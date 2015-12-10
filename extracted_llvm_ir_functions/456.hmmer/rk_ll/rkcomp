@@ -1,50 +1,60 @@
 define i64 @rkcomp(i8* %probe) #0 {
 entry:
   %coded = alloca [17 x i8], align 16
-  %call = call i64 @strlen(i8* %probe) #4
-  %conv = trunc i64 %call to i32
-  %sext = shl i64 %call, 32
-  %conv1 = ashr exact i64 %sext, 32
-  %cmp = icmp ugt i64 %conv1, 16
-  br i1 %cmp, label %return, label %if.end
+  call void @llvm.dbg.value(metadata !{i8* %probe}, i64 0, metadata !13), !dbg !32
+  call void @llvm.dbg.value(metadata !33, i64 0, metadata !14), !dbg !34
+  call void @llvm.dbg.declare(metadata !{[17 x i8]* %coded}, metadata !15), !dbg !35
+  %call = call i64 @strlen(i8* %probe) #5, !dbg !36
+  %conv = trunc i64 %call to i32, !dbg !36
+  call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !19), !dbg !36
+  %sext = shl i64 %call, 32, !dbg !36
+  %conv1 = ashr exact i64 %sext, 32, !dbg !36
+  %cmp = icmp ugt i64 %conv1, 16, !dbg !36
+  br i1 %cmp, label %return, label %if.end, !dbg !36
 
 if.end:                                           ; preds = %entry
-  %arraydecay = getelementptr inbounds [17 x i8]* %coded, i64 0, i64 0
-  %call3 = call i32 @seqencode(i8* %arraydecay, i8* %probe) #5
-  %cmp4 = icmp eq i32 %call3, 0
-  br i1 %cmp4, label %return, label %for.cond.preheader
+  %arraydecay = getelementptr inbounds [17 x i8]* %coded, i64 0, i64 0, !dbg !37
+  %call3 = call i32 @seqencode(i8* %arraydecay, i8* %probe) #6, !dbg !37
+  %cmp4 = icmp eq i32 %call3, 0, !dbg !37
+  br i1 %cmp4, label %return, label %for.cond.preheader, !dbg !37
 
 for.cond.preheader:                               ; preds = %if.end
-  %cmp832 = icmp sgt i32 %conv, 0
-  br i1 %cmp832, label %for.body, label %for.body15
+  %cmp832 = icmp sgt i32 %conv, 0, !dbg !38
+  br i1 %cmp832, label %for.body, label %for.body15, !dbg !38
 
 for.cond11.preheader:                             ; preds = %for.body
-  %cmp1329 = icmp ult i32 %conv, 16
-  br i1 %cmp1329, label %for.body15, label %return
+  %cmp1329 = icmp ult i32 %conv, 16, !dbg !40
+  br i1 %cmp1329, label %for.body15, label %return, !dbg !40
 
 for.body:                                         ; preds = %for.cond.preheader, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
   %hashprobe.033 = phi i64 [ %or, %for.body ], [ 0, %for.cond.preheader ]
-  %shl = shl i64 %hashprobe.033, 4
-  %arrayidx = getelementptr inbounds [17 x i8]* %coded, i64 0, i64 %indvars.iv
-  %0 = load i8* %arrayidx, align 1, !tbaa !0
-  %conv10 = sext i8 %0 to i64
-  %or = or i64 %conv10, %shl
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond37 = icmp eq i32 %lftr.wideiv, %conv
-  br i1 %exitcond37, label %for.cond11.preheader, label %for.body
+  %shl = shl i64 %hashprobe.033, 4, !dbg !42
+  call void @llvm.dbg.value(metadata !{i64 %shl}, i64 0, metadata !14), !dbg !42
+  %arrayidx = getelementptr inbounds [17 x i8]* %coded, i64 0, i64 %indvars.iv, !dbg !44
+  %0 = load i8* %arrayidx, align 1, !dbg !44, !tbaa !45
+  %conv10 = sext i8 %0 to i64, !dbg !44
+  %or = or i64 %conv10, %shl, !dbg !44
+  call void @llvm.dbg.value(metadata !{i64 %or}, i64 0, metadata !14), !dbg !44
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !38
+  call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !21), !dbg !38
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !38
+  %exitcond37 = icmp eq i32 %lftr.wideiv, %conv, !dbg !38
+  br i1 %exitcond37, label %for.cond11.preheader, label %for.body, !dbg !38
 
 for.body15:                                       ; preds = %for.cond.preheader, %for.cond11.preheader, %for.body15
   %i.131 = phi i32 [ %inc19, %for.body15 ], [ %conv, %for.cond11.preheader ], [ 0, %for.cond.preheader ]
   %hashprobe.130 = phi i64 [ %or17, %for.body15 ], [ %or, %for.cond11.preheader ], [ 0, %for.cond.preheader ]
-  %shl16 = shl i64 %hashprobe.130, 4
-  %or17 = or i64 %shl16, 15
-  %inc19 = add nsw i32 %i.131, 1
-  %exitcond = icmp eq i32 %inc19, 16
-  br i1 %exitcond, label %return, label %for.body15
+  %shl16 = shl i64 %hashprobe.130, 4, !dbg !47
+  call void @llvm.dbg.value(metadata !{i64 %shl16}, i64 0, metadata !14), !dbg !47
+  %or17 = or i64 %shl16, 15, !dbg !49
+  call void @llvm.dbg.value(metadata !{i64 %or17}, i64 0, metadata !14), !dbg !49
+  %inc19 = add nsw i32 %i.131, 1, !dbg !40
+  call void @llvm.dbg.value(metadata !{i32 %inc19}, i64 0, metadata !21), !dbg !40
+  %exitcond = icmp eq i32 %inc19, 16, !dbg !40
+  br i1 %exitcond, label %return, label %for.body15, !dbg !40
 
 return:                                           ; preds = %for.cond11.preheader, %for.body15, %if.end, %entry
   %retval.0 = phi i64 [ 0, %entry ], [ 0, %if.end ], [ %or, %for.cond11.preheader ], [ %or17, %for.body15 ]
-  ret i64 %retval.0
+  ret i64 %retval.0, !dbg !50
 }

@@ -1,0 +1,72 @@
+define double @_ZN10xalanc_1_813DoubleSupport7modulusEdd(double %theLHS, double %theRHS) #4 align 2 {
+entry:
+  %theDummy = alloca double, align 8
+  call void @llvm.dbg.value(metadata !{double %theLHS}, i64 0, metadata !1672), !dbg !2274
+  call void @llvm.dbg.value(metadata !{double %theRHS}, i64 0, metadata !1673), !dbg !2275
+  tail call void @llvm.dbg.value(metadata !{double %theLHS}, i64 0, metadata !2276), !dbg !2278
+  tail call void @llvm.dbg.declare(metadata !2159, metadata !2130), !dbg !2279
+  %0 = load i64* bitcast (%"union.xalanc_1_8::DoubleSupport::NumberUnion"* @_ZN10xalanc_1_813DoubleSupport5s_NaNE to i64*), align 8, !dbg !2280
+  %1 = trunc i64 %0 to i32, !dbg !2280
+  %2 = bitcast double %theLHS to i64, !dbg !2280
+  %temp.sroa.0.0.extract.trunc.i = trunc i64 %2 to i32, !dbg !2280
+  %cmp.i = icmp eq i32 %1, %temp.sroa.0.0.extract.trunc.i, !dbg !2280
+  %3 = bitcast i64 %0 to double
+  br i1 %cmp.i, label %_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit, label %if.else, !dbg !2280
+
+_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit:      ; preds = %entry
+  %4 = lshr i64 %0, 32
+  %5 = trunc i64 %4 to i32
+  %temp.sroa.0.4.extract.shift.i = lshr i64 %2, 32, !dbg !2280
+  %temp.sroa.0.4.extract.trunc.i = trunc i64 %temp.sroa.0.4.extract.shift.i to i32, !dbg !2280
+  %cmp2.i = icmp eq i32 %5, %temp.sroa.0.4.extract.trunc.i, !dbg !2280
+  br i1 %cmp2.i, label %return, label %if.else, !dbg !2277
+
+if.else:                                          ; preds = %entry, %_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit
+  tail call void @llvm.dbg.value(metadata !{double %theRHS}, i64 0, metadata !2281), !dbg !2283
+  tail call void @llvm.dbg.declare(metadata !2159, metadata !2130), !dbg !2284
+  %6 = bitcast double %theRHS to i64, !dbg !2285
+  %temp.sroa.0.0.extract.trunc.i34 = trunc i64 %6 to i32, !dbg !2285
+  %cmp.i35 = icmp eq i32 %1, %temp.sroa.0.0.extract.trunc.i34, !dbg !2285
+  br i1 %cmp.i35, label %_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit40, label %if.else5, !dbg !2285
+
+_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit40:    ; preds = %if.else
+  %7 = lshr i64 %0, 32
+  %8 = trunc i64 %7 to i32
+  %temp.sroa.0.4.extract.shift.i36 = lshr i64 %6, 32, !dbg !2285
+  %temp.sroa.0.4.extract.trunc.i37 = trunc i64 %temp.sroa.0.4.extract.shift.i36 to i32, !dbg !2285
+  %cmp2.i38 = icmp eq i32 %8, %temp.sroa.0.4.extract.trunc.i37, !dbg !2285
+  br i1 %cmp2.i38, label %return, label %if.else5, !dbg !2282
+
+if.else5:                                         ; preds = %if.else, %_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit40
+  %cmp6 = fcmp oeq double %theRHS, 0.000000e+00, !dbg !2286
+  br i1 %cmp6, label %return, label %if.else9, !dbg !2286
+
+if.else9:                                         ; preds = %if.else5
+  %conv10 = fptosi double %theLHS to i64, !dbg !2287
+  %conv11 = sitofp i64 %conv10 to double, !dbg !2287
+  %cmp12 = fcmp oeq double %conv11, %theLHS, !dbg !2287
+  br i1 %cmp12, label %land.lhs.true, label %if.else20, !dbg !2287
+
+land.lhs.true:                                    ; preds = %if.else9
+  %conv13 = fptosi double %theRHS to i64, !dbg !2287
+  %conv14 = sitofp i64 %conv13 to double, !dbg !2287
+  %cmp15 = fcmp oeq double %conv14, %theRHS, !dbg !2287
+  br i1 %cmp15, label %if.then16, label %if.else20, !dbg !2287
+
+if.then16:                                        ; preds = %land.lhs.true
+  %rem = srem i64 %conv10, %conv13, !dbg !2288
+  %conv19 = sitofp i64 %rem to double, !dbg !2288
+  br label %return, !dbg !2288
+
+if.else20:                                        ; preds = %land.lhs.true, %if.else9
+  call void @llvm.dbg.declare(metadata !{double* %theDummy}, metadata !1674), !dbg !2290
+  %call21 = call double @_ZN10xalanc_1_813DoubleSupport6divideEdd(double %theLHS, double %theRHS) #9, !dbg !2291
+  call void @llvm.dbg.value(metadata !{double %call21}, i64 0, metadata !1676), !dbg !2291
+  %call22 = call double @modf(double %call21, double* %theDummy) #10, !dbg !2292
+  %mul = fmul double %call22, %theRHS, !dbg !2292
+  br label %return, !dbg !2292
+
+return:                                           ; preds = %if.else5, %_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit40, %_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit, %if.else20, %if.then16
+  %retval.0 = phi double [ %conv19, %if.then16 ], [ %mul, %if.else20 ], [ %theLHS, %_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit ], [ %theRHS, %_ZN10xalanc_1_813DoubleSupport5isNaNEd.exit40 ], [ %3, %if.else5 ]
+  ret double %retval.0, !dbg !2293
+}

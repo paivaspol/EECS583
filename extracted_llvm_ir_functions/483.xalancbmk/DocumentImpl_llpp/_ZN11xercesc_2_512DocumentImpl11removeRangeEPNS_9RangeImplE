@@ -1,0 +1,56 @@
+define void @_ZN11xercesc_2_512DocumentImpl11removeRangeEPNS_9RangeImplE(%"class.xercesc_2_5::DocumentImpl"* nocapture %this, %"class.xercesc_2_5::RangeImpl"* %range) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DocumentImpl"* %this}, i64 0, metadata !4955), !dbg !6287
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RangeImpl"* %range}, i64 0, metadata !4956), !dbg !6287
+  %ranges = getelementptr inbounds %"class.xercesc_2_5::DocumentImpl"* %this, i64 0, i32 8, !dbg !6288
+  %0 = load %"class.xercesc_2_5::RefVectorOf.2"** %ranges, align 8, !dbg !6288, !tbaa !5820
+  %cmp = icmp eq %"class.xercesc_2_5::RefVectorOf.2"* %0, null, !dbg !6288
+  br i1 %cmp, label %if.end14, label %if.then, !dbg !6288
+
+if.then:                                          ; preds = %entry
+  %fCurCount.i = getelementptr inbounds %"class.xercesc_2_5::RefVectorOf.2"* %0, i64 0, i32 0, i32 2, !dbg !6289
+  %1 = load i32* %fCurCount.i, align 4, !dbg !6289, !tbaa !6040
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !4957), !dbg !6291
+  %cmp3 = icmp eq i32 %1, 0, !dbg !6292
+  br i1 %cmp3, label %if.end14, label %for.body, !dbg !6292
+
+for.cond:                                         ; preds = %for.body
+  %cmp5 = icmp ult i32 %inc, %1, !dbg !6293
+  br i1 %cmp5, label %for.cond.for.body_crit_edge, label %if.end14, !dbg !6293
+
+for.cond.for.body_crit_edge:                      ; preds = %for.cond
+  %.pre = load %"class.xercesc_2_5::RefVectorOf.2"** %ranges, align 8, !dbg !6294, !tbaa !5820
+  br label %for.body, !dbg !6293
+
+for.body:                                         ; preds = %if.then, %for.cond.for.body_crit_edge
+  %2 = phi %"class.xercesc_2_5::RefVectorOf.2"* [ %.pre, %for.cond.for.body_crit_edge ], [ %0, %if.then ]
+  %i.022 = phi i32 [ %inc, %for.cond.for.body_crit_edge ], [ 0, %if.then ]
+  %3 = getelementptr inbounds %"class.xercesc_2_5::RefVectorOf.2"* %2, i64 0, i32 0, !dbg !6294
+  %call7 = tail call %"class.xercesc_2_5::RangeImpl"* @_ZN11xercesc_2_515BaseRefVectorOfINS_9RangeImplEE9elementAtEj(%"class.xercesc_2_5::BaseRefVectorOf.3"* %3, i32 %i.022) #9, !dbg !6294
+  %cmp8 = icmp eq %"class.xercesc_2_5::RangeImpl"* %call7, %range, !dbg !6294
+  %inc = add i32 %i.022, 1, !dbg !6293
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !4959), !dbg !6293
+  br i1 %cmp8, label %if.then9, label %for.cond, !dbg !6294
+
+if.then9:                                         ; preds = %for.body
+  %4 = load %"class.xercesc_2_5::RefVectorOf.2"** %ranges, align 8, !dbg !6296, !tbaa !5820
+  %5 = getelementptr inbounds %"class.xercesc_2_5::RefVectorOf.2"* %4, i64 0, i32 0, !dbg !6296
+  %6 = bitcast %"class.xercesc_2_5::RefVectorOf.2"* %4 to void (%"class.xercesc_2_5::BaseRefVectorOf.3"*, i32)***, !dbg !6296
+  %vtable = load void (%"class.xercesc_2_5::BaseRefVectorOf.3"*, i32)*** %6, align 8, !dbg !6296, !tbaa !5816
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::BaseRefVectorOf.3"*, i32)** %vtable, i64 4, !dbg !6296
+  %7 = load void (%"class.xercesc_2_5::BaseRefVectorOf.3"*, i32)** %vfn, align 8, !dbg !6296
+  tail call void %7(%"class.xercesc_2_5::BaseRefVectorOf.3"* %5, i32 %i.022) #9, !dbg !6296
+  %isnull = icmp eq %"class.xercesc_2_5::RangeImpl"* %range, null, !dbg !6298
+  br i1 %isnull, label %if.end14, label %delete.notnull, !dbg !6298
+
+delete.notnull:                                   ; preds = %if.then9
+  %8 = bitcast %"class.xercesc_2_5::RangeImpl"* %range to void (%"class.xercesc_2_5::RangeImpl"*)***, !dbg !6298
+  %vtable11 = load void (%"class.xercesc_2_5::RangeImpl"*)*** %8, align 8, !dbg !6298, !tbaa !5816
+  %vfn12 = getelementptr inbounds void (%"class.xercesc_2_5::RangeImpl"*)** %vtable11, i64 1, !dbg !6298
+  %9 = load void (%"class.xercesc_2_5::RangeImpl"*)** %vfn12, align 8, !dbg !6298
+  tail call void %9(%"class.xercesc_2_5::RangeImpl"* %range) #9, !dbg !6298
+  br label %if.end14, !dbg !6298
+
+if.end14:                                         ; preds = %for.cond, %if.then, %entry, %if.then9, %delete.notnull
+  ret void, !dbg !6299
+}

@@ -1,57 +1,65 @@
 define void @writeMB_transform_size_CABAC(%struct.syntaxelement* nocapture %se, %struct.EncodingEnvironment* %eep_dp) #0 {
 entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !3
-  %currentSlice = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 50
-  %1 = load %struct.Slice** %currentSlice, align 8, !tbaa !3
-  %mot_ctx = getelementptr inbounds %struct.Slice* %1, i64 0, i32 7
-  %2 = load %struct.MotionInfoContexts** %mot_ctx, align 8, !tbaa !3
-  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3
-  %3 = load i32* %current_mb_nr, align 4, !tbaa !0
-  %idxprom = sext i32 %3 to i64
-  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51
-  %4 = load %struct.macroblock** %mb_data, align 8, !tbaa !3
-  %mb_available_up = getelementptr inbounds %struct.macroblock* %4, i64 %idxprom, i32 6
-  %5 = load %struct.macroblock** %mb_available_up, align 8, !tbaa !3
-  %cmp = icmp eq %struct.macroblock* %5, null
-  br i1 %cmp, label %if.end, label %if.else
+  tail call void @llvm.dbg.value(metadata !{%struct.syntaxelement* %se}, i64 0, metadata !323), !dbg !1066
+  tail call void @llvm.dbg.value(metadata !{%struct.EncodingEnvironment* %eep_dp}, i64 0, metadata !324), !dbg !1066
+  tail call void @llvm.dbg.value(metadata !45, i64 0, metadata !327), !dbg !1067
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !1068, !tbaa !989
+  %currentSlice = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 50, !dbg !1068
+  %1 = load %struct.Slice** %currentSlice, align 8, !dbg !1068, !tbaa !989
+  %mot_ctx = getelementptr inbounds %struct.Slice* %1, i64 0, i32 7, !dbg !1068
+  %2 = load %struct.MotionInfoContexts** %mot_ctx, align 8, !dbg !1068, !tbaa !989
+  tail call void @llvm.dbg.value(metadata !{%struct.MotionInfoContexts* %2}, i64 0, metadata !329), !dbg !1068
+  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3, !dbg !1069
+  %3 = load i32* %current_mb_nr, align 4, !dbg !1069, !tbaa !984
+  %idxprom = sext i32 %3 to i64, !dbg !1069
+  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51, !dbg !1069
+  %4 = load %struct.macroblock** %mb_data, align 8, !dbg !1069, !tbaa !989
+  %mb_available_up = getelementptr inbounds %struct.macroblock* %4, i64 %idxprom, i32 6, !dbg !1070
+  %5 = load %struct.macroblock** %mb_available_up, align 8, !dbg !1070, !tbaa !989
+  %cmp = icmp eq %struct.macroblock* %5, null, !dbg !1070
+  br i1 %cmp, label %if.end, label %if.else, !dbg !1070
 
 if.else:                                          ; preds = %entry
-  %luma_transform_size_8x8_flag = getelementptr inbounds %struct.macroblock* %5, i64 0, i32 32
-  %6 = load i32* %luma_transform_size_8x8_flag, align 4, !tbaa !0
+  %luma_transform_size_8x8_flag = getelementptr inbounds %struct.macroblock* %5, i64 0, i32 32, !dbg !1071
+  %6 = load i32* %luma_transform_size_8x8_flag, align 4, !dbg !1071, !tbaa !984
+  tail call void @llvm.dbg.value(metadata !{i32 %6}, i64 0, metadata !326), !dbg !1071
   br label %if.end
 
 if.end:                                           ; preds = %entry, %if.else
   %b.0 = phi i32 [ %6, %if.else ], [ 0, %entry ]
-  %mb_available_left = getelementptr inbounds %struct.macroblock* %4, i64 %idxprom, i32 7
-  %7 = load %struct.macroblock** %mb_available_left, align 8, !tbaa !3
-  %cmp2 = icmp eq %struct.macroblock* %7, null
-  br i1 %cmp2, label %if.end7, label %if.else4
+  %mb_available_left = getelementptr inbounds %struct.macroblock* %4, i64 %idxprom, i32 7, !dbg !1072
+  %7 = load %struct.macroblock** %mb_available_left, align 8, !dbg !1072, !tbaa !989
+  %cmp2 = icmp eq %struct.macroblock* %7, null, !dbg !1072
+  br i1 %cmp2, label %if.end7, label %if.else4, !dbg !1072
 
 if.else4:                                         ; preds = %if.end
-  %luma_transform_size_8x8_flag6 = getelementptr inbounds %struct.macroblock* %7, i64 0, i32 32
-  %8 = load i32* %luma_transform_size_8x8_flag6, align 4, !tbaa !0
+  %luma_transform_size_8x8_flag6 = getelementptr inbounds %struct.macroblock* %7, i64 0, i32 32, !dbg !1073
+  %8 = load i32* %luma_transform_size_8x8_flag6, align 4, !dbg !1073, !tbaa !984
+  tail call void @llvm.dbg.value(metadata !{i32 %8}, i64 0, metadata !325), !dbg !1073
   br label %if.end7
 
 if.end7:                                          ; preds = %if.end, %if.else4
   %a.0 = phi i32 [ %8, %if.else4 ], [ 0, %if.end ]
-  %add = add nsw i32 %a.0, %b.0
-  %luma_transform_size_8x8_flag8 = getelementptr inbounds %struct.macroblock* %4, i64 %idxprom, i32 32
-  %9 = load i32* %luma_transform_size_8x8_flag8, align 4, !tbaa !0
-  %context = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 6
-  store i32 %add, i32* %context, align 4, !tbaa !0
-  %cmp9 = icmp eq i32 %9, 0
-  %idx.ext = sext i32 %add to i64
-  %add.ptr = getelementptr inbounds %struct.MotionInfoContexts* %2, i64 0, i32 6, i64 %idx.ext
-  br i1 %cmp9, label %if.then10, label %if.else11
+  %add = add nsw i32 %a.0, %b.0, !dbg !1074
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !327), !dbg !1074
+  %luma_transform_size_8x8_flag8 = getelementptr inbounds %struct.macroblock* %4, i64 %idxprom, i32 32, !dbg !1075
+  %9 = load i32* %luma_transform_size_8x8_flag8, align 4, !dbg !1075, !tbaa !984
+  tail call void @llvm.dbg.value(metadata !{i32 %9}, i64 0, metadata !328), !dbg !1075
+  %context = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 6, !dbg !1076
+  store i32 %add, i32* %context, align 4, !dbg !1076, !tbaa !984
+  %cmp9 = icmp eq i32 %9, 0, !dbg !1077
+  %idx.ext = sext i32 %add to i64, !dbg !1078
+  %add.ptr = getelementptr inbounds %struct.MotionInfoContexts* %2, i64 0, i32 6, i64 %idx.ext, !dbg !1078
+  br i1 %cmp9, label %if.then10, label %if.else11, !dbg !1077
 
 if.then10:                                        ; preds = %if.end7
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %add.ptr) #5
-  br label %if.end16
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %add.ptr) #6, !dbg !1078
+  br label %if.end16, !dbg !1078
 
 if.else11:                                        ; preds = %if.end7
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %add.ptr) #5
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %add.ptr) #6, !dbg !1079
   br label %if.end16
 
 if.end16:                                         ; preds = %if.else11, %if.then10
-  ret void
+  ret void, !dbg !1080
 }

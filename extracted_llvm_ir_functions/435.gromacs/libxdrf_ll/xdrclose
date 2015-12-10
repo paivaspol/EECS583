@@ -1,47 +1,50 @@
-define i32 @xdrclose(%struct.XDR* %xdrs) #4 {
-  %1 = icmp eq %struct.XDR* %xdrs, null
-  br i1 %1, label %2, label %.preheader
+define i32 @xdrclose(%struct.XDR* %xdrs) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.XDR* %xdrs}, i64 0, metadata !86), !dbg !335
+  %cmp = icmp eq %struct.XDR* %xdrs, null, !dbg !336
+  br i1 %cmp, label %if.then, label %for.body, !dbg !336
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !18
-  %4 = tail call i64 @fwrite(i8* getelementptr inbounds ([33 x i8]* @.str3, i64 0, i64 0), i64 32, i64 1, %struct.__sFILE* %3)
-  tail call void @exit(i32 1) #11
-  unreachable
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !337, !tbaa !304
+  %1 = tail call i64 @fwrite(i8* getelementptr inbounds ([33 x i8]* @.str3, i64 0, i64 0), i64 32, i64 1, %struct._IO_FILE* %0), !dbg !337
+  tail call void @exit(i32 1) #8, !dbg !339
+  unreachable, !dbg !339
 
-; <label>:5                                       ; preds = %.preheader
-  %6 = icmp slt i64 %indvars.iv.next, 20
-  br i1 %6, label %.preheader, label %21
+for.cond:                                         ; preds = %for.body
+  %2 = trunc i64 %indvars.iv.next to i32, !dbg !340
+  %cmp1 = icmp slt i32 %2, 20, !dbg !340
+  br i1 %cmp1, label %for.body, label %for.end, !dbg !340
 
-.preheader:                                       ; preds = %0, %5
-  %indvars.iv = phi i64 [ %indvars.iv.next, %5 ], [ 1, %0 ]
-  %7 = getelementptr inbounds [20 x %struct.XDR*]* @xdridptr, i64 0, i64 %indvars.iv
-  %8 = load %struct.XDR** %7, align 8, !tbaa !18
-  %9 = icmp eq %struct.XDR* %8, %xdrs
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  br i1 %9, label %10, label %5
+for.body:                                         ; preds = %entry, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 1, %entry ]
+  %arrayidx = getelementptr inbounds [20 x %struct.XDR*]* @xdridptr, i64 0, i64 %indvars.iv, !dbg !342
+  %3 = load %struct.XDR** %arrayidx, align 8, !dbg !342, !tbaa !304
+  %cmp2 = icmp eq %struct.XDR* %3, %xdrs, !dbg !342
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !340
+  br i1 %cmp2, label %do.body, label %for.cond, !dbg !342
 
-; <label>:10                                      ; preds = %.preheader
-  %11 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 1
-  %12 = load %struct.xdr_ops** %11, align 8, !tbaa !19
-  %13 = getelementptr inbounds %struct.xdr_ops* %12, i64 0, i32 7
-  %14 = load void (%struct.XDR*)** %13, align 8, !tbaa !21
-  %15 = icmp eq void (%struct.XDR*)* %14, null
-  br i1 %15, label %17, label %16
+do.body:                                          ; preds = %for.body
+  %x_ops = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 1, !dbg !344
+  %4 = load %struct.xdr_ops** %x_ops, align 8, !dbg !344, !tbaa !304
+  %x_destroy = getelementptr inbounds %struct.xdr_ops* %4, i64 0, i32 7, !dbg !344
+  %5 = load void (%struct.XDR*)** %x_destroy, align 8, !dbg !344, !tbaa !304
+  %tobool = icmp eq void (%struct.XDR*)* %5, null, !dbg !344
+  br i1 %tobool, label %do.end, label %if.then4, !dbg !344
 
-; <label>:16                                      ; preds = %10
-  tail call void %14(%struct.XDR* %xdrs) #10
-  br label %17
+if.then4:                                         ; preds = %do.body
+  tail call void %5(%struct.XDR* %xdrs) #7, !dbg !344
+  br label %do.end, !dbg !344
 
-; <label>:17                                      ; preds = %10, %16
-  %18 = getelementptr inbounds [20 x %struct.__sFILE*]* @xdrfiles, i64 0, i64 %indvars.iv
-  %19 = load %struct.__sFILE** %18, align 8, !tbaa !18
-  %20 = tail call i32 @fclose(%struct.__sFILE* %19) #10
-  store %struct.XDR* null, %struct.XDR** %7, align 8, !tbaa !18
-  ret i32 1
+do.end:                                           ; preds = %do.body, %if.then4
+  %arrayidx9 = getelementptr inbounds [20 x %struct._IO_FILE*]* @xdrfiles, i64 0, i64 %indvars.iv, !dbg !347
+  %6 = load %struct._IO_FILE** %arrayidx9, align 8, !dbg !347, !tbaa !304
+  %call10 = tail call i32 @fclose(%struct._IO_FILE* %6) #7, !dbg !347
+  store %struct.XDR* null, %struct.XDR** %arrayidx, align 8, !dbg !348, !tbaa !304
+  ret i32 1, !dbg !349
 
-; <label>:21                                      ; preds = %5
-  %22 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !18
-  %23 = tail call i64 @fwrite(i8* getelementptr inbounds ([33 x i8]* @.str4, i64 0, i64 0), i64 32, i64 1, %struct.__sFILE* %22)
-  tail call void @exit(i32 1) #11
-  unreachable
+for.end:                                          ; preds = %for.cond
+  %7 = load %struct._IO_FILE** @stderr, align 8, !dbg !350, !tbaa !304
+  %8 = tail call i64 @fwrite(i8* getelementptr inbounds ([33 x i8]* @.str4, i64 0, i64 0), i64 32, i64 1, %struct._IO_FILE* %7), !dbg !350
+  tail call void @exit(i32 1) #8, !dbg !351
+  unreachable, !dbg !351
 }

@@ -1,0 +1,28 @@
+define void @_ZN6soplex9CLUFactor14vSolveLeftNoNZEdPdS1_Pii(%"class.soplex::CLUFactor"* nocapture %this, double %eps, double* nocapture %vec2, double* nocapture %rhs2, i32* nocapture %ridx2, i32 %rn2) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::CLUFactor"* %this}, i64 0, metadata !2755), !dbg !3874
+  tail call void @llvm.dbg.value(metadata !{double %eps}, i64 0, metadata !2756), !dbg !3874
+  tail call void @llvm.dbg.value(metadata !{double* %vec2}, i64 0, metadata !2757), !dbg !3875
+  tail call void @llvm.dbg.value(metadata !{double* %rhs2}, i64 0, metadata !2758), !dbg !3876
+  tail call void @llvm.dbg.value(metadata !{i32* %ridx2}, i64 0, metadata !2759), !dbg !3876
+  tail call void @llvm.dbg.value(metadata !{i32 %rn2}, i64 0, metadata !2760), !dbg !3876
+  %updateType = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 10, i32 8, !dbg !3877
+  %0 = load i32* %updateType, align 4, !dbg !3877, !tbaa !2843
+  %tobool = icmp eq i32 %0, 0, !dbg !3877
+  br i1 %tobool, label %if.then, label %if.else, !dbg !3877
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @_ZN6soplex9CLUFactor15solveUpdateLeftEdPdPii(%"class.soplex::CLUFactor"* %this, double %eps, double* %rhs2, i32* %ridx2, i32 %rn2) #6, !dbg !3878
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !2760), !dbg !3878
+  tail call void @_ZN6soplex9CLUFactor14solveUleftNoNZEdPdS1_Pii(%"class.soplex::CLUFactor"* %this, double %eps, double* %vec2, double* %rhs2, i32* %ridx2, i32 %call) #6, !dbg !3880
+  br label %if.end, !dbg !3881
+
+if.else:                                          ; preds = %entry
+  tail call void @_ZN6soplex9CLUFactor14solveUleftNoNZEdPdS1_Pii(%"class.soplex::CLUFactor"* %this, double %eps, double* %vec2, double* %rhs2, i32* %ridx2, i32 %rn2) #6, !dbg !3882
+  tail call void @_ZN6soplex9CLUFactor20solveLleftForestNoNZEPd(%"class.soplex::CLUFactor"* %this, double* %vec2) #6, !dbg !3884
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  tail call void @_ZN6soplex9CLUFactor14solveLleftNoNZEPd(%"class.soplex::CLUFactor"* %this, double* %vec2) #6, !dbg !3885
+  ret void, !dbg !3886
+}

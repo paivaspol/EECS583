@@ -1,0 +1,35 @@
+define void @_ZN11xercesc_2_519XTemplateSerializer11storeObjectEPNS_11RefVectorOfINS_9XMLNumberEEERNS_16XSerializeEngineE(%"class.xercesc_2_5::RefVectorOf.23"* %objToStore, %"class.xercesc_2_5::XSerializeEngine"* %serEng) #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefVectorOf.23"* %objToStore}, i64 0, metadata !10124), !dbg !15599
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XSerializeEngine"* %serEng}, i64 0, metadata !10125), !dbg !15600
+  %0 = bitcast %"class.xercesc_2_5::RefVectorOf.23"* %objToStore to i8*, !dbg !15601
+  %call = tail call zeroext i1 @_ZN11xercesc_2_516XSerializeEngine17needToStoreObjectEPv(%"class.xercesc_2_5::XSerializeEngine"* %serEng, i8* %0) #12, !dbg !15601
+  br i1 %call, label %if.then, label %if.end, !dbg !15601
+
+if.then:                                          ; preds = %entry
+  %1 = getelementptr inbounds %"class.xercesc_2_5::RefVectorOf.23"* %objToStore, i64 0, i32 0, !dbg !15602
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf.24"* %1}, i64 0, metadata !15603), !dbg !15604
+  %fCurCount.i = getelementptr inbounds %"class.xercesc_2_5::RefVectorOf.23"* %objToStore, i64 0, i32 0, i32 2, !dbg !15605
+  %2 = load i32* %fCurCount.i, align 4, !dbg !15605, !tbaa !14899
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !10126), !dbg !15602
+  %call2 = tail call %"class.xercesc_2_5::XSerializeEngine"* @_ZN11xercesc_2_516XSerializeEnginelsEi(%"class.xercesc_2_5::XSerializeEngine"* %serEng, i32 %2) #12, !dbg !15606
+  tail call void @llvm.dbg.value(metadata !1577, i64 0, metadata !10128), !dbg !15607
+  %cmp12 = icmp sgt i32 %2, 0, !dbg !15607
+  br i1 %cmp12, label %for.body, label %if.end, !dbg !15607
+
+for.body:                                         ; preds = %if.then, %for.body
+  %i.013 = phi i32 [ %inc, %for.body ], [ 0, %if.then ]
+  %call3 = tail call %"class.xercesc_2_5::XMLNumber"* @_ZN11xercesc_2_515BaseRefVectorOfINS_9XMLNumberEE9elementAtEj(%"class.xercesc_2_5::BaseRefVectorOf.24"* %1, i32 %i.013) #12, !dbg !15608
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLNumber"* %call3}, i64 0, metadata !10130), !dbg !15608
+  %3 = getelementptr inbounds %"class.xercesc_2_5::XMLNumber"* %call3, i64 0, i32 0, !dbg !15609
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XSerializeEngine"* %serEng}, i64 0, metadata !15610), !dbg !15611
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XSerializable"* %3}, i64 0, metadata !15612), !dbg !15613
+  tail call void @_ZN11xercesc_2_516XSerializeEngine5writeEPNS_13XSerializableE(%"class.xercesc_2_5::XSerializeEngine"* %serEng, %"class.xercesc_2_5::XSerializable"* %3) #12, !dbg !15614
+  %inc = add nsw i32 %i.013, 1, !dbg !15607
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !10128), !dbg !15607
+  %exitcond = icmp eq i32 %inc, %2, !dbg !15607
+  br i1 %exitcond, label %if.end, label %for.body, !dbg !15607
+
+if.end:                                           ; preds = %if.then, %for.body, %entry
+  ret void, !dbg !15615
+}

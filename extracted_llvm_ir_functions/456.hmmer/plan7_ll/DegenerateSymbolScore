@@ -1,68 +1,76 @@
 define i32 @DegenerateSymbolScore(float* nocapture %p, float* nocapture %null, i32 %ambig) #0 {
 entry:
-  %0 = load i32* @Alphabet_size, align 4, !tbaa !0
-  %cmp42 = icmp sgt i32 %0, 0
-  br i1 %cmp42, label %for.body.lr.ph, label %for.end
+  tail call void @llvm.dbg.value(metadata !{float* %p}, i64 0, metadata !278), !dbg !567
+  tail call void @llvm.dbg.value(metadata !{float* %null}, i64 0, metadata !279), !dbg !567
+  tail call void @llvm.dbg.value(metadata !{i32 %ambig}, i64 0, metadata !280), !dbg !567
+  tail call void @llvm.dbg.value(metadata !544, i64 0, metadata !282), !dbg !568
+  tail call void @llvm.dbg.value(metadata !544, i64 0, metadata !283), !dbg !569
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !281), !dbg !570
+  %0 = load i32* @Alphabet_size, align 4, !dbg !570, !tbaa !327
+  %cmp42 = icmp sgt i32 %0, 0, !dbg !570
+  br i1 %cmp42, label %for.body.lr.ph, label %for.end, !dbg !570
 
 for.body.lr.ph:                                   ; preds = %entry
-  %idxprom1 = sext i32 %ambig to i64
-  br label %for.body
+  %idxprom1 = sext i32 %ambig to i64, !dbg !572
+  br label %for.body, !dbg !570
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.inc
   %1 = phi i32 [ %0, %for.body.lr.ph ], [ %6, %for.inc ]
   %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
   %denom.045 = phi float [ 0.000000e+00, %for.body.lr.ph ], [ %denom.1, %for.inc ]
   %numer.044 = phi float [ 0.000000e+00, %for.body.lr.ph ], [ %numer.1, %for.inc ]
-  %arrayidx2 = getelementptr inbounds [24 x [20 x i8]]* @Degenerate, i64 0, i64 %idxprom1, i64 %indvars.iv
-  %2 = load i8* %arrayidx2, align 1, !tbaa !1
-  %tobool = icmp eq i8 %2, 0
-  br i1 %tobool, label %for.inc, label %if.then
+  %arrayidx2 = getelementptr inbounds [24 x [20 x i8]]* @Degenerate, i64 0, i64 %idxprom1, i64 %indvars.iv, !dbg !572
+  %2 = load i8* %arrayidx2, align 1, !dbg !572, !tbaa !328
+  %tobool = icmp eq i8 %2, 0, !dbg !572
+  br i1 %tobool, label %for.inc, label %if.then, !dbg !572
 
 if.then:                                          ; preds = %for.body
-  %arrayidx4 = getelementptr inbounds float* %null, i64 %indvars.iv
-  %3 = load float* %arrayidx4, align 4, !tbaa !3
-  %conv = fpext float %3 to double
-  %arrayidx6 = getelementptr inbounds float* %p, i64 %indvars.iv
-  %4 = load float* %arrayidx6, align 4, !tbaa !3
-  %div = fdiv float %4, %3
-  %cmp9 = fcmp ogt float %div, 0.000000e+00
-  br i1 %cmp9, label %cond.true, label %cond.end
+  %arrayidx4 = getelementptr inbounds float* %null, i64 %indvars.iv, !dbg !574
+  %3 = load float* %arrayidx4, align 4, !dbg !574, !tbaa !332
+  %conv = fpext float %3 to double, !dbg !574
+  %arrayidx6 = getelementptr inbounds float* %p, i64 %indvars.iv, !dbg !574
+  %4 = load float* %arrayidx6, align 4, !dbg !574, !tbaa !332
+  %div = fdiv float %4, %3, !dbg !574
+  %cmp9 = fcmp ogt float %div, 0.000000e+00, !dbg !574
+  br i1 %cmp9, label %cond.true, label %cond.end, !dbg !574
 
 cond.true:                                        ; preds = %if.then
-  %conv16 = fpext float %div to double
-  %call = tail call double @log(double %conv16) #7
-  %mul = fmul double %call, 0x3FF7154764EE6C2F
-  %.pre47 = load float* %arrayidx4, align 4, !tbaa !3
-  %.pre.pre = load i32* @Alphabet_size, align 4, !tbaa !0
-  br label %cond.end
+  %conv16 = fpext float %div to double, !dbg !574
+  %call = tail call double @log(double %conv16) #8, !dbg !574
+  %mul = fmul double %call, 0x3FF7154764EE6C2F, !dbg !574
+  %.pre47 = load float* %arrayidx4, align 4, !dbg !576, !tbaa !332
+  %.pre.pre = load i32* @Alphabet_size, align 4, !dbg !570, !tbaa !327
+  br label %cond.end, !dbg !574
 
 cond.end:                                         ; preds = %if.then, %cond.true
-  %.pre = phi i32 [ %.pre.pre, %cond.true ], [ %1, %if.then ]
+  %.pre = phi i32 [ %.pre.pre, %cond.true ], [ %1, %if.then ], !dbg !574
   %5 = phi float [ %.pre47, %cond.true ], [ %3, %if.then ]
-  %cond = phi double [ %mul, %cond.true ], [ -9.999000e+03, %if.then ]
-  %mul17 = fmul double %conv, %cond
-  %conv18 = fpext float %numer.044 to double
-  %add = fadd double %conv18, %mul17
-  %conv19 = fptrunc double %add to float
-  %add22 = fadd float %denom.045, %5
-  br label %for.inc
+  %cond = phi double [ %mul, %cond.true ], [ -9.999000e+03, %if.then ], !dbg !574
+  %mul17 = fmul double %conv, %cond, !dbg !574
+  %conv18 = fpext float %numer.044 to double, !dbg !574
+  %add = fadd double %conv18, %mul17, !dbg !574
+  %conv19 = fptrunc double %add to float, !dbg !574
+  tail call void @llvm.dbg.value(metadata !{float %conv19}, i64 0, metadata !282), !dbg !574
+  %add22 = fadd float %denom.045, %5, !dbg !576
+  tail call void @llvm.dbg.value(metadata !{float %add22}, i64 0, metadata !283), !dbg !576
+  br label %for.inc, !dbg !577
 
 for.inc:                                          ; preds = %for.body, %cond.end
-  %6 = phi i32 [ %.pre, %cond.end ], [ %1, %for.body ]
+  %6 = phi i32 [ %.pre, %cond.end ], [ %1, %for.body ], !dbg !570
   %numer.1 = phi float [ %conv19, %cond.end ], [ %numer.044, %for.body ]
   %denom.1 = phi float [ %add22, %cond.end ], [ %denom.045, %for.body ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %7 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %7, %6
-  br i1 %cmp, label %for.body, label %for.end
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !570
+  %7 = trunc i64 %indvars.iv.next to i32, !dbg !570
+  %cmp = icmp slt i32 %7, %6, !dbg !570
+  br i1 %cmp, label %for.body, label %for.end, !dbg !570
 
 for.end:                                          ; preds = %for.inc, %entry
   %denom.0.lcssa = phi float [ 0.000000e+00, %entry ], [ %denom.1, %for.inc ]
   %numer.0.lcssa = phi float [ 0.000000e+00, %entry ], [ %numer.1, %for.inc ]
-  %conv23 = fpext float %numer.0.lcssa to double
-  %mul24 = fmul double %conv23, 1.000000e+03
-  %conv25 = fpext float %denom.0.lcssa to double
-  %div26 = fdiv double %mul24, %conv25
-  %conv27 = fptosi double %div26 to i32
-  ret i32 %conv27
+  %conv23 = fpext float %numer.0.lcssa to double, !dbg !578
+  %mul24 = fmul double %conv23, 1.000000e+03, !dbg !578
+  %conv25 = fpext float %denom.0.lcssa to double, !dbg !578
+  %div26 = fdiv double %mul24, %conv25, !dbg !578
+  %conv27 = fptosi double %div26 to i32, !dbg !578
+  ret i32 %conv27, !dbg !578
 }

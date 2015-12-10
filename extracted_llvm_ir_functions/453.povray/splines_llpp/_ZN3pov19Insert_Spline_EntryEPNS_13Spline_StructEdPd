@@ -1,0 +1,148 @@
+define void @_ZN3pov19Insert_Spline_EntryEPNS_13Spline_StructEdPd(%"struct.pov::Spline_Struct"* nocapture %sp, double %p, double* nocapture %v) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Spline_Struct"* %sp}, i64 0, metadata !149), !dbg !318
+  tail call void @llvm.dbg.value(metadata !{double %p}, i64 0, metadata !150), !dbg !318
+  tail call void @llvm.dbg.value(metadata !{double* %v}, i64 0, metadata !151), !dbg !318
+  %Coeffs_Computed = getelementptr inbounds %"struct.pov::Spline_Struct"* %sp, i64 0, i32 4, !dbg !319
+  store i32 0, i32* %Coeffs_Computed, align 4, !dbg !319, !tbaa !194
+  %Cache_Valid = getelementptr inbounds %"struct.pov::Spline_Struct"* %sp, i64 0, i32 6, !dbg !320
+  store i8 0, i8* %Cache_Valid, align 1, !dbg !320, !tbaa !294
+  %Number_Of_Entries = getelementptr inbounds %"struct.pov::Spline_Struct"* %sp, i64 0, i32 0, !dbg !321
+  %0 = load i32* %Number_Of_Entries, align 4, !dbg !321, !tbaa !194
+  %Max_Entries = getelementptr inbounds %"struct.pov::Spline_Struct"* %sp, i64 0, i32 2, !dbg !321
+  %1 = load i32* %Max_Entries, align 4, !dbg !321, !tbaa !194
+  %cmp = icmp slt i32 %0, %1, !dbg !321
+  br i1 %cmp, label %if.end, label %if.then, !dbg !321
+
+if.then:                                          ; preds = %entry
+  %add = add nsw i32 %1, 16, !dbg !322
+  store i32 %add, i32* %Max_Entries, align 4, !dbg !322, !tbaa !194
+  %SplineEntries = getelementptr inbounds %"struct.pov::Spline_Struct"* %sp, i64 0, i32 3, !dbg !324
+  %2 = load %"struct.pov::Spline_Entry"** %SplineEntries, align 8, !dbg !324, !tbaa !210
+  %3 = bitcast %"struct.pov::Spline_Entry"* %2 to i8*, !dbg !324
+  %conv = sext i32 %add to i64, !dbg !324
+  %mul = mul i64 %conv, 88, !dbg !324
+  %call = tail call i8* @_ZN3pov11pov_reallocEPvmPKciS2_(i8* %3, i64 %mul, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 615, i8* getelementptr inbounds ([25 x i8]* @.str4, i64 0, i64 0)) #6, !dbg !324
+  %4 = bitcast i8* %call to %"struct.pov::Spline_Entry"*, !dbg !324
+  store %"struct.pov::Spline_Entry"* %4, %"struct.pov::Spline_Entry"** %SplineEntries, align 8, !dbg !324, !tbaa !210
+  %5 = load i32* %Number_Of_Entries, align 4, !dbg !325, !tbaa !194
+  tail call void @llvm.dbg.value(metadata !{i32 %5}, i64 0, metadata !152), !dbg !325
+  %6 = load i32* %Max_Entries, align 4, !dbg !325, !tbaa !194
+  %cmp6101 = icmp slt i32 %5, %6, !dbg !325
+  br i1 %cmp6101, label %for.body.lr.ph, label %if.end, !dbg !325
+
+for.body.lr.ph:                                   ; preds = %if.then
+  %7 = sext i32 %5 to i64
+  br label %for.body, !dbg !325
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv109 = phi i64 [ %7, %for.body.lr.ph ], [ %indvars.iv.next110, %for.body ]
+  %par = getelementptr inbounds %"struct.pov::Spline_Entry"* %4, i64 %indvars.iv109, i32 0, !dbg !327
+  store double -1.000000e+06, double* %par, align 8, !dbg !327, !tbaa !215
+  %indvars.iv.next110 = add i64 %indvars.iv109, 1, !dbg !325
+  %8 = trunc i64 %indvars.iv.next110 to i32, !dbg !325
+  %cmp6 = icmp slt i32 %8, %6, !dbg !325
+  br i1 %cmp6, label %for.body, label %if.end, !dbg !325
+
+if.end:                                           ; preds = %if.then, %for.body, %entry
+  %9 = phi i32 [ %0, %entry ], [ %5, %for.body ], [ %5, %if.then ], !dbg !329
+  %call8 = tail call i32 @_ZN3pov5findtEPNS_13Spline_StructEd(%"struct.pov::Spline_Struct"* %sp, double %p) #6, !dbg !330
+  tail call void @llvm.dbg.value(metadata !{i32 %call8}, i64 0, metadata !152), !dbg !330
+  %cmp10 = icmp eq i32 %9, 0, !dbg !329
+  br i1 %cmp10, label %if.end.if.else_crit_edge, label %land.lhs.true, !dbg !329
+
+if.end.if.else_crit_edge:                         ; preds = %if.end
+  %SplineEntries.i.phi.trans.insert = getelementptr inbounds %"struct.pov::Spline_Struct"* %sp, i64 0, i32 3
+  %.pre111 = load %"struct.pov::Spline_Entry"** %SplineEntries.i.phi.trans.insert, align 8, !dbg !331, !tbaa !210
+  br label %if.else, !dbg !329
+
+land.lhs.true:                                    ; preds = %if.end
+  %idxprom11 = sext i32 %call8 to i64, !dbg !329
+  %SplineEntries12 = getelementptr inbounds %"struct.pov::Spline_Struct"* %sp, i64 0, i32 3, !dbg !329
+  %10 = load %"struct.pov::Spline_Entry"** %SplineEntries12, align 8, !dbg !329, !tbaa !210
+  %par14 = getelementptr inbounds %"struct.pov::Spline_Entry"* %10, i64 %idxprom11, i32 0, !dbg !329
+  %11 = load double* %par14, align 8, !dbg !329, !tbaa !215
+  %cmp15 = fcmp oeq double %11, %p, !dbg !329
+  br i1 %cmp15, label %for.body27, label %lor.lhs.false, !dbg !329
+
+lor.lhs.false:                                    ; preds = %land.lhs.true
+  %cmp17 = icmp eq i32 %call8, %9, !dbg !329
+  br i1 %cmp17, label %land.lhs.true18, label %if.else, !dbg !329
+
+land.lhs.true18:                                  ; preds = %lor.lhs.false
+  %sub = add nsw i32 %9, -1, !dbg !329
+  %idxprom19 = sext i32 %sub to i64, !dbg !329
+  %par22 = getelementptr inbounds %"struct.pov::Spline_Entry"* %10, i64 %idxprom19, i32 0, !dbg !329
+  %12 = load double* %par22, align 8, !dbg !329, !tbaa !215
+  %cmp23 = fcmp oeq double %12, %p, !dbg !329
+  br i1 %cmp23, label %for.body27, label %if.else, !dbg !329
+
+for.body27:                                       ; preds = %land.lhs.true, %land.lhs.true18, %for.body27
+  %indvars.iv104 = phi i64 [ %indvars.iv.next105, %for.body27 ], [ 0, %land.lhs.true18 ], [ 0, %land.lhs.true ]
+  %arrayidx29 = getelementptr inbounds double* %v, i64 %indvars.iv104, !dbg !334
+  %13 = load double* %arrayidx29, align 8, !dbg !334, !tbaa !215
+  %arrayidx34 = getelementptr inbounds %"struct.pov::Spline_Entry"* %10, i64 %idxprom11, i32 1, i64 %indvars.iv104, !dbg !334
+  store double %13, double* %arrayidx34, align 8, !dbg !334, !tbaa !215
+  %indvars.iv.next105 = add i64 %indvars.iv104, 1, !dbg !337
+  %lftr.wideiv106 = trunc i64 %indvars.iv.next105 to i32, !dbg !337
+  %exitcond107 = icmp eq i32 %lftr.wideiv106, 5, !dbg !337
+  br i1 %exitcond107, label %if.end58, label %for.body27, !dbg !337
+
+if.else:                                          ; preds = %if.end.if.else_crit_edge, %land.lhs.true18, %lor.lhs.false
+  %14 = phi %"struct.pov::Spline_Entry"* [ %.pre111, %if.end.if.else_crit_edge ], [ %10, %land.lhs.true18 ], [ %10, %lor.lhs.false ]
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Spline_Struct"* %sp}, i64 0, metadata !338) #4, !dbg !339
+  tail call void @llvm.dbg.value(metadata !{i32 %call8}, i64 0, metadata !340) #4, !dbg !339
+  %SplineEntries.i = getelementptr inbounds %"struct.pov::Spline_Struct"* %sp, i64 0, i32 3, !dbg !331
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Spline_Entry"* %14}, i64 0, metadata !341) #4, !dbg !331
+  tail call void @llvm.dbg.value(metadata !{i32 %9}, i64 0, metadata !342) #4, !dbg !343
+  %cmp8.i = icmp sgt i32 %9, %call8, !dbg !343
+  br i1 %cmp8.i, label %for.body.lr.ph.i, label %_ZN3pov6mkfreeEPNS_13Spline_StructEi.exit, !dbg !343
+
+for.body.lr.ph.i:                                 ; preds = %if.else
+  %15 = sext i32 %9 to i64
+  br label %for.body.i, !dbg !343
+
+for.body.i:                                       ; preds = %for.body.i, %for.body.lr.ph.i
+  %indvars.iv.i = phi i64 [ %15, %for.body.lr.ph.i ], [ %indvars.iv.next.i, %for.body.i ]
+  %arrayidx.i = getelementptr inbounds %"struct.pov::Spline_Entry"* %14, i64 %indvars.iv.i, !dbg !344
+  %indvars.iv.next.i = add i64 %indvars.iv.i, -1, !dbg !343
+  %arrayidx2.i = getelementptr inbounds %"struct.pov::Spline_Entry"* %14, i64 %indvars.iv.next.i, !dbg !344
+  %16 = bitcast %"struct.pov::Spline_Entry"* %arrayidx.i to i8*, !dbg !344
+  %17 = bitcast %"struct.pov::Spline_Entry"* %arrayidx2.i to i8*, !dbg !344
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %16, i8* %17, i64 88, i32 8, i1 false) #4, !dbg !344, !tbaa.struct !283
+  %18 = trunc i64 %indvars.iv.next.i to i32, !dbg !343
+  %cmp.i = icmp sgt i32 %18, %call8, !dbg !343
+  br i1 %cmp.i, label %for.body.i, label %_ZN3pov6mkfreeEPNS_13Spline_StructEi.exit.loopexit, !dbg !343
+
+_ZN3pov6mkfreeEPNS_13Spline_StructEi.exit.loopexit: ; preds = %for.body.i
+  %.pre = load %"struct.pov::Spline_Entry"** %SplineEntries.i, align 8, !dbg !345, !tbaa !210
+  br label %_ZN3pov6mkfreeEPNS_13Spline_StructEi.exit
+
+_ZN3pov6mkfreeEPNS_13Spline_StructEi.exit:        ; preds = %_ZN3pov6mkfreeEPNS_13Spline_StructEi.exit.loopexit, %if.else
+  %19 = phi %"struct.pov::Spline_Entry"* [ %.pre, %_ZN3pov6mkfreeEPNS_13Spline_StructEi.exit.loopexit ], [ %14, %if.else ]
+  %idxprom38 = sext i32 %call8 to i64, !dbg !345
+  %par41 = getelementptr inbounds %"struct.pov::Spline_Entry"* %19, i64 %idxprom38, i32 0, !dbg !345
+  store double %p, double* %par41, align 8, !dbg !345, !tbaa !215
+  tail call void @llvm.dbg.value(metadata !12, i64 0, metadata !153), !dbg !346
+  br label %for.body44, !dbg !346
+
+for.body44:                                       ; preds = %for.body44, %_ZN3pov6mkfreeEPNS_13Spline_StructEi.exit
+  %indvars.iv = phi i64 [ 0, %_ZN3pov6mkfreeEPNS_13Spline_StructEi.exit ], [ %indvars.iv.next, %for.body44 ]
+  %arrayidx46 = getelementptr inbounds double* %v, i64 %indvars.iv, !dbg !348
+  %20 = load double* %arrayidx46, align 8, !dbg !348, !tbaa !215
+  %arrayidx52 = getelementptr inbounds %"struct.pov::Spline_Entry"* %19, i64 %idxprom38, i32 1, i64 %indvars.iv, !dbg !348
+  store double %20, double* %arrayidx52, align 8, !dbg !348, !tbaa !215
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !346
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !346
+  %exitcond = icmp eq i32 %lftr.wideiv, 5, !dbg !346
+  br i1 %exitcond, label %for.end55, label %for.body44, !dbg !346
+
+for.end55:                                        ; preds = %for.body44
+  %21 = load i32* %Number_Of_Entries, align 4, !dbg !349, !tbaa !194
+  %add57 = add nsw i32 %21, 1, !dbg !349
+  store i32 %add57, i32* %Number_Of_Entries, align 4, !dbg !349, !tbaa !194
+  br label %if.end58
+
+if.end58:                                         ; preds = %for.body27, %for.end55
+  ret void, !dbg !350
+}

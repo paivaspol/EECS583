@@ -1,55 +1,59 @@
 define void @gen_aux_info_record(%union.tree_node* nocapture %fndecl, i32 %is_definition, i32 %is_implicit, i32 %is_prototyped) #0 {
 entry:
-  %0 = load i32* @flag_gen_aux_info, align 4, !tbaa !0
-  %tobool = icmp eq i32 %0, 0
-  br i1 %tobool, label %if.end18, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %fndecl}, i64 0, metadata !594), !dbg !663
+  tail call void @llvm.dbg.value(metadata !{i32 %is_definition}, i64 0, metadata !595), !dbg !664
+  tail call void @llvm.dbg.value(metadata !{i32 %is_implicit}, i64 0, metadata !596), !dbg !665
+  tail call void @llvm.dbg.value(metadata !{i32 %is_prototyped}, i64 0, metadata !597), !dbg !666
+  %0 = load i32* @flag_gen_aux_info, align 4, !dbg !667, !tbaa !668
+  %tobool = icmp eq i32 %0, 0, !dbg !667
+  br i1 %tobool, label %if.end18, label %if.then, !dbg !667
 
 if.then:                                          ; preds = %entry
-  %1 = load i32* @gen_aux_info_record.compiled_from_record, align 4, !tbaa !0
-  %inc = add nsw i32 %1, 1
-  store i32 %inc, i32* @gen_aux_info_record.compiled_from_record, align 4, !tbaa !0
-  %tobool1 = icmp eq i32 %1, 0
-  br i1 %tobool1, label %if.then2, label %if.end
+  %1 = load i32* @gen_aux_info_record.compiled_from_record, align 4, !dbg !671, !tbaa !668
+  %inc = add nsw i32 %1, 1, !dbg !671
+  store i32 %inc, i32* @gen_aux_info_record.compiled_from_record, align 4, !dbg !671, !tbaa !668
+  %tobool1 = icmp eq i32 %1, 0, !dbg !671
+  br i1 %tobool1, label %if.then2, label %if.end, !dbg !671
 
 if.then2:                                         ; preds = %if.then
-  %2 = load %struct._IO_FILE** @aux_info_file, align 8, !tbaa !3
-  %3 = tail call i64 @fwrite(i8* getelementptr inbounds ([24 x i8]* @.str, i64 0, i64 0), i64 23, i64 1, %struct._IO_FILE* %2)
-  br label %if.end
+  %2 = load %struct._IO_FILE** @aux_info_file, align 8, !dbg !673, !tbaa !675
+  %3 = tail call i64 @fwrite(i8* getelementptr inbounds ([24 x i8]* @.str, i64 0, i64 0), i64 23, i64 1, %struct._IO_FILE* %2), !dbg !673
+  br label %if.end, !dbg !676
 
 if.end:                                           ; preds = %if.then, %if.then2
-  %4 = load %struct._IO_FILE** @aux_info_file, align 8, !tbaa !3
-  %filename = getelementptr inbounds %union.tree_node* %fndecl, i64 0, i32 0, i32 1
-  %5 = load i8** %filename, align 8, !tbaa !3
-  %linenum = getelementptr inbounds %union.tree_node* %fndecl, i64 0, i32 0, i32 2
-  %6 = load i32* %linenum, align 4, !tbaa !0
-  %tobool4 = icmp eq i32 %is_implicit, 0
-  br i1 %tobool4, label %cond.false, label %cond.end
+  %4 = load %struct._IO_FILE** @aux_info_file, align 8, !dbg !677, !tbaa !675
+  %filename = getelementptr inbounds %union.tree_node* %fndecl, i64 0, i32 0, i32 1, !dbg !677
+  %5 = load i8** %filename, align 8, !dbg !677, !tbaa !675
+  %linenum = getelementptr inbounds %union.tree_node* %fndecl, i64 0, i32 0, i32 2, !dbg !677
+  %6 = load i32* %linenum, align 4, !dbg !677, !tbaa !668
+  %tobool4 = icmp eq i32 %is_implicit, 0, !dbg !677
+  br i1 %tobool4, label %cond.false, label %cond.end, !dbg !677
 
 cond.false:                                       ; preds = %if.end
-  %tobool5 = icmp ne i32 %is_prototyped, 0
-  %cond = select i1 %tobool5, i32 78, i32 79
-  br label %cond.end
+  %tobool5 = icmp ne i32 %is_prototyped, 0, !dbg !677
+  %cond = select i1 %tobool5, i32 78, i32 79, !dbg !677
+  br label %cond.end, !dbg !677
 
 cond.end:                                         ; preds = %if.end, %cond.false
-  %cond6 = phi i32 [ %cond, %cond.false ], [ 73, %if.end ]
-  %tobool7 = icmp ne i32 %is_definition, 0
-  %cond8 = select i1 %tobool7, i32 70, i32 67
-  %call9 = tail call fastcc i8* @gen_decl(%union.tree_node* %fndecl, i32 %is_definition, i32 0) #6
-  %call10 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([21 x i8]* @.str1, i64 0, i64 0), i8* %5, i32 %6, i32 %cond6, i32 %cond8, i8* %call9) #7
-  br i1 %tobool7, label %if.then12, label %if.end16
+  %cond6 = phi i32 [ %cond, %cond.false ], [ 73, %if.end ], !dbg !677
+  %tobool7 = icmp ne i32 %is_definition, 0, !dbg !677
+  %cond8 = select i1 %tobool7, i32 70, i32 67, !dbg !677
+  %call9 = tail call fastcc i8* @gen_decl(%union.tree_node* %fndecl, i32 %is_definition, i32 0) #7, !dbg !678
+  %call10 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([21 x i8]* @.str1, i64 0, i64 0), i8* %5, i32 %6, i32 %cond6, i32 %cond8, i8* %call9) #8, !dbg !678
+  br i1 %tobool7, label %if.then12, label %if.end16, !dbg !679
 
 if.then12:                                        ; preds = %cond.end
-  %7 = load %struct._IO_FILE** @aux_info_file, align 8, !tbaa !3
-  %call13 = tail call fastcc i8* @gen_formal_list_for_func_def(%union.tree_node* %fndecl, i32 1) #6
-  %call14 = tail call fastcc i8* @gen_formal_list_for_func_def(%union.tree_node* %fndecl, i32 2) #6
-  %call15 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %7, i8* getelementptr inbounds ([11 x i8]* @.str2, i64 0, i64 0), i8* %call13, i8* %call14) #7
-  br label %if.end16
+  %7 = load %struct._IO_FILE** @aux_info_file, align 8, !dbg !680, !tbaa !675
+  %call13 = tail call fastcc i8* @gen_formal_list_for_func_def(%union.tree_node* %fndecl, i32 1) #7, !dbg !682
+  %call14 = tail call fastcc i8* @gen_formal_list_for_func_def(%union.tree_node* %fndecl, i32 2) #7, !dbg !683
+  %call15 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %7, i8* getelementptr inbounds ([11 x i8]* @.str2, i64 0, i64 0), i8* %call13, i8* %call14) #8, !dbg !683
+  br label %if.end16, !dbg !684
 
 if.end16:                                         ; preds = %if.then12, %cond.end
-  %8 = load %struct._IO_FILE** @aux_info_file, align 8, !tbaa !3
-  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %8)
-  br label %if.end18
+  %8 = load %struct._IO_FILE** @aux_info_file, align 8, !dbg !685, !tbaa !675
+  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %8), !dbg !685
+  br label %if.end18, !dbg !686
 
 if.end18:                                         ; preds = %entry, %if.end16
-  ret void
+  ret void, !dbg !687
 }

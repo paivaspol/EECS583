@@ -1,44 +1,51 @@
 define void @write_buffer(i64 %NumberLeakyBuckets, i64* nocapture %Rmin, i64* nocapture %Bmin, i64* nocapture %Fmin) #0 {
 entry:
-  %0 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %arraydecay = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 90, i64 0
-  %call = tail call %struct._IO_FILE* @fopen(i8* %arraydecay, i8* getelementptr inbounds ([3 x i8]* @.str4, i64 0, i64 0)) #4
-  %cmp = icmp eq %struct._IO_FILE* %call, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i64 %NumberLeakyBuckets}, i64 0, metadata !89), !dbg !635
+  tail call void @llvm.dbg.value(metadata !{i64* %Rmin}, i64 0, metadata !90), !dbg !635
+  tail call void @llvm.dbg.value(metadata !{i64* %Bmin}, i64 0, metadata !91), !dbg !635
+  tail call void @llvm.dbg.value(metadata !{i64* %Fmin}, i64 0, metadata !92), !dbg !635
+  %0 = load %struct.InputParameters** @input, align 8, !dbg !636, !tbaa !611
+  %arraydecay = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 90, i64 0, !dbg !636
+  %call = tail call %struct._IO_FILE* @fopen(i8* %arraydecay, i8* getelementptr inbounds ([3 x i8]* @.str4, i64 0, i64 0)) #5, !dbg !636
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %call}, i64 0, metadata !93), !dbg !636
+  %cmp = icmp eq %struct._IO_FILE* %call, null, !dbg !636
+  br i1 %cmp, label %if.then, label %if.end, !dbg !636
 
 if.then:                                          ; preds = %entry
-  %1 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %arraydecay2 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 90, i64 0
-  %call3 = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([22 x i8]* @.str5, i64 0, i64 0), i8* %arraydecay2) #4
-  tail call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 1) #4
-  br label %if.end
+  %1 = load %struct.InputParameters** @input, align 8, !dbg !637, !tbaa !611
+  %arraydecay2 = getelementptr inbounds %struct.InputParameters* %1, i64 0, i32 90, i64 0, !dbg !637
+  %call3 = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([22 x i8]* @.str5, i64 0, i64 0), i8* %arraydecay2) #5, !dbg !637
+  tail call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 1) #5, !dbg !639
+  br label %if.end, !dbg !640
 
 if.end:                                           ; preds = %if.then, %entry
-  tail call void @PutBigDoubleWord(i64 %NumberLeakyBuckets, %struct._IO_FILE* %call) #5
-  %call4 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([58 x i8]* @.str6, i64 0, i64 0), i64 %NumberLeakyBuckets) #4
-  %cmp529 = icmp eq i64 %NumberLeakyBuckets, 0
-  br i1 %cmp529, label %for.end, label %for.body
+  tail call void @PutBigDoubleWord(i64 %NumberLeakyBuckets, %struct._IO_FILE* %call) #6, !dbg !641
+  %call4 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([58 x i8]* @.str6, i64 0, i64 0), i64 %NumberLeakyBuckets) #5, !dbg !642
+  tail call void @llvm.dbg.value(metadata !643, i64 0, metadata !94), !dbg !644
+  %cmp529 = icmp eq i64 %NumberLeakyBuckets, 0, !dbg !644
+  br i1 %cmp529, label %for.end, label %for.body, !dbg !644
 
 for.body:                                         ; preds = %if.end, %for.body
   %iBucket.030 = phi i64 [ %inc, %for.body ], [ 0, %if.end ]
-  %arrayidx = getelementptr inbounds i64* %Rmin, i64 %iBucket.030
-  %2 = load i64* %arrayidx, align 8, !tbaa !3
-  tail call void @PutBigDoubleWord(i64 %2, %struct._IO_FILE* %call) #5
-  %arrayidx6 = getelementptr inbounds i64* %Bmin, i64 %iBucket.030
-  %3 = load i64* %arrayidx6, align 8, !tbaa !3
-  tail call void @PutBigDoubleWord(i64 %3, %struct._IO_FILE* %call) #5
-  %arrayidx7 = getelementptr inbounds i64* %Fmin, i64 %iBucket.030
-  %4 = load i64* %arrayidx7, align 8, !tbaa !3
-  tail call void @PutBigDoubleWord(i64 %4, %struct._IO_FILE* %call) #5
-  %5 = load i64* %arrayidx, align 8, !tbaa !3
-  %6 = load i64* %arrayidx6, align 8, !tbaa !3
-  %7 = load i64* %arrayidx7, align 8, !tbaa !3
-  %call11 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([18 x i8]* @.str7, i64 0, i64 0), i64 %5, i64 %6, i64 %7) #4
-  %inc = add i64 %iBucket.030, 1
-  %exitcond = icmp eq i64 %inc, %NumberLeakyBuckets
-  br i1 %exitcond, label %for.end, label %for.body
+  %arrayidx = getelementptr inbounds i64* %Rmin, i64 %iBucket.030, !dbg !646
+  %2 = load i64* %arrayidx, align 8, !dbg !646, !tbaa !626
+  tail call void @PutBigDoubleWord(i64 %2, %struct._IO_FILE* %call) #6, !dbg !646
+  %arrayidx6 = getelementptr inbounds i64* %Bmin, i64 %iBucket.030, !dbg !648
+  %3 = load i64* %arrayidx6, align 8, !dbg !648, !tbaa !626
+  tail call void @PutBigDoubleWord(i64 %3, %struct._IO_FILE* %call) #6, !dbg !648
+  %arrayidx7 = getelementptr inbounds i64* %Fmin, i64 %iBucket.030, !dbg !649
+  %4 = load i64* %arrayidx7, align 8, !dbg !649, !tbaa !626
+  tail call void @PutBigDoubleWord(i64 %4, %struct._IO_FILE* %call) #6, !dbg !649
+  %5 = load i64* %arrayidx, align 8, !dbg !650, !tbaa !626
+  %6 = load i64* %arrayidx6, align 8, !dbg !650, !tbaa !626
+  %7 = load i64* %arrayidx7, align 8, !dbg !650, !tbaa !626
+  %call11 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([18 x i8]* @.str7, i64 0, i64 0), i64 %5, i64 %6, i64 %7) #5, !dbg !650
+  %inc = add i64 %iBucket.030, 1, !dbg !644
+  tail call void @llvm.dbg.value(metadata !{i64 %inc}, i64 0, metadata !94), !dbg !644
+  %exitcond = icmp eq i64 %inc, %NumberLeakyBuckets, !dbg !644
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !644
 
 for.end:                                          ; preds = %for.body, %if.end
-  %call12 = tail call i32 @fclose(%struct._IO_FILE* %call) #4
-  ret void
+  %call12 = tail call i32 @fclose(%struct._IO_FILE* %call) #5, !dbg !651
+  ret void, !dbg !652
 }

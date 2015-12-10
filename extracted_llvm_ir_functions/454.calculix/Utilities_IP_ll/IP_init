@@ -1,117 +1,133 @@
 define %struct._IP* @IP_init(i32 %n, i32 %flag) #0 {
 entry:
-  %cmp = icmp sgt i32 %n, 0
-  br i1 %cmp, label %if.then, label %if.end58
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !95), !dbg !197
+  tail call void @llvm.dbg.value(metadata !{i32 %flag}, i64 0, metadata !96), !dbg !198
+  tail call void @llvm.dbg.value(metadata !199, i64 0, metadata !97), !dbg !200
+  %cmp = icmp sgt i32 %n, 0, !dbg !201
+  br i1 %cmp, label %if.then, label %if.end58, !dbg !201
 
 if.then:                                          ; preds = %entry
-  %0 = icmp ugt i32 %flag, 2
-  br i1 %0, label %if.then5, label %if.then7
+  %0 = icmp ugt i32 %flag, 2, !dbg !202
+  br i1 %0, label %if.then5, label %if.then7, !dbg !202
 
 if.then5:                                         ; preds = %if.then
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([118 x i8]* @.str4, i64 0, i64 0), i32 %n, i32 %flag) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !203, !tbaa !171
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([118 x i8]* @.str4, i64 0, i64 0), i32 %n, i32 %flag) #5, !dbg !203
+  tail call void @exit(i32 -1) #6, !dbg !205
+  unreachable, !dbg !205
 
 if.then7:                                         ; preds = %if.then
-  %conv = sext i32 %n to i64
-  %mul = shl nsw i64 %conv, 4
-  %call8 = tail call noalias i8* @malloc(i64 %mul) #4
-  %2 = bitcast i8* %call8 to %struct._IP*
-  %cmp9 = icmp eq i8* %call8, null
-  br i1 %cmp9, label %if.then11, label %if.end25
+  %conv = sext i32 %n to i64, !dbg !206
+  %mul = shl nsw i64 %conv, 4, !dbg !206
+  %call8 = tail call noalias i8* @malloc(i64 %mul) #5, !dbg !206
+  %2 = bitcast i8* %call8 to %struct._IP*, !dbg !206
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %2}, i64 0, metadata !97), !dbg !206
+  %cmp9 = icmp eq i8* %call8, null, !dbg !206
+  br i1 %cmp9, label %if.then11, label %if.end25, !dbg !206
 
 if.then11:                                        ; preds = %if.then7
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call14 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([49 x i8]* @.str5, i64 0, i64 0), i64 %mul, i32 107, i8* getelementptr inbounds ([83 x i8]* @.str6, i64 0, i64 0)) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !208, !tbaa !171
+  %call14 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([49 x i8]* @.str5, i64 0, i64 0), i64 %mul, i32 107, i8* getelementptr inbounds ([83 x i8]* @.str6, i64 0, i64 0)) #5, !dbg !208
+  tail call void @exit(i32 -1) #6, !dbg !208
+  unreachable, !dbg !208
 
 if.end25:                                         ; preds = %if.then7
   switch i32 %flag, label %if.end58 [
     i32 1, label %for.body.lr.ph
     i32 2, label %sw.bb28
     i32 0, label %for.body51
-  ]
+  ], !dbg !210
 
 for.body.lr.ph:                                   ; preds = %if.end25
-  %sub = add nsw i32 %n, -1
-  %idx.ext = sext i32 %sub to i64
-  %add.ptr = getelementptr inbounds %struct._IP* %2, i64 %idx.ext
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata !199, i64 0, metadata !101), !dbg !211
+  %sub = add nsw i32 %n, -1, !dbg !213
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !98), !dbg !213
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %add.ptr}, i64 0, metadata !102), !dbg !213
+  %idx.ext = sext i32 %sub to i64, !dbg !213
+  %add.ptr = getelementptr inbounds %struct._IP* %2, i64 %idx.ext, !dbg !213
+  br label %for.body, !dbg !213
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.body
   %ip.098 = phi %struct._IP* [ %add.ptr, %for.body.lr.ph ], [ %incdec.ptr, %for.body ]
   %head.097 = phi %struct._IP* [ null, %for.body.lr.ph ], [ %ip.098, %for.body ]
   %i.096 = phi i32 [ %sub, %for.body.lr.ph ], [ %dec, %for.body ]
-  %next = getelementptr inbounds %struct._IP* %ip.098, i64 0, i32 1
-  store %struct._IP* %head.097, %struct._IP** %next, align 8, !tbaa !3
-  %val = getelementptr inbounds %struct._IP* %ip.098, i64 0, i32 0
-  store i32 0, i32* %val, align 4, !tbaa !0
-  %dec = add nsw i32 %i.096, -1
-  %incdec.ptr = getelementptr inbounds %struct._IP* %ip.098, i64 -1
-  %cmp26 = icmp sgt i32 %i.096, 0
-  br i1 %cmp26, label %for.body, label %if.end58
+  %next = getelementptr inbounds %struct._IP* %ip.098, i64 0, i32 1, !dbg !215
+  store %struct._IP* %head.097, %struct._IP** %next, align 8, !dbg !215, !tbaa !171
+  %val = getelementptr inbounds %struct._IP* %ip.098, i64 0, i32 0, !dbg !217
+  store i32 0, i32* %val, align 4, !dbg !217, !tbaa !167
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %ip.098}, i64 0, metadata !101), !dbg !218
+  %dec = add nsw i32 %i.096, -1, !dbg !213
+  tail call void @llvm.dbg.value(metadata !{i32 %dec}, i64 0, metadata !98), !dbg !213
+  %incdec.ptr = getelementptr inbounds %struct._IP* %ip.098, i64 -1, !dbg !213
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %incdec.ptr}, i64 0, metadata !102), !dbg !213
+  %cmp26 = icmp sgt i32 %i.096, 0, !dbg !213
+  br i1 %cmp26, label %for.body, label %if.end58, !dbg !213
 
 sw.bb28:                                          ; preds = %if.end25
-  %add.ptr30.sum = add i64 %conv, -1
-  %val32 = getelementptr inbounds %struct._IP* %2, i64 %add.ptr30.sum, i32 0
-  store i32 0, i32* %val32, align 4, !tbaa !0
-  %sub33 = add i32 %n, -2
-  %cmp3799 = icmp sgt i32 %sub33, -1
-  %next40 = getelementptr inbounds %struct._IP* %2, i64 %add.ptr30.sum, i32 1
-  br i1 %cmp3799, label %for.body39.lr.ph, label %for.end45
+  %add.ptr30.sum = add i64 %conv, -1, !dbg !219
+  %val32 = getelementptr inbounds %struct._IP* %2, i64 %add.ptr30.sum, i32 0, !dbg !220
+  store i32 0, i32* %val32, align 4, !dbg !220, !tbaa !167
+  %sub33 = add i32 %n, -2, !dbg !221
+  tail call void @llvm.dbg.value(metadata !{i32 %sub33}, i64 0, metadata !98), !dbg !221
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %add.ptr35}, i64 0, metadata !102), !dbg !221
+  %cmp3799 = icmp sgt i32 %sub33, -1, !dbg !221
+  %next40 = getelementptr inbounds %struct._IP* %2, i64 %add.ptr30.sum, i32 1, !dbg !223
+  br i1 %cmp3799, label %for.body39.lr.ph, label %for.end45, !dbg !221
 
 for.body39.lr.ph:                                 ; preds = %sw.bb28
-  %idx.ext34 = sext i32 %sub33 to i64
-  %add.ptr31.sum = add i64 %add.ptr30.sum, %idx.ext34
-  %add.ptr35 = getelementptr inbounds %struct._IP* %2, i64 %add.ptr31.sum
-  %4 = add i64 %conv, %idx.ext34
-  %5 = shl nsw i64 %4, 4
-  %6 = add i64 %5, -16
-  %7 = sub i32 1, %n
+  %idx.ext34 = sext i32 %sub33 to i64, !dbg !221
+  %add.ptr31.sum = add i64 %add.ptr30.sum, %idx.ext34, !dbg !221
+  %add.ptr35 = getelementptr inbounds %struct._IP* %2, i64 %add.ptr31.sum, !dbg !221
+  %4 = add i64 %conv, %idx.ext34, !dbg !221
+  %5 = shl nsw i64 %4, 4, !dbg !221
+  %6 = add i64 %5, -16, !dbg !221
+  %7 = sub i32 1, %n, !dbg !221
   %8 = icmp sgt i32 %7, -1
   %smax = select i1 %8, i32 %7, i32 -1
-  %9 = add i32 %smax, %n
-  %10 = add i32 %9, -1
+  %9 = add i32 %smax, %n, !dbg !221
+  %10 = add i32 %9, -1, !dbg !221
   %11 = zext i32 %10 to i64
-  %12 = shl nuw nsw i64 %11, 4
-  %13 = sub i64 %6, %12
+  %12 = shl nuw nsw i64 %11, 4, !dbg !221
+  %13 = sub i64 %6, %12, !dbg !221
   %scevgep = getelementptr i8* %call8, i64 %13
-  br label %for.body39
+  br label %for.body39, !dbg !221
 
 for.body39:                                       ; preds = %for.body39.lr.ph, %for.body39
   %ip.1101 = phi %struct._IP* [ %add.ptr35, %for.body39.lr.ph ], [ %incdec.ptr44, %for.body39 ]
   %i.1100 = phi i32 [ %sub33, %for.body39.lr.ph ], [ %dec43, %for.body39 ]
-  %val41 = getelementptr inbounds %struct._IP* %ip.1101, i64 0, i32 0
-  store i32 0, i32* %val41, align 4, !tbaa !0
-  %dec43 = add nsw i32 %i.1100, -1
-  %incdec.ptr44 = getelementptr inbounds %struct._IP* %ip.1101, i64 -1
-  %cmp37 = icmp sgt i32 %i.1100, 0
-  br i1 %cmp37, label %for.body39, label %for.cond36.for.end45_crit_edge
+  %val41 = getelementptr inbounds %struct._IP* %ip.1101, i64 0, i32 0, !dbg !225
+  store i32 0, i32* %val41, align 4, !dbg !225, !tbaa !167
+  %dec43 = add nsw i32 %i.1100, -1, !dbg !221
+  tail call void @llvm.dbg.value(metadata !{i32 %dec43}, i64 0, metadata !98), !dbg !221
+  %incdec.ptr44 = getelementptr inbounds %struct._IP* %ip.1101, i64 -1, !dbg !221
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %incdec.ptr44}, i64 0, metadata !102), !dbg !221
+  %cmp37 = icmp sgt i32 %i.1100, 0, !dbg !221
+  br i1 %cmp37, label %for.body39, label %for.cond36.for.end45_crit_edge, !dbg !221
 
 for.cond36.for.end45_crit_edge:                   ; preds = %for.body39
   %scevgep106 = bitcast i8* %scevgep to %struct._IP*
-  store %struct._IP* %scevgep106, %struct._IP** %next40, align 8, !tbaa !3
-  br label %for.end45
+  store %struct._IP* %scevgep106, %struct._IP** %next40, align 8, !dbg !223, !tbaa !171
+  br label %for.end45, !dbg !221
 
 for.end45:                                        ; preds = %for.cond36.for.end45_crit_edge, %sw.bb28
-  store %struct._IP* null, %struct._IP** %next40, align 8, !tbaa !3
-  br label %if.end58
+  store %struct._IP* null, %struct._IP** %next40, align 8, !dbg !226, !tbaa !171
+  br label %if.end58, !dbg !227
 
 for.body51:                                       ; preds = %if.end25, %for.body51
   %ip.2105 = phi %struct._IP* [ %incdec.ptr55, %for.body51 ], [ %2, %if.end25 ]
   %i.2104 = phi i32 [ %inc, %for.body51 ], [ 0, %if.end25 ]
-  %val52 = getelementptr inbounds %struct._IP* %ip.2105, i64 0, i32 0
-  store i32 0, i32* %val52, align 4, !tbaa !0
-  %next53 = getelementptr inbounds %struct._IP* %ip.2105, i64 0, i32 1
-  store %struct._IP* null, %struct._IP** %next53, align 8, !tbaa !3
-  %inc = add nsw i32 %i.2104, 1
-  %incdec.ptr55 = getelementptr inbounds %struct._IP* %ip.2105, i64 1
-  %exitcond = icmp eq i32 %inc, %n
-  br i1 %exitcond, label %if.end58, label %for.body51
+  %val52 = getelementptr inbounds %struct._IP* %ip.2105, i64 0, i32 0, !dbg !228
+  store i32 0, i32* %val52, align 4, !dbg !228, !tbaa !167
+  %next53 = getelementptr inbounds %struct._IP* %ip.2105, i64 0, i32 1, !dbg !231
+  store %struct._IP* null, %struct._IP** %next53, align 8, !dbg !231, !tbaa !171
+  %inc = add nsw i32 %i.2104, 1, !dbg !232
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !98), !dbg !232
+  %incdec.ptr55 = getelementptr inbounds %struct._IP* %ip.2105, i64 1, !dbg !232
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %incdec.ptr55}, i64 0, metadata !102), !dbg !232
+  %exitcond = icmp eq i32 %inc, %n, !dbg !232
+  br i1 %exitcond, label %if.end58, label %for.body51, !dbg !232
 
 if.end58:                                         ; preds = %for.body51, %for.body, %if.end25, %for.end45, %entry
   %base.1 = phi %struct._IP* [ %2, %if.end25 ], [ %2, %for.end45 ], [ null, %entry ], [ %2, %for.body ], [ %2, %for.body51 ]
-  ret %struct._IP* %base.1
+  ret %struct._IP* %base.1, !dbg !233
 }

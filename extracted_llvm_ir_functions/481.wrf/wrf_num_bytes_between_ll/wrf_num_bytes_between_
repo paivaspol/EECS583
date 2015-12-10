@@ -1,11 +1,15 @@
 define i32 @wrf_num_bytes_between_(i8* %a, i8* %b, i32* nocapture %n) #0 {
-  %1 = ptrtoint i8* %a to i64
-  %2 = ptrtoint i8* %b to i64
-  %3 = sub i64 %1, %2
-  %4 = trunc i64 %3 to i32
-  %5 = icmp slt i32 %4, 0
-  %6 = sub nsw i32 0, %4
-  %. = select i1 %5, i32 %6, i32 %4
-  store i32 %., i32* %n, align 4, !tbaa !2
-  ret i32 undef
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %a}, i64 0, metadata !13), !dbg !34
+  tail call void @llvm.dbg.value(metadata !{i8* %b}, i64 0, metadata !14), !dbg !35
+  tail call void @llvm.dbg.value(metadata !{i32* %n}, i64 0, metadata !15), !dbg !36
+  %sub.ptr.lhs.cast = ptrtoint i8* %a to i64, !dbg !37
+  %sub.ptr.rhs.cast = ptrtoint i8* %b to i64, !dbg !37
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !37
+  %conv = trunc i64 %sub.ptr.sub to i32, !dbg !37
+  %cmp = icmp slt i32 %conv, 0, !dbg !38
+  %sub = sub nsw i32 0, %conv, !dbg !38
+  %sub.conv = select i1 %cmp, i32 %sub, i32 %conv, !dbg !38
+  store i32 %sub.conv, i32* %n, align 4, !dbg !37, !tbaa !39
+  ret i32 undef, !dbg !42
 }

@@ -1,12 +1,24 @@
-define void @CCTK_Cmplx32Conjg(%struct.CCTK_COMPLEX32* noalias nocapture sret %agg.result, %struct.CCTK_COMPLEX32* byval nocapture readonly align 16 %complex_number) #3 {
-  %1 = getelementptr inbounds %struct.CCTK_COMPLEX32* %complex_number, i64 0, i32 0
-  %2 = load x86_fp80* %1, align 16, !tbaa !2
-  %3 = getelementptr inbounds %struct.CCTK_COMPLEX32* %complex_number, i64 0, i32 1
-  %4 = load x86_fp80* %3, align 16, !tbaa !7
-  %5 = fsub x86_fp80 0xK80000000000000000000, %4
-  %6 = getelementptr inbounds %struct.CCTK_COMPLEX32* %agg.result, i64 0, i32 0
-  store x86_fp80 %2, x86_fp80* %6, align 16
-  %7 = getelementptr inbounds %struct.CCTK_COMPLEX32* %agg.result, i64 0, i32 1
-  store x86_fp80 %5, x86_fp80* %7, align 16
-  ret void
+define void @CCTK_Cmplx32Conjg(%struct.CCTK_COMPLEX32* noalias nocapture sret %agg.result, %struct.CCTK_COMPLEX32* byval nocapture align 16 %complex_number) #3 {
+entry:
+  %result.sroa.1 = alloca [6 x i8], align 2
+  %result.sroa.3 = alloca [6 x i8], align 2
+  call void @llvm.dbg.declare(metadata !{%struct.CCTK_COMPLEX32* %complex_number}, metadata !187), !dbg !311
+  call void @llvm.dbg.declare(metadata !305, metadata !188), !dbg !311
+  %Re = getelementptr inbounds %struct.CCTK_COMPLEX32* %complex_number, i64 0, i32 0, !dbg !311
+  %0 = load x86_fp80* %Re, align 16, !dbg !311, !tbaa !307
+  %Im = getelementptr inbounds %struct.CCTK_COMPLEX32* %complex_number, i64 0, i32 1, !dbg !311
+  %1 = load x86_fp80* %Im, align 16, !dbg !311, !tbaa !307
+  %sub = fsub x86_fp80 0xK80000000000000000000, %1, !dbg !311
+  %result.sroa.0.0.idx = getelementptr inbounds %struct.CCTK_COMPLEX32* %agg.result, i64 0, i32 0, !dbg !311
+  store x86_fp80 %0, x86_fp80* %result.sroa.0.0.idx, align 16, !dbg !311
+  %result.sroa.1.10.raw_cast = bitcast %struct.CCTK_COMPLEX32* %agg.result to i8*, !dbg !311
+  %result.sroa.1.10.raw_idx = getelementptr inbounds i8* %result.sroa.1.10.raw_cast, i64 10, !dbg !311
+  %result.sroa.1.10.idx = getelementptr inbounds [6 x i8]* %result.sroa.1, i64 0, i64 0, !dbg !311
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %result.sroa.1.10.raw_idx, i8* %result.sroa.1.10.idx, i64 6, i32 2, i1 false), !dbg !311
+  %result.sroa.2.16.idx3 = getelementptr inbounds %struct.CCTK_COMPLEX32* %agg.result, i64 0, i32 1, !dbg !311
+  store x86_fp80 %sub, x86_fp80* %result.sroa.2.16.idx3, align 16, !dbg !311
+  %result.sroa.3.26.raw_idx = getelementptr inbounds i8* %result.sroa.1.10.raw_cast, i64 26, !dbg !311
+  %result.sroa.3.26.idx = getelementptr inbounds [6 x i8]* %result.sroa.3, i64 0, i64 0, !dbg !311
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %result.sroa.3.26.raw_idx, i8* %result.sroa.3.26.idx, i64 6, i32 2, i1 false), !dbg !311
+  ret void, !dbg !311
 }

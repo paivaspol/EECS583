@@ -3,68 +3,82 @@ entry:
   %code = alloca i32, align 4
   %second_code = alloca i32, align 4
   %bypass_code = alloca i32, align 4
-  %0 = bitcast %struct.rtx_def* %op to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  store i32 %bf.clear, i32* %code, align 4, !tbaa !8
-  %cmp = icmp eq i32 %mode, 0
-  br i1 %cmp, label %if.end, label %land.lhs.true
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op}, i64 0, metadata !2395), !dbg !6308
+  call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !2396), !dbg !6309
+  call void @llvm.dbg.declare(metadata !{i32* %code}, metadata !2398), !dbg !6310
+  %0 = bitcast %struct.rtx_def* %op to i32*, !dbg !6310
+  %bf.load = load i32* %0, align 8, !dbg !6310
+  %bf.clear = and i32 %bf.load, 65535, !dbg !6310
+  call void @llvm.dbg.value(metadata !{i32 %bf.clear}, i64 0, metadata !2398), !dbg !6310
+  store i32 %bf.clear, i32* %code, align 4, !dbg !6310, !tbaa !5195
+  %cmp = icmp eq i32 %mode, 0, !dbg !6311
+  br i1 %cmp, label %if.end, label %land.lhs.true, !dbg !6311
 
 land.lhs.true:                                    ; preds = %entry
-  %bf.lshr = lshr i32 %bf.load, 16
-  %bf.clear2 = and i32 %bf.lshr, 255
-  %cmp3 = icmp eq i32 %bf.clear2, %mode
-  br i1 %cmp3, label %if.end, label %return
+  %bf.lshr = lshr i32 %bf.load, 16, !dbg !6311
+  %bf.clear2 = and i32 %bf.lshr, 255, !dbg !6311
+  %cmp3 = icmp eq i32 %bf.clear2, %mode, !dbg !6311
+  br i1 %cmp3, label %if.end, label %return, !dbg !6311
 
 if.end:                                           ; preds = %land.lhs.true, %entry
-  %idxprom46 = zext i32 %bf.clear to i64
-  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom46
-  %1 = load i8* %arrayidx, align 1, !tbaa !1
-  %cmp4 = icmp eq i8 %1, 60
-  br i1 %cmp4, label %if.end7, label %return
+  call void @llvm.dbg.value(metadata !{i32* %code}, i64 0, metadata !2398), !dbg !6312
+  %idxprom46 = zext i32 %bf.clear to i64, !dbg !6312
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom46, !dbg !6312
+  %1 = load i8* %arrayidx, align 1, !dbg !6312, !tbaa !4348
+  %cmp4 = icmp eq i8 %1, 60, !dbg !6312
+  br i1 %cmp4, label %if.end7, label %return, !dbg !6312
 
 if.end7:                                          ; preds = %if.end
-  %arrayidx8 = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx8 to %struct.rtx_def**
-  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
-  %3 = bitcast %struct.rtx_def* %2 to i32*
-  %bf.load9 = load i32* %3, align 8
-  %bf.lshr10 = lshr i32 %bf.load9, 16
-  %bf.clear11 = and i32 %bf.lshr10, 255
-  %bf.clear11.off = add i32 %bf.clear11, -57
-  %4 = icmp ult i32 %bf.clear11.off, 2
-  br i1 %4, label %if.then16, label %if.end24
+  %arrayidx8 = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0, !dbg !6313
+  %rtx = bitcast %union.rtunion_def* %arrayidx8 to %struct.rtx_def**, !dbg !6313
+  %2 = load %struct.rtx_def** %rtx, align 8, !dbg !6313, !tbaa !4365
+  %3 = bitcast %struct.rtx_def* %2 to i32*, !dbg !6313
+  %bf.load9 = load i32* %3, align 8, !dbg !6313
+  %bf.lshr10 = lshr i32 %bf.load9, 16, !dbg !6313
+  %bf.clear11 = and i32 %bf.lshr10, 255, !dbg !6313
+  call void @llvm.dbg.value(metadata !{i32 %bf.clear11}, i64 0, metadata !2397), !dbg !6313
+  %bf.clear11.off = add i32 %bf.clear11, -57, !dbg !6314
+  %4 = icmp ult i32 %bf.clear11.off, 2, !dbg !6314
+  br i1 %4, label %if.then16, label %if.end24, !dbg !6314
 
 if.then16:                                        ; preds = %if.end7
-  call fastcc void @ix86_fp_comparison_codes(i32 %bf.clear, i32* %bypass_code, i32* %code, i32* %second_code) #10
-  %5 = load i32* %bypass_code, align 4, !tbaa !8
-  %cmp17 = icmp eq i32 %5, 1
-  br i1 %cmp17, label %lor.lhs.false19, label %return
+  call void @llvm.dbg.declare(metadata !{i32* %second_code}, metadata !2399), !dbg !6315
+  call void @llvm.dbg.declare(metadata !{i32* %bypass_code}, metadata !2401), !dbg !6315
+  call fastcc void @ix86_fp_comparison_codes(i32 %bf.clear, i32* %bypass_code, i32* %code, i32* %second_code) #11, !dbg !6316
+  call void @llvm.dbg.value(metadata !{i32* %bypass_code}, i64 0, metadata !2401), !dbg !6317
+  %5 = load i32* %bypass_code, align 4, !dbg !6317, !tbaa !5195
+  %cmp17 = icmp eq i32 %5, 1, !dbg !6317
+  br i1 %cmp17, label %lor.lhs.false19, label %return, !dbg !6317
 
 lor.lhs.false19:                                  ; preds = %if.then16
-  %6 = load i32* %second_code, align 4, !tbaa !8
-  %cmp20 = icmp eq i32 %6, 1
-  br i1 %cmp20, label %if.end23, label %return
+  call void @llvm.dbg.value(metadata !{i32* %second_code}, i64 0, metadata !2399), !dbg !6317
+  %6 = load i32* %second_code, align 4, !dbg !6317, !tbaa !5195
+  %cmp20 = icmp eq i32 %6, 1, !dbg !6317
+  br i1 %cmp20, label %if.end23, label %return, !dbg !6317
 
 if.end23:                                         ; preds = %lor.lhs.false19
-  %7 = load i32* %code, align 4, !tbaa !8
-  %switch.tableidx.i = add i32 %7, -104
-  %8 = icmp ult i32 %switch.tableidx.i, 16
-  br i1 %8, label %switch.lookup.i, label %ix86_fp_compare_code_to_integer.exit
+  call void @llvm.dbg.value(metadata !{i32* %code}, i64 0, metadata !2398), !dbg !6318
+  %7 = load i32* %code, align 4, !dbg !6318, !tbaa !5195
+  tail call void @llvm.dbg.value(metadata !{i32 %7}, i64 0, metadata !6319), !dbg !6320
+  %switch.tableidx.i = add i32 %7, -104, !dbg !6321
+  %8 = icmp ult i32 %switch.tableidx.i, 16, !dbg !6321
+  br i1 %8, label %switch.lookup.i, label %ix86_fp_compare_code_to_integer.exit, !dbg !6321
 
 switch.lookup.i:                                  ; preds = %if.end23
-  %9 = sext i32 %switch.tableidx.i to i64
-  %switch.gep.i = getelementptr inbounds [16 x i32]* @switch.table492, i64 0, i64 %9
-  %switch.load.i = load i32* %switch.gep.i, align 4
-  br label %ix86_fp_compare_code_to_integer.exit
+  %9 = sext i32 %switch.tableidx.i to i64, !dbg !6321
+  %switch.gep.i = getelementptr inbounds [16 x i32]* @switch.table492, i64 0, i64 %9, !dbg !6321
+  %switch.load.i = load i32* %switch.gep.i, align 4, !dbg !6321
+  br label %ix86_fp_compare_code_to_integer.exit, !dbg !6321
 
 ix86_fp_compare_code_to_integer.exit:             ; preds = %if.end23, %switch.lookup.i
   %call45 = phi i32 [ %switch.load.i, %switch.lookup.i ], [ 0, %if.end23 ]
-  store i32 %call45, i32* %code, align 4, !tbaa !8
-  br label %if.end24
+  call void @llvm.dbg.value(metadata !{i32 %call45}, i64 0, metadata !2398), !dbg !6318
+  store i32 %call45, i32* %code, align 4, !dbg !6318, !tbaa !5195
+  br label %if.end24, !dbg !6322
 
 if.end24:                                         ; preds = %if.end7, %ix86_fp_compare_code_to_integer.exit
-  %10 = phi i32 [ %call45, %ix86_fp_compare_code_to_integer.exit ], [ %bf.clear, %if.end7 ]
+  %10 = phi i32 [ %call45, %ix86_fp_compare_code_to_integer.exit ], [ %bf.clear, %if.end7 ], !dbg !6323
+  call void @llvm.dbg.value(metadata !{i32* %code}, i64 0, metadata !2398), !dbg !6323
   switch i32 %10, label %sw.default [
     i32 111, label %sw.bb
     i32 109, label %sw.bb
@@ -74,22 +88,22 @@ if.end24:                                         ; preds = %if.end7, %ix86_fp_c
     i32 112, label %return
     i32 103, label %return
     i32 102, label %return
-  ]
+  ], !dbg !6323
 
 sw.bb:                                            ; preds = %if.end24, %if.end24, %if.end24, %if.end24
   switch i32 %bf.clear11, label %if.end34 [
     i32 58, label %return
     i32 57, label %return
     i32 52, label %return
-  ]
+  ], !dbg !6324
 
 if.end34:                                         ; preds = %sw.bb
-  br label %return
+  br label %return, !dbg !6326
 
 sw.default:                                       ; preds = %if.end24
-  br label %return
+  br label %return, !dbg !6327
 
 return:                                           ; preds = %if.end24, %if.end24, %if.end24, %if.end24, %sw.bb, %sw.bb, %sw.bb, %if.then16, %lor.lhs.false19, %if.end, %land.lhs.true, %sw.default, %if.end34
   %retval.0 = phi i32 [ 0, %sw.default ], [ 0, %if.end34 ], [ 0, %land.lhs.true ], [ 0, %if.end ], [ 0, %lor.lhs.false19 ], [ 0, %if.then16 ], [ 1, %sw.bb ], [ 1, %sw.bb ], [ 1, %sw.bb ], [ 1, %if.end24 ], [ 1, %if.end24 ], [ 1, %if.end24 ], [ 1, %if.end24 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !6328
 }

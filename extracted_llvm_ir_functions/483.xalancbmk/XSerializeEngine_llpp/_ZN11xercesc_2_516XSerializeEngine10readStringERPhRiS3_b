@@ -1,0 +1,54 @@
+define void @_ZN11xercesc_2_516XSerializeEngine10readStringERPhRiS3_b(%"class.xercesc_2_5::XSerializeEngine"* %this, i8** nocapture %toRead, i32* nocapture %bufferLen, i32* nocapture %dataLen, i1 zeroext %toReadBufLen) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XSerializeEngine"* %this}, i64 0, metadata !1448), !dbg !3839
+  tail call void @llvm.dbg.value(metadata !{i8** %toRead}, i64 0, metadata !1449), !dbg !3839
+  tail call void @llvm.dbg.value(metadata !{i32* %bufferLen}, i64 0, metadata !1450), !dbg !3840
+  tail call void @llvm.dbg.value(metadata !{i32* %dataLen}, i64 0, metadata !1451), !dbg !3841
+  tail call void @llvm.dbg.value(metadata !{i1 %toReadBufLen}, i64 0, metadata !1452), !dbg !3842
+  %call = tail call %"class.xercesc_2_5::XSerializeEngine"* @_ZN11xercesc_2_516XSerializeEnginersERi(%"class.xercesc_2_5::XSerializeEngine"* %this, i32* %bufferLen) #6, !dbg !3843
+  %0 = load i32* %bufferLen, align 4, !dbg !3844, !tbaa !2801
+  %cmp = icmp eq i32 %0, -1, !dbg !3844
+  br i1 %cmp, label %if.then, label %if.end, !dbg !3844
+
+if.then:                                          ; preds = %entry
+  store i8* null, i8** %toRead, align 8, !dbg !3845, !tbaa !2775
+  store i32 0, i32* %bufferLen, align 4, !dbg !3847, !tbaa !2801
+  store i32 0, i32* %dataLen, align 4, !dbg !3848, !tbaa !2801
+  br label %return, !dbg !3849
+
+if.end:                                           ; preds = %entry
+  br i1 %toReadBufLen, label %if.then2, label %if.else, !dbg !3850
+
+if.then2:                                         ; preds = %if.end
+  %call3 = tail call %"class.xercesc_2_5::XSerializeEngine"* @_ZN11xercesc_2_516XSerializeEnginersERi(%"class.xercesc_2_5::XSerializeEngine"* %this, i32* %dataLen) #6, !dbg !3851
+  br label %if.end4, !dbg !3853
+
+if.else:                                          ; preds = %if.end
+  %inc = add nsw i32 %0, 1, !dbg !3854
+  store i32 %inc, i32* %bufferLen, align 4, !dbg !3854, !tbaa !2801
+  store i32 %0, i32* %dataLen, align 4, !dbg !3854, !tbaa !2801
+  br label %if.end4
+
+if.end4:                                          ; preds = %if.else, %if.then2
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::XSerializeEngine"* %this, i64 0, i32 1, !dbg !3856
+  %1 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !3856, !tbaa !2775
+  %2 = bitcast %"class.xercesc_2_5::MemoryManager"* %1 to i8* (%"class.xercesc_2_5::MemoryManager"*, i64)***, !dbg !3856
+  %vtable = load i8* (%"class.xercesc_2_5::MemoryManager"*, i64)*** %2, align 8, !dbg !3856, !tbaa !2778
+  %vfn = getelementptr inbounds i8* (%"class.xercesc_2_5::MemoryManager"*, i64)** %vtable, i64 2, !dbg !3856
+  %3 = load i8* (%"class.xercesc_2_5::MemoryManager"*, i64)** %vfn, align 8, !dbg !3856
+  %4 = load i32* %bufferLen, align 4, !dbg !3856, !tbaa !2801
+  %conv = sext i32 %4 to i64, !dbg !3856
+  %call5 = tail call i8* %3(%"class.xercesc_2_5::MemoryManager"* %1, i64 %conv) #6, !dbg !3856
+  store i8* %call5, i8** %toRead, align 8, !dbg !3856, !tbaa !2775
+  %5 = load i32* %dataLen, align 4, !dbg !3857, !tbaa !2801
+  tail call void @_ZN11xercesc_2_516XSerializeEngine4readEPhi(%"class.xercesc_2_5::XSerializeEngine"* %this, i8* %call5, i32 %5) #6, !dbg !3857
+  %6 = load i32* %dataLen, align 4, !dbg !3858, !tbaa !2801
+  %idxprom = sext i32 %6 to i64, !dbg !3858
+  %7 = load i8** %toRead, align 8, !dbg !3858, !tbaa !2775
+  %arrayidx = getelementptr inbounds i8* %7, i64 %idxprom, !dbg !3858
+  store i8 0, i8* %arrayidx, align 1, !dbg !3858, !tbaa !2773
+  br label %return, !dbg !3858
+
+return:                                           ; preds = %if.end4, %if.then
+  ret void, !dbg !3858
+}

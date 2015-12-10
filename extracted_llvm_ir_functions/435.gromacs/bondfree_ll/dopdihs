@@ -1,34 +1,53 @@
-define float @dopdihs(float %cpA, float %cpB, float %phiA, float %phiB, i32 %mult, float %phi, float %lambda, float* nocapture %V, float* nocapture %F) #3 {
-  %1 = fsub float 1.000000e+00, %lambda
-  %2 = fmul float %1, %phiA
-  %3 = fmul float %phiB, %lambda
-  %4 = fadd float %3, %2
-  %5 = fpext float %4 to double
-  %6 = fmul double %5, 0x3F91DF46A2529D39
-  %7 = fptrunc double %6 to float
-  %8 = fmul float %1, %cpA
-  %9 = fmul float %cpB, %lambda
-  %10 = fadd float %9, %8
-  %11 = sitofp i32 %mult to float
-  %12 = fmul float %11, %phi
-  %13 = fsub float %12, %7
-  %14 = fpext float %13 to double
-  %15 = tail call double @sin(double %14) #10
-  %16 = fptrunc double %15 to float
-  %17 = fmul float %11, %10
-  %18 = fmul float %17, %16
-  %19 = fsub float -0.000000e+00, %18
-  %20 = tail call double @cos(double %14) #10
-  %21 = fadd double %20, 1.000000e+00
-  %22 = fptrunc double %21 to float
-  %23 = fmul float %10, %22
-  %24 = fsub float %cpB, %cpA
-  %25 = fmul float %24, %22
-  %26 = fsub float %phiA, %phiB
-  %27 = fmul float %26, %10
-  %28 = fmul float %27, %16
-  %29 = fsub float %25, %28
-  store float %23, float* %V, align 4, !tbaa !14
-  store float %19, float* %F, align 4, !tbaa !14
-  ret float %29
+define float @dopdihs(float %cpA, float %cpB, float %phiA, float %phiB, i32 %mult, float %phi, float %lambda, float* nocapture %V, float* nocapture %F) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float %cpA}, i64 0, metadata !829), !dbg !2339
+  tail call void @llvm.dbg.value(metadata !{float %cpB}, i64 0, metadata !830), !dbg !2339
+  tail call void @llvm.dbg.value(metadata !{float %phiA}, i64 0, metadata !831), !dbg !2339
+  tail call void @llvm.dbg.value(metadata !{float %phiB}, i64 0, metadata !832), !dbg !2339
+  tail call void @llvm.dbg.value(metadata !{i32 %mult}, i64 0, metadata !833), !dbg !2339
+  tail call void @llvm.dbg.value(metadata !{float %phi}, i64 0, metadata !834), !dbg !2340
+  tail call void @llvm.dbg.value(metadata !{float %lambda}, i64 0, metadata !835), !dbg !2340
+  tail call void @llvm.dbg.value(metadata !{float* %V}, i64 0, metadata !836), !dbg !2340
+  tail call void @llvm.dbg.value(metadata !{float* %F}, i64 0, metadata !837), !dbg !2340
+  %conv1 = fsub float 1.000000e+00, %lambda, !dbg !2341
+  tail call void @llvm.dbg.value(metadata !{float %conv1}, i64 0, metadata !844), !dbg !2341
+  %mul = fmul float %conv1, %phiA, !dbg !2342
+  %mul2 = fmul float %phiB, %lambda, !dbg !2342
+  %add = fadd float %mul2, %mul, !dbg !2342
+  %conv3 = fpext float %add to double, !dbg !2342
+  %mul4 = fmul double %conv3, 0x3F91DF46A2529D39, !dbg !2342
+  %conv5 = fptrunc double %mul4 to float, !dbg !2342
+  tail call void @llvm.dbg.value(metadata !{float %conv5}, i64 0, metadata !845), !dbg !2342
+  %mul6 = fmul float %conv1, %cpA, !dbg !2343
+  %mul7 = fmul float %cpB, %lambda, !dbg !2343
+  %add8 = fadd float %mul7, %mul6, !dbg !2343
+  tail call void @llvm.dbg.value(metadata !{float %add8}, i64 0, metadata !846), !dbg !2343
+  %conv9 = sitofp i32 %mult to float, !dbg !2344
+  %mul10 = fmul float %conv9, %phi, !dbg !2344
+  %sub11 = fsub float %mul10, %conv5, !dbg !2344
+  tail call void @llvm.dbg.value(metadata !{float %sub11}, i64 0, metadata !840), !dbg !2344
+  %conv12 = fpext float %sub11 to double, !dbg !2345
+  %call = tail call double @sin(double %conv12) #6, !dbg !2345
+  %conv13 = fptrunc double %call to float, !dbg !2345
+  tail call void @llvm.dbg.value(metadata !{float %conv13}, i64 0, metadata !842), !dbg !2345
+  %0 = fmul float %conv9, %add8, !dbg !2346
+  %1 = fmul float %0, %conv13, !dbg !2346
+  %mul17 = fsub float -0.000000e+00, %1, !dbg !2346
+  tail call void @llvm.dbg.value(metadata !{float %mul17}, i64 0, metadata !843), !dbg !2346
+  %call19 = tail call double @cos(double %conv12) #6, !dbg !2347
+  %add20 = fadd double %call19, 1.000000e+00, !dbg !2347
+  %conv21 = fptrunc double %add20 to float, !dbg !2347
+  tail call void @llvm.dbg.value(metadata !{float %conv21}, i64 0, metadata !841), !dbg !2347
+  %mul22 = fmul float %add8, %conv21, !dbg !2348
+  tail call void @llvm.dbg.value(metadata !{float %mul22}, i64 0, metadata !838), !dbg !2348
+  %sub23 = fsub float %cpB, %cpA, !dbg !2349
+  %mul24 = fmul float %sub23, %conv21, !dbg !2349
+  %sub25 = fsub float %phiA, %phiB, !dbg !2349
+  %mul26 = fmul float %sub25, %add8, !dbg !2349
+  %mul27 = fmul float %mul26, %conv13, !dbg !2349
+  %sub28 = fsub float %mul24, %mul27, !dbg !2349
+  tail call void @llvm.dbg.value(metadata !{float %sub28}, i64 0, metadata !839), !dbg !2349
+  store float %mul22, float* %V, align 4, !dbg !2350, !tbaa !1309
+  store float %mul17, float* %F, align 4, !dbg !2351, !tbaa !1309
+  ret float %sub28, !dbg !2352
 }

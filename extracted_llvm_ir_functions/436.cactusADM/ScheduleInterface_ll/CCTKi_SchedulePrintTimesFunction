@@ -1,62 +1,69 @@
-define internal i32 @CCTKi_SchedulePrintTimesFunction(i8* nocapture readnone %function, %struct.t_attribute* nocapture readonly %attribute, %struct.t_sched_data* nocapture %data) #1 {
-  %1 = getelementptr inbounds %struct.t_attribute* %attribute, i64 0, i32 8
-  %2 = load i32* %1, align 4, !tbaa !33
-  %3 = icmp sgt i32 %2, -1
-  br i1 %3, label %4, label %37
+define internal i32 @CCTKi_SchedulePrintTimesFunction(i8* nocapture %function, %struct.t_attribute* nocapture %attribute, %struct.t_sched_data* nocapture %data) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %function}, i64 0, metadata !321), !dbg !1171
+  tail call void @llvm.dbg.value(metadata !{%struct.t_attribute* %attribute}, i64 0, metadata !322), !dbg !1172
+  tail call void @llvm.dbg.value(metadata !{%struct.t_sched_data* %data}, i64 0, metadata !323), !dbg !1173
+  tail call void @llvm.dbg.value(metadata !{i8* %function}, i64 0, metadata !321), !dbg !1174
+  %timer_handle = getelementptr inbounds %struct.t_attribute* %attribute, i64 0, i32 8, !dbg !1175
+  %0 = load i32* %timer_handle, align 4, !dbg !1175, !tbaa !592
+  %cmp = icmp sgt i32 %0, -1, !dbg !1175
+  br i1 %cmp, label %if.then, label %if.end6, !dbg !1175
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 2
-  %6 = load %struct.cTimerData** %5, align 8, !tbaa !44
-  %7 = tail call i32 @CCTK_TimerI(i32 %2, %struct.cTimerData* %6) #8
-  %8 = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 4
-  %9 = load i32* %8, align 4, !tbaa !43
-  %10 = icmp eq i32 %9, 0
-  br i1 %10, label %29, label %11
+if.then:                                          ; preds = %entry
+  %info = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 2, !dbg !1176
+  %1 = load %struct.cTimerData** %info, align 8, !dbg !1176, !tbaa !504
+  %call = tail call i32 @CCTK_TimerI(i32 %0, %struct.cTimerData* %1) #8, !dbg !1176
+  %print_headers = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 4, !dbg !1178
+  %2 = load i32* %print_headers, align 4, !dbg !1178, !tbaa !592
+  %tobool = icmp eq i32 %2, 0, !dbg !1178
+  br i1 %tobool, label %if.end, label %if.then2, !dbg !1178
 
-; <label>:11                                      ; preds = %4
-  %12 = load %struct.cTimerData** %5, align 8, !tbaa !44
-  tail call fastcc void @PrintDelimiterLine(i8 signext 61, %struct.cTimerData* %12) #8
-  %13 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([19 x i8]* @.str80, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str81, i64 0, i64 0), i8* getelementptr inbounds ([30 x i8]* @.str82, i64 0, i64 0)) #8
-  %14 = getelementptr inbounds %struct.cTimerData* %12, i64 0, i32 0
-  %15 = load i32* %14, align 4, !tbaa !48
-  %16 = icmp sgt i32 %15, 0
-  br i1 %16, label %.lr.ph.i, label %CCTKi_SchedulePrintTimerHeaders.exit
+if.then2:                                         ; preds = %if.then
+  %3 = load %struct.cTimerData** %info, align 8, !dbg !1179, !tbaa !504
+  tail call void @llvm.dbg.value(metadata !{%struct.cTimerData* %3}, i64 0, metadata !1181) #4, !dbg !1182
+  tail call fastcc void @PrintDelimiterLine(i8 signext 61, %struct.cTimerData* %3) #8, !dbg !1183
+  %call.i = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([19 x i8]* @.str65, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str71, i64 0, i64 0), i8* getelementptr inbounds ([30 x i8]* @.str72, i64 0, i64 0)) #8, !dbg !1184
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !1185) #4, !dbg !1186
+  %n_vals.i = getelementptr inbounds %struct.cTimerData* %3, i64 0, i32 0, !dbg !1186
+  %4 = load i32* %n_vals.i, align 4, !dbg !1186, !tbaa !592
+  %cmp13.i = icmp sgt i32 %4, 0, !dbg !1186
+  br i1 %cmp13.i, label %for.body.lr.ph.i, label %CCTKi_SchedulePrintTimerHeaders.exit, !dbg !1186
 
-.lr.ph.i:                                         ; preds = %11
-  %17 = getelementptr inbounds %struct.cTimerData* %12, i64 0, i32 1
-  br label %18
+for.body.lr.ph.i:                                 ; preds = %if.then2
+  %vals.i = getelementptr inbounds %struct.cTimerData* %3, i64 0, i32 1, !dbg !1188
+  br label %for.body.i, !dbg !1186
 
-; <label>:18                                      ; preds = %18, %.lr.ph.i
-  %indvars.iv.i = phi i64 [ 0, %.lr.ph.i ], [ %indvars.iv.next.i, %18 ]
-  %19 = load %struct.cTimerVal** %17, align 8, !tbaa !46
-  %20 = getelementptr inbounds %struct.cTimerVal* %19, i64 %indvars.iv.i, i32 1
-  %21 = load i8** %20, align 8, !tbaa !51
-  %22 = getelementptr inbounds %struct.cTimerVal* %19, i64 %indvars.iv.i, i32 2
-  %23 = load i8** %22, align 8, !tbaa !52
-  %24 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([11 x i8]* @.str83, i64 0, i64 0), i8* %21, i8* %23) #8
-  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1
-  %25 = load i32* %14, align 4, !tbaa !48
-  %26 = sext i32 %25 to i64
-  %27 = icmp slt i64 %indvars.iv.next.i, %26
-  br i1 %27, label %18, label %CCTKi_SchedulePrintTimerHeaders.exit
+for.body.i:                                       ; preds = %for.body.i, %for.body.lr.ph.i
+  %indvars.iv.i = phi i64 [ 0, %for.body.lr.ph.i ], [ %indvars.iv.next.i, %for.body.i ]
+  %5 = load %struct.cTimerVal** %vals.i, align 8, !dbg !1188, !tbaa !504
+  %heading.i = getelementptr inbounds %struct.cTimerVal* %5, i64 %indvars.iv.i, i32 1, !dbg !1188
+  %6 = load i8** %heading.i, align 8, !dbg !1188, !tbaa !504
+  %units.i = getelementptr inbounds %struct.cTimerVal* %5, i64 %indvars.iv.i, i32 2, !dbg !1188
+  %7 = load i8** %units.i, align 8, !dbg !1188, !tbaa !504
+  %call4.i = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([11 x i8]* @.str73, i64 0, i64 0), i8* %6, i8* %7) #8, !dbg !1188
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1, !dbg !1186
+  %8 = load i32* %n_vals.i, align 4, !dbg !1186, !tbaa !592
+  %9 = trunc i64 %indvars.iv.next.i to i32, !dbg !1186
+  %cmp.i = icmp slt i32 %9, %8, !dbg !1186
+  br i1 %cmp.i, label %for.body.i, label %CCTKi_SchedulePrintTimerHeaders.exit, !dbg !1186
 
-CCTKi_SchedulePrintTimerHeaders.exit:             ; preds = %18, %11
-  %28 = tail call i32 @putchar(i32 10) #8
-  tail call fastcc void @PrintDelimiterLine(i8 signext 61, %struct.cTimerData* %12) #8
-  store i32 0, i32* %8, align 4, !tbaa !43
-  br label %29
+CCTKi_SchedulePrintTimerHeaders.exit:             ; preds = %for.body.i, %if.then2
+  %call5.i = tail call i32 @putchar(i32 10) #8, !dbg !1190
+  tail call fastcc void @PrintDelimiterLine(i8 signext 61, %struct.cTimerData* %3) #8, !dbg !1191
+  store i32 0, i32* %print_headers, align 4, !dbg !1192, !tbaa !592
+  br label %if.end, !dbg !1193
 
-; <label>:29                                      ; preds = %4, %CCTKi_SchedulePrintTimerHeaders.exit
-  %30 = load %struct.cTimerData** %5, align 8, !tbaa !44
-  %31 = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 3
-  %32 = load %struct.cTimerData** %31, align 8, !tbaa !45
-  %33 = getelementptr inbounds %struct.t_attribute* %attribute, i64 0, i32 3, i32 10
-  %34 = load i8** %33, align 8, !tbaa !17
-  %35 = getelementptr inbounds %struct.t_attribute* %attribute, i64 0, i32 0
-  %36 = load i8** %35, align 8, !tbaa !16
-  tail call fastcc void @CCTKi_SchedulePrintTimerInfo(%struct.cTimerData* %30, %struct.cTimerData* %32, i8* %34, i8* %36) #9
-  br label %37
+if.end:                                           ; preds = %if.then, %CCTKi_SchedulePrintTimerHeaders.exit
+  %10 = load %struct.cTimerData** %info, align 8, !dbg !1194, !tbaa !504
+  %total_time = getelementptr inbounds %struct.t_sched_data* %data, i64 0, i32 3, !dbg !1194
+  %11 = load %struct.cTimerData** %total_time, align 8, !dbg !1194, !tbaa !504
+  %thorn = getelementptr inbounds %struct.t_attribute* %attribute, i64 0, i32 3, i32 10, !dbg !1194
+  %12 = load i8** %thorn, align 8, !dbg !1194, !tbaa !504
+  %description = getelementptr inbounds %struct.t_attribute* %attribute, i64 0, i32 0, !dbg !1194
+  %13 = load i8** %description, align 8, !dbg !1194, !tbaa !504
+  tail call fastcc void @CCTKi_SchedulePrintTimerInfo(%struct.cTimerData* %10, %struct.cTimerData* %11, i8* %12, i8* %13) #9, !dbg !1194
+  br label %if.end6, !dbg !1195
 
-; <label>:37                                      ; preds = %29, %0
-  ret i32 1
+if.end6:                                          ; preds = %if.end, %entry
+  ret i32 1, !dbg !1196
 }

@@ -1,0 +1,53 @@
+define %"class.xercesc_2_5::DOMDocument"* @_ZN11xercesc_2_514DOMBuilderImpl5parseERKNS_14DOMInputSourceE(%"class.xercesc_2_5::DOMBuilderImpl"* %this, %"class.xercesc_2_5::DOMInputSource"* %source) unnamed_addr #3 align 2 {
+entry:
+  %isWrapper = alloca %"class.xercesc_2_5::Wrapper4DOMInputSource", align 8
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMBuilderImpl"* %this}, i64 0, metadata !5813), !dbg !7841
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMInputSource"* %source}, i64 0, metadata !5814), !dbg !7841
+  %0 = getelementptr inbounds %"class.xercesc_2_5::Wrapper4DOMInputSource"* %isWrapper, i64 0, i32 0, i64 0, !dbg !7842
+  call void @llvm.lifetime.start(i64 56, i8* %0) #6, !dbg !7842
+  call void @llvm.dbg.declare(metadata !{%"class.xercesc_2_5::Wrapper4DOMInputSource"* %isWrapper}, metadata !5815), !dbg !7842
+  %1 = getelementptr inbounds %"class.xercesc_2_5::DOMBuilderImpl"* %this, i64 0, i32 0, !dbg !7843
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::AbstractDOMParser"* %1}, i64 0, metadata !7844), !dbg !7845
+  %fMemoryManager.i = getelementptr inbounds %"class.xercesc_2_5::DOMBuilderImpl"* %this, i64 0, i32 0, i32 22, !dbg !7846
+  %2 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager.i, align 8, !dbg !7846, !tbaa !7314
+  call void @_ZN11xercesc_2_522Wrapper4DOMInputSourceC1EPNS_14DOMInputSourceEbPNS_13MemoryManagerE(%"class.xercesc_2_5::Wrapper4DOMInputSource"* %isWrapper, %"class.xercesc_2_5::DOMInputSource"* %source, i1 zeroext false, %"class.xercesc_2_5::MemoryManager"* %2) #12, !dbg !7843
+  %3 = bitcast %"class.xercesc_2_5::Wrapper4DOMInputSource"* %isWrapper to %"class.xercesc_2_5::InputSource"*, !dbg !7847
+  invoke void @_ZN11xercesc_2_517AbstractDOMParser5parseERKNS_11InputSourceE(%"class.xercesc_2_5::AbstractDOMParser"* %1, %"class.xercesc_2_5::InputSource"* %3) #12
+          to label %invoke.cont unwind label %lpad, !dbg !7847
+
+invoke.cont:                                      ; preds = %entry
+  %fUserAdoptsDocument = getelementptr inbounds %"class.xercesc_2_5::DOMBuilderImpl"* %this, i64 0, i32 9, !dbg !7848
+  %4 = load i8* %fUserAdoptsDocument, align 1, !dbg !7848, !tbaa !7306, !range !7585
+  %tobool = icmp eq i8 %4, 0, !dbg !7848
+  br i1 %tobool, label %if.else, label %if.then, !dbg !7848
+
+if.then:                                          ; preds = %invoke.cont
+  %call3 = invoke %"class.xercesc_2_5::DOMDocument"* @_ZN11xercesc_2_517AbstractDOMParser13adoptDocumentEv(%"class.xercesc_2_5::AbstractDOMParser"* %1) #12
+          to label %cleanup unwind label %lpad, !dbg !7849
+
+lpad:                                             ; preds = %if.else, %if.then, %entry
+  %5 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !7847
+  invoke void @_ZN11xercesc_2_522Wrapper4DOMInputSourceD1Ev(%"class.xercesc_2_5::Wrapper4DOMInputSource"* %isWrapper) #12
+          to label %eh.resume unwind label %terminate.lpad, !dbg !7850
+
+if.else:                                          ; preds = %invoke.cont
+  %call5 = invoke %"class.xercesc_2_5::DOMDocument"* @_ZN11xercesc_2_517AbstractDOMParser11getDocumentEv(%"class.xercesc_2_5::AbstractDOMParser"* %1) #12
+          to label %cleanup unwind label %lpad, !dbg !7851
+
+cleanup:                                          ; preds = %if.else, %if.then
+  %retval.0 = phi %"class.xercesc_2_5::DOMDocument"* [ %call3, %if.then ], [ %call5, %if.else ]
+  call void @_ZN11xercesc_2_522Wrapper4DOMInputSourceD1Ev(%"class.xercesc_2_5::Wrapper4DOMInputSource"* %isWrapper) #12, !dbg !7850
+  call void @llvm.lifetime.end(i64 56, i8* %0) #6, !dbg !7850
+  ret %"class.xercesc_2_5::DOMDocument"* %retval.0, !dbg !7850
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %5, !dbg !7850
+
+terminate.lpad:                                   ; preds = %lpad
+  %6 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !7850
+  %7 = extractvalue { i8*, i32 } %6, 0, !dbg !7850
+  call void @__clang_call_terminate(i8* %7) #11, !dbg !7850
+  unreachable, !dbg !7850
+}

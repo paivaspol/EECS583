@@ -1,0 +1,37 @@
+define void @_ZN11xercesc_2_513RangeTokenMap14reinitInstanceEv() #3 align 2 {
+entry:
+  %0 = load %"class.xercesc_2_5::RangeTokenMap"** @_ZN11xercesc_2_513RangeTokenMap9fInstanceE, align 8, !dbg !2606, !tbaa !2251
+  %isnull = icmp eq %"class.xercesc_2_5::RangeTokenMap"* %0, null, !dbg !2606
+  br i1 %isnull, label %delete.end, label %delete.notnull, !dbg !2606
+
+delete.notnull:                                   ; preds = %entry
+  invoke void @_ZN11xercesc_2_513RangeTokenMapD2Ev(%"class.xercesc_2_5::RangeTokenMap"* %0) #7
+          to label %invoke.cont unwind label %lpad, !dbg !2606
+
+invoke.cont:                                      ; preds = %delete.notnull
+  %1 = getelementptr inbounds %"class.xercesc_2_5::RangeTokenMap"* %0, i64 0, i32 0, !dbg !2606
+  tail call void @_ZN11xercesc_2_57XMemorydlEPv(i8* %1) #7, !dbg !2606
+  br label %delete.end, !dbg !2606
+
+delete.end:                                       ; preds = %invoke.cont, %entry
+  store %"class.xercesc_2_5::RangeTokenMap"* null, %"class.xercesc_2_5::RangeTokenMap"** @_ZN11xercesc_2_513RangeTokenMap9fInstanceE, align 8, !dbg !2607, !tbaa !2251
+  store i8 0, i8* @_ZN11xercesc_2_512TokenFactory17fRangeInitializedE, align 1, !dbg !2608, !tbaa !2246
+  ret void, !dbg !2609
+
+lpad:                                             ; preds = %delete.notnull
+  %2 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !2606
+  %3 = getelementptr inbounds %"class.xercesc_2_5::RangeTokenMap"* %0, i64 0, i32 0, !dbg !2606
+  invoke void @_ZN11xercesc_2_57XMemorydlEPv(i8* %3) #7
+          to label %eh.resume unwind label %terminate.lpad, !dbg !2606
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %2, !dbg !2606
+
+terminate.lpad:                                   ; preds = %lpad
+  %4 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !2606
+  %5 = extractvalue { i8*, i32 } %4, 0, !dbg !2606
+  tail call void @__clang_call_terminate(i8* %5) #8, !dbg !2606
+  unreachable, !dbg !2606
+}

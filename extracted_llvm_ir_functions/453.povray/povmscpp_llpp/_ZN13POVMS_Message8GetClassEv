@@ -1,0 +1,23 @@
+define i32 @_ZN13POVMS_Message8GetClassEv(%class.POVMS_Message* %this) #5 align 2 {
+entry:
+  %type = alloca i32, align 4
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %this}, i64 0, metadata !997), !dbg !1722
+  call void @llvm.dbg.declare(metadata !{i32* %type}, metadata !998), !dbg !1723
+  %data = getelementptr inbounds %class.POVMS_Message* %this, i64 0, i32 0, i32 0, i32 1, !dbg !1724
+  %call = call i32 @_Z24POVMSMsg_GetMessageClassP9POVMSDataPj(%struct.POVMSData* %data, i32* %type) #12, !dbg !1724
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !999), !dbg !1724
+  %cmp = icmp eq i32 %call, 0, !dbg !1725
+  br i1 %cmp, label %if.end, label %if.then, !dbg !1725
+
+if.then:                                          ; preds = %entry
+  %exception = call i8* @__cxa_allocate_exception(i64 4) #9, !dbg !1726
+  %0 = bitcast i8* %exception to i32*, !dbg !1726
+  store i32 %call, i32* %0, align 4, !dbg !1726, !tbaa !1112
+  call void @__cxa_throw(i8* %exception, i8* bitcast (i8** @_ZTIi to i8*), i8* null) #13, !dbg !1726
+  unreachable, !dbg !1726
+
+if.end:                                           ; preds = %entry
+  call void @llvm.dbg.value(metadata !{i32* %type}, i64 0, metadata !998), !dbg !1727
+  %1 = load i32* %type, align 4, !dbg !1727, !tbaa !1112
+  ret i32 %1, !dbg !1727
+}

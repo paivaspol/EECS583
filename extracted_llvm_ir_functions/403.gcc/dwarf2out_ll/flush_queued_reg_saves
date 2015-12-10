@@ -1,36 +1,42 @@
 define internal fastcc void @flush_queued_reg_saves() #1 {
 entry:
-  %0 = load %struct.queued_reg_save** @queued_reg_saves, align 8, !tbaa !4
-  %tobool6 = icmp eq %struct.queued_reg_save* %0, null
-  br i1 %tobool6, label %for.end, label %for.body
+  %0 = load %struct.queued_reg_save** @queued_reg_saves, align 8, !dbg !4108, !tbaa !3768
+  tail call void @llvm.dbg.value(metadata !{%struct.queued_reg_save* %0}, i64 0, metadata !3515), !dbg !4108
+  %tobool6 = icmp eq %struct.queued_reg_save* %0, null, !dbg !4108
+  br i1 %tobool6, label %for.end, label %for.body, !dbg !4108
 
 for.body:                                         ; preds = %entry, %for.body
   %q.07 = phi %struct.queued_reg_save* [ %6, %for.body ], [ %0, %entry ]
-  %1 = load i8** @last_reg_save_label, align 8, !tbaa !4
-  %reg = getelementptr inbounds %struct.queued_reg_save* %q.07, i64 0, i32 1
-  %2 = load %struct.rtx_def** %reg, align 8, !tbaa !4
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
-  %3 = load i32* %rtuint, align 4, !tbaa !0
-  %cfa_offset = getelementptr inbounds %struct.queued_reg_save* %q.07, i64 0, i32 2
-  %4 = load i64* %cfa_offset, align 8, !tbaa !6
-  %5 = load i32* @target_flags, align 4, !tbaa !0
-  %and.i = and i32 %5, 33554432
-  %tobool.i = icmp eq i32 %and.i, 0
-  %idxprom.i = zext i32 %3 to i64
-  %svr4_dbx_register_map.dbx64_register_map.i = select i1 %tobool.i, [53 x i32]* @svr4_dbx_register_map, [53 x i32]* @dbx64_register_map
-  %cond.in.i = getelementptr inbounds [53 x i32]* %svr4_dbx_register_map.dbx64_register_map.i, i64 0, i64 %idxprom.i
-  %cond.i = load i32* %cond.in.i, align 4
-  tail call fastcc void @reg_save(i8* %1, i32 %cond.i, i32 -1, i64 %4) #9
-  %next1 = getelementptr inbounds %struct.queued_reg_save* %q.07, i64 0, i32 0
-  %6 = load %struct.queued_reg_save** %next1, align 8, !tbaa !4
-  %7 = bitcast %struct.queued_reg_save* %q.07 to i8*
-  tail call void @free(i8* %7) #9
-  %tobool = icmp eq %struct.queued_reg_save* %6, null
-  br i1 %tobool, label %for.end, label %for.body
+  %1 = load i8** @last_reg_save_label, align 8, !dbg !4110, !tbaa !3768
+  %reg = getelementptr inbounds %struct.queued_reg_save* %q.07, i64 0, i32 1, !dbg !4110
+  %2 = load %struct.rtx_def** %reg, align 8, !dbg !4110, !tbaa !3768
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0, !dbg !4110
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*, !dbg !4110
+  %3 = load i32* %rtuint, align 4, !dbg !4110, !tbaa !3758
+  %cfa_offset = getelementptr inbounds %struct.queued_reg_save* %q.07, i64 0, i32 2, !dbg !4110
+  %4 = load i64* %cfa_offset, align 8, !dbg !4110, !tbaa !3782
+  tail call void @llvm.dbg.value(metadata !{i8* %1}, i64 0, metadata !4112) #6, !dbg !4113
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !4114) #6, !dbg !4115
+  tail call void @llvm.dbg.value(metadata !{i64 %4}, i64 0, metadata !4116) #6, !dbg !4117
+  %5 = load i32* @target_flags, align 4, !dbg !4118, !tbaa !3758
+  %and.i = and i32 %5, 33554432, !dbg !4118
+  %tobool.i = icmp eq i32 %and.i, 0, !dbg !4118
+  %idxprom.i = zext i32 %3 to i64, !dbg !4118
+  %svr4_dbx_register_map.dbx64_register_map.i = select i1 %tobool.i, [53 x i32]* @svr4_dbx_register_map, [53 x i32]* @dbx64_register_map, !dbg !4118
+  %cond.in.i = getelementptr inbounds [53 x i32]* %svr4_dbx_register_map.dbx64_register_map.i, i64 0, i64 %idxprom.i, !dbg !4118
+  %cond.i = load i32* %cond.in.i, align 4, !dbg !4118
+  tail call fastcc void @reg_save(i8* %1, i32 %cond.i, i32 -1, i64 %4) #10, !dbg !4118
+  %next1 = getelementptr inbounds %struct.queued_reg_save* %q.07, i64 0, i32 0, !dbg !4119
+  %6 = load %struct.queued_reg_save** %next1, align 8, !dbg !4119, !tbaa !3768
+  tail call void @llvm.dbg.value(metadata !{%struct.queued_reg_save* %6}, i64 0, metadata !3516), !dbg !4119
+  %7 = bitcast %struct.queued_reg_save* %q.07 to i8*, !dbg !4120
+  tail call void @free(i8* %7) #10, !dbg !4120
+  tail call void @llvm.dbg.value(metadata !{%struct.queued_reg_save* %6}, i64 0, metadata !3515), !dbg !4108
+  %tobool = icmp eq %struct.queued_reg_save* %6, null, !dbg !4108
+  br i1 %tobool, label %for.end, label %for.body, !dbg !4108
 
 for.end:                                          ; preds = %for.body, %entry
-  store %struct.queued_reg_save* null, %struct.queued_reg_save** @queued_reg_saves, align 8, !tbaa !4
-  store i8* null, i8** @last_reg_save_label, align 8, !tbaa !4
-  ret void
+  store %struct.queued_reg_save* null, %struct.queued_reg_save** @queued_reg_saves, align 8, !dbg !4121, !tbaa !3768
+  store i8* null, i8** @last_reg_save_label, align 8, !dbg !4122, !tbaa !3768
+  ret void, !dbg !4123
 }

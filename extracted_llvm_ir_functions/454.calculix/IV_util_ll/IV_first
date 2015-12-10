@@ -1,26 +1,28 @@
 define i32* @IV_first(%struct._IV* %iv) #0 {
 entry:
-  %cmp = icmp eq %struct._IV* %iv, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._IV* %iv}, i64 0, metadata !89), !dbg !307
+  %cmp = icmp eq %struct._IV* %iv, null, !dbg !308
+  br i1 %cmp, label %if.then, label %if.end, !dbg !308
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([41 x i8]* @.str12, i64 0, i64 0), %struct._IV* null) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !309, !tbaa !175
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([41 x i8]* @.str12, i64 0, i64 0), %struct._IV* null) #6, !dbg !309
+  tail call void @exit(i32 -1) #7, !dbg !311
+  unreachable, !dbg !311
 
 if.end:                                           ; preds = %entry
-  %size = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0
-  %1 = load i32* %size, align 4, !tbaa !3
-  %cmp1 = icmp eq i32 %1, 0
-  br i1 %cmp1, label %if.end3, label %if.else
+  %size = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0, !dbg !312
+  %1 = load i32* %size, align 4, !dbg !312, !tbaa !181
+  %cmp1 = icmp eq i32 %1, 0, !dbg !312
+  br i1 %cmp1, label %if.end3, label %if.else, !dbg !312
 
 if.else:                                          ; preds = %if.end
-  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3
-  %2 = load i32** %vec, align 8, !tbaa !0
+  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3, !dbg !313
+  %2 = load i32** %vec, align 8, !dbg !313, !tbaa !175
+  tail call void @llvm.dbg.value(metadata !{i32* %2}, i64 0, metadata !90), !dbg !313
   br label %if.end3
 
 if.end3:                                          ; preds = %if.end, %if.else
   %pi.0 = phi i32* [ %2, %if.else ], [ null, %if.end ]
-  ret i32* %pi.0
+  ret i32* %pi.0, !dbg !315
 }

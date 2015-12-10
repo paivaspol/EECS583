@@ -1,0 +1,53 @@
+define linkonce_odr zeroext i1 @_ZN6Params8addParamEPKcS1_(%class.Params* nocapture %this, i8* %name, i8* %expression) #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.Params* %this}, i64 0, metadata !7132), !dbg !7566
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !7133), !dbg !7567
+  tail call void @llvm.dbg.value(metadata !{i8* %expression}, i64 0, metadata !7134), !dbg !7568
+  %m_currentParam = getelementptr inbounds %class.Params* %this, i64 0, i32 12, !dbg !7569
+  %0 = load i64* %m_currentParam, align 8, !dbg !7569, !tbaa !7571
+  %m_maxParams = getelementptr inbounds %class.Params* %this, i64 0, i32 11, !dbg !7569
+  %1 = load i64* %m_maxParams, align 8, !dbg !7569, !tbaa !7571
+  %cmp = icmp eq i64 %0, %1, !dbg !7569
+  br i1 %cmp, label %return, label %if.else, !dbg !7569
+
+if.else:                                          ; preds = %entry
+  %m_pointer.i = getelementptr inbounds %class.Params* %this, i64 0, i32 10, i32 0, !dbg !7572
+  %2 = load %"struct.Params::ParamPair"** %m_pointer.i, align 8, !dbg !7572, !tbaa !7214
+  %cmp2 = icmp eq %"struct.Params::ParamPair"* %2, null, !dbg !7573
+  br i1 %cmp2, label %if.then3, label %if.end, !dbg !7573
+
+if.then3:                                         ; preds = %if.else
+  %3 = tail call { i64, i1 } @llvm.umul.with.overflow.i64(i64 %1, i64 16), !dbg !7575
+  %4 = extractvalue { i64, i1 } %3, 1, !dbg !7575
+  %5 = extractvalue { i64, i1 } %3, 0, !dbg !7575
+  %6 = select i1 %4, i64 -1, i64 %5, !dbg !7575
+  %call6 = tail call noalias i8* @_Znam(i64 %6) #9, !dbg !7575
+  %7 = bitcast i8* %call6 to %"struct.Params::ParamPair"*, !dbg !7575
+  %isempty = icmp eq i64 %1, 0, !dbg !7575
+  br i1 %isempty, label %_ZN10xalanc_1_817XalanArrayAutoPtrIN6Params9ParamPairEE5resetEPS2_.exit, label %new.ctorloop, !dbg !7575
+
+new.ctorloop:                                     ; preds = %if.then3
+  call void @llvm.memset.p0i8.i64(i8* %call6, i8 0, i64 %5, i32 8, i1 false), !dbg !7577
+  br label %_ZN10xalanc_1_817XalanArrayAutoPtrIN6Params9ParamPairEE5resetEPS2_.exit
+
+_ZN10xalanc_1_817XalanArrayAutoPtrIN6Params9ParamPairEE5resetEPS2_.exit: ; preds = %if.then3, %new.ctorloop
+  store %"struct.Params::ParamPair"* %7, %"struct.Params::ParamPair"** %m_pointer.i, align 8, !dbg !7579, !tbaa !7214
+  br label %if.end, !dbg !7581
+
+if.end:                                           ; preds = %_ZN10xalanc_1_817XalanArrayAutoPtrIN6Params9ParamPairEE5resetEPS2_.exit, %if.else
+  %8 = phi %"struct.Params::ParamPair"* [ %7, %_ZN10xalanc_1_817XalanArrayAutoPtrIN6Params9ParamPairEE5resetEPS2_.exit ], [ %2, %if.else ]
+  tail call void @llvm.dbg.value(metadata !{i64 %0}, i64 0, metadata !7582), !dbg !7584
+  %m_name = getelementptr inbounds %"struct.Params::ParamPair"* %8, i64 %0, i32 0, !dbg !7583
+  store i8* %name, i8** %m_name, align 8, !dbg !7583, !tbaa !7214
+  tail call void @llvm.dbg.value(metadata !{i64 %0}, i64 0, metadata !7585), !dbg !7587
+  %9 = load %"struct.Params::ParamPair"** %m_pointer.i, align 8, !dbg !7588, !tbaa !7214
+  %m_expression = getelementptr inbounds %"struct.Params::ParamPair"* %9, i64 %0, i32 1, !dbg !7586
+  store i8* %expression, i8** %m_expression, align 8, !dbg !7586, !tbaa !7214
+  %inc = add i64 %0, 1, !dbg !7590
+  store i64 %inc, i64* %m_currentParam, align 8, !dbg !7590, !tbaa !7571
+  br label %return, !dbg !7591
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i1 [ true, %if.end ], [ false, %entry ]
+  ret i1 %retval.0, !dbg !7592
+}

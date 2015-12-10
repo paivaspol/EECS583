@@ -1,42 +1,45 @@
-define internal fastcc void @close_nblist(%struct.t_nblist* nocapture %nlist) #3 {
-  %1 = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 2
-  %2 = load i32* %1, align 4, !tbaa !35
-  %3 = icmp sgt i32 %2, 0
-  br i1 %3, label %4, label %29
+define internal fastcc void @close_nblist(%struct.t_nblist* nocapture %nlist) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.t_nblist* %nlist}, i64 0, metadata !896), !dbg !2758
+  %maxnri = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 2, !dbg !2759
+  %0 = load i32* %maxnri, align 4, !dbg !2759, !tbaa !1398
+  %cmp = icmp sgt i32 %0, 0, !dbg !2759
+  br i1 %cmp, label %if.then, label %if.end15, !dbg !2759
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 1
-  %6 = load i32* %5, align 4, !tbaa !18
-  %7 = add nsw i32 %6, 1
-  %8 = sext i32 %7 to i64
-  %9 = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 10
-  %10 = load i32** %9, align 8, !tbaa !41
-  %11 = getelementptr inbounds i32* %10, i64 %8
-  %12 = load i32* %11, align 4, !tbaa !17
-  %13 = sext i32 %6 to i64
-  %14 = getelementptr inbounds i32* %10, i64 %13
-  %15 = load i32* %14, align 4, !tbaa !17
-  %16 = icmp sgt i32 %12, %15
-  br i1 %16, label %17, label %29
+if.then:                                          ; preds = %entry
+  %nri1 = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 1, !dbg !2760
+  %1 = load i32* %nri1, align 4, !dbg !2760, !tbaa !1398
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !897), !dbg !2760
+  %add = add nsw i32 %1, 1, !dbg !2761
+  %idxprom = sext i32 %add to i64, !dbg !2761
+  %jindex = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 10, !dbg !2761
+  %2 = load i32** %jindex, align 8, !dbg !2761, !tbaa !1403
+  %arrayidx = getelementptr inbounds i32* %2, i64 %idxprom, !dbg !2761
+  %3 = load i32* %arrayidx, align 4, !dbg !2761, !tbaa !1398
+  %idxprom2 = sext i32 %1 to i64, !dbg !2761
+  %arrayidx4 = getelementptr inbounds i32* %2, i64 %idxprom2, !dbg !2761
+  %4 = load i32* %arrayidx4, align 4, !dbg !2761, !tbaa !1398
+  %cmp5 = icmp sgt i32 %3, %4, !dbg !2761
+  br i1 %cmp5, label %land.lhs.true, label %if.end15, !dbg !2761
 
-; <label>:17                                      ; preds = %4
-  %18 = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 8
-  %19 = load i32** %18, align 8, !tbaa !42
-  %20 = getelementptr inbounds i32* %19, i64 %13
-  %21 = load i32* %20, align 4, !tbaa !17
-  %22 = icmp eq i32 %21, -1
-  br i1 %22, label %29, label %23
+land.lhs.true:                                    ; preds = %if.then
+  %gid = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 8, !dbg !2761
+  %5 = load i32** %gid, align 8, !dbg !2761, !tbaa !1403
+  %arrayidx7 = getelementptr inbounds i32* %5, i64 %idxprom2, !dbg !2761
+  %6 = load i32* %arrayidx7, align 4, !dbg !2761, !tbaa !1398
+  %cmp8 = icmp eq i32 %6, -1, !dbg !2761
+  br i1 %cmp8, label %if.end15, label %if.then9, !dbg !2761
 
-; <label>:23                                      ; preds = %17
-  store i32 %7, i32* %5, align 4, !tbaa !18
-  %24 = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 3
-  %25 = load i32* %24, align 4, !tbaa !38
-  %26 = add nsw i32 %6, 2
-  %27 = sext i32 %26 to i64
-  %28 = getelementptr inbounds i32* %10, i64 %27
-  store i32 %25, i32* %28, align 4, !tbaa !17
-  br label %29
+if.then9:                                         ; preds = %land.lhs.true
+  store i32 %add, i32* %nri1, align 4, !dbg !2762, !tbaa !1398
+  %nrj = getelementptr inbounds %struct.t_nblist* %nlist, i64 0, i32 3, !dbg !2764
+  %7 = load i32* %nrj, align 4, !dbg !2764, !tbaa !1398
+  %add11 = add nsw i32 %1, 2, !dbg !2764
+  %idxprom12 = sext i32 %add11 to i64, !dbg !2764
+  %arrayidx14 = getelementptr inbounds i32* %2, i64 %idxprom12, !dbg !2764
+  store i32 %7, i32* %arrayidx14, align 4, !dbg !2764, !tbaa !1398
+  br label %if.end15, !dbg !2765
 
-; <label>:29                                      ; preds = %17, %4, %23, %0
-  ret void
+if.end15:                                         ; preds = %land.lhs.true, %if.then, %if.then9, %entry
+  ret void, !dbg !2766
 }

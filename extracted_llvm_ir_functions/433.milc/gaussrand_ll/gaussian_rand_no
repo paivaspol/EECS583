@@ -1,38 +1,43 @@
 define double @gaussian_rand_no(%struct.double_prn* %prn_pt) #0 {
 entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.double_prn* %prn_pt}, i64 0, metadata !27), !dbg !36
   %.b = load i1* @gaussian_rand_no.iset, align 1
-  br i1 %.b, label %if.else, label %do.body
+  br i1 %.b, label %if.else, label %do.body, !dbg !37
 
 do.body:                                          ; preds = %entry, %do.body
-  %call = tail call double @myrand(%struct.double_prn* %prn_pt) #3
-  %mul = fmul double %call, 2.000000e+00
-  %sub = fadd double %mul, -1.000000e+00
-  %call1 = tail call double @myrand(%struct.double_prn* %prn_pt) #3
-  %mul2 = fmul double %call1, 2.000000e+00
-  %sub3 = fadd double %mul2, -1.000000e+00
-  %mul4 = fmul double %sub, %sub
-  %mul5 = fmul double %sub3, %sub3
-  %add = fadd double %mul4, %mul5
-  %cmp6 = fcmp ult double %add, 1.000000e+00
-  br i1 %cmp6, label %do.end, label %do.body
+  %call = tail call double @myrand(%struct.double_prn* %prn_pt) #4, !dbg !38
+  %mul = fmul double %call, 2.000000e+00, !dbg !38
+  %sub = fadd double %mul, -1.000000e+00, !dbg !38
+  tail call void @llvm.dbg.value(metadata !{double %sub}, i64 0, metadata !30), !dbg !38
+  %call1 = tail call double @myrand(%struct.double_prn* %prn_pt) #4, !dbg !41
+  %mul2 = fmul double %call1, 2.000000e+00, !dbg !41
+  %sub3 = fadd double %mul2, -1.000000e+00, !dbg !41
+  tail call void @llvm.dbg.value(metadata !{double %sub3}, i64 0, metadata !31), !dbg !41
+  %mul4 = fmul double %sub, %sub, !dbg !42
+  %mul5 = fmul double %sub3, %sub3, !dbg !42
+  %add = fadd double %mul4, %mul5, !dbg !42
+  tail call void @llvm.dbg.value(metadata !{double %add}, i64 0, metadata !29), !dbg !42
+  %cmp6 = fcmp ult double %add, 1.000000e+00, !dbg !43
+  br i1 %cmp6, label %do.end, label %do.body, !dbg !43
 
 do.end:                                           ; preds = %do.body
-  %call7 = tail call double @log(double %add) #3
-  %sub8 = fsub double -0.000000e+00, %call7
-  %div = fdiv double %sub8, %add
-  %call9 = tail call double @sqrt(double %div) #3
-  %mul10 = fmul double %sub, %call9
-  store double %mul10, double* @gaussian_rand_no.gset, align 8, !tbaa !0
+  %call7 = tail call double @log(double %add) #4, !dbg !44
+  %sub8 = fsub double -0.000000e+00, %call7, !dbg !44
+  %div = fdiv double %sub8, %add, !dbg !44
+  %call9 = tail call double @sqrt(double %div) #4, !dbg !44
+  tail call void @llvm.dbg.value(metadata !{double %call9}, i64 0, metadata !28), !dbg !44
+  %mul10 = fmul double %sub, %call9, !dbg !45
+  store double %mul10, double* @gaussian_rand_no.gset, align 8, !dbg !45, !tbaa !46
   store i1 true, i1* @gaussian_rand_no.iset, align 1
-  %mul11 = fmul double %sub3, %call9
-  br label %return
+  %mul11 = fmul double %sub3, %call9, !dbg !49
+  br label %return, !dbg !49
 
 if.else:                                          ; preds = %entry
   store i1 false, i1* @gaussian_rand_no.iset, align 1
-  %0 = load double* @gaussian_rand_no.gset, align 8, !tbaa !0
-  br label %return
+  %0 = load double* @gaussian_rand_no.gset, align 8, !dbg !50, !tbaa !46
+  br label %return, !dbg !50
 
 return:                                           ; preds = %if.else, %do.end
   %retval.0 = phi double [ %mul11, %do.end ], [ %0, %if.else ]
-  ret double %retval.0
+  ret double %retval.0, !dbg !52
 }

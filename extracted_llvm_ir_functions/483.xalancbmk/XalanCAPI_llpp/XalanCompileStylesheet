@@ -1,0 +1,54 @@
+define i32 @XalanCompileStylesheet(i8* %theXSLFileName, i8* %theXalanHandle, i8** nocapture %theCSSHandle) #2 {
+entry:
+  %theCompiledStylesheet = alloca %"class.xalanc_1_8::XalanCompiledStylesheet"*, align 8
+  %ref.tmp = alloca %"class.xalanc_1_8::XSLTInputSource", align 8
+  call void @llvm.dbg.value(metadata !{i8* %theXSLFileName}, i64 0, metadata !6059), !dbg !6530
+  call void @llvm.dbg.value(metadata !{i8* %theXalanHandle}, i64 0, metadata !6060), !dbg !6531
+  call void @llvm.dbg.value(metadata !{i8** %theCSSHandle}, i64 0, metadata !6061), !dbg !6532
+  call void @llvm.dbg.declare(metadata !{%"class.xalanc_1_8::XalanCompiledStylesheet"** %theCompiledStylesheet}, metadata !6062), !dbg !6533
+  call void @llvm.dbg.value(metadata !6534, i64 0, metadata !6062), !dbg !6533
+  store %"class.xalanc_1_8::XalanCompiledStylesheet"* null, %"class.xalanc_1_8::XalanCompiledStylesheet"** %theCompiledStylesheet, align 8, !dbg !6533, !tbaa !6369
+  tail call void @llvm.dbg.value(metadata !{i8* %theXalanHandle}, i64 0, metadata !6535), !dbg !6537
+  %0 = bitcast i8* %theXalanHandle to %"class.xalanc_1_8::XalanTransformer"*, !dbg !6538
+  call void @_ZN10xalanc_1_815XSLTInputSourceC1EPKc(%"class.xalanc_1_8::XSLTInputSource"* %ref.tmp, i8* %theXSLFileName) #8, !dbg !6536
+  %call1 = invoke i32 @_ZN10xalanc_1_816XalanTransformer17compileStylesheetERKNS_15XSLTInputSourceERPKNS_23XalanCompiledStylesheetE(%"class.xalanc_1_8::XalanTransformer"* %0, %"class.xalanc_1_8::XSLTInputSource"* %ref.tmp, %"class.xalanc_1_8::XalanCompiledStylesheet"** %theCompiledStylesheet) #8
+          to label %invoke.cont unwind label %lpad, !dbg !6536
+
+invoke.cont:                                      ; preds = %entry
+  call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XSLTInputSource"* %ref.tmp}, i64 0, metadata !6539), !dbg !6540
+  call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XSLTInputSource"* %ref.tmp}, i64 0, metadata !6541), !dbg !6543
+  %1 = getelementptr inbounds %"class.xalanc_1_8::XSLTInputSource"* %ref.tmp, i64 0, i32 0, !dbg !6544
+  call void @_ZN11xercesc_2_511InputSourceD2Ev(%"class.xercesc_2_5::InputSource"* %1) #8, !dbg !6544
+  call void @llvm.dbg.value(metadata !{i32 %call1}, i64 0, metadata !6063), !dbg !6536
+  %cmp = icmp eq i32 %call1, 0, !dbg !6545
+  br i1 %cmp, label %if.then, label %if.end, !dbg !6545
+
+if.then:                                          ; preds = %invoke.cont
+  call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XalanCompiledStylesheet"** %theCompiledStylesheet}, i64 0, metadata !6062), !dbg !6546
+  %2 = load %"class.xalanc_1_8::XalanCompiledStylesheet"** %theCompiledStylesheet, align 8, !dbg !6546, !tbaa !6369
+  %3 = bitcast %"class.xalanc_1_8::XalanCompiledStylesheet"* %2 to i8*, !dbg !6546
+  store i8* %3, i8** %theCSSHandle, align 8, !dbg !6546, !tbaa !6369
+  br label %if.end, !dbg !6548
+
+lpad:                                             ; preds = %entry
+  %4 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !6536
+  call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XSLTInputSource"* %ref.tmp}, i64 0, metadata !6539), !dbg !6540
+  call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XSLTInputSource"* %ref.tmp}, i64 0, metadata !6541), !dbg !6543
+  %5 = getelementptr inbounds %"class.xalanc_1_8::XSLTInputSource"* %ref.tmp, i64 0, i32 0, !dbg !6544
+  invoke void @_ZN11xercesc_2_511InputSourceD2Ev(%"class.xercesc_2_5::InputSource"* %5) #8
+          to label %eh.resume unwind label %terminate.lpad
+
+if.end:                                           ; preds = %if.then, %invoke.cont
+  ret i32 %call1, !dbg !6549
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %4, !dbg !6536
+
+terminate.lpad:                                   ; preds = %lpad
+  %6 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !6536
+  %7 = extractvalue { i8*, i32 } %6, 0, !dbg !6536
+  call void @__clang_call_terminate(i8* %7) #10, !dbg !6536
+  unreachable, !dbg !6536
+}

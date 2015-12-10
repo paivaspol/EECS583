@@ -1,35 +1,33 @@
-define i32 @nenum(i8** nocapture readonly %enumc) #3 {
-  %1 = getelementptr inbounds i8** %enumc, i64 1
-  %2 = load i8** %1, align 8, !tbaa !19
-  %3 = icmp eq i8* %2, null
-  br i1 %3, label %.critedge, label %.lr.ph
+define i32 @nenum(i8** nocapture %enumc) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8** %enumc}, i64 0, metadata !425), !dbg !698
+  tail call void @llvm.dbg.value(metadata !680, i64 0, metadata !426), !dbg !699
+  %arrayidx8 = getelementptr inbounds i8** %enumc, i64 1, !dbg !700
+  %0 = load i8** %arrayidx8, align 8, !dbg !700, !tbaa !636
+  %tobool9 = icmp eq i8* %0, null, !dbg !700
+  br i1 %tobool9, label %while.end, label %land.rhs.lr.ph, !dbg !700
 
-.lr.ph:                                           ; preds = %0
-  %4 = load i8** %enumc, align 8, !tbaa !19
-  br label %5
+land.rhs.lr.ph:                                   ; preds = %entry
+  %1 = load i8** %enumc, align 8, !dbg !700, !tbaa !636
+  br label %land.rhs, !dbg !700
 
-; <label>:5                                       ; preds = %.lr.ph, %8
-  %indvars.iv = phi i64 [ 1, %.lr.ph ], [ %indvars.iv.next, %8 ]
-  %6 = phi i8* [ %2, %.lr.ph ], [ %10, %8 ]
-  %7 = icmp eq i8* %4, %6
-  br i1 %7, label %..critedge_crit_edge, label %8
+while.cond:                                       ; preds = %land.rhs
+  %arrayidx = getelementptr inbounds i8** %enumc, i64 %indvars.iv.next, !dbg !700
+  %2 = load i8** %arrayidx, align 8, !dbg !700, !tbaa !636
+  %tobool = icmp eq i8* %2, null, !dbg !700
+  br i1 %tobool, label %while.end, label %land.rhs, !dbg !700
 
-; <label>:8                                       ; preds = %5
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %9 = getelementptr inbounds i8** %enumc, i64 %indvars.iv.next
-  %10 = load i8** %9, align 8, !tbaa !19
-  %11 = icmp eq i8* %10, null
-  br i1 %11, label %..critedge_crit_edge2, label %5
+land.rhs:                                         ; preds = %land.rhs.lr.ph, %while.cond
+  %indvars.iv = phi i64 [ 1, %land.rhs.lr.ph ], [ %indvars.iv.next, %while.cond ]
+  %3 = phi i8* [ %0, %land.rhs.lr.ph ], [ %2, %while.cond ]
+  %i.010 = phi i32 [ 1, %land.rhs.lr.ph ], [ %inc, %while.cond ]
+  %cmp = icmp eq i8* %1, %3, !dbg !700
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !700
+  %inc = add nsw i32 %i.010, 1, !dbg !701
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !426), !dbg !701
+  br i1 %cmp, label %while.end, label %while.cond
 
-..critedge_crit_edge:                             ; preds = %5
-  %12 = trunc i64 %indvars.iv to i32
-  br label %.critedge
-
-..critedge_crit_edge2:                            ; preds = %8
-  %13 = trunc i64 %indvars.iv.next to i32
-  br label %.critedge
-
-.critedge:                                        ; preds = %..critedge_crit_edge2, %..critedge_crit_edge, %0
-  %i.0.lcssa = phi i32 [ %12, %..critedge_crit_edge ], [ %13, %..critedge_crit_edge2 ], [ 1, %0 ]
-  ret i32 %i.0.lcssa
+while.end:                                        ; preds = %while.cond, %land.rhs, %entry
+  %i.0.lcssa = phi i32 [ 1, %entry ], [ %i.010, %land.rhs ], [ %inc, %while.cond ]
+  ret i32 %i.0.lcssa, !dbg !702
 }

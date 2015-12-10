@@ -1,52 +1,54 @@
 define void @htab_empty(%struct.htab* nocapture %htab) #1 {
 entry:
-  %del_f = getelementptr inbounds %struct.htab* %htab, i64 0, i32 2
-  %0 = load void (i8*)** %del_f, align 8, !tbaa !0
-  %tobool = icmp eq void (i8*)* %0, null
-  %size16.pre = getelementptr inbounds %struct.htab* %htab, i64 0, i32 4
-  br i1 %tobool, label %if.end14, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.htab* %htab}, i64 0, metadata !70), !dbg !274
+  %del_f = getelementptr inbounds %struct.htab* %htab, i64 0, i32 2, !dbg !275
+  %0 = load void (i8*)** %del_f, align 8, !dbg !275, !tbaa !221
+  %tobool = icmp eq void (i8*)* %0, null, !dbg !275
+  %size16.pre = getelementptr inbounds %struct.htab* %htab, i64 0, i32 4, !dbg !276
+  br i1 %tobool, label %if.end14, label %if.then, !dbg !275
 
 if.then:                                          ; preds = %entry
-  %1 = load i64* %size16.pre, align 8, !tbaa !3
-  %sub = add i64 %1, 4294967295
-  %conv = trunc i64 %sub to i32
-  %cmp28 = icmp sgt i32 %conv, -1
-  br i1 %cmp28, label %for.body.lr.ph, label %if.end14
+  %1 = load i64* %size16.pre, align 8, !dbg !277, !tbaa !225
+  %sub = add i64 %1, 4294967295, !dbg !277
+  %conv = trunc i64 %sub to i32, !dbg !277
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !71), !dbg !277
+  %cmp28 = icmp sgt i32 %conv, -1, !dbg !277
+  br i1 %cmp28, label %for.body.lr.ph, label %if.end14, !dbg !277
 
 for.body.lr.ph:                                   ; preds = %if.then
-  %entries = getelementptr inbounds %struct.htab* %htab, i64 0, i32 3
+  %entries = getelementptr inbounds %struct.htab* %htab, i64 0, i32 3, !dbg !279
   %sext = shl i64 %sub, 32
   %2 = ashr exact i64 %sext, 32
-  br label %for.body
+  br label %for.body, !dbg !277
 
 for.body:                                         ; preds = %for.inc.for.body_crit_edge, %for.body.lr.ph
   %indvars.iv = phi i64 [ %2, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc.for.body_crit_edge ]
-  %3 = load i8*** %entries, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds i8** %3, i64 %indvars.iv
-  %4 = load i8** %arrayidx, align 8, !tbaa !0
-  %switch = icmp ult i8* %4, inttoptr (i64 2 to i8*)
-  br i1 %switch, label %for.inc, label %if.then9
+  %3 = load i8*** %entries, align 8, !dbg !279, !tbaa !221
+  %arrayidx = getelementptr inbounds i8** %3, i64 %indvars.iv, !dbg !279
+  %4 = load i8** %arrayidx, align 8, !dbg !279, !tbaa !221
+  %switch = icmp ult i8* %4, inttoptr (i64 2 to i8*), !dbg !279
+  br i1 %switch, label %for.inc, label %if.then9, !dbg !279
 
 if.then9:                                         ; preds = %for.body
-  %5 = load void (i8*)** %del_f, align 8, !tbaa !0
-  tail call void %5(i8* %4) #8
-  br label %for.inc
+  %5 = load void (i8*)** %del_f, align 8, !dbg !280, !tbaa !221
+  tail call void %5(i8* %4) #9, !dbg !280
+  br label %for.inc, !dbg !280
 
 for.inc:                                          ; preds = %for.body, %if.then9
-  %6 = trunc i64 %indvars.iv to i32
-  %cmp = icmp sgt i32 %6, 0
-  br i1 %cmp, label %for.inc.for.body_crit_edge, label %if.end14
+  %6 = trunc i64 %indvars.iv to i32, !dbg !277
+  %cmp = icmp sgt i32 %6, 0, !dbg !277
+  br i1 %cmp, label %for.inc.for.body_crit_edge, label %if.end14, !dbg !277
 
 for.inc.for.body_crit_edge:                       ; preds = %for.inc
-  %indvars.iv.next = add i64 %indvars.iv, -1
-  br label %for.body
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !277
+  br label %for.body, !dbg !277
 
 if.end14:                                         ; preds = %entry, %if.then, %for.inc
-  %entries15 = getelementptr inbounds %struct.htab* %htab, i64 0, i32 3
-  %7 = load i8*** %entries15, align 8, !tbaa !0
-  %8 = bitcast i8** %7 to i8*
-  %9 = load i64* %size16.pre, align 8, !tbaa !3
-  %mul = shl i64 %9, 3
-  tail call void @llvm.memset.p0i8.i64(i8* %8, i8 0, i64 %mul, i32 8, i1 false)
-  ret void
+  %entries15 = getelementptr inbounds %struct.htab* %htab, i64 0, i32 3, !dbg !276
+  %7 = load i8*** %entries15, align 8, !dbg !276, !tbaa !221
+  %8 = bitcast i8** %7 to i8*, !dbg !276
+  %9 = load i64* %size16.pre, align 8, !dbg !276, !tbaa !225
+  %mul = shl i64 %9, 3, !dbg !276
+  tail call void @llvm.memset.p0i8.i64(i8* %8, i8 0, i64 %mul, i32 8, i1 false), !dbg !276
+  ret void, !dbg !281
 }

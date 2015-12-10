@@ -1,108 +1,114 @@
 define void @SubMtxManager_releaseObject(%struct._SubMtxManager* %manager, %struct._SubMtx* %mtx1) #0 {
 entry:
-  %cmp = icmp eq %struct._SubMtxManager* %manager, null
-  %cmp1 = icmp eq %struct._SubMtx* %mtx1, null
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtxManager* %manager}, i64 0, metadata !72), !dbg !135
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtx* %mtx1}, i64 0, metadata !73), !dbg !136
+  %cmp = icmp eq %struct._SubMtxManager* %manager, null, !dbg !137
+  %cmp1 = icmp eq %struct._SubMtx* %mtx1, null, !dbg !137
+  %or.cond = or i1 %cmp, %cmp1, !dbg !137
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !137
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([64 x i8]* @.str1, i64 0, i64 0), %struct._SubMtxManager* %manager, %struct._SubMtx* %mtx1) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !138, !tbaa !92
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([64 x i8]* @.str1, i64 0, i64 0), %struct._SubMtxManager* %manager, %struct._SubMtx* %mtx1) #5, !dbg !138
+  tail call void @exit(i32 -1) #6, !dbg !140
+  unreachable, !dbg !140
 
 if.end:                                           ; preds = %entry
-  %lock = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 1
-  %1 = load %struct._Lock** %lock, align 8, !tbaa !0
-  %cmp2 = icmp eq %struct._Lock* %1, null
-  br i1 %cmp2, label %if.end5, label %if.then3
+  %lock = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 1, !dbg !141
+  %1 = load %struct._Lock** %lock, align 8, !dbg !141, !tbaa !92
+  %cmp2 = icmp eq %struct._Lock* %1, null, !dbg !141
+  br i1 %cmp2, label %if.end5, label %if.then3, !dbg !141
 
 if.then3:                                         ; preds = %if.end
-  tail call void @Lock_lock(%struct._Lock* %1) #4
-  %nlocks = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 9
-  %2 = load i32* %nlocks, align 4, !tbaa !3
-  %inc = add nsw i32 %2, 1
-  store i32 %inc, i32* %nlocks, align 4, !tbaa !3
-  br label %if.end5
+  tail call void @Lock_lock(%struct._Lock* %1) #5, !dbg !142
+  %nlocks = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 9, !dbg !144
+  %2 = load i32* %nlocks, align 4, !dbg !144, !tbaa !100
+  %inc = add nsw i32 %2, 1, !dbg !144
+  store i32 %inc, i32* %nlocks, align 4, !dbg !144, !tbaa !100
+  br label %if.end5, !dbg !145
 
 if.end5:                                          ; preds = %if.end, %if.then3
-  %nreleases = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 8
-  %3 = load i32* %nreleases, align 4, !tbaa !3
-  %inc6 = add nsw i32 %3, 1
-  store i32 %inc6, i32* %nreleases, align 4, !tbaa !3
-  %call7 = tail call i32 @SubMtx_nbytesInWorkspace(%struct._SubMtx* %mtx1) #4
-  %nbytesactive = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 4
-  %4 = load i32* %nbytesactive, align 4, !tbaa !3
-  %sub = sub nsw i32 %4, %call7
-  store i32 %sub, i32* %nbytesactive, align 4, !tbaa !3
-  %nactive = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 3
-  %5 = load i32* %nactive, align 4, !tbaa !3
-  %dec = add nsw i32 %5, -1
-  store i32 %dec, i32* %nactive, align 4, !tbaa !3
-  %mode = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 2
-  %6 = load i32* %mode, align 4, !tbaa !3
-  %cmp8 = icmp eq i32 %6, 0
-  br i1 %cmp8, label %if.then9, label %if.else
+  %nreleases = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 8, !dbg !146
+  %3 = load i32* %nreleases, align 4, !dbg !146, !tbaa !100
+  %inc6 = add nsw i32 %3, 1, !dbg !146
+  store i32 %inc6, i32* %nreleases, align 4, !dbg !146, !tbaa !100
+  %call7 = tail call i32 @SubMtx_nbytesInWorkspace(%struct._SubMtx* %mtx1) #5, !dbg !147
+  %nbytesactive = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 4, !dbg !147
+  %4 = load i32* %nbytesactive, align 4, !dbg !147, !tbaa !100
+  %sub = sub nsw i32 %4, %call7, !dbg !147
+  store i32 %sub, i32* %nbytesactive, align 4, !dbg !147, !tbaa !100
+  %nactive = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 3, !dbg !148
+  %5 = load i32* %nactive, align 4, !dbg !148, !tbaa !100
+  %dec = add nsw i32 %5, -1, !dbg !148
+  store i32 %dec, i32* %nactive, align 4, !dbg !148, !tbaa !100
+  %mode = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 2, !dbg !149
+  %6 = load i32* %mode, align 4, !dbg !149, !tbaa !100
+  %cmp8 = icmp eq i32 %6, 0, !dbg !149
+  br i1 %cmp8, label %if.then9, label %if.else, !dbg !149
 
 if.then9:                                         ; preds = %if.end5
-  tail call void @SubMtx_free(%struct._SubMtx* %mtx1) #4
-  br label %if.end23
+  tail call void @SubMtx_free(%struct._SubMtx* %mtx1) #5, !dbg !150
+  br label %if.end23, !dbg !152
 
 if.else:                                          ; preds = %if.end5
-  %call10 = tail call i32 @SubMtx_nbytesInWorkspace(%struct._SubMtx* %mtx1) #4
-  %head = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 0
-  %mtx2.053 = load %struct._SubMtx** %head, align 8
-  %cmp1154 = icmp eq %struct._SubMtx* %mtx2.053, null
-  br i1 %cmp1154, label %if.then17, label %for.body
+  %call10 = tail call i32 @SubMtx_nbytesInWorkspace(%struct._SubMtx* %mtx1) #5, !dbg !153
+  tail call void @llvm.dbg.value(metadata !{i32 %call10}, i64 0, metadata !76), !dbg !153
+  %head = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 0, !dbg !155
+  tail call void @llvm.dbg.value(metadata !104, i64 0, metadata !75), !dbg !155
+  %mtx2.053 = load %struct._SubMtx** %head, align 8, !dbg !155
+  %cmp1154 = icmp eq %struct._SubMtx* %mtx2.053, null, !dbg !155
+  br i1 %cmp1154, label %if.then17, label %for.body, !dbg !155
 
 for.cond:                                         ; preds = %for.body
-  %next = getelementptr inbounds %struct._SubMtx* %mtx2.056, i64 0, i32 9
-  %mtx2.0 = load %struct._SubMtx** %next, align 8
-  %cmp11 = icmp eq %struct._SubMtx* %mtx2.0, null
-  br i1 %cmp11, label %for.end, label %for.body
+  %next = getelementptr inbounds %struct._SubMtx* %mtx2.056, i64 0, i32 9, !dbg !157
+  %mtx2.0 = load %struct._SubMtx** %next, align 8, !dbg !155
+  %cmp11 = icmp eq %struct._SubMtx* %mtx2.0, null, !dbg !155
+  br i1 %cmp11, label %for.end, label %for.body, !dbg !155
 
 for.body:                                         ; preds = %if.else, %for.cond
   %mtx2.056 = phi %struct._SubMtx* [ %mtx2.0, %for.cond ], [ %mtx2.053, %if.else ]
   %prev.055 = phi %struct._SubMtx* [ %mtx2.056, %for.cond ], [ null, %if.else ]
-  %call12 = tail call i32 @SubMtx_nbytesInWorkspace(%struct._SubMtx* %mtx2.056) #4
-  %cmp13 = icmp slt i32 %call12, %call10
-  br i1 %cmp13, label %for.cond, label %for.end
+  %call12 = tail call i32 @SubMtx_nbytesInWorkspace(%struct._SubMtx* %mtx2.056) #5, !dbg !158
+  tail call void @llvm.dbg.value(metadata !{i32 %call12}, i64 0, metadata !77), !dbg !158
+  %cmp13 = icmp slt i32 %call12, %call10, !dbg !160
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtx* %mtx2.0.lcssa62}, i64 0, metadata !75), !dbg !161
+  br i1 %cmp13, label %for.cond, label %for.end, !dbg !160
 
 for.end:                                          ; preds = %for.cond, %for.body
   %mtx2.0.lcssa = phi %struct._SubMtx* [ %mtx2.056, %for.body ], [ null, %for.cond ]
   %prev.0.lcssa = phi %struct._SubMtx* [ %prev.055, %for.body ], [ %mtx2.056, %for.cond ]
-  %cmp16 = icmp eq %struct._SubMtx* %prev.0.lcssa, null
-  br i1 %cmp16, label %if.then17, label %if.else19
+  %cmp16 = icmp eq %struct._SubMtx* %prev.0.lcssa, null, !dbg !162
+  br i1 %cmp16, label %if.then17, label %if.else19, !dbg !162
 
 if.then17:                                        ; preds = %if.else, %for.end
   %mtx2.0.lcssa63 = phi %struct._SubMtx* [ %mtx2.0.lcssa, %for.end ], [ null, %if.else ]
-  store %struct._SubMtx* %mtx1, %struct._SubMtx** %head, align 8, !tbaa !0
-  br label %if.end21
+  store %struct._SubMtx* %mtx1, %struct._SubMtx** %head, align 8, !dbg !163, !tbaa !92
+  br label %if.end21, !dbg !165
 
 if.else19:                                        ; preds = %for.end
-  %next20 = getelementptr inbounds %struct._SubMtx* %prev.0.lcssa, i64 0, i32 9
-  store %struct._SubMtx* %mtx1, %struct._SubMtx** %next20, align 8, !tbaa !0
+  %next20 = getelementptr inbounds %struct._SubMtx* %prev.0.lcssa, i64 0, i32 9, !dbg !166
+  store %struct._SubMtx* %mtx1, %struct._SubMtx** %next20, align 8, !dbg !166, !tbaa !92
   br label %if.end21
 
 if.end21:                                         ; preds = %if.else19, %if.then17
   %mtx2.0.lcssa62 = phi %struct._SubMtx* [ %mtx2.0.lcssa, %if.else19 ], [ %mtx2.0.lcssa63, %if.then17 ]
-  %next22 = getelementptr inbounds %struct._SubMtx* %mtx1, i64 0, i32 9
-  store %struct._SubMtx* %mtx2.0.lcssa62, %struct._SubMtx** %next22, align 8, !tbaa !0
+  %next22 = getelementptr inbounds %struct._SubMtx* %mtx1, i64 0, i32 9, !dbg !168
+  store %struct._SubMtx* %mtx2.0.lcssa62, %struct._SubMtx** %next22, align 8, !dbg !168, !tbaa !92
   br label %if.end23
 
 if.end23:                                         ; preds = %if.end21, %if.then9
-  %7 = load %struct._Lock** %lock, align 8, !tbaa !0
-  %cmp25 = icmp eq %struct._Lock* %7, null
-  br i1 %cmp25, label %if.end29, label %if.then26
+  %7 = load %struct._Lock** %lock, align 8, !dbg !169, !tbaa !92
+  %cmp25 = icmp eq %struct._Lock* %7, null, !dbg !169
+  br i1 %cmp25, label %if.end29, label %if.then26, !dbg !169
 
 if.then26:                                        ; preds = %if.end23
-  %nunlocks = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 10
-  %8 = load i32* %nunlocks, align 4, !tbaa !3
-  %inc27 = add nsw i32 %8, 1
-  store i32 %inc27, i32* %nunlocks, align 4, !tbaa !3
-  tail call void @Lock_unlock(%struct._Lock* %7) #4
-  br label %if.end29
+  %nunlocks = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 10, !dbg !170
+  %8 = load i32* %nunlocks, align 4, !dbg !170, !tbaa !100
+  %inc27 = add nsw i32 %8, 1, !dbg !170
+  store i32 %inc27, i32* %nunlocks, align 4, !dbg !170, !tbaa !100
+  tail call void @Lock_unlock(%struct._Lock* %7) #5, !dbg !172
+  br label %if.end29, !dbg !173
 
 if.end29:                                         ; preds = %if.end23, %if.then26
-  ret void
+  ret void, !dbg !174
 }

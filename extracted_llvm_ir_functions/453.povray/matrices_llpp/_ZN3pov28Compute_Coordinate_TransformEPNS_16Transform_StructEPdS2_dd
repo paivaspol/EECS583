@@ -1,0 +1,77 @@
+define void @_ZN3pov28Compute_Coordinate_TransformEPNS_16Transform_StructEPdS2_dd(%"struct.pov::Transform_Struct"* nocapture %trans, double* nocapture %origin, double* nocapture %up, double %radius, double %length) #0 {
+entry:
+  %trans2 = alloca %"struct.pov::Transform_Struct", align 8
+  %tmpv = alloca [3 x double], align 16
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Transform_Struct"* %trans}, i64 0, metadata !194), !dbg !792
+  call void @llvm.dbg.value(metadata !{double* %origin}, i64 0, metadata !195), !dbg !792
+  call void @llvm.dbg.value(metadata !{double* %up}, i64 0, metadata !196), !dbg !792
+  call void @llvm.dbg.value(metadata !{double %radius}, i64 0, metadata !197), !dbg !792
+  call void @llvm.dbg.value(metadata !{double %length}, i64 0, metadata !198), !dbg !792
+  %0 = bitcast %"struct.pov::Transform_Struct"* %trans2 to i8*, !dbg !793
+  call void @llvm.lifetime.start(i64 256, i8* %0) #3, !dbg !793
+  call void @llvm.dbg.declare(metadata !{%"struct.pov::Transform_Struct"* %trans2}, metadata !199), !dbg !793
+  call void @llvm.dbg.declare(metadata !{[3 x double]* %tmpv}, metadata !200), !dbg !794
+  %arraydecay = getelementptr inbounds [3 x double]* %tmpv, i64 0, i64 0, !dbg !795
+  tail call void @llvm.dbg.value(metadata !{double* %arraydecay}, i64 0, metadata !796), !dbg !797
+  tail call void @llvm.dbg.value(metadata !{double %radius}, i64 0, metadata !798), !dbg !797
+  tail call void @llvm.dbg.value(metadata !{double %radius}, i64 0, metadata !799), !dbg !797
+  tail call void @llvm.dbg.value(metadata !{double %length}, i64 0, metadata !800), !dbg !797
+  store double %radius, double* %arraydecay, align 16, !dbg !801, !tbaa !397
+  %arrayidx1.i = getelementptr inbounds [3 x double]* %tmpv, i64 0, i64 1, !dbg !803
+  store double %radius, double* %arrayidx1.i, align 8, !dbg !803, !tbaa !397
+  %arrayidx2.i = getelementptr inbounds [3 x double]* %tmpv, i64 0, i64 2, !dbg !804
+  store double %length, double* %arrayidx2.i, align 16, !dbg !804, !tbaa !397
+  call void @_ZN3pov25Compute_Scaling_TransformEPNS_16Transform_StructEPd(%"struct.pov::Transform_Struct"* %trans, double* %arraydecay) #7, !dbg !805
+  %arrayidx = getelementptr inbounds double* %up, i64 2, !dbg !806
+  %1 = load double* %arrayidx, align 8, !dbg !806, !tbaa !397
+  %call = call double @fabs(double %1) #9, !dbg !806
+  %cmp = fcmp ogt double %call, 9.999999e-01, !dbg !806
+  br i1 %cmp, label %if.then, label %if.else, !dbg !806
+
+if.then:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{double* %arraydecay}, i64 0, metadata !807), !dbg !810
+  tail call void @llvm.dbg.value(metadata !811, i64 0, metadata !812), !dbg !810
+  tail call void @llvm.dbg.value(metadata !813, i64 0, metadata !814), !dbg !810
+  tail call void @llvm.dbg.value(metadata !813, i64 0, metadata !815), !dbg !810
+  store double 1.000000e+00, double* %arraydecay, align 16, !dbg !816, !tbaa !397
+  %cmp4 = fcmp olt double %1, 0.000000e+00, !dbg !817
+  %cond = select i1 %cmp4, double -1.000000e+00, double 1.000000e+00, !dbg !817
+  %2 = bitcast double* %arrayidx1.i to i8*, !dbg !817
+  call void @llvm.memset.p0i8.i64(i8* %2, i8 0, i64 16, i32 8, i1 false), !dbg !818
+  store double %cond, double* %arrayidx, align 8, !dbg !817, !tbaa !397
+  br label %if.end, !dbg !819
+
+if.else:                                          ; preds = %entry
+  %arrayidx7 = getelementptr inbounds double* %up, i64 1, !dbg !820
+  %3 = load double* %arrayidx7, align 8, !dbg !820, !tbaa !397
+  %sub = fsub double -0.000000e+00, %3, !dbg !820
+  %4 = load double* %up, align 8, !dbg !820, !tbaa !397
+  tail call void @llvm.dbg.value(metadata !{double* %arraydecay}, i64 0, metadata !822), !dbg !823
+  tail call void @llvm.dbg.value(metadata !{double %sub}, i64 0, metadata !824), !dbg !823
+  tail call void @llvm.dbg.value(metadata !{double %4}, i64 0, metadata !825), !dbg !823
+  tail call void @llvm.dbg.value(metadata !813, i64 0, metadata !826), !dbg !823
+  store double %sub, double* %arraydecay, align 16, !dbg !827, !tbaa !397
+  store double %4, double* %arrayidx1.i, align 8, !dbg !828, !tbaa !397
+  store double 0.000000e+00, double* %arrayidx2.i, align 16, !dbg !829, !tbaa !397
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %5 = phi double [ %1, %if.else ], [ %cond, %if.then ]
+  %call11 = call double @acos(double %5) #8, !dbg !830
+  call void @_ZN3pov31Compute_Axis_Rotation_TransformEPNS_16Transform_StructEPdd(%"struct.pov::Transform_Struct"* %trans2, double* %arraydecay, double %call11) #7, !dbg !830
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Transform_Struct"* %trans}, i64 0, metadata !831) #3, !dbg !833
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Transform_Struct"* %trans2}, i64 0, metadata !834) #3, !dbg !833
+  %arraydecay.i24 = getelementptr inbounds %"struct.pov::Transform_Struct"* %trans, i64 0, i32 0, i64 0, !dbg !835
+  %arraydecay2.i25 = getelementptr inbounds %"struct.pov::Transform_Struct"* %trans2, i64 0, i32 0, i64 0, !dbg !835
+  call void @_ZN3pov7MTimesAEPA4_dS1_([4 x double]* %arraydecay.i24, [4 x double]* %arraydecay2.i25) #8, !dbg !835
+  %arraydecay3.i26 = getelementptr inbounds %"struct.pov::Transform_Struct"* %trans2, i64 0, i32 1, i64 0, !dbg !836
+  %arraydecay5.i27 = getelementptr inbounds %"struct.pov::Transform_Struct"* %trans, i64 0, i32 1, i64 0, !dbg !836
+  call void @_ZN3pov7MTimesBEPA4_dS1_([4 x double]* %arraydecay3.i26, [4 x double]* %arraydecay5.i27) #8, !dbg !836
+  call void @_ZN3pov29Compute_Translation_TransformEPNS_16Transform_StructEPd(%"struct.pov::Transform_Struct"* %trans2, double* %origin) #7, !dbg !837
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Transform_Struct"* %trans}, i64 0, metadata !838) #3, !dbg !840
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Transform_Struct"* %trans2}, i64 0, metadata !841) #3, !dbg !840
+  call void @_ZN3pov7MTimesAEPA4_dS1_([4 x double]* %arraydecay.i24, [4 x double]* %arraydecay2.i25) #8, !dbg !842
+  call void @_ZN3pov7MTimesBEPA4_dS1_([4 x double]* %arraydecay3.i26, [4 x double]* %arraydecay5.i27) #8, !dbg !843
+  call void @llvm.lifetime.end(i64 256, i8* %0) #3, !dbg !844
+  ret void, !dbg !844
+}

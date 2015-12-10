@@ -1,0 +1,20 @@
+define void @_ZdlPv(i8* %p) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %p}, i64 0, metadata !62), !dbg !123
+  %cmp = icmp eq i8* %p, null, !dbg !124
+  br i1 %cmp, label %if.end3, label %if.end, !dbg !124
+
+if.end:                                           ; preds = %entry
+  tail call void @free(i8* %p) #8, !dbg !125
+  tail call void @llvm.dbg.value(metadata !101, i64 0, metadata !126), !dbg !128
+  %0 = load i8* getelementptr inbounds (%class.MemManager* @_ZL10memManager, i64 0, i32 2), align 4, !dbg !128, !tbaa !79, !range !95
+  %tobool.i = icmp eq i8 %0, 0, !dbg !128
+  br i1 %tobool.i, label %if.end3, label %if.then1, !dbg !127
+
+if.then1:                                         ; preds = %if.end
+  tail call void @_ZN10MemManager11restorePoolEv(%class.MemManager* @_ZL10memManager) #9, !dbg !129
+  br label %if.end3, !dbg !129
+
+if.end3:                                          ; preds = %if.end, %entry, %if.then1
+  ret void, !dbg !129
+}

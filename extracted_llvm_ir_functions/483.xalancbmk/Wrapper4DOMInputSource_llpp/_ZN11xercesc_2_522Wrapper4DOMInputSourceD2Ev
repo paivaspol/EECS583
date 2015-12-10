@@ -1,0 +1,46 @@
+define void @_ZN11xercesc_2_522Wrapper4DOMInputSourceD2Ev(%"class.xercesc_2_5::Wrapper4DOMInputSource"* %this) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::Wrapper4DOMInputSource"* %this}, i64 0, metadata !761), !dbg !1001
+  %0 = bitcast %"class.xercesc_2_5::Wrapper4DOMInputSource"* %this to i8***, !dbg !1002
+  store i8** getelementptr inbounds ([13 x i8*]* @_ZTVN11xercesc_2_522Wrapper4DOMInputSourceE, i64 0, i64 2), i8*** %0, align 8, !dbg !1002, !tbaa !969
+  %fAdoptInputSource = getelementptr inbounds %"class.xercesc_2_5::Wrapper4DOMInputSource"* %this, i64 0, i32 1, !dbg !1003
+  %1 = load i8* %fAdoptInputSource, align 1, !dbg !1003, !tbaa !971, !range !1005
+  %tobool = icmp eq i8 %1, 0, !dbg !1003
+  br i1 %tobool, label %if.end, label %if.then, !dbg !1003
+
+if.then:                                          ; preds = %entry
+  %fInputSource = getelementptr inbounds %"class.xercesc_2_5::Wrapper4DOMInputSource"* %this, i64 0, i32 2, !dbg !1006
+  %2 = load %"class.xercesc_2_5::DOMInputSource"** %fInputSource, align 8, !dbg !1006, !tbaa !973
+  %isnull = icmp eq %"class.xercesc_2_5::DOMInputSource"* %2, null, !dbg !1006
+  br i1 %isnull, label %if.end, label %delete.notnull, !dbg !1006
+
+delete.notnull:                                   ; preds = %if.then
+  %3 = bitcast %"class.xercesc_2_5::DOMInputSource"* %2 to void (%"class.xercesc_2_5::DOMInputSource"*)***, !dbg !1006
+  %vtable = load void (%"class.xercesc_2_5::DOMInputSource"*)*** %3, align 8, !dbg !1006, !tbaa !969
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::DOMInputSource"*)** %vtable, i64 1, !dbg !1006
+  %4 = load void (%"class.xercesc_2_5::DOMInputSource"*)** %vfn, align 8, !dbg !1006
+  invoke void %4(%"class.xercesc_2_5::DOMInputSource"* %2) #5
+          to label %if.end unwind label %lpad, !dbg !1006
+
+lpad:                                             ; preds = %delete.notnull
+  %5 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !1006
+  %6 = bitcast %"class.xercesc_2_5::Wrapper4DOMInputSource"* %this to %"class.xercesc_2_5::InputSource"*, !dbg !1007
+  invoke void @_ZN11xercesc_2_511InputSourceD2Ev(%"class.xercesc_2_5::InputSource"* %6) #5
+          to label %eh.resume unwind label %terminate.lpad, !dbg !1007
+
+if.end:                                           ; preds = %entry, %if.then, %delete.notnull
+  %7 = bitcast %"class.xercesc_2_5::Wrapper4DOMInputSource"* %this to %"class.xercesc_2_5::InputSource"*, !dbg !1008
+  tail call void @_ZN11xercesc_2_511InputSourceD2Ev(%"class.xercesc_2_5::InputSource"* %7) #5, !dbg !1008
+  ret void, !dbg !1007
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %5, !dbg !1007
+
+terminate.lpad:                                   ; preds = %lpad
+  %8 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !1007
+  %9 = extractvalue { i8*, i32 } %8, 0, !dbg !1007
+  tail call void @__clang_call_terminate(i8* %9) #8, !dbg !1007
+  unreachable, !dbg !1007
+}

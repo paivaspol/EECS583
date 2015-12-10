@@ -1,0 +1,291 @@
+define void @_ZN3pov26Start_Non_Adaptive_TracingEv() #0 {
+entry:
+  %unclippedColour = alloca [5 x float], align 16
+  call void @llvm.dbg.declare(metadata !{[5 x float]* %unclippedColour}, metadata !299), !dbg !2298
+  call void @llvm.dbg.value(metadata !1976, i64 0, metadata !301), !dbg !2299
+  %0 = load double* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 16), align 8, !dbg !2300, !tbaa !1662
+  %1 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 14), align 4, !dbg !2300, !tbaa !1664
+  %conv = sitofp i32 %1 to double, !dbg !2300
+  %div = fdiv double %0, %conv, !dbg !2300
+  store double %div, double* @_ZN3povL11JitterScaleE, align 8, !dbg !2300, !tbaa !1662
+  %2 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 2), align 8, !dbg !2301, !tbaa !1664
+  %rem = srem i32 %2, 2, !dbg !2301
+  %cmp = icmp eq i32 %rem, 1, !dbg !2301
+  %conv1 = zext i1 %cmp to i32, !dbg !2301
+  %3 = load i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 13), align 1, !dbg !2301, !tbaa !1717, !range !1718
+  %conv2 = zext i8 %3 to i32, !dbg !2301
+  %4 = xor i32 %conv2, 1, !dbg !2301
+  %lnot = xor i32 %4, %conv1, !dbg !2301
+  call void @llvm.dbg.value(metadata !{i32 %lnot}, i64 0, metadata !304), !dbg !2301
+  %5 = load i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 12), align 8, !dbg !2302, !tbaa !1717, !range !1718
+  %tobool5 = icmp eq i8 %5, 0, !dbg !2302
+  %.pre68 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !2303, !tbaa !1664
+  br i1 %tobool5, label %land.end, label %land.rhs, !dbg !2302
+
+land.rhs:                                         ; preds = %entry
+  %and = and i32 %.pre68, 16, !dbg !2302
+  %lnot8 = icmp eq i32 %and, 0, !dbg !2302
+  br label %land.end
+
+land.end:                                         ; preds = %entry, %land.rhs
+  %6 = phi i1 [ %lnot8, %land.rhs ], [ false, %entry ]
+  %7 = load i64* bitcast (i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 24) to i64*), align 8, !dbg !2303
+  %8 = trunc i64 %7 to i32, !dbg !2303
+  %9 = shl i32 %.pre68, 27, !dbg !2303
+  %sext = ashr i32 %9, 31, !dbg !2303
+  %cond = add nsw i32 %sext, %8, !dbg !2303
+  call void @llvm.dbg.value(metadata !{i32 %cond}, i64 0, metadata !303), !dbg !2303
+  store i32 %cond, i32* @_ZN3pov19Current_Line_NumberE, align 4, !dbg !2304, !tbaa !1664
+  %10 = lshr i64 %7, 32
+  %11 = trunc i64 %10 to i32
+  %cmp1364 = icmp slt i32 %cond, %11, !dbg !2304
+  br i1 %cmp1364, label %for.body.lr.ph, label %for.end48, !dbg !2304
+
+for.body.lr.ph:                                   ; preds = %land.end
+  %arraydecay32 = getelementptr inbounds [5 x float]* %unclippedColour, i64 0, i64 0, !dbg !2306
+  br label %for.body, !dbg !2304
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc46
+  %antialias_line.066 = phi i32 [ 1, %for.body.lr.ph ], [ %antialias_line.2, %for.inc46 ]
+  %storemerge65 = phi i32 [ %cond, %for.body.lr.ph ], [ %inc47, %for.inc46 ]
+  br i1 %6, label %land.lhs.true, label %if.end19, !dbg !2310
+
+land.lhs.true:                                    ; preds = %for.body
+  %rem15 = srem i32 %storemerge65, 2, !dbg !2310
+  %cmp16 = icmp eq i32 %rem15, %lnot, !dbg !2310
+  br i1 %cmp16, label %if.then, label %if.end19, !dbg !2310
+
+if.then:                                          ; preds = %land.lhs.true
+  %12 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 24), align 8, !dbg !2311, !tbaa !1664
+  %cmp17 = icmp sgt i32 %storemerge65, %12, !dbg !2311
+  br i1 %cmp17, label %if.then18, label %for.inc46, !dbg !2311
+
+if.then18:                                        ; preds = %if.then
+  %13 = load [5 x float]** @_ZN3pov13Previous_LineE, align 8, !dbg !2313, !tbaa !1667
+  call void @_ZN3pov46output_single_image_line_with_alpha_correctionEPA5_fi([5 x float]* %13, i32 %storemerge65) #8, !dbg !2313
+  br label %for.inc46, !dbg !2315
+
+if.end19:                                         ; preds = %land.lhs.true, %for.body
+  store i64 1, i64* @_ZN3pov17MosaicPreviewSizeE, align 8, !dbg !2316, !tbaa !1992
+  %call = call i32 @_ZN3pov21Send_RenderStatisticsEb(i1 zeroext false) #8, !dbg !2317
+  call void @_ZN3pov12Do_CooperateEi(i32 0) #8, !dbg !2318
+  %14 = load i32* @_ZN3pov19Current_Line_NumberE, align 4, !dbg !2319, !tbaa !1664
+  call void @_ZN3pov16Prune_Vista_TreeEi(i32 %14) #8, !dbg !2319
+  %15 = load i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 12), align 8, !dbg !2320, !tbaa !1717, !range !1718
+  %tobool20 = icmp eq i8 %15, 0, !dbg !2320
+  br i1 %tobool20, label %if.end28, label %if.then21, !dbg !2320
+
+if.then21:                                        ; preds = %if.end19
+  %16 = load i32* @_ZN3pov19Current_Line_NumberE, align 4, !dbg !2321, !tbaa !1664
+  %17 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 24), align 8, !dbg !2321, !tbaa !1664
+  %cmp22 = icmp slt i32 %16, %17, !dbg !2321
+  br i1 %cmp22, label %if.end28, label %if.then23, !dbg !2321
+
+if.then23:                                        ; preds = %if.then21
+  %rem24 = srem i32 %16, 2, !dbg !2323
+  %xor25 = xor i32 %rem24, %lnot, !dbg !2323
+  call void @llvm.dbg.value(metadata !{i32 %xor25}, i64 0, metadata !301), !dbg !2323
+  br label %if.end28, !dbg !2325
+
+if.end28:                                         ; preds = %if.then21, %if.end19, %if.then23
+  %antialias_line.1 = phi i32 [ %xor25, %if.then23 ], [ %antialias_line.066, %if.end19 ], [ 0, %if.then21 ]
+  %18 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 20), align 4, !dbg !2326, !tbaa !1664
+  call void @llvm.dbg.value(metadata !{i32 %18}, i64 0, metadata !300), !dbg !2326
+  %19 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 21), align 8, !dbg !2326, !tbaa !1664
+  %cmp3061 = icmp slt i32 %18, %19, !dbg !2326
+  br i1 %cmp3061, label %for.body31.lr.ph, label %for.end, !dbg !2326
+
+for.body31.lr.ph:                                 ; preds = %if.end28
+  %tobool37 = icmp eq i32 %antialias_line.1, 0, !dbg !2327
+  %20 = sext i32 %18 to i64
+  br label %for.body31, !dbg !2326
+
+for.body31:                                       ; preds = %for.body31.lr.ph, %if.end42
+  %indvars.iv = phi i64 [ %20, %for.body31.lr.ph ], [ %indvars.iv.next, %if.end42 ]
+  call void @_ZN3pov16Check_User_AbortEi(i32 0) #8, !dbg !2328
+  %21 = load i32* @_ZN3pov19Current_Line_NumberE, align 4, !dbg !2306, !tbaa !1664
+  %22 = load [5 x float]** @_ZN3pov12Current_LineE, align 8, !dbg !2306, !tbaa !1667
+  %arraydecay = getelementptr inbounds [5 x float]* %22, i64 %indvars.iv, i64 0, !dbg !2306
+  %23 = trunc i64 %indvars.iv to i32, !dbg !2306
+  call void @_ZN3pov11trace_pixelEiiPfS0_(i32 %23, i32 %21, float* %arraydecay, float* %arraydecay32) #8, !dbg !2306
+  %24 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !2327, !tbaa !1664
+  %and34 = and i32 %24, 16, !dbg !2327
+  %tobool35 = icmp eq i32 %and34, 0, !dbg !2327
+  %or.cond = or i1 %tobool35, %tobool37, !dbg !2327
+  br i1 %or.cond, label %if.end42, label %if.then38, !dbg !2327
+
+if.then38:                                        ; preds = %for.body31
+  %25 = load i32* @_ZN3pov19Current_Line_NumberE, align 4, !dbg !2329, !tbaa !1664
+  %26 = load [5 x float]** @_ZN3pov12Current_LineE, align 8, !dbg !2329, !tbaa !1667
+  %arraydecay41 = getelementptr inbounds [5 x float]* %26, i64 %indvars.iv, i64 0, !dbg !2329
+  call void @llvm.dbg.value(metadata !2331, i64 0, metadata !2332), !dbg !2333
+  call void @llvm.dbg.value(metadata !{i32 %25}, i64 0, metadata !2334), !dbg !2333
+  call void @llvm.dbg.value(metadata !{float* %arraydecay41}, i64 0, metadata !2335), !dbg !2333
+  call void @llvm.dbg.value(metadata !2336, i64 0, metadata !2337), !dbg !2338
+  %27 = load i8** @_ZN3pov30Current_Line_Antialiased_FlagsE, align 8, !dbg !2339, !tbaa !1667
+  %arrayidx.i = getelementptr inbounds i8* %27, i64 %indvars.iv, !dbg !2339
+  store i8 0, i8* %arrayidx.i, align 1, !dbg !2339, !tbaa !1660
+  %cmp.i = icmp eq i32 %23, 0, !dbg !2340
+  br i1 %cmp.i, label %if.end26.i, label %if.then.i, !dbg !2340
+
+if.then.i:                                        ; preds = %if.then38
+  %28 = add nsw i64 %indvars.iv, -1, !dbg !2341
+  %29 = load [5 x float]** @_ZN3pov12Current_LineE, align 8, !dbg !2341, !tbaa !1667
+  %arraydecay.i = getelementptr inbounds [5 x float]* %29, i64 %28, i64 0, !dbg !2341
+  %arraydecay5.i = getelementptr inbounds [5 x float]* %29, i64 %indvars.iv, i64 0, !dbg !2341
+  %call.i = call double @_ZN3pov20Colour_Distance_RGBTEPfS0_(float* %arraydecay.i, float* %arraydecay5.i) #8, !dbg !2341
+  %30 = load double* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 8), align 8, !dbg !2341, !tbaa !1662
+  %cmp6.i = fcmp ult double %call.i, %30, !dbg !2341
+  br i1 %cmp6.i, label %if.end26.i, label %if.then7.i, !dbg !2341
+
+if.then7.i:                                       ; preds = %if.then.i
+  call void @llvm.dbg.value(metadata !2343, i64 0, metadata !2337), !dbg !2344
+  %31 = load i8** @_ZN3pov30Current_Line_Antialiased_FlagsE, align 8, !dbg !2346, !tbaa !1667
+  %arrayidx10.i = getelementptr inbounds i8* %31, i64 %28, !dbg !2346
+  %32 = load i8* %arrayidx10.i, align 1, !dbg !2346, !tbaa !1660
+  %tobool.i = icmp eq i8 %32, 0, !dbg !2346
+  br i1 %tobool.i, label %if.then11.i, label %if.end26.i, !dbg !2346
+
+if.then11.i:                                      ; preds = %if.then7.i
+  %33 = load [5 x float]** @_ZN3pov12Current_LineE, align 8, !dbg !2347, !tbaa !1667
+  %arraydecay15.i = getelementptr inbounds [5 x float]* %33, i64 %28, i64 0, !dbg !2347
+  %34 = trunc i64 %28 to i32, !dbg !2347
+  call fastcc void @_ZN3povL11supersampleEPfii(float* %arraydecay15.i, i32 %34, i32 %25) #8, !dbg !2347
+  %35 = load i8** @_ZN3pov30Current_Line_Antialiased_FlagsE, align 8, !dbg !2349, !tbaa !1667
+  %arrayidx19.i = getelementptr inbounds i8* %35, i64 %28, !dbg !2349
+  store i8 1, i8* %arrayidx19.i, align 1, !dbg !2349, !tbaa !1660
+  %36 = load i64* @_ZN3pov16SuperSampleCountE, align 8, !dbg !2350, !tbaa !1992
+  %inc.i = add nsw i64 %36, 1, !dbg !2350
+  store i64 %inc.i, i64* @_ZN3pov16SuperSampleCountE, align 8, !dbg !2350, !tbaa !1992
+  %37 = load [5 x float]** @_ZN3pov12Current_LineE, align 8, !dbg !2351, !tbaa !1667
+  %arraydecay24.i = getelementptr inbounds [5 x float]* %37, i64 %28, i64 0, !dbg !2351
+  call void @_ZN3pov10plot_pixelEiiPf(i32 %34, i32 %25, float* %arraydecay24.i) #8, !dbg !2351
+  br label %if.end26.i, !dbg !2352
+
+if.end26.i:                                       ; preds = %if.then11.i, %if.then7.i, %if.then.i, %if.then38
+  %Antialias_Center_Flag.0.i = phi i8 [ 1, %if.then7.i ], [ 1, %if.then11.i ], [ 0, %if.then.i ], [ 0, %if.then38 ]
+  %38 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 24), align 8, !dbg !2353, !tbaa !1664
+  %sub27.i = add nsw i32 %38, -1, !dbg !2353
+  %cmp28.i = icmp ne i32 %sub27.i, %25, !dbg !2353
+  %39 = load i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 12), align 8, !dbg !2353, !tbaa !1717, !range !1718
+  %tobool29.i = icmp eq i8 %39, 0, !dbg !2353
+  %or.cond.i = and i1 %cmp28.i, %tobool29.i, !dbg !2353
+  br i1 %or.cond.i, label %if.then30.i, label %if.end56.i, !dbg !2353
+
+if.then30.i:                                      ; preds = %if.end26.i
+  %40 = load [5 x float]** @_ZN3pov13Previous_LineE, align 8, !dbg !2354, !tbaa !1667
+  %arraydecay33.i = getelementptr inbounds [5 x float]* %40, i64 %indvars.iv, i64 0, !dbg !2354
+  %41 = load [5 x float]** @_ZN3pov12Current_LineE, align 8, !dbg !2354, !tbaa !1667
+  %arraydecay36.i = getelementptr inbounds [5 x float]* %41, i64 %indvars.iv, i64 0, !dbg !2354
+  %call37.i = call double @_ZN3pov20Colour_Distance_RGBTEPfS0_(float* %arraydecay33.i, float* %arraydecay36.i) #8, !dbg !2354
+  %42 = load double* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 8), align 8, !dbg !2354, !tbaa !1662
+  %cmp38.i = fcmp ult double %call37.i, %42, !dbg !2354
+  br i1 %cmp38.i, label %if.end56.i, label %if.then39.i, !dbg !2354
+
+if.then39.i:                                      ; preds = %if.then30.i
+  call void @llvm.dbg.value(metadata !2343, i64 0, metadata !2337), !dbg !2356
+  %43 = load i8** @_ZN3pov31Previous_Line_Antialiased_FlagsE, align 8, !dbg !2358, !tbaa !1667
+  %arrayidx41.i = getelementptr inbounds i8* %43, i64 %indvars.iv, !dbg !2358
+  %44 = load i8* %arrayidx41.i, align 1, !dbg !2358, !tbaa !1660
+  %tobool42.i = icmp eq i8 %44, 0, !dbg !2358
+  br i1 %tobool42.i, label %if.then43.i, label %if.then58.i, !dbg !2358
+
+if.then43.i:                                      ; preds = %if.then39.i
+  %45 = load [5 x float]** @_ZN3pov13Previous_LineE, align 8, !dbg !2359, !tbaa !1667
+  %arraydecay46.i = getelementptr inbounds [5 x float]* %45, i64 %indvars.iv, i64 0, !dbg !2359
+  %sub47.i = add nsw i32 %25, -1, !dbg !2359
+  call fastcc void @_ZN3povL11supersampleEPfii(float* %arraydecay46.i, i32 %23, i32 %sub47.i) #8, !dbg !2359
+  %46 = load i8** @_ZN3pov31Previous_Line_Antialiased_FlagsE, align 8, !dbg !2361, !tbaa !1667
+  %arrayidx49.i = getelementptr inbounds i8* %46, i64 %indvars.iv, !dbg !2361
+  store i8 1, i8* %arrayidx49.i, align 1, !dbg !2361, !tbaa !1660
+  %47 = load i64* @_ZN3pov16SuperSampleCountE, align 8, !dbg !2362, !tbaa !1992
+  %inc50.i = add nsw i64 %47, 1, !dbg !2362
+  store i64 %inc50.i, i64* @_ZN3pov16SuperSampleCountE, align 8, !dbg !2362, !tbaa !1992
+  %48 = load [5 x float]** @_ZN3pov13Previous_LineE, align 8, !dbg !2363, !tbaa !1667
+  %arraydecay53.i = getelementptr inbounds [5 x float]* %48, i64 %indvars.iv, i64 0, !dbg !2363
+  call void @_ZN3pov10plot_pixelEiiPf(i32 %23, i32 %25, float* %arraydecay53.i) #8, !dbg !2363
+  br label %if.then58.i, !dbg !2364
+
+if.end56.i:                                       ; preds = %if.then30.i, %if.end26.i
+  %tobool57.i = icmp eq i8 %Antialias_Center_Flag.0.i, 0, !dbg !2365
+  br i1 %tobool57.i, label %if.end42, label %if.then58.i, !dbg !2365
+
+if.then58.i:                                      ; preds = %if.end56.i, %if.then43.i, %if.then39.i
+  %49 = load [5 x float]** @_ZN3pov12Current_LineE, align 8, !dbg !2366, !tbaa !1667
+  %arraydecay61.i = getelementptr inbounds [5 x float]* %49, i64 %indvars.iv, i64 0, !dbg !2366
+  call fastcc void @_ZN3povL11supersampleEPfii(float* %arraydecay61.i, i32 %23, i32 %25) #8, !dbg !2366
+  %50 = load i8** @_ZN3pov30Current_Line_Antialiased_FlagsE, align 8, !dbg !2368, !tbaa !1667
+  %arrayidx63.i = getelementptr inbounds i8* %50, i64 %indvars.iv, !dbg !2368
+  store i8 1, i8* %arrayidx63.i, align 1, !dbg !2368, !tbaa !1660
+  %51 = load [5 x float]** @_ZN3pov12Current_LineE, align 8, !dbg !2369, !tbaa !1667
+  %arraydecay66.i = getelementptr inbounds [5 x float]* %51, i64 %indvars.iv, i64 0, !dbg !2369
+  call void @llvm.dbg.value(metadata !{float* %arraydecay41}, i64 0, metadata !2370), !dbg !2371
+  call void @llvm.dbg.value(metadata !{float* %arraydecay66.i}, i64 0, metadata !2372), !dbg !2371
+  %52 = load float* %arraydecay66.i, align 4, !dbg !2373, !tbaa !2062
+  store float %52, float* %arraydecay41, align 4, !dbg !2373, !tbaa !2062
+  %arrayidx2.i.i = getelementptr inbounds [5 x float]* %51, i64 %indvars.iv, i64 1, !dbg !2374
+  %53 = load float* %arrayidx2.i.i, align 4, !dbg !2374, !tbaa !2062
+  %arrayidx3.i.i = getelementptr inbounds [5 x float]* %26, i64 %indvars.iv, i64 1, !dbg !2374
+  store float %53, float* %arrayidx3.i.i, align 4, !dbg !2374, !tbaa !2062
+  %arrayidx4.i.i = getelementptr inbounds [5 x float]* %51, i64 %indvars.iv, i64 2, !dbg !2375
+  %54 = load float* %arrayidx4.i.i, align 4, !dbg !2375, !tbaa !2062
+  %arrayidx5.i.i = getelementptr inbounds [5 x float]* %26, i64 %indvars.iv, i64 2, !dbg !2375
+  store float %54, float* %arrayidx5.i.i, align 4, !dbg !2375, !tbaa !2062
+  %arrayidx6.i.i = getelementptr inbounds [5 x float]* %51, i64 %indvars.iv, i64 3, !dbg !2376
+  %55 = load float* %arrayidx6.i.i, align 4, !dbg !2376, !tbaa !2062
+  %arrayidx7.i.i = getelementptr inbounds [5 x float]* %26, i64 %indvars.iv, i64 3, !dbg !2376
+  store float %55, float* %arrayidx7.i.i, align 4, !dbg !2376, !tbaa !2062
+  %arrayidx8.i.i = getelementptr inbounds [5 x float]* %51, i64 %indvars.iv, i64 4, !dbg !2377
+  %56 = load float* %arrayidx8.i.i, align 4, !dbg !2377, !tbaa !2062
+  %arrayidx9.i.i = getelementptr inbounds [5 x float]* %26, i64 %indvars.iv, i64 4, !dbg !2377
+  store float %56, float* %arrayidx9.i.i, align 4, !dbg !2377, !tbaa !2062
+  %57 = load i64* @_ZN3pov16SuperSampleCountE, align 8, !dbg !2378, !tbaa !1992
+  %inc67.i = add nsw i64 %57, 1, !dbg !2378
+  store i64 %inc67.i, i64* @_ZN3pov16SuperSampleCountE, align 8, !dbg !2378, !tbaa !1992
+  br label %if.end42, !dbg !2379
+
+if.end42:                                         ; preds = %if.end56.i, %for.body31, %if.then58.i
+  %58 = load i32* @_ZN3pov19Current_Line_NumberE, align 4, !dbg !2380, !tbaa !1664
+  %59 = load [5 x float]** @_ZN3pov12Current_LineE, align 8, !dbg !2380, !tbaa !1667
+  %arraydecay45 = getelementptr inbounds [5 x float]* %59, i64 %indvars.iv, i64 0, !dbg !2380
+  call void @_ZN3pov10plot_pixelEiiPf(i32 %23, i32 %58, float* %arraydecay45) #8, !dbg !2380
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2326
+  %60 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 21), align 8, !dbg !2326, !tbaa !1664
+  %61 = trunc i64 %indvars.iv.next to i32, !dbg !2326
+  %cmp30 = icmp slt i32 %61, %60, !dbg !2326
+  br i1 %cmp30, label %for.body31, label %for.end, !dbg !2326
+
+for.end:                                          ; preds = %if.end42, %if.end28
+  %62 = load i32* @_ZN3pov19Current_Line_NumberE, align 4, !dbg !2381, !tbaa !1664
+  call void @_ZN3pov34output_prev_image_line_and_advanceEi(i32 %62) #8, !dbg !2381
+  br label %for.inc46, !dbg !2382
+
+for.inc46:                                        ; preds = %if.then18, %if.then, %for.end
+  %antialias_line.2 = phi i32 [ %antialias_line.066, %if.then18 ], [ %antialias_line.066, %if.then ], [ %antialias_line.1, %for.end ]
+  %63 = load i32* @_ZN3pov19Current_Line_NumberE, align 4, !dbg !2304, !tbaa !1664
+  %inc47 = add nsw i32 %63, 1, !dbg !2304
+  store i32 %inc47, i32* @_ZN3pov19Current_Line_NumberE, align 4, !dbg !2304, !tbaa !1664
+  %64 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 25), align 4, !dbg !2304, !tbaa !1664
+  %cmp13 = icmp slt i32 %inc47, %64, !dbg !2304
+  br i1 %cmp13, label %for.body, label %for.cond.for.end48_crit_edge, !dbg !2304
+
+for.cond.for.end48_crit_edge:                     ; preds = %for.inc46
+  %.pre = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 24), align 8, !dbg !2383, !tbaa !1664
+  br label %for.end48, !dbg !2304
+
+for.end48:                                        ; preds = %for.cond.for.end48_crit_edge, %land.end
+  %65 = phi i32 [ %.pre, %for.cond.for.end48_crit_edge ], [ %8, %land.end ]
+  %66 = phi i32 [ %64, %for.cond.for.end48_crit_edge ], [ %11, %land.end ]
+  store i32 0, i32* @_ZN3pov19Current_Line_NumberE, align 4, !dbg !2384, !tbaa !1664
+  %cmp49 = icmp eq i32 %66, %65, !dbg !2383
+  br i1 %cmp49, label %if.end52, label %if.then50, !dbg !2383
+
+if.then50:                                        ; preds = %for.end48
+  %67 = load [5 x float]** @_ZN3pov13Previous_LineE, align 8, !dbg !2385, !tbaa !1667
+  %sub51 = add nsw i32 %66, -1, !dbg !2385
+  call void @_ZN3pov46output_single_image_line_with_alpha_correctionEPA5_fi([5 x float]* %67, i32 %sub51) #8, !dbg !2385
+  br label %if.end52, !dbg !2387
+
+if.end52:                                         ; preds = %for.end48, %if.then50
+  ret void, !dbg !2388
+}

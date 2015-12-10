@@ -1,13 +1,15 @@
 define void @DVfree(double* %y) #0 {
 entry:
-  %cmp = icmp eq double* %y, null
-  br i1 %cmp, label %if.end3, label %if.then2
+  tail call void @llvm.dbg.value(metadata !{double* %y}, i64 0, metadata !166), !dbg !752
+  %cmp = icmp eq double* %y, null, !dbg !753
+  br i1 %cmp, label %if.end3, label %if.then2, !dbg !753
 
 if.then2:                                         ; preds = %entry
-  %0 = bitcast double* %y to i8*
-  tail call void @free(i8* %0) #5
-  br label %if.end3
+  %0 = bitcast double* %y to i8*, !dbg !754
+  tail call void @free(i8* %0) #6, !dbg !754
+  tail call void @llvm.dbg.value(metadata !728, i64 0, metadata !166), !dbg !754
+  br label %if.end3, !dbg !754
 
 if.end3:                                          ; preds = %entry, %if.then2
-  ret void
+  ret void, !dbg !755
 }

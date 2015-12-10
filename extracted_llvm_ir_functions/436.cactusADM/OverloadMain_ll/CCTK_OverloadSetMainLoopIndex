@@ -1,23 +1,27 @@
 define i32 @CCTK_OverloadSetMainLoopIndex(i32 (i32)* %func) #1 {
-  %1 = icmp eq i32 (i32)* %func, null
-  %2 = load i32* @CCTK_OverloadSetMainLoopIndex.overloaded, align 4, !tbaa !2
-  br i1 %1, label %9, label %3
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 (i32)* %func}, i64 0, metadata !96), !dbg !145
+  %tobool = icmp eq i32 (i32)* %func, null, !dbg !145
+  %0 = load i32* @CCTK_OverloadSetMainLoopIndex.overloaded, align 4, !dbg !146, !tbaa !116
+  br i1 %tobool, label %if.end3, label %if.then, !dbg !145
 
-; <label>:3                                       ; preds = %0
-  %4 = icmp slt i32 %2, 2
-  br i1 %4, label %5, label %7
+if.then:                                          ; preds = %entry
+  %cmp = icmp slt i32 %0, 2, !dbg !146
+  br i1 %cmp, label %if.then1, label %if.else, !dbg !146
 
-; <label>:5                                       ; preds = %3
-  store i32 (i32)* %func, i32 (i32)** @CCTK_SetMainLoopIndex, align 8, !tbaa !6
-  %6 = add nsw i32 %2, 1
-  store i32 %6, i32* @CCTK_OverloadSetMainLoopIndex.overloaded, align 4, !tbaa !2
-  br label %9
+if.then1:                                         ; preds = %if.then
+  store i32 (i32)* %func, i32 (i32)** @CCTK_SetMainLoopIndex, align 8, !dbg !148, !tbaa !121
+  %inc = add nsw i32 %0, 1, !dbg !148
+  store i32 %inc, i32* @CCTK_OverloadSetMainLoopIndex.overloaded, align 4, !dbg !148, !tbaa !116
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !97), !dbg !148
+  br label %if.end3, !dbg !148
 
-; <label>:7                                       ; preds = %3
-  %8 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 65, i8* getelementptr inbounds ([97 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([59 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([17 x i8]* @.str8, i64 0, i64 0)) #3
-  br label %9
+if.else:                                          ; preds = %if.then
+  %call = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 65, i8* getelementptr inbounds ([85 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([59 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([17 x i8]* @.str8, i64 0, i64 0)) #4, !dbg !150
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !97), !dbg !150
+  br label %if.end3
 
-; <label>:9                                       ; preds = %0, %5, %7
-  %return_code.0 = phi i32 [ %6, %5 ], [ 0, %7 ], [ %2, %0 ]
-  ret i32 %return_code.0
+if.end3:                                          ; preds = %entry, %if.then1, %if.else
+  %return_code.0 = phi i32 [ %inc, %if.then1 ], [ 0, %if.else ], [ %0, %entry ]
+  ret i32 %return_code.0, !dbg !145
 }

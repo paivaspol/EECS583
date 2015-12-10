@@ -1,0 +1,846 @@
+define void @_ZN3pov16Read_Targa_ImageEPNS_12Image_StructEPc(%"struct.pov::Image_Struct"* %Image, i8* %name) #0 {
+entry:
+  %bytes = alloca [4 x i8], align 1
+  %tgaheader = alloca [18 x i8], align 16
+  %idbuf = alloca [256 x i8], align 16
+  %pixel = alloca %"struct.pov::Image_Colour_Struct", align 2
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Image_Struct"* %Image}, i64 0, metadata !592), !dbg !1136
+  call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !593), !dbg !1136
+  call void @llvm.dbg.value(metadata !775, i64 0, metadata !599), !dbg !1137
+  call void @llvm.dbg.value(metadata !1138, i64 0, metadata !600), !dbg !1139
+  call void @llvm.dbg.declare(metadata !{[4 x i8]* %bytes}, metadata !601), !dbg !1140
+  call void @llvm.dbg.declare(metadata !{[18 x i8]* %tgaheader}, metadata !605), !dbg !1141
+  %0 = getelementptr inbounds [256 x i8]* %idbuf, i64 0, i64 0, !dbg !1142
+  call void @llvm.lifetime.start(i64 256, i8* %0) #5, !dbg !1142
+  call void @llvm.dbg.declare(metadata !{[256 x i8]* %idbuf}, metadata !606), !dbg !1142
+  call void @llvm.dbg.value(metadata !1143, i64 0, metadata !619), !dbg !1144
+  call void @llvm.dbg.declare(metadata !{%"struct.pov::Image_Colour_Struct"* %pixel}, metadata !621), !dbg !1145
+  %call = call %"class.pov_base::IStream"* @_ZN3pov11Locate_FileEPcjS0_b(i8* %name, i32 1, i8* null, i1 zeroext true) #7, !dbg !1146
+  call void @llvm.dbg.value(metadata !{%"class.pov_base::IStream"* %call}, i64 0, metadata !618), !dbg !1146
+  %cmp = icmp eq %"class.pov_base::IStream"* %call, null, !dbg !1146
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1146
+
+if.then:                                          ; preds = %entry
+  %call1 = call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([23 x i8]* @.str5, i64 0, i64 0)) #7, !dbg !1147
+  br label %if.end, !dbg !1147
+
+if.end:                                           ; preds = %if.then, %entry
+  %1 = getelementptr inbounds %"class.pov_base::IStream"* %call, i64 0, i32 0, !dbg !1148
+  %arraydecay = getelementptr inbounds [18 x i8]* %tgaheader, i64 0, i64 0, !dbg !1148
+  %call2 = call %"class.pov_base::IOBase"* @_ZN8pov_base6IOBase4readEPvm(%"class.pov_base::IOBase"* %1, i8* %arraydecay, i64 18) #7, !dbg !1148
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::IOBase"* %call2}, i64 0, metadata !1149), !dbg !1150
+  %fail.i = getelementptr inbounds %"class.pov_base::IOBase"* %call2, i64 0, i32 1, !dbg !1150
+  %2 = load i8* %fail.i, align 1, !dbg !1150, !tbaa !733, !range !753
+  %tobool.i = icmp eq i8 %2, 0, !dbg !1150
+  br i1 %tobool.i, label %if.end6, label %if.then4, !dbg !1148
+
+if.then4:                                         ; preds = %if.end
+  %call5 = call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([36 x i8]* @.str6, i64 0, i64 0)) #7, !dbg !1151
+  br label %if.end6, !dbg !1151
+
+if.end6:                                          ; preds = %if.end, %if.then4
+  %3 = bitcast [18 x i8]* %tgaheader to i64*, !dbg !1152
+  %4 = load i64* %3, align 16, !dbg !1152
+  %5 = trunc i64 %4 to i32, !dbg !1152
+  %6 = trunc i64 %4 to i8, !dbg !1152
+  %7 = lshr i32 %5, 16
+  %8 = trunc i32 %7 to i8
+  %conv8 = and i32 %7, 255, !dbg !1153
+  call void @llvm.dbg.value(metadata !{i32 %conv8}, i64 0, metadata !610), !dbg !1153
+  %9 = lshr i64 %4, 40
+  %10 = trunc i64 %9 to i32
+  %conv10 = and i32 %10, 255, !dbg !1154
+  %11 = lshr i64 %4, 40, !dbg !1154
+  %conv12 = trunc i64 %11 to i32, !dbg !1154
+  %shl = and i32 %conv12, 65280, !dbg !1154
+  %add = or i32 %shl, %conv10, !dbg !1154
+  call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !612), !dbg !1154
+  %12 = lshr i64 %4, 59
+  %div = trunc i64 %12 to i32, !dbg !1155
+  call void @llvm.dbg.value(metadata !{i32 %div}, i64 0, metadata !613), !dbg !1155
+  %arrayidx15 = getelementptr inbounds [18 x i8]* %tgaheader, i64 0, i64 12, !dbg !1156
+  %13 = bitcast i8* %arrayidx15 to i32*, !dbg !1156
+  %14 = load i32* %13, align 4, !dbg !1156
+  %add20 = and i32 %14, 65535, !dbg !1156
+  call void @llvm.dbg.value(metadata !{i32 %add20}, i64 0, metadata !616), !dbg !1156
+  %15 = lshr i32 %14, 16
+  %conv22 = and i32 %15, 255, !dbg !1157
+  %16 = lshr i32 %14, 24
+  %shl25 = shl nuw nsw i32 %16, 8, !dbg !1157
+  %add26 = or i32 %shl25, %conv22, !dbg !1157
+  call void @llvm.dbg.value(metadata !{i32 %add26}, i64 0, metadata !617), !dbg !1157
+  %arrayidx27 = getelementptr inbounds [18 x i8]* %tgaheader, i64 0, i64 16, !dbg !1158
+  %17 = bitcast i8* %arrayidx27 to i16*, !dbg !1158
+  %18 = load i16* %17, align 16, !dbg !1158
+  %19 = trunc i16 %18 to i8, !dbg !1158
+  %.mask = and i16 %18, 248, !dbg !1158
+  %conv28 = zext i16 %.mask to i32, !dbg !1158
+  %div29 = lshr exact i32 %conv28, 3, !dbg !1158
+  call void @llvm.dbg.value(metadata !{i32 %div29}, i64 0, metadata !614), !dbg !1158
+  %20 = lshr i16 %18, 8
+  %21 = zext i16 %20 to i32
+  %and = and i32 %21, 32, !dbg !1159
+  call void @llvm.dbg.value(metadata !{i32 %and}, i64 0, metadata !615), !dbg !1159
+  %iwidth = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 5, !dbg !1160
+  store i32 %add20, i32* %iwidth, align 4, !dbg !1160, !tbaa !739
+  %iheight = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 6, !dbg !1161
+  store i32 %add26, i32* %iheight, align 4, !dbg !1161, !tbaa !739
+  %conv32 = uitofp i32 %add20 to double, !dbg !1162
+  %conv33 = fptrunc double %conv32 to float, !dbg !1162
+  %width34 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 11, !dbg !1162
+  store float %conv33, float* %width34, align 4, !dbg !1162, !tbaa !960
+  %conv35 = uitofp i32 %add26 to double, !dbg !1163
+  %conv36 = fptrunc double %conv35 to float, !dbg !1163
+  %height37 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 12, !dbg !1163
+  store float %conv36, float* %height37, align 4, !dbg !1163, !tbaa !960
+  %conv38 = trunc i32 %add to i16, !dbg !1164
+  %Colour_Map_Size = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 7, !dbg !1164
+  store i16 %conv38, i16* %Colour_Map_Size, align 2, !dbg !1164, !tbaa !1165
+  %Colour_Map = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 16, !dbg !1166
+  store %"struct.pov::Image_Colour_Struct"* null, %"struct.pov::Image_Colour_Struct"** %Colour_Map, align 8, !dbg !1166, !tbaa !741
+  %.off = add i8 %8, -9, !dbg !1167
+  %22 = icmp ult i8 %.off, 3, !dbg !1167
+  br i1 %22, label %if.end53, label %if.else, !dbg !1167
+
+if.else:                                          ; preds = %if.end6
+  %.off603 = add i8 %8, -1, !dbg !1168
+  %23 = icmp ult i8 %.off603, 3, !dbg !1168
+  br i1 %23, label %if.end53, label %if.else50, !dbg !1168
+
+if.else50:                                        ; preds = %if.else
+  %call51 = call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([39 x i8]* @.str7, i64 0, i64 0), i32 %conv8) #7, !dbg !1170
+  br label %if.end53
+
+if.end53:                                         ; preds = %if.else, %if.end6, %if.else50
+  %cflag.0 = phi i8 [ 0, %if.else50 ], [ 1, %if.end6 ], [ 0, %if.else ]
+  %cmp54 = icmp eq i8 %6, 0, !dbg !1172
+  br i1 %cmp54, label %if.end63, label %if.then55, !dbg !1172
+
+if.then55:                                        ; preds = %if.end53
+  %conv57 = and i64 %4, 255, !dbg !1173
+  %call58 = call %"class.pov_base::IOBase"* @_ZN8pov_base6IOBase4readEPvm(%"class.pov_base::IOBase"* %1, i8* %0, i64 %conv57) #7, !dbg !1173
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::IOBase"* %call58}, i64 0, metadata !1175), !dbg !1176
+  %fail.i604 = getelementptr inbounds %"class.pov_base::IOBase"* %call58, i64 0, i32 1, !dbg !1176
+  %24 = load i8* %fail.i604, align 1, !dbg !1176, !tbaa !733, !range !753
+  %tobool.i605 = icmp eq i8 %24, 0, !dbg !1176
+  br i1 %tobool.i605, label %if.end63, label %if.then60, !dbg !1173
+
+if.then60:                                        ; preds = %if.then55
+  %call61 = call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([35 x i8]* @.str8, i64 0, i64 0)) #7, !dbg !1177
+  br label %if.end63, !dbg !1177
+
+if.end63:                                         ; preds = %if.then55, %if.end53, %if.then60
+  %cmp64 = icmp ne i32 %add, 0, !dbg !1178
+  br i1 %cmp64, label %if.then65, label %if.else100, !dbg !1178
+
+if.then65:                                        ; preds = %if.end63
+  %cmp66 = icmp eq i32 %div29, 1, !dbg !1179
+  br i1 %cmp66, label %for.cond74.preheader.lr.ph, label %if.then67, !dbg !1179
+
+if.then67:                                        ; preds = %if.then65
+  %call68 = call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([55 x i8]* @.str9, i64 0, i64 0), i32 %conv28) #7, !dbg !1181
+  br label %for.cond74.preheader.lr.ph, !dbg !1183
+
+for.cond74.preheader.lr.ph:                       ; preds = %if.then67, %if.then65
+  %conv70 = zext i32 %add to i64, !dbg !1184
+  %mul71 = mul i64 %conv70, 10, !dbg !1184
+  %call72 = call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %mul71, i8* getelementptr inbounds ([54 x i8]* @.str10, i64 0, i64 0), i32 949, i8* getelementptr inbounds ([14 x i8]* @.str11, i64 0, i64 0)) #7, !dbg !1184
+  %25 = bitcast i8* %call72 to %"struct.pov::Image_Colour_Struct"*, !dbg !1184
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Image_Colour_Struct"* %25}, i64 0, metadata !620), !dbg !1184
+  call void @llvm.dbg.value(metadata !61, i64 0, metadata !596), !dbg !1185
+  %cmp75687 = icmp eq i32 %div, 0, !dbg !1187
+  %arraydecay87 = getelementptr inbounds [4 x i8]* %bytes, i64 0, i64 0, !dbg !1190
+  %fail.i606 = getelementptr inbounds %"class.pov_base::IStream"* %call, i64 0, i32 0, i32 1, !dbg !1191
+  %f.i = getelementptr inbounds %"class.pov_base::IStream"* %call, i64 0, i32 0, i32 2, !dbg !1191
+  br label %for.cond74.preheader, !dbg !1185
+
+for.cond74.preheader:                             ; preds = %for.end, %for.cond74.preheader.lr.ph
+  %indvars.iv707 = phi i64 [ 0, %for.cond74.preheader.lr.ph ], [ %indvars.iv.next708, %for.end ]
+  br i1 %cmp75687, label %for.end, label %for.body76, !dbg !1187
+
+for.body76:                                       ; preds = %for.cond74.preheader, %for.inc
+  %indvars.iv705 = phi i64 [ %indvars.iv.next706, %for.inc ], [ 0, %for.cond74.preheader ]
+  call void @llvm.dbg.value(metadata !{%"class.pov_base::IStream"* %call}, i64 0, metadata !1194) #5, !dbg !1195
+  %26 = load i8* %fail.i606, align 1, !dbg !1191, !tbaa !733, !range !753
+  %tobool.i607 = icmp eq i8 %26, 0, !dbg !1191
+  br i1 %tobool.i607, label %_ZN8pov_base7IStream9Read_ByteEv.exit, label %if.then79, !dbg !1191
+
+_ZN8pov_base7IStream9Read_ByteEv.exit:            ; preds = %for.body76
+  %27 = load %struct._IO_FILE** %f.i, align 8, !dbg !1191, !tbaa !741
+  %call.i = call i32 @fgetc(%struct._IO_FILE* %27) #8, !dbg !1191
+  call void @llvm.dbg.value(metadata !{i32 %call.i}, i64 0, metadata !595), !dbg !1192
+  %cmp78 = icmp eq i32 %call.i, -1, !dbg !1192
+  br i1 %cmp78, label %if.then79, label %if.else81, !dbg !1192
+
+if.then79:                                        ; preds = %for.body76, %_ZN8pov_base7IStream9Read_ByteEv.exit
+  %call80 = call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([38 x i8]* @.str12, i64 0, i64 0)) #7, !dbg !1196
+  br label %for.inc, !dbg !1198
+
+if.else81:                                        ; preds = %_ZN8pov_base7IStream9Read_ByteEv.exit
+  %conv82 = trunc i32 %call.i to i8, !dbg !1199
+  %arrayidx83 = getelementptr inbounds [4 x i8]* %bytes, i64 0, i64 %indvars.iv705, !dbg !1199
+  store i8 %conv82, i8* %arrayidx83, align 1, !dbg !1199, !tbaa !734
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then79, %if.else81
+  %indvars.iv.next706 = add i64 %indvars.iv705, 1, !dbg !1187
+  %28 = trunc i64 %indvars.iv.next706 to i32, !dbg !1187
+  %cmp75 = icmp ult i32 %28, %div, !dbg !1187
+  br i1 %cmp75, label %for.body76, label %for.end, !dbg !1187
+
+for.end:                                          ; preds = %for.inc, %for.cond74.preheader
+  %arrayidx86 = getelementptr inbounds %"struct.pov::Image_Colour_Struct"* %25, i64 %indvars.iv707, !dbg !1190
+  call fastcc void @_ZN3povL19convert_targa_colorEPNS_19Image_Colour_StructEjPh(%"struct.pov::Image_Colour_Struct"* %arrayidx86, i32 %div, i8* %arraydecay87) #7, !dbg !1190
+  %indvars.iv.next708 = add i64 %indvars.iv707, 1, !dbg !1185
+  %lftr.wideiv709 = trunc i64 %indvars.iv.next708 to i32, !dbg !1185
+  %exitcond710 = icmp eq i32 %lftr.wideiv709, %add, !dbg !1185
+  br i1 %exitcond710, label %if.then96, label %for.cond74.preheader, !dbg !1185
+
+if.then96:                                        ; preds = %for.end
+  store %"struct.pov::Image_Colour_Struct"* %25, %"struct.pov::Image_Colour_Struct"** %Colour_Map, align 8, !dbg !1201, !tbaa !741
+  %conv97 = zext i32 %add26 to i64, !dbg !1202
+  %mul98 = shl nuw nsw i64 %conv97, 3, !dbg !1202
+  %call99 = call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %mul98, i8* getelementptr inbounds ([54 x i8]* @.str10, i64 0, i64 0), i32 979, i8* getelementptr inbounds ([10 x i8]* @.str13, i64 0, i64 0)) #7, !dbg !1202
+  %29 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 18, i32 0, !dbg !1202
+  %.c = bitcast i8* %call99 to %"struct.pov::Image8_Line_Struct"*, !dbg !1202
+  store %"struct.pov::Image8_Line_Struct"* %.c, %"struct.pov::Image8_Line_Struct"** %29, align 8, !dbg !1202, !tbaa !741
+  br label %for.cond106.preheader, !dbg !1204
+
+if.else100:                                       ; preds = %if.end63
+  store %"struct.pov::Image_Colour_Struct"* null, %"struct.pov::Image_Colour_Struct"** %Colour_Map, align 8, !dbg !1201, !tbaa !741
+  %conv97637 = zext i32 %add26 to i64, !dbg !1202
+  %mul102 = shl nuw nsw i64 %conv97637, 5, !dbg !1205
+  %call103 = call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %mul102, i8* getelementptr inbounds ([54 x i8]* @.str10, i64 0, i64 0), i32 983, i8* getelementptr inbounds ([10 x i8]* @.str13, i64 0, i64 0)) #7, !dbg !1205
+  %30 = bitcast i8* %call103 to %"struct.pov::Image8_Line_Struct"*, !dbg !1205
+  %rgb8_lines = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 18, i32 0, !dbg !1205
+  store %"struct.pov::Image8_Line_Struct"* %30, %"struct.pov::Image8_Line_Struct"** %rgb8_lines, align 8, !dbg !1205, !tbaa !741
+  br label %for.cond106.preheader
+
+for.cond106.preheader:                            ; preds = %if.else100, %if.then96
+  %cmp107681 = icmp eq i32 %add26, 0, !dbg !1207
+  br i1 %cmp107681, label %for.end141, label %for.body108.lr.ph, !dbg !1207
+
+for.body108.lr.ph:                                ; preds = %for.cond106.preheader
+  %conv114 = zext i32 %add20 to i64, !dbg !1209
+  %data117 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 18, !dbg !1212
+  %map_lines118 = bitcast %union.anon.0* %data117 to i8***, !dbg !1212
+  %rgb8_lines123 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 18, i32 0, !dbg !1213
+  %cmp131 = icmp ugt i8 %19, 31, !dbg !1215
+  br label %for.body108, !dbg !1207
+
+for.body108:                                      ; preds = %for.inc139, %for.body108.lr.ph
+  %indvars.iv701 = phi i64 [ 0, %for.body108.lr.ph ], [ %indvars.iv.next702, %for.inc139 ]
+  %line_data.0684 = phi %"struct.pov::Image8_Line_Struct"* [ null, %for.body108.lr.ph ], [ %line_data.1, %for.inc139 ]
+  %map_line.0682 = phi i8* [ null, %for.body108.lr.ph ], [ %map_line.1, %for.inc139 ]
+  call void @llvm.dbg.value(metadata !{i32 %add20}, i64 0, metadata !598), !dbg !1216
+  br i1 %cmp64, label %if.then113, label %if.else120, !dbg !1217
+
+if.then113:                                       ; preds = %for.body108
+  %call115 = call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %conv114, i8* getelementptr inbounds ([54 x i8]* @.str10, i64 0, i64 0), i32 992, i8* getelementptr inbounds ([15 x i8]* @.str14, i64 0, i64 0)) #7, !dbg !1209
+  call void @llvm.dbg.value(metadata !{i8* %call115}, i64 0, metadata !600), !dbg !1209
+  %31 = load i8*** %map_lines118, align 8, !dbg !1212, !tbaa !741
+  %arrayidx119 = getelementptr inbounds i8** %31, i64 %indvars.iv701, !dbg !1212
+  store i8* %call115, i8** %arrayidx119, align 8, !dbg !1212, !tbaa !741
+  br label %for.inc139, !dbg !1218
+
+if.else120:                                       ; preds = %for.body108
+  %32 = load %"struct.pov::Image8_Line_Struct"** %rgb8_lines123, align 8, !dbg !1213, !tbaa !741
+  %arrayidx124 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %32, i64 %indvars.iv701, !dbg !1213
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Image8_Line_Struct"* %arrayidx124}, i64 0, metadata !619), !dbg !1213
+  %call126 = call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %conv114, i8* getelementptr inbounds ([54 x i8]* @.str10, i64 0, i64 0), i32 1000, i8* getelementptr inbounds ([15 x i8]* @.str14, i64 0, i64 0)) #7, !dbg !1219
+  %red = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %arrayidx124, i64 0, i32 0, !dbg !1219
+  store i8* %call126, i8** %red, align 8, !dbg !1219, !tbaa !741
+  %call128 = call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %conv114, i8* getelementptr inbounds ([54 x i8]* @.str10, i64 0, i64 0), i32 1001, i8* getelementptr inbounds ([15 x i8]* @.str14, i64 0, i64 0)) #7, !dbg !1220
+  %green = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %32, i64 %indvars.iv701, i32 1, !dbg !1220
+  store i8* %call128, i8** %green, align 8, !dbg !1220, !tbaa !741
+  %call130 = call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %conv114, i8* getelementptr inbounds ([54 x i8]* @.str10, i64 0, i64 0), i32 1002, i8* getelementptr inbounds ([15 x i8]* @.str14, i64 0, i64 0)) #7, !dbg !1221
+  %blue = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %32, i64 %indvars.iv701, i32 2, !dbg !1221
+  store i8* %call130, i8** %blue, align 8, !dbg !1221, !tbaa !741
+  br i1 %cmp131, label %if.then132, label %if.else135, !dbg !1215
+
+if.then132:                                       ; preds = %if.else120
+  %call134 = call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %conv114, i8* getelementptr inbounds ([54 x i8]* @.str10, i64 0, i64 0), i32 1006, i8* getelementptr inbounds ([15 x i8]* @.str14, i64 0, i64 0)) #7, !dbg !1222
+  %transm = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %32, i64 %indvars.iv701, i32 3, !dbg !1222
+  store i8* %call134, i8** %transm, align 8, !dbg !1222, !tbaa !741
+  br label %for.inc139, !dbg !1224
+
+if.else135:                                       ; preds = %if.else120
+  %transm136 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %32, i64 %indvars.iv701, i32 3, !dbg !1225
+  store i8* null, i8** %transm136, align 8, !dbg !1225, !tbaa !741
+  br label %for.inc139
+
+for.inc139:                                       ; preds = %if.then113, %if.else135, %if.then132
+  %map_line.1 = phi i8* [ %call115, %if.then113 ], [ %map_line.0682, %if.then132 ], [ %map_line.0682, %if.else135 ]
+  %line_data.1 = phi %"struct.pov::Image8_Line_Struct"* [ %line_data.0684, %if.then113 ], [ %arrayidx124, %if.then132 ], [ %arrayidx124, %if.else135 ]
+  %indvars.iv.next702 = add i64 %indvars.iv701, 1, !dbg !1207
+  %lftr.wideiv703 = trunc i64 %indvars.iv.next702 to i32, !dbg !1207
+  %exitcond704 = icmp eq i32 %lftr.wideiv703, %add26, !dbg !1207
+  br i1 %exitcond704, label %for.end141, label %for.body108, !dbg !1207
+
+for.end141:                                       ; preds = %for.inc139, %for.cond106.preheader
+  %line_data.0.lcssa = phi %"struct.pov::Image8_Line_Struct"* [ null, %for.cond106.preheader ], [ %line_data.1, %for.inc139 ]
+  %map_line.0.lcssa = phi i8* [ null, %for.cond106.preheader ], [ %map_line.1, %for.inc139 ]
+  %tobool = icmp eq i8 %cflag.0, 0, !dbg !1227
+  br i1 %tobool, label %if.else335, label %if.then142, !dbg !1227
+
+if.then142:                                       ; preds = %for.end141
+  %tobool145 = icmp ne i32 %and, 0, !dbg !1228
+  br i1 %cmp64, label %if.then144, label %if.else156, !dbg !1231
+
+if.then144:                                       ; preds = %if.then142
+  br i1 %tobool145, label %if.then146, label %if.else150, !dbg !1228
+
+if.then146:                                       ; preds = %if.then144
+  %data147 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 18, !dbg !1232
+  %map_lines148 = bitcast %union.anon.0* %data147 to i8***, !dbg !1232
+  %33 = load i8*** %map_lines148, align 8, !dbg !1232, !tbaa !741
+  %34 = load i8** %33, align 8, !dbg !1232, !tbaa !741
+  call void @llvm.dbg.value(metadata !{i8* %34}, i64 0, metadata !600), !dbg !1232
+  br label %while.cond.preheader, !dbg !1234
+
+if.else150:                                       ; preds = %if.then144
+  %sub = add i32 %add26, -1, !dbg !1235
+  %idxprom151 = zext i32 %sub to i64, !dbg !1235
+  %data152 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 18, !dbg !1235
+  %map_lines153 = bitcast %union.anon.0* %data152 to i8***, !dbg !1235
+  %35 = load i8*** %map_lines153, align 8, !dbg !1235, !tbaa !741
+  %arrayidx154 = getelementptr inbounds i8** %35, i64 %idxprom151, !dbg !1235
+  %36 = load i8** %arrayidx154, align 8, !dbg !1235, !tbaa !741
+  call void @llvm.dbg.value(metadata !{i8* %36}, i64 0, metadata !600), !dbg !1235
+  br label %while.cond.preheader
+
+if.else156:                                       ; preds = %if.then142
+  br i1 %tobool145, label %if.then158, label %if.else162, !dbg !1237
+
+if.then158:                                       ; preds = %if.else156
+  %rgb8_lines160 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 18, i32 0, !dbg !1239
+  %37 = load %"struct.pov::Image8_Line_Struct"** %rgb8_lines160, align 8, !dbg !1239, !tbaa !741
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Image8_Line_Struct"* %37}, i64 0, metadata !619), !dbg !1239
+  br label %while.cond.preheader, !dbg !1241
+
+if.else162:                                       ; preds = %if.else156
+  %sub163 = add i32 %add26, -1, !dbg !1242
+  %idxprom164 = zext i32 %sub163 to i64, !dbg !1242
+  %rgb8_lines166 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 18, i32 0, !dbg !1242
+  %38 = load %"struct.pov::Image8_Line_Struct"** %rgb8_lines166, align 8, !dbg !1242, !tbaa !741
+  %arrayidx167 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %38, i64 %idxprom164, !dbg !1242
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Image8_Line_Struct"* %arrayidx167}, i64 0, metadata !619), !dbg !1242
+  br label %while.cond.preheader
+
+while.cond.preheader:                             ; preds = %if.then158, %if.else162, %if.then146, %if.else150
+  %map_line.3.ph = phi i8* [ %36, %if.else150 ], [ %34, %if.then146 ], [ %map_line.0.lcssa, %if.else162 ], [ %map_line.0.lcssa, %if.then158 ]
+  %line_data.3.ph = phi %"struct.pov::Image8_Line_Struct"* [ %line_data.0.lcssa, %if.else150 ], [ %line_data.0.lcssa, %if.then146 ], [ %arrayidx167, %if.else162 ], [ %37, %if.then158 ]
+  br i1 %cmp107681, label %if.end433, label %while.body.lr.ph, !dbg !1244
+
+while.body.lr.ph:                                 ; preds = %while.cond.preheader
+  %fail.i608 = getelementptr inbounds %"class.pov_base::IStream"* %call, i64 0, i32 0, i32 1, !dbg !1245
+  %f.i610 = getelementptr inbounds %"class.pov_base::IStream"* %call, i64 0, i32 0, i32 2, !dbg !1245
+  %cmp259656 = icmp eq i32 %div29, 0, !dbg !1248
+  %arrayidx275 = getelementptr inbounds [4 x i8]* %bytes, i64 0, i64 0, !dbg !1253
+  %data313 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 18, !dbg !1255
+  %map_lines314 = bitcast %union.anon.0* %data313 to i8***, !dbg !1255
+  %sub317 = add i32 %add26, -1, !dbg !1259
+  %39 = lshr exact i32 %and, 4, !dbg !1261
+  %40 = add i32 %39, -1, !dbg !1261
+  %idx.ext327 = sext i32 %40 to i64, !dbg !1261
+  %Red280 = getelementptr inbounds %"struct.pov::Image_Colour_Struct"* %pixel, i64 0, i32 0, !dbg !1263
+  %Green285 = getelementptr inbounds %"struct.pov::Image_Colour_Struct"* %pixel, i64 0, i32 1, !dbg !1265
+  %Blue290 = getelementptr inbounds %"struct.pov::Image_Colour_Struct"* %pixel, i64 0, i32 2, !dbg !1266
+  %cmp295 = icmp ugt i8 %19, 31, !dbg !1267
+  %Transmit297 = getelementptr inbounds %"struct.pov::Image_Colour_Struct"* %pixel, i64 0, i32 4, !dbg !1268
+  %cmp195 = icmp eq i32 %add, 0, !dbg !1270
+  br label %while.body, !dbg !1244
+
+while.cond.backedge:                              ; preds = %for.inc252, %for.cond255.preheader, %for.inc331
+  %map_line.3.be = phi i8* [ %map_line.3677, %for.cond255.preheader ], [ %map_line.9, %for.inc331 ], [ %map_line.6, %for.inc252 ]
+  %j.1.be = phi i32 [ %j.1678, %for.cond255.preheader ], [ %j.5, %for.inc331 ], [ %j.3, %for.inc252 ]
+  %i.2.be = phi i32 [ %i.2679, %for.cond255.preheader ], [ %i.6, %for.inc331 ], [ %i.4, %for.inc252 ]
+  %line_data.3.be = phi %"struct.pov::Image8_Line_Struct"* [ %line_data.3680, %for.cond255.preheader ], [ %line_data.9, %for.inc331 ], [ %line_data.6, %for.inc252 ]
+  %cmp170 = icmp ult i32 %i.2.be, %add26, !dbg !1244
+  br i1 %cmp170, label %while.body, label %if.end433, !dbg !1244
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.cond.backedge
+  %line_data.3680 = phi %"struct.pov::Image8_Line_Struct"* [ %line_data.3.ph, %while.body.lr.ph ], [ %line_data.3.be, %while.cond.backedge ]
+  %i.2679 = phi i32 [ 0, %while.body.lr.ph ], [ %i.2.be, %while.cond.backedge ]
+  %j.1678 = phi i32 [ 0, %while.body.lr.ph ], [ %j.1.be, %while.cond.backedge ]
+  %map_line.3677 = phi i8* [ %map_line.3.ph, %while.body.lr.ph ], [ %map_line.3.be, %while.cond.backedge ]
+  call void @llvm.dbg.value(metadata !{%"class.pov_base::IStream"* %call}, i64 0, metadata !1272) #5, !dbg !1273
+  %41 = load i8* %fail.i608, align 1, !dbg !1245, !tbaa !733, !range !753
+  %tobool.i609 = icmp eq i8 %41, 0, !dbg !1245
+  br i1 %tobool.i609, label %_ZN8pov_base7IStream9Read_ByteEv.exit614, label %if.end175.thread, !dbg !1245
+
+_ZN8pov_base7IStream9Read_ByteEv.exit614:         ; preds = %while.body
+  %42 = load %struct._IO_FILE** %f.i610, align 8, !dbg !1245, !tbaa !741
+  %call.i611 = call i32 @fgetc(%struct._IO_FILE* %42) #8, !dbg !1245
+  call void @llvm.dbg.value(metadata !{i32 %cond.i613640644}, i64 0, metadata !594), !dbg !1246
+  %cmp172 = icmp eq i32 %call.i611, -1, !dbg !1246
+  br i1 %cmp172, label %if.end175.thread, label %if.end175, !dbg !1246
+
+if.end175.thread:                                 ; preds = %_ZN8pov_base7IStream9Read_ByteEv.exit614, %while.body
+  %call174 = call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([33 x i8]* @.str15, i64 0, i64 0)) #7, !dbg !1274
+  br label %if.then178, !dbg !1276
+
+if.end175:                                        ; preds = %_ZN8pov_base7IStream9Read_ByteEv.exit614
+  %and176 = and i32 %call.i611, 128, !dbg !1276
+  %tobool177 = icmp eq i32 %and176, 0, !dbg !1276
+  br i1 %tobool177, label %for.cond255.preheader, label %if.then178, !dbg !1276
+
+for.cond255.preheader:                            ; preds = %if.end175
+  %cmp256658 = icmp sgt i32 %call.i611, -1, !dbg !1277
+  br i1 %cmp256658, label %for.cond258.preheader, label %while.cond.backedge, !dbg !1277
+
+if.then178:                                       ; preds = %if.end175.thread, %if.end175
+  %cond.i613640644 = phi i32 [ -1, %if.end175.thread ], [ %call.i611, %if.end175 ]
+  %and179 = and i32 %cond.i613640644, 127, !dbg !1278
+  call void @llvm.dbg.value(metadata !{i32 %and179}, i64 0, metadata !594), !dbg !1278
+  call void @llvm.dbg.value(metadata !61, i64 0, metadata !598), !dbg !1279
+  br i1 %cmp259656, label %for.end194, label %for.body182, !dbg !1279
+
+for.body182:                                      ; preds = %if.then178, %for.inc192
+  %indvars.iv699 = phi i64 [ %indvars.iv.next700, %for.inc192 ], [ 0, %if.then178 ]
+  call void @llvm.dbg.value(metadata !{%"class.pov_base::IStream"* %call}, i64 0, metadata !1281) #5, !dbg !1284
+  %43 = load i8* %fail.i608, align 1, !dbg !1285, !tbaa !733, !range !753
+  %tobool.i616 = icmp eq i8 %43, 0, !dbg !1285
+  br i1 %tobool.i616, label %_ZN8pov_base7IStream9Read_ByteEv.exit621, label %if.then185, !dbg !1285
+
+_ZN8pov_base7IStream9Read_ByteEv.exit621:         ; preds = %for.body182
+  %44 = load %struct._IO_FILE** %f.i610, align 8, !dbg !1285, !tbaa !741
+  %call.i618 = call i32 @fgetc(%struct._IO_FILE* %44) #8, !dbg !1285
+  call void @llvm.dbg.value(metadata !{i32 %call.i618}, i64 0, metadata !595), !dbg !1282
+  %cmp184 = icmp eq i32 %call.i618, -1, !dbg !1282
+  br i1 %cmp184, label %if.then185, label %if.else187, !dbg !1282
+
+if.then185:                                       ; preds = %for.body182, %_ZN8pov_base7IStream9Read_ByteEv.exit621
+  %call186 = call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([33 x i8]* @.str15, i64 0, i64 0)) #7, !dbg !1286
+  br label %for.inc192, !dbg !1288
+
+if.else187:                                       ; preds = %_ZN8pov_base7IStream9Read_ByteEv.exit621
+  %conv188 = trunc i32 %call.i618 to i8, !dbg !1289
+  %arrayidx190 = getelementptr inbounds [4 x i8]* %bytes, i64 0, i64 %indvars.iv699, !dbg !1289
+  store i8 %conv188, i8* %arrayidx190, align 1, !dbg !1289, !tbaa !734
+  br label %for.inc192
+
+for.inc192:                                       ; preds = %if.then185, %if.else187
+  %indvars.iv.next700 = add i64 %indvars.iv699, 1, !dbg !1279
+  %45 = trunc i64 %indvars.iv.next700 to i32, !dbg !1279
+  %cmp181 = icmp ult i32 %45, %div29, !dbg !1279
+  br i1 %cmp181, label %for.body182, label %for.end194, !dbg !1279
+
+for.end194:                                       ; preds = %for.inc192, %if.then178
+  br i1 %cmp195, label %if.then196, label %for.body201, !dbg !1270
+
+if.then196:                                       ; preds = %for.end194
+  call fastcc void @_ZN3povL19convert_targa_colorEPNS_19Image_Colour_StructEjPh(%"struct.pov::Image_Colour_Struct"* %pixel, i32 %div29, i8* %arrayidx275) #7, !dbg !1291
+  br label %for.body201, !dbg !1293
+
+for.body201:                                      ; preds = %for.end194, %if.then196, %for.inc252
+  %h.0674 = phi i32 [ %dec, %for.inc252 ], [ %and179, %if.then196 ], [ %and179, %for.end194 ]
+  %line_data.4673 = phi %"struct.pov::Image8_Line_Struct"* [ %line_data.6, %for.inc252 ], [ %line_data.3680, %if.then196 ], [ %line_data.3680, %for.end194 ]
+  %i.3672 = phi i32 [ %i.4, %for.inc252 ], [ %i.2679, %if.then196 ], [ %i.2679, %for.end194 ]
+  %j.2671 = phi i32 [ %j.3, %for.inc252 ], [ %j.1678, %if.then196 ], [ %j.1678, %for.end194 ]
+  %map_line.4670 = phi i8* [ %map_line.6, %for.inc252 ], [ %map_line.3677, %if.then196 ], [ %map_line.3677, %for.end194 ]
+  br i1 %cmp64, label %if.then203, label %if.else207, !dbg !1294
+
+if.then203:                                       ; preds = %for.body201
+  %46 = load i8* %arrayidx275, align 1, !dbg !1297, !tbaa !734
+  %idxprom205 = zext i32 %j.2671 to i64, !dbg !1297
+  %arrayidx206 = getelementptr inbounds i8* %map_line.4670, i64 %idxprom205, !dbg !1297
+  store i8 %46, i8* %arrayidx206, align 1, !dbg !1297, !tbaa !734
+  br label %if.end227, !dbg !1299
+
+if.else207:                                       ; preds = %for.body201
+  %47 = load i16* %Red280, align 2, !dbg !1300, !tbaa !1165
+  %conv208 = trunc i16 %47 to i8, !dbg !1300
+  %idxprom209 = zext i32 %j.2671 to i64, !dbg !1300
+  %red210 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %line_data.4673, i64 0, i32 0, !dbg !1300
+  %48 = load i8** %red210, align 8, !dbg !1300, !tbaa !741
+  %arrayidx211 = getelementptr inbounds i8* %48, i64 %idxprom209, !dbg !1300
+  store i8 %conv208, i8* %arrayidx211, align 1, !dbg !1300, !tbaa !734
+  %49 = load i16* %Green285, align 2, !dbg !1302, !tbaa !1165
+  %conv212 = trunc i16 %49 to i8, !dbg !1302
+  %green214 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %line_data.4673, i64 0, i32 1, !dbg !1302
+  %50 = load i8** %green214, align 8, !dbg !1302, !tbaa !741
+  %arrayidx215 = getelementptr inbounds i8* %50, i64 %idxprom209, !dbg !1302
+  store i8 %conv212, i8* %arrayidx215, align 1, !dbg !1302, !tbaa !734
+  %51 = load i16* %Blue290, align 2, !dbg !1303, !tbaa !1165
+  %conv216 = trunc i16 %51 to i8, !dbg !1303
+  %blue218 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %line_data.4673, i64 0, i32 2, !dbg !1303
+  %52 = load i8** %blue218, align 8, !dbg !1303, !tbaa !741
+  %arrayidx219 = getelementptr inbounds i8* %52, i64 %idxprom209, !dbg !1303
+  store i8 %conv216, i8* %arrayidx219, align 1, !dbg !1303, !tbaa !734
+  br i1 %cmp295, label %if.then221, label %if.end227, !dbg !1304
+
+if.then221:                                       ; preds = %if.else207
+  %53 = load i16* %Transmit297, align 2, !dbg !1305, !tbaa !1165
+  %conv222 = trunc i16 %53 to i8, !dbg !1305
+  %transm224 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %line_data.4673, i64 0, i32 3, !dbg !1305
+  %54 = load i8** %transm224, align 8, !dbg !1305, !tbaa !741
+  %arrayidx225 = getelementptr inbounds i8* %54, i64 %idxprom209, !dbg !1305
+  store i8 %conv222, i8* %arrayidx225, align 1, !dbg !1305, !tbaa !734
+  br label %if.end227, !dbg !1307
+
+if.end227:                                        ; preds = %if.else207, %if.then221, %if.then203
+  %inc228 = add i32 %j.2671, 1, !dbg !1308
+  call void @llvm.dbg.value(metadata !{i32 %inc228}, i64 0, metadata !597), !dbg !1308
+  %cmp229 = icmp eq i32 %inc228, %add20, !dbg !1308
+  br i1 %cmp229, label %if.then230, label %for.inc252, !dbg !1308
+
+if.then230:                                       ; preds = %if.end227
+  %inc231 = add i32 %i.3672, 1, !dbg !1309
+  call void @llvm.dbg.value(metadata !{i32 %inc231}, i64 0, metadata !596), !dbg !1309
+  br i1 %cmp64, label %if.then233, label %if.else248, !dbg !1311
+
+if.then233:                                       ; preds = %if.then230
+  br i1 %tobool145, label %if.then235, label %if.else240, !dbg !1312
+
+if.then235:                                       ; preds = %if.then233
+  %idxprom236 = zext i32 %inc231 to i64, !dbg !1314
+  %55 = load i8*** %map_lines314, align 8, !dbg !1314, !tbaa !741
+  %arrayidx239 = getelementptr inbounds i8** %55, i64 %idxprom236, !dbg !1314
+  %56 = load i8** %arrayidx239, align 8, !dbg !1314, !tbaa !741
+  call void @llvm.dbg.value(metadata !{i8* %56}, i64 0, metadata !600), !dbg !1314
+  br label %for.inc252, !dbg !1316
+
+if.else240:                                       ; preds = %if.then233
+  %inc231.neg = xor i32 %i.3672, -1
+  %sub242 = add i32 %sub317, %inc231.neg, !dbg !1317
+  %idxprom243 = zext i32 %sub242 to i64, !dbg !1317
+  %57 = load i8*** %map_lines314, align 8, !dbg !1317, !tbaa !741
+  %arrayidx246 = getelementptr inbounds i8** %57, i64 %idxprom243, !dbg !1317
+  %58 = load i8** %arrayidx246, align 8, !dbg !1317, !tbaa !741
+  call void @llvm.dbg.value(metadata !{i8* %58}, i64 0, metadata !600), !dbg !1317
+  br label %for.inc252
+
+if.else248:                                       ; preds = %if.then230
+  %add.ptr = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %line_data.4673, i64 %idx.ext327, !dbg !1319
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Image8_Line_Struct"* %add.ptr}, i64 0, metadata !619), !dbg !1319
+  br label %for.inc252
+
+for.inc252:                                       ; preds = %if.else248, %if.else240, %if.then235, %if.end227
+  %map_line.6 = phi i8* [ %map_line.4670, %if.end227 ], [ %56, %if.then235 ], [ %58, %if.else240 ], [ %map_line.4670, %if.else248 ]
+  %j.3 = phi i32 [ %inc228, %if.end227 ], [ 0, %if.then235 ], [ 0, %if.else240 ], [ 0, %if.else248 ]
+  %i.4 = phi i32 [ %i.3672, %if.end227 ], [ %inc231, %if.then235 ], [ %inc231, %if.else240 ], [ %inc231, %if.else248 ]
+  %line_data.6 = phi %"struct.pov::Image8_Line_Struct"* [ %line_data.4673, %if.end227 ], [ %line_data.4673, %if.then235 ], [ %line_data.4673, %if.else240 ], [ %add.ptr, %if.else248 ]
+  %dec = add nsw i32 %h.0674, -1, !dbg !1321
+  call void @llvm.dbg.value(metadata !{i32 %dec}, i64 0, metadata !594), !dbg !1321
+  %cmp200 = icmp sgt i32 %h.0674, 0, !dbg !1321
+  br i1 %cmp200, label %for.body201, label %while.cond.backedge, !dbg !1321
+
+for.cond258.preheader:                            ; preds = %for.cond255.preheader, %for.inc331
+  %h.1663 = phi i32 [ %dec332, %for.inc331 ], [ %call.i611, %for.cond255.preheader ]
+  %line_data.7662 = phi %"struct.pov::Image8_Line_Struct"* [ %line_data.9, %for.inc331 ], [ %line_data.3680, %for.cond255.preheader ]
+  %i.5661 = phi i32 [ %i.6, %for.inc331 ], [ %i.2679, %for.cond255.preheader ]
+  %j.4660 = phi i32 [ %j.5, %for.inc331 ], [ %j.1678, %for.cond255.preheader ]
+  %map_line.7659 = phi i8* [ %map_line.9, %for.inc331 ], [ %map_line.3677, %for.cond255.preheader ]
+  br i1 %cmp259656, label %for.end272, label %for.body260, !dbg !1248
+
+for.body260:                                      ; preds = %for.cond258.preheader, %for.inc270
+  %indvars.iv697 = phi i64 [ %indvars.iv.next698, %for.inc270 ], [ 0, %for.cond258.preheader ]
+  call void @llvm.dbg.value(metadata !{%"class.pov_base::IStream"* %call}, i64 0, metadata !1322) #5, !dbg !1325
+  %59 = load i8* %fail.i608, align 1, !dbg !1326, !tbaa !733, !range !753
+  %tobool.i623 = icmp eq i8 %59, 0, !dbg !1326
+  br i1 %tobool.i623, label %_ZN8pov_base7IStream9Read_ByteEv.exit628, label %if.then263, !dbg !1326
+
+_ZN8pov_base7IStream9Read_ByteEv.exit628:         ; preds = %for.body260
+  %60 = load %struct._IO_FILE** %f.i610, align 8, !dbg !1326, !tbaa !741
+  %call.i625 = call i32 @fgetc(%struct._IO_FILE* %60) #8, !dbg !1326
+  call void @llvm.dbg.value(metadata !{i32 %call.i625}, i64 0, metadata !595), !dbg !1323
+  %cmp262 = icmp eq i32 %call.i625, -1, !dbg !1323
+  br i1 %cmp262, label %if.then263, label %if.else265, !dbg !1323
+
+if.then263:                                       ; preds = %for.body260, %_ZN8pov_base7IStream9Read_ByteEv.exit628
+  %call264 = call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([36 x i8]* @.str16, i64 0, i64 0)) #7, !dbg !1327
+  br label %for.inc270, !dbg !1329
+
+if.else265:                                       ; preds = %_ZN8pov_base7IStream9Read_ByteEv.exit628
+  %conv266 = trunc i32 %call.i625 to i8, !dbg !1330
+  %arrayidx268 = getelementptr inbounds [4 x i8]* %bytes, i64 0, i64 %indvars.iv697, !dbg !1330
+  store i8 %conv266, i8* %arrayidx268, align 1, !dbg !1330, !tbaa !734
+  br label %for.inc270
+
+for.inc270:                                       ; preds = %if.then263, %if.else265
+  %indvars.iv.next698 = add i64 %indvars.iv697, 1, !dbg !1248
+  %61 = trunc i64 %indvars.iv.next698 to i32, !dbg !1248
+  %cmp259 = icmp ult i32 %61, %div29, !dbg !1248
+  br i1 %cmp259, label %for.body260, label %for.end272, !dbg !1248
+
+for.end272:                                       ; preds = %for.inc270, %for.cond258.preheader
+  br i1 %cmp64, label %if.then274, label %if.else278, !dbg !1332
+
+if.then274:                                       ; preds = %for.end272
+  %62 = load i8* %arrayidx275, align 1, !dbg !1253, !tbaa !734
+  %idxprom276 = zext i32 %j.4660 to i64, !dbg !1253
+  %arrayidx277 = getelementptr inbounds i8* %map_line.7659, i64 %idxprom276, !dbg !1253
+  store i8 %62, i8* %arrayidx277, align 1, !dbg !1253, !tbaa !734
+  br label %if.end303, !dbg !1333
+
+if.else278:                                       ; preds = %for.end272
+  call fastcc void @_ZN3povL19convert_targa_colorEPNS_19Image_Colour_StructEjPh(%"struct.pov::Image_Colour_Struct"* %pixel, i32 %div29, i8* %arrayidx275) #7, !dbg !1334
+  %63 = load i16* %Red280, align 2, !dbg !1263, !tbaa !1165
+  %conv281 = trunc i16 %63 to i8, !dbg !1263
+  %idxprom282 = zext i32 %j.4660 to i64, !dbg !1263
+  %red283 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %line_data.7662, i64 0, i32 0, !dbg !1263
+  %64 = load i8** %red283, align 8, !dbg !1263, !tbaa !741
+  %arrayidx284 = getelementptr inbounds i8* %64, i64 %idxprom282, !dbg !1263
+  store i8 %conv281, i8* %arrayidx284, align 1, !dbg !1263, !tbaa !734
+  %65 = load i16* %Green285, align 2, !dbg !1265, !tbaa !1165
+  %conv286 = trunc i16 %65 to i8, !dbg !1265
+  %green288 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %line_data.7662, i64 0, i32 1, !dbg !1265
+  %66 = load i8** %green288, align 8, !dbg !1265, !tbaa !741
+  %arrayidx289 = getelementptr inbounds i8* %66, i64 %idxprom282, !dbg !1265
+  store i8 %conv286, i8* %arrayidx289, align 1, !dbg !1265, !tbaa !734
+  %67 = load i16* %Blue290, align 2, !dbg !1266, !tbaa !1165
+  %conv291 = trunc i16 %67 to i8, !dbg !1266
+  %blue293 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %line_data.7662, i64 0, i32 2, !dbg !1266
+  %68 = load i8** %blue293, align 8, !dbg !1266, !tbaa !741
+  %arrayidx294 = getelementptr inbounds i8* %68, i64 %idxprom282, !dbg !1266
+  store i8 %conv291, i8* %arrayidx294, align 1, !dbg !1266, !tbaa !734
+  br i1 %cmp295, label %if.then296, label %if.end303, !dbg !1267
+
+if.then296:                                       ; preds = %if.else278
+  %69 = load i16* %Transmit297, align 2, !dbg !1268, !tbaa !1165
+  %conv298 = trunc i16 %69 to i8, !dbg !1268
+  %transm300 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %line_data.7662, i64 0, i32 3, !dbg !1268
+  %70 = load i8** %transm300, align 8, !dbg !1268, !tbaa !741
+  %arrayidx301 = getelementptr inbounds i8* %70, i64 %idxprom282, !dbg !1268
+  store i8 %conv298, i8* %arrayidx301, align 1, !dbg !1268, !tbaa !734
+  br label %if.end303, !dbg !1335
+
+if.end303:                                        ; preds = %if.else278, %if.then296, %if.then274
+  %inc304 = add i32 %j.4660, 1, !dbg !1336
+  call void @llvm.dbg.value(metadata !{i32 %inc304}, i64 0, metadata !597), !dbg !1336
+  %cmp305 = icmp eq i32 %inc304, %add20, !dbg !1336
+  br i1 %cmp305, label %if.then306, label %for.inc331, !dbg !1336
+
+if.then306:                                       ; preds = %if.end303
+  %inc307 = add i32 %i.5661, 1, !dbg !1337
+  call void @llvm.dbg.value(metadata !{i32 %inc307}, i64 0, metadata !596), !dbg !1337
+  br i1 %cmp64, label %if.then309, label %if.else324, !dbg !1338
+
+if.then309:                                       ; preds = %if.then306
+  br i1 %tobool145, label %if.then311, label %if.else316, !dbg !1339
+
+if.then311:                                       ; preds = %if.then309
+  %idxprom312 = zext i32 %inc307 to i64, !dbg !1255
+  %71 = load i8*** %map_lines314, align 8, !dbg !1255, !tbaa !741
+  %arrayidx315 = getelementptr inbounds i8** %71, i64 %idxprom312, !dbg !1255
+  %72 = load i8** %arrayidx315, align 8, !dbg !1255, !tbaa !741
+  call void @llvm.dbg.value(metadata !{i8* %72}, i64 0, metadata !600), !dbg !1255
+  br label %for.inc331, !dbg !1340
+
+if.else316:                                       ; preds = %if.then309
+  %inc307.neg = xor i32 %i.5661, -1
+  %sub318 = add i32 %sub317, %inc307.neg, !dbg !1259
+  %idxprom319 = zext i32 %sub318 to i64, !dbg !1259
+  %73 = load i8*** %map_lines314, align 8, !dbg !1259, !tbaa !741
+  %arrayidx322 = getelementptr inbounds i8** %73, i64 %idxprom319, !dbg !1259
+  %74 = load i8** %arrayidx322, align 8, !dbg !1259, !tbaa !741
+  call void @llvm.dbg.value(metadata !{i8* %74}, i64 0, metadata !600), !dbg !1259
+  br label %for.inc331
+
+if.else324:                                       ; preds = %if.then306
+  %add.ptr328 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %line_data.7662, i64 %idx.ext327, !dbg !1261
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Image8_Line_Struct"* %add.ptr328}, i64 0, metadata !619), !dbg !1261
+  br label %for.inc331
+
+for.inc331:                                       ; preds = %if.else324, %if.else316, %if.then311, %if.end303
+  %map_line.9 = phi i8* [ %map_line.7659, %if.end303 ], [ %72, %if.then311 ], [ %74, %if.else316 ], [ %map_line.7659, %if.else324 ]
+  %j.5 = phi i32 [ %inc304, %if.end303 ], [ 0, %if.then311 ], [ 0, %if.else316 ], [ 0, %if.else324 ]
+  %i.6 = phi i32 [ %i.5661, %if.end303 ], [ %inc307, %if.then311 ], [ %inc307, %if.else316 ], [ %inc307, %if.else324 ]
+  %line_data.9 = phi %"struct.pov::Image8_Line_Struct"* [ %line_data.7662, %if.end303 ], [ %line_data.7662, %if.then311 ], [ %line_data.7662, %if.else316 ], [ %add.ptr328, %if.else324 ]
+  %dec332 = add nsw i32 %h.1663, -1, !dbg !1277
+  call void @llvm.dbg.value(metadata !{i32 %dec332}, i64 0, metadata !594), !dbg !1277
+  %cmp256 = icmp sgt i32 %h.1663, 0, !dbg !1277
+  br i1 %cmp256, label %for.cond258.preheader, label %while.cond.backedge, !dbg !1277
+
+if.else335:                                       ; preds = %for.end141
+  %cmp336 = icmp eq i32 %add, 0, !dbg !1341
+  br i1 %cmp336, label %if.then337, label %for.cond351.preheader, !dbg !1341
+
+if.then337:                                       ; preds = %if.else335
+  %tobool338 = icmp eq i32 %and, 0, !dbg !1343
+  br i1 %tobool338, label %if.else343, label %if.then339, !dbg !1343
+
+if.then339:                                       ; preds = %if.then337
+  %rgb8_lines341 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 18, i32 0, !dbg !1345
+  %75 = load %"struct.pov::Image8_Line_Struct"** %rgb8_lines341, align 8, !dbg !1345, !tbaa !741
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Image8_Line_Struct"* %75}, i64 0, metadata !619), !dbg !1345
+  br label %for.cond351.preheader, !dbg !1347
+
+if.else343:                                       ; preds = %if.then337
+  %sub344 = add i32 %add26, -1, !dbg !1348
+  %idxprom345 = zext i32 %sub344 to i64, !dbg !1348
+  %rgb8_lines347 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 18, i32 0, !dbg !1348
+  %76 = load %"struct.pov::Image8_Line_Struct"** %rgb8_lines347, align 8, !dbg !1348, !tbaa !741
+  %arrayidx348 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %76, i64 %idxprom345, !dbg !1348
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Image8_Line_Struct"* %arrayidx348}, i64 0, metadata !619), !dbg !1348
+  br label %for.cond351.preheader
+
+for.cond351.preheader:                            ; preds = %if.then339, %if.else343, %if.else335
+  %line_data.11.ph = phi %"struct.pov::Image8_Line_Struct"* [ %line_data.0.lcssa, %if.else335 ], [ %arrayidx348, %if.else343 ], [ %75, %if.then339 ]
+  br i1 %cmp107681, label %if.end433, label %for.body353.lr.ph, !dbg !1350
+
+for.body353.lr.ph:                                ; preds = %for.cond351.preheader
+  %tobool356 = icmp eq i32 %and, 0, !dbg !1352
+  %sub363 = add i32 %add26, -1, !dbg !1355
+  %data366 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 18, !dbg !1355
+  %map_lines367 = bitcast %union.anon.0* %data366 to i8***, !dbg !1355
+  %cmp372650 = icmp eq i32 %add20, 0, !dbg !1357
+  %77 = lshr exact i32 %and, 4, !dbg !1359
+  %78 = add i32 %77, -1, !dbg !1359
+  %idx.ext427 = sext i32 %78 to i64, !dbg !1359
+  %cmp375648 = icmp eq i32 %div29, 0, !dbg !1361
+  %arrayidx391 = getelementptr inbounds [4 x i8]* %bytes, i64 0, i64 0, !dbg !1364
+  %Red396 = getelementptr inbounds %"struct.pov::Image_Colour_Struct"* %pixel, i64 0, i32 0, !dbg !1366
+  %Green401 = getelementptr inbounds %"struct.pov::Image_Colour_Struct"* %pixel, i64 0, i32 1, !dbg !1368
+  %Blue406 = getelementptr inbounds %"struct.pov::Image_Colour_Struct"* %pixel, i64 0, i32 2, !dbg !1369
+  %cmp411 = icmp ugt i8 %19, 31, !dbg !1370
+  %Transmit413 = getelementptr inbounds %"struct.pov::Image_Colour_Struct"* %pixel, i64 0, i32 4, !dbg !1371
+  %fail.i629 = getelementptr inbounds %"class.pov_base::IStream"* %call, i64 0, i32 0, i32 1, !dbg !1373
+  %f.i631 = getelementptr inbounds %"class.pov_base::IStream"* %call, i64 0, i32 0, i32 2, !dbg !1373
+  br label %for.body353, !dbg !1350
+
+for.body353:                                      ; preds = %for.inc430, %for.body353.lr.ph
+  %indvars.iv693 = phi i64 [ 0, %for.body353.lr.ph ], [ %indvars.iv.next694, %for.inc430 ]
+  %line_data.11655 = phi %"struct.pov::Image8_Line_Struct"* [ %line_data.11.ph, %for.body353.lr.ph ], [ %line_data.12, %for.inc430 ]
+  %map_line.10653 = phi i8* [ %map_line.0.lcssa, %for.body353.lr.ph ], [ %map_line.11, %for.inc430 ]
+  br i1 %cmp64, label %if.then355, label %if.end370, !dbg !1376
+
+if.then355:                                       ; preds = %for.body353
+  br i1 %tobool356, label %if.else362, label %if.then357, !dbg !1352
+
+if.then357:                                       ; preds = %if.then355
+  %79 = load i8*** %map_lines367, align 8, !dbg !1377, !tbaa !741
+  %arrayidx361 = getelementptr inbounds i8** %79, i64 %indvars.iv693, !dbg !1377
+  %80 = load i8** %arrayidx361, align 8, !dbg !1377, !tbaa !741
+  call void @llvm.dbg.value(metadata !{i8* %80}, i64 0, metadata !600), !dbg !1377
+  br label %if.end370, !dbg !1379
+
+if.else362:                                       ; preds = %if.then355
+  %81 = trunc i64 %indvars.iv693 to i32, !dbg !1355
+  %sub364 = sub i32 %sub363, %81, !dbg !1355
+  %idxprom365 = zext i32 %sub364 to i64, !dbg !1355
+  %82 = load i8*** %map_lines367, align 8, !dbg !1355, !tbaa !741
+  %arrayidx368 = getelementptr inbounds i8** %82, i64 %idxprom365, !dbg !1355
+  %83 = load i8** %arrayidx368, align 8, !dbg !1355, !tbaa !741
+  call void @llvm.dbg.value(metadata !{i8* %83}, i64 0, metadata !600), !dbg !1355
+  br label %if.end370
+
+if.end370:                                        ; preds = %if.then357, %if.else362, %for.body353
+  %map_line.11 = phi i8* [ %80, %if.then357 ], [ %83, %if.else362 ], [ %map_line.10653, %for.body353 ]
+  call void @llvm.dbg.value(metadata !61, i64 0, metadata !597), !dbg !1357
+  br i1 %cmp372650, label %for.end422, label %for.cond374.preheader.lr.ph, !dbg !1357
+
+for.cond374.preheader.lr.ph:                      ; preds = %if.end370
+  %red399 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %line_data.11655, i64 0, i32 0, !dbg !1366
+  %green404 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %line_data.11655, i64 0, i32 1, !dbg !1368
+  %blue409 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %line_data.11655, i64 0, i32 2, !dbg !1369
+  %transm416 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %line_data.11655, i64 0, i32 3, !dbg !1371
+  br label %for.cond374.preheader, !dbg !1357
+
+for.cond374.preheader:                            ; preds = %for.inc420, %for.cond374.preheader.lr.ph
+  %indvars.iv691 = phi i64 [ 0, %for.cond374.preheader.lr.ph ], [ %indvars.iv.next692, %for.inc420 ]
+  br i1 %cmp375648, label %for.end388, label %for.body376, !dbg !1361
+
+for.body376:                                      ; preds = %for.cond374.preheader, %for.inc386
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc386 ], [ 0, %for.cond374.preheader ]
+  call void @llvm.dbg.value(metadata !{%"class.pov_base::IStream"* %call}, i64 0, metadata !1380) #5, !dbg !1381
+  %84 = load i8* %fail.i629, align 1, !dbg !1373, !tbaa !733, !range !753
+  %tobool.i630 = icmp eq i8 %84, 0, !dbg !1373
+  br i1 %tobool.i630, label %_ZN8pov_base7IStream9Read_ByteEv.exit635, label %if.then379, !dbg !1373
+
+_ZN8pov_base7IStream9Read_ByteEv.exit635:         ; preds = %for.body376
+  %85 = load %struct._IO_FILE** %f.i631, align 8, !dbg !1373, !tbaa !741
+  %call.i632 = call i32 @fgetc(%struct._IO_FILE* %85) #8, !dbg !1373
+  call void @llvm.dbg.value(metadata !{i32 %call.i632}, i64 0, metadata !595), !dbg !1374
+  %cmp378 = icmp eq i32 %call.i632, -1, !dbg !1374
+  br i1 %cmp378, label %if.then379, label %if.else381, !dbg !1374
+
+if.then379:                                       ; preds = %for.body376, %_ZN8pov_base7IStream9Read_ByteEv.exit635
+  %call380 = call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([33 x i8]* @.str15, i64 0, i64 0)) #7, !dbg !1382
+  br label %for.inc386, !dbg !1384
+
+if.else381:                                       ; preds = %_ZN8pov_base7IStream9Read_ByteEv.exit635
+  %conv382 = trunc i32 %call.i632 to i8, !dbg !1385
+  %arrayidx384 = getelementptr inbounds [4 x i8]* %bytes, i64 0, i64 %indvars.iv, !dbg !1385
+  store i8 %conv382, i8* %arrayidx384, align 1, !dbg !1385, !tbaa !734
+  br label %for.inc386
+
+for.inc386:                                       ; preds = %if.then379, %if.else381
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1361
+  %86 = trunc i64 %indvars.iv.next to i32, !dbg !1361
+  %cmp375 = icmp ult i32 %86, %div29, !dbg !1361
+  br i1 %cmp375, label %for.body376, label %for.end388, !dbg !1361
+
+for.end388:                                       ; preds = %for.inc386, %for.cond374.preheader
+  br i1 %cmp64, label %if.then390, label %if.else394, !dbg !1387
+
+if.then390:                                       ; preds = %for.end388
+  %87 = load i8* %arrayidx391, align 1, !dbg !1364, !tbaa !734
+  %arrayidx393 = getelementptr inbounds i8* %map_line.11, i64 %indvars.iv691, !dbg !1364
+  store i8 %87, i8* %arrayidx393, align 1, !dbg !1364, !tbaa !734
+  br label %for.inc420, !dbg !1388
+
+if.else394:                                       ; preds = %for.end388
+  call fastcc void @_ZN3povL19convert_targa_colorEPNS_19Image_Colour_StructEjPh(%"struct.pov::Image_Colour_Struct"* %pixel, i32 %div29, i8* %arrayidx391) #7, !dbg !1389
+  %88 = load i16* %Red396, align 2, !dbg !1366, !tbaa !1165
+  %conv397 = trunc i16 %88 to i8, !dbg !1366
+  %89 = load i8** %red399, align 8, !dbg !1366, !tbaa !741
+  %arrayidx400 = getelementptr inbounds i8* %89, i64 %indvars.iv691, !dbg !1366
+  store i8 %conv397, i8* %arrayidx400, align 1, !dbg !1366, !tbaa !734
+  %90 = load i16* %Green401, align 2, !dbg !1368, !tbaa !1165
+  %conv402 = trunc i16 %90 to i8, !dbg !1368
+  %91 = load i8** %green404, align 8, !dbg !1368, !tbaa !741
+  %arrayidx405 = getelementptr inbounds i8* %91, i64 %indvars.iv691, !dbg !1368
+  store i8 %conv402, i8* %arrayidx405, align 1, !dbg !1368, !tbaa !734
+  %92 = load i16* %Blue406, align 2, !dbg !1369, !tbaa !1165
+  %conv407 = trunc i16 %92 to i8, !dbg !1369
+  %93 = load i8** %blue409, align 8, !dbg !1369, !tbaa !741
+  %arrayidx410 = getelementptr inbounds i8* %93, i64 %indvars.iv691, !dbg !1369
+  store i8 %conv407, i8* %arrayidx410, align 1, !dbg !1369, !tbaa !734
+  br i1 %cmp411, label %if.then412, label %for.inc420, !dbg !1370
+
+if.then412:                                       ; preds = %if.else394
+  %94 = load i16* %Transmit413, align 2, !dbg !1371, !tbaa !1165
+  %conv414 = trunc i16 %94 to i8, !dbg !1371
+  %95 = load i8** %transm416, align 8, !dbg !1371, !tbaa !741
+  %arrayidx417 = getelementptr inbounds i8* %95, i64 %indvars.iv691, !dbg !1371
+  store i8 %conv414, i8* %arrayidx417, align 1, !dbg !1371, !tbaa !734
+  br label %for.inc420, !dbg !1390
+
+for.inc420:                                       ; preds = %if.then390, %if.then412, %if.else394
+  %indvars.iv.next692 = add i64 %indvars.iv691, 1, !dbg !1357
+  %lftr.wideiv = trunc i64 %indvars.iv.next692 to i32, !dbg !1357
+  %exitcond = icmp eq i32 %lftr.wideiv, %add20, !dbg !1357
+  br i1 %exitcond, label %for.end422, label %for.cond374.preheader, !dbg !1357
+
+for.end422:                                       ; preds = %for.inc420, %if.end370
+  br i1 %cmp336, label %if.then424, label %for.inc430, !dbg !1391
+
+if.then424:                                       ; preds = %for.end422
+  %add.ptr428 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %line_data.11655, i64 %idx.ext427, !dbg !1359
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Image8_Line_Struct"* %add.ptr428}, i64 0, metadata !619), !dbg !1359
+  br label %for.inc430, !dbg !1392
+
+for.inc430:                                       ; preds = %for.end422, %if.then424
+  %line_data.12 = phi %"struct.pov::Image8_Line_Struct"* [ %add.ptr428, %if.then424 ], [ %line_data.11655, %for.end422 ]
+  %indvars.iv.next694 = add i64 %indvars.iv693, 1, !dbg !1350
+  %lftr.wideiv695 = trunc i64 %indvars.iv.next694 to i32, !dbg !1350
+  %exitcond696 = icmp eq i32 %lftr.wideiv695, %add26, !dbg !1350
+  br i1 %exitcond696, label %if.end433, label %for.body353, !dbg !1350
+
+if.end433:                                        ; preds = %while.cond.preheader, %while.cond.backedge, %for.cond351.preheader, %for.inc430
+  br i1 %cmp, label %delete.end, label %delete.notnull, !dbg !1393
+
+delete.notnull:                                   ; preds = %if.end433
+  %96 = bitcast %"class.pov_base::IStream"* %call to void (%"class.pov_base::IStream"*)***, !dbg !1393
+  %vtable = load void (%"class.pov_base::IStream"*)*** %96, align 8, !dbg !1393, !tbaa !736
+  %vfn = getelementptr inbounds void (%"class.pov_base::IStream"*)** %vtable, i64 1, !dbg !1393
+  %97 = load void (%"class.pov_base::IStream"*)** %vfn, align 8, !dbg !1393
+  call void %97(%"class.pov_base::IStream"* %call) #7, !dbg !1393
+  br label %delete.end, !dbg !1393
+
+delete.end:                                       ; preds = %delete.notnull, %if.end433
+  call void @llvm.lifetime.end(i64 256, i8* %0) #5, !dbg !1394
+  ret void, !dbg !1394
+}

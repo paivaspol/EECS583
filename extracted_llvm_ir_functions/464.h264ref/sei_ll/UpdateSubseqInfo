@@ -1,83 +1,84 @@
 define void @UpdateSubseqInfo(i32 %currLayer) #0 {
 entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 6
-  %1 = load i32* %type, align 4, !tbaa !3
-  %cmp = icmp eq i32 %1, 1
-  br i1 %cmp, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{i32 %currLayer}, i64 0, metadata !221), !dbg !1249
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !1250, !tbaa !926
+  %type = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 6, !dbg !1250
+  %1 = load i32* %type, align 4, !dbg !1250, !tbaa !937
+  %cmp = icmp eq i32 %1, 1, !dbg !1250
+  br i1 %cmp, label %if.end, label %if.then, !dbg !1250
 
 if.then:                                          ; preds = %entry
-  %idxprom = sext i32 %currLayer to i64
-  %stored_frame_cnt = getelementptr inbounds [2 x %struct.subseq_information_struct]* @seiSubseqInfo, i64 0, i64 %idxprom, i32 3
-  %2 = load i32* %stored_frame_cnt, align 4, !tbaa !3
-  %inc = add i32 %2, 1
-  %rem = and i32 %inc, 255
-  store i32 %rem, i32* %stored_frame_cnt, align 4, !tbaa !3
-  br label %if.end
+  %idxprom = sext i32 %currLayer to i64, !dbg !1251
+  %stored_frame_cnt = getelementptr inbounds [2 x %struct.subseq_information_struct]* @seiSubseqInfo, i64 0, i64 %idxprom, i32 3, !dbg !1251
+  %2 = load i32* %stored_frame_cnt, align 4, !dbg !1251, !tbaa !937
+  %inc = add i32 %2, 1, !dbg !1251
+  %rem = and i32 %inc, 255, !dbg !1253
+  store i32 %rem, i32* %stored_frame_cnt, align 4, !dbg !1253, !tbaa !937
+  br label %if.end, !dbg !1254
 
 if.end:                                           ; preds = %entry, %if.then
   switch i32 %currLayer, label %if.end48 [
     i32 0, label %if.then8
     i32 1, label %if.then19
-  ]
+  ], !dbg !1255
 
 if.then8:                                         ; preds = %if.end
-  %number = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 0
-  %3 = load i32* %number, align 4, !tbaa !3
-  %4 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %no_frames = getelementptr inbounds %struct.InputParameters* %4, i64 0, i32 2
-  %5 = load i32* %no_frames, align 4, !tbaa !3
-  %sub = add nsw i32 %5, -1
-  %cmp9 = icmp eq i32 %3, %sub
-  br i1 %cmp9, label %if.end17, label %if.end17.thread
+  %number = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 0, !dbg !1256
+  %3 = load i32* %number, align 4, !dbg !1256, !tbaa !937
+  %4 = load %struct.InputParameters** @input, align 8, !dbg !1256, !tbaa !926
+  %no_frames = getelementptr inbounds %struct.InputParameters* %4, i64 0, i32 2, !dbg !1256
+  %5 = load i32* %no_frames, align 4, !dbg !1256, !tbaa !937
+  %sub = add nsw i32 %5, -1, !dbg !1256
+  %cmp9 = icmp eq i32 %3, %sub, !dbg !1256
+  br i1 %cmp9, label %if.end17, label %if.end17.thread, !dbg !1256
 
 if.end17.thread:                                  ; preds = %if.then8
-  store i32 0, i32* getelementptr inbounds ([2 x %struct.subseq_information_struct]* @seiSubseqInfo, i64 0, i64 0, i32 2), align 8, !tbaa !3
-  br label %if.end48
+  store i32 0, i32* getelementptr inbounds ([2 x %struct.subseq_information_struct]* @seiSubseqInfo, i64 0, i64 0, i32 2), align 8, !dbg !1258, !tbaa !937
+  br label %if.end48, !dbg !1259
 
 if.end17:                                         ; preds = %if.then8
-  store i32 1, i32* getelementptr inbounds ([2 x %struct.subseq_information_struct]* @seiSubseqInfo, i64 0, i64 0, i32 2), align 8, !tbaa !3
+  store i32 1, i32* getelementptr inbounds ([2 x %struct.subseq_information_struct]* @seiSubseqInfo, i64 0, i64 0, i32 2), align 8, !dbg !1260, !tbaa !937
   br label %if.end48
 
 if.then19:                                        ; preds = %if.end
-  %number20 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 0
-  %6 = load i32* %number20, align 4, !tbaa !3
-  %7 = load i32* @start_frame_no_in_this_IGOP, align 4, !tbaa !3
-  %sub21 = sub nsw i32 %6, %7
-  %8 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %NumFramesInELSubSeq = getelementptr inbounds %struct.InputParameters* %8, i64 0, i32 99
-  %9 = load i32* %NumFramesInELSubSeq, align 4, !tbaa !3
-  %add = add nsw i32 %9, 1
-  %rem22 = srem i32 %sub21, %add
-  %cmp23 = icmp eq i32 %rem22, 0
-  br i1 %cmp23, label %land.lhs.true, label %lor.lhs.false
+  %number20 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 0, !dbg !1261
+  %6 = load i32* %number20, align 4, !dbg !1261, !tbaa !937
+  %7 = load i32* @start_frame_no_in_this_IGOP, align 4, !dbg !1261, !tbaa !937
+  %sub21 = sub nsw i32 %6, %7, !dbg !1261
+  %8 = load %struct.InputParameters** @input, align 8, !dbg !1261, !tbaa !926
+  %NumFramesInELSubSeq = getelementptr inbounds %struct.InputParameters* %8, i64 0, i32 99, !dbg !1261
+  %9 = load i32* %NumFramesInELSubSeq, align 4, !dbg !1261, !tbaa !937
+  %add = add nsw i32 %9, 1, !dbg !1261
+  %rem22 = srem i32 %sub21, %add, !dbg !1261
+  %cmp23 = icmp eq i32 %rem22, 0, !dbg !1261
+  br i1 %cmp23, label %land.lhs.true, label %lor.lhs.false, !dbg !1261
 
 land.lhs.true:                                    ; preds = %if.then19
-  %successive_Bframe = getelementptr inbounds %struct.InputParameters* %8, i64 0, i32 34
-  %10 = load i32* %successive_Bframe, align 4, !tbaa !3
-  %cmp24 = icmp ne i32 %10, 0
-  %cmp28 = icmp sgt i32 %sub21, 0
-  %or.cond = and i1 %cmp24, %cmp28
-  br i1 %or.cond, label %if.then39, label %lor.lhs.false
+  %successive_Bframe = getelementptr inbounds %struct.InputParameters* %8, i64 0, i32 34, !dbg !1261
+  %10 = load i32* %successive_Bframe, align 4, !dbg !1261, !tbaa !937
+  %cmp24 = icmp ne i32 %10, 0, !dbg !1261
+  %cmp28 = icmp sgt i32 %sub21, 0, !dbg !1261
+  %or.cond = and i1 %cmp24, %cmp28, !dbg !1261
+  br i1 %or.cond, label %if.then39, label %lor.lhs.false, !dbg !1261
 
 lor.lhs.false:                                    ; preds = %land.lhs.true, %if.then19
-  %cmp35 = icmp eq i32 %rem22, %9
-  br i1 %cmp35, label %land.lhs.true36, label %if.else43
+  %cmp35 = icmp eq i32 %rem22, %9, !dbg !1261
+  br i1 %cmp35, label %land.lhs.true36, label %if.else43, !dbg !1261
 
 land.lhs.true36:                                  ; preds = %lor.lhs.false
-  %successive_Bframe37 = getelementptr inbounds %struct.InputParameters* %8, i64 0, i32 34
-  %11 = load i32* %successive_Bframe37, align 4, !tbaa !3
-  %cmp38 = icmp eq i32 %11, 0
-  br i1 %cmp38, label %if.then39, label %if.else43
+  %successive_Bframe37 = getelementptr inbounds %struct.InputParameters* %8, i64 0, i32 34, !dbg !1261
+  %11 = load i32* %successive_Bframe37, align 4, !dbg !1261, !tbaa !937
+  %cmp38 = icmp eq i32 %11, 0, !dbg !1261
+  br i1 %cmp38, label %if.then39, label %if.else43, !dbg !1261
 
 if.then39:                                        ; preds = %land.lhs.true, %land.lhs.true36
-  store i32 1, i32* getelementptr inbounds ([2 x %struct.subseq_information_struct]* @seiSubseqInfo, i64 0, i64 1, i32 2), align 8, !tbaa !3
-  br label %if.end48
+  store i32 1, i32* getelementptr inbounds ([2 x %struct.subseq_information_struct]* @seiSubseqInfo, i64 0, i64 1, i32 2), align 8, !dbg !1263, !tbaa !937
+  br label %if.end48, !dbg !1263
 
 if.else43:                                        ; preds = %land.lhs.true36, %lor.lhs.false
-  store i32 0, i32* getelementptr inbounds ([2 x %struct.subseq_information_struct]* @seiSubseqInfo, i64 0, i64 1, i32 2), align 8, !tbaa !3
+  store i32 0, i32* getelementptr inbounds ([2 x %struct.subseq_information_struct]* @seiSubseqInfo, i64 0, i64 1, i32 2), align 8, !dbg !1264, !tbaa !937
   br label %if.end48
 
 if.end48:                                         ; preds = %if.end17, %if.end17.thread, %if.end, %if.then39, %if.else43
-  ret void
+  ret void, !dbg !1265
 }

@@ -1,22 +1,26 @@
 define internal fastcc %union.tree_node* @omit_one_operand(%union.tree_node* %type, %union.tree_node* %result, %union.tree_node* %omitted) #0 {
 entry:
-  %call = tail call %union.tree_node* @convert(%union.tree_node* %type, %union.tree_node* %result) #9
-  %side_effects_flag = getelementptr inbounds %union.tree_node* %omitted, i64 0, i32 0, i32 0, i32 2
-  %0 = bitcast [4 x i8]* %side_effects_flag to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 256
-  %tobool = icmp eq i32 %bf.clear, 0
-  br i1 %tobool, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %type}, i64 0, metadata !1476), !dbg !4163
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %result}, i64 0, metadata !1477), !dbg !4163
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %omitted}, i64 0, metadata !1478), !dbg !4163
+  %call = tail call %union.tree_node* @convert(%union.tree_node* %type, %union.tree_node* %result) #9, !dbg !4164
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call}, i64 0, metadata !1479), !dbg !4164
+  %side_effects_flag = getelementptr inbounds %union.tree_node* %omitted, i64 0, i32 0, i32 0, i32 2, !dbg !4165
+  %0 = bitcast [4 x i8]* %side_effects_flag to i32*, !dbg !4165
+  %bf.load = load i32* %0, align 8, !dbg !4165
+  %bf.clear = and i32 %bf.load, 256, !dbg !4165
+  %tobool = icmp eq i32 %bf.clear, 0, !dbg !4165
+  br i1 %tobool, label %if.end, label %if.then, !dbg !4165
 
 if.then:                                          ; preds = %entry
-  %call1 = tail call %union.tree_node* (i32, %union.tree_node*, ...)* @build(i32 47, %union.tree_node* %type, %union.tree_node* %omitted, %union.tree_node* %call) #9
-  br label %return
+  %call1 = tail call %union.tree_node* (i32, %union.tree_node*, ...)* @build(i32 47, %union.tree_node* %type, %union.tree_node* %omitted, %union.tree_node* %call) #9, !dbg !4166
+  br label %return, !dbg !4166
 
 if.end:                                           ; preds = %entry
-  %call2 = tail call %union.tree_node* @non_lvalue(%union.tree_node* %call) #7
-  br label %return
+  %call2 = tail call %union.tree_node* @non_lvalue(%union.tree_node* %call) #7, !dbg !4167
+  br label %return, !dbg !4167
 
 return:                                           ; preds = %if.end, %if.then
   %retval.0 = phi %union.tree_node* [ %call1, %if.then ], [ %call2, %if.end ]
-  ret %union.tree_node* %retval.0
+  ret %union.tree_node* %retval.0, !dbg !4168
 }

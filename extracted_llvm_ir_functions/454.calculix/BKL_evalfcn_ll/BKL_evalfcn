@@ -1,49 +1,52 @@
 define float @BKL_evalfcn(%struct._BKL* %bkl) #0 {
 entry:
-  %cmp = icmp eq %struct._BKL* %bkl, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._BKL* %bkl}, i64 0, metadata !78), !dbg !111
+  %cmp = icmp eq %struct._BKL* %bkl, null, !dbg !112
+  br i1 %cmp, label %if.then, label %if.end, !dbg !112
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([45 x i8]* @.str, i64 0, i64 0), %struct._BKL* null) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !113, !tbaa !115
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([45 x i8]* @.str, i64 0, i64 0), %struct._BKL* null) #5, !dbg !113
+  tail call void @exit(i32 -1) #6, !dbg !118
+  unreachable, !dbg !118
 
 if.end:                                           ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 11, i64 1
-  %1 = load i32* %arrayidx, align 4, !tbaa !3
-  %arrayidx2 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 11, i64 2
-  %2 = load i32* %arrayidx2, align 4, !tbaa !3
-  %cmp3 = icmp sgt i32 %1, %2
+  %arrayidx = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 11, i64 1, !dbg !119
+  %1 = load i32* %arrayidx, align 4, !dbg !119, !tbaa !120
+  %arrayidx2 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 11, i64 2, !dbg !119
+  %2 = load i32* %arrayidx2, align 4, !dbg !119, !tbaa !120
+  %cmp3 = icmp sgt i32 %1, %2, !dbg !119
   %.39 = select i1 %cmp3, i32 %2, i32 %1
-  %cmp14 = icmp eq i32 %.39, 0
-  br i1 %cmp14, label %if.then15, label %if.else18
+  %cmp14 = icmp eq i32 %.39, 0, !dbg !121
+  br i1 %cmp14, label %if.then15, label %if.else18, !dbg !121
 
 if.then15:                                        ; preds = %if.end
-  %totweight = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 4
-  %3 = load i32* %totweight, align 4, !tbaa !3
-  %conv = sitofp i32 %3 to float
-  %mul = fmul float %conv, %conv
-  br label %if.end28
+  %totweight = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 4, !dbg !122
+  %3 = load i32* %totweight, align 4, !dbg !122, !tbaa !120
+  %conv = sitofp i32 %3 to float, !dbg !122
+  %mul = fmul float %conv, %conv, !dbg !122
+  tail call void @llvm.dbg.value(metadata !{float %mul}, i64 0, metadata !79), !dbg !122
+  br label %if.end28, !dbg !124
 
 if.else18:                                        ; preds = %if.end
   %. = select i1 %cmp3, i32 %1, i32 %2
-  %arrayidx20 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 11, i64 0
-  %4 = load i32* %arrayidx20, align 4, !tbaa !3
-  %conv21 = sitofp i32 %4 to double
-  %alpha = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 13
-  %5 = load float* %alpha, align 4, !tbaa !4
-  %conv22 = sitofp i32 %. to float
-  %mul23 = fmul float %conv22, %5
-  %conv24 = sitofp i32 %.39 to float
-  %div = fdiv float %mul23, %conv24
-  %conv25 = fpext float %div to double
-  %add = fadd double %conv25, 1.000000e+00
-  %mul26 = fmul double %conv21, %add
-  %conv27 = fptrunc double %mul26 to float
+  %arrayidx20 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 11, i64 0, !dbg !125
+  %4 = load i32* %arrayidx20, align 4, !dbg !125, !tbaa !120
+  %conv21 = sitofp i32 %4 to double, !dbg !125
+  %alpha = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 13, !dbg !125
+  %5 = load float* %alpha, align 4, !dbg !125, !tbaa !127
+  %conv22 = sitofp i32 %. to float, !dbg !125
+  %mul23 = fmul float %conv22, %5, !dbg !125
+  %conv24 = sitofp i32 %.39 to float, !dbg !125
+  %div = fdiv float %mul23, %conv24, !dbg !125
+  %conv25 = fpext float %div to double, !dbg !125
+  %add = fadd double %conv25, 1.000000e+00, !dbg !125
+  %mul26 = fmul double %conv21, %add, !dbg !125
+  %conv27 = fptrunc double %mul26 to float, !dbg !125
+  tail call void @llvm.dbg.value(metadata !{float %conv27}, i64 0, metadata !79), !dbg !125
   br label %if.end28
 
 if.end28:                                         ; preds = %if.else18, %if.then15
   %cost.0 = phi float [ %mul, %if.then15 ], [ %conv27, %if.else18 ]
-  ret float %cost.0
+  ret float %cost.0, !dbg !128
 }

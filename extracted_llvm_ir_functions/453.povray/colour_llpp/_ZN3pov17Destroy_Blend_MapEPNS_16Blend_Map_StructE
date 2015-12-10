@@ -1,0 +1,86 @@
+define void @_ZN3pov17Destroy_Blend_MapEPNS_16Blend_Map_StructE(%"struct.pov::Blend_Map_Struct"* %BMap) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Blend_Map_Struct"* %BMap}, i64 0, metadata !857), !dbg !1110
+  %cmp = icmp eq %"struct.pov::Blend_Map_Struct"* %BMap, null, !dbg !1111
+  br i1 %cmp, label %if.end17, label %if.then, !dbg !1111
+
+if.then:                                          ; preds = %entry
+  %Users = getelementptr inbounds %"struct.pov::Blend_Map_Struct"* %BMap, i64 0, i32 0, !dbg !1112
+  %0 = load i32* %Users, align 4, !dbg !1112, !tbaa !1016
+  %dec = add nsw i32 %0, -1, !dbg !1112
+  store i32 %dec, i32* %Users, align 4, !dbg !1112, !tbaa !1016
+  %cmp1 = icmp eq i32 %dec, 0, !dbg !1112
+  br i1 %cmp1, label %for.cond.preheader, label %if.end17, !dbg !1112
+
+for.cond.preheader:                               ; preds = %if.then
+  %Number_Of_Entries = getelementptr inbounds %"struct.pov::Blend_Map_Struct"* %BMap, i64 0, i32 1, !dbg !1114
+  %1 = load i16* %Number_Of_Entries, align 2, !dbg !1114, !tbaa !1018
+  %cmp331 = icmp sgt i16 %1, 0, !dbg !1114
+  br i1 %cmp331, label %for.body.lr.ph, label %for.cond.preheader.for.end_crit_edge, !dbg !1114
+
+for.cond.preheader.for.end_crit_edge:             ; preds = %for.cond.preheader
+  %Blend_Map_Entries15.pre = getelementptr inbounds %"struct.pov::Blend_Map_Struct"* %BMap, i64 0, i32 4, !dbg !1117
+  br label %for.end, !dbg !1114
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %Type = getelementptr inbounds %"struct.pov::Blend_Map_Struct"* %BMap, i64 0, i32 3, !dbg !1119
+  %Blend_Map_Entries = getelementptr inbounds %"struct.pov::Blend_Map_Struct"* %BMap, i64 0, i32 4, !dbg !1121
+  br label %for.body, !dbg !1114
+
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %2 = load i8* %Type, align 1, !dbg !1119, !tbaa !979
+  %conv4 = sext i8 %2 to i32, !dbg !1119
+  switch i32 %conv4, label %for.inc [
+    i32 0, label %sw.bb
+    i32 7, label %sw.bb
+    i32 1, label %sw.bb5
+    i32 4, label %sw.bb10
+  ], !dbg !1119
+
+sw.bb:                                            ; preds = %for.body, %for.body
+  %3 = load %"struct.pov::Blend_Map_Entry"** %Blend_Map_Entries, align 8, !dbg !1121, !tbaa !1004
+  %Vals = getelementptr inbounds %"struct.pov::Blend_Map_Entry"* %3, i64 %indvars.iv, i32 2, !dbg !1121
+  %Pigment = bitcast %union.anon* %Vals to %"struct.pov::Pigment_Struct"**, !dbg !1121
+  %4 = load %"struct.pov::Pigment_Struct"** %Pigment, align 8, !dbg !1121, !tbaa !1004
+  tail call void @_ZN3pov15Destroy_PigmentEPNS_14Pigment_StructE(%"struct.pov::Pigment_Struct"* %4) #6, !dbg !1121
+  br label %for.inc, !dbg !1123
+
+sw.bb5:                                           ; preds = %for.body
+  %5 = load %"struct.pov::Blend_Map_Entry"** %Blend_Map_Entries, align 8, !dbg !1124, !tbaa !1004
+  %Vals9 = getelementptr inbounds %"struct.pov::Blend_Map_Entry"* %5, i64 %indvars.iv, i32 2, !dbg !1124
+  %Tnormal = bitcast %union.anon* %Vals9 to %"struct.pov::Tnormal_Struct"**, !dbg !1124
+  %6 = load %"struct.pov::Tnormal_Struct"** %Tnormal, align 8, !dbg !1124, !tbaa !1004
+  tail call void @_ZN3pov15Destroy_TnormalEPNS_14Tnormal_StructE(%"struct.pov::Tnormal_Struct"* %6) #6, !dbg !1124
+  br label %for.inc, !dbg !1125
+
+sw.bb10:                                          ; preds = %for.body
+  %7 = load %"struct.pov::Blend_Map_Entry"** %Blend_Map_Entries, align 8, !dbg !1126, !tbaa !1004
+  %Vals14 = getelementptr inbounds %"struct.pov::Blend_Map_Entry"* %7, i64 %indvars.iv, i32 2, !dbg !1126
+  %Texture = bitcast %union.anon* %Vals14 to %"struct.pov::Texture_Struct"**, !dbg !1126
+  %8 = load %"struct.pov::Texture_Struct"** %Texture, align 8, !dbg !1126, !tbaa !1004
+  tail call void @_ZN3pov16Destroy_TexturesEPNS_14Texture_StructE(%"struct.pov::Texture_Struct"* %8) #6, !dbg !1126
+  br label %for.inc, !dbg !1127
+
+for.inc:                                          ; preds = %sw.bb, %sw.bb5, %for.body, %sw.bb10
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1114
+  %9 = load i16* %Number_Of_Entries, align 2, !dbg !1114, !tbaa !1018
+  %conv = sext i16 %9 to i32, !dbg !1114
+  %10 = trunc i64 %indvars.iv.next to i32, !dbg !1114
+  %cmp3 = icmp slt i32 %10, %conv, !dbg !1114
+  br i1 %cmp3, label %for.body, label %for.end, !dbg !1114
+
+for.end:                                          ; preds = %for.inc, %for.cond.preheader.for.end_crit_edge
+  %Blend_Map_Entries15.pre-phi = phi %"struct.pov::Blend_Map_Entry"** [ %Blend_Map_Entries15.pre, %for.cond.preheader.for.end_crit_edge ], [ %Blend_Map_Entries, %for.inc ], !dbg !1117
+  %11 = load %"struct.pov::Blend_Map_Entry"** %Blend_Map_Entries15.pre-phi, align 8, !dbg !1117, !tbaa !1004
+  %12 = bitcast %"struct.pov::Blend_Map_Entry"* %11 to i8*, !dbg !1117
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %12, i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 658) #6, !dbg !1117
+  store %"struct.pov::Blend_Map_Entry"* null, %"struct.pov::Blend_Map_Entry"** %Blend_Map_Entries15.pre-phi, align 8, !dbg !1117, !tbaa !1004
+  %13 = bitcast %"struct.pov::Blend_Map_Struct"* %BMap to i8*, !dbg !1128
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %13, i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 660) #6, !dbg !1128
+  tail call void @llvm.dbg.value(metadata !1130, i64 0, metadata !857), !dbg !1128
+  br label %if.end17, !dbg !1131
+
+if.end17:                                         ; preds = %entry, %if.then, %for.end
+  ret void, !dbg !1132
+}

@@ -1,15 +1,18 @@
-define void @ps_rotate(%struct.__sFILE* nocapture %ps, i32 %bPlus) #1 {
-  %1 = icmp eq i32 %bPlus, 0
-  br i1 %1, label %4, label %2
+define void @ps_rotate(%struct._IO_FILE* nocapture %ps, i32 %bPlus) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %ps}, i64 0, metadata !260), !dbg !545
+  tail call void @llvm.dbg.value(metadata !{i32 %bPlus}, i64 0, metadata !261), !dbg !545
+  %tobool = icmp eq i32 %bPlus, 0, !dbg !546
+  br i1 %tobool, label %if.else, label %if.then, !dbg !546
 
-; <label>:2                                       ; preds = %0
-  %3 = tail call i64 @fwrite(i8* getelementptr inbounds ([29 x i8]* @.str45, i64 0, i64 0), i64 28, i64 1, %struct.__sFILE* %ps)
-  br label %6
+if.then:                                          ; preds = %entry
+  %0 = tail call i64 @fwrite(i8* getelementptr inbounds ([29 x i8]* @.str45, i64 0, i64 0), i64 28, i64 1, %struct._IO_FILE* %ps), !dbg !547
+  br label %if.end, !dbg !547
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i64 @fwrite(i8* getelementptr inbounds ([31 x i8]* @.str46, i64 0, i64 0), i64 30, i64 1, %struct.__sFILE* %ps)
-  br label %6
+if.else:                                          ; preds = %entry
+  %1 = tail call i64 @fwrite(i8* getelementptr inbounds ([31 x i8]* @.str46, i64 0, i64 0), i64 30, i64 1, %struct._IO_FILE* %ps), !dbg !548
+  br label %if.end
 
-; <label>:6                                       ; preds = %4, %2
-  ret void
+if.end:                                           ; preds = %if.else, %if.then
+  ret void, !dbg !549
 }

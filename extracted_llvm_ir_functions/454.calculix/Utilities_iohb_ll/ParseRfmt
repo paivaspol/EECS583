@@ -1,143 +1,155 @@
 define internal fastcc void @ParseRfmt(i8* %fmt, i32* nocapture %perline, i32* nocapture %width, i32* nocapture %prec, i32* nocapture %flag) #0 {
 entry:
-  %cmp = icmp eq i8* %fmt, null
-  br i1 %cmp, label %if.then, label %if.end
+  %cmp = icmp eq i8* %fmt, null, !dbg !768
+  br i1 %cmp, label %if.then, label %if.end, !dbg !768
 
 if.then:                                          ; preds = %entry
-  store i32 0, i32* %perline, align 4, !tbaa !3
-  store i32 0, i32* %width, align 4, !tbaa !3
-  br label %return
+  store i32 0, i32* %perline, align 4, !dbg !769, !tbaa !572
+  store i32 0, i32* %width, align 4, !dbg !771, !tbaa !572
+  tail call void @llvm.dbg.value(metadata !772, i64 0, metadata !532), !dbg !773
+  br label %return, !dbg !774
 
 if.end:                                           ; preds = %entry
-  tail call fastcc void @upcase(i8* %fmt) #9
-  %call = tail call i8* @strchr(i8* %fmt, i32 40) #11
-  %cmp5 = icmp eq i8* %call, null
-  %fmt.call = select i1 %cmp5, i8* %fmt, i8* %call
-  %call9 = tail call i8* @strchr(i8* %fmt.call, i32 41) #11
-  %cmp10 = icmp eq i8* %call9, null
-  br i1 %cmp10, label %if.end18, label %while.cond
+  tail call fastcc void @upcase(i8* %fmt) #10, !dbg !775
+  %call = tail call i8* @strchr(i8* %fmt, i32 40) #12, !dbg !776
+  %cmp5 = icmp eq i8* %call, null, !dbg !776
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !528), !dbg !776
+  %fmt.call = select i1 %cmp5, i8* %fmt, i8* %call, !dbg !776
+  %call9 = tail call i8* @strchr(i8* %fmt.call, i32 41) #12, !dbg !777
+  %cmp10 = icmp eq i8* %call9, null, !dbg !777
+  br i1 %cmp10, label %if.end18, label %while.cond, !dbg !777
 
 while.cond:                                       ; preds = %if.end, %while.cond
   %tmp2.0 = phi i8* [ %call13, %while.cond ], [ %call9, %if.end ]
-  %add.ptr = getelementptr inbounds i8* %tmp2.0, i64 1
-  %call13 = tail call i8* @strchr(i8* %add.ptr, i32 41) #11
-  %cmp14 = icmp eq i8* %call13, null
-  br i1 %cmp14, label %while.end, label %while.cond
+  %add.ptr = getelementptr inbounds i8* %tmp2.0, i64 1, !dbg !778
+  %call13 = tail call i8* @strchr(i8* %add.ptr, i32 41) #12, !dbg !778
+  %cmp14 = icmp eq i8* %call13, null, !dbg !778
+  br i1 %cmp14, label %while.end, label %while.cond, !dbg !778
 
 while.end:                                        ; preds = %while.cond
-  store i8 0, i8* %add.ptr, align 1, !tbaa !1
-  br label %if.end18
+  store i8 0, i8* %add.ptr, align 1, !dbg !780, !tbaa !564
+  br label %if.end18, !dbg !781
 
 if.end18:                                         ; preds = %if.end, %while.end
-  %call19 = tail call i8* @strchr(i8* %fmt.call, i32 80) #11
-  %cmp20 = icmp eq i8* %call19, null
-  br i1 %cmp20, label %if.end47, label %if.then21
+  %call19 = tail call i8* @strchr(i8* %fmt.call, i32 80) #12, !dbg !782
+  %cmp20 = icmp eq i8* %call19, null, !dbg !782
+  br i1 %cmp20, label %if.end47, label %if.then21, !dbg !782
 
 if.then21:                                        ; preds = %if.end18
-  %call22 = tail call i8* @strchr(i8* %fmt.call, i32 40) #11
-  %cmp23 = icmp eq i8* %call22, null
-  br i1 %cmp23, label %if.end47, label %if.then24
+  %call22 = tail call i8* @strchr(i8* %fmt.call, i32 40) #12, !dbg !783
+  %cmp23 = icmp eq i8* %call22, null, !dbg !783
+  br i1 %cmp23, label %if.end47, label %if.then24, !dbg !783
 
 if.then24:                                        ; preds = %if.then21
-  %incdec.ptr = getelementptr inbounds i8* %call19, i64 1
-  %0 = load i8* %incdec.ptr, align 1, !tbaa !1
-  %cmp26 = icmp eq i8 %0, 44
-  %incdec.ptr29 = getelementptr inbounds i8* %call19, i64 2
-  %incdec.ptr29.incdec.ptr = select i1 %cmp26, i8* %incdec.ptr29, i8* %incdec.ptr
-  %add.ptr32 = getelementptr inbounds i8* %call22, i64 1
-  %sub.ptr.lhs.cast = ptrtoint i8* %incdec.ptr29.incdec.ptr to i64
-  %sub.ptr.rhs.cast = ptrtoint i8* %add.ptr32 to i64
-  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
-  %sext = shl i64 %sub.ptr.sub, 32
-  %idx.ext = ashr exact i64 %sext, 32
-  %add.ptr32.sum = add i64 %idx.ext, 1
-  %add.ptr351 = getelementptr inbounds i8* %call22, i64 %add.ptr32.sum
-  %1 = load i8* %add.ptr351, align 1, !tbaa !1
-  %cmp372 = icmp eq i8 %1, 0
-  br i1 %cmp372, label %while.end43, label %while.body39
+  tail call void @llvm.dbg.value(metadata !{i8* %call19}, i64 0, metadata !533), !dbg !785
+  %incdec.ptr = getelementptr inbounds i8* %call19, i64 1, !dbg !787
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !533), !dbg !787
+  %0 = load i8* %incdec.ptr, align 1, !dbg !787, !tbaa !564
+  %cmp26 = icmp eq i8 %0, 44, !dbg !787
+  %incdec.ptr29 = getelementptr inbounds i8* %call19, i64 2, !dbg !787
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr29}, i64 0, metadata !533), !dbg !787
+  %incdec.ptr29.incdec.ptr = select i1 %cmp26, i8* %incdec.ptr29, i8* %incdec.ptr, !dbg !787
+  %add.ptr32 = getelementptr inbounds i8* %call22, i64 1, !dbg !788
+  tail call void @llvm.dbg.value(metadata !{i8* %add.ptr32}, i64 0, metadata !535), !dbg !788
+  %sub.ptr.lhs.cast = ptrtoint i8* %incdec.ptr29.incdec.ptr to i64, !dbg !789
+  %sub.ptr.rhs.cast = ptrtoint i8* %add.ptr32 to i64, !dbg !789
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !789
+  tail call void @llvm.dbg.value(metadata !{i8* %add.ptr32}, i64 0, metadata !534), !dbg !790
+  %sext = shl i64 %sub.ptr.sub, 32, !dbg !791
+  %idx.ext = ashr exact i64 %sext, 32, !dbg !791
+  %add.ptr32.sum = add i64 %idx.ext, 1, !dbg !791
+  %add.ptr351 = getelementptr inbounds i8* %call22, i64 %add.ptr32.sum, !dbg !791
+  %1 = load i8* %add.ptr351, align 1, !dbg !791, !tbaa !564
+  %cmp372 = icmp eq i8 %1, 0, !dbg !791
+  br i1 %cmp372, label %while.end43, label %while.body39, !dbg !791
 
 while.body39:                                     ; preds = %if.then24, %while.body39
   %2 = phi i8 [ %3, %while.body39 ], [ %1, %if.then24 ]
   %tmp2.13 = phi i8* [ %incdec.ptr42, %while.body39 ], [ %add.ptr32, %if.then24 ]
-  store i8 %2, i8* %tmp2.13, align 1, !tbaa !1
-  %incdec.ptr42 = getelementptr inbounds i8* %tmp2.13, i64 1
-  %add.ptr35 = getelementptr inbounds i8* %tmp2.13, i64 %add.ptr32.sum
-  %3 = load i8* %add.ptr35, align 1, !tbaa !1
-  %cmp37 = icmp eq i8 %3, 0
-  br i1 %cmp37, label %while.end43, label %while.body39
+  store i8 %2, i8* %tmp2.13, align 1, !dbg !792, !tbaa !564
+  %incdec.ptr42 = getelementptr inbounds i8* %tmp2.13, i64 1, !dbg !794
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr42}, i64 0, metadata !534), !dbg !794
+  %add.ptr35 = getelementptr inbounds i8* %tmp2.13, i64 %add.ptr32.sum, !dbg !791
+  %3 = load i8* %add.ptr35, align 1, !dbg !791, !tbaa !564
+  %cmp37 = icmp eq i8 %3, 0, !dbg !791
+  br i1 %cmp37, label %while.end43, label %while.body39, !dbg !791
 
 while.end43:                                      ; preds = %while.body39, %if.then24
-  %call44 = tail call i8* @strchr(i8* %fmt.call, i32 41) #11
-  %add.ptr45 = getelementptr inbounds i8* %call44, i64 1
-  store i8 0, i8* %add.ptr45, align 1, !tbaa !1
-  br label %if.end47
+  %call44 = tail call i8* @strchr(i8* %fmt.call, i32 41) #12, !dbg !795
+  %add.ptr45 = getelementptr inbounds i8* %call44, i64 1, !dbg !795
+  store i8 0, i8* %add.ptr45, align 1, !dbg !795, !tbaa !564
+  br label %if.end47, !dbg !796
 
 if.end47:                                         ; preds = %if.then21, %if.end18, %while.end43
-  %call48 = tail call i8* @strchr(i8* %fmt.call, i32 69) #11
-  %cmp49 = icmp eq i8* %call48, null
-  br i1 %cmp49, label %if.else, label %if.then51
+  %call48 = tail call i8* @strchr(i8* %fmt.call, i32 69) #12, !dbg !797
+  %cmp49 = icmp eq i8* %call48, null, !dbg !797
+  br i1 %cmp49, label %if.else, label %if.then51, !dbg !797
 
 if.then51:                                        ; preds = %if.end47
-  store i32 69, i32* %flag, align 4, !tbaa !3
-  br label %if.end65
+  store i32 69, i32* %flag, align 4, !dbg !798, !tbaa !572
+  br label %if.end65, !dbg !800
 
 if.else:                                          ; preds = %if.end47
-  %call52 = tail call i8* @strchr(i8* %fmt.call, i32 68) #11
-  %cmp53 = icmp eq i8* %call52, null
-  br i1 %cmp53, label %if.else56, label %if.then55
+  %call52 = tail call i8* @strchr(i8* %fmt.call, i32 68) #12, !dbg !801
+  %cmp53 = icmp eq i8* %call52, null, !dbg !801
+  br i1 %cmp53, label %if.else56, label %if.then55, !dbg !801
 
 if.then55:                                        ; preds = %if.else
-  store i32 68, i32* %flag, align 4, !tbaa !3
-  br label %if.end65
+  store i32 68, i32* %flag, align 4, !dbg !802, !tbaa !572
+  br label %if.end65, !dbg !804
 
 if.else56:                                        ; preds = %if.else
-  %call57 = tail call i8* @strchr(i8* %fmt.call, i32 70) #11
-  %cmp58 = icmp eq i8* %call57, null
-  br i1 %cmp58, label %if.else61, label %if.then60
+  %call57 = tail call i8* @strchr(i8* %fmt.call, i32 70) #12, !dbg !805
+  %cmp58 = icmp eq i8* %call57, null, !dbg !805
+  br i1 %cmp58, label %if.else61, label %if.then60, !dbg !805
 
 if.then60:                                        ; preds = %if.else56
-  store i32 70, i32* %flag, align 4, !tbaa !3
+  store i32 70, i32* %flag, align 4, !dbg !806, !tbaa !572
   br label %if.end65
 
 if.else61:                                        ; preds = %if.else56
-  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call62 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([43 x i8]* @.str61, i64 0, i64 0), i8* %fmt.call) #8
-  br label %return
+  %4 = load %struct._IO_FILE** @stderr, align 8, !dbg !808, !tbaa !563
+  %call62 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([43 x i8]* @.str61, i64 0, i64 0), i8* %fmt.call) #9, !dbg !808
+  br label %return, !dbg !810
 
 if.end65:                                         ; preds = %if.then55, %if.then60, %if.then51
   %5 = phi i32 [ 68, %if.then55 ], [ 70, %if.then60 ], [ 69, %if.then51 ]
-  %call67 = tail call i8* @strchr(i8* %fmt.call, i32 40) #11
-  %call69 = tail call i8* @strchr(i8* %fmt.call, i32 41) #11
-  %call71 = tail call i8* @strchr(i8* %fmt.call, i32 %5) #11
-  %call73 = tail call i8* @strchr(i8* %fmt.call, i32 46) #11
-  store i8 0, i8* %call71, align 1, !tbaa !1
-  %add.ptr74 = getelementptr inbounds i8* %call67, i64 1
-  %call75 = tail call i32 @atoi(i8* %add.ptr74) #11
-  store i32 %call75, i32* %perline, align 4, !tbaa !3
-  %6 = load i32* %flag, align 4, !tbaa !3
-  %conv76 = trunc i32 %6 to i8
-  store i8 %conv76, i8* %call71, align 1, !tbaa !1
-  %cmp77 = icmp eq i8* %call73, null
-  store i8 0, i8* %call69, align 1, !tbaa !1
-  br i1 %cmp77, label %if.else84, label %if.then79
+  %call67 = tail call i8* @strchr(i8* %fmt.call, i32 40) #12, !dbg !811
+  tail call void @llvm.dbg.value(metadata !{i8* %call67}, i64 0, metadata !537), !dbg !811
+  %call69 = tail call i8* @strchr(i8* %fmt.call, i32 41) #12, !dbg !812
+  tail call void @llvm.dbg.value(metadata !{i8* %call69}, i64 0, metadata !539), !dbg !812
+  %call71 = tail call i8* @strchr(i8* %fmt.call, i32 %5) #12, !dbg !813
+  tail call void @llvm.dbg.value(metadata !{i8* %call71}, i64 0, metadata !540), !dbg !813
+  %call73 = tail call i8* @strchr(i8* %fmt.call, i32 46) #12, !dbg !814
+  tail call void @llvm.dbg.value(metadata !{i8* %call73}, i64 0, metadata !541), !dbg !814
+  store i8 0, i8* %call71, align 1, !dbg !815, !tbaa !564
+  %add.ptr74 = getelementptr inbounds i8* %call67, i64 1, !dbg !816
+  %call75 = tail call i32 @atoi(i8* %add.ptr74) #12, !dbg !816
+  store i32 %call75, i32* %perline, align 4, !dbg !816, !tbaa !572
+  %6 = load i32* %flag, align 4, !dbg !817, !tbaa !572
+  %conv76 = trunc i32 %6 to i8, !dbg !817
+  store i8 %conv76, i8* %call71, align 1, !dbg !817, !tbaa !564
+  %cmp77 = icmp eq i8* %call73, null, !dbg !818
+  store i8 0, i8* %call69, align 1, !dbg !819, !tbaa !564
+  br i1 %cmp77, label %if.else84, label %if.then79, !dbg !818
 
 if.then79:                                        ; preds = %if.end65
-  %add.ptr80 = getelementptr inbounds i8* %call73, i64 1
-  %call81 = tail call i32 @atoi(i8* %add.ptr80) #11
-  store i32 %call81, i32* %prec, align 4, !tbaa !3
-  store i8 41, i8* %call69, align 1, !tbaa !1
-  store i8 0, i8* %call73, align 1, !tbaa !1
-  %add.ptr82 = getelementptr inbounds i8* %call71, i64 1
-  %call83 = tail call i32 @atoi(i8* %add.ptr82) #11
-  store i32 %call83, i32* %width, align 4, !tbaa !3
-  store i8 46, i8* %call73, align 1, !tbaa !1
-  br label %return
+  %add.ptr80 = getelementptr inbounds i8* %call73, i64 1, !dbg !821
+  %call81 = tail call i32 @atoi(i8* %add.ptr80) #12, !dbg !821
+  store i32 %call81, i32* %prec, align 4, !dbg !821, !tbaa !572
+  store i8 41, i8* %call69, align 1, !dbg !822, !tbaa !564
+  store i8 0, i8* %call73, align 1, !dbg !823, !tbaa !564
+  %add.ptr82 = getelementptr inbounds i8* %call71, i64 1, !dbg !824
+  %call83 = tail call i32 @atoi(i8* %add.ptr82) #12, !dbg !824
+  store i32 %call83, i32* %width, align 4, !dbg !824, !tbaa !572
+  store i8 46, i8* %call73, align 1, !dbg !825, !tbaa !564
+  br label %return, !dbg !826
 
 if.else84:                                        ; preds = %if.end65
-  %add.ptr85 = getelementptr inbounds i8* %call71, i64 1
-  %call86 = tail call i32 @atoi(i8* %add.ptr85) #11
-  store i32 %call86, i32* %width, align 4, !tbaa !3
-  store i8 46, i8* %call69, align 1, !tbaa !1
+  %add.ptr85 = getelementptr inbounds i8* %call71, i64 1, !dbg !827
+  %call86 = tail call i32 @atoi(i8* %add.ptr85) #12, !dbg !827
+  store i32 %call86, i32* %width, align 4, !dbg !827, !tbaa !572
+  store i8 46, i8* %call69, align 1, !dbg !829, !tbaa !564
   br label %return
 
 return:                                           ; preds = %if.then79, %if.else84, %if.else61, %if.then

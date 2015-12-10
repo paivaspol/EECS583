@@ -1,20 +1,23 @@
-define { double, double } @CCTK_Cmplx16Sin(double %complex_number.coerce0, double %complex_number.coerce1) #0 {
-  %1 = fcmp oeq double %complex_number.coerce1, 0.000000e+00
-  %2 = tail call double @sin(double %complex_number.coerce0) #5
-  br i1 %1, label %9, label %3
+define { double, double } @CCTK_Cmplx16Sin(double %complex_number.coerce0, double %complex_number.coerce1) #3 {
+entry:
+  tail call void @llvm.dbg.declare(metadata !273, metadata !142), !dbg !282
+  tail call void @llvm.dbg.declare(metadata !273, metadata !143), !dbg !282
+  %cmp = fcmp oeq double %complex_number.coerce1, 0.000000e+00, !dbg !282
+  %call = tail call double @sin(double %complex_number.coerce0) #7, !dbg !283
+  br i1 %cmp, label %if.end, label %if.else, !dbg !282
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call double @cosh(double %complex_number.coerce1) #5
-  %5 = fmul double %2, %4
-  %6 = tail call double @cos(double %complex_number.coerce0) #5
-  %7 = tail call double @sinh(double %complex_number.coerce1) #5
-  %8 = fmul double %6, %7
-  br label %9
+if.else:                                          ; preds = %entry
+  %call6 = tail call double @cosh(double %complex_number.coerce1) #7, !dbg !285
+  %mul = fmul double %call, %call6, !dbg !285
+  %call9 = tail call double @cos(double %complex_number.coerce0) #7, !dbg !285
+  %call11 = tail call double @sinh(double %complex_number.coerce1) #7, !dbg !285
+  %mul12 = fmul double %call9, %call11, !dbg !285
+  br label %if.end
 
-; <label>:9                                       ; preds = %0, %3
-  %result.sroa.3.0 = phi double [ %8, %3 ], [ 0.000000e+00, %0 ]
-  %result.sroa.0.0 = phi double [ %5, %3 ], [ %2, %0 ]
-  %10 = insertvalue { double, double } undef, double %result.sroa.0.0, 0
-  %11 = insertvalue { double, double } %10, double %result.sroa.3.0, 1
-  ret { double, double } %11
+if.end:                                           ; preds = %entry, %if.else
+  %result.sroa.1.0 = phi double [ %mul12, %if.else ], [ 0.000000e+00, %entry ]
+  %result.sroa.0.0 = phi double [ %mul, %if.else ], [ %call, %entry ]
+  %.fca.0.insert = insertvalue { double, double } undef, double %result.sroa.0.0, 0, !dbg !282
+  %.fca.1.insert = insertvalue { double, double } %.fca.0.insert, double %result.sroa.1.0, 1, !dbg !282
+  ret { double, double } %.fca.1.insert, !dbg !282
 }

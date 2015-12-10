@@ -1,194 +1,203 @@
 define internal fastcc void @append_include_chain(%struct.cpp_reader* %pfile, i8* %dir, i32 %path, i32 %cxx_aware) #0 {
 entry:
   %st = alloca %struct.stat, align 8
-  %pending = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 3
-  %0 = load %struct.cpp_pending** %pending, align 8, !tbaa !3
-  %1 = bitcast %struct.stat* %st to i8*
-  call void @llvm.lifetime.start(i64 144, i8* %1) #4
-  %2 = load i8* %dir, align 1, !tbaa !0
-  %cmp = icmp eq i8 %2, 0
-  br i1 %cmp, label %if.then, label %if.end
+  call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !704), !dbg !1782
+  call void @llvm.dbg.value(metadata !{i8* %dir}, i64 0, metadata !705), !dbg !1783
+  call void @llvm.dbg.value(metadata !{i32 %path}, i64 0, metadata !706), !dbg !1784
+  call void @llvm.dbg.value(metadata !{i32 %cxx_aware}, i64 0, metadata !707), !dbg !1785
+  %pending = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 3, !dbg !1786
+  %0 = load %struct.cpp_pending** %pending, align 8, !dbg !1786, !tbaa !1004
+  call void @llvm.dbg.value(metadata !{%struct.cpp_pending* %0}, i64 0, metadata !708), !dbg !1786
+  %1 = bitcast %struct.stat* %st to i8*, !dbg !1787
+  call void @llvm.lifetime.start(i64 144, i8* %1) #5, !dbg !1787
+  call void @llvm.dbg.declare(metadata !{%struct.stat* %st}, metadata !710), !dbg !1787
+  %2 = load i8* %dir, align 1, !dbg !1788, !tbaa !995
+  %cmp = icmp eq i8 %2, 0, !dbg !1788
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1788
 
 if.then:                                          ; preds = %entry
-  call void @free(i8* %dir) #6
-  %call = call noalias i8* @xstrdup(i8* getelementptr inbounds ([2 x i8]* @.str46, i64 0, i64 0)) #6
-  br label %if.end
+  call void @free(i8* %dir) #7, !dbg !1789
+  %call = call noalias i8* @xstrdup(i8* getelementptr inbounds ([2 x i8]* @.str46, i64 0, i64 0)) #7, !dbg !1791
+  call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !705), !dbg !1791
+  br label %if.end, !dbg !1792
 
 if.end:                                           ; preds = %if.then, %entry
   %dir.addr.0 = phi i8* [ %call, %if.then ], [ %dir, %entry ]
-  %call2 = call i8* @_cpp_simplify_pathname(i8* %dir.addr.0) #6
-  %call3 = call i32 @stat(i8* %dir.addr.0, %struct.stat* %st) #6
-  %tobool = icmp eq i32 %call3, 0
-  br i1 %tobool, label %if.end15, label %if.then4
+  %call2 = call i8* @_cpp_simplify_pathname(i8* %dir.addr.0) #7, !dbg !1793
+  %call3 = call i32 @stat(i8* %dir.addr.0, %struct.stat* %st) #7, !dbg !1794
+  %tobool = icmp eq i32 %call3, 0, !dbg !1794
+  br i1 %tobool, label %if.end15, label %if.then4, !dbg !1794
 
 if.then4:                                         ; preds = %if.end
-  %call5 = call i32* @__errno_location() #9
-  %3 = load i32* %call5, align 4, !tbaa !2
-  %cmp6 = icmp eq i32 %3, 2
-  br i1 %cmp6, label %if.else, label %if.then8
+  %call5 = call i32* @__errno_location() #10, !dbg !1795
+  %3 = load i32* %call5, align 4, !dbg !1795, !tbaa !1000
+  %cmp6 = icmp eq i32 %3, 2, !dbg !1795
+  br i1 %cmp6, label %if.else, label %if.then8, !dbg !1795
 
 if.then8:                                         ; preds = %if.then4
-  call void @cpp_notice_from_errno(%struct.cpp_reader* %pfile, i8* %dir.addr.0) #6
-  br label %if.end14
+  call void @cpp_notice_from_errno(%struct.cpp_reader* %pfile, i8* %dir.addr.0) #7, !dbg !1797
+  br label %if.end14, !dbg !1797
 
 if.else:                                          ; preds = %if.then4
-  %verbose = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 12
-  %4 = load i8* %verbose, align 1, !tbaa !0
-  %tobool10 = icmp eq i8 %4, 0
-  br i1 %tobool10, label %if.end14, label %if.then11
+  %verbose = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 12, !dbg !1798
+  %4 = load i8* %verbose, align 1, !dbg !1798, !tbaa !995
+  %tobool10 = icmp eq i8 %4, 0, !dbg !1798
+  br i1 %tobool10, label %if.end14, label %if.then11, !dbg !1798
 
 if.then11:                                        ; preds = %if.else
-  %5 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call12 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([37 x i8]* @.str47, i64 0, i64 0), i8* %dir.addr.0) #6
-  br label %if.end14
+  %5 = load %struct._IO_FILE** @stderr, align 8, !dbg !1799, !tbaa !1004
+  %call12 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([37 x i8]* @.str47, i64 0, i64 0), i8* %dir.addr.0) #7, !dbg !1799
+  br label %if.end14, !dbg !1799
 
 if.end14:                                         ; preds = %if.else, %if.then11, %if.then8
-  call void @free(i8* %dir.addr.0) #6
-  br label %cleanup
+  call void @free(i8* %dir.addr.0) #7, !dbg !1800
+  br label %cleanup, !dbg !1801
 
 if.end15:                                         ; preds = %if.end
-  %st_mode = getelementptr inbounds %struct.stat* %st, i64 0, i32 3
-  %6 = load i32* %st_mode, align 8, !tbaa !2
-  %and = and i32 %6, 61440
-  %cmp16 = icmp eq i32 %and, 16384
-  br i1 %cmp16, label %if.end19, label %if.then18
+  %st_mode = getelementptr inbounds %struct.stat* %st, i64 0, i32 3, !dbg !1802
+  %6 = load i32* %st_mode, align 8, !dbg !1802, !tbaa !1000
+  %and = and i32 %6, 61440, !dbg !1802
+  %cmp16 = icmp eq i32 %and, 16384, !dbg !1802
+  br i1 %cmp16, label %if.end19, label %if.then18, !dbg !1802
 
 if.then18:                                        ; preds = %if.end15
-  call void (%struct.cpp_reader*, i8*, ...)* @cpp_notice(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([20 x i8]* @.str48, i64 0, i64 0), i8* %dir.addr.0) #6
-  call void @free(i8* %dir.addr.0) #6
-  br label %cleanup
+  call void (%struct.cpp_reader*, i8*, ...)* @cpp_notice(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([20 x i8]* @.str48, i64 0, i64 0), i8* %dir.addr.0) #7, !dbg !1803
+  call void @free(i8* %dir.addr.0) #7, !dbg !1805
+  br label %cleanup, !dbg !1806
 
 if.end19:                                         ; preds = %if.end15
-  %call20 = call i64 @strlen(i8* %dir.addr.0) #8
-  %conv21 = trunc i64 %call20 to i32
-  %max_include_len = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 26
-  %7 = load i32* %max_include_len, align 4, !tbaa !2
-  %cmp22 = icmp ugt i32 %conv21, %7
-  br i1 %cmp22, label %if.then24, label %if.end26
+  %call20 = call i64 @strlen(i8* %dir.addr.0) #9, !dbg !1807
+  %conv21 = trunc i64 %call20 to i32, !dbg !1807
+  call void @llvm.dbg.value(metadata !{i32 %conv21}, i64 0, metadata !746), !dbg !1807
+  %max_include_len = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 26, !dbg !1808
+  %7 = load i32* %max_include_len, align 4, !dbg !1808, !tbaa !1000
+  %cmp22 = icmp ugt i32 %conv21, %7, !dbg !1808
+  br i1 %cmp22, label %if.then24, label %if.end26, !dbg !1808
 
 if.then24:                                        ; preds = %if.end19
-  store i32 %conv21, i32* %max_include_len, align 4, !tbaa !2
-  br label %if.end26
+  store i32 %conv21, i32* %max_include_len, align 4, !dbg !1809, !tbaa !1000
+  br label %if.end26, !dbg !1809
 
 if.end26:                                         ; preds = %if.then24, %if.end19
-  %call27 = call noalias i8* @xmalloc(i64 56) #6
-  %8 = bitcast i8* %call27 to %struct.search_path*
-  %name = getelementptr inbounds i8* %call27, i64 8
-  %9 = bitcast i8* %name to i8**
-  store i8* %dir.addr.0, i8** %9, align 8, !tbaa !3
-  %len28 = getelementptr inbounds i8* %call27, i64 16
-  %10 = bitcast i8* %len28 to i32*
-  store i32 %conv21, i32* %10, align 4, !tbaa !2
-  %st_ino = getelementptr inbounds %struct.stat* %st, i64 0, i32 1
-  %11 = load i64* %st_ino, align 8, !tbaa !5
-  %ino = getelementptr inbounds i8* %call27, i64 24
-  %12 = bitcast i8* %ino to i64*
-  store i64 %11, i64* %12, align 8, !tbaa !5
-  %st_dev = getelementptr inbounds %struct.stat* %st, i64 0, i32 0
-  %13 = load i64* %st_dev, align 8, !tbaa !5
-  %dev = getelementptr inbounds i8* %call27, i64 32
-  %14 = bitcast i8* %dev to i64*
-  store i64 %13, i64* %14, align 8, !tbaa !5
-  %path.off = add i32 %path, -1
-  %15 = icmp ult i32 %path.off, 2
-  br i1 %15, label %if.then33, label %if.else35
+  %call27 = call noalias i8* @xmalloc(i64 56) #7, !dbg !1810
+  %8 = bitcast i8* %call27 to %struct.search_path*, !dbg !1810
+  call void @llvm.dbg.value(metadata !{%struct.search_path* %8}, i64 0, metadata !709), !dbg !1810
+  %name = getelementptr inbounds i8* %call27, i64 8, !dbg !1811
+  %9 = bitcast i8* %name to i8**, !dbg !1811
+  store i8* %dir.addr.0, i8** %9, align 8, !dbg !1811, !tbaa !1004
+  %len28 = getelementptr inbounds i8* %call27, i64 16, !dbg !1812
+  %10 = bitcast i8* %len28 to i32*, !dbg !1812
+  store i32 %conv21, i32* %10, align 4, !dbg !1812, !tbaa !1000
+  %st_ino = getelementptr inbounds %struct.stat* %st, i64 0, i32 1, !dbg !1813
+  %11 = load i64* %st_ino, align 8, !dbg !1813, !tbaa !1106
+  %ino = getelementptr inbounds i8* %call27, i64 24, !dbg !1813
+  %12 = bitcast i8* %ino to i64*, !dbg !1813
+  store i64 %11, i64* %12, align 8, !dbg !1813, !tbaa !1106
+  %st_dev = getelementptr inbounds %struct.stat* %st, i64 0, i32 0, !dbg !1814
+  %13 = load i64* %st_dev, align 8, !dbg !1814, !tbaa !1106
+  %dev = getelementptr inbounds i8* %call27, i64 32, !dbg !1814
+  %14 = bitcast i8* %dev to i64*, !dbg !1814
+  store i64 %13, i64* %14, align 8, !dbg !1814, !tbaa !1106
+  %path.off = add i32 %path, -1, !dbg !1815
+  %15 = icmp ult i32 %path.off, 2, !dbg !1815
+  br i1 %15, label %if.then33, label %if.else35, !dbg !1815
 
 if.then33:                                        ; preds = %if.end26
-  %tobool34 = icmp ne i32 %cxx_aware, 0
-  %cond = select i1 %tobool34, i32 1, i32 2
-  %sysp = getelementptr inbounds i8* %call27, i64 40
-  %16 = bitcast i8* %sysp to i32*
-  store i32 %cond, i32* %16, align 4, !tbaa !2
-  br label %if.end37
+  %tobool34 = icmp ne i32 %cxx_aware, 0, !dbg !1816
+  %cond = select i1 %tobool34, i32 1, i32 2, !dbg !1816
+  %sysp = getelementptr inbounds i8* %call27, i64 40, !dbg !1816
+  %16 = bitcast i8* %sysp to i32*, !dbg !1816
+  store i32 %cond, i32* %16, align 4, !dbg !1816, !tbaa !1000
+  br label %if.end37, !dbg !1816
 
 if.else35:                                        ; preds = %if.end26
-  %sysp36 = getelementptr inbounds i8* %call27, i64 40
-  %17 = bitcast i8* %sysp36 to i32*
-  store i32 0, i32* %17, align 4, !tbaa !2
+  %sysp36 = getelementptr inbounds i8* %call27, i64 40, !dbg !1817
+  %17 = bitcast i8* %sysp36 to i32*, !dbg !1817
+  store i32 0, i32* %17, align 4, !dbg !1817, !tbaa !1000
   br label %if.end37
 
 if.end37:                                         ; preds = %if.else35, %if.then33
-  %name_map = getelementptr inbounds i8* %call27, i64 48
-  %18 = bitcast i8* %name_map to %struct.file_name_map**
-  store %struct.file_name_map* null, %struct.file_name_map** %18, align 8, !tbaa !3
-  %next = bitcast i8* %call27 to %struct.search_path**
-  store %struct.search_path* null, %struct.search_path** %next, align 8, !tbaa !3
+  %name_map = getelementptr inbounds i8* %call27, i64 48, !dbg !1818
+  %18 = bitcast i8* %name_map to %struct.file_name_map**, !dbg !1818
+  store %struct.file_name_map* null, %struct.file_name_map** %18, align 8, !dbg !1818, !tbaa !1004
+  %next = bitcast i8* %call27 to %struct.search_path**, !dbg !1819
+  store %struct.search_path* null, %struct.search_path** %next, align 8, !dbg !1819, !tbaa !1004
   switch i32 %path, label %cleanup [
     i32 0, label %do.body
     i32 1, label %do.body46
     i32 2, label %do.body57
-  ]
+  ], !dbg !1820
 
 do.body:                                          ; preds = %if.end37
-  %brack_head = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 4
-  %19 = load %struct.search_path** %brack_head, align 8, !tbaa !3
-  %tobool38 = icmp eq %struct.search_path* %19, null
-  br i1 %tobool38, label %if.then39, label %if.else41
+  %brack_head = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 4, !dbg !1821
+  %19 = load %struct.search_path** %brack_head, align 8, !dbg !1821, !tbaa !1004
+  %tobool38 = icmp eq %struct.search_path* %19, null, !dbg !1821
+  br i1 %tobool38, label %if.then39, label %if.else41, !dbg !1821
 
 if.then39:                                        ; preds = %do.body
-  store %struct.search_path* %8, %struct.search_path** %brack_head, align 8, !tbaa !3
-  %brack_tail44.pre = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 5
-  br label %if.end43
+  store %struct.search_path* %8, %struct.search_path** %brack_head, align 8, !dbg !1821, !tbaa !1004
+  %brack_tail44.pre = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 5, !dbg !1821
+  br label %if.end43, !dbg !1821
 
 if.else41:                                        ; preds = %do.body
-  %brack_tail = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 5
-  %20 = load %struct.search_path** %brack_tail, align 8, !tbaa !3
-  %next42 = getelementptr inbounds %struct.search_path* %20, i64 0, i32 0
-  store %struct.search_path* %8, %struct.search_path** %next42, align 8, !tbaa !3
+  %brack_tail = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 5, !dbg !1821
+  %20 = load %struct.search_path** %brack_tail, align 8, !dbg !1821, !tbaa !1004
+  %next42 = getelementptr inbounds %struct.search_path* %20, i64 0, i32 0, !dbg !1821
+  store %struct.search_path* %8, %struct.search_path** %next42, align 8, !dbg !1821, !tbaa !1004
   br label %if.end43
 
 if.end43:                                         ; preds = %if.else41, %if.then39
-  %brack_tail44.pre-phi = phi %struct.search_path** [ %brack_tail, %if.else41 ], [ %brack_tail44.pre, %if.then39 ]
-  store %struct.search_path* %8, %struct.search_path** %brack_tail44.pre-phi, align 8, !tbaa !3
-  br label %cleanup
+  %brack_tail44.pre-phi = phi %struct.search_path** [ %brack_tail, %if.else41 ], [ %brack_tail44.pre, %if.then39 ], !dbg !1821
+  store %struct.search_path* %8, %struct.search_path** %brack_tail44.pre-phi, align 8, !dbg !1821, !tbaa !1004
+  br label %cleanup, !dbg !1824
 
 do.body46:                                        ; preds = %if.end37
-  %systm_head = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 6
-  %21 = load %struct.search_path** %systm_head, align 8, !tbaa !3
-  %tobool47 = icmp eq %struct.search_path* %21, null
-  br i1 %tobool47, label %if.then48, label %if.else50
+  %systm_head = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 6, !dbg !1825
+  %21 = load %struct.search_path** %systm_head, align 8, !dbg !1825, !tbaa !1004
+  %tobool47 = icmp eq %struct.search_path* %21, null, !dbg !1825
+  br i1 %tobool47, label %if.then48, label %if.else50, !dbg !1825
 
 if.then48:                                        ; preds = %do.body46
-  store %struct.search_path* %8, %struct.search_path** %systm_head, align 8, !tbaa !3
-  %systm_tail53.pre = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 7
-  br label %if.end52
+  store %struct.search_path* %8, %struct.search_path** %systm_head, align 8, !dbg !1825, !tbaa !1004
+  %systm_tail53.pre = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 7, !dbg !1825
+  br label %if.end52, !dbg !1825
 
 if.else50:                                        ; preds = %do.body46
-  %systm_tail = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 7
-  %22 = load %struct.search_path** %systm_tail, align 8, !tbaa !3
-  %next51 = getelementptr inbounds %struct.search_path* %22, i64 0, i32 0
-  store %struct.search_path* %8, %struct.search_path** %next51, align 8, !tbaa !3
+  %systm_tail = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 7, !dbg !1825
+  %22 = load %struct.search_path** %systm_tail, align 8, !dbg !1825, !tbaa !1004
+  %next51 = getelementptr inbounds %struct.search_path* %22, i64 0, i32 0, !dbg !1825
+  store %struct.search_path* %8, %struct.search_path** %next51, align 8, !dbg !1825, !tbaa !1004
   br label %if.end52
 
 if.end52:                                         ; preds = %if.else50, %if.then48
-  %systm_tail53.pre-phi = phi %struct.search_path** [ %systm_tail, %if.else50 ], [ %systm_tail53.pre, %if.then48 ]
-  store %struct.search_path* %8, %struct.search_path** %systm_tail53.pre-phi, align 8, !tbaa !3
-  br label %cleanup
+  %systm_tail53.pre-phi = phi %struct.search_path** [ %systm_tail, %if.else50 ], [ %systm_tail53.pre, %if.then48 ], !dbg !1825
+  store %struct.search_path* %8, %struct.search_path** %systm_tail53.pre-phi, align 8, !dbg !1825, !tbaa !1004
+  br label %cleanup, !dbg !1827
 
 do.body57:                                        ; preds = %if.end37
-  %after_head = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 8
-  %23 = load %struct.search_path** %after_head, align 8, !tbaa !3
-  %tobool58 = icmp eq %struct.search_path* %23, null
-  br i1 %tobool58, label %if.then59, label %if.else61
+  %after_head = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 8, !dbg !1828
+  %23 = load %struct.search_path** %after_head, align 8, !dbg !1828, !tbaa !1004
+  %tobool58 = icmp eq %struct.search_path* %23, null, !dbg !1828
+  br i1 %tobool58, label %if.then59, label %if.else61, !dbg !1828
 
 if.then59:                                        ; preds = %do.body57
-  store %struct.search_path* %8, %struct.search_path** %after_head, align 8, !tbaa !3
-  %after_tail64.pre = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 9
-  br label %if.end63
+  store %struct.search_path* %8, %struct.search_path** %after_head, align 8, !dbg !1828, !tbaa !1004
+  %after_tail64.pre = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 9, !dbg !1828
+  br label %if.end63, !dbg !1828
 
 if.else61:                                        ; preds = %do.body57
-  %after_tail = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 9
-  %24 = load %struct.search_path** %after_tail, align 8, !tbaa !3
-  %next62 = getelementptr inbounds %struct.search_path* %24, i64 0, i32 0
-  store %struct.search_path* %8, %struct.search_path** %next62, align 8, !tbaa !3
+  %after_tail = getelementptr inbounds %struct.cpp_pending* %0, i64 0, i32 9, !dbg !1828
+  %24 = load %struct.search_path** %after_tail, align 8, !dbg !1828, !tbaa !1004
+  %next62 = getelementptr inbounds %struct.search_path* %24, i64 0, i32 0, !dbg !1828
+  store %struct.search_path* %8, %struct.search_path** %next62, align 8, !dbg !1828, !tbaa !1004
   br label %if.end63
 
 if.end63:                                         ; preds = %if.else61, %if.then59
-  %after_tail64.pre-phi = phi %struct.search_path** [ %after_tail, %if.else61 ], [ %after_tail64.pre, %if.then59 ]
-  store %struct.search_path* %8, %struct.search_path** %after_tail64.pre-phi, align 8, !tbaa !3
-  br label %cleanup
+  %after_tail64.pre-phi = phi %struct.search_path** [ %after_tail, %if.else61 ], [ %after_tail64.pre, %if.then59 ], !dbg !1828
+  store %struct.search_path* %8, %struct.search_path** %after_tail64.pre-phi, align 8, !dbg !1828, !tbaa !1004
+  br label %cleanup, !dbg !1830
 
 cleanup:                                          ; preds = %if.end43, %if.end52, %if.end63, %if.end37, %if.then18, %if.end14
-  call void @llvm.lifetime.end(i64 144, i8* %1) #4
-  ret void
+  call void @llvm.lifetime.end(i64 144, i8* %1) #5, !dbg !1831
+  ret void, !dbg !1832
 }

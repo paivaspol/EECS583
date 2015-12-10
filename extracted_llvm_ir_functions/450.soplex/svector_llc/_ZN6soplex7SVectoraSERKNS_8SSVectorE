@@ -1,0 +1,54 @@
+define %"class.soplex::SVector"* @_ZN6soplex7SVectoraSERKNS_8SSVectorE(%"class.soplex::SVector"* %this, %"class.soplex::SSVector"* nocapture %sv) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SVector"* %this}, i64 0, metadata !1799), !dbg !3128
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %sv}, i64 0, metadata !1800), !dbg !3128
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %sv}, i64 0, metadata !3129), !dbg !3131
+  %num.i.i = getelementptr inbounds %"class.soplex::SSVector"* %sv, i64 0, i32 1, i32 0, !dbg !3132
+  %0 = load i32* %num.i.i, align 4, !dbg !3132, !tbaa !2982
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SVector"* %this}, i64 0, metadata !3136), !dbg !3137
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !3138), !dbg !3137
+  %m_elem.i12 = getelementptr inbounds %"class.soplex::SVector"* %this, i64 0, i32 0, !dbg !3139
+  %1 = load %"struct.soplex::SVector::Element"** %m_elem.i12, align 8, !dbg !3139, !tbaa !2976
+  %idx.i13 = getelementptr inbounds %"struct.soplex::SVector::Element"* %1, i64 -1, i32 1, !dbg !3139
+  store i32 %0, i32* %idx.i13, align 4, !dbg !3139, !tbaa !2982
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SVector"* %this}, i64 0, metadata !3140), !dbg !3142
+  %cmp.i = icmp eq %"struct.soplex::SVector::Element"* %1, null, !dbg !3143
+  %tobool15 = icmp eq i32 %0, 0, !dbg !3144
+  %or.cond = or i1 %cmp.i, %tobool15, !dbg !3143
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !1801), !dbg !3141
+  tail call void @llvm.dbg.value(metadata !{%"struct.soplex::SVector::Element"* %1}, i64 0, metadata !1802), !dbg !3145
+  br i1 %or.cond, label %while.end, label %while.body.lr.ph, !dbg !3143
+
+while.body.lr.ph:                                 ; preds = %entry
+  %idx.i.i = getelementptr inbounds %"class.soplex::SSVector"* %sv, i64 0, i32 1, i32 2, !dbg !3146
+  %2 = load i32** %idx.i.i, align 8, !dbg !3146, !tbaa !2976
+  %val.i = getelementptr inbounds %"class.soplex::SSVector"* %sv, i64 0, i32 0, i32 0, i32 1, !dbg !3151
+  %3 = load double** %val.i, align 8, !dbg !3151, !tbaa !2976
+  %4 = sext i32 %0 to i64
+  br label %while.body, !dbg !3144
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.body
+  %indvars.iv = phi i64 [ %4, %while.body.lr.ph ], [ %indvars.iv.next, %while.body ]
+  %e.016 = phi %"struct.soplex::SVector::Element"* [ %1, %while.body.lr.ph ], [ %incdec.ptr, %while.body ]
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !3144
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %sv}, i64 0, metadata !3154), !dbg !3155
+  %arrayidx.i.i = getelementptr inbounds i32* %2, i64 %indvars.iv.next, !dbg !3146
+  %5 = load i32* %arrayidx.i.i, align 4, !dbg !3146, !tbaa !2982
+  %idx = getelementptr inbounds %"struct.soplex::SVector::Element"* %e.016, i64 0, i32 1, !dbg !3149
+  store i32 %5, i32* %idx, align 4, !dbg !3149, !tbaa !2982
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %sv}, i64 0, metadata !3156), !dbg !3157
+  tail call void @llvm.dbg.value(metadata !{i32 %5}, i64 0, metadata !3158), !dbg !3157
+  %idxprom.i = sext i32 %5 to i64, !dbg !3151
+  %arrayidx.i = getelementptr inbounds double* %3, i64 %idxprom.i, !dbg !3151
+  %6 = load double* %arrayidx.i, align 8, !dbg !3151, !tbaa !2995
+  %val = getelementptr inbounds %"struct.soplex::SVector::Element"* %e.016, i64 0, i32 0, !dbg !3153
+  store double %6, double* %val, align 8, !dbg !3153, !tbaa !2995
+  %incdec.ptr = getelementptr inbounds %"struct.soplex::SVector::Element"* %e.016, i64 1, !dbg !3159
+  tail call void @llvm.dbg.value(metadata !{%"struct.soplex::SVector::Element"* %incdec.ptr}, i64 0, metadata !1802), !dbg !3159
+  %7 = trunc i64 %indvars.iv.next to i32, !dbg !3144
+  %tobool = icmp eq i32 %7, 0, !dbg !3144
+  br i1 %tobool, label %while.end, label %while.body, !dbg !3144
+
+while.end:                                        ; preds = %entry, %while.body
+  ret %"class.soplex::SVector"* %this, !dbg !3160
+}

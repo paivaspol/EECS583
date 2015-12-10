@@ -1,0 +1,36 @@
+define linkonce_odr void @_ZN11xercesc_2_515BaseRefVectorOfINS_5TokenEE17removeLastElementEv(%"class.xercesc_2_5::BaseRefVectorOf"* nocapture %this) unnamed_addr #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf"* %this}, i64 0, metadata !1258), !dbg !2561
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf"* %this, i64 0, i32 2, !dbg !2562
+  %0 = load i32* %fCurCount, align 4, !dbg !2562, !tbaa !2244
+  %tobool = icmp eq i32 %0, 0, !dbg !2562
+  br i1 %tobool, label %if.end6, label %if.end, !dbg !2562
+
+if.end:                                           ; preds = %entry
+  %dec = add i32 %0, -1, !dbg !2563
+  store i32 %dec, i32* %fCurCount, align 4, !dbg !2563, !tbaa !2244
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf"* %this, i64 0, i32 1, !dbg !2564
+  %1 = load i8* %fAdoptedElems, align 1, !dbg !2564, !tbaa !2304, !range !2528
+  %tobool3 = icmp eq i8 %1, 0, !dbg !2564
+  br i1 %tobool3, label %if.end6, label %if.then4, !dbg !2564
+
+if.then4:                                         ; preds = %if.end
+  %idxprom = zext i32 %dec to i64, !dbg !2565
+  %fElemList = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf"* %this, i64 0, i32 4, !dbg !2565
+  %2 = load %"class.xercesc_2_5::Token"*** %fElemList, align 8, !dbg !2565, !tbaa !2191
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::Token"** %2, i64 %idxprom, !dbg !2565
+  %3 = load %"class.xercesc_2_5::Token"** %arrayidx, align 8, !dbg !2565, !tbaa !2191
+  %isnull = icmp eq %"class.xercesc_2_5::Token"* %3, null, !dbg !2565
+  br i1 %isnull, label %if.end6, label %delete.notnull, !dbg !2565
+
+delete.notnull:                                   ; preds = %if.then4
+  %4 = bitcast %"class.xercesc_2_5::Token"* %3 to void (%"class.xercesc_2_5::Token"*)***, !dbg !2565
+  %vtable = load void (%"class.xercesc_2_5::Token"*)*** %4, align 8, !dbg !2565, !tbaa !2189
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::Token"*)** %vtable, i64 1, !dbg !2565
+  %5 = load void (%"class.xercesc_2_5::Token"*)** %vfn, align 8, !dbg !2565
+  tail call void %5(%"class.xercesc_2_5::Token"* %3) #10, !dbg !2565
+  br label %if.end6, !dbg !2565
+
+if.end6:                                          ; preds = %if.end, %entry, %if.then4, %delete.notnull
+  ret void, !dbg !2565
+}

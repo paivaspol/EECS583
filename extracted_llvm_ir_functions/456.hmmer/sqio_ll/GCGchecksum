@@ -1,27 +1,32 @@
 define i32 @GCGchecksum(i8* nocapture %seq, i32 %len) #0 {
 entry:
-  %cmp6 = icmp sgt i32 %len, 0
-  br i1 %cmp6, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{i8* %seq}, i64 0, metadata !368), !dbg !1204
+  tail call void @llvm.dbg.value(metadata !{i32 %len}, i64 0, metadata !369), !dbg !1204
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !371), !dbg !1205
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !370), !dbg !1206
+  %cmp6 = icmp sgt i32 %len, 0, !dbg !1206
+  br i1 %cmp6, label %for.body, label %for.end, !dbg !1206
 
 for.body:                                         ; preds = %entry, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
   %chk.08 = phi i32 [ %rem2, %for.body ], [ 0, %entry ]
-  %0 = trunc i64 %indvars.iv to i32
-  %rem = srem i32 %0, 57
-  %add = add nsw i32 %rem, 1
-  %arrayidx = getelementptr inbounds i8* %seq, i64 %indvars.iv
-  %1 = load i8* %arrayidx, align 1, !tbaa !1
-  %conv = sext i8 %1 to i32
-  %call = tail call i32 @sre_toupper(i32 %conv) #8
-  %mul = mul nsw i32 %call, %add
-  %add1 = add nsw i32 %mul, %chk.08
-  %rem2 = srem i32 %add1, 10000
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %len
-  br i1 %exitcond, label %for.end, label %for.body
+  %0 = trunc i64 %indvars.iv to i32, !dbg !1208
+  %rem = srem i32 %0, 57, !dbg !1208
+  %add = add nsw i32 %rem, 1, !dbg !1208
+  %arrayidx = getelementptr inbounds i8* %seq, i64 %indvars.iv, !dbg !1208
+  %1 = load i8* %arrayidx, align 1, !dbg !1208, !tbaa !601
+  %conv = sext i8 %1 to i32, !dbg !1208
+  %call = tail call i32 @sre_toupper(i32 %conv) #9, !dbg !1208
+  %mul = mul nsw i32 %call, %add, !dbg !1208
+  %add1 = add nsw i32 %mul, %chk.08, !dbg !1208
+  %rem2 = srem i32 %add1, 10000, !dbg !1208
+  tail call void @llvm.dbg.value(metadata !{i32 %rem2}, i64 0, metadata !371), !dbg !1208
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1206
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1206
+  %exitcond = icmp eq i32 %lftr.wideiv, %len, !dbg !1206
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !1206
 
 for.end:                                          ; preds = %for.body, %entry
   %chk.0.lcssa = phi i32 [ 0, %entry ], [ %rem2, %for.body ]
-  ret i32 %chk.0.lcssa
+  ret i32 %chk.0.lcssa, !dbg !1209
 }

@@ -1,0 +1,49 @@
+define zeroext i1 @_ZN11xercesc_2_521XercesElementWildcard17wildcardIntersectENS_15ContentSpecNode9NodeTypesEjS2_j(i32 %t1, i32 %w1, i32 %t2, i32 %w2) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %t1}, i64 0, metadata !1053), !dbg !1108
+  tail call void @llvm.dbg.value(metadata !{i32 %w1}, i64 0, metadata !1054), !dbg !1109
+  tail call void @llvm.dbg.value(metadata !{i32 %t2}, i64 0, metadata !1055), !dbg !1110
+  tail call void @llvm.dbg.value(metadata !{i32 %w2}, i64 0, metadata !1056), !dbg !1111
+  %and = and i32 %t1, 15, !dbg !1112
+  %cmp = icmp eq i32 %and, 6, !dbg !1112
+  br i1 %cmp, label %return, label %lor.lhs.false, !dbg !1112
+
+lor.lhs.false:                                    ; preds = %entry
+  %and1 = and i32 %t2, 15, !dbg !1112
+  %cmp2 = icmp eq i32 %and1, 6, !dbg !1112
+  br i1 %cmp2, label %return, label %if.else, !dbg !1112
+
+if.else:                                          ; preds = %lor.lhs.false
+  %cmp4 = icmp eq i32 %and, 8, !dbg !1113
+  %cmp6 = icmp eq i32 %and1, 8, !dbg !1113
+  %or.cond = and i1 %cmp4, %cmp6, !dbg !1113
+  %cmp8 = icmp eq i32 %w1, %w2, !dbg !1113
+  %or.cond45 = and i1 %or.cond, %cmp8, !dbg !1113
+  br i1 %or.cond45, label %return, label %if.else10, !dbg !1113
+
+if.else10:                                        ; preds = %if.else
+  %cmp12 = icmp eq i32 %and, 7, !dbg !1114
+  %cmp15 = icmp eq i32 %and1, 7, !dbg !1114
+  %or.cond46 = and i1 %cmp12, %cmp15, !dbg !1114
+  br i1 %or.cond46, label %return, label %if.else17, !dbg !1114
+
+if.else17:                                        ; preds = %if.else10
+  %or.cond47 = and i1 %cmp4, %cmp15, !dbg !1115
+  br i1 %or.cond47, label %land.lhs.true29, label %lor.lhs.false23, !dbg !1115
+
+lor.lhs.false23:                                  ; preds = %if.else17
+  %or.cond48 = and i1 %cmp12, %cmp6, !dbg !1115
+  %or.cond48.not = xor i1 %or.cond48, true, !dbg !1115
+  %or.cond49 = or i1 %cmp8, %or.cond48.not, !dbg !1115
+  br i1 %or.cond49, label %if.end34, label %return, !dbg !1115
+
+land.lhs.true29:                                  ; preds = %if.else17
+  br i1 %cmp8, label %if.end34, label %return, !dbg !1115
+
+if.end34:                                         ; preds = %lor.lhs.false23, %land.lhs.true29
+  br label %return, !dbg !1116
+
+return:                                           ; preds = %land.lhs.true29, %lor.lhs.false23, %if.else10, %if.else, %entry, %lor.lhs.false, %if.end34
+  %retval.0 = phi i1 [ false, %if.end34 ], [ true, %lor.lhs.false ], [ true, %entry ], [ true, %if.else ], [ true, %if.else10 ], [ true, %lor.lhs.false23 ], [ true, %land.lhs.true29 ]
+  ret i1 %retval.0, !dbg !1116
+}

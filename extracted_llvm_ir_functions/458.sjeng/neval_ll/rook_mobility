@@ -1,40 +1,45 @@
-define internal fastcc i32 @rook_mobility(i32 %square) #1 {
+define internal fastcc i32 @rook_mobility(i32 %square) #2 {
 entry:
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata !{i32 %square}, i64 0, metadata !118), !dbg !228
+  tail call void @llvm.dbg.value(metadata !8, i64 0, metadata !120), !dbg !229
+  tail call void @llvm.dbg.value(metadata !8, i64 0, metadata !121), !dbg !230
+  br label %for.body, !dbg !230
 
 for.body:                                         ; preds = %for.inc9, %entry
   %indvars.iv24 = phi i64 [ 0, %entry ], [ %indvars.iv.next25, %for.inc9 ]
   %m.022 = phi i32 [ 0, %entry ], [ %m.1.lcssa, %for.inc9 ]
-  %arrayidx = getelementptr inbounds [4 x i32]* @rook_mobility.dir, i64 0, i64 %indvars.iv24
-  %0 = load i32* %arrayidx, align 4, !tbaa !0
-  %add = add i32 %0, %square
-  %idxprom217 = sext i32 %add to i64
-  %arrayidx318 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom217
-  %1 = load i32* %arrayidx318, align 4, !tbaa !0
-  %cmp419 = icmp eq i32 %1, 13
-  br i1 %cmp419, label %for.body5.lr.ph, label %for.inc9
+  %arrayidx = getelementptr inbounds [4 x i32]* @rook_mobility.dir, i64 0, i64 %indvars.iv24, !dbg !232
+  %0 = load i32* %arrayidx, align 4, !dbg !232, !tbaa !177
+  %add = add i32 %0, %square, !dbg !232
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !119), !dbg !232
+  %idxprom217 = sext i32 %add to i64, !dbg !232
+  %arrayidx318 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom217, !dbg !232
+  %1 = load i32* %arrayidx318, align 4, !dbg !232, !tbaa !177
+  %cmp419 = icmp eq i32 %1, 13, !dbg !232
+  br i1 %cmp419, label %for.body5.lr.ph, label %for.inc9, !dbg !232
 
 for.body5.lr.ph:                                  ; preds = %for.body
   %2 = sext i32 %0 to i64
-  br label %for.body5
+  br label %for.body5, !dbg !232
 
 for.body5:                                        ; preds = %for.body5.lr.ph, %for.body5
   %indvars.iv = phi i64 [ %idxprom217, %for.body5.lr.ph ], [ %indvars.iv.next, %for.body5 ]
   %m.121 = phi i32 [ %m.022, %for.body5.lr.ph ], [ %inc, %for.body5 ]
-  %inc = add nsw i32 %m.121, 1
-  %indvars.iv.next = add i64 %indvars.iv, %2
-  %arrayidx3 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %indvars.iv.next
-  %3 = load i32* %arrayidx3, align 4, !tbaa !0
-  %cmp4 = icmp eq i32 %3, 13
-  br i1 %cmp4, label %for.body5, label %for.inc9
+  %inc = add nsw i32 %m.121, 1, !dbg !235
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !120), !dbg !235
+  %indvars.iv.next = add i64 %indvars.iv, %2, !dbg !232
+  %arrayidx3 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %indvars.iv.next, !dbg !232
+  %3 = load i32* %arrayidx3, align 4, !dbg !232, !tbaa !177
+  %cmp4 = icmp eq i32 %3, 13, !dbg !232
+  br i1 %cmp4, label %for.body5, label %for.inc9, !dbg !232
 
 for.inc9:                                         ; preds = %for.body5, %for.body
   %m.1.lcssa = phi i32 [ %m.022, %for.body ], [ %inc, %for.body5 ]
-  %indvars.iv.next25 = add i64 %indvars.iv24, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next25 to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 4
-  br i1 %exitcond, label %for.end11, label %for.body
+  %indvars.iv.next25 = add i64 %indvars.iv24, 1, !dbg !230
+  %lftr.wideiv = trunc i64 %indvars.iv.next25 to i32, !dbg !230
+  %exitcond = icmp eq i32 %lftr.wideiv, 4, !dbg !230
+  br i1 %exitcond, label %for.end11, label %for.body, !dbg !230
 
 for.end11:                                        ; preds = %for.inc9
-  ret i32 %m.1.lcssa
+  ret i32 %m.1.lcssa, !dbg !236
 }

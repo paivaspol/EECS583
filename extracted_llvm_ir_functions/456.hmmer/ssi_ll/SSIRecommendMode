@@ -1,4 +1,23 @@
-define i32 @SSIRecommendMode(i8* nocapture %file) #2 {
+define i32 @SSIRecommendMode(i8* nocapture %file) #0 {
 entry:
-  ret i32 0
+  %s2 = alloca %struct.stat, align 8
+  call void @llvm.dbg.value(metadata !{i8* %file}, i64 0, metadata !179), !dbg !735
+  %0 = bitcast %struct.stat* %s2 to i8*, !dbg !736
+  call void @llvm.lifetime.start(i64 144, i8* %0) #3, !dbg !736
+  call void @llvm.dbg.declare(metadata !{%struct.stat* %s2}, metadata !180), !dbg !736
+  %call = call i32 @stat(i8* %file, %struct.stat* %s2) #9, !dbg !737
+  %cmp = icmp eq i32 %call, 0, !dbg !737
+  br i1 %cmp, label %if.then, label %cleanup, !dbg !737
+
+if.then:                                          ; preds = %entry
+  %st_size = getelementptr inbounds %struct.stat* %s2, i64 0, i32 8, !dbg !738
+  %1 = load i64* %st_size, align 8, !dbg !738, !tbaa !740
+  %not.cmp1 = icmp sgt i64 %1, 2146483647, !dbg !738
+  %. = zext i1 %not.cmp1 to i32, !dbg !738
+  br label %cleanup, !dbg !738
+
+cleanup:                                          ; preds = %entry, %if.then
+  %retval.0 = phi i32 [ %., %if.then ], [ -1, %entry ]
+  call void @llvm.lifetime.end(i64 144, i8* %0) #3, !dbg !741
+  ret i32 %retval.0, !dbg !742
 }

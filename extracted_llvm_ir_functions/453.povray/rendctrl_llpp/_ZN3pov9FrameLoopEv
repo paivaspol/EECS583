@@ -1,0 +1,117 @@
+define void @_ZN3pov9FrameLoopEv() #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{double %sub}, i64 0, metadata !71), !dbg !1403
+  %0 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !1404, !tbaa !1405
+  %1 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 5), align 8, !dbg !1408, !tbaa !1405
+  %2 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 3), align 4, !dbg !1408, !tbaa !1405
+  %sub1 = sub nsw i32 %1, %2, !dbg !1408
+  %and = lshr i32 %0, 15, !dbg !1404
+  %and.lobit = and i32 %and, 1, !dbg !1404
+  %Diff_Frame.0 = add nsw i32 %sub1, %and.lobit, !dbg !1404
+  %cmp = icmp eq i32 %Diff_Frame.0, 0, !dbg !1409
+  br i1 %cmp, label %cond.end, label %cond.false, !dbg !1409
+
+cond.false:                                       ; preds = %entry
+  %3 = load double* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 4), align 8, !dbg !1403, !tbaa !1410
+  %4 = load double* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 7), align 8, !dbg !1403, !tbaa !1410
+  %sub = fsub double %4, %3, !dbg !1403
+  %conv3 = sitofp i32 %Diff_Frame.0 to double, !dbg !1409
+  %div = fdiv double %sub, %conv3, !dbg !1409
+  br label %cond.end, !dbg !1409
+
+cond.end:                                         ; preds = %entry, %cond.false
+  %cond = phi double [ %div, %cond.false ], [ 0.000000e+00, %entry ], !dbg !1409
+  store double %cond, double* @_ZN3pov11Clock_DeltaE, align 8, !dbg !1409, !tbaa !1410
+  %call = tail call i32 @_ZN3pov12pov_shelloutENS_9shelltypeE(i32 0) #7, !dbg !1411
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !73), !dbg !1411
+  switch i32 %call, label %if.then7 [
+    i32 5, label %if.end40
+    i32 4, label %if.end38
+  ], !dbg !1412
+
+if.then7:                                         ; preds = %cond.end
+  %5 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 3), align 4, !dbg !1413, !tbaa !1405
+  store i32 %5, i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 2), align 8, !dbg !1413, !tbaa !1405
+  %6 = load double* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 4), align 8, !dbg !1413, !tbaa !1410
+  store double %6, double* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 1), align 8, !dbg !1417, !tbaa !1410
+  %7 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 5), align 8, !dbg !1413, !tbaa !1405
+  %cmp846 = icmp sgt i32 %5, %7, !dbg !1413
+  br i1 %cmp846, label %for.end, label %for.body, !dbg !1413
+
+for.body:                                         ; preds = %if.then7, %if.end29
+  %8 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 0), align 8, !dbg !1418, !tbaa !1420
+  %cmp9 = icmp eq i32 %8, 1, !dbg !1418
+  br i1 %cmp9, label %if.then10, label %if.end13, !dbg !1418
+
+if.then10:                                        ; preds = %for.body
+  %call11 = tail call i64 @time(i64* @_ZN3pov6tstartE) #8, !dbg !1421
+  %call12 = tail call i32 @_ZN3pov13Send_ProgressEPKci(i8* getelementptr inbounds ([17 x i8]* @.str, i64 0, i64 0), i32 13) #7, !dbg !1423
+  br label %if.end13, !dbg !1424
+
+if.end13:                                         ; preds = %if.then10, %for.body
+  tail call void @_ZN3pov22setup_output_file_nameEv() #7, !dbg !1425
+  %call14 = tail call i32 @_ZN3pov12pov_shelloutENS_9shelltypeE(i32 1) #7, !dbg !1426
+  tail call void @llvm.dbg.value(metadata !{i32 %call14}, i64 0, metadata !75), !dbg !1426
+  switch i32 %call14, label %if.then19 [
+    i32 5, label %for.end
+    i32 4, label %if.end25
+  ], !dbg !1427
+
+if.then19:                                        ; preds = %if.end13
+  tail call void @_ZN3pov11FrameRenderEv() #7, !dbg !1428
+  %call20 = tail call i32 @_ZN3pov12pov_shelloutENS_9shelltypeE(i32 2) #7, !dbg !1430
+  tail call void @llvm.dbg.value(metadata !{i32 %call20}, i64 0, metadata !75), !dbg !1430
+  %9 = and i32 %call20, -2, !dbg !1431
+  %10 = icmp eq i32 %9, 4, !dbg !1431
+  br i1 %10, label %for.end, label %if.end25, !dbg !1431
+
+if.end25:                                         ; preds = %if.end13, %if.then19
+  %11 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 0), align 8, !dbg !1432, !tbaa !1420
+  %cmp26 = icmp eq i32 %11, 1, !dbg !1432
+  br i1 %cmp26, label %if.then27, label %if.end29, !dbg !1432
+
+if.then27:                                        ; preds = %if.end25
+  %call28 = tail call i32 @_ZN3pov20Send_FrameStatisticsEv() #7, !dbg !1433
+  br label %if.end29, !dbg !1433
+
+if.end29:                                         ; preds = %if.then27, %if.end25
+  tail call void @_ZN3pov12Do_CooperateEi(i32 1) #7, !dbg !1434
+  %12 = load i64* bitcast (i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 2) to i64*), align 8, !dbg !1417
+  %13 = trunc i64 %12 to i32, !dbg !1417
+  %inc = add nsw i32 %13, 1, !dbg !1417
+  store i32 %inc, i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 2), align 8, !dbg !1417, !tbaa !1405
+  %14 = load double* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 4), align 8, !dbg !1417, !tbaa !1410
+  %15 = load double* @_ZN3pov11Clock_DeltaE, align 8, !dbg !1417, !tbaa !1410
+  %16 = lshr i64 %12, 32
+  %17 = trunc i64 %16 to i32
+  %sub30 = sub nsw i32 %inc, %17, !dbg !1417
+  %conv31 = sitofp i32 %sub30 to double, !dbg !1417
+  %mul = fmul double %15, %conv31, !dbg !1417
+  %add32 = fadd double %14, %mul, !dbg !1417
+  store double %add32, double* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 1), align 8, !dbg !1417, !tbaa !1410
+  %18 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 5), align 8, !dbg !1413, !tbaa !1405
+  %cmp8 = icmp slt i32 %13, %18, !dbg !1413
+  br i1 %cmp8, label %for.body, label %for.end, !dbg !1413
+
+for.end:                                          ; preds = %if.end29, %if.end13, %if.then19, %if.then7
+  %19 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 0), align 8, !dbg !1435, !tbaa !1420
+  %cmp33 = icmp eq i32 %19, 1, !dbg !1435
+  br i1 %cmp33, label %if.then34, label %if.end38, !dbg !1435
+
+if.then34:                                        ; preds = %for.end
+  %20 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 2), align 8, !dbg !1436, !tbaa !1405
+  %dec = add nsw i32 %20, -1, !dbg !1436
+  store i32 %dec, i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 2), align 8, !dbg !1436, !tbaa !1405
+  %call35 = tail call i32 @_ZN3pov21Send_RenderStatisticsEb(i1 zeroext true) #7, !dbg !1438
+  %21 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 2), align 8, !dbg !1439, !tbaa !1405
+  %inc36 = add nsw i32 %21, 1, !dbg !1439
+  store i32 %inc36, i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 34, i32 2), align 8, !dbg !1439, !tbaa !1405
+  br label %if.end38, !dbg !1440
+
+if.end38:                                         ; preds = %cond.end, %for.end, %if.then34
+  %call39 = tail call i32 @_ZN3pov12pov_shelloutENS_9shelltypeE(i32 3) #7, !dbg !1441
+  br label %if.end40, !dbg !1442
+
+if.end40:                                         ; preds = %cond.end, %if.end38
+  ret void, !dbg !1443
+}

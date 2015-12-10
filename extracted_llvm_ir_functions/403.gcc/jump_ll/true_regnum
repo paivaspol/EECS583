@@ -1,58 +1,60 @@
 define i32 @true_regnum(%struct.rtx_def* nocapture %x) #0 {
 entry:
-  %0 = bitcast %struct.rtx_def* %x to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !676), !dbg !1608
+  %0 = bitcast %struct.rtx_def* %x to i32*, !dbg !1609
+  %bf.load = load i32* %0, align 8, !dbg !1609
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1609
   switch i32 %bf.clear, label %return [
     i32 61, label %if.then
     i32 63, label %if.then23
-  ]
+  ], !dbg !1609
 
 if.then:                                          ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
-  %1 = load i32* %rtuint, align 4, !tbaa !0
-  %cmp1 = icmp ugt i32 %1, 52
-  br i1 %cmp1, label %land.lhs.true, label %return
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0, !dbg !1610
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*, !dbg !1610
+  %1 = load i32* %rtuint, align 4, !dbg !1610, !tbaa !806
+  %cmp1 = icmp ugt i32 %1, 52, !dbg !1610
+  br i1 %cmp1, label %land.lhs.true, label %return, !dbg !1610
 
 land.lhs.true:                                    ; preds = %if.then
-  %idxprom = zext i32 %1 to i64
-  %2 = load i16** @reg_renumber, align 8, !tbaa !3
-  %arrayidx5 = getelementptr inbounds i16* %2, i64 %idxprom
-  %3 = load i16* %arrayidx5, align 2, !tbaa !5
-  %cmp6 = icmp sgt i16 %3, -1
-  %conv = sext i16 %3 to i32
-  %conv. = select i1 %cmp6, i32 %conv, i32 %1
-  ret i32 %conv.
+  %idxprom = zext i32 %1 to i64, !dbg !1610
+  %2 = load i16** @reg_renumber, align 8, !dbg !1610, !tbaa !810
+  %arrayidx5 = getelementptr inbounds i16* %2, i64 %idxprom, !dbg !1610
+  %3 = load i16* %arrayidx5, align 2, !dbg !1610, !tbaa !1549
+  %cmp6 = icmp sgt i16 %3, -1, !dbg !1610
+  %conv = sext i16 %3 to i32, !dbg !1610
+  %conv. = select i1 %cmp6, i32 %conv, i32 %1, !dbg !1610
+  ret i32 %conv., !dbg !1610
 
 if.then23:                                        ; preds = %entry
-  %fld24 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1
-  %rtx = bitcast [1 x %union.rtunion_def]* %fld24 to %struct.rtx_def**
-  %4 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
-  %call = tail call i32 @true_regnum(%struct.rtx_def* %4) #8
-  %5 = icmp ult i32 %call, 53
-  br i1 %5, label %if.then31, label %return
+  %fld24 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, !dbg !1612
+  %rtx = bitcast [1 x %union.rtunion_def]* %fld24 to %struct.rtx_def**, !dbg !1612
+  %4 = load %struct.rtx_def** %rtx, align 8, !dbg !1612, !tbaa !810
+  %call = tail call i32 @true_regnum(%struct.rtx_def* %4) #10, !dbg !1612
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !677), !dbg !1612
+  %5 = icmp ult i32 %call, 53, !dbg !1613
+  br i1 %5, label %if.then31, label %return, !dbg !1613
 
 if.then31:                                        ; preds = %if.then23
-  %6 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
-  %arrayidx36 = getelementptr inbounds %struct.rtx_def* %6, i64 0, i32 1, i64 0
-  %rtuint37 = bitcast %union.rtunion_def* %arrayidx36 to i32*
-  %7 = load i32* %rtuint37, align 4, !tbaa !0
-  %8 = bitcast %struct.rtx_def* %6 to i32*
-  %bf.load41 = load i32* %8, align 8
-  %bf.lshr = lshr i32 %bf.load41, 16
-  %bf.clear42 = and i32 %bf.lshr, 255
-  %arrayidx44 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 1
-  %rtuint45 = bitcast %union.rtunion_def* %arrayidx44 to i32*
-  %9 = load i32* %rtuint45, align 4, !tbaa !0
-  %bf.load46 = load i32* %0, align 8
-  %bf.lshr47 = lshr i32 %bf.load46, 16
-  %bf.clear48 = and i32 %bf.lshr47, 255
-  %call49 = tail call i32 @subreg_regno_offset(i32 %7, i32 %bf.clear42, i32 %9, i32 %bf.clear48) #7
-  %add = add i32 %call49, %call
-  br label %return
+  %6 = load %struct.rtx_def** %rtx, align 8, !dbg !1614, !tbaa !810
+  %arrayidx36 = getelementptr inbounds %struct.rtx_def* %6, i64 0, i32 1, i64 0, !dbg !1614
+  %rtuint37 = bitcast %union.rtunion_def* %arrayidx36 to i32*, !dbg !1614
+  %7 = load i32* %rtuint37, align 4, !dbg !1614, !tbaa !806
+  %8 = bitcast %struct.rtx_def* %6 to i32*, !dbg !1614
+  %bf.load41 = load i32* %8, align 8, !dbg !1614
+  %bf.lshr = lshr i32 %bf.load41, 16, !dbg !1614
+  %bf.clear42 = and i32 %bf.lshr, 255, !dbg !1614
+  %arrayidx44 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 1, !dbg !1614
+  %rtuint45 = bitcast %union.rtunion_def* %arrayidx44 to i32*, !dbg !1614
+  %9 = load i32* %rtuint45, align 4, !dbg !1614, !tbaa !806
+  %bf.load46 = load i32* %0, align 8, !dbg !1614
+  %bf.lshr47 = lshr i32 %bf.load46, 16, !dbg !1614
+  %bf.clear48 = and i32 %bf.lshr47, 255, !dbg !1614
+  %call49 = tail call i32 @subreg_regno_offset(i32 %7, i32 %bf.clear42, i32 %9, i32 %bf.clear48) #9, !dbg !1614
+  %add = add i32 %call49, %call, !dbg !1614
+  br label %return, !dbg !1614
 
 return:                                           ; preds = %if.then, %if.then23, %entry, %if.then31
   %retval.0 = phi i32 [ %add, %if.then31 ], [ -1, %entry ], [ -1, %if.then23 ], [ %1, %if.then ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1615
 }

@@ -1,30 +1,39 @@
 define i32 @CCTK_MemTicketRequest() #1 {
-  %tmem = alloca i8*, align 8
+entry:
+  %tmem = alloca %struct.t_memticket*, align 8
   %tname = alloca [20 x i8], align 16
-  %1 = getelementptr inbounds [20 x i8]* %tname, i64 0, i64 0
-  %2 = load i32* @n_tickets, align 4, !tbaa !18
-  %3 = add nsw i32 %2, 1
-  store i32 %3, i32* @n_tickets, align 4, !tbaa !18
-  %4 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %1, i32 0, i64 20, i8* getelementptr inbounds ([10 x i8]* @.str1, i64 0, i64 0), i32 %2) #6
-  %5 = load %struct.cHandledData** @ticketDB, align 8, !tbaa !2
-  %6 = call i32 @Util_GetHandle(%struct.cHandledData* %5, i8* %1, i8** %tmem) #6
-  %7 = icmp sgt i32 %6, -1
-  br i1 %7, label %15, label %8
+  call void @llvm.dbg.declare(metadata !{%struct.t_memticket** %tmem}, metadata !57), !dbg !154
+  call void @llvm.dbg.declare(metadata !{[20 x i8]* %tname}, metadata !63), !dbg !155
+  %arraydecay = getelementptr inbounds [20 x i8]* %tname, i64 0, i64 0, !dbg !156
+  %0 = load i32* @n_tickets, align 4, !dbg !156, !tbaa !126
+  %inc = add nsw i32 %0, 1, !dbg !156
+  store i32 %inc, i32* @n_tickets, align 4, !dbg !156, !tbaa !126
+  %call = call i32 (i8*, i8*, ...)* @sprintf(i8* %arraydecay, i8* getelementptr inbounds ([10 x i8]* @.str1, i64 0, i64 0), i32 %0) #7, !dbg !156
+  %1 = load %struct.cHandledData** @ticketDB, align 8, !dbg !157, !tbaa !117
+  %2 = bitcast %struct.t_memticket** %tmem to i8**, !dbg !157
+  %call2 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %arraydecay, i8** %2) #7, !dbg !157
+  %cmp = icmp sgt i32 %call2, -1, !dbg !157
+  br i1 %cmp, label %if.end9, label %if.else, !dbg !157
 
-; <label>:8                                       ; preds = %0
-  %9 = call i8* @malloc(i64 8) #6
-  store i8* %9, i8** %tmem, align 8, !tbaa !2
-  %10 = icmp eq i8* %9, null
-  br i1 %10, label %15, label %11
+if.else:                                          ; preds = %entry
+  %call3 = call noalias i8* @malloc(i64 8) #7, !dbg !158
+  %3 = bitcast i8* %call3 to %struct.t_memticket*, !dbg !158
+  call void @llvm.dbg.value(metadata !{%struct.t_memticket* %3}, i64 0, metadata !57), !dbg !158
+  store %struct.t_memticket* %3, %struct.t_memticket** %tmem, align 8, !dbg !158, !tbaa !117
+  %tobool = icmp eq i8* %call3, null, !dbg !160
+  br i1 %tobool, label %if.end9, label %if.then4, !dbg !160
 
-; <label>:11                                      ; preds = %8
-  %12 = load i64* @totmem, align 8, !tbaa !14
-  %13 = bitcast i8* %9 to i64*
-  store i64 %12, i64* %13, align 8, !tbaa !19
-  %14 = call i32 @Util_NewHandle(%struct.cHandledData** @ticketDB, i8* %1, i8* %9) #6
-  br label %15
+if.then4:                                         ; preds = %if.else
+  %4 = load i64* @totmem, align 8, !dbg !161, !tbaa !122
+  call void @llvm.dbg.value(metadata !{%struct.t_memticket** %tmem}, i64 0, metadata !57), !dbg !162
+  %size = bitcast i8* %call3 to i64*, !dbg !162
+  store i64 %4, i64* %size, align 8, !dbg !162, !tbaa !122
+  call void @llvm.dbg.value(metadata !{%struct.t_memticket** %tmem}, i64 0, metadata !57), !dbg !164
+  %call7 = call i32 @Util_NewHandle(%struct.cHandledData** @ticketDB, i8* %arraydecay, i8* %call3) #7, !dbg !164
+  call void @llvm.dbg.value(metadata !{i32 %call7}, i64 0, metadata !56), !dbg !164
+  br label %if.end9, !dbg !165
 
-; <label>:15                                      ; preds = %8, %0, %11
-  %this_ticket.0 = phi i32 [ %14, %11 ], [ -3, %0 ], [ -2, %8 ]
-  ret i32 %this_ticket.0
+if.end9:                                          ; preds = %if.else, %entry, %if.then4
+  %this_ticket.0 = phi i32 [ %call7, %if.then4 ], [ -3, %entry ], [ -2, %if.else ]
+  ret i32 %this_ticket.0, !dbg !166
 }

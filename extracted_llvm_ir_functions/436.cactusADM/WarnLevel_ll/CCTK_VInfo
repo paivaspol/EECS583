@@ -1,16 +1,20 @@
-define i32 @CCTK_VInfo(i8* %thorn, i8* nocapture readonly %format, ...) #1 {
+define i32 @CCTK_VInfo(i8* %thorn, i8* nocapture %format, ...) #1 {
+entry:
   %ap = alloca [1 x %struct.__va_list_tag], align 16
-  %1 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0
-  %2 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
-  call void @llvm.va_start(i8* %2)
-  %3 = load %struct.__sFILE** @__stdoutp, align 8, !tbaa !2
-  %4 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([12 x i8]* @.str1, i64 0, i64 0), i8* %thorn) #8
-  %5 = load %struct.__sFILE** @__stdoutp, align 8, !tbaa !2
-  %6 = call i32 @vfprintf(%struct.__sFILE* %5, i8* %format, %struct.__va_list_tag* %1) #8
-  %7 = load %struct.__sFILE** @__stdoutp, align 8, !tbaa !2
-  %fputc = call i32 @fputc(i32 10, %struct.__sFILE* %7)
-  %8 = load %struct.__sFILE** @__stdoutp, align 8, !tbaa !2
-  %9 = call i32 @fflush(%struct.__sFILE* %8) #8
-  call void @llvm.va_end(i8* %2)
-  ret i32 0
+  call void @llvm.dbg.value(metadata !{i8* %thorn}, i64 0, metadata !32), !dbg !214
+  call void @llvm.dbg.value(metadata !{i8* %format}, i64 0, metadata !33), !dbg !214
+  call void @llvm.dbg.declare(metadata !{[1 x %struct.__va_list_tag]* %ap}, metadata !34), !dbg !215
+  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, !dbg !216
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*, !dbg !216
+  call void @llvm.va_start(i8* %arraydecay1), !dbg !216
+  %0 = load %struct._IO_FILE** @stdout, align 8, !dbg !217, !tbaa !218
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([12 x i8]* @.str1, i64 0, i64 0), i8* %thorn) #9, !dbg !217
+  %1 = load %struct._IO_FILE** @stdout, align 8, !dbg !221, !tbaa !218
+  %call3 = call i32 @vfprintf(%struct._IO_FILE* %1, i8* %format, %struct.__va_list_tag* %arraydecay) #9, !dbg !221
+  %2 = load %struct._IO_FILE** @stdout, align 8, !dbg !222, !tbaa !218
+  %fputc = call i32 @fputc(i32 10, %struct._IO_FILE* %2), !dbg !222
+  %3 = load %struct._IO_FILE** @stdout, align 8, !dbg !223, !tbaa !218
+  %call5 = call i32 @fflush(%struct._IO_FILE* %3) #9, !dbg !223
+  call void @llvm.va_end(i8* %arraydecay1), !dbg !224
+  ret i32 0, !dbg !225
 }

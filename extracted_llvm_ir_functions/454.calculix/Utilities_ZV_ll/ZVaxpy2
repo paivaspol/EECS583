@@ -1,61 +1,74 @@
 define void @ZVaxpy2(i32 %size, double* nocapture %z, double %areal, double %aimag, double* %x, double %breal, double %bimag, double* %y) #0 {
 entry:
-  %cmp = icmp slt i32 %size, 0
-  %cmp1 = icmp eq double* %y, null
-  %or.cond = or i1 %cmp, %cmp1
-  %cmp3 = icmp eq double* %x, null
-  %or.cond59 = or i1 %or.cond, %cmp3
-  br i1 %or.cond59, label %if.then, label %for.cond.preheader
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !263), !dbg !1146
+  tail call void @llvm.dbg.value(metadata !{double* %z}, i64 0, metadata !264), !dbg !1147
+  tail call void @llvm.dbg.value(metadata !{double %areal}, i64 0, metadata !265), !dbg !1148
+  tail call void @llvm.dbg.value(metadata !{double %aimag}, i64 0, metadata !266), !dbg !1149
+  tail call void @llvm.dbg.value(metadata !{double* %x}, i64 0, metadata !267), !dbg !1150
+  tail call void @llvm.dbg.value(metadata !{double %breal}, i64 0, metadata !268), !dbg !1151
+  tail call void @llvm.dbg.value(metadata !{double %bimag}, i64 0, metadata !269), !dbg !1152
+  tail call void @llvm.dbg.value(metadata !{double* %y}, i64 0, metadata !270), !dbg !1153
+  %cmp = icmp slt i32 %size, 0, !dbg !1154
+  %cmp1 = icmp eq double* %y, null, !dbg !1154
+  %or.cond = or i1 %cmp, %cmp1, !dbg !1154
+  %cmp3 = icmp eq double* %x, null, !dbg !1154
+  %or.cond59 = or i1 %or.cond, %cmp3, !dbg !1154
+  br i1 %or.cond59, label %if.then, label %for.cond.preheader, !dbg !1154
 
 for.cond.preheader:                               ; preds = %entry
-  %cmp460 = icmp sgt i32 %size, 0
-  br i1 %cmp460, label %for.body, label %for.end
+  %cmp460 = icmp sgt i32 %size, 0, !dbg !1155
+  br i1 %cmp460, label %for.body, label %for.end, !dbg !1155
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([52 x i8]* @.str7, i64 0, i64 0), i32 %size, double* %y, double %areal, double %aimag, double* %x) #5
-  tail call void @exit(i32 -1) #7
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !1157, !tbaa !925
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([52 x i8]* @.str7, i64 0, i64 0), i32 %size, double* %y, double %areal, double %aimag, double* %x) #6, !dbg !1157
+  tail call void @exit(i32 -1) #8, !dbg !1159
+  unreachable, !dbg !1159
 
 for.body:                                         ; preds = %for.cond.preheader, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
   %ii.061 = phi i32 [ %inc, %for.body ], [ 0, %for.cond.preheader ]
-  %arrayidx = getelementptr inbounds double* %x, i64 %indvars.iv
-  %1 = load double* %arrayidx, align 8, !tbaa !0
-  %2 = or i64 %indvars.iv, 1
-  %arrayidx6 = getelementptr inbounds double* %x, i64 %2
-  %3 = load double* %arrayidx6, align 8, !tbaa !0
-  %arrayidx8 = getelementptr inbounds double* %y, i64 %indvars.iv
-  %4 = load double* %arrayidx8, align 8, !tbaa !0
-  %arrayidx11 = getelementptr inbounds double* %y, i64 %2
-  %5 = load double* %arrayidx11, align 8, !tbaa !0
-  %mul = fmul double %1, %areal
-  %mul12 = fmul double %3, %aimag
-  %sub = fsub double %mul, %mul12
-  %mul13 = fmul double %4, %breal
-  %add14 = fadd double %sub, %mul13
-  %mul15 = fmul double %5, %bimag
-  %sub16 = fsub double %add14, %mul15
-  %arrayidx18 = getelementptr inbounds double* %z, i64 %indvars.iv
-  %6 = load double* %arrayidx18, align 8, !tbaa !0
-  %add19 = fadd double %6, %sub16
-  store double %add19, double* %arrayidx18, align 8, !tbaa !0
-  %mul20 = fmul double %3, %areal
-  %mul21 = fmul double %1, %aimag
-  %add22 = fadd double %mul21, %mul20
-  %mul23 = fmul double %5, %breal
-  %add24 = fadd double %add22, %mul23
-  %mul25 = fmul double %4, %bimag
-  %add26 = fadd double %mul25, %add24
-  %arrayidx29 = getelementptr inbounds double* %z, i64 %2
-  %7 = load double* %arrayidx29, align 8, !tbaa !0
-  %add30 = fadd double %7, %add26
-  store double %add30, double* %arrayidx29, align 8, !tbaa !0
-  %inc = add nsw i32 %ii.061, 1
-  %indvars.iv.next = add i64 %indvars.iv, 2
-  %exitcond = icmp eq i32 %inc, %size
-  br i1 %exitcond, label %for.end, label %for.body
+  %arrayidx = getelementptr inbounds double* %x, i64 %indvars.iv, !dbg !1160
+  %1 = load double* %arrayidx, align 8, !dbg !1160, !tbaa !861
+  tail call void @llvm.dbg.value(metadata !{double %1}, i64 0, metadata !272), !dbg !1160
+  %2 = or i64 %indvars.iv, 1, !dbg !1162
+  %arrayidx6 = getelementptr inbounds double* %x, i64 %2, !dbg !1162
+  %3 = load double* %arrayidx6, align 8, !dbg !1162, !tbaa !861
+  tail call void @llvm.dbg.value(metadata !{double %3}, i64 0, metadata !271), !dbg !1162
+  %arrayidx8 = getelementptr inbounds double* %y, i64 %indvars.iv, !dbg !1163
+  %4 = load double* %arrayidx8, align 8, !dbg !1163, !tbaa !861
+  tail call void @llvm.dbg.value(metadata !{double %4}, i64 0, metadata !274), !dbg !1163
+  %arrayidx11 = getelementptr inbounds double* %y, i64 %2, !dbg !1164
+  %5 = load double* %arrayidx11, align 8, !dbg !1164, !tbaa !861
+  tail call void @llvm.dbg.value(metadata !{double %5}, i64 0, metadata !273), !dbg !1164
+  %mul = fmul double %1, %areal, !dbg !1165
+  %mul12 = fmul double %3, %aimag, !dbg !1165
+  %sub = fsub double %mul, %mul12, !dbg !1165
+  %mul13 = fmul double %4, %breal, !dbg !1165
+  %add14 = fadd double %sub, %mul13, !dbg !1165
+  %mul15 = fmul double %5, %bimag, !dbg !1165
+  %sub16 = fsub double %add14, %mul15, !dbg !1165
+  %arrayidx18 = getelementptr inbounds double* %z, i64 %indvars.iv, !dbg !1165
+  %6 = load double* %arrayidx18, align 8, !dbg !1165, !tbaa !861
+  %add19 = fadd double %6, %sub16, !dbg !1165
+  store double %add19, double* %arrayidx18, align 8, !dbg !1165, !tbaa !861
+  %mul20 = fmul double %3, %areal, !dbg !1166
+  %mul21 = fmul double %1, %aimag, !dbg !1166
+  %add22 = fadd double %mul21, %mul20, !dbg !1166
+  %mul23 = fmul double %5, %breal, !dbg !1166
+  %add24 = fadd double %add22, %mul23, !dbg !1166
+  %mul25 = fmul double %4, %bimag, !dbg !1166
+  %add26 = fadd double %mul25, %add24, !dbg !1166
+  %arrayidx29 = getelementptr inbounds double* %z, i64 %2, !dbg !1166
+  %7 = load double* %arrayidx29, align 8, !dbg !1166, !tbaa !861
+  %add30 = fadd double %7, %add26, !dbg !1166
+  store double %add30, double* %arrayidx29, align 8, !dbg !1166, !tbaa !861
+  %inc = add nsw i32 %ii.061, 1, !dbg !1155
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !275), !dbg !1155
+  %indvars.iv.next = add i64 %indvars.iv, 2, !dbg !1155
+  %exitcond = icmp eq i32 %inc, %size, !dbg !1155
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !1155
 
 for.end:                                          ; preds = %for.body, %for.cond.preheader
-  ret void
+  ret void, !dbg !1167
 }

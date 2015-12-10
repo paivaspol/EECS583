@@ -1,0 +1,31 @@
+define void @_ZN13ICUResHandler15printToDataFileEPPKc(%class.ICUResHandler* %this, i8** %sArrayOfStrins) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.ICUResHandler* %this}, i64 0, metadata !968), !dbg !2013
+  tail call void @llvm.dbg.value(metadata !{i8** %sArrayOfStrins}, i64 0, metadata !969), !dbg !2013
+  %cmp = icmp eq i8** %sArrayOfStrins, null, !dbg !2014
+  br i1 %cmp, label %for.end, label %for.cond.preheader, !dbg !2014
+
+for.cond.preheader:                               ; preds = %entry
+  %0 = load i8** %sArrayOfStrins, align 8, !dbg !2015, !tbaa !1977
+  %cmp213 = icmp eq i8* %0, null, !dbg !2015
+  br i1 %cmp213, label %for.end, label %for.body.lr.ph, !dbg !2015
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %m_fStream = getelementptr inbounds %class.ICUResHandler* %this, i64 0, i32 1, !dbg !2016
+  br label %for.body, !dbg !2015
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %1 = phi i8* [ %0, %for.body.lr.ph ], [ %2, %for.body ]
+  %call = tail call i64 @strlen(i8* %1) #12, !dbg !2016
+  %conv = trunc i64 %call to i32, !dbg !2016
+  tail call void @_ZN21XalanFileOutputStream5writeEPKcj(%class.XalanFileOutputStream* %m_fStream, i8* %1, i32 %conv) #9, !dbg !2016
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2015
+  %arrayidx = getelementptr inbounds i8** %sArrayOfStrins, i64 %indvars.iv.next, !dbg !2015
+  %2 = load i8** %arrayidx, align 8, !dbg !2015, !tbaa !1977
+  %cmp2 = icmp eq i8* %2, null, !dbg !2015
+  br i1 %cmp2, label %for.end, label %for.body, !dbg !2015
+
+for.end:                                          ; preds = %for.cond.preheader, %for.body, %entry
+  ret void, !dbg !2018
+}

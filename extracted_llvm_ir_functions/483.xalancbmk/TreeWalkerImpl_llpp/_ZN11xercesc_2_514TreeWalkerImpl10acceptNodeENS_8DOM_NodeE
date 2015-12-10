@@ -1,0 +1,40 @@
+define signext i16 @_ZN11xercesc_2_514TreeWalkerImpl10acceptNodeENS_8DOM_NodeE(%"class.xercesc_2_5::TreeWalkerImpl"* nocapture %this, %"class.xercesc_2_5::DOM_Node"* %node) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::TreeWalkerImpl"* %this}, i64 0, metadata !3012), !dbg !3447
+  tail call void @llvm.dbg.declare(metadata !{%"class.xercesc_2_5::DOM_Node"* %node}, metadata !3013), !dbg !3447
+  %fNodeFilter = getelementptr inbounds %"class.xercesc_2_5::TreeWalkerImpl"* %this, i64 0, i32 2, !dbg !3448
+  %0 = load %"class.xercesc_2_5::DOM_NodeFilter"** %fNodeFilter, align 8, !dbg !3448, !tbaa !3209
+  %cmp = icmp eq %"class.xercesc_2_5::DOM_NodeFilter"* %0, null, !dbg !3448
+  %fWhatToShow = getelementptr inbounds %"class.xercesc_2_5::TreeWalkerImpl"* %this, i64 0, i32 1, !dbg !3449
+  %1 = load i64* %fWhatToShow, align 8, !dbg !3449, !tbaa !3207
+  %call = tail call signext i16 @_ZNK11xercesc_2_58DOM_Node11getNodeTypeEv(%"class.xercesc_2_5::DOM_Node"* %node) #7, !dbg !3449
+  %conv = sext i16 %call to i32, !dbg !3449
+  %sub = add nsw i32 %conv, -1, !dbg !3449
+  %shl = shl i32 1, %sub, !dbg !3449
+  %conv2 = sext i32 %shl to i64, !dbg !3449
+  %and = and i64 %conv2, %1, !dbg !3449
+  %cmp3 = icmp ne i64 %and, 0, !dbg !3449
+  br i1 %cmp, label %if.then, label %if.else5, !dbg !3448
+
+if.then:                                          ; preds = %entry
+  %. = select i1 %cmp3, i16 1, i16 3, !dbg !3451
+  br label %return, !dbg !3451
+
+if.else5:                                         ; preds = %entry
+  %2 = load %"class.xercesc_2_5::DOM_NodeFilter"** %fNodeFilter, align 8, !dbg !3453, !tbaa !3209
+  %3 = bitcast %"class.xercesc_2_5::DOM_NodeFilter"* %2 to i16 (%"class.xercesc_2_5::DOM_NodeFilter"*, %"class.xercesc_2_5::DOM_Node"*)***, !dbg !3453
+  %vtable = load i16 (%"class.xercesc_2_5::DOM_NodeFilter"*, %"class.xercesc_2_5::DOM_Node"*)*** %3, align 8, !dbg !3453, !tbaa !3205
+  %vfn = getelementptr inbounds i16 (%"class.xercesc_2_5::DOM_NodeFilter"*, %"class.xercesc_2_5::DOM_Node"*)** %vtable, i64 2, !dbg !3453
+  %4 = load i16 (%"class.xercesc_2_5::DOM_NodeFilter"*, %"class.xercesc_2_5::DOM_Node"*)** %vfn, align 8, !dbg !3453
+  %call16 = tail call signext i16 %4(%"class.xercesc_2_5::DOM_NodeFilter"* %2, %"class.xercesc_2_5::DOM_Node"* %node) #7, !dbg !3453
+  br i1 %cmp3, label %return, label %if.else17, !dbg !3456
+
+if.else17:                                        ; preds = %if.else5
+  %cmp23 = icmp eq i16 %call16, 2, !dbg !3457
+  %.26 = select i1 %cmp23, i16 2, i16 3, !dbg !3459
+  br label %return, !dbg !3459
+
+return:                                           ; preds = %if.else17, %if.else5, %if.then
+  %retval.0 = phi i16 [ %., %if.then ], [ %call16, %if.else5 ], [ %.26, %if.else17 ]
+  ret i16 %retval.0, !dbg !3461
+}

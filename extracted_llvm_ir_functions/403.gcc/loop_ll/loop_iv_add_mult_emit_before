@@ -1,24 +1,35 @@
 define void @loop_iv_add_mult_emit_before(%struct.loop* nocapture %loop, %struct.rtx_def* %b, %struct.rtx_def* %m, %struct.rtx_def* %a, %struct.rtx_def* %reg, %struct.basic_block_def* nocapture %before_bb, %struct.rtx_def* %before_insn) #0 {
 entry:
-  %tobool = icmp eq %struct.rtx_def* %before_insn, null
-  br i1 %tobool, label %if.then, label %loop_insn_emit_before.exit
+  tail call void @llvm.dbg.value(metadata !{%struct.loop* %loop}, i64 0, metadata !1448), !dbg !4598
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %b}, i64 0, metadata !1449), !dbg !4599
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %m}, i64 0, metadata !1450), !dbg !4600
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %a}, i64 0, metadata !1451), !dbg !4601
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %reg}, i64 0, metadata !1452), !dbg !4602
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %before_bb}, i64 0, metadata !1453), !dbg !4603
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %before_insn}, i64 0, metadata !1454), !dbg !4604
+  %tobool = icmp eq %struct.rtx_def* %before_insn, null, !dbg !4605
+  br i1 %tobool, label %if.then, label %loop_insn_emit_before.exit, !dbg !4605
 
 if.then:                                          ; preds = %entry
-  tail call void @loop_iv_add_mult_hoist(%struct.loop* %loop, %struct.rtx_def* %b, %struct.rtx_def* %m, %struct.rtx_def* %a, %struct.rtx_def* %reg) #10
-  br label %return
+  tail call void @loop_iv_add_mult_hoist(%struct.loop* %loop, %struct.rtx_def* %b, %struct.rtx_def* %m, %struct.rtx_def* %a, %struct.rtx_def* %reg) #10, !dbg !4606
+  br label %return, !dbg !4608
 
 loop_insn_emit_before.exit:                       ; preds = %entry
-  %call = tail call %struct.rtx_def* @copy_rtx(%struct.rtx_def* %b) #8
-  %call1 = tail call %struct.rtx_def* @copy_rtx(%struct.rtx_def* %m) #8
-  %call2 = tail call %struct.rtx_def* @copy_rtx(%struct.rtx_def* %a) #8
-  %call3 = tail call fastcc %struct.rtx_def* @gen_add_mult(%struct.rtx_def* %call, %struct.rtx_def* %call1, %struct.rtx_def* %call2, %struct.rtx_def* %reg) #10
-  tail call fastcc void @update_reg_last_use(%struct.rtx_def* %a, %struct.rtx_def* %before_insn) #10
-  tail call fastcc void @update_reg_last_use(%struct.rtx_def* %b, %struct.rtx_def* %before_insn) #10
-  tail call fastcc void @update_reg_last_use(%struct.rtx_def* %m, %struct.rtx_def* %before_insn) #10
-  %call1.i = tail call %struct.rtx_def* @emit_insn_before(%struct.rtx_def* %call3, %struct.rtx_def* %before_insn) #8
-  tail call fastcc void @loop_regs_update(%struct.rtx_def* %call3) #10
-  br label %return
+  %call = tail call %struct.rtx_def* @copy_rtx(%struct.rtx_def* %b) #8, !dbg !4609
+  %call1 = tail call %struct.rtx_def* @copy_rtx(%struct.rtx_def* %m) #8, !dbg !4609
+  %call2 = tail call %struct.rtx_def* @copy_rtx(%struct.rtx_def* %a) #8, !dbg !4609
+  %call3 = tail call fastcc %struct.rtx_def* @gen_add_mult(%struct.rtx_def* %call, %struct.rtx_def* %call1, %struct.rtx_def* %call2, %struct.rtx_def* %reg) #10, !dbg !4609
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call3}, i64 0, metadata !1455), !dbg !4609
+  tail call fastcc void @update_reg_last_use(%struct.rtx_def* %a, %struct.rtx_def* %before_insn) #10, !dbg !4610
+  tail call fastcc void @update_reg_last_use(%struct.rtx_def* %b, %struct.rtx_def* %before_insn) #10, !dbg !4611
+  tail call fastcc void @update_reg_last_use(%struct.rtx_def* %m, %struct.rtx_def* %before_insn) #10, !dbg !4612
+  tail call void @llvm.dbg.value(metadata !{%struct.loop* %loop}, i64 0, metadata !4613) #3, !dbg !4615
+  tail call void @llvm.dbg.value(metadata !3695, i64 0, metadata !4616) #3, !dbg !4617
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call3}, i64 0, metadata !4618) #3, !dbg !4619
+  %call1.i = tail call %struct.rtx_def* @emit_insn_before(%struct.rtx_def* %call3, %struct.rtx_def* %before_insn) #8, !dbg !4620
+  tail call fastcc void @loop_regs_update(%struct.rtx_def* %call3) #10, !dbg !4621
+  br label %return, !dbg !4621
 
 return:                                           ; preds = %loop_insn_emit_before.exit, %if.then
-  ret void
+  ret void, !dbg !4621
 }

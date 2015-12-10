@@ -1,30 +1,31 @@
 define i32 @significand_size(i32 %mode) #0 {
 entry:
-  %idxprom = sext i32 %mode to i64
-  %arrayidx = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom
-  %0 = load i16* %arrayidx, align 2, !tbaa !0
-  %conv = zext i16 %0 to i32
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !499), !dbg !3088
+  %idxprom = sext i32 %mode to i64, !dbg !3089
+  %arrayidx = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom, !dbg !3089
+  %0 = load i16* %arrayidx, align 2, !dbg !3089, !tbaa !1057
+  %conv = zext i16 %0 to i32, !dbg !3089
   switch i32 %conv, label %sw.default [
     i32 32, label %return
     i32 64, label %sw.bb1
     i32 96, label %sw.bb2
     i32 128, label %sw.bb3
-  ]
+  ], !dbg !3089
 
 sw.bb1:                                           ; preds = %entry
-  br label %return
+  br label %return, !dbg !3090
 
 sw.bb2:                                           ; preds = %entry
-  br label %return
+  br label %return, !dbg !3092
 
 sw.bb3:                                           ; preds = %entry
-  br label %return
+  br label %return, !dbg !3093
 
 sw.default:                                       ; preds = %entry
-  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str2, i64 0, i64 0), i32 6993, i8* getelementptr inbounds ([17 x i8]* @__FUNCTION__.significand_size, i64 0, i64 0)) #8
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str2, i64 0, i64 0), i32 6993, i8* getelementptr inbounds ([17 x i8]* @__FUNCTION__.significand_size, i64 0, i64 0)) #9, !dbg !3094
+  unreachable, !dbg !3094
 
 return:                                           ; preds = %entry, %sw.bb3, %sw.bb2, %sw.bb1
   %retval.0 = phi i32 [ 64, %sw.bb3 ], [ 64, %sw.bb2 ], [ 53, %sw.bb1 ], [ 24, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !3095
 }

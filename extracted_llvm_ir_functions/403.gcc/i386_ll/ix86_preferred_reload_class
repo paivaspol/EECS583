@@ -1,63 +1,65 @@
 define i32 @ix86_preferred_reload_class(%struct.rtx_def* %x, i32 %class) #1 {
 entry:
-  %0 = bitcast %struct.rtx_def* %x to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp ne i32 %bf.clear, 55
-  %bf.clear2 = and i32 %bf.load, 16711680
-  %cmp3 = icmp eq i32 %bf.clear2, 0
-  %or.cond = or i1 %cmp, %cmp3
-  br i1 %or.cond, label %if.end27, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !3281), !dbg !9490
+  tail call void @llvm.dbg.value(metadata !{i32 %class}, i64 0, metadata !3282), !dbg !9491
+  %0 = bitcast %struct.rtx_def* %x to i32*, !dbg !9492
+  %bf.load = load i32* %0, align 8, !dbg !9492
+  %bf.clear = and i32 %bf.load, 65535, !dbg !9492
+  %cmp = icmp ne i32 %bf.clear, 55, !dbg !9492
+  %bf.clear2 = and i32 %bf.load, 16711680, !dbg !9492
+  %cmp3 = icmp eq i32 %bf.clear2, 0, !dbg !9492
+  %or.cond = or i1 %cmp, %cmp3, !dbg !9492
+  br i1 %or.cond, label %if.end27, label %if.then, !dbg !9492
 
 if.then:                                          ; preds = %entry
-  %call = tail call i32 @reg_class_subset_p(i32 %class, i32 16) #9
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %if.end, label %return
+  %call = tail call i32 @reg_class_subset_p(i32 %class, i32 16) #10, !dbg !9493
+  %tobool = icmp eq i32 %call, 0, !dbg !9493
+  br i1 %tobool, label %if.end, label %return, !dbg !9493
 
 if.end:                                           ; preds = %if.then
-  %call5 = tail call i32 @reg_classes_intersect_p(i32 %class, i32 15) #9
-  %tobool6 = icmp eq i32 %call5, 0
-  br i1 %tobool6, label %if.end16, label %land.lhs.true7
+  %call5 = tail call i32 @reg_classes_intersect_p(i32 %class, i32 15) #10, !dbg !9495
+  %tobool6 = icmp eq i32 %call5, 0, !dbg !9495
+  br i1 %tobool6, label %if.end16, label %land.lhs.true7, !dbg !9495
 
 land.lhs.true7:                                   ; preds = %if.end
-  %call8 = tail call i32 @standard_80387_constant_p(%struct.rtx_def* %x) #10
-  %tobool9 = icmp eq i32 %call8, 0
-  br i1 %tobool9, label %if.end16, label %if.then10
+  %call8 = tail call i32 @standard_80387_constant_p(%struct.rtx_def* %x) #11, !dbg !9495
+  %tobool9 = icmp eq i32 %call8, 0, !dbg !9495
+  br i1 %tobool9, label %if.end16, label %if.then10, !dbg !9495
 
 if.then10:                                        ; preds = %land.lhs.true7
-  %call11 = tail call i32 @reg_classes_intersect_p(i32 16, i32 %class) #9
-  %tobool12 = icmp eq i32 %call11, 0
-  br i1 %tobool12, label %return, label %if.then13
+  %call11 = tail call i32 @reg_classes_intersect_p(i32 16, i32 %class) #10, !dbg !9496
+  %tobool12 = icmp eq i32 %call11, 0, !dbg !9496
+  br i1 %tobool12, label %return, label %if.then13, !dbg !9496
 
 if.then13:                                        ; preds = %if.then10
-  %call14 = tail call i32 @reg_class_subset_p(i32 %class, i32 12) #9
-  %tobool15 = icmp ne i32 %call14, 0
-  %cond = select i1 %tobool15, i32 12, i32 15
-  br label %return
+  %call14 = tail call i32 @reg_class_subset_p(i32 %class, i32 12) #10, !dbg !9498
+  %tobool15 = icmp ne i32 %call14, 0, !dbg !9498
+  %cond = select i1 %tobool15, i32 12, i32 15, !dbg !9498
+  br label %return, !dbg !9498
 
 if.end16:                                         ; preds = %land.lhs.true7, %if.end
-  %call17 = tail call i32 @reg_class_subset_p(i32 %class, i32 12) #9
-  %tobool18 = icmp eq i32 %call17, 0
-  br i1 %tobool18, label %if.end20, label %return
+  %call17 = tail call i32 @reg_class_subset_p(i32 %class, i32 12) #10, !dbg !9499
+  %tobool18 = icmp eq i32 %call17, 0, !dbg !9499
+  br i1 %tobool18, label %if.end20, label %return, !dbg !9499
 
 if.end20:                                         ; preds = %if.end16
-  %call21 = tail call i32 @reg_classes_intersect_p(i32 %class, i32 15) #9
-  %tobool22 = icmp eq i32 %call21, 0
-  br i1 %tobool22, label %lor.lhs.false, label %return
+  %call21 = tail call i32 @reg_classes_intersect_p(i32 %class, i32 15) #10, !dbg !9500
+  %tobool22 = icmp eq i32 %call21, 0, !dbg !9500
+  br i1 %tobool22, label %lor.lhs.false, label %return, !dbg !9500
 
 lor.lhs.false:                                    ; preds = %if.end20
-  %call23 = tail call i32 @reg_classes_intersect_p(i32 16, i32 %class) #9
-  %tobool24 = icmp eq i32 %call23, 0
-  br i1 %tobool24, label %if.end27, label %return
+  %call23 = tail call i32 @reg_classes_intersect_p(i32 16, i32 %class) #10, !dbg !9500
+  %tobool24 = icmp eq i32 %call23, 0, !dbg !9500
+  br i1 %tobool24, label %if.end27, label %return, !dbg !9500
 
 if.end27:                                         ; preds = %entry, %lor.lhs.false
-  %call28 = tail call i32 @reg_classes_intersect_p(i32 17, i32 %class) #9
-  %tobool29 = icmp eq i32 %call28, 0
-  %bf.load64.pre = load i32* %0, align 8
-  br i1 %tobool29, label %if.end63, label %land.lhs.true30
+  %call28 = tail call i32 @reg_classes_intersect_p(i32 17, i32 %class) #10, !dbg !9501
+  %tobool29 = icmp eq i32 %call28, 0, !dbg !9501
+  %bf.load64.pre = load i32* %0, align 8, !dbg !9502
+  br i1 %tobool29, label %if.end63, label %land.lhs.true30, !dbg !9501
 
 land.lhs.true30:                                  ; preds = %if.end27
-  %bf.clear32 = and i32 %bf.load64.pre, 65535
+  %bf.clear32 = and i32 %bf.load64.pre, 65535, !dbg !9501
   switch i32 %bf.clear32, label %if.end63 [
     i32 67, label %return
     i32 68, label %return
@@ -67,22 +69,22 @@ land.lhs.true30:                                  ; preds = %if.end27
     i32 134, label %return
     i32 56, label %return
     i32 140, label %return
-  ]
+  ], !dbg !9501
 
 if.end63:                                         ; preds = %if.end27, %land.lhs.true30
-  %bf.clear66 = and i32 %bf.load64.pre, 16711680
-  %cmp67 = icmp eq i32 %bf.clear66, 131072
-  br i1 %cmp67, label %land.lhs.true68, label %if.end72
+  %bf.clear66 = and i32 %bf.load64.pre, 16711680, !dbg !9502
+  %cmp67 = icmp eq i32 %bf.clear66, 131072, !dbg !9502
+  br i1 %cmp67, label %land.lhs.true68, label %if.end72, !dbg !9502
 
 land.lhs.true68:                                  ; preds = %if.end63
-  %call69 = tail call i32 @reg_class_subset_p(i32 %class, i32 8) #9
-  %tobool70 = icmp eq i32 %call69, 0
-  br i1 %tobool70, label %return, label %if.end72
+  %call69 = tail call i32 @reg_class_subset_p(i32 %class, i32 8) #10, !dbg !9502
+  %tobool70 = icmp eq i32 %call69, 0, !dbg !9502
+  br i1 %tobool70, label %return, label %if.end72, !dbg !9502
 
 if.end72:                                         ; preds = %land.lhs.true68, %if.end63
-  br label %return
+  br label %return, !dbg !9503
 
 return:                                           ; preds = %land.lhs.true68, %land.lhs.true30, %land.lhs.true30, %land.lhs.true30, %land.lhs.true30, %land.lhs.true30, %land.lhs.true30, %land.lhs.true30, %land.lhs.true30, %if.end20, %lor.lhs.false, %if.end16, %if.then10, %if.then, %if.end72, %if.then13
   %retval.0 = phi i32 [ %cond, %if.then13 ], [ %class, %if.end72 ], [ 0, %if.then ], [ %class, %if.then10 ], [ 12, %if.end16 ], [ 0, %lor.lhs.false ], [ 0, %if.end20 ], [ 0, %land.lhs.true30 ], [ 0, %land.lhs.true30 ], [ 0, %land.lhs.true30 ], [ 0, %land.lhs.true30 ], [ 0, %land.lhs.true30 ], [ 0, %land.lhs.true30 ], [ 0, %land.lhs.true30 ], [ 0, %land.lhs.true30 ], [ 8, %land.lhs.true68 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !9504
 }

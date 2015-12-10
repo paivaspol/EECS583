@@ -1,0 +1,32 @@
+define i32 @_obstack_memory_used(%struct.obstack* nocapture readonly %h) #2 {
+  tail call void @llvm.dbg.value(metadata %struct.obstack* %h, i64 0, metadata !130, metadata !155), !dbg !436
+  tail call void @llvm.dbg.value(metadata i32 0, i64 0, metadata !132, metadata !155), !dbg !437
+  %1 = getelementptr inbounds %struct.obstack* %h, i64 0, i32 1, !dbg !438
+  %lp.01 = load %struct._obstack_chunk** %1, align 8, !dbg !438
+  %2 = icmp eq %struct._obstack_chunk* %lp.01, null, !dbg !440
+  br i1 %2, label %13, label %.lr.ph, !dbg !442
+
+.lr.ph:                                           ; preds = %0, %.lr.ph
+  %lp.03 = phi %struct._obstack_chunk* [ %lp.0, %.lr.ph ], [ %lp.01, %0 ]
+  %nbytes.02 = phi i64 [ %9, %.lr.ph ], [ 0, %0 ]
+  %3 = getelementptr inbounds %struct._obstack_chunk* %lp.03, i64 0, i32 0, !dbg !443
+  %4 = load i8** %3, align 8, !dbg !443, !tbaa !205
+  %5 = ptrtoint i8* %4 to i64, !dbg !445
+  %6 = ptrtoint %struct._obstack_chunk* %lp.03 to i64, !dbg !445
+  %7 = and i64 %nbytes.02, 4294967295, !dbg !446
+  %8 = sub i64 %7, %6, !dbg !445
+  %9 = add i64 %8, %5, !dbg !446
+  tail call void @llvm.dbg.value(metadata i32 %12, i64 0, metadata !132, metadata !155), !dbg !437
+  %10 = getelementptr inbounds %struct._obstack_chunk* %lp.03, i64 0, i32 1, !dbg !447
+  %lp.0 = load %struct._obstack_chunk** %10, align 8, !dbg !438
+  %11 = icmp eq %struct._obstack_chunk* %lp.0, null, !dbg !440
+  br i1 %11, label %._crit_edge, label %.lr.ph, !dbg !442
+
+._crit_edge:                                      ; preds = %.lr.ph
+  %12 = trunc i64 %9 to i32, !dbg !446
+  br label %13, !dbg !442
+
+; <label>:13                                      ; preds = %._crit_edge, %0
+  %nbytes.0.lcssa = phi i32 [ %12, %._crit_edge ], [ 0, %0 ]
+  ret i32 %nbytes.0.lcssa, !dbg !448
+}

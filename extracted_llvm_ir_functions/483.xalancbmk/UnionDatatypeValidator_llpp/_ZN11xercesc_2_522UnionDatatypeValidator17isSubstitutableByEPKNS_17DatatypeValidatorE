@@ -1,0 +1,48 @@
+define linkonce_odr zeroext i1 @_ZN11xercesc_2_522UnionDatatypeValidator17isSubstitutableByEPKNS_17DatatypeValidatorE(%"class.xercesc_2_5::UnionDatatypeValidator"* %this, %"class.xercesc_2_5::DatatypeValidator"* %toCheck) unnamed_addr #7 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::UnionDatatypeValidator"* %this}, i64 0, metadata !8091), !dbg !9294
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DatatypeValidator"* %toCheck}, i64 0, metadata !8092), !dbg !9294
+  %0 = bitcast %"class.xercesc_2_5::UnionDatatypeValidator"* %this to %"class.xercesc_2_5::DatatypeValidator"*, !dbg !9295
+  %cmp = icmp eq %"class.xercesc_2_5::DatatypeValidator"* %0, %toCheck, !dbg !9295
+  br i1 %cmp, label %return, label %if.end, !dbg !9295
+
+if.end:                                           ; preds = %entry
+  %fMemberTypeValidators = getelementptr inbounds %"class.xercesc_2_5::UnionDatatypeValidator"* %this, i64 0, i32 4, !dbg !9296
+  %1 = load %"class.xercesc_2_5::RefVectorOf.3"** %fMemberTypeValidators, align 8, !dbg !9296, !tbaa !8732
+  %tobool = icmp eq %"class.xercesc_2_5::RefVectorOf.3"* %1, null, !dbg !9296
+  br i1 %tobool, label %return, label %if.then2, !dbg !9296
+
+if.then2:                                         ; preds = %if.end
+  %fCurCount.i = getelementptr inbounds %"class.xercesc_2_5::RefVectorOf.3"* %1, i64 0, i32 0, i32 2, !dbg !9297
+  %2 = load i32* %fCurCount.i, align 4, !dbg !9297, !tbaa !8849
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !8093), !dbg !9298
+  tail call void @llvm.dbg.value(metadata !3563, i64 0, metadata !8095), !dbg !9299
+  %cmp414 = icmp eq i32 %2, 0, !dbg !9299
+  br i1 %cmp414, label %return, label %for.body, !dbg !9299
+
+for.cond:                                         ; preds = %for.body
+  %cmp4 = icmp ult i32 %inc, %2, !dbg !9299
+  br i1 %cmp4, label %for.cond.for.body_crit_edge, label %return, !dbg !9299
+
+for.cond.for.body_crit_edge:                      ; preds = %for.cond
+  %.pre = load %"class.xercesc_2_5::RefVectorOf.3"** %fMemberTypeValidators, align 8, !dbg !9300, !tbaa !8732
+  br label %for.body, !dbg !9299
+
+for.body:                                         ; preds = %if.then2, %for.cond.for.body_crit_edge
+  %3 = phi %"class.xercesc_2_5::RefVectorOf.3"* [ %.pre, %for.cond.for.body_crit_edge ], [ %1, %if.then2 ]
+  %i.015 = phi i32 [ %inc, %for.cond.for.body_crit_edge ], [ 0, %if.then2 ]
+  %4 = getelementptr inbounds %"class.xercesc_2_5::RefVectorOf.3"* %3, i64 0, i32 0, !dbg !9300
+  %call6 = tail call %"class.xercesc_2_5::DatatypeValidator"* @_ZN11xercesc_2_515BaseRefVectorOfINS_17DatatypeValidatorEE9elementAtEj(%"class.xercesc_2_5::BaseRefVectorOf.4"* %4, i32 %i.015) #10, !dbg !9300
+  %5 = bitcast %"class.xercesc_2_5::DatatypeValidator"* %call6 to i1 (%"class.xercesc_2_5::DatatypeValidator"*, %"class.xercesc_2_5::DatatypeValidator"*)***, !dbg !9300
+  %vtable = load i1 (%"class.xercesc_2_5::DatatypeValidator"*, %"class.xercesc_2_5::DatatypeValidator"*)*** %5, align 8, !dbg !9300, !tbaa !8716
+  %vfn = getelementptr inbounds i1 (%"class.xercesc_2_5::DatatypeValidator"*, %"class.xercesc_2_5::DatatypeValidator"*)** %vtable, i64 9, !dbg !9300
+  %6 = load i1 (%"class.xercesc_2_5::DatatypeValidator"*, %"class.xercesc_2_5::DatatypeValidator"*)** %vfn, align 8, !dbg !9300
+  %call7 = tail call zeroext i1 %6(%"class.xercesc_2_5::DatatypeValidator"* %call6, %"class.xercesc_2_5::DatatypeValidator"* %toCheck) #10, !dbg !9300
+  %inc = add i32 %i.015, 1, !dbg !9299
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !8095), !dbg !9299
+  br i1 %call7, label %return, label %for.cond, !dbg !9300
+
+return:                                           ; preds = %if.then2, %for.body, %for.cond, %if.end, %entry
+  %retval.0 = phi i1 [ true, %entry ], [ false, %if.end ], [ false, %if.then2 ], [ true, %for.body ], [ false, %for.cond ]
+  ret i1 %retval.0, !dbg !9302
+}

@@ -1,0 +1,28 @@
+define linkonce_odr void @_ZN9flexstackIiE3putEi(%class.flexstack* nocapture %this, i32 %elem) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.flexstack* %this}, i64 0, metadata !678), !dbg !1498
+  tail call void @llvm.dbg.value(metadata !{i32 %elem}, i64 0, metadata !680), !dbg !1498
+  %elemqu = getelementptr inbounds %class.flexstack* %this, i64 0, i32 1, !dbg !1499
+  %0 = load i32* %elemqu, align 4, !dbg !1499, !tbaa !781
+  %maxelemqu = getelementptr inbounds %class.flexstack* %this, i64 0, i32 2, !dbg !1499
+  %1 = load i32* %maxelemqu, align 4, !dbg !1499, !tbaa !781
+  %cmp = icmp eq i32 %0, %1, !dbg !1499
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1499
+
+if.then:                                          ; preds = %entry
+  tail call void @_ZN9flexstackIiE8doublingEv(%class.flexstack* %this) #7, !dbg !1499
+  %.pre = load i32* %elemqu, align 4, !dbg !1500, !tbaa !781
+  br label %if.end, !dbg !1499
+
+if.end:                                           ; preds = %if.then, %entry
+  %2 = phi i32 [ %.pre, %if.then ], [ %0, %entry ]
+  %idxprom = sext i32 %2 to i64, !dbg !1500
+  %ep = getelementptr inbounds %class.flexstack* %this, i64 0, i32 0, !dbg !1500
+  %3 = load i32** %ep, align 8, !dbg !1500, !tbaa !777
+  %arrayidx = getelementptr inbounds i32* %3, i64 %idxprom, !dbg !1500
+  store i32 %elem, i32* %arrayidx, align 4, !dbg !1500, !tbaa !781
+  %4 = load i32* %elemqu, align 4, !dbg !1501, !tbaa !781
+  %inc = add nsw i32 %4, 1, !dbg !1501
+  store i32 %inc, i32* %elemqu, align 4, !dbg !1501, !tbaa !781
+  ret void, !dbg !1502
+}

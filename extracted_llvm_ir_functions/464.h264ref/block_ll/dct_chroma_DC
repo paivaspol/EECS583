@@ -1,62 +1,74 @@
 define i32 @dct_chroma_DC(i32 %uv, i32 %cr_cbp) #0 {
 entry:
-  %add = add nsw i32 %uv, 1
-  %idxprom = sext i32 %add to i64
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %cofDC = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 48
-  %1 = load i32**** %cofDC, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds i32*** %1, i64 %idxprom
-  %2 = load i32*** %arrayidx, align 8, !tbaa !0
-  %3 = load i32** %2, align 8, !tbaa !0
-  %arrayidx6 = getelementptr inbounds i32** %2, i64 1
-  %4 = load i32** %arrayidx6, align 8, !tbaa !0
-  %idxprom16 = sext i32 %uv to i64
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata !{i32 %uv}, i64 0, metadata !306), !dbg !2180
+  tail call void @llvm.dbg.value(metadata !{i32 %cr_cbp}, i64 0, metadata !307), !dbg !2180
+  %add = add nsw i32 %uv, 1, !dbg !2181
+  %idxprom = sext i32 %add to i64, !dbg !2181
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !2181, !tbaa !978
+  %cofDC = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 48, !dbg !2181
+  %1 = load i32**** %cofDC, align 8, !dbg !2181, !tbaa !978
+  %arrayidx = getelementptr inbounds i32*** %1, i64 %idxprom, !dbg !2181
+  %2 = load i32*** %arrayidx, align 8, !dbg !2181, !tbaa !978
+  %3 = load i32** %2, align 8, !dbg !2181, !tbaa !978
+  tail call void @llvm.dbg.value(metadata !{i32* %3}, i64 0, metadata !314), !dbg !2181
+  %arrayidx6 = getelementptr inbounds i32** %2, i64 1, !dbg !2182
+  %4 = load i32** %arrayidx6, align 8, !dbg !2182, !tbaa !978
+  tail call void @llvm.dbg.value(metadata !{i32* %4}, i64 0, metadata !315), !dbg !2182
+  tail call void @llvm.dbg.value(metadata !1322, i64 0, metadata !308), !dbg !2183
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !309), !dbg !2184
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !310), !dbg !2185
+  %idxprom16 = sext i32 %uv to i64, !dbg !2187
+  br label %for.body, !dbg !2185
 
 for.body:                                         ; preds = %for.inc, %entry
   %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc ]
   %cr_cbp.addr.058 = phi i32 [ %cr_cbp, %entry ], [ %cr_cbp.addr.1, %for.inc ]
   %run.057 = phi i32 [ -1, %entry ], [ %run.1, %for.inc ]
   %scan_pos.056 = phi i32 [ 0, %entry ], [ %scan_pos.1, %for.inc ]
-  %arrayidx9 = getelementptr inbounds [16 x [2 x i8]]* @SNGL_SCAN, i64 0, i64 %indvars.iv, i64 0
-  %5 = load i8* %arrayidx9, align 2, !tbaa !1
-  %arrayidx12 = getelementptr inbounds [16 x [2 x i8]]* @SNGL_SCAN, i64 0, i64 %indvars.iv, i64 1
-  %6 = load i8* %arrayidx12, align 1, !tbaa !1
-  %inc = add nsw i32 %run.057, 1
-  %idxprom14 = zext i8 %6 to i64
-  %idxprom15 = zext i8 %5 to i64
-  %arrayidx19 = getelementptr inbounds [2 x [4 x [4 x i32]]]* @dc_level, i64 0, i64 %idxprom16, i64 %idxprom15, i64 %idxprom14
-  %7 = load i32* %arrayidx19, align 4, !tbaa !3
-  %cmp20 = icmp eq i32 %7, 0
-  br i1 %cmp20, label %for.inc, label %if.then
+  %arrayidx9 = getelementptr inbounds [16 x [2 x i8]]* @SNGL_SCAN, i64 0, i64 %indvars.iv, i64 0, !dbg !2189
+  %5 = load i8* %arrayidx9, align 2, !dbg !2189, !tbaa !979
+  %arrayidx12 = getelementptr inbounds [16 x [2 x i8]]* @SNGL_SCAN, i64 0, i64 %indvars.iv, i64 1, !dbg !2190
+  %6 = load i8* %arrayidx12, align 1, !dbg !2190, !tbaa !979
+  %inc = add nsw i32 %run.057, 1, !dbg !2191
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !308), !dbg !2191
+  %idxprom14 = zext i8 %6 to i64, !dbg !2187
+  %idxprom15 = zext i8 %5 to i64, !dbg !2187
+  %arrayidx19 = getelementptr inbounds [2 x [4 x [4 x i32]]]* @dc_level, i64 0, i64 %idxprom16, i64 %idxprom15, i64 %idxprom14, !dbg !2187
+  %7 = load i32* %arrayidx19, align 4, !dbg !2187, !tbaa !984
+  tail call void @llvm.dbg.value(metadata !{i32 %8}, i64 0, metadata !311), !dbg !2187
+  %cmp20 = icmp eq i32 %7, 0, !dbg !2192
+  br i1 %cmp20, label %for.inc, label %if.then, !dbg !2192
 
 if.then:                                          ; preds = %for.body
-  %neg = sub i32 0, %7
-  %ispos = icmp sgt i32 %7, -1
-  %8 = select i1 %ispos, i32 %7, i32 %neg
-  %cmp22 = icmp slt i32 %cr_cbp.addr.058, 1
-  %cond = select i1 %cmp22, i32 1, i32 %cr_cbp.addr.058
-  %call30 = tail call i32 @sign(i32 %8, i32 %7) #3
-  %idxprom31 = sext i32 %scan_pos.056 to i64
-  %arrayidx32 = getelementptr inbounds i32* %3, i64 %idxprom31
-  store i32 %call30, i32* %arrayidx32, align 4, !tbaa !3
-  %arrayidx34 = getelementptr inbounds i32* %4, i64 %idxprom31
-  store i32 %inc, i32* %arrayidx34, align 4, !tbaa !3
-  %inc35 = add nsw i32 %scan_pos.056, 1
-  br label %for.inc
+  %neg = sub i32 0, %7, !dbg !2187
+  %ispos = icmp sgt i32 %7, -1, !dbg !2187
+  %8 = select i1 %ispos, i32 %7, i32 %neg, !dbg !2187
+  %cmp22 = icmp slt i32 %cr_cbp.addr.058, 1, !dbg !2193
+  %cond = select i1 %cmp22, i32 1, i32 %cr_cbp.addr.058, !dbg !2193
+  tail call void @llvm.dbg.value(metadata !{i32 %cond}, i64 0, metadata !307), !dbg !2193
+  %call30 = tail call i32 @sign(i32 %8, i32 %7) #4, !dbg !2195
+  %idxprom31 = sext i32 %scan_pos.056 to i64, !dbg !2195
+  %arrayidx32 = getelementptr inbounds i32* %3, i64 %idxprom31, !dbg !2195
+  store i32 %call30, i32* %arrayidx32, align 4, !dbg !2195, !tbaa !984
+  %arrayidx34 = getelementptr inbounds i32* %4, i64 %idxprom31, !dbg !2196
+  store i32 %inc, i32* %arrayidx34, align 4, !dbg !2196, !tbaa !984
+  %inc35 = add nsw i32 %scan_pos.056, 1, !dbg !2197
+  tail call void @llvm.dbg.value(metadata !{i32 %inc35}, i64 0, metadata !309), !dbg !2197
+  tail call void @llvm.dbg.value(metadata !1322, i64 0, metadata !308), !dbg !2198
+  br label %for.inc, !dbg !2199
 
 for.inc:                                          ; preds = %for.body, %if.then
   %scan_pos.1 = phi i32 [ %inc35, %if.then ], [ %scan_pos.056, %for.body ]
   %run.1 = phi i32 [ -1, %if.then ], [ %inc, %for.body ]
   %cr_cbp.addr.1 = phi i32 [ %cond, %if.then ], [ %cr_cbp.addr.058, %for.body ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 16
-  br i1 %exitcond, label %for.end, label %for.body
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2185
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !2185
+  %exitcond = icmp eq i32 %lftr.wideiv, 16, !dbg !2185
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !2185
 
 for.end:                                          ; preds = %for.inc
-  %idxprom37 = sext i32 %scan_pos.1 to i64
-  %arrayidx38 = getelementptr inbounds i32* %3, i64 %idxprom37
-  store i32 0, i32* %arrayidx38, align 4, !tbaa !3
-  ret i32 %cr_cbp.addr.1
+  %idxprom37 = sext i32 %scan_pos.1 to i64, !dbg !2200
+  %arrayidx38 = getelementptr inbounds i32* %3, i64 %idxprom37, !dbg !2200
+  store i32 0, i32* %arrayidx38, align 4, !dbg !2200, !tbaa !984
+  ret i32 %cr_cbp.addr.1, !dbg !2201
 }

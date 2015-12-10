@@ -1,38 +1,40 @@
 define internal fastcc %struct.rtx_def* @subtract_reg_term(%struct.rtx_def* %op, %struct.rtx_def* %reg) #0 {
 entry:
-  %cmp = icmp eq %struct.rtx_def* %op, %reg
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op}, i64 0, metadata !1014), !dbg !2658
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %reg}, i64 0, metadata !1015), !dbg !2658
+  %cmp = icmp eq %struct.rtx_def* %op, %reg, !dbg !2659
+  br i1 %cmp, label %if.then, label %if.end, !dbg !2659
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !0
-  br label %return
+  %0 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !dbg !2660, !tbaa !1254
+  br label %return, !dbg !2660
 
 if.end:                                           ; preds = %entry
-  %1 = bitcast %struct.rtx_def* %op to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp1 = icmp eq i32 %bf.clear, 75
-  br i1 %cmp1, label %if.then2, label %if.end18
+  %1 = bitcast %struct.rtx_def* %op to i32*, !dbg !2661
+  %bf.load = load i32* %1, align 8, !dbg !2661
+  %bf.clear = and i32 %bf.load, 65535, !dbg !2661
+  %cmp1 = icmp eq i32 %bf.clear, 75, !dbg !2661
+  br i1 %cmp1, label %if.then2, label %if.end18, !dbg !2661
 
 if.then2:                                         ; preds = %if.end
-  %fld = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1
-  %rtx = bitcast [1 x %union.rtunion_def]* %fld to %struct.rtx_def**
-  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %cmp3 = icmp eq %struct.rtx_def* %2, %reg
-  %arrayidx6 = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 1
-  %rtx7 = bitcast %union.rtunion_def* %arrayidx6 to %struct.rtx_def**
-  %3 = load %struct.rtx_def** %rtx7, align 8, !tbaa !0
-  br i1 %cmp3, label %return, label %if.else
+  %fld = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, !dbg !2662
+  %rtx = bitcast [1 x %union.rtunion_def]* %fld to %struct.rtx_def**, !dbg !2662
+  %2 = load %struct.rtx_def** %rtx, align 8, !dbg !2662, !tbaa !1254
+  %cmp3 = icmp eq %struct.rtx_def* %2, %reg, !dbg !2662
+  %arrayidx6 = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 1, !dbg !2664
+  %rtx7 = bitcast %union.rtunion_def* %arrayidx6 to %struct.rtx_def**, !dbg !2664
+  %3 = load %struct.rtx_def** %rtx7, align 8, !dbg !2664, !tbaa !1254
+  br i1 %cmp3, label %return, label %if.else, !dbg !2662
 
 if.else:                                          ; preds = %if.then2
-  %cmp11 = icmp eq %struct.rtx_def* %3, %reg
-  br i1 %cmp11, label %return, label %if.end18
+  %cmp11 = icmp eq %struct.rtx_def* %3, %reg, !dbg !2665
+  br i1 %cmp11, label %return, label %if.end18, !dbg !2665
 
 if.end18:                                         ; preds = %if.else, %if.end
-  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str13, i64 0, i64 0), i32 3476, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.subtract_reg_term, i64 0, i64 0)) #7
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str13, i64 0, i64 0), i32 3476, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.subtract_reg_term, i64 0, i64 0)) #8, !dbg !2666
+  unreachable, !dbg !2666
 
 return:                                           ; preds = %if.else, %if.then2, %if.then
   %retval.0 = phi %struct.rtx_def* [ %0, %if.then ], [ %3, %if.then2 ], [ %2, %if.else ]
-  ret %struct.rtx_def* %retval.0
+  ret %struct.rtx_def* %retval.0, !dbg !2667
 }

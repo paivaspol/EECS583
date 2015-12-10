@@ -1,0 +1,75 @@
+define internal fastcc double @_ZN3povL22fractal_exterior_colorEPNS_14Pattern_StructEidd(%"struct.pov::Pattern_Struct"* nocapture %TPat, i32 %iters, double %a, double %b) #5 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Pattern_Struct"* %TPat}, i64 0, metadata !1538), !dbg !4344
+  tail call void @llvm.dbg.value(metadata !{i32 %iters}, i64 0, metadata !1539), !dbg !4344
+  tail call void @llvm.dbg.value(metadata !{double %a}, i64 0, metadata !1540), !dbg !4344
+  tail call void @llvm.dbg.value(metadata !{double %b}, i64 0, metadata !1541), !dbg !4344
+  %Vals = getelementptr inbounds %"struct.pov::Pattern_Struct"* %TPat, i64 0, i32 10, !dbg !4345
+  %Fractal = bitcast %union.anon.25* %Vals to %struct.anon.31*, !dbg !4345
+  %exterior_type = getelementptr inbounds %struct.anon.31* %Fractal, i64 0, i32 3, !dbg !4345
+  %0 = load i16* %exterior_type, align 2, !dbg !4345, !tbaa !2127
+  %conv = sext i16 %0 to i32, !dbg !4345
+  switch i32 %conv, label %return [
+    i32 0, label %sw.bb
+    i32 1, label %sw.bb3
+    i32 2, label %sw.bb8
+    i32 3, label %sw.bb12
+    i32 4, label %sw.bb17
+    i32 5, label %sw.bb23
+    i32 6, label %sw.bb29
+  ], !dbg !4345
+
+sw.bb:                                            ; preds = %entry
+  %1 = getelementptr inbounds %"struct.pov::Pattern_Struct"* %TPat, i64 0, i32 10, i32 0, i32 1, i64 0, !dbg !4346
+  %2 = load double* %1, align 8, !dbg !4346, !tbaa !2153
+  br label %return, !dbg !4346
+
+sw.bb3:                                           ; preds = %entry
+  %conv4 = sitofp i32 %iters to double, !dbg !4348
+  %Iterations = getelementptr inbounds %"struct.pov::Pattern_Struct"* %TPat, i64 0, i32 10, i32 0, i32 0, i64 2, !dbg !4348
+  %3 = bitcast double* %Iterations to i16*, !dbg !4348
+  %4 = load i16* %3, align 2, !dbg !4348, !tbaa !2127
+  %conv7 = sitofp i16 %4 to double, !dbg !4348
+  %div = fdiv double %conv4, %conv7, !dbg !4348
+  br label %return, !dbg !4348
+
+sw.bb8:                                           ; preds = %entry
+  %5 = getelementptr inbounds %"struct.pov::Pattern_Struct"* %TPat, i64 0, i32 10, i32 0, i32 1, i64 0, !dbg !4349
+  %6 = load double* %5, align 8, !dbg !4349, !tbaa !2153
+  %mul = fmul double %6, %a, !dbg !4349
+  br label %return, !dbg !4349
+
+sw.bb12:                                          ; preds = %entry
+  %7 = getelementptr inbounds %"struct.pov::Pattern_Struct"* %TPat, i64 0, i32 10, i32 0, i32 1, i64 0, !dbg !4350
+  %8 = load double* %7, align 8, !dbg !4350, !tbaa !2153
+  %mul16 = fmul double %8, %b, !dbg !4350
+  br label %return, !dbg !4350
+
+sw.bb17:                                          ; preds = %entry
+  %mul18 = fmul double %a, %a, !dbg !4351
+  %9 = getelementptr inbounds %"struct.pov::Pattern_Struct"* %TPat, i64 0, i32 10, i32 0, i32 1, i64 0, !dbg !4351
+  %10 = load double* %9, align 8, !dbg !4351, !tbaa !2153
+  %mul22 = fmul double %mul18, %10, !dbg !4351
+  br label %return, !dbg !4351
+
+sw.bb23:                                          ; preds = %entry
+  %mul24 = fmul double %b, %b, !dbg !4352
+  %11 = getelementptr inbounds %"struct.pov::Pattern_Struct"* %TPat, i64 0, i32 10, i32 0, i32 1, i64 0, !dbg !4352
+  %12 = load double* %11, align 8, !dbg !4352, !tbaa !2153
+  %mul28 = fmul double %mul24, %12, !dbg !4352
+  br label %return, !dbg !4352
+
+sw.bb29:                                          ; preds = %entry
+  %mul30 = fmul double %a, %a, !dbg !4353
+  %mul31 = fmul double %b, %b, !dbg !4353
+  %add = fadd double %mul30, %mul31, !dbg !4353
+  %call = tail call double @sqrt(double %add) #9, !dbg !4353
+  %13 = getelementptr inbounds %"struct.pov::Pattern_Struct"* %TPat, i64 0, i32 10, i32 0, i32 1, i64 0, !dbg !4353
+  %14 = load double* %13, align 8, !dbg !4353, !tbaa !2153
+  %mul35 = fmul double %call, %14, !dbg !4353
+  br label %return, !dbg !4353
+
+return:                                           ; preds = %entry, %sw.bb29, %sw.bb23, %sw.bb17, %sw.bb12, %sw.bb8, %sw.bb3, %sw.bb
+  %retval.0 = phi double [ %mul35, %sw.bb29 ], [ %mul28, %sw.bb23 ], [ %mul22, %sw.bb17 ], [ %mul16, %sw.bb12 ], [ %mul, %sw.bb8 ], [ %div, %sw.bb3 ], [ %2, %sw.bb ], [ 0.000000e+00, %entry ]
+  ret double %retval.0, !dbg !4354
+}

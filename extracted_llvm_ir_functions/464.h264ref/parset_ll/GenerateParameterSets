@@ -1,90 +1,94 @@
 define void @GenerateParameterSets() #0 {
 entry:
-  %call = tail call %struct.seq_parameter_set_rbsp_t* (...)* @AllocSPS() #5
-  %call1 = tail call %struct.pic_parameter_set_rbsp_t* (...)* @AllocPPS() #5
-  tail call void @GenerateSequenceParameterSet(%struct.seq_parameter_set_rbsp_t* %call, i32 undef) #6
-  %0 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %GenerateMultiplePPS = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 15
-  %1 = load i32* %GenerateMultiplePPS, align 4, !tbaa !3
-  %tobool = icmp eq i32 %1, 0
-  %profile_idc = getelementptr inbounds %struct.seq_parameter_set_rbsp_t* %call, i64 0, i32 1
-  %2 = load i32* %profile_idc, align 4, !tbaa !3
-  %cmp = icmp ugt i32 %2, 99
-  br i1 %tobool, label %if.else9, label %if.then
+  tail call void @llvm.dbg.value(metadata !689, i64 0, metadata !25), !dbg !690
+  tail call void @llvm.dbg.value(metadata !691, i64 0, metadata !126), !dbg !692
+  %call = tail call %struct.seq_parameter_set_rbsp_t* (...)* @AllocSPS() #6, !dbg !693
+  tail call void @llvm.dbg.value(metadata !{%struct.seq_parameter_set_rbsp_t* %call}, i64 0, metadata !25), !dbg !693
+  %call1 = tail call %struct.pic_parameter_set_rbsp_t* (...)* @AllocPPS() #6, !dbg !694
+  tail call void @llvm.dbg.value(metadata !{%struct.pic_parameter_set_rbsp_t* %call1}, i64 0, metadata !126), !dbg !694
+  tail call void @GenerateSequenceParameterSet(%struct.seq_parameter_set_rbsp_t* %call, i32 undef) #7, !dbg !695
+  %0 = load %struct.InputParameters** @input, align 8, !dbg !696, !tbaa !697
+  %GenerateMultiplePPS = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 15, !dbg !696
+  %1 = load i32* %GenerateMultiplePPS, align 4, !dbg !696, !tbaa !700
+  %tobool = icmp eq i32 %1, 0, !dbg !696
+  %profile_idc = getelementptr inbounds %struct.seq_parameter_set_rbsp_t* %call, i64 0, i32 1, !dbg !701
+  %2 = load i32* %profile_idc, align 4, !dbg !701, !tbaa !700
+  %cmp = icmp ugt i32 %2, 99, !dbg !701
+  br i1 %tobool, label %if.else9, label %if.then, !dbg !696
 
 if.then:                                          ; preds = %entry
-  br i1 %cmp, label %if.then2, label %if.else
+  br i1 %cmp, label %if.then2, label %if.else, !dbg !701
 
 if.then2:                                         ; preds = %if.then
-  %cb_qp_index_offset = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 140
-  %3 = load i32* %cb_qp_index_offset, align 4, !tbaa !3
-  %cr_qp_index_offset = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 141
-  %4 = load i32* %cr_qp_index_offset, align 4, !tbaa !3
-  tail call void @GeneratePictureParameterSet(%struct.pic_parameter_set_rbsp_t* %call1, %struct.seq_parameter_set_rbsp_t* %call, i32 0, i32 0, i32 0, i32 %3, i32 %4) #6
-  %5 = bitcast %struct.pic_parameter_set_rbsp_t* %call1 to i8*
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* bitcast ([256 x %struct.pic_parameter_set_rbsp_t]* @PicParSet to i8*), i8* %5, i64 240, i32 8, i1 false)
-  %6 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %cb_qp_index_offset3 = getelementptr inbounds %struct.InputParameters* %6, i64 0, i32 140
-  %7 = load i32* %cb_qp_index_offset3, align 4, !tbaa !3
-  %cr_qp_index_offset4 = getelementptr inbounds %struct.InputParameters* %6, i64 0, i32 141
-  %8 = load i32* %cr_qp_index_offset4, align 4, !tbaa !3
-  tail call void @GeneratePictureParameterSet(%struct.pic_parameter_set_rbsp_t* %call1, %struct.seq_parameter_set_rbsp_t* %call, i32 1, i32 1, i32 1, i32 %7, i32 %8) #6
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* bitcast (%struct.pic_parameter_set_rbsp_t* getelementptr inbounds ([256 x %struct.pic_parameter_set_rbsp_t]* @PicParSet, i64 0, i64 1) to i8*), i8* %5, i64 240, i32 8, i1 false)
-  %9 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %cb_qp_index_offset5 = getelementptr inbounds %struct.InputParameters* %9, i64 0, i32 140
-  %10 = load i32* %cb_qp_index_offset5, align 4, !tbaa !3
-  %cr_qp_index_offset6 = getelementptr inbounds %struct.InputParameters* %9, i64 0, i32 141
-  %11 = load i32* %cr_qp_index_offset6, align 4, !tbaa !3
-  tail call void @GeneratePictureParameterSet(%struct.pic_parameter_set_rbsp_t* %call1, %struct.seq_parameter_set_rbsp_t* %call, i32 2, i32 1, i32 2, i32 %10, i32 %11) #6
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* bitcast (%struct.pic_parameter_set_rbsp_t* getelementptr inbounds ([256 x %struct.pic_parameter_set_rbsp_t]* @PicParSet, i64 0, i64 2) to i8*), i8* %5, i64 240, i32 8, i1 false)
-  br label %if.end20
+  %cb_qp_index_offset = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 140, !dbg !703
+  %3 = load i32* %cb_qp_index_offset, align 4, !dbg !703, !tbaa !700
+  %cr_qp_index_offset = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 141, !dbg !703
+  %4 = load i32* %cr_qp_index_offset, align 4, !dbg !703, !tbaa !700
+  tail call void @GeneratePictureParameterSet(%struct.pic_parameter_set_rbsp_t* %call1, %struct.seq_parameter_set_rbsp_t* %call, i32 0, i32 0, i32 0, i32 %3, i32 %4) #7, !dbg !703
+  %5 = bitcast %struct.pic_parameter_set_rbsp_t* %call1 to i8*, !dbg !705
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* bitcast ([256 x %struct.pic_parameter_set_rbsp_t]* @PicParSet to i8*), i8* %5, i64 240, i32 8, i1 false), !dbg !705
+  %6 = load %struct.InputParameters** @input, align 8, !dbg !706, !tbaa !697
+  %cb_qp_index_offset3 = getelementptr inbounds %struct.InputParameters* %6, i64 0, i32 140, !dbg !706
+  %7 = load i32* %cb_qp_index_offset3, align 4, !dbg !706, !tbaa !700
+  %cr_qp_index_offset4 = getelementptr inbounds %struct.InputParameters* %6, i64 0, i32 141, !dbg !706
+  %8 = load i32* %cr_qp_index_offset4, align 4, !dbg !706, !tbaa !700
+  tail call void @GeneratePictureParameterSet(%struct.pic_parameter_set_rbsp_t* %call1, %struct.seq_parameter_set_rbsp_t* %call, i32 1, i32 1, i32 1, i32 %7, i32 %8) #7, !dbg !706
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* bitcast (%struct.pic_parameter_set_rbsp_t* getelementptr inbounds ([256 x %struct.pic_parameter_set_rbsp_t]* @PicParSet, i64 0, i64 1) to i8*), i8* %5, i64 240, i32 8, i1 false), !dbg !707
+  %9 = load %struct.InputParameters** @input, align 8, !dbg !708, !tbaa !697
+  %cb_qp_index_offset5 = getelementptr inbounds %struct.InputParameters* %9, i64 0, i32 140, !dbg !708
+  %10 = load i32* %cb_qp_index_offset5, align 4, !dbg !708, !tbaa !700
+  %cr_qp_index_offset6 = getelementptr inbounds %struct.InputParameters* %9, i64 0, i32 141, !dbg !708
+  %11 = load i32* %cr_qp_index_offset6, align 4, !dbg !708, !tbaa !700
+  tail call void @GeneratePictureParameterSet(%struct.pic_parameter_set_rbsp_t* %call1, %struct.seq_parameter_set_rbsp_t* %call, i32 2, i32 1, i32 2, i32 %10, i32 %11) #7, !dbg !708
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* bitcast (%struct.pic_parameter_set_rbsp_t* getelementptr inbounds ([256 x %struct.pic_parameter_set_rbsp_t]* @PicParSet, i64 0, i64 2) to i8*), i8* %5, i64 240, i32 8, i1 false), !dbg !709
+  br label %if.end20, !dbg !710
 
 if.else:                                          ; preds = %if.then
-  %chroma_qp_index_offset = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 77
-  %12 = load i32* %chroma_qp_index_offset, align 4, !tbaa !3
-  tail call void @GeneratePictureParameterSet(%struct.pic_parameter_set_rbsp_t* %call1, %struct.seq_parameter_set_rbsp_t* %call, i32 0, i32 0, i32 0, i32 %12, i32 0) #6
-  %13 = bitcast %struct.pic_parameter_set_rbsp_t* %call1 to i8*
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* bitcast ([256 x %struct.pic_parameter_set_rbsp_t]* @PicParSet to i8*), i8* %13, i64 240, i32 8, i1 false)
-  %14 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %chroma_qp_index_offset7 = getelementptr inbounds %struct.InputParameters* %14, i64 0, i32 77
-  %15 = load i32* %chroma_qp_index_offset7, align 4, !tbaa !3
-  tail call void @GeneratePictureParameterSet(%struct.pic_parameter_set_rbsp_t* %call1, %struct.seq_parameter_set_rbsp_t* %call, i32 1, i32 1, i32 1, i32 %15, i32 0) #6
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* bitcast (%struct.pic_parameter_set_rbsp_t* getelementptr inbounds ([256 x %struct.pic_parameter_set_rbsp_t]* @PicParSet, i64 0, i64 1) to i8*), i8* %13, i64 240, i32 8, i1 false)
-  %16 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %chroma_qp_index_offset8 = getelementptr inbounds %struct.InputParameters* %16, i64 0, i32 77
-  %17 = load i32* %chroma_qp_index_offset8, align 4, !tbaa !3
-  tail call void @GeneratePictureParameterSet(%struct.pic_parameter_set_rbsp_t* %call1, %struct.seq_parameter_set_rbsp_t* %call, i32 2, i32 1, i32 2, i32 %17, i32 0) #6
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* bitcast (%struct.pic_parameter_set_rbsp_t* getelementptr inbounds ([256 x %struct.pic_parameter_set_rbsp_t]* @PicParSet, i64 0, i64 2) to i8*), i8* %13, i64 240, i32 8, i1 false)
+  %chroma_qp_index_offset = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 77, !dbg !711
+  %12 = load i32* %chroma_qp_index_offset, align 4, !dbg !711, !tbaa !700
+  tail call void @GeneratePictureParameterSet(%struct.pic_parameter_set_rbsp_t* %call1, %struct.seq_parameter_set_rbsp_t* %call, i32 0, i32 0, i32 0, i32 %12, i32 0) #7, !dbg !711
+  %13 = bitcast %struct.pic_parameter_set_rbsp_t* %call1 to i8*, !dbg !713
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* bitcast ([256 x %struct.pic_parameter_set_rbsp_t]* @PicParSet to i8*), i8* %13, i64 240, i32 8, i1 false), !dbg !713
+  %14 = load %struct.InputParameters** @input, align 8, !dbg !714, !tbaa !697
+  %chroma_qp_index_offset7 = getelementptr inbounds %struct.InputParameters* %14, i64 0, i32 77, !dbg !714
+  %15 = load i32* %chroma_qp_index_offset7, align 4, !dbg !714, !tbaa !700
+  tail call void @GeneratePictureParameterSet(%struct.pic_parameter_set_rbsp_t* %call1, %struct.seq_parameter_set_rbsp_t* %call, i32 1, i32 1, i32 1, i32 %15, i32 0) #7, !dbg !714
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* bitcast (%struct.pic_parameter_set_rbsp_t* getelementptr inbounds ([256 x %struct.pic_parameter_set_rbsp_t]* @PicParSet, i64 0, i64 1) to i8*), i8* %13, i64 240, i32 8, i1 false), !dbg !715
+  %16 = load %struct.InputParameters** @input, align 8, !dbg !716, !tbaa !697
+  %chroma_qp_index_offset8 = getelementptr inbounds %struct.InputParameters* %16, i64 0, i32 77, !dbg !716
+  %17 = load i32* %chroma_qp_index_offset8, align 4, !dbg !716, !tbaa !700
+  tail call void @GeneratePictureParameterSet(%struct.pic_parameter_set_rbsp_t* %call1, %struct.seq_parameter_set_rbsp_t* %call, i32 2, i32 1, i32 2, i32 %17, i32 0) #7, !dbg !716
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* bitcast (%struct.pic_parameter_set_rbsp_t* getelementptr inbounds ([256 x %struct.pic_parameter_set_rbsp_t]* @PicParSet, i64 0, i64 2) to i8*), i8* %13, i64 240, i32 8, i1 false), !dbg !717
   br label %if.end20
 
 if.else9:                                         ; preds = %entry
-  %WeightedPrediction = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 46
-  %18 = load i32* %WeightedPrediction, align 4, !tbaa !3
-  %WeightedBiprediction = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 47
-  %19 = load i32* %WeightedBiprediction, align 4, !tbaa !3
-  br i1 %cmp, label %if.then12, label %if.else15
+  %WeightedPrediction = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 46, !dbg !718
+  %18 = load i32* %WeightedPrediction, align 4, !dbg !718, !tbaa !700
+  %WeightedBiprediction = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 47, !dbg !718
+  %19 = load i32* %WeightedBiprediction, align 4, !dbg !718, !tbaa !700
+  br i1 %cmp, label %if.then12, label %if.else15, !dbg !720
 
 if.then12:                                        ; preds = %if.else9
-  %cb_qp_index_offset13 = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 140
-  %20 = load i32* %cb_qp_index_offset13, align 4, !tbaa !3
-  %cr_qp_index_offset14 = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 141
-  %21 = load i32* %cr_qp_index_offset14, align 4, !tbaa !3
-  tail call void @GeneratePictureParameterSet(%struct.pic_parameter_set_rbsp_t* %call1, %struct.seq_parameter_set_rbsp_t* %call, i32 0, i32 %18, i32 %19, i32 %20, i32 %21) #6
-  br label %if.end19
+  %cb_qp_index_offset13 = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 140, !dbg !718
+  %20 = load i32* %cb_qp_index_offset13, align 4, !dbg !718, !tbaa !700
+  %cr_qp_index_offset14 = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 141, !dbg !718
+  %21 = load i32* %cr_qp_index_offset14, align 4, !dbg !718, !tbaa !700
+  tail call void @GeneratePictureParameterSet(%struct.pic_parameter_set_rbsp_t* %call1, %struct.seq_parameter_set_rbsp_t* %call, i32 0, i32 %18, i32 %19, i32 %20, i32 %21) #7, !dbg !718
+  br label %if.end19, !dbg !718
 
 if.else15:                                        ; preds = %if.else9
-  %chroma_qp_index_offset18 = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 77
-  %22 = load i32* %chroma_qp_index_offset18, align 4, !tbaa !3
-  tail call void @GeneratePictureParameterSet(%struct.pic_parameter_set_rbsp_t* %call1, %struct.seq_parameter_set_rbsp_t* %call, i32 0, i32 %18, i32 %19, i32 %22, i32 0) #6
+  %chroma_qp_index_offset18 = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 77, !dbg !721
+  %22 = load i32* %chroma_qp_index_offset18, align 4, !dbg !721, !tbaa !700
+  tail call void @GeneratePictureParameterSet(%struct.pic_parameter_set_rbsp_t* %call1, %struct.seq_parameter_set_rbsp_t* %call, i32 0, i32 %18, i32 %19, i32 %22, i32 0) #7, !dbg !721
   br label %if.end19
 
 if.end19:                                         ; preds = %if.else15, %if.then12
-  %23 = bitcast %struct.pic_parameter_set_rbsp_t* %call1 to i8*
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* bitcast ([256 x %struct.pic_parameter_set_rbsp_t]* @PicParSet to i8*), i8* %23, i64 240, i32 8, i1 false)
+  %23 = bitcast %struct.pic_parameter_set_rbsp_t* %call1 to i8*, !dbg !722
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* bitcast ([256 x %struct.pic_parameter_set_rbsp_t]* @PicParSet to i8*), i8* %23, i64 240, i32 8, i1 false), !dbg !722
   br label %if.end20
 
 if.end20:                                         ; preds = %if.then2, %if.else, %if.end19
-  store %struct.seq_parameter_set_rbsp_t* %call, %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !tbaa !0
-  store %struct.pic_parameter_set_rbsp_t* getelementptr inbounds ([256 x %struct.pic_parameter_set_rbsp_t]* @PicParSet, i64 0, i64 0), %struct.pic_parameter_set_rbsp_t** @active_pps, align 8, !tbaa !0
-  ret void
+  store %struct.seq_parameter_set_rbsp_t* %call, %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !dbg !723, !tbaa !697
+  store %struct.pic_parameter_set_rbsp_t* getelementptr inbounds ([256 x %struct.pic_parameter_set_rbsp_t]* @PicParSet, i64 0, i64 0), %struct.pic_parameter_set_rbsp_t** @active_pps, align 8, !dbg !724, !tbaa !697
+  ret void, !dbg !725
 }

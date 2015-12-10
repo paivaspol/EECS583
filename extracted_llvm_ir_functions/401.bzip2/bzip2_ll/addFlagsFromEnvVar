@@ -1,0 +1,121 @@
+define internal fastcc void @addFlagsFromEnvVar(%struct.zzzz** nocapture %argList, i8* nocapture %varName) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.zzzz** %argList}, i64 0, metadata !427), !dbg !742
+  tail call void @llvm.dbg.value(metadata !{i8* %varName}, i64 0, metadata !428), !dbg !742
+  %call = tail call i8* @getenv(i8* %varName) #10, !dbg !743
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !432), !dbg !743
+  %cmp = icmp eq i8* %call, null, !dbg !744
+  br i1 %cmp, label %if.end48, label %while.body.preheader, !dbg !744
+
+while.body.preheader:                             ; preds = %entry
+  %0 = load i8* %call, align 1, !dbg !745, !tbaa !485
+  %cmp172 = icmp eq i8 %0, 0, !dbg !745
+  br i1 %cmp172, label %if.end48, label %while.cond4.preheader.lr.ph, !dbg !745
+
+while.cond4.preheader.lr.ph:                      ; preds = %while.body.preheader
+  %call8 = tail call i16** @__ctype_b_loc() #15, !dbg !748
+  br label %while.cond4.preheader, !dbg !745
+
+while.cond4.preheader:                            ; preds = %while.body.backedge, %while.cond4.preheader.lr.ph
+  %1 = phi i8 [ %0, %while.cond4.preheader.lr.ph ], [ %11, %while.body.backedge ]
+  %arrayidx73 = phi i8* [ %call, %while.cond4.preheader.lr.ph ], [ %arrayidx, %while.body.backedge ]
+  %2 = load i16** %call8, align 8, !dbg !748, !tbaa !484
+  br label %while.cond4, !dbg !748
+
+while.cond4:                                      ; preds = %while.cond4.while.cond4_crit_edge, %while.cond4.preheader
+  %3 = phi i8 [ %.pre, %while.cond4.while.cond4_crit_edge ], [ %1, %while.cond4.preheader ]
+  %p.1 = phi i8* [ %incdec.ptr, %while.cond4.while.cond4_crit_edge ], [ %arrayidx73, %while.cond4.preheader ]
+  %idxprom7 = sext i8 %3 to i64, !dbg !748
+  %arrayidx9 = getelementptr inbounds i16* %2, i64 %idxprom7, !dbg !748
+  %4 = load i16* %arrayidx9, align 2, !dbg !748, !tbaa !749
+  %and = and i16 %4, 8192, !dbg !748
+  %tobool = icmp eq i16 %and, 0, !dbg !748
+  %incdec.ptr = getelementptr inbounds i8* %p.1, i64 1, !dbg !748
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !433), !dbg !748
+  br i1 %tobool, label %while.cond12.loopexit, label %while.cond4.while.cond4_crit_edge, !dbg !748
+
+while.cond4.while.cond4_crit_edge:                ; preds = %while.cond4
+  %.pre = load i8* %incdec.ptr, align 1, !dbg !748, !tbaa !485
+  br label %while.cond4, !dbg !748
+
+while.cond12.loopexit:                            ; preds = %while.cond4
+  %cmp1668 = icmp eq i8 %3, 0, !dbg !750
+  br i1 %cmp1668, label %while.body.backedge, label %land.rhs, !dbg !750
+
+while.cond12:                                     ; preds = %land.rhs
+  %arrayidx14 = getelementptr inbounds i8* %p.1, i64 %indvars.iv, !dbg !750
+  %5 = load i8* %arrayidx14, align 1, !dbg !750, !tbaa !485
+  %cmp16 = icmp eq i8 %5, 0, !dbg !750
+  br i1 %cmp16, label %while.end28, label %while.cond12.land.rhs_crit_edge, !dbg !750
+
+while.cond12.land.rhs_crit_edge:                  ; preds = %while.cond12
+  %idxprom21.phi.trans.insert = sext i8 %5 to i64
+  %arrayidx23.phi.trans.insert = getelementptr inbounds i16* %2, i64 %idxprom21.phi.trans.insert
+  %.pre81 = load i16* %arrayidx23.phi.trans.insert, align 2, !dbg !750, !tbaa !749
+  %phitmp = add i64 %indvars.iv, 1, !dbg !750
+  br label %land.rhs, !dbg !750
+
+land.rhs:                                         ; preds = %while.cond12.loopexit, %while.cond12.land.rhs_crit_edge
+  %6 = phi i16 [ %.pre81, %while.cond12.land.rhs_crit_edge ], [ %4, %while.cond12.loopexit ]
+  %indvars.iv = phi i64 [ %phitmp, %while.cond12.land.rhs_crit_edge ], [ 1, %while.cond12.loopexit ]
+  %i.169 = phi i32 [ %inc, %while.cond12.land.rhs_crit_edge ], [ 0, %while.cond12.loopexit ]
+  %and25 = and i16 %6, 8192, !dbg !750
+  %lnot = icmp eq i16 %and25, 0, !dbg !750
+  %inc = add nsw i32 %i.169, 1, !dbg !750
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !429), !dbg !750
+  br i1 %lnot, label %while.cond12, label %while.end28
+
+while.end28:                                      ; preds = %while.cond12, %land.rhs
+  %i.1.lcssa = phi i32 [ %i.169, %land.rhs ], [ %inc, %while.cond12 ]
+  %cmp29 = icmp sgt i32 %i.1.lcssa, 0, !dbg !751
+  br i1 %cmp29, label %if.then31, label %while.body.backedge, !dbg !751
+
+if.then31:                                        ; preds = %while.end28
+  tail call void @llvm.dbg.value(metadata !{i32 %i.1.lcssa83}, i64 0, metadata !431), !dbg !752
+  %cmp32 = icmp sgt i32 %i.1.lcssa, 1024, !dbg !752
+  %. = select i1 %cmp32, i32 1024, i32 %i.1.lcssa, !dbg !752
+  tail call void @llvm.dbg.value(metadata !{i32 %.}, i64 0, metadata !431), !dbg !752
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !430), !dbg !754
+  %cmp3670 = icmp sgt i32 %., 0, !dbg !754
+  br i1 %cmp3670, label %for.body.lr.ph, label %for.end, !dbg !754
+
+for.body.lr.ph:                                   ; preds = %if.then31
+  %7 = icmp slt i32 %i.1.lcssa, 1024, !dbg !754
+  %8 = select i1 %7, i32 %i.1.lcssa, i32 1024, !dbg !754
+  br label %for.body, !dbg !754
+
+for.body:                                         ; preds = %for.body.for.body_crit_edge, %for.body.lr.ph
+  %9 = phi i8 [ %3, %for.body.lr.ph ], [ %.pre80, %for.body.for.body_crit_edge ]
+  %indvars.iv78 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next79, %for.body.for.body_crit_edge ]
+  %arrayidx41 = getelementptr inbounds [1034 x i8]* @tmpName, i64 0, i64 %indvars.iv78, !dbg !754
+  store i8 %9, i8* %arrayidx41, align 1, !dbg !754, !tbaa !485
+  %indvars.iv.next79 = add i64 %indvars.iv78, 1, !dbg !754
+  %lftr.wideiv = trunc i64 %indvars.iv.next79 to i32, !dbg !754
+  %exitcond = icmp eq i32 %lftr.wideiv, %8, !dbg !754
+  br i1 %exitcond, label %for.end, label %for.body.for.body_crit_edge, !dbg !754
+
+for.body.for.body_crit_edge:                      ; preds = %for.body
+  %arrayidx39.phi.trans.insert = getelementptr inbounds i8* %p.1, i64 %indvars.iv.next79
+  %.pre80 = load i8* %arrayidx39.phi.trans.insert, align 1, !dbg !754, !tbaa !485
+  br label %for.body, !dbg !754
+
+for.end:                                          ; preds = %for.body, %if.then31
+  %idxprom43 = sext i32 %. to i64, !dbg !756
+  %arrayidx44 = getelementptr inbounds [1034 x i8]* @tmpName, i64 0, i64 %idxprom43, !dbg !756
+  store i8 0, i8* %arrayidx44, align 1, !dbg !756, !tbaa !485
+  %10 = load %struct.zzzz** %argList, align 8, !dbg !757, !tbaa !484
+  %call45 = tail call fastcc %struct.zzzz* @snocString(%struct.zzzz* %10, i8* getelementptr inbounds ([1034 x i8]* @tmpName, i64 0, i64 0)) #11, !dbg !757
+  store %struct.zzzz* %call45, %struct.zzzz** %argList, align 8, !dbg !757, !tbaa !484
+  br label %while.body.backedge, !dbg !758
+
+while.body.backedge:                              ; preds = %while.cond12.loopexit, %while.end28, %for.end
+  %i.1.lcssa83 = phi i32 [ %i.1.lcssa, %for.end ], [ %i.1.lcssa, %while.end28 ], [ 0, %while.cond12.loopexit ]
+  %idxprom = sext i32 %i.1.lcssa83 to i64, !dbg !745
+  %arrayidx = getelementptr inbounds i8* %p.1, i64 %idxprom, !dbg !745
+  %11 = load i8* %arrayidx, align 1, !dbg !745, !tbaa !485
+  %cmp1 = icmp eq i8 %11, 0, !dbg !745
+  br i1 %cmp1, label %if.end48, label %while.cond4.preheader, !dbg !745
+
+if.end48:                                         ; preds = %while.body.preheader, %while.body.backedge, %entry
+  ret void, !dbg !759
+}

@@ -1,0 +1,72 @@
+define void @_ZN11xercesc_2_512KVStringPair6setKeyEPKt(%"class.xercesc_2_5::KVStringPair"* nocapture %this, i16* %newKey) #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::KVStringPair"* %this}, i64 0, metadata !1059), !dbg !1664
+  tail call void @llvm.dbg.value(metadata !{i16* %newKey}, i64 0, metadata !1060), !dbg !1664
+  tail call void @llvm.dbg.value(metadata !{i16* %newKey}, i64 0, metadata !1665), !dbg !1667
+  %cmp.i = icmp eq i16* %newKey, null, !dbg !1668
+  br i1 %cmp.i, label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, label %lor.lhs.false.i, !dbg !1668
+
+lor.lhs.false.i:                                  ; preds = %entry
+  %0 = load i16* %newKey, align 2, !dbg !1668, !tbaa !1669
+  %cmp1.i = icmp eq i16 %0, 0, !dbg !1668
+  br i1 %cmp1.i, label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, label %while.cond.i, !dbg !1668
+
+while.cond.i:                                     ; preds = %lor.lhs.false.i, %while.cond.i
+  %src.pn.i = phi i16* [ %pszTmp.0.i, %while.cond.i ], [ %newKey, %lor.lhs.false.i ]
+  %pszTmp.0.i = getelementptr inbounds i16* %src.pn.i, i64 1, !dbg !1670
+  %1 = load i16* %pszTmp.0.i, align 2, !dbg !1671, !tbaa !1669
+  %tobool.i = icmp eq i16 %1, 0, !dbg !1671
+  br i1 %tobool.i, label %while.end.i, label %while.cond.i, !dbg !1671
+
+while.end.i:                                      ; preds = %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %pszTmp.0.i to i64, !dbg !1672
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %newKey to i64, !dbg !1672
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !1672
+  %sub.ptr.div7.i = lshr exact i64 %sub.ptr.sub.i, 1, !dbg !1672
+  %conv2.i = trunc i64 %sub.ptr.div7.i to i32, !dbg !1672
+  br label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, !dbg !1672
+
+_ZN11xercesc_2_59XMLString9stringLenEPKt.exit:    ; preds = %entry, %lor.lhs.false.i, %while.end.i
+  %retval.0.i = phi i32 [ %conv2.i, %while.end.i ], [ 0, %lor.lhs.false.i ], [ 0, %entry ]
+  tail call void @llvm.dbg.value(metadata !{i32 %retval.0.i}, i64 0, metadata !1061), !dbg !1666
+  %conv = zext i32 %retval.0.i to i64, !dbg !1673
+  %fKeyAllocSize = getelementptr inbounds %"class.xercesc_2_5::KVStringPair"* %this, i64 0, i32 3, !dbg !1673
+  %2 = load i64* %fKeyAllocSize, align 8, !dbg !1673, !tbaa !1674
+  %cmp = icmp ult i64 %conv, %2, !dbg !1673
+  br i1 %cmp, label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit.if.end_crit_edge, label %if.then, !dbg !1673
+
+_ZN11xercesc_2_59XMLString9stringLenEPKt.exit.if.end_crit_edge: ; preds = %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit
+  %fKey10.phi.trans.insert = getelementptr inbounds %"class.xercesc_2_5::KVStringPair"* %this, i64 0, i32 2
+  %.pre = load i16** %fKey10.phi.trans.insert, align 8, !dbg !1675, !tbaa !1620
+  br label %if.end, !dbg !1673
+
+if.then:                                          ; preds = %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::KVStringPair"* %this, i64 0, i32 1, !dbg !1676
+  %3 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !1676, !tbaa !1620
+  %4 = bitcast %"class.xercesc_2_5::MemoryManager"* %3 to void (%"class.xercesc_2_5::MemoryManager"*, i8*)***, !dbg !1676
+  %vtable = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)*** %4, align 8, !dbg !1676, !tbaa !1618
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vtable, i64 3, !dbg !1676
+  %5 = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vfn, align 8, !dbg !1676
+  %fKey = getelementptr inbounds %"class.xercesc_2_5::KVStringPair"* %this, i64 0, i32 2, !dbg !1676
+  %6 = load i16** %fKey, align 8, !dbg !1676, !tbaa !1620
+  %7 = bitcast i16* %6 to i8*, !dbg !1676
+  tail call void %5(%"class.xercesc_2_5::MemoryManager"* %3, i8* %7) #8, !dbg !1676
+  %add = add i32 %retval.0.i, 1, !dbg !1678
+  %conv2 = zext i32 %add to i64, !dbg !1678
+  store i64 %conv2, i64* %fKeyAllocSize, align 8, !dbg !1678, !tbaa !1674
+  %8 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !1679, !tbaa !1620
+  %9 = bitcast %"class.xercesc_2_5::MemoryManager"* %8 to i8* (%"class.xercesc_2_5::MemoryManager"*, i64)***, !dbg !1679
+  %vtable5 = load i8* (%"class.xercesc_2_5::MemoryManager"*, i64)*** %9, align 8, !dbg !1679, !tbaa !1618
+  %vfn6 = getelementptr inbounds i8* (%"class.xercesc_2_5::MemoryManager"*, i64)** %vtable5, i64 2, !dbg !1679
+  %10 = load i8* (%"class.xercesc_2_5::MemoryManager"*, i64)** %vfn6, align 8, !dbg !1679
+  %mul = shl nuw nsw i64 %conv2, 1, !dbg !1679
+  %call8 = tail call i8* %10(%"class.xercesc_2_5::MemoryManager"* %8, i64 %mul) #8, !dbg !1679
+  %11 = bitcast i8* %call8 to i16*, !dbg !1679
+  store i16* %11, i16** %fKey, align 8, !dbg !1679, !tbaa !1620
+  br label %if.end, !dbg !1680
+
+if.end:                                           ; preds = %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit.if.end_crit_edge, %if.then
+  %12 = phi i16* [ %.pre, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit.if.end_crit_edge ], [ %11, %if.then ]
+  tail call void @_ZN11xercesc_2_59XMLString10copyStringEPtPKt(i16* %12, i16* %newKey) #8, !dbg !1675
+  ret void, !dbg !1681
+}

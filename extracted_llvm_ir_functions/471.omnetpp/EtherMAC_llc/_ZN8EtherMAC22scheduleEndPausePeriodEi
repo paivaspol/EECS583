@@ -1,0 +1,20 @@
+define void @_ZN8EtherMAC22scheduleEndPausePeriodEi(%class.EtherMAC* %this, i32 %pauseUnits) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.EtherMAC* %this}, i64 0, metadata !4970), !dbg !6689
+  tail call void @llvm.dbg.value(metadata !{i32 %pauseUnits}, i64 0, metadata !4971), !dbg !6689
+  %mul = shl nsw i32 %pauseUnits, 9, !dbg !6690
+  %conv = sitofp i32 %mul to double, !dbg !6690
+  %bitTime = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 9, !dbg !6690
+  %0 = load double* %bitTime, align 8, !dbg !6690, !tbaa !5436
+  %mul2 = fmul double %conv, %0, !dbg !6690
+  tail call void @llvm.dbg.value(metadata !{double %mul2}, i64 0, metadata !4972), !dbg !6690
+  %1 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 0, !dbg !6691
+  %call = tail call double @_ZNK13cSimpleModule7simTimeEv(%class.cSimpleModule* %1) #11, !dbg !6691
+  %add = fadd double %call, %mul2, !dbg !6691
+  %endPauseMsg = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 31, !dbg !6691
+  %2 = load %class.cMessage** %endPauseMsg, align 8, !dbg !6691, !tbaa !5362
+  %call3 = tail call i32 @_ZN13cSimpleModule10scheduleAtEdP8cMessage(%class.cSimpleModule* %1, double %add, %class.cMessage* %2) #11, !dbg !6691
+  %transmitState = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 17, !dbg !6692
+  store i32 6, i32* %transmitState, align 4, !dbg !6692, !tbaa !5376
+  ret void, !dbg !6693
+}

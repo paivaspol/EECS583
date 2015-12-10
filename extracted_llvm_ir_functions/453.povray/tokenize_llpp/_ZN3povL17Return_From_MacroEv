@@ -1,0 +1,69 @@
+define internal fastcc void @_ZN3povL17Return_From_MacroEv() #0 {
+entry:
+  tail call fastcc void @_ZN3povL16Check_Macro_VersEv() #9, !dbg !3468
+  %0 = load i32* @_ZN3pov8CS_IndexE, align 4, !dbg !3469, !tbaa !1569
+  %idxprom = sext i32 %0 to i64, !dbg !3469
+  %1 = load %"struct.pov::Cond_Stack_Entry"** @_ZN3pov10Cond_StackE, align 8, !dbg !3469, !tbaa !1578
+  %Macro_Same_Flag = getelementptr inbounds %"struct.pov::Cond_Stack_Entry"* %1, i64 %idxprom, i32 5, !dbg !3469
+  %2 = load i32* %Macro_Same_Flag, align 4, !dbg !3469, !tbaa !1569
+  %tobool = icmp eq i32 %2, 0, !dbg !3469
+  br i1 %tobool, label %if.then, label %if.end, !dbg !3469
+
+if.then:                                          ; preds = %entry
+  %3 = load %"struct.pov::InputFileData"** @_ZN3pov10Input_FileE, align 8, !dbg !3470, !tbaa !1578
+  %In_File = getelementptr inbounds %"struct.pov::InputFileData"* %3, i64 0, i32 0, !dbg !3470
+  %4 = load %"class.pov_base::ITextStream"** %In_File, align 8, !dbg !3470, !tbaa !1578
+  %isnull = icmp eq %"class.pov_base::ITextStream"* %4, null, !dbg !3470
+  br i1 %isnull, label %delete.end, label %delete.notnull, !dbg !3470
+
+delete.notnull:                                   ; preds = %if.then
+  %5 = bitcast %"class.pov_base::ITextStream"* %4 to void (%"class.pov_base::ITextStream"*)***, !dbg !3470
+  %vtable = load void (%"class.pov_base::ITextStream"*)*** %5, align 8, !dbg !3470, !tbaa !1686
+  %vfn = getelementptr inbounds void (%"class.pov_base::ITextStream"*)** %vtable, i64 1, !dbg !3470
+  %6 = load void (%"class.pov_base::ITextStream"*)** %vfn, align 8, !dbg !3470
+  tail call void %6(%"class.pov_base::ITextStream"* %4) #9, !dbg !3470
+  %.pre = load %"struct.pov::InputFileData"** @_ZN3pov10Input_FileE, align 8, !dbg !3472, !tbaa !1578
+  %.pre11 = load i32* @_ZN3pov8CS_IndexE, align 4, !dbg !3473, !tbaa !1569
+  %.pre12 = load %"struct.pov::Cond_Stack_Entry"** @_ZN3pov10Cond_StackE, align 8, !dbg !3473, !tbaa !1578
+  br label %delete.end, !dbg !3470
+
+delete.end:                                       ; preds = %delete.notnull, %if.then
+  %7 = phi %"struct.pov::Cond_Stack_Entry"* [ %.pre12, %delete.notnull ], [ %1, %if.then ]
+  %8 = phi i32 [ %.pre11, %delete.notnull ], [ %0, %if.then ]
+  %9 = phi %"struct.pov::InputFileData"* [ %.pre, %delete.notnull ], [ %3, %if.then ]
+  %R_Flag = getelementptr inbounds %"struct.pov::InputFileData"* %9, i64 0, i32 1, !dbg !3472
+  store i8 0, i8* %R_Flag, align 1, !dbg !3472, !tbaa !1591
+  %idxprom1 = sext i32 %8 to i64, !dbg !3473
+  %Macro_File = getelementptr inbounds %"struct.pov::Cond_Stack_Entry"* %7, i64 %idxprom1, i32 3, !dbg !3473
+  %10 = load %"class.pov_base::ITextStream"** %Macro_File, align 8, !dbg !3473, !tbaa !1578
+  %In_File3 = getelementptr inbounds %"struct.pov::InputFileData"* %9, i64 0, i32 0, !dbg !3473
+  store %"class.pov_base::ITextStream"* %10, %"class.pov_base::ITextStream"** %In_File3, align 8, !dbg !3473, !tbaa !1578
+  %.pre13 = load %"struct.pov::Cond_Stack_Entry"** @_ZN3pov10Cond_StackE, align 8, !dbg !3474, !tbaa !1578
+  br label %if.end, !dbg !3475
+
+if.end:                                           ; preds = %entry, %delete.end
+  %11 = phi %"struct.pov::Cond_Stack_Entry"* [ %1, %entry ], [ %.pre13, %delete.end ]
+  %12 = phi i32 [ %0, %entry ], [ %8, %delete.end ]
+  store i32 0, i32* @_ZN3pov7Got_EOFE, align 4, !dbg !3476, !tbaa !1569
+  %13 = load %"struct.pov::InputFileData"** @_ZN3pov10Input_FileE, align 8, !dbg !3474, !tbaa !1578
+  %In_File4 = getelementptr inbounds %"struct.pov::InputFileData"* %13, i64 0, i32 0, !dbg !3474
+  %14 = load %"class.pov_base::ITextStream"** %In_File4, align 8, !dbg !3474, !tbaa !1578
+  %idxprom5 = sext i32 %12 to i64, !dbg !3474
+  %agg.tmp.sroa.0.0.idx = getelementptr inbounds %"struct.pov::Cond_Stack_Entry"* %11, i64 %idxprom5, i32 7, i32 0, !dbg !3474
+  %agg.tmp.sroa.0.0.copyload = load i64* %agg.tmp.sroa.0.0.idx, align 8, !dbg !3474
+  %agg.tmp.sroa.1.8.idx10 = getelementptr inbounds %"struct.pov::Cond_Stack_Entry"* %11, i64 %idxprom5, i32 7, i32 1, !dbg !3474
+  %agg.tmp.sroa.1.8.copyload = load i32* %agg.tmp.sroa.1.8.idx10, align 8, !dbg !3474
+  %call = tail call zeroext i1 @_ZN8pov_base11ITextStream5seekgENS0_7FilePosE(%"class.pov_base::ITextStream"* %14, i64 %agg.tmp.sroa.0.0.copyload, i32 %agg.tmp.sroa.1.8.copyload) #9, !dbg !3474
+  br i1 %call, label %if.end9, label %if.then7, !dbg !3474
+
+if.then7:                                         ; preds = %if.end
+  %call8 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([42 x i8]* @.str589, i64 0, i64 0)) #9, !dbg !3477
+  br label %if.end9, !dbg !3479
+
+if.end9:                                          ; preds = %if.then7, %if.end
+  %15 = load i32* @_ZN3pov11Table_IndexE, align 4, !dbg !3480, !tbaa !1569
+  %dec = add nsw i32 %15, -1, !dbg !3480
+  store i32 %dec, i32* @_ZN3pov11Table_IndexE, align 4, !dbg !3480, !tbaa !1569
+  tail call fastcc void @_ZN3povL13Destroy_TableEi(i32 %15) #9, !dbg !3480
+  ret void, !dbg !3481
+}

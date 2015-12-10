@@ -1,120 +1,149 @@
 define internal fastcc void @CheckSteerableParameters(%struct.IOBASIC_GH* nocapture %myGH) #1 {
+entry:
   %msg = alloca i8*, align 8
-  %1 = load i8** getelementptr inbounds (%struct.anon* @iobasicpriv_, i64 0, i32 4), align 8, !tbaa !13
-  %2 = load i32* getelementptr inbounds (%struct.anon* @iobasicpriv_, i64 0, i32 8), align 4, !tbaa !15
-  %3 = load i32* getelementptr inbounds (%struct.anon.0* @iorest_, i64 0, i32 37), align 8, !tbaa !16
-  %4 = load i8** getelementptr inbounds (%struct.anon.0* @iorest_, i64 0, i32 12), align 8, !tbaa !18
-  %5 = getelementptr inbounds %struct.IOBASIC_GH* %myGH, i64 0, i32 0
-  %6 = load i32* %5, align 4, !tbaa !2
-  %7 = icmp sgt i32 %3, 0
-  %8 = select i1 %7, i32 %3, i32 -1
-  %9 = icmp sgt i32 %2, 0
-  %. = select i1 %9, i32 %2, i32 %8
-  store i32 %., i32* %5, align 4, !tbaa !2
-  %10 = icmp eq i32 %., %6
-  br i1 %10, label %20, label %11
+  call void @llvm.dbg.value(metadata !{%struct.IOBASIC_GH* %myGH}, i64 0, metadata !131), !dbg !194
+  call void @llvm.dbg.declare(metadata !{i8** %msg}, metadata !137), !dbg !195
+  %0 = load i8** getelementptr inbounds (%struct.anon* @iobasicpriv_, i64 0, i32 4), align 8, !dbg !196, !tbaa !190
+  call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !143), !dbg !196
+  %1 = load i32* getelementptr inbounds (%struct.anon* @iobasicpriv_, i64 0, i32 8), align 4, !dbg !196, !tbaa !173
+  call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !148), !dbg !196
+  %2 = load i32* getelementptr inbounds (%struct.anon.0* @iorest_, i64 0, i32 37), align 8, !dbg !196, !tbaa !173
+  call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !150), !dbg !196
+  %3 = load i8** getelementptr inbounds (%struct.anon.0* @iorest_, i64 0, i32 12), align 8, !dbg !196, !tbaa !190
+  call void @llvm.dbg.value(metadata !{i8* %3}, i64 0, metadata !151), !dbg !196
+  %outScalar_every1 = getelementptr inbounds %struct.IOBASIC_GH* %myGH, i64 0, i32 0, !dbg !197
+  %4 = load i32* %outScalar_every1, align 4, !dbg !197, !tbaa !173
+  call void @llvm.dbg.value(metadata !{i32 %4}, i64 0, metadata !134), !dbg !197
+  %cmp = icmp sgt i32 %2, 0, !dbg !198
+  %cond = select i1 %cmp, i32 %2, i32 -1, !dbg !198
+  %cmp3 = icmp sgt i32 %1, 0, !dbg !199
+  %.cond = select i1 %cmp3, i32 %1, i32 %cond, !dbg !199
+  store i32 %.cond, i32* %outScalar_every1, align 4, !dbg !198, !tbaa !173
+  %cmp6 = icmp eq i32 %.cond, %4, !dbg !200
+  br i1 %cmp6, label %if.end14, label %if.then7, !dbg !200
 
-; <label>:11                                      ; preds = %0
-  %12 = tail call i32 @CCTK_Equals(i8* %4, i8* getelementptr inbounds ([9 x i8]* @.str4, i64 0, i64 0)) #5
-  %13 = icmp eq i32 %12, 0
-  br i1 %13, label %14, label %17
+if.then7:                                         ; preds = %entry
+  %call = call i32 @CCTK_Equals(i8* %3, i8* getelementptr inbounds ([9 x i8]* @.str3, i64 0, i64 0)) #6, !dbg !201
+  %tobool = icmp eq i32 %call, 0, !dbg !201
+  br i1 %tobool, label %lor.lhs.false, label %if.then10, !dbg !201
 
-; <label>:14                                      ; preds = %11
-  %15 = tail call i32 @CCTK_Equals(i8* %4, i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0)) #5
-  %16 = icmp eq i32 %15, 0
-  br i1 %16, label %20, label %17
+lor.lhs.false:                                    ; preds = %if.then7
+  %call8 = call i32 @CCTK_Equals(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str4, i64 0, i64 0)) #6, !dbg !203
+  %tobool9 = icmp eq i32 %call8, 0, !dbg !203
+  br i1 %tobool9, label %if.end14, label %if.then10, !dbg !203
 
-; <label>:17                                      ; preds = %14, %11
-  %18 = load i32* %5, align 4, !tbaa !2
-  %19 = tail call i32 (i8*, i8*, ...)* @CCTK_VInfo(i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([35 x i8]* @.str6, i64 0, i64 0), i32 %18) #5
-  br label %20
+if.then10:                                        ; preds = %lor.lhs.false, %if.then7
+  %5 = load i32* %outScalar_every1, align 4, !dbg !204, !tbaa !173
+  %call12 = call i32 (i8*, i8*, ...)* @CCTK_VInfo(i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([35 x i8]* @.str5, i64 0, i64 0), i32 %5) #6, !dbg !204
+  br label %if.end14, !dbg !206
 
-; <label>:20                                      ; preds = %14, %0, %17
-  %21 = tail call i32 @CCTK_ParameterQueryTimesSet(i8* getelementptr inbounds ([15 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0)) #5
-  %22 = load i32* @CheckSteerableParameters.outScalar_vars_lastset, align 4, !tbaa !12
-  %23 = icmp eq i32 %21, %22
-  br i1 %23, label %63, label %24
+if.end14:                                         ; preds = %lor.lhs.false, %entry, %if.then10
+  %call15 = call i32 @CCTK_ParameterQueryTimesSet(i8* getelementptr inbounds ([15 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0)) #6, !dbg !207
+  call void @llvm.dbg.value(metadata !{i32 %call15}, i64 0, metadata !135), !dbg !207
+  %6 = load i32* @CheckSteerableParameters.outScalar_vars_lastset, align 4, !dbg !208, !tbaa !173
+  %cmp16 = icmp eq i32 %call15, %6, !dbg !208
+  br i1 %cmp16, label %if.end46, label %if.then17, !dbg !208
 
-; <label>:24                                      ; preds = %20
-  %25 = tail call i32 @CCTK_NumVars() #5
-  %26 = getelementptr inbounds %struct.IOBASIC_GH* %myGH, i64 0, i32 3
-  %27 = load i8** %26, align 8, !tbaa !19
-  %28 = sext i32 %25 to i64
-  %29 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %27, i1 false)
-  %30 = tail call i8* @__memset_chk(i8* %27, i32 0, i64 %28, i64 %29) #5
-  %31 = load i8** %26, align 8, !tbaa !19
-  %32 = tail call i32 @CCTK_TraverseString(i8* %1, void (i32, i8*, i8*)* @SetOutputFlag, i8* %31, i32 3) #5
-  %33 = load i32* %5, align 4, !tbaa !2
-  %34 = icmp eq i32 %33, 0
-  br i1 %34, label %.thread, label %35
+if.then17:                                        ; preds = %if.end14
+  %call18 = call i32 @CCTK_NumVars() #6, !dbg !209
+  call void @llvm.dbg.value(metadata !{i32 %call18}, i64 0, metadata !133), !dbg !209
+  %do_outScalar = getelementptr inbounds %struct.IOBASIC_GH* %myGH, i64 0, i32 3, !dbg !211
+  %7 = load i8** %do_outScalar, align 8, !dbg !211, !tbaa !190
+  %conv = sext i32 %call18 to i64, !dbg !211
+  call void @llvm.memset.p0i8.i64(i8* %7, i8 0, i64 %conv, i32 1, i1 false), !dbg !211
+  %8 = load i8** %do_outScalar, align 8, !dbg !212, !tbaa !190
+  %call20 = call i32 @CCTK_TraverseString(i8* %0, void (i32, i8*, i8*)* @SetOutputFlag, i8* %8, i32 3) #6, !dbg !212
+  %9 = load i32* %outScalar_every1, align 4, !dbg !213, !tbaa !173
+  %tobool22 = icmp eq i32 %9, 0, !dbg !213
+  br i1 %tobool22, label %if.end45, label %land.lhs.true, !dbg !213
 
-; <label>:35                                      ; preds = %24
-  %36 = tail call i32 @CCTK_Equals(i8* %4, i8* getelementptr inbounds ([9 x i8]* @.str4, i64 0, i64 0)) #5
-  %37 = icmp eq i32 %36, 0
-  br i1 %37, label %38, label %41
+land.lhs.true:                                    ; preds = %if.then17
+  %call23 = call i32 @CCTK_Equals(i8* %3, i8* getelementptr inbounds ([9 x i8]* @.str3, i64 0, i64 0)) #6, !dbg !214
+  %tobool24 = icmp eq i32 %call23, 0, !dbg !214
+  br i1 %tobool24, label %lor.lhs.false25, label %if.then28, !dbg !214
 
-; <label>:38                                      ; preds = %35
-  %39 = tail call i32 @CCTK_Equals(i8* %4, i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0)) #5
-  %40 = icmp eq i32 %39, 0
-  br i1 %40, label %.thread, label %41
+lor.lhs.false25:                                  ; preds = %land.lhs.true
+  %call26 = call i32 @CCTK_Equals(i8* %3, i8* getelementptr inbounds ([5 x i8]* @.str4, i64 0, i64 0)) #6, !dbg !215
+  %tobool27 = icmp eq i32 %call26, 0, !dbg !215
+  br i1 %tobool27, label %if.end45, label %if.then28, !dbg !215
 
-; <label>:41                                      ; preds = %38, %35
-  store i8* null, i8** %msg, align 8, !tbaa !20
-  %42 = icmp sgt i32 %25, 0
-  br i1 %42, label %.lr.ph, label %.thread
+if.then28:                                        ; preds = %lor.lhs.false25, %land.lhs.true
+  call void @llvm.dbg.value(metadata !216, i64 0, metadata !137), !dbg !217
+  store i8* null, i8** %msg, align 8, !dbg !217, !tbaa !190
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !132), !dbg !219
+  %cmp2968 = icmp sgt i32 %call18, 0, !dbg !219
+  br i1 %cmp2968, label %for.body, label %if.end45, !dbg !219
 
-.lr.ph:                                           ; preds = %41
-  %43 = add i32 %25, -1
-  br label %44
+for.body:                                         ; preds = %for.inc, %if.then28
+  %indvars.iv = phi i64 [ 0, %if.then28 ], [ %indvars.iv.next, %for.inc ]
+  %10 = load i8** %do_outScalar, align 8, !dbg !221, !tbaa !190
+  %arrayidx = getelementptr inbounds i8* %10, i64 %indvars.iv, !dbg !221
+  %11 = load i8* %arrayidx, align 1, !dbg !221, !tbaa !174
+  %tobool32 = icmp eq i8 %11, 0, !dbg !221
+  br i1 %tobool32, label %for.inc, label %if.then33, !dbg !221
 
-; <label>:44                                      ; preds = %._crit_edge2, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %._crit_edge2 ]
-  %45 = load i8** %26, align 8, !tbaa !19
-  %46 = getelementptr inbounds i8* %45, i64 %indvars.iv
-  %47 = load i8* %46, align 1, !tbaa !21
-  %48 = icmp eq i8 %47, 0
-  %.pre3 = trunc i64 %indvars.iv to i32
-  br i1 %48, label %._crit_edge2, label %49
+if.then33:                                        ; preds = %for.body
+  %12 = trunc i64 %indvars.iv to i32, !dbg !223
+  %call34 = call i8* @CCTK_FullName(i32 %12) #6, !dbg !223
+  call void @llvm.dbg.value(metadata !{i8* %call34}, i64 0, metadata !136), !dbg !223
+  call void @llvm.dbg.value(metadata !{i8** %msg}, i64 0, metadata !137), !dbg !225
+  %13 = load i8** %msg, align 8, !dbg !225, !tbaa !190
+  %tobool35 = icmp eq i8* %13, null, !dbg !225
+  br i1 %tobool35, label %if.then36, label %if.else, !dbg !225
 
-; <label>:49                                      ; preds = %44
-  %50 = call i8* @CCTK_FullName(i32 %.pre3) #5
-  %51 = load i8** %msg, align 8, !tbaa !20
-  %52 = icmp eq i8* %51, null
-  br i1 %52, label %53, label %55
+if.then36:                                        ; preds = %if.then33
+  %call37 = call i32 (i8**, i8*, ...)* @Util_asprintf(i8** %msg, i8* getelementptr inbounds ([32 x i8]* @.str7, i64 0, i64 0), i8* %call34) #6, !dbg !226
+  br label %if.end39, !dbg !228
 
-; <label>:53                                      ; preds = %49
-  %54 = call i32 (i8**, i8*, ...)* @Util_asprintf(i8** %msg, i8* getelementptr inbounds ([32 x i8]* @.str8, i64 0, i64 0), i8* %50) #5
-  br label %57
+if.else:                                          ; preds = %if.then33
+  call void @llvm.dbg.value(metadata !{i8* %13}, i64 0, metadata !138), !dbg !229
+  %call38 = call i32 (i8**, i8*, ...)* @Util_asprintf(i8** %msg, i8* getelementptr inbounds ([6 x i8]* @.str8, i64 0, i64 0), i8* %13, i8* %call34) #6, !dbg !231
+  call void @free(i8* %13) #6, !dbg !232
+  br label %if.end39
 
-; <label>:55                                      ; preds = %49
-  %56 = call i32 (i8**, i8*, ...)* @Util_asprintf(i8** %msg, i8* getelementptr inbounds ([6 x i8]* @.str9, i64 0, i64 0), i8* %51, i8* %50) #5
-  call void @free(i8* %51) #6
-  br label %57
+if.end39:                                         ; preds = %if.else, %if.then36
+  call void @free(i8* %call34) #6, !dbg !233
+  br label %for.inc, !dbg !234
 
-; <label>:57                                      ; preds = %55, %53
-  call void @free(i8* %50) #6
-  br label %._crit_edge2
+for.inc:                                          ; preds = %for.body, %if.end39
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !219
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !219
+  %exitcond = icmp eq i32 %lftr.wideiv, %call18, !dbg !219
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !219
 
-._crit_edge2:                                     ; preds = %44, %57
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i32 %.pre3, %43
-  br i1 %exitcond, label %58, label %44
+for.end:                                          ; preds = %for.inc
+  call void @llvm.dbg.value(metadata !{i8** %msg}, i64 0, metadata !137), !dbg !235
+  %.pre = load i8** %msg, align 8, !dbg !235, !tbaa !190
+  call void @llvm.dbg.value(metadata !{i8** %msg}, i64 0, metadata !137), !dbg !235
+  %tobool41 = icmp eq i8* %.pre, null, !dbg !235
+  br i1 %tobool41, label %if.end45, label %if.then42, !dbg !235
 
-; <label>:58                                      ; preds = %._crit_edge2
-  %.pre = load i8** %msg, align 8, !tbaa !20
-  %59 = icmp eq i8* %.pre, null
-  br i1 %59, label %.thread, label %60
+if.then42:                                        ; preds = %for.end
+  %call43 = call i32 @CCTK_Info(i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* %.pre) #6, !dbg !236
+  call void @llvm.dbg.value(metadata !{i8** %msg}, i64 0, metadata !137), !dbg !238
+  %14 = load i8** %msg, align 8, !dbg !238, !tbaa !190
+  call void @free(i8* %14) #6, !dbg !238
+  br label %if.end45, !dbg !239
 
-; <label>:60                                      ; preds = %58
-  %61 = call i32 @CCTK_Info(i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* %.pre) #5
-  %62 = load i8** %msg, align 8, !tbaa !20
-  call void @free(i8* %62) #6
-  br label %.thread
+if.end45:                                         ; preds = %if.then28, %for.end, %lor.lhs.false25, %if.then17, %if.then42
+  store i32 %call15, i32* @CheckSteerableParameters.outScalar_vars_lastset, align 4, !dbg !240, !tbaa !173
+  br label %if.end46, !dbg !241
 
-.thread:                                          ; preds = %41, %58, %38, %24, %60
-  store i32 %21, i32* @CheckSteerableParameters.outScalar_vars_lastset, align 4, !tbaa !12
-  br label %63
-
-; <label>:63                                      ; preds = %20, %.thread
-  ret void
+if.end46:                                         ; preds = %if.end14, %if.end45
+  call void @llvm.dbg.value(metadata !242, i64 0, metadata !154), !dbg !243
+  call void @llvm.dbg.value(metadata !242, i64 0, metadata !154), !dbg !243
+  call void @llvm.dbg.value(metadata !242, i64 0, metadata !154), !dbg !243
+  call void @llvm.dbg.value(metadata !242, i64 0, metadata !154), !dbg !243
+  call void @llvm.dbg.value(metadata !242, i64 0, metadata !154), !dbg !243
+  call void @llvm.dbg.value(metadata !242, i64 0, metadata !154), !dbg !243
+  call void @llvm.dbg.value(metadata !242, i64 0, metadata !154), !dbg !243
+  call void @llvm.dbg.value(metadata !242, i64 0, metadata !154), !dbg !243
+  call void @llvm.dbg.value(metadata !242, i64 0, metadata !154), !dbg !243
+  call void @llvm.dbg.value(metadata !242, i64 0, metadata !154), !dbg !243
+  call void @llvm.dbg.value(metadata !242, i64 0, metadata !154), !dbg !243
+  call void @llvm.dbg.value(metadata !242, i64 0, metadata !154), !dbg !243
+  call void @llvm.dbg.value(metadata !242, i64 0, metadata !154), !dbg !243
+  call void @llvm.dbg.value(metadata !242, i64 0, metadata !154), !dbg !243
+  call void @llvm.dbg.value(metadata !242, i64 0, metadata !154), !dbg !243
+  ret void, !dbg !243
 }

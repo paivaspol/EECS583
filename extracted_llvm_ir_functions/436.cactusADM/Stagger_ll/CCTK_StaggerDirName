@@ -1,40 +1,52 @@
-define i32 @CCTK_StaggerDirName(i32 %dir, i8* %stype) #1 {
+define i32 @CCTK_StaggerDirName(i32 %dir, i8* nocapture %stype) #1 {
+entry:
   %hs = alloca [7 x i8], align 1
-  %1 = getelementptr inbounds [7 x i8]* %hs, i64 0, i64 0
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %1, i8* getelementptr inbounds ([7 x i8]* @CCTK_StaggerDirName.hs, i64 0, i64 0), i64 7, i32 1, i1 false)
-  %2 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %1, i32 0, i64 7, i8* getelementptr inbounds ([3 x i8]* @.str4, i64 0, i64 0), i8* %stype) #6
-  %3 = call i64 @strlen(i8* %1) #6
-  %4 = trunc i64 %3 to i32
-  %5 = icmp slt i32 %4, %dir
-  br i1 %5, label %6, label %8
+  call void @llvm.dbg.value(metadata !{i32 %dir}, i64 0, metadata !123), !dbg !307
+  call void @llvm.dbg.value(metadata !{i8* %stype}, i64 0, metadata !124), !dbg !307
+  call void @llvm.dbg.declare(metadata !{[7 x i8]* %hs}, metadata !126), !dbg !308
+  %0 = getelementptr inbounds [7 x i8]* %hs, i64 0, i64 0, !dbg !308
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* getelementptr inbounds ([7 x i8]* @CCTK_StaggerDirName.hs, i64 0, i64 0), i64 7, i32 1, i1 false), !dbg !308
+  %strlen = call i64 @strlen(i8* %stype), !dbg !309
+  %leninc = add i64 %strlen, 1, !dbg !309
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %stype, i64 %leninc, i32 1, i1 false), !dbg !309
+  %call2 = call i64 @strlen(i8* %0) #9, !dbg !310
+  %conv = trunc i64 %call2 to i32, !dbg !310
+  %cmp = icmp slt i32 %conv, %dir, !dbg !310
+  br i1 %cmp, label %if.then, label %if.end, !dbg !310
 
-; <label>:6                                       ; preds = %0
-  %7 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 336, i8* getelementptr inbounds ([76 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([61 x i8]* @.str5, i64 0, i64 0), i32 %dir) #6
-  br label %8
+if.then:                                          ; preds = %entry
+  %call4 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 336, i8* getelementptr inbounds ([64 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([61 x i8]* @.str5, i64 0, i64 0), i32 %dir) #8, !dbg !311
+  br label %if.end, !dbg !313
 
-; <label>:8                                       ; preds = %6, %0
-  %9 = sext i32 %dir to i64
-  %10 = getelementptr inbounds [7 x i8]* %hs, i64 0, i64 %9
-  %11 = load i8* %10, align 1, !tbaa !8
-  %12 = sext i8 %11 to i32
-  %13 = call i32 @__toupper(i32 %12) #6
-  switch i32 %13, label %16 [
-    i32 77, label %18
-    i32 67, label %14
-    i32 80, label %15
-  ]
+if.end:                                           ; preds = %if.then, %entry
+  %idxprom = sext i32 %dir to i64, !dbg !314
+  %arrayidx = getelementptr inbounds [7 x i8]* %hs, i64 0, i64 %idxprom, !dbg !314
+  %1 = load i8* %arrayidx, align 1, !dbg !314, !tbaa !176
+  %idxprom6 = sext i8 %1 to i64, !dbg !314
+  %call7 = call i32** @__ctype_toupper_loc() #10, !dbg !314
+  %2 = load i32** %call7, align 8, !dbg !314, !tbaa !219
+  %arrayidx8 = getelementptr inbounds i32* %2, i64 %idxprom6, !dbg !314
+  %3 = load i32* %arrayidx8, align 4, !dbg !314, !tbaa !175
+  call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !130), !dbg !314
+  switch i32 %3, label %sw.default [
+    i32 77, label %return
+    i32 67, label %sw.bb9
+    i32 80, label %sw.bb10
+  ], !dbg !314
 
-; <label>:14                                      ; preds = %8
-  br label %18
+sw.bb9:                                           ; preds = %if.end
+  call void @llvm.dbg.value(metadata !213, i64 0, metadata !125), !dbg !315
+  br label %return, !dbg !315
 
-; <label>:15                                      ; preds = %8
-  br label %18
+sw.bb10:                                          ; preds = %if.end
+  call void @llvm.dbg.value(metadata !222, i64 0, metadata !125), !dbg !317
+  br label %return, !dbg !317
 
-; <label>:16                                      ; preds = %8
-  %17 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 347, i8* getelementptr inbounds ([76 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([45 x i8]* @.str6, i64 0, i64 0), i8* %1) #6
-  br label %18
+sw.default:                                       ; preds = %if.end
+  %call12 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 347, i8* getelementptr inbounds ([64 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([45 x i8]* @.str6, i64 0, i64 0), i8* %0) #8, !dbg !318
+  br label %return, !dbg !319
 
-; <label>:18                                      ; preds = %14, %15, %8, %16
-  %.0 = phi i32 [ -1, %16 ], [ 2, %15 ], [ 1, %14 ], [ 0, %8 ]
-  ret i32 %.0
+return:                                           ; preds = %sw.bb9, %sw.bb10, %if.end, %sw.default
+  %retval.0 = phi i32 [ -1, %sw.default ], [ 2, %sw.bb10 ], [ 1, %sw.bb9 ], [ 0, %if.end ]
+  ret i32 %retval.0, !dbg !320
 }

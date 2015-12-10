@@ -1,0 +1,98 @@
+define void @_ZN11xercesc_2_59SAXParser5parseEPKt(%"class.xercesc_2_5::SAXParser"* nocapture %this, i16* %systemId) unnamed_addr #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::SAXParser"* %this}, i64 0, metadata !5872), !dbg !7895
+  tail call void @llvm.dbg.value(metadata !{i16* %systemId}, i64 0, metadata !5873), !dbg !7895
+  %fParseInProgress = getelementptr inbounds %"class.xercesc_2_5::SAXParser"* %this, i64 0, i32 5, !dbg !7896
+  %0 = load i8* %fParseInProgress, align 1, !dbg !7896, !tbaa !7429, !range !7560
+  %tobool = icmp eq i8 %0, 0, !dbg !7896
+  br i1 %tobool, label %if.end, label %if.then, !dbg !7896
+
+if.then:                                          ; preds = %entry
+  %exception = tail call i8* @__cxa_allocate_exception(i64 48) #4, !dbg !7897
+  %1 = bitcast i8* %exception to %"class.xercesc_2_5::IOException"*, !dbg !7897
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::SAXParser"* %this, i64 0, i32 21, !dbg !7897
+  %2 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !7897, !tbaa !7432
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::IOException"* %1}, i64 0, metadata !7898), !dbg !7899
+  tail call void @llvm.dbg.value(metadata !7785, i64 0, metadata !7900), !dbg !7899
+  tail call void @llvm.dbg.value(metadata !7901, i64 0, metadata !7902), !dbg !7899
+  tail call void @llvm.dbg.value(metadata !7789, i64 0, metadata !7903), !dbg !7899
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %2}, i64 0, metadata !7904), !dbg !7899
+  invoke void @_ZN11xercesc_2_511IOExceptionC2EPKcjNS_10XMLExcepts5CodesEPNS_13MemoryManagerE(%"class.xercesc_2_5::IOException"* %1, i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 730, i32 43, %"class.xercesc_2_5::MemoryManager"* %2) #9
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %if.then
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_511IOExceptionE to i8*), i8* bitcast (void (%"class.xercesc_2_5::IOException"*)* @_ZN11xercesc_2_511IOExceptionD1Ev to i8*)) #10, !dbg !7897
+  unreachable, !dbg !7897
+
+lpad:                                             ; preds = %if.then
+  %3 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !7897
+  %4 = extractvalue { i8*, i32 } %3, 0, !dbg !7897
+  %5 = extractvalue { i8*, i32 } %3, 1, !dbg !7897
+  tail call void @__cxa_free_exception(i8* %exception) #4, !dbg !7897
+  br label %eh.resume, !dbg !7897
+
+if.end:                                           ; preds = %entry
+  store i8 1, i8* %fParseInProgress, align 1, !dbg !7905, !tbaa !7429
+  %fScanner = getelementptr inbounds %"class.xercesc_2_5::SAXParser"* %this, i64 0, i32 17, !dbg !7907
+  %6 = load %"class.xercesc_2_5::XMLScanner"** %fScanner, align 8, !dbg !7907, !tbaa !7432
+  invoke void @_ZN11xercesc_2_510XMLScanner12scanDocumentEPKt(%"class.xercesc_2_5::XMLScanner"* %6, i16* %systemId) #9
+          to label %invoke.cont4 unwind label %lpad3, !dbg !7907
+
+invoke.cont4:                                     ; preds = %if.end
+  store i8 0, i8* %fParseInProgress, align 1, !dbg !7908, !tbaa !7429
+  ret void, !dbg !7909
+
+lpad3:                                            ; preds = %if.end
+  %7 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_520OutOfMemoryExceptionE to i8*)
+          catch i8* null, !dbg !7907
+  %8 = extractvalue { i8*, i32 } %7, 0, !dbg !7907
+  %9 = extractvalue { i8*, i32 } %7, 1, !dbg !7907
+  %10 = tail call i32 @llvm.eh.typeid.for(i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_520OutOfMemoryExceptionE to i8*)) #4, !dbg !7910
+  %matches = icmp eq i32 %9, %10, !dbg !7910
+  %11 = tail call i8* @__cxa_begin_catch(i8* %8) #4, !dbg !7911
+  br i1 %matches, label %catch9, label %catch, !dbg !7910
+
+catch9:                                           ; preds = %lpad3
+  invoke void @__cxa_rethrow() #10
+          to label %unreachable unwind label %lpad11, !dbg !7912
+
+catch:                                            ; preds = %lpad3
+  store i8 0, i8* %fParseInProgress, align 1, !dbg !7914, !tbaa !7429
+  invoke void @__cxa_rethrow() #10
+          to label %unreachable unwind label %lpad7, !dbg !7916
+
+lpad7:                                            ; preds = %catch
+  %12 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !7916
+  %13 = extractvalue { i8*, i32 } %12, 0, !dbg !7916
+  %14 = extractvalue { i8*, i32 } %12, 1, !dbg !7916
+  invoke void @__cxa_end_catch()
+          to label %eh.resume unwind label %terminate.lpad, !dbg !7911
+
+lpad11:                                           ; preds = %catch9
+  %15 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !7912
+  %16 = extractvalue { i8*, i32 } %15, 0, !dbg !7912
+  %17 = extractvalue { i8*, i32 } %15, 1, !dbg !7912
+  invoke void @__cxa_end_catch()
+          to label %eh.resume unwind label %terminate.lpad, !dbg !7917
+
+eh.resume:                                        ; preds = %lpad11, %lpad7, %lpad
+  %ehselector.slot.0 = phi i32 [ %5, %lpad ], [ %17, %lpad11 ], [ %14, %lpad7 ]
+  %exn.slot.0 = phi i8* [ %4, %lpad ], [ %16, %lpad11 ], [ %13, %lpad7 ]
+  %lpad.val = insertvalue { i8*, i32 } undef, i8* %exn.slot.0, 0, !dbg !7897
+  %lpad.val15 = insertvalue { i8*, i32 } %lpad.val, i32 %ehselector.slot.0, 1, !dbg !7897
+  resume { i8*, i32 } %lpad.val15, !dbg !7897
+
+terminate.lpad:                                   ; preds = %lpad11, %lpad7
+  %18 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !7911
+  %19 = extractvalue { i8*, i32 } %18, 0, !dbg !7911
+  tail call void @__clang_call_terminate(i8* %19) #8, !dbg !7911
+  unreachable, !dbg !7911
+
+unreachable:                                      ; preds = %catch9, %catch
+  unreachable
+}

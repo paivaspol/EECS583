@@ -1,0 +1,85 @@
+define zeroext i1 @_ZN10xalanc_1_810XalanQName13isValidNCNameEPKtj(i16* %theNCName, i32 %theLength) #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %theNCName}, i64 0, metadata !2834), !dbg !3843
+  tail call void @llvm.dbg.value(metadata !{i32 %theLength}, i64 0, metadata !2835), !dbg !3844
+  %cmp = icmp eq i32 %theLength, -1, !dbg !3845
+  br i1 %cmp, label %while.cond.i, label %if.end, !dbg !3845
+
+while.cond.i:                                     ; preds = %entry, %while.cond.i
+  %theBufferPointer.0.i = phi i16* [ %incdec.ptr.i, %while.cond.i ], [ %theNCName, %entry ]
+  %0 = load i16* %theBufferPointer.0.i, align 2, !dbg !3846, !tbaa !3849
+  %cmp.i = icmp eq i16 %0, 0, !dbg !3846
+  %incdec.ptr.i = getelementptr inbounds i16* %theBufferPointer.0.i, i64 1, !dbg !3850
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr.i}, i64 0, metadata !3852), !dbg !3850
+  br i1 %cmp.i, label %_ZN10xalanc_1_86lengthEPKt.exit, label %while.cond.i, !dbg !3846
+
+_ZN10xalanc_1_86lengthEPKt.exit:                  ; preds = %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %theBufferPointer.0.i to i64, !dbg !3853
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %theNCName to i64, !dbg !3853
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !3853
+  %sub.ptr.div4.i = lshr exact i64 %sub.ptr.sub.i, 1, !dbg !3853
+  %conv1.i = trunc i64 %sub.ptr.div4.i to i32, !dbg !3853
+  tail call void @llvm.dbg.value(metadata !{i32 %conv1.i}, i64 0, metadata !2835), !dbg !3847
+  br label %if.end, !dbg !3854
+
+if.end:                                           ; preds = %_ZN10xalanc_1_86lengthEPKt.exit, %entry
+  %theLength.addr.0 = phi i32 [ %conv1.i, %_ZN10xalanc_1_86lengthEPKt.exit ], [ %theLength, %entry ]
+  %cmp1 = icmp eq i32 %theLength.addr.0, 0, !dbg !3855
+  br i1 %cmp1, label %return, label %if.else, !dbg !3855
+
+if.else:                                          ; preds = %if.end
+  %1 = load i16* %theNCName, align 2, !dbg !3856, !tbaa !3849
+  tail call void @llvm.dbg.value(metadata !{i16 %1}, i64 0, metadata !2836), !dbg !3856
+  tail call void @llvm.dbg.value(metadata !{i16 %1}, i64 0, metadata !3857), !dbg !3859
+  %idxprom.i57 = zext i16 %1 to i64, !dbg !3860
+  %arrayidx.i58 = getelementptr inbounds [0 x i8]* @_ZN10xalanc_1_812XalanXMLChar15theUnicodeTableE, i64 0, i64 %idxprom.i57, !dbg !3860
+  %2 = load i8* %arrayidx.i58, align 1, !dbg !3860, !tbaa !3385
+  %.off.i59 = add i8 %2, -1, !dbg !3860
+  %3 = icmp ult i8 %.off.i59, 2, !dbg !3860
+  %cmp4 = icmp eq i16 %1, 95, !dbg !3858
+  %or.cond = or i1 %3, %cmp4, !dbg !3858
+  br i1 %or.cond, label %if.end6, label %return, !dbg !3858
+
+if.end6:                                          ; preds = %if.else
+  %cmp7 = icmp ugt i32 %theLength.addr.0, 1, !dbg !3861
+  br i1 %cmp7, label %for.body, label %return, !dbg !3861
+
+for.body:                                         ; preds = %if.end6, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 1, %if.end6 ]
+  %arrayidx10 = getelementptr inbounds i16* %theNCName, i64 %indvars.iv, !dbg !3862
+  %4 = load i16* %arrayidx10, align 2, !dbg !3862, !tbaa !3849
+  tail call void @llvm.dbg.value(metadata !{i16 %4}, i64 0, metadata !2836), !dbg !3862
+  tail call void @llvm.dbg.value(metadata !{i16 %4}, i64 0, metadata !3864), !dbg !3866
+  %idxprom.i55 = zext i16 %4 to i64, !dbg !3867
+  %arrayidx.i56 = getelementptr inbounds [0 x i8]* @_ZN10xalanc_1_812XalanXMLChar15theUnicodeTableE, i64 0, i64 %idxprom.i55, !dbg !3867
+  %5 = load i8* %arrayidx.i56, align 1, !dbg !3867, !tbaa !3385
+  %.off.i = add i8 %5, -1, !dbg !3867
+  %6 = icmp ult i8 %.off.i, 2, !dbg !3867
+  %cmp.i54 = icmp eq i8 %5, 4, !dbg !3868
+  %or.cond60 = or i1 %6, %cmp.i54, !dbg !3865
+  tail call void @llvm.dbg.value(metadata !{i16 %4}, i64 0, metadata !3870), !dbg !3871
+  %cmp.i51 = icmp eq i8 %5, 3, !dbg !3872
+  %or.cond61 = or i1 %or.cond60, %cmp.i51, !dbg !3865
+  tail call void @llvm.dbg.value(metadata !{i16 %4}, i64 0, metadata !3874), !dbg !3875
+  %cmp.i48 = icmp eq i8 %5, 5, !dbg !3876
+  %or.cond62 = or i1 %or.cond61, %cmp.i48, !dbg !3865
+  tail call void @llvm.dbg.value(metadata !{i16 %4}, i64 0, metadata !3879), !dbg !3880
+  br i1 %or.cond62, label %for.inc, label %switch.early.test, !dbg !3865
+
+switch.early.test:                                ; preds = %for.body
+  switch i16 %4, label %return [
+    i16 95, label %for.inc
+    i16 46, label %for.inc
+    i16 45, label %for.inc
+  ], !dbg !3878
+
+for.inc:                                          ; preds = %switch.early.test, %switch.early.test, %switch.early.test, %for.body
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !3881
+  %7 = trunc i64 %indvars.iv.next to i32, !dbg !3881
+  %cmp9 = icmp ult i32 %7, %theLength.addr.0, !dbg !3881
+  br i1 %cmp9, label %for.body, label %return, !dbg !3881
+
+return:                                           ; preds = %switch.early.test, %for.inc, %if.end6, %if.else, %if.end
+  %retval.0 = phi i1 [ false, %if.end ], [ false, %if.else ], [ true, %if.end6 ], [ false, %switch.early.test ], [ true, %for.inc ]
+  ret i1 %retval.0, !dbg !3882
+}

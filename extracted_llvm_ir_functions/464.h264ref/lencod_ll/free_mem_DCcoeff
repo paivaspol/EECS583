@@ -1,35 +1,37 @@
 define void @free_mem_DCcoeff(i32*** nocapture %cofDC) #0 {
 entry:
-  br label %for.cond1.preheader
+  tail call void @llvm.dbg.value(metadata !{i32*** %cofDC}, i64 0, metadata !456), !dbg !1936
+  tail call void @llvm.dbg.value(metadata !30, i64 0, metadata !458), !dbg !1937
+  br label %for.cond1.preheader, !dbg !1937
 
 for.cond1.preheader:                              ; preds = %for.end, %entry
   %indvars.iv20 = phi i64 [ 0, %entry ], [ %indvars.iv.next21, %for.end ]
-  %arrayidx = getelementptr inbounds i32*** %cofDC, i64 %indvars.iv20
-  br label %for.body3
+  %arrayidx = getelementptr inbounds i32*** %cofDC, i64 %indvars.iv20, !dbg !1939
+  br label %for.body3, !dbg !1943
 
 for.body3:                                        ; preds = %for.body3, %for.cond1.preheader
   %indvars.iv = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next, %for.body3 ]
-  %0 = load i32*** %arrayidx, align 8, !tbaa !3
-  %arrayidx5 = getelementptr inbounds i32** %0, i64 %indvars.iv
-  %1 = load i32** %arrayidx5, align 8, !tbaa !3
-  %2 = bitcast i32* %1 to i8*
-  tail call void @free(i8* %2) #6
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 2
-  br i1 %exitcond, label %for.end, label %for.body3
+  %0 = load i32*** %arrayidx, align 8, !dbg !1939, !tbaa !1428
+  %arrayidx5 = getelementptr inbounds i32** %0, i64 %indvars.iv, !dbg !1939
+  %1 = load i32** %arrayidx5, align 8, !dbg !1939, !tbaa !1428
+  %2 = bitcast i32* %1 to i8*, !dbg !1939
+  tail call void @free(i8* %2) #7, !dbg !1939
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1943
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1943
+  %exitcond = icmp eq i32 %lftr.wideiv, 2, !dbg !1943
+  br i1 %exitcond, label %for.end, label %for.body3, !dbg !1943
 
 for.end:                                          ; preds = %for.body3
-  %3 = load i32*** %arrayidx, align 8, !tbaa !3
-  %4 = bitcast i32** %3 to i8*
-  tail call void @free(i8* %4) #6
-  %indvars.iv.next21 = add i64 %indvars.iv20, 1
-  %lftr.wideiv22 = trunc i64 %indvars.iv.next21 to i32
-  %exitcond23 = icmp eq i32 %lftr.wideiv22, 3
-  br i1 %exitcond23, label %for.end10, label %for.cond1.preheader
+  %3 = load i32*** %arrayidx, align 8, !dbg !1944, !tbaa !1428
+  %4 = bitcast i32** %3 to i8*, !dbg !1944
+  tail call void @free(i8* %4) #7, !dbg !1944
+  %indvars.iv.next21 = add i64 %indvars.iv20, 1, !dbg !1937
+  %lftr.wideiv22 = trunc i64 %indvars.iv.next21 to i32, !dbg !1937
+  %exitcond23 = icmp eq i32 %lftr.wideiv22, 3, !dbg !1937
+  br i1 %exitcond23, label %for.end10, label %for.cond1.preheader, !dbg !1937
 
 for.end10:                                        ; preds = %for.end
-  %5 = bitcast i32*** %cofDC to i8*
-  tail call void @free(i8* %5) #6
-  ret void
+  %5 = bitcast i32*** %cofDC to i8*, !dbg !1945
+  tail call void @free(i8* %5) #7, !dbg !1945
+  ret void, !dbg !1946
 }

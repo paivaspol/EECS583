@@ -1,302 +1,316 @@
 define void @biari_encode_symbol(%struct.EncodingEnvironment* %eep, i16 signext %symbol, %struct.BiContextType* nocapture %bi_ct) #0 {
 entry:
-  %Erange = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 1
-  %0 = load i32* %Erange, align 4, !tbaa !0
-  %Elow = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 0
-  %1 = load i32* %Elow, align 4, !tbaa !0
-  %shr = lshr i32 %0, 6
-  %and = and i32 %shr, 3
-  %idxprom = zext i32 %and to i64
-  %state = getelementptr inbounds %struct.BiContextType* %bi_ct, i64 0, i32 0
-  %2 = load i16* %state, align 2, !tbaa !4
-  %idxprom1 = zext i16 %2 to i64
-  %arrayidx2 = getelementptr inbounds [64 x [4 x i8]]* @rLPS_table_64x4, i64 0, i64 %idxprom1, i64 %idxprom
-  %3 = load i8* %arrayidx2, align 1, !tbaa !1
-  %conv = zext i8 %3 to i32
-  %4 = load i32* @cabac_encoding, align 4, !tbaa !0
-  %tobool = icmp eq i32 %4, 0
-  br i1 %tobool, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.EncodingEnvironment* %eep}, i64 0, metadata !86), !dbg !695
+  tail call void @llvm.dbg.value(metadata !{i16 %symbol}, i64 0, metadata !87), !dbg !695
+  tail call void @llvm.dbg.value(metadata !{%struct.BiContextType* %bi_ct}, i64 0, metadata !88), !dbg !695
+  %Erange = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 1, !dbg !696
+  %0 = load i32* %Erange, align 4, !dbg !696, !tbaa !637
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !89), !dbg !696
+  %Elow = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 0, !dbg !697
+  %1 = load i32* %Elow, align 4, !dbg !697, !tbaa !637
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !90), !dbg !697
+  %shr = lshr i32 %0, 6, !dbg !698
+  %and = and i32 %shr, 3, !dbg !698
+  %idxprom = zext i32 %and to i64, !dbg !698
+  %state = getelementptr inbounds %struct.BiContextType* %bi_ct, i64 0, i32 0, !dbg !698
+  %2 = load i16* %state, align 2, !dbg !698, !tbaa !699
+  %idxprom1 = zext i16 %2 to i64, !dbg !698
+  %arrayidx2 = getelementptr inbounds [64 x [4 x i8]]* @rLPS_table_64x4, i64 0, i64 %idxprom1, i64 %idxprom, !dbg !698
+  %3 = load i8* %arrayidx2, align 1, !dbg !698, !tbaa !638
+  %conv = zext i8 %3 to i32, !dbg !698
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !91), !dbg !698
+  %4 = load i32* @cabac_encoding, align 4, !dbg !700, !tbaa !637
+  %tobool = icmp eq i32 %4, 0, !dbg !700
+  br i1 %tobool, label %if.end, label %if.then, !dbg !700
 
 if.then:                                          ; preds = %entry
-  %count = getelementptr inbounds %struct.BiContextType* %bi_ct, i64 0, i32 2
-  %5 = load i64* %count, align 8, !tbaa !5
-  %inc = add i64 %5, 1
-  store i64 %inc, i64* %count, align 8, !tbaa !5
-  br label %if.end
+  %count = getelementptr inbounds %struct.BiContextType* %bi_ct, i64 0, i32 2, !dbg !701
+  %5 = load i64* %count, align 8, !dbg !701, !tbaa !703
+  %inc = add i64 %5, 1, !dbg !701
+  store i64 %inc, i64* %count, align 8, !dbg !701, !tbaa !703
+  br label %if.end, !dbg !704
 
 if.end:                                           ; preds = %entry, %if.then
-  %not.cmp = icmp ne i16 %symbol, 0
-  %sub = sub i32 %0, %conv
-  %conv7 = zext i1 %not.cmp to i32
-  %MPS = getelementptr inbounds %struct.BiContextType* %bi_ct, i64 0, i32 1
-  %6 = load i8* %MPS, align 1, !tbaa !1
-  %conv8 = zext i8 %6 to i32
-  %cmp9 = icmp eq i32 %conv7, %conv8
-  br i1 %cmp9, label %while.cond.preheader, label %if.then11
+  tail call void @llvm.dbg.value(metadata !705, i64 0, metadata !87), !dbg !706
+  %not.cmp = icmp ne i16 %symbol, 0, !dbg !707
+  %sub = sub i32 %0, %conv, !dbg !708
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !89), !dbg !708
+  %conv7 = zext i1 %not.cmp to i32, !dbg !709
+  %MPS = getelementptr inbounds %struct.BiContextType* %bi_ct, i64 0, i32 1, !dbg !709
+  %6 = load i8* %MPS, align 1, !dbg !709, !tbaa !638
+  %conv8 = zext i8 %6 to i32, !dbg !709
+  %cmp9 = icmp eq i32 %conv7, %conv8, !dbg !709
+  br i1 %cmp9, label %while.cond.preheader, label %if.then11, !dbg !709
 
 if.then11:                                        ; preds = %if.end
-  %add = add i32 %sub, %1
-  %tobool13 = icmp eq i16 %2, 0
-  br i1 %tobool13, label %if.then14, label %while.cond.preheader.thread
+  %add = add i32 %sub, %1, !dbg !710
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !90), !dbg !710
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !89), !dbg !712
+  %tobool13 = icmp eq i16 %2, 0, !dbg !713
+  br i1 %tobool13, label %if.then14, label %while.cond.preheader.thread, !dbg !713
 
 if.then14:                                        ; preds = %if.then11
-  %xor = xor i8 %6, 1
-  store i8 %xor, i8* %MPS, align 1, !tbaa !1
-  br label %while.cond.preheader.thread
+  %xor = xor i8 %6, 1, !dbg !714
+  store i8 %xor, i8* %MPS, align 1, !dbg !714, !tbaa !638
+  br label %while.cond.preheader.thread, !dbg !714
 
 while.cond.preheader.thread:                      ; preds = %if.then11, %if.then14
-  %storemerge.in254 = getelementptr inbounds [64 x i16]* @AC_next_state_LPS_64, i64 0, i64 %idxprom1
-  %storemerge255 = load i16* %storemerge.in254, align 2
-  store i16 %storemerge255, i16* %state, align 2, !tbaa !4
-  br label %while.body.lr.ph
+  %storemerge.in254 = getelementptr inbounds [64 x i16]* @AC_next_state_LPS_64, i64 0, i64 %idxprom1, !dbg !715
+  %storemerge255 = load i16* %storemerge.in254, align 2, !dbg !715
+  store i16 %storemerge255, i16* %state, align 2, !dbg !716, !tbaa !699
+  br label %while.body.lr.ph, !dbg !717
 
 while.cond.preheader:                             ; preds = %if.end
-  %storemerge.in = getelementptr inbounds [64 x i16]* @AC_next_state_MPS_64, i64 0, i64 %idxprom1
-  %storemerge = load i16* %storemerge.in, align 2
-  store i16 %storemerge, i16* %state, align 2, !tbaa !4
-  %cmp29249 = icmp ult i32 %sub, 256
-  br i1 %cmp29249, label %while.body.lr.ph, label %while.cond.preheader.while.end162_crit_edge
+  %storemerge.in = getelementptr inbounds [64 x i16]* @AC_next_state_MPS_64, i64 0, i64 %idxprom1, !dbg !715
+  %storemerge = load i16* %storemerge.in, align 2, !dbg !715
+  store i16 %storemerge, i16* %state, align 2, !dbg !716, !tbaa !699
+  %cmp29249 = icmp ult i32 %sub, 256, !dbg !717
+  br i1 %cmp29249, label %while.body.lr.ph, label %while.cond.preheader.while.end162_crit_edge, !dbg !717
 
 while.cond.preheader.while.end162_crit_edge:      ; preds = %while.cond.preheader
-  %C165.pre = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 14
-  br label %while.end162
+  %C165.pre = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 14, !dbg !718
+  br label %while.end162, !dbg !717
 
 while.body.lr.ph:                                 ; preds = %while.cond.preheader.thread, %while.cond.preheader
   %low.0.ph258 = phi i32 [ %add, %while.cond.preheader.thread ], [ %1, %while.cond.preheader ]
   %range.0.ph257 = phi i32 [ %conv, %while.cond.preheader.thread ], [ %sub, %while.cond.preheader ]
-  %Ebuffer = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 2
-  %Ebits_to_go = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 3
-  %Ecodestrm_len = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 6
-  %Ecodestrm = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 5
-  %C = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 14
-  %E = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 16
-  %Ebits_to_follow = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 4
-  br label %while.body
+  %Ebuffer = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 2, !dbg !719
+  %Ebits_to_go = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 3, !dbg !719
+  %Ecodestrm_len = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 6, !dbg !724
+  %Ecodestrm = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 5, !dbg !724
+  %C = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 14, !dbg !724
+  %E = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 16, !dbg !726
+  %Ebits_to_follow = getelementptr inbounds %struct.EncodingEnvironment* %eep, i64 0, i32 4, !dbg !728
+  br label %while.body, !dbg !717
 
 while.body:                                       ; preds = %while.body.lr.ph, %if.end159
   %low.0251 = phi i32 [ %low.0.ph258, %while.body.lr.ph ], [ %shl160, %if.end159 ]
   %range.0250 = phi i32 [ %range.0.ph257, %while.body.lr.ph ], [ %shl161, %if.end159 ]
-  %cmp31 = icmp ugt i32 %low.0251, 511
-  br i1 %cmp31, label %if.then33, label %if.else87
+  %cmp31 = icmp ugt i32 %low.0251, 511, !dbg !729
+  br i1 %cmp31, label %if.then33, label %if.else87, !dbg !729
 
 if.then33:                                        ; preds = %while.body
-  %7 = load i32* %Ebuffer, align 4, !tbaa !0
-  %shl = shl i32 %7, 1
-  %or = or i32 %shl, 1
-  store i32 %or, i32* %Ebuffer, align 4, !tbaa !0
-  %8 = load i32* %Ebits_to_go, align 4, !tbaa !0
-  %dec = add i32 %8, -1
-  store i32 %dec, i32* %Ebits_to_go, align 4, !tbaa !0
-  %cmp35 = icmp eq i32 %dec, 0
-  br i1 %cmp35, label %if.then37, label %while.cond52.preheader
+  %7 = load i32* %Ebuffer, align 4, !dbg !719, !tbaa !637
+  %shl = shl i32 %7, 1, !dbg !719
+  %or = or i32 %shl, 1, !dbg !719
+  store i32 %or, i32* %Ebuffer, align 4, !dbg !719, !tbaa !637
+  %8 = load i32* %Ebits_to_go, align 4, !dbg !719, !tbaa !637
+  %dec = add i32 %8, -1, !dbg !719
+  store i32 %dec, i32* %Ebits_to_go, align 4, !dbg !719, !tbaa !637
+  %cmp35 = icmp eq i32 %dec, 0, !dbg !719
+  br i1 %cmp35, label %if.then37, label %while.cond52.preheader, !dbg !719
 
 if.then37:                                        ; preds = %if.then33
-  %conv39 = trunc i32 %or to i8
-  %9 = load i32** %Ecodestrm_len, align 8, !tbaa !3
-  %10 = load i32* %9, align 4, !tbaa !0
-  %inc40 = add nsw i32 %10, 1
-  store i32 %inc40, i32* %9, align 4, !tbaa !0
-  %idxprom41 = sext i32 %10 to i64
-  %11 = load i8** %Ecodestrm, align 8, !tbaa !3
-  %arrayidx42 = getelementptr inbounds i8* %11, i64 %idxprom41
-  store i8 %conv39, i8* %arrayidx42, align 1, !tbaa !1
-  store i32 8, i32* %Ebits_to_go, align 4, !tbaa !0
-  %12 = load i32* %C, align 4, !tbaa !0
-  %cmp45243 = icmp sgt i32 %12, 7
-  br i1 %cmp45243, label %while.body47.lr.ph, label %while.cond52.preheader
+  %conv39 = trunc i32 %or to i8, !dbg !724
+  %9 = load i32** %Ecodestrm_len, align 8, !dbg !724, !tbaa !644
+  %10 = load i32* %9, align 4, !dbg !724, !tbaa !637
+  %inc40 = add nsw i32 %10, 1, !dbg !724
+  store i32 %inc40, i32* %9, align 4, !dbg !724, !tbaa !637
+  %idxprom41 = sext i32 %10 to i64, !dbg !724
+  %11 = load i8** %Ecodestrm, align 8, !dbg !724, !tbaa !644
+  %arrayidx42 = getelementptr inbounds i8* %11, i64 %idxprom41, !dbg !724
+  store i8 %conv39, i8* %arrayidx42, align 1, !dbg !724, !tbaa !638
+  store i32 8, i32* %Ebits_to_go, align 4, !dbg !724, !tbaa !637
+  %12 = load i32* %C, align 4, !dbg !724, !tbaa !637
+  %cmp45243 = icmp sgt i32 %12, 7, !dbg !724
+  br i1 %cmp45243, label %while.body47.lr.ph, label %while.cond52.preheader, !dbg !724
 
 while.body47.lr.ph:                               ; preds = %if.then37
-  %E.promoted = load i32* %E, align 4, !tbaa !0
-  %13 = add i32 %12, -8
-  %14 = lshr i32 %13, 3
-  %15 = shl nuw i32 %14, 3
-  %16 = add i32 %E.promoted, 1
-  %17 = add i32 %16, %14
-  %18 = sub i32 %13, %15
-  store i32 %18, i32* %C, align 4, !tbaa !0
-  store i32 %17, i32* %E, align 4, !tbaa !0
-  br label %while.cond52.preheader
+  %E.promoted = load i32* %E, align 4, !dbg !726, !tbaa !637
+  %13 = add i32 %12, -8, !dbg !724
+  %14 = lshr i32 %13, 3, !dbg !724
+  %15 = shl nuw i32 %14, 3, !dbg !724
+  %16 = add i32 %E.promoted, 1, !dbg !724
+  %17 = add i32 %16, %14, !dbg !724
+  %18 = sub i32 %13, %15, !dbg !724
+  store i32 %18, i32* %C, align 4, !dbg !726, !tbaa !637
+  store i32 %17, i32* %E, align 4, !dbg !726, !tbaa !637
+  br label %while.cond52.preheader, !dbg !724
 
 while.cond52.preheader:                           ; preds = %if.then37, %while.body47.lr.ph, %if.then33
   %19 = phi i32 [ %dec, %if.then33 ], [ 8, %while.body47.lr.ph ], [ 8, %if.then37 ]
-  %20 = load i32* %Ebits_to_follow, align 4, !tbaa !0
-  %cmp53248 = icmp eq i32 %20, 0
-  br i1 %cmp53248, label %while.end85, label %while.body55
+  %20 = load i32* %Ebits_to_follow, align 4, !dbg !728, !tbaa !637
+  %cmp53248 = icmp eq i32 %20, 0, !dbg !728
+  br i1 %cmp53248, label %while.end85, label %while.body55, !dbg !728
 
 while.cond52.loopexit245:                         ; preds = %while.body78.lr.ph, %if.then65
-  %.pre = load i32* %Ebits_to_follow, align 4, !tbaa !0
+  %.pre = load i32* %Ebits_to_follow, align 4, !dbg !728, !tbaa !637
   br label %while.cond52.backedge
 
 while.body55:                                     ; preds = %while.cond52.backedge, %while.cond52.preheader
-  %21 = phi i32 [ %19, %while.cond52.preheader ], [ %25, %while.cond52.backedge ]
+  %21 = phi i32 [ %19, %while.cond52.preheader ], [ %25, %while.cond52.backedge ], !dbg !730
   %22 = phi i32 [ %20, %while.cond52.preheader ], [ %24, %while.cond52.backedge ]
-  %dec57 = add i32 %22, -1
-  store i32 %dec57, i32* %Ebits_to_follow, align 4, !tbaa !0
-  %23 = load i32* %Ebuffer, align 4, !tbaa !0
-  %shl59 = shl i32 %23, 1
-  store i32 %shl59, i32* %Ebuffer, align 4, !tbaa !0
-  %dec62 = add i32 %21, -1
-  store i32 %dec62, i32* %Ebits_to_go, align 4, !tbaa !0
-  %cmp63 = icmp eq i32 %dec62, 0
-  br i1 %cmp63, label %if.then65, label %while.cond52.backedge
+  %dec57 = add i32 %22, -1, !dbg !730
+  store i32 %dec57, i32* %Ebits_to_follow, align 4, !dbg !730, !tbaa !637
+  %23 = load i32* %Ebuffer, align 4, !dbg !732, !tbaa !637
+  %shl59 = shl i32 %23, 1, !dbg !732
+  store i32 %shl59, i32* %Ebuffer, align 4, !dbg !732, !tbaa !637
+  %dec62 = add i32 %21, -1, !dbg !732
+  store i32 %dec62, i32* %Ebits_to_go, align 4, !dbg !732, !tbaa !637
+  %cmp63 = icmp eq i32 %dec62, 0, !dbg !732
+  br i1 %cmp63, label %if.then65, label %while.cond52.backedge, !dbg !732
 
 while.cond52.backedge:                            ; preds = %while.body55, %while.cond52.loopexit245
   %24 = phi i32 [ %dec57, %while.body55 ], [ %.pre, %while.cond52.loopexit245 ]
   %25 = phi i32 [ %dec62, %while.body55 ], [ 8, %while.cond52.loopexit245 ]
-  %cmp53 = icmp eq i32 %24, 0
-  br i1 %cmp53, label %while.end85, label %while.body55
+  %cmp53 = icmp eq i32 %24, 0, !dbg !728
+  br i1 %cmp53, label %while.end85, label %while.body55, !dbg !728
 
 if.then65:                                        ; preds = %while.body55
-  %conv67 = trunc i32 %shl59 to i8
-  %26 = load i32** %Ecodestrm_len, align 8, !tbaa !3
-  %27 = load i32* %26, align 4, !tbaa !0
-  %inc69 = add nsw i32 %27, 1
-  store i32 %inc69, i32* %26, align 4, !tbaa !0
-  %idxprom70 = sext i32 %27 to i64
-  %28 = load i8** %Ecodestrm, align 8, !tbaa !3
-  %arrayidx72 = getelementptr inbounds i8* %28, i64 %idxprom70
-  store i8 %conv67, i8* %arrayidx72, align 1, !tbaa !1
-  store i32 8, i32* %Ebits_to_go, align 4, !tbaa !0
-  %29 = load i32* %C, align 4, !tbaa !0
-  %cmp76246 = icmp sgt i32 %29, 7
-  br i1 %cmp76246, label %while.body78.lr.ph, label %while.cond52.loopexit245
+  %conv67 = trunc i32 %shl59 to i8, !dbg !734
+  %26 = load i32** %Ecodestrm_len, align 8, !dbg !734, !tbaa !644
+  %27 = load i32* %26, align 4, !dbg !734, !tbaa !637
+  %inc69 = add nsw i32 %27, 1, !dbg !734
+  store i32 %inc69, i32* %26, align 4, !dbg !734, !tbaa !637
+  %idxprom70 = sext i32 %27 to i64, !dbg !734
+  %28 = load i8** %Ecodestrm, align 8, !dbg !734, !tbaa !644
+  %arrayidx72 = getelementptr inbounds i8* %28, i64 %idxprom70, !dbg !734
+  store i8 %conv67, i8* %arrayidx72, align 1, !dbg !734, !tbaa !638
+  store i32 8, i32* %Ebits_to_go, align 4, !dbg !734, !tbaa !637
+  %29 = load i32* %C, align 4, !dbg !734, !tbaa !637
+  %cmp76246 = icmp sgt i32 %29, 7, !dbg !734
+  br i1 %cmp76246, label %while.body78.lr.ph, label %while.cond52.loopexit245, !dbg !734
 
 while.body78.lr.ph:                               ; preds = %if.then65
-  %E81.promoted = load i32* %E, align 4, !tbaa !0
-  %30 = add i32 %29, -8
-  %31 = lshr i32 %30, 3
-  %32 = shl nuw i32 %31, 3
-  %33 = add i32 %E81.promoted, 1
-  %34 = add i32 %33, %31
-  %35 = sub i32 %30, %32
-  store i32 %35, i32* %C, align 4, !tbaa !0
-  store i32 %34, i32* %E, align 4, !tbaa !0
-  br label %while.cond52.loopexit245
+  %E81.promoted = load i32* %E, align 4, !dbg !736, !tbaa !637
+  %30 = add i32 %29, -8, !dbg !734
+  %31 = lshr i32 %30, 3, !dbg !734
+  %32 = shl nuw i32 %31, 3, !dbg !734
+  %33 = add i32 %E81.promoted, 1, !dbg !734
+  %34 = add i32 %33, %31, !dbg !734
+  %35 = sub i32 %30, %32, !dbg !734
+  store i32 %35, i32* %C, align 4, !dbg !736, !tbaa !637
+  store i32 %34, i32* %E, align 4, !dbg !736, !tbaa !637
+  br label %while.cond52.loopexit245, !dbg !734
 
 while.end85:                                      ; preds = %while.cond52.backedge, %while.cond52.preheader
-  %sub86 = add i32 %low.0251, -512
-  br label %if.end159
+  %sub86 = add i32 %low.0251, -512, !dbg !738
+  tail call void @llvm.dbg.value(metadata !{i32 %sub86}, i64 0, metadata !90), !dbg !738
+  br label %if.end159, !dbg !739
 
 if.else87:                                        ; preds = %while.body
-  %cmp88 = icmp ult i32 %low.0251, 256
-  br i1 %cmp88, label %if.then90, label %if.else154
+  %cmp88 = icmp ult i32 %low.0251, 256, !dbg !740
+  br i1 %cmp88, label %if.then90, label %if.else154, !dbg !740
 
 if.then90:                                        ; preds = %if.else87
-  %36 = load i32* %Ebuffer, align 4, !tbaa !0
-  %shl92 = shl i32 %36, 1
-  store i32 %shl92, i32* %Ebuffer, align 4, !tbaa !0
-  %37 = load i32* %Ebits_to_go, align 4, !tbaa !0
-  %dec95 = add i32 %37, -1
-  store i32 %dec95, i32* %Ebits_to_go, align 4, !tbaa !0
-  %cmp96 = icmp eq i32 %dec95, 0
-  br i1 %cmp96, label %if.then98, label %while.cond118.preheader
+  %36 = load i32* %Ebuffer, align 4, !dbg !741, !tbaa !637
+  %shl92 = shl i32 %36, 1, !dbg !741
+  store i32 %shl92, i32* %Ebuffer, align 4, !dbg !741, !tbaa !637
+  %37 = load i32* %Ebits_to_go, align 4, !dbg !741, !tbaa !637
+  %dec95 = add i32 %37, -1, !dbg !741
+  store i32 %dec95, i32* %Ebits_to_go, align 4, !dbg !741, !tbaa !637
+  %cmp96 = icmp eq i32 %dec95, 0, !dbg !741
+  br i1 %cmp96, label %if.then98, label %while.cond118.preheader, !dbg !741
 
 if.then98:                                        ; preds = %if.then90
-  %conv100 = trunc i32 %shl92 to i8
-  %38 = load i32** %Ecodestrm_len, align 8, !tbaa !3
-  %39 = load i32* %38, align 4, !tbaa !0
-  %inc102 = add nsw i32 %39, 1
-  store i32 %inc102, i32* %38, align 4, !tbaa !0
-  %idxprom103 = sext i32 %39 to i64
-  %40 = load i8** %Ecodestrm, align 8, !tbaa !3
-  %arrayidx105 = getelementptr inbounds i8* %40, i64 %idxprom103
-  store i8 %conv100, i8* %arrayidx105, align 1, !tbaa !1
-  store i32 8, i32* %Ebits_to_go, align 4, !tbaa !0
-  %41 = load i32* %C, align 4, !tbaa !0
-  %cmp109237 = icmp sgt i32 %41, 7
-  br i1 %cmp109237, label %while.body111.lr.ph, label %while.cond118.preheader
+  %conv100 = trunc i32 %shl92 to i8, !dbg !745
+  %38 = load i32** %Ecodestrm_len, align 8, !dbg !745, !tbaa !644
+  %39 = load i32* %38, align 4, !dbg !745, !tbaa !637
+  %inc102 = add nsw i32 %39, 1, !dbg !745
+  store i32 %inc102, i32* %38, align 4, !dbg !745, !tbaa !637
+  %idxprom103 = sext i32 %39 to i64, !dbg !745
+  %40 = load i8** %Ecodestrm, align 8, !dbg !745, !tbaa !644
+  %arrayidx105 = getelementptr inbounds i8* %40, i64 %idxprom103, !dbg !745
+  store i8 %conv100, i8* %arrayidx105, align 1, !dbg !745, !tbaa !638
+  store i32 8, i32* %Ebits_to_go, align 4, !dbg !745, !tbaa !637
+  %41 = load i32* %C, align 4, !dbg !745, !tbaa !637
+  %cmp109237 = icmp sgt i32 %41, 7, !dbg !745
+  br i1 %cmp109237, label %while.body111.lr.ph, label %while.cond118.preheader, !dbg !745
 
 while.body111.lr.ph:                              ; preds = %if.then98
-  %E114.promoted = load i32* %E, align 4, !tbaa !0
-  %42 = add i32 %41, -8
-  %43 = lshr i32 %42, 3
-  %44 = shl nuw i32 %43, 3
-  %45 = add i32 %E114.promoted, 1
-  %46 = add i32 %45, %43
-  %47 = sub i32 %42, %44
-  store i32 %47, i32* %C, align 4, !tbaa !0
-  store i32 %46, i32* %E, align 4, !tbaa !0
-  br label %while.cond118.preheader
+  %E114.promoted = load i32* %E, align 4, !dbg !747, !tbaa !637
+  %42 = add i32 %41, -8, !dbg !745
+  %43 = lshr i32 %42, 3, !dbg !745
+  %44 = shl nuw i32 %43, 3, !dbg !745
+  %45 = add i32 %E114.promoted, 1, !dbg !745
+  %46 = add i32 %45, %43, !dbg !745
+  %47 = sub i32 %42, %44, !dbg !745
+  store i32 %47, i32* %C, align 4, !dbg !747, !tbaa !637
+  store i32 %46, i32* %E, align 4, !dbg !747, !tbaa !637
+  br label %while.cond118.preheader, !dbg !745
 
 while.cond118.preheader:                          ; preds = %if.then98, %while.body111.lr.ph, %if.then90
   %48 = phi i32 [ %dec95, %if.then90 ], [ 8, %while.body111.lr.ph ], [ 8, %if.then98 ]
-  %49 = load i32* %Ebits_to_follow, align 4, !tbaa !0
-  %cmp120242 = icmp eq i32 %49, 0
-  br i1 %cmp120242, label %if.end159, label %while.body122
+  %49 = load i32* %Ebits_to_follow, align 4, !dbg !749, !tbaa !637
+  %cmp120242 = icmp eq i32 %49, 0, !dbg !749
+  br i1 %cmp120242, label %if.end159, label %while.body122, !dbg !749
 
 while.cond118.loopexit239:                        ; preds = %while.body146.lr.ph, %if.then133
-  %.pre253 = load i32* %Ebits_to_follow, align 4, !tbaa !0
+  %.pre253 = load i32* %Ebits_to_follow, align 4, !dbg !749, !tbaa !637
   br label %while.cond118.backedge
 
 while.body122:                                    ; preds = %while.cond118.backedge, %while.cond118.preheader
-  %50 = phi i32 [ %48, %while.cond118.preheader ], [ %54, %while.cond118.backedge ]
+  %50 = phi i32 [ %48, %while.cond118.preheader ], [ %54, %while.cond118.backedge ], !dbg !750
   %51 = phi i32 [ %49, %while.cond118.preheader ], [ %53, %while.cond118.backedge ]
-  %dec124 = add i32 %51, -1
-  store i32 %dec124, i32* %Ebits_to_follow, align 4, !tbaa !0
-  %52 = load i32* %Ebuffer, align 4, !tbaa !0
-  %shl126 = shl i32 %52, 1
-  %or128 = or i32 %shl126, 1
-  store i32 %or128, i32* %Ebuffer, align 4, !tbaa !0
-  %dec130 = add i32 %50, -1
-  store i32 %dec130, i32* %Ebits_to_go, align 4, !tbaa !0
-  %cmp131 = icmp eq i32 %dec130, 0
-  br i1 %cmp131, label %if.then133, label %while.cond118.backedge
+  %dec124 = add i32 %51, -1, !dbg !750
+  store i32 %dec124, i32* %Ebits_to_follow, align 4, !dbg !750, !tbaa !637
+  %52 = load i32* %Ebuffer, align 4, !dbg !752, !tbaa !637
+  %shl126 = shl i32 %52, 1, !dbg !752
+  %or128 = or i32 %shl126, 1, !dbg !752
+  store i32 %or128, i32* %Ebuffer, align 4, !dbg !752, !tbaa !637
+  %dec130 = add i32 %50, -1, !dbg !752
+  store i32 %dec130, i32* %Ebits_to_go, align 4, !dbg !752, !tbaa !637
+  %cmp131 = icmp eq i32 %dec130, 0, !dbg !752
+  br i1 %cmp131, label %if.then133, label %while.cond118.backedge, !dbg !752
 
 while.cond118.backedge:                           ; preds = %while.body122, %while.cond118.loopexit239
   %53 = phi i32 [ %dec124, %while.body122 ], [ %.pre253, %while.cond118.loopexit239 ]
   %54 = phi i32 [ %dec130, %while.body122 ], [ 8, %while.cond118.loopexit239 ]
-  %cmp120 = icmp eq i32 %53, 0
-  br i1 %cmp120, label %if.end159, label %while.body122
+  %cmp120 = icmp eq i32 %53, 0, !dbg !749
+  br i1 %cmp120, label %if.end159, label %while.body122, !dbg !749
 
 if.then133:                                       ; preds = %while.body122
-  %conv135 = trunc i32 %or128 to i8
-  %55 = load i32** %Ecodestrm_len, align 8, !tbaa !3
-  %56 = load i32* %55, align 4, !tbaa !0
-  %inc137 = add nsw i32 %56, 1
-  store i32 %inc137, i32* %55, align 4, !tbaa !0
-  %idxprom138 = sext i32 %56 to i64
-  %57 = load i8** %Ecodestrm, align 8, !tbaa !3
-  %arrayidx140 = getelementptr inbounds i8* %57, i64 %idxprom138
-  store i8 %conv135, i8* %arrayidx140, align 1, !tbaa !1
-  store i32 8, i32* %Ebits_to_go, align 4, !tbaa !0
-  %58 = load i32* %C, align 4, !tbaa !0
-  %cmp144240 = icmp sgt i32 %58, 7
-  br i1 %cmp144240, label %while.body146.lr.ph, label %while.cond118.loopexit239
+  %conv135 = trunc i32 %or128 to i8, !dbg !754
+  %55 = load i32** %Ecodestrm_len, align 8, !dbg !754, !tbaa !644
+  %56 = load i32* %55, align 4, !dbg !754, !tbaa !637
+  %inc137 = add nsw i32 %56, 1, !dbg !754
+  store i32 %inc137, i32* %55, align 4, !dbg !754, !tbaa !637
+  %idxprom138 = sext i32 %56 to i64, !dbg !754
+  %57 = load i8** %Ecodestrm, align 8, !dbg !754, !tbaa !644
+  %arrayidx140 = getelementptr inbounds i8* %57, i64 %idxprom138, !dbg !754
+  store i8 %conv135, i8* %arrayidx140, align 1, !dbg !754, !tbaa !638
+  store i32 8, i32* %Ebits_to_go, align 4, !dbg !754, !tbaa !637
+  %58 = load i32* %C, align 4, !dbg !754, !tbaa !637
+  %cmp144240 = icmp sgt i32 %58, 7, !dbg !754
+  br i1 %cmp144240, label %while.body146.lr.ph, label %while.cond118.loopexit239, !dbg !754
 
 while.body146.lr.ph:                              ; preds = %if.then133
-  %E149.promoted = load i32* %E, align 4, !tbaa !0
-  %59 = add i32 %58, -8
-  %60 = lshr i32 %59, 3
-  %61 = shl nuw i32 %60, 3
-  %62 = add i32 %E149.promoted, 1
-  %63 = add i32 %62, %60
-  %64 = sub i32 %59, %61
-  store i32 %64, i32* %C, align 4, !tbaa !0
-  store i32 %63, i32* %E, align 4, !tbaa !0
-  br label %while.cond118.loopexit239
+  %E149.promoted = load i32* %E, align 4, !dbg !756, !tbaa !637
+  %59 = add i32 %58, -8, !dbg !754
+  %60 = lshr i32 %59, 3, !dbg !754
+  %61 = shl nuw i32 %60, 3, !dbg !754
+  %62 = add i32 %E149.promoted, 1, !dbg !754
+  %63 = add i32 %62, %60, !dbg !754
+  %64 = sub i32 %59, %61, !dbg !754
+  store i32 %64, i32* %C, align 4, !dbg !756, !tbaa !637
+  store i32 %63, i32* %E, align 4, !dbg !756, !tbaa !637
+  br label %while.cond118.loopexit239, !dbg !754
 
 if.else154:                                       ; preds = %if.else87
-  %65 = load i32* %Ebits_to_follow, align 4, !tbaa !0
-  %inc156 = add i32 %65, 1
-  store i32 %inc156, i32* %Ebits_to_follow, align 4, !tbaa !0
-  %sub157 = add i32 %low.0251, -256
+  %65 = load i32* %Ebits_to_follow, align 4, !dbg !758, !tbaa !637
+  %inc156 = add i32 %65, 1, !dbg !758
+  store i32 %inc156, i32* %Ebits_to_follow, align 4, !dbg !758, !tbaa !637
+  %sub157 = add i32 %low.0251, -256, !dbg !760
+  tail call void @llvm.dbg.value(metadata !{i32 %sub157}, i64 0, metadata !90), !dbg !760
   br label %if.end159
 
 if.end159:                                        ; preds = %while.cond118.preheader, %while.cond118.backedge, %if.else154, %while.end85
   %low.1 = phi i32 [ %sub86, %while.end85 ], [ %sub157, %if.else154 ], [ %low.0251, %while.cond118.backedge ], [ %low.0251, %while.cond118.preheader ]
-  %shl160 = shl i32 %low.1, 1
-  %shl161 = shl i32 %range.0250, 1
-  %cmp29 = icmp ult i32 %shl161, 256
-  br i1 %cmp29, label %while.body, label %while.end162
+  %shl160 = shl i32 %low.1, 1, !dbg !761
+  tail call void @llvm.dbg.value(metadata !{i32 %shl160}, i64 0, metadata !90), !dbg !761
+  %shl161 = shl i32 %range.0250, 1, !dbg !762
+  tail call void @llvm.dbg.value(metadata !{i32 %shl161}, i64 0, metadata !89), !dbg !762
+  %cmp29 = icmp ult i32 %shl161, 256, !dbg !717
+  br i1 %cmp29, label %while.body, label %while.end162, !dbg !717
 
 while.end162:                                     ; preds = %if.end159, %while.cond.preheader.while.end162_crit_edge
-  %C165.pre-phi = phi i32* [ %C165.pre, %while.cond.preheader.while.end162_crit_edge ], [ %C, %if.end159 ]
+  %C165.pre-phi = phi i32* [ %C165.pre, %while.cond.preheader.while.end162_crit_edge ], [ %C, %if.end159 ], !dbg !718
   %low.0.lcssa = phi i32 [ %1, %while.cond.preheader.while.end162_crit_edge ], [ %shl160, %if.end159 ]
   %range.0.lcssa = phi i32 [ %sub, %while.cond.preheader.while.end162_crit_edge ], [ %shl161, %if.end159 ]
-  store i32 %range.0.lcssa, i32* %Erange, align 4, !tbaa !0
-  store i32 %low.0.lcssa, i32* %Elow, align 4, !tbaa !0
-  %66 = load i32* %C165.pre-phi, align 4, !tbaa !0
-  %inc166 = add nsw i32 %66, 1
-  store i32 %inc166, i32* %C165.pre-phi, align 4, !tbaa !0
-  ret void
+  store i32 %range.0.lcssa, i32* %Erange, align 4, !dbg !763, !tbaa !637
+  store i32 %low.0.lcssa, i32* %Elow, align 4, !dbg !764, !tbaa !637
+  %66 = load i32* %C165.pre-phi, align 4, !dbg !718, !tbaa !637
+  %inc166 = add nsw i32 %66, 1, !dbg !718
+  store i32 %inc166, i32* %C165.pre-phi, align 4, !dbg !718, !tbaa !637
+  ret void, !dbg !765
 }

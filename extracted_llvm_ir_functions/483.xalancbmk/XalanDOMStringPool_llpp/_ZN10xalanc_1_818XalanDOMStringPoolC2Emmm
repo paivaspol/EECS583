@@ -1,0 +1,35 @@
+define void @_ZN10xalanc_1_818XalanDOMStringPoolC2Emmm(%"class.xalanc_1_8::XalanDOMStringPool"* %this, i64 %theBlockSize, i64 %theBucketCount, i64 %theBucketSize) unnamed_addr #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XalanDOMStringPool"* %this}, i64 0, metadata !2575), !dbg !2996
+  tail call void @llvm.dbg.value(metadata !{i64 %theBlockSize}, i64 0, metadata !2577), !dbg !2997
+  tail call void @llvm.dbg.value(metadata !{i64 %theBucketCount}, i64 0, metadata !2578), !dbg !2998
+  tail call void @llvm.dbg.value(metadata !{i64 %theBucketSize}, i64 0, metadata !2579), !dbg !2999
+  %0 = getelementptr inbounds %"class.xalanc_1_8::XalanDOMStringPool"* %this, i64 0, i32 0, !dbg !3000
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([8 x i8*]* @_ZTVN10xalanc_1_818XalanDOMStringPoolE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %0, align 8, !dbg !3000, !tbaa !3001
+  %m_stringAllocator = getelementptr inbounds %"class.xalanc_1_8::XalanDOMStringPool"* %this, i64 0, i32 1, !dbg !3000
+  tail call void @_ZN10xalanc_1_823XalanDOMStringAllocatorC1Em(%"class.xalanc_1_8::XalanDOMStringAllocator"* %m_stringAllocator, i64 %theBlockSize) #8, !dbg !3000
+  %m_stringCount = getelementptr inbounds %"class.xalanc_1_8::XalanDOMStringPool"* %this, i64 0, i32 2, !dbg !3000
+  store i64 0, i64* %m_stringCount, align 8, !dbg !3000, !tbaa !3002
+  %m_hashTable = getelementptr inbounds %"class.xalanc_1_8::XalanDOMStringPool"* %this, i64 0, i32 3, !dbg !3000
+  invoke void @_ZN10xalanc_1_823XalanDOMStringHashTableC1Emm(%"class.xalanc_1_8::XalanDOMStringHashTable"* %m_hashTable, i64 %theBucketCount, i64 %theBucketSize) #8
+          to label %invoke.cont unwind label %lpad, !dbg !3000
+
+invoke.cont:                                      ; preds = %entry
+  ret void, !dbg !3003
+
+lpad:                                             ; preds = %entry
+  %1 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !3000
+  invoke void @_ZN10xalanc_1_823XalanDOMStringAllocatorD1Ev(%"class.xalanc_1_8::XalanDOMStringAllocator"* %m_stringAllocator) #8
+          to label %eh.resume unwind label %terminate.lpad, !dbg !3003
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %1, !dbg !3003
+
+terminate.lpad:                                   ; preds = %lpad
+  %2 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !3003
+  %3 = extractvalue { i8*, i32 } %2, 0, !dbg !3003
+  tail call void @__clang_call_terminate(i8* %3) #9, !dbg !3003
+  unreachable, !dbg !3003
+}

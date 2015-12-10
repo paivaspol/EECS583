@@ -1,45 +1,49 @@
 define i32 @mode_for_extraction(i32 %pattern, i32 %opno) #0 {
 entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %pattern}, i64 0, metadata !1558), !dbg !2305
+  tail call void @llvm.dbg.value(metadata !{i32 %opno}, i64 0, metadata !1559), !dbg !2306
   switch i32 %pattern, label %sw.default [
     i32 0, label %sw.epilog
     i32 1, label %sw.bb1
     i32 2, label %sw.bb2
-  ]
+  ], !dbg !2307
 
 sw.bb1:                                           ; preds = %entry
-  br label %sw.epilog
+  tail call void @llvm.dbg.value(metadata !2308, i64 0, metadata !1560), !dbg !2309
+  br label %sw.epilog, !dbg !2312
 
 sw.bb2:                                           ; preds = %entry
-  br label %sw.epilog
+  tail call void @llvm.dbg.value(metadata !2313, i64 0, metadata !1560), !dbg !2314
+  br label %sw.epilog, !dbg !2316
 
 sw.default:                                       ; preds = %entry
-  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 259, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.mode_for_extraction, i64 0, i64 0)) #5
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 259, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.mode_for_extraction, i64 0, i64 0)) #6, !dbg !2317
+  unreachable, !dbg !2317
 
 sw.epilog:                                        ; preds = %entry, %sw.bb2, %sw.bb1
   %data.0 = phi %struct.insn_data* [ getelementptr inbounds ([0 x %struct.insn_data]* @insn_data, i64 0, i64 1113), %sw.bb2 ], [ getelementptr inbounds ([0 x %struct.insn_data]* @insn_data, i64 0, i64 1112), %sw.bb1 ], [ getelementptr inbounds ([0 x %struct.insn_data]* @insn_data, i64 0, i64 1114), %entry ]
-  %cmp = icmp eq i32 %opno, -1
-  br i1 %cmp, label %return, label %if.end
+  %cmp = icmp eq i32 %opno, -1, !dbg !2318
+  br i1 %cmp, label %return, label %if.end, !dbg !2318
 
 if.end:                                           ; preds = %sw.epilog
-  %idxprom = sext i32 %opno to i64
-  %operand = getelementptr inbounds %struct.insn_data* %data.0, i64 0, i32 3
-  %0 = load %struct.insn_operand_data** %operand, align 8, !tbaa !3
-  %mode = getelementptr inbounds %struct.insn_operand_data* %0, i64 %idxprom, i32 2
-  %1 = bitcast [2 x i8]* %mode to i16*
-  %bf.load = load i16* %1, align 8
-  %cmp3 = icmp eq i16 %bf.load, 0
-  br i1 %cmp3, label %if.then4, label %if.end5
+  %idxprom = sext i32 %opno to i64, !dbg !2319
+  %operand = getelementptr inbounds %struct.insn_data* %data.0, i64 0, i32 3, !dbg !2319
+  %0 = load %struct.insn_operand_data** %operand, align 8, !dbg !2319, !tbaa !2258
+  %mode = getelementptr inbounds %struct.insn_operand_data* %0, i64 %idxprom, i32 2, !dbg !2319
+  %1 = bitcast [2 x i8]* %mode to i16*, !dbg !2319
+  %bf.load = load i16* %1, align 8, !dbg !2319
+  %cmp3 = icmp eq i16 %bf.load, 0, !dbg !2319
+  br i1 %cmp3, label %if.then4, label %if.end5, !dbg !2319
 
 if.then4:                                         ; preds = %if.end
-  %2 = load i32* @word_mode, align 4, !tbaa !0
-  br label %return
+  %2 = load i32* @word_mode, align 4, !dbg !2320, !tbaa !2251
+  br label %return, !dbg !2320
 
 if.end5:                                          ; preds = %if.end
-  %bf.cast = zext i16 %bf.load to i32
-  br label %return
+  %bf.cast = zext i16 %bf.load to i32, !dbg !2319
+  br label %return, !dbg !2321
 
 return:                                           ; preds = %sw.epilog, %if.end5, %if.then4
   %retval.0 = phi i32 [ %2, %if.then4 ], [ %bf.cast, %if.end5 ], [ 0, %sw.epilog ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !2322
 }

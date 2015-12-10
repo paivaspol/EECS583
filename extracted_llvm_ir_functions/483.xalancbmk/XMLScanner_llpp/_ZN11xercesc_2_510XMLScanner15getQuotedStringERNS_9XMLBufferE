@@ -1,0 +1,42 @@
+define zeroext i1 @_ZN11xercesc_2_510XMLScanner15getQuotedStringERNS_9XMLBufferE(%"class.xercesc_2_5::XMLScanner"* %this, %"class.xercesc_2_5::XMLBuffer"* %toFill) #3 align 2 {
+entry:
+  %quoteCh = alloca i16, align 2
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLScanner"* %this}, i64 0, metadata !6537), !dbg !10110
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLBuffer"* %toFill}, i64 0, metadata !6538), !dbg !10110
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLBuffer"* %toFill}, i64 0, metadata !10111), !dbg !10113
+  %fIndex.i = getelementptr inbounds %"class.xercesc_2_5::XMLBuffer"* %toFill, i64 0, i32 1, !dbg !10114
+  store i32 0, i32* %fIndex.i, align 4, !dbg !10114, !tbaa !8183
+  %fBuffer.i = getelementptr inbounds %"class.xercesc_2_5::XMLBuffer"* %toFill, i64 0, i32 4, !dbg !10115
+  %0 = load i16** %fBuffer.i, align 8, !dbg !10115, !tbaa !8169
+  store i16 0, i16* %0, align 2, !dbg !10115, !tbaa !8208
+  call void @llvm.dbg.declare(metadata !{i16* %quoteCh}, metadata !6539), !dbg !10116
+  %fReaderMgr = getelementptr inbounds %"class.xercesc_2_5::XMLScanner"* %this, i64 0, i32 40, !dbg !10117
+  %call = call zeroext i1 @_ZN11xercesc_2_59ReaderMgr11skipIfQuoteERt(%"class.xercesc_2_5::ReaderMgr"* %fReaderMgr, i16* %quoteCh) #10, !dbg !10117
+  br i1 %call, label %while.body.preheader, label %return, !dbg !10117
+
+while.body.preheader:                             ; preds = %entry
+  %call312 = call zeroext i16 @_ZN11xercesc_2_59ReaderMgr11getNextCharEv(%"class.xercesc_2_5::ReaderMgr"* %fReaderMgr) #10, !dbg !10118
+  call void @llvm.dbg.value(metadata !{i16 %call312}, i64 0, metadata !6540), !dbg !10118
+  call void @llvm.dbg.value(metadata !{i16* %quoteCh}, i64 0, metadata !6539), !dbg !10119
+  %1 = load i16* %quoteCh, align 2, !dbg !10119, !tbaa !8208
+  %cmp13 = icmp eq i16 %call312, %1, !dbg !10119
+  br i1 %cmp13, label %return, label %if.end6, !dbg !10119
+
+if.end6:                                          ; preds = %while.body.preheader, %if.end8
+  %call314 = phi i16 [ %call3, %if.end8 ], [ %call312, %while.body.preheader ]
+  %tobool = icmp eq i16 %call314, 0, !dbg !10120
+  br i1 %tobool, label %return, label %if.end8, !dbg !10120
+
+if.end8:                                          ; preds = %if.end6
+  call void @_ZN11xercesc_2_59XMLBuffer6appendEt(%"class.xercesc_2_5::XMLBuffer"* %toFill, i16 zeroext %call314) #10, !dbg !10121
+  %call3 = call zeroext i16 @_ZN11xercesc_2_59ReaderMgr11getNextCharEv(%"class.xercesc_2_5::ReaderMgr"* %fReaderMgr) #10, !dbg !10118
+  call void @llvm.dbg.value(metadata !{i16 %call314}, i64 0, metadata !6540), !dbg !10118
+  call void @llvm.dbg.value(metadata !{i16* %quoteCh}, i64 0, metadata !6539), !dbg !10119
+  %2 = load i16* %quoteCh, align 2, !dbg !10119, !tbaa !8208
+  %cmp = icmp eq i16 %call3, %2, !dbg !10119
+  br i1 %cmp, label %return, label %if.end6, !dbg !10119
+
+return:                                           ; preds = %while.body.preheader, %if.end6, %if.end8, %entry
+  %retval.0 = phi i1 [ false, %entry ], [ true, %while.body.preheader ], [ false, %if.end6 ], [ true, %if.end8 ]
+  ret i1 %retval.0, !dbg !10122
+}

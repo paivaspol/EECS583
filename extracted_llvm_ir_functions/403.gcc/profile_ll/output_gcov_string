@@ -1,26 +1,30 @@
 define internal fastcc void @output_gcov_string(i8* nocapture %string, i64 %delimiter) #0 {
 entry:
-  %c = alloca i32, align 4
-  %0 = load %struct._IO_FILE** @bb_file, align 8, !tbaa !3
-  call fastcc void @__write_long(i64 %delimiter, %struct._IO_FILE* %0) #6
-  %call1 = call i64 @strlen(i8* %string) #9
-  %add = add i64 %call1, 1
-  %1 = load %struct._IO_FILE** @bb_file, align 8, !tbaa !3
-  %call2 = call i64 @fwrite(i8* %string, i64 %add, i64 1, %struct._IO_FILE* %1) #7
-  %and = and i64 %add, 3
-  %tobool = icmp eq i64 %and, 0
-  br i1 %tobool, label %if.end, label %if.then
+  %c = alloca i32, align 4, !dbg !1978
+  call void @llvm.dbg.value(metadata !{i8* %string}, i64 0, metadata !1467), !dbg !1979
+  call void @llvm.dbg.value(metadata !{i64 %delimiter}, i64 0, metadata !1468), !dbg !1980
+  %0 = load %struct._IO_FILE** @bb_file, align 8, !dbg !1981, !tbaa !1500
+  call fastcc void @__write_long(i64 %delimiter, %struct._IO_FILE* %0) #7, !dbg !1981
+  %call1 = call i64 @strlen(i8* %string) #10, !dbg !1982
+  %add = add i64 %call1, 1, !dbg !1982
+  call void @llvm.dbg.value(metadata !{i64 %add}, i64 0, metadata !1469), !dbg !1982
+  %1 = load %struct._IO_FILE** @bb_file, align 8, !dbg !1983, !tbaa !1500
+  %call2 = call i64 @fwrite(i8* %string, i64 %add, i64 1, %struct._IO_FILE* %1) #8, !dbg !1983
+  %and = and i64 %add, 3, !dbg !1984
+  call void @llvm.dbg.value(metadata !{i64 %and}, i64 0, metadata !1469), !dbg !1984
+  %tobool = icmp eq i64 %and, 0, !dbg !1985
+  br i1 %tobool, label %if.end, label %if.then, !dbg !1985
 
 if.then:                                          ; preds = %entry
-  %arrayidx5 = bitcast i32* %c to i8*
-  %sub = sub nsw i64 4, %and
-  store i32 0, i32* %c, align 4
-  %2 = load %struct._IO_FILE** @bb_file, align 8, !tbaa !3
-  %call6 = call i64 @fwrite(i8* %arrayidx5, i64 1, i64 %sub, %struct._IO_FILE* %2) #7
-  br label %if.end
+  %arrayidx5 = bitcast i32* %c to i8*, !dbg !1978
+  %sub = sub nsw i64 4, %and, !dbg !1986
+  store i32 0, i32* %c, align 4, !dbg !1978
+  %2 = load %struct._IO_FILE** @bb_file, align 8, !dbg !1986, !tbaa !1500
+  %call6 = call i64 @fwrite(i8* %arrayidx5, i64 1, i64 %sub, %struct._IO_FILE* %2) #8, !dbg !1986
+  br label %if.end, !dbg !1987
 
 if.end:                                           ; preds = %entry, %if.then
-  %3 = load %struct._IO_FILE** @bb_file, align 8, !tbaa !3
-  call fastcc void @__write_long(i64 %delimiter, %struct._IO_FILE* %3) #6
-  ret void
+  %3 = load %struct._IO_FILE** @bb_file, align 8, !dbg !1988, !tbaa !1500
+  call fastcc void @__write_long(i64 %delimiter, %struct._IO_FILE* %3) #7, !dbg !1988
+  ret void, !dbg !1989
 }

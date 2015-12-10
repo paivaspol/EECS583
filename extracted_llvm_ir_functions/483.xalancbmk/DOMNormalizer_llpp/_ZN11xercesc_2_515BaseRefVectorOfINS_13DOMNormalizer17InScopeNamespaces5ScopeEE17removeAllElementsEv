@@ -1,0 +1,70 @@
+define linkonce_odr void @_ZN11xercesc_2_515BaseRefVectorOfINS_13DOMNormalizer17InScopeNamespaces5ScopeEE17removeAllElementsEv(%"class.xercesc_2_5::BaseRefVectorOf"* nocapture %this) unnamed_addr #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf"* %this}, i64 0, metadata !4982), !dbg !6866
+  tail call void @llvm.dbg.value(metadata !3823, i64 0, metadata !4983), !dbg !6867
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf"* %this, i64 0, i32 2, !dbg !6867
+  %0 = load i32* %fCurCount, align 4, !dbg !6867, !tbaa !5726
+  %cmp12 = icmp eq i32 %0, 0, !dbg !6867
+  br i1 %cmp12, label %for.end, label %for.body.lr.ph, !dbg !6867
+
+for.body.lr.ph:                                   ; preds = %entry
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf"* %this, i64 0, i32 1, !dbg !6868
+  %fElemList4 = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf"* %this, i64 0, i32 4, !dbg !6870
+  br label %for.body, !dbg !6867
+
+for.body:                                         ; preds = %if.end, %for.body.lr.ph
+  %1 = phi i32 [ %0, %for.body.lr.ph ], [ %8, %if.end ]
+  %index.013 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %if.end ]
+  %2 = load i8* %fAdoptedElems, align 1, !dbg !6868, !tbaa !6102, !range !6489
+  %tobool = icmp eq i8 %2, 0, !dbg !6868
+  %idxprom3.pre = zext i32 %index.013 to i64, !dbg !6870
+  br i1 %tobool, label %if.end, label %if.then, !dbg !6868
+
+if.then:                                          ; preds = %for.body
+  %3 = load %"class.xercesc_2_5::DOMNormalizer::InScopeNamespaces::Scope"*** %fElemList4, align 8, !dbg !6871, !tbaa !5715
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::DOMNormalizer::InScopeNamespaces::Scope"** %3, i64 %idxprom3.pre, !dbg !6871
+  %4 = load %"class.xercesc_2_5::DOMNormalizer::InScopeNamespaces::Scope"** %arrayidx, align 8, !dbg !6871, !tbaa !5715
+  %isnull = icmp eq %"class.xercesc_2_5::DOMNormalizer::InScopeNamespaces::Scope"* %4, null, !dbg !6871
+  br i1 %isnull, label %if.end, label %delete.notnull, !dbg !6871
+
+delete.notnull:                                   ; preds = %if.then
+  invoke void @_ZN11xercesc_2_513DOMNormalizer17InScopeNamespaces5ScopeD2Ev(%"class.xercesc_2_5::DOMNormalizer::InScopeNamespaces::Scope"* %4) #10
+          to label %invoke.cont unwind label %lpad, !dbg !6871
+
+invoke.cont:                                      ; preds = %delete.notnull
+  %5 = bitcast %"class.xercesc_2_5::DOMNormalizer::InScopeNamespaces::Scope"* %4 to i8*, !dbg !6871
+  tail call void @_ZN11xercesc_2_57XMemorydlEPv(i8* %5) #10, !dbg !6871
+  %.pre = load i32* %fCurCount, align 4, !dbg !6867, !tbaa !5726
+  br label %if.end, !dbg !6871
+
+lpad:                                             ; preds = %delete.notnull
+  %6 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !6871
+  %7 = bitcast %"class.xercesc_2_5::DOMNormalizer::InScopeNamespaces::Scope"* %4 to i8*, !dbg !6871
+  invoke void @_ZN11xercesc_2_57XMemorydlEPv(i8* %7) #10
+          to label %eh.resume unwind label %terminate.lpad, !dbg !6871
+
+if.end:                                           ; preds = %for.body, %if.then, %invoke.cont
+  %8 = phi i32 [ %1, %if.then ], [ %.pre, %invoke.cont ], [ %1, %for.body ], !dbg !6870
+  %9 = load %"class.xercesc_2_5::DOMNormalizer::InScopeNamespaces::Scope"*** %fElemList4, align 8, !dbg !6870, !tbaa !5715
+  %arrayidx5 = getelementptr inbounds %"class.xercesc_2_5::DOMNormalizer::InScopeNamespaces::Scope"** %9, i64 %idxprom3.pre, !dbg !6870
+  store %"class.xercesc_2_5::DOMNormalizer::InScopeNamespaces::Scope"* null, %"class.xercesc_2_5::DOMNormalizer::InScopeNamespaces::Scope"** %arrayidx5, align 8, !dbg !6870, !tbaa !5715
+  %inc = add i32 %index.013, 1, !dbg !6867
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !4983), !dbg !6867
+  %cmp = icmp ult i32 %inc, %8, !dbg !6867
+  br i1 %cmp, label %for.body, label %for.end, !dbg !6867
+
+for.end:                                          ; preds = %if.end, %entry
+  store i32 0, i32* %fCurCount, align 4, !dbg !6872, !tbaa !5726
+  ret void, !dbg !6873
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %6, !dbg !6871
+
+terminate.lpad:                                   ; preds = %lpad
+  %10 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !6871
+  %11 = extractvalue { i8*, i32 } %10, 0, !dbg !6871
+  tail call void @__clang_call_terminate(i8* %11) #9, !dbg !6871
+  unreachable, !dbg !6871
+}

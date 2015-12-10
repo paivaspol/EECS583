@@ -1,13 +1,15 @@
-define %struct.T_SKTREE* @SKTreeFindFirst(%struct.T_SKTREE* readonly %root) #5 {
-  br label %1
+define %struct.T_SKTREE* @SKTreeFindFirst(%struct.T_SKTREE* %root) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %root}, i64 0, metadata !87), !dbg !208
+  br label %for.cond, !dbg !209
 
-; <label>:1                                       ; preds = %1, %0
-  %.0 = phi %struct.T_SKTREE* [ %root, %0 ], [ %3, %1 ]
-  %2 = getelementptr inbounds %struct.T_SKTREE* %.0, i64 0, i32 0
-  %3 = load %struct.T_SKTREE** %2, align 8, !tbaa !8
-  %4 = icmp eq %struct.T_SKTREE* %3, null
-  br i1 %4, label %5, label %1
+for.cond:                                         ; preds = %for.cond, %entry
+  %root.addr.0 = phi %struct.T_SKTREE* [ %root, %entry ], [ %0, %for.cond ]
+  %left = getelementptr inbounds %struct.T_SKTREE* %root.addr.0, i64 0, i32 0, !dbg !209
+  %0 = load %struct.T_SKTREE** %left, align 8, !dbg !209, !tbaa !117
+  %tobool = icmp eq %struct.T_SKTREE* %0, null, !dbg !209
+  br i1 %tobool, label %for.end, label %for.cond, !dbg !209
 
-; <label>:5                                       ; preds = %1
-  ret %struct.T_SKTREE* %.0
+for.end:                                          ; preds = %for.cond
+  ret %struct.T_SKTREE* %root.addr.0, !dbg !211
 }

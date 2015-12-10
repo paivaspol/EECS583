@@ -1,68 +1,72 @@
 define internal i32 @mark_constant(%struct.rtx_def** nocapture %current_rtx, i8* nocapture %data) #0 {
 entry:
-  %0 = load %struct.rtx_def** %current_rtx, align 8, !tbaa !3
-  %cmp = icmp eq %struct.rtx_def* %0, null
-  br i1 %cmp, label %return, label %if.else
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %current_rtx}, i64 0, metadata !1968), !dbg !4127
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !1969), !dbg !4128
+  %0 = load %struct.rtx_def** %current_rtx, align 8, !dbg !4129, !tbaa !2357
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %0}, i64 0, metadata !1970), !dbg !4129
+  %cmp = icmp eq %struct.rtx_def* %0, null, !dbg !4130
+  br i1 %cmp, label %return, label %if.else, !dbg !4130
 
 if.else:                                          ; preds = %entry
-  %1 = bitcast %struct.rtx_def* %0 to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp1 = icmp eq i32 %bf.clear, 68
-  br i1 %cmp1, label %if.then2, label %return
+  %1 = bitcast %struct.rtx_def* %0 to i32*, !dbg !4131
+  %bf.load = load i32* %1, align 8, !dbg !4131
+  %bf.clear = and i32 %bf.load, 65535, !dbg !4131
+  %cmp1 = icmp eq i32 %bf.clear, 68, !dbg !4131
+  br i1 %cmp1, label %if.then2, label %return, !dbg !4131
 
 if.then2:                                         ; preds = %if.else
-  %bf.clear4 = and i32 %bf.load, 67108864
-  %tobool = icmp eq i32 %bf.clear4, 0
-  br i1 %tobool, label %if.else11, label %if.then5
+  %bf.clear4 = and i32 %bf.load, 67108864, !dbg !4132
+  %tobool = icmp eq i32 %bf.clear4, 0, !dbg !4132
+  br i1 %tobool, label %if.else11, label %if.then5, !dbg !4132
 
 if.then5:                                         ; preds = %if.then2
-  %2 = load %struct.function** @cfun, align 8, !tbaa !3
-  %call = tail call fastcc %struct.pool_constant* @find_pool_constant(%struct.function* %2, %struct.rtx_def* %0) #10
-  %mark = getelementptr inbounds %struct.pool_constant* %call, i64 0, i32 8
-  %3 = load i32* %mark, align 4, !tbaa !4
-  %cmp6 = icmp eq i32 %3, 0
-  br i1 %cmp6, label %if.then7, label %return
+  %2 = load %struct.function** @cfun, align 8, !dbg !4133, !tbaa !2357
+  %call = tail call fastcc %struct.pool_constant* @find_pool_constant(%struct.function* %2, %struct.rtx_def* %0) #11, !dbg !4133
+  tail call void @llvm.dbg.value(metadata !{%struct.pool_constant* %call}, i64 0, metadata !1971), !dbg !4133
+  %mark = getelementptr inbounds %struct.pool_constant* %call, i64 0, i32 8, !dbg !4134
+  %3 = load i32* %mark, align 4, !dbg !4134, !tbaa !2382
+  %cmp6 = icmp eq i32 %3, 0, !dbg !4134
+  br i1 %cmp6, label %if.then7, label %return, !dbg !4134
 
 if.then7:                                         ; preds = %if.then5
-  store i32 1, i32* %mark, align 4, !tbaa !4
-  %constant = getelementptr inbounds %struct.pool_constant* %call, i64 0, i32 3
-  %call9 = tail call i32 @for_each_rtx(%struct.rtx_def** %constant, i32 (%struct.rtx_def**, i8*)* @mark_constant, i8* null) #9
-  br label %return
+  store i32 1, i32* %mark, align 4, !dbg !4135, !tbaa !2382
+  %constant = getelementptr inbounds %struct.pool_constant* %call, i64 0, i32 3, !dbg !4137
+  %call9 = tail call i32 @for_each_rtx(%struct.rtx_def** %constant, i32 (%struct.rtx_def**, i8*)* @mark_constant, i8* null) #10, !dbg !4137
+  br label %return, !dbg !4138
 
 if.else11:                                        ; preds = %if.then2
-  %tobool14 = icmp slt i32 %bf.load, 0
-  br i1 %tobool14, label %if.then15, label %return
+  %tobool14 = icmp slt i32 %bf.load, 0, !dbg !4139
+  br i1 %tobool14, label %if.then15, label %return, !dbg !4139
 
 if.then15:                                        ; preds = %if.else11
-  %4 = load %struct.htab** @const_str_htab, align 8, !tbaa !3
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
-  %rtstr = bitcast %union.rtunion_def* %arrayidx to i8**
-  %5 = load i8** %rtstr, align 8, !tbaa !3
-  %6 = ptrtoint i8* %5 to i64
-  %shr41 = lshr i64 %6, 3
-  %conv = trunc i64 %shr41 to i32
-  %call19 = tail call i8** @htab_find_slot_with_hash(%struct.htab* %4, i8* %5, i32 %conv, i32 0) #9
-  %tobool20 = icmp eq i8** %call19, null
-  br i1 %tobool20, label %return, label %if.then21
+  %4 = load %struct.htab** @const_str_htab, align 8, !dbg !4140, !tbaa !2357
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0, !dbg !4140
+  %rtstr = bitcast %union.rtunion_def* %arrayidx to i8**, !dbg !4140
+  %5 = load i8** %rtstr, align 8, !dbg !4140, !tbaa !2357
+  %6 = ptrtoint i8* %5 to i64, !dbg !4140
+  %shr41 = lshr i64 %6, 3, !dbg !4140
+  %conv = trunc i64 %shr41 to i32, !dbg !4140
+  %call19 = tail call i8** @htab_find_slot_with_hash(%struct.htab* %4, i8* %5, i32 %conv, i32 0) #10, !dbg !4140
+  %tobool20 = icmp eq i8** %call19, null, !dbg !4141
+  br i1 %tobool20, label %return, label %if.then21, !dbg !4141
 
 if.then21:                                        ; preds = %if.then15
-  %7 = load i8** %call19, align 8
-  %bf.load22 = load i32* %1, align 8
-  %bf.clear23 = and i32 %bf.load22, 2147483647
-  store i32 %bf.clear23, i32* %1, align 8
-  %exp = getelementptr inbounds i8* %7, i64 8
-  %8 = bitcast i8* %exp to %union.tree_node**
-  %9 = load %union.tree_node** %8, align 8, !tbaa !3
-  %labelno = getelementptr inbounds i8* %7, i64 16
-  %10 = bitcast i8* %labelno to i32*
-  %11 = load i32* %10, align 4, !tbaa !4
-  tail call fastcc void @output_constant_def_contents(%union.tree_node* %9, i32 0, i32 %11) #10
-  %12 = load %struct.htab** @const_str_htab, align 8, !tbaa !3
-  tail call void @htab_clear_slot(%struct.htab* %12, i8** %call19) #9
-  br label %return
+  %7 = load i8** %call19, align 8, !dbg !4142
+  %bf.load22 = load i32* %1, align 8, !dbg !4143
+  %bf.clear23 = and i32 %bf.load22, 2147483647, !dbg !4143
+  store i32 %bf.clear23, i32* %1, align 8, !dbg !4143
+  %exp = getelementptr inbounds i8* %7, i64 8, !dbg !4144
+  %8 = bitcast i8* %exp to %union.tree_node**, !dbg !4144
+  %9 = load %union.tree_node** %8, align 8, !dbg !4144, !tbaa !2357
+  %labelno = getelementptr inbounds i8* %7, i64 16, !dbg !4144
+  %10 = bitcast i8* %labelno to i32*, !dbg !4144
+  %11 = load i32* %10, align 4, !dbg !4144, !tbaa !2382
+  tail call fastcc void @output_constant_def_contents(%union.tree_node* %9, i32 0, i32 %11) #11, !dbg !4144
+  %12 = load %struct.htab** @const_str_htab, align 8, !dbg !4145, !tbaa !2357
+  tail call void @htab_clear_slot(%struct.htab* %12, i8** %call19) #10, !dbg !4145
+  br label %return, !dbg !4146
 
 return:                                           ; preds = %if.then7, %if.then21, %if.else11, %if.else, %if.then15, %if.then5, %entry
   %retval.0 = phi i32 [ 0, %entry ], [ -1, %if.then5 ], [ 0, %if.then15 ], [ 0, %if.else ], [ 0, %if.else11 ], [ 0, %if.then21 ], [ 0, %if.then7 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !4147
 }

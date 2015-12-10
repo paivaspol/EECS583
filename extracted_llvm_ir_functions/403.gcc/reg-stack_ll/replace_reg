@@ -1,48 +1,50 @@
 define internal fastcc void @replace_reg(%struct.rtx_def** nocapture %reg, i32 %regno) #0 {
 entry:
-  %regno.off = add i32 %regno, -8
-  %0 = icmp ugt i32 %regno.off, 7
-  br i1 %0, label %if.then, label %lor.lhs.false2
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %reg}, i64 0, metadata !1280), !dbg !2352
+  tail call void @llvm.dbg.value(metadata !{i32 %regno}, i64 0, metadata !1281), !dbg !2353
+  %regno.off = add i32 %regno, -8, !dbg !2354
+  %0 = icmp ugt i32 %regno.off, 7, !dbg !2354
+  br i1 %0, label %if.then, label %lor.lhs.false2, !dbg !2354
 
 lor.lhs.false2:                                   ; preds = %entry
-  %1 = load %struct.rtx_def** %reg, align 8, !tbaa !2
-  %2 = bitcast %struct.rtx_def* %1 to i32*
-  %bf.load = load i32* %2, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp3 = icmp eq i32 %bf.clear, 61
-  br i1 %cmp3, label %land.lhs.true, label %if.then
+  %1 = load %struct.rtx_def** %reg, align 8, !dbg !2354, !tbaa !1563
+  %2 = bitcast %struct.rtx_def* %1 to i32*, !dbg !2354
+  %bf.load = load i32* %2, align 8, !dbg !2354
+  %bf.clear = and i32 %bf.load, 65535, !dbg !2354
+  %cmp3 = icmp eq i32 %bf.clear, 61, !dbg !2354
+  br i1 %cmp3, label %land.lhs.true, label %if.then, !dbg !2354
 
 land.lhs.true:                                    ; preds = %lor.lhs.false2
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
-  %3 = load i32* %rtuint, align 4, !tbaa !3
-  %.off = add i32 %3, -8
-  %4 = icmp ult i32 %.off, 8
-  br i1 %4, label %if.end, label %if.then
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0, !dbg !2354
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*, !dbg !2354
+  %3 = load i32* %rtuint, align 4, !dbg !2354, !tbaa !1565
+  %.off = add i32 %3, -8, !dbg !2354
+  %4 = icmp ult i32 %.off, 8, !dbg !2354
+  br i1 %4, label %if.end, label %if.then, !dbg !2354
 
 if.then:                                          ; preds = %land.lhs.true, %lor.lhs.false2, %entry
-  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), i32 851, i8* getelementptr inbounds ([12 x i8]* @__FUNCTION__.replace_reg, i64 0, i64 0)) #8
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), i32 851, i8* getelementptr inbounds ([12 x i8]* @__FUNCTION__.replace_reg, i64 0, i64 0)) #9, !dbg !2355
+  unreachable, !dbg !2355
 
 if.end:                                           ; preds = %land.lhs.true
-  %bf.lshr = lshr i32 %bf.load, 16
-  %bf.clear11 = and i32 %bf.lshr, 255
-  %idxprom27 = zext i32 %bf.clear11 to i64
-  %arrayidx12 = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom27
-  %5 = load i32* %arrayidx12, align 4, !tbaa !6
+  %bf.lshr = lshr i32 %bf.load, 16, !dbg !2356
+  %bf.clear11 = and i32 %bf.lshr, 255, !dbg !2356
+  %idxprom27 = zext i32 %bf.clear11 to i64, !dbg !2356
+  %arrayidx12 = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom27, !dbg !2356
+  %5 = load i32* %arrayidx12, align 4, !dbg !2356, !tbaa !1695
   switch i32 %5, label %sw.default [
     i32 2, label %sw.epilog
     i32 6, label %sw.epilog
-  ]
+  ], !dbg !2356
 
 sw.default:                                       ; preds = %if.end
-  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), i32 855, i8* getelementptr inbounds ([12 x i8]* @__FUNCTION__.replace_reg, i64 0, i64 0)) #8
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), i32 855, i8* getelementptr inbounds ([12 x i8]* @__FUNCTION__.replace_reg, i64 0, i64 0)) #9, !dbg !2357
+  unreachable, !dbg !2357
 
 sw.epilog:                                        ; preds = %if.end, %if.end
-  %idxprom17 = sext i32 %regno.off to i64
-  %arrayidx19 = getelementptr inbounds [8 x [59 x %struct.rtx_def*]]* @FP_mode_reg, i64 0, i64 %idxprom17, i64 %idxprom27
-  %6 = load %struct.rtx_def** %arrayidx19, align 8, !tbaa !2
-  store %struct.rtx_def* %6, %struct.rtx_def** %reg, align 8, !tbaa !2
-  ret void
+  %idxprom17 = sext i32 %regno.off to i64, !dbg !2359
+  %arrayidx19 = getelementptr inbounds [8 x [59 x %struct.rtx_def*]]* @FP_mode_reg, i64 0, i64 %idxprom17, i64 %idxprom27, !dbg !2359
+  %6 = load %struct.rtx_def** %arrayidx19, align 8, !dbg !2359, !tbaa !1563
+  store %struct.rtx_def* %6, %struct.rtx_def** %reg, align 8, !dbg !2359, !tbaa !1563
+  ret void, !dbg !2360
 }

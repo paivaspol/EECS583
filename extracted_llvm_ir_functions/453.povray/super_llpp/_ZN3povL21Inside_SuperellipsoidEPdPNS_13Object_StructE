@@ -1,0 +1,46 @@
+define internal i32 @_ZN3povL21Inside_SuperellipsoidEPdPNS_13Object_StructE(double* %IPoint, %"struct.pov::Object_Struct"* nocapture %Object) #0 {
+entry:
+  %P = alloca [3 x double], align 16
+  call void @llvm.dbg.value(metadata !{double* %IPoint}, i64 0, metadata !1057), !dbg !1689
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !1058), !dbg !1689
+  call void @llvm.dbg.declare(metadata !{[3 x double]* %P}, metadata !1061), !dbg !1690
+  %arraydecay = getelementptr inbounds [3 x double]* %P, i64 0, i64 0, !dbg !1691
+  %0 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 10, !dbg !1691
+  %1 = load %"struct.pov::Transform_Struct"** %0, align 8, !dbg !1691, !tbaa !1325
+  call void @_ZN3pov14MInvTransPointEPdS0_PNS_16Transform_StructE(double* %arraydecay, double* %IPoint, %"struct.pov::Transform_Struct"* %1) #8, !dbg !1691
+  call void @llvm.dbg.value(metadata !{double* %arraydecay}, i64 0, metadata !1692) #4, !dbg !1694
+  %2 = load double* %arraydecay, align 16, !dbg !1695, !tbaa !1352
+  %call.i = call double @fabs(double %2) #10, !dbg !1695
+  %arrayidx1.i = getelementptr inbounds [3 x double]* %P, i64 0, i64 1, !dbg !1695
+  %3 = load double* %arrayidx1.i, align 8, !dbg !1695, !tbaa !1352
+  %call2.i = call double @fabs(double %3) #10, !dbg !1695
+  %arrayidx3.i = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, !dbg !1695
+  %4 = bitcast %"struct.pov::Object_Struct"* %arrayidx3.i to double*, !dbg !1695
+  %5 = load double* %4, align 8, !dbg !1695, !tbaa !1352
+  %call4.i = call fastcc double @_ZN3povL10evaluate_gEddd(double %call.i, double %call2.i, double %5) #9, !dbg !1695
+  %arrayidx5.i = getelementptr inbounds [3 x double]* %P, i64 0, i64 2, !dbg !1695
+  %6 = load double* %arrayidx5.i, align 16, !dbg !1695, !tbaa !1352
+  %call6.i = call double @fabs(double %6) #10, !dbg !1695
+  %arrayidx8.i = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, i32 2, !dbg !1695
+  %7 = bitcast %"struct.pov::Object_Struct"** %arrayidx8.i to double*, !dbg !1695
+  %8 = load double* %7, align 8, !dbg !1695, !tbaa !1352
+  %call9.i = call fastcc double @_ZN3povL10evaluate_gEddd(double %call4.i, double %call6.i, double %8) #9, !dbg !1695
+  %sub.i = fadd double %call9.i, -1.000000e+00, !dbg !1695
+  call void @llvm.dbg.value(metadata !{double %sub.i}, i64 0, metadata !1059), !dbg !1693
+  %cmp = fcmp olt double %sub.i, 1.000000e-07, !dbg !1696
+  %9 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 13, !dbg !1697
+  %10 = load i32* %9, align 4, !dbg !1697, !tbaa !1322
+  %conv = zext i32 %10 to i64, !dbg !1697
+  %and = and i64 %conv, 4, !dbg !1697
+  br i1 %cmp, label %if.then, label %return, !dbg !1696
+
+if.then:                                          ; preds = %entry
+  %and.lobit = lshr exact i64 %and, 2, !dbg !1697
+  %11 = xor i64 %and.lobit, 1, !dbg !1697
+  br label %return, !dbg !1697
+
+return:                                           ; preds = %entry, %if.then
+  %retval.0.in = phi i64 [ %11, %if.then ], [ %and, %entry ]
+  %retval.0 = trunc i64 %retval.0.in to i32, !dbg !1697
+  ret i32 %retval.0, !dbg !1699
+}

@@ -1,33 +1,39 @@
-define internal fastcc float @box_weight(i32* nocapture readonly %nbox, [3 x float]* nocapture readonly %box) #5 {
+define internal fastcc float @box_weight(i32* nocapture %nbox, [3 x float]* nocapture %box) #3 {
+entry:
   %lx = alloca [3 x float], align 4
-  br label %1
+  call void @llvm.dbg.value(metadata !{i32* %nbox}, i64 0, metadata !77), !dbg !588
+  call void @llvm.dbg.value(metadata !{[3 x float]* %box}, i64 0, metadata !78), !dbg !588
+  call void @llvm.dbg.declare(metadata !{[3 x float]* %lx}, metadata !79), !dbg !589
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !80), !dbg !590
+  br label %for.body, !dbg !590
 
-; <label>:1                                       ; preds = %1, %0
-  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %1 ]
-  %2 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv, i64 %indvars.iv
-  %3 = load float* %2, align 4, !tbaa !14
-  %4 = getelementptr inbounds i32* %nbox, i64 %indvars.iv
-  %5 = load i32* %4, align 4, !tbaa !18
-  %6 = sitofp i32 %5 to float
-  %7 = fdiv float %3, %6
-  %8 = getelementptr inbounds [3 x float]* %lx, i64 0, i64 %indvars.iv
-  store float %7, float* %8, align 4, !tbaa !14
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i64 %indvars.iv.next, 3
-  br i1 %exitcond, label %9, label %1
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %arrayidx2 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv, i64 %indvars.iv, !dbg !592
+  %0 = load float* %arrayidx2, align 4, !dbg !592, !tbaa !244
+  %arrayidx4 = getelementptr inbounds i32* %nbox, i64 %indvars.iv, !dbg !592
+  %1 = load i32* %arrayidx4, align 4, !dbg !592, !tbaa !228
+  %conv = sitofp i32 %1 to float, !dbg !592
+  %div = fdiv float %0, %conv, !dbg !592
+  %arrayidx6 = getelementptr inbounds [3 x float]* %lx, i64 0, i64 %indvars.iv, !dbg !592
+  store float %div, float* %arrayidx6, align 4, !dbg !592, !tbaa !244
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !590
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !590
+  %exitcond = icmp eq i32 %lftr.wideiv, 3, !dbg !590
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !590
 
-; <label>:9                                       ; preds = %1
-  %10 = getelementptr inbounds [3 x float]* %lx, i64 0, i64 0
-  %11 = load float* %10, align 4, !tbaa !14
-  %12 = getelementptr inbounds [3 x float]* %lx, i64 0, i64 1
-  %13 = load float* %12, align 4, !tbaa !14
-  %14 = fmul float %11, %13
-  %15 = getelementptr inbounds [3 x float]* %lx, i64 0, i64 2
-  %16 = load float* %15, align 4, !tbaa !14
-  %17 = fmul float %11, %16
-  %18 = fadd float %14, %17
-  %19 = fmul float %13, %16
-  %20 = fadd float %19, %18
-  %21 = fmul float %20, 2.000000e+00
-  ret float %21
+for.end:                                          ; preds = %for.body
+  %arrayidx7 = getelementptr inbounds [3 x float]* %lx, i64 0, i64 0, !dbg !593
+  %2 = load float* %arrayidx7, align 4, !dbg !593, !tbaa !244
+  %arrayidx8 = getelementptr inbounds [3 x float]* %lx, i64 0, i64 1, !dbg !593
+  %3 = load float* %arrayidx8, align 4, !dbg !593, !tbaa !244
+  %mul = fmul float %2, %3, !dbg !593
+  %arrayidx10 = getelementptr inbounds [3 x float]* %lx, i64 0, i64 2, !dbg !593
+  %4 = load float* %arrayidx10, align 4, !dbg !593, !tbaa !244
+  %mul11 = fmul float %2, %4, !dbg !593
+  %add = fadd float %mul, %mul11, !dbg !593
+  %mul14 = fmul float %3, %4, !dbg !593
+  %add15 = fadd float %mul14, %add, !dbg !593
+  %mul16 = fmul float %add15, 2.000000e+00, !dbg !593
+  ret float %mul16, !dbg !593
 }

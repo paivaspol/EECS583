@@ -1,34 +1,37 @@
-define internal fastcc void @CCTKi_TimerReset(i32 %this_timer, %struct.t_Timer* readonly %timer) #1 {
-  %1 = icmp eq %struct.t_Timer* %timer, null
-  br i1 %1, label %.loopexit, label %2
+define internal fastcc void @CCTKi_TimerReset(i32 %this_timer, %struct.t_Timer* %timer) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %this_timer}, i64 0, metadata !297), !dbg !575
+  tail call void @llvm.dbg.value(metadata !{%struct.t_Timer* %timer}, i64 0, metadata !298), !dbg !575
+  %tobool = icmp eq %struct.t_Timer* %timer, null, !dbg !576
+  br i1 %tobool, label %if.end, label %land.lhs.true, !dbg !576
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.t_Timer* %timer, i64 0, i32 0
-  %4 = load i8*** %3, align 8, !tbaa !12
-  %5 = icmp ne i8** %4, null
-  %6 = load i32* @n_clocks, align 4
-  %7 = icmp sgt i32 %6, 0
-  %or.cond = and i1 %5, %7
-  br i1 %or.cond, label %.lr.ph, label %.loopexit
+land.lhs.true:                                    ; preds = %entry
+  %data = getelementptr inbounds %struct.t_Timer* %timer, i64 0, i32 0, !dbg !576
+  %0 = load i8*** %data, align 8, !dbg !576, !tbaa !355
+  %tobool1 = icmp ne i8** %0, null, !dbg !576
+  %1 = load i32* @n_clocks, align 4, !dbg !577, !tbaa !359
+  %cmp8 = icmp sgt i32 %1, 0, !dbg !577
+  %or.cond = and i1 %tobool1, %cmp8, !dbg !576
+  br i1 %or.cond, label %for.body, label %if.end, !dbg !576
 
-.lr.ph:                                           ; preds = %2, %.lr.ph
-  %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %2 ]
-  %8 = load %struct.cHandledData** @clocks, align 8, !tbaa !9
-  %9 = trunc i64 %indvars.iv to i32
-  %10 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %8, i32 %9) #7
-  %11 = getelementptr inbounds i8* %10, i64 48
-  %12 = bitcast i8* %11 to void (i32, i8*)**
-  %13 = load void (i32, i8*)** %12, align 8, !tbaa !18
-  %14 = load i8*** %3, align 8, !tbaa !12
-  %15 = getelementptr inbounds i8** %14, i64 %indvars.iv
-  %16 = load i8** %15, align 8, !tbaa !9
-  tail call void %13(i32 %this_timer, i8* %16) #7
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %17 = load i32* @n_clocks, align 4, !tbaa !11
-  %18 = sext i32 %17 to i64
-  %19 = icmp slt i64 %indvars.iv.next, %18
-  br i1 %19, label %.lr.ph, label %.loopexit
+for.body:                                         ; preds = %land.lhs.true, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %land.lhs.true ]
+  %2 = load %struct.cHandledData** @clocks, align 8, !dbg !580, !tbaa !355
+  %3 = trunc i64 %indvars.iv to i32, !dbg !580
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %2, i32 %3) #8, !dbg !580
+  %reset = getelementptr inbounds i8* %call, i64 48, !dbg !582
+  %4 = bitcast i8* %reset to void (i32, i8*)**, !dbg !582
+  %5 = load void (i32, i8*)** %4, align 8, !dbg !582, !tbaa !355
+  %6 = load i8*** %data, align 8, !dbg !582, !tbaa !355
+  %arrayidx = getelementptr inbounds i8** %6, i64 %indvars.iv, !dbg !582
+  %7 = load i8** %arrayidx, align 8, !dbg !582, !tbaa !355
+  tail call void %5(i32 %this_timer, i8* %7) #8, !dbg !582
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !577
+  %8 = load i32* @n_clocks, align 4, !dbg !577, !tbaa !359
+  %9 = trunc i64 %indvars.iv.next to i32, !dbg !577
+  %cmp = icmp slt i32 %9, %8, !dbg !577
+  br i1 %cmp, label %for.body, label %if.end, !dbg !577
 
-.loopexit:                                        ; preds = %.lr.ph, %2, %0
-  ret void
+if.end:                                           ; preds = %land.lhs.true, %for.body, %entry
+  ret void, !dbg !583
 }

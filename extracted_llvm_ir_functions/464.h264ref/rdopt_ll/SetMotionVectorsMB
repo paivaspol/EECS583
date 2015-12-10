@@ -1,126 +1,141 @@
 define void @SetMotionVectorsMB(%struct.macroblock* nocapture %currMB, i32 %bframe) #0 {
 entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %all_mv1 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 71
-  %1 = load i16******* %all_mv1, align 8, !tbaa !0
-  %pred_mv2 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 70
-  %2 = load i16******* %pred_mv2, align 8, !tbaa !0
-  %bi_pred_me = getelementptr inbounds %struct.macroblock* %currMB, i64 0, i32 34
-  %mb_type = getelementptr inbounds %struct.macroblock* %currMB, i64 0, i32 8
-  %tobool37 = icmp eq i32 %bframe, 0
-  br label %for.cond3.preheader
+  tail call void @llvm.dbg.value(metadata !{%struct.macroblock* %currMB}, i64 0, metadata !578), !dbg !2497
+  tail call void @llvm.dbg.value(metadata !{i32 %bframe}, i64 0, metadata !579), !dbg !2497
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !2498, !tbaa !1451
+  %all_mv1 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 71, !dbg !2498
+  %1 = load i16******* %all_mv1, align 8, !dbg !2498, !tbaa !1451
+  tail call void @llvm.dbg.value(metadata !{i16****** %1}, i64 0, metadata !591), !dbg !2498
+  %pred_mv2 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 70, !dbg !2499
+  %2 = load i16******* %pred_mv2, align 8, !dbg !2499, !tbaa !1451
+  tail call void @llvm.dbg.value(metadata !{i16****** %2}, i64 0, metadata !598), !dbg !2499
+  tail call void @llvm.dbg.value(metadata !60, i64 0, metadata !581), !dbg !2500
+  %bi_pred_me = getelementptr inbounds %struct.macroblock* %currMB, i64 0, i32 34, !dbg !2502
+  %mb_type = getelementptr inbounds %struct.macroblock* %currMB, i64 0, i32 8, !dbg !2502
+  %tobool37 = icmp eq i32 %bframe, 0, !dbg !2505
+  br label %for.cond3.preheader, !dbg !2500
 
 for.cond3.preheader:                              ; preds = %for.inc304, %entry
   %indvars.iv621 = phi i64 [ 0, %entry ], [ %indvars.iv.next622, %for.inc304 ]
   %all_mv.0602 = phi i16****** [ %1, %entry ], [ %all_mv.2, %for.inc304 ]
-  %3 = trunc i64 %indvars.iv621 to i32
-  %div = sdiv i32 %3, 2
-  %mul = shl i32 %div, 1
-  br label %for.body5
+  %3 = trunc i64 %indvars.iv621 to i32, !dbg !2506
+  %div = sdiv i32 %3, 2, !dbg !2506
+  %mul = shl i32 %div, 1, !dbg !2506
+  br label %for.body5, !dbg !2507
 
 for.body5:                                        ; preds = %for.inc, %for.cond3.preheader
   %indvars.iv617 = phi i64 [ 0, %for.cond3.preheader ], [ %indvars.iv.next618, %for.inc ]
   %all_mv.1599 = phi i16****** [ %all_mv.0602, %for.cond3.preheader ], [ %all_mv.2, %for.inc ]
-  %4 = trunc i64 %indvars.iv617 to i32
-  %div6 = sdiv i32 %4, 2
-  %add = add nsw i32 %mul, %div6
-  %idxprom = sext i32 %add to i64
-  %arrayidx = getelementptr inbounds %struct.macroblock* %currMB, i64 0, i32 14, i64 %idxprom
-  %5 = load i32* %arrayidx, align 4, !tbaa !3
-  %6 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %block_y = getelementptr inbounds %struct.ImageParameters* %6, i64 0, i32 32
-  %7 = load i32* %block_y, align 4, !tbaa !3
-  %add10 = add nsw i32 %7, %3
-  %block_x = getelementptr inbounds %struct.ImageParameters* %6, i64 0, i32 31
-  %8 = load i32* %block_x, align 4, !tbaa !3
-  %add11 = add nsw i32 %8, %4
-  %arrayidx16 = getelementptr inbounds %struct.macroblock* %currMB, i64 0, i32 15, i64 %idxprom
-  %9 = load i32* %arrayidx16, align 4, !tbaa !3
-  %idxprom17 = sext i32 %add10 to i64
-  %idxprom18 = sext i32 %add11 to i64
-  %10 = load %struct.storable_picture** @enc_picture, align 8, !tbaa !0
-  %ref_idx = getelementptr inbounds %struct.storable_picture* %10, i64 0, i32 32
-  %11 = load i16**** %ref_idx, align 8, !tbaa !0
-  %12 = load i16*** %11, align 8, !tbaa !0
-  %arrayidx20 = getelementptr inbounds i16** %12, i64 %idxprom18
-  %13 = load i16** %arrayidx20, align 8, !tbaa !0
-  %arrayidx21 = getelementptr inbounds i16* %13, i64 %idxprom17
-  %14 = load i16* %arrayidx21, align 2, !tbaa !4
-  %conv = sext i16 %14 to i32
-  %arrayidx25 = getelementptr inbounds i16*** %11, i64 1
-  %15 = load i16*** %arrayidx25, align 8, !tbaa !0
-  %arrayidx26 = getelementptr inbounds i16** %15, i64 %idxprom18
-  %16 = load i16** %arrayidx26, align 8, !tbaa !0
-  %arrayidx27 = getelementptr inbounds i16* %16, i64 %idxprom17
-  %17 = load i16* %arrayidx27, align 2, !tbaa !4
-  %conv28 = sext i16 %17 to i32
-  %18 = load i32* %bi_pred_me, align 4, !tbaa !3
-  %tobool = icmp ne i32 %18, 0
-  %cmp29 = icmp eq i32 %9, 2
-  %or.cond = and i1 %tobool, %cmp29
-  br i1 %or.cond, label %land.lhs.true31, label %if.end
+  %4 = trunc i64 %indvars.iv617 to i32, !dbg !2506
+  %div6 = sdiv i32 %4, 2, !dbg !2506
+  %add = add nsw i32 %mul, %div6, !dbg !2506
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !582), !dbg !2506
+  %idxprom = sext i32 %add to i64, !dbg !2506
+  %arrayidx = getelementptr inbounds %struct.macroblock* %currMB, i64 0, i32 14, i64 %idxprom, !dbg !2506
+  %5 = load i32* %arrayidx, align 4, !dbg !2506, !tbaa !1458
+  tail call void @llvm.dbg.value(metadata !{i32 %5}, i64 0, metadata !585), !dbg !2506
+  %6 = load %struct.ImageParameters** @img, align 8, !dbg !2508, !tbaa !1451
+  %block_y = getelementptr inbounds %struct.ImageParameters* %6, i64 0, i32 32, !dbg !2508
+  %7 = load i32* %block_y, align 4, !dbg !2508, !tbaa !1458
+  %add10 = add nsw i32 %7, %3, !dbg !2508
+  tail call void @llvm.dbg.value(metadata !{i32 %add10}, i64 0, metadata !588), !dbg !2508
+  %block_x = getelementptr inbounds %struct.ImageParameters* %6, i64 0, i32 31, !dbg !2509
+  %8 = load i32* %block_x, align 4, !dbg !2509, !tbaa !1458
+  %add11 = add nsw i32 %8, %4, !dbg !2509
+  tail call void @llvm.dbg.value(metadata !{i32 %add11}, i64 0, metadata !590), !dbg !2509
+  %arrayidx16 = getelementptr inbounds %struct.macroblock* %currMB, i64 0, i32 15, i64 %idxprom, !dbg !2510
+  %9 = load i32* %arrayidx16, align 4, !dbg !2510, !tbaa !1458
+  tail call void @llvm.dbg.value(metadata !{i32 %9}, i64 0, metadata !586), !dbg !2510
+  %idxprom17 = sext i32 %add10 to i64, !dbg !2511
+  %idxprom18 = sext i32 %add11 to i64, !dbg !2511
+  %10 = load %struct.storable_picture** @enc_picture, align 8, !dbg !2511, !tbaa !1451
+  %ref_idx = getelementptr inbounds %struct.storable_picture* %10, i64 0, i32 32, !dbg !2511
+  %11 = load i16**** %ref_idx, align 8, !dbg !2511, !tbaa !1451
+  %12 = load i16*** %11, align 8, !dbg !2511, !tbaa !1451
+  %arrayidx20 = getelementptr inbounds i16** %12, i64 %idxprom18, !dbg !2511
+  %13 = load i16** %arrayidx20, align 8, !dbg !2511, !tbaa !1451
+  %arrayidx21 = getelementptr inbounds i16* %13, i64 %idxprom17, !dbg !2511
+  %14 = load i16* %arrayidx21, align 2, !dbg !2511, !tbaa !1540
+  %conv = sext i16 %14 to i32, !dbg !2511
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !587), !dbg !2511
+  %arrayidx25 = getelementptr inbounds i16*** %11, i64 1, !dbg !2512
+  %15 = load i16*** %arrayidx25, align 8, !dbg !2512, !tbaa !1451
+  %arrayidx26 = getelementptr inbounds i16** %15, i64 %idxprom18, !dbg !2512
+  %16 = load i16** %arrayidx26, align 8, !dbg !2512, !tbaa !1451
+  %arrayidx27 = getelementptr inbounds i16* %16, i64 %idxprom17, !dbg !2512
+  %17 = load i16* %arrayidx27, align 2, !dbg !2512, !tbaa !1540
+  %conv28 = sext i16 %17 to i32, !dbg !2512
+  tail call void @llvm.dbg.value(metadata !{i32 %conv28}, i64 0, metadata !599), !dbg !2512
+  %18 = load i32* %bi_pred_me, align 4, !dbg !2502, !tbaa !1458
+  %tobool = icmp ne i32 %18, 0, !dbg !2502
+  %cmp29 = icmp eq i32 %9, 2, !dbg !2502
+  %or.cond = and i1 %tobool, %cmp29, !dbg !2502
+  br i1 %or.cond, label %land.lhs.true31, label %if.end, !dbg !2502
 
 land.lhs.true31:                                  ; preds = %for.body5
-  %19 = load i32* %mb_type, align 4, !tbaa !3
-  %cmp32 = icmp eq i32 %19, 1
-  br i1 %cmp32, label %if.then, label %if.end
+  %19 = load i32* %mb_type, align 4, !dbg !2502, !tbaa !1458
+  %cmp32 = icmp eq i32 %19, 1, !dbg !2502
+  br i1 %cmp32, label %if.then, label %if.end, !dbg !2502
 
 if.then:                                          ; preds = %land.lhs.true31
-  %cmp35 = icmp eq i32 %18, 1
-  %bipred_mv1 = getelementptr inbounds %struct.ImageParameters* %6, i64 0, i32 72
-  %bipred_mv2 = getelementptr inbounds %struct.ImageParameters* %6, i64 0, i32 73
-  %cond.in = select i1 %cmp35, i16******* %bipred_mv1, i16******* %bipred_mv2
-  %cond = load i16******* %cond.in, align 8
-  br label %if.end
+  %cmp35 = icmp eq i32 %18, 1, !dbg !2513
+  %bipred_mv1 = getelementptr inbounds %struct.ImageParameters* %6, i64 0, i32 72, !dbg !2513
+  %bipred_mv2 = getelementptr inbounds %struct.ImageParameters* %6, i64 0, i32 73, !dbg !2513
+  %cond.in = select i1 %cmp35, i16******* %bipred_mv1, i16******* %bipred_mv2, !dbg !2513
+  %cond = load i16******* %cond.in, align 8, !dbg !2513
+  tail call void @llvm.dbg.value(metadata !{i16****** %cond}, i64 0, metadata !591), !dbg !2513
+  tail call void @llvm.dbg.value(metadata !60, i64 0, metadata !587), !dbg !2515
+  tail call void @llvm.dbg.value(metadata !60, i64 0, metadata !599), !dbg !2516
+  br label %if.end, !dbg !2517
 
 if.end:                                           ; preds = %for.body5, %if.then, %land.lhs.true31
   %ref.0 = phi i32 [ 0, %if.then ], [ %conv, %land.lhs.true31 ], [ %conv, %for.body5 ]
   %all_mv.2 = phi i16****** [ %cond, %if.then ], [ %all_mv.1599, %land.lhs.true31 ], [ %all_mv.1599, %for.body5 ]
   %bw_ref.0 = phi i32 [ 0, %if.then ], [ %conv28, %land.lhs.true31 ], [ %conv28, %for.body5 ]
-  br i1 %tobool37, label %if.then38, label %if.else90
+  br i1 %tobool37, label %if.then38, label %if.else90, !dbg !2505
 
 if.then38:                                        ; preds = %if.end
-  %cmp39 = icmp sgt i32 %9, -1
-  br i1 %cmp39, label %if.then41, label %if.else
+  %cmp39 = icmp sgt i32 %9, -1, !dbg !2518
+  br i1 %cmp39, label %if.then41, label %if.else, !dbg !2518
 
 if.then41:                                        ; preds = %if.then38
-  %idxprom42 = sext i32 %5 to i64
-  %idxprom43 = sext i32 %ref.0 to i64
-  %arrayidx46 = getelementptr inbounds i16****** %all_mv.2, i64 %indvars.iv617
-  %20 = load i16****** %arrayidx46, align 8, !tbaa !0
-  %arrayidx47 = getelementptr inbounds i16***** %20, i64 %indvars.iv621
-  %21 = load i16***** %arrayidx47, align 8, !tbaa !0
-  %22 = load i16**** %21, align 8, !tbaa !0
-  %arrayidx49 = getelementptr inbounds i16*** %22, i64 %idxprom43
-  %23 = load i16*** %arrayidx49, align 8, !tbaa !0
-  %arrayidx50 = getelementptr inbounds i16** %23, i64 %idxprom42
-  %24 = load i16** %arrayidx50, align 8, !tbaa !0
-  %25 = load i16* %24, align 2, !tbaa !4
-  %mv = getelementptr inbounds %struct.storable_picture* %10, i64 0, i32 35
-  %26 = load i16***** %mv, align 8, !tbaa !0
-  %27 = load i16**** %26, align 8, !tbaa !0
-  %arrayidx55 = getelementptr inbounds i16*** %27, i64 %idxprom18
-  %28 = load i16*** %arrayidx55, align 8, !tbaa !0
-  %arrayidx56 = getelementptr inbounds i16** %28, i64 %idxprom17
-  %29 = load i16** %arrayidx56, align 8, !tbaa !0
-  store i16 %25, i16* %29, align 2, !tbaa !4
-  %arrayidx67 = getelementptr inbounds i16* %24, i64 1
-  %30 = load i16* %arrayidx67, align 2, !tbaa !4
-  %arrayidx74 = getelementptr inbounds i16* %29, i64 1
-  store i16 %30, i16* %arrayidx74, align 2, !tbaa !4
-  br label %for.inc
+  %idxprom42 = sext i32 %5 to i64, !dbg !2520
+  %idxprom43 = sext i32 %ref.0 to i64, !dbg !2520
+  %arrayidx46 = getelementptr inbounds i16****** %all_mv.2, i64 %indvars.iv617, !dbg !2520
+  %20 = load i16****** %arrayidx46, align 8, !dbg !2520, !tbaa !1451
+  %arrayidx47 = getelementptr inbounds i16***** %20, i64 %indvars.iv621, !dbg !2520
+  %21 = load i16***** %arrayidx47, align 8, !dbg !2520, !tbaa !1451
+  %22 = load i16**** %21, align 8, !dbg !2520, !tbaa !1451
+  %arrayidx49 = getelementptr inbounds i16*** %22, i64 %idxprom43, !dbg !2520
+  %23 = load i16*** %arrayidx49, align 8, !dbg !2520, !tbaa !1451
+  %arrayidx50 = getelementptr inbounds i16** %23, i64 %idxprom42, !dbg !2520
+  %24 = load i16** %arrayidx50, align 8, !dbg !2520, !tbaa !1451
+  %25 = load i16* %24, align 2, !dbg !2520, !tbaa !1540
+  %mv = getelementptr inbounds %struct.storable_picture* %10, i64 0, i32 35, !dbg !2520
+  %26 = load i16***** %mv, align 8, !dbg !2520, !tbaa !1451
+  %27 = load i16**** %26, align 8, !dbg !2520, !tbaa !1451
+  %arrayidx55 = getelementptr inbounds i16*** %27, i64 %idxprom18, !dbg !2520
+  %28 = load i16*** %arrayidx55, align 8, !dbg !2520, !tbaa !1451
+  %arrayidx56 = getelementptr inbounds i16** %28, i64 %idxprom17, !dbg !2520
+  %29 = load i16** %arrayidx56, align 8, !dbg !2520, !tbaa !1451
+  store i16 %25, i16* %29, align 2, !dbg !2520, !tbaa !1540
+  %arrayidx67 = getelementptr inbounds i16* %24, i64 1, !dbg !2522
+  %30 = load i16* %arrayidx67, align 2, !dbg !2522, !tbaa !1540
+  %arrayidx74 = getelementptr inbounds i16* %29, i64 1, !dbg !2522
+  store i16 %30, i16* %arrayidx74, align 2, !dbg !2522, !tbaa !1540
+  br label %for.inc, !dbg !2523
 
 if.else:                                          ; preds = %if.then38
-  %mv77 = getelementptr inbounds %struct.storable_picture* %10, i64 0, i32 35
-  %31 = load i16***** %mv77, align 8, !tbaa !0
-  %32 = load i16**** %31, align 8, !tbaa !0
-  %arrayidx79 = getelementptr inbounds i16*** %32, i64 %idxprom18
-  %33 = load i16*** %arrayidx79, align 8, !tbaa !0
-  %arrayidx80 = getelementptr inbounds i16** %33, i64 %idxprom17
-  %34 = load i16** %arrayidx80, align 8, !tbaa !0
-  store i16 0, i16* %34, align 2, !tbaa !4
-  %arrayidx88 = getelementptr inbounds i16* %34, i64 1
-  store i16 0, i16* %arrayidx88, align 2, !tbaa !4
+  %mv77 = getelementptr inbounds %struct.storable_picture* %10, i64 0, i32 35, !dbg !2524
+  %31 = load i16***** %mv77, align 8, !dbg !2524, !tbaa !1451
+  %32 = load i16**** %31, align 8, !dbg !2524, !tbaa !1451
+  %arrayidx79 = getelementptr inbounds i16*** %32, i64 %idxprom18, !dbg !2524
+  %33 = load i16*** %arrayidx79, align 8, !dbg !2524, !tbaa !1451
+  %arrayidx80 = getelementptr inbounds i16** %33, i64 %idxprom17, !dbg !2524
+  %34 = load i16** %arrayidx80, align 8, !dbg !2524, !tbaa !1451
+  store i16 0, i16* %34, align 2, !dbg !2524, !tbaa !1540
+  %arrayidx88 = getelementptr inbounds i16* %34, i64 1, !dbg !2526
+  store i16 0, i16* %arrayidx88, align 2, !dbg !2526, !tbaa !1540
   br label %for.inc
 
 if.else90:                                        ; preds = %if.end
@@ -129,285 +144,285 @@ if.else90:                                        ; preds = %if.end
     i32 0, label %if.then125
     i32 1, label %if.then177
     i32 2, label %if.then229
-  ]
+  ], !dbg !2527
 
 if.then93:                                        ; preds = %if.else90
-  %mv96 = getelementptr inbounds %struct.storable_picture* %10, i64 0, i32 35
-  %35 = load i16***** %mv96, align 8, !tbaa !0
-  %36 = load i16**** %35, align 8, !tbaa !0
-  %arrayidx98 = getelementptr inbounds i16*** %36, i64 %idxprom18
-  %37 = load i16*** %arrayidx98, align 8, !tbaa !0
-  %arrayidx99 = getelementptr inbounds i16** %37, i64 %idxprom17
-  %38 = load i16** %arrayidx99, align 8, !tbaa !0
-  store i16 0, i16* %38, align 2, !tbaa !4
-  %arrayidx107 = getelementptr inbounds i16* %38, i64 1
-  store i16 0, i16* %arrayidx107, align 2, !tbaa !4
-  %arrayidx111 = getelementptr inbounds i16**** %35, i64 1
-  %39 = load i16**** %arrayidx111, align 8, !tbaa !0
-  %arrayidx112 = getelementptr inbounds i16*** %39, i64 %idxprom18
-  %40 = load i16*** %arrayidx112, align 8, !tbaa !0
-  %arrayidx113 = getelementptr inbounds i16** %40, i64 %idxprom17
-  %41 = load i16** %arrayidx113, align 8, !tbaa !0
-  store i16 0, i16* %41, align 2, !tbaa !4
-  %arrayidx121 = getelementptr inbounds i16* %41, i64 1
-  store i16 0, i16* %arrayidx121, align 2, !tbaa !4
-  br label %for.inc
+  %mv96 = getelementptr inbounds %struct.storable_picture* %10, i64 0, i32 35, !dbg !2529
+  %35 = load i16***** %mv96, align 8, !dbg !2529, !tbaa !1451
+  %36 = load i16**** %35, align 8, !dbg !2529, !tbaa !1451
+  %arrayidx98 = getelementptr inbounds i16*** %36, i64 %idxprom18, !dbg !2529
+  %37 = load i16*** %arrayidx98, align 8, !dbg !2529, !tbaa !1451
+  %arrayidx99 = getelementptr inbounds i16** %37, i64 %idxprom17, !dbg !2529
+  %38 = load i16** %arrayidx99, align 8, !dbg !2529, !tbaa !1451
+  store i16 0, i16* %38, align 2, !dbg !2529, !tbaa !1540
+  %arrayidx107 = getelementptr inbounds i16* %38, i64 1, !dbg !2531
+  store i16 0, i16* %arrayidx107, align 2, !dbg !2531, !tbaa !1540
+  %arrayidx111 = getelementptr inbounds i16**** %35, i64 1, !dbg !2532
+  %39 = load i16**** %arrayidx111, align 8, !dbg !2532, !tbaa !1451
+  %arrayidx112 = getelementptr inbounds i16*** %39, i64 %idxprom18, !dbg !2532
+  %40 = load i16*** %arrayidx112, align 8, !dbg !2532, !tbaa !1451
+  %arrayidx113 = getelementptr inbounds i16** %40, i64 %idxprom17, !dbg !2532
+  %41 = load i16** %arrayidx113, align 8, !dbg !2532, !tbaa !1451
+  store i16 0, i16* %41, align 2, !dbg !2532, !tbaa !1540
+  %arrayidx121 = getelementptr inbounds i16* %41, i64 1, !dbg !2533
+  store i16 0, i16* %arrayidx121, align 2, !dbg !2533, !tbaa !1540
+  br label %for.inc, !dbg !2534
 
 if.then125:                                       ; preds = %if.else90
-  %idxprom126 = sext i32 %5 to i64
-  %idxprom127 = sext i32 %ref.0 to i64
-  %arrayidx130 = getelementptr inbounds i16****** %all_mv.2, i64 %indvars.iv617
-  %42 = load i16****** %arrayidx130, align 8, !tbaa !0
-  %arrayidx131 = getelementptr inbounds i16***** %42, i64 %indvars.iv621
-  %43 = load i16***** %arrayidx131, align 8, !tbaa !0
-  %44 = load i16**** %43, align 8, !tbaa !0
-  %arrayidx133 = getelementptr inbounds i16*** %44, i64 %idxprom127
-  %45 = load i16*** %arrayidx133, align 8, !tbaa !0
-  %arrayidx134 = getelementptr inbounds i16** %45, i64 %idxprom126
-  %46 = load i16** %arrayidx134, align 8, !tbaa !0
-  %47 = load i16* %46, align 2, !tbaa !4
-  %mv138 = getelementptr inbounds %struct.storable_picture* %10, i64 0, i32 35
-  %48 = load i16***** %mv138, align 8, !tbaa !0
-  %49 = load i16**** %48, align 8, !tbaa !0
-  %arrayidx140 = getelementptr inbounds i16*** %49, i64 %idxprom18
-  %50 = load i16*** %arrayidx140, align 8, !tbaa !0
-  %arrayidx141 = getelementptr inbounds i16** %50, i64 %idxprom17
-  %51 = load i16** %arrayidx141, align 8, !tbaa !0
-  store i16 %47, i16* %51, align 2, !tbaa !4
-  %arrayidx152 = getelementptr inbounds i16* %46, i64 1
-  %52 = load i16* %arrayidx152, align 2, !tbaa !4
-  %arrayidx159 = getelementptr inbounds i16* %51, i64 1
-  store i16 %52, i16* %arrayidx159, align 2, !tbaa !4
-  %arrayidx163 = getelementptr inbounds i16**** %48, i64 1
-  %53 = load i16**** %arrayidx163, align 8, !tbaa !0
-  %arrayidx164 = getelementptr inbounds i16*** %53, i64 %idxprom18
-  %54 = load i16*** %arrayidx164, align 8, !tbaa !0
-  %arrayidx165 = getelementptr inbounds i16** %54, i64 %idxprom17
-  %55 = load i16** %arrayidx165, align 8, !tbaa !0
-  store i16 0, i16* %55, align 2, !tbaa !4
-  %arrayidx173 = getelementptr inbounds i16* %55, i64 1
-  store i16 0, i16* %arrayidx173, align 2, !tbaa !4
-  br label %for.inc
+  %idxprom126 = sext i32 %5 to i64, !dbg !2535
+  %idxprom127 = sext i32 %ref.0 to i64, !dbg !2535
+  %arrayidx130 = getelementptr inbounds i16****** %all_mv.2, i64 %indvars.iv617, !dbg !2535
+  %42 = load i16****** %arrayidx130, align 8, !dbg !2535, !tbaa !1451
+  %arrayidx131 = getelementptr inbounds i16***** %42, i64 %indvars.iv621, !dbg !2535
+  %43 = load i16***** %arrayidx131, align 8, !dbg !2535, !tbaa !1451
+  %44 = load i16**** %43, align 8, !dbg !2535, !tbaa !1451
+  %arrayidx133 = getelementptr inbounds i16*** %44, i64 %idxprom127, !dbg !2535
+  %45 = load i16*** %arrayidx133, align 8, !dbg !2535, !tbaa !1451
+  %arrayidx134 = getelementptr inbounds i16** %45, i64 %idxprom126, !dbg !2535
+  %46 = load i16** %arrayidx134, align 8, !dbg !2535, !tbaa !1451
+  %47 = load i16* %46, align 2, !dbg !2535, !tbaa !1540
+  %mv138 = getelementptr inbounds %struct.storable_picture* %10, i64 0, i32 35, !dbg !2535
+  %48 = load i16***** %mv138, align 8, !dbg !2535, !tbaa !1451
+  %49 = load i16**** %48, align 8, !dbg !2535, !tbaa !1451
+  %arrayidx140 = getelementptr inbounds i16*** %49, i64 %idxprom18, !dbg !2535
+  %50 = load i16*** %arrayidx140, align 8, !dbg !2535, !tbaa !1451
+  %arrayidx141 = getelementptr inbounds i16** %50, i64 %idxprom17, !dbg !2535
+  %51 = load i16** %arrayidx141, align 8, !dbg !2535, !tbaa !1451
+  store i16 %47, i16* %51, align 2, !dbg !2535, !tbaa !1540
+  %arrayidx152 = getelementptr inbounds i16* %46, i64 1, !dbg !2537
+  %52 = load i16* %arrayidx152, align 2, !dbg !2537, !tbaa !1540
+  %arrayidx159 = getelementptr inbounds i16* %51, i64 1, !dbg !2537
+  store i16 %52, i16* %arrayidx159, align 2, !dbg !2537, !tbaa !1540
+  %arrayidx163 = getelementptr inbounds i16**** %48, i64 1, !dbg !2538
+  %53 = load i16**** %arrayidx163, align 8, !dbg !2538, !tbaa !1451
+  %arrayidx164 = getelementptr inbounds i16*** %53, i64 %idxprom18, !dbg !2538
+  %54 = load i16*** %arrayidx164, align 8, !dbg !2538, !tbaa !1451
+  %arrayidx165 = getelementptr inbounds i16** %54, i64 %idxprom17, !dbg !2538
+  %55 = load i16** %arrayidx165, align 8, !dbg !2538, !tbaa !1451
+  store i16 0, i16* %55, align 2, !dbg !2538, !tbaa !1540
+  %arrayidx173 = getelementptr inbounds i16* %55, i64 1, !dbg !2539
+  store i16 0, i16* %arrayidx173, align 2, !dbg !2539, !tbaa !1540
+  br label %for.inc, !dbg !2540
 
 if.then177:                                       ; preds = %if.else90
-  %mv180 = getelementptr inbounds %struct.storable_picture* %10, i64 0, i32 35
-  %56 = load i16***** %mv180, align 8, !tbaa !0
-  %57 = load i16**** %56, align 8, !tbaa !0
-  %arrayidx182 = getelementptr inbounds i16*** %57, i64 %idxprom18
-  %58 = load i16*** %arrayidx182, align 8, !tbaa !0
-  %arrayidx183 = getelementptr inbounds i16** %58, i64 %idxprom17
-  %59 = load i16** %arrayidx183, align 8, !tbaa !0
-  store i16 0, i16* %59, align 2, !tbaa !4
-  %arrayidx191 = getelementptr inbounds i16* %59, i64 1
-  store i16 0, i16* %arrayidx191, align 2, !tbaa !4
-  %idxprom192 = sext i32 %5 to i64
-  %idxprom193 = sext i32 %bw_ref.0 to i64
-  %arrayidx196 = getelementptr inbounds i16****** %all_mv.2, i64 %indvars.iv617
-  %60 = load i16****** %arrayidx196, align 8, !tbaa !0
-  %arrayidx197 = getelementptr inbounds i16***** %60, i64 %indvars.iv621
-  %61 = load i16***** %arrayidx197, align 8, !tbaa !0
-  %arrayidx198 = getelementptr inbounds i16**** %61, i64 1
-  %62 = load i16**** %arrayidx198, align 8, !tbaa !0
-  %arrayidx199 = getelementptr inbounds i16*** %62, i64 %idxprom193
-  %63 = load i16*** %arrayidx199, align 8, !tbaa !0
-  %arrayidx200 = getelementptr inbounds i16** %63, i64 %idxprom192
-  %64 = load i16** %arrayidx200, align 8, !tbaa !0
-  %65 = load i16* %64, align 2, !tbaa !4
-  %arrayidx205 = getelementptr inbounds i16**** %56, i64 1
-  %66 = load i16**** %arrayidx205, align 8, !tbaa !0
-  %arrayidx206 = getelementptr inbounds i16*** %66, i64 %idxprom18
-  %67 = load i16*** %arrayidx206, align 8, !tbaa !0
-  %arrayidx207 = getelementptr inbounds i16** %67, i64 %idxprom17
-  %68 = load i16** %arrayidx207, align 8, !tbaa !0
-  store i16 %65, i16* %68, align 2, !tbaa !4
-  %arrayidx218 = getelementptr inbounds i16* %64, i64 1
-  %69 = load i16* %arrayidx218, align 2, !tbaa !4
-  %arrayidx225 = getelementptr inbounds i16* %68, i64 1
-  store i16 %69, i16* %arrayidx225, align 2, !tbaa !4
-  br label %for.inc
+  %mv180 = getelementptr inbounds %struct.storable_picture* %10, i64 0, i32 35, !dbg !2541
+  %56 = load i16***** %mv180, align 8, !dbg !2541, !tbaa !1451
+  %57 = load i16**** %56, align 8, !dbg !2541, !tbaa !1451
+  %arrayidx182 = getelementptr inbounds i16*** %57, i64 %idxprom18, !dbg !2541
+  %58 = load i16*** %arrayidx182, align 8, !dbg !2541, !tbaa !1451
+  %arrayidx183 = getelementptr inbounds i16** %58, i64 %idxprom17, !dbg !2541
+  %59 = load i16** %arrayidx183, align 8, !dbg !2541, !tbaa !1451
+  store i16 0, i16* %59, align 2, !dbg !2541, !tbaa !1540
+  %arrayidx191 = getelementptr inbounds i16* %59, i64 1, !dbg !2543
+  store i16 0, i16* %arrayidx191, align 2, !dbg !2543, !tbaa !1540
+  %idxprom192 = sext i32 %5 to i64, !dbg !2544
+  %idxprom193 = sext i32 %bw_ref.0 to i64, !dbg !2544
+  %arrayidx196 = getelementptr inbounds i16****** %all_mv.2, i64 %indvars.iv617, !dbg !2544
+  %60 = load i16****** %arrayidx196, align 8, !dbg !2544, !tbaa !1451
+  %arrayidx197 = getelementptr inbounds i16***** %60, i64 %indvars.iv621, !dbg !2544
+  %61 = load i16***** %arrayidx197, align 8, !dbg !2544, !tbaa !1451
+  %arrayidx198 = getelementptr inbounds i16**** %61, i64 1, !dbg !2544
+  %62 = load i16**** %arrayidx198, align 8, !dbg !2544, !tbaa !1451
+  %arrayidx199 = getelementptr inbounds i16*** %62, i64 %idxprom193, !dbg !2544
+  %63 = load i16*** %arrayidx199, align 8, !dbg !2544, !tbaa !1451
+  %arrayidx200 = getelementptr inbounds i16** %63, i64 %idxprom192, !dbg !2544
+  %64 = load i16** %arrayidx200, align 8, !dbg !2544, !tbaa !1451
+  %65 = load i16* %64, align 2, !dbg !2544, !tbaa !1540
+  %arrayidx205 = getelementptr inbounds i16**** %56, i64 1, !dbg !2544
+  %66 = load i16**** %arrayidx205, align 8, !dbg !2544, !tbaa !1451
+  %arrayidx206 = getelementptr inbounds i16*** %66, i64 %idxprom18, !dbg !2544
+  %67 = load i16*** %arrayidx206, align 8, !dbg !2544, !tbaa !1451
+  %arrayidx207 = getelementptr inbounds i16** %67, i64 %idxprom17, !dbg !2544
+  %68 = load i16** %arrayidx207, align 8, !dbg !2544, !tbaa !1451
+  store i16 %65, i16* %68, align 2, !dbg !2544, !tbaa !1540
+  %arrayidx218 = getelementptr inbounds i16* %64, i64 1, !dbg !2545
+  %69 = load i16* %arrayidx218, align 2, !dbg !2545, !tbaa !1540
+  %arrayidx225 = getelementptr inbounds i16* %68, i64 1, !dbg !2545
+  store i16 %69, i16* %arrayidx225, align 2, !dbg !2545, !tbaa !1540
+  br label %for.inc, !dbg !2546
 
 if.then229:                                       ; preds = %if.else90
-  %idxprom230 = sext i32 %5 to i64
-  %idxprom231 = sext i32 %ref.0 to i64
-  %arrayidx234 = getelementptr inbounds i16****** %all_mv.2, i64 %indvars.iv617
-  %70 = load i16****** %arrayidx234, align 8, !tbaa !0
-  %arrayidx235 = getelementptr inbounds i16***** %70, i64 %indvars.iv621
-  %71 = load i16***** %arrayidx235, align 8, !tbaa !0
-  %72 = load i16**** %71, align 8, !tbaa !0
-  %arrayidx237 = getelementptr inbounds i16*** %72, i64 %idxprom231
-  %73 = load i16*** %arrayidx237, align 8, !tbaa !0
-  %arrayidx238 = getelementptr inbounds i16** %73, i64 %idxprom230
-  %74 = load i16** %arrayidx238, align 8, !tbaa !0
-  %75 = load i16* %74, align 2, !tbaa !4
-  %mv242 = getelementptr inbounds %struct.storable_picture* %10, i64 0, i32 35
-  %76 = load i16***** %mv242, align 8, !tbaa !0
-  %77 = load i16**** %76, align 8, !tbaa !0
-  %arrayidx244 = getelementptr inbounds i16*** %77, i64 %idxprom18
-  %78 = load i16*** %arrayidx244, align 8, !tbaa !0
-  %arrayidx245 = getelementptr inbounds i16** %78, i64 %idxprom17
-  %79 = load i16** %arrayidx245, align 8, !tbaa !0
-  store i16 %75, i16* %79, align 2, !tbaa !4
-  %arrayidx256 = getelementptr inbounds i16* %74, i64 1
-  %80 = load i16* %arrayidx256, align 2, !tbaa !4
-  %arrayidx263 = getelementptr inbounds i16* %79, i64 1
-  store i16 %80, i16* %arrayidx263, align 2, !tbaa !4
-  %idxprom265 = sext i32 %bw_ref.0 to i64
-  %arrayidx270 = getelementptr inbounds i16**** %71, i64 1
-  %81 = load i16**** %arrayidx270, align 8, !tbaa !0
-  %arrayidx271 = getelementptr inbounds i16*** %81, i64 %idxprom265
-  %82 = load i16*** %arrayidx271, align 8, !tbaa !0
-  %arrayidx272 = getelementptr inbounds i16** %82, i64 %idxprom230
-  %83 = load i16** %arrayidx272, align 8, !tbaa !0
-  %84 = load i16* %83, align 2, !tbaa !4
-  %arrayidx277 = getelementptr inbounds i16**** %76, i64 1
-  %85 = load i16**** %arrayidx277, align 8, !tbaa !0
-  %arrayidx278 = getelementptr inbounds i16*** %85, i64 %idxprom18
-  %86 = load i16*** %arrayidx278, align 8, !tbaa !0
-  %arrayidx279 = getelementptr inbounds i16** %86, i64 %idxprom17
-  %87 = load i16** %arrayidx279, align 8, !tbaa !0
-  store i16 %84, i16* %87, align 2, !tbaa !4
-  %arrayidx290 = getelementptr inbounds i16* %83, i64 1
-  %88 = load i16* %arrayidx290, align 2, !tbaa !4
-  %arrayidx297 = getelementptr inbounds i16* %87, i64 1
-  store i16 %88, i16* %arrayidx297, align 2, !tbaa !4
-  br label %for.inc
+  %idxprom230 = sext i32 %5 to i64, !dbg !2547
+  %idxprom231 = sext i32 %ref.0 to i64, !dbg !2547
+  %arrayidx234 = getelementptr inbounds i16****** %all_mv.2, i64 %indvars.iv617, !dbg !2547
+  %70 = load i16****** %arrayidx234, align 8, !dbg !2547, !tbaa !1451
+  %arrayidx235 = getelementptr inbounds i16***** %70, i64 %indvars.iv621, !dbg !2547
+  %71 = load i16***** %arrayidx235, align 8, !dbg !2547, !tbaa !1451
+  %72 = load i16**** %71, align 8, !dbg !2547, !tbaa !1451
+  %arrayidx237 = getelementptr inbounds i16*** %72, i64 %idxprom231, !dbg !2547
+  %73 = load i16*** %arrayidx237, align 8, !dbg !2547, !tbaa !1451
+  %arrayidx238 = getelementptr inbounds i16** %73, i64 %idxprom230, !dbg !2547
+  %74 = load i16** %arrayidx238, align 8, !dbg !2547, !tbaa !1451
+  %75 = load i16* %74, align 2, !dbg !2547, !tbaa !1540
+  %mv242 = getelementptr inbounds %struct.storable_picture* %10, i64 0, i32 35, !dbg !2547
+  %76 = load i16***** %mv242, align 8, !dbg !2547, !tbaa !1451
+  %77 = load i16**** %76, align 8, !dbg !2547, !tbaa !1451
+  %arrayidx244 = getelementptr inbounds i16*** %77, i64 %idxprom18, !dbg !2547
+  %78 = load i16*** %arrayidx244, align 8, !dbg !2547, !tbaa !1451
+  %arrayidx245 = getelementptr inbounds i16** %78, i64 %idxprom17, !dbg !2547
+  %79 = load i16** %arrayidx245, align 8, !dbg !2547, !tbaa !1451
+  store i16 %75, i16* %79, align 2, !dbg !2547, !tbaa !1540
+  %arrayidx256 = getelementptr inbounds i16* %74, i64 1, !dbg !2549
+  %80 = load i16* %arrayidx256, align 2, !dbg !2549, !tbaa !1540
+  %arrayidx263 = getelementptr inbounds i16* %79, i64 1, !dbg !2549
+  store i16 %80, i16* %arrayidx263, align 2, !dbg !2549, !tbaa !1540
+  %idxprom265 = sext i32 %bw_ref.0 to i64, !dbg !2550
+  %arrayidx270 = getelementptr inbounds i16**** %71, i64 1, !dbg !2550
+  %81 = load i16**** %arrayidx270, align 8, !dbg !2550, !tbaa !1451
+  %arrayidx271 = getelementptr inbounds i16*** %81, i64 %idxprom265, !dbg !2550
+  %82 = load i16*** %arrayidx271, align 8, !dbg !2550, !tbaa !1451
+  %arrayidx272 = getelementptr inbounds i16** %82, i64 %idxprom230, !dbg !2550
+  %83 = load i16** %arrayidx272, align 8, !dbg !2550, !tbaa !1451
+  %84 = load i16* %83, align 2, !dbg !2550, !tbaa !1540
+  %arrayidx277 = getelementptr inbounds i16**** %76, i64 1, !dbg !2550
+  %85 = load i16**** %arrayidx277, align 8, !dbg !2550, !tbaa !1451
+  %arrayidx278 = getelementptr inbounds i16*** %85, i64 %idxprom18, !dbg !2550
+  %86 = load i16*** %arrayidx278, align 8, !dbg !2550, !tbaa !1451
+  %arrayidx279 = getelementptr inbounds i16** %86, i64 %idxprom17, !dbg !2550
+  %87 = load i16** %arrayidx279, align 8, !dbg !2550, !tbaa !1451
+  store i16 %84, i16* %87, align 2, !dbg !2550, !tbaa !1540
+  %arrayidx290 = getelementptr inbounds i16* %83, i64 1, !dbg !2551
+  %88 = load i16* %arrayidx290, align 2, !dbg !2551, !tbaa !1540
+  %arrayidx297 = getelementptr inbounds i16* %87, i64 1, !dbg !2551
+  store i16 %88, i16* %arrayidx297, align 2, !dbg !2551, !tbaa !1540
+  br label %for.inc, !dbg !2552
 
 if.else298:                                       ; preds = %if.else90
-  tail call void @error(i8* getelementptr inbounds ([23 x i8]* @.str1, i64 0, i64 0), i32 255) #8
+  tail call void @error(i8* getelementptr inbounds ([23 x i8]* @.str3, i64 0, i64 0), i32 255) #9, !dbg !2553
   br label %for.inc
 
 for.inc:                                          ; preds = %if.else, %if.then41, %if.then125, %if.then229, %if.else298, %if.then177, %if.then93
-  %indvars.iv.next618 = add i64 %indvars.iv617, 1
-  %lftr.wideiv619 = trunc i64 %indvars.iv.next618 to i32
-  %exitcond620 = icmp eq i32 %lftr.wideiv619, 4
-  br i1 %exitcond620, label %for.inc304, label %for.body5
+  %indvars.iv.next618 = add i64 %indvars.iv617, 1, !dbg !2507
+  %lftr.wideiv619 = trunc i64 %indvars.iv.next618 to i32, !dbg !2507
+  %exitcond620 = icmp eq i32 %lftr.wideiv619, 4, !dbg !2507
+  br i1 %exitcond620, label %for.inc304, label %for.body5, !dbg !2507
 
 for.inc304:                                       ; preds = %for.inc
-  %indvars.iv.next622 = add i64 %indvars.iv621, 1
-  %lftr.wideiv623 = trunc i64 %indvars.iv.next622 to i32
-  %exitcond624 = icmp eq i32 %lftr.wideiv623, 4
-  br i1 %exitcond624, label %for.end306, label %for.cond3.preheader
+  %indvars.iv.next622 = add i64 %indvars.iv621, 1, !dbg !2500
+  %lftr.wideiv623 = trunc i64 %indvars.iv.next622 to i32, !dbg !2500
+  %exitcond624 = icmp eq i32 %lftr.wideiv623, 4, !dbg !2500
+  br i1 %exitcond624, label %for.end306, label %for.cond3.preheader, !dbg !2500
 
 for.end306:                                       ; preds = %for.inc304
-  %89 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %MbaffFrameFlag = getelementptr inbounds %struct.ImageParameters* %89, i64 0, i32 90
-  %90 = load i32* %MbaffFrameFlag, align 4, !tbaa !3
-  %tobool307 = icmp eq i32 %90, 0
-  br i1 %tobool307, label %if.end436, label %for.cond309.preheader
+  %89 = load %struct.ImageParameters** @img, align 8, !dbg !2555, !tbaa !1451
+  %MbaffFrameFlag = getelementptr inbounds %struct.ImageParameters* %89, i64 0, i32 90, !dbg !2555
+  %90 = load i32* %MbaffFrameFlag, align 4, !dbg !2555, !tbaa !1458
+  %tobool307 = icmp eq i32 %90, 0, !dbg !2555
+  br i1 %tobool307, label %if.end436, label %for.cond309.preheader, !dbg !2555
 
 for.cond309.preheader:                            ; preds = %for.end306
-  %max_num_references593 = getelementptr inbounds %struct.ImageParameters* %89, i64 0, i32 9
-  %91 = load i32* %max_num_references593, align 4, !tbaa !3
-  %cmp322594 = icmp sgt i32 %91, 0
-  %92 = load %struct.RD_DATA** @rdopt, align 8, !tbaa !0
-  %all_mv345 = getelementptr inbounds %struct.RD_DATA* %92, i64 0, i32 16
-  %pred_mv368 = getelementptr inbounds %struct.RD_DATA* %92, i64 0, i32 15
-  br label %for.cond313.preheader
+  %max_num_references593 = getelementptr inbounds %struct.ImageParameters* %89, i64 0, i32 9, !dbg !2556
+  %91 = load i32* %max_num_references593, align 4, !dbg !2556, !tbaa !1458
+  %cmp322594 = icmp sgt i32 %91, 0, !dbg !2556
+  %92 = load %struct.RD_DATA** @rdopt, align 8, !dbg !2565, !tbaa !1451
+  %all_mv345 = getelementptr inbounds %struct.RD_DATA* %92, i64 0, i32 16, !dbg !2565
+  %pred_mv368 = getelementptr inbounds %struct.RD_DATA* %92, i64 0, i32 15, !dbg !2569
+  br label %for.cond313.preheader, !dbg !2570
 
 for.cond313.preheader:                            ; preds = %for.inc433, %for.cond309.preheader
   %indvars.iv613 = phi i64 [ 0, %for.cond309.preheader ], [ %indvars.iv.next614, %for.inc433 ]
-  %arrayidx334 = getelementptr inbounds i16****** %all_mv.2, i64 %indvars.iv613
-  %arrayidx357 = getelementptr inbounds i16****** %2, i64 %indvars.iv613
-  br label %for.cond317.preheader
+  %arrayidx334 = getelementptr inbounds i16****** %all_mv.2, i64 %indvars.iv613, !dbg !2565
+  %arrayidx357 = getelementptr inbounds i16****** %2, i64 %indvars.iv613, !dbg !2569
+  br label %for.cond317.preheader, !dbg !2571
 
 for.cond317.preheader:                            ; preds = %for.inc430, %for.cond313.preheader
   %indvars.iv609 = phi i64 [ 0, %for.cond313.preheader ], [ %indvars.iv.next610, %for.inc430 ]
-  br label %for.cond321.preheader
+  br label %for.cond321.preheader, !dbg !2572
 
 for.cond321.preheader:                            ; preds = %for.inc427, %for.cond317.preheader
   %indvars.iv605 = phi i64 [ 0, %for.cond317.preheader ], [ %indvars.iv.next606, %for.inc427 ]
-  br i1 %cmp322594, label %for.cond325.preheader.lr.ph, label %for.inc427
+  br i1 %cmp322594, label %for.cond325.preheader.lr.ph, label %for.inc427, !dbg !2556
 
 for.cond325.preheader.lr.ph:                      ; preds = %for.cond321.preheader
-  %93 = load i16****** %arrayidx334, align 8, !tbaa !0
-  %arrayidx335 = getelementptr inbounds i16***** %93, i64 %indvars.iv609
-  %94 = load i16***** %arrayidx335, align 8, !tbaa !0
-  %arrayidx336 = getelementptr inbounds i16**** %94, i64 %indvars.iv605
-  %95 = load i16**** %arrayidx336, align 8, !tbaa !0
-  %96 = load i16******* %all_mv345, align 8, !tbaa !0
-  %arrayidx346 = getelementptr inbounds i16****** %96, i64 %indvars.iv613
-  %97 = load i16****** %arrayidx346, align 8, !tbaa !0
-  %arrayidx347 = getelementptr inbounds i16***** %97, i64 %indvars.iv609
-  %98 = load i16***** %arrayidx347, align 8, !tbaa !0
-  %arrayidx348 = getelementptr inbounds i16**** %98, i64 %indvars.iv605
-  %99 = load i16**** %arrayidx348, align 8, !tbaa !0
-  %100 = load i16****** %arrayidx357, align 8, !tbaa !0
-  %arrayidx358 = getelementptr inbounds i16***** %100, i64 %indvars.iv609
-  %101 = load i16***** %arrayidx358, align 8, !tbaa !0
-  %arrayidx359 = getelementptr inbounds i16**** %101, i64 %indvars.iv605
-  %102 = load i16**** %arrayidx359, align 8, !tbaa !0
-  %103 = load i16******* %pred_mv368, align 8, !tbaa !0
-  %arrayidx369 = getelementptr inbounds i16****** %103, i64 %indvars.iv613
-  %104 = load i16****** %arrayidx369, align 8, !tbaa !0
-  %arrayidx370 = getelementptr inbounds i16***** %104, i64 %indvars.iv609
-  %105 = load i16***** %arrayidx370, align 8, !tbaa !0
-  %arrayidx371 = getelementptr inbounds i16**** %105, i64 %indvars.iv605
-  %106 = load i16**** %arrayidx371, align 8, !tbaa !0
-  br label %for.cond325.preheader
+  %93 = load i16****** %arrayidx334, align 8, !dbg !2565, !tbaa !1451
+  %arrayidx335 = getelementptr inbounds i16***** %93, i64 %indvars.iv609, !dbg !2565
+  %94 = load i16***** %arrayidx335, align 8, !dbg !2565, !tbaa !1451
+  %arrayidx336 = getelementptr inbounds i16**** %94, i64 %indvars.iv605, !dbg !2565
+  %95 = load i16**** %arrayidx336, align 8, !dbg !2565, !tbaa !1451
+  %96 = load i16******* %all_mv345, align 8, !dbg !2565, !tbaa !1451
+  %arrayidx346 = getelementptr inbounds i16****** %96, i64 %indvars.iv613, !dbg !2565
+  %97 = load i16****** %arrayidx346, align 8, !dbg !2565, !tbaa !1451
+  %arrayidx347 = getelementptr inbounds i16***** %97, i64 %indvars.iv609, !dbg !2565
+  %98 = load i16***** %arrayidx347, align 8, !dbg !2565, !tbaa !1451
+  %arrayidx348 = getelementptr inbounds i16**** %98, i64 %indvars.iv605, !dbg !2565
+  %99 = load i16**** %arrayidx348, align 8, !dbg !2565, !tbaa !1451
+  %100 = load i16****** %arrayidx357, align 8, !dbg !2569, !tbaa !1451
+  %arrayidx358 = getelementptr inbounds i16***** %100, i64 %indvars.iv609, !dbg !2569
+  %101 = load i16***** %arrayidx358, align 8, !dbg !2569, !tbaa !1451
+  %arrayidx359 = getelementptr inbounds i16**** %101, i64 %indvars.iv605, !dbg !2569
+  %102 = load i16**** %arrayidx359, align 8, !dbg !2569, !tbaa !1451
+  %103 = load i16******* %pred_mv368, align 8, !dbg !2569, !tbaa !1451
+  %arrayidx369 = getelementptr inbounds i16****** %103, i64 %indvars.iv613, !dbg !2569
+  %104 = load i16****** %arrayidx369, align 8, !dbg !2569, !tbaa !1451
+  %arrayidx370 = getelementptr inbounds i16***** %104, i64 %indvars.iv609, !dbg !2569
+  %105 = load i16***** %arrayidx370, align 8, !dbg !2569, !tbaa !1451
+  %arrayidx371 = getelementptr inbounds i16**** %105, i64 %indvars.iv605, !dbg !2569
+  %106 = load i16**** %arrayidx371, align 8, !dbg !2569, !tbaa !1451
+  br label %for.cond325.preheader, !dbg !2556
 
 for.cond325.preheader:                            ; preds = %for.cond325.preheader.lr.ph, %for.inc424
   %indvars.iv603 = phi i64 [ 0, %for.cond325.preheader.lr.ph ], [ %indvars.iv.next604, %for.inc424 ]
-  %arrayidx337 = getelementptr inbounds i16*** %95, i64 %indvars.iv603
-  %107 = load i16*** %arrayidx337, align 8, !tbaa !0
-  %arrayidx349 = getelementptr inbounds i16*** %99, i64 %indvars.iv603
-  %108 = load i16*** %arrayidx349, align 8, !tbaa !0
-  %arrayidx360 = getelementptr inbounds i16*** %102, i64 %indvars.iv603
-  %109 = load i16*** %arrayidx360, align 8, !tbaa !0
-  %arrayidx372 = getelementptr inbounds i16*** %106, i64 %indvars.iv603
-  %110 = load i16*** %arrayidx372, align 8, !tbaa !0
-  br label %for.body328
+  %arrayidx337 = getelementptr inbounds i16*** %95, i64 %indvars.iv603, !dbg !2565
+  %107 = load i16*** %arrayidx337, align 8, !dbg !2565, !tbaa !1451
+  %arrayidx349 = getelementptr inbounds i16*** %99, i64 %indvars.iv603, !dbg !2565
+  %108 = load i16*** %arrayidx349, align 8, !dbg !2565, !tbaa !1451
+  %arrayidx360 = getelementptr inbounds i16*** %102, i64 %indvars.iv603, !dbg !2569
+  %109 = load i16*** %arrayidx360, align 8, !dbg !2569, !tbaa !1451
+  %arrayidx372 = getelementptr inbounds i16*** %106, i64 %indvars.iv603, !dbg !2569
+  %110 = load i16*** %arrayidx372, align 8, !dbg !2569, !tbaa !1451
+  br label %for.body328, !dbg !2573
 
 for.body328:                                      ; preds = %for.body328, %for.cond325.preheader
   %indvars.iv = phi i64 [ 0, %for.cond325.preheader ], [ %indvars.iv.next, %for.body328 ]
-  %arrayidx338 = getelementptr inbounds i16** %107, i64 %indvars.iv
-  %111 = load i16** %arrayidx338, align 8, !tbaa !0
-  %112 = load i16* %111, align 2, !tbaa !4
-  %arrayidx350 = getelementptr inbounds i16** %108, i64 %indvars.iv
-  %113 = load i16** %arrayidx350, align 8, !tbaa !0
-  store i16 %112, i16* %113, align 2, !tbaa !4
-  %arrayidx361 = getelementptr inbounds i16** %109, i64 %indvars.iv
-  %114 = load i16** %arrayidx361, align 8, !tbaa !0
-  %115 = load i16* %114, align 2, !tbaa !4
-  %arrayidx373 = getelementptr inbounds i16** %110, i64 %indvars.iv
-  %116 = load i16** %arrayidx373, align 8, !tbaa !0
-  store i16 %115, i16* %116, align 2, !tbaa !4
-  %arrayidx385 = getelementptr inbounds i16* %111, i64 1
-  %117 = load i16* %arrayidx385, align 2, !tbaa !4
-  %arrayidx397 = getelementptr inbounds i16* %113, i64 1
-  store i16 %117, i16* %arrayidx397, align 2, !tbaa !4
-  %arrayidx408 = getelementptr inbounds i16* %114, i64 1
-  %118 = load i16* %arrayidx408, align 2, !tbaa !4
-  %arrayidx420 = getelementptr inbounds i16* %116, i64 1
-  store i16 %118, i16* %arrayidx420, align 2, !tbaa !4
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 9
-  br i1 %exitcond, label %for.inc424, label %for.body328
+  %arrayidx338 = getelementptr inbounds i16** %107, i64 %indvars.iv, !dbg !2565
+  %111 = load i16** %arrayidx338, align 8, !dbg !2565, !tbaa !1451
+  %112 = load i16* %111, align 2, !dbg !2565, !tbaa !1540
+  %arrayidx350 = getelementptr inbounds i16** %108, i64 %indvars.iv, !dbg !2565
+  %113 = load i16** %arrayidx350, align 8, !dbg !2565, !tbaa !1451
+  store i16 %112, i16* %113, align 2, !dbg !2565, !tbaa !1540
+  %arrayidx361 = getelementptr inbounds i16** %109, i64 %indvars.iv, !dbg !2569
+  %114 = load i16** %arrayidx361, align 8, !dbg !2569, !tbaa !1451
+  %115 = load i16* %114, align 2, !dbg !2569, !tbaa !1540
+  %arrayidx373 = getelementptr inbounds i16** %110, i64 %indvars.iv, !dbg !2569
+  %116 = load i16** %arrayidx373, align 8, !dbg !2569, !tbaa !1451
+  store i16 %115, i16* %116, align 2, !dbg !2569, !tbaa !1540
+  %arrayidx385 = getelementptr inbounds i16* %111, i64 1, !dbg !2574
+  %117 = load i16* %arrayidx385, align 2, !dbg !2574, !tbaa !1540
+  %arrayidx397 = getelementptr inbounds i16* %113, i64 1, !dbg !2574
+  store i16 %117, i16* %arrayidx397, align 2, !dbg !2574, !tbaa !1540
+  %arrayidx408 = getelementptr inbounds i16* %114, i64 1, !dbg !2575
+  %118 = load i16* %arrayidx408, align 2, !dbg !2575, !tbaa !1540
+  %arrayidx420 = getelementptr inbounds i16* %116, i64 1, !dbg !2575
+  store i16 %118, i16* %arrayidx420, align 2, !dbg !2575, !tbaa !1540
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2573
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !2573
+  %exitcond = icmp eq i32 %lftr.wideiv, 9, !dbg !2573
+  br i1 %exitcond, label %for.inc424, label %for.body328, !dbg !2573
 
 for.inc424:                                       ; preds = %for.body328
-  %indvars.iv.next604 = add i64 %indvars.iv603, 1
-  %119 = trunc i64 %indvars.iv.next604 to i32
-  %cmp322 = icmp slt i32 %119, %91
-  br i1 %cmp322, label %for.cond325.preheader, label %for.inc427
+  %indvars.iv.next604 = add i64 %indvars.iv603, 1, !dbg !2556
+  %119 = trunc i64 %indvars.iv.next604 to i32, !dbg !2556
+  %cmp322 = icmp slt i32 %119, %91, !dbg !2556
+  br i1 %cmp322, label %for.cond325.preheader, label %for.inc427, !dbg !2556
 
 for.inc427:                                       ; preds = %for.inc424, %for.cond321.preheader
-  %indvars.iv.next606 = add i64 %indvars.iv605, 1
-  %lftr.wideiv607 = trunc i64 %indvars.iv.next606 to i32
-  %exitcond608 = icmp eq i32 %lftr.wideiv607, 2
-  br i1 %exitcond608, label %for.inc430, label %for.cond321.preheader
+  %indvars.iv.next606 = add i64 %indvars.iv605, 1, !dbg !2572
+  %lftr.wideiv607 = trunc i64 %indvars.iv.next606 to i32, !dbg !2572
+  %exitcond608 = icmp eq i32 %lftr.wideiv607, 2, !dbg !2572
+  br i1 %exitcond608, label %for.inc430, label %for.cond321.preheader, !dbg !2572
 
 for.inc430:                                       ; preds = %for.inc427
-  %indvars.iv.next610 = add i64 %indvars.iv609, 1
-  %lftr.wideiv611 = trunc i64 %indvars.iv.next610 to i32
-  %exitcond612 = icmp eq i32 %lftr.wideiv611, 4
-  br i1 %exitcond612, label %for.inc433, label %for.cond317.preheader
+  %indvars.iv.next610 = add i64 %indvars.iv609, 1, !dbg !2571
+  %lftr.wideiv611 = trunc i64 %indvars.iv.next610 to i32, !dbg !2571
+  %exitcond612 = icmp eq i32 %lftr.wideiv611, 4, !dbg !2571
+  br i1 %exitcond612, label %for.inc433, label %for.cond317.preheader, !dbg !2571
 
 for.inc433:                                       ; preds = %for.inc430
-  %indvars.iv.next614 = add i64 %indvars.iv613, 1
-  %lftr.wideiv615 = trunc i64 %indvars.iv.next614 to i32
-  %exitcond616 = icmp eq i32 %lftr.wideiv615, 4
-  br i1 %exitcond616, label %if.end436, label %for.cond313.preheader
+  %indvars.iv.next614 = add i64 %indvars.iv613, 1, !dbg !2570
+  %lftr.wideiv615 = trunc i64 %indvars.iv.next614 to i32, !dbg !2570
+  %exitcond616 = icmp eq i32 %lftr.wideiv615, 4, !dbg !2570
+  br i1 %exitcond616, label %if.end436, label %for.cond313.preheader, !dbg !2570
 
 if.end436:                                        ; preds = %for.inc433, %for.end306
-  ret void
+  ret void, !dbg !2576
 }

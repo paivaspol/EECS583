@@ -1,0 +1,39 @@
+define zeroext i1 @_ZN3pov24Check_Photon_Light_GroupEPNS_13Object_StructE(%"struct.pov::Object_Struct"* nocapture %Object) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !831), !dbg !941
+  %0 = load i8* getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 28), align 8, !dbg !942, !tbaa !943, !range !944
+  %tobool = icmp eq i8 %0, 0, !dbg !942
+  br i1 %tobool, label %if.else2, label %if.then, !dbg !942
+
+if.then:                                          ; preds = %entry
+  %Flags = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 13, !dbg !945
+  %1 = load i32* %Flags, align 4, !dbg !945, !tbaa !906
+  %and = and i32 %1, 131072, !dbg !945
+  %cmp = icmp eq i32 %and, 0, !dbg !945
+  br label %return, !dbg !947
+
+if.else2:                                         ; preds = %entry
+  %LLights = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 8, !dbg !948
+  %Test_Light.08 = load %"struct.pov::Light_Source_Struct"** %LLights, align 8, !dbg !948
+  %cmp39 = icmp eq %"struct.pov::Light_Source_Struct"* %Test_Light.08, null, !dbg !948
+  br i1 %cmp39, label %return, label %for.body.lr.ph, !dbg !948
+
+for.body.lr.ph:                                   ; preds = %if.else2
+  %2 = load %"struct.pov::Light_Source_Struct"** getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 27), align 8, !dbg !950, !tbaa !912
+  br label %for.body, !dbg !948
+
+for.cond:                                         ; preds = %for.body
+  %Next_Light_Source = getelementptr inbounds %"struct.pov::Light_Source_Struct"* %Test_Light.010, i64 0, i32 26, !dbg !952
+  %Test_Light.0 = load %"struct.pov::Light_Source_Struct"** %Next_Light_Source, align 8, !dbg !948
+  %cmp3 = icmp eq %"struct.pov::Light_Source_Struct"* %Test_Light.0, null, !dbg !948
+  br i1 %cmp3, label %return, label %for.body, !dbg !948
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond
+  %Test_Light.010 = phi %"struct.pov::Light_Source_Struct"* [ %Test_Light.08, %for.body.lr.ph ], [ %Test_Light.0, %for.cond ]
+  %cmp4 = icmp eq %"struct.pov::Light_Source_Struct"* %Test_Light.010, %2, !dbg !950
+  br i1 %cmp4, label %return, label %for.cond, !dbg !950
+
+return:                                           ; preds = %if.else2, %for.body, %for.cond, %if.then
+  %retval.0 = phi i1 [ %cmp, %if.then ], [ false, %if.else2 ], [ true, %for.body ], [ false, %for.cond ]
+  ret i1 %retval.0, !dbg !953
+}

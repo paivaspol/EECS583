@@ -1,19 +1,37 @@
-define void @write_xpm3(%struct.__sFILE* nocapture %out, i8* %title, i8* %legend, i8* %label_x, i8* %label_y, i32 %n_x, i32 %n_y, float* readonly %axis_x, float* readonly %axis_y, float** nocapture readonly %matrix, float %lo, float %mid, float %hi, <2 x float> %rlo.coerce0, float %rlo.coerce1, <2 x float> %rmid.coerce0, float %rmid.coerce1, %struct.t_rgb* byval nocapture readonly align 8 %rhi, i32* nocapture %nlevels) #3 {
-  %1 = fcmp ugt float %hi, %lo
-  br i1 %1, label %5, label %2
+define void @write_xpm3(%struct._IO_FILE* nocapture %out, i8* %title, i8* %legend, i8* %label_x, i8* %label_y, i32 %n_x, i32 %n_y, float* %axis_x, float* %axis_y, float** nocapture %matrix, float %lo, float %mid, float %hi, <2 x float> %rlo.coerce0, float %rlo.coerce1, <2 x float> %rmid.coerce0, float %rmid.coerce1, %struct.t_rgb* byval nocapture align 8 %rhi, i32* nocapture %nlevels) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %out}, i64 0, metadata !408), !dbg !1004
+  tail call void @llvm.dbg.value(metadata !{i8* %title}, i64 0, metadata !409), !dbg !1005
+  tail call void @llvm.dbg.value(metadata !{i8* %legend}, i64 0, metadata !410), !dbg !1005
+  tail call void @llvm.dbg.value(metadata !{i8* %label_x}, i64 0, metadata !411), !dbg !1005
+  tail call void @llvm.dbg.value(metadata !{i8* %label_y}, i64 0, metadata !412), !dbg !1005
+  tail call void @llvm.dbg.value(metadata !{i32 %n_x}, i64 0, metadata !413), !dbg !1006
+  tail call void @llvm.dbg.value(metadata !{i32 %n_y}, i64 0, metadata !414), !dbg !1006
+  tail call void @llvm.dbg.value(metadata !{float* %axis_x}, i64 0, metadata !415), !dbg !1006
+  tail call void @llvm.dbg.value(metadata !{float* %axis_y}, i64 0, metadata !416), !dbg !1006
+  tail call void @llvm.dbg.value(metadata !{float** %matrix}, i64 0, metadata !417), !dbg !1007
+  tail call void @llvm.dbg.value(metadata !{float %lo}, i64 0, metadata !418), !dbg !1007
+  tail call void @llvm.dbg.value(metadata !{float %mid}, i64 0, metadata !419), !dbg !1007
+  tail call void @llvm.dbg.value(metadata !{float %hi}, i64 0, metadata !420), !dbg !1007
+  tail call void @llvm.dbg.declare(metadata !543, metadata !421), !dbg !1008
+  tail call void @llvm.dbg.declare(metadata !543, metadata !422), !dbg !1008
+  tail call void @llvm.dbg.declare(metadata !{%struct.t_rgb* %rhi}, metadata !423), !dbg !1008
+  tail call void @llvm.dbg.value(metadata !{i32* %nlevels}, i64 0, metadata !424), !dbg !1008
+  %cmp = fcmp ugt float %hi, %lo, !dbg !1009
+  br i1 %cmp, label %if.end, label %if.then, !dbg !1009
 
-; <label>:2                                       ; preds = %0
-  %3 = fpext float %hi to double
-  %4 = fpext float %lo to double
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([19 x i8]* @.str79, i64 0, i64 0), double %3, double %4) #10
-  br label %5
+if.then:                                          ; preds = %entry
+  %conv = fpext float %hi to double, !dbg !1010
+  %conv2 = fpext float %lo to double, !dbg !1010
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([19 x i8]* @.str79, i64 0, i64 0), double %conv, double %conv2) #9, !dbg !1010
+  br label %if.end, !dbg !1010
 
-; <label>:5                                       ; preds = %0, %2
-  tail call void @write_xpm_header(%struct.__sFILE* %out, i8* %title, i8* %legend, i8* %label_x, i8* %label_y, i32 0) #11
-  call void @write_xpm_map3(%struct.__sFILE* %out, i32 %n_x, i32 %n_y, i32* %nlevels, float %lo, float %mid, float %hi, <2 x float> %rlo.coerce0, float %rlo.coerce1, <2 x float> %rmid.coerce0, float %rmid.coerce1, %struct.t_rgb* byval align 8 %rhi) #11
-  tail call void @write_xpm_axis(%struct.__sFILE* %out, i8* getelementptr inbounds ([2 x i8]* @.str77, i64 0, i64 0), i32 %n_x, float* %axis_x) #11
-  tail call void @write_xpm_axis(%struct.__sFILE* %out, i8* getelementptr inbounds ([2 x i8]* @.str78, i64 0, i64 0), i32 %n_y, float* %axis_y) #11
-  %6 = load i32* %nlevels, align 4, !tbaa !15
-  tail call void @write_xpm_data3(%struct.__sFILE* %out, i32 %n_x, i32 %n_y, float** %matrix, float %lo, float %mid, float %hi, i32 %6) #11
-  ret void
+if.end:                                           ; preds = %entry, %if.then
+  tail call void @write_xpm_header(%struct._IO_FILE* %out, i8* %title, i8* %legend, i8* %label_x, i8* %label_y, i32 0) #10, !dbg !1011
+  tail call void @write_xpm_map3(%struct._IO_FILE* %out, i32 %n_x, i32 %n_y, i32* %nlevels, float %lo, float %mid, float %hi, <2 x float> %rlo.coerce0, float %rlo.coerce1, <2 x float> %rmid.coerce0, float %rmid.coerce1, %struct.t_rgb* byval align 8 %rhi) #10, !dbg !1012
+  tail call void @write_xpm_axis(%struct._IO_FILE* %out, i8* getelementptr inbounds ([2 x i8]* @.str77, i64 0, i64 0), i32 %n_x, float* %axis_x) #10, !dbg !1013
+  tail call void @write_xpm_axis(%struct._IO_FILE* %out, i8* getelementptr inbounds ([2 x i8]* @.str78, i64 0, i64 0), i32 %n_y, float* %axis_y) #10, !dbg !1014
+  %0 = load i32* %nlevels, align 4, !dbg !1015, !tbaa !507
+  tail call void @write_xpm_data3(%struct._IO_FILE* %out, i32 %n_x, i32 %n_y, float** %matrix, float %lo, float %mid, float %hi, i32 %0) #10, !dbg !1015
+  ret void, !dbg !1016
 }

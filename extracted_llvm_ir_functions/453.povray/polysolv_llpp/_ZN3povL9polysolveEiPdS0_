@@ -1,0 +1,411 @@
+define internal fastcc i32 @_ZN3povL9polysolveEiPdS0_(i32 %order, double* nocapture %Coeffs, double* %roots) #0 {
+entry:
+  %sseq = alloca [16 x %"struct.pov::p"], align 16
+  call void @llvm.dbg.value(metadata !{i32 %order}, i64 0, metadata !211), !dbg !610
+  call void @llvm.dbg.value(metadata !{double* %Coeffs}, i64 0, metadata !212), !dbg !610
+  call void @llvm.dbg.value(metadata !{double* %roots}, i64 0, metadata !213), !dbg !610
+  %0 = bitcast [16 x %"struct.pov::p"]* %sseq to i8*, !dbg !611
+  call void @llvm.lifetime.start(i64 2176, i8* %0) #4, !dbg !611
+  call void @llvm.dbg.declare(metadata !{[16 x %"struct.pov::p"]* %sseq}, metadata !214), !dbg !611
+  call void @llvm.dbg.value(metadata !134, i64 0, metadata !238), !dbg !612
+  %cmp44 = icmp slt i32 %order, 0, !dbg !612
+  br i1 %cmp44, label %for.end, label %for.body.lr.ph, !dbg !612
+
+for.body.lr.ph:                                   ; preds = %entry
+  %1 = load double* %Coeffs, align 8, !dbg !614, !tbaa !422
+  %2 = add i32 %order, 1, !dbg !612
+  br label %for.body, !dbg !612
+
+for.body:                                         ; preds = %for.body.for.body_crit_edge, %for.body.lr.ph
+  %3 = phi double [ %.pre, %for.body.for.body_crit_edge ], [ %1, %for.body.lr.ph ]
+  %indvars.iv48 = phi i64 [ %indvars.iv.next49, %for.body.for.body_crit_edge ], [ 0, %for.body.lr.ph ]
+  %div = fdiv double %3, %1, !dbg !614
+  %4 = trunc i64 %indvars.iv48 to i32, !dbg !614
+  %sub = sub nsw i32 %order, %4, !dbg !614
+  %idxprom2 = sext i32 %sub to i64, !dbg !614
+  %arrayidx4 = getelementptr inbounds [16 x %"struct.pov::p"]* %sseq, i64 0, i64 0, i32 1, i64 %idxprom2, !dbg !614
+  store double %div, double* %arrayidx4, align 8, !dbg !614, !tbaa !422
+  %indvars.iv.next49 = add i64 %indvars.iv48, 1, !dbg !612
+  %lftr.wideiv = trunc i64 %indvars.iv.next49 to i32, !dbg !612
+  %exitcond = icmp eq i32 %lftr.wideiv, %2, !dbg !612
+  br i1 %exitcond, label %for.end, label %for.body.for.body_crit_edge, !dbg !612
+
+for.body.for.body_crit_edge:                      ; preds = %for.body
+  %arrayidx.phi.trans.insert = getelementptr inbounds double* %Coeffs, i64 %indvars.iv.next49
+  %.pre = load double* %arrayidx.phi.trans.insert, align 8, !dbg !614, !tbaa !422
+  br label %for.body, !dbg !612
+
+for.end:                                          ; preds = %for.body, %entry
+  %arrayidx5 = getelementptr inbounds [16 x %"struct.pov::p"]* %sseq, i64 0, i64 0, !dbg !616
+  call void @llvm.dbg.value(metadata !{i32 %order}, i64 0, metadata !617) #4, !dbg !618
+  call void @llvm.dbg.value(metadata !{%"struct.pov::p"* %arrayidx5}, i64 0, metadata !619) #4, !dbg !618
+  %ord1.i = getelementptr inbounds [16 x %"struct.pov::p"]* %sseq, i64 0, i64 0, i32 0, !dbg !620
+  store i32 %order, i32* %ord1.i, align 16, !dbg !620, !tbaa !621
+  %sub.i = add nsw i32 %order, -1, !dbg !622
+  %ord3.i = getelementptr inbounds [16 x %"struct.pov::p"]* %sseq, i64 0, i64 1, i32 0, !dbg !622
+  store i32 %sub.i, i32* %ord3.i, align 8, !dbg !622, !tbaa !621
+  %idxprom.i = sext i32 %order to i64, !dbg !623
+  %arrayidx5.i = getelementptr inbounds [16 x %"struct.pov::p"]* %sseq, i64 0, i64 0, i32 1, i64 %idxprom.i, !dbg !623
+  %5 = load double* %arrayidx5.i, align 8, !dbg !623, !tbaa !422
+  %conv.i = sitofp i32 %order to double, !dbg !623
+  %mul.i = fmul double %conv.i, %5, !dbg !623
+  %call.i = call double @fabs(double %mul.i) #6, !dbg !623
+  call void @llvm.dbg.value(metadata !{double %call.i}, i64 0, metadata !624) #4, !dbg !623
+  call void @llvm.dbg.value(metadata !432, i64 0, metadata !625) #4, !dbg !626
+  %cmp77.i = icmp slt i32 %order, 1, !dbg !626
+  br i1 %cmp77.i, label %for.end.i, label %for.body.lr.ph.i, !dbg !626
+
+for.body.lr.ph.i:                                 ; preds = %for.end
+  %add.ptr.i = getelementptr inbounds [16 x %"struct.pov::p"]* %sseq, i64 0, i64 0, i32 1, i64 1, !dbg !628
+  %arraydecay.i = getelementptr inbounds [16 x %"struct.pov::p"]* %sseq, i64 0, i64 1, i32 1, i64 0, !dbg !629
+  br label %for.body.i, !dbg !626
+
+for.body.i:                                       ; preds = %for.body.i.for.body.i_crit_edge, %for.body.lr.ph.i
+  %fc.080.i = phi double* [ %add.ptr.i, %for.body.lr.ph.i ], [ %incdec.ptr.i, %for.body.i.for.body.i_crit_edge ]
+  %fp.079.i = phi double* [ %arraydecay.i, %for.body.lr.ph.i ], [ %incdec.ptr13.i, %for.body.i.for.body.i_crit_edge ]
+  %i.078.i = phi i32 [ 1, %for.body.lr.ph.i ], [ %inc.i, %for.body.i.for.body.i_crit_edge ]
+  call void @llvm.dbg.value(metadata !{double* %incdec.ptr.i}, i64 0, metadata !630) #4, !dbg !631
+  %6 = load double* %fc.080.i, align 8, !dbg !631, !tbaa !422
+  %conv11.i = sitofp i32 %i.078.i to double, !dbg !631
+  %mul12.i = fmul double %conv11.i, %6, !dbg !631
+  %div.i = fdiv double %mul12.i, %call.i, !dbg !631
+  call void @llvm.dbg.value(metadata !{double* %incdec.ptr13.i}, i64 0, metadata !633) #4, !dbg !631
+  store double %div.i, double* %fp.079.i, align 8, !dbg !631, !tbaa !422
+  call void @llvm.dbg.value(metadata !{i32 %inc.i}, i64 0, metadata !625) #4, !dbg !626
+  %exitcond.i = icmp eq i32 %i.078.i, %order, !dbg !626
+  br i1 %exitcond.i, label %for.end.i, label %for.body.i.for.body.i_crit_edge, !dbg !626
+
+for.body.i.for.body.i_crit_edge:                  ; preds = %for.body.i
+  %inc.i = add nsw i32 %i.078.i, 1, !dbg !626
+  %incdec.ptr13.i = getelementptr inbounds double* %fp.079.i, i64 1, !dbg !631
+  %incdec.ptr.i = getelementptr inbounds double* %fc.080.i, i64 1, !dbg !631
+  br label %for.body.i, !dbg !626
+
+for.end.i:                                        ; preds = %for.body.i, %for.end
+  %add.ptr14.i = getelementptr inbounds [16 x %"struct.pov::p"]* %sseq, i64 0, i64 2, !dbg !634
+  call void @llvm.dbg.value(metadata !{%"struct.pov::p"* %add.ptr14.i}, i64 0, metadata !636) #4, !dbg !634
+  br label %for.cond15.i, !dbg !634
+
+for.cond15.i:                                     ; preds = %for.inc39.i, %for.end.i
+  %sp.0.i = phi %"struct.pov::p"* [ %add.ptr14.i, %for.end.i ], [ %incdec.ptr40.i, %for.inc39.i ]
+  %add.ptr16.i = getelementptr inbounds %"struct.pov::p"* %sp.0.i, i64 -2, !dbg !634
+  call void @llvm.dbg.value(metadata !{%"struct.pov::p"* %add.ptr16.i}, i64 0, metadata !637) #4, !dbg !638
+  call void @llvm.dbg.value(metadata !{%"struct.pov::p"* %sp.0.i}, i64 0, metadata !639) #4, !dbg !638
+  %7 = bitcast %"struct.pov::p"* %sp.0.i to i8*, !dbg !640
+  %8 = bitcast %"struct.pov::p"* %add.ptr16.i to i8*, !dbg !640
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %7, i8* %8, i64 136, i32 8, i1 false) #4, !dbg !640, !tbaa.struct !641
+  %ord.i.i = getelementptr inbounds %"struct.pov::p"* %sp.0.i, i64 -1, i32 0, !dbg !642
+  %9 = load i32* %ord.i.i, align 4, !dbg !642, !tbaa !621
+  %idxprom.i.i = sext i32 %9 to i64, !dbg !642
+  %arrayidx.i.i = getelementptr inbounds %"struct.pov::p"* %sp.0.i, i64 -1, i32 1, i64 %idxprom.i.i, !dbg !642
+  %10 = load double* %arrayidx.i.i, align 8, !dbg !642, !tbaa !422
+  %cmp.i.i = fcmp olt double %10, 0.000000e+00, !dbg !642
+  %ord1.i.i = getelementptr inbounds %"struct.pov::p"* %add.ptr16.i, i64 0, i32 0, !dbg !643
+  %11 = load i32* %ord1.i.i, align 4, !dbg !643, !tbaa !621
+  %sub.i.i = sub i32 %11, %9, !dbg !643
+  br i1 %cmp.i.i, label %if.then.i.i, label %for.cond49.preheader.i.i, !dbg !642
+
+for.cond49.preheader.i.i:                         ; preds = %for.cond15.i
+  %cmp50158.i.i = icmp sgt i32 %sub.i.i, -1, !dbg !646
+  br i1 %cmp50158.i.i, label %for.body51.i.preheader.i, label %if.end.i.i, !dbg !646
+
+for.body51.i.preheader.i:                         ; preds = %for.cond49.preheader.i.i
+  %cmp56155.i.i = icmp sgt i32 %9, 0, !dbg !649
+  %12 = sext i32 %sub.i.i to i64
+  br label %for.body51.i.i, !dbg !649
+
+if.then.i.i:                                      ; preds = %for.cond15.i
+  %cmp4152.i.i = icmp sgt i32 %sub.i.i, 0, !dbg !643
+  br i1 %cmp4152.i.i, label %for.body.lr.ph.i.i, label %for.end.i.i, !dbg !643
+
+for.body.lr.ph.i.i:                               ; preds = %if.then.i.i
+  %sub3.i.i = add nsw i32 %sub.i.i, -1, !dbg !643
+  %13 = xor i32 %9, -1, !dbg !643
+  %14 = add i32 %11, %13, !dbg !643
+  %15 = sext i32 %14 to i64
+  br label %for.body.i.i, !dbg !643
+
+for.body.i.i:                                     ; preds = %for.body.i.i, %for.body.lr.ph.i.i
+  %indvars.iv169.i.i = phi i64 [ %15, %for.body.lr.ph.i.i ], [ %indvars.iv.next170.i.i, %for.body.i.i ]
+  %k.0153.i.i = phi i32 [ %sub3.i.i, %for.body.lr.ph.i.i ], [ %sub12.i.i, %for.body.i.i ]
+  %arrayidx7.i.i = getelementptr inbounds %"struct.pov::p"* %sp.0.i, i64 0, i32 1, i64 %indvars.iv169.i.i, !dbg !652
+  %16 = load double* %arrayidx7.i.i, align 8, !dbg !652, !tbaa !422
+  %sub8.i.i = fsub double -0.000000e+00, %16, !dbg !652
+  store double %sub8.i.i, double* %arrayidx7.i.i, align 8, !dbg !652, !tbaa !422
+  %sub12.i.i = add nsw i32 %k.0153.i.i, -2, !dbg !643
+  call void @llvm.dbg.value(metadata !{i32 %sub12.i.i}, i64 0, metadata !654) #4, !dbg !643
+  %cmp4.i.i = icmp sgt i32 %sub12.i.i, -1, !dbg !643
+  %indvars.iv.next170.i.i = add i64 %indvars.iv169.i.i, -2, !dbg !643
+  br i1 %cmp4.i.i, label %for.body.i.i, label %for.end.i.i, !dbg !643
+
+for.end.i.i:                                      ; preds = %for.body.i.i, %if.then.i.i
+  call void @llvm.dbg.value(metadata !{i32 %sub.i.i}, i64 0, metadata !654) #4, !dbg !655
+  %cmp17149.i.i = icmp sgt i32 %sub.i.i, -1, !dbg !655
+  br i1 %cmp17149.i.i, label %for.body18.i.preheader.i, label %if.end.i.i, !dbg !655
+
+for.body18.i.preheader.i:                         ; preds = %for.end.i.i
+  %cmp22147.i.i = icmp sgt i32 %9, 0, !dbg !657
+  %17 = sext i32 %sub.i.i to i64
+  br label %for.body18.i.i, !dbg !657
+
+for.body18.i.i:                                   ; preds = %for.inc43.i.i, %for.body18.i.preheader.i
+  %indvars.iv90.i = phi i64 [ %17, %for.body18.i.preheader.i ], [ %indvars.iv.next91.i, %for.inc43.i.i ]
+  %indvars.iv164.i.i = phi i32 [ %sub.i.i, %for.body18.i.preheader.i ], [ %indvars.iv.next165.i.i, %for.inc43.i.i ]
+  br i1 %cmp22147.i.i, label %for.body23.lr.ph.i.i, label %for.body18.i.for.inc43.i_crit_edge.i, !dbg !657
+
+for.body18.i.for.inc43.i_crit_edge.i:             ; preds = %for.body18.i.i
+  %.pre93.i = trunc i64 %indvars.iv90.i to i32, !dbg !655
+  br label %for.inc43.i.i, !dbg !657
+
+for.body23.lr.ph.i.i:                             ; preds = %for.body18.i.i
+  %18 = add nsw i64 %indvars.iv90.i, %idxprom.i.i, !dbg !657
+  %arrayidx32.i.i = getelementptr inbounds %"struct.pov::p"* %sp.0.i, i64 0, i32 1, i64 %18, !dbg !660
+  %19 = trunc i64 %indvars.iv90.i to i32, !dbg !660
+  %20 = add i32 %9, %indvars.iv164.i.i, !dbg !657
+  %21 = sext i32 %20 to i64
+  br label %for.body23.i.i, !dbg !657
+
+for.body23.i.i:                                   ; preds = %for.body23.i.i, %for.body23.lr.ph.i.i
+  %indvars.iv46 = phi i64 [ %indvars.iv.next47, %for.body23.i.i ], [ %21, %for.body23.lr.ph.i.i ]
+  %indvars.iv.next47 = add i64 %indvars.iv46, -1, !dbg !657
+  %arrayidx26.i.i = getelementptr inbounds %"struct.pov::p"* %sp.0.i, i64 0, i32 1, i64 %indvars.iv.next47, !dbg !660
+  %22 = load double* %arrayidx26.i.i, align 8, !dbg !660, !tbaa !422
+  %sub27.i.i = fsub double -0.000000e+00, %22, !dbg !660
+  %23 = load double* %arrayidx32.i.i, align 8, !dbg !660, !tbaa !422
+  %24 = trunc i64 %indvars.iv.next47 to i32, !dbg !660
+  %sub33.i.i = sub i64 %indvars.iv.next47, %indvars.iv90.i, !dbg !660
+  %sext51 = shl i64 %sub33.i.i, 32, !dbg !660
+  %idxprom34.i.i = ashr exact i64 %sext51, 32, !dbg !660
+  %arrayidx36.i.i = getelementptr inbounds %"struct.pov::p"* %sp.0.i, i64 -1, i32 1, i64 %idxprom34.i.i, !dbg !660
+  %25 = load double* %arrayidx36.i.i, align 8, !dbg !660, !tbaa !422
+  %mul.i.i = fmul double %23, %25, !dbg !660
+  %sub37.i.i = fsub double %sub27.i.i, %mul.i.i, !dbg !660
+  store double %sub37.i.i, double* %arrayidx26.i.i, align 8, !dbg !660, !tbaa !422
+  %cmp22.i.i = icmp sgt i32 %24, %19, !dbg !657
+  br i1 %cmp22.i.i, label %for.body23.i.i, label %for.inc43.i.i, !dbg !657
+
+for.inc43.i.i:                                    ; preds = %for.body23.i.i, %for.body18.i.for.inc43.i_crit_edge.i
+  %.pre-phi.i = phi i32 [ %.pre93.i, %for.body18.i.for.inc43.i_crit_edge.i ], [ %19, %for.body23.i.i ], !dbg !655
+  %indvars.iv.next165.i.i = add i32 %.pre-phi.i, -1, !dbg !655
+  call void @llvm.dbg.value(metadata !{i32 %indvars.iv.next165.i.i}, i64 0, metadata !654) #4, !dbg !655
+  %cmp17.i.i = icmp sgt i32 %.pre-phi.i, 0, !dbg !655
+  %indvars.iv.next91.i = add i64 %indvars.iv90.i, -1, !dbg !655
+  br i1 %cmp17.i.i, label %for.body18.i.i, label %if.end.i.i, !dbg !655
+
+for.body51.i.i:                                   ; preds = %for.inc75.i.i, %for.body51.i.preheader.i
+  %indvars.iv84.i = phi i64 [ %12, %for.body51.i.preheader.i ], [ %indvars.iv.next85.i, %for.inc75.i.i ]
+  %indvars.iv172.i.i = phi i32 [ %sub.i.i, %for.body51.i.preheader.i ], [ %indvars.iv.next173.i.i, %for.inc75.i.i ]
+  br i1 %cmp56155.i.i, label %for.body57.lr.ph.i.i, label %for.body51.i.for.inc75.i_crit_edge.i, !dbg !649
+
+for.body51.i.for.inc75.i_crit_edge.i:             ; preds = %for.body51.i.i
+  %.pre94.i = trunc i64 %indvars.iv84.i to i32, !dbg !646
+  br label %for.inc75.i.i, !dbg !649
+
+for.body57.lr.ph.i.i:                             ; preds = %for.body51.i.i
+  %26 = add nsw i64 %indvars.iv84.i, %idxprom.i.i, !dbg !649
+  %arrayidx62.i.i = getelementptr inbounds %"struct.pov::p"* %sp.0.i, i64 0, i32 1, i64 %26, !dbg !662
+  %27 = trunc i64 %indvars.iv84.i to i32, !dbg !662
+  %28 = add i32 %9, %indvars.iv172.i.i, !dbg !649
+  %29 = sext i32 %28 to i64
+  br label %for.body57.i.i, !dbg !649
+
+for.body57.i.i:                                   ; preds = %for.body57.i.i, %for.body57.lr.ph.i.i
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body57.i.i ], [ %29, %for.body57.lr.ph.i.i ]
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !649
+  %30 = load double* %arrayidx62.i.i, align 8, !dbg !662, !tbaa !422
+  %31 = trunc i64 %indvars.iv.next to i32, !dbg !662
+  %sub63.i.i = sub i64 %indvars.iv.next, %indvars.iv84.i, !dbg !662
+  %sext50 = shl i64 %sub63.i.i, 32, !dbg !662
+  %idxprom64.i.i = ashr exact i64 %sext50, 32, !dbg !662
+  %arrayidx66.i.i = getelementptr inbounds %"struct.pov::p"* %sp.0.i, i64 -1, i32 1, i64 %idxprom64.i.i, !dbg !662
+  %32 = load double* %arrayidx66.i.i, align 8, !dbg !662, !tbaa !422
+  %mul67.i.i = fmul double %30, %32, !dbg !662
+  %arrayidx70.i.i = getelementptr inbounds %"struct.pov::p"* %sp.0.i, i64 0, i32 1, i64 %indvars.iv.next, !dbg !662
+  %33 = load double* %arrayidx70.i.i, align 8, !dbg !662, !tbaa !422
+  %sub71.i.i = fsub double %33, %mul67.i.i, !dbg !662
+  store double %sub71.i.i, double* %arrayidx70.i.i, align 8, !dbg !662, !tbaa !422
+  %cmp56.i.i = icmp sgt i32 %31, %27, !dbg !649
+  br i1 %cmp56.i.i, label %for.body57.i.i, label %for.inc75.i.i, !dbg !649
+
+for.inc75.i.i:                                    ; preds = %for.body57.i.i, %for.body51.i.for.inc75.i_crit_edge.i
+  %.pre-phi95.i = phi i32 [ %.pre94.i, %for.body51.i.for.inc75.i_crit_edge.i ], [ %27, %for.body57.i.i ], !dbg !646
+  %indvars.iv.next173.i.i = add i32 %.pre-phi95.i, -1, !dbg !646
+  call void @llvm.dbg.value(metadata !{i32 %indvars.iv.next173.i.i}, i64 0, metadata !654) #4, !dbg !646
+  %cmp50.i.i = icmp sgt i32 %.pre-phi95.i, 0, !dbg !646
+  %indvars.iv.next85.i = add i64 %indvars.iv84.i, -1, !dbg !646
+  br i1 %cmp50.i.i, label %for.body51.i.i, label %if.end.i.i, !dbg !646
+
+if.end.i.i:                                       ; preds = %for.inc43.i.i, %for.inc75.i.i, %for.end.i.i, %for.cond49.preheader.i.i
+  %k.3143.i.i = add nsw i32 %9, -1, !dbg !664
+  %cmp80144.i.i = icmp sgt i32 %9, 0, !dbg !665
+  br i1 %cmp80144.i.i, label %land.rhs.i.i, label %_ZN3povL4modpEPNS_1pES1_S1_.exit.i, !dbg !665
+
+land.rhs.i.i:                                     ; preds = %if.end.i.i, %while.body.i.i
+  %indvars.iv.in.i.i = phi i64 [ %indvars.iv.i.i, %while.body.i.i ], [ %idxprom.i.i, %if.end.i.i ]
+  %k.3145.i.i = phi i32 [ %k.3.i.i, %while.body.i.i ], [ %k.3143.i.i, %if.end.i.i ]
+  %indvars.iv.i.i = add i64 %indvars.iv.in.i.i, -1, !dbg !665
+  %arrayidx83.i.i = getelementptr inbounds %"struct.pov::p"* %sp.0.i, i64 0, i32 1, i64 %indvars.iv.i.i, !dbg !665
+  %34 = load double* %arrayidx83.i.i, align 8, !dbg !665, !tbaa !422
+  %call.i.i = call double @fabs(double %34) #6, !dbg !665
+  %cmp84.i.i = fcmp olt double %call.i.i, 1.000000e-10, !dbg !665
+  br i1 %cmp84.i.i, label %while.body.i.i, label %_ZN3povL4modpEPNS_1pES1_S1_.exit.i
+
+while.body.i.i:                                   ; preds = %land.rhs.i.i
+  store double 0.000000e+00, double* %arrayidx83.i.i, align 8, !dbg !666, !tbaa !422
+  %k.3.i.i = add nsw i32 %k.3145.i.i, -1, !dbg !664
+  %35 = trunc i64 %indvars.iv.i.i to i32, !dbg !665
+  %cmp80.i.i = icmp sgt i32 %35, 0, !dbg !665
+  br i1 %cmp80.i.i, label %land.rhs.i.i, label %_ZN3povL4modpEPNS_1pES1_S1_.exit.i, !dbg !665
+
+_ZN3povL4modpEPNS_1pES1_S1_.exit.i:               ; preds = %while.body.i.i, %land.rhs.i.i, %if.end.i.i
+  %k.3.lcssa.i.i = phi i32 [ %k.3143.i.i, %if.end.i.i ], [ %k.3.i.i, %while.body.i.i ], [ %k.3145.i.i, %land.rhs.i.i ]
+  %cmp89.i.i = icmp slt i32 %k.3.lcssa.i.i, 0, !dbg !668
+  %cond.i.i = select i1 %cmp89.i.i, i32 0, i32 %k.3.lcssa.i.i, !dbg !668
+  %ord90.i.i = getelementptr inbounds %"struct.pov::p"* %sp.0.i, i64 0, i32 0, !dbg !668
+  store i32 %cond.i.i, i32* %ord90.i.i, align 4, !dbg !668, !tbaa !621
+  %tobool.i = icmp eq i32 %cond.i.i, 0, !dbg !634
+  br i1 %tobool.i, label %_ZN3povL10buildsturmEiPNS_1pE.exit, label %for.body34.lr.ph.i, !dbg !634
+
+for.body34.lr.ph.i:                               ; preds = %_ZN3povL4modpEPNS_1pES1_S1_.exit.i
+  %idxprom21.i = sext i32 %cond.i.i to i64, !dbg !669
+  %arrayidx23.i = getelementptr inbounds %"struct.pov::p"* %sp.0.i, i64 0, i32 1, i64 %idxprom21.i, !dbg !669
+  %36 = load double* %arrayidx23.i, align 8, !dbg !669, !tbaa !422
+  %call24.i = call double @fabs(double %36) #6, !dbg !669
+  %sub25.i = fsub double -0.000000e+00, %call24.i, !dbg !669
+  call void @llvm.dbg.value(metadata !{double %sub25.i}, i64 0, metadata !624) #4, !dbg !669
+  call void @llvm.dbg.value(metadata !{double* %arrayidx23.i}, i64 0, metadata !633) #4, !dbg !671
+  %arraydecay32.i = getelementptr inbounds %"struct.pov::p"* %sp.0.i, i64 0, i32 1, i64 0, !dbg !671
+  %div35.i40 = fdiv double %36, %sub25.i, !dbg !673
+  store double %div35.i40, double* %arrayidx23.i, align 8, !dbg !673, !tbaa !422
+  %arrayidx23.i.sum = add i64 %idxprom21.i, -1, !dbg !671
+  call void @llvm.dbg.value(metadata !{double* %incdec.ptr37.i41}, i64 0, metadata !633) #4, !dbg !671
+  %cmp33.i42 = icmp slt i64 %arrayidx23.i.sum, 0, !dbg !671
+  br i1 %cmp33.i42, label %for.inc39.i, label %for.body34.for.body34_crit_edge.i.lr.ph, !dbg !671
+
+for.body34.for.body34_crit_edge.i.lr.ph:          ; preds = %for.body34.lr.ph.i
+  %incdec.ptr37.i41 = getelementptr inbounds %"struct.pov::p"* %sp.0.i, i64 0, i32 1, i64 %arrayidx23.i.sum, !dbg !671
+  br label %for.body34.for.body34_crit_edge.i, !dbg !671
+
+for.body34.for.body34_crit_edge.i:                ; preds = %for.body34.for.body34_crit_edge.i.lr.ph, %for.body34.for.body34_crit_edge.i
+  %incdec.ptr37.i43 = phi double* [ %incdec.ptr37.i41, %for.body34.for.body34_crit_edge.i.lr.ph ], [ %incdec.ptr37.i, %for.body34.for.body34_crit_edge.i ]
+  %.pre.i = load double* %incdec.ptr37.i43, align 8, !dbg !673, !tbaa !422
+  %div35.i = fdiv double %.pre.i, %sub25.i, !dbg !673
+  store double %div35.i, double* %incdec.ptr37.i43, align 8, !dbg !673, !tbaa !422
+  %incdec.ptr37.i = getelementptr inbounds double* %incdec.ptr37.i43, i64 -1, !dbg !671
+  call void @llvm.dbg.value(metadata !{double* %incdec.ptr37.i43}, i64 0, metadata !633) #4, !dbg !671
+  %cmp33.i = icmp ult double* %incdec.ptr37.i, %arraydecay32.i, !dbg !671
+  br i1 %cmp33.i, label %for.inc39.i, label %for.body34.for.body34_crit_edge.i, !dbg !671
+
+for.inc39.i:                                      ; preds = %for.body34.for.body34_crit_edge.i, %for.body34.lr.ph.i
+  %incdec.ptr40.i = getelementptr inbounds %"struct.pov::p"* %sp.0.i, i64 1, !dbg !634
+  call void @llvm.dbg.value(metadata !{%"struct.pov::p"* %incdec.ptr40.i}, i64 0, metadata !636) #4, !dbg !634
+  br label %for.cond15.i, !dbg !634
+
+_ZN3povL10buildsturmEiPNS_1pE.exit:               ; preds = %_ZN3povL4modpEPNS_1pES1_S1_.exit.i
+  %arrayidx43.i = getelementptr inbounds %"struct.pov::p"* %sp.0.i, i64 0, i32 1, i64 0, !dbg !675
+  %37 = load double* %arrayidx43.i, align 8, !dbg !675, !tbaa !422
+  %sub44.i = fsub double -0.000000e+00, %37, !dbg !675
+  store double %sub44.i, double* %arrayidx43.i, align 8, !dbg !675, !tbaa !422
+  %sub.ptr.lhs.cast.i = ptrtoint %"struct.pov::p"* %sp.0.i to i64, !dbg !676
+  %sub.ptr.rhs.cast.i = ptrtoint [16 x %"struct.pov::p"]* %sseq to i64, !dbg !676
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !676
+  %sub.ptr.div.i = sdiv exact i64 %sub.ptr.sub.i, 136, !dbg !676
+  %conv47.i = trunc i64 %sub.ptr.div.i to i32, !dbg !676
+  call void @llvm.dbg.value(metadata !{i32 %conv47.i}, i64 0, metadata !240), !dbg !616
+  tail call void @llvm.dbg.value(metadata !{i32 %conv47.i}, i64 0, metadata !677), !dbg !679
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::p"* %arrayidx5}, i64 0, metadata !680), !dbg !679
+  tail call void @llvm.dbg.value(metadata !134, i64 0, metadata !681), !dbg !682
+  tail call void @llvm.dbg.value(metadata !134, i64 0, metadata !683), !dbg !682
+  %add.ptr.i29 = getelementptr inbounds [16 x %"struct.pov::p"]* %sseq, i64 0, i64 1, !dbg !684
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::p"* %add.ptr.i29}, i64 0, metadata !686), !dbg !684
+  %sext = shl i64 %sub.ptr.div.i, 32, !dbg !684
+  %idx.ext.i = ashr exact i64 %sext, 32, !dbg !684
+  %add.ptr3.i = getelementptr inbounds [16 x %"struct.pov::p"]* %sseq, i64 0, i64 %idx.ext.i, !dbg !684
+  %cmp59.i = icmp slt i32 %conv47.i, 1, !dbg !684
+  br i1 %cmp59.i, label %cleanup, label %for.body.lr.ph.i31, !dbg !684
+
+for.body.lr.ph.i31:                               ; preds = %_ZN3povL10buildsturmEiPNS_1pE.exit
+  %38 = load i32* %ord1.i, align 16, !dbg !687, !tbaa !621
+  %idxprom.i30 = sext i32 %38 to i64, !dbg !687
+  %arrayidx2.i = getelementptr inbounds [16 x %"struct.pov::p"]* %sseq, i64 0, i64 0, i32 1, i64 %idxprom.i30, !dbg !687
+  %39 = load double* %arrayidx2.i, align 8, !dbg !687, !tbaa !422
+  br label %for.body.i35, !dbg !684
+
+for.body.i35:                                     ; preds = %for.body.i35, %for.body.lr.ph.i31
+  %lf.062.i = phi double [ %39, %for.body.lr.ph.i31 ], [ %41, %for.body.i35 ]
+  %s.061.i = phi %"struct.pov::p"* [ %add.ptr.i29, %for.body.lr.ph.i31 ], [ %incdec.ptr.i34, %for.body.i35 ]
+  %atposinf.060.i = phi i32 [ 0, %for.body.lr.ph.i31 ], [ %atposinf.1.i, %for.body.i35 ]
+  %ord4.i = getelementptr inbounds %"struct.pov::p"* %s.061.i, i64 0, i32 0, !dbg !688
+  %40 = load i32* %ord4.i, align 4, !dbg !688, !tbaa !621
+  %idxprom5.i = sext i32 %40 to i64, !dbg !688
+  %arrayidx7.i = getelementptr inbounds %"struct.pov::p"* %s.061.i, i64 0, i32 1, i64 %idxprom5.i, !dbg !688
+  %41 = load double* %arrayidx7.i, align 8, !dbg !688, !tbaa !422
+  tail call void @llvm.dbg.value(metadata !{double %41}, i64 0, metadata !690), !dbg !688
+  %cmp8.i = fcmp oeq double %lf.062.i, 0.000000e+00, !dbg !691
+  %mul.i32 = fmul double %lf.062.i, %41, !dbg !691
+  %cmp9.i = fcmp olt double %mul.i32, 0.000000e+00, !dbg !691
+  %or.cond.i = or i1 %cmp8.i, %cmp9.i, !dbg !691
+  %inc.i33 = zext i1 %or.cond.i to i32, !dbg !691
+  %atposinf.1.i = add nsw i32 %inc.i33, %atposinf.060.i, !dbg !691
+  tail call void @llvm.dbg.value(metadata !{double %41}, i64 0, metadata !692), !dbg !693
+  %incdec.ptr.i34 = getelementptr inbounds %"struct.pov::p"* %s.061.i, i64 1, !dbg !684
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::p"* %incdec.ptr.i34}, i64 0, metadata !686), !dbg !684
+  %cmp.i = icmp ugt %"struct.pov::p"* %incdec.ptr.i34, %add.ptr3.i, !dbg !684
+  br i1 %cmp.i, label %for.body18.lr.ph.i, label %for.body.i35, !dbg !684
+
+for.body18.lr.ph.i:                               ; preds = %for.body.i35
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::p"* %add.ptr.i29}, i64 0, metadata !686), !dbg !694
+  %arrayidx12.i = getelementptr inbounds [16 x %"struct.pov::p"]* %sseq, i64 0, i64 0, i32 1, i64 0, !dbg !696
+  %42 = load double* %arrayidx12.i, align 8, !dbg !696, !tbaa !422
+  br label %for.body18.i, !dbg !694
+
+for.body18.i:                                     ; preds = %for.body18.i, %for.body18.lr.ph.i
+  %lf.158.i = phi double [ %42, %for.body18.lr.ph.i ], [ %43, %for.body18.i ]
+  %s.157.i = phi %"struct.pov::p"* [ %add.ptr.i29, %for.body18.lr.ph.i ], [ %incdec.ptr29.i, %for.body18.i ]
+  %atzero.056.i = phi i32 [ 0, %for.body18.lr.ph.i ], [ %atzero.1.i, %for.body18.i ]
+  %arrayidx20.i = getelementptr inbounds %"struct.pov::p"* %s.157.i, i64 0, i32 1, i64 0, !dbg !697
+  %43 = load double* %arrayidx20.i, align 8, !dbg !697, !tbaa !422
+  tail call void @llvm.dbg.value(metadata !{double %43}, i64 0, metadata !690), !dbg !697
+  %cmp21.i = fcmp oeq double %lf.158.i, 0.000000e+00, !dbg !699
+  %mul23.i = fmul double %lf.158.i, %43, !dbg !699
+  %cmp24.i = fcmp olt double %mul23.i, 0.000000e+00, !dbg !699
+  %or.cond54.i = or i1 %cmp21.i, %cmp24.i, !dbg !699
+  %inc26.i = zext i1 %or.cond54.i to i32, !dbg !699
+  %atzero.1.i = add nsw i32 %inc26.i, %atzero.056.i, !dbg !699
+  tail call void @llvm.dbg.value(metadata !{double %43}, i64 0, metadata !692), !dbg !700
+  %incdec.ptr29.i = getelementptr inbounds %"struct.pov::p"* %s.157.i, i64 1, !dbg !694
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::p"* %incdec.ptr29.i}, i64 0, metadata !686), !dbg !694
+  %cmp17.i = icmp ugt %"struct.pov::p"* %incdec.ptr29.i, %add.ptr3.i, !dbg !694
+  br i1 %cmp17.i, label %_ZN3povL13visible_rootsEiPNS_1pEPiS2_.exit, label %for.body18.i, !dbg !694
+
+_ZN3povL13visible_rootsEiPNS_1pEPiS2_.exit:       ; preds = %for.body18.i
+  call void @llvm.dbg.value(metadata !{i32 %atzero.1.i}, i64 0, metadata !241), !dbg !701
+  call void @llvm.dbg.value(metadata !{i32 %atzero.1.i}, i64 0, metadata !702), !dbg !679
+  call void @llvm.dbg.value(metadata !{i32 %atzero.1.i}, i64 0, metadata !241), !dbg !703
+  call void @llvm.dbg.value(metadata !{i32 %atposinf.1.i}, i64 0, metadata !242), !dbg !704
+  call void @llvm.dbg.value(metadata !{i32 %atposinf.1.i}, i64 0, metadata !705), !dbg !679
+  %cmp7 = icmp eq i32 %atzero.1.i, %atposinf.1.i, !dbg !678
+  br i1 %cmp7, label %cleanup, label %if.end, !dbg !678
+
+if.end:                                           ; preds = %_ZN3povL13visible_rootsEiPNS_1pEPiS2_.exit
+  call void @llvm.dbg.value(metadata !706, i64 0, metadata !236), !dbg !707
+  call void @llvm.dbg.value(metadata !708, i64 0, metadata !237), !dbg !709
+  %call9 = call fastcc i32 @_ZN3povL10numchangesEiPNS_1pEd(i32 %conv47.i, %"struct.pov::p"* %arrayidx5, double 0.000000e+00) #7, !dbg !710
+  call void @llvm.dbg.value(metadata !{i32 %call9}, i64 0, metadata !241), !dbg !710
+  call void @llvm.dbg.value(metadata !{i32 %call9}, i64 0, metadata !702), !dbg !679
+  call void @llvm.dbg.value(metadata !{i32 %call9}, i64 0, metadata !241), !dbg !703
+  %call11 = call fastcc i32 @_ZN3povL10numchangesEiPNS_1pEd(i32 %conv47.i, %"struct.pov::p"* %arrayidx5, double 1.000000e+07) #7, !dbg !711
+  call void @llvm.dbg.value(metadata !{i32 %call11}, i64 0, metadata !242), !dbg !711
+  call void @llvm.dbg.value(metadata !{i32 %call11}, i64 0, metadata !705), !dbg !679
+  %cmp13 = icmp eq i32 %call9, %call11, !dbg !712
+  br i1 %cmp13, label %cleanup, label %if.end15, !dbg !712
+
+if.end15:                                         ; preds = %if.end
+  %call17 = call fastcc i32 @_ZN3povL7sbisectEiPNS_1pEddiiPd(i32 %conv47.i, %"struct.pov::p"* %arrayidx5, double 0.000000e+00, double 1.000000e+07, i32 %call9, i32 %call11, double* %roots) #7, !dbg !713
+  br label %cleanup, !dbg !713
+
+cleanup:                                          ; preds = %_ZN3povL10buildsturmEiPNS_1pE.exit, %if.end, %_ZN3povL13visible_rootsEiPNS_1pEPiS2_.exit, %if.end15
+  %retval.0 = phi i32 [ %call17, %if.end15 ], [ 0, %_ZN3povL13visible_rootsEiPNS_1pEPiS2_.exit ], [ 0, %if.end ], [ 0, %_ZN3povL10buildsturmEiPNS_1pE.exit ]
+  call void @llvm.lifetime.end(i64 2176, i8* %0) #4, !dbg !714
+  ret i32 %retval.0, !dbg !714
+}

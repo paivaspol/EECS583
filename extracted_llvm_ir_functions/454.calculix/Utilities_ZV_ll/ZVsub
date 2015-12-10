@@ -1,43 +1,47 @@
 define void @ZVsub(i32 %size, double* %y, double* %x) #0 {
 entry:
-  %cmp = icmp slt i32 %size, 0
-  %cmp1 = icmp eq double* %y, null
-  %or.cond = or i1 %cmp, %cmp1
-  %cmp3 = icmp eq double* %x, null
-  %or.cond28 = or i1 %or.cond, %cmp3
-  br i1 %or.cond28, label %if.then, label %for.cond.preheader
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !254), !dbg !1133
+  tail call void @llvm.dbg.value(metadata !{double* %y}, i64 0, metadata !255), !dbg !1134
+  tail call void @llvm.dbg.value(metadata !{double* %x}, i64 0, metadata !256), !dbg !1135
+  %cmp = icmp slt i32 %size, 0, !dbg !1136
+  %cmp1 = icmp eq double* %y, null, !dbg !1136
+  %or.cond = or i1 %cmp, %cmp1, !dbg !1136
+  %cmp3 = icmp eq double* %x, null, !dbg !1136
+  %or.cond28 = or i1 %or.cond, %cmp3, !dbg !1136
+  br i1 %or.cond28, label %if.then, label %for.cond.preheader, !dbg !1136
 
 for.cond.preheader:                               ; preds = %entry
-  %cmp429 = icmp sgt i32 %size, 0
-  br i1 %cmp429, label %for.body, label %for.end
+  %cmp429 = icmp sgt i32 %size, 0, !dbg !1137
+  br i1 %cmp429, label %for.body, label %for.end, !dbg !1137
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([45 x i8]* @.str14, i64 0, i64 0), i32 %size, double* %y, double* %x) #5
-  tail call void @exit(i32 -1) #7
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !1139, !tbaa !925
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([45 x i8]* @.str14, i64 0, i64 0), i32 %size, double* %y, double* %x) #6, !dbg !1139
+  tail call void @exit(i32 -1) #8, !dbg !1141
+  unreachable, !dbg !1141
 
 for.body:                                         ; preds = %for.cond.preheader, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
   %ii.030 = phi i32 [ %inc, %for.body ], [ 0, %for.cond.preheader ]
-  %arrayidx = getelementptr inbounds double* %x, i64 %indvars.iv
-  %1 = load double* %arrayidx, align 8, !tbaa !0
-  %arrayidx6 = getelementptr inbounds double* %y, i64 %indvars.iv
-  %2 = load double* %arrayidx6, align 8, !tbaa !0
-  %sub = fsub double %2, %1
-  store double %sub, double* %arrayidx6, align 8, !tbaa !0
-  %3 = or i64 %indvars.iv, 1
-  %arrayidx8 = getelementptr inbounds double* %x, i64 %3
-  %4 = load double* %arrayidx8, align 8, !tbaa !0
-  %arrayidx11 = getelementptr inbounds double* %y, i64 %3
-  %5 = load double* %arrayidx11, align 8, !tbaa !0
-  %sub12 = fsub double %5, %4
-  store double %sub12, double* %arrayidx11, align 8, !tbaa !0
-  %inc = add nsw i32 %ii.030, 1
-  %indvars.iv.next = add i64 %indvars.iv, 2
-  %exitcond = icmp eq i32 %inc, %size
-  br i1 %exitcond, label %for.end, label %for.body
+  %arrayidx = getelementptr inbounds double* %x, i64 %indvars.iv, !dbg !1142
+  %1 = load double* %arrayidx, align 8, !dbg !1142, !tbaa !861
+  %arrayidx6 = getelementptr inbounds double* %y, i64 %indvars.iv, !dbg !1142
+  %2 = load double* %arrayidx6, align 8, !dbg !1142, !tbaa !861
+  %sub = fsub double %2, %1, !dbg !1142
+  store double %sub, double* %arrayidx6, align 8, !dbg !1142, !tbaa !861
+  %3 = or i64 %indvars.iv, 1, !dbg !1144
+  %arrayidx8 = getelementptr inbounds double* %x, i64 %3, !dbg !1144
+  %4 = load double* %arrayidx8, align 8, !dbg !1144, !tbaa !861
+  %arrayidx11 = getelementptr inbounds double* %y, i64 %3, !dbg !1144
+  %5 = load double* %arrayidx11, align 8, !dbg !1144, !tbaa !861
+  %sub12 = fsub double %5, %4, !dbg !1144
+  store double %sub12, double* %arrayidx11, align 8, !dbg !1144, !tbaa !861
+  %inc = add nsw i32 %ii.030, 1, !dbg !1137
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !257), !dbg !1137
+  %indvars.iv.next = add i64 %indvars.iv, 2, !dbg !1137
+  %exitcond = icmp eq i32 %inc, %size, !dbg !1137
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !1137
 
 for.end:                                          ; preds = %for.body, %for.cond.preheader
-  ret void
+  ret void, !dbg !1145
 }

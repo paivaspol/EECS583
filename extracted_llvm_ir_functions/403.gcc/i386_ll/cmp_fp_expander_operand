@@ -1,26 +1,28 @@
 define i32 @cmp_fp_expander_operand(%struct.rtx_def* %op, i32 %mode) #1 {
 entry:
-  %cmp = icmp eq i32 %mode, 0
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op}, i64 0, metadata !2408), !dbg !6336
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !2409), !dbg !6337
+  %cmp = icmp eq i32 %mode, 0, !dbg !6338
   %.phi.trans.insert = bitcast %struct.rtx_def* %op to i32*
-  %bf.load2.pre = load i32* %.phi.trans.insert, align 8
-  br i1 %cmp, label %if.end, label %land.lhs.true
+  %bf.load2.pre = load i32* %.phi.trans.insert, align 8, !dbg !6339
+  br i1 %cmp, label %if.end, label %land.lhs.true, !dbg !6338
 
 land.lhs.true:                                    ; preds = %entry
-  %bf.lshr = lshr i32 %bf.load2.pre, 16
-  %bf.clear = and i32 %bf.lshr, 255
-  %cmp1 = icmp eq i32 %bf.clear, %mode
-  br i1 %cmp1, label %if.end, label %return
+  %bf.lshr = lshr i32 %bf.load2.pre, 16, !dbg !6338
+  %bf.clear = and i32 %bf.lshr, 255, !dbg !6338
+  %cmp1 = icmp eq i32 %bf.clear, %mode, !dbg !6338
+  br i1 %cmp1, label %if.end, label %return, !dbg !6338
 
 if.end:                                           ; preds = %entry, %land.lhs.true
-  %bf.clear3 = and i32 %bf.load2.pre, 65535
-  %cmp4 = icmp eq i32 %bf.clear3, 55
-  br i1 %cmp4, label %return, label %if.end6
+  %bf.clear3 = and i32 %bf.load2.pre, 65535, !dbg !6339
+  %cmp4 = icmp eq i32 %bf.clear3, 55, !dbg !6339
+  br i1 %cmp4, label %return, label %if.end6, !dbg !6339
 
 if.end6:                                          ; preds = %if.end
-  %call = tail call i32 @general_operand(%struct.rtx_def* %op, i32 %mode) #9
-  br label %return
+  %call = tail call i32 @general_operand(%struct.rtx_def* %op, i32 %mode) #10, !dbg !6340
+  br label %return, !dbg !6340
 
 return:                                           ; preds = %if.end, %land.lhs.true, %if.end6
   %retval.0 = phi i32 [ %call, %if.end6 ], [ 0, %land.lhs.true ], [ 1, %if.end ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !6341
 }

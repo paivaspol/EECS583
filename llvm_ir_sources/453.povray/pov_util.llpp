@@ -1,0 +1,747 @@
+; ModuleID = '../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
+
+%"struct.pov_base::POV_File_Extensions" = type { [4 x i8*] }
+%"struct.pov::OPTIONS_STRUCT" = type { i32, i8, i8, i8, i32, i32, [1024 x i8], [1024 x i8], [1024 x i8], [1024 x i8], [1024 x i8], float, float, i32, i32, double, double, i32, [25 x i8*], i32, i32, i32, double, double, i32, i32, double, double, i32, i8, i64, i32, i32, i32, %"struct.pov::FRAMESEQ", double, i64, double, double, double, double, double, i64, i32, i64, i32, i32, i32, i32, i32, i32, double, double, double, i32, i32, i8*, i8*, i32, i8, double, double, i32, i32, i8, i32, i32, [1024 x i8], [6 x %"struct.pov::shelldata"], [1024 x i8], [1024 x i8], i32, i32, i64, i32, i32, i32, %struct.POVMSData }
+%"struct.pov::FRAMESEQ" = type { i32, double, i32, i32, double, i32, i32, double, i32, double, i32, double, i8, i8 }
+%"struct.pov::shelldata" = type { i32, i32, [250 x i8] }
+%struct.POVMSData = type { i32, i32, %union.anon }
+%union.anon = type { i8* }
+%struct.__va_list_tag = type { i32, i32, i8*, i8* }
+%"class.pov_base::IStream" = type { %"class.pov_base::IOBase" }
+%"class.pov_base::IOBase" = type { i32 (...)**, i8, %struct._IO_FILE*, i32, i32, i8* }
+%struct._IO_FILE = type { i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, %struct._IO_marker*, %struct._IO_FILE*, i32, i32, i64, i16, i8, [1 x i8], i8*, i64, i8*, i8*, i8*, i8*, i64, i32, [20 x i8] }
+%struct._IO_marker = type { %struct._IO_marker*, %struct._IO_FILE*, i32 }
+%"class.pov_base::OStream" = type { %"class.pov_base::IOBase" }
+
+@_ZN8pov_base20gPOV_File_ExtensionsE = external global [0 x %"struct.pov_base::POV_File_Extensions"]
+@_ZN3pov4optsE = external global %"struct.pov::OPTIONS_STRUCT"
+@.str = private unnamed_addr constant [27 x i8] c"Could not find file '%s%s'\00", align 1
+@.str1 = private unnamed_addr constant [25 x i8] c"Could not find file '%s'\00", align 1
+
+; Function Attrs: nounwind optsize uwtable
+define void @_ZN3pov18POV_Std_Split_TimeEdPjS0_Pd(double %time_dif, i32* nocapture %hrs, i32* nocapture %mins, double* nocapture %secs) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{double %time_dif}, i64 0, metadata !40), !dbg !210
+  tail call void @llvm.dbg.value(metadata !{i32* %hrs}, i64 0, metadata !42), !dbg !210
+  tail call void @llvm.dbg.value(metadata !{i32* %mins}, i64 0, metadata !43), !dbg !210
+  tail call void @llvm.dbg.value(metadata !{double* %secs}, i64 0, metadata !44), !dbg !210
+  %mul = fmul double %time_dif, 1.000000e+01, !dbg !211
+  %conv = fptosi double %mul to i32, !dbg !211
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !45), !dbg !211
+  %div = sdiv i32 %conv, 36000, !dbg !212
+  store i32 %div, i32* %hrs, align 4, !dbg !212, !tbaa !213
+  %div1 = sdiv i32 %conv, 600, !dbg !216
+  %rem = srem i32 %div1, 60, !dbg !216
+  store i32 %rem, i32* %mins, align 4, !dbg !216, !tbaa !213
+  %rem2 = srem i32 %conv, 600, !dbg !217
+  %conv3 = sitofp i32 %rem2 to double, !dbg !217
+  %div4 = fdiv double %conv3, 1.000000e+01, !dbg !217
+  store double %div4, double* %secs, align 8, !dbg !217, !tbaa !218
+  ret void, !dbg !219
+}
+
+; Function Attrs: nounwind readnone
+declare void @llvm.dbg.declare(metadata, metadata) #1
+
+; Function Attrs: nounwind optsize readnone uwtable
+define i32 @_ZN3pov18closest_power_of_2Ej(i32 %theNumber) #2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %theNumber}, i64 0, metadata !51), !dbg !220
+  %cmp = icmp eq i32 %theNumber, 0, !dbg !221
+  br i1 %cmp, label %return, label %while.cond.preheader, !dbg !221
+
+while.cond.preheader:                             ; preds = %entry
+  %cmp14 = icmp ugt i32 %theNumber, 1, !dbg !222
+  br i1 %cmp14, label %while.body, label %return, !dbg !222
+
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %PowerOf2Counter.06 = phi i32 [ %shl, %while.body ], [ 1, %while.cond.preheader ]
+  %theNumber.addr.05 = phi i32 [ %shr, %while.body ], [ %theNumber, %while.cond.preheader ]
+  %shl = shl i32 %PowerOf2Counter.06, 1, !dbg !223
+  tail call void @llvm.dbg.value(metadata !{i32 %shl}, i64 0, metadata !52), !dbg !223
+  %shr = lshr i32 %theNumber.addr.05, 1, !dbg !225
+  tail call void @llvm.dbg.value(metadata !{i32 %shr}, i64 0, metadata !51), !dbg !225
+  %cmp1 = icmp ugt i32 %theNumber.addr.05, 3, !dbg !222
+  br i1 %cmp1, label %while.body, label %return, !dbg !222
+
+return:                                           ; preds = %while.cond.preheader, %while.body, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ 1, %while.cond.preheader ], [ %shl, %while.body ]
+  ret i32 %retval.0, !dbg !226
+}
+
+; Function Attrs: optsize uwtable
+define i32 @_ZN3pov25POVMSUtil_SetFormatStringEP9POVMSDatajPKcz(%struct.POVMSData* %object, i32 %key, i8* nocapture %format, ...) #3 {
+entry:
+  %marker = alloca [1 x %struct.__va_list_tag], align 16
+  %buffer = alloca [1024 x i8], align 16
+  call void @llvm.dbg.value(metadata !{%struct.POVMSData* %object}, i64 0, metadata !81), !dbg !227
+  call void @llvm.dbg.value(metadata !{i32 %key}, i64 0, metadata !82), !dbg !227
+  call void @llvm.dbg.value(metadata !{i8* %format}, i64 0, metadata !83), !dbg !227
+  call void @llvm.dbg.declare(metadata !{[1 x %struct.__va_list_tag]* %marker}, metadata !84), !dbg !228
+  %0 = getelementptr inbounds [1024 x i8]* %buffer, i64 0, i64 0, !dbg !229
+  call void @llvm.lifetime.start(i64 1024, i8* %0) #4, !dbg !229
+  call void @llvm.dbg.declare(metadata !{[1024 x i8]* %buffer}, metadata !103), !dbg !229
+  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %marker, i64 0, i64 0, !dbg !230
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %marker to i8*, !dbg !230
+  call void @llvm.va_start(i8* %arraydecay1), !dbg !230
+  %call = call i32 @vsprintf(i8* %0, i8* %format, %struct.__va_list_tag* %arraydecay) #8, !dbg !231
+  call void @llvm.va_end(i8* %arraydecay1), !dbg !232
+  %call7 = call i32 @_Z19POVMSUtil_SetStringP9POVMSDatajPKc(%struct.POVMSData* %object, i32 %key, i8* %0) #9, !dbg !233
+  call void @llvm.lifetime.end(i64 1024, i8* %0) #4, !dbg !234
+  ret i32 %call7, !dbg !234
+}
+
+; Function Attrs: nounwind
+declare void @llvm.lifetime.start(i64, i8* nocapture) #4
+
+; Function Attrs: nounwind
+declare void @llvm.va_start(i8*) #4
+
+; Function Attrs: nounwind optsize
+declare i32 @vsprintf(i8* nocapture, i8* nocapture, %struct.__va_list_tag*) #5
+
+; Function Attrs: nounwind
+declare void @llvm.va_end(i8*) #4
+
+; Function Attrs: optsize
+declare i32 @_Z19POVMSUtil_SetStringP9POVMSDatajPKc(%struct.POVMSData*, i32, i8*) #6
+
+; Function Attrs: nounwind
+declare void @llvm.lifetime.end(i64, i8* nocapture) #4
+
+; Function Attrs: optsize uwtable
+define %"class.pov_base::IStream"* @_ZN3pov19New_Checked_IStreamEPcj(i8* %filename, i32 %stype) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %filename}, i64 0, metadata !114), !dbg !235
+  tail call void @llvm.dbg.value(metadata !{i32 %stype}, i64 0, metadata !115), !dbg !235
+  %call = tail call %"class.pov_base::IStream"* @_ZN8pov_base11New_IStreamEPKcj(i8* %filename, i32 %stype) #9, !dbg !236
+  ret %"class.pov_base::IStream"* %call, !dbg !236
+}
+
+; Function Attrs: optsize
+declare %"class.pov_base::IStream"* @_ZN8pov_base11New_IStreamEPKcj(i8*, i32) #6
+
+; Function Attrs: optsize uwtable
+define %"class.pov_base::OStream"* @_ZN3pov19New_Checked_OStreamEPcjb(i8* %filename, i32 %stype, i1 zeroext %append) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %filename}, i64 0, metadata !123), !dbg !237
+  tail call void @llvm.dbg.value(metadata !{i32 %stype}, i64 0, metadata !124), !dbg !237
+  tail call void @llvm.dbg.value(metadata !{i1 %append}, i64 0, metadata !125), !dbg !237
+  %call = tail call %"class.pov_base::OStream"* @_ZN8pov_base11New_OStreamEPKcjb(i8* %filename, i32 %stype, i1 zeroext %append) #9, !dbg !238
+  ret %"class.pov_base::OStream"* %call, !dbg !238
+}
+
+; Function Attrs: optsize
+declare %"class.pov_base::OStream"* @_ZN8pov_base11New_OStreamEPKcjb(i8*, i32, i1 zeroext) #6
+
+; Function Attrs: optsize uwtable
+define %"class.pov_base::IStream"* @_ZN3pov11Locate_FileEPcjS0_b(i8* %filename, i32 %stype, i8* %buffer, i1 zeroext %err_flag) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %filename}, i64 0, metadata !130), !dbg !239
+  tail call void @llvm.dbg.value(metadata !{i32 %stype}, i64 0, metadata !131), !dbg !239
+  tail call void @llvm.dbg.value(metadata !{i8* %buffer}, i64 0, metadata !132), !dbg !239
+  tail call void @llvm.dbg.value(metadata !{i1 %err_flag}, i64 0, metadata !133), !dbg !239
+  %call = tail call i8* @_ZN3pov15Locate_FilenameEPcjb(i8* %filename, i32 %stype, i1 zeroext %err_flag) #9, !dbg !240
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !135), !dbg !240
+  %cmp = icmp eq i8* %call, null, !dbg !241
+  br i1 %cmp, label %if.end5, label %if.then, !dbg !241
+
+if.then:                                          ; preds = %entry
+  %tobool1 = icmp eq i8* %buffer, null, !dbg !242
+  br i1 %tobool1, label %delete.notnull, label %if.then2, !dbg !242
+
+if.then2:                                         ; preds = %if.then
+  %call3 = tail call i8* @strcpy(i8* %buffer, i8* %call) #8, !dbg !242
+  br label %delete.notnull, !dbg !242
+
+delete.notnull:                                   ; preds = %if.then2, %if.then
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !244), !dbg !246
+  tail call void @llvm.dbg.value(metadata !{i32 %stype}, i64 0, metadata !247), !dbg !246
+  %call.i = tail call %"class.pov_base::IStream"* @_ZN8pov_base11New_IStreamEPKcj(i8* %call, i32 %stype) #9, !dbg !248
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::IStream"* %call.i}, i64 0, metadata !134), !dbg !245
+  tail call void @_ZdaPv(i8* %call) #8, !dbg !249
+  br label %if.end5, !dbg !249
+
+if.end5:                                          ; preds = %entry, %delete.notnull
+  %result.0 = phi %"class.pov_base::IStream"* [ %call.i, %delete.notnull ], [ null, %entry ]
+  ret %"class.pov_base::IStream"* %result.0, !dbg !250
+}
+
+; Function Attrs: optsize uwtable
+define i8* @_ZN3pov15Locate_FilenameEPcjb(i8* %filename, i32 %stype, i1 zeroext %err_flag) #3 {
+entry:
+  %l = alloca [4 x i32], align 16
+  %pathname = alloca [1024 x i8], align 16
+  %file = alloca [1024 x i8], align 16
+  %file_x = alloca [4 x [1024 x i8]], align 16
+  call void @llvm.dbg.value(metadata !{i8* %filename}, i64 0, metadata !140), !dbg !251
+  call void @llvm.dbg.value(metadata !{i32 %stype}, i64 0, metadata !141), !dbg !251
+  call void @llvm.dbg.value(metadata !{i1 %err_flag}, i64 0, metadata !142), !dbg !251
+  call void @llvm.dbg.declare(metadata !{[4 x i32]* %l}, metadata !145), !dbg !252
+  %0 = getelementptr inbounds [1024 x i8]* %pathname, i64 0, i64 0, !dbg !253
+  call void @llvm.lifetime.start(i64 1024, i8* %0) #4, !dbg !253
+  call void @llvm.dbg.declare(metadata !{[1024 x i8]* %pathname}, metadata !149), !dbg !253
+  %1 = getelementptr inbounds [1024 x i8]* %file, i64 0, i64 0, !dbg !254
+  call void @llvm.lifetime.start(i64 1024, i8* %1) #4, !dbg !254
+  call void @llvm.dbg.declare(metadata !{[1024 x i8]* %file}, metadata !150), !dbg !254
+  %2 = getelementptr inbounds [4 x [1024 x i8]]* %file_x, i64 0, i64 0, i64 0, !dbg !255
+  call void @llvm.lifetime.start(i64 4096, i8* %2) #4, !dbg !255
+  call void @llvm.dbg.declare(metadata !{[4 x [1024 x i8]]* %file_x}, metadata !151), !dbg !255
+  call void @llvm.dbg.value(metadata !256, i64 0, metadata !154), !dbg !257
+  %call = call i32 @_ZN8pov_base13Has_ExtensionEPKc(i8* %filename) #9, !dbg !258
+  %tobool = icmp eq i32 %call, 0, !dbg !258
+  call void @llvm.dbg.value(metadata !29, i64 0, metadata !143), !dbg !259
+  br i1 %tobool, label %for.cond1.preheader, label %for.cond.preheader, !dbg !258
+
+for.cond.preheader:                               ; preds = %entry
+  %l227 = bitcast [4 x i32]* %l to i8*
+  call void @llvm.memset.p0i8.i64(i8* %l227, i8 0, i64 16, i32 16, i1 false), !dbg !262
+  br label %for.body31
+
+for.cond1.preheader:                              ; preds = %entry
+  %idxprom5 = zext i32 %stype to i64, !dbg !263
+  br label %for.body3, !dbg !267
+
+for.body3:                                        ; preds = %for.inc25, %for.cond1.preheader
+  %indvars.iv221 = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next222, %for.inc25 ]
+  %arrayidx7 = getelementptr inbounds [0 x %"struct.pov_base::POV_File_Extensions"]* @_ZN8pov_base20gPOV_File_ExtensionsE, i64 0, i64 %idxprom5, i32 0, i64 %indvars.iv221, !dbg !263
+  %3 = load i8** %arrayidx7, align 8, !dbg !263, !tbaa !268
+  %call8 = call i64 @strlen(i8* %3) #10, !dbg !263
+  %conv = trunc i64 %call8 to i32, !dbg !263
+  %arrayidx10 = getelementptr inbounds [4 x i32]* %l, i64 0, i64 %indvars.iv221, !dbg !263
+  store i32 %conv, i32* %arrayidx10, align 4, !dbg !263, !tbaa !213
+  %cmp11 = icmp sgt i32 %conv, 0, !dbg !263
+  br i1 %cmp11, label %if.then12, label %for.inc25, !dbg !263
+
+if.then12:                                        ; preds = %for.body3
+  %arraydecay = getelementptr inbounds [4 x [1024 x i8]]* %file_x, i64 0, i64 %indvars.iv221, i64 0, !dbg !269
+  %call15 = call i8* @strcpy(i8* %arraydecay, i8* %filename) #8, !dbg !269
+  %4 = load i8** %arrayidx7, align 8, !dbg !271, !tbaa !268
+  %call24 = call i8* @strcat(i8* %arraydecay, i8* %4) #8, !dbg !271
+  br label %for.inc25, !dbg !272
+
+for.inc25:                                        ; preds = %for.body3, %if.then12
+  %indvars.iv.next222 = add i64 %indvars.iv221, 1, !dbg !267
+  %lftr.wideiv = trunc i64 %indvars.iv.next222 to i32, !dbg !267
+  %exitcond = icmp eq i32 %lftr.wideiv, 4, !dbg !267
+  br i1 %exitcond, label %for.body31, label %for.body3, !dbg !267
+
+for.body31:                                       ; preds = %for.inc57, %for.cond.preheader, %for.inc25
+  %indvars.iv219 = phi i64 [ 0, %for.inc25 ], [ 0, %for.cond.preheader ], [ %indvars.iv.next220, %for.inc57 ]
+  %arrayidx33 = getelementptr inbounds [4 x i32]* %l, i64 0, i64 %indvars.iv219, !dbg !273
+  %5 = load i32* %arrayidx33, align 4, !dbg !273, !tbaa !213
+  %tobool34 = icmp eq i32 %5, 0, !dbg !273
+  br i1 %tobool34, label %for.inc57, label %if.then35, !dbg !273
+
+if.then35:                                        ; preds = %for.body31
+  %arraydecay38 = getelementptr inbounds [4 x [1024 x i8]]* %file_x, i64 0, i64 %indvars.iv219, i64 0, !dbg !276
+  %call39 = call zeroext i1 @_ZN8pov_base10File_ExistEPKc(i8* %arraydecay38) #9, !dbg !276
+  br i1 %call39, label %if.then42, label %for.inc57, !dbg !276
+
+if.then42:                                        ; preds = %if.then35
+  %call46 = call i64 @strlen(i8* %arraydecay38) #10, !dbg !278
+  %add = add i64 %call46, 1, !dbg !278
+  %call47 = call noalias i8* @_Znam(i64 %add) #9, !dbg !278
+  call void @llvm.dbg.value(metadata !{i8* %call47}, i64 0, metadata !154), !dbg !278
+  %tobool48 = icmp eq i8* %call47, null, !dbg !280
+  br i1 %tobool48, label %cleanup, label %if.then49, !dbg !280
+
+if.then49:                                        ; preds = %if.then42
+  %call53 = call i8* @strcpy(i8* %call47, i8* %arraydecay38) #8, !dbg !280
+  br label %cleanup, !dbg !280
+
+for.inc57:                                        ; preds = %for.body31, %if.then35
+  %indvars.iv.next220 = add i64 %indvars.iv219, 1, !dbg !281
+  %6 = trunc i64 %indvars.iv.next220 to i32, !dbg !281
+  %cmp30 = icmp slt i32 %6, 4, !dbg !281
+  br i1 %cmp30, label %for.body31, label %for.end59, !dbg !281
+
+for.end59:                                        ; preds = %for.inc57
+  %call60 = call zeroext i1 @_ZN8pov_base10File_ExistEPKc(i8* %filename) #9, !dbg !282
+  br i1 %call60, label %if.then63, label %for.cond72.preheader, !dbg !282
+
+for.cond72.preheader:                             ; preds = %for.end59
+  %7 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 19), align 8, !dbg !283, !tbaa !213
+  %cmp73211 = icmp sgt i32 %7, 0, !dbg !283
+  br i1 %cmp73211, label %for.body74, label %for.end149, !dbg !283
+
+if.then63:                                        ; preds = %for.end59
+  %call64 = call i64 @strlen(i8* %filename) #10, !dbg !285
+  %add65 = add i64 %call64, 1, !dbg !285
+  %call66 = call noalias i8* @_Znam(i64 %add65) #9, !dbg !285
+  call void @llvm.dbg.value(metadata !{i8* %call66}, i64 0, metadata !154), !dbg !285
+  %tobool67 = icmp eq i8* %call66, null, !dbg !287
+  br i1 %tobool67, label %cleanup, label %if.then68, !dbg !287
+
+if.then68:                                        ; preds = %if.then63
+  %call69 = call i8* @strcpy(i8* %call66, i8* %filename) #8, !dbg !287
+  br label %cleanup, !dbg !287
+
+for.cond72:                                       ; preds = %for.end126
+  %8 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 19), align 8, !dbg !283, !tbaa !213
+  %9 = trunc i64 %indvars.iv.next218 to i32, !dbg !283
+  %cmp73 = icmp slt i32 %9, %8, !dbg !283
+  br i1 %cmp73, label %for.body74, label %for.end149, !dbg !283
+
+for.body74:                                       ; preds = %for.cond72.preheader, %for.cond72
+  %indvars.iv217 = phi i64 [ %indvars.iv.next218, %for.cond72 ], [ 0, %for.cond72.preheader ]
+  %arrayidx77 = getelementptr inbounds %"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 18, i64 %indvars.iv217, !dbg !288
+  %10 = load i8** %arrayidx77, align 8, !dbg !288, !tbaa !268
+  %call78 = call i8* @strcpy(i8* %1, i8* %10) #8, !dbg !288
+  %call80 = call i64 @strlen(i8* %1) #10, !dbg !290
+  %add81 = add i64 %call80, 1, !dbg !290
+  %arrayidx82 = getelementptr inbounds [1024 x i8]* %file, i64 0, i64 %add81, !dbg !290
+  store i8 0, i8* %arrayidx82, align 1, !dbg !290, !tbaa !214
+  %call84 = call i64 @strlen(i8* %1) #10, !dbg !291
+  %sub = add i64 %call84, -1, !dbg !291
+  %arrayidx85 = getelementptr inbounds [1024 x i8]* %file, i64 0, i64 %sub, !dbg !291
+  %11 = load i8* %arrayidx85, align 1, !dbg !291, !tbaa !214
+  %cmp87 = icmp eq i8 %11, 58, !dbg !291
+  br i1 %cmp87, label %for.body95, label %if.then88, !dbg !291
+
+if.then88:                                        ; preds = %for.body74
+  %arrayidx91 = getelementptr inbounds [1024 x i8]* %file, i64 0, i64 %call84, !dbg !292
+  store i8 47, i8* %arrayidx91, align 1, !dbg !292, !tbaa !214
+  br label %for.body95, !dbg !292
+
+for.body95:                                       ; preds = %for.inc124, %if.then88, %for.body74
+  %indvars.iv = phi i64 [ 0, %for.body74 ], [ 0, %if.then88 ], [ %indvars.iv.next, %for.inc124 ]
+  %arrayidx97 = getelementptr inbounds [4 x i32]* %l, i64 0, i64 %indvars.iv, !dbg !293
+  %12 = load i32* %arrayidx97, align 4, !dbg !293, !tbaa !213
+  %tobool98 = icmp eq i32 %12, 0, !dbg !293
+  br i1 %tobool98, label %for.inc124, label %if.then99, !dbg !293
+
+if.then99:                                        ; preds = %for.body95
+  %call102 = call i8* @strcpy(i8* %0, i8* %1) #8, !dbg !296
+  %arraydecay106 = getelementptr inbounds [4 x [1024 x i8]]* %file_x, i64 0, i64 %indvars.iv, i64 0, !dbg !298
+  %call107 = call i8* @strcat(i8* %0, i8* %arraydecay106) #8, !dbg !298
+  %call109 = call zeroext i1 @_ZN8pov_base10File_ExistEPKc(i8* %0) #9, !dbg !299
+  br i1 %call109, label %if.then112, label %for.inc124, !dbg !299
+
+if.then112:                                       ; preds = %if.then99
+  %call114 = call i64 @strlen(i8* %0) #10, !dbg !300
+  %add115 = add i64 %call114, 1, !dbg !300
+  %call116 = call noalias i8* @_Znam(i64 %add115) #9, !dbg !300
+  call void @llvm.dbg.value(metadata !{i8* %call116}, i64 0, metadata !154), !dbg !300
+  %tobool117 = icmp eq i8* %call116, null, !dbg !302
+  br i1 %tobool117, label %cleanup, label %if.then118, !dbg !302
+
+if.then118:                                       ; preds = %if.then112
+  %call120 = call i8* @strcpy(i8* %call116, i8* %0) #8, !dbg !302
+  br label %cleanup, !dbg !302
+
+for.inc124:                                       ; preds = %for.body95, %if.then99
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !303
+  %13 = trunc i64 %indvars.iv.next to i32, !dbg !303
+  %cmp94 = icmp slt i32 %13, 4, !dbg !303
+  br i1 %cmp94, label %for.body95, label %for.end126, !dbg !303
+
+for.end126:                                       ; preds = %for.inc124
+  %call129 = call i8* @strcpy(i8* %0, i8* %1) #8, !dbg !304
+  %call131 = call i8* @strcat(i8* %0, i8* %filename) #8, !dbg !305
+  %call133 = call zeroext i1 @_ZN8pov_base10File_ExistEPKc(i8* %0) #9, !dbg !306
+  %indvars.iv.next218 = add i64 %indvars.iv217, 1, !dbg !283
+  br i1 %call133, label %if.then136, label %for.cond72, !dbg !306
+
+if.then136:                                       ; preds = %for.end126
+  %call138 = call i64 @strlen(i8* %0) #10, !dbg !307
+  %add139 = add i64 %call138, 1, !dbg !307
+  %call140 = call noalias i8* @_Znam(i64 %add139) #9, !dbg !307
+  call void @llvm.dbg.value(metadata !{i8* %call140}, i64 0, metadata !154), !dbg !307
+  %tobool141 = icmp eq i8* %call140, null, !dbg !309
+  br i1 %tobool141, label %cleanup, label %if.then142, !dbg !309
+
+if.then142:                                       ; preds = %if.then136
+  %call144 = call i8* @strcpy(i8* %call140, i8* %0) #8, !dbg !309
+  br label %cleanup, !dbg !309
+
+for.end149:                                       ; preds = %for.cond72, %for.cond72.preheader
+  br i1 %err_flag, label %if.then154, label %cleanup, !dbg !310
+
+if.then154:                                       ; preds = %for.end149
+  %arrayidx155 = getelementptr inbounds [4 x i32]* %l, i64 0, i64 0, !dbg !311
+  %14 = load i32* %arrayidx155, align 16, !dbg !311, !tbaa !213
+  %tobool156 = icmp eq i32 %14, 0, !dbg !311
+  br i1 %tobool156, label %if.else163, label %if.then157, !dbg !311
+
+if.then157:                                       ; preds = %if.then154
+  %idxprom158 = zext i32 %stype to i64, !dbg !313
+  %arrayidx161 = getelementptr inbounds [0 x %"struct.pov_base::POV_File_Extensions"]* @_ZN8pov_base20gPOV_File_ExtensionsE, i64 0, i64 %idxprom158, i32 0, i64 0, !dbg !313
+  %15 = load i8** %arrayidx161, align 8, !dbg !313, !tbaa !268
+  %call162 = call i32 (i8*, ...)* @_ZN3pov13PossibleErrorEPKcz(i8* getelementptr inbounds ([27 x i8]* @.str, i64 0, i64 0), i8* %filename, i8* %15) #9, !dbg !313
+  br label %cleanup, !dbg !313
+
+if.else163:                                       ; preds = %if.then154
+  %call164 = call i32 (i8*, ...)* @_ZN3pov13PossibleErrorEPKcz(i8* getelementptr inbounds ([25 x i8]* @.str1, i64 0, i64 0), i8* %filename) #9, !dbg !314
+  br label %cleanup
+
+cleanup:                                          ; preds = %for.end149, %if.else163, %if.then157, %if.then142, %if.then136, %if.then118, %if.then112, %if.then68, %if.then63, %if.then49, %if.then42
+  %retval.0 = phi i8* [ null, %if.then42 ], [ %call47, %if.then49 ], [ null, %if.then63 ], [ %call66, %if.then68 ], [ null, %if.then112 ], [ %call116, %if.then118 ], [ null, %if.then136 ], [ %call140, %if.then142 ], [ null, %if.then157 ], [ null, %if.else163 ], [ null, %for.end149 ]
+  call void @llvm.lifetime.end(i64 4096, i8* %2) #4, !dbg !315
+  call void @llvm.lifetime.end(i64 1024, i8* %1) #4, !dbg !315
+  call void @llvm.lifetime.end(i64 1024, i8* %0) #4, !dbg !315
+  ret i8* %retval.0, !dbg !315
+}
+
+; Function Attrs: nounwind optsize
+declare i8* @strcpy(i8*, i8* nocapture) #5
+
+; Function Attrs: nounwind optsize
+declare void @_ZdaPv(i8*) #5
+
+; Function Attrs: optsize
+declare i32 @_ZN8pov_base13Has_ExtensionEPKc(i8*) #6
+
+; Function Attrs: nounwind optsize readonly
+declare i64 @strlen(i8* nocapture) #7
+
+; Function Attrs: nounwind optsize
+declare i8* @strcat(i8*, i8* nocapture) #5
+
+; Function Attrs: optsize
+declare zeroext i1 @_ZN8pov_base10File_ExistEPKc(i8*) #6
+
+; Function Attrs: optsize
+declare noalias i8* @_Znam(i64) #6
+
+; Function Attrs: optsize
+declare i32 @_ZN3pov13PossibleErrorEPKcz(i8*, ...) #6
+
+; Function Attrs: nounwind readnone
+declare void @llvm.dbg.value(metadata, i64, metadata) #1
+
+; Function Attrs: nounwind
+declare void @llvm.memset.p0i8.i64(i8* nocapture, i8, i64, i32, i1) #4
+
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind readnone }
+attributes #2 = { nounwind optsize readnone uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #4 = { nounwind }
+attributes #5 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #6 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #7 = { nounwind optsize readonly "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #8 = { nounwind optsize }
+attributes #9 = { optsize }
+attributes #10 = { nounwind optsize readonly }
+
+!llvm.dbg.cu = !{!0}
+
+!0 = metadata !{i32 786449, metadata !1, i32 4, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !29, metadata !30, metadata !29, metadata !155, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp] [DW_LANG_C_plus_plus]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{metadata !3}
+!3 = metadata !{i32 786436, metadata !4, metadata !5, metadata !"", i32 51, i64 32, i64 32, i32 0, i32 0, null, metadata !6, i32 0, i32 0} ; [ DW_TAG_enumeration_type ] [line 51, size 32, align 32, offset 0] [from ]
+!4 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/fileinputoutput.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!5 = metadata !{i32 786489, metadata !4, null, metadata !"pov_base", i32 37} ; [ DW_TAG_namespace ] [pov_base] [line 37]
+!6 = metadata !{metadata !7, metadata !8, metadata !9, metadata !10, metadata !11, metadata !12, metadata !13, metadata !14, metadata !15, metadata !16, metadata !17, metadata !18, metadata !19, metadata !20, metadata !21, metadata !22, metadata !23, metadata !24, metadata !25, metadata !26, metadata !27, metadata !28}
+!7 = metadata !{i32 786472, metadata !"POV_File_Unknown", i64 0} ; [ DW_TAG_enumerator ] [POV_File_Unknown :: 0]
+!8 = metadata !{i32 786472, metadata !"POV_File_Image_Targa", i64 1} ; [ DW_TAG_enumerator ] [POV_File_Image_Targa :: 1]
+!9 = metadata !{i32 786472, metadata !"POV_File_Image_PNG", i64 2} ; [ DW_TAG_enumerator ] [POV_File_Image_PNG :: 2]
+!10 = metadata !{i32 786472, metadata !"POV_File_Image_PPM", i64 3} ; [ DW_TAG_enumerator ] [POV_File_Image_PPM :: 3]
+!11 = metadata !{i32 786472, metadata !"POV_File_Image_PGM", i64 4} ; [ DW_TAG_enumerator ] [POV_File_Image_PGM :: 4]
+!12 = metadata !{i32 786472, metadata !"POV_File_Image_GIF", i64 5} ; [ DW_TAG_enumerator ] [POV_File_Image_GIF :: 5]
+!13 = metadata !{i32 786472, metadata !"POV_File_Image_IFF", i64 6} ; [ DW_TAG_enumerator ] [POV_File_Image_IFF :: 6]
+!14 = metadata !{i32 786472, metadata !"POV_File_Image_JPEG", i64 7} ; [ DW_TAG_enumerator ] [POV_File_Image_JPEG :: 7]
+!15 = metadata !{i32 786472, metadata !"POV_File_Image_TIFF", i64 8} ; [ DW_TAG_enumerator ] [POV_File_Image_TIFF :: 8]
+!16 = metadata !{i32 786472, metadata !"POV_File_Image_System", i64 9} ; [ DW_TAG_enumerator ] [POV_File_Image_System :: 9]
+!17 = metadata !{i32 786472, metadata !"POV_File_Text_POV", i64 10} ; [ DW_TAG_enumerator ] [POV_File_Text_POV :: 10]
+!18 = metadata !{i32 786472, metadata !"POV_File_Text_INC", i64 11} ; [ DW_TAG_enumerator ] [POV_File_Text_INC :: 11]
+!19 = metadata !{i32 786472, metadata !"POV_File_Text_Macro", i64 11} ; [ DW_TAG_enumerator ] [POV_File_Text_Macro :: 11]
+!20 = metadata !{i32 786472, metadata !"POV_File_Text_INI", i64 12} ; [ DW_TAG_enumerator ] [POV_File_Text_INI :: 12]
+!21 = metadata !{i32 786472, metadata !"POV_File_Text_CSV", i64 13} ; [ DW_TAG_enumerator ] [POV_File_Text_CSV :: 13]
+!22 = metadata !{i32 786472, metadata !"POV_File_Text_Stream", i64 14} ; [ DW_TAG_enumerator ] [POV_File_Text_Stream :: 14]
+!23 = metadata !{i32 786472, metadata !"POV_File_Text_User", i64 15} ; [ DW_TAG_enumerator ] [POV_File_Text_User :: 15]
+!24 = metadata !{i32 786472, metadata !"POV_File_Data_DF3", i64 16} ; [ DW_TAG_enumerator ] [POV_File_Data_DF3 :: 16]
+!25 = metadata !{i32 786472, metadata !"POV_File_Data_RCA", i64 17} ; [ DW_TAG_enumerator ] [POV_File_Data_RCA :: 17]
+!26 = metadata !{i32 786472, metadata !"POV_File_Data_LOG", i64 18} ; [ DW_TAG_enumerator ] [POV_File_Data_LOG :: 18]
+!27 = metadata !{i32 786472, metadata !"POV_File_Font_TTF", i64 19} ; [ DW_TAG_enumerator ] [POV_File_Font_TTF :: 19]
+!28 = metadata !{i32 786472, metadata !"POV_File_Unknown_Count", i64 20} ; [ DW_TAG_enumerator ] [POV_File_Unknown_Count :: 20]
+!29 = metadata !{i32 0}
+!30 = metadata !{metadata !31, metadata !47, metadata !53, metadata !107, metadata !116, metadata !126, metadata !136}
+!31 = metadata !{i32 786478, metadata !1, metadata !32, metadata !"POV_Std_Split_Time", metadata !"POV_Std_Split_Time", metadata !"_ZN3pov18POV_Std_Split_TimeEdPjS0_Pd", i32 104, metadata !33, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (double, i32*, i32*, double*)* @_ZN3pov18POV_Std_Split_TimeEdPjS0_Pd, null, null, metadata !39, i32 105} ; [ DW_TAG_subprogram ] [line 104] [def] [scope 105] [POV_Std_Split_Time]
+!32 = metadata !{i32 786489, metadata !1, null, metadata !"pov", i32 39} ; [ DW_TAG_namespace ] [pov] [line 39]
+!33 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !34, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!34 = metadata !{null, metadata !35, metadata !36, metadata !36, metadata !38}
+!35 = metadata !{i32 786468, null, null, metadata !"double", i32 0, i64 64, i64 64, i64 0, i32 0, i32 4} ; [ DW_TAG_base_type ] [double] [line 0, size 64, align 64, offset 0, enc DW_ATE_float]
+!36 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !37} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from unsigned int]
+!37 = metadata !{i32 786468, null, null, metadata !"unsigned int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 7} ; [ DW_TAG_base_type ] [unsigned int] [line 0, size 32, align 32, offset 0, enc DW_ATE_unsigned]
+!38 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !35} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from double]
+!39 = metadata !{metadata !40, metadata !42, metadata !43, metadata !44, metadata !45}
+!40 = metadata !{i32 786689, metadata !31, metadata !"time_dif", metadata !41, i32 16777320, metadata !35, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [time_dif] [line 104]
+!41 = metadata !{i32 786473, metadata !1}         ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp]
+!42 = metadata !{i32 786689, metadata !31, metadata !"hrs", metadata !41, i32 33554536, metadata !36, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [hrs] [line 104]
+!43 = metadata !{i32 786689, metadata !31, metadata !"mins", metadata !41, i32 50331752, metadata !36, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [mins] [line 104]
+!44 = metadata !{i32 786689, metadata !31, metadata !"secs", metadata !41, i32 67108968, metadata !38, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [secs] [line 104]
+!45 = metadata !{i32 786688, metadata !31, metadata !"t", metadata !41, i32 106, metadata !46, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [t] [line 106]
+!46 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!47 = metadata !{i32 786478, metadata !1, metadata !32, metadata !"closest_power_of_2", metadata !"closest_power_of_2", metadata !"_ZN3pov18closest_power_of_2Ej", i32 158, metadata !48, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i32)* @_ZN3pov18closest_power_of_2Ej, null, null, metadata !50, i32 159} ; [ DW_TAG_subprogram ] [line 158] [def] [scope 159] [closest_power_of_2]
+!48 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !49, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!49 = metadata !{metadata !37, metadata !37}
+!50 = metadata !{metadata !51, metadata !52}
+!51 = metadata !{i32 786689, metadata !47, metadata !"theNumber", metadata !41, i32 16777374, metadata !37, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [theNumber] [line 158]
+!52 = metadata !{i32 786688, metadata !47, metadata !"PowerOf2Counter", metadata !41, i32 160, metadata !46, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [PowerOf2Counter] [line 160]
+!53 = metadata !{i32 786478, metadata !1, metadata !32, metadata !"POVMSUtil_SetFormatString", metadata !"POVMSUtil_SetFormatString", metadata !"_ZN3pov25POVMSUtil_SetFormatStringEP9POVMSDatajPKcz", i32 202, metadata !54, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (%struct.POVMSData*, i32, i8*, ...)* @_ZN3pov25POVMSUtil_SetFormatStringEP9POVMSDatajPKcz, null, null, metadata !80, i32 203} ; [ DW_TAG_subprogram ] [line 202] [def] [scope 203] [POVMSUtil_SetFormatString]
+!54 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !55, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!55 = metadata !{metadata !46, metadata !56, metadata !37, metadata !77}
+!56 = metadata !{i32 786454, metadata !1, null, metadata !"POVMSObjectPtr", i32 173, i64 0, i64 0, i64 0, i32 0, metadata !57} ; [ DW_TAG_typedef ] [POVMSObjectPtr] [line 173, size 0, align 0, offset 0] [from ]
+!57 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !58} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from POVMSData]
+!58 = metadata !{i32 786451, metadata !59, null, metadata !"POVMSData", i32 178, i64 128, i64 64, i32 0, i32 0, null, metadata !60, i32 0, null, null} ; [ DW_TAG_structure_type ] [POVMSData] [line 178, size 128, align 64, offset 0] [from ]
+!59 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/povms.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!60 = metadata !{metadata !61, metadata !62, metadata !63}
+!61 = metadata !{i32 786445, metadata !59, metadata !58, metadata !"type", i32 180, i64 32, i64 32, i64 0, i32 0, metadata !37} ; [ DW_TAG_member ] [type] [line 180, size 32, align 32, offset 0] [from unsigned int]
+!62 = metadata !{i32 786445, metadata !59, metadata !58, metadata !"size", i32 181, i64 32, i64 32, i64 32, i32 0, metadata !46} ; [ DW_TAG_member ] [size] [line 181, size 32, align 32, offset 32] [from int]
+!63 = metadata !{i32 786445, metadata !59, metadata !58, metadata !"", i32 182, i64 64, i64 64, i64 64, i32 0, metadata !64} ; [ DW_TAG_member ] [line 182, size 64, align 64, offset 64] [from ]
+!64 = metadata !{i32 786455, metadata !59, metadata !58, metadata !"", i32 182, i64 64, i64 64, i64 0, i32 0, null, metadata !65, i32 0, null, null} ; [ DW_TAG_union_type ] [line 182, size 64, align 64, offset 0] [from ]
+!65 = metadata !{metadata !66, metadata !68, metadata !69}
+!66 = metadata !{i32 786445, metadata !59, metadata !64, metadata !"ptr", i32 184, i64 64, i64 64, i64 0, i32 0, metadata !67} ; [ DW_TAG_member ] [ptr] [line 184, size 64, align 64, offset 0] [from ]
+!67 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, null} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!68 = metadata !{i32 786445, metadata !59, metadata !64, metadata !"items", i32 185, i64 64, i64 64, i64 0, i32 0, metadata !57} ; [ DW_TAG_member ] [items] [line 185, size 64, align 64, offset 0] [from ]
+!69 = metadata !{i32 786445, metadata !59, metadata !64, metadata !"root", i32 186, i64 64, i64 64, i64 0, i32 0, metadata !70} ; [ DW_TAG_member ] [root] [line 186, size 64, align 64, offset 0] [from ]
+!70 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !71} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from POVMSNode]
+!71 = metadata !{i32 786451, metadata !59, null, metadata !"POVMSNode", i32 190, i64 320, i64 64, i32 0, i32 0, null, metadata !72, i32 0, null, null} ; [ DW_TAG_structure_type ] [POVMSNode] [line 190, size 320, align 64, offset 0] [from ]
+!72 = metadata !{metadata !73, metadata !74, metadata !75, metadata !76}
+!73 = metadata !{i32 786445, metadata !59, metadata !71, metadata !"last", i32 192, i64 64, i64 64, i64 0, i32 0, metadata !70} ; [ DW_TAG_member ] [last] [line 192, size 64, align 64, offset 0] [from ]
+!74 = metadata !{i32 786445, metadata !59, metadata !71, metadata !"next", i32 193, i64 64, i64 64, i64 64, i32 0, metadata !70} ; [ DW_TAG_member ] [next] [line 193, size 64, align 64, offset 64] [from ]
+!75 = metadata !{i32 786445, metadata !59, metadata !71, metadata !"key", i32 194, i64 32, i64 32, i64 128, i32 0, metadata !37} ; [ DW_TAG_member ] [key] [line 194, size 32, align 32, offset 128] [from unsigned int]
+!76 = metadata !{i32 786445, metadata !59, metadata !71, metadata !"data", i32 195, i64 128, i64 64, i64 192, i32 0, metadata !58} ; [ DW_TAG_member ] [data] [line 195, size 128, align 64, offset 192] [from POVMSData]
+!77 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !78} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!78 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !79} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from char]
+!79 = metadata !{i32 786468, null, null, metadata !"char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!80 = metadata !{metadata !81, metadata !82, metadata !83, metadata !84, metadata !103}
+!81 = metadata !{i32 786689, metadata !53, metadata !"object", metadata !41, i32 16777418, metadata !56, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [object] [line 202]
+!82 = metadata !{i32 786689, metadata !53, metadata !"key", metadata !41, i32 33554634, metadata !37, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [key] [line 202]
+!83 = metadata !{i32 786689, metadata !53, metadata !"format", metadata !41, i32 50331850, metadata !77, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [format] [line 202]
+!84 = metadata !{i32 786688, metadata !53, metadata !"marker", metadata !41, i32 204, metadata !85, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [marker] [line 204]
+!85 = metadata !{i32 786454, metadata !1, null, metadata !"va_list", i32 79, i64 0, i64 0, i64 0, i32 0, metadata !86} ; [ DW_TAG_typedef ] [va_list] [line 79, size 0, align 0, offset 0] [from __gnuc_va_list]
+!86 = metadata !{i32 786454, metadata !1, null, metadata !"__gnuc_va_list", i32 48, i64 0, i64 0, i64 0, i32 0, metadata !87} ; [ DW_TAG_typedef ] [__gnuc_va_list] [line 48, size 0, align 0, offset 0] [from __builtin_va_list]
+!87 = metadata !{i32 786454, metadata !1, null, metadata !"__builtin_va_list", i32 204, i64 0, i64 0, i64 0, i32 0, metadata !88} ; [ DW_TAG_typedef ] [__builtin_va_list] [line 204, size 0, align 0, offset 0] [from ]
+!88 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 192, i64 64, i32 0, i32 0, metadata !89, metadata !101, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 192, align 64, offset 0] [from __va_list_tag]
+!89 = metadata !{i32 786454, metadata !1, null, metadata !"__va_list_tag", i32 204, i64 0, i64 0, i64 0, i32 0, metadata !90} ; [ DW_TAG_typedef ] [__va_list_tag] [line 204, size 0, align 0, offset 0] [from __va_list_tag]
+!90 = metadata !{i32 786451, metadata !1, null, metadata !"__va_list_tag", i32 204, i64 192, i64 64, i32 0, i32 0, null, metadata !91, i32 0, null, null} ; [ DW_TAG_structure_type ] [__va_list_tag] [line 204, size 192, align 64, offset 0] [from ]
+!91 = metadata !{metadata !92, metadata !93, metadata !94, metadata !95, metadata !96}
+!92 = metadata !{i32 786445, metadata !1, metadata !90, metadata !"gp_offset", i32 204, i64 32, i64 32, i64 0, i32 0, metadata !37} ; [ DW_TAG_member ] [gp_offset] [line 204, size 32, align 32, offset 0] [from unsigned int]
+!93 = metadata !{i32 786445, metadata !1, metadata !90, metadata !"fp_offset", i32 204, i64 32, i64 32, i64 32, i32 0, metadata !37} ; [ DW_TAG_member ] [fp_offset] [line 204, size 32, align 32, offset 32] [from unsigned int]
+!94 = metadata !{i32 786445, metadata !1, metadata !90, metadata !"overflow_arg_area", i32 204, i64 64, i64 64, i64 64, i32 0, metadata !67} ; [ DW_TAG_member ] [overflow_arg_area] [line 204, size 64, align 64, offset 64] [from ]
+!95 = metadata !{i32 786445, metadata !1, metadata !90, metadata !"reg_save_area", i32 204, i64 64, i64 64, i64 128, i32 0, metadata !67} ; [ DW_TAG_member ] [reg_save_area] [line 204, size 64, align 64, offset 128] [from ]
+!96 = metadata !{i32 786478, metadata !1, metadata !90, metadata !"__va_list_tag", metadata !"__va_list_tag", metadata !"", i32 204, metadata !97, i1 false, i1 false, i32 0, i32 0, null, i32 320, i1 true, null, null, i32 0, metadata !100, i32 204} ; [ DW_TAG_subprogram ] [line 204] [__va_list_tag]
+!97 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !98, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!98 = metadata !{null, metadata !99}
+!99 = metadata !{i32 786447, i32 0, i32 0, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 1088, metadata !90} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [artificial] [from __va_list_tag]
+!100 = metadata !{i32 786468}
+!101 = metadata !{metadata !102}
+!102 = metadata !{i32 786465, i64 0, i64 1}       ; [ DW_TAG_subrange_type ] [0, 0]
+!103 = metadata !{i32 786688, metadata !53, metadata !"buffer", metadata !41, i32 205, metadata !104, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [buffer] [line 205]
+!104 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 8192, i64 8, i32 0, i32 0, metadata !79, metadata !105, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 8192, align 8, offset 0] [from char]
+!105 = metadata !{metadata !106}
+!106 = metadata !{i32 786465, i64 0, i64 1024}    ; [ DW_TAG_subrange_type ] [0, 1023]
+!107 = metadata !{i32 786478, metadata !1, metadata !32, metadata !"New_Checked_IStream", metadata !"New_Checked_IStream", metadata !"_ZN3pov19New_Checked_IStreamEPcj", i32 237, metadata !108, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, %"class.pov_base::IStream"* (i8*, i32)* @_ZN3pov19New_Checked_IStreamEPcj, null, null, metadata !113, i32 238} ; [ DW_TAG_subprogram ] [line 237] [def] [scope 238] [New_Checked_IStream]
+!108 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !109, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!109 = metadata !{metadata !110, metadata !112, metadata !37}
+!110 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !111} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from IStream]
+!111 = metadata !{i32 786434, metadata !4, metadata !5, metadata !"IStream", i32 118, i64 0, i64 0, i32 0, i32 4, null, null, i32 0} ; [ DW_TAG_class_type ] [IStream] [line 118, size 0, align 0, offset 0] [fwd] [from ]
+!112 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !79} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from char]
+!113 = metadata !{metadata !114, metadata !115}
+!114 = metadata !{i32 786689, metadata !107, metadata !"filename", metadata !41, i32 16777453, metadata !112, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [filename] [line 237]
+!115 = metadata !{i32 786689, metadata !107, metadata !"stype", metadata !41, i32 33554669, metadata !37, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [stype] [line 237]
+!116 = metadata !{i32 786478, metadata !1, metadata !32, metadata !"New_Checked_OStream", metadata !"New_Checked_OStream", metadata !"_ZN3pov19New_Checked_OStreamEPcjb", i32 267, metadata !117, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, %"class.pov_base::OStream"* (i8*, i32, i1)* @_ZN3pov19New_Checked_OStreamEPcjb, null, null, metadata !122, i32 268} ; [ DW_TAG_subprogram ] [line 267] [def] [scope 268] [New_Checked_OStream]
+!117 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !118, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!118 = metadata !{metadata !119, metadata !112, metadata !37, metadata !121}
+!119 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !120} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from OStream]
+!120 = metadata !{i32 786434, metadata !4, metadata !5, metadata !"OStream", i32 150, i64 0, i64 0, i32 0, i32 4, null, null, i32 0} ; [ DW_TAG_class_type ] [OStream] [line 150, size 0, align 0, offset 0] [fwd] [from ]
+!121 = metadata !{i32 786468, null, null, metadata !"bool", i32 0, i64 8, i64 8, i64 0, i32 0, i32 2} ; [ DW_TAG_base_type ] [bool] [line 0, size 8, align 8, offset 0, enc DW_ATE_boolean]
+!122 = metadata !{metadata !123, metadata !124, metadata !125}
+!123 = metadata !{i32 786689, metadata !116, metadata !"filename", metadata !41, i32 16777483, metadata !112, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [filename] [line 267]
+!124 = metadata !{i32 786689, metadata !116, metadata !"stype", metadata !41, i32 33554699, metadata !37, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [stype] [line 267]
+!125 = metadata !{i32 786689, metadata !116, metadata !"append", metadata !41, i32 50331915, metadata !121, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [append] [line 267]
+!126 = metadata !{i32 786478, metadata !1, metadata !32, metadata !"Locate_File", metadata !"Locate_File", metadata !"_ZN3pov11Locate_FileEPcjS0_b", i32 302, metadata !127, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, %"class.pov_base::IStream"* (i8*, i32, i8*, i1)* @_ZN3pov11Locate_FileEPcjS0_b, null, null, metadata !129, i32 303} ; [ DW_TAG_subprogram ] [line 302] [def] [scope 303] [Locate_File]
+!127 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !128, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!128 = metadata !{metadata !110, metadata !112, metadata !37, metadata !112, metadata !121}
+!129 = metadata !{metadata !130, metadata !131, metadata !132, metadata !133, metadata !134, metadata !135}
+!130 = metadata !{i32 786689, metadata !126, metadata !"filename", metadata !41, i32 16777518, metadata !112, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [filename] [line 302]
+!131 = metadata !{i32 786689, metadata !126, metadata !"stype", metadata !41, i32 33554734, metadata !37, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [stype] [line 302]
+!132 = metadata !{i32 786689, metadata !126, metadata !"buffer", metadata !41, i32 50331950, metadata !112, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [buffer] [line 302]
+!133 = metadata !{i32 786689, metadata !126, metadata !"err_flag", metadata !41, i32 67109166, metadata !121, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [err_flag] [line 302]
+!134 = metadata !{i32 786688, metadata !126, metadata !"result", metadata !41, i32 304, metadata !110, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [result] [line 304]
+!135 = metadata !{i32 786688, metadata !126, metadata !"qualified_name", metadata !41, i32 305, metadata !112, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [qualified_name] [line 305]
+!136 = metadata !{i32 786478, metadata !1, metadata !32, metadata !"Locate_Filename", metadata !"Locate_Filename", metadata !"_ZN3pov15Locate_FilenameEPcjb", i32 348, metadata !137, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i8* (i8*, i32, i1)* @_ZN3pov15Locate_FilenameEPcjb, null, null, metadata !139, i32 349} ; [ DW_TAG_subprogram ] [line 348] [def] [scope 349] [Locate_Filename]
+!137 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !138, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!138 = metadata !{metadata !112, metadata !112, metadata !37, metadata !121}
+!139 = metadata !{metadata !140, metadata !141, metadata !142, metadata !143, metadata !144, metadata !145, metadata !149, metadata !150, metadata !151, metadata !154}
+!140 = metadata !{i32 786689, metadata !136, metadata !"filename", metadata !41, i32 16777564, metadata !112, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [filename] [line 348]
+!141 = metadata !{i32 786689, metadata !136, metadata !"stype", metadata !41, i32 33554780, metadata !37, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [stype] [line 348]
+!142 = metadata !{i32 786689, metadata !136, metadata !"err_flag", metadata !41, i32 50331996, metadata !121, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [err_flag] [line 348]
+!143 = metadata !{i32 786688, metadata !136, metadata !"i", metadata !41, i32 350, metadata !46, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i] [line 350]
+!144 = metadata !{i32 786688, metadata !136, metadata !"ii", metadata !41, i32 350, metadata !46, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [ii] [line 350]
+!145 = metadata !{i32 786688, metadata !136, metadata !"l", metadata !41, i32 350, metadata !146, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [l] [line 350]
+!146 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 128, i64 32, i32 0, i32 0, metadata !46, metadata !147, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 128, align 32, offset 0] [from int]
+!147 = metadata !{metadata !148}
+!148 = metadata !{i32 786465, i64 0, i64 4}       ; [ DW_TAG_subrange_type ] [0, 3]
+!149 = metadata !{i32 786688, metadata !136, metadata !"pathname", metadata !41, i32 351, metadata !104, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [pathname] [line 351]
+!150 = metadata !{i32 786688, metadata !136, metadata !"file", metadata !41, i32 352, metadata !104, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [file] [line 352]
+!151 = metadata !{i32 786688, metadata !136, metadata !"file_x", metadata !41, i32 353, metadata !152, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [file_x] [line 353]
+!152 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 32768, i64 8, i32 0, i32 0, metadata !79, metadata !153, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 32768, align 8, offset 0] [from char]
+!153 = metadata !{metadata !148, metadata !106}
+!154 = metadata !{i32 786688, metadata !136, metadata !"result", metadata !41, i32 354, metadata !112, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [result] [line 354]
+!155 = metadata !{metadata !156, metadata !159, metadata !160, metadata !163, metadata !166, metadata !169, metadata !172, metadata !173, metadata !176, metadata !179, metadata !182, metadata !185, metadata !188, metadata !191, metadata !194, metadata !197, metadata !200, metadata !203, metadata !206, metadata !207, metadata !209}
+!156 = metadata !{i32 786490, metadata !0, metadata !157, i32 28} ; [ DW_TAG_imported_module ]
+!157 = metadata !{i32 786489, metadata !158, null, metadata !"std", i32 26} ; [ DW_TAG_namespace ] [std] [line 26]
+!158 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/config.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!159 = metadata !{i32 786490, metadata !5, metadata !157, i32 37} ; [ DW_TAG_imported_module ]
+!160 = metadata !{i32 786490, metadata !161, metadata !157, i32 36} ; [ DW_TAG_imported_module ]
+!161 = metadata !{i32 786489, metadata !162, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!162 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/pov_mem.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!163 = metadata !{i32 786490, metadata !164, metadata !157, i32 72} ; [ DW_TAG_imported_module ]
+!164 = metadata !{i32 786489, metadata !165, null, metadata !"pov", i32 72} ; [ DW_TAG_namespace ] [pov] [line 72]
+!165 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/frame.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!166 = metadata !{i32 786490, metadata !167, metadata !157, i32 37} ; [ DW_TAG_imported_module ]
+!167 = metadata !{i32 786489, metadata !168, null, metadata !"pov_base", i32 37} ; [ DW_TAG_namespace ] [pov_base] [line 37]
+!168 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/stringutilities.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!169 = metadata !{i32 786490, metadata !170, metadata !157, i32 40} ; [ DW_TAG_imported_module ]
+!170 = metadata !{i32 786489, metadata !171, null, metadata !"pov", i32 40} ; [ DW_TAG_namespace ] [pov] [line 40]
+!171 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!172 = metadata !{i32 786490, metadata !170, metadata !5, i32 42} ; [ DW_TAG_imported_module ]
+!173 = metadata !{i32 786490, metadata !174, metadata !157, i32 36} ; [ DW_TAG_imported_module ]
+!174 = metadata !{i32 786489, metadata !175, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!175 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/atmosph.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!176 = metadata !{i32 786490, metadata !177, metadata !157, i32 36} ; [ DW_TAG_imported_module ]
+!177 = metadata !{i32 786489, metadata !178, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!178 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/camera.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!179 = metadata !{i32 786490, metadata !180, metadata !157, i32 37} ; [ DW_TAG_imported_module ]
+!180 = metadata !{i32 786489, metadata !181, null, metadata !"pov", i32 37} ; [ DW_TAG_namespace ] [pov] [line 37]
+!181 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/bbox.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!182 = metadata !{i32 786490, metadata !183, metadata !157, i32 39} ; [ DW_TAG_imported_module ]
+!183 = metadata !{i32 786489, metadata !184, null, metadata !"pov", i32 39} ; [ DW_TAG_namespace ] [pov] [line 39]
+!184 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/vlbuffer.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!185 = metadata !{i32 786490, metadata !186, metadata !157, i32 38} ; [ DW_TAG_imported_module ]
+!186 = metadata !{i32 786489, metadata !187, null, metadata !"pov", i32 38} ; [ DW_TAG_namespace ] [pov] [line 38]
+!187 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/point.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!188 = metadata !{i32 786490, metadata !189, metadata !157, i32 38} ; [ DW_TAG_imported_module ]
+!189 = metadata !{i32 786489, metadata !190, null, metadata !"pov", i32 38} ; [ DW_TAG_namespace ] [pov] [line 38]
+!190 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/media.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!191 = metadata !{i32 786490, metadata !192, metadata !157, i32 36} ; [ DW_TAG_imported_module ]
+!192 = metadata !{i32 786489, metadata !193, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!193 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/render.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!194 = metadata !{i32 786490, metadata !195, metadata !157, i32 36} ; [ DW_TAG_imported_module ]
+!195 = metadata !{i32 786489, metadata !196, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!196 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/userio.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!197 = metadata !{i32 786490, metadata !198, metadata !157, i32 36} ; [ DW_TAG_imported_module ]
+!198 = metadata !{i32 786489, metadata !199, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!199 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/csg.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!200 = metadata !{i32 786490, metadata !201, metadata !157, i32 37} ; [ DW_TAG_imported_module ]
+!201 = metadata !{i32 786489, metadata !202, null, metadata !"pov", i32 37} ; [ DW_TAG_namespace ] [pov] [line 37]
+!202 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/lightgrp.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!203 = metadata !{i32 786490, metadata !204, metadata !157, i32 48} ; [ DW_TAG_imported_module ]
+!204 = metadata !{i32 786489, metadata !205, null, metadata !"pov", i32 48} ; [ DW_TAG_namespace ] [pov] [line 48]
+!205 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/povray.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!206 = metadata !{i32 786490, metadata !204, metadata !5, i32 50} ; [ DW_TAG_imported_module ]
+!207 = metadata !{i32 786490, metadata !208, metadata !157, i32 479} ; [ DW_TAG_imported_module ]
+!208 = metadata !{i32 786489, metadata !205, null, metadata !"pov", i32 479} ; [ DW_TAG_namespace ] [pov] [line 479]
+!209 = metadata !{i32 786490, metadata !32, metadata !157, i32 39} ; [ DW_TAG_imported_module ]
+!210 = metadata !{i32 104, i32 0, metadata !31, null}
+!211 = metadata !{i32 106, i32 0, metadata !31, null}
+!212 = metadata !{i32 108, i32 0, metadata !31, null}
+!213 = metadata !{metadata !"int", metadata !214}
+!214 = metadata !{metadata !"omnipotent char", metadata !215}
+!215 = metadata !{metadata !"Simple C/C++ TBAA"}
+!216 = metadata !{i32 110, i32 0, metadata !31, null}
+!217 = metadata !{i32 112, i32 0, metadata !31, null}
+!218 = metadata !{metadata !"double", metadata !214}
+!219 = metadata !{i32 113, i32 0, metadata !31, null}
+!220 = metadata !{i32 158, i32 0, metadata !47, null}
+!221 = metadata !{i32 164, i32 0, metadata !47, null}
+!222 = metadata !{i32 173, i32 0, metadata !47, null}
+!223 = metadata !{i32 177, i32 0, metadata !224, null}
+!224 = metadata !{i32 786443, metadata !1, metadata !47, i32 174, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp]
+!225 = metadata !{i32 181, i32 0, metadata !224, null}
+!226 = metadata !{i32 185, i32 0, metadata !47, null}
+!227 = metadata !{i32 202, i32 0, metadata !53, null}
+!228 = metadata !{i32 204, i32 0, metadata !53, null}
+!229 = metadata !{i32 205, i32 0, metadata !53, null}
+!230 = metadata !{i32 207, i32 0, metadata !53, null}
+!231 = metadata !{i32 208, i32 0, metadata !53, null}
+!232 = metadata !{i32 209, i32 0, metadata !53, null}
+!233 = metadata !{i32 211, i32 0, metadata !53, null}
+!234 = metadata !{i32 212, i32 0, metadata !53, null}
+!235 = metadata !{i32 237, i32 0, metadata !107, null}
+!236 = metadata !{i32 240, i32 0, metadata !107, null}
+!237 = metadata !{i32 267, i32 0, metadata !116, null}
+!238 = metadata !{i32 270, i32 0, metadata !116, null}
+!239 = metadata !{i32 302, i32 0, metadata !126, null}
+!240 = metadata !{i32 305, i32 0, metadata !126, null}
+!241 = metadata !{i32 307, i32 0, metadata !126, null}
+!242 = metadata !{i32 309, i32 0, metadata !243, null}
+!243 = metadata !{i32 786443, metadata !1, metadata !126, i32 308, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp]
+!244 = metadata !{i32 786689, metadata !107, metadata !"filename", metadata !41, i32 16777453, metadata !112, i32 0, metadata !245} ; [ DW_TAG_arg_variable ] [filename] [line 237]
+!245 = metadata !{i32 310, i32 0, metadata !243, null}
+!246 = metadata !{i32 237, i32 0, metadata !107, metadata !245}
+!247 = metadata !{i32 786689, metadata !107, metadata !"stype", metadata !41, i32 33554669, metadata !37, i32 0, metadata !245} ; [ DW_TAG_arg_variable ] [stype] [line 237]
+!248 = metadata !{i32 240, i32 0, metadata !107, metadata !245}
+!249 = metadata !{i32 311, i32 0, metadata !243, null}
+!250 = metadata !{i32 319, i32 0, metadata !126, null}
+!251 = metadata !{i32 348, i32 0, metadata !136, null}
+!252 = metadata !{i32 350, i32 0, metadata !136, null}
+!253 = metadata !{i32 351, i32 0, metadata !136, null}
+!254 = metadata !{i32 352, i32 0, metadata !136, null}
+!255 = metadata !{i32 353, i32 0, metadata !136, null}
+!256 = metadata !{i8* null}
+!257 = metadata !{i32 354, i32 0, metadata !136, null}
+!258 = metadata !{i32 356, i32 0, metadata !136, null}
+!259 = metadata !{i32 358, i32 0, metadata !260, null}
+!260 = metadata !{i32 786443, metadata !1, metadata !261, i32 358, i32 0, i32 5} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp]
+!261 = metadata !{i32 786443, metadata !1, metadata !136, i32 357, i32 0, i32 4} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp]
+!262 = metadata !{i32 359, i32 0, metadata !260, null}
+!263 = metadata !{i32 365, i32 0, metadata !264, null}
+!264 = metadata !{i32 786443, metadata !1, metadata !265, i32 364, i32 0, i32 8} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp]
+!265 = metadata !{i32 786443, metadata !1, metadata !266, i32 363, i32 0, i32 7} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp]
+!266 = metadata !{i32 786443, metadata !1, metadata !136, i32 362, i32 0, i32 6} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp]
+!267 = metadata !{i32 363, i32 0, metadata !265, null}
+!268 = metadata !{metadata !"any pointer", metadata !214}
+!269 = metadata !{i32 367, i32 0, metadata !270, null}
+!270 = metadata !{i32 786443, metadata !1, metadata !264, i32 366, i32 0, i32 9} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp]
+!271 = metadata !{i32 368, i32 0, metadata !270, null}
+!272 = metadata !{i32 369, i32 0, metadata !270, null}
+!273 = metadata !{i32 377, i32 0, metadata !274, null}
+!274 = metadata !{i32 786443, metadata !1, metadata !275, i32 375, i32 0, i32 11} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp]
+!275 = metadata !{i32 786443, metadata !1, metadata !136, i32 374, i32 0, i32 10} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp]
+!276 = metadata !{i32 379, i32 0, metadata !277, null}
+!277 = metadata !{i32 786443, metadata !1, metadata !274, i32 378, i32 0, i32 12} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp]
+!278 = metadata !{i32 381, i32 0, metadata !279, null}
+!279 = metadata !{i32 786443, metadata !1, metadata !277, i32 380, i32 0, i32 13} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp]
+!280 = metadata !{i32 382, i32 0, metadata !279, null}
+!281 = metadata !{i32 374, i32 0, metadata !275, null}
+!282 = metadata !{i32 388, i32 0, metadata !136, null}
+!283 = metadata !{i32 396, i32 0, metadata !284, null}
+!284 = metadata !{i32 786443, metadata !1, metadata !136, i32 396, i32 0, i32 15} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp]
+!285 = metadata !{i32 390, i32 0, metadata !286, null}
+!286 = metadata !{i32 786443, metadata !1, metadata !136, i32 389, i32 0, i32 14} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp]
+!287 = metadata !{i32 391, i32 0, metadata !286, null}
+!288 = metadata !{i32 398, i32 0, metadata !289, null}
+!289 = metadata !{i32 786443, metadata !1, metadata !284, i32 397, i32 0, i32 16} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp]
+!290 = metadata !{i32 399, i32 0, metadata !289, null}
+!291 = metadata !{i32 400, i32 0, metadata !289, null}
+!292 = metadata !{i32 401, i32 0, metadata !289, null}
+!293 = metadata !{i32 405, i32 0, metadata !294, null}
+!294 = metadata !{i32 786443, metadata !1, metadata !295, i32 404, i32 0, i32 18} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp]
+!295 = metadata !{i32 786443, metadata !1, metadata !289, i32 403, i32 0, i32 17} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp]
+!296 = metadata !{i32 407, i32 0, metadata !297, null}
+!297 = metadata !{i32 786443, metadata !1, metadata !294, i32 406, i32 0, i32 19} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp]
+!298 = metadata !{i32 408, i32 0, metadata !297, null}
+!299 = metadata !{i32 409, i32 0, metadata !297, null}
+!300 = metadata !{i32 411, i32 0, metadata !301, null}
+!301 = metadata !{i32 786443, metadata !1, metadata !297, i32 410, i32 0, i32 20} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp]
+!302 = metadata !{i32 412, i32 0, metadata !301, null}
+!303 = metadata !{i32 403, i32 0, metadata !295, null}
+!304 = metadata !{i32 418, i32 0, metadata !289, null}
+!305 = metadata !{i32 419, i32 0, metadata !289, null}
+!306 = metadata !{i32 420, i32 0, metadata !289, null}
+!307 = metadata !{i32 422, i32 0, metadata !308, null}
+!308 = metadata !{i32 786443, metadata !1, metadata !289, i32 421, i32 0, i32 21} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp]
+!309 = metadata !{i32 423, i32 0, metadata !308, null}
+!310 = metadata !{i32 441, i32 0, metadata !136, null}
+!311 = metadata !{i32 443, i32 0, metadata !312, null}
+!312 = metadata !{i32 786443, metadata !1, metadata !136, i32 442, i32 0, i32 23} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/pov_util.cpp]
+!313 = metadata !{i32 444, i32 0, metadata !312, null}
+!314 = metadata !{i32 446, i32 0, metadata !312, null}
+!315 = metadata !{i32 450, i32 0, metadata !136, null}

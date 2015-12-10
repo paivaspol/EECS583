@@ -1,42 +1,45 @@
 define void @StringChop(i8* nocapture %s) #0 {
 entry:
-  %call = tail call i64 @strlen(i8* %s) #7
-  %sub = add i64 %call, 4294967295
-  %conv = trunc i64 %sub to i32
-  %cmp13 = icmp sgt i32 %conv, -1
-  br i1 %cmp13, label %land.rhs.lr.ph, label %while.end
+  tail call void @llvm.dbg.value(metadata !{i8* %s}, i64 0, metadata !33), !dbg !217
+  %call = tail call i64 @strlen(i8* %s) #8, !dbg !218
+  %sub = add i64 %call, 4294967295, !dbg !218
+  %conv = trunc i64 %sub to i32, !dbg !218
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !34), !dbg !218
+  %cmp13 = icmp sgt i32 %conv, -1, !dbg !219
+  br i1 %cmp13, label %land.rhs.lr.ph, label %while.end, !dbg !219
 
 land.rhs.lr.ph:                                   ; preds = %entry
-  %call4 = tail call i16** @__ctype_b_loc() #9
-  %0 = load i16** %call4, align 8, !tbaa !0
+  %call4 = tail call i16** @__ctype_b_loc() #10, !dbg !219
+  %0 = load i16** %call4, align 8, !dbg !219, !tbaa !220
   %sext = shl i64 %sub, 32
   %1 = ashr exact i64 %sext, 32
-  br label %land.rhs
+  br label %land.rhs, !dbg !219
 
 while.cond:                                       ; preds = %land.rhs
-  %indvars.iv.next = add i64 %indvars.iv, -1
-  %2 = trunc i64 %indvars.iv to i32
-  %cmp = icmp sgt i32 %2, 0
-  br i1 %cmp, label %land.rhs, label %while.end
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !219
+  %2 = trunc i64 %indvars.iv to i32, !dbg !219
+  %cmp = icmp sgt i32 %2, 0, !dbg !219
+  br i1 %cmp, label %land.rhs, label %while.end, !dbg !219
 
 land.rhs:                                         ; preds = %land.rhs.lr.ph, %while.cond
   %indvars.iv = phi i64 [ %1, %land.rhs.lr.ph ], [ %indvars.iv.next, %while.cond ]
   %i.014 = phi i32 [ %conv, %land.rhs.lr.ph ], [ %dec, %while.cond ]
-  %arrayidx = getelementptr inbounds i8* %s, i64 %indvars.iv
-  %3 = load i8* %arrayidx, align 1, !tbaa !1
-  %idxprom3 = sext i8 %3 to i64
-  %arrayidx5 = getelementptr inbounds i16* %0, i64 %idxprom3
-  %4 = load i16* %arrayidx5, align 2, !tbaa !3
-  %and = and i16 %4, 8192
-  %tobool = icmp eq i16 %and, 0
-  %dec = add nsw i32 %i.014, -1
+  %arrayidx = getelementptr inbounds i8* %s, i64 %indvars.iv, !dbg !219
+  %3 = load i8* %arrayidx, align 1, !dbg !219, !tbaa !221
+  %idxprom3 = sext i8 %3 to i64, !dbg !219
+  %arrayidx5 = getelementptr inbounds i16* %0, i64 %idxprom3, !dbg !219
+  %4 = load i16* %arrayidx5, align 2, !dbg !219, !tbaa !223
+  %and = and i16 %4, 8192, !dbg !219
+  %tobool = icmp eq i16 %and, 0, !dbg !219
+  %dec = add nsw i32 %i.014, -1, !dbg !219
+  tail call void @llvm.dbg.value(metadata !{i32 %dec}, i64 0, metadata !34), !dbg !219
   br i1 %tobool, label %while.end, label %while.cond
 
 while.end:                                        ; preds = %while.cond, %land.rhs, %entry
   %i.0.lcssa = phi i32 [ %conv, %entry ], [ %i.014, %land.rhs ], [ %dec, %while.cond ]
-  %add = add nsw i32 %i.0.lcssa, 1
-  %idxprom7 = sext i32 %add to i64
-  %arrayidx8 = getelementptr inbounds i8* %s, i64 %idxprom7
-  store i8 0, i8* %arrayidx8, align 1, !tbaa !1
-  ret void
+  %add = add nsw i32 %i.0.lcssa, 1, !dbg !224
+  %idxprom7 = sext i32 %add to i64, !dbg !224
+  %arrayidx8 = getelementptr inbounds i8* %s, i64 %idxprom7, !dbg !224
+  store i8 0, i8* %arrayidx8, align 1, !dbg !224, !tbaa !221
+  ret void, !dbg !225
 }

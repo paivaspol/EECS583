@@ -1,33 +1,36 @@
 define i8* @context_as_prefix(i8* %file, i32 %line, i32 %warn) #2 {
 entry:
-  %tobool = icmp eq i8* %file, null
-  %tobool1 = icmp ne i32 %warn, 0
-  br i1 %tobool, label %if.else4, label %if.then
+  tail call void @llvm.dbg.value(metadata !{i8* %file}, i64 0, metadata !565), !dbg !1400
+  tail call void @llvm.dbg.value(metadata !{i32 %line}, i64 0, metadata !566), !dbg !1401
+  tail call void @llvm.dbg.value(metadata !{i32 %warn}, i64 0, metadata !567), !dbg !1402
+  %tobool = icmp eq i8* %file, null, !dbg !1403
+  %tobool1 = icmp ne i32 %warn, 0, !dbg !1404
+  br i1 %tobool, label %if.else4, label %if.then, !dbg !1403
 
 if.then:                                          ; preds = %entry
-  br i1 %tobool1, label %if.then2, label %if.else
+  br i1 %tobool1, label %if.then2, label %if.else, !dbg !1404
 
 if.then2:                                         ; preds = %if.then
-  %call = tail call i8* (i8*, ...)* @build_message_string(i8* getelementptr inbounds ([17 x i8]* @.str1, i64 0, i64 0), i8* %file, i32 %line) #11
-  br label %return
+  %call = tail call i8* (i8*, ...)* @build_message_string(i8* getelementptr inbounds ([17 x i8]* @.str1, i64 0, i64 0), i8* %file, i32 %line) #12, !dbg !1406
+  br label %return, !dbg !1406
 
 if.else:                                          ; preds = %if.then
-  %call3 = tail call i8* (i8*, ...)* @build_message_string(i8* getelementptr inbounds ([8 x i8]* @.str2, i64 0, i64 0), i8* %file, i32 %line) #11
-  br label %return
+  %call3 = tail call i8* (i8*, ...)* @build_message_string(i8* getelementptr inbounds ([8 x i8]* @.str2, i64 0, i64 0), i8* %file, i32 %line) #12, !dbg !1407
+  br label %return, !dbg !1407
 
 if.else4:                                         ; preds = %entry
-  %0 = load i8** @progname, align 8, !tbaa !3
-  br i1 %tobool1, label %if.then6, label %if.else8
+  %0 = load i8** @progname, align 8, !dbg !1408, !tbaa !1178
+  br i1 %tobool1, label %if.then6, label %if.else8, !dbg !1410
 
 if.then6:                                         ; preds = %if.else4
-  %call7 = tail call i8* (i8*, ...)* @build_message_string(i8* getelementptr inbounds ([14 x i8]* @.str3, i64 0, i64 0), i8* %0) #11
-  br label %return
+  %call7 = tail call i8* (i8*, ...)* @build_message_string(i8* getelementptr inbounds ([14 x i8]* @.str3, i64 0, i64 0), i8* %0) #12, !dbg !1408
+  br label %return, !dbg !1408
 
 if.else8:                                         ; preds = %if.else4
-  %call9 = tail call i8* (i8*, ...)* @build_message_string(i8* getelementptr inbounds ([5 x i8]* @.str4, i64 0, i64 0), i8* %0) #11
-  br label %return
+  %call9 = tail call i8* (i8*, ...)* @build_message_string(i8* getelementptr inbounds ([5 x i8]* @.str4, i64 0, i64 0), i8* %0) #12, !dbg !1411
+  br label %return, !dbg !1411
 
 return:                                           ; preds = %if.else8, %if.then6, %if.else, %if.then2
   %retval.0 = phi i8* [ %call, %if.then2 ], [ %call3, %if.else ], [ %call7, %if.then6 ], [ %call9, %if.else8 ]
-  ret i8* %retval.0
+  ret i8* %retval.0, !dbg !1412
 }

@@ -1,0 +1,128 @@
+define i32 @Perl_parse_unicode_opts(i8** nocapture %popt) #0 {
+entry:
+  %0 = load i8** %popt, align 8, !tbaa !2
+  %1 = load i8* %0, align 1, !tbaa !0
+  %tobool = icmp eq i8 %1, 0
+  br i1 %tobool, label %if.end60, label %if.then
+
+if.then:                                          ; preds = %entry
+  %.off = add i8 %1, -48
+  %2 = icmp ult i8 %.off, 10
+  br i1 %2, label %if.then5, label %for.body
+
+if.then5:                                         ; preds = %if.then
+  %call = tail call i32 @atoi(i8* %0) #8
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.cond.while.cond_crit_edge, %if.then5
+  %3 = phi i8 [ %1, %if.then5 ], [ %.pre, %while.cond.while.cond_crit_edge ]
+  %p.0 = phi i8* [ %0, %if.then5 ], [ %incdec.ptr, %while.cond.while.cond_crit_edge ]
+  %.off93 = add i8 %3, -48
+  %4 = icmp ult i8 %.off93, 10
+  %incdec.ptr = getelementptr inbounds i8* %p.0, i64 1
+  br i1 %4, label %while.cond.while.cond_crit_edge, label %while.end
+
+while.cond.while.cond_crit_edge:                  ; preds = %while.cond
+  %.pre = load i8* %incdec.ptr, align 1, !tbaa !0
+  br label %while.cond
+
+while.end:                                        ; preds = %while.cond
+  switch i8 %3, label %if.then22 [
+    i8 0, label %if.end55
+    i8 10, label %if.end55
+    i8 13, label %if.end55
+  ]
+
+if.then22:                                        ; preds = %while.end
+  %conv12 = sext i8 %3 to i32
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([35 x i8]* @.str41, i64 0, i64 0), i32 %conv12) #9
+  br label %if.end55
+
+for.body:                                         ; preds = %if.then, %for.inc
+  %5 = phi i8 [ %6, %for.inc ], [ %1, %if.then ]
+  %opt.096 = phi i32 [ %opt.1, %for.inc ], [ 0, %if.then ]
+  %p.195 = phi i8* [ %incdec.ptr52, %for.inc ], [ %0, %if.then ]
+  %conv25 = sext i8 %5 to i32
+  switch i32 %conv25, label %sw.default [
+    i32 73, label %sw.bb
+    i32 79, label %sw.bb26
+    i32 69, label %sw.bb28
+    i32 83, label %sw.bb30
+    i32 105, label %sw.bb32
+    i32 111, label %sw.bb34
+    i32 68, label %sw.bb36
+    i32 76, label %sw.bb38
+    i32 65, label %sw.bb40
+  ]
+
+sw.bb:                                            ; preds = %for.body
+  %or = or i32 %opt.096, 1
+  br label %for.inc
+
+sw.bb26:                                          ; preds = %for.body
+  %or27 = or i32 %opt.096, 2
+  br label %for.inc
+
+sw.bb28:                                          ; preds = %for.body
+  %or29 = or i32 %opt.096, 4
+  br label %for.inc
+
+sw.bb30:                                          ; preds = %for.body
+  %or31 = or i32 %opt.096, 7
+  br label %for.inc
+
+sw.bb32:                                          ; preds = %for.body
+  %or33 = or i32 %opt.096, 8
+  br label %for.inc
+
+sw.bb34:                                          ; preds = %for.body
+  %or35 = or i32 %opt.096, 16
+  br label %for.inc
+
+sw.bb36:                                          ; preds = %for.body
+  %or37 = or i32 %opt.096, 24
+  br label %for.inc
+
+sw.bb38:                                          ; preds = %for.body
+  %or39 = or i32 %opt.096, 64
+  br label %for.inc
+
+sw.bb40:                                          ; preds = %for.body
+  %or41 = or i32 %opt.096, 32
+  br label %for.inc
+
+sw.default:                                       ; preds = %for.body
+  switch i8 %5, label %if.then49 [
+    i8 10, label %for.inc
+    i8 13, label %for.inc
+  ]
+
+if.then49:                                        ; preds = %sw.default
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([35 x i8]* @.str41, i64 0, i64 0), i32 %conv25) #9
+  br label %for.inc
+
+for.inc:                                          ; preds = %sw.default, %sw.default, %sw.bb, %sw.bb26, %sw.bb28, %sw.bb30, %sw.bb32, %sw.bb34, %sw.bb36, %sw.bb38, %sw.bb40, %if.then49
+  %opt.1 = phi i32 [ %opt.096, %if.then49 ], [ %opt.096, %sw.default ], [ %or41, %sw.bb40 ], [ %or39, %sw.bb38 ], [ %or37, %sw.bb36 ], [ %or35, %sw.bb34 ], [ %or33, %sw.bb32 ], [ %or31, %sw.bb30 ], [ %or29, %sw.bb28 ], [ %or27, %sw.bb26 ], [ %or, %sw.bb ], [ %opt.096, %sw.default ]
+  %incdec.ptr52 = getelementptr inbounds i8* %p.195, i64 1
+  %6 = load i8* %incdec.ptr52, align 1, !tbaa !0
+  %tobool24 = icmp eq i8 %6, 0
+  br i1 %tobool24, label %if.end55, label %for.body
+
+if.end55:                                         ; preds = %for.inc, %while.end, %while.end, %while.end, %if.then22
+  %p.2 = phi i8* [ %p.0, %if.then22 ], [ %p.0, %while.end ], [ %p.0, %while.end ], [ %p.0, %while.end ], [ %incdec.ptr52, %for.inc ]
+  %opt.2 = phi i32 [ %call, %if.then22 ], [ %call, %while.end ], [ %call, %while.end ], [ %call, %while.end ], [ %opt.1, %for.inc ]
+  %and = and i32 %opt.2, -256
+  %tobool56 = icmp eq i32 %and, 0
+  br i1 %tobool56, label %if.end60, label %if.then57
+
+if.then57:                                        ; preds = %if.end55
+  %conv59 = zext i32 %and to i64
+  tail call void (i8*, ...)* @Perl_croak(i8* getelementptr inbounds ([33 x i8]* @.str42, i64 0, i64 0), i64 %conv59) #9
+  br label %if.end60
+
+if.end60:                                         ; preds = %entry, %if.end55, %if.then57
+  %opt.292 = phi i32 [ %opt.2, %if.end55 ], [ %opt.2, %if.then57 ], [ 95, %entry ]
+  %p.291 = phi i8* [ %p.2, %if.end55 ], [ %p.2, %if.then57 ], [ %0, %entry ]
+  store i8* %p.291, i8** %popt, align 8, !tbaa !2
+  ret i32 %opt.292
+}

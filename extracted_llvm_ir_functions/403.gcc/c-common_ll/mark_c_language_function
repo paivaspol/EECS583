@@ -1,51 +1,53 @@
 define void @mark_c_language_function(%struct.language_function* %f) #0 {
 entry:
-  %tobool = icmp eq %struct.language_function* %f, null
-  br i1 %tobool, label %do.end11, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.language_function* %f}, i64 0, metadata !1912), !dbg !3638
+  %tobool = icmp eq %struct.language_function* %f, null, !dbg !3639
+  br i1 %tobool, label %do.end11, label %if.end, !dbg !3639
 
 if.end:                                           ; preds = %entry
-  %0 = bitcast %struct.language_function* %f to i8*
-  tail call void @mark_stmt_tree(i8* %0) #9
-  %x_scope_stmt_stack = getelementptr inbounds %struct.language_function* %f, i64 0, i32 1
-  %1 = load %union.tree_node** %x_scope_stmt_stack, align 8, !tbaa !3
-  %cmp = icmp eq %union.tree_node* %1, null
-  br i1 %cmp, label %do.end11, label %land.lhs.true
+  %0 = bitcast %struct.language_function* %f to i8*, !dbg !3640
+  tail call void @mark_stmt_tree(i8* %0) #10, !dbg !3640
+  %x_scope_stmt_stack = getelementptr inbounds %struct.language_function* %f, i64 0, i32 1, !dbg !3641
+  %1 = load %union.tree_node** %x_scope_stmt_stack, align 8, !dbg !3641, !tbaa !2305
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %1}, i64 0, metadata !1913), !dbg !3641
+  %cmp = icmp eq %union.tree_node* %1, null, !dbg !3641
+  br i1 %cmp, label %do.end11, label %land.lhs.true, !dbg !3641
 
 land.lhs.true:                                    ; preds = %if.end
-  %2 = bitcast %union.tree_node* %1 to i8*
-  %call = tail call i32 @ggc_set_mark(i8* %2) #8
-  %tobool1 = icmp eq i32 %call, 0
-  br i1 %tobool1, label %do.body3, label %do.end11
+  %2 = bitcast %union.tree_node* %1 to i8*, !dbg !3641
+  %call = tail call i32 @ggc_set_mark(i8* %2) #9, !dbg !3641
+  %tobool1 = icmp eq i32 %call, 0, !dbg !3641
+  br i1 %tobool1, label %do.body3, label %do.end11, !dbg !3641
 
 do.body3:                                         ; preds = %land.lhs.true
-  %3 = load %struct.varray_head_tag** @ggc_pending_trees, align 8, !tbaa !3
-  %elements_used = getelementptr inbounds %struct.varray_head_tag* %3, i64 0, i32 1
-  %4 = load i64* %elements_used, align 8, !tbaa !4
-  %num_elements = getelementptr inbounds %struct.varray_head_tag* %3, i64 0, i32 0
-  %5 = load i64* %num_elements, align 8, !tbaa !4
-  %cmp4 = icmp ult i64 %4, %5
-  br i1 %cmp4, label %if.end8, label %if.then5
+  %3 = load %struct.varray_head_tag** @ggc_pending_trees, align 8, !dbg !3642, !tbaa !2305
+  %elements_used = getelementptr inbounds %struct.varray_head_tag* %3, i64 0, i32 1, !dbg !3642
+  %4 = load i64* %elements_used, align 8, !dbg !3642, !tbaa !2378
+  %num_elements = getelementptr inbounds %struct.varray_head_tag* %3, i64 0, i32 0, !dbg !3642
+  %5 = load i64* %num_elements, align 8, !dbg !3642, !tbaa !2378
+  %cmp4 = icmp ult i64 %4, %5, !dbg !3642
+  br i1 %cmp4, label %if.end8, label %if.then5, !dbg !3642
 
 if.then5:                                         ; preds = %do.body3
-  %mul = shl i64 %5, 1
-  %call7 = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %3, i64 %mul) #8
-  store %struct.varray_head_tag* %call7, %struct.varray_head_tag** @ggc_pending_trees, align 8, !tbaa !3
+  %mul = shl i64 %5, 1, !dbg !3642
+  %call7 = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %3, i64 %mul) #9, !dbg !3642
+  store %struct.varray_head_tag* %call7, %struct.varray_head_tag** @ggc_pending_trees, align 8, !dbg !3642, !tbaa !2305
   %elements_used9.phi.trans.insert = getelementptr inbounds %struct.varray_head_tag* %call7, i64 0, i32 1
-  %.pre = load i64* %elements_used9.phi.trans.insert, align 8, !tbaa !4
-  br label %if.end8
+  %.pre = load i64* %elements_used9.phi.trans.insert, align 8, !dbg !3642, !tbaa !2378
+  br label %if.end8, !dbg !3642
 
 if.end8:                                          ; preds = %do.body3, %if.then5
   %6 = phi i64 [ %4, %do.body3 ], [ %.pre, %if.then5 ]
   %7 = phi %struct.varray_head_tag* [ %3, %do.body3 ], [ %call7, %if.then5 ]
-  %elements_used9 = getelementptr inbounds %struct.varray_head_tag* %7, i64 0, i32 1
-  %inc = add i64 %6, 1
-  store i64 %inc, i64* %elements_used9, align 8, !tbaa !4
-  %data = getelementptr inbounds %struct.varray_head_tag* %7, i64 0, i32 4
-  %tree = bitcast %union.varray_data_tag* %data to [1 x %union.tree_node*]*
-  %arrayidx = getelementptr inbounds [1 x %union.tree_node*]* %tree, i64 0, i64 %6
-  store %union.tree_node* %1, %union.tree_node** %arrayidx, align 8, !tbaa !3
-  br label %do.end11
+  %elements_used9 = getelementptr inbounds %struct.varray_head_tag* %7, i64 0, i32 1, !dbg !3642
+  %inc = add i64 %6, 1, !dbg !3642
+  store i64 %inc, i64* %elements_used9, align 8, !dbg !3642, !tbaa !2378
+  %data = getelementptr inbounds %struct.varray_head_tag* %7, i64 0, i32 4, !dbg !3642
+  %tree = bitcast %union.varray_data_tag* %data to [1 x %union.tree_node*]*, !dbg !3642
+  %arrayidx = getelementptr inbounds [1 x %union.tree_node*]* %tree, i64 0, i64 %6, !dbg !3642
+  store %union.tree_node* %1, %union.tree_node** %arrayidx, align 8, !dbg !3642, !tbaa !2305
+  br label %do.end11, !dbg !3642
 
 do.end11:                                         ; preds = %land.lhs.true, %if.end, %entry, %if.end8
-  ret void
+  ret void, !dbg !3644
 }

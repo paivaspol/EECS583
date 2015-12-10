@@ -1,35 +1,37 @@
 define internal fastcc void @mark_clobber(%struct.rtx_def* nocapture %pat, %struct.rtx_def* %insn) #0 {
 entry:
-  br label %while.cond
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %pat}, i64 0, metadata !1350), !dbg !3931
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !1351), !dbg !3931
+  br label %while.cond, !dbg !3932
 
 while.cond:                                       ; preds = %while.cond, %entry
   %pat.pn = phi %struct.rtx_def* [ %pat, %entry ], [ %clob.0, %while.cond ]
-  %clob.0.in.in = getelementptr inbounds %struct.rtx_def* %pat.pn, i64 0, i32 1, i64 0
-  %clob.0.in = bitcast %union.rtunion_def* %clob.0.in.in to %struct.rtx_def**
-  %clob.0 = load %struct.rtx_def** %clob.0.in, align 8
-  %0 = bitcast %struct.rtx_def* %clob.0 to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %bf.clear.off = add i32 %bf.clear, -63
-  %1 = icmp ult i32 %bf.clear.off, 2
-  br i1 %1, label %while.cond, label %while.end
+  %clob.0.in.in = getelementptr inbounds %struct.rtx_def* %pat.pn, i64 0, i32 1, i64 0, !dbg !3933
+  %clob.0.in = bitcast %union.rtunion_def* %clob.0.in.in to %struct.rtx_def**, !dbg !3933
+  %clob.0 = load %struct.rtx_def** %clob.0.in, align 8, !dbg !3933
+  %0 = bitcast %struct.rtx_def* %clob.0 to i32*, !dbg !3932
+  %bf.load = load i32* %0, align 8, !dbg !3932
+  %bf.clear = and i32 %bf.load, 65535, !dbg !3932
+  %bf.clear.off = add i32 %bf.clear, -63, !dbg !3932
+  %1 = icmp ult i32 %bf.clear.off, 2, !dbg !3932
+  br i1 %1, label %while.cond, label %while.end, !dbg !3932
 
 while.end:                                        ; preds = %while.cond
-  %cmp9 = icmp eq i32 %bf.clear, 61
-  br i1 %cmp9, label %if.then, label %if.else
+  %cmp9 = icmp eq i32 %bf.clear, 61, !dbg !3934
+  br i1 %cmp9, label %if.then, label %if.else, !dbg !3934
 
 if.then:                                          ; preds = %while.end
-  %2 = load %struct.bitmap_head_def** @reg_set_bitmap, align 8, !tbaa !0
-  %arrayidx11 = getelementptr inbounds %struct.rtx_def* %clob.0, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx11 to i32*
-  %3 = load i32* %rtuint, align 4, !tbaa !3
-  tail call void @bitmap_set_bit(%struct.bitmap_head_def* %2, i32 %3) #6
-  br label %if.end
+  %2 = load %struct.bitmap_head_def** @reg_set_bitmap, align 8, !dbg !3935, !tbaa !1729
+  %arrayidx11 = getelementptr inbounds %struct.rtx_def* %clob.0, i64 0, i32 1, i64 0, !dbg !3935
+  %rtuint = bitcast %union.rtunion_def* %arrayidx11 to i32*, !dbg !3935
+  %3 = load i32* %rtuint, align 4, !dbg !3935, !tbaa !1735
+  tail call void @bitmap_set_bit(%struct.bitmap_head_def* %2, i32 %3) #7, !dbg !3935
+  br label %if.end, !dbg !3935
 
 if.else:                                          ; preds = %while.end
-  tail call fastcc void @record_last_mem_set_info(%struct.rtx_def* %insn) #7
+  tail call fastcc void @record_last_mem_set_info(%struct.rtx_def* %insn) #8, !dbg !3936
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
-  ret void
+  ret void, !dbg !3937
 }

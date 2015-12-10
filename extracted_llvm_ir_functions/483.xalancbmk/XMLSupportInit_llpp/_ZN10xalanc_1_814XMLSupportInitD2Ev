@@ -1,0 +1,62 @@
+define void @_ZN10xalanc_1_814XMLSupportInitD2Ev(%"class.xalanc_1_8::XMLSupportInit"* %this) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XMLSupportInit"* %this}, i64 0, metadata !126), !dbg !151
+  %0 = load i64* @_ZN10xalanc_1_814XMLSupportInit13s_initCounterE, align 8, !dbg !152, !tbaa !141
+  %dec = add i64 %0, -1, !dbg !152
+  store i64 %dec, i64* @_ZN10xalanc_1_814XMLSupportInit13s_initCounterE, align 8, !dbg !152, !tbaa !141
+  %cmp = icmp eq i64 %dec, 0, !dbg !154
+  br i1 %cmp, label %if.then, label %if.end, !dbg !154
+
+if.then:                                          ; preds = %entry
+  invoke void @_ZN10xalanc_1_820FormatterToXML_UTF169terminateEv() #4
+          to label %.noexc unwind label %lpad
+
+.noexc:                                           ; preds = %if.then
+  invoke void @_ZN10xalanc_1_819FormatterToXML_UTF89terminateEv() #4
+          to label %if.end unwind label %lpad
+
+lpad:                                             ; preds = %.noexc, %if.then
+  %1 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !155
+  %2 = extractvalue { i8*, i32 } %1, 0, !dbg !155
+  %3 = extractvalue { i8*, i32 } %1, 1, !dbg !155
+  %m_domSupportInit4 = getelementptr inbounds %"class.xalanc_1_8::XMLSupportInit"* %this, i64 0, i32 1, !dbg !157
+  invoke void @_ZN10xalanc_1_814DOMSupportInitD1Ev(%"class.xalanc_1_8::DOMSupportInit"* %m_domSupportInit4) #4
+          to label %ehcleanup unwind label %terminate.lpad, !dbg !157
+
+if.end:                                           ; preds = %.noexc, %entry
+  %m_domSupportInit = getelementptr inbounds %"class.xalanc_1_8::XMLSupportInit"* %this, i64 0, i32 1, !dbg !158
+  invoke void @_ZN10xalanc_1_814DOMSupportInitD1Ev(%"class.xalanc_1_8::DOMSupportInit"* %m_domSupportInit) #4
+          to label %invoke.cont3 unwind label %lpad2, !dbg !158
+
+invoke.cont3:                                     ; preds = %if.end
+  %m_platformSupportInit = getelementptr inbounds %"class.xalanc_1_8::XMLSupportInit"* %this, i64 0, i32 0, !dbg !157
+  tail call void @_ZN10xalanc_1_819PlatformSupportInitD1Ev(%"class.xalanc_1_8::PlatformSupportInit"* %m_platformSupportInit) #4, !dbg !157
+  ret void, !dbg !157
+
+lpad2:                                            ; preds = %if.end
+  %4 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !158
+  %5 = extractvalue { i8*, i32 } %4, 0, !dbg !158
+  %6 = extractvalue { i8*, i32 } %4, 1, !dbg !158
+  br label %ehcleanup, !dbg !158
+
+ehcleanup:                                        ; preds = %lpad, %lpad2
+  %exn.slot.0 = phi i8* [ %5, %lpad2 ], [ %2, %lpad ]
+  %ehselector.slot.0 = phi i32 [ %6, %lpad2 ], [ %3, %lpad ]
+  %m_platformSupportInit6 = getelementptr inbounds %"class.xalanc_1_8::XMLSupportInit"* %this, i64 0, i32 0, !dbg !157
+  invoke void @_ZN10xalanc_1_819PlatformSupportInitD1Ev(%"class.xalanc_1_8::PlatformSupportInit"* %m_platformSupportInit6) #4
+          to label %eh.resume unwind label %terminate.lpad, !dbg !157
+
+eh.resume:                                        ; preds = %ehcleanup
+  %lpad.val = insertvalue { i8*, i32 } undef, i8* %exn.slot.0, 0, !dbg !157
+  %lpad.val8 = insertvalue { i8*, i32 } %lpad.val, i32 %ehselector.slot.0, 1, !dbg !157
+  resume { i8*, i32 } %lpad.val8, !dbg !157
+
+terminate.lpad:                                   ; preds = %ehcleanup, %lpad
+  %7 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !157
+  %8 = extractvalue { i8*, i32 } %7, 0, !dbg !157
+  tail call void @__clang_call_terminate(i8* %8) #5, !dbg !157
+  unreachable, !dbg !157
+}

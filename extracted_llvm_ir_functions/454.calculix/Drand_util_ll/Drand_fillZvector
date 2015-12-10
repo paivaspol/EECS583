@@ -1,33 +1,36 @@
 define void @Drand_fillZvector(%struct._Drand* %drand, i32 %size, double* %dvec) #0 {
 entry:
-  %cmp = icmp eq %struct._Drand* %drand, null
-  %cmp1 = icmp slt i32 %size, 0
-  %or.cond = or i1 %cmp, %cmp1
-  %cmp3 = icmp eq double* %dvec, null
-  %or.cond14 = or i1 %or.cond, %cmp3
-  br i1 %or.cond14, label %if.then, label %for.cond.preheader
+  tail call void @llvm.dbg.value(metadata !{%struct._Drand* %drand}, i64 0, metadata !33), !dbg !100
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !34), !dbg !101
+  tail call void @llvm.dbg.value(metadata !{double* %dvec}, i64 0, metadata !35), !dbg !102
+  %cmp = icmp eq %struct._Drand* %drand, null, !dbg !103
+  %cmp1 = icmp slt i32 %size, 0, !dbg !103
+  %or.cond = or i1 %cmp, %cmp1, !dbg !103
+  %cmp3 = icmp eq double* %dvec, null, !dbg !103
+  %or.cond14 = or i1 %or.cond, %cmp3, !dbg !103
+  br i1 %or.cond14, label %if.then, label %for.cond.preheader, !dbg !103
 
 for.cond.preheader:                               ; preds = %entry
-  %mul = shl nsw i32 %size, 1
-  %cmp415 = icmp sgt i32 %size, 0
-  br i1 %cmp415, label %for.body, label %for.end
+  %mul = shl nsw i32 %size, 1, !dbg !104
+  %cmp415 = icmp sgt i32 %size, 0, !dbg !104
+  br i1 %cmp415, label %for.body, label %for.end, !dbg !104
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([57 x i8]* @.str1, i64 0, i64 0), %struct._Drand* %drand, i32 %size, double* %dvec) #3
-  tail call void @exit(i32 -1) #4
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !106, !tbaa !56
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([57 x i8]* @.str1, i64 0, i64 0), %struct._Drand* %drand, i32 %size, double* %dvec) #4, !dbg !106
+  tail call void @exit(i32 -1) #5, !dbg !108
+  unreachable, !dbg !108
 
 for.body:                                         ; preds = %for.cond.preheader, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
-  %call5 = tail call double @Drand_value(%struct._Drand* %drand) #5
-  %arrayidx = getelementptr inbounds double* %dvec, i64 %indvars.iv
-  store double %call5, double* %arrayidx, align 8, !tbaa !4
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %1 = trunc i64 %indvars.iv.next to i32
-  %cmp4 = icmp slt i32 %1, %mul
-  br i1 %cmp4, label %for.body, label %for.end
+  %call5 = tail call double @Drand_value(%struct._Drand* %drand) #6, !dbg !109
+  %arrayidx = getelementptr inbounds double* %dvec, i64 %indvars.iv, !dbg !109
+  store double %call5, double* %arrayidx, align 8, !dbg !109, !tbaa !64
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !104
+  %1 = trunc i64 %indvars.iv.next to i32, !dbg !104
+  %cmp4 = icmp slt i32 %1, %mul, !dbg !104
+  br i1 %cmp4, label %for.body, label %for.end, !dbg !104
 
 for.end:                                          ; preds = %for.body, %for.cond.preheader
-  ret void
+  ret void, !dbg !111
 }

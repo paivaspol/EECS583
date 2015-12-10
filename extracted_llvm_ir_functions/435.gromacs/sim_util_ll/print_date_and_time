@@ -1,39 +1,49 @@
-define i64 @print_date_and_time(%struct.__sFILE* %log, i32 %nodeid, i8* %title) #4 {
+define i64 @print_date_and_time(%struct._IO_FILE* %log, i32 %nodeid, i8* %title) #0 {
+entry:
   %time_string = alloca [4096 x i8], align 16
   %now = alloca i64, align 8
-  %1 = getelementptr inbounds [4096 x i8]* %time_string, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 4096, i8* %1) #5
-  %2 = tail call i64 @time(i64* null) #10
-  store i64 %2, i64* %now, align 8, !tbaa !13
-  %3 = call i8* @ctime(i64* %now) #10
-  %4 = load i8* %3, align 1, !tbaa !16
-  %5 = icmp sgt i8 %4, 31
-  br i1 %5, label %.lr.ph, label %._crit_edge
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %log}, i64 0, metadata !537), !dbg !1528
+  call void @llvm.dbg.value(metadata !{i32 %nodeid}, i64 0, metadata !538), !dbg !1528
+  call void @llvm.dbg.value(metadata !{i8* %title}, i64 0, metadata !539), !dbg !1528
+  %0 = getelementptr inbounds [4096 x i8]* %time_string, i64 0, i64 0, !dbg !1529
+  call void @llvm.lifetime.start(i64 4096, i8* %0) #2, !dbg !1529
+  call void @llvm.dbg.declare(metadata !{[4096 x i8]* %time_string}, metadata !542), !dbg !1529
+  call void @llvm.dbg.declare(metadata !{i64* %now}, metadata !546), !dbg !1530
+  %call = call i64 @time(i64* null) #7, !dbg !1531
+  call void @llvm.dbg.value(metadata !{i64 %call}, i64 0, metadata !546), !dbg !1531
+  store i64 %call, i64* %now, align 8, !dbg !1531, !tbaa !1513
+  %call1 = call i8* @ctime(i64* %now) #7, !dbg !1532
+  call void @llvm.dbg.value(metadata !{i8* %call1}, i64 0, metadata !541), !dbg !1532
+  call void @llvm.dbg.value(metadata !332, i64 0, metadata !540), !dbg !1533
+  %1 = load i8* %call1, align 1, !dbg !1533, !tbaa !1505
+  %cmp15 = icmp sgt i8 %1, 31, !dbg !1533
+  br i1 %cmp15, label %for.body, label %for.end, !dbg !1533
 
-.lr.ph:                                           ; preds = %0, %.lr.ph
-  %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %0 ]
-  %6 = phi i8* [ %11, %.lr.ph ], [ %1, %0 ]
-  %7 = phi i8 [ %9, %.lr.ph ], [ %4, %0 ]
-  store i8 %7, i8* %6, align 1, !tbaa !16
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %8 = getelementptr inbounds i8* %3, i64 %indvars.iv.next
-  %9 = load i8* %8, align 1, !tbaa !16
-  %10 = icmp sgt i8 %9, 31
-  %11 = getelementptr inbounds [4096 x i8]* %time_string, i64 0, i64 %indvars.iv.next
-  br i1 %10, label %.lr.ph, label %._crit_edge
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %arrayidx618 = phi i8* [ %arrayidx6, %for.body ], [ %0, %entry ]
+  %2 = phi i8 [ %3, %for.body ], [ %1, %entry ]
+  store i8 %2, i8* %arrayidx618, align 1, !dbg !1533, !tbaa !1505
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1533
+  %arrayidx = getelementptr inbounds i8* %call1, i64 %indvars.iv.next, !dbg !1533
+  %3 = load i8* %arrayidx, align 1, !dbg !1533, !tbaa !1505
+  %cmp = icmp sgt i8 %3, 31, !dbg !1533
+  %arrayidx6 = getelementptr inbounds [4096 x i8]* %time_string, i64 0, i64 %indvars.iv.next, !dbg !1533
+  br i1 %cmp, label %for.body, label %for.end, !dbg !1533
 
-._crit_edge:                                      ; preds = %.lr.ph, %0
-  %.lcssa = phi i8* [ %1, %0 ], [ %11, %.lr.ph ]
-  store i8 0, i8* %.lcssa, align 1, !tbaa !16
-  %12 = icmp eq %struct.__sFILE* %log, null
-  br i1 %12, label %15, label %13
+for.end:                                          ; preds = %for.body, %entry
+  %arrayidx6.lcssa = phi i8* [ %0, %entry ], [ %arrayidx6, %for.body ]
+  store i8 0, i8* %arrayidx6.lcssa, align 1, !dbg !1535, !tbaa !1505
+  %tobool = icmp eq %struct._IO_FILE* %log, null, !dbg !1536
+  br i1 %tobool, label %if.end, label %if.then, !dbg !1536
 
-; <label>:13                                      ; preds = %._crit_edge
-  %14 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([18 x i8]* @.str4, i64 0, i64 0), i8* %title, i32 %nodeid, i8* %1) #10
-  br label %15
+if.then:                                          ; preds = %for.end
+  %call9 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([18 x i8]* @.str4, i64 0, i64 0), i8* %title, i32 %nodeid, i8* %0) #7, !dbg !1537
+  br label %if.end, !dbg !1537
 
-; <label>:15                                      ; preds = %._crit_edge, %13
-  %16 = load i64* %now, align 8, !tbaa !13
-  call void @llvm.lifetime.end(i64 4096, i8* %1) #5
-  ret i64 %16
+if.end:                                           ; preds = %for.end, %if.then
+  call void @llvm.dbg.value(metadata !{i64* %now}, i64 0, metadata !546), !dbg !1538
+  %4 = load i64* %now, align 8, !dbg !1538, !tbaa !1513
+  call void @llvm.lifetime.end(i64 4096, i8* %0) #2, !dbg !1539
+  ret i64 %4, !dbg !1539
 }

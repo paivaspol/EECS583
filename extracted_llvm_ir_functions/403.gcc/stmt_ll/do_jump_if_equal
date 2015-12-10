@@ -1,47 +1,51 @@
 define internal fastcc void @do_jump_if_equal(%struct.rtx_def* %op1, %struct.rtx_def* %op2, %struct.rtx_def* %label, i32 %unsignedp) #0 {
 entry:
-  %0 = bitcast %struct.rtx_def* %op1 to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 54
-  br i1 %cmp, label %land.lhs.true, label %if.else
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op1}, i64 0, metadata !2060), !dbg !4788
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op2}, i64 0, metadata !2061), !dbg !4788
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %label}, i64 0, metadata !2062), !dbg !4788
+  tail call void @llvm.dbg.value(metadata !{i32 %unsignedp}, i64 0, metadata !2063), !dbg !4789
+  %0 = bitcast %struct.rtx_def* %op1 to i32*, !dbg !4790
+  %bf.load = load i32* %0, align 8, !dbg !4790
+  %bf.clear = and i32 %bf.load, 65535, !dbg !4790
+  %cmp = icmp eq i32 %bf.clear, 54, !dbg !4790
+  br i1 %cmp, label %land.lhs.true, label %if.else, !dbg !4790
 
 land.lhs.true:                                    ; preds = %entry
-  %1 = bitcast %struct.rtx_def* %op2 to i32*
-  %bf.load1 = load i32* %1, align 8
-  %bf.clear2 = and i32 %bf.load1, 65535
-  %cmp3 = icmp eq i32 %bf.clear2, 54
-  br i1 %cmp3, label %if.then, label %if.else
+  %1 = bitcast %struct.rtx_def* %op2 to i32*, !dbg !4790
+  %bf.load1 = load i32* %1, align 8, !dbg !4790
+  %bf.clear2 = and i32 %bf.load1, 65535, !dbg !4790
+  %cmp3 = icmp eq i32 %bf.clear2, 54, !dbg !4790
+  br i1 %cmp3, label %if.then, label %if.else, !dbg !4790
 
 if.then:                                          ; preds = %land.lhs.true
-  %rtwint = getelementptr inbounds %struct.rtx_def* %op1, i64 0, i32 1, i64 0, i32 0
-  %2 = load i64* %rtwint, align 8, !tbaa !3
-  %rtwint6 = getelementptr inbounds %struct.rtx_def* %op2, i64 0, i32 1, i64 0, i32 0
-  %3 = load i64* %rtwint6, align 8, !tbaa !3
-  %cmp7 = icmp eq i64 %2, %3
-  br i1 %cmp7, label %if.then8, label %if.end18
+  %rtwint = getelementptr inbounds %struct.rtx_def* %op1, i64 0, i32 1, i64 0, i32 0, !dbg !4791
+  %2 = load i64* %rtwint, align 8, !dbg !4791, !tbaa !2460
+  %rtwint6 = getelementptr inbounds %struct.rtx_def* %op2, i64 0, i32 1, i64 0, i32 0, !dbg !4791
+  %3 = load i64* %rtwint6, align 8, !dbg !4791, !tbaa !2460
+  %cmp7 = icmp eq i64 %2, %3, !dbg !4791
+  br i1 %cmp7, label %if.then8, label %if.end18, !dbg !4791
 
 if.then8:                                         ; preds = %if.then
-  tail call void @emit_jump(%struct.rtx_def* %label) #9
-  br label %if.end18
+  tail call void @emit_jump(%struct.rtx_def* %label) #10, !dbg !4793
+  br label %if.end18, !dbg !4793
 
 if.else:                                          ; preds = %land.lhs.true, %entry
-  %bf.clear10 = and i32 %bf.load, 16711680
-  %cmp11 = icmp eq i32 %bf.clear10, 0
-  br i1 %cmp11, label %cond.true, label %cond.end
+  %bf.clear10 = and i32 %bf.load, 16711680, !dbg !4794
+  %cmp11 = icmp eq i32 %bf.clear10, 0, !dbg !4794
+  br i1 %cmp11, label %cond.true, label %cond.end, !dbg !4794
 
 cond.true:                                        ; preds = %if.else
-  %4 = bitcast %struct.rtx_def* %op2 to i32*
-  %bf.load12 = load i32* %4, align 8
-  br label %cond.end
+  %4 = bitcast %struct.rtx_def* %op2 to i32*, !dbg !4794
+  %bf.load12 = load i32* %4, align 8, !dbg !4794
+  br label %cond.end, !dbg !4794
 
 cond.end:                                         ; preds = %if.else, %cond.true
   %bf.load12.sink = phi i32 [ %bf.load12, %cond.true ], [ %bf.load, %if.else ]
-  %bf.lshr13 = lshr i32 %bf.load12.sink, 16
-  %bf.clear14 = and i32 %bf.lshr13, 255
-  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %op1, %struct.rtx_def* %op2, i32 103, %struct.rtx_def* null, i32 %bf.clear14, i32 %unsignedp, %struct.rtx_def* %label) #7
+  %bf.lshr13 = lshr i32 %bf.load12.sink, 16, !dbg !4794
+  %bf.clear14 = and i32 %bf.lshr13, 255, !dbg !4794
+  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %op1, %struct.rtx_def* %op2, i32 103, %struct.rtx_def* null, i32 %bf.clear14, i32 %unsignedp, %struct.rtx_def* %label) #8, !dbg !4794
   br label %if.end18
 
 if.end18:                                         ; preds = %if.then, %if.then8, %cond.end
-  ret void
+  ret void, !dbg !4795
 }

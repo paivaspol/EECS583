@@ -1,0 +1,67 @@
+define zeroext i1 @_ZN11xercesc_2_59XMLReader10peekStringEPKt(%"class.xercesc_2_5::XMLReader"* %this, i16* %toPeek) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLReader"* %this}, i64 0, metadata !1542), !dbg !3279
+  tail call void @llvm.dbg.value(metadata !{i16* %toPeek}, i64 0, metadata !1543), !dbg !3279
+  tail call void @llvm.dbg.value(metadata !{i16* %toPeek}, i64 0, metadata !3280), !dbg !3282
+  %cmp.i = icmp eq i16* %toPeek, null, !dbg !3283
+  br i1 %cmp.i, label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, label %lor.lhs.false.i, !dbg !3283
+
+lor.lhs.false.i:                                  ; preds = %entry
+  %0 = load i16* %toPeek, align 2, !dbg !3283, !tbaa !2400
+  %cmp1.i = icmp eq i16 %0, 0, !dbg !3283
+  br i1 %cmp1.i, label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, label %while.cond.i, !dbg !3283
+
+while.cond.i:                                     ; preds = %lor.lhs.false.i, %while.cond.i
+  %src.pn.i = phi i16* [ %pszTmp.0.i, %while.cond.i ], [ %toPeek, %lor.lhs.false.i ]
+  %pszTmp.0.i = getelementptr inbounds i16* %src.pn.i, i64 1, !dbg !3284
+  %1 = load i16* %pszTmp.0.i, align 2, !dbg !3285, !tbaa !2400
+  %tobool.i = icmp eq i16 %1, 0, !dbg !3285
+  br i1 %tobool.i, label %while.end.i, label %while.cond.i, !dbg !3285
+
+while.end.i:                                      ; preds = %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %pszTmp.0.i to i64, !dbg !3286
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %toPeek to i64, !dbg !3286
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !3286
+  %sub.ptr.div7.i = lshr exact i64 %sub.ptr.sub.i, 1, !dbg !3286
+  %conv2.i = trunc i64 %sub.ptr.div7.i to i32, !dbg !3286
+  br label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, !dbg !3286
+
+_ZN11xercesc_2_59XMLString9stringLenEPKt.exit:    ; preds = %entry, %lor.lhs.false.i, %while.end.i
+  %retval.0.i = phi i32 [ %conv2.i, %while.end.i ], [ 0, %lor.lhs.false.i ], [ 0, %entry ]
+  tail call void @llvm.dbg.value(metadata !{i32 %retval.0.i}, i64 0, metadata !1544), !dbg !3281
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLReader"* %this}, i64 0, metadata !3287), !dbg !3289
+  %fCharsAvail.i14 = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %this, i64 0, i32 2, !dbg !3290
+  %2 = load i32* %fCharsAvail.i14, align 4, !dbg !3290, !tbaa !2430
+  %fCharIndex.i15 = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %this, i64 0, i32 0, !dbg !3290
+  %3 = load i32* %fCharIndex.i15, align 4, !dbg !3290, !tbaa !2430
+  %sub.i16 = sub i32 %2, %3, !dbg !3290
+  tail call void @llvm.dbg.value(metadata !{i32 %sub.i16}, i64 0, metadata !1545), !dbg !3288
+  br label %while.cond, !dbg !3291
+
+while.cond:                                       ; preds = %while.body, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit
+  %4 = phi i32 [ %3, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit ], [ %6, %while.body ]
+  %charsLeft.0 = phi i32 [ %sub.i16, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit ], [ %sub.i, %while.body ]
+  %cmp = icmp ult i32 %charsLeft.0, %retval.0.i, !dbg !3291
+  br i1 %cmp, label %while.body, label %while.end, !dbg !3291
+
+while.body:                                       ; preds = %while.cond
+  %call3 = tail call zeroext i1 @_ZN11xercesc_2_59XMLReader17refreshCharBufferEv(%"class.xercesc_2_5::XMLReader"* %this) #10, !dbg !3292
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLReader"* %this}, i64 0, metadata !3293), !dbg !3295
+  %5 = load i32* %fCharsAvail.i14, align 4, !dbg !3296, !tbaa !2430
+  %6 = load i32* %fCharIndex.i15, align 4, !dbg !3296, !tbaa !2430
+  %sub.i = sub i32 %5, %6, !dbg !3296
+  tail call void @llvm.dbg.value(metadata !{i32 %sub.i}, i64 0, metadata !1546), !dbg !3294
+  %cmp6 = icmp eq i32 %sub.i, %charsLeft.0, !dbg !3297
+  br i1 %cmp6, label %return, label %while.cond, !dbg !3297
+
+while.end:                                        ; preds = %while.cond
+  %idxprom = zext i32 %4 to i64, !dbg !3298
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %this, i64 0, i32 1, i64 %idxprom, !dbg !3298
+  %call7 = tail call i32 @_ZN11xercesc_2_59XMLString14compareNStringEPKtS2_j(i16* %arrayidx, i16* %toPeek, i32 %retval.0.i) #10, !dbg !3298
+  %tobool = icmp eq i32 %call7, 0, !dbg !3298
+  br label %return, !dbg !3299
+
+return:                                           ; preds = %while.body, %while.end
+  %retval.0 = phi i1 [ %tobool, %while.end ], [ false, %while.body ]
+  ret i1 %retval.0, !dbg !3299
+}

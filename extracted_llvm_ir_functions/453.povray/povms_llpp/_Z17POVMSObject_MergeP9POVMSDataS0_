@@ -1,0 +1,82 @@
+define i32 @_Z17POVMSObject_MergeP9POVMSDataS0_(%struct.POVMSData* %sourceobject, %struct.POVMSData* %destobject) #0 {
+entry:
+  %attr = alloca %struct.POVMSData, align 8
+  %t1 = alloca i32, align 4
+  %t2 = alloca i32, align 4
+  call void @llvm.dbg.value(metadata !{%struct.POVMSData* %sourceobject}, i64 0, metadata !502), !dbg !2088
+  call void @llvm.dbg.value(metadata !{%struct.POVMSData* %destobject}, i64 0, metadata !503), !dbg !2088
+  call void @llvm.dbg.value(metadata !1895, i64 0, metadata !504), !dbg !2089
+  call void @llvm.dbg.declare(metadata !{%struct.POVMSData* %attr}, metadata !505), !dbg !2090
+  call void @llvm.dbg.declare(metadata !{i32* %t1}, metadata !506), !dbg !2091
+  call void @llvm.dbg.declare(metadata !{i32* %t2}, metadata !507), !dbg !2091
+  call void @llvm.dbg.value(metadata !71, i64 0, metadata !508), !dbg !2092
+  %cmp = icmp eq %struct.POVMSData* %sourceobject, null, !dbg !2093
+  %cmp1 = icmp eq %struct.POVMSData* %destobject, null, !dbg !2094
+  %or.cond = or i1 %cmp, %cmp1, !dbg !2093
+  br i1 %or.cond, label %return, label %if.end3, !dbg !2093
+
+if.end3:                                          ; preds = %entry
+  %call = call i32 @_Z17POVMSUtil_GetTypeP9POVMSDatajPj(%struct.POVMSData* %sourceobject, i32 1329810497, i32* %t1) #8, !dbg !2095
+  %cmp4 = icmp eq i32 %call, 0, !dbg !2095
+  br i1 %cmp4, label %if.end6, label %return, !dbg !2095
+
+if.end6:                                          ; preds = %if.end3
+  %call7 = call i32 @_Z17POVMSUtil_GetTypeP9POVMSDatajPj(%struct.POVMSData* %sourceobject, i32 1329810497, i32* %t2) #8, !dbg !2096
+  %cmp8 = icmp eq i32 %call7, 0, !dbg !2096
+  br i1 %cmp8, label %if.end10, label %return, !dbg !2096
+
+if.end10:                                         ; preds = %if.end6
+  call void @llvm.dbg.value(metadata !{i32* %t1}, i64 0, metadata !506), !dbg !2097
+  %0 = load i32* %t1, align 4, !dbg !2097, !tbaa !937
+  call void @llvm.dbg.value(metadata !{i32* %t2}, i64 0, metadata !507), !dbg !2097
+  %1 = load i32* %t2, align 4, !dbg !2097, !tbaa !937
+  %cmp11 = icmp eq i32 %0, %1, !dbg !2097
+  br i1 %cmp11, label %if.end13, label %return, !dbg !2097
+
+if.end13:                                         ; preds = %if.end10
+  %2 = getelementptr inbounds %struct.POVMSData* %sourceobject, i64 0, i32 2, !dbg !2098
+  %root = bitcast %union.anon* %2 to %struct.POVMSNode**, !dbg !2098
+  %cur.046 = load %struct.POVMSNode** %root, align 8, !dbg !2098
+  %cmp1447 = icmp eq %struct.POVMSNode* %cur.046, null, !dbg !2098
+  br i1 %cmp1447, label %return, label %for.body, !dbg !2098
+
+for.cond:                                         ; preds = %if.end20
+  %next = getelementptr inbounds %struct.POVMSNode* %cur.048, i64 0, i32 1, !dbg !2098
+  %cur.0 = load %struct.POVMSNode** %next, align 8, !dbg !2098
+  %cmp14 = icmp eq %struct.POVMSNode* %cur.0, null, !dbg !2098
+  br i1 %cmp14, label %return, label %for.body, !dbg !2098
+
+for.body:                                         ; preds = %if.end13, %for.cond
+  %cur.048 = phi %struct.POVMSNode* [ %cur.0, %for.cond ], [ %cur.046, %if.end13 ]
+  %data = getelementptr inbounds %struct.POVMSNode* %cur.048, i64 0, i32 3, !dbg !2100
+  %call15 = call i32 @_Z14POVMSAttr_CopyP9POVMSDataS0_(%struct.POVMSData* %data, %struct.POVMSData* %attr) #8, !dbg !2100
+  %cmp16 = icmp eq i32 %call15, 0, !dbg !2100
+  call void @llvm.dbg.value(metadata !2102, i64 0, metadata !2103) #6, !dbg !2104
+  call void @llvm.dbg.value(metadata !925, i64 0, metadata !2105) #6, !dbg !2104
+  call void @llvm.dbg.value(metadata !2106, i64 0, metadata !2107) #6, !dbg !2104
+  br i1 %cmp16, label %if.end20, label %_Z20POVMS_AssertFunctioniPKcS0_i.exit.thread, !dbg !2108
+
+_Z20POVMS_AssertFunctioniPKcS0_i.exit.thread:     ; preds = %for.body
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !2109, !tbaa !917
+  %call.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([39 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 2084, i8* getelementptr inbounds ([40 x i8]* @.str6, i64 0, i64 0)) #9, !dbg !2109
+  br label %return, !dbg !2100
+
+if.end20:                                         ; preds = %for.body
+  %key = getelementptr inbounds %struct.POVMSNode* %cur.048, i64 0, i32 2, !dbg !2110
+  %4 = load i32* %key, align 4, !dbg !2110, !tbaa !937
+  %call21 = call i32 @_Z15POVMSObject_SetP9POVMSDataS0_j(%struct.POVMSData* %destobject, %struct.POVMSData* %attr, i32 %4) #8, !dbg !2110
+  %cmp22 = icmp eq i32 %call21, 0, !dbg !2110
+  call void @llvm.dbg.value(metadata !2102, i64 0, metadata !2111) #6, !dbg !2112
+  call void @llvm.dbg.value(metadata !925, i64 0, metadata !2113) #6, !dbg !2112
+  call void @llvm.dbg.value(metadata !2114, i64 0, metadata !2115) #6, !dbg !2112
+  br i1 %cmp22, label %for.cond, label %_Z20POVMS_AssertFunctioniPKcS0_i.exit39.thread, !dbg !2116
+
+_Z20POVMS_AssertFunctioniPKcS0_i.exit39.thread:   ; preds = %if.end20
+  %5 = load %struct._IO_FILE** @stderr, align 8, !dbg !2117, !tbaa !917
+  %call.i36 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([39 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 2090, i8* getelementptr inbounds ([40 x i8]* @.str6, i64 0, i64 0)) #9, !dbg !2117
+  br label %return, !dbg !2110
+
+return:                                           ; preds = %if.end13, %for.cond, %_Z20POVMS_AssertFunctioniPKcS0_i.exit39.thread, %_Z20POVMS_AssertFunctioniPKcS0_i.exit.thread, %if.end10, %if.end6, %if.end3, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ -15, %if.end3 ], [ -15, %if.end6 ], [ -19, %if.end10 ], [ -2, %_Z20POVMS_AssertFunctioniPKcS0_i.exit.thread ], [ -2, %_Z20POVMS_AssertFunctioniPKcS0_i.exit39.thread ], [ 0, %for.cond ], [ 0, %if.end13 ]
+  ret i32 %retval.0, !dbg !2118
+}

@@ -1,37 +1,39 @@
 define internal fastcc void @end_directive(%struct.cpp_reader* %pfile, i32 %skip_line) #0 {
 entry:
-  %tobool = icmp eq i32 %skip_line, 0
-  br i1 %tobool, label %if.end4, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !867), !dbg !1119
+  tail call void @llvm.dbg.value(metadata !{i32 %skip_line}, i64 0, metadata !868), !dbg !1120
+  %tobool = icmp eq i32 %skip_line, 0, !dbg !1121
+  br i1 %tobool, label %if.end4, label %if.then, !dbg !1121
 
 if.then:                                          ; preds = %entry
-  tail call fastcc void @skip_rest_of_line(%struct.cpp_reader* %pfile) #9
-  %keep_tokens = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 19
-  %0 = load i32* %keep_tokens, align 4, !tbaa !2
-  %tobool1 = icmp eq i32 %0, 0
-  br i1 %tobool1, label %if.then2, label %if.end4
+  tail call fastcc void @skip_rest_of_line(%struct.cpp_reader* %pfile) #10, !dbg !1122
+  %keep_tokens = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 19, !dbg !1124
+  %0 = load i32* %keep_tokens, align 4, !dbg !1124, !tbaa !1065
+  %tobool1 = icmp eq i32 %0, 0, !dbg !1124
+  br i1 %tobool1, label %if.then2, label %if.end4, !dbg !1124
 
 if.then2:                                         ; preds = %if.then
-  %base_run = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 16
-  %cur_run = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 17
-  store %struct.tokenrun* %base_run, %struct.tokenrun** %cur_run, align 8, !tbaa !3
-  %base = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 16, i32 2
-  %1 = load %struct.cpp_token** %base, align 8, !tbaa !3
-  %cur_token = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 15
-  store %struct.cpp_token* %1, %struct.cpp_token** %cur_token, align 8, !tbaa !3
-  br label %if.end4
+  %base_run = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 16, !dbg !1125
+  %cur_run = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 17, !dbg !1125
+  store %struct.tokenrun* %base_run, %struct.tokenrun** %cur_run, align 8, !dbg !1125, !tbaa !1070
+  %base = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 16, i32 2, !dbg !1127
+  %1 = load %struct.cpp_token** %base, align 8, !dbg !1127, !tbaa !1070
+  %cur_token = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 15, !dbg !1127
+  store %struct.cpp_token* %1, %struct.cpp_token** %cur_token, align 8, !dbg !1127, !tbaa !1070
+  br label %if.end4, !dbg !1128
 
 if.end4:                                          ; preds = %if.then, %entry, %if.then2
-  %discard_comments = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 17
-  %2 = load i8* %discard_comments, align 1, !tbaa !0
-  %lnot = icmp eq i8 %2, 0
-  %conv = zext i1 %lnot to i8
-  %save_comments = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 1, i32 3
-  store i8 %conv, i8* %save_comments, align 1, !tbaa !0
-  %in_directive = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 1, i32 0
-  store i8 0, i8* %in_directive, align 1, !tbaa !0
-  %angled_headers = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 1, i32 2
-  store i8 0, i8* %angled_headers, align 1, !tbaa !0
-  %directive = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 11
-  store %struct.directive* null, %struct.directive** %directive, align 8, !tbaa !3
-  ret void
+  %discard_comments = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 17, !dbg !1129
+  %2 = load i8* %discard_comments, align 1, !dbg !1129, !tbaa !1061
+  %lnot = icmp eq i8 %2, 0, !dbg !1129
+  %conv = zext i1 %lnot to i8, !dbg !1129
+  %save_comments = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 1, i32 3, !dbg !1129
+  store i8 %conv, i8* %save_comments, align 1, !dbg !1129, !tbaa !1061
+  %in_directive = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 1, i32 0, !dbg !1130
+  store i8 0, i8* %in_directive, align 1, !dbg !1130, !tbaa !1061
+  %angled_headers = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 1, i32 2, !dbg !1131
+  store i8 0, i8* %angled_headers, align 1, !dbg !1131, !tbaa !1061
+  %directive = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 11, !dbg !1132
+  store %struct.directive* null, %struct.directive** %directive, align 8, !dbg !1132, !tbaa !1070
+  ret void, !dbg !1133
 }

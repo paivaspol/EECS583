@@ -1,86 +1,93 @@
 define internal fastcc %struct.bitmap_element_def* @bitmap_element_allocate() #0 {
 entry:
-  %0 = load %struct.bitmap_element_def** @bitmap_free, align 8, !tbaa !0
-  %cmp = icmp eq %struct.bitmap_element_def* %0, null
-  br i1 %cmp, label %if.else, label %if.then
+  %0 = load %struct.bitmap_element_def** @bitmap_free, align 8, !dbg !419, !tbaa !368
+  %cmp = icmp eq %struct.bitmap_element_def* %0, null, !dbg !419
+  br i1 %cmp, label %if.else, label %if.then, !dbg !419
 
 if.then:                                          ; preds = %entry
-  %next = getelementptr inbounds %struct.bitmap_element_def* %0, i64 0, i32 0
-  %1 = load %struct.bitmap_element_def** %next, align 8, !tbaa !0
-  store %struct.bitmap_element_def* %1, %struct.bitmap_element_def** @bitmap_free, align 8, !tbaa !0
-  br label %if.end37
+  tail call void @llvm.dbg.value(metadata !{%struct.bitmap_element_def* %0}, i64 0, metadata !352), !dbg !420
+  %next = getelementptr inbounds %struct.bitmap_element_def* %0, i64 0, i32 0, !dbg !422
+  %1 = load %struct.bitmap_element_def** %next, align 8, !dbg !422, !tbaa !368
+  store %struct.bitmap_element_def* %1, %struct.bitmap_element_def** @bitmap_free, align 8, !dbg !422, !tbaa !368
+  br label %if.end37, !dbg !423
 
 if.else:                                          ; preds = %entry
   %.b = load i1* @bitmap_obstack_init, align 1
-  br i1 %.b, label %if.end, label %if.then1
+  br i1 %.b, label %if.end, label %if.then1, !dbg !424
 
 if.then1:                                         ; preds = %if.else
   store i1 true, i1* @bitmap_obstack_init, align 1
-  %call = tail call i32 @_obstack_begin(%struct.obstack* @bitmap_obstack, i32 0, i32 8, i8* (i64)* @xmalloc, void (i8*)* @free) #6
-  br label %if.end
+  %call = tail call i32 @_obstack_begin(%struct.obstack* @bitmap_obstack, i32 0, i32 8, i8* (i64)* @xmalloc, void (i8*)* @free) #7, !dbg !425
+  br label %if.end, !dbg !427
 
 if.end:                                           ; preds = %if.then1, %if.else
-  %2 = load i8** getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 4), align 8, !tbaa !0
-  %3 = load i8** getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 3), align 8, !tbaa !0
-  %sub.ptr.lhs.cast = ptrtoint i8* %2 to i64
-  %sub.ptr.rhs.cast = ptrtoint i8* %3 to i64
-  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
-  %cmp2 = icmp slt i64 %sub.ptr.sub, 40
-  br i1 %cmp2, label %if.then4, label %if.end5
+  tail call void @llvm.dbg.value(metadata !372, i64 0, metadata !353), !dbg !428
+  tail call void @llvm.dbg.value(metadata !372, i64 0, metadata !356), !dbg !429
+  tail call void @llvm.dbg.value(metadata !430, i64 0, metadata !358), !dbg !429
+  %2 = load i8** getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 4), align 8, !dbg !429, !tbaa !368
+  %3 = load i8** getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 3), align 8, !dbg !429, !tbaa !368
+  %sub.ptr.lhs.cast = ptrtoint i8* %2 to i64, !dbg !429
+  %sub.ptr.rhs.cast = ptrtoint i8* %3 to i64, !dbg !429
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !429
+  %cmp2 = icmp slt i64 %sub.ptr.sub, 40, !dbg !429
+  br i1 %cmp2, label %if.then4, label %if.end5, !dbg !429
 
 if.then4:                                         ; preds = %if.end
-  tail call void @_obstack_newchunk(%struct.obstack* @bitmap_obstack, i32 40) #6
-  %.pre = load i8** getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 3), align 8, !tbaa !0
-  br label %if.end5
+  tail call void @_obstack_newchunk(%struct.obstack* @bitmap_obstack, i32 40) #7, !dbg !429
+  %.pre = load i8** getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 3), align 8, !dbg !429, !tbaa !368
+  br label %if.end5, !dbg !429
 
 if.end5:                                          ; preds = %if.then4, %if.end
   %4 = phi i8* [ %.pre, %if.then4 ], [ %3, %if.end ]
-  %add.ptr = getelementptr inbounds i8* %4, i64 40
-  store i8* %add.ptr, i8** getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 3), align 8, !tbaa !0
-  %5 = load i8** getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 2), align 8, !tbaa !0
-  %cmp8 = icmp eq i8* %add.ptr, %5
-  br i1 %cmp8, label %if.then10, label %if.end11
+  %add.ptr = getelementptr inbounds i8* %4, i64 40, !dbg !429
+  store i8* %add.ptr, i8** getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 3), align 8, !dbg !429, !tbaa !368
+  tail call void @llvm.dbg.value(metadata !372, i64 0, metadata !359), !dbg !431
+  %5 = load i8** getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 2), align 8, !dbg !431, !tbaa !368
+  tail call void @llvm.dbg.value(metadata !{i8* %5}, i64 0, metadata !361), !dbg !431
+  %cmp8 = icmp eq i8* %add.ptr, %5, !dbg !431
+  br i1 %cmp8, label %if.then10, label %if.end11, !dbg !431
 
 if.then10:                                        ; preds = %if.end5
-  %bf.load = load i8* getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 10), align 8
-  %bf.set = or i8 %bf.load, 2
-  store i8 %bf.set, i8* getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 10), align 8
-  br label %if.end11
+  %bf.load = load i8* getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 10), align 8, !dbg !431
+  %bf.set = or i8 %bf.load, 2, !dbg !431
+  store i8 %bf.set, i8* getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 10), align 8, !dbg !431
+  br label %if.end11, !dbg !431
 
 if.end11:                                         ; preds = %if.end5, %if.then10
-  %sub.ptr.lhs.cast13 = ptrtoint i8* %add.ptr to i64
-  %6 = load i32* getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 6), align 8, !tbaa !3
-  %conv15 = sext i32 %6 to i64
-  %add = add nsw i64 %conv15, %sub.ptr.lhs.cast13
-  %neg = xor i32 %6, -1
-  %conv17 = sext i32 %neg to i64
-  %and = and i64 %add, %conv17
-  %add.ptr18 = getelementptr inbounds i8* null, i64 %and
-  store i8* %add.ptr18, i8** getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 3), align 8, !tbaa !0
-  %7 = load %struct._obstack_chunk** getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 1), align 8, !tbaa !0
-  %sub.ptr.lhs.cast21 = ptrtoint i8* %add.ptr18 to i64
-  %sub.ptr.rhs.cast22 = ptrtoint %struct._obstack_chunk* %7 to i64
-  %sub.ptr.sub23 = sub i64 %sub.ptr.lhs.cast21, %sub.ptr.rhs.cast22
-  %8 = load i8** getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 4), align 8, !tbaa !0
-  %sub.ptr.lhs.cast26 = ptrtoint i8* %8 to i64
-  %sub.ptr.sub28 = sub i64 %sub.ptr.lhs.cast26, %sub.ptr.rhs.cast22
-  %cmp29 = icmp sgt i64 %sub.ptr.sub23, %sub.ptr.sub28
-  br i1 %cmp29, label %if.then31, label %if.end34
+  %sub.ptr.lhs.cast13 = ptrtoint i8* %add.ptr to i64, !dbg !431
+  %6 = load i32* getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 6), align 8, !dbg !431, !tbaa !406
+  %conv15 = sext i32 %6 to i64, !dbg !431
+  %add = add nsw i64 %conv15, %sub.ptr.lhs.cast13, !dbg !431
+  %neg = xor i32 %6, -1, !dbg !431
+  %conv17 = sext i32 %neg to i64, !dbg !431
+  %and = and i64 %add, %conv17, !dbg !431
+  %add.ptr18 = getelementptr inbounds i8* null, i64 %and, !dbg !431
+  store i8* %add.ptr18, i8** getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 3), align 8, !dbg !431, !tbaa !368
+  %7 = load %struct._obstack_chunk** getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 1), align 8, !dbg !431, !tbaa !368
+  %sub.ptr.lhs.cast21 = ptrtoint i8* %add.ptr18 to i64, !dbg !431
+  %sub.ptr.rhs.cast22 = ptrtoint %struct._obstack_chunk* %7 to i64, !dbg !431
+  %sub.ptr.sub23 = sub i64 %sub.ptr.lhs.cast21, %sub.ptr.rhs.cast22, !dbg !431
+  %8 = load i8** getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 4), align 8, !dbg !431, !tbaa !368
+  %sub.ptr.lhs.cast26 = ptrtoint i8* %8 to i64, !dbg !431
+  %sub.ptr.sub28 = sub i64 %sub.ptr.lhs.cast26, %sub.ptr.rhs.cast22, !dbg !431
+  %cmp29 = icmp sgt i64 %sub.ptr.sub23, %sub.ptr.sub28, !dbg !431
+  br i1 %cmp29, label %if.then31, label %if.end34, !dbg !431
 
 if.then31:                                        ; preds = %if.end11
-  store i8* %8, i8** getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 3), align 8, !tbaa !0
-  br label %if.end34
+  store i8* %8, i8** getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 3), align 8, !dbg !431, !tbaa !368
+  br label %if.end34, !dbg !431
 
 if.end34:                                         ; preds = %if.then31, %if.end11
   %9 = phi i8* [ %8, %if.then31 ], [ %add.ptr18, %if.end11 ]
-  store i8* %9, i8** getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 2), align 8, !tbaa !0
-  %10 = bitcast i8* %5 to %struct.bitmap_element_def*
+  store i8* %9, i8** getelementptr inbounds (%struct.obstack* @bitmap_obstack, i64 0, i32 2), align 8, !dbg !431, !tbaa !368
+  %10 = bitcast i8* %5 to %struct.bitmap_element_def*, !dbg !428
+  tail call void @llvm.dbg.value(metadata !{%struct.bitmap_element_def* %10}, i64 0, metadata !352), !dbg !428
   br label %if.end37
 
 if.end37:                                         ; preds = %if.end34, %if.then
   %element.0 = phi %struct.bitmap_element_def* [ %0, %if.then ], [ %10, %if.end34 ]
-  %bits = getelementptr inbounds %struct.bitmap_element_def* %element.0, i64 0, i32 3
-  %11 = bitcast [2 x i64]* %bits to i8*
-  tail call void @llvm.memset.p0i8.i64(i8* %11, i8 0, i64 16, i32 8, i1 false)
-  ret %struct.bitmap_element_def* %element.0
+  %bits = getelementptr inbounds %struct.bitmap_element_def* %element.0, i64 0, i32 3, !dbg !432
+  %11 = bitcast [2 x i64]* %bits to i8*, !dbg !432
+  tail call void @llvm.memset.p0i8.i64(i8* %11, i8 0, i64 16, i32 8, i1 false), !dbg !432
+  ret %struct.bitmap_element_def* %element.0, !dbg !433
 }

@@ -1,92 +1,109 @@
 define i32 @xdr_double(%struct.XDR* %xdrs, double* nocapture %dp) #0 {
+entry:
   %tmp = alloca [2 x i64], align 16
-  %tmp2 = alloca [2 x i64], align 16
-  %.b6 = load i1* @xdr_double.LSW, align 1
-  br i1 %.b6, label %2, label %1
+  %tmp35 = alloca [2 x i64], align 16
+  call void @llvm.dbg.value(metadata !{%struct.XDR* %xdrs}, i64 0, metadata !188), !dbg !493
+  call void @llvm.dbg.value(metadata !{double* %dp}, i64 0, metadata !189), !dbg !494
+  %0 = load i32* @xdr_double.LSW, align 4, !dbg !495, !tbaa !357
+  %cmp = icmp slt i32 %0, 0, !dbg !495
+  br i1 %cmp, label %if.then14, label %if.end17, !dbg !495
 
-; <label>:1                                       ; preds = %0
-  store i1 true, i1* @xdr_double.LSW, align 1
-  br label %2
+if.then14:                                        ; preds = %entry
+  call void @llvm.dbg.value(metadata !496, i64 0, metadata !190), !dbg !497
+  call void @llvm.dbg.value(metadata !498, i64 0, metadata !192), !dbg !499
+  store i32 0, i32* @xdr_double.LSW, align 4, !dbg !500, !tbaa !357
+  br label %if.end17
 
-; <label>:2                                       ; preds = %0, %1
-  %3 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 0
-  %4 = load i32* %3, align 4, !tbaa !2
-  switch i32 %4, label %53 [
-    i32 0, label %5
-    i32 1, label %29
-    i32 2, label %54
-  ]
+if.end17:                                         ; preds = %if.then14, %entry
+  %1 = phi i32 [ 0, %if.then14 ], [ %0, %entry ]
+  %x_op = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 0, !dbg !501
+  %2 = load i32* %x_op, align 4, !dbg !501, !tbaa !346
+  switch i32 %2, label %sw.epilog [
+    i32 0, label %sw.bb
+    i32 1, label %sw.bb31
+    i32 2, label %return
+  ], !dbg !501
 
-; <label>:5                                       ; preds = %2
-  %6 = bitcast double* %dp to i32*
-  %7 = getelementptr inbounds i32* %6, i64 1
-  %8 = load i32* %7, align 4, !tbaa !8
-  %9 = sext i32 %8 to i64
-  %10 = getelementptr inbounds [2 x i64]* %tmp, i64 0, i64 0
-  store i64 %9, i64* %10, align 16, !tbaa !9
-  %11 = load i32* %6, align 4, !tbaa !8
-  %12 = sext i32 %11 to i64
-  %13 = getelementptr inbounds [2 x i64]* %tmp, i64 0, i64 1
-  store i64 %12, i64* %13, align 8, !tbaa !9
-  %14 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 1
-  %15 = load %struct.xdr_ops** %14, align 8, !tbaa !11
-  %16 = getelementptr inbounds %struct.xdr_ops* %15, i64 0, i32 1
-  %17 = load i32 (%struct.XDR*, i64*)** %16, align 8, !tbaa !12
-  %18 = call i32 %17(%struct.XDR* %xdrs, i64* %10) #6
-  %19 = icmp eq i32 %18, 0
-  br i1 %19, label %26, label %20
+sw.bb:                                            ; preds = %if.end17
+  %3 = bitcast double* %dp to i32*, !dbg !502
+  call void @llvm.dbg.value(metadata !{i32* %3}, i64 0, metadata !193), !dbg !502
+  call void @llvm.dbg.declare(metadata !{[2 x i64]* %tmp}, metadata !196), !dbg !503
+  %lnot = icmp eq i32 %1, 0, !dbg !504
+  %idxprom = zext i1 %lnot to i64, !dbg !504
+  %arrayidx = getelementptr inbounds i32* %3, i64 %idxprom, !dbg !504
+  %4 = load i32* %arrayidx, align 4, !dbg !504, !tbaa !357
+  %conv18 = sext i32 %4 to i64, !dbg !504
+  %arrayidx19 = getelementptr inbounds [2 x i64]* %tmp, i64 0, i64 0, !dbg !504
+  store i64 %conv18, i64* %arrayidx19, align 16, !dbg !504, !tbaa !358
+  %idxprom20 = sext i32 %1 to i64, !dbg !505
+  %arrayidx21 = getelementptr inbounds i32* %3, i64 %idxprom20, !dbg !505
+  %5 = load i32* %arrayidx21, align 4, !dbg !505, !tbaa !357
+  %conv22 = sext i32 %5 to i64, !dbg !505
+  %arrayidx23 = getelementptr inbounds [2 x i64]* %tmp, i64 0, i64 1, !dbg !505
+  store i64 %conv22, i64* %arrayidx23, align 8, !dbg !505, !tbaa !358
+  %x_ops = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 1, !dbg !506
+  %6 = load %struct.xdr_ops** %x_ops, align 8, !dbg !506, !tbaa !360
+  %x_putlong = getelementptr inbounds %struct.xdr_ops* %6, i64 0, i32 1, !dbg !506
+  %7 = load i32 (%struct.XDR*, i64*)** %x_putlong, align 8, !dbg !506, !tbaa !360
+  %call24 = call i32 %7(%struct.XDR* %xdrs, i64* %arrayidx19) #6, !dbg !506
+  %tobool25 = icmp eq i32 %call24, 0, !dbg !506
+  br i1 %tobool25, label %land.end, label %land.rhs, !dbg !506
 
-; <label>:20                                      ; preds = %5
-  %21 = load %struct.xdr_ops** %14, align 8, !tbaa !11
-  %22 = getelementptr inbounds %struct.xdr_ops* %21, i64 0, i32 1
-  %23 = load i32 (%struct.XDR*, i64*)** %22, align 8, !tbaa !12
-  %24 = call i32 %23(%struct.XDR* %xdrs, i64* %13) #6
-  %25 = icmp ne i32 %24, 0
-  br label %26
+land.rhs:                                         ; preds = %sw.bb
+  %8 = load %struct.xdr_ops** %x_ops, align 8, !dbg !507, !tbaa !360
+  %x_putlong27 = getelementptr inbounds %struct.xdr_ops* %8, i64 0, i32 1, !dbg !507
+  %9 = load i32 (%struct.XDR*, i64*)** %x_putlong27, align 8, !dbg !507, !tbaa !360
+  %call29 = call i32 %9(%struct.XDR* %xdrs, i64* %arrayidx23) #6, !dbg !507
+  %tobool30 = icmp ne i32 %call29, 0, !dbg !507
+  br label %land.end
 
-; <label>:26                                      ; preds = %5, %20
-  %27 = phi i1 [ false, %5 ], [ %25, %20 ]
-  %28 = zext i1 %27 to i32
-  br label %54
+land.end:                                         ; preds = %sw.bb, %land.rhs
+  %10 = phi i1 [ false, %sw.bb ], [ %tobool30, %land.rhs ]
+  %land.ext = zext i1 %10 to i32
+  br label %return
 
-; <label>:29                                      ; preds = %2
-  %30 = bitcast double* %dp to i32*
-  %31 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 1
-  %32 = load %struct.xdr_ops** %31, align 8, !tbaa !11
-  %33 = getelementptr inbounds %struct.xdr_ops* %32, i64 0, i32 0
-  %34 = load i32 (%struct.XDR*, i64*)** %33, align 8, !tbaa !14
-  %35 = getelementptr inbounds [2 x i64]* %tmp2, i64 0, i64 1
-  %36 = call i32 %34(%struct.XDR* %xdrs, i64* %35) #6
-  %37 = icmp eq i32 %36, 0
-  br i1 %37, label %53, label %38
+sw.bb31:                                          ; preds = %if.end17
+  %11 = bitcast double* %dp to i32*, !dbg !508
+  call void @llvm.dbg.value(metadata !{i32* %11}, i64 0, metadata !200), !dbg !508
+  call void @llvm.dbg.declare(metadata !{[2 x i64]* %tmp35}, metadata !202), !dbg !509
+  %x_ops36 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 1, !dbg !510
+  %12 = load %struct.xdr_ops** %x_ops36, align 8, !dbg !510, !tbaa !360
+  %x_getlong = getelementptr inbounds %struct.xdr_ops* %12, i64 0, i32 0, !dbg !510
+  %13 = load i32 (%struct.XDR*, i64*)** %x_getlong, align 8, !dbg !510, !tbaa !360
+  %lnot39 = icmp eq i32 %1, 0, !dbg !510
+  %idx.ext = zext i1 %lnot39 to i64, !dbg !510
+  %add.ptr41 = getelementptr inbounds [2 x i64]* %tmp35, i64 0, i64 %idx.ext, !dbg !510
+  %call42 = call i32 %13(%struct.XDR* %xdrs, i64* %add.ptr41) #6, !dbg !510
+  %tobool43 = icmp eq i32 %call42, 0, !dbg !510
+  br i1 %tobool43, label %sw.epilog, label %land.lhs.true, !dbg !510
 
-; <label>:38                                      ; preds = %29
-  %39 = load %struct.xdr_ops** %31, align 8, !tbaa !11
-  %40 = getelementptr inbounds %struct.xdr_ops* %39, i64 0, i32 0
-  %41 = load i32 (%struct.XDR*, i64*)** %40, align 8, !tbaa !14
-  %.b = load i1* @xdr_double.LSW, align 1
-  %not..b = xor i1 %.b, true
-  %42 = sext i1 %not..b to i64
-  %43 = getelementptr inbounds [2 x i64]* %tmp2, i64 0, i64 %42
-  %44 = call i32 %41(%struct.XDR* %xdrs, i64* %43) #6
-  %45 = icmp eq i32 %44, 0
-  br i1 %45, label %53, label %46
+land.lhs.true:                                    ; preds = %sw.bb31
+  %14 = load %struct.xdr_ops** %x_ops36, align 8, !dbg !511, !tbaa !360
+  %x_getlong45 = getelementptr inbounds %struct.xdr_ops* %14, i64 0, i32 0, !dbg !511
+  %15 = load i32 (%struct.XDR*, i64*)** %x_getlong45, align 8, !dbg !511, !tbaa !360
+  %16 = load i32* @xdr_double.LSW, align 4, !dbg !511, !tbaa !357
+  %idx.ext47 = sext i32 %16 to i64, !dbg !511
+  %add.ptr48 = getelementptr inbounds [2 x i64]* %tmp35, i64 0, i64 %idx.ext47, !dbg !511
+  %call49 = call i32 %15(%struct.XDR* %xdrs, i64* %add.ptr48) #6, !dbg !511
+  %tobool50 = icmp eq i32 %call49, 0, !dbg !511
+  br i1 %tobool50, label %sw.epilog, label %if.then51, !dbg !511
 
-; <label>:46                                      ; preds = %38
-  %47 = getelementptr inbounds [2 x i64]* %tmp2, i64 0, i64 0
-  %48 = load i64* %47, align 16, !tbaa !9
-  %49 = trunc i64 %48 to i32
-  store i32 %49, i32* %30, align 4, !tbaa !8
-  %50 = load i64* %35, align 8, !tbaa !9
-  %51 = trunc i64 %50 to i32
-  %52 = getelementptr inbounds i32* %30, i64 1
-  store i32 %51, i32* %52, align 4, !tbaa !8
-  br label %54
+if.then51:                                        ; preds = %land.lhs.true
+  %arrayidx52 = getelementptr inbounds [2 x i64]* %tmp35, i64 0, i64 0, !dbg !512
+  %17 = load i64* %arrayidx52, align 16, !dbg !512, !tbaa !358
+  %conv53 = trunc i64 %17 to i32, !dbg !512
+  store i32 %conv53, i32* %11, align 4, !dbg !512, !tbaa !357
+  %arrayidx55 = getelementptr inbounds [2 x i64]* %tmp35, i64 0, i64 1, !dbg !514
+  %18 = load i64* %arrayidx55, align 8, !dbg !514, !tbaa !358
+  %conv56 = trunc i64 %18 to i32, !dbg !514
+  %arrayidx57 = getelementptr inbounds i32* %11, i64 1, !dbg !514
+  store i32 %conv56, i32* %arrayidx57, align 4, !dbg !514, !tbaa !357
+  br label %return, !dbg !515
 
-; <label>:53                                      ; preds = %38, %29, %2
-  br label %54
+sw.epilog:                                        ; preds = %land.lhs.true, %sw.bb31, %if.end17
+  br label %return, !dbg !516
 
-; <label>:54                                      ; preds = %2, %53, %46, %26
-  %.0 = phi i32 [ 0, %53 ], [ 1, %46 ], [ %28, %26 ], [ 1, %2 ]
-  ret i32 %.0
+return:                                           ; preds = %if.end17, %sw.epilog, %if.then51, %land.end
+  %retval.0 = phi i32 [ 0, %sw.epilog ], [ 1, %if.then51 ], [ %land.ext, %land.end ], [ 1, %if.end17 ]
+  ret i32 %retval.0, !dbg !517
 }

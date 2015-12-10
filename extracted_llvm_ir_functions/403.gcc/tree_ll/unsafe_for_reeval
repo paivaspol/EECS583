@@ -1,82 +1,92 @@
 define i32 @unsafe_for_reeval(%union.tree_node* %expr) #0 {
 entry:
-  %cmp = icmp eq %union.tree_node* %expr, null
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %expr}, i64 0, metadata !1199), !dbg !2619
+  tail call void @llvm.dbg.value(metadata !429, i64 0, metadata !1200), !dbg !2620
+  %cmp = icmp eq %union.tree_node* %expr, null, !dbg !2621
+  br i1 %cmp, label %return, label %if.end, !dbg !2621
 
 if.end:                                           ; preds = %entry
-  %code3 = getelementptr inbounds %union.tree_node* %expr, i64 0, i32 0, i32 0, i32 2
-  %0 = bitcast [4 x i8]* %code3 to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 255
+  %code3 = getelementptr inbounds %union.tree_node* %expr, i64 0, i32 0, i32 0, i32 2, !dbg !2622
+  %0 = bitcast [4 x i8]* %code3 to i32*, !dbg !2622
+  %bf.load = load i32* %0, align 8, !dbg !2622
+  %bf.clear = and i32 %bf.load, 255, !dbg !2622
+  tail call void @llvm.dbg.value(metadata !{i32 %bf.clear}, i64 0, metadata !1201), !dbg !2622
+  tail call void @llvm.dbg.value(metadata !{i32 %bf.clear}, i64 0, metadata !2623), !dbg !2625
   switch i32 %bf.clear, label %sw.default.i [
     i32 118, label %first_rtl_op.exit
     i32 136, label %sw.bb1.i
     i32 120, label %sw.bb1.i
     i32 55, label %first_rtl_op.exit
     i32 54, label %sw.default
-  ]
+  ], !dbg !2626
 
 sw.bb1.i:                                         ; preds = %if.end, %if.end
-  br label %first_rtl_op.exit
+  br label %first_rtl_op.exit, !dbg !2627
 
 sw.default.i:                                     ; preds = %if.end
-  %idxprom.i72 = zext i32 %bf.clear to i64
-  %arrayidx.i = getelementptr inbounds [256 x i32]* @tree_code_length, i64 0, i64 %idxprom.i72
-  %1 = load i32* %arrayidx.i, align 4, !tbaa !4
-  br label %first_rtl_op.exit
+  %idxprom.i72 = zext i32 %bf.clear to i64, !dbg !2628
+  %arrayidx.i = getelementptr inbounds [256 x i32]* @tree_code_length, i64 0, i64 %idxprom.i72, !dbg !2628
+  %1 = load i32* %arrayidx.i, align 4, !dbg !2628, !tbaa !1932
+  br label %first_rtl_op.exit, !dbg !2628
 
 first_rtl_op.exit:                                ; preds = %if.end, %if.end, %sw.bb1.i, %sw.default.i
   %retval.0.i = phi i32 [ %1, %sw.default.i ], [ 0, %sw.bb1.i ], [ 2, %if.end ], [ 2, %if.end ]
+  tail call void @llvm.dbg.value(metadata !{i32 %retval.0.i70}, i64 0, metadata !1205), !dbg !2624
   switch i32 %bf.clear, label %sw.default [
     i32 118, label %return
     i32 120, label %return
     i32 2, label %for.body
     i32 53, label %sw.bb9
     i32 50, label %sw.epilog
-  ]
+  ], !dbg !2629
 
 for.body:                                         ; preds = %first_rtl_op.exit, %for.body
   %exp.080 = phi %union.tree_node* [ %4, %for.body ], [ %expr, %first_rtl_op.exit ]
   %unsafeness.079 = phi i32 [ %cond, %for.body ], [ 0, %first_rtl_op.exit ]
-  %value = getelementptr inbounds %union.tree_node* %exp.080, i64 0, i32 0, i32 2
-  %2 = bitcast i32* %value to %union.tree_node**
-  %3 = load %union.tree_node** %2, align 8, !tbaa !0
-  %call6 = tail call i32 @unsafe_for_reeval(%union.tree_node* %3) #10
-  %cmp7 = icmp sgt i32 %call6, %unsafeness.079
-  %cond = select i1 %cmp7, i32 %call6, i32 %unsafeness.079
-  %chain = getelementptr inbounds %union.tree_node* %exp.080, i64 0, i32 0, i32 0, i32 0
-  %4 = load %union.tree_node** %chain, align 8, !tbaa !0
-  %cmp5 = icmp eq %union.tree_node* %4, null
-  br i1 %cmp5, label %return, label %for.body
+  %value = getelementptr inbounds %union.tree_node* %exp.080, i64 0, i32 0, i32 2, !dbg !2630
+  %2 = bitcast i32* %value to %union.tree_node**, !dbg !2630
+  %3 = load %union.tree_node** %2, align 8, !dbg !2630, !tbaa !1913
+  %call6 = tail call i32 @unsafe_for_reeval(%union.tree_node* %3) #11, !dbg !2630
+  tail call void @llvm.dbg.value(metadata !{i32 %call6}, i64 0, metadata !1203), !dbg !2630
+  %cmp7 = icmp sgt i32 %call6, %unsafeness.079, !dbg !2634
+  %cond = select i1 %cmp7, i32 %call6, i32 %unsafeness.079, !dbg !2634
+  tail call void @llvm.dbg.value(metadata !{i32 %cond}, i64 0, metadata !1200), !dbg !2634
+  %chain = getelementptr inbounds %union.tree_node* %exp.080, i64 0, i32 0, i32 0, i32 0, !dbg !2635
+  %4 = load %union.tree_node** %chain, align 8, !dbg !2635, !tbaa !1913
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %4}, i64 0, metadata !1204), !dbg !2635
+  %cmp5 = icmp eq %union.tree_node* %4, null, !dbg !2635
+  br i1 %cmp5, label %return, label %for.body, !dbg !2635
 
 sw.bb9:                                           ; preds = %first_rtl_op.exit
-  %operands = getelementptr inbounds %union.tree_node* %expr, i64 0, i32 0, i32 2
-  %arrayidx = getelementptr inbounds i32* %operands, i64 2
-  %5 = bitcast i32* %arrayidx to %union.tree_node**
-  %6 = load %union.tree_node** %5, align 8, !tbaa !0
-  %call11 = tail call i32 @unsafe_for_reeval(%union.tree_node* %6) #10
-  %cmp12 = icmp sgt i32 %call11, 1
-  %cond16 = select i1 %cmp12, i32 %call11, i32 1
-  ret i32 %cond16
+  %operands = getelementptr inbounds %union.tree_node* %expr, i64 0, i32 0, i32 2, !dbg !2636
+  %arrayidx = getelementptr inbounds i32* %operands, i64 2, !dbg !2636
+  %5 = bitcast i32* %arrayidx to %union.tree_node**, !dbg !2636
+  %6 = load %union.tree_node** %5, align 8, !dbg !2636, !tbaa !1913
+  %call11 = tail call i32 @unsafe_for_reeval(%union.tree_node* %6) #11, !dbg !2636
+  tail call void @llvm.dbg.value(metadata !{i32 %call11}, i64 0, metadata !1203), !dbg !2636
+  %cmp12 = icmp sgt i32 %call11, 1, !dbg !2637
+  %cond16 = select i1 %cmp12, i32 %call11, i32 1, !dbg !2637
+  ret i32 %cond16, !dbg !2638
 
 sw.default:                                       ; preds = %if.end, %first_rtl_op.exit
   %retval.0.i71 = phi i32 [ %retval.0.i, %first_rtl_op.exit ], [ 3, %if.end ]
-  %7 = load i32 (%union.tree_node*)** @lang_unsafe_for_reeval, align 8, !tbaa !0
-  %cmp18 = icmp eq i32 (%union.tree_node*)* %7, null
-  br i1 %cmp18, label %sw.epilog, label %if.then19
+  %7 = load i32 (%union.tree_node*)** @lang_unsafe_for_reeval, align 8, !dbg !2639, !tbaa !1913
+  %cmp18 = icmp eq i32 (%union.tree_node*)* %7, null, !dbg !2639
+  br i1 %cmp18, label %sw.epilog, label %if.then19, !dbg !2639
 
 if.then19:                                        ; preds = %sw.default
-  %call20 = tail call i32 %7(%union.tree_node* %expr) #9
-  %cmp21 = icmp sgt i32 %call20, -1
-  br i1 %cmp21, label %return, label %sw.epilog
+  %call20 = tail call i32 %7(%union.tree_node* %expr) #10, !dbg !2640
+  tail call void @llvm.dbg.value(metadata !{i32 %call20}, i64 0, metadata !1203), !dbg !2640
+  %cmp21 = icmp sgt i32 %call20, -1, !dbg !2642
+  br i1 %cmp21, label %return, label %sw.epilog, !dbg !2642
 
 sw.epilog:                                        ; preds = %first_rtl_op.exit, %sw.default, %if.then19
   %retval.0.i70 = phi i32 [ %retval.0.i71, %if.then19 ], [ %retval.0.i71, %sw.default ], [ %retval.0.i, %first_rtl_op.exit ]
   %unsafeness.1 = phi i32 [ 0, %if.then19 ], [ 0, %sw.default ], [ 1, %first_rtl_op.exit ]
-  %idxprom69 = zext i32 %bf.clear to i64
-  %arrayidx25 = getelementptr inbounds [256 x i8]* @tree_code_type, i64 0, i64 %idxprom69
-  %8 = load i8* %arrayidx25, align 1, !tbaa !1
-  %conv = sext i8 %8 to i32
+  %idxprom69 = zext i32 %bf.clear to i64, !dbg !2643
+  %arrayidx25 = getelementptr inbounds [256 x i8]* @tree_code_type, i64 0, i64 %idxprom69, !dbg !2643
+  %8 = load i8* %arrayidx25, align 1, !dbg !2643, !tbaa !1914
+  %conv = sext i8 %8 to i32, !dbg !2643
   switch i32 %conv, label %sw.default45 [
     i32 99, label %return
     i32 116, label %return
@@ -89,35 +99,37 @@ sw.epilog:                                        ; preds = %first_rtl_op.exit, 
     i32 60, label %for.cond28.preheader
     i32 50, label %for.cond28.preheader
     i32 49, label %for.cond28.preheader
-  ]
+  ], !dbg !2643
 
 for.cond28.preheader:                             ; preds = %sw.epilog, %sw.epilog, %sw.epilog, %sw.epilog, %sw.epilog, %sw.epilog
-  %cmp2974 = icmp sgt i32 %retval.0.i70, 0
-  br i1 %cmp2974, label %for.body31.lr.ph, label %return
+  %cmp2974 = icmp sgt i32 %retval.0.i70, 0, !dbg !2644
+  br i1 %cmp2974, label %for.body31.lr.ph, label %return, !dbg !2644
 
 for.body31.lr.ph:                                 ; preds = %for.cond28.preheader
-  %operands34 = getelementptr inbounds %union.tree_node* %expr, i64 0, i32 0, i32 2
-  %9 = bitcast i32* %operands34 to [1 x %union.tree_node*]*
+  %operands34 = getelementptr inbounds %union.tree_node* %expr, i64 0, i32 0, i32 2, !dbg !2647
+  %9 = bitcast i32* %operands34 to [1 x %union.tree_node*]*, !dbg !2647
   %10 = sext i32 %retval.0.i70 to i64
-  br label %for.body31
+  br label %for.body31, !dbg !2644
 
 for.body31:                                       ; preds = %for.body31.lr.ph, %for.body31
   %indvars.iv = phi i64 [ %10, %for.body31.lr.ph ], [ %indvars.iv.next, %for.body31 ]
   %unsafeness.275 = phi i32 [ %unsafeness.1, %for.body31.lr.ph ], [ %cond42, %for.body31 ]
-  %indvars.iv.next = add i64 %indvars.iv, -1
-  %arrayidx35 = getelementptr inbounds [1 x %union.tree_node*]* %9, i64 0, i64 %indvars.iv.next
-  %11 = load %union.tree_node** %arrayidx35, align 8, !tbaa !0
-  %call36 = tail call i32 @unsafe_for_reeval(%union.tree_node* %11) #10
-  %cmp37 = icmp sgt i32 %call36, %unsafeness.275
-  %cond42 = select i1 %cmp37, i32 %call36, i32 %unsafeness.275
-  %12 = trunc i64 %indvars.iv.next to i32
-  %cmp29 = icmp sgt i32 %12, 0
-  br i1 %cmp29, label %for.body31, label %return
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !2644
+  %arrayidx35 = getelementptr inbounds [1 x %union.tree_node*]* %9, i64 0, i64 %indvars.iv.next, !dbg !2647
+  %11 = load %union.tree_node** %arrayidx35, align 8, !dbg !2647, !tbaa !1913
+  %call36 = tail call i32 @unsafe_for_reeval(%union.tree_node* %11) #11, !dbg !2647
+  tail call void @llvm.dbg.value(metadata !{i32 %call36}, i64 0, metadata !1203), !dbg !2647
+  %cmp37 = icmp sgt i32 %call36, %unsafeness.275, !dbg !2649
+  %cond42 = select i1 %cmp37, i32 %call36, i32 %unsafeness.275, !dbg !2649
+  tail call void @llvm.dbg.value(metadata !{i32 %cond42}, i64 0, metadata !1200), !dbg !2649
+  %12 = trunc i64 %indvars.iv.next to i32, !dbg !2644
+  %cmp29 = icmp sgt i32 %12, 0, !dbg !2644
+  br i1 %cmp29, label %for.body31, label %return, !dbg !2644
 
 sw.default45:                                     ; preds = %sw.epilog
-  br label %return
+  br label %return, !dbg !2650
 
 return:                                           ; preds = %for.body, %for.cond28.preheader, %for.body31, %sw.epilog, %sw.epilog, %sw.epilog, %sw.epilog, %sw.epilog, %if.then19, %first_rtl_op.exit, %first_rtl_op.exit, %entry, %sw.default45
   %retval.0 = phi i32 [ 2, %sw.default45 ], [ 1, %entry ], [ 2, %first_rtl_op.exit ], [ 2, %first_rtl_op.exit ], [ %call20, %if.then19 ], [ 0, %sw.epilog ], [ 0, %sw.epilog ], [ 0, %sw.epilog ], [ 0, %sw.epilog ], [ 0, %sw.epilog ], [ %unsafeness.1, %for.cond28.preheader ], [ %cond42, %for.body31 ], [ %cond, %for.body ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !2638
 }

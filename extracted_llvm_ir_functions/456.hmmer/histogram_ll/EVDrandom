@@ -1,24 +1,28 @@
 define float @EVDrandom(float %mu, float %lambda) #0 {
 entry:
-  br label %while.body
+  tail call void @llvm.dbg.value(metadata !{float %mu}, i64 0, metadata !273), !dbg !909
+  tail call void @llvm.dbg.value(metadata !{float %lambda}, i64 0, metadata !274), !dbg !909
+  tail call void @llvm.dbg.value(metadata !828, i64 0, metadata !275), !dbg !910
+  br label %while.body, !dbg !911
 
 while.body:                                       ; preds = %entry, %while.body
-  %call = tail call double @sre_random() #4
-  %conv5 = fptrunc double %call to float
-  %cmp = fcmp oeq float %conv5, 0.000000e+00
-  %cmp3 = fcmp oeq float %conv5, 1.000000e+00
-  %or.cond = or i1 %cmp, %cmp3
-  br i1 %or.cond, label %while.body, label %while.end
+  %call = tail call double @sre_random() #5, !dbg !911
+  %conv5 = fptrunc double %call to float, !dbg !911
+  tail call void @llvm.dbg.value(metadata !{float %conv5}, i64 0, metadata !275), !dbg !911
+  %cmp = fcmp oeq float %conv5, 0.000000e+00, !dbg !911
+  %cmp3 = fcmp oeq float %conv5, 1.000000e+00, !dbg !911
+  %or.cond = or i1 %cmp, %cmp3, !dbg !911
+  br i1 %or.cond, label %while.body, label %while.end, !dbg !911
 
 while.end:                                        ; preds = %while.body
-  %phitmp = fpext float %conv5 to double
-  %conv6 = fpext float %mu to double
-  %call8 = tail call double @log(double %phitmp) #4
-  %mul = fmul double %call8, -1.000000e+00
-  %call9 = tail call double @log(double %mul) #4
-  %conv10 = fpext float %lambda to double
-  %div = fdiv double %call9, %conv10
-  %sub = fsub double %conv6, %div
-  %conv11 = fptrunc double %sub to float
-  ret float %conv11
+  %phitmp = fpext float %conv5 to double, !dbg !911
+  %conv6 = fpext float %mu to double, !dbg !912
+  %call8 = tail call double @log(double %phitmp) #5, !dbg !912
+  %mul = fmul double %call8, -1.000000e+00, !dbg !912
+  %call9 = tail call double @log(double %mul) #5, !dbg !912
+  %conv10 = fpext float %lambda to double, !dbg !912
+  %div = fdiv double %call9, %conv10, !dbg !912
+  %sub = fsub double %conv6, %div, !dbg !912
+  %conv11 = fptrunc double %sub to float, !dbg !912
+  ret float %conv11, !dbg !912
 }

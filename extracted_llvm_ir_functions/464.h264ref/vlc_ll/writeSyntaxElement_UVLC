@@ -1,38 +1,42 @@
 define i32 @writeSyntaxElement_UVLC(%struct.syntaxelement* %se, %struct.datapartition* nocapture %this_dataPart) #0 {
 entry:
-  %mapping = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 8
-  %0 = load void (i32, i32, i32*, i32*)** %mapping, align 8, !tbaa !3
-  %value1 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1
-  %1 = load i32* %value1, align 4, !tbaa !0
-  %value2 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 2
-  %2 = load i32* %value2, align 4, !tbaa !0
-  %len = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 3
-  %inf = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 4
-  tail call void %0(i32 %1, i32 %2, i32* %len, i32* %inf) #5
-  %3 = load i32* %len, align 4, !tbaa !0
-  %div.i = sdiv i32 %3, 2
-  %shl.i = shl i32 1, %div.i
-  %4 = load i32* %inf, align 4, !tbaa !0
-  %sub.i = add nsw i32 %shl.i, -1
-  %and.i = and i32 %sub.i, %4
-  %or.i = or i32 %and.i, %shl.i
-  %bitpattern.i = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 5
-  store i32 %or.i, i32* %bitpattern.i, align 4, !tbaa !0
-  %bitstream = getelementptr inbounds %struct.datapartition* %this_dataPart, i64 0, i32 0
-  %5 = load %struct.Bitstream** %bitstream, align 8, !tbaa !3
-  tail call void @writeUVLC2buffer(%struct.syntaxelement* %se, %struct.Bitstream* %5) #4
-  %type = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 0
-  %6 = load i32* %type, align 4, !tbaa !0
-  %cmp = icmp eq i32 %6, 0
-  br i1 %cmp, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.syntaxelement* %se}, i64 0, metadata !222), !dbg !823
+  tail call void @llvm.dbg.value(metadata !{%struct.datapartition* %this_dataPart}, i64 0, metadata !223), !dbg !823
+  %mapping = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 8, !dbg !824
+  %0 = load void (i32, i32, i32*, i32*)** %mapping, align 8, !dbg !824, !tbaa !810
+  %value1 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1, !dbg !824
+  %1 = load i32* %value1, align 4, !dbg !824, !tbaa !806
+  %value2 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 2, !dbg !824
+  %2 = load i32* %value2, align 4, !dbg !824, !tbaa !806
+  %len = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 3, !dbg !824
+  %inf = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 4, !dbg !824
+  tail call void %0(i32 %1, i32 %2, i32* %len, i32* %inf) #7, !dbg !824
+  tail call void @llvm.dbg.value(metadata !{%struct.syntaxelement* %se}, i64 0, metadata !825), !dbg !827
+  %3 = load i32* %len, align 4, !dbg !828, !tbaa !806
+  %div.i = sdiv i32 %3, 2, !dbg !828
+  tail call void @llvm.dbg.value(metadata !{i32 %div.i}, i64 0, metadata !829), !dbg !828
+  %shl.i = shl i32 1, %div.i, !dbg !830
+  %4 = load i32* %inf, align 4, !dbg !830, !tbaa !806
+  %sub.i = add nsw i32 %shl.i, -1, !dbg !830
+  %and.i = and i32 %sub.i, %4, !dbg !830
+  %or.i = or i32 %and.i, %shl.i, !dbg !830
+  %bitpattern.i = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 5, !dbg !830
+  store i32 %or.i, i32* %bitpattern.i, align 4, !dbg !830, !tbaa !806
+  %bitstream = getelementptr inbounds %struct.datapartition* %this_dataPart, i64 0, i32 0, !dbg !831
+  %5 = load %struct.Bitstream** %bitstream, align 8, !dbg !831, !tbaa !810
+  tail call void @writeUVLC2buffer(%struct.syntaxelement* %se, %struct.Bitstream* %5) #6, !dbg !831
+  %type = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 0, !dbg !832
+  %6 = load i32* %type, align 4, !dbg !832, !tbaa !806
+  %cmp = icmp eq i32 %6, 0, !dbg !832
+  br i1 %cmp, label %if.end, label %if.then, !dbg !832
 
 if.then:                                          ; preds = %entry
-  %7 = load %struct.Bitstream** %bitstream, align 8, !tbaa !3
-  %write_flag = getelementptr inbounds %struct.Bitstream* %7, i64 0, i32 10
-  store i32 1, i32* %write_flag, align 4, !tbaa !0
-  br label %if.end
+  %7 = load %struct.Bitstream** %bitstream, align 8, !dbg !833, !tbaa !810
+  %write_flag = getelementptr inbounds %struct.Bitstream* %7, i64 0, i32 10, !dbg !833
+  store i32 1, i32* %write_flag, align 4, !dbg !833, !tbaa !806
+  br label %if.end, !dbg !833
 
 if.end:                                           ; preds = %entry, %if.then
-  %8 = load i32* %len, align 4, !tbaa !0
-  ret i32 %8
+  %8 = load i32* %len, align 4, !dbg !834, !tbaa !806
+  ret i32 %8, !dbg !834
 }

@@ -1,0 +1,90 @@
+define i32 @_ZN3pov5ErrorEPKcz(i8* nocapture %format, ...) #1 {
+entry:
+  %marker = alloca [1 x %struct.__va_list_tag], align 16
+  %msg = alloca %struct.POVMSData, align 8
+  %localvsbuffer = alloca [1024 x i8], align 16
+  call void @llvm.dbg.value(metadata !{i8* %format}, i64 0, metadata !520), !dbg !829
+  call void @llvm.dbg.declare(metadata !{[1 x %struct.__va_list_tag]* %marker}, metadata !521), !dbg !830
+  call void @llvm.dbg.declare(metadata !{%struct.POVMSData* %msg}, metadata !522), !dbg !831
+  %0 = getelementptr inbounds [1024 x i8]* %localvsbuffer, i64 0, i64 0, !dbg !832
+  call void @llvm.lifetime.start(i64 1024, i8* %0) #0, !dbg !832
+  call void @llvm.dbg.declare(metadata !{[1024 x i8]* %localvsbuffer}, metadata !523), !dbg !832
+  %1 = load i32* @_ZN3pov5StageE, align 4, !dbg !833, !tbaa !725
+  %idxprom = sext i32 %1 to i64, !dbg !833
+  %stage_name = getelementptr inbounds [14 x %"struct.pov::StageName_Struct"]* @_ZN3povL11Stage_NamesE, i64 0, i64 %idxprom, i32 1, !dbg !833
+  %2 = load i8** %stage_name, align 8, !dbg !833, !tbaa !704
+  %call = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([11 x i8]* @.str3, i64 0, i64 0), i8* %2) #9, !dbg !833
+  %arraydecay1 = getelementptr inbounds [1 x %struct.__va_list_tag]* %marker, i64 0, i64 0, !dbg !834
+  %arraydecay12 = bitcast [1 x %struct.__va_list_tag]* %marker to i8*, !dbg !834
+  call void @llvm.va_start(i8* %arraydecay12), !dbg !834
+  %call5 = call i64 @strlen(i8* %0) #10, !dbg !835
+  %add.ptr = getelementptr inbounds [1024 x i8]* %localvsbuffer, i64 0, i64 %call5, !dbg !835
+  %sub = sub i64 1023, %call5, !dbg !835
+  %call9 = call i32 @vsnprintf(i8* %add.ptr, i64 %sub, i8* %format, %struct.__va_list_tag* %arraydecay1) #9, !dbg !835
+  call void @llvm.va_end(i8* %arraydecay12), !dbg !836
+  tail call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !837), !dbg !839
+  br label %while.cond.i, !dbg !840
+
+while.cond.i:                                     ; preds = %if.end.i, %entry
+  %str.addr.0.i = phi i8* [ %0, %entry ], [ %incdec.ptr.i, %if.end.i ]
+  %3 = load i8* %str.addr.0.i, align 1, !dbg !840, !tbaa !693
+  switch i8 %3, label %if.end.i [
+    i8 0, label %_ZN3pov13CleanupStringEPc.exit
+    i8 10, label %if.then.i
+  ], !dbg !840
+
+if.then.i:                                        ; preds = %while.cond.i
+  store i8 32, i8* %str.addr.0.i, align 1, !dbg !841, !tbaa !693
+  br label %if.end.i, !dbg !841
+
+if.end.i:                                         ; preds = %if.then.i, %while.cond.i
+  %incdec.ptr.i = getelementptr inbounds i8* %str.addr.0.i, i64 1, !dbg !842
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr.i}, i64 0, metadata !837), !dbg !842
+  br label %while.cond.i, !dbg !843
+
+_ZN3pov13CleanupStringEPc.exit:                   ; preds = %while.cond.i
+  %4 = load i32* @_ZN3pov5StageE, align 4, !dbg !844, !tbaa !725
+  %call17 = call i32 @_Z15POVMSObject_NewP9POVMSDataj(%struct.POVMSData* %msg, i32 1179676531) #8, !dbg !845
+  switch i32 %4, label %if.else [
+    i32 13, label %if.then
+    i32 12, label %if.then
+    i32 5, label %if.then
+  ], !dbg !844
+
+if.then:                                          ; preds = %_ZN3pov13CleanupStringEPc.exit, %_ZN3pov13CleanupStringEPc.exit, %_ZN3pov13CleanupStringEPc.exit
+  call void @_ZN3pov11Where_ErrorEP9POVMSData(%struct.POVMSData* %msg) #8, !dbg !847
+  %call19 = call i32 @_Z19POVMSUtil_SetStringP9POVMSDatajPKc(%struct.POVMSData* %msg, i32 1163163764, i8* %0) #8, !dbg !848
+  %call20 = call i32 @_Z16POVMSUtil_SetIntP9POVMSDataji(%struct.POVMSData* %msg, i32 1165128303, i32 0) #8, !dbg !849
+  %call21 = call i32 @_Z21POVMSMsg_SetupMessageP9POVMSDatajj(%struct.POVMSData* %msg, i32 1333097584, i32 1165128262) #8, !dbg !850
+  %call22 = call i8* @_Z23povray_getoutputcontextv() #8, !dbg !851
+  %call23 = call i32 @_Z30POVMSMsg_SetDestinationAddressP9POVMSDataPv(%struct.POVMSData* %msg, i8* %call22) #8, !dbg !851
+  %5 = load i8** @POVMS_Render_Context, align 8, !dbg !852, !tbaa !704
+  %call24 = call i32 @_Z10POVMS_SendPvP9POVMSDataS1_i(i8* %5, %struct.POVMSData* %msg, %struct.POVMSData* null, i32 1) #8, !dbg !852
+  br label %if.end, !dbg !853
+
+if.else:                                          ; preds = %_ZN3pov13CleanupStringEPc.exit
+  %call27 = call i32 @_Z19POVMSUtil_SetStringP9POVMSDatajPKc(%struct.POVMSData* %msg, i32 1163163764, i8* %0) #8, !dbg !854
+  %call28 = call i32 @_Z16POVMSUtil_SetIntP9POVMSDataji(%struct.POVMSData* %msg, i32 1165128303, i32 0) #8, !dbg !856
+  %call29 = call i32 @_Z21POVMSMsg_SetupMessageP9POVMSDatajj(%struct.POVMSData* %msg, i32 1333097584, i32 1165128262) #8, !dbg !857
+  %call30 = call i8* @_Z23povray_getoutputcontextv() #8, !dbg !858
+  %call31 = call i32 @_Z30POVMSMsg_SetDestinationAddressP9POVMSDataPv(%struct.POVMSData* %msg, i8* %call30) #8, !dbg !858
+  %6 = load i8** @POVMS_Render_Context, align 8, !dbg !859, !tbaa !704
+  %call32 = call i32 @_Z10POVMS_SendPvP9POVMSDataS1_i(i8* %6, %struct.POVMSData* %msg, %struct.POVMSData* null, i32 1) #8, !dbg !859
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %7 = load i32* @_ZN3pov5StageE, align 4, !dbg !860, !tbaa !725
+  %cmp33 = icmp eq i32 %7, 12, !dbg !860
+  br i1 %cmp33, label %if.then34, label %if.end36, !dbg !860
+
+if.then34:                                        ; preds = %if.end
+  %call35 = call i32 (i32, i8*, ...)* @_ZN3pov7WarningEjPKcz(i32 0, i8* getelementptr inbounds ([199 x i8]* @.str4, i64 0, i64 0)) #8, !dbg !861
+  br label %if.end36, !dbg !863
+
+if.end36:                                         ; preds = %if.then34, %if.end
+  call void @_ZN3pov19Terminate_TokenizerEv() #8, !dbg !864
+  %call37 = call i32 @_ZN3pov12pov_shelloutENS_9shelltypeE(i32 5) #8, !dbg !865
+  call void @_Z11povray_exiti(i32 1) #8, !dbg !866
+  call void @llvm.lifetime.end(i64 1024, i8* %0) #0, !dbg !867
+  ret i32 0, !dbg !868
+}

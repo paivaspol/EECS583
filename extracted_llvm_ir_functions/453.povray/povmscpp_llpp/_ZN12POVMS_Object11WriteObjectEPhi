@@ -1,0 +1,26 @@
+define zeroext i1 @_ZN12POVMS_Object11WriteObjectEPhi(%class.POVMS_Object* %this, i8* %stream, i32 %objectsize) #5 align 2 {
+entry:
+  %objectsize.addr = alloca i32, align 4
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Object* %this}, i64 0, metadata !961), !dbg !1657
+  call void @llvm.dbg.value(metadata !{i8* %stream}, i64 0, metadata !962), !dbg !1657
+  call void @llvm.dbg.value(metadata !{i32 %objectsize}, i64 0, metadata !963), !dbg !1657
+  store i32 %objectsize, i32* %objectsize.addr, align 4, !tbaa !1112
+  call void @llvm.dbg.declare(metadata !{i32* %objectsize.addr}, metadata !963), !dbg !1657
+  call void @llvm.dbg.value(metadata !59, i64 0, metadata !964), !dbg !1658
+  %cmp = icmp eq i8* %stream, null, !dbg !1659
+  %cmp2 = icmp eq i32 %objectsize, 0, !dbg !1660
+  %or.cond = or i1 %cmp, %cmp2, !dbg !1659
+  br i1 %or.cond, label %return, label %if.end4, !dbg !1659
+
+if.end4:                                          ; preds = %entry
+  %data = getelementptr inbounds %class.POVMS_Object* %this, i64 0, i32 0, i32 1, !dbg !1661
+  %call = call i32 @_Z17POVMSStream_WriteP9POVMSDataPhPi(%struct.POVMSData* %data, i8* %stream, i32* %objectsize.addr) #12, !dbg !1661
+  call void @llvm.dbg.value(metadata !{i32* %objectsize.addr}, i64 0, metadata !963), !dbg !1662
+  %0 = load i32* %objectsize.addr, align 4, !dbg !1662, !tbaa !1112
+  %cmp5 = icmp eq i32 %0, 0, !dbg !1662
+  br label %return, !dbg !1663
+
+return:                                           ; preds = %if.end4, %entry
+  %retval.0 = phi i1 [ false, %entry ], [ %cmp5, %if.end4 ]
+  ret i1 %retval.0, !dbg !1663
+}

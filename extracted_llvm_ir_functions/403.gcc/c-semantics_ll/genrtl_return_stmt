@@ -1,24 +1,26 @@
 define void @genrtl_return_stmt(%union.tree_node* nocapture %stmt) #0 {
 entry:
-  %operands = getelementptr inbounds %union.tree_node* %stmt, i64 0, i32 0, i32 2
-  %arrayidx = bitcast i32* %operands to %union.tree_node**
-  %0 = load %union.tree_node** %arrayidx, align 8, !tbaa !0
-  %1 = load i8** @input_filename, align 8, !tbaa !0
-  %2 = load i32* @lineno, align 4, !tbaa !4
-  %call = tail call %struct.rtx_def* @emit_line_note(i8* %1, i32 %2) #5
-  %tobool = icmp eq %union.tree_node* %0, null
-  br i1 %tobool, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %stmt}, i64 0, metadata !1175), !dbg !1485
+  %operands = getelementptr inbounds %union.tree_node* %stmt, i64 0, i32 0, i32 2, !dbg !1486
+  %arrayidx = bitcast i32* %operands to %union.tree_node**, !dbg !1486
+  %0 = load %union.tree_node** %arrayidx, align 8, !dbg !1486, !tbaa !1245
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %0}, i64 0, metadata !1176), !dbg !1486
+  %1 = load i8** @input_filename, align 8, !dbg !1487, !tbaa !1245
+  %2 = load i32* @lineno, align 4, !dbg !1487, !tbaa !1276
+  %call = tail call %struct.rtx_def* @emit_line_note(i8* %1, i32 %2) #6, !dbg !1487
+  %tobool = icmp eq %union.tree_node* %0, null, !dbg !1488
+  br i1 %tobool, label %if.then, label %if.else, !dbg !1488
 
 if.then:                                          ; preds = %entry
-  tail call void @expand_null_return() #5
-  br label %if.end
+  tail call void @expand_null_return() #6, !dbg !1489
+  br label %if.end, !dbg !1489
 
 if.else:                                          ; preds = %entry
-  tail call void @expand_start_target_temps() #5
-  tail call void @expand_return(%union.tree_node* %0) #5
-  tail call void @expand_end_target_temps() #5
+  tail call void @expand_start_target_temps() #6, !dbg !1490
+  tail call void @expand_return(%union.tree_node* %0) #6, !dbg !1492
+  tail call void @expand_end_target_temps() #6, !dbg !1493
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
-  ret void
+  ret void, !dbg !1494
 }

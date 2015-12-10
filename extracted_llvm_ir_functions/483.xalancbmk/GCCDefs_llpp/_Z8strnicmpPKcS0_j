@@ -1,0 +1,17 @@
+define i32 @_Z8strnicmpPKcS0_j(i8* nocapture %str1, i8* nocapture %str2, i32 %count) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %str1}, i64 0, metadata !22), !dbg !27
+  tail call void @llvm.dbg.value(metadata !{i8* %str2}, i64 0, metadata !23), !dbg !27
+  tail call void @llvm.dbg.value(metadata !{i32 %count}, i64 0, metadata !24), !dbg !27
+  %cmp = icmp eq i32 %count, 0, !dbg !28
+  br i1 %cmp, label %return, label %if.end, !dbg !28
+
+if.end:                                           ; preds = %entry
+  %conv = zext i32 %count to i64, !dbg !29
+  %call = tail call i32 @strncasecmp(i8* %str1, i8* %str2, i64 %conv) #3, !dbg !29
+  br label %return, !dbg !29
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i32 [ %call, %if.end ], [ 0, %entry ]
+  ret i32 %retval.0, !dbg !30
+}

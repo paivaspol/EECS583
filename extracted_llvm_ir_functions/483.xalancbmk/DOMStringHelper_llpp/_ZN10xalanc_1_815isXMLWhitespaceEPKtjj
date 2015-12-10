@@ -1,0 +1,34 @@
+define zeroext i1 @_ZN10xalanc_1_815isXMLWhitespaceEPKtjj(i16* nocapture %ch, i32 %start, i32 %length) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %ch}, i64 0, metadata !4532), !dbg !9141
+  tail call void @llvm.dbg.value(metadata !{i32 %start}, i64 0, metadata !4533), !dbg !9142
+  tail call void @llvm.dbg.value(metadata !{i32 %length}, i64 0, metadata !4534), !dbg !9143
+  %add = add i32 %length, %start, !dbg !9144
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !4535), !dbg !9144
+  tail call void @llvm.dbg.value(metadata !{i32 %start}, i64 0, metadata !4536), !dbg !9145
+  %cmp4 = icmp ugt i32 %add, %start, !dbg !9145
+  br i1 %cmp4, label %for.body, label %return, !dbg !9145
+
+for.cond:                                         ; preds = %for.body
+  %cmp = icmp ult i32 %inc, %add, !dbg !9145
+  br i1 %cmp, label %for.body, label %return, !dbg !9145
+
+for.body:                                         ; preds = %entry, %for.cond
+  %s.05 = phi i32 [ %inc, %for.cond ], [ %start, %entry ]
+  %idxprom = zext i32 %s.05 to i64, !dbg !9146
+  %arrayidx = getelementptr inbounds i16* %ch, i64 %idxprom, !dbg !9146
+  %0 = load i16* %arrayidx, align 2, !dbg !9146, !tbaa !6609
+  tail call void @llvm.dbg.value(metadata !{i16 %0}, i64 0, metadata !9147), !dbg !9148
+  tail call void @llvm.dbg.value(metadata !{i16 %0}, i64 0, metadata !9149), !dbg !9151
+  %idxprom.i.i = zext i16 %0 to i64, !dbg !9152
+  %arrayidx.i.i = getelementptr inbounds [0 x i8]* @_ZN10xalanc_1_812XalanXMLChar15theUnicodeTableE, i64 0, i64 %idxprom.i.i, !dbg !9152
+  %1 = load i8* %arrayidx.i.i, align 1, !dbg !9152, !tbaa !6610
+  %cmp.i.i = icmp eq i8 %1, 6, !dbg !9152
+  %inc = add i32 %s.05, 1, !dbg !9145
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !4536), !dbg !9145
+  br i1 %cmp.i.i, label %for.cond, label %return, !dbg !9146
+
+return:                                           ; preds = %for.cond, %for.body, %entry
+  %retval.0 = phi i1 [ true, %entry ], [ false, %for.body ], [ true, %for.cond ]
+  ret i1 %retval.0, !dbg !9153
+}

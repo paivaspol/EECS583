@@ -1,42 +1,69 @@
-define float @bond_angle([3 x float]* nocapture readnone %box, float* nocapture readonly %xi, float* nocapture readonly %xj, float* nocapture readonly %xk, float* nocapture %r_ij, float* nocapture %r_kj, float* nocapture %costh) #3 {
-  %1 = load float* %xi, align 4, !tbaa !14
-  %2 = load float* %xj, align 4, !tbaa !14
-  %3 = fsub float %1, %2
-  %4 = getelementptr inbounds float* %xi, i64 1
-  %5 = load float* %4, align 4, !tbaa !14
-  %6 = getelementptr inbounds float* %xj, i64 1
-  %7 = load float* %6, align 4, !tbaa !14
-  %8 = fsub float %5, %7
-  %9 = getelementptr inbounds float* %xi, i64 2
-  %10 = load float* %9, align 4, !tbaa !14
-  %11 = getelementptr inbounds float* %xj, i64 2
-  %12 = load float* %11, align 4, !tbaa !14
-  %13 = fsub float %10, %12
-  store float %3, float* %r_ij, align 4, !tbaa !14
-  %14 = getelementptr inbounds float* %r_ij, i64 1
-  store float %8, float* %14, align 4, !tbaa !14
-  %15 = getelementptr inbounds float* %r_ij, i64 2
-  store float %13, float* %15, align 4, !tbaa !14
-  %16 = load float* %xk, align 4, !tbaa !14
-  %17 = load float* %xj, align 4, !tbaa !14
-  %18 = fsub float %16, %17
-  %19 = getelementptr inbounds float* %xk, i64 1
-  %20 = load float* %19, align 4, !tbaa !14
-  %21 = load float* %6, align 4, !tbaa !14
-  %22 = fsub float %20, %21
-  %23 = getelementptr inbounds float* %xk, i64 2
-  %24 = load float* %23, align 4, !tbaa !14
-  %25 = load float* %11, align 4, !tbaa !14
-  %26 = fsub float %24, %25
-  store float %18, float* %r_kj, align 4, !tbaa !14
-  %27 = getelementptr inbounds float* %r_kj, i64 1
-  store float %22, float* %27, align 4, !tbaa !14
-  %28 = getelementptr inbounds float* %r_kj, i64 2
-  store float %26, float* %28, align 4, !tbaa !14
-  %29 = tail call fastcc float @cos_angle(float* %r_ij, float* %r_kj) #11
-  store float %29, float* %costh, align 4, !tbaa !14
-  %30 = fpext float %29 to double
-  %31 = tail call double @acos(double %30) #10
-  %32 = fptrunc double %31 to float
-  ret float %32
+define float @bond_angle([3 x float]* nocapture %box, float* nocapture %xi, float* nocapture %xj, float* nocapture %xk, float* nocapture %r_ij, float* nocapture %r_kj, float* nocapture %costh) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{[3 x float]* %box}, i64 0, metadata !712), !dbg !1799
+  tail call void @llvm.dbg.value(metadata !{float* %xi}, i64 0, metadata !713), !dbg !1800
+  tail call void @llvm.dbg.value(metadata !{float* %xj}, i64 0, metadata !714), !dbg !1800
+  tail call void @llvm.dbg.value(metadata !{float* %xk}, i64 0, metadata !715), !dbg !1800
+  tail call void @llvm.dbg.value(metadata !{float* %r_ij}, i64 0, metadata !716), !dbg !1801
+  tail call void @llvm.dbg.value(metadata !{float* %r_kj}, i64 0, metadata !717), !dbg !1801
+  tail call void @llvm.dbg.value(metadata !{float* %costh}, i64 0, metadata !718), !dbg !1801
+  tail call void @llvm.dbg.value(metadata !{float* %xi}, i64 0, metadata !1802), !dbg !1804
+  tail call void @llvm.dbg.value(metadata !{float* %xj}, i64 0, metadata !1805), !dbg !1804
+  tail call void @llvm.dbg.value(metadata !{float* %r_ij}, i64 0, metadata !1806), !dbg !1804
+  tail call void @llvm.dbg.value(metadata !{float* %xi}, i64 0, metadata !1807), !dbg !1809
+  tail call void @llvm.dbg.value(metadata !{float* %xj}, i64 0, metadata !1810), !dbg !1809
+  tail call void @llvm.dbg.value(metadata !{float* %r_ij}, i64 0, metadata !1811), !dbg !1809
+  %0 = load float* %xi, align 4, !dbg !1812, !tbaa !1309
+  %1 = load float* %xj, align 4, !dbg !1812, !tbaa !1309
+  %sub.i.i = fsub float %0, %1, !dbg !1812
+  tail call void @llvm.dbg.value(metadata !{float %sub.i.i}, i64 0, metadata !1813), !dbg !1812
+  %arrayidx2.i.i = getelementptr inbounds float* %xi, i64 1, !dbg !1814
+  %2 = load float* %arrayidx2.i.i, align 4, !dbg !1814, !tbaa !1309
+  %arrayidx3.i.i = getelementptr inbounds float* %xj, i64 1, !dbg !1814
+  %3 = load float* %arrayidx3.i.i, align 4, !dbg !1814, !tbaa !1309
+  %sub4.i.i = fsub float %2, %3, !dbg !1814
+  tail call void @llvm.dbg.value(metadata !{float %sub4.i.i}, i64 0, metadata !1815), !dbg !1814
+  %arrayidx5.i.i = getelementptr inbounds float* %xi, i64 2, !dbg !1816
+  %4 = load float* %arrayidx5.i.i, align 4, !dbg !1816, !tbaa !1309
+  %arrayidx6.i.i = getelementptr inbounds float* %xj, i64 2, !dbg !1816
+  %5 = load float* %arrayidx6.i.i, align 4, !dbg !1816, !tbaa !1309
+  %sub7.i.i = fsub float %4, %5, !dbg !1816
+  tail call void @llvm.dbg.value(metadata !{float %sub7.i.i}, i64 0, metadata !1817), !dbg !1816
+  store float %sub.i.i, float* %r_ij, align 4, !dbg !1818, !tbaa !1309
+  %arrayidx9.i.i = getelementptr inbounds float* %r_ij, i64 1, !dbg !1819
+  store float %sub4.i.i, float* %arrayidx9.i.i, align 4, !dbg !1819, !tbaa !1309
+  %arrayidx10.i.i = getelementptr inbounds float* %r_ij, i64 2, !dbg !1820
+  store float %sub7.i.i, float* %arrayidx10.i.i, align 4, !dbg !1820, !tbaa !1309
+  tail call void @llvm.dbg.value(metadata !{float* %xk}, i64 0, metadata !1821), !dbg !1823
+  tail call void @llvm.dbg.value(metadata !{float* %xj}, i64 0, metadata !1824), !dbg !1823
+  tail call void @llvm.dbg.value(metadata !{float* %r_kj}, i64 0, metadata !1825), !dbg !1823
+  tail call void @llvm.dbg.value(metadata !{float* %xk}, i64 0, metadata !1826), !dbg !1828
+  tail call void @llvm.dbg.value(metadata !{float* %xj}, i64 0, metadata !1829), !dbg !1828
+  tail call void @llvm.dbg.value(metadata !{float* %r_kj}, i64 0, metadata !1830), !dbg !1828
+  %6 = load float* %xk, align 4, !dbg !1831, !tbaa !1309
+  %7 = load float* %xj, align 4, !dbg !1831, !tbaa !1309
+  %sub.i.i7 = fsub float %6, %7, !dbg !1831
+  tail call void @llvm.dbg.value(metadata !{float %sub.i.i7}, i64 0, metadata !1832), !dbg !1831
+  %arrayidx2.i.i8 = getelementptr inbounds float* %xk, i64 1, !dbg !1833
+  %8 = load float* %arrayidx2.i.i8, align 4, !dbg !1833, !tbaa !1309
+  %9 = load float* %arrayidx3.i.i, align 4, !dbg !1833, !tbaa !1309
+  %sub4.i.i10 = fsub float %8, %9, !dbg !1833
+  tail call void @llvm.dbg.value(metadata !{float %sub4.i.i10}, i64 0, metadata !1834), !dbg !1833
+  %arrayidx5.i.i11 = getelementptr inbounds float* %xk, i64 2, !dbg !1835
+  %10 = load float* %arrayidx5.i.i11, align 4, !dbg !1835, !tbaa !1309
+  %11 = load float* %arrayidx6.i.i, align 4, !dbg !1835, !tbaa !1309
+  %sub7.i.i13 = fsub float %10, %11, !dbg !1835
+  tail call void @llvm.dbg.value(metadata !{float %sub7.i.i13}, i64 0, metadata !1836), !dbg !1835
+  store float %sub.i.i7, float* %r_kj, align 4, !dbg !1837, !tbaa !1309
+  %arrayidx9.i.i14 = getelementptr inbounds float* %r_kj, i64 1, !dbg !1838
+  store float %sub4.i.i10, float* %arrayidx9.i.i14, align 4, !dbg !1838, !tbaa !1309
+  %arrayidx10.i.i15 = getelementptr inbounds float* %r_kj, i64 2, !dbg !1839
+  store float %sub7.i.i13, float* %arrayidx10.i.i15, align 4, !dbg !1839, !tbaa !1309
+  %call = tail call fastcc float @cos_angle(float* %r_ij, float* %r_kj) #8, !dbg !1840
+  store float %call, float* %costh, align 4, !dbg !1840, !tbaa !1309
+  %conv = fpext float %call to double, !dbg !1841
+  %call1 = tail call double @acos(double %conv) #6, !dbg !1841
+  %conv2 = fptrunc double %call1 to float, !dbg !1841
+  tail call void @llvm.dbg.value(metadata !{float %conv2}, i64 0, metadata !719), !dbg !1841
+  ret float %conv2, !dbg !1842
 }

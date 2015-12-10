@@ -1,26 +1,27 @@
 define i32 @c_disregard_inline_limits(%union.tree_node* nocapture %fn) #0 {
 entry:
-  %attributes = getelementptr inbounds %union.tree_node* %fn, i64 0, i32 0, i32 16
-  %0 = load %union.tree_node** %attributes, align 8, !tbaa !3
-  %call = tail call %union.tree_node* @lookup_attribute(i8* getelementptr inbounds ([14 x i8]* @.str, i64 0, i64 0), %union.tree_node* %0) #3
-  %cmp = icmp eq %union.tree_node* %call, null
-  br i1 %cmp, label %if.end, label %return
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %fn}, i64 0, metadata !898), !dbg !1167
+  %attributes = getelementptr inbounds %union.tree_node* %fn, i64 0, i32 0, i32 16, !dbg !1168
+  %0 = load %union.tree_node** %attributes, align 8, !dbg !1168, !tbaa !1165
+  %call = tail call %union.tree_node* @lookup_attribute(i8* getelementptr inbounds ([14 x i8]* @.str, i64 0, i64 0), %union.tree_node* %0) #4, !dbg !1168
+  %cmp = icmp eq %union.tree_node* %call, null, !dbg !1168
+  br i1 %cmp, label %if.end, label %return, !dbg !1168
 
 if.end:                                           ; preds = %entry
-  %lang_specific = getelementptr inbounds %union.tree_node* %fn, i64 0, i32 0, i32 24
-  %1 = load %struct.lang_decl** %lang_specific, align 8, !tbaa !3
-  %2 = getelementptr inbounds %struct.lang_decl* %1, i64 0, i32 0, i32 0
-  %bf.load = load i8* %2, align 4
-  %bf.clear = and i8 %bf.load, 1
-  %tobool = icmp eq i8 %bf.clear, 0
-  br i1 %tobool, label %land.end, label %land.rhs
+  %lang_specific = getelementptr inbounds %union.tree_node* %fn, i64 0, i32 0, i32 24, !dbg !1169
+  %1 = load %struct.lang_decl** %lang_specific, align 8, !dbg !1169, !tbaa !1165
+  %2 = getelementptr inbounds %struct.lang_decl* %1, i64 0, i32 0, i32 0, !dbg !1169
+  %bf.load = load i8* %2, align 4, !dbg !1169
+  %bf.clear = and i8 %bf.load, 1, !dbg !1169
+  %tobool = icmp eq i8 %bf.clear, 0, !dbg !1169
+  br i1 %tobool, label %land.end, label %land.rhs, !dbg !1169
 
 land.rhs:                                         ; preds = %if.end
-  %external_flag = getelementptr inbounds %union.tree_node* %fn, i64 0, i32 0, i32 5
-  %3 = bitcast [8 x i8]* %external_flag to i64*
-  %bf.load3 = load i64* %3, align 8
-  %bf.cast5 = and i64 %bf.load3, 256
-  %tobool6 = icmp ne i64 %bf.cast5, 0
+  %external_flag = getelementptr inbounds %union.tree_node* %fn, i64 0, i32 0, i32 5, !dbg !1169
+  %3 = bitcast [8 x i8]* %external_flag to i64*, !dbg !1169
+  %bf.load3 = load i64* %3, align 8, !dbg !1169
+  %bf.cast5 = and i64 %bf.load3, 256, !dbg !1169
+  %tobool6 = icmp ne i64 %bf.cast5, 0, !dbg !1169
   br label %land.end
 
 land.end:                                         ; preds = %if.end, %land.rhs
@@ -30,5 +31,5 @@ land.end:                                         ; preds = %if.end, %land.rhs
 
 return:                                           ; preds = %entry, %land.end
   %retval.0 = phi i32 [ %land.ext, %land.end ], [ 1, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1170
 }

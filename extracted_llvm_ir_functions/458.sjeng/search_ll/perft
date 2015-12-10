@@ -1,47 +1,54 @@
 define void @perft(i32 %depth) #0 {
 entry:
   %moves = alloca [512 x %struct.move_s], align 16
-  %0 = bitcast [512 x %struct.move_s]* %moves to i8*
-  call void @llvm.lifetime.start(i64 12288, i8* %0) #2
-  %tobool = icmp eq i32 %depth, 0
-  br i1 %tobool, label %if.then, label %if.end
+  call void @llvm.dbg.value(metadata !{i32 %depth}, i64 0, metadata !42), !dbg !420
+  %0 = bitcast [512 x %struct.move_s]* %moves to i8*, !dbg !421
+  call void @llvm.lifetime.start(i64 12288, i8* %0) #3, !dbg !421
+  call void @llvm.dbg.declare(metadata !{[512 x %struct.move_s]* %moves}, metadata !43), !dbg !421
+  call void @llvm.dbg.value(metadata !8, i64 0, metadata !47), !dbg !422
+  %tobool = icmp eq i32 %depth, 0, !dbg !423
+  br i1 %tobool, label %if.then, label %if.end, !dbg !423
 
 if.then:                                          ; preds = %entry
-  %1 = load i32* @raw_nodes, align 4, !tbaa !2
-  %inc = add nsw i32 %1, 1
-  store i32 %inc, i32* @raw_nodes, align 4, !tbaa !2
-  br label %cleanup
+  %1 = load i32* @raw_nodes, align 4, !dbg !424, !tbaa !300
+  %inc = add nsw i32 %1, 1, !dbg !424
+  store i32 %inc, i32* @raw_nodes, align 4, !dbg !424, !tbaa !300
+  br label %cleanup, !dbg !426
 
 if.end:                                           ; preds = %entry
-  %arrayidx = getelementptr inbounds [512 x %struct.move_s]* %moves, i64 0, i64 0
-  call void @gen(%struct.move_s* %arrayidx) #5
-  %2 = load i32* @numb_moves, align 4, !tbaa !2
-  %call = call i32 @in_check() #5
-  %cmp14 = icmp sgt i32 %2, 0
-  br i1 %cmp14, label %for.body.lr.ph, label %cleanup
+  %arrayidx = getelementptr inbounds [512 x %struct.move_s]* %moves, i64 0, i64 0, !dbg !427
+  call void @gen(%struct.move_s* %arrayidx) #6, !dbg !427
+  %2 = load i32* @numb_moves, align 4, !dbg !428, !tbaa !300
+  call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !47), !dbg !428
+  %call = call i32 @in_check() #6, !dbg !429
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !49), !dbg !429
+  call void @llvm.dbg.value(metadata !8, i64 0, metadata !48), !dbg !430
+  %cmp14 = icmp sgt i32 %2, 0, !dbg !430
+  br i1 %cmp14, label %for.body.lr.ph, label %cleanup, !dbg !430
 
 for.body.lr.ph:                                   ; preds = %if.end
-  %sub = add nsw i32 %depth, -1
-  br label %for.body
+  %sub = add nsw i32 %depth, -1, !dbg !432
+  br label %for.body, !dbg !430
 
 for.body:                                         ; preds = %if.end6, %for.body.lr.ph
   %i.015 = phi i32 [ 0, %for.body.lr.ph ], [ %inc8, %if.end6 ]
-  call void @make(%struct.move_s* %arrayidx, i32 %i.015) #5
-  %call3 = call i32 @check_legal(%struct.move_s* %arrayidx, i32 %i.015, i32 %call) #5
-  %tobool4 = icmp eq i32 %call3, 0
-  br i1 %tobool4, label %if.end6, label %if.then5
+  call void @make(%struct.move_s* %arrayidx, i32 %i.015) #6, !dbg !435
+  %call3 = call i32 @check_legal(%struct.move_s* %arrayidx, i32 %i.015, i32 %call) #6, !dbg !436
+  %tobool4 = icmp eq i32 %call3, 0, !dbg !436
+  br i1 %tobool4, label %if.end6, label %if.then5, !dbg !436
 
 if.then5:                                         ; preds = %for.body
-  call void @perft(i32 %sub) #6
-  br label %if.end6
+  call void @perft(i32 %sub) #7, !dbg !432
+  br label %if.end6, !dbg !437
 
 if.end6:                                          ; preds = %for.body, %if.then5
-  call void @unmake(%struct.move_s* %arrayidx, i32 %i.015) #5
-  %inc8 = add nsw i32 %i.015, 1
-  %exitcond = icmp eq i32 %inc8, %2
-  br i1 %exitcond, label %cleanup, label %for.body
+  call void @unmake(%struct.move_s* %arrayidx, i32 %i.015) #6, !dbg !438
+  %inc8 = add nsw i32 %i.015, 1, !dbg !430
+  call void @llvm.dbg.value(metadata !{i32 %inc8}, i64 0, metadata !48), !dbg !430
+  %exitcond = icmp eq i32 %inc8, %2, !dbg !430
+  br i1 %exitcond, label %cleanup, label %for.body, !dbg !430
 
 cleanup:                                          ; preds = %if.end, %if.end6, %if.then
-  call void @llvm.lifetime.end(i64 12288, i8* %0) #2
-  ret void
+  call void @llvm.lifetime.end(i64 12288, i8* %0) #3, !dbg !439
+  ret void, !dbg !440
 }

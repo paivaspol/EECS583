@@ -1,0 +1,107 @@
+define i32 @_ZN11xercesc_2_517XMLUCS4Transcoder13transcodeFromEPKhjPtjRjPh(%"class.xercesc_2_5::XMLUCS4Transcoder"* nocapture %this, i8* %srcData, i32 %srcCount, i16* %toFill, i32 %maxChars, i32* nocapture %bytesEaten, i8* nocapture %charSizes) unnamed_addr #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLUCS4Transcoder"* %this}, i64 0, metadata !677), !dbg !952
+  tail call void @llvm.dbg.value(metadata !{i8* %srcData}, i64 0, metadata !678), !dbg !952
+  tail call void @llvm.dbg.value(metadata !{i32 %srcCount}, i64 0, metadata !679), !dbg !953
+  tail call void @llvm.dbg.value(metadata !{i16* %toFill}, i64 0, metadata !680), !dbg !954
+  tail call void @llvm.dbg.value(metadata !{i32 %maxChars}, i64 0, metadata !681), !dbg !955
+  tail call void @llvm.dbg.value(metadata !{i32* %bytesEaten}, i64 0, metadata !682), !dbg !956
+  tail call void @llvm.dbg.value(metadata !{i8* %charSizes}, i64 0, metadata !683), !dbg !957
+  %0 = bitcast i8* %srcData to i32*, !dbg !958
+  tail call void @llvm.dbg.value(metadata !{i32* %0}, i64 0, metadata !684), !dbg !958
+  %conv = zext i32 %srcCount to i64, !dbg !959
+  %div = lshr i64 %conv, 2, !dbg !959
+  %add.ptr = getelementptr inbounds i32* %0, i64 %div, !dbg !959
+  tail call void @llvm.dbg.value(metadata !{i32* %add.ptr}, i64 0, metadata !689), !dbg !959
+  tail call void @llvm.dbg.value(metadata !{i16* %toFill}, i64 0, metadata !690), !dbg !960
+  %idx.ext = zext i32 %maxChars to i64, !dbg !961
+  %add.ptr2 = getelementptr inbounds i16* %toFill, i64 %idx.ext, !dbg !961
+  tail call void @llvm.dbg.value(metadata !{i16* %add.ptr2}, i64 0, metadata !691), !dbg !961
+  tail call void @llvm.dbg.value(metadata !{i8* %charSizes}, i64 0, metadata !692), !dbg !962
+  %cmp49 = icmp ne i32 %maxChars, 0, !dbg !963
+  %cmp350 = icmp ult i32* %0, %add.ptr, !dbg !963
+  %or.cond51 = and i1 %cmp49, %cmp350, !dbg !963
+  br i1 %or.cond51, label %while.body.lr.ph, label %while.end, !dbg !963
+
+while.body.lr.ph:                                 ; preds = %entry
+  %fSwapped = getelementptr inbounds %"class.xercesc_2_5::XMLUCS4Transcoder"* %this, i64 0, i32 1, !dbg !964
+  br label %while.body, !dbg !963
+
+while.body:                                       ; preds = %while.body.lr.ph, %if.end21
+  %srcPtr.054 = phi i32* [ %0, %while.body.lr.ph ], [ %incdec.ptr22, %if.end21 ]
+  %outPtr.053 = phi i16* [ %toFill, %while.body.lr.ph ], [ %outPtr.1, %if.end21 ]
+  %sizePtr.052 = phi i8* [ %charSizes, %while.body.lr.ph ], [ %sizePtr.1, %if.end21 ]
+  %1 = load i32* %srcPtr.054, align 4, !dbg !965, !tbaa !966
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !693), !dbg !965
+  %2 = load i8* %fSwapped, align 1, !dbg !964, !tbaa !939, !range !967
+  %tobool = icmp eq i8 %2, 0, !dbg !964
+  br i1 %tobool, label %if.end, label %if.then, !dbg !964
+
+if.then:                                          ; preds = %while.body
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !968) #8, !dbg !970
+  %or5.i = tail call i32 @llvm.bswap.i32(i32 %1) #8, !dbg !971
+  tail call void @llvm.dbg.value(metadata !{i32 %or5.i}, i64 0, metadata !693), !dbg !969
+  br label %if.end, !dbg !969
+
+if.end:                                           ; preds = %while.body, %if.then
+  %nextVal.0 = phi i32 [ %or5.i, %if.then ], [ %1, %while.body ]
+  %tobool4 = icmp ugt i32 %nextVal.0, 65535, !dbg !973
+  br i1 %tobool4, label %if.then5, label %if.else, !dbg !973
+
+if.then5:                                         ; preds = %if.end
+  %add.ptr6 = getelementptr inbounds i16* %outPtr.053, i64 1, !dbg !974
+  %cmp7 = icmp eq i16* %add.ptr6, %add.ptr2, !dbg !974
+  br i1 %cmp7, label %while.end, label %if.end9, !dbg !974
+
+if.end9:                                          ; preds = %if.then5
+  %sub = add i32 %nextVal.0, -65536, !dbg !975
+  %shr = lshr i32 %sub, 10, !dbg !975
+  %add = add i32 %shr, 55296, !dbg !975
+  %conv10 = trunc i32 %add to i16, !dbg !975
+  tail call void @llvm.dbg.value(metadata !{i16 %conv10}, i64 0, metadata !695), !dbg !975
+  %and12 = and i32 %sub, 1023, !dbg !976
+  %add1348 = or i32 %and12, 56320, !dbg !976
+  %conv14 = trunc i32 %add1348 to i16, !dbg !976
+  tail call void @llvm.dbg.value(metadata !{i16 %conv14}, i64 0, metadata !697), !dbg !976
+  %incdec.ptr = getelementptr inbounds i8* %sizePtr.052, i64 1, !dbg !977
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !692), !dbg !977
+  store i8 4, i8* %sizePtr.052, align 1, !dbg !977, !tbaa !940
+  tail call void @llvm.dbg.value(metadata !{i16* %add.ptr6}, i64 0, metadata !690), !dbg !978
+  store i16 %conv10, i16* %outPtr.053, align 2, !dbg !978, !tbaa !979
+  store i8 0, i8* %incdec.ptr, align 1, !dbg !980, !tbaa !940
+  store i16 %conv14, i16* %add.ptr6, align 2, !dbg !981, !tbaa !979
+  br label %if.end21, !dbg !982
+
+if.else:                                          ; preds = %if.end
+  store i8 4, i8* %sizePtr.052, align 1, !dbg !983, !tbaa !940
+  %conv19 = trunc i32 %nextVal.0 to i16, !dbg !985
+  store i16 %conv19, i16* %outPtr.053, align 2, !dbg !985, !tbaa !979
+  br label %if.end21
+
+if.end21:                                         ; preds = %if.else, %if.end9
+  %incdec.ptr.pn = phi i8* [ %incdec.ptr, %if.end9 ], [ %sizePtr.052, %if.else ]
+  %incdec.ptr15.pn = phi i16* [ %add.ptr6, %if.end9 ], [ %outPtr.053, %if.else ]
+  %outPtr.1 = getelementptr inbounds i16* %incdec.ptr15.pn, i64 1, !dbg !981
+  %sizePtr.1 = getelementptr inbounds i8* %incdec.ptr.pn, i64 1, !dbg !980
+  %incdec.ptr22 = getelementptr inbounds i32* %srcPtr.054, i64 1, !dbg !986
+  tail call void @llvm.dbg.value(metadata !{i32* %incdec.ptr22}, i64 0, metadata !684), !dbg !986
+  %cmp = icmp ult i16* %outPtr.1, %add.ptr2, !dbg !963
+  %cmp3 = icmp ult i32* %incdec.ptr22, %add.ptr, !dbg !963
+  %or.cond = and i1 %cmp, %cmp3, !dbg !963
+  br i1 %or.cond, label %while.body, label %while.end, !dbg !963
+
+while.end:                                        ; preds = %if.end21, %if.then5, %entry
+  %srcPtr.0.lcssa = phi i32* [ %0, %entry ], [ %srcPtr.054, %if.then5 ], [ %incdec.ptr22, %if.end21 ]
+  %outPtr.0.lcssa = phi i16* [ %toFill, %entry ], [ %outPtr.053, %if.then5 ], [ %outPtr.1, %if.end21 ]
+  %sub.ptr.lhs.cast = ptrtoint i32* %srcPtr.0.lcssa to i64, !dbg !987
+  %sub.ptr.rhs.cast = ptrtoint i8* %srcData to i64, !dbg !987
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !987
+  %conv23 = trunc i64 %sub.ptr.sub to i32, !dbg !987
+  store i32 %conv23, i32* %bytesEaten, align 4, !dbg !987, !tbaa !966
+  %sub.ptr.lhs.cast24 = ptrtoint i16* %outPtr.0.lcssa to i64, !dbg !988
+  %sub.ptr.rhs.cast25 = ptrtoint i16* %toFill to i64, !dbg !988
+  %sub.ptr.sub26 = sub i64 %sub.ptr.lhs.cast24, %sub.ptr.rhs.cast25, !dbg !988
+  %sub.ptr.div47 = lshr exact i64 %sub.ptr.sub26, 1, !dbg !988
+  %conv27 = trunc i64 %sub.ptr.div47 to i32, !dbg !988
+  ret i32 %conv27, !dbg !988
+}

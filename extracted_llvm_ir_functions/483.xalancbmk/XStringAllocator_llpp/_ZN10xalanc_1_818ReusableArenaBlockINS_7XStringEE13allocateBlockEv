@@ -1,0 +1,21 @@
+define linkonce_odr %"class.xalanc_1_8::XString"* @_ZN10xalanc_1_818ReusableArenaBlockINS_7XStringEE13allocateBlockEv(%"class.xalanc_1_8::ReusableArenaBlock"* %this) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::ReusableArenaBlock"* %this}, i64 0, metadata !4706), !dbg !5803
+  %m_freeBlockCount = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 2, !dbg !5804
+  %0 = load i64* %m_freeBlockCount, align 8, !dbg !5804, !tbaa !5009
+  %cmp = icmp eq i64 %0, 0, !dbg !5804
+  br i1 %cmp, label %if.then, label %if.else, !dbg !5804
+
+if.then:                                          ; preds = %entry
+  %1 = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 0, !dbg !5806
+  %call = tail call %"class.xalanc_1_8::XString"* @_ZN10xalanc_1_810ArenaBlockINS_7XStringEE13allocateBlockEv(%"class.xalanc_1_8::ArenaBlock"* %1) #10, !dbg !5806
+  br label %return, !dbg !5806
+
+if.else:                                          ; preds = %entry
+  %call2 = tail call %"class.xalanc_1_8::XString"* @_ZN10xalanc_1_818ReusableArenaBlockINS_7XStringEE19getNextFromFreeListEv(%"class.xalanc_1_8::ReusableArenaBlock"* %this) #10, !dbg !5808
+  br label %return, !dbg !5808
+
+return:                                           ; preds = %if.else, %if.then
+  %retval.0 = phi %"class.xalanc_1_8::XString"* [ %call, %if.then ], [ %call2, %if.else ]
+  ret %"class.xalanc_1_8::XString"* %retval.0, !dbg !5810
+}

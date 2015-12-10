@@ -1,41 +1,45 @@
 define void @MSASetSeqAccession(%struct.msa_struct* nocapture %msa, i32 %seqidx, i8* %acc) #0 {
 entry:
-  %sqacc = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 14
-  %0 = load i8*** %sqacc, align 8, !tbaa !0
-  %cmp = icmp eq i8** %0, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.msa_struct* %msa}, i64 0, metadata !106), !dbg !601
+  tail call void @llvm.dbg.value(metadata !{i32 %seqidx}, i64 0, metadata !107), !dbg !601
+  tail call void @llvm.dbg.value(metadata !{i8* %acc}, i64 0, metadata !108), !dbg !601
+  %sqacc = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 14, !dbg !602
+  %0 = load i8*** %sqacc, align 8, !dbg !602, !tbaa !466
+  %cmp = icmp eq i8** %0, null, !dbg !602
+  br i1 %cmp, label %if.then, label %if.end, !dbg !602
 
 if.then:                                          ; preds = %entry
-  %nseqalloc = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 40
-  %1 = load i32* %nseqalloc, align 4, !tbaa !3
-  %conv = sext i32 %1 to i64
-  %mul = shl nsw i64 %conv, 3
-  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 310, i64 %mul) #6
-  %2 = bitcast i8* %call to i8**
-  store i8** %2, i8*** %sqacc, align 8, !tbaa !0
-  %3 = load i32* %nseqalloc, align 4, !tbaa !3
-  %cmp317 = icmp sgt i32 %3, 0
-  br i1 %cmp317, label %for.body, label %if.end
+  %nseqalloc = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 40, !dbg !603
+  %1 = load i32* %nseqalloc, align 4, !dbg !603, !tbaa !478
+  %conv = sext i32 %1 to i64, !dbg !603
+  %mul = shl nsw i64 %conv, 3, !dbg !603
+  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 310, i64 %mul) #7, !dbg !603
+  %2 = bitcast i8* %call to i8**, !dbg !603
+  store i8** %2, i8*** %sqacc, align 8, !dbg !603, !tbaa !466
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !109), !dbg !605
+  %3 = load i32* %nseqalloc, align 4, !dbg !605, !tbaa !478
+  %cmp317 = icmp sgt i32 %3, 0, !dbg !605
+  br i1 %cmp317, label %for.body, label %if.end, !dbg !605
 
 for.body:                                         ; preds = %if.then, %for.body.for.body_crit_edge
   %4 = phi i8** [ %.pre, %for.body.for.body_crit_edge ], [ %2, %if.then ]
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body.for.body_crit_edge ], [ 0, %if.then ]
-  %arrayidx = getelementptr inbounds i8** %4, i64 %indvars.iv
-  store i8* null, i8** %arrayidx, align 8, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %5 = trunc i64 %indvars.iv.next to i32
-  %cmp3 = icmp slt i32 %5, %3
-  br i1 %cmp3, label %for.body.for.body_crit_edge, label %if.end
+  %arrayidx = getelementptr inbounds i8** %4, i64 %indvars.iv, !dbg !607
+  store i8* null, i8** %arrayidx, align 8, !dbg !607, !tbaa !466
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !605
+  %5 = trunc i64 %indvars.iv.next to i32, !dbg !605
+  %cmp3 = icmp slt i32 %5, %3, !dbg !605
+  br i1 %cmp3, label %for.body.for.body_crit_edge, label %if.end, !dbg !605
 
 for.body.for.body_crit_edge:                      ; preds = %for.body
-  %.pre = load i8*** %sqacc, align 8, !tbaa !0
-  br label %for.body
+  %.pre = load i8*** %sqacc, align 8, !dbg !607, !tbaa !466
+  br label %for.body, !dbg !605
 
 if.end:                                           ; preds = %if.then, %for.body, %entry
-  %call6 = tail call i8* @sre_strdup(i8* %acc, i32 -1) #6
-  %idxprom7 = sext i32 %seqidx to i64
-  %6 = load i8*** %sqacc, align 8, !tbaa !0
-  %arrayidx9 = getelementptr inbounds i8** %6, i64 %idxprom7
-  store i8* %call6, i8** %arrayidx9, align 8, !tbaa !0
-  ret void
+  %call6 = tail call i8* @sre_strdup(i8* %acc, i32 -1) #7, !dbg !608
+  %idxprom7 = sext i32 %seqidx to i64, !dbg !608
+  %6 = load i8*** %sqacc, align 8, !dbg !608, !tbaa !466
+  %arrayidx9 = getelementptr inbounds i8** %6, i64 %idxprom7, !dbg !608
+  store i8* %call6, i8** %arrayidx9, align 8, !dbg !608, !tbaa !466
+  ret void, !dbg !609
 }

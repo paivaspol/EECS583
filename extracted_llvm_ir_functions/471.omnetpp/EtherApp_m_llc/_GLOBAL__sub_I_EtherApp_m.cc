@@ -1,0 +1,11 @@
+define internal void @_GLOBAL__sub_I_EtherApp_m.cc() #1 section "__TEXT,__StaticInit,regular,pure_instructions" {
+  tail call void @_ZN16ExecuteOnStartupC1EPFvvE(%class.ExecuteOnStartup* @_ZL24__EtherAppReq__class_reg, void ()* @_ZL25__EtherAppReq__class_codev) #9, !dbg !5440
+  %1 = tail call i32 @__cxa_atexit(void (i8*)* bitcast (void (%class.ExecuteOnStartup*)* @_ZN16ExecuteOnStartupD1Ev to void (i8*)*), i8* bitcast (%class.ExecuteOnStartup* @_ZL24__EtherAppReq__class_reg to i8*), i8* @__dso_handle) #3, !dbg !5440
+  tail call void @_ZN16ExecuteOnStartupC1EPFvvE(%class.ExecuteOnStartup* @_ZL34__EtherAppReqDescriptor__class_reg, void ()* @_ZL35__EtherAppReqDescriptor__class_codev) #9, !dbg !5442
+  %2 = tail call i32 @__cxa_atexit(void (i8*)* bitcast (void (%class.ExecuteOnStartup*)* @_ZN16ExecuteOnStartupD1Ev to void (i8*)*), i8* bitcast (%class.ExecuteOnStartup* @_ZL34__EtherAppReqDescriptor__class_reg to i8*), i8* @__dso_handle) #3, !dbg !5442
+  tail call void @_ZN16ExecuteOnStartupC1EPFvvE(%class.ExecuteOnStartup* @_ZL25__EtherAppResp__class_reg, void ()* @_ZL26__EtherAppResp__class_codev) #9, !dbg !5444
+  %3 = tail call i32 @__cxa_atexit(void (i8*)* bitcast (void (%class.ExecuteOnStartup*)* @_ZN16ExecuteOnStartupD1Ev to void (i8*)*), i8* bitcast (%class.ExecuteOnStartup* @_ZL25__EtherAppResp__class_reg to i8*), i8* @__dso_handle) #3, !dbg !5444
+  tail call void @_ZN16ExecuteOnStartupC1EPFvvE(%class.ExecuteOnStartup* @_ZL35__EtherAppRespDescriptor__class_reg, void ()* @_ZL36__EtherAppRespDescriptor__class_codev) #9, !dbg !5446
+  %4 = tail call i32 @__cxa_atexit(void (i8*)* bitcast (void (%class.ExecuteOnStartup*)* @_ZN16ExecuteOnStartupD1Ev to void (i8*)*), i8* bitcast (%class.ExecuteOnStartup* @_ZL35__EtherAppRespDescriptor__class_reg to i8*), i8* @__dso_handle) #3, !dbg !5446
+  ret void
+}

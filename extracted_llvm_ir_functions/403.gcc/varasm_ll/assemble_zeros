@@ -1,34 +1,36 @@
 define void @assemble_zeros(i32 %size) #0 {
 entry:
-  %0 = load i32* @flag_syntax_only, align 4, !tbaa !4
-  %tobool = icmp eq i32 %0, 0
-  br i1 %tobool, label %if.end, label %if.end8
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !1334), !dbg !2867
+  %0 = load i32* @flag_syntax_only, align 4, !dbg !2868, !tbaa !2382
+  %tobool = icmp eq i32 %0, 0, !dbg !2868
+  br i1 %tobool, label %if.end, label %if.end8, !dbg !2868
 
 if.end:                                           ; preds = %entry
-  %1 = load i32* @in_section, align 4, !tbaa !0
-  %cmp.i = icmp eq i32 %1, 1
-  %cmp12 = icmp sgt i32 %size, 0
-  br i1 %cmp.i, label %for.cond.preheader, label %if.else
+  %1 = load i32* @in_section, align 4, !dbg !2869, !tbaa !2352
+  %cmp.i = icmp eq i32 %1, 1, !dbg !2869
+  %cmp12 = icmp sgt i32 %size, 0, !dbg !2871
+  br i1 %cmp.i, label %for.cond.preheader, label %if.else, !dbg !2870
 
 for.cond.preheader:                               ; preds = %if.end
-  br i1 %cmp12, label %for.body, label %if.end8
+  br i1 %cmp12, label %for.body, label %if.end8, !dbg !2871
 
 for.body:                                         ; preds = %for.cond.preheader, %for.body
   %i.013 = phi i32 [ %inc, %for.body ], [ 0, %for.cond.preheader ]
-  %2 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !3
-  %call3 = tail call zeroext i1 @assemble_integer(%struct.rtx_def* %2, i32 1, i32 8, i32 1) #10
-  %inc = add nsw i32 %i.013, 1
-  %exitcond = icmp eq i32 %inc, %size
-  br i1 %exitcond, label %if.end8, label %for.body
+  %2 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !dbg !2873, !tbaa !2357
+  %call3 = tail call zeroext i1 @assemble_integer(%struct.rtx_def* %2, i32 1, i32 8, i32 1) #11, !dbg !2873
+  %inc = add nsw i32 %i.013, 1, !dbg !2871
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1335), !dbg !2871
+  %exitcond = icmp eq i32 %inc, %size, !dbg !2871
+  br i1 %exitcond, label %if.end8, label %for.body, !dbg !2871
 
 if.else:                                          ; preds = %if.end
-  br i1 %cmp12, label %if.then5, label %if.end8
+  br i1 %cmp12, label %if.then5, label %if.end8, !dbg !2874
 
 if.then5:                                         ; preds = %if.else
-  %3 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !3
-  %call6 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([6 x i8]* @.str80, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str81, i64 0, i64 0), i32 %size) #9
-  br label %if.end8
+  %3 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !2875, !tbaa !2357
+  %call6 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([6 x i8]* @.str80, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str81, i64 0, i64 0), i32 %size) #10, !dbg !2875
+  br label %if.end8, !dbg !2875
 
 if.end8:                                          ; preds = %for.cond.preheader, %for.body, %entry, %if.else, %if.then5
-  ret void
+  ret void, !dbg !2875
 }

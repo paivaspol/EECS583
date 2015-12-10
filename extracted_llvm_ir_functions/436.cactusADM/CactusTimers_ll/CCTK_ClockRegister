@@ -1,92 +1,110 @@
-define i32 @CCTK_ClockRegister(i8* %clockname, %struct.cClockFuncs* nocapture readonly %functions) #1 {
-  %1 = tail call i8* @malloc(i64 72) #7
-  %2 = icmp eq i8* %1, null
-  br i1 %2, label %.preheader, label %3
+define i32 @CCTK_ClockRegister(i8* %clockname, %struct.cClockFuncs* nocapture %functions) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %clockname}, i64 0, metadata !64), !dbg !350
+  tail call void @llvm.dbg.value(metadata !{%struct.cClockFuncs* %functions}, i64 0, metadata !65), !dbg !350
+  %call = tail call noalias i8* @malloc(i64 72) #8, !dbg !351
+  %tobool = icmp eq i8* %call, null, !dbg !352
+  br i1 %tobool, label %for.cond.preheader, label %if.then, !dbg !352
 
-; <label>:3                                       ; preds = %0
-  %4 = bitcast i8* %1 to i8**
-  store i8* %clockname, i8** %4, align 8, !tbaa !2
-  %5 = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 1
-  %6 = load i32* %5, align 4, !tbaa !8
-  %7 = getelementptr inbounds i8* %1, i64 8
-  %8 = bitcast i8* %7 to i32*
-  store i32 %6, i32* %8, align 4, !tbaa !8
-  %9 = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 2
-  %10 = getelementptr inbounds i8* %1, i64 16
-  %11 = bitcast i8* (i32)** %9 to <2 x i64>*
-  %12 = load <2 x i64>* %11, align 8, !tbaa !9
-  %13 = bitcast i8* %10 to <2 x i64>*
-  store <2 x i64> %12, <2 x i64>* %13, align 8, !tbaa !9
-  %14 = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 4
-  %15 = getelementptr inbounds i8* %1, i64 32
-  %16 = bitcast void (i32, i8*)** %14 to <2 x i64>*
-  %17 = load <2 x i64>* %16, align 8, !tbaa !9
-  %18 = bitcast i8* %15 to <2 x i64>*
-  store <2 x i64> %17, <2 x i64>* %18, align 8, !tbaa !9
-  %19 = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 6
-  %20 = getelementptr inbounds i8* %1, i64 48
-  %21 = bitcast void (i32, i8*)** %19 to <2 x i64>*
-  %22 = load <2 x i64>* %21, align 8, !tbaa !9
-  %23 = bitcast i8* %20 to <2 x i64>*
-  store <2 x i64> %22, <2 x i64>* %23, align 8, !tbaa !9
-  %24 = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 8
-  %25 = bitcast void (i32, i8*, %struct.cTimerVal*)** %24 to i64*
-  %26 = load i64* %25, align 8, !tbaa !10
-  %27 = getelementptr inbounds i8* %1, i64 64
-  %28 = bitcast i8* %27 to i64*
-  store i64 %26, i64* %28, align 8, !tbaa !10
-  br label %.preheader
+if.then:                                          ; preds = %entry
+  %name = bitcast i8* %call to i8**, !dbg !353
+  store i8* %clockname, i8** %name, align 8, !dbg !353, !tbaa !355
+  %n_vals = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 1, !dbg !358
+  %0 = load i32* %n_vals, align 4, !dbg !358, !tbaa !359
+  %n_vals4 = getelementptr inbounds i8* %call, i64 8, !dbg !358
+  %1 = bitcast i8* %n_vals4 to i32*, !dbg !358
+  store i32 %0, i32* %1, align 4, !dbg !358, !tbaa !359
+  %create = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 2, !dbg !360
+  %2 = load i8* (i32)** %create, align 8, !dbg !360, !tbaa !355
+  %create5 = getelementptr inbounds i8* %call, i64 16, !dbg !360
+  %3 = bitcast i8* %create5 to i8* (i32)**, !dbg !360
+  store i8* (i32)* %2, i8* (i32)** %3, align 8, !dbg !360, !tbaa !355
+  %destroy = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 3, !dbg !361
+  %4 = load void (i32, i8*)** %destroy, align 8, !dbg !361, !tbaa !355
+  %destroy6 = getelementptr inbounds i8* %call, i64 24, !dbg !361
+  %5 = bitcast i8* %destroy6 to void (i32, i8*)**, !dbg !361
+  store void (i32, i8*)* %4, void (i32, i8*)** %5, align 8, !dbg !361, !tbaa !355
+  %start = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 4, !dbg !362
+  %6 = load void (i32, i8*)** %start, align 8, !dbg !362, !tbaa !355
+  %start7 = getelementptr inbounds i8* %call, i64 32, !dbg !362
+  %7 = bitcast i8* %start7 to void (i32, i8*)**, !dbg !362
+  store void (i32, i8*)* %6, void (i32, i8*)** %7, align 8, !dbg !362, !tbaa !355
+  %stop = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 5, !dbg !363
+  %8 = load void (i32, i8*)** %stop, align 8, !dbg !363, !tbaa !355
+  %stop8 = getelementptr inbounds i8* %call, i64 40, !dbg !363
+  %9 = bitcast i8* %stop8 to void (i32, i8*)**, !dbg !363
+  store void (i32, i8*)* %8, void (i32, i8*)** %9, align 8, !dbg !363, !tbaa !355
+  %reset = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 6, !dbg !364
+  %10 = load void (i32, i8*)** %reset, align 8, !dbg !364, !tbaa !355
+  %reset9 = getelementptr inbounds i8* %call, i64 48, !dbg !364
+  %11 = bitcast i8* %reset9 to void (i32, i8*)**, !dbg !364
+  store void (i32, i8*)* %10, void (i32, i8*)** %11, align 8, !dbg !364, !tbaa !355
+  %get = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 7, !dbg !365
+  %12 = load void (i32, i8*, %struct.cTimerVal*)** %get, align 8, !dbg !365, !tbaa !355
+  %get10 = getelementptr inbounds i8* %call, i64 56, !dbg !365
+  %13 = bitcast i8* %get10 to void (i32, i8*, %struct.cTimerVal*)**, !dbg !365
+  store void (i32, i8*, %struct.cTimerVal*)* %12, void (i32, i8*, %struct.cTimerVal*)** %13, align 8, !dbg !365, !tbaa !355
+  %set = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 8, !dbg !366
+  %14 = load void (i32, i8*, %struct.cTimerVal*)** %set, align 8, !dbg !366, !tbaa !355
+  %set11 = getelementptr inbounds i8* %call, i64 64, !dbg !366
+  %15 = bitcast i8* %set11 to void (i32, i8*, %struct.cTimerVal*)**, !dbg !366
+  store void (i32, i8*, %struct.cTimerVal*)* %14, void (i32, i8*, %struct.cTimerVal*)** %15, align 8, !dbg !366, !tbaa !355
+  br label %for.cond.preheader, !dbg !367
 
-.preheader:                                       ; preds = %0, %3
-  %29 = load i32* @n_timers, align 4, !tbaa !11
-  %30 = icmp sgt i32 %29, 0
-  br i1 %30, label %.lr.ph, label %._crit_edge
+for.cond.preheader:                               ; preds = %entry, %if.then
+  %16 = load i32* @n_timers, align 4, !dbg !368, !tbaa !359
+  %cmp52 = icmp sgt i32 %16, 0, !dbg !368
+  br i1 %cmp52, label %for.body.lr.ph, label %for.end, !dbg !368
 
-.lr.ph:                                           ; preds = %.preheader
-  %31 = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 2
-  br label %32
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %create17 = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 2, !dbg !370
+  br label %for.body, !dbg !368
 
-; <label>:32                                      ; preds = %.lr.ph, %51
-  %handle.01 = phi i32 [ 0, %.lr.ph ], [ %52, %51 ]
-  %33 = load %struct.cHandledData** @timers, align 8, !tbaa !9
-  %34 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %33, i32 %handle.01) #7
-  %35 = bitcast i8* %34 to i8**
-  %36 = load i8** %35, align 8, !tbaa !12
-  %37 = load i32* @n_clocks, align 4, !tbaa !11
-  %38 = add nsw i32 %37, 1
-  %39 = sext i32 %38 to i64
-  %40 = shl nsw i64 %39, 3
-  %41 = tail call i8* @realloc(i8* %36, i64 %40) #7
-  %42 = icmp eq i8* %41, null
-  br i1 %42, label %51, label %43
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %handle.053 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.inc ]
+  %17 = load %struct.cHandledData** @timers, align 8, !dbg !373, !tbaa !355
+  %call12 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %17, i32 %handle.053) #8, !dbg !373
+  %data = bitcast i8* %call12 to i8***, !dbg !374
+  %18 = load i8*** %data, align 8, !dbg !374, !tbaa !355
+  %19 = bitcast i8** %18 to i8*, !dbg !374
+  %20 = load i32* @n_clocks, align 4, !dbg !374, !tbaa !359
+  %add = add nsw i32 %20, 1, !dbg !374
+  %conv = sext i32 %add to i64, !dbg !374
+  %mul = shl nsw i64 %conv, 3, !dbg !374
+  %call13 = tail call i8* @realloc(i8* %19, i64 %mul) #8, !dbg !374
+  tail call void @llvm.dbg.value(metadata !{i8* %call13}, i64 0, metadata !66), !dbg !374
+  %tobool14 = icmp eq i8* %call13, null, !dbg !375
+  br i1 %tobool14, label %for.inc, label %if.then15, !dbg !375
 
-; <label>:43                                      ; preds = %32
-  %44 = bitcast i8* %34 to i8***
-  store i8* %41, i8** %35, align 8, !tbaa !12
-  %45 = load i8* (i32)** %31, align 8, !tbaa !14
-  %46 = tail call i8* %45(i32 %handle.01) #7
-  %47 = load i32* @n_clocks, align 4, !tbaa !11
-  %48 = sext i32 %47 to i64
-  %49 = load i8*** %44, align 8, !tbaa !12
-  %50 = getelementptr inbounds i8** %49, i64 %48
-  store i8* %46, i8** %50, align 8, !tbaa !9
-  br label %51
+if.then15:                                        ; preds = %for.body
+  %21 = bitcast i8* %call13 to i8**, !dbg !376
+  store i8** %21, i8*** %data, align 8, !dbg !376, !tbaa !355
+  %22 = load i8* (i32)** %create17, align 8, !dbg !370, !tbaa !355
+  %call18 = tail call i8* %22(i32 %handle.053) #8, !dbg !370
+  %23 = load i32* @n_clocks, align 4, !dbg !370, !tbaa !359
+  %idxprom = sext i32 %23 to i64, !dbg !370
+  %24 = load i8*** %data, align 8, !dbg !370, !tbaa !355
+  %arrayidx = getelementptr inbounds i8** %24, i64 %idxprom, !dbg !370
+  store i8* %call18, i8** %arrayidx, align 8, !dbg !370, !tbaa !355
+  br label %for.inc, !dbg !377
 
-; <label>:51                                      ; preds = %32, %43
-  %52 = add nuw nsw i32 %handle.01, 1
-  %53 = load i32* @n_timers, align 4, !tbaa !11
-  %54 = icmp slt i32 %52, %53
-  br i1 %54, label %32, label %._crit_edge
+for.inc:                                          ; preds = %for.body, %if.then15
+  %inc = add nsw i32 %handle.053, 1, !dbg !368
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !67), !dbg !368
+  %25 = load i32* @n_timers, align 4, !dbg !368, !tbaa !359
+  %cmp = icmp slt i32 %inc, %25, !dbg !368
+  br i1 %cmp, label %for.body, label %for.end, !dbg !368
 
-._crit_edge:                                      ; preds = %51, %.preheader
-  %55 = tail call i32 @Util_NewHandle(%struct.cHandledData** @clocks, i8* %clockname, i8* %1) #7
-  %56 = load i32* @n_clocks, align 4, !tbaa !11
-  %57 = add nsw i32 %56, 1
-  store i32 %57, i32* @n_clocks, align 4, !tbaa !11
-  %58 = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 1
-  %59 = load i32* %58, align 4, !tbaa !8
-  %60 = load i32* @n_clock_vals, align 4, !tbaa !11
-  %61 = add nsw i32 %60, %59
-  store i32 %61, i32* @n_clock_vals, align 4, !tbaa !11
-  ret i32 %55
+for.end:                                          ; preds = %for.inc, %for.cond.preheader
+  %call21 = tail call i32 @Util_NewHandle(%struct.cHandledData** @clocks, i8* %clockname, i8* %call) #8, !dbg !378
+  tail call void @llvm.dbg.value(metadata !{i32 %call21}, i64 0, metadata !67), !dbg !378
+  %26 = load i32* @n_clocks, align 4, !dbg !379, !tbaa !359
+  %inc22 = add nsw i32 %26, 1, !dbg !379
+  store i32 %inc22, i32* @n_clocks, align 4, !dbg !379, !tbaa !359
+  %n_vals23 = getelementptr inbounds %struct.cClockFuncs* %functions, i64 0, i32 1, !dbg !380
+  %27 = load i32* %n_vals23, align 4, !dbg !380, !tbaa !359
+  %28 = load i32* @n_clock_vals, align 4, !dbg !380, !tbaa !359
+  %add24 = add nsw i32 %28, %27, !dbg !380
+  store i32 %add24, i32* @n_clock_vals, align 4, !dbg !380, !tbaa !359
+  ret i32 %call21, !dbg !381
 }

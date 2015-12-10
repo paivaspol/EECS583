@@ -1,0 +1,34 @@
+define void @_ZN3pov19Copy_Ray_ContainersEPNS_10Ray_StructES1_(%"struct.pov::Ray_Struct"* nocapture %Dest_Ray, %"struct.pov::Ray_Struct"* nocapture %Source_Ray) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Ray_Struct"* %Dest_Ray}, i64 0, metadata !771), !dbg !872
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Ray_Struct"* %Source_Ray}, i64 0, metadata !772), !dbg !872
+  %Index = getelementptr inbounds %"struct.pov::Ray_Struct"* %Source_Ray, i64 0, i32 2, !dbg !873
+  %0 = load i32* %Index, align 4, !dbg !873, !tbaa !867
+  %Index1 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Dest_Ray, i64 0, i32 2, !dbg !873
+  store i32 %0, i32* %Index1, align 4, !dbg !873, !tbaa !867
+  %cmp = icmp sgt i32 %0, 99, !dbg !873
+  br i1 %cmp, label %if.then, label %for.cond.preheader, !dbg !873
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([27 x i8]* @.str, i64 0, i64 0)) #5, !dbg !874
+  br label %for.cond.preheader, !dbg !876
+
+for.cond.preheader:                               ; preds = %if.then, %entry
+  %1 = load i32* %Index, align 4, !dbg !877, !tbaa !867
+  %cmp313 = icmp slt i32 %1, 0, !dbg !877
+  br i1 %cmp313, label %for.end, label %for.body, !dbg !877
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds %"struct.pov::Ray_Struct"* %Source_Ray, i64 0, i32 4, i64 %indvars.iv, !dbg !879
+  %2 = load %"struct.pov::Interior_Struct"** %arrayidx, align 8, !dbg !879, !tbaa !881
+  %arrayidx6 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Dest_Ray, i64 0, i32 4, i64 %indvars.iv, !dbg !879
+  store %"struct.pov::Interior_Struct"* %2, %"struct.pov::Interior_Struct"** %arrayidx6, align 8, !dbg !879, !tbaa !881
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !877
+  %3 = trunc i64 %indvars.iv to i32, !dbg !877
+  %cmp3 = icmp slt i32 %3, %1, !dbg !877
+  br i1 %cmp3, label %for.body, label %for.end, !dbg !877
+
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  ret void, !dbg !882
+}

@@ -1,0 +1,40 @@
+define void @_ZN21XalanFileOutputStream9writeDataEPKcj(%class.XalanFileOutputStream* nocapture %this, i8* nocapture %theBuffer, i32 %theBufferLength) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.XalanFileOutputStream* %this}, i64 0, metadata !177), !dbg !353
+  tail call void @llvm.dbg.value(metadata !{i8* %theBuffer}, i64 0, metadata !178), !dbg !354
+  tail call void @llvm.dbg.value(metadata !{i32 %theBufferLength}, i64 0, metadata !179), !dbg !355
+  %conv = zext i32 %theBufferLength to i64, !dbg !356
+  %m_handle = getelementptr inbounds %class.XalanFileOutputStream* %this, i64 0, i32 2, !dbg !356
+  %0 = load %struct._IO_FILE** %m_handle, align 8, !dbg !356, !tbaa !304
+  %call = tail call i64 @fwrite(i8* %theBuffer, i64 1, i64 %conv, %struct._IO_FILE* %0) #10, !dbg !356
+  tail call void @llvm.dbg.value(metadata !{i64 %call}, i64 0, metadata !180), !dbg !356
+  %cmp = icmp eq i64 %call, %conv, !dbg !357
+  br i1 %cmp, label %if.end, label %if.then, !dbg !357
+
+if.then:                                          ; preds = %entry
+  %exception = tail call i8* @__cxa_allocate_exception(i64 16) #7, !dbg !358
+  %call3 = tail call i32* @__errno_location() #9, !dbg !360
+  %1 = load i32* %call3, align 4, !dbg !360, !tbaa !315
+  tail call void @llvm.dbg.value(metadata !316, i64 0, metadata !361), !dbg !362
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !363), !dbg !364
+  %2 = bitcast i8* %exception to i32 (...)***, !dbg !365
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([4 x i8*]* @_ZTVN21XalanFileOutputStream35XalanFileOutputStreamWriteExceptionE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %2, align 8, !dbg !365, !tbaa !302
+  %call.i6 = invoke fastcc i8* @_ZL18FormatMessageLocalPKcS0_i(i8* getelementptr inbounds ([21 x i8]* @.str1, i64 0, i64 0), i32 %1) #10
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %if.then
+  %m_pMessage.i = getelementptr inbounds i8* %exception, i64 8, !dbg !365
+  %3 = bitcast i8* %m_pMessage.i to i8**, !dbg !365
+  store i8* %call.i6, i8** %3, align 8, !dbg !366, !tbaa !304
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8* }* @_ZTIN21XalanFileOutputStream35XalanFileOutputStreamWriteExceptionE to i8*), i8* bitcast (void (%"class.XalanFileOutputStream::XalanFileOutputStreamWriteException"*)* @_ZN21XalanFileOutputStream35XalanFileOutputStreamWriteExceptionD2Ev to i8*)) #11, !dbg !360
+  unreachable, !dbg !360
+
+lpad:                                             ; preds = %if.then
+  %4 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !360
+  tail call void @__cxa_free_exception(i8* %exception) #7, !dbg !360
+  resume { i8*, i32 } %4, !dbg !360
+
+if.end:                                           ; preds = %entry
+  ret void, !dbg !367
+}

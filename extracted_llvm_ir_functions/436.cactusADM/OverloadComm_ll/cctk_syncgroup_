@@ -1,8 +1,14 @@
 define void @cctk_syncgroup_(i32* nocapture %ierror, %struct.cGH* %GH, i8* %cctk_str1, i32 %cctk_strlen1) #1 {
-  %1 = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #4
-  %2 = load i32 (%struct.cGH*, i8*)** @CCTK_SyncGroup, align 8, !tbaa !6
-  %3 = tail call i32 %2(%struct.cGH* %GH, i8* %1) #4
-  store i32 %3, i32* %ierror, align 4, !tbaa !2
-  tail call void @free(i8* %1) #5
-  ret void
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %ierror}, i64 0, metadata !270), !dbg !504
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !271), !dbg !504
+  tail call void @llvm.dbg.value(metadata !{i8* %cctk_str1}, i64 0, metadata !272), !dbg !504
+  tail call void @llvm.dbg.value(metadata !{i32 %cctk_strlen1}, i64 0, metadata !273), !dbg !504
+  %call = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #5, !dbg !505
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !274), !dbg !505
+  %0 = load i32 (%struct.cGH*, i8*)** @CCTK_SyncGroup, align 8, !dbg !506, !tbaa !354
+  %call1 = tail call i32 %0(%struct.cGH* %GH, i8* %call) #5, !dbg !506
+  store i32 %call1, i32* %ierror, align 4, !dbg !506, !tbaa !349
+  tail call void @free(i8* %call) #5, !dbg !507
+  ret void, !dbg !508
 }

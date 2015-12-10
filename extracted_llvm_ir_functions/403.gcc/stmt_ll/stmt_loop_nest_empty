@@ -1,19 +1,19 @@
-define i32 @stmt_loop_nest_empty() #3 {
+define i32 @stmt_loop_nest_empty() #4 {
 entry:
-  %0 = load %struct.function** @cfun, align 8, !tbaa !0
-  %stmt = getelementptr inbounds %struct.function* %0, i64 0, i32 1
-  %1 = load %struct.stmt_status** %stmt, align 8, !tbaa !0
-  %cmp = icmp eq %struct.stmt_status* %1, null
-  br i1 %cmp, label %lor.end, label %lor.rhs
+  %0 = load %struct.function** @cfun, align 8, !dbg !3461, !tbaa !2438
+  %stmt = getelementptr inbounds %struct.function* %0, i64 0, i32 1, !dbg !3461
+  %1 = load %struct.stmt_status** %stmt, align 8, !dbg !3461, !tbaa !2438
+  %cmp = icmp eq %struct.stmt_status* %1, null, !dbg !3461
+  br i1 %cmp, label %lor.end, label %lor.rhs, !dbg !3461
 
 lor.rhs:                                          ; preds = %entry
-  %x_loop_stack = getelementptr inbounds %struct.stmt_status* %1, i64 0, i32 3
-  %2 = load %struct.nesting** %x_loop_stack, align 8, !tbaa !0
-  %cmp2 = icmp eq %struct.nesting* %2, null
-  br label %lor.end
+  %x_loop_stack = getelementptr inbounds %struct.stmt_status* %1, i64 0, i32 3, !dbg !3461
+  %2 = load %struct.nesting** %x_loop_stack, align 8, !dbg !3461, !tbaa !2438
+  %cmp2 = icmp eq %struct.nesting* %2, null, !dbg !3461
+  br label %lor.end, !dbg !3461
 
 lor.end:                                          ; preds = %lor.rhs, %entry
   %3 = phi i1 [ true, %entry ], [ %cmp2, %lor.rhs ]
-  %lor.ext = zext i1 %3 to i32
-  ret i32 %lor.ext
+  %lor.ext = zext i1 %3 to i32, !dbg !3461
+  ret i32 %lor.ext, !dbg !3461
 }

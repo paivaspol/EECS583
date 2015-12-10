@@ -1,24 +1,29 @@
 define void @CCTKi_CommandLineWarningLevel(i8* %argument) #1 {
+entry:
   %endptr = alloca i8*, align 8
-  %1 = call i64 @strtol(i8* %argument, i8** %endptr, i32 10) #5
-  %2 = load i8** %endptr, align 8, !tbaa !2
-  %3 = icmp eq i8* %2, null
-  br i1 %3, label %10, label %4
+  call void @llvm.dbg.value(metadata !{i8* %argument}, i64 0, metadata !68), !dbg !230
+  call void @llvm.dbg.declare(metadata !{i8** %endptr}, metadata !69), !dbg !231
+  %call = call i64 @strtol(i8* %argument, i8** %endptr, i32 10) #6, !dbg !232
+  call void @llvm.dbg.value(metadata !{i64 %call}, i64 0, metadata !70), !dbg !232
+  call void @llvm.dbg.value(metadata !{i8** %endptr}, i64 0, metadata !69), !dbg !233
+  %0 = load i8** %endptr, align 8, !dbg !233, !tbaa !129
+  %tobool = icmp eq i8* %0, null, !dbg !233
+  br i1 %tobool, label %if.else, label %land.lhs.true, !dbg !233
 
-; <label>:4                                       ; preds = %0
-  %5 = load i8* %2, align 1, !tbaa !6
-  %6 = icmp eq i8 %5, 0
-  br i1 %6, label %7, label %10
+land.lhs.true:                                    ; preds = %entry
+  %1 = load i8* %0, align 1, !dbg !233, !tbaa !130
+  %cmp = icmp eq i8 %1, 0, !dbg !233
+  br i1 %cmp, label %if.then, label %if.else, !dbg !233
 
-; <label>:7                                       ; preds = %4
-  %8 = trunc i64 %1 to i32
-  %9 = tail call i32 @CCTKi_SetWarnLevel(i32 %8) #5
-  br label %11
+if.then:                                          ; preds = %land.lhs.true
+  %conv2 = trunc i64 %call to i32, !dbg !234
+  %call3 = call i32 @CCTKi_SetWarnLevel(i32 %conv2) #6, !dbg !234
+  br label %if.end, !dbg !236
 
-; <label>:10                                      ; preds = %0, %4
-  tail call void @CCTKi_CommandLineUsage() #6
-  br label %11
+if.else:                                          ; preds = %entry, %land.lhs.true
+  call void @CCTKi_CommandLineUsage() #7, !dbg !237
+  br label %if.end
 
-; <label>:11                                      ; preds = %10, %7
-  ret void
+if.end:                                           ; preds = %if.else, %if.then
+  ret void, !dbg !239
 }

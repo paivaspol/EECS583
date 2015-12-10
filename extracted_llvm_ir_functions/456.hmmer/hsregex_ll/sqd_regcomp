@@ -2,154 +2,166 @@ define %struct.sqd_regexp* @sqd_regcomp(i8* %exp) #0 {
 entry:
   %flags = alloca i32, align 4
   %co = alloca %struct.comp, align 8
-  %0 = bitcast %struct.comp* %co to i8*
-  call void @llvm.lifetime.start(i64 40, i8* %0) #3
-  %cmp = icmp eq i8* %exp, null
-  br i1 %cmp, label %if.then, label %regc.exit
+  call void @llvm.dbg.value(metadata !{i8* %exp}, i64 0, metadata !64), !dbg !292
+  call void @llvm.dbg.declare(metadata !{i32* %flags}, metadata !67), !dbg !293
+  %0 = bitcast %struct.comp* %co to i8*, !dbg !294
+  call void @llvm.lifetime.start(i64 40, i8* %0) #4, !dbg !294
+  call void @llvm.dbg.declare(metadata !{%struct.comp* %co}, metadata !68), !dbg !294
+  %cmp = icmp eq i8* %exp, null, !dbg !295
+  br i1 %cmp, label %if.then, label %regc.exit, !dbg !295
 
 if.then:                                          ; preds = %entry
-  call void @sqd_regerror(i8* getelementptr inbounds ([29 x i8]* @.str3, i64 0, i64 0)) #10
+  call void @sqd_regerror(i8* getelementptr inbounds ([29 x i8]* @.str3, i64 0, i64 0)) #11, !dbg !296
   unreachable
 
 regc.exit:                                        ; preds = %entry
-  %regparse = getelementptr inbounds %struct.comp* %co, i64 0, i32 0
-  store i8* %exp, i8** %regparse, align 8, !tbaa !0
-  %regnpar = getelementptr inbounds %struct.comp* %co, i64 0, i32 1
-  store i32 1, i32* %regnpar, align 8, !tbaa !3
-  %regsize = getelementptr inbounds %struct.comp* %co, i64 0, i32 4
-  %arrayidx = getelementptr inbounds %struct.comp* %co, i64 0, i32 3, i64 0
-  store i8 9, i8* %arrayidx, align 8, !tbaa !1
-  %arrayidx2 = getelementptr inbounds %struct.comp* %co, i64 0, i32 3, i64 2
-  store i8 0, i8* %arrayidx2, align 2, !tbaa !1
-  %arrayidx4 = getelementptr inbounds %struct.comp* %co, i64 0, i32 3, i64 1
-  store i8 0, i8* %arrayidx4, align 1, !tbaa !1
-  %regcode = getelementptr inbounds %struct.comp* %co, i64 0, i32 2
-  store i8* %arrayidx, i8** %regcode, align 8, !tbaa !0
-  store i64 1, i64* %regsize, align 8, !tbaa !4
-  %call = call fastcc i8* @reg(%struct.comp* %co, i32 0, i32* %flags) #10
-  %cmp6 = icmp eq i8* %call, null
-  br i1 %cmp6, label %cleanup, label %if.end8
+  %regparse = getelementptr inbounds %struct.comp* %co, i64 0, i32 0, !dbg !298
+  store i8* %exp, i8** %regparse, align 8, !dbg !298, !tbaa !270
+  %regnpar = getelementptr inbounds %struct.comp* %co, i64 0, i32 1, !dbg !299
+  store i32 1, i32* %regnpar, align 8, !dbg !299, !tbaa !300
+  %regsize = getelementptr inbounds %struct.comp* %co, i64 0, i32 4, !dbg !301
+  %arrayidx = getelementptr inbounds %struct.comp* %co, i64 0, i32 3, i64 0, !dbg !302
+  store i8 9, i8* %arrayidx, align 8, !dbg !302, !tbaa !271
+  %arrayidx2 = getelementptr inbounds %struct.comp* %co, i64 0, i32 3, i64 2, !dbg !303
+  store i8 0, i8* %arrayidx2, align 2, !dbg !303, !tbaa !271
+  %arrayidx4 = getelementptr inbounds %struct.comp* %co, i64 0, i32 3, i64 1, !dbg !303
+  store i8 0, i8* %arrayidx4, align 1, !dbg !303, !tbaa !271
+  %regcode = getelementptr inbounds %struct.comp* %co, i64 0, i32 2, !dbg !304
+  store i8* %arrayidx, i8** %regcode, align 8, !dbg !304, !tbaa !270
+  tail call void @llvm.dbg.value(metadata !{%struct.comp* %co}, i64 0, metadata !305), !dbg !307
+  store i64 1, i64* %regsize, align 8, !dbg !308, !tbaa !309
+  %call = call fastcc i8* @reg(%struct.comp* %co, i32 0, i32* %flags) #11, !dbg !310
+  %cmp6 = icmp eq i8* %call, null, !dbg !310
+  br i1 %cmp6, label %cleanup, label %if.end8, !dbg !310
 
 if.end8:                                          ; preds = %regc.exit
-  %1 = load i64* %regsize, align 8, !tbaa !4
-  %cmp10 = icmp sgt i64 %1, 32766
-  br i1 %cmp10, label %if.then11, label %if.end12
+  %1 = load i64* %regsize, align 8, !dbg !311, !tbaa !309
+  %cmp10 = icmp sgt i64 %1, 32766, !dbg !311
+  br i1 %cmp10, label %if.then11, label %if.end12, !dbg !311
 
 if.then11:                                        ; preds = %if.end8
-  call void @sqd_regerror(i8* getelementptr inbounds ([15 x i8]* @.str4, i64 0, i64 0)) #10
+  call void @sqd_regerror(i8* getelementptr inbounds ([15 x i8]* @.str4, i64 0, i64 0)) #11, !dbg !312
   unreachable
 
 if.end12:                                         ; preds = %if.end8
-  %add = add i64 %1, 184
-  %call14 = call noalias i8* @malloc(i64 %add) #9
-  %2 = bitcast i8* %call14 to %struct.sqd_regexp*
-  %cmp15 = icmp eq i8* %call14, null
-  br i1 %cmp15, label %if.then16, label %if.end17
+  %add = add i64 %1, 184, !dbg !314
+  %call14 = call noalias i8* @malloc(i64 %add) #10, !dbg !314
+  %2 = bitcast i8* %call14 to %struct.sqd_regexp*, !dbg !314
+  call void @llvm.dbg.value(metadata !{%struct.sqd_regexp* %2}, i64 0, metadata !65), !dbg !314
+  %cmp15 = icmp eq i8* %call14, null, !dbg !315
+  br i1 %cmp15, label %if.then16, label %if.end17, !dbg !315
 
 if.then16:                                        ; preds = %if.end12
-  call void @sqd_regerror(i8* getelementptr inbounds ([13 x i8]* @.str5, i64 0, i64 0)) #10
+  call void @sqd_regerror(i8* getelementptr inbounds ([13 x i8]* @.str5, i64 0, i64 0)) #11, !dbg !316
   unreachable
 
 if.end17:                                         ; preds = %if.end12
-  store i8* %exp, i8** %regparse, align 8, !tbaa !0
-  store i32 1, i32* %regnpar, align 8, !tbaa !3
-  %program = getelementptr inbounds i8* %call14, i64 180
-  store i8* %program, i8** %regcode, align 8, !tbaa !0
-  %cmp.i92 = icmp eq i8* %program, %arrayidx
-  br i1 %cmp.i92, label %if.else.i97, label %if.then.i94
+  store i8* %exp, i8** %regparse, align 8, !dbg !318, !tbaa !270
+  store i32 1, i32* %regnpar, align 8, !dbg !319, !tbaa !300
+  %program = getelementptr inbounds i8* %call14, i64 180, !dbg !320
+  store i8* %program, i8** %regcode, align 8, !dbg !320, !tbaa !270
+  tail call void @llvm.dbg.value(metadata !{%struct.comp* %co}, i64 0, metadata !321), !dbg !323
+  %cmp.i92 = icmp eq i8* %program, %arrayidx, !dbg !324
+  br i1 %cmp.i92, label %if.else.i97, label %if.then.i94, !dbg !324
 
 if.then.i94:                                      ; preds = %if.end17
-  %incdec.ptr.i93 = getelementptr inbounds i8* %call14, i64 181
-  store i8* %incdec.ptr.i93, i8** %regcode, align 8, !tbaa !0
-  store i8 -100, i8* %program, align 1, !tbaa !1
-  br label %regc.exit98
+  %incdec.ptr.i93 = getelementptr inbounds i8* %call14, i64 181, !dbg !325
+  store i8* %incdec.ptr.i93, i8** %regcode, align 8, !dbg !325, !tbaa !270
+  store i8 -100, i8* %program, align 1, !dbg !325, !tbaa !271
+  br label %regc.exit98, !dbg !325
 
 if.else.i97:                                      ; preds = %if.end17
-  %inc.i96 = add nsw i64 %1, 1
-  store i64 %inc.i96, i64* %regsize, align 8, !tbaa !4
+  %inc.i96 = add nsw i64 %1, 1, !dbg !326
+  store i64 %inc.i96, i64* %regsize, align 8, !dbg !326, !tbaa !309
   br label %regc.exit98
 
 regc.exit98:                                      ; preds = %if.then.i94, %if.else.i97
-  %call22 = call fastcc i8* @reg(%struct.comp* %co, i32 0, i32* %flags) #10
-  %cmp23 = icmp eq i8* %call22, null
-  br i1 %cmp23, label %cleanup, label %if.end25
+  %call22 = call fastcc i8* @reg(%struct.comp* %co, i32 0, i32* %flags) #11, !dbg !327
+  %cmp23 = icmp eq i8* %call22, null, !dbg !327
+  br i1 %cmp23, label %cleanup, label %if.end25, !dbg !327
 
 if.end25:                                         ; preds = %regc.exit98
-  %3 = getelementptr inbounds i8* %call14, i64 160
-  store i8 0, i8* %3, align 1, !tbaa !1
-  %4 = getelementptr inbounds i8* %call14, i64 161
-  store i8 0, i8* %4, align 1, !tbaa !1
-  %regmust = getelementptr inbounds i8* %call14, i64 168
-  %5 = bitcast i8* %regmust to i8**
-  store i8* null, i8** %5, align 8, !tbaa !0
-  %regmlen = getelementptr inbounds i8* %call14, i64 176
-  %6 = bitcast i8* %regmlen to i32*
-  store i32 0, i32* %6, align 4, !tbaa !3
-  %add.ptr = getelementptr inbounds i8* %call14, i64 181
-  %call28 = call fastcc i8* @regnext(i8* %add.ptr) #10
-  %7 = load i8* %call28, align 1, !tbaa !1
-  %cmp29 = icmp eq i8 %7, 0
-  br i1 %cmp29, label %if.then31, label %cleanup
+  %3 = getelementptr inbounds i8* %call14, i64 160, !dbg !328
+  store i8 0, i8* %3, align 1, !dbg !328, !tbaa !271
+  %4 = getelementptr inbounds i8* %call14, i64 161, !dbg !329
+  store i8 0, i8* %4, align 1, !dbg !329, !tbaa !271
+  %regmust = getelementptr inbounds i8* %call14, i64 168, !dbg !330
+  %5 = bitcast i8* %regmust to i8**, !dbg !330
+  store i8* null, i8** %5, align 8, !dbg !330, !tbaa !270
+  %regmlen = getelementptr inbounds i8* %call14, i64 176, !dbg !331
+  %6 = bitcast i8* %regmlen to i32*, !dbg !331
+  store i32 0, i32* %6, align 4, !dbg !331, !tbaa !300
+  %add.ptr = getelementptr inbounds i8* %call14, i64 181, !dbg !332
+  call void @llvm.dbg.value(metadata !{i8* %add.ptr}, i64 0, metadata !66), !dbg !332
+  %call28 = call fastcc i8* @regnext(i8* %add.ptr) #11, !dbg !333
+  %7 = load i8* %call28, align 1, !dbg !333, !tbaa !271
+  %cmp29 = icmp eq i8 %7, 0, !dbg !333
+  br i1 %cmp29, label %if.then31, label %cleanup, !dbg !333
 
 if.then31:                                        ; preds = %if.end25
-  %add.ptr32 = getelementptr inbounds i8* %call14, i64 184
-  %8 = load i8* %add.ptr32, align 1, !tbaa !1
+  %add.ptr32 = getelementptr inbounds i8* %call14, i64 184, !dbg !334
+  call void @llvm.dbg.value(metadata !{i8* %add.ptr32}, i64 0, metadata !66), !dbg !334
+  %8 = load i8* %add.ptr32, align 1, !dbg !335, !tbaa !271
   switch i8 %8, label %if.end45 [
     i8 8, label %if.then36
     i8 1, label %if.then42
-  ]
+  ], !dbg !335
 
 if.then36:                                        ; preds = %if.then31
-  %add.ptr37 = getelementptr inbounds i8* %call14, i64 187
-  %9 = load i8* %add.ptr37, align 1, !tbaa !1
-  store i8 %9, i8* %3, align 1, !tbaa !1
-  br label %if.end45
+  %add.ptr37 = getelementptr inbounds i8* %call14, i64 187, !dbg !336
+  %9 = load i8* %add.ptr37, align 1, !dbg !336, !tbaa !271
+  store i8 %9, i8* %3, align 1, !dbg !336, !tbaa !271
+  br label %if.end45, !dbg !336
 
 if.then42:                                        ; preds = %if.then31
-  store i8 1, i8* %4, align 1, !tbaa !1
-  br label %if.end45
+  store i8 1, i8* %4, align 1, !dbg !337, !tbaa !271
+  br label %if.end45, !dbg !337
 
 if.end45:                                         ; preds = %if.then31, %if.then42, %if.then36
-  %10 = load i32* %flags, align 4, !tbaa !3
-  %and = and i32 %10, 4
-  %tobool = icmp eq i32 %and, 0
-  br i1 %tobool, label %cleanup, label %for.body
+  call void @llvm.dbg.value(metadata !{i32* %flags}, i64 0, metadata !67), !dbg !338
+  %10 = load i32* %flags, align 4, !dbg !338, !tbaa !300
+  %and = and i32 %10, 4, !dbg !338
+  %tobool = icmp eq i32 %and, 0, !dbg !338
+  br i1 %tobool, label %cleanup, label %for.body, !dbg !338
 
 for.body:                                         ; preds = %if.end45, %for.inc.for.body_crit_edge
   %11 = phi i8 [ %.pre, %for.inc.for.body_crit_edge ], [ %8, %if.end45 ]
   %len.0102 = phi i64 [ %len.1, %for.inc.for.body_crit_edge ], [ 0, %if.end45 ]
   %longest.0101 = phi i8* [ %longest.1, %for.inc.for.body_crit_edge ], [ null, %if.end45 ]
   %scan.0100 = phi i8* [ %call61, %for.inc.for.body_crit_edge ], [ %add.ptr32, %if.end45 ]
-  %cmp50 = icmp eq i8 %11, 8
-  br i1 %cmp50, label %land.lhs.true, label %for.inc
+  %cmp50 = icmp eq i8 %11, 8, !dbg !339
+  br i1 %cmp50, label %land.lhs.true, label %for.inc, !dbg !339
 
 land.lhs.true:                                    ; preds = %for.body
-  %add.ptr52 = getelementptr inbounds i8* %scan.0100, i64 3
-  %call53 = call i64 @strlen(i8* %add.ptr52) #11
-  %cmp54 = icmp ult i64 %call53, %len.0102
-  %longest.0.add.ptr52 = select i1 %cmp54, i8* %longest.0101, i8* %add.ptr52
-  %len.0.call53 = select i1 %cmp54, i64 %len.0102, i64 %call53
-  br label %for.inc
+  %add.ptr52 = getelementptr inbounds i8* %scan.0100, i64 3, !dbg !339
+  %call53 = call i64 @strlen(i8* %add.ptr52) #12, !dbg !339
+  %cmp54 = icmp ult i64 %call53, %len.0102, !dbg !339
+  call void @llvm.dbg.value(metadata !{i8* %add.ptr52}, i64 0, metadata !80), !dbg !341
+  call void @llvm.dbg.value(metadata !{i64 %call53}, i64 0, metadata !83), !dbg !343
+  %longest.0.add.ptr52 = select i1 %cmp54, i8* %longest.0101, i8* %add.ptr52, !dbg !339
+  %len.0.call53 = select i1 %cmp54, i64 %len.0102, i64 %call53, !dbg !339
+  br label %for.inc, !dbg !339
 
 for.inc:                                          ; preds = %land.lhs.true, %for.body
   %longest.1 = phi i8* [ %longest.0101, %for.body ], [ %longest.0.add.ptr52, %land.lhs.true ]
   %len.1 = phi i64 [ %len.0102, %for.body ], [ %len.0.call53, %land.lhs.true ]
-  %call61 = call fastcc i8* @regnext(i8* %scan.0100) #10
-  %cmp47 = icmp eq i8* %call61, null
-  br i1 %cmp47, label %for.end, label %for.inc.for.body_crit_edge
+  %call61 = call fastcc i8* @regnext(i8* %scan.0100) #11, !dbg !344
+  call void @llvm.dbg.value(metadata !{i8* %call61}, i64 0, metadata !66), !dbg !344
+  %cmp47 = icmp eq i8* %call61, null, !dbg !344
+  br i1 %cmp47, label %for.end, label %for.inc.for.body_crit_edge, !dbg !344
 
 for.inc.for.body_crit_edge:                       ; preds = %for.inc
-  %.pre = load i8* %call61, align 1, !tbaa !1
-  br label %for.body
+  %.pre = load i8* %call61, align 1, !dbg !339, !tbaa !271
+  br label %for.body, !dbg !344
 
 for.end:                                          ; preds = %for.inc
-  store i8* %longest.1, i8** %5, align 8, !tbaa !0
-  %conv63 = trunc i64 %len.1 to i32
-  store i32 %conv63, i32* %6, align 4, !tbaa !3
-  br label %cleanup
+  store i8* %longest.1, i8** %5, align 8, !dbg !345, !tbaa !270
+  %conv63 = trunc i64 %len.1 to i32, !dbg !346
+  store i32 %conv63, i32* %6, align 4, !dbg !346, !tbaa !300
+  br label %cleanup, !dbg !347
 
 cleanup:                                          ; preds = %if.end25, %for.end, %if.end45, %regc.exit98, %regc.exit
   %retval.0 = phi %struct.sqd_regexp* [ null, %regc.exit ], [ null, %regc.exit98 ], [ %2, %if.end45 ], [ %2, %for.end ], [ %2, %if.end25 ]
-  call void @llvm.lifetime.end(i64 40, i8* %0) #3
-  ret %struct.sqd_regexp* %retval.0
+  call void @llvm.lifetime.end(i64 40, i8* %0) #4, !dbg !348
+  ret %struct.sqd_regexp* %retval.0, !dbg !348
 }

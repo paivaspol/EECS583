@@ -1,141 +1,152 @@
 define void @writeCBP_CABAC(%struct.syntaxelement* nocapture %se, %struct.EncodingEnvironment* %eep_dp) #0 {
 entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !3
-  %currentSlice = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 50
-  %1 = load %struct.Slice** %currentSlice, align 8, !tbaa !3
-  %tex_ctx = getelementptr inbounds %struct.Slice* %1, i64 0, i32 8
-  %2 = load %struct.TextureInfoContexts** %tex_ctx, align 8, !tbaa !3
-  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3
-  %3 = load i32* %current_mb_nr, align 4, !tbaa !0
-  %idxprom = sext i32 %3 to i64
-  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51
-  %4 = load %struct.macroblock** %mb_data, align 8, !tbaa !3
-  %arrayidx = getelementptr inbounds %struct.macroblock* %4, i64 %idxprom
-  %value1 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1
-  %5 = load i32* %value1, align 4, !tbaa !0
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct.syntaxelement* %se}, i64 0, metadata !436), !dbg !1538
+  tail call void @llvm.dbg.value(metadata !{%struct.EncodingEnvironment* %eep_dp}, i64 0, metadata !437), !dbg !1538
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !1539, !tbaa !989
+  %currentSlice = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 50, !dbg !1539
+  %1 = load %struct.Slice** %currentSlice, align 8, !dbg !1539, !tbaa !989
+  %tex_ctx = getelementptr inbounds %struct.Slice* %1, i64 0, i32 8, !dbg !1539
+  %2 = load %struct.TextureInfoContexts** %tex_ctx, align 8, !dbg !1539, !tbaa !989
+  tail call void @llvm.dbg.value(metadata !{%struct.TextureInfoContexts* %2}, i64 0, metadata !438), !dbg !1539
+  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3, !dbg !1540
+  %3 = load i32* %current_mb_nr, align 4, !dbg !1540, !tbaa !984
+  %idxprom = sext i32 %3 to i64, !dbg !1540
+  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51, !dbg !1540
+  %4 = load %struct.macroblock** %mb_data, align 8, !dbg !1540, !tbaa !989
+  %arrayidx = getelementptr inbounds %struct.macroblock* %4, i64 %idxprom, !dbg !1540
+  tail call void @llvm.dbg.value(metadata !{%struct.macroblock* %arrayidx}, i64 0, metadata !439), !dbg !1540
+  %value1 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1, !dbg !1541
+  %5 = load i32* %value1, align 4, !dbg !1541, !tbaa !984
+  tail call void @llvm.dbg.value(metadata !{i32 %5}, i64 0, metadata !444), !dbg !1541
+  tail call void @llvm.dbg.value(metadata !45, i64 0, metadata !446), !dbg !1542
+  br label %for.body, !dbg !1542
 
 for.body:                                         ; preds = %for.body, %entry
   %b8.0129 = phi i32 [ 0, %entry ], [ %inc, %for.body ]
-  %shl = shl i32 1, %b8.0129
-  %and = and i32 %shl, %5
-  tail call void @writeCBP_BIT_CABAC(i32 %b8.0129, i32 %and, i32 %5, %struct.macroblock* %arrayidx, i32 undef, %struct.EncodingEnvironment* %eep_dp) #7
-  %inc = add nsw i32 %b8.0129, 1
-  %exitcond = icmp eq i32 %inc, 4
-  br i1 %exitcond, label %for.end, label %for.body
+  %shl = shl i32 1, %b8.0129, !dbg !1544
+  %and = and i32 %shl, %5, !dbg !1544
+  tail call void @writeCBP_BIT_CABAC(i32 %b8.0129, i32 %and, i32 %5, %struct.macroblock* %arrayidx, i32 undef, %struct.EncodingEnvironment* %eep_dp) #8, !dbg !1544
+  %inc = add nsw i32 %b8.0129, 1, !dbg !1542
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !446), !dbg !1542
+  %exitcond = icmp eq i32 %inc, 4, !dbg !1542
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !1542
 
 for.end:                                          ; preds = %for.body
-  %6 = load %struct.ImageParameters** @img, align 8, !tbaa !3
-  %yuv_format = getelementptr inbounds %struct.ImageParameters* %6, i64 0, i32 159
-  %7 = load i32* %yuv_format, align 4, !tbaa !0
-  %cmp4 = icmp eq i32 %7, 0
-  br i1 %cmp4, label %if.end96, label %if.then
+  %6 = load %struct.ImageParameters** @img, align 8, !dbg !1546, !tbaa !989
+  %yuv_format = getelementptr inbounds %struct.ImageParameters* %6, i64 0, i32 159, !dbg !1546
+  %7 = load i32* %yuv_format, align 4, !dbg !1546, !tbaa !984
+  %cmp4 = icmp eq i32 %7, 0, !dbg !1546
+  br i1 %cmp4, label %if.end96, label %if.then, !dbg !1546
 
 if.then:                                          ; preds = %for.end
-  %mb_available_up = getelementptr inbounds %struct.macroblock* %4, i64 %idxprom, i32 6
-  %8 = load %struct.macroblock** %mb_available_up, align 8, !tbaa !3
-  %cmp5 = icmp eq %struct.macroblock* %8, null
-  br i1 %cmp5, label %if.end14, label %if.then6
+  tail call void @llvm.dbg.value(metadata !45, i64 0, metadata !441), !dbg !1547
+  %mb_available_up = getelementptr inbounds %struct.macroblock* %4, i64 %idxprom, i32 6, !dbg !1549
+  %8 = load %struct.macroblock** %mb_available_up, align 8, !dbg !1549, !tbaa !989
+  %cmp5 = icmp eq %struct.macroblock* %8, null, !dbg !1549
+  br i1 %cmp5, label %if.end14, label %if.then6, !dbg !1549
 
 if.then6:                                         ; preds = %if.then
-  %mb_type = getelementptr inbounds %struct.macroblock* %8, i64 0, i32 8
-  %9 = load i32* %mb_type, align 4, !tbaa !0
-  %cmp8 = icmp eq i32 %9, 14
-  br i1 %cmp8, label %if.end14, label %if.else
+  %mb_type = getelementptr inbounds %struct.macroblock* %8, i64 0, i32 8, !dbg !1550
+  %9 = load i32* %mb_type, align 4, !dbg !1550, !tbaa !984
+  %cmp8 = icmp eq i32 %9, 14, !dbg !1550
+  br i1 %cmp8, label %if.end14, label %if.else, !dbg !1550
 
 if.else:                                          ; preds = %if.then6
-  %cbp11 = getelementptr inbounds %struct.macroblock* %8, i64 0, i32 12
-  %10 = load i32* %cbp11, align 4, !tbaa !0
-  %cmp12 = icmp sgt i32 %10, 15
-  %cond13 = select i1 %cmp12, i64 2, i64 0
+  %cbp11 = getelementptr inbounds %struct.macroblock* %8, i64 0, i32 12, !dbg !1552
+  %10 = load i32* %cbp11, align 4, !dbg !1552, !tbaa !984
+  %cmp12 = icmp sgt i32 %10, 15, !dbg !1552
+  %cond13 = select i1 %cmp12, i64 2, i64 0, !dbg !1552
   br label %if.end14
 
 if.end14:                                         ; preds = %if.then6, %if.then, %if.else
   %b.0 = phi i64 [ %cond13, %if.else ], [ 0, %if.then ], [ 2, %if.then6 ]
-  %mb_available_left = getelementptr inbounds %struct.macroblock* %4, i64 %idxprom, i32 7
-  %11 = load %struct.macroblock** %mb_available_left, align 8, !tbaa !3
-  %cmp15 = icmp eq %struct.macroblock* %11, null
-  br i1 %cmp15, label %if.end27, label %if.then16
+  tail call void @llvm.dbg.value(metadata !45, i64 0, metadata !440), !dbg !1553
+  %mb_available_left = getelementptr inbounds %struct.macroblock* %4, i64 %idxprom, i32 7, !dbg !1554
+  %11 = load %struct.macroblock** %mb_available_left, align 8, !dbg !1554, !tbaa !989
+  %cmp15 = icmp eq %struct.macroblock* %11, null, !dbg !1554
+  br i1 %cmp15, label %if.end27, label %if.then16, !dbg !1554
 
 if.then16:                                        ; preds = %if.end14
-  %mb_type18 = getelementptr inbounds %struct.macroblock* %11, i64 0, i32 8
-  %12 = load i32* %mb_type18, align 4, !tbaa !0
-  %cmp19 = icmp eq i32 %12, 14
-  br i1 %cmp19, label %if.end27, label %if.else21
+  %mb_type18 = getelementptr inbounds %struct.macroblock* %11, i64 0, i32 8, !dbg !1555
+  %12 = load i32* %mb_type18, align 4, !dbg !1555, !tbaa !984
+  %cmp19 = icmp eq i32 %12, 14, !dbg !1555
+  br i1 %cmp19, label %if.end27, label %if.else21, !dbg !1555
 
 if.else21:                                        ; preds = %if.then16
-  %cbp23 = getelementptr inbounds %struct.macroblock* %11, i64 0, i32 12
-  %13 = load i32* %cbp23, align 4, !tbaa !0
-  %cmp24 = icmp sgt i32 %13, 15
-  %cond25 = zext i1 %cmp24 to i64
+  %cbp23 = getelementptr inbounds %struct.macroblock* %11, i64 0, i32 12, !dbg !1557
+  %13 = load i32* %cbp23, align 4, !dbg !1557, !tbaa !984
+  %cmp24 = icmp sgt i32 %13, 15, !dbg !1557
+  %cond25 = zext i1 %cmp24 to i64, !dbg !1557
   br label %if.end27
 
 if.end27:                                         ; preds = %if.then16, %if.end14, %if.else21
   %a.0 = phi i64 [ %cond25, %if.else21 ], [ 0, %if.end14 ], [ 1, %if.then16 ]
-  %add = or i64 %a.0, %b.0
-  %cmp28 = icmp sgt i32 %5, 15
-  %conv30 = zext i1 %cmp28 to i16
-  %add.ptr = getelementptr inbounds %struct.TextureInfoContexts* %2, i64 0, i32 2, i64 1, i64 %add
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext %conv30, %struct.BiContextType* %add.ptr) #5
-  br i1 %cmp28, label %if.then34, label %if.end96
+  %add = or i64 %a.0, %b.0, !dbg !1558
+  %cmp28 = icmp sgt i32 %5, 15, !dbg !1559
+  %conv30 = zext i1 %cmp28 to i16, !dbg !1560
+  %add.ptr = getelementptr inbounds %struct.TextureInfoContexts* %2, i64 0, i32 2, i64 1, i64 %add, !dbg !1560
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext %conv30, %struct.BiContextType* %add.ptr) #6, !dbg !1560
+  br i1 %cmp28, label %if.then34, label %if.end96, !dbg !1561
 
 if.then34:                                        ; preds = %if.end27
-  %14 = load %struct.macroblock** %mb_available_up, align 8, !tbaa !3
-  %cmp36 = icmp eq %struct.macroblock* %14, null
-  br i1 %cmp36, label %if.end57, label %if.then38
+  tail call void @llvm.dbg.value(metadata !45, i64 0, metadata !441), !dbg !1562
+  %14 = load %struct.macroblock** %mb_available_up, align 8, !dbg !1564, !tbaa !989
+  %cmp36 = icmp eq %struct.macroblock* %14, null, !dbg !1564
+  br i1 %cmp36, label %if.end57, label %if.then38, !dbg !1564
 
 if.then38:                                        ; preds = %if.then34
-  %mb_type40 = getelementptr inbounds %struct.macroblock* %14, i64 0, i32 8
-  %15 = load i32* %mb_type40, align 4, !tbaa !0
-  %cmp41 = icmp eq i32 %15, 14
-  br i1 %cmp41, label %if.end57, label %if.else44
+  %mb_type40 = getelementptr inbounds %struct.macroblock* %14, i64 0, i32 8, !dbg !1565
+  %15 = load i32* %mb_type40, align 4, !dbg !1565, !tbaa !984
+  %cmp41 = icmp eq i32 %15, 14, !dbg !1565
+  br i1 %cmp41, label %if.end57, label %if.else44, !dbg !1565
 
 if.else44:                                        ; preds = %if.then38
-  %cbp46 = getelementptr inbounds %struct.macroblock* %14, i64 0, i32 12
-  %16 = load i32* %cbp46, align 4, !tbaa !0
-  %cmp47 = icmp sgt i32 %16, 15
-  br i1 %cmp47, label %if.then49, label %if.end57
+  %cbp46 = getelementptr inbounds %struct.macroblock* %14, i64 0, i32 12, !dbg !1567
+  %16 = load i32* %cbp46, align 4, !dbg !1567, !tbaa !984
+  %cmp47 = icmp sgt i32 %16, 15, !dbg !1567
+  br i1 %cmp47, label %if.then49, label %if.end57, !dbg !1567
 
 if.then49:                                        ; preds = %if.else44
-  %shr.mask = and i32 %16, -16
-  %cmp52 = icmp eq i32 %shr.mask, 32
-  %cond54 = select i1 %cmp52, i64 2, i64 0
-  br label %if.end57
+  %shr.mask = and i32 %16, -16, !dbg !1568
+  %cmp52 = icmp eq i32 %shr.mask, 32, !dbg !1568
+  %cond54 = select i1 %cmp52, i64 2, i64 0, !dbg !1568
+  br label %if.end57, !dbg !1568
 
 if.end57:                                         ; preds = %if.then38, %if.then34, %if.then49, %if.else44
   %b.1 = phi i64 [ %cond54, %if.then49 ], [ 0, %if.else44 ], [ 0, %if.then34 ], [ 2, %if.then38 ]
-  %17 = load %struct.macroblock** %mb_available_left, align 8, !tbaa !3
-  %cmp59 = icmp eq %struct.macroblock* %17, null
-  br i1 %cmp59, label %if.end81, label %if.then61
+  tail call void @llvm.dbg.value(metadata !45, i64 0, metadata !440), !dbg !1569
+  %17 = load %struct.macroblock** %mb_available_left, align 8, !dbg !1570, !tbaa !989
+  %cmp59 = icmp eq %struct.macroblock* %17, null, !dbg !1570
+  br i1 %cmp59, label %if.end81, label %if.then61, !dbg !1570
 
 if.then61:                                        ; preds = %if.end57
-  %mb_type63 = getelementptr inbounds %struct.macroblock* %17, i64 0, i32 8
-  %18 = load i32* %mb_type63, align 4, !tbaa !0
-  %cmp64 = icmp eq i32 %18, 14
-  br i1 %cmp64, label %if.end81, label %if.else67
+  %mb_type63 = getelementptr inbounds %struct.macroblock* %17, i64 0, i32 8, !dbg !1571
+  %18 = load i32* %mb_type63, align 4, !dbg !1571, !tbaa !984
+  %cmp64 = icmp eq i32 %18, 14, !dbg !1571
+  br i1 %cmp64, label %if.end81, label %if.else67, !dbg !1571
 
 if.else67:                                        ; preds = %if.then61
-  %cbp69 = getelementptr inbounds %struct.macroblock* %17, i64 0, i32 12
-  %19 = load i32* %cbp69, align 4, !tbaa !0
-  %cmp70 = icmp sgt i32 %19, 15
-  br i1 %cmp70, label %if.then72, label %if.end81
+  %cbp69 = getelementptr inbounds %struct.macroblock* %17, i64 0, i32 12, !dbg !1573
+  %19 = load i32* %cbp69, align 4, !dbg !1573, !tbaa !984
+  %cmp70 = icmp sgt i32 %19, 15, !dbg !1573
+  br i1 %cmp70, label %if.then72, label %if.end81, !dbg !1573
 
 if.then72:                                        ; preds = %if.else67
-  %shr75.mask = and i32 %19, -16
-  %cmp76 = icmp eq i32 %shr75.mask, 32
-  %cond78 = zext i1 %cmp76 to i64
-  br label %if.end81
+  %shr75.mask = and i32 %19, -16, !dbg !1574
+  %cmp76 = icmp eq i32 %shr75.mask, 32, !dbg !1574
+  %cond78 = zext i1 %cmp76 to i64, !dbg !1574
+  br label %if.end81, !dbg !1574
 
 if.end81:                                         ; preds = %if.then61, %if.end57, %if.then72, %if.else67
   %a.1 = phi i64 [ %cond78, %if.then72 ], [ 0, %if.else67 ], [ 0, %if.end57 ], [ 1, %if.then61 ]
-  %add83 = or i64 %a.1, %b.1
-  %shr84.mask = and i32 %5, -16
-  %cmp85 = icmp eq i32 %shr84.mask, 32
-  %conv89 = zext i1 %cmp85 to i16
-  %add.ptr94 = getelementptr inbounds %struct.TextureInfoContexts* %2, i64 0, i32 2, i64 2, i64 %add83
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext %conv89, %struct.BiContextType* %add.ptr94) #5
-  br label %if.end96
+  %add83 = or i64 %a.1, %b.1, !dbg !1575
+  %shr84.mask = and i32 %5, -16, !dbg !1576
+  %cmp85 = icmp eq i32 %shr84.mask, 32, !dbg !1576
+  %conv89 = zext i1 %cmp85 to i16, !dbg !1577
+  %add.ptr94 = getelementptr inbounds %struct.TextureInfoContexts* %2, i64 0, i32 2, i64 2, i64 %add83, !dbg !1577
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext %conv89, %struct.BiContextType* %add.ptr94) #6, !dbg !1577
+  br label %if.end96, !dbg !1578
 
 if.end96:                                         ; preds = %for.end, %if.end27, %if.end81
-  ret void
+  ret void, !dbg !1579
 }

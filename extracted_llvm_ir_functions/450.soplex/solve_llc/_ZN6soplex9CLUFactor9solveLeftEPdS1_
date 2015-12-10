@@ -1,0 +1,25 @@
+define void @_ZN6soplex9CLUFactor9solveLeftEPdS1_(%"class.soplex::CLUFactor"* nocapture %this, double* nocapture %vec, double* nocapture %rhs) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::CLUFactor"* %this}, i64 0, metadata !2698), !dbg !3362
+  tail call void @llvm.dbg.value(metadata !{double* %vec}, i64 0, metadata !2699), !dbg !3362
+  tail call void @llvm.dbg.value(metadata !{double* %rhs}, i64 0, metadata !2700), !dbg !3362
+  %updateType = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 10, i32 8, !dbg !3363
+  %0 = load i32* %updateType, align 4, !dbg !3363, !tbaa !2749
+  %tobool = icmp eq i32 %0, 0, !dbg !3363
+  br i1 %tobool, label %if.then, label %if.else, !dbg !3363
+
+if.then:                                          ; preds = %entry
+  tail call void @_ZN6soplex9CLUFactor15solveUpdateLeftEPd(%"class.soplex::CLUFactor"* %this, double* %rhs) #6, !dbg !3364
+  tail call void @_ZN6soplex9CLUFactor10solveUleftEPdS1_(%"class.soplex::CLUFactor"* %this, double* %vec, double* %rhs) #6, !dbg !3366
+  tail call void @_ZN6soplex9CLUFactor10solveLleftEPd(%"class.soplex::CLUFactor"* %this, double* %vec) #6, !dbg !3367
+  br label %if.end, !dbg !3368
+
+if.else:                                          ; preds = %entry
+  tail call void @_ZN6soplex9CLUFactor10solveUleftEPdS1_(%"class.soplex::CLUFactor"* %this, double* %vec, double* %rhs) #6, !dbg !3369
+  %call = tail call i32 @_ZN6soplex9CLUFactor16solveLleftForestEPdPid(%"class.soplex::CLUFactor"* %this, double* %vec, i32* undef, double undef) #6, !dbg !3371
+  tail call void @_ZN6soplex9CLUFactor10solveLleftEPd(%"class.soplex::CLUFactor"* %this, double* %vec) #6, !dbg !3372
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret void, !dbg !3373
+}

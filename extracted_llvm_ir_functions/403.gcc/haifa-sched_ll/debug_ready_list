@@ -1,46 +1,49 @@
 define internal fastcc void @debug_ready_list(%struct.ready_list* nocapture %ready) #0 {
 entry:
-  %n_ready = getelementptr inbounds %struct.ready_list* %ready, i64 0, i32 3
-  %0 = load i32* %n_ready, align 4, !tbaa !0
-  %cmp = icmp eq i32 %0, 0
-  br i1 %cmp, label %return, label %ready_lastpos.exit
+  tail call void @llvm.dbg.value(metadata !{%struct.ready_list* %ready}, i64 0, metadata !780), !dbg !1516
+  %n_ready = getelementptr inbounds %struct.ready_list* %ready, i64 0, i32 3, !dbg !1517
+  %0 = load i32* %n_ready, align 4, !dbg !1517, !tbaa !899
+  %cmp = icmp eq i32 %0, 0, !dbg !1517
+  br i1 %cmp, label %return, label %ready_lastpos.exit, !dbg !1517
 
 ready_lastpos.exit:                               ; preds = %entry
-  %vec.i = getelementptr inbounds %struct.ready_list* %ready, i64 0, i32 0
-  %1 = load %struct.rtx_def*** %vec.i, align 8, !tbaa !3
-  %first.i = getelementptr inbounds %struct.ready_list* %ready, i64 0, i32 2
-  %2 = load i32* %first.i, align 4, !tbaa !0
-  %idx.ext.i = sext i32 %2 to i64
-  %idx.ext2.i = sext i32 %0 to i64
-  %add.ptr.sum.i = sub i64 1, %idx.ext2.i
-  %add.ptr3.sum.i = add i64 %add.ptr.sum.i, %idx.ext.i
-  %cmp210 = icmp sgt i32 %0, 0
-  %3 = load %struct._IO_FILE** @sched_dump, align 8, !tbaa !3
-  br i1 %cmp210, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{%struct.ready_list* %ready}, i64 0, metadata !1518) #6, !dbg !1520
+  %vec.i = getelementptr inbounds %struct.ready_list* %ready, i64 0, i32 0, !dbg !1521
+  %1 = load %struct.rtx_def*** %vec.i, align 8, !dbg !1521, !tbaa !906
+  %first.i = getelementptr inbounds %struct.ready_list* %ready, i64 0, i32 2, !dbg !1521
+  %2 = load i32* %first.i, align 4, !dbg !1521, !tbaa !899
+  %idx.ext.i = sext i32 %2 to i64, !dbg !1521
+  %idx.ext2.i = sext i32 %0 to i64, !dbg !1521
+  %add.ptr.sum.i = sub i64 1, %idx.ext2.i, !dbg !1521
+  %add.ptr3.sum.i = add i64 %add.ptr.sum.i, %idx.ext.i, !dbg !1521
+  tail call void @llvm.dbg.value(metadata !291, i64 0, metadata !782), !dbg !1522
+  %cmp210 = icmp sgt i32 %0, 0, !dbg !1522
+  %3 = load %struct._IO_FILE** @sched_dump, align 8, !dbg !1524, !tbaa !906
+  br i1 %cmp210, label %for.body, label %for.end, !dbg !1522
 
 for.body:                                         ; preds = %ready_lastpos.exit, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %ready_lastpos.exit ]
   %4 = phi %struct._IO_FILE* [ %10, %for.body ], [ %3, %ready_lastpos.exit ]
-  %5 = load %struct.sched_info** @current_sched_info, align 8, !tbaa !3
-  %print_insn = getelementptr inbounds %struct.sched_info* %5, i64 0, i32 5
-  %6 = load i8* (%struct.rtx_def*, i32)** %print_insn, align 8, !tbaa !3
-  %add.ptr4.i.sum = add i64 %add.ptr3.sum.i, %indvars.iv
-  %arrayidx = getelementptr inbounds %struct.rtx_def** %1, i64 %add.ptr4.i.sum
-  %7 = load %struct.rtx_def** %arrayidx, align 8, !tbaa !3
-  %call3 = tail call i8* %6(%struct.rtx_def* %7, i32 0) #9
-  %call4 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([5 x i8]* @.str22, i64 0, i64 0), i8* %call3) #9
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %8 = load i32* %n_ready, align 4, !tbaa !0
-  %9 = trunc i64 %indvars.iv.next to i32
-  %cmp2 = icmp slt i32 %9, %8
-  %10 = load %struct._IO_FILE** @sched_dump, align 8, !tbaa !3
-  br i1 %cmp2, label %for.body, label %for.end
+  %5 = load %struct.sched_info** @current_sched_info, align 8, !dbg !1524, !tbaa !906
+  %print_insn = getelementptr inbounds %struct.sched_info* %5, i64 0, i32 5, !dbg !1524
+  %6 = load i8* (%struct.rtx_def*, i32)** %print_insn, align 8, !dbg !1524, !tbaa !906
+  %add.ptr4.i.sum = add i64 %add.ptr3.sum.i, %indvars.iv, !dbg !1524
+  %arrayidx = getelementptr inbounds %struct.rtx_def** %1, i64 %add.ptr4.i.sum, !dbg !1524
+  %7 = load %struct.rtx_def** %arrayidx, align 8, !dbg !1524, !tbaa !906
+  %call3 = tail call i8* %6(%struct.rtx_def* %7, i32 0) #10, !dbg !1524
+  %call4 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([5 x i8]* @.str22, i64 0, i64 0), i8* %call3) #10, !dbg !1524
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1522
+  %8 = load i32* %n_ready, align 4, !dbg !1522, !tbaa !899
+  %9 = trunc i64 %indvars.iv.next to i32, !dbg !1522
+  %cmp2 = icmp slt i32 %9, %8, !dbg !1522
+  %10 = load %struct._IO_FILE** @sched_dump, align 8, !dbg !1524, !tbaa !906
+  br i1 %cmp2, label %for.body, label %for.end, !dbg !1522
 
 for.end:                                          ; preds = %for.body, %ready_lastpos.exit
   %.lcssa = phi %struct._IO_FILE* [ %3, %ready_lastpos.exit ], [ %10, %for.body ]
-  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %.lcssa)
-  br label %return
+  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %.lcssa), !dbg !1525
+  br label %return, !dbg !1525
 
 return:                                           ; preds = %entry, %for.end
-  ret void
+  ret void, !dbg !1525
 }

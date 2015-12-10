@@ -1,83 +1,84 @@
 define void @RandomIntraInit(i32 %xsize, i32 %ysize, i32 %refresh) #0 {
 entry:
-  tail call void @spec_srand(i32 1) #4
-  %mul = mul nsw i32 %ysize, %xsize
-  store i32 %mul, i32* @NumberOfMBs, align 4, !tbaa !0
-  store i32 %refresh, i32* @NumberIntraPerPicture, align 4, !tbaa !0
-  %add = add nsw i32 %mul, 1
-  %conv = sext i32 %add to i64
-  %mul1 = shl nsw i64 %conv, 2
-  %call = tail call noalias i8* @malloc(i64 %mul1) #4
-  %0 = bitcast i8* %call to i32*
-  store i32* %0, i32** @RefreshPattern, align 8, !tbaa !3
-  %cmp = icmp eq i8* %call, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i32 %xsize}, i64 0, metadata !16), !dbg !575
+  tail call void @llvm.dbg.value(metadata !{i32 %ysize}, i64 0, metadata !17), !dbg !575
+  tail call void @llvm.dbg.value(metadata !{i32 %refresh}, i64 0, metadata !18), !dbg !575
+  tail call void @srand(i32 1) #5, !dbg !576
+  %mul = mul nsw i32 %ysize, %xsize, !dbg !577
+  store i32 %mul, i32* @NumberOfMBs, align 4, !dbg !577, !tbaa !578
+  store i32 %refresh, i32* @NumberIntraPerPicture, align 4, !dbg !581, !tbaa !578
+  %conv = sext i32 %mul to i64, !dbg !582
+  %mul1 = shl nsw i64 %conv, 2, !dbg !582
+  %call = tail call noalias i8* @malloc(i64 %mul1) #5, !dbg !582
+  %0 = bitcast i8* %call to i32*, !dbg !582
+  store i32* %0, i32** @RefreshPattern, align 8, !dbg !582, !tbaa !583
+  %cmp = icmp eq i8* %call, null, !dbg !584
+  br i1 %cmp, label %if.then, label %if.end, !dbg !584
 
 if.then:                                          ; preds = %entry
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([32 x i8]* @.str, i64 0, i64 0)) #4
-  br label %if.end
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([32 x i8]* @.str, i64 0, i64 0)) #5, !dbg !584
+  br label %if.end, !dbg !584
 
 if.end:                                           ; preds = %if.then, %entry
-  %add3 = add nsw i32 %refresh, 1
-  %conv4 = sext i32 %add3 to i64
-  %mul5 = shl nsw i64 %conv4, 2
-  %call6 = tail call noalias i8* @malloc(i64 %mul5) #4
-  %1 = bitcast i8* %call6 to i32*
-  store i32* %1, i32** @IntraMBs, align 8, !tbaa !3
-  %cmp7 = icmp eq i8* %call6, null
-  br i1 %cmp7, label %if.then9, label %for.cond.preheader
+  %conv3 = sext i32 %refresh to i64, !dbg !585
+  %mul4 = shl nsw i64 %conv3, 2, !dbg !585
+  %call5 = tail call noalias i8* @malloc(i64 %mul4) #5, !dbg !585
+  %1 = bitcast i8* %call5 to i32*, !dbg !585
+  store i32* %1, i32** @IntraMBs, align 8, !dbg !585, !tbaa !583
+  %cmp6 = icmp eq i8* %call5, null, !dbg !586
+  br i1 %cmp6, label %if.then8, label %for.cond.preheader, !dbg !586
 
-if.then9:                                         ; preds = %if.end
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([26 x i8]* @.str1, i64 0, i64 0)) #4
-  br label %for.cond.preheader
+if.then8:                                         ; preds = %if.end
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([26 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !586
+  br label %for.cond.preheader, !dbg !586
 
-for.cond.preheader:                               ; preds = %if.end, %if.then9
-  %2 = load i32* @NumberOfMBs, align 4, !tbaa !0
-  %cmp1138 = icmp sgt i32 %2, 0
-  br i1 %cmp1138, label %for.body.lr.ph, label %for.end28
+for.cond.preheader:                               ; preds = %if.end, %if.then8
+  %2 = load i32* @NumberOfMBs, align 4, !dbg !587, !tbaa !578
+  %cmp1035 = icmp sgt i32 %2, 0, !dbg !587
+  br i1 %cmp1035, label %for.body.lr.ph, label %for.end25, !dbg !587
 
 for.body.lr.ph:                                   ; preds = %for.cond.preheader
-  %3 = load i32** @RefreshPattern, align 8, !tbaa !3
-  br label %for.body
+  %3 = load i32** @RefreshPattern, align 8, !dbg !589, !tbaa !583
+  br label %for.body, !dbg !587
 
-for.cond13.preheader:                             ; preds = %for.body
-  %cmp1436 = icmp sgt i32 %4, 0
-  br i1 %cmp1436, label %do.body.preheader, label %for.end28
+for.cond12.preheader:                             ; preds = %for.body
+  %cmp1333 = icmp sgt i32 %4, 0, !dbg !590
+  br i1 %cmp1333, label %do.body.preheader, label %for.end25, !dbg !590
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.body
   %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
-  %arrayidx = getelementptr inbounds i32* %3, i64 %indvars.iv
-  store i32 -1, i32* %arrayidx, align 4, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %4 = load i32* @NumberOfMBs, align 4, !tbaa !0
-  %5 = trunc i64 %indvars.iv.next to i32
-  %cmp11 = icmp slt i32 %5, %4
-  br i1 %cmp11, label %for.body, label %for.cond13.preheader
+  %arrayidx = getelementptr inbounds i32* %3, i64 %indvars.iv, !dbg !589
+  store i32 -1, i32* %arrayidx, align 4, !dbg !589, !tbaa !578
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !587
+  %4 = load i32* @NumberOfMBs, align 4, !dbg !587, !tbaa !578
+  %5 = trunc i64 %indvars.iv.next to i32, !dbg !587
+  %cmp10 = icmp slt i32 %5, %4, !dbg !587
+  br i1 %cmp10, label %for.body, label %for.cond12.preheader, !dbg !587
 
-do.body.preheader:                                ; preds = %for.cond13.preheader, %do.end
-  %i.137 = phi i32 [ %inc27, %do.end ], [ 0, %for.cond13.preheader ]
-  br label %do.body
+do.body.preheader:                                ; preds = %for.cond12.preheader, %do.end
+  %i.134 = phi i32 [ %inc24, %do.end ], [ 0, %for.cond12.preheader ]
+  br label %do.body, !dbg !592
 
 do.body:                                          ; preds = %do.body.preheader, %do.body
-  %call17 = tail call double @spec_rand() #4
-  %mul18 = fmul double %call17, 0x41DFFFFFFFC00000
-  %conv19 = fptosi double %mul18 to i32
-  %6 = load i32* @NumberOfMBs, align 4, !tbaa !0
-  %rem = srem i32 %conv19, %6
-  %idxprom20 = sext i32 %rem to i64
-  %7 = load i32** @RefreshPattern, align 8, !tbaa !3
-  %arrayidx21 = getelementptr inbounds i32* %7, i64 %idxprom20
-  %8 = load i32* %arrayidx21, align 4, !tbaa !0
-  %cmp22 = icmp eq i32 %8, -1
-  br i1 %cmp22, label %do.end, label %do.body
+  %call16 = tail call i32 @rand() #5, !dbg !592
+  %6 = load i32* @NumberOfMBs, align 4, !dbg !592, !tbaa !578
+  %rem = srem i32 %call16, %6, !dbg !592
+  tail call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !20), !dbg !592
+  %idxprom17 = sext i32 %rem to i64, !dbg !595
+  %7 = load i32** @RefreshPattern, align 8, !dbg !595, !tbaa !583
+  %arrayidx18 = getelementptr inbounds i32* %7, i64 %idxprom17, !dbg !595
+  %8 = load i32* %arrayidx18, align 4, !dbg !595, !tbaa !578
+  %cmp19 = icmp eq i32 %8, -1, !dbg !595
+  br i1 %cmp19, label %do.end, label %do.body, !dbg !595
 
 do.end:                                           ; preds = %do.body
-  store i32 %i.137, i32* %arrayidx21, align 4, !tbaa !0
-  %inc27 = add nsw i32 %i.137, 1
-  %9 = load i32* @NumberOfMBs, align 4, !tbaa !0
-  %cmp14 = icmp slt i32 %inc27, %9
-  br i1 %cmp14, label %do.body.preheader, label %for.end28
+  store i32 %i.134, i32* %arrayidx18, align 4, !dbg !596, !tbaa !578
+  %inc24 = add nsw i32 %i.134, 1, !dbg !590
+  tail call void @llvm.dbg.value(metadata !{i32 %inc24}, i64 0, metadata !19), !dbg !590
+  %9 = load i32* @NumberOfMBs, align 4, !dbg !590, !tbaa !578
+  %cmp13 = icmp slt i32 %inc24, %9, !dbg !590
+  br i1 %cmp13, label %do.body.preheader, label %for.end25, !dbg !590
 
-for.end28:                                        ; preds = %for.cond.preheader, %do.end, %for.cond13.preheader
-  ret void
+for.end25:                                        ; preds = %for.cond.preheader, %do.end, %for.cond12.preheader
+  ret void, !dbg !597
 }

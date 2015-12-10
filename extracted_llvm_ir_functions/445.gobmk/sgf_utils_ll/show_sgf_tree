@@ -1,28 +1,33 @@
 define i32 @show_sgf_tree(%struct.SGFNode_t* nocapture %node) #0 {
 entry:
-  %call = tail call i32 @show_sgf_properties(%struct.SGFNode_t* %node) #7
-  %child = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 2
-  %0 = load %struct.SGFNode_t** %child, align 8, !tbaa !0
-  %tobool = icmp eq %struct.SGFNode_t* %0, null
-  br i1 %tobool, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.SGFNode_t* %node}, i64 0, metadata !61), !dbg !131
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !62), !dbg !132
+  tail call void @llvm.dbg.value(metadata !133, i64 0, metadata !62), !dbg !134
+  %call = tail call i32 @show_sgf_properties(%struct.SGFNode_t* %node) #8, !dbg !135
+  %child = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 2, !dbg !136
+  %0 = load %struct.SGFNode_t** %child, align 8, !dbg !136, !tbaa !86
+  %tobool = icmp eq %struct.SGFNode_t* %0, null, !dbg !136
+  br i1 %tobool, label %if.end, label %if.then, !dbg !136
 
 if.then:                                          ; preds = %entry
-  %call2 = tail call i32 @show_sgf_tree(%struct.SGFNode_t* %0) #7
-  %add = add nsw i32 %call2, 1
-  br label %if.end
+  %call2 = tail call i32 @show_sgf_tree(%struct.SGFNode_t* %0) #8, !dbg !137
+  %add = add nsw i32 %call2, 1, !dbg !137
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !62), !dbg !137
+  br label %if.end, !dbg !137
 
 if.end:                                           ; preds = %entry, %if.then
   %n.0 = phi i32 [ %add, %if.then ], [ 1, %entry ]
-  %next = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 3
-  %1 = load %struct.SGFNode_t** %next, align 8, !tbaa !0
-  %tobool3 = icmp eq %struct.SGFNode_t* %1, null
-  br i1 %tobool3, label %if.end8, label %if.then4
+  %next = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 3, !dbg !138
+  %1 = load %struct.SGFNode_t** %next, align 8, !dbg !138, !tbaa !86
+  %tobool3 = icmp eq %struct.SGFNode_t* %1, null, !dbg !138
+  br i1 %tobool3, label %if.end8, label %if.then4, !dbg !138
 
 if.then4:                                         ; preds = %if.end
-  %call6 = tail call i32 @show_sgf_tree(%struct.SGFNode_t* %1) #7
-  %add7 = add nsw i32 %call6, %n.0
-  ret i32 %add7
+  %call6 = tail call i32 @show_sgf_tree(%struct.SGFNode_t* %1) #8, !dbg !139
+  %add7 = add nsw i32 %call6, %n.0, !dbg !139
+  tail call void @llvm.dbg.value(metadata !{i32 %add7}, i64 0, metadata !62), !dbg !139
+  ret i32 %add7, !dbg !140
 
 if.end8:                                          ; preds = %if.end
-  ret i32 %n.0
+  ret i32 %n.0, !dbg !140
 }

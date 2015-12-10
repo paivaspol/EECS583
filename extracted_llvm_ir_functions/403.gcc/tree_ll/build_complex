@@ -1,44 +1,48 @@
 define %union.tree_node* @build_complex(%union.tree_node* %type, %union.tree_node* %real, %union.tree_node* %imag) #0 {
 entry:
-  %call = tail call %union.tree_node* @make_node(i32 27) #10
-  %real1 = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 2
-  %0 = bitcast i32* %real1 to %union.tree_node**
-  store %union.tree_node* %real, %union.tree_node** %0, align 8, !tbaa !0
-  %1 = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 4
-  store %union.tree_node* %imag, %union.tree_node** %1, align 8, !tbaa !0
-  %tobool = icmp eq %union.tree_node* %type, null
-  br i1 %tobool, label %cond.false, label %cond.end
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %type}, i64 0, metadata !1011), !dbg !2100
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %real}, i64 0, metadata !1012), !dbg !2101
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %imag}, i64 0, metadata !1013), !dbg !2101
+  %call = tail call %union.tree_node* @make_node(i32 27) #11, !dbg !2102
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call}, i64 0, metadata !1014), !dbg !2102
+  %real1 = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 2, !dbg !2103
+  %0 = bitcast i32* %real1 to %union.tree_node**, !dbg !2103
+  store %union.tree_node* %real, %union.tree_node** %0, align 8, !dbg !2103, !tbaa !1913
+  %1 = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 4, !dbg !2104
+  store %union.tree_node* %imag, %union.tree_node** %1, align 8, !dbg !2104, !tbaa !1913
+  %tobool = icmp eq %union.tree_node* %type, null, !dbg !2105
+  br i1 %tobool, label %cond.false, label %cond.end, !dbg !2105
 
 cond.false:                                       ; preds = %entry
-  %type4 = getelementptr inbounds %union.tree_node* %real, i64 0, i32 0, i32 0, i32 1
-  %2 = load %union.tree_node** %type4, align 8, !tbaa !0
-  %call5 = tail call %union.tree_node* @build_complex_type(%union.tree_node* %2) #10
-  br label %cond.end
+  %type4 = getelementptr inbounds %union.tree_node* %real, i64 0, i32 0, i32 0, i32 1, !dbg !2105
+  %2 = load %union.tree_node** %type4, align 8, !dbg !2105, !tbaa !1913
+  %call5 = tail call %union.tree_node* @build_complex_type(%union.tree_node* %2) #11, !dbg !2105
+  br label %cond.end, !dbg !2105
 
 cond.end:                                         ; preds = %entry, %cond.false
-  %cond = phi %union.tree_node* [ %call5, %cond.false ], [ %type, %entry ]
-  %type7 = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 0, i32 1
-  store %union.tree_node* %cond, %union.tree_node** %type7, align 8, !tbaa !0
-  %public_flag = getelementptr inbounds %union.tree_node* %real, i64 0, i32 0, i32 0, i32 2
-  %3 = bitcast [4 x i8]* %public_flag to i32*
-  %bf.load = load i32* %3, align 8
-  %public_flag10 = getelementptr inbounds %union.tree_node* %imag, i64 0, i32 0, i32 0, i32 2
-  %4 = bitcast [4 x i8]* %public_flag10 to i32*
-  %bf.load11 = load i32* %4, align 8
-  %bf.lshr47 = or i32 %bf.load11, %bf.load
-  %or = and i32 %bf.lshr47, 524288
-  %public_flag15 = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 0, i32 2
-  %5 = bitcast [4 x i8]* %public_flag15 to i32*
-  %bf.load16 = load i32* %5, align 8
-  %bf.clear17 = and i32 %bf.load16, -524289
-  %bf.set = or i32 %bf.clear17, %or
-  store i32 %bf.set, i32* %5, align 8
-  %bf.load19 = load i32* %3, align 8
-  %bf.load24 = load i32* %4, align 8
-  %bf.lshr2049 = or i32 %bf.load24, %bf.load19
-  %or27 = and i32 %bf.lshr2049, 262144
-  %bf.clear33 = and i32 %bf.set, -262145
-  %bf.set34 = or i32 %or27, %bf.clear33
-  store i32 %bf.set34, i32* %5, align 8
-  ret %union.tree_node* %call
+  %cond = phi %union.tree_node* [ %call5, %cond.false ], [ %type, %entry ], !dbg !2105
+  %type7 = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 0, i32 1, !dbg !2105
+  store %union.tree_node* %cond, %union.tree_node** %type7, align 8, !dbg !2105, !tbaa !1913
+  %public_flag = getelementptr inbounds %union.tree_node* %real, i64 0, i32 0, i32 0, i32 2, !dbg !2106
+  %3 = bitcast [4 x i8]* %public_flag to i32*, !dbg !2106
+  %bf.load = load i32* %3, align 8, !dbg !2106
+  %public_flag10 = getelementptr inbounds %union.tree_node* %imag, i64 0, i32 0, i32 0, i32 2, !dbg !2106
+  %4 = bitcast [4 x i8]* %public_flag10 to i32*, !dbg !2106
+  %bf.load11 = load i32* %4, align 8, !dbg !2106
+  %bf.lshr47 = or i32 %bf.load11, %bf.load, !dbg !2106
+  %or = and i32 %bf.lshr47, 524288, !dbg !2106
+  %public_flag15 = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 0, i32 2, !dbg !2106
+  %5 = bitcast [4 x i8]* %public_flag15 to i32*, !dbg !2106
+  %bf.load16 = load i32* %5, align 8, !dbg !2106
+  %bf.clear17 = and i32 %bf.load16, -524289, !dbg !2106
+  %bf.set = or i32 %bf.clear17, %or, !dbg !2106
+  store i32 %bf.set, i32* %5, align 8, !dbg !2106
+  %bf.load19 = load i32* %3, align 8, !dbg !2107
+  %bf.load24 = load i32* %4, align 8, !dbg !2107
+  %bf.lshr2049 = or i32 %bf.load24, %bf.load19, !dbg !2107
+  %or27 = and i32 %bf.lshr2049, 262144, !dbg !2107
+  %bf.clear33 = and i32 %bf.set, -262145, !dbg !2107
+  %bf.set34 = or i32 %or27, %bf.clear33, !dbg !2107
+  store i32 %bf.set34, i32* %5, align 8, !dbg !2107
+  ret %union.tree_node* %call, !dbg !2108
 }

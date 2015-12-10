@@ -1,30 +1,30 @@
-define i32 @FmoGetLastCodedMBOfSliceGroup(i32 %SliceGroupID) #2 {
+define i32 @FmoGetLastCodedMBOfSliceGroup(i32 %SliceGroupID) #0 {
 entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !3
-  %PicSizeInMbs5 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 110
-  %1 = load i32* %PicSizeInMbs5, align 4, !tbaa !0
-  %cmp6 = icmp sgt i32 %1, 0
-  br i1 %cmp6, label %for.body.lr.ph, label %for.end
+  tail call void @llvm.dbg.value(metadata !{i32 %SliceGroupID}, i64 0, metadata !652), !dbg !1185
+  tail call void @llvm.dbg.value(metadata !1186, i64 0, metadata !654), !dbg !1187
+  tail call void @llvm.dbg.value(metadata !8, i64 0, metadata !653), !dbg !1188
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !1188, !tbaa !948
+  %PicSizeInMbs5 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 110, !dbg !1188
+  %1 = load i32* %PicSizeInMbs5, align 4, !dbg !1188, !tbaa !938
+  %cmp6 = icmp sgt i32 %1, 0, !dbg !1188
+  br i1 %cmp6, label %for.body, label %for.end, !dbg !1188
 
-for.body.lr.ph:                                   ; preds = %entry
-  %2 = load i8** @MBAmap, align 8, !tbaa !3
-  br label %for.body
-
-for.body:                                         ; preds = %for.body.lr.ph, %for.body
-  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
-  %LastMB.08 = phi i32 [ -1, %for.body.lr.ph ], [ %i.0.LastMB.0, %for.body ]
-  %arrayidx.i = getelementptr inbounds i8* %2, i64 %indvars.iv
-  %3 = load i8* %arrayidx.i, align 1, !tbaa !1
-  %conv.i = zext i8 %3 to i32
-  %cmp1 = icmp eq i32 %conv.i, %SliceGroupID
-  %4 = trunc i64 %indvars.iv to i32
-  %i.0.LastMB.0 = select i1 %cmp1, i32 %4, i32 %LastMB.08
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %5 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %5, %1
-  br i1 %cmp, label %for.body, label %for.end
+for.body:                                         ; preds = %entry, %for.body
+  %LastMB.08 = phi i32 [ %i.0.LastMB.0, %for.body ], [ -1, %entry ]
+  %i.07 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
+  %call = tail call i32 @FmoMB2SliceGroup(i32 %i.07) #10, !dbg !1190
+  %cmp1 = icmp eq i32 %call, %SliceGroupID, !dbg !1190
+  tail call void @llvm.dbg.value(metadata !{i32 %i.07}, i64 0, metadata !654), !dbg !1191
+  %i.0.LastMB.0 = select i1 %cmp1, i32 %i.07, i32 %LastMB.08, !dbg !1190
+  %inc = add nsw i32 %i.07, 1, !dbg !1188
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !653), !dbg !1188
+  %2 = load %struct.ImageParameters** @img, align 8, !dbg !1188, !tbaa !948
+  %PicSizeInMbs = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 110, !dbg !1188
+  %3 = load i32* %PicSizeInMbs, align 4, !dbg !1188, !tbaa !938
+  %cmp = icmp slt i32 %inc, %3, !dbg !1188
+  br i1 %cmp, label %for.body, label %for.end, !dbg !1188
 
 for.end:                                          ; preds = %for.body, %entry
   %LastMB.0.lcssa = phi i32 [ -1, %entry ], [ %i.0.LastMB.0, %for.body ]
-  ret i32 %LastMB.0.lcssa
+  ret i32 %LastMB.0.lcssa, !dbg !1192
 }

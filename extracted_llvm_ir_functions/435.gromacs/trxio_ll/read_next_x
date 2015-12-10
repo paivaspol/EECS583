@@ -1,69 +1,64 @@
-define i32 @read_next_x(i32 %status, float* nocapture %t, i32 %natoms, [3 x float]* %x, [3 x float]* nocapture %box) #5 {
-  %1 = sext i32 %status to i64
-  %2 = load %struct.t_trxframe** @xframe, align 8, !tbaa !54
-  %3 = getelementptr inbounds %struct.t_trxframe* %2, i64 %1, i32 19
-  store [3 x float]* %x, [3 x float]** %3, align 8, !tbaa !42
-  %4 = load %struct.t_trxframe** @xframe, align 8, !tbaa !54
-  %5 = getelementptr inbounds %struct.t_trxframe* %4, i64 %1
-  %6 = tail call i32 @read_next_frame(i32 %status, %struct.t_trxframe* %5) #13
-  %7 = load %struct.t_trxframe** @xframe, align 8, !tbaa !54
-  %8 = getelementptr inbounds %struct.t_trxframe* %7, i64 %1, i32 11
-  %9 = bitcast float* %8 to i32*
-  %10 = load i32* %9, align 4, !tbaa !38
-  %11 = bitcast float* %t to i32*
-  store i32 %10, i32* %11, align 4, !tbaa !14
-  %12 = getelementptr inbounds %struct.t_trxframe* %7, i64 %1, i32 25, i64 0
-  %13 = bitcast [3 x float]* %12 to i32*
-  %14 = load i32* %13, align 4, !tbaa !14
-  %15 = bitcast [3 x float]* %box to i32*
-  store i32 %14, i32* %15, align 4, !tbaa !14
-  %16 = getelementptr inbounds %struct.t_trxframe* %7, i64 %1, i32 25, i64 0, i64 1
-  %17 = bitcast float* %16 to i32*
-  %18 = load i32* %17, align 4, !tbaa !14
-  %19 = getelementptr inbounds [3 x float]* %box, i64 0, i64 1
-  %20 = bitcast float* %19 to i32*
-  store i32 %18, i32* %20, align 4, !tbaa !14
-  %21 = getelementptr inbounds %struct.t_trxframe* %7, i64 %1, i32 25, i64 0, i64 2
-  %22 = bitcast float* %21 to i32*
-  %23 = load i32* %22, align 4, !tbaa !14
-  %24 = getelementptr inbounds [3 x float]* %box, i64 0, i64 2
-  %25 = bitcast float* %24 to i32*
-  store i32 %23, i32* %25, align 4, !tbaa !14
-  %26 = getelementptr inbounds %struct.t_trxframe* %7, i64 %1, i32 25, i64 1, i64 0
-  %27 = getelementptr inbounds [3 x float]* %box, i64 1, i64 0
-  %28 = bitcast float* %26 to i32*
-  %29 = load i32* %28, align 4, !tbaa !14
-  %30 = bitcast float* %27 to i32*
-  store i32 %29, i32* %30, align 4, !tbaa !14
-  %31 = getelementptr inbounds %struct.t_trxframe* %7, i64 %1, i32 25, i64 1, i64 1
-  %32 = bitcast float* %31 to i32*
-  %33 = load i32* %32, align 4, !tbaa !14
-  %34 = getelementptr inbounds [3 x float]* %box, i64 1, i64 1
-  %35 = bitcast float* %34 to i32*
-  store i32 %33, i32* %35, align 4, !tbaa !14
-  %36 = getelementptr inbounds %struct.t_trxframe* %7, i64 %1, i32 25, i64 1, i64 2
-  %37 = bitcast float* %36 to i32*
-  %38 = load i32* %37, align 4, !tbaa !14
-  %39 = getelementptr inbounds [3 x float]* %box, i64 1, i64 2
-  %40 = bitcast float* %39 to i32*
-  store i32 %38, i32* %40, align 4, !tbaa !14
-  %41 = getelementptr inbounds %struct.t_trxframe* %7, i64 %1, i32 25, i64 2, i64 0
-  %42 = getelementptr inbounds [3 x float]* %box, i64 2, i64 0
-  %43 = bitcast float* %41 to i32*
-  %44 = load i32* %43, align 4, !tbaa !14
-  %45 = bitcast float* %42 to i32*
-  store i32 %44, i32* %45, align 4, !tbaa !14
-  %46 = getelementptr inbounds %struct.t_trxframe* %7, i64 %1, i32 25, i64 2, i64 1
-  %47 = bitcast float* %46 to i32*
-  %48 = load i32* %47, align 4, !tbaa !14
-  %49 = getelementptr inbounds [3 x float]* %box, i64 2, i64 1
-  %50 = bitcast float* %49 to i32*
-  store i32 %48, i32* %50, align 4, !tbaa !14
-  %51 = getelementptr inbounds %struct.t_trxframe* %7, i64 %1, i32 25, i64 2, i64 2
-  %52 = bitcast float* %51 to i32*
-  %53 = load i32* %52, align 4, !tbaa !14
-  %54 = getelementptr inbounds [3 x float]* %box, i64 2, i64 2
-  %55 = bitcast float* %54 to i32*
-  store i32 %53, i32* %55, align 4, !tbaa !14
-  ret i32 %6
+define i32 @read_next_x(i32 %status, float* nocapture %t, i32 %natoms, [3 x float]* %x, [3 x float]* nocapture %box) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %status}, i64 0, metadata !284), !dbg !1118
+  tail call void @llvm.dbg.value(metadata !{float* %t}, i64 0, metadata !285), !dbg !1118
+  tail call void @llvm.dbg.value(metadata !{i32 %natoms}, i64 0, metadata !286), !dbg !1118
+  tail call void @llvm.dbg.value(metadata !{[3 x float]* %x}, i64 0, metadata !287), !dbg !1118
+  tail call void @llvm.dbg.value(metadata !{[3 x float]* %box}, i64 0, metadata !288), !dbg !1118
+  %idxprom = sext i32 %status to i64, !dbg !1119
+  %0 = load %struct.t_trxframe** @xframe, align 8, !dbg !1119, !tbaa !547
+  %x1 = getelementptr inbounds %struct.t_trxframe* %0, i64 %idxprom, i32 19, !dbg !1119
+  store [3 x float]* %x, [3 x float]** %x1, align 8, !dbg !1119, !tbaa !547
+  %1 = load %struct.t_trxframe** @xframe, align 8, !dbg !1120, !tbaa !547
+  %arrayidx3 = getelementptr inbounds %struct.t_trxframe* %1, i64 %idxprom, !dbg !1120
+  %call = tail call i32 @read_next_frame(i32 %status, %struct.t_trxframe* %arrayidx3) #8, !dbg !1120
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !289), !dbg !1120
+  %2 = load %struct.t_trxframe** @xframe, align 8, !dbg !1121, !tbaa !547
+  %time = getelementptr inbounds %struct.t_trxframe* %2, i64 %idxprom, i32 11, !dbg !1121
+  %3 = load float* %time, align 4, !dbg !1121, !tbaa !543
+  store float %3, float* %t, align 4, !dbg !1121, !tbaa !543
+  tail call void @llvm.dbg.value(metadata !{[3 x float]* %box}, i64 0, metadata !1122), !dbg !1124
+  %arraydecay.i = getelementptr inbounds %struct.t_trxframe* %2, i64 %idxprom, i32 25, i64 0, i64 0, !dbg !1125
+  %arraydecay2.i = getelementptr inbounds [3 x float]* %box, i64 0, i64 0, !dbg !1125
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay.i}, i64 0, metadata !1126), !dbg !1127
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay2.i}, i64 0, metadata !1128), !dbg !1127
+  %4 = load float* %arraydecay.i, align 4, !dbg !1129, !tbaa !543
+  store float %4, float* %arraydecay2.i, align 4, !dbg !1129, !tbaa !543
+  %arrayidx2.i.i = getelementptr inbounds %struct.t_trxframe* %2, i64 %idxprom, i32 25, i64 0, i64 1, !dbg !1130
+  %5 = load float* %arrayidx2.i.i, align 4, !dbg !1130, !tbaa !543
+  %arrayidx3.i.i = getelementptr inbounds [3 x float]* %box, i64 0, i64 1, !dbg !1130
+  store float %5, float* %arrayidx3.i.i, align 4, !dbg !1130, !tbaa !543
+  %arrayidx4.i.i = getelementptr inbounds %struct.t_trxframe* %2, i64 %idxprom, i32 25, i64 0, i64 2, !dbg !1131
+  %6 = load float* %arrayidx4.i.i, align 4, !dbg !1131, !tbaa !543
+  %arrayidx5.i.i = getelementptr inbounds [3 x float]* %box, i64 0, i64 2, !dbg !1131
+  store float %6, float* %arrayidx5.i.i, align 4, !dbg !1131, !tbaa !543
+  %arraydecay4.i = getelementptr inbounds %struct.t_trxframe* %2, i64 %idxprom, i32 25, i64 1, i64 0, !dbg !1132
+  %arraydecay6.i = getelementptr inbounds [3 x float]* %box, i64 1, i64 0, !dbg !1132
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay4.i}, i64 0, metadata !1133), !dbg !1134
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay6.i}, i64 0, metadata !1135), !dbg !1134
+  %7 = load float* %arraydecay4.i, align 4, !dbg !1136, !tbaa !543
+  store float %7, float* %arraydecay6.i, align 4, !dbg !1136, !tbaa !543
+  %arrayidx2.i19.i = getelementptr inbounds %struct.t_trxframe* %2, i64 %idxprom, i32 25, i64 1, i64 1, !dbg !1137
+  %8 = load float* %arrayidx2.i19.i, align 4, !dbg !1137, !tbaa !543
+  %arrayidx3.i20.i = getelementptr inbounds [3 x float]* %box, i64 1, i64 1, !dbg !1137
+  store float %8, float* %arrayidx3.i20.i, align 4, !dbg !1137, !tbaa !543
+  %arrayidx4.i21.i = getelementptr inbounds %struct.t_trxframe* %2, i64 %idxprom, i32 25, i64 1, i64 2, !dbg !1138
+  %9 = load float* %arrayidx4.i21.i, align 4, !dbg !1138, !tbaa !543
+  %arrayidx5.i22.i = getelementptr inbounds [3 x float]* %box, i64 1, i64 2, !dbg !1138
+  store float %9, float* %arrayidx5.i22.i, align 4, !dbg !1138, !tbaa !543
+  %arraydecay8.i = getelementptr inbounds %struct.t_trxframe* %2, i64 %idxprom, i32 25, i64 2, i64 0, !dbg !1139
+  %arraydecay10.i = getelementptr inbounds [3 x float]* %box, i64 2, i64 0, !dbg !1139
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay8.i}, i64 0, metadata !1140), !dbg !1141
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay10.i}, i64 0, metadata !1142), !dbg !1141
+  %10 = load float* %arraydecay8.i, align 4, !dbg !1143, !tbaa !543
+  store float %10, float* %arraydecay10.i, align 4, !dbg !1143, !tbaa !543
+  %arrayidx2.i15.i = getelementptr inbounds %struct.t_trxframe* %2, i64 %idxprom, i32 25, i64 2, i64 1, !dbg !1144
+  %11 = load float* %arrayidx2.i15.i, align 4, !dbg !1144, !tbaa !543
+  %arrayidx3.i16.i = getelementptr inbounds [3 x float]* %box, i64 2, i64 1, !dbg !1144
+  store float %11, float* %arrayidx3.i16.i, align 4, !dbg !1144, !tbaa !543
+  %arrayidx4.i17.i = getelementptr inbounds %struct.t_trxframe* %2, i64 %idxprom, i32 25, i64 2, i64 2, !dbg !1145
+  %12 = load float* %arrayidx4.i17.i, align 4, !dbg !1145, !tbaa !543
+  %arrayidx5.i18.i = getelementptr inbounds [3 x float]* %box, i64 2, i64 2, !dbg !1145
+  store float %12, float* %arrayidx5.i18.i, align 4, !dbg !1145, !tbaa !543
+  ret i32 %call, !dbg !1146
 }

@@ -1,0 +1,15 @@
+define void @_Z12task_restartP5_Task(%struct._Task* %p) #6 {
+entry:
+  call void @llvm.dbg.value(metadata !{%struct._Task* %p}, i64 0, metadata !111), !dbg !222
+  %call = call i32 @_setjmp(%struct.__jmp_buf_tag* getelementptr inbounds ([1 x %struct.__jmp_buf_tag]* @tmp_jmpb, i64 0, i64 0)) #10, !dbg !223
+  %cmp = icmp eq i32 %call, 0, !dbg !223
+  br i1 %cmp, label %if.then, label %if.end, !dbg !223
+
+if.then:                                          ; preds = %entry
+  %arraydecay = getelementptr inbounds %struct._Task* %p, i64 0, i32 2, i64 0, !dbg !224
+  call void @longjmp(%struct.__jmp_buf_tag* %arraydecay, i32 1) #11, !dbg !224
+  unreachable, !dbg !224
+
+if.end:                                           ; preds = %entry
+  ret void, !dbg !226
+}

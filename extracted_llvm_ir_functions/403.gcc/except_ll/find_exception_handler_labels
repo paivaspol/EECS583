@@ -1,119 +1,123 @@
 define void @find_exception_handler_labels() #0 {
 entry:
-  %0 = load %struct.htab** @exception_handler_label_map, align 8, !tbaa !3
-  %tobool = icmp eq %struct.htab* %0, null
-  br i1 %tobool, label %if.else, label %if.then
+  %0 = load %struct.htab** @exception_handler_label_map, align 8, !dbg !2773, !tbaa !2232
+  %tobool = icmp eq %struct.htab* %0, null, !dbg !2773
+  br i1 %tobool, label %if.else, label %if.then, !dbg !2773
 
 if.then:                                          ; preds = %entry
-  tail call void @htab_empty(%struct.htab* %0) #6
-  br label %if.end
+  tail call void @htab_empty(%struct.htab* %0) #7, !dbg !2774
+  br label %if.end, !dbg !2774
 
 if.else:                                          ; preds = %entry
-  %1 = load %struct.function** @cfun, align 8, !tbaa !3
-  %eh = getelementptr inbounds %struct.function* %1, i64 0, i32 0
-  %2 = load %struct.eh_status** %eh, align 8, !tbaa !3
-  %last_region_number = getelementptr inbounds %struct.eh_status* %2, i64 0, i32 8
-  %3 = load i32* %last_region_number, align 4, !tbaa !0
-  %mul = mul nsw i32 %3, 3
-  %div = sdiv i32 %mul, 2
-  %conv = sext i32 %div to i64
-  %call = tail call %struct.htab* @htab_create(i64 %conv, i32 (i8*)* @ehl_hash, i32 (i8*, i8*)* @ehl_eq, void (i8*)* @ehl_free) #6
-  store %struct.htab* %call, %struct.htab** @exception_handler_label_map, align 8, !tbaa !3
+  %1 = load %struct.function** @cfun, align 8, !dbg !2775, !tbaa !2232
+  %eh = getelementptr inbounds %struct.function* %1, i64 0, i32 0, !dbg !2775
+  %2 = load %struct.eh_status** %eh, align 8, !dbg !2775, !tbaa !2232
+  %last_region_number = getelementptr inbounds %struct.eh_status* %2, i64 0, i32 8, !dbg !2775
+  %3 = load i32* %last_region_number, align 4, !dbg !2775, !tbaa !2220
+  %mul = mul nsw i32 %3, 3, !dbg !2775
+  %div = sdiv i32 %mul, 2, !dbg !2775
+  %conv = sext i32 %div to i64, !dbg !2775
+  %call = tail call %struct.htab* @htab_create(i64 %conv, i32 (i8*)* @ehl_hash, i32 (i8*, i8*)* @ehl_eq, void (i8*)* @ehl_free) #7, !dbg !2775
+  store %struct.htab* %call, %struct.htab** @exception_handler_label_map, align 8, !dbg !2775, !tbaa !2232
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
-  %4 = load %struct.function** @cfun, align 8, !tbaa !3
-  %eh1 = getelementptr inbounds %struct.function* %4, i64 0, i32 0
-  %5 = load %struct.eh_status** %eh1, align 8, !tbaa !3
-  %region_tree = getelementptr inbounds %struct.eh_status* %5, i64 0, i32 0
-  %6 = load %struct.eh_region** %region_tree, align 8, !tbaa !3
-  %cmp = icmp eq %struct.eh_region* %6, null
-  br i1 %cmp, label %for.end, label %if.end4
+  %4 = load %struct.function** @cfun, align 8, !dbg !2777, !tbaa !2232
+  %eh1 = getelementptr inbounds %struct.function* %4, i64 0, i32 0, !dbg !2777
+  %5 = load %struct.eh_status** %eh1, align 8, !dbg !2777, !tbaa !2232
+  %region_tree = getelementptr inbounds %struct.eh_status* %5, i64 0, i32 0, !dbg !2777
+  %6 = load %struct.eh_region** %region_tree, align 8, !dbg !2777, !tbaa !2232
+  %cmp = icmp eq %struct.eh_region* %6, null, !dbg !2777
+  br i1 %cmp, label %for.end, label %if.end4, !dbg !2777
 
 if.end4:                                          ; preds = %if.end
-  %last_region_number6 = getelementptr inbounds %struct.eh_status* %5, i64 0, i32 8
-  %7 = load i32* %last_region_number6, align 4, !tbaa !0
-  %cmp730 = icmp sgt i32 %7, 0
-  br i1 %cmp730, label %for.body.lr.ph, label %for.end
+  %last_region_number6 = getelementptr inbounds %struct.eh_status* %5, i64 0, i32 8, !dbg !2778
+  %7 = load i32* %last_region_number6, align 4, !dbg !2778, !tbaa !2220
+  tail call void @llvm.dbg.value(metadata !{i32 %7}, i64 0, metadata !1534), !dbg !2778
+  %cmp730 = icmp sgt i32 %7, 0, !dbg !2778
+  br i1 %cmp730, label %for.body.lr.ph, label %for.end, !dbg !2778
 
 for.body.lr.ph:                                   ; preds = %if.end4
   %8 = sext i32 %7 to i64
-  br label %for.body
+  br label %for.body, !dbg !2778
 
 for.body:                                         ; preds = %for.inc.for.body_crit_edge, %for.body.lr.ph
   %9 = phi %struct.eh_status* [ %5, %for.body.lr.ph ], [ %.pre32, %for.inc.for.body_crit_edge ]
   %indvars.iv = phi i64 [ %8, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc.for.body_crit_edge ]
-  %region_array = getelementptr inbounds %struct.eh_status* %9, i64 0, i32 1
-  %10 = load %struct.eh_region*** %region_array, align 8, !tbaa !3
-  %arrayidx = getelementptr inbounds %struct.eh_region** %10, i64 %indvars.iv
-  %11 = load %struct.eh_region** %arrayidx, align 8, !tbaa !3
-  %tobool10 = icmp eq %struct.eh_region* %11, null
-  br i1 %tobool10, label %for.inc, label %lor.lhs.false
+  %region_array = getelementptr inbounds %struct.eh_status* %9, i64 0, i32 1, !dbg !2779
+  %10 = load %struct.eh_region*** %region_array, align 8, !dbg !2779, !tbaa !2232
+  %arrayidx = getelementptr inbounds %struct.eh_region** %10, i64 %indvars.iv, !dbg !2779
+  %11 = load %struct.eh_region** %arrayidx, align 8, !dbg !2779, !tbaa !2232
+  tail call void @llvm.dbg.value(metadata !{%struct.eh_region* %11}, i64 0, metadata !1535), !dbg !2779
+  %tobool10 = icmp eq %struct.eh_region* %11, null, !dbg !2780
+  br i1 %tobool10, label %for.inc, label %lor.lhs.false, !dbg !2780
 
 lor.lhs.false:                                    ; preds = %for.body
-  %region_number = getelementptr inbounds %struct.eh_region* %11, i64 0, i32 3
-  %12 = load i32* %region_number, align 4, !tbaa !0
-  %13 = trunc i64 %indvars.iv to i32
-  %cmp11 = icmp eq i32 %12, %13
-  br i1 %cmp11, label %if.end14, label %for.inc
+  %region_number = getelementptr inbounds %struct.eh_region* %11, i64 0, i32 3, !dbg !2780
+  %12 = load i32* %region_number, align 4, !dbg !2780, !tbaa !2220
+  %13 = trunc i64 %indvars.iv to i32, !dbg !2780
+  %cmp11 = icmp eq i32 %12, %13, !dbg !2780
+  br i1 %cmp11, label %if.end14, label %for.inc, !dbg !2780
 
 if.end14:                                         ; preds = %lor.lhs.false
-  %built_landing_pads = getelementptr inbounds %struct.eh_status* %9, i64 0, i32 7
-  %14 = load i32* %built_landing_pads, align 4, !tbaa !0
-  %tobool16 = icmp eq i32 %14, 0
-  %landing_pad = getelementptr inbounds %struct.eh_region* %11, i64 0, i32 8
-  %label = getelementptr inbounds %struct.eh_region* %11, i64 0, i32 7
-  %lab.0.in = select i1 %tobool16, %struct.rtx_def** %label, %struct.rtx_def** %landing_pad
-  %lab.0 = load %struct.rtx_def** %lab.0.in, align 8
-  %tobool20 = icmp eq %struct.rtx_def* %lab.0, null
-  br i1 %tobool20, label %for.inc, label %if.then21
+  %built_landing_pads = getelementptr inbounds %struct.eh_status* %9, i64 0, i32 7, !dbg !2781
+  %14 = load i32* %built_landing_pads, align 4, !dbg !2781, !tbaa !2220
+  %tobool16 = icmp eq i32 %14, 0, !dbg !2781
+  %landing_pad = getelementptr inbounds %struct.eh_region* %11, i64 0, i32 8, !dbg !2782
+  %label = getelementptr inbounds %struct.eh_region* %11, i64 0, i32 7, !dbg !2783
+  %lab.0.in = select i1 %tobool16, %struct.rtx_def** %label, %struct.rtx_def** %landing_pad, !dbg !2781
+  %lab.0 = load %struct.rtx_def** %lab.0.in, align 8, !dbg !2782
+  %tobool20 = icmp eq %struct.rtx_def* %lab.0, null, !dbg !2784
+  br i1 %tobool20, label %for.inc, label %if.then21, !dbg !2784
 
 if.then21:                                        ; preds = %if.end14
-  %15 = bitcast %struct.rtx_def* %lab.0 to i32*
-  %bf.load.i = load i32* %15, align 8
-  %bf.set.i = or i32 %bf.load.i, 268435456
-  store i32 %bf.set.i, i32* %15, align 8
-  %call.i = tail call noalias i8* @xmalloc(i64 16) #6
-  %label2.i = bitcast i8* %call.i to %struct.rtx_def**
-  store %struct.rtx_def* %lab.0, %struct.rtx_def** %label2.i, align 8, !tbaa !3
-  %region3.i = getelementptr inbounds i8* %call.i, i64 8
-  %16 = bitcast i8* %region3.i to %struct.eh_region**
-  store %struct.eh_region* %11, %struct.eh_region** %16, align 8, !tbaa !3
-  %17 = load %struct.htab** @exception_handler_label_map, align 8, !tbaa !3
-  %call4.i = tail call i8** @htab_find_slot(%struct.htab* %17, i8* %call.i, i32 1) #6
-  %18 = load i8** %call4.i, align 8
-  %tobool.i = icmp eq i8* %18, null
-  br i1 %tobool.i, label %add_ehl_entry.exit, label %land.lhs.true.i
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %lab.0}, i64 0, metadata !2785) #5, !dbg !2787
+  tail call void @llvm.dbg.value(metadata !{%struct.eh_region* %11}, i64 0, metadata !2788) #5, !dbg !2789
+  %15 = bitcast %struct.rtx_def* %lab.0 to i32*, !dbg !2790
+  %bf.load.i = load i32* %15, align 8, !dbg !2790
+  %bf.set.i = or i32 %bf.load.i, 268435456, !dbg !2790
+  store i32 %bf.set.i, i32* %15, align 8, !dbg !2790
+  %call.i = tail call noalias i8* @xmalloc(i64 16) #7, !dbg !2791
+  %label2.i = bitcast i8* %call.i to %struct.rtx_def**, !dbg !2792
+  store %struct.rtx_def* %lab.0, %struct.rtx_def** %label2.i, align 8, !dbg !2792, !tbaa !2232
+  %region3.i = getelementptr inbounds i8* %call.i, i64 8, !dbg !2793
+  %16 = bitcast i8* %region3.i to %struct.eh_region**, !dbg !2793
+  store %struct.eh_region* %11, %struct.eh_region** %16, align 8, !dbg !2793, !tbaa !2232
+  %17 = load %struct.htab** @exception_handler_label_map, align 8, !dbg !2794, !tbaa !2232
+  %call4.i = tail call i8** @htab_find_slot(%struct.htab* %17, i8* %call.i, i32 1) #7, !dbg !2794
+  %18 = load i8** %call4.i, align 8, !dbg !2795
+  %tobool.i = icmp eq i8* %18, null, !dbg !2795
+  br i1 %tobool.i, label %add_ehl_entry.exit, label %land.lhs.true.i, !dbg !2795
 
 land.lhs.true.i:                                  ; preds = %if.then21
-  %19 = load %struct.function** @cfun, align 8, !tbaa !3
-  %eh.i = getelementptr inbounds %struct.function* %19, i64 0, i32 0
-  %20 = load %struct.eh_status** %eh.i, align 8, !tbaa !3
-  %built_landing_pads.i = getelementptr inbounds %struct.eh_status* %20, i64 0, i32 7
-  %21 = load i32* %built_landing_pads.i, align 4, !tbaa !0
-  %tobool5.i = icmp eq i32 %21, 0
-  br i1 %tobool5.i, label %if.then.i, label %add_ehl_entry.exit
+  %19 = load %struct.function** @cfun, align 8, !dbg !2795, !tbaa !2232
+  %eh.i = getelementptr inbounds %struct.function* %19, i64 0, i32 0, !dbg !2795
+  %20 = load %struct.eh_status** %eh.i, align 8, !dbg !2795, !tbaa !2232
+  %built_landing_pads.i = getelementptr inbounds %struct.eh_status* %20, i64 0, i32 7, !dbg !2795
+  %21 = load i32* %built_landing_pads.i, align 4, !dbg !2795, !tbaa !2220
+  %tobool5.i = icmp eq i32 %21, 0, !dbg !2795
+  br i1 %tobool5.i, label %if.then.i, label %add_ehl_entry.exit, !dbg !2795
 
 if.then.i:                                        ; preds = %land.lhs.true.i
-  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str26, i64 0, i64 0), i32 1446, i8* getelementptr inbounds ([14 x i8]* @__FUNCTION__.add_ehl_entry, i64 0, i64 0)) #8
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str26, i64 0, i64 0), i32 1446, i8* getelementptr inbounds ([14 x i8]* @__FUNCTION__.add_ehl_entry, i64 0, i64 0)) #9, !dbg !2796
+  unreachable, !dbg !2796
 
 add_ehl_entry.exit:                               ; preds = %if.then21, %land.lhs.true.i
-  store i8* %call.i, i8** %call4.i, align 8, !tbaa !3
-  br label %for.inc
+  store i8* %call.i, i8** %call4.i, align 8, !dbg !2797, !tbaa !2232
+  br label %for.inc, !dbg !2786
 
 for.inc:                                          ; preds = %if.end14, %lor.lhs.false, %for.body, %add_ehl_entry.exit
-  %indvars.iv.next = add i64 %indvars.iv, -1
-  %22 = trunc i64 %indvars.iv.next to i32
-  %cmp7 = icmp sgt i32 %22, 0
-  br i1 %cmp7, label %for.inc.for.body_crit_edge, label %for.end
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !2778
+  %22 = trunc i64 %indvars.iv.next to i32, !dbg !2778
+  %cmp7 = icmp sgt i32 %22, 0, !dbg !2778
+  br i1 %cmp7, label %for.inc.for.body_crit_edge, label %for.end, !dbg !2778
 
 for.inc.for.body_crit_edge:                       ; preds = %for.inc
-  %.pre = load %struct.function** @cfun, align 8, !tbaa !3
+  %.pre = load %struct.function** @cfun, align 8, !dbg !2779, !tbaa !2232
   %eh9.phi.trans.insert = getelementptr inbounds %struct.function* %.pre, i64 0, i32 0
-  %.pre32 = load %struct.eh_status** %eh9.phi.trans.insert, align 8, !tbaa !3
-  br label %for.body
+  %.pre32 = load %struct.eh_status** %eh9.phi.trans.insert, align 8, !dbg !2779, !tbaa !2232
+  br label %for.body, !dbg !2778
 
 for.end:                                          ; preds = %if.end4, %for.inc, %if.end
-  ret void
+  ret void, !dbg !2798
 }

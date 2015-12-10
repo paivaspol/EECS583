@@ -1,16 +1,17 @@
 define i8* @Statetype(i8 signext %st) #0 {
 entry:
-  %conv = sext i8 %st to i32
-  %switch.tableidx = add i32 %conv, -1
-  %0 = icmp ult i32 %switch.tableidx, 10
-  br i1 %0, label %switch.lookup, label %return
+  tail call void @llvm.dbg.value(metadata !{i8 %st}, i64 0, metadata !11), !dbg !214
+  %conv = sext i8 %st to i32, !dbg !215
+  %switch.tableidx = add i32 %conv, -1, !dbg !215
+  %0 = icmp ult i32 %switch.tableidx, 10, !dbg !215
+  br i1 %0, label %switch.lookup, label %return, !dbg !215
 
 switch.lookup:                                    ; preds = %entry
-  %1 = sext i32 %switch.tableidx to i64
-  %switch.gep = getelementptr inbounds [10 x i8*]* @switch.table, i64 0, i64 %1
-  %switch.load = load i8** %switch.gep, align 8
-  ret i8* %switch.load
+  %1 = sext i32 %switch.tableidx to i64, !dbg !215
+  %switch.gep = getelementptr inbounds [10 x i8*]* @switch.table, i64 0, i64 %1, !dbg !215
+  %switch.load = load i8** %switch.gep, align 8, !dbg !215
+  ret i8* %switch.load, !dbg !215
 
 return:                                           ; preds = %entry
-  ret i8* getelementptr inbounds ([6 x i8]* @.str10, i64 0, i64 0)
+  ret i8* getelementptr inbounds ([6 x i8]* @.str10, i64 0, i64 0), !dbg !216
 }

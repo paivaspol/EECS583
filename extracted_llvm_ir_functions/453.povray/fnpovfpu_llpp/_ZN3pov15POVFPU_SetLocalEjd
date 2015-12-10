@@ -1,0 +1,39 @@
+define void @_ZN3pov15POVFPU_SetLocalEjd(i32 %k, double %v) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %k}, i64 0, metadata !165), !dbg !585
+  tail call void @llvm.dbg.value(metadata !{double %v}, i64 0, metadata !166), !dbg !585
+  %0 = load %"struct.pov::FPUContext_Struct"** @_ZN3pov22POVFPU_Current_ContextE, align 8, !dbg !586, !tbaa !493
+  %maxdblstacksize = getelementptr inbounds %"struct.pov::FPUContext_Struct"* %0, i64 0, i32 3, !dbg !586
+  %1 = load i32* %maxdblstacksize, align 4, !dbg !586, !tbaa !498
+  %cmp = icmp ugt i32 %1, %k, !dbg !586
+  br i1 %cmp, label %if.end, label %if.then, !dbg !586
+
+if.then:                                          ; preds = %entry
+  %add = add i32 %k, 1, !dbg !587
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !589), !dbg !590
+  tail call void @llvm.dbg.value(metadata !591, i64 0, metadata !592), !dbg !590
+  %cmp.i = icmp ult i32 %add, 256, !dbg !593
+  %.sroa.speculated = select i1 %cmp.i, i32 256, i32 %add, !dbg !587
+  store i32 %.sroa.speculated, i32* %maxdblstacksize, align 4, !dbg !587, !tbaa !498
+  %dblstackbase = getelementptr inbounds %"struct.pov::FPUContext_Struct"* %0, i64 0, i32 2, !dbg !596
+  %2 = load double** %dblstackbase, align 8, !dbg !596, !tbaa !493
+  %3 = bitcast double* %2 to i8*, !dbg !596
+  %conv = zext i32 %.sroa.speculated to i64, !dbg !596
+  %mul = shl nuw nsw i64 %conv, 3, !dbg !596
+  %call4 = tail call i8* @_ZN3pov11pov_reallocEPvmPKciS2_(i8* %3, i64 %mul, i8* getelementptr inbounds ([57 x i8]* @.str51, i64 0, i64 0), i32 778, i8* getelementptr inbounds ([10 x i8]* @.str52, i64 0, i64 0)) #9, !dbg !596
+  %4 = bitcast i8* %call4 to double*, !dbg !596
+  %5 = load %"struct.pov::FPUContext_Struct"** @_ZN3pov22POVFPU_Current_ContextE, align 8, !dbg !596, !tbaa !493
+  %dblstackbase5 = getelementptr inbounds %"struct.pov::FPUContext_Struct"* %5, i64 0, i32 2, !dbg !596
+  store double* %4, double** %dblstackbase5, align 8, !dbg !596, !tbaa !493
+  %.pre = load %"struct.pov::FPUContext_Struct"** @_ZN3pov22POVFPU_Current_ContextE, align 8, !dbg !597, !tbaa !493
+  br label %if.end, !dbg !598
+
+if.end:                                           ; preds = %entry, %if.then
+  %6 = phi %"struct.pov::FPUContext_Struct"* [ %0, %entry ], [ %.pre, %if.then ]
+  %idxprom = zext i32 %k to i64, !dbg !597
+  %dblstackbase6 = getelementptr inbounds %"struct.pov::FPUContext_Struct"* %6, i64 0, i32 2, !dbg !597
+  %7 = load double** %dblstackbase6, align 8, !dbg !597, !tbaa !493
+  %arrayidx = getelementptr inbounds double* %7, i64 %idxprom, !dbg !597
+  store double %v, double* %arrayidx, align 8, !dbg !597, !tbaa !521
+  ret void, !dbg !599
+}

@@ -1,68 +1,80 @@
 define %struct.T_TREE* @Util_BinTreeStoreData(%struct.T_TREE* %root, %struct.T_TREE* %subtree, i8* %data, i32 (i8*, i8*)* %compare) #1 {
-  %1 = icmp eq %struct.T_TREE* %subtree, null
-  br i1 %1, label %tailrecurse._crit_edge, label %.lr.ph
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.T_TREE* %root.tr.lcssa}, i64 0, metadata !32), !dbg !82
+  tail call void @llvm.dbg.value(metadata !{%struct.T_TREE* %subtree}, i64 0, metadata !33), !dbg !83
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !34), !dbg !84
+  tail call void @llvm.dbg.value(metadata !{i32 (i8*, i8*)* %compare}, i64 0, metadata !35), !dbg !85
+  %tobool54 = icmp eq %struct.T_TREE* %subtree, null, !dbg !86
+  br i1 %tobool54, label %if.then, label %if.else13, !dbg !86
 
-tailrecurse._crit_edge:                           ; preds = %tailrecurse.backedge, %0
-  %root.tr.lcssa = phi %struct.T_TREE* [ %root, %0 ], [ %subtree.tr3, %tailrecurse.backedge ]
-  %2 = tail call i8* @malloc(i64 32) #4
-  %3 = bitcast i8* %2 to %struct.T_TREE*
-  %4 = icmp eq i8* %2, null
-  br i1 %4, label %.loopexit, label %5
+if.then:                                          ; preds = %tailrecurse.backedge, %entry
+  %root.tr.lcssa = phi %struct.T_TREE* [ %root, %entry ], [ %subtree.tr56, %tailrecurse.backedge ]
+  %call = tail call noalias i8* @malloc(i64 32) #5, !dbg !87
+  %0 = bitcast i8* %call to %struct.T_TREE*, !dbg !87
+  tail call void @llvm.dbg.value(metadata !{%struct.T_TREE* %0}, i64 0, metadata !33), !dbg !87
+  %tobool1 = icmp eq i8* %call, null, !dbg !89
+  br i1 %tobool1, label %if.else25, label %if.then2, !dbg !89
 
-; <label>:5                                       ; preds = %tailrecurse._crit_edge
-  %6 = getelementptr inbounds i8* %2, i64 24
-  %7 = bitcast i8* %6 to i8**
-  call void @llvm.memset.p0i8.i64(i8* %2, i8 0, i64 16, i32 8, i1 false)
-  store i8* %data, i8** %7, align 8, !tbaa !2
-  %8 = icmp eq %struct.T_TREE* %root.tr.lcssa, null
-  br i1 %8, label %.loopexit, label %9
+if.then2:                                         ; preds = %if.then
+  %data3 = getelementptr inbounds i8* %call, i64 24, !dbg !90
+  %1 = bitcast i8* %data3 to i8**, !dbg !90
+  call void @llvm.memset.p0i8.i64(i8* %call, i8 0, i64 16, i32 8, i1 false), !dbg !92
+  store i8* %data, i8** %1, align 8, !dbg !90, !tbaa !93
+  %tobool4 = icmp eq %struct.T_TREE* %root.tr.lcssa, null, !dbg !96
+  br i1 %tobool4, label %if.else25, label %if.then5, !dbg !96
 
-; <label>:9                                       ; preds = %5
-  %10 = getelementptr inbounds %struct.T_TREE* %root.tr.lcssa, i64 0, i32 3
-  %11 = load i8** %10, align 8, !tbaa !2
-  %12 = tail call i32 %compare(i8* %data, i8* %11) #4
-  %13 = icmp slt i32 %12, 0
-  br i1 %13, label %14, label %16
+if.then5:                                         ; preds = %if.then2
+  %data6 = getelementptr inbounds %struct.T_TREE* %root.tr.lcssa, i64 0, i32 3, !dbg !97
+  %2 = load i8** %data6, align 8, !dbg !97, !tbaa !93
+  %call7 = tail call i32 %compare(i8* %data, i8* %2) #5, !dbg !97
+  tail call void @llvm.dbg.value(metadata !{i32 %call7}, i64 0, metadata !36), !dbg !97
+  %cmp = icmp slt i32 %call7, 0, !dbg !97
+  br i1 %cmp, label %if.then8, label %if.else, !dbg !97
 
-; <label>:14                                      ; preds = %9
-  %15 = bitcast %struct.T_TREE* %root.tr.lcssa to i8**
-  store i8* %2, i8** %15, align 8, !tbaa !7
-  br label %.loopexit
+if.then8:                                         ; preds = %if.then5
+  %left9 = getelementptr inbounds %struct.T_TREE* %root.tr.lcssa, i64 0, i32 0, !dbg !99
+  store %struct.T_TREE* %0, %struct.T_TREE** %left9, align 8, !dbg !99, !tbaa !93
+  br label %if.else25, !dbg !101
 
-; <label>:16                                      ; preds = %9
-  %17 = getelementptr inbounds %struct.T_TREE* %root.tr.lcssa, i64 0, i32 1
-  %18 = bitcast %struct.T_TREE** %17 to i8**
-  store i8* %2, i8** %18, align 8, !tbaa !8
-  br label %.loopexit
+if.else:                                          ; preds = %if.then5
+  %right10 = getelementptr inbounds %struct.T_TREE* %root.tr.lcssa, i64 0, i32 1, !dbg !102
+  store %struct.T_TREE* %0, %struct.T_TREE** %right10, align 8, !dbg !102, !tbaa !93
+  br label %if.else25
 
-.lr.ph:                                           ; preds = %0, %tailrecurse.backedge
-  %subtree.tr3 = phi %struct.T_TREE* [ %subtree.tr.be, %tailrecurse.backedge ], [ %subtree, %0 ]
-  %root.tr2 = phi %struct.T_TREE* [ %subtree.tr3, %tailrecurse.backedge ], [ %root, %0 ]
-  %19 = getelementptr inbounds %struct.T_TREE* %root.tr2, i64 0, i32 3
-  %20 = load i8** %19, align 8, !tbaa !2
-  %21 = tail call i32 %compare(i8* %data, i8* %20) #4
-  %22 = icmp slt i32 %21, 0
-  br i1 %22, label %23, label %25
+if.else13:                                        ; preds = %entry, %tailrecurse.backedge
+  %subtree.tr56 = phi %struct.T_TREE* [ %subtree.tr.be, %tailrecurse.backedge ], [ %subtree, %entry ]
+  %root.tr55 = phi %struct.T_TREE* [ %subtree.tr56, %tailrecurse.backedge ], [ %root, %entry ]
+  %data14 = getelementptr inbounds %struct.T_TREE* %root.tr55, i64 0, i32 3, !dbg !104
+  %3 = load i8** %data14, align 8, !dbg !104, !tbaa !93
+  %call15 = tail call i32 %compare(i8* %data, i8* %3) #5, !dbg !104
+  tail call void @llvm.dbg.value(metadata !{i32 %call15}, i64 0, metadata !36), !dbg !104
+  %cmp16 = icmp slt i32 %call15, 0, !dbg !104
+  br i1 %cmp16, label %if.then17, label %if.else20, !dbg !104
 
-; <label>:23                                      ; preds = %.lr.ph
-  %24 = getelementptr inbounds %struct.T_TREE* %subtree.tr3, i64 0, i32 0
-  br label %tailrecurse.backedge
+if.then17:                                        ; preds = %if.else13
+  %left18 = getelementptr inbounds %struct.T_TREE* %subtree.tr56, i64 0, i32 0, !dbg !106
+  br label %tailrecurse.backedge, !dbg !106
 
-; <label>:25                                      ; preds = %.lr.ph
-  %26 = icmp sgt i32 %21, 0
-  br i1 %26, label %27, label %.loopexit
+if.else20:                                        ; preds = %if.else13
+  %cmp21 = icmp sgt i32 %call15, 0, !dbg !108
+  br i1 %cmp21, label %if.then22, label %if.else25, !dbg !108
 
-; <label>:27                                      ; preds = %25
-  %28 = getelementptr inbounds %struct.T_TREE* %subtree.tr3, i64 0, i32 1
-  br label %tailrecurse.backedge
+if.then22:                                        ; preds = %if.else20
+  %right23 = getelementptr inbounds %struct.T_TREE* %subtree.tr56, i64 0, i32 1, !dbg !109
+  br label %tailrecurse.backedge, !dbg !109
 
-tailrecurse.backedge:                             ; preds = %27, %23
-  %subtree.tr.be.in = phi %struct.T_TREE** [ %28, %27 ], [ %24, %23 ]
-  %subtree.tr.be = load %struct.T_TREE** %subtree.tr.be.in, align 8
-  %29 = icmp eq %struct.T_TREE* %subtree.tr.be, null
-  br i1 %29, label %tailrecurse._crit_edge, label %.lr.ph
+tailrecurse.backedge:                             ; preds = %if.then22, %if.then17
+  %subtree.tr.be.in = phi %struct.T_TREE** [ %right23, %if.then22 ], [ %left18, %if.then17 ]
+  %subtree.tr.be = load %struct.T_TREE** %subtree.tr.be.in, align 8, !dbg !109
+  tail call void @llvm.dbg.value(metadata !{%struct.T_TREE* %root.tr.lcssa}, i64 0, metadata !32), !dbg !82
+  tail call void @llvm.dbg.value(metadata !{%struct.T_TREE* %subtree.tr56}, i64 0, metadata !33), !dbg !83
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !34), !dbg !84
+  tail call void @llvm.dbg.value(metadata !{i32 (i8*, i8*)* %compare}, i64 0, metadata !35), !dbg !85
+  %tobool = icmp eq %struct.T_TREE* %subtree.tr.be, null, !dbg !86
+  br i1 %tobool, label %if.then, label %if.else13, !dbg !86
 
-.loopexit:                                        ; preds = %25, %16, %14, %tailrecurse._crit_edge, %5
-  %merge = phi %struct.T_TREE* [ %3, %5 ], [ %3, %tailrecurse._crit_edge ], [ %3, %14 ], [ %3, %16 ], [ null, %25 ]
-  ret %struct.T_TREE* %merge
+if.else25:                                        ; preds = %if.else20, %if.else, %if.then8, %if.then, %if.then2
+  %merge = phi %struct.T_TREE* [ %0, %if.then2 ], [ %0, %if.then ], [ %0, %if.then8 ], [ %0, %if.else ], [ null, %if.else20 ]
+  tail call void @llvm.dbg.value(metadata !111, i64 0, metadata !33), !dbg !112
+  ret %struct.T_TREE* %merge, !dbg !114
 }

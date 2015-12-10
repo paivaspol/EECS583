@@ -1,0 +1,18 @@
+define linkonce_odr void @_ZN7cObject7setNameEPKc(%class.cObject* nocapture %this, i8* %s) #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.cObject* %this}, i64 0, metadata !2835), !dbg !3001
+  tail call void @llvm.dbg.value(metadata !{i8* %s}, i64 0, metadata !2836), !dbg !3001
+  %namestr = getelementptr inbounds %class.cObject* %this, i64 0, i32 1, !dbg !3002
+  %0 = load i8** %namestr, align 8, !dbg !3002, !tbaa !2913
+  %isnull = icmp eq i8* %0, null, !dbg !3002
+  br i1 %isnull, label %delete.end, label %delete.notnull, !dbg !3002
+
+delete.notnull:                                   ; preds = %entry
+  tail call void @_ZdlPv(i8* %0) #9, !dbg !3002
+  br label %delete.end, !dbg !3002
+
+delete.end:                                       ; preds = %delete.notnull, %entry
+  %call = tail call i8* @_Z10opp_strdupPKc(i8* %s) #10, !dbg !3002
+  store i8* %call, i8** %namestr, align 8, !dbg !3002, !tbaa !2913
+  ret void, !dbg !3002
+}

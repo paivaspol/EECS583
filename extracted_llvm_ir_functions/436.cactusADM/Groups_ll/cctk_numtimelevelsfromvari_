@@ -1,24 +1,28 @@
-define void @cctk_numtimelevelsfromvari_(i32* nocapture %num, i32* nocapture readonly %var) #2 {
-  %1 = load i32* %var, align 4, !tbaa !6
-  %2 = icmp sgt i32 %1, -1
-  %3 = load i32* @total_variables, align 4
-  %4 = icmp sgt i32 %3, %1
-  %or.cond.i = and i1 %2, %4
-  br i1 %or.cond.i, label %5, label %CCTK_NumTimeLevelsFromVarI.exit
+define void @cctk_numtimelevelsfromvari_(i32* nocapture %num, i32* nocapture %var) #2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %num}, i64 0, metadata !253), !dbg !772
+  tail call void @llvm.dbg.value(metadata !{i32* %var}, i64 0, metadata !254), !dbg !773
+  %0 = load i32* %var, align 4, !dbg !774, !tbaa !488
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !775), !dbg !776
+  %cmp.i = icmp sgt i32 %0, -1, !dbg !777
+  %1 = load i32* @total_variables, align 4, !dbg !777, !tbaa !488
+  %cmp1.i = icmp sgt i32 %1, %0, !dbg !777
+  %or.cond.i = and i1 %cmp.i, %cmp1.i, !dbg !777
+  br i1 %or.cond.i, label %cond.true.i, label %CCTK_NumTimeLevelsFromVarI.exit, !dbg !777
 
-; <label>:5                                       ; preds = %0
-  %6 = sext i32 %1 to i64
-  %7 = load i32** @group_of_variable, align 8, !tbaa !2
-  %8 = getelementptr inbounds i32* %7, i64 %6
-  %9 = load i32* %8, align 4, !tbaa !6
-  %10 = sext i32 %9 to i64
-  %11 = load %struct.cGroupDefinition** @groups, align 8, !tbaa !2
-  %12 = getelementptr inbounds %struct.cGroupDefinition* %11, i64 %10, i32 10
-  %13 = load i32* %12, align 4, !tbaa !20
-  br label %CCTK_NumTimeLevelsFromVarI.exit
+cond.true.i:                                      ; preds = %entry
+  %idxprom.i = sext i32 %0 to i64, !dbg !777
+  %2 = load i32** @group_of_variable, align 8, !dbg !777, !tbaa !480
+  %arrayidx.i = getelementptr inbounds i32* %2, i64 %idxprom.i, !dbg !777
+  %3 = load i32* %arrayidx.i, align 4, !dbg !777, !tbaa !488
+  %idxprom2.i = sext i32 %3 to i64, !dbg !777
+  %4 = load %struct.cGroupDefinition** @groups, align 8, !dbg !777, !tbaa !480
+  %n_timelevels.i = getelementptr inbounds %struct.cGroupDefinition* %4, i64 %idxprom2.i, i32 10, !dbg !777
+  %5 = load i32* %n_timelevels.i, align 4, !dbg !777, !tbaa !488
+  br label %CCTK_NumTimeLevelsFromVarI.exit, !dbg !777
 
-CCTK_NumTimeLevelsFromVarI.exit:                  ; preds = %0, %5
-  %14 = phi i32 [ %13, %5 ], [ -1, %0 ]
-  store i32 %14, i32* %num, align 4, !tbaa !6
-  ret void
+CCTK_NumTimeLevelsFromVarI.exit:                  ; preds = %entry, %cond.true.i
+  %cond.i = phi i32 [ %5, %cond.true.i ], [ -1, %entry ], !dbg !777
+  store i32 %cond.i, i32* %num, align 4, !dbg !774, !tbaa !488
+  ret void, !dbg !778
 }

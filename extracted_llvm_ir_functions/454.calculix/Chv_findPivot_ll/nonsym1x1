@@ -3,46 +3,62 @@ entry:
   %value = alloca double, align 8
   %imag = alloca double, align 8
   %real = alloca double, align 8
-  %type = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4
-  %0 = load i32* %type, align 4, !tbaa !3
+  call void @llvm.dbg.value(metadata !{%struct._Chv* %chv}, i64 0, metadata !80), !dbg !422
+  call void @llvm.dbg.value(metadata !{i32 %irow}, i64 0, metadata !81), !dbg !423
+  call void @llvm.dbg.value(metadata !{i32 %jcol}, i64 0, metadata !82), !dbg !424
+  call void @llvm.dbg.value(metadata !{double %tau}, i64 0, metadata !83), !dbg !425
+  call void @llvm.dbg.value(metadata !{double* %rowmaxes}, i64 0, metadata !84), !dbg !426
+  call void @llvm.dbg.value(metadata !{double* %colmaxes}, i64 0, metadata !85), !dbg !427
+  %type = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4, !dbg !428
+  %0 = load i32* %type, align 4, !dbg !428, !tbaa !177
   switch i32 %0, label %if.end5 [
     i32 1, label %if.then
     i32 2, label %if.then3
-  ]
+  ], !dbg !428
 
 if.then:                                          ; preds = %entry
-  call void @Chv_realEntry(%struct._Chv* %chv, i32 %irow, i32 %jcol, double* %value) #6
-  %1 = load double* %value, align 8, !tbaa !4
-  %call = call double @fabs(double %1) #8
-  br label %if.end5
+  call void @llvm.dbg.declare(metadata !{double* %value}, metadata !89), !dbg !429
+  call void @Chv_realEntry(%struct._Chv* %chv, i32 %irow, i32 %jcol, double* %value) #7, !dbg !430
+  call void @llvm.dbg.value(metadata !{double* %value}, i64 0, metadata !89), !dbg !431
+  %1 = load double* %value, align 8, !dbg !431, !tbaa !243
+  %call = call double @fabs(double %1) #9, !dbg !431
+  call void @llvm.dbg.value(metadata !{double %call}, i64 0, metadata !87), !dbg !431
+  br label %if.end5, !dbg !432
 
 if.then3:                                         ; preds = %entry
-  call void @Chv_complexEntry(%struct._Chv* %chv, i32 %irow, i32 %jcol, double* %real, double* %imag) #6
-  %2 = load double* %real, align 8, !tbaa !4
-  %3 = load double* %imag, align 8, !tbaa !4
-  %call4 = call double @Zabs(double %2, double %3) #6
-  br label %if.end5
+  call void @llvm.dbg.declare(metadata !{double* %imag}, metadata !91), !dbg !433
+  call void @llvm.dbg.declare(metadata !{double* %real}, metadata !93), !dbg !433
+  call void @Chv_complexEntry(%struct._Chv* %chv, i32 %irow, i32 %jcol, double* %real, double* %imag) #7, !dbg !434
+  call void @llvm.dbg.value(metadata !{double* %real}, i64 0, metadata !93), !dbg !435
+  %2 = load double* %real, align 8, !dbg !435, !tbaa !243
+  call void @llvm.dbg.value(metadata !{double* %imag}, i64 0, metadata !91), !dbg !435
+  %3 = load double* %imag, align 8, !dbg !435, !tbaa !243
+  %call4 = call double @Zabs(double %2, double %3) #7, !dbg !435
+  call void @llvm.dbg.value(metadata !{double %call4}, i64 0, metadata !87), !dbg !435
+  br label %if.end5, !dbg !436
 
 if.end5:                                          ; preds = %entry, %if.then3, %if.then
   %magn.0 = phi double [ %call, %if.then ], [ %call4, %if.then3 ], [ undef, %entry ]
-  %mul = fmul double %magn.0, %tau
-  %idxprom = sext i32 %irow to i64
-  %arrayidx = getelementptr inbounds double* %rowmaxes, i64 %idxprom
-  %4 = load double* %arrayidx, align 8, !tbaa !4
-  %cmp6 = fcmp ugt double %4, %mul
-  br i1 %cmp6, label %if.else11, label %land.lhs.true
+  %mul = fmul double %magn.0, %tau, !dbg !437
+  call void @llvm.dbg.value(metadata !{double %mul}, i64 0, metadata !86), !dbg !437
+  %idxprom = sext i32 %irow to i64, !dbg !438
+  %arrayidx = getelementptr inbounds double* %rowmaxes, i64 %idxprom, !dbg !438
+  %4 = load double* %arrayidx, align 8, !dbg !438, !tbaa !243
+  %cmp6 = fcmp ugt double %4, %mul, !dbg !438
+  br i1 %cmp6, label %if.else11, label %land.lhs.true, !dbg !438
 
 land.lhs.true:                                    ; preds = %if.end5
-  %idxprom7 = sext i32 %jcol to i64
-  %arrayidx8 = getelementptr inbounds double* %colmaxes, i64 %idxprom7
-  %5 = load double* %arrayidx8, align 8, !tbaa !4
-  %cmp9 = fcmp ugt double %5, %mul
-  br i1 %cmp9, label %if.else11, label %if.end12
+  %idxprom7 = sext i32 %jcol to i64, !dbg !438
+  %arrayidx8 = getelementptr inbounds double* %colmaxes, i64 %idxprom7, !dbg !438
+  %5 = load double* %arrayidx8, align 8, !dbg !438, !tbaa !243
+  %cmp9 = fcmp ugt double %5, %mul, !dbg !438
+  br i1 %cmp9, label %if.else11, label %if.end12, !dbg !438
 
 if.else11:                                        ; preds = %land.lhs.true, %if.end5
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !88), !dbg !439
   br label %if.end12
 
 if.end12:                                         ; preds = %land.lhs.true, %if.else11
   %rc.0 = phi i32 [ 0, %if.else11 ], [ 1, %land.lhs.true ]
-  ret i32 %rc.0
+  ret i32 %rc.0, !dbg !441
 }

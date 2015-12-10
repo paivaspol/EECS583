@@ -4,78 +4,91 @@ entry:
   %df = alloca [6 x i16], align 2
   %dg = alloca [6 x i16], align 2
   %dh = alloca [6 x i16], align 2
-  %0 = bitcast [6 x i16]* %d to i8*
-  %1 = bitcast %struct.realvaluetype* %rr to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 12, i32 2, i1 false)
-  %arraydecay = getelementptr inbounds [6 x i16]* %d, i64 0, i64 0
-  %arrayidx.i = getelementptr inbounds [6 x i16]* %d, i64 0, i64 5
-  %2 = load i16* %arrayidx.i, align 2, !tbaa !0
-  %and.i = and i16 %2, 32767
-  %cmp.i = icmp eq i16 %and.i, 32767
-  br i1 %cmp.i, label %for.body.i, label %if.end
+  call void @llvm.dbg.value(metadata !{i64* %low}, i64 0, metadata !360), !dbg !2258
+  call void @llvm.dbg.value(metadata !{i64* %high}, i64 0, metadata !361), !dbg !2258
+  call void @llvm.dbg.declare(metadata !{%struct.realvaluetype* %rr}, metadata !362), !dbg !2259
+  call void @llvm.dbg.declare(metadata !{[6 x i16]* %d}, metadata !363), !dbg !2260
+  call void @llvm.dbg.declare(metadata !{[6 x i16]* %df}, metadata !364), !dbg !2260
+  call void @llvm.dbg.declare(metadata !{[6 x i16]* %dg}, metadata !365), !dbg !2260
+  call void @llvm.dbg.declare(metadata !{[6 x i16]* %dh}, metadata !366), !dbg !2260
+  %0 = bitcast [6 x i16]* %d to i8*, !dbg !2261
+  %1 = bitcast %struct.realvaluetype* %rr to i8*, !dbg !2261
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 12, i32 2, i1 false), !dbg !2261
+  %arraydecay = getelementptr inbounds [6 x i16]* %d, i64 0, i64 0, !dbg !2262
+  tail call void @llvm.dbg.value(metadata !{i16* %arraydecay}, i64 0, metadata !2263), !dbg !2264
+  %arrayidx.i = getelementptr inbounds [6 x i16]* %d, i64 0, i64 5, !dbg !2265
+  %2 = load i16* %arrayidx.i, align 2, !dbg !2265, !tbaa !1057
+  %and.i = and i16 %2, 32767, !dbg !2265
+  %cmp.i = icmp eq i16 %and.i, 32767, !dbg !2265
+  br i1 %cmp.i, label %for.body.i, label %if.end, !dbg !2265
 
 for.body.i:                                       ; preds = %entry, %for.inc.i
   %i.012.i = phi i32 [ %inc.i, %for.inc.i ], [ 0, %entry ]
   %x.addr.011.i = phi i16* [ %incdec.ptr.i, %for.inc.i ], [ %arraydecay, %entry ]
-  %3 = load i16* %x.addr.011.i, align 2, !tbaa !0
-  %cmp5.i = icmp eq i16 %3, 0
-  br i1 %cmp5.i, label %for.inc.i, label %if.then
+  %3 = load i16* %x.addr.011.i, align 2, !dbg !2266, !tbaa !1057
+  %cmp5.i = icmp eq i16 %3, 0, !dbg !2266
+  br i1 %cmp5.i, label %for.inc.i, label %if.then, !dbg !2266
 
 for.inc.i:                                        ; preds = %for.body.i
-  %incdec.ptr.i = getelementptr inbounds i16* %x.addr.011.i, i64 1
-  %inc.i = add nsw i32 %i.012.i, 1
-  %cmp2.i = icmp slt i32 %inc.i, 5
-  br i1 %cmp2.i, label %for.body.i, label %if.end
+  %incdec.ptr.i = getelementptr inbounds i16* %x.addr.011.i, i64 1, !dbg !2266
+  %inc.i = add nsw i32 %i.012.i, 1, !dbg !2267
+  tail call void @llvm.dbg.value(metadata !{i32 %inc.i}, i64 0, metadata !2268), !dbg !2267
+  %cmp2.i = icmp slt i32 %inc.i, 5, !dbg !2267
+  br i1 %cmp2.i, label %for.body.i, label %if.end, !dbg !2267
 
 if.then:                                          ; preds = %for.body.i
-  call void (i8*, ...)* @warning(i8* getelementptr inbounds ([27 x i8]* @.str, i64 0, i64 0)) #7
-  store i64 -1, i64* %low, align 8, !tbaa !4
-  store i64 -1, i64* %high, align 8, !tbaa !4
-  br label %if.end23
+  call void (i8*, ...)* @warning(i8* getelementptr inbounds ([27 x i8]* @.str, i64 0, i64 0)) #8, !dbg !2269
+  store i64 -1, i64* %low, align 8, !dbg !2271, !tbaa !1581
+  store i64 -1, i64* %high, align 8, !dbg !2272, !tbaa !1581
+  br label %if.end23, !dbg !2273
 
 if.end:                                           ; preds = %for.inc.i, %entry
-  %tobool3 = icmp sgt i16 %2, -1
-  br i1 %tobool3, label %if.end6, label %if.then4
+  call void @llvm.dbg.value(metadata !250, i64 0, metadata !367), !dbg !2274
+  tail call void @llvm.dbg.value(metadata !{i16* %arraydecay}, i64 0, metadata !2275), !dbg !2277
+  %tobool3 = icmp sgt i16 %2, -1, !dbg !2276
+  br i1 %tobool3, label %if.end6, label %if.then4, !dbg !2276
 
 if.then4:                                         ; preds = %if.end
-  %xor.i = xor i16 %2, -32768
-  store i16 %xor.i, i16* %arrayidx.i, align 2, !tbaa !0
-  %arraydecay7.c = getelementptr inbounds [6 x i16]* %df, i64 0, i64 0
-  call fastcc void @eldexp(i16* getelementptr inbounds ([6 x i16]* @eone, i64 0, i64 0), i32 64, i16* %arraydecay7.c) #6
-  %arraydecay10.c = getelementptr inbounds [6 x i16]* %dg, i64 0, i64 0
-  call fastcc void @ediv(i16* %arraydecay7.c, i16* %arraydecay, i16* %arraydecay10.c) #6
-  %arraydecay12.c = getelementptr inbounds [6 x i16]* %dh, i64 0, i64 0
-  call fastcc void @euifrac(i16* %arraydecay10.c, i64* %high, i16* %arraydecay12.c) #6
-  call fastcc void @emul(i16* %arraydecay7.c, i16* %arraydecay12.c, i16* %arraydecay10.c) #6
-  call fastcc void @euifrac(i16* %arraydecay10.c, i64* %low, i16* %arraydecay12.c) #6
-  %4 = load i64* %high, align 8, !tbaa !4
-  %neg = xor i64 %4, -1
-  store i64 %neg, i64* %high, align 8, !tbaa !4
-  %5 = load i64* %low, align 8, !tbaa !4
-  %tobool20 = icmp eq i64 %5, 0
-  br i1 %tobool20, label %if.else, label %if.then21
+  tail call void @llvm.dbg.value(metadata !{i16* %arraydecay}, i64 0, metadata !2278), !dbg !2281
+  %xor.i = xor i16 %2, -32768, !dbg !2282
+  store i16 %xor.i, i16* %arrayidx.i, align 2, !dbg !2282, !tbaa !1057
+  call void @llvm.dbg.value(metadata !1858, i64 0, metadata !367), !dbg !2283
+  %arraydecay7.c = getelementptr inbounds [6 x i16]* %df, i64 0, i64 0, !dbg !2284
+  call fastcc void @eldexp(i16* getelementptr inbounds ([6 x i16]* @eone, i64 0, i64 0), i32 64, i16* %arraydecay7.c) #7, !dbg !2284
+  %arraydecay10.c = getelementptr inbounds [6 x i16]* %dg, i64 0, i64 0, !dbg !2285
+  call fastcc void @ediv(i16* %arraydecay7.c, i16* %arraydecay, i16* %arraydecay10.c) #7, !dbg !2285
+  %arraydecay12.c = getelementptr inbounds [6 x i16]* %dh, i64 0, i64 0, !dbg !2286
+  call fastcc void @euifrac(i16* %arraydecay10.c, i64* %high, i16* %arraydecay12.c) #7, !dbg !2286
+  call fastcc void @emul(i16* %arraydecay7.c, i16* %arraydecay12.c, i16* %arraydecay10.c) #7, !dbg !2287
+  call fastcc void @euifrac(i16* %arraydecay10.c, i64* %low, i16* %arraydecay12.c) #7, !dbg !2288
+  %4 = load i64* %high, align 8, !dbg !2289, !tbaa !1581
+  %neg = xor i64 %4, -1, !dbg !2289
+  store i64 %neg, i64* %high, align 8, !dbg !2289, !tbaa !1581
+  %5 = load i64* %low, align 8, !dbg !2291, !tbaa !1581
+  %tobool20 = icmp eq i64 %5, 0, !dbg !2291
+  br i1 %tobool20, label %if.else, label %if.then21, !dbg !2291
 
 if.end6:                                          ; preds = %if.end
-  %arraydecay7 = getelementptr inbounds [6 x i16]* %df, i64 0, i64 0
-  call fastcc void @eldexp(i16* getelementptr inbounds ([6 x i16]* @eone, i64 0, i64 0), i32 64, i16* %arraydecay7) #6
-  %arraydecay10 = getelementptr inbounds [6 x i16]* %dg, i64 0, i64 0
-  call fastcc void @ediv(i16* %arraydecay7, i16* %arraydecay, i16* %arraydecay10) #6
-  %arraydecay12 = getelementptr inbounds [6 x i16]* %dh, i64 0, i64 0
-  call fastcc void @euifrac(i16* %arraydecay10, i64* %high, i16* %arraydecay12) #6
-  call fastcc void @emul(i16* %arraydecay7, i16* %arraydecay12, i16* %arraydecay10) #6
-  call fastcc void @euifrac(i16* %arraydecay10, i64* %low, i16* %arraydecay12) #6
-  br label %if.end23
+  %arraydecay7 = getelementptr inbounds [6 x i16]* %df, i64 0, i64 0, !dbg !2284
+  call fastcc void @eldexp(i16* getelementptr inbounds ([6 x i16]* @eone, i64 0, i64 0), i32 64, i16* %arraydecay7) #7, !dbg !2284
+  %arraydecay10 = getelementptr inbounds [6 x i16]* %dg, i64 0, i64 0, !dbg !2285
+  call fastcc void @ediv(i16* %arraydecay7, i16* %arraydecay, i16* %arraydecay10) #7, !dbg !2285
+  %arraydecay12 = getelementptr inbounds [6 x i16]* %dh, i64 0, i64 0, !dbg !2286
+  call fastcc void @euifrac(i16* %arraydecay10, i64* %high, i16* %arraydecay12) #7, !dbg !2286
+  call fastcc void @emul(i16* %arraydecay7, i16* %arraydecay12, i16* %arraydecay10) #7, !dbg !2287
+  call fastcc void @euifrac(i16* %arraydecay10, i64* %low, i16* %arraydecay12) #7, !dbg !2288
+  br label %if.end23, !dbg !2292
 
 if.then21:                                        ; preds = %if.then4
-  %sub = sub nsw i64 0, %5
-  store i64 %sub, i64* %low, align 8, !tbaa !4
-  br label %if.end23
+  %sub = sub nsw i64 0, %5, !dbg !2293
+  store i64 %sub, i64* %low, align 8, !dbg !2293, !tbaa !1581
+  br label %if.end23, !dbg !2293
 
 if.else:                                          ; preds = %if.then4
-  %add = sub i64 0, %4
-  store i64 %add, i64* %high, align 8, !tbaa !4
+  %add = sub i64 0, %4, !dbg !2294
+  store i64 %add, i64* %high, align 8, !dbg !2294, !tbaa !1581
   br label %if.end23
 
 if.end23:                                         ; preds = %if.end6, %if.then21, %if.else, %if.then
-  ret void
+  ret void, !dbg !2295
 }

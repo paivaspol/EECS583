@@ -1,0 +1,47 @@
+define void @_ZN10xalanc_1_818XPathFunctionTable12DestroyTableEv(%"class.xalanc_1_8::XPathFunctionTable"* %this) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XPathFunctionTable"* %this}, i64 0, metadata !3166), !dbg !4155
+  %arraydecay = getelementptr inbounds %"class.xalanc_1_8::XPathFunctionTable"* %this, i64 0, i32 0, i64 0, !dbg !4156
+  %add.ptr = getelementptr inbounds %"class.xalanc_1_8::XPathFunctionTable"* %this, i64 0, i32 0, i64 36, !dbg !4156
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::Function"** %arraydecay}, i64 0, metadata !4158), !dbg !4159
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::Function"** %add.ptr}, i64 0, metadata !4160), !dbg !4159
+  br label %for.body.i
+
+for.body.i:                                       ; preds = %_ZNK10xalanc_1_813DeleteFunctorINS_8FunctionEEclEPKS1_.exit.i, %entry
+  %__first.addr.04.i = phi %"class.xalanc_1_8::Function"** [ %incdec.ptr.i, %_ZNK10xalanc_1_813DeleteFunctorINS_8FunctionEEclEPKS1_.exit.i ], [ %arraydecay, %entry ]
+  %0 = load %"class.xalanc_1_8::Function"** %__first.addr.04.i, align 8, !dbg !4161, !tbaa !3759
+  tail call void @llvm.dbg.value(metadata !4164, i64 0, metadata !4165), !dbg !4166
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::Function"* %0}, i64 0, metadata !4167), !dbg !4166
+  %isnull.i.i = icmp eq %"class.xalanc_1_8::Function"* %0, null, !dbg !4168
+  br i1 %isnull.i.i, label %_ZNK10xalanc_1_813DeleteFunctorINS_8FunctionEEclEPKS1_.exit.i, label %delete.notnull.i.i, !dbg !4168
+
+delete.notnull.i.i:                               ; preds = %for.body.i
+  %1 = bitcast %"class.xalanc_1_8::Function"* %0 to void (%"class.xalanc_1_8::Function"*)***, !dbg !4168
+  %vtable.i.i = load void (%"class.xalanc_1_8::Function"*)*** %1, align 8, !dbg !4168, !tbaa !3782
+  %vfn.i.i = getelementptr inbounds void (%"class.xalanc_1_8::Function"*)** %vtable.i.i, i64 1, !dbg !4168
+  %2 = load void (%"class.xalanc_1_8::Function"*)** %vfn.i.i, align 8, !dbg !4168
+  invoke void %2(%"class.xalanc_1_8::Function"* %0) #7
+          to label %_ZNK10xalanc_1_813DeleteFunctorINS_8FunctionEEclEPKS1_.exit.i unwind label %lpad
+
+_ZNK10xalanc_1_813DeleteFunctorINS_8FunctionEEclEPKS1_.exit.i: ; preds = %delete.notnull.i.i, %for.body.i
+  %incdec.ptr.i = getelementptr inbounds %"class.xalanc_1_8::Function"** %__first.addr.04.i, i64 1, !dbg !4170
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::Function"** %incdec.ptr.i}, i64 0, metadata !4158), !dbg !4170
+  %cmp.i = icmp eq %"class.xalanc_1_8::Function"** %incdec.ptr.i, %add.ptr, !dbg !4170
+  br i1 %cmp.i, label %invoke.cont, label %for.body.i, !dbg !4170
+
+invoke.cont:                                      ; preds = %_ZNK10xalanc_1_813DeleteFunctorINS_8FunctionEEclEPKS1_.exit.i
+  %3 = bitcast %"class.xalanc_1_8::XPathFunctionTable"* %this to i8*, !dbg !4171
+  tail call void @llvm.memset.p0i8.i64(i8* %3, i8 0, i64 288, i32 8, i1 false), !dbg !4171
+  br label %try.cont, !dbg !4172
+
+lpad:                                             ; preds = %delete.notnull.i.i
+  %4 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !4156
+  %5 = extractvalue { i8*, i32 } %4, 0, !dbg !4156
+  %6 = tail call i8* @__cxa_begin_catch(i8* %5) #2, !dbg !4172
+  tail call void @__cxa_end_catch(), !dbg !4173
+  br label %try.cont, !dbg !4173
+
+try.cont:                                         ; preds = %lpad, %invoke.cont
+  ret void, !dbg !4175
+}

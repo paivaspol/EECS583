@@ -1,0 +1,35 @@
+define linkonce_odr void @_ZN9flexarrayI6pointtE8doublingEb(%class.flexarray.1* nocapture %this, i1 zeroext %flcopy) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.flexarray.1* %this}, i64 0, metadata !478), !dbg !851
+  tail call void @llvm.dbg.value(metadata !{i1 %flcopy}, i64 0, metadata !479), !dbg !851
+  %maxelemqu = getelementptr inbounds %class.flexarray.1* %this, i64 0, i32 2, !dbg !852
+  %0 = load i32* %maxelemqu, align 4, !dbg !852, !tbaa !522
+  %shl = shl i32 %0, 1, !dbg !852
+  tail call void @llvm.dbg.value(metadata !{i32 %shl}, i64 0, metadata !481), !dbg !852
+  %mul = shl i32 %0, 4, !dbg !853
+  tail call void @llvm.dbg.value(metadata !{i32 %mul}, i64 0, metadata !854) #2, !dbg !855
+  tail call void @llvm.dbg.value(metadata !571, i64 0, metadata !856) #2, !dbg !855
+  %conv.i = sext i32 %mul to i64, !dbg !857
+  %call.i = tail call noalias i8* @malloc(i64 %conv.i) #6, !dbg !857
+  %1 = bitcast i8* %call.i to %struct.pointt*, !dbg !853
+  tail call void @llvm.dbg.value(metadata !{%struct.pointt* %1}, i64 0, metadata !480), !dbg !853
+  %ep = getelementptr inbounds %class.flexarray.1* %this, i64 0, i32 0, !dbg !858
+  %2 = load %struct.pointt** %ep, align 8, !dbg !858, !tbaa !525
+  br i1 %flcopy, label %if.then, label %if.end, !dbg !859
+
+if.then:                                          ; preds = %entry
+  %3 = bitcast %struct.pointt* %2 to i8*, !dbg !858
+  %conv4 = sext i32 %0 to i64, !dbg !858
+  %mul5 = shl nsw i64 %conv4, 3, !dbg !858
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call.i, i8* %3, i64 %mul5, i32 4, i1 false), !dbg !858
+  br label %if.end, !dbg !858
+
+if.end:                                           ; preds = %entry, %if.then
+  %ep6 = getelementptr inbounds %class.flexarray.1* %this, i64 0, i32 0, !dbg !860
+  %4 = bitcast %struct.pointt* %2 to i8*, !dbg !860
+  tail call void @llvm.dbg.value(metadata !{i8* %4}, i64 0, metadata !861) #2, !dbg !862
+  tail call void @free(i8* %4) #6, !dbg !863
+  store %struct.pointt* %1, %struct.pointt** %ep6, align 8, !dbg !864, !tbaa !525
+  store i32 %shl, i32* %maxelemqu, align 4, !dbg !865, !tbaa !522
+  ret void, !dbg !866
+}

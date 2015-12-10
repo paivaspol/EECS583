@@ -1,62 +1,65 @@
 define void @Free3DArray(i8*** %p, i32 %dim1, i32 %dim2) #0 {
 entry:
-  %cmp = icmp eq i8*** %p, null
-  br i1 %cmp, label %if.end23, label %for.cond.preheader
+  tail call void @llvm.dbg.value(metadata !{i8*** %p}, i64 0, metadata !91), !dbg !270
+  tail call void @llvm.dbg.value(metadata !{i32 %dim1}, i64 0, metadata !92), !dbg !270
+  tail call void @llvm.dbg.value(metadata !{i32 %dim2}, i64 0, metadata !93), !dbg !270
+  %cmp = icmp eq i8*** %p, null, !dbg !271
+  br i1 %cmp, label %if.end23, label %for.cond.preheader, !dbg !271
 
 for.cond.preheader:                               ; preds = %entry
-  %cmp139 = icmp sgt i32 %dim1, 0
-  br i1 %cmp139, label %for.body.lr.ph, label %for.end22
+  %cmp139 = icmp sgt i32 %dim1, 0, !dbg !272
+  br i1 %cmp139, label %for.body.lr.ph, label %for.end22, !dbg !272
 
 for.body.lr.ph:                                   ; preds = %for.cond.preheader
-  %cmp537 = icmp sgt i32 %dim2, 0
-  br label %for.body
+  %cmp537 = icmp sgt i32 %dim2, 0, !dbg !275
+  br label %for.body, !dbg !272
 
 for.body:                                         ; preds = %for.inc20, %for.body.lr.ph
   %indvars.iv41 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next42, %for.inc20 ]
-  %arrayidx = getelementptr inbounds i8*** %p, i64 %indvars.iv41
-  %0 = load i8*** %arrayidx, align 8, !tbaa !0
-  %cmp2 = icmp eq i8** %0, null
-  br i1 %cmp2, label %for.inc20, label %for.cond4.preheader
+  %arrayidx = getelementptr inbounds i8*** %p, i64 %indvars.iv41, !dbg !278
+  %0 = load i8*** %arrayidx, align 8, !dbg !278, !tbaa !220
+  %cmp2 = icmp eq i8** %0, null, !dbg !278
+  br i1 %cmp2, label %for.inc20, label %for.cond4.preheader, !dbg !278
 
 for.cond4.preheader:                              ; preds = %for.body
-  br i1 %cmp537, label %for.body6, label %for.end
+  br i1 %cmp537, label %for.body6, label %for.end, !dbg !275
 
 for.body6:                                        ; preds = %for.inc, %for.cond4.preheader
-  %1 = phi i8** [ %0, %for.cond4.preheader ], [ %.pre, %for.inc ]
+  %1 = phi i8** [ %0, %for.cond4.preheader ], [ %.pre, %for.inc ], !dbg !279
   %indvars.iv = phi i64 [ 0, %for.cond4.preheader ], [ %indvars.iv.next, %for.inc ]
-  %arrayidx10 = getelementptr inbounds i8** %1, i64 %indvars.iv
-  %2 = load i8** %arrayidx10, align 8, !tbaa !0
-  %cmp11 = icmp eq i8* %2, null
-  br i1 %cmp11, label %for.inc, label %if.then12
+  %arrayidx10 = getelementptr inbounds i8** %1, i64 %indvars.iv, !dbg !279
+  %2 = load i8** %arrayidx10, align 8, !dbg !279, !tbaa !220
+  %cmp11 = icmp eq i8* %2, null, !dbg !279
+  br i1 %cmp11, label %for.inc, label %if.then12, !dbg !279
 
 if.then12:                                        ; preds = %for.body6
-  tail call void @free(i8* %2) #8
-  br label %for.inc
+  tail call void @free(i8* %2) #9, !dbg !279
+  br label %for.inc, !dbg !279
 
 for.inc:                                          ; preds = %for.body6, %if.then12
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %dim2
-  %.pre = load i8*** %arrayidx, align 8, !tbaa !0
-  br i1 %exitcond, label %for.end, label %for.body6
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !275
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !275
+  %exitcond = icmp eq i32 %lftr.wideiv, %dim2, !dbg !275
+  %.pre = load i8*** %arrayidx, align 8, !dbg !280, !tbaa !220
+  br i1 %exitcond, label %for.end, label %for.body6, !dbg !275
 
 for.end:                                          ; preds = %for.inc, %for.cond4.preheader
   %3 = phi i8** [ %0, %for.cond4.preheader ], [ %.pre, %for.inc ]
-  %4 = bitcast i8** %3 to i8*
-  tail call void @free(i8* %4) #8
-  br label %for.inc20
+  %4 = bitcast i8** %3 to i8*, !dbg !280
+  tail call void @free(i8* %4) #9, !dbg !280
+  br label %for.inc20, !dbg !281
 
 for.inc20:                                        ; preds = %for.body, %for.end
-  %indvars.iv.next42 = add i64 %indvars.iv41, 1
-  %lftr.wideiv43 = trunc i64 %indvars.iv.next42 to i32
-  %exitcond44 = icmp eq i32 %lftr.wideiv43, %dim1
-  br i1 %exitcond44, label %for.end22, label %for.body
+  %indvars.iv.next42 = add i64 %indvars.iv41, 1, !dbg !272
+  %lftr.wideiv43 = trunc i64 %indvars.iv.next42 to i32, !dbg !272
+  %exitcond44 = icmp eq i32 %lftr.wideiv43, %dim1, !dbg !272
+  br i1 %exitcond44, label %for.end22, label %for.body, !dbg !272
 
 for.end22:                                        ; preds = %for.inc20, %for.cond.preheader
-  %5 = bitcast i8*** %p to i8*
-  tail call void @free(i8* %5) #8
-  br label %if.end23
+  %5 = bitcast i8*** %p to i8*, !dbg !282
+  tail call void @free(i8* %5) #9, !dbg !282
+  br label %if.end23, !dbg !283
 
 if.end23:                                         ; preds = %entry, %for.end22
-  ret void
+  ret void, !dbg !284
 }

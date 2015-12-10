@@ -1,16 +1,15 @@
 define internal noalias i8* @CCTKi_TimerGetrUsageCreate(i32 %timernum) #1 {
-  %1 = tail call i8* @malloc(i64 32) #5
-  %2 = icmp eq i8* %1, null
-  br i1 %2, label %7, label %3
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %timernum}, i64 0, metadata !190), !dbg !282
+  tail call void @llvm.dbg.value(metadata !{i32 %timernum}, i64 0, metadata !190), !dbg !283
+  %call = tail call noalias i8* @malloc(i64 32) #6, !dbg !284
+  %tobool = icmp eq i8* %call, null, !dbg !285
+  br i1 %tobool, label %if.end, label %if.then, !dbg !285
 
-; <label>:3                                       ; preds = %0
-  %4 = bitcast i8* %1 to i64*
-  store i64 0, i64* %4, align 8, !tbaa !15
-  %5 = getelementptr inbounds i8* %1, i64 8
-  %6 = bitcast i8* %5 to i32*
-  store i32 0, i32* %6, align 4, !tbaa !19
-  br label %7
+if.then:                                          ; preds = %entry
+  call void @llvm.memset.p0i8.i64(i8* %call, i8 0, i64 16, i32 8, i1 false), !dbg !286
+  br label %if.end, !dbg !288
 
-; <label>:7                                       ; preds = %0, %3
-  ret i8* %1
+if.end:                                           ; preds = %entry, %if.then
+  ret i8* %call, !dbg !289
 }

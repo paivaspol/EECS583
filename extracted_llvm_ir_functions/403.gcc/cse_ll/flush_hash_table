@@ -1,46 +1,47 @@
 define internal fastcc void @flush_hash_table() #0 {
 entry:
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata !340, i64 0, metadata !1627), !dbg !2191
+  br label %for.body, !dbg !2191
 
 for.body:                                         ; preds = %for.inc7, %entry
   %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc7 ]
-  %arrayidx = getelementptr inbounds [32 x %struct.table_elt*]* @table, i64 0, i64 %indvars.iv
-  %p.016 = load %struct.table_elt** %arrayidx, align 8
-  %tobool17 = icmp eq %struct.table_elt* %p.016, null
-  br i1 %tobool17, label %for.inc7, label %for.body2
+  %arrayidx = getelementptr inbounds [32 x %struct.table_elt*]* @table, i64 0, i64 %indvars.iv, !dbg !2193
+  %p.016 = load %struct.table_elt** %arrayidx, align 8, !dbg !2193
+  %tobool17 = icmp eq %struct.table_elt* %p.016, null, !dbg !2193
+  br i1 %tobool17, label %for.inc7, label %for.body2, !dbg !2193
 
 for.body2:                                        ; preds = %for.body, %for.cond1.backedge
   %p.018 = phi %struct.table_elt* [ %p.0, %for.cond1.backedge ], [ %p.016, %for.body ]
-  %exp = getelementptr inbounds %struct.table_elt* %p.018, i64 0, i32 0
-  %0 = load %struct.rtx_def** %exp, align 8, !tbaa !0
-  %1 = bitcast %struct.rtx_def* %0 to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp3 = icmp eq i32 %bf.clear, 61
-  br i1 %cmp3, label %if.then, label %if.else
+  %exp = getelementptr inbounds %struct.table_elt* %p.018, i64 0, i32 0, !dbg !2195
+  %0 = load %struct.rtx_def** %exp, align 8, !dbg !2195, !tbaa !1677
+  %1 = bitcast %struct.rtx_def* %0 to i32*, !dbg !2195
+  %bf.load = load i32* %1, align 8, !dbg !2195
+  %bf.clear = and i32 %bf.load, 65535, !dbg !2195
+  %cmp3 = icmp eq i32 %bf.clear, 61, !dbg !2195
+  br i1 %cmp3, label %if.then, label %if.else, !dbg !2195
 
 if.then:                                          ; preds = %for.body2
-  %mode = getelementptr inbounds %struct.table_elt* %p.018, i64 0, i32 10
-  %2 = load i32* %mode, align 4, !tbaa !9
-  tail call fastcc void @invalidate(%struct.rtx_def* %0, i32 %2) #7
-  br label %for.cond1.backedge
+  %mode = getelementptr inbounds %struct.table_elt* %p.018, i64 0, i32 10, !dbg !2197
+  %2 = load i32* %mode, align 4, !dbg !2197, !tbaa !2198
+  tail call fastcc void @invalidate(%struct.rtx_def* %0, i32 %2) #8, !dbg !2197
+  br label %for.cond1.backedge, !dbg !2197
 
 for.cond1.backedge:                               ; preds = %if.then, %if.else
-  %p.0 = load %struct.table_elt** %arrayidx, align 8
-  %tobool = icmp eq %struct.table_elt* %p.0, null
-  br i1 %tobool, label %for.inc7, label %for.body2
+  %p.0 = load %struct.table_elt** %arrayidx, align 8, !dbg !2193
+  %tobool = icmp eq %struct.table_elt* %p.0, null, !dbg !2193
+  br i1 %tobool, label %for.inc7, label %for.body2, !dbg !2193
 
 if.else:                                          ; preds = %for.body2
-  %3 = trunc i64 %indvars.iv to i32
-  tail call fastcc void @remove_from_table(%struct.table_elt* %p.018, i32 %3) #7
+  %3 = trunc i64 %indvars.iv to i32, !dbg !2199
+  tail call fastcc void @remove_from_table(%struct.table_elt* %p.018, i32 %3) #8, !dbg !2199
   br label %for.cond1.backedge
 
 for.inc7:                                         ; preds = %for.cond1.backedge, %for.body
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 32
-  br i1 %exitcond, label %for.end8, label %for.body
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2191
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !2191
+  %exitcond = icmp eq i32 %lftr.wideiv, 32, !dbg !2191
+  br i1 %exitcond, label %for.end8, label %for.body, !dbg !2191
 
 for.end8:                                         ; preds = %for.inc7
-  ret void
+  ret void, !dbg !2200
 }

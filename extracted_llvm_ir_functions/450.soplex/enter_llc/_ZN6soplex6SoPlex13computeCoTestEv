@@ -1,0 +1,60 @@
+define void @_ZN6soplex6SoPlex13computeCoTestEv(%"class.soplex::SoPlex"* nocapture %this) #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SoPlex"* %this}, i64 0, metadata !6850), !dbg !7678
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SoPlex"* %this}, i64 0, metadata !7679), !dbg !7681
+  %thecovectors.i = getelementptr inbounds %"class.soplex::SoPlex"* %this, i64 0, i32 23, !dbg !7682
+  %0 = load %"class.soplex::SVSet"** %thecovectors.i, align 8, !dbg !7682, !tbaa !7430
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SVSet"* %0}, i64 0, metadata !7684), !dbg !7685
+  %thenum.i.i.i = getelementptr inbounds %"class.soplex::SVSet"* %0, i64 0, i32 1, i32 4, !dbg !7686
+  %1 = load i32* %thenum.i.i.i, align 4, !dbg !7686, !tbaa !7534
+  %cmp19 = icmp sgt i32 %1, 0, !dbg !7680
+  br i1 %cmp19, label %for.body.lr.ph, label %for.end, !dbg !7680
+
+for.body.lr.ph:                                   ; preds = %entry
+  %costat.i = getelementptr inbounds %"class.soplex::SoPlex"* %this, i64 0, i32 1, i32 18, i32 3, !dbg !7688
+  %therep.i.i = getelementptr inbounds %"class.soplex::SoPlex"* %this, i64 0, i32 4, !dbg !7691
+  %val.i16 = getelementptr inbounds %"class.soplex::SoPlex"* %this, i64 0, i32 48, i32 0, i32 1, !dbg !7694
+  %2 = sext i32 %1 to i64
+  %.pre = load %"class.soplex::DataArray.2"** %costat.i, align 8, !dbg !7688, !tbaa !7430
+  %data.i.i.phi.trans.insert = getelementptr inbounds %"class.soplex::DataArray.2"* %.pre, i64 0, i32 2
+  %.pre21 = load i32** %data.i.i.phi.trans.insert, align 8, !dbg !7696, !tbaa !7430
+  %.pre22 = load i32* %therep.i.i, align 4, !dbg !7691, !tbaa !7546
+  br label %for.body, !dbg !7680
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond.backedge
+  %indvars.iv = phi i64 [ %2, %for.body.lr.ph ], [ %indvars.iv.next, %for.cond.backedge ]
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !7680
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataArray.2"* %.pre}, i64 0, metadata !7697), !dbg !7698
+  %arrayidx.i.i = getelementptr inbounds i32* %.pre21, i64 %indvars.iv.next, !dbg !7696
+  %3 = load i32* %arrayidx.i.i, align 4, !dbg !7688, !tbaa !7549
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !6853), !dbg !7690
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SoPlex"* %this}, i64 0, metadata !7699), !dbg !7700
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !7701), !dbg !7700
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SoPlex"* %this}, i64 0, metadata !7702), !dbg !7703
+  %mul.i = mul nsw i32 %.pre22, %3, !dbg !7692
+  %cmp.i = icmp sgt i32 %mul.i, 0, !dbg !7692
+  br i1 %cmp.i, label %if.then, label %if.else, !dbg !7693
+
+if.then:                                          ; preds = %for.body
+  %4 = load double** %val.i16, align 8, !dbg !7694, !tbaa !7430
+  %arrayidx.i17 = getelementptr inbounds double* %4, i64 %indvars.iv.next, !dbg !7694
+  store double 0.000000e+00, double* %arrayidx.i17, align 8, !dbg !7695, !tbaa !7445
+  %.pre23 = trunc i64 %indvars.iv.next to i32, !dbg !7680
+  br label %for.cond.backedge, !dbg !7695
+
+for.cond.backedge:                                ; preds = %if.then, %if.else
+  %.pre-phi = phi i32 [ %.pre23, %if.then ], [ %5, %if.else ], !dbg !7680
+  %cmp = icmp sgt i32 %.pre-phi, 0, !dbg !7680
+  br i1 %cmp, label %for.body, label %for.end, !dbg !7680
+
+if.else:                                          ; preds = %for.body
+  %5 = trunc i64 %indvars.iv.next to i32, !dbg !7704
+  %call6 = tail call double @_ZNK6soplex6SoPlex6coTestEiNS_8SPxBasis4Desc6StatusE(%"class.soplex::SoPlex"* %this, i32 %5, i32 %3) #9, !dbg !7704
+  %6 = load double** %val.i16, align 8, !dbg !7705, !tbaa !7430
+  %arrayidx.i = getelementptr inbounds double* %6, i64 %indvars.iv.next, !dbg !7705
+  store double %call6, double* %arrayidx.i, align 8, !dbg !7704, !tbaa !7445
+  br label %for.cond.backedge
+
+for.end:                                          ; preds = %for.cond.backedge, %entry
+  ret void, !dbg !7706
+}

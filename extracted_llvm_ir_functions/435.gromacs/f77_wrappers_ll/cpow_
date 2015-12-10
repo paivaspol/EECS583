@@ -1,9 +1,12 @@
-define float @cpow_(float* nocapture readonly %x, float* nocapture readonly %y) #4 {
-  %1 = load float* %x, align 4, !tbaa !2
-  %2 = fpext float %1 to double
-  %3 = load float* %y, align 4, !tbaa !2
-  %4 = fpext float %3 to double
-  %5 = tail call double @llvm.pow.f64(double %2, double %4)
-  %6 = fptrunc double %5 to float
-  ret float %6
+define float @cpow_(float* nocapture %x, float* nocapture %y) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float* %x}, i64 0, metadata !17), !dbg !24
+  tail call void @llvm.dbg.value(metadata !{float* %y}, i64 0, metadata !18), !dbg !24
+  %0 = load float* %x, align 4, !dbg !25, !tbaa !21
+  %conv = fpext float %0 to double, !dbg !25
+  %1 = load float* %y, align 4, !dbg !25, !tbaa !21
+  %conv1 = fpext float %1 to double, !dbg !25
+  %call = tail call double @pow(double %conv, double %conv1) #3, !dbg !25
+  %conv2 = fptrunc double %call to float, !dbg !25
+  ret float %conv2, !dbg !25
 }

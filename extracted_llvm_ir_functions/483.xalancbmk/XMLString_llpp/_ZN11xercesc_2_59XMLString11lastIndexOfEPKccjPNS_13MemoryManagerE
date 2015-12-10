@@ -1,0 +1,61 @@
+define i32 @_ZN11xercesc_2_59XMLString11lastIndexOfEPKccjPNS_13MemoryManagerE(i8* nocapture %toSearch, i8 signext %ch, i32 %fromIndex, %"class.xercesc_2_5::MemoryManager"* %manager) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %toSearch}, i64 0, metadata !1560), !dbg !3008
+  tail call void @llvm.dbg.value(metadata !{i8 %ch}, i64 0, metadata !1561), !dbg !3009
+  tail call void @llvm.dbg.value(metadata !{i32 %fromIndex}, i64 0, metadata !1562), !dbg !3010
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %manager}, i64 0, metadata !1563), !dbg !3011
+  %call = tail call i64 @strlen(i8* %toSearch) #14, !dbg !3012
+  %conv = trunc i64 %call to i32, !dbg !3012
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !1564), !dbg !3012
+  %cmp = icmp sgt i32 %conv, %fromIndex, !dbg !3013
+  br i1 %cmp, label %for.cond.preheader, label %if.then, !dbg !3013
+
+for.cond.preheader:                               ; preds = %entry
+  %cmp112 = icmp sgt i32 %fromIndex, -1, !dbg !3014
+  br i1 %cmp112, label %for.body.lr.ph, label %return, !dbg !3014
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %0 = sext i32 %fromIndex to i64
+  br label %for.body, !dbg !3014
+
+if.then:                                          ; preds = %entry
+  %exception = tail call i8* @__cxa_allocate_exception(i64 48) #3, !dbg !3015
+  %1 = bitcast i8* %exception to %"class.xercesc_2_5::ArrayIndexOutOfBoundsException"*, !dbg !3015
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::ArrayIndexOutOfBoundsException"* %1}, i64 0, metadata !3016), !dbg !3017
+  tail call void @llvm.dbg.value(metadata !2808, i64 0, metadata !3018), !dbg !3017
+  tail call void @llvm.dbg.value(metadata !3019, i64 0, metadata !3020), !dbg !3017
+  tail call void @llvm.dbg.value(metadata !2989, i64 0, metadata !3021), !dbg !3017
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %manager}, i64 0, metadata !3022), !dbg !3017
+  invoke void @_ZN11xercesc_2_530ArrayIndexOutOfBoundsExceptionC2EPKcjNS_10XMLExcepts5CodesEPNS_13MemoryManagerE(%"class.xercesc_2_5::ArrayIndexOutOfBoundsException"* %1, i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 407, i32 82, %"class.xercesc_2_5::MemoryManager"* %manager) #11
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %if.then
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_530ArrayIndexOutOfBoundsExceptionE to i8*), i8* bitcast (void (%"class.xercesc_2_5::ArrayIndexOutOfBoundsException"*)* @_ZN11xercesc_2_530ArrayIndexOutOfBoundsExceptionD1Ev to i8*)) #12, !dbg !3015
+  unreachable, !dbg !3015
+
+lpad:                                             ; preds = %if.then
+  %2 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !3015
+  tail call void @__cxa_free_exception(i8* %exception) #3, !dbg !3015
+  resume { i8*, i32 } %2, !dbg !3015
+
+for.cond:                                         ; preds = %for.body
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !3014
+  %dec = add nsw i32 %i.013, -1, !dbg !3014
+  %3 = trunc i64 %indvars.iv to i32, !dbg !3014
+  %cmp1 = icmp sgt i32 %3, 0, !dbg !3014
+  br i1 %cmp1, label %for.body, label %return, !dbg !3014
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond
+  %indvars.iv = phi i64 [ %0, %for.body.lr.ph ], [ %indvars.iv.next, %for.cond ]
+  %i.013 = phi i32 [ %fromIndex, %for.body.lr.ph ], [ %dec, %for.cond ]
+  %arrayidx = getelementptr inbounds i8* %toSearch, i64 %indvars.iv, !dbg !3023
+  %4 = load i8* %arrayidx, align 1, !dbg !3023, !tbaa !2818
+  %cmp4 = icmp eq i8 %4, %ch, !dbg !3023
+  tail call void @llvm.dbg.value(metadata !{i32 %dec}, i64 0, metadata !1565), !dbg !3014
+  br i1 %cmp4, label %return, label %for.cond, !dbg !3023
+
+return:                                           ; preds = %for.cond, %for.body, %for.cond.preheader
+  %retval.0 = phi i32 [ -1, %for.cond.preheader ], [ %i.013, %for.body ], [ -1, %for.cond ]
+  ret i32 %retval.0, !dbg !3025
+}

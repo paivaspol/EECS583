@@ -1,0 +1,67 @@
+define zeroext i1 @_ZN11xercesc_2_518XMLStringTokenizer13hasMoreTokensEv(%"class.xercesc_2_5::XMLStringTokenizer"* nocapture %this) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLStringTokenizer"* %this}, i64 0, metadata !876), !dbg !1900
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLStringTokenizer"* %this}, i64 0, metadata !1901), !dbg !1903
+  %fStringLen.i = getelementptr inbounds %"class.xercesc_2_5::XMLStringTokenizer"* %this, i64 0, i32 1, !dbg !1904
+  %0 = load i32* %fStringLen.i, align 4, !dbg !1904, !tbaa !1700
+  %cmp.i = icmp eq i32 %0, 0, !dbg !1904
+  br i1 %cmp.i, label %_ZN11xercesc_2_518XMLStringTokenizer11countTokensEv.exit, label %if.end.i, !dbg !1904
+
+if.end.i:                                         ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !509, i64 0, metadata !1905), !dbg !1906
+  tail call void @llvm.dbg.value(metadata !1907, i64 0, metadata !1908), !dbg !1909
+  %fOffset.i = getelementptr inbounds %"class.xercesc_2_5::XMLStringTokenizer"* %this, i64 0, i32 0, !dbg !1910
+  %1 = load i32* %fOffset.i, align 4, !dbg !1910, !tbaa !1700
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !1911), !dbg !1910
+  %cmp315.i = icmp slt i32 %1, %0, !dbg !1910
+  br i1 %cmp315.i, label %for.body.lr.ph.i, label %_ZN11xercesc_2_518XMLStringTokenizer11countTokensEv.exit, !dbg !1910
+
+for.body.lr.ph.i:                                 ; preds = %if.end.i
+  %fString.i = getelementptr inbounds %"class.xercesc_2_5::XMLStringTokenizer"* %this, i64 0, i32 2, !dbg !1912
+  %fDelimeters.i.i = getelementptr inbounds %"class.xercesc_2_5::XMLStringTokenizer"* %this, i64 0, i32 3, !dbg !1914
+  %2 = sext i32 %1 to i64
+  br label %for.body.i, !dbg !1910
+
+for.body.i:                                       ; preds = %for.inc.i, %for.body.lr.ph.i
+  %indvars.iv.i = phi i64 [ %2, %for.body.lr.ph.i ], [ %indvars.iv.next.i, %for.inc.i ]
+  %inToken.017.i = phi i8 [ 0, %for.body.lr.ph.i ], [ %inToken.1.i, %for.inc.i ]
+  %tokCount.016.i = phi i32 [ 0, %for.body.lr.ph.i ], [ %tokCount.1.i, %for.inc.i ]
+  %3 = load i16** %fString.i, align 8, !dbg !1912, !tbaa !1731
+  %arrayidx.i = getelementptr inbounds i16* %3, i64 %indvars.iv.i, !dbg !1912
+  %4 = load i16* %arrayidx.i, align 2, !dbg !1912, !tbaa !1716
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLStringTokenizer"* %this}, i64 0, metadata !1915), !dbg !1916
+  tail call void @llvm.dbg.value(metadata !{i16 %4}, i64 0, metadata !1917), !dbg !1916
+  %5 = load i16** %fDelimeters.i.i, align 8, !dbg !1914, !tbaa !1731
+  %call.i.i = tail call i32 @_ZN11xercesc_2_59XMLString7indexOfEPKtt(i16* %5, i16 zeroext %4) #8, !dbg !1914
+  %not.cmp.i.i = icmp eq i32 %call.i.i, -1, !dbg !1914
+  %6 = and i8 %inToken.017.i, 1, !dbg !1918
+  %tobool.i = icmp ne i8 %6, 0, !dbg !1918
+  br i1 %not.cmp.i.i, label %if.end7.i, label %if.then4.i, !dbg !1912
+
+if.then4.i:                                       ; preds = %for.body.i
+  tail call void @llvm.dbg.value(metadata !1907, i64 0, metadata !1908), !dbg !1920
+  %.inToken.0.i = select i1 %tobool.i, i8 0, i8 %inToken.017.i, !dbg !1918
+  br label %for.inc.i, !dbg !1918
+
+if.end7.i:                                        ; preds = %for.body.i
+  tail call void @llvm.dbg.value(metadata !1922, i64 0, metadata !1908), !dbg !1923
+  %7 = zext i8 %6 to i32, !dbg !1925
+  %inc.i = xor i32 %7, 1, !dbg !1925
+  %tokCount.0.inc.i = add nsw i32 %inc.i, %tokCount.016.i, !dbg !1925
+  %inToken.0..i = select i1 %tobool.i, i8 %inToken.017.i, i8 1, !dbg !1925
+  br label %for.inc.i, !dbg !1925
+
+for.inc.i:                                        ; preds = %if.end7.i, %if.then4.i
+  %tokCount.1.i = phi i32 [ %tokCount.016.i, %if.then4.i ], [ %tokCount.0.inc.i, %if.end7.i ]
+  %inToken.1.i = phi i8 [ %.inToken.0.i, %if.then4.i ], [ %inToken.0..i, %if.end7.i ]
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1, !dbg !1910
+  %8 = load i32* %fStringLen.i, align 4, !dbg !1910, !tbaa !1700
+  %9 = trunc i64 %indvars.iv.next.i to i32, !dbg !1910
+  %cmp3.i = icmp slt i32 %9, %8, !dbg !1910
+  br i1 %cmp3.i, label %for.body.i, label %_ZN11xercesc_2_518XMLStringTokenizer11countTokensEv.exit, !dbg !1910
+
+_ZN11xercesc_2_518XMLStringTokenizer11countTokensEv.exit: ; preds = %for.inc.i, %entry, %if.end.i
+  %retval.0.i = phi i32 [ 0, %entry ], [ 0, %if.end.i ], [ %tokCount.1.i, %for.inc.i ]
+  %cmp = icmp sgt i32 %retval.0.i, 0, !dbg !1902
+  ret i1 %cmp, !dbg !1926
+}

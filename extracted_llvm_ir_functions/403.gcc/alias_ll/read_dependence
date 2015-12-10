@@ -1,20 +1,22 @@
-define i32 @read_dependence(%struct.rtx_def* nocapture %mem, %struct.rtx_def* nocapture %x) #2 {
+define i32 @read_dependence(%struct.rtx_def* nocapture %mem, %struct.rtx_def* nocapture %x) #3 {
 entry:
-  %0 = bitcast %struct.rtx_def* %x to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 134217728
-  %tobool = icmp eq i32 %bf.clear, 0
-  br i1 %tobool, label %land.end, label %land.rhs
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %mem}, i64 0, metadata !1295), !dbg !1857
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !1296), !dbg !1858
+  %0 = bitcast %struct.rtx_def* %x to i32*, !dbg !1859
+  %bf.load = load i32* %0, align 8, !dbg !1859
+  %bf.clear = and i32 %bf.load, 134217728, !dbg !1859
+  %tobool = icmp eq i32 %bf.clear, 0, !dbg !1859
+  br i1 %tobool, label %land.end, label %land.rhs, !dbg !1859
 
 land.rhs:                                         ; preds = %entry
-  %1 = bitcast %struct.rtx_def* %mem to i32*
-  %bf.load1 = load i32* %1, align 8
-  %bf.clear3 = and i32 %bf.load1, 134217728
-  %tobool4 = icmp ne i32 %bf.clear3, 0
+  %1 = bitcast %struct.rtx_def* %mem to i32*, !dbg !1859
+  %bf.load1 = load i32* %1, align 8, !dbg !1859
+  %bf.clear3 = and i32 %bf.load1, 134217728, !dbg !1859
+  %tobool4 = icmp ne i32 %bf.clear3, 0, !dbg !1859
   br label %land.end
 
 land.end:                                         ; preds = %entry, %land.rhs
   %2 = phi i1 [ false, %entry ], [ %tobool4, %land.rhs ]
   %land.ext = zext i1 %2 to i32
-  ret i32 %land.ext
+  ret i32 %land.ext, !dbg !1860
 }

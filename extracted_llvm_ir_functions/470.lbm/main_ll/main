@@ -1,68 +1,90 @@
 define i32 @main(i32 %nArgs, i8** nocapture %arg) #0 {
 entry:
   %param = alloca %struct.MAIN_Param, align 8
-  call void @MAIN_parseCommandLine(i32 %nArgs, i8** %arg, %struct.MAIN_Param* %param) #6
-  %nTimeSteps.i = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 0
-  %0 = load i32* %nTimeSteps.i, align 8, !tbaa !0
-  %resultFilename.i = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 1
-  %1 = load i8** %resultFilename.i, align 8, !tbaa !3
-  %action.i = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 2
-  %2 = bitcast i32* %action.i to i64*
-  %3 = load i64* %2, align 8
-  %idxprom.i = and i64 %3, 4294967295
-  %arraydecay.i = getelementptr inbounds [3 x [32 x i8]]* @MAIN_printInfo.actionString, i64 0, i64 %idxprom.i, i64 0
-  %4 = lshr i64 %3, 32
-  %arraydecay3.i = getelementptr inbounds [3 x [32 x i8]]* @MAIN_printInfo.simTypeString, i64 0, i64 %4, i64 0
-  %obstacleFilename.i = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 4
-  %5 = load i8** %obstacleFilename.i, align 8, !tbaa !3
-  %cmp.i = icmp eq i8* %5, null
-  %..i = select i1 %cmp.i, i8* getelementptr inbounds ([7 x i8]* @.str6, i64 0, i64 0), i8* %5
-  %call.i = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([174 x i8]* @.str5, i64 0, i64 0), i32 100, i32 100, i32 130, double 0x3FF4CCCCCCCCCCCC, i32 %0, i8* %1, i8* %arraydecay.i, i8* %arraydecay3.i, i8* %..i) #7
-  call void @MAIN_initialize(%struct.MAIN_Param* %param) #6
-  %6 = load i32* %nTimeSteps.i, align 8, !tbaa !0
-  %cmp11 = icmp slt i32 %6, 1
-  br i1 %cmp11, label %for.end, label %for.body.lr.ph
+  %time = alloca %struct.MAIN_Time, align 8
+  call void @llvm.dbg.value(metadata !{i32 %nArgs}, i64 0, metadata !242), !dbg !364
+  call void @llvm.dbg.value(metadata !{i8** %arg}, i64 0, metadata !243), !dbg !364
+  call void @llvm.dbg.declare(metadata !{%struct.MAIN_Param* %param}, metadata !244), !dbg !365
+  %0 = bitcast %struct.MAIN_Time* %time to i8*, !dbg !366
+  call void @llvm.lifetime.start(i64 88, i8* %0) #2, !dbg !366
+  call void @llvm.dbg.declare(metadata !{%struct.MAIN_Time* %time}, metadata !255), !dbg !366
+  call void @MAIN_parseCommandLine(i32 %nArgs, i8** %arg, %struct.MAIN_Param* %param) #7, !dbg !367
+  call void @llvm.dbg.value(metadata !{%struct.MAIN_Param* %param}, i64 0, metadata !368) #2, !dbg !370
+  %nTimeSteps.i = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 0, !dbg !371
+  %1 = load i32* %nTimeSteps.i, align 8, !dbg !371, !tbaa !372
+  %resultFilename.i = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 1, !dbg !371
+  %2 = load i8** %resultFilename.i, align 8, !dbg !371, !tbaa !375
+  %action.i = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 2, !dbg !371
+  %3 = bitcast i32* %action.i to i64*, !dbg !371
+  %4 = load i64* %3, align 8, !dbg !371
+  %idxprom.i = and i64 %4, 4294967295, !dbg !371
+  %arraydecay.i = getelementptr inbounds [3 x [32 x i8]]* @MAIN_printInfo.actionString, i64 0, i64 %idxprom.i, i64 0, !dbg !371
+  %5 = lshr i64 %4, 32
+  %arraydecay3.i = getelementptr inbounds [3 x [32 x i8]]* @MAIN_printInfo.simTypeString, i64 0, i64 %5, i64 0, !dbg !371
+  %obstacleFilename.i = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 4, !dbg !371
+  %6 = load i8** %obstacleFilename.i, align 8, !dbg !371, !tbaa !375
+  %cmp.i = icmp eq i8* %6, null, !dbg !371
+  %..i = select i1 %cmp.i, i8* getelementptr inbounds ([7 x i8]* @.str6, i64 0, i64 0), i8* %6, !dbg !371
+  %call.i = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([174 x i8]* @.str5, i64 0, i64 0), i32 100, i32 100, i32 130, double 0x3FF4CCCCCCCCCCCC, i32 %1, i8* %2, i8* %arraydecay.i, i8* %arraydecay3.i, i8* %..i) #8, !dbg !371
+  call void @MAIN_initialize(%struct.MAIN_Param* %param) #7, !dbg !376
+  call void @llvm.dbg.value(metadata !{%struct.MAIN_Time* %time}, i64 0, metadata !377) #2, !dbg !379
+  %call.i11 = call i64 @sysconf(i32 2) #8, !dbg !380
+  %conv.i = sitofp i64 %call.i11 to double, !dbg !380
+  %div.i = fdiv double 1.000000e+00, %conv.i, !dbg !380
+  %timeScale.i = getelementptr inbounds %struct.MAIN_Time* %time, i64 0, i32 0, !dbg !380
+  store double %div.i, double* %timeScale.i, align 8, !dbg !380, !tbaa !381
+  %timeStart.i = getelementptr inbounds %struct.MAIN_Time* %time, i64 0, i32 3, !dbg !382
+  %call1.i = call i64 @times(%struct.tms* %timeStart.i) #8, !dbg !382
+  %tickStart.i = getelementptr inbounds %struct.MAIN_Time* %time, i64 0, i32 1, !dbg !382
+  store i64 %call1.i, i64* %tickStart.i, align 8, !dbg !382, !tbaa !383
+  call void @llvm.dbg.value(metadata !384, i64 0, metadata !275), !dbg !385
+  %7 = load i32* %nTimeSteps.i, align 8, !dbg !385, !tbaa !372
+  %cmp12 = icmp slt i32 %7, 1, !dbg !385
+  br i1 %cmp12, label %for.end, label %for.body.lr.ph, !dbg !385
 
 for.body.lr.ph:                                   ; preds = %entry
-  %simType.i = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 3
-  %7 = load i32* %simType.i, align 4, !tbaa !1
-  %cmp1 = icmp eq i32 %7, 1
-  br label %for.body
+  %simType.i = getelementptr inbounds %struct.MAIN_Param* %param, i64 0, i32 3, !dbg !371
+  %8 = load i32* %simType.i, align 4, !dbg !387, !tbaa !373
+  %cmp1 = icmp eq i32 %8, 1, !dbg !387
+  br label %for.body, !dbg !385
 
 for.body:                                         ; preds = %for.inc, %for.body.lr.ph
-  %t.012 = phi i32 [ 1, %for.body.lr.ph ], [ %inc, %for.inc ]
-  br i1 %cmp1, label %if.then, label %if.end
+  %t.013 = phi i32 [ 1, %for.body.lr.ph ], [ %inc, %for.inc ]
+  br i1 %cmp1, label %if.then, label %if.end, !dbg !387
 
 if.then:                                          ; preds = %for.body
-  %8 = load [26000000 x double]** @srcGrid, align 8, !tbaa !3
-  %arraydecay = getelementptr inbounds [26000000 x double]* %8, i64 0, i64 0
-  call void @LBM_handleInOutFlow(double* %arraydecay) #7
-  br label %if.end
+  %9 = load [26000000 x double]** @srcGrid, align 8, !dbg !389, !tbaa !375
+  %arraydecay = getelementptr inbounds [26000000 x double]* %9, i64 0, i64 0, !dbg !389
+  call void @LBM_handleInOutFlow(double* %arraydecay) #8, !dbg !389
+  br label %if.end, !dbg !391
 
 if.end:                                           ; preds = %if.then, %for.body
-  %9 = load [26000000 x double]** @srcGrid, align 8, !tbaa !3
-  %arraydecay2 = getelementptr inbounds [26000000 x double]* %9, i64 0, i64 0
-  %10 = load [26000000 x double]** @dstGrid, align 8, !tbaa !3
-  %arraydecay3 = getelementptr inbounds [26000000 x double]* %10, i64 0, i64 0
-  call void @LBM_performStreamCollide(double* %arraydecay2, double* %arraydecay3) #7
-  call void @LBM_swapGrids([26000000 x double]** @srcGrid, [26000000 x double]** @dstGrid) #7
-  %and = and i32 %t.012, 63
-  %cmp4 = icmp eq i32 %and, 0
-  br i1 %cmp4, label %if.then5, label %for.inc
+  %10 = load [26000000 x double]** @srcGrid, align 8, !dbg !392, !tbaa !375
+  %arraydecay2 = getelementptr inbounds [26000000 x double]* %10, i64 0, i64 0, !dbg !392
+  %11 = load [26000000 x double]** @dstGrid, align 8, !dbg !392, !tbaa !375
+  %arraydecay3 = getelementptr inbounds [26000000 x double]* %11, i64 0, i64 0, !dbg !392
+  call void @LBM_performStreamCollide(double* %arraydecay2, double* %arraydecay3) #8, !dbg !392
+  call void @LBM_swapGrids([26000000 x double]** @srcGrid, [26000000 x double]** @dstGrid) #8, !dbg !393
+  %and = and i32 %t.013, 63, !dbg !394
+  %cmp4 = icmp eq i32 %and, 0, !dbg !394
+  br i1 %cmp4, label %if.then5, label %for.inc, !dbg !394
 
 if.then5:                                         ; preds = %if.end
-  %call = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([14 x i8]* @.str, i64 0, i64 0), i32 %t.012) #7
-  %11 = load [26000000 x double]** @srcGrid, align 8, !tbaa !3
-  %arraydecay6 = getelementptr inbounds [26000000 x double]* %11, i64 0, i64 0
-  call void @LBM_showGridStatistics(double* %arraydecay6) #7
-  br label %for.inc
+  %call = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([14 x i8]* @.str, i64 0, i64 0), i32 %t.013) #8, !dbg !395
+  %12 = load [26000000 x double]** @srcGrid, align 8, !dbg !397, !tbaa !375
+  %arraydecay6 = getelementptr inbounds [26000000 x double]* %12, i64 0, i64 0, !dbg !397
+  call void @LBM_showGridStatistics(double* %arraydecay6) #8, !dbg !397
+  br label %for.inc, !dbg !398
 
 for.inc:                                          ; preds = %if.end, %if.then5
-  %inc = add nsw i32 %t.012, 1
-  %cmp = icmp slt i32 %t.012, %6
-  br i1 %cmp, label %for.body, label %for.end
+  %inc = add nsw i32 %t.013, 1, !dbg !385
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !275), !dbg !385
+  %cmp = icmp slt i32 %t.013, %7, !dbg !385
+  br i1 %cmp, label %for.body, label %for.end, !dbg !385
 
 for.end:                                          ; preds = %for.inc, %entry
-  call void @MAIN_finalize(%struct.MAIN_Param* %param) #6
-  ret i32 0
+  call void @MAIN_stopClock(%struct.MAIN_Time* %time, %struct.MAIN_Param* %param) #7, !dbg !399
+  call void @MAIN_finalize(%struct.MAIN_Param* %param) #7, !dbg !400
+  call void @llvm.lifetime.end(i64 88, i8* %0) #2, !dbg !401
+  ret i32 0, !dbg !402
 }

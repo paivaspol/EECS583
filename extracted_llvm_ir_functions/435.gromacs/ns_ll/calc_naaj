@@ -1,44 +1,48 @@
-define i32 @calc_naaj(i32 %icg, i32 %cgtot) #5 {
-  %1 = srem i32 %cgtot, 2
-  %2 = icmp eq i32 %1, 1
-  br i1 %2, label %3, label %6
+define i32 @calc_naaj(i32 %icg, i32 %cgtot) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %icg}, i64 0, metadata !467), !dbg !1572
+  tail call void @llvm.dbg.value(metadata !{i32 %cgtot}, i64 0, metadata !468), !dbg !1572
+  %rem = srem i32 %cgtot, 2, !dbg !1573
+  %cmp = icmp eq i32 %rem, 1, !dbg !1573
+  br i1 %cmp, label %if.then, label %if.else, !dbg !1573
 
-; <label>:3                                       ; preds = %0
-  %4 = sdiv i32 %cgtot, 2
-  %5 = add nsw i32 %4, 1
-  br label %23
+if.then:                                          ; preds = %entry
+  %div = sdiv i32 %cgtot, 2, !dbg !1574
+  %add = add nsw i32 %div, 1, !dbg !1574
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !469), !dbg !1574
+  br label %if.end34, !dbg !1576
 
-; <label>:6                                       ; preds = %0
-  %7 = and i32 %cgtot, 3
-  %8 = icmp eq i32 %7, 0
-  br i1 %8, label %9, label %19
+if.else:                                          ; preds = %entry
+  %rem141 = and i32 %cgtot, 3, !dbg !1577
+  %cmp2 = icmp eq i32 %rem141, 0, !dbg !1577
+  br i1 %cmp2, label %if.then3, label %if.else24, !dbg !1577
 
-; <label>:9                                       ; preds = %6
-  %10 = sdiv i32 %cgtot, 2
-  %11 = icmp sgt i32 %10, %icg
-  %12 = srem i32 %icg, 2
-  br i1 %11, label %13, label %16
+if.then3:                                         ; preds = %if.else
+  %div4 = sdiv i32 %cgtot, 2, !dbg !1578
+  %cmp5 = icmp sgt i32 %div4, %icg, !dbg !1578
+  %rem7 = srem i32 %icg, 2, !dbg !1580
+  br i1 %cmp5, label %if.then6, label %if.else14, !dbg !1578
 
-; <label>:13                                      ; preds = %9
-  %14 = icmp eq i32 %12, 0
-  %15 = zext i1 %14 to i32
-  %. = add nsw i32 %15, %10
-  ret i32 %.
+if.then6:                                         ; preds = %if.then3
+  %cmp8 = icmp eq i32 %rem7, 0, !dbg !1580
+  %add11 = zext i1 %cmp8 to i32, !dbg !1580
+  %add11.div4 = add nsw i32 %add11, %div4, !dbg !1580
+  ret i32 %add11.div4, !dbg !1580
 
-; <label>:16                                      ; preds = %9
-  %17 = icmp eq i32 %12, 1
-  %18 = zext i1 %17 to i32
-  %.1 = add nsw i32 %18, %10
-  br label %23
+if.else14:                                        ; preds = %if.then3
+  %cmp16 = icmp eq i32 %rem7, 1, !dbg !1582
+  %add19 = zext i1 %cmp16 to i32, !dbg !1582
+  %add19.div4 = add nsw i32 %add19, %div4, !dbg !1582
+  br label %if.end34, !dbg !1582
 
-; <label>:19                                      ; preds = %6
-  %20 = and i32 %icg, 1
-  %21 = sdiv i32 %cgtot, 2
-  %22 = xor i32 %20, 1
-  %.2 = add nsw i32 %21, %22
-  br label %23
+if.else24:                                        ; preds = %if.else
+  %rem2542 = and i32 %icg, 1, !dbg !1584
+  %div28 = sdiv i32 %cgtot, 2, !dbg !1586
+  %0 = xor i32 %rem2542, 1, !dbg !1584
+  %add29.div28 = add nsw i32 %div28, %0, !dbg !1584
+  br label %if.end34, !dbg !1584
 
-; <label>:23                                      ; preds = %19, %16, %3
-  %naaj.0 = phi i32 [ %5, %3 ], [ %.1, %16 ], [ %.2, %19 ]
-  ret i32 %naaj.0
+if.end34:                                         ; preds = %if.else24, %if.else14, %if.then
+  %naaj.0 = phi i32 [ %add, %if.then ], [ %add19.div4, %if.else14 ], [ %add29.div28, %if.else24 ]
+  ret i32 %naaj.0, !dbg !1587
 }

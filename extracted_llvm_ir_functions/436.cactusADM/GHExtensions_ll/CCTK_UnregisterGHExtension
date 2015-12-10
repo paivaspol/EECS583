@@ -1,25 +1,32 @@
 define i32 @CCTK_UnregisterGHExtension(i8* %name) #1 {
+entry:
   %extension = alloca i8*, align 8
-  %1 = load %struct.cHandledData** @GHExtensions, align 8, !tbaa !2
-  %2 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %name, i8** %extension) #5
-  %3 = icmp sgt i32 %2, -1
-  br i1 %3, label %4, label %12
+  call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !84), !dbg !209
+  call void @llvm.dbg.value(metadata !210, i64 0, metadata !86), !dbg !211
+  call void @llvm.dbg.declare(metadata !{i8** %extension}, metadata !87), !dbg !212
+  %0 = load %struct.cHandledData** @GHExtensions, align 8, !dbg !213, !tbaa !195
+  %call = call i32 @Util_GetHandle(%struct.cHandledData* %0, i8* %name, i8** %extension) #6, !dbg !213
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !85), !dbg !213
+  %cmp = icmp sgt i32 %call, -1, !dbg !214
+  br i1 %cmp, label %if.then, label %if.end4, !dbg !214
 
-; <label>:4                                       ; preds = %0
-  %5 = load %struct.cHandledData** @GHExtensions, align 8, !tbaa !2
-  %6 = call i32 @Util_DeleteHandle(%struct.cHandledData* %5, i32 %2) #5
-  %7 = icmp eq i32 %6, 0
-  br i1 %7, label %8, label %12
+if.then:                                          ; preds = %entry
+  %1 = load %struct.cHandledData** @GHExtensions, align 8, !dbg !215, !tbaa !195
+  %call1 = call i32 @Util_DeleteHandle(%struct.cHandledData* %1, i32 %call) #6, !dbg !215
+  %cmp2 = icmp eq i32 %call1, 0, !dbg !215
+  br i1 %cmp2, label %if.then3, label %if.end4, !dbg !215
 
-; <label>:8                                       ; preds = %4
-  %9 = load i8** %extension, align 8, !tbaa !2
-  call void @free(i8* %9) #6
-  %10 = load i32* @num_extensions, align 4, !tbaa !6
-  %11 = add nsw i32 %10, -1
-  store i32 %11, i32* @num_extensions, align 4, !tbaa !6
-  br label %12
+if.then3:                                         ; preds = %if.then
+  call void @llvm.dbg.value(metadata !{i8** %extension}, i64 0, metadata !87), !dbg !217
+  %2 = load i8** %extension, align 8, !dbg !217, !tbaa !195
+  call void @free(i8* %2) #6, !dbg !217
+  %3 = load i32* @num_extensions, align 4, !dbg !219, !tbaa !206
+  %dec = add nsw i32 %3, -1, !dbg !219
+  store i32 %dec, i32* @num_extensions, align 4, !dbg !219, !tbaa !206
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !86), !dbg !220
+  br label %if.end4, !dbg !221
 
-; <label>:12                                      ; preds = %4, %8, %0
-  %ret_val.0 = phi i32 [ 0, %8 ], [ -1, %4 ], [ -1, %0 ]
-  ret i32 %ret_val.0
+if.end4:                                          ; preds = %if.then, %if.then3, %entry
+  %ret_val.0 = phi i32 [ 0, %if.then3 ], [ -1, %if.then ], [ -1, %entry ]
+  ret i32 %ret_val.0, !dbg !222
 }

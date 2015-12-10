@@ -1,98 +1,106 @@
 define i32 @IVZVsortUpAndCompress(i32 %n, i32* %ivec, double* %zvec) #0 {
 entry:
-  %cmp = icmp slt i32 %n, 0
-  %cmp1 = icmp eq i32* %ivec, null
-  %or.cond = or i1 %cmp, %cmp1
-  %cmp3 = icmp eq double* %zvec, null
-  %or.cond93 = or i1 %or.cond, %cmp3
-  br i1 %or.cond93, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !32), !dbg !126
+  tail call void @llvm.dbg.value(metadata !{i32* %ivec}, i64 0, metadata !33), !dbg !127
+  tail call void @llvm.dbg.value(metadata !{double* %zvec}, i64 0, metadata !34), !dbg !128
+  %cmp = icmp slt i32 %n, 0, !dbg !129
+  %cmp1 = icmp eq i32* %ivec, null, !dbg !129
+  %or.cond = or i1 %cmp, %cmp1, !dbg !129
+  %cmp3 = icmp eq double* %zvec, null, !dbg !129
+  %or.cond93 = or i1 %or.cond, %cmp3, !dbg !129
+  br i1 %or.cond93, label %if.then, label %if.end, !dbg !129
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([88 x i8]* @.str2, i64 0, i64 0), i32 %n, i32* %ivec, double* %zvec, i32 %n, i32* %ivec, double* %zvec) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !130, !tbaa !83
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([88 x i8]* @.str2, i64 0, i64 0), i32 %n, i32* %ivec, double* %zvec, i32 %n, i32* %ivec, double* %zvec) #5, !dbg !130
+  tail call void @exit(i32 -1) #6, !dbg !132
+  unreachable, !dbg !132
 
 if.end:                                           ; preds = %entry
-  %cmp4 = icmp eq i32 %n, 0
-  br i1 %cmp4, label %return, label %if.end6
+  %cmp4 = icmp eq i32 %n, 0, !dbg !133
+  br i1 %cmp4, label %return, label %if.end6, !dbg !133
 
 if.end6:                                          ; preds = %if.end
-  tail call void @IVZVqsortUp(i32 %n, i32* %ivec, double* %zvec) #4
-  %cmp794 = icmp sgt i32 %n, 1
-  br i1 %cmp794, label %for.body.lr.ph, label %return
+  tail call void @IVZVqsortUp(i32 %n, i32* %ivec, double* %zvec) #5, !dbg !134
+  tail call void @llvm.dbg.value(metadata !89, i64 0, metadata !35), !dbg !135
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !38), !dbg !136
+  tail call void @llvm.dbg.value(metadata !89, i64 0, metadata !37), !dbg !137
+  %cmp794 = icmp sgt i32 %n, 1, !dbg !137
+  br i1 %cmp794, label %for.body.lr.ph, label %return, !dbg !137
 
 for.body.lr.ph:                                   ; preds = %if.end6
-  %1 = load i32* %ivec, align 4, !tbaa !3
-  br label %for.body
+  %1 = load i32* %ivec, align 4, !dbg !136, !tbaa !94
+  br label %for.body, !dbg !137
 
 for.body:                                         ; preds = %for.inc, %for.body.lr.ph
   %indvars.iv = phi i64 [ 1, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
   %key.097 = phi i32 [ %1, %for.body.lr.ph ], [ %key.1, %for.inc ]
   %first.095 = phi i32 [ 1, %for.body.lr.ph ], [ %first.1, %for.inc ]
-  %arrayidx8 = getelementptr inbounds i32* %ivec, i64 %indvars.iv
-  %2 = load i32* %arrayidx8, align 4, !tbaa !3
-  %cmp9 = icmp eq i32 %key.097, %2
-  br i1 %cmp9, label %if.then10, label %if.then29
+  %arrayidx8 = getelementptr inbounds i32* %ivec, i64 %indvars.iv, !dbg !139
+  %2 = load i32* %arrayidx8, align 4, !dbg !139, !tbaa !94
+  %cmp9 = icmp eq i32 %key.097, %2, !dbg !139
+  br i1 %cmp9, label %if.then10, label %if.then29, !dbg !139
 
 if.then10:                                        ; preds = %for.body
-  %3 = trunc i64 %indvars.iv to i32
-  %mul = shl nsw i32 %3, 1
-  %idxprom11 = sext i32 %mul to i64
-  %arrayidx12 = getelementptr inbounds double* %zvec, i64 %idxprom11
-  %4 = load double* %arrayidx12, align 8, !tbaa !4
-  %sub = shl i32 %first.095, 1
-  %mul13 = add i32 %sub, -2
-  %idxprom14 = sext i32 %mul13 to i64
-  %arrayidx15 = getelementptr inbounds double* %zvec, i64 %idxprom14
-  %5 = load double* %arrayidx15, align 8, !tbaa !4
-  %add = fadd double %4, %5
-  store double %add, double* %arrayidx15, align 8, !tbaa !4
-  %add1792 = or i32 %mul, 1
-  %idxprom18 = sext i32 %add1792 to i64
-  %arrayidx19 = getelementptr inbounds double* %zvec, i64 %idxprom18
-  %6 = load double* %arrayidx19, align 8, !tbaa !4
-  %add22 = add i32 %sub, -1
-  %idxprom23 = sext i32 %add22 to i64
-  %arrayidx24 = getelementptr inbounds double* %zvec, i64 %idxprom23
-  %7 = load double* %arrayidx24, align 8, !tbaa !4
-  %add25 = fadd double %6, %7
-  store double %add25, double* %arrayidx24, align 8, !tbaa !4
-  br label %for.inc
+  %3 = trunc i64 %indvars.iv to i32, !dbg !141
+  %mul = shl nsw i32 %3, 1, !dbg !141
+  %idxprom11 = sext i32 %mul to i64, !dbg !141
+  %arrayidx12 = getelementptr inbounds double* %zvec, i64 %idxprom11, !dbg !141
+  %4 = load double* %arrayidx12, align 8, !dbg !141, !tbaa !118
+  %sub = shl i32 %first.095, 1, !dbg !141
+  %mul13 = add i32 %sub, -2, !dbg !141
+  %idxprom14 = sext i32 %mul13 to i64, !dbg !141
+  %arrayidx15 = getelementptr inbounds double* %zvec, i64 %idxprom14, !dbg !141
+  %5 = load double* %arrayidx15, align 8, !dbg !141, !tbaa !118
+  %add = fadd double %4, %5, !dbg !141
+  store double %add, double* %arrayidx15, align 8, !dbg !141, !tbaa !118
+  %add1792 = or i32 %mul, 1, !dbg !143
+  %idxprom18 = sext i32 %add1792 to i64, !dbg !143
+  %arrayidx19 = getelementptr inbounds double* %zvec, i64 %idxprom18, !dbg !143
+  %6 = load double* %arrayidx19, align 8, !dbg !143, !tbaa !118
+  %add22 = add i32 %sub, -1, !dbg !143
+  %idxprom23 = sext i32 %add22 to i64, !dbg !143
+  %arrayidx24 = getelementptr inbounds double* %zvec, i64 %idxprom23, !dbg !143
+  %7 = load double* %arrayidx24, align 8, !dbg !143, !tbaa !118
+  %add25 = fadd double %6, %7, !dbg !143
+  store double %add25, double* %arrayidx24, align 8, !dbg !143, !tbaa !118
+  br label %for.inc, !dbg !144
 
 if.then29:                                        ; preds = %for.body
-  %idxprom32 = sext i32 %first.095 to i64
-  %arrayidx33 = getelementptr inbounds i32* %ivec, i64 %idxprom32
-  store i32 %2, i32* %arrayidx33, align 4, !tbaa !3
-  %8 = trunc i64 %indvars.iv to i32
-  %mul34 = shl nsw i32 %8, 1
-  %idxprom35 = sext i32 %mul34 to i64
-  %arrayidx36 = getelementptr inbounds double* %zvec, i64 %idxprom35
-  %9 = load double* %arrayidx36, align 8, !tbaa !4
-  %mul37 = shl nsw i32 %first.095, 1
-  %idxprom38 = sext i32 %mul37 to i64
-  %arrayidx39 = getelementptr inbounds double* %zvec, i64 %idxprom38
-  store double %9, double* %arrayidx39, align 8, !tbaa !4
-  %add4190 = or i32 %mul34, 1
-  %idxprom42 = sext i32 %add4190 to i64
-  %arrayidx43 = getelementptr inbounds double* %zvec, i64 %idxprom42
-  %10 = load double* %arrayidx43, align 8, !tbaa !4
-  %add4591 = or i32 %mul37, 1
-  %idxprom46 = sext i32 %add4591 to i64
-  %arrayidx47 = getelementptr inbounds double* %zvec, i64 %idxprom46
-  store double %10, double* %arrayidx47, align 8, !tbaa !4
-  %inc = add nsw i32 %first.095, 1
-  br label %for.inc
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !38), !dbg !145
+  %idxprom32 = sext i32 %first.095 to i64, !dbg !145
+  %arrayidx33 = getelementptr inbounds i32* %ivec, i64 %idxprom32, !dbg !145
+  store i32 %2, i32* %arrayidx33, align 4, !dbg !145, !tbaa !94
+  %8 = trunc i64 %indvars.iv to i32, !dbg !147
+  %mul34 = shl nsw i32 %8, 1, !dbg !147
+  %idxprom35 = sext i32 %mul34 to i64, !dbg !147
+  %arrayidx36 = getelementptr inbounds double* %zvec, i64 %idxprom35, !dbg !147
+  %9 = load double* %arrayidx36, align 8, !dbg !147, !tbaa !118
+  %mul37 = shl nsw i32 %first.095, 1, !dbg !147
+  %idxprom38 = sext i32 %mul37 to i64, !dbg !147
+  %arrayidx39 = getelementptr inbounds double* %zvec, i64 %idxprom38, !dbg !147
+  store double %9, double* %arrayidx39, align 8, !dbg !147, !tbaa !118
+  %add4190 = or i32 %mul34, 1, !dbg !148
+  %idxprom42 = sext i32 %add4190 to i64, !dbg !148
+  %arrayidx43 = getelementptr inbounds double* %zvec, i64 %idxprom42, !dbg !148
+  %10 = load double* %arrayidx43, align 8, !dbg !148, !tbaa !118
+  %add4591 = or i32 %mul37, 1, !dbg !148
+  %idxprom46 = sext i32 %add4591 to i64, !dbg !148
+  %arrayidx47 = getelementptr inbounds double* %zvec, i64 %idxprom46, !dbg !148
+  store double %10, double* %arrayidx47, align 8, !dbg !148, !tbaa !118
+  %inc = add nsw i32 %first.095, 1, !dbg !149
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !35), !dbg !149
+  br label %for.inc, !dbg !150
 
 for.inc:                                          ; preds = %if.then10, %if.then29
   %first.1 = phi i32 [ %first.095, %if.then10 ], [ %inc, %if.then29 ]
   %key.1 = phi i32 [ %key.097, %if.then10 ], [ %2, %if.then29 ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n
-  br i1 %exitcond, label %return, label %for.body
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !137
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !137
+  %exitcond = icmp eq i32 %lftr.wideiv, %n, !dbg !137
+  br i1 %exitcond, label %return, label %for.body, !dbg !137
 
 return:                                           ; preds = %if.end6, %for.inc, %if.end
   %retval.0 = phi i32 [ 0, %if.end ], [ 1, %if.end6 ], [ %first.1, %for.inc ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !151
 }

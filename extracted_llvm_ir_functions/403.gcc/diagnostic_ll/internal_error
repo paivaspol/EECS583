@@ -1,77 +1,87 @@
-define void @internal_error(i8* %msgid, ...) #7 {
+define void @internal_error(i8* %msgid, ...) #8 {
 entry:
   %dc = alloca %struct.diagnostic_context, align 8
   %ap = alloca [1 x %struct.__va_list_tag], align 16
-  %0 = bitcast %struct.diagnostic_context* %dc to i8*
-  call void @llvm.lifetime.start(i64 376, i8* %0) #3
-  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
-  call void @llvm.va_start(i8* %arraydecay1)
-  %1 = load i32* @diagnostic_lock, align 4, !tbaa !0
-  %tobool = icmp eq i32 %1, 0
-  br i1 %tobool, label %if.end, label %if.then
+  call void @llvm.dbg.value(metadata !{i8* %msgid}, i64 0, metadata !939), !dbg !1926
+  %0 = bitcast %struct.diagnostic_context* %dc to i8*, !dbg !1927
+  call void @llvm.lifetime.start(i64 376, i8* %0) #4, !dbg !1927
+  call void @llvm.dbg.declare(metadata !{%struct.diagnostic_context* %dc}, metadata !940), !dbg !1927
+  call void @llvm.dbg.declare(metadata !{[1 x %struct.__va_list_tag]* %ap}, metadata !941), !dbg !1928
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*, !dbg !1928
+  call void @llvm.va_start(i8* %arraydecay1), !dbg !1928
+  %1 = load i32* @diagnostic_lock, align 4, !dbg !1929, !tbaa !1172
+  %tobool = icmp eq i32 %1, 0, !dbg !1929
+  br i1 %tobool, label %if.end, label %if.then, !dbg !1929
 
 if.then:                                          ; preds = %entry
-  call fastcc void @error_recursion() #15
-  unreachable
+  call fastcc void @error_recursion() #16, !dbg !1931
+  unreachable, !dbg !1931
 
 if.end:                                           ; preds = %entry
-  %2 = load %struct.diagnostic_context** @global_dc, align 8, !tbaa !3
-  %arrayidx = getelementptr inbounds %struct.diagnostic_context* %2, i64 0, i32 0, i32 0, i32 9, i64 3
-  %3 = load i32* %arrayidx, align 4, !tbaa !0
-  %cmp = icmp sgt i32 %3, 0
-  br i1 %cmp, label %if.then6, label %lor.lhs.false
+  %2 = load %struct.diagnostic_context** @global_dc, align 8, !dbg !1932, !tbaa !1178
+  %arrayidx = getelementptr inbounds %struct.diagnostic_context* %2, i64 0, i32 0, i32 0, i32 9, i64 3, !dbg !1932
+  %3 = load i32* %arrayidx, align 4, !dbg !1932, !tbaa !1172
+  %cmp = icmp sgt i32 %3, 0, !dbg !1932
+  br i1 %cmp, label %if.then6, label %lor.lhs.false, !dbg !1932
 
 lor.lhs.false:                                    ; preds = %if.end
-  %arrayidx4 = getelementptr inbounds %struct.diagnostic_context* %2, i64 0, i32 0, i32 0, i32 9, i64 2
-  %4 = load i32* %arrayidx4, align 4, !tbaa !0
-  %cmp5 = icmp sgt i32 %4, 0
-  br i1 %cmp5, label %if.then6, label %if.end7
+  %arrayidx4 = getelementptr inbounds %struct.diagnostic_context* %2, i64 0, i32 0, i32 0, i32 9, i64 2, !dbg !1932
+  %4 = load i32* %arrayidx4, align 4, !dbg !1932, !tbaa !1172
+  %cmp5 = icmp sgt i32 %4, 0, !dbg !1932
+  br i1 %cmp5, label %if.then6, label %if.end7, !dbg !1932
 
 if.then6:                                         ; preds = %lor.lhs.false, %if.end
-  %5 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %6 = load i8** @input_filename, align 8, !tbaa !3
-  %7 = load i32* @lineno, align 4, !tbaa !0
-  call void (%struct._IO_FILE*, i8*, ...)* @fnotice(%struct._IO_FILE* %5, i8* getelementptr inbounds ([48 x i8]* @.str11, i64 0, i64 0), i8* %6, i32 %7) #11
-  call void @exit(i32 1) #14
-  unreachable
+  %5 = load %struct._IO_FILE** @stderr, align 8, !dbg !1933, !tbaa !1178
+  %6 = load i8** @input_filename, align 8, !dbg !1933, !tbaa !1178
+  %7 = load i32* @lineno, align 4, !dbg !1933, !tbaa !1172
+  call void (%struct._IO_FILE*, i8*, ...)* @fnotice(%struct._IO_FILE* %5, i8* getelementptr inbounds ([48 x i8]* @.str11, i64 0, i64 0), i8* %6, i32 %7) #12, !dbg !1933
+  call void @exit(i32 1) #15, !dbg !1935
+  unreachable, !dbg !1935
 
 if.end7:                                          ; preds = %lor.lhs.false
-  %8 = load void (i8*, [1 x %struct.__va_list_tag]*)** @internal_error_function, align 8, !tbaa !3
-  %cmp8 = icmp eq void (i8*, [1 x %struct.__va_list_tag]*)* %8, null
-  br i1 %cmp8, label %if.end10, label %if.then9
+  %8 = load void (i8*, [1 x %struct.__va_list_tag]*)** @internal_error_function, align 8, !dbg !1936, !tbaa !1178
+  %cmp8 = icmp eq void (i8*, [1 x %struct.__va_list_tag]*)* %8, null, !dbg !1936
+  br i1 %cmp8, label %if.end10, label %if.then9, !dbg !1936
 
 if.then9:                                         ; preds = %if.end7
-  call void %8(i8* %msgid, [1 x %struct.__va_list_tag]* %ap) #10
-  %.pre = load %struct.diagnostic_context** @global_dc, align 8, !tbaa !3
-  br label %if.end10
+  call void %8(i8* %msgid, [1 x %struct.__va_list_tag]* %ap) #11, !dbg !1937
+  %.pre = load %struct.diagnostic_context** @global_dc, align 8, !dbg !1938, !tbaa !1178
+  br label %if.end10, !dbg !1937
 
 if.end10:                                         ; preds = %if.end7, %if.then9
   %9 = phi %struct.diagnostic_context* [ %2, %if.end7 ], [ %.pre, %if.then9 ]
-  %10 = load i8** @input_filename, align 8, !tbaa !3
-  %11 = load i32* @lineno, align 4, !tbaa !0
-  call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 376, i32 8, i1 false) #3
-  %message.i = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 1
-  store i8* %msgid, i8** %message.i, align 8, !tbaa !3
-  %args_ptr1.i = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 2
-  store [1 x %struct.__va_list_tag]* %ap, [1 x %struct.__va_list_tag]** %args_ptr1.i, align 8, !tbaa !3
-  %file2.i = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 3
-  store i8* %10, i8** %file2.i, align 8, !tbaa !3
-  %line3.i = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 4
-  store i32 %11, i32* %line3.i, align 8, !tbaa !0
-  %warn4.i = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 5
-  store i32 0, i32* %warn4.i, align 4, !tbaa !0
-  %begin_diagnostic.i = getelementptr inbounds %struct.diagnostic_context* %9, i64 0, i32 6
-  %12 = load void (%struct.output_buffer*, %struct.diagnostic_context*)** %begin_diagnostic.i, align 8, !tbaa !3
-  %begin_diagnostic5.i = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 6
-  store void (%struct.output_buffer*, %struct.diagnostic_context*)* %12, void (%struct.output_buffer*, %struct.diagnostic_context*)** %begin_diagnostic5.i, align 8, !tbaa !3
-  %end_diagnostic.i = getelementptr inbounds %struct.diagnostic_context* %9, i64 0, i32 7
-  %13 = load void (%struct.output_buffer*, %struct.diagnostic_context*)** %end_diagnostic.i, align 8, !tbaa !3
-  %end_diagnostic6.i = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 7
-  store void (%struct.output_buffer*, %struct.diagnostic_context*)* %13, void (%struct.output_buffer*, %struct.diagnostic_context*)** %end_diagnostic6.i, align 8, !tbaa !3
-  call void @report_diagnostic(%struct.diagnostic_context* %dc) #11
-  call void @llvm.va_end(i8* %arraydecay1)
-  %14 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  call void (%struct._IO_FILE*, i8*, ...)* @fnotice(%struct._IO_FILE* %14, i8* getelementptr inbounds ([421 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([27 x i8]* @.str13, i64 0, i64 0)) #11
-  call void @exit(i32 1) #14
-  unreachable
+  %10 = load i8** @input_filename, align 8, !dbg !1939, !tbaa !1178
+  %11 = load i32* @lineno, align 4, !dbg !1939, !tbaa !1172
+  call void @llvm.dbg.value(metadata !{%struct.diagnostic_context* %dc}, i64 0, metadata !1940) #4, !dbg !1941
+  call void @llvm.dbg.value(metadata !{i8* %msgid}, i64 0, metadata !1942) #4, !dbg !1943
+  call void @llvm.dbg.value(metadata !{[1 x %struct.__va_list_tag]* %ap}, i64 0, metadata !1944) #4, !dbg !1945
+  call void @llvm.dbg.value(metadata !{i8* %10}, i64 0, metadata !1946) #4, !dbg !1947
+  call void @llvm.dbg.value(metadata !{i32 %11}, i64 0, metadata !1948) #4, !dbg !1949
+  call void @llvm.dbg.value(metadata !289, i64 0, metadata !1950) #4, !dbg !1951
+  call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 376, i32 8, i1 false) #4, !dbg !1952
+  %message.i = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 1, !dbg !1953
+  store i8* %msgid, i8** %message.i, align 8, !dbg !1953, !tbaa !1178
+  %args_ptr1.i = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 2, !dbg !1954
+  call void @llvm.dbg.value(metadata !{[1 x %struct.__va_list_tag]* %ap}, i64 0, metadata !941), !dbg !1954
+  store [1 x %struct.__va_list_tag]* %ap, [1 x %struct.__va_list_tag]** %args_ptr1.i, align 8, !dbg !1954, !tbaa !1178
+  %file2.i = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 3, !dbg !1955
+  store i8* %10, i8** %file2.i, align 8, !dbg !1955, !tbaa !1178
+  %line3.i = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 4, !dbg !1956
+  store i32 %11, i32* %line3.i, align 8, !dbg !1956, !tbaa !1172
+  %warn4.i = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 5, !dbg !1957
+  store i32 0, i32* %warn4.i, align 4, !dbg !1957, !tbaa !1172
+  %begin_diagnostic.i = getelementptr inbounds %struct.diagnostic_context* %9, i64 0, i32 6, !dbg !1938
+  %12 = load void (%struct.output_buffer*, %struct.diagnostic_context*)** %begin_diagnostic.i, align 8, !dbg !1938, !tbaa !1178
+  %begin_diagnostic5.i = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 6, !dbg !1938
+  store void (%struct.output_buffer*, %struct.diagnostic_context*)* %12, void (%struct.output_buffer*, %struct.diagnostic_context*)** %begin_diagnostic5.i, align 8, !dbg !1938, !tbaa !1178
+  %end_diagnostic.i = getelementptr inbounds %struct.diagnostic_context* %9, i64 0, i32 7, !dbg !1958
+  %13 = load void (%struct.output_buffer*, %struct.diagnostic_context*)** %end_diagnostic.i, align 8, !dbg !1958, !tbaa !1178
+  %end_diagnostic6.i = getelementptr inbounds %struct.diagnostic_context* %dc, i64 0, i32 7, !dbg !1958
+  store void (%struct.output_buffer*, %struct.diagnostic_context*)* %13, void (%struct.output_buffer*, %struct.diagnostic_context*)** %end_diagnostic6.i, align 8, !dbg !1958, !tbaa !1178
+  call void @report_diagnostic(%struct.diagnostic_context* %dc) #12, !dbg !1959
+  call void @llvm.va_end(i8* %arraydecay1), !dbg !1960
+  %14 = load %struct._IO_FILE** @stderr, align 8, !dbg !1961, !tbaa !1178
+  call void (%struct._IO_FILE*, i8*, ...)* @fnotice(%struct._IO_FILE* %14, i8* getelementptr inbounds ([421 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([27 x i8]* @.str13, i64 0, i64 0)) #12, !dbg !1961
+  call void @exit(i32 1) #15, !dbg !1962
+  unreachable, !dbg !1962
 }

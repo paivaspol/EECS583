@@ -1,52 +1,56 @@
 define internal fastcc i32 @read_flag(%struct.cpp_reader* %pfile, i32 %last) #0 {
 entry:
-  %call = tail call %struct.cpp_token* @_cpp_lex_token(%struct.cpp_reader* %pfile) #8
-  %type = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 2
-  %bf.load = load i8* %type, align 2
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !889), !dbg !1660
+  tail call void @llvm.dbg.value(metadata !{i32 %last}, i64 0, metadata !890), !dbg !1661
+  %call = tail call %struct.cpp_token* @_cpp_lex_token(%struct.cpp_reader* %pfile) #9, !dbg !1662
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_token* %call}, i64 0, metadata !891), !dbg !1662
+  %type = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 2, !dbg !1663
+  %bf.load = load i8* %type, align 2, !dbg !1663
   switch i8 %bf.load, label %if.then27 [
     i8 57, label %land.lhs.true
     i8 67, label %return
-  ]
+  ], !dbg !1663
 
 land.lhs.true:                                    ; preds = %entry
-  %len = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 4, i32 0, i32 0
-  %0 = load i32* %len, align 4, !tbaa !2
-  %cmp1 = icmp eq i32 %0, 1
-  br i1 %cmp1, label %if.then, label %if.then27
+  %len = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 4, i32 0, i32 0, !dbg !1663
+  %0 = load i32* %len, align 4, !dbg !1663, !tbaa !1065
+  %cmp1 = icmp eq i32 %0, 1, !dbg !1663
+  br i1 %cmp1, label %if.then, label %if.then27, !dbg !1663
 
 if.then:                                          ; preds = %land.lhs.true
-  %text = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 4, i32 0, i32 1
-  %1 = load i8** %text, align 8, !tbaa !3
-  %2 = load i8* %1, align 1, !tbaa !0
-  %conv = zext i8 %2 to i32
-  %sub = add nsw i32 %conv, -48
-  %cmp4 = icmp ugt i32 %sub, %last
-  %cmp7 = icmp ult i32 %sub, 5
-  %or.cond = and i1 %cmp4, %cmp7
-  br i1 %or.cond, label %land.lhs.true9, label %if.end21
+  %text = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 4, i32 0, i32 1, !dbg !1664
+  %1 = load i8** %text, align 8, !dbg !1664, !tbaa !1070
+  %2 = load i8* %1, align 1, !dbg !1664, !tbaa !1061
+  %conv = zext i8 %2 to i32, !dbg !1664
+  %sub = add nsw i32 %conv, -48, !dbg !1664
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !892), !dbg !1664
+  %cmp4 = icmp ugt i32 %sub, %last, !dbg !1665
+  %cmp7 = icmp ult i32 %sub, 5, !dbg !1665
+  %or.cond = and i1 %cmp4, %cmp7, !dbg !1665
+  br i1 %or.cond, label %land.lhs.true9, label %if.end21, !dbg !1665
 
 land.lhs.true9:                                   ; preds = %if.then
-  %cmp10 = icmp ne i32 %sub, 4
-  %cmp12 = icmp eq i32 %last, 3
-  %or.cond42 = or i1 %cmp10, %cmp12
-  br i1 %or.cond42, label %land.lhs.true14, label %if.end21
+  %cmp10 = icmp ne i32 %sub, 4, !dbg !1665
+  %cmp12 = icmp eq i32 %last, 3, !dbg !1665
+  %or.cond42 = or i1 %cmp10, %cmp12, !dbg !1665
+  br i1 %or.cond42, label %land.lhs.true14, label %if.end21, !dbg !1665
 
 land.lhs.true14:                                  ; preds = %land.lhs.true9
-  %cmp15 = icmp ne i32 %sub, 2
-  %cmp18 = icmp eq i32 %last, 0
-  %or.cond43 = or i1 %cmp15, %cmp18
-  br i1 %or.cond43, label %return, label %if.end21
+  %cmp15 = icmp ne i32 %sub, 2, !dbg !1665
+  %cmp18 = icmp eq i32 %last, 0, !dbg !1665
+  %or.cond43 = or i1 %cmp15, %cmp18, !dbg !1665
+  br i1 %or.cond43, label %return, label %if.end21, !dbg !1665
 
 if.end21:                                         ; preds = %land.lhs.true14, %land.lhs.true9, %if.then
-  %cmp25 = icmp eq i8 %bf.load, 67
-  br i1 %cmp25, label %return, label %if.then27
+  %cmp25 = icmp eq i8 %bf.load, 67, !dbg !1666
+  br i1 %cmp25, label %return, label %if.then27, !dbg !1666
 
 if.then27:                                        ; preds = %entry, %land.lhs.true, %if.end21
-  %call28 = tail call i8* @cpp_token_as_text(%struct.cpp_reader* %pfile, %struct.cpp_token* %call) #8
-  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_error(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([36 x i8]* @.str37, i64 0, i64 0), i8* %call28) #8
-  br label %return
+  %call28 = tail call i8* @cpp_token_as_text(%struct.cpp_reader* %pfile, %struct.cpp_token* %call) #9, !dbg !1667
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_error(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([36 x i8]* @.str37, i64 0, i64 0), i8* %call28) #9, !dbg !1667
+  br label %return, !dbg !1667
 
 return:                                           ; preds = %entry, %if.then27, %if.end21, %land.lhs.true14
   %retval.0 = phi i32 [ %sub, %land.lhs.true14 ], [ 0, %if.end21 ], [ 0, %if.then27 ], [ 0, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1668
 }

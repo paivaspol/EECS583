@@ -1,11 +1,15 @@
 define void @cctk_timercreatei_(i32* nocapture %ierr) #1 {
+entry:
   %timername.i = alloca [40 x i8], align 16
-  %1 = getelementptr inbounds [40 x i8]* %timername.i, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 40, i8* %1) #6
-  %2 = load i32* @n_timers, align 4, !tbaa !11
-  %3 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %1, i32 0, i64 40, i8* getelementptr inbounds ([18 x i8]* @.str, i64 0, i64 0), i32 %2) #7
-  %4 = call fastcc i32 @CCTKi_TimerCreate(i8* %1) #7
-  call void @llvm.lifetime.end(i64 40, i8* %1) #6
-  store i32 %4, i32* %ierr, align 4, !tbaa !11
-  ret void
+  call void @llvm.dbg.value(metadata !{i32* %ierr}, i64 0, metadata !130), !dbg !444
+  %0 = getelementptr inbounds [40 x i8]* %timername.i, i64 0, i64 0, !dbg !445
+  call void @llvm.lifetime.start(i64 40, i8* %0) #7, !dbg !445
+  call void @llvm.dbg.declare(metadata !{[40 x i8]* %timername.i}, metadata !124) #7, !dbg !445
+  %1 = load i32* @n_timers, align 4, !dbg !447, !tbaa !359
+  %call.i = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([18 x i8]* @.str, i64 0, i64 0), i32 %1) #8, !dbg !447
+  %call3.i = call fastcc i32 @CCTKi_TimerCreate(i8* %0) #8, !dbg !448
+  call void @llvm.dbg.value(metadata !{i32 %call3.i}, i64 0, metadata !449) #7, !dbg !448
+  call void @llvm.lifetime.end(i64 40, i8* %0) #7, !dbg !450
+  store i32 %call3.i, i32* %ierr, align 4, !dbg !446, !tbaa !359
+  ret void, !dbg !451
 }

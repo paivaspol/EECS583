@@ -1,0 +1,53 @@
+define void @_ZN15EthernetIIFrameC2ERKS_(%class.EthernetIIFrame* %this, %class.EthernetIIFrame* %other) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.EthernetIIFrame* %this}, i64 0, metadata !3342), !dbg !4674
+  tail call void @llvm.dbg.value(metadata !{%class.EthernetIIFrame* %other}, i64 0, metadata !3343), !dbg !4674
+  %0 = getelementptr inbounds %class.EthernetIIFrame* %this, i64 0, i32 0, !dbg !4675
+  tail call void @_ZN10EtherFrameC2EPKci(%class.EtherFrame* %0, i8* null, i32 0) #9, !dbg !4675
+  %1 = getelementptr inbounds %class.EthernetIIFrame* %this, i64 0, i32 0, i32 0, i32 0, i32 0, !dbg !4675
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([27 x i8*]* @_ZTV15EthernetIIFrame, i64 0, i64 2) to i32 (...)**), i32 (...)*** %1, align 8, !dbg !4675, !tbaa !4540
+  %2 = getelementptr inbounds %class.EthernetIIFrame* %this, i64 0, i32 0, i32 0, i32 0, !dbg !4676
+  %namestr.i = getelementptr inbounds %class.EthernetIIFrame* %other, i64 0, i32 0, i32 0, i32 0, i32 1, !dbg !4677
+  %3 = load i8** %namestr.i, align 8, !dbg !4677, !tbaa !4556
+  %tobool.i = icmp eq i8* %3, null, !dbg !4677
+  %..i = select i1 %tobool.i, i8* getelementptr inbounds ([1 x i8]* @.str39, i64 0, i64 0), i8* %3, !dbg !4677
+  invoke void @_ZN7cObject7setNameEPKc(%class.cObject* %2, i8* %..i) #9
+          to label %invoke.cont2 unwind label %lpad, !dbg !4676
+
+invoke.cont2:                                     ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{%class.EthernetIIFrame* %this}, i64 0, metadata !4678), !dbg !4680
+  tail call void @llvm.dbg.value(metadata !{%class.EthernetIIFrame* %other}, i64 0, metadata !4681), !dbg !4680
+  %cmp.i = icmp eq %class.EthernetIIFrame* %this, %other, !dbg !4682
+  br i1 %cmp.i, label %invoke.cont3, label %if.end.i, !dbg !4682
+
+if.end.i:                                         ; preds = %invoke.cont2
+  %4 = getelementptr inbounds %class.EthernetIIFrame* %other, i64 0, i32 0, !dbg !4683
+  %call.i8 = invoke %class.EtherFrame* @_ZN10EtherFrameaSERKS_(%class.EtherFrame* %0, %class.EtherFrame* %4) #9
+          to label %call.i.noexc unwind label %lpad
+
+call.i.noexc:                                     ; preds = %if.end.i
+  %etherType.i = getelementptr inbounds %class.EthernetIIFrame* %other, i64 0, i32 1, !dbg !4684
+  %5 = load i32* %etherType.i, align 4, !dbg !4684, !tbaa !4668
+  %etherType2.i = getelementptr inbounds %class.EthernetIIFrame* %this, i64 0, i32 1, !dbg !4684
+  store i32 %5, i32* %etherType2.i, align 4, !dbg !4684, !tbaa !4668
+  br label %invoke.cont3, !dbg !4685
+
+invoke.cont3:                                     ; preds = %call.i.noexc, %invoke.cont2
+  ret void, !dbg !4686
+
+lpad:                                             ; preds = %if.end.i, %entry
+  %6 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !4676
+  invoke void @_ZN10EtherFrameD2Ev(%class.EtherFrame* %0) #9
+          to label %eh.resume unwind label %terminate.lpad, !dbg !4686
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %6, !dbg !4686
+
+terminate.lpad:                                   ; preds = %lpad
+  %7 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !4686
+  %8 = extractvalue { i8*, i32 } %7, 0, !dbg !4686
+  tail call void @__clang_call_terminate(i8* %8) #11, !dbg !4686
+  unreachable, !dbg !4686
+}

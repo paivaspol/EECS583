@@ -1,74 +1,80 @@
 define internal fastcc i32 @copy_cost(%struct.rtx_def* %x, i32 %mode, i32 %class, i32 %to_p) #0 {
 entry:
-  %0 = bitcast %struct.rtx_def* %x to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 62
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !810), !dbg !1816
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !811), !dbg !1817
+  tail call void @llvm.dbg.value(metadata !{i32 %class}, i64 0, metadata !812), !dbg !1818
+  tail call void @llvm.dbg.value(metadata !{i32 %to_p}, i64 0, metadata !813), !dbg !1819
+  tail call void @llvm.dbg.value(metadata !316, i64 0, metadata !814), !dbg !1820
+  %0 = bitcast %struct.rtx_def* %x to i32*, !dbg !1821
+  %bf.load = load i32* %0, align 8, !dbg !1821
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1821
+  %cmp = icmp eq i32 %bf.clear, 62, !dbg !1821
+  br i1 %cmp, label %return, label %if.end, !dbg !1821
 
 if.end:                                           ; preds = %entry
-  %call = tail call i32 @ix86_preferred_reload_class(%struct.rtx_def* %x, i32 %class) #5
-  %tobool = icmp eq i32 %to_p, 0
-  br i1 %tobool, label %if.then1, label %if.end16
+  %call = tail call i32 @ix86_preferred_reload_class(%struct.rtx_def* %x, i32 %class) #6, !dbg !1822
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !812), !dbg !1822
+  %tobool = icmp eq i32 %to_p, 0, !dbg !1823
+  br i1 %tobool, label %if.then1, label %if.end16, !dbg !1823
 
 if.then1:                                         ; preds = %if.end
-  %call.off = add i32 %call, -11
-  %1 = icmp ult i32 %call.off, 2
-  %cmp5 = icmp eq i32 %call, 10
-  %or.cond38 = or i1 %1, %cmp5
-  br i1 %or.cond38, label %land.lhs.true, label %if.end16
+  %call.off = add i32 %call, -11, !dbg !1824
+  %1 = icmp ult i32 %call.off, 2, !dbg !1824
+  %cmp5 = icmp eq i32 %call, 10, !dbg !1824
+  %or.cond38 = or i1 %1, %cmp5, !dbg !1824
+  br i1 %or.cond38, label %land.lhs.true, label %if.end16, !dbg !1824
 
 land.lhs.true:                                    ; preds = %if.then1
-  %2 = load i32* @target_flags, align 4, !tbaa !3
-  %and = and i32 %2, 33554432
-  %tobool6 = icmp eq i32 %and, 0
-  br i1 %tobool6, label %if.end8, label %if.end16
+  %2 = load i32* @target_flags, align 4, !dbg !1824, !tbaa !959
+  %and = and i32 %2, 33554432, !dbg !1824
+  %tobool6 = icmp eq i32 %and, 0, !dbg !1824
+  br i1 %tobool6, label %if.end8, label %if.end16, !dbg !1824
 
 if.end8:                                          ; preds = %land.lhs.true
-  %cmp7 = icmp eq i32 %mode, 2
+  %cmp7 = icmp eq i32 %mode, 2, !dbg !1824
   %phitmp = select i1 %cmp7, i32 8, i32 0
-  br i1 %cmp7, label %if.then10, label %if.end16
+  br i1 %cmp7, label %if.then10, label %if.end16, !dbg !1825
 
 if.then10:                                        ; preds = %if.end8
-  %idxprom = sext i32 %call to i64
-  %idxprom1159 = zext i32 %phitmp to i64
-  %arrayidx14 = getelementptr inbounds [59 x [25 x [25 x i32]]]* @move_cost, i64 0, i64 2, i64 %idxprom1159, i64 %idxprom
-  %3 = load i32* %arrayidx14, align 4, !tbaa !3
-  %call15 = tail call fastcc i32 @copy_cost(%struct.rtx_def* %x, i32 2, i32 %phitmp, i32 2) #6
-  %add = add nsw i32 %call15, %3
-  ret i32 %add
+  %idxprom = sext i32 %call to i64, !dbg !1826
+  %idxprom1159 = zext i32 %phitmp to i64, !dbg !1826
+  %arrayidx14 = getelementptr inbounds [59 x [25 x [25 x i32]]]* @move_cost, i64 0, i64 2, i64 %idxprom1159, i64 %idxprom, !dbg !1826
+  %3 = load i32* %arrayidx14, align 4, !dbg !1826, !tbaa !959
+  %call15 = tail call fastcc i32 @copy_cost(%struct.rtx_def* %x, i32 2, i32 %phitmp, i32 2) #7, !dbg !1827
+  %add = add nsw i32 %call15, %3, !dbg !1827
+  ret i32 %add, !dbg !1828
 
 if.end16:                                         ; preds = %if.end8, %if.then1, %land.lhs.true, %if.end
-  %bf.load17 = load i32* %0, align 8
-  %bf.clear18 = and i32 %bf.load17, 65535
-  %cmp19 = icmp eq i32 %bf.clear18, 66
-  %cmp21 = icmp eq i32 %call, 0
-  %or.cond = or i1 %cmp19, %cmp21
-  br i1 %or.cond, label %if.then22, label %if.else
+  %bf.load17 = load i32* %0, align 8, !dbg !1829
+  %bf.clear18 = and i32 %bf.load17, 65535, !dbg !1829
+  %cmp19 = icmp eq i32 %bf.clear18, 66, !dbg !1829
+  %cmp21 = icmp eq i32 %call, 0, !dbg !1829
+  %or.cond = or i1 %cmp19, %cmp21, !dbg !1829
+  br i1 %or.cond, label %if.then22, label %if.else, !dbg !1829
 
 if.then22:                                        ; preds = %if.end16
-  %call23 = tail call i32 @ix86_memory_move_cost(i32 %mode, i32 %call, i32 %to_p) #5
-  br label %return
+  %call23 = tail call i32 @ix86_memory_move_cost(i32 %mode, i32 %call, i32 %to_p) #6, !dbg !1830
+  br label %return, !dbg !1830
 
 if.else:                                          ; preds = %if.end16
-  %cmp26 = icmp eq i32 %bf.clear18, 61
-  br i1 %cmp26, label %if.then27, label %return
+  %cmp26 = icmp eq i32 %bf.clear18, 61, !dbg !1831
+  br i1 %cmp26, label %if.then27, label %return, !dbg !1831
 
 if.then27:                                        ; preds = %if.else
-  %idxprom28 = sext i32 %call to i64
-  %arrayidx29 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx29 to i32*
-  %4 = load i32* %rtuint, align 4, !tbaa !3
-  %idxprom30 = zext i32 %4 to i64
-  %arrayidx31 = getelementptr inbounds [53 x i32]* @regclass_map, i64 0, i64 %idxprom30
-  %5 = load i32* %arrayidx31, align 4, !tbaa !4
-  %idxprom32 = sext i32 %5 to i64
-  %idxprom33 = zext i32 %mode to i64
-  %arrayidx36 = getelementptr inbounds [59 x [25 x [25 x i32]]]* @move_cost, i64 0, i64 %idxprom33, i64 %idxprom32, i64 %idxprom28
-  %6 = load i32* %arrayidx36, align 4, !tbaa !3
-  br label %return
+  %idxprom28 = sext i32 %call to i64, !dbg !1832
+  %arrayidx29 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0, !dbg !1832
+  %rtuint = bitcast %union.rtunion_def* %arrayidx29 to i32*, !dbg !1832
+  %4 = load i32* %rtuint, align 4, !dbg !1832, !tbaa !959
+  %idxprom30 = zext i32 %4 to i64, !dbg !1832
+  %arrayidx31 = getelementptr inbounds [53 x i32]* @regclass_map, i64 0, i64 %idxprom30, !dbg !1832
+  %5 = load i32* %arrayidx31, align 4, !dbg !1832, !tbaa !1005
+  %idxprom32 = sext i32 %5 to i64, !dbg !1832
+  %idxprom33 = zext i32 %mode to i64, !dbg !1832
+  %arrayidx36 = getelementptr inbounds [59 x [25 x [25 x i32]]]* @move_cost, i64 0, i64 %idxprom33, i64 %idxprom32, i64 %idxprom28, !dbg !1832
+  %6 = load i32* %arrayidx36, align 4, !dbg !1832, !tbaa !959
+  br label %return, !dbg !1832
 
 return:                                           ; preds = %if.else, %entry, %if.then27, %if.then22
   %retval.0 = phi i32 [ %call23, %if.then22 ], [ %6, %if.then27 ], [ 0, %entry ], [ 4, %if.else ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1828
 }

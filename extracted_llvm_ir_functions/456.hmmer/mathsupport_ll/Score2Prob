@@ -1,20 +1,22 @@
 define float @Score2Prob(i32 %sc, float %null) #0 {
 entry:
-  %cmp = icmp eq i32 %sc, -987654321
-  br i1 %cmp, label %return, label %if.else
+  tail call void @llvm.dbg.value(metadata !{i32 %sc}, i64 0, metadata !17), !dbg !183
+  tail call void @llvm.dbg.value(metadata !{float %null}, i64 0, metadata !18), !dbg !183
+  %cmp = icmp eq i32 %sc, -987654321, !dbg !184
+  br i1 %cmp, label %return, label %if.else, !dbg !184
 
 if.else:                                          ; preds = %entry
-  %conv = fpext float %null to double
-  %conv1 = sitofp i32 %sc to float
-  %conv2 = fpext float %conv1 to double
-  %div = fdiv double %conv2, 1.000000e+03
-  %mul = fmul double %div, 0x3FE62E42FEAD449C
-  %call = tail call double @exp(double %mul) #5
-  %mul3 = fmul double %conv, %call
-  %conv4 = fptrunc double %mul3 to float
-  br label %return
+  %conv = fpext float %null to double, !dbg !185
+  %conv1 = sitofp i32 %sc to float, !dbg !185
+  %conv2 = fpext float %conv1 to double, !dbg !185
+  %div = fdiv double %conv2, 1.000000e+03, !dbg !185
+  %mul = fmul double %div, 0x3FE62E42FEAD449C, !dbg !185
+  %call = tail call double @exp(double %mul) #6, !dbg !185
+  %mul3 = fmul double %conv, %call, !dbg !185
+  %conv4 = fptrunc double %mul3 to float, !dbg !185
+  br label %return, !dbg !185
 
 return:                                           ; preds = %entry, %if.else
   %retval.0 = phi float [ %conv4, %if.else ], [ 0.000000e+00, %entry ]
-  ret float %retval.0
+  ret float %retval.0, !dbg !186
 }

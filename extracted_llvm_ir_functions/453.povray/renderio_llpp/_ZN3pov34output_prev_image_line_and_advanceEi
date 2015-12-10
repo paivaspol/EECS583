@@ -1,0 +1,25 @@
+define void @_ZN3pov34output_prev_image_line_and_advanceEi(i32 %current_y) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %current_y}, i64 0, metadata !130), !dbg !558
+  %0 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 24), align 8, !dbg !559, !tbaa !358
+  %cmp = icmp slt i32 %0, %current_y, !dbg !559
+  br i1 %cmp, label %if.then, label %if.end, !dbg !559
+
+if.then:                                          ; preds = %entry
+  %1 = load [5 x float]** @_ZN3pov13Previous_LineE, align 8, !dbg !560, !tbaa !354
+  tail call void @_ZN3pov46output_single_image_line_with_alpha_correctionEPA5_fi([5 x float]* %1, i32 undef) #7, !dbg !560
+  br label %if.end, !dbg !562
+
+if.end:                                           ; preds = %if.then, %entry
+  %2 = load [5 x float]** @_ZN3pov13Previous_LineE, align 8, !dbg !563, !tbaa !354
+  tail call void @llvm.dbg.value(metadata !{[5 x float]* %2}, i64 0, metadata !131), !dbg !563
+  %3 = load [5 x float]** @_ZN3pov12Current_LineE, align 8, !dbg !564, !tbaa !354
+  store [5 x float]* %3, [5 x float]** @_ZN3pov13Previous_LineE, align 8, !dbg !564, !tbaa !354
+  store [5 x float]* %2, [5 x float]** @_ZN3pov12Current_LineE, align 8, !dbg !565, !tbaa !354
+  %4 = load i8** @_ZN3pov31Previous_Line_Antialiased_FlagsE, align 8, !dbg !566, !tbaa !354
+  tail call void @llvm.dbg.value(metadata !{i8* %4}, i64 0, metadata !132), !dbg !566
+  %5 = load i8** @_ZN3pov30Current_Line_Antialiased_FlagsE, align 8, !dbg !567, !tbaa !354
+  store i8* %5, i8** @_ZN3pov31Previous_Line_Antialiased_FlagsE, align 8, !dbg !567, !tbaa !354
+  store i8* %4, i8** @_ZN3pov30Current_Line_Antialiased_FlagsE, align 8, !dbg !568, !tbaa !354
+  ret void, !dbg !569
+}

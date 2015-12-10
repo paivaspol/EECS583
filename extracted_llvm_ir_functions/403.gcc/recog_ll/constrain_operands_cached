@@ -1,14 +1,15 @@
 define i32 @constrain_operands_cached(i32 %strict) #0 {
 entry:
-  %0 = load i32* @which_alternative, align 4, !tbaa !0
-  %cmp = icmp eq i32 %0, -1
-  br i1 %cmp, label %if.then, label %return
+  tail call void @llvm.dbg.value(metadata !{i32 %strict}, i64 0, metadata !787), !dbg !1996
+  %0 = load i32* @which_alternative, align 4, !dbg !1997, !tbaa !1168
+  %cmp = icmp eq i32 %0, -1, !dbg !1997
+  br i1 %cmp, label %if.then, label %return, !dbg !1997
 
 if.then:                                          ; preds = %entry
-  %call = tail call i32 @constrain_operands(i32 %strict) #7
-  br label %return
+  %call = tail call i32 @constrain_operands(i32 %strict) #8, !dbg !1998
+  br label %return, !dbg !1998
 
 return:                                           ; preds = %entry, %if.then
   %retval.0 = phi i32 [ %call, %if.then ], [ 1, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1999
 }

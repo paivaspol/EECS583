@@ -1,30 +1,33 @@
-define void @dump_estat(%struct.__sFILE* %log, %struct.t_grp_ener* nocapture readonly %estat) #3 {
-  %1 = icmp eq %struct.__sFILE* %log, null
-  br i1 %1, label %.loopexit, label %.preheader
+define void @dump_estat(%struct._IO_FILE* %log, %struct.t_grp_ener* nocapture %estat) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %log}, i64 0, metadata !239), !dbg !450
+  tail call void @llvm.dbg.value(metadata !{%struct.t_grp_ener* %estat}, i64 0, metadata !240), !dbg !450
+  %tobool = icmp eq %struct._IO_FILE* %log, null, !dbg !451
+  br i1 %tobool, label %if.end, label %for.cond.preheader, !dbg !451
 
-.preheader:                                       ; preds = %0
-  %2 = getelementptr inbounds %struct.t_grp_ener* %estat, i64 0, i32 0
-  %3 = load i32* %2, align 4, !tbaa !38
-  %4 = icmp sgt i32 %3, 0
-  br i1 %4, label %.lr.ph, label %.loopexit
+for.cond.preheader:                               ; preds = %entry
+  %nn = getelementptr inbounds %struct.t_grp_ener* %estat, i64 0, i32 0, !dbg !452
+  %0 = load i32* %nn, align 4, !dbg !452, !tbaa !392
+  %cmp6 = icmp sgt i32 %0, 0, !dbg !452
+  br i1 %cmp6, label %for.body.lr.ph, label %if.end, !dbg !452
 
-.lr.ph:                                           ; preds = %.preheader
-  %5 = getelementptr inbounds %struct.t_grp_ener* %estat, i64 0, i32 1, i64 1
-  br label %6
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %arrayidx = getelementptr inbounds %struct.t_grp_ener* %estat, i64 0, i32 1, i64 1, !dbg !454
+  br label %for.body, !dbg !452
 
-; <label>:6                                       ; preds = %.lr.ph, %6
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %6 ]
-  %7 = load float** %5, align 8, !tbaa !39
-  %8 = getelementptr inbounds float* %7, i64 %indvars.iv
-  %9 = load float* %8, align 4, !tbaa !33
-  %10 = fpext float %9 to double
-  %11 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([8 x i8]* @.str3, i64 0, i64 0), double %10) #8
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %12 = load i32* %2, align 4, !tbaa !38
-  %13 = sext i32 %12 to i64
-  %14 = icmp slt i64 %indvars.iv.next, %13
-  br i1 %14, label %6, label %.loopexit
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %1 = load float** %arrayidx, align 8, !dbg !454, !tbaa !395
+  %arrayidx1 = getelementptr inbounds float* %1, i64 %indvars.iv, !dbg !454
+  %2 = load float* %arrayidx1, align 4, !dbg !454, !tbaa !405
+  %conv = fpext float %2 to double, !dbg !454
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([8 x i8]* @.str3, i64 0, i64 0), double %conv) #5, !dbg !454
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !452
+  %3 = load i32* %nn, align 4, !dbg !452, !tbaa !392
+  %4 = trunc i64 %indvars.iv.next to i32, !dbg !452
+  %cmp = icmp slt i32 %4, %3, !dbg !452
+  br i1 %cmp, label %for.body, label %if.end, !dbg !452
 
-.loopexit:                                        ; preds = %6, %.preheader, %0
-  ret void
+if.end:                                           ; preds = %for.cond.preheader, %for.body, %entry
+  ret void, !dbg !456
 }

@@ -1,66 +1,72 @@
 define i8* @md5_finish_ctx(%struct.md5_ctx* %ctx, i8* %resbuf) #0 {
 entry:
-  %buflen = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 5
-  %0 = load i32* %buflen, align 4, !tbaa !0
-  %arrayidx = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 4, i64 0
-  %1 = load i32* %arrayidx, align 4, !tbaa !0
-  %uadd = tail call { i32, i1 } @llvm.uadd.with.overflow.i32(i32 %1, i32 %0)
-  %2 = extractvalue { i32, i1 } %uadd, 0
-  store i32 %2, i32* %arrayidx, align 4, !tbaa !0
-  %cmp = extractvalue { i32, i1 } %uadd, 1
-  %arrayidx4 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 4, i64 1
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.md5_ctx* %ctx}, i64 0, metadata !43), !dbg !189
+  tail call void @llvm.dbg.value(metadata !{i8* %resbuf}, i64 0, metadata !44), !dbg !190
+  %buflen = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 5, !dbg !191
+  %0 = load i32* %buflen, align 4, !dbg !191, !tbaa !173
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !45), !dbg !191
+  %arrayidx = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 4, i64 0, !dbg !192
+  %1 = load i32* %arrayidx, align 4, !dbg !192, !tbaa !173
+  %uadd = tail call { i32, i1 } @llvm.uadd.with.overflow.i32(i32 %1, i32 %0), !dbg !192
+  %2 = extractvalue { i32, i1 } %uadd, 0, !dbg !192
+  store i32 %2, i32* %arrayidx, align 4, !dbg !192, !tbaa !173
+  %cmp = extractvalue { i32, i1 } %uadd, 1, !dbg !193
+  %arrayidx4 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 4, i64 1, !dbg !194
+  br i1 %cmp, label %if.then, label %if.end, !dbg !193
 
 if.then:                                          ; preds = %entry
-  %3 = load i32* %arrayidx4, align 4, !tbaa !0
-  %inc = add i32 %3, 1
-  store i32 %inc, i32* %arrayidx4, align 4, !tbaa !0
-  br label %if.end
+  %3 = load i32* %arrayidx4, align 4, !dbg !194, !tbaa !173
+  %inc = add i32 %3, 1, !dbg !194
+  store i32 %inc, i32* %arrayidx4, align 4, !dbg !194, !tbaa !173
+  br label %if.end, !dbg !194
 
 if.end:                                           ; preds = %entry, %if.then
-  %cmp5 = icmp ugt i32 %0, 55
-  %cond.v = select i1 %cmp5, i32 120, i32 56
-  %cond = sub i32 %cond.v, %0
-  %conv = zext i32 %cond to i64
-  %idxprom = zext i32 %0 to i64
-  %arrayidx7 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 %idxprom
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %arrayidx7, i8* getelementptr inbounds ([64 x i8]* @fillbuf, i64 0, i64 0), i64 %conv, i32 1, i1 false)
-  %4 = load i32* %arrayidx, align 4, !tbaa !0
-  %shl = shl i32 %4, 3
-  %add11 = add i64 %conv, %idxprom
-  %arrayidx13 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 %add11
-  %5 = bitcast i8* %arrayidx13 to i32*
-  store i32 %shl, i32* %5, align 4, !tbaa !0
-  %6 = load i32* %arrayidx4, align 4, !tbaa !0
-  %shl16 = shl i32 %6, 3
-  %7 = load i32* %arrayidx, align 4, !tbaa !0
-  %shr = lshr i32 %7, 29
-  %or = or i32 %shr, %shl16
-  %add21 = add i64 %add11, 4
-  %arrayidx23 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 %add21
-  %8 = bitcast i8* %arrayidx23 to i32*
-  store i32 %or, i32* %8, align 4, !tbaa !0
-  %arraydecay = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 0
-  %add27 = add i64 %add11, 8
-  tail call void @md5_process_block(i8* %arraydecay, i64 %add27, %struct.md5_ctx* %ctx) #5
-  %A.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 0
-  %9 = load i32* %A.i, align 4, !tbaa !0
-  %10 = bitcast i8* %resbuf to i32*
-  store i32 %9, i32* %10, align 4, !tbaa !0
-  %B.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 1
-  %11 = load i32* %B.i, align 4, !tbaa !0
-  %arrayidx1.i = getelementptr inbounds i8* %resbuf, i64 4
-  %12 = bitcast i8* %arrayidx1.i to i32*
-  store i32 %11, i32* %12, align 4, !tbaa !0
-  %C.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 2
-  %13 = load i32* %C.i, align 4, !tbaa !0
-  %arrayidx2.i = getelementptr inbounds i8* %resbuf, i64 8
-  %14 = bitcast i8* %arrayidx2.i to i32*
-  store i32 %13, i32* %14, align 4, !tbaa !0
-  %D.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 3
-  %15 = load i32* %D.i, align 4, !tbaa !0
-  %arrayidx3.i = getelementptr inbounds i8* %resbuf, i64 12
-  %16 = bitcast i8* %arrayidx3.i to i32*
-  store i32 %15, i32* %16, align 4, !tbaa !0
-  ret i8* %resbuf
+  %cmp5 = icmp ugt i32 %0, 55, !dbg !195
+  %cond.v = select i1 %cmp5, i32 120, i32 56, !dbg !195
+  %cond = sub i32 %cond.v, %0, !dbg !195
+  %conv = zext i32 %cond to i64, !dbg !195
+  tail call void @llvm.dbg.value(metadata !{i64 %conv}, i64 0, metadata !46), !dbg !195
+  %idxprom = zext i32 %0 to i64, !dbg !196
+  %arrayidx7 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 %idxprom, !dbg !196
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %arrayidx7, i8* getelementptr inbounds ([64 x i8]* @fillbuf, i64 0, i64 0), i64 %conv, i32 1, i1 false), !dbg !196
+  %4 = load i32* %arrayidx, align 4, !dbg !197, !tbaa !173
+  %shl = shl i32 %4, 3, !dbg !197
+  %add11 = add i64 %conv, %idxprom, !dbg !197
+  %arrayidx13 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 %add11, !dbg !197
+  %5 = bitcast i8* %arrayidx13 to i32*, !dbg !197
+  store i32 %shl, i32* %5, align 4, !dbg !197, !tbaa !173
+  %6 = load i32* %arrayidx4, align 4, !dbg !198, !tbaa !173
+  %shl16 = shl i32 %6, 3, !dbg !198
+  %7 = load i32* %arrayidx, align 4, !dbg !198, !tbaa !173
+  %shr = lshr i32 %7, 29, !dbg !198
+  %or = or i32 %shr, %shl16, !dbg !198
+  %add21 = add i64 %add11, 4, !dbg !198
+  %arrayidx23 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 %add21, !dbg !198
+  %8 = bitcast i8* %arrayidx23 to i32*, !dbg !198
+  store i32 %or, i32* %8, align 4, !dbg !198, !tbaa !173
+  %arraydecay = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 0, !dbg !199
+  %add27 = add i64 %add11, 8, !dbg !199
+  tail call void @md5_process_block(i8* %arraydecay, i64 %add27, %struct.md5_ctx* %ctx) #5, !dbg !199
+  tail call void @llvm.dbg.value(metadata !{%struct.md5_ctx* %ctx}, i64 0, metadata !200), !dbg !202
+  tail call void @llvm.dbg.value(metadata !{i8* %resbuf}, i64 0, metadata !203), !dbg !204
+  %A.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 0, !dbg !205
+  %9 = load i32* %A.i, align 4, !dbg !205, !tbaa !173
+  %10 = bitcast i8* %resbuf to i32*, !dbg !205
+  store i32 %9, i32* %10, align 4, !dbg !205, !tbaa !173
+  %B.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 1, !dbg !206
+  %11 = load i32* %B.i, align 4, !dbg !206, !tbaa !173
+  %arrayidx1.i = getelementptr inbounds i8* %resbuf, i64 4, !dbg !206
+  %12 = bitcast i8* %arrayidx1.i to i32*, !dbg !206
+  store i32 %11, i32* %12, align 4, !dbg !206, !tbaa !173
+  %C.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 2, !dbg !207
+  %13 = load i32* %C.i, align 4, !dbg !207, !tbaa !173
+  %arrayidx2.i = getelementptr inbounds i8* %resbuf, i64 8, !dbg !207
+  %14 = bitcast i8* %arrayidx2.i to i32*, !dbg !207
+  store i32 %13, i32* %14, align 4, !dbg !207, !tbaa !173
+  %D.i = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 3, !dbg !208
+  %15 = load i32* %D.i, align 4, !dbg !208, !tbaa !173
+  %arrayidx3.i = getelementptr inbounds i8* %resbuf, i64 12, !dbg !208
+  %16 = bitcast i8* %arrayidx3.i to i32*, !dbg !208
+  store i32 %15, i32* %16, align 4, !dbg !208, !tbaa !173
+  ret i8* %resbuf, !dbg !201
 }

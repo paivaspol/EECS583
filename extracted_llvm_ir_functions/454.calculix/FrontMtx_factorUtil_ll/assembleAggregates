@@ -1,34 +1,60 @@
 define internal fastcc void @assembleAggregates(%struct._Chv* %frontJ, %struct._ChvList* %aggList, %struct._ChvManager* %chvmanager, double* nocapture %cpus, i32 %msglvl, %struct._IO_FILE* %msgFile) #0 {
 entry:
-  %id = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 0
-  %0 = load i32* %id, align 4, !tbaa !3
-  %call = tail call %struct._Chv* @ChvList_getList(%struct._ChvList* %aggList, i32 %0) #5
-  %cmp11 = icmp eq %struct._Chv* %call, null
-  br i1 %cmp11, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %frontJ}, i64 0, metadata !574), !dbg !970
+  tail call void @llvm.dbg.value(metadata !{%struct._ChvList* %aggList}, i64 0, metadata !575), !dbg !971
+  tail call void @llvm.dbg.value(metadata !{%struct._ChvManager* %chvmanager}, i64 0, metadata !576), !dbg !972
+  tail call void @llvm.dbg.value(metadata !{double* %cpus}, i64 0, metadata !577), !dbg !973
+  tail call void @llvm.dbg.value(metadata !{i32 %msglvl}, i64 0, metadata !578), !dbg !974
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %msgFile}, i64 0, metadata !579), !dbg !975
+  %call = tail call i32 @gettimeofday(%struct.timeval* @TV, %struct.timezone* @TZ) #6, !dbg !976
+  %0 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !976, !tbaa !665
+  %conv = sitofp i64 %0 to double, !dbg !976
+  %1 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !976, !tbaa !665
+  %conv1 = sitofp i64 %1 to double, !dbg !976
+  %mul = fmul double %conv1, 1.000000e-06, !dbg !976
+  %add = fadd double %conv, %mul, !dbg !976
+  tail call void @llvm.dbg.value(metadata !{double %add}, i64 0, metadata !582), !dbg !976
+  %id = getelementptr inbounds %struct._Chv* %frontJ, i64 0, i32 0, !dbg !977
+  %2 = load i32* %id, align 4, !dbg !977, !tbaa !612
+  %call2 = tail call %struct._Chv* @ChvList_getList(%struct._ChvList* %aggList, i32 %2) #6, !dbg !977
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %call2}, i64 0, metadata !581), !dbg !977
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %call2}, i64 0, metadata !580), !dbg !978
+  %cmp21 = icmp eq %struct._Chv* %call2, null, !dbg !978
+  br i1 %cmp21, label %for.end, label %for.body, !dbg !978
 
 for.body:                                         ; preds = %entry, %for.body
-  %chv.012 = phi %struct._Chv* [ %1, %for.body ], [ %call, %entry ]
-  tail call void @Chv_assembleChv(%struct._Chv* %frontJ, %struct._Chv* %chv.012) #5
-  %next = getelementptr inbounds %struct._Chv* %chv.012, i64 0, i32 10
-  %1 = load %struct._Chv** %next, align 8, !tbaa !0
-  %cmp = icmp eq %struct._Chv* %1, null
-  br i1 %cmp, label %for.end, label %for.body
+  %chv.022 = phi %struct._Chv* [ %3, %for.body ], [ %call2, %entry ]
+  tail call void @Chv_assembleChv(%struct._Chv* %frontJ, %struct._Chv* %chv.022) #6, !dbg !980
+  %next = getelementptr inbounds %struct._Chv* %chv.022, i64 0, i32 10, !dbg !978
+  %3 = load %struct._Chv** %next, align 8, !dbg !978, !tbaa !607
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %3}, i64 0, metadata !580), !dbg !978
+  %cmp = icmp eq %struct._Chv* %3, null, !dbg !978
+  br i1 %cmp, label %for.end, label %for.body, !dbg !978
 
 for.end:                                          ; preds = %for.body, %entry
-  %arrayidx = getelementptr inbounds double* %cpus, i64 8
-  %2 = load double* %arrayidx, align 8, !tbaa !4
-  %add = fadd double %2, 0.000000e+00
-  store double %add, double* %arrayidx, align 8, !tbaa !4
-  tail call void @ChvManager_releaseListOfObjects(%struct._ChvManager* %chvmanager, %struct._Chv* %call) #5
-  %cmp1 = icmp sgt i32 %msglvl, 3
-  br i1 %cmp1, label %if.then, label %if.end
+  %call4 = tail call i32 @gettimeofday(%struct.timeval* @TV, %struct.timezone* @TZ) #6, !dbg !982
+  %4 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !982, !tbaa !665
+  %conv5 = sitofp i64 %4 to double, !dbg !982
+  %5 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !982, !tbaa !665
+  %conv6 = sitofp i64 %5 to double, !dbg !982
+  %mul7 = fmul double %conv6, 1.000000e-06, !dbg !982
+  %add8 = fadd double %conv5, %mul7, !dbg !982
+  tail call void @llvm.dbg.value(metadata !{double %add8}, i64 0, metadata !583), !dbg !982
+  %sub = fsub double %add8, %add, !dbg !983
+  %arrayidx = getelementptr inbounds double* %cpus, i64 8, !dbg !983
+  %6 = load double* %arrayidx, align 8, !dbg !983, !tbaa !669
+  %add9 = fadd double %6, %sub, !dbg !983
+  store double %add9, double* %arrayidx, align 8, !dbg !983, !tbaa !669
+  tail call void @ChvManager_releaseListOfObjects(%struct._ChvManager* %chvmanager, %struct._Chv* %call2) #6, !dbg !984
+  %cmp10 = icmp sgt i32 %msglvl, 3, !dbg !985
+  br i1 %cmp10, label %if.then, label %if.end, !dbg !985
 
 if.then:                                          ; preds = %for.end
-  %3 = tail call i64 @fwrite(i8* getelementptr inbounds ([17 x i8]* @.str30, i64 0, i64 0), i64 16, i64 1, %struct._IO_FILE* %msgFile)
-  tail call void @Chv_writeForHumanEye(%struct._Chv* %frontJ, %struct._IO_FILE* %msgFile) #5
-  %call3 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #5
-  br label %if.end
+  %7 = tail call i64 @fwrite(i8* getelementptr inbounds ([17 x i8]* @.str30, i64 0, i64 0), i64 16, i64 1, %struct._IO_FILE* %msgFile), !dbg !986
+  tail call void @Chv_writeForHumanEye(%struct._Chv* %frontJ, %struct._IO_FILE* %msgFile) #6, !dbg !988
+  %call13 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #6, !dbg !989
+  br label %if.end, !dbg !990
 
 if.end:                                           ; preds = %if.then, %for.end
-  ret void
+  ret void, !dbg !991
 }

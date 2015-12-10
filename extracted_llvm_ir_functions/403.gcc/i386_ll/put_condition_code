@@ -3,56 +3,74 @@ entry:
   %code.addr = alloca i32, align 4
   %second_code = alloca i32, align 4
   %bypass_code = alloca i32, align 4
-  store i32 %code, i32* %code.addr, align 4, !tbaa !8
-  %mode.off = add i32 %mode, -57
-  %0 = icmp ult i32 %mode.off, 2
-  br i1 %0, label %if.then, label %if.end6
+  call void @llvm.dbg.value(metadata !{i32 %code}, i64 0, metadata !3807), !dbg !7385
+  store i32 %code, i32* %code.addr, align 4, !tbaa !5195
+  call void @llvm.dbg.declare(metadata !{i32* %code.addr}, metadata !3807), !dbg !7385
+  call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !3808), !dbg !7386
+  call void @llvm.dbg.value(metadata !{i32 %reverse}, i64 0, metadata !3809), !dbg !7387
+  call void @llvm.dbg.value(metadata !{i32 %fp}, i64 0, metadata !3810), !dbg !7387
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %file}, i64 0, metadata !3811), !dbg !7388
+  %mode.off = add i32 %mode, -57, !dbg !7389
+  %0 = icmp ult i32 %mode.off, 2, !dbg !7389
+  br i1 %0, label %if.then, label %if.end6, !dbg !7389
 
 if.then:                                          ; preds = %entry
-  call fastcc void @ix86_fp_comparison_codes(i32 %code, i32* %bypass_code, i32* %code.addr, i32* %second_code) #10
-  %1 = load i32* %bypass_code, align 4, !tbaa !8
-  %cmp2 = icmp eq i32 %1, 1
-  br i1 %cmp2, label %lor.lhs.false3, label %if.then5
+  call void @llvm.dbg.declare(metadata !{i32* %second_code}, metadata !3813), !dbg !7390
+  call void @llvm.dbg.declare(metadata !{i32* %bypass_code}, metadata !3815), !dbg !7390
+  call fastcc void @ix86_fp_comparison_codes(i32 %code, i32* %bypass_code, i32* %code.addr, i32* %second_code) #11, !dbg !7391
+  call void @llvm.dbg.value(metadata !{i32* %bypass_code}, i64 0, metadata !3815), !dbg !7392
+  %1 = load i32* %bypass_code, align 4, !dbg !7392, !tbaa !5195
+  %cmp2 = icmp eq i32 %1, 1, !dbg !7392
+  br i1 %cmp2, label %lor.lhs.false3, label %if.then5, !dbg !7392
 
 lor.lhs.false3:                                   ; preds = %if.then
-  %2 = load i32* %second_code, align 4, !tbaa !8
-  %cmp4 = icmp eq i32 %2, 1
-  br i1 %cmp4, label %if.end, label %if.then5
+  call void @llvm.dbg.value(metadata !{i32* %second_code}, i64 0, metadata !3813), !dbg !7392
+  %2 = load i32* %second_code, align 4, !dbg !7392, !tbaa !5195
+  %cmp4 = icmp eq i32 %2, 1, !dbg !7392
+  br i1 %cmp4, label %if.end, label %if.then5, !dbg !7392
 
 if.then5:                                         ; preds = %lor.lhs.false3, %if.then
-  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5554, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.put_condition_code, i64 0, i64 0)) #11
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5554, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.put_condition_code, i64 0, i64 0)) #12, !dbg !7393
+  unreachable, !dbg !7393
 
 if.end:                                           ; preds = %lor.lhs.false3
-  %3 = load i32* %code.addr, align 4, !tbaa !8
-  %switch.tableidx.i = add i32 %3, -104
-  %4 = icmp ult i32 %switch.tableidx.i, 16
-  br i1 %4, label %switch.lookup.i, label %ix86_fp_compare_code_to_integer.exit
+  call void @llvm.dbg.value(metadata !{i32* %code.addr}, i64 0, metadata !3807), !dbg !7394
+  %3 = load i32* %code.addr, align 4, !dbg !7394, !tbaa !5195
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !7395), !dbg !7396
+  %switch.tableidx.i = add i32 %3, -104, !dbg !7397
+  %4 = icmp ult i32 %switch.tableidx.i, 16, !dbg !7397
+  br i1 %4, label %switch.lookup.i, label %ix86_fp_compare_code_to_integer.exit, !dbg !7397
 
 switch.lookup.i:                                  ; preds = %if.end
-  %5 = sext i32 %switch.tableidx.i to i64
-  %switch.gep.i = getelementptr inbounds [16 x i32]* @switch.table492, i64 0, i64 %5
-  %switch.load.i = load i32* %switch.gep.i, align 4
-  br label %ix86_fp_compare_code_to_integer.exit
+  %5 = sext i32 %switch.tableidx.i to i64, !dbg !7397
+  %switch.gep.i = getelementptr inbounds [16 x i32]* @switch.table492, i64 0, i64 %5, !dbg !7397
+  %switch.load.i = load i32* %switch.gep.i, align 4, !dbg !7397
+  br label %ix86_fp_compare_code_to_integer.exit, !dbg !7397
 
 ix86_fp_compare_code_to_integer.exit:             ; preds = %if.end, %switch.lookup.i
   %call107 = phi i32 [ %switch.load.i, %switch.lookup.i ], [ 0, %if.end ]
-  store i32 %call107, i32* %code.addr, align 4, !tbaa !8
-  br label %if.end6
+  call void @llvm.dbg.value(metadata !{i32 %call107}, i64 0, metadata !3807), !dbg !7394
+  store i32 %call107, i32* %code.addr, align 4, !dbg !7394, !tbaa !5195
+  call void @llvm.dbg.value(metadata !6521, i64 0, metadata !3808), !dbg !7398
+  br label %if.end6, !dbg !7399
 
 if.end6:                                          ; preds = %entry, %ix86_fp_compare_code_to_integer.exit
   %.pr = phi i32 [ %call107, %ix86_fp_compare_code_to_integer.exit ], [ %code, %entry ]
   %mode.addr.0 = phi i32 [ 52, %ix86_fp_compare_code_to_integer.exit ], [ %mode, %entry ]
-  %tobool = icmp eq i32 %reverse, 0
-  br i1 %tobool, label %if.end9, label %if.then7
+  %tobool = icmp eq i32 %reverse, 0, !dbg !7400
+  call void @llvm.dbg.value(metadata !{i32* %code.addr}, i64 0, metadata !3807), !dbg !7401
+  br i1 %tobool, label %if.end9, label %if.then7, !dbg !7400
 
 if.then7:                                         ; preds = %if.end6
-  %call8 = call i32 @reverse_condition(i32 %.pr) #9
-  store i32 %call8, i32* %code.addr, align 4, !tbaa !8
-  br label %if.end9
+  call void @llvm.dbg.value(metadata !{i32* %code.addr}, i64 0, metadata !3807), !dbg !7402
+  %call8 = call i32 @reverse_condition(i32 %.pr) #10, !dbg !7402
+  call void @llvm.dbg.value(metadata !{i32 %call8}, i64 0, metadata !3807), !dbg !7402
+  store i32 %call8, i32* %code.addr, align 4, !dbg !7402, !tbaa !5195
+  br label %if.end9, !dbg !7402
 
 if.end9:                                          ; preds = %if.end6, %if.then7
-  %6 = phi i32 [ %call8, %if.then7 ], [ %.pr, %if.end6 ]
+  %6 = phi i32 [ %call8, %if.then7 ], [ %.pr, %if.end6 ], !dbg !7401
+  call void @llvm.dbg.value(metadata !{i32* %code.addr}, i64 0, metadata !3807), !dbg !7401
   switch i32 %6, label %sw.default [
     i32 103, label %sw.epilog
     i32 102, label %sw.bb10
@@ -66,117 +84,122 @@ if.end9:                                          ; preds = %if.end6, %if.then7
     i32 110, label %sw.bb66
     i32 112, label %sw.bb70
     i32 113, label %sw.bb73
-  ]
+  ], !dbg !7401
 
 sw.bb10:                                          ; preds = %if.end9
-  br label %sw.epilog
+  call void @llvm.dbg.value(metadata !7403, i64 0, metadata !3812), !dbg !7404
+  br label %sw.epilog, !dbg !7406
 
 sw.bb11:                                          ; preds = %if.end9
   switch i32 %mode.addr.0, label %if.then16 [
     i32 55, label %sw.epilog
     i32 53, label %sw.epilog
     i32 52, label %sw.epilog
-  ]
+  ], !dbg !7407
 
 if.then16:                                        ; preds = %sw.bb11
-  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5571, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.put_condition_code, i64 0, i64 0)) #11
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5571, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.put_condition_code, i64 0, i64 0)) #12, !dbg !7408
+  unreachable, !dbg !7408
 
 sw.bb18:                                          ; preds = %if.end9
-  %cmp19 = icmp eq i32 %mode.addr.0, 52
-  br i1 %cmp19, label %if.end21, label %if.then20
+  %cmp19 = icmp eq i32 %mode.addr.0, 52, !dbg !7409
+  br i1 %cmp19, label %if.end21, label %if.then20, !dbg !7409
 
 if.then20:                                        ; preds = %sw.bb18
-  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5578, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.put_condition_code, i64 0, i64 0)) #11
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5578, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.put_condition_code, i64 0, i64 0)) #12, !dbg !7410
+  unreachable, !dbg !7410
 
 if.end21:                                         ; preds = %sw.bb18
-  %tobool22 = icmp ne i32 %fp, 0
-  %cond = select i1 %tobool22, i8* getelementptr inbounds ([4 x i8]* @.str391, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str392, i64 0, i64 0)
-  br label %sw.epilog
+  %tobool22 = icmp ne i32 %fp, 0, !dbg !7411
+  %cond = select i1 %tobool22, i8* getelementptr inbounds ([4 x i8]* @.str391, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str392, i64 0, i64 0), !dbg !7411
+  call void @llvm.dbg.value(metadata !{i8* %cond}, i64 0, metadata !3812), !dbg !7411
+  br label %sw.epilog, !dbg !7412
 
 sw.bb23:                                          ; preds = %if.end9
-  %7 = and i32 %mode.addr.0, -2
-  %8 = icmp eq i32 %7, 54
-  br i1 %8, label %sw.epilog, label %if.else
+  %7 = and i32 %mode.addr.0, -2, !dbg !7413
+  %8 = icmp eq i32 %7, 54, !dbg !7413
+  br i1 %8, label %sw.epilog, label %if.else, !dbg !7413
 
 if.else:                                          ; preds = %sw.bb23
-  %9 = icmp eq i32 %7, 52
-  br i1 %9, label %sw.epilog, label %if.else32
+  %9 = icmp eq i32 %7, 52, !dbg !7414
+  br i1 %9, label %sw.epilog, label %if.else32, !dbg !7414
 
 if.else32:                                        ; preds = %if.else
-  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5587, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.put_condition_code, i64 0, i64 0)) #11
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5587, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.put_condition_code, i64 0, i64 0)) #12, !dbg !7415
+  unreachable, !dbg !7415
 
 sw.bb35:                                          ; preds = %if.end9
-  %cmp36 = icmp eq i32 %mode.addr.0, 52
-  br i1 %cmp36, label %sw.epilog, label %if.then37
+  %cmp36 = icmp eq i32 %mode.addr.0, 52, !dbg !7416
+  br i1 %cmp36, label %sw.epilog, label %if.then37, !dbg !7416
 
 if.then37:                                        ; preds = %sw.bb35
-  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5591, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.put_condition_code, i64 0, i64 0)) #11
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5591, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.put_condition_code, i64 0, i64 0)) #12, !dbg !7417
+  unreachable, !dbg !7417
 
 sw.bb39:                                          ; preds = %if.end9
-  %10 = and i32 %mode.addr.0, -2
-  %11 = icmp eq i32 %10, 54
-  br i1 %11, label %sw.epilog, label %if.else44
+  %10 = and i32 %mode.addr.0, -2, !dbg !7418
+  %11 = icmp eq i32 %10, 54, !dbg !7418
+  br i1 %11, label %sw.epilog, label %if.else44, !dbg !7418
 
 if.else44:                                        ; preds = %sw.bb39
-  %12 = icmp eq i32 %10, 52
-  br i1 %12, label %sw.epilog, label %if.else49
+  %12 = icmp eq i32 %10, 52, !dbg !7419
+  br i1 %12, label %sw.epilog, label %if.else49, !dbg !7419
 
 if.else49:                                        ; preds = %if.else44
-  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5600, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.put_condition_code, i64 0, i64 0)) #11
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5600, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.put_condition_code, i64 0, i64 0)) #12, !dbg !7420
+  unreachable, !dbg !7420
 
 sw.bb52:                                          ; preds = %if.end9
-  %cmp53 = icmp eq i32 %mode.addr.0, 52
-  br i1 %cmp53, label %if.end55, label %if.then54
+  %cmp53 = icmp eq i32 %mode.addr.0, 52, !dbg !7421
+  br i1 %cmp53, label %if.end55, label %if.then54, !dbg !7421
 
 if.then54:                                        ; preds = %sw.bb52
-  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5605, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.put_condition_code, i64 0, i64 0)) #11
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5605, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.put_condition_code, i64 0, i64 0)) #12, !dbg !7422
+  unreachable, !dbg !7422
 
 if.end55:                                         ; preds = %sw.bb52
-  %tobool56 = icmp ne i32 %fp, 0
-  %cond57 = select i1 %tobool56, i8* getelementptr inbounds ([3 x i8]* @.str398, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str399, i64 0, i64 0)
-  br label %sw.epilog
+  %tobool56 = icmp ne i32 %fp, 0, !dbg !7423
+  %cond57 = select i1 %tobool56, i8* getelementptr inbounds ([3 x i8]* @.str398, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str399, i64 0, i64 0), !dbg !7423
+  call void @llvm.dbg.value(metadata !{i8* %cond57}, i64 0, metadata !3812), !dbg !7423
+  br label %sw.epilog, !dbg !7424
 
 sw.bb58:                                          ; preds = %if.end9
-  %mode.addr.0.off = add i32 %mode.addr.0, -52
-  %13 = icmp ugt i32 %mode.addr.0.off, 1
-  %cmp63 = icmp ne i32 %mode.addr.0, 55
-  %or.cond84 = and i1 %13, %cmp63
-  br i1 %or.cond84, label %if.then64, label %sw.epilog
+  %mode.addr.0.off = add i32 %mode.addr.0, -52, !dbg !7425
+  %13 = icmp ugt i32 %mode.addr.0.off, 1, !dbg !7425
+  %cmp63 = icmp ne i32 %mode.addr.0, 55, !dbg !7425
+  %or.cond84 = and i1 %13, %cmp63, !dbg !7425
+  br i1 %or.cond84, label %if.then64, label %sw.epilog, !dbg !7425
 
 if.then64:                                        ; preds = %sw.bb58
-  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5610, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.put_condition_code, i64 0, i64 0)) #11
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5610, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.put_condition_code, i64 0, i64 0)) #12, !dbg !7426
+  unreachable, !dbg !7426
 
 sw.bb66:                                          ; preds = %if.end9
-  %cmp67 = icmp eq i32 %mode.addr.0, 52
-  br i1 %cmp67, label %sw.epilog, label %if.then68
+  %cmp67 = icmp eq i32 %mode.addr.0, 52, !dbg !7427
+  br i1 %cmp67, label %sw.epilog, label %if.then68, !dbg !7427
 
 if.then68:                                        ; preds = %sw.bb66
-  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5615, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.put_condition_code, i64 0, i64 0)) #11
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5615, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.put_condition_code, i64 0, i64 0)) #12, !dbg !7428
+  unreachable, !dbg !7428
 
 sw.bb70:                                          ; preds = %if.end9
-  %tobool71 = icmp ne i32 %fp, 0
-  %cond72 = select i1 %tobool71, i8* getelementptr inbounds ([2 x i8]* @.str401, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str402, i64 0, i64 0)
-  br label %sw.epilog
+  %tobool71 = icmp ne i32 %fp, 0, !dbg !7429
+  %cond72 = select i1 %tobool71, i8* getelementptr inbounds ([2 x i8]* @.str401, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str402, i64 0, i64 0), !dbg !7429
+  call void @llvm.dbg.value(metadata !{i8* %cond72}, i64 0, metadata !3812), !dbg !7429
+  br label %sw.epilog, !dbg !7430
 
 sw.bb73:                                          ; preds = %if.end9
-  %tobool74 = icmp ne i32 %fp, 0
-  %cond75 = select i1 %tobool74, i8* getelementptr inbounds ([3 x i8]* @.str403, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str404, i64 0, i64 0)
-  br label %sw.epilog
+  %tobool74 = icmp ne i32 %fp, 0, !dbg !7431
+  %cond75 = select i1 %tobool74, i8* getelementptr inbounds ([3 x i8]* @.str403, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str404, i64 0, i64 0), !dbg !7431
+  call void @llvm.dbg.value(metadata !{i8* %cond75}, i64 0, metadata !3812), !dbg !7431
+  br label %sw.epilog, !dbg !7432
 
 sw.default:                                       ; preds = %if.end9
-  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5625, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.put_condition_code, i64 0, i64 0)) #11
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str76, i64 0, i64 0), i32 5625, i8* getelementptr inbounds ([19 x i8]* @__FUNCTION__.put_condition_code, i64 0, i64 0)) #12, !dbg !7433
+  unreachable, !dbg !7433
 
 sw.epilog:                                        ; preds = %sw.bb66, %sw.bb58, %if.else44, %sw.bb39, %sw.bb35, %if.else, %sw.bb23, %sw.bb11, %sw.bb11, %sw.bb11, %if.end9, %sw.bb73, %sw.bb70, %if.end55, %if.end21, %sw.bb10
   %suffix.0 = phi i8* [ %cond75, %sw.bb73 ], [ %cond72, %sw.bb70 ], [ %cond57, %if.end55 ], [ %cond, %if.end21 ], [ getelementptr inbounds ([3 x i8]* @.str389, i64 0, i64 0), %sw.bb10 ], [ getelementptr inbounds ([2 x i8]* @.str388, i64 0, i64 0), %if.end9 ], [ getelementptr inbounds ([2 x i8]* @.str390, i64 0, i64 0), %sw.bb11 ], [ getelementptr inbounds ([2 x i8]* @.str390, i64 0, i64 0), %sw.bb11 ], [ getelementptr inbounds ([2 x i8]* @.str390, i64 0, i64 0), %sw.bb11 ], [ getelementptr inbounds ([2 x i8]* @.str393, i64 0, i64 0), %sw.bb23 ], [ getelementptr inbounds ([2 x i8]* @.str394, i64 0, i64 0), %if.else ], [ getelementptr inbounds ([2 x i8]* @.str395, i64 0, i64 0), %sw.bb35 ], [ getelementptr inbounds ([3 x i8]* @.str396, i64 0, i64 0), %sw.bb39 ], [ getelementptr inbounds ([3 x i8]* @.str397, i64 0, i64 0), %if.else44 ], [ getelementptr inbounds ([3 x i8]* @.str111, i64 0, i64 0), %sw.bb58 ], [ getelementptr inbounds ([3 x i8]* @.str400, i64 0, i64 0), %sw.bb66 ]
-  %call76 = call i32 @fputs(i8* %suffix.0, %struct._IO_FILE* %file) #9
-  ret void
+  %call76 = call i32 @fputs(i8* %suffix.0, %struct._IO_FILE* %file) #10, !dbg !7434
+  ret void, !dbg !7435
 }

@@ -1,17 +1,24 @@
 define i32 @CCTK_SyncGroupI(%struct.cGH* %GH, i32 %group) #1 {
-  %1 = tail call i8* @CCTK_GroupName(i32 %group) #4
-  %2 = icmp eq i8* %1, null
-  br i1 %2, label %7, label %3
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !53), !dbg !106
+  tail call void @llvm.dbg.value(metadata !{i32 %group}, i64 0, metadata !54), !dbg !106
+  tail call void @llvm.dbg.value(metadata !107, i64 0, metadata !55), !dbg !108
+  %call = tail call i8* @CCTK_GroupName(i32 %group) #5, !dbg !109
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !56), !dbg !109
+  %tobool = icmp eq i8* %call, null, !dbg !110
+  br i1 %tobool, label %if.end5, label %if.then, !dbg !110
 
-; <label>:3                                       ; preds = %0
-  %4 = load i32 (%struct.cGH*, i8*)** @CCTK_SyncGroup, align 8, !tbaa !2
-  %5 = tail call i32 %4(%struct.cGH* %GH, i8* %1) #4
-  %6 = icmp ne i32 %5, 0
-  %. = select i1 %6, i32 -2, i32 0
-  tail call void @free(i8* %1) #5
-  br label %7
+if.then:                                          ; preds = %entry
+  %0 = load i32 (%struct.cGH*, i8*)** @CCTK_SyncGroup, align 8, !dbg !111, !tbaa !113
+  %call2 = tail call i32 %0(%struct.cGH* %GH, i8* %call) #5, !dbg !111
+  tail call void @llvm.dbg.value(metadata !{i32 %call2}, i64 0, metadata !55), !dbg !111
+  %tobool3 = icmp ne i32 %call2, 0, !dbg !116
+  %.call2 = select i1 %tobool3, i32 -2, i32 0, !dbg !116
+  tail call void @llvm.dbg.value(metadata !{i32 %.call2}, i64 0, metadata !55), !dbg !117
+  tail call void @free(i8* %call) #5, !dbg !119
+  br label %if.end5, !dbg !120
 
-; <label>:7                                       ; preds = %0, %3
-  %retval.0 = phi i32 [ %., %3 ], [ -1, %0 ]
-  ret i32 %retval.0
+if.end5:                                          ; preds = %entry, %if.then
+  %retval1.0 = phi i32 [ %.call2, %if.then ], [ -1, %entry ]
+  ret i32 %retval1.0, !dbg !121
 }

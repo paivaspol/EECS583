@@ -1,0 +1,117 @@
+define void @_ZN3pov11mem_releaseEv() #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !594, i64 0, metadata !123), !dbg !595
+  %0 = load %"struct.pov::mem_node"** @_ZN3povL7memlistE, align 8, !dbg !596, !tbaa !471
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::mem_node"* %0}, i64 0, metadata !326), !dbg !596
+  tail call void @llvm.dbg.value(metadata !597, i64 0, metadata !328), !dbg !598
+  %cmp = icmp eq %"struct.pov::mem_node"* %0, null, !dbg !599
+  br i1 %cmp, label %if.end23, label %land.lhs.true, !dbg !599
+
+land.lhs.true:                                    ; preds = %entry
+  %poolno = getelementptr inbounds %"struct.pov::mem_node"* %0, i64 0, i32 3, !dbg !599
+  %1 = load i32* %poolno, align 4, !dbg !599, !tbaa !469
+  %2 = load i32* @_ZN3povL6poolnoE, align 4, !dbg !599, !tbaa !469
+  %cmp2 = icmp eq i32 %1, %2, !dbg !599
+  br i1 %cmp2, label %if.then, label %land.rhs.lr.ph, !dbg !599
+
+if.then:                                          ; preds = %land.lhs.true
+  %call = tail call %"class.pov_base::OStream"* @_ZN8pov_base11New_OStreamEPKcjb(i8* getelementptr inbounds ([11 x i8]* @.str3, i64 0, i64 0), i32 18, i1 zeroext true) #8, !dbg !600
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::OStream"* %call}, i64 0, metadata !123), !dbg !600
+  br label %land.rhs.lr.ph, !dbg !600
+
+land.rhs.lr.ph:                                   ; preds = %land.lhs.true, %if.then
+  %f.0.ph.ph = phi %"class.pov_base::OStream"* [ null, %land.lhs.true ], [ %call, %if.then ]
+  %cmp10 = icmp eq %"class.pov_base::OStream"* %f.0.ph.ph, null, !dbg !601
+  br label %land.rhs, !dbg !603
+
+land.rhs:                                         ; preds = %if.end15, %land.rhs.lr.ph
+  %totsize.045 = phi i64 [ 0, %land.rhs.lr.ph ], [ %add, %if.end15 ]
+  %p.044 = phi %"struct.pov::mem_node"* [ %0, %land.rhs.lr.ph ], [ %11, %if.end15 ]
+  %poolno4 = getelementptr inbounds %"struct.pov::mem_node"* %p.044, i64 0, i32 3, !dbg !603
+  %3 = load i32* %poolno4, align 4, !dbg !603, !tbaa !469
+  %4 = load i32* @_ZN3povL6poolnoE, align 4, !dbg !603, !tbaa !469
+  %cmp5 = icmp eq i32 %3, %4, !dbg !603
+  br i1 %cmp5, label %while.body, label %while.end
+
+while.body:                                       ; preds = %land.rhs
+  %size = getelementptr inbounds %"struct.pov::mem_node"* %p.044, i64 0, i32 0, !dbg !604
+  %5 = load i64* %size, align 8, !dbg !604, !tbaa !465
+  %sub = add i64 %totsize.045, -48, !dbg !604
+  %add = add i64 %sub, %5, !dbg !604
+  tail call void @llvm.dbg.value(metadata !{i64 %add}, i64 0, metadata !328), !dbg !604
+  %.b = load i1* @_ZN3povL8leak_msgE, align 1
+  br i1 %.b, label %if.end9, label %if.then7, !dbg !605
+
+if.then7:                                         ; preds = %while.body
+  %call8 = tail call i32 (i8*, ...)* @_ZN3pov10Debug_InfoEPKcz(i8* getelementptr inbounds ([49 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str3, i64 0, i64 0)) #8, !dbg !606
+  store i1 true, i1* @_ZN3povL8leak_msgE, align 1
+  br label %if.end9, !dbg !608
+
+if.end9:                                          ; preds = %if.then7, %while.body
+  br i1 %cmp10, label %if.end15, label %if.then11, !dbg !601
+
+if.then11:                                        ; preds = %if.end9
+  %file = getelementptr inbounds %"struct.pov::mem_node"* %p.044, i64 0, i32 4, !dbg !609
+  %6 = load i8** %file, align 8, !dbg !609, !tbaa !471
+  %line = getelementptr inbounds %"struct.pov::mem_node"* %p.044, i64 0, i32 5, !dbg !609
+  %7 = load i32* %line, align 4, !dbg !609, !tbaa !469
+  %8 = load i64* %size, align 8, !dbg !609, !tbaa !465
+  %sub13 = add i64 %8, -48, !dbg !609
+  tail call void (%"class.pov_base::OStream"*, i8*, ...)* @_ZN8pov_base7OStream6printfEPKcz(%"class.pov_base::OStream"* %f.0.ph.ph, i8* getelementptr inbounds ([31 x i8]* @.str5, i64 0, i64 0), i8* %6, i32 %7, i64 %sub13) #8, !dbg !609
+  br label %if.end15, !dbg !609
+
+if.end15:                                         ; preds = %if.end9, %if.then11
+  %9 = load i64* %size, align 8, !dbg !610, !tbaa !465
+  tail call void @llvm.dbg.value(metadata !{i64 %9}, i64 0, metadata !611), !dbg !612
+  %10 = load i64* @_ZN3povL9mem_statsE.2, align 8, !dbg !613, !tbaa !465
+  %sub.i = sub i64 %10, %9, !dbg !613
+  store i64 %sub.i, i64* @_ZN3povL9mem_statsE.2, align 8, !dbg !613, !tbaa !465
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::mem_node"* %p.044}, i64 0, metadata !327), !dbg !614
+  %next = getelementptr inbounds %"struct.pov::mem_node"* %p.044, i64 0, i32 2, !dbg !615
+  %11 = load %"struct.pov::mem_node"** %next, align 8, !dbg !615, !tbaa !471
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::mem_node"* %11}, i64 0, metadata !326), !dbg !615
+  tail call fastcc void @_ZN3povL11remove_nodeEPNS_8mem_nodeE(%"struct.pov::mem_node"* %p.044) #8, !dbg !616
+  %12 = bitcast %"struct.pov::mem_node"* %p.044 to i8*, !dbg !617
+  tail call void @free(i8* %12) #9, !dbg !617
+  %cmp3 = icmp eq %"struct.pov::mem_node"* %11, null, !dbg !603
+  br i1 %cmp3, label %while.end, label %land.rhs, !dbg !603
+
+while.end:                                        ; preds = %if.end15, %land.rhs
+  %totsize.0.lcssa = phi i64 [ %totsize.045, %land.rhs ], [ %add, %if.end15 ]
+  %cmp17 = icmp eq %"class.pov_base::OStream"* %f.0.ph.ph, null, !dbg !618
+  br i1 %cmp17, label %if.end19, label %delete.notnull, !dbg !618
+
+delete.notnull:                                   ; preds = %while.end
+  %13 = bitcast %"class.pov_base::OStream"* %f.0.ph.ph to void (%"class.pov_base::OStream"*)***, !dbg !619
+  %vtable = load void (%"class.pov_base::OStream"*)*** %13, align 8, !dbg !619, !tbaa !620
+  %vfn = getelementptr inbounds void (%"class.pov_base::OStream"*)** %vtable, i64 1, !dbg !619
+  %14 = load void (%"class.pov_base::OStream"*)** %vfn, align 8, !dbg !619
+  tail call void %14(%"class.pov_base::OStream"* %f.0.ph.ph) #8, !dbg !619
+  br label %if.end19, !dbg !619
+
+if.end19:                                         ; preds = %while.end, %delete.notnull
+  %cmp20 = icmp eq i64 %totsize.0.lcssa, 0, !dbg !621
+  br i1 %cmp20, label %if.end23, label %if.then21, !dbg !621
+
+if.then21:                                        ; preds = %if.end19
+  %15 = load i32* @_ZN3povL6poolnoE, align 4, !dbg !622, !tbaa !469
+  %call22 = tail call i32 (i8*, ...)* @_ZN3pov10Debug_InfoEPKcz(i8* getelementptr inbounds ([32 x i8]* @.str6, i64 0, i64 0), i64 %totsize.0.lcssa, i32 %15) #8, !dbg !622
+  br label %if.end23, !dbg !622
+
+if.end23:                                         ; preds = %entry, %if.end19, %if.then21
+  %16 = load i32* @_ZN3povL6poolnoE, align 4, !dbg !623, !tbaa !469
+  %cmp24 = icmp sgt i32 %16, 0, !dbg !623
+  br i1 %cmp24, label %if.then25, label %if.end26, !dbg !623
+
+if.then25:                                        ; preds = %if.end23
+  %dec = add nsw i32 %16, -1, !dbg !624
+  store i32 %dec, i32* @_ZN3povL6poolnoE, align 4, !dbg !624, !tbaa !469
+  br label %if.end26, !dbg !624
+
+if.end26:                                         ; preds = %if.then25, %if.end23
+  store i64 65535, i64* @_ZN3povL9mem_statsE.0, align 8, !dbg !625, !tbaa !465
+  store i64 0, i64* @_ZN3povL9mem_statsE.1, align 8, !dbg !627, !tbaa !465
+  store i64 0, i64* @_ZN3povL9mem_statsE.2, align 8, !dbg !628, !tbaa !465
+  store i64 0, i64* @_ZN3povL9mem_statsE.3, align 8, !dbg !629, !tbaa !465
+  ret void, !dbg !630
+}

@@ -1,0 +1,81 @@
+define i32 @_ZN11xercesc_2_59XMLString7indexOfEPKttjPNS_13MemoryManagerE(i16* %toSearch, i16 zeroext %ch, i32 %fromIndex, %"class.xercesc_2_5::MemoryManager"* %manager) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %toSearch}, i64 0, metadata !1899), !dbg !3640
+  tail call void @llvm.dbg.value(metadata !{i16 %ch}, i64 0, metadata !1900), !dbg !3641
+  tail call void @llvm.dbg.value(metadata !{i32 %fromIndex}, i64 0, metadata !1901), !dbg !3642
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %manager}, i64 0, metadata !1902), !dbg !3643
+  tail call void @llvm.dbg.value(metadata !{i16* %toSearch}, i64 0, metadata !3644), !dbg !3646
+  %cmp.i = icmp eq i16* %toSearch, null, !dbg !3647
+  br i1 %cmp.i, label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, label %lor.lhs.false.i, !dbg !3647
+
+lor.lhs.false.i:                                  ; preds = %entry
+  %0 = load i16* %toSearch, align 2, !dbg !3647, !tbaa !2947
+  %cmp1.i = icmp eq i16 %0, 0, !dbg !3647
+  br i1 %cmp1.i, label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, label %while.cond.i, !dbg !3647
+
+while.cond.i:                                     ; preds = %lor.lhs.false.i, %while.cond.i
+  %src.pn.i = phi i16* [ %pszTmp.0.i, %while.cond.i ], [ %toSearch, %lor.lhs.false.i ]
+  %pszTmp.0.i = getelementptr inbounds i16* %src.pn.i, i64 1, !dbg !3648
+  %1 = load i16* %pszTmp.0.i, align 2, !dbg !3649, !tbaa !2947
+  %tobool.i = icmp eq i16 %1, 0, !dbg !3649
+  br i1 %tobool.i, label %while.end.i, label %while.cond.i, !dbg !3649
+
+while.end.i:                                      ; preds = %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %pszTmp.0.i to i64, !dbg !3650
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %toSearch to i64, !dbg !3650
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !3650
+  %sub.ptr.div7.i = lshr exact i64 %sub.ptr.sub.i, 1, !dbg !3650
+  %conv2.i = trunc i64 %sub.ptr.div7.i to i32, !dbg !3650
+  br label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, !dbg !3650
+
+_ZN11xercesc_2_59XMLString9stringLenEPKt.exit:    ; preds = %entry, %lor.lhs.false.i, %while.end.i
+  %retval.0.i = phi i32 [ %conv2.i, %while.end.i ], [ 0, %lor.lhs.false.i ], [ 0, %entry ]
+  tail call void @llvm.dbg.value(metadata !{i32 %retval.0.i}, i64 0, metadata !1903), !dbg !3645
+  %cmp = icmp sgt i32 %retval.0.i, %fromIndex, !dbg !3651
+  br i1 %cmp, label %for.body.lr.ph, label %if.then, !dbg !3651
+
+for.body.lr.ph:                                   ; preds = %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit
+  %2 = sext i32 %fromIndex to i64
+  br label %for.body, !dbg !3652
+
+if.then:                                          ; preds = %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit
+  %exception = tail call i8* @__cxa_allocate_exception(i64 48) #3, !dbg !3653
+  %3 = bitcast i8* %exception to %"class.xercesc_2_5::ArrayIndexOutOfBoundsException"*, !dbg !3653
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::ArrayIndexOutOfBoundsException"* %3}, i64 0, metadata !3654), !dbg !3655
+  tail call void @llvm.dbg.value(metadata !2808, i64 0, metadata !3656), !dbg !3655
+  tail call void @llvm.dbg.value(metadata !3657, i64 0, metadata !3658), !dbg !3655
+  tail call void @llvm.dbg.value(metadata !2989, i64 0, metadata !3659), !dbg !3655
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %manager}, i64 0, metadata !3660), !dbg !3655
+  invoke void @_ZN11xercesc_2_530ArrayIndexOutOfBoundsExceptionC2EPKcjNS_10XMLExcepts5CodesEPNS_13MemoryManagerE(%"class.xercesc_2_5::ArrayIndexOutOfBoundsException"* %3, i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 1237, i32 82, %"class.xercesc_2_5::MemoryManager"* %manager) #11
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %if.then
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_530ArrayIndexOutOfBoundsExceptionE to i8*), i8* bitcast (void (%"class.xercesc_2_5::ArrayIndexOutOfBoundsException"*)* @_ZN11xercesc_2_530ArrayIndexOutOfBoundsExceptionD1Ev to i8*)) #12, !dbg !3653
+  unreachable, !dbg !3653
+
+lpad:                                             ; preds = %if.then
+  %4 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !3653
+  tail call void @__cxa_free_exception(i8* %exception) #3, !dbg !3653
+  resume { i8*, i32 } %4, !dbg !3653
+
+for.cond:                                         ; preds = %for.body
+  %inc = add nsw i32 %i.013, 1, !dbg !3652
+  %5 = trunc i64 %indvars.iv.next to i32, !dbg !3652
+  %cmp1 = icmp slt i32 %5, %retval.0.i, !dbg !3652
+  br i1 %cmp1, label %for.body, label %return, !dbg !3652
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond
+  %indvars.iv = phi i64 [ %2, %for.body.lr.ph ], [ %indvars.iv.next, %for.cond ]
+  %i.013 = phi i32 [ %fromIndex, %for.body.lr.ph ], [ %inc, %for.cond ]
+  %arrayidx = getelementptr inbounds i16* %toSearch, i64 %indvars.iv, !dbg !3661
+  %6 = load i16* %arrayidx, align 2, !dbg !3661, !tbaa !2947
+  %cmp3 = icmp eq i16 %6, %ch, !dbg !3661
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !3652
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1904), !dbg !3652
+  br i1 %cmp3, label %return, label %for.cond, !dbg !3661
+
+return:                                           ; preds = %for.cond, %for.body
+  %retval.0 = phi i32 [ %i.013, %for.body ], [ -1, %for.cond ]
+  ret i32 %retval.0, !dbg !3663
+}

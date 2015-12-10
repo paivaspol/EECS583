@@ -1,0 +1,31 @@
+define linkonce_odr void @_ZN9flexarrayI6pointtE3addERKS0_(%class.flexarray* nocapture %this, %struct.pointt* nocapture %e) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.flexarray* %this}, i64 0, metadata !284), !dbg !350
+  tail call void @llvm.dbg.value(metadata !{%struct.pointt* %e}, i64 0, metadata !285), !dbg !350
+  %elemqu = getelementptr inbounds %class.flexarray* %this, i64 0, i32 1, !dbg !351
+  %0 = load i32* %elemqu, align 4, !dbg !351, !tbaa !324
+  %maxelemqu = getelementptr inbounds %class.flexarray* %this, i64 0, i32 2, !dbg !351
+  %1 = load i32* %maxelemqu, align 4, !dbg !351, !tbaa !324
+  %cmp = icmp eq i32 %0, %1, !dbg !351
+  br i1 %cmp, label %if.then, label %if.end, !dbg !351
+
+if.then:                                          ; preds = %entry
+  tail call void @_ZN9flexarrayI6pointtE8doublingEb(%class.flexarray* %this, i1 zeroext true) #7, !dbg !351
+  %.pre = load i32* %elemqu, align 4, !dbg !352, !tbaa !324
+  br label %if.end, !dbg !351
+
+if.end:                                           ; preds = %if.then, %entry
+  %2 = phi i32 [ %.pre, %if.then ], [ %0, %entry ]
+  %idxprom = sext i32 %2 to i64, !dbg !352
+  %ep = getelementptr inbounds %class.flexarray* %this, i64 0, i32 0, !dbg !352
+  %3 = load %struct.pointt** %ep, align 8, !dbg !352, !tbaa !327
+  %arrayidx = getelementptr inbounds %struct.pointt* %3, i64 %idxprom, !dbg !352
+  %4 = bitcast %struct.pointt* %e to i64*, !dbg !352
+  %5 = bitcast %struct.pointt* %arrayidx to i64*, !dbg !352
+  %6 = load i64* %4, align 4, !dbg !352
+  store i64 %6, i64* %5, align 4, !dbg !352
+  %7 = load i32* %elemqu, align 4, !dbg !353, !tbaa !324
+  %inc = add nsw i32 %7, 1, !dbg !353
+  store i32 %inc, i32* %elemqu, align 4, !dbg !353, !tbaa !324
+  ret void, !dbg !354
+}

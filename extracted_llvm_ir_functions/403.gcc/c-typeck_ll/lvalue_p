@@ -1,13 +1,15 @@
-define i32 @lvalue_p(%union.tree_node* nocapture %ref) #3 {
+define i32 @lvalue_p(%union.tree_node* nocapture %ref) #4 {
 entry:
   br label %tailrecurse
 
 tailrecurse:                                      ; preds = %sw.bb, %entry
   %ref.tr = phi %union.tree_node* [ %ref, %entry ], [ %1, %sw.bb ]
-  %code1 = getelementptr inbounds %union.tree_node* %ref.tr, i64 0, i32 0, i32 0, i32 2
-  %0 = bitcast [4 x i8]* %code1 to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 255
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %ref.tr}, i64 0, metadata !1277), !dbg !2496
+  %code1 = getelementptr inbounds %union.tree_node* %ref.tr, i64 0, i32 0, i32 0, i32 2, !dbg !2497
+  %0 = bitcast [4 x i8]* %code1 to i32*, !dbg !2497
+  %bf.load = load i32* %0, align 8, !dbg !2497
+  %bf.clear = and i32 %bf.load, 255, !dbg !2497
+  tail call void @llvm.dbg.value(metadata !{i32 %bf.clear}, i64 0, metadata !1278), !dbg !2497
   switch i32 %bf.clear, label %return [
     i32 127, label %sw.bb
     i32 128, label %sw.bb
@@ -22,42 +24,42 @@ tailrecurse:                                      ; preds = %sw.bb, %entry
     i32 0, label %sw.bb3
     i32 52, label %sw.bb16
     i32 120, label %sw.bb16
-  ]
+  ], !dbg !2498
 
 sw.bb:                                            ; preds = %tailrecurse, %tailrecurse, %tailrecurse
-  %operands = getelementptr inbounds %union.tree_node* %ref.tr, i64 0, i32 0, i32 2
-  %arrayidx = bitcast i32* %operands to %union.tree_node**
-  %1 = load %union.tree_node** %arrayidx, align 8, !tbaa !0
-  br label %tailrecurse
+  %operands = getelementptr inbounds %union.tree_node* %ref.tr, i64 0, i32 0, i32 2, !dbg !2499
+  %arrayidx = bitcast i32* %operands to %union.tree_node**, !dbg !2499
+  %1 = load %union.tree_node** %arrayidx, align 8, !dbg !2499, !tbaa !1977
+  br label %tailrecurse, !dbg !2499
 
 sw.bb3:                                           ; preds = %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse, %tailrecurse
-  %type = getelementptr inbounds %union.tree_node* %ref.tr, i64 0, i32 0, i32 0, i32 1
-  %2 = load %union.tree_node** %type, align 8, !tbaa !0
-  %code6 = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 0, i32 2
-  %3 = bitcast [4 x i8]* %code6 to i32*
-  %bf.load7 = load i32* %3, align 8
-  %bf.clear8 = and i32 %bf.load7, 255
-  %cmp15 = icmp ne i32 %bf.clear8, 16
-  %not.cmp = icmp ne i32 %bf.clear8, 23
-  %.cmp15 = and i1 %cmp15, %not.cmp
+  %type = getelementptr inbounds %union.tree_node* %ref.tr, i64 0, i32 0, i32 0, i32 1, !dbg !2501
+  %2 = load %union.tree_node** %type, align 8, !dbg !2501, !tbaa !1977
+  %code6 = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 0, i32 2, !dbg !2501
+  %3 = bitcast [4 x i8]* %code6 to i32*, !dbg !2501
+  %bf.load7 = load i32* %3, align 8, !dbg !2501
+  %bf.clear8 = and i32 %bf.load7, 255, !dbg !2501
+  %cmp15 = icmp ne i32 %bf.clear8, 16, !dbg !2501
+  %not.cmp = icmp ne i32 %bf.clear8, 23, !dbg !2501
+  %.cmp15 = and i1 %cmp15, %not.cmp, !dbg !2501
   %land.ext = zext i1 %.cmp15 to i32
   br label %return
 
 sw.bb16:                                          ; preds = %tailrecurse, %tailrecurse
-  %type18 = getelementptr inbounds %union.tree_node* %ref.tr, i64 0, i32 0, i32 0, i32 1
-  %4 = load %union.tree_node** %type18, align 8, !tbaa !0
-  %code20 = getelementptr inbounds %union.tree_node* %4, i64 0, i32 0, i32 0, i32 2
-  %5 = bitcast [4 x i8]* %code20 to i32*
-  %bf.load21 = load i32* %5, align 8
-  %bf.clear22 = and i32 %bf.load21, 255
-  %cmp23 = icmp eq i32 %bf.clear22, 18
-  %conv = zext i1 %cmp23 to i32
-  br label %return
+  %type18 = getelementptr inbounds %union.tree_node* %ref.tr, i64 0, i32 0, i32 0, i32 1, !dbg !2502
+  %4 = load %union.tree_node** %type18, align 8, !dbg !2502, !tbaa !1977
+  %code20 = getelementptr inbounds %union.tree_node* %4, i64 0, i32 0, i32 0, i32 2, !dbg !2502
+  %5 = bitcast [4 x i8]* %code20 to i32*, !dbg !2502
+  %bf.load21 = load i32* %5, align 8, !dbg !2502
+  %bf.clear22 = and i32 %bf.load21, 255, !dbg !2502
+  %cmp23 = icmp eq i32 %bf.clear22, 18, !dbg !2502
+  %conv = zext i1 %cmp23 to i32, !dbg !2502
+  br label %return, !dbg !2502
 
 return.loopexit:                                  ; preds = %tailrecurse, %tailrecurse
   br label %return
 
 return:                                           ; preds = %tailrecurse, %return.loopexit, %sw.bb16, %sw.bb3
   %retval.0 = phi i32 [ %conv, %sw.bb16 ], [ %land.ext, %sw.bb3 ], [ 1, %return.loopexit ], [ 0, %tailrecurse ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !2503
 }

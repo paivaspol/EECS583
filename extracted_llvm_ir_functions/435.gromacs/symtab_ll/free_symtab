@@ -1,30 +1,35 @@
-define void @free_symtab(%struct.t_symtab* nocapture %symtab) #1 {
-  %1 = getelementptr inbounds %struct.t_symtab* %symtab, i64 0, i32 1
-  %2 = load %struct.symbuf** %1, align 8, !tbaa !11
-  %3 = icmp eq %struct.symbuf* %2, null
-  br i1 %3, label %._crit_edge, label %.lr.ph
+define void @free_symtab(%struct.t_symtab* nocapture %symtab) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.t_symtab* %symtab}, i64 0, metadata !62), !dbg !245
+  %symbuf1 = getelementptr inbounds %struct.t_symtab* %symtab, i64 0, i32 1, !dbg !246
+  %0 = load %struct.symbuf** %symbuf1, align 8, !dbg !246, !tbaa !163
+  tail call void @llvm.dbg.value(metadata !{%struct.symbuf* %0}, i64 0, metadata !63), !dbg !246
+  %cmp16 = icmp eq %struct.symbuf* %0, null, !dbg !247
+  br i1 %cmp16, label %while.end, label %while.body.lr.ph, !dbg !247
 
-.lr.ph:                                           ; preds = %0
-  %4 = getelementptr inbounds %struct.t_symtab* %symtab, i64 0, i32 0
-  br label %5
+while.body.lr.ph:                                 ; preds = %entry
+  %nr = getelementptr inbounds %struct.t_symtab* %symtab, i64 0, i32 0, !dbg !248
+  br label %while.body, !dbg !247
 
-; <label>:5                                       ; preds = %.lr.ph, %5
-  %symbuf.01 = phi %struct.symbuf* [ %2, %.lr.ph ], [ %12, %5 ]
-  %6 = getelementptr inbounds %struct.symbuf* %symbuf.01, i64 0, i32 0
-  %7 = load i32* %6, align 4, !tbaa !8
-  %8 = load i32* %4, align 4, !tbaa !13
-  %9 = icmp slt i32 %7, %8
-  %. = select i1 %9, i32 %7, i32 %8
-  %10 = sub nsw i32 %8, %.
-  store i32 %10, i32* %4, align 4, !tbaa !13
-  %11 = getelementptr inbounds %struct.symbuf* %symbuf.01, i64 0, i32 2
-  %12 = load %struct.symbuf** %11, align 8, !tbaa !14
-  %13 = bitcast %struct.symbuf* %symbuf.01 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([8 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str3, i64 0, i64 0), i32 196, i8* %13) #6
-  %14 = icmp eq %struct.symbuf* %12, null
-  br i1 %14, label %._crit_edge, label %5
+while.body:                                       ; preds = %while.body.lr.ph, %while.body
+  %symbuf.017 = phi %struct.symbuf* [ %0, %while.body.lr.ph ], [ %3, %while.body ]
+  %bufsize = getelementptr inbounds %struct.symbuf* %symbuf.017, i64 0, i32 0, !dbg !248
+  %1 = load i32* %bufsize, align 4, !dbg !248, !tbaa !167
+  %2 = load i32* %nr, align 4, !dbg !248, !tbaa !167
+  %cmp2 = icmp slt i32 %1, %2, !dbg !248
+  %. = select i1 %cmp2, i32 %1, i32 %2, !dbg !248
+  %sub = sub nsw i32 %2, %., !dbg !248
+  store i32 %sub, i32* %nr, align 4, !dbg !248, !tbaa !167
+  tail call void @llvm.dbg.value(metadata !{%struct.symbuf* %symbuf.017}, i64 0, metadata !64), !dbg !250
+  %next = getelementptr inbounds %struct.symbuf* %symbuf.017, i64 0, i32 2, !dbg !251
+  %3 = load %struct.symbuf** %next, align 8, !dbg !251, !tbaa !163
+  tail call void @llvm.dbg.value(metadata !{%struct.symbuf* %3}, i64 0, metadata !63), !dbg !251
+  %4 = bitcast %struct.symbuf* %symbuf.017 to i8*, !dbg !252
+  tail call void @save_free(i8* getelementptr inbounds ([8 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str3, i64 0, i64 0), i32 196, i8* %4) #6, !dbg !252
+  %cmp = icmp eq %struct.symbuf* %3, null, !dbg !247
+  br i1 %cmp, label %while.end, label %while.body, !dbg !247
 
-._crit_edge:                                      ; preds = %5, %0
-  store %struct.symbuf* null, %struct.symbuf** %1, align 8, !tbaa !11
-  ret void
+while.end:                                        ; preds = %while.body, %entry
+  store %struct.symbuf* null, %struct.symbuf** %symbuf1, align 8, !dbg !253, !tbaa !163
+  ret void, !dbg !254
 }

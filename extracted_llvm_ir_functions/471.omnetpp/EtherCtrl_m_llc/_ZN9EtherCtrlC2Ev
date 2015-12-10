@@ -1,0 +1,52 @@
+define void @_ZN9EtherCtrlC2Ev(%class.EtherCtrl* %this) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.EtherCtrl* %this}, i64 0, metadata !2834), !dbg !3165
+  %0 = getelementptr inbounds %class.EtherCtrl* %this, i64 0, i32 0, i32 0, !dbg !3166
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([19 x i8*]* @_ZTV9EtherCtrl, i64 0, i64 2) to i32 (...)**), i32 (...)*** %0, align 8, !dbg !3166, !tbaa !3167
+  %src = getelementptr inbounds %class.EtherCtrl* %this, i64 0, i32 1, !dbg !3166
+  invoke void @_ZN10MACAddressC1Ev(%class.MACAddress* %src) #9
+          to label %invoke.cont unwind label %lpad, !dbg !3166
+
+invoke.cont:                                      ; preds = %entry
+  %dest = getelementptr inbounds %class.EtherCtrl* %this, i64 0, i32 2, !dbg !3166
+  invoke void @_ZN10MACAddressC1Ev(%class.MACAddress* %dest) #9
+          to label %invoke.cont3 unwind label %lpad2, !dbg !3166
+
+invoke.cont3:                                     ; preds = %invoke.cont
+  %etherType = getelementptr inbounds %class.EtherCtrl* %this, i64 0, i32 3, !dbg !3169
+  %1 = bitcast i32* %etherType to i8*, !dbg !3170
+  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 16, i32 4, i1 false), !dbg !3171
+  ret void, !dbg !3170
+
+lpad:                                             ; preds = %entry
+  %2 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !3166
+  %3 = extractvalue { i8*, i32 } %2, 0, !dbg !3166
+  %4 = extractvalue { i8*, i32 } %2, 1, !dbg !3166
+  br label %ehcleanup, !dbg !3166
+
+lpad2:                                            ; preds = %invoke.cont
+  %5 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !3166
+  %6 = extractvalue { i8*, i32 } %5, 0, !dbg !3166
+  %7 = extractvalue { i8*, i32 } %5, 1, !dbg !3166
+  tail call void @llvm.dbg.value(metadata !{%class.MACAddress* %src}, i64 0, metadata !3172), !dbg !3173
+  tail call void @llvm.dbg.value(metadata !{%class.MACAddress* %src}, i64 0, metadata !3174), !dbg !3177
+  %8 = getelementptr inbounds %class.MACAddress* %src, i64 0, i32 0, !dbg !3178
+  invoke void @_ZN15MACAddress_BaseD2Ev(%class.MACAddress_Base* %8) #9
+          to label %ehcleanup unwind label %terminate.lpad
+
+ehcleanup:                                        ; preds = %lpad2, %lpad
+  %exn.slot.0 = phi i8* [ %3, %lpad ], [ %6, %lpad2 ]
+  %ehselector.slot.0 = phi i32 [ %4, %lpad ], [ %7, %lpad2 ]
+  %lpad.val = insertvalue { i8*, i32 } undef, i8* %exn.slot.0, 0, !dbg !3170
+  %lpad.val6 = insertvalue { i8*, i32 } %lpad.val, i32 %ehselector.slot.0, 1, !dbg !3170
+  resume { i8*, i32 } %lpad.val6, !dbg !3170
+
+terminate.lpad:                                   ; preds = %lpad2
+  %9 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !3170
+  %10 = extractvalue { i8*, i32 } %9, 0, !dbg !3170
+  tail call void @__clang_call_terminate(i8* %10) #10, !dbg !3170
+  unreachable, !dbg !3170
+}

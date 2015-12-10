@@ -2,47 +2,53 @@ define void @post_fl_thinking(i32 %score, %struct.move_s* %failmove) #0 {
 entry:
   %output = alloca [256 x i8], align 16
   %tmp = alloca %struct.move_s, align 8
-  %0 = getelementptr inbounds [256 x i8]* %output, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 256, i8* %0) #1
-  %1 = load i32* @xb_mode, align 4, !tbaa !0
-  %tobool = icmp eq i32 %1, 0
-  %2 = load i32* @i_depth, align 4, !tbaa !0
-  br i1 %tobool, label %if.else6, label %if.then4
+  call void @llvm.dbg.value(metadata !{i32 %score}, i64 0, metadata !236), !dbg !842
+  call void @llvm.dbg.value(metadata !{%struct.move_s* %failmove}, i64 0, metadata !237), !dbg !842
+  %0 = getelementptr inbounds [256 x i8]* %output, i64 0, i64 0, !dbg !843
+  call void @llvm.lifetime.start(i64 256, i8* %0) #2, !dbg !843
+  call void @llvm.dbg.declare(metadata !{[256 x i8]* %output}, metadata !240), !dbg !843
+  call void @llvm.dbg.value(metadata !772, i64 0, metadata !844) #2, !dbg !846
+  call void @llvm.dbg.value(metadata !{i64 %3}, i64 0, metadata !847) #2, !dbg !846
+  call void @llvm.dbg.value(metadata !{i32 %mul.i}, i64 0, metadata !238), !dbg !845
+  %1 = load i32* @xb_mode, align 4, !dbg !848, !tbaa !371
+  %tobool = icmp eq i32 %1, 0, !dbg !848
+  %2 = load i32* @i_depth, align 4, !dbg !849, !tbaa !371
+  br i1 %tobool, label %if.else6, label %if.then4, !dbg !848
 
 if.then4:                                         ; preds = %entry
-  %3 = load i64* @start_time, align 8, !tbaa !6
-  %call.i = call double @difftime(i64 0, i64 %3) #14
-  %conv.i = fptosi double %call.i to i32
-  %mul.i = mul nsw i32 %conv.i, 100
-  %4 = load i32* @nodes, align 4, !tbaa !0
-  %call5 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([18 x i8]* @.str50, i64 0, i64 0), i32 %2, i32 %score, i32 %mul.i, i32 %4) #12
-  br label %if.end13
+  %3 = load i64* @start_time, align 8, !dbg !845, !tbaa !779
+  %call.i = call double @difftime(i64 0, i64 %3) #15, !dbg !850
+  %conv.i = fptosi double %call.i to i32, !dbg !850
+  %mul.i = mul nsw i32 %conv.i, 100, !dbg !850
+  %4 = load i32* @nodes, align 4, !dbg !849, !tbaa !371
+  %call5 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([18 x i8]* @.str50, i64 0, i64 0), i32 %2, i32 %score, i32 %mul.i, i32 %4) #13, !dbg !849
+  br label %if.end13, !dbg !849
 
 if.else6:                                         ; preds = %entry
-  %5 = ashr i32 %score, 31
-  %6 = and i32 %5, 13
-  %7 = or i32 %6, 32
-  %div9 = sdiv i32 %score, 100
-  %ispos = icmp sgt i32 %score, -100
-  %neg = sub i32 0, %div9
-  %8 = select i1 %ispos, i32 %div9, i32 %neg
-  %rem = srem i32 %score, 100
-  %ispos23 = icmp sgt i32 %rem, -1
-  %neg24 = sub i32 0, %rem
-  %9 = select i1 %ispos23, i32 %rem, i32 %neg24
-  %10 = load i32* @nodes, align 4, !tbaa !0
-  %call12 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([20 x i8]* @.str51, i64 0, i64 0), i32 %2, i32 %7, i32 %8, i32 %9, i32 %10) #12
+  %5 = ashr i32 %score, 31, !dbg !851
+  %6 = and i32 %5, 13, !dbg !851
+  %7 = or i32 %6, 32, !dbg !851
+  %div9 = sdiv i32 %score, 100, !dbg !852
+  %ispos = icmp sgt i32 %score, -100, !dbg !852
+  %neg = sub i32 0, %div9, !dbg !852
+  %8 = select i1 %ispos, i32 %div9, i32 %neg, !dbg !852
+  %rem = srem i32 %score, 100, !dbg !852
+  %ispos23 = icmp sgt i32 %rem, -1, !dbg !852
+  %neg24 = sub i32 0, %rem, !dbg !852
+  %9 = select i1 %ispos23, i32 %rem, i32 %neg24, !dbg !852
+  %10 = load i32* @nodes, align 4, !dbg !852, !tbaa !371
+  %call12 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([20 x i8]* @.str51, i64 0, i64 0), i32 %2, i32 %7, i32 %8, i32 %9, i32 %10) #13, !dbg !852
   br label %if.end13
 
 if.end13:                                         ; preds = %if.else6, %if.then4
-  call void @unmake(%struct.move_s* %failmove, i32 0) #12
-  %11 = bitcast %struct.move_s* %tmp to i8*
-  %12 = bitcast %struct.move_s* %failmove to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %11, i8* %12, i64 24, i32 4, i1 false), !tbaa.struct !5
-  call void @comp_to_san(%struct.move_s* byval align 8 %tmp, i8* %0) #13
-  call void @make(%struct.move_s* %failmove, i32 0) #12
-  %call15 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([6 x i8]* @.str57, i64 0, i64 0), i8* %0) #12
-  %putchar = call i32 @putchar(i32 10) #1
-  call void @llvm.lifetime.end(i64 256, i8* %0) #1
-  ret void
+  call void @unmake(%struct.move_s* %failmove, i32 0) #13, !dbg !853
+  %11 = bitcast %struct.move_s* %tmp to i8*, !dbg !854
+  %12 = bitcast %struct.move_s* %failmove to i8*, !dbg !854
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %11, i8* %12, i64 24, i32 4, i1 false), !dbg !854, !tbaa.struct !722
+  call void @comp_to_san(%struct.move_s* byval align 8 %tmp, i8* %0) #14, !dbg !854
+  call void @make(%struct.move_s* %failmove, i32 0) #13, !dbg !855
+  %call15 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([6 x i8]* @.str57, i64 0, i64 0), i8* %0) #13, !dbg !856
+  %putchar = call i32 @putchar(i32 10) #2, !dbg !857
+  call void @llvm.lifetime.end(i64 256, i8* %0) #2, !dbg !858
+  ret void, !dbg !858
 }

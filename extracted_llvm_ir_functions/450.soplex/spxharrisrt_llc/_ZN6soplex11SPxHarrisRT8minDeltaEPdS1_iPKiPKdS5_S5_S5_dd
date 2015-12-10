@@ -1,0 +1,90 @@
+define i32 @_ZN6soplex11SPxHarrisRT8minDeltaEPdS1_iPKiPKdS5_S5_S5_dd(%"class.soplex::SPxHarrisRT"* nocapture %this, double* nocapture, double* nocapture %val, i32 %num, i32* nocapture %idx, double* nocapture %upd, double* nocapture %vec, double* nocapture %low, double* nocapture %up, double %delta, double %epsilon) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SPxHarrisRT"* %this}, i64 0, metadata !6863), !dbg !7345
+  tail call void @llvm.dbg.value(metadata !{double* %0}, i64 0, metadata !6864), !dbg !7346
+  tail call void @llvm.dbg.value(metadata !{double* %val}, i64 0, metadata !6865), !dbg !7347
+  tail call void @llvm.dbg.value(metadata !{i32 %num}, i64 0, metadata !6866), !dbg !7348
+  tail call void @llvm.dbg.value(metadata !{i32* %idx}, i64 0, metadata !6867), !dbg !7349
+  tail call void @llvm.dbg.value(metadata !{double* %upd}, i64 0, metadata !6868), !dbg !7350
+  tail call void @llvm.dbg.value(metadata !{double* %vec}, i64 0, metadata !6869), !dbg !7351
+  tail call void @llvm.dbg.value(metadata !{double* %low}, i64 0, metadata !6870), !dbg !7352
+  tail call void @llvm.dbg.value(metadata !{double* %up}, i64 0, metadata !6871), !dbg !7353
+  tail call void @llvm.dbg.value(metadata !{double %delta}, i64 0, metadata !6872), !dbg !7354
+  tail call void @llvm.dbg.value(metadata !{double %epsilon}, i64 0, metadata !6873), !dbg !7355
+  %1 = load double* %val, align 8, !dbg !7356, !tbaa !7322
+  tail call void @llvm.dbg.value(metadata !{double %1}, i64 0, metadata !6875), !dbg !7356
+  tail call void @llvm.dbg.value(metadata !7325, i64 0, metadata !6876), !dbg !7357
+  tail call void @llvm.dbg.value(metadata !7327, i64 0, metadata !6877), !dbg !7358
+  %sub16 = fsub double -0.000000e+00, %epsilon, !dbg !7359
+  %2 = load double* @_ZN6soplex8infinityE, align 8, !dbg !7361, !tbaa !7322
+  %sub13 = fsub double -0.000000e+00, %2, !dbg !7361
+  br label %while.cond.outer, !dbg !7363
+
+while.cond.outer:                                 ; preds = %if.then, %if.then18, %entry
+  %theval.0.ph = phi double [ %1, %entry ], [ %div28.theval.0, %if.then18 ], [ %div, %if.then ]
+  %num.addr.0.ph = phi i32 [ %num, %entry ], [ %dec, %if.then18 ], [ %dec, %if.then ]
+  br label %while.cond.outer66
+
+while.cond.outer66:                               ; preds = %if.then, %while.cond.outer
+  %num.addr.0.ph68 = phi i32 [ %num.addr.0.ph, %while.cond.outer ], [ %dec, %if.then ]
+  %3 = sext i32 %num.addr.0.ph68 to i64
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.cond.outer66, %if.else
+  %indvars.iv = phi i64 [ %3, %while.cond.outer66 ], [ %indvars.iv.next, %if.else ]
+  %num.addr.0 = phi i32 [ %num.addr.0.ph68, %while.cond.outer66 ], [ %dec, %if.else ]
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !7359
+  %dec = add nsw i32 %num.addr.0, -1, !dbg !7363
+  %4 = trunc i64 %indvars.iv to i32, !dbg !7363
+  %tobool = icmp eq i32 %4, 0, !dbg !7363
+  br i1 %tobool, label %while.end, label %while.body, !dbg !7363
+
+while.body:                                       ; preds = %while.cond
+  %arrayidx = getelementptr inbounds i32* %idx, i64 %indvars.iv.next, !dbg !7364
+  %5 = load i32* %arrayidx, align 4, !dbg !7364, !tbaa !7335
+  tail call void @llvm.dbg.value(metadata !{i32 %5}, i64 0, metadata !6878), !dbg !7364
+  %idxprom2 = sext i32 %5 to i64, !dbg !7365
+  %arrayidx3 = getelementptr inbounds double* %upd, i64 %idxprom2, !dbg !7365
+  %6 = load double* %arrayidx3, align 8, !dbg !7365, !tbaa !7322
+  tail call void @llvm.dbg.value(metadata !{double %6}, i64 0, metadata !6874), !dbg !7365
+  %cmp = fcmp ogt double %6, %epsilon, !dbg !7366
+  br i1 %cmp, label %if.then, label %if.else, !dbg !7366
+
+if.then:                                          ; preds = %while.body
+  %arrayidx6 = getelementptr inbounds double* %low, i64 %idxprom2, !dbg !7367
+  %7 = load double* %arrayidx6, align 8, !dbg !7367, !tbaa !7322
+  %arrayidx8 = getelementptr inbounds double* %vec, i64 %idxprom2, !dbg !7367
+  %8 = load double* %arrayidx8, align 8, !dbg !7367, !tbaa !7322
+  %sub = fsub double %7, %8, !dbg !7367
+  %sub9 = fsub double %sub, %delta, !dbg !7367
+  %div = fdiv double %sub9, %6, !dbg !7367
+  tail call void @llvm.dbg.value(metadata !{double %div}, i64 0, metadata !6874), !dbg !7367
+  %cmp10 = fcmp ogt double %div, %theval.0.ph, !dbg !7361
+  %cmp14 = fcmp ogt double %7, %sub13, !dbg !7361
+  %or.cond82 = and i1 %cmp10, %cmp14, !dbg !7361
+  br i1 %or.cond82, label %while.cond.outer, label %while.cond.outer66, !dbg !7361
+
+if.else:                                          ; preds = %while.body
+  %cmp17 = fcmp olt double %6, %sub16, !dbg !7359
+  br i1 %cmp17, label %if.then18, label %while.cond, !dbg !7359
+
+if.then18:                                        ; preds = %if.else
+  %arrayidx24 = getelementptr inbounds double* %up, i64 %idxprom2, !dbg !7368
+  %9 = load double* %arrayidx24, align 8, !dbg !7368, !tbaa !7322
+  %arrayidx26 = getelementptr inbounds double* %vec, i64 %idxprom2, !dbg !7368
+  %10 = load double* %arrayidx26, align 8, !dbg !7368, !tbaa !7322
+  %sub27 = fsub double %9, %10, !dbg !7368
+  %add = fadd double %sub27, %delta, !dbg !7368
+  %div28 = fdiv double %add, %6, !dbg !7368
+  tail call void @llvm.dbg.value(metadata !{double %div28}, i64 0, metadata !6874), !dbg !7368
+  %cmp29 = fcmp ogt double %div28, %theval.0.ph, !dbg !7370
+  %cmp33 = fcmp olt double %9, %2, !dbg !7370
+  %or.cond = and i1 %cmp29, %cmp33, !dbg !7370
+  tail call void @llvm.dbg.value(metadata !{double %div28}, i64 0, metadata !6875), !dbg !7371
+  %div28.theval.0 = select i1 %or.cond, double %div28, double %theval.0.ph, !dbg !7370
+  br label %while.cond.outer, !dbg !7370
+
+while.end:                                        ; preds = %while.cond
+  store double %theval.0.ph, double* %val, align 8, !dbg !7372, !tbaa !7322
+  ret i32 -1, !dbg !7373
+}

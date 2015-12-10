@@ -1,28 +1,30 @@
 define i32 @Prob2Score(float %p, float %null) #0 {
 entry:
-  %cmp = fcmp oeq float %p, 0.000000e+00
-  br i1 %cmp, label %return, label %if.else
+  tail call void @llvm.dbg.value(metadata !{float %p}, i64 0, metadata !11), !dbg !179
+  tail call void @llvm.dbg.value(metadata !{float %null}, i64 0, metadata !12), !dbg !179
+  %cmp = fcmp oeq float %p, 0.000000e+00, !dbg !180
+  br i1 %cmp, label %return, label %if.else, !dbg !180
 
 if.else:                                          ; preds = %entry
-  %div = fdiv float %p, %null
-  %cmp2 = fcmp ogt float %div, 0.000000e+00
-  br i1 %cmp2, label %cond.true, label %cond.end
+  %div = fdiv float %p, %null, !dbg !181
+  %cmp2 = fcmp ogt float %div, 0.000000e+00, !dbg !181
+  br i1 %cmp2, label %cond.true, label %cond.end, !dbg !181
 
 cond.true:                                        ; preds = %if.else
-  %conv5 = fpext float %div to double
-  %call = tail call double @log(double %conv5) #5
-  %mul = fmul double %call, 0x3FF7154764EE6C2F
-  %phitmp = fmul double %mul, 1.000000e+03
-  %phitmp12 = fadd double %phitmp, 5.000000e-01
-  br label %cond.end
+  %conv5 = fpext float %div to double, !dbg !181
+  %call = tail call double @log(double %conv5) #6, !dbg !181
+  %mul = fmul double %call, 0x3FF7154764EE6C2F, !dbg !181
+  %phitmp = fmul double %mul, 1.000000e+03, !dbg !181
+  %phitmp12 = fadd double %phitmp, 5.000000e-01, !dbg !181
+  br label %cond.end, !dbg !181
 
 cond.end:                                         ; preds = %if.else, %cond.true
   %cond = phi double [ %phitmp12, %cond.true ], [ 0xC1631252F0000000, %if.else ]
-  %call7 = tail call double @floor(double %cond) #6
-  %conv8 = fptosi double %call7 to i32
-  br label %return
+  %call7 = tail call double @floor(double %cond) #7, !dbg !181
+  %conv8 = fptosi double %call7 to i32, !dbg !181
+  br label %return, !dbg !181
 
 return:                                           ; preds = %entry, %cond.end
   %retval.0 = phi i32 [ %conv8, %cond.end ], [ -987654321, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !182
 }

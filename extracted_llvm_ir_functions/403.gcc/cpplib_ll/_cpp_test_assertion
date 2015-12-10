@@ -1,34 +1,39 @@
 define i32 @_cpp_test_assertion(%struct.cpp_reader* %pfile, i32* nocapture %value) #0 {
 entry:
   %answer = alloca %struct.answer*, align 8
-  %call = call fastcc %struct.cpp_hashnode* @parse_assertion(%struct.cpp_reader* %pfile, %struct.answer** %answer, i32 4) #9
-  %tobool = icmp eq %struct.cpp_hashnode* %call, null
-  br i1 %tobool, label %if.end, label %if.then
+  call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !625), !dbg !1313
+  call void @llvm.dbg.value(metadata !{i32* %value}, i64 0, metadata !626), !dbg !1314
+  call void @llvm.dbg.declare(metadata !{%struct.answer** %answer}, metadata !627), !dbg !1315
+  %call = call fastcc %struct.cpp_hashnode* @parse_assertion(%struct.cpp_reader* %pfile, %struct.answer** %answer, i32 4) #10, !dbg !1316
+  call void @llvm.dbg.value(metadata !{%struct.cpp_hashnode* %call}, i64 0, metadata !628), !dbg !1316
+  %tobool = icmp eq %struct.cpp_hashnode* %call, null, !dbg !1317
+  br i1 %tobool, label %if.end, label %if.then, !dbg !1317
 
 if.then:                                          ; preds = %entry
-  %type = getelementptr inbounds %struct.cpp_hashnode* %call, i64 0, i32 4
-  %bf.load = load i8* %type, align 4
-  %cmp = icmp eq i8 %bf.load, 2
-  br i1 %cmp, label %land.rhs, label %land.end
+  %type = getelementptr inbounds %struct.cpp_hashnode* %call, i64 0, i32 4, !dbg !1318
+  %bf.load = load i8* %type, align 4, !dbg !1318
+  %cmp = icmp eq i8 %bf.load, 2, !dbg !1318
+  br i1 %cmp, label %land.rhs, label %land.end, !dbg !1318
 
 land.rhs:                                         ; preds = %if.then
-  %0 = load %struct.answer** %answer, align 8, !tbaa !3
-  %cmp1 = icmp eq %struct.answer* %0, null
-  br i1 %cmp1, label %land.end, label %lor.rhs
+  call void @llvm.dbg.value(metadata !{%struct.answer** %answer}, i64 0, metadata !627), !dbg !1318
+  %0 = load %struct.answer** %answer, align 8, !dbg !1318, !tbaa !1070
+  %cmp1 = icmp eq %struct.answer* %0, null, !dbg !1318
+  br i1 %cmp1, label %land.end, label %lor.rhs, !dbg !1318
 
 lor.rhs:                                          ; preds = %land.rhs
-  %call2 = call fastcc %struct.answer** @find_answer(%struct.cpp_hashnode* %call, %struct.answer* %0) #9
-  %1 = load %struct.answer** %call2, align 8, !tbaa !3
-  %cmp3 = icmp ne %struct.answer* %1, null
-  br label %land.end
+  %call2 = call fastcc %struct.answer** @find_answer(%struct.cpp_hashnode* %call, %struct.answer* %0) #10, !dbg !1319
+  %1 = load %struct.answer** %call2, align 8, !dbg !1319, !tbaa !1070
+  %cmp3 = icmp ne %struct.answer* %1, null, !dbg !1319
+  br label %land.end, !dbg !1319
 
 land.end:                                         ; preds = %land.rhs, %lor.rhs, %if.then
   %2 = phi i1 [ false, %if.then ], [ true, %land.rhs ], [ %cmp3, %lor.rhs ]
   %land.ext = zext i1 %2 to i32
-  store i32 %land.ext, i32* %value, align 4, !tbaa !2
+  store i32 %land.ext, i32* %value, align 4, !tbaa !1065
   br label %if.end
 
 if.end:                                           ; preds = %entry, %land.end
-  %conv = zext i1 %tobool to i32
-  ret i32 %conv
+  %conv = zext i1 %tobool to i32, !dbg !1320
+  ret i32 %conv, !dbg !1320
 }

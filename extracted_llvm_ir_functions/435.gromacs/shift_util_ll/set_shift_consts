@@ -1,162 +1,168 @@
-define void @set_shift_consts(%struct.__sFILE* %log, float %r1, float %rc, float* nocapture readonly %box, %struct.t_forcerec* nocapture readnone %fr) #1 {
-  %1 = fcmp olt float %r1, %rc
-  br i1 %1, label %2, label %17
+define void @set_shift_consts(%struct._IO_FILE* %log, float %r1, float %rc, float* nocapture %box, %struct.t_forcerec* nocapture %fr) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %log}, i64 0, metadata !173), !dbg !641
+  tail call void @llvm.dbg.value(metadata !{float %r1}, i64 0, metadata !174), !dbg !641
+  tail call void @llvm.dbg.value(metadata !{float %rc}, i64 0, metadata !175), !dbg !641
+  tail call void @llvm.dbg.value(metadata !{float* %box}, i64 0, metadata !176), !dbg !641
+  tail call void @llvm.dbg.value(metadata !{%struct.t_forcerec* %fr}, i64 0, metadata !177), !dbg !641
+  %cmp = fcmp olt float %r1, %rc, !dbg !642
+  br i1 %cmp, label %if.then, label %if.else, !dbg !642
 
-; <label>:2                                       ; preds = %0
-  %3 = fmul float %r1, 2.000000e+00
-  %4 = fmul float %rc, 5.000000e+00
-  %5 = fsub float %3, %4
-  %6 = fmul float %rc, %rc
-  %7 = fmul float %6, %rc
-  %8 = fsub float %rc, %r1
-  %9 = fmul float %8, %8
-  %10 = fmul float %7, %9
-  %11 = fdiv float %5, %10
-  store float %11, float* @A, align 4, !tbaa !2
-  %12 = fmul float %rc, 4.000000e+00
-  %13 = fsub float %12, %3
-  %14 = fmul float %8, %9
-  %15 = fmul float %7, %14
-  %16 = fdiv float %13, %15
-  store float %16, float* @B, align 4, !tbaa !2
-  br label %20
+if.then:                                          ; preds = %entry
+  %mul = fmul float %r1, 2.000000e+00, !dbg !643
+  %mul1 = fmul float %rc, 5.000000e+00, !dbg !643
+  %sub = fsub float %mul, %mul1, !dbg !643
+  %mul2 = fmul float %rc, %rc, !dbg !643
+  %mul3 = fmul float %mul2, %rc, !dbg !643
+  %sub4 = fsub float %rc, %r1, !dbg !643
+  %mul6 = fmul float %sub4, %sub4, !dbg !643
+  %mul7 = fmul float %mul3, %mul6, !dbg !643
+  %div = fdiv float %sub, %mul7, !dbg !643
+  store float %div, float* @A, align 4, !dbg !643, !tbaa !645
+  %mul8 = fmul float %rc, 4.000000e+00, !dbg !648
+  %sub10 = fsub float %mul8, %mul, !dbg !648
+  %mul17 = fmul float %sub4, %mul6, !dbg !648
+  %mul18 = fmul float %mul3, %mul17, !dbg !648
+  %div19 = fdiv float %sub10, %mul18, !dbg !648
+  store float %div19, float* @B, align 4, !dbg !648, !tbaa !645
+  br label %if.end, !dbg !649
 
-; <label>:17                                      ; preds = %0
-  %18 = fpext float %r1 to double
-  %19 = fpext float %rc to double
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([34 x i8]* @.str, i64 0, i64 0), double %18, double %19, i8* getelementptr inbounds ([70 x i8]* @.str1, i64 0, i64 0), i32 64) #8
-  %.pre = load float* @A, align 4, !tbaa !2
-  %.pre4 = load float* @B, align 4, !tbaa !2
-  %.pre6 = fsub float %rc, %r1
-  %.pre7 = fmul float %.pre6, %.pre6
-  %.pre9 = fmul float %.pre6, %.pre7
-  %.pre11 = fmul float %rc, %rc
-  %.pre13 = fmul float %.pre11, %rc
-  br label %20
+if.else:                                          ; preds = %entry
+  %conv = fpext float %r1 to double, !dbg !650
+  %conv20 = fpext float %rc to double, !dbg !650
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([34 x i8]* @.str, i64 0, i64 0), double %conv, double %conv20, i8* getelementptr inbounds ([58 x i8]* @.str1, i64 0, i64 0), i32 64) #7, !dbg !650
+  %.pre = load float* @A, align 4, !dbg !651, !tbaa !645
+  %.pre218 = load float* @B, align 4, !dbg !652, !tbaa !645
+  %sub28.pre = fsub float %rc, %r1, !dbg !653
+  %mul30.pre = fmul float %sub28.pre, %sub28.pre, !dbg !653
+  %mul32.pre = fmul float %sub28.pre, %mul30.pre, !dbg !653
+  %mul44.pre = fmul float %rc, %rc, !dbg !654
+  %mul45.pre = fmul float %mul44.pre, %rc, !dbg !654
+  br label %if.end
 
-; <label>:20                                      ; preds = %17, %2
-  %.pre-phi14 = phi float [ %.pre13, %17 ], [ %7, %2 ]
-  %.pre-phi10 = phi float [ %.pre9, %17 ], [ %14, %2 ]
-  %.pre-phi = phi float [ %.pre6, %17 ], [ %8, %2 ]
-  %21 = phi float [ %.pre4, %17 ], [ %16, %2 ]
-  %22 = phi float [ %.pre, %17 ], [ %11, %2 ]
-  %23 = fdiv float %22, 3.000000e+00
-  store float %23, float* @A_3, align 4, !tbaa !2
-  %24 = fmul float %21, 2.500000e-01
-  store float %24, float* @B_4, align 4, !tbaa !2
-  %25 = fdiv float 1.000000e+00, %rc
-  %26 = fmul float %.pre-phi10, %23
-  %27 = fsub float %25, %26
-  %28 = fmul float %.pre-phi, %.pre-phi10
-  %29 = fmul float %28, %24
-  %30 = fsub float %27, %29
-  store float %30, float* @C, align 4, !tbaa !2
-  %31 = fpext float %.pre-phi14 to double
-  %32 = fmul double %31, 0x401921FB54442D18
-  %33 = fpext float %.pre-phi10 to double
-  %34 = fmul double %32, %33
-  %35 = fptrunc double %34 to float
-  store float %35, float* @N0, align 4, !tbaa !2
-  %36 = load float* %box, align 4, !tbaa !2
-  %37 = getelementptr inbounds float* %box, i64 1
-  %38 = load float* %37, align 4, !tbaa !2
-  %39 = fmul float %36, %38
-  %40 = getelementptr inbounds float* %box, i64 2
-  %41 = load float* %40, align 4, !tbaa !2
-  %42 = fmul float %39, %41
-  store float %42, float* @Vol, align 4, !tbaa !2
-  %43 = fpext float %42 to double
-  %44 = fdiv double 0x402921FB54442D18, %43
-  %45 = fptrunc double %44 to float
-  store float %45, float* @FourPi_V, align 4, !tbaa !2
-  %46 = load %struct.__sFILE** @debug, align 8, !tbaa !6
-  %47 = icmp ne %struct.__sFILE* %46, null
-  %48 = icmp ne %struct.__sFILE* %log, null
-  %or.cond = and i1 %48, %47
-  br i1 %or.cond, label %49, label %57
+if.end:                                           ; preds = %if.else, %if.then
+  %mul45.pre-phi = phi float [ %mul45.pre, %if.else ], [ %mul3, %if.then ], !dbg !654
+  %mul32.pre-phi = phi float [ %mul32.pre, %if.else ], [ %mul17, %if.then ], !dbg !653
+  %sub28.pre-phi = phi float [ %sub28.pre, %if.else ], [ %sub4, %if.then ], !dbg !653
+  %0 = phi float [ %.pre218, %if.else ], [ %div19, %if.then ]
+  %1 = phi float [ %.pre, %if.else ], [ %div, %if.then ]
+  %conv23 = fdiv float %1, 3.000000e+00, !dbg !651
+  store float %conv23, float* @A_3, align 4, !dbg !651, !tbaa !645
+  %conv26 = fmul float %0, 2.500000e-01, !dbg !652
+  store float %conv26, float* @B_4, align 4, !dbg !652, !tbaa !645
+  %div27 = fdiv float 1.000000e+00, %rc, !dbg !653
+  %mul33 = fmul float %mul32.pre-phi, %conv23, !dbg !653
+  %sub34 = fsub float %div27, %mul33, !dbg !653
+  %mul41 = fmul float %sub28.pre-phi, %mul32.pre-phi, !dbg !653
+  %mul42 = fmul float %mul41, %conv26, !dbg !653
+  %sub43 = fsub float %sub34, %mul42, !dbg !653
+  store float %sub43, float* @C, align 4, !dbg !653, !tbaa !645
+  %conv46 = fpext float %mul45.pre-phi to double, !dbg !654
+  %mul47 = fmul double %conv46, 0x401921FB54442D18, !dbg !654
+  %conv53 = fpext float %mul32.pre-phi to double, !dbg !654
+  %mul54 = fmul double %mul47, %conv53, !dbg !654
+  %conv55 = fptrunc double %mul54 to float, !dbg !654
+  store float %conv55, float* @N0, align 4, !dbg !654, !tbaa !645
+  %2 = load float* %box, align 4, !dbg !655, !tbaa !645
+  %arrayidx56 = getelementptr inbounds float* %box, i64 1, !dbg !655
+  %3 = load float* %arrayidx56, align 4, !dbg !655, !tbaa !645
+  %mul57 = fmul float %2, %3, !dbg !655
+  %arrayidx58 = getelementptr inbounds float* %box, i64 2, !dbg !655
+  %4 = load float* %arrayidx58, align 4, !dbg !655, !tbaa !645
+  %mul59 = fmul float %mul57, %4, !dbg !655
+  store float %mul59, float* @Vol, align 4, !dbg !655, !tbaa !645
+  %conv60 = fpext float %mul59 to double, !dbg !656
+  %div61 = fdiv double 0x402921FB54442D18, %conv60, !dbg !656
+  %conv62 = fptrunc double %div61 to float, !dbg !656
+  store float %conv62, float* @FourPi_V, align 4, !dbg !656, !tbaa !645
+  %5 = load %struct._IO_FILE** @debug, align 8, !dbg !657, !tbaa !658
+  %tobool = icmp eq %struct._IO_FILE* %5, null, !dbg !657
+  %tobool63 = icmp eq %struct._IO_FILE* %log, null, !dbg !657
+  %or.cond = or i1 %tobool, %tobool63, !dbg !657
+  br i1 %or.cond, label %if.end71, label %if.then64, !dbg !657
 
-; <label>:49                                      ; preds = %20
-  %50 = fpext float %r1 to double
-  %51 = fpext float %rc to double
-  %52 = fpext float %22 to double
-  %53 = fpext float %21 to double
-  %54 = fpext float %30 to double
-  %55 = fpext float %45 to double
-  %56 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([131 x i8]* @.str2, i64 0, i64 0), double %50, double %51, double %52, double %53, double %54, double %55) #8
-  %.pre5 = load %struct.__sFILE** @debug, align 8, !tbaa !6
-  br label %57
+if.then64:                                        ; preds = %if.end
+  %conv65 = fpext float %r1 to double, !dbg !659
+  %conv66 = fpext float %rc to double, !dbg !659
+  %conv67 = fpext float %1 to double, !dbg !659
+  %conv68 = fpext float %0 to double, !dbg !659
+  %conv69 = fpext float %sub43 to double, !dbg !659
+  %conv70 = fpext float %conv62 to double, !dbg !659
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([131 x i8]* @.str2, i64 0, i64 0), double %conv65, double %conv66, double %conv67, double %conv68, double %conv69, double %conv70) #7, !dbg !659
+  %.pre219 = load %struct._IO_FILE** @debug, align 8, !dbg !660, !tbaa !658
+  br label %if.end71, !dbg !659
 
-; <label>:57                                      ; preds = %49, %20
-  %58 = phi %struct.__sFILE* [ %.pre5, %49 ], [ %46, %20 ]
-  %59 = fmul float %rc, -4.000000e+01
-  %60 = fmul float %59, %rc
-  %61 = fmul float %rc, 5.000000e+01
-  %62 = fmul float %61, %r1
-  %63 = fadd float %60, %62
-  %64 = fmul float %r1, 1.600000e+01
-  %65 = fmul float %64, %r1
-  %66 = fsub float %63, %65
-  store float %66, float* @c1, align 4, !tbaa !2
-  %67 = fmul float %rc, 6.000000e+01
-  %68 = fmul float %r1, 3.000000e+01
-  %69 = fsub float %67, %68
-  store float %69, float* @c2, align 4, !tbaa !2
-  %70 = fmul float %rc, -1.000000e+01
-  %71 = fmul float %70, %rc
-  %72 = fmul float %71, %rc
-  %73 = fmul float %rc, 2.000000e+01
-  %74 = fmul float %73, %rc
-  %75 = fmul float %74, %r1
-  %76 = fadd float %72, %75
-  %77 = fmul float %rc, 1.300000e+01
-  %78 = fmul float %77, %r1
-  %79 = fmul float %78, %r1
-  %80 = fsub float %76, %79
-  %81 = fmul float %r1, 3.000000e+00
-  %82 = fmul float %81, %r1
-  %83 = fmul float %82, %r1
-  %84 = fadd float %83, %80
-  store float %84, float* @c3, align 4, !tbaa !2
-  %85 = fmul float %rc, -2.000000e+01
-  %86 = fmul float %85, %rc
-  %87 = fmul float %rc, 4.000000e+01
-  %88 = fmul float %87, %r1
-  %89 = fadd float %86, %88
-  %90 = fmul float %r1, 1.400000e+01
-  %91 = fmul float %90, %r1
-  %92 = fsub float %89, %91
-  store float %92, float* @c4, align 4, !tbaa !2
-  %93 = fsub float -0.000000e+00, %69
-  store float %93, float* @c5, align 4, !tbaa !2
-  %94 = fmul float %rc, -5.000000e+00
-  %95 = fmul float %94, %rc
-  %96 = fmul float %95, %r1
-  %97 = fmul float %rc, 7.000000e+00
-  %98 = fmul float %97, %r1
-  %99 = fmul float %98, %r1
-  %100 = fadd float %96, %99
-  %101 = fmul float %r1, 2.000000e+00
-  %102 = fmul float %101, %r1
-  %103 = fmul float %102, %r1
-  %104 = fsub float %100, %103
-  store float %104, float* @c6, align 4, !tbaa !2
-  %105 = icmp ne %struct.__sFILE* %58, null
-  %or.cond3 = and i1 %48, %105
-  br i1 %or.cond3, label %106, label %116
+if.end71:                                         ; preds = %if.end, %if.then64
+  %6 = phi %struct._IO_FILE* [ %5, %if.end ], [ %.pre219, %if.then64 ]
+  %mul72 = fmul float %rc, -4.000000e+01, !dbg !661
+  %mul73 = fmul float %mul72, %rc, !dbg !661
+  %mul74 = fmul float %rc, 5.000000e+01, !dbg !661
+  %mul75 = fmul float %mul74, %r1, !dbg !661
+  %add = fadd float %mul73, %mul75, !dbg !661
+  %mul76 = fmul float %r1, 1.600000e+01, !dbg !661
+  %mul77 = fmul float %mul76, %r1, !dbg !661
+  %sub78 = fsub float %add, %mul77, !dbg !661
+  store float %sub78, float* @c1, align 4, !dbg !661, !tbaa !645
+  %mul79 = fmul float %rc, 6.000000e+01, !dbg !662
+  %mul80 = fmul float %r1, 3.000000e+01, !dbg !662
+  %sub81 = fsub float %mul79, %mul80, !dbg !662
+  store float %sub81, float* @c2, align 4, !dbg !662, !tbaa !645
+  %mul82 = fmul float %rc, -1.000000e+01, !dbg !663
+  %mul83 = fmul float %mul82, %rc, !dbg !663
+  %mul84 = fmul float %mul83, %rc, !dbg !663
+  %mul85 = fmul float %rc, 2.000000e+01, !dbg !663
+  %mul86 = fmul float %mul85, %rc, !dbg !663
+  %mul87 = fmul float %mul86, %r1, !dbg !663
+  %add88 = fadd float %mul84, %mul87, !dbg !663
+  %mul89 = fmul float %rc, 1.300000e+01, !dbg !663
+  %mul90 = fmul float %mul89, %r1, !dbg !663
+  %mul91 = fmul float %mul90, %r1, !dbg !663
+  %sub92 = fsub float %add88, %mul91, !dbg !663
+  %mul93 = fmul float %r1, 3.000000e+00, !dbg !663
+  %mul94 = fmul float %mul93, %r1, !dbg !663
+  %mul95 = fmul float %mul94, %r1, !dbg !663
+  %add96 = fadd float %mul95, %sub92, !dbg !663
+  store float %add96, float* @c3, align 4, !dbg !663, !tbaa !645
+  %mul97 = fmul float %rc, -2.000000e+01, !dbg !664
+  %mul98 = fmul float %mul97, %rc, !dbg !664
+  %mul99 = fmul float %rc, 4.000000e+01, !dbg !664
+  %mul100 = fmul float %mul99, %r1, !dbg !664
+  %add101 = fadd float %mul98, %mul100, !dbg !664
+  %mul102 = fmul float %r1, 1.400000e+01, !dbg !664
+  %mul103 = fmul float %mul102, %r1, !dbg !664
+  %sub104 = fsub float %add101, %mul103, !dbg !664
+  store float %sub104, float* @c4, align 4, !dbg !664, !tbaa !645
+  %sub105 = fsub float -0.000000e+00, %sub81, !dbg !665
+  store float %sub105, float* @c5, align 4, !dbg !665, !tbaa !645
+  %mul106 = fmul float %rc, -5.000000e+00, !dbg !666
+  %mul107 = fmul float %mul106, %rc, !dbg !666
+  %mul108 = fmul float %mul107, %r1, !dbg !666
+  %mul109 = fmul float %rc, 7.000000e+00, !dbg !666
+  %mul110 = fmul float %mul109, %r1, !dbg !666
+  %mul111 = fmul float %mul110, %r1, !dbg !666
+  %add112 = fadd float %mul108, %mul111, !dbg !666
+  %mul113 = fmul float %r1, 2.000000e+00, !dbg !666
+  %mul114 = fmul float %mul113, %r1, !dbg !666
+  %mul115 = fmul float %mul114, %r1, !dbg !666
+  %sub116 = fsub float %add112, %mul115, !dbg !666
+  store float %sub116, float* @c6, align 4, !dbg !666, !tbaa !645
+  %tobool117 = icmp eq %struct._IO_FILE* %6, null, !dbg !660
+  %or.cond217 = or i1 %tobool117, %tobool63, !dbg !660
+  br i1 %or.cond217, label %if.end129, label %if.then120, !dbg !660
 
-; <label>:106                                     ; preds = %57
-  %107 = fpext float %66 to double
-  %108 = fpext float %69 to double
-  %109 = fpext float %84 to double
-  %110 = fpext float %92 to double
-  %111 = fpext float %93 to double
-  %112 = fpext float %104 to double
-  %113 = load float* @N0, align 4, !tbaa !2
-  %114 = fpext float %113 to double
-  %115 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([95 x i8]* @.str3, i64 0, i64 0), double %107, double %108, double %109, double %110, double %111, double %112, double %114) #8
-  br label %116
+if.then120:                                       ; preds = %if.end71
+  %conv121 = fpext float %sub78 to double, !dbg !667
+  %conv122 = fpext float %sub81 to double, !dbg !667
+  %conv123 = fpext float %add96 to double, !dbg !667
+  %conv124 = fpext float %sub104 to double, !dbg !667
+  %conv125 = fpext float %sub105 to double, !dbg !667
+  %conv126 = fpext float %sub116 to double, !dbg !667
+  %7 = load float* @N0, align 4, !dbg !667, !tbaa !645
+  %conv127 = fpext float %7 to double, !dbg !667
+  %call128 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([95 x i8]* @.str3, i64 0, i64 0), double %conv121, double %conv122, double %conv123, double %conv124, double %conv125, double %conv126, double %conv127) #7, !dbg !667
+  br label %if.end129, !dbg !667
 
-; <label>:116                                     ; preds = %106, %57
-  store float 0x3FB45F3060000000, float* @One_4pi, align 4, !tbaa !2
-  ret void
+if.end129:                                        ; preds = %if.end71, %if.then120
+  store float 0x3FB45F3060000000, float* @One_4pi, align 4, !dbg !668, !tbaa !645
+  ret void, !dbg !669
 }

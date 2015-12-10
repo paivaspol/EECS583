@@ -1,16 +1,18 @@
 define i64 @tree_low_cst(%union.tree_node* nocapture %t, i32 %pos) #0 {
 entry:
-  %call = tail call i32 @host_integerp(%union.tree_node* %t, i32 %pos) #10
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %if.else, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %t}, i64 0, metadata !1520), !dbg !2384
+  tail call void @llvm.dbg.value(metadata !{i32 %pos}, i64 0, metadata !1521), !dbg !2385
+  %call = tail call i32 @host_integerp(%union.tree_node* %t, i32 %pos) #11, !dbg !2386
+  %tobool = icmp eq i32 %call, 0, !dbg !2386
+  br i1 %tobool, label %if.else, label %if.then, !dbg !2386
 
 if.then:                                          ; preds = %entry
-  %int_cst1 = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 2
-  %low = bitcast i32* %int_cst1 to i64*
-  %0 = load i64* %low, align 8, !tbaa !3
-  ret i64 %0
+  %int_cst1 = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 2, !dbg !2387
+  %low = bitcast i32* %int_cst1 to i64*, !dbg !2387
+  %0 = load i64* %low, align 8, !dbg !2387, !tbaa !1927
+  ret i64 %0, !dbg !2387
 
 if.else:                                          ; preds = %entry
-  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str147, i64 0, i64 0), i32 3489, i8* getelementptr inbounds ([13 x i8]* @__FUNCTION__.tree_low_cst, i64 0, i64 0)) #8
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str147, i64 0, i64 0), i32 3489, i8* getelementptr inbounds ([13 x i8]* @__FUNCTION__.tree_low_cst, i64 0, i64 0)) #9, !dbg !2388
+  unreachable, !dbg !2388
 }

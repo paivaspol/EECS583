@@ -1,0 +1,64 @@
+define internal fastcc i32 @_ZN3povL15solve_quadraticEPdS0_(double* nocapture %x, double* nocapture %y) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{double* %x}, i64 0, metadata !331), !dbg !589
+  tail call void @llvm.dbg.value(metadata !{double* %y}, i64 0, metadata !332), !dbg !589
+  %0 = load double* %x, align 8, !dbg !590, !tbaa !422
+  tail call void @llvm.dbg.value(metadata !{double %0}, i64 0, metadata !335), !dbg !590
+  %arrayidx1 = getelementptr inbounds double* %x, i64 1, !dbg !591
+  %1 = load double* %arrayidx1, align 8, !dbg !591, !tbaa !422
+  %sub = fsub double -0.000000e+00, %1, !dbg !591
+  tail call void @llvm.dbg.value(metadata !{double %sub}, i64 0, metadata !336), !dbg !591
+  %arrayidx2 = getelementptr inbounds double* %x, i64 2, !dbg !592
+  %2 = load double* %arrayidx2, align 8, !dbg !592, !tbaa !422
+  tail call void @llvm.dbg.value(metadata !{double %2}, i64 0, metadata !337), !dbg !592
+  %cmp = fcmp oeq double %0, 0.000000e+00, !dbg !593
+  br i1 %cmp, label %if.then, label %if.end6, !dbg !593
+
+if.then:                                          ; preds = %entry
+  %cmp3 = fcmp oeq double %1, -0.000000e+00, !dbg !594
+  br i1 %cmp3, label %return, label %if.end, !dbg !594
+
+if.end:                                           ; preds = %if.then
+  %div = fdiv double %2, %sub, !dbg !596
+  store double %div, double* %y, align 8, !dbg !596, !tbaa !422
+  br label %return, !dbg !597
+
+if.end6:                                          ; preds = %entry
+  %mul = fmul double %1, %1, !dbg !598
+  %mul7 = fmul double %0, 4.000000e+00, !dbg !598
+  %mul8 = fmul double %mul7, %2, !dbg !598
+  %sub9 = fsub double %mul, %mul8, !dbg !598
+  tail call void @llvm.dbg.value(metadata !{double %sub9}, i64 0, metadata !333), !dbg !598
+  %cmp10 = fcmp ogt double %sub9, -1.000000e-10, !dbg !599
+  %cmp11 = fcmp olt double %sub9, 1.000000e-10, !dbg !599
+  %or.cond = and i1 %cmp10, %cmp11, !dbg !599
+  br i1 %or.cond, label %if.then12, label %if.else, !dbg !599
+
+if.then12:                                        ; preds = %if.end6
+  %mul13 = fmul double %1, -5.000000e-01, !dbg !600
+  %div14 = fdiv double %mul13, %0, !dbg !600
+  store double %div14, double* %y, align 8, !dbg !600, !tbaa !422
+  br label %return, !dbg !602
+
+if.else:                                          ; preds = %if.end6
+  %cmp16 = fcmp olt double %sub9, 0.000000e+00, !dbg !603
+  br i1 %cmp16, label %return, label %if.end19, !dbg !603
+
+if.end19:                                         ; preds = %if.else
+  %call = tail call double @sqrt(double %sub9) #8, !dbg !605
+  tail call void @llvm.dbg.value(metadata !{double %call}, i64 0, metadata !333), !dbg !605
+  %mul20 = fmul double %0, 2.000000e+00, !dbg !606
+  tail call void @llvm.dbg.value(metadata !{double %mul20}, i64 0, metadata !334), !dbg !606
+  %add = fsub double %call, %1, !dbg !607
+  %div21 = fdiv double %add, %mul20, !dbg !607
+  store double %div21, double* %y, align 8, !dbg !607, !tbaa !422
+  %sub23 = fsub double %sub, %call, !dbg !608
+  %div24 = fdiv double %sub23, %mul20, !dbg !608
+  %arrayidx25 = getelementptr inbounds double* %y, i64 1, !dbg !608
+  store double %div24, double* %arrayidx25, align 8, !dbg !608, !tbaa !422
+  br label %return, !dbg !609
+
+return:                                           ; preds = %if.else, %if.then, %if.end19, %if.then12, %if.end
+  %retval.0 = phi i32 [ 1, %if.end ], [ 1, %if.then12 ], [ 2, %if.end19 ], [ 0, %if.then ], [ 0, %if.else ]
+  ret i32 %retval.0, !dbg !609
+}

@@ -1,107 +1,126 @@
-define float @ptheta_incoh(i32 %Eindex, float %theta) #9 {
-  %1 = fpext float %theta to double
-  %2 = sext i32 %Eindex to i64
-  %3 = getelementptr inbounds [6 x [8 x double]]* @ptheta_incoh.ppp, i64 0, i64 %2, i64 7
-  %4 = load double* %3, align 8, !tbaa !16
-  %5 = fsub double %1, %4
-  %6 = getelementptr inbounds [6 x [8 x double]]* @ptheta_incoh.ppp, i64 0, i64 %2, i64 1
-  %7 = load double* %6, align 8, !tbaa !16
-  %8 = fdiv double %5, %7
-  %9 = fptrunc double %8 to float
-  %10 = fmul float %9, %9
-  %11 = fpext float %10 to double
-  %12 = fmul double %11, -5.000000e-01
-  %13 = fcmp olt double %12, -7.000000e+01
-  br i1 %13, label %myexp.exit2, label %14
+define float @ptheta_incoh(i32 %Eindex, float %theta) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %Eindex}, i64 0, metadata !181), !dbg !642
+  tail call void @llvm.dbg.value(metadata !{float %theta}, i64 0, metadata !182), !dbg !642
+  %conv = fpext float %theta to double, !dbg !643
+  %idxprom = sext i32 %Eindex to i64, !dbg !643
+  %arrayidx1 = getelementptr inbounds [6 x [8 x double]]* @ptheta_incoh.ppp, i64 0, i64 %idxprom, i64 7, !dbg !643
+  %0 = load double* %arrayidx1, align 8, !dbg !643, !tbaa !644
+  %sub = fsub double %conv, %0, !dbg !643
+  %arrayidx4 = getelementptr inbounds [6 x [8 x double]]* @ptheta_incoh.ppp, i64 0, i64 %idxprom, i64 1, !dbg !643
+  %1 = load double* %arrayidx4, align 8, !dbg !643, !tbaa !644
+  %div = fdiv double %sub, %1, !dbg !643
+  %conv5 = fptrunc double %div to float, !dbg !643
+  tail call void @llvm.dbg.value(metadata !{float %conv5}, i64 0, metadata !645), !dbg !646
+  %mul.i = fmul float %conv5, %conv5, !dbg !647
+  %conv6 = fpext float %mul.i to double, !dbg !643
+  %mul = fmul double %conv6, -5.000000e-01, !dbg !643
+  tail call void @llvm.dbg.value(metadata !{double %mul}, i64 0, metadata !649) #3, !dbg !650
+  %cmp.i94 = fcmp olt double %mul, -7.000000e+01, !dbg !651
+  br i1 %cmp.i94, label %myexp.exit98, label %if.else.i96, !dbg !651
 
-; <label>:14                                      ; preds = %0
-  %15 = tail call double @exp(double %12) #14
-  br label %myexp.exit2
+if.else.i96:                                      ; preds = %entry
+  %call.i95 = tail call double @exp(double %mul) #8, !dbg !652
+  br label %myexp.exit98, !dbg !652
 
-myexp.exit2:                                      ; preds = %0, %14
-  %.0.i1 = phi double [ %15, %14 ], [ 0.000000e+00, %0 ]
-  %16 = fadd float %theta, -1.800000e+02
-  %17 = fpext float %16 to double
-  %18 = fadd double %17, %4
-  %19 = fdiv double %18, %7
-  %20 = fptrunc double %19 to float
-  %21 = fmul float %20, %20
-  %22 = fpext float %21 to double
-  %23 = fmul double %22, -5.000000e-01
-  %24 = fcmp olt double %23, -7.000000e+01
-  br i1 %24, label %myexp.exit6, label %25
+myexp.exit98:                                     ; preds = %entry, %if.else.i96
+  %retval.0.i97 = phi double [ %call.i95, %if.else.i96 ], [ 0.000000e+00, %entry ]
+  tail call void @llvm.dbg.value(metadata !{double %retval.0.i97}, i64 0, metadata !183), !dbg !643
+  %sub8 = fadd float %theta, -1.800000e+02, !dbg !653
+  %conv9 = fpext float %sub8 to double, !dbg !653
+  %add = fadd double %conv9, %0, !dbg !653
+  %div16 = fdiv double %add, %1, !dbg !653
+  %conv17 = fptrunc double %div16 to float, !dbg !653
+  tail call void @llvm.dbg.value(metadata !{float %conv17}, i64 0, metadata !654), !dbg !655
+  %mul.i99 = fmul float %conv17, %conv17, !dbg !656
+  %conv19 = fpext float %mul.i99 to double, !dbg !653
+  %mul20 = fmul double %conv19, -5.000000e-01, !dbg !653
+  tail call void @llvm.dbg.value(metadata !{double %mul20}, i64 0, metadata !657) #3, !dbg !658
+  %cmp.i106 = fcmp olt double %mul20, -7.000000e+01, !dbg !659
+  br i1 %cmp.i106, label %myexp.exit110, label %if.else.i108, !dbg !659
 
-; <label>:25                                      ; preds = %myexp.exit2
-  %26 = tail call double @exp(double %23) #14
-  br label %myexp.exit6
+if.else.i108:                                     ; preds = %myexp.exit98
+  %call.i107 = tail call double @exp(double %mul20) #8, !dbg !660
+  br label %myexp.exit110, !dbg !660
 
-myexp.exit6:                                      ; preds = %myexp.exit2, %25
-  %.0.i5 = phi double [ %26, %25 ], [ 0.000000e+00, %myexp.exit2 ]
-  %27 = fadd float %theta, -9.000000e+01
-  %28 = fpext float %27 to double
-  %29 = getelementptr inbounds [6 x [8 x double]]* @ptheta_incoh.ppp, i64 0, i64 %2, i64 3
-  %30 = load double* %29, align 8, !tbaa !16
-  %31 = fdiv double %28, %30
-  %32 = fptrunc double %31 to float
-  %33 = fmul float %32, %32
-  %34 = fpext float %33 to double
-  %35 = fmul double %34, -5.000000e-01
-  %36 = fcmp olt double %35, -7.000000e+01
-  br i1 %36, label %myexp.exit8, label %37
+myexp.exit110:                                    ; preds = %myexp.exit98, %if.else.i108
+  %retval.0.i109 = phi double [ %call.i107, %if.else.i108 ], [ 0.000000e+00, %myexp.exit98 ]
+  tail call void @llvm.dbg.value(metadata !{double %retval.0.i109}, i64 0, metadata !184), !dbg !653
+  %sub22 = fadd float %theta, -9.000000e+01, !dbg !661
+  %conv23 = fpext float %sub22 to double, !dbg !661
+  %arrayidx26 = getelementptr inbounds [6 x [8 x double]]* @ptheta_incoh.ppp, i64 0, i64 %idxprom, i64 3, !dbg !661
+  %2 = load double* %arrayidx26, align 8, !dbg !661, !tbaa !644
+  %div27 = fdiv double %conv23, %2, !dbg !661
+  %conv28 = fptrunc double %div27 to float, !dbg !661
+  tail call void @llvm.dbg.value(metadata !{float %conv28}, i64 0, metadata !662), !dbg !663
+  %mul.i111 = fmul float %conv28, %conv28, !dbg !664
+  %conv30 = fpext float %mul.i111 to double, !dbg !661
+  %mul31 = fmul double %conv30, -5.000000e-01, !dbg !661
+  tail call void @llvm.dbg.value(metadata !{double %mul31}, i64 0, metadata !665) #3, !dbg !666
+  %cmp.i113 = fcmp olt double %mul31, -7.000000e+01, !dbg !667
+  br i1 %cmp.i113, label %myexp.exit117, label %if.else.i115, !dbg !667
 
-; <label>:37                                      ; preds = %myexp.exit6
-  %38 = tail call double @exp(double %35) #14
-  br label %myexp.exit8
+if.else.i115:                                     ; preds = %myexp.exit110
+  %call.i114 = tail call double @exp(double %mul31) #8, !dbg !668
+  br label %myexp.exit117, !dbg !668
 
-myexp.exit8:                                      ; preds = %myexp.exit6, %37
-  %.0.i7 = phi double [ %38, %37 ], [ 0.000000e+00, %myexp.exit6 ]
-  %39 = getelementptr inbounds [6 x [8 x double]]* @ptheta_incoh.ppp, i64 0, i64 %2, i64 6
-  %40 = load double* %39, align 16, !tbaa !16
-  %41 = fsub double %1, %40
-  %42 = getelementptr inbounds [6 x [8 x double]]* @ptheta_incoh.ppp, i64 0, i64 %2, i64 5
-  %43 = load double* %42, align 8, !tbaa !16
-  %44 = fdiv double %41, %43
-  %45 = fptrunc double %44 to float
-  %46 = fmul float %45, %45
-  %47 = fpext float %46 to double
-  %48 = fmul double %47, -5.000000e-01
-  %49 = fcmp olt double %48, -7.000000e+01
-  br i1 %49, label %myexp.exit4, label %50
+myexp.exit117:                                    ; preds = %myexp.exit110, %if.else.i115
+  %retval.0.i116 = phi double [ %call.i114, %if.else.i115 ], [ 0.000000e+00, %myexp.exit110 ]
+  tail call void @llvm.dbg.value(metadata !{double %retval.0.i116}, i64 0, metadata !185), !dbg !661
+  %arrayidx36 = getelementptr inbounds [6 x [8 x double]]* @ptheta_incoh.ppp, i64 0, i64 %idxprom, i64 6, !dbg !669
+  %3 = load double* %arrayidx36, align 16, !dbg !669, !tbaa !644
+  %sub37 = fsub double %conv, %3, !dbg !669
+  %arrayidx40 = getelementptr inbounds [6 x [8 x double]]* @ptheta_incoh.ppp, i64 0, i64 %idxprom, i64 5, !dbg !669
+  %4 = load double* %arrayidx40, align 8, !dbg !669, !tbaa !644
+  %div41 = fdiv double %sub37, %4, !dbg !669
+  %conv42 = fptrunc double %div41 to float, !dbg !669
+  tail call void @llvm.dbg.value(metadata !{float %conv42}, i64 0, metadata !670), !dbg !671
+  %mul.i112 = fmul float %conv42, %conv42, !dbg !672
+  %conv44 = fpext float %mul.i112 to double, !dbg !669
+  %mul45 = fmul double %conv44, -5.000000e-01, !dbg !669
+  tail call void @llvm.dbg.value(metadata !{double %mul45}, i64 0, metadata !673) #3, !dbg !674
+  %cmp.i101 = fcmp olt double %mul45, -7.000000e+01, !dbg !675
+  br i1 %cmp.i101, label %myexp.exit105, label %if.else.i103, !dbg !675
 
-; <label>:50                                      ; preds = %myexp.exit8
-  %51 = tail call double @exp(double %48) #14
-  br label %myexp.exit4
+if.else.i103:                                     ; preds = %myexp.exit117
+  %call.i102 = tail call double @exp(double %mul45) #8, !dbg !676
+  br label %myexp.exit105, !dbg !676
 
-myexp.exit4:                                      ; preds = %myexp.exit8, %50
-  %.0.i3 = phi double [ %51, %50 ], [ 0.000000e+00, %myexp.exit8 ]
-  %52 = fadd double %17, %40
-  %53 = fdiv double %52, %43
-  %54 = fptrunc double %53 to float
-  %55 = fmul float %54, %54
-  %56 = fpext float %55 to double
-  %57 = fmul double %56, -5.000000e-01
-  %58 = fcmp olt double %57, -7.000000e+01
-  br i1 %58, label %myexp.exit, label %59
+myexp.exit105:                                    ; preds = %myexp.exit117, %if.else.i103
+  %retval.0.i104 = phi double [ %call.i102, %if.else.i103 ], [ 0.000000e+00, %myexp.exit117 ]
+  tail call void @llvm.dbg.value(metadata !{double %retval.0.i104}, i64 0, metadata !186), !dbg !669
+  %add52 = fadd double %conv9, %3, !dbg !677
+  %div56 = fdiv double %add52, %4, !dbg !677
+  %conv57 = fptrunc double %div56 to float, !dbg !677
+  tail call void @llvm.dbg.value(metadata !{float %conv57}, i64 0, metadata !678), !dbg !679
+  %mul.i100 = fmul float %conv57, %conv57, !dbg !680
+  %conv59 = fpext float %mul.i100 to double, !dbg !677
+  %mul60 = fmul double %conv59, -5.000000e-01, !dbg !677
+  tail call void @llvm.dbg.value(metadata !{double %mul60}, i64 0, metadata !681) #3, !dbg !682
+  %cmp.i = fcmp olt double %mul60, -7.000000e+01, !dbg !683
+  br i1 %cmp.i, label %myexp.exit, label %if.else.i, !dbg !683
 
-; <label>:59                                      ; preds = %myexp.exit4
-  %60 = tail call double @exp(double %57) #14
-  br label %myexp.exit
+if.else.i:                                        ; preds = %myexp.exit105
+  %call.i = tail call double @exp(double %mul60) #8, !dbg !684
+  br label %myexp.exit, !dbg !684
 
-myexp.exit:                                       ; preds = %myexp.exit4, %59
-  %.0.i = phi double [ %60, %59 ], [ 0.000000e+00, %myexp.exit4 ]
-  %61 = getelementptr inbounds [6 x [8 x double]]* @ptheta_incoh.ppp, i64 0, i64 %2, i64 0
-  %62 = load double* %61, align 16, !tbaa !16
-  %63 = fadd double %.0.i1, %.0.i5
-  %64 = fmul double %63, %62
-  %65 = getelementptr inbounds [6 x [8 x double]]* @ptheta_incoh.ppp, i64 0, i64 %2, i64 2
-  %66 = load double* %65, align 16, !tbaa !16
-  %67 = fmul double %.0.i7, %66
-  %68 = fadd double %64, %67
-  %69 = getelementptr inbounds [6 x [8 x double]]* @ptheta_incoh.ppp, i64 0, i64 %2, i64 4
-  %70 = load double* %69, align 16, !tbaa !16
-  %71 = fadd double %.0.i3, %.0.i
-  %72 = fmul double %71, %70
-  %73 = fadd double %68, %72
-  %74 = fptrunc double %73 to float
-  ret float %74
+myexp.exit:                                       ; preds = %myexp.exit105, %if.else.i
+  %retval.0.i = phi double [ %call.i, %if.else.i ], [ 0.000000e+00, %myexp.exit105 ]
+  tail call void @llvm.dbg.value(metadata !{double %retval.0.i}, i64 0, metadata !187), !dbg !677
+  %arrayidx64 = getelementptr inbounds [6 x [8 x double]]* @ptheta_incoh.ppp, i64 0, i64 %idxprom, i64 0, !dbg !685
+  %5 = load double* %arrayidx64, align 16, !dbg !685, !tbaa !644
+  %add65 = fadd double %retval.0.i97, %retval.0.i109, !dbg !685
+  %mul66 = fmul double %add65, %5, !dbg !685
+  %arrayidx69 = getelementptr inbounds [6 x [8 x double]]* @ptheta_incoh.ppp, i64 0, i64 %idxprom, i64 2, !dbg !685
+  %6 = load double* %arrayidx69, align 16, !dbg !685, !tbaa !644
+  %mul70 = fmul double %retval.0.i116, %6, !dbg !685
+  %add71 = fadd double %mul66, %mul70, !dbg !685
+  %arrayidx74 = getelementptr inbounds [6 x [8 x double]]* @ptheta_incoh.ppp, i64 0, i64 %idxprom, i64 4, !dbg !685
+  %7 = load double* %arrayidx74, align 16, !dbg !685, !tbaa !644
+  %add75 = fadd double %retval.0.i104, %retval.0.i, !dbg !685
+  %mul76 = fmul double %add75, %7, !dbg !685
+  %add77 = fadd double %add71, %mul76, !dbg !685
+  tail call void @llvm.dbg.value(metadata !{double %add77}, i64 0, metadata !188), !dbg !685
+  %conv78 = fptrunc double %add77 to float, !dbg !686
+  ret float %conv78, !dbg !686
 }

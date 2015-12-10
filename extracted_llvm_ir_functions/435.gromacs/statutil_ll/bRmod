@@ -1,14 +1,19 @@
-define i32 @bRmod(double %a, double %b) #0 {
-  %1 = fmul double %a, 0x3FF00000A10FAFA0
-  %2 = fdiv double %1, %b
-  %3 = fptosi double %2 to i32
-  %4 = sitofp i32 %3 to double
-  %5 = fmul double %4, %b
-  %6 = fsub double %a, %5
-  %7 = tail call double @fabs(double %6) #15
-  %8 = tail call double @fabs(double %a) #15
-  %9 = fmul double %8, 6.000000e-07
-  %not. = fcmp ole double %7, %9
-  %. = zext i1 %not. to i32
-  ret i32 %.
+define i32 @bRmod(double %a, double %b) #5 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{double %a}, i64 0, metadata !106), !dbg !653
+  tail call void @llvm.dbg.value(metadata !{double %b}, i64 0, metadata !107), !dbg !653
+  tail call void @llvm.dbg.value(metadata !654, i64 0, metadata !109), !dbg !655
+  %mul = fmul double %a, 0x3FF00000A10FAFA0, !dbg !656
+  %div = fdiv double %mul, %b, !dbg !656
+  %conv = fptosi double %div to i32, !dbg !656
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !108), !dbg !656
+  %conv1 = sitofp i32 %conv to double, !dbg !657
+  %mul2 = fmul double %conv1, %b, !dbg !657
+  %sub = fsub double %a, %mul2, !dbg !657
+  %call = tail call double @fabs(double %sub) #12, !dbg !657
+  %call3 = tail call double @fabs(double %a) #12, !dbg !657
+  %mul4 = fmul double %call3, 6.000000e-07, !dbg !657
+  %not.cmp = fcmp ole double %call, %mul4, !dbg !658
+  %. = zext i1 %not.cmp to i32, !dbg !658
+  ret i32 %., !dbg !658
 }

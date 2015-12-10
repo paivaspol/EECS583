@@ -1,0 +1,48 @@
+define void @_ZN11xercesc_2_59XMLReader16refreshRawBufferEv(%"class.xercesc_2_5::XMLReader"* %this) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLReader"* %this}, i64 0, metadata !1660), !dbg !2522
+  %fRawBytesAvail = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %this, i64 0, i32 13, !dbg !2523
+  %0 = load i32* %fRawBytesAvail, align 4, !dbg !2523, !tbaa !2430
+  %fRawBufIndex = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %this, i64 0, i32 11, !dbg !2523
+  %1 = load i32* %fRawBufIndex, align 4, !dbg !2523, !tbaa !2430
+  %sub = sub i32 %0, %1, !dbg !2523
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !1661), !dbg !2523
+  tail call void @llvm.dbg.value(metadata !1369, i64 0, metadata !1662), !dbg !2524
+  %cmp19 = icmp eq i32 %0, %1, !dbg !2524
+  br i1 %cmp19, label %for.end, label %for.body, !dbg !2524
+
+for.body:                                         ; preds = %entry, %for.body.for.body_crit_edge
+  %2 = phi i32 [ %.pre, %for.body.for.body_crit_edge ], [ %1, %entry ]
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body.for.body_crit_edge ], [ 0, %entry ]
+  %3 = trunc i64 %indvars.iv to i32, !dbg !2525
+  %add = add i32 %2, %3, !dbg !2525
+  %idxprom = zext i32 %add to i64, !dbg !2525
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %this, i64 0, i32 12, i64 %idxprom, !dbg !2525
+  %4 = load i8* %arrayidx, align 1, !dbg !2525, !tbaa !2401
+  %arrayidx5 = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %this, i64 0, i32 12, i64 %indvars.iv, !dbg !2525
+  store i8 %4, i8* %arrayidx5, align 1, !dbg !2525, !tbaa !2401
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2524
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !2524
+  %exitcond = icmp eq i32 %lftr.wideiv, %sub, !dbg !2524
+  br i1 %exitcond, label %for.end, label %for.body.for.body_crit_edge, !dbg !2524
+
+for.body.for.body_crit_edge:                      ; preds = %for.body
+  %.pre = load i32* %fRawBufIndex, align 4, !dbg !2525, !tbaa !2430
+  br label %for.body, !dbg !2524
+
+for.end:                                          ; preds = %for.body, %entry
+  %fStream = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %this, i64 0, i32 22, !dbg !2526
+  %5 = load %"class.xercesc_2_5::BinInputStream"** %fStream, align 8, !dbg !2526, !tbaa !2403
+  %6 = bitcast %"class.xercesc_2_5::BinInputStream"* %5 to i32 (%"class.xercesc_2_5::BinInputStream"*, i8*, i32)***, !dbg !2526
+  %vtable = load i32 (%"class.xercesc_2_5::BinInputStream"*, i8*, i32)*** %6, align 8, !dbg !2526, !tbaa !2450
+  %vfn = getelementptr inbounds i32 (%"class.xercesc_2_5::BinInputStream"*, i8*, i32)** %vtable, i64 3, !dbg !2526
+  %7 = load i32 (%"class.xercesc_2_5::BinInputStream"*, i8*, i32)** %vfn, align 8, !dbg !2526
+  %idxprom6 = zext i32 %sub to i64, !dbg !2526
+  %arrayidx8 = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %this, i64 0, i32 12, i64 %idxprom6, !dbg !2526
+  %sub9 = sub i32 49152, %sub, !dbg !2526
+  %call = tail call i32 %7(%"class.xercesc_2_5::BinInputStream"* %5, i8* %arrayidx8, i32 %sub9) #10, !dbg !2526
+  %add10 = add i32 %call, %sub, !dbg !2526
+  store i32 %add10, i32* %fRawBytesAvail, align 4, !dbg !2526, !tbaa !2430
+  store i32 0, i32* %fRawBufIndex, align 4, !dbg !2527, !tbaa !2430
+  ret void, !dbg !2528
+}

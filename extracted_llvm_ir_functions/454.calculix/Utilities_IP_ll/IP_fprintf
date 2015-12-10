@@ -1,31 +1,35 @@
 define void @IP_fprintf(%struct._IO_FILE* %fp, %struct._IP* %ip) #0 {
 entry:
-  %cmp = icmp eq %struct._IO_FILE* %fp, null
-  %cmp1 = icmp eq %struct._IP* %ip, null
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.end6, label %while.body
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !76), !dbg !161
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %ip}, i64 0, metadata !77), !dbg !162
+  %cmp = icmp eq %struct._IO_FILE* %fp, null, !dbg !163
+  %cmp1 = icmp eq %struct._IP* %ip, null, !dbg !163
+  %or.cond = or i1 %cmp, %cmp1, !dbg !163
+  br i1 %or.cond, label %if.end6, label %while.body, !dbg !163
 
 while.body:                                       ; preds = %entry, %if.end
   %i.016 = phi i32 [ %inc, %if.end ], [ 0, %entry ]
   %ip.addr.015 = phi %struct._IP* [ %2, %if.end ], [ %ip, %entry ]
-  %rem13 = and i32 %i.016, 15
-  %cmp3 = icmp eq i32 %rem13, 0
-  br i1 %cmp3, label %if.then4, label %if.end
+  %rem13 = and i32 %i.016, 15, !dbg !164
+  %cmp3 = icmp eq i32 %rem13, 0, !dbg !164
+  br i1 %cmp3, label %if.then4, label %if.end, !dbg !164
 
 if.then4:                                         ; preds = %while.body
-  %0 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %fp)
-  br label %if.end
+  %0 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %fp), !dbg !164
+  br label %if.end, !dbg !164
 
 if.end:                                           ; preds = %if.then4, %while.body
-  %val = getelementptr inbounds %struct._IP* %ip.addr.015, i64 0, i32 0
-  %1 = load i32* %val, align 4, !tbaa !0
-  %call5 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i32 %1) #4
-  %next = getelementptr inbounds %struct._IP* %ip.addr.015, i64 0, i32 1
-  %2 = load %struct._IP** %next, align 8, !tbaa !3
-  %inc = add nsw i32 %i.016, 1
-  %cmp2 = icmp eq %struct._IP* %2, null
-  br i1 %cmp2, label %if.end6, label %while.body
+  %val = getelementptr inbounds %struct._IP* %ip.addr.015, i64 0, i32 0, !dbg !166
+  %1 = load i32* %val, align 4, !dbg !166, !tbaa !167
+  %call5 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i32 %1) #5, !dbg !166
+  %next = getelementptr inbounds %struct._IP* %ip.addr.015, i64 0, i32 1, !dbg !170
+  %2 = load %struct._IP** %next, align 8, !dbg !170, !tbaa !171
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %2}, i64 0, metadata !77), !dbg !170
+  %inc = add nsw i32 %i.016, 1, !dbg !172
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !78), !dbg !172
+  %cmp2 = icmp eq %struct._IP* %2, null, !dbg !173
+  br i1 %cmp2, label %if.end6, label %while.body, !dbg !173
 
 if.end6:                                          ; preds = %if.end, %entry
-  ret void
+  ret void, !dbg !174
 }

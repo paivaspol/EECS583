@@ -1,51 +1,54 @@
 define void @push_slidE(i32 %target) #0 {
 entry:
-  %0 = load i32* @gfrom, align 4, !tbaa !0
-  %sub = sub nsw i32 %target, %0
-  %idxprom = sext i32 %0 to i64
-  %arrayidx = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom
-  %1 = load i32* %arrayidx, align 4, !tbaa !0
+  tail call void @llvm.dbg.value(metadata !{i32 %target}, i64 0, metadata !114), !dbg !606
+  %0 = load i32* @gfrom, align 4, !dbg !607, !tbaa !145
+  %sub = sub nsw i32 %target, %0, !dbg !607
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !115), !dbg !607
+  %idxprom = sext i32 %0 to i64, !dbg !608
+  %arrayidx = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom, !dbg !608
+  %1 = load i32* %arrayidx, align 4, !dbg !608, !tbaa !145
   %2 = sext i32 %target to i64
   %3 = sext i32 %sub to i64
-  br label %do.body
+  br label %do.body, !dbg !609
 
 do.body:                                          ; preds = %if.end, %entry
   %indvars.iv = phi i64 [ %indvars.iv.next, %if.end ], [ %2, %entry ]
   %target.addr.0 = phi i32 [ %add, %if.end ], [ %target, %entry ]
-  %arrayidx2 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %indvars.iv
-  %4 = load i32* %arrayidx2, align 4, !tbaa !0
-  %cmp = icmp eq i32 %4, 13
-  br i1 %cmp, label %if.then, label %if.else
+  %arrayidx2 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %indvars.iv, !dbg !610
+  %4 = load i32* %arrayidx2, align 4, !dbg !610, !tbaa !145
+  %cmp = icmp eq i32 %4, 13, !dbg !610
+  br i1 %cmp, label %if.then, label %if.else, !dbg !610
 
 if.then:                                          ; preds = %do.body
-  %5 = load i32* @captures, align 4, !tbaa !1
-  %tobool = icmp eq i32 %5, 0
-  br i1 %tobool, label %if.then3, label %if.end
+  %5 = load i32* @captures, align 4, !dbg !612, !tbaa !146
+  %tobool = icmp eq i32 %5, 0, !dbg !612
+  br i1 %tobool, label %if.then3, label %if.end, !dbg !612
 
 if.then3:                                         ; preds = %if.then
-  %6 = trunc i64 %indvars.iv to i32
-  tail call void @add_move(i32 %6, i32 0) #3
-  br label %if.end
+  %6 = trunc i64 %indvars.iv to i32, !dbg !614
+  tail call void @add_move(i32 %6, i32 0) #5, !dbg !614
+  br label %if.end, !dbg !616
 
 if.end:                                           ; preds = %if.then, %if.then3
-  %add = add nsw i32 %target.addr.0, %sub
-  %idxprom13 = sext i32 %add to i64
-  %arrayidx14 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom13
-  %7 = load i32* %arrayidx14, align 4, !tbaa !0
-  %cmp15 = icmp eq i32 %7, 0
-  %indvars.iv.next = add i64 %indvars.iv, %3
-  br i1 %cmp15, label %do.end, label %do.body
+  %add = add nsw i32 %target.addr.0, %sub, !dbg !617
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !114), !dbg !617
+  %idxprom13 = sext i32 %add to i64, !dbg !618
+  %arrayidx14 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom13, !dbg !618
+  %7 = load i32* %arrayidx14, align 4, !dbg !618, !tbaa !145
+  %cmp15 = icmp eq i32 %7, 0, !dbg !618
+  %indvars.iv.next = add i64 %indvars.iv, %3, !dbg !618
+  br i1 %cmp15, label %do.end, label %do.body, !dbg !618
 
 if.else:                                          ; preds = %do.body
-  %8 = xor i32 %4, %1
-  %9 = and i32 %8, 1
-  %cmp7 = icmp eq i32 %9, 0
-  br i1 %cmp7, label %do.end, label %if.then8
+  %8 = xor i32 %4, %1, !dbg !619
+  %9 = and i32 %8, 1, !dbg !619
+  %cmp7 = icmp eq i32 %9, 0, !dbg !619
+  br i1 %cmp7, label %do.end, label %if.then8, !dbg !619
 
 if.then8:                                         ; preds = %if.else
-  tail call void @add_capture(i32 %target.addr.0, i32 %4, i32 0, i32 0) #3
-  br label %do.end
+  tail call void @add_capture(i32 %target.addr.0, i32 %4, i32 0, i32 0) #5, !dbg !620
+  br label %do.end, !dbg !622
 
 do.end:                                           ; preds = %if.end, %if.else, %if.then8
-  ret void
+  ret void, !dbg !623
 }

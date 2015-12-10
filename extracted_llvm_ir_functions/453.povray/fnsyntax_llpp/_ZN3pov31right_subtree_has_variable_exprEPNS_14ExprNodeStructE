@@ -1,0 +1,34 @@
+define zeroext i1 @_ZN3pov31right_subtree_has_variable_exprEPNS_14ExprNodeStructE(%"struct.pov::ExprNodeStruct"* %node) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::ExprNodeStruct"* %node}, i64 0, metadata !712), !dbg !1352
+  %cmp = icmp eq %"struct.pov::ExprNodeStruct"* %node, null, !dbg !1353
+  br i1 %cmp, label %return, label %for.body, !dbg !1353
+
+for.body:                                         ; preds = %entry, %for.inc
+  %i.018 = phi %"struct.pov::ExprNodeStruct"* [ %2, %for.inc ], [ %node, %entry ]
+  %op = getelementptr inbounds %"struct.pov::ExprNodeStruct"* %i.018, i64 0, i32 5, !dbg !1354
+  %0 = load i32* %op, align 4, !dbg !1354, !tbaa !903
+  %cmp2 = icmp eq i32 %0, 19, !dbg !1354
+  br i1 %cmp2, label %return, label %if.end4, !dbg !1354
+
+if.end4:                                          ; preds = %for.body
+  %child = getelementptr inbounds %"struct.pov::ExprNodeStruct"* %i.018, i64 0, i32 1, !dbg !1356
+  %1 = load %"struct.pov::ExprNodeStruct"** %child, align 8, !dbg !1356, !tbaa !889
+  %cmp5 = icmp eq %"struct.pov::ExprNodeStruct"* %1, null, !dbg !1356
+  br i1 %cmp5, label %for.inc, label %if.then6, !dbg !1356
+
+if.then6:                                         ; preds = %if.end4
+  %call = tail call zeroext i1 @_ZN3pov31right_subtree_has_variable_exprEPNS_14ExprNodeStructE(%"struct.pov::ExprNodeStruct"* %1) #9, !dbg !1357
+  br i1 %call, label %return, label %for.inc, !dbg !1357
+
+for.inc:                                          ; preds = %if.end4, %if.then6
+  %next = getelementptr inbounds %"struct.pov::ExprNodeStruct"* %i.018, i64 0, i32 3, !dbg !1359
+  %2 = load %"struct.pov::ExprNodeStruct"** %next, align 8, !dbg !1359, !tbaa !889
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::ExprNodeStruct"* %2}, i64 0, metadata !713), !dbg !1359
+  %cmp1 = icmp eq %"struct.pov::ExprNodeStruct"* %2, null, !dbg !1359
+  br i1 %cmp1, label %return, label %for.body, !dbg !1359
+
+return:                                           ; preds = %if.then6, %for.body, %for.inc, %entry
+  %retval.0 = phi i1 [ false, %entry ], [ true, %if.then6 ], [ true, %for.body ], [ false, %for.inc ]
+  ret i1 %retval.0, !dbg !1360
+}

@@ -1,80 +1,87 @@
 define %struct.hash_entry* @hash_lookup(%struct.hash_table* %table, i8* %key, i32 %create, i8* (%struct.obstack*, i8*)* %copy) #0 {
 entry:
-  %hash1 = getelementptr inbounds %struct.hash_table* %table, i64 0, i32 3
-  %0 = load i64 (i8*)** %hash1, align 8, !tbaa !0
-  %call = tail call i64 %0(i8* %key) #6
-  %size = getelementptr inbounds %struct.hash_table* %table, i64 0, i32 1
-  %1 = load i32* %size, align 4, !tbaa !3
-  %conv = zext i32 %1 to i64
-  %rem = urem i64 %call, %conv
-  %table3 = getelementptr inbounds %struct.hash_table* %table, i64 0, i32 0
-  %2 = load %struct.hash_entry*** %table3, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds %struct.hash_entry** %2, i64 %rem
-  %hashp.059 = load %struct.hash_entry** %arrayidx, align 8
-  %cmp60 = icmp eq %struct.hash_entry* %hashp.059, null
-  br i1 %cmp60, label %for.end, label %for.body.lr.ph
+  tail call void @llvm.dbg.value(metadata !{%struct.hash_table* %table}, i64 0, metadata !113), !dbg !209
+  tail call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !114), !dbg !210
+  tail call void @llvm.dbg.value(metadata !{i32 %create}, i64 0, metadata !115), !dbg !211
+  tail call void @llvm.dbg.value(metadata !{i8* (%struct.obstack*, i8*)* %copy}, i64 0, metadata !116), !dbg !212
+  %hash1 = getelementptr inbounds %struct.hash_table* %table, i64 0, i32 3, !dbg !213
+  %0 = load i64 (i8*)** %hash1, align 8, !dbg !213, !tbaa !188
+  %call = tail call i64 %0(i8* %key) #7, !dbg !213
+  tail call void @llvm.dbg.value(metadata !{i64 %call}, i64 0, metadata !117), !dbg !213
+  %size = getelementptr inbounds %struct.hash_table* %table, i64 0, i32 1, !dbg !214
+  %1 = load i32* %size, align 4, !dbg !214, !tbaa !192
+  %conv = zext i32 %1 to i64, !dbg !214
+  %rem = urem i64 %call, %conv, !dbg !214
+  %table3 = getelementptr inbounds %struct.hash_table* %table, i64 0, i32 0, !dbg !215
+  %2 = load %struct.hash_entry*** %table3, align 8, !dbg !215, !tbaa !188
+  %arrayidx = getelementptr inbounds %struct.hash_entry** %2, i64 %rem, !dbg !215
+  %hashp.059 = load %struct.hash_entry** %arrayidx, align 8, !dbg !215
+  %cmp60 = icmp eq %struct.hash_entry* %hashp.059, null, !dbg !215
+  br i1 %cmp60, label %for.end, label %for.body.lr.ph, !dbg !215
 
 for.body.lr.ph:                                   ; preds = %entry
-  %comp = getelementptr inbounds %struct.hash_table* %table, i64 0, i32 4
-  br label %for.body
+  %comp = getelementptr inbounds %struct.hash_table* %table, i64 0, i32 4, !dbg !217
+  br label %for.body, !dbg !215
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.inc
   %hashp.061 = phi %struct.hash_entry* [ %hashp.059, %for.body.lr.ph ], [ %hashp.0, %for.inc ]
-  %hash5 = getelementptr inbounds %struct.hash_entry* %hashp.061, i64 0, i32 2
-  %3 = load i64* %hash5, align 8, !tbaa !4
-  %cmp6 = icmp eq i64 %3, %call
-  br i1 %cmp6, label %land.lhs.true, label %for.inc
+  %hash5 = getelementptr inbounds %struct.hash_entry* %hashp.061, i64 0, i32 2, !dbg !218
+  %3 = load i64* %hash5, align 8, !dbg !218, !tbaa !219
+  %cmp6 = icmp eq i64 %3, %call, !dbg !218
+  br i1 %cmp6, label %land.lhs.true, label %for.inc, !dbg !218
 
 land.lhs.true:                                    ; preds = %for.body
-  %4 = load i1 (i8*, i8*)** %comp, align 8, !tbaa !0
-  %key8 = getelementptr inbounds %struct.hash_entry* %hashp.061, i64 0, i32 1
-  %5 = load i8** %key8, align 8, !tbaa !0
-  %call9 = tail call zeroext i1 %4(i8* %5, i8* %key) #6
-  br i1 %call9, label %return, label %for.inc
+  %4 = load i1 (i8*, i8*)** %comp, align 8, !dbg !217, !tbaa !188
+  %key8 = getelementptr inbounds %struct.hash_entry* %hashp.061, i64 0, i32 1, !dbg !217
+  %5 = load i8** %key8, align 8, !dbg !217, !tbaa !188
+  %call9 = tail call zeroext i1 %4(i8* %5, i8* %key) #7, !dbg !217
+  br i1 %call9, label %return, label %for.inc, !dbg !217
 
 for.inc:                                          ; preds = %for.body, %land.lhs.true
-  %next = getelementptr inbounds %struct.hash_entry* %hashp.061, i64 0, i32 0
-  %hashp.0 = load %struct.hash_entry** %next, align 8
-  %cmp = icmp eq %struct.hash_entry* %hashp.0, null
-  br i1 %cmp, label %for.end, label %for.body
+  %next = getelementptr inbounds %struct.hash_entry* %hashp.061, i64 0, i32 0, !dbg !215
+  %hashp.0 = load %struct.hash_entry** %next, align 8, !dbg !215
+  %cmp = icmp eq %struct.hash_entry* %hashp.0, null, !dbg !215
+  br i1 %cmp, label %for.end, label %for.body, !dbg !215
 
 for.end:                                          ; preds = %for.inc, %entry
-  %tobool = icmp eq i32 %create, 0
-  br i1 %tobool, label %return, label %if.end12
+  %tobool = icmp eq i32 %create, 0, !dbg !220
+  br i1 %tobool, label %return, label %if.end12, !dbg !220
 
 if.end12:                                         ; preds = %for.end
-  %newfunc = getelementptr inbounds %struct.hash_table* %table, i64 0, i32 2
-  %6 = load %struct.hash_entry* (%struct.hash_entry*, %struct.hash_table*, i8*)** %newfunc, align 8, !tbaa !0
-  %call13 = tail call %struct.hash_entry* %6(%struct.hash_entry* null, %struct.hash_table* %table, i8* %key) #6
-  %cmp14 = icmp eq %struct.hash_entry* %call13, null
-  br i1 %cmp14, label %return, label %if.end17
+  %newfunc = getelementptr inbounds %struct.hash_table* %table, i64 0, i32 2, !dbg !221
+  %6 = load %struct.hash_entry* (%struct.hash_entry*, %struct.hash_table*, i8*)** %newfunc, align 8, !dbg !221, !tbaa !188
+  %call13 = tail call %struct.hash_entry* %6(%struct.hash_entry* null, %struct.hash_table* %table, i8* %key) #7, !dbg !221
+  tail call void @llvm.dbg.value(metadata !{%struct.hash_entry* %call13}, i64 0, metadata !118), !dbg !221
+  %cmp14 = icmp eq %struct.hash_entry* %call13, null, !dbg !222
+  br i1 %cmp14, label %return, label %if.end17, !dbg !222
 
 if.end17:                                         ; preds = %if.end12
-  %tobool18 = icmp eq i8* (%struct.obstack*, i8*)* %copy, null
-  br i1 %tobool18, label %if.end21, label %if.then19
+  %tobool18 = icmp eq i8* (%struct.obstack*, i8*)* %copy, null, !dbg !223
+  br i1 %tobool18, label %if.end21, label %if.then19, !dbg !223
 
 if.then19:                                        ; preds = %if.end17
-  %memory = getelementptr inbounds %struct.hash_table* %table, i64 0, i32 5
-  %call20 = tail call i8* %copy(%struct.obstack* %memory, i8* %key) #6
-  br label %if.end21
+  %memory = getelementptr inbounds %struct.hash_table* %table, i64 0, i32 5, !dbg !224
+  %call20 = tail call i8* %copy(%struct.obstack* %memory, i8* %key) #7, !dbg !224
+  tail call void @llvm.dbg.value(metadata !{i8* %call20}, i64 0, metadata !114), !dbg !224
+  br label %if.end21, !dbg !224
 
 if.end21:                                         ; preds = %if.end17, %if.then19
   %key.addr.0 = phi i8* [ %call20, %if.then19 ], [ %key, %if.end17 ]
-  %key22 = getelementptr inbounds %struct.hash_entry* %call13, i64 0, i32 1
-  store i8* %key.addr.0, i8** %key22, align 8, !tbaa !0
-  %hash23 = getelementptr inbounds %struct.hash_entry* %call13, i64 0, i32 2
-  store i64 %call, i64* %hash23, align 8, !tbaa !4
-  %7 = load %struct.hash_entry*** %table3, align 8, !tbaa !0
-  %arrayidx26 = getelementptr inbounds %struct.hash_entry** %7, i64 %rem
-  %8 = load %struct.hash_entry** %arrayidx26, align 8, !tbaa !0
-  %next27 = getelementptr inbounds %struct.hash_entry* %call13, i64 0, i32 0
-  store %struct.hash_entry* %8, %struct.hash_entry** %next27, align 8, !tbaa !0
-  %9 = load %struct.hash_entry*** %table3, align 8, !tbaa !0
-  %arrayidx30 = getelementptr inbounds %struct.hash_entry** %9, i64 %rem
-  store %struct.hash_entry* %call13, %struct.hash_entry** %arrayidx30, align 8, !tbaa !0
-  br label %return
+  %key22 = getelementptr inbounds %struct.hash_entry* %call13, i64 0, i32 1, !dbg !225
+  store i8* %key.addr.0, i8** %key22, align 8, !dbg !225, !tbaa !188
+  %hash23 = getelementptr inbounds %struct.hash_entry* %call13, i64 0, i32 2, !dbg !226
+  store i64 %call, i64* %hash23, align 8, !dbg !226, !tbaa !219
+  %7 = load %struct.hash_entry*** %table3, align 8, !dbg !227, !tbaa !188
+  %arrayidx26 = getelementptr inbounds %struct.hash_entry** %7, i64 %rem, !dbg !227
+  %8 = load %struct.hash_entry** %arrayidx26, align 8, !dbg !227, !tbaa !188
+  %next27 = getelementptr inbounds %struct.hash_entry* %call13, i64 0, i32 0, !dbg !227
+  store %struct.hash_entry* %8, %struct.hash_entry** %next27, align 8, !dbg !227, !tbaa !188
+  %9 = load %struct.hash_entry*** %table3, align 8, !dbg !228, !tbaa !188
+  %arrayidx30 = getelementptr inbounds %struct.hash_entry** %9, i64 %rem, !dbg !228
+  store %struct.hash_entry* %call13, %struct.hash_entry** %arrayidx30, align 8, !dbg !228, !tbaa !188
+  br label %return, !dbg !229
 
 return:                                           ; preds = %land.lhs.true, %if.end12, %for.end, %if.end21
   %retval.0 = phi %struct.hash_entry* [ %call13, %if.end21 ], [ null, %for.end ], [ null, %if.end12 ], [ %hashp.061, %land.lhs.true ]
-  ret %struct.hash_entry* %retval.0
+  ret %struct.hash_entry* %retval.0, !dbg !230
 }

@@ -1,10 +1,15 @@
 define %union.tree_node* @walk_tree_without_duplicates(%union.tree_node** %tp, %union.tree_node* (%union.tree_node**, i32*, i8*)* %func, i8* %data) #0 {
 entry:
-  %0 = load i32 (i8*)** @htab_hash_pointer, align 8, !tbaa !0
-  %1 = load i32 (i8*, i8*)** @htab_eq_pointer, align 8, !tbaa !0
-  %call = tail call %struct.htab* @htab_create(i64 37, i32 (i8*)* %0, i32 (i8*, i8*)* %1, void (i8*)* null) #6
-  %2 = bitcast %struct.htab* %call to i8*
-  %call1 = tail call %union.tree_node* @walk_tree(%union.tree_node** %tp, %union.tree_node* (%union.tree_node**, i32*, i8*)* %func, i8* %data, i8* %2) #5
-  tail call void @htab_delete(%struct.htab* %call) #6
-  ret %union.tree_node* %call1
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node** %tp}, i64 0, metadata !951), !dbg !1310
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* (%union.tree_node**, i32*, i8*)* %func}, i64 0, metadata !952), !dbg !1311
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !953), !dbg !1312
+  %0 = load i32 (i8*)** @htab_hash_pointer, align 8, !dbg !1313, !tbaa !1120
+  %1 = load i32 (i8*, i8*)** @htab_eq_pointer, align 8, !dbg !1313, !tbaa !1120
+  %call = tail call %struct.htab* @htab_create(i64 37, i32 (i8*)* %0, i32 (i8*, i8*)* %1, void (i8*)* null) #7, !dbg !1313
+  tail call void @llvm.dbg.value(metadata !{%struct.htab* %call}, i64 0, metadata !955), !dbg !1313
+  %2 = bitcast %struct.htab* %call to i8*, !dbg !1314
+  %call1 = tail call %union.tree_node* @walk_tree(%union.tree_node** %tp, %union.tree_node* (%union.tree_node**, i32*, i8*)* %func, i8* %data, i8* %2) #6, !dbg !1314
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call1}, i64 0, metadata !954), !dbg !1314
+  tail call void @htab_delete(%struct.htab* %call) #7, !dbg !1315
+  ret %union.tree_node* %call1, !dbg !1316
 }

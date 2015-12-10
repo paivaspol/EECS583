@@ -1,11 +1,14 @@
 define internal fastcc %union.tree_node** @get_block_vector(%union.tree_node* %block, i32* nocapture %n_blocks_p) #0 {
 entry:
-  %call = tail call fastcc i32 @all_blocks(%union.tree_node* %block, %union.tree_node** null) #9
-  store i32 %call, i32* %n_blocks_p, align 4, !tbaa !4
-  %conv = sext i32 %call to i64
-  %mul = shl nsw i64 %conv, 3
-  %call1 = tail call noalias i8* @xmalloc(i64 %mul) #10
-  %0 = bitcast i8* %call1 to %union.tree_node**
-  %call2 = tail call fastcc i32 @all_blocks(%union.tree_node* %block, %union.tree_node** %0) #9
-  ret %union.tree_node** %0
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %block}, i64 0, metadata !2181), !dbg !4209
+  tail call void @llvm.dbg.value(metadata !{i32* %n_blocks_p}, i64 0, metadata !2182), !dbg !4210
+  %call = tail call fastcc i32 @all_blocks(%union.tree_node* %block, %union.tree_node** null) #10, !dbg !4211
+  store i32 %call, i32* %n_blocks_p, align 4, !dbg !4211, !tbaa !2768
+  %conv = sext i32 %call to i64, !dbg !4212
+  %mul = shl nsw i64 %conv, 3, !dbg !4212
+  %call1 = tail call noalias i8* @xmalloc(i64 %mul) #11, !dbg !4212
+  %0 = bitcast i8* %call1 to %union.tree_node**, !dbg !4212
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node** %0}, i64 0, metadata !2183), !dbg !4212
+  %call2 = tail call fastcc i32 @all_blocks(%union.tree_node* %block, %union.tree_node** %0) #10, !dbg !4213
+  ret %union.tree_node** %0, !dbg !4214
 }

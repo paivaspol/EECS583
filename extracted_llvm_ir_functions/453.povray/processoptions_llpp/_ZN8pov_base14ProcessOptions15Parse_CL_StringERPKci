@@ -1,0 +1,75 @@
+define noalias i8* @_ZN8pov_base14ProcessOptions15Parse_CL_StringERPKci(%"class.pov_base::ProcessOptions"* nocapture %this, i8** nocapture %commandline, i32 %endchr) #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::ProcessOptions"* %this}, i64 0, metadata !621), !dbg !1099
+  tail call void @llvm.dbg.value(metadata !{i8** %commandline}, i64 0, metadata !622), !dbg !1099
+  tail call void @llvm.dbg.value(metadata !{i32 %endchr}, i64 0, metadata !623), !dbg !1099
+  %0 = load i8** %commandline, align 8, !dbg !1100, !tbaa !692
+  %call = tail call i64 @strlen(i8* %0) #10, !dbg !1100
+  %add = shl i64 %call, 32, !dbg !1101
+  %sext = add i64 %add, 4294967296, !dbg !1101
+  %1 = ashr exact i64 %sext, 32, !dbg !1101
+  %2 = icmp slt i64 %sext, 0, !dbg !1101
+  %3 = select i1 %2, i64 -1, i64 %1, !dbg !1101
+  %call2 = tail call noalias i8* @_Znam(i64 %3) #8, !dbg !1101
+  tail call void @llvm.dbg.value(metadata !{i8* %call2}, i64 0, metadata !625), !dbg !1101
+  tail call void @llvm.dbg.value(metadata !{i8* %call2}, i64 0, metadata !626), !dbg !1102
+  %4 = load i8* %0, align 1, !dbg !1103, !tbaa !693
+  %cmp52 = icmp eq i8 %4, 0, !dbg !1103
+  br i1 %cmp52, label %while.end, label %while.body.lr.ph, !dbg !1103
+
+while.body.lr.ph:                                 ; preds = %entry
+  %cmp5 = icmp slt i32 %endchr, 0, !dbg !1104
+  %cmp15 = icmp eq i32 %endchr, -1, !dbg !1105
+  br label %while.body, !dbg !1103
+
+while.body:                                       ; preds = %while.body.lr.ph, %if.end26
+  %conv354.in = phi i8 [ %4, %while.body.lr.ph ], [ %7, %if.end26 ]
+  %pos.053 = phi i8* [ %call2, %while.body.lr.ph ], [ %incdec.ptr28, %if.end26 ]
+  %conv354 = sext i8 %conv354.in to i32, !dbg !1103
+  tail call void @llvm.dbg.value(metadata !{i32 %conv354}, i64 0, metadata !627), !dbg !1107
+  br i1 %cmp5, label %if.then, label %if.end23, !dbg !1104
+
+if.then:                                          ; preds = %while.body
+  %call6 = tail call i32 @isspace(i32 %conv354) #9, !dbg !1108
+  %tobool = icmp eq i32 %call6, 0, !dbg !1108
+  br i1 %tobool, label %switch.early.test, label %while.end
+
+switch.early.test:                                ; preds = %if.then
+  switch i8 %conv354.in, label %if.else [
+    i8 59, label %while.end
+    i8 39, label %while.end
+    i8 35, label %while.end
+    i8 34, label %while.end
+  ], !dbg !1108
+
+if.else:                                          ; preds = %switch.early.test
+  br i1 %cmp15, label %land.lhs.true, label %if.end23, !dbg !1105
+
+land.lhs.true:                                    ; preds = %if.else
+  switch i8 %conv354.in, label %if.end23 [
+    i8 93, label %while.end
+    i8 91, label %while.end
+    i8 61, label %while.end
+  ], !dbg !1105
+
+if.end23:                                         ; preds = %land.lhs.true, %if.else, %while.body
+  %5 = load i8** %commandline, align 8, !dbg !1109, !tbaa !692
+  %incdec.ptr = getelementptr inbounds i8* %5, i64 1, !dbg !1109
+  store i8* %incdec.ptr, i8** %commandline, align 8, !dbg !1109, !tbaa !692
+  %cmp24 = icmp eq i32 %conv354, %endchr, !dbg !1110
+  br i1 %cmp24, label %while.end, label %if.end26, !dbg !1110
+
+if.end26:                                         ; preds = %if.end23
+  store i8 %conv354.in, i8* %pos.053, align 1, !dbg !1111, !tbaa !693
+  %incdec.ptr28 = getelementptr inbounds i8* %pos.053, i64 1, !dbg !1112
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr28}, i64 0, metadata !626), !dbg !1112
+  %6 = load i8** %commandline, align 8, !dbg !1103, !tbaa !692
+  %7 = load i8* %6, align 1, !dbg !1103, !tbaa !693
+  %cmp = icmp eq i8 %7, 0, !dbg !1103
+  br i1 %cmp, label %while.end, label %while.body, !dbg !1103
+
+while.end:                                        ; preds = %if.end26, %if.then, %land.lhs.true, %land.lhs.true, %land.lhs.true, %switch.early.test, %switch.early.test, %switch.early.test, %switch.early.test, %if.end23, %entry
+  %pos.0.lcssa = phi i8* [ %call2, %entry ], [ %pos.053, %if.end23 ], [ %pos.053, %switch.early.test ], [ %pos.053, %switch.early.test ], [ %pos.053, %switch.early.test ], [ %pos.053, %switch.early.test ], [ %pos.053, %land.lhs.true ], [ %pos.053, %land.lhs.true ], [ %pos.053, %land.lhs.true ], [ %pos.053, %if.then ], [ %incdec.ptr28, %if.end26 ]
+  store i8 0, i8* %pos.0.lcssa, align 1, !dbg !1113, !tbaa !693
+  ret i8* %call2, !dbg !1114
+}

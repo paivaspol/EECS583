@@ -1,75 +1,78 @@
 define void @dump_bb(%struct.basic_block_def* nocapture %bb, %struct._IO_FILE* %outf) #0 {
 entry:
-  %index = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 11
-  %0 = load i32* %index, align 4, !tbaa !3
-  %loop_depth = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 12
-  %1 = load i32* %loop_depth, align 4, !tbaa !3
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %outf, i8* getelementptr inbounds ([41 x i8]* @.str3, i64 0, i64 0), i32 %0, i32 %1) #5
-  %count = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 13
-  %2 = load i64* %count, align 8, !tbaa !4
-  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %outf, i8* getelementptr inbounds ([4 x i8]* @.str4, i64 0, i64 0), i64 %2) #5
-  %call2 = tail call i32 @_IO_putc(i32 10, %struct._IO_FILE* %outf) #5
-  %3 = tail call i64 @fwrite(i8* getelementptr inbounds ([18 x i8]* @.str5, i64 0, i64 0), i64 17, i64 1, %struct._IO_FILE* %outf)
-  %pred = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 4
-  %e.057 = load %struct.edge_def** %pred, align 8
-  %tobool58 = icmp eq %struct.edge_def* %e.057, null
-  br i1 %tobool58, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %bb}, i64 0, metadata !1268), !dbg !2089
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %outf}, i64 0, metadata !1269), !dbg !2090
+  %index = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 11, !dbg !2091
+  %0 = load i32* %index, align 4, !dbg !2091, !tbaa !1533
+  %loop_depth = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 12, !dbg !2091
+  %1 = load i32* %loop_depth, align 4, !dbg !2091, !tbaa !1533
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %outf, i8* getelementptr inbounds ([41 x i8]* @.str3, i64 0, i64 0), i32 %0, i32 %1) #6, !dbg !2091
+  %count = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 13, !dbg !2092
+  %2 = load i64* %count, align 8, !dbg !2092, !tbaa !1669
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %outf, i8* getelementptr inbounds ([4 x i8]* @.str4, i64 0, i64 0), i64 %2) #6, !dbg !2092
+  %call2 = tail call i32 @_IO_putc(i32 10, %struct._IO_FILE* %outf) #6, !dbg !2093
+  %3 = tail call i64 @fwrite(i8* getelementptr inbounds ([18 x i8]* @.str5, i64 0, i64 0), i64 17, i64 1, %struct._IO_FILE* %outf), !dbg !2094
+  %pred = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 4, !dbg !2095
+  %e.057 = load %struct.edge_def** %pred, align 8, !dbg !2095
+  %tobool58 = icmp eq %struct.edge_def* %e.057, null, !dbg !2095
+  br i1 %tobool58, label %for.end, label %for.body, !dbg !2095
 
 for.body:                                         ; preds = %entry, %for.body
   %e.059 = phi %struct.edge_def* [ %e.0, %for.body ], [ %e.057, %entry ]
-  tail call void @dump_edge_info(%struct._IO_FILE* %outf, %struct.edge_def* %e.059, i32 0) #5
-  %pred_next = getelementptr inbounds %struct.edge_def* %e.059, i64 0, i32 0
-  %e.0 = load %struct.edge_def** %pred_next, align 8
-  %tobool = icmp eq %struct.edge_def* %e.0, null
-  br i1 %tobool, label %for.end, label %for.body
+  tail call void @dump_edge_info(%struct._IO_FILE* %outf, %struct.edge_def* %e.059, i32 0) #6, !dbg !2097
+  %pred_next = getelementptr inbounds %struct.edge_def* %e.059, i64 0, i32 0, !dbg !2095
+  %e.0 = load %struct.edge_def** %pred_next, align 8, !dbg !2095
+  %tobool = icmp eq %struct.edge_def* %e.0, null, !dbg !2095
+  br i1 %tobool, label %for.end, label %for.body, !dbg !2095
 
 for.end:                                          ; preds = %for.body, %entry
-  %call4 = tail call i32 @_IO_putc(i32 10, %struct._IO_FILE* %outf) #5
-  %4 = tail call i64 @fwrite(i8* getelementptr inbounds ([28 x i8]* @.str6, i64 0, i64 0), i64 27, i64 1, %struct._IO_FILE* %outf)
-  %global_live_at_start = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 8
-  %5 = load %struct.bitmap_head_def** %global_live_at_start, align 8, !tbaa !0
-  tail call void @dump_regset(%struct.bitmap_head_def* %5, %struct._IO_FILE* %outf) #5
-  %call6 = tail call i32 @_IO_putc(i32 10, %struct._IO_FILE* %outf) #5
-  %head = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 0
-  %end = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 1
-  %6 = load %struct.rtx_def** %end, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %6, i64 0, i32 1, i64 2
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %7 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %insn.054 = load %struct.rtx_def** %head, align 8
-  %cmp55 = icmp eq %struct.rtx_def* %insn.054, %7
-  br i1 %cmp55, label %for.end14, label %for.body8
+  %call4 = tail call i32 @_IO_putc(i32 10, %struct._IO_FILE* %outf) #6, !dbg !2098
+  %4 = tail call i64 @fwrite(i8* getelementptr inbounds ([28 x i8]* @.str6, i64 0, i64 0), i64 27, i64 1, %struct._IO_FILE* %outf), !dbg !2099
+  %global_live_at_start = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 8, !dbg !2100
+  %5 = load %struct.bitmap_head_def** %global_live_at_start, align 8, !dbg !2100, !tbaa !1516
+  tail call void @dump_regset(%struct.bitmap_head_def* %5, %struct._IO_FILE* %outf) #6, !dbg !2100
+  %call6 = tail call i32 @_IO_putc(i32 10, %struct._IO_FILE* %outf) #6, !dbg !2101
+  %head = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 0, !dbg !2102
+  %end = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 1, !dbg !2102
+  %6 = load %struct.rtx_def** %end, align 8, !dbg !2102, !tbaa !1516
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %6, i64 0, i32 1, i64 2, !dbg !2102
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !2102
+  %7 = load %struct.rtx_def** %rtx, align 8, !dbg !2102, !tbaa !1516
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %7}, i64 0, metadata !1271), !dbg !2102
+  %insn.054 = load %struct.rtx_def** %head, align 8, !dbg !2102
+  %cmp55 = icmp eq %struct.rtx_def* %insn.054, %7, !dbg !2102
+  br i1 %cmp55, label %for.end14, label %for.body8, !dbg !2102
 
 for.body8:                                        ; preds = %for.end, %for.body8
   %insn.056 = phi %struct.rtx_def* [ %insn.0, %for.body8 ], [ %insn.054, %for.end ]
-  %call9 = tail call i32 @print_rtl_single(%struct._IO_FILE* %outf, %struct.rtx_def* %insn.056) #5
-  %arrayidx12 = getelementptr inbounds %struct.rtx_def* %insn.056, i64 0, i32 1, i64 2
-  %rtx13 = bitcast %union.rtunion_def* %arrayidx12 to %struct.rtx_def**
-  %insn.0 = load %struct.rtx_def** %rtx13, align 8
-  %cmp = icmp eq %struct.rtx_def* %insn.0, %7
-  br i1 %cmp, label %for.end14, label %for.body8
+  %call9 = tail call i32 @print_rtl_single(%struct._IO_FILE* %outf, %struct.rtx_def* %insn.056) #6, !dbg !2104
+  %arrayidx12 = getelementptr inbounds %struct.rtx_def* %insn.056, i64 0, i32 1, i64 2, !dbg !2105
+  %rtx13 = bitcast %union.rtunion_def* %arrayidx12 to %struct.rtx_def**, !dbg !2105
+  %insn.0 = load %struct.rtx_def** %rtx13, align 8, !dbg !2102
+  %cmp = icmp eq %struct.rtx_def* %insn.0, %7, !dbg !2102
+  br i1 %cmp, label %for.end14, label %for.body8, !dbg !2102
 
 for.end14:                                        ; preds = %for.body8, %for.end
-  %8 = tail call i64 @fwrite(i8* getelementptr inbounds ([26 x i8]* @.str7, i64 0, i64 0), i64 25, i64 1, %struct._IO_FILE* %outf)
-  %global_live_at_end = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 9
-  %9 = load %struct.bitmap_head_def** %global_live_at_end, align 8, !tbaa !0
-  tail call void @dump_regset(%struct.bitmap_head_def* %9, %struct._IO_FILE* %outf) #5
-  %call16 = tail call i32 @_IO_putc(i32 10, %struct._IO_FILE* %outf) #5
-  %10 = tail call i64 @fwrite(i8* getelementptr inbounds ([16 x i8]* @.str8, i64 0, i64 0), i64 15, i64 1, %struct._IO_FILE* %outf)
-  %succ = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 5
-  %e.151 = load %struct.edge_def** %succ, align 8
-  %tobool1952 = icmp eq %struct.edge_def* %e.151, null
-  br i1 %tobool1952, label %for.end22, label %for.body20
+  %8 = tail call i64 @fwrite(i8* getelementptr inbounds ([26 x i8]* @.str7, i64 0, i64 0), i64 25, i64 1, %struct._IO_FILE* %outf), !dbg !2106
+  %global_live_at_end = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 9, !dbg !2107
+  %9 = load %struct.bitmap_head_def** %global_live_at_end, align 8, !dbg !2107, !tbaa !1516
+  tail call void @dump_regset(%struct.bitmap_head_def* %9, %struct._IO_FILE* %outf) #6, !dbg !2107
+  %call16 = tail call i32 @_IO_putc(i32 10, %struct._IO_FILE* %outf) #6, !dbg !2108
+  %10 = tail call i64 @fwrite(i8* getelementptr inbounds ([16 x i8]* @.str8, i64 0, i64 0), i64 15, i64 1, %struct._IO_FILE* %outf), !dbg !2109
+  %succ = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 5, !dbg !2110
+  %e.151 = load %struct.edge_def** %succ, align 8, !dbg !2110
+  %tobool1952 = icmp eq %struct.edge_def* %e.151, null, !dbg !2110
+  br i1 %tobool1952, label %for.end22, label %for.body20, !dbg !2110
 
 for.body20:                                       ; preds = %for.end14, %for.body20
   %e.153 = phi %struct.edge_def* [ %e.1, %for.body20 ], [ %e.151, %for.end14 ]
-  tail call void @dump_edge_info(%struct._IO_FILE* %outf, %struct.edge_def* %e.153, i32 1) #5
-  %succ_next = getelementptr inbounds %struct.edge_def* %e.153, i64 0, i32 1
-  %e.1 = load %struct.edge_def** %succ_next, align 8
-  %tobool19 = icmp eq %struct.edge_def* %e.1, null
-  br i1 %tobool19, label %for.end22, label %for.body20
+  tail call void @dump_edge_info(%struct._IO_FILE* %outf, %struct.edge_def* %e.153, i32 1) #6, !dbg !2112
+  %succ_next = getelementptr inbounds %struct.edge_def* %e.153, i64 0, i32 1, !dbg !2110
+  %e.1 = load %struct.edge_def** %succ_next, align 8, !dbg !2110
+  %tobool19 = icmp eq %struct.edge_def* %e.1, null, !dbg !2110
+  br i1 %tobool19, label %for.end22, label %for.body20, !dbg !2110
 
 for.end22:                                        ; preds = %for.body20, %for.end14
-  %call23 = tail call i32 @_IO_putc(i32 10, %struct._IO_FILE* %outf) #5
-  ret void
+  %call23 = tail call i32 @_IO_putc(i32 10, %struct._IO_FILE* %outf) #6, !dbg !2113
+  ret void, !dbg !2114
 }

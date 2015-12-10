@@ -64,8 +64,10 @@ def generate_llvm_ir_from_directory(root_dir, output_dir):
             subprocess.call(generate_ir_cmd, shell=True)
 
 def check_directory(path):
-    for benchmark in flags:
+    for benchmark in directories:
         if path.endswith(benchmark):
+    # for benchmark in flags:
+    #     if path.endswith(benchmark):
             return benchmark
     return None
 

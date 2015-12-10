@@ -1,23 +1,24 @@
 define i32 @MSAFileRewind(%struct.msafile_struct* nocapture %afp) #0 {
 entry:
-  %do_gzip = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 6
-  %0 = load i32* %do_gzip, align 4, !tbaa !3
-  %tobool = icmp eq i32 %0, 0
-  br i1 %tobool, label %lor.lhs.false, label %return
+  tail call void @llvm.dbg.value(metadata !{%struct.msafile_struct* %afp}, i64 0, metadata !297), !dbg !838
+  %do_gzip = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 6, !dbg !839
+  %0 = load i32* %do_gzip, align 4, !dbg !839, !tbaa !478
+  %tobool = icmp eq i32 %0, 0, !dbg !839
+  br i1 %tobool, label %lor.lhs.false, label %return, !dbg !839
 
 lor.lhs.false:                                    ; preds = %entry
-  %do_stdin = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 7
-  %1 = load i32* %do_stdin, align 4, !tbaa !3
-  %tobool1 = icmp eq i32 %1, 0
-  br i1 %tobool1, label %if.end, label %return
+  %do_stdin = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 7, !dbg !839
+  %1 = load i32* %do_stdin, align 4, !dbg !839, !tbaa !478
+  %tobool1 = icmp eq i32 %1, 0, !dbg !839
+  br i1 %tobool1, label %if.end, label %return, !dbg !839
 
 if.end:                                           ; preds = %lor.lhs.false
-  %f = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 0
-  %2 = load %struct._IO_FILE** %f, align 8, !tbaa !0
-  tail call void @rewind(%struct._IO_FILE* %2) #6
-  br label %return
+  %f = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 0, !dbg !840
+  %2 = load %struct._IO_FILE** %f, align 8, !dbg !840, !tbaa !466
+  tail call void @rewind(%struct._IO_FILE* %2) #7, !dbg !840
+  br label %return, !dbg !841
 
 return:                                           ; preds = %entry, %lor.lhs.false, %if.end
   %retval.0 = phi i32 [ 1, %if.end ], [ 0, %lor.lhs.false ], [ 0, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !841
 }

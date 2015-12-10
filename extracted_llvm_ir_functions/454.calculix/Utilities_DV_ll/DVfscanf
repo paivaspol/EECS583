@@ -1,36 +1,41 @@
 define i32 @DVfscanf(%struct._IO_FILE* %fp, i32 %size, double* %y) #0 {
 entry:
-  %cmp = icmp ne %struct._IO_FILE* %fp, null
-  %cmp1 = icmp sgt i32 %size, 0
-  %or.cond = and i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end9
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !171), !dbg !810
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !172), !dbg !811
+  tail call void @llvm.dbg.value(metadata !{double* %y}, i64 0, metadata !173), !dbg !812
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !174), !dbg !813
+  %cmp = icmp ne %struct._IO_FILE* %fp, null, !dbg !814
+  %cmp1 = icmp sgt i32 %size, 0, !dbg !814
+  %or.cond = and i1 %cmp, %cmp1, !dbg !814
+  br i1 %or.cond, label %if.then, label %if.end9, !dbg !814
 
 if.then:                                          ; preds = %entry
-  %cmp2 = icmp eq double* %y, null
-  br i1 %cmp2, label %if.then3, label %for.body
+  %cmp2 = icmp eq double* %y, null, !dbg !815
+  br i1 %cmp2, label %if.then3, label %for.body, !dbg !815
 
 if.then3:                                         ; preds = %if.then
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([70 x i8]* @.str11, i64 0, i64 0), %struct._IO_FILE* %fp, i32 %size, double* null) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !817, !tbaa !629
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([70 x i8]* @.str11, i64 0, i64 0), %struct._IO_FILE* %fp, i32 %size, double* null) #6, !dbg !817
+  tail call void @exit(i32 -1) #7, !dbg !819
+  unreachable, !dbg !819
 
 for.cond:                                         ; preds = %for.body
-  %1 = trunc i64 %indvars.iv.next to i32
-  %cmp4 = icmp slt i32 %1, %size
-  br i1 %cmp4, label %for.body, label %if.end9
+  %1 = trunc i64 %indvars.iv.next to i32, !dbg !820
+  %cmp4 = icmp slt i32 %1, %size, !dbg !820
+  br i1 %cmp4, label %for.body, label %if.end9, !dbg !820
 
 for.body:                                         ; preds = %if.then, %for.cond
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %if.then ]
   %i.020 = phi i32 [ %inc, %for.cond ], [ 0, %if.then ]
-  %add.ptr = getelementptr inbounds double* %y, i64 %indvars.iv
-  %call5 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @__isoc99_fscanf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([5 x i8]* @.str12, i64 0, i64 0), double* %add.ptr) #5
-  %cmp6 = icmp eq i32 %call5, 1
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %inc = add nsw i32 %i.020, 1
-  br i1 %cmp6, label %for.cond, label %if.end9
+  %add.ptr = getelementptr inbounds double* %y, i64 %indvars.iv, !dbg !822
+  %call5 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @__isoc99_fscanf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([5 x i8]* @.str12, i64 0, i64 0), double* %add.ptr) #6, !dbg !822
+  %cmp6 = icmp eq i32 %call5, 1, !dbg !822
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !820
+  %inc = add nsw i32 %i.020, 1, !dbg !820
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !174), !dbg !820
+  br i1 %cmp6, label %for.cond, label %if.end9, !dbg !822
 
 if.end9:                                          ; preds = %for.body, %for.cond, %entry
   %i.1 = phi i32 [ 0, %entry ], [ %i.020, %for.body ], [ %inc, %for.cond ]
-  ret i32 %i.1
+  ret i32 %i.1, !dbg !824
 }

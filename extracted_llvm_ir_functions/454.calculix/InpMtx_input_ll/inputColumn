@@ -1,95 +1,107 @@
 define internal fastcc void @inputColumn(%struct._InpMtx* %inpmtx, i32 %col, i32 %colsize, i32* %colind, double* %colent) #0 {
 entry:
-  tail call fastcc void @prepareToAddNewEntries(%struct._InpMtx* %inpmtx, i32 %colsize) #6
-  %nent1 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 4
-  %0 = load i32* %nent1, align 4, !tbaa !3
-  %ivec1IV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 6
-  %call = tail call i32* @IV_entries(%struct._IV* %ivec1IV) #4
-  %ivec2IV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 7
-  %call2 = tail call i32* @IV_entries(%struct._IV* %ivec2IV) #4
-  %coordType = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 0
-  %1 = load i32* %coordType, align 4, !tbaa !3
+  tail call void @llvm.dbg.value(metadata !{%struct._InpMtx* %inpmtx}, i64 0, metadata !256), !dbg !500
+  tail call void @llvm.dbg.value(metadata !{i32 %col}, i64 0, metadata !257), !dbg !501
+  tail call void @llvm.dbg.value(metadata !{i32 %colsize}, i64 0, metadata !258), !dbg !502
+  tail call void @llvm.dbg.value(metadata !{i32* %colind}, i64 0, metadata !259), !dbg !503
+  tail call void @llvm.dbg.value(metadata !{double* %colent}, i64 0, metadata !260), !dbg !504
+  tail call fastcc void @prepareToAddNewEntries(%struct._InpMtx* %inpmtx, i32 %colsize) #7, !dbg !505
+  %nent1 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 4, !dbg !506
+  %0 = load i32* %nent1, align 4, !dbg !506, !tbaa !313
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !263), !dbg !506
+  %ivec1IV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 6, !dbg !507
+  %call = tail call i32* @IV_entries(%struct._IV* %ivec1IV) #5, !dbg !507
+  tail call void @llvm.dbg.value(metadata !{i32* %call}, i64 0, metadata !265), !dbg !507
+  %ivec2IV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 7, !dbg !508
+  %call2 = tail call i32* @IV_entries(%struct._IV* %ivec2IV) #5, !dbg !508
+  tail call void @llvm.dbg.value(metadata !{i32* %call2}, i64 0, metadata !266), !dbg !508
+  %coordType = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 0, !dbg !509
+  %1 = load i32* %coordType, align 4, !dbg !509, !tbaa !313
   switch i32 %1, label %if.end24 [
     i32 1, label %if.then
     i32 2, label %if.then7
     i32 3, label %for.cond.preheader
-  ]
+  ], !dbg !509
 
 for.cond.preheader:                               ; preds = %entry
-  %cmp16106 = icmp sgt i32 %colsize, 0
-  br i1 %cmp16106, label %for.body.lr.ph, label %if.end24
+  %cmp16106 = icmp sgt i32 %colsize, 0, !dbg !510
+  br i1 %cmp16106, label %for.body.lr.ph, label %if.end24, !dbg !510
 
 for.body.lr.ph:                                   ; preds = %for.cond.preheader
   %2 = sext i32 %0 to i64
-  br label %for.body
+  br label %for.body, !dbg !510
 
 if.then:                                          ; preds = %entry
-  %idx.ext = sext i32 %0 to i64
-  %add.ptr = getelementptr inbounds i32* %call, i64 %idx.ext
-  tail call void @IVcopy(i32 %colsize, i32* %add.ptr, i32* %colind) #4
-  %add.ptr4 = getelementptr inbounds i32* %call2, i64 %idx.ext
-  tail call void @IVfill(i32 %colsize, i32* %add.ptr4, i32 %col) #4
-  br label %if.end24
+  %idx.ext = sext i32 %0 to i64, !dbg !513
+  %add.ptr = getelementptr inbounds i32* %call, i64 %idx.ext, !dbg !513
+  tail call void @IVcopy(i32 %colsize, i32* %add.ptr, i32* %colind) #5, !dbg !513
+  %add.ptr4 = getelementptr inbounds i32* %call2, i64 %idx.ext, !dbg !515
+  tail call void @IVfill(i32 %colsize, i32* %add.ptr4, i32 %col) #5, !dbg !515
+  br label %if.end24, !dbg !516
 
 if.then7:                                         ; preds = %entry
-  %idx.ext8 = sext i32 %0 to i64
-  %add.ptr9 = getelementptr inbounds i32* %call, i64 %idx.ext8
-  tail call void @IVfill(i32 %colsize, i32* %add.ptr9, i32 %col) #4
-  %add.ptr11 = getelementptr inbounds i32* %call2, i64 %idx.ext8
-  tail call void @IVcopy(i32 %colsize, i32* %add.ptr11, i32* %colind) #4
-  br label %if.end24
+  %idx.ext8 = sext i32 %0 to i64, !dbg !517
+  %add.ptr9 = getelementptr inbounds i32* %call, i64 %idx.ext8, !dbg !517
+  tail call void @IVfill(i32 %colsize, i32* %add.ptr9, i32 %col) #5, !dbg !517
+  %add.ptr11 = getelementptr inbounds i32* %call2, i64 %idx.ext8, !dbg !519
+  tail call void @IVcopy(i32 %colsize, i32* %add.ptr11, i32* %colind) #5, !dbg !519
+  br label %if.end24, !dbg !520
 
 for.body:                                         ; preds = %for.body, %for.body.lr.ph
   %indvars.iv = phi i64 [ %2, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
   %ii.0108 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.body ]
-  %arrayidx = getelementptr inbounds i32* %colind, i64 %indvars.iv
-  %3 = load i32* %arrayidx, align 4, !tbaa !3
-  %cmp17 = icmp sle i32 %3, %col
-  %cond = select i1 %cmp17, i32 %3, i32 %col
-  %arrayidx19 = getelementptr inbounds i32* %call, i64 %indvars.iv
-  store i32 %cond, i32* %arrayidx19, align 4, !tbaa !3
-  %sub = sub nsw i32 %col, %3
-  %arrayidx21 = getelementptr inbounds i32* %call2, i64 %indvars.iv
-  store i32 %sub, i32* %arrayidx21, align 4, !tbaa !3
-  %inc = add nsw i32 %ii.0108, 1
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %exitcond = icmp eq i32 %inc, %colsize
-  br i1 %exitcond, label %if.end24, label %for.body
+  %arrayidx = getelementptr inbounds i32* %colind, i64 %indvars.iv, !dbg !521
+  %3 = load i32* %arrayidx, align 4, !dbg !521, !tbaa !313
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !264), !dbg !521
+  %cmp17 = icmp sle i32 %3, %col, !dbg !523
+  %cond = select i1 %cmp17, i32 %3, i32 %col, !dbg !523
+  %arrayidx19 = getelementptr inbounds i32* %call, i64 %indvars.iv, !dbg !523
+  store i32 %cond, i32* %arrayidx19, align 4, !dbg !523, !tbaa !313
+  %sub = sub nsw i32 %col, %3, !dbg !524
+  %arrayidx21 = getelementptr inbounds i32* %call2, i64 %indvars.iv, !dbg !524
+  store i32 %sub, i32* %arrayidx21, align 4, !dbg !524, !tbaa !313
+  %inc = add nsw i32 %ii.0108, 1, !dbg !510
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !261), !dbg !510
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !510
+  %exitcond = icmp eq i32 %inc, %colsize, !dbg !510
+  br i1 %exitcond, label %if.end24, label %for.body, !dbg !510
 
 if.end24:                                         ; preds = %for.cond.preheader, %for.body, %entry, %if.then7, %if.then
-  %add = add nsw i32 %0, %colsize
-  tail call void @IV_setSize(%struct._IV* %ivec1IV, i32 %add) #4
-  tail call void @IV_setSize(%struct._IV* %ivec2IV, i32 %add) #4
-  %inputMode = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 2
-  %4 = load i32* %inputMode, align 4, !tbaa !3
+  %add = add nsw i32 %0, %colsize, !dbg !525
+  tail call void @IV_setSize(%struct._IV* %ivec1IV, i32 %add) #5, !dbg !525
+  tail call void @IV_setSize(%struct._IV* %ivec2IV, i32 %add) #5, !dbg !526
+  %inputMode = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 2, !dbg !527
+  %4 = load i32* %inputMode, align 4, !dbg !527, !tbaa !313
   switch i32 %4, label %if.end48 [
     i32 1, label %if.then29
     i32 2, label %if.then38
-  ]
+  ], !dbg !527
 
 if.then29:                                        ; preds = %if.end24
-  %dvecDV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 8
-  %call30 = tail call double* @DV_entries(%struct._DV* %dvecDV) #4
-  %idx.ext31 = sext i32 %0 to i64
-  %add.ptr32 = getelementptr inbounds double* %call30, i64 %idx.ext31
-  tail call void @DVcopy(i32 %colsize, double* %add.ptr32, double* %colent) #4
-  tail call void @DV_setSize(%struct._DV* %dvecDV, i32 %add) #4
-  br label %if.end48
+  %dvecDV = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 8, !dbg !528
+  %call30 = tail call double* @DV_entries(%struct._DV* %dvecDV) #5, !dbg !528
+  %idx.ext31 = sext i32 %0 to i64, !dbg !528
+  %add.ptr32 = getelementptr inbounds double* %call30, i64 %idx.ext31, !dbg !528
+  tail call void @llvm.dbg.value(metadata !{double* %add.ptr32}, i64 0, metadata !267), !dbg !528
+  tail call void @DVcopy(i32 %colsize, double* %add.ptr32, double* %colent) #5, !dbg !529
+  tail call void @DV_setSize(%struct._DV* %dvecDV, i32 %add) #5, !dbg !530
+  br label %if.end48, !dbg !531
 
 if.then38:                                        ; preds = %if.end24
-  %dvecDV40 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 8
-  %call41 = tail call double* @DV_entries(%struct._DV* %dvecDV40) #4
-  %mul = shl nsw i32 %0, 1
-  %idx.ext42 = sext i32 %mul to i64
-  %add.ptr43 = getelementptr inbounds double* %call41, i64 %idx.ext42
-  tail call void @ZVcopy(i32 %colsize, double* %add.ptr43, double* %colent) #4
-  %mul46 = shl nsw i32 %add, 1
-  tail call void @DV_setSize(%struct._DV* %dvecDV40, i32 %mul46) #4
-  br label %if.end48
+  %dvecDV40 = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 8, !dbg !532
+  %call41 = tail call double* @DV_entries(%struct._DV* %dvecDV40) #5, !dbg !532
+  %mul = shl nsw i32 %0, 1, !dbg !532
+  %idx.ext42 = sext i32 %mul to i64, !dbg !532
+  %add.ptr43 = getelementptr inbounds double* %call41, i64 %idx.ext42, !dbg !532
+  tail call void @llvm.dbg.value(metadata !{double* %add.ptr43}, i64 0, metadata !269), !dbg !532
+  tail call void @ZVcopy(i32 %colsize, double* %add.ptr43, double* %colent) #5, !dbg !533
+  %mul46 = shl nsw i32 %add, 1, !dbg !534
+  tail call void @DV_setSize(%struct._DV* %dvecDV40, i32 %mul46) #5, !dbg !534
+  br label %if.end48, !dbg !535
 
 if.end48:                                         ; preds = %if.end24, %if.then38, %if.then29
-  store i32 %add, i32* %nent1, align 4, !tbaa !3
-  %storageMode = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 1
-  store i32 1, i32* %storageMode, align 4, !tbaa !3
-  ret void
+  store i32 %add, i32* %nent1, align 4, !dbg !536, !tbaa !313
+  %storageMode = getelementptr inbounds %struct._InpMtx* %inpmtx, i64 0, i32 1, !dbg !537
+  store i32 1, i32* %storageMode, align 4, !dbg !537, !tbaa !313
+  ret void, !dbg !538
 }

@@ -1,0 +1,36 @@
+define linkonce_odr void @_ZN11xercesc_2_515BaseRefVectorOfINS_8NodeImplEE17removeLastElementEv(%"class.xercesc_2_5::BaseRefVectorOf.3"* nocapture %this) unnamed_addr #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf.3"* %this}, i64 0, metadata !3926), !dbg !5211
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.3"* %this, i64 0, i32 2, !dbg !5212
+  %0 = load i32* %fCurCount, align 4, !dbg !5212, !tbaa !4004
+  %tobool = icmp eq i32 %0, 0, !dbg !5212
+  br i1 %tobool, label %if.end6, label %if.end, !dbg !5212
+
+if.end:                                           ; preds = %entry
+  %dec = add i32 %0, -1, !dbg !5213
+  store i32 %dec, i32* %fCurCount, align 4, !dbg !5213, !tbaa !4004
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.3"* %this, i64 0, i32 1, !dbg !5214
+  %1 = load i8* %fAdoptedElems, align 1, !dbg !5214, !tbaa !4006, !range !4017
+  %tobool3 = icmp eq i8 %1, 0, !dbg !5214
+  br i1 %tobool3, label %if.end6, label %if.then4, !dbg !5214
+
+if.then4:                                         ; preds = %if.end
+  %idxprom = zext i32 %dec to i64, !dbg !5215
+  %fElemList = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.3"* %this, i64 0, i32 4, !dbg !5215
+  %2 = load %"class.xercesc_2_5::NodeImpl"*** %fElemList, align 8, !dbg !5215, !tbaa !4031
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::NodeImpl"** %2, i64 %idxprom, !dbg !5215
+  %3 = load %"class.xercesc_2_5::NodeImpl"** %arrayidx, align 8, !dbg !5215, !tbaa !4031
+  %isnull = icmp eq %"class.xercesc_2_5::NodeImpl"* %3, null, !dbg !5215
+  br i1 %isnull, label %if.end6, label %delete.notnull, !dbg !5215
+
+delete.notnull:                                   ; preds = %if.then4
+  %4 = bitcast %"class.xercesc_2_5::NodeImpl"* %3 to void (%"class.xercesc_2_5::NodeImpl"*)***, !dbg !5215
+  %vtable = load void (%"class.xercesc_2_5::NodeImpl"*)*** %4, align 8, !dbg !5215, !tbaa !4002
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::NodeImpl"*)** %vtable, i64 1, !dbg !5215
+  %5 = load void (%"class.xercesc_2_5::NodeImpl"*)** %vfn, align 8, !dbg !5215
+  tail call void %5(%"class.xercesc_2_5::NodeImpl"* %3) #7, !dbg !5215
+  br label %if.end6, !dbg !5215
+
+if.end6:                                          ; preds = %if.end, %entry, %if.then4, %delete.notnull
+  ret void, !dbg !5215
+}

@@ -1,0 +1,56 @@
+define void @_ZN11xercesc_2_516XSerializeEngine11writeStringEPKtib(%"class.xercesc_2_5::XSerializeEngine"* %this, i16* %toWrite, i32 %bufferLen, i1 zeroext %toWriteBufLen) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XSerializeEngine"* %this}, i64 0, metadata !1391), !dbg !3345
+  tail call void @llvm.dbg.value(metadata !{i16* %toWrite}, i64 0, metadata !1392), !dbg !3345
+  tail call void @llvm.dbg.value(metadata !{i32 %bufferLen}, i64 0, metadata !1393), !dbg !3346
+  tail call void @llvm.dbg.value(metadata !{i1 %toWriteBufLen}, i64 0, metadata !1394), !dbg !3347
+  %tobool = icmp eq i16* %toWrite, null, !dbg !3348
+  br i1 %tobool, label %if.else, label %if.then, !dbg !3348
+
+if.then:                                          ; preds = %entry
+  br i1 %toWriteBufLen, label %if.end, label %lor.lhs.false.i, !dbg !3349
+
+if.end:                                           ; preds = %if.then
+  %call = tail call %"class.xercesc_2_5::XSerializeEngine"* @_ZN11xercesc_2_516XSerializeEnginelsEi(%"class.xercesc_2_5::XSerializeEngine"* %this, i32 %bufferLen) #6, !dbg !3350
+  tail call void @llvm.dbg.value(metadata !{i16* %toWrite}, i64 0, metadata !3351), !dbg !3353
+  br label %lor.lhs.false.i
+
+lor.lhs.false.i:                                  ; preds = %if.then, %if.end
+  %0 = load i16* %toWrite, align 2, !dbg !3354, !tbaa !2772
+  %cmp1.i = icmp eq i16 %0, 0, !dbg !3354
+  br i1 %cmp1.i, label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, label %while.cond.i, !dbg !3354
+
+while.cond.i:                                     ; preds = %lor.lhs.false.i, %while.cond.i
+  %src.pn.i = phi i16* [ %pszTmp.0.i, %while.cond.i ], [ %toWrite, %lor.lhs.false.i ]
+  %pszTmp.0.i = getelementptr inbounds i16* %src.pn.i, i64 1, !dbg !3355
+  %1 = load i16* %pszTmp.0.i, align 2, !dbg !3356, !tbaa !2772
+  %tobool.i = icmp eq i16 %1, 0, !dbg !3356
+  br i1 %tobool.i, label %while.end.i, label %while.cond.i, !dbg !3356
+
+while.end.i:                                      ; preds = %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %pszTmp.0.i to i64, !dbg !3357
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %toWrite to i64, !dbg !3357
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !3357
+  %sub.ptr.div7.i = lshr exact i64 %sub.ptr.sub.i, 1, !dbg !3357
+  %conv2.i = trunc i64 %sub.ptr.div7.i to i32, !dbg !3357
+  br label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, !dbg !3357
+
+_ZN11xercesc_2_59XMLString9stringLenEPKt.exit:    ; preds = %lor.lhs.false.i, %while.end.i
+  %retval.0.i = phi i32 [ %conv2.i, %while.end.i ], [ 0, %lor.lhs.false.i ]
+  tail call void @llvm.dbg.value(metadata !{i32 %retval.0.i}, i64 0, metadata !1395), !dbg !3352
+  %call5 = tail call %"class.xercesc_2_5::XSerializeEngine"* @_ZN11xercesc_2_516XSerializeEnginelsEi(%"class.xercesc_2_5::XSerializeEngine"* %this, i32 %retval.0.i) #6, !dbg !3358
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XSerializeEngine"* %this}, i64 0, metadata !3359), !dbg !3361
+  tail call void @llvm.dbg.value(metadata !{i16* %toWrite}, i64 0, metadata !3362), !dbg !3361
+  tail call void @llvm.dbg.value(metadata !{i32 %retval.0.i}, i64 0, metadata !3363), !dbg !3364
+  %2 = bitcast i16* %toWrite to i8*, !dbg !3365
+  %mul.i = shl i32 %retval.0.i, 1, !dbg !3365
+  tail call void @_ZN11xercesc_2_516XSerializeEngine5writeEPKhi(%"class.xercesc_2_5::XSerializeEngine"* %this, i8* %2, i32 %mul.i) #6, !dbg !3365
+  br label %if.end7, !dbg !3366
+
+if.else:                                          ; preds = %entry
+  %call6 = tail call %"class.xercesc_2_5::XSerializeEngine"* @_ZN11xercesc_2_516XSerializeEnginelsEi(%"class.xercesc_2_5::XSerializeEngine"* %this, i32 -1) #6, !dbg !3367
+  br label %if.end7
+
+if.end7:                                          ; preds = %if.else, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit
+  ret void, !dbg !3369
+}

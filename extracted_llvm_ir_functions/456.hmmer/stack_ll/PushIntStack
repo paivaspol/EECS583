@@ -1,22 +1,25 @@
 define void @PushIntStack(%struct.intstack_s* nocapture %stack, i32 %data) #0 {
 entry:
-  %call = tail call noalias i8* @malloc(i64 16) #3
-  %0 = bitcast i8* %call to %struct.intstack_s*
-  %cmp = icmp eq i8* %call, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.intstack_s* %stack}, i64 0, metadata !21), !dbg !53
+  tail call void @llvm.dbg.value(metadata !{i32 %data}, i64 0, metadata !22), !dbg !53
+  %call = tail call noalias i8* @malloc(i64 16) #4, !dbg !54
+  %0 = bitcast i8* %call to %struct.intstack_s*, !dbg !54
+  tail call void @llvm.dbg.value(metadata !{%struct.intstack_s* %0}, i64 0, metadata !23), !dbg !54
+  %cmp = icmp eq i8* %call, null, !dbg !54
+  br i1 %cmp, label %if.then, label %if.end, !dbg !54
 
 if.then:                                          ; preds = %entry
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([40 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0), i32 52) #3
-  br label %if.end
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([40 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0), i32 52) #4, !dbg !55
+  br label %if.end, !dbg !55
 
 if.end:                                           ; preds = %if.then, %entry
-  %data1 = bitcast i8* %call to i32*
-  store i32 %data, i32* %data1, align 4, !tbaa !3
-  %nxt = getelementptr inbounds %struct.intstack_s* %stack, i64 0, i32 1
-  %1 = load %struct.intstack_s** %nxt, align 8, !tbaa !0
-  %nxt2 = getelementptr inbounds i8* %call, i64 8
-  %2 = bitcast i8* %nxt2 to %struct.intstack_s**
-  store %struct.intstack_s* %1, %struct.intstack_s** %2, align 8, !tbaa !0
-  store %struct.intstack_s* %0, %struct.intstack_s** %nxt, align 8, !tbaa !0
-  ret void
+  %data1 = bitcast i8* %call to i32*, !dbg !56
+  store i32 %data, i32* %data1, align 4, !dbg !56, !tbaa !57
+  %nxt = getelementptr inbounds %struct.intstack_s* %stack, i64 0, i32 1, !dbg !58
+  %1 = load %struct.intstack_s** %nxt, align 8, !dbg !58, !tbaa !49
+  %nxt2 = getelementptr inbounds i8* %call, i64 8, !dbg !58
+  %2 = bitcast i8* %nxt2 to %struct.intstack_s**, !dbg !58
+  store %struct.intstack_s* %1, %struct.intstack_s** %2, align 8, !dbg !58, !tbaa !49
+  store %struct.intstack_s* %0, %struct.intstack_s** %nxt, align 8, !dbg !59, !tbaa !49
+  ret void, !dbg !60
 }

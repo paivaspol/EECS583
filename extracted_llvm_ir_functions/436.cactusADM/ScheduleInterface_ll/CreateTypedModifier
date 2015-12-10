@@ -1,45 +1,53 @@
 define internal fastcc %struct.T_SCHED_MODIFIER* @CreateTypedModifier(%struct.T_SCHED_MODIFIER* %modifier, i8* %type, i32 %n_items, [1 x %struct.__va_list_tag]* nocapture %ap) #1 {
-  %1 = icmp sgt i32 %n_items, 0
-  br i1 %1, label %.lr.ph, label %._crit_edge
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SCHED_MODIFIER* %modifier}, i64 0, metadata !383), !dbg !1243
+  tail call void @llvm.dbg.value(metadata !{i8* %type}, i64 0, metadata !384), !dbg !1244
+  tail call void @llvm.dbg.value(metadata !{i32 %n_items}, i64 0, metadata !385), !dbg !1245
+  tail call void @llvm.dbg.value(metadata !{[1 x %struct.__va_list_tag]* %ap}, i64 0, metadata !386), !dbg !1246
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !387), !dbg !1247
+  %cmp3 = icmp sgt i32 %n_items, 0, !dbg !1247
+  br i1 %cmp3, label %for.body.lr.ph, label %for.end, !dbg !1247
 
-.lr.ph:                                           ; preds = %0
-  %2 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 0
-  %3 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 3
-  %4 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 2
-  %5 = add i32 %n_items, -1
-  br label %6
+for.body.lr.ph:                                   ; preds = %entry
+  %gp_offset_p = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 0, !dbg !1249
+  %0 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 3, !dbg !1249
+  %overflow_arg_area_p = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 2, !dbg !1249
+  br label %for.body, !dbg !1247
 
-; <label>:6                                       ; preds = %17, %.lr.ph
-  %.02 = phi %struct.T_SCHED_MODIFIER* [ %modifier, %.lr.ph ], [ %20, %17 ]
-  %i.01 = phi i32 [ 0, %.lr.ph ], [ %21, %17 ]
-  %7 = load i32* %2, align 4
-  %8 = icmp ult i32 %7, 41
-  br i1 %8, label %9, label %14
+for.body:                                         ; preds = %vaarg.end, %for.body.lr.ph
+  %modifier.addr.05 = phi %struct.T_SCHED_MODIFIER* [ %modifier, %for.body.lr.ph ], [ %call, %vaarg.end ]
+  %i.04 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %vaarg.end ]
+  %gp_offset = load i32* %gp_offset_p, align 4, !dbg !1249
+  %fits_in_gp = icmp ult i32 %gp_offset, 41, !dbg !1249
+  br i1 %fits_in_gp, label %vaarg.in_reg, label %vaarg.in_mem, !dbg !1249
 
-; <label>:9                                       ; preds = %6
-  %10 = load i8** %3, align 8
-  %11 = sext i32 %7 to i64
-  %12 = getelementptr i8* %10, i64 %11
-  %13 = add i32 %7, 8
-  store i32 %13, i32* %2, align 4
-  br label %17
+vaarg.in_reg:                                     ; preds = %for.body
+  %reg_save_area = load i8** %0, align 8, !dbg !1249
+  %1 = sext i32 %gp_offset to i64, !dbg !1249
+  %2 = getelementptr i8* %reg_save_area, i64 %1, !dbg !1249
+  %3 = add i32 %gp_offset, 8, !dbg !1249
+  store i32 %3, i32* %gp_offset_p, align 4, !dbg !1249
+  br label %vaarg.end, !dbg !1249
 
-; <label>:14                                      ; preds = %6
-  %15 = load i8** %4, align 8
-  %16 = getelementptr i8* %15, i64 8
-  store i8* %16, i8** %4, align 8
-  br label %17
+vaarg.in_mem:                                     ; preds = %for.body
+  %overflow_arg_area = load i8** %overflow_arg_area_p, align 8, !dbg !1249
+  %overflow_arg_area.next = getelementptr i8* %overflow_arg_area, i64 8, !dbg !1249
+  store i8* %overflow_arg_area.next, i8** %overflow_arg_area_p, align 8, !dbg !1249
+  br label %vaarg.end, !dbg !1249
 
-; <label>:17                                      ; preds = %14, %9
-  %.in = phi i8* [ %12, %9 ], [ %15, %14 ]
-  %18 = bitcast i8* %.in to i8**
-  %19 = load i8** %18, align 8
-  %20 = tail call %struct.T_SCHED_MODIFIER* @CCTKi_ScheduleAddModifier(%struct.T_SCHED_MODIFIER* %.02, i8* %type, i8* %19) #8
-  %21 = add nuw nsw i32 %i.01, 1
-  %exitcond = icmp eq i32 %i.01, %5
-  br i1 %exitcond, label %._crit_edge, label %6
+vaarg.end:                                        ; preds = %vaarg.in_mem, %vaarg.in_reg
+  %vaarg.addr.in = phi i8* [ %2, %vaarg.in_reg ], [ %overflow_arg_area, %vaarg.in_mem ]
+  %vaarg.addr = bitcast i8* %vaarg.addr.in to i8**, !dbg !1249
+  %4 = load i8** %vaarg.addr, align 8, !dbg !1249
+  tail call void @llvm.dbg.value(metadata !{i8* %4}, i64 0, metadata !388), !dbg !1249
+  %call = tail call %struct.T_SCHED_MODIFIER* @CCTKi_ScheduleAddModifier(%struct.T_SCHED_MODIFIER* %modifier.addr.05, i8* %type, i8* %4) #8, !dbg !1251
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SCHED_MODIFIER* %call}, i64 0, metadata !383), !dbg !1251
+  %inc = add nsw i32 %i.04, 1, !dbg !1247
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !387), !dbg !1247
+  %exitcond = icmp eq i32 %inc, %n_items, !dbg !1247
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !1247
 
-._crit_edge:                                      ; preds = %17, %0
-  %.0.lcssa = phi %struct.T_SCHED_MODIFIER* [ %modifier, %0 ], [ %20, %17 ]
-  ret %struct.T_SCHED_MODIFIER* %.0.lcssa
+for.end:                                          ; preds = %vaarg.end, %entry
+  %modifier.addr.0.lcssa = phi %struct.T_SCHED_MODIFIER* [ %modifier, %entry ], [ %call, %vaarg.end ]
+  ret %struct.T_SCHED_MODIFIER* %modifier.addr.0.lcssa, !dbg !1252
 }

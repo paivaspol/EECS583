@@ -1,24 +1,31 @@
-define internal fastcc void @printcount2(float %t, float %t0, float %tpf, float %tppf) #5 {
-  %1 = load i32* @__frame, align 4, !tbaa !18
-  %2 = add nsw i32 %1, 1
-  store i32 %2, i32* @__frame, align 4, !tbaa !18
-  %3 = srem i32 %2, 10
-  %4 = icmp eq i32 %3, 0
-  %5 = icmp slt i32 %2, 10
-  %or.cond = or i1 %4, %5
-  br i1 %or.cond, label %6, label %15
+define internal fastcc void @printcount2(float %t, float %t0, float %tpf, float %tppf) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float %t}, i64 0, metadata !424), !dbg !905
+  tail call void @llvm.dbg.value(metadata !{float %t0}, i64 0, metadata !425), !dbg !905
+  tail call void @llvm.dbg.value(metadata !{float %tpf}, i64 0, metadata !426), !dbg !905
+  tail call void @llvm.dbg.value(metadata !{float %tppf}, i64 0, metadata !427), !dbg !905
+  %0 = load i32* @__frame, align 4, !dbg !906, !tbaa !519
+  %inc = add nsw i32 %0, 1, !dbg !906
+  store i32 %inc, i32* @__frame, align 4, !dbg !906, !tbaa !519
+  %rem = srem i32 %inc, 10, !dbg !907
+  %cmp = icmp eq i32 %rem, 0, !dbg !907
+  %cmp1 = icmp slt i32 %inc, 10, !dbg !907
+  %or.cond = or i1 %cmp, %cmp1, !dbg !907
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !907
 
-; <label>:6                                       ; preds = %0
-  %7 = tail call i32 @check_times2(float %t, float %t0, float %tpf, float %tppf) #10
-  %8 = icmp slt i32 %7, 0
-  %9 = select i1 %8, i8* getelementptr inbounds ([15 x i8]* @.str24, i64 0, i64 0), i8* getelementptr inbounds ([14 x i8]* @.str25, i64 0, i64 0)
-  %10 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !54
-  %11 = load i32* @__frame, align 4, !tbaa !18
-  %12 = tail call float @convert_time(float %t) #10
-  %13 = fpext float %12 to double
-  %14 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %10, i8* getelementptr inbounds ([25 x i8]* @.str26, i64 0, i64 0), i8* %9, i32 %11, double %13) #10
-  br label %15
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @check_times2(float %t, float %t0, float %tpf, float %tppf) #7, !dbg !908
+  %cmp2 = icmp slt i32 %call, 0, !dbg !908
+  %cond = select i1 %cmp2, i8* getelementptr inbounds ([15 x i8]* @.str44, i64 0, i64 0), i8* getelementptr inbounds ([14 x i8]* @.str45, i64 0, i64 0), !dbg !908
+  tail call void @llvm.dbg.value(metadata !{i8* %cond}, i64 0, metadata !909) #5, !dbg !910
+  tail call void @llvm.dbg.value(metadata !{float %t}, i64 0, metadata !911) #5, !dbg !910
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !912, !tbaa !547
+  %2 = load i32* @__frame, align 4, !dbg !912, !tbaa !519
+  %call.i = tail call float @convert_time(float %t) #7, !dbg !912
+  %conv.i = fpext float %call.i to double, !dbg !912
+  %call1.i = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([25 x i8]* @.str43, i64 0, i64 0), i8* %cond, i32 %2, double %conv.i) #7, !dbg !912
+  br label %if.end, !dbg !908
 
-; <label>:15                                      ; preds = %0, %6
-  ret void
+if.end:                                           ; preds = %entry, %if.then
+  ret void, !dbg !913
 }

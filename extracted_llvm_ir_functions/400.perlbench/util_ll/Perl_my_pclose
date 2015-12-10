@@ -1,0 +1,84 @@
+define i32 @Perl_my_pclose(%struct._PerlIO** %ptr) #0 {
+entry:
+  %status = alloca i32, align 4
+  %0 = load %struct.av** @PL_fdpid, align 8, !tbaa !2
+  %call = call i32 @Perl_PerlIO_fileno(%struct._PerlIO** %ptr) #8
+  %call1 = call %struct.sv** @Perl_av_fetch(%struct.av* %0, i32 %call, i32 1) #8
+  %1 = load %struct.sv** %call1, align 8, !tbaa !2
+  %sv_flags = getelementptr inbounds %struct.sv* %1, i64 0, i32 2
+  %2 = load i32* %sv_flags, align 4, !tbaa !3
+  %and = and i32 %2, 255
+  %cmp = icmp eq i32 %and, 1
+  br i1 %cmp, label %cond.true, label %cond.end
+
+cond.true:                                        ; preds = %entry
+  %sv_any = getelementptr inbounds %struct.sv* %1, i64 0, i32 0
+  %3 = load i8** %sv_any, align 8, !tbaa !2
+  %xiv_iv = getelementptr inbounds i8* %3, i64 24
+  %4 = bitcast i8* %xiv_iv to i64*
+  %5 = load i64* %4, align 8, !tbaa !4
+  %phitmp = trunc i64 %5 to i32
+  br label %cond.end
+
+cond.end:                                         ; preds = %entry, %cond.true
+  %cond = phi i32 [ %phitmp, %cond.true ], [ -1, %entry ]
+  call void @Perl_sv_free(%struct.sv* %1) #8
+  store %struct.sv* @PL_sv_undef, %struct.sv** %call1, align 8, !tbaa !2
+  %call2 = call i32 @Perl_PerlIO_close(%struct._PerlIO** %ptr) #8
+  %cmp3 = icmp eq i32 %call2, -1
+  br i1 %cmp3, label %if.then, label %if.end
+
+if.then:                                          ; preds = %cond.end
+  %call6 = call i32* @__errno_location() #8
+  %6 = load i32* %call6, align 4, !tbaa !3
+  br label %if.end
+
+if.end:                                           ; preds = %if.then, %cond.end
+  %saved_errno.0 = phi i32 [ %6, %if.then ], [ 0, %cond.end ]
+  %call.i = call void (i32)* (i32, void (i32)*)* @signal(i32 1, void (i32)* inttoptr (i64 1 to void (i32)*)) #8
+  %call.i42 = call void (i32)* (i32, void (i32)*)* @signal(i32 2, void (i32)* inttoptr (i64 1 to void (i32)*)) #8
+  %call.i45 = call void (i32)* (i32, void (i32)*)* @signal(i32 3, void (i32)* inttoptr (i64 1 to void (i32)*)) #8
+  br label %do.body
+
+do.body:                                          ; preds = %land.rhs, %if.end
+  %call10 = call i32 @Perl_wait4pid(i32 %cond, i32* %status, i32 0) #9
+  %cmp11 = icmp eq i32 %call10, -1
+  br i1 %cmp11, label %land.rhs, label %do.end
+
+land.rhs:                                         ; preds = %do.body
+  %call13 = call i32* @__errno_location() #8
+  %7 = load i32* %call13, align 4, !tbaa !3
+  %cmp14 = icmp eq i32 %7, 4
+  br i1 %cmp14, label %do.body, label %do.end
+
+do.end:                                           ; preds = %do.body, %land.rhs
+  %call10.lcssa = phi i32 [ %call10, %do.body ], [ -1, %land.rhs ]
+  %call.i48 = call void (i32)* (i32, void (i32)*)* @signal(i32 1, void (i32)* %call.i) #8
+  %call.i51 = call void (i32)* (i32, void (i32)*)* @signal(i32 2, void (i32)* %call.i42) #8
+  %call.i54 = call void (i32)* (i32, void (i32)*)* @signal(i32 3, void (i32)* %call.i45) #8
+  br i1 %cmp3, label %if.then20, label %if.end22
+
+if.then20:                                        ; preds = %do.end
+  %call21 = call i32* @__errno_location() #8
+  store i32 %saved_errno.0, i32* %call21, align 4, !tbaa !3
+  br label %return
+
+if.end22:                                         ; preds = %do.end
+  %cmp23 = icmp slt i32 %call10.lcssa, 0
+  br i1 %cmp23, label %return, label %cond.false26
+
+cond.false26:                                     ; preds = %if.end22
+  %8 = load i32* %status, align 4, !tbaa !3
+  %cmp27 = icmp eq i32 %8, 0
+  br i1 %cmp27, label %return, label %cond.false30
+
+cond.false30:                                     ; preds = %cond.false26
+  %call31 = call i32* @__errno_location() #8
+  store i32 0, i32* %call31, align 4, !tbaa !3
+  %9 = load i32* %status, align 4, !tbaa !3
+  br label %return
+
+return:                                           ; preds = %cond.false26, %cond.false30, %if.end22, %if.then20
+  %retval.0 = phi i32 [ -1, %if.then20 ], [ %9, %cond.false30 ], [ 0, %cond.false26 ], [ %call10.lcssa, %if.end22 ]
+  ret i32 %retval.0
+}

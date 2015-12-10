@@ -1,135 +1,153 @@
-define void @init_pme(%struct.__sFILE* %log, %struct.t_commrec* readonly %cr, i32 %nkx, i32 %nky, i32 %nkz, i32 %pme_order, i32 %homenr, i32 %bOptFFT, i32 %ewald_geometry) #1 {
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([58 x i8]* @.str7, i64 0, i64 0)) #6
-  %1 = tail call i64 @fwrite(i8* getelementptr inbounds ([38 x i8]* @.str8, i64 0, i64 0), i64 37, i64 1, %struct.__sFILE* %log)
-  tail call void @please_cite(%struct.__sFILE* %log, i8* getelementptr inbounds ([10 x i8]* @.str9, i64 0, i64 0)) #6
-  %2 = icmp eq i32 %ewald_geometry, 1
-  br i1 %2, label %3, label %5
+define void @init_pme(%struct._IO_FILE* %log, %struct.t_commrec* %cr, i32 %nkx, i32 %nky, i32 %nkz, i32 %pme_order, i32 %homenr, i32 %bOptFFT, i32 %ewald_geometry) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %log}, i64 0, metadata !567), !dbg !1136
+  tail call void @llvm.dbg.value(metadata !{%struct.t_commrec* %cr}, i64 0, metadata !568), !dbg !1136
+  tail call void @llvm.dbg.value(metadata !{i32 %nkx}, i64 0, metadata !569), !dbg !1137
+  tail call void @llvm.dbg.value(metadata !{i32 %nky}, i64 0, metadata !570), !dbg !1137
+  tail call void @llvm.dbg.value(metadata !{i32 %nkz}, i64 0, metadata !571), !dbg !1137
+  tail call void @llvm.dbg.value(metadata !{i32 %pme_order}, i64 0, metadata !572), !dbg !1137
+  tail call void @llvm.dbg.value(metadata !{i32 %homenr}, i64 0, metadata !573), !dbg !1137
+  tail call void @llvm.dbg.value(metadata !{i32 %bOptFFT}, i64 0, metadata !574), !dbg !1138
+  tail call void @llvm.dbg.value(metadata !{i32 %ewald_geometry}, i64 0, metadata !575), !dbg !1138
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([58 x i8]* @.str7, i64 0, i64 0)) #5, !dbg !1139
+  %0 = tail call i64 @fwrite(i8* getelementptr inbounds ([38 x i8]* @.str8, i64 0, i64 0), i64 37, i64 1, %struct._IO_FILE* %log), !dbg !1140
+  tail call void @please_cite(%struct._IO_FILE* %log, i8* getelementptr inbounds ([10 x i8]* @.str9, i64 0, i64 0)) #5, !dbg !1141
+  %cmp = icmp eq i32 %ewald_geometry, 1, !dbg !1142
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1142
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i64 @fwrite(i8* getelementptr inbounds ([65 x i8]* @.str10, i64 0, i64 0), i64 64, i64 1, %struct.__sFILE* %log)
-  tail call void @please_cite(%struct.__sFILE* %log, i8* getelementptr inbounds ([11 x i8]* @.str11, i64 0, i64 0)) #6
-  br label %5
+if.then:                                          ; preds = %entry
+  %1 = tail call i64 @fwrite(i8* getelementptr inbounds ([65 x i8]* @.str10, i64 0, i64 0), i64 64, i64 1, %struct._IO_FILE* %log), !dbg !1143
+  tail call void @please_cite(%struct._IO_FILE* %log, i8* getelementptr inbounds ([11 x i8]* @.str11, i64 0, i64 0)) #5, !dbg !1145
+  br label %if.end, !dbg !1146
 
-; <label>:5                                       ; preds = %3, %0
-  %6 = icmp eq %struct.t_commrec* %cr, null
-  br i1 %6, label %.thread, label %7
+if.end:                                           ; preds = %if.then, %entry
+  %tobool = icmp eq %struct.t_commrec* %cr, null, !dbg !1147
+  br i1 %tobool, label %if.end11, label %land.end, !dbg !1147
 
-; <label>:7                                       ; preds = %5
-  %8 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1
-  %9 = load i32* %8, align 4, !tbaa !10
-  %10 = icmp sgt i32 %9, 1
-  %11 = zext i1 %10 to i32
-  br i1 %10, label %12, label %.thread
+land.end:                                         ; preds = %if.end
+  %nnodes = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1, !dbg !1147
+  %2 = load i32* %nnodes, align 4, !dbg !1147, !tbaa !815
+  %cmp2 = icmp sgt i32 %2, 1, !dbg !1147
+  %land.ext = zext i1 %cmp2 to i32
+  tail call void @llvm.dbg.value(metadata !{i32 %land.ext106}, i64 0, metadata !577), !dbg !1148
+  br i1 %cmp2, label %if.then4, label %if.end11, !dbg !1149
 
-; <label>:12                                      ; preds = %7
-  %13 = tail call i64 @fwrite(i8* getelementptr inbounds ([28 x i8]* @.str12, i64 0, i64 0), i64 27, i64 1, %struct.__sFILE* %log)
-  %14 = load i32* %8, align 4, !tbaa !10
-  %15 = srem i32 %nkx, %14
-  %16 = icmp eq i32 %15, 0
-  br i1 %16, label %.thread, label %17
+if.then4:                                         ; preds = %land.end
+  %3 = tail call i64 @fwrite(i8* getelementptr inbounds ([28 x i8]* @.str12, i64 0, i64 0), i64 27, i64 1, %struct._IO_FILE* %log), !dbg !1150
+  %4 = load i32* %nnodes, align 4, !dbg !1152, !tbaa !815
+  %rem = srem i32 %nkx, %4, !dbg !1152
+  %cmp7 = icmp eq i32 %rem, 0, !dbg !1152
+  br i1 %cmp7, label %if.end11, label %if.then8, !dbg !1152
 
-; <label>:17                                      ; preds = %12
-  %18 = tail call i64 @fwrite(i8* getelementptr inbounds ([69 x i8]* @.str13, i64 0, i64 0), i64 68, i64 1, %struct.__sFILE* %log)
-  br label %.thread
+if.then8:                                         ; preds = %if.then4
+  %5 = tail call i64 @fwrite(i8* getelementptr inbounds ([69 x i8]* @.str13, i64 0, i64 0), i64 68, i64 1, %struct._IO_FILE* %log), !dbg !1153
+  br label %if.end11, !dbg !1153
 
-.thread:                                          ; preds = %5, %12, %17, %7
-  %19 = phi i32 [ %11, %12 ], [ %11, %17 ], [ %11, %7 ], [ 0, %5 ]
-  %20 = tail call i8* @save_calloc(i8* getelementptr inbounds ([12 x i8]* @.str14, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str4, i64 0, i64 0), i32 694, i32 %nkx, i32 4) #6
-  store i8* %20, i8** bitcast ([3 x float*]* @bsp_mod to i8**), align 16, !tbaa !2
-  %21 = tail call i8* @save_calloc(i8* getelementptr inbounds ([12 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str4, i64 0, i64 0), i32 695, i32 %nky, i32 4) #6
-  store i8* %21, i8** bitcast (float** getelementptr inbounds ([3 x float*]* @bsp_mod, i64 0, i64 1) to i8**), align 8, !tbaa !2
-  %22 = tail call i8* @save_calloc(i8* getelementptr inbounds ([12 x i8]* @.str16, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str4, i64 0, i64 0), i32 696, i32 %nkz, i32 4) #6
-  store i8* %22, i8** bitcast (float** getelementptr inbounds ([3 x float*]* @bsp_mod, i64 0, i64 2) to i8**), align 16, !tbaa !2
-  %23 = mul nsw i32 %homenr, %pme_order
-  br label %24
+if.end11:                                         ; preds = %if.end, %if.then4, %if.then8, %land.end
+  %land.ext106 = phi i32 [ %land.ext, %if.then4 ], [ %land.ext, %if.then8 ], [ %land.ext, %land.end ], [ 0, %if.end ]
+  %call12 = tail call i8* @save_calloc(i8* getelementptr inbounds ([12 x i8]* @.str14, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str4, i64 0, i64 0), i32 694, i32 %nkx, i32 4) #5, !dbg !1154
+  %6 = bitcast i8* %call12 to float*, !dbg !1154
+  store float* %6, float** getelementptr inbounds ([3 x float*]* @bsp_mod, i64 0, i64 0), align 16, !dbg !1154, !tbaa !773
+  %call13 = tail call i8* @save_calloc(i8* getelementptr inbounds ([12 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str4, i64 0, i64 0), i32 695, i32 %nky, i32 4) #5, !dbg !1155
+  %7 = bitcast i8* %call13 to float*, !dbg !1155
+  store float* %7, float** getelementptr inbounds ([3 x float*]* @bsp_mod, i64 0, i64 1), align 8, !dbg !1155, !tbaa !773
+  %call14 = tail call i8* @save_calloc(i8* getelementptr inbounds ([12 x i8]* @.str16, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str4, i64 0, i64 0), i32 696, i32 %nkz, i32 4) #5, !dbg !1156
+  %8 = bitcast i8* %call14 to float*, !dbg !1156
+  store float* %8, float** getelementptr inbounds ([3 x float*]* @bsp_mod, i64 0, i64 2), align 16, !dbg !1156, !tbaa !773
+  tail call void @llvm.dbg.value(metadata !148, i64 0, metadata !576), !dbg !1157
+  %mul = mul nsw i32 %homenr, %pme_order, !dbg !1159
+  br label %for.body, !dbg !1157
 
-; <label>:24                                      ; preds = %24, %.thread
-  %indvars.iv13 = phi i64 [ 0, %.thread ], [ %indvars.iv.next14, %24 ]
-  %25 = tail call i8* @save_calloc(i8* getelementptr inbounds ([9 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str4, i64 0, i64 0), i32 698, i32 %23, i32 4) #6
-  %26 = getelementptr inbounds [3 x float*]* @theta, i64 0, i64 %indvars.iv13
-  %27 = bitcast float** %26 to i8**
-  store i8* %25, i8** %27, align 8, !tbaa !2
-  %28 = tail call i8* @save_calloc(i8* getelementptr inbounds ([10 x i8]* @.str18, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str4, i64 0, i64 0), i32 699, i32 %23, i32 4) #6
-  %29 = getelementptr inbounds [3 x float*]* @dtheta, i64 0, i64 %indvars.iv13
-  %30 = bitcast float** %29 to i8**
-  store i8* %28, i8** %30, align 8, !tbaa !2
-  %indvars.iv.next14 = add nuw nsw i64 %indvars.iv13, 1
-  %exitcond = icmp eq i64 %indvars.iv.next14, 3
-  br i1 %exitcond, label %31, label %24
+for.body:                                         ; preds = %for.body, %if.end11
+  %indvars.iv118 = phi i64 [ 0, %if.end11 ], [ %indvars.iv.next119, %for.body ]
+  %call16 = tail call i8* @save_calloc(i8* getelementptr inbounds ([9 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str4, i64 0, i64 0), i32 698, i32 %mul, i32 4) #5, !dbg !1159
+  %9 = bitcast i8* %call16 to float*, !dbg !1159
+  %arrayidx = getelementptr inbounds [3 x float*]* @theta, i64 0, i64 %indvars.iv118, !dbg !1159
+  store float* %9, float** %arrayidx, align 8, !dbg !1159, !tbaa !773
+  %call18 = tail call i8* @save_calloc(i8* getelementptr inbounds ([10 x i8]* @.str18, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str4, i64 0, i64 0), i32 699, i32 %mul, i32 4) #5, !dbg !1161
+  %10 = bitcast i8* %call18 to float*, !dbg !1161
+  %arrayidx20 = getelementptr inbounds [3 x float*]* @dtheta, i64 0, i64 %indvars.iv118, !dbg !1161
+  store float* %10, float** %arrayidx20, align 8, !dbg !1161, !tbaa !773
+  %indvars.iv.next119 = add i64 %indvars.iv118, 1, !dbg !1157
+  %lftr.wideiv = trunc i64 %indvars.iv.next119 to i32, !dbg !1157
+  %exitcond = icmp eq i32 %lftr.wideiv, 3, !dbg !1157
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !1157
 
-; <label>:31                                      ; preds = %24
-  %32 = tail call i8* @save_calloc(i8* getelementptr inbounds ([7 x i8]* @.str19, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str4, i64 0, i64 0), i32 701, i32 %homenr, i32 12) #6
-  store i8* %32, i8** bitcast ([3 x float]** @fractx to i8**), align 8, !tbaa !2
-  %33 = tail call i8* @save_calloc(i8* getelementptr inbounds ([4 x i8]* @.str20, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str4, i64 0, i64 0), i32 703, i32 %homenr, i32 12) #6
-  store i8* %33, i8** bitcast ([3 x i32]** @idx to i8**), align 8, !tbaa !2
-  %34 = mul nsw i32 %nkx, 3
-  %35 = tail call i8* @save_calloc(i8* getelementptr inbounds ([4 x i8]* @.str21, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str4, i64 0, i64 0), i32 704, i32 %34, i32 4) #6
-  store i8* %35, i8** bitcast (i32** @nnx to i8**), align 8, !tbaa !2
-  %36 = mul nsw i32 %nky, 3
-  %37 = tail call i8* @save_calloc(i8* getelementptr inbounds ([4 x i8]* @.str22, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str4, i64 0, i64 0), i32 705, i32 %36, i32 4) #6
-  store i8* %37, i8** bitcast (i32** @nny to i8**), align 8, !tbaa !2
-  %38 = mul nsw i32 %nkz, 3
-  %39 = tail call i8* @save_calloc(i8* getelementptr inbounds ([4 x i8]* @.str23, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str4, i64 0, i64 0), i32 706, i32 %38, i32 4) #6
-  store i8* %39, i8** bitcast (i32** @nnz to i8**), align 8, !tbaa !2
-  %40 = icmp sgt i32 %nkx, 0
-  %41 = bitcast i8* %39 to i32*
-  br i1 %40, label %.lr.ph7, label %.preheader1
+for.end:                                          ; preds = %for.body
+  %call21 = tail call i8* @save_calloc(i8* getelementptr inbounds ([7 x i8]* @.str19, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str4, i64 0, i64 0), i32 701, i32 %homenr, i32 12) #5, !dbg !1162
+  %11 = bitcast i8* %call21 to [3 x float]*, !dbg !1162
+  store [3 x float]* %11, [3 x float]** @fractx, align 8, !dbg !1162, !tbaa !773
+  %call22 = tail call i8* @save_calloc(i8* getelementptr inbounds ([4 x i8]* @.str20, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str4, i64 0, i64 0), i32 703, i32 %homenr, i32 12) #5, !dbg !1163
+  %12 = bitcast i8* %call22 to [3 x i32]*, !dbg !1163
+  store [3 x i32]* %12, [3 x i32]** @idx, align 8, !dbg !1163, !tbaa !773
+  %mul23 = mul nsw i32 %nkx, 3, !dbg !1164
+  %call24 = tail call i8* @save_calloc(i8* getelementptr inbounds ([4 x i8]* @.str21, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str4, i64 0, i64 0), i32 704, i32 %mul23, i32 4) #5, !dbg !1164
+  %13 = bitcast i8* %call24 to i32*, !dbg !1164
+  store i32* %13, i32** @nnx, align 8, !dbg !1164, !tbaa !773
+  %mul25 = mul nsw i32 %nky, 3, !dbg !1165
+  %call26 = tail call i8* @save_calloc(i8* getelementptr inbounds ([4 x i8]* @.str22, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str4, i64 0, i64 0), i32 705, i32 %mul25, i32 4) #5, !dbg !1165
+  %14 = bitcast i8* %call26 to i32*, !dbg !1165
+  store i32* %14, i32** @nny, align 8, !dbg !1165, !tbaa !773
+  %mul27 = mul nsw i32 %nkz, 3, !dbg !1166
+  %call28 = tail call i8* @save_calloc(i8* getelementptr inbounds ([4 x i8]* @.str23, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str4, i64 0, i64 0), i32 706, i32 %mul27, i32 4) #5, !dbg !1166
+  %15 = bitcast i8* %call28 to i32*, !dbg !1166
+  store i32* %15, i32** @nnz, align 8, !dbg !1166, !tbaa !773
+  tail call void @llvm.dbg.value(metadata !148, i64 0, metadata !576), !dbg !1167
+  %cmp31111 = icmp sgt i32 %nkx, 0, !dbg !1167
+  br i1 %cmp31111, label %for.body32.lr.ph, label %for.cond39.preheader, !dbg !1167
 
-.lr.ph7:                                          ; preds = %31
-  %42 = load i32** @nnx, align 8, !tbaa !2
-  %43 = sext i32 %34 to i64
-  br label %47
+for.body32.lr.ph:                                 ; preds = %for.end
+  %16 = load i32** @nnx, align 8, !dbg !1169, !tbaa !773
+  br label %for.body32, !dbg !1167
 
-.preheader1:                                      ; preds = %47, %31
-  %44 = icmp sgt i32 %nky, 0
-  br i1 %44, label %.lr.ph4, label %.preheader
+for.cond39.preheader:                             ; preds = %for.body32, %for.end
+  %cmp41109 = icmp sgt i32 %nky, 0, !dbg !1170
+  br i1 %cmp41109, label %for.body42.lr.ph, label %for.cond49.preheader, !dbg !1170
 
-.lr.ph4:                                          ; preds = %.preheader1
-  %45 = load i32** @nny, align 8, !tbaa !2
-  %46 = sext i32 %36 to i64
-  br label %54
+for.body42.lr.ph:                                 ; preds = %for.cond39.preheader
+  %17 = load i32** @nny, align 8, !dbg !1172, !tbaa !773
+  br label %for.body42, !dbg !1170
 
-; <label>:47                                      ; preds = %.lr.ph7, %47
-  %indvars.iv11 = phi i64 [ 0, %.lr.ph7 ], [ %indvars.iv.next12, %47 ]
-  %48 = trunc i64 %indvars.iv11 to i32
-  %49 = srem i32 %48, %nkx
-  %50 = getelementptr inbounds i32* %42, i64 %indvars.iv11
-  store i32 %49, i32* %50, align 4, !tbaa !8
-  %indvars.iv.next12 = add nuw nsw i64 %indvars.iv11, 1
-  %51 = icmp slt i64 %indvars.iv.next12, %43
-  br i1 %51, label %47, label %.preheader1
+for.body32:                                       ; preds = %for.body32.lr.ph, %for.body32
+  %indvars.iv116 = phi i64 [ 0, %for.body32.lr.ph ], [ %indvars.iv.next117, %for.body32 ]
+  %18 = trunc i64 %indvars.iv116 to i32, !dbg !1169
+  %rem33 = srem i32 %18, %nkx, !dbg !1169
+  %arrayidx35 = getelementptr inbounds i32* %16, i64 %indvars.iv116, !dbg !1169
+  store i32 %rem33, i32* %arrayidx35, align 4, !dbg !1169, !tbaa !815
+  %indvars.iv.next117 = add i64 %indvars.iv116, 1, !dbg !1167
+  %19 = trunc i64 %indvars.iv.next117 to i32, !dbg !1167
+  %cmp31 = icmp slt i32 %19, %mul23, !dbg !1167
+  br i1 %cmp31, label %for.body32, label %for.cond39.preheader, !dbg !1167
 
-.preheader:                                       ; preds = %54, %.preheader1
-  %52 = icmp sgt i32 %nkz, 0
-  br i1 %52, label %.lr.ph, label %._crit_edge
+for.cond49.preheader:                             ; preds = %for.body42, %for.cond39.preheader
+  %cmp51107 = icmp sgt i32 %nkz, 0, !dbg !1173
+  br i1 %cmp51107, label %for.body52, label %for.end58, !dbg !1173
 
-.lr.ph:                                           ; preds = %.preheader
-  %53 = sext i32 %38 to i64
-  br label %59
+for.body42:                                       ; preds = %for.body42.lr.ph, %for.body42
+  %indvars.iv114 = phi i64 [ 0, %for.body42.lr.ph ], [ %indvars.iv.next115, %for.body42 ]
+  %20 = trunc i64 %indvars.iv114 to i32, !dbg !1172
+  %rem43 = srem i32 %20, %nky, !dbg !1172
+  %arrayidx45 = getelementptr inbounds i32* %17, i64 %indvars.iv114, !dbg !1172
+  store i32 %rem43, i32* %arrayidx45, align 4, !dbg !1172, !tbaa !815
+  %indvars.iv.next115 = add i64 %indvars.iv114, 1, !dbg !1170
+  %21 = trunc i64 %indvars.iv.next115 to i32, !dbg !1170
+  %cmp41 = icmp slt i32 %21, %mul25, !dbg !1170
+  br i1 %cmp41, label %for.body42, label %for.cond49.preheader, !dbg !1170
 
-; <label>:54                                      ; preds = %.lr.ph4, %54
-  %indvars.iv9 = phi i64 [ 0, %.lr.ph4 ], [ %indvars.iv.next10, %54 ]
-  %55 = trunc i64 %indvars.iv9 to i32
-  %56 = srem i32 %55, %nky
-  %57 = getelementptr inbounds i32* %45, i64 %indvars.iv9
-  store i32 %56, i32* %57, align 4, !tbaa !8
-  %indvars.iv.next10 = add nuw nsw i64 %indvars.iv9, 1
-  %58 = icmp slt i64 %indvars.iv.next10, %46
-  br i1 %58, label %54, label %.preheader
+for.body52:                                       ; preds = %for.cond49.preheader, %for.body52
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body52 ], [ 0, %for.cond49.preheader ]
+  %22 = trunc i64 %indvars.iv to i32, !dbg !1175
+  %rem53 = srem i32 %22, %nkz, !dbg !1175
+  %arrayidx55 = getelementptr inbounds i32* %15, i64 %indvars.iv, !dbg !1175
+  store i32 %rem53, i32* %arrayidx55, align 4, !dbg !1175, !tbaa !815
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1173
+  %23 = trunc i64 %indvars.iv.next to i32, !dbg !1173
+  %cmp51 = icmp slt i32 %23, %mul27, !dbg !1173
+  br i1 %cmp51, label %for.body52, label %for.end58, !dbg !1173
 
-; <label>:59                                      ; preds = %.lr.ph, %59
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %59 ]
-  %60 = trunc i64 %indvars.iv to i32
-  %61 = srem i32 %60, %nkz
-  %62 = getelementptr inbounds i32* %41, i64 %indvars.iv
-  store i32 %61, i32* %62, align 4, !tbaa !8
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %63 = icmp slt i64 %indvars.iv.next, %53
-  br i1 %63, label %59, label %._crit_edge
-
-._crit_edge:                                      ; preds = %59, %.preheader
-  %64 = tail call %struct.t_fftgrid* @mk_fftgrid(%struct.__sFILE* %log, i32 %19, i32 %nkx, i32 %nky, i32 %nkz, i32 %bOptFFT) #6
-  store %struct.t_fftgrid* %64, %struct.t_fftgrid** @grid, align 8, !tbaa !2
-  tail call void @make_bspline_moduli(float** getelementptr inbounds ([3 x float*]* @bsp_mod, i64 0, i64 0), i32 %nkx, i32 %nky, i32 %nkz, i32 %pme_order) #8
-  ret void
+for.end58:                                        ; preds = %for.body52, %for.cond49.preheader
+  %call59 = tail call %struct.t_fftgrid* @mk_fftgrid(%struct._IO_FILE* %log, i32 %land.ext106, i32 %nkx, i32 %nky, i32 %nkz, i32 %bOptFFT) #5, !dbg !1176
+  store %struct.t_fftgrid* %call59, %struct.t_fftgrid** @grid, align 8, !dbg !1176, !tbaa !773
+  tail call void @make_bspline_moduli(float** getelementptr inbounds ([3 x float*]* @bsp_mod, i64 0, i64 0), i32 %nkx, i32 %nky, i32 %nkz, i32 %pme_order) #7, !dbg !1177
+  ret void, !dbg !1178
 }

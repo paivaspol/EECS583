@@ -1,31 +1,34 @@
 define noalias i32** @PIVinit(i32 %size) #0 {
 entry:
-  %cmp = icmp sgt i32 %size, 0
-  br i1 %cmp, label %if.then2, label %if.end21
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !17), !dbg !49
+  tail call void @llvm.dbg.value(metadata !47, i64 0, metadata !18), !dbg !50
+  %cmp = icmp sgt i32 %size, 0, !dbg !51
+  br i1 %cmp, label %if.then2, label %if.end21, !dbg !51
 
 if.then2:                                         ; preds = %entry
-  %conv = sext i32 %size to i64
-  %mul = shl nsw i64 %conv, 3
-  %call = tail call noalias i8* @malloc(i64 %mul) #4
-  %cmp3 = icmp eq i8* %call, null
-  br i1 %cmp3, label %if.then5, label %if.end21.loopexit
+  %conv = sext i32 %size to i64, !dbg !52
+  %mul = shl nsw i64 %conv, 3, !dbg !52
+  %call = tail call noalias i8* @malloc(i64 %mul) #5, !dbg !52
+  tail call void @llvm.dbg.value(metadata !{i32** %1}, i64 0, metadata !18), !dbg !52
+  %cmp3 = icmp eq i8* %call, null, !dbg !52
+  br i1 %cmp3, label %if.then5, label %if.end21.loopexit, !dbg !52
 
 if.then5:                                         ; preds = %if.then2
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call8 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 %mul, i32 39, i8* getelementptr inbounds ([84 x i8]* @.str1, i64 0, i64 0)) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !54, !tbaa !56
+  %call8 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i64 %mul, i32 39, i8* getelementptr inbounds ([84 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !54
+  tail call void @exit(i32 -1) #6, !dbg !54
+  unreachable, !dbg !54
 
 if.end21.loopexit:                                ; preds = %if.then2
-  %1 = bitcast i8* %call to i32**
-  %2 = add i32 %size, -1
+  %1 = bitcast i8* %call to i32**, !dbg !52
+  %2 = add i32 %size, -1, !dbg !59
   %3 = zext i32 %2 to i64
-  %4 = shl nuw nsw i64 %3, 3
-  %5 = add i64 %4, 8
-  call void @llvm.memset.p0i8.i64(i8* %call, i8 0, i64 %5, i32 8, i1 false)
+  %4 = shl nuw nsw i64 %3, 3, !dbg !59
+  %5 = add i64 %4, 8, !dbg !59
+  call void @llvm.memset.p0i8.i64(i8* %call, i8 0, i64 %5, i32 8, i1 false), !dbg !61
   br label %if.end21
 
 if.end21:                                         ; preds = %if.end21.loopexit, %entry
   %p_ivec.1 = phi i32** [ null, %entry ], [ %1, %if.end21.loopexit ]
-  ret i32** %p_ivec.1
+  ret i32** %p_ivec.1, !dbg !63
 }

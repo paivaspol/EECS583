@@ -1,0 +1,61 @@
+define %"class.xercesc_2_5::BinInputStream"* @_ZNK11xercesc_2_516StdInInputSource10makeStreamEv(%"class.xercesc_2_5::StdInInputSource"* nocapture %this) unnamed_addr #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::StdInInputSource"* %this}, i64 0, metadata !262), !dbg !348
+  %fMemoryManager.i = getelementptr inbounds %"class.xercesc_2_5::StdInInputSource"* %this, i64 0, i32 0, i32 1, !dbg !349
+  %0 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager.i, align 8, !dbg !349, !tbaa !352
+  %call2 = tail call i8* @_ZN11xercesc_2_57XMemorynwEmPNS_13MemoryManagerE(i64 24, %"class.xercesc_2_5::MemoryManager"* %0) #6, !dbg !351
+  %1 = bitcast i8* %call2 to %"class.xercesc_2_5::BinFileInputStream"*, !dbg !351
+  %2 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager.i, align 8, !dbg !355, !tbaa !352
+  %call5 = invoke i8* @_ZN11xercesc_2_516XMLPlatformUtils15openStdInHandleEPNS_13MemoryManagerE(%"class.xercesc_2_5::MemoryManager"* %2) #6
+          to label %invoke.cont4 unwind label %lpad, !dbg !356
+
+invoke.cont4:                                     ; preds = %entry
+  %3 = load %"class.xercesc_2_5::MemoryManager"** @_ZN11xercesc_2_516XMLPlatformUtils15fgMemoryManagerE, align 8, !dbg !356, !tbaa !352
+  invoke void @_ZN11xercesc_2_518BinFileInputStreamC1EPvPNS_13MemoryManagerE(%"class.xercesc_2_5::BinFileInputStream"* %1, i8* %call5, %"class.xercesc_2_5::MemoryManager"* %3) #6
+          to label %invoke.cont6 unwind label %lpad, !dbg !356
+
+invoke.cont6:                                     ; preds = %invoke.cont4
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BinFileInputStream"* %1}, i64 0, metadata !265), !dbg !356
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BinFileInputStream"* %1}, i64 0, metadata !357), !dbg !359
+  %fSource.i = getelementptr inbounds i8* %call2, i64 8, !dbg !360
+  %4 = bitcast i8* %fSource.i to i8**, !dbg !360
+  %5 = load i8** %4, align 8, !dbg !360, !tbaa !352
+  %cmp.i = icmp eq i8* %5, null, !dbg !360
+  br i1 %cmp.i, label %if.then, label %if.end, !dbg !358
+
+if.then:                                          ; preds = %invoke.cont6
+  %isnull = icmp eq i8* %call2, null, !dbg !362
+  br i1 %isnull, label %return, label %delete.notnull, !dbg !362
+
+delete.notnull:                                   ; preds = %if.then
+  %6 = bitcast i8* %call2 to void (%"class.xercesc_2_5::BinFileInputStream"*)***, !dbg !362
+  %vtable = load void (%"class.xercesc_2_5::BinFileInputStream"*)*** %6, align 8, !dbg !362, !tbaa !364
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::BinFileInputStream"*)** %vtable, i64 1, !dbg !362
+  %7 = load void (%"class.xercesc_2_5::BinFileInputStream"*)** %vfn, align 8, !dbg !362
+  tail call void %7(%"class.xercesc_2_5::BinFileInputStream"* %1) #6, !dbg !362
+  br label %return, !dbg !362
+
+lpad:                                             ; preds = %invoke.cont4, %entry
+  %8 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !356
+  invoke void @_ZN11xercesc_2_57XMemorydlEPvPNS_13MemoryManagerE(i8* %call2, %"class.xercesc_2_5::MemoryManager"* %0) #6
+          to label %eh.resume unwind label %terminate.lpad, !dbg !356
+
+if.end:                                           ; preds = %invoke.cont6
+  %9 = bitcast i8* %call2 to %"class.xercesc_2_5::BinInputStream"*, !dbg !365
+  br label %return, !dbg !365
+
+return:                                           ; preds = %if.then, %delete.notnull, %if.end
+  %retval.0 = phi %"class.xercesc_2_5::BinInputStream"* [ %9, %if.end ], [ null, %delete.notnull ], [ null, %if.then ]
+  ret %"class.xercesc_2_5::BinInputStream"* %retval.0, !dbg !366
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %8, !dbg !356
+
+terminate.lpad:                                   ; preds = %lpad
+  %10 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !356
+  %11 = extractvalue { i8*, i32 } %10, 0, !dbg !356
+  tail call void @__clang_call_terminate(i8* %11) #5, !dbg !356
+  unreachable, !dbg !356
+}

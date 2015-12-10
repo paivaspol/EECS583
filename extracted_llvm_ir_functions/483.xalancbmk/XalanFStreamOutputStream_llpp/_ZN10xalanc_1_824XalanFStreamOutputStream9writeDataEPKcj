@@ -1,0 +1,34 @@
+define void @_ZN10xalanc_1_824XalanFStreamOutputStream9writeDataEPKcj(%"class.xalanc_1_8::XalanFStreamOutputStream"* nocapture %this, i8* nocapture %theBuffer, i32 %theBufferLength) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XalanFStreamOutputStream"* %this}, i64 0, metadata !1935), !dbg !2350
+  tail call void @llvm.dbg.value(metadata !{i8* %theBuffer}, i64 0, metadata !1936), !dbg !2351
+  tail call void @llvm.dbg.value(metadata !{i32 %theBufferLength}, i64 0, metadata !1937), !dbg !2352
+  %conv = zext i32 %theBufferLength to i64, !dbg !2353
+  %m_handle = getelementptr inbounds %"class.xalanc_1_8::XalanFStreamOutputStream"* %this, i64 0, i32 1, !dbg !2353
+  %0 = load %struct._IO_FILE** %m_handle, align 8, !dbg !2353, !tbaa !2335
+  %call = tail call i64 @fwrite(i8* %theBuffer, i64 1, i64 %conv, %struct._IO_FILE* %0) #7, !dbg !2353
+  tail call void @llvm.dbg.value(metadata !{i64 %call}, i64 0, metadata !1938), !dbg !2353
+  %cmp = icmp eq i64 %call, %conv, !dbg !2354
+  br i1 %cmp, label %if.end, label %if.then, !dbg !2354
+
+if.then:                                          ; preds = %entry
+  %exception = tail call i8* @__cxa_allocate_exception(i64 120) #6, !dbg !2355
+  %1 = bitcast i8* %exception to %"class.xalanc_1_8::XalanFStreamOutputStream::XalanFStreamOutputStreamWriteException"*, !dbg !2355
+  %call3 = tail call i32* @__errno_location() #9, !dbg !2355
+  %2 = load i32* %call3, align 4, !dbg !2355, !tbaa !2357
+  invoke void @_ZN10xalanc_1_824XalanFStreamOutputStream38XalanFStreamOutputStreamWriteExceptionC2Ei(%"class.xalanc_1_8::XalanFStreamOutputStream::XalanFStreamOutputStreamWriteException"* %1, i32 %2) #7
+          to label %invoke.cont unwind label %lpad, !dbg !2355
+
+invoke.cont:                                      ; preds = %if.then
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN10xalanc_1_824XalanFStreamOutputStream38XalanFStreamOutputStreamWriteExceptionE to i8*), i8* bitcast (void (%"class.xalanc_1_8::XalanFStreamOutputStream::XalanFStreamOutputStreamWriteException"*)* @_ZN10xalanc_1_824XalanFStreamOutputStream38XalanFStreamOutputStreamWriteExceptionD2Ev to i8*)) #10, !dbg !2355
+  unreachable, !dbg !2355
+
+lpad:                                             ; preds = %if.then
+  %3 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !2355
+  tail call void @__cxa_free_exception(i8* %exception) #6, !dbg !2355
+  resume { i8*, i32 } %3, !dbg !2355
+
+if.end:                                           ; preds = %entry
+  ret void, !dbg !2358
+}

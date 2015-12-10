@@ -1,0 +1,86 @@
+define zeroext i1 @_ZN3pov16ot_dist_traverseEPNS_14ot_node_structEPdiPFiPNS_15ot_block_structEPvES5_(%"struct.pov::ot_node_struct"* nocapture %subtree, double* nocapture %point, i32 %bounce_depth, i32 (%"struct.pov::ot_block_struct"*, i8*)* nocapture %function, i8* %handle) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::ot_node_struct"* %subtree}, i64 0, metadata !135), !dbg !764
+  tail call void @llvm.dbg.value(metadata !{double* %point}, i64 0, metadata !136), !dbg !764
+  tail call void @llvm.dbg.value(metadata !{i32 %bounce_depth}, i64 0, metadata !137), !dbg !764
+  tail call void @llvm.dbg.value(metadata !{i32 (%"struct.pov::ot_block_struct"*, i8*)* %function}, i64 0, metadata !138), !dbg !764
+  tail call void @llvm.dbg.value(metadata !{i8* %handle}, i64 0, metadata !139), !dbg !764
+  tail call void @llvm.dbg.value(metadata !765, i64 0, metadata !141), !dbg !766
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !140), !dbg !767
+  br label %land.rhs, !dbg !767
+
+land.rhs:                                         ; preds = %entry, %for.inc
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc ]
+  %oksofar.041 = phi i8 [ 1, %entry ], [ %oksofar.1, %for.inc ]
+  %0 = and i8 %oksofar.041, 1, !dbg !767
+  %tobool = icmp eq i8 %0, 0, !dbg !767
+  br i1 %tobool, label %for.end, label %for.body
+
+for.body:                                         ; preds = %land.rhs
+  %arrayidx = getelementptr inbounds %"struct.pov::ot_node_struct"* %subtree, i64 0, i32 2, i64 %indvars.iv, !dbg !769
+  %1 = load %"struct.pov::ot_node_struct"** %arrayidx, align 8, !dbg !769, !tbaa !699
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::ot_node_struct"* %1}, i64 0, metadata !142), !dbg !769
+  %cmp1 = icmp eq %"struct.pov::ot_node_struct"* %1, null, !dbg !771
+  br i1 %cmp1, label %for.inc, label %if.then, !dbg !771
+
+if.then:                                          ; preds = %for.body
+  %Id = getelementptr inbounds %"struct.pov::ot_node_struct"* %1, i64 0, i32 0, !dbg !772
+  %call = tail call i32 @_ZN3pov16ot_point_in_nodeEPdPNS_12ot_id_structE(double* %point, %"struct.pov::ot_id_struct"* %Id) #8, !dbg !772
+  %tobool2 = icmp eq i32 %call, 0, !dbg !772
+  br i1 %tobool2, label %for.inc, label %if.then3, !dbg !772
+
+if.then3:                                         ; preds = %if.then
+  %call4 = tail call zeroext i1 @_ZN3pov16ot_dist_traverseEPNS_14ot_node_structEPdiPFiPNS_15ot_block_structEPvES5_(%"struct.pov::ot_node_struct"* %1, double* %point, i32 %bounce_depth, i32 (%"struct.pov::ot_block_struct"*, i8*)* %function, i8* %handle) #8, !dbg !774
+  tail call void @llvm.dbg.value(metadata !776, i64 0, metadata !141), !dbg !777
+  %oksofar.0. = select i1 %call4, i8 %oksofar.041, i8 0, !dbg !774
+  br label %for.inc, !dbg !774
+
+for.inc:                                          ; preds = %if.then3, %if.then, %for.body
+  %oksofar.1 = phi i8 [ %oksofar.041, %if.then ], [ %oksofar.041, %for.body ], [ %oksofar.0., %if.then3 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !767
+  %2 = trunc i64 %indvars.iv.next to i32, !dbg !767
+  %cmp = icmp slt i32 %2, 8, !dbg !767
+  br i1 %cmp, label %land.rhs, label %for.end, !dbg !767
+
+for.end:                                          ; preds = %land.rhs, %for.inc
+  %oksofar.0.lcssa = phi i8 [ %oksofar.041, %land.rhs ], [ %oksofar.1, %for.inc ]
+  %Values = getelementptr inbounds %"struct.pov::ot_node_struct"* %subtree, i64 0, i32 1, !dbg !778
+  %this_block.034 = load %"struct.pov::ot_block_struct"** %Values, align 8, !dbg !778
+  %3 = and i8 %oksofar.0.lcssa, 1, !dbg !780
+  %tobool835 = icmp ne i8 %3, 0, !dbg !780
+  %tobool8.not36 = xor i1 %tobool835, true, !dbg !780
+  %cmp1037 = icmp eq %"struct.pov::ot_block_struct"* %this_block.034, null, !dbg !780
+  %or.cond38 = or i1 %cmp1037, %tobool8.not36, !dbg !780
+  br i1 %or.cond38, label %while.end, label %while.body, !dbg !780
+
+while.body:                                       ; preds = %for.end, %if.end18
+  %this_block.040 = phi %"struct.pov::ot_block_struct"* [ %this_block.0, %if.end18 ], [ %this_block.034, %for.end ]
+  %oksofar.239 = phi i8 [ %oksofar.3, %if.end18 ], [ %oksofar.0.lcssa, %for.end ]
+  %Bounce_Depth = getelementptr inbounds %"struct.pov::ot_block_struct"* %this_block.040, i64 0, i32 16, !dbg !781
+  %4 = load i16* %Bounce_Depth, align 2, !dbg !781, !tbaa !783
+  %conv = sext i16 %4 to i32, !dbg !781
+  %cmp12 = icmp eq i32 %conv, %bounce_depth, !dbg !781
+  br i1 %cmp12, label %if.then13, label %if.end18, !dbg !781
+
+if.then13:                                        ; preds = %while.body
+  %call14 = tail call i32 %function(%"struct.pov::ot_block_struct"* %this_block.040, i8* %handle) #8, !dbg !784
+  %tobool15 = icmp eq i32 %call14, 0, !dbg !784
+  tail call void @llvm.dbg.value(metadata !776, i64 0, metadata !141), !dbg !786
+  %.oksofar.2 = select i1 %tobool15, i8 0, i8 %oksofar.239, !dbg !784
+  br label %if.end18, !dbg !784
+
+if.end18:                                         ; preds = %if.then13, %while.body
+  %oksofar.3 = phi i8 [ %oksofar.239, %while.body ], [ %.oksofar.2, %if.then13 ]
+  %next = getelementptr inbounds %"struct.pov::ot_block_struct"* %this_block.040, i64 0, i32 0, !dbg !787
+  %this_block.0 = load %"struct.pov::ot_block_struct"** %next, align 8, !dbg !778
+  %5 = and i8 %oksofar.3, 1, !dbg !780
+  %tobool8 = icmp ne i8 %5, 0, !dbg !780
+  %tobool8.not = xor i1 %tobool8, true, !dbg !780
+  %cmp10 = icmp eq %"struct.pov::ot_block_struct"* %this_block.0, null, !dbg !780
+  %or.cond = or i1 %cmp10, %tobool8.not, !dbg !780
+  br i1 %or.cond, label %while.end, label %while.body, !dbg !780
+
+while.end:                                        ; preds = %if.end18, %for.end
+  %tobool8.lcssa = phi i1 [ %tobool835, %for.end ], [ %tobool8, %if.end18 ]
+  ret i1 %tobool8.lcssa, !dbg !788
+}

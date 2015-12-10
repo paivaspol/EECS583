@@ -1,34 +1,46 @@
-define i32 @gmx_strcasecmp(i8* nocapture readonly %str1, i8* nocapture readonly %str2) #3 {
-  br label %1
+define i32 @gmx_strcasecmp(i8* nocapture %str1, i8* nocapture %str2) #5 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %str1}, i64 0, metadata !139), !dbg !253
+  tail call void @llvm.dbg.value(metadata !{i8* %str2}, i64 0, metadata !140), !dbg !253
+  %call = tail call i32** @__ctype_toupper_loc() #11, !dbg !254
+  %0 = load i32** %call, align 8, !dbg !254, !tbaa !213
+  br label %do.body, !dbg !255
 
-; <label>:1                                       ; preds = %13, %0
-  %.02 = phi i8* [ %str2, %0 ], [ %15, %13 ]
-  %.01 = phi i8* [ %str1, %0 ], [ %16, %13 ]
-  %2 = load i8* %.01, align 1, !tbaa !13
-  %3 = sext i8 %2 to i32
-  %4 = tail call i32 @__toupper(i32 %3) #10
-  %5 = load i8* %.02, align 1, !tbaa !13
-  %6 = sext i8 %5 to i32
-  %7 = tail call i32 @__toupper(i32 %6) #10
-  %sext = shl i32 %4, 24
-  %8 = ashr exact i32 %sext, 24
-  %sext3 = shl i32 %7, 24
-  %9 = ashr exact i32 %sext3, 24
-  %10 = icmp eq i32 %8, %9
-  br i1 %10, label %13, label %11
+do.body:                                          ; preds = %do.cond, %entry
+  %str2.addr.0 = phi i8* [ %str2, %entry ], [ %incdec.ptr3, %do.cond ]
+  %str1.addr.0 = phi i8* [ %str1, %entry ], [ %incdec.ptr, %do.cond ]
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !139), !dbg !254
+  %1 = load i8* %str1.addr.0, align 1, !dbg !254, !tbaa !189
+  %idxprom = sext i8 %1 to i64, !dbg !254
+  %arrayidx = getelementptr inbounds i32* %0, i64 %idxprom, !dbg !254
+  %2 = load i32* %arrayidx, align 4, !dbg !254, !tbaa !214
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !143), !dbg !254
+  tail call void @llvm.dbg.value(metadata !{i8 %conv1}, i64 0, metadata !141), !dbg !254
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr3}, i64 0, metadata !140), !dbg !256
+  %3 = load i8* %str2.addr.0, align 1, !dbg !256, !tbaa !189
+  %idxprom5 = sext i8 %3 to i64, !dbg !256
+  %arrayidx7 = getelementptr inbounds i32* %0, i64 %idxprom5, !dbg !256
+  %4 = load i32* %arrayidx7, align 4, !dbg !256, !tbaa !214
+  tail call void @llvm.dbg.value(metadata !{i32 %4}, i64 0, metadata !146), !dbg !256
+  %sext = shl i32 %2, 24, !dbg !257
+  %conv9 = ashr exact i32 %sext, 24, !dbg !257
+  %sext16 = shl i32 %4, 24, !dbg !257
+  %conv10 = ashr exact i32 %sext16, 24, !dbg !257
+  %cmp = icmp eq i32 %conv9, %conv10, !dbg !257
+  br i1 %cmp, label %do.cond, label %if.then, !dbg !257
 
-; <label>:11                                      ; preds = %1
-  %12 = sub nsw i32 %8, %9
-  br label %.loopexit
+if.then:                                          ; preds = %do.body
+  %sub = sub nsw i32 %conv9, %conv10, !dbg !257
+  br label %return, !dbg !257
 
-; <label>:13                                      ; preds = %1
-  %14 = trunc i32 %4 to i8
-  %15 = getelementptr inbounds i8* %.02, i64 1
-  %16 = getelementptr inbounds i8* %.01, i64 1
-  %17 = icmp eq i8 %14, 0
-  br i1 %17, label %.loopexit, label %1
+do.cond:                                          ; preds = %do.body
+  %conv1 = trunc i32 %2 to i8, !dbg !254
+  %incdec.ptr3 = getelementptr inbounds i8* %str2.addr.0, i64 1, !dbg !256
+  %incdec.ptr = getelementptr inbounds i8* %str1.addr.0, i64 1, !dbg !254
+  %tobool = icmp eq i8 %conv1, 0, !dbg !258
+  br i1 %tobool, label %return, label %do.body, !dbg !258
 
-.loopexit:                                        ; preds = %13, %11
-  %.0 = phi i32 [ %12, %11 ], [ 0, %13 ]
-  ret i32 %.0
+return:                                           ; preds = %do.cond, %if.then
+  %retval.0 = phi i32 [ %sub, %if.then ], [ 0, %do.cond ]
+  ret i32 %retval.0, !dbg !259
 }

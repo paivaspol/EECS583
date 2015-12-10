@@ -1,30 +1,38 @@
-define i32 @PUGH_ComposeIJK(i32 %dim, i32* nocapture readonly %nprocs, i32* nocapture readonly %pos) #4 {
-  %1 = add nsw i32 %dim, -1
-  %2 = sext i32 %1 to i64
-  %3 = getelementptr inbounds i32* %pos, i64 %2
-  %4 = load i32* %3, align 4, !tbaa !20
-  %5 = add i32 %dim, -2
-  %6 = icmp sgt i32 %5, -1
-  br i1 %6, label %.lr.ph, label %._crit_edge
+define i32 @PUGH_ComposeIJK(i32 %dim, i32* nocapture %nprocs, i32* nocapture %pos) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %dim}, i64 0, metadata !131), !dbg !926
+  tail call void @llvm.dbg.value(metadata !{i32* %nprocs}, i64 0, metadata !132), !dbg !927
+  tail call void @llvm.dbg.value(metadata !{i32* %pos}, i64 0, metadata !133), !dbg !928
+  %sub = add nsw i32 %dim, -1, !dbg !929
+  %idxprom = sext i32 %sub to i64, !dbg !929
+  %arrayidx = getelementptr inbounds i32* %pos, i64 %idxprom, !dbg !929
+  %0 = load i32* %arrayidx, align 4, !dbg !929, !tbaa !381
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !134), !dbg !929
+  %sub1 = add i32 %dim, -2, !dbg !930
+  tail call void @llvm.dbg.value(metadata !{i32 %sub1}, i64 0, metadata !135), !dbg !930
+  %cmp12 = icmp sgt i32 %sub1, -1, !dbg !930
+  br i1 %cmp12, label %for.body.lr.ph, label %for.end, !dbg !930
 
-.lr.ph:                                           ; preds = %0
-  %7 = sext i32 %5 to i64
-  br label %8
+for.body.lr.ph:                                   ; preds = %entry
+  %1 = sext i32 %sub1 to i64
+  br label %for.body, !dbg !930
 
-; <label>:8                                       ; preds = %.lr.ph, %8
-  %indvars.iv = phi i64 [ %7, %.lr.ph ], [ %indvars.iv.next, %8 ]
-  %ijk.01 = phi i32 [ %4, %.lr.ph ], [ %14, %8 ]
-  %9 = getelementptr inbounds i32* %pos, i64 %indvars.iv
-  %10 = load i32* %9, align 4, !tbaa !20
-  %11 = getelementptr inbounds i32* %nprocs, i64 %indvars.iv
-  %12 = load i32* %11, align 4, !tbaa !20
-  %13 = mul nsw i32 %12, %ijk.01
-  %14 = add nsw i32 %13, %10
-  %15 = icmp sgt i64 %indvars.iv, 0
-  %indvars.iv.next = add nsw i64 %indvars.iv, -1
-  br i1 %15, label %8, label %._crit_edge
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ %1, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %ijk.013 = phi i32 [ %0, %for.body.lr.ph ], [ %add, %for.body ]
+  %arrayidx3 = getelementptr inbounds i32* %pos, i64 %indvars.iv, !dbg !932
+  %2 = load i32* %arrayidx3, align 4, !dbg !932, !tbaa !381
+  %arrayidx5 = getelementptr inbounds i32* %nprocs, i64 %indvars.iv, !dbg !932
+  %3 = load i32* %arrayidx5, align 4, !dbg !932, !tbaa !381
+  %mul = mul nsw i32 %3, %ijk.013, !dbg !932
+  %add = add nsw i32 %mul, %2, !dbg !932
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !134), !dbg !932
+  %4 = trunc i64 %indvars.iv to i32, !dbg !930
+  %cmp = icmp sgt i32 %4, 0, !dbg !930
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !930
+  br i1 %cmp, label %for.body, label %for.end, !dbg !930
 
-._crit_edge:                                      ; preds = %8, %0
-  %ijk.0.lcssa = phi i32 [ %4, %0 ], [ %14, %8 ]
-  ret i32 %ijk.0.lcssa
+for.end:                                          ; preds = %for.body, %entry
+  %ijk.0.lcssa = phi i32 [ %0, %entry ], [ %add, %for.body ]
+  ret i32 %ijk.0.lcssa, !dbg !934
 }

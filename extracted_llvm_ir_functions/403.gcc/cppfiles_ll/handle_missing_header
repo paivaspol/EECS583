@@ -1,111 +1,121 @@
 define internal fastcc void @handle_missing_header(%struct.cpp_reader* %pfile, i8* %fname, i32 %angle_brackets) #0 {
 entry:
-  %print_deps = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 21
-  %0 = load i8* %print_deps, align 1, !tbaa !1
-  %conv = zext i8 %0 to i32
-  %tobool = icmp ne i32 %angle_brackets, 0
-  br i1 %tobool, label %lor.end, label %lor.rhs
+  call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !824), !dbg !1073
+  call void @llvm.dbg.value(metadata !{i8* %fname}, i64 0, metadata !825), !dbg !1074
+  call void @llvm.dbg.value(metadata !{i32 %angle_brackets}, i64 0, metadata !826), !dbg !1075
+  %print_deps = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 21, !dbg !1076
+  %0 = load i8* %print_deps, align 1, !dbg !1076, !tbaa !882
+  %conv = zext i8 %0 to i32, !dbg !1076
+  %tobool = icmp ne i32 %angle_brackets, 0, !dbg !1076
+  br i1 %tobool, label %lor.end, label %lor.rhs, !dbg !1076
 
 lor.rhs:                                          ; preds = %entry
-  %map = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 3
-  %1 = load %struct.line_map** %map, align 8, !tbaa !0
-  %sysp = getelementptr inbounds %struct.line_map* %1, i64 0, i32 5
-  %2 = load i8* %sysp, align 1, !tbaa !1
-  %tobool2 = icmp ne i8 %2, 0
-  br label %lor.end
+  %map = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 3, !dbg !1076
+  %1 = load %struct.line_map** %map, align 8, !dbg !1076, !tbaa !881
+  %sysp = getelementptr inbounds %struct.line_map* %1, i64 0, i32 5, !dbg !1076
+  %2 = load i8* %sysp, align 1, !dbg !1076, !tbaa !882
+  %tobool2 = icmp ne i8 %2, 0, !dbg !1076
+  br label %lor.end, !dbg !1076
 
 lor.end:                                          ; preds = %lor.rhs, %entry
   %3 = phi i1 [ true, %entry ], [ %tobool2, %lor.rhs ]
-  %lor.ext = zext i1 %3 to i32
-  %cmp = icmp ugt i32 %conv, %lor.ext
-  %print_deps_missing_files = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 23
-  %4 = load i8* %print_deps_missing_files, align 1, !tbaa !1
-  %tobool6 = icmp eq i8 %4, 0
-  %cmp.not = xor i1 %cmp, true
-  %brmerge = or i1 %tobool6, %cmp.not
-  br i1 %brmerge, label %if.else34, label %if.then
+  %lor.ext = zext i1 %3 to i32, !dbg !1076
+  %cmp = icmp ugt i32 %conv, %lor.ext, !dbg !1076
+  %print_deps_missing_files = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 23, !dbg !1077
+  %4 = load i8* %print_deps_missing_files, align 1, !dbg !1077, !tbaa !882
+  %tobool6 = icmp eq i8 %4, 0, !dbg !1077
+  %cmp.not = xor i1 %cmp, true, !dbg !1077
+  %brmerge = or i1 %tobool6, %cmp.not, !dbg !1077
+  br i1 %brmerge, label %if.else34, label %if.then, !dbg !1077
 
 if.then:                                          ; preds = %lor.end
-  br i1 %tobool, label %lor.lhs.false, label %if.then17
+  br i1 %tobool, label %lor.lhs.false, label %if.then17, !dbg !1078
 
 lor.lhs.false:                                    ; preds = %if.then
-  %5 = load i8* %fname, align 1, !tbaa !1
+  %5 = load i8* %fname, align 1, !dbg !1078, !tbaa !882
   switch i8 %5, label %if.else [
     i8 47, label %if.then17
     i8 36, label %if.then17
-  ]
+  ], !dbg !1078
 
 if.then17:                                        ; preds = %lor.lhs.false, %lor.lhs.false, %if.then
-  %deps = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 31
-  %6 = load %struct.deps** %deps, align 8, !tbaa !0
-  call void @deps_add_dep(%struct.deps* %6, i8* %fname) #6
-  br label %if.end46
+  %deps = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 31, !dbg !1079
+  %6 = load %struct.deps** %deps, align 8, !dbg !1079, !tbaa !881
+  call void @deps_add_dep(%struct.deps* %6, i8* %fname) #7, !dbg !1079
+  br label %if.end46, !dbg !1079
 
 if.else:                                          ; preds = %lor.lhs.false
-  %bracket_include = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 6
-  %7 = load %struct.search_path** %bracket_include, align 8, !tbaa !0
-  %call = call i64 @strlen(i8* %fname) #9
-  %tobool20 = icmp eq %struct.search_path* %7, null
-  br i1 %tobool20, label %if.end.thread, label %if.end
+  %bracket_include = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 37, i32 6, !dbg !1080
+  %7 = load %struct.search_path** %bracket_include, align 8, !dbg !1080, !tbaa !881
+  call void @llvm.dbg.value(metadata !{%struct.search_path* %7}, i64 0, metadata !828), !dbg !1080
+  call void @llvm.dbg.value(metadata !136, i64 0, metadata !832), !dbg !1081
+  %call = call i64 @strlen(i8* %fname) #10, !dbg !1081
+  call void @llvm.dbg.value(metadata !{i32 %conv19}, i64 0, metadata !833), !dbg !1081
+  %tobool20 = icmp eq %struct.search_path* %7, null, !dbg !1082
+  br i1 %tobool20, label %if.end.thread, label %if.end, !dbg !1082
 
 if.end.thread:                                    ; preds = %if.else
-  %add2375 = shl i64 %call, 32
-  %sext78 = add i64 %add2375, 8589934592
-  %conv2476 = ashr exact i64 %sext78, 32
-  %8 = alloca i8, i64 %conv2476, align 1
-  br label %if.end29
+  %add2375 = shl i64 %call, 32, !dbg !1083
+  %sext78 = add i64 %add2375, 8589934592, !dbg !1083
+  %conv2476 = ashr exact i64 %sext78, 32, !dbg !1083
+  %8 = alloca i8, i64 %conv2476, align 1, !dbg !1083
+  call void @llvm.dbg.value(metadata !{i8* %12}, i64 0, metadata !831), !dbg !1083
+  br label %if.end29, !dbg !1084
 
 if.end:                                           ; preds = %if.else
-  %conv19 = trunc i64 %call to i32
-  %len22 = getelementptr inbounds %struct.search_path* %7, i64 0, i32 2
-  %9 = load i32* %len22, align 4, !tbaa !3
-  %add = add i32 %conv19, 2
-  %add23 = add i32 %add, %9
-  %conv24 = sext i32 %add23 to i64
-  %10 = alloca i8, i64 %conv24, align 1
-  %tobool25 = icmp eq i32 %9, 0
-  br i1 %tobool25, label %if.end29, label %if.then26
+  %conv19 = trunc i64 %call to i32, !dbg !1081
+  %len22 = getelementptr inbounds %struct.search_path* %7, i64 0, i32 2, !dbg !1085
+  %9 = load i32* %len22, align 4, !dbg !1085, !tbaa !921
+  call void @llvm.dbg.value(metadata !{i32 %9}, i64 0, metadata !832), !dbg !1085
+  %add = add i32 %conv19, 2, !dbg !1083
+  %add23 = add i32 %add, %9, !dbg !1083
+  %conv24 = sext i32 %add23 to i64, !dbg !1083
+  %10 = alloca i8, i64 %conv24, align 1, !dbg !1083
+  call void @llvm.dbg.value(metadata !{i8* %12}, i64 0, metadata !831), !dbg !1083
+  %tobool25 = icmp eq i32 %9, 0, !dbg !1084
+  br i1 %tobool25, label %if.end29, label %if.then26, !dbg !1084
 
 if.then26:                                        ; preds = %if.end
-  %name = getelementptr inbounds %struct.search_path* %7, i64 0, i32 1
-  %11 = load i8** %name, align 8, !tbaa !0
-  %conv27 = sext i32 %9 to i64
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %10, i8* %11, i64 %conv27, i32 1, i1 false)
-  %inc = add nsw i32 %9, 1
-  %arrayidx28 = getelementptr inbounds i8* %10, i64 %conv27
-  store i8 47, i8* %arrayidx28, align 1, !tbaa !1
-  %phitmp = sext i32 %inc to i64
-  br label %if.end29
+  %name = getelementptr inbounds %struct.search_path* %7, i64 0, i32 1, !dbg !1086
+  %11 = load i8** %name, align 8, !dbg !1086, !tbaa !881
+  %conv27 = sext i32 %9 to i64, !dbg !1086
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %10, i8* %11, i64 %conv27, i32 1, i1 false), !dbg !1086
+  %inc = add nsw i32 %9, 1, !dbg !1088
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !832), !dbg !1088
+  %arrayidx28 = getelementptr inbounds i8* %10, i64 %conv27, !dbg !1088
+  store i8 47, i8* %arrayidx28, align 1, !dbg !1088, !tbaa !882
+  %phitmp = sext i32 %inc to i64, !dbg !1089
+  br label %if.end29, !dbg !1089
 
 if.end29:                                         ; preds = %if.end.thread, %if.end, %if.then26
   %12 = phi i8* [ %10, %if.then26 ], [ %10, %if.end ], [ %8, %if.end.thread ]
   %len.1 = phi i64 [ %phitmp, %if.then26 ], [ 0, %if.end ], [ 0, %if.end.thread ]
-  %add.ptr = getelementptr inbounds i8* %12, i64 %len.1
-  %add30 = shl i64 %call, 32
-  %sext = add i64 %add30, 4294967296
-  %conv31 = ashr exact i64 %sext, 32
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %add.ptr, i8* %fname, i64 %conv31, i32 1, i1 false)
-  %deps32 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 31
-  %13 = load %struct.deps** %deps32, align 8, !tbaa !0
-  call void @deps_add_dep(%struct.deps* %13, i8* %12) #6
+  %add.ptr = getelementptr inbounds i8* %12, i64 %len.1, !dbg !1090
+  %add30 = shl i64 %call, 32, !dbg !1090
+  %sext = add i64 %add30, 4294967296, !dbg !1090
+  %conv31 = ashr exact i64 %sext, 32, !dbg !1090
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %add.ptr, i8* %fname, i64 %conv31, i32 1, i1 false), !dbg !1090
+  %deps32 = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 31, !dbg !1091
+  %13 = load %struct.deps** %deps32, align 8, !dbg !1091, !tbaa !881
+  call void @deps_add_dep(%struct.deps* %13, i8* %12) #7, !dbg !1091
   br label %if.end46
 
 if.else34:                                        ; preds = %lor.end
-  %tobool38 = icmp eq i8 %0, 0
-  %brmerge73 = or i1 %tobool38, %cmp
-  br i1 %brmerge73, label %if.else44, label %if.then41
+  %tobool38 = icmp eq i8 %0, 0, !dbg !1092
+  %brmerge73 = or i1 %tobool38, %cmp, !dbg !1092
+  br i1 %brmerge73, label %if.else44, label %if.then41, !dbg !1092
 
 if.then41:                                        ; preds = %if.else34
-  %call42 = call i32* @__errno_location() #8
-  %14 = load i32* %call42, align 4, !tbaa !3
-  %call43 = call i8* @xstrerror(i32 %14) #6
-  call void (%struct.cpp_reader*, i8*, ...)* @cpp_warning(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([7 x i8]* @.str8, i64 0, i64 0), i8* %fname, i8* %call43) #6
-  br label %if.end46
+  %call42 = call i32* @__errno_location() #9, !dbg !1093
+  %14 = load i32* %call42, align 4, !dbg !1093, !tbaa !921
+  %call43 = call i8* @xstrerror(i32 %14) #7, !dbg !1093
+  call void (%struct.cpp_reader*, i8*, ...)* @cpp_warning(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([7 x i8]* @.str8, i64 0, i64 0), i8* %fname, i8* %call43) #7, !dbg !1093
+  br label %if.end46, !dbg !1093
 
 if.else44:                                        ; preds = %if.else34
-  call void @cpp_error_from_errno(%struct.cpp_reader* %pfile, i8* %fname) #6
+  call void @cpp_error_from_errno(%struct.cpp_reader* %pfile, i8* %fname) #7, !dbg !1094
   br label %if.end46
 
 if.end46:                                         ; preds = %if.then41, %if.else44, %if.then17, %if.end29
-  ret void
+  ret void, !dbg !1095
 }

@@ -1,0 +1,41 @@
+define i8* @_ZN11xercesc_2_515DOMDocumentImpl8allocateEmNS0_14NodeObjectTypeE(%"class.xercesc_2_5::DOMDocumentImpl"* nocapture %this, i64 %amount, i32 %type) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMDocumentImpl"* %this}, i64 0, metadata !6925), !dbg !10812
+  tail call void @llvm.dbg.value(metadata !{i64 %amount}, i64 0, metadata !6926), !dbg !10812
+  tail call void @llvm.dbg.value(metadata !{i32 %type}, i64 0, metadata !6927), !dbg !10812
+  %fRecycleNodePtr = getelementptr inbounds %"class.xercesc_2_5::DOMDocumentImpl"* %this, i64 0, i32 14, !dbg !10813
+  %0 = load %"class.xercesc_2_5::RefArrayOf"** %fRecycleNodePtr, align 8, !dbg !10813, !tbaa !9057
+  %tobool = icmp eq %"class.xercesc_2_5::RefArrayOf"* %0, null, !dbg !10813
+  br i1 %tobool, label %if.then, label %if.end, !dbg !10813
+
+if.then:                                          ; preds = %entry
+  %call = tail call i8* @_ZN11xercesc_2_515DOMDocumentImpl8allocateEm(%"class.xercesc_2_5::DOMDocumentImpl"* %this, i64 %amount) #10, !dbg !10814
+  br label %return, !dbg !10814
+
+if.end:                                           ; preds = %entry
+  %call3 = tail call %"class.xercesc_2_5::RefStackOf"** @_ZN11xercesc_2_510RefArrayOfINS_10RefStackOfINS_7DOMNodeEEEEixEj(%"class.xercesc_2_5::RefArrayOf"* %0, i32 %type) #10, !dbg !10815
+  %1 = load %"class.xercesc_2_5::RefStackOf"** %call3, align 8, !dbg !10815, !tbaa !9057
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefStackOf"* %1}, i64 0, metadata !6928), !dbg !10815
+  %tobool4 = icmp eq %"class.xercesc_2_5::RefStackOf"* %1, null, !dbg !10816
+  br i1 %tobool4, label %if.then6, label %lor.lhs.false, !dbg !10816
+
+lor.lhs.false:                                    ; preds = %if.end
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefStackOf"* %1}, i64 0, metadata !10817), !dbg !10818
+  %fCurCount.i.i = getelementptr inbounds %"class.xercesc_2_5::RefStackOf"* %1, i64 0, i32 1, i32 0, i32 2, !dbg !10819
+  %2 = load i32* %fCurCount.i.i, align 4, !dbg !10819, !tbaa !9059
+  %cmp.i = icmp eq i32 %2, 0, !dbg !10821
+  br i1 %cmp.i, label %if.then6, label %if.end8, !dbg !10816
+
+if.then6:                                         ; preds = %if.end, %lor.lhs.false
+  %call7 = tail call i8* @_ZN11xercesc_2_515DOMDocumentImpl8allocateEm(%"class.xercesc_2_5::DOMDocumentImpl"* %this, i64 %amount) #10, !dbg !10823
+  br label %return, !dbg !10823
+
+if.end8:                                          ; preds = %lor.lhs.false
+  %call9 = tail call %"class.xercesc_2_5::DOMNode"* @_ZN11xercesc_2_510RefStackOfINS_7DOMNodeEE3popEv(%"class.xercesc_2_5::RefStackOf"* %1) #10, !dbg !10824
+  %3 = bitcast %"class.xercesc_2_5::DOMNode"* %call9 to i8*, !dbg !10824
+  br label %return, !dbg !10824
+
+return:                                           ; preds = %if.end8, %if.then6, %if.then
+  %retval.0 = phi i8* [ %call7, %if.then6 ], [ %3, %if.end8 ], [ %call, %if.then ]
+  ret i8* %retval.0, !dbg !10825
+}

@@ -1,28 +1,30 @@
-define i32 @BZ2_bzCompress(%struct.bz_stream* %strm, i32 %action) #4 {
+define i32 @BZ2_bzCompress(%struct.bz_stream* %strm, i32 %action) #5 {
 entry:
-  %cmp = icmp eq %struct.bz_stream* %strm, null
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.bz_stream* %strm}, i64 0, metadata !139), !dbg !688
+  tail call void @llvm.dbg.value(metadata !{i32 %action}, i64 0, metadata !140), !dbg !688
+  %cmp = icmp eq %struct.bz_stream* %strm, null, !dbg !689
+  br i1 %cmp, label %return, label %if.end, !dbg !689
 
 if.end:                                           ; preds = %entry
-  %state = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 8
-  %0 = load i8** %state, align 8, !tbaa !0
-  %cmp1 = icmp eq i8* %0, null
-  br i1 %cmp1, label %return, label %if.end3
+  %state = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 8, !dbg !690
+  %0 = load i8** %state, align 8, !dbg !690, !tbaa !615
+  %cmp1 = icmp eq i8* %0, null, !dbg !691
+  br i1 %cmp1, label %return, label %if.end3, !dbg !691
 
 if.end3:                                          ; preds = %if.end
-  %strm4 = bitcast i8* %0 to %struct.bz_stream**
-  %1 = load %struct.bz_stream** %strm4, align 8, !tbaa !0
-  %cmp5 = icmp eq %struct.bz_stream* %1, %strm
-  br i1 %cmp5, label %preswitch.preheader, label %return
+  %strm4 = bitcast i8* %0 to %struct.bz_stream**, !dbg !692
+  %1 = load %struct.bz_stream** %strm4, align 8, !dbg !692, !tbaa !615
+  %cmp5 = icmp eq %struct.bz_stream* %1, %strm, !dbg !692
+  br i1 %cmp5, label %preswitch.preheader, label %return, !dbg !692
 
 preswitch.preheader:                              ; preds = %if.end3
-  %mode = getelementptr inbounds i8* %0, i64 8
-  %2 = bitcast i8* %mode to i32*
-  %avail_in = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 1
-  %avail_in_expect = getelementptr inbounds i8* %0, i64 16
-  %3 = bitcast i8* %avail_in_expect to i32*
-  %.pre = load i32* %2, align 4, !tbaa !3
-  br label %preswitch
+  %mode = getelementptr inbounds i8* %0, i64 8, !dbg !693
+  %2 = bitcast i8* %mode to i32*, !dbg !693
+  %avail_in = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 1, !dbg !694
+  %avail_in_expect = getelementptr inbounds i8* %0, i64 16, !dbg !694
+  %3 = bitcast i8* %avail_in_expect to i32*, !dbg !694
+  %.pre = load i32* %2, align 4, !dbg !693, !tbaa !651
+  br label %preswitch, !dbg !693
 
 preswitch:                                        ; preds = %preswitch.backedge, %preswitch.preheader
   %4 = phi i32 [ %storemerge, %preswitch.backedge ], [ %.pre, %preswitch.preheader ]
@@ -31,122 +33,125 @@ preswitch:                                        ; preds = %preswitch.backedge,
     i32 2, label %sw.bb8
     i32 3, label %sw.bb23
     i32 4, label %sw.bb47
-  ]
+  ], !dbg !693
 
 sw.bb8:                                           ; preds = %preswitch
   switch i32 %action, label %return.loopexit [
     i32 0, label %if.then10
     i32 1, label %preswitch.backedge
     i32 2, label %if.then18
-  ]
+  ], !dbg !697
 
 if.then10:                                        ; preds = %sw.bb8
-  %call = tail call fastcc zeroext i8 @handle_compress(%struct.bz_stream* %strm) #13
-  %tobool = icmp ne i8 %call, 0
-  %cond = select i1 %tobool, i32 1, i32 -2
-  br label %return
+  %call = tail call fastcc zeroext i8 @handle_compress(%struct.bz_stream* %strm) #14, !dbg !698
+  tail call void @llvm.dbg.value(metadata !{i8 %call}, i64 0, metadata !141), !dbg !698
+  %tobool = icmp ne i8 %call, 0, !dbg !700
+  %cond = select i1 %tobool, i32 1, i32 -2, !dbg !700
+  br label %return, !dbg !700
 
 preswitch.backedge:                               ; preds = %sw.bb8, %if.then18
   %storemerge = phi i32 [ 4, %if.then18 ], [ 3, %sw.bb8 ]
-  %storemerge123 = load i32* %avail_in, align 4
-  store i32 %storemerge123, i32* %3, align 4, !tbaa !3
-  store i32 %storemerge, i32* %2, align 4, !tbaa !3
+  %storemerge123 = load i32* %avail_in, align 4, !dbg !701
+  store i32 %storemerge123, i32* %3, align 4, !dbg !694, !tbaa !651
+  store i32 %storemerge, i32* %2, align 4, !dbg !703, !tbaa !651
   br label %preswitch
 
 if.then18:                                        ; preds = %sw.bb8
-  br label %preswitch.backedge
+  br label %preswitch.backedge, !dbg !704
 
 sw.bb23:                                          ; preds = %preswitch
-  %cmp24 = icmp eq i32 %action, 1
-  br i1 %cmp24, label %if.end27, label %return
+  %cmp24 = icmp eq i32 %action, 1, !dbg !705
+  br i1 %cmp24, label %if.end27, label %return, !dbg !705
 
 if.end27:                                         ; preds = %sw.bb23
-  %5 = load i32* %3, align 4, !tbaa !3
-  %6 = load i32* %avail_in, align 4, !tbaa !3
-  %cmp31 = icmp eq i32 %5, %6
-  br i1 %cmp31, label %if.end34, label %return
+  %5 = load i32* %3, align 4, !dbg !706, !tbaa !651
+  %6 = load i32* %avail_in, align 4, !dbg !706, !tbaa !651
+  %cmp31 = icmp eq i32 %5, %6, !dbg !706
+  br i1 %cmp31, label %if.end34, label %return, !dbg !706
 
 if.end34:                                         ; preds = %if.end27
-  %call35 = tail call fastcc zeroext i8 @handle_compress(%struct.bz_stream* %strm) #13
-  %7 = load i32* %3, align 4, !tbaa !3
-  %cmp37 = icmp eq i32 %7, 0
-  br i1 %cmp37, label %lor.lhs.false, label %return
+  %call35 = tail call fastcc zeroext i8 @handle_compress(%struct.bz_stream* %strm) #14, !dbg !707
+  tail call void @llvm.dbg.value(metadata !{i8 %call35}, i64 0, metadata !141), !dbg !707
+  %7 = load i32* %3, align 4, !dbg !708, !tbaa !651
+  %cmp37 = icmp eq i32 %7, 0, !dbg !708
+  br i1 %cmp37, label %lor.lhs.false, label %return, !dbg !708
 
 lor.lhs.false:                                    ; preds = %if.end34
-  %state_in_ch.i = getelementptr inbounds i8* %0, i64 92
-  %8 = bitcast i8* %state_in_ch.i to i32*
-  %9 = load i32* %8, align 4, !tbaa !3
-  %cmp.i = icmp ult i32 %9, 256
-  br i1 %cmp.i, label %land.lhs.true.i, label %lor.lhs.false41
+  %state_in_ch.i = getelementptr inbounds i8* %0, i64 92, !dbg !709
+  %8 = bitcast i8* %state_in_ch.i to i32*, !dbg !709
+  %9 = load i32* %8, align 4, !dbg !709, !tbaa !651
+  %cmp.i = icmp ult i32 %9, 256, !dbg !709
+  br i1 %cmp.i, label %land.lhs.true.i, label %lor.lhs.false41, !dbg !709
 
 land.lhs.true.i:                                  ; preds = %lor.lhs.false
-  %state_in_len.i = getelementptr inbounds i8* %0, i64 96
-  %10 = bitcast i8* %state_in_len.i to i32*
-  %11 = load i32* %10, align 4, !tbaa !3
-  %cmp1.i = icmp sgt i32 %11, 0
-  br i1 %cmp1.i, label %return, label %lor.lhs.false41
+  %state_in_len.i = getelementptr inbounds i8* %0, i64 96, !dbg !709
+  %10 = bitcast i8* %state_in_len.i to i32*, !dbg !709
+  %11 = load i32* %10, align 4, !dbg !709, !tbaa !651
+  %cmp1.i = icmp sgt i32 %11, 0, !dbg !709
+  br i1 %cmp1.i, label %return, label %lor.lhs.false41, !dbg !709
 
 lor.lhs.false41:                                  ; preds = %land.lhs.true.i, %lor.lhs.false
-  %state_out_pos = getelementptr inbounds i8* %0, i64 120
-  %12 = bitcast i8* %state_out_pos to i32*
-  %13 = load i32* %12, align 4, !tbaa !3
-  %numZ = getelementptr inbounds i8* %0, i64 116
-  %14 = bitcast i8* %numZ to i32*
-  %15 = load i32* %14, align 4, !tbaa !3
-  %cmp42 = icmp slt i32 %13, %15
-  br i1 %cmp42, label %return, label %if.end45
+  %state_out_pos = getelementptr inbounds i8* %0, i64 120, !dbg !708
+  %12 = bitcast i8* %state_out_pos to i32*, !dbg !708
+  %13 = load i32* %12, align 4, !dbg !708, !tbaa !651
+  %numZ = getelementptr inbounds i8* %0, i64 116, !dbg !708
+  %14 = bitcast i8* %numZ to i32*, !dbg !708
+  %15 = load i32* %14, align 4, !dbg !708, !tbaa !651
+  %cmp42 = icmp slt i32 %13, %15, !dbg !708
+  br i1 %cmp42, label %return, label %if.end45, !dbg !708
 
 if.end45:                                         ; preds = %lor.lhs.false41
-  store i32 2, i32* %2, align 4, !tbaa !3
-  br label %return
+  store i32 2, i32* %2, align 4, !dbg !710, !tbaa !651
+  br label %return, !dbg !711
 
 sw.bb47:                                          ; preds = %preswitch
-  %cmp48 = icmp eq i32 %action, 2
-  br i1 %cmp48, label %if.end51, label %return
+  %cmp48 = icmp eq i32 %action, 2, !dbg !712
+  br i1 %cmp48, label %if.end51, label %return, !dbg !712
 
 if.end51:                                         ; preds = %sw.bb47
-  %16 = load i32* %3, align 4, !tbaa !3
-  %17 = load i32* %avail_in, align 4, !tbaa !3
-  %cmp55 = icmp eq i32 %16, %17
-  br i1 %cmp55, label %if.end58, label %return
+  %16 = load i32* %3, align 4, !dbg !713, !tbaa !651
+  %17 = load i32* %avail_in, align 4, !dbg !713, !tbaa !651
+  %cmp55 = icmp eq i32 %16, %17, !dbg !713
+  br i1 %cmp55, label %if.end58, label %return, !dbg !713
 
 if.end58:                                         ; preds = %if.end51
-  %call59 = tail call fastcc zeroext i8 @handle_compress(%struct.bz_stream* %strm) #13
-  %tobool60 = icmp eq i8 %call59, 0
-  br i1 %tobool60, label %return, label %if.end62
+  %call59 = tail call fastcc zeroext i8 @handle_compress(%struct.bz_stream* %strm) #14, !dbg !714
+  tail call void @llvm.dbg.value(metadata !{i8 %call59}, i64 0, metadata !141), !dbg !714
+  %tobool60 = icmp eq i8 %call59, 0, !dbg !715
+  br i1 %tobool60, label %return, label %if.end62, !dbg !715
 
 if.end62:                                         ; preds = %if.end58
-  %18 = load i32* %3, align 4, !tbaa !3
-  %cmp64 = icmp eq i32 %18, 0
-  br i1 %cmp64, label %lor.lhs.false66, label %return
+  %18 = load i32* %3, align 4, !dbg !716, !tbaa !651
+  %cmp64 = icmp eq i32 %18, 0, !dbg !716
+  br i1 %cmp64, label %lor.lhs.false66, label %return, !dbg !716
 
 lor.lhs.false66:                                  ; preds = %if.end62
-  %state_in_ch.i109 = getelementptr inbounds i8* %0, i64 92
-  %19 = bitcast i8* %state_in_ch.i109 to i32*
-  %20 = load i32* %19, align 4, !tbaa !3
-  %cmp.i110 = icmp ult i32 %20, 256
-  br i1 %cmp.i110, label %land.lhs.true.i113, label %lor.lhs.false69
+  %state_in_ch.i109 = getelementptr inbounds i8* %0, i64 92, !dbg !717
+  %19 = bitcast i8* %state_in_ch.i109 to i32*, !dbg !717
+  %20 = load i32* %19, align 4, !dbg !717, !tbaa !651
+  %cmp.i110 = icmp ult i32 %20, 256, !dbg !717
+  br i1 %cmp.i110, label %land.lhs.true.i113, label %lor.lhs.false69, !dbg !717
 
 land.lhs.true.i113:                               ; preds = %lor.lhs.false66
-  %state_in_len.i111 = getelementptr inbounds i8* %0, i64 96
-  %21 = bitcast i8* %state_in_len.i111 to i32*
-  %22 = load i32* %21, align 4, !tbaa !3
-  %cmp1.i112 = icmp sgt i32 %22, 0
-  br i1 %cmp1.i112, label %return, label %lor.lhs.false69
+  %state_in_len.i111 = getelementptr inbounds i8* %0, i64 96, !dbg !717
+  %21 = bitcast i8* %state_in_len.i111 to i32*, !dbg !717
+  %22 = load i32* %21, align 4, !dbg !717, !tbaa !651
+  %cmp1.i112 = icmp sgt i32 %22, 0, !dbg !717
+  br i1 %cmp1.i112, label %return, label %lor.lhs.false69, !dbg !717
 
 lor.lhs.false69:                                  ; preds = %land.lhs.true.i113, %lor.lhs.false66
-  %state_out_pos70 = getelementptr inbounds i8* %0, i64 120
-  %23 = bitcast i8* %state_out_pos70 to i32*
-  %24 = load i32* %23, align 4, !tbaa !3
-  %numZ71 = getelementptr inbounds i8* %0, i64 116
-  %25 = bitcast i8* %numZ71 to i32*
-  %26 = load i32* %25, align 4, !tbaa !3
-  %cmp72 = icmp slt i32 %24, %26
-  br i1 %cmp72, label %return, label %if.end75
+  %state_out_pos70 = getelementptr inbounds i8* %0, i64 120, !dbg !716
+  %23 = bitcast i8* %state_out_pos70 to i32*, !dbg !716
+  %24 = load i32* %23, align 4, !dbg !716, !tbaa !651
+  %numZ71 = getelementptr inbounds i8* %0, i64 116, !dbg !716
+  %25 = bitcast i8* %numZ71 to i32*, !dbg !716
+  %26 = load i32* %25, align 4, !dbg !716, !tbaa !651
+  %cmp72 = icmp slt i32 %24, %26, !dbg !716
+  br i1 %cmp72, label %return, label %if.end75, !dbg !716
 
 if.end75:                                         ; preds = %lor.lhs.false69
-  store i32 1, i32* %2, align 4, !tbaa !3
-  br label %return
+  store i32 1, i32* %2, align 4, !dbg !718, !tbaa !651
+  br label %return, !dbg !719
 
 return.loopexit:                                  ; preds = %preswitch, %sw.bb8
   %retval.0.ph = phi i32 [ -2, %sw.bb8 ], [ -1, %preswitch ]
@@ -154,5 +159,5 @@ return.loopexit:                                  ; preds = %preswitch, %sw.bb8
 
 return:                                           ; preds = %preswitch, %return.loopexit, %land.lhs.true.i113, %land.lhs.true.i, %lor.lhs.false69, %if.end62, %if.end58, %if.end51, %sw.bb47, %lor.lhs.false41, %if.end34, %if.end27, %sw.bb23, %if.end3, %if.end, %entry, %if.end75, %if.end45, %if.then10
   %retval.0 = phi i32 [ 4, %if.end75 ], [ 1, %if.end45 ], [ %cond, %if.then10 ], [ -2, %entry ], [ -2, %if.end ], [ -2, %if.end3 ], [ -1, %sw.bb23 ], [ -1, %if.end27 ], [ 2, %if.end34 ], [ 2, %lor.lhs.false41 ], [ -1, %sw.bb47 ], [ -1, %if.end51 ], [ -1, %if.end58 ], [ 3, %if.end62 ], [ 3, %lor.lhs.false69 ], [ 2, %land.lhs.true.i ], [ 3, %land.lhs.true.i113 ], [ %retval.0.ph, %return.loopexit ], [ 0, %preswitch ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !720
 }

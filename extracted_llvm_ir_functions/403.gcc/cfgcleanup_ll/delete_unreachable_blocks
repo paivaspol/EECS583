@@ -1,64 +1,70 @@
 define internal fastcc zeroext i1 @delete_unreachable_blocks() #0 {
 entry:
-  tail call void @find_unreachable_blocks() #5
-  %0 = load i32* @n_basic_blocks, align 4, !tbaa !0
-  %cmp19 = icmp sgt i32 %0, 0
-  br i1 %cmp19, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !842, i64 0, metadata !837), !dbg !1333
+  tail call void @find_unreachable_blocks() #6, !dbg !1334
+  tail call void @llvm.dbg.value(metadata !373, i64 0, metadata !836), !dbg !1335
+  tail call void @llvm.dbg.value(metadata !373, i64 0, metadata !835), !dbg !1335
+  %0 = load i32* @n_basic_blocks, align 4, !dbg !1335, !tbaa !857
+  %cmp19 = icmp sgt i32 %0, 0, !dbg !1335
+  br i1 %cmp19, label %for.body, label %for.end, !dbg !1335
 
 for.body:                                         ; preds = %entry, %for.inc
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %entry ]
   %changed.021 = phi i8 [ %changed.1, %for.inc ], [ 0, %entry ]
   %j.020 = phi i32 [ %j.1, %for.inc ], [ 0, %entry ]
-  %1 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !3
-  %data = getelementptr inbounds %struct.varray_head_tag* %1, i64 0, i32 4
-  %bb = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
-  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %indvars.iv
-  %2 = load %struct.basic_block_def** %arrayidx, align 8, !tbaa !3
-  %flags = getelementptr inbounds %struct.basic_block_def* %2, i64 0, i32 15
-  %3 = load i32* %flags, align 4, !tbaa !0
-  %and = and i32 %3, 1
-  %tobool = icmp eq i32 %and, 0
-  br i1 %tobool, label %if.then, label %if.else
+  %1 = load %struct.varray_head_tag** @basic_block_info, align 8, !dbg !1336, !tbaa !861
+  %data = getelementptr inbounds %struct.varray_head_tag* %1, i64 0, i32 4, !dbg !1336
+  %bb = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*, !dbg !1336
+  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %indvars.iv, !dbg !1336
+  %2 = load %struct.basic_block_def** %arrayidx, align 8, !dbg !1336, !tbaa !861
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %2}, i64 0, metadata !838), !dbg !1336
+  %flags = getelementptr inbounds %struct.basic_block_def* %2, i64 0, i32 15, !dbg !1337
+  %3 = load i32* %flags, align 4, !dbg !1337, !tbaa !857
+  %and = and i32 %3, 1, !dbg !1337
+  %tobool = icmp eq i32 %and, 0, !dbg !1337
+  br i1 %tobool, label %if.then, label %if.else, !dbg !1337
 
 if.then:                                          ; preds = %for.body
-  %call = tail call i32 @flow_delete_block_noexpunge(%struct.basic_block_def* %2) #5
-  tail call void @expunge_block_nocompact(%struct.basic_block_def* %2) #5
-  br label %for.inc
+  %call = tail call i32 @flow_delete_block_noexpunge(%struct.basic_block_def* %2) #6, !dbg !1338
+  tail call void @expunge_block_nocompact(%struct.basic_block_def* %2) #6, !dbg !1340
+  tail call void @llvm.dbg.value(metadata !892, i64 0, metadata !837), !dbg !1341
+  br label %for.inc, !dbg !1342
 
 if.else:                                          ; preds = %for.body
-  %idxprom1 = sext i32 %j.020 to i64
-  %arrayidx4 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %idxprom1
-  store %struct.basic_block_def* %2, %struct.basic_block_def** %arrayidx4, align 8, !tbaa !3
-  %inc = add nsw i32 %j.020, 1
-  %index = getelementptr inbounds %struct.basic_block_def* %2, i64 0, i32 11
-  store i32 %j.020, i32* %index, align 4, !tbaa !0
+  %idxprom1 = sext i32 %j.020 to i64, !dbg !1343
+  %arrayidx4 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb, i64 0, i64 %idxprom1, !dbg !1343
+  store %struct.basic_block_def* %2, %struct.basic_block_def** %arrayidx4, align 8, !dbg !1343, !tbaa !861
+  %inc = add nsw i32 %j.020, 1, !dbg !1345
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !836), !dbg !1345
+  %index = getelementptr inbounds %struct.basic_block_def* %2, i64 0, i32 11, !dbg !1345
+  store i32 %j.020, i32* %index, align 4, !dbg !1345, !tbaa !857
   br label %for.inc
 
 for.inc:                                          ; preds = %if.then, %if.else
   %j.1 = phi i32 [ %inc, %if.else ], [ %j.020, %if.then ]
   %changed.1 = phi i8 [ %changed.021, %if.else ], [ 1, %if.then ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %4 = load i32* @n_basic_blocks, align 4, !tbaa !0
-  %5 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %5, %4
-  br i1 %cmp, label %for.body, label %for.end
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1335
+  %4 = load i32* @n_basic_blocks, align 4, !dbg !1335, !tbaa !857
+  %5 = trunc i64 %indvars.iv.next to i32, !dbg !1335
+  %cmp = icmp slt i32 %5, %4, !dbg !1335
+  br i1 %cmp, label %for.body, label %for.end, !dbg !1335
 
 for.end:                                          ; preds = %for.inc, %entry
   %changed.0.lcssa = phi i8 [ 0, %entry ], [ %changed.1, %for.inc ]
   %j.0.lcssa = phi i32 [ 0, %entry ], [ %j.1, %for.inc ]
-  store i32 %j.0.lcssa, i32* @n_basic_blocks, align 4, !tbaa !0
-  %conv = sext i32 %j.0.lcssa to i64
-  %6 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !3
-  %num_elements = getelementptr inbounds %struct.varray_head_tag* %6, i64 0, i32 0
-  store i64 %conv, i64* %num_elements, align 8, !tbaa !4
-  %7 = and i8 %changed.0.lcssa, 1
-  %tobool6 = icmp ne i8 %7, 0
-  br i1 %tobool6, label %if.then7, label %if.end8
+  store i32 %j.0.lcssa, i32* @n_basic_blocks, align 4, !dbg !1346, !tbaa !857
+  %conv = sext i32 %j.0.lcssa to i64, !dbg !1347
+  %6 = load %struct.varray_head_tag** @basic_block_info, align 8, !dbg !1347, !tbaa !861
+  %num_elements = getelementptr inbounds %struct.varray_head_tag* %6, i64 0, i32 0, !dbg !1347
+  store i64 %conv, i64* %num_elements, align 8, !dbg !1347, !tbaa !1182
+  %7 = and i8 %changed.0.lcssa, 1, !dbg !1348
+  %tobool6 = icmp ne i8 %7, 0, !dbg !1348
+  br i1 %tobool6, label %if.then7, label %if.end8, !dbg !1348
 
 if.then7:                                         ; preds = %for.end
-  tail call void @tidy_fallthru_edges() #5
-  br label %if.end8
+  tail call void @tidy_fallthru_edges() #6, !dbg !1349
+  br label %if.end8, !dbg !1349
 
 if.end8:                                          ; preds = %if.then7, %for.end
-  ret i1 %tobool6
+  ret i1 %tobool6, !dbg !1350
 }

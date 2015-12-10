@@ -1,10 +1,6 @@
-; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/435.gromacs/src/names.c'
-target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
-target triple = "x86_64-apple-macosx10.10.0"
-
-%struct.__sFILE = type { i8*, i32, i32, i16, i16, %struct.__sbuf, i32, i8*, i32 (i8*)*, i32 (i8*, i8*, i32)*, i64 (i8*, i64, i32)*, i32 (i8*, i8*, i32)*, %struct.__sbuf, %struct.__sFILEX*, i32, [3 x i8], [1 x i8], %struct.__sbuf, i32, i64 }
-%struct.__sFILEX = type opaque
-%struct.__sbuf = type { i8*, i32 }
+; ModuleID = '../../SPEC/benchspec/CPU2006/435.gromacs/src/names.c'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
 
 @.str = private unnamed_addr constant [4 x i8] c"CGS\00", align 1
 @.str1 = private unnamed_addr constant [5 x i8] c"MOLS\00", align 1
@@ -107,84 +103,60 @@ target triple = "x86_64-apple-macosx10.10.0"
 @.str75 = private unnamed_addr constant [5 x i8] c"None\00", align 1
 @ecm_names = global [4 x i8*] [i8* getelementptr inbounds ([7 x i8]* @.str73, i32 0, i32 0), i8* getelementptr inbounds ([8 x i8]* @.str74, i32 0, i32 0), i8* getelementptr inbounds ([5 x i8]* @.str75, i32 0, i32 0), i8* null], align 16
 
-; Function Attrs: alwaysinline nounwind optsize ssp uwtable
-define i32 @__sputc(i32 %_c, %struct.__sFILE* %_p) #0 {
-  %1 = getelementptr inbounds %struct.__sFILE* %_p, i64 0, i32 2
-  %2 = load i32* %1, align 4, !tbaa !2
-  %3 = add nsw i32 %2, -1
-  store i32 %3, i32* %1, align 4, !tbaa !2
-  %4 = icmp sgt i32 %2, 0
-  br i1 %4, label %._crit_edge, label %5
+!llvm.dbg.cu = !{!0}
 
-._crit_edge:                                      ; preds = %0
-  %.pre = and i32 %_c, 255
-  br label %10
-
-; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct.__sFILE* %_p, i64 0, i32 6
-  %7 = load i32* %6, align 4, !tbaa !11
-  %8 = icmp sle i32 %2, %7
-  %sext.mask = and i32 %_c, 255
-  %9 = icmp eq i32 %sext.mask, 10
-  %or.cond = or i1 %9, %8
-  br i1 %or.cond, label %15, label %10
-
-; <label>:10                                      ; preds = %._crit_edge, %5
-  %.pre-phi = phi i32 [ %.pre, %._crit_edge ], [ %sext.mask, %5 ]
-  %11 = trunc i32 %_c to i8
-  %12 = getelementptr inbounds %struct.__sFILE* %_p, i64 0, i32 0
-  %13 = load i8** %12, align 8, !tbaa !12
-  %14 = getelementptr inbounds i8* %13, i64 1
-  store i8* %14, i8** %12, align 8, !tbaa !12
-  store i8 %11, i8* %13, align 1, !tbaa !13
-  br label %17
-
-; <label>:15                                      ; preds = %5
-  %16 = tail call i32 @__swbuf(i32 %_c, %struct.__sFILE* %_p) #3
-  br label %17
-
-; <label>:17                                      ; preds = %15, %10
-  %.0 = phi i32 [ %.pre-phi, %10 ], [ %16, %15 ]
-  ret i32 %.0
-}
-
-; Function Attrs: optsize
-declare i32 @__swbuf(i32, %struct.__sFILE*) #1
-
-; Function Attrs: alwaysinline nounwind optsize readnone ssp uwtable
-define i32 @__sigbits(i32 %__signo) #2 {
-  %1 = icmp sgt i32 %__signo, 32
-  br i1 %1, label %5, label %2
-
-; <label>:2                                       ; preds = %0
-  %3 = add nsw i32 %__signo, -1
-  %4 = shl i32 1, %3
-  br label %5
-
-; <label>:5                                       ; preds = %0, %2
-  %6 = phi i32 [ %4, %2 ], [ 0, %0 ]
-  ret i32 %6
-}
-
-attributes #0 = { alwaysinline nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { alwaysinline nounwind optsize readnone ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #3 = { nounwind optsize }
-
-!llvm.module.flags = !{!0}
-!llvm.ident = !{!1}
-
-!0 = !{i32 1, !"PIC Level", i32 2}
-!1 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
-!2 = !{!3, !7, i64 12}
-!3 = !{!"__sFILE", !4, i64 0, !7, i64 8, !7, i64 12, !8, i64 16, !8, i64 18, !9, i64 24, !7, i64 40, !4, i64 48, !4, i64 56, !4, i64 64, !4, i64 72, !4, i64 80, !9, i64 88, !4, i64 104, !7, i64 112, !5, i64 116, !5, i64 119, !9, i64 120, !7, i64 136, !10, i64 144}
-!4 = !{!"any pointer", !5, i64 0}
-!5 = !{!"omnipotent char", !6, i64 0}
-!6 = !{!"Simple C/C++ TBAA"}
-!7 = !{!"int", !5, i64 0}
-!8 = !{!"short", !5, i64 0}
-!9 = !{!"__sbuf", !4, i64 0, !7, i64 8}
-!10 = !{!"long long", !5, i64 0}
-!11 = !{!3, !7, i64 40}
-!12 = !{!3, !4, i64 0}
-!13 = !{!5, !5, i64 0}
+!0 = metadata !{i32 786449, metadata !1, i32 12, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !2, metadata !3, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/435.gromacs/src/names.c] [DW_LANG_C99]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/435.gromacs/src/names.c", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4, metadata !11, metadata !15, metadata !16, metadata !20, metadata !21, metadata !22, metadata !26, metadata !30, metadata !31, metadata !35, metadata !36, metadata !40, metadata !41, metadata !42, metadata !43, metadata !44, metadata !45, metadata !46, metadata !47, metadata !51, metadata !52, metadata !53, metadata !54}
+!4 = metadata !{i32 786484, i32 0, null, metadata !"eblock_names", metadata !"eblock_names", metadata !"", metadata !5, i32 38, metadata !6, i32 0, i32 1, [4 x i8*]* @eblock_names, null} ; [ DW_TAG_variable ] [eblock_names] [line 38] [def]
+!5 = metadata !{i32 786473, metadata !1}          ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/435.gromacs/src/names.c]
+!6 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 256, i64 64, i32 0, i32 0, metadata !7, metadata !9, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 256, align 64, offset 0] [from ]
+!7 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !8} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from char]
+!8 = metadata !{i32 786468, null, null, metadata !"char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!9 = metadata !{metadata !10}
+!10 = metadata !{i32 786465, i64 0, i64 4}        ; [ DW_TAG_subrange_type ] [0, 3]
+!11 = metadata !{i32 786484, i32 0, null, metadata !"epbc_names", metadata !"epbc_names", metadata !"", metadata !5, i32 43, metadata !12, i32 0, i32 1, [3 x i8*]* @epbc_names, null} ; [ DW_TAG_variable ] [epbc_names] [line 43] [def]
+!12 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 192, i64 64, i32 0, i32 0, metadata !7, metadata !13, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 192, align 64, offset 0] [from ]
+!13 = metadata !{metadata !14}
+!14 = metadata !{i32 786465, i64 0, i64 3}        ; [ DW_TAG_subrange_type ] [0, 2]
+!15 = metadata !{i32 786484, i32 0, null, metadata !"ens_names", metadata !"ens_names", metadata !"", metadata !5, i32 48, metadata !12, i32 0, i32 1, [3 x i8*]* @ens_names, null} ; [ DW_TAG_variable ] [ens_names] [line 48] [def]
+!16 = metadata !{i32 786484, i32 0, null, metadata !"ei_names", metadata !"ei_names", metadata !"", metadata !5, i32 53, metadata !17, i32 0, i32 1, [7 x i8*]* @ei_names, null} ; [ DW_TAG_variable ] [ei_names] [line 53] [def]
+!17 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 448, i64 64, i32 0, i32 0, metadata !7, metadata !18, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 448, align 64, offset 0] [from ]
+!18 = metadata !{metadata !19}
+!19 = metadata !{i32 786465, i64 0, i64 7}        ; [ DW_TAG_subrange_type ] [0, 6]
+!20 = metadata !{i32 786484, i32 0, null, metadata !"bool_names", metadata !"bool_names", metadata !"", metadata !5, i32 58, metadata !12, i32 0, i32 1, [3 x i8*]* @bool_names, null} ; [ DW_TAG_variable ] [bool_names] [line 58] [def]
+!21 = metadata !{i32 786484, i32 0, null, metadata !"yesno_names", metadata !"yesno_names", metadata !"", metadata !5, i32 63, metadata !12, i32 0, i32 1, [3 x i8*]* @yesno_names, null} ; [ DW_TAG_variable ] [yesno_names] [line 63] [def]
+!22 = metadata !{i32 786484, i32 0, null, metadata !"ptype_str", metadata !"ptype_str", metadata !"", metadata !5, i32 68, metadata !23, i32 0, i32 1, [6 x i8*]* @ptype_str, null} ; [ DW_TAG_variable ] [ptype_str] [line 68] [def]
+!23 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 384, i64 64, i32 0, i32 0, metadata !7, metadata !24, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 384, align 64, offset 0] [from ]
+!24 = metadata !{metadata !25}
+!25 = metadata !{i32 786465, i64 0, i64 6}        ; [ DW_TAG_subrange_type ] [0, 5]
+!26 = metadata !{i32 786484, i32 0, null, metadata !"eel_names", metadata !"eel_names", metadata !"", metadata !5, i32 72, metadata !27, i32 0, i32 1, [11 x i8*]* @eel_names, null} ; [ DW_TAG_variable ] [eel_names] [line 72] [def]
+!27 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 704, i64 64, i32 0, i32 0, metadata !7, metadata !28, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 704, align 64, offset 0] [from ]
+!28 = metadata !{metadata !29}
+!29 = metadata !{i32 786465, i64 0, i64 11}       ; [ DW_TAG_subrange_type ] [0, 10]
+!30 = metadata !{i32 786484, i32 0, null, metadata !"eewg_names", metadata !"eewg_names", metadata !"", metadata !5, i32 77, metadata !12, i32 0, i32 1, [3 x i8*]* @eewg_names, null} ; [ DW_TAG_variable ] [eewg_names] [line 77] [def]
+!31 = metadata !{i32 786484, i32 0, null, metadata !"evdw_names", metadata !"evdw_names", metadata !"", metadata !5, i32 81, metadata !32, i32 0, i32 1, [5 x i8*]* @evdw_names, null} ; [ DW_TAG_variable ] [evdw_names] [line 81] [def]
+!32 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 320, i64 64, i32 0, i32 0, metadata !7, metadata !33, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 320, align 64, offset 0] [from ]
+!33 = metadata !{metadata !34}
+!34 = metadata !{i32 786465, i64 0, i64 5}        ; [ DW_TAG_subrange_type ] [0, 4]
+!35 = metadata !{i32 786484, i32 0, null, metadata !"eshake_names", metadata !"eshake_names", metadata !"", metadata !5, i32 85, metadata !12, i32 0, i32 1, [3 x i8*]* @eshake_names, null} ; [ DW_TAG_variable ] [eshake_names] [line 85] [def]
+!36 = metadata !{i32 786484, i32 0, null, metadata !"egrp_nm", metadata !"egrp_nm", metadata !"", metadata !5, i32 89, metadata !37, i32 0, i32 1, [8 x i8*]* @egrp_nm, null} ; [ DW_TAG_variable ] [egrp_nm] [line 89] [def]
+!37 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 512, i64 64, i32 0, i32 0, metadata !7, metadata !38, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 512, align 64, offset 0] [from ]
+!38 = metadata !{metadata !39}
+!39 = metadata !{i32 786465, i64 0, i64 8}        ; [ DW_TAG_subrange_type ] [0, 7]
+!40 = metadata !{i32 786484, i32 0, null, metadata !"etcoupl_names", metadata !"etcoupl_names", metadata !"", metadata !5, i32 93, metadata !32, i32 0, i32 1, [5 x i8*]* @etcoupl_names, null} ; [ DW_TAG_variable ] [etcoupl_names] [line 93] [def]
+!41 = metadata !{i32 786484, i32 0, null, metadata !"epcoupl_names", metadata !"epcoupl_names", metadata !"", metadata !5, i32 97, metadata !32, i32 0, i32 1, [5 x i8*]* @epcoupl_names, null} ; [ DW_TAG_variable ] [epcoupl_names] [line 97] [def]
+!42 = metadata !{i32 786484, i32 0, null, metadata !"epcoupltype_names", metadata !"epcoupltype_names", metadata !"", metadata !5, i32 101, metadata !32, i32 0, i32 1, [5 x i8*]* @epcoupltype_names, null} ; [ DW_TAG_variable ] [epcoupltype_names] [line 101] [def]
+!43 = metadata !{i32 786484, i32 0, null, metadata !"edisre_names", metadata !"edisre_names", metadata !"", metadata !5, i32 105, metadata !6, i32 0, i32 1, [4 x i8*]* @edisre_names, null} ; [ DW_TAG_variable ] [edisre_names] [line 105] [def]
+!44 = metadata !{i32 786484, i32 0, null, metadata !"edisreweighting_names", metadata !"edisreweighting_names", metadata !"", metadata !5, i32 109, metadata !12, i32 0, i32 1, [3 x i8*]* @edisreweighting_names, null} ; [ DW_TAG_variable ] [edisreweighting_names] [line 109] [def]
+!45 = metadata !{i32 786484, i32 0, null, metadata !"enbf_names", metadata !"enbf_names", metadata !"", metadata !5, i32 113, metadata !6, i32 0, i32 1, [4 x i8*]* @enbf_names, null} ; [ DW_TAG_variable ] [enbf_names] [line 113] [def]
+!46 = metadata !{i32 786484, i32 0, null, metadata !"ecomb_names", metadata !"ecomb_names", metadata !"", metadata !5, i32 117, metadata !32, i32 0, i32 1, [5 x i8*]* @ecomb_names, null} ; [ DW_TAG_variable ] [ecomb_names] [line 117] [def]
+!47 = metadata !{i32 786484, i32 0, null, metadata !"gtypes", metadata !"gtypes", metadata !"", metadata !5, i32 121, metadata !48, i32 0, i32 1, [10 x i8*]* @gtypes, null} ; [ DW_TAG_variable ] [gtypes] [line 121] [def]
+!48 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 640, i64 64, i32 0, i32 0, metadata !7, metadata !49, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 640, align 64, offset 0] [from ]
+!49 = metadata !{metadata !50}
+!50 = metadata !{i32 786465, i64 0, i64 10}       ; [ DW_TAG_subrange_type ] [0, 9]
+!51 = metadata !{i32 786484, i32 0, null, metadata !"efep_names", metadata !"efep_names", metadata !"", metadata !5, i32 126, metadata !12, i32 0, i32 1, [3 x i8*]* @efep_names, null} ; [ DW_TAG_variable ] [efep_names] [line 126] [def]
+!52 = metadata !{i32 786484, i32 0, null, metadata !"esolv_names", metadata !"esolv_names", metadata !"", metadata !5, i32 130, metadata !32, i32 0, i32 1, [5 x i8*]* @esolv_names, null} ; [ DW_TAG_variable ] [esolv_names] [line 130] [def]
+!53 = metadata !{i32 786484, i32 0, null, metadata !"edispc_names", metadata !"edispc_names", metadata !"", metadata !5, i32 134, metadata !6, i32 0, i32 1, [4 x i8*]* @edispc_names, null} ; [ DW_TAG_variable ] [edispc_names] [line 134] [def]
+!54 = metadata !{i32 786484, i32 0, null, metadata !"ecm_names", metadata !"ecm_names", metadata !"", metadata !5, i32 138, metadata !6, i32 0, i32 1, [4 x i8*]* @ecm_names, null} ; [ DW_TAG_variable ] [ecm_names] [line 138] [def]

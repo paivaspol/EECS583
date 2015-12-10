@@ -1,0 +1,44 @@
+define i32 @_Z21POVMS_InstallReceiverPvPFiP9POVMSDataS1_iS_EjjS_(i8* %contextref, i32 (%struct.POVMSData*, %struct.POVMSData*, i32, i8*)* %hfunc, i32 %hclass, i32 %hid, i8* %hpd) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %contextref}, i64 0, metadata !167), !dbg !1014
+  tail call void @llvm.dbg.value(metadata !{i32 (%struct.POVMSData*, %struct.POVMSData*, i32, i8*)* %hfunc}, i64 0, metadata !168), !dbg !1014
+  tail call void @llvm.dbg.value(metadata !{i32 %hclass}, i64 0, metadata !169), !dbg !1014
+  tail call void @llvm.dbg.value(metadata !{i32 %hid}, i64 0, metadata !170), !dbg !1014
+  tail call void @llvm.dbg.value(metadata !{i8* %hpd}, i64 0, metadata !171), !dbg !1014
+  %0 = bitcast i8* %contextref to %struct.POVMSContextData*, !dbg !1015
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMSContextData* %0}, i64 0, metadata !172), !dbg !1015
+  tail call void @llvm.dbg.value(metadata !1016, i64 0, metadata !173), !dbg !1017
+  %cmp = icmp eq i8* %contextref, null, !dbg !1018
+  br i1 %cmp, label %return, label %if.end, !dbg !1018
+
+if.end:                                           ; preds = %entry
+  %valid = bitcast i8* %contextref to i32*, !dbg !1019
+  %1 = load i32* %valid, align 4, !dbg !1019, !tbaa !937
+  %cmp1 = icmp eq i32 %1, 0, !dbg !1019
+  br i1 %cmp1, label %return, label %if.end3, !dbg !1019
+
+if.end3:                                          ; preds = %if.end
+  %cmp4 = icmp eq i32 (%struct.POVMSData*, %struct.POVMSData*, i32, i8*)* %hfunc, null, !dbg !1020
+  br i1 %cmp4, label %return, label %if.end6, !dbg !1020
+
+if.end6:                                          ; preds = %if.end3
+  %call = tail call %struct.POVMSReceiveHandlerNode* @_Z27POVMS_AddReceiveHandlerNodeP16POVMSContextData(%struct.POVMSContextData* %0) #8, !dbg !1021
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMSReceiveHandlerNode* %call}, i64 0, metadata !173), !dbg !1021
+  %cmp7 = icmp eq %struct.POVMSReceiveHandlerNode* %call, null, !dbg !1022
+  br i1 %cmp7, label %return, label %if.end9, !dbg !1022
+
+if.end9:                                          ; preds = %if.end6
+  %handledclass = getelementptr inbounds %struct.POVMSReceiveHandlerNode* %call, i64 0, i32 2, !dbg !1023
+  store i32 %hclass, i32* %handledclass, align 4, !dbg !1023, !tbaa !937
+  %handledid = getelementptr inbounds %struct.POVMSReceiveHandlerNode* %call, i64 0, i32 3, !dbg !1024
+  store i32 %hid, i32* %handledid, align 4, !dbg !1024, !tbaa !937
+  %handlerprivatedata = getelementptr inbounds %struct.POVMSReceiveHandlerNode* %call, i64 0, i32 4, !dbg !1025
+  store i8* %hpd, i8** %handlerprivatedata, align 8, !dbg !1025, !tbaa !917
+  %handler = getelementptr inbounds %struct.POVMSReceiveHandlerNode* %call, i64 0, i32 5, !dbg !1026
+  store i32 (%struct.POVMSData*, %struct.POVMSData*, i32, i8*)* %hfunc, i32 (%struct.POVMSData*, %struct.POVMSData*, i32, i8*)** %handler, align 8, !dbg !1026, !tbaa !917
+  br label %return, !dbg !1027
+
+return:                                           ; preds = %if.end6, %if.end3, %if.end, %entry, %if.end9
+  %retval.0 = phi i32 [ 0, %if.end9 ], [ -1, %entry ], [ -21, %if.end ], [ -1, %if.end3 ], [ -2, %if.end6 ]
+  ret i32 %retval.0, !dbg !1027
+}

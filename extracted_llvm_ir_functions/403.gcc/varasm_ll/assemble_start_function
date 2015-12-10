@@ -1,102 +1,107 @@
 define void @assemble_start_function(%union.tree_node* %decl, i8* %fnname) #0 {
 entry:
-  tail call void @app_disable() #9
-  tail call void @output_constant_pool(i8* undef, %union.tree_node* undef) #10
-  %0 = load i32* @flag_function_sections, align 4, !tbaa !4
-  tail call fastcc void @resolve_unique_section(%union.tree_node* %decl, i32 0, i32 %0) #10
-  tail call void @function_section(%union.tree_node* %decl) #10
-  %call = tail call i32 @floor_log2_wide(i64 2) #9
-  %1 = icmp sgt i32 %call, 0
-  br i1 %1, label %if.then2, label %if.end4
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %decl}, i64 0, metadata !1313), !dbg !2747
+  tail call void @llvm.dbg.value(metadata !{i8* %fnname}, i64 0, metadata !1314), !dbg !2748
+  tail call void @app_disable() #10, !dbg !2749
+  tail call void @output_constant_pool(i8* undef, %union.tree_node* undef) #11, !dbg !2750
+  %0 = load i32* @flag_function_sections, align 4, !dbg !2751, !tbaa !2382
+  tail call fastcc void @resolve_unique_section(%union.tree_node* %decl, i32 0, i32 %0) #11, !dbg !2751
+  tail call void @function_section(%union.tree_node* %decl) #11, !dbg !2752
+  %call = tail call i32 @floor_log2_wide(i64 2) #10, !dbg !2753
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !1315), !dbg !2753
+  %1 = icmp sgt i32 %call, 0, !dbg !2754
+  br i1 %1, label %if.then2, label %if.end4, !dbg !2754
 
 if.then2:                                         ; preds = %entry
-  %2 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !3
-  %shl = shl i32 1, %call
-  %call3 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([12 x i8]* @.str58, i64 0, i64 0), i32 %shl) #9
-  br label %if.end4
+  %2 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !2755, !tbaa !2357
+  %shl = shl i32 1, %call, !dbg !2755
+  %call3 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([12 x i8]* @.str58, i64 0, i64 0), i32 %shl) #10, !dbg !2755
+  br label %if.end4, !dbg !2755
 
 if.end4:                                          ; preds = %if.then2, %entry
-  %3 = load i32* @align_functions_log, align 4, !tbaa !4
-  %cmp5 = icmp sgt i32 %3, %call
-  %cmp7 = icmp ne i32 %3, 0
-  %or.cond49 = and i1 %cmp5, %cmp7
-  br i1 %or.cond49, label %if.then8, label %if.end16
+  %3 = load i32* @align_functions_log, align 4, !dbg !2757, !tbaa !2382
+  %cmp5 = icmp sgt i32 %3, %call, !dbg !2757
+  %cmp7 = icmp ne i32 %3, 0, !dbg !2758
+  %or.cond49 = and i1 %cmp5, %cmp7, !dbg !2757
+  br i1 %or.cond49, label %if.then8, label %if.end16, !dbg !2757
 
 if.then8:                                         ; preds = %if.end4
-  %4 = load i32* @align_functions, align 4, !tbaa !4
-  %sub = add nsw i32 %4, -1
-  %cmp9 = icmp eq i32 %sub, 0
-  %5 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !3
-  br i1 %cmp9, label %if.then10, label %if.else
+  %4 = load i32* @align_functions, align 4, !dbg !2761, !tbaa !2382
+  %sub = add nsw i32 %4, -1, !dbg !2761
+  %cmp9 = icmp eq i32 %sub, 0, !dbg !2761
+  %5 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !2761, !tbaa !2357
+  br i1 %cmp9, label %if.then10, label %if.else, !dbg !2761
 
 if.then10:                                        ; preds = %if.then8
-  %call11 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([14 x i8]* @.str67, i64 0, i64 0), i32 %3) #9
-  br label %if.end16
+  %call11 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([14 x i8]* @.str67, i64 0, i64 0), i32 %3) #10, !dbg !2761
+  br label %if.end16, !dbg !2761
 
 if.else:                                          ; preds = %if.then8
-  %call13 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([18 x i8]* @.str68, i64 0, i64 0), i32 %3, i32 %sub) #9
+  %call13 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([18 x i8]* @.str68, i64 0, i64 0), i32 %3, i32 %sub) #10, !dbg !2761
   br label %if.end16
 
 if.end16:                                         ; preds = %if.then10, %if.else, %if.end4
-  %6 = load %struct.gcc_debug_hooks** @debug_hooks, align 8, !tbaa !3
-  %begin_function = getelementptr inbounds %struct.gcc_debug_hooks* %6, i64 0, i32 13
-  %7 = load void (%union.tree_node*)** %begin_function, align 8, !tbaa !3
-  tail call void %7(%union.tree_node* %decl) #9
-  %public_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 2
-  %8 = bitcast [4 x i8]* %public_flag to i32*
-  %bf.load = load i32* %8, align 8
-  %bf.clear = and i32 %bf.load, 524288
-  %tobool = icmp eq i32 %bf.clear, 0
-  br i1 %tobool, label %do.body42, label %if.then17
+  %6 = load %struct.gcc_debug_hooks** @debug_hooks, align 8, !dbg !2763, !tbaa !2357
+  %begin_function = getelementptr inbounds %struct.gcc_debug_hooks* %6, i64 0, i32 13, !dbg !2763
+  %7 = load void (%union.tree_node*)** %begin_function, align 8, !dbg !2763, !tbaa !2357
+  tail call void %7(%union.tree_node* %decl) #10, !dbg !2763
+  %public_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 2, !dbg !2764
+  %8 = bitcast [4 x i8]* %public_flag to i32*, !dbg !2764
+  %bf.load = load i32* %8, align 8, !dbg !2764
+  %bf.clear = and i32 %bf.load, 524288, !dbg !2764
+  %tobool = icmp eq i32 %bf.clear, 0, !dbg !2764
+  br i1 %tobool, label %do.body42, label %if.then17, !dbg !2764
 
 if.then17:                                        ; preds = %if.end16
-  %9 = load i8** @first_global_object_name, align 8, !tbaa !3
-  %tobool18 = icmp eq i8* %9, null
-  br i1 %tobool18, label %if.then19, label %if.end40
+  %9 = load i8** @first_global_object_name, align 8, !dbg !2765, !tbaa !2357
+  %tobool18 = icmp eq i8* %9, null, !dbg !2765
+  br i1 %tobool18, label %if.then19, label %if.end40, !dbg !2765
 
 if.then19:                                        ; preds = %if.then17
-  %10 = load i8* %fnname, align 1, !tbaa !1
-  %cmp20 = icmp eq i8 %10, 42
-  %idx.ext = zext i1 %cmp20 to i64
-  %add.ptr = getelementptr inbounds i8* %fnname, i64 %idx.ext
-  %call22 = tail call i64 @strlen(i8* %add.ptr) #11
-  %add = add i64 %call22, 1
-  %conv23 = trunc i64 %add to i32
-  %call24 = tail call i8* @permalloc(i32 %conv23) #9
-  %call25 = tail call i8* @strcpy(i8* %call24, i8* %add.ptr) #9
-  %weak_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 5
-  %11 = bitcast [8 x i8]* %weak_flag to i64*
-  %bf.load27 = load i64* %11, align 8
-  %12 = and i64 %bf.load27, 8912896
-  %13 = icmp eq i64 %12, 0
-  br i1 %13, label %if.then37, label %if.else38
+  %10 = load i8* %fnname, align 1, !dbg !2766, !tbaa !2353
+  %cmp20 = icmp eq i8 %10, 42, !dbg !2766
+  %idx.ext = zext i1 %cmp20 to i64, !dbg !2766
+  %add.ptr = getelementptr inbounds i8* %fnname, i64 %idx.ext, !dbg !2766
+  tail call void @llvm.dbg.value(metadata !{i8* %add.ptr}, i64 0, metadata !1316), !dbg !2766
+  %call22 = tail call i64 @strlen(i8* %add.ptr) #12, !dbg !2767
+  %add = add i64 %call22, 1, !dbg !2767
+  %conv23 = trunc i64 %add to i32, !dbg !2767
+  %call24 = tail call i8* @permalloc(i32 %conv23) #10, !dbg !2767
+  tail call void @llvm.dbg.value(metadata !{i8* %call24}, i64 0, metadata !1319), !dbg !2767
+  %call25 = tail call i8* @strcpy(i8* %call24, i8* %add.ptr) #10, !dbg !2768
+  %weak_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 5, !dbg !2769
+  %11 = bitcast [8 x i8]* %weak_flag to i64*, !dbg !2769
+  %bf.load27 = load i64* %11, align 8, !dbg !2769
+  %12 = and i64 %bf.load27, 8912896, !dbg !2769
+  %13 = icmp eq i64 %12, 0, !dbg !2769
+  br i1 %13, label %if.then37, label %if.else38, !dbg !2769
 
 if.then37:                                        ; preds = %if.then19
-  store i8* %call24, i8** @first_global_object_name, align 8, !tbaa !3
-  br label %if.end40
+  store i8* %call24, i8** @first_global_object_name, align 8, !dbg !2770, !tbaa !2357
+  br label %if.end40, !dbg !2770
 
 if.else38:                                        ; preds = %if.then19
-  store i8* %call24, i8** @weak_global_object_name, align 8, !tbaa !3
+  store i8* %call24, i8** @weak_global_object_name, align 8, !dbg !2771, !tbaa !2357
   br label %if.end40
 
 if.end40:                                         ; preds = %if.then17, %if.then37, %if.else38
-  tail call fastcc void @globalize_decl(%union.tree_node* %decl) #10
-  br label %do.body42
+  tail call fastcc void @globalize_decl(%union.tree_node* %decl) #11, !dbg !2772
+  br label %do.body42, !dbg !2773
 
 do.body42:                                        ; preds = %if.end16, %if.end40
-  %14 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !3
-  %15 = tail call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str70, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %14)
-  %16 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !3
-  tail call void @assemble_name(%struct._IO_FILE* %16, i8* %fnname) #10
-  %17 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !3
-  %call44 = tail call i32 @_IO_putc(i32 44, %struct._IO_FILE* %17) #9
-  %18 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !3
-  %call45 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %18, i8* getelementptr inbounds ([4 x i8]* @.str71, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str72, i64 0, i64 0)) #9
-  %19 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !3
-  %call46 = tail call i32 @_IO_putc(i32 10, %struct._IO_FILE* %19) #9
-  %20 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !3
-  tail call void @assemble_name(%struct._IO_FILE* %20, i8* %fnname) #10
-  %21 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !3
-  %22 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str73, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %21)
-  ret void
+  %14 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !2774, !tbaa !2357
+  %15 = tail call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str70, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %14), !dbg !2774
+  %16 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !2774, !tbaa !2357
+  tail call void @assemble_name(%struct._IO_FILE* %16, i8* %fnname) #11, !dbg !2774
+  %17 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !2774, !tbaa !2357
+  %call44 = tail call i32 @_IO_putc(i32 44, %struct._IO_FILE* %17) #10, !dbg !2774
+  %18 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !2774, !tbaa !2357
+  %call45 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %18, i8* getelementptr inbounds ([4 x i8]* @.str71, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str72, i64 0, i64 0)) #10, !dbg !2774
+  %19 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !2774, !tbaa !2357
+  %call46 = tail call i32 @_IO_putc(i32 10, %struct._IO_FILE* %19) #10, !dbg !2774
+  %20 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !2774, !tbaa !2357
+  tail call void @assemble_name(%struct._IO_FILE* %20, i8* %fnname) #11, !dbg !2774
+  %21 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !2774, !tbaa !2357
+  %22 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str73, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %21), !dbg !2774
+  ret void, !dbg !2776
 }

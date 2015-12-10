@@ -1,0 +1,40 @@
+define zeroext i1 @_ZN11xercesc_2_59ReaderMgr14skipPastSpacesEv(%"class.xercesc_2_5::ReaderMgr"* nocapture %this) #2 align 2 {
+entry:
+  %tmpFlag = alloca i8, align 1
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::ReaderMgr"* %this}, i64 0, metadata !2255), !dbg !4167
+  call void @llvm.dbg.value(metadata !4168, i64 0, metadata !2256), !dbg !4169
+  call void @llvm.dbg.declare(metadata !{i8* %tmpFlag}, metadata !2257), !dbg !4170
+  %fCurReader = getelementptr inbounds %"class.xercesc_2_5::ReaderMgr"* %this, i64 0, i32 2, !dbg !4171
+  br label %while.body, !dbg !4173
+
+while.body:                                       ; preds = %if.end, %entry
+  %skippedSomething.0 = phi i8 [ 0, %entry ], [ %skippedSomething.0., %if.end ]
+  %0 = load %"class.xercesc_2_5::XMLReader"** %fCurReader, align 8, !dbg !4171, !tbaa !3955
+  %call = call zeroext i1 @_ZN11xercesc_2_59XMLReader10skipSpacesERb(%"class.xercesc_2_5::XMLReader"* %0, i8* %tmpFlag) #9, !dbg !4171
+  br i1 %call, label %while.end, label %if.end, !dbg !4171
+
+if.end:                                           ; preds = %while.body
+  call void @llvm.dbg.value(metadata !{i8* %tmpFlag}, i64 0, metadata !2257), !dbg !4174
+  %1 = load i8* %tmpFlag, align 1, !dbg !4174, !tbaa !3956, !range !4009
+  %tobool = icmp eq i8 %1, 0, !dbg !4174
+  call void @llvm.dbg.value(metadata !4175, i64 0, metadata !2256), !dbg !4176
+  %skippedSomething.0. = select i1 %tobool, i8 %skippedSomething.0, i8 1, !dbg !4174
+  %call4 = call zeroext i1 @_ZN11xercesc_2_59ReaderMgr9popReaderEv(%"class.xercesc_2_5::ReaderMgr"* %this) #9, !dbg !4177
+  br i1 %call4, label %while.body, label %while.end, !dbg !4177
+
+while.end:                                        ; preds = %if.end, %while.body
+  %skippedSomething.2 = phi i8 [ %skippedSomething.0, %while.body ], [ %skippedSomething.0., %if.end ]
+  call void @llvm.dbg.value(metadata !{i8* %tmpFlag}, i64 0, metadata !2257), !dbg !4178
+  %2 = load i8* %tmpFlag, align 1, !dbg !4178, !tbaa !3956, !range !4009
+  %tobool7 = icmp eq i8 %2, 0, !dbg !4178
+  br i1 %tobool7, label %lor.rhs, label %lor.end, !dbg !4178
+
+lor.rhs:                                          ; preds = %while.end
+  %3 = and i8 %skippedSomething.2, 1, !dbg !4178
+  %tobool8 = icmp ne i8 %3, 0, !dbg !4178
+  br label %lor.end, !dbg !4178
+
+lor.end:                                          ; preds = %while.end, %lor.rhs
+  %4 = phi i1 [ true, %while.end ], [ %tobool8, %lor.rhs ]
+  ret i1 %4, !dbg !4178
+}

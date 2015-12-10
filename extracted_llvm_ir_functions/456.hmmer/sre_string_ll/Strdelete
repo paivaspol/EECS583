@@ -1,19 +1,23 @@
 define i32 @Strdelete(i8* nocapture %s1, i32 %pos) #0 {
 entry:
-  %idx.ext = sext i32 %pos to i64
-  %add.ptr = getelementptr inbounds i8* %s1, i64 %idx.ext
-  %0 = load i8* %add.ptr, align 1, !tbaa !1
-  %tobool5 = icmp eq i8 %0, 0
-  br i1 %tobool5, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !{i8* %s1}, i64 0, metadata !49), !dbg !237
+  tail call void @llvm.dbg.value(metadata !{i32 %pos}, i64 0, metadata !50), !dbg !238
+  %idx.ext = sext i32 %pos to i64, !dbg !239
+  %add.ptr = getelementptr inbounds i8* %s1, i64 %idx.ext, !dbg !239
+  tail call void @llvm.dbg.value(metadata !{i8* %add.ptr}, i64 0, metadata !51), !dbg !239
+  %0 = load i8* %add.ptr, align 1, !dbg !239, !tbaa !221
+  %tobool5 = icmp eq i8 %0, 0, !dbg !239
+  br i1 %tobool5, label %for.end, label %for.body, !dbg !239
 
 for.body:                                         ; preds = %entry, %for.body
   %s.06 = phi i8* [ %add.ptr1, %for.body ], [ %add.ptr, %entry ]
-  %add.ptr1 = getelementptr inbounds i8* %s.06, i64 1
-  %1 = load i8* %add.ptr1, align 1, !tbaa !1
-  store i8 %1, i8* %s.06, align 1, !tbaa !1
-  %tobool = icmp eq i8 %1, 0
-  br i1 %tobool, label %for.end, label %for.body
+  %add.ptr1 = getelementptr inbounds i8* %s.06, i64 1, !dbg !241
+  %1 = load i8* %add.ptr1, align 1, !dbg !241, !tbaa !221
+  store i8 %1, i8* %s.06, align 1, !dbg !241, !tbaa !221
+  tail call void @llvm.dbg.value(metadata !{i8* %add.ptr1}, i64 0, metadata !51), !dbg !239
+  %tobool = icmp eq i8 %1, 0, !dbg !239
+  br i1 %tobool, label %for.end, label %for.body, !dbg !239
 
 for.end:                                          ; preds = %for.body, %entry
-  ret i32 1
+  ret i32 1, !dbg !242
 }

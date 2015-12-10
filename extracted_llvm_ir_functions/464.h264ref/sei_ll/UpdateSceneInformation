@@ -1,15 +1,43 @@
 define void @UpdateSceneInformation(i32 %HasSceneInformation, i32 %sceneID, i32 %sceneTransType, i32 %secondSceneID) #0 {
 entry:
-  store i32 %HasSceneInformation, i32* @seiHasSceneInformation, align 4, !tbaa !1
-  store i32 %sceneID, i32* getelementptr inbounds (%struct.scene_information_struct* @seiSceneInformation, i64 0, i32 0), align 8, !tbaa !3
-  store i32 %sceneTransType, i32* getelementptr inbounds (%struct.scene_information_struct* @seiSceneInformation, i64 0, i32 1), align 4, !tbaa !3
-  %cmp = icmp sgt i32 %sceneTransType, 3
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i32 %HasSceneInformation}, i64 0, metadata !260), !dbg !1464
+  tail call void @llvm.dbg.value(metadata !{i32 %sceneID}, i64 0, metadata !261), !dbg !1464
+  tail call void @llvm.dbg.value(metadata !{i32 %sceneTransType}, i64 0, metadata !262), !dbg !1464
+  tail call void @llvm.dbg.value(metadata !{i32 %secondSceneID}, i64 0, metadata !263), !dbg !1464
+  store i32 %HasSceneInformation, i32* @seiHasSceneInformation, align 4, !dbg !1465, !tbaa !927
+  %cmp = icmp slt i32 %sceneID, 256, !dbg !1466
+  br i1 %cmp, label %cond.end, label %cond.false, !dbg !1466
 
-if.then:                                          ; preds = %entry
-  store i32 %secondSceneID, i32* getelementptr inbounds (%struct.scene_information_struct* @seiSceneInformation, i64 0, i32 2), align 8, !tbaa !3
-  br label %if.end
+cond.false:                                       ; preds = %entry
+  tail call void @__assert_fail(i8* getelementptr inbounds ([14 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str2, i64 0, i64 0), i32 1196, i8* getelementptr inbounds ([52 x i8]* @__PRETTY_FUNCTION__.UpdateSceneInformation, i64 0, i64 0)) #10, !dbg !1466
+  unreachable, !dbg !1466
 
-if.end:                                           ; preds = %if.then, %entry
-  ret void
+cond.end:                                         ; preds = %entry
+  store i32 %sceneID, i32* getelementptr inbounds (%struct.scene_information_struct* @seiSceneInformation, i64 0, i32 0), align 8, !dbg !1467, !tbaa !937
+  %cmp1 = icmp slt i32 %sceneTransType, 7, !dbg !1468
+  br i1 %cmp1, label %cond.end4, label %cond.false3, !dbg !1468
+
+cond.false3:                                      ; preds = %cond.end
+  tail call void @__assert_fail(i8* getelementptr inbounds ([20 x i8]* @.str14, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str2, i64 0, i64 0), i32 1199, i8* getelementptr inbounds ([52 x i8]* @__PRETTY_FUNCTION__.UpdateSceneInformation, i64 0, i64 0)) #10, !dbg !1468
+  unreachable, !dbg !1468
+
+cond.end4:                                        ; preds = %cond.end
+  store i32 %sceneTransType, i32* getelementptr inbounds (%struct.scene_information_struct* @seiSceneInformation, i64 0, i32 1), align 4, !dbg !1469, !tbaa !937
+  %cmp5 = icmp sgt i32 %sceneTransType, 3, !dbg !1470
+  br i1 %cmp5, label %if.then, label %if.end, !dbg !1470
+
+if.then:                                          ; preds = %cond.end4
+  %cmp6 = icmp slt i32 %secondSceneID, 256, !dbg !1471
+  br i1 %cmp6, label %cond.end9, label %cond.false8, !dbg !1471
+
+cond.false8:                                      ; preds = %if.then
+  tail call void @__assert_fail(i8* getelementptr inbounds ([20 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str2, i64 0, i64 0), i32 1204, i8* getelementptr inbounds ([52 x i8]* @__PRETTY_FUNCTION__.UpdateSceneInformation, i64 0, i64 0)) #10, !dbg !1471
+  unreachable, !dbg !1471
+
+cond.end9:                                        ; preds = %if.then
+  store i32 %secondSceneID, i32* getelementptr inbounds (%struct.scene_information_struct* @seiSceneInformation, i64 0, i32 2), align 8, !dbg !1473, !tbaa !937
+  br label %if.end, !dbg !1474
+
+if.end:                                           ; preds = %cond.end9, %cond.end4
+  ret void, !dbg !1475
 }

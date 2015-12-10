@@ -1,18 +1,23 @@
-define <2 x float> @CCTK_Cmplx8Exp(<2 x float> %complex_number.coerce) #0 {
-  %1 = extractelement <2 x float> %complex_number.coerce, i32 0
-  %2 = fpext float %1 to double
-  %3 = tail call double @exp(double %2) #5
-  %4 = fptrunc double %3 to float
-  %5 = extractelement <2 x float> %complex_number.coerce, i32 1
-  %6 = fpext float %4 to double
-  %7 = fpext float %5 to double
-  %8 = tail call double @cos(double %7) #5
-  %9 = tail call double @sin(double %7) #5
-  %10 = insertelement <2 x double> undef, double %6, i32 0
-  %11 = insertelement <2 x double> %10, double %6, i32 1
-  %12 = insertelement <2 x double> undef, double %8, i32 0
-  %13 = insertelement <2 x double> %12, double %9, i32 1
-  %14 = fmul <2 x double> %11, %13
-  %15 = fptrunc <2 x double> %14 to <2 x float>
-  ret <2 x float> %15
+define <2 x float> @CCTK_Cmplx8Exp(<2 x float> %complex_number.coerce) #3 {
+entry:
+  tail call void @llvm.dbg.declare(metadata !241, metadata !75), !dbg !260
+  tail call void @llvm.dbg.declare(metadata !241, metadata !78), !dbg !260
+  %complex_number.sroa.0.0.vec.extract = extractelement <2 x float> %complex_number.coerce, i32 0, !dbg !260
+  %conv = fpext float %complex_number.sroa.0.0.vec.extract to double, !dbg !260
+  %call = tail call double @exp(double %conv) #7, !dbg !260
+  %conv1 = fptrunc double %call to float, !dbg !260
+  tail call void @llvm.dbg.value(metadata !{float %conv1}, i64 0, metadata !76), !dbg !260
+  %complex_number.sroa.0.4.vec.extract = extractelement <2 x float> %complex_number.coerce, i32 1, !dbg !260
+  tail call void @llvm.dbg.value(metadata !{float %complex_number.sroa.0.4.vec.extract}, i64 0, metadata !77), !dbg !260
+  %conv2 = fpext float %conv1 to double, !dbg !260
+  %conv3 = fpext float %complex_number.sroa.0.4.vec.extract to double, !dbg !260
+  %call4 = tail call double @cos(double %conv3) #7, !dbg !260
+  %mul = fmul double %call4, %conv2, !dbg !260
+  %conv5 = fptrunc double %mul to float, !dbg !260
+  %call9 = tail call double @sin(double %conv3) #7, !dbg !260
+  %mul10 = fmul double %conv2, %call9, !dbg !260
+  %conv11 = fptrunc double %mul10 to float, !dbg !260
+  %retval.sroa.0.0.vec.insert = insertelement <2 x float> undef, float %conv5, i32 0, !dbg !260
+  %retval.sroa.0.4.vec.insert = insertelement <2 x float> %retval.sroa.0.0.vec.insert, float %conv11, i32 1, !dbg !260
+  ret <2 x float> %retval.sroa.0.4.vec.insert, !dbg !260
 }

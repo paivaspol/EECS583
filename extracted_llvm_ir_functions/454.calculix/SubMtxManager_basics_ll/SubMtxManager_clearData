@@ -1,41 +1,44 @@
 define void @SubMtxManager_clearData(%struct._SubMtxManager* %manager) #0 {
 entry:
-  %cmp = icmp eq %struct._SubMtxManager* %manager, null
-  br i1 %cmp, label %if.then, label %while.cond.preheader
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtxManager* %manager}, i64 0, metadata !70), !dbg !91
+  %cmp = icmp eq %struct._SubMtxManager* %manager, null, !dbg !92
+  br i1 %cmp, label %if.then, label %while.cond.preheader, !dbg !92
 
 while.cond.preheader:                             ; preds = %entry
-  %head = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 0
-  %0 = load %struct._SubMtx** %head, align 8, !tbaa !0
-  %cmp114 = icmp eq %struct._SubMtx* %0, null
-  br i1 %cmp114, label %while.end, label %while.body
+  %head = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 0, !dbg !93
+  %0 = load %struct._SubMtx** %head, align 8, !dbg !93, !tbaa !79
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtx* %0}, i64 0, metadata !71), !dbg !93
+  %cmp114 = icmp eq %struct._SubMtx* %0, null, !dbg !93
+  br i1 %cmp114, label %while.end, label %while.body, !dbg !93
 
 if.then:                                          ; preds = %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([57 x i8]* @.str3, i64 0, i64 0), %struct._SubMtxManager* null) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !94, !tbaa !79
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([57 x i8]* @.str3, i64 0, i64 0), %struct._SubMtxManager* null) #6, !dbg !94
+  tail call void @exit(i32 -1) #7, !dbg !96
+  unreachable, !dbg !96
 
 while.body:                                       ; preds = %while.cond.preheader, %while.body
   %2 = phi %struct._SubMtx* [ %4, %while.body ], [ %0, %while.cond.preheader ]
-  %next = getelementptr inbounds %struct._SubMtx* %2, i64 0, i32 9
-  %3 = load %struct._SubMtx** %next, align 8, !tbaa !0
-  store %struct._SubMtx* %3, %struct._SubMtx** %head, align 8, !tbaa !0
-  tail call void @SubMtx_free(%struct._SubMtx* %2) #5
-  %4 = load %struct._SubMtx** %head, align 8, !tbaa !0
-  %cmp1 = icmp eq %struct._SubMtx* %4, null
-  br i1 %cmp1, label %while.end, label %while.body
+  %next = getelementptr inbounds %struct._SubMtx* %2, i64 0, i32 9, !dbg !97
+  %3 = load %struct._SubMtx** %next, align 8, !dbg !97, !tbaa !79
+  store %struct._SubMtx* %3, %struct._SubMtx** %head, align 8, !dbg !97, !tbaa !79
+  tail call void @SubMtx_free(%struct._SubMtx* %2) #6, !dbg !99
+  %4 = load %struct._SubMtx** %head, align 8, !dbg !93, !tbaa !79
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtx* %2}, i64 0, metadata !71), !dbg !93
+  %cmp1 = icmp eq %struct._SubMtx* %4, null, !dbg !93
+  br i1 %cmp1, label %while.end, label %while.body, !dbg !93
 
 while.end:                                        ; preds = %while.body, %while.cond.preheader
-  %lock = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 1
-  %5 = load %struct._Lock** %lock, align 8, !tbaa !0
-  %cmp3 = icmp eq %struct._Lock* %5, null
-  br i1 %cmp3, label %if.end6, label %if.then4
+  %lock = getelementptr inbounds %struct._SubMtxManager* %manager, i64 0, i32 1, !dbg !100
+  %5 = load %struct._Lock** %lock, align 8, !dbg !100, !tbaa !79
+  %cmp3 = icmp eq %struct._Lock* %5, null, !dbg !100
+  br i1 %cmp3, label %if.end6, label %if.then4, !dbg !100
 
 if.then4:                                         ; preds = %while.end
-  tail call void @Lock_free(%struct._Lock* %5) #5
-  br label %if.end6
+  tail call void @Lock_free(%struct._Lock* %5) #6, !dbg !101
+  br label %if.end6, !dbg !103
 
 if.end6:                                          ; preds = %while.end, %if.then4
-  tail call void @SubMtxManager_setDefaultFields(%struct._SubMtxManager* %manager) #7
-  ret void
+  tail call void @SubMtxManager_setDefaultFields(%struct._SubMtxManager* %manager) #8, !dbg !104
+  ret void, !dbg !105
 }

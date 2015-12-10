@@ -1,26 +1,30 @@
 define i8* @sre_strdup(i8* %s, i32 %n) #0 {
 entry:
-  %cmp = icmp eq i8* %s, null
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i8* %s}, i64 0, metadata !196), !dbg !336
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !197), !dbg !336
+  %cmp = icmp eq i8* %s, null, !dbg !337
+  br i1 %cmp, label %return, label %if.end, !dbg !337
 
 if.end:                                           ; preds = %entry
-  %cmp1 = icmp slt i32 %n, 0
-  br i1 %cmp1, label %if.then2, label %if.end3
+  %cmp1 = icmp slt i32 %n, 0, !dbg !338
+  br i1 %cmp1, label %if.then2, label %if.end3, !dbg !338
 
 if.then2:                                         ; preds = %if.end
-  %call = tail call i64 @strlen(i8* %s) #7
-  %conv = trunc i64 %call to i32
-  br label %if.end3
+  %call = tail call i64 @strlen(i8* %s) #8, !dbg !338
+  %conv = trunc i64 %call to i32, !dbg !338
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !197), !dbg !338
+  br label %if.end3, !dbg !338
 
 if.end3:                                          ; preds = %if.then2, %if.end
   %n.addr.0 = phi i32 [ %conv, %if.then2 ], [ %n, %if.end ]
-  %add = add nsw i32 %n.addr.0, 1
-  %conv4 = sext i32 %add to i64
-  %call5 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([56 x i8]* @.str2, i64 0, i64 0), i32 442, i64 %conv4) #10
-  %call6 = tail call i8* @strcpy(i8* %call5, i8* %s) #8
-  br label %return
+  %add = add nsw i32 %n.addr.0, 1, !dbg !339
+  %conv4 = sext i32 %add to i64, !dbg !339
+  %call5 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([56 x i8]* @.str2, i64 0, i64 0), i32 442, i64 %conv4) #11, !dbg !339
+  tail call void @llvm.dbg.value(metadata !{i8* %call5}, i64 0, metadata !198), !dbg !339
+  %call6 = tail call i8* @strcpy(i8* %call5, i8* %s) #9, !dbg !340
+  br label %return, !dbg !341
 
 return:                                           ; preds = %entry, %if.end3
   %retval.0 = phi i8* [ %call5, %if.end3 ], [ null, %entry ]
-  ret i8* %retval.0
+  ret i8* %retval.0, !dbg !342
 }

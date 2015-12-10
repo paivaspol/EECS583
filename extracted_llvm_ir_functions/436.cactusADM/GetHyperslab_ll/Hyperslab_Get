@@ -1,643 +1,676 @@
 define i32 @Hyperslab_Get(%struct.cGH* %GH, i32 %mapping_handle, i32 %vindex, i32 %timelevel, i32 %hdatatype, i8* %hdata) #1 {
+entry:
   %vinfo.i = alloca %struct.cGroup, align 4
-  %1 = tail call %struct.hslab_mapping_t* @PUGHSlabi_GetMapping(i32 %mapping_handle) #6
-  %2 = icmp eq %struct.hslab_mapping_t* %1, null
-  br i1 %2, label %389, label %3
-
-; <label>:3                                       ; preds = %0
-  %4 = bitcast %struct.cGroup* %vinfo.i to i8*
-  call void @llvm.lifetime.start(i64 32, i8* %4)
-  %5 = icmp eq %struct.cGH* %GH, null
-  br i1 %5, label %45, label %6
-
-; <label>:6                                       ; preds = %3
-  %7 = getelementptr inbounds %struct.hslab_mapping_t* %1, i64 0, i32 13
-  %8 = load i32* %7, align 4, !tbaa !2
-  %9 = icmp eq i32 %8, 0
-  %10 = icmp ne i8* %hdata, null
-  %or.cond3.i = or i1 %10, %9
-  br i1 %or.cond3.i, label %11, label %45
-
-; <label>:11                                      ; preds = %6
-  %12 = tail call i32 @CCTK_GroupIndexFromVarI(i32 %vindex) #6
-  %13 = call i32 @CCTK_GroupData(i32 %12, %struct.cGroup* %vinfo.i) #6
-  %14 = icmp slt i32 %13, 0
-  br i1 %14, label %45, label %15
-
-; <label>:15                                      ; preds = %11
-  %16 = icmp slt i32 %timelevel, 0
-  br i1 %16, label %45, label %17
-
-; <label>:17                                      ; preds = %15
-  %18 = getelementptr inbounds %struct.cGroup* %vinfo.i, i64 0, i32 6
-  %19 = load i32* %18, align 4, !tbaa !9
-  %20 = icmp sgt i32 %19, %timelevel
-  br i1 %20, label %21, label %45
-
-; <label>:21                                      ; preds = %17
-  %22 = getelementptr inbounds %struct.cGroup* %vinfo.i, i64 0, i32 0
-  %23 = load i32* %22, align 4, !tbaa !10
-  %24 = getelementptr inbounds %struct.hslab_mapping_t* %1, i64 0, i32 19, i32 0
-  %25 = load i32* %24, align 4, !tbaa !11
-  %26 = icmp eq i32 %23, %25
-  br i1 %26, label %27, label %45
-
-; <label>:27                                      ; preds = %21
-  %28 = getelementptr inbounds %struct.cGroup* %vinfo.i, i64 0, i32 2
-  %29 = load i32* %28, align 4, !tbaa !12
-  %30 = getelementptr inbounds %struct.hslab_mapping_t* %1, i64 0, i32 19, i32 2
-  %31 = load i32* %30, align 4, !tbaa !13
-  %32 = icmp eq i32 %29, %31
-  br i1 %32, label %33, label %45
-
-; <label>:33                                      ; preds = %27
-  %34 = getelementptr inbounds %struct.cGroup* %vinfo.i, i64 0, i32 4
-  %35 = load i32* %34, align 4, !tbaa !14
-  %36 = getelementptr inbounds %struct.hslab_mapping_t* %1, i64 0, i32 19, i32 4
-  %37 = load i32* %36, align 4, !tbaa !15
-  %38 = icmp eq i32 %35, %37
-  br i1 %38, label %39, label %45
-
-; <label>:39                                      ; preds = %33
-  %40 = getelementptr inbounds %struct.cGroup* %vinfo.i, i64 0, i32 3
-  %41 = load i32* %40, align 4, !tbaa !16
-  %42 = getelementptr inbounds %struct.hslab_mapping_t* %1, i64 0, i32 19, i32 3
-  %43 = load i32* %42, align 4, !tbaa !17
-  %44 = icmp eq i32 %41, %43
-  br i1 %44, label %47, label %45
-
-; <label>:45                                      ; preds = %3, %39, %33, %27, %21, %17, %15, %11, %6
-  %errormsg.0.ph.i = phi i8* [ getelementptr inbounds ([24 x i8]* @.str3, i64 0, i64 0), %15 ], [ getelementptr inbounds ([24 x i8]* @.str3, i64 0, i64 0), %17 ], [ getelementptr inbounds ([29 x i8]* @.str2, i64 0, i64 0), %11 ], [ getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), %3 ], [ getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), %6 ], [ getelementptr inbounds ([75 x i8]* @.str4, i64 0, i64 0), %39 ], [ getelementptr inbounds ([75 x i8]* @.str4, i64 0, i64 0), %33 ], [ getelementptr inbounds ([75 x i8]* @.str4, i64 0, i64 0), %27 ], [ getelementptr inbounds ([75 x i8]* @.str4, i64 0, i64 0), %21 ]
-  %46 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 262, i8* getelementptr inbounds ([83 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([22 x i8]* @.str7, i64 0, i64 0), i8* %errormsg.0.ph.i) #6
-  br label %GetLocalHyperslab.exit
-
-; <label>:47                                      ; preds = %39
-  %48 = load i32* %7, align 4, !tbaa !2
-  %49 = icmp eq i32 %48, 0
-  br i1 %49, label %GetLocalHyperslab.exit, label %50
-
-; <label>:50                                      ; preds = %47
-  %51 = getelementptr inbounds %struct.hslab_mapping_t* %1, i64 0, i32 15
-  %52 = load i32* %51, align 4, !tbaa !18
-  %53 = icmp eq i32 %52, 0
-  br i1 %53, label %179, label %54
-
-; <label>:54                                      ; preds = %50
-  %55 = call %struct.PGH* @PUGH_pGH(%struct.cGH* %GH) #6
-  %56 = sext i32 %timelevel to i64
-  %57 = sext i32 %vindex to i64
-  %58 = getelementptr inbounds %struct.PGH* %55, i64 0, i32 7
-  %59 = load i8**** %58, align 8, !tbaa !19
-  %60 = getelementptr inbounds i8*** %59, i64 %57
-  %61 = load i8*** %60, align 8, !tbaa !22
-  %62 = getelementptr inbounds i8** %61, i64 %56
-  %63 = bitcast i8** %62 to %struct.PGA**
-  %64 = load %struct.PGA** %63, align 8, !tbaa !22
-  %65 = getelementptr inbounds %struct.PGA* %64, i64 0, i32 10
-  %66 = load %struct.PGExtras** %65, align 8, !tbaa !23
-  %67 = call i32 @CCTK_VarTypeI(i32 %vindex) #6
-  %68 = icmp slt i32 %hdatatype, 0
-  %.hdatatype.i.i = select i1 %68, i32 %67, i32 %hdatatype
-  %69 = call i32 @CCTK_VarTypeSize(i32 %.hdatatype.i.i) #6
-  %70 = call i32 @CCTK_VarTypeSize(i32 %67) #6
-  %71 = call i8* @CCTK_VarDataPtrI(%struct.cGH* %GH, i32 %timelevel, i32 %vindex) #6
-  %72 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !tbaa !22
-  %73 = call i32 %72(%struct.cGH* %GH) #6
-  %74 = load i32 (%struct.cGH*)** @CCTK_nProcs, align 8, !tbaa !22
-  %75 = call i32 %74(%struct.cGH* %GH) #6
-  %76 = icmp eq i32 %75, 1
-  %.phi.trans.insert.i.i = getelementptr inbounds %struct.hslab_mapping_t* %1, i64 0, i32 11
-  %.pre.i.i = load i32** %.phi.trans.insert.i.i, align 8, !tbaa !25
-  br i1 %76, label %._crit_edge8.i.i, label %77
-
-; <label>:77                                      ; preds = %54
-  %78 = load i32* %.pre.i.i, align 4, !tbaa !26
-  %79 = mul nsw i32 %78, %69
-  %80 = sext i32 %79 to i64
-  %81 = call i8* @malloc(i64 %80) #6
-  br label %._crit_edge8.i.i
-
-._crit_edge8.i.i:                                 ; preds = %77, %54
-  %local_hdata.0.i.i = phi i8* [ %81, %77 ], [ %hdata, %54 ]
-  %82 = getelementptr inbounds %struct.hslab_mapping_t* %1, i64 0, i32 7
-  %83 = load i32** %82, align 8, !tbaa !27
-  %84 = sext i32 %73 to i64
-  %85 = getelementptr inbounds %struct.PGExtras* %66, i64 0, i32 3
-  %86 = load i32*** %85, align 8, !tbaa !28
-  %87 = getelementptr inbounds i32** %86, i64 %84
-  %88 = load i32** %87, align 8, !tbaa !22
-  %89 = load i32* %.pre.i.i, align 4, !tbaa !26
-  %90 = icmp sgt i32 %89, 0
-  br i1 %90, label %.lr.ph.i.i, label %._crit_edge.i.i
-
-.lr.ph.i.i:                                       ; preds = %._crit_edge8.i.i
-  %91 = getelementptr inbounds i32* %83, i64 2
-  %92 = load i32* %91, align 4, !tbaa !26
-  %93 = getelementptr inbounds i32* %88, i64 2
-  %94 = load i32* %93, align 4, !tbaa !26
-  %95 = sub nsw i32 %92, %94
-  %96 = getelementptr inbounds i32* %83, i64 1
-  %97 = load i32* %96, align 4, !tbaa !26
-  %98 = getelementptr inbounds i32* %88, i64 1
-  %99 = load i32* %98, align 4, !tbaa !26
-  %100 = sub nsw i32 %97, %99
-  %101 = load i32* %83, align 4, !tbaa !26
-  %102 = load i32* %88, align 4, !tbaa !26
-  %103 = sub nsw i32 %101, %102
-  %104 = getelementptr inbounds %struct.PGExtras* %66, i64 0, i32 13, i64 0, i64 0
-  %105 = getelementptr inbounds %struct.hslab_mapping_t* %1, i64 0, i32 10
-  %106 = getelementptr inbounds %struct.PGExtras* %66, i64 0, i32 13, i64 0, i64 1
-  %107 = getelementptr inbounds %struct.PGExtras* %66, i64 0, i32 11
-  %108 = icmp eq i32 %67, %.hdatatype.i.i
-  %109 = sext i32 %69 to i64
-  %110 = getelementptr inbounds %struct.hslab_mapping_t* %1, i64 0, i32 16
-  br label %111
-
-; <label>:111                                     ; preds = %160, %.lr.ph.i.i
-  %112 = phi i32 [ %89, %.lr.ph.i.i ], [ %161, %160 ]
-  %i.06.i.i = phi i32 [ %103, %.lr.ph.i.i ], [ %164, %160 ]
-  %local_hdata.15.i.i = phi i8* [ %local_hdata.0.i.i, %.lr.ph.i.i ], [ %local_hdata.2.i.i, %160 ]
-  %j.04.i.i = phi i32 [ %100, %.lr.ph.i.i ], [ %167, %160 ]
-  %k.03.i.i = phi i32 [ %95, %.lr.ph.i.i ], [ %170, %160 ]
-  %local_npoints.02.i.i = phi i32 [ 0, %.lr.ph.i.i ], [ %local_npoints.1.i.i, %160 ]
-  %npoints.01.i.i = phi i32 [ 0, %.lr.ph.i.i ], [ %171, %160 ]
-  %113 = load i32** %104, align 8, !tbaa !22
-  %114 = load i32* %113, align 4, !tbaa !26
-  %115 = icmp slt i32 %i.06.i.i, %114
-  br i1 %115, label %160, label %116
-
-; <label>:116                                     ; preds = %111
-  %117 = load i32** %106, align 8, !tbaa !22
-  %118 = load i32* %117, align 4, !tbaa !26
-  %119 = icmp slt i32 %i.06.i.i, %118
-  br i1 %119, label %120, label %160
-
-; <label>:120                                     ; preds = %116
-  %121 = getelementptr inbounds i32* %113, i64 1
-  %122 = load i32* %121, align 4, !tbaa !26
-  %123 = icmp slt i32 %j.04.i.i, %122
-  br i1 %123, label %160, label %124
-
-; <label>:124                                     ; preds = %120
-  %125 = getelementptr inbounds i32* %117, i64 1
-  %126 = load i32* %125, align 4, !tbaa !26
-  %127 = icmp slt i32 %j.04.i.i, %126
-  br i1 %127, label %128, label %160
-
-; <label>:128                                     ; preds = %124
-  %129 = getelementptr inbounds i32* %113, i64 2
-  %130 = load i32* %129, align 4, !tbaa !26
-  %131 = icmp slt i32 %k.03.i.i, %130
-  br i1 %131, label %160, label %132
-
-; <label>:132                                     ; preds = %128
-  %133 = getelementptr inbounds i32* %117, i64 2
-  %134 = load i32* %133, align 4, !tbaa !26
-  %135 = icmp slt i32 %k.03.i.i, %134
-  br i1 %135, label %136, label %160
-
-; <label>:136                                     ; preds = %132
-  %137 = load i32** %107, align 8, !tbaa !30
-  %138 = getelementptr inbounds i32* %137, i64 1
-  %139 = load i32* %138, align 4, !tbaa !26
-  %140 = mul nsw i32 %139, %j.04.i.i
-  %141 = add nsw i32 %140, %i.06.i.i
-  %142 = getelementptr inbounds i32* %137, i64 2
-  %143 = load i32* %142, align 4, !tbaa !26
-  %144 = mul nsw i32 %143, %k.03.i.i
-  %145 = add nsw i32 %141, %144
-  br i1 %108, label %151, label %146
-
-; <label>:146                                     ; preds = %136
-  %147 = load void (i8*, i8*, i32, i32, i32)** %110, align 8, !tbaa !31
-  %148 = mul nsw i32 %145, %70
-  %149 = sext i32 %148 to i64
-  %150 = getelementptr inbounds i8* %71, i64 %149
-  call void %147(i8* %150, i8* %local_hdata.15.i.i, i32 1, i32 1, i32 1) #6
-  br label %157
-
-; <label>:151                                     ; preds = %136
-  %152 = mul nsw i32 %145, %70
-  %153 = sext i32 %152 to i64
-  %154 = getelementptr inbounds i8* %71, i64 %153
-  %155 = call i64 @llvm.objectsize.i64.p0i8(i8* %local_hdata.15.i.i, i1 false) #5
-  %156 = call i8* @__memcpy_chk(i8* %local_hdata.15.i.i, i8* %154, i64 %109, i64 %155) #6
-  br label %157
-
-; <label>:157                                     ; preds = %151, %146
-  %158 = getelementptr inbounds i8* %local_hdata.15.i.i, i64 %109
-  %159 = add nsw i32 %local_npoints.02.i.i, 1
-  %.pre9.i.i = load i32** %.phi.trans.insert.i.i, align 8, !tbaa !25
-  %.pre10.i.i = load i32* %.pre9.i.i, align 4, !tbaa !26
-  br label %160
-
-; <label>:160                                     ; preds = %157, %132, %128, %124, %120, %116, %111
-  %161 = phi i32 [ %.pre10.i.i, %157 ], [ %112, %132 ], [ %112, %128 ], [ %112, %124 ], [ %112, %120 ], [ %112, %116 ], [ %112, %111 ]
-  %local_npoints.1.i.i = phi i32 [ %159, %157 ], [ %local_npoints.02.i.i, %132 ], [ %local_npoints.02.i.i, %128 ], [ %local_npoints.02.i.i, %124 ], [ %local_npoints.02.i.i, %120 ], [ %local_npoints.02.i.i, %116 ], [ %local_npoints.02.i.i, %111 ]
-  %local_hdata.2.i.i = phi i8* [ %158, %157 ], [ %local_hdata.15.i.i, %132 ], [ %local_hdata.15.i.i, %128 ], [ %local_hdata.15.i.i, %124 ], [ %local_hdata.15.i.i, %120 ], [ %local_hdata.15.i.i, %116 ], [ %local_hdata.15.i.i, %111 ]
-  %162 = load i32** %105, align 8, !tbaa !32
-  %163 = load i32* %162, align 4, !tbaa !26
-  %164 = add nsw i32 %163, %i.06.i.i
-  %165 = getelementptr inbounds i32* %162, i64 1
-  %166 = load i32* %165, align 4, !tbaa !26
-  %167 = add nsw i32 %166, %j.04.i.i
-  %168 = getelementptr inbounds i32* %162, i64 2
-  %169 = load i32* %168, align 4, !tbaa !26
-  %170 = add nsw i32 %169, %k.03.i.i
-  %171 = add nuw nsw i32 %npoints.01.i.i, 1
-  %172 = icmp slt i32 %171, %161
-  br i1 %172, label %111, label %._crit_edge.i.i
-
-._crit_edge.i.i:                                  ; preds = %160, %._crit_edge8.i.i
-  %local_hdata.1.lcssa.i.i = phi i8* [ %local_hdata.0.i.i, %._crit_edge8.i.i ], [ %local_hdata.2.i.i, %160 ]
-  %local_npoints.0.lcssa.i.i = phi i32 [ 0, %._crit_edge8.i.i ], [ %local_npoints.1.i.i, %160 ]
-  %173 = icmp sgt i32 %75, 1
-  br i1 %173, label %174, label %GetLocalHyperslab.exit
-
-; <label>:174                                     ; preds = %._crit_edge.i.i
-  %175 = mul nsw i32 %local_npoints.0.lcssa.i.i, %69
-  %176 = sext i32 %175 to i64
-  %177 = sub nsw i64 0, %176
-  %178 = getelementptr inbounds i8* %local_hdata.1.lcssa.i.i, i64 %177
-  call void @free(i8* %178) #6
-  br label %GetLocalHyperslab.exit
-
-; <label>:179                                     ; preds = %50
-  %180 = icmp slt i32 %hdatatype, 0
-  %181 = getelementptr inbounds %struct.cGroup* %vinfo.i, i64 0, i32 1
-  %182 = load i32* %181, align 4, !tbaa !33
-  %183 = getelementptr inbounds %struct.hslab_mapping_t* %1, i64 0, i32 16
-  %184 = load void (i8*, i8*, i32, i32, i32)** %183, align 8, !tbaa !31
-  br i1 %180, label %.thread.i, label %186
-
-.thread.i:                                        ; preds = %179
-  %185 = icmp eq void (i8*, i8*, i32, i32, i32)* %184, null
-  br i1 %185, label %201, label %199
-
-; <label>:186                                     ; preds = %179
-  %187 = icmp eq i32 %182, %hdatatype
-  %188 = icmp eq void (i8*, i8*, i32, i32, i32)* %184, null
-  br i1 %187, label %198, label %189
-
-; <label>:189                                     ; preds = %186
-  br i1 %188, label %190, label %201
-
-; <label>:190                                     ; preds = %189
-  %191 = call void (i8*, i8*, i32, i32, i32)* (i32, i32)* @PUGHSlabi_GetDatatypeConversionFn(i32 %182, i32 %hdatatype) #6
-  %192 = icmp eq void (i8*, i8*, i32, i32, i32)* %191, null
-  br i1 %192, label %193, label %201
-
-; <label>:193                                     ; preds = %190
-  %194 = load i32* %181, align 4, !tbaa !33
-  %195 = call i8* @CCTK_VarTypeName(i32 %194) #6
-  %196 = call i8* @CCTK_VarTypeName(i32 %hdatatype) #6
-  %197 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 297, i8* getelementptr inbounds ([83 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([67 x i8]* @.str8, i64 0, i64 0), i8* %195, i8* %196) #6
-  br label %GetLocalHyperslab.exit
-
-; <label>:198                                     ; preds = %186
-  br i1 %188, label %201, label %199
-
-; <label>:199                                     ; preds = %198, %.thread.i
-  %.066869.i = phi i32 [ %182, %.thread.i ], [ %hdatatype, %198 ]
-  %200 = call i32 @CCTK_Warn(i32 8, i32 308, i8* getelementptr inbounds ([83 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([106 x i8]* @.str9, i64 0, i64 0)) #6
-  br label %201
-
-; <label>:201                                     ; preds = %199, %198, %190, %189, %.thread.i
-  %.0667.i = phi i32 [ %hdatatype, %190 ], [ %hdatatype, %189 ], [ %.066869.i, %199 ], [ %hdatatype, %198 ], [ %182, %.thread.i ]
-  %conversion_fn.0.i = phi void (i8*, i8*, i32, i32, i32)* [ %191, %190 ], [ %184, %189 ], [ null, %199 ], [ null, %198 ], [ null, %.thread.i ]
-  %202 = load i32* %34, align 4, !tbaa !14
-  %203 = mul nsw i32 %202, 5
-  %204 = sext i32 %203 to i64
-  %205 = shl nsw i64 %204, 2
-  %206 = call i8* @malloc(i64 %205) #6
-  %207 = bitcast i8* %206 to i32*
-  %208 = sext i32 %202 to i64
-  %209 = getelementptr inbounds i32* %207, i64 %208
-  %210 = shl nsw i32 %202, 1
-  %211 = sext i32 %210 to i64
-  %212 = getelementptr inbounds i32* %207, i64 %211
-  %213 = mul nsw i32 %202, 3
-  %214 = sext i32 %213 to i64
-  %215 = getelementptr inbounds i32* %207, i64 %214
-  %216 = shl nsw i32 %202, 2
-  %217 = sext i32 %216 to i64
-  %218 = bitcast i32* %209 to i8*
-  %219 = getelementptr inbounds %struct.hslab_mapping_t* %1, i64 0, i32 5
-  %220 = bitcast i32** %219 to i8**
-  %221 = load i8** %220, align 8, !tbaa !34
-  %222 = shl nsw i64 %208, 2
-  %223 = call i64 @llvm.objectsize.i64.p0i8(i8* %218, i1 false) #5
-  %224 = call i8* @__memcpy_chk(i8* %218, i8* %221, i64 %222, i64 %223) #6
-  %225 = bitcast i32* %212 to i8*
-  %226 = getelementptr inbounds %struct.hslab_mapping_t* %1, i64 0, i32 6
-  %227 = bitcast i32** %226 to i8**
-  %228 = load i8** %227, align 8, !tbaa !35
-  %229 = load i32* %34, align 4, !tbaa !14
-  %230 = sext i32 %229 to i64
-  %231 = shl nsw i64 %230, 2
-  %232 = call i64 @llvm.objectsize.i64.p0i8(i8* %225, i1 false) #5
-  %233 = call i8* @__memcpy_chk(i8* %225, i8* %228, i64 %231, i64 %232) #6
-  %234 = bitcast i32* %215 to i8*
-  %235 = getelementptr inbounds %struct.hslab_mapping_t* %1, i64 0, i32 10
-  %236 = bitcast i32** %235 to i8**
-  %237 = load i8** %236, align 8, !tbaa !32
-  %238 = load i32* %34, align 4, !tbaa !14
-  %239 = sext i32 %238 to i64
-  %240 = shl nsw i64 %239, 2
-  %241 = call i64 @llvm.objectsize.i64.p0i8(i8* %234, i1 false) #5
-  %242 = call i8* @__memcpy_chk(i8* %234, i8* %237, i64 %240, i64 %241) #6
-  %243 = call %struct.PGH* @PUGH_pGH(%struct.cGH* %GH) #6
-  %244 = sext i32 %timelevel to i64
-  %245 = sext i32 %vindex to i64
-  %246 = getelementptr inbounds %struct.PGH* %243, i64 0, i32 7
-  %247 = load i8**** %246, align 8, !tbaa !19
-  %248 = getelementptr inbounds i8*** %247, i64 %245
-  %249 = load i8*** %248, align 8, !tbaa !22
-  %250 = getelementptr inbounds i8** %249, i64 %244
-  %251 = bitcast i8** %250 to %struct.PGA**
-  %252 = load %struct.PGA** %251, align 8, !tbaa !22
-  %253 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !tbaa !22
-  %254 = call i32 %253(%struct.cGH* %GH) #6
-  %255 = call i8* @CCTK_VarDataPtrI(%struct.cGH* %GH, i32 %timelevel, i32 %vindex) #6
-  %256 = getelementptr inbounds %struct.hslab_mapping_t* %1, i64 0, i32 14
-  %257 = load i32* %256, align 4, !tbaa !36
-  %258 = icmp ne i32 %257, 0
-  %259 = icmp eq void (i8*, i8*, i32, i32, i32)* %conversion_fn.0.i, null
-  %or.cond5.i = and i1 %259, %258
-  br i1 %or.cond5.i, label %260, label %268
-
-; <label>:260                                     ; preds = %201
-  %261 = load i32* %7, align 4, !tbaa !2
-  %262 = load i32* %181, align 4, !tbaa !33
-  %263 = call i32 @CCTK_VarTypeSize(i32 %262) #6
-  %264 = mul i32 %263, %261
-  %265 = zext i32 %264 to i64
-  %266 = call i64 @llvm.objectsize.i64.p0i8(i8* %hdata, i1 false) #5
-  %267 = call i8* @__memcpy_chk(i8* %hdata, i8* %255, i64 %265, i64 %266) #6
-  br label %.loopexit22.i
-
-; <label>:268                                     ; preds = %201
-  %269 = getelementptr inbounds i32* %207, i64 %217
-  %270 = load i32* %181, align 4, !tbaa !33
-  %271 = call i32 @CCTK_VarTypeSize(i32 %270) #6
-  %272 = call i32 @CCTK_VarTypeSize(i32 %.0667.i) #6
-  store i32 1, i32* %269, align 4, !tbaa !26
-  %273 = load i32* %34, align 4, !tbaa !14
-  %274 = icmp sgt i32 %273, 1
-  br i1 %274, label %.lr.ph45.i, label %.._crit_edge46.i_crit_edge
-
-.._crit_edge46.i_crit_edge:                       ; preds = %268
-  %.pre = sext i32 %273 to i64
-  br label %._crit_edge46.i
-
-.lr.ph45.i:                                       ; preds = %268
-  %275 = getelementptr inbounds %struct.PGA* %252, i64 0, i32 10
-  %276 = load %struct.PGExtras** %275, align 8, !tbaa !23
-  %277 = getelementptr inbounds %struct.PGExtras* %276, i64 0, i32 6
-  %278 = load i32** %277, align 8, !tbaa !37
-  %279 = sext i32 %273 to i64
-  %280 = add nsw i64 %279, -1
-  br label %281
-
-; <label>:281                                     ; preds = %281, %.lr.ph45.i
-  %indvars.iv58.i = phi i64 [ 1, %.lr.ph45.i ], [ %indvars.iv.next59.i, %281 ]
-  %282 = add nsw i64 %indvars.iv58.i, -1
-  %.sum15.i = add nsw i64 %282, %217
-  %283 = getelementptr inbounds i32* %207, i64 %.sum15.i
-  %284 = load i32* %283, align 4, !tbaa !26
-  %285 = getelementptr inbounds i32* %278, i64 %282
-  %286 = load i32* %285, align 4, !tbaa !26
-  %287 = mul nsw i32 %286, %284
-  %.sum16.i = add nsw i64 %indvars.iv58.i, %217
-  %288 = getelementptr inbounds i32* %207, i64 %.sum16.i
-  store i32 %287, i32* %288, align 4, !tbaa !26
-  %indvars.iv.next59.i = add nuw nsw i64 %indvars.iv58.i, 1
-  %exitcond3 = icmp eq i64 %indvars.iv58.i, %280
-  br i1 %exitcond3, label %._crit_edge46.i, label %281
-
-._crit_edge46.i:                                  ; preds = %281, %.._crit_edge46.i_crit_edge
-  %.pre-phi = phi i64 [ %.pre, %.._crit_edge46.i_crit_edge ], [ %279, %281 ]
-  %289 = load i32* %212, align 4, !tbaa !26
-  %290 = load i32* %209, align 4, !tbaa !26
-  %291 = sub nsw i32 %289, %290
-  %292 = load i32* %215, align 4, !tbaa !26
-  %293 = sdiv i32 %291, %292
-  %294 = srem i32 %291, %292
-  %not..i = icmp ne i32 %294, 0
-  %295 = zext i1 %not..i to i32
-  %..i = add nsw i32 %295, %293
-  %296 = mul nsw i32 %..i, %272
-  %297 = icmp sgt i32 %273, 0
-  br i1 %297, label %.lr.ph40.i.preheader, label %._crit_edge41.i
-
-.lr.ph40.i.preheader:                             ; preds = %._crit_edge46.i
-  %298 = add nsw i64 %.pre-phi, -1
-  br label %.lr.ph40.i
-
-.lr.ph40.i:                                       ; preds = %.lr.ph40.i, %.lr.ph40.i.preheader
-  %indvars.iv56.i = phi i64 [ %indvars.iv.next57.i, %.lr.ph40.i ], [ 0, %.lr.ph40.i.preheader ]
-  %.sum12.i = add nsw i64 %indvars.iv56.i, %208
-  %299 = getelementptr inbounds i32* %207, i64 %.sum12.i
-  %300 = load i32* %299, align 4, !tbaa !26
-  %301 = mul nsw i32 %300, %271
-  store i32 %301, i32* %299, align 4, !tbaa !26
-  %.sum13.i = add nsw i64 %indvars.iv56.i, %211
-  %302 = getelementptr inbounds i32* %207, i64 %.sum13.i
-  %303 = load i32* %302, align 4, !tbaa !26
-  %304 = mul nsw i32 %303, %271
-  store i32 %304, i32* %302, align 4, !tbaa !26
-  %.sum14.i = add nsw i64 %indvars.iv56.i, %214
-  %305 = getelementptr inbounds i32* %207, i64 %.sum14.i
-  %306 = load i32* %305, align 4, !tbaa !26
-  %307 = mul nsw i32 %306, %271
-  store i32 %307, i32* %305, align 4, !tbaa !26
-  %indvars.iv.next57.i = add nuw nsw i64 %indvars.iv56.i, 1
-  %exitcond = icmp eq i64 %indvars.iv56.i, %298
-  br i1 %exitcond, label %._crit_edge41.i, label %.lr.ph40.i
-
-._crit_edge41.i:                                  ; preds = %.lr.ph40.i, %._crit_edge46.i
-  %308 = shl nsw i64 %.pre-phi, 2
-  %309 = call i64 @llvm.objectsize.i64.p0i8(i8* %206, i1 false) #5
-  %310 = call i8* @__memcpy_chk(i8* %206, i8* %218, i64 %308, i64 %309) #6
-  %311 = getelementptr inbounds i8* %206, i64 4
-  %312 = bitcast i8* %311 to i32*
-  %.sum8.i = or i64 %211, 1
-  %313 = getelementptr inbounds i32* %207, i64 %.sum8.i
-  %314 = sext i32 %296 to i64
-  %.sum.i = add nsw i64 %214, 1
-  %315 = getelementptr inbounds i32* %207, i64 %.sum.i
-  %316 = icmp sgt i32 %296, 0
-  %317 = sext i32 %271 to i64
-  %318 = sext i32 %272 to i64
-  %.pre61.i = load i32* %34, align 4, !tbaa !14
-  br label %319
-
-; <label>:319                                     ; preds = %384, %._crit_edge41.i
-  %320 = phi i32 [ %.pre61.i, %._crit_edge41.i ], [ %382, %384 ]
-  %typed_hdata.0.i = phi i8* [ %hdata, %._crit_edge41.i ], [ %385, %384 ]
-  %321 = icmp sgt i32 %320, 1
-  br i1 %321, label %325, label %.loopexit20.thread71.i
-
-.loopexit20.thread71.i:                           ; preds = %319
-  %322 = load i32* %207, align 4, !tbaa !26
-  %323 = sext i32 %322 to i64
-  %324 = getelementptr inbounds i8* %255, i64 %323
-  br label %._crit_edge33.i
-
-; <label>:325                                     ; preds = %319
-  %326 = load i32* %312, align 4, !tbaa !26
-  %327 = load i32* %313, align 4, !tbaa !26
-  %328 = icmp slt i32 %326, %327
-  br i1 %328, label %.lr.ph32.i, label %.preheader21.i
-
-.preheader21.i:                                   ; preds = %325
-  %329 = icmp sgt i32 %320, 2
-  br i1 %329, label %.lr.ph.i, label %344
-
-.lr.ph.i:                                         ; preds = %.preheader21.i
-  %330 = sext i32 %320 to i64
-  br label %331
-
-; <label>:331                                     ; preds = %340, %.lr.ph.i
-  %indvars.iv.i = phi i64 [ 2, %.lr.ph.i ], [ %indvars.iv.next.i, %340 ]
-  %.sum10.i = add nsw i64 %indvars.iv.i, %214
-  %332 = getelementptr inbounds i32* %207, i64 %.sum10.i
-  %333 = load i32* %332, align 4, !tbaa !26
-  %334 = getelementptr inbounds i32* %207, i64 %indvars.iv.i
-  %335 = load i32* %334, align 4, !tbaa !26
-  %336 = add nsw i32 %335, %333
-  store i32 %336, i32* %334, align 4, !tbaa !26
-  %.sum11.i = add nsw i64 %indvars.iv.i, %211
-  %337 = getelementptr inbounds i32* %207, i64 %.sum11.i
-  %338 = load i32* %337, align 4, !tbaa !26
-  %339 = icmp slt i32 %336, %338
-  br i1 %339, label %._crit_edge.i, label %340
-
-; <label>:340                                     ; preds = %331
-  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1
-  %341 = icmp slt i64 %indvars.iv.next.i, %330
-  br i1 %341, label %331, label %._crit_edge24.i
-
-._crit_edge.i:                                    ; preds = %331
-  %342 = trunc i64 %indvars.iv.i to i32
-  br label %344
-
-._crit_edge24.i:                                  ; preds = %340
-  %343 = trunc i64 %indvars.iv.next.i to i32
-  br label %344
-
-; <label>:344                                     ; preds = %._crit_edge24.i, %._crit_edge.i, %.preheader21.i
-  %vdim.2.lcssa.i = phi i32 [ %342, %._crit_edge.i ], [ %343, %._crit_edge24.i ], [ 2, %.preheader21.i ]
-  %345 = icmp slt i32 %vdim.2.lcssa.i, %320
-  br i1 %345, label %.preheader19.i, label %.loopexit22.i
-
-.preheader19.i:                                   ; preds = %344
-  %346 = icmp sgt i32 %vdim.2.lcssa.i, 1
-  br i1 %346, label %.lr.ph28.i, label %.lr.ph32.i
-
-.lr.ph28.i:                                       ; preds = %.preheader19.i
-  %347 = sext i32 %vdim.2.lcssa.i to i64
-  br label %348
-
-; <label>:348                                     ; preds = %348, %.lr.ph28.i
-  %indvars.iv50.i = phi i64 [ %347, %.lr.ph28.i ], [ %indvars.iv.next51.i, %348 ]
-  %indvars.iv.next51.i = add nsw i64 %indvars.iv50.i, -1
-  %.sum9.i = add nsw i64 %indvars.iv.next51.i, %208
-  %349 = getelementptr inbounds i32* %207, i64 %.sum9.i
-  %350 = load i32* %349, align 4, !tbaa !26
-  %351 = getelementptr inbounds i32* %207, i64 %indvars.iv.next51.i
-  store i32 %350, i32* %351, align 4, !tbaa !26
-  %352 = icmp sgt i64 %indvars.iv.next51.i, 1
-  br i1 %352, label %348, label %.lr.ph32.i
-
-.lr.ph32.i:                                       ; preds = %348, %.preheader19.i, %325
-  %.pn.in = load i32* %207, align 4
-  %.pn = sext i32 %.pn.in to i64
-  %353 = getelementptr inbounds i8* %255, i64 %.pn
-  %354 = sext i32 %320 to i64
-  br label %355
-
-; <label>:355                                     ; preds = %355, %.lr.ph32.i
-  %indvars.iv52.i = phi i64 [ 1, %.lr.ph32.i ], [ %indvars.iv.next53.i, %355 ]
-  %typed_vdata.029.i = phi i8* [ %353, %.lr.ph32.i ], [ %362, %355 ]
-  %356 = getelementptr inbounds i32* %207, i64 %indvars.iv52.i
-  %357 = load i32* %356, align 4, !tbaa !26
-  %.sum7.i = add nsw i64 %indvars.iv52.i, %217
-  %358 = getelementptr inbounds i32* %207, i64 %.sum7.i
-  %359 = load i32* %358, align 4, !tbaa !26
-  %360 = mul nsw i32 %359, %357
-  %361 = sext i32 %360 to i64
-  %362 = getelementptr inbounds i8* %typed_vdata.029.i, i64 %361
-  %indvars.iv.next53.i = add nuw nsw i64 %indvars.iv52.i, 1
-  %363 = icmp slt i64 %indvars.iv.next53.i, %354
-  br i1 %363, label %355, label %._crit_edge33.i
-
-._crit_edge33.i:                                  ; preds = %355, %.loopexit20.thread71.i
-  %typed_vdata.0.lcssa.i = phi i8* [ %324, %.loopexit20.thread71.i ], [ %362, %355 ]
-  %364 = load i32* %215, align 4, !tbaa !26
-  %365 = icmp eq i32 %364, %271
-  %366 = load void (i8*, i8*, i32, i32, i32)** %183, align 8, !tbaa !31
-  %367 = icmp ne void (i8*, i8*, i32, i32, i32)* %366, null
-  br i1 %365, label %368, label %373
-
-; <label>:368                                     ; preds = %._crit_edge33.i
-  br i1 %367, label %369, label %370
-
-; <label>:369                                     ; preds = %368
-  call void %366(i8* %typed_vdata.0.lcssa.i, i8* %typed_hdata.0.i, i32 %..i, i32 1, i32 1) #6
-  br label %.loopexit.i
-
-; <label>:370                                     ; preds = %368
-  %371 = call i64 @llvm.objectsize.i64.p0i8(i8* %typed_hdata.0.i, i1 false) #5
-  %372 = call i8* @__memcpy_chk(i8* %typed_hdata.0.i, i8* %typed_vdata.0.lcssa.i, i64 %314, i64 %371) #6
-  br label %.loopexit.i
-
-; <label>:373                                     ; preds = %._crit_edge33.i
-  br i1 %367, label %374, label %.preheader.i
-
-.preheader.i:                                     ; preds = %373
-  br i1 %316, label %.lr.ph37.i, label %.loopexit.i
-
-; <label>:374                                     ; preds = %373
-  call void %366(i8* %typed_vdata.0.lcssa.i, i8* %typed_hdata.0.i, i32 %..i, i32 %364, i32 1) #6
-  br label %.loopexit.i
-
-.lr.ph37.i:                                       ; preds = %.preheader.i, %.lr.ph37.i
-  %indvars.iv54.i = phi i64 [ %indvars.iv.next55.i, %.lr.ph37.i ], [ 0, %.preheader.i ]
-  %typed_vdata.135.i = phi i8* [ %380, %.lr.ph37.i ], [ %typed_vdata.0.lcssa.i, %.preheader.i ]
-  %375 = getelementptr inbounds i8* %typed_hdata.0.i, i64 %indvars.iv54.i
-  %376 = call i64 @llvm.objectsize.i64.p0i8(i8* %375, i1 false) #5
-  %377 = call i8* @__memcpy_chk(i8* %375, i8* %typed_vdata.135.i, i64 %317, i64 %376) #6
-  %378 = load i32* %215, align 4, !tbaa !26
-  %379 = sext i32 %378 to i64
-  %380 = getelementptr inbounds i8* %typed_vdata.135.i, i64 %379
-  %indvars.iv.next55.i = add i64 %indvars.iv54.i, %318
-  %381 = icmp slt i64 %indvars.iv.next55.i, %314
-  br i1 %381, label %.lr.ph37.i, label %.loopexit.i
-
-.loopexit.i:                                      ; preds = %.lr.ph37.i, %374, %.preheader.i, %370, %369
-  %382 = load i32* %34, align 4, !tbaa !14
-  %383 = icmp sgt i32 %382, 1
-  br i1 %383, label %384, label %.loopexit22.i
-
-; <label>:384                                     ; preds = %.loopexit.i
-  %385 = getelementptr inbounds i8* %typed_hdata.0.i, i64 %314
-  %386 = load i32* %315, align 4, !tbaa !26
-  %387 = load i32* %312, align 4, !tbaa !26
-  %388 = add nsw i32 %387, %386
-  store i32 %388, i32* %312, align 4, !tbaa !26
-  br label %319
-
-.loopexit22.i:                                    ; preds = %.loopexit.i, %344, %260
-  call void @free(i8* %206) #6
-  br label %GetLocalHyperslab.exit
-
-GetLocalHyperslab.exit:                           ; preds = %45, %47, %._crit_edge.i.i, %174, %193, %.loopexit22.i
-  %.0.i = phi i32 [ -1, %45 ], [ 0, %.loopexit22.i ], [ -1, %193 ], [ 0, %47 ], [ 0, %._crit_edge.i.i ], [ 0, %174 ]
-  call void @llvm.lifetime.end(i64 32, i8* %4)
-  br label %389
-
-; <label>:389                                     ; preds = %0, %GetLocalHyperslab.exit
-  %.0 = phi i32 [ %.0.i, %GetLocalHyperslab.exit ], [ -1, %0 ]
-  ret i32 %.0
+  call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !54), !dbg !288
+  call void @llvm.dbg.value(metadata !{i32 %mapping_handle}, i64 0, metadata !55), !dbg !289
+  call void @llvm.dbg.value(metadata !{i32 %vindex}, i64 0, metadata !56), !dbg !290
+  call void @llvm.dbg.value(metadata !{i32 %timelevel}, i64 0, metadata !57), !dbg !291
+  call void @llvm.dbg.value(metadata !{i32 %hdatatype}, i64 0, metadata !58), !dbg !292
+  call void @llvm.dbg.value(metadata !{i8* %hdata}, i64 0, metadata !59), !dbg !293
+  %call = call %struct.hslab_mapping_t* @PUGHSlabi_GetMapping(i32 %mapping_handle) #6, !dbg !294
+  call void @llvm.dbg.value(metadata !{%struct.hslab_mapping_t* %call}, i64 0, metadata !61), !dbg !294
+  %cmp = icmp eq %struct.hslab_mapping_t* %call, null, !dbg !295
+  br i1 %cmp, label %return, label %if.end, !dbg !295
+
+if.end:                                           ; preds = %entry
+  %0 = bitcast %struct.cGroup* %vinfo.i to i8*, !dbg !296
+  call void @llvm.lifetime.start(i64 32, i8* %0) #5, !dbg !296
+  call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !298) #5, !dbg !296
+  call void @llvm.dbg.value(metadata !{%struct.hslab_mapping_t* %call}, i64 0, metadata !299) #5, !dbg !300
+  call void @llvm.dbg.value(metadata !{i32 %vindex}, i64 0, metadata !301) #5, !dbg !302
+  call void @llvm.dbg.value(metadata !{i32 %timelevel}, i64 0, metadata !303) #5, !dbg !304
+  call void @llvm.dbg.value(metadata !{i32 %hdatatype}, i64 0, metadata !305) #5, !dbg !306
+  call void @llvm.dbg.value(metadata !{i8* %hdata}, i64 0, metadata !307) #5, !dbg !308
+  call void @llvm.dbg.declare(metadata !{%struct.cGroup* %vinfo.i}, metadata !153) #5, !dbg !309
+  call void @llvm.dbg.value(metadata !310, i64 0, metadata !311) #5, !dbg !312
+  %tobool.i = icmp eq %struct.cGH* %GH, null, !dbg !313
+  br i1 %tobool.i, label %if.then34.i, label %lor.lhs.false3.i, !dbg !313
+
+lor.lhs.false3.i:                                 ; preds = %if.end
+  %totals.i = getelementptr inbounds %struct.hslab_mapping_t* %call, i64 0, i32 13, !dbg !313
+  %1 = load i32* %totals.i, align 4, !dbg !313, !tbaa !314
+  %cmp.i = icmp ne i32 %1, 0, !dbg !313
+  %tobool4.i = icmp eq i8* %hdata, null, !dbg !313
+  %or.cond413.i = and i1 %cmp.i, %tobool4.i, !dbg !313
+  br i1 %or.cond413.i, label %if.then34.i, label %if.else.i, !dbg !313
+
+if.else.i:                                        ; preds = %lor.lhs.false3.i
+  %call.i = call i32 @CCTK_GroupIndexFromVarI(i32 %vindex) #6, !dbg !317
+  %call5.i = call i32 @CCTK_GroupData(i32 %call.i, %struct.cGroup* %vinfo.i) #6, !dbg !317
+  %cmp6.i = icmp slt i32 %call5.i, 0, !dbg !317
+  br i1 %cmp6.i, label %if.then34.i, label %if.else8.i, !dbg !317
+
+if.else8.i:                                       ; preds = %if.else.i
+  %cmp9.i = icmp slt i32 %timelevel, 0, !dbg !318
+  br i1 %cmp9.i, label %if.then34.i, label %lor.lhs.false10.i, !dbg !318
+
+lor.lhs.false10.i:                                ; preds = %if.else8.i
+  %numtimelevels.i = getelementptr inbounds %struct.cGroup* %vinfo.i, i64 0, i32 6, !dbg !318
+  %2 = load i32* %numtimelevels.i, align 4, !dbg !318, !tbaa !314
+  %cmp11.i = icmp sgt i32 %2, %timelevel, !dbg !318
+  br i1 %cmp11.i, label %if.else13.i, label %if.then34.i, !dbg !318
+
+if.else13.i:                                      ; preds = %lor.lhs.false10.i
+  %grouptype.i = getelementptr inbounds %struct.cGroup* %vinfo.i, i64 0, i32 0, !dbg !319
+  %3 = load i32* %grouptype.i, align 4, !dbg !319, !tbaa !314
+  %grouptype15.i = getelementptr inbounds %struct.hslab_mapping_t* %call, i64 0, i32 19, i32 0, !dbg !319
+  %4 = load i32* %grouptype15.i, align 4, !dbg !319, !tbaa !314
+  %cmp16.i = icmp eq i32 %3, %4, !dbg !319
+  br i1 %cmp16.i, label %lor.lhs.false17.i, label %if.then34.i, !dbg !319
+
+lor.lhs.false17.i:                                ; preds = %if.else13.i
+  %disttype.i = getelementptr inbounds %struct.cGroup* %vinfo.i, i64 0, i32 2, !dbg !319
+  %5 = load i32* %disttype.i, align 4, !dbg !319, !tbaa !314
+  %disttype19.i = getelementptr inbounds %struct.hslab_mapping_t* %call, i64 0, i32 19, i32 2, !dbg !319
+  %6 = load i32* %disttype19.i, align 4, !dbg !319, !tbaa !314
+  %cmp20.i = icmp eq i32 %5, %6, !dbg !319
+  br i1 %cmp20.i, label %lor.lhs.false21.i, label %if.then34.i, !dbg !319
+
+lor.lhs.false21.i:                                ; preds = %lor.lhs.false17.i
+  %dim.i = getelementptr inbounds %struct.cGroup* %vinfo.i, i64 0, i32 4, !dbg !319
+  %7 = load i32* %dim.i, align 4, !dbg !319, !tbaa !314
+  %dim23.i = getelementptr inbounds %struct.hslab_mapping_t* %call, i64 0, i32 19, i32 4, !dbg !319
+  %8 = load i32* %dim23.i, align 4, !dbg !319, !tbaa !314
+  %cmp24.i = icmp eq i32 %7, %8, !dbg !319
+  br i1 %cmp24.i, label %lor.lhs.false25.i, label %if.then34.i, !dbg !319
+
+lor.lhs.false25.i:                                ; preds = %lor.lhs.false21.i
+  %stagtype.i = getelementptr inbounds %struct.cGroup* %vinfo.i, i64 0, i32 3, !dbg !319
+  %9 = load i32* %stagtype.i, align 4, !dbg !319, !tbaa !314
+  %stagtype27.i = getelementptr inbounds %struct.hslab_mapping_t* %call, i64 0, i32 19, i32 3, !dbg !319
+  %10 = load i32* %stagtype27.i, align 4, !dbg !319, !tbaa !314
+  %cmp28.i = icmp eq i32 %9, %10, !dbg !319
+  br i1 %cmp28.i, label %if.end36.i, label %if.then34.i, !dbg !319
+
+if.then34.i:                                      ; preds = %lor.lhs.false25.i, %lor.lhs.false21.i, %lor.lhs.false17.i, %if.else13.i, %lor.lhs.false10.i, %if.else8.i, %if.else.i, %lor.lhs.false3.i, %if.end
+  %errormsg.0.ph.i = phi i8* [ getelementptr inbounds ([54 x i8]* @.str, i64 0, i64 0), %lor.lhs.false3.i ], [ getelementptr inbounds ([54 x i8]* @.str, i64 0, i64 0), %if.end ], [ getelementptr inbounds ([29 x i8]* @.str1, i64 0, i64 0), %if.else.i ], [ getelementptr inbounds ([24 x i8]* @.str2, i64 0, i64 0), %lor.lhs.false10.i ], [ getelementptr inbounds ([24 x i8]* @.str2, i64 0, i64 0), %if.else8.i ], [ getelementptr inbounds ([75 x i8]* @.str3, i64 0, i64 0), %lor.lhs.false25.i ], [ getelementptr inbounds ([75 x i8]* @.str3, i64 0, i64 0), %lor.lhs.false21.i ], [ getelementptr inbounds ([75 x i8]* @.str3, i64 0, i64 0), %lor.lhs.false17.i ], [ getelementptr inbounds ([75 x i8]* @.str3, i64 0, i64 0), %if.else13.i ]
+  %call35.i = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 262, i8* getelementptr inbounds ([71 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([22 x i8]* @.str6, i64 0, i64 0), i8* %errormsg.0.ph.i) #6, !dbg !320
+  br label %return, !dbg !322
+
+if.end36.i:                                       ; preds = %lor.lhs.false25.i
+  %11 = load i32* %totals.i, align 4, !dbg !323, !tbaa !314
+  %cmp38.i = icmp eq i32 %11, 0, !dbg !323
+  br i1 %cmp38.i, label %return, label %if.end40.i, !dbg !323
+
+if.end40.i:                                       ; preds = %if.end36.i
+  %is_diagonal_in_3D.i = getelementptr inbounds %struct.hslab_mapping_t* %call, i64 0, i32 15, !dbg !324
+  %12 = load i32* %is_diagonal_in_3D.i, align 4, !dbg !324, !tbaa !314
+  %tobool41.i = icmp eq i32 %12, 0, !dbg !324
+  br i1 %tobool41.i, label %if.end44.i, label %if.then42.i, !dbg !324
+
+if.then42.i:                                      ; preds = %if.end40.i
+  %call.i.i = call %struct.PGH* @PUGH_pGH(%struct.cGH* %GH) #6, !dbg !325
+  call void @llvm.dbg.value(metadata !{%struct.PGH* %call.i.i}, i64 0, metadata !328) #5, !dbg !325
+  %idxprom.i.i = sext i32 %timelevel to i64, !dbg !329
+  %idxprom1.i.i = sext i32 %vindex to i64, !dbg !329
+  %variables.i.i = getelementptr inbounds %struct.PGH* %call.i.i, i64 0, i32 7, !dbg !329
+  %13 = load i8**** %variables.i.i, align 8, !dbg !329, !tbaa !330
+  %arrayidx.i.i = getelementptr inbounds i8*** %13, i64 %idxprom1.i.i, !dbg !329
+  %14 = load i8*** %arrayidx.i.i, align 8, !dbg !329, !tbaa !330
+  %arrayidx2.i.i = getelementptr inbounds i8** %14, i64 %idxprom.i.i, !dbg !329
+  %15 = load i8** %arrayidx2.i.i, align 8, !dbg !329, !tbaa !330
+  %extras3.i.i = getelementptr inbounds i8* %15, i64 56, !dbg !329
+  %16 = bitcast i8* %extras3.i.i to %struct.PGExtras**, !dbg !329
+  %17 = load %struct.PGExtras** %16, align 8, !dbg !329, !tbaa !330
+  call void @llvm.dbg.value(metadata !{%struct.PGExtras* %17}, i64 0, metadata !331) #5, !dbg !329
+  %call4.i.i = call i32 @CCTK_VarTypeI(i32 %vindex) #6, !dbg !332
+  call void @llvm.dbg.value(metadata !{i32 %call4.i.i}, i64 0, metadata !333) #5, !dbg !332
+  %cmp.i.i = icmp slt i32 %hdatatype, 0, !dbg !334
+  call void @llvm.dbg.value(metadata !{i32 %call4.i.i}, i64 0, metadata !335) #5, !dbg !336
+  %call4.hdatatype.i.i = select i1 %cmp.i.i, i32 %call4.i.i, i32 %hdatatype, !dbg !334
+  %call5.i.i = call i32 @CCTK_VarTypeSize(i32 %call4.hdatatype.i.i) #6, !dbg !338
+  call void @llvm.dbg.value(metadata !{i32 %call5.i.i}, i64 0, metadata !339) #5, !dbg !338
+  %call6.i.i = call i32 @CCTK_VarTypeSize(i32 %call4.i.i) #6, !dbg !340
+  call void @llvm.dbg.value(metadata !{i32 %call6.i.i}, i64 0, metadata !341) #5, !dbg !340
+  %call7.i.i = call i8* @CCTK_VarDataPtrI(%struct.cGH* %GH, i32 %timelevel, i32 %vindex) #6, !dbg !342
+  call void @llvm.dbg.value(metadata !{i8* %call7.i.i}, i64 0, metadata !343) #5, !dbg !342
+  %18 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !344, !tbaa !330
+  %call8.i.i = call i32 %18(%struct.cGH* %GH) #6, !dbg !344
+  call void @llvm.dbg.value(metadata !{i32 %call8.i.i}, i64 0, metadata !345) #5, !dbg !344
+  %19 = load i32 (%struct.cGH*)** @CCTK_nProcs, align 8, !dbg !346, !tbaa !330
+  %call9.i.i = call i32 %19(%struct.cGH* %GH) #6, !dbg !346
+  call void @llvm.dbg.value(metadata !{i32 %call9.i.i}, i64 0, metadata !347) #5, !dbg !346
+  %cmp10.i.i = icmp eq i32 %call9.i.i, 1, !dbg !348
+  %global_hsize33.phi.trans.insert.i.i = getelementptr inbounds %struct.hslab_mapping_t* %call, i64 0, i32 11
+  %.pre10.i.i = load i32** %global_hsize33.phi.trans.insert.i.i, align 8, !dbg !349, !tbaa !330
+  br i1 %cmp10.i.i, label %if.end14.i.i, label %if.else.i.i, !dbg !348
+
+if.else.i.i:                                      ; preds = %if.then42.i
+  %20 = load i32* %.pre10.i.i, align 4, !dbg !351, !tbaa !314
+  %mul.i.i = mul nsw i32 %20, %call5.i.i, !dbg !351
+  %conv.i.i = sext i32 %mul.i.i to i64, !dbg !351
+  %call13.i.i = call noalias i8* @malloc(i64 %conv.i.i) #6, !dbg !351
+  call void @llvm.dbg.value(metadata !{i8* %call13.i.i}, i64 0, metadata !353) #5, !dbg !351
+  br label %if.end14.i.i
+
+if.end14.i.i:                                     ; preds = %if.else.i.i, %if.then42.i
+  %local_hdata.0.i.i = phi i8* [ %call13.i.i, %if.else.i.i ], [ %hdata, %if.then42.i ]
+  %global_startpoint.i.i = getelementptr inbounds %struct.hslab_mapping_t* %call, i64 0, i32 7, !dbg !354
+  %21 = load i32** %global_startpoint.i.i, align 8, !dbg !354, !tbaa !330
+  %idxprom16.i.i = sext i32 %call8.i.i to i64, !dbg !354
+  %lb.i.i = getelementptr inbounds %struct.PGExtras* %17, i64 0, i32 3, !dbg !354
+  %22 = load i32*** %lb.i.i, align 8, !dbg !354, !tbaa !330
+  %arrayidx17.i.i = getelementptr inbounds i32** %22, i64 %idxprom16.i.i, !dbg !354
+  %23 = load i32** %arrayidx17.i.i, align 8, !dbg !354, !tbaa !330
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !355) #5, !dbg !356
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !357) #5, !dbg !349
+  %24 = load i32* %.pre10.i.i, align 4, !dbg !349, !tbaa !314
+  %cmp351.i.i = icmp sgt i32 %24, 0, !dbg !349
+  br i1 %cmp351.i.i, label %for.body.lr.ph.i.i, label %for.end.i.i, !dbg !349
+
+for.body.lr.ph.i.i:                               ; preds = %if.end14.i.i
+  %arrayidx31.i.i = getelementptr inbounds i32* %23, i64 2, !dbg !358
+  %arrayidx27.i.i = getelementptr inbounds i32* %21, i64 2, !dbg !358
+  %arrayidx24.i.i = getelementptr inbounds i32* %23, i64 1, !dbg !359
+  %arrayidx20.i.i = getelementptr inbounds i32* %21, i64 1, !dbg !359
+  %25 = load i32* %arrayidx31.i.i, align 4, !dbg !358, !tbaa !314
+  %26 = load i32* %arrayidx27.i.i, align 4, !dbg !358, !tbaa !314
+  %27 = load i32* %arrayidx24.i.i, align 4, !dbg !359, !tbaa !314
+  %28 = load i32* %arrayidx20.i.i, align 4, !dbg !359, !tbaa !314
+  %29 = load i32* %23, align 4, !dbg !354, !tbaa !314
+  %30 = load i32* %21, align 4, !dbg !354, !tbaa !314
+  %sub32.i.i = sub nsw i32 %26, %25, !dbg !358
+  %sub25.i.i = sub nsw i32 %28, %27, !dbg !359
+  %sub.i.i = sub nsw i32 %30, %29, !dbg !354
+  %arrayidx38.i.i = getelementptr inbounds %struct.PGExtras* %17, i64 0, i32 13, i64 0, i64 0, !dbg !360
+  %downsample.i.i = getelementptr inbounds %struct.hslab_mapping_t* %call, i64 0, i32 10, !dbg !362
+  %arrayidx44.i.i = getelementptr inbounds %struct.PGExtras* %17, i64 0, i32 13, i64 0, i64 1, !dbg !360
+  %hyper_volume.i.i = getelementptr inbounds %struct.PGExtras* %17, i64 0, i32 11, !dbg !363
+  %cmp83.i.i = icmp eq i32 %call4.i.i, %call4.hdatatype.i.i, !dbg !365
+  %conv91.i.i = sext i32 %call5.i.i to i64, !dbg !366
+  %conversion_fn.i.i = getelementptr inbounds %struct.hslab_mapping_t* %call, i64 0, i32 16, !dbg !368
+  br label %for.body.i.i, !dbg !349
+
+for.body.i.i:                                     ; preds = %if.end95.for.body_crit_edge.i.i, %for.body.lr.ph.i.i
+  %31 = phi i32 [ %24, %for.body.lr.ph.i.i ], [ %44, %if.end95.for.body_crit_edge.i.i ]
+  %i.07.i.i = phi i32 [ %sub.i.i, %for.body.lr.ph.i.i ], [ %add97.i.i, %if.end95.for.body_crit_edge.i.i ]
+  %local_hdata.16.i.i = phi i8* [ %local_hdata.0.i.i, %for.body.lr.ph.i.i ], [ %local_hdata.2.i.i, %if.end95.for.body_crit_edge.i.i ]
+  %j.05.i.i = phi i32 [ %sub25.i.i, %for.body.lr.ph.i.i ], [ %add100.i.i, %if.end95.for.body_crit_edge.i.i ]
+  %k.04.i.i = phi i32 [ %sub32.i.i, %for.body.lr.ph.i.i ], [ %add103.i.i, %if.end95.for.body_crit_edge.i.i ]
+  %local_npoints.03.i.i = phi i32 [ 0, %for.body.lr.ph.i.i ], [ %local_npoints.1.i.i, %if.end95.for.body_crit_edge.i.i ]
+  %npoints.02.i.i = phi i32 [ 1, %for.body.lr.ph.i.i ], [ %phitmp.i.i, %if.end95.for.body_crit_edge.i.i ]
+  %32 = load i32** %arrayidx38.i.i, align 8, !dbg !360, !tbaa !330
+  %33 = load i32* %32, align 4, !dbg !360, !tbaa !314
+  %cmp40.i.i = icmp slt i32 %i.07.i.i, %33, !dbg !360
+  br i1 %cmp40.i.i, label %if.end95.i.i, label %land.lhs.true.i.i, !dbg !360
+
+land.lhs.true.i.i:                                ; preds = %for.body.i.i
+  %34 = load i32** %arrayidx44.i.i, align 8, !dbg !360, !tbaa !330
+  %35 = load i32* %34, align 4, !dbg !360, !tbaa !314
+  %cmp46.i.i = icmp slt i32 %i.07.i.i, %35, !dbg !360
+  br i1 %cmp46.i.i, label %land.lhs.true48.i.i, label %if.end95.i.i, !dbg !360
+
+land.lhs.true48.i.i:                              ; preds = %land.lhs.true.i.i
+  %arrayidx52.i.i = getelementptr inbounds i32* %32, i64 1, !dbg !360
+  %36 = load i32* %arrayidx52.i.i, align 4, !dbg !360, !tbaa !314
+  %cmp53.i.i = icmp slt i32 %j.05.i.i, %36, !dbg !360
+  br i1 %cmp53.i.i, label %if.end95.i.i, label %land.lhs.true55.i.i, !dbg !360
+
+land.lhs.true55.i.i:                              ; preds = %land.lhs.true48.i.i
+  %arrayidx59.i.i = getelementptr inbounds i32* %34, i64 1, !dbg !360
+  %37 = load i32* %arrayidx59.i.i, align 4, !dbg !360, !tbaa !314
+  %cmp60.i.i = icmp slt i32 %j.05.i.i, %37, !dbg !360
+  br i1 %cmp60.i.i, label %land.lhs.true62.i.i, label %if.end95.i.i, !dbg !360
+
+land.lhs.true62.i.i:                              ; preds = %land.lhs.true55.i.i
+  %arrayidx66.i.i = getelementptr inbounds i32* %32, i64 2, !dbg !360
+  %38 = load i32* %arrayidx66.i.i, align 4, !dbg !360, !tbaa !314
+  %cmp67.i.i = icmp slt i32 %k.04.i.i, %38, !dbg !360
+  br i1 %cmp67.i.i, label %if.end95.i.i, label %land.lhs.true69.i.i, !dbg !360
+
+land.lhs.true69.i.i:                              ; preds = %land.lhs.true62.i.i
+  %arrayidx73.i.i = getelementptr inbounds i32* %34, i64 2, !dbg !360
+  %39 = load i32* %arrayidx73.i.i, align 4, !dbg !360, !tbaa !314
+  %cmp74.i.i = icmp slt i32 %k.04.i.i, %39, !dbg !360
+  br i1 %cmp74.i.i, label %if.then76.i.i, label %if.end95.i.i, !dbg !360
+
+if.then76.i.i:                                    ; preds = %land.lhs.true69.i.i
+  %40 = load i32** %hyper_volume.i.i, align 8, !dbg !363, !tbaa !330
+  %arrayidx77.i.i = getelementptr inbounds i32* %40, i64 1, !dbg !363
+  %41 = load i32* %arrayidx77.i.i, align 4, !dbg !363, !tbaa !314
+  %mul78.i.i = mul nsw i32 %41, %j.05.i.i, !dbg !363
+  %add.i.i = add nsw i32 %mul78.i.i, %i.07.i.i, !dbg !363
+  %arrayidx80.i.i = getelementptr inbounds i32* %40, i64 2, !dbg !363
+  %42 = load i32* %arrayidx80.i.i, align 4, !dbg !363, !tbaa !314
+  %mul81.i.i = mul nsw i32 %42, %k.04.i.i, !dbg !363
+  %add82.i.i = add nsw i32 %add.i.i, %mul81.i.i, !dbg !363
+  call void @llvm.dbg.value(metadata !{i32 %add82.i.i}, i64 0, metadata !370) #5, !dbg !363
+  br i1 %cmp83.i.i, label %if.else87.i.i, label %if.then85.i.i, !dbg !365
+
+if.then85.i.i:                                    ; preds = %if.then76.i.i
+  %43 = load void (i8*, i8*, i32, i32, i32)** %conversion_fn.i.i, align 8, !dbg !368, !tbaa !330
+  %mul86.i.i = mul nsw i32 %add82.i.i, %call6.i.i, !dbg !368
+  %idx.ext.i.i = sext i32 %mul86.i.i to i64, !dbg !368
+  %add.ptr.i.i = getelementptr inbounds i8* %call7.i.i, i64 %idx.ext.i.i, !dbg !368
+  call void %43(i8* %add.ptr.i.i, i8* %local_hdata.16.i.i, i32 1, i32 1, i32 1) #6, !dbg !368
+  br label %if.end92.i.i, !dbg !371
+
+if.else87.i.i:                                    ; preds = %if.then76.i.i
+  %mul88.i.i = mul nsw i32 %add82.i.i, %call6.i.i, !dbg !366
+  %idx.ext89.i.i = sext i32 %mul88.i.i to i64, !dbg !366
+  %add.ptr90.i.i = getelementptr inbounds i8* %call7.i.i, i64 %idx.ext89.i.i, !dbg !366
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %local_hdata.16.i.i, i8* %add.ptr90.i.i, i64 %conv91.i.i, i32 1, i1 false) #5, !dbg !366
+  br label %if.end92.i.i
+
+if.end92.i.i:                                     ; preds = %if.else87.i.i, %if.then85.i.i
+  %add.ptr94.i.i = getelementptr inbounds i8* %local_hdata.16.i.i, i64 %conv91.i.i, !dbg !372
+  call void @llvm.dbg.value(metadata !{i8* %add.ptr94.i.i}, i64 0, metadata !353) #5, !dbg !372
+  %inc.i.i = add nsw i32 %local_npoints.03.i.i, 1, !dbg !373
+  call void @llvm.dbg.value(metadata !{i32 %inc.i.i}, i64 0, metadata !355) #5, !dbg !373
+  %.pre.i.i = load i32** %global_hsize33.phi.trans.insert.i.i, align 8, !dbg !349, !tbaa !330
+  %.pre9.i.i = load i32* %.pre.i.i, align 4, !dbg !349, !tbaa !314
+  br label %if.end95.i.i, !dbg !374
+
+if.end95.i.i:                                     ; preds = %land.lhs.true69.i.i, %land.lhs.true62.i.i, %land.lhs.true55.i.i, %land.lhs.true48.i.i, %land.lhs.true.i.i, %for.body.i.i, %if.end92.i.i
+  %44 = phi i32 [ %.pre9.i.i, %if.end92.i.i ], [ %31, %for.body.i.i ], [ %31, %land.lhs.true.i.i ], [ %31, %land.lhs.true48.i.i ], [ %31, %land.lhs.true55.i.i ], [ %31, %land.lhs.true62.i.i ], [ %31, %land.lhs.true69.i.i ], !dbg !362
+  %local_npoints.1.i.i = phi i32 [ %inc.i.i, %if.end92.i.i ], [ %local_npoints.03.i.i, %for.body.i.i ], [ %local_npoints.03.i.i, %land.lhs.true.i.i ], [ %local_npoints.03.i.i, %land.lhs.true48.i.i ], [ %local_npoints.03.i.i, %land.lhs.true55.i.i ], [ %local_npoints.03.i.i, %land.lhs.true62.i.i ], [ %local_npoints.03.i.i, %land.lhs.true69.i.i ]
+  %local_hdata.2.i.i = phi i8* [ %add.ptr94.i.i, %if.end92.i.i ], [ %local_hdata.16.i.i, %for.body.i.i ], [ %local_hdata.16.i.i, %land.lhs.true.i.i ], [ %local_hdata.16.i.i, %land.lhs.true48.i.i ], [ %local_hdata.16.i.i, %land.lhs.true55.i.i ], [ %local_hdata.16.i.i, %land.lhs.true62.i.i ], [ %local_hdata.16.i.i, %land.lhs.true69.i.i ]
+  %45 = load i32** %downsample.i.i, align 8, !dbg !362, !tbaa !330
+  call void @llvm.dbg.value(metadata !{i32 %npoints.02.i.i}, i64 0, metadata !357) #5, !dbg !349
+  %cmp35.i.i = icmp slt i32 %npoints.02.i.i, %44, !dbg !349
+  br i1 %cmp35.i.i, label %if.end95.for.body_crit_edge.i.i, label %for.end.i.i, !dbg !349
+
+if.end95.for.body_crit_edge.i.i:                  ; preds = %if.end95.i.i
+  %arrayidx102.i.i = getelementptr inbounds i32* %45, i64 2, !dbg !375
+  %arrayidx99.i.i = getelementptr inbounds i32* %45, i64 1, !dbg !376
+  %46 = load i32* %arrayidx102.i.i, align 4, !dbg !375, !tbaa !314
+  %47 = load i32* %arrayidx99.i.i, align 4, !dbg !376, !tbaa !314
+  %48 = load i32* %45, align 4, !dbg !362, !tbaa !314
+  %add103.i.i = add nsw i32 %46, %k.04.i.i, !dbg !375
+  %add100.i.i = add nsw i32 %47, %j.05.i.i, !dbg !376
+  %add97.i.i = add nsw i32 %48, %i.07.i.i, !dbg !362
+  %phitmp.i.i = add i32 %npoints.02.i.i, 1, !dbg !349
+  br label %for.body.i.i, !dbg !349
+
+for.end.i.i:                                      ; preds = %if.end95.i.i, %if.end14.i.i
+  %local_hdata.1.lcssa.i.i = phi i8* [ %local_hdata.0.i.i, %if.end14.i.i ], [ %local_hdata.2.i.i, %if.end95.i.i ]
+  %local_npoints.0.lcssa.i.i = phi i32 [ 0, %if.end14.i.i ], [ %local_npoints.1.i.i, %if.end95.i.i ]
+  %cmp108.i.i = icmp sgt i32 %call9.i.i, 1, !dbg !377
+  br i1 %cmp108.i.i, label %if.then110.i.i, label %return, !dbg !377
+
+if.then110.i.i:                                   ; preds = %for.end.i.i
+  %mul105.i.i = mul nsw i32 %local_npoints.0.lcssa.i.i, %call5.i.i, !dbg !378
+  %idx.ext106.i.i = sext i32 %mul105.i.i to i64, !dbg !378
+  %idx.neg.i.i = sub i64 0, %idx.ext106.i.i, !dbg !378
+  %add.ptr107.i.i = getelementptr inbounds i8* %local_hdata.1.lcssa.i.i, i64 %idx.neg.i.i, !dbg !378
+  call void @free(i8* %add.ptr107.i.i) #6, !dbg !379
+  br label %return, !dbg !381
+
+if.end44.i:                                       ; preds = %if.end40.i
+  %cmp45.i = icmp slt i32 %hdatatype, 0, !dbg !382
+  %vartype.i = getelementptr inbounds %struct.cGroup* %vinfo.i, i64 0, i32 1, !dbg !383
+  %49 = load i32* %vartype.i, align 4, !dbg !383, !tbaa !314
+  %conversion_fn48450.i = getelementptr inbounds %struct.hslab_mapping_t* %call, i64 0, i32 16, !dbg !385
+  %50 = load void (i8*, i8*, i32, i32, i32)** %conversion_fn48450.i, align 8, !dbg !385, !tbaa !330
+  call void @llvm.dbg.value(metadata !{void (i8*, i8*, i32, i32, i32)* %50}, i64 0, metadata !386) #5, !dbg !385
+  br i1 %cmp45.i, label %if.end47.thread.i, label %if.end47.i, !dbg !382
+
+if.end47.thread.i:                                ; preds = %if.end44.i
+  call void @llvm.dbg.value(metadata !{i32 %49}, i64 0, metadata !305) #5, !dbg !383
+  %tobool65453.i = icmp eq void (i8*, i8*, i32, i32, i32)* %50, null, !dbg !387
+  br i1 %tobool65453.i, label %if.end69.i, label %if.then66.i, !dbg !387
+
+if.end47.i:                                       ; preds = %if.end44.i
+  %cmp50.i = icmp eq i32 %49, %hdatatype, !dbg !388
+  %tobool65.i = icmp eq void (i8*, i8*, i32, i32, i32)* %50, null, !dbg !387
+  br i1 %cmp50.i, label %if.else64.i, label %if.then51.i, !dbg !388
+
+if.then51.i:                                      ; preds = %if.end47.i
+  br i1 %tobool65.i, label %if.then53.i, label %if.end69.i, !dbg !389
+
+if.then53.i:                                      ; preds = %if.then51.i
+  %call55.i = call void (i8*, i8*, i32, i32, i32)* (i32, i32)* @PUGHSlabi_GetDatatypeConversionFn(i32 %49, i32 %hdatatype) #6, !dbg !391
+  call void @llvm.dbg.value(metadata !{void (i8*, i8*, i32, i32, i32)* %call55.i}, i64 0, metadata !386) #5, !dbg !391
+  %tobool56.i = icmp eq void (i8*, i8*, i32, i32, i32)* %call55.i, null, !dbg !393
+  br i1 %tobool56.i, label %if.then57.i, label %if.end69.i, !dbg !393
+
+if.then57.i:                                      ; preds = %if.then53.i
+  %51 = load i32* %vartype.i, align 4, !dbg !394, !tbaa !314
+  %call59.i = call i8* @CCTK_VarTypeName(i32 %51) #6, !dbg !394
+  %call60.i = call i8* @CCTK_VarTypeName(i32 %hdatatype) #6, !dbg !396
+  %call61.i = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 297, i8* getelementptr inbounds ([71 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([67 x i8]* @.str7, i64 0, i64 0), i8* %call59.i, i8* %call60.i) #6, !dbg !396
+  br label %return, !dbg !397
+
+if.else64.i:                                      ; preds = %if.end47.i
+  br i1 %tobool65.i, label %if.end69.i, label %if.then66.i, !dbg !387
+
+if.then66.i:                                      ; preds = %if.else64.i, %if.end47.thread.i
+  %hdatatype.addr.0455463.i = phi i32 [ %49, %if.end47.thread.i ], [ %hdatatype, %if.else64.i ]
+  %call67.i = call i32 @CCTK_Warn(i32 8, i32 308, i8* getelementptr inbounds ([71 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([106 x i8]* @.str8, i64 0, i64 0)) #6, !dbg !398
+  call void @llvm.dbg.value(metadata !400, i64 0, metadata !386) #5, !dbg !401
+  br label %if.end69.i, !dbg !402
+
+if.end69.i:                                       ; preds = %if.then53.i, %if.then66.i, %if.else64.i, %if.then51.i, %if.end47.thread.i
+  %hdatatype.addr.0454.i = phi i32 [ %hdatatype, %if.then51.i ], [ %hdatatype.addr.0455463.i, %if.then66.i ], [ %hdatatype, %if.else64.i ], [ %49, %if.end47.thread.i ], [ %hdatatype, %if.then53.i ]
+  %conversion_fn.0.i = phi void (i8*, i8*, i32, i32, i32)* [ %50, %if.then51.i ], [ null, %if.then66.i ], [ null, %if.else64.i ], [ null, %if.end47.thread.i ], [ %call55.i, %if.then53.i ]
+  %52 = load i32* %dim.i, align 4, !dbg !403, !tbaa !314
+  %mul.i = mul nsw i32 %52, 5, !dbg !403
+  %conv.i = sext i32 %mul.i to i64, !dbg !403
+  %mul71.i = shl nsw i64 %conv.i, 2, !dbg !403
+  %call72.i = call noalias i8* @malloc(i64 %mul71.i) #6, !dbg !403
+  %53 = bitcast i8* %call72.i to i32*, !dbg !403
+  call void @llvm.dbg.value(metadata !{i32* %53}, i64 0, metadata !404) #5, !dbg !403
+  %idx.ext.i = sext i32 %52 to i64, !dbg !405
+  %add.ptr.i = getelementptr inbounds i32* %53, i64 %idx.ext.i, !dbg !405
+  call void @llvm.dbg.value(metadata !{i32* %add.ptr.i}, i64 0, metadata !406) #5, !dbg !405
+  %mul76.i = shl nsw i32 %52, 1, !dbg !407
+  %idx.ext77.i = sext i32 %mul76.i to i64, !dbg !407
+  %add.ptr78.i = getelementptr inbounds i32* %53, i64 %idx.ext77.i, !dbg !407
+  call void @llvm.dbg.value(metadata !{i32* %add.ptr78.i}, i64 0, metadata !408) #5, !dbg !407
+  %mul80.i = mul nsw i32 %52, 3, !dbg !409
+  %idx.ext81.i = sext i32 %mul80.i to i64, !dbg !409
+  %add.ptr82.i = getelementptr inbounds i32* %53, i64 %idx.ext81.i, !dbg !409
+  call void @llvm.dbg.value(metadata !{i32* %add.ptr82.i}, i64 0, metadata !410) #5, !dbg !409
+  %mul84.i = shl nsw i32 %52, 2, !dbg !411
+  %idx.ext85.i = sext i32 %mul84.i to i64, !dbg !411
+  %54 = bitcast i32* %add.ptr.i to i8*, !dbg !412
+  %local_startpoint.i = getelementptr inbounds %struct.hslab_mapping_t* %call, i64 0, i32 5, !dbg !412
+  %55 = load i32** %local_startpoint.i, align 8, !dbg !412, !tbaa !330
+  %56 = bitcast i32* %55 to i8*, !dbg !412
+  %mul89.i = shl nsw i64 %idx.ext.i, 2, !dbg !412
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %54, i8* %56, i64 %mul89.i, i32 4, i1 false) #5, !dbg !412
+  %57 = bitcast i32* %add.ptr78.i to i8*, !dbg !413
+  %local_endpoint.i = getelementptr inbounds %struct.hslab_mapping_t* %call, i64 0, i32 6, !dbg !413
+  %58 = load i32** %local_endpoint.i, align 8, !dbg !413, !tbaa !330
+  %59 = bitcast i32* %58 to i8*, !dbg !413
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %57, i8* %59, i64 %mul89.i, i32 4, i1 false) #5, !dbg !413
+  %60 = bitcast i32* %add.ptr82.i to i8*, !dbg !414
+  %downsample93.i = getelementptr inbounds %struct.hslab_mapping_t* %call, i64 0, i32 10, !dbg !414
+  %61 = load i32** %downsample93.i, align 8, !dbg !414, !tbaa !330
+  %62 = bitcast i32* %61 to i8*, !dbg !414
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %60, i8* %62, i64 %mul89.i, i32 4, i1 false) #5, !dbg !414
+  %call97.i = call %struct.PGH* @PUGH_pGH(%struct.cGH* %GH) #6, !dbg !415
+  call void @llvm.dbg.value(metadata !{%struct.PGH* %call97.i}, i64 0, metadata !416) #5, !dbg !415
+  %idxprom.i = sext i32 %timelevel to i64, !dbg !417
+  %idxprom98.i = sext i32 %vindex to i64, !dbg !417
+  %variables.i = getelementptr inbounds %struct.PGH* %call97.i, i64 0, i32 7, !dbg !417
+  %63 = load i8**** %variables.i, align 8, !dbg !417, !tbaa !330
+  %arrayidx.i = getelementptr inbounds i8*** %63, i64 %idxprom98.i, !dbg !417
+  %64 = load i8*** %arrayidx.i, align 8, !dbg !417, !tbaa !330
+  %arrayidx99.i = getelementptr inbounds i8** %64, i64 %idxprom.i, !dbg !417
+  %65 = load i8** %arrayidx99.i, align 8, !dbg !417, !tbaa !330
+  %66 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !418, !tbaa !330
+  %call100.i = call i32 %66(%struct.cGH* %GH) #6, !dbg !418
+  call void @llvm.dbg.value(metadata !{i32 %call100.i}, i64 0, metadata !419) #5, !dbg !418
+  %call101.i = call i8* @CCTK_VarDataPtrI(%struct.cGH* %GH, i32 %timelevel, i32 %vindex) #6, !dbg !420
+  call void @llvm.dbg.value(metadata !{i8* %call101.i}, i64 0, metadata !421) #5, !dbg !420
+  %is_full_hyperslab.i = getelementptr inbounds %struct.hslab_mapping_t* %call, i64 0, i32 14, !dbg !422
+  %67 = load i32* %is_full_hyperslab.i, align 4, !dbg !422, !tbaa !314
+  %tobool102.i = icmp ne i32 %67, 0, !dbg !422
+  %cmp104.i = icmp eq void (i8*, i8*, i32, i32, i32)* %conversion_fn.0.i, null, !dbg !422
+  %or.cond414.i = and i1 %tobool102.i, %cmp104.i, !dbg !422
+  br i1 %or.cond414.i, label %if.then106.i, label %if.else112.i, !dbg !422
+
+if.then106.i:                                     ; preds = %if.end69.i
+  %68 = load i32* %totals.i, align 4, !dbg !423, !tbaa !314
+  %69 = load i32* %vartype.i, align 4, !dbg !423, !tbaa !314
+  %call109.i = call i32 @CCTK_VarTypeSize(i32 %69) #6, !dbg !423
+  %mul110.i = mul i32 %call109.i, %68, !dbg !423
+  %conv111.i = zext i32 %mul110.i to i64, !dbg !423
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %hdata, i8* %call101.i, i64 %conv111.i, i32 1, i1 false) #5, !dbg !423
+  br label %if.end278.i, !dbg !425
+
+if.else112.i:                                     ; preds = %if.end69.i
+  %add.ptr86.i = getelementptr inbounds i32* %53, i64 %idx.ext85.i, !dbg !411
+  %70 = load i32* %vartype.i, align 4, !dbg !426, !tbaa !314
+  %call114.i = call i32 @CCTK_VarTypeSize(i32 %70) #6, !dbg !426
+  call void @llvm.dbg.value(metadata !{i32 %call114.i}, i64 0, metadata !428) #5, !dbg !426
+  %call115.i = call i32 @CCTK_VarTypeSize(i32 %hdatatype.addr.0454.i) #6, !dbg !429
+  call void @llvm.dbg.value(metadata !{i32 %call115.i}, i64 0, metadata !430) #5, !dbg !429
+  call void @llvm.dbg.value(metadata !{i8* %hdata}, i64 0, metadata !431) #5, !dbg !432
+  store i32 1, i32* %add.ptr86.i, align 4, !dbg !433, !tbaa !314
+  call void @llvm.dbg.value(metadata !434, i64 0, metadata !435) #5, !dbg !436
+  %71 = load i32* %dim.i, align 4, !dbg !436, !tbaa !314
+  %cmp118434.i = icmp sgt i32 %71, 1, !dbg !436
+  br i1 %cmp118434.i, label %for.body.lr.ph.i, label %for.end.i, !dbg !436
+
+for.body.lr.ph.i:                                 ; preds = %if.else112.i
+  %extras.i = getelementptr inbounds i8* %65, i64 56, !dbg !438
+  %72 = bitcast i8* %extras.i to %struct.PGExtras**, !dbg !438
+  %73 = load %struct.PGExtras** %72, align 8, !dbg !438, !tbaa !330
+  %lnsize.i = getelementptr inbounds %struct.PGExtras* %73, i64 0, i32 6, !dbg !438
+  %74 = load i32** %lnsize.i, align 8, !dbg !438, !tbaa !330
+  br label %for.body.i, !dbg !436
+
+for.body.i:                                       ; preds = %for.body.i, %for.body.lr.ph.i
+  %indvars.iv447.i = phi i64 [ 1, %for.body.lr.ph.i ], [ %indvars.iv.next448.i, %for.body.i ]
+  %75 = add nsw i64 %indvars.iv447.i, -1, !dbg !438
+  %add.ptr86.sum411.i = add i64 %75, %idx.ext85.i, !dbg !438
+  %arrayidx121.i = getelementptr inbounds i32* %53, i64 %add.ptr86.sum411.i, !dbg !438
+  %76 = load i32* %arrayidx121.i, align 4, !dbg !438, !tbaa !314
+  %arrayidx124.i = getelementptr inbounds i32* %74, i64 %75, !dbg !438
+  %77 = load i32* %arrayidx124.i, align 4, !dbg !438, !tbaa !314
+  %mul125.i = mul nsw i32 %77, %76, !dbg !438
+  %add.ptr86.sum412.i = add i64 %indvars.iv447.i, %idx.ext85.i, !dbg !438
+  %arrayidx127.i = getelementptr inbounds i32* %53, i64 %add.ptr86.sum412.i, !dbg !438
+  store i32 %mul125.i, i32* %arrayidx127.i, align 4, !dbg !438, !tbaa !314
+  %indvars.iv.next448.i = add i64 %indvars.iv447.i, 1, !dbg !436
+  %lftr.wideiv4 = trunc i64 %indvars.iv.next448.i to i32, !dbg !436
+  %exitcond5 = icmp eq i32 %lftr.wideiv4, %71, !dbg !436
+  br i1 %exitcond5, label %for.end.i, label %for.body.i, !dbg !436
+
+for.end.i:                                        ; preds = %for.body.i, %if.else112.i
+  %78 = load i32* %add.ptr78.i, align 4, !dbg !440, !tbaa !314
+  %79 = load i32* %add.ptr.i, align 4, !dbg !440, !tbaa !314
+  %sub130.i = sub nsw i32 %78, %79, !dbg !440
+  %80 = load i32* %add.ptr82.i, align 4, !dbg !440, !tbaa !314
+  %div.i = sdiv i32 %sub130.i, %80, !dbg !440
+  call void @llvm.dbg.value(metadata !{i32 %div.i}, i64 0, metadata !441) #5, !dbg !440
+  %rem.i = srem i32 %sub130.i, %80, !dbg !442
+  %not.tobool136.i = icmp ne i32 %rem.i, 0, !dbg !442
+  %inc138.i = zext i1 %not.tobool136.i to i32, !dbg !442
+  %div.inc138.i = add nsw i32 %inc138.i, %div.i, !dbg !442
+  %mul140.i = mul nsw i32 %div.inc138.i, %call115.i, !dbg !443
+  call void @llvm.dbg.value(metadata !{i32 %mul140.i}, i64 0, metadata !444) #5, !dbg !443
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !445) #5, !dbg !446
+  %cmp143431.i = icmp sgt i32 %71, 0, !dbg !446
+  br i1 %cmp143431.i, label %for.body145.i, label %for.end157.i, !dbg !446
+
+for.body145.i:                                    ; preds = %for.end.i, %for.body145.i
+  %indvars.iv445.i = phi i64 [ %indvars.iv.next446.i, %for.body145.i ], [ 0, %for.end.i ]
+  %add.ptr.sum408.i = add i64 %indvars.iv445.i, %idx.ext.i, !dbg !448
+  %arrayidx147.i = getelementptr inbounds i32* %53, i64 %add.ptr.sum408.i, !dbg !448
+  %81 = load i32* %arrayidx147.i, align 4, !dbg !448, !tbaa !314
+  %mul148.i = mul nsw i32 %81, %call114.i, !dbg !448
+  store i32 %mul148.i, i32* %arrayidx147.i, align 4, !dbg !448, !tbaa !314
+  %add.ptr78.sum409.i = add i64 %indvars.iv445.i, %idx.ext77.i, !dbg !450
+  %arrayidx150.i = getelementptr inbounds i32* %53, i64 %add.ptr78.sum409.i, !dbg !450
+  %82 = load i32* %arrayidx150.i, align 4, !dbg !450, !tbaa !314
+  %mul151.i = mul nsw i32 %82, %call114.i, !dbg !450
+  store i32 %mul151.i, i32* %arrayidx150.i, align 4, !dbg !450, !tbaa !314
+  %add.ptr82.sum410.i = add i64 %indvars.iv445.i, %idx.ext81.i, !dbg !451
+  %arrayidx153.i = getelementptr inbounds i32* %53, i64 %add.ptr82.sum410.i, !dbg !451
+  %83 = load i32* %arrayidx153.i, align 4, !dbg !451, !tbaa !314
+  %mul154.i = mul nsw i32 %83, %call114.i, !dbg !451
+  store i32 %mul154.i, i32* %arrayidx153.i, align 4, !dbg !451, !tbaa !314
+  %indvars.iv.next446.i = add i64 %indvars.iv445.i, 1, !dbg !446
+  %lftr.wideiv = trunc i64 %indvars.iv.next446.i to i32, !dbg !446
+  %exitcond = icmp eq i32 %lftr.wideiv, %71, !dbg !446
+  br i1 %exitcond, label %for.end157.i, label %for.body145.i, !dbg !446
+
+for.end157.i:                                     ; preds = %for.body145.i, %for.end.i
+  %conv159.i = sext i32 %71 to i64, !dbg !452
+  %mul160.i = shl nsw i64 %conv159.i, 2, !dbg !452
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call72.i, i8* %54, i64 %mul160.i, i32 4, i1 false) #5, !dbg !452
+  call void @llvm.dbg.value(metadata !434, i64 0, metadata !435) #5, !dbg !453
+  %arrayidx166.i = getelementptr inbounds i8* %call72.i, i64 4, !dbg !454
+  %84 = bitcast i8* %arrayidx166.i to i32*, !dbg !454
+  %add.ptr78.sum406.i = or i64 %idx.ext77.i, 1, !dbg !454
+  %arrayidx168.i = getelementptr inbounds i32* %53, i64 %add.ptr78.sum406.i, !dbg !454
+  %conv237.i = sext i32 %mul140.i to i64, !dbg !456
+  %add.ptr82.sum.i = add i64 %idx.ext81.i, 1, !dbg !459
+  %arrayidx272.i = getelementptr inbounds i32* %53, i64 %add.ptr82.sum.i, !dbg !459
+  %cmp251428.i = icmp sgt i32 %mul140.i, 0, !dbg !461
+  %conv256.i = sext i32 %call114.i to i64, !dbg !465
+  %85 = sext i32 %call115.i to i64
+  br label %while.body.i, !dbg !467
+
+while.body.i:                                     ; preds = %if.then270.i, %for.end157.i
+  %86 = phi i32 [ %71, %for.end157.i ], [ %105, %if.then270.i ]
+  %typed_hdata.0.i = phi i8* [ %hdata, %for.end157.i ], [ %add.ptr266.i, %if.then270.i ]
+  %cmp162.i = icmp sgt i32 %86, 1, !dbg !454
+  br i1 %cmp162.i, label %land.lhs.true164.i, label %if.end209.thread467.i, !dbg !454
+
+if.end209.thread467.i:                            ; preds = %while.body.i
+  %87 = load i32* %53, align 4, !dbg !468, !tbaa !314
+  %idx.ext211468.i = sext i32 %87 to i64, !dbg !468
+  %add.ptr212469.i = getelementptr inbounds i8* %call101.i, i64 %idx.ext211468.i, !dbg !468
+  call void @llvm.dbg.value(metadata !434, i64 0, metadata !445) #5, !dbg !469
+  br label %for.end227.i, !dbg !469
+
+land.lhs.true164.i:                               ; preds = %while.body.i
+  %88 = load i32* %84, align 4, !dbg !454, !tbaa !314
+  %89 = load i32* %arrayidx168.i, align 4, !dbg !454, !tbaa !314
+  %cmp169.i = icmp slt i32 %88, %89, !dbg !454
+  br i1 %cmp169.i, label %if.end209.thread.i, label %for.cond173.preheader.i, !dbg !454
+
+if.end209.thread.i:                               ; preds = %land.lhs.true164.i
+  %90 = load i32* %53, align 4, !dbg !468, !tbaa !314
+  %idx.ext211464.i = sext i32 %90 to i64, !dbg !468
+  %add.ptr212465.i = getelementptr inbounds i8* %call101.i, i64 %idx.ext211464.i, !dbg !468
+  call void @llvm.dbg.value(metadata !434, i64 0, metadata !445) #5, !dbg !469
+  br label %for.body217.i, !dbg !469
+
+for.cond173.preheader.i:                          ; preds = %land.lhs.true164.i
+  %cmp175419.i = icmp sgt i32 %86, 2, !dbg !471
+  br i1 %cmp175419.i, label %for.body177.i, label %for.end192.i, !dbg !471
+
+for.cond173.i:                                    ; preds = %for.body177.i
+  %91 = trunc i64 %indvars.iv.next.i to i32, !dbg !471
+  %cmp175.i = icmp slt i32 %91, %86, !dbg !471
+  br i1 %cmp175.i, label %for.body177.i, label %for.end192.i, !dbg !471
+
+for.body177.i:                                    ; preds = %for.cond173.preheader.i, %for.cond173.i
+  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %for.cond173.i ], [ 2, %for.cond173.preheader.i ]
+  %vdim.2420.i = phi i32 [ %inc191.i, %for.cond173.i ], [ 2, %for.cond173.preheader.i ]
+  %add.ptr82.sum407.i = add i64 %indvars.iv.i, %idx.ext81.i, !dbg !474
+  %arrayidx179.i = getelementptr inbounds i32* %53, i64 %add.ptr82.sum407.i, !dbg !474
+  %92 = load i32* %arrayidx179.i, align 4, !dbg !474, !tbaa !314
+  %arrayidx181.i = getelementptr inbounds i32* %53, i64 %indvars.iv.i, !dbg !474
+  %93 = load i32* %arrayidx181.i, align 4, !dbg !474, !tbaa !314
+  %add.i = add nsw i32 %93, %92, !dbg !474
+  store i32 %add.i, i32* %arrayidx181.i, align 4, !dbg !474, !tbaa !314
+  %add.ptr78.sum.i = add i64 %indvars.iv.i, %idx.ext77.i, !dbg !476
+  %arrayidx185.i = getelementptr inbounds i32* %53, i64 %add.ptr78.sum.i, !dbg !476
+  %94 = load i32* %arrayidx185.i, align 4, !dbg !476, !tbaa !314
+  %cmp186.i = icmp slt i32 %add.i, %94, !dbg !476
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1, !dbg !471
+  %inc191.i = add nsw i32 %vdim.2420.i, 1, !dbg !471
+  call void @llvm.dbg.value(metadata !{i32 %inc191.i}, i64 0, metadata !435) #5, !dbg !471
+  br i1 %cmp186.i, label %for.end192.i, label %for.cond173.i, !dbg !476
+
+for.end192.i:                                     ; preds = %for.body177.i, %for.cond173.i, %for.cond173.preheader.i
+  %vdim.2.lcssa.i = phi i32 [ 2, %for.cond173.preheader.i ], [ %vdim.2420.i, %for.body177.i ], [ %inc191.i, %for.cond173.i ]
+  %cmp194.i = icmp slt i32 %vdim.2.lcssa.i, %86, !dbg !477
+  br i1 %cmp194.i, label %for.cond198.preheader.i, label %if.end278.i, !dbg !477
+
+for.cond198.preheader.i:                          ; preds = %for.end192.i
+  %vdim.3421.i = add i32 %vdim.2.lcssa.i, -1, !dbg !478
+  %cmp199422.i = icmp sgt i32 %vdim.3421.i, 0, !dbg !478
+  br i1 %cmp199422.i, label %for.body201.lr.ph.i, label %if.end209.i, !dbg !478
+
+for.body201.lr.ph.i:                              ; preds = %for.cond198.preheader.i
+  %95 = sext i32 %vdim.3421.i to i64
+  br label %for.body201.i, !dbg !478
+
+for.body201.i:                                    ; preds = %for.body201.i, %for.body201.lr.ph.i
+  %indvars.iv438.i = phi i64 [ %95, %for.body201.lr.ph.i ], [ %indvars.iv.next439.i, %for.body201.i ]
+  %vdim.3423.i = phi i32 [ %vdim.3421.i, %for.body201.lr.ph.i ], [ %vdim.3.i, %for.body201.i ]
+  %add.ptr.sum.i = add i64 %indvars.iv438.i, %idx.ext.i, !dbg !480
+  %arrayidx203.i = getelementptr inbounds i32* %53, i64 %add.ptr.sum.i, !dbg !480
+  %96 = load i32* %arrayidx203.i, align 4, !dbg !480, !tbaa !314
+  %arrayidx205.i = getelementptr inbounds i32* %53, i64 %indvars.iv438.i, !dbg !480
+  store i32 %96, i32* %arrayidx205.i, align 4, !dbg !480, !tbaa !314
+  %vdim.3.i = add nsw i32 %vdim.3423.i, -1, !dbg !478
+  %cmp199.i = icmp sgt i32 %vdim.3.i, 0, !dbg !478
+  %indvars.iv.next439.i = add i64 %indvars.iv438.i, -1, !dbg !478
+  br i1 %cmp199.i, label %for.body201.i, label %if.end209.i, !dbg !478
+
+if.end209.i:                                      ; preds = %for.body201.i, %for.cond198.preheader.i
+  %97 = load i32* %53, align 4, !dbg !468, !tbaa !314
+  %idx.ext211.i = sext i32 %97 to i64, !dbg !468
+  %add.ptr212.i = getelementptr inbounds i8* %call101.i, i64 %idx.ext211.i, !dbg !468
+  call void @llvm.dbg.value(metadata !434, i64 0, metadata !445) #5, !dbg !469
+  br label %for.body217.i, !dbg !469
+
+for.body217.i:                                    ; preds = %if.end209.thread.i, %if.end209.i, %for.body217.i
+  %indvars.iv441.i = phi i64 [ %indvars.iv.next442.i, %for.body217.i ], [ 1, %if.end209.i ], [ 1, %if.end209.thread.i ]
+  %typed_vdata.0425.i = phi i8* [ %add.ptr224.i, %for.body217.i ], [ %add.ptr212.i, %if.end209.i ], [ %add.ptr212465.i, %if.end209.thread.i ]
+  %arrayidx219.i = getelementptr inbounds i32* %53, i64 %indvars.iv441.i, !dbg !482
+  %98 = load i32* %arrayidx219.i, align 4, !dbg !482, !tbaa !314
+  %add.ptr86.sum.i = add i64 %indvars.iv441.i, %idx.ext85.i, !dbg !482
+  %arrayidx221.i = getelementptr inbounds i32* %53, i64 %add.ptr86.sum.i, !dbg !482
+  %99 = load i32* %arrayidx221.i, align 4, !dbg !482, !tbaa !314
+  %mul222.i = mul nsw i32 %99, %98, !dbg !482
+  %idx.ext223.i = sext i32 %mul222.i to i64, !dbg !482
+  %add.ptr224.i = getelementptr inbounds i8* %typed_vdata.0425.i, i64 %idx.ext223.i, !dbg !482
+  call void @llvm.dbg.value(metadata !{i8* %add.ptr224.i}, i64 0, metadata !484) #5, !dbg !482
+  %indvars.iv.next442.i = add i64 %indvars.iv441.i, 1, !dbg !469
+  %100 = trunc i64 %indvars.iv.next442.i to i32, !dbg !469
+  %cmp215.i = icmp slt i32 %100, %86, !dbg !469
+  br i1 %cmp215.i, label %for.body217.i, label %for.end227.i, !dbg !469
+
+for.end227.i:                                     ; preds = %for.body217.i, %if.end209.thread467.i
+  %typed_vdata.0.lcssa.i = phi i8* [ %add.ptr212469.i, %if.end209.thread467.i ], [ %add.ptr224.i, %for.body217.i ]
+  %101 = load i32* %add.ptr82.i, align 4, !dbg !485, !tbaa !314
+  %cmp229.i = icmp eq i32 %101, %call114.i, !dbg !485
+  %102 = load void (i8*, i8*, i32, i32, i32)** %conversion_fn48450.i, align 8, !dbg !486, !tbaa !330
+  %tobool233.i = icmp ne void (i8*, i8*, i32, i32, i32)* %102, null, !dbg !486
+  br i1 %cmp229.i, label %if.then231.i, label %if.else239.i, !dbg !485
+
+if.then231.i:                                     ; preds = %for.end227.i
+  br i1 %tobool233.i, label %if.then234.i, label %if.else236.i, !dbg !486
+
+if.then234.i:                                     ; preds = %if.then231.i
+  call void %102(i8* %typed_vdata.0.lcssa.i, i8* %typed_hdata.0.i, i32 %div.inc138.i, i32 1, i32 1) #6, !dbg !487
+  br label %if.end264.i, !dbg !489
+
+if.else236.i:                                     ; preds = %if.then231.i
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %typed_hdata.0.i, i8* %typed_vdata.0.lcssa.i, i64 %conv237.i, i32 1, i1 false) #5, !dbg !456
+  br label %if.end264.i
+
+if.else239.i:                                     ; preds = %for.end227.i
+  br i1 %tobool233.i, label %if.then242.i, label %for.cond250.preheader.i, !dbg !490
+
+for.cond250.preheader.i:                          ; preds = %if.else239.i
+  br i1 %cmp251428.i, label %for.body253.i, label %if.end264.i, !dbg !461
+
+if.then242.i:                                     ; preds = %if.else239.i
+  call void %102(i8* %typed_vdata.0.lcssa.i, i8* %typed_hdata.0.i, i32 %div.inc138.i, i32 %101, i32 1) #6, !dbg !491
+  br label %if.end264.i, !dbg !493
+
+for.body253.i:                                    ; preds = %for.cond250.preheader.i, %for.body253.i
+  %indvars.iv443.i = phi i64 [ %indvars.iv.next444.i, %for.body253.i ], [ 0, %for.cond250.preheader.i ]
+  %typed_vdata.1429.i = phi i8* [ %add.ptr259.i, %for.body253.i ], [ %typed_vdata.0.lcssa.i, %for.cond250.preheader.i ]
+  %add.ptr255.i = getelementptr inbounds i8* %typed_hdata.0.i, i64 %indvars.iv443.i, !dbg !465
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %add.ptr255.i, i8* %typed_vdata.1429.i, i64 %conv256.i, i32 1, i1 false) #5, !dbg !465
+  %103 = load i32* %add.ptr82.i, align 4, !dbg !494, !tbaa !314
+  %idx.ext258.i = sext i32 %103 to i64, !dbg !494
+  %add.ptr259.i = getelementptr inbounds i8* %typed_vdata.1429.i, i64 %idx.ext258.i, !dbg !494
+  call void @llvm.dbg.value(metadata !{i8* %add.ptr259.i}, i64 0, metadata !484) #5, !dbg !494
+  %indvars.iv.next444.i = add i64 %indvars.iv443.i, %85, !dbg !461
+  %104 = trunc i64 %indvars.iv.next444.i to i32, !dbg !461
+  %cmp251.i = icmp slt i32 %104, %mul140.i, !dbg !461
+  br i1 %cmp251.i, label %for.body253.i, label %if.end264.i, !dbg !461
+
+if.end264.i:                                      ; preds = %for.body253.i, %if.then242.i, %for.cond250.preheader.i, %if.else236.i, %if.then234.i
+  %105 = load i32* %dim.i, align 4, !dbg !495, !tbaa !314
+  %cmp268.i = icmp sgt i32 %105, 1, !dbg !495
+  br i1 %cmp268.i, label %if.then270.i, label %if.end278.i, !dbg !495
+
+if.then270.i:                                     ; preds = %if.end264.i
+  %add.ptr266.i = getelementptr inbounds i8* %typed_hdata.0.i, i64 %conv237.i, !dbg !496
+  %106 = load i32* %arrayidx272.i, align 4, !dbg !459, !tbaa !314
+  %107 = load i32* %84, align 4, !dbg !459, !tbaa !314
+  %add275.i = add nsw i32 %107, %106, !dbg !459
+  store i32 %add275.i, i32* %84, align 4, !dbg !459, !tbaa !314
+  br label %while.body.i, !dbg !497
+
+if.end278.i:                                      ; preds = %if.end264.i, %for.end192.i, %if.then106.i
+  call void @free(i8* %call72.i) #6, !dbg !498
+  br label %return, !dbg !499
+
+return:                                           ; preds = %if.end278.i, %if.then57.i, %if.then110.i.i, %for.end.i.i, %if.end36.i, %if.then34.i, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ -1, %if.then34.i ], [ 0, %if.end278.i ], [ -1, %if.then57.i ], [ 0, %if.end36.i ], [ 0, %for.end.i.i ], [ 0, %if.then110.i.i ]
+  ret i32 %retval.0, !dbg !500
 }

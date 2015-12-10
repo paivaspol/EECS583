@@ -1,18 +1,23 @@
 define %struct.rtx_def* @emit_insns(%struct.rtx_def* %insn) #0 {
 entry:
-  %tobool4 = icmp eq %struct.rtx_def* %insn, null
-  br i1 %tobool4, label %while.end, label %while.body
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !1907), !dbg !3754
+  tail call void @llvm.dbg.value(metadata !2589, i64 0, metadata !1908), !dbg !3755
+  %tobool4 = icmp eq %struct.rtx_def* %insn, null, !dbg !3756
+  br i1 %tobool4, label %while.end, label %while.body, !dbg !3756
 
 while.body:                                       ; preds = %entry, %while.body
   %insn.addr.05 = phi %struct.rtx_def* [ %0, %while.body ], [ %insn, %entry ]
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn.addr.05, i64 0, i32 1, i64 2
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
-  tail call void @add_insn(%struct.rtx_def* %insn.addr.05) #9
-  %tobool = icmp eq %struct.rtx_def* %0, null
-  br i1 %tobool, label %while.end, label %while.body
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn.addr.05, i64 0, i32 1, i64 2, !dbg !3757
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !3757
+  %0 = load %struct.rtx_def** %rtx, align 8, !dbg !3757, !tbaa !2272
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %0}, i64 0, metadata !1909), !dbg !3757
+  tail call void @add_insn(%struct.rtx_def* %insn.addr.05) #10, !dbg !3758
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn.addr.05}, i64 0, metadata !1908), !dbg !3759
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %0}, i64 0, metadata !1907), !dbg !3760
+  %tobool = icmp eq %struct.rtx_def* %0, null, !dbg !3756
+  br i1 %tobool, label %while.end, label %while.body, !dbg !3756
 
 while.end:                                        ; preds = %while.body, %entry
   %last.0.lcssa = phi %struct.rtx_def* [ null, %entry ], [ %insn.addr.05, %while.body ]
-  ret %struct.rtx_def* %last.0.lcssa
+  ret %struct.rtx_def* %last.0.lcssa, !dbg !3761
 }

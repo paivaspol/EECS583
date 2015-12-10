@@ -1,31 +1,37 @@
-define i32 @get_header(i8* %line, i8* %header) #1 {
+define i32 @get_header(i8* %line, i8* %header) #0 {
+entry:
   %temp = alloca [4096 x i8], align 16
-  %1 = getelementptr inbounds [4096 x i8]* %temp, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 4096, i8* %1) #6
-  %2 = call i8* @__strcpy_chk(i8* %1, i8* %line, i64 4096) #8
-  %3 = call i8* @strchr(i8* %1, i32 91) #8
-  %4 = icmp eq i8* %3, null
-  br i1 %4, label %12, label %5
+  call void @llvm.dbg.value(metadata !{i8* %line}, i64 0, metadata !75), !dbg !164
+  call void @llvm.dbg.value(metadata !{i8* %header}, i64 0, metadata !76), !dbg !164
+  %0 = getelementptr inbounds [4096 x i8]* %temp, i64 0, i64 0, !dbg !165
+  call void @llvm.lifetime.start(i64 4096, i8* %0) #5, !dbg !165
+  call void @llvm.dbg.declare(metadata !{[4096 x i8]* %temp}, metadata !77), !dbg !165
+  %call = call i8* @strcpy(i8* %0, i8* %line) #7, !dbg !166
+  %call2 = call i8* @strchr(i8* %0, i32 91) #8, !dbg !167
+  call void @llvm.dbg.value(metadata !{i8* %call2}, i64 0, metadata !81), !dbg !167
+  %cmp = icmp eq i8* %call2, null, !dbg !168
+  br i1 %cmp, label %cleanup, label %if.end, !dbg !168
 
-; <label>:5                                       ; preds = %0
-  store i8 32, i8* %3, align 1, !tbaa !8
-  %6 = call i8* @strchr(i8* %1, i32 93) #8
-  %7 = icmp eq i8* %6, null
-  br i1 %7, label %8, label %9
+if.end:                                           ; preds = %entry
+  store i8 32, i8* %call2, align 1, !dbg !169, !tbaa !138
+  %call4 = call i8* @strchr(i8* %0, i32 93) #8, !dbg !170
+  call void @llvm.dbg.value(metadata !{i8* %call4}, i64 0, metadata !81), !dbg !170
+  %cmp5 = icmp eq i8* %call4, null, !dbg !171
+  br i1 %cmp5, label %if.then6, label %if.end7, !dbg !171
 
-; <label>:8                                       ; preds = %5
-  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([40 x i8]* @.str4, i64 0, i64 0), i8* %line) #8
-  br label %12
+if.then6:                                         ; preds = %if.end
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([40 x i8]* @.str4, i64 0, i64 0), i8* %line) #7, !dbg !172
+  br label %cleanup, !dbg !174
 
-; <label>:9                                       ; preds = %5
-  store i8 0, i8* %6, align 1, !tbaa !8
-  %10 = call i32 (i8*, i8*, ...)* @sscanf(i8* %1, i8* getelementptr inbounds ([6 x i8]* @.str5, i64 0, i64 0), i8* %header) #8
-  %11 = icmp eq i32 %10, 1
-  %. = zext i1 %11 to i32
-  br label %12
+if.end7:                                          ; preds = %if.end
+  store i8 0, i8* %call4, align 1, !dbg !175, !tbaa !138
+  %call10 = call i32 (i8*, i8*, ...)* @__isoc99_sscanf(i8* %0, i8* getelementptr inbounds ([6 x i8]* @.str5, i64 0, i64 0), i8* %header) #7, !dbg !176
+  %cmp11 = icmp eq i32 %call10, 1, !dbg !176
+  %. = zext i1 %cmp11 to i32, !dbg !177
+  br label %cleanup, !dbg !177
 
-; <label>:12                                      ; preds = %9, %0, %8
-  %.0 = phi i32 [ 0, %8 ], [ 0, %0 ], [ %., %9 ]
-  call void @llvm.lifetime.end(i64 4096, i8* %1) #6
-  ret i32 %.0
+cleanup:                                          ; preds = %if.end7, %entry, %if.then6
+  %retval.0 = phi i32 [ 0, %if.then6 ], [ 0, %entry ], [ %., %if.end7 ]
+  call void @llvm.lifetime.end(i64 4096, i8* %0) #5, !dbg !177
+  ret i32 %retval.0, !dbg !178
 }

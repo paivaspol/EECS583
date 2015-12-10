@@ -1,49 +1,53 @@
 define void @IVL_listAndSize(%struct._IVL* %ivl, i32 %ilist, i32* %psize, i32** %pivec) #0 {
 entry:
-  %cmp = icmp eq %struct._IVL* %ivl, null
-  %cmp1 = icmp slt i32 %ilist, 0
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+  tail call void @llvm.dbg.value(metadata !{%struct._IVL* %ivl}, i64 0, metadata !33), !dbg !74
+  tail call void @llvm.dbg.value(metadata !{i32 %ilist}, i64 0, metadata !34), !dbg !75
+  tail call void @llvm.dbg.value(metadata !{i32* %psize}, i64 0, metadata !35), !dbg !76
+  tail call void @llvm.dbg.value(metadata !{i32** %pivec}, i64 0, metadata !36), !dbg !77
+  %cmp = icmp eq %struct._IVL* %ivl, null, !dbg !78
+  %cmp1 = icmp slt i32 %ilist, 0, !dbg !78
+  %or.cond = or i1 %cmp, %cmp1, !dbg !78
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2, !dbg !78
 
 lor.lhs.false2:                                   ; preds = %entry
-  %nlist = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 2
-  %0 = load i32* %nlist, align 4, !tbaa !0
-  %cmp3 = icmp sle i32 %0, %ilist
-  %cmp5 = icmp eq i32* %psize, null
-  %or.cond32 = or i1 %cmp3, %cmp5
-  %cmp7 = icmp eq i32** %pivec, null
-  %or.cond33 = or i1 %or.cond32, %cmp7
-  br i1 %or.cond33, label %if.then, label %if.end13
+  %nlist = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 2, !dbg !78
+  %0 = load i32* %nlist, align 4, !dbg !78, !tbaa !79
+  %cmp3 = icmp sle i32 %0, %ilist, !dbg !78
+  %cmp5 = icmp eq i32* %psize, null, !dbg !78
+  %or.cond32 = or i1 %cmp3, %cmp5, !dbg !78
+  %cmp7 = icmp eq i32** %pivec, null, !dbg !78
+  %or.cond33 = or i1 %or.cond32, %cmp7, !dbg !78
+  br i1 %or.cond33, label %if.then, label %if.end13, !dbg !78
 
 if.then:                                          ; preds = %lor.lhs.false2, %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([58 x i8]* @.str, i64 0, i64 0), %struct._IVL* %ivl, i32 %ilist, i32* %psize, i32** %pivec) #4
-  br i1 %cmp, label %if.end, label %if.then9
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !82, !tbaa !84
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([58 x i8]* @.str, i64 0, i64 0), %struct._IVL* %ivl, i32 %ilist, i32* %psize, i32** %pivec) #5, !dbg !82
+  br i1 %cmp, label %if.end, label %if.then9, !dbg !85
 
 if.then9:                                         ; preds = %if.then
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %nlist10 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 2
-  %3 = load i32* %nlist10, align 4, !tbaa !0
-  %call11 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([25 x i8]* @.str1, i64 0, i64 0), i32 %ilist, i32 %3) #4
-  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call12 = tail call i32 @IVL_writeForHumanEye(%struct._IVL* %ivl, %struct._IO_FILE* %4) #4
-  br label %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !86, !tbaa !84
+  %nlist10 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 2, !dbg !86
+  %3 = load i32* %nlist10, align 4, !dbg !86, !tbaa !79
+  %call11 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([25 x i8]* @.str1, i64 0, i64 0), i32 %ilist, i32 %3) #5, !dbg !86
+  %4 = load %struct._IO_FILE** @stderr, align 8, !dbg !88, !tbaa !84
+  %call12 = tail call i32 @IVL_writeForHumanEye(%struct._IVL* %ivl, %struct._IO_FILE* %4) #5, !dbg !88
+  br label %if.end, !dbg !89
 
 if.end:                                           ; preds = %if.then, %if.then9
-  tail call void @exit(i32 -1) #5
-  unreachable
+  tail call void @exit(i32 -1) #6, !dbg !90
+  unreachable, !dbg !90
 
 if.end13:                                         ; preds = %lor.lhs.false2
-  %idxprom = sext i32 %ilist to i64
-  %sizes = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 4
-  %5 = load i32** %sizes, align 8, !tbaa !3
-  %arrayidx = getelementptr inbounds i32* %5, i64 %idxprom
-  %6 = load i32* %arrayidx, align 4, !tbaa !0
-  store i32 %6, i32* %psize, align 4, !tbaa !0
-  %p_vec = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 5
-  %7 = load i32*** %p_vec, align 8, !tbaa !3
-  %arrayidx15 = getelementptr inbounds i32** %7, i64 %idxprom
-  %8 = load i32** %arrayidx15, align 8, !tbaa !3
-  store i32* %8, i32** %pivec, align 8, !tbaa !3
-  ret void
+  %idxprom = sext i32 %ilist to i64, !dbg !91
+  %sizes = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 4, !dbg !91
+  %5 = load i32** %sizes, align 8, !dbg !91, !tbaa !84
+  %arrayidx = getelementptr inbounds i32* %5, i64 %idxprom, !dbg !91
+  %6 = load i32* %arrayidx, align 4, !dbg !91, !tbaa !79
+  store i32 %6, i32* %psize, align 4, !dbg !91, !tbaa !79
+  %p_vec = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 5, !dbg !92
+  %7 = load i32*** %p_vec, align 8, !dbg !92, !tbaa !84
+  %arrayidx15 = getelementptr inbounds i32** %7, i64 %idxprom, !dbg !92
+  %8 = load i32** %arrayidx15, align 8, !dbg !92, !tbaa !84
+  store i32* %8, i32** %pivec, align 8, !dbg !92, !tbaa !84
+  ret void, !dbg !93
 }

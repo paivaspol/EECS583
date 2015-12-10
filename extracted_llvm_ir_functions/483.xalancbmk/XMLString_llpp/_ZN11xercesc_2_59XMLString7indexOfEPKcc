@@ -1,0 +1,29 @@
+define i32 @_ZN11xercesc_2_59XMLString7indexOfEPKcc(i8* nocapture %toSearch, i8 signext %ch) #6 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %toSearch}, i64 0, metadata !1537), !dbg !2970
+  tail call void @llvm.dbg.value(metadata !{i8 %ch}, i64 0, metadata !1538), !dbg !2970
+  %call = tail call i64 @strlen(i8* %toSearch) #14, !dbg !2971
+  %conv = trunc i64 %call to i32, !dbg !2971
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !1539), !dbg !2971
+  tail call void @llvm.dbg.value(metadata !1004, i64 0, metadata !1540), !dbg !2972
+  %cmp7 = icmp eq i32 %conv, 0, !dbg !2972
+  br i1 %cmp7, label %return, label %for.body, !dbg !2972
+
+for.cond:                                         ; preds = %for.body
+  %cmp = icmp ult i32 %inc, %conv, !dbg !2972
+  br i1 %cmp, label %for.body, label %return, !dbg !2972
+
+for.body:                                         ; preds = %entry, %for.cond
+  %i.08 = phi i32 [ %inc, %for.cond ], [ 0, %entry ]
+  %idxprom = zext i32 %i.08 to i64, !dbg !2973
+  %arrayidx = getelementptr inbounds i8* %toSearch, i64 %idxprom, !dbg !2973
+  %0 = load i8* %arrayidx, align 1, !dbg !2973, !tbaa !2818
+  %cmp3 = icmp eq i8 %0, %ch, !dbg !2973
+  %inc = add i32 %i.08, 1, !dbg !2972
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1540), !dbg !2972
+  br i1 %cmp3, label %return, label %for.cond, !dbg !2973
+
+return:                                           ; preds = %for.cond, %for.body, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ %i.08, %for.body ], [ -1, %for.cond ]
+  ret i32 %retval.0, !dbg !2975
+}

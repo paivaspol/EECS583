@@ -1,27 +1,34 @@
-define void @put_serverdata(i8* nocapture readonly %data, i32 %size) #0 {
-  %1 = icmp sgt i32 %size, 0
-  br i1 %1, label %.lr.ph, label %._crit_edge
+define void @put_serverdata(i8* nocapture %data, i32 %size) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !29), !dbg !55
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !30), !dbg !55
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !31), !dbg !56
+  %cmp2 = icmp sgt i32 %size, 0, !dbg !56
+  br i1 %cmp2, label %for.body, label %for.end, !dbg !56
 
-.lr.ph:                                           ; preds = %0, %put_serverbyte.exit
-  %p.02 = phi i8* [ %7, %put_serverbyte.exit ], [ %data, %0 ]
-  %.01 = phi i32 [ %8, %put_serverbyte.exit ], [ %size, %0 ]
-  %2 = load i8* %p.02, align 1, !tbaa !2
-  store volatile i8 %2, i8* inttoptr (i64 2952794328 to i8*), align 8, !tbaa !2
-  store volatile i8 1, i8* inttoptr (i64 2952794312 to i8*), align 8, !tbaa !2
-  br label %3
+for.body:                                         ; preds = %entry, %put_serverbyte.exit
+  %p.04 = phi i8* [ %incdec.ptr, %put_serverbyte.exit ], [ %data, %entry ]
+  %size.addr.03 = phi i32 [ %dec, %put_serverbyte.exit ], [ %size, %entry ]
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !31), !dbg !56
+  %0 = load i8* %p.04, align 1, !dbg !56, !tbaa !38
+  tail call void @llvm.dbg.value(metadata !{i8 %0}, i64 0, metadata !58), !dbg !59
+  store volatile i8 %0, i8* inttoptr (i64 2952794328 to i8*), align 8, !dbg !60, !tbaa !38
+  store volatile i8 1, i8* inttoptr (i64 2952794312 to i8*), align 8, !dbg !61, !tbaa !38
+  br label %while.cond.i, !dbg !62
 
-; <label>:3                                       ; preds = %3, %.lr.ph
-  %4 = load volatile i8* inttoptr (i64 2952794312 to i8*), align 8, !tbaa !2
-  %5 = and i8 %4, 1
-  %6 = icmp eq i8 %5, 0
-  br i1 %6, label %put_serverbyte.exit, label %3
+while.cond.i:                                     ; preds = %while.cond.i, %for.body
+  %1 = load volatile i8* inttoptr (i64 2952794312 to i8*), align 8, !dbg !62, !tbaa !38
+  %and.i = and i8 %1, 1, !dbg !62
+  %tobool.i = icmp eq i8 %and.i, 0, !dbg !62
+  br i1 %tobool.i, label %put_serverbyte.exit, label %while.cond.i, !dbg !62
 
-put_serverbyte.exit:                              ; preds = %3
-  %7 = getelementptr inbounds i8* %p.02, i64 1
-  %8 = add nsw i32 %.01, -1
-  %9 = icmp sgt i32 %.01, 1
-  br i1 %9, label %.lr.ph, label %._crit_edge
+put_serverbyte.exit:                              ; preds = %while.cond.i
+  %incdec.ptr = getelementptr inbounds i8* %p.04, i64 1, !dbg !56
+  %dec = add nsw i32 %size.addr.03, -1, !dbg !56
+  tail call void @llvm.dbg.value(metadata !{i32 %dec}, i64 0, metadata !30), !dbg !56
+  %cmp = icmp sgt i32 %dec, 0, !dbg !56
+  br i1 %cmp, label %for.body, label %for.end, !dbg !56
 
-._crit_edge:                                      ; preds = %put_serverbyte.exit, %0
-  ret void
+for.end:                                          ; preds = %put_serverbyte.exit, %entry
+  ret void, !dbg !63
 }

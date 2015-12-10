@@ -1,42 +1,62 @@
 define internal fastcc void @loop_insn_sink_or_swim(%struct.loop* nocapture %loop, %struct.rtx_def* %pattern) #0 {
 entry:
-  %exit_count = getelementptr inbounds %struct.loop* %loop, i64 0, i32 32
-  %0 = load i32* %exit_count, align 4, !tbaa !3
-  %tobool = icmp eq i32 %0, 0
-  br i1 %tobool, label %if.else, label %if.then
+  %exit_count = getelementptr inbounds %struct.loop* %loop, i64 0, i32 32, !dbg !6290
+  %0 = load i32* %exit_count, align 4, !dbg !6290, !tbaa !2973
+  %tobool = icmp eq i32 %0, 0, !dbg !6290
+  br i1 %tobool, label %if.else, label %if.then, !dbg !6290
 
 if.then:                                          ; preds = %entry
-  %start.i = getelementptr inbounds %struct.loop* %loop, i64 0, i32 26
-  %1 = load %struct.rtx_def** %start.i, align 8, !tbaa !4
-  %tobool4.i = icmp eq %struct.rtx_def* %1, null
-  br i1 %tobool4.i, label %if.then.i, label %loop_insn_emit_before.exit
+  tail call void @llvm.dbg.value(metadata !{%struct.loop* %loop}, i64 0, metadata !6291) #3, !dbg !6293
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %pattern}, i64 0, metadata !6294) #3, !dbg !6295
+  %start.i = getelementptr inbounds %struct.loop* %loop, i64 0, i32 26, !dbg !6296
+  %1 = load %struct.rtx_def** %start.i, align 8, !dbg !6296, !tbaa !2982
+  tail call void @llvm.dbg.value(metadata !{%struct.loop* %loop}, i64 0, metadata !6297) #3, !dbg !6298
+  tail call void @llvm.dbg.value(metadata !3695, i64 0, metadata !6299) #3, !dbg !6300
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %pattern}, i64 0, metadata !6301) #3, !dbg !6302
+  %tobool4.i = icmp eq %struct.rtx_def* %1, null, !dbg !6303
+  br i1 %tobool4.i, label %if.then.i, label %loop_insn_emit_before.exit, !dbg !6303
 
 if.then.i:                                        ; preds = %if.then, %if.then.i
+  tail call void @llvm.dbg.value(metadata !{%struct.loop* %loop}, i64 0, metadata !6304) #3, !dbg !6306
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %pattern}, i64 0, metadata !6307) #3, !dbg !6308
+  tail call void @llvm.dbg.value(metadata !{%struct.loop* %loop}, i64 0, metadata !6297) #3, !dbg !6298
+  tail call void @llvm.dbg.value(metadata !3695, i64 0, metadata !6299) #3, !dbg !6300
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %pattern}, i64 0, metadata !6301) #3, !dbg !6302
   br label %if.then.i
 
 loop_insn_emit_before.exit:                       ; preds = %if.then
-  %call1.i = tail call %struct.rtx_def* @emit_insn_before(%struct.rtx_def* %pattern, %struct.rtx_def* %1) #8
-  br label %return
+  %call1.i = tail call %struct.rtx_def* @emit_insn_before(%struct.rtx_def* %pattern, %struct.rtx_def* %1) #8, !dbg !6309
+  br label %return, !dbg !6292
 
 if.else:                                          ; preds = %entry
-  %sink.i = getelementptr inbounds %struct.loop* %loop, i64 0, i32 30
-  %2 = load %struct.rtx_def** %sink.i, align 8, !tbaa !4
-  %tobool4.i.i = icmp eq %struct.rtx_def* %2, null
-  br i1 %tobool4.i.i, label %if.then.lr.ph.i.i, label %loop_insn_sink.exit
+  tail call void @llvm.dbg.value(metadata !{%struct.loop* %loop}, i64 0, metadata !6310) #3, !dbg !6312
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %pattern}, i64 0, metadata !6313) #3, !dbg !6314
+  %sink.i = getelementptr inbounds %struct.loop* %loop, i64 0, i32 30, !dbg !6315
+  %2 = load %struct.rtx_def** %sink.i, align 8, !dbg !6315, !tbaa !2982
+  tail call void @llvm.dbg.value(metadata !{%struct.loop* %loop}, i64 0, metadata !6316) #3, !dbg !6317
+  tail call void @llvm.dbg.value(metadata !3695, i64 0, metadata !6318) #3, !dbg !6319
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %pattern}, i64 0, metadata !6320) #3, !dbg !6321
+  %tobool4.i.i = icmp eq %struct.rtx_def* %2, null, !dbg !6322
+  br i1 %tobool4.i.i, label %if.then.lr.ph.i.i, label %loop_insn_sink.exit, !dbg !6322
 
 if.then.lr.ph.i.i:                                ; preds = %if.else
-  %start.i.i.i = getelementptr inbounds %struct.loop* %loop, i64 0, i32 26
-  %3 = load %struct.rtx_def** %start.i.i.i, align 8, !tbaa !4
-  %tobool.i.i = icmp eq %struct.rtx_def* %3, null
+  %start.i.i.i = getelementptr inbounds %struct.loop* %loop, i64 0, i32 26, !dbg !6323
+  %3 = load %struct.rtx_def** %start.i.i.i, align 8, !dbg !6323, !tbaa !2982
+  %tobool.i.i = icmp eq %struct.rtx_def* %3, null, !dbg !6322
   br i1 %tobool.i.i, label %if.then.i.i, label %loop_insn_sink.exit
 
 if.then.i.i:                                      ; preds = %if.then.lr.ph.i.i, %if.then.i.i
-  br label %if.then.i.i
+  tail call void @llvm.dbg.value(metadata !{%struct.loop* %loop}, i64 0, metadata !6325) #3, !dbg !6326
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %pattern}, i64 0, metadata !6327) #3, !dbg !6328
+  tail call void @llvm.dbg.value(metadata !{%struct.loop* %loop}, i64 0, metadata !6316) #3, !dbg !6317
+  tail call void @llvm.dbg.value(metadata !3695, i64 0, metadata !6318) #3, !dbg !6319
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %pattern}, i64 0, metadata !6320) #3, !dbg !6321
+  br label %if.then.i.i, !dbg !6322
 
 loop_insn_sink.exit:                              ; preds = %if.else, %if.then.lr.ph.i.i
   %where_insn.tr.lcssa.i.i = phi %struct.rtx_def* [ %2, %if.else ], [ %3, %if.then.lr.ph.i.i ]
-  %call1.i.i = tail call %struct.rtx_def* @emit_insn_before(%struct.rtx_def* %pattern, %struct.rtx_def* %where_insn.tr.lcssa.i.i) #8
-  br label %return
+  %call1.i.i = tail call %struct.rtx_def* @emit_insn_before(%struct.rtx_def* %pattern, %struct.rtx_def* %where_insn.tr.lcssa.i.i) #8, !dbg !6329
+  br label %return, !dbg !6311
 
 return:                                           ; preds = %loop_insn_sink.exit, %loop_insn_emit_before.exit
   ret void

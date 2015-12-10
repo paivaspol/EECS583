@@ -1,0 +1,46 @@
+define zeroext i1 @_ZNK11xercesc_2_56BitSet6equalsERKS0_(%"class.xercesc_2_5::BitSet"* %this, %"class.xercesc_2_5::BitSet"* %other) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BitSet"* %this}, i64 0, metadata !208), !dbg !338
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BitSet"* %other}, i64 0, metadata !210), !dbg !338
+  %cmp = icmp eq %"class.xercesc_2_5::BitSet"* %this, %other, !dbg !339
+  br i1 %cmp, label %return, label %if.end, !dbg !339
+
+if.end:                                           ; preds = %entry
+  %fUnitLen = getelementptr inbounds %"class.xercesc_2_5::BitSet"* %this, i64 0, i32 2, !dbg !340
+  %0 = load i32* %fUnitLen, align 4, !dbg !340, !tbaa !304
+  %fUnitLen2 = getelementptr inbounds %"class.xercesc_2_5::BitSet"* %other, i64 0, i32 2, !dbg !340
+  %1 = load i32* %fUnitLen2, align 4, !dbg !340, !tbaa !304
+  %cmp3 = icmp eq i32 %0, %1, !dbg !340
+  br i1 %cmp3, label %for.cond.preheader, label %return, !dbg !340
+
+for.cond.preheader:                               ; preds = %if.end
+  %cmp719 = icmp eq i32 %0, 0, !dbg !341
+  br i1 %cmp719, label %return, label %for.body.lr.ph, !dbg !341
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %fBits = getelementptr inbounds %"class.xercesc_2_5::BitSet"* %this, i64 0, i32 1, !dbg !342
+  %2 = load i64** %fBits, align 8, !dbg !342, !tbaa !301
+  %fBits9 = getelementptr inbounds %"class.xercesc_2_5::BitSet"* %other, i64 0, i32 1, !dbg !342
+  %3 = load i64** %fBits9, align 8, !dbg !342, !tbaa !301
+  br label %for.body, !dbg !341
+
+for.cond:                                         ; preds = %for.body
+  %cmp7 = icmp ult i32 %inc, %0, !dbg !341
+  br i1 %cmp7, label %for.body, label %return, !dbg !341
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond
+  %i.020 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.cond ]
+  %idxprom = zext i32 %i.020 to i64, !dbg !342
+  %arrayidx = getelementptr inbounds i64* %2, i64 %idxprom, !dbg !342
+  %4 = load i64* %arrayidx, align 8, !dbg !342, !tbaa !322
+  %arrayidx10 = getelementptr inbounds i64* %3, i64 %idxprom, !dbg !342
+  %5 = load i64* %arrayidx10, align 8, !dbg !342, !tbaa !322
+  %cmp11 = icmp eq i64 %4, %5, !dbg !342
+  %inc = add i32 %i.020, 1, !dbg !341
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !211), !dbg !341
+  br i1 %cmp11, label %for.cond, label %return, !dbg !342
+
+return:                                           ; preds = %for.cond.preheader, %for.body, %for.cond, %if.end, %entry
+  %retval.0 = phi i1 [ true, %entry ], [ false, %if.end ], [ true, %for.cond.preheader ], [ false, %for.body ], [ true, %for.cond ]
+  ret i1 %retval.0, !dbg !344
+}

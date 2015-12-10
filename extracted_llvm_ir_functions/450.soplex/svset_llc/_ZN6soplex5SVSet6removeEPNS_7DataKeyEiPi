@@ -1,0 +1,75 @@
+define void @_ZN6soplex5SVSet6removeEPNS_7DataKeyEiPi(%"class.soplex::SVSet"* nocapture %this, %"class.soplex::DataKey"* nocapture %keys, i32 %n, i32* nocapture %perm) #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SVSet"* %this}, i64 0, metadata !2155), !dbg !4479
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataKey"* %keys}, i64 0, metadata !2156), !dbg !4479
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !2157), !dbg !4479
+  tail call void @llvm.dbg.value(metadata !{i32* %perm}, i64 0, metadata !2158), !dbg !4479
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SVSet"* %this}, i64 0, metadata !4480), !dbg !4482
+  %thenum.i.i = getelementptr inbounds %"class.soplex::SVSet"* %this, i64 0, i32 1, i32 4, !dbg !4483
+  %0 = load i32* %thenum.i.i, align 4, !dbg !4483, !tbaa !3751
+  %cmp15 = icmp sgt i32 %0, 0, !dbg !4481
+  br i1 %cmp15, label %for.body.lr.ph, label %while.cond.preheader, !dbg !4481
+
+for.body.lr.ph:                                   ; preds = %entry
+  %1 = sext i32 %0 to i64
+  br label %for.body, !dbg !4481
+
+while.cond.preheader:                             ; preds = %for.body, %entry
+  tail call void @llvm.dbg.value(metadata !{i32 %dec2}, i64 0, metadata !2157), !dbg !4485
+  %tobool11 = icmp eq i32 %n, 0, !dbg !4485
+  br i1 %tobool11, label %while.end, label %while.body.lr.ph, !dbg !4485
+
+while.body.lr.ph:                                 ; preds = %while.cond.preheader
+  %thesize.i.i.i = getelementptr inbounds %"class.soplex::SVSet"* %this, i64 0, i32 1, i32 3, !dbg !4486
+  %theitem.i.i = getelementptr inbounds %"class.soplex::SVSet"* %this, i64 0, i32 1, i32 0, !dbg !4487
+  br label %while.body, !dbg !4485
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ %1, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !4481
+  %arrayidx = getelementptr inbounds i32* %perm, i64 %indvars.iv.next, !dbg !4491
+  %2 = trunc i64 %indvars.iv.next to i32, !dbg !4491
+  store i32 %2, i32* %arrayidx, align 4, !dbg !4491, !tbaa !3751
+  %cmp = icmp sgt i32 %2, 0, !dbg !4481
+  br i1 %cmp, label %for.body, label %while.cond.preheader, !dbg !4481
+
+while.body:                                       ; preds = %while.body.lr.ph, %_ZNK6soplex5SVSet6numberERKNS_7DataKeyE.exit
+  %keys.addr.013 = phi %"class.soplex::DataKey"* [ %keys, %while.body.lr.ph ], [ %incdec.ptr, %_ZNK6soplex5SVSet6numberERKNS_7DataKeyE.exit ]
+  %n.addr.012 = phi i32 [ %n, %while.body.lr.ph ], [ %dec2, %_ZNK6soplex5SVSet6numberERKNS_7DataKeyE.exit ]
+  %dec2 = add nsw i32 %n.addr.012, -1, !dbg !4485
+  %incdec.ptr = getelementptr inbounds %"class.soplex::DataKey"* %keys.addr.013, i64 1, !dbg !4490
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataKey"* %incdec.ptr}, i64 0, metadata !2156), !dbg !4490
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SVSet"* %this}, i64 0, metadata !4492), !dbg !4493
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataKey"* %keys.addr.013}, i64 0, metadata !4494), !dbg !4493
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataKey"* %keys.addr.013}, i64 0, metadata !4495), !dbg !4496
+  %3 = bitcast %"class.soplex::DataKey"* %keys.addr.013 to i32*, !dbg !4487
+  %bf.load.i.i = load i32* %3, align 4, !dbg !4487
+  %bf.ashr.i.i = ashr i32 %bf.load.i.i, 8, !dbg !4487
+  %cmp.i.i = icmp slt i32 %bf.ashr.i.i, 0, !dbg !4487
+  br i1 %cmp.i.i, label %_ZNK6soplex5SVSet6numberERKNS_7DataKeyE.exit, label %lor.lhs.false.i.i, !dbg !4487
+
+lor.lhs.false.i.i:                                ; preds = %while.body
+  %4 = load i32* %thesize.i.i.i, align 4, !dbg !4486, !tbaa !3751
+  %cmp4.i.i = icmp slt i32 %bf.ashr.i.i, %4, !dbg !4487
+  br i1 %cmp4.i.i, label %cond.false.i.i, label %_ZNK6soplex5SVSet6numberERKNS_7DataKeyE.exit, !dbg !4487
+
+cond.false.i.i:                                   ; preds = %lor.lhs.false.i.i
+  %idxprom.i.i = sext i32 %bf.ashr.i.i to i64, !dbg !4487
+  %5 = load %"struct.soplex::DataSet<soplex::SVSet::DLPSV>::Item"** %theitem.i.i, align 8, !dbg !4487, !tbaa !3778
+  %info.i.i = getelementptr inbounds %"struct.soplex::DataSet<soplex::SVSet::DLPSV>::Item"* %5, i64 %idxprom.i.i, i32 1, !dbg !4487
+  %6 = load i32* %info.i.i, align 4, !dbg !4487, !tbaa !3751
+  %phitmp = sext i32 %6 to i64, !dbg !4487
+  br label %_ZNK6soplex5SVSet6numberERKNS_7DataKeyE.exit, !dbg !4487
+
+_ZNK6soplex5SVSet6numberERKNS_7DataKeyE.exit:     ; preds = %while.body, %lor.lhs.false.i.i, %cond.false.i.i
+  %cond.i.i = phi i64 [ %phitmp, %cond.false.i.i ], [ -1, %lor.lhs.false.i.i ], [ -1, %while.body ]
+  %arrayidx5 = getelementptr inbounds i32* %perm, i64 %cond.i.i, !dbg !4490
+  store i32 -1, i32* %arrayidx5, align 4, !dbg !4490, !tbaa !3751
+  tail call void @llvm.dbg.value(metadata !{i32 %dec2}, i64 0, metadata !2157), !dbg !4485
+  %tobool = icmp eq i32 %dec2, 0, !dbg !4485
+  br i1 %tobool, label %while.end, label %while.body, !dbg !4485
+
+while.end:                                        ; preds = %_ZNK6soplex5SVSet6numberERKNS_7DataKeyE.exit, %while.cond.preheader
+  tail call void @_ZN6soplex5SVSet6removeEPi(%"class.soplex::SVSet"* %this, i32* %perm) #9, !dbg !4497
+  ret void, !dbg !4498
+}

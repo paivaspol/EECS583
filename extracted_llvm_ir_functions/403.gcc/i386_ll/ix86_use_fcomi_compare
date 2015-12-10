@@ -1,19 +1,21 @@
 define i32 @ix86_use_fcomi_compare(i32 %code) #1 {
 entry:
-  %call = tail call i32 @swap_condition(i32 %code) #9
-  %call1 = tail call fastcc i32 @ix86_fp_comparison_cost(i32 %code) #10
-  %call2 = tail call fastcc i32 @ix86_fp_comparison_fcomi_cost(i32 %code) #10
-  %cmp = icmp eq i32 %call1, %call2
-  br i1 %cmp, label %lor.end, label %lor.rhs
+  tail call void @llvm.dbg.value(metadata !{i32 %code}, i64 0, metadata !2898), !dbg !7885
+  %call = tail call i32 @swap_condition(i32 %code) #10, !dbg !7886
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !2899), !dbg !7886
+  %call1 = tail call fastcc i32 @ix86_fp_comparison_cost(i32 %code) #11, !dbg !7887
+  %call2 = tail call fastcc i32 @ix86_fp_comparison_fcomi_cost(i32 %code) #11, !dbg !7887
+  %cmp = icmp eq i32 %call1, %call2, !dbg !7887
+  br i1 %cmp, label %lor.end, label %lor.rhs, !dbg !7887
 
 lor.rhs:                                          ; preds = %entry
-  %call3 = tail call fastcc i32 @ix86_fp_comparison_cost(i32 %call) #10
-  %call4 = tail call fastcc i32 @ix86_fp_comparison_fcomi_cost(i32 %call) #10
-  %cmp5 = icmp eq i32 %call3, %call4
-  br label %lor.end
+  %call3 = tail call fastcc i32 @ix86_fp_comparison_cost(i32 %call) #11, !dbg !7888
+  %call4 = tail call fastcc i32 @ix86_fp_comparison_fcomi_cost(i32 %call) #11, !dbg !7889
+  %cmp5 = icmp eq i32 %call3, %call4, !dbg !7889
+  br label %lor.end, !dbg !7889
 
 lor.end:                                          ; preds = %lor.rhs, %entry
   %0 = phi i1 [ true, %entry ], [ %cmp5, %lor.rhs ]
-  %lor.ext = zext i1 %0 to i32
-  ret i32 %lor.ext
+  %lor.ext = zext i1 %0 to i32, !dbg !7889
+  ret i32 %lor.ext, !dbg !7889
 }

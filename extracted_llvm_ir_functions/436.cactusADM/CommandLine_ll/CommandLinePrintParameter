@@ -1,67 +1,69 @@
-define internal fastcc void @CommandLinePrintParameter(%struct.PARAM_PROPS* readonly %properties) #1 {
-  %1 = icmp eq %struct.PARAM_PROPS* %properties, null
-  br i1 %1, label %.loopexit, label %2
+define internal fastcc void @CommandLinePrintParameter(%struct.PARAM_PROPS* %properties) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.PARAM_PROPS* %properties}, i64 0, metadata !108), !dbg !167
+  %tobool = icmp eq %struct.PARAM_PROPS* %properties, null, !dbg !168
+  br i1 %tobool, label %if.end22, label %if.then, !dbg !168
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 1
-  %4 = load i8** %3, align 8, !tbaa !7
-  %5 = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 0
-  %6 = load i8** %5, align 8, !tbaa !10
-  %7 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([20 x i8]* @.str26, i64 0, i64 0), i8* %4, i8* %6) #5
-  %8 = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 2
-  %9 = load i32* %8, align 4, !tbaa !11
-  %10 = icmp eq i32 %9, 3
-  br i1 %10, label %16, label %11
+if.then:                                          ; preds = %entry
+  %thorn = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 1, !dbg !169
+  %0 = load i8** %thorn, align 8, !dbg !169, !tbaa !129
+  %name = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 0, !dbg !169
+  %1 = load i8** %name, align 8, !dbg !169, !tbaa !129
+  %call = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([20 x i8]* @.str25, i64 0, i64 0), i8* %0, i8* %1) #6, !dbg !169
+  %scope = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 2, !dbg !171
+  %2 = load i32* %scope, align 4, !dbg !171, !tbaa !172
+  %cmp = icmp eq i32 %2, 3, !dbg !171
+  br i1 %cmp, label %if.end, label %if.then1, !dbg !171
 
-; <label>:11                                      ; preds = %2
-  %12 = load i8** %3, align 8, !tbaa !7
-  %13 = tail call i8* @CCTK_ThornImplementation(i8* %12) #5
-  %14 = load i8** %5, align 8, !tbaa !10
-  %15 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([9 x i8]* @.str27, i64 0, i64 0), i8* %13, i8* %14) #5
-  br label %16
+if.then1:                                         ; preds = %if.then
+  %3 = load i8** %thorn, align 8, !dbg !173, !tbaa !129
+  %call3 = tail call i8* @CCTK_ThornImplementation(i8* %3) #6, !dbg !173
+  %4 = load i8** %name, align 8, !dbg !173, !tbaa !129
+  %call5 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([9 x i8]* @.str26, i64 0, i64 0), i8* %call3, i8* %4) #6, !dbg !173
+  br label %if.end, !dbg !175
 
-; <label>:16                                      ; preds = %2, %11
-  %putchar = tail call i32 @putchar(i32 10) #4
-  %17 = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 3
-  %18 = load i8** %17, align 8, !tbaa !12
-  %19 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([19 x i8]* @.str29, i64 0, i64 0), i8* %18) #5
-  %20 = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 5
-  %21 = load i32* %20, align 4, !tbaa !13
-  %22 = add nsw i32 %21, -1
-  %23 = sext i32 %22 to i64
-  %24 = getelementptr inbounds [6 x i8*]* @cctk_parameter_type_names, i64 0, i64 %23
-  %25 = load i8** %24, align 8, !tbaa !2
-  %26 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([17 x i8]* @.str30, i64 0, i64 0), i8* %25) #5
-  %27 = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 4
-  %28 = load i8** %27, align 8, !tbaa !14
-  %29 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([17 x i8]* @.str31, i64 0, i64 0), i8* %28) #5
-  %30 = load i32* %8, align 4, !tbaa !11
-  %31 = add nsw i32 %30, -1
-  %32 = sext i32 %31 to i64
-  %33 = getelementptr inbounds [5 x i8*]* @cctk_parameter_scopes, i64 0, i64 %32
-  %34 = load i8** %33, align 8, !tbaa !2
-  %35 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([17 x i8]* @.str32, i64 0, i64 0), i8* %34) #5
-  %36 = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 6
-  %range.01 = load %struct.RANGE** %36, align 8
-  %37 = icmp eq %struct.RANGE* %range.01, null
-  br i1 %37, label %.loopexit, label %.lr.ph
+if.end:                                           ; preds = %if.then, %if.then1
+  %putchar = tail call i32 @putchar(i32 10) #5, !dbg !176
+  %description = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 3, !dbg !177
+  %5 = load i8** %description, align 8, !dbg !177, !tbaa !129
+  %call7 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([19 x i8]* @.str28, i64 0, i64 0), i8* %5) #6, !dbg !177
+  %type = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 5, !dbg !178
+  %6 = load i32* %type, align 4, !dbg !178, !tbaa !172
+  %sub = add nsw i32 %6, -1, !dbg !178
+  %idxprom = sext i32 %sub to i64, !dbg !178
+  %arrayidx = getelementptr inbounds [6 x i8*]* @cctk_parameter_type_names, i64 0, i64 %idxprom, !dbg !178
+  %7 = load i8** %arrayidx, align 8, !dbg !178, !tbaa !129
+  %call8 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([17 x i8]* @.str29, i64 0, i64 0), i8* %7) #6, !dbg !178
+  %defval = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 4, !dbg !179
+  %8 = load i8** %defval, align 8, !dbg !179, !tbaa !129
+  %call9 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([17 x i8]* @.str30, i64 0, i64 0), i8* %8) #6, !dbg !179
+  %9 = load i32* %scope, align 4, !dbg !180, !tbaa !172
+  %sub11 = add nsw i32 %9, -1, !dbg !180
+  %idxprom12 = sext i32 %sub11 to i64, !dbg !180
+  %arrayidx13 = getelementptr inbounds [5 x i8*]* @cctk_parameter_scopes, i64 0, i64 %idxprom12, !dbg !180
+  %10 = load i8** %arrayidx13, align 8, !dbg !180, !tbaa !129
+  %call14 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([17 x i8]* @.str31, i64 0, i64 0), i8* %10) #6, !dbg !180
+  %range15 = getelementptr inbounds %struct.PARAM_PROPS* %properties, i64 0, i32 6, !dbg !181
+  %range.037 = load %struct.RANGE** %range15, align 8, !dbg !181
+  %tobool1638 = icmp eq %struct.RANGE* %range.037, null, !dbg !181
+  br i1 %tobool1638, label %if.end22, label %for.body, !dbg !181
 
-.lr.ph:                                           ; preds = %16, %.lr.ph
-  %range.02 = phi %struct.RANGE* [ %range.0, %.lr.ph ], [ %range.01, %16 ]
-  %38 = getelementptr inbounds %struct.RANGE* %range.02, i64 0, i32 2
-  %39 = load i8** %38, align 8, !tbaa !15
-  %40 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([17 x i8]* @.str33, i64 0, i64 0), i8* %39) #5
-  %41 = getelementptr inbounds %struct.RANGE* %range.02, i64 0, i32 3
-  %42 = load i8** %41, align 8, !tbaa !17
-  %43 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([21 x i8]* @.str34, i64 0, i64 0), i8* %42) #5
-  %44 = getelementptr inbounds %struct.RANGE* %range.02, i64 0, i32 5
-  %45 = load i8** %44, align 8, !tbaa !18
-  %46 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([21 x i8]* @.str35, i64 0, i64 0), i8* %45) #5
-  %47 = getelementptr inbounds %struct.RANGE* %range.02, i64 0, i32 1
-  %range.0 = load %struct.RANGE** %47, align 8
-  %48 = icmp eq %struct.RANGE* %range.0, null
-  br i1 %48, label %.loopexit, label %.lr.ph
+for.body:                                         ; preds = %if.end, %for.body
+  %range.039 = phi %struct.RANGE* [ %range.0, %for.body ], [ %range.037, %if.end ]
+  %range17 = getelementptr inbounds %struct.RANGE* %range.039, i64 0, i32 2, !dbg !183
+  %11 = load i8** %range17, align 8, !dbg !183, !tbaa !129
+  %call18 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([17 x i8]* @.str32, i64 0, i64 0), i8* %11) #6, !dbg !183
+  %origin = getelementptr inbounds %struct.RANGE* %range.039, i64 0, i32 3, !dbg !185
+  %12 = load i8** %origin, align 8, !dbg !185, !tbaa !129
+  %call19 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([21 x i8]* @.str33, i64 0, i64 0), i8* %12) #6, !dbg !185
+  %description20 = getelementptr inbounds %struct.RANGE* %range.039, i64 0, i32 5, !dbg !186
+  %13 = load i8** %description20, align 8, !dbg !186, !tbaa !129
+  %call21 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([21 x i8]* @.str34, i64 0, i64 0), i8* %13) #6, !dbg !186
+  %next = getelementptr inbounds %struct.RANGE* %range.039, i64 0, i32 1, !dbg !181
+  %range.0 = load %struct.RANGE** %next, align 8, !dbg !181
+  %tobool16 = icmp eq %struct.RANGE* %range.0, null, !dbg !181
+  br i1 %tobool16, label %if.end22, label %for.body, !dbg !181
 
-.loopexit:                                        ; preds = %.lr.ph, %16, %0
-  ret void
+if.end22:                                         ; preds = %if.end, %for.body, %entry
+  ret void, !dbg !187
 }

@@ -1,66 +1,69 @@
 define internal fastcc void @push_member_name(%union.tree_node* nocapture %decl) #0 {
 entry:
-  %name = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 8
-  %0 = load %union.tree_node** %name, align 8, !tbaa !0
-  %tobool = icmp eq %union.tree_node* %0, null
-  br i1 %tobool, label %cond.end, label %cond.true
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %decl}, i64 0, metadata !1727), !dbg !4383
+  %name = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 8, !dbg !4384
+  %0 = load %union.tree_node** %name, align 8, !dbg !4384, !tbaa !1977
+  %tobool = icmp eq %union.tree_node* %0, null, !dbg !4384
+  br i1 %tobool, label %cond.end, label %cond.true, !dbg !4384
 
 cond.true:                                        ; preds = %entry
-  %id = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 1
-  %1 = getelementptr inbounds i8** %id, i64 1
-  %2 = load i8** %1, align 8, !tbaa !0
-  br label %cond.end
+  %id = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 1, !dbg !4384
+  %1 = getelementptr inbounds i8** %id, i64 1, !dbg !4384
+  %2 = load i8** %1, align 8, !dbg !4384, !tbaa !1977
+  br label %cond.end, !dbg !4384
 
 cond.end:                                         ; preds = %entry, %cond.true
-  %cond = phi i8* [ %2, %cond.true ], [ getelementptr inbounds ([12 x i8]* @.str154, i64 0, i64 0), %entry ]
-  %3 = load %struct.spelling** @spelling, align 8, !tbaa !0
-  %4 = load %struct.spelling** @spelling_base, align 8, !tbaa !0
-  %sub.ptr.lhs.cast = ptrtoint %struct.spelling* %3 to i64
-  %sub.ptr.rhs.cast = ptrtoint %struct.spelling* %4 to i64
-  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
-  %sub.ptr.div15 = lshr exact i64 %sub.ptr.sub, 4
-  %conv = trunc i64 %sub.ptr.div15 to i32
-  %5 = load i32* @spelling_size, align 4, !tbaa !3
-  %cmp = icmp slt i32 %conv, %5
-  br i1 %cmp, label %if.end12, label %if.then
+  %cond = phi i8* [ %2, %cond.true ], [ getelementptr inbounds ([12 x i8]* @.str154, i64 0, i64 0), %entry ], !dbg !4384
+  tail call void @llvm.dbg.value(metadata !{i8* %cond}, i64 0, metadata !1728), !dbg !4384
+  %3 = load %struct.spelling** @spelling, align 8, !dbg !4385, !tbaa !1977
+  %4 = load %struct.spelling** @spelling_base, align 8, !dbg !4385, !tbaa !1977
+  %sub.ptr.lhs.cast = ptrtoint %struct.spelling* %3 to i64, !dbg !4385
+  %sub.ptr.rhs.cast = ptrtoint %struct.spelling* %4 to i64, !dbg !4385
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !4385
+  %sub.ptr.div15 = lshr exact i64 %sub.ptr.sub, 4, !dbg !4385
+  %conv = trunc i64 %sub.ptr.div15 to i32, !dbg !4385
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !1730), !dbg !4385
+  %5 = load i32* @spelling_size, align 4, !dbg !4385, !tbaa !2105
+  %cmp = icmp slt i32 %conv, %5, !dbg !4385
+  br i1 %cmp, label %if.end12, label %if.then, !dbg !4385
 
 if.then:                                          ; preds = %cond.end
-  %add = add nsw i32 %5, 10
-  store i32 %add, i32* @spelling_size, align 4, !tbaa !3
-  %cmp5 = icmp eq %struct.spelling* %4, null
-  br i1 %cmp5, label %if.then7, label %if.else
+  %add = add nsw i32 %5, 10, !dbg !4386
+  store i32 %add, i32* @spelling_size, align 4, !dbg !4386, !tbaa !2105
+  %cmp5 = icmp eq %struct.spelling* %4, null, !dbg !4386
+  br i1 %cmp5, label %if.then7, label %if.else, !dbg !4386
 
 if.then7:                                         ; preds = %if.then
-  %conv8 = sext i32 %add to i64
-  %mul = shl nsw i64 %conv8, 4
-  %call = tail call noalias i8* @xmalloc(i64 %mul) #8
-  br label %if.end
+  %conv8 = sext i32 %add to i64, !dbg !4386
+  %mul = shl nsw i64 %conv8, 4, !dbg !4386
+  %call = tail call noalias i8* @xmalloc(i64 %mul) #9, !dbg !4386
+  br label %if.end, !dbg !4386
 
 if.else:                                          ; preds = %if.then
-  %6 = bitcast %struct.spelling* %4 to i8*
-  %conv9 = sext i32 %add to i64
-  %mul10 = shl nsw i64 %conv9, 4
-  %call11 = tail call i8* @xrealloc(i8* %6, i64 %mul10) #8
+  %6 = bitcast %struct.spelling* %4 to i8*, !dbg !4386
+  %conv9 = sext i32 %add to i64, !dbg !4386
+  %mul10 = shl nsw i64 %conv9, 4, !dbg !4386
+  %call11 = tail call i8* @xrealloc(i8* %6, i64 %mul10) #9, !dbg !4386
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then7
   %storemerge.in = phi i8* [ %call11, %if.else ], [ %call, %if.then7 ]
-  %storemerge = bitcast i8* %storemerge.in to %struct.spelling*
-  store %struct.spelling* %storemerge, %struct.spelling** @spelling_base, align 8, !tbaa !0
-  %sext = shl i64 %sub.ptr.sub, 28
-  %idx.ext = ashr exact i64 %sext, 32
-  %add.ptr = getelementptr inbounds %struct.spelling* %storemerge, i64 %idx.ext
-  store %struct.spelling* %add.ptr, %struct.spelling** @spelling, align 8, !tbaa !0
-  br label %if.end12
+  %storemerge = bitcast i8* %storemerge.in to %struct.spelling*, !dbg !4386
+  store %struct.spelling* %storemerge, %struct.spelling** @spelling_base, align 8, !dbg !4386, !tbaa !1977
+  %sext = shl i64 %sub.ptr.sub, 28, !dbg !4386
+  %idx.ext = ashr exact i64 %sext, 32, !dbg !4386
+  %add.ptr = getelementptr inbounds %struct.spelling* %storemerge, i64 %idx.ext, !dbg !4386
+  store %struct.spelling* %add.ptr, %struct.spelling** @spelling, align 8, !dbg !4386, !tbaa !1977
+  br label %if.end12, !dbg !4386
 
 if.end12:                                         ; preds = %cond.end, %if.end
   %7 = phi %struct.spelling* [ %3, %cond.end ], [ %add.ptr, %if.end ]
-  %kind = getelementptr inbounds %struct.spelling* %7, i64 0, i32 0
-  store i32 2, i32* %kind, align 4, !tbaa !3
-  %s = getelementptr inbounds %struct.spelling* %7, i64 0, i32 1, i32 0
-  store i8* %cond, i8** %s, align 8, !tbaa !0
-  %8 = load %struct.spelling** @spelling, align 8, !tbaa !0
-  %incdec.ptr = getelementptr inbounds %struct.spelling* %8, i64 1
-  store %struct.spelling* %incdec.ptr, %struct.spelling** @spelling, align 8, !tbaa !0
-  ret void
+  %kind = getelementptr inbounds %struct.spelling* %7, i64 0, i32 0, !dbg !4385
+  store i32 2, i32* %kind, align 4, !dbg !4385, !tbaa !2105
+  %s = getelementptr inbounds %struct.spelling* %7, i64 0, i32 1, i32 0, !dbg !4385
+  store i8* %cond, i8** %s, align 8, !dbg !4385, !tbaa !1977
+  %8 = load %struct.spelling** @spelling, align 8, !dbg !4385, !tbaa !1977
+  %incdec.ptr = getelementptr inbounds %struct.spelling* %8, i64 1, !dbg !4385
+  store %struct.spelling* %incdec.ptr, %struct.spelling** @spelling, align 8, !dbg !4385, !tbaa !1977
+  ret void, !dbg !4388
 }

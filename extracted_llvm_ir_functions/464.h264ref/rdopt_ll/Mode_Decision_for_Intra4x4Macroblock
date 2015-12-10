@@ -1,31 +1,39 @@
 define i32 @Mode_Decision_for_Intra4x4Macroblock(double %lambda, i32* nocapture %cost) #0 {
 entry:
   %cost8x8 = alloca i32, align 4
-  store i32 0, i32* %cost, align 4, !tbaa !3
-  br label %for.body
+  call void @llvm.dbg.value(metadata !{double %lambda}, i64 0, metadata !476), !dbg !2013
+  call void @llvm.dbg.value(metadata !{i32* %cost}, i64 0, metadata !477), !dbg !2013
+  call void @llvm.dbg.value(metadata !60, i64 0, metadata !478), !dbg !2014
+  call void @llvm.dbg.declare(metadata !{i32* %cost8x8}, metadata !480), !dbg !2014
+  store i32 0, i32* %cost, align 4, !dbg !2015, !tbaa !1458
+  call void @llvm.dbg.value(metadata !60, i64 0, metadata !479), !dbg !2015
+  br label %for.body, !dbg !2015
 
 for.body:                                         ; preds = %if.end, %entry
   %b8.07 = phi i32 [ 0, %entry ], [ %inc, %if.end ]
   %cbp.06 = phi i32 [ 0, %entry ], [ %cbp.1, %if.end ]
-  %call = call i32 @Mode_Decision_for_8x8IntraBlocks(i32 %b8.07, double %lambda, i32* %cost8x8) #10
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %if.end, label %if.then
+  %call = call i32 @Mode_Decision_for_8x8IntraBlocks(i32 %b8.07, double %lambda, i32* %cost8x8) #11, !dbg !2017
+  %tobool = icmp eq i32 %call, 0, !dbg !2017
+  br i1 %tobool, label %if.end, label %if.then, !dbg !2017
 
 if.then:                                          ; preds = %for.body
-  %shl = shl i32 1, %b8.07
-  %or = or i32 %shl, %cbp.06
-  br label %if.end
+  %shl = shl i32 1, %b8.07, !dbg !2019
+  %or = or i32 %shl, %cbp.06, !dbg !2019
+  call void @llvm.dbg.value(metadata !{i32 %or}, i64 0, metadata !478), !dbg !2019
+  br label %if.end, !dbg !2021
 
 if.end:                                           ; preds = %for.body, %if.then
   %cbp.1 = phi i32 [ %or, %if.then ], [ %cbp.06, %for.body ]
-  %0 = load i32* %cost8x8, align 4, !tbaa !3
-  %1 = load i32* %cost, align 4, !tbaa !3
-  %add = add nsw i32 %1, %0
-  store i32 %add, i32* %cost, align 4, !tbaa !3
-  %inc = add nsw i32 %b8.07, 1
-  %exitcond = icmp eq i32 %inc, 4
-  br i1 %exitcond, label %for.end, label %for.body
+  call void @llvm.dbg.value(metadata !{i32* %cost8x8}, i64 0, metadata !480), !dbg !2022
+  %0 = load i32* %cost8x8, align 4, !dbg !2022, !tbaa !1458
+  %1 = load i32* %cost, align 4, !dbg !2022, !tbaa !1458
+  %add = add nsw i32 %1, %0, !dbg !2022
+  store i32 %add, i32* %cost, align 4, !dbg !2022, !tbaa !1458
+  %inc = add nsw i32 %b8.07, 1, !dbg !2015
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !479), !dbg !2015
+  %exitcond = icmp eq i32 %inc, 4, !dbg !2015
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !2015
 
 for.end:                                          ; preds = %if.end
-  ret i32 %cbp.1
+  ret i32 %cbp.1, !dbg !2023
 }

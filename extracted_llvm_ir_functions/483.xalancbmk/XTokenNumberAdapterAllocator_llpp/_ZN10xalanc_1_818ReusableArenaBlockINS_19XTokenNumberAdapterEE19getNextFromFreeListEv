@@ -1,0 +1,42 @@
+define linkonce_odr %"class.xalanc_1_8::XTokenNumberAdapter"* @_ZN10xalanc_1_818ReusableArenaBlockINS_19XTokenNumberAdapterEE19getNextFromFreeListEv(%"class.xalanc_1_8::ReusableArenaBlock"* %this) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::ReusableArenaBlock"* %this}, i64 0, metadata !3975), !dbg !5172
+  tail call void @llvm.dbg.value(metadata !5173, i64 0, metadata !3976), !dbg !5174
+  %m_freeBlockCount = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 2, !dbg !5175
+  %0 = load i64* %m_freeBlockCount, align 8, !dbg !5175, !tbaa !4275
+  %cmp = icmp eq i64 %0, 0, !dbg !5175
+  br i1 %cmp, label %if.end8, label %if.then, !dbg !5175
+
+if.then:                                          ; preds = %entry
+  %m_freeList = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 1, !dbg !5176
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XalanBitmap"* %m_freeList}, i64 0, metadata !5177), !dbg !5178
+  %m_size.i = getelementptr inbounds %"class.xalanc_1_8::XalanBitmap"* %m_freeList, i64 0, i32 0, !dbg !5179
+  %1 = load i64* %m_size.i, align 8, !dbg !5179, !tbaa !4275
+  tail call void @llvm.dbg.value(metadata !{i64 %1}, i64 0, metadata !3977), !dbg !5176
+  tail call void @llvm.dbg.value(metadata !5181, i64 0, metadata !3979), !dbg !5182
+  %cmp213 = icmp eq i64 %1, 0, !dbg !5182
+  br i1 %cmp213, label %if.end8, label %for.body, !dbg !5182
+
+for.cond:                                         ; preds = %for.body
+  %cmp2 = icmp ult i64 %inc, %1, !dbg !5182
+  br i1 %cmp2, label %for.body, label %if.end8, !dbg !5182
+
+for.body:                                         ; preds = %if.then, %for.cond
+  %i.014 = phi i64 [ %inc, %for.cond ], [ 0, %if.then ]
+  %call4 = tail call zeroext i1 @_ZNK10xalanc_1_811XalanBitmap5isSetEm(%"class.xalanc_1_8::XalanBitmap"* %m_freeList, i64 %i.014) #10, !dbg !5183
+  %inc = add i64 %i.014, 1, !dbg !5182
+  tail call void @llvm.dbg.value(metadata !{i64 %inc}, i64 0, metadata !3979), !dbg !5182
+  br i1 %call4, label %if.then6, label %for.cond, !dbg !5183
+
+if.then6:                                         ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !{i64 %i.014}, i64 0, metadata !5185), !dbg !5188
+  %m_objectBlock.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 0, i32 4, !dbg !5189
+  %2 = load %"class.xalanc_1_8::XTokenNumberAdapter"** %m_objectBlock.i, align 8, !dbg !5189, !tbaa !4289
+  %add.ptr.i = getelementptr inbounds %"class.xalanc_1_8::XTokenNumberAdapter"* %2, i64 %i.014, !dbg !5189
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XTokenNumberAdapter"* %add.ptr.i}, i64 0, metadata !3976), !dbg !5186
+  br label %if.end8, !dbg !5191
+
+if.end8:                                          ; preds = %if.then, %for.cond, %entry, %if.then6
+  %theResult.0 = phi %"class.xalanc_1_8::XTokenNumberAdapter"* [ %add.ptr.i, %if.then6 ], [ null, %entry ], [ null, %for.cond ], [ null, %if.then ]
+  ret %"class.xalanc_1_8::XTokenNumberAdapter"* %theResult.0, !dbg !5192
+}

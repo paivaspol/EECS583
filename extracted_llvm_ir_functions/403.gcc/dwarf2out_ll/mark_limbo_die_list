@@ -1,57 +1,59 @@
 define internal void @mark_limbo_die_list(i8* nocapture %ptr) #1 {
 entry:
-  %node.014 = load %struct.limbo_die_struct** @limbo_die_list, align 8
-  %tobool15 = icmp eq %struct.limbo_die_struct* %node.014, null
-  br i1 %tobool15, label %for.end, label %do.body
+  tail call void @llvm.dbg.value(metadata !{i8* %ptr}, i64 0, metadata !2993), !dbg !11050
+  %node.014 = load %struct.limbo_die_struct** @limbo_die_list, align 8, !dbg !11051
+  %tobool15 = icmp eq %struct.limbo_die_struct* %node.014, null, !dbg !11051
+  br i1 %tobool15, label %for.end, label %do.body, !dbg !11051
 
 do.body:                                          ; preds = %entry, %for.inc
   %node.016 = phi %struct.limbo_die_struct* [ %node.0, %for.inc ], [ %node.014, %entry ]
-  %created_for = getelementptr inbounds %struct.limbo_die_struct* %node.016, i64 0, i32 1
-  %0 = load %union.tree_node** %created_for, align 8, !tbaa !4
-  %cmp = icmp eq %union.tree_node* %0, null
-  br i1 %cmp, label %for.inc, label %land.lhs.true
+  %created_for = getelementptr inbounds %struct.limbo_die_struct* %node.016, i64 0, i32 1, !dbg !11052
+  %0 = load %union.tree_node** %created_for, align 8, !dbg !11052, !tbaa !3768
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %0}, i64 0, metadata !2995), !dbg !11052
+  %cmp = icmp eq %union.tree_node* %0, null, !dbg !11052
+  br i1 %cmp, label %for.inc, label %land.lhs.true, !dbg !11052
 
 land.lhs.true:                                    ; preds = %do.body
-  %1 = bitcast %union.tree_node* %0 to i8*
-  %call = tail call i32 @ggc_set_mark(i8* %1) #9
-  %tobool1 = icmp eq i32 %call, 0
-  br i1 %tobool1, label %do.body2, label %for.inc
+  %1 = bitcast %union.tree_node* %0 to i8*, !dbg !11052
+  %call = tail call i32 @ggc_set_mark(i8* %1) #10, !dbg !11052
+  %tobool1 = icmp eq i32 %call, 0, !dbg !11052
+  br i1 %tobool1, label %do.body2, label %for.inc, !dbg !11052
 
 do.body2:                                         ; preds = %land.lhs.true
-  %2 = load %struct.varray_head_tag** @ggc_pending_trees, align 8, !tbaa !4
-  %elements_used = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 1
-  %3 = load i64* %elements_used, align 8, !tbaa !6
-  %num_elements = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 0
-  %4 = load i64* %num_elements, align 8, !tbaa !6
-  %cmp3 = icmp ult i64 %3, %4
-  br i1 %cmp3, label %if.end, label %if.then4
+  %2 = load %struct.varray_head_tag** @ggc_pending_trees, align 8, !dbg !11053, !tbaa !3768
+  %elements_used = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 1, !dbg !11053
+  %3 = load i64* %elements_used, align 8, !dbg !11053, !tbaa !3782
+  %num_elements = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 0, !dbg !11053
+  %4 = load i64* %num_elements, align 8, !dbg !11053, !tbaa !3782
+  %cmp3 = icmp ult i64 %3, %4, !dbg !11053
+  br i1 %cmp3, label %if.end, label %if.then4, !dbg !11053
 
 if.then4:                                         ; preds = %do.body2
-  %mul = shl i64 %4, 1
-  %call6 = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %2, i64 %mul) #9
-  store %struct.varray_head_tag* %call6, %struct.varray_head_tag** @ggc_pending_trees, align 8, !tbaa !4
+  %mul = shl i64 %4, 1, !dbg !11053
+  %call6 = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %2, i64 %mul) #10, !dbg !11053
+  store %struct.varray_head_tag* %call6, %struct.varray_head_tag** @ggc_pending_trees, align 8, !dbg !11053, !tbaa !3768
   %elements_used7.phi.trans.insert = getelementptr inbounds %struct.varray_head_tag* %call6, i64 0, i32 1
-  %.pre = load i64* %elements_used7.phi.trans.insert, align 8, !tbaa !6
-  br label %if.end
+  %.pre = load i64* %elements_used7.phi.trans.insert, align 8, !dbg !11053, !tbaa !3782
+  br label %if.end, !dbg !11053
 
 if.end:                                           ; preds = %do.body2, %if.then4
   %5 = phi i64 [ %3, %do.body2 ], [ %.pre, %if.then4 ]
   %6 = phi %struct.varray_head_tag* [ %2, %do.body2 ], [ %call6, %if.then4 ]
-  %elements_used7 = getelementptr inbounds %struct.varray_head_tag* %6, i64 0, i32 1
-  %inc = add i64 %5, 1
-  store i64 %inc, i64* %elements_used7, align 8, !tbaa !6
-  %data = getelementptr inbounds %struct.varray_head_tag* %6, i64 0, i32 4
-  %tree = bitcast %union.varray_data_tag* %data to [1 x %union.tree_node*]*
-  %arrayidx = getelementptr inbounds [1 x %union.tree_node*]* %tree, i64 0, i64 %5
-  store %union.tree_node* %0, %union.tree_node** %arrayidx, align 8, !tbaa !4
-  br label %for.inc
+  %elements_used7 = getelementptr inbounds %struct.varray_head_tag* %6, i64 0, i32 1, !dbg !11053
+  %inc = add i64 %5, 1, !dbg !11053
+  store i64 %inc, i64* %elements_used7, align 8, !dbg !11053, !tbaa !3782
+  %data = getelementptr inbounds %struct.varray_head_tag* %6, i64 0, i32 4, !dbg !11053
+  %tree = bitcast %union.varray_data_tag* %data to [1 x %union.tree_node*]*, !dbg !11053
+  %arrayidx = getelementptr inbounds [1 x %union.tree_node*]* %tree, i64 0, i64 %5, !dbg !11053
+  store %union.tree_node* %0, %union.tree_node** %arrayidx, align 8, !dbg !11053, !tbaa !3768
+  br label %for.inc, !dbg !11053
 
 for.inc:                                          ; preds = %land.lhs.true, %do.body, %if.end
-  %next = getelementptr inbounds %struct.limbo_die_struct* %node.016, i64 0, i32 2
-  %node.0 = load %struct.limbo_die_struct** %next, align 8
-  %tobool = icmp eq %struct.limbo_die_struct* %node.0, null
-  br i1 %tobool, label %for.end, label %do.body
+  %next = getelementptr inbounds %struct.limbo_die_struct* %node.016, i64 0, i32 2, !dbg !11051
+  %node.0 = load %struct.limbo_die_struct** %next, align 8, !dbg !11051
+  %tobool = icmp eq %struct.limbo_die_struct* %node.0, null, !dbg !11051
+  br i1 %tobool, label %for.end, label %do.body, !dbg !11051
 
 for.end:                                          ; preds = %for.inc, %entry
-  ret void
+  ret void, !dbg !11055
 }

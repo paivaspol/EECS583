@@ -1,0 +1,37 @@
+define internal fastcc zeroext i1 @_ZN6soplexL10isInfinityEPKc(i8* nocapture %s) #6 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %s}, i64 0, metadata !5309), !dbg !6435
+  %0 = load i8* %s, align 1, !dbg !6436, !tbaa !5728
+  switch i8 %0, label %land.end [
+    i8 45, label %land.lhs.true
+    i8 43, label %land.lhs.true
+  ], !dbg !6436
+
+land.lhs.true:                                    ; preds = %entry, %entry
+  %arrayidx4 = getelementptr inbounds i8* %s, i64 1, !dbg !6437
+  %1 = load i8* %arrayidx4, align 1, !dbg !6437, !tbaa !5728
+  %conv5 = sext i8 %1 to i32, !dbg !6437
+  %call = tail call i32 @tolower(i32 %conv5) #15, !dbg !6437
+  %cmp6 = icmp eq i32 %call, 105, !dbg !6437
+  br i1 %cmp6, label %land.lhs.true7, label %land.end, !dbg !6437
+
+land.lhs.true7:                                   ; preds = %land.lhs.true
+  %arrayidx8 = getelementptr inbounds i8* %s, i64 2, !dbg !6438
+  %2 = load i8* %arrayidx8, align 1, !dbg !6438, !tbaa !5728
+  %conv9 = sext i8 %2 to i32, !dbg !6438
+  %call10 = tail call i32 @tolower(i32 %conv9) #15, !dbg !6438
+  %cmp11 = icmp eq i32 %call10, 110, !dbg !6438
+  br i1 %cmp11, label %land.rhs, label %land.end, !dbg !6438
+
+land.rhs:                                         ; preds = %land.lhs.true7
+  %arrayidx12 = getelementptr inbounds i8* %s, i64 3, !dbg !6439
+  %3 = load i8* %arrayidx12, align 1, !dbg !6439, !tbaa !5728
+  %conv13 = sext i8 %3 to i32, !dbg !6439
+  %call14 = tail call i32 @tolower(i32 %conv13) #15, !dbg !6439
+  %cmp15 = icmp eq i32 %call14, 102, !dbg !6439
+  br label %land.end
+
+land.end:                                         ; preds = %entry, %land.rhs, %land.lhs.true7, %land.lhs.true
+  %4 = phi i1 [ false, %land.lhs.true7 ], [ false, %land.lhs.true ], [ %cmp15, %land.rhs ], [ false, %entry ]
+  ret i1 %4, !dbg !6440
+}

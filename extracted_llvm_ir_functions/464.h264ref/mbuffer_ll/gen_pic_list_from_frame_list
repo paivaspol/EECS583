@@ -1,230 +1,246 @@
-define internal fastcc void @gen_pic_list_from_frame_list(i32 %currStrcture, %struct.frame_store** nocapture %fs_list, i32 %list_idx, %struct.storable_picture** nocapture %list, i32* nocapture %list_size, i32 %long_term) #1 {
+define internal fastcc void @gen_pic_list_from_frame_list(i32 %currStrcture, %struct.frame_store** nocapture %fs_list, i32 %list_idx, %struct.storable_picture** nocapture %list, i32* nocapture %list_size, i32 %long_term) #2 {
 entry:
-  %tobool = icmp eq i32 %long_term, 0
+  tail call void @llvm.dbg.value(metadata !{i32 %currStrcture}, i64 0, metadata !1008), !dbg !1899
+  tail call void @llvm.dbg.value(metadata !{%struct.frame_store** %fs_list}, i64 0, metadata !1009), !dbg !1899
+  tail call void @llvm.dbg.value(metadata !{i32 %list_idx}, i64 0, metadata !1010), !dbg !1899
+  tail call void @llvm.dbg.value(metadata !{%struct.storable_picture** %list}, i64 0, metadata !1011), !dbg !1899
+  tail call void @llvm.dbg.value(metadata !{i32* %list_size}, i64 0, metadata !1012), !dbg !1899
+  tail call void @llvm.dbg.value(metadata !{i32 %long_term}, i64 0, metadata !1013), !dbg !1899
+  tail call void @llvm.dbg.value(metadata !21, i64 0, metadata !1014), !dbg !1900
+  tail call void @llvm.dbg.value(metadata !21, i64 0, metadata !1015), !dbg !1901
+  %tobool = icmp eq i32 %long_term, 0, !dbg !1902
   %is_short_ref.is_long_ref = select i1 %tobool, i32 (%struct.storable_picture*)* @is_short_ref, i32 (%struct.storable_picture*)* @is_long_ref
-  %cmp = icmp eq i32 %currStrcture, 1
-  br i1 %cmp, label %while.cond.preheader, label %if.end46
+  %cmp = icmp eq i32 %currStrcture, 1, !dbg !1903
+  br i1 %cmp, label %while.cond.preheader, label %if.end46, !dbg !1903
 
 while.cond.preheader:                             ; preds = %entry
-  %0 = icmp sgt i32 %list_idx, 0
-  br i1 %0, label %for.cond.preheader, label %if.end110
+  %0 = icmp sgt i32 %list_idx, 0, !dbg !1904
+  br i1 %0, label %for.cond.preheader, label %if.end110, !dbg !1904
 
 for.cond.preheader:                               ; preds = %while.cond.preheader, %while.cond.backedge
   %bot_idx.0194 = phi i32 [ %bot_idx.0.be, %while.cond.backedge ], [ 0, %while.cond.preheader ]
   %top_idx.0193 = phi i32 [ %top_idx.2.ph, %while.cond.backedge ], [ 0, %while.cond.preheader ]
-  %cmp4183 = icmp slt i32 %top_idx.0193, %list_idx
-  br i1 %cmp4183, label %for.body.lr.ph, label %for.cond20.preheader
+  %cmp4183 = icmp slt i32 %top_idx.0193, %list_idx, !dbg !1906
+  br i1 %cmp4183, label %for.body.lr.ph, label %for.cond20.preheader, !dbg !1906
 
 for.body.lr.ph:                                   ; preds = %for.cond.preheader
   %1 = sext i32 %top_idx.0193 to i64
-  br label %for.body
+  br label %for.body, !dbg !1906
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.inc
   %indvars.iv205 = phi i64 [ %1, %for.body.lr.ph ], [ %indvars.iv.next206, %for.inc ]
   %top_idx.1184 = phi i32 [ %top_idx.0193, %for.body.lr.ph ], [ %inc19, %for.inc ]
-  %arrayidx = getelementptr inbounds %struct.frame_store** %fs_list, i64 %indvars.iv205
-  %2 = load %struct.frame_store** %arrayidx, align 8, !tbaa !0
-  %is_used = getelementptr inbounds %struct.frame_store* %2, i64 0, i32 0
-  %3 = load i32* %is_used, align 4, !tbaa !3
-  %and = and i32 %3, 1
-  %tobool5 = icmp eq i32 %and, 0
-  br i1 %tobool5, label %for.inc, label %if.then6
+  %arrayidx = getelementptr inbounds %struct.frame_store** %fs_list, i64 %indvars.iv205, !dbg !1909
+  %2 = load %struct.frame_store** %arrayidx, align 8, !dbg !1909, !tbaa !1363
+  %is_used = getelementptr inbounds %struct.frame_store* %2, i64 0, i32 0, !dbg !1909
+  %3 = load i32* %is_used, align 4, !dbg !1909, !tbaa !1366
+  %and = and i32 %3, 1, !dbg !1909
+  %tobool5 = icmp eq i32 %and, 0, !dbg !1909
+  br i1 %tobool5, label %for.inc, label %if.then6, !dbg !1909
 
 if.then6:                                         ; preds = %for.body
-  %top_field = getelementptr inbounds %struct.frame_store* %2, i64 0, i32 11
-  %4 = load %struct.storable_picture** %top_field, align 8, !tbaa !0
-  %call = tail call i32 %is_short_ref.is_long_ref(%struct.storable_picture* %4) #6
-  %tobool9 = icmp eq i32 %call, 0
-  br i1 %tobool9, label %for.inc, label %if.then10
+  %top_field = getelementptr inbounds %struct.frame_store* %2, i64 0, i32 11, !dbg !1911
+  %4 = load %struct.storable_picture** %top_field, align 8, !dbg !1911, !tbaa !1363
+  %call = tail call i32 %is_short_ref.is_long_ref(%struct.storable_picture* %4) #8, !dbg !1911
+  %tobool9 = icmp eq i32 %call, 0, !dbg !1911
+  br i1 %tobool9, label %for.inc, label %if.then10, !dbg !1911
 
 if.then10:                                        ; preds = %if.then6
-  %5 = load %struct.frame_store** %arrayidx, align 8, !tbaa !0
-  %top_field13 = getelementptr inbounds %struct.frame_store* %5, i64 0, i32 11
-  %6 = load %struct.storable_picture** %top_field13, align 8, !tbaa !0
-  %7 = load i32* %list_size, align 4, !tbaa !3
-  %idxprom14 = sext i32 %7 to i64
-  %arrayidx15 = getelementptr inbounds %struct.storable_picture** %list, i64 %idxprom14
-  store %struct.storable_picture* %6, %struct.storable_picture** %arrayidx15, align 8, !tbaa !0
-  %inc = add nsw i32 %7, 1
-  store i32 %inc, i32* %list_size, align 4, !tbaa !3
-  %inc16 = add nsw i32 %top_idx.1184, 1
-  br label %for.cond20.preheader
+  %5 = load %struct.frame_store** %arrayidx, align 8, !dbg !1913, !tbaa !1363
+  %top_field13 = getelementptr inbounds %struct.frame_store* %5, i64 0, i32 11, !dbg !1913
+  %6 = load %struct.storable_picture** %top_field13, align 8, !dbg !1913, !tbaa !1363
+  %7 = load i32* %list_size, align 4, !dbg !1913, !tbaa !1366
+  %idxprom14 = sext i32 %7 to i64, !dbg !1913
+  %arrayidx15 = getelementptr inbounds %struct.storable_picture** %list, i64 %idxprom14, !dbg !1913
+  store %struct.storable_picture* %6, %struct.storable_picture** %arrayidx15, align 8, !dbg !1913, !tbaa !1363
+  %inc = add nsw i32 %7, 1, !dbg !1915
+  store i32 %inc, i32* %list_size, align 4, !dbg !1915, !tbaa !1366
+  %inc16 = add nsw i32 %top_idx.1184, 1, !dbg !1916
+  tail call void @llvm.dbg.value(metadata !{i32 %inc16}, i64 0, metadata !1014), !dbg !1916
+  br label %for.cond20.preheader, !dbg !1917
 
 for.inc:                                          ; preds = %if.then6, %for.body
-  %indvars.iv.next206 = add i64 %indvars.iv205, 1
-  %inc19 = add nsw i32 %top_idx.1184, 1
-  %8 = trunc i64 %indvars.iv.next206 to i32
-  %cmp4 = icmp slt i32 %8, %list_idx
-  br i1 %cmp4, label %for.body, label %for.cond20.preheader
+  %indvars.iv.next206 = add i64 %indvars.iv205, 1, !dbg !1906
+  %inc19 = add nsw i32 %top_idx.1184, 1, !dbg !1906
+  tail call void @llvm.dbg.value(metadata !{i32 %inc19}, i64 0, metadata !1014), !dbg !1906
+  %8 = trunc i64 %indvars.iv.next206 to i32, !dbg !1906
+  %cmp4 = icmp slt i32 %8, %list_idx, !dbg !1906
+  br i1 %cmp4, label %for.body, label %for.cond20.preheader, !dbg !1906
 
 for.cond20.preheader:                             ; preds = %for.cond.preheader, %for.inc, %if.then10
   %top_idx.2.ph = phi i32 [ %inc16, %if.then10 ], [ %top_idx.0193, %for.cond.preheader ], [ %inc19, %for.inc ]
-  %cmp21187 = icmp slt i32 %bot_idx.0194, %list_idx
-  br i1 %cmp21187, label %for.body22.lr.ph, label %while.cond.backedge
+  %cmp21187 = icmp slt i32 %bot_idx.0194, %list_idx, !dbg !1918
+  br i1 %cmp21187, label %for.body22.lr.ph, label %while.cond.backedge, !dbg !1918
 
 for.body22.lr.ph:                                 ; preds = %for.cond20.preheader
   %9 = sext i32 %bot_idx.0194 to i64
-  br label %for.body22
+  br label %for.body22, !dbg !1918
 
 for.body22:                                       ; preds = %for.body22.lr.ph, %for.inc43
   %indvars.iv209 = phi i64 [ %9, %for.body22.lr.ph ], [ %indvars.iv.next210, %for.inc43 ]
   %bot_idx.1188 = phi i32 [ %bot_idx.0194, %for.body22.lr.ph ], [ %inc44, %for.inc43 ]
-  %arrayidx24 = getelementptr inbounds %struct.frame_store** %fs_list, i64 %indvars.iv209
-  %10 = load %struct.frame_store** %arrayidx24, align 8, !tbaa !0
-  %is_used25 = getelementptr inbounds %struct.frame_store* %10, i64 0, i32 0
-  %11 = load i32* %is_used25, align 4, !tbaa !3
-  %and26 = and i32 %11, 2
-  %tobool27 = icmp eq i32 %and26, 0
-  br i1 %tobool27, label %for.inc43, label %if.then28
+  %arrayidx24 = getelementptr inbounds %struct.frame_store** %fs_list, i64 %indvars.iv209, !dbg !1920
+  %10 = load %struct.frame_store** %arrayidx24, align 8, !dbg !1920, !tbaa !1363
+  %is_used25 = getelementptr inbounds %struct.frame_store* %10, i64 0, i32 0, !dbg !1920
+  %11 = load i32* %is_used25, align 4, !dbg !1920, !tbaa !1366
+  %and26 = and i32 %11, 2, !dbg !1920
+  %tobool27 = icmp eq i32 %and26, 0, !dbg !1920
+  br i1 %tobool27, label %for.inc43, label %if.then28, !dbg !1920
 
 if.then28:                                        ; preds = %for.body22
-  %bottom_field = getelementptr inbounds %struct.frame_store* %10, i64 0, i32 12
-  %12 = load %struct.storable_picture** %bottom_field, align 8, !tbaa !0
-  %call31 = tail call i32 %is_short_ref.is_long_ref(%struct.storable_picture* %12) #6
-  %tobool32 = icmp eq i32 %call31, 0
-  br i1 %tobool32, label %for.inc43, label %if.then33
+  %bottom_field = getelementptr inbounds %struct.frame_store* %10, i64 0, i32 12, !dbg !1922
+  %12 = load %struct.storable_picture** %bottom_field, align 8, !dbg !1922, !tbaa !1363
+  %call31 = tail call i32 %is_short_ref.is_long_ref(%struct.storable_picture* %12) #8, !dbg !1922
+  %tobool32 = icmp eq i32 %call31, 0, !dbg !1922
+  br i1 %tobool32, label %for.inc43, label %if.then33, !dbg !1922
 
 if.then33:                                        ; preds = %if.then28
-  %13 = load %struct.frame_store** %arrayidx24, align 8, !tbaa !0
-  %bottom_field36 = getelementptr inbounds %struct.frame_store* %13, i64 0, i32 12
-  %14 = load %struct.storable_picture** %bottom_field36, align 8, !tbaa !0
-  %15 = load i32* %list_size, align 4, !tbaa !3
-  %idxprom37 = sext i32 %15 to i64
-  %arrayidx38 = getelementptr inbounds %struct.storable_picture** %list, i64 %idxprom37
-  store %struct.storable_picture* %14, %struct.storable_picture** %arrayidx38, align 8, !tbaa !0
-  %inc39 = add nsw i32 %15, 1
-  store i32 %inc39, i32* %list_size, align 4, !tbaa !3
-  %inc40 = add nsw i32 %bot_idx.1188, 1
-  br label %while.cond.backedge
+  %13 = load %struct.frame_store** %arrayidx24, align 8, !dbg !1924, !tbaa !1363
+  %bottom_field36 = getelementptr inbounds %struct.frame_store* %13, i64 0, i32 12, !dbg !1924
+  %14 = load %struct.storable_picture** %bottom_field36, align 8, !dbg !1924, !tbaa !1363
+  %15 = load i32* %list_size, align 4, !dbg !1924, !tbaa !1366
+  %idxprom37 = sext i32 %15 to i64, !dbg !1924
+  %arrayidx38 = getelementptr inbounds %struct.storable_picture** %list, i64 %idxprom37, !dbg !1924
+  store %struct.storable_picture* %14, %struct.storable_picture** %arrayidx38, align 8, !dbg !1924, !tbaa !1363
+  %inc39 = add nsw i32 %15, 1, !dbg !1926
+  store i32 %inc39, i32* %list_size, align 4, !dbg !1926, !tbaa !1366
+  %inc40 = add nsw i32 %bot_idx.1188, 1, !dbg !1927
+  tail call void @llvm.dbg.value(metadata !{i32 %inc40}, i64 0, metadata !1015), !dbg !1927
+  br label %while.cond.backedge, !dbg !1928
 
 while.cond.backedge:                              ; preds = %for.cond20.preheader, %for.inc43, %if.then33
   %bot_idx.0.be = phi i32 [ %inc40, %if.then33 ], [ %bot_idx.0194, %for.cond20.preheader ], [ %inc44, %for.inc43 ]
-  %cmp2 = icmp slt i32 %top_idx.2.ph, %list_idx
-  %cmp3 = icmp slt i32 %bot_idx.0.be, %list_idx
-  %or.cond = or i1 %cmp2, %cmp3
-  br i1 %or.cond, label %for.cond.preheader, label %if.end46
+  %cmp2 = icmp slt i32 %top_idx.2.ph, %list_idx, !dbg !1904
+  %cmp3 = icmp slt i32 %bot_idx.0.be, %list_idx, !dbg !1904
+  %or.cond = or i1 %cmp2, %cmp3, !dbg !1904
+  br i1 %or.cond, label %for.cond.preheader, label %if.end46, !dbg !1904
 
 for.inc43:                                        ; preds = %if.then28, %for.body22
-  %indvars.iv.next210 = add i64 %indvars.iv209, 1
-  %inc44 = add nsw i32 %bot_idx.1188, 1
-  %16 = trunc i64 %indvars.iv.next210 to i32
-  %cmp21 = icmp slt i32 %16, %list_idx
-  br i1 %cmp21, label %for.body22, label %while.cond.backedge
+  %indvars.iv.next210 = add i64 %indvars.iv209, 1, !dbg !1918
+  %inc44 = add nsw i32 %bot_idx.1188, 1, !dbg !1918
+  tail call void @llvm.dbg.value(metadata !{i32 %inc44}, i64 0, metadata !1015), !dbg !1918
+  %16 = trunc i64 %indvars.iv.next210 to i32, !dbg !1918
+  %cmp21 = icmp slt i32 %16, %list_idx, !dbg !1918
+  br i1 %cmp21, label %for.body22, label %while.cond.backedge, !dbg !1918
 
 if.end46:                                         ; preds = %while.cond.backedge, %entry
   %top_idx.3 = phi i32 [ 0, %entry ], [ %top_idx.2.ph, %while.cond.backedge ]
   %bot_idx.2 = phi i32 [ 0, %entry ], [ %bot_idx.0.be, %while.cond.backedge ]
-  %cmp47 = icmp eq i32 %currStrcture, 2
-  br i1 %cmp47, label %while.cond49.preheader, label %if.end110
+  %cmp47 = icmp eq i32 %currStrcture, 2, !dbg !1929
+  br i1 %cmp47, label %while.cond49.preheader, label %if.end110, !dbg !1929
 
 while.cond49.preheader:                           ; preds = %if.end46
-  %cmp50177 = icmp slt i32 %top_idx.3, %list_idx
-  %cmp52178 = icmp slt i32 %bot_idx.2, %list_idx
-  %or.cond169179 = or i1 %cmp50177, %cmp52178
-  br i1 %or.cond169179, label %for.cond55.preheader, label %if.end110
+  %cmp50177 = icmp slt i32 %top_idx.3, %list_idx, !dbg !1930
+  %cmp52178 = icmp slt i32 %bot_idx.2, %list_idx, !dbg !1930
+  %or.cond169179 = or i1 %cmp50177, %cmp52178, !dbg !1930
+  br i1 %or.cond169179, label %for.cond55.preheader, label %if.end110, !dbg !1930
 
 for.cond55.preheader:                             ; preds = %while.cond49.preheader, %while.cond49.backedge
   %bot_idx.3181 = phi i32 [ %bot_idx.5.ph, %while.cond49.backedge ], [ %bot_idx.2, %while.cond49.preheader ]
   %top_idx.4180 = phi i32 [ %top_idx.4.be, %while.cond49.backedge ], [ %top_idx.3, %while.cond49.preheader ]
-  %cmp56171 = icmp slt i32 %bot_idx.3181, %list_idx
-  br i1 %cmp56171, label %for.body57.lr.ph, label %for.cond82.preheader
+  %cmp56171 = icmp slt i32 %bot_idx.3181, %list_idx, !dbg !1932
+  br i1 %cmp56171, label %for.body57.lr.ph, label %for.cond82.preheader, !dbg !1932
 
 for.body57.lr.ph:                                 ; preds = %for.cond55.preheader
   %17 = sext i32 %bot_idx.3181 to i64
-  br label %for.body57
+  br label %for.body57, !dbg !1932
 
 for.body57:                                       ; preds = %for.body57.lr.ph, %for.inc79
   %indvars.iv = phi i64 [ %17, %for.body57.lr.ph ], [ %indvars.iv.next, %for.inc79 ]
   %bot_idx.4172 = phi i32 [ %bot_idx.3181, %for.body57.lr.ph ], [ %inc80, %for.inc79 ]
-  %arrayidx59 = getelementptr inbounds %struct.frame_store** %fs_list, i64 %indvars.iv
-  %18 = load %struct.frame_store** %arrayidx59, align 8, !tbaa !0
-  %is_used60 = getelementptr inbounds %struct.frame_store* %18, i64 0, i32 0
-  %19 = load i32* %is_used60, align 4, !tbaa !3
-  %and61 = and i32 %19, 2
-  %tobool62 = icmp eq i32 %and61, 0
-  br i1 %tobool62, label %for.inc79, label %if.then63
+  %arrayidx59 = getelementptr inbounds %struct.frame_store** %fs_list, i64 %indvars.iv, !dbg !1935
+  %18 = load %struct.frame_store** %arrayidx59, align 8, !dbg !1935, !tbaa !1363
+  %is_used60 = getelementptr inbounds %struct.frame_store* %18, i64 0, i32 0, !dbg !1935
+  %19 = load i32* %is_used60, align 4, !dbg !1935, !tbaa !1366
+  %and61 = and i32 %19, 2, !dbg !1935
+  %tobool62 = icmp eq i32 %and61, 0, !dbg !1935
+  br i1 %tobool62, label %for.inc79, label %if.then63, !dbg !1935
 
 if.then63:                                        ; preds = %for.body57
-  %bottom_field66 = getelementptr inbounds %struct.frame_store* %18, i64 0, i32 12
-  %20 = load %struct.storable_picture** %bottom_field66, align 8, !tbaa !0
-  %call67 = tail call i32 %is_short_ref.is_long_ref(%struct.storable_picture* %20) #6
-  %tobool68 = icmp eq i32 %call67, 0
-  br i1 %tobool68, label %for.inc79, label %if.then69
+  %bottom_field66 = getelementptr inbounds %struct.frame_store* %18, i64 0, i32 12, !dbg !1937
+  %20 = load %struct.storable_picture** %bottom_field66, align 8, !dbg !1937, !tbaa !1363
+  %call67 = tail call i32 %is_short_ref.is_long_ref(%struct.storable_picture* %20) #8, !dbg !1937
+  %tobool68 = icmp eq i32 %call67, 0, !dbg !1937
+  br i1 %tobool68, label %for.inc79, label %if.then69, !dbg !1937
 
 if.then69:                                        ; preds = %if.then63
-  %21 = load %struct.frame_store** %arrayidx59, align 8, !tbaa !0
-  %bottom_field72 = getelementptr inbounds %struct.frame_store* %21, i64 0, i32 12
-  %22 = load %struct.storable_picture** %bottom_field72, align 8, !tbaa !0
-  %23 = load i32* %list_size, align 4, !tbaa !3
-  %idxprom73 = sext i32 %23 to i64
-  %arrayidx74 = getelementptr inbounds %struct.storable_picture** %list, i64 %idxprom73
-  store %struct.storable_picture* %22, %struct.storable_picture** %arrayidx74, align 8, !tbaa !0
-  %inc75 = add nsw i32 %23, 1
-  store i32 %inc75, i32* %list_size, align 4, !tbaa !3
-  %inc76 = add nsw i32 %bot_idx.4172, 1
-  br label %for.cond82.preheader
+  %21 = load %struct.frame_store** %arrayidx59, align 8, !dbg !1939, !tbaa !1363
+  %bottom_field72 = getelementptr inbounds %struct.frame_store* %21, i64 0, i32 12, !dbg !1939
+  %22 = load %struct.storable_picture** %bottom_field72, align 8, !dbg !1939, !tbaa !1363
+  %23 = load i32* %list_size, align 4, !dbg !1939, !tbaa !1366
+  %idxprom73 = sext i32 %23 to i64, !dbg !1939
+  %arrayidx74 = getelementptr inbounds %struct.storable_picture** %list, i64 %idxprom73, !dbg !1939
+  store %struct.storable_picture* %22, %struct.storable_picture** %arrayidx74, align 8, !dbg !1939, !tbaa !1363
+  %inc75 = add nsw i32 %23, 1, !dbg !1941
+  store i32 %inc75, i32* %list_size, align 4, !dbg !1941, !tbaa !1366
+  %inc76 = add nsw i32 %bot_idx.4172, 1, !dbg !1942
+  tail call void @llvm.dbg.value(metadata !{i32 %inc76}, i64 0, metadata !1015), !dbg !1942
+  br label %for.cond82.preheader, !dbg !1943
 
 for.inc79:                                        ; preds = %if.then63, %for.body57
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %inc80 = add nsw i32 %bot_idx.4172, 1
-  %24 = trunc i64 %indvars.iv.next to i32
-  %cmp56 = icmp slt i32 %24, %list_idx
-  br i1 %cmp56, label %for.body57, label %for.cond82.preheader
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1932
+  %inc80 = add nsw i32 %bot_idx.4172, 1, !dbg !1932
+  tail call void @llvm.dbg.value(metadata !{i32 %inc80}, i64 0, metadata !1015), !dbg !1932
+  %24 = trunc i64 %indvars.iv.next to i32, !dbg !1932
+  %cmp56 = icmp slt i32 %24, %list_idx, !dbg !1932
+  br i1 %cmp56, label %for.body57, label %for.cond82.preheader, !dbg !1932
 
 for.cond82.preheader:                             ; preds = %for.cond55.preheader, %for.inc79, %if.then69
   %bot_idx.5.ph = phi i32 [ %inc76, %if.then69 ], [ %bot_idx.3181, %for.cond55.preheader ], [ %inc80, %for.inc79 ]
-  %cmp83174 = icmp slt i32 %top_idx.4180, %list_idx
-  br i1 %cmp83174, label %for.body84.lr.ph, label %while.cond49.backedge
+  %cmp83174 = icmp slt i32 %top_idx.4180, %list_idx, !dbg !1944
+  br i1 %cmp83174, label %for.body84.lr.ph, label %while.cond49.backedge, !dbg !1944
 
 for.body84.lr.ph:                                 ; preds = %for.cond82.preheader
   %25 = sext i32 %top_idx.4180 to i64
-  br label %for.body84
+  br label %for.body84, !dbg !1944
 
 for.body84:                                       ; preds = %for.body84.lr.ph, %for.inc106
   %indvars.iv201 = phi i64 [ %25, %for.body84.lr.ph ], [ %indvars.iv.next202, %for.inc106 ]
   %top_idx.5175 = phi i32 [ %top_idx.4180, %for.body84.lr.ph ], [ %inc107, %for.inc106 ]
-  %arrayidx86 = getelementptr inbounds %struct.frame_store** %fs_list, i64 %indvars.iv201
-  %26 = load %struct.frame_store** %arrayidx86, align 8, !tbaa !0
-  %is_used87 = getelementptr inbounds %struct.frame_store* %26, i64 0, i32 0
-  %27 = load i32* %is_used87, align 4, !tbaa !3
-  %and88 = and i32 %27, 1
-  %tobool89 = icmp eq i32 %and88, 0
-  br i1 %tobool89, label %for.inc106, label %if.then90
+  %arrayidx86 = getelementptr inbounds %struct.frame_store** %fs_list, i64 %indvars.iv201, !dbg !1946
+  %26 = load %struct.frame_store** %arrayidx86, align 8, !dbg !1946, !tbaa !1363
+  %is_used87 = getelementptr inbounds %struct.frame_store* %26, i64 0, i32 0, !dbg !1946
+  %27 = load i32* %is_used87, align 4, !dbg !1946, !tbaa !1366
+  %and88 = and i32 %27, 1, !dbg !1946
+  %tobool89 = icmp eq i32 %and88, 0, !dbg !1946
+  br i1 %tobool89, label %for.inc106, label %if.then90, !dbg !1946
 
 if.then90:                                        ; preds = %for.body84
-  %top_field93 = getelementptr inbounds %struct.frame_store* %26, i64 0, i32 11
-  %28 = load %struct.storable_picture** %top_field93, align 8, !tbaa !0
-  %call94 = tail call i32 %is_short_ref.is_long_ref(%struct.storable_picture* %28) #6
-  %tobool95 = icmp eq i32 %call94, 0
-  br i1 %tobool95, label %for.inc106, label %if.then96
+  %top_field93 = getelementptr inbounds %struct.frame_store* %26, i64 0, i32 11, !dbg !1948
+  %28 = load %struct.storable_picture** %top_field93, align 8, !dbg !1948, !tbaa !1363
+  %call94 = tail call i32 %is_short_ref.is_long_ref(%struct.storable_picture* %28) #8, !dbg !1948
+  %tobool95 = icmp eq i32 %call94, 0, !dbg !1948
+  br i1 %tobool95, label %for.inc106, label %if.then96, !dbg !1948
 
 if.then96:                                        ; preds = %if.then90
-  %29 = load %struct.frame_store** %arrayidx86, align 8, !tbaa !0
-  %top_field99 = getelementptr inbounds %struct.frame_store* %29, i64 0, i32 11
-  %30 = load %struct.storable_picture** %top_field99, align 8, !tbaa !0
-  %31 = load i32* %list_size, align 4, !tbaa !3
-  %idxprom100 = sext i32 %31 to i64
-  %arrayidx101 = getelementptr inbounds %struct.storable_picture** %list, i64 %idxprom100
-  store %struct.storable_picture* %30, %struct.storable_picture** %arrayidx101, align 8, !tbaa !0
-  %inc102 = add nsw i32 %31, 1
-  store i32 %inc102, i32* %list_size, align 4, !tbaa !3
-  %inc103 = add nsw i32 %top_idx.5175, 1
-  br label %while.cond49.backedge
+  %29 = load %struct.frame_store** %arrayidx86, align 8, !dbg !1950, !tbaa !1363
+  %top_field99 = getelementptr inbounds %struct.frame_store* %29, i64 0, i32 11, !dbg !1950
+  %30 = load %struct.storable_picture** %top_field99, align 8, !dbg !1950, !tbaa !1363
+  %31 = load i32* %list_size, align 4, !dbg !1950, !tbaa !1366
+  %idxprom100 = sext i32 %31 to i64, !dbg !1950
+  %arrayidx101 = getelementptr inbounds %struct.storable_picture** %list, i64 %idxprom100, !dbg !1950
+  store %struct.storable_picture* %30, %struct.storable_picture** %arrayidx101, align 8, !dbg !1950, !tbaa !1363
+  %inc102 = add nsw i32 %31, 1, !dbg !1952
+  store i32 %inc102, i32* %list_size, align 4, !dbg !1952, !tbaa !1366
+  %inc103 = add nsw i32 %top_idx.5175, 1, !dbg !1953
+  tail call void @llvm.dbg.value(metadata !{i32 %inc103}, i64 0, metadata !1014), !dbg !1953
+  br label %while.cond49.backedge, !dbg !1954
 
 while.cond49.backedge:                            ; preds = %for.cond82.preheader, %for.inc106, %if.then96
   %top_idx.4.be = phi i32 [ %inc103, %if.then96 ], [ %top_idx.4180, %for.cond82.preheader ], [ %inc107, %for.inc106 ]
-  %cmp50 = icmp slt i32 %top_idx.4.be, %list_idx
-  %cmp52 = icmp slt i32 %bot_idx.5.ph, %list_idx
-  %or.cond169 = or i1 %cmp50, %cmp52
-  br i1 %or.cond169, label %for.cond55.preheader, label %if.end110
+  %cmp50 = icmp slt i32 %top_idx.4.be, %list_idx, !dbg !1930
+  %cmp52 = icmp slt i32 %bot_idx.5.ph, %list_idx, !dbg !1930
+  %or.cond169 = or i1 %cmp50, %cmp52, !dbg !1930
+  br i1 %or.cond169, label %for.cond55.preheader, label %if.end110, !dbg !1930
 
 for.inc106:                                       ; preds = %if.then90, %for.body84
-  %indvars.iv.next202 = add i64 %indvars.iv201, 1
-  %inc107 = add nsw i32 %top_idx.5175, 1
-  %32 = trunc i64 %indvars.iv.next202 to i32
-  %cmp83 = icmp slt i32 %32, %list_idx
-  br i1 %cmp83, label %for.body84, label %while.cond49.backedge
+  %indvars.iv.next202 = add i64 %indvars.iv201, 1, !dbg !1944
+  %inc107 = add nsw i32 %top_idx.5175, 1, !dbg !1944
+  tail call void @llvm.dbg.value(metadata !{i32 %inc107}, i64 0, metadata !1014), !dbg !1944
+  %32 = trunc i64 %indvars.iv.next202 to i32, !dbg !1944
+  %cmp83 = icmp slt i32 %32, %list_idx, !dbg !1944
+  br i1 %cmp83, label %for.body84, label %while.cond49.backedge, !dbg !1944
 
 if.end110:                                        ; preds = %while.cond.preheader, %while.cond49.preheader, %while.cond49.backedge, %if.end46
-  ret void
+  ret void, !dbg !1955
 }

@@ -1,36 +1,38 @@
 define i8* @Getword(%struct._IO_FILE* nocapture %fp, i32 %type) #0 {
 entry:
-  %0 = load i8** @Getword.sptr, align 8, !tbaa !0
-  %cmp = icmp eq i8* %0, null
-  br i1 %cmp, label %while.body, label %while.cond.preheader
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !106), !dbg !197
+  tail call void @llvm.dbg.value(metadata !{i32 %type}, i64 0, metadata !107), !dbg !197
+  %0 = load i8** @Getword.sptr, align 8, !dbg !198, !tbaa !199
+  %cmp = icmp eq i8* %0, null, !dbg !198
+  br i1 %cmp, label %while.body, label %while.cond.preheader, !dbg !198
 
 while.cond.preheader:                             ; preds = %entry
-  %call = tail call i8* @strtok(i8* null, i8* getelementptr inbounds ([4 x i8]* @.str8, i64 0, i64 0)) #6
-  store i8* %call, i8** @Getword.sptr, align 8, !tbaa !0
-  %cmp125 = icmp eq i8* %call, null
-  br i1 %cmp125, label %while.body, label %while.end
+  %call = tail call i8* @strtok(i8* null, i8* getelementptr inbounds ([4 x i8]* @.str8, i64 0, i64 0)) #7, !dbg !198
+  store i8* %call, i8** @Getword.sptr, align 8, !dbg !198, !tbaa !199
+  %cmp125 = icmp eq i8* %call, null, !dbg !202
+  br i1 %cmp125, label %while.body, label %while.end, !dbg !202
 
 while.body:                                       ; preds = %entry, %while.cond.preheader, %if.end9
-  %call2 = tail call i8* @fgets(i8* getelementptr inbounds ([512 x i8]* @Getword.buffer, i64 0, i64 0), i32 512, %struct._IO_FILE* %fp) #6
-  store i8* %call2, i8** @Getword.sptr, align 8, !tbaa !0
-  %cmp3 = icmp eq i8* %call2, null
-  br i1 %cmp3, label %return, label %if.end5
+  %call2 = tail call i8* @fgets(i8* getelementptr inbounds ([512 x i8]* @Getword.buffer, i64 0, i64 0), i32 512, %struct._IO_FILE* %fp) #7, !dbg !203
+  store i8* %call2, i8** @Getword.sptr, align 8, !dbg !203, !tbaa !199
+  %cmp3 = icmp eq i8* %call2, null, !dbg !203
+  br i1 %cmp3, label %return, label %if.end5, !dbg !203
 
 if.end5:                                          ; preds = %while.body
-  %call6 = tail call i8* @strchr(i8* getelementptr inbounds ([512 x i8]* @Getword.buffer, i64 0, i64 0), i32 35) #7
-  store i8* %call6, i8** @Getword.sptr, align 8, !tbaa !0
-  %cmp7 = icmp eq i8* %call6, null
-  br i1 %cmp7, label %if.end9, label %if.then8
+  %call6 = tail call i8* @strchr(i8* getelementptr inbounds ([512 x i8]* @Getword.buffer, i64 0, i64 0), i32 35) #8, !dbg !205
+  store i8* %call6, i8** @Getword.sptr, align 8, !dbg !205, !tbaa !199
+  %cmp7 = icmp eq i8* %call6, null, !dbg !205
+  br i1 %cmp7, label %if.end9, label %if.then8, !dbg !205
 
 if.then8:                                         ; preds = %if.end5
-  store i8 0, i8* %call6, align 1, !tbaa !1
-  br label %if.end9
+  store i8 0, i8* %call6, align 1, !dbg !205, !tbaa !200
+  br label %if.end9, !dbg !205
 
 if.end9:                                          ; preds = %if.end5, %if.then8
-  %call10 = tail call i8* @strtok(i8* getelementptr inbounds ([512 x i8]* @Getword.buffer, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str8, i64 0, i64 0)) #6
-  store i8* %call10, i8** @Getword.sptr, align 8, !tbaa !0
-  %cmp1 = icmp eq i8* %call10, null
-  br i1 %cmp1, label %while.body, label %while.end
+  %call10 = tail call i8* @strtok(i8* getelementptr inbounds ([512 x i8]* @Getword.buffer, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str8, i64 0, i64 0)) #7, !dbg !206
+  store i8* %call10, i8** @Getword.sptr, align 8, !dbg !206, !tbaa !199
+  %cmp1 = icmp eq i8* %call10, null, !dbg !202
+  br i1 %cmp1, label %while.body, label %while.end, !dbg !202
 
 while.end:                                        ; preds = %if.end9, %while.cond.preheader
   %.lcssa = phi i8* [ %call, %while.cond.preheader ], [ %call10, %if.end9 ]
@@ -38,45 +40,45 @@ while.end:                                        ; preds = %if.end9, %while.con
     i32 4, label %sw.bb
     i32 1, label %sw.bb15
     i32 2, label %sw.bb19
-  ]
+  ], !dbg !207
 
 sw.bb:                                            ; preds = %while.end
-  %strlenfirst = load i8* %.lcssa, align 1
-  %cmp12 = icmp eq i8 %strlenfirst, 0
-  br i1 %cmp12, label %if.then13, label %sw.epilog
+  %strlenfirst = load i8* %.lcssa, align 1, !dbg !208
+  %cmp12 = icmp eq i8 %strlenfirst, 0, !dbg !208
+  br i1 %cmp12, label %if.then13, label %sw.epilog, !dbg !208
 
 if.then13:                                        ; preds = %sw.bb
-  tail call void (i8*, ...)* @Warn(i8* getelementptr inbounds ([43 x i8]* @.str9, i64 0, i64 0)) #6
-  store i8* null, i8** @Getword.sptr, align 8, !tbaa !0
-  br label %sw.epilog
+  tail call void (i8*, ...)* @Warn(i8* getelementptr inbounds ([43 x i8]* @.str9, i64 0, i64 0)) #7, !dbg !210
+  store i8* null, i8** @Getword.sptr, align 8, !dbg !212, !tbaa !199
+  br label %sw.epilog, !dbg !213
 
 sw.bb15:                                          ; preds = %while.end
-  %call16 = tail call i32 @IsInt(i8* %.lcssa) #6
-  %tobool = icmp eq i32 %call16, 0
-  br i1 %tobool, label %if.then17, label %sw.epilog
+  %call16 = tail call i32 @IsInt(i8* %.lcssa) #7, !dbg !214
+  %tobool = icmp eq i32 %call16, 0, !dbg !214
+  br i1 %tobool, label %if.then17, label %sw.epilog, !dbg !214
 
 if.then17:                                        ; preds = %sw.bb15
-  %1 = load i8** @Getword.sptr, align 8, !tbaa !0
-  tail call void (i8*, ...)* @Warn(i8* getelementptr inbounds ([39 x i8]* @.str10, i64 0, i64 0), i8* %1) #6
-  store i8* null, i8** @Getword.sptr, align 8, !tbaa !0
-  br label %sw.epilog
+  %1 = load i8** @Getword.sptr, align 8, !dbg !215, !tbaa !199
+  tail call void (i8*, ...)* @Warn(i8* getelementptr inbounds ([39 x i8]* @.str10, i64 0, i64 0), i8* %1) #7, !dbg !215
+  store i8* null, i8** @Getword.sptr, align 8, !dbg !217, !tbaa !199
+  br label %sw.epilog, !dbg !218
 
 sw.bb19:                                          ; preds = %while.end
-  %call20 = tail call i32 @IsReal(i8* %.lcssa) #6
-  %tobool21 = icmp eq i32 %call20, 0
-  br i1 %tobool21, label %if.then22, label %sw.epilog
+  %call20 = tail call i32 @IsReal(i8* %.lcssa) #7, !dbg !219
+  %tobool21 = icmp eq i32 %call20, 0, !dbg !219
+  br i1 %tobool21, label %if.then22, label %sw.epilog, !dbg !219
 
 if.then22:                                        ; preds = %sw.bb19
-  %2 = load i8** @Getword.sptr, align 8, !tbaa !0
-  tail call void (i8*, ...)* @Warn(i8* getelementptr inbounds ([42 x i8]* @.str11, i64 0, i64 0), i8* %2) #6
-  store i8* null, i8** @Getword.sptr, align 8, !tbaa !0
-  br label %sw.epilog
+  %2 = load i8** @Getword.sptr, align 8, !dbg !220, !tbaa !199
+  tail call void (i8*, ...)* @Warn(i8* getelementptr inbounds ([42 x i8]* @.str11, i64 0, i64 0), i8* %2) #7, !dbg !220
+  store i8* null, i8** @Getword.sptr, align 8, !dbg !222, !tbaa !199
+  br label %sw.epilog, !dbg !223
 
 sw.epilog:                                        ; preds = %sw.bb19, %sw.bb15, %if.then22, %if.then17, %sw.bb, %if.then13, %while.end
-  %3 = load i8** @Getword.sptr, align 8, !tbaa !0
-  br label %return
+  %3 = load i8** @Getword.sptr, align 8, !dbg !224, !tbaa !199
+  br label %return, !dbg !224
 
 return:                                           ; preds = %while.body, %sw.epilog
   %retval.0 = phi i8* [ %3, %sw.epilog ], [ null, %while.body ]
-  ret i8* %retval.0
+  ret i8* %retval.0, !dbg !225
 }

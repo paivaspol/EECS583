@@ -1,20 +1,23 @@
 define internal void @do_if(%struct.cpp_reader* %pfile) #0 {
 entry:
-  %skipping = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 1, i32 1
-  %0 = load i8* %skipping, align 1, !tbaa !0
-  %tobool = icmp eq i8 %0, 0
-  br i1 %tobool, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !1018), !dbg !1706
+  tail call void @llvm.dbg.value(metadata !1055, i64 0, metadata !1019), !dbg !1707
+  %skipping = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 1, i32 1, !dbg !1708
+  %0 = load i8* %skipping, align 1, !dbg !1708, !tbaa !1061
+  %tobool = icmp eq i8 %0, 0, !dbg !1708
+  br i1 %tobool, label %if.then, label %if.end, !dbg !1708
 
 if.then:                                          ; preds = %entry
-  %call = tail call i32 @_cpp_parse_expr(%struct.cpp_reader* %pfile) #8
-  %cmp = icmp eq i32 %call, 0
-  %conv = zext i1 %cmp to i32
-  br label %if.end
+  %call = tail call i32 @_cpp_parse_expr(%struct.cpp_reader* %pfile) #9, !dbg !1709
+  %cmp = icmp eq i32 %call, 0, !dbg !1709
+  %conv = zext i1 %cmp to i32, !dbg !1709
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !1019), !dbg !1709
+  br label %if.end, !dbg !1709
 
 if.end:                                           ; preds = %entry, %if.then
   %skip.0 = phi i32 [ 1, %entry ], [ %conv, %if.then ]
-  %mi_ind_cmacro = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 13
-  %1 = load %struct.cpp_hashnode** %mi_ind_cmacro, align 8, !tbaa !3
-  tail call fastcc void @push_conditional(%struct.cpp_reader* %pfile, i32 %skip.0, i32 4, %struct.cpp_hashnode* %1) #9
-  ret void
+  %mi_ind_cmacro = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 13, !dbg !1710
+  %1 = load %struct.cpp_hashnode** %mi_ind_cmacro, align 8, !dbg !1710, !tbaa !1070
+  tail call fastcc void @push_conditional(%struct.cpp_reader* %pfile, i32 %skip.0, i32 4, %struct.cpp_hashnode* %1) #10, !dbg !1710
+  ret void, !dbg !1711
 }

@@ -1,0 +1,23 @@
+define i32 @_ZN3pov11UCS2_strlenEPt(i16* nocapture %str) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %str}, i64 0, metadata !712), !dbg !1135
+  tail call void @llvm.dbg.value(metadata !551, i64 0, metadata !713), !dbg !1136
+  %0 = load i16* %str, align 2, !dbg !1136, !tbaa !868
+  %cmp3 = icmp eq i16 %0, 0, !dbg !1136
+  br i1 %cmp3, label %for.end, label %for.inc, !dbg !1136
+
+for.inc:                                          ; preds = %entry, %for.inc
+  %i.05 = phi i32 [ %inc, %for.inc ], [ 0, %entry ]
+  %str.addr.04 = phi i16* [ %incdec.ptr, %for.inc ], [ %str, %entry ]
+  %incdec.ptr = getelementptr inbounds i16* %str.addr.04, i64 1, !dbg !1136
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !712), !dbg !1136
+  %inc = add nsw i32 %i.05, 1, !dbg !1136
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !713), !dbg !1136
+  %1 = load i16* %incdec.ptr, align 2, !dbg !1136, !tbaa !868
+  %cmp = icmp eq i16 %1, 0, !dbg !1136
+  br i1 %cmp, label %for.end, label %for.inc, !dbg !1136
+
+for.end:                                          ; preds = %for.inc, %entry
+  %i.0.lcssa = phi i32 [ 0, %entry ], [ %inc, %for.inc ]
+  ret i32 %i.0.lcssa, !dbg !1137
+}

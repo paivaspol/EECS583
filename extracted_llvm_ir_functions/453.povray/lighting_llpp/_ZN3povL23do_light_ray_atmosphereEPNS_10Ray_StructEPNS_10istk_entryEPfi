@@ -1,0 +1,110 @@
+define internal fastcc void @_ZN3povL23do_light_ray_atmosphereEPNS_10Ray_StructEPNS_10istk_entryEPfi(%"struct.pov::Ray_Struct"* %Light_Source_Ray, %"struct.pov::istk_entry"* %Ray_Intersection, float* %Colour, i32 %Valid_Object) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Ray_Struct"* %Light_Source_Ray}, i64 0, metadata !1183), !dbg !4605
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istk_entry"* %Ray_Intersection}, i64 0, metadata !1184), !dbg !4605
+  tail call void @llvm.dbg.value(metadata !{float* %Colour}, i64 0, metadata !1185), !dbg !4605
+  tail call void @llvm.dbg.value(metadata !{i32 %Valid_Object}, i64 0, metadata !1186), !dbg !4605
+  %0 = load float* %Colour, align 4, !dbg !4606, !tbaa !2644
+  %conv = fpext float %0 to double, !dbg !4606
+  %cmp = fcmp olt double %conv, 1.000000e-07, !dbg !4606
+  br i1 %cmp, label %land.lhs.true, label %for.cond.preheader, !dbg !4606
+
+land.lhs.true:                                    ; preds = %entry
+  %arrayidx1 = getelementptr inbounds float* %Colour, i64 1, !dbg !4606
+  %1 = load float* %arrayidx1, align 4, !dbg !4606, !tbaa !2644
+  %conv2 = fpext float %1 to double, !dbg !4606
+  %cmp3 = fcmp olt double %conv2, 1.000000e-07, !dbg !4606
+  br i1 %cmp3, label %land.lhs.true4, label %for.cond.preheader, !dbg !4606
+
+land.lhs.true4:                                   ; preds = %land.lhs.true
+  %arrayidx5 = getelementptr inbounds float* %Colour, i64 2, !dbg !4606
+  %2 = load float* %arrayidx5, align 4, !dbg !4606, !tbaa !2644
+  %conv6 = fpext float %2 to double, !dbg !4606
+  %cmp7 = fcmp olt double %conv6, 1.000000e-07, !dbg !4606
+  br i1 %cmp7, label %if.end37, label %for.cond.preheader, !dbg !4606
+
+for.cond.preheader:                               ; preds = %land.lhs.true4, %land.lhs.true, %entry
+  %Index = getelementptr inbounds %"struct.pov::Ray_Struct"* %Light_Source_Ray, i64 0, i32 2, !dbg !4607
+  %3 = load i32* %Index, align 4, !dbg !4607, !tbaa !2301
+  %cmp852 = icmp slt i32 %3, 0, !dbg !4607
+  br i1 %cmp852, label %for.end, label %for.body, !dbg !4607
+
+for.cond:                                         ; preds = %for.body
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !4607
+  %4 = trunc i64 %indvars.iv to i32, !dbg !4607
+  %cmp8 = icmp slt i32 %4, %3, !dbg !4607
+  br i1 %cmp8, label %for.body, label %for.end, !dbg !4607
+
+for.body:                                         ; preds = %for.cond.preheader, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %for.cond.preheader ]
+  %arrayidx9 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Light_Source_Ray, i64 0, i32 4, i64 %indvars.iv, !dbg !4609
+  %5 = load %"struct.pov::Interior_Struct"** %arrayidx9, align 8, !dbg !4609, !tbaa !2295
+  %hollow = getelementptr inbounds %"struct.pov::Interior_Struct"* %5, i64 0, i32 1, !dbg !4609
+  %6 = load i32* %hollow, align 4, !dbg !4609, !tbaa !2301
+  %tobool = icmp eq i32 %6, 0, !dbg !4609
+  br i1 %tobool, label %for.end, label %for.cond, !dbg !4609
+
+for.end:                                          ; preds = %for.cond, %for.body, %for.cond.preheader
+  %all_hollow.0 = phi i32 [ 1, %for.cond.preheader ], [ 0, %for.body ], [ 1, %for.cond ]
+  %7 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 13), align 8, !dbg !4611, !tbaa !2301
+  %and = and i32 %7, 128, !dbg !4611
+  %tobool13 = icmp eq i32 %and, 0, !dbg !4611
+  br i1 %tobool13, label %if.end20, label %land.lhs.true14, !dbg !4611
+
+land.lhs.true14:                                  ; preds = %for.end
+  %tobool15 = icmp eq i32 %all_hollow.0, 0, !dbg !4611
+  br i1 %tobool15, label %lor.lhs.false, label %if.then19, !dbg !4611
+
+lor.lhs.false:                                    ; preds = %land.lhs.true14
+  %cond = icmp eq i32 %Valid_Object, 0, !dbg !4611
+  br i1 %cond, label %if.end37, label %land.lhs.true17, !dbg !4611
+
+land.lhs.true17:                                  ; preds = %lor.lhs.false
+  %Object = getelementptr inbounds %"struct.pov::istk_entry"* %Ray_Intersection, i64 0, i32 5, !dbg !4611
+  %8 = load %"struct.pov::Object_Struct"** %Object, align 8, !dbg !4611, !tbaa !2295
+  %Interior = getelementptr inbounds %"struct.pov::Object_Struct"* %8, i64 0, i32 5, !dbg !4611
+  %9 = load %"struct.pov::Interior_Struct"** %Interior, align 8, !dbg !4611, !tbaa !2295
+  %cmp18 = icmp eq %"struct.pov::Interior_Struct"* %9, null, !dbg !4611
+  br i1 %cmp18, label %if.end20, label %if.then19, !dbg !4611
+
+if.then19:                                        ; preds = %land.lhs.true17, %land.lhs.true14
+  tail call void @_ZN3pov20Do_Finite_AtmosphereEPNS_10Ray_StructEPNS_10istk_entryEPfi(%"struct.pov::Ray_Struct"* %Light_Source_Ray, %"struct.pov::istk_entry"* %Ray_Intersection, float* %Colour, i32 1) #7, !dbg !4612
+  br label %if.end20, !dbg !4614
+
+if.end20:                                         ; preds = %land.lhs.true17, %for.end, %if.then19
+  %tobool21 = icmp eq i32 %Valid_Object, 0, !dbg !4615
+  br i1 %tobool21, label %if.end37, label %if.then22, !dbg !4615
+
+if.then22:                                        ; preds = %if.end20
+  %10 = load i32* %Index, align 4, !dbg !4616, !tbaa !2301
+  %cmp24 = icmp eq i32 %10, -1, !dbg !4616
+  %Object26 = getelementptr inbounds %"struct.pov::istk_entry"* %Ray_Intersection, i64 0, i32 5, !dbg !4618
+  %11 = load %"struct.pov::Object_Struct"** %Object26, align 8, !dbg !4618, !tbaa !2295
+  %Interior27 = getelementptr inbounds %"struct.pov::Object_Struct"* %11, i64 0, i32 5, !dbg !4618
+  %12 = load %"struct.pov::Interior_Struct"** %Interior27, align 8, !dbg !4618, !tbaa !2295
+  br i1 %cmp24, label %if.then25, label %if.else, !dbg !4616
+
+if.then25:                                        ; preds = %if.then22
+  tail call void @_ZN3pov9Ray_EnterEPNS_10Ray_StructEPNS_15Interior_StructE(%"struct.pov::Ray_Struct"* %Light_Source_Ray, %"struct.pov::Interior_Struct"* %12) #7, !dbg !4618
+  br label %if.end37, !dbg !4620
+
+if.else:                                          ; preds = %if.then22
+  %call = tail call i32 @_ZN3pov25Interior_In_Ray_ContainerEPNS_10Ray_StructEPNS_15Interior_StructE(%"struct.pov::Ray_Struct"* %Light_Source_Ray, %"struct.pov::Interior_Struct"* %12) #7, !dbg !4621
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !1187), !dbg !4621
+  %cmp30 = icmp sgt i32 %call, -1, !dbg !4621
+  br i1 %cmp30, label %if.then31, label %if.else32, !dbg !4621
+
+if.then31:                                        ; preds = %if.else
+  tail call void @_ZN3pov8Ray_ExitEPNS_10Ray_StructEi(%"struct.pov::Ray_Struct"* %Light_Source_Ray, i32 %call) #7, !dbg !4623
+  br label %if.end37, !dbg !4625
+
+if.else32:                                        ; preds = %if.else
+  %13 = load %"struct.pov::Object_Struct"** %Object26, align 8, !dbg !4626, !tbaa !2295
+  %Interior34 = getelementptr inbounds %"struct.pov::Object_Struct"* %13, i64 0, i32 5, !dbg !4626
+  %14 = load %"struct.pov::Interior_Struct"** %Interior34, align 8, !dbg !4626, !tbaa !2295
+  tail call void @_ZN3pov9Ray_EnterEPNS_10Ray_StructEPNS_15Interior_StructE(%"struct.pov::Ray_Struct"* %Light_Source_Ray, %"struct.pov::Interior_Struct"* %14) #7, !dbg !4626
+  br label %if.end37
+
+if.end37:                                         ; preds = %lor.lhs.false, %if.end20, %if.then25, %if.else32, %if.then31, %land.lhs.true4
+  ret void, !dbg !4628
+}

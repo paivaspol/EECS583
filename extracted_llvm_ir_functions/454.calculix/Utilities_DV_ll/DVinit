@@ -1,14 +1,18 @@
 define double* @DVinit(i32 %size, double %dval) #0 {
 entry:
-  %cmp = icmp sgt i32 %size, 0
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !211), !dbg !730
+  tail call void @llvm.dbg.value(metadata !{double %dval}, i64 0, metadata !212), !dbg !731
+  tail call void @llvm.dbg.value(metadata !728, i64 0, metadata !213), !dbg !732
+  %cmp = icmp sgt i32 %size, 0, !dbg !733
+  br i1 %cmp, label %if.then, label %if.end, !dbg !733
 
 if.then:                                          ; preds = %entry
-  %call = tail call double* @DVinit2(i32 %size) #7
-  tail call void @DVfill(i32 %size, double* %call, double %dval) #7
-  br label %if.end
+  %call = tail call double* @DVinit2(i32 %size) #8, !dbg !734
+  tail call void @llvm.dbg.value(metadata !{double* %call}, i64 0, metadata !213), !dbg !734
+  tail call void @DVfill(i32 %size, double* %call, double %dval) #8, !dbg !736
+  br label %if.end, !dbg !737
 
 if.end:                                           ; preds = %if.then, %entry
   %y.0 = phi double* [ %call, %if.then ], [ null, %entry ]
-  ret double* %y.0
+  ret double* %y.0, !dbg !738
 }

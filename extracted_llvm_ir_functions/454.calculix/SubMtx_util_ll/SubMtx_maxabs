@@ -25,31 +25,35 @@ entry:
   %pivotsizes = alloca i32*, align 8
   %nrow26 = alloca i32, align 4
   %pivotsizes27 = alloca i32*, align 8
-  %cmp = icmp eq %struct._SubMtx* %mtx, null
-  br i1 %cmp, label %if.then, label %if.end
+  call void @llvm.dbg.value(metadata !{%struct._SubMtx* %mtx}, i64 0, metadata !408), !dbg !1072
+  call void @llvm.dbg.declare(metadata !{double** %entries}, metadata !410), !dbg !1073
+  call void @llvm.dbg.declare(metadata !{i32* %loc}, metadata !411), !dbg !1074
+  call void @llvm.dbg.declare(metadata !{i32* %nent}, metadata !412), !dbg !1074
+  %cmp = icmp eq %struct._SubMtx* %mtx, null, !dbg !1075
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1075
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([47 x i8]* @.str8, i64 0, i64 0), %struct._SubMtx* null) #4
-  call void @exit(i32 -1) #5
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !1076, !tbaa !455
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([47 x i8]* @.str8, i64 0, i64 0), %struct._SubMtx* null) #5, !dbg !1076
+  call void @exit(i32 -1) #6, !dbg !1078
+  unreachable, !dbg !1078
 
 if.end:                                           ; preds = %entry
-  %type = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 0
-  %1 = load i32* %type, align 4, !tbaa !3
-  %.off = add i32 %1, -1
-  %switch = icmp ult i32 %.off, 2
-  br i1 %switch, label %if.end7, label %if.then4
+  %type = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 0, !dbg !1079
+  %1 = load i32* %type, align 4, !dbg !1079, !tbaa !460
+  %.off = add i32 %1, -1, !dbg !1079
+  %switch = icmp ult i32 %.off, 2, !dbg !1079
+  br i1 %switch, label %if.end7, label %if.then4, !dbg !1079
 
 if.then4:                                         ; preds = %if.end
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call6 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([90 x i8]* @.str9, i64 0, i64 0), %struct._SubMtx* %mtx, i32 %1) #4
-  call void @exit(i32 -1) #5
-  unreachable
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !1080, !tbaa !455
+  %call6 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([90 x i8]* @.str9, i64 0, i64 0), %struct._SubMtx* %mtx, i32 %1) #5, !dbg !1080
+  call void @exit(i32 -1) #6, !dbg !1082
+  unreachable, !dbg !1082
 
 if.end7:                                          ; preds = %if.end
-  %mode = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 1
-  %3 = load i32* %mode, align 4, !tbaa !3
+  %mode = getelementptr inbounds %struct._SubMtx* %mtx, i64 0, i32 1, !dbg !1083
+  %3 = load i32* %mode, align 4, !dbg !1083, !tbaa !460
   switch i32 %3, label %sw.epilog [
     i32 0, label %sw.bb
     i32 1, label %sw.bb
@@ -61,68 +65,99 @@ if.end7:                                          ; preds = %if.end
     i32 7, label %sw.bb22
     i32 8, label %sw.bb23
     i32 9, label %sw.bb25
-  ]
+  ], !dbg !1083
 
 sw.bb:                                            ; preds = %if.end7, %if.end7
-  call void @SubMtx_denseInfo(%struct._SubMtx* %mtx, i32* %nrow, i32* %ncol, i32* %inc1, i32* %inc2, double** %entries) #4
-  %4 = load i32* %nrow, align 4, !tbaa !3
-  %5 = load i32* %ncol, align 4, !tbaa !3
-  %mul = mul nsw i32 %5, %4
-  store i32 %mul, i32* %nent, align 4, !tbaa !3
-  br label %sw.epilog
+  call void @llvm.dbg.declare(metadata !{i32* %inc1}, metadata !413), !dbg !1084
+  call void @llvm.dbg.declare(metadata !{i32* %inc2}, metadata !416), !dbg !1084
+  call void @llvm.dbg.declare(metadata !{i32* %ncol}, metadata !417), !dbg !1084
+  call void @llvm.dbg.declare(metadata !{i32* %nrow}, metadata !418), !dbg !1084
+  call void @SubMtx_denseInfo(%struct._SubMtx* %mtx, i32* %nrow, i32* %ncol, i32* %inc1, i32* %inc2, double** %entries) #5, !dbg !1085
+  call void @llvm.dbg.value(metadata !{i32* %nrow}, i64 0, metadata !418), !dbg !1086
+  %4 = load i32* %nrow, align 4, !dbg !1086, !tbaa !460
+  call void @llvm.dbg.value(metadata !{i32* %ncol}, i64 0, metadata !417), !dbg !1086
+  %5 = load i32* %ncol, align 4, !dbg !1086, !tbaa !460
+  %mul = mul nsw i32 %5, %4, !dbg !1086
+  call void @llvm.dbg.value(metadata !{i32 %mul}, i64 0, metadata !412), !dbg !1086
+  store i32 %mul, i32* %nent, align 4, !dbg !1086, !tbaa !460
+  br label %sw.epilog, !dbg !1087
 
 sw.bb8:                                           ; preds = %if.end7
-  call void @SubMtx_sparseColumnsInfo(%struct._SubMtx* %mtx, i32* %ncol9, i32* %nent, i32** %sizes, i32** %indices, double** %entries) #4
-  br label %sw.epilog
+  call void @llvm.dbg.declare(metadata !{i32* %ncol9}, metadata !419), !dbg !1088
+  call void @llvm.dbg.declare(metadata !{i32** %indices}, metadata !421), !dbg !1089
+  call void @llvm.dbg.declare(metadata !{i32** %sizes}, metadata !422), !dbg !1089
+  call void @SubMtx_sparseColumnsInfo(%struct._SubMtx* %mtx, i32* %ncol9, i32* %nent, i32** %sizes, i32** %indices, double** %entries) #5, !dbg !1090
+  br label %sw.epilog, !dbg !1091
 
 sw.bb10:                                          ; preds = %if.end7
-  call void @SubMtx_sparseRowsInfo(%struct._SubMtx* %mtx, i32* %nrow11, i32* %nent, i32** %sizes13, i32** %indices12, double** %entries) #4
-  br label %sw.epilog
+  call void @llvm.dbg.declare(metadata !{i32* %nrow11}, metadata !423), !dbg !1092
+  call void @llvm.dbg.declare(metadata !{i32** %indices12}, metadata !425), !dbg !1093
+  call void @llvm.dbg.declare(metadata !{i32** %sizes13}, metadata !426), !dbg !1093
+  call void @SubMtx_sparseRowsInfo(%struct._SubMtx* %mtx, i32* %nrow11, i32* %nent, i32** %sizes13, i32** %indices12, double** %entries) #5, !dbg !1094
+  br label %sw.epilog, !dbg !1095
 
 sw.bb14:                                          ; preds = %if.end7
-  call void @SubMtx_sparseTriplesInfo(%struct._SubMtx* %mtx, i32* %nent, i32** %rowids, i32** %colids, double** %entries) #4
-  br label %sw.epilog
+  call void @llvm.dbg.declare(metadata !{i32** %colids}, metadata !427), !dbg !1096
+  call void @llvm.dbg.declare(metadata !{i32** %rowids}, metadata !429), !dbg !1096
+  call void @SubMtx_sparseTriplesInfo(%struct._SubMtx* %mtx, i32* %nent, i32** %rowids, i32** %colids, double** %entries) #5, !dbg !1097
+  br label %sw.epilog, !dbg !1098
 
 sw.bb15:                                          ; preds = %if.end7
-  call void @SubMtx_denseSubcolumnsInfo(%struct._SubMtx* %mtx, i32* %ncol16, i32* %nent, i32** %firstlocs, i32** %sizes17, double** %entries) #4
-  br label %sw.epilog
+  call void @llvm.dbg.declare(metadata !{i32* %ncol16}, metadata !430), !dbg !1099
+  call void @llvm.dbg.declare(metadata !{i32** %firstlocs}, metadata !432), !dbg !1100
+  call void @llvm.dbg.declare(metadata !{i32** %sizes17}, metadata !433), !dbg !1100
+  call void @SubMtx_denseSubcolumnsInfo(%struct._SubMtx* %mtx, i32* %ncol16, i32* %nent, i32** %firstlocs, i32** %sizes17, double** %entries) #5, !dbg !1101
+  br label %sw.epilog, !dbg !1102
 
 sw.bb18:                                          ; preds = %if.end7
-  call void @SubMtx_denseSubrowsInfo(%struct._SubMtx* %mtx, i32* %nrow19, i32* %nent, i32** %firstlocs20, i32** %sizes21, double** %entries) #4
-  br label %sw.epilog
+  call void @llvm.dbg.declare(metadata !{i32* %nrow19}, metadata !434), !dbg !1103
+  call void @llvm.dbg.declare(metadata !{i32** %firstlocs20}, metadata !436), !dbg !1104
+  call void @llvm.dbg.declare(metadata !{i32** %sizes21}, metadata !437), !dbg !1104
+  call void @SubMtx_denseSubrowsInfo(%struct._SubMtx* %mtx, i32* %nrow19, i32* %nent, i32** %firstlocs20, i32** %sizes21, double** %entries) #5, !dbg !1105
+  br label %sw.epilog, !dbg !1106
 
 sw.bb22:                                          ; preds = %if.end7
-  call void @SubMtx_diagonalInfo(%struct._SubMtx* %mtx, i32* %nent, double** %entries) #4
-  br label %sw.epilog
+  call void @SubMtx_diagonalInfo(%struct._SubMtx* %mtx, i32* %nent, double** %entries) #5, !dbg !1107
+  br label %sw.epilog, !dbg !1109
 
 sw.bb23:                                          ; preds = %if.end7
-  call void @SubMtx_blockDiagonalInfo(%struct._SubMtx* %mtx, i32* %nrow24, i32* %nent, i32** %pivotsizes, double** %entries) #4
-  br label %sw.epilog
+  call void @llvm.dbg.declare(metadata !{i32* %nrow24}, metadata !438), !dbg !1110
+  call void @llvm.dbg.declare(metadata !{i32** %pivotsizes}, metadata !440), !dbg !1111
+  call void @SubMtx_blockDiagonalInfo(%struct._SubMtx* %mtx, i32* %nrow24, i32* %nent, i32** %pivotsizes, double** %entries) #5, !dbg !1112
+  br label %sw.epilog, !dbg !1113
 
 sw.bb25:                                          ; preds = %if.end7
-  call void @SubMtx_blockDiagonalInfo(%struct._SubMtx* %mtx, i32* %nrow26, i32* %nent, i32** %pivotsizes27, double** %entries) #4
-  br label %sw.epilog
+  call void @llvm.dbg.declare(metadata !{i32* %nrow26}, metadata !441), !dbg !1114
+  call void @llvm.dbg.declare(metadata !{i32** %pivotsizes27}, metadata !443), !dbg !1115
+  call void @SubMtx_blockDiagonalInfo(%struct._SubMtx* %mtx, i32* %nrow26, i32* %nent, i32** %pivotsizes27, double** %entries) #5, !dbg !1116
+  br label %sw.epilog, !dbg !1117
 
 sw.epilog:                                        ; preds = %if.end7, %sw.bb25, %sw.bb23, %sw.bb22, %sw.bb18, %sw.bb15, %sw.bb14, %sw.bb10, %sw.bb8, %sw.bb
-  %6 = load i32* %type, align 4, !tbaa !3
+  %6 = load i32* %type, align 4, !dbg !1118, !tbaa !460
   switch i32 %6, label %if.end37 [
     i32 1, label %if.then30
     i32 2, label %if.then34
-  ]
+  ], !dbg !1118
 
 if.then30:                                        ; preds = %sw.epilog
-  %7 = load i32* %nent, align 4, !tbaa !3
-  %8 = load double** %entries, align 8, !tbaa !0
-  %call31 = call double @DVmaxabs(i32 %7, double* %8, i32* %loc) #4
-  br label %if.end37
+  call void @llvm.dbg.value(metadata !{i32* %nent}, i64 0, metadata !412), !dbg !1119
+  %7 = load i32* %nent, align 4, !dbg !1119, !tbaa !460
+  call void @llvm.dbg.value(metadata !{double** %entries}, i64 0, metadata !410), !dbg !1119
+  %8 = load double** %entries, align 8, !dbg !1119, !tbaa !455
+  %call31 = call double @DVmaxabs(i32 %7, double* %8, i32* %loc) #5, !dbg !1119
+  call void @llvm.dbg.value(metadata !{double %call31}, i64 0, metadata !409), !dbg !1119
+  br label %if.end37, !dbg !1121
 
 if.then34:                                        ; preds = %sw.epilog
-  %9 = load i32* %nent, align 4, !tbaa !3
-  %10 = load double** %entries, align 8, !tbaa !0
-  %call35 = call double @ZVmaxabs(i32 %9, double* %10) #4
-  br label %if.end37
+  call void @llvm.dbg.value(metadata !{i32* %nent}, i64 0, metadata !412), !dbg !1122
+  %9 = load i32* %nent, align 4, !dbg !1122, !tbaa !460
+  call void @llvm.dbg.value(metadata !{double** %entries}, i64 0, metadata !410), !dbg !1122
+  %10 = load double** %entries, align 8, !dbg !1122, !tbaa !455
+  %call35 = call double @ZVmaxabs(i32 %9, double* %10) #5, !dbg !1122
+  call void @llvm.dbg.value(metadata !{double %call35}, i64 0, metadata !409), !dbg !1122
+  br label %if.end37, !dbg !1124
 
 if.end37:                                         ; preds = %sw.epilog, %if.then34, %if.then30
   %maxabs.0 = phi double [ %call31, %if.then30 ], [ %call35, %if.then34 ], [ undef, %sw.epilog ]
-  ret double %maxabs.0
+  ret double %maxabs.0, !dbg !1125
 }

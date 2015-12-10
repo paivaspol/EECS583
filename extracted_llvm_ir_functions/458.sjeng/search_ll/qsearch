@@ -6,242 +6,283 @@ entry:
   %see_values = alloca [512 x i32], align 16
   %best = alloca i32, align 4
   %bound = alloca i32, align 4
-  %0 = bitcast [512 x %struct.move_s]* %moves to i8*
-  call void @llvm.lifetime.start(i64 12288, i8* %0) #2
-  %1 = bitcast [512 x i32]* %move_ordering to i8*
-  call void @llvm.lifetime.start(i64 2048, i8* %1) #2
-  %2 = bitcast [512 x i32]* %see_values to i8*
-  call void @llvm.lifetime.start(i64 2048, i8* %2) #2
-  %3 = load i32* @ply, align 4, !tbaa !2
-  %idxprom = sext i32 %3 to i64
-  %arrayidx = getelementptr inbounds [300 x i32]* @pv_length, i64 0, i64 %idxprom
-  store i32 %3, i32* %arrayidx, align 4, !tbaa !2
-  %4 = load i32* @nodes, align 4, !tbaa !2
-  %and = and i32 %4, 65535
-  %tobool = icmp eq i32 %and, 0
-  br i1 %tobool, label %if.then, label %if.end26
+  call void @llvm.dbg.value(metadata !{i32 %alpha}, i64 0, metadata !54), !dbg !441
+  call void @llvm.dbg.value(metadata !{i32 %beta}, i64 0, metadata !55), !dbg !441
+  call void @llvm.dbg.value(metadata !{i32 %depth}, i64 0, metadata !56), !dbg !441
+  %0 = bitcast [512 x %struct.move_s]* %moves to i8*, !dbg !442
+  call void @llvm.lifetime.start(i64 12288, i8* %0) #3, !dbg !442
+  call void @llvm.dbg.declare(metadata !{[512 x %struct.move_s]* %moves}, metadata !57), !dbg !442
+  call void @llvm.dbg.declare(metadata !{i32* %i}, metadata !59), !dbg !443
+  call void @llvm.dbg.value(metadata !444, i64 0, metadata !61), !dbg !445
+  %1 = bitcast [512 x i32]* %move_ordering to i8*, !dbg !445
+  call void @llvm.lifetime.start(i64 2048, i8* %1) #3, !dbg !445
+  call void @llvm.dbg.declare(metadata !{[512 x i32]* %move_ordering}, metadata !63), !dbg !446
+  %2 = bitcast [512 x i32]* %see_values to i8*, !dbg !445
+  call void @llvm.lifetime.start(i64 2048, i8* %2) #3, !dbg !445
+  call void @llvm.dbg.declare(metadata !{[512 x i32]* %see_values}, metadata !65), !dbg !445
+  call void @llvm.dbg.value(metadata !447, i64 0, metadata !68), !dbg !448
+  call void @llvm.dbg.declare(metadata !{i32* %best}, metadata !71), !dbg !449
+  call void @llvm.dbg.declare(metadata !{i32* %bound}, metadata !73), !dbg !449
+  %3 = load i32* @ply, align 4, !dbg !450, !tbaa !300
+  %idxprom = sext i32 %3 to i64, !dbg !450
+  %arrayidx = getelementptr inbounds [300 x i32]* @pv_length, i64 0, i64 %idxprom, !dbg !450
+  store i32 %3, i32* %arrayidx, align 4, !dbg !450, !tbaa !300
+  %4 = load i32* @nodes, align 4, !dbg !451, !tbaa !300
+  %and = and i32 %4, 65535, !dbg !451
+  %tobool = icmp eq i32 %and, 0, !dbg !451
+  br i1 %tobool, label %if.then, label %if.end26, !dbg !451
 
 if.then:                                          ; preds = %entry
-  %call = call i32 @interrupt() #5
-  %tobool1 = icmp eq i32 %call, 0
-  br i1 %tobool1, label %if.else, label %if.then2
+  %call = call i32 @interrupt() #6, !dbg !452
+  %tobool1 = icmp eq i32 %call, 0, !dbg !452
+  br i1 %tobool1, label %if.else, label %if.then2, !dbg !452
 
 if.then2:                                         ; preds = %if.then
-  store i32 1, i32* @time_exit, align 4, !tbaa !0
-  br label %cleanup
+  store i32 1, i32* @time_exit, align 4, !dbg !454, !tbaa !284
+  br label %cleanup, !dbg !456
 
 if.else:                                          ; preds = %if.then
-  %call3 = call i64 @rtime() #5
-  %5 = load i64* @start_time, align 8, !tbaa !3
-  %call4 = call i32 @rdifftime(i64 %call3, i64 %5) #5
-  %6 = load i32* @time_for_move, align 4, !tbaa !2
-  %cmp = icmp sge i32 %call4, %6
-  %7 = load i32* @i_depth, align 4, !tbaa !2
-  %cmp5 = icmp sgt i32 %7, 1
-  %or.cond = and i1 %cmp, %cmp5
-  br i1 %or.cond, label %if.then6, label %if.end26
+  %call3 = call i64 @rtime() #6, !dbg !457
+  %5 = load i64* @start_time, align 8, !dbg !457, !tbaa !458
+  %call4 = call i32 @rdifftime(i64 %call3, i64 %5) #6, !dbg !457
+  %6 = load i32* @time_for_move, align 4, !dbg !457, !tbaa !300
+  %cmp = icmp sge i32 %call4, %6, !dbg !457
+  %7 = load i32* @i_depth, align 4, !dbg !457, !tbaa !300
+  %cmp5 = icmp sgt i32 %7, 1, !dbg !457
+  %or.cond = and i1 %cmp, %cmp5, !dbg !457
+  br i1 %or.cond, label %if.then6, label %if.end26, !dbg !457
 
 if.then6:                                         ; preds = %if.else
-  %8 = load i32* @failed, align 4, !tbaa !2
-  %cmp7 = icmp ne i32 %8, 1
-  %9 = load i32* @extendedtime, align 4, !tbaa !2
-  %tobool9 = icmp ne i32 %9, 0
-  %or.cond125 = or i1 %cmp7, %tobool9
-  %10 = load i32* @fixed_time, align 4, !tbaa !2
-  %tobool11 = icmp ne i32 %10, 0
-  %or.cond126 = or i1 %or.cond125, %tobool11
-  %11 = load i32* @go_fast, align 4, !tbaa !0
-  %tobool13 = icmp ne i32 %11, 0
-  %or.cond127 = or i1 %or.cond126, %tobool13
-  %or.cond127.not = xor i1 %or.cond127, true
-  %12 = load i32* @Variant, align 4, !tbaa !2
-  %cmp15 = icmp ne i32 %12, 1
-  %or.cond128 = and i1 %cmp15, %or.cond127.not
-  br i1 %or.cond128, label %land.lhs.true16, label %if.else23
+  %8 = load i32* @failed, align 4, !dbg !459, !tbaa !300
+  %cmp7 = icmp ne i32 %8, 1, !dbg !459
+  %9 = load i32* @extendedtime, align 4, !dbg !459, !tbaa !300
+  %tobool9 = icmp ne i32 %9, 0, !dbg !459
+  %or.cond125 = or i1 %cmp7, %tobool9, !dbg !459
+  %10 = load i32* @fixed_time, align 4, !dbg !459, !tbaa !300
+  %tobool11 = icmp ne i32 %10, 0, !dbg !459
+  %or.cond126 = or i1 %or.cond125, %tobool11, !dbg !459
+  %11 = load i32* @go_fast, align 4, !dbg !459, !tbaa !284
+  %tobool13 = icmp ne i32 %11, 0, !dbg !459
+  %or.cond127 = or i1 %or.cond126, %tobool13, !dbg !459
+  %or.cond127.not = xor i1 %or.cond127, true, !dbg !459
+  %12 = load i32* @Variant, align 4, !dbg !459, !tbaa !300
+  %cmp15 = icmp ne i32 %12, 1, !dbg !459
+  %or.cond128 = and i1 %cmp15, %or.cond127.not, !dbg !459
+  br i1 %or.cond128, label %land.lhs.true16, label %if.else23, !dbg !459
 
 land.lhs.true16:                                  ; preds = %if.then6
-  %13 = load i32* @time_left, align 4, !tbaa !2
-  %mul = shl nsw i32 %6, 2
-  %cmp17 = icmp sgt i32 %mul, 1000
-  %mul. = select i1 %cmp17, i32 %mul, i32 1000
-  %cmp19 = icmp sgt i32 %13, %mul.
-  br i1 %cmp19, label %if.then20, label %if.else23
+  %13 = load i32* @time_left, align 4, !dbg !459, !tbaa !300
+  %mul = shl nsw i32 %6, 2, !dbg !459
+  %cmp17 = icmp sgt i32 %mul, 1000, !dbg !459
+  %mul. = select i1 %cmp17, i32 %mul, i32 1000, !dbg !459
+  %cmp19 = icmp sgt i32 %13, %mul., !dbg !459
+  br i1 %cmp19, label %if.then20, label %if.else23, !dbg !459
 
 if.then20:                                        ; preds = %land.lhs.true16
-  store i32 1, i32* @extendedtime, align 4, !tbaa !2
-  %call21 = call i32 @allocate_time() #5
-  %14 = load i32* @time_for_move, align 4, !tbaa !2
-  %add = add nsw i32 %14, %call21
-  store i32 %add, i32* @time_for_move, align 4, !tbaa !2
-  %15 = load i32* @time_left, align 4, !tbaa !2
-  %call22 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([38 x i8]* @.str, i64 0, i64 0), i32 %6, i32 %add, i32 %15) #5
-  br label %if.end26
+  store i32 1, i32* @extendedtime, align 4, !dbg !461, !tbaa !300
+  call void @llvm.dbg.value(metadata !{i32 %6}, i64 0, metadata !75), !dbg !463
+  %call21 = call i32 @allocate_time() #6, !dbg !464
+  %14 = load i32* @time_for_move, align 4, !dbg !464, !tbaa !300
+  %add = add nsw i32 %14, %call21, !dbg !464
+  store i32 %add, i32* @time_for_move, align 4, !dbg !464, !tbaa !300
+  %15 = load i32* @time_left, align 4, !dbg !465, !tbaa !300
+  %call22 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([38 x i8]* @.str, i64 0, i64 0), i32 %6, i32 %add, i32 %15) #6, !dbg !465
+  br label %if.end26, !dbg !466
 
 if.else23:                                        ; preds = %if.then6, %land.lhs.true16
-  store i32 1, i32* @time_exit, align 4, !tbaa !0
-  br label %cleanup
+  store i32 1, i32* @time_exit, align 4, !dbg !467, !tbaa !284
+  br label %cleanup, !dbg !469
 
 if.end26:                                         ; preds = %if.else, %entry, %if.then20
-  %cmp27 = icmp slt i32 %depth, 1
-  %16 = load i32* @ply, align 4, !tbaa !2
-  %cmp28 = icmp sgt i32 %16, 299
-  %or.cond129 = or i1 %cmp27, %cmp28
-  br i1 %or.cond129, label %if.then29, label %if.end31
+  %cmp27 = icmp slt i32 %depth, 1, !dbg !470
+  %16 = load i32* @ply, align 4, !dbg !470, !tbaa !300
+  %cmp28 = icmp sgt i32 %16, 299, !dbg !470
+  %or.cond129 = or i1 %cmp27, %cmp28, !dbg !470
+  br i1 %or.cond129, label %if.then29, label %if.end31, !dbg !470
 
 if.then29:                                        ; preds = %if.end26
-  %call30 = call i32 @eval(i32 %alpha, i32 %beta) #5
-  br label %cleanup
+  %call30 = call i32 @eval(i32 %alpha, i32 %beta) #6, !dbg !471
+  call void @llvm.dbg.value(metadata !{i32 %call30}, i64 0, metadata !61), !dbg !471
+  br label %cleanup, !dbg !473
 
 if.end31:                                         ; preds = %if.end26
-  %17 = load i32* @qnodes, align 4, !tbaa !2
-  %inc = add nsw i32 %17, 1
-  store i32 %inc, i32* @qnodes, align 4, !tbaa !2
-  %18 = load i32* @nodes, align 4, !tbaa !2
-  %inc32 = add nsw i32 %18, 1
-  store i32 %inc32, i32* @nodes, align 4, !tbaa !2
-  %call33 = call i32 @QProbeTT(i32* %bound, i32* %best) #5
+  %17 = load i32* @qnodes, align 4, !dbg !474, !tbaa !300
+  %inc = add nsw i32 %17, 1, !dbg !474
+  store i32 %inc, i32* @qnodes, align 4, !dbg !474, !tbaa !300
+  %18 = load i32* @nodes, align 4, !dbg !475, !tbaa !300
+  %inc32 = add nsw i32 %18, 1, !dbg !475
+  store i32 %inc32, i32* @nodes, align 4, !dbg !475, !tbaa !300
+  call void @llvm.dbg.value(metadata !{i32 %alpha}, i64 0, metadata !74), !dbg !476
+  %call33 = call i32 @QProbeTT(i32* %bound, i32* %best) #6, !dbg !477
   switch i32 %call33, label %sw.epilog [
     i32 3, label %sw.bb
     i32 1, label %sw.bb34
     i32 2, label %sw.bb38
     i32 4, label %sw.bb42
-  ]
+  ], !dbg !477
 
 sw.bb:                                            ; preds = %if.end31
-  %19 = load i32* %bound, align 4, !tbaa !2
-  br label %cleanup
+  call void @llvm.dbg.value(metadata !{i32* %bound}, i64 0, metadata !73), !dbg !478
+  %19 = load i32* %bound, align 4, !dbg !478, !tbaa !300
+  br label %cleanup, !dbg !478
 
 sw.bb34:                                          ; preds = %if.end31
-  %20 = load i32* %bound, align 4, !tbaa !2
-  %cmp35 = icmp sgt i32 %20, %alpha
-  br i1 %cmp35, label %sw.epilog, label %cleanup
+  call void @llvm.dbg.value(metadata !{i32* %bound}, i64 0, metadata !73), !dbg !480
+  %20 = load i32* %bound, align 4, !dbg !480, !tbaa !300
+  %cmp35 = icmp sgt i32 %20, %alpha, !dbg !480
+  br i1 %cmp35, label %sw.epilog, label %cleanup, !dbg !480
 
 sw.bb38:                                          ; preds = %if.end31
-  %21 = load i32* %bound, align 4, !tbaa !2
-  %cmp39 = icmp slt i32 %21, %beta
-  br i1 %cmp39, label %sw.epilog, label %cleanup
+  call void @llvm.dbg.value(metadata !{i32* %bound}, i64 0, metadata !73), !dbg !481
+  %21 = load i32* %bound, align 4, !dbg !481, !tbaa !300
+  %cmp39 = icmp slt i32 %21, %beta, !dbg !481
+  br i1 %cmp39, label %sw.epilog, label %cleanup, !dbg !481
 
 sw.bb42:                                          ; preds = %if.end31
-  store i32 -1, i32* %best, align 4, !tbaa !2
-  br label %sw.epilog
+  call void @llvm.dbg.value(metadata !482, i64 0, metadata !71), !dbg !483
+  store i32 -1, i32* %best, align 4, !dbg !483, !tbaa !300
+  br label %sw.epilog, !dbg !484
 
 sw.epilog:                                        ; preds = %sw.bb34, %sw.bb38, %if.end31, %sw.bb42
-  %call43 = call i32 @eval(i32 %alpha, i32 %beta) #5
-  %cmp44 = icmp slt i32 %call43, %beta
-  br i1 %cmp44, label %if.else46, label %if.then45
+  %call43 = call i32 @eval(i32 %alpha, i32 %beta) #6, !dbg !485
+  call void @llvm.dbg.value(metadata !{i32 %call43}, i64 0, metadata !62), !dbg !485
+  %cmp44 = icmp slt i32 %call43, %beta, !dbg !486
+  br i1 %cmp44, label %if.else46, label %if.then45, !dbg !486
 
 if.then45:                                        ; preds = %sw.epilog
-  call void @QStoreTT(i32 %call43, i32 %alpha, i32 %beta, i32 500) #5
-  br label %cleanup
+  call void @QStoreTT(i32 %call43, i32 %alpha, i32 %beta, i32 500) #6, !dbg !487
+  br label %cleanup, !dbg !489
 
 if.else46:                                        ; preds = %sw.epilog
-  %cmp47 = icmp sgt i32 %call43, %alpha
-  %call43.alpha = select i1 %cmp47, i32 %call43, i32 %alpha
-  %arrayidx51 = getelementptr inbounds [512 x %struct.move_s]* %moves, i64 0, i64 0
-  call void @gen(%struct.move_s* %arrayidx51) #5
-  %22 = load i32* @numb_moves, align 4, !tbaa !2
-  %23 = load i32* @kingcap, align 4, !tbaa !2
-  %tobool52 = icmp eq i32 %23, 0
-  br i1 %tobool52, label %if.end54, label %cleanup
+  %cmp47 = icmp sgt i32 %call43, %alpha, !dbg !490
+  call void @llvm.dbg.value(metadata !{i32 %call43}, i64 0, metadata !54), !dbg !491
+  %call43.alpha = select i1 %cmp47, i32 %call43, i32 %alpha, !dbg !490
+  call void @llvm.dbg.value(metadata !482, i64 0, metadata !69), !dbg !493
+  call void @llvm.dbg.value(metadata !444, i64 0, metadata !70), !dbg !494
+  call void @llvm.dbg.value(metadata !8, i64 0, metadata !58), !dbg !495
+  %arrayidx51 = getelementptr inbounds [512 x %struct.move_s]* %moves, i64 0, i64 0, !dbg !496
+  call void @gen(%struct.move_s* %arrayidx51) #6, !dbg !496
+  %22 = load i32* @numb_moves, align 4, !dbg !497, !tbaa !300
+  call void @llvm.dbg.value(metadata !{i32 %22}, i64 0, metadata !58), !dbg !497
+  %23 = load i32* @kingcap, align 4, !dbg !498, !tbaa !300
+  %tobool52 = icmp eq i32 %23, 0, !dbg !498
+  br i1 %tobool52, label %if.end54, label %cleanup, !dbg !498
 
 if.end54:                                         ; preds = %if.else46
-  %sub = sub i32 -150, %call43
-  %sub55 = add i32 %sub, %call43.alpha
-  %arrayidx57 = getelementptr inbounds [512 x i32]* %move_ordering, i64 0, i64 0
-  %arrayidx58 = getelementptr inbounds [512 x i32]* %see_values, i64 0, i64 0
-  %24 = load i32* %best, align 4, !tbaa !2
-  call void @order_moves(%struct.move_s* %arrayidx51, i32* %arrayidx57, i32* %arrayidx58, i32 %22, i32 %24) #6
-  %sub75 = sub nsw i32 0, %beta
-  %sub77 = add nsw i32 %depth, -1
-  br label %while.cond.outer.outer
+  %sub = sub i32 -150, %call43, !dbg !499
+  %sub55 = add i32 %sub, %call43.alpha, !dbg !499
+  call void @llvm.dbg.value(metadata !{i32 %sub55}, i64 0, metadata !72), !dbg !499
+  %arrayidx57 = getelementptr inbounds [512 x i32]* %move_ordering, i64 0, i64 0, !dbg !500
+  %arrayidx58 = getelementptr inbounds [512 x i32]* %see_values, i64 0, i64 0, !dbg !500
+  call void @llvm.dbg.value(metadata !{i32* %best}, i64 0, metadata !71), !dbg !500
+  %24 = load i32* %best, align 4, !dbg !500, !tbaa !300
+  call void @order_moves(%struct.move_s* %arrayidx51, i32* %arrayidx57, i32* %arrayidx58, i32 %22, i32 %24) #7, !dbg !500
+  %sub75 = sub nsw i32 0, %beta, !dbg !501
+  %sub77 = add nsw i32 %depth, -1, !dbg !501
+  br label %while.cond.outer.outer, !dbg !503
 
 while.cond.outer.outer:                           ; preds = %for.end, %if.end54
   %alpha.addr.1.ph.ph = phi i32 [ %call43.alpha, %if.end54 ], [ %sub79, %for.end ]
-  %sub76 = sub nsw i32 0, %alpha.addr.1.ph.ph
+  %sub76 = sub nsw i32 0, %alpha.addr.1.ph.ph, !dbg !501
   br label %while.cond
 
 while.cond:                                       ; preds = %if.end73, %while.cond.outer.outer, %if.then65
-  %call60 = call i32 @remove_one(i32* %i, i32* %arrayidx57, i32 %22) #6
-  %tobool61 = icmp eq i32 %call60, 0
-  br i1 %tobool61, label %while.end, label %while.body
+  %call60 = call i32 @remove_one(i32* %i, i32* %arrayidx57, i32 %22) #7, !dbg !503
+  %tobool61 = icmp eq i32 %call60, 0, !dbg !503
+  br i1 %tobool61, label %while.end, label %while.body, !dbg !503
 
 while.body:                                       ; preds = %while.cond
-  %25 = load i32* %i, align 4, !tbaa !2
-  %idxprom62 = sext i32 %25 to i64
-  %promoted = getelementptr inbounds [512 x %struct.move_s]* %moves, i64 0, i64 %idxprom62, i32 3
-  %26 = load i32* %promoted, align 4, !tbaa !2
-  %tobool64 = icmp eq i32 %26, 0
-  br i1 %tobool64, label %if.then65, label %if.end73
+  call void @llvm.dbg.value(metadata !8, i64 0, metadata !66), !dbg !504
+  call void @llvm.dbg.value(metadata !{i32* %i}, i64 0, metadata !59), !dbg !505
+  %25 = load i32* %i, align 4, !dbg !505, !tbaa !300
+  %idxprom62 = sext i32 %25 to i64, !dbg !505
+  %promoted = getelementptr inbounds [512 x %struct.move_s]* %moves, i64 0, i64 %idxprom62, i32 3, !dbg !505
+  %26 = load i32* %promoted, align 4, !dbg !505, !tbaa !300
+  %tobool64 = icmp eq i32 %26, 0, !dbg !505
+  br i1 %tobool64, label %if.then65, label %if.end73, !dbg !505
 
 if.then65:                                        ; preds = %while.body
-  %arrayidx67 = getelementptr inbounds [512 x i32]* %see_values, i64 0, i64 %idxprom62
-  %27 = load i32* %arrayidx67, align 4, !tbaa !2
-  %cmp68 = icmp slt i32 %27, %sub55
-  %cmp70 = icmp slt i32 %27, 0
-  %or.cond130 = or i1 %cmp68, %cmp70
-  br i1 %or.cond130, label %while.cond, label %if.end73
+  %arrayidx67 = getelementptr inbounds [512 x i32]* %see_values, i64 0, i64 %idxprom62, !dbg !506
+  %27 = load i32* %arrayidx67, align 4, !dbg !506, !tbaa !300
+  call void @llvm.dbg.value(metadata !{i32 %27}, i64 0, metadata !76), !dbg !506
+  %cmp68 = icmp slt i32 %27, %sub55, !dbg !508
+  %cmp70 = icmp slt i32 %27, 0, !dbg !508
+  %or.cond130 = or i1 %cmp68, %cmp70, !dbg !508
+  br i1 %or.cond130, label %while.cond, label %if.end73, !dbg !508
 
 if.end73:                                         ; preds = %while.body, %if.then65
-  call void @make(%struct.move_s* %arrayidx51, i32 %25) #5
-  %call78 = call i32 @qsearch(i32 %sub75, i32 %sub76, i32 %sub77) #6
-  %sub79 = sub nsw i32 0, %call78
-  %cmp80 = icmp eq i32 %sub79, -50000
-  call void @unmake(%struct.move_s* %arrayidx51, i32 %25) #5
-  %cmp89 = icmp sge i32 %alpha.addr.1.ph.ph, %sub79
-  %or.cond169 = or i1 %cmp89, %cmp80
-  br i1 %or.cond169, label %while.cond, label %if.then92
+  call void @llvm.dbg.value(metadata !{i32* %i}, i64 0, metadata !59), !dbg !509
+  call void @make(%struct.move_s* %arrayidx51, i32 %25) #6, !dbg !509
+  %call78 = call i32 @qsearch(i32 %sub75, i32 %sub76, i32 %sub77) #7, !dbg !501
+  %sub79 = sub nsw i32 0, %call78, !dbg !501
+  call void @llvm.dbg.value(metadata !{i32 %sub79}, i64 0, metadata !61), !dbg !501
+  %cmp80 = icmp eq i32 %sub79, -50000, !dbg !510
+  call void @llvm.dbg.value(metadata !447, i64 0, metadata !66), !dbg !511
+  call void @llvm.dbg.value(metadata !8, i64 0, metadata !68), !dbg !513
+  call void @llvm.dbg.value(metadata !{i32* %i}, i64 0, metadata !59), !dbg !514
+  call void @unmake(%struct.move_s* %arrayidx51, i32 %25) #6, !dbg !514
+  call void @llvm.dbg.value(metadata !{i32 %sub79}, i64 0, metadata !70), !dbg !515
+  %cmp89 = icmp sge i32 %alpha.addr.1.ph.ph, %sub79, !dbg !517
+  %or.cond169 = or i1 %cmp89, %cmp80, !dbg !517
+  br i1 %or.cond169, label %while.cond, label %if.then92, !dbg !517
 
 if.then92:                                        ; preds = %if.end73
-  store i32 %25, i32* %best, align 4, !tbaa !2
-  %cmp93 = icmp slt i32 %sub79, %beta
-  br i1 %cmp93, label %if.end95, label %if.then94
+  call void @llvm.dbg.value(metadata !{i32* %i}, i64 0, metadata !59), !dbg !518
+  call void @llvm.dbg.value(metadata !{i32 %25}, i64 0, metadata !71), !dbg !518
+  store i32 %25, i32* %best, align 4, !dbg !518, !tbaa !300
+  %cmp93 = icmp slt i32 %sub79, %beta, !dbg !520
+  br i1 %cmp93, label %if.end95, label %if.then94, !dbg !520
 
 if.then94:                                        ; preds = %if.then92
-  call void @QStoreTT(i32 %sub79, i32 %alpha, i32 %beta, i32 %25) #5
-  br label %cleanup
+  call void @llvm.dbg.value(metadata !{i32* %i}, i64 0, metadata !59), !dbg !521
+  call void @QStoreTT(i32 %sub79, i32 %alpha, i32 %beta, i32 %25) #6, !dbg !521
+  br label %cleanup, !dbg !523
 
 if.end95:                                         ; preds = %if.then92
-  %28 = load i32* @ply, align 4, !tbaa !2
-  %idxprom96 = sext i32 %28 to i64
-  %arrayidx99 = getelementptr inbounds [300 x [300 x %struct.move_s]]* @pv, i64 0, i64 %idxprom96, i64 %idxprom96
-  %arrayidx101 = getelementptr inbounds [512 x %struct.move_s]* %moves, i64 0, i64 %idxprom62
-  %29 = bitcast %struct.move_s* %arrayidx99 to i8*
-  %30 = bitcast %struct.move_s* %arrayidx101 to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %29, i8* %30, i64 24, i32 4, i1 false), !tbaa.struct !4
-  %j.0171 = add i32 %28, 1
-  %idxprom104173 = sext i32 %j.0171 to i64
-  %arrayidx105174 = getelementptr inbounds [300 x i32]* @pv_length, i64 0, i64 %idxprom104173
-  %31 = load i32* %arrayidx105174, align 4, !tbaa !2
-  %cmp106175 = icmp slt i32 %j.0171, %31
-  br i1 %cmp106175, label %for.body, label %for.end
+  call void @llvm.dbg.value(metadata !{i32 %sub79}, i64 0, metadata !54), !dbg !524
+  %28 = load i32* @ply, align 4, !dbg !525, !tbaa !300
+  %idxprom96 = sext i32 %28 to i64, !dbg !525
+  %arrayidx99 = getelementptr inbounds [300 x [300 x %struct.move_s]]* @pv, i64 0, i64 %idxprom96, i64 %idxprom96, !dbg !525
+  call void @llvm.dbg.value(metadata !{i32* %i}, i64 0, metadata !59), !dbg !525
+  %arrayidx101 = getelementptr inbounds [512 x %struct.move_s]* %moves, i64 0, i64 %idxprom62, !dbg !525
+  %29 = bitcast %struct.move_s* %arrayidx99 to i8*, !dbg !525
+  %30 = bitcast %struct.move_s* %arrayidx101 to i8*, !dbg !525
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %29, i8* %30, i64 24, i32 4, i1 false), !dbg !525, !tbaa.struct !526
+  %j.0171 = add i32 %28, 1, !dbg !527
+  %idxprom104173 = sext i32 %j.0171 to i64, !dbg !527
+  %arrayidx105174 = getelementptr inbounds [300 x i32]* @pv_length, i64 0, i64 %idxprom104173, !dbg !527
+  %31 = load i32* %arrayidx105174, align 4, !dbg !527, !tbaa !300
+  %cmp106175 = icmp slt i32 %j.0171, %31, !dbg !527
+  br i1 %cmp106175, label %for.body, label %for.end, !dbg !527
 
 for.body:                                         ; preds = %if.end95, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ %idxprom104173, %if.end95 ]
   %j.0176 = phi i32 [ %j.0, %for.body ], [ %j.0171, %if.end95 ]
-  %arrayidx110 = getelementptr inbounds [300 x [300 x %struct.move_s]]* @pv, i64 0, i64 %idxprom96, i64 %indvars.iv
-  %arrayidx115 = getelementptr inbounds [300 x [300 x %struct.move_s]]* @pv, i64 0, i64 %idxprom104173, i64 %indvars.iv
-  %32 = bitcast %struct.move_s* %arrayidx110 to i8*
-  %33 = bitcast %struct.move_s* %arrayidx115 to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %32, i8* %33, i64 24, i32 4, i1 false), !tbaa.struct !4
-  %j.0 = add nsw i32 %j.0176, 1
-  %cmp106 = icmp slt i32 %j.0, %31
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  br i1 %cmp106, label %for.body, label %for.end
+  %arrayidx110 = getelementptr inbounds [300 x [300 x %struct.move_s]]* @pv, i64 0, i64 %idxprom96, i64 %indvars.iv, !dbg !529
+  %arrayidx115 = getelementptr inbounds [300 x [300 x %struct.move_s]]* @pv, i64 0, i64 %idxprom104173, i64 %indvars.iv, !dbg !529
+  %32 = bitcast %struct.move_s* %arrayidx110 to i8*, !dbg !529
+  %33 = bitcast %struct.move_s* %arrayidx115 to i8*, !dbg !529
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %32, i8* %33, i64 24, i32 4, i1 false), !dbg !529, !tbaa.struct !526
+  %j.0 = add nsw i32 %j.0176, 1, !dbg !527
+  %cmp106 = icmp slt i32 %j.0, %31, !dbg !527
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !527
+  br i1 %cmp106, label %for.body, label %for.end, !dbg !527
 
 for.end:                                          ; preds = %for.body, %if.end95
-  %arrayidx121 = getelementptr inbounds [300 x i32]* @pv_length, i64 0, i64 %idxprom96
-  store i32 %31, i32* %arrayidx121, align 4, !tbaa !2
-  br label %while.cond.outer.outer
+  %arrayidx121 = getelementptr inbounds [300 x i32]* @pv_length, i64 0, i64 %idxprom96, !dbg !530
+  store i32 %31, i32* %arrayidx121, align 4, !dbg !530, !tbaa !300
+  br label %while.cond.outer.outer, !dbg !531
 
 while.end:                                        ; preds = %while.cond
-  %34 = load i32* %best, align 4, !tbaa !2
-  call void @QStoreTT(i32 %alpha.addr.1.ph.ph, i32 %alpha, i32 %beta, i32 %34) #5
-  br label %cleanup
+  call void @llvm.dbg.value(metadata !{i32* %best}, i64 0, metadata !71), !dbg !532
+  %34 = load i32* %best, align 4, !dbg !532, !tbaa !300
+  call void @QStoreTT(i32 %alpha.addr.1.ph.ph, i32 %alpha, i32 %beta, i32 %34) #6, !dbg !532
+  br label %cleanup, !dbg !533
 
 cleanup:                                          ; preds = %if.else46, %sw.bb38, %sw.bb34, %while.end, %if.then94, %if.then45, %sw.bb, %if.then29, %if.else23, %if.then2
   %retval.0 = phi i32 [ %call30, %if.then29 ], [ %call43, %if.then45 ], [ %sub79, %if.then94 ], [ %alpha.addr.1.ph.ph, %while.end ], [ %19, %sw.bb ], [ 0, %if.then2 ], [ 0, %if.else23 ], [ %20, %sw.bb34 ], [ %21, %sw.bb38 ], [ 50000, %if.else46 ]
-  call void @llvm.lifetime.end(i64 2048, i8* %2) #2
-  call void @llvm.lifetime.end(i64 2048, i8* %1) #2
-  call void @llvm.lifetime.end(i64 12288, i8* %0) #2
-  ret i32 %retval.0
+  call void @llvm.lifetime.end(i64 2048, i8* %2) #3, !dbg !534
+  call void @llvm.lifetime.end(i64 2048, i8* %1) #3, !dbg !534
+  call void @llvm.lifetime.end(i64 12288, i8* %0) #3, !dbg !534
+  ret i32 %retval.0, !dbg !534
 }

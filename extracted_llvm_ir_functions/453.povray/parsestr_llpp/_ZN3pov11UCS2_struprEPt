@@ -1,0 +1,39 @@
+define void @_ZN3pov11UCS2_struprEPt(i16* nocapture %str) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %str}, i64 0, metadata !739), !dbg !1164
+  tail call void @llvm.dbg.value(metadata !1165, i64 0, metadata !740), !dbg !1166
+  br label %while.body, !dbg !1167
+
+while.body:                                       ; preds = %entry, %if.end6
+  %str.addr.0 = phi i16* [ %str, %entry ], [ %incdec.ptr, %if.end6 ]
+  %err.0 = phi i8 [ 0, %entry ], [ %err.1, %if.end6 ]
+  %0 = load i16* %str.addr.0, align 2, !dbg !1168, !tbaa !868
+  %cmp2 = icmp ugt i16 %0, 127, !dbg !1168
+  br i1 %cmp2, label %if.end6, label %if.else, !dbg !1168
+
+if.else:                                          ; preds = %while.body
+  %cmp4 = icmp eq i16 %0, 0, !dbg !1170
+  br i1 %cmp4, label %while.end, label %if.end6, !dbg !1170
+
+if.end6:                                          ; preds = %while.body, %if.else
+  %err.1 = phi i8 [ %err.0, %if.else ], [ 1, %while.body ]
+  %conv7 = zext i16 %0 to i32, !dbg !1171
+  %call = tail call i32 @toupper(i32 %conv7) #10, !dbg !1171
+  %conv8 = trunc i32 %call to i16, !dbg !1171
+  store i16 %conv8, i16* %str.addr.0, align 2, !dbg !1171, !tbaa !868
+  %incdec.ptr = getelementptr inbounds i16* %str.addr.0, i64 1, !dbg !1172
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !739), !dbg !1172
+  br label %while.body, !dbg !1173
+
+while.end:                                        ; preds = %if.else
+  %1 = and i8 %err.0, 1, !dbg !1174
+  %tobool = icmp eq i8 %1, 0, !dbg !1174
+  br i1 %tobool, label %if.end13, label %if.then11, !dbg !1174
+
+if.then11:                                        ; preds = %while.end
+  %call12 = tail call i32 (i32, i8*, ...)* @_ZN3pov7WarningEjPKcz(i32 0, i8* getelementptr inbounds ([64 x i8]* @.str16, i64 0, i64 0)) #8, !dbg !1175
+  br label %if.end13, !dbg !1175
+
+if.end13:                                         ; preds = %while.end, %if.then11
+  ret void, !dbg !1176
+}

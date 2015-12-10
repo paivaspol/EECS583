@@ -1,0 +1,90 @@
+define void @_ZN8EtherMAC20handleRetransmissionEv(%class.EtherMAC* %this) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.EtherMAC* %this}, i64 0, metadata !4988), !dbg !6721
+  %backoffs = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 21, !dbg !6722
+  %0 = load i32* %backoffs, align 4, !dbg !6722, !tbaa !5376
+  %inc = add nsw i32 %0, 1, !dbg !6722
+  store i32 %inc, i32* %backoffs, align 4, !dbg !6722, !tbaa !5376
+  %cmp = icmp sgt i32 %0, 15, !dbg !6722
+  %1 = load i32* getelementptr inbounds (%class.cEnvir* @ev, i64 0, i32 1), align 8, !dbg !6723, !tbaa !5376
+  %tobool = icmp ne i32 %1, 0, !dbg !6723
+  br i1 %cmp, label %if.then, label %if.end, !dbg !6722
+
+if.then:                                          ; preds = %entry
+  br i1 %tobool, label %cond.end, label %cond.false, !dbg !6723
+
+cond.false:                                       ; preds = %if.then
+  tail call void @llvm.dbg.value(metadata !5402, i64 0, metadata !6725), !dbg !6726
+  tail call void @llvm.dbg.value(metadata !6727, i64 0, metadata !6728), !dbg !6726
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([90 x i8]* @.str132, i64 0, i64 0)) #11, !dbg !6729
+  br label %cond.end, !dbg !6723
+
+cond.end:                                         ; preds = %if.then, %cond.false
+  %outputbuffer = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 24, !dbg !6730
+  %call2 = tail call %class.cObject* @_ZN6cQueue3popEv(%class.cQueue* %outputbuffer) #11, !dbg !6730
+  %isnull = icmp eq %class.cObject* %call2, null, !dbg !6730
+  br i1 %isnull, label %delete.end, label %delete.notnull, !dbg !6730
+
+delete.notnull:                                   ; preds = %cond.end
+  %2 = bitcast %class.cObject* %call2 to void (%class.cObject*)***, !dbg !6730
+  %vtable = load void (%class.cObject*)*** %2, align 8, !dbg !6730, !tbaa !5419
+  %vfn = getelementptr inbounds void (%class.cObject*)** %vtable, i64 1, !dbg !6730
+  %3 = load void (%class.cObject*)** %vfn, align 8, !dbg !6730
+  tail call void %3(%class.cObject* %call2) #11, !dbg !6730
+  br label %delete.end, !dbg !6730
+
+delete.end:                                       ; preds = %delete.notnull, %cond.end
+  %transmitState = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 17, !dbg !6731
+  store i32 1, i32* %transmitState, align 4, !dbg !6731, !tbaa !5376
+  store i32 0, i32* %backoffs, align 4, !dbg !6732, !tbaa !5376
+  br label %return, !dbg !6733
+
+if.end:                                           ; preds = %entry
+  br i1 %tobool, label %cond.end8, label %cond.false6, !dbg !6734
+
+cond.false6:                                      ; preds = %if.end
+  tail call void @llvm.dbg.value(metadata !5402, i64 0, metadata !6735), !dbg !6736
+  tail call void @llvm.dbg.value(metadata !6737, i64 0, metadata !6738), !dbg !6736
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([29 x i8]* @.str133, i64 0, i64 0)) #11, !dbg !6739
+  %.pre = load i32* %backoffs, align 4, !dbg !6740, !tbaa !5376
+  br label %cond.end8, !dbg !6734
+
+cond.end8:                                        ; preds = %if.end, %cond.false6
+  %4 = phi i32 [ %inc, %if.end ], [ %.pre, %cond.false6 ]
+  %cmp11 = icmp sgt i32 %4, 9, !dbg !6740
+  br i1 %cmp11, label %cond.end15, label %cond.false13, !dbg !6740
+
+cond.false13:                                     ; preds = %cond.end8
+  %shl = shl i32 1, %4, !dbg !6740
+  %phitmp = add i32 %shl, -1, !dbg !6740
+  br label %cond.end15, !dbg !6740
+
+cond.end15:                                       ; preds = %cond.end8, %cond.false13
+  %cond = phi i32 [ %phitmp, %cond.false13 ], [ 1023, %cond.end8 ]
+  %call16 = tail call i32 @_Z10intuniformiii(i32 0, i32 %cond, i32 0) #11, !dbg !6741
+  tail call void @llvm.dbg.value(metadata !{i32 %call16}, i64 0, metadata !4990), !dbg !6741
+  %conv = sitofp i32 %call16 to double, !dbg !6742
+  %slotTime = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 10, !dbg !6742
+  %5 = load double* %slotTime, align 8, !dbg !6742, !tbaa !5436
+  %mul = fmul double %conv, %5, !dbg !6742
+  tail call void @llvm.dbg.value(metadata !{double %mul}, i64 0, metadata !4991), !dbg !6742
+  %6 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 0, !dbg !6743
+  %call17 = tail call double @_ZNK13cSimpleModule7simTimeEv(%class.cSimpleModule* %6) #11, !dbg !6743
+  %add = fadd double %call17, %mul, !dbg !6743
+  %endBackoffMsg = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 29, !dbg !6743
+  %7 = load %class.cMessage** %endBackoffMsg, align 8, !dbg !6743, !tbaa !5362
+  %call18 = tail call i32 @_ZN13cSimpleModule10scheduleAtEdP8cMessage(%class.cSimpleModule* %6, double %add, %class.cMessage* %7) #11, !dbg !6743
+  %transmitState19 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 17, !dbg !6744
+  store i32 5, i32* %transmitState19, align 4, !dbg !6744, !tbaa !5376
+  %numBackoffs = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 47, !dbg !6745
+  %8 = load i64* %numBackoffs, align 8, !dbg !6745, !tbaa !5932
+  %inc20 = add i64 %8, 1, !dbg !6745
+  store i64 %inc20, i64* %numBackoffs, align 8, !dbg !6745, !tbaa !5932
+  %numBackoffsVector = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 59, !dbg !6746
+  %conv22 = uitofp i64 %inc20 to double, !dbg !6746
+  %call23 = tail call zeroext i1 @_ZN10cOutVector6recordEd(%class.cOutVector* %numBackoffsVector, double %conv22) #11, !dbg !6746
+  br label %return, !dbg !6746
+
+return:                                           ; preds = %cond.end15, %delete.end
+  ret void, !dbg !6746
+}

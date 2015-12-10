@@ -1,0 +1,52 @@
+define i32 @XalanCreateXPathEvaluator(i8** %theHandle) #2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8** %theHandle}, i64 0, metadata !7059), !dbg !12792
+  %.b = load i1* @_ZL12fInitialized, align 1
+  br i1 %.b, label %if.else, label %return, !dbg !12793
+
+if.else:                                          ; preds = %entry
+  %.b12 = load i1* @_ZL11fTerminated, align 1
+  br i1 %.b12, label %return, label %if.else5, !dbg !12794
+
+if.else5:                                         ; preds = %if.else
+  %cmp6 = icmp eq i8** %theHandle, null, !dbg !12795
+  br i1 %cmp6, label %return, label %if.else8, !dbg !12795
+
+if.else8:                                         ; preds = %if.else5
+  tail call void @llvm.dbg.value(metadata !84, i64 0, metadata !7060), !dbg !12796
+  %call = invoke noalias i8* @_Znwm(i64 32) #7
+          to label %invoke.cont unwind label %lpad, !dbg !12797
+
+invoke.cont:                                      ; preds = %if.else8
+  %0 = bitcast i8* %call to %"class.xalanc_1_8::XPathEvaluator"*, !dbg !12797
+  invoke void @_ZN10xalanc_1_814XPathEvaluatorC1Ev(%"class.xalanc_1_8::XPathEvaluator"* %0) #7
+          to label %invoke.cont10 unwind label %lpad9, !dbg !12797
+
+invoke.cont10:                                    ; preds = %invoke.cont
+  store i8* %call, i8** %theHandle, align 8, !dbg !12797, !tbaa !12759
+  br label %return, !dbg !12799
+
+lpad:                                             ; preds = %if.else8
+  %1 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !12797
+  %2 = extractvalue { i8*, i32 } %1, 0, !dbg !12797
+  br label %catch, !dbg !12797
+
+lpad9:                                            ; preds = %invoke.cont
+  %3 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !12797
+  %4 = extractvalue { i8*, i32 } %3, 0, !dbg !12797
+  tail call void @_ZdlPv(i8* %call) #8, !dbg !12797
+  br label %catch, !dbg !12797
+
+catch:                                            ; preds = %lpad9, %lpad
+  %exn.slot.0 = phi i8* [ %4, %lpad9 ], [ %2, %lpad ]
+  %5 = tail call i8* @__cxa_begin_catch(i8* %exn.slot.0) #6, !dbg !12799
+  tail call void @llvm.dbg.value(metadata !12800, i64 0, metadata !7060), !dbg !12801
+  tail call void @__cxa_end_catch(), !dbg !12803
+  br label %return, !dbg !12803
+
+return:                                           ; preds = %invoke.cont10, %catch, %if.else5, %if.else, %entry
+  %retval.0 = phi i32 [ 5, %entry ], [ 2, %if.else ], [ 7, %if.else5 ], [ 0, %invoke.cont10 ], [ 13, %catch ]
+  ret i32 %retval.0, !dbg !12804
+}

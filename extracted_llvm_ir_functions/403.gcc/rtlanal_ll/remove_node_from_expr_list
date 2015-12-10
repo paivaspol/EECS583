@@ -1,42 +1,46 @@
-define void @remove_node_from_expr_list(%struct.rtx_def* %node, %struct.rtx_def** nocapture %listp) #1 {
+define void @remove_node_from_expr_list(%struct.rtx_def* %node, %struct.rtx_def** nocapture %listp) #2 {
 entry:
-  %temp.024 = load %struct.rtx_def** %listp, align 8
-  %tobool25 = icmp eq %struct.rtx_def* %temp.024, null
-  br i1 %tobool25, label %while.end, label %while.body
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %node}, i64 0, metadata !744), !dbg !1666
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %listp}, i64 0, metadata !745), !dbg !1667
+  tail call void @llvm.dbg.value(metadata !1088, i64 0, metadata !747), !dbg !1668
+  %temp.024 = load %struct.rtx_def** %listp, align 8, !dbg !1669
+  %tobool25 = icmp eq %struct.rtx_def* %temp.024, null, !dbg !1670
+  br i1 %tobool25, label %while.end, label %while.body, !dbg !1670
 
 while.body:                                       ; preds = %entry, %if.end12
   %temp.027 = phi %struct.rtx_def* [ %temp.0, %if.end12 ], [ %temp.024, %entry ]
   %prev.026 = phi %struct.rtx_def* [ %temp.027, %if.end12 ], [ null, %entry ]
-  %fld = getelementptr inbounds %struct.rtx_def* %temp.027, i64 0, i32 1
-  %rtx = bitcast [1 x %union.rtunion_def]* %fld to %struct.rtx_def**
-  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %cmp = icmp eq %struct.rtx_def* %0, %node
-  br i1 %cmp, label %if.then, label %if.end12
+  %fld = getelementptr inbounds %struct.rtx_def* %temp.027, i64 0, i32 1, !dbg !1671
+  %rtx = bitcast [1 x %union.rtunion_def]* %fld to %struct.rtx_def**, !dbg !1671
+  %0 = load %struct.rtx_def** %rtx, align 8, !dbg !1671, !tbaa !979
+  %cmp = icmp eq %struct.rtx_def* %0, %node, !dbg !1671
+  br i1 %cmp, label %if.then, label %if.end12, !dbg !1671
 
 if.then:                                          ; preds = %while.body
-  %tobool1 = icmp eq %struct.rtx_def* %prev.026, null
-  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %temp.027, i64 0, i32 1, i64 1
-  %rtx5 = bitcast %union.rtunion_def* %arrayidx4 to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx5, align 8, !tbaa !0
-  br i1 %tobool1, label %if.else, label %if.then2
+  %tobool1 = icmp eq %struct.rtx_def* %prev.026, null, !dbg !1673
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %temp.027, i64 0, i32 1, i64 1, !dbg !1675
+  %rtx5 = bitcast %union.rtunion_def* %arrayidx4 to %struct.rtx_def**, !dbg !1675
+  %1 = load %struct.rtx_def** %rtx5, align 8, !dbg !1675, !tbaa !979
+  br i1 %tobool1, label %if.else, label %if.then2, !dbg !1673
 
 if.then2:                                         ; preds = %if.then
-  %2 = getelementptr inbounds %struct.rtx_def* %prev.026, i64 0, i32 1, i64 1, i32 0
-  %.c = ptrtoint %struct.rtx_def* %1 to i64
-  store i64 %.c, i64* %2, align 8, !tbaa !0
-  br label %while.end
+  %2 = getelementptr inbounds %struct.rtx_def* %prev.026, i64 0, i32 1, i64 1, i32 0, !dbg !1675
+  %.c = ptrtoint %struct.rtx_def* %1 to i64, !dbg !1675
+  store i64 %.c, i64* %2, align 8, !dbg !1675, !tbaa !979
+  br label %while.end, !dbg !1675
 
 if.else:                                          ; preds = %if.then
-  store %struct.rtx_def* %1, %struct.rtx_def** %listp, align 8, !tbaa !0
+  store %struct.rtx_def* %1, %struct.rtx_def** %listp, align 8, !dbg !1676, !tbaa !979
   br label %while.end
 
 if.end12:                                         ; preds = %while.body
-  %arrayidx14 = getelementptr inbounds %struct.rtx_def* %temp.027, i64 0, i32 1, i64 1
-  %rtx15 = bitcast %union.rtunion_def* %arrayidx14 to %struct.rtx_def**
-  %temp.0 = load %struct.rtx_def** %rtx15, align 8
-  %tobool = icmp eq %struct.rtx_def* %temp.0, null
-  br i1 %tobool, label %while.end, label %while.body
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %temp.027}, i64 0, metadata !747), !dbg !1677
+  %arrayidx14 = getelementptr inbounds %struct.rtx_def* %temp.027, i64 0, i32 1, i64 1, !dbg !1678
+  %rtx15 = bitcast %union.rtunion_def* %arrayidx14 to %struct.rtx_def**, !dbg !1678
+  %temp.0 = load %struct.rtx_def** %rtx15, align 8, !dbg !1669
+  %tobool = icmp eq %struct.rtx_def* %temp.0, null, !dbg !1670
+  br i1 %tobool, label %while.end, label %while.body, !dbg !1670
 
 while.end:                                        ; preds = %entry, %if.end12, %if.then2, %if.else
-  ret void
+  ret void, !dbg !1679
 }

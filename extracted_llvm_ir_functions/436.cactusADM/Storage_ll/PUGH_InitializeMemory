@@ -1,45 +1,49 @@
-define internal fastcc void @PUGH_InitializeMemory(i8* %initialize_memory, i32 %vtype, i32 %bytes, i8* %data) #1 {
-  %1 = tail call i32 @CCTK_Equals(i8* %initialize_memory, i8* getelementptr inbounds ([5 x i8]* @.str25, i64 0, i64 0)) #7
-  %2 = icmp eq i32 %1, 0
-  br i1 %2, label %7, label %3
+define internal fastcc void @PUGH_InitializeMemory(i8* %initialize_memory, i32 %vtype, i32 %bytes, i8* nocapture %data) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %initialize_memory}, i64 0, metadata !370), !dbg !860
+  tail call void @llvm.dbg.value(metadata !{i32 %vtype}, i64 0, metadata !371), !dbg !861
+  tail call void @llvm.dbg.value(metadata !{i32 %bytes}, i64 0, metadata !372), !dbg !862
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !373), !dbg !863
+  %call = tail call i32 @CCTK_Equals(i8* %initialize_memory, i8* getelementptr inbounds ([5 x i8]* @.str23, i64 0, i64 0)) #7, !dbg !864
+  %tobool = icmp eq i32 %call, 0, !dbg !864
+  br i1 %tobool, label %if.else, label %if.then, !dbg !864
 
-; <label>:3                                       ; preds = %0
-  %4 = sext i32 %bytes to i64
-  %5 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %data, i1 false)
-  %6 = tail call i8* @__memset_chk(i8* %data, i32 0, i64 %4, i64 %5) #7
-  br label %26
+if.then:                                          ; preds = %entry
+  %conv = sext i32 %bytes to i64, !dbg !865
+  tail call void @llvm.memset.p0i8.i64(i8* %data, i8 0, i64 %conv, i32 1, i1 false), !dbg !865
+  br label %if.end19, !dbg !867
 
-; <label>:7                                       ; preds = %0
-  %8 = tail call i32 @CCTK_Equals(i8* %initialize_memory, i8* getelementptr inbounds ([4 x i8]* @.str26, i64 0, i64 0)) #7
-  %9 = icmp eq i32 %8, 0
-  br i1 %9, label %21, label %10
+if.else:                                          ; preds = %entry
+  %call1 = tail call i32 @CCTK_Equals(i8* %initialize_memory, i8* getelementptr inbounds ([4 x i8]* @.str24, i64 0, i64 0)) #7, !dbg !868
+  %tobool2 = icmp eq i32 %call1, 0, !dbg !868
+  br i1 %tobool2, label %if.else12, label %if.then3, !dbg !868
 
-; <label>:10                                      ; preds = %7
-  %11 = tail call i8* @CCTK_VarTypeName(i32 %vtype) #7
-  %12 = tail call i32 @strncmp(i8* %11, i8* getelementptr inbounds ([19 x i8]* @.str27, i64 0, i64 0), i64 18) #7
-  %13 = icmp eq i32 %12, 0
-  br i1 %13, label %17, label %14
+if.then3:                                         ; preds = %if.else
+  %call4 = tail call i8* @CCTK_VarTypeName(i32 %vtype) #7, !dbg !869
+  tail call void @llvm.dbg.value(metadata !{i8* %call4}, i64 0, metadata !374), !dbg !869
+  %call5 = tail call i32 @strncmp(i8* %call4, i8* getelementptr inbounds ([19 x i8]* @.str25, i64 0, i64 0), i64 18) #9, !dbg !871
+  %cmp = icmp eq i32 %call5, 0, !dbg !871
+  br i1 %cmp, label %if.then10, label %lor.lhs.false, !dbg !871
 
-; <label>:14                                      ; preds = %10
-  %15 = tail call i32 @strncmp(i8* %11, i8* getelementptr inbounds ([22 x i8]* @.str28, i64 0, i64 0), i64 22) #7
-  %16 = icmp eq i32 %15, 0
-  br i1 %16, label %17, label %26
+lor.lhs.false:                                    ; preds = %if.then3
+  %call7 = tail call i32 @strncmp(i8* %call4, i8* getelementptr inbounds ([22 x i8]* @.str26, i64 0, i64 0), i64 22) #9, !dbg !872
+  %cmp8 = icmp eq i32 %call7, 0, !dbg !872
+  br i1 %cmp8, label %if.then10, label %if.end19, !dbg !872
 
-; <label>:17                                      ; preds = %14, %10
-  %18 = sext i32 %bytes to i64
-  %19 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %data, i1 false)
-  %20 = tail call i8* @__memset_chk(i8* %data, i32 -1, i64 %18, i64 %19) #7
-  br label %26
+if.then10:                                        ; preds = %lor.lhs.false, %if.then3
+  %conv11 = sext i32 %bytes to i64, !dbg !873
+  tail call void @llvm.memset.p0i8.i64(i8* %data, i8 -1, i64 %conv11, i32 1, i1 false), !dbg !873
+  br label %if.end19, !dbg !875
 
-; <label>:21                                      ; preds = %7
-  %22 = tail call i32 @CCTK_Equals(i8* %initialize_memory, i8* getelementptr inbounds ([5 x i8]* @.str18, i64 0, i64 0)) #7
-  %23 = icmp eq i32 %22, 0
-  br i1 %23, label %24, label %26
+if.else12:                                        ; preds = %if.else
+  %call13 = tail call i32 @CCTK_Equals(i8* %initialize_memory, i8* getelementptr inbounds ([5 x i8]* @.str18, i64 0, i64 0)) #7, !dbg !876
+  %tobool14 = icmp eq i32 %call13, 0, !dbg !876
+  br i1 %tobool14, label %if.then15, label %if.end19, !dbg !876
 
-; <label>:24                                      ; preds = %21
-  %25 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 0, i32 964, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([73 x i8]* @.str29, i64 0, i64 0), i8* %initialize_memory) #7
-  br label %26
+if.then15:                                        ; preds = %if.else12
+  %call16 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 0, i32 964, i8* getelementptr inbounds ([62 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([73 x i8]* @.str27, i64 0, i64 0), i8* %initialize_memory) #7, !dbg !877
+  br label %if.end19, !dbg !879
 
-; <label>:26                                      ; preds = %21, %17, %14, %24, %3
-  ret void
+if.end19:                                         ; preds = %if.else12, %if.then10, %lor.lhs.false, %if.then15, %if.then
+  ret void, !dbg !880
 }

@@ -5,27 +5,31 @@ entry:
 tailrecurse:                                      ; preds = %if.then6, %entry
   %node.tr = phi %struct.case_node* [ %node, %entry ], [ %1, %if.then6 ]
   %right.tr = phi %struct.case_node* [ %right, %entry ], [ %node.tr, %if.then6 ]
-  %right1 = getelementptr inbounds %struct.case_node* %node.tr, i64 0, i32 1
-  %0 = load %struct.case_node** %right1, align 8, !tbaa !0
-  %tobool = icmp eq %struct.case_node* %0, null
-  br i1 %tobool, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.case_node* %node.tr}, i64 0, metadata !2111), !dbg !4362
+  tail call void @llvm.dbg.value(metadata !{%struct.case_node* %right.tr}, i64 0, metadata !2112), !dbg !4362
+  %right1 = getelementptr inbounds %struct.case_node* %node.tr, i64 0, i32 1, !dbg !4363
+  %0 = load %struct.case_node** %right1, align 8, !dbg !4363, !tbaa !2438
+  %tobool = icmp eq %struct.case_node* %0, null, !dbg !4363
+  br i1 %tobool, label %if.end, label %if.then, !dbg !4363
 
 if.then:                                          ; preds = %tailrecurse
-  %call = tail call fastcc %struct.case_node* @case_tree2list(%struct.case_node* %0, %struct.case_node* %right.tr) #9
-  br label %if.end
+  %call = tail call fastcc %struct.case_node* @case_tree2list(%struct.case_node* %0, %struct.case_node* %right.tr) #10, !dbg !4364
+  tail call void @llvm.dbg.value(metadata !{%struct.case_node* %call}, i64 0, metadata !2112), !dbg !4364
+  br label %if.end, !dbg !4364
 
 if.end:                                           ; preds = %tailrecurse, %if.then
   %right.addr.0 = phi %struct.case_node* [ %call, %if.then ], [ %right.tr, %tailrecurse ]
-  store %struct.case_node* %right.addr.0, %struct.case_node** %right1, align 8, !tbaa !0
-  %left4 = getelementptr inbounds %struct.case_node* %node.tr, i64 0, i32 0
-  %1 = load %struct.case_node** %left4, align 8, !tbaa !0
-  %tobool5 = icmp eq %struct.case_node* %1, null
-  br i1 %tobool5, label %return, label %if.then6
+  store %struct.case_node* %right.addr.0, %struct.case_node** %right1, align 8, !dbg !4365, !tbaa !2438
+  %left4 = getelementptr inbounds %struct.case_node* %node.tr, i64 0, i32 0, !dbg !4366
+  %1 = load %struct.case_node** %left4, align 8, !dbg !4366, !tbaa !2438
+  tail call void @llvm.dbg.value(metadata !{%struct.case_node* %1}, i64 0, metadata !2113), !dbg !4366
+  %tobool5 = icmp eq %struct.case_node* %1, null, !dbg !4366
+  br i1 %tobool5, label %return, label %if.then6, !dbg !4366
 
 if.then6:                                         ; preds = %if.end
-  store %struct.case_node* null, %struct.case_node** %left4, align 8, !tbaa !0
-  br label %tailrecurse
+  store %struct.case_node* null, %struct.case_node** %left4, align 8, !dbg !4367, !tbaa !2438
+  br label %tailrecurse, !dbg !4369
 
 return:                                           ; preds = %if.end
-  ret %struct.case_node* %node.tr
+  ret %struct.case_node* %node.tr, !dbg !4370
 }

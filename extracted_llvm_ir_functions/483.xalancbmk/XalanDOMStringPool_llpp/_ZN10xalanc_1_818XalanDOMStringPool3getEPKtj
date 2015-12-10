@@ -1,0 +1,65 @@
+define %"class.xalanc_1_8::XalanDOMString"* @_ZN10xalanc_1_818XalanDOMStringPool3getEPKtj(%"class.xalanc_1_8::XalanDOMStringPool"* %this, i16* %theString, i32 %theLength) unnamed_addr #1 align 2 {
+entry:
+  %theBucketIndex = alloca i64, align 8
+  call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XalanDOMStringPool"* %this}, i64 0, metadata !2599), !dbg !3082
+  call void @llvm.dbg.value(metadata !{i16* %theString}, i64 0, metadata !2600), !dbg !3083
+  call void @llvm.dbg.value(metadata !{i32 %theLength}, i64 0, metadata !2601), !dbg !3084
+  %cmp = icmp eq i16* %theString, null, !dbg !3085
+  br i1 %cmp, label %return, label %lor.lhs.false, !dbg !3085
+
+lor.lhs.false:                                    ; preds = %entry
+  %0 = load i16* %theString, align 2, !dbg !3085, !tbaa !3086
+  %cmp2 = icmp eq i16 %0, 0, !dbg !3085
+  br i1 %cmp2, label %return, label %if.else, !dbg !3085
+
+if.else:                                          ; preds = %lor.lhs.false
+  %cmp3 = icmp eq i32 %theLength, -1, !dbg !3087
+  br i1 %cmp3, label %while.cond.i, label %cond.end, !dbg !3087
+
+while.cond.i:                                     ; preds = %if.else, %while.cond.i.while.cond.i_crit_edge
+  %1 = phi i16 [ %.pre, %while.cond.i.while.cond.i_crit_edge ], [ %0, %if.else ]
+  %theBufferPointer.0.i = phi i16* [ %incdec.ptr.i, %while.cond.i.while.cond.i_crit_edge ], [ %theString, %if.else ]
+  %cmp.i = icmp eq i16 %1, 0, !dbg !3088
+  %incdec.ptr.i = getelementptr inbounds i16* %theBufferPointer.0.i, i64 1, !dbg !3090
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr.i}, i64 0, metadata !3092), !dbg !3090
+  br i1 %cmp.i, label %_ZN10xalanc_1_86lengthEPKt.exit, label %while.cond.i.while.cond.i_crit_edge, !dbg !3088
+
+while.cond.i.while.cond.i_crit_edge:              ; preds = %while.cond.i
+  %.pre = load i16* %incdec.ptr.i, align 2, !dbg !3088, !tbaa !3086
+  br label %while.cond.i, !dbg !3088
+
+_ZN10xalanc_1_86lengthEPKt.exit:                  ; preds = %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %theBufferPointer.0.i to i64, !dbg !3093
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %theString to i64, !dbg !3093
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !3093
+  %sub.ptr.div4.i = lshr exact i64 %sub.ptr.sub.i, 1, !dbg !3093
+  %conv1.i = trunc i64 %sub.ptr.div4.i to i32, !dbg !3093
+  br label %cond.end, !dbg !3089
+
+cond.end:                                         ; preds = %if.else, %_ZN10xalanc_1_86lengthEPKt.exit
+  %cond = phi i32 [ %conv1.i, %_ZN10xalanc_1_86lengthEPKt.exit ], [ %theLength, %if.else ], !dbg !3089
+  call void @llvm.dbg.value(metadata !{i32 %cond}, i64 0, metadata !2602), !dbg !3089
+  call void @llvm.dbg.declare(metadata !{i64* %theBucketIndex}, metadata !2604), !dbg !3094
+  %m_hashTable = getelementptr inbounds %"class.xalanc_1_8::XalanDOMStringPool"* %this, i64 0, i32 3, !dbg !3095
+  %call4 = call %"class.xalanc_1_8::XalanDOMString"* @_ZNK10xalanc_1_823XalanDOMStringHashTable4findEPKtjPm(%"class.xalanc_1_8::XalanDOMStringHashTable"* %m_hashTable, i16* %theString, i32 %cond, i64* %theBucketIndex) #8, !dbg !3095
+  call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XalanDOMString"* %call4}, i64 0, metadata !2605), !dbg !3095
+  %cmp5 = icmp eq %"class.xalanc_1_8::XalanDOMString"* %call4, null, !dbg !3096
+  br i1 %cmp5, label %if.else7, label %return, !dbg !3096
+
+if.else7:                                         ; preds = %cond.end
+  %m_stringAllocator = getelementptr inbounds %"class.xalanc_1_8::XalanDOMStringPool"* %this, i64 0, i32 1, !dbg !3097
+  %call8 = call %"class.xalanc_1_8::XalanDOMString"* @_ZN10xalanc_1_823XalanDOMStringAllocator6createEPKtj(%"class.xalanc_1_8::XalanDOMStringAllocator"* %m_stringAllocator, i16* %theString, i32 %cond) #8, !dbg !3097
+  call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XalanDOMString"* %call8}, i64 0, metadata !2606), !dbg !3097
+  %m_stringCount = getelementptr inbounds %"class.xalanc_1_8::XalanDOMStringPool"* %this, i64 0, i32 2, !dbg !3098
+  %2 = load i64* %m_stringCount, align 8, !dbg !3098, !tbaa !3002
+  %inc = add i64 %2, 1, !dbg !3098
+  store i64 %inc, i64* %m_stringCount, align 8, !dbg !3098, !tbaa !3002
+  call void @llvm.dbg.value(metadata !{i64* %theBucketIndex}, i64 0, metadata !2604), !dbg !3099
+  %3 = load i64* %theBucketIndex, align 8, !dbg !3099, !tbaa !3002
+  call void @_ZN10xalanc_1_823XalanDOMStringHashTable6insertERKNS_14XalanDOMStringEm(%"class.xalanc_1_8::XalanDOMStringHashTable"* %m_hashTable, %"class.xalanc_1_8::XalanDOMString"* %call8, i64 %3) #8, !dbg !3099
+  br label %return, !dbg !3100
+
+return:                                           ; preds = %cond.end, %entry, %lor.lhs.false, %if.else7
+  %retval.0 = phi %"class.xalanc_1_8::XalanDOMString"* [ %call8, %if.else7 ], [ @_ZN10xalanc_1_818XalanDOMStringPool13s_emptyStringE, %lor.lhs.false ], [ @_ZN10xalanc_1_818XalanDOMStringPool13s_emptyStringE, %entry ], [ %call4, %cond.end ]
+  ret %"class.xalanc_1_8::XalanDOMString"* %retval.0, !dbg !3101
+}

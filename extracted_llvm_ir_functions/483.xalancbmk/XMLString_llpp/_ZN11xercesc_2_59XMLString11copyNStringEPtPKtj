@@ -1,0 +1,40 @@
+define zeroext i1 @_ZN11xercesc_2_59XMLString11copyNStringEPtPKtj(i16* %target, i16* nocapture %src, i32 %maxChars) #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %target}, i64 0, metadata !1839), !dbg !3543
+  tail call void @llvm.dbg.value(metadata !{i16* %src}, i64 0, metadata !1840), !dbg !3544
+  tail call void @llvm.dbg.value(metadata !{i32 %maxChars}, i64 0, metadata !1841), !dbg !3545
+  tail call void @llvm.dbg.value(metadata !{i16* %target}, i64 0, metadata !1842), !dbg !3546
+  tail call void @llvm.dbg.value(metadata !{i16* %src}, i64 0, metadata !1843), !dbg !3547
+  %idx.ext = zext i32 %maxChars to i64, !dbg !3548
+  %add.ptr.sum = add i64 %idx.ext, -1, !dbg !3548
+  %add.ptr1 = getelementptr inbounds i16* %target, i64 %add.ptr.sum, !dbg !3548
+  tail call void @llvm.dbg.value(metadata !{i16* %add.ptr1}, i64 0, metadata !1844), !dbg !3548
+  %0 = load i16* %src, align 2, !dbg !3549, !tbaa !2947
+  %tobool9 = icmp eq i16 %0, 0, !dbg !3549
+  %cmp10 = icmp slt i64 %add.ptr.sum, 0, !dbg !3549
+  %or.cond11 = or i1 %tobool9, %cmp10, !dbg !3549
+  br i1 %or.cond11, label %while.end, label %while.body, !dbg !3549
+
+while.body:                                       ; preds = %entry, %while.body
+  %1 = phi i16 [ %2, %while.body ], [ %0, %entry ]
+  %outPtr.013 = phi i16* [ %incdec.ptr2, %while.body ], [ %target, %entry ]
+  %srcPtr.012 = phi i16* [ %incdec.ptr, %while.body ], [ %src, %entry ]
+  %incdec.ptr = getelementptr inbounds i16* %srcPtr.012, i64 1, !dbg !3550
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !1843), !dbg !3550
+  %incdec.ptr2 = getelementptr inbounds i16* %outPtr.013, i64 1, !dbg !3550
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr2}, i64 0, metadata !1842), !dbg !3550
+  store i16 %1, i16* %outPtr.013, align 2, !dbg !3550, !tbaa !2947
+  %2 = load i16* %incdec.ptr, align 2, !dbg !3549, !tbaa !2947
+  %tobool = icmp eq i16 %2, 0, !dbg !3549
+  %cmp = icmp ugt i16* %incdec.ptr2, %add.ptr1, !dbg !3549
+  %or.cond = or i1 %tobool, %cmp, !dbg !3549
+  br i1 %or.cond, label %while.end, label %while.body, !dbg !3549
+
+while.end:                                        ; preds = %while.body, %entry
+  %outPtr.0.lcssa = phi i16* [ %target, %entry ], [ %incdec.ptr2, %while.body ]
+  %srcPtr.0.lcssa = phi i16* [ %src, %entry ], [ %incdec.ptr, %while.body ]
+  store i16 0, i16* %outPtr.0.lcssa, align 2, !dbg !3551, !tbaa !2947
+  %3 = load i16* %srcPtr.0.lcssa, align 2, !dbg !3552, !tbaa !2947
+  %cmp3 = icmp eq i16 %3, 0, !dbg !3552
+  ret i1 %cmp3, !dbg !3552
+}

@@ -1,0 +1,86 @@
+define linkonce_odr void @_ZN11xercesc_2_515BaseRefVectorOfINS_9XMLBufferEE7cleanupEv(%"class.xercesc_2_5::BaseRefVectorOf.15"* nocapture %this) unnamed_addr #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf.15"* %this}, i64 0, metadata !7331), !dbg !11049
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.15"* %this, i64 0, i32 1, !dbg !11050
+  %0 = load i8* %fAdoptedElems, align 1, !dbg !11050, !tbaa !8707, !range !9134
+  %tobool = icmp eq i8 %0, 0, !dbg !11050
+  br i1 %tobool, label %if.end, label %for.cond.preheader, !dbg !11050
+
+for.cond.preheader:                               ; preds = %entry
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.15"* %this, i64 0, i32 2, !dbg !11051
+  %1 = load i32* %fCurCount, align 4, !dbg !11051, !tbaa !8709
+  %cmp7 = icmp eq i32 %1, 0, !dbg !11051
+  br i1 %cmp7, label %if.end, label %for.body.lr.ph, !dbg !11051
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %fElemList = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.15"* %this, i64 0, i32 4, !dbg !11052
+  br label %for.body, !dbg !11051
+
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %2 = phi i32 [ %1, %for.body.lr.ph ], [ %11, %for.inc ]
+  %index.08 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.inc ]
+  %idxprom = zext i32 %index.08 to i64, !dbg !11052
+  %3 = load %"class.xercesc_2_5::XMLBuffer"*** %fElemList, align 8, !dbg !11052, !tbaa !8710
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::XMLBuffer"** %3, i64 %idxprom, !dbg !11052
+  %4 = load %"class.xercesc_2_5::XMLBuffer"** %arrayidx, align 8, !dbg !11052, !tbaa !8710
+  %isnull = icmp eq %"class.xercesc_2_5::XMLBuffer"* %4, null, !dbg !11052
+  br i1 %isnull, label %for.inc, label %delete.notnull, !dbg !11052
+
+delete.notnull:                                   ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLBuffer"* %4}, i64 0, metadata !11053), !dbg !11054
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLBuffer"* %4}, i64 0, metadata !11055), !dbg !11057
+  %fMemoryManager.i.i = getelementptr inbounds %"class.xercesc_2_5::XMLBuffer"* %4, i64 0, i32 3, !dbg !11058
+  %5 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager.i.i, align 8, !dbg !11058, !tbaa !8710
+  %6 = bitcast %"class.xercesc_2_5::MemoryManager"* %5 to void (%"class.xercesc_2_5::MemoryManager"*, i8*)***, !dbg !11058
+  %vtable.i.i = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)*** %6, align 8, !dbg !11058, !tbaa !8705
+  %vfn.i.i = getelementptr inbounds void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vtable.i.i, i64 3, !dbg !11058
+  %7 = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vfn.i.i, align 8, !dbg !11058
+  %fBuffer.i.i = getelementptr inbounds %"class.xercesc_2_5::XMLBuffer"* %4, i64 0, i32 4, !dbg !11058
+  %8 = load i16** %fBuffer.i.i, align 8, !dbg !11058, !tbaa !8710
+  %9 = bitcast i16* %8 to i8*, !dbg !11058
+  invoke void %7(%"class.xercesc_2_5::MemoryManager"* %5, i8* %9) #12
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %delete.notnull
+  %10 = getelementptr inbounds %"class.xercesc_2_5::XMLBuffer"* %4, i64 0, i32 0, !dbg !11052
+  tail call void @_ZN11xercesc_2_57XMemorydlEPv(i8* %10) #12, !dbg !11052
+  %.pre = load i32* %fCurCount, align 4, !dbg !11051, !tbaa !8709
+  br label %for.inc, !dbg !11052
+
+for.inc:                                          ; preds = %for.body, %invoke.cont
+  %11 = phi i32 [ %2, %for.body ], [ %.pre, %invoke.cont ], !dbg !11051
+  %inc = add i32 %index.08, 1, !dbg !11051
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !7332), !dbg !11051
+  %cmp = icmp ult i32 %inc, %11, !dbg !11051
+  br i1 %cmp, label %for.body, label %if.end, !dbg !11051
+
+lpad:                                             ; preds = %delete.notnull
+  %12 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !11052
+  %13 = getelementptr inbounds %"class.xercesc_2_5::XMLBuffer"* %4, i64 0, i32 0, !dbg !11052
+  invoke void @_ZN11xercesc_2_57XMemorydlEPv(i8* %13) #12
+          to label %eh.resume unwind label %terminate.lpad, !dbg !11052
+
+if.end:                                           ; preds = %for.cond.preheader, %for.inc, %entry
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.15"* %this, i64 0, i32 5, !dbg !11059
+  %14 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !11059, !tbaa !8710
+  %15 = bitcast %"class.xercesc_2_5::MemoryManager"* %14 to void (%"class.xercesc_2_5::MemoryManager"*, i8*)***, !dbg !11059
+  %vtable = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)*** %15, align 8, !dbg !11059, !tbaa !8705
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vtable, i64 3, !dbg !11059
+  %16 = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vfn, align 8, !dbg !11059
+  %fElemList3 = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.15"* %this, i64 0, i32 4, !dbg !11059
+  %17 = load %"class.xercesc_2_5::XMLBuffer"*** %fElemList3, align 8, !dbg !11059, !tbaa !8710
+  %18 = bitcast %"class.xercesc_2_5::XMLBuffer"** %17 to i8*, !dbg !11059
+  tail call void %16(%"class.xercesc_2_5::MemoryManager"* %14, i8* %18) #12, !dbg !11059
+  ret void, !dbg !11060
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %12, !dbg !11052
+
+terminate.lpad:                                   ; preds = %lpad
+  %19 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !11052
+  %20 = extractvalue { i8*, i32 } %19, 0, !dbg !11052
+  tail call void @__clang_call_terminate(i8* %20) #11, !dbg !11052
+  unreachable, !dbg !11052
+}

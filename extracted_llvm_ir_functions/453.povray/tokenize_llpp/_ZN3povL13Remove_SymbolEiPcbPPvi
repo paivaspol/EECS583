@@ -1,0 +1,102 @@
+define internal fastcc void @_ZN3povL13Remove_SymbolEiPcbPPvi(i32 %Index, i8* nocapture %Name, i1 zeroext %is_array_elem, i8** %DataPtr, i32 %ttype) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %Index}, i64 0, metadata !1279), !dbg !3583
+  tail call void @llvm.dbg.value(metadata !{i8* %Name}, i64 0, metadata !1280), !dbg !3583
+  tail call void @llvm.dbg.value(metadata !{i1 %is_array_elem}, i64 0, metadata !1281), !dbg !3583
+  tail call void @llvm.dbg.value(metadata !{i8** %DataPtr}, i64 0, metadata !1282), !dbg !3583
+  tail call void @llvm.dbg.value(metadata !{i32 %ttype}, i64 0, metadata !1283), !dbg !3583
+  br i1 %is_array_elem, label %if.then, label %if.else13, !dbg !3584
+
+if.then:                                          ; preds = %entry
+  %cmp1 = icmp eq i8** %DataPtr, null, !dbg !3585
+  br i1 %cmp1, label %if.then2, label %if.end, !dbg !3585
+
+if.then2:                                         ; preds = %if.then
+  %call = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([23 x i8]* @.str599, i64 0, i64 0)) #9, !dbg !3587
+  br label %if.end, !dbg !3587
+
+if.end:                                           ; preds = %if.then2, %if.then
+  switch i32 %ttype, label %if.else7 [
+    i32 64, label %if.end12
+    i32 77, label %if.then6
+  ], !dbg !3588
+
+if.then6:                                         ; preds = %if.end
+  tail call void @llvm.dbg.value(metadata !3589, i64 0, metadata !1283), !dbg !3590
+  br label %if.end12, !dbg !3590
+
+if.else7:                                         ; preds = %if.end
+  %cmp8 = icmp eq i32 %ttype, 89, !dbg !3591
+  tail call void @llvm.dbg.value(metadata !3386, i64 0, metadata !1283), !dbg !3592
+  %.ttype = select i1 %cmp8, i32 92, i32 %ttype, !dbg !3591
+  br label %if.end12, !dbg !3591
+
+if.end12:                                         ; preds = %if.else7, %if.end, %if.then6
+  %ttype.addr.0 = phi i32 [ 67, %if.then6 ], [ 10, %if.end ], [ %.ttype, %if.else7 ]
+  %0 = load i8** %DataPtr, align 8, !dbg !3593, !tbaa !1578
+  tail call void @_ZN3pov18Destroy_Ident_DataEPvi(i8* %0, i32 %ttype.addr.0) #9, !dbg !3593
+  store i8* null, i8** %DataPtr, align 8, !dbg !3594, !tbaa !1578
+  br label %if.end25, !dbg !3595
+
+if.else13:                                        ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{i8* %Name}, i64 0, metadata !3596), !dbg !3598
+  tail call void @llvm.dbg.value(metadata !807, i64 0, metadata !3599), !dbg !3600
+  %1 = load i8* %Name, align 1, !dbg !3601, !tbaa !1570
+  %tobool2.i = icmp eq i8 %1, 0, !dbg !3601
+  br i1 %tobool2.i, label %_ZN3povL14get_hash_valueEPc.exit, label %while.body.i, !dbg !3601
+
+while.body.i:                                     ; preds = %if.else13, %while.body.i
+  %2 = phi i8 [ %3, %while.body.i ], [ %1, %if.else13 ]
+  %i.04.i = phi i32 [ %xor.i, %while.body.i ], [ 0, %if.else13 ]
+  %s.addr.03.i = phi i8* [ %incdec.ptr.i, %while.body.i ], [ %Name, %if.else13 ]
+  %shl.i = shl i32 %i.04.i, 1, !dbg !3602
+  %incdec.ptr.i = getelementptr inbounds i8* %s.addr.03.i, i64 1, !dbg !3602
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr.i}, i64 0, metadata !3596), !dbg !3602
+  %conv.i = sext i8 %2 to i32, !dbg !3602
+  %xor.i = xor i32 %shl.i, %conv.i, !dbg !3602
+  tail call void @llvm.dbg.value(metadata !{i32 %xor.i}, i64 0, metadata !3599), !dbg !3602
+  %3 = load i8* %incdec.ptr.i, align 1, !dbg !3601, !tbaa !1570
+  %tobool.i = icmp eq i8 %3, 0, !dbg !3601
+  br i1 %tobool.i, label %while.cond.while.end_crit_edge.i, label %while.body.i, !dbg !3601
+
+while.cond.while.end_crit_edge.i:                 ; preds = %while.body.i
+  %phitmp.i = urem i32 %xor.i, 257, !dbg !3601
+  %phitmp38 = zext i32 %phitmp.i to i64, !dbg !3601
+  br label %_ZN3povL14get_hash_valueEPc.exit, !dbg !3601
+
+_ZN3povL14get_hash_valueEPc.exit:                 ; preds = %if.else13, %while.cond.while.end_crit_edge.i
+  %i.0.lcssa.i = phi i64 [ %phitmp38, %while.cond.while.end_crit_edge.i ], [ 0, %if.else13 ]
+  %idxprom15 = sext i32 %Index to i64, !dbg !3604
+  %arrayidx = getelementptr inbounds [100 x %"struct.pov::Sym_Table_Struct"*]* @_ZN3pov6TablesE, i64 0, i64 %idxprom15, !dbg !3604
+  %4 = load %"struct.pov::Sym_Table_Struct"** %arrayidx, align 8, !dbg !3604, !tbaa !1578
+  %arrayidx16 = getelementptr inbounds %"struct.pov::Sym_Table_Struct"* %4, i64 0, i32 1, i64 %i.0.lcssa.i, !dbg !3604
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Sym_Table_Entry"** %arrayidx16}, i64 0, metadata !1286), !dbg !3604
+  br label %while.cond, !dbg !3605
+
+while.cond:                                       ; preds = %while.body, %_ZN3povL14get_hash_valueEPc.exit
+  %Entry.0.in = phi %"struct.pov::Sym_Table_Entry"** [ %arrayidx16, %_ZN3povL14get_hash_valueEPc.exit ], [ %next, %while.body ]
+  %Entry.0 = load %"struct.pov::Sym_Table_Entry"** %Entry.0.in, align 8, !dbg !3606
+  %tobool17 = icmp eq %"struct.pov::Sym_Table_Entry"* %Entry.0, null, !dbg !3605
+  br i1 %tobool17, label %while.end, label %while.body, !dbg !3605
+
+while.body:                                       ; preds = %while.cond
+  %Token_Name = getelementptr inbounds %"struct.pov::Sym_Table_Entry"* %Entry.0, i64 0, i32 1, !dbg !3607
+  %5 = load i8** %Token_Name, align 8, !dbg !3607, !tbaa !1578
+  %call18 = tail call i32 @strcmp(i8* %Name, i8* %5) #12, !dbg !3607
+  %cmp19 = icmp eq i32 %call18, 0, !dbg !3607
+  %next = getelementptr inbounds %"struct.pov::Sym_Table_Entry"* %Entry.0, i64 0, i32 0, !dbg !3609
+  br i1 %cmp19, label %if.then20, label %while.cond, !dbg !3607
+
+if.then20:                                        ; preds = %while.body
+  %6 = load %"struct.pov::Sym_Table_Entry"** %next, align 8, !dbg !3609, !tbaa !1578
+  store %"struct.pov::Sym_Table_Entry"* %6, %"struct.pov::Sym_Table_Entry"** %Entry.0.in, align 8, !dbg !3609, !tbaa !1578
+  %call21 = tail call %"struct.pov::Sym_Table_Entry"* @_ZN3pov13Destroy_EntryEiPNS_15Sym_Table_EntryE(i32 %Index, %"struct.pov::Sym_Table_Entry"* %Entry.0) #9, !dbg !3611
+  br label %if.end25, !dbg !3612
+
+while.end:                                        ; preds = %while.cond
+  %call24 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([31 x i8]* @.str600, i64 0, i64 0)) #9, !dbg !3613
+  br label %if.end25
+
+if.end25:                                         ; preds = %if.then20, %while.end, %if.end12
+  ret void, !dbg !3614
+}

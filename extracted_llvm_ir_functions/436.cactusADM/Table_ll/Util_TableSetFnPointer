@@ -1,7 +1,16 @@
 define i32 @Util_TableSetFnPointer(i32 %handle, void ()* %value, i8* %key) #1 {
-  %1 = alloca void ()*, align 8
-  store void ()* %value, void ()** %1, align 8, !tbaa !6
-  %2 = bitcast void ()** %1 to i8*
-  %3 = call fastcc i32 @internal_set(i32 %handle, i32 16, i32 1, i8* %2, i8* %key) #10
-  ret i32 %3
+entry:
+  %value.addr = alloca void ()*, align 8
+  call void @llvm.dbg.value(metadata !{i32 %handle}, i64 0, metadata !176), !dbg !943
+  call void @llvm.dbg.value(metadata !{void ()* %value}, i64 0, metadata !177), !dbg !943
+  store void ()* %value, void ()** %value.addr, align 8, !tbaa !602
+  call void @llvm.dbg.declare(metadata !{void ()** %value.addr}, metadata !177), !dbg !943
+  call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !178), !dbg !943
+  call void @llvm.dbg.value(metadata !{i32 %handle}, i64 0, metadata !944) #8, !dbg !946
+  call void @llvm.dbg.value(metadata !792, i64 0, metadata !947) #8, !dbg !948
+  call void @llvm.dbg.value(metadata !{void ()** %value.addr}, i64 0, metadata !949) #8, !dbg !948
+  call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !950) #8, !dbg !951
+  %0 = bitcast void ()** %value.addr to i8*, !dbg !952
+  %call.i = call fastcc i32 @internal_set(i32 %handle, i32 16, i32 1, i8* %0, i8* %key) #10, !dbg !952
+  ret i32 %call.i, !dbg !945
 }

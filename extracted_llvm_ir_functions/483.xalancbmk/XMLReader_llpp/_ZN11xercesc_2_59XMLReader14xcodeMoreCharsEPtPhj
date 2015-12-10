@@ -1,0 +1,56 @@
+define i32 @_ZN11xercesc_2_59XMLReader14xcodeMoreCharsEPtPhj(%"class.xercesc_2_5::XMLReader"* %this, i16* %bufToFill, i8* %charSizes, i32 %maxChars) #2 align 2 {
+entry:
+  %bytesEaten = alloca i32, align 4
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLReader"* %this}, i64 0, metadata !1666), !dbg !3024
+  call void @llvm.dbg.value(metadata !{i16* %bufToFill}, i64 0, metadata !1667), !dbg !3024
+  call void @llvm.dbg.value(metadata !{i8* %charSizes}, i64 0, metadata !1668), !dbg !3025
+  call void @llvm.dbg.value(metadata !{i32 %maxChars}, i64 0, metadata !1669), !dbg !3026
+  %fRawBytesAvail = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %this, i64 0, i32 13, !dbg !3027
+  %0 = load i32* %fRawBytesAvail, align 4, !dbg !3027, !tbaa !2430
+  %tobool = icmp eq i32 %0, 0, !dbg !3027
+  br i1 %tobool, label %return, label %if.end, !dbg !3027
+
+if.end:                                           ; preds = %entry
+  %fRawBufIndex = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %this, i64 0, i32 11, !dbg !3028
+  %1 = load i32* %fRawBufIndex, align 4, !dbg !3028, !tbaa !2430
+  %sub = sub i32 %0, %1, !dbg !3028
+  call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !1670), !dbg !3028
+  %cmp = icmp ult i32 %sub, 100, !dbg !3029
+  br i1 %cmp, label %if.then3, label %if.end8, !dbg !3029
+
+if.then3:                                         ; preds = %if.end
+  call void @_ZN11xercesc_2_59XMLReader16refreshRawBufferEv(%"class.xercesc_2_5::XMLReader"* %this) #10, !dbg !3030
+  %2 = load i32* %fRawBytesAvail, align 4, !dbg !3032, !tbaa !2430
+  %tobool5 = icmp eq i32 %2, 0, !dbg !3032
+  br i1 %tobool5, label %return, label %if.then3.if.end8_crit_edge, !dbg !3032
+
+if.then3.if.end8_crit_edge:                       ; preds = %if.then3
+  %.pre = load i32* %fRawBufIndex, align 4, !dbg !3033, !tbaa !2430
+  br label %if.end8, !dbg !3032
+
+if.end8:                                          ; preds = %if.then3.if.end8_crit_edge, %if.end
+  %3 = phi i32 [ %.pre, %if.then3.if.end8_crit_edge ], [ %1, %if.end ]
+  %4 = phi i32 [ %2, %if.then3.if.end8_crit_edge ], [ %0, %if.end ]
+  call void @llvm.dbg.declare(metadata !{i32* %bytesEaten}, metadata !1671), !dbg !3034
+  %fTranscoder = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %this, i64 0, i32 25, !dbg !3033
+  %5 = load %"class.xercesc_2_5::XMLTranscoder"** %fTranscoder, align 8, !dbg !3033, !tbaa !2403
+  %6 = bitcast %"class.xercesc_2_5::XMLTranscoder"* %5 to i32 (%"class.xercesc_2_5::XMLTranscoder"*, i8*, i32, i16*, i32, i32*, i8*)***, !dbg !3033
+  %vtable = load i32 (%"class.xercesc_2_5::XMLTranscoder"*, i8*, i32, i16*, i32, i32*, i8*)*** %6, align 8, !dbg !3033, !tbaa !2450
+  %vfn = getelementptr inbounds i32 (%"class.xercesc_2_5::XMLTranscoder"*, i8*, i32, i16*, i32, i32*, i8*)** %vtable, i64 2, !dbg !3033
+  %7 = load i32 (%"class.xercesc_2_5::XMLTranscoder"*, i8*, i32, i16*, i32, i32*, i8*)** %vfn, align 8, !dbg !3033
+  %idxprom = zext i32 %3 to i64, !dbg !3033
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %this, i64 0, i32 12, i64 %idxprom, !dbg !3033
+  %sub12 = sub i32 %4, %3, !dbg !3033
+  %call = call i32 %7(%"class.xercesc_2_5::XMLTranscoder"* %5, i8* %arrayidx, i32 %sub12, i16* %bufToFill, i32 %maxChars, i32* %bytesEaten, i8* %charSizes) #10, !dbg !3033
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !1672), !dbg !3033
+  call void @llvm.dbg.value(metadata !{i32* %bytesEaten}, i64 0, metadata !1671), !dbg !3035
+  %8 = load i32* %bytesEaten, align 4, !dbg !3035, !tbaa !2430
+  %9 = load i32* %fRawBufIndex, align 4, !dbg !3035, !tbaa !2430
+  %add = add i32 %9, %8, !dbg !3035
+  store i32 %add, i32* %fRawBufIndex, align 4, !dbg !3035, !tbaa !2430
+  br label %return, !dbg !3036
+
+return:                                           ; preds = %if.then3, %entry, %if.end8
+  %retval.0 = phi i32 [ %call, %if.end8 ], [ 0, %entry ], [ 0, %if.then3 ]
+  ret i32 %retval.0, !dbg !3037
+}

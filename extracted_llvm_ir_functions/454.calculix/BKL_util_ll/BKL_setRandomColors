@@ -1,56 +1,61 @@
 define void @BKL_setRandomColors(%struct._BKL* %bkl, i32 %seed) #0 {
 entry:
   %drand = alloca %struct._Drand, align 8
-  %0 = bitcast %struct._Drand* %drand to i8*
-  call void @llvm.lifetime.start(i64 72, i8* %0) #1
-  %cmp = icmp eq %struct._BKL* %bkl, null
-  br i1 %cmp, label %if.then, label %lor.lhs.false
+  call void @llvm.dbg.value(metadata !{%struct._BKL* %bkl}, i64 0, metadata !78), !dbg !179
+  call void @llvm.dbg.value(metadata !{i32 %seed}, i64 0, metadata !79), !dbg !180
+  %0 = bitcast %struct._Drand* %drand to i8*, !dbg !181
+  call void @llvm.lifetime.start(i64 72, i8* %0) #2, !dbg !181
+  call void @llvm.dbg.declare(metadata !{%struct._Drand* %drand}, metadata !84), !dbg !181
+  %cmp = icmp eq %struct._BKL* %bkl, null, !dbg !182
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !182
 
 lor.lhs.false:                                    ; preds = %entry
-  %bpg = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 0
-  %1 = load %struct._BPG** %bpg, align 8, !tbaa !0
-  %cmp1 = icmp eq %struct._BPG* %1, null
-  br i1 %cmp1, label %if.then, label %if.end
+  %bpg = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 0, !dbg !182
+  %1 = load %struct._BPG** %bpg, align 8, !dbg !182, !tbaa !183
+  %cmp1 = icmp eq %struct._BPG* %1, null, !dbg !182
+  br i1 %cmp1, label %if.then, label %if.end, !dbg !182
 
 if.then:                                          ; preds = %lor.lhs.false, %entry
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), %struct._BKL* %bkl, i32 %seed) #5
-  call void @exit(i32 -1) #6
-  unreachable
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !186, !tbaa !183
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), %struct._BKL* %bkl, i32 %seed) #6, !dbg !186
+  call void @exit(i32 -1) #7, !dbg !188
+  unreachable, !dbg !188
 
 if.end:                                           ; preds = %lor.lhs.false
-  %ndom2 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 1
-  %3 = load i32* %ndom2, align 4, !tbaa !3
-  %colors4 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 10
-  %4 = load i32** %colors4, align 8, !tbaa !0
-  call void @Drand_setDefaultFields(%struct._Drand* %drand) #5
-  call void @Drand_init(%struct._Drand* %drand) #5
-  call void @Drand_setUniform(%struct._Drand* %drand, double 0.000000e+00, double 1.000000e+00) #5
-  %cmp5 = icmp sgt i32 %seed, 0
-  br i1 %cmp5, label %if.then6, label %for.cond.preheader
+  %ndom2 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 1, !dbg !189
+  %3 = load i32* %ndom2, align 4, !dbg !189, !tbaa !190
+  call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !81), !dbg !189
+  %colors4 = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 10, !dbg !191
+  %4 = load i32** %colors4, align 8, !dbg !191, !tbaa !183
+  call void @llvm.dbg.value(metadata !{i32* %4}, i64 0, metadata !83), !dbg !191
+  call void @Drand_setDefaultFields(%struct._Drand* %drand) #6, !dbg !192
+  call void @Drand_init(%struct._Drand* %drand) #6, !dbg !193
+  call void @Drand_setUniform(%struct._Drand* %drand, double 0.000000e+00, double 1.000000e+00) #6, !dbg !194
+  %cmp5 = icmp sgt i32 %seed, 0, !dbg !195
+  br i1 %cmp5, label %if.then6, label %for.cond.preheader, !dbg !195
 
 if.then6:                                         ; preds = %if.end
-  call void @Drand_setSeed(%struct._Drand* %drand, i32 %seed) #5
-  br label %for.cond.preheader
+  call void @Drand_setSeed(%struct._Drand* %drand, i32 %seed) #6, !dbg !196
+  br label %for.cond.preheader, !dbg !198
 
 for.cond.preheader:                               ; preds = %if.then6, %if.end
-  %cmp821 = icmp sgt i32 %3, 0
-  br i1 %cmp821, label %for.body, label %for.end
+  %cmp821 = icmp sgt i32 %3, 0, !dbg !199
+  br i1 %cmp821, label %for.body, label %for.end, !dbg !199
 
 for.body:                                         ; preds = %for.cond.preheader, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
-  %call9 = call double @Drand_value(%struct._Drand* %drand) #5
-  %cmp10 = fcmp olt double %call9, 5.000000e-01
-  %cond = select i1 %cmp10, i32 1, i32 2
-  %arrayidx = getelementptr inbounds i32* %4, i64 %indvars.iv
-  store i32 %cond, i32* %arrayidx, align 4, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %3
-  br i1 %exitcond, label %for.end, label %for.body
+  %call9 = call double @Drand_value(%struct._Drand* %drand) #6, !dbg !201
+  %cmp10 = fcmp olt double %call9, 5.000000e-01, !dbg !201
+  %cond = select i1 %cmp10, i32 1, i32 2, !dbg !201
+  %arrayidx = getelementptr inbounds i32* %4, i64 %indvars.iv, !dbg !201
+  store i32 %cond, i32* %arrayidx, align 4, !dbg !201, !tbaa !190
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !199
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !199
+  %exitcond = icmp eq i32 %lftr.wideiv, %3, !dbg !199
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !199
 
 for.end:                                          ; preds = %for.body, %for.cond.preheader
-  call void @BKL_setColorWeights(%struct._BKL* %bkl) #7
-  call void @llvm.lifetime.end(i64 72, i8* %0) #1
-  ret void
+  call void @BKL_setColorWeights(%struct._BKL* %bkl) #8, !dbg !203
+  call void @llvm.lifetime.end(i64 72, i8* %0) #2, !dbg !204
+  ret void, !dbg !204
 }

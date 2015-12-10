@@ -1,9 +1,29 @@
-define i32 @FmoMB2SliceGroup(i32 %mb) #2 {
+define i32 @FmoMB2SliceGroup(i32 %mb) #0 {
 entry:
-  %idxprom = sext i32 %mb to i64
-  %0 = load i8** @MBAmap, align 8, !tbaa !3
-  %arrayidx = getelementptr inbounds i8* %0, i64 %idxprom
-  %1 = load i8* %arrayidx, align 1, !tbaa !1
-  %conv = zext i8 %1 to i32
-  ret i32 %conv
+  tail call void @llvm.dbg.value(metadata !{i32 %mb}, i64 0, metadata !637), !dbg !1168
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !1169, !tbaa !948
+  %PicSizeInMbs = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 110, !dbg !1169
+  %1 = load i32* %PicSizeInMbs, align 4, !dbg !1169, !tbaa !938
+  %cmp = icmp sgt i32 %1, %mb, !dbg !1169
+  br i1 %cmp, label %cond.end, label %cond.false, !dbg !1169
+
+cond.false:                                       ; preds = %entry
+  tail call void @__assert_fail(i8* getelementptr inbounds ([28 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0), i32 598, i8* getelementptr inbounds ([26 x i8]* @__PRETTY_FUNCTION__.FmoMB2SliceGroup, i64 0, i64 0)) #9, !dbg !1169
+  unreachable, !dbg !1169
+
+cond.end:                                         ; preds = %entry
+  %2 = load i8** @MBAmap, align 8, !dbg !1170, !tbaa !948
+  %cmp1 = icmp eq i8* %2, null, !dbg !1170
+  br i1 %cmp1, label %cond.false3, label %cond.end4, !dbg !1170
+
+cond.false3:                                      ; preds = %cond.end
+  tail call void @__assert_fail(i8* getelementptr inbounds ([21 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0), i32 599, i8* getelementptr inbounds ([26 x i8]* @__PRETTY_FUNCTION__.FmoMB2SliceGroup, i64 0, i64 0)) #9, !dbg !1170
+  unreachable, !dbg !1170
+
+cond.end4:                                        ; preds = %cond.end
+  %idxprom = sext i32 %mb to i64, !dbg !1171
+  %arrayidx = getelementptr inbounds i8* %2, i64 %idxprom, !dbg !1171
+  %3 = load i8* %arrayidx, align 1, !dbg !1171, !tbaa !939
+  %conv = zext i8 %3 to i32, !dbg !1171
+  ret i32 %conv, !dbg !1171
 }

@@ -1,0 +1,28 @@
+define void @_Z9task_initjj(i32 %total_stack, i32 %main_stack) #7 {
+entry:
+  %tmp = alloca %struct._Task, align 8
+  call void @llvm.dbg.value(metadata !{i32 %total_stack}, i64 0, metadata !89), !dbg !197
+  call void @llvm.dbg.value(metadata !{i32 %main_stack}, i64 0, metadata !90), !dbg !197
+  %0 = bitcast %struct._Task* %tmp to i8*, !dbg !198
+  call void @llvm.lifetime.start(i64 464, i8* %0) #3, !dbg !198
+  call void @llvm.dbg.declare(metadata !{%struct._Task* %tmp}, metadata !91), !dbg !198
+  %size = getelementptr inbounds %struct._Task* %tmp, i64 0, i32 4, !dbg !199
+  store i32 %total_stack, i32* %size, align 4, !dbg !199, !tbaa !148
+  %next = getelementptr inbounds %struct._Task* %tmp, i64 0, i32 5, !dbg !200
+  store %struct._Task* null, %struct._Task** %next, align 8, !dbg !200, !tbaa !138
+  %arraydecay = getelementptr inbounds %struct._Task* %tmp, i64 0, i32 1, i64 0, !dbg !201
+  %call = call i32 @_setjmp(%struct.__jmp_buf_tag* %arraydecay) #10, !dbg !201
+  %cmp = icmp eq i32 %call, 0, !dbg !201
+  br i1 %cmp, label %if.then, label %if.end, !dbg !201
+
+if.then:                                          ; preds = %entry
+  call void @_Z3eatP5_TaskjS0_(%struct._Task* %tmp, i32 %main_stack, %struct._Task* null) #9, !dbg !202
+  unreachable
+
+if.end:                                           ; preds = %entry
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* bitcast (%struct._Task* @main_task to i8*), i8* %0, i64 464, i32 8, i1 false), !dbg !204, !tbaa.struct !205
+  store i32 1, i32* getelementptr inbounds (%struct._Task* @main_task, i64 0, i32 3), align 8, !dbg !206, !tbaa !148
+  store %struct._Task* @main_task, %struct._Task** @current_task, align 8, !dbg !207, !tbaa !138
+  call void @llvm.lifetime.end(i64 464, i8* %0) #3, !dbg !208
+  ret void, !dbg !208
+}

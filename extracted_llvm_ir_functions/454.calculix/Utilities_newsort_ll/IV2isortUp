@@ -1,41 +1,47 @@
 define void @IV2isortUp(i32 %n, i32* nocapture %ivec1, i32* nocapture %ivec2) #1 {
 entry:
-  %cmp53 = icmp sgt i32 %n, 1
-  br i1 %cmp53, label %land.rhs.lr.ph, label %for.end28
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !57), !dbg !564
+  tail call void @llvm.dbg.value(metadata !{i32* %ivec1}, i64 0, metadata !58), !dbg !565
+  tail call void @llvm.dbg.value(metadata !{i32* %ivec2}, i64 0, metadata !59), !dbg !566
+  tail call void @llvm.dbg.value(metadata !543, i64 0, metadata !60), !dbg !567
+  %cmp53 = icmp sgt i32 %n, 1, !dbg !567
+  br i1 %cmp53, label %land.rhs.lr.ph, label %for.end28, !dbg !567
 
 land.rhs.lr.ph:                                   ; preds = %for.inc27, %entry
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc27 ], [ 1, %entry ]
-  br label %land.rhs
+  br label %land.rhs, !dbg !569
 
 land.rhs:                                         ; preds = %land.rhs.lr.ph, %for.body6
-  %indvars.iv55 = phi i64 [ %indvars.iv, %land.rhs.lr.ph ], [ %indvars.iv.next56, %for.body6 ]
-  %indvars.iv.next56 = add i64 %indvars.iv55, -1
-  %arrayidx = getelementptr inbounds i32* %ivec1, i64 %indvars.iv.next56
-  %0 = load i32* %arrayidx, align 4, !tbaa !0
-  %arrayidx4 = getelementptr inbounds i32* %ivec1, i64 %indvars.iv55
-  %1 = load i32* %arrayidx4, align 4, !tbaa !0
-  %cmp5 = icmp sgt i32 %0, %1
+  %indvars.iv55 = phi i64 [ %indvars.iv, %land.rhs.lr.ph ], [ %indvars.iv.next56, %for.body6 ], !dbg !567
+  %indvars.iv.next56 = add i64 %indvars.iv55, -1, !dbg !569
+  %arrayidx = getelementptr inbounds i32* %ivec1, i64 %indvars.iv.next56, !dbg !569
+  %0 = load i32* %arrayidx, align 4, !dbg !569, !tbaa !508
+  %arrayidx4 = getelementptr inbounds i32* %ivec1, i64 %indvars.iv55, !dbg !569
+  %1 = load i32* %arrayidx4, align 4, !dbg !569, !tbaa !508
+  %cmp5 = icmp sgt i32 %0, %1, !dbg !569
   br i1 %cmp5, label %for.body6, label %for.inc27
 
 for.body6:                                        ; preds = %land.rhs
-  store i32 %1, i32* %arrayidx, align 4, !tbaa !0
-  store i32 %0, i32* %arrayidx4, align 4, !tbaa !0
-  %arrayidx19 = getelementptr inbounds i32* %ivec2, i64 %indvars.iv.next56
-  %2 = load i32* %arrayidx19, align 4, !tbaa !0
-  %arrayidx21 = getelementptr inbounds i32* %ivec2, i64 %indvars.iv55
-  %3 = load i32* %arrayidx21, align 4, !tbaa !0
-  store i32 %3, i32* %arrayidx19, align 4, !tbaa !0
-  store i32 %2, i32* %arrayidx21, align 4, !tbaa !0
-  %4 = trunc i64 %indvars.iv.next56 to i32
-  %cmp2 = icmp sgt i32 %4, 0
-  br i1 %cmp2, label %land.rhs, label %for.inc27
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !61), !dbg !572
+  store i32 %1, i32* %arrayidx, align 4, !dbg !572, !tbaa !508
+  store i32 %0, i32* %arrayidx4, align 4, !dbg !572, !tbaa !508
+  %arrayidx19 = getelementptr inbounds i32* %ivec2, i64 %indvars.iv.next56, !dbg !572
+  %2 = load i32* %arrayidx19, align 4, !dbg !572, !tbaa !508
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !61), !dbg !572
+  %arrayidx21 = getelementptr inbounds i32* %ivec2, i64 %indvars.iv55, !dbg !572
+  %3 = load i32* %arrayidx21, align 4, !dbg !572, !tbaa !508
+  store i32 %3, i32* %arrayidx19, align 4, !dbg !572, !tbaa !508
+  store i32 %2, i32* %arrayidx21, align 4, !dbg !572, !tbaa !508
+  %4 = trunc i64 %indvars.iv.next56 to i32, !dbg !569
+  %cmp2 = icmp sgt i32 %4, 0, !dbg !569
+  br i1 %cmp2, label %land.rhs, label %for.inc27, !dbg !569
 
 for.inc27:                                        ; preds = %for.body6, %land.rhs
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n
-  br i1 %exitcond, label %for.end28, label %land.rhs.lr.ph
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !567
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !567
+  %exitcond = icmp eq i32 %lftr.wideiv, %n, !dbg !567
+  br i1 %exitcond, label %for.end28, label %land.rhs.lr.ph, !dbg !567
 
 for.end28:                                        ; preds = %for.inc27, %entry
-  ret void
+  ret void, !dbg !575
 }

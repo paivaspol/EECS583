@@ -1,0 +1,145 @@
+define internal fastcc void @_ZN3povL11supersampleEPfii(float* %result, i32 %x, i32 %y) #0 {
+entry:
+  %Jitter_X = alloca double, align 8
+  %Jitter_Y = alloca double, align 8
+  %colour = alloca [5 x float], align 16
+  call void @llvm.dbg.value(metadata !{float* %result}, i64 0, metadata !1328), !dbg !4047
+  call void @llvm.dbg.value(metadata !{i32 %x}, i64 0, metadata !1329), !dbg !4047
+  call void @llvm.dbg.value(metadata !{i32 %y}, i64 0, metadata !1330), !dbg !4047
+  call void @llvm.dbg.declare(metadata !{double* %Jitter_X}, metadata !1338), !dbg !4048
+  call void @llvm.dbg.declare(metadata !{double* %Jitter_Y}, metadata !1339), !dbg !4048
+  call void @llvm.dbg.declare(metadata !{[5 x float]* %colour}, metadata !1342), !dbg !4049
+  %0 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 14), align 4, !dbg !4050, !tbaa !1664
+  %cmp = icmp slt i32 %0, 2, !dbg !4050
+  br i1 %cmp, label %return, label %if.end, !dbg !4050
+
+if.end:                                           ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !4051, i64 0, metadata !4052), !dbg !4054
+  %1 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 1), align 8, !dbg !4055, !tbaa !1992
+  %inc.i = add nsw i64 %1, 1, !dbg !4055
+  store i64 %inc.i, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 1), align 8, !dbg !4055, !tbaa !1992
+  call void @llvm.dbg.value(metadata !1976, i64 0, metadata !1333), !dbg !4056
+  %conv = sitofp i32 %0 to double, !dbg !4057
+  %div = fdiv double 1.000000e+00, %conv, !dbg !4057
+  call void @llvm.dbg.value(metadata !{double %div}, i64 0, metadata !1336), !dbg !4057
+  %rem = srem i32 %0, 2, !dbg !4058
+  %sub = sub nsw i32 2, %rem, !dbg !4058
+  call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !1335), !dbg !4058
+  %idxprom = sext i32 %0 to i64, !dbg !4059
+  %arrayidx = getelementptr inbounds [10 x i16]* @_ZN3povL7JRangesE, i64 0, i64 %idxprom, !dbg !4059
+  %2 = load i16* %arrayidx, align 2, !dbg !4059, !tbaa !3898
+  %conv1 = zext i16 %2 to i32, !dbg !4059
+  call void @llvm.dbg.value(metadata !{i32 %conv1}, i64 0, metadata !1334), !dbg !4059
+  %conv2 = sitofp i32 %sub to double, !dbg !4060
+  %div3 = fdiv double %div, %conv2, !dbg !4060
+  call void @llvm.dbg.value(metadata !{double %div3}, i64 0, metadata !1337), !dbg !4060
+  %sub4 = sub nsw i32 0, %conv1, !dbg !4061
+  call void @llvm.dbg.value(metadata !{i32 %sub4}, i64 0, metadata !1331), !dbg !4061
+  %cmp563 = icmp slt i32 %conv1, %sub4, !dbg !4061
+  br i1 %cmp563, label %for.end37, label %for.cond7.preheader.lr.ph, !dbg !4061
+
+for.cond7.preheader.lr.ph:                        ; preds = %if.end
+  %conv18 = sitofp i32 %x to double, !dbg !4063
+  %conv20 = sitofp i32 %y to double, !dbg !4063
+  %arraydecay32 = getelementptr inbounds [5 x float]* %colour, i64 0, i64 0, !dbg !4067
+  %arrayidx4.i = getelementptr inbounds [5 x float]* %colour, i64 0, i64 4, !dbg !4069
+  br label %for.body9.lr.ph, !dbg !4061
+
+for.body9.lr.ph:                                  ; preds = %for.inc35, %for.cond7.preheader.lr.ph
+  %i.065 = phi i32 [ %sub4, %for.cond7.preheader.lr.ph ], [ %add36, %for.inc35 ]
+  %samples.064 = phi i32 [ 1, %for.cond7.preheader.lr.ph ], [ %samples.2, %for.inc35 ]
+  %conv14 = sitofp i32 %i.065 to double, !dbg !4070
+  %mul = fmul double %div3, %conv14, !dbg !4070
+  br label %for.body9, !dbg !4071
+
+for.body9:                                        ; preds = %for.body9.lr.ph, %for.inc
+  %j.062 = phi i32 [ %sub4, %for.body9.lr.ph ], [ %add34, %for.inc ]
+  %samples.161 = phi i32 [ %samples.064, %for.body9.lr.ph ], [ %samples.2, %for.inc ]
+  %3 = or i32 %j.062, %i.065, !dbg !4072
+  %4 = icmp eq i32 %3, 0, !dbg !4072
+  br i1 %4, label %for.inc, label %if.end13, !dbg !4072
+
+if.end13:                                         ; preds = %for.body9
+  call fastcc void @_ZN3povL21jitter_pixel_positionEiiPdS0_(i32 %x, i32 %y, double* %Jitter_X, double* %Jitter_Y) #8, !dbg !4073
+  call void @llvm.dbg.value(metadata !{double* %Jitter_X}, i64 0, metadata !1338), !dbg !4070
+  %5 = load double* %Jitter_X, align 8, !dbg !4070, !tbaa !1662
+  %add = fadd double %mul, %5, !dbg !4070
+  call void @llvm.dbg.value(metadata !{double %add}, i64 0, metadata !1340), !dbg !4070
+  call void @llvm.dbg.value(metadata !{double* %Jitter_Y}, i64 0, metadata !1339), !dbg !4074
+  %6 = load double* %Jitter_Y, align 8, !dbg !4074, !tbaa !1662
+  %conv15 = sitofp i32 %j.062 to double, !dbg !4074
+  %mul16 = fmul double %div3, %conv15, !dbg !4074
+  %add17 = fadd double %mul16, %6, !dbg !4074
+  call void @llvm.dbg.value(metadata !{double %add17}, i64 0, metadata !1341), !dbg !4074
+  %add19 = fadd double %conv18, %add, !dbg !4063
+  %add21 = fadd double %conv20, %add17, !dbg !4063
+  %call = call fastcc i32 @_ZN3povL10create_rayEPNS_10Ray_StructEddi(double %add19, double %add21, i32 0) #8, !dbg !4063
+  %tobool = icmp eq i32 %call, 0, !dbg !4063
+  br i1 %tobool, label %if.else31, label %if.then22, !dbg !4063
+
+if.then22:                                        ; preds = %if.end13
+  store i32 1, i32* @_ZN3pov11Trace_LevelE, align 4, !dbg !4075, !tbaa !1664
+  store double 0.000000e+00, double* @_ZN3pov11Total_DepthE, align 8, !dbg !4077, !tbaa !1662
+  store i8 0, i8* @_ZN3pov17In_Reflection_RayE, align 1, !dbg !4078, !tbaa !1717
+  store i8 0, i8* @_ZN3pov13In_Shadow_RayE, align 1, !dbg !4079, !tbaa !1717
+  tail call void @llvm.dbg.value(metadata !2038, i64 0, metadata !4080), !dbg !4082
+  %7 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 2), align 8, !dbg !4083, !tbaa !1992
+  %inc.i59 = add nsw i64 %7, 1, !dbg !4083
+  store i64 %inc.i59, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 2), align 8, !dbg !4083, !tbaa !1992
+  %8 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !4084, !tbaa !1664
+  %and = and i32 %8, 2048, !dbg !4084
+  %tobool24 = icmp eq i32 %and, 0, !dbg !4084
+  br i1 %tobool24, label %if.else, label %if.then25, !dbg !4084
+
+if.then25:                                        ; preds = %if.then22
+  %call26 = call double @_ZN3pov17Trace_Primary_RayEPNS_10Ray_StructEPfdi(%"struct.pov::Ray_Struct"* @_ZN3povL10Camera_RayE, float* %arraydecay32, double 1.000000e+00, i32 %x) #8, !dbg !4085
+  br label %if.end29, !dbg !4085
+
+if.else:                                          ; preds = %if.then22
+  %call28 = call double @_ZN3pov5TraceEPNS_10Ray_StructEPfd(%"struct.pov::Ray_Struct"* @_ZN3povL10Camera_RayE, float* %arraydecay32, double 1.000000e+00) #8, !dbg !4086
+  br label %if.end29
+
+if.end29:                                         ; preds = %if.else, %if.then25
+  call void @_ZN3pov10Add_ColourEPfS0_S0_(float* %result, float* %result, float* %arraydecay32) #8, !dbg !4087
+  br label %if.end33, !dbg !4088
+
+if.else31:                                        ; preds = %if.end13
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay32}, i64 0, metadata !4089), !dbg !4090
+  tail call void @llvm.dbg.value(metadata !1681, i64 0, metadata !4091), !dbg !4090
+  tail call void @llvm.dbg.value(metadata !1681, i64 0, metadata !4092), !dbg !4090
+  tail call void @llvm.dbg.value(metadata !1681, i64 0, metadata !4093), !dbg !4090
+  tail call void @llvm.dbg.value(metadata !1681, i64 0, metadata !4094), !dbg !4090
+  tail call void @llvm.dbg.value(metadata !2058, i64 0, metadata !4095), !dbg !4090
+  %9 = bitcast [5 x float]* %colour to i8*, !dbg !4069
+  call void @llvm.memset.p0i8.i64(i8* %9, i8 0, i64 16, i32 16, i1 false), !dbg !4096
+  store float 1.000000e+00, float* %arrayidx4.i, align 16, !dbg !4069, !tbaa !2062
+  br label %if.end33
+
+if.end33:                                         ; preds = %if.else31, %if.end29
+  %inc = add nsw i32 %samples.161, 1, !dbg !4097
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1333), !dbg !4097
+  br label %for.inc, !dbg !4098
+
+for.inc:                                          ; preds = %for.body9, %if.end33
+  %samples.2 = phi i32 [ %inc, %if.end33 ], [ %samples.161, %for.body9 ]
+  %add34 = add nsw i32 %j.062, %sub, !dbg !4071
+  call void @llvm.dbg.value(metadata !{i32 %add34}, i64 0, metadata !1332), !dbg !4071
+  %cmp8 = icmp sgt i32 %add34, %conv1, !dbg !4071
+  br i1 %cmp8, label %for.inc35, label %for.body9, !dbg !4071
+
+for.inc35:                                        ; preds = %for.inc
+  %add36 = add nsw i32 %i.065, %sub, !dbg !4061
+  call void @llvm.dbg.value(metadata !{i32 %add36}, i64 0, metadata !1331), !dbg !4061
+  %cmp5 = icmp sgt i32 %add36, %conv1, !dbg !4061
+  br i1 %cmp5, label %for.end37, label %for.body9.lr.ph, !dbg !4061
+
+for.end37:                                        ; preds = %for.inc35, %if.end
+  %samples.0.lcssa = phi i32 [ 1, %if.end ], [ %samples.2, %for.inc35 ]
+  %conv38 = sitofp i32 %samples.0.lcssa to double, !dbg !4099
+  %div39 = fdiv double 1.000000e+00, %conv38, !dbg !4099
+  call void @_ZN3pov12Scale_ColourEPfS0_d(float* %result, float* %result, double %div39) #8, !dbg !4099
+  br label %return, !dbg !4099
+
+return:                                           ; preds = %entry, %for.end37
+  ret void, !dbg !4099
+}

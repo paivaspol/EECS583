@@ -1,20 +1,21 @@
 define void @fibheap_delete(%struct.fibheap* nocapture %heap) #0 {
 entry:
-  %min = getelementptr inbounds %struct.fibheap* %heap, i64 0, i32 1
-  %0 = load %struct.fibnode** %min, align 8, !tbaa !0
-  %cmp2 = icmp eq %struct.fibnode* %0, null
-  br i1 %cmp2, label %while.end, label %while.body
+  tail call void @llvm.dbg.value(metadata !{%struct.fibheap* %heap}, i64 0, metadata !104), !dbg !530
+  %min = getelementptr inbounds %struct.fibheap* %heap, i64 0, i32 1, !dbg !531
+  %0 = load %struct.fibnode** %min, align 8, !dbg !531, !tbaa !204
+  %cmp2 = icmp eq %struct.fibnode* %0, null, !dbg !531
+  br i1 %cmp2, label %while.end, label %while.body, !dbg !531
 
 while.body:                                       ; preds = %entry, %while.body
-  %call = tail call fastcc %struct.fibnode* @fibheap_extr_min_node(%struct.fibheap* %heap) #6
-  %1 = bitcast %struct.fibnode* %call to i8*
-  tail call void @free(i8* %1) #5
-  %2 = load %struct.fibnode** %min, align 8, !tbaa !0
-  %cmp = icmp eq %struct.fibnode* %2, null
-  br i1 %cmp, label %while.end, label %while.body
+  %call = tail call fastcc %struct.fibnode* @fibheap_extr_min_node(%struct.fibheap* %heap) #7, !dbg !532
+  %1 = bitcast %struct.fibnode* %call to i8*, !dbg !532
+  tail call void @free(i8* %1) #6, !dbg !532
+  %2 = load %struct.fibnode** %min, align 8, !dbg !531, !tbaa !204
+  %cmp = icmp eq %struct.fibnode* %2, null, !dbg !531
+  br i1 %cmp, label %while.end, label %while.body, !dbg !531
 
 while.end:                                        ; preds = %while.body, %entry
-  %3 = bitcast %struct.fibheap* %heap to i8*
-  tail call void @free(i8* %3) #5
-  ret void
+  %3 = bitcast %struct.fibheap* %heap to i8*, !dbg !533
+  tail call void @free(i8* %3) #6, !dbg !533
+  ret void, !dbg !534
 }

@@ -1,0 +1,67 @@
+define zeroext i1 @_ZN7way2obj7loadmapEPKc(%class.way2obj* nocapture %this, i8* nocapture %fn) #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.way2obj* %this}, i64 0, metadata !237), !dbg !597
+  tail call void @llvm.dbg.value(metadata !{i8* %fn}, i64 0, metadata !238), !dbg !597
+  %call = tail call i32 (i8*, i32, ...)* @open(i8* %fn, i32 0) #7, !dbg !598
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !239), !dbg !598
+  %cmp = icmp eq i32 %call, -1, !dbg !599
+  br i1 %cmp, label %return, label %if.end, !dbg !599
+
+if.end:                                           ; preds = %entry
+  %mapsizex = getelementptr inbounds %class.way2obj* %this, i64 0, i32 15, !dbg !600
+  %0 = bitcast i32* %mapsizex to i8*, !dbg !600
+  %call2 = tail call i64 @read(i32 %call, i8* %0, i64 4) #7, !dbg !600
+  %mapsizey = getelementptr inbounds %class.way2obj* %this, i64 0, i32 16, !dbg !601
+  %1 = bitcast i32* %mapsizey to i8*, !dbg !601
+  %call3 = tail call i64 @read(i32 %call, i8* %1, i64 4) #7, !dbg !601
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !240), !dbg !602
+  br label %for.body, !dbg !602
+
+for.body:                                         ; preds = %for.body, %if.end
+  %indvars.iv = phi i64 [ 0, %if.end ], [ %indvars.iv.next, %for.body ]
+  tail call void @llvm.dbg.value(metadata !604, i64 0, metadata !605) #3, !dbg !607
+  %maxelemqu.i = getelementptr inbounds %class.way2obj* %this, i64 0, i32 4, i64 %indvars.iv, i32 2, !dbg !608
+  store i32 128, i32* %maxelemqu.i, align 4, !dbg !608, !tbaa !324
+  %elemqu.i = getelementptr inbounds %class.way2obj* %this, i64 0, i32 4, i64 %indvars.iv, i32 1, !dbg !609
+  store i32 0, i32* %elemqu.i, align 4, !dbg !609, !tbaa !324
+  tail call void @llvm.dbg.value(metadata !610, i64 0, metadata !611) #3, !dbg !613
+  tail call void @llvm.dbg.value(metadata !463, i64 0, metadata !614) #3, !dbg !613
+  %call.i.i = tail call noalias i8* @malloc(i64 1024) #8, !dbg !615
+  %2 = bitcast i8* %call.i.i to %struct.pointt*, !dbg !612
+  %ep.i = getelementptr inbounds %class.way2obj* %this, i64 0, i32 4, i64 %indvars.iv, i32 0, !dbg !612
+  store %struct.pointt* %2, %struct.pointt** %ep.i, align 8, !dbg !612, !tbaa !327
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !602
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !602
+  %exitcond = icmp eq i32 %lftr.wideiv, 256, !dbg !602
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !602
+
+for.end:                                          ; preds = %for.body
+  %3 = load i32* %mapsizex, align 4, !dbg !616, !tbaa !324
+  %sub = add nsw i32 %3, -1, !dbg !616
+  %mapmaxx = getelementptr inbounds %class.way2obj* %this, i64 0, i32 13, !dbg !616
+  store i32 %sub, i32* %mapmaxx, align 4, !dbg !616, !tbaa !324
+  %4 = load i32* %mapsizey, align 4, !dbg !617, !tbaa !324
+  %sub7 = add nsw i32 %4, -1, !dbg !617
+  %mapmaxy = getelementptr inbounds %class.way2obj* %this, i64 0, i32 14, !dbg !617
+  store i32 %sub7, i32* %mapmaxy, align 4, !dbg !617, !tbaa !324
+  %mul = mul nsw i32 %4, %3, !dbg !618
+  %conv = sext i32 %mul to i64, !dbg !618
+  %mul10 = shl nsw i64 %conv, 2, !dbg !618
+  %call11 = tail call noalias i8* @malloc(i64 %mul10) #8, !dbg !618
+  %5 = bitcast i8* %call11 to %"struct.way2obj::waymapcellt"*, !dbg !618
+  %waymap = getelementptr inbounds %class.way2obj* %this, i64 0, i32 1, !dbg !618
+  store %"struct.way2obj::waymapcellt"* %5, %"struct.way2obj::waymapcellt"** %waymap, align 8, !dbg !618, !tbaa !327
+  tail call void @llvm.memset.p0i8.i64(i8* %call11, i8 0, i64 %mul10, i32 2, i1 false), !dbg !619
+  %fillnum = getelementptr inbounds %class.way2obj* %this, i64 0, i32 2, !dbg !620
+  store i16 0, i16* %fillnum, align 2, !dbg !620, !tbaa !357
+  %call23 = tail call noalias i8* @malloc(i64 %conv) #8, !dbg !621
+  %mapp = getelementptr inbounds %class.way2obj* %this, i64 0, i32 0, !dbg !621
+  store i8* %call23, i8** %mapp, align 8, !dbg !621, !tbaa !327
+  %call30 = tail call i64 @read(i32 %call, i8* %call23, i64 %conv) #7, !dbg !622
+  %call31 = tail call i32 @close(i32 %call) #7, !dbg !623
+  br label %return, !dbg !624
+
+return:                                           ; preds = %entry, %for.end
+  %retval.0 = phi i1 [ true, %for.end ], [ false, %entry ]
+  ret i1 %retval.0, !dbg !624
+}

@@ -1,0 +1,214 @@
+define i8* @_ZN3pov15Locate_FilenameEPcjb(i8* %filename, i32 %stype, i1 zeroext %err_flag) #3 {
+entry:
+  %l = alloca [4 x i32], align 16
+  %pathname = alloca [1024 x i8], align 16
+  %file = alloca [1024 x i8], align 16
+  %file_x = alloca [4 x [1024 x i8]], align 16
+  call void @llvm.dbg.value(metadata !{i8* %filename}, i64 0, metadata !140), !dbg !251
+  call void @llvm.dbg.value(metadata !{i32 %stype}, i64 0, metadata !141), !dbg !251
+  call void @llvm.dbg.value(metadata !{i1 %err_flag}, i64 0, metadata !142), !dbg !251
+  call void @llvm.dbg.declare(metadata !{[4 x i32]* %l}, metadata !145), !dbg !252
+  %0 = getelementptr inbounds [1024 x i8]* %pathname, i64 0, i64 0, !dbg !253
+  call void @llvm.lifetime.start(i64 1024, i8* %0) #4, !dbg !253
+  call void @llvm.dbg.declare(metadata !{[1024 x i8]* %pathname}, metadata !149), !dbg !253
+  %1 = getelementptr inbounds [1024 x i8]* %file, i64 0, i64 0, !dbg !254
+  call void @llvm.lifetime.start(i64 1024, i8* %1) #4, !dbg !254
+  call void @llvm.dbg.declare(metadata !{[1024 x i8]* %file}, metadata !150), !dbg !254
+  %2 = getelementptr inbounds [4 x [1024 x i8]]* %file_x, i64 0, i64 0, i64 0, !dbg !255
+  call void @llvm.lifetime.start(i64 4096, i8* %2) #4, !dbg !255
+  call void @llvm.dbg.declare(metadata !{[4 x [1024 x i8]]* %file_x}, metadata !151), !dbg !255
+  call void @llvm.dbg.value(metadata !256, i64 0, metadata !154), !dbg !257
+  %call = call i32 @_ZN8pov_base13Has_ExtensionEPKc(i8* %filename) #9, !dbg !258
+  %tobool = icmp eq i32 %call, 0, !dbg !258
+  call void @llvm.dbg.value(metadata !29, i64 0, metadata !143), !dbg !259
+  br i1 %tobool, label %for.cond1.preheader, label %for.cond.preheader, !dbg !258
+
+for.cond.preheader:                               ; preds = %entry
+  %l227 = bitcast [4 x i32]* %l to i8*
+  call void @llvm.memset.p0i8.i64(i8* %l227, i8 0, i64 16, i32 16, i1 false), !dbg !262
+  br label %for.body31
+
+for.cond1.preheader:                              ; preds = %entry
+  %idxprom5 = zext i32 %stype to i64, !dbg !263
+  br label %for.body3, !dbg !267
+
+for.body3:                                        ; preds = %for.inc25, %for.cond1.preheader
+  %indvars.iv221 = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next222, %for.inc25 ]
+  %arrayidx7 = getelementptr inbounds [0 x %"struct.pov_base::POV_File_Extensions"]* @_ZN8pov_base20gPOV_File_ExtensionsE, i64 0, i64 %idxprom5, i32 0, i64 %indvars.iv221, !dbg !263
+  %3 = load i8** %arrayidx7, align 8, !dbg !263, !tbaa !268
+  %call8 = call i64 @strlen(i8* %3) #10, !dbg !263
+  %conv = trunc i64 %call8 to i32, !dbg !263
+  %arrayidx10 = getelementptr inbounds [4 x i32]* %l, i64 0, i64 %indvars.iv221, !dbg !263
+  store i32 %conv, i32* %arrayidx10, align 4, !dbg !263, !tbaa !213
+  %cmp11 = icmp sgt i32 %conv, 0, !dbg !263
+  br i1 %cmp11, label %if.then12, label %for.inc25, !dbg !263
+
+if.then12:                                        ; preds = %for.body3
+  %arraydecay = getelementptr inbounds [4 x [1024 x i8]]* %file_x, i64 0, i64 %indvars.iv221, i64 0, !dbg !269
+  %call15 = call i8* @strcpy(i8* %arraydecay, i8* %filename) #8, !dbg !269
+  %4 = load i8** %arrayidx7, align 8, !dbg !271, !tbaa !268
+  %call24 = call i8* @strcat(i8* %arraydecay, i8* %4) #8, !dbg !271
+  br label %for.inc25, !dbg !272
+
+for.inc25:                                        ; preds = %for.body3, %if.then12
+  %indvars.iv.next222 = add i64 %indvars.iv221, 1, !dbg !267
+  %lftr.wideiv = trunc i64 %indvars.iv.next222 to i32, !dbg !267
+  %exitcond = icmp eq i32 %lftr.wideiv, 4, !dbg !267
+  br i1 %exitcond, label %for.body31, label %for.body3, !dbg !267
+
+for.body31:                                       ; preds = %for.inc57, %for.cond.preheader, %for.inc25
+  %indvars.iv219 = phi i64 [ 0, %for.inc25 ], [ 0, %for.cond.preheader ], [ %indvars.iv.next220, %for.inc57 ]
+  %arrayidx33 = getelementptr inbounds [4 x i32]* %l, i64 0, i64 %indvars.iv219, !dbg !273
+  %5 = load i32* %arrayidx33, align 4, !dbg !273, !tbaa !213
+  %tobool34 = icmp eq i32 %5, 0, !dbg !273
+  br i1 %tobool34, label %for.inc57, label %if.then35, !dbg !273
+
+if.then35:                                        ; preds = %for.body31
+  %arraydecay38 = getelementptr inbounds [4 x [1024 x i8]]* %file_x, i64 0, i64 %indvars.iv219, i64 0, !dbg !276
+  %call39 = call zeroext i1 @_ZN8pov_base10File_ExistEPKc(i8* %arraydecay38) #9, !dbg !276
+  br i1 %call39, label %if.then42, label %for.inc57, !dbg !276
+
+if.then42:                                        ; preds = %if.then35
+  %call46 = call i64 @strlen(i8* %arraydecay38) #10, !dbg !278
+  %add = add i64 %call46, 1, !dbg !278
+  %call47 = call noalias i8* @_Znam(i64 %add) #9, !dbg !278
+  call void @llvm.dbg.value(metadata !{i8* %call47}, i64 0, metadata !154), !dbg !278
+  %tobool48 = icmp eq i8* %call47, null, !dbg !280
+  br i1 %tobool48, label %cleanup, label %if.then49, !dbg !280
+
+if.then49:                                        ; preds = %if.then42
+  %call53 = call i8* @strcpy(i8* %call47, i8* %arraydecay38) #8, !dbg !280
+  br label %cleanup, !dbg !280
+
+for.inc57:                                        ; preds = %for.body31, %if.then35
+  %indvars.iv.next220 = add i64 %indvars.iv219, 1, !dbg !281
+  %6 = trunc i64 %indvars.iv.next220 to i32, !dbg !281
+  %cmp30 = icmp slt i32 %6, 4, !dbg !281
+  br i1 %cmp30, label %for.body31, label %for.end59, !dbg !281
+
+for.end59:                                        ; preds = %for.inc57
+  %call60 = call zeroext i1 @_ZN8pov_base10File_ExistEPKc(i8* %filename) #9, !dbg !282
+  br i1 %call60, label %if.then63, label %for.cond72.preheader, !dbg !282
+
+for.cond72.preheader:                             ; preds = %for.end59
+  %7 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 19), align 8, !dbg !283, !tbaa !213
+  %cmp73211 = icmp sgt i32 %7, 0, !dbg !283
+  br i1 %cmp73211, label %for.body74, label %for.end149, !dbg !283
+
+if.then63:                                        ; preds = %for.end59
+  %call64 = call i64 @strlen(i8* %filename) #10, !dbg !285
+  %add65 = add i64 %call64, 1, !dbg !285
+  %call66 = call noalias i8* @_Znam(i64 %add65) #9, !dbg !285
+  call void @llvm.dbg.value(metadata !{i8* %call66}, i64 0, metadata !154), !dbg !285
+  %tobool67 = icmp eq i8* %call66, null, !dbg !287
+  br i1 %tobool67, label %cleanup, label %if.then68, !dbg !287
+
+if.then68:                                        ; preds = %if.then63
+  %call69 = call i8* @strcpy(i8* %call66, i8* %filename) #8, !dbg !287
+  br label %cleanup, !dbg !287
+
+for.cond72:                                       ; preds = %for.end126
+  %8 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 19), align 8, !dbg !283, !tbaa !213
+  %9 = trunc i64 %indvars.iv.next218 to i32, !dbg !283
+  %cmp73 = icmp slt i32 %9, %8, !dbg !283
+  br i1 %cmp73, label %for.body74, label %for.end149, !dbg !283
+
+for.body74:                                       ; preds = %for.cond72.preheader, %for.cond72
+  %indvars.iv217 = phi i64 [ %indvars.iv.next218, %for.cond72 ], [ 0, %for.cond72.preheader ]
+  %arrayidx77 = getelementptr inbounds %"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 18, i64 %indvars.iv217, !dbg !288
+  %10 = load i8** %arrayidx77, align 8, !dbg !288, !tbaa !268
+  %call78 = call i8* @strcpy(i8* %1, i8* %10) #8, !dbg !288
+  %call80 = call i64 @strlen(i8* %1) #10, !dbg !290
+  %add81 = add i64 %call80, 1, !dbg !290
+  %arrayidx82 = getelementptr inbounds [1024 x i8]* %file, i64 0, i64 %add81, !dbg !290
+  store i8 0, i8* %arrayidx82, align 1, !dbg !290, !tbaa !214
+  %call84 = call i64 @strlen(i8* %1) #10, !dbg !291
+  %sub = add i64 %call84, -1, !dbg !291
+  %arrayidx85 = getelementptr inbounds [1024 x i8]* %file, i64 0, i64 %sub, !dbg !291
+  %11 = load i8* %arrayidx85, align 1, !dbg !291, !tbaa !214
+  %cmp87 = icmp eq i8 %11, 58, !dbg !291
+  br i1 %cmp87, label %for.body95, label %if.then88, !dbg !291
+
+if.then88:                                        ; preds = %for.body74
+  %arrayidx91 = getelementptr inbounds [1024 x i8]* %file, i64 0, i64 %call84, !dbg !292
+  store i8 47, i8* %arrayidx91, align 1, !dbg !292, !tbaa !214
+  br label %for.body95, !dbg !292
+
+for.body95:                                       ; preds = %for.inc124, %if.then88, %for.body74
+  %indvars.iv = phi i64 [ 0, %for.body74 ], [ 0, %if.then88 ], [ %indvars.iv.next, %for.inc124 ]
+  %arrayidx97 = getelementptr inbounds [4 x i32]* %l, i64 0, i64 %indvars.iv, !dbg !293
+  %12 = load i32* %arrayidx97, align 4, !dbg !293, !tbaa !213
+  %tobool98 = icmp eq i32 %12, 0, !dbg !293
+  br i1 %tobool98, label %for.inc124, label %if.then99, !dbg !293
+
+if.then99:                                        ; preds = %for.body95
+  %call102 = call i8* @strcpy(i8* %0, i8* %1) #8, !dbg !296
+  %arraydecay106 = getelementptr inbounds [4 x [1024 x i8]]* %file_x, i64 0, i64 %indvars.iv, i64 0, !dbg !298
+  %call107 = call i8* @strcat(i8* %0, i8* %arraydecay106) #8, !dbg !298
+  %call109 = call zeroext i1 @_ZN8pov_base10File_ExistEPKc(i8* %0) #9, !dbg !299
+  br i1 %call109, label %if.then112, label %for.inc124, !dbg !299
+
+if.then112:                                       ; preds = %if.then99
+  %call114 = call i64 @strlen(i8* %0) #10, !dbg !300
+  %add115 = add i64 %call114, 1, !dbg !300
+  %call116 = call noalias i8* @_Znam(i64 %add115) #9, !dbg !300
+  call void @llvm.dbg.value(metadata !{i8* %call116}, i64 0, metadata !154), !dbg !300
+  %tobool117 = icmp eq i8* %call116, null, !dbg !302
+  br i1 %tobool117, label %cleanup, label %if.then118, !dbg !302
+
+if.then118:                                       ; preds = %if.then112
+  %call120 = call i8* @strcpy(i8* %call116, i8* %0) #8, !dbg !302
+  br label %cleanup, !dbg !302
+
+for.inc124:                                       ; preds = %for.body95, %if.then99
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !303
+  %13 = trunc i64 %indvars.iv.next to i32, !dbg !303
+  %cmp94 = icmp slt i32 %13, 4, !dbg !303
+  br i1 %cmp94, label %for.body95, label %for.end126, !dbg !303
+
+for.end126:                                       ; preds = %for.inc124
+  %call129 = call i8* @strcpy(i8* %0, i8* %1) #8, !dbg !304
+  %call131 = call i8* @strcat(i8* %0, i8* %filename) #8, !dbg !305
+  %call133 = call zeroext i1 @_ZN8pov_base10File_ExistEPKc(i8* %0) #9, !dbg !306
+  %indvars.iv.next218 = add i64 %indvars.iv217, 1, !dbg !283
+  br i1 %call133, label %if.then136, label %for.cond72, !dbg !306
+
+if.then136:                                       ; preds = %for.end126
+  %call138 = call i64 @strlen(i8* %0) #10, !dbg !307
+  %add139 = add i64 %call138, 1, !dbg !307
+  %call140 = call noalias i8* @_Znam(i64 %add139) #9, !dbg !307
+  call void @llvm.dbg.value(metadata !{i8* %call140}, i64 0, metadata !154), !dbg !307
+  %tobool141 = icmp eq i8* %call140, null, !dbg !309
+  br i1 %tobool141, label %cleanup, label %if.then142, !dbg !309
+
+if.then142:                                       ; preds = %if.then136
+  %call144 = call i8* @strcpy(i8* %call140, i8* %0) #8, !dbg !309
+  br label %cleanup, !dbg !309
+
+for.end149:                                       ; preds = %for.cond72, %for.cond72.preheader
+  br i1 %err_flag, label %if.then154, label %cleanup, !dbg !310
+
+if.then154:                                       ; preds = %for.end149
+  %arrayidx155 = getelementptr inbounds [4 x i32]* %l, i64 0, i64 0, !dbg !311
+  %14 = load i32* %arrayidx155, align 16, !dbg !311, !tbaa !213
+  %tobool156 = icmp eq i32 %14, 0, !dbg !311
+  br i1 %tobool156, label %if.else163, label %if.then157, !dbg !311
+
+if.then157:                                       ; preds = %if.then154
+  %idxprom158 = zext i32 %stype to i64, !dbg !313
+  %arrayidx161 = getelementptr inbounds [0 x %"struct.pov_base::POV_File_Extensions"]* @_ZN8pov_base20gPOV_File_ExtensionsE, i64 0, i64 %idxprom158, i32 0, i64 0, !dbg !313
+  %15 = load i8** %arrayidx161, align 8, !dbg !313, !tbaa !268
+  %call162 = call i32 (i8*, ...)* @_ZN3pov13PossibleErrorEPKcz(i8* getelementptr inbounds ([27 x i8]* @.str, i64 0, i64 0), i8* %filename, i8* %15) #9, !dbg !313
+  br label %cleanup, !dbg !313
+
+if.else163:                                       ; preds = %if.then154
+  %call164 = call i32 (i8*, ...)* @_ZN3pov13PossibleErrorEPKcz(i8* getelementptr inbounds ([25 x i8]* @.str1, i64 0, i64 0), i8* %filename) #9, !dbg !314
+  br label %cleanup
+
+cleanup:                                          ; preds = %for.end149, %if.else163, %if.then157, %if.then142, %if.then136, %if.then118, %if.then112, %if.then68, %if.then63, %if.then49, %if.then42
+  %retval.0 = phi i8* [ null, %if.then42 ], [ %call47, %if.then49 ], [ null, %if.then63 ], [ %call66, %if.then68 ], [ null, %if.then112 ], [ %call116, %if.then118 ], [ null, %if.then136 ], [ %call140, %if.then142 ], [ null, %if.then157 ], [ null, %if.else163 ], [ null, %for.end149 ]
+  call void @llvm.lifetime.end(i64 4096, i8* %2) #4, !dbg !315
+  call void @llvm.lifetime.end(i64 1024, i8* %1) #4, !dbg !315
+  call void @llvm.lifetime.end(i64 1024, i8* %0) #4, !dbg !315
+  ret i8* %retval.0, !dbg !315
+}

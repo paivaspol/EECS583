@@ -1,0 +1,53 @@
+define void @_ZN6soplex6SoPlex12setupPupdateEv(%"class.soplex::SoPlex"* nocapture %this) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SoPlex"* %this}, i64 0, metadata !6862), !dbg !7939
+  %thePvec = getelementptr inbounds %"class.soplex::SoPlex"* %this, i64 0, i32 41, !dbg !7940
+  %0 = load %"class.soplex::UpdateVector"** %thePvec, align 8, !dbg !7940, !tbaa !7264
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::UpdateVector"* %0}, i64 0, metadata !7941), !dbg !7942
+  %thedelta.i = getelementptr inbounds %"class.soplex::UpdateVector"* %0, i64 0, i32 2, !dbg !7943
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %thedelta.i}, i64 0, metadata !6863), !dbg !7940
+  %theCoPvec = getelementptr inbounds %"class.soplex::SoPlex"* %this, i64 0, i32 40, !dbg !7945
+  %1 = load %"class.soplex::UpdateVector"** %theCoPvec, align 8, !dbg !7945, !tbaa !7264
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::UpdateVector"* %1}, i64 0, metadata !7946), !dbg !7947
+  %thedelta.i21 = getelementptr inbounds %"class.soplex::UpdateVector"* %1, i64 0, i32 2, !dbg !7948
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %thedelta.i21}, i64 0, metadata !6864), !dbg !7945
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %thedelta.i21}, i64 0, metadata !7949), !dbg !7951
+  %setupStatus.i = getelementptr inbounds %"class.soplex::UpdateVector"* %1, i64 0, i32 2, i32 2, !dbg !7952
+  %2 = load i8* %setupStatus.i, align 1, !dbg !7952, !tbaa !7954, !range !7955
+  %tobool.i = icmp eq i8 %2, 0, !dbg !7952
+  br i1 %tobool.i, label %if.else11, label %if.then, !dbg !7950
+
+if.then:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %thedelta.i21}, i64 0, metadata !7956), !dbg !7959
+  %num.i.i = getelementptr inbounds %"class.soplex::UpdateVector"* %1, i64 0, i32 2, i32 1, i32 0, !dbg !7960
+  %3 = load i32* %num.i.i, align 4, !dbg !7960, !tbaa !7267
+  %conv = sitofp i32 %3 to double, !dbg !7957
+  %dimen.i = getelementptr inbounds %"class.soplex::UpdateVector"* %1, i64 0, i32 0, i32 0, i32 0, !dbg !7964
+  %4 = load i32* %dimen.i, align 4, !dbg !7964, !tbaa !7267
+  %conv7 = sitofp i32 %4 to double, !dbg !7957
+  %mul = fmul double %conv7, 9.500000e-01, !dbg !7957
+  %cmp = fcmp olt double %conv, %mul, !dbg !7957
+  br i1 %cmp, label %if.then8, label %if.else, !dbg !7957
+
+if.then8:                                         ; preds = %if.then
+  %thecovectors = getelementptr inbounds %"class.soplex::SoPlex"* %this, i64 0, i32 23, !dbg !7965
+  %5 = load %"class.soplex::SVSet"** %thecovectors, align 8, !dbg !7965, !tbaa !7264
+  %call9 = tail call %"class.soplex::SSVector"* @_ZN6soplex8SSVector20assign2product4setupERKNS_5SVSetERKS0_(%"class.soplex::SSVector"* %thedelta.i, %"class.soplex::SVSet"* %5, %"class.soplex::SSVector"* %thedelta.i21) #9, !dbg !7965
+  br label %if.end14, !dbg !7965
+
+if.else:                                          ; preds = %if.then
+  %thevectors = getelementptr inbounds %"class.soplex::SoPlex"* %this, i64 0, i32 22, !dbg !7966
+  %6 = load %"class.soplex::SVSet"** %thevectors, align 8, !dbg !7966, !tbaa !7264
+  %call10 = tail call %"class.soplex::SSVector"* @_ZN6soplex8SSVector14assign2productERKS0_RKNS_5SVSetE(%"class.soplex::SSVector"* %thedelta.i, %"class.soplex::SSVector"* %thedelta.i21, %"class.soplex::SVSet"* %6) #9, !dbg !7966
+  br label %if.end14
+
+if.else11:                                        ; preds = %entry
+  %thecovectors12 = getelementptr inbounds %"class.soplex::SoPlex"* %this, i64 0, i32 23, !dbg !7967
+  %7 = load %"class.soplex::SVSet"** %thecovectors12, align 8, !dbg !7967, !tbaa !7264
+  %call13 = tail call %"class.soplex::SSVector"* @_ZN6soplex8SSVector22assign2productAndSetupERKNS_5SVSetERS0_(%"class.soplex::SSVector"* %thedelta.i, %"class.soplex::SVSet"* %7, %"class.soplex::SSVector"* %thedelta.i21) #9, !dbg !7967
+  br label %if.end14
+
+if.end14:                                         ; preds = %if.then8, %if.else, %if.else11
+  tail call void @_ZN6soplex8SSVector5setupEv(%"class.soplex::SSVector"* %thedelta.i) #9, !dbg !7969
+  ret void, !dbg !7970
+}

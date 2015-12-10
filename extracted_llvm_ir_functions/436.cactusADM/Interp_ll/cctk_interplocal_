@@ -1,463 +1,480 @@
-define void @cctk_interplocal_(i32* nocapture %fortranreturn, %struct.cGH* %GH, i32* nocapture readonly %operator_handle, i32* nocapture readonly %num_points, i32* nocapture readonly %num_dims, i32* nocapture readonly %num_in_arrays, i32* nocapture readonly %num_out_arrays, ...) #1 {
+define void @cctk_interplocal_(i32* nocapture %fortranreturn, %struct.cGH* %GH, i32* nocapture %operator_handle, i32* nocapture %num_points, i32* nocapture %num_dims, i32* nocapture %num_in_arrays, i32* nocapture %num_out_arrays, ...) #1 {
+entry:
   %indices = alloca [1 x %struct.__va_list_tag], align 16
-  %1 = load %struct.cHandledData** @interp_operators, align 8, !tbaa !2
-  %2 = load i32* %operator_handle, align 4, !tbaa !11
-  %3 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %2) #6
-  %4 = icmp eq i8* %3, null
-  br i1 %4, label %5, label %7
+  call void @llvm.dbg.value(metadata !{i32* %fortranreturn}, i64 0, metadata !232), !dbg !582
+  call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !233), !dbg !583
+  call void @llvm.dbg.value(metadata !{i32* %operator_handle}, i64 0, metadata !234), !dbg !584
+  call void @llvm.dbg.value(metadata !{i32* %num_points}, i64 0, metadata !235), !dbg !585
+  call void @llvm.dbg.value(metadata !{i32* %num_dims}, i64 0, metadata !236), !dbg !586
+  call void @llvm.dbg.value(metadata !{i32* %num_in_arrays}, i64 0, metadata !237), !dbg !587
+  call void @llvm.dbg.value(metadata !{i32* %num_out_arrays}, i64 0, metadata !238), !dbg !588
+  call void @llvm.dbg.declare(metadata !{[1 x %struct.__va_list_tag]* %indices}, metadata !239), !dbg !589
+  %0 = load %struct.cHandledData** @interp_operators, align 8, !dbg !590, !tbaa !310
+  %1 = load i32* %operator_handle, align 4, !dbg !590, !tbaa !324
+  %call = call i8* @Util_GetHandledData(%struct.cHandledData* %0, i32 %1) #7, !dbg !590
+  %cmp = icmp eq i8* %call, null, !dbg !591
+  br i1 %cmp, label %if.then, label %if.else, !dbg !591
 
-; <label>:5                                       ; preds = %0
-  %6 = tail call i32 @CCTK_Warn(i32 3, i32 809, i8* getelementptr inbounds ([75 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([56 x i8]* @.str12, i64 0, i64 0)) #6
-  br label %251
+if.then:                                          ; preds = %entry
+  %call1 = call i32 @CCTK_Warn(i32 3, i32 809, i8* getelementptr inbounds ([63 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([56 x i8]* @.str12, i64 0, i64 0)) #7, !dbg !592
+  call void @llvm.dbg.value(metadata !305, i64 0, metadata !240), !dbg !594
+  br label %if.end, !dbg !595
 
-; <label>:7                                       ; preds = %0
-  %8 = load i32* %num_dims, align 4, !tbaa !11
-  %9 = sext i32 %8 to i64
-  %10 = shl nsw i64 %9, 2
-  %11 = tail call i8* @malloc(i64 %10) #6
-  %12 = bitcast i8* %11 to i32*
-  %13 = shl nsw i64 %9, 3
-  %14 = tail call i8* @malloc(i64 %13) #6
-  %15 = bitcast i8* %14 to i8**
-  %16 = tail call i8* @malloc(i64 %10) #6
-  %17 = bitcast i8* %16 to i32*
-  %18 = tail call i8* @malloc(i64 %13) #6
-  %19 = bitcast i8* %18 to i8**
-  %20 = tail call i8* @malloc(i64 %10) #6
-  %21 = bitcast i8* %20 to i32*
-  %22 = load i32* %num_in_arrays, align 4, !tbaa !11
-  %23 = sext i32 %22 to i64
-  %24 = shl nsw i64 %23, 3
-  %25 = tail call i8* @malloc(i64 %24) #6
-  %26 = bitcast i8* %25 to i8**
-  %27 = shl nsw i64 %23, 2
-  %28 = tail call i8* @malloc(i64 %27) #6
-  %29 = bitcast i8* %28 to i32*
-  %30 = load i32* %num_out_arrays, align 4, !tbaa !11
-  %31 = sext i32 %30 to i64
-  %32 = shl nsw i64 %31, 3
-  %33 = tail call i8* @malloc(i64 %32) #6
-  %34 = bitcast i8* %33 to i8**
-  %35 = shl nsw i64 %31, 2
-  %36 = tail call i8* @malloc(i64 %35) #6
-  %37 = bitcast i8* %36 to i32*
-  %38 = bitcast [1 x %struct.__va_list_tag]* %indices to i8*
-  call void @llvm.va_start(i8* %38)
-  %39 = load i32* %num_dims, align 4, !tbaa !11
-  %40 = icmp sgt i32 %39, 0
-  br i1 %40, label %.lr.ph41, label %.preheader19
+if.else:                                          ; preds = %entry
+  %2 = load i32* %num_dims, align 4, !dbg !596, !tbaa !324
+  %conv = sext i32 %2 to i64, !dbg !596
+  %mul = shl nsw i64 %conv, 2, !dbg !596
+  %call2 = call noalias i8* @malloc(i64 %mul) #7, !dbg !596
+  %3 = bitcast i8* %call2 to i32*, !dbg !596
+  call void @llvm.dbg.value(metadata !{i32* %3}, i64 0, metadata !241), !dbg !596
+  %mul4 = shl nsw i64 %conv, 3, !dbg !597
+  %call5 = call noalias i8* @malloc(i64 %mul4) #7, !dbg !597
+  %4 = bitcast i8* %call5 to i8**, !dbg !597
+  call void @llvm.dbg.value(metadata !{i8** %4}, i64 0, metadata !246), !dbg !597
+  %call8 = call noalias i8* @malloc(i64 %mul) #7, !dbg !598
+  %5 = bitcast i8* %call8 to i32*, !dbg !598
+  call void @llvm.dbg.value(metadata !{i32* %5}, i64 0, metadata !242), !dbg !598
+  %call11 = call noalias i8* @malloc(i64 %mul4) #7, !dbg !599
+  %6 = bitcast i8* %call11 to i8**, !dbg !599
+  call void @llvm.dbg.value(metadata !{i8** %6}, i64 0, metadata !247), !dbg !599
+  %call14 = call noalias i8* @malloc(i64 %mul) #7, !dbg !600
+  %7 = bitcast i8* %call14 to i32*, !dbg !600
+  call void @llvm.dbg.value(metadata !{i32* %7}, i64 0, metadata !243), !dbg !600
+  %8 = load i32* %num_in_arrays, align 4, !dbg !601, !tbaa !324
+  %conv15 = sext i32 %8 to i64, !dbg !601
+  %mul16 = shl nsw i64 %conv15, 3, !dbg !601
+  %call17 = call noalias i8* @malloc(i64 %mul16) #7, !dbg !601
+  %9 = bitcast i8* %call17 to i8**, !dbg !601
+  call void @llvm.dbg.value(metadata !{i8** %9}, i64 0, metadata !248), !dbg !601
+  %mul19 = shl nsw i64 %conv15, 2, !dbg !602
+  %call20 = call noalias i8* @malloc(i64 %mul19) #7, !dbg !602
+  %10 = bitcast i8* %call20 to i32*, !dbg !602
+  call void @llvm.dbg.value(metadata !{i32* %10}, i64 0, metadata !244), !dbg !602
+  %11 = load i32* %num_out_arrays, align 4, !dbg !603, !tbaa !324
+  %conv21 = sext i32 %11 to i64, !dbg !603
+  %mul22 = shl nsw i64 %conv21, 3, !dbg !603
+  %call23 = call noalias i8* @malloc(i64 %mul22) #7, !dbg !603
+  %12 = bitcast i8* %call23 to i8**, !dbg !603
+  call void @llvm.dbg.value(metadata !{i8** %12}, i64 0, metadata !249), !dbg !603
+  %mul25 = shl nsw i64 %conv21, 2, !dbg !604
+  %call26 = call noalias i8* @malloc(i64 %mul25) #7, !dbg !604
+  %13 = bitcast i8* %call26 to i32*, !dbg !604
+  call void @llvm.dbg.value(metadata !{i32* %13}, i64 0, metadata !245), !dbg !604
+  %arraydecay27 = bitcast [1 x %struct.__va_list_tag]* %indices to i8*, !dbg !605
+  call void @llvm.va_start(i8* %arraydecay27), !dbg !605
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !251), !dbg !606
+  %14 = load i32* %num_dims, align 4, !dbg !606, !tbaa !324
+  %cmp28281 = icmp sgt i32 %14, 0, !dbg !606
+  br i1 %cmp28281, label %for.body.lr.ph, label %for.cond120.preheader, !dbg !606
 
-.lr.ph41:                                         ; preds = %7
-  %41 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 0
-  %42 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 3
-  %43 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 2
-  %.pre = load i32* %41, align 16
-  br label %47
+for.body.lr.ph:                                   ; preds = %if.else
+  %gp_offset_p = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 0, !dbg !608
+  %15 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 3, !dbg !608
+  %overflow_arg_area_p = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 2, !dbg !608
+  %gp_offset.pre = load i32* %gp_offset_p, align 16, !dbg !608
+  br label %for.body, !dbg !606
 
-.preheader23:                                     ; preds = %58
-  br i1 %40, label %.lr.ph38, label %.preheader19
+for.cond32.preheader:                             ; preds = %vaarg.end
+  br i1 %cmp28281, label %for.body35.lr.ph, label %for.cond120.preheader, !dbg !610
 
-.lr.ph38:                                         ; preds = %.preheader23
-  %44 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 0
-  %45 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 3
-  %46 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 2
-  %.pre58 = load i32* %44, align 16
-  br label %69
+for.body35.lr.ph:                                 ; preds = %for.cond32.preheader
+  %gp_offset_p37 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 0, !dbg !612
+  %16 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 3, !dbg !612
+  %overflow_arg_area_p43 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 2, !dbg !612
+  %gp_offset38.pre = load i32* %gp_offset_p37, align 16, !dbg !612
+  br label %for.body35, !dbg !610
 
-; <label>:47                                      ; preds = %.lr.ph41, %58
-  %48 = phi i32 [ %.pre, %.lr.ph41 ], [ %59, %58 ]
-  %indvars.iv56 = phi i64 [ 0, %.lr.ph41 ], [ %indvars.iv.next57, %58 ]
-  %49 = icmp ult i32 %48, 41
-  br i1 %49, label %50, label %55
+for.body:                                         ; preds = %for.body.lr.ph, %vaarg.end
+  %gp_offset = phi i32 [ %gp_offset.pre, %for.body.lr.ph ], [ %gp_offset315, %vaarg.end ], !dbg !608
+  %indvars.iv297 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next298, %vaarg.end ]
+  %fits_in_gp = icmp ult i32 %gp_offset, 41, !dbg !608
+  br i1 %fits_in_gp, label %vaarg.in_reg, label %vaarg.in_mem, !dbg !608
 
-; <label>:50                                      ; preds = %47
-  %51 = load i8** %42, align 16
-  %52 = sext i32 %48 to i64
-  %53 = getelementptr i8* %51, i64 %52
-  %54 = add i32 %48, 8
-  store i32 %54, i32* %41, align 16
-  br label %58
+vaarg.in_reg:                                     ; preds = %for.body
+  %reg_save_area = load i8** %15, align 16, !dbg !608
+  %17 = sext i32 %gp_offset to i64, !dbg !608
+  %18 = getelementptr i8* %reg_save_area, i64 %17, !dbg !608
+  %19 = add i32 %gp_offset, 8, !dbg !608
+  store i32 %19, i32* %gp_offset_p, align 16, !dbg !608
+  br label %vaarg.end, !dbg !608
 
-; <label>:55                                      ; preds = %47
-  %56 = load i8** %43, align 8
-  %57 = getelementptr i8* %56, i64 8
-  store i8* %57, i8** %43, align 8
-  br label %58
+vaarg.in_mem:                                     ; preds = %for.body
+  %overflow_arg_area = load i8** %overflow_arg_area_p, align 8, !dbg !608
+  %overflow_arg_area.next = getelementptr i8* %overflow_arg_area, i64 8, !dbg !608
+  store i8* %overflow_arg_area.next, i8** %overflow_arg_area_p, align 8, !dbg !608
+  br label %vaarg.end, !dbg !608
 
-; <label>:58                                      ; preds = %55, %50
-  %59 = phi i32 [ %54, %50 ], [ %48, %55 ]
-  %.in16 = phi i8* [ %53, %50 ], [ %56, %55 ]
-  %60 = bitcast i8* %.in16 to i32**
-  %61 = load i32** %60, align 8
-  %62 = load i32* %61, align 4, !tbaa !11
-  %63 = getelementptr inbounds i32* %12, i64 %indvars.iv56
-  store i32 %62, i32* %63, align 4, !tbaa !11
-  %indvars.iv.next57 = add nuw nsw i64 %indvars.iv56, 1
-  %64 = sext i32 %39 to i64
-  %65 = icmp slt i64 %indvars.iv.next57, %64
-  br i1 %65, label %47, label %.preheader23
+vaarg.end:                                        ; preds = %vaarg.in_mem, %vaarg.in_reg
+  %gp_offset315 = phi i32 [ %19, %vaarg.in_reg ], [ %gp_offset, %vaarg.in_mem ]
+  %vaarg.addr.in = phi i8* [ %18, %vaarg.in_reg ], [ %overflow_arg_area, %vaarg.in_mem ]
+  %vaarg.addr = bitcast i8* %vaarg.addr.in to i32**, !dbg !608
+  %20 = load i32** %vaarg.addr, align 8, !dbg !608
+  %21 = load i32* %20, align 4, !dbg !608, !tbaa !324
+  %arrayidx = getelementptr inbounds i32* %3, i64 %indvars.iv297, !dbg !608
+  store i32 %21, i32* %arrayidx, align 4, !dbg !608, !tbaa !324
+  %indvars.iv.next298 = add i64 %indvars.iv297, 1, !dbg !606
+  %22 = trunc i64 %indvars.iv.next298 to i32, !dbg !606
+  %cmp28 = icmp slt i32 %22, %14, !dbg !606
+  br i1 %cmp28, label %for.body, label %for.cond32.preheader, !dbg !606
 
-.preheader22:                                     ; preds = %80
-  br i1 %40, label %.lr.ph36, label %.preheader19
+for.cond54.preheader:                             ; preds = %vaarg.end46
+  br i1 %cmp28281, label %for.body57.lr.ph, label %for.cond120.preheader, !dbg !614
 
-.lr.ph36:                                         ; preds = %.preheader22
-  %66 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 0
-  %67 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 3
-  %68 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 2
-  %.pre59 = load i32* %66, align 16
-  br label %91
+for.body57.lr.ph:                                 ; preds = %for.cond54.preheader
+  %gp_offset_p59 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 0, !dbg !616
+  %23 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 3, !dbg !616
+  %overflow_arg_area_p65 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 2, !dbg !616
+  %gp_offset60.pre = load i32* %gp_offset_p59, align 16, !dbg !616
+  br label %for.body57, !dbg !614
 
-; <label>:69                                      ; preds = %.lr.ph38, %80
-  %70 = phi i32 [ %.pre58, %.lr.ph38 ], [ %81, %80 ]
-  %indvars.iv54 = phi i64 [ 0, %.lr.ph38 ], [ %indvars.iv.next55, %80 ]
-  %71 = icmp ult i32 %70, 41
-  br i1 %71, label %72, label %77
+for.body35:                                       ; preds = %for.body35.lr.ph, %vaarg.end46
+  %gp_offset38 = phi i32 [ %gp_offset38.pre, %for.body35.lr.ph ], [ %gp_offset38313, %vaarg.end46 ], !dbg !612
+  %indvars.iv295 = phi i64 [ 0, %for.body35.lr.ph ], [ %indvars.iv.next296, %vaarg.end46 ]
+  %fits_in_gp39 = icmp ult i32 %gp_offset38, 41, !dbg !612
+  br i1 %fits_in_gp39, label %vaarg.in_reg40, label %vaarg.in_mem42, !dbg !612
 
-; <label>:72                                      ; preds = %69
-  %73 = load i8** %45, align 16
-  %74 = sext i32 %70 to i64
-  %75 = getelementptr i8* %73, i64 %74
-  %76 = add i32 %70, 8
-  store i32 %76, i32* %44, align 16
-  br label %80
+vaarg.in_reg40:                                   ; preds = %for.body35
+  %reg_save_area41 = load i8** %16, align 16, !dbg !612
+  %24 = sext i32 %gp_offset38 to i64, !dbg !612
+  %25 = getelementptr i8* %reg_save_area41, i64 %24, !dbg !612
+  %26 = add i32 %gp_offset38, 8, !dbg !612
+  store i32 %26, i32* %gp_offset_p37, align 16, !dbg !612
+  br label %vaarg.end46, !dbg !612
 
-; <label>:77                                      ; preds = %69
-  %78 = load i8** %46, align 8
-  %79 = getelementptr i8* %78, i64 8
-  store i8* %79, i8** %46, align 8
-  br label %80
+vaarg.in_mem42:                                   ; preds = %for.body35
+  %overflow_arg_area44 = load i8** %overflow_arg_area_p43, align 8, !dbg !612
+  %overflow_arg_area.next45 = getelementptr i8* %overflow_arg_area44, i64 8, !dbg !612
+  store i8* %overflow_arg_area.next45, i8** %overflow_arg_area_p43, align 8, !dbg !612
+  br label %vaarg.end46, !dbg !612
 
-; <label>:80                                      ; preds = %77, %72
-  %81 = phi i32 [ %76, %72 ], [ %70, %77 ]
-  %.in15 = phi i8* [ %75, %72 ], [ %78, %77 ]
-  %82 = bitcast i8* %.in15 to i64*
-  %83 = load i64* %82, align 8
-  %84 = getelementptr inbounds i8** %15, i64 %indvars.iv54
-  %85 = bitcast i8** %84 to i64*
-  store i64 %83, i64* %85, align 8, !tbaa !2
-  %indvars.iv.next55 = add nuw nsw i64 %indvars.iv54, 1
-  %86 = sext i32 %39 to i64
-  %87 = icmp slt i64 %indvars.iv.next55, %86
-  br i1 %87, label %69, label %.preheader22
+vaarg.end46:                                      ; preds = %vaarg.in_mem42, %vaarg.in_reg40
+  %gp_offset38313 = phi i32 [ %26, %vaarg.in_reg40 ], [ %gp_offset38, %vaarg.in_mem42 ]
+  %vaarg.addr47.in = phi i8* [ %25, %vaarg.in_reg40 ], [ %overflow_arg_area44, %vaarg.in_mem42 ]
+  %vaarg.addr47 = bitcast i8* %vaarg.addr47.in to i8**, !dbg !612
+  %27 = load i8** %vaarg.addr47, align 8, !dbg !612
+  %arrayidx49 = getelementptr inbounds i8** %4, i64 %indvars.iv295, !dbg !612
+  store i8* %27, i8** %arrayidx49, align 8, !dbg !612, !tbaa !310
+  %indvars.iv.next296 = add i64 %indvars.iv295, 1, !dbg !610
+  %28 = trunc i64 %indvars.iv.next296 to i32, !dbg !610
+  %cmp33 = icmp slt i32 %28, %14, !dbg !610
+  br i1 %cmp33, label %for.body35, label %for.cond54.preheader, !dbg !610
 
-.preheader21:                                     ; preds = %102
-  br i1 %40, label %.lr.ph34, label %.preheader19
+for.cond76.preheader:                             ; preds = %vaarg.end68
+  br i1 %cmp28281, label %for.body79.lr.ph, label %for.cond120.preheader, !dbg !618
 
-.lr.ph34:                                         ; preds = %.preheader21
-  %88 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 0
-  %89 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 3
-  %90 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 2
-  %.pre60 = load i32* %88, align 16
-  br label %113
+for.body79.lr.ph:                                 ; preds = %for.cond76.preheader
+  %gp_offset_p81 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 0, !dbg !620
+  %29 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 3, !dbg !620
+  %overflow_arg_area_p87 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 2, !dbg !620
+  %gp_offset82.pre = load i32* %gp_offset_p81, align 16, !dbg !620
+  br label %for.body79, !dbg !618
 
-; <label>:91                                      ; preds = %.lr.ph36, %102
-  %92 = phi i32 [ %.pre59, %.lr.ph36 ], [ %103, %102 ]
-  %indvars.iv52 = phi i64 [ 0, %.lr.ph36 ], [ %indvars.iv.next53, %102 ]
-  %93 = icmp ult i32 %92, 41
-  br i1 %93, label %94, label %99
+for.body57:                                       ; preds = %for.body57.lr.ph, %vaarg.end68
+  %gp_offset60 = phi i32 [ %gp_offset60.pre, %for.body57.lr.ph ], [ %gp_offset60311, %vaarg.end68 ], !dbg !616
+  %indvars.iv293 = phi i64 [ 0, %for.body57.lr.ph ], [ %indvars.iv.next294, %vaarg.end68 ]
+  %fits_in_gp61 = icmp ult i32 %gp_offset60, 41, !dbg !616
+  br i1 %fits_in_gp61, label %vaarg.in_reg62, label %vaarg.in_mem64, !dbg !616
 
-; <label>:94                                      ; preds = %91
-  %95 = load i8** %67, align 16
-  %96 = sext i32 %92 to i64
-  %97 = getelementptr i8* %95, i64 %96
-  %98 = add i32 %92, 8
-  store i32 %98, i32* %66, align 16
-  br label %102
+vaarg.in_reg62:                                   ; preds = %for.body57
+  %reg_save_area63 = load i8** %23, align 16, !dbg !616
+  %30 = sext i32 %gp_offset60 to i64, !dbg !616
+  %31 = getelementptr i8* %reg_save_area63, i64 %30, !dbg !616
+  %32 = add i32 %gp_offset60, 8, !dbg !616
+  store i32 %32, i32* %gp_offset_p59, align 16, !dbg !616
+  br label %vaarg.end68, !dbg !616
 
-; <label>:99                                      ; preds = %91
-  %100 = load i8** %68, align 8
-  %101 = getelementptr i8* %100, i64 8
-  store i8* %101, i8** %68, align 8
-  br label %102
+vaarg.in_mem64:                                   ; preds = %for.body57
+  %overflow_arg_area66 = load i8** %overflow_arg_area_p65, align 8, !dbg !616
+  %overflow_arg_area.next67 = getelementptr i8* %overflow_arg_area66, i64 8, !dbg !616
+  store i8* %overflow_arg_area.next67, i8** %overflow_arg_area_p65, align 8, !dbg !616
+  br label %vaarg.end68, !dbg !616
 
-; <label>:102                                     ; preds = %99, %94
-  %103 = phi i32 [ %98, %94 ], [ %92, %99 ]
-  %.in14 = phi i8* [ %97, %94 ], [ %100, %99 ]
-  %104 = bitcast i8* %.in14 to i32**
-  %105 = load i32** %104, align 8
-  %106 = load i32* %105, align 4, !tbaa !11
-  %107 = getelementptr inbounds i32* %17, i64 %indvars.iv52
-  store i32 %106, i32* %107, align 4, !tbaa !11
-  %indvars.iv.next53 = add nuw nsw i64 %indvars.iv52, 1
-  %108 = sext i32 %39 to i64
-  %109 = icmp slt i64 %indvars.iv.next53, %108
-  br i1 %109, label %91, label %.preheader21
+vaarg.end68:                                      ; preds = %vaarg.in_mem64, %vaarg.in_reg62
+  %gp_offset60311 = phi i32 [ %32, %vaarg.in_reg62 ], [ %gp_offset60, %vaarg.in_mem64 ]
+  %vaarg.addr69.in = phi i8* [ %31, %vaarg.in_reg62 ], [ %overflow_arg_area66, %vaarg.in_mem64 ]
+  %vaarg.addr69 = bitcast i8* %vaarg.addr69.in to i32**, !dbg !616
+  %33 = load i32** %vaarg.addr69, align 8, !dbg !616
+  %34 = load i32* %33, align 4, !dbg !616, !tbaa !324
+  %arrayidx71 = getelementptr inbounds i32* %5, i64 %indvars.iv293, !dbg !616
+  store i32 %34, i32* %arrayidx71, align 4, !dbg !616, !tbaa !324
+  %indvars.iv.next294 = add i64 %indvars.iv293, 1, !dbg !614
+  %35 = trunc i64 %indvars.iv.next294 to i32, !dbg !614
+  %cmp55 = icmp slt i32 %35, %14, !dbg !614
+  br i1 %cmp55, label %for.body57, label %for.cond76.preheader, !dbg !614
 
-.preheader20:                                     ; preds = %124
-  br i1 %40, label %.lr.ph32, label %.preheader19
+for.cond98.preheader:                             ; preds = %vaarg.end90
+  br i1 %cmp28281, label %for.body101.lr.ph, label %for.cond120.preheader, !dbg !622
 
-.lr.ph32:                                         ; preds = %.preheader20
-  %110 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 0
-  %111 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 3
-  %112 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 2
-  %.pre61 = load i32* %110, align 16
-  br label %137
+for.body101.lr.ph:                                ; preds = %for.cond98.preheader
+  %gp_offset_p103 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 0, !dbg !624
+  %36 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 3, !dbg !624
+  %overflow_arg_area_p109 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 2, !dbg !624
+  %gp_offset104.pre = load i32* %gp_offset_p103, align 16, !dbg !624
+  br label %for.body101, !dbg !622
 
-; <label>:113                                     ; preds = %.lr.ph34, %124
-  %114 = phi i32 [ %.pre60, %.lr.ph34 ], [ %125, %124 ]
-  %indvars.iv50 = phi i64 [ 0, %.lr.ph34 ], [ %indvars.iv.next51, %124 ]
-  %115 = icmp ult i32 %114, 41
-  br i1 %115, label %116, label %121
+for.body79:                                       ; preds = %for.body79.lr.ph, %vaarg.end90
+  %gp_offset82 = phi i32 [ %gp_offset82.pre, %for.body79.lr.ph ], [ %gp_offset82309, %vaarg.end90 ], !dbg !620
+  %indvars.iv291 = phi i64 [ 0, %for.body79.lr.ph ], [ %indvars.iv.next292, %vaarg.end90 ]
+  %fits_in_gp83 = icmp ult i32 %gp_offset82, 41, !dbg !620
+  br i1 %fits_in_gp83, label %vaarg.in_reg84, label %vaarg.in_mem86, !dbg !620
 
-; <label>:116                                     ; preds = %113
-  %117 = load i8** %89, align 16
-  %118 = sext i32 %114 to i64
-  %119 = getelementptr i8* %117, i64 %118
-  %120 = add i32 %114, 8
-  store i32 %120, i32* %88, align 16
-  br label %124
+vaarg.in_reg84:                                   ; preds = %for.body79
+  %reg_save_area85 = load i8** %29, align 16, !dbg !620
+  %37 = sext i32 %gp_offset82 to i64, !dbg !620
+  %38 = getelementptr i8* %reg_save_area85, i64 %37, !dbg !620
+  %39 = add i32 %gp_offset82, 8, !dbg !620
+  store i32 %39, i32* %gp_offset_p81, align 16, !dbg !620
+  br label %vaarg.end90, !dbg !620
 
-; <label>:121                                     ; preds = %113
-  %122 = load i8** %90, align 8
-  %123 = getelementptr i8* %122, i64 8
-  store i8* %123, i8** %90, align 8
-  br label %124
+vaarg.in_mem86:                                   ; preds = %for.body79
+  %overflow_arg_area88 = load i8** %overflow_arg_area_p87, align 8, !dbg !620
+  %overflow_arg_area.next89 = getelementptr i8* %overflow_arg_area88, i64 8, !dbg !620
+  store i8* %overflow_arg_area.next89, i8** %overflow_arg_area_p87, align 8, !dbg !620
+  br label %vaarg.end90, !dbg !620
 
-; <label>:124                                     ; preds = %121, %116
-  %125 = phi i32 [ %120, %116 ], [ %114, %121 ]
-  %.in13 = phi i8* [ %119, %116 ], [ %122, %121 ]
-  %126 = bitcast i8* %.in13 to i64*
-  %127 = load i64* %126, align 8
-  %128 = getelementptr inbounds i8** %19, i64 %indvars.iv50
-  %129 = bitcast i8** %128 to i64*
-  store i64 %127, i64* %129, align 8, !tbaa !2
-  %indvars.iv.next51 = add nuw nsw i64 %indvars.iv50, 1
-  %130 = sext i32 %39 to i64
-  %131 = icmp slt i64 %indvars.iv.next51, %130
-  br i1 %131, label %113, label %.preheader20
+vaarg.end90:                                      ; preds = %vaarg.in_mem86, %vaarg.in_reg84
+  %gp_offset82309 = phi i32 [ %39, %vaarg.in_reg84 ], [ %gp_offset82, %vaarg.in_mem86 ]
+  %vaarg.addr91.in = phi i8* [ %38, %vaarg.in_reg84 ], [ %overflow_arg_area88, %vaarg.in_mem86 ]
+  %vaarg.addr91 = bitcast i8* %vaarg.addr91.in to i8**, !dbg !620
+  %40 = load i8** %vaarg.addr91, align 8, !dbg !620
+  %arrayidx93 = getelementptr inbounds i8** %6, i64 %indvars.iv291, !dbg !620
+  store i8* %40, i8** %arrayidx93, align 8, !dbg !620, !tbaa !310
+  %indvars.iv.next292 = add i64 %indvars.iv291, 1, !dbg !618
+  %41 = trunc i64 %indvars.iv.next292 to i32, !dbg !618
+  %cmp77 = icmp slt i32 %41, %14, !dbg !618
+  br i1 %cmp77, label %for.body79, label %for.cond98.preheader, !dbg !618
 
-.preheader19:                                     ; preds = %148, %7, %.preheader23, %.preheader22, %.preheader21, %.preheader20
-  %132 = load i32* %num_in_arrays, align 4, !tbaa !11
-  %133 = icmp sgt i32 %132, 0
-  br i1 %133, label %.lr.ph30, label %.preheader17
+for.cond120.preheader:                            ; preds = %for.cond32.preheader, %if.else, %for.cond54.preheader, %for.cond76.preheader, %vaarg.end112, %for.cond98.preheader
+  %42 = load i32* %num_in_arrays, align 4, !dbg !626, !tbaa !324
+  %cmp121271 = icmp sgt i32 %42, 0, !dbg !626
+  br i1 %cmp121271, label %for.body123.lr.ph, label %for.cond164.preheader, !dbg !626
 
-.lr.ph30:                                         ; preds = %.preheader19
-  %134 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 0
-  %135 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 3
-  %136 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 2
-  %.pre62 = load i32* %134, align 16
-  br label %159
+for.body123.lr.ph:                                ; preds = %for.cond120.preheader
+  %gp_offset_p125 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 0, !dbg !628
+  %43 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 3, !dbg !628
+  %overflow_arg_area_p131 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 2, !dbg !628
+  %gp_offset126.pre = load i32* %gp_offset_p125, align 16, !dbg !628
+  br label %for.body123, !dbg !626
 
-; <label>:137                                     ; preds = %.lr.ph32, %148
-  %138 = phi i32 [ %.pre61, %.lr.ph32 ], [ %149, %148 ]
-  %indvars.iv48 = phi i64 [ 0, %.lr.ph32 ], [ %indvars.iv.next49, %148 ]
-  %139 = icmp ult i32 %138, 41
-  br i1 %139, label %140, label %145
+for.body101:                                      ; preds = %for.body101.lr.ph, %vaarg.end112
+  %gp_offset104 = phi i32 [ %gp_offset104.pre, %for.body101.lr.ph ], [ %gp_offset104307, %vaarg.end112 ], !dbg !624
+  %indvars.iv289 = phi i64 [ 0, %for.body101.lr.ph ], [ %indvars.iv.next290, %vaarg.end112 ]
+  %fits_in_gp105 = icmp ult i32 %gp_offset104, 41, !dbg !624
+  br i1 %fits_in_gp105, label %vaarg.in_reg106, label %vaarg.in_mem108, !dbg !624
 
-; <label>:140                                     ; preds = %137
-  %141 = load i8** %111, align 16
-  %142 = sext i32 %138 to i64
-  %143 = getelementptr i8* %141, i64 %142
-  %144 = add i32 %138, 8
-  store i32 %144, i32* %110, align 16
-  br label %148
+vaarg.in_reg106:                                  ; preds = %for.body101
+  %reg_save_area107 = load i8** %36, align 16, !dbg !624
+  %44 = sext i32 %gp_offset104 to i64, !dbg !624
+  %45 = getelementptr i8* %reg_save_area107, i64 %44, !dbg !624
+  %46 = add i32 %gp_offset104, 8, !dbg !624
+  store i32 %46, i32* %gp_offset_p103, align 16, !dbg !624
+  br label %vaarg.end112, !dbg !624
 
-; <label>:145                                     ; preds = %137
-  %146 = load i8** %112, align 8
-  %147 = getelementptr i8* %146, i64 8
-  store i8* %147, i8** %112, align 8
-  br label %148
+vaarg.in_mem108:                                  ; preds = %for.body101
+  %overflow_arg_area110 = load i8** %overflow_arg_area_p109, align 8, !dbg !624
+  %overflow_arg_area.next111 = getelementptr i8* %overflow_arg_area110, i64 8, !dbg !624
+  store i8* %overflow_arg_area.next111, i8** %overflow_arg_area_p109, align 8, !dbg !624
+  br label %vaarg.end112, !dbg !624
 
-; <label>:148                                     ; preds = %145, %140
-  %149 = phi i32 [ %144, %140 ], [ %138, %145 ]
-  %.in12 = phi i8* [ %143, %140 ], [ %146, %145 ]
-  %150 = bitcast i8* %.in12 to i32**
-  %151 = load i32** %150, align 8
-  %152 = load i32* %151, align 4, !tbaa !11
-  %153 = getelementptr inbounds i32* %21, i64 %indvars.iv48
-  store i32 %152, i32* %153, align 4, !tbaa !11
-  %indvars.iv.next49 = add nuw nsw i64 %indvars.iv48, 1
-  %154 = sext i32 %39 to i64
-  %155 = icmp slt i64 %indvars.iv.next49, %154
-  br i1 %155, label %137, label %.preheader19
+vaarg.end112:                                     ; preds = %vaarg.in_mem108, %vaarg.in_reg106
+  %gp_offset104307 = phi i32 [ %46, %vaarg.in_reg106 ], [ %gp_offset104, %vaarg.in_mem108 ]
+  %vaarg.addr113.in = phi i8* [ %45, %vaarg.in_reg106 ], [ %overflow_arg_area110, %vaarg.in_mem108 ]
+  %vaarg.addr113 = bitcast i8* %vaarg.addr113.in to i32**, !dbg !624
+  %47 = load i32** %vaarg.addr113, align 8, !dbg !624
+  %48 = load i32* %47, align 4, !dbg !624, !tbaa !324
+  %arrayidx115 = getelementptr inbounds i32* %7, i64 %indvars.iv289, !dbg !624
+  store i32 %48, i32* %arrayidx115, align 4, !dbg !624, !tbaa !324
+  %indvars.iv.next290 = add i64 %indvars.iv289, 1, !dbg !622
+  %49 = trunc i64 %indvars.iv.next290 to i32, !dbg !622
+  %cmp99 = icmp slt i32 %49, %14, !dbg !622
+  br i1 %cmp99, label %for.body101, label %for.cond120.preheader, !dbg !622
 
-.preheader18:                                     ; preds = %170
-  br i1 %133, label %.lr.ph28, label %.preheader17
+for.cond142.preheader:                            ; preds = %vaarg.end134
+  br i1 %cmp121271, label %for.body145.lr.ph, label %for.cond164.preheader, !dbg !630
 
-.lr.ph28:                                         ; preds = %.preheader18
-  %156 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 0
-  %157 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 3
-  %158 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 2
-  %.pre63 = load i32* %156, align 16
-  br label %183
+for.body145.lr.ph:                                ; preds = %for.cond142.preheader
+  %gp_offset_p147 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 0, !dbg !632
+  %50 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 3, !dbg !632
+  %overflow_arg_area_p153 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 2, !dbg !632
+  %gp_offset148.pre = load i32* %gp_offset_p147, align 16, !dbg !632
+  br label %for.body145, !dbg !630
 
-; <label>:159                                     ; preds = %.lr.ph30, %170
-  %160 = phi i32 [ %.pre62, %.lr.ph30 ], [ %171, %170 ]
-  %indvars.iv46 = phi i64 [ 0, %.lr.ph30 ], [ %indvars.iv.next47, %170 ]
-  %161 = icmp ult i32 %160, 41
-  br i1 %161, label %162, label %167
+for.body123:                                      ; preds = %for.body123.lr.ph, %vaarg.end134
+  %gp_offset126 = phi i32 [ %gp_offset126.pre, %for.body123.lr.ph ], [ %gp_offset126305, %vaarg.end134 ], !dbg !628
+  %indvars.iv287 = phi i64 [ 0, %for.body123.lr.ph ], [ %indvars.iv.next288, %vaarg.end134 ]
+  %fits_in_gp127 = icmp ult i32 %gp_offset126, 41, !dbg !628
+  br i1 %fits_in_gp127, label %vaarg.in_reg128, label %vaarg.in_mem130, !dbg !628
 
-; <label>:162                                     ; preds = %159
-  %163 = load i8** %135, align 16
-  %164 = sext i32 %160 to i64
-  %165 = getelementptr i8* %163, i64 %164
-  %166 = add i32 %160, 8
-  store i32 %166, i32* %134, align 16
-  br label %170
+vaarg.in_reg128:                                  ; preds = %for.body123
+  %reg_save_area129 = load i8** %43, align 16, !dbg !628
+  %51 = sext i32 %gp_offset126 to i64, !dbg !628
+  %52 = getelementptr i8* %reg_save_area129, i64 %51, !dbg !628
+  %53 = add i32 %gp_offset126, 8, !dbg !628
+  store i32 %53, i32* %gp_offset_p125, align 16, !dbg !628
+  br label %vaarg.end134, !dbg !628
 
-; <label>:167                                     ; preds = %159
-  %168 = load i8** %136, align 8
-  %169 = getelementptr i8* %168, i64 8
-  store i8* %169, i8** %136, align 8
-  br label %170
+vaarg.in_mem130:                                  ; preds = %for.body123
+  %overflow_arg_area132 = load i8** %overflow_arg_area_p131, align 8, !dbg !628
+  %overflow_arg_area.next133 = getelementptr i8* %overflow_arg_area132, i64 8, !dbg !628
+  store i8* %overflow_arg_area.next133, i8** %overflow_arg_area_p131, align 8, !dbg !628
+  br label %vaarg.end134, !dbg !628
 
-; <label>:170                                     ; preds = %167, %162
-  %171 = phi i32 [ %166, %162 ], [ %160, %167 ]
-  %.in11 = phi i8* [ %165, %162 ], [ %168, %167 ]
-  %172 = bitcast i8* %.in11 to i64*
-  %173 = load i64* %172, align 8
-  %174 = getelementptr inbounds i8** %26, i64 %indvars.iv46
-  %175 = bitcast i8** %174 to i64*
-  store i64 %173, i64* %175, align 8, !tbaa !2
-  %indvars.iv.next47 = add nuw nsw i64 %indvars.iv46, 1
-  %176 = sext i32 %132 to i64
-  %177 = icmp slt i64 %indvars.iv.next47, %176
-  br i1 %177, label %159, label %.preheader18
+vaarg.end134:                                     ; preds = %vaarg.in_mem130, %vaarg.in_reg128
+  %gp_offset126305 = phi i32 [ %53, %vaarg.in_reg128 ], [ %gp_offset126, %vaarg.in_mem130 ]
+  %vaarg.addr135.in = phi i8* [ %52, %vaarg.in_reg128 ], [ %overflow_arg_area132, %vaarg.in_mem130 ]
+  %vaarg.addr135 = bitcast i8* %vaarg.addr135.in to i8**, !dbg !628
+  %54 = load i8** %vaarg.addr135, align 8, !dbg !628
+  %arrayidx137 = getelementptr inbounds i8** %9, i64 %indvars.iv287, !dbg !628
+  store i8* %54, i8** %arrayidx137, align 8, !dbg !628, !tbaa !310
+  %indvars.iv.next288 = add i64 %indvars.iv287, 1, !dbg !626
+  %55 = trunc i64 %indvars.iv.next288 to i32, !dbg !626
+  %cmp121 = icmp slt i32 %55, %42, !dbg !626
+  br i1 %cmp121, label %for.body123, label %for.cond142.preheader, !dbg !626
 
-.preheader17:                                     ; preds = %194, %.preheader19, %.preheader18
-  %178 = load i32* %num_out_arrays, align 4, !tbaa !11
-  %179 = icmp sgt i32 %178, 0
-  br i1 %179, label %.lr.ph26, label %._crit_edge
+for.cond164.preheader:                            ; preds = %for.cond120.preheader, %vaarg.end156, %for.cond142.preheader
+  %56 = load i32* %num_out_arrays, align 4, !dbg !634, !tbaa !324
+  %cmp165267 = icmp sgt i32 %56, 0, !dbg !634
+  br i1 %cmp165267, label %for.body167.lr.ph, label %for.end206, !dbg !634
 
-.lr.ph26:                                         ; preds = %.preheader17
-  %180 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 0
-  %181 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 3
-  %182 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 2
-  %.pre64 = load i32* %180, align 16
-  br label %205
+for.body167.lr.ph:                                ; preds = %for.cond164.preheader
+  %gp_offset_p169 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 0, !dbg !636
+  %57 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 3, !dbg !636
+  %overflow_arg_area_p175 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 2, !dbg !636
+  %gp_offset170.pre = load i32* %gp_offset_p169, align 16, !dbg !636
+  br label %for.body167, !dbg !634
 
-; <label>:183                                     ; preds = %.lr.ph28, %194
-  %184 = phi i32 [ %.pre63, %.lr.ph28 ], [ %195, %194 ]
-  %indvars.iv44 = phi i64 [ 0, %.lr.ph28 ], [ %indvars.iv.next45, %194 ]
-  %185 = icmp ult i32 %184, 41
-  br i1 %185, label %186, label %191
+for.body145:                                      ; preds = %for.body145.lr.ph, %vaarg.end156
+  %gp_offset148 = phi i32 [ %gp_offset148.pre, %for.body145.lr.ph ], [ %gp_offset148303, %vaarg.end156 ], !dbg !632
+  %indvars.iv285 = phi i64 [ 0, %for.body145.lr.ph ], [ %indvars.iv.next286, %vaarg.end156 ]
+  %fits_in_gp149 = icmp ult i32 %gp_offset148, 41, !dbg !632
+  br i1 %fits_in_gp149, label %vaarg.in_reg150, label %vaarg.in_mem152, !dbg !632
 
-; <label>:186                                     ; preds = %183
-  %187 = load i8** %157, align 16
-  %188 = sext i32 %184 to i64
-  %189 = getelementptr i8* %187, i64 %188
-  %190 = add i32 %184, 8
-  store i32 %190, i32* %156, align 16
-  br label %194
+vaarg.in_reg150:                                  ; preds = %for.body145
+  %reg_save_area151 = load i8** %50, align 16, !dbg !632
+  %58 = sext i32 %gp_offset148 to i64, !dbg !632
+  %59 = getelementptr i8* %reg_save_area151, i64 %58, !dbg !632
+  %60 = add i32 %gp_offset148, 8, !dbg !632
+  store i32 %60, i32* %gp_offset_p147, align 16, !dbg !632
+  br label %vaarg.end156, !dbg !632
 
-; <label>:191                                     ; preds = %183
-  %192 = load i8** %158, align 8
-  %193 = getelementptr i8* %192, i64 8
-  store i8* %193, i8** %158, align 8
-  br label %194
+vaarg.in_mem152:                                  ; preds = %for.body145
+  %overflow_arg_area154 = load i8** %overflow_arg_area_p153, align 8, !dbg !632
+  %overflow_arg_area.next155 = getelementptr i8* %overflow_arg_area154, i64 8, !dbg !632
+  store i8* %overflow_arg_area.next155, i8** %overflow_arg_area_p153, align 8, !dbg !632
+  br label %vaarg.end156, !dbg !632
 
-; <label>:194                                     ; preds = %191, %186
-  %195 = phi i32 [ %190, %186 ], [ %184, %191 ]
-  %.in10 = phi i8* [ %189, %186 ], [ %192, %191 ]
-  %196 = bitcast i8* %.in10 to i32**
-  %197 = load i32** %196, align 8
-  %198 = load i32* %197, align 4, !tbaa !11
-  %199 = getelementptr inbounds i32* %29, i64 %indvars.iv44
-  store i32 %198, i32* %199, align 4, !tbaa !11
-  %indvars.iv.next45 = add nuw nsw i64 %indvars.iv44, 1
-  %200 = sext i32 %132 to i64
-  %201 = icmp slt i64 %indvars.iv.next45, %200
-  br i1 %201, label %183, label %.preheader17
+vaarg.end156:                                     ; preds = %vaarg.in_mem152, %vaarg.in_reg150
+  %gp_offset148303 = phi i32 [ %60, %vaarg.in_reg150 ], [ %gp_offset148, %vaarg.in_mem152 ]
+  %vaarg.addr157.in = phi i8* [ %59, %vaarg.in_reg150 ], [ %overflow_arg_area154, %vaarg.in_mem152 ]
+  %vaarg.addr157 = bitcast i8* %vaarg.addr157.in to i32**, !dbg !632
+  %61 = load i32** %vaarg.addr157, align 8, !dbg !632
+  %62 = load i32* %61, align 4, !dbg !632, !tbaa !324
+  %arrayidx159 = getelementptr inbounds i32* %10, i64 %indvars.iv285, !dbg !632
+  store i32 %62, i32* %arrayidx159, align 4, !dbg !632, !tbaa !324
+  %indvars.iv.next286 = add i64 %indvars.iv285, 1, !dbg !630
+  %63 = trunc i64 %indvars.iv.next286 to i32, !dbg !630
+  %cmp143 = icmp slt i32 %63, %42, !dbg !630
+  br i1 %cmp143, label %for.body145, label %for.cond164.preheader, !dbg !630
 
-.preheader:                                       ; preds = %216
-  br i1 %179, label %.lr.ph, label %._crit_edge
+for.cond186.preheader:                            ; preds = %vaarg.end178
+  br i1 %cmp165267, label %for.body189.lr.ph, label %for.end206, !dbg !638
 
-.lr.ph:                                           ; preds = %.preheader
-  %202 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 0
-  %203 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 3
-  %204 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 2
-  %.pre65 = load i32* %202, align 16
-  br label %224
+for.body189.lr.ph:                                ; preds = %for.cond186.preheader
+  %gp_offset_p191 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 0, !dbg !640
+  %64 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 3, !dbg !640
+  %overflow_arg_area_p197 = getelementptr inbounds [1 x %struct.__va_list_tag]* %indices, i64 0, i64 0, i32 2, !dbg !640
+  %gp_offset192.pre = load i32* %gp_offset_p191, align 16, !dbg !640
+  br label %for.body189, !dbg !638
 
-; <label>:205                                     ; preds = %.lr.ph26, %216
-  %206 = phi i32 [ %.pre64, %.lr.ph26 ], [ %217, %216 ]
-  %indvars.iv42 = phi i64 [ 0, %.lr.ph26 ], [ %indvars.iv.next43, %216 ]
-  %207 = icmp ult i32 %206, 41
-  br i1 %207, label %208, label %213
+for.body167:                                      ; preds = %for.body167.lr.ph, %vaarg.end178
+  %gp_offset170 = phi i32 [ %gp_offset170.pre, %for.body167.lr.ph ], [ %gp_offset170301, %vaarg.end178 ], !dbg !636
+  %indvars.iv283 = phi i64 [ 0, %for.body167.lr.ph ], [ %indvars.iv.next284, %vaarg.end178 ]
+  %fits_in_gp171 = icmp ult i32 %gp_offset170, 41, !dbg !636
+  br i1 %fits_in_gp171, label %vaarg.in_reg172, label %vaarg.in_mem174, !dbg !636
 
-; <label>:208                                     ; preds = %205
-  %209 = load i8** %181, align 16
-  %210 = sext i32 %206 to i64
-  %211 = getelementptr i8* %209, i64 %210
-  %212 = add i32 %206, 8
-  store i32 %212, i32* %180, align 16
-  br label %216
+vaarg.in_reg172:                                  ; preds = %for.body167
+  %reg_save_area173 = load i8** %57, align 16, !dbg !636
+  %65 = sext i32 %gp_offset170 to i64, !dbg !636
+  %66 = getelementptr i8* %reg_save_area173, i64 %65, !dbg !636
+  %67 = add i32 %gp_offset170, 8, !dbg !636
+  store i32 %67, i32* %gp_offset_p169, align 16, !dbg !636
+  br label %vaarg.end178, !dbg !636
 
-; <label>:213                                     ; preds = %205
-  %214 = load i8** %182, align 8
-  %215 = getelementptr i8* %214, i64 8
-  store i8* %215, i8** %182, align 8
-  br label %216
+vaarg.in_mem174:                                  ; preds = %for.body167
+  %overflow_arg_area176 = load i8** %overflow_arg_area_p175, align 8, !dbg !636
+  %overflow_arg_area.next177 = getelementptr i8* %overflow_arg_area176, i64 8, !dbg !636
+  store i8* %overflow_arg_area.next177, i8** %overflow_arg_area_p175, align 8, !dbg !636
+  br label %vaarg.end178, !dbg !636
 
-; <label>:216                                     ; preds = %213, %208
-  %217 = phi i32 [ %212, %208 ], [ %206, %213 ]
-  %.in9 = phi i8* [ %211, %208 ], [ %214, %213 ]
-  %218 = bitcast i8* %.in9 to i64*
-  %219 = load i64* %218, align 8
-  %220 = getelementptr inbounds i8** %34, i64 %indvars.iv42
-  %221 = bitcast i8** %220 to i64*
-  store i64 %219, i64* %221, align 8, !tbaa !2
-  %indvars.iv.next43 = add nuw nsw i64 %indvars.iv42, 1
-  %222 = sext i32 %178 to i64
-  %223 = icmp slt i64 %indvars.iv.next43, %222
-  br i1 %223, label %205, label %.preheader
+vaarg.end178:                                     ; preds = %vaarg.in_mem174, %vaarg.in_reg172
+  %gp_offset170301 = phi i32 [ %67, %vaarg.in_reg172 ], [ %gp_offset170, %vaarg.in_mem174 ]
+  %vaarg.addr179.in = phi i8* [ %66, %vaarg.in_reg172 ], [ %overflow_arg_area176, %vaarg.in_mem174 ]
+  %vaarg.addr179 = bitcast i8* %vaarg.addr179.in to i8**, !dbg !636
+  %68 = load i8** %vaarg.addr179, align 8, !dbg !636
+  %arrayidx181 = getelementptr inbounds i8** %12, i64 %indvars.iv283, !dbg !636
+  store i8* %68, i8** %arrayidx181, align 8, !dbg !636, !tbaa !310
+  %indvars.iv.next284 = add i64 %indvars.iv283, 1, !dbg !634
+  %69 = trunc i64 %indvars.iv.next284 to i32, !dbg !634
+  %cmp165 = icmp slt i32 %69, %56, !dbg !634
+  br i1 %cmp165, label %for.body167, label %for.cond186.preheader, !dbg !634
 
-; <label>:224                                     ; preds = %.lr.ph, %235
-  %225 = phi i32 [ %.pre65, %.lr.ph ], [ %236, %235 ]
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %235 ]
-  %226 = icmp ult i32 %225, 41
-  br i1 %226, label %227, label %232
+for.body189:                                      ; preds = %for.body189.lr.ph, %vaarg.end200
+  %gp_offset192 = phi i32 [ %gp_offset192.pre, %for.body189.lr.ph ], [ %gp_offset192299, %vaarg.end200 ], !dbg !640
+  %indvars.iv = phi i64 [ 0, %for.body189.lr.ph ], [ %indvars.iv.next, %vaarg.end200 ]
+  %fits_in_gp193 = icmp ult i32 %gp_offset192, 41, !dbg !640
+  br i1 %fits_in_gp193, label %vaarg.in_reg194, label %vaarg.in_mem196, !dbg !640
 
-; <label>:227                                     ; preds = %224
-  %228 = load i8** %203, align 16
-  %229 = sext i32 %225 to i64
-  %230 = getelementptr i8* %228, i64 %229
-  %231 = add i32 %225, 8
-  store i32 %231, i32* %202, align 16
-  br label %235
+vaarg.in_reg194:                                  ; preds = %for.body189
+  %reg_save_area195 = load i8** %64, align 16, !dbg !640
+  %70 = sext i32 %gp_offset192 to i64, !dbg !640
+  %71 = getelementptr i8* %reg_save_area195, i64 %70, !dbg !640
+  %72 = add i32 %gp_offset192, 8, !dbg !640
+  store i32 %72, i32* %gp_offset_p191, align 16, !dbg !640
+  br label %vaarg.end200, !dbg !640
 
-; <label>:232                                     ; preds = %224
-  %233 = load i8** %204, align 8
-  %234 = getelementptr i8* %233, i64 8
-  store i8* %234, i8** %204, align 8
-  br label %235
+vaarg.in_mem196:                                  ; preds = %for.body189
+  %overflow_arg_area198 = load i8** %overflow_arg_area_p197, align 8, !dbg !640
+  %overflow_arg_area.next199 = getelementptr i8* %overflow_arg_area198, i64 8, !dbg !640
+  store i8* %overflow_arg_area.next199, i8** %overflow_arg_area_p197, align 8, !dbg !640
+  br label %vaarg.end200, !dbg !640
 
-; <label>:235                                     ; preds = %232, %227
-  %236 = phi i32 [ %231, %227 ], [ %225, %232 ]
-  %.in = phi i8* [ %230, %227 ], [ %233, %232 ]
-  %237 = bitcast i8* %.in to i32**
-  %238 = load i32** %237, align 8
-  %239 = load i32* %238, align 4, !tbaa !11
-  %240 = getelementptr inbounds i32* %37, i64 %indvars.iv
-  store i32 %239, i32* %240, align 4, !tbaa !11
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %241 = sext i32 %178 to i64
-  %242 = icmp slt i64 %indvars.iv.next, %241
-  br i1 %242, label %224, label %._crit_edge
+vaarg.end200:                                     ; preds = %vaarg.in_mem196, %vaarg.in_reg194
+  %gp_offset192299 = phi i32 [ %72, %vaarg.in_reg194 ], [ %gp_offset192, %vaarg.in_mem196 ]
+  %vaarg.addr201.in = phi i8* [ %71, %vaarg.in_reg194 ], [ %overflow_arg_area198, %vaarg.in_mem196 ]
+  %vaarg.addr201 = bitcast i8* %vaarg.addr201.in to i32**, !dbg !640
+  %73 = load i32** %vaarg.addr201, align 8, !dbg !640
+  %74 = load i32* %73, align 4, !dbg !640, !tbaa !324
+  %arrayidx203 = getelementptr inbounds i32* %13, i64 %indvars.iv, !dbg !640
+  store i32 %74, i32* %arrayidx203, align 4, !dbg !640, !tbaa !324
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !638
+  %75 = trunc i64 %indvars.iv.next to i32, !dbg !638
+  %cmp187 = icmp slt i32 %75, %56, !dbg !638
+  br i1 %cmp187, label %for.body189, label %for.end206, !dbg !638
 
-._crit_edge:                                      ; preds = %235, %.preheader17, %.preheader
-  call void @llvm.va_end(i8* %38)
-  %243 = getelementptr inbounds i8* %3, i64 24
-  %244 = bitcast i8* %243 to i32 (%struct.cGH*, i32, i32, i32, i32, i32*, i8**, i32*, i8**, i32*, i8**, i32*, i8**, i32*)**
-  %245 = load i32 (%struct.cGH*, i32, i32, i32, i32, i32*, i8**, i32*, i8**, i32*, i8**, i32*, i8**, i32*)** %244, align 8, !tbaa !10
-  %246 = load i32* %num_points, align 4, !tbaa !11
-  %247 = load i32* %num_dims, align 4, !tbaa !11
-  %248 = load i32* %num_in_arrays, align 4, !tbaa !11
-  %249 = load i32* %num_out_arrays, align 4, !tbaa !11
-  %250 = call i32 %245(%struct.cGH* %GH, i32 %246, i32 %247, i32 %248, i32 %249, i32* %12, i8** %15, i32* %17, i8** %19, i32* %21, i8** %26, i32* %29, i8** %34, i32* %37) #6
-  call void @free(i8* %36) #7
-  call void @free(i8* %33) #7
-  call void @free(i8* %28) #7
-  call void @free(i8* %25) #7
-  call void @free(i8* %20) #7
-  call void @free(i8* %18) #7
-  call void @free(i8* %16) #7
-  call void @free(i8* %14) #7
-  call void @free(i8* %11) #7
-  br label %251
+for.end206:                                       ; preds = %for.cond164.preheader, %vaarg.end200, %for.cond186.preheader
+  call void @llvm.va_end(i8* %arraydecay27), !dbg !642
+  %interp_operator_local = getelementptr inbounds i8* %call, i64 24, !dbg !643
+  %76 = bitcast i8* %interp_operator_local to i32 (%struct.cGH*, i32, i32, i32, i32, i32*, i8**, i32*, i8**, i32*, i8**, i32*, i8**, i32*)**, !dbg !643
+  %77 = load i32 (%struct.cGH*, i32, i32, i32, i32, i32*, i8**, i32*, i8**, i32*, i8**, i32*, i8**, i32*)** %76, align 8, !dbg !643, !tbaa !310
+  %78 = load i32* %num_points, align 4, !dbg !643, !tbaa !324
+  %79 = load i32* %num_dims, align 4, !dbg !643, !tbaa !324
+  %80 = load i32* %num_in_arrays, align 4, !dbg !643, !tbaa !324
+  %81 = load i32* %num_out_arrays, align 4, !dbg !643, !tbaa !324
+  %call209 = call i32 %77(%struct.cGH* %GH, i32 %78, i32 %79, i32 %80, i32 %81, i32* %3, i8** %4, i32* %5, i8** %6, i32* %7, i8** %9, i32* %10, i8** %12, i32* %13) #7, !dbg !643
+  call void @llvm.dbg.value(metadata !{i32 %call209}, i64 0, metadata !240), !dbg !643
+  call void @free(i8* %call26) #7, !dbg !644
+  call void @free(i8* %call23) #7, !dbg !645
+  call void @free(i8* %call20) #7, !dbg !646
+  call void @free(i8* %call17) #7, !dbg !647
+  call void @free(i8* %call14) #7, !dbg !648
+  call void @free(i8* %call11) #7, !dbg !649
+  call void @free(i8* %call8) #7, !dbg !650
+  call void @free(i8* %call5) #7, !dbg !651
+  call void @free(i8* %call2) #7, !dbg !652
+  br label %if.end
 
-; <label>:251                                     ; preds = %._crit_edge, %5
-  %retcode.0 = phi i32 [ -1, %5 ], [ %250, %._crit_edge ]
-  store i32 %retcode.0, i32* %fortranreturn, align 4, !tbaa !11
-  ret void
+if.end:                                           ; preds = %for.end206, %if.then
+  %retcode.0 = phi i32 [ -1, %if.then ], [ %call209, %for.end206 ]
+  store i32 %retcode.0, i32* %fortranreturn, align 4, !dbg !653, !tbaa !324
+  ret void, !dbg !654
 }

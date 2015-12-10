@@ -1,16 +1,18 @@
 define i8* @CCTK_IOMethod(i32 %handle) #1 {
-  %1 = load %struct.cHandledData** @IOMethods, align 8, !tbaa !2
-  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %handle) #5
-  %3 = icmp eq i8* %2, null
-  br i1 %3, label %8, label %4
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %handle}, i64 0, metadata !149), !dbg !334
+  %0 = load %struct.cHandledData** @IOMethods, align 8, !dbg !335, !tbaa !235
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %0, i32 %handle) #6, !dbg !335
+  %tobool = icmp eq i8* %call, null, !dbg !336
+  br i1 %tobool, label %cond.end, label %cond.true, !dbg !336
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds i8* %2, i64 8
-  %6 = bitcast i8* %5 to i8**
-  %7 = load i8** %6, align 8, !tbaa !8
-  br label %8
+cond.true:                                        ; preds = %entry
+  %name = getelementptr inbounds i8* %call, i64 8, !dbg !336
+  %1 = bitcast i8* %name to i8**, !dbg !336
+  %2 = load i8** %1, align 8, !dbg !336, !tbaa !235
+  br label %cond.end, !dbg !336
 
-; <label>:8                                       ; preds = %0, %4
-  %9 = phi i8* [ %7, %4 ], [ null, %0 ]
-  ret i8* %9
+cond.end:                                         ; preds = %entry, %cond.true
+  %cond = phi i8* [ %2, %cond.true ], [ null, %entry ], !dbg !336
+  ret i8* %cond, !dbg !336
 }

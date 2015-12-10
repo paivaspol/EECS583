@@ -1,197 +1,204 @@
-define i32 @BZ2_bzCompressInit(%struct.bz_stream* %strm, i32 %blockSize100k, i32 %verbosity, i32 %workFactor) #4 {
+define i32 @BZ2_bzCompressInit(%struct.bz_stream* %strm, i32 %blockSize100k, i32 %verbosity, i32 %workFactor) #5 {
 entry:
-  %cmp = icmp eq %struct.bz_stream* %strm, null
-  br i1 %cmp, label %return, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata !{%struct.bz_stream* %strm}, i64 0, metadata !58), !dbg !625
+  tail call void @llvm.dbg.value(metadata !{i32 %blockSize100k}, i64 0, metadata !59), !dbg !626
+  tail call void @llvm.dbg.value(metadata !{i32 %verbosity}, i64 0, metadata !60), !dbg !627
+  tail call void @llvm.dbg.value(metadata !{i32 %workFactor}, i64 0, metadata !61), !dbg !628
+  %cmp = icmp eq %struct.bz_stream* %strm, null, !dbg !629
+  br i1 %cmp, label %return, label %lor.lhs.false, !dbg !629
 
 lor.lhs.false:                                    ; preds = %entry
-  %blockSize100k.off = add i32 %blockSize100k, -1
-  %0 = icmp ugt i32 %blockSize100k.off, 8
-  %1 = icmp ugt i32 %workFactor, 250
-  %or.cond = or i1 %0, %1
-  br i1 %or.cond, label %return, label %if.end9
+  %blockSize100k.off = add i32 %blockSize100k, -1, !dbg !629
+  %0 = icmp ugt i32 %blockSize100k.off, 8, !dbg !629
+  %1 = icmp ugt i32 %workFactor, 250, !dbg !629
+  %or.cond = or i1 %0, %1, !dbg !629
+  br i1 %or.cond, label %return, label %if.end9, !dbg !629
 
 if.end9:                                          ; preds = %lor.lhs.false
-  %cmp10 = icmp eq i32 %workFactor, 0
-  %.workFactor = select i1 %cmp10, i32 30, i32 %workFactor
-  %bzalloc = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 9
-  %2 = load i8* (i8*, i32, i32)** %bzalloc, align 8, !tbaa !0
-  %cmp13 = icmp eq i8* (i8*, i32, i32)* %2, null
-  br i1 %cmp13, label %if.then14, label %if.end16
+  %cmp10 = icmp eq i32 %workFactor, 0, !dbg !630
+  tail call void @llvm.dbg.value(metadata !631, i64 0, metadata !61), !dbg !630
+  %.workFactor = select i1 %cmp10, i32 30, i32 %workFactor, !dbg !630
+  %bzalloc = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 9, !dbg !632
+  %2 = load i8* (i8*, i32, i32)** %bzalloc, align 8, !dbg !632, !tbaa !615
+  %cmp13 = icmp eq i8* (i8*, i32, i32)* %2, null, !dbg !632
+  br i1 %cmp13, label %if.then14, label %if.end16, !dbg !632
 
 if.then14:                                        ; preds = %if.end9
-  store i8* (i8*, i32, i32)* @default_bzalloc, i8* (i8*, i32, i32)** %bzalloc, align 8, !tbaa !0
-  br label %if.end16
+  store i8* (i8*, i32, i32)* @default_bzalloc, i8* (i8*, i32, i32)** %bzalloc, align 8, !dbg !632, !tbaa !615
+  br label %if.end16, !dbg !632
 
 if.end16:                                         ; preds = %if.then14, %if.end9
   %3 = phi i8* (i8*, i32, i32)* [ @default_bzalloc, %if.then14 ], [ %2, %if.end9 ]
-  %bzfree = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 10
-  %4 = load void (i8*, i8*)** %bzfree, align 8, !tbaa !0
-  %cmp17 = icmp eq void (i8*, i8*)* %4, null
-  br i1 %cmp17, label %if.then18, label %if.end20
+  %bzfree = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 10, !dbg !633
+  %4 = load void (i8*, i8*)** %bzfree, align 8, !dbg !633, !tbaa !615
+  %cmp17 = icmp eq void (i8*, i8*)* %4, null, !dbg !633
+  br i1 %cmp17, label %if.then18, label %if.end20, !dbg !633
 
 if.then18:                                        ; preds = %if.end16
-  store void (i8*, i8*)* @default_bzfree, void (i8*, i8*)** %bzfree, align 8, !tbaa !0
-  br label %if.end20
+  store void (i8*, i8*)* @default_bzfree, void (i8*, i8*)** %bzfree, align 8, !dbg !633, !tbaa !615
+  br label %if.end20, !dbg !633
 
 if.end20:                                         ; preds = %if.then18, %if.end16
-  %opaque = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 11
-  %5 = load i8** %opaque, align 8, !tbaa !0
-  %call22 = tail call i8* %3(i8* %5, i32 55768, i32 1) #11
-  %cmp23 = icmp eq i8* %call22, null
-  br i1 %cmp23, label %return, label %if.end25
+  %opaque = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 11, !dbg !634
+  %5 = load i8** %opaque, align 8, !dbg !634, !tbaa !615
+  %call22 = tail call i8* %3(i8* %5, i32 55768, i32 1) #12, !dbg !634
+  %cmp23 = icmp eq i8* %call22, null, !dbg !635
+  br i1 %cmp23, label %return, label %if.end25, !dbg !635
 
 if.end25:                                         ; preds = %if.end20
-  %strm26 = bitcast i8* %call22 to %struct.bz_stream**
-  store %struct.bz_stream* %strm, %struct.bz_stream** %strm26, align 8, !tbaa !0
-  %arr1 = getelementptr inbounds i8* %call22, i64 24
-  %6 = bitcast i8* %arr1 to i32**
-  %arr2 = getelementptr inbounds i8* %call22, i64 32
-  %7 = bitcast i8* %arr2 to i32**
-  %ftab = getelementptr inbounds i8* %call22, i64 40
-  %8 = bitcast i8* %ftab to i32**
-  %mul = mul nsw i32 %blockSize100k, 100000
-  call void @llvm.memset.p0i8.i64(i8* %arr1, i8 0, i64 24, i32 8, i1 false)
-  %9 = load i8* (i8*, i32, i32)** %bzalloc, align 8, !tbaa !0
-  %10 = load i8** %opaque, align 8, !tbaa !0
-  %mul29 = mul i32 %blockSize100k, 400000
-  %call31 = tail call i8* %9(i8* %10, i32 %mul29, i32 1) #11
-  %11 = bitcast i8* %call31 to i32*
-  store i32* %11, i32** %6, align 8, !tbaa !0
-  %12 = load i8* (i8*, i32, i32)** %bzalloc, align 8, !tbaa !0
-  %13 = load i8** %opaque, align 8, !tbaa !0
-  %mul36 = add i32 %mul29, 136
-  %call38 = tail call i8* %12(i8* %13, i32 %mul36, i32 1) #11
-  %14 = bitcast i8* %call38 to i32*
-  store i32* %14, i32** %7, align 8, !tbaa !0
-  %15 = load i8* (i8*, i32, i32)** %bzalloc, align 8, !tbaa !0
-  %16 = load i8** %opaque, align 8, !tbaa !0
-  %call42 = tail call i8* %15(i8* %16, i32 262148, i32 1) #11
-  %17 = bitcast i8* %call42 to i32*
-  store i32* %17, i32** %8, align 8, !tbaa !0
-  %18 = load i32** %6, align 8, !tbaa !0
-  %cmp45 = icmp eq i32* %18, null
-  br i1 %cmp45, label %if.end63, label %lor.lhs.false47
+  %strm26 = bitcast i8* %call22 to %struct.bz_stream**, !dbg !636
+  store %struct.bz_stream* %strm, %struct.bz_stream** %strm26, align 8, !dbg !636, !tbaa !615
+  %arr1 = getelementptr inbounds i8* %call22, i64 24, !dbg !637
+  %6 = bitcast i8* %arr1 to i32**, !dbg !637
+  %arr2 = getelementptr inbounds i8* %call22, i64 32, !dbg !638
+  %7 = bitcast i8* %arr2 to i32**, !dbg !638
+  %ftab = getelementptr inbounds i8* %call22, i64 40, !dbg !639
+  %8 = bitcast i8* %ftab to i32**, !dbg !639
+  %mul = mul nsw i32 %blockSize100k, 100000, !dbg !640
+  tail call void @llvm.dbg.value(metadata !{i32 %mul}, i64 0, metadata !62), !dbg !640
+  call void @llvm.memset.p0i8.i64(i8* %arr1, i8 0, i64 24, i32 8, i1 false), !dbg !638
+  %9 = load i8* (i8*, i32, i32)** %bzalloc, align 8, !dbg !641, !tbaa !615
+  %10 = load i8** %opaque, align 8, !dbg !641, !tbaa !615
+  %mul29 = mul i32 %blockSize100k, 400000, !dbg !641
+  %call31 = tail call i8* %9(i8* %10, i32 %mul29, i32 1) #12, !dbg !641
+  %11 = bitcast i8* %call31 to i32*, !dbg !641
+  store i32* %11, i32** %6, align 8, !dbg !641, !tbaa !615
+  %12 = load i8* (i8*, i32, i32)** %bzalloc, align 8, !dbg !642, !tbaa !615
+  %13 = load i8** %opaque, align 8, !dbg !642, !tbaa !615
+  %mul36 = add i32 %mul29, 136, !dbg !642
+  %call38 = tail call i8* %12(i8* %13, i32 %mul36, i32 1) #12, !dbg !642
+  %14 = bitcast i8* %call38 to i32*, !dbg !642
+  store i32* %14, i32** %7, align 8, !dbg !642, !tbaa !615
+  %15 = load i8* (i8*, i32, i32)** %bzalloc, align 8, !dbg !643, !tbaa !615
+  %16 = load i8** %opaque, align 8, !dbg !643, !tbaa !615
+  %call42 = tail call i8* %15(i8* %16, i32 262148, i32 1) #12, !dbg !643
+  %17 = bitcast i8* %call42 to i32*, !dbg !643
+  store i32* %17, i32** %8, align 8, !dbg !643, !tbaa !615
+  %18 = load i32** %6, align 8, !dbg !644, !tbaa !615
+  %cmp45 = icmp eq i32* %18, null, !dbg !644
+  br i1 %cmp45, label %if.end63, label %lor.lhs.false47, !dbg !644
 
 lor.lhs.false47:                                  ; preds = %if.end25
-  %19 = load i32** %7, align 8, !tbaa !0
-  %cmp49 = icmp eq i32* %19, null
-  %cmp53 = icmp eq i8* %call42, null
-  %or.cond166 = or i1 %cmp49, %cmp53
-  br i1 %or.cond166, label %if.then59, label %if.end86
+  %19 = load i32** %7, align 8, !dbg !644, !tbaa !615
+  %cmp49 = icmp eq i32* %19, null, !dbg !644
+  %cmp53 = icmp eq i8* %call42, null, !dbg !644
+  %or.cond166 = or i1 %cmp49, %cmp53, !dbg !644
+  br i1 %or.cond166, label %if.then59, label %if.end86, !dbg !644
 
 if.then59:                                        ; preds = %lor.lhs.false47
-  %20 = load void (i8*, i8*)** %bzfree, align 8, !tbaa !0
-  %21 = load i8** %opaque, align 8, !tbaa !0
-  %22 = bitcast i32* %18 to i8*
-  tail call void %20(i8* %21, i8* %22) #11
-  br label %if.end63
+  %20 = load void (i8*, i8*)** %bzfree, align 8, !dbg !645, !tbaa !615
+  %21 = load i8** %opaque, align 8, !dbg !645, !tbaa !615
+  %22 = bitcast i32* %18 to i8*, !dbg !645
+  tail call void %20(i8* %21, i8* %22) #12, !dbg !645
+  br label %if.end63, !dbg !645
 
 if.end63:                                         ; preds = %if.end25, %if.then59
-  %23 = load i32** %7, align 8, !tbaa !0
-  %cmp65 = icmp eq i32* %23, null
-  br i1 %cmp65, label %if.end71, label %if.then67
+  %23 = load i32** %7, align 8, !dbg !647, !tbaa !615
+  %cmp65 = icmp eq i32* %23, null, !dbg !647
+  br i1 %cmp65, label %if.end71, label %if.then67, !dbg !647
 
 if.then67:                                        ; preds = %if.end63
-  %24 = load void (i8*, i8*)** %bzfree, align 8, !tbaa !0
-  %25 = load i8** %opaque, align 8, !tbaa !0
-  %26 = bitcast i32* %23 to i8*
-  tail call void %24(i8* %25, i8* %26) #11
-  br label %if.end71
+  %24 = load void (i8*, i8*)** %bzfree, align 8, !dbg !647, !tbaa !615
+  %25 = load i8** %opaque, align 8, !dbg !647, !tbaa !615
+  %26 = bitcast i32* %23 to i8*, !dbg !647
+  tail call void %24(i8* %25, i8* %26) #12, !dbg !647
+  br label %if.end71, !dbg !647
 
 if.end71:                                         ; preds = %if.end63, %if.then67
-  %27 = load i32** %8, align 8, !tbaa !0
-  %cmp73 = icmp eq i32* %27, null
-  br i1 %cmp73, label %if.then82, label %if.then75
+  %27 = load i32** %8, align 8, !dbg !648, !tbaa !615
+  %cmp73 = icmp eq i32* %27, null, !dbg !648
+  br i1 %cmp73, label %if.then82, label %if.then75, !dbg !648
 
 if.then75:                                        ; preds = %if.end71
-  %28 = load void (i8*, i8*)** %bzfree, align 8, !tbaa !0
-  %29 = load i8** %opaque, align 8, !tbaa !0
-  %30 = bitcast i32* %27 to i8*
-  tail call void %28(i8* %29, i8* %30) #11
-  br label %if.then82
+  %28 = load void (i8*, i8*)** %bzfree, align 8, !dbg !648, !tbaa !615
+  %29 = load i8** %opaque, align 8, !dbg !648, !tbaa !615
+  %30 = bitcast i32* %27 to i8*, !dbg !648
+  tail call void %28(i8* %29, i8* %30) #12, !dbg !648
+  br label %if.then82, !dbg !648
 
 if.then82:                                        ; preds = %if.then75, %if.end71
-  %31 = load void (i8*, i8*)** %bzfree, align 8, !tbaa !0
-  %32 = load i8** %opaque, align 8, !tbaa !0
-  tail call void %31(i8* %32, i8* %call22) #11
-  br label %return
+  %31 = load void (i8*, i8*)** %bzfree, align 8, !dbg !649, !tbaa !615
+  %32 = load i8** %opaque, align 8, !dbg !649, !tbaa !615
+  tail call void %31(i8* %32, i8* %call22) #12, !dbg !649
+  br label %return, !dbg !649
 
 if.end86:                                         ; preds = %lor.lhs.false47
-  %blockNo = getelementptr inbounds i8* %call22, i64 660
-  %33 = bitcast i8* %blockNo to i32*
-  store i32 0, i32* %33, align 4, !tbaa !3
-  %state = getelementptr inbounds i8* %call22, i64 12
-  %34 = bitcast i8* %state to i32*
-  store i32 2, i32* %34, align 4, !tbaa !3
-  %mode = getelementptr inbounds i8* %call22, i64 8
-  %35 = bitcast i8* %mode to i32*
-  store i32 2, i32* %35, align 4, !tbaa !3
-  %combinedCRC = getelementptr inbounds i8* %call22, i64 652
-  %36 = bitcast i8* %combinedCRC to i32*
-  store i32 0, i32* %36, align 4, !tbaa !3
-  %blockSize100k87 = getelementptr inbounds i8* %call22, i64 664
-  %37 = bitcast i8* %blockSize100k87 to i32*
-  store i32 %blockSize100k, i32* %37, align 4, !tbaa !3
-  %sub = add nsw i32 %mul, -19
-  %nblockMAX = getelementptr inbounds i8* %call22, i64 112
-  %38 = bitcast i8* %nblockMAX to i32*
-  store i32 %sub, i32* %38, align 4, !tbaa !3
-  %verbosity89 = getelementptr inbounds i8* %call22, i64 656
-  %39 = bitcast i8* %verbosity89 to i32*
-  store i32 %verbosity, i32* %39, align 4, !tbaa !3
-  %workFactor90 = getelementptr inbounds i8* %call22, i64 88
-  %40 = bitcast i8* %workFactor90 to i32*
-  store i32 %.workFactor, i32* %40, align 4, !tbaa !3
-  %41 = bitcast i32* %19 to i8*
-  %block = getelementptr inbounds i8* %call22, i64 64
-  %42 = bitcast i8* %block to i8**
-  store i8* %41, i8** %42, align 8, !tbaa !0
-  %43 = bitcast i32* %18 to i16*
-  %mtfv = getelementptr inbounds i8* %call22, i64 72
-  %44 = bitcast i8* %mtfv to i16**
-  store i16* %43, i16** %44, align 8, !tbaa !0
-  %zbits = getelementptr inbounds i8* %call22, i64 80
-  %45 = bitcast i8* %zbits to i8**
-  store i8* null, i8** %45, align 8, !tbaa !0
-  %ptr = getelementptr inbounds i8* %call22, i64 56
-  %46 = bitcast i8* %ptr to i32**
-  store i32* %18, i32** %46, align 8, !tbaa !0
-  %state94 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 8
-  store i8* %call22, i8** %state94, align 8, !tbaa !0
-  %total_in_lo32 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 2
-  store i32 0, i32* %total_in_lo32, align 4, !tbaa !3
-  %total_in_hi32 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 3
-  store i32 0, i32* %total_in_hi32, align 4, !tbaa !3
-  %total_out_lo32 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 6
-  store i32 0, i32* %total_out_lo32, align 4, !tbaa !3
-  %total_out_hi32 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 7
-  store i32 0, i32* %total_out_hi32, align 4, !tbaa !3
-  %state_in_ch.i = getelementptr inbounds i8* %call22, i64 92
-  %47 = bitcast i8* %state_in_ch.i to i32*
-  store i32 256, i32* %47, align 4, !tbaa !3
-  %state_in_len.i = getelementptr inbounds i8* %call22, i64 96
-  %48 = bitcast i8* %state_in_len.i to i32*
-  store i32 0, i32* %48, align 4, !tbaa !3
-  %nblock.i = getelementptr inbounds i8* %call22, i64 108
-  %49 = bitcast i8* %nblock.i to i32*
-  store i32 0, i32* %49, align 4, !tbaa !3
-  %numZ.i = getelementptr inbounds i8* %call22, i64 116
-  %50 = bitcast i8* %numZ.i to i32*
-  store i32 0, i32* %50, align 4, !tbaa !3
-  %state_out_pos.i = getelementptr inbounds i8* %call22, i64 120
-  %51 = bitcast i8* %state_out_pos.i to i32*
-  store i32 0, i32* %51, align 4, !tbaa !3
-  %blockCRC.i = getelementptr inbounds i8* %call22, i64 648
-  %52 = bitcast i8* %blockCRC.i to i32*
-  store i32 -1, i32* %52, align 4, !tbaa !3
+  %blockNo = getelementptr inbounds i8* %call22, i64 660, !dbg !650
+  %33 = bitcast i8* %blockNo to i32*, !dbg !650
+  store i32 0, i32* %33, align 4, !dbg !650, !tbaa !651
+  %state = getelementptr inbounds i8* %call22, i64 12, !dbg !652
+  %34 = bitcast i8* %state to i32*, !dbg !652
+  store i32 2, i32* %34, align 4, !dbg !652, !tbaa !651
+  %mode = getelementptr inbounds i8* %call22, i64 8, !dbg !653
+  %35 = bitcast i8* %mode to i32*, !dbg !653
+  store i32 2, i32* %35, align 4, !dbg !653, !tbaa !651
+  %combinedCRC = getelementptr inbounds i8* %call22, i64 652, !dbg !654
+  %36 = bitcast i8* %combinedCRC to i32*, !dbg !654
+  store i32 0, i32* %36, align 4, !dbg !654, !tbaa !651
+  %blockSize100k87 = getelementptr inbounds i8* %call22, i64 664, !dbg !655
+  %37 = bitcast i8* %blockSize100k87 to i32*, !dbg !655
+  store i32 %blockSize100k, i32* %37, align 4, !dbg !655, !tbaa !651
+  %sub = add nsw i32 %mul, -19, !dbg !656
+  %nblockMAX = getelementptr inbounds i8* %call22, i64 112, !dbg !656
+  %38 = bitcast i8* %nblockMAX to i32*, !dbg !656
+  store i32 %sub, i32* %38, align 4, !dbg !656, !tbaa !651
+  %verbosity89 = getelementptr inbounds i8* %call22, i64 656, !dbg !657
+  %39 = bitcast i8* %verbosity89 to i32*, !dbg !657
+  store i32 %verbosity, i32* %39, align 4, !dbg !657, !tbaa !651
+  %workFactor90 = getelementptr inbounds i8* %call22, i64 88, !dbg !658
+  %40 = bitcast i8* %workFactor90 to i32*, !dbg !658
+  store i32 %.workFactor, i32* %40, align 4, !dbg !658, !tbaa !651
+  %41 = bitcast i32* %19 to i8*, !dbg !659
+  %block = getelementptr inbounds i8* %call22, i64 64, !dbg !659
+  %42 = bitcast i8* %block to i8**, !dbg !659
+  store i8* %41, i8** %42, align 8, !dbg !659, !tbaa !615
+  %43 = bitcast i32* %18 to i16*, !dbg !660
+  %mtfv = getelementptr inbounds i8* %call22, i64 72, !dbg !660
+  %44 = bitcast i8* %mtfv to i16**, !dbg !660
+  store i16* %43, i16** %44, align 8, !dbg !660, !tbaa !615
+  %zbits = getelementptr inbounds i8* %call22, i64 80, !dbg !661
+  %45 = bitcast i8* %zbits to i8**, !dbg !661
+  store i8* null, i8** %45, align 8, !dbg !661, !tbaa !615
+  %ptr = getelementptr inbounds i8* %call22, i64 56, !dbg !662
+  %46 = bitcast i8* %ptr to i32**, !dbg !662
+  store i32* %18, i32** %46, align 8, !dbg !662, !tbaa !615
+  %state94 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 8, !dbg !663
+  store i8* %call22, i8** %state94, align 8, !dbg !663, !tbaa !615
+  %total_in_lo32 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 2, !dbg !664
+  store i32 0, i32* %total_in_lo32, align 4, !dbg !664, !tbaa !651
+  %total_in_hi32 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 3, !dbg !665
+  store i32 0, i32* %total_in_hi32, align 4, !dbg !665, !tbaa !651
+  %total_out_lo32 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 6, !dbg !666
+  store i32 0, i32* %total_out_lo32, align 4, !dbg !666, !tbaa !651
+  %total_out_hi32 = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 7, !dbg !667
+  store i32 0, i32* %total_out_hi32, align 4, !dbg !667, !tbaa !651
+  %state_in_ch.i = getelementptr inbounds i8* %call22, i64 92, !dbg !668
+  %47 = bitcast i8* %state_in_ch.i to i32*, !dbg !668
+  store i32 256, i32* %47, align 4, !dbg !668, !tbaa !651
+  %state_in_len.i = getelementptr inbounds i8* %call22, i64 96, !dbg !670
+  %48 = bitcast i8* %state_in_len.i to i32*, !dbg !670
+  store i32 0, i32* %48, align 4, !dbg !670, !tbaa !651
+  %nblock.i = getelementptr inbounds i8* %call22, i64 108, !dbg !671
+  %49 = bitcast i8* %nblock.i to i32*, !dbg !671
+  store i32 0, i32* %49, align 4, !dbg !671, !tbaa !651
+  %numZ.i = getelementptr inbounds i8* %call22, i64 116, !dbg !673
+  %50 = bitcast i8* %numZ.i to i32*, !dbg !673
+  store i32 0, i32* %50, align 4, !dbg !673, !tbaa !651
+  %state_out_pos.i = getelementptr inbounds i8* %call22, i64 120, !dbg !674
+  %51 = bitcast i8* %state_out_pos.i to i32*, !dbg !674
+  store i32 0, i32* %51, align 4, !dbg !674, !tbaa !651
+  %blockCRC.i = getelementptr inbounds i8* %call22, i64 648, !dbg !675
+  %52 = bitcast i8* %blockCRC.i to i32*, !dbg !675
+  store i32 -1, i32* %52, align 4, !dbg !675, !tbaa !651
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !677) #9, !dbg !678
   %53 = getelementptr i8* %call22, i64 128
-  tail call void @llvm.memset.p0i8.i64(i8* %53, i8 0, i64 256, i32 1, i1 false) #7
-  %54 = load i32* %33, align 4, !tbaa !3
-  %inc1.i = add nsw i32 %54, 1
-  store i32 %inc1.i, i32* %33, align 4, !tbaa !3
-  br label %return
+  tail call void @llvm.memset.p0i8.i64(i8* %53, i8 0, i64 256, i32 1, i1 false) #9, !dbg !678
+  %54 = load i32* %33, align 4, !dbg !680, !tbaa !651
+  %inc1.i = add nsw i32 %54, 1, !dbg !680
+  store i32 %inc1.i, i32* %33, align 4, !dbg !680, !tbaa !651
+  br label %return, !dbg !681
 
 return:                                           ; preds = %if.then82, %if.end20, %entry, %lor.lhs.false, %if.end86
   %retval.0 = phi i32 [ 0, %if.end86 ], [ -2, %lor.lhs.false ], [ -2, %entry ], [ -3, %if.end20 ], [ -3, %if.then82 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !681
 }

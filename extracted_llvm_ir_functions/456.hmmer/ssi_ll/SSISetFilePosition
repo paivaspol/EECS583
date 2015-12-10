@@ -1,21 +1,23 @@
 define i32 @SSISetFilePosition(%struct._IO_FILE* nocapture %fp, %struct.ssioffset_s* nocapture %offset) #0 {
 entry:
-  %mode = getelementptr inbounds %struct.ssioffset_s* %offset, i64 0, i32 0
-  %0 = load i8* %mode, align 1, !tbaa !1
-  %cmp = icmp eq i8 %0, 0
-  br i1 %cmp, label %if.then, label %return
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !160), !dbg !705
+  tail call void @llvm.dbg.value(metadata !{%struct.ssioffset_s* %offset}, i64 0, metadata !161), !dbg !705
+  %mode = getelementptr inbounds %struct.ssioffset_s* %offset, i64 0, i32 0, !dbg !706
+  %0 = load i8* %mode, align 1, !dbg !706, !tbaa !499
+  %cmp = icmp eq i8 %0, 0, !dbg !706
+  br i1 %cmp, label %if.then, label %return, !dbg !706
 
 if.then:                                          ; preds = %entry
-  %off = getelementptr inbounds %struct.ssioffset_s* %offset, i64 0, i32 1
-  %i32 = bitcast %union.anon* %off to i32*
-  %1 = load i32* %i32, align 4, !tbaa !4
-  %conv2 = zext i32 %1 to i64
-  %call = tail call i32 @fseek(%struct._IO_FILE* %fp, i64 %conv2, i32 0) #8
-  %cmp3 = icmp eq i32 %call, 0
-  %. = select i1 %cmp3, i32 0, i32 8
-  br label %return
+  %off = getelementptr inbounds %struct.ssioffset_s* %offset, i64 0, i32 1, !dbg !707
+  %i32 = bitcast %union.anon* %off to i32*, !dbg !707
+  %1 = load i32* %i32, align 4, !dbg !707, !tbaa !521
+  %conv2 = zext i32 %1 to i64, !dbg !707
+  %call = tail call i32 @fseek(%struct._IO_FILE* %fp, i64 %conv2, i32 0) #9, !dbg !707
+  %cmp3 = icmp eq i32 %call, 0, !dbg !707
+  %. = select i1 %cmp3, i32 0, i32 8, !dbg !708
+  br label %return, !dbg !708
 
 return:                                           ; preds = %entry, %if.then
   %retval.0 = phi i32 [ %., %if.then ], [ 7, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !708
 }

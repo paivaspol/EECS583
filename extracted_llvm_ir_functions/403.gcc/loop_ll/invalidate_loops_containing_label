@@ -1,24 +1,25 @@
 define internal void @invalidate_loops_containing_label(%struct.rtx_def* nocapture %label) #0 {
 entry:
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %label, i64 0, i32 1, i64 0
-  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
-  %0 = load i32* %rtint, align 4, !tbaa !3
-  %idxprom = sext i32 %0 to i64
-  %1 = load %struct.loop*** @uid_loop, align 8, !tbaa !4
-  %arrayidx1 = getelementptr inbounds %struct.loop** %1, i64 %idxprom
-  %loop.04 = load %struct.loop** %arrayidx1, align 8
-  %tobool5 = icmp eq %struct.loop* %loop.04, null
-  br i1 %tobool5, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %label}, i64 0, metadata !1719), !dbg !4990
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %label, i64 0, i32 1, i64 0, !dbg !4991
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*, !dbg !4991
+  %0 = load i32* %rtint, align 4, !dbg !4991, !tbaa !2973
+  %idxprom = sext i32 %0 to i64, !dbg !4991
+  %1 = load %struct.loop*** @uid_loop, align 8, !dbg !4991, !tbaa !2982
+  %arrayidx1 = getelementptr inbounds %struct.loop** %1, i64 %idxprom, !dbg !4991
+  %loop.04 = load %struct.loop** %arrayidx1, align 8, !dbg !4991
+  %tobool5 = icmp eq %struct.loop* %loop.04, null, !dbg !4991
+  br i1 %tobool5, label %for.end, label %for.body, !dbg !4991
 
 for.body:                                         ; preds = %entry, %for.body
   %loop.06 = phi %struct.loop* [ %loop.0, %for.body ], [ %loop.04, %entry ]
-  %invalid = getelementptr inbounds %struct.loop* %loop.06, i64 0, i32 21
-  store i32 1, i32* %invalid, align 4, !tbaa !3
-  %outer = getelementptr inbounds %struct.loop* %loop.06, i64 0, i32 17
-  %loop.0 = load %struct.loop** %outer, align 8
-  %tobool = icmp eq %struct.loop* %loop.0, null
-  br i1 %tobool, label %for.end, label %for.body
+  %invalid = getelementptr inbounds %struct.loop* %loop.06, i64 0, i32 21, !dbg !4992
+  store i32 1, i32* %invalid, align 4, !dbg !4992, !tbaa !2973
+  %outer = getelementptr inbounds %struct.loop* %loop.06, i64 0, i32 17, !dbg !4991
+  %loop.0 = load %struct.loop** %outer, align 8, !dbg !4991
+  %tobool = icmp eq %struct.loop* %loop.0, null, !dbg !4991
+  br i1 %tobool, label %for.end, label %for.body, !dbg !4991
 
 for.end:                                          ; preds = %for.body, %entry
-  ret void
+  ret void, !dbg !4993
 }

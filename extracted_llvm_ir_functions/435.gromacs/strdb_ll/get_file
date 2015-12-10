@@ -1,52 +1,63 @@
-define i32 @get_file(i8* %db, i8*** nocapture %strings) #1 {
+define i32 @get_file(i8* %db, i8*** nocapture %strings) #0 {
+entry:
   %buf = alloca [256 x i8], align 16
-  %1 = getelementptr inbounds [256 x i8]* %buf, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 256, i8* %1) #6
-  %2 = tail call %struct.__sFILE* @libopen(i8* %db) #8
-  %3 = call i8* @fgets2(i8* %1, i32 255, %struct.__sFILE* %2) #8
-  %4 = icmp eq i8* %3, null
-  br i1 %4, label %19, label %.lr.ph
+  call void @llvm.dbg.value(metadata !{i8* %db}, i64 0, metadata !124), !dbg !230
+  call void @llvm.dbg.value(metadata !{i8*** %strings}, i64 0, metadata !125), !dbg !230
+  call void @llvm.dbg.value(metadata !231, i64 0, metadata !127), !dbg !232
+  %0 = getelementptr inbounds [256 x i8]* %buf, i64 0, i64 0, !dbg !233
+  call void @llvm.lifetime.start(i64 256, i8* %0) #5, !dbg !233
+  call void @llvm.dbg.declare(metadata !{[256 x i8]* %buf}, metadata !128), !dbg !233
+  %call = call %struct._IO_FILE* @libopen(i8* %db) #7, !dbg !234
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %call}, i64 0, metadata !126), !dbg !234
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !131), !dbg !235
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !129), !dbg !235
+  %call119 = call i8* @fgets2(i8* %0, i32 255, %struct._IO_FILE* %call) #7, !dbg !236
+  %tobool20 = icmp eq i8* %call119, null, !dbg !236
+  br i1 %tobool20, label %while.end, label %while.body, !dbg !236
 
-.lr.ph:                                           ; preds = %0, %13
-  %indvars.iv = phi i64 [ %indvars.iv.next, %13 ], [ 0, %0 ]
-  %ptr.03 = phi i8** [ %ptr.1, %13 ], [ null, %0 ]
-  %maxi.02 = phi i32 [ %maxi.1, %13 ], [ 0, %0 ]
-  %5 = sext i32 %maxi.02 to i64
-  %6 = icmp slt i64 %indvars.iv, %5
-  br i1 %6, label %13, label %7
+while.body:                                       ; preds = %entry, %if.end
+  %indvars.iv = phi i64 [ %indvars.iv.next, %if.end ], [ 0, %entry ]
+  %ptr.023 = phi i8** [ %ptr.1, %if.end ], [ null, %entry ]
+  %maxi.022 = phi i32 [ %maxi.1, %if.end ], [ 0, %entry ]
+  %i.021 = phi i32 [ %inc, %if.end ], [ 0, %entry ]
+  %1 = trunc i64 %indvars.iv to i32, !dbg !237
+  %cmp = icmp slt i32 %1, %maxi.022, !dbg !237
+  br i1 %cmp, label %if.end, label %if.then, !dbg !237
 
-; <label>:7                                       ; preds = %.lr.ph
-  %8 = add nsw i32 %maxi.02, 50
-  %9 = bitcast i8** %ptr.03 to i8*
-  %10 = shl i32 %8, 3
-  %11 = call i8* @save_realloc(i8* getelementptr inbounds ([4 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 190, i8* %9, i32 %10) #8
-  %12 = bitcast i8* %11 to i8**
-  br label %13
+if.then:                                          ; preds = %while.body
+  %add = add nsw i32 %maxi.022, 50, !dbg !239
+  call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !131), !dbg !239
+  %2 = bitcast i8** %ptr.023 to i8*, !dbg !241
+  %mul = shl i32 %add, 3, !dbg !241
+  %call3 = call i8* @save_realloc(i8* getelementptr inbounds ([4 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 190, i8* %2, i32 %mul) #7, !dbg !241
+  %3 = bitcast i8* %call3 to i8**, !dbg !241
+  call void @llvm.dbg.value(metadata !{i8** %3}, i64 0, metadata !127), !dbg !241
+  br label %if.end, !dbg !242
 
-; <label>:13                                      ; preds = %.lr.ph, %7
-  %maxi.1 = phi i32 [ %8, %7 ], [ %maxi.02, %.lr.ph ]
-  %ptr.1 = phi i8** [ %12, %7 ], [ %ptr.03, %.lr.ph ]
-  %14 = call i8* @strdup(i8* %1) #8
-  %15 = getelementptr inbounds i8** %ptr.1, i64 %indvars.iv
-  store i8* %14, i8** %15, align 8, !tbaa !6
-  %indvars.iv.next = add nuw i64 %indvars.iv, 1
-  %16 = call i8* @fgets2(i8* %1, i32 255, %struct.__sFILE* %2) #8
-  %17 = icmp eq i8* %16, null
-  br i1 %17, label %._crit_edge, label %.lr.ph
+if.end:                                           ; preds = %while.body, %if.then
+  %maxi.1 = phi i32 [ %add, %if.then ], [ %maxi.022, %while.body ]
+  %ptr.1 = phi i8** [ %3, %if.then ], [ %ptr.023, %while.body ]
+  %call5 = call noalias i8* @strdup(i8* %0) #7, !dbg !243
+  %arrayidx = getelementptr inbounds i8** %ptr.1, i64 %indvars.iv, !dbg !243
+  store i8* %call5, i8** %arrayidx, align 8, !dbg !243, !tbaa !145
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !236
+  %inc = add nsw i32 %i.021, 1, !dbg !244
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !129), !dbg !244
+  %call1 = call i8* @fgets2(i8* %0, i32 255, %struct._IO_FILE* %call) #7, !dbg !236
+  %tobool = icmp eq i8* %call1, null, !dbg !236
+  br i1 %tobool, label %while.end, label %while.body, !dbg !236
 
-._crit_edge:                                      ; preds = %13
-  %18 = trunc i64 %indvars.iv.next to i32
-  br label %19
-
-; <label>:19                                      ; preds = %._crit_edge, %0
-  %ptr.0.lcssa = phi i8** [ %ptr.1, %._crit_edge ], [ null, %0 ]
-  %i.0.lcssa = phi i32 [ %18, %._crit_edge ], [ 0, %0 ]
-  call void @ffclose(%struct.__sFILE* %2) #8
-  %20 = bitcast i8** %ptr.0.lcssa to i8*
-  %21 = shl i32 %i.0.lcssa, 3
-  %22 = call i8* @save_realloc(i8* getelementptr inbounds ([4 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 197, i8* %20, i32 %21) #8
-  %23 = bitcast i8*** %strings to i8**
-  store i8* %22, i8** %23, align 8, !tbaa !6
-  call void @llvm.lifetime.end(i64 256, i8* %1) #6
-  ret i32 %i.0.lcssa
+while.end:                                        ; preds = %if.end, %entry
+  %ptr.0.lcssa = phi i8** [ null, %entry ], [ %ptr.1, %if.end ]
+  %i.0.lcssa = phi i32 [ 0, %entry ], [ %inc, %if.end ]
+  call void @llvm.dbg.value(metadata !{i32 %i.0.lcssa}, i64 0, metadata !130), !dbg !245
+  call void @ffclose(%struct._IO_FILE* %call) #7, !dbg !246
+  %4 = bitcast i8** %ptr.0.lcssa to i8*, !dbg !247
+  %mul7 = shl i32 %i.0.lcssa, 3, !dbg !247
+  %call9 = call i8* @save_realloc(i8* getelementptr inbounds ([4 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 197, i8* %4, i32 %mul7) #7, !dbg !247
+  %5 = bitcast i8* %call9 to i8**, !dbg !247
+  call void @llvm.dbg.value(metadata !{i8** %5}, i64 0, metadata !127), !dbg !247
+  store i8** %5, i8*** %strings, align 8, !dbg !248, !tbaa !145
+  call void @llvm.lifetime.end(i64 256, i8* %0) #5, !dbg !249
+  ret i32 %i.0.lcssa, !dbg !249
 }

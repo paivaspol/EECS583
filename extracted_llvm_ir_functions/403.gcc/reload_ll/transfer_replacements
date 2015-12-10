@@ -1,26 +1,29 @@
 define void @transfer_replacements(i32 %to, i32 %from) #0 {
 entry:
-  %0 = load i32* @n_replacements, align 4, !tbaa !3
-  %cmp8 = icmp sgt i32 %0, 0
-  br i1 %cmp8, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{i32 %to}, i64 0, metadata !1270), !dbg !2931
+  tail call void @llvm.dbg.value(metadata !{i32 %from}, i64 0, metadata !1271), !dbg !2931
+  tail call void @llvm.dbg.value(metadata !1191, i64 0, metadata !1272), !dbg !2932
+  %0 = load i32* @n_replacements, align 4, !dbg !2932, !tbaa !1966
+  %cmp8 = icmp sgt i32 %0, 0, !dbg !2932
+  br i1 %cmp8, label %for.body, label %for.end, !dbg !2932
 
 for.body:                                         ; preds = %entry, %for.inc
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %entry ]
-  %what = getelementptr inbounds [150 x %struct.replacement]* @replacements, i64 0, i64 %indvars.iv, i32 2
-  %1 = load i32* %what, align 8, !tbaa !3
-  %cmp1 = icmp eq i32 %1, %from
-  br i1 %cmp1, label %if.then, label %for.inc
+  %what = getelementptr inbounds [150 x %struct.replacement]* @replacements, i64 0, i64 %indvars.iv, i32 2, !dbg !2934
+  %1 = load i32* %what, align 8, !dbg !2934, !tbaa !1966
+  %cmp1 = icmp eq i32 %1, %from, !dbg !2934
+  br i1 %cmp1, label %if.then, label %for.inc, !dbg !2934
 
 if.then:                                          ; preds = %for.body
-  store i32 %to, i32* %what, align 8, !tbaa !3
-  br label %for.inc
+  store i32 %to, i32* %what, align 8, !dbg !2935, !tbaa !1966
+  br label %for.inc, !dbg !2935
 
 for.inc:                                          ; preds = %for.body, %if.then
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %2 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %2, %0
-  br i1 %cmp, label %for.body, label %for.end
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2932
+  %2 = trunc i64 %indvars.iv.next to i32, !dbg !2932
+  %cmp = icmp slt i32 %2, %0, !dbg !2932
+  br i1 %cmp, label %for.body, label %for.end, !dbg !2932
 
 for.end:                                          ; preds = %for.inc, %entry
-  ret void
+  ret void, !dbg !2936
 }

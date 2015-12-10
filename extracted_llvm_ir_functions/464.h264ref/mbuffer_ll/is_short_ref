@@ -1,18 +1,19 @@
-define i32 @is_short_ref(%struct.storable_picture* nocapture %s) #4 {
+define i32 @is_short_ref(%struct.storable_picture* nocapture %s) #5 {
 entry:
-  %used_for_reference = getelementptr inbounds %struct.storable_picture* %s, i64 0, i32 15
-  %0 = load i32* %used_for_reference, align 4, !tbaa !3
-  %tobool = icmp eq i32 %0, 0
-  br i1 %tobool, label %land.end, label %land.rhs
+  tail call void @llvm.dbg.value(metadata !{%struct.storable_picture* %s}, i64 0, metadata !168), !dbg !1620
+  %used_for_reference = getelementptr inbounds %struct.storable_picture* %s, i64 0, i32 15, !dbg !1621
+  %0 = load i32* %used_for_reference, align 4, !dbg !1621, !tbaa !1366
+  %tobool = icmp eq i32 %0, 0, !dbg !1621
+  br i1 %tobool, label %land.end, label %land.rhs, !dbg !1621
 
 land.rhs:                                         ; preds = %entry
-  %is_long_term = getelementptr inbounds %struct.storable_picture* %s, i64 0, i32 14
-  %1 = load i32* %is_long_term, align 4, !tbaa !3
-  %lnot = icmp eq i32 %1, 0
+  %is_long_term = getelementptr inbounds %struct.storable_picture* %s, i64 0, i32 14, !dbg !1621
+  %1 = load i32* %is_long_term, align 4, !dbg !1621, !tbaa !1366
+  %lnot = icmp eq i32 %1, 0, !dbg !1621
   br label %land.end
 
 land.end:                                         ; preds = %entry, %land.rhs
   %2 = phi i1 [ false, %entry ], [ %lnot, %land.rhs ]
   %land.ext = zext i1 %2 to i32
-  ret i32 %land.ext
+  ret i32 %land.ext, !dbg !1622
 }

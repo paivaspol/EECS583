@@ -1,42 +1,43 @@
 define void @writeVlcByteAlign(%struct.Bitstream* nocapture %currStream) #0 {
 entry:
-  %bits_to_go = getelementptr inbounds %struct.Bitstream* %currStream, i64 0, i32 1
-  %0 = load i32* %bits_to_go, align 4, !tbaa !0
-  %cmp = icmp slt i32 %0, 8
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.Bitstream* %currStream}, i64 0, metadata !312), !dbg !1194
+  %bits_to_go = getelementptr inbounds %struct.Bitstream* %currStream, i64 0, i32 1, !dbg !1195
+  %0 = load i32* %bits_to_go, align 4, !dbg !1195, !tbaa !806
+  %cmp = icmp slt i32 %0, 8, !dbg !1195
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1195
 
 if.then:                                          ; preds = %entry
-  %byte_buf = getelementptr inbounds %struct.Bitstream* %currStream, i64 0, i32 2
-  %1 = load i8* %byte_buf, align 1, !tbaa !1
-  %conv = zext i8 %1 to i32
-  %shl = shl i32 %conv, %0
-  %sub = sub nsw i32 8, %0
-  %shr = lshr i32 255, %sub
-  %or = or i32 %shl, %shr
-  %conv3 = trunc i32 %or to i8
-  store i8 %conv3, i8* %byte_buf, align 1, !tbaa !1
-  %2 = load %struct.ImageParameters** @img, align 8, !tbaa !3
-  %type = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 6
-  %3 = load i32* %type, align 4, !tbaa !0
-  %idxprom = sext i32 %3 to i64
-  %4 = load %struct.StatParameters** @stats, align 8, !tbaa !3
-  %arrayidx = getelementptr inbounds %struct.StatParameters* %4, i64 0, i32 22, i64 %idxprom
-  %5 = load i32* %arrayidx, align 4, !tbaa !0
-  %add = add nsw i32 %5, %0
-  store i32 %add, i32* %arrayidx, align 4, !tbaa !0
-  %6 = load i8* %byte_buf, align 1, !tbaa !1
-  %byte_pos = getelementptr inbounds %struct.Bitstream* %currStream, i64 0, i32 0
-  %7 = load i32* %byte_pos, align 4, !tbaa !0
-  %inc = add nsw i32 %7, 1
-  store i32 %inc, i32* %byte_pos, align 4, !tbaa !0
-  %idxprom7 = sext i32 %7 to i64
-  %streamBuffer = getelementptr inbounds %struct.Bitstream* %currStream, i64 0, i32 9
-  %8 = load i8** %streamBuffer, align 8, !tbaa !3
-  %arrayidx8 = getelementptr inbounds i8* %8, i64 %idxprom7
-  store i8 %6, i8* %arrayidx8, align 1, !tbaa !1
-  store i32 8, i32* %bits_to_go, align 4, !tbaa !0
-  br label %if.end
+  %byte_buf = getelementptr inbounds %struct.Bitstream* %currStream, i64 0, i32 2, !dbg !1196
+  %1 = load i8* %byte_buf, align 1, !dbg !1196, !tbaa !807
+  %conv = zext i8 %1 to i32, !dbg !1196
+  %shl = shl i32 %conv, %0, !dbg !1196
+  %sub = sub nsw i32 8, %0, !dbg !1196
+  %shr = lshr i32 255, %sub, !dbg !1196
+  %or = or i32 %shl, %shr, !dbg !1196
+  %conv3 = trunc i32 %or to i8, !dbg !1196
+  store i8 %conv3, i8* %byte_buf, align 1, !dbg !1196, !tbaa !807
+  %2 = load %struct.ImageParameters** @img, align 8, !dbg !1198, !tbaa !810
+  %type = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 6, !dbg !1198
+  %3 = load i32* %type, align 4, !dbg !1198, !tbaa !806
+  %idxprom = sext i32 %3 to i64, !dbg !1198
+  %4 = load %struct.StatParameters** @stats, align 8, !dbg !1198, !tbaa !810
+  %arrayidx = getelementptr inbounds %struct.StatParameters* %4, i64 0, i32 22, i64 %idxprom, !dbg !1198
+  %5 = load i32* %arrayidx, align 4, !dbg !1198, !tbaa !806
+  %add = add nsw i32 %5, %0, !dbg !1198
+  store i32 %add, i32* %arrayidx, align 4, !dbg !1198, !tbaa !806
+  %6 = load i8* %byte_buf, align 1, !dbg !1199, !tbaa !807
+  %byte_pos = getelementptr inbounds %struct.Bitstream* %currStream, i64 0, i32 0, !dbg !1199
+  %7 = load i32* %byte_pos, align 4, !dbg !1199, !tbaa !806
+  %inc = add nsw i32 %7, 1, !dbg !1199
+  store i32 %inc, i32* %byte_pos, align 4, !dbg !1199, !tbaa !806
+  %idxprom7 = sext i32 %7 to i64, !dbg !1199
+  %streamBuffer = getelementptr inbounds %struct.Bitstream* %currStream, i64 0, i32 9, !dbg !1199
+  %8 = load i8** %streamBuffer, align 8, !dbg !1199, !tbaa !810
+  %arrayidx8 = getelementptr inbounds i8* %8, i64 %idxprom7, !dbg !1199
+  store i8 %6, i8* %arrayidx8, align 1, !dbg !1199, !tbaa !807
+  store i32 8, i32* %bits_to_go, align 4, !dbg !1200, !tbaa !806
+  br label %if.end, !dbg !1201
 
 if.end:                                           ; preds = %if.then, %entry
-  ret void
+  ret void, !dbg !1202
 }

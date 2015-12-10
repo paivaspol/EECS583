@@ -1,21 +1,25 @@
 define void @SampleDirichlet(float* nocapture %alpha, i32 %n, float* %p) #0 {
 entry:
-  %cmp8 = icmp sgt i32 %n, 0
-  br i1 %cmp8, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{float* %alpha}, i64 0, metadata !137), !dbg !252
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !138), !dbg !252
+  tail call void @llvm.dbg.value(metadata !{float* %p}, i64 0, metadata !139), !dbg !252
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !140), !dbg !253
+  %cmp8 = icmp sgt i32 %n, 0, !dbg !253
+  br i1 %cmp8, label %for.body, label %for.end, !dbg !253
 
 for.body:                                         ; preds = %entry, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
-  %arrayidx = getelementptr inbounds float* %alpha, i64 %indvars.iv
-  %0 = load float* %arrayidx, align 4, !tbaa !3
-  %call = tail call float @SampleGamma(float %0) #7
-  %arrayidx2 = getelementptr inbounds float* %p, i64 %indvars.iv
-  store float %call, float* %arrayidx2, align 4, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n
-  br i1 %exitcond, label %for.end, label %for.body
+  %arrayidx = getelementptr inbounds float* %alpha, i64 %indvars.iv, !dbg !255
+  %0 = load float* %arrayidx, align 4, !dbg !255, !tbaa !199
+  %call = tail call float @SampleGamma(float %0) #8, !dbg !255
+  %arrayidx2 = getelementptr inbounds float* %p, i64 %indvars.iv, !dbg !255
+  store float %call, float* %arrayidx2, align 4, !dbg !255, !tbaa !199
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !253
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !253
+  %exitcond = icmp eq i32 %lftr.wideiv, %n, !dbg !253
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !253
 
 for.end:                                          ; preds = %for.body, %entry
-  tail call void @FNorm(float* %p, i32 %n) #5
-  ret void
+  tail call void @FNorm(float* %p, i32 %n) #6, !dbg !256
+  ret void, !dbg !257
 }

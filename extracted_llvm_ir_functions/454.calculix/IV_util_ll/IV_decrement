@@ -1,39 +1,41 @@
 define i32 @IV_decrement(%struct._IV* %iv, i32 %loc) #0 {
 entry:
-  %cmp = icmp eq %struct._IV* %iv, null
-  %cmp1 = icmp slt i32 %loc, 0
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+  tail call void @llvm.dbg.value(metadata !{%struct._IV* %iv}, i64 0, metadata !120), !dbg !371
+  tail call void @llvm.dbg.value(metadata !{i32 %loc}, i64 0, metadata !121), !dbg !372
+  %cmp = icmp eq %struct._IV* %iv, null, !dbg !373
+  %cmp1 = icmp slt i32 %loc, 0, !dbg !373
+  %or.cond = or i1 %cmp, %cmp1, !dbg !373
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2, !dbg !373
 
 lor.lhs.false2:                                   ; preds = %entry
-  %size = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0
-  %0 = load i32* %size, align 4, !tbaa !3
-  %cmp3 = icmp sgt i32 %0, %loc
-  br i1 %cmp3, label %if.end8, label %if.then
+  %size = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0, !dbg !373
+  %0 = load i32* %size, align 4, !dbg !373, !tbaa !181
+  %cmp3 = icmp sgt i32 %0, %loc, !dbg !373
+  br i1 %cmp3, label %if.end8, label %if.then, !dbg !373
 
 if.then:                                          ; preds = %lor.lhs.false2, %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([49 x i8]* @.str19, i64 0, i64 0), %struct._IV* %iv, i32 %loc) #5
-  br i1 %cmp, label %if.end, label %if.then5
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !374, !tbaa !175
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([49 x i8]* @.str19, i64 0, i64 0), %struct._IV* %iv, i32 %loc) #6, !dbg !374
+  br i1 %cmp, label %if.end, label %if.then5, !dbg !376
 
 if.then5:                                         ; preds = %if.then
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %size6 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0
-  %3 = load i32* %size6, align 4, !tbaa !3
-  %call7 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([22 x i8]* @.str18, i64 0, i64 0), i32 %loc, i32 %3) #5
-  br label %if.end
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !377, !tbaa !175
+  %size6 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0, !dbg !377
+  %3 = load i32* %size6, align 4, !dbg !377, !tbaa !181
+  %call7 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([22 x i8]* @.str18, i64 0, i64 0), i32 %loc, i32 %3) #6, !dbg !377
+  br label %if.end, !dbg !379
 
 if.end:                                           ; preds = %if.then, %if.then5
-  tail call void @exit(i32 -1) #6
-  unreachable
+  tail call void @exit(i32 -1) #7, !dbg !380
+  unreachable, !dbg !380
 
 if.end8:                                          ; preds = %lor.lhs.false2
-  %idxprom = sext i32 %loc to i64
-  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3
-  %4 = load i32** %vec, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds i32* %4, i64 %idxprom
-  %5 = load i32* %arrayidx, align 4, !tbaa !3
-  %dec = add nsw i32 %5, -1
-  store i32 %dec, i32* %arrayidx, align 4, !tbaa !3
-  ret i32 %dec
+  %idxprom = sext i32 %loc to i64, !dbg !381
+  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3, !dbg !381
+  %4 = load i32** %vec, align 8, !dbg !381, !tbaa !175
+  %arrayidx = getelementptr inbounds i32* %4, i64 %idxprom, !dbg !381
+  %5 = load i32* %arrayidx, align 4, !dbg !381, !tbaa !181
+  %dec = add nsw i32 %5, -1, !dbg !381
+  store i32 %dec, i32* %arrayidx, align 4, !dbg !381, !tbaa !181
+  ret i32 %dec, !dbg !381
 }

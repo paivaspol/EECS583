@@ -1,0 +1,118 @@
+define internal fastcc void @_ZN3povL7do_iridEPNS_13Finish_StructEPNS_10Ray_StructEPdS4_Pf(%"struct.pov::Finish_Struct"* nocapture %Finish, %"struct.pov::Ray_Struct"* nocapture %Light_Source_Ray, double* nocapture %Layer_Normal, double* %IPoint, float* nocapture %Colour) #0 {
+entry:
+  %Turb = alloca %"struct.pov::Turb_Struct", align 8
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Finish_Struct"* %Finish}, i64 0, metadata !1644), !dbg !6377
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Ray_Struct"* %Light_Source_Ray}, i64 0, metadata !1645), !dbg !6377
+  call void @llvm.dbg.value(metadata !{double* %Layer_Normal}, i64 0, metadata !1646), !dbg !6377
+  call void @llvm.dbg.value(metadata !{double* %IPoint}, i64 0, metadata !1647), !dbg !6377
+  call void @llvm.dbg.value(metadata !{float* %Colour}, i64 0, metadata !1648), !dbg !6377
+  %0 = bitcast %"struct.pov::Turb_Struct"* %Turb to i8*, !dbg !6378
+  call void @llvm.lifetime.start(i64 64, i8* %0) #6, !dbg !6378
+  call void @llvm.dbg.declare(metadata !{%"struct.pov::Turb_Struct"* %Turb}, metadata !1657), !dbg !6378
+  %Irid_Film_Thickness = getelementptr inbounds %"struct.pov::Finish_Struct"* %Finish, i64 0, i32 7, !dbg !6379
+  %1 = load float* %Irid_Film_Thickness, align 4, !dbg !6379, !tbaa !2644
+  %conv = fpext float %1 to double, !dbg !6379
+  call void @llvm.dbg.value(metadata !{double %conv}, i64 0, metadata !1654), !dbg !6379
+  %Irid_Turb = getelementptr inbounds %"struct.pov::Finish_Struct"* %Finish, i64 0, i32 8, !dbg !6380
+  %2 = load float* %Irid_Turb, align 4, !dbg !6380, !tbaa !2644
+  %cmp = fcmp une float %2, 0.000000e+00, !dbg !6380
+  br i1 %cmp, label %if.then, label %if.end, !dbg !6380
+
+if.then:                                          ; preds = %entry
+  %Omega = getelementptr inbounds %"struct.pov::Turb_Struct"* %Turb, i64 0, i32 6, !dbg !6381
+  store float 5.000000e-01, float* %Omega, align 8, !dbg !6381, !tbaa !2644
+  %Lambda = getelementptr inbounds %"struct.pov::Turb_Struct"* %Turb, i64 0, i32 5, !dbg !6383
+  store float 2.000000e+00, float* %Lambda, align 4, !dbg !6383, !tbaa !2644
+  %Octaves = getelementptr inbounds %"struct.pov::Turb_Struct"* %Turb, i64 0, i32 4, !dbg !6384
+  store i32 5, i32* %Octaves, align 8, !dbg !6384, !tbaa !2301
+  %call = call double @_ZN3pov10TurbulenceEPdPNS_11Turb_StructEPNS_14Pattern_StructE(double* %IPoint, %"struct.pov::Turb_Struct"* %Turb, %"struct.pov::Pattern_Struct"* null) #7, !dbg !6385
+  %3 = load float* %Irid_Turb, align 4, !dbg !6385, !tbaa !2644
+  %conv2 = fpext float %3 to double, !dbg !6385
+  %mul = fmul double %call, %conv2, !dbg !6385
+  call void @llvm.dbg.value(metadata !{double %mul}, i64 0, metadata !1655), !dbg !6385
+  %mul3 = fmul double %conv, %mul, !dbg !6386
+  call void @llvm.dbg.value(metadata !{double %mul3}, i64 0, metadata !1654), !dbg !6386
+  br label %if.end, !dbg !6387
+
+if.end:                                           ; preds = %if.then, %entry
+  %film_thickness.0 = phi double [ %mul3, %if.then ], [ %conv, %entry ]
+  %4 = load float* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 11, i64 0), align 8, !dbg !6388, !tbaa !2644
+  %conv4 = fpext float %4 to double, !dbg !6388
+  call void @llvm.dbg.value(metadata !{double %conv4}, i64 0, metadata !1649), !dbg !6388
+  %5 = load float* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 11, i64 1), align 4, !dbg !6389, !tbaa !2644
+  %conv5 = fpext float %5 to double, !dbg !6389
+  call void @llvm.dbg.value(metadata !{double %conv5}, i64 0, metadata !1650), !dbg !6389
+  %6 = load float* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 11, i64 2), align 8, !dbg !6390, !tbaa !2644
+  %conv6 = fpext float %6 to double, !dbg !6390
+  call void @llvm.dbg.value(metadata !{double %conv6}, i64 0, metadata !1651), !dbg !6390
+  %arraydecay = getelementptr inbounds %"struct.pov::Ray_Struct"* %Light_Source_Ray, i64 0, i32 1, i64 0, !dbg !6391
+  tail call void @llvm.dbg.value(metadata !{double* %Layer_Normal}, i64 0, metadata !6392), !dbg !6393
+  tail call void @llvm.dbg.value(metadata !{double* %arraydecay}, i64 0, metadata !6394), !dbg !6393
+  %7 = load double* %Layer_Normal, align 8, !dbg !6395, !tbaa !2552
+  %8 = load double* %arraydecay, align 8, !dbg !6395, !tbaa !2552
+  %mul.i = fmul double %7, %8, !dbg !6395
+  %arrayidx2.i = getelementptr inbounds double* %Layer_Normal, i64 1, !dbg !6395
+  %9 = load double* %arrayidx2.i, align 8, !dbg !6395, !tbaa !2552
+  %arrayidx3.i = getelementptr inbounds %"struct.pov::Ray_Struct"* %Light_Source_Ray, i64 0, i32 1, i64 1, !dbg !6395
+  %10 = load double* %arrayidx3.i, align 8, !dbg !6395, !tbaa !2552
+  %mul4.i = fmul double %9, %10, !dbg !6395
+  %add.i = fadd double %mul.i, %mul4.i, !dbg !6395
+  %arrayidx5.i = getelementptr inbounds double* %Layer_Normal, i64 2, !dbg !6395
+  %11 = load double* %arrayidx5.i, align 8, !dbg !6395, !tbaa !2552
+  %arrayidx6.i = getelementptr inbounds %"struct.pov::Ray_Struct"* %Light_Source_Ray, i64 0, i32 1, i64 2, !dbg !6395
+  %12 = load double* %arrayidx6.i, align 8, !dbg !6395, !tbaa !2552
+  %mul7.i = fmul double %11, %12, !dbg !6395
+  %add8.i = fadd double %add.i, %mul7.i, !dbg !6395
+  call void @llvm.dbg.value(metadata !{double %add8.i}, i64 0, metadata !1652), !dbg !6395
+  call void @llvm.dbg.value(metadata !{double %add8.i}, i64 0, metadata !6396), !dbg !6393
+  call void @llvm.dbg.value(metadata !{double %add8.i}, i64 0, metadata !1652), !dbg !6397
+  %mul7 = fmul double %film_thickness.0, 0x402921FB54442D18, !dbg !6397
+  %mul8 = fmul double %mul7, %add8.i, !dbg !6397
+  call void @llvm.dbg.value(metadata !{double %mul8}, i64 0, metadata !1653), !dbg !6397
+  %Irid = getelementptr inbounds %"struct.pov::Finish_Struct"* %Finish, i64 0, i32 6, !dbg !6398
+  %13 = load float* %Irid, align 4, !dbg !6398, !tbaa !2644
+  %conv9 = fpext float %13 to double, !dbg !6398
+  %mul10 = fmul double %add8.i, %conv9, !dbg !6398
+  call void @llvm.dbg.value(metadata !{double %mul10}, i64 0, metadata !1656), !dbg !6398
+  %div = fdiv double %mul8, %conv4, !dbg !6399
+  %call13 = call double @cos(double %div) #8, !dbg !6399
+  %mul14 = fmul double %call13, 5.000000e-01, !dbg !6399
+  %sub = fsub double 1.000000e+00, %mul14, !dbg !6399
+  %mul15 = fmul double %mul10, %sub, !dbg !6399
+  %mul16 = fmul double %conv9, %mul15, !dbg !6399
+  %14 = load float* %Colour, align 4, !dbg !6399, !tbaa !2644
+  %conv17 = fpext float %14 to double, !dbg !6399
+  %add = fadd double %conv17, %mul16, !dbg !6399
+  %conv18 = fptrunc double %add to float, !dbg !6399
+  store float %conv18, float* %Colour, align 4, !dbg !6399, !tbaa !2644
+  %15 = load float* %Irid, align 4, !dbg !6400, !tbaa !2644
+  %conv20 = fpext float %15 to double, !dbg !6400
+  %div21 = fdiv double %mul8, %conv5, !dbg !6400
+  %call22 = call double @cos(double %div21) #8, !dbg !6400
+  %mul23 = fmul double %call22, 5.000000e-01, !dbg !6400
+  %sub24 = fsub double 1.000000e+00, %mul23, !dbg !6400
+  %mul25 = fmul double %mul10, %sub24, !dbg !6400
+  %mul26 = fmul double %conv20, %mul25, !dbg !6400
+  %arrayidx27 = getelementptr inbounds float* %Colour, i64 1, !dbg !6400
+  %16 = load float* %arrayidx27, align 4, !dbg !6400, !tbaa !2644
+  %conv28 = fpext float %16 to double, !dbg !6400
+  %add29 = fadd double %conv28, %mul26, !dbg !6400
+  %conv30 = fptrunc double %add29 to float, !dbg !6400
+  store float %conv30, float* %arrayidx27, align 4, !dbg !6400, !tbaa !2644
+  %17 = load float* %Irid, align 4, !dbg !6401, !tbaa !2644
+  %conv32 = fpext float %17 to double, !dbg !6401
+  %div33 = fdiv double %mul8, %conv6, !dbg !6401
+  %call34 = call double @cos(double %div33) #8, !dbg !6401
+  %mul35 = fmul double %call34, 5.000000e-01, !dbg !6401
+  %sub36 = fsub double 1.000000e+00, %mul35, !dbg !6401
+  %mul37 = fmul double %mul10, %sub36, !dbg !6401
+  %mul38 = fmul double %conv32, %mul37, !dbg !6401
+  %arrayidx39 = getelementptr inbounds float* %Colour, i64 2, !dbg !6401
+  %18 = load float* %arrayidx39, align 4, !dbg !6401, !tbaa !2644
+  %conv40 = fpext float %18 to double, !dbg !6401
+  %add41 = fadd double %conv40, %mul38, !dbg !6401
+  %conv42 = fptrunc double %add41 to float, !dbg !6401
+  store float %conv42, float* %arrayidx39, align 4, !dbg !6401, !tbaa !2644
+  call void @llvm.lifetime.end(i64 64, i8* %0) #6, !dbg !6402
+  ret void, !dbg !6402
+}

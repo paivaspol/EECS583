@@ -1,43 +1,51 @@
 define internal fastcc i32 @combine_pending_stack_adjustment_and_call(i32 %unadjusted_args_size, %struct.args_size* nocapture %args_size, i32 %preferred_unit_stack_boundary) #0 {
 entry:
-  %0 = load %struct.function** @cfun, align 8, !tbaa !0
-  %expr = getelementptr inbounds %struct.function* %0, i64 0, i32 2
-  %1 = load %struct.expr_status** %expr, align 8, !tbaa !0
-  %x_stack_pointer_delta = getelementptr inbounds %struct.expr_status* %1, i64 0, i32 2
-  %2 = load i32* %x_stack_pointer_delta, align 4, !tbaa !3
-  %add = add nsw i32 %2, %unadjusted_args_size
-  %rem = srem i32 %add, %preferred_unit_stack_boundary
-  %conv = sext i32 %rem to i64
-  %x_pending_stack_adjust = getelementptr inbounds %struct.expr_status* %1, i64 0, i32 0
-  %3 = load i32* %x_pending_stack_adjust, align 4, !tbaa !3
-  %rem2 = srem i32 %3, %preferred_unit_stack_boundary
-  %conv3 = sext i32 %rem2 to i64
-  %sub = sub nsw i64 %conv, %conv3
-  %conv6 = sext i32 %3 to i64
-  %cmp = icmp sgt i32 %preferred_unit_stack_boundary, 1
-  br i1 %cmp, label %if.then, label %if.end15
+  tail call void @llvm.dbg.value(metadata !{i32 %unadjusted_args_size}, i64 0, metadata !1608), !dbg !2633
+  tail call void @llvm.dbg.value(metadata !{%struct.args_size* %args_size}, i64 0, metadata !1609), !dbg !2634
+  tail call void @llvm.dbg.value(metadata !{i32 %preferred_unit_stack_boundary}, i64 0, metadata !1610), !dbg !2635
+  %0 = load %struct.function** @cfun, align 8, !dbg !2636, !tbaa !1765
+  %expr = getelementptr inbounds %struct.function* %0, i64 0, i32 2, !dbg !2636
+  %1 = load %struct.expr_status** %expr, align 8, !dbg !2636, !tbaa !1765
+  %x_stack_pointer_delta = getelementptr inbounds %struct.expr_status* %1, i64 0, i32 2, !dbg !2636
+  %2 = load i32* %x_stack_pointer_delta, align 4, !dbg !2636, !tbaa !1776
+  %add = add nsw i32 %2, %unadjusted_args_size, !dbg !2636
+  %rem = srem i32 %add, %preferred_unit_stack_boundary, !dbg !2636
+  %conv = sext i32 %rem to i64, !dbg !2636
+  tail call void @llvm.dbg.value(metadata !{i64 %conv}, i64 0, metadata !1612), !dbg !2636
+  %x_pending_stack_adjust = getelementptr inbounds %struct.expr_status* %1, i64 0, i32 0, !dbg !2637
+  %3 = load i32* %x_pending_stack_adjust, align 4, !dbg !2637, !tbaa !1776
+  %rem2 = srem i32 %3, %preferred_unit_stack_boundary, !dbg !2637
+  %conv3 = sext i32 %rem2 to i64, !dbg !2637
+  %sub = sub nsw i64 %conv, %conv3, !dbg !2637
+  tail call void @llvm.dbg.value(metadata !{i64 %sub}, i64 0, metadata !1612), !dbg !2637
+  %conv6 = sext i32 %3 to i64, !dbg !2638
+  tail call void @llvm.dbg.value(metadata !{i64 %conv6}, i64 0, metadata !1611), !dbg !2638
+  %cmp = icmp sgt i32 %preferred_unit_stack_boundary, 1, !dbg !2639
+  br i1 %cmp, label %if.then, label %if.end15, !dbg !2639
 
 if.then:                                          ; preds = %entry
-  %cmp8 = icmp sgt i64 %sub, 0
-  br i1 %cmp8, label %if.then10, label %if.else
+  %cmp8 = icmp sgt i64 %sub, 0, !dbg !2640
+  br i1 %cmp8, label %if.then10, label %if.else, !dbg !2640
 
 if.then10:                                        ; preds = %if.then
-  %conv11 = sext i32 %preferred_unit_stack_boundary to i64
-  %sub1233 = sub i64 %conv6, %conv11
-  %sub13 = add i64 %sub1233, %sub
-  br label %if.end15
+  %conv11 = sext i32 %preferred_unit_stack_boundary to i64, !dbg !2642
+  %sub1233 = sub i64 %conv6, %conv11, !dbg !2642
+  %sub13 = add i64 %sub1233, %sub, !dbg !2642
+  tail call void @llvm.dbg.value(metadata !{i64 %sub13}, i64 0, metadata !1611), !dbg !2642
+  br label %if.end15, !dbg !2642
 
 if.else:                                          ; preds = %if.then
-  %add14 = add nsw i64 %sub, %conv6
+  %add14 = add nsw i64 %sub, %conv6, !dbg !2643
+  tail call void @llvm.dbg.value(metadata !{i64 %add14}, i64 0, metadata !1611), !dbg !2643
   br label %if.end15
 
 if.end15:                                         ; preds = %if.then10, %if.else, %entry
   %adjustment.0 = phi i64 [ %sub13, %if.then10 ], [ %add14, %if.else ], [ %conv6, %entry ]
-  %conv20 = sext i32 %unadjusted_args_size to i64
-  %sub19 = sub i64 %conv20, %adjustment.0
-  %add21 = add i64 %sub19, %conv6
-  %constant = getelementptr inbounds %struct.args_size* %args_size, i64 0, i32 0
-  store i64 %add21, i64* %constant, align 8, !tbaa !6
-  %conv22 = trunc i64 %adjustment.0 to i32
-  ret i32 %conv22
+  %conv20 = sext i32 %unadjusted_args_size to i64, !dbg !2644
+  %sub19 = sub i64 %conv20, %adjustment.0, !dbg !2644
+  %add21 = add i64 %sub19, %conv6, !dbg !2644
+  %constant = getelementptr inbounds %struct.args_size* %args_size, i64 0, i32 0, !dbg !2644
+  store i64 %add21, i64* %constant, align 8, !dbg !2644, !tbaa !2068
+  %conv22 = trunc i64 %adjustment.0 to i32, !dbg !2645
+  ret i32 %conv22, !dbg !2645
 }

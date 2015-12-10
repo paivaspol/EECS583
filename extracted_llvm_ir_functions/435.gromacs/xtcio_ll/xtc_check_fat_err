@@ -1,11 +1,16 @@
-define void @xtc_check_fat_err(i8* %str, i32 %bResult, i8* %file, i32 %line) #4 {
-  %1 = icmp eq i32 %bResult, 0
-  br i1 %1, label %2, label %3
+define void @xtc_check_fat_err(i8* %str, i32 %bResult, i8* %file, i32 %line) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %str}, i64 0, metadata !38), !dbg !188
+  tail call void @llvm.dbg.value(metadata !{i32 %bResult}, i64 0, metadata !39), !dbg !188
+  tail call void @llvm.dbg.value(metadata !{i8* %file}, i64 0, metadata !40), !dbg !188
+  tail call void @llvm.dbg.value(metadata !{i32 %line}, i64 0, metadata !41), !dbg !188
+  %tobool = icmp eq i32 %bResult, 0, !dbg !189
+  br i1 %tobool, label %if.then, label %if.end, !dbg !189
 
-; <label>:2                                       ; preds = %0
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i8* %str, i8* %file, i32 %line) #6
-  br label %3
+if.then:                                          ; preds = %entry
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i8* %str, i8* %file, i32 %line) #4, !dbg !190
+  br label %if.end, !dbg !192
 
-; <label>:3                                       ; preds = %0, %2
-  ret void
+if.end:                                           ; preds = %entry, %if.then
+  ret void, !dbg !193
 }

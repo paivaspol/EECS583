@@ -1,30 +1,31 @@
 define void @DV_sortUp(%struct._DV* %dv) #0 {
 entry:
-  %cmp = icmp eq %struct._DV* %dv, null
-  br i1 %cmp, label %if.then, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata !{%struct._DV* %dv}, i64 0, metadata !46), !dbg !148
+  %cmp = icmp eq %struct._DV* %dv, null, !dbg !149
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !149
 
 lor.lhs.false:                                    ; preds = %entry
-  %size = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0
-  %0 = load i32* %size, align 4, !tbaa !3
-  %cmp1 = icmp slt i32 %0, 1
-  br i1 %cmp1, label %if.then, label %lor.lhs.false2
+  %size = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0, !dbg !149
+  %0 = load i32* %size, align 4, !dbg !149, !tbaa !108
+  %cmp1 = icmp slt i32 %0, 1, !dbg !149
+  br i1 %cmp1, label %if.then, label %lor.lhs.false2, !dbg !149
 
 lor.lhs.false2:                                   ; preds = %lor.lhs.false
-  %vec = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3
-  %1 = load double** %vec, align 8, !tbaa !0
-  %cmp3 = icmp eq double* %1, null
-  br i1 %cmp3, label %if.then, label %if.end
+  %vec = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !149
+  %1 = load double** %vec, align 8, !dbg !149, !tbaa !102
+  %cmp3 = icmp eq double* %1, null, !dbg !149
+  br i1 %cmp3, label %if.then, label %if.end, !dbg !149
 
 if.then:                                          ; preds = %lor.lhs.false, %entry, %lor.lhs.false2
   %2 = phi i32 [ %0, %lor.lhs.false2 ], [ 0, %entry ], [ %0, %lor.lhs.false ]
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %vec5 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3
-  %4 = load double** %vec5, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([52 x i8]* @.str5, i64 0, i64 0), %struct._DV* %dv, i32 %2, double* %4) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !150, !tbaa !102
+  %vec5 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !150
+  %4 = load double** %vec5, align 8, !dbg !150, !tbaa !102
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([52 x i8]* @.str5, i64 0, i64 0), %struct._DV* %dv, i32 %2, double* %4) #5, !dbg !150
+  tail call void @exit(i32 -1) #6, !dbg !152
+  unreachable, !dbg !152
 
 if.end:                                           ; preds = %lor.lhs.false2
-  tail call void @DVqsortUp(i32 %0, double* %1) #4
-  ret void
+  tail call void @DVqsortUp(i32 %0, double* %1) #5, !dbg !153
+  ret void, !dbg !154
 }

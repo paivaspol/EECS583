@@ -1,22 +1,23 @@
 define void @preserve_rtl_expr_result(%struct.rtx_def* %x) #0 {
 entry:
-  %cmp = icmp eq %struct.rtx_def* %x, null
-  br i1 %cmp, label %return, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !1416), !dbg !3128
+  %cmp = icmp eq %struct.rtx_def* %x, null, !dbg !3129
+  br i1 %cmp, label %return, label %lor.lhs.false, !dbg !3129
 
 lor.lhs.false:                                    ; preds = %entry
-  %0 = bitcast %struct.rtx_def* %x to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp1 = icmp eq i32 %bf.clear, 66
-  br i1 %cmp1, label %lor.lhs.false2, label %return
+  %0 = bitcast %struct.rtx_def* %x to i32*, !dbg !3129
+  %bf.load = load i32* %0, align 8, !dbg !3129
+  %bf.clear = and i32 %bf.load, 65535, !dbg !3129
+  %cmp1 = icmp eq i32 %bf.clear, 66, !dbg !3129
+  br i1 %cmp1, label %lor.lhs.false2, label %return, !dbg !3129
 
 lor.lhs.false2:                                   ; preds = %lor.lhs.false
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %2 = bitcast %struct.rtx_def* %1 to i32*
-  %bf.load3 = load i32* %2, align 8
-  %bf.clear4 = and i32 %bf.load3, 65535
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0, !dbg !3129
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !3129
+  %1 = load %struct.rtx_def** %rtx, align 8, !dbg !3129, !tbaa !2729
+  %2 = bitcast %struct.rtx_def* %1 to i32*, !dbg !3129
+  %bf.load3 = load i32* %2, align 8, !dbg !3129
+  %bf.clear4 = and i32 %bf.load3, 65535, !dbg !3129
   switch i32 %bf.clear4, label %if.end [
     i32 67, label %return
     i32 68, label %return
@@ -26,26 +27,27 @@ lor.lhs.false2:                                   ; preds = %lor.lhs.false
     i32 134, label %return
     i32 56, label %return
     i32 140, label %return
-  ]
+  ], !dbg !3129
 
 if.end:                                           ; preds = %lor.lhs.false2
-  %call = tail call fastcc %struct.temp_slot* @find_temp_slot_from_address(%struct.rtx_def* %1) #9
-  %cmp58 = icmp eq %struct.temp_slot* %call, null
-  br i1 %cmp58, label %return, label %if.then59
+  %call = tail call fastcc %struct.temp_slot* @find_temp_slot_from_address(%struct.rtx_def* %1) #10, !dbg !3130
+  tail call void @llvm.dbg.value(metadata !{%struct.temp_slot* %call}, i64 0, metadata !1417), !dbg !3130
+  %cmp58 = icmp eq %struct.temp_slot* %call, null, !dbg !3131
+  br i1 %cmp58, label %return, label %if.then59, !dbg !3131
 
 if.then59:                                        ; preds = %if.end
-  %level = getelementptr inbounds %struct.temp_slot* %call, i64 0, i32 9
-  %3 = load i32* %level, align 4, !tbaa !4
-  %4 = load %struct.function** @cfun, align 8, !tbaa !0
-  %x_temp_slot_level = getelementptr inbounds %struct.function* %4, i64 0, i32 40
-  %5 = load i32* %x_temp_slot_level, align 4, !tbaa !4
-  %cmp60 = icmp slt i32 %3, %5
-  %. = select i1 %cmp60, i32 %3, i32 %5
-  store i32 %., i32* %level, align 4, !tbaa !4
-  %rtl_expr = getelementptr inbounds %struct.temp_slot* %call, i64 0, i32 6
-  store %union.tree_node* null, %union.tree_node** %rtl_expr, align 8, !tbaa !0
-  br label %return
+  %level = getelementptr inbounds %struct.temp_slot* %call, i64 0, i32 9, !dbg !3132
+  %3 = load i32* %level, align 4, !dbg !3132, !tbaa !2768
+  %4 = load %struct.function** @cfun, align 8, !dbg !3132, !tbaa !2729
+  %x_temp_slot_level = getelementptr inbounds %struct.function* %4, i64 0, i32 40, !dbg !3132
+  %5 = load i32* %x_temp_slot_level, align 4, !dbg !3132, !tbaa !2768
+  %cmp60 = icmp slt i32 %3, %5, !dbg !3132
+  %. = select i1 %cmp60, i32 %3, i32 %5, !dbg !3132
+  store i32 %., i32* %level, align 4, !dbg !3132, !tbaa !2768
+  %rtl_expr = getelementptr inbounds %struct.temp_slot* %call, i64 0, i32 6, !dbg !3134
+  store %union.tree_node* null, %union.tree_node** %rtl_expr, align 8, !dbg !3134, !tbaa !2729
+  br label %return, !dbg !3135
 
 return:                                           ; preds = %lor.lhs.false2, %lor.lhs.false2, %lor.lhs.false2, %lor.lhs.false2, %lor.lhs.false2, %lor.lhs.false2, %lor.lhs.false2, %lor.lhs.false2, %if.end, %lor.lhs.false, %if.then59, %entry
-  ret void
+  ret void, !dbg !3136
 }

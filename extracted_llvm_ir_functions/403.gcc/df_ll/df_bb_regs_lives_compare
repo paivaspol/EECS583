@@ -1,72 +1,82 @@
 define i32 @df_bb_regs_lives_compare(%struct.df* nocapture %df, %struct.basic_block_def* %bb, %struct.rtx_def* nocapture %reg1, %struct.rtx_def* nocapture %reg2) #0 {
 entry:
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %reg1, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
-  %0 = load i32* %rtuint, align 4, !tbaa !4
-  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %reg2, i64 0, i32 1, i64 0
-  %rtuint3 = bitcast %union.rtunion_def* %arrayidx2 to i32*
-  %1 = load i32* %rtuint3, align 4, !tbaa !4
-  %call = tail call %struct.basic_block_def* @df_regno_bb(%struct.df* %df, i32 %0) #6
-  %cmp = icmp eq %struct.basic_block_def* %call, %bb
-  br i1 %cmp, label %lor.lhs.false, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.df* %df}, i64 0, metadata !701), !dbg !3150
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %bb}, i64 0, metadata !702), !dbg !3151
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %reg1}, i64 0, metadata !703), !dbg !3152
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %reg2}, i64 0, metadata !704), !dbg !3153
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %reg1, i64 0, i32 1, i64 0, !dbg !3154
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*, !dbg !3154
+  %0 = load i32* %rtuint, align 4, !dbg !3154, !tbaa !1899
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !705), !dbg !3154
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %reg2, i64 0, i32 1, i64 0, !dbg !3155
+  %rtuint3 = bitcast %union.rtunion_def* %arrayidx2 to i32*, !dbg !3155
+  %1 = load i32* %rtuint3, align 4, !dbg !3155, !tbaa !1899
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !706), !dbg !3155
+  %call = tail call %struct.basic_block_def* @df_regno_bb(%struct.df* %df, i32 %0) #7, !dbg !3156
+  %cmp = icmp eq %struct.basic_block_def* %call, %bb, !dbg !3156
+  br i1 %cmp, label %lor.lhs.false, label %if.then, !dbg !3156
 
 lor.lhs.false:                                    ; preds = %entry
-  %call4 = tail call %struct.basic_block_def* @df_regno_bb(%struct.df* %df, i32 %1) #6
-  %cmp5 = icmp eq %struct.basic_block_def* %call4, %bb
-  br i1 %cmp5, label %if.end, label %if.then
+  %call4 = tail call %struct.basic_block_def* @df_regno_bb(%struct.df* %df, i32 %1) #7, !dbg !3157
+  %cmp5 = icmp eq %struct.basic_block_def* %call4, %bb, !dbg !3157
+  br i1 %cmp5, label %if.end, label %if.then, !dbg !3157
 
 if.then:                                          ; preds = %lor.lhs.false, %entry
-  tail call void @fancy_abort(i8* getelementptr inbounds ([46 x i8]* @.str, i64 0, i64 0), i32 3081, i8* getelementptr inbounds ([25 x i8]* @__FUNCTION__.df_bb_regs_lives_compare, i64 0, i64 0)) #7
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([46 x i8]* @.str, i64 0, i64 0), i32 3081, i8* getelementptr inbounds ([25 x i8]* @__FUNCTION__.df_bb_regs_lives_compare, i64 0, i64 0)) #8, !dbg !3158
+  unreachable, !dbg !3158
 
 if.end:                                           ; preds = %lor.lhs.false
-  %call6 = tail call fastcc %struct.ref* @df_bb_regno_first_def_find(%struct.df* %df, %struct.basic_block_def* %bb, i32 %1) #6
-  %call7 = tail call fastcc %struct.ref* @df_bb_regno_last_use_find(%struct.df* %df, %struct.basic_block_def* %bb, i32 %0) #6
-  %insn = getelementptr inbounds %struct.ref* %call6, i64 0, i32 1
-  %2 = load %struct.rtx_def** %insn, align 8, !tbaa !3
-  %arrayidx9 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0
-  %rtint = bitcast %union.rtunion_def* %arrayidx9 to i32*
-  %3 = load i32* %rtint, align 4, !tbaa !4
-  %idxprom = sext i32 %3 to i64
-  %insns = getelementptr inbounds %struct.df* %df, i64 0, i32 7
-  %4 = load %struct.insn_info** %insns, align 8, !tbaa !3
-  %luid = getelementptr inbounds %struct.insn_info* %4, i64 %idxprom, i32 2
-  %5 = load i32* %luid, align 4, !tbaa !4
-  %insn11 = getelementptr inbounds %struct.ref* %call7, i64 0, i32 1
-  %6 = load %struct.rtx_def** %insn11, align 8, !tbaa !3
-  %arrayidx13 = getelementptr inbounds %struct.rtx_def* %6, i64 0, i32 1, i64 0
-  %rtint14 = bitcast %union.rtunion_def* %arrayidx13 to i32*
-  %7 = load i32* %rtint14, align 4, !tbaa !4
-  %idxprom15 = sext i32 %7 to i64
-  %luid18 = getelementptr inbounds %struct.insn_info* %4, i64 %idxprom15, i32 2
-  %8 = load i32* %luid18, align 4, !tbaa !4
-  %cmp19 = icmp sgt i32 %5, %8
-  br i1 %cmp19, label %return, label %if.end21
+  %call6 = tail call fastcc %struct.ref* @df_bb_regno_first_def_find(%struct.df* %df, %struct.basic_block_def* %bb, i32 %1) #7, !dbg !3159
+  tail call void @llvm.dbg.value(metadata !{%struct.ref* %call6}, i64 0, metadata !709), !dbg !3159
+  %call7 = tail call fastcc %struct.ref* @df_bb_regno_last_use_find(%struct.df* %df, %struct.basic_block_def* %bb, i32 %0) #7, !dbg !3160
+  tail call void @llvm.dbg.value(metadata !{%struct.ref* %call7}, i64 0, metadata !708), !dbg !3160
+  %insn = getelementptr inbounds %struct.ref* %call6, i64 0, i32 1, !dbg !3161
+  %2 = load %struct.rtx_def** %insn, align 8, !dbg !3161, !tbaa !1898
+  %arrayidx9 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0, !dbg !3161
+  %rtint = bitcast %union.rtunion_def* %arrayidx9 to i32*, !dbg !3161
+  %3 = load i32* %rtint, align 4, !dbg !3161, !tbaa !1899
+  %idxprom = sext i32 %3 to i64, !dbg !3161
+  %insns = getelementptr inbounds %struct.df* %df, i64 0, i32 7, !dbg !3161
+  %4 = load %struct.insn_info** %insns, align 8, !dbg !3161, !tbaa !1898
+  %luid = getelementptr inbounds %struct.insn_info* %4, i64 %idxprom, i32 2, !dbg !3161
+  %5 = load i32* %luid, align 4, !dbg !3161, !tbaa !1899
+  %insn11 = getelementptr inbounds %struct.ref* %call7, i64 0, i32 1, !dbg !3161
+  %6 = load %struct.rtx_def** %insn11, align 8, !dbg !3161, !tbaa !1898
+  %arrayidx13 = getelementptr inbounds %struct.rtx_def* %6, i64 0, i32 1, i64 0, !dbg !3161
+  %rtint14 = bitcast %union.rtunion_def* %arrayidx13 to i32*, !dbg !3161
+  %7 = load i32* %rtint14, align 4, !dbg !3161, !tbaa !1899
+  %idxprom15 = sext i32 %7 to i64, !dbg !3161
+  %luid18 = getelementptr inbounds %struct.insn_info* %4, i64 %idxprom15, i32 2, !dbg !3161
+  %8 = load i32* %luid18, align 4, !dbg !3161, !tbaa !1899
+  %cmp19 = icmp sgt i32 %5, %8, !dbg !3161
+  br i1 %cmp19, label %return, label %if.end21, !dbg !3161
 
 if.end21:                                         ; preds = %if.end
-  %call22 = tail call fastcc %struct.ref* @df_bb_regno_first_def_find(%struct.df* %df, %struct.basic_block_def* %bb, i32 %0) #6
-  %call23 = tail call fastcc %struct.ref* @df_bb_regno_last_use_find(%struct.df* %df, %struct.basic_block_def* %bb, i32 %1) #6
-  %insn24 = getelementptr inbounds %struct.ref* %call22, i64 0, i32 1
-  %9 = load %struct.rtx_def** %insn24, align 8, !tbaa !3
-  %arrayidx26 = getelementptr inbounds %struct.rtx_def* %9, i64 0, i32 1, i64 0
-  %rtint27 = bitcast %union.rtunion_def* %arrayidx26 to i32*
-  %10 = load i32* %rtint27, align 4, !tbaa !4
-  %idxprom28 = sext i32 %10 to i64
-  %luid31 = getelementptr inbounds %struct.insn_info* %4, i64 %idxprom28, i32 2
-  %11 = load i32* %luid31, align 4, !tbaa !4
-  %insn32 = getelementptr inbounds %struct.ref* %call23, i64 0, i32 1
-  %12 = load %struct.rtx_def** %insn32, align 8, !tbaa !3
-  %arrayidx34 = getelementptr inbounds %struct.rtx_def* %12, i64 0, i32 1, i64 0
-  %rtint35 = bitcast %union.rtunion_def* %arrayidx34 to i32*
-  %13 = load i32* %rtint35, align 4, !tbaa !4
-  %idxprom36 = sext i32 %13 to i64
-  %luid39 = getelementptr inbounds %struct.insn_info* %4, i64 %idxprom36, i32 2
-  %14 = load i32* %luid39, align 4, !tbaa !4
-  %cmp40 = icmp sgt i32 %11, %14
-  %. = zext i1 %cmp40 to i32
-  br label %return
+  %call22 = tail call fastcc %struct.ref* @df_bb_regno_first_def_find(%struct.df* %df, %struct.basic_block_def* %bb, i32 %0) #7, !dbg !3162
+  tail call void @llvm.dbg.value(metadata !{%struct.ref* %call22}, i64 0, metadata !707), !dbg !3162
+  %call23 = tail call fastcc %struct.ref* @df_bb_regno_last_use_find(%struct.df* %df, %struct.basic_block_def* %bb, i32 %1) #7, !dbg !3163
+  tail call void @llvm.dbg.value(metadata !{%struct.ref* %call23}, i64 0, metadata !710), !dbg !3163
+  %insn24 = getelementptr inbounds %struct.ref* %call22, i64 0, i32 1, !dbg !3164
+  %9 = load %struct.rtx_def** %insn24, align 8, !dbg !3164, !tbaa !1898
+  %arrayidx26 = getelementptr inbounds %struct.rtx_def* %9, i64 0, i32 1, i64 0, !dbg !3164
+  %rtint27 = bitcast %union.rtunion_def* %arrayidx26 to i32*, !dbg !3164
+  %10 = load i32* %rtint27, align 4, !dbg !3164, !tbaa !1899
+  %idxprom28 = sext i32 %10 to i64, !dbg !3164
+  %luid31 = getelementptr inbounds %struct.insn_info* %4, i64 %idxprom28, i32 2, !dbg !3164
+  %11 = load i32* %luid31, align 4, !dbg !3164, !tbaa !1899
+  %insn32 = getelementptr inbounds %struct.ref* %call23, i64 0, i32 1, !dbg !3164
+  %12 = load %struct.rtx_def** %insn32, align 8, !dbg !3164, !tbaa !1898
+  %arrayidx34 = getelementptr inbounds %struct.rtx_def* %12, i64 0, i32 1, i64 0, !dbg !3164
+  %rtint35 = bitcast %union.rtunion_def* %arrayidx34 to i32*, !dbg !3164
+  %13 = load i32* %rtint35, align 4, !dbg !3164, !tbaa !1899
+  %idxprom36 = sext i32 %13 to i64, !dbg !3164
+  %luid39 = getelementptr inbounds %struct.insn_info* %4, i64 %idxprom36, i32 2, !dbg !3164
+  %14 = load i32* %luid39, align 4, !dbg !3164, !tbaa !1899
+  %cmp40 = icmp sgt i32 %11, %14, !dbg !3164
+  %. = zext i1 %cmp40 to i32, !dbg !3165
+  br label %return, !dbg !3165
 
 return:                                           ; preds = %if.end21, %if.end
   %retval.0 = phi i32 [ -1, %if.end ], [ %., %if.end21 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !3166
 }

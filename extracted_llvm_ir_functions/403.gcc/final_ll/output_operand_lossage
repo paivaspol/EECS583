@@ -3,30 +3,39 @@ entry:
   %fmt_string = alloca i8*, align 8
   %new_message = alloca i8*, align 8
   %ap = alloca [1 x %struct.__va_list_tag], align 16
-  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0
-  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
-  call void @llvm.va_start(i8* %arraydecay1)
-  %0 = load %struct.rtx_def** @this_is_asm_operands, align 8, !tbaa !0
-  %tobool = icmp ne %struct.rtx_def* %0, null
-  %cond = select i1 %tobool, i8* getelementptr inbounds ([16 x i8]* @.str26, i64 0, i64 0), i8* getelementptr inbounds ([17 x i8]* @.str27, i64 0, i64 0)
-  %call = call i32 (i8**, i8*, ...)* @asprintf(i8** %fmt_string, i8* getelementptr inbounds ([5 x i8]* @.str28, i64 0, i64 0), i8* %cond, i8* %msgid) #8
-  %1 = load i8** %fmt_string, align 8, !tbaa !0
-  %call3 = call i32 @vasprintf(i8** %new_message, i8* %1, %struct.__va_list_tag* %arraydecay) #8
-  %2 = load %struct.rtx_def** @this_is_asm_operands, align 8, !tbaa !0
-  %tobool4 = icmp eq %struct.rtx_def* %2, null
-  %3 = load i8** %new_message, align 8, !tbaa !0
-  br i1 %tobool4, label %if.else, label %if.then
+  call void @llvm.dbg.value(metadata !{i8* %msgid}, i64 0, metadata !1256), !dbg !2399
+  call void @llvm.dbg.declare(metadata !{i8** %fmt_string}, metadata !1257), !dbg !2400
+  call void @llvm.dbg.declare(metadata !{i8** %new_message}, metadata !1258), !dbg !2401
+  call void @llvm.dbg.declare(metadata !{[1 x %struct.__va_list_tag]* %ap}, metadata !1260), !dbg !2402
+  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, !dbg !2402
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*, !dbg !2402
+  call void @llvm.va_start(i8* %arraydecay1), !dbg !2402
+  %0 = load %struct.rtx_def** @this_is_asm_operands, align 8, !dbg !2403, !tbaa !1555
+  %tobool = icmp ne %struct.rtx_def* %0, null, !dbg !2403
+  %cond = select i1 %tobool, i8* getelementptr inbounds ([16 x i8]* @.str26, i64 0, i64 0), i8* getelementptr inbounds ([17 x i8]* @.str27, i64 0, i64 0), !dbg !2403
+  call void @llvm.dbg.value(metadata !{i8* %cond}, i64 0, metadata !1259), !dbg !2403
+  %call = call i32 (i8**, i8*, ...)* @asprintf(i8** %fmt_string, i8* getelementptr inbounds ([5 x i8]* @.str28, i64 0, i64 0), i8* %cond, i8* %msgid) #9, !dbg !2405
+  call void @llvm.dbg.value(metadata !{i8** %fmt_string}, i64 0, metadata !1257), !dbg !2406
+  %1 = load i8** %fmt_string, align 8, !dbg !2406, !tbaa !1555
+  %call3 = call i32 @vasprintf(i8** %new_message, i8* %1, %struct.__va_list_tag* %arraydecay) #9, !dbg !2406
+  %2 = load %struct.rtx_def** @this_is_asm_operands, align 8, !dbg !2407, !tbaa !1555
+  %tobool4 = icmp eq %struct.rtx_def* %2, null, !dbg !2407
+  call void @llvm.dbg.value(metadata !{i8** %new_message}, i64 0, metadata !1258), !dbg !2408
+  %3 = load i8** %new_message, align 8, !dbg !2408, !tbaa !1555
+  br i1 %tobool4, label %if.else, label %if.then, !dbg !2407
 
 if.then:                                          ; preds = %entry
-  call void (%struct.rtx_def*, i8*, ...)* @error_for_asm(%struct.rtx_def* %2, i8* getelementptr inbounds ([3 x i8]* @.str7, i64 0, i64 0), i8* %3) #8
-  %4 = load i8** %fmt_string, align 8, !tbaa !0
-  call void @free(i8* %4) #8
-  %5 = load i8** %new_message, align 8, !tbaa !0
-  call void @free(i8* %5) #8
-  call void @llvm.va_end(i8* %arraydecay1)
-  ret void
+  call void (%struct.rtx_def*, i8*, ...)* @error_for_asm(%struct.rtx_def* %2, i8* getelementptr inbounds ([3 x i8]* @.str7, i64 0, i64 0), i8* %3) #9, !dbg !2409
+  call void @llvm.dbg.value(metadata !{i8** %fmt_string}, i64 0, metadata !1257), !dbg !2410
+  %4 = load i8** %fmt_string, align 8, !dbg !2410, !tbaa !1555
+  call void @free(i8* %4) #9, !dbg !2410
+  call void @llvm.dbg.value(metadata !{i8** %new_message}, i64 0, metadata !1258), !dbg !2411
+  %5 = load i8** %new_message, align 8, !dbg !2411, !tbaa !1555
+  call void @free(i8* %5) #9, !dbg !2411
+  call void @llvm.va_end(i8* %arraydecay1), !dbg !2412
+  ret void, !dbg !2413
 
 if.else:                                          ; preds = %entry
-  call void (i8*, ...)* @internal_error(i8* getelementptr inbounds ([3 x i8]* @.str7, i64 0, i64 0), i8* %3) #11
-  unreachable
+  call void (i8*, ...)* @internal_error(i8* getelementptr inbounds ([3 x i8]* @.str7, i64 0, i64 0), i8* %3) #12, !dbg !2408
+  unreachable, !dbg !2408
 }

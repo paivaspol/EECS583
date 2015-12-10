@@ -1,45 +1,46 @@
-define void @free_frame_store(%struct.frame_store* %f) #1 {
+define void @free_frame_store(%struct.frame_store* %f) #2 {
 entry:
-  %tobool = icmp eq %struct.frame_store* %f, null
-  br i1 %tobool, label %if.end15, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.frame_store* %f}, i64 0, metadata !158), !dbg !1484
+  %tobool = icmp eq %struct.frame_store* %f, null, !dbg !1485
+  br i1 %tobool, label %if.end15, label %if.then, !dbg !1485
 
 if.then:                                          ; preds = %entry
-  %frame = getelementptr inbounds %struct.frame_store* %f, i64 0, i32 10
-  %0 = load %struct.storable_picture** %frame, align 8, !tbaa !0
-  %tobool1 = icmp eq %struct.storable_picture* %0, null
-  br i1 %tobool1, label %if.end, label %if.then2
+  %frame = getelementptr inbounds %struct.frame_store* %f, i64 0, i32 10, !dbg !1486
+  %0 = load %struct.storable_picture** %frame, align 8, !dbg !1486, !tbaa !1363
+  %tobool1 = icmp eq %struct.storable_picture* %0, null, !dbg !1486
+  br i1 %tobool1, label %if.end, label %if.then2, !dbg !1486
 
 if.then2:                                         ; preds = %if.then
-  tail call void @free_storable_picture(%struct.storable_picture* %0) #7
-  store %struct.storable_picture* null, %struct.storable_picture** %frame, align 8, !tbaa !0
-  br label %if.end
+  tail call void @free_storable_picture(%struct.storable_picture* %0) #9, !dbg !1488
+  store %struct.storable_picture* null, %struct.storable_picture** %frame, align 8, !dbg !1490, !tbaa !1363
+  br label %if.end, !dbg !1491
 
 if.end:                                           ; preds = %if.then, %if.then2
-  %top_field = getelementptr inbounds %struct.frame_store* %f, i64 0, i32 11
-  %1 = load %struct.storable_picture** %top_field, align 8, !tbaa !0
-  %tobool5 = icmp eq %struct.storable_picture* %1, null
-  br i1 %tobool5, label %if.end9, label %if.then6
+  %top_field = getelementptr inbounds %struct.frame_store* %f, i64 0, i32 11, !dbg !1492
+  %1 = load %struct.storable_picture** %top_field, align 8, !dbg !1492, !tbaa !1363
+  %tobool5 = icmp eq %struct.storable_picture* %1, null, !dbg !1492
+  br i1 %tobool5, label %if.end9, label %if.then6, !dbg !1492
 
 if.then6:                                         ; preds = %if.end
-  tail call void @free_storable_picture(%struct.storable_picture* %1) #7
-  store %struct.storable_picture* null, %struct.storable_picture** %top_field, align 8, !tbaa !0
-  br label %if.end9
+  tail call void @free_storable_picture(%struct.storable_picture* %1) #9, !dbg !1493
+  store %struct.storable_picture* null, %struct.storable_picture** %top_field, align 8, !dbg !1495, !tbaa !1363
+  br label %if.end9, !dbg !1496
 
 if.end9:                                          ; preds = %if.end, %if.then6
-  %bottom_field = getelementptr inbounds %struct.frame_store* %f, i64 0, i32 12
-  %2 = load %struct.storable_picture** %bottom_field, align 8, !tbaa !0
-  %tobool10 = icmp eq %struct.storable_picture* %2, null
-  br i1 %tobool10, label %if.end14, label %if.then11
+  %bottom_field = getelementptr inbounds %struct.frame_store* %f, i64 0, i32 12, !dbg !1497
+  %2 = load %struct.storable_picture** %bottom_field, align 8, !dbg !1497, !tbaa !1363
+  %tobool10 = icmp eq %struct.storable_picture* %2, null, !dbg !1497
+  br i1 %tobool10, label %if.end14, label %if.then11, !dbg !1497
 
 if.then11:                                        ; preds = %if.end9
-  tail call void @free_storable_picture(%struct.storable_picture* %2) #7
-  br label %if.end14
+  tail call void @free_storable_picture(%struct.storable_picture* %2) #9, !dbg !1498
+  br label %if.end14, !dbg !1500
 
 if.end14:                                         ; preds = %if.end9, %if.then11
-  %3 = bitcast %struct.frame_store* %f to i8*
-  tail call void @free(i8* %3) #6
-  br label %if.end15
+  %3 = bitcast %struct.frame_store* %f to i8*, !dbg !1501
+  tail call void @free(i8* %3) #8, !dbg !1501
+  br label %if.end15, !dbg !1502
 
 if.end15:                                         ; preds = %entry, %if.end14
-  ret void
+  ret void, !dbg !1503
 }

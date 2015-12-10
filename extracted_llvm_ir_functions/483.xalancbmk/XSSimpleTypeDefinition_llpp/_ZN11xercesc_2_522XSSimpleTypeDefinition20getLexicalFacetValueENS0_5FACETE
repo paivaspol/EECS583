@@ -1,0 +1,47 @@
+define i16* @_ZN11xercesc_2_522XSSimpleTypeDefinition20getLexicalFacetValueENS0_5FACETE(%"class.xercesc_2_5::XSSimpleTypeDefinition"* nocapture %this, i32 %facetName) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XSSimpleTypeDefinition"* %this}, i64 0, metadata !2628), !dbg !3085
+  tail call void @llvm.dbg.value(metadata !{i32 %facetName}, i64 0, metadata !2629), !dbg !3085
+  %fXSFacetList = getelementptr inbounds %"class.xercesc_2_5::XSSimpleTypeDefinition"* %this, i64 0, i32 5, !dbg !3086
+  %0 = load %"class.xercesc_2_5::RefVectorOf.9"** %fXSFacetList, align 8, !dbg !3086, !tbaa !3007
+  %fCurCount.i = getelementptr inbounds %"class.xercesc_2_5::RefVectorOf.9"* %0, i64 0, i32 0, i32 2, !dbg !3087
+  %1 = load i32* %fCurCount.i, align 4, !dbg !3087, !tbaa !3004
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !2630), !dbg !3086
+  tail call void @llvm.dbg.value(metadata !2459, i64 0, metadata !2631), !dbg !3089
+  %cmp13 = icmp eq i32 %1, 0, !dbg !3089
+  br i1 %cmp13, label %return, label %for.body, !dbg !3089
+
+for.cond:                                         ; preds = %for.body
+  %cmp = icmp ult i32 %inc, %1, !dbg !3089
+  br i1 %cmp, label %for.cond.for.body_crit_edge, label %return, !dbg !3089
+
+for.cond.for.body_crit_edge:                      ; preds = %for.cond
+  %.pre = load %"class.xercesc_2_5::RefVectorOf.9"** %fXSFacetList, align 8, !dbg !3090, !tbaa !3007
+  br label %for.body, !dbg !3089
+
+for.body:                                         ; preds = %entry, %for.cond.for.body_crit_edge
+  %2 = phi %"class.xercesc_2_5::RefVectorOf.9"* [ %.pre, %for.cond.for.body_crit_edge ], [ %0, %entry ]
+  %i.014 = phi i32 [ %inc, %for.cond.for.body_crit_edge ], [ 0, %entry ]
+  %3 = getelementptr inbounds %"class.xercesc_2_5::RefVectorOf.9"* %2, i64 0, i32 0, !dbg !3090
+  %call3 = tail call %"class.xercesc_2_5::XSFacet"* @_ZN11xercesc_2_515BaseRefVectorOfINS_7XSFacetEE9elementAtEj(%"class.xercesc_2_5::BaseRefVectorOf.10"* %3, i32 %i.014) #9, !dbg !3090
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XSFacet"* %call3}, i64 0, metadata !3092), !dbg !3093
+  %fFacetKind.i = getelementptr inbounds %"class.xercesc_2_5::XSFacet"* %call3, i64 0, i32 1, !dbg !3094
+  %4 = load i32* %fFacetKind.i, align 4, !dbg !3094, !tbaa !3095
+  %cmp5 = icmp eq i32 %4, %facetName, !dbg !3090
+  %inc = add i32 %i.014, 1, !dbg !3089
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !2631), !dbg !3089
+  br i1 %cmp5, label %if.then, label %for.cond, !dbg !3090
+
+if.then:                                          ; preds = %for.body
+  %5 = load %"class.xercesc_2_5::RefVectorOf.9"** %fXSFacetList, align 8, !dbg !3096, !tbaa !3007
+  %6 = getelementptr inbounds %"class.xercesc_2_5::RefVectorOf.9"* %5, i64 0, i32 0, !dbg !3096
+  %call7 = tail call %"class.xercesc_2_5::XSFacet"* @_ZN11xercesc_2_515BaseRefVectorOfINS_7XSFacetEE9elementAtEj(%"class.xercesc_2_5::BaseRefVectorOf.10"* %6, i32 %i.014) #9, !dbg !3096
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XSFacet"* %call7}, i64 0, metadata !3097), !dbg !3098
+  %fLexicalValue.i = getelementptr inbounds %"class.xercesc_2_5::XSFacet"* %call7, i64 0, i32 3, !dbg !3099
+  %7 = load i16** %fLexicalValue.i, align 8, !dbg !3099, !tbaa !3007
+  br label %return, !dbg !3096
+
+return:                                           ; preds = %entry, %for.cond, %if.then
+  %retval.0 = phi i16* [ %7, %if.then ], [ null, %for.cond ], [ null, %entry ]
+  ret i16* %retval.0, !dbg !3101
+}

@@ -1,95 +1,102 @@
 define i32 @start_slice() #0 {
 entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %currentSlice = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 50
-  %1 = load %struct.Slice** %currentSlice, align 8, !tbaa !0
-  %2 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %partition_mode = getelementptr inbounds %struct.InputParameters* %2, i64 0, i32 61
-  %3 = load i32* %partition_mode, align 4, !tbaa !3
-  %cmp = icmp eq i32 %3, 0
-  %cond = select i1 %cmp, i32 1, i32 3
-  %currentPicture = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 49
-  %4 = load %struct.Picture** %currentPicture, align 8, !tbaa !0
-  %idr_flag = getelementptr inbounds %struct.Picture* %4, i64 0, i32 1
-  %5 = load i32* %idr_flag, align 4, !tbaa !3
-  %tobool = icmp ne i32 %5, 0
-  %.cond = select i1 %tobool, i32 1, i32 %cond
-  %tr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 55
-  %6 = load i32* %tr, align 4, !tbaa !3
-  tail call void @RTPUpdateTimestamp(i32 %6) #4
-  %partArr = getelementptr inbounds %struct.Slice* %1, i64 0, i32 6
-  br label %for.body
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !772, !tbaa !765
+  %currentSlice = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 50, !dbg !772
+  %1 = load %struct.Slice** %currentSlice, align 8, !dbg !772, !tbaa !765
+  tail call void @llvm.dbg.value(metadata !{%struct.Slice* %1}, i64 0, metadata !227), !dbg !772
+  tail call void @llvm.dbg.value(metadata !34, i64 0, metadata !229), !dbg !773
+  %2 = load %struct.InputParameters** @input, align 8, !dbg !774, !tbaa !765
+  %partition_mode = getelementptr inbounds %struct.InputParameters* %2, i64 0, i32 61, !dbg !774
+  %3 = load i32* %partition_mode, align 4, !dbg !774, !tbaa !769
+  %cmp = icmp eq i32 %3, 0, !dbg !774
+  %cond = select i1 %cmp, i32 1, i32 3, !dbg !774
+  tail call void @llvm.dbg.value(metadata !{i32 %cond}, i64 0, metadata !231), !dbg !774
+  %currentPicture = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 49, !dbg !775
+  %4 = load %struct.Picture** %currentPicture, align 8, !dbg !775, !tbaa !765
+  %idr_flag = getelementptr inbounds %struct.Picture* %4, i64 0, i32 1, !dbg !775
+  %5 = load i32* %idr_flag, align 4, !dbg !775, !tbaa !769
+  %tobool = icmp ne i32 %5, 0, !dbg !775
+  %.cond = select i1 %tobool, i32 1, i32 %cond, !dbg !775
+  tail call void @llvm.dbg.value(metadata !{i32 %.cond}, i64 0, metadata !231), !dbg !776
+  %tr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 55, !dbg !778
+  %6 = load i32* %tr, align 4, !dbg !778, !tbaa !769
+  tail call void @RTPUpdateTimestamp(i32 %6) #6, !dbg !778
+  tail call void @llvm.dbg.value(metadata !34, i64 0, metadata !230), !dbg !779
+  %partArr = getelementptr inbounds %struct.Slice* %1, i64 0, i32 6, !dbg !781
+  br label %for.body, !dbg !779
 
 for.body:                                         ; preds = %entry, %for.inc
   %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc ]
   %header_len.037 = phi i32 [ 0, %entry ], [ %header_len.3, %for.inc ]
-  %7 = load %struct.datapartition** %partArr, align 8, !tbaa !0
-  %bitstream = getelementptr inbounds %struct.datapartition* %7, i64 %indvars.iv, i32 0
-  %8 = load %struct.Bitstream** %bitstream, align 8, !tbaa !0
-  %write_flag = getelementptr inbounds %struct.Bitstream* %8, i64 0, i32 10
-  store i32 0, i32* %write_flag, align 4, !tbaa !3
-  %9 = trunc i64 %indvars.iv to i32
-  %cmp2 = icmp eq i32 %9, 0
-  br i1 %cmp2, label %if.then3, label %if.else
+  %7 = load %struct.datapartition** %partArr, align 8, !dbg !781, !tbaa !765
+  %bitstream = getelementptr inbounds %struct.datapartition* %7, i64 %indvars.iv, i32 0, !dbg !781
+  %8 = load %struct.Bitstream** %bitstream, align 8, !dbg !781, !tbaa !765
+  tail call void @llvm.dbg.value(metadata !{%struct.Bitstream* %8}, i64 0, metadata !228), !dbg !781
+  %write_flag = getelementptr inbounds %struct.Bitstream* %8, i64 0, i32 10, !dbg !783
+  store i32 0, i32* %write_flag, align 4, !dbg !783, !tbaa !769
+  %9 = trunc i64 %indvars.iv to i32, !dbg !784
+  %cmp2 = icmp eq i32 %9, 0, !dbg !784
+  br i1 %cmp2, label %if.then3, label %if.else, !dbg !784
 
 if.then3:                                         ; preds = %for.body
-  %call = tail call i32 (i32, ...)* bitcast (i32 (...)* @SliceHeader to i32 (i32, ...)*)(i32 0) #4
-  br label %if.end6
+  %call = tail call i32 (i32, ...)* bitcast (i32 (...)* @SliceHeader to i32 (i32, ...)*)(i32 0) #6, !dbg !785
+  br label %if.end6, !dbg !785
 
 if.else:                                          ; preds = %for.body
-  %call4 = tail call i32 (i32, ...)* bitcast (i32 (...)* @Partition_BC_Header to i32 (i32, ...)*)(i32 %9) #4
+  %call4 = tail call i32 (i32, ...)* bitcast (i32 (...)* @Partition_BC_Header to i32 (i32, ...)*)(i32 %9) #6, !dbg !786
   br label %if.end6
 
 if.end6:                                          ; preds = %if.else, %if.then3
   %call.pn = phi i32 [ %call, %if.then3 ], [ %call4, %if.else ]
-  %header_len.1 = add nsw i32 %call.pn, %header_len.037
-  %10 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %symbol_mode = getelementptr inbounds %struct.InputParameters* %10, i64 0, i32 59
-  %11 = load i32* %symbol_mode, align 4, !tbaa !3
-  %cmp7 = icmp eq i32 %11, 1
-  br i1 %cmp7, label %if.then8, label %if.else17
+  %header_len.1 = add nsw i32 %call.pn, %header_len.037, !dbg !785
+  %10 = load %struct.InputParameters** @input, align 8, !dbg !787, !tbaa !765
+  %symbol_mode = getelementptr inbounds %struct.InputParameters* %10, i64 0, i32 59, !dbg !787
+  %11 = load i32* %symbol_mode, align 4, !dbg !787, !tbaa !769
+  %cmp7 = icmp eq i32 %11, 1, !dbg !787
+  br i1 %cmp7, label %if.then8, label %if.else17, !dbg !787
 
 if.then8:                                         ; preds = %if.end6
-  %12 = load %struct.datapartition** %partArr, align 8, !tbaa !0
-  %ee_cabac = getelementptr inbounds %struct.datapartition* %12, i64 %indvars.iv, i32 1
-  %bits_to_go = getelementptr inbounds %struct.Bitstream* %8, i64 0, i32 1
-  %13 = load i32* %bits_to_go, align 4, !tbaa !3
-  %cmp12 = icmp eq i32 %13, 8
-  %add15 = select i1 %cmp12, i32 0, i32 %13
-  %header_len.1.add15 = add nsw i32 %add15, %header_len.1
-  tail call void @writeVlcByteAlign(%struct.Bitstream* %8) #4
-  %streamBuffer = getelementptr inbounds %struct.Bitstream* %8, i64 0, i32 9
-  %14 = load i8** %streamBuffer, align 8, !tbaa !0
-  %byte_pos = getelementptr inbounds %struct.Bitstream* %8, i64 0, i32 0
-  %15 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type = getelementptr inbounds %struct.ImageParameters* %15, i64 0, i32 6
-  %16 = load i32* %type, align 4, !tbaa !3
-  tail call void @arienco_start_encoding(%struct.EncodingEnvironment* %ee_cabac, i8* %14, i32* %byte_pos, i32 %16) #4
-  tail call void (...)* @cabac_new_slice() #4
-  br label %for.inc
+  %12 = load %struct.datapartition** %partArr, align 8, !dbg !788, !tbaa !765
+  %ee_cabac = getelementptr inbounds %struct.datapartition* %12, i64 %indvars.iv, i32 1, !dbg !788
+  tail call void @llvm.dbg.value(metadata !{%struct.EncodingEnvironment* %ee_cabac}, i64 0, metadata !226), !dbg !788
+  %bits_to_go = getelementptr inbounds %struct.Bitstream* %8, i64 0, i32 1, !dbg !790
+  %13 = load i32* %bits_to_go, align 4, !dbg !790, !tbaa !769
+  %cmp12 = icmp eq i32 %13, 8, !dbg !790
+  %add15 = select i1 %cmp12, i32 0, i32 %13, !dbg !790
+  %header_len.1.add15 = add nsw i32 %add15, %header_len.1, !dbg !790
+  tail call void @writeVlcByteAlign(%struct.Bitstream* %8) #6, !dbg !791
+  %streamBuffer = getelementptr inbounds %struct.Bitstream* %8, i64 0, i32 9, !dbg !792
+  %14 = load i8** %streamBuffer, align 8, !dbg !792, !tbaa !765
+  %byte_pos = getelementptr inbounds %struct.Bitstream* %8, i64 0, i32 0, !dbg !792
+  %15 = load %struct.ImageParameters** @img, align 8, !dbg !792, !tbaa !765
+  %type = getelementptr inbounds %struct.ImageParameters* %15, i64 0, i32 6, !dbg !792
+  %16 = load i32* %type, align 4, !dbg !792, !tbaa !769
+  tail call void @arienco_start_encoding(%struct.EncodingEnvironment* %ee_cabac, i8* %14, i32* %byte_pos, i32 %16) #6, !dbg !792
+  tail call void (...)* @cabac_new_slice() #6, !dbg !793
+  br label %for.inc, !dbg !794
 
 if.else17:                                        ; preds = %if.end6
-  tail call void (...)* @CAVLC_init() #4
+  tail call void (...)* @CAVLC_init() #6, !dbg !795
   br label %for.inc
 
 for.inc:                                          ; preds = %if.then8, %if.else17
   %header_len.3 = phi i32 [ %header_len.1.add15, %if.then8 ], [ %header_len.1, %if.else17 ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %17 = trunc i64 %indvars.iv.next to i32
-  %cmp1 = icmp slt i32 %17, %.cond
-  br i1 %cmp1, label %for.body, label %for.end
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !779
+  %17 = trunc i64 %indvars.iv.next to i32, !dbg !779
+  %cmp1 = icmp slt i32 %17, %.cond, !dbg !779
+  br i1 %cmp1, label %for.body, label %for.end, !dbg !779
 
 for.end:                                          ; preds = %for.inc
-  %18 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %symbol_mode19 = getelementptr inbounds %struct.InputParameters* %18, i64 0, i32 59
-  %19 = load i32* %symbol_mode19, align 4, !tbaa !3
-  %cmp20 = icmp eq i32 %19, 1
-  br i1 %cmp20, label %if.then21, label %if.end22
+  %18 = load %struct.InputParameters** @input, align 8, !dbg !797, !tbaa !765
+  %symbol_mode19 = getelementptr inbounds %struct.InputParameters* %18, i64 0, i32 59, !dbg !797
+  %19 = load i32* %symbol_mode19, align 4, !dbg !797, !tbaa !769
+  %cmp20 = icmp eq i32 %19, 1, !dbg !797
+  br i1 %cmp20, label %if.then21, label %if.end22, !dbg !797
 
 if.then21:                                        ; preds = %for.end
-  tail call void (...)* @init_contexts() #4
-  br label %if.end22
+  tail call void (...)* @init_contexts() #6, !dbg !798
+  br label %if.end22, !dbg !800
 
 if.end22:                                         ; preds = %if.then21, %for.end
-  ret i32 %header_len.3
+  ret i32 %header_len.3, !dbg !801
 }

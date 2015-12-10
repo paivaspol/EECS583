@@ -1,20 +1,24 @@
 define i32 @cpp_defined(%struct.cpp_reader* nocapture %pfile, i8* %str, i32 %len) #0 {
 entry:
-  %hash_table = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 36
-  %0 = load %struct.ht** %hash_table, align 8, !tbaa !2
-  %call = tail call %struct.ht_identifier* @ht_lookup(%struct.ht* %0, i8* %str, i32 %len, i32 0) #3
-  %tobool = icmp eq %struct.ht_identifier* %call, null
-  br i1 %tobool, label %land.end, label %land.rhs
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !516), !dbg !631
+  tail call void @llvm.dbg.value(metadata !{i8* %str}, i64 0, metadata !517), !dbg !632
+  tail call void @llvm.dbg.value(metadata !{i32 %len}, i64 0, metadata !518), !dbg !633
+  %hash_table = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 36, !dbg !634
+  %0 = load %struct.ht** %hash_table, align 8, !dbg !634, !tbaa !554
+  %call = tail call %struct.ht_identifier* @ht_lookup(%struct.ht* %0, i8* %str, i32 %len, i32 0) #4, !dbg !634
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_hashnode* %1}, i64 0, metadata !519), !dbg !634
+  %tobool = icmp eq %struct.ht_identifier* %call, null, !dbg !635
+  br i1 %tobool, label %land.end, label %land.rhs, !dbg !635
 
 land.rhs:                                         ; preds = %entry
-  %1 = bitcast %struct.ht_identifier* %call to %struct.cpp_hashnode*
-  %type = getelementptr inbounds %struct.cpp_hashnode* %1, i64 0, i32 4
-  %bf.load = load i8* %type, align 4
-  %cmp = icmp eq i8 %bf.load, 1
+  %1 = bitcast %struct.ht_identifier* %call to %struct.cpp_hashnode*, !dbg !634
+  %type = getelementptr inbounds %struct.cpp_hashnode* %1, i64 0, i32 4, !dbg !635
+  %bf.load = load i8* %type, align 4, !dbg !635
+  %cmp = icmp eq i8 %bf.load, 1, !dbg !635
   br label %land.end
 
 land.end:                                         ; preds = %entry, %land.rhs
   %2 = phi i1 [ false, %entry ], [ %cmp, %land.rhs ]
   %land.ext = zext i1 %2 to i32
-  ret i32 %land.ext
+  ret i32 %land.ext, !dbg !636
 }

@@ -1,0 +1,72 @@
+define void @_ZN8EtherMAC22handleEndBackoffPeriodEv(%class.EtherMAC* %this) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.EtherMAC* %this}, i64 0, metadata !4946), !dbg !6549
+  %transmitState = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 17, !dbg !6550
+  %0 = load i32* %transmitState, align 4, !dbg !6550, !tbaa !5376
+  %cmp = icmp eq i32 %0, 5, !dbg !6550
+  br i1 %cmp, label %if.end, label %if.then, !dbg !6550
+
+if.then:                                          ; preds = %entry
+  %1 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 0, !dbg !6551
+  tail call void (%class.cSimpleModule*, i8*, ...)* @_ZNK13cSimpleModule5errorEPKcz(%class.cSimpleModule* %1, i8* getelementptr inbounds ([40 x i8]* @.str116, i64 0, i64 0)) #11, !dbg !6551
+  br label %if.end, !dbg !6551
+
+if.end:                                           ; preds = %entry, %if.then
+  %outputbuffer = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 24, !dbg !6552
+  tail call void @llvm.dbg.value(metadata !{%class.cQueue* %outputbuffer}, i64 0, metadata !6553), !dbg !6554
+  %2 = bitcast %class.cQueue* %outputbuffer to i32 (%class.cQueue*)***, !dbg !6555
+  %vtable.i = load i32 (%class.cQueue*)*** %2, align 8, !dbg !6555, !tbaa !5419
+  %vfn.i = getelementptr inbounds i32 (%class.cQueue*)** %vtable.i, i64 23, !dbg !6555
+  %3 = load i32 (%class.cQueue*)** %vfn.i, align 8, !dbg !6555
+  %call.i = tail call i32 %3(%class.cQueue* %outputbuffer) #11, !dbg !6555
+  %cmp.i = icmp eq i32 %call.i, 0, !dbg !6555
+  br i1 %cmp.i, label %if.then2, label %if.end3, !dbg !6552
+
+if.then2:                                         ; preds = %if.end
+  %4 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 0, !dbg !6556
+  tail call void (%class.cSimpleModule*, i8*, ...)* @_ZNK13cSimpleModule5errorEPKcz(%class.cSimpleModule* %4, i8* getelementptr inbounds ([36 x i8]* @.str117, i64 0, i64 0)) #11, !dbg !6556
+  br label %if.end3, !dbg !6556
+
+if.end3:                                          ; preds = %if.then2, %if.end
+  %receiveState = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 18, !dbg !6557
+  %5 = load i32* %receiveState, align 4, !dbg !6557, !tbaa !5376
+  %cmp4 = icmp eq i32 %5, 1, !dbg !6557
+  %6 = load i32* getelementptr inbounds (%class.cEnvir* @ev, i64 0, i32 1), align 8, !dbg !6558, !tbaa !5376
+  %tobool = icmp ne i32 %6, 0, !dbg !6558
+  br i1 %cmp4, label %if.then5, label %if.else, !dbg !6557
+
+if.then5:                                         ; preds = %if.end3
+  br i1 %tobool, label %cond.end, label %cond.false, !dbg !6558
+
+cond.false:                                       ; preds = %if.then5
+  tail call void @llvm.dbg.value(metadata !5402, i64 0, metadata !6560), !dbg !6561
+  tail call void @llvm.dbg.value(metadata !6562, i64 0, metadata !6563), !dbg !6561
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([32 x i8]* @.str118, i64 0, i64 0)) #11, !dbg !6564
+  br label %cond.end, !dbg !6558
+
+cond.end:                                         ; preds = %if.then5, %cond.false
+  tail call void @llvm.dbg.value(metadata !{%class.EtherMAC* %this}, i64 0, metadata !6565), !dbg !6567
+  %7 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 0, !dbg !6568
+  %call.i15 = tail call double @_ZNK13cSimpleModule7simTimeEv(%class.cSimpleModule* %7) #11, !dbg !6568
+  %interFrameGap.i = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 11, !dbg !6568
+  %8 = load double* %interFrameGap.i, align 8, !dbg !6568, !tbaa !5436
+  %add.i = fadd double %call.i15, %8, !dbg !6568
+  %endIFGMsg.i = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 28, !dbg !6568
+  %9 = load %class.cMessage** %endIFGMsg.i, align 8, !dbg !6568, !tbaa !5362
+  %call2.i = tail call i32 @_ZN13cSimpleModule10scheduleAtEdP8cMessage(%class.cSimpleModule* %7, double %add.i, %class.cMessage* %9) #11, !dbg !6568
+  br label %if.end14, !dbg !6569
+
+if.else:                                          ; preds = %if.end3
+  br i1 %tobool, label %if.end14, label %cond.false9, !dbg !6570
+
+cond.false9:                                      ; preds = %if.else
+  tail call void @llvm.dbg.value(metadata !5402, i64 0, metadata !6572), !dbg !6573
+  tail call void @llvm.dbg.value(metadata !6574, i64 0, metadata !6575), !dbg !6573
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([51 x i8]* @.str119, i64 0, i64 0)) #11, !dbg !6576
+  br label %if.end14, !dbg !6570
+
+if.end14:                                         ; preds = %cond.false9, %if.else, %cond.end
+  %storemerge = phi i32 [ 2, %cond.end ], [ 1, %if.else ], [ 1, %cond.false9 ]
+  store i32 %storemerge, i32* %transmitState, align 4, !dbg !6577, !tbaa !5376
+  ret void, !dbg !6578
+}

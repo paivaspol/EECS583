@@ -1,52 +1,55 @@
-define void @clear_cgrid(i32 %nx, i32 %ny, i32 %nz, %struct.t_complex*** nocapture readonly %grid) #4 {
-  %1 = icmp sgt i32 %nx, 0
-  br i1 %1, label %.preheader1.lr.ph, label %._crit_edge6
+define void @clear_cgrid(i32 %nx, i32 %ny, i32 %nz, %struct.t_complex*** nocapture %grid) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %nx}, i64 0, metadata !222), !dbg !426
+  tail call void @llvm.dbg.value(metadata !{i32 %ny}, i64 0, metadata !223), !dbg !426
+  tail call void @llvm.dbg.value(metadata !{i32 %nz}, i64 0, metadata !224), !dbg !426
+  tail call void @llvm.dbg.value(metadata !{%struct.t_complex*** %grid}, i64 0, metadata !225), !dbg !426
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !226), !dbg !427
+  %cmp27 = icmp sgt i32 %nx, 0, !dbg !427
+  br i1 %cmp27, label %for.cond1.preheader.lr.ph, label %for.end16, !dbg !427
 
-.preheader1.lr.ph:                                ; preds = %0
-  %2 = icmp sgt i32 %ny, 0
-  %3 = icmp sgt i32 %nz, 0
-  %4 = add i32 %nz, -1
-  %5 = add i32 %ny, -1
-  %6 = add i32 %nx, -1
-  br label %.preheader1
+for.cond1.preheader.lr.ph:                        ; preds = %entry
+  %cmp225 = icmp sgt i32 %ny, 0, !dbg !429
+  %cmp523 = icmp sgt i32 %nz, 0, !dbg !431
+  br label %for.cond1.preheader, !dbg !427
 
-.preheader1:                                      ; preds = %._crit_edge4, %.preheader1.lr.ph
-  %indvars.iv11 = phi i64 [ 0, %.preheader1.lr.ph ], [ %indvars.iv.next12, %._crit_edge4 ]
-  br i1 %2, label %.preheader.lr.ph, label %._crit_edge4
+for.cond1.preheader:                              ; preds = %for.inc14, %for.cond1.preheader.lr.ph
+  %indvars.iv33 = phi i64 [ 0, %for.cond1.preheader.lr.ph ], [ %indvars.iv.next34, %for.inc14 ]
+  br i1 %cmp225, label %for.cond4.preheader.lr.ph, label %for.inc14, !dbg !429
 
-.preheader.lr.ph:                                 ; preds = %.preheader1
-  %7 = getelementptr inbounds %struct.t_complex*** %grid, i64 %indvars.iv11
-  br label %.preheader
+for.cond4.preheader.lr.ph:                        ; preds = %for.cond1.preheader
+  %arrayidx = getelementptr inbounds %struct.t_complex*** %grid, i64 %indvars.iv33, !dbg !433
+  br label %for.cond4.preheader, !dbg !429
 
-.preheader:                                       ; preds = %._crit_edge, %.preheader.lr.ph
-  %indvars.iv7 = phi i64 [ 0, %.preheader.lr.ph ], [ %indvars.iv.next8, %._crit_edge ]
-  br i1 %3, label %.lr.ph, label %._crit_edge
+for.cond4.preheader:                              ; preds = %for.inc11, %for.cond4.preheader.lr.ph
+  %indvars.iv29 = phi i64 [ 0, %for.cond4.preheader.lr.ph ], [ %indvars.iv.next30, %for.inc11 ]
+  br i1 %cmp523, label %for.body6, label %for.inc11, !dbg !431
 
-.lr.ph:                                           ; preds = %.preheader, %.lr.ph
-  %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %.preheader ]
-  %8 = load %struct.t_complex*** %7, align 8, !tbaa !32
-  %9 = getelementptr inbounds %struct.t_complex** %8, i64 %indvars.iv7
-  %10 = load %struct.t_complex** %9, align 8, !tbaa !32
-  %11 = getelementptr inbounds %struct.t_complex* %10, i64 %indvars.iv
-  %12 = bitcast %struct.t_complex* %11 to i64*
-  store i64 0, i64* %12, align 4
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %4
-  br i1 %exitcond, label %._crit_edge, label %.lr.ph
+for.body6:                                        ; preds = %for.cond4.preheader, %for.body6
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body6 ], [ 0, %for.cond4.preheader ]
+  %0 = load %struct.t_complex*** %arrayidx, align 8, !dbg !433, !tbaa !314
+  %arrayidx9 = getelementptr inbounds %struct.t_complex** %0, i64 %indvars.iv29, !dbg !433
+  %1 = load %struct.t_complex** %arrayidx9, align 8, !dbg !433, !tbaa !314
+  %arrayidx10 = getelementptr inbounds %struct.t_complex* %1, i64 %indvars.iv, !dbg !433
+  %2 = bitcast %struct.t_complex* %arrayidx10 to i64*, !dbg !433
+  store i64 0, i64* %2, align 4, !dbg !433
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !431
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !431
+  %exitcond = icmp eq i32 %lftr.wideiv, %nz, !dbg !431
+  br i1 %exitcond, label %for.inc11, label %for.body6, !dbg !431
 
-._crit_edge:                                      ; preds = %.lr.ph, %.preheader
-  %indvars.iv.next8 = add nuw nsw i64 %indvars.iv7, 1
-  %lftr.wideiv9 = trunc i64 %indvars.iv7 to i32
-  %exitcond10 = icmp eq i32 %lftr.wideiv9, %5
-  br i1 %exitcond10, label %._crit_edge4, label %.preheader
+for.inc11:                                        ; preds = %for.body6, %for.cond4.preheader
+  %indvars.iv.next30 = add i64 %indvars.iv29, 1, !dbg !429
+  %lftr.wideiv31 = trunc i64 %indvars.iv.next30 to i32, !dbg !429
+  %exitcond32 = icmp eq i32 %lftr.wideiv31, %ny, !dbg !429
+  br i1 %exitcond32, label %for.inc14, label %for.cond4.preheader, !dbg !429
 
-._crit_edge4:                                     ; preds = %._crit_edge, %.preheader1
-  %indvars.iv.next12 = add nuw nsw i64 %indvars.iv11, 1
-  %lftr.wideiv13 = trunc i64 %indvars.iv11 to i32
-  %exitcond14 = icmp eq i32 %lftr.wideiv13, %6
-  br i1 %exitcond14, label %._crit_edge6, label %.preheader1
+for.inc14:                                        ; preds = %for.inc11, %for.cond1.preheader
+  %indvars.iv.next34 = add i64 %indvars.iv33, 1, !dbg !427
+  %lftr.wideiv35 = trunc i64 %indvars.iv.next34 to i32, !dbg !427
+  %exitcond36 = icmp eq i32 %lftr.wideiv35, %nx, !dbg !427
+  br i1 %exitcond36, label %for.end16, label %for.cond1.preheader, !dbg !427
 
-._crit_edge6:                                     ; preds = %._crit_edge4, %0
-  ret void
+for.end16:                                        ; preds = %for.inc14, %entry
+  ret void, !dbg !434
 }

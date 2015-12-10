@@ -1,0 +1,39 @@
+define internal void @Convert_CCTK_INT4_to_CCTK_INT2(i8* nocapture %src, i8* nocapture %dst, i32 %nelems, i32 %src_stride, i32 %dst_stride) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %src}, i64 0, metadata !142), !dbg !189
+  tail call void @llvm.dbg.value(metadata !{i8* %dst}, i64 0, metadata !143), !dbg !189
+  tail call void @llvm.dbg.value(metadata !{i32 %nelems}, i64 0, metadata !144), !dbg !189
+  tail call void @llvm.dbg.value(metadata !{i32 %src_stride}, i64 0, metadata !145), !dbg !189
+  tail call void @llvm.dbg.value(metadata !{i32 %dst_stride}, i64 0, metadata !146), !dbg !189
+  tail call void @llvm.dbg.value(metadata !{i16* %1}, i64 0, metadata !147), !dbg !189
+  tail call void @llvm.dbg.value(metadata !{i32* %0}, i64 0, metadata !148), !dbg !189
+  tail call void @llvm.dbg.value(metadata !{i32 %dec}, i64 0, metadata !144), !dbg !189
+  %tobool5 = icmp eq i32 %nelems, 0, !dbg !189
+  br i1 %tobool5, label %while.end, label %while.body.lr.ph, !dbg !189
+
+while.body.lr.ph:                                 ; preds = %entry
+  %0 = bitcast i8* %src to i32*, !dbg !189
+  %1 = bitcast i8* %dst to i16*, !dbg !189
+  %idx.ext = sext i32 %src_stride to i64, !dbg !190
+  %idx.ext1 = sext i32 %dst_stride to i64, !dbg !190
+  br label %while.body, !dbg !189
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.body
+  %_src.08 = phi i32* [ %0, %while.body.lr.ph ], [ %add.ptr, %while.body ]
+  %_dst.07 = phi i16* [ %1, %while.body.lr.ph ], [ %add.ptr2, %while.body ]
+  %nelems.addr.06 = phi i32 [ %nelems, %while.body.lr.ph ], [ %dec, %while.body ]
+  %dec = add nsw i32 %nelems.addr.06, -1, !dbg !189
+  %2 = load i32* %_src.08, align 4, !dbg !190, !tbaa !192
+  %conv = trunc i32 %2 to i16, !dbg !190
+  store i16 %conv, i16* %_dst.07, align 2, !dbg !190, !tbaa !195
+  %add.ptr = getelementptr inbounds i32* %_src.08, i64 %idx.ext, !dbg !190
+  tail call void @llvm.dbg.value(metadata !{i32* %add.ptr}, i64 0, metadata !148), !dbg !190
+  %add.ptr2 = getelementptr inbounds i16* %_dst.07, i64 %idx.ext1, !dbg !190
+  tail call void @llvm.dbg.value(metadata !{i16* %add.ptr2}, i64 0, metadata !147), !dbg !190
+  tail call void @llvm.dbg.value(metadata !{i32 %dec}, i64 0, metadata !144), !dbg !189
+  %tobool = icmp eq i32 %dec, 0, !dbg !189
+  br i1 %tobool, label %while.end, label %while.body, !dbg !189
+
+while.end:                                        ; preds = %while.body, %entry
+  ret void, !dbg !189
+}

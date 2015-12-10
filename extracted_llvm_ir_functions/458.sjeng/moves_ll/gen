@@ -1,62 +1,68 @@
 define void @gen(%struct.move_s* %moves) #0 {
 entry:
-  store i32 0, i32* @kingcap, align 4, !tbaa !0
-  store i32 0, i32* @numb_moves, align 4, !tbaa !0
-  store %struct.move_s* %moves, %struct.move_s** @genfor, align 8, !tbaa !3
-  %0 = load i32* @Variant, align 4, !tbaa !0
-  %cmp = icmp eq i32 %0, 3
-  br i1 %cmp, label %if.then, label %restart
+  tail call void @llvm.dbg.value(metadata !{%struct.move_s* %moves}, i64 0, metadata !38), !dbg !330
+  store i32 0, i32* @kingcap, align 4, !dbg !331, !tbaa !145
+  store i32 0, i32* @numb_moves, align 4, !dbg !332, !tbaa !145
+  store %struct.move_s* %moves, %struct.move_s** @genfor, align 8, !dbg !333, !tbaa !334
+  %0 = load i32* @Variant, align 4, !dbg !335, !tbaa !145
+  %cmp = icmp eq i32 %0, 3, !dbg !335
+  br i1 %cmp, label %if.then, label %restart, !dbg !335
 
 if.then:                                          ; preds = %entry
-  store i32 0, i32* @captures, align 4, !tbaa !1
-  store i32 0, i32* @fcaptures, align 4, !tbaa !1
-  br label %restart
+  store i32 0, i32* @captures, align 4, !dbg !336, !tbaa !146
+  store i32 0, i32* @fcaptures, align 4, !dbg !338, !tbaa !146
+  br label %restart, !dbg !339
 
 restart:                                          ; preds = %entry, %if.then, %if.then726
   %1 = phi i32 [ 3, %if.then726 ], [ 3, %if.then ], [ %0, %entry ]
-  %2 = load i32* @white_to_move, align 4, !tbaa !0
-  %tobool = icmp eq i32 %2, 0
-  %3 = load i32* @piece_count, align 4, !tbaa !0
-  %cmp299957 = icmp slt i32 %3, 1
-  br i1 %tobool, label %for.cond298.preheader, label %for.cond.preheader
+  %2 = load i32* @white_to_move, align 4, !dbg !340, !tbaa !145
+  %tobool = icmp eq i32 %2, 0, !dbg !340
+  tail call void @llvm.dbg.value(metadata !341, i64 0, metadata !40), !dbg !342
+  tail call void @llvm.dbg.value(metadata !341, i64 0, metadata !41), !dbg !342
+  %3 = load i32* @piece_count, align 4, !dbg !345, !tbaa !145
+  %cmp299957 = icmp slt i32 %3, 1, !dbg !345
+  br i1 %tobool, label %for.cond298.preheader, label %for.cond.preheader, !dbg !340
 
 for.cond298.preheader:                            ; preds = %restart
-  br i1 %cmp299957, label %if.end612, label %land.rhs300
+  br i1 %cmp299957, label %if.end612, label %land.rhs300, !dbg !345
 
 for.cond.preheader:                               ; preds = %restart
-  br i1 %cmp299957, label %if.end612, label %land.rhs
+  br i1 %cmp299957, label %if.end612, label %land.rhs, !dbg !342
 
 land.rhs:                                         ; preds = %for.cond.preheader, %for.inc.land.rhs_crit_edge
-  %4 = phi i32 [ %.pre, %for.inc.land.rhs_crit_edge ], [ %1, %for.cond.preheader ]
+  %4 = phi i32 [ %.pre, %for.inc.land.rhs_crit_edge ], [ %1, %for.cond.preheader ], !dbg !342
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc.land.rhs_crit_edge ], [ 1, %for.cond.preheader ]
   %a.0954 = phi i32 [ %a.1, %for.inc.land.rhs_crit_edge ], [ 1, %for.cond.preheader ]
-  %cmp3 = icmp eq i32 %4, 3
-  %5 = load i32* @kingcap, align 4, !tbaa !0
-  %tobool4 = icmp ne i32 %5, 0
-  %or.cond = or i1 %cmp3, %tobool4
-  br i1 %or.cond, label %lor.rhs, label %for.body
+  %cmp3 = icmp eq i32 %4, 3, !dbg !342
+  %5 = load i32* @kingcap, align 4, !dbg !342, !tbaa !145
+  %tobool4 = icmp ne i32 %5, 0, !dbg !342
+  %or.cond = or i1 %cmp3, %tobool4, !dbg !342
+  br i1 %or.cond, label %lor.rhs, label %for.body, !dbg !342
 
 lor.rhs:                                          ; preds = %land.rhs
-  br i1 %cmp3, label %land.rhs6, label %if.end612
+  br i1 %cmp3, label %land.rhs6, label %if.end612, !dbg !342
 
 land.rhs6:                                        ; preds = %lor.rhs
-  %6 = load i32* @fcaptures, align 4, !tbaa !1
-  %7 = load i32* @captures, align 4, !tbaa !1
-  %cmp7 = icmp eq i32 %6, %7
+  %6 = load i32* @fcaptures, align 4, !dbg !342, !tbaa !146
+  %7 = load i32* @captures, align 4, !dbg !342, !tbaa !146
+  %cmp7 = icmp eq i32 %6, %7, !dbg !342
   br i1 %cmp7, label %for.body, label %if.end612
 
 for.body:                                         ; preds = %land.rhs, %land.rhs6
-  %arrayidx9 = getelementptr inbounds [62 x i32]* @pieces, i64 0, i64 %indvars.iv
-  %8 = load i32* %arrayidx9, align 4, !tbaa !0
-  %tobool10 = icmp eq i32 %8, 0
-  br i1 %tobool10, label %for.inc, label %if.else
+  %arrayidx9 = getelementptr inbounds [62 x i32]* @pieces, i64 0, i64 %indvars.iv, !dbg !348
+  %8 = load i32* %arrayidx9, align 4, !dbg !348, !tbaa !145
+  tail call void @llvm.dbg.value(metadata !{i32 %8}, i64 0, metadata !42), !dbg !348
+  %tobool10 = icmp eq i32 %8, 0, !dbg !350
+  br i1 %tobool10, label %for.inc, label %if.else, !dbg !350
 
 if.else:                                          ; preds = %for.body
-  %inc = add nsw i32 %a.0954, 1
-  store i32 %8, i32* @gfrom, align 4, !tbaa !0
-  %idxprom13 = sext i32 %8 to i64
-  %arrayidx14 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom13
-  %9 = load i32* %arrayidx14, align 4, !tbaa !0
+  %inc = add nsw i32 %a.0954, 1, !dbg !351
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !40), !dbg !351
+  tail call void @llvm.dbg.value(metadata !{i32 %8}, i64 0, metadata !39), !dbg !352
+  store i32 %8, i32* @gfrom, align 4, !dbg !353, !tbaa !145
+  %idxprom13 = sext i32 %8 to i64, !dbg !354
+  %arrayidx14 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom13, !dbg !354
+  %9 = load i32* %arrayidx14, align 4, !dbg !354, !tbaa !145
   switch i32 %9, label %for.inc [
     i32 1, label %sw.bb
     i32 3, label %sw.bb82
@@ -64,507 +70,511 @@ if.else:                                          ; preds = %for.body
     i32 7, label %sw.bb167
     i32 9, label %sw.bb196
     i32 5, label %sw.bb253
-  ]
+  ], !dbg !354
 
 sw.bb:                                            ; preds = %if.else
-  %add = add nsw i32 %8, 12
-  %idxprom15 = sext i32 %add to i64
-  %arrayidx16 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom15
-  %10 = load i32* %arrayidx16, align 4, !tbaa !0
-  %cmp17 = icmp eq i32 %10, 13
-  br i1 %cmp17, label %if.then18, label %if.end45
+  %add = add nsw i32 %8, 12, !dbg !355
+  %idxprom15 = sext i32 %add to i64, !dbg !355
+  %arrayidx16 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom15, !dbg !355
+  %10 = load i32* %arrayidx16, align 4, !dbg !355, !tbaa !145
+  %cmp17 = icmp eq i32 %10, 13, !dbg !355
+  br i1 %cmp17, label %if.then18, label %if.end45, !dbg !355
 
 if.then18:                                        ; preds = %sw.bb
-  %arrayidx20 = getelementptr inbounds [144 x i32]* @Xrank, i64 0, i64 %idxprom13
-  %11 = load i32* %arrayidx20, align 4, !tbaa !0
-  %cmp21 = icmp eq i32 %11, 7
+  %arrayidx20 = getelementptr inbounds [144 x i32]* @Xrank, i64 0, i64 %idxprom13, !dbg !357
+  %11 = load i32* %arrayidx20, align 4, !dbg !357, !tbaa !145
+  %cmp21 = icmp eq i32 %11, 7, !dbg !357
   br i1 %cmp21, label %switch.early.test, label %if.else28
 
 switch.early.test:                                ; preds = %if.then18
-  %.off = add i32 %4, -3
-  %switch = icmp ult i32 %.off, 2
-  br i1 %switch, label %if.else28, label %if.then26
+  %.off = add i32 %4, -3, !dbg !357
+  %switch = icmp ult i32 %.off, 2, !dbg !357
+  br i1 %switch, label %if.else28, label %if.then26, !dbg !357
 
 if.then26:                                        ; preds = %switch.early.test
-  tail call void @push_pawn(i32 %add, i32 0) #3
-  br label %if.end45
+  tail call void @push_pawn(i32 %add, i32 0) #5, !dbg !359
+  br label %if.end45, !dbg !361
 
 if.else28:                                        ; preds = %switch.early.test, %if.then18
-  %12 = load i32* @captures, align 4, !tbaa !1
-  %tobool29 = icmp eq i32 %12, 0
-  br i1 %tobool29, label %if.then30, label %if.end45
+  %12 = load i32* @captures, align 4, !dbg !362, !tbaa !146
+  %tobool29 = icmp eq i32 %12, 0, !dbg !362
+  br i1 %tobool29, label %if.then30, label %if.end45, !dbg !362
 
 if.then30:                                        ; preds = %if.else28
-  tail call void @push_pawn(i32 %add, i32 0) #3
-  %cmp34 = icmp eq i32 %11, 2
-  br i1 %cmp34, label %land.lhs.true35, label %if.end45
+  tail call void @push_pawn(i32 %add, i32 0) #5, !dbg !363
+  %cmp34 = icmp eq i32 %11, 2, !dbg !365
+  br i1 %cmp34, label %land.lhs.true35, label %if.end45, !dbg !365
 
 land.lhs.true35:                                  ; preds = %if.then30
-  %add36 = add nsw i32 %8, 24
-  %idxprom37 = sext i32 %add36 to i64
-  %arrayidx38 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom37
-  %13 = load i32* %arrayidx38, align 4, !tbaa !0
-  %cmp39 = icmp eq i32 %13, 13
-  br i1 %cmp39, label %if.then40, label %if.end45
+  %add36 = add nsw i32 %8, 24, !dbg !365
+  %idxprom37 = sext i32 %add36 to i64, !dbg !365
+  %arrayidx38 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom37, !dbg !365
+  %13 = load i32* %arrayidx38, align 4, !dbg !365, !tbaa !145
+  %cmp39 = icmp eq i32 %13, 13, !dbg !365
+  br i1 %cmp39, label %if.then40, label %if.end45, !dbg !365
 
 if.then40:                                        ; preds = %land.lhs.true35
-  tail call void @add_move(i32 %add36, i32 0) #2
-  br label %if.end45
+  tail call void @llvm.dbg.value(metadata !{i32 %add36}, i64 0, metadata !366) #6, !dbg !368
+  tail call void @add_move(i32 %add36, i32 0) #4, !dbg !369
+  br label %if.end45, !dbg !367
 
 if.end45:                                         ; preds = %if.else28, %if.then26, %if.then30, %land.lhs.true35, %if.then40, %sw.bb
-  %add46 = add nsw i32 %8, 13
-  %idxprom47 = sext i32 %add46 to i64
-  %arrayidx48 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom47
-  %14 = load i32* %arrayidx48, align 4, !tbaa !0
-  %and = and i32 %14, 1
-  %cmp49 = icmp ne i32 %and, 0
-  %cmp54 = icmp eq i32 %14, 0
-  %or.cond945 = or i1 %cmp49, %cmp54
-  br i1 %or.cond945, label %if.end57, label %if.then55
+  %add46 = add nsw i32 %8, 13, !dbg !370
+  %idxprom47 = sext i32 %add46 to i64, !dbg !370
+  %arrayidx48 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom47, !dbg !370
+  %14 = load i32* %arrayidx48, align 4, !dbg !370, !tbaa !145
+  %and = and i32 %14, 1, !dbg !370
+  %cmp49 = icmp ne i32 %and, 0, !dbg !370
+  %cmp54 = icmp eq i32 %14, 0, !dbg !370
+  %or.cond945 = or i1 %cmp49, %cmp54, !dbg !370
+  br i1 %or.cond945, label %if.end57, label %if.then55, !dbg !370
 
 if.then55:                                        ; preds = %if.end45
-  tail call void @push_pawn(i32 %add46, i32 0) #3
-  br label %if.end57
+  tail call void @push_pawn(i32 %add46, i32 0) #5, !dbg !371
+  br label %if.end57, !dbg !371
 
 if.end57:                                         ; preds = %if.end45, %if.then55
-  %add58 = add nsw i32 %8, 11
-  %idxprom59 = sext i32 %add58 to i64
-  %arrayidx60 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom59
-  %15 = load i32* %arrayidx60, align 4, !tbaa !0
-  %and61 = and i32 %15, 1
-  %cmp62 = icmp ne i32 %and61, 0
-  %cmp67 = icmp eq i32 %15, 0
-  %or.cond946 = or i1 %cmp62, %cmp67
-  br i1 %or.cond946, label %if.end70, label %if.then68
+  %add58 = add nsw i32 %8, 11, !dbg !372
+  %idxprom59 = sext i32 %add58 to i64, !dbg !372
+  %arrayidx60 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom59, !dbg !372
+  %15 = load i32* %arrayidx60, align 4, !dbg !372, !tbaa !145
+  %and61 = and i32 %15, 1, !dbg !372
+  %cmp62 = icmp ne i32 %and61, 0, !dbg !372
+  %cmp67 = icmp eq i32 %15, 0, !dbg !372
+  %or.cond946 = or i1 %cmp62, %cmp67, !dbg !372
+  br i1 %or.cond946, label %if.end70, label %if.then68, !dbg !372
 
 if.then68:                                        ; preds = %if.end57
-  tail call void @push_pawn(i32 %add58, i32 0) #3
-  br label %if.end70
+  tail call void @push_pawn(i32 %add58, i32 0) #5, !dbg !373
+  br label %if.end70, !dbg !373
 
 if.end70:                                         ; preds = %if.end57, %if.then68
-  %16 = load i32* @ep_square, align 4, !tbaa !0
-  %cmp72 = icmp eq i32 %16, %add46
-  br i1 %cmp72, label %if.then73, label %if.else75
+  %16 = load i32* @ep_square, align 4, !dbg !374, !tbaa !145
+  %cmp72 = icmp eq i32 %16, %add46, !dbg !374
+  br i1 %cmp72, label %if.then73, label %if.else75, !dbg !374
 
 if.then73:                                        ; preds = %if.end70
-  tail call void @push_pawn(i32 %add46, i32 1) #3
-  br label %for.inc
+  tail call void @push_pawn(i32 %add46, i32 1) #5, !dbg !375
+  br label %for.inc, !dbg !375
 
 if.else75:                                        ; preds = %if.end70
-  %cmp77 = icmp eq i32 %16, %add58
-  br i1 %cmp77, label %if.then78, label %for.inc
+  %cmp77 = icmp eq i32 %16, %add58, !dbg !376
+  br i1 %cmp77, label %if.then78, label %for.inc, !dbg !376
 
 if.then78:                                        ; preds = %if.else75
-  tail call void @push_pawn(i32 %add58, i32 1) #3
-  br label %for.inc
+  tail call void @push_pawn(i32 %add58, i32 1) #5, !dbg !377
+  br label %for.inc, !dbg !377
 
 sw.bb82:                                          ; preds = %if.else
-  %sub = add nsw i32 %8, -25
-  %idxprom83 = sext i32 %sub to i64
-  %arrayidx84 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom83
-  %17 = load i32* %arrayidx84, align 4, !tbaa !0
-  %cmp85 = icmp eq i32 %17, 0
-  br i1 %cmp85, label %if.end88, label %if.then86
+  %sub = add nsw i32 %8, -25, !dbg !378
+  %idxprom83 = sext i32 %sub to i64, !dbg !378
+  %arrayidx84 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom83, !dbg !378
+  %17 = load i32* %arrayidx84, align 4, !dbg !378, !tbaa !145
+  %cmp85 = icmp eq i32 %17, 0, !dbg !378
+  br i1 %cmp85, label %if.end88, label %if.then86, !dbg !378
 
 if.then86:                                        ; preds = %sw.bb82
-  tail call void @push_knighT(i32 %sub) #3
-  br label %if.end88
+  tail call void @push_knighT(i32 %sub) #5, !dbg !378
+  br label %if.end88, !dbg !378
 
 if.end88:                                         ; preds = %sw.bb82, %if.then86
-  %sub89 = add nsw i32 %8, -23
-  %idxprom90 = sext i32 %sub89 to i64
-  %arrayidx91 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom90
-  %18 = load i32* %arrayidx91, align 4, !tbaa !0
-  %cmp92 = icmp eq i32 %18, 0
-  br i1 %cmp92, label %if.end95, label %if.then93
+  %sub89 = add nsw i32 %8, -23, !dbg !379
+  %idxprom90 = sext i32 %sub89 to i64, !dbg !379
+  %arrayidx91 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom90, !dbg !379
+  %18 = load i32* %arrayidx91, align 4, !dbg !379, !tbaa !145
+  %cmp92 = icmp eq i32 %18, 0, !dbg !379
+  br i1 %cmp92, label %if.end95, label %if.then93, !dbg !379
 
 if.then93:                                        ; preds = %if.end88
-  tail call void @push_knighT(i32 %sub89) #3
-  br label %if.end95
+  tail call void @push_knighT(i32 %sub89) #5, !dbg !379
+  br label %if.end95, !dbg !379
 
 if.end95:                                         ; preds = %if.end88, %if.then93
-  %sub96 = add nsw i32 %8, -14
-  %idxprom97 = sext i32 %sub96 to i64
-  %arrayidx98 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom97
-  %19 = load i32* %arrayidx98, align 4, !tbaa !0
-  %cmp99 = icmp eq i32 %19, 0
-  br i1 %cmp99, label %if.end102, label %if.then100
+  %sub96 = add nsw i32 %8, -14, !dbg !380
+  %idxprom97 = sext i32 %sub96 to i64, !dbg !380
+  %arrayidx98 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom97, !dbg !380
+  %19 = load i32* %arrayidx98, align 4, !dbg !380, !tbaa !145
+  %cmp99 = icmp eq i32 %19, 0, !dbg !380
+  br i1 %cmp99, label %if.end102, label %if.then100, !dbg !380
 
 if.then100:                                       ; preds = %if.end95
-  tail call void @push_knighT(i32 %sub96) #3
-  br label %if.end102
+  tail call void @push_knighT(i32 %sub96) #5, !dbg !380
+  br label %if.end102, !dbg !380
 
 if.end102:                                        ; preds = %if.end95, %if.then100
-  %sub103 = add nsw i32 %8, -10
-  %idxprom104 = sext i32 %sub103 to i64
-  %arrayidx105 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom104
-  %20 = load i32* %arrayidx105, align 4, !tbaa !0
-  %cmp106 = icmp eq i32 %20, 0
-  br i1 %cmp106, label %if.end109, label %if.then107
+  %sub103 = add nsw i32 %8, -10, !dbg !381
+  %idxprom104 = sext i32 %sub103 to i64, !dbg !381
+  %arrayidx105 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom104, !dbg !381
+  %20 = load i32* %arrayidx105, align 4, !dbg !381, !tbaa !145
+  %cmp106 = icmp eq i32 %20, 0, !dbg !381
+  br i1 %cmp106, label %if.end109, label %if.then107, !dbg !381
 
 if.then107:                                       ; preds = %if.end102
-  tail call void @push_knighT(i32 %sub103) #3
-  br label %if.end109
+  tail call void @push_knighT(i32 %sub103) #5, !dbg !381
+  br label %if.end109, !dbg !381
 
 if.end109:                                        ; preds = %if.end102, %if.then107
-  %add110 = add nsw i32 %8, 10
-  %idxprom111 = sext i32 %add110 to i64
-  %arrayidx112 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom111
-  %21 = load i32* %arrayidx112, align 4, !tbaa !0
-  %cmp113 = icmp eq i32 %21, 0
-  br i1 %cmp113, label %if.end116, label %if.then114
+  %add110 = add nsw i32 %8, 10, !dbg !382
+  %idxprom111 = sext i32 %add110 to i64, !dbg !382
+  %arrayidx112 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom111, !dbg !382
+  %21 = load i32* %arrayidx112, align 4, !dbg !382, !tbaa !145
+  %cmp113 = icmp eq i32 %21, 0, !dbg !382
+  br i1 %cmp113, label %if.end116, label %if.then114, !dbg !382
 
 if.then114:                                       ; preds = %if.end109
-  tail call void @push_knighT(i32 %add110) #3
-  br label %if.end116
+  tail call void @push_knighT(i32 %add110) #5, !dbg !382
+  br label %if.end116, !dbg !382
 
 if.end116:                                        ; preds = %if.end109, %if.then114
-  %add117 = add nsw i32 %8, 14
-  %idxprom118 = sext i32 %add117 to i64
-  %arrayidx119 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom118
-  %22 = load i32* %arrayidx119, align 4, !tbaa !0
-  %cmp120 = icmp eq i32 %22, 0
-  br i1 %cmp120, label %if.end123, label %if.then121
+  %add117 = add nsw i32 %8, 14, !dbg !383
+  %idxprom118 = sext i32 %add117 to i64, !dbg !383
+  %arrayidx119 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom118, !dbg !383
+  %22 = load i32* %arrayidx119, align 4, !dbg !383, !tbaa !145
+  %cmp120 = icmp eq i32 %22, 0, !dbg !383
+  br i1 %cmp120, label %if.end123, label %if.then121, !dbg !383
 
 if.then121:                                       ; preds = %if.end116
-  tail call void @push_knighT(i32 %add117) #3
-  br label %if.end123
+  tail call void @push_knighT(i32 %add117) #5, !dbg !383
+  br label %if.end123, !dbg !383
 
 if.end123:                                        ; preds = %if.end116, %if.then121
-  %add124 = add nsw i32 %8, 23
-  %idxprom125 = sext i32 %add124 to i64
-  %arrayidx126 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom125
-  %23 = load i32* %arrayidx126, align 4, !tbaa !0
-  %cmp127 = icmp eq i32 %23, 0
-  br i1 %cmp127, label %if.end130, label %if.then128
+  %add124 = add nsw i32 %8, 23, !dbg !384
+  %idxprom125 = sext i32 %add124 to i64, !dbg !384
+  %arrayidx126 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom125, !dbg !384
+  %23 = load i32* %arrayidx126, align 4, !dbg !384, !tbaa !145
+  %cmp127 = icmp eq i32 %23, 0, !dbg !384
+  br i1 %cmp127, label %if.end130, label %if.then128, !dbg !384
 
 if.then128:                                       ; preds = %if.end123
-  tail call void @push_knighT(i32 %add124) #3
-  br label %if.end130
+  tail call void @push_knighT(i32 %add124) #5, !dbg !384
+  br label %if.end130, !dbg !384
 
 if.end130:                                        ; preds = %if.end123, %if.then128
-  %add131 = add nsw i32 %8, 25
-  %idxprom132 = sext i32 %add131 to i64
-  %arrayidx133 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom132
-  %24 = load i32* %arrayidx133, align 4, !tbaa !0
-  %cmp134 = icmp eq i32 %24, 0
-  br i1 %cmp134, label %for.inc, label %if.then135
+  %add131 = add nsw i32 %8, 25, !dbg !385
+  %idxprom132 = sext i32 %add131 to i64, !dbg !385
+  %arrayidx133 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom132, !dbg !385
+  %24 = load i32* %arrayidx133, align 4, !dbg !385, !tbaa !145
+  %cmp134 = icmp eq i32 %24, 0, !dbg !385
+  br i1 %cmp134, label %for.inc, label %if.then135, !dbg !385
 
 if.then135:                                       ; preds = %if.end130
-  tail call void @push_knighT(i32 %add131) #3
-  br label %for.inc
+  tail call void @push_knighT(i32 %add131) #5, !dbg !385
+  br label %for.inc, !dbg !385
 
 sw.bb138:                                         ; preds = %if.else
-  %sub139 = add nsw i32 %8, -13
-  %idxprom140 = sext i32 %sub139 to i64
-  %arrayidx141 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom140
-  %25 = load i32* %arrayidx141, align 4, !tbaa !0
-  %cmp142 = icmp eq i32 %25, 0
-  br i1 %cmp142, label %if.end145, label %if.then143
+  %sub139 = add nsw i32 %8, -13, !dbg !386
+  %idxprom140 = sext i32 %sub139 to i64, !dbg !386
+  %arrayidx141 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom140, !dbg !386
+  %25 = load i32* %arrayidx141, align 4, !dbg !386, !tbaa !145
+  %cmp142 = icmp eq i32 %25, 0, !dbg !386
+  br i1 %cmp142, label %if.end145, label %if.then143, !dbg !386
 
 if.then143:                                       ; preds = %sw.bb138
-  tail call void @push_slidE(i32 %sub139) #3
-  br label %if.end145
+  tail call void @push_slidE(i32 %sub139) #5, !dbg !386
+  br label %if.end145, !dbg !386
 
 if.end145:                                        ; preds = %sw.bb138, %if.then143
-  %sub146 = add nsw i32 %8, -11
-  %idxprom147 = sext i32 %sub146 to i64
-  %arrayidx148 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom147
-  %26 = load i32* %arrayidx148, align 4, !tbaa !0
-  %cmp149 = icmp eq i32 %26, 0
-  br i1 %cmp149, label %if.end152, label %if.then150
+  %sub146 = add nsw i32 %8, -11, !dbg !387
+  %idxprom147 = sext i32 %sub146 to i64, !dbg !387
+  %arrayidx148 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom147, !dbg !387
+  %26 = load i32* %arrayidx148, align 4, !dbg !387, !tbaa !145
+  %cmp149 = icmp eq i32 %26, 0, !dbg !387
+  br i1 %cmp149, label %if.end152, label %if.then150, !dbg !387
 
 if.then150:                                       ; preds = %if.end145
-  tail call void @push_slidE(i32 %sub146) #3
-  br label %if.end152
+  tail call void @push_slidE(i32 %sub146) #5, !dbg !387
+  br label %if.end152, !dbg !387
 
 if.end152:                                        ; preds = %if.end145, %if.then150
-  %add153 = add nsw i32 %8, 11
-  %idxprom154 = sext i32 %add153 to i64
-  %arrayidx155 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom154
-  %27 = load i32* %arrayidx155, align 4, !tbaa !0
-  %cmp156 = icmp eq i32 %27, 0
-  br i1 %cmp156, label %if.end159, label %if.then157
+  %add153 = add nsw i32 %8, 11, !dbg !388
+  %idxprom154 = sext i32 %add153 to i64, !dbg !388
+  %arrayidx155 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom154, !dbg !388
+  %27 = load i32* %arrayidx155, align 4, !dbg !388, !tbaa !145
+  %cmp156 = icmp eq i32 %27, 0, !dbg !388
+  br i1 %cmp156, label %if.end159, label %if.then157, !dbg !388
 
 if.then157:                                       ; preds = %if.end152
-  tail call void @push_slidE(i32 %add153) #3
-  br label %if.end159
+  tail call void @push_slidE(i32 %add153) #5, !dbg !388
+  br label %if.end159, !dbg !388
 
 if.end159:                                        ; preds = %if.end152, %if.then157
-  %add160 = add nsw i32 %8, 13
-  %idxprom161 = sext i32 %add160 to i64
-  %arrayidx162 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom161
-  %28 = load i32* %arrayidx162, align 4, !tbaa !0
-  %cmp163 = icmp eq i32 %28, 0
-  br i1 %cmp163, label %for.inc, label %if.then164
+  %add160 = add nsw i32 %8, 13, !dbg !389
+  %idxprom161 = sext i32 %add160 to i64, !dbg !389
+  %arrayidx162 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom161, !dbg !389
+  %28 = load i32* %arrayidx162, align 4, !dbg !389, !tbaa !145
+  %cmp163 = icmp eq i32 %28, 0, !dbg !389
+  br i1 %cmp163, label %for.inc, label %if.then164, !dbg !389
 
 if.then164:                                       ; preds = %if.end159
-  tail call void @push_slidE(i32 %add160) #3
-  br label %for.inc
+  tail call void @push_slidE(i32 %add160) #5, !dbg !389
+  br label %for.inc, !dbg !389
 
 sw.bb167:                                         ; preds = %if.else
-  %sub168 = add nsw i32 %8, -12
-  %idxprom169 = sext i32 %sub168 to i64
-  %arrayidx170 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom169
-  %29 = load i32* %arrayidx170, align 4, !tbaa !0
-  %cmp171 = icmp eq i32 %29, 0
-  br i1 %cmp171, label %if.end174, label %if.then172
+  %sub168 = add nsw i32 %8, -12, !dbg !390
+  %idxprom169 = sext i32 %sub168 to i64, !dbg !390
+  %arrayidx170 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom169, !dbg !390
+  %29 = load i32* %arrayidx170, align 4, !dbg !390, !tbaa !145
+  %cmp171 = icmp eq i32 %29, 0, !dbg !390
+  br i1 %cmp171, label %if.end174, label %if.then172, !dbg !390
 
 if.then172:                                       ; preds = %sw.bb167
-  tail call void @push_slidE(i32 %sub168) #3
-  br label %if.end174
+  tail call void @push_slidE(i32 %sub168) #5, !dbg !390
+  br label %if.end174, !dbg !390
 
 if.end174:                                        ; preds = %sw.bb167, %if.then172
-  %sub175 = add nsw i32 %8, -1
-  %idxprom176 = sext i32 %sub175 to i64
-  %arrayidx177 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom176
-  %30 = load i32* %arrayidx177, align 4, !tbaa !0
-  %cmp178 = icmp eq i32 %30, 0
-  br i1 %cmp178, label %if.end181, label %if.then179
+  %sub175 = add nsw i32 %8, -1, !dbg !391
+  %idxprom176 = sext i32 %sub175 to i64, !dbg !391
+  %arrayidx177 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom176, !dbg !391
+  %30 = load i32* %arrayidx177, align 4, !dbg !391, !tbaa !145
+  %cmp178 = icmp eq i32 %30, 0, !dbg !391
+  br i1 %cmp178, label %if.end181, label %if.then179, !dbg !391
 
 if.then179:                                       ; preds = %if.end174
-  tail call void @push_slidE(i32 %sub175) #3
-  br label %if.end181
+  tail call void @push_slidE(i32 %sub175) #5, !dbg !391
+  br label %if.end181, !dbg !391
 
 if.end181:                                        ; preds = %if.end174, %if.then179
-  %add182 = add nsw i32 %8, 1
-  %idxprom183 = sext i32 %add182 to i64
-  %arrayidx184 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom183
-  %31 = load i32* %arrayidx184, align 4, !tbaa !0
-  %cmp185 = icmp eq i32 %31, 0
-  br i1 %cmp185, label %if.end188, label %if.then186
+  %add182 = add nsw i32 %8, 1, !dbg !392
+  %idxprom183 = sext i32 %add182 to i64, !dbg !392
+  %arrayidx184 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom183, !dbg !392
+  %31 = load i32* %arrayidx184, align 4, !dbg !392, !tbaa !145
+  %cmp185 = icmp eq i32 %31, 0, !dbg !392
+  br i1 %cmp185, label %if.end188, label %if.then186, !dbg !392
 
 if.then186:                                       ; preds = %if.end181
-  tail call void @push_slidE(i32 %add182) #3
-  br label %if.end188
+  tail call void @push_slidE(i32 %add182) #5, !dbg !392
+  br label %if.end188, !dbg !392
 
 if.end188:                                        ; preds = %if.end181, %if.then186
-  %add189 = add nsw i32 %8, 12
-  %idxprom190 = sext i32 %add189 to i64
-  %arrayidx191 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom190
-  %32 = load i32* %arrayidx191, align 4, !tbaa !0
-  %cmp192 = icmp eq i32 %32, 0
-  br i1 %cmp192, label %for.inc, label %if.then193
+  %add189 = add nsw i32 %8, 12, !dbg !393
+  %idxprom190 = sext i32 %add189 to i64, !dbg !393
+  %arrayidx191 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom190, !dbg !393
+  %32 = load i32* %arrayidx191, align 4, !dbg !393, !tbaa !145
+  %cmp192 = icmp eq i32 %32, 0, !dbg !393
+  br i1 %cmp192, label %for.inc, label %if.then193, !dbg !393
 
 if.then193:                                       ; preds = %if.end188
-  tail call void @push_slidE(i32 %add189) #3
-  br label %for.inc
+  tail call void @push_slidE(i32 %add189) #5, !dbg !393
+  br label %for.inc, !dbg !393
 
 sw.bb196:                                         ; preds = %if.else
-  %sub197 = add nsw i32 %8, -13
-  %idxprom198 = sext i32 %sub197 to i64
-  %arrayidx199 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom198
-  %33 = load i32* %arrayidx199, align 4, !tbaa !0
-  %cmp200 = icmp eq i32 %33, 0
-  br i1 %cmp200, label %if.end203, label %if.then201
+  %sub197 = add nsw i32 %8, -13, !dbg !394
+  %idxprom198 = sext i32 %sub197 to i64, !dbg !394
+  %arrayidx199 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom198, !dbg !394
+  %33 = load i32* %arrayidx199, align 4, !dbg !394, !tbaa !145
+  %cmp200 = icmp eq i32 %33, 0, !dbg !394
+  br i1 %cmp200, label %if.end203, label %if.then201, !dbg !394
 
 if.then201:                                       ; preds = %sw.bb196
-  tail call void @push_slidE(i32 %sub197) #3
-  br label %if.end203
+  tail call void @push_slidE(i32 %sub197) #5, !dbg !394
+  br label %if.end203, !dbg !394
 
 if.end203:                                        ; preds = %sw.bb196, %if.then201
-  %sub204 = add nsw i32 %8, -12
-  %idxprom205 = sext i32 %sub204 to i64
-  %arrayidx206 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom205
-  %34 = load i32* %arrayidx206, align 4, !tbaa !0
-  %cmp207 = icmp eq i32 %34, 0
-  br i1 %cmp207, label %if.end210, label %if.then208
+  %sub204 = add nsw i32 %8, -12, !dbg !395
+  %idxprom205 = sext i32 %sub204 to i64, !dbg !395
+  %arrayidx206 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom205, !dbg !395
+  %34 = load i32* %arrayidx206, align 4, !dbg !395, !tbaa !145
+  %cmp207 = icmp eq i32 %34, 0, !dbg !395
+  br i1 %cmp207, label %if.end210, label %if.then208, !dbg !395
 
 if.then208:                                       ; preds = %if.end203
-  tail call void @push_slidE(i32 %sub204) #3
-  br label %if.end210
+  tail call void @push_slidE(i32 %sub204) #5, !dbg !395
+  br label %if.end210, !dbg !395
 
 if.end210:                                        ; preds = %if.end203, %if.then208
-  %sub211 = add nsw i32 %8, -11
-  %idxprom212 = sext i32 %sub211 to i64
-  %arrayidx213 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom212
-  %35 = load i32* %arrayidx213, align 4, !tbaa !0
-  %cmp214 = icmp eq i32 %35, 0
-  br i1 %cmp214, label %if.end217, label %if.then215
+  %sub211 = add nsw i32 %8, -11, !dbg !396
+  %idxprom212 = sext i32 %sub211 to i64, !dbg !396
+  %arrayidx213 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom212, !dbg !396
+  %35 = load i32* %arrayidx213, align 4, !dbg !396, !tbaa !145
+  %cmp214 = icmp eq i32 %35, 0, !dbg !396
+  br i1 %cmp214, label %if.end217, label %if.then215, !dbg !396
 
 if.then215:                                       ; preds = %if.end210
-  tail call void @push_slidE(i32 %sub211) #3
-  br label %if.end217
+  tail call void @push_slidE(i32 %sub211) #5, !dbg !396
+  br label %if.end217, !dbg !396
 
 if.end217:                                        ; preds = %if.end210, %if.then215
-  %sub218 = add nsw i32 %8, -1
-  %idxprom219 = sext i32 %sub218 to i64
-  %arrayidx220 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom219
-  %36 = load i32* %arrayidx220, align 4, !tbaa !0
-  %cmp221 = icmp eq i32 %36, 0
-  br i1 %cmp221, label %if.end224, label %if.then222
+  %sub218 = add nsw i32 %8, -1, !dbg !397
+  %idxprom219 = sext i32 %sub218 to i64, !dbg !397
+  %arrayidx220 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom219, !dbg !397
+  %36 = load i32* %arrayidx220, align 4, !dbg !397, !tbaa !145
+  %cmp221 = icmp eq i32 %36, 0, !dbg !397
+  br i1 %cmp221, label %if.end224, label %if.then222, !dbg !397
 
 if.then222:                                       ; preds = %if.end217
-  tail call void @push_slidE(i32 %sub218) #3
-  br label %if.end224
+  tail call void @push_slidE(i32 %sub218) #5, !dbg !397
+  br label %if.end224, !dbg !397
 
 if.end224:                                        ; preds = %if.end217, %if.then222
-  %add225 = add nsw i32 %8, 1
-  %idxprom226 = sext i32 %add225 to i64
-  %arrayidx227 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom226
-  %37 = load i32* %arrayidx227, align 4, !tbaa !0
-  %cmp228 = icmp eq i32 %37, 0
-  br i1 %cmp228, label %if.end231, label %if.then229
+  %add225 = add nsw i32 %8, 1, !dbg !398
+  %idxprom226 = sext i32 %add225 to i64, !dbg !398
+  %arrayidx227 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom226, !dbg !398
+  %37 = load i32* %arrayidx227, align 4, !dbg !398, !tbaa !145
+  %cmp228 = icmp eq i32 %37, 0, !dbg !398
+  br i1 %cmp228, label %if.end231, label %if.then229, !dbg !398
 
 if.then229:                                       ; preds = %if.end224
-  tail call void @push_slidE(i32 %add225) #3
-  br label %if.end231
+  tail call void @push_slidE(i32 %add225) #5, !dbg !398
+  br label %if.end231, !dbg !398
 
 if.end231:                                        ; preds = %if.end224, %if.then229
-  %add232 = add nsw i32 %8, 11
-  %idxprom233 = sext i32 %add232 to i64
-  %arrayidx234 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom233
-  %38 = load i32* %arrayidx234, align 4, !tbaa !0
-  %cmp235 = icmp eq i32 %38, 0
-  br i1 %cmp235, label %if.end238, label %if.then236
+  %add232 = add nsw i32 %8, 11, !dbg !399
+  %idxprom233 = sext i32 %add232 to i64, !dbg !399
+  %arrayidx234 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom233, !dbg !399
+  %38 = load i32* %arrayidx234, align 4, !dbg !399, !tbaa !145
+  %cmp235 = icmp eq i32 %38, 0, !dbg !399
+  br i1 %cmp235, label %if.end238, label %if.then236, !dbg !399
 
 if.then236:                                       ; preds = %if.end231
-  tail call void @push_slidE(i32 %add232) #3
-  br label %if.end238
+  tail call void @push_slidE(i32 %add232) #5, !dbg !399
+  br label %if.end238, !dbg !399
 
 if.end238:                                        ; preds = %if.end231, %if.then236
-  %add239 = add nsw i32 %8, 12
-  %idxprom240 = sext i32 %add239 to i64
-  %arrayidx241 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom240
-  %39 = load i32* %arrayidx241, align 4, !tbaa !0
-  %cmp242 = icmp eq i32 %39, 0
-  br i1 %cmp242, label %if.end245, label %if.then243
+  %add239 = add nsw i32 %8, 12, !dbg !400
+  %idxprom240 = sext i32 %add239 to i64, !dbg !400
+  %arrayidx241 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom240, !dbg !400
+  %39 = load i32* %arrayidx241, align 4, !dbg !400, !tbaa !145
+  %cmp242 = icmp eq i32 %39, 0, !dbg !400
+  br i1 %cmp242, label %if.end245, label %if.then243, !dbg !400
 
 if.then243:                                       ; preds = %if.end238
-  tail call void @push_slidE(i32 %add239) #3
-  br label %if.end245
+  tail call void @push_slidE(i32 %add239) #5, !dbg !400
+  br label %if.end245, !dbg !400
 
 if.end245:                                        ; preds = %if.end238, %if.then243
-  %add246 = add nsw i32 %8, 13
-  %idxprom247 = sext i32 %add246 to i64
-  %arrayidx248 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom247
-  %40 = load i32* %arrayidx248, align 4, !tbaa !0
-  %cmp249 = icmp eq i32 %40, 0
-  br i1 %cmp249, label %for.inc, label %if.then250
+  %add246 = add nsw i32 %8, 13, !dbg !401
+  %idxprom247 = sext i32 %add246 to i64, !dbg !401
+  %arrayidx248 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom247, !dbg !401
+  %40 = load i32* %arrayidx248, align 4, !dbg !401, !tbaa !145
+  %cmp249 = icmp eq i32 %40, 0, !dbg !401
+  br i1 %cmp249, label %for.inc, label %if.then250, !dbg !401
 
 if.then250:                                       ; preds = %if.end245
-  tail call void @push_slidE(i32 %add246) #3
-  br label %for.inc
+  tail call void @push_slidE(i32 %add246) #5, !dbg !401
+  br label %for.inc, !dbg !401
 
 sw.bb253:                                         ; preds = %if.else
-  %sub254 = add nsw i32 %8, -13
-  tail call void @push_king(i32 %sub254) #3
-  %sub255 = add nsw i32 %8, -12
-  tail call void @push_king(i32 %sub255) #3
-  %sub256 = add nsw i32 %8, -11
-  tail call void @push_king(i32 %sub256) #3
-  %sub257 = add nsw i32 %8, -1
-  tail call void @push_king(i32 %sub257) #3
-  %add258 = add nsw i32 %8, 1
-  tail call void @push_king(i32 %add258) #3
-  %add259 = add nsw i32 %8, 11
-  tail call void @push_king(i32 %add259) #3
-  %add260 = add nsw i32 %8, 12
-  tail call void @push_king(i32 %add260) #3
-  %add261 = add nsw i32 %8, 13
-  tail call void @push_king(i32 %add261) #3
-  %cmp262 = icmp ne i32 %8, 30
-  %41 = load i32* getelementptr inbounds ([144 x i32]* @moved, i64 0, i64 30), align 4, !tbaa !0
-  %tobool264 = icmp ne i32 %41, 0
-  %or.cond734 = or i1 %cmp262, %tobool264
-  %42 = load i32* @captures, align 4, !tbaa !1
-  %tobool266 = icmp ne i32 %42, 0
-  %or.cond735 = or i1 %or.cond734, %tobool266
-  br i1 %or.cond735, label %for.inc, label %land.lhs.true267
+  %sub254 = add nsw i32 %8, -13, !dbg !402
+  tail call void @push_king(i32 %sub254) #5, !dbg !402
+  %sub255 = add nsw i32 %8, -12, !dbg !403
+  tail call void @push_king(i32 %sub255) #5, !dbg !403
+  %sub256 = add nsw i32 %8, -11, !dbg !404
+  tail call void @push_king(i32 %sub256) #5, !dbg !404
+  %sub257 = add nsw i32 %8, -1, !dbg !405
+  tail call void @push_king(i32 %sub257) #5, !dbg !405
+  %add258 = add nsw i32 %8, 1, !dbg !406
+  tail call void @push_king(i32 %add258) #5, !dbg !406
+  %add259 = add nsw i32 %8, 11, !dbg !407
+  tail call void @push_king(i32 %add259) #5, !dbg !407
+  %add260 = add nsw i32 %8, 12, !dbg !408
+  tail call void @push_king(i32 %add260) #5, !dbg !408
+  %add261 = add nsw i32 %8, 13, !dbg !409
+  tail call void @push_king(i32 %add261) #5, !dbg !409
+  %cmp262 = icmp ne i32 %8, 30, !dbg !410
+  %41 = load i32* getelementptr inbounds ([144 x i32]* @moved, i64 0, i64 30), align 4, !dbg !410, !tbaa !145
+  %tobool264 = icmp ne i32 %41, 0, !dbg !410
+  %or.cond734 = or i1 %cmp262, %tobool264, !dbg !410
+  %42 = load i32* @captures, align 4, !dbg !410, !tbaa !146
+  %tobool266 = icmp ne i32 %42, 0, !dbg !410
+  %or.cond735 = or i1 %or.cond734, %tobool266, !dbg !410
+  br i1 %or.cond735, label %for.inc, label %land.lhs.true267, !dbg !410
 
 land.lhs.true267:                                 ; preds = %sw.bb253
-  %43 = load i32* @Variant, align 4, !tbaa !0
-  %cmp268 = icmp ne i32 %43, 3
-  %44 = load i32* @Giveaway, align 4, !tbaa !0
-  %cmp269 = icmp eq i32 %44, 1
-  %or.cond736 = or i1 %cmp268, %cmp269
-  br i1 %or.cond736, label %if.then270, label %for.inc
+  %43 = load i32* @Variant, align 4, !dbg !410, !tbaa !145
+  %cmp268 = icmp ne i32 %43, 3, !dbg !410
+  %44 = load i32* @Giveaway, align 4, !dbg !410, !tbaa !145
+  %cmp269 = icmp eq i32 %44, 1, !dbg !410
+  %or.cond736 = or i1 %cmp268, %cmp269, !dbg !410
+  br i1 %or.cond736, label %if.then270, label %for.inc, !dbg !410
 
 if.then270:                                       ; preds = %land.lhs.true267
-  %45 = load i32* getelementptr inbounds ([144 x i32]* @moved, i64 0, i64 33), align 4, !tbaa !0
-  %tobool271 = icmp eq i32 %45, 0
-  %46 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 33), align 4, !tbaa !0
-  %cmp273 = icmp eq i32 %46, 7
-  %or.cond737 = and i1 %tobool271, %cmp273
-  br i1 %or.cond737, label %if.then274, label %if.end281
+  %45 = load i32* getelementptr inbounds ([144 x i32]* @moved, i64 0, i64 33), align 4, !dbg !411, !tbaa !145
+  %tobool271 = icmp eq i32 %45, 0, !dbg !411
+  %46 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 33), align 4, !dbg !411, !tbaa !145
+  %cmp273 = icmp eq i32 %46, 7, !dbg !411
+  %or.cond737 = and i1 %tobool271, %cmp273, !dbg !411
+  br i1 %or.cond737, label %if.then274, label %if.end281, !dbg !411
 
 if.then274:                                       ; preds = %if.then270
-  %47 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 31), align 4, !tbaa !0
-  %cmp275 = icmp eq i32 %47, 13
-  %48 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 32), align 4, !tbaa !0
-  %cmp277 = icmp eq i32 %48, 13
-  %or.cond738 = and i1 %cmp275, %cmp277
-  br i1 %or.cond738, label %if.then278, label %if.end281
+  %47 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 31), align 4, !dbg !413, !tbaa !145
+  %cmp275 = icmp eq i32 %47, 13, !dbg !413
+  %48 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 32), align 4, !dbg !413, !tbaa !145
+  %cmp277 = icmp eq i32 %48, 13, !dbg !413
+  %or.cond738 = and i1 %cmp275, %cmp277, !dbg !413
+  br i1 %or.cond738, label %if.then278, label %if.end281, !dbg !413
 
 if.then278:                                       ; preds = %if.then274
-  tail call void @push_king_castle(i32 32, i32 1) #3
-  br label %if.end281
+  tail call void @push_king_castle(i32 32, i32 1) #5, !dbg !414
+  br label %if.end281, !dbg !414
 
 if.end281:                                        ; preds = %if.then274, %if.then278, %if.then270
-  %49 = load i32* getelementptr inbounds ([144 x i32]* @moved, i64 0, i64 26), align 4, !tbaa !0
-  %tobool282 = icmp eq i32 %49, 0
-  %50 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 26), align 4, !tbaa !0
-  %cmp284 = icmp eq i32 %50, 7
-  %or.cond739 = and i1 %tobool282, %cmp284
-  br i1 %or.cond739, label %if.then285, label %for.inc
+  %49 = load i32* getelementptr inbounds ([144 x i32]* @moved, i64 0, i64 26), align 4, !dbg !415, !tbaa !145
+  %tobool282 = icmp eq i32 %49, 0, !dbg !415
+  %50 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 26), align 4, !dbg !415, !tbaa !145
+  %cmp284 = icmp eq i32 %50, 7, !dbg !415
+  %or.cond739 = and i1 %tobool282, %cmp284, !dbg !415
+  br i1 %or.cond739, label %if.then285, label %for.inc, !dbg !415
 
 if.then285:                                       ; preds = %if.end281
-  %51 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 27), align 4, !tbaa !0
-  %cmp286 = icmp eq i32 %51, 13
-  %52 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 28), align 4, !tbaa !0
-  %cmp288 = icmp eq i32 %52, 13
-  %or.cond740 = and i1 %cmp286, %cmp288
-  %53 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 29), align 4, !tbaa !0
-  %cmp290 = icmp eq i32 %53, 13
-  %or.cond741 = and i1 %or.cond740, %cmp290
-  br i1 %or.cond741, label %if.then291, label %for.inc
+  %51 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 27), align 4, !dbg !416, !tbaa !145
+  %cmp286 = icmp eq i32 %51, 13, !dbg !416
+  %52 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 28), align 4, !dbg !416, !tbaa !145
+  %cmp288 = icmp eq i32 %52, 13, !dbg !416
+  %or.cond740 = and i1 %cmp286, %cmp288, !dbg !416
+  %53 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 29), align 4, !dbg !416, !tbaa !145
+  %cmp290 = icmp eq i32 %53, 13, !dbg !416
+  %or.cond741 = and i1 %or.cond740, %cmp290, !dbg !416
+  br i1 %or.cond741, label %if.then291, label %for.inc, !dbg !416
 
 if.then291:                                       ; preds = %if.then285
-  tail call void @push_king_castle(i32 28, i32 2) #3
-  br label %for.inc
+  tail call void @push_king_castle(i32 28, i32 2) #5, !dbg !417
+  br label %for.inc, !dbg !417
 
 for.inc:                                          ; preds = %if.then285, %if.end281, %land.lhs.true267, %sw.bb253, %if.end245, %if.end188, %if.end159, %if.end130, %if.else75, %for.body, %if.then78, %if.then73, %if.then135, %if.then164, %if.then193, %if.then250, %if.then291, %if.else
   %a.1 = phi i32 [ %inc, %if.else ], [ %inc, %if.then291 ], [ %inc, %if.then250 ], [ %inc, %if.then193 ], [ %inc, %if.then164 ], [ %inc, %if.then135 ], [ %inc, %if.then73 ], [ %inc, %if.then78 ], [ %a.0954, %for.body ], [ %inc, %if.else75 ], [ %inc, %if.end130 ], [ %inc, %if.end159 ], [ %inc, %if.end188 ], [ %inc, %if.end245 ], [ %inc, %sw.bb253 ], [ %inc, %land.lhs.true267 ], [ %inc, %if.end281 ], [ %inc, %if.then285 ]
-  %54 = load i32* @piece_count, align 4, !tbaa !0
-  %cmp2 = icmp sgt i32 %a.1, %54
-  br i1 %cmp2, label %if.end612, label %for.inc.land.rhs_crit_edge
+  %54 = load i32* @piece_count, align 4, !dbg !342, !tbaa !145
+  %cmp2 = icmp sgt i32 %a.1, %54, !dbg !342
+  br i1 %cmp2, label %if.end612, label %for.inc.land.rhs_crit_edge, !dbg !342
 
 for.inc.land.rhs_crit_edge:                       ; preds = %for.inc
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %.pre = load i32* @Variant, align 4, !tbaa !0
-  br label %land.rhs
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !342
+  %.pre = load i32* @Variant, align 4, !dbg !342, !tbaa !145
+  br label %land.rhs, !dbg !342
 
 land.rhs300:                                      ; preds = %for.cond298.preheader, %for.inc609.land.rhs300_crit_edge
-  %55 = phi i32 [ %.pre965, %for.inc609.land.rhs300_crit_edge ], [ %1, %for.cond298.preheader ]
+  %55 = phi i32 [ %.pre965, %for.inc609.land.rhs300_crit_edge ], [ %1, %for.cond298.preheader ], !dbg !345
   %indvars.iv963 = phi i64 [ %indvars.iv.next964, %for.inc609.land.rhs300_crit_edge ], [ 1, %for.cond298.preheader ]
   %a.2958 = phi i32 [ %a.3, %for.inc609.land.rhs300_crit_edge ], [ 1, %for.cond298.preheader ]
-  %cmp301 = icmp eq i32 %55, 3
-  %56 = load i32* @kingcap, align 4, !tbaa !0
-  %tobool303 = icmp ne i32 %56, 0
-  %or.cond742 = or i1 %cmp301, %tobool303
-  br i1 %or.cond742, label %lor.rhs304, label %for.body311
+  %cmp301 = icmp eq i32 %55, 3, !dbg !345
+  %56 = load i32* @kingcap, align 4, !dbg !345, !tbaa !145
+  %tobool303 = icmp ne i32 %56, 0, !dbg !345
+  %or.cond742 = or i1 %cmp301, %tobool303, !dbg !345
+  br i1 %or.cond742, label %lor.rhs304, label %for.body311, !dbg !345
 
 lor.rhs304:                                       ; preds = %land.rhs300
-  br i1 %cmp301, label %land.rhs306, label %if.end612
+  br i1 %cmp301, label %land.rhs306, label %if.end612, !dbg !345
 
 land.rhs306:                                      ; preds = %lor.rhs304
-  %57 = load i32* @fcaptures, align 4, !tbaa !1
-  %58 = load i32* @captures, align 4, !tbaa !1
-  %cmp307 = icmp eq i32 %57, %58
+  %57 = load i32* @fcaptures, align 4, !dbg !345, !tbaa !146
+  %58 = load i32* @captures, align 4, !dbg !345, !tbaa !146
+  %cmp307 = icmp eq i32 %57, %58, !dbg !345
   br i1 %cmp307, label %for.body311, label %if.end612
 
 for.body311:                                      ; preds = %land.rhs300, %land.rhs306
-  %arrayidx313 = getelementptr inbounds [62 x i32]* @pieces, i64 0, i64 %indvars.iv963
-  %59 = load i32* %arrayidx313, align 4, !tbaa !0
-  %tobool314 = icmp eq i32 %59, 0
-  br i1 %tobool314, label %for.inc609, label %if.else316
+  %arrayidx313 = getelementptr inbounds [62 x i32]* @pieces, i64 0, i64 %indvars.iv963, !dbg !418
+  %59 = load i32* %arrayidx313, align 4, !dbg !418, !tbaa !145
+  tail call void @llvm.dbg.value(metadata !{i32 %59}, i64 0, metadata !42), !dbg !418
+  %tobool314 = icmp eq i32 %59, 0, !dbg !420
+  br i1 %tobool314, label %for.inc609, label %if.else316, !dbg !420
 
 if.else316:                                       ; preds = %for.body311
-  %inc317 = add nsw i32 %a.2958, 1
-  store i32 %59, i32* @gfrom, align 4, !tbaa !0
-  %idxprom319 = sext i32 %59 to i64
-  %arrayidx320 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom319
-  %60 = load i32* %arrayidx320, align 4, !tbaa !0
+  %inc317 = add nsw i32 %a.2958, 1, !dbg !421
+  tail call void @llvm.dbg.value(metadata !{i32 %inc317}, i64 0, metadata !40), !dbg !421
+  tail call void @llvm.dbg.value(metadata !{i32 %59}, i64 0, metadata !39), !dbg !422
+  store i32 %59, i32* @gfrom, align 4, !dbg !423, !tbaa !145
+  %idxprom319 = sext i32 %59 to i64, !dbg !424
+  %arrayidx320 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom319, !dbg !424
+  %60 = load i32* %arrayidx320, align 4, !dbg !424, !tbaa !145
   switch i32 %60, label %for.inc609 [
     i32 2, label %sw.bb321
     i32 4, label %sw.bb391
@@ -572,689 +582,694 @@ if.else316:                                       ; preds = %for.body311
     i32 8, label %sw.bb477
     i32 10, label %sw.bb506
     i32 6, label %sw.bb563
-  ]
+  ], !dbg !424
 
 sw.bb321:                                         ; preds = %if.else316
-  %sub322 = add nsw i32 %59, -12
-  %idxprom323 = sext i32 %sub322 to i64
-  %arrayidx324 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom323
-  %61 = load i32* %arrayidx324, align 4, !tbaa !0
-  %cmp325 = icmp eq i32 %61, 13
-  br i1 %cmp325, label %if.then326, label %if.end353
+  %sub322 = add nsw i32 %59, -12, !dbg !425
+  %idxprom323 = sext i32 %sub322 to i64, !dbg !425
+  %arrayidx324 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom323, !dbg !425
+  %61 = load i32* %arrayidx324, align 4, !dbg !425, !tbaa !145
+  %cmp325 = icmp eq i32 %61, 13, !dbg !425
+  br i1 %cmp325, label %if.then326, label %if.end353, !dbg !425
 
 if.then326:                                       ; preds = %sw.bb321
-  %arrayidx328 = getelementptr inbounds [144 x i32]* @Xrank, i64 0, i64 %idxprom319
-  %62 = load i32* %arrayidx328, align 4, !tbaa !0
-  %cmp329 = icmp eq i32 %62, 2
+  %arrayidx328 = getelementptr inbounds [144 x i32]* @Xrank, i64 0, i64 %idxprom319, !dbg !427
+  %62 = load i32* %arrayidx328, align 4, !dbg !427, !tbaa !145
+  %cmp329 = icmp eq i32 %62, 2, !dbg !427
   br i1 %cmp329, label %switch.early.test947, label %if.else336
 
 switch.early.test947:                             ; preds = %if.then326
-  %.off950 = add i32 %55, -3
-  %switch951 = icmp ult i32 %.off950, 2
-  br i1 %switch951, label %if.else336, label %if.then334
+  %.off950 = add i32 %55, -3, !dbg !427
+  %switch951 = icmp ult i32 %.off950, 2, !dbg !427
+  br i1 %switch951, label %if.else336, label %if.then334, !dbg !427
 
 if.then334:                                       ; preds = %switch.early.test947
-  tail call void @push_pawn(i32 %sub322, i32 0) #3
-  br label %if.end353
+  tail call void @push_pawn(i32 %sub322, i32 0) #5, !dbg !429
+  br label %if.end353, !dbg !431
 
 if.else336:                                       ; preds = %switch.early.test947, %if.then326
-  %63 = load i32* @captures, align 4, !tbaa !1
-  %tobool337 = icmp eq i32 %63, 0
-  br i1 %tobool337, label %if.then338, label %if.end353
+  %63 = load i32* @captures, align 4, !dbg !432, !tbaa !146
+  %tobool337 = icmp eq i32 %63, 0, !dbg !432
+  br i1 %tobool337, label %if.then338, label %if.end353, !dbg !432
 
 if.then338:                                       ; preds = %if.else336
-  tail call void @push_pawn(i32 %sub322, i32 0) #3
-  %cmp342 = icmp eq i32 %62, 7
-  br i1 %cmp342, label %land.lhs.true343, label %if.end353
+  tail call void @push_pawn(i32 %sub322, i32 0) #5, !dbg !433
+  %cmp342 = icmp eq i32 %62, 7, !dbg !435
+  br i1 %cmp342, label %land.lhs.true343, label %if.end353, !dbg !435
 
 land.lhs.true343:                                 ; preds = %if.then338
-  %sub344 = add nsw i32 %59, -24
-  %idxprom345 = sext i32 %sub344 to i64
-  %arrayidx346 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom345
-  %64 = load i32* %arrayidx346, align 4, !tbaa !0
-  %cmp347 = icmp eq i32 %64, 13
-  br i1 %cmp347, label %if.then348, label %if.end353
+  %sub344 = add nsw i32 %59, -24, !dbg !435
+  %idxprom345 = sext i32 %sub344 to i64, !dbg !435
+  %arrayidx346 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom345, !dbg !435
+  %64 = load i32* %arrayidx346, align 4, !dbg !435, !tbaa !145
+  %cmp347 = icmp eq i32 %64, 13, !dbg !435
+  br i1 %cmp347, label %if.then348, label %if.end353, !dbg !435
 
 if.then348:                                       ; preds = %land.lhs.true343
-  tail call void @add_move(i32 %sub344, i32 0) #2
-  br label %if.end353
+  tail call void @llvm.dbg.value(metadata !{i32 %sub344}, i64 0, metadata !436) #6, !dbg !438
+  tail call void @add_move(i32 %sub344, i32 0) #4, !dbg !439
+  br label %if.end353, !dbg !437
 
 if.end353:                                        ; preds = %if.else336, %if.then334, %if.then338, %land.lhs.true343, %if.then348, %sw.bb321
-  %sub354 = add nsw i32 %59, -13
-  %idxprom355 = sext i32 %sub354 to i64
-  %arrayidx356 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom355
-  %65 = load i32* %arrayidx356, align 4, !tbaa !0
-  %and357 = and i32 %65, 1
-  %cmp358 = icmp eq i32 %and357, 0
-  %cmp363 = icmp eq i32 %65, 13
-  %or.cond948 = or i1 %cmp358, %cmp363
-  br i1 %or.cond948, label %if.end366, label %if.then364
+  %sub354 = add nsw i32 %59, -13, !dbg !440
+  %idxprom355 = sext i32 %sub354 to i64, !dbg !440
+  %arrayidx356 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom355, !dbg !440
+  %65 = load i32* %arrayidx356, align 4, !dbg !440, !tbaa !145
+  %and357 = and i32 %65, 1, !dbg !440
+  %cmp358 = icmp eq i32 %and357, 0, !dbg !440
+  %cmp363 = icmp eq i32 %65, 13, !dbg !440
+  %or.cond948 = or i1 %cmp358, %cmp363, !dbg !440
+  br i1 %or.cond948, label %if.end366, label %if.then364, !dbg !440
 
 if.then364:                                       ; preds = %if.end353
-  tail call void @push_pawn(i32 %sub354, i32 0) #3
-  br label %if.end366
+  tail call void @push_pawn(i32 %sub354, i32 0) #5, !dbg !441
+  br label %if.end366, !dbg !441
 
 if.end366:                                        ; preds = %if.end353, %if.then364
-  %sub367 = add nsw i32 %59, -11
-  %idxprom368 = sext i32 %sub367 to i64
-  %arrayidx369 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom368
-  %66 = load i32* %arrayidx369, align 4, !tbaa !0
-  %and370 = and i32 %66, 1
-  %cmp371 = icmp eq i32 %and370, 0
-  %cmp376 = icmp eq i32 %66, 13
-  %or.cond949 = or i1 %cmp371, %cmp376
-  br i1 %or.cond949, label %if.end379, label %if.then377
+  %sub367 = add nsw i32 %59, -11, !dbg !442
+  %idxprom368 = sext i32 %sub367 to i64, !dbg !442
+  %arrayidx369 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom368, !dbg !442
+  %66 = load i32* %arrayidx369, align 4, !dbg !442, !tbaa !145
+  %and370 = and i32 %66, 1, !dbg !442
+  %cmp371 = icmp eq i32 %and370, 0, !dbg !442
+  %cmp376 = icmp eq i32 %66, 13, !dbg !442
+  %or.cond949 = or i1 %cmp371, %cmp376, !dbg !442
+  br i1 %or.cond949, label %if.end379, label %if.then377, !dbg !442
 
 if.then377:                                       ; preds = %if.end366
-  tail call void @push_pawn(i32 %sub367, i32 0) #3
-  br label %if.end379
+  tail call void @push_pawn(i32 %sub367, i32 0) #5, !dbg !443
+  br label %if.end379, !dbg !443
 
 if.end379:                                        ; preds = %if.end366, %if.then377
-  %67 = load i32* @ep_square, align 4, !tbaa !0
-  %cmp381 = icmp eq i32 %67, %sub354
-  br i1 %cmp381, label %if.then382, label %if.else384
+  %67 = load i32* @ep_square, align 4, !dbg !444, !tbaa !145
+  %cmp381 = icmp eq i32 %67, %sub354, !dbg !444
+  br i1 %cmp381, label %if.then382, label %if.else384, !dbg !444
 
 if.then382:                                       ; preds = %if.end379
-  tail call void @push_pawn(i32 %sub354, i32 1) #3
-  br label %for.inc609
+  tail call void @push_pawn(i32 %sub354, i32 1) #5, !dbg !445
+  br label %for.inc609, !dbg !445
 
 if.else384:                                       ; preds = %if.end379
-  %cmp386 = icmp eq i32 %67, %sub367
-  br i1 %cmp386, label %if.then387, label %for.inc609
+  %cmp386 = icmp eq i32 %67, %sub367, !dbg !446
+  br i1 %cmp386, label %if.then387, label %for.inc609, !dbg !446
 
 if.then387:                                       ; preds = %if.else384
-  tail call void @push_pawn(i32 %sub367, i32 1) #3
-  br label %for.inc609
+  tail call void @push_pawn(i32 %sub367, i32 1) #5, !dbg !447
+  br label %for.inc609, !dbg !447
 
 sw.bb391:                                         ; preds = %if.else316
-  %sub392 = add nsw i32 %59, -25
-  %idxprom393 = sext i32 %sub392 to i64
-  %arrayidx394 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom393
-  %68 = load i32* %arrayidx394, align 4, !tbaa !0
-  %cmp395 = icmp eq i32 %68, 0
-  br i1 %cmp395, label %if.end398, label %if.then396
+  %sub392 = add nsw i32 %59, -25, !dbg !448
+  %idxprom393 = sext i32 %sub392 to i64, !dbg !448
+  %arrayidx394 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom393, !dbg !448
+  %68 = load i32* %arrayidx394, align 4, !dbg !448, !tbaa !145
+  %cmp395 = icmp eq i32 %68, 0, !dbg !448
+  br i1 %cmp395, label %if.end398, label %if.then396, !dbg !448
 
 if.then396:                                       ; preds = %sw.bb391
-  tail call void @push_knighT(i32 %sub392) #3
-  br label %if.end398
+  tail call void @push_knighT(i32 %sub392) #5, !dbg !448
+  br label %if.end398, !dbg !448
 
 if.end398:                                        ; preds = %sw.bb391, %if.then396
-  %sub399 = add nsw i32 %59, -23
-  %idxprom400 = sext i32 %sub399 to i64
-  %arrayidx401 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom400
-  %69 = load i32* %arrayidx401, align 4, !tbaa !0
-  %cmp402 = icmp eq i32 %69, 0
-  br i1 %cmp402, label %if.end405, label %if.then403
+  %sub399 = add nsw i32 %59, -23, !dbg !449
+  %idxprom400 = sext i32 %sub399 to i64, !dbg !449
+  %arrayidx401 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom400, !dbg !449
+  %69 = load i32* %arrayidx401, align 4, !dbg !449, !tbaa !145
+  %cmp402 = icmp eq i32 %69, 0, !dbg !449
+  br i1 %cmp402, label %if.end405, label %if.then403, !dbg !449
 
 if.then403:                                       ; preds = %if.end398
-  tail call void @push_knighT(i32 %sub399) #3
-  br label %if.end405
+  tail call void @push_knighT(i32 %sub399) #5, !dbg !449
+  br label %if.end405, !dbg !449
 
 if.end405:                                        ; preds = %if.end398, %if.then403
-  %sub406 = add nsw i32 %59, -14
-  %idxprom407 = sext i32 %sub406 to i64
-  %arrayidx408 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom407
-  %70 = load i32* %arrayidx408, align 4, !tbaa !0
-  %cmp409 = icmp eq i32 %70, 0
-  br i1 %cmp409, label %if.end412, label %if.then410
+  %sub406 = add nsw i32 %59, -14, !dbg !450
+  %idxprom407 = sext i32 %sub406 to i64, !dbg !450
+  %arrayidx408 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom407, !dbg !450
+  %70 = load i32* %arrayidx408, align 4, !dbg !450, !tbaa !145
+  %cmp409 = icmp eq i32 %70, 0, !dbg !450
+  br i1 %cmp409, label %if.end412, label %if.then410, !dbg !450
 
 if.then410:                                       ; preds = %if.end405
-  tail call void @push_knighT(i32 %sub406) #3
-  br label %if.end412
+  tail call void @push_knighT(i32 %sub406) #5, !dbg !450
+  br label %if.end412, !dbg !450
 
 if.end412:                                        ; preds = %if.end405, %if.then410
-  %sub413 = add nsw i32 %59, -10
-  %idxprom414 = sext i32 %sub413 to i64
-  %arrayidx415 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom414
-  %71 = load i32* %arrayidx415, align 4, !tbaa !0
-  %cmp416 = icmp eq i32 %71, 0
-  br i1 %cmp416, label %if.end419, label %if.then417
+  %sub413 = add nsw i32 %59, -10, !dbg !451
+  %idxprom414 = sext i32 %sub413 to i64, !dbg !451
+  %arrayidx415 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom414, !dbg !451
+  %71 = load i32* %arrayidx415, align 4, !dbg !451, !tbaa !145
+  %cmp416 = icmp eq i32 %71, 0, !dbg !451
+  br i1 %cmp416, label %if.end419, label %if.then417, !dbg !451
 
 if.then417:                                       ; preds = %if.end412
-  tail call void @push_knighT(i32 %sub413) #3
-  br label %if.end419
+  tail call void @push_knighT(i32 %sub413) #5, !dbg !451
+  br label %if.end419, !dbg !451
 
 if.end419:                                        ; preds = %if.end412, %if.then417
-  %add420 = add nsw i32 %59, 10
-  %idxprom421 = sext i32 %add420 to i64
-  %arrayidx422 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom421
-  %72 = load i32* %arrayidx422, align 4, !tbaa !0
-  %cmp423 = icmp eq i32 %72, 0
-  br i1 %cmp423, label %if.end426, label %if.then424
+  %add420 = add nsw i32 %59, 10, !dbg !452
+  %idxprom421 = sext i32 %add420 to i64, !dbg !452
+  %arrayidx422 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom421, !dbg !452
+  %72 = load i32* %arrayidx422, align 4, !dbg !452, !tbaa !145
+  %cmp423 = icmp eq i32 %72, 0, !dbg !452
+  br i1 %cmp423, label %if.end426, label %if.then424, !dbg !452
 
 if.then424:                                       ; preds = %if.end419
-  tail call void @push_knighT(i32 %add420) #3
-  br label %if.end426
+  tail call void @push_knighT(i32 %add420) #5, !dbg !452
+  br label %if.end426, !dbg !452
 
 if.end426:                                        ; preds = %if.end419, %if.then424
-  %add427 = add nsw i32 %59, 14
-  %idxprom428 = sext i32 %add427 to i64
-  %arrayidx429 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom428
-  %73 = load i32* %arrayidx429, align 4, !tbaa !0
-  %cmp430 = icmp eq i32 %73, 0
-  br i1 %cmp430, label %if.end433, label %if.then431
+  %add427 = add nsw i32 %59, 14, !dbg !453
+  %idxprom428 = sext i32 %add427 to i64, !dbg !453
+  %arrayidx429 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom428, !dbg !453
+  %73 = load i32* %arrayidx429, align 4, !dbg !453, !tbaa !145
+  %cmp430 = icmp eq i32 %73, 0, !dbg !453
+  br i1 %cmp430, label %if.end433, label %if.then431, !dbg !453
 
 if.then431:                                       ; preds = %if.end426
-  tail call void @push_knighT(i32 %add427) #3
-  br label %if.end433
+  tail call void @push_knighT(i32 %add427) #5, !dbg !453
+  br label %if.end433, !dbg !453
 
 if.end433:                                        ; preds = %if.end426, %if.then431
-  %add434 = add nsw i32 %59, 23
-  %idxprom435 = sext i32 %add434 to i64
-  %arrayidx436 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom435
-  %74 = load i32* %arrayidx436, align 4, !tbaa !0
-  %cmp437 = icmp eq i32 %74, 0
-  br i1 %cmp437, label %if.end440, label %if.then438
+  %add434 = add nsw i32 %59, 23, !dbg !454
+  %idxprom435 = sext i32 %add434 to i64, !dbg !454
+  %arrayidx436 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom435, !dbg !454
+  %74 = load i32* %arrayidx436, align 4, !dbg !454, !tbaa !145
+  %cmp437 = icmp eq i32 %74, 0, !dbg !454
+  br i1 %cmp437, label %if.end440, label %if.then438, !dbg !454
 
 if.then438:                                       ; preds = %if.end433
-  tail call void @push_knighT(i32 %add434) #3
-  br label %if.end440
+  tail call void @push_knighT(i32 %add434) #5, !dbg !454
+  br label %if.end440, !dbg !454
 
 if.end440:                                        ; preds = %if.end433, %if.then438
-  %add441 = add nsw i32 %59, 25
-  %idxprom442 = sext i32 %add441 to i64
-  %arrayidx443 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom442
-  %75 = load i32* %arrayidx443, align 4, !tbaa !0
-  %cmp444 = icmp eq i32 %75, 0
-  br i1 %cmp444, label %for.inc609, label %if.then445
+  %add441 = add nsw i32 %59, 25, !dbg !455
+  %idxprom442 = sext i32 %add441 to i64, !dbg !455
+  %arrayidx443 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom442, !dbg !455
+  %75 = load i32* %arrayidx443, align 4, !dbg !455, !tbaa !145
+  %cmp444 = icmp eq i32 %75, 0, !dbg !455
+  br i1 %cmp444, label %for.inc609, label %if.then445, !dbg !455
 
 if.then445:                                       ; preds = %if.end440
-  tail call void @push_knighT(i32 %add441) #3
-  br label %for.inc609
+  tail call void @push_knighT(i32 %add441) #5, !dbg !455
+  br label %for.inc609, !dbg !455
 
 sw.bb448:                                         ; preds = %if.else316
-  %sub449 = add nsw i32 %59, -13
-  %idxprom450 = sext i32 %sub449 to i64
-  %arrayidx451 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom450
-  %76 = load i32* %arrayidx451, align 4, !tbaa !0
-  %cmp452 = icmp eq i32 %76, 0
-  br i1 %cmp452, label %if.end455, label %if.then453
+  %sub449 = add nsw i32 %59, -13, !dbg !456
+  %idxprom450 = sext i32 %sub449 to i64, !dbg !456
+  %arrayidx451 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom450, !dbg !456
+  %76 = load i32* %arrayidx451, align 4, !dbg !456, !tbaa !145
+  %cmp452 = icmp eq i32 %76, 0, !dbg !456
+  br i1 %cmp452, label %if.end455, label %if.then453, !dbg !456
 
 if.then453:                                       ; preds = %sw.bb448
-  tail call void @push_slidE(i32 %sub449) #3
-  br label %if.end455
+  tail call void @push_slidE(i32 %sub449) #5, !dbg !456
+  br label %if.end455, !dbg !456
 
 if.end455:                                        ; preds = %sw.bb448, %if.then453
-  %sub456 = add nsw i32 %59, -11
-  %idxprom457 = sext i32 %sub456 to i64
-  %arrayidx458 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom457
-  %77 = load i32* %arrayidx458, align 4, !tbaa !0
-  %cmp459 = icmp eq i32 %77, 0
-  br i1 %cmp459, label %if.end462, label %if.then460
+  %sub456 = add nsw i32 %59, -11, !dbg !457
+  %idxprom457 = sext i32 %sub456 to i64, !dbg !457
+  %arrayidx458 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom457, !dbg !457
+  %77 = load i32* %arrayidx458, align 4, !dbg !457, !tbaa !145
+  %cmp459 = icmp eq i32 %77, 0, !dbg !457
+  br i1 %cmp459, label %if.end462, label %if.then460, !dbg !457
 
 if.then460:                                       ; preds = %if.end455
-  tail call void @push_slidE(i32 %sub456) #3
-  br label %if.end462
+  tail call void @push_slidE(i32 %sub456) #5, !dbg !457
+  br label %if.end462, !dbg !457
 
 if.end462:                                        ; preds = %if.end455, %if.then460
-  %add463 = add nsw i32 %59, 11
-  %idxprom464 = sext i32 %add463 to i64
-  %arrayidx465 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom464
-  %78 = load i32* %arrayidx465, align 4, !tbaa !0
-  %cmp466 = icmp eq i32 %78, 0
-  br i1 %cmp466, label %if.end469, label %if.then467
+  %add463 = add nsw i32 %59, 11, !dbg !458
+  %idxprom464 = sext i32 %add463 to i64, !dbg !458
+  %arrayidx465 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom464, !dbg !458
+  %78 = load i32* %arrayidx465, align 4, !dbg !458, !tbaa !145
+  %cmp466 = icmp eq i32 %78, 0, !dbg !458
+  br i1 %cmp466, label %if.end469, label %if.then467, !dbg !458
 
 if.then467:                                       ; preds = %if.end462
-  tail call void @push_slidE(i32 %add463) #3
-  br label %if.end469
+  tail call void @push_slidE(i32 %add463) #5, !dbg !458
+  br label %if.end469, !dbg !458
 
 if.end469:                                        ; preds = %if.end462, %if.then467
-  %add470 = add nsw i32 %59, 13
-  %idxprom471 = sext i32 %add470 to i64
-  %arrayidx472 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom471
-  %79 = load i32* %arrayidx472, align 4, !tbaa !0
-  %cmp473 = icmp eq i32 %79, 0
-  br i1 %cmp473, label %for.inc609, label %if.then474
+  %add470 = add nsw i32 %59, 13, !dbg !459
+  %idxprom471 = sext i32 %add470 to i64, !dbg !459
+  %arrayidx472 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom471, !dbg !459
+  %79 = load i32* %arrayidx472, align 4, !dbg !459, !tbaa !145
+  %cmp473 = icmp eq i32 %79, 0, !dbg !459
+  br i1 %cmp473, label %for.inc609, label %if.then474, !dbg !459
 
 if.then474:                                       ; preds = %if.end469
-  tail call void @push_slidE(i32 %add470) #3
-  br label %for.inc609
+  tail call void @push_slidE(i32 %add470) #5, !dbg !459
+  br label %for.inc609, !dbg !459
 
 sw.bb477:                                         ; preds = %if.else316
-  %sub478 = add nsw i32 %59, -12
-  %idxprom479 = sext i32 %sub478 to i64
-  %arrayidx480 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom479
-  %80 = load i32* %arrayidx480, align 4, !tbaa !0
-  %cmp481 = icmp eq i32 %80, 0
-  br i1 %cmp481, label %if.end484, label %if.then482
+  %sub478 = add nsw i32 %59, -12, !dbg !460
+  %idxprom479 = sext i32 %sub478 to i64, !dbg !460
+  %arrayidx480 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom479, !dbg !460
+  %80 = load i32* %arrayidx480, align 4, !dbg !460, !tbaa !145
+  %cmp481 = icmp eq i32 %80, 0, !dbg !460
+  br i1 %cmp481, label %if.end484, label %if.then482, !dbg !460
 
 if.then482:                                       ; preds = %sw.bb477
-  tail call void @push_slidE(i32 %sub478) #3
-  br label %if.end484
+  tail call void @push_slidE(i32 %sub478) #5, !dbg !460
+  br label %if.end484, !dbg !460
 
 if.end484:                                        ; preds = %sw.bb477, %if.then482
-  %sub485 = add nsw i32 %59, -1
-  %idxprom486 = sext i32 %sub485 to i64
-  %arrayidx487 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom486
-  %81 = load i32* %arrayidx487, align 4, !tbaa !0
-  %cmp488 = icmp eq i32 %81, 0
-  br i1 %cmp488, label %if.end491, label %if.then489
+  %sub485 = add nsw i32 %59, -1, !dbg !461
+  %idxprom486 = sext i32 %sub485 to i64, !dbg !461
+  %arrayidx487 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom486, !dbg !461
+  %81 = load i32* %arrayidx487, align 4, !dbg !461, !tbaa !145
+  %cmp488 = icmp eq i32 %81, 0, !dbg !461
+  br i1 %cmp488, label %if.end491, label %if.then489, !dbg !461
 
 if.then489:                                       ; preds = %if.end484
-  tail call void @push_slidE(i32 %sub485) #3
-  br label %if.end491
+  tail call void @push_slidE(i32 %sub485) #5, !dbg !461
+  br label %if.end491, !dbg !461
 
 if.end491:                                        ; preds = %if.end484, %if.then489
-  %add492 = add nsw i32 %59, 1
-  %idxprom493 = sext i32 %add492 to i64
-  %arrayidx494 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom493
-  %82 = load i32* %arrayidx494, align 4, !tbaa !0
-  %cmp495 = icmp eq i32 %82, 0
-  br i1 %cmp495, label %if.end498, label %if.then496
+  %add492 = add nsw i32 %59, 1, !dbg !462
+  %idxprom493 = sext i32 %add492 to i64, !dbg !462
+  %arrayidx494 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom493, !dbg !462
+  %82 = load i32* %arrayidx494, align 4, !dbg !462, !tbaa !145
+  %cmp495 = icmp eq i32 %82, 0, !dbg !462
+  br i1 %cmp495, label %if.end498, label %if.then496, !dbg !462
 
 if.then496:                                       ; preds = %if.end491
-  tail call void @push_slidE(i32 %add492) #3
-  br label %if.end498
+  tail call void @push_slidE(i32 %add492) #5, !dbg !462
+  br label %if.end498, !dbg !462
 
 if.end498:                                        ; preds = %if.end491, %if.then496
-  %add499 = add nsw i32 %59, 12
-  %idxprom500 = sext i32 %add499 to i64
-  %arrayidx501 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom500
-  %83 = load i32* %arrayidx501, align 4, !tbaa !0
-  %cmp502 = icmp eq i32 %83, 0
-  br i1 %cmp502, label %for.inc609, label %if.then503
+  %add499 = add nsw i32 %59, 12, !dbg !463
+  %idxprom500 = sext i32 %add499 to i64, !dbg !463
+  %arrayidx501 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom500, !dbg !463
+  %83 = load i32* %arrayidx501, align 4, !dbg !463, !tbaa !145
+  %cmp502 = icmp eq i32 %83, 0, !dbg !463
+  br i1 %cmp502, label %for.inc609, label %if.then503, !dbg !463
 
 if.then503:                                       ; preds = %if.end498
-  tail call void @push_slidE(i32 %add499) #3
-  br label %for.inc609
+  tail call void @push_slidE(i32 %add499) #5, !dbg !463
+  br label %for.inc609, !dbg !463
 
 sw.bb506:                                         ; preds = %if.else316
-  %sub507 = add nsw i32 %59, -13
-  %idxprom508 = sext i32 %sub507 to i64
-  %arrayidx509 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom508
-  %84 = load i32* %arrayidx509, align 4, !tbaa !0
-  %cmp510 = icmp eq i32 %84, 0
-  br i1 %cmp510, label %if.end513, label %if.then511
+  %sub507 = add nsw i32 %59, -13, !dbg !464
+  %idxprom508 = sext i32 %sub507 to i64, !dbg !464
+  %arrayidx509 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom508, !dbg !464
+  %84 = load i32* %arrayidx509, align 4, !dbg !464, !tbaa !145
+  %cmp510 = icmp eq i32 %84, 0, !dbg !464
+  br i1 %cmp510, label %if.end513, label %if.then511, !dbg !464
 
 if.then511:                                       ; preds = %sw.bb506
-  tail call void @push_slidE(i32 %sub507) #3
-  br label %if.end513
+  tail call void @push_slidE(i32 %sub507) #5, !dbg !464
+  br label %if.end513, !dbg !464
 
 if.end513:                                        ; preds = %sw.bb506, %if.then511
-  %sub514 = add nsw i32 %59, -12
-  %idxprom515 = sext i32 %sub514 to i64
-  %arrayidx516 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom515
-  %85 = load i32* %arrayidx516, align 4, !tbaa !0
-  %cmp517 = icmp eq i32 %85, 0
-  br i1 %cmp517, label %if.end520, label %if.then518
+  %sub514 = add nsw i32 %59, -12, !dbg !465
+  %idxprom515 = sext i32 %sub514 to i64, !dbg !465
+  %arrayidx516 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom515, !dbg !465
+  %85 = load i32* %arrayidx516, align 4, !dbg !465, !tbaa !145
+  %cmp517 = icmp eq i32 %85, 0, !dbg !465
+  br i1 %cmp517, label %if.end520, label %if.then518, !dbg !465
 
 if.then518:                                       ; preds = %if.end513
-  tail call void @push_slidE(i32 %sub514) #3
-  br label %if.end520
+  tail call void @push_slidE(i32 %sub514) #5, !dbg !465
+  br label %if.end520, !dbg !465
 
 if.end520:                                        ; preds = %if.end513, %if.then518
-  %sub521 = add nsw i32 %59, -11
-  %idxprom522 = sext i32 %sub521 to i64
-  %arrayidx523 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom522
-  %86 = load i32* %arrayidx523, align 4, !tbaa !0
-  %cmp524 = icmp eq i32 %86, 0
-  br i1 %cmp524, label %if.end527, label %if.then525
+  %sub521 = add nsw i32 %59, -11, !dbg !466
+  %idxprom522 = sext i32 %sub521 to i64, !dbg !466
+  %arrayidx523 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom522, !dbg !466
+  %86 = load i32* %arrayidx523, align 4, !dbg !466, !tbaa !145
+  %cmp524 = icmp eq i32 %86, 0, !dbg !466
+  br i1 %cmp524, label %if.end527, label %if.then525, !dbg !466
 
 if.then525:                                       ; preds = %if.end520
-  tail call void @push_slidE(i32 %sub521) #3
-  br label %if.end527
+  tail call void @push_slidE(i32 %sub521) #5, !dbg !466
+  br label %if.end527, !dbg !466
 
 if.end527:                                        ; preds = %if.end520, %if.then525
-  %sub528 = add nsw i32 %59, -1
-  %idxprom529 = sext i32 %sub528 to i64
-  %arrayidx530 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom529
-  %87 = load i32* %arrayidx530, align 4, !tbaa !0
-  %cmp531 = icmp eq i32 %87, 0
-  br i1 %cmp531, label %if.end534, label %if.then532
+  %sub528 = add nsw i32 %59, -1, !dbg !467
+  %idxprom529 = sext i32 %sub528 to i64, !dbg !467
+  %arrayidx530 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom529, !dbg !467
+  %87 = load i32* %arrayidx530, align 4, !dbg !467, !tbaa !145
+  %cmp531 = icmp eq i32 %87, 0, !dbg !467
+  br i1 %cmp531, label %if.end534, label %if.then532, !dbg !467
 
 if.then532:                                       ; preds = %if.end527
-  tail call void @push_slidE(i32 %sub528) #3
-  br label %if.end534
+  tail call void @push_slidE(i32 %sub528) #5, !dbg !467
+  br label %if.end534, !dbg !467
 
 if.end534:                                        ; preds = %if.end527, %if.then532
-  %add535 = add nsw i32 %59, 1
-  %idxprom536 = sext i32 %add535 to i64
-  %arrayidx537 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom536
-  %88 = load i32* %arrayidx537, align 4, !tbaa !0
-  %cmp538 = icmp eq i32 %88, 0
-  br i1 %cmp538, label %if.end541, label %if.then539
+  %add535 = add nsw i32 %59, 1, !dbg !468
+  %idxprom536 = sext i32 %add535 to i64, !dbg !468
+  %arrayidx537 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom536, !dbg !468
+  %88 = load i32* %arrayidx537, align 4, !dbg !468, !tbaa !145
+  %cmp538 = icmp eq i32 %88, 0, !dbg !468
+  br i1 %cmp538, label %if.end541, label %if.then539, !dbg !468
 
 if.then539:                                       ; preds = %if.end534
-  tail call void @push_slidE(i32 %add535) #3
-  br label %if.end541
+  tail call void @push_slidE(i32 %add535) #5, !dbg !468
+  br label %if.end541, !dbg !468
 
 if.end541:                                        ; preds = %if.end534, %if.then539
-  %add542 = add nsw i32 %59, 11
-  %idxprom543 = sext i32 %add542 to i64
-  %arrayidx544 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom543
-  %89 = load i32* %arrayidx544, align 4, !tbaa !0
-  %cmp545 = icmp eq i32 %89, 0
-  br i1 %cmp545, label %if.end548, label %if.then546
+  %add542 = add nsw i32 %59, 11, !dbg !469
+  %idxprom543 = sext i32 %add542 to i64, !dbg !469
+  %arrayidx544 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom543, !dbg !469
+  %89 = load i32* %arrayidx544, align 4, !dbg !469, !tbaa !145
+  %cmp545 = icmp eq i32 %89, 0, !dbg !469
+  br i1 %cmp545, label %if.end548, label %if.then546, !dbg !469
 
 if.then546:                                       ; preds = %if.end541
-  tail call void @push_slidE(i32 %add542) #3
-  br label %if.end548
+  tail call void @push_slidE(i32 %add542) #5, !dbg !469
+  br label %if.end548, !dbg !469
 
 if.end548:                                        ; preds = %if.end541, %if.then546
-  %add549 = add nsw i32 %59, 12
-  %idxprom550 = sext i32 %add549 to i64
-  %arrayidx551 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom550
-  %90 = load i32* %arrayidx551, align 4, !tbaa !0
-  %cmp552 = icmp eq i32 %90, 0
-  br i1 %cmp552, label %if.end555, label %if.then553
+  %add549 = add nsw i32 %59, 12, !dbg !470
+  %idxprom550 = sext i32 %add549 to i64, !dbg !470
+  %arrayidx551 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom550, !dbg !470
+  %90 = load i32* %arrayidx551, align 4, !dbg !470, !tbaa !145
+  %cmp552 = icmp eq i32 %90, 0, !dbg !470
+  br i1 %cmp552, label %if.end555, label %if.then553, !dbg !470
 
 if.then553:                                       ; preds = %if.end548
-  tail call void @push_slidE(i32 %add549) #3
-  br label %if.end555
+  tail call void @push_slidE(i32 %add549) #5, !dbg !470
+  br label %if.end555, !dbg !470
 
 if.end555:                                        ; preds = %if.end548, %if.then553
-  %add556 = add nsw i32 %59, 13
-  %idxprom557 = sext i32 %add556 to i64
-  %arrayidx558 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom557
-  %91 = load i32* %arrayidx558, align 4, !tbaa !0
-  %cmp559 = icmp eq i32 %91, 0
-  br i1 %cmp559, label %for.inc609, label %if.then560
+  %add556 = add nsw i32 %59, 13, !dbg !471
+  %idxprom557 = sext i32 %add556 to i64, !dbg !471
+  %arrayidx558 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom557, !dbg !471
+  %91 = load i32* %arrayidx558, align 4, !dbg !471, !tbaa !145
+  %cmp559 = icmp eq i32 %91, 0, !dbg !471
+  br i1 %cmp559, label %for.inc609, label %if.then560, !dbg !471
 
 if.then560:                                       ; preds = %if.end555
-  tail call void @push_slidE(i32 %add556) #3
-  br label %for.inc609
+  tail call void @push_slidE(i32 %add556) #5, !dbg !471
+  br label %for.inc609, !dbg !471
 
 sw.bb563:                                         ; preds = %if.else316
-  %sub564 = add nsw i32 %59, -13
-  tail call void @push_king(i32 %sub564) #3
-  %sub565 = add nsw i32 %59, -12
-  tail call void @push_king(i32 %sub565) #3
-  %sub566 = add nsw i32 %59, -11
-  tail call void @push_king(i32 %sub566) #3
-  %sub567 = add nsw i32 %59, -1
-  tail call void @push_king(i32 %sub567) #3
-  %add568 = add nsw i32 %59, 1
-  tail call void @push_king(i32 %add568) #3
-  %add569 = add nsw i32 %59, 11
-  tail call void @push_king(i32 %add569) #3
-  %add570 = add nsw i32 %59, 12
-  tail call void @push_king(i32 %add570) #3
-  %add571 = add nsw i32 %59, 13
-  tail call void @push_king(i32 %add571) #3
-  %cmp572 = icmp ne i32 %59, 114
-  %92 = load i32* getelementptr inbounds ([144 x i32]* @moved, i64 0, i64 114), align 4, !tbaa !0
-  %tobool574 = icmp ne i32 %92, 0
-  %or.cond746 = or i1 %cmp572, %tobool574
-  %93 = load i32* @captures, align 4, !tbaa !1
-  %tobool576 = icmp ne i32 %93, 0
-  %or.cond747 = or i1 %or.cond746, %tobool576
-  br i1 %or.cond747, label %for.inc609, label %land.lhs.true577
+  %sub564 = add nsw i32 %59, -13, !dbg !472
+  tail call void @push_king(i32 %sub564) #5, !dbg !472
+  %sub565 = add nsw i32 %59, -12, !dbg !473
+  tail call void @push_king(i32 %sub565) #5, !dbg !473
+  %sub566 = add nsw i32 %59, -11, !dbg !474
+  tail call void @push_king(i32 %sub566) #5, !dbg !474
+  %sub567 = add nsw i32 %59, -1, !dbg !475
+  tail call void @push_king(i32 %sub567) #5, !dbg !475
+  %add568 = add nsw i32 %59, 1, !dbg !476
+  tail call void @push_king(i32 %add568) #5, !dbg !476
+  %add569 = add nsw i32 %59, 11, !dbg !477
+  tail call void @push_king(i32 %add569) #5, !dbg !477
+  %add570 = add nsw i32 %59, 12, !dbg !478
+  tail call void @push_king(i32 %add570) #5, !dbg !478
+  %add571 = add nsw i32 %59, 13, !dbg !479
+  tail call void @push_king(i32 %add571) #5, !dbg !479
+  %cmp572 = icmp ne i32 %59, 114, !dbg !480
+  %92 = load i32* getelementptr inbounds ([144 x i32]* @moved, i64 0, i64 114), align 4, !dbg !480, !tbaa !145
+  %tobool574 = icmp ne i32 %92, 0, !dbg !480
+  %or.cond746 = or i1 %cmp572, %tobool574, !dbg !480
+  %93 = load i32* @captures, align 4, !dbg !480, !tbaa !146
+  %tobool576 = icmp ne i32 %93, 0, !dbg !480
+  %or.cond747 = or i1 %or.cond746, %tobool576, !dbg !480
+  br i1 %or.cond747, label %for.inc609, label %land.lhs.true577, !dbg !480
 
 land.lhs.true577:                                 ; preds = %sw.bb563
-  %94 = load i32* @Variant, align 4, !tbaa !0
-  %cmp578 = icmp ne i32 %94, 3
-  %95 = load i32* @Giveaway, align 4, !tbaa !0
-  %cmp580 = icmp eq i32 %95, 1
-  %or.cond748 = or i1 %cmp578, %cmp580
-  br i1 %or.cond748, label %if.then581, label %for.inc609
+  %94 = load i32* @Variant, align 4, !dbg !480, !tbaa !145
+  %cmp578 = icmp ne i32 %94, 3, !dbg !480
+  %95 = load i32* @Giveaway, align 4, !dbg !480, !tbaa !145
+  %cmp580 = icmp eq i32 %95, 1, !dbg !480
+  %or.cond748 = or i1 %cmp578, %cmp580, !dbg !480
+  br i1 %or.cond748, label %if.then581, label %for.inc609, !dbg !480
 
 if.then581:                                       ; preds = %land.lhs.true577
-  %96 = load i32* getelementptr inbounds ([144 x i32]* @moved, i64 0, i64 117), align 4, !tbaa !0
-  %tobool582 = icmp eq i32 %96, 0
-  %97 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 117), align 4, !tbaa !0
-  %cmp584 = icmp eq i32 %97, 8
-  %or.cond749 = and i1 %tobool582, %cmp584
-  br i1 %or.cond749, label %if.then585, label %if.end592
+  %96 = load i32* getelementptr inbounds ([144 x i32]* @moved, i64 0, i64 117), align 4, !dbg !481, !tbaa !145
+  %tobool582 = icmp eq i32 %96, 0, !dbg !481
+  %97 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 117), align 4, !dbg !481, !tbaa !145
+  %cmp584 = icmp eq i32 %97, 8, !dbg !481
+  %or.cond749 = and i1 %tobool582, %cmp584, !dbg !481
+  br i1 %or.cond749, label %if.then585, label %if.end592, !dbg !481
 
 if.then585:                                       ; preds = %if.then581
-  %98 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 115), align 4, !tbaa !0
-  %cmp586 = icmp eq i32 %98, 13
-  %99 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 116), align 4, !tbaa !0
-  %cmp588 = icmp eq i32 %99, 13
-  %or.cond750 = and i1 %cmp586, %cmp588
-  br i1 %or.cond750, label %if.then589, label %if.end592
+  %98 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 115), align 4, !dbg !483, !tbaa !145
+  %cmp586 = icmp eq i32 %98, 13, !dbg !483
+  %99 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 116), align 4, !dbg !483, !tbaa !145
+  %cmp588 = icmp eq i32 %99, 13, !dbg !483
+  %or.cond750 = and i1 %cmp586, %cmp588, !dbg !483
+  br i1 %or.cond750, label %if.then589, label %if.end592, !dbg !483
 
 if.then589:                                       ; preds = %if.then585
-  tail call void @push_king_castle(i32 116, i32 3) #3
-  br label %if.end592
+  tail call void @push_king_castle(i32 116, i32 3) #5, !dbg !484
+  br label %if.end592, !dbg !484
 
 if.end592:                                        ; preds = %if.then585, %if.then589, %if.then581
-  %100 = load i32* getelementptr inbounds ([144 x i32]* @moved, i64 0, i64 110), align 4, !tbaa !0
-  %tobool593 = icmp eq i32 %100, 0
-  %101 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 110), align 4, !tbaa !0
-  %cmp595 = icmp eq i32 %101, 8
-  %or.cond751 = and i1 %tobool593, %cmp595
-  br i1 %or.cond751, label %if.then596, label %for.inc609
+  %100 = load i32* getelementptr inbounds ([144 x i32]* @moved, i64 0, i64 110), align 4, !dbg !485, !tbaa !145
+  %tobool593 = icmp eq i32 %100, 0, !dbg !485
+  %101 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 110), align 4, !dbg !485, !tbaa !145
+  %cmp595 = icmp eq i32 %101, 8, !dbg !485
+  %or.cond751 = and i1 %tobool593, %cmp595, !dbg !485
+  br i1 %or.cond751, label %if.then596, label %for.inc609, !dbg !485
 
 if.then596:                                       ; preds = %if.end592
-  %102 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 111), align 4, !tbaa !0
-  %cmp597 = icmp eq i32 %102, 13
-  %103 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 112), align 4, !tbaa !0
-  %cmp599 = icmp eq i32 %103, 13
-  %or.cond752 = and i1 %cmp597, %cmp599
-  %104 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 113), align 4, !tbaa !0
-  %cmp601 = icmp eq i32 %104, 13
-  %or.cond753 = and i1 %or.cond752, %cmp601
-  br i1 %or.cond753, label %if.then602, label %for.inc609
+  %102 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 111), align 4, !dbg !486, !tbaa !145
+  %cmp597 = icmp eq i32 %102, 13, !dbg !486
+  %103 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 112), align 4, !dbg !486, !tbaa !145
+  %cmp599 = icmp eq i32 %103, 13, !dbg !486
+  %or.cond752 = and i1 %cmp597, %cmp599, !dbg !486
+  %104 = load i32* getelementptr inbounds ([144 x i32]* @board, i64 0, i64 113), align 4, !dbg !486, !tbaa !145
+  %cmp601 = icmp eq i32 %104, 13, !dbg !486
+  %or.cond753 = and i1 %or.cond752, %cmp601, !dbg !486
+  br i1 %or.cond753, label %if.then602, label %for.inc609, !dbg !486
 
 if.then602:                                       ; preds = %if.then596
-  tail call void @push_king_castle(i32 112, i32 4) #3
-  br label %for.inc609
+  tail call void @push_king_castle(i32 112, i32 4) #5, !dbg !487
+  br label %for.inc609, !dbg !487
 
 for.inc609:                                       ; preds = %if.then596, %if.end592, %land.lhs.true577, %sw.bb563, %if.end555, %if.end498, %if.end469, %if.end440, %if.else384, %for.body311, %if.then387, %if.then382, %if.then445, %if.then474, %if.then503, %if.then560, %if.then602, %if.else316
   %a.3 = phi i32 [ %inc317, %if.else316 ], [ %inc317, %if.then602 ], [ %inc317, %if.then560 ], [ %inc317, %if.then503 ], [ %inc317, %if.then474 ], [ %inc317, %if.then445 ], [ %inc317, %if.then382 ], [ %inc317, %if.then387 ], [ %a.2958, %for.body311 ], [ %inc317, %if.else384 ], [ %inc317, %if.end440 ], [ %inc317, %if.end469 ], [ %inc317, %if.end498 ], [ %inc317, %if.end555 ], [ %inc317, %sw.bb563 ], [ %inc317, %land.lhs.true577 ], [ %inc317, %if.end592 ], [ %inc317, %if.then596 ]
-  %105 = load i32* @piece_count, align 4, !tbaa !0
-  %cmp299 = icmp sgt i32 %a.3, %105
-  br i1 %cmp299, label %if.end612, label %for.inc609.land.rhs300_crit_edge
+  %105 = load i32* @piece_count, align 4, !dbg !345, !tbaa !145
+  %cmp299 = icmp sgt i32 %a.3, %105, !dbg !345
+  br i1 %cmp299, label %if.end612, label %for.inc609.land.rhs300_crit_edge, !dbg !345
 
 for.inc609.land.rhs300_crit_edge:                 ; preds = %for.inc609
-  %indvars.iv.next964 = add i64 %indvars.iv963, 1
-  %.pre965 = load i32* @Variant, align 4, !tbaa !0
-  br label %land.rhs300
+  %indvars.iv.next964 = add i64 %indvars.iv963, 1, !dbg !345
+  %.pre965 = load i32* @Variant, align 4, !dbg !345, !tbaa !145
+  br label %land.rhs300, !dbg !345
 
 if.end612:                                        ; preds = %for.cond298.preheader, %land.rhs306, %lor.rhs304, %for.inc609, %for.cond.preheader, %land.rhs6, %lor.rhs, %for.inc
-  %106 = load i32* @Variant, align 4, !tbaa !0
-  %or.cond754.not = icmp ugt i32 %106, 1
-  %107 = load i32* @captures, align 4, !tbaa !1
-  %tobool617 = icmp ne i32 %107, 0
-  %or.cond755 = or i1 %or.cond754.not, %tobool617
-  %108 = load i32* @kingcap, align 4, !tbaa !0
-  %tobool619 = icmp ne i32 %108, 0
-  %or.cond756 = or i1 %or.cond755, %tobool619
-  br i1 %or.cond756, label %if.end720, label %if.then620
+  %106 = load i32* @Variant, align 4, !dbg !488, !tbaa !145
+  %or.cond754.not = icmp ugt i32 %106, 1, !dbg !488
+  %107 = load i32* @captures, align 4, !dbg !488, !tbaa !146
+  %tobool617 = icmp ne i32 %107, 0, !dbg !488
+  %or.cond755 = or i1 %or.cond754.not, %tobool617, !dbg !488
+  %108 = load i32* @kingcap, align 4, !dbg !488, !tbaa !145
+  %tobool619 = icmp ne i32 %108, 0, !dbg !488
+  %or.cond756 = or i1 %or.cond755, %tobool619, !dbg !488
+  br i1 %or.cond756, label %if.end720, label %if.then620, !dbg !488
 
 if.then620:                                       ; preds = %if.end612
-  %109 = load i32* @white_to_move, align 4, !tbaa !0
-  %tobool621 = icmp eq i32 %109, 0
-  br i1 %tobool621, label %land.lhs.true671, label %land.lhs.true622
+  %109 = load i32* @white_to_move, align 4, !dbg !489, !tbaa !145
+  %tobool621 = icmp eq i32 %109, 0, !dbg !489
+  br i1 %tobool621, label %land.lhs.true671, label %land.lhs.true622, !dbg !489
 
 land.lhs.true622:                                 ; preds = %if.then620
-  %110 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 0, i64 1), align 4, !tbaa !0
-  %111 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 0, i64 3), align 4, !tbaa !0
-  %112 = or i32 %111, %110
-  %113 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 0, i64 11), align 4, !tbaa !0
-  %114 = or i32 %112, %113
-  %115 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 0, i64 9), align 4, !tbaa !0
-  %116 = or i32 %114, %115
-  %117 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 0, i64 7), align 4, !tbaa !0
-  %118 = or i32 %116, %117
-  %119 = icmp eq i32 %118, 0
-  br i1 %119, label %if.end720, label %for.body635
+  %110 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 0, i64 1), align 4, !dbg !489, !tbaa !145
+  %111 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 0, i64 3), align 4, !dbg !489, !tbaa !145
+  %112 = or i32 %111, %110, !dbg !489
+  %113 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 0, i64 11), align 4, !dbg !489, !tbaa !145
+  %114 = or i32 %112, %113, !dbg !489
+  %115 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 0, i64 9), align 4, !dbg !489, !tbaa !145
+  %116 = or i32 %114, %115, !dbg !489
+  %117 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 0, i64 7), align 4, !dbg !489, !tbaa !145
+  %118 = or i32 %116, %117, !dbg !489
+  %119 = icmp eq i32 %118, 0, !dbg !489
+  br i1 %119, label %if.end720, label %for.body635, !dbg !489
 
 for.body635:                                      ; preds = %for.inc666, %land.lhs.true622
   %from.0960 = phi i32 [ 26, %land.lhs.true622 ], [ %inc667, %for.inc666 ]
-  store i32 %from.0960, i32* @gfrom, align 4, !tbaa !0
-  %idxprom636 = sext i32 %from.0960 to i64
-  %arrayidx637 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom636
-  %120 = load i32* %arrayidx637, align 4, !tbaa !0
+  store i32 %from.0960, i32* @gfrom, align 4, !dbg !491, !tbaa !145
+  %idxprom636 = sext i32 %from.0960 to i64, !dbg !495
+  %arrayidx637 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom636, !dbg !495
+  %120 = load i32* %arrayidx637, align 4, !dbg !495, !tbaa !145
   switch i32 %120, label %for.inc666 [
     i32 0, label %sw.bb638
     i32 13, label %sw.bb640
-  ]
+  ], !dbg !495
 
 sw.bb638:                                         ; preds = %for.body635
-  %add639 = add nsw i32 %from.0960, 3
-  br label %for.inc666
+  %add639 = add nsw i32 %from.0960, 3, !dbg !496
+  tail call void @llvm.dbg.value(metadata !{i32 %add639}, i64 0, metadata !39), !dbg !496
+  br label %for.inc666, !dbg !498
 
 sw.bb640:                                         ; preds = %for.body635
-  %121 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 0, i64 1), align 4, !tbaa !0
-  %tobool641 = icmp eq i32 %121, 0
-  br i1 %tobool641, label %if.end652, label %if.then642
+  %121 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 0, i64 1), align 4, !dbg !499, !tbaa !145
+  %tobool641 = icmp eq i32 %121, 0, !dbg !499
+  br i1 %tobool641, label %if.end652, label %if.then642, !dbg !499
 
 if.then642:                                       ; preds = %sw.bb640
-  %arrayidx644 = getelementptr inbounds [144 x i32]* @Xrank, i64 0, i64 %idxprom636
-  %122 = load i32* %arrayidx644, align 4, !tbaa !0
+  %arrayidx644 = getelementptr inbounds [144 x i32]* @Xrank, i64 0, i64 %idxprom636, !dbg !500
+  %122 = load i32* %arrayidx644, align 4, !dbg !500, !tbaa !145
   switch i32 %122, label %if.then650 [
     i32 8, label %if.end652
     i32 1, label %if.end652
-  ]
+  ], !dbg !500
 
 if.then650:                                       ; preds = %if.then642
-  tail call void @try_drop(i32 1) #3
-  br label %if.end652
+  tail call void @try_drop(i32 1) #5, !dbg !502
+  br label %if.end652, !dbg !504
 
 if.end652:                                        ; preds = %if.then642, %if.then642, %sw.bb640, %if.then650
-  %123 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 0, i64 3), align 4, !tbaa !0
-  %tobool653 = icmp eq i32 %123, 0
-  br i1 %tobool653, label %if.end655, label %if.then654
+  %123 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 0, i64 3), align 4, !dbg !505, !tbaa !145
+  %tobool653 = icmp eq i32 %123, 0, !dbg !505
+  br i1 %tobool653, label %if.end655, label %if.then654, !dbg !505
 
 if.then654:                                       ; preds = %if.end652
-  tail call void @try_drop(i32 3) #3
-  br label %if.end655
+  tail call void @try_drop(i32 3) #5, !dbg !506
+  br label %if.end655, !dbg !508
 
 if.end655:                                        ; preds = %if.end652, %if.then654
-  %124 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 0, i64 11), align 4, !tbaa !0
-  %tobool656 = icmp eq i32 %124, 0
-  br i1 %tobool656, label %if.end658, label %if.then657
+  %124 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 0, i64 11), align 4, !dbg !509, !tbaa !145
+  %tobool656 = icmp eq i32 %124, 0, !dbg !509
+  br i1 %tobool656, label %if.end658, label %if.then657, !dbg !509
 
 if.then657:                                       ; preds = %if.end655
-  tail call void @try_drop(i32 11) #3
-  br label %if.end658
+  tail call void @try_drop(i32 11) #5, !dbg !510
+  br label %if.end658, !dbg !512
 
 if.end658:                                        ; preds = %if.end655, %if.then657
-  %125 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 0, i64 7), align 4, !tbaa !0
-  %tobool659 = icmp eq i32 %125, 0
-  br i1 %tobool659, label %if.end661, label %if.then660
+  %125 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 0, i64 7), align 4, !dbg !513, !tbaa !145
+  %tobool659 = icmp eq i32 %125, 0, !dbg !513
+  br i1 %tobool659, label %if.end661, label %if.then660, !dbg !513
 
 if.then660:                                       ; preds = %if.end658
-  tail call void @try_drop(i32 7) #3
-  br label %if.end661
+  tail call void @try_drop(i32 7) #5, !dbg !514
+  br label %if.end661, !dbg !516
 
 if.end661:                                        ; preds = %if.end658, %if.then660
-  %126 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 0, i64 9), align 4, !tbaa !0
-  %tobool662 = icmp eq i32 %126, 0
-  br i1 %tobool662, label %for.inc666, label %if.then663
+  %126 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 0, i64 9), align 4, !dbg !517, !tbaa !145
+  %tobool662 = icmp eq i32 %126, 0, !dbg !517
+  br i1 %tobool662, label %for.inc666, label %if.then663, !dbg !517
 
 if.then663:                                       ; preds = %if.end661
-  tail call void @try_drop(i32 9) #3
-  br label %for.inc666
+  tail call void @try_drop(i32 9) #5, !dbg !518
+  br label %for.inc666, !dbg !520
 
 for.inc666:                                       ; preds = %if.end661, %for.body635, %if.then663, %sw.bb638
   %from.1 = phi i32 [ %from.0960, %for.body635 ], [ %from.0960, %if.then663 ], [ %from.0960, %if.end661 ], [ %add639, %sw.bb638 ]
-  %inc667 = add nsw i32 %from.1, 1
-  %cmp634 = icmp slt i32 %inc667, 118
-  br i1 %cmp634, label %for.body635, label %if.end720
+  %inc667 = add nsw i32 %from.1, 1, !dbg !521
+  tail call void @llvm.dbg.value(metadata !{i32 %inc667}, i64 0, metadata !39), !dbg !521
+  %cmp634 = icmp slt i32 %inc667, 118, !dbg !521
+  br i1 %cmp634, label %for.body635, label %if.end720, !dbg !521
 
 land.lhs.true671:                                 ; preds = %if.then620
-  %127 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 1, i64 2), align 4, !tbaa !0
-  %128 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 1, i64 4), align 4, !tbaa !0
-  %129 = or i32 %128, %127
-  %130 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 1, i64 12), align 4, !tbaa !0
-  %131 = or i32 %129, %130
-  %132 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 1, i64 10), align 4, !tbaa !0
-  %133 = or i32 %131, %132
-  %134 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 1, i64 8), align 4, !tbaa !0
-  %135 = or i32 %133, %134
-  %136 = icmp eq i32 %135, 0
-  br i1 %136, label %if.end720, label %for.body684
+  %127 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 1, i64 2), align 4, !dbg !522, !tbaa !145
+  %128 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 1, i64 4), align 4, !dbg !522, !tbaa !145
+  %129 = or i32 %128, %127, !dbg !522
+  %130 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 1, i64 12), align 4, !dbg !522, !tbaa !145
+  %131 = or i32 %129, %130, !dbg !522
+  %132 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 1, i64 10), align 4, !dbg !522, !tbaa !145
+  %133 = or i32 %131, %132, !dbg !522
+  %134 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 1, i64 8), align 4, !dbg !522, !tbaa !145
+  %135 = or i32 %133, %134, !dbg !522
+  %136 = icmp eq i32 %135, 0, !dbg !522
+  br i1 %136, label %if.end720, label %for.body684, !dbg !522
 
 for.body684:                                      ; preds = %for.inc715, %land.lhs.true671
   %from.2962 = phi i32 [ 26, %land.lhs.true671 ], [ %inc716, %for.inc715 ]
-  store i32 %from.2962, i32* @gfrom, align 4, !tbaa !0
-  %idxprom685 = sext i32 %from.2962 to i64
-  %arrayidx686 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom685
-  %137 = load i32* %arrayidx686, align 4, !tbaa !0
+  store i32 %from.2962, i32* @gfrom, align 4, !dbg !523, !tbaa !145
+  %idxprom685 = sext i32 %from.2962 to i64, !dbg !527
+  %arrayidx686 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom685, !dbg !527
+  %137 = load i32* %arrayidx686, align 4, !dbg !527, !tbaa !145
   switch i32 %137, label %for.inc715 [
     i32 0, label %sw.bb687
     i32 13, label %sw.bb689
-  ]
+  ], !dbg !527
 
 sw.bb687:                                         ; preds = %for.body684
-  %add688 = add nsw i32 %from.2962, 3
-  br label %for.inc715
+  %add688 = add nsw i32 %from.2962, 3, !dbg !528
+  tail call void @llvm.dbg.value(metadata !{i32 %add688}, i64 0, metadata !39), !dbg !528
+  br label %for.inc715, !dbg !530
 
 sw.bb689:                                         ; preds = %for.body684
-  %138 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 1, i64 2), align 4, !tbaa !0
-  %tobool690 = icmp eq i32 %138, 0
-  br i1 %tobool690, label %if.end701, label %if.then691
+  %138 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 1, i64 2), align 4, !dbg !531, !tbaa !145
+  %tobool690 = icmp eq i32 %138, 0, !dbg !531
+  br i1 %tobool690, label %if.end701, label %if.then691, !dbg !531
 
 if.then691:                                       ; preds = %sw.bb689
-  %arrayidx693 = getelementptr inbounds [144 x i32]* @Xrank, i64 0, i64 %idxprom685
-  %139 = load i32* %arrayidx693, align 4, !tbaa !0
+  %arrayidx693 = getelementptr inbounds [144 x i32]* @Xrank, i64 0, i64 %idxprom685, !dbg !532
+  %139 = load i32* %arrayidx693, align 4, !dbg !532, !tbaa !145
   switch i32 %139, label %if.then699 [
     i32 8, label %if.end701
     i32 1, label %if.end701
-  ]
+  ], !dbg !532
 
 if.then699:                                       ; preds = %if.then691
-  tail call void @try_drop(i32 2) #3
-  br label %if.end701
+  tail call void @try_drop(i32 2) #5, !dbg !534
+  br label %if.end701, !dbg !536
 
 if.end701:                                        ; preds = %if.then691, %if.then691, %sw.bb689, %if.then699
-  %140 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 1, i64 4), align 4, !tbaa !0
-  %tobool702 = icmp eq i32 %140, 0
-  br i1 %tobool702, label %if.end704, label %if.then703
+  %140 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 1, i64 4), align 4, !dbg !537, !tbaa !145
+  %tobool702 = icmp eq i32 %140, 0, !dbg !537
+  br i1 %tobool702, label %if.end704, label %if.then703, !dbg !537
 
 if.then703:                                       ; preds = %if.end701
-  tail call void @try_drop(i32 4) #3
-  br label %if.end704
+  tail call void @try_drop(i32 4) #5, !dbg !538
+  br label %if.end704, !dbg !540
 
 if.end704:                                        ; preds = %if.end701, %if.then703
-  %141 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 1, i64 12), align 4, !tbaa !0
-  %tobool705 = icmp eq i32 %141, 0
-  br i1 %tobool705, label %if.end707, label %if.then706
+  %141 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 1, i64 12), align 4, !dbg !541, !tbaa !145
+  %tobool705 = icmp eq i32 %141, 0, !dbg !541
+  br i1 %tobool705, label %if.end707, label %if.then706, !dbg !541
 
 if.then706:                                       ; preds = %if.end704
-  tail call void @try_drop(i32 12) #3
-  br label %if.end707
+  tail call void @try_drop(i32 12) #5, !dbg !542
+  br label %if.end707, !dbg !544
 
 if.end707:                                        ; preds = %if.end704, %if.then706
-  %142 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 1, i64 8), align 4, !tbaa !0
-  %tobool708 = icmp eq i32 %142, 0
-  br i1 %tobool708, label %if.end710, label %if.then709
+  %142 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 1, i64 8), align 4, !dbg !545, !tbaa !145
+  %tobool708 = icmp eq i32 %142, 0, !dbg !545
+  br i1 %tobool708, label %if.end710, label %if.then709, !dbg !545
 
 if.then709:                                       ; preds = %if.end707
-  tail call void @try_drop(i32 8) #3
-  br label %if.end710
+  tail call void @try_drop(i32 8) #5, !dbg !546
+  br label %if.end710, !dbg !548
 
 if.end710:                                        ; preds = %if.end707, %if.then709
-  %143 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 1, i64 10), align 4, !tbaa !0
-  %tobool711 = icmp eq i32 %143, 0
-  br i1 %tobool711, label %for.inc715, label %if.then712
+  %143 = load i32* getelementptr inbounds ([2 x [16 x i32]]* @holding, i64 0, i64 1, i64 10), align 4, !dbg !549, !tbaa !145
+  %tobool711 = icmp eq i32 %143, 0, !dbg !549
+  br i1 %tobool711, label %for.inc715, label %if.then712, !dbg !549
 
 if.then712:                                       ; preds = %if.end710
-  tail call void @try_drop(i32 10) #3
-  br label %for.inc715
+  tail call void @try_drop(i32 10) #5, !dbg !550
+  br label %for.inc715, !dbg !552
 
 for.inc715:                                       ; preds = %if.end710, %for.body684, %if.then712, %sw.bb687
   %from.3 = phi i32 [ %from.2962, %for.body684 ], [ %from.2962, %if.then712 ], [ %from.2962, %if.end710 ], [ %add688, %sw.bb687 ]
-  %inc716 = add nsw i32 %from.3, 1
-  %cmp683 = icmp slt i32 %inc716, 118
-  br i1 %cmp683, label %for.body684, label %if.end720
+  %inc716 = add nsw i32 %from.3, 1, !dbg !553
+  tail call void @llvm.dbg.value(metadata !{i32 %inc716}, i64 0, metadata !39), !dbg !553
+  %cmp683 = icmp slt i32 %inc716, 118, !dbg !553
+  br i1 %cmp683, label %for.body684, label %if.end720, !dbg !553
 
 if.end720:                                        ; preds = %for.inc715, %for.inc666, %land.lhs.true671, %land.lhs.true622, %if.end612
-  %144 = load i32* @Variant, align 4, !tbaa !0
-  %cmp721 = icmp eq i32 %144, 3
-  %145 = load i32* @fcaptures, align 4, !tbaa !1
-  %cmp723 = icmp eq i32 %145, 1
-  %or.cond765 = and i1 %cmp721, %cmp723
-  %146 = load i32* @captures, align 4, !tbaa !1
-  %cmp725 = icmp eq i32 %146, 0
-  %or.cond766 = and i1 %or.cond765, %cmp725
-  br i1 %or.cond766, label %if.then726, label %if.end727
+  %144 = load i32* @Variant, align 4, !dbg !554, !tbaa !145
+  %cmp721 = icmp eq i32 %144, 3, !dbg !554
+  %145 = load i32* @fcaptures, align 4, !dbg !554, !tbaa !146
+  %cmp723 = icmp eq i32 %145, 1, !dbg !554
+  %or.cond765 = and i1 %cmp721, %cmp723, !dbg !554
+  %146 = load i32* @captures, align 4, !dbg !554, !tbaa !146
+  %cmp725 = icmp eq i32 %146, 0, !dbg !554
+  %or.cond766 = and i1 %or.cond765, %cmp725, !dbg !554
+  br i1 %or.cond766, label %if.then726, label %if.end727, !dbg !554
 
 if.then726:                                       ; preds = %if.end720
-  store i32 1, i32* @captures, align 4, !tbaa !1
-  store i32 0, i32* @numb_moves, align 4, !tbaa !0
-  br label %restart
+  store i32 1, i32* @captures, align 4, !dbg !555, !tbaa !146
+  store i32 0, i32* @numb_moves, align 4, !dbg !557, !tbaa !145
+  br label %restart, !dbg !558
 
 if.end727:                                        ; preds = %if.end720
-  br i1 %cmp721, label %if.then729, label %if.end730
+  br i1 %cmp721, label %if.then729, label %if.end730, !dbg !559
 
 if.then729:                                       ; preds = %if.end727
-  store i32 0, i32* @kingcap, align 4, !tbaa !0
-  br label %if.end730
+  store i32 0, i32* @kingcap, align 4, !dbg !559, !tbaa !145
+  br label %if.end730, !dbg !559
 
 if.end730:                                        ; preds = %if.then729, %if.end727
-  ret void
+  ret void, !dbg !560
 }

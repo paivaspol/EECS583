@@ -1,37 +1,42 @@
 define void @DVgatherZero(i32 %size, double* %y, double* %x, i32* %index) #0 {
 entry:
-  %cmp = icmp sgt i32 %size, 0
-  br i1 %cmp, label %if.then, label %if.end13
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !199), !dbg !855
+  tail call void @llvm.dbg.value(metadata !{double* %y}, i64 0, metadata !200), !dbg !856
+  tail call void @llvm.dbg.value(metadata !{double* %x}, i64 0, metadata !201), !dbg !857
+  tail call void @llvm.dbg.value(metadata !{i32* %index}, i64 0, metadata !202), !dbg !858
+  %cmp = icmp sgt i32 %size, 0, !dbg !859
+  br i1 %cmp, label %if.then, label %if.end13, !dbg !859
 
 if.then:                                          ; preds = %entry
-  %cmp1 = icmp eq double* %y, null
-  %cmp2 = icmp eq double* %x, null
-  %or.cond = or i1 %cmp1, %cmp2
-  %cmp4 = icmp eq i32* %index, null
-  %or.cond27 = or i1 %or.cond, %cmp4
-  br i1 %or.cond27, label %if.then5, label %for.body
+  %cmp1 = icmp eq double* %y, null, !dbg !860
+  %cmp2 = icmp eq double* %x, null, !dbg !860
+  %or.cond = or i1 %cmp1, %cmp2, !dbg !860
+  %cmp4 = icmp eq i32* %index, null, !dbg !860
+  %or.cond27 = or i1 %or.cond, %cmp4, !dbg !860
+  br i1 %or.cond27, label %if.then5, label %for.body, !dbg !860
 
 if.then5:                                         ; preds = %if.then
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([85 x i8]* @.str15, i64 0, i64 0), i32 %size, double* %y, double* %x, i32* %index) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !861, !tbaa !629
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([85 x i8]* @.str15, i64 0, i64 0), i32 %size, double* %y, double* %x, i32* %index) #6, !dbg !861
+  tail call void @exit(i32 -1) #7, !dbg !863
+  unreachable, !dbg !863
 
 for.body:                                         ; preds = %if.then, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.then ]
-  %arrayidx = getelementptr inbounds i32* %index, i64 %indvars.iv
-  %1 = load i32* %arrayidx, align 4, !tbaa !4
-  %idxprom7 = sext i32 %1 to i64
-  %arrayidx8 = getelementptr inbounds double* %x, i64 %idxprom7
-  %2 = load double* %arrayidx8, align 8, !tbaa !3
-  %arrayidx10 = getelementptr inbounds double* %y, i64 %indvars.iv
-  store double %2, double* %arrayidx10, align 8, !tbaa !3
-  store double 0.000000e+00, double* %arrayidx8, align 8, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %size
-  br i1 %exitcond, label %if.end13, label %for.body
+  %arrayidx = getelementptr inbounds i32* %index, i64 %indvars.iv, !dbg !864
+  %1 = load i32* %arrayidx, align 4, !dbg !864, !tbaa !665
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !206), !dbg !864
+  %idxprom7 = sext i32 %1 to i64, !dbg !867
+  %arrayidx8 = getelementptr inbounds double* %x, i64 %idxprom7, !dbg !867
+  %2 = load double* %arrayidx8, align 8, !dbg !867, !tbaa !635
+  %arrayidx10 = getelementptr inbounds double* %y, i64 %indvars.iv, !dbg !867
+  store double %2, double* %arrayidx10, align 8, !dbg !867, !tbaa !635
+  store double 0.000000e+00, double* %arrayidx8, align 8, !dbg !868, !tbaa !635
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !869
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !869
+  %exitcond = icmp eq i32 %lftr.wideiv, %size, !dbg !869
+  br i1 %exitcond, label %if.end13, label %for.body, !dbg !869
 
 if.end13:                                         ; preds = %for.body, %entry
-  ret void
+  ret void, !dbg !870
 }

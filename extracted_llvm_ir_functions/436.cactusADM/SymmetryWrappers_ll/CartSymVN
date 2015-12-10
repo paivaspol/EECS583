@@ -1,17 +1,23 @@
 define i32 @CartSymVN(%struct.cGH* %GH, i8* %vn) #1 {
-  %1 = tail call i32 @CCTK_VarIndex(i8* %vn) #4
-  %2 = icmp sgt i32 %1, -1
-  br i1 %2, label %3, label %5
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !196), !dbg !332
+  tail call void @llvm.dbg.value(metadata !{i8* %vn}, i64 0, metadata !197), !dbg !332
+  tail call void @llvm.dbg.value(metadata !215, i64 0, metadata !198), !dbg !333
+  %call = tail call i32 @CCTK_VarIndex(i8* %vn) #5, !dbg !334
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !199), !dbg !334
+  %cmp = icmp sgt i32 %call, -1, !dbg !335
+  br i1 %cmp, label %if.then, label %if.else, !dbg !335
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i32 @CartSymVI(%struct.cGH* %GH, i32 %1) #5
-  br label %7
+if.then:                                          ; preds = %entry
+  %call2 = tail call i32 @CartSymVI(%struct.cGH* %GH, i32 %call) #6, !dbg !336
+  tail call void @llvm.dbg.value(metadata !{i32 %call2}, i64 0, metadata !198), !dbg !336
+  br label %if.end, !dbg !338
 
-; <label>:5                                       ; preds = %0
-  %6 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 421, i8* getelementptr inbounds ([89 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([37 x i8]* @.str10, i64 0, i64 0), i8* %vn) #4
-  br label %7
+if.else:                                          ; preds = %entry
+  %call3 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 421, i8* getelementptr inbounds ([77 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([37 x i8]* @.str10, i64 0, i64 0), i8* %vn) #5, !dbg !339
+  br label %if.end
 
-; <label>:7                                       ; preds = %5, %3
-  %retval.0 = phi i32 [ %4, %3 ], [ -1, %5 ]
-  ret i32 %retval.0
+if.end:                                           ; preds = %if.else, %if.then
+  %retval1.0 = phi i32 [ %call2, %if.then ], [ -1, %if.else ]
+  ret i32 %retval1.0, !dbg !341
 }

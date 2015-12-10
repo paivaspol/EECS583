@@ -1,0 +1,52 @@
+define linkonce_odr void @_ZN11xercesc_2_515BaseRefVectorOfINS_15DOMDocumentImplEE17removeAllElementsEv(%"class.xercesc_2_5::BaseRefVectorOf.19"* nocapture %this) unnamed_addr #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf.19"* %this}, i64 0, metadata !10527), !dbg !13564
+  tail call void @llvm.dbg.value(metadata !8221, i64 0, metadata !10528), !dbg !13565
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.19"* %this, i64 0, i32 2, !dbg !13565
+  %0 = load i32* %fCurCount, align 4, !dbg !13565, !tbaa !11681
+  %cmp9 = icmp eq i32 %0, 0, !dbg !13565
+  br i1 %cmp9, label %for.end, label %for.body.lr.ph, !dbg !13565
+
+for.body.lr.ph:                                   ; preds = %entry
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.19"* %this, i64 0, i32 1, !dbg !13566
+  %fElemList3 = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.19"* %this, i64 0, i32 4, !dbg !13568
+  br label %for.body, !dbg !13565
+
+for.body:                                         ; preds = %if.end, %for.body.lr.ph
+  %1 = phi i32 [ %0, %for.body.lr.ph ], [ %7, %if.end ]
+  %index.010 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %if.end ]
+  %2 = load i8* %fAdoptedElems, align 1, !dbg !13566, !tbaa !11609, !range !11691
+  %tobool = icmp eq i8 %2, 0, !dbg !13566
+  %idxprom2.pre = zext i32 %index.010 to i64, !dbg !13568
+  br i1 %tobool, label %if.end, label %if.then, !dbg !13566
+
+if.then:                                          ; preds = %for.body
+  %3 = load %"class.xercesc_2_5::DOMDocumentImpl"*** %fElemList3, align 8, !dbg !13569, !tbaa !11611
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::DOMDocumentImpl"** %3, i64 %idxprom2.pre, !dbg !13569
+  %4 = load %"class.xercesc_2_5::DOMDocumentImpl"** %arrayidx, align 8, !dbg !13569, !tbaa !11611
+  %isnull = icmp eq %"class.xercesc_2_5::DOMDocumentImpl"* %4, null, !dbg !13569
+  br i1 %isnull, label %if.end, label %delete.notnull, !dbg !13569
+
+delete.notnull:                                   ; preds = %if.then
+  %5 = bitcast %"class.xercesc_2_5::DOMDocumentImpl"* %4 to void (%"class.xercesc_2_5::DOMDocumentImpl"*)***, !dbg !13569
+  %vtable = load void (%"class.xercesc_2_5::DOMDocumentImpl"*)*** %5, align 8, !dbg !13569, !tbaa !11607
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::DOMDocumentImpl"*)** %vtable, i64 1, !dbg !13569
+  %6 = load void (%"class.xercesc_2_5::DOMDocumentImpl"*)** %vfn, align 8, !dbg !13569
+  tail call void %6(%"class.xercesc_2_5::DOMDocumentImpl"* %4) #9, !dbg !13569
+  %.pre = load i32* %fCurCount, align 4, !dbg !13565, !tbaa !11681
+  br label %if.end, !dbg !13569
+
+if.end:                                           ; preds = %for.body, %if.then, %delete.notnull
+  %7 = phi i32 [ %1, %if.then ], [ %.pre, %delete.notnull ], [ %1, %for.body ], !dbg !13568
+  %8 = load %"class.xercesc_2_5::DOMDocumentImpl"*** %fElemList3, align 8, !dbg !13568, !tbaa !11611
+  %arrayidx4 = getelementptr inbounds %"class.xercesc_2_5::DOMDocumentImpl"** %8, i64 %idxprom2.pre, !dbg !13568
+  store %"class.xercesc_2_5::DOMDocumentImpl"* null, %"class.xercesc_2_5::DOMDocumentImpl"** %arrayidx4, align 8, !dbg !13568, !tbaa !11611
+  %inc = add i32 %index.010, 1, !dbg !13565
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !10528), !dbg !13565
+  %cmp = icmp ult i32 %inc, %7, !dbg !13565
+  br i1 %cmp, label %for.body, label %for.end, !dbg !13565
+
+for.end:                                          ; preds = %if.end, %entry
+  store i32 0, i32* %fCurCount, align 4, !dbg !13570, !tbaa !11681
+  ret void, !dbg !13571
+}

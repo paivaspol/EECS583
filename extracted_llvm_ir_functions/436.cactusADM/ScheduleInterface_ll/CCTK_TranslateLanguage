@@ -1,19 +1,22 @@
 define i32 @CCTK_TranslateLanguage(i8* %sval) #1 {
-  %1 = tail call i32 @CCTK_Equals(i8* %sval, i8* getelementptr inbounds ([2 x i8]* @.str59, i64 0, i64 0)) #8
-  %2 = icmp eq i32 %1, 0
-  br i1 %2, label %3, label %9
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %sval}, i64 0, metadata !277), !dbg !1151
+  %call = tail call i32 @CCTK_Equals(i8* %sval, i8* getelementptr inbounds ([2 x i8]* @.str59, i64 0, i64 0)) #8, !dbg !1152
+  %tobool = icmp eq i32 %call, 0, !dbg !1152
+  br i1 %tobool, label %if.else, label %if.end6, !dbg !1152
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i32 @CCTK_Equals(i8* %sval, i8* getelementptr inbounds ([8 x i8]* @.str60, i64 0, i64 0)) #8
-  %5 = icmp eq i32 %4, 0
-  br i1 %5, label %6, label %9
+if.else:                                          ; preds = %entry
+  %call1 = tail call i32 @CCTK_Equals(i8* %sval, i8* getelementptr inbounds ([8 x i8]* @.str60, i64 0, i64 0)) #8, !dbg !1153
+  %tobool2 = icmp eq i32 %call1, 0, !dbg !1153
+  br i1 %tobool2, label %if.else4, label %if.end6, !dbg !1153
 
-; <label>:6                                       ; preds = %3
-  %7 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !13
-  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([21 x i8]* @.str61, i64 0, i64 0), i8* %sval) #8
-  br label %9
+if.else4:                                         ; preds = %if.else
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !1154, !tbaa !504
+  %call5 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([21 x i8]* @.str61, i64 0, i64 0), i8* %sval) #8, !dbg !1154
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !278), !dbg !1156
+  br label %if.end6
 
-; <label>:9                                       ; preds = %3, %0, %6
-  %retcode.0 = phi i32 [ 0, %6 ], [ 1, %0 ], [ 2, %3 ]
-  ret i32 %retcode.0
+if.end6:                                          ; preds = %if.else, %entry, %if.else4
+  %retcode.0 = phi i32 [ 0, %if.else4 ], [ 1, %entry ], [ 2, %if.else ]
+  ret i32 %retcode.0, !dbg !1157
 }

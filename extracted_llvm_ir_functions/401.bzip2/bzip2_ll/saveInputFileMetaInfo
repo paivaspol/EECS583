@@ -1,0 +1,15 @@
+define internal fastcc void @saveInputFileMetaInfo() #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !842, i64 0, metadata !271), !dbg !1504
+  %call = tail call i32 @stat(i8* getelementptr inbounds ([1034 x i8]* @inName, i64 0, i64 0), %struct.stat* @fileMetaInfo) #10, !dbg !1505
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !272), !dbg !1505
+  %cmp = icmp eq i32 %call, 0, !dbg !1506
+  br i1 %cmp, label %if.end, label %if.then, !dbg !1506
+
+if.then:                                          ; preds = %entry
+  tail call fastcc void @ioError() #14, !dbg !1506
+  unreachable, !dbg !1506
+
+if.end:                                           ; preds = %entry
+  ret void, !dbg !1508
+}

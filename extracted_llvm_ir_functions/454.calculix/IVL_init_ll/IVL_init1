@@ -1,43 +1,46 @@
 define void @IVL_init1(%struct._IVL* %ivl, i32 %type, i32 %maxnlist) #0 {
 entry:
-  %cmp = icmp eq %struct._IVL* %ivl, null
-  br i1 %cmp, label %if.then, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata !{%struct._IVL* %ivl}, i64 0, metadata !33), !dbg !66
+  tail call void @llvm.dbg.value(metadata !{i32 %type}, i64 0, metadata !34), !dbg !67
+  tail call void @llvm.dbg.value(metadata !{i32 %maxnlist}, i64 0, metadata !35), !dbg !68
+  %cmp = icmp eq %struct._IVL* %ivl, null, !dbg !69
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !69
 
 lor.lhs.false:                                    ; preds = %entry
-  %type.off = add i32 %type, -1
-  %0 = icmp ugt i32 %type.off, 1
-  %cmp4 = icmp ne i32 %type, 3
-  %or.cond14 = and i1 %0, %cmp4
-  %cmp6 = icmp slt i32 %maxnlist, 0
-  %or.cond = or i1 %or.cond14, %cmp6
-  br i1 %or.cond, label %if.then, label %if.end
+  %type.off = add i32 %type, -1, !dbg !69
+  %0 = icmp ugt i32 %type.off, 1, !dbg !69
+  %cmp4 = icmp ne i32 %type, 3, !dbg !69
+  %or.cond14 = and i1 %0, %cmp4, !dbg !69
+  %cmp6 = icmp slt i32 %maxnlist, 0, !dbg !69
+  %or.cond = or i1 %or.cond14, %cmp6, !dbg !69
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !69
 
 if.then:                                          ; preds = %lor.lhs.false, %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([48 x i8]* @.str, i64 0, i64 0), %struct._IVL* %ivl, i32 %type, i32 %maxnlist) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !70, !tbaa !72
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([48 x i8]* @.str, i64 0, i64 0), %struct._IVL* %ivl, i32 %type, i32 %maxnlist) #5, !dbg !70
+  tail call void @exit(i32 -1) #6, !dbg !75
+  unreachable, !dbg !75
 
 if.end:                                           ; preds = %lor.lhs.false
-  tail call void @IVL_clearData(%struct._IVL* %ivl) #4
-  %type7 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 0
-  store i32 %type, i32* %type7, align 4, !tbaa !3
-  %maxnlist8 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 1
-  store i32 %maxnlist, i32* %maxnlist8, align 4, !tbaa !3
-  %nlist = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 2
-  store i32 %maxnlist, i32* %nlist, align 4, !tbaa !3
-  %cmp9 = icmp sgt i32 %maxnlist, 0
-  br i1 %cmp9, label %if.then10, label %if.end13
+  tail call void @IVL_clearData(%struct._IVL* %ivl) #5, !dbg !76
+  %type7 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 0, !dbg !77
+  store i32 %type, i32* %type7, align 4, !dbg !77, !tbaa !78
+  %maxnlist8 = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 1, !dbg !79
+  store i32 %maxnlist, i32* %maxnlist8, align 4, !dbg !79, !tbaa !78
+  %nlist = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 2, !dbg !80
+  store i32 %maxnlist, i32* %nlist, align 4, !dbg !80, !tbaa !78
+  %cmp9 = icmp sgt i32 %maxnlist, 0, !dbg !81
+  br i1 %cmp9, label %if.then10, label %if.end13, !dbg !81
 
 if.then10:                                        ; preds = %if.end
-  %call11 = tail call i32* @IVinit(i32 %maxnlist, i32 0) #4
-  %sizes = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 4
-  store i32* %call11, i32** %sizes, align 8, !tbaa !0
-  %call12 = tail call i32** @PIVinit(i32 %maxnlist) #4
-  %p_vec = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 5
-  store i32** %call12, i32*** %p_vec, align 8, !tbaa !0
-  br label %if.end13
+  %call11 = tail call i32* @IVinit(i32 %maxnlist, i32 0) #5, !dbg !82
+  %sizes = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 4, !dbg !82
+  store i32* %call11, i32** %sizes, align 8, !dbg !82, !tbaa !72
+  %call12 = tail call i32** @PIVinit(i32 %maxnlist) #5, !dbg !84
+  %p_vec = getelementptr inbounds %struct._IVL* %ivl, i64 0, i32 5, !dbg !84
+  store i32** %call12, i32*** %p_vec, align 8, !dbg !84, !tbaa !72
+  br label %if.end13, !dbg !85
 
 if.end13:                                         ; preds = %if.then10, %if.end
-  ret void
+  ret void, !dbg !86
 }

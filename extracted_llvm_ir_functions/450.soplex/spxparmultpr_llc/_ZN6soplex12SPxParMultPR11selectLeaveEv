@@ -1,0 +1,48 @@
+define i32 @_ZN6soplex12SPxParMultPR11selectLeaveEv(%"class.soplex::SPxParMultPR"* nocapture %this) unnamed_addr #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SPxParMultPR"* %this}, i64 0, metadata !7038), !dbg !7911
+  %theeps = getelementptr inbounds %"class.soplex::SPxParMultPR"* %this, i64 0, i32 0, i32 3, !dbg !7912
+  %0 = load double* %theeps, align 8, !dbg !7912, !tbaa !7470
+  %sub = fsub double -0.000000e+00, %0, !dbg !7912
+  tail call void @llvm.dbg.value(metadata !{double %sub}, i64 0, metadata !7042), !dbg !7912
+  tail call void @llvm.dbg.value(metadata !7513, i64 0, metadata !7040), !dbg !7913
+  %thesolver = getelementptr inbounds %"class.soplex::SPxParMultPR"* %this, i64 0, i32 0, i32 2, !dbg !7914
+  %1 = load %"class.soplex::SoPlex"** %thesolver, align 8, !dbg !7914, !tbaa !7436
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SoPlex"* %1}, i64 0, metadata !7916), !dbg !7917
+  %thecovectors.i = getelementptr inbounds %"class.soplex::SoPlex"* %1, i64 0, i32 23, !dbg !7918
+  %2 = load %"class.soplex::SVSet"** %thecovectors.i, align 8, !dbg !7918, !tbaa !7436
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SVSet"* %2}, i64 0, metadata !7919), !dbg !7920
+  %thenum.i.i.i = getelementptr inbounds %"class.soplex::SVSet"* %2, i64 0, i32 1, i32 4, !dbg !7921
+  %3 = load i32* %thenum.i.i.i, align 4, !dbg !7921, !tbaa !7432
+  br label %for.cond.outer, !dbg !7914
+
+for.cond.outer:                                   ; preds = %for.body, %entry
+  %n.0.ph = phi i32 [ -1, %entry ], [ %i.0, %for.body ]
+  %i.0.in.ph = phi i32 [ %3, %entry ], [ %i.0, %for.body ]
+  %best.0.ph = phi double [ %sub, %entry ], [ %7, %for.body ]
+  %4 = sext i32 %i.0.in.ph to i64
+  br label %for.cond
+
+for.cond:                                         ; preds = %for.cond.outer, %for.body
+  %indvars.iv = phi i64 [ %4, %for.cond.outer ], [ %indvars.iv.next, %for.body ]
+  %i.0.in = phi i32 [ %i.0.in.ph, %for.cond.outer ], [ %i.0, %for.body ]
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !7923
+  %i.0 = add nsw i32 %i.0.in, -1, !dbg !7914
+  %5 = trunc i64 %indvars.iv to i32, !dbg !7914
+  %cmp = icmp sgt i32 %5, 0, !dbg !7914
+  br i1 %cmp, label %for.body, label %for.end, !dbg !7914
+
+for.body:                                         ; preds = %for.cond
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SoPlex"* %1}, i64 0, metadata !7925), !dbg !7927
+  tail call void @llvm.dbg.value(metadata !{i32 %i.0}, i64 0, metadata !7928), !dbg !7929
+  %val.i15 = getelementptr inbounds %"class.soplex::SoPlex"* %1, i64 0, i32 48, i32 0, i32 1, !dbg !7930
+  %6 = load double** %val.i15, align 8, !dbg !7930, !tbaa !7436
+  %arrayidx.i16 = getelementptr inbounds double* %6, i64 %indvars.iv.next, !dbg !7930
+  %7 = load double* %arrayidx.i16, align 8, !dbg !7930, !tbaa !7470
+  tail call void @llvm.dbg.value(metadata !{double %7}, i64 0, metadata !7041), !dbg !7926
+  %cmp6 = fcmp olt double %7, %best.0.ph, !dbg !7923
+  br i1 %cmp6, label %for.cond.outer, label %for.cond, !dbg !7923
+
+for.end:                                          ; preds = %for.cond
+  ret i32 %n.0.ph, !dbg !7931
+}

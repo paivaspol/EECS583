@@ -1,0 +1,48 @@
+define void @_ZN3pov16POVFPU_TerminateEv() #4 {
+entry:
+  %0 = load %"struct.pov::FPUContext_Struct"** @_ZN3pov19POVFPU_Context_RootE, align 8, !dbg !533, !tbaa !493
+  %cmp = icmp eq %"struct.pov::FPUContext_Struct"* %0, null, !dbg !533
+  br i1 %cmp, label %return, label %if.end, !dbg !533
+
+if.end:                                           ; preds = %entry
+  tail call void @_ZN3pov12POVFPU_ResetEv() #9, !dbg !534
+  %1 = load %"struct.pov::FPUContext_Struct"** @_ZN3pov19POVFPU_Context_RootE, align 8, !dbg !535, !tbaa !493
+  %cmp14 = icmp eq %"struct.pov::FPUContext_Struct"* %1, null, !dbg !535
+  br i1 %cmp14, label %while.end, label %while.body, !dbg !535
+
+while.body:                                       ; preds = %if.end, %while.body
+  %2 = phi %"struct.pov::FPUContext_Struct"* [ %13, %while.body ], [ %1, %if.end ]
+  %dblstackbase = getelementptr inbounds %"struct.pov::FPUContext_Struct"* %2, i64 0, i32 2, !dbg !536
+  %3 = load double** %dblstackbase, align 8, !dbg !536, !tbaa !493
+  %4 = bitcast double* %3 to i8*, !dbg !536
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %4, i8* getelementptr inbounds ([57 x i8]* @.str51, i64 0, i64 0), i32 657) #9, !dbg !536
+  %5 = load %"struct.pov::FPUContext_Struct"** @_ZN3pov19POVFPU_Context_RootE, align 8, !dbg !536, !tbaa !493
+  %dblstackbase2 = getelementptr inbounds %"struct.pov::FPUContext_Struct"* %5, i64 0, i32 2, !dbg !536
+  store double* null, double** %dblstackbase2, align 8, !dbg !536, !tbaa !493
+  %6 = load %"struct.pov::FPUContext_Struct"** @_ZN3pov19POVFPU_Context_RootE, align 8, !dbg !539, !tbaa !493
+  %pstackbase = getelementptr inbounds %"struct.pov::FPUContext_Struct"* %6, i64 0, i32 1, !dbg !539
+  %7 = load %"struct.pov::StackFrame_Struct"** %pstackbase, align 8, !dbg !539, !tbaa !493
+  %8 = bitcast %"struct.pov::StackFrame_Struct"* %7 to i8*, !dbg !539
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %8, i8* getelementptr inbounds ([57 x i8]* @.str51, i64 0, i64 0), i32 658) #9, !dbg !539
+  %9 = load %"struct.pov::FPUContext_Struct"** @_ZN3pov19POVFPU_Context_RootE, align 8, !dbg !539, !tbaa !493
+  %pstackbase3 = getelementptr inbounds %"struct.pov::FPUContext_Struct"* %9, i64 0, i32 1, !dbg !539
+  store %"struct.pov::StackFrame_Struct"* null, %"struct.pov::StackFrame_Struct"** %pstackbase3, align 8, !dbg !539, !tbaa !493
+  %10 = load %"struct.pov::FPUContext_Struct"** @_ZN3pov19POVFPU_Context_RootE, align 8, !dbg !541, !tbaa !493
+  store %"struct.pov::FPUContext_Struct"* %10, %"struct.pov::FPUContext_Struct"** @_ZN3pov22POVFPU_Current_ContextE, align 8, !dbg !541, !tbaa !493
+  %next = getelementptr inbounds %"struct.pov::FPUContext_Struct"* %10, i64 0, i32 0, !dbg !542
+  %11 = load %"struct.pov::FPUContext_Struct"** %next, align 8, !dbg !542, !tbaa !493
+  store %"struct.pov::FPUContext_Struct"* %11, %"struct.pov::FPUContext_Struct"** @_ZN3pov19POVFPU_Context_RootE, align 8, !dbg !542, !tbaa !493
+  %12 = bitcast %"struct.pov::FPUContext_Struct"* %10 to i8*, !dbg !543
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %12, i8* getelementptr inbounds ([57 x i8]* @.str51, i64 0, i64 0), i32 661) #9, !dbg !543
+  store %"struct.pov::FPUContext_Struct"* null, %"struct.pov::FPUContext_Struct"** @_ZN3pov22POVFPU_Current_ContextE, align 8, !dbg !543, !tbaa !493
+  %13 = load %"struct.pov::FPUContext_Struct"** @_ZN3pov19POVFPU_Context_RootE, align 8, !dbg !535, !tbaa !493
+  %cmp1 = icmp eq %"struct.pov::FPUContext_Struct"* %13, null, !dbg !535
+  br i1 %cmp1, label %while.end, label %while.body, !dbg !535
+
+while.end:                                        ; preds = %while.body, %if.end
+  store %"struct.pov::FPUContext_Struct"* null, %"struct.pov::FPUContext_Struct"** @_ZN3pov22POVFPU_Current_ContextE, align 8, !dbg !545, !tbaa !493
+  br label %return, !dbg !545
+
+return:                                           ; preds = %entry, %while.end
+  ret void, !dbg !545
+}

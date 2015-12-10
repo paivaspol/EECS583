@@ -1,98 +1,101 @@
 define void @reorder_insns_nobb(%struct.rtx_def* %from, %struct.rtx_def* %to, %struct.rtx_def* %after) #0 {
 entry:
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %from, i64 0, i32 1, i64 1
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
-  %tobool = icmp eq %struct.rtx_def* %0, null
-  %arrayidx11.pre = getelementptr inbounds %struct.rtx_def* %to, i64 0, i32 1, i64 2
-  %rtx12.pre = bitcast %union.rtunion_def* %arrayidx11.pre to %struct.rtx_def**
-  br i1 %tobool, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %from}, i64 0, metadata !1797), !dbg !3490
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %to}, i64 0, metadata !1798), !dbg !3490
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %after}, i64 0, metadata !1799), !dbg !3490
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %from, i64 0, i32 1, i64 1, !dbg !3491
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !3491
+  %0 = load %struct.rtx_def** %rtx, align 8, !dbg !3491, !tbaa !2272
+  %tobool = icmp eq %struct.rtx_def* %0, null, !dbg !3491
+  %arrayidx11.pre = getelementptr inbounds %struct.rtx_def* %to, i64 0, i32 1, i64 2, !dbg !3492
+  %rtx12.pre = bitcast %union.rtunion_def* %arrayidx11.pre to %struct.rtx_def**, !dbg !3492
+  br i1 %tobool, label %if.end, label %if.then, !dbg !3491
 
 if.then:                                          ; preds = %entry
-  %1 = load %struct.rtx_def** %rtx12.pre, align 8, !tbaa !4
-  %2 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 2, i32 0
-  %.c91 = ptrtoint %struct.rtx_def* %1 to i64
-  store i64 %.c91, i64* %2, align 8, !tbaa !4
-  br label %if.end
+  %1 = load %struct.rtx_def** %rtx12.pre, align 8, !dbg !3493, !tbaa !2272
+  %2 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 2, i32 0, !dbg !3493
+  %.c91 = ptrtoint %struct.rtx_def* %1 to i64, !dbg !3493
+  store i64 %.c91, i64* %2, align 8, !dbg !3493, !tbaa !2272
+  br label %if.end, !dbg !3493
 
 if.end:                                           ; preds = %entry, %if.then
-  %3 = load %struct.rtx_def** %rtx12.pre, align 8, !tbaa !4
-  %tobool13 = icmp eq %struct.rtx_def* %3, null
-  br i1 %tobool13, label %if.end24, label %if.then14
+  %3 = load %struct.rtx_def** %rtx12.pre, align 8, !dbg !3492, !tbaa !2272
+  %tobool13 = icmp eq %struct.rtx_def* %3, null, !dbg !3492
+  br i1 %tobool13, label %if.end24, label %if.then14, !dbg !3492
 
 if.then14:                                        ; preds = %if.end
-  %4 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
-  %5 = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 1, i64 1, i32 0
-  %.c90 = ptrtoint %struct.rtx_def* %4 to i64
-  store i64 %.c90, i64* %5, align 8, !tbaa !4
-  br label %if.end24
+  %4 = load %struct.rtx_def** %rtx, align 8, !dbg !3494, !tbaa !2272
+  %5 = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 1, i64 1, i32 0, !dbg !3494
+  %.c90 = ptrtoint %struct.rtx_def* %4 to i64, !dbg !3494
+  store i64 %.c90, i64* %5, align 8, !dbg !3494, !tbaa !2272
+  br label %if.end24, !dbg !3494
 
 if.end24:                                         ; preds = %if.end, %if.then14
-  %6 = load %struct.function** @cfun, align 8, !tbaa !4
-  %emit = getelementptr inbounds %struct.function* %6, i64 0, i32 3
-  %7 = load %struct.emit_status** %emit, align 8, !tbaa !4
-  %x_last_insn = getelementptr inbounds %struct.emit_status* %7, i64 0, i32 3
-  %8 = load %struct.rtx_def** %x_last_insn, align 8, !tbaa !4
-  %cmp = icmp eq %struct.rtx_def* %8, %to
-  br i1 %cmp, label %if.then25, label %if.end31
+  %6 = load %struct.function** @cfun, align 8, !dbg !3495, !tbaa !2272
+  %emit = getelementptr inbounds %struct.function* %6, i64 0, i32 3, !dbg !3495
+  %7 = load %struct.emit_status** %emit, align 8, !dbg !3495, !tbaa !2272
+  %x_last_insn = getelementptr inbounds %struct.emit_status* %7, i64 0, i32 3, !dbg !3495
+  %8 = load %struct.rtx_def** %x_last_insn, align 8, !dbg !3495, !tbaa !2272
+  %cmp = icmp eq %struct.rtx_def* %8, %to, !dbg !3495
+  br i1 %cmp, label %if.then25, label %if.end31, !dbg !3495
 
 if.then25:                                        ; preds = %if.end24
-  %9 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
-  store %struct.rtx_def* %9, %struct.rtx_def** %x_last_insn, align 8, !tbaa !4
-  %.pre = load %struct.function** @cfun, align 8, !tbaa !4
+  %9 = load %struct.rtx_def** %rtx, align 8, !dbg !3496, !tbaa !2272
+  store %struct.rtx_def* %9, %struct.rtx_def** %x_last_insn, align 8, !dbg !3496, !tbaa !2272
+  %.pre = load %struct.function** @cfun, align 8, !dbg !3497, !tbaa !2272
   %emit32.phi.trans.insert = getelementptr inbounds %struct.function* %.pre, i64 0, i32 3
-  %.pre92 = load %struct.emit_status** %emit32.phi.trans.insert, align 8, !tbaa !4
-  br label %if.end31
+  %.pre92 = load %struct.emit_status** %emit32.phi.trans.insert, align 8, !dbg !3497, !tbaa !2272
+  br label %if.end31, !dbg !3496
 
 if.end31:                                         ; preds = %if.then25, %if.end24
   %10 = phi %struct.emit_status* [ %.pre92, %if.then25 ], [ %7, %if.end24 ]
-  %x_first_insn = getelementptr inbounds %struct.emit_status* %10, i64 0, i32 2
-  %11 = load %struct.rtx_def** %x_first_insn, align 8, !tbaa !4
-  %cmp33 = icmp eq %struct.rtx_def* %11, %from
-  br i1 %cmp33, label %if.then34, label %if.end40
+  %x_first_insn = getelementptr inbounds %struct.emit_status* %10, i64 0, i32 2, !dbg !3497
+  %11 = load %struct.rtx_def** %x_first_insn, align 8, !dbg !3497, !tbaa !2272
+  %cmp33 = icmp eq %struct.rtx_def* %11, %from, !dbg !3497
+  br i1 %cmp33, label %if.then34, label %if.end40, !dbg !3497
 
 if.then34:                                        ; preds = %if.end31
-  %12 = load %struct.rtx_def** %rtx12.pre, align 8, !tbaa !4
-  store %struct.rtx_def* %12, %struct.rtx_def** %x_first_insn, align 8, !tbaa !4
-  br label %if.end40
+  %12 = load %struct.rtx_def** %rtx12.pre, align 8, !dbg !3498, !tbaa !2272
+  store %struct.rtx_def* %12, %struct.rtx_def** %x_first_insn, align 8, !dbg !3498, !tbaa !2272
+  br label %if.end40, !dbg !3498
 
 if.end40:                                         ; preds = %if.then34, %if.end31
-  %arrayidx42 = getelementptr inbounds %struct.rtx_def* %after, i64 0, i32 1, i64 2
-  %rtx43 = bitcast %union.rtunion_def* %arrayidx42 to %struct.rtx_def**
-  %13 = load %struct.rtx_def** %rtx43, align 8, !tbaa !4
-  %tobool44 = icmp eq %struct.rtx_def* %13, null
-  br i1 %tobool44, label %if.end52, label %if.then45
+  %arrayidx42 = getelementptr inbounds %struct.rtx_def* %after, i64 0, i32 1, i64 2, !dbg !3499
+  %rtx43 = bitcast %union.rtunion_def* %arrayidx42 to %struct.rtx_def**, !dbg !3499
+  %13 = load %struct.rtx_def** %rtx43, align 8, !dbg !3499, !tbaa !2272
+  %tobool44 = icmp eq %struct.rtx_def* %13, null, !dbg !3499
+  br i1 %tobool44, label %if.end52, label %if.then45, !dbg !3499
 
 if.then45:                                        ; preds = %if.end40
-  %14 = getelementptr inbounds %struct.rtx_def* %13, i64 0, i32 1, i64 1, i32 0
-  %to.c = ptrtoint %struct.rtx_def* %to to i64
-  store i64 %to.c, i64* %14, align 8, !tbaa !4
-  %.pre93 = load %struct.rtx_def** %rtx43, align 8, !tbaa !4
-  %phitmp = ptrtoint %struct.rtx_def* %.pre93 to i64
-  br label %if.end52
+  %14 = getelementptr inbounds %struct.rtx_def* %13, i64 0, i32 1, i64 1, i32 0, !dbg !3500
+  %to.c = ptrtoint %struct.rtx_def* %to to i64, !dbg !3500
+  store i64 %to.c, i64* %14, align 8, !dbg !3500, !tbaa !2272
+  %.pre93 = load %struct.rtx_def** %rtx43, align 8, !dbg !3501, !tbaa !2272
+  %phitmp = ptrtoint %struct.rtx_def* %.pre93 to i64, !dbg !3500
+  br label %if.end52, !dbg !3500
 
 if.end52:                                         ; preds = %if.end40, %if.then45
   %15 = phi i64 [ 0, %if.end40 ], [ %phitmp, %if.then45 ]
-  %16 = getelementptr inbounds %union.rtunion_def* %arrayidx11.pre, i64 0, i32 0
-  store i64 %15, i64* %16, align 8, !tbaa !4
-  %17 = getelementptr inbounds %union.rtunion_def* %arrayidx, i64 0, i32 0
-  %after.c = ptrtoint %struct.rtx_def* %after to i64
-  store i64 %after.c, i64* %17, align 8, !tbaa !4
-  %18 = getelementptr inbounds %union.rtunion_def* %arrayidx42, i64 0, i32 0
-  %from.c = ptrtoint %struct.rtx_def* %from to i64
-  store i64 %from.c, i64* %18, align 8, !tbaa !4
-  %19 = load %struct.function** @cfun, align 8, !tbaa !4
-  %emit65 = getelementptr inbounds %struct.function* %19, i64 0, i32 3
-  %20 = load %struct.emit_status** %emit65, align 8, !tbaa !4
-  %x_last_insn66 = getelementptr inbounds %struct.emit_status* %20, i64 0, i32 3
-  %21 = load %struct.rtx_def** %x_last_insn66, align 8, !tbaa !4
-  %cmp67 = icmp eq %struct.rtx_def* %21, %after
-  br i1 %cmp67, label %if.then68, label %if.end71
+  %16 = getelementptr inbounds %union.rtunion_def* %arrayidx11.pre, i64 0, i32 0, !dbg !3501
+  store i64 %15, i64* %16, align 8, !dbg !3501, !tbaa !2272
+  %17 = getelementptr inbounds %union.rtunion_def* %arrayidx, i64 0, i32 0, !dbg !3502
+  %after.c = ptrtoint %struct.rtx_def* %after to i64, !dbg !3502
+  store i64 %after.c, i64* %17, align 8, !dbg !3502, !tbaa !2272
+  %18 = getelementptr inbounds %union.rtunion_def* %arrayidx42, i64 0, i32 0, !dbg !3503
+  %from.c = ptrtoint %struct.rtx_def* %from to i64, !dbg !3503
+  store i64 %from.c, i64* %18, align 8, !dbg !3503, !tbaa !2272
+  %19 = load %struct.function** @cfun, align 8, !dbg !3504, !tbaa !2272
+  %emit65 = getelementptr inbounds %struct.function* %19, i64 0, i32 3, !dbg !3504
+  %20 = load %struct.emit_status** %emit65, align 8, !dbg !3504, !tbaa !2272
+  %x_last_insn66 = getelementptr inbounds %struct.emit_status* %20, i64 0, i32 3, !dbg !3504
+  %21 = load %struct.rtx_def** %x_last_insn66, align 8, !dbg !3504, !tbaa !2272
+  %cmp67 = icmp eq %struct.rtx_def* %21, %after, !dbg !3504
+  br i1 %cmp67, label %if.then68, label %if.end71, !dbg !3504
 
 if.then68:                                        ; preds = %if.end52
-  store %struct.rtx_def* %to, %struct.rtx_def** %x_last_insn66, align 8, !tbaa !4
-  br label %if.end71
+  store %struct.rtx_def* %to, %struct.rtx_def** %x_last_insn66, align 8, !dbg !3505, !tbaa !2272
+  br label %if.end71, !dbg !3505
 
 if.end71:                                         ; preds = %if.then68, %if.end52
-  ret void
+  ret void, !dbg !3506
 }

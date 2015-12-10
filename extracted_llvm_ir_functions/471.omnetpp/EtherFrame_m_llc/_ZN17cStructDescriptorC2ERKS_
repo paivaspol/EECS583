@@ -1,0 +1,40 @@
+define linkonce_odr void @_ZN17cStructDescriptorC2ERKS_(%class.cStructDescriptor* %this, %class.cStructDescriptor* nocapture %cs) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.cStructDescriptor* %this}, i64 0, metadata !4354), !dbg !5433
+  tail call void @llvm.dbg.value(metadata !{%class.cStructDescriptor* %cs}, i64 0, metadata !4356), !dbg !5433
+  %0 = getelementptr inbounds %class.cStructDescriptor* %this, i64 0, i32 0, !dbg !5434
+  tail call void @_ZN7cObjectC2Ev(%class.cObject* %0) #9, !dbg !5434
+  %1 = getelementptr inbounds %class.cStructDescriptor* %this, i64 0, i32 0, i32 0, !dbg !5434
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([27 x i8*]* @_ZTV17cStructDescriptor, i64 0, i64 2) to i32 (...)**), i32 (...)*** %1, align 8, !dbg !5434, !tbaa !4540
+  %namestr.i = getelementptr inbounds %class.cStructDescriptor* %cs, i64 0, i32 0, i32 1, !dbg !5436
+  %2 = load i8** %namestr.i, align 8, !dbg !5436, !tbaa !4556
+  %tobool.i = icmp eq i8* %2, null, !dbg !5436
+  %..i = select i1 %tobool.i, i8* getelementptr inbounds ([1 x i8]* @.str39, i64 0, i64 0), i8* %2, !dbg !5436
+  invoke void @_ZN7cObject7setNameEPKc(%class.cObject* %0, i8* %..i) #9
+          to label %invoke.cont2 unwind label %lpad, !dbg !5437
+
+invoke.cont2:                                     ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{%class.cStructDescriptor* %this}, i64 0, metadata !5439), !dbg !5440
+  tail call void @llvm.dbg.value(metadata !5441, i64 0, metadata !5442), !dbg !5440
+  invoke void @_ZNK7cObject16copyNotSupportedEv(%class.cObject* %0) #9
+          to label %invoke.cont3 unwind label %lpad
+
+invoke.cont3:                                     ; preds = %invoke.cont2
+  ret void, !dbg !5434
+
+lpad:                                             ; preds = %invoke.cont2, %entry
+  %3 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !5437
+  invoke void @_ZN7cObjectD2Ev(%class.cObject* %0) #9
+          to label %eh.resume unwind label %terminate.lpad, !dbg !5434
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %3, !dbg !5434
+
+terminate.lpad:                                   ; preds = %lpad
+  %4 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !5434
+  %5 = extractvalue { i8*, i32 } %4, 0, !dbg !5434
+  tail call void @__clang_call_terminate(i8* %5) #11, !dbg !5434
+  unreachable, !dbg !5434
+}

@@ -1,50 +1,62 @@
-define internal fastcc void @add_filters(i32* nocapture %n, i32 %nf, i32* nocapture readonly %ftp) #3 {
+define internal fastcc void @add_filters(i32* nocapture %n, i32 %nf, i32* nocapture %ftp) #0 {
+entry:
   %buf = alloca [8 x i8], align 1
-  %1 = tail call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* getelementptr inbounds ([128 x i8]* @ftp2filter.filter, i64 0, i64 0), i32 0, i64 128, i8* getelementptr inbounds ([4 x i8]* @.str174, i64 0, i64 0)) #9
-  %2 = icmp sgt i32 %nf, 0
-  br i1 %2, label %.lr.ph, label %._crit_edge
+  call void @llvm.dbg.value(metadata !747, i64 0, metadata !274), !dbg !748
+  call void @llvm.dbg.declare(metadata !{[8 x i8]* %buf}, metadata !278), !dbg !749
+  store i32 8072746, i32* bitcast ([128 x i8]* @ftp2filter.filter to i32*), align 16, !dbg !750
+  call void @llvm.dbg.value(metadata !53, i64 0, metadata !282), !dbg !751
+  %cmp4 = icmp sgt i32 %nf, 0, !dbg !751
+  br i1 %cmp4, label %for.body.lr.ph, label %for.end, !dbg !751
 
-.lr.ph:                                           ; preds = %0
-  %3 = getelementptr inbounds [8 x i8]* %buf, i64 0, i64 0
-  %4 = add i32 %nf, -1
-  br label %5
+for.body.lr.ph:                                   ; preds = %entry
+  %arraydecay = getelementptr inbounds [8 x i8]* %buf, i64 0, i64 0, !dbg !753
+  br label %for.body, !dbg !751
 
-; <label>:5                                       ; preds = %19, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %19 ]
-  %6 = getelementptr inbounds i32* %ftp, i64 %indvars.iv
-  %7 = load i32* %6, align 4, !tbaa !22
-  %8 = icmp ult i32 %7, 46
-  br i1 %8, label %9, label %ftp2ext.exit
+for.body:                                         ; preds = %if.end, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %if.end ]
+  %arrayidx = getelementptr inbounds i32* %ftp, i64 %indvars.iv, !dbg !753
+  %0 = load i32* %arrayidx, align 4, !dbg !753, !tbaa !382
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !755), !dbg !756
+  %1 = icmp ult i32 %0, 46, !dbg !757
+  br i1 %1, label %if.then.i, label %ftp2ext.exit, !dbg !757
 
-; <label>:9                                       ; preds = %5
-  %10 = sext i32 %7 to i64
-  %11 = getelementptr inbounds [46 x %struct.t_deffile]* @deffile, i64 0, i64 %10, i32 1
-  %12 = load i8** %11, align 8, !tbaa !17
-  %13 = getelementptr inbounds i8* %12, i64 1
-  br label %ftp2ext.exit
+if.then.i:                                        ; preds = %for.body
+  %idxprom.i = sext i32 %0 to i64, !dbg !758
+  %ext.i = getelementptr inbounds [46 x %struct.t_deffile]* @deffile, i64 0, i64 %idxprom.i, i32 1, !dbg !758
+  %2 = load i8** %ext.i, align 8, !dbg !758, !tbaa !363
+  %add.ptr.i = getelementptr inbounds i8* %2, i64 1, !dbg !758
+  br label %ftp2ext.exit, !dbg !758
 
-ftp2ext.exit:                                     ; preds = %5, %9
-  %.0.i = phi i8* [ %13, %9 ], [ getelementptr inbounds ([8 x i8]* @.str2, i64 0, i64 0), %5 ]
-  %14 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %3, i32 0, i64 8, i8* getelementptr inbounds ([3 x i8]* @.str9, i64 0, i64 0), i8* %.0.i) #9
-  %15 = load i32* %n, align 4, !tbaa !22
-  %16 = icmp sgt i32 %15, 0
-  br i1 %16, label %17, label %19
+ftp2ext.exit:                                     ; preds = %for.body, %if.then.i
+  %retval.0.i = phi i8* [ %add.ptr.i, %if.then.i ], [ getelementptr inbounds ([8 x i8]* @.str2, i64 0, i64 0), %for.body ]
+  %strlen1 = call i64 @strlen(i8* %retval.0.i), !dbg !753
+  %leninc = add i64 %strlen1, 1, !dbg !753
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %arraydecay, i8* %retval.0.i, i64 %leninc, i32 1, i1 false), !dbg !753
+  %3 = load i32* %n, align 4, !dbg !759, !tbaa !382
+  %cmp3 = icmp sgt i32 %3, 0, !dbg !759
+  br i1 %cmp3, label %if.then, label %if.end, !dbg !759
 
-; <label>:17                                      ; preds = %ftp2ext.exit
-  %18 = call i8* @__strcat_chk(i8* getelementptr inbounds ([128 x i8]* @ftp2filter.filter, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str30, i64 0, i64 0), i64 128) #9
-  br label %19
+if.then:                                          ; preds = %ftp2ext.exit
+  %strlen2 = call i64 @strlen(i8* getelementptr inbounds ([128 x i8]* @ftp2filter.filter, i64 0, i64 0)), !dbg !760
+  %endptr3 = getelementptr [128 x i8]* @ftp2filter.filter, i64 0, i64 %strlen2, !dbg !760
+  %4 = bitcast i8* %endptr3 to i16*, !dbg !760
+  store i16 44, i16* %4, align 1, !dbg !760
+  br label %if.end, !dbg !760
 
-; <label>:19                                      ; preds = %17, %ftp2ext.exit
-  %20 = call i8* @__strcat_chk(i8* getelementptr inbounds ([128 x i8]* @ftp2filter.filter, i64 0, i64 0), i8* %3, i64 128) #9
-  %21 = load i32* %n, align 4, !tbaa !22
-  %22 = add nsw i32 %21, 1
-  store i32 %22, i32* %n, align 4, !tbaa !22
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %4
-  br i1 %exitcond, label %._crit_edge, label %5
+if.end:                                           ; preds = %if.then, %ftp2ext.exit
+  %call6 = call i8* @strcat(i8* getelementptr inbounds ([128 x i8]* @ftp2filter.filter, i64 0, i64 0), i8* %arraydecay) #7, !dbg !761
+  %5 = load i32* %n, align 4, !dbg !762, !tbaa !382
+  %inc = add nsw i32 %5, 1, !dbg !762
+  store i32 %inc, i32* %n, align 4, !dbg !762, !tbaa !382
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !751
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !751
+  %exitcond = icmp eq i32 %lftr.wideiv, %nf, !dbg !751
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !751
 
-._crit_edge:                                      ; preds = %19, %0
-  %23 = call i8* @__strcat_chk(i8* getelementptr inbounds ([128 x i8]* @ftp2filter.filter, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str31, i64 0, i64 0), i64 128) #9
-  ret void
+for.end:                                          ; preds = %if.end, %entry
+  %strlen = call i64 @strlen(i8* getelementptr inbounds ([128 x i8]* @ftp2filter.filter, i64 0, i64 0)), !dbg !763
+  %endptr = getelementptr [128 x i8]* @ftp2filter.filter, i64 0, i64 %strlen, !dbg !763
+  %6 = bitcast i8* %endptr to i16*, !dbg !763
+  store i16 125, i16* %6, align 1, !dbg !763
+  ret void, !dbg !764
 }

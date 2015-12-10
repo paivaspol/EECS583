@@ -1,28 +1,30 @@
 define void @ToRNA(i8* nocapture %seq) #0 {
 entry:
-  br label %for.cond
+  tail call void @llvm.dbg.value(metadata !{i8* %seq}, i64 0, metadata !326), !dbg !797
+  br label %for.cond, !dbg !798
 
 for.cond:                                         ; preds = %for.inc, %entry
   %seq.addr.0 = phi i8* [ %seq, %entry ], [ %incdec.ptr, %for.inc ]
-  %0 = load i8* %seq.addr.0, align 1, !tbaa !1
+  %0 = load i8* %seq.addr.0, align 1, !dbg !798, !tbaa !601
   switch i8 %0, label %for.inc [
     i8 0, label %for.end
     i8 84, label %if.then
     i8 116, label %if.then8
-  ]
+  ], !dbg !798
 
 if.then:                                          ; preds = %for.cond
-  store i8 85, i8* %seq.addr.0, align 1, !tbaa !1
-  br label %for.inc
+  store i8 85, i8* %seq.addr.0, align 1, !dbg !800, !tbaa !601
+  br label %for.inc, !dbg !800
 
 if.then8:                                         ; preds = %for.cond
-  store i8 117, i8* %seq.addr.0, align 1, !tbaa !1
-  br label %for.inc
+  store i8 117, i8* %seq.addr.0, align 1, !dbg !802, !tbaa !601
+  br label %for.inc, !dbg !802
 
 for.inc:                                          ; preds = %for.cond, %if.then, %if.then8
-  %incdec.ptr = getelementptr inbounds i8* %seq.addr.0, i64 1
-  br label %for.cond
+  %incdec.ptr = getelementptr inbounds i8* %seq.addr.0, i64 1, !dbg !798
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !326), !dbg !798
+  br label %for.cond, !dbg !798
 
 for.end:                                          ; preds = %for.cond
-  ret void
+  ret void, !dbg !803
 }

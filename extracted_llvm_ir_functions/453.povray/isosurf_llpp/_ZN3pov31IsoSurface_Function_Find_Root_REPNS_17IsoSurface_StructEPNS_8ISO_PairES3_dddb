@@ -1,0 +1,153 @@
+define i32 @_ZN3pov31IsoSurface_Function_Find_Root_REPNS_17IsoSurface_StructEPNS_8ISO_PairES3_dddb(%"struct.pov::IsoSurface_Struct"* %ISOSRF, %"struct.pov::ISO_Pair"* nocapture %EP1, %"struct.pov::ISO_Pair"* nocapture %EP2, double %dt, double %t21, double %len, i1 zeroext %in_shadow_test) #0 {
+entry:
+  %EPa = alloca %"struct.pov::ISO_Pair", align 8
+  call void @llvm.dbg.value(metadata !{%"struct.pov::IsoSurface_Struct"* %ISOSRF}, i64 0, metadata !1119), !dbg !2444
+  call void @llvm.dbg.value(metadata !{%"struct.pov::ISO_Pair"* %EP1}, i64 0, metadata !1120), !dbg !2444
+  call void @llvm.dbg.value(metadata !{%"struct.pov::ISO_Pair"* %EP2}, i64 0, metadata !1121), !dbg !2444
+  call void @llvm.dbg.value(metadata !{double %dt}, i64 0, metadata !1122), !dbg !2444
+  call void @llvm.dbg.value(metadata !{double %t21}, i64 0, metadata !1123), !dbg !2444
+  call void @llvm.dbg.value(metadata !{double %len}, i64 0, metadata !1124), !dbg !2444
+  call void @llvm.dbg.value(metadata !{i1 %in_shadow_test}, i64 0, metadata !1125), !dbg !2444
+  call void @llvm.dbg.declare(metadata !{%"struct.pov::ISO_Pair"* %EPa}, metadata !1126), !dbg !2445
+  %f = getelementptr inbounds %"struct.pov::ISO_Pair"* %EP2, i64 0, i32 1, !dbg !2446
+  %0 = load double* %f, align 8, !dbg !2446, !tbaa !1455
+  %f1 = getelementptr inbounds %"struct.pov::ISO_Pair"* %EP1, i64 0, i32 1, !dbg !2446
+  %1 = load double* %f1, align 8, !dbg !2446, !tbaa !1455
+  %sub = fsub double %0, %1, !dbg !2446
+  %mul = fmul double %sub, %len, !dbg !2446
+  %call = call double @fabs(double %mul) #9, !dbg !2446
+  call void @llvm.dbg.value(metadata !{double %call}, i64 0, metadata !1127), !dbg !2446
+  %gradient = getelementptr inbounds %"struct.pov::IsoSurface_Struct"* %ISOSRF, i64 0, i32 16, !dbg !2447
+  %2 = load double* %gradient, align 8, !dbg !2447, !tbaa !1455
+  %cmp = fcmp olt double %2, %call, !dbg !2447
+  br i1 %cmp, label %if.then, label %if.end, !dbg !2447
+
+if.then:                                          ; preds = %entry
+  store double %call, double* %gradient, align 8, !dbg !2448, !tbaa !1455
+  br label %if.end, !dbg !2448
+
+if.end:                                           ; preds = %if.then, %entry
+  %eval = getelementptr inbounds %"struct.pov::IsoSurface_Struct"* %ISOSRF, i64 0, i32 23, !dbg !2449
+  %3 = load i8* %eval, align 1, !dbg !2449, !tbaa !1548, !range !1549
+  %tobool = icmp eq i8 %3, 0, !dbg !2449
+  br i1 %tobool, label %if.end17, label %land.lhs.true, !dbg !2449
+
+land.lhs.true:                                    ; preds = %if.end
+  %max_gradient = getelementptr inbounds %"struct.pov::IsoSurface_Struct"* %ISOSRF, i64 0, i32 15, !dbg !2449
+  %4 = load double* %max_gradient, align 8, !dbg !2449, !tbaa !1455
+  %arrayidx = getelementptr inbounds %"struct.pov::IsoSurface_Struct"* %ISOSRF, i64 0, i32 19, i64 1, !dbg !2449
+  %5 = load double* %arrayidx, align 8, !dbg !2449, !tbaa !1455
+  %mul4 = fmul double %call, %5, !dbg !2449
+  %cmp5 = fcmp olt double %4, %mul4, !dbg !2449
+  br i1 %cmp5, label %if.then6, label %if.end17, !dbg !2449
+
+if.then6:                                         ; preds = %land.lhs.true
+  %mul12 = fmul double %5, %mul4, !dbg !2450
+  store double %mul12, double* %max_gradient, align 8, !dbg !2450, !tbaa !1455
+  %Vlength = getelementptr inbounds %"struct.pov::IsoSurface_Struct"* %ISOSRF, i64 0, i32 28, !dbg !2452
+  %6 = load double* %Vlength, align 8, !dbg !2452, !tbaa !1455
+  %mul15 = fmul double %mul12, %6, !dbg !2452
+  %mul16 = fmul double %mul15, %t21, !dbg !2452
+  call void @llvm.dbg.value(metadata !{double %mul16}, i64 0, metadata !1122), !dbg !2452
+  br label %if.end17, !dbg !2453
+
+if.end17:                                         ; preds = %if.end, %if.then6, %land.lhs.true
+  %dt.addr.0 = phi double [ %mul16, %if.then6 ], [ %dt, %land.lhs.true ], [ %dt, %if.end ]
+  %accuracy = getelementptr inbounds %"struct.pov::IsoSurface_Struct"* %ISOSRF, i64 0, i32 18, !dbg !2454
+  %7 = load double* %accuracy, align 8, !dbg !2454, !tbaa !1455
+  %cmp18 = fcmp ogt double %7, %t21, !dbg !2454
+  br i1 %cmp18, label %if.then19, label %if.end23, !dbg !2454
+
+if.then19:                                        ; preds = %if.end17
+  %8 = load double* %f, align 8, !dbg !2455, !tbaa !1455
+  %cmp21 = fcmp olt double %8, 0.000000e+00, !dbg !2455
+  br i1 %cmp21, label %if.then22, label %return, !dbg !2455
+
+if.then22:                                        ; preds = %if.then19
+  %t = getelementptr inbounds %"struct.pov::ISO_Pair"* %EP2, i64 0, i32 0, !dbg !2457
+  %9 = load double* %t, align 8, !dbg !2457, !tbaa !1455
+  %tl = getelementptr inbounds %"struct.pov::IsoSurface_Struct"* %ISOSRF, i64 0, i32 29, !dbg !2457
+  store double %9, double* %tl, align 8, !dbg !2457, !tbaa !1455
+  br label %return, !dbg !2459
+
+if.end23:                                         ; preds = %if.end17
+  %10 = load double* %f1, align 8, !dbg !2460, !tbaa !1455
+  %11 = load double* %f, align 8, !dbg !2460, !tbaa !1455
+  %add = fadd double %10, %11, !dbg !2460
+  %sub26 = fsub double %add, %dt.addr.0, !dbg !2460
+  %cmp27 = fcmp olt double %sub26, 0.000000e+00, !dbg !2460
+  br i1 %cmp27, label %if.then28, label %return, !dbg !2460
+
+if.then28:                                        ; preds = %if.end23
+  %mul29 = fmul double %t21, 5.000000e-01, !dbg !2461
+  call void @llvm.dbg.value(metadata !{double %mul29}, i64 0, metadata !1123), !dbg !2461
+  %mul30 = fmul double %dt.addr.0, 5.000000e-01, !dbg !2463
+  call void @llvm.dbg.value(metadata !{double %mul30}, i64 0, metadata !1122), !dbg !2463
+  %t31 = getelementptr inbounds %"struct.pov::ISO_Pair"* %EP1, i64 0, i32 0, !dbg !2464
+  %12 = load double* %t31, align 8, !dbg !2464, !tbaa !1455
+  %add32 = fadd double %mul29, %12, !dbg !2464
+  %t33 = getelementptr inbounds %"struct.pov::ISO_Pair"* %EPa, i64 0, i32 0, !dbg !2464
+  store double %add32, double* %t33, align 8, !dbg !2464, !tbaa !1455
+  call void @llvm.dbg.value(metadata !{%"struct.pov::IsoSurface_Struct"* %ISOSRF}, i64 0, metadata !2465), !dbg !2467
+  call void @llvm.dbg.value(metadata !{double* %t33}, i64 0, metadata !2468), !dbg !2467
+  call void @llvm.dbg.declare(metadata !1473, metadata !1151), !dbg !2469
+  %arraydecay1.i = getelementptr inbounds %"struct.pov::IsoSurface_Struct"* %ISOSRF, i64 0, i32 26, i64 0, !dbg !2470
+  %arraydecay2.i = getelementptr inbounds %"struct.pov::IsoSurface_Struct"* %ISOSRF, i64 0, i32 27, i64 0, !dbg !2470
+  call void @llvm.dbg.value(metadata !1553, i64 0, metadata !2471), !dbg !2472
+  call void @llvm.dbg.value(metadata !{double* %arraydecay1.i}, i64 0, metadata !2473), !dbg !2472
+  call void @llvm.dbg.value(metadata !{double %add32}, i64 0, metadata !2474), !dbg !2472
+  call void @llvm.dbg.value(metadata !{double* %arraydecay2.i}, i64 0, metadata !2475), !dbg !2472
+  %13 = load double* %arraydecay1.i, align 8, !dbg !2476, !tbaa !1455
+  %14 = load double* %arraydecay2.i, align 8, !dbg !2476, !tbaa !1455
+  %mul.i.i = fmul double %add32, %14, !dbg !2476
+  %add.i.i = fadd double %13, %mul.i.i, !dbg !2476
+  %arrayidx3.i.i = getelementptr inbounds %"struct.pov::IsoSurface_Struct"* %ISOSRF, i64 0, i32 26, i64 1, !dbg !2477
+  %15 = load double* %arrayidx3.i.i, align 8, !dbg !2477, !tbaa !1455
+  %arrayidx4.i.i = getelementptr inbounds %"struct.pov::IsoSurface_Struct"* %ISOSRF, i64 0, i32 27, i64 1, !dbg !2477
+  %16 = load double* %arrayidx4.i.i, align 8, !dbg !2477, !tbaa !1455
+  %mul5.i.i = fmul double %add32, %16, !dbg !2477
+  %add6.i.i = fadd double %15, %mul5.i.i, !dbg !2477
+  %arrayidx8.i.i = getelementptr inbounds %"struct.pov::IsoSurface_Struct"* %ISOSRF, i64 0, i32 26, i64 2, !dbg !2478
+  %17 = load double* %arrayidx8.i.i, align 8, !dbg !2478, !tbaa !1455
+  %arrayidx9.i.i = getelementptr inbounds %"struct.pov::IsoSurface_Struct"* %ISOSRF, i64 0, i32 27, i64 2, !dbg !2478
+  %18 = load double* %arrayidx9.i.i, align 8, !dbg !2478, !tbaa !1455
+  %mul10.i.i = fmul double %add32, %18, !dbg !2478
+  %add11.i.i = fadd double %17, %mul10.i.i, !dbg !2478
+  %Inv3.i = getelementptr inbounds %"struct.pov::IsoSurface_Struct"* %ISOSRF, i64 0, i32 21, !dbg !2479
+  %19 = load i32* %Inv3.i, align 4, !dbg !2479, !tbaa !1450
+  %conv.i = sitofp i32 %19 to double, !dbg !2479
+  %Function.i = getelementptr inbounds %"struct.pov::IsoSurface_Struct"* %ISOSRF, i64 0, i32 14, !dbg !2480
+  %20 = load i32** %Function.i, align 8, !dbg !2480, !tbaa !1486
+  %21 = load i32* %20, align 4, !dbg !2480, !tbaa !1450
+  call void @llvm.dbg.value(metadata !{i32 %21}, i64 0, metadata !2481), !dbg !2482
+  call void @llvm.dbg.value(metadata !1553, i64 0, metadata !2483), !dbg !2482
+  call void @_ZN3pov15POVFPU_SetLocalEjd(i32 0, double %add.i.i) #7, !dbg !2484
+  call void @_ZN3pov15POVFPU_SetLocalEjd(i32 1, double %add6.i.i) #7, !dbg !2485
+  call void @_ZN3pov15POVFPU_SetLocalEjd(i32 2, double %add11.i.i) #7, !dbg !2486
+  %call.i.i = call double @_ZN3pov17POVFPU_RunDefaultEj(i32 %21) #7, !dbg !2487
+  %threshold.i = getelementptr inbounds %"struct.pov::IsoSurface_Struct"* %ISOSRF, i64 0, i32 17, !dbg !2480
+  %22 = load double* %threshold.i, align 8, !dbg !2480, !tbaa !1455
+  %sub.i = fsub double %call.i.i, %22, !dbg !2480
+  %mul.i = fmul double %conv.i, %sub.i, !dbg !2480
+  %f36 = getelementptr inbounds %"struct.pov::ISO_Pair"* %EPa, i64 0, i32 1, !dbg !2466
+  store double %mul.i, double* %f36, align 8, !dbg !2466, !tbaa !1455
+  %fmax = getelementptr inbounds %"struct.pov::IsoSurface_Struct"* %ISOSRF, i64 0, i32 30, !dbg !2488
+  tail call void @llvm.dbg.value(metadata !{double* %f36}, i64 0, metadata !2489), !dbg !2490
+  tail call void @llvm.dbg.value(metadata !{double* %fmax}, i64 0, metadata !2491), !dbg !2490
+  %23 = load double* %fmax, align 8, !dbg !2492, !tbaa !1455
+  %cmp.i = fcmp olt double %23, %mul.i, !dbg !2492
+  %24 = select i1 %cmp.i, double %23, double %mul.i, !dbg !2488
+  store double %24, double* %fmax, align 8, !dbg !2488, !tbaa !1455
+  %mul40 = fmul double %len, 2.000000e+00, !dbg !2493
+  %call42 = call i32 @_ZN3pov31IsoSurface_Function_Find_Root_REPNS_17IsoSurface_StructEPNS_8ISO_PairES3_dddb(%"struct.pov::IsoSurface_Struct"* %ISOSRF, %"struct.pov::ISO_Pair"* %EP1, %"struct.pov::ISO_Pair"* %EPa, double %mul30, double %mul29, double %mul40, i1 zeroext %in_shadow_test) #7, !dbg !2493
+  %tobool43 = icmp eq i32 %call42, 0, !dbg !2493
+  br i1 %tobool43, label %if.then44, label %return, !dbg !2493
+
+if.then44:                                        ; preds = %if.then28
+  %call47 = call i32 @_ZN3pov31IsoSurface_Function_Find_Root_REPNS_17IsoSurface_StructEPNS_8ISO_PairES3_dddb(%"struct.pov::IsoSurface_Struct"* %ISOSRF, %"struct.pov::ISO_Pair"* %EPa, %"struct.pov::ISO_Pair"* %EP2, double %mul30, double %mul29, double %mul40, i1 zeroext %in_shadow_test) #7, !dbg !2494
+  br label %return, !dbg !2494
+
+return:                                           ; preds = %if.end23, %if.then28, %if.then19, %if.then44, %if.then22
+  %retval.0 = phi i32 [ 1, %if.then22 ], [ %call47, %if.then44 ], [ 0, %if.then19 ], [ 1, %if.then28 ], [ 0, %if.end23 ]
+  ret i32 %retval.0, !dbg !2495
+}

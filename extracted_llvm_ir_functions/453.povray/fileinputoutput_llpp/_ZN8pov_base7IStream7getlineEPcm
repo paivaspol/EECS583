@@ -1,0 +1,82 @@
+define %"class.pov_base::IStream"* @_ZN8pov_base7IStream7getlineEPcm(%"class.pov_base::IStream"* %this, i8* nocapture %s, i64 %buflen) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::IStream"* %this}, i64 0, metadata !321), !dbg !825
+  tail call void @llvm.dbg.value(metadata !{i8* %s}, i64 0, metadata !322), !dbg !825
+  tail call void @llvm.dbg.value(metadata !{i64 %buflen}, i64 0, metadata !323), !dbg !825
+  tail call void @llvm.dbg.value(metadata !154, i64 0, metadata !324), !dbg !826
+  %f = getelementptr inbounds %"class.pov_base::IStream"* %this, i64 0, i32 0, i32 2, !dbg !827
+  %0 = load %struct._IO_FILE** %f, align 8, !dbg !827, !tbaa !689
+  %call = tail call i32 @feof(%struct._IO_FILE* %0) #10, !dbg !827
+  %cmp = icmp eq i32 %call, 0, !dbg !827
+  %fail2.phi.trans.insert = getelementptr inbounds %"class.pov_base::IStream"* %this, i64 0, i32 0, i32 1
+  br i1 %cmp, label %if.end, label %if.end.thread, !dbg !827
+
+if.end.thread:                                    ; preds = %entry
+  store i8 1, i8* %fail2.phi.trans.insert, align 1, !dbg !828, !tbaa !687
+  br label %if.end32, !dbg !829
+
+if.end:                                           ; preds = %entry
+  %.pre = load i8* %fail2.phi.trans.insert, align 1, !dbg !829, !tbaa !687
+  %phitmp = icmp ne i8 %.pre, 0, !dbg !827
+  %cmp3 = icmp eq i64 %buflen, 0, !dbg !829
+  %or.cond = or i1 %phitmp, %cmp3, !dbg !829
+  br i1 %or.cond, label %if.end32, label %while.cond.preheader, !dbg !829
+
+while.cond.preheader:                             ; preds = %if.end
+  %cmp547 = icmp ugt i64 %buflen, 1, !dbg !830
+  br i1 %cmp547, label %while.body, label %while.end, !dbg !830
+
+while.body:                                       ; preds = %while.cond.preheader, %if.end31
+  %buflen.addr.049 = phi i64 [ %dec, %if.end31 ], [ %buflen, %while.cond.preheader ]
+  %s.addr.048 = phi i8* [ %incdec.ptr, %if.end31 ], [ %s, %while.cond.preheader ]
+  %1 = load %struct._IO_FILE** %f, align 8, !dbg !832, !tbaa !689
+  %call7 = tail call i32 @fgetc(%struct._IO_FILE* %1) #9, !dbg !832
+  tail call void @llvm.dbg.value(metadata !{i32 %call7}, i64 0, metadata !324), !dbg !832
+  switch i32 %call7, label %if.end31 [
+    i32 -1, label %while.end
+    i32 10, label %if.then11
+    i32 13, label %if.then21
+  ], !dbg !834
+
+if.then11:                                        ; preds = %while.body
+  %2 = load %struct._IO_FILE** %f, align 8, !dbg !835, !tbaa !689
+  %call13 = tail call i32 @fgetc(%struct._IO_FILE* %2) #9, !dbg !835
+  tail call void @llvm.dbg.value(metadata !{i32 %call13}, i64 0, metadata !324), !dbg !835
+  %cmp14 = icmp eq i32 %call13, 13, !dbg !837
+  br i1 %cmp14, label %while.end, label %if.then15, !dbg !837
+
+if.then15:                                        ; preds = %if.then11
+  %3 = load %struct._IO_FILE** %f, align 8, !dbg !838, !tbaa !689
+  %call17 = tail call i32 @ungetc(i32 %call13, %struct._IO_FILE* %3) #9, !dbg !838
+  br label %while.end, !dbg !838
+
+if.then21:                                        ; preds = %while.body
+  %4 = load %struct._IO_FILE** %f, align 8, !dbg !839, !tbaa !689
+  %call23 = tail call i32 @fgetc(%struct._IO_FILE* %4) #9, !dbg !839
+  tail call void @llvm.dbg.value(metadata !{i32 %call23}, i64 0, metadata !324), !dbg !839
+  %cmp24 = icmp eq i32 %call23, 10, !dbg !841
+  br i1 %cmp24, label %while.end, label %if.then25, !dbg !841
+
+if.then25:                                        ; preds = %if.then21
+  %5 = load %struct._IO_FILE** %f, align 8, !dbg !842, !tbaa !689
+  %call27 = tail call i32 @ungetc(i32 %call23, %struct._IO_FILE* %5) #9, !dbg !842
+  br label %while.end, !dbg !842
+
+if.end31:                                         ; preds = %while.body
+  %conv = trunc i32 %call7 to i8, !dbg !843
+  store i8 %conv, i8* %s.addr.048, align 1, !dbg !843, !tbaa !684
+  %incdec.ptr = getelementptr inbounds i8* %s.addr.048, i64 1, !dbg !844
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !322), !dbg !844
+  %dec = add i64 %buflen.addr.049, -1, !dbg !845
+  tail call void @llvm.dbg.value(metadata !{i64 %dec}, i64 0, metadata !323), !dbg !845
+  %cmp5 = icmp ugt i64 %dec, 1, !dbg !830
+  br i1 %cmp5, label %while.body, label %while.end, !dbg !830
+
+while.end:                                        ; preds = %while.cond.preheader, %while.body, %if.end31, %if.then11, %if.then21, %if.then25, %if.then15
+  %s.addr.046 = phi i8* [ %s.addr.048, %if.then11 ], [ %s.addr.048, %if.then21 ], [ %s.addr.048, %if.then25 ], [ %s.addr.048, %if.then15 ], [ %s, %while.cond.preheader ], [ %s.addr.048, %while.body ], [ %incdec.ptr, %if.end31 ]
+  store i8 0, i8* %s.addr.046, align 1, !dbg !846, !tbaa !684
+  br label %if.end32, !dbg !847
+
+if.end32:                                         ; preds = %if.end.thread, %if.end, %while.end
+  ret %"class.pov_base::IStream"* %this, !dbg !848
+}

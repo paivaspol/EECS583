@@ -1,111 +1,127 @@
 define i32 @can_store_by_pieces(i64 %len, %struct.rtx_def* (i8*, i64, i32)* nocapture %constfun, i8* %constfundata, i32 %align) #0 {
 entry:
-  %call = tail call fastcc i64 @move_by_pieces_ninsns(i64 %len) #10
-  %0 = load i32* @optimize_size, align 4, !tbaa !3
-  %tobool = icmp eq i32 %0, 0
-  br i1 %tobool, label %cond.false, label %cond.end
+  tail call void @llvm.dbg.value(metadata !{i64 %len}, i64 0, metadata !2116), !dbg !5114
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* (i8*, i64, i32)* %constfun}, i64 0, metadata !2117), !dbg !5115
+  tail call void @llvm.dbg.value(metadata !{i8* %constfundata}, i64 0, metadata !2118), !dbg !5116
+  tail call void @llvm.dbg.value(metadata !{i32 %align}, i64 0, metadata !2119), !dbg !5117
+  tail call void @llvm.dbg.value(metadata !3686, i64 0, metadata !2122), !dbg !5118
+  %call = tail call fastcc i64 @move_by_pieces_ninsns(i64 %len) #11, !dbg !5119
+  %0 = load i32* @optimize_size, align 4, !dbg !5119, !tbaa !3192
+  %tobool = icmp eq i32 %0, 0, !dbg !5119
+  br i1 %tobool, label %cond.false, label %cond.end, !dbg !5119
 
 cond.false:                                       ; preds = %entry
-  %1 = load %struct.processor_costs** @ix86_cost, align 8, !tbaa !0
-  %move_ratio = getelementptr inbounds %struct.processor_costs* %1, i64 0, i32 10
-  %2 = load i32* %move_ratio, align 4, !tbaa !3
-  %phitmp = zext i32 %2 to i64
-  br label %cond.end
+  %1 = load %struct.processor_costs** @ix86_cost, align 8, !dbg !5119, !tbaa !3154
+  %move_ratio = getelementptr inbounds %struct.processor_costs* %1, i64 0, i32 10, !dbg !5119
+  %2 = load i32* %move_ratio, align 4, !dbg !5119, !tbaa !3192
+  %phitmp = zext i32 %2 to i64, !dbg !5119
+  br label %cond.end, !dbg !5119
 
 cond.end:                                         ; preds = %entry, %cond.false
   %cond = phi i64 [ %phitmp, %cond.false ], [ 3, %entry ]
-  %cmp = icmp ult i64 %call, %cond
-  br i1 %cmp, label %for.body, label %return
+  %cmp = icmp ult i64 %call, %cond, !dbg !5119
+  br i1 %cmp, label %for.body, label %return, !dbg !5119
 
 for.body:                                         ; preds = %cond.end
-  %3 = load i32* getelementptr inbounds ([9 x i32]* @class_narrowest_mode, i64 0, i64 1), align 4, !tbaa !6
-  %cmp1086 = icmp eq i32 %3, 0
-  %4 = load i32* @target_flags, align 4, !tbaa !3
-  %and = lshr i32 %4, 23
-  %5 = and i32 %and, 4
-  %add = add i32 %5, 5
-  %cmp794 = icmp eq i32 %add, 1
-  br i1 %cmp794, label %while.end57, label %while.body.lr.ph
+  %3 = load i32* getelementptr inbounds ([9 x i32]* @class_narrowest_mode, i64 0, i64 1), align 4, !dbg !5120, !tbaa !3359
+  %cmp1086 = icmp eq i32 %3, 0, !dbg !5120
+  tail call void @llvm.dbg.value(metadata !{i64 %len}, i64 0, metadata !2121), !dbg !5122
+  tail call void @llvm.dbg.value(metadata !1351, i64 0, metadata !2123), !dbg !5123
+  %4 = load i32* @target_flags, align 4, !dbg !5124, !tbaa !3192
+  %and = lshr i32 %4, 23, !dbg !5124
+  %5 = and i32 %and, 4, !dbg !5124
+  %add = add i32 %5, 5, !dbg !5124
+  tail call void @llvm.dbg.value(metadata !{i64 %conv685}, i64 0, metadata !2120), !dbg !5124
+  %cmp794 = icmp eq i32 %add, 1, !dbg !5125
+  br i1 %cmp794, label %while.end57, label %while.body.lr.ph, !dbg !5125
 
 while.body.lr.ph:                                 ; preds = %for.body
-  %conv685 = zext i32 %add to i64
-  br label %while.body
+  %conv685 = zext i32 %add to i64, !dbg !5124
+  br label %while.body, !dbg !5125
 
 while.body:                                       ; preds = %while.body.lr.ph, %if.end53
   %max_size.098 = phi i64 [ %conv685, %while.body.lr.ph ], [ %conv56, %if.end53 ]
   %mode.097 = phi i32 [ 0, %while.body.lr.ph ], [ %mode.1.lcssa, %if.end53 ]
   %offset.196 = phi i64 [ 0, %while.body.lr.ph ], [ %offset.5, %if.end53 ]
   %l.095 = phi i64 [ %len, %while.body.lr.ph ], [ %l.2, %if.end53 ]
-  br i1 %cmp1086, label %for.end, label %for.body12
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !2124), !dbg !5120
+  br i1 %cmp1086, label %for.end, label %for.body12, !dbg !5120
 
 for.body12:                                       ; preds = %while.body, %for.body12
   %tmode.088 = phi i32 [ %conv20, %for.body12 ], [ %3, %while.body ]
   %mode.187 = phi i32 [ %tmode.0.mode.1, %for.body12 ], [ %mode.097, %while.body ]
-  %idxprom = sext i32 %tmode.088 to i64
-  %arrayidx = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom
-  %6 = load i8* %arrayidx, align 1, !tbaa !1
-  %conv13 = zext i8 %6 to i64
-  %cmp14 = icmp ult i64 %conv13, %max_size.098
-  %tmode.0.mode.1 = select i1 %cmp14, i32 %tmode.088, i32 %mode.187
-  %arrayidx19 = getelementptr inbounds [59 x i8]* @mode_wider_mode, i64 0, i64 %idxprom
-  %7 = load i8* %arrayidx19, align 1, !tbaa !1
-  %conv20 = zext i8 %7 to i32
-  %cmp10 = icmp eq i8 %7, 0
-  br i1 %cmp10, label %for.end, label %for.body12
+  %idxprom = sext i32 %tmode.088 to i64, !dbg !5126
+  %arrayidx = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom, !dbg !5126
+  %6 = load i8* %arrayidx, align 1, !dbg !5126, !tbaa !3155
+  %conv13 = zext i8 %6 to i64, !dbg !5126
+  %cmp14 = icmp ult i64 %conv13, %max_size.098, !dbg !5126
+  tail call void @llvm.dbg.value(metadata !{i32 %tmode.088}, i64 0, metadata !2123), !dbg !5127
+  %tmode.0.mode.1 = select i1 %cmp14, i32 %tmode.088, i32 %mode.187, !dbg !5126
+  %arrayidx19 = getelementptr inbounds [59 x i8]* @mode_wider_mode, i64 0, i64 %idxprom, !dbg !5128
+  %7 = load i8* %arrayidx19, align 1, !dbg !5128, !tbaa !3155
+  %conv20 = zext i8 %7 to i32, !dbg !5128
+  tail call void @llvm.dbg.value(metadata !{i32 %conv20}, i64 0, metadata !2124), !dbg !5128
+  %cmp10 = icmp eq i8 %7, 0, !dbg !5120
+  br i1 %cmp10, label %for.end, label %for.body12, !dbg !5120
 
 for.end:                                          ; preds = %for.body12, %while.body
   %mode.1.lcssa = phi i32 [ %mode.097, %while.body ], [ %tmode.0.mode.1, %for.body12 ]
-  %cmp21 = icmp eq i32 %mode.1.lcssa, 0
-  br i1 %cmp21, label %while.end57, label %if.end24
+  %cmp21 = icmp eq i32 %mode.1.lcssa, 0, !dbg !5129
+  br i1 %cmp21, label %while.end57, label %if.end24, !dbg !5129
 
 if.end24:                                         ; preds = %for.end
-  %idxprom25 = sext i32 %mode.1.lcssa to i64
-  %8 = load %struct.optab** getelementptr inbounds ([49 x %struct.optab*]* @optab_table, i64 0, i64 30), align 8, !tbaa !0
-  %insn_code = getelementptr inbounds %struct.optab* %8, i64 0, i32 1, i64 %idxprom25, i32 0
-  %9 = load i32* %insn_code, align 4, !tbaa !8
-  %cmp27 = icmp eq i32 %9, 1317
-  br i1 %cmp27, label %if.end53, label %land.lhs.true
+  %idxprom25 = sext i32 %mode.1.lcssa to i64, !dbg !5130
+  %8 = load %struct.optab** getelementptr inbounds ([49 x %struct.optab*]* @optab_table, i64 0, i64 30), align 8, !dbg !5130, !tbaa !3154
+  %insn_code = getelementptr inbounds %struct.optab* %8, i64 0, i32 1, i64 %idxprom25, i32 0, !dbg !5130
+  %9 = load i32* %insn_code, align 4, !dbg !5130, !tbaa !3654
+  tail call void @llvm.dbg.value(metadata !{i32 %9}, i64 0, metadata !2125), !dbg !5130
+  %cmp27 = icmp eq i32 %9, 1317, !dbg !5131
+  br i1 %cmp27, label %if.end53, label %land.lhs.true, !dbg !5131
 
 land.lhs.true:                                    ; preds = %if.end24
-  %call29 = tail call i32 @get_mode_alignment(i32 %mode.1.lcssa) #8
-  %cmp30 = icmp ult i32 %call29, 129
-  br i1 %cmp30, label %if.then32, label %if.end53
+  %call29 = tail call i32 @get_mode_alignment(i32 %mode.1.lcssa) #9, !dbg !5132
+  %cmp30 = icmp ult i32 %call29, 129, !dbg !5132
+  br i1 %cmp30, label %if.then32, label %if.end53, !dbg !5132
 
 if.then32:                                        ; preds = %land.lhs.true
-  %arrayidx34 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom25
-  %10 = load i8* %arrayidx34, align 1, !tbaa !1
-  %conv37 = zext i8 %10 to i64
-  %cmp3889 = icmp ult i64 %l.095, %conv37
-  br i1 %cmp3889, label %if.end53, label %while.body40
+  %arrayidx34 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom25, !dbg !5133
+  %10 = load i8* %arrayidx34, align 1, !dbg !5133, !tbaa !3155
+  %conv37 = zext i8 %10 to i64, !dbg !5134
+  %cmp3889 = icmp ult i64 %l.095, %conv37, !dbg !5134
+  br i1 %cmp3889, label %if.end53, label %while.body40, !dbg !5134
 
 while.body40:                                     ; preds = %if.then32, %while.body40
   %offset.291 = phi i64 [ %offset.4, %while.body40 ], [ %offset.196, %if.then32 ]
   %l.190 = phi i64 [ %sub52, %while.body40 ], [ %l.095, %if.then32 ]
-  %call45 = tail call %struct.rtx_def* %constfun(i8* %constfundata, i64 %offset.291, i32 %mode.1.lcssa) #8
-  %offset.4 = add nsw i64 %offset.291, %conv37
-  %sub52 = sub i64 %l.190, %conv37
-  %cmp38 = icmp ult i64 %sub52, %conv37
-  br i1 %cmp38, label %if.end53, label %while.body40
+  %call45 = tail call %struct.rtx_def* %constfun(i8* %constfundata, i64 %offset.291, i32 %mode.1.lcssa) #9, !dbg !5135
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call45}, i64 0, metadata !2127), !dbg !5135
+  %offset.4 = add nsw i64 %offset.291, %conv37, !dbg !5137
+  %sub52 = sub i64 %l.190, %conv37, !dbg !5138
+  tail call void @llvm.dbg.value(metadata !{i64 %sub52}, i64 0, metadata !2121), !dbg !5138
+  %cmp38 = icmp ult i64 %sub52, %conv37, !dbg !5134
+  br i1 %cmp38, label %if.end53, label %while.body40, !dbg !5134
 
 if.end53:                                         ; preds = %if.then32, %while.body40, %land.lhs.true, %if.end24
   %l.2 = phi i64 [ %l.095, %if.end24 ], [ %l.095, %land.lhs.true ], [ %l.095, %if.then32 ], [ %sub52, %while.body40 ]
   %offset.5 = phi i64 [ %offset.196, %if.end24 ], [ %offset.196, %land.lhs.true ], [ %offset.196, %if.then32 ], [ %offset.4, %while.body40 ]
-  %arrayidx55 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom25
-  %11 = load i8* %arrayidx55, align 1, !tbaa !1
-  %conv56 = zext i8 %11 to i64
-  %cmp7 = icmp ugt i8 %11, 1
-  br i1 %cmp7, label %while.body, label %while.end57
+  %arrayidx55 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom25, !dbg !5139
+  %11 = load i8* %arrayidx55, align 1, !dbg !5139, !tbaa !3155
+  %conv56 = zext i8 %11 to i64, !dbg !5139
+  tail call void @llvm.dbg.value(metadata !{i64 %conv56}, i64 0, metadata !2120), !dbg !5139
+  %cmp7 = icmp ugt i8 %11, 1, !dbg !5125
+  br i1 %cmp7, label %while.body, label %while.end57, !dbg !5125
 
 while.end57:                                      ; preds = %if.end53, %for.end, %for.body
   %l.0.lcssa = phi i64 [ %len, %for.body ], [ %l.095, %for.end ], [ %l.2, %if.end53 ]
-  %cmp58 = icmp eq i64 %l.0.lcssa, 0
-  br i1 %cmp58, label %return, label %if.then60
+  %cmp58 = icmp eq i64 %l.0.lcssa, 0, !dbg !5140
+  tail call void @llvm.dbg.value(metadata !3392, i64 0, metadata !2126), !dbg !5141
+  br i1 %cmp58, label %return, label %if.then60, !dbg !5140
 
 if.then60:                                        ; preds = %while.end57
-  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str, i64 0, i64 0), i32 2378, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.can_store_by_pieces, i64 0, i64 0)) #9
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str, i64 0, i64 0), i32 2378, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.can_store_by_pieces, i64 0, i64 0)) #10, !dbg !5142
+  unreachable, !dbg !5142
 
 return:                                           ; preds = %while.end57, %cond.end
   %retval.0 = phi i32 [ 0, %cond.end ], [ 1, %while.end57 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !5143
 }

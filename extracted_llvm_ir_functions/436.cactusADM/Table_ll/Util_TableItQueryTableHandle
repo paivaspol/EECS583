@@ -1,27 +1,29 @@
-define i32 @Util_TableItQueryTableHandle(i32 %ihandle) #4 {
-  %1 = icmp sgt i32 %ihandle, -1
-  %2 = load i32* @N_ip_array, align 4
-  %3 = icmp sgt i32 %2, %ihandle
-  %or.cond.i = and i1 %1, %3
-  br i1 %or.cond.i, label %get_iterator_ptr.exit, label %get_iterator_ptr.exit.thread
+define i32 @Util_TableItQueryTableHandle(i32 %ihandle) #5 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %ihandle}, i64 0, metadata !454), !dbg !1187
+  tail call void @llvm.dbg.value(metadata !{i32 %ihandle}, i64 0, metadata !1188), !dbg !1190
+  %cmp.i = icmp sgt i32 %ihandle, -1, !dbg !1191
+  %0 = load i32* @N_ip_array, align 4, !dbg !1191, !tbaa !595
+  %cmp1.i = icmp sgt i32 %0, %ihandle, !dbg !1191
+  %or.cond.i = and i1 %cmp.i, %cmp1.i, !dbg !1191
+  br i1 %or.cond.i, label %get_iterator_ptr.exit, label %return, !dbg !1191
 
-get_iterator_ptr.exit:                            ; preds = %0
-  %4 = sext i32 %ihandle to i64
-  %5 = load i8*** @ip_array, align 8, !tbaa !6
-  %6 = getelementptr inbounds i8** %5, i64 %4
-  %7 = bitcast i8** %6 to %struct.iterator**
-  %8 = load %struct.iterator** %7, align 8, !tbaa !6
-  %9 = icmp eq %struct.iterator* %8, null
-  br i1 %9, label %get_iterator_ptr.exit.thread, label %10
+get_iterator_ptr.exit:                            ; preds = %entry
+  %idxprom.i = sext i32 %ihandle to i64, !dbg !1191
+  %1 = load i8*** @ip_array, align 8, !dbg !1191, !tbaa !602
+  %arrayidx.i = getelementptr inbounds i8** %1, i64 %idxprom.i, !dbg !1191
+  %2 = load i8** %arrayidx.i, align 8, !dbg !1191, !tbaa !602
+  %cmp = icmp eq i8* %2, null, !dbg !1192
+  br i1 %cmp, label %return, label %if.end, !dbg !1192
 
-; <label>:10                                      ; preds = %get_iterator_ptr.exit
-  %11 = getelementptr inbounds %struct.iterator* %8, i64 0, i32 0
-  %12 = load %struct.table_header** %11, align 8, !tbaa !21
-  %13 = getelementptr inbounds %struct.table_header* %12, i64 0, i32 2
-  %14 = load i32* %13, align 4, !tbaa !11
-  br label %get_iterator_ptr.exit.thread
+if.end:                                           ; preds = %get_iterator_ptr.exit
+  %thp = bitcast i8* %2 to %struct.table_header**, !dbg !1193
+  %3 = load %struct.table_header** %thp, align 8, !dbg !1193, !tbaa !602
+  %handle = getelementptr inbounds %struct.table_header* %3, i64 0, i32 2, !dbg !1193
+  %4 = load i32* %handle, align 4, !dbg !1193, !tbaa !595
+  br label %return, !dbg !1193
 
-get_iterator_ptr.exit.thread:                     ; preds = %0, %get_iterator_ptr.exit, %10
-  %.0 = phi i32 [ %14, %10 ], [ -2, %get_iterator_ptr.exit ], [ -2, %0 ]
-  ret i32 %.0
+return:                                           ; preds = %entry, %get_iterator_ptr.exit, %if.end
+  %retval.0 = phi i32 [ %4, %if.end ], [ -2, %get_iterator_ptr.exit ], [ -2, %entry ]
+  ret i32 %retval.0, !dbg !1194
 }

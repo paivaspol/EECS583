@@ -1,16 +1,19 @@
 define i32 @CCTK_RegisterIOMethodTriggerOutput(i32 %handle, i32 (%struct.cGH*, i32)* %TriggerOutput) #1 {
-  %1 = load %struct.cHandledData** @IOMethods, align 8, !tbaa !2
-  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %handle) #5
-  %3 = icmp ne i8* %2, null
-  br i1 %3, label %4, label %7
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %handle}, i64 0, metadata !95), !dbg !287
+  tail call void @llvm.dbg.value(metadata !{i32 (%struct.cGH*, i32)* %TriggerOutput}, i64 0, metadata !96), !dbg !288
+  %0 = load %struct.cHandledData** @IOMethods, align 8, !dbg !289, !tbaa !235
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %0, i32 %handle) #6, !dbg !289
+  %tobool = icmp ne i8* %call, null, !dbg !290
+  br i1 %tobool, label %if.then, label %if.end, !dbg !290
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds i8* %2, i64 32
-  %6 = bitcast i8* %5 to i32 (%struct.cGH*, i32)**
-  store i32 (%struct.cGH*, i32)* %TriggerOutput, i32 (%struct.cGH*, i32)** %6, align 8, !tbaa !11
-  br label %7
+if.then:                                          ; preds = %entry
+  %TriggerOutput1 = getelementptr inbounds i8* %call, i64 32, !dbg !291
+  %1 = bitcast i8* %TriggerOutput1 to i32 (%struct.cGH*, i32)**, !dbg !291
+  store i32 (%struct.cGH*, i32)* %TriggerOutput, i32 (%struct.cGH*, i32)** %1, align 8, !dbg !291, !tbaa !235
+  br label %if.end, !dbg !293
 
-; <label>:7                                       ; preds = %4, %0
-  %8 = zext i1 %3 to i32
-  ret i32 %8
+if.end:                                           ; preds = %if.then, %entry
+  %conv = zext i1 %tobool to i32, !dbg !294
+  ret i32 %conv, !dbg !294
 }

@@ -1,0 +1,36 @@
+define linkonce_odr void @_ZNSt12_Vector_baseItSaItEE17_M_create_storageEm(%"struct.std::_Vector_base"* nocapture %this, i64 %__n) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.std::_Vector_base"* %this}, i64 0, metadata !3271), !dbg !4440
+  tail call void @llvm.dbg.value(metadata !{i64 %__n}, i64 0, metadata !3272), !dbg !4440
+  tail call void @llvm.dbg.value(metadata !{%"struct.std::_Vector_base"* %this}, i64 0, metadata !4441), !dbg !4443
+  tail call void @llvm.dbg.value(metadata !{i64 %__n}, i64 0, metadata !4444), !dbg !4443
+  %cmp.i = icmp eq i64 %__n, 0, !dbg !4445
+  br i1 %cmp.i, label %_ZNSt12_Vector_baseItSaItEE11_M_allocateEm.exit, label %cond.true.i, !dbg !4445
+
+cond.true.i:                                      ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{i64 %__n}, i64 0, metadata !4446), !dbg !4447
+  tail call void @llvm.dbg.value(metadata !4192, i64 0, metadata !4448), !dbg !4447
+  %cmp.i9 = icmp slt i64 %__n, 0, !dbg !4449
+  br i1 %cmp.i9, label %if.then.i, label %_ZN9__gnu_cxx13new_allocatorItE8allocateEmPKv.exit, !dbg !4449
+
+if.then.i:                                        ; preds = %cond.true.i
+  tail call void @_ZSt17__throw_bad_allocv() #12, !dbg !4451
+  unreachable, !dbg !4451
+
+_ZN9__gnu_cxx13new_allocatorItE8allocateEmPKv.exit: ; preds = %cond.true.i
+  %mul.i = shl i64 %__n, 1, !dbg !4452
+  %call2.i = tail call noalias i8* @_Znwm(i64 %mul.i) #8, !dbg !4452
+  %0 = bitcast i8* %call2.i to i16*, !dbg !4452
+  br label %_ZNSt12_Vector_baseItSaItEE11_M_allocateEm.exit, !dbg !4445
+
+_ZNSt12_Vector_baseItSaItEE11_M_allocateEm.exit:  ; preds = %entry, %_ZN9__gnu_cxx13new_allocatorItE8allocateEmPKv.exit
+  %cond.i = phi i16* [ %0, %_ZN9__gnu_cxx13new_allocatorItE8allocateEmPKv.exit ], [ null, %entry ], !dbg !4445
+  %_M_start = getelementptr inbounds %"struct.std::_Vector_base"* %this, i64 0, i32 0, i32 0, !dbg !4442
+  store i16* %cond.i, i16** %_M_start, align 8, !dbg !4442, !tbaa !3439
+  %_M_finish = getelementptr inbounds %"struct.std::_Vector_base"* %this, i64 0, i32 0, i32 1, !dbg !4453
+  store i16* %cond.i, i16** %_M_finish, align 8, !dbg !4453, !tbaa !3439
+  %add.ptr = getelementptr inbounds i16* %cond.i, i64 %__n, !dbg !4454
+  %_M_end_of_storage = getelementptr inbounds %"struct.std::_Vector_base"* %this, i64 0, i32 0, i32 2, !dbg !4454
+  store i16* %add.ptr, i16** %_M_end_of_storage, align 8, !dbg !4454, !tbaa !3439
+  ret void, !dbg !4455
+}

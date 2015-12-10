@@ -1,47 +1,52 @@
 define internal fastcc void @set_offsets_for_label(%struct.rtx_def* nocapture %insn) #0 {
 entry:
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 5
-  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
-  %0 = load i32* %rtint, align 4, !tbaa !0
-  store i32 0, i32* @num_not_at_initial_offset, align 4, !tbaa !0
-  %1 = load %struct.elim_table** @reg_eliminate, align 8, !tbaa !3
-  %idxprom2 = sext i32 %0 to i64
-  %2 = load [4 x i32]** @offsets_at, align 8, !tbaa !3
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !2710), !dbg !6084
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 5, !dbg !6085
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*, !dbg !6085
+  %0 = load i32* %rtint, align 4, !dbg !6085, !tbaa !3224
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !2712), !dbg !6085
+  store i32 0, i32* @num_not_at_initial_offset, align 4, !dbg !6086, !tbaa !3224
+  tail call void @llvm.dbg.value(metadata !1063, i64 0, metadata !2711), !dbg !6087
+  %1 = load %struct.elim_table** @reg_eliminate, align 8, !dbg !6087, !tbaa !3248
+  tail call void @llvm.dbg.value(metadata !{%struct.elim_table* %1}, i64 0, metadata !2713), !dbg !6087
+  %idxprom2 = sext i32 %0 to i64, !dbg !6089
+  %2 = load [4 x i32]** @offsets_at, align 8, !dbg !6089, !tbaa !3248
+  br label %for.body, !dbg !6087
 
 for.body:                                         ; preds = %for.inc, %entry
   %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc ]
   %ep.017 = phi %struct.elim_table* [ %1, %entry ], [ %incdec.ptr, %for.inc ]
-  %arrayidx4 = getelementptr inbounds [4 x i32]* %2, i64 %idxprom2, i64 %indvars.iv
-  %3 = load i32* %arrayidx4, align 4, !tbaa !0
-  %previous_offset = getelementptr inbounds %struct.elim_table* %ep.017, i64 0, i32 6
-  store i32 %3, i32* %previous_offset, align 4, !tbaa !0
-  %offset = getelementptr inbounds %struct.elim_table* %ep.017, i64 0, i32 5
-  store i32 %3, i32* %offset, align 4, !tbaa !0
-  %can_eliminate = getelementptr inbounds %struct.elim_table* %ep.017, i64 0, i32 3
-  %4 = load i32* %can_eliminate, align 4, !tbaa !0
-  %tobool = icmp eq i32 %4, 0
-  br i1 %tobool, label %for.inc, label %land.lhs.true
+  %arrayidx4 = getelementptr inbounds [4 x i32]* %2, i64 %idxprom2, i64 %indvars.iv, !dbg !6089
+  %3 = load i32* %arrayidx4, align 4, !dbg !6089, !tbaa !3224
+  %previous_offset = getelementptr inbounds %struct.elim_table* %ep.017, i64 0, i32 6, !dbg !6089
+  store i32 %3, i32* %previous_offset, align 4, !dbg !6089, !tbaa !3224
+  %offset = getelementptr inbounds %struct.elim_table* %ep.017, i64 0, i32 5, !dbg !6089
+  store i32 %3, i32* %offset, align 4, !dbg !6089, !tbaa !3224
+  %can_eliminate = getelementptr inbounds %struct.elim_table* %ep.017, i64 0, i32 3, !dbg !6091
+  %4 = load i32* %can_eliminate, align 4, !dbg !6091, !tbaa !3224
+  %tobool = icmp eq i32 %4, 0, !dbg !6091
+  br i1 %tobool, label %for.inc, label %land.lhs.true, !dbg !6091
 
 land.lhs.true:                                    ; preds = %for.body
-  %initial_offset = getelementptr inbounds %struct.elim_table* %ep.017, i64 0, i32 2
-  %5 = load i32* %initial_offset, align 4, !tbaa !0
-  %cmp6 = icmp eq i32 %3, %5
-  br i1 %cmp6, label %for.inc, label %if.then
+  %initial_offset = getelementptr inbounds %struct.elim_table* %ep.017, i64 0, i32 2, !dbg !6091
+  %5 = load i32* %initial_offset, align 4, !dbg !6091, !tbaa !3224
+  %cmp6 = icmp eq i32 %3, %5, !dbg !6091
+  br i1 %cmp6, label %for.inc, label %if.then, !dbg !6091
 
 if.then:                                          ; preds = %land.lhs.true
-  %6 = load i32* @num_not_at_initial_offset, align 4, !tbaa !0
-  %inc = add nsw i32 %6, 1
-  store i32 %inc, i32* @num_not_at_initial_offset, align 4, !tbaa !0
-  br label %for.inc
+  %6 = load i32* @num_not_at_initial_offset, align 4, !dbg !6092, !tbaa !3224
+  %inc = add nsw i32 %6, 1, !dbg !6092
+  store i32 %inc, i32* @num_not_at_initial_offset, align 4, !dbg !6092, !tbaa !3224
+  br label %for.inc, !dbg !6092
 
 for.inc:                                          ; preds = %land.lhs.true, %for.body, %if.then
-  %incdec.ptr = getelementptr inbounds %struct.elim_table* %ep.017, i64 1
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 4
-  br i1 %exitcond, label %for.end, label %for.body
+  %incdec.ptr = getelementptr inbounds %struct.elim_table* %ep.017, i64 1, !dbg !6087
+  tail call void @llvm.dbg.value(metadata !{%struct.elim_table* %incdec.ptr}, i64 0, metadata !2713), !dbg !6087
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !6087
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !6087
+  %exitcond = icmp eq i32 %lftr.wideiv, 4, !dbg !6087
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !6087
 
 for.end:                                          ; preds = %for.inc
-  ret void
+  ret void, !dbg !6093
 }

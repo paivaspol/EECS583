@@ -1,62 +1,67 @@
 define i64 @dual_feasible(%struct.network* nocapture %net) #0 {
 entry:
-  %stop_arcs = getelementptr inbounds %struct.network* %net, i64 0, i32 24
-  %0 = load %struct.arc** %stop_arcs, align 8, !tbaa !0
-  %arcs = getelementptr inbounds %struct.network* %net, i64 0, i32 23
-  %1 = load %struct.arc** %arcs, align 8, !tbaa !0
-  %cmp20 = icmp ult %struct.arc* %1, %0
-  br i1 %cmp20, label %for.body.lr.ph, label %return
+  tail call void @llvm.dbg.value(metadata !{%struct.network* %net}, i64 0, metadata !130), !dbg !259
+  %stop_arcs = getelementptr inbounds %struct.network* %net, i64 0, i32 24, !dbg !260
+  %0 = load %struct.arc** %stop_arcs, align 8, !dbg !260, !tbaa !139
+  tail call void @llvm.dbg.value(metadata !{%struct.arc* %0}, i64 0, metadata !132), !dbg !260
+  %arcs = getelementptr inbounds %struct.network* %net, i64 0, i32 23, !dbg !261
+  %1 = load %struct.arc** %arcs, align 8, !dbg !261, !tbaa !139
+  tail call void @llvm.dbg.value(metadata !{%struct.arc* %1}, i64 0, metadata !131), !dbg !261
+  %cmp20 = icmp ult %struct.arc* %1, %0, !dbg !261
+  br i1 %cmp20, label %for.body.lr.ph, label %return, !dbg !261
 
 for.body.lr.ph:                                   ; preds = %entry
-  %feas_tol = getelementptr inbounds %struct.network* %net, i64 0, i32 16
-  br label %for.body
+  %feas_tol = getelementptr inbounds %struct.network* %net, i64 0, i32 16, !dbg !263
+  br label %for.body, !dbg !261
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.inc
   %arc.021 = phi %struct.arc* [ %1, %for.body.lr.ph ], [ %incdec.ptr, %for.inc ]
-  %cost = getelementptr inbounds %struct.arc* %arc.021, i64 0, i32 0
-  %2 = load i64* %cost, align 8, !tbaa !3
-  %tail = getelementptr inbounds %struct.arc* %arc.021, i64 0, i32 1
-  %3 = load %struct.node** %tail, align 8, !tbaa !0
-  %potential = getelementptr inbounds %struct.node* %3, i64 0, i32 0
-  %4 = load i64* %potential, align 8, !tbaa !3
-  %sub = sub nsw i64 %2, %4
-  %head = getelementptr inbounds %struct.arc* %arc.021, i64 0, i32 2
-  %5 = load %struct.node** %head, align 8, !tbaa !0
-  %potential1 = getelementptr inbounds %struct.node* %5, i64 0, i32 0
-  %6 = load i64* %potential1, align 8, !tbaa !3
-  %add = add nsw i64 %6, %sub
-  %ident = getelementptr inbounds %struct.arc* %arc.021, i64 0, i32 3
-  %7 = load i32* %ident, align 4, !tbaa !4
+  %cost = getelementptr inbounds %struct.arc* %arc.021, i64 0, i32 0, !dbg !266
+  %2 = load i64* %cost, align 8, !dbg !266, !tbaa !160
+  %tail = getelementptr inbounds %struct.arc* %arc.021, i64 0, i32 1, !dbg !266
+  %3 = load %struct.node** %tail, align 8, !dbg !266, !tbaa !139
+  %potential = getelementptr inbounds %struct.node* %3, i64 0, i32 0, !dbg !266
+  %4 = load i64* %potential, align 8, !dbg !266, !tbaa !160
+  %sub = sub nsw i64 %2, %4, !dbg !266
+  %head = getelementptr inbounds %struct.arc* %arc.021, i64 0, i32 2, !dbg !266
+  %5 = load %struct.node** %head, align 8, !dbg !266, !tbaa !139
+  %potential1 = getelementptr inbounds %struct.node* %5, i64 0, i32 0, !dbg !266
+  %6 = load i64* %potential1, align 8, !dbg !266, !tbaa !160
+  %add = add nsw i64 %6, %sub, !dbg !266
+  tail call void @llvm.dbg.value(metadata !{i64 %add}, i64 0, metadata !133), !dbg !266
+  %ident = getelementptr inbounds %struct.arc* %arc.021, i64 0, i32 3, !dbg !267
+  %7 = load i32* %ident, align 4, !dbg !267, !tbaa !167
   switch i32 %7, label %for.inc [
     i32 0, label %sw.bb
     i32 1, label %sw.bb
     i32 2, label %sw.bb4
-  ]
+  ], !dbg !267
 
 sw.bb:                                            ; preds = %for.body, %for.body
-  %8 = load i64* %feas_tol, align 8, !tbaa !3
-  %sub2 = sub nsw i64 0, %8
-  %cmp3 = icmp slt i64 %add, %sub2
-  br i1 %cmp3, label %DUAL_INFEAS, label %for.inc
+  %8 = load i64* %feas_tol, align 8, !dbg !263, !tbaa !160
+  %sub2 = sub nsw i64 0, %8, !dbg !263
+  %cmp3 = icmp slt i64 %add, %sub2, !dbg !263
+  br i1 %cmp3, label %DUAL_INFEAS, label %for.inc, !dbg !263
 
 sw.bb4:                                           ; preds = %for.body
-  %9 = load i64* %feas_tol, align 8, !tbaa !3
-  %cmp6 = icmp sgt i64 %add, %9
-  br i1 %cmp6, label %DUAL_INFEAS, label %for.inc
+  %9 = load i64* %feas_tol, align 8, !dbg !268, !tbaa !160
+  %cmp6 = icmp sgt i64 %add, %9, !dbg !268
+  br i1 %cmp6, label %DUAL_INFEAS, label %for.inc, !dbg !268
 
 for.inc:                                          ; preds = %sw.bb, %sw.bb4, %for.body
-  %incdec.ptr = getelementptr inbounds %struct.arc* %arc.021, i64 1
-  %cmp = icmp ult %struct.arc* %incdec.ptr, %0
-  br i1 %cmp, label %for.body, label %return
+  %incdec.ptr = getelementptr inbounds %struct.arc* %arc.021, i64 1, !dbg !261
+  tail call void @llvm.dbg.value(metadata !{%struct.arc* %incdec.ptr}, i64 0, metadata !131), !dbg !261
+  %cmp = icmp ult %struct.arc* %incdec.ptr, %0, !dbg !261
+  br i1 %cmp, label %for.body, label %return, !dbg !261
 
 DUAL_INFEAS:                                      ; preds = %sw.bb4, %sw.bb
-  %10 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %11 = tail call i64 @fwrite(i8* getelementptr inbounds ([23 x i8]* @.str3, i64 0, i64 0), i64 22, i64 1, %struct._IO_FILE* %10)
-  %12 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %13 = tail call i64 @fwrite(i8* getelementptr inbounds ([23 x i8]* @.str4, i64 0, i64 0), i64 22, i64 1, %struct._IO_FILE* %12)
-  br label %return
+  %10 = load %struct._IO_FILE** @stderr, align 8, !dbg !269, !tbaa !139
+  %11 = tail call i64 @fwrite(i8* getelementptr inbounds ([23 x i8]* @.str3, i64 0, i64 0), i64 22, i64 1, %struct._IO_FILE* %10), !dbg !269
+  %12 = load %struct._IO_FILE** @stderr, align 8, !dbg !270, !tbaa !139
+  %13 = tail call i64 @fwrite(i8* getelementptr inbounds ([23 x i8]* @.str4, i64 0, i64 0), i64 22, i64 1, %struct._IO_FILE* %12), !dbg !270
+  br label %return, !dbg !271
 
 return:                                           ; preds = %entry, %for.inc, %DUAL_INFEAS
   %retval.0 = phi i64 [ 1, %DUAL_INFEAS ], [ 0, %for.inc ], [ 0, %entry ]
-  ret i64 %retval.0
+  ret i64 %retval.0, !dbg !271
 }

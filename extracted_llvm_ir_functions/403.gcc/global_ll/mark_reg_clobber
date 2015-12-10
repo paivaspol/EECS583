@@ -1,15 +1,18 @@
 define internal void @mark_reg_clobber(%struct.rtx_def* %reg, %struct.rtx_def* %setter, i8* nocapture %data) #0 {
 entry:
-  %0 = bitcast %struct.rtx_def* %setter to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 49
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %reg}, i64 0, metadata !816), !dbg !1566
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %setter}, i64 0, metadata !817), !dbg !1566
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !818), !dbg !1567
+  %0 = bitcast %struct.rtx_def* %setter to i32*, !dbg !1568
+  %bf.load = load i32* %0, align 8, !dbg !1568
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1568
+  %cmp = icmp eq i32 %bf.clear, 49, !dbg !1568
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1568
 
 if.then:                                          ; preds = %entry
-  tail call void @mark_reg_store(%struct.rtx_def* %reg, %struct.rtx_def* %setter, i8* %data) #7
-  br label %if.end
+  tail call void @mark_reg_store(%struct.rtx_def* %reg, %struct.rtx_def* %setter, i8* %data) #8, !dbg !1569
+  br label %if.end, !dbg !1569
 
 if.end:                                           ; preds = %if.then, %entry
-  ret void
+  ret void, !dbg !1570
 }

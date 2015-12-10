@@ -1,0 +1,30 @@
+define i32 @_Z23POVMSObjectStream_WriteP9POVMSDataPhPi(%struct.POVMSData* %object, i8* %stream, i32* %maxstreamsize) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMSData* %object}, i64 0, metadata !563), !dbg !2189
+  tail call void @llvm.dbg.value(metadata !{i8* %stream}, i64 0, metadata !564), !dbg !2189
+  tail call void @llvm.dbg.value(metadata !{i32* %maxstreamsize}, i64 0, metadata !565), !dbg !2189
+  %cmp = icmp eq %struct.POVMSData* %object, null, !dbg !2190
+  br i1 %cmp, label %return, label %if.end, !dbg !2190
+
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct.POVMSData* %object, i64 0, i32 0, !dbg !2191
+  %0 = load i32* %type, align 4, !dbg !2191, !tbaa !937
+  %cmp1 = icmp eq i32 %0, 1280262987, !dbg !2191
+  br i1 %cmp1, label %return, label %if.end3, !dbg !2191
+
+if.end3:                                          ; preds = %if.end
+  %cmp4 = icmp eq i8* %stream, null, !dbg !2192
+  %cmp7 = icmp eq i32* %maxstreamsize, null, !dbg !2193
+  %or.cond = or i1 %cmp4, %cmp7, !dbg !2192
+  br i1 %or.cond, label %return, label %if.end9, !dbg !2192
+
+if.end9:                                          ; preds = %if.end3
+  %call = tail call i32 @_Z17POVMSStream_WriteP9POVMSDataPhPi(%struct.POVMSData* %object, i8* %stream, i32* %maxstreamsize) #8, !dbg !2194
+  %cmp10 = icmp eq i32 %call, 0, !dbg !2194
+  %. = sext i1 %cmp10 to i32, !dbg !2195
+  br label %return, !dbg !2195
+
+return:                                           ; preds = %if.end9, %if.end3, %if.end, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ 2, %if.end ], [ -1, %if.end3 ], [ %., %if.end9 ]
+  ret i32 %retval.0, !dbg !2196
+}

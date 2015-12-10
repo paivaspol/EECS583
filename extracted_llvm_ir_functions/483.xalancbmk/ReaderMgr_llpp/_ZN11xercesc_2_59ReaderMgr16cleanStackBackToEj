@@ -1,0 +1,106 @@
+define void @_ZN11xercesc_2_59ReaderMgr16cleanStackBackToEj(%"class.xercesc_2_5::ReaderMgr"* nocapture %this, i32 %readerNum) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::ReaderMgr"* %this}, i64 0, metadata !2278), !dbg !4216
+  tail call void @llvm.dbg.value(metadata !{i32 %readerNum}, i64 0, metadata !2279), !dbg !4216
+  %fCurReader = getelementptr inbounds %"class.xercesc_2_5::ReaderMgr"* %this, i64 0, i32 2, !dbg !4217
+  %0 = load %"class.xercesc_2_5::XMLReader"** %fCurReader, align 8, !dbg !4217, !tbaa !3955
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLReader"* %2}, i64 0, metadata !4219), !dbg !4220
+  %fReaderNum.i16 = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %0, i64 0, i32 14, !dbg !4221
+  %1 = load i32* %fReaderNum.i16, align 4, !dbg !4221, !tbaa !3953
+  %cmp17 = icmp eq i32 %1, %readerNum, !dbg !4217
+  br i1 %cmp17, label %while.end, label %if.end.lr.ph, !dbg !4217
+
+if.end.lr.ph:                                     ; preds = %entry
+  %fReaderStack = getelementptr inbounds %"class.xercesc_2_5::ReaderMgr"* %this, i64 0, i32 6, !dbg !4222
+  %fEntityStack = getelementptr inbounds %"class.xercesc_2_5::ReaderMgr"* %this, i64 0, i32 4, !dbg !4223
+  %fCurEntity = getelementptr inbounds %"class.xercesc_2_5::ReaderMgr"* %this, i64 0, i32 1, !dbg !4223
+  br label %if.end, !dbg !4217
+
+if.end:                                           ; preds = %if.end.lr.ph, %delete.end
+  %2 = phi %"class.xercesc_2_5::XMLReader"* [ %0, %if.end.lr.ph ], [ %13, %delete.end ]
+  %3 = load %"class.xercesc_2_5::RefStackOf.0"** %fReaderStack, align 8, !dbg !4222, !tbaa !3955
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefStackOf.0"* %3}, i64 0, metadata !4224), !dbg !4225
+  %fCurCount.i.i = getelementptr inbounds %"class.xercesc_2_5::RefStackOf.0"* %3, i64 0, i32 1, i32 0, i32 2, !dbg !4226
+  %4 = load i32* %fCurCount.i.i, align 4, !dbg !4226, !tbaa !3953
+  %cmp.i = icmp eq i32 %4, 0, !dbg !4227
+  br i1 %cmp.i, label %if.then3, label %if.end4, !dbg !4222
+
+if.then3:                                         ; preds = %if.end
+  %exception = tail call i8* @__cxa_allocate_exception(i64 48) #7, !dbg !4228
+  %5 = bitcast i8* %exception to %"class.xercesc_2_5::RuntimeException"*, !dbg !4228
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::ReaderMgr"* %this, i64 0, i32 10, !dbg !4228
+  %6 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !4228, !tbaa !3955
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RuntimeException"* %5}, i64 0, metadata !4229), !dbg !4230
+  tail call void @llvm.dbg.value(metadata !4231, i64 0, metadata !4232), !dbg !4230
+  tail call void @llvm.dbg.value(metadata !4233, i64 0, metadata !4234), !dbg !4230
+  tail call void @llvm.dbg.value(metadata !4235, i64 0, metadata !4236), !dbg !4230
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %6}, i64 0, metadata !4237), !dbg !4230
+  invoke void @_ZN11xercesc_2_516RuntimeExceptionC2EPKcjNS_10XMLExcepts5CodesEPNS_13MemoryManagerE(%"class.xercesc_2_5::RuntimeException"* %5, i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 406, i32 68, %"class.xercesc_2_5::MemoryManager"* %6) #9
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %if.then3
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_516RuntimeExceptionE to i8*), i8* bitcast (void (%"class.xercesc_2_5::RuntimeException"*)* @_ZN11xercesc_2_516RuntimeExceptionD1Ev to i8*)) #11, !dbg !4228
+  unreachable, !dbg !4228
+
+lpad:                                             ; preds = %if.then3
+  %7 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !4228
+  %8 = extractvalue { i8*, i32 } %7, 0, !dbg !4228
+  %9 = extractvalue { i8*, i32 } %7, 1, !dbg !4228
+  tail call void @__cxa_free_exception(i8* %exception) #7, !dbg !4228
+  br label %eh.resume, !dbg !4228
+
+if.end4:                                          ; preds = %if.end
+  %isnull = icmp eq %"class.xercesc_2_5::XMLReader"* %2, null, !dbg !4238
+  br i1 %isnull, label %delete.end, label %delete.notnull, !dbg !4238
+
+delete.notnull:                                   ; preds = %if.end4
+  invoke void @_ZN11xercesc_2_59XMLReaderD1Ev(%"class.xercesc_2_5::XMLReader"* %2) #9
+          to label %invoke.cont7 unwind label %lpad6, !dbg !4238
+
+invoke.cont7:                                     ; preds = %delete.notnull
+  %10 = bitcast %"class.xercesc_2_5::XMLReader"* %2 to i8*, !dbg !4238
+  tail call void @_ZN11xercesc_2_57XMemorydlEPv(i8* %10) #9, !dbg !4238
+  %.pre = load %"class.xercesc_2_5::RefStackOf.0"** %fReaderStack, align 8, !dbg !4239, !tbaa !3955
+  br label %delete.end, !dbg !4238
+
+delete.end:                                       ; preds = %invoke.cont7, %if.end4
+  %11 = phi %"class.xercesc_2_5::RefStackOf.0"* [ %.pre, %invoke.cont7 ], [ %3, %if.end4 ]
+  %call10 = tail call %"class.xercesc_2_5::XMLReader"* @_ZN11xercesc_2_510RefStackOfINS_9XMLReaderEE3popEv(%"class.xercesc_2_5::RefStackOf.0"* %11) #9, !dbg !4239
+  store %"class.xercesc_2_5::XMLReader"* %call10, %"class.xercesc_2_5::XMLReader"** %fCurReader, align 8, !dbg !4239, !tbaa !3955
+  %12 = load %"class.xercesc_2_5::RefStackOf"** %fEntityStack, align 8, !dbg !4223, !tbaa !3955
+  %call12 = tail call %"class.xercesc_2_5::XMLEntityDecl"* @_ZN11xercesc_2_510RefStackOfINS_13XMLEntityDeclEE3popEv(%"class.xercesc_2_5::RefStackOf"* %12) #9, !dbg !4223
+  store %"class.xercesc_2_5::XMLEntityDecl"* %call12, %"class.xercesc_2_5::XMLEntityDecl"** %fCurEntity, align 8, !dbg !4223, !tbaa !3955
+  %13 = load %"class.xercesc_2_5::XMLReader"** %fCurReader, align 8, !dbg !4217, !tbaa !3955
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLReader"* %2}, i64 0, metadata !4219), !dbg !4220
+  %fReaderNum.i = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %13, i64 0, i32 14, !dbg !4221
+  %14 = load i32* %fReaderNum.i, align 4, !dbg !4221, !tbaa !3953
+  %cmp = icmp eq i32 %14, %readerNum, !dbg !4217
+  br i1 %cmp, label %while.end, label %if.end, !dbg !4217
+
+lpad6:                                            ; preds = %delete.notnull
+  %15 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !4238
+  %16 = extractvalue { i8*, i32 } %15, 0, !dbg !4238
+  %17 = extractvalue { i8*, i32 } %15, 1, !dbg !4238
+  %18 = bitcast %"class.xercesc_2_5::XMLReader"* %2 to i8*, !dbg !4238
+  invoke void @_ZN11xercesc_2_57XMemorydlEPv(i8* %18) #9
+          to label %eh.resume unwind label %terminate.lpad, !dbg !4238
+
+while.end:                                        ; preds = %delete.end, %entry
+  ret void, !dbg !4240
+
+eh.resume:                                        ; preds = %lpad6, %lpad
+  %exn.slot.0 = phi i8* [ %8, %lpad ], [ %16, %lpad6 ]
+  %ehselector.slot.0 = phi i32 [ %9, %lpad ], [ %17, %lpad6 ]
+  %lpad.val = insertvalue { i8*, i32 } undef, i8* %exn.slot.0, 0, !dbg !4228
+  %lpad.val13 = insertvalue { i8*, i32 } %lpad.val, i32 %ehselector.slot.0, 1, !dbg !4228
+  resume { i8*, i32 } %lpad.val13, !dbg !4228
+
+terminate.lpad:                                   ; preds = %lpad6
+  %19 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !4238
+  %20 = extractvalue { i8*, i32 } %19, 0, !dbg !4238
+  tail call void @__clang_call_terminate(i8* %20) #10, !dbg !4238
+  unreachable, !dbg !4238
+}

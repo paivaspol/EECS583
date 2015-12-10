@@ -1,30 +1,31 @@
 define void @timevar_start(i32 %timevar) #0 {
 entry:
-  %idxprom = zext i32 %timevar to i64
-  %0 = load i32* @time_report, align 4, !tbaa !0
-  %tobool = icmp eq i32 %0, 0
-  br i1 %tobool, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i32 %timevar}, i64 0, metadata !97), !dbg !329
+  %idxprom = zext i32 %timevar to i64, !dbg !330
+  %0 = load i32* @time_report, align 4, !dbg !331, !tbaa !218
+  %tobool = icmp eq i32 %0, 0, !dbg !331
+  br i1 %tobool, label %return, label %if.end, !dbg !331
 
 if.end:                                           ; preds = %entry
-  %used = getelementptr inbounds [45 x %struct.timevar_def]* @timevars, i64 0, i64 %idxprom, i32 3
-  %bf.load = load i8* %used, align 8
-  %bf.set = or i8 %bf.load, 2
-  store i8 %bf.set, i8* %used, align 8
-  %bf.clear2 = and i8 %bf.load, 1
-  %tobool3 = icmp eq i8 %bf.clear2, 0
-  br i1 %tobool3, label %if.end5, label %if.then4
+  %used = getelementptr inbounds [45 x %struct.timevar_def]* @timevars, i64 0, i64 %idxprom, i32 3, !dbg !332
+  %bf.load = load i8* %used, align 8, !dbg !332
+  %bf.set = or i8 %bf.load, 2, !dbg !332
+  store i8 %bf.set, i8* %used, align 8, !dbg !332
+  %bf.clear2 = and i8 %bf.load, 1, !dbg !333
+  %tobool3 = icmp eq i8 %bf.clear2, 0, !dbg !333
+  br i1 %tobool3, label %if.end5, label %if.then4, !dbg !333
 
 if.then4:                                         ; preds = %if.end
-  tail call void @fancy_abort(i8* getelementptr inbounds ([51 x i8]* @.str45, i64 0, i64 0), i32 360, i8* getelementptr inbounds ([14 x i8]* @__FUNCTION__.timevar_start, i64 0, i64 0)) #5
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([51 x i8]* @.str45, i64 0, i64 0), i32 360, i8* getelementptr inbounds ([14 x i8]* @__FUNCTION__.timevar_start, i64 0, i64 0)) #6, !dbg !334
+  unreachable, !dbg !334
 
 if.end5:                                          ; preds = %if.end
-  %bf.set9 = or i8 %bf.load, 3
-  store i8 %bf.set9, i8* %used, align 8
-  %start_time = getelementptr inbounds [45 x %struct.timevar_def]* @timevars, i64 0, i64 %idxprom, i32 1
-  tail call fastcc void @get_time(%struct.timevar_time_def* %start_time) #6
-  br label %return
+  %bf.set9 = or i8 %bf.load, 3, !dbg !335
+  store i8 %bf.set9, i8* %used, align 8, !dbg !335
+  %start_time = getelementptr inbounds [45 x %struct.timevar_def]* @timevars, i64 0, i64 %idxprom, i32 1, !dbg !336
+  tail call fastcc void @get_time(%struct.timevar_time_def* %start_time) #7, !dbg !336
+  br label %return, !dbg !336
 
 return:                                           ; preds = %entry, %if.end5
-  ret void
+  ret void, !dbg !336
 }

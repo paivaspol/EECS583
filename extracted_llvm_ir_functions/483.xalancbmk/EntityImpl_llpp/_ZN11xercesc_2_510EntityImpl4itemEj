@@ -1,0 +1,30 @@
+define %"class.xercesc_2_5::NodeImpl"* @_ZN11xercesc_2_510EntityImpl4itemEj(%"class.xercesc_2_5::EntityImpl"* %this, i32 %index) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::EntityImpl"* %this}, i64 0, metadata !1251), !dbg !1356
+  tail call void @llvm.dbg.value(metadata !{i32 %index}, i64 0, metadata !1252), !dbg !1356
+  tail call void @_ZN11xercesc_2_510EntityImpl18cloneEntityRefTreeEv(%"class.xercesc_2_5::EntityImpl"* %this) #6, !dbg !1357
+  %firstChild = getelementptr inbounds %"class.xercesc_2_5::EntityImpl"* %this, i64 0, i32 0, i32 2, !dbg !1358
+  tail call void @llvm.dbg.value(metadata !1142, i64 0, metadata !1254), !dbg !1359
+  %node.05 = load %"class.xercesc_2_5::ChildNode"** %firstChild, align 8, !dbg !1358
+  %cmp6 = icmp ne i32 %index, 0, !dbg !1359
+  %cmp27 = icmp ne %"class.xercesc_2_5::ChildNode"* %node.05, null, !dbg !1359
+  %cmp2.8 = and i1 %cmp6, %cmp27, !dbg !1359
+  br i1 %cmp2.8, label %for.body, label %for.end
+
+for.body:                                         ; preds = %entry, %for.body
+  %node.010 = phi %"class.xercesc_2_5::ChildNode"* [ %node.0, %for.body ], [ %node.05, %entry ]
+  %i.09 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
+  %nextSibling = getelementptr inbounds %"class.xercesc_2_5::ChildNode"* %node.010, i64 0, i32 2, !dbg !1360
+  %inc = add i32 %i.09, 1, !dbg !1359
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1254), !dbg !1359
+  %node.0 = load %"class.xercesc_2_5::ChildNode"** %nextSibling, align 8, !dbg !1358
+  %cmp = icmp ult i32 %inc, %index, !dbg !1359
+  %cmp2 = icmp ne %"class.xercesc_2_5::ChildNode"* %node.0, null, !dbg !1359
+  %cmp2. = and i1 %cmp, %cmp2, !dbg !1359
+  br i1 %cmp2., label %for.body, label %for.end
+
+for.end:                                          ; preds = %for.body, %entry
+  %node.0.lcssa = phi %"class.xercesc_2_5::ChildNode"* [ %node.05, %entry ], [ %node.0, %for.body ]
+  %0 = getelementptr inbounds %"class.xercesc_2_5::ChildNode"* %node.0.lcssa, i64 0, i32 0, !dbg !1361
+  ret %"class.xercesc_2_5::NodeImpl"* %0, !dbg !1361
+}

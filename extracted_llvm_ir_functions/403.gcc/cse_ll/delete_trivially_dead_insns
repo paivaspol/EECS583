@@ -1,174 +1,201 @@
 define void @delete_trivially_dead_insns(%struct.rtx_def* %insns, i32 %nreg, i32 %preserve_basic_blocks) #0 {
 entry:
-  %conv = sext i32 %nreg to i64
-  %call = tail call noalias i8* @xcalloc(i64 %conv, i64 4) #6
-  %0 = bitcast i8* %call to i32*
-  %call1 = tail call %struct.rtx_def* @next_real_insn(%struct.rtx_def* %insns) #6
-  %tobool140 = icmp eq %struct.rtx_def* %call1, null
-  br i1 %tobool140, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insns}, i64 0, metadata !645), !dbg !2077
+  tail call void @llvm.dbg.value(metadata !{i32 %nreg}, i64 0, metadata !646), !dbg !2078
+  tail call void @llvm.dbg.value(metadata !{i32 %preserve_basic_blocks}, i64 0, metadata !647), !dbg !2079
+  tail call void @llvm.dbg.value(metadata !340, i64 0, metadata !653), !dbg !2080
+  tail call void @llvm.dbg.value(metadata !340, i64 0, metadata !654), !dbg !2080
+  %conv = sext i32 %nreg to i64, !dbg !2081
+  %call = tail call noalias i8* @xcalloc(i64 %conv, i64 4) #7, !dbg !2081
+  %0 = bitcast i8* %call to i32*, !dbg !2081
+  tail call void @llvm.dbg.value(metadata !{i32* %0}, i64 0, metadata !648), !dbg !2081
+  %call1 = tail call %struct.rtx_def* @next_real_insn(%struct.rtx_def* %insns) #7, !dbg !2082
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call1}, i64 0, metadata !650), !dbg !2082
+  %tobool140 = icmp eq %struct.rtx_def* %call1, null, !dbg !2082
+  br i1 %tobool140, label %for.end, label %for.body, !dbg !2082
 
 for.body:                                         ; preds = %entry, %for.body
   %insn.0141 = phi %struct.rtx_def* [ %call2, %for.body ], [ %call1, %entry ]
-  tail call fastcc void @count_reg_usage(%struct.rtx_def* %insn.0141, i32* %0, %struct.rtx_def* null, i32 1) #7
-  %call2 = tail call %struct.rtx_def* @next_real_insn(%struct.rtx_def* %insn.0141) #6
-  %tobool = icmp eq %struct.rtx_def* %call2, null
-  br i1 %tobool, label %for.end, label %for.body
+  tail call fastcc void @count_reg_usage(%struct.rtx_def* %insn.0141, i32* %0, %struct.rtx_def* null, i32 1) #8, !dbg !2084
+  %call2 = tail call %struct.rtx_def* @next_real_insn(%struct.rtx_def* %insn.0141) #7, !dbg !2082
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call2}, i64 0, metadata !650), !dbg !2082
+  %tobool = icmp eq %struct.rtx_def* %call2, null, !dbg !2082
+  br i1 %tobool, label %for.end, label %for.body, !dbg !2082
 
 for.end:                                          ; preds = %for.body, %entry
-  %call3 = tail call %struct.rtx_def* @get_last_insn() #6
-  %1 = bitcast %struct.rtx_def* %call3 to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %idxprom120 = zext i32 %bf.clear to i64
-  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom120
-  %2 = load i8* %arrayidx, align 1, !tbaa !1
-  %cmp = icmp eq i8 %2, 105
-  br i1 %cmp, label %if.end, label %if.then
+  %call3 = tail call %struct.rtx_def* @get_last_insn() #7, !dbg !2085
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call3}, i64 0, metadata !650), !dbg !2085
+  %1 = bitcast %struct.rtx_def* %call3 to i32*, !dbg !2086
+  %bf.load = load i32* %1, align 8, !dbg !2086
+  %bf.clear = and i32 %bf.load, 65535, !dbg !2086
+  %idxprom120 = zext i32 %bf.clear to i64, !dbg !2086
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom120, !dbg !2086
+  %2 = load i8* %arrayidx, align 1, !dbg !2086, !tbaa !1678
+  %cmp = icmp eq i8 %2, 105, !dbg !2086
+  br i1 %cmp, label %if.end, label %if.then, !dbg !2086
 
 if.then:                                          ; preds = %for.end
-  %call6 = tail call %struct.rtx_def* @prev_real_insn(%struct.rtx_def* %call3) #6
-  br label %if.end
+  %call6 = tail call %struct.rtx_def* @prev_real_insn(%struct.rtx_def* %call3) #7, !dbg !2087
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call6}, i64 0, metadata !650), !dbg !2087
+  br label %if.end, !dbg !2087
 
 if.end:                                           ; preds = %if.then, %for.end
   %insn.1 = phi %struct.rtx_def* [ %call3, %for.end ], [ %call6, %if.then ]
-  %tobool7 = icmp eq i32 %preserve_basic_blocks, 0
-  br i1 %tobool7, label %for.cond9.preheader, label %for.cond37.preheader
+  %tobool7 = icmp eq i32 %preserve_basic_blocks, 0, !dbg !2088
+  br i1 %tobool7, label %for.cond9.preheader, label %for.cond37.preheader, !dbg !2088
 
 for.cond37.preheader:                             ; preds = %if.end
-  %3 = load i32* @n_basic_blocks, align 4, !tbaa !4
-  %cmp38136 = icmp sgt i32 %3, 0
-  br i1 %cmp38136, label %for.body40, label %if.end87
+  %3 = load i32* @n_basic_blocks, align 4, !dbg !2089, !tbaa !1704
+  %cmp38136 = icmp sgt i32 %3, 0, !dbg !2089
+  br i1 %cmp38136, label %for.body40, label %if.end87, !dbg !2089
 
 for.cond9.preheader:                              ; preds = %if.end
-  %tobool10128 = icmp eq %struct.rtx_def* %insn.1, null
-  br i1 %tobool10128, label %if.end87, label %for.body11
+  %tobool10128 = icmp eq %struct.rtx_def* %insn.1, null, !dbg !2090
+  br i1 %tobool10128, label %if.end87, label %for.body11, !dbg !2090
 
 for.body11:                                       ; preds = %for.cond9.preheader, %if.end29
   %insn.2131 = phi %struct.rtx_def* [ %call12, %if.end29 ], [ %insn.1, %for.cond9.preheader ]
   %dead_libcall.0130 = phi i32 [ %dead_libcall.1., %if.end29 ], [ 0, %for.cond9.preheader ]
   %in_libcall.0129 = phi i32 [ %in_libcall.1., %if.end29 ], [ 0, %for.cond9.preheader ]
-  %call12 = tail call %struct.rtx_def* @prev_real_insn(%struct.rtx_def* %insn.2131) #6
-  %call13 = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %insn.2131, i32 6, %struct.rtx_def* null) #6
-  %tobool14 = icmp eq %struct.rtx_def* %call13, null
-  br i1 %tobool14, label %if.else, label %if.end25.thread
+  tail call void @llvm.dbg.value(metadata !340, i64 0, metadata !657), !dbg !2091
+  %call12 = tail call %struct.rtx_def* @prev_real_insn(%struct.rtx_def* %insn.2131) #7, !dbg !2092
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call12}, i64 0, metadata !651), !dbg !2092
+  %call13 = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %insn.2131, i32 6, %struct.rtx_def* null) #7, !dbg !2093
+  %tobool14 = icmp eq %struct.rtx_def* %call13, null, !dbg !2093
+  br i1 %tobool14, label %if.else, label %if.end25.thread, !dbg !2093
 
 if.end25.thread:                                  ; preds = %for.body11
-  %call16 = tail call fastcc zeroext i1 @dead_libcall_p(%struct.rtx_def* %insn.2131) #7
-  %conv17 = zext i1 %call16 to i32
-  br label %if.end29
+  tail call void @llvm.dbg.value(metadata !2024, i64 0, metadata !653), !dbg !2094
+  tail call void @llvm.dbg.value(metadata !2024, i64 0, metadata !657), !dbg !2096
+  %call16 = tail call fastcc zeroext i1 @dead_libcall_p(%struct.rtx_def* %insn.2131) #8, !dbg !2097
+  %conv17 = zext i1 %call16 to i32, !dbg !2097
+  tail call void @llvm.dbg.value(metadata !{i32 %conv17}, i64 0, metadata !654), !dbg !2097
+  br label %if.end29, !dbg !2098
 
 if.else:                                          ; preds = %for.body11
-  %tobool18 = icmp eq i32 %in_libcall.0129, 0
-  br i1 %tobool18, label %if.end25, label %if.then19
+  %tobool18 = icmp eq i32 %in_libcall.0129, 0, !dbg !2099
+  br i1 %tobool18, label %if.end25, label %if.then19, !dbg !2099
 
 if.then19:                                        ; preds = %if.else
-  %lnot = icmp eq i32 %dead_libcall.0130, 0
-  br i1 %lnot, label %if.end29, label %if.then27
+  %lnot = icmp eq i32 %dead_libcall.0130, 0, !dbg !2100
+  br i1 %lnot, label %if.end29, label %if.then27, !dbg !2098
 
 if.end25:                                         ; preds = %if.else
-  %call22 = tail call fastcc zeroext i1 @insn_live_p(%struct.rtx_def* %insn.2131, i32* %0) #7
-  br i1 %call22, label %if.end29, label %if.then27
+  %call22 = tail call fastcc zeroext i1 @insn_live_p(%struct.rtx_def* %insn.2131, i32* %0) #8, !dbg !2101
+  br i1 %call22, label %if.end29, label %if.then27, !dbg !2098
 
 if.then27:                                        ; preds = %if.then19, %if.end25
   %in_libcall.1143 = phi i32 [ %in_libcall.0129, %if.then19 ], [ 0, %if.end25 ]
-  tail call fastcc void @count_reg_usage(%struct.rtx_def* %insn.2131, i32* %0, %struct.rtx_def* null, i32 -1) #7
-  %call28 = tail call %struct.rtx_def* @delete_related_insns(%struct.rtx_def* %insn.2131) #6
-  br label %if.end29
+  tail call fastcc void @count_reg_usage(%struct.rtx_def* %insn.2131, i32* %0, %struct.rtx_def* null, i32 -1) #8, !dbg !2102
+  %call28 = tail call %struct.rtx_def* @delete_related_insns(%struct.rtx_def* %insn.2131) #7, !dbg !2104
+  br label %if.end29, !dbg !2105
 
 if.end29:                                         ; preds = %if.then19, %if.end25, %if.end25.thread, %if.then27
   %dead_libcall.1124 = phi i32 [ %conv17, %if.end25.thread ], [ %dead_libcall.0130, %if.end25 ], [ %dead_libcall.0130, %if.then27 ], [ 0, %if.then19 ]
   %in_libcall.1123 = phi i32 [ 1, %if.end25.thread ], [ 0, %if.end25 ], [ %in_libcall.1143, %if.then27 ], [ %in_libcall.0129, %if.then19 ]
-  %call30 = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %insn.2131, i32 7, %struct.rtx_def* null) #6
-  %tobool31 = icmp eq %struct.rtx_def* %call30, null
-  %in_libcall.1. = select i1 %tobool31, i32 %in_libcall.1123, i32 0
-  %dead_libcall.1. = select i1 %tobool31, i32 %dead_libcall.1124, i32 0
-  %tobool10 = icmp eq %struct.rtx_def* %call12, null
-  br i1 %tobool10, label %if.end87, label %for.body11
+  %call30 = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %insn.2131, i32 7, %struct.rtx_def* null) #7, !dbg !2106
+  %tobool31 = icmp eq %struct.rtx_def* %call30, null, !dbg !2106
+  tail call void @llvm.dbg.value(metadata !340, i64 0, metadata !653), !dbg !2107
+  tail call void @llvm.dbg.value(metadata !340, i64 0, metadata !654), !dbg !2109
+  %in_libcall.1. = select i1 %tobool31, i32 %in_libcall.1123, i32 0, !dbg !2106
+  %dead_libcall.1. = select i1 %tobool31, i32 %dead_libcall.1124, i32 0, !dbg !2106
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call12}, i64 0, metadata !650), !dbg !2090
+  %tobool10 = icmp eq %struct.rtx_def* %call12, null, !dbg !2090
+  br i1 %tobool10, label %if.end87, label %for.body11, !dbg !2090
 
 for.body40:                                       ; preds = %for.inc85, %for.cond37.preheader
   %indvars.iv = phi i64 [ 0, %for.cond37.preheader ], [ %indvars.iv.next, %for.inc85 ]
   %dead_libcall.3139 = phi i32 [ 0, %for.cond37.preheader ], [ %dead_libcall.4.ph, %for.inc85 ]
   %in_libcall.3138 = phi i32 [ 0, %for.cond37.preheader ], [ %in_libcall.4.ph, %for.inc85 ]
-  %4 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !0
-  %data = getelementptr inbounds %struct.varray_head_tag* %4, i64 0, i32 4
-  %bb42 = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
-  %arrayidx43 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb42, i64 0, i64 %indvars.iv
-  %5 = load %struct.basic_block_def** %arrayidx43, align 8, !tbaa !0
-  %end = getelementptr inbounds %struct.basic_block_def* %5, i64 0, i32 1
-  %6 = load %struct.rtx_def** %end, align 8, !tbaa !0
-  %head = getelementptr inbounds %struct.basic_block_def* %5, i64 0, i32 0
-  br label %for.cond44.outer
+  %4 = load %struct.varray_head_tag** @basic_block_info, align 8, !dbg !2110, !tbaa !1677
+  %data = getelementptr inbounds %struct.varray_head_tag* %4, i64 0, i32 4, !dbg !2110
+  %bb42 = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*, !dbg !2110
+  %arrayidx43 = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb42, i64 0, i64 %indvars.iv, !dbg !2110
+  %5 = load %struct.basic_block_def** %arrayidx43, align 8, !dbg !2110, !tbaa !1677
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %5}, i64 0, metadata !655), !dbg !2110
+  %end = getelementptr inbounds %struct.basic_block_def* %5, i64 0, i32 1, !dbg !2110
+  %6 = load %struct.rtx_def** %end, align 8, !dbg !2110, !tbaa !1677
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %6}, i64 0, metadata !650), !dbg !2110
+  %head = getelementptr inbounds %struct.basic_block_def* %5, i64 0, i32 0, !dbg !2110
+  br label %for.cond44.outer, !dbg !2110
 
 for.cond44.outer:                                 ; preds = %if.end78, %for.body40
   %in_libcall.4.ph = phi i32 [ %in_libcall.3138, %for.body40 ], [ %in_libcall.5., %if.end78 ]
   %dead_libcall.4.ph = phi i32 [ %dead_libcall.3139, %for.body40 ], [ %dead_libcall.5., %if.end78 ]
   %insn.3.ph = phi %struct.rtx_def* [ %6, %for.body40 ], [ %8, %if.end78 ]
-  %7 = load %struct.rtx_def** %head, align 8, !tbaa !0
+  %7 = load %struct.rtx_def** %head, align 8, !dbg !2110, !tbaa !1677
   br label %for.cond44
 
 for.cond44:                                       ; preds = %for.cond44.outer, %for.body47
   %insn.3 = phi %struct.rtx_def* [ %8, %for.body47 ], [ %insn.3.ph, %for.cond44.outer ]
-  %cmp45 = icmp eq %struct.rtx_def* %insn.3, %7
-  br i1 %cmp45, label %for.inc85, label %for.body47
+  %cmp45 = icmp eq %struct.rtx_def* %insn.3, %7, !dbg !2110
+  br i1 %cmp45, label %for.inc85, label %for.body47, !dbg !2110
 
 for.body47:                                       ; preds = %for.cond44
-  %arrayidx49 = getelementptr inbounds %struct.rtx_def* %insn.3, i64 0, i32 1, i64 1
-  %rtx = bitcast %union.rtunion_def* %arrayidx49 to %struct.rtx_def**
-  %8 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %9 = bitcast %struct.rtx_def* %insn.3 to i32*
-  %bf.load50 = load i32* %9, align 8
-  %bf.clear51 = and i32 %bf.load50, 65535
-  %idxprom52121 = zext i32 %bf.clear51 to i64
-  %arrayidx53 = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom52121
-  %10 = load i8* %arrayidx53, align 1, !tbaa !1
-  %cmp55 = icmp eq i8 %10, 105
-  br i1 %cmp55, label %if.end58, label %for.cond44
+  tail call void @llvm.dbg.value(metadata !340, i64 0, metadata !660), !dbg !2111
+  %arrayidx49 = getelementptr inbounds %struct.rtx_def* %insn.3, i64 0, i32 1, i64 1, !dbg !2112
+  %rtx = bitcast %union.rtunion_def* %arrayidx49 to %struct.rtx_def**, !dbg !2112
+  %8 = load %struct.rtx_def** %rtx, align 8, !dbg !2112, !tbaa !1677
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %8}, i64 0, metadata !651), !dbg !2112
+  %9 = bitcast %struct.rtx_def* %insn.3 to i32*, !dbg !2113
+  %bf.load50 = load i32* %9, align 8, !dbg !2113
+  %bf.clear51 = and i32 %bf.load50, 65535, !dbg !2113
+  %idxprom52121 = zext i32 %bf.clear51 to i64, !dbg !2113
+  %arrayidx53 = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom52121, !dbg !2113
+  %10 = load i8* %arrayidx53, align 1, !dbg !2113, !tbaa !1678
+  %cmp55 = icmp eq i8 %10, 105, !dbg !2113
+  br i1 %cmp55, label %if.end58, label %for.cond44, !dbg !2113
 
 if.end58:                                         ; preds = %for.body47
-  %call59 = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %insn.3, i32 6, %struct.rtx_def* null) #6
-  %tobool60 = icmp eq %struct.rtx_def* %call59, null
-  br i1 %tobool60, label %if.else64, label %if.end74.thread
+  %call59 = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %insn.3, i32 6, %struct.rtx_def* null) #7, !dbg !2114
+  %tobool60 = icmp eq %struct.rtx_def* %call59, null, !dbg !2114
+  br i1 %tobool60, label %if.else64, label %if.end74.thread, !dbg !2114
 
 if.end74.thread:                                  ; preds = %if.end58
-  %call62 = tail call fastcc zeroext i1 @dead_libcall_p(%struct.rtx_def* %insn.3) #7
-  %conv63 = zext i1 %call62 to i32
-  br label %if.end78
+  tail call void @llvm.dbg.value(metadata !2024, i64 0, metadata !653), !dbg !2115
+  tail call void @llvm.dbg.value(metadata !2024, i64 0, metadata !660), !dbg !2117
+  %call62 = tail call fastcc zeroext i1 @dead_libcall_p(%struct.rtx_def* %insn.3) #8, !dbg !2118
+  %conv63 = zext i1 %call62 to i32, !dbg !2118
+  tail call void @llvm.dbg.value(metadata !{i32 %conv63}, i64 0, metadata !654), !dbg !2118
+  br label %if.end78, !dbg !2119
 
 if.else64:                                        ; preds = %if.end58
-  %tobool65 = icmp eq i32 %in_libcall.4.ph, 0
-  br i1 %tobool65, label %if.end74, label %if.then66
+  %tobool65 = icmp eq i32 %in_libcall.4.ph, 0, !dbg !2120
+  br i1 %tobool65, label %if.end74, label %if.then66, !dbg !2120
 
 if.then66:                                        ; preds = %if.else64
-  %lnot68 = icmp eq i32 %dead_libcall.4.ph, 0
-  br i1 %lnot68, label %if.end78, label %if.then76
+  %lnot68 = icmp eq i32 %dead_libcall.4.ph, 0, !dbg !2121
+  br i1 %lnot68, label %if.end78, label %if.then76, !dbg !2119
 
 if.end74:                                         ; preds = %if.else64
-  %call71 = tail call fastcc zeroext i1 @insn_live_p(%struct.rtx_def* %insn.3, i32* %0) #7
-  br i1 %call71, label %if.end78, label %if.then76
+  %call71 = tail call fastcc zeroext i1 @insn_live_p(%struct.rtx_def* %insn.3, i32* %0) #8, !dbg !2122
+  br i1 %call71, label %if.end78, label %if.then76, !dbg !2119
 
 if.then76:                                        ; preds = %if.then66, %if.end74
   %in_libcall.5144 = phi i32 [ %in_libcall.4.ph, %if.then66 ], [ 0, %if.end74 ]
-  tail call fastcc void @count_reg_usage(%struct.rtx_def* %insn.3, i32* %0, %struct.rtx_def* null, i32 -1) #7
-  %call77 = tail call %struct.rtx_def* @delete_insn(%struct.rtx_def* %insn.3) #6
-  br label %if.end78
+  tail call fastcc void @count_reg_usage(%struct.rtx_def* %insn.3, i32* %0, %struct.rtx_def* null, i32 -1) #8, !dbg !2123
+  %call77 = tail call %struct.rtx_def* @delete_insn(%struct.rtx_def* %insn.3) #7, !dbg !2125
+  br label %if.end78, !dbg !2126
 
 if.end78:                                         ; preds = %if.then66, %if.end74, %if.end74.thread, %if.then76
   %dead_libcall.5127 = phi i32 [ %conv63, %if.end74.thread ], [ %dead_libcall.4.ph, %if.end74 ], [ %dead_libcall.4.ph, %if.then76 ], [ 0, %if.then66 ]
   %in_libcall.5126 = phi i32 [ 1, %if.end74.thread ], [ 0, %if.end74 ], [ %in_libcall.5144, %if.then76 ], [ %in_libcall.4.ph, %if.then66 ]
-  %call79 = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %insn.3, i32 7, %struct.rtx_def* null) #6
-  %tobool80 = icmp eq %struct.rtx_def* %call79, null
-  %in_libcall.5. = select i1 %tobool80, i32 %in_libcall.5126, i32 0
-  %dead_libcall.5. = select i1 %tobool80, i32 %dead_libcall.5127, i32 0
-  br label %for.cond44.outer
+  %call79 = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %insn.3, i32 7, %struct.rtx_def* null) #7, !dbg !2127
+  %tobool80 = icmp eq %struct.rtx_def* %call79, null, !dbg !2127
+  tail call void @llvm.dbg.value(metadata !340, i64 0, metadata !653), !dbg !2128
+  tail call void @llvm.dbg.value(metadata !340, i64 0, metadata !654), !dbg !2130
+  %in_libcall.5. = select i1 %tobool80, i32 %in_libcall.5126, i32 0, !dbg !2127
+  %dead_libcall.5. = select i1 %tobool80, i32 %dead_libcall.5127, i32 0, !dbg !2127
+  br label %for.cond44.outer, !dbg !2127
 
 for.inc85:                                        ; preds = %for.cond44
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %11 = load i32* @n_basic_blocks, align 4, !tbaa !4
-  %12 = trunc i64 %indvars.iv.next to i32
-  %cmp38 = icmp slt i32 %12, %11
-  br i1 %cmp38, label %for.body40, label %if.end87
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2089
+  %11 = load i32* @n_basic_blocks, align 4, !dbg !2089, !tbaa !1704
+  %12 = trunc i64 %indvars.iv.next to i32, !dbg !2089
+  %cmp38 = icmp slt i32 %12, %11, !dbg !2089
+  br i1 %cmp38, label %for.body40, label %if.end87, !dbg !2089
 
 if.end87:                                         ; preds = %for.cond37.preheader, %for.inc85, %for.cond9.preheader, %if.end29
-  tail call void @free(i8* %call) #6
-  ret void
+  tail call void @free(i8* %call) #7, !dbg !2131
+  ret void, !dbg !2132
 }

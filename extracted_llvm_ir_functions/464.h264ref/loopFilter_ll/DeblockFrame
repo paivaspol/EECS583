@@ -1,18 +1,23 @@
 define void @DeblockFrame(%struct.ImageParameters* nocapture %img, i16** nocapture %imgY, i16*** %imgUV) #0 {
 entry:
-  %PicSizeInMbs = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 110
-  %0 = load i32* %PicSizeInMbs, align 4, !tbaa !0
-  %cmp4 = icmp eq i32 %0, 0
-  br i1 %cmp4, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct.ImageParameters* %img}, i64 0, metadata !506), !dbg !973
+  tail call void @llvm.dbg.value(metadata !{i16** %imgY}, i64 0, metadata !507), !dbg !973
+  tail call void @llvm.dbg.value(metadata !{i16*** %imgUV}, i64 0, metadata !508), !dbg !973
+  tail call void @llvm.dbg.value(metadata !21, i64 0, metadata !509), !dbg !974
+  %PicSizeInMbs = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 110, !dbg !974
+  %0 = load i32* %PicSizeInMbs, align 4, !dbg !974, !tbaa !976
+  %cmp4 = icmp eq i32 %0, 0, !dbg !974
+  br i1 %cmp4, label %for.end, label %for.body, !dbg !974
 
 for.body:                                         ; preds = %entry, %for.body
   %i.05 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
-  tail call void @DeblockMb(%struct.ImageParameters* %img, i16** %imgY, i16*** %imgUV, i32 %i.05) #3
-  %inc = add i32 %i.05, 1
-  %1 = load i32* %PicSizeInMbs, align 4, !tbaa !0
-  %cmp = icmp ult i32 %inc, %1
-  br i1 %cmp, label %for.body, label %for.end
+  tail call void @DeblockMb(%struct.ImageParameters* %img, i16** %imgY, i16*** %imgUV, i32 %i.05) #5, !dbg !979
+  %inc = add i32 %i.05, 1, !dbg !974
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !509), !dbg !974
+  %1 = load i32* %PicSizeInMbs, align 4, !dbg !974, !tbaa !976
+  %cmp = icmp ult i32 %inc, %1, !dbg !974
+  br i1 %cmp, label %for.body, label %for.end, !dbg !974
 
 for.end:                                          ; preds = %for.body, %entry
-  ret void
+  ret void, !dbg !981
 }

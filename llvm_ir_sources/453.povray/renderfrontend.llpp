@@ -1,0 +1,1401 @@
+; ModuleID = '../../SPEC/benchspec/CPU2006/453.povray/src/renderfrontend.cpp'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
+
+%"class.pov_frontend::RenderFrontend" = type { %"class.pov_frontend::MessageOutput", i8*, i8*, i32 }
+%"class.pov_frontend::MessageOutput" = type { %class.POVMS_MessageReceiver, [8 x %"class.pov_base::TextStreamBuffer"*], [8 x i8*], [8 x i8], i32, i8*, [80 x i8] }
+%class.POVMS_MessageReceiver = type { i32 (...)**, i8*, %"struct.POVMS_MessageReceiver::HandlerNode"* }
+%"struct.POVMS_MessageReceiver::HandlerNode" = type { %"struct.POVMS_MessageReceiver::HandlerNode"*, %"struct.POVMS_MessageReceiver::HandlerNode"*, i32, i32, %"class.POVMS_MessageReceiver::HandlerOO"*, %"class.POVMS_MessageReceiver::Handler"* }
+%"class.POVMS_MessageReceiver::HandlerOO" = type { i32 (...)** }
+%"class.POVMS_MessageReceiver::Handler" = type { i32 (...)** }
+%"class.pov_base::TextStreamBuffer" = type { i32 (...)**, i8*, i32, i32, i32, i32 }
+%class.POVMS_Message = type { %class.POVMS_Object }
+%class.POVMS_Object = type { %class.POVMS_Container }
+%class.POVMS_Container = type { i32 (...)**, %struct.POVMSData }
+%struct.POVMSData = type { i32, i32, %union.anon }
+%union.anon = type { i8* }
+%"class.POVMS_MessageReceiver::MemberHandlerOO" = type { %"class.POVMS_MessageReceiver::HandlerOO", { i64, i64 }, %"class.pov_frontend::RenderFrontend"* }
+
+@_ZTVN12pov_frontend14RenderFrontendE = unnamed_addr constant [6 x i8*] [i8* null, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN12pov_frontend14RenderFrontendE to i8*), i8* bitcast (void (%"class.pov_frontend::RenderFrontend"*)* @_ZN12pov_frontend14RenderFrontendD2Ev to i8*), i8* bitcast (void (%"class.pov_frontend::RenderFrontend"*)* @_ZN12pov_frontend14RenderFrontendD0Ev to i8*), i8* bitcast (void ()* @__cxa_pure_virtual to i8*), i8* bitcast (void ()* @__cxa_pure_virtual to i8*)]
+@_ZTIi = external constant i8*
+@_ZTVN10__cxxabiv120__si_class_type_infoE = external global i8*
+@_ZTSN12pov_frontend14RenderFrontendE = constant [33 x i8] c"N12pov_frontend14RenderFrontendE\00"
+@_ZTIN12pov_frontend13MessageOutputE = external constant i8*
+@_ZTIN12pov_frontend14RenderFrontendE = unnamed_addr constant { i8*, i8*, i8* } { i8* bitcast (i8** getelementptr inbounds (i8** @_ZTVN10__cxxabiv120__si_class_type_infoE, i64 2) to i8*), i8* getelementptr inbounds ([33 x i8]* @_ZTSN12pov_frontend14RenderFrontendE, i32 0, i32 0), i8* bitcast (i8** @_ZTIN12pov_frontend13MessageOutputE to i8*) }
+@_ZTVN21POVMS_MessageReceiver15MemberHandlerOOIN12pov_frontend14RenderFrontendEEE = linkonce_odr unnamed_addr constant [3 x i8*] [i8* null, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN21POVMS_MessageReceiver15MemberHandlerOOIN12pov_frontend14RenderFrontendEEE to i8*), i8* bitcast (void (%"class.POVMS_MessageReceiver::MemberHandlerOO"*, %class.POVMS_Message*, %class.POVMS_Message*, i32)* @_ZN21POVMS_MessageReceiver15MemberHandlerOOIN12pov_frontend14RenderFrontendEE4CallER13POVMS_MessageS5_i to i8*)]
+@_ZTSN21POVMS_MessageReceiver15MemberHandlerOOIN12pov_frontend14RenderFrontendEEE = linkonce_odr constant [77 x i8] c"N21POVMS_MessageReceiver15MemberHandlerOOIN12pov_frontend14RenderFrontendEEE\00"
+@_ZTVN10__cxxabiv117__class_type_infoE = external global i8*
+@_ZTSN21POVMS_MessageReceiver9HandlerOOE = linkonce_odr constant [36 x i8] c"N21POVMS_MessageReceiver9HandlerOOE\00"
+@_ZTIN21POVMS_MessageReceiver9HandlerOOE = linkonce_odr unnamed_addr constant { i8*, i8* } { i8* bitcast (i8** getelementptr inbounds (i8** @_ZTVN10__cxxabiv117__class_type_infoE, i64 2) to i8*), i8* getelementptr inbounds ([36 x i8]* @_ZTSN21POVMS_MessageReceiver9HandlerOOE, i32 0, i32 0) }
+@_ZTIN21POVMS_MessageReceiver15MemberHandlerOOIN12pov_frontend14RenderFrontendEEE = linkonce_odr unnamed_addr constant { i8*, i8*, i8* } { i8* bitcast (i8** getelementptr inbounds (i8** @_ZTVN10__cxxabiv120__si_class_type_infoE, i64 2) to i8*), i8* getelementptr inbounds ([77 x i8]* @_ZTSN21POVMS_MessageReceiver15MemberHandlerOOIN12pov_frontend14RenderFrontendEEE, i32 0, i32 0), i8* bitcast ({ i8*, i8* }* @_ZTIN21POVMS_MessageReceiver9HandlerOOE to i8*) }
+
+@_ZN12pov_frontend14RenderFrontendD1Ev = alias void (%"class.pov_frontend::RenderFrontend"*)* @_ZN12pov_frontend14RenderFrontendD2Ev
+
+; Function Attrs: optsize uwtable
+define void @_ZN12pov_frontend14RenderFrontendC2EPvS1_(%"class.pov_frontend::RenderFrontend"* %this, i8* %ctx, i8* %baddr) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_frontend::RenderFrontend"* %this}, i64 0, metadata !729), !dbg !816
+  tail call void @llvm.dbg.value(metadata !{i8* %ctx}, i64 0, metadata !731), !dbg !816
+  tail call void @llvm.dbg.value(metadata !{i8* %baddr}, i64 0, metadata !732), !dbg !816
+  %0 = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 0, !dbg !817
+  tail call void @_ZN12pov_frontend13MessageOutputC2EPv(%"class.pov_frontend::MessageOutput"* %0, i8* %ctx) #6, !dbg !817
+  %1 = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 0, i32 0, i32 0, !dbg !817
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([6 x i8*]* @_ZTVN12pov_frontend14RenderFrontendE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %1, align 8, !dbg !817, !tbaa !818
+  tail call void @llvm.dbg.value(metadata !725, i64 0, metadata !733), !dbg !820
+  %context = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 2, !dbg !821
+  store i8* %ctx, i8** %context, align 8, !dbg !821, !tbaa !822
+  %backendaddress = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 1, !dbg !824
+  store i8* %baddr, i8** %backendaddress, align 8, !dbg !824, !tbaa !822
+  %state = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 3, !dbg !825
+  store i32 0, i32* %state, align 4, !dbg !825, !tbaa !826
+  %2 = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 0, i32 0, !dbg !827
+  tail call void @llvm.dbg.value(metadata !{%class.POVMS_MessageReceiver* %2}, i64 0, metadata !828), !dbg !829
+  tail call void @llvm.dbg.value(metadata !830, i64 0, metadata !831), !dbg !829
+  tail call void @llvm.dbg.value(metadata !832, i64 0, metadata !833), !dbg !829
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_frontend::RenderFrontend"* %this}, i64 0, metadata !834), !dbg !829
+  tail call void @llvm.dbg.declare(metadata !835, metadata !797), !dbg !829
+  %call.i8 = invoke noalias i8* @_Znwm(i64 32) #6
+          to label %call.i.noexc unwind label %lpad
+
+call.i.noexc:                                     ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_frontend::RenderFrontend"* %this}, i64 0, metadata !836), !dbg !838
+  tail call void @llvm.dbg.declare(metadata !835, metadata !776), !dbg !838
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_frontend::RenderFrontend"* %this}, i64 0, metadata !839), !dbg !841
+  tail call void @llvm.dbg.declare(metadata !835, metadata !781), !dbg !841
+  %3 = bitcast i8* %call.i8 to i32 (...)***, !dbg !842
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([3 x i8*]* @_ZTVN21POVMS_MessageReceiver15MemberHandlerOOIN12pov_frontend14RenderFrontendEEE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %3, align 8, !dbg !842, !tbaa !818
+  %classptr.i.i.i = getelementptr inbounds i8* %call.i8, i64 24, !dbg !843
+  %4 = bitcast i8* %classptr.i.i.i to %"class.pov_frontend::RenderFrontend"**, !dbg !843
+  store %"class.pov_frontend::RenderFrontend"* %this, %"class.pov_frontend::RenderFrontend"** %4, align 8, !dbg !843, !tbaa !822
+  %handlerptr.i.i.i = getelementptr inbounds i8* %call.i8, i64 8, !dbg !845
+  %5 = bitcast i8* %handlerptr.i.i.i to { i64, i64 }*, !dbg !845
+  store { i64, i64 } { i64 ptrtoint (void (%"class.pov_frontend::RenderFrontend"*, %class.POVMS_Message*, %class.POVMS_Message*, i32)* @_ZN12pov_frontend14RenderFrontend13RenderStartedER13POVMS_MessageS2_i to i64), i64 0 }, { i64, i64 }* %5, align 8, !dbg !845, !tbaa !823
+  %6 = bitcast i8* %call.i8 to %"class.POVMS_MessageReceiver::HandlerOO"*, !dbg !837
+  invoke void @_ZN21POVMS_MessageReceiver12AddNodeFrontEjjPNS_9HandlerOOEPNS_7HandlerE(%class.POVMS_MessageReceiver* %2, i32 1333097584, i32 1381135726, %"class.POVMS_MessageReceiver::HandlerOO"* %6, %"class.POVMS_MessageReceiver::Handler"* null) #6
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %call.i.noexc
+  tail call void @llvm.dbg.value(metadata !{%class.POVMS_MessageReceiver* %2}, i64 0, metadata !846), !dbg !848
+  tail call void @llvm.dbg.value(metadata !830, i64 0, metadata !849), !dbg !848
+  tail call void @llvm.dbg.value(metadata !850, i64 0, metadata !851), !dbg !848
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_frontend::RenderFrontend"* %this}, i64 0, metadata !852), !dbg !848
+  tail call void @llvm.dbg.declare(metadata !835, metadata !770), !dbg !848
+  %call.i12 = invoke noalias i8* @_Znwm(i64 32) #6
+          to label %call.i.noexc11 unwind label %lpad
+
+call.i.noexc11:                                   ; preds = %invoke.cont
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_frontend::RenderFrontend"* %this}, i64 0, metadata !853), !dbg !856
+  tail call void @llvm.dbg.declare(metadata !835, metadata !776), !dbg !856
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_frontend::RenderFrontend"* %this}, i64 0, metadata !857), !dbg !859
+  tail call void @llvm.dbg.declare(metadata !835, metadata !781), !dbg !859
+  %7 = bitcast i8* %call.i12 to i32 (...)***, !dbg !860
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([3 x i8*]* @_ZTVN21POVMS_MessageReceiver15MemberHandlerOOIN12pov_frontend14RenderFrontendEEE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %7, align 8, !dbg !860, !tbaa !818
+  %classptr.i.i.i9 = getelementptr inbounds i8* %call.i12, i64 24, !dbg !861
+  %8 = bitcast i8* %classptr.i.i.i9 to %"class.pov_frontend::RenderFrontend"**, !dbg !861
+  store %"class.pov_frontend::RenderFrontend"* %this, %"class.pov_frontend::RenderFrontend"** %8, align 8, !dbg !861, !tbaa !822
+  %handlerptr.i.i.i10 = getelementptr inbounds i8* %call.i12, i64 8, !dbg !862
+  %9 = bitcast i8* %handlerptr.i.i.i10 to { i64, i64 }*, !dbg !862
+  store { i64, i64 } { i64 ptrtoint (void (%"class.pov_frontend::RenderFrontend"*, %class.POVMS_Message*, %class.POVMS_Message*, i32)* @_ZN12pov_frontend14RenderFrontend10RenderDoneER13POVMS_MessageS2_i to i64), i64 0 }, { i64, i64 }* %9, align 8, !dbg !862, !tbaa !823
+  %10 = bitcast i8* %call.i12 to %"class.POVMS_MessageReceiver::HandlerOO"*, !dbg !854
+  invoke void @_ZN21POVMS_MessageReceiver11AddNodeBackEjjPNS_9HandlerOOEPNS_7HandlerE(%class.POVMS_MessageReceiver* %2, i32 1333097584, i32 1380281956, %"class.POVMS_MessageReceiver::HandlerOO"* %10, %"class.POVMS_MessageReceiver::Handler"* null) #6
+          to label %invoke.cont3 unwind label %lpad
+
+invoke.cont3:                                     ; preds = %call.i.noexc11
+  store i32 1, i32* %state, align 4, !dbg !863, !tbaa !826
+  ret void, !dbg !864
+
+lpad:                                             ; preds = %call.i.noexc11, %invoke.cont, %call.i.noexc, %entry
+  %11 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !827
+  invoke void @_ZN12pov_frontend13MessageOutputD2Ev(%"class.pov_frontend::MessageOutput"* %0) #6
+          to label %eh.resume unwind label %terminate.lpad, !dbg !864
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %11, !dbg !864
+
+terminate.lpad:                                   ; preds = %lpad
+  %12 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !864
+  %13 = extractvalue { i8*, i32 } %12, 0, !dbg !864
+  tail call void @__clang_call_terminate(i8* %13) #7, !dbg !864
+  unreachable, !dbg !864
+}
+
+; Function Attrs: nounwind readnone
+declare void @llvm.dbg.declare(metadata, metadata) #1
+
+; Function Attrs: optsize
+declare void @_ZN12pov_frontend13MessageOutputC2EPv(%"class.pov_frontend::MessageOutput"*, i8*) #2
+
+; Function Attrs: nounwind optsize uwtable
+define void @_ZN12pov_frontend14RenderFrontend13RenderStartedER13POVMS_MessageS2_i(%"class.pov_frontend::RenderFrontend"* nocapture %this, %class.POVMS_Message* nocapture, %class.POVMS_Message* nocapture, i32) #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_frontend::RenderFrontend"* %this}, i64 0, metadata !753), !dbg !865
+  tail call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %0}, i64 0, metadata !754), !dbg !865
+  tail call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %1}, i64 0, metadata !755), !dbg !865
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !756), !dbg !865
+  %state = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 3, !dbg !866
+  store i32 3, i32* %state, align 4, !dbg !866, !tbaa !826
+  ret void, !dbg !867
+}
+
+declare i32 @__gxx_personality_v0(...)
+
+; Function Attrs: nounwind optsize uwtable
+define void @_ZN12pov_frontend14RenderFrontend10RenderDoneER13POVMS_MessageS2_i(%"class.pov_frontend::RenderFrontend"* nocapture %this, %class.POVMS_Message* nocapture, %class.POVMS_Message* nocapture, i32) #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_frontend::RenderFrontend"* %this}, i64 0, metadata !759), !dbg !868
+  tail call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %0}, i64 0, metadata !760), !dbg !868
+  tail call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %1}, i64 0, metadata !761), !dbg !868
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !762), !dbg !868
+  %state = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 3, !dbg !869
+  store i32 1, i32* %state, align 4, !dbg !869, !tbaa !826
+  ret void, !dbg !870
+}
+
+; Function Attrs: optsize
+declare void @_ZN12pov_frontend13MessageOutputD2Ev(%"class.pov_frontend::MessageOutput"*) #2
+
+; Function Attrs: noinline noreturn nounwind
+define linkonce_odr hidden void @__clang_call_terminate(i8*) #4 {
+  %2 = tail call i8* @__cxa_begin_catch(i8* %0) #8
+  tail call void @_ZSt9terminatev() #7
+  unreachable
+}
+
+declare i8* @__cxa_begin_catch(i8*)
+
+declare void @_ZSt9terminatev()
+
+; Function Attrs: optsize uwtable
+define void @_ZN12pov_frontend14RenderFrontendD0Ev(%"class.pov_frontend::RenderFrontend"* %this) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_frontend::RenderFrontend"* %this}, i64 0, metadata !737), !dbg !871
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_frontend::RenderFrontend"* %this}, i64 0, metadata !872), !dbg !874
+  %0 = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 0, i32 0, i32 0, !dbg !875
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([6 x i8*]* @_ZTVN12pov_frontend14RenderFrontendE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %0, align 8, !dbg !875, !tbaa !818
+  %state.i = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 3, !dbg !876
+  store i32 0, i32* %state.i, align 4, !dbg !876, !tbaa !826
+  %1 = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 0, !dbg !878
+  invoke void @_ZN12pov_frontend13MessageOutputD2Ev(%"class.pov_frontend::MessageOutput"* %1) #6
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %entry
+  %2 = bitcast %"class.pov_frontend::RenderFrontend"* %this to i8*, !dbg !873
+  tail call void @_ZdlPv(i8* %2) #9, !dbg !873
+  ret void, !dbg !879
+
+lpad:                                             ; preds = %entry
+  %3 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !873
+  %4 = bitcast %"class.pov_frontend::RenderFrontend"* %this to i8*, !dbg !873
+  tail call void @_ZdlPv(i8* %4) #9, !dbg !873
+  resume { i8*, i32 } %3, !dbg !873
+}
+
+; Function Attrs: nounwind optsize
+declare void @_ZdlPv(i8*) #5
+
+; Function Attrs: optsize uwtable
+define void @_ZN12pov_frontend14RenderFrontendD2Ev(%"class.pov_frontend::RenderFrontend"* %this) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_frontend::RenderFrontend"* %this}, i64 0, metadata !740), !dbg !880
+  %0 = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 0, i32 0, i32 0, !dbg !881
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([6 x i8*]* @_ZTVN12pov_frontend14RenderFrontendE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %0, align 8, !dbg !881, !tbaa !818
+  %state = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 3, !dbg !882
+  store i32 0, i32* %state, align 4, !dbg !882, !tbaa !826
+  %1 = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 0, !dbg !883
+  tail call void @_ZN12pov_frontend13MessageOutputD2Ev(%"class.pov_frontend::MessageOutput"* %1) #6, !dbg !883
+  ret void, !dbg !884
+}
+
+; Function Attrs: optsize uwtable
+define void @_ZN12pov_frontend14RenderFrontend11StartRenderER12POVMS_Object(%"class.pov_frontend::RenderFrontend"* nocapture %this, %class.POVMS_Object* %renderoptions) #0 align 2 {
+entry:
+  %optionsmsg = alloca %class.POVMS_Message, align 8
+  %startmsg = alloca %class.POVMS_Message, align 8
+  call void @llvm.dbg.value(metadata !{%"class.pov_frontend::RenderFrontend"* %this}, i64 0, metadata !743), !dbg !885
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Object* %renderoptions}, i64 0, metadata !744), !dbg !885
+  %state = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 3, !dbg !886
+  %0 = load i32* %state, align 4, !dbg !886, !tbaa !826
+  %cmp = icmp eq i32 %0, 1, !dbg !886
+  br i1 %cmp, label %if.end, label %if.then, !dbg !886
+
+if.then:                                          ; preds = %entry
+  %exception = call i8* @__cxa_allocate_exception(i64 4) #8, !dbg !887
+  %1 = bitcast i8* %exception to i32*, !dbg !887
+  store i32 2, i32* %1, align 4, !dbg !887, !tbaa !888
+  call void @__cxa_throw(i8* %exception, i8* bitcast (i8** @_ZTIi to i8*), i8* null) #10, !dbg !887
+  unreachable, !dbg !887
+
+if.end:                                           ; preds = %entry
+  call void @llvm.dbg.declare(metadata !{%class.POVMS_Message* %optionsmsg}, metadata !745), !dbg !889
+  call void @_ZN13POVMS_MessageC1Ejjj(%class.POVMS_Message* %optionsmsg, i32 1380937844, i32 1131704940, i32 1380937844) #6, !dbg !889
+  call void @llvm.dbg.declare(metadata !{%class.POVMS_Message* %startmsg}, metadata !746), !dbg !890
+  invoke void @_ZN13POVMS_MessageC1Ejjj(%class.POVMS_Message* %startmsg, i32 707406378, i32 1131704940, i32 1380019308) #6
+          to label %invoke.cont unwind label %lpad, !dbg !890
+
+invoke.cont:                                      ; preds = %if.end
+  %2 = getelementptr inbounds %class.POVMS_Message* %optionsmsg, i64 0, i32 0, !dbg !891
+  invoke void @_ZN12POVMS_Object5MergeERS_(%class.POVMS_Object* %2, %class.POVMS_Object* %renderoptions) #6
+          to label %invoke.cont3 unwind label %lpad2, !dbg !891
+
+invoke.cont3:                                     ; preds = %invoke.cont
+  %backendaddress = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 1, !dbg !892
+  %3 = load i8** %backendaddress, align 8, !dbg !892, !tbaa !822
+  invoke void @_ZN13POVMS_Message21SetDestinationAddressEPv(%class.POVMS_Message* %optionsmsg, i8* %3) #6
+          to label %invoke.cont4 unwind label %lpad2, !dbg !892
+
+invoke.cont4:                                     ; preds = %invoke.cont3
+  %context = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 2, !dbg !893
+  %4 = load i8** %context, align 8, !dbg !893, !tbaa !822
+  invoke void @_Z17POVMS_SendMessagePvR13POVMS_MessagePS0_i(i8* %4, %class.POVMS_Message* %optionsmsg, %class.POVMS_Message* null, i32 1) #6
+          to label %invoke.cont5 unwind label %lpad2, !dbg !893
+
+invoke.cont5:                                     ; preds = %invoke.cont4
+  %5 = load i8** %backendaddress, align 8, !dbg !894, !tbaa !822
+  invoke void @_ZN13POVMS_Message21SetDestinationAddressEPv(%class.POVMS_Message* %startmsg, i8* %5) #6
+          to label %invoke.cont7 unwind label %lpad2, !dbg !894
+
+invoke.cont7:                                     ; preds = %invoke.cont5
+  %6 = load i8** %context, align 8, !dbg !895, !tbaa !822
+  invoke void @_Z17POVMS_SendMessagePvR13POVMS_MessagePS0_i(i8* %6, %class.POVMS_Message* %startmsg, %class.POVMS_Message* null, i32 1) #6
+          to label %invoke.cont9 unwind label %lpad2, !dbg !895
+
+invoke.cont9:                                     ; preds = %invoke.cont7
+  store i32 2, i32* %state, align 4, !dbg !896, !tbaa !826
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %startmsg}, i64 0, metadata !897), !dbg !899
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %startmsg}, i64 0, metadata !900), !dbg !901
+  %7 = getelementptr inbounds %class.POVMS_Message* %startmsg, i64 0, i32 0, !dbg !902
+  invoke void @_ZN12POVMS_ObjectD2Ev(%class.POVMS_Object* %7) #6
+          to label %invoke.cont11 unwind label %lpad
+
+invoke.cont11:                                    ; preds = %invoke.cont9
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %optionsmsg}, i64 0, metadata !897), !dbg !899
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %optionsmsg}, i64 0, metadata !900), !dbg !901
+  call void @_ZN12POVMS_ObjectD2Ev(%class.POVMS_Object* %2) #6, !dbg !902
+  ret void, !dbg !898
+
+lpad:                                             ; preds = %invoke.cont9, %if.end
+  %8 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !890
+  %9 = extractvalue { i8*, i32 } %8, 0, !dbg !890
+  %10 = extractvalue { i8*, i32 } %8, 1, !dbg !890
+  %.pre = getelementptr inbounds %class.POVMS_Message* %optionsmsg, i64 0, i32 0, !dbg !902
+  br label %ehcleanup, !dbg !890
+
+lpad2:                                            ; preds = %invoke.cont7, %invoke.cont5, %invoke.cont4, %invoke.cont3, %invoke.cont
+  %11 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !891
+  %12 = extractvalue { i8*, i32 } %11, 0, !dbg !891
+  %13 = extractvalue { i8*, i32 } %11, 1, !dbg !891
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %startmsg}, i64 0, metadata !897), !dbg !899
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %startmsg}, i64 0, metadata !900), !dbg !901
+  %14 = getelementptr inbounds %class.POVMS_Message* %startmsg, i64 0, i32 0, !dbg !902
+  invoke void @_ZN12POVMS_ObjectD2Ev(%class.POVMS_Object* %14) #6
+          to label %ehcleanup unwind label %terminate.lpad
+
+ehcleanup:                                        ; preds = %lpad2, %lpad
+  %.pre-phi = phi %class.POVMS_Object* [ %2, %lpad2 ], [ %.pre, %lpad ], !dbg !902
+  %exn.slot.0 = phi i8* [ %12, %lpad2 ], [ %9, %lpad ]
+  %ehselector.slot.0 = phi i32 [ %13, %lpad2 ], [ %10, %lpad ]
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %optionsmsg}, i64 0, metadata !897), !dbg !899
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %optionsmsg}, i64 0, metadata !900), !dbg !901
+  invoke void @_ZN12POVMS_ObjectD2Ev(%class.POVMS_Object* %.pre-phi) #6
+          to label %eh.resume unwind label %terminate.lpad
+
+eh.resume:                                        ; preds = %ehcleanup
+  %lpad.val = insertvalue { i8*, i32 } undef, i8* %exn.slot.0, 0, !dbg !898
+  %lpad.val14 = insertvalue { i8*, i32 } %lpad.val, i32 %ehselector.slot.0, 1, !dbg !898
+  resume { i8*, i32 } %lpad.val14, !dbg !898
+
+terminate.lpad:                                   ; preds = %ehcleanup, %lpad2
+  %15 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !898
+  %16 = extractvalue { i8*, i32 } %15, 0, !dbg !898
+  call void @__clang_call_terminate(i8* %16) #7, !dbg !898
+  unreachable, !dbg !898
+}
+
+declare i8* @__cxa_allocate_exception(i64)
+
+declare void @__cxa_throw(i8*, i8*, i8*)
+
+; Function Attrs: optsize
+declare void @_ZN13POVMS_MessageC1Ejjj(%class.POVMS_Message*, i32, i32, i32) #2
+
+; Function Attrs: optsize
+declare void @_ZN12POVMS_Object5MergeERS_(%class.POVMS_Object*, %class.POVMS_Object*) #2
+
+; Function Attrs: optsize
+declare void @_ZN13POVMS_Message21SetDestinationAddressEPv(%class.POVMS_Message*, i8*) #2
+
+; Function Attrs: optsize
+declare void @_Z17POVMS_SendMessagePvR13POVMS_MessagePS0_i(i8*, %class.POVMS_Message*, %class.POVMS_Message*, i32) #2
+
+; Function Attrs: optsize uwtable
+define void @_ZN12pov_frontend14RenderFrontend10StopRenderEv(%"class.pov_frontend::RenderFrontend"* nocapture %this) #0 align 2 {
+entry:
+  %stopmsg = alloca %class.POVMS_Message, align 8
+  call void @llvm.dbg.value(metadata !{%"class.pov_frontend::RenderFrontend"* %this}, i64 0, metadata !749), !dbg !904
+  %state = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 3, !dbg !905
+  %0 = load i32* %state, align 4, !dbg !905, !tbaa !826
+  %cmp = icmp slt i32 %0, 2, !dbg !905
+  br i1 %cmp, label %if.then, label %if.end, !dbg !905
+
+if.then:                                          ; preds = %entry
+  %exception = call i8* @__cxa_allocate_exception(i64 4) #8, !dbg !906
+  %1 = bitcast i8* %exception to i32*, !dbg !906
+  store i32 2, i32* %1, align 4, !dbg !906, !tbaa !888
+  call void @__cxa_throw(i8* %exception, i8* bitcast (i8** @_ZTIi to i8*), i8* null) #10, !dbg !906
+  unreachable, !dbg !906
+
+if.end:                                           ; preds = %entry
+  call void @llvm.dbg.declare(metadata !{%class.POVMS_Message* %stopmsg}, metadata !750), !dbg !907
+  call void @_ZN13POVMS_MessageC1Ejjj(%class.POVMS_Message* %stopmsg, i32 707406378, i32 1131704940, i32 1381201007) #6, !dbg !907
+  %backendaddress = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 1, !dbg !908
+  %2 = load i8** %backendaddress, align 8, !dbg !908, !tbaa !822
+  invoke void @_ZN13POVMS_Message21SetDestinationAddressEPv(%class.POVMS_Message* %stopmsg, i8* %2) #6
+          to label %invoke.cont unwind label %lpad, !dbg !908
+
+invoke.cont:                                      ; preds = %if.end
+  %context = getelementptr inbounds %"class.pov_frontend::RenderFrontend"* %this, i64 0, i32 2, !dbg !909
+  %3 = load i8** %context, align 8, !dbg !909, !tbaa !822
+  invoke void @_Z17POVMS_SendMessagePvR13POVMS_MessagePS0_i(i8* %3, %class.POVMS_Message* %stopmsg, %class.POVMS_Message* null, i32 1) #6
+          to label %invoke.cont2 unwind label %lpad, !dbg !909
+
+invoke.cont2:                                     ; preds = %invoke.cont
+  store i32 4, i32* %state, align 4, !dbg !910, !tbaa !826
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %stopmsg}, i64 0, metadata !911), !dbg !913
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %stopmsg}, i64 0, metadata !914), !dbg !915
+  %4 = getelementptr inbounds %class.POVMS_Message* %stopmsg, i64 0, i32 0, !dbg !916
+  call void @_ZN12POVMS_ObjectD2Ev(%class.POVMS_Object* %4) #6, !dbg !916
+  ret void, !dbg !912
+
+lpad:                                             ; preds = %invoke.cont, %if.end
+  %5 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !908
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %stopmsg}, i64 0, metadata !911), !dbg !913
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %stopmsg}, i64 0, metadata !914), !dbg !915
+  %6 = getelementptr inbounds %class.POVMS_Message* %stopmsg, i64 0, i32 0, !dbg !916
+  invoke void @_ZN12POVMS_ObjectD2Ev(%class.POVMS_Object* %6) #6
+          to label %eh.resume unwind label %terminate.lpad
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %5, !dbg !912
+
+terminate.lpad:                                   ; preds = %lpad
+  %7 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !912
+  %8 = extractvalue { i8*, i32 } %7, 0, !dbg !912
+  call void @__clang_call_terminate(i8* %8) #7, !dbg !912
+  unreachable, !dbg !912
+}
+
+declare void @__cxa_pure_virtual()
+
+; Function Attrs: optsize
+declare void @_ZN21POVMS_MessageReceiver11AddNodeBackEjjPNS_9HandlerOOEPNS_7HandlerE(%class.POVMS_MessageReceiver*, i32, i32, %"class.POVMS_MessageReceiver::HandlerOO"*, %"class.POVMS_MessageReceiver::Handler"*) #2
+
+; Function Attrs: optsize
+declare noalias i8* @_Znwm(i64) #2
+
+; Function Attrs: optsize uwtable
+define linkonce_odr void @_ZN21POVMS_MessageReceiver15MemberHandlerOOIN12pov_frontend14RenderFrontendEE4CallER13POVMS_MessageS5_i(%"class.POVMS_MessageReceiver::MemberHandlerOO"* nocapture %this, %class.POVMS_Message* %msg, %class.POVMS_Message* %result, i32 %mode) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.POVMS_MessageReceiver::MemberHandlerOO"* %this}, i64 0, metadata !784), !dbg !917
+  tail call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %msg}, i64 0, metadata !785), !dbg !917
+  tail call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %result}, i64 0, metadata !786), !dbg !917
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !787), !dbg !917
+  %classptr = getelementptr inbounds %"class.POVMS_MessageReceiver::MemberHandlerOO"* %this, i64 0, i32 2, !dbg !918
+  %0 = load %"class.pov_frontend::RenderFrontend"** %classptr, align 8, !dbg !918, !tbaa !822
+  %cmp = icmp eq %"class.pov_frontend::RenderFrontend"* %0, null, !dbg !918
+  br i1 %cmp, label %if.else, label %land.lhs.true, !dbg !918
+
+land.lhs.true:                                    ; preds = %entry
+  %handlerptr = getelementptr inbounds %"class.POVMS_MessageReceiver::MemberHandlerOO"* %this, i64 0, i32 1, !dbg !918
+  %1 = load { i64, i64 }* %handlerptr, align 8, !dbg !918, !tbaa !823
+  %lhs.memptr.ptr = extractvalue { i64, i64 } %1, 0, !dbg !918
+  %cmp.ptr = icmp eq i64 %lhs.memptr.ptr, 0, !dbg !918
+  br i1 %cmp.ptr, label %if.else, label %if.then, !dbg !918
+
+if.then:                                          ; preds = %land.lhs.true
+  %lhs.memptr.adj = extractvalue { i64, i64 } %1, 1, !dbg !918
+  %2 = bitcast %"class.pov_frontend::RenderFrontend"* %0 to i8*, !dbg !919
+  %3 = getelementptr inbounds i8* %2, i64 %lhs.memptr.adj, !dbg !919
+  %this.adjusted = bitcast i8* %3 to %"class.pov_frontend::RenderFrontend"*, !dbg !919
+  %4 = and i64 %lhs.memptr.ptr, 1, !dbg !919
+  %memptr.isvirtual = icmp eq i64 %4, 0, !dbg !919
+  br i1 %memptr.isvirtual, label %memptr.nonvirtual, label %memptr.virtual, !dbg !919
+
+memptr.virtual:                                   ; preds = %if.then
+  %5 = bitcast i8* %3 to i8**, !dbg !919
+  %memptr.vtable = load i8** %5, align 8, !dbg !919
+  %6 = add i64 %lhs.memptr.ptr, -1, !dbg !919
+  %7 = getelementptr i8* %memptr.vtable, i64 %6, !dbg !919
+  %8 = bitcast i8* %7 to void (%"class.pov_frontend::RenderFrontend"*, %class.POVMS_Message*, %class.POVMS_Message*, i32)**, !dbg !919
+  %memptr.virtualfn = load void (%"class.pov_frontend::RenderFrontend"*, %class.POVMS_Message*, %class.POVMS_Message*, i32)** %8, align 8, !dbg !919
+  br label %memptr.end, !dbg !919
+
+memptr.nonvirtual:                                ; preds = %if.then
+  %memptr.nonvirtualfn = inttoptr i64 %lhs.memptr.ptr to void (%"class.pov_frontend::RenderFrontend"*, %class.POVMS_Message*, %class.POVMS_Message*, i32)*, !dbg !919
+  br label %memptr.end, !dbg !919
+
+memptr.end:                                       ; preds = %memptr.nonvirtual, %memptr.virtual
+  %9 = phi void (%"class.pov_frontend::RenderFrontend"*, %class.POVMS_Message*, %class.POVMS_Message*, i32)* [ %memptr.virtualfn, %memptr.virtual ], [ %memptr.nonvirtualfn, %memptr.nonvirtual ], !dbg !919
+  tail call void %9(%"class.pov_frontend::RenderFrontend"* %this.adjusted, %class.POVMS_Message* %msg, %class.POVMS_Message* %result, i32 %mode) #6, !dbg !919
+  ret void, !dbg !920
+
+if.else:                                          ; preds = %land.lhs.true, %entry
+  %exception = tail call i8* @__cxa_allocate_exception(i64 4) #8, !dbg !921
+  %10 = bitcast i8* %exception to i32*, !dbg !921
+  store i32 -5, i32* %10, align 4, !dbg !921, !tbaa !888
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast (i8** @_ZTIi to i8*), i8* null) #10, !dbg !921
+  unreachable, !dbg !921
+}
+
+; Function Attrs: optsize
+declare void @_ZN21POVMS_MessageReceiver12AddNodeFrontEjjPNS_9HandlerOOEPNS_7HandlerE(%class.POVMS_MessageReceiver*, i32, i32, %"class.POVMS_MessageReceiver::HandlerOO"*, %"class.POVMS_MessageReceiver::Handler"*) #2
+
+; Function Attrs: optsize
+declare void @_ZN12POVMS_ObjectD2Ev(%class.POVMS_Object*) #2
+
+; Function Attrs: nounwind readnone
+declare void @llvm.dbg.value(metadata, i64, metadata) #1
+
+attributes #0 = { optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind readnone }
+attributes #2 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #4 = { noinline noreturn nounwind }
+attributes #5 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #6 = { optsize }
+attributes #7 = { noreturn nounwind }
+attributes #8 = { nounwind }
+attributes #9 = { nounwind optsize }
+attributes #10 = { noreturn }
+
+!llvm.dbg.cu = !{!0}
+
+!0 = metadata !{i32 786449, metadata !1, i32 4, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !725, metadata !726, metadata !725, metadata !805, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/renderfrontend.cpp] [DW_LANG_C_plus_plus]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/renderfrontend.cpp", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{metadata !3, metadata !628, metadata !656, metadata !663, metadata !681, metadata !687, metadata !701, metadata !719}
+!3 = metadata !{i32 786436, metadata !4, metadata !5, metadata !"EngineState", i32 44, i64 32, i64 32, i32 0, i32 0, null, metadata !622, i32 0, i32 0} ; [ DW_TAG_enumeration_type ] [EngineState] [line 44, size 32, align 32, offset 0] [from ]
+!4 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/renderfrontend.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!5 = metadata !{i32 786434, metadata !4, metadata !6, metadata !"RenderFrontend", i32 41, i64 2240, i64 64, i32 0, i32 0, null, metadata !7, i32 0, metadata !14, null} ; [ DW_TAG_class_type ] [RenderFrontend] [line 41, size 2240, align 64, offset 0] [from ]
+!6 = metadata !{i32 786489, metadata !4, null, metadata !"pov_frontend", i32 39} ; [ DW_TAG_namespace ] [pov_frontend] [line 39]
+!7 = metadata !{metadata !8, metadata !597, metadata !598, metadata !599, metadata !600, metadata !604, metadata !608, metadata !612, metadata !614, metadata !618, metadata !620}
+!8 = metadata !{i32 786460, null, metadata !5, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !9} ; [ DW_TAG_inheritance ] [line 0, size 0, align 0, offset 0] [from MessageOutput]
+!9 = metadata !{i32 786434, metadata !10, metadata !11, metadata !"MessageOutput", i32 45, i64 2048, i64 64, i32 0, i32 0, null, metadata !12, i32 0, metadata !14, null} ; [ DW_TAG_class_type ] [MessageOutput] [line 45, size 2048, align 64, offset 0] [from ]
+!10 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/messageoutput.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!11 = metadata !{i32 786489, metadata !10, null, metadata !"pov_frontend", i32 41} ; [ DW_TAG_namespace ] [pov_frontend] [line 41]
+!12 = metadata !{metadata !13, metadata !516, metadata !524, metadata !526, metadata !528, metadata !530, metadata !531, metadata !535, metadata !540, metadata !544, metadata !548, metadata !550, metadata !555, metadata !559, metadata !563, metadata !567, metadata !569, metadata !571, metadata !573, metadata !575, metadata !577, metadata !579, metadata !581, metadata !583, metadata !585, metadata !587, metadata !589, metadata !593}
+!13 = metadata !{i32 786460, null, metadata !9, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !14} ; [ DW_TAG_inheritance ] [line 0, size 0, align 0, offset 0] [from POVMS_MessageReceiver]
+!14 = metadata !{i32 786434, metadata !15, null, metadata !"POVMS_MessageReceiver", i32 226, i64 192, i64 64, i32 0, i32 0, null, metadata !16, i32 0, metadata !14, null} ; [ DW_TAG_class_type ] [POVMS_MessageReceiver] [line 226, size 192, align 64, offset 0] [from ]
+!15 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/povmscpp.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!16 = metadata !{metadata !17, metadata !24, metadata !27, metadata !30, metadata !35, metadata !39, metadata !385, metadata !423, metadata !449, metadata !475, metadata !477, metadata !479, metadata !481, metadata !483, metadata !487, metadata !489, metadata !495, metadata !500, metadata !504, metadata !510, metadata !512}
+!17 = metadata !{i32 786445, metadata !15, metadata !18, metadata !"_vptr$POVMS_MessageReceiver", i32 0, i64 64, i64 0, i64 0, i32 64, metadata !19} ; [ DW_TAG_member ] [_vptr$POVMS_MessageReceiver] [line 0, size 64, align 0, offset 0] [artificial] [from ]
+!18 = metadata !{i32 786473, metadata !15}        ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/povmscpp.h]
+!19 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 0, i64 0, i32 0, metadata !20} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 0, offset 0] [from __vtbl_ptr_type]
+!20 = metadata !{i32 786447, null, null, metadata !"__vtbl_ptr_type", i32 0, i64 64, i64 0, i64 0, i32 0, metadata !21} ; [ DW_TAG_pointer_type ] [__vtbl_ptr_type] [line 0, size 64, align 0, offset 0] [from ]
+!21 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !22, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!22 = metadata !{metadata !23}
+!23 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!24 = metadata !{i32 786445, metadata !15, metadata !14, metadata !"context", i32 415, i64 64, i64 64, i64 64, i32 1, metadata !25} ; [ DW_TAG_member ] [context] [line 415, size 64, align 64, offset 64] [private] [from POVMSContext]
+!25 = metadata !{i32 786454, metadata !1, null, metadata !"POVMSContext", i32 171, i64 0, i64 0, i64 0, i32 0, metadata !26} ; [ DW_TAG_typedef ] [POVMSContext] [line 171, size 0, align 0, offset 0] [from ]
+!26 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, null} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!27 = metadata !{i32 786445, metadata !15, metadata !14, metadata !"receivers", i32 416, i64 64, i64 64, i64 128, i32 1, metadata !28} ; [ DW_TAG_member ] [receivers] [line 416, size 64, align 64, offset 128] [private] [from ]
+!28 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !29} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from HandlerNode]
+!29 = metadata !{i32 786451, metadata !15, metadata !14, metadata !"HandlerNode", i32 405, i64 0, i64 0, i32 0, i32 4, null, null, i32 0} ; [ DW_TAG_structure_type ] [HandlerNode] [line 405, size 0, align 0, offset 0] [fwd] [from ]
+!30 = metadata !{i32 786478, metadata !15, metadata !14, metadata !"POVMS_MessageReceiver", metadata !"POVMS_MessageReceiver", metadata !"", i32 360, metadata !31, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !34, i32 360} ; [ DW_TAG_subprogram ] [line 360] [protected] [POVMS_MessageReceiver]
+!31 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !32, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!32 = metadata !{null, metadata !33, metadata !25}
+!33 = metadata !{i32 786447, i32 0, i32 0, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 1088, metadata !14} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [artificial] [from POVMS_MessageReceiver]
+!34 = metadata !{i32 786468}
+!35 = metadata !{i32 786478, metadata !15, metadata !14, metadata !"~POVMS_MessageReceiver", metadata !"~POVMS_MessageReceiver", metadata !"", i32 361, metadata !36, i1 false, i1 false, i32 1, i32 0, metadata !14, i32 258, i1 true, null, null, i32 0, metadata !38, i32 361} ; [ DW_TAG_subprogram ] [line 361] [protected] [~POVMS_MessageReceiver]
+!36 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !37, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!37 = metadata !{null, metadata !33}
+!38 = metadata !{i32 786468}
+!39 = metadata !{i32 786478, metadata !15, metadata !14, metadata !"InstallFront<pov_frontend::RenderFrontend>", metadata !"InstallFront<pov_frontend::RenderFrontend>", metadata !"_ZN21POVMS_MessageReceiver12InstallFrontIN12pov_frontend14RenderFrontendEEEvjjPT_NS_15MemberHandlerOOIS3_E16MemberHandlerPtrE", i32 363, metadata !40, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, metadata !378, i32 0, metadata !384, i32 363} ; [ DW_TAG_subprogram ] [line 363] [protected] [InstallFront<pov_frontend::RenderFrontend>]
+!40 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !41, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!41 = metadata !{null, metadata !33, metadata !42, metadata !42, metadata !43, metadata !44}
+!42 = metadata !{i32 786468, null, null, metadata !"unsigned int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 7} ; [ DW_TAG_base_type ] [unsigned int] [line 0, size 32, align 32, offset 0, enc DW_ATE_unsigned]
+!43 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !5} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from RenderFrontend]
+!44 = metadata !{i32 786454, metadata !15, metadata !45, metadata !"MemberHandlerPtr", i32 247, i64 0, i64 0, i64 0, i32 0, metadata !380} ; [ DW_TAG_typedef ] [MemberHandlerPtr] [line 247, size 0, align 0, offset 0] [from ]
+!45 = metadata !{i32 786434, metadata !15, metadata !14, metadata !"MemberHandlerOO<pov_frontend::RenderFrontend>", i32 244, i64 256, i64 64, i32 0, i32 0, null, metadata !46, i32 0, metadata !48, metadata !378} ; [ DW_TAG_class_type ] [MemberHandlerOO<pov_frontend::RenderFrontend>] [line 244, size 256, align 64, offset 0] [from ]
+!46 = metadata !{metadata !47, metadata !363, metadata !364, metadata !365, metadata !370, metadata !374}
+!47 = metadata !{i32 786460, null, metadata !45, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !48} ; [ DW_TAG_inheritance ] [line 0, size 0, align 0, offset 0] [from HandlerOO]
+!48 = metadata !{i32 786434, metadata !15, metadata !14, metadata !"HandlerOO", i32 233, i64 64, i64 64, i32 0, i32 0, null, metadata !49, i32 0, metadata !48, null} ; [ DW_TAG_class_type ] [HandlerOO] [line 233, size 64, align 64, offset 0] [from ]
+!49 = metadata !{metadata !50, metadata !51, metadata !359}
+!50 = metadata !{i32 786445, metadata !15, metadata !18, metadata !"_vptr$HandlerOO", i32 0, i64 64, i64 0, i64 0, i32 64, metadata !19} ; [ DW_TAG_member ] [_vptr$HandlerOO] [line 0, size 64, align 0, offset 0] [artificial] [from ]
+!51 = metadata !{i32 786478, metadata !15, metadata !48, metadata !"Call", metadata !"Call", metadata !"_ZN21POVMS_MessageReceiver9HandlerOO4CallER13POVMS_MessageS2_i", i32 236, metadata !52, i1 false, i1 false, i32 2, i32 0, metadata !48, i32 256, i1 true, null, null, i32 0, metadata !358, i32 236} ; [ DW_TAG_subprogram ] [line 236] [Call]
+!52 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !53, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!53 = metadata !{null, metadata !54, metadata !55, metadata !55, metadata !23}
+!54 = metadata !{i32 786447, i32 0, i32 0, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 1088, metadata !48} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [artificial] [from HandlerOO]
+!55 = metadata !{i32 786448, null, null, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !56} ; [ DW_TAG_reference_type ] [line 0, size 0, align 0, offset 0] [from POVMS_Message]
+!56 = metadata !{i32 786434, metadata !15, null, metadata !"POVMS_Message", i32 207, i64 192, i64 64, i32 0, i32 0, null, metadata !57, i32 0, metadata !62, null} ; [ DW_TAG_class_type ] [POVMS_Message] [line 207, size 192, align 64, offset 0] [from ]
+!57 = metadata !{metadata !58, metadata !313, metadata !318, metadata !322, metadata !326, metadata !330, metadata !334, metadata !338, metadata !342, metadata !344, metadata !348, metadata !350, metadata !354}
+!58 = metadata !{i32 786460, null, metadata !56, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !59} ; [ DW_TAG_inheritance ] [line 0, size 0, align 0, offset 0] [from POVMS_Object]
+!59 = metadata !{i32 786434, metadata !15, null, metadata !"POVMS_Object", i32 112, i64 192, i64 64, i32 0, i32 0, null, metadata !60, i32 0, metadata !62, null} ; [ DW_TAG_class_type ] [POVMS_Object] [line 112, size 192, align 64, offset 0] [from ]
+!60 = metadata !{metadata !61, metadata !173, metadata !178, metadata !184, metadata !189, metadata !193, metadata !197, metadata !201, metadata !205, metadata !209, metadata !213, metadata !215, metadata !217, metadata !219, metadata !221, metadata !225, metadata !227, metadata !235, metadata !240, metadata !244, metadata !251, metadata !255, metadata !260, metadata !265, metadata !267, metadata !271, metadata !275, metadata !280, metadata !282, metadata !286, metadata !290, metadata !292, metadata !296, metadata !303, metadata !307, metadata !309, metadata !311, metadata !312}
+!61 = metadata !{i32 786460, null, metadata !59, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !62} ; [ DW_TAG_inheritance ] [line 0, size 0, align 0, offset 0] [from POVMS_Container]
+!62 = metadata !{i32 786434, metadata !15, null, metadata !"POVMS_Container", i32 50, i64 192, i64 64, i32 0, i32 0, null, metadata !63, i32 0, metadata !62, null} ; [ DW_TAG_class_type ] [POVMS_Container] [line 50, size 192, align 64, offset 0] [from ]
+!63 = metadata !{metadata !64, metadata !65, metadata !85, metadata !90, metadata !92, metadata !96, metadata !101, metadata !106, metadata !108, metadata !109, metadata !110}
+!64 = metadata !{i32 786445, metadata !15, metadata !18, metadata !"_vptr$POVMS_Container", i32 0, i64 64, i64 0, i64 0, i32 64, metadata !19} ; [ DW_TAG_member ] [_vptr$POVMS_Container] [line 0, size 64, align 0, offset 0] [artificial] [from ]
+!65 = metadata !{i32 786445, metadata !15, metadata !62, metadata !"data", i32 64, i64 128, i64 64, i64 64, i32 2, metadata !66} ; [ DW_TAG_member ] [data] [line 64, size 128, align 64, offset 64] [protected] [from POVMSData]
+!66 = metadata !{i32 786451, metadata !67, null, metadata !"POVMSData", i32 178, i64 128, i64 64, i32 0, i32 0, null, metadata !68, i32 0, null, null} ; [ DW_TAG_structure_type ] [POVMSData] [line 178, size 128, align 64, offset 0] [from ]
+!67 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/povms.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!68 = metadata !{metadata !69, metadata !70, metadata !71}
+!69 = metadata !{i32 786445, metadata !67, metadata !66, metadata !"type", i32 180, i64 32, i64 32, i64 0, i32 0, metadata !42} ; [ DW_TAG_member ] [type] [line 180, size 32, align 32, offset 0] [from unsigned int]
+!70 = metadata !{i32 786445, metadata !67, metadata !66, metadata !"size", i32 181, i64 32, i64 32, i64 32, i32 0, metadata !23} ; [ DW_TAG_member ] [size] [line 181, size 32, align 32, offset 32] [from int]
+!71 = metadata !{i32 786445, metadata !67, metadata !66, metadata !"", i32 182, i64 64, i64 64, i64 64, i32 0, metadata !72} ; [ DW_TAG_member ] [line 182, size 64, align 64, offset 64] [from ]
+!72 = metadata !{i32 786455, metadata !67, metadata !66, metadata !"", i32 182, i64 64, i64 64, i64 0, i32 0, null, metadata !73, i32 0, null, null} ; [ DW_TAG_union_type ] [line 182, size 64, align 64, offset 0] [from ]
+!73 = metadata !{metadata !74, metadata !75, metadata !77}
+!74 = metadata !{i32 786445, metadata !67, metadata !72, metadata !"ptr", i32 184, i64 64, i64 64, i64 0, i32 0, metadata !26} ; [ DW_TAG_member ] [ptr] [line 184, size 64, align 64, offset 0] [from ]
+!75 = metadata !{i32 786445, metadata !67, metadata !72, metadata !"items", i32 185, i64 64, i64 64, i64 0, i32 0, metadata !76} ; [ DW_TAG_member ] [items] [line 185, size 64, align 64, offset 0] [from ]
+!76 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !66} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from POVMSData]
+!77 = metadata !{i32 786445, metadata !67, metadata !72, metadata !"root", i32 186, i64 64, i64 64, i64 0, i32 0, metadata !78} ; [ DW_TAG_member ] [root] [line 186, size 64, align 64, offset 0] [from ]
+!78 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !79} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from POVMSNode]
+!79 = metadata !{i32 786451, metadata !67, null, metadata !"POVMSNode", i32 190, i64 320, i64 64, i32 0, i32 0, null, metadata !80, i32 0, null, null} ; [ DW_TAG_structure_type ] [POVMSNode] [line 190, size 320, align 64, offset 0] [from ]
+!80 = metadata !{metadata !81, metadata !82, metadata !83, metadata !84}
+!81 = metadata !{i32 786445, metadata !67, metadata !79, metadata !"last", i32 192, i64 64, i64 64, i64 0, i32 0, metadata !78} ; [ DW_TAG_member ] [last] [line 192, size 64, align 64, offset 0] [from ]
+!82 = metadata !{i32 786445, metadata !67, metadata !79, metadata !"next", i32 193, i64 64, i64 64, i64 64, i32 0, metadata !78} ; [ DW_TAG_member ] [next] [line 193, size 64, align 64, offset 64] [from ]
+!83 = metadata !{i32 786445, metadata !67, metadata !79, metadata !"key", i32 194, i64 32, i64 32, i64 128, i32 0, metadata !42} ; [ DW_TAG_member ] [key] [line 194, size 32, align 32, offset 128] [from unsigned int]
+!84 = metadata !{i32 786445, metadata !67, metadata !79, metadata !"data", i32 195, i64 128, i64 64, i64 192, i32 0, metadata !66} ; [ DW_TAG_member ] [data] [line 195, size 128, align 64, offset 192] [from POVMSData]
+!85 = metadata !{i32 786478, metadata !15, metadata !62, metadata !"POVMS_Container", metadata !"POVMS_Container", metadata !"", i32 57, metadata !86, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !89, i32 57} ; [ DW_TAG_subprogram ] [line 57] [POVMS_Container]
+!86 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !87, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!87 = metadata !{null, metadata !88}
+!88 = metadata !{i32 786447, i32 0, i32 0, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 1088, metadata !62} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [artificial] [from POVMS_Container]
+!89 = metadata !{i32 786468}
+!90 = metadata !{i32 786478, metadata !15, metadata !62, metadata !"~POVMS_Container", metadata !"~POVMS_Container", metadata !"", i32 58, metadata !86, i1 false, i1 false, i32 1, i32 0, metadata !62, i32 256, i1 true, null, null, i32 0, metadata !91, i32 58} ; [ DW_TAG_subprogram ] [line 58] [~POVMS_Container]
+!91 = metadata !{i32 786468}
+!92 = metadata !{i32 786478, metadata !15, metadata !62, metadata !"Type", metadata !"Type", metadata !"_ZN15POVMS_Container4TypeEv", i32 60, metadata !93, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !95, i32 60} ; [ DW_TAG_subprogram ] [line 60] [Type]
+!93 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !94, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!94 = metadata !{metadata !42, metadata !88}
+!95 = metadata !{i32 786468}
+!96 = metadata !{i32 786478, metadata !15, metadata !62, metadata !"Size", metadata !"Size", metadata !"_ZN15POVMS_Container4SizeEv", i32 61, metadata !97, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !100, i32 61} ; [ DW_TAG_subprogram ] [line 61] [Size]
+!97 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !98, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!98 = metadata !{metadata !99, metadata !88}
+!99 = metadata !{i32 786468, null, null, metadata !"long int", i32 0, i64 64, i64 64, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [long int] [line 0, size 64, align 64, offset 0, enc DW_ATE_signed]
+!100 = metadata !{i32 786468}
+!101 = metadata !{i32 786478, metadata !15, metadata !62, metadata !"IsNull", metadata !"IsNull", metadata !"_ZN15POVMS_Container6IsNullEv", i32 62, metadata !102, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !105, i32 62} ; [ DW_TAG_subprogram ] [line 62] [IsNull]
+!102 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !103, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!103 = metadata !{metadata !104, metadata !88}
+!104 = metadata !{i32 786468, null, null, metadata !"bool", i32 0, i64 8, i64 8, i64 0, i32 0, i32 2} ; [ DW_TAG_base_type ] [bool] [line 0, size 8, align 8, offset 0, enc DW_ATE_boolean]
+!105 = metadata !{i32 786468}
+!106 = metadata !{i32 786478, metadata !15, metadata !62, metadata !"DetachData", metadata !"DetachData", metadata !"_ZN15POVMS_Container10DetachDataEv", i32 66, metadata !86, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !107, i32 66} ; [ DW_TAG_subprogram ] [line 66] [protected] [DetachData]
+!107 = metadata !{i32 786468}
+!108 = metadata !{i32 786474, null, metadata !62, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !14} ; [ DW_TAG_friend ] [line 0, size 0, align 0, offset 0] [from POVMS_MessageReceiver]
+!109 = metadata !{i32 786474, null, metadata !62, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !59} ; [ DW_TAG_friend ] [line 0, size 0, align 0, offset 0] [from POVMS_Object]
+!110 = metadata !{i32 786474, null, metadata !62, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !111} ; [ DW_TAG_friend ] [line 0, size 0, align 0, offset 0] [from POVMS_List]
+!111 = metadata !{i32 786434, metadata !15, null, metadata !"POVMS_List", i32 89, i64 192, i64 64, i32 0, i32 0, null, metadata !112, i32 0, metadata !62, null} ; [ DW_TAG_class_type ] [POVMS_List] [line 89, size 192, align 64, offset 0] [from ]
+!112 = metadata !{metadata !113, metadata !114, metadata !119, metadata !125, metadata !130, metadata !132, metadata !136, metadata !142, metadata !144, metadata !149, metadata !153, metadata !157, metadata !161, metadata !163, metadata !165, metadata !167, metadata !171}
+!113 = metadata !{i32 786460, null, metadata !111, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !62} ; [ DW_TAG_inheritance ] [line 0, size 0, align 0, offset 0] [from POVMS_Container]
+!114 = metadata !{i32 786478, metadata !15, metadata !111, metadata !"POVMS_List", metadata !"POVMS_List", metadata !"", i32 92, metadata !115, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !118, i32 92} ; [ DW_TAG_subprogram ] [line 92] [POVMS_List]
+!115 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !116, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!116 = metadata !{null, metadata !117}
+!117 = metadata !{i32 786447, i32 0, i32 0, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 1088, metadata !111} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [artificial] [from POVMS_List]
+!118 = metadata !{i32 786468}
+!119 = metadata !{i32 786478, metadata !15, metadata !111, metadata !"POVMS_List", metadata !"POVMS_List", metadata !"", i32 93, metadata !120, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !124, i32 93} ; [ DW_TAG_subprogram ] [line 93] [POVMS_List]
+!120 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !121, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!121 = metadata !{null, metadata !117, metadata !122}
+!122 = metadata !{i32 786448, null, null, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !123} ; [ DW_TAG_reference_type ] [line 0, size 0, align 0, offset 0] [from POVMSAttributeList]
+!123 = metadata !{i32 786454, metadata !15, null, metadata !"POVMSAttributeList", i32 175, i64 0, i64 0, i64 0, i32 0, metadata !66} ; [ DW_TAG_typedef ] [POVMSAttributeList] [line 175, size 0, align 0, offset 0] [from POVMSData]
+!124 = metadata !{i32 786468}
+!125 = metadata !{i32 786478, metadata !15, metadata !111, metadata !"POVMS_List", metadata !"POVMS_List", metadata !"", i32 94, metadata !126, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !129, i32 94} ; [ DW_TAG_subprogram ] [line 94] [POVMS_List]
+!126 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !127, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!127 = metadata !{null, metadata !117, metadata !128}
+!128 = metadata !{i32 786448, null, null, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !111} ; [ DW_TAG_reference_type ] [line 0, size 0, align 0, offset 0] [from POVMS_List]
+!129 = metadata !{i32 786468}
+!130 = metadata !{i32 786478, metadata !15, metadata !111, metadata !"~POVMS_List", metadata !"~POVMS_List", metadata !"", i32 95, metadata !115, i1 false, i1 false, i32 1, i32 0, metadata !111, i32 256, i1 true, null, null, i32 0, metadata !131, i32 95} ; [ DW_TAG_subprogram ] [line 95] [~POVMS_List]
+!131 = metadata !{i32 786468}
+!132 = metadata !{i32 786478, metadata !15, metadata !111, metadata !"operator=", metadata !"operator=", metadata !"_ZN10POVMS_ListaSERS_", i32 97, metadata !133, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !135, i32 97} ; [ DW_TAG_subprogram ] [line 97] [operator=]
+!133 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !134, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!134 = metadata !{metadata !128, metadata !117, metadata !128}
+!135 = metadata !{i32 786468}
+!136 = metadata !{i32 786478, metadata !15, metadata !111, metadata !"Append", metadata !"Append", metadata !"_ZN10POVMS_List6AppendER15POVMS_Attribute", i32 99, metadata !137, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !141, i32 99} ; [ DW_TAG_subprogram ] [line 99] [Append]
+!137 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !138, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!138 = metadata !{null, metadata !117, metadata !139}
+!139 = metadata !{i32 786448, null, null, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !140} ; [ DW_TAG_reference_type ] [line 0, size 0, align 0, offset 0] [from POVMS_Attribute]
+!140 = metadata !{i32 786434, metadata !15, null, metadata !"POVMS_Attribute", i32 69, i64 0, i64 0, i32 0, i32 4, null, null, i32 0} ; [ DW_TAG_class_type ] [POVMS_Attribute] [line 69, size 0, align 0, offset 0] [fwd] [from ]
+!141 = metadata !{i32 786468}
+!142 = metadata !{i32 786478, metadata !15, metadata !111, metadata !"Append", metadata !"Append", metadata !"_ZN10POVMS_List6AppendERS_", i32 100, metadata !126, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !143, i32 100} ; [ DW_TAG_subprogram ] [line 100] [Append]
+!143 = metadata !{i32 786468}
+!144 = metadata !{i32 786478, metadata !15, metadata !111, metadata !"Append", metadata !"Append", metadata !"_ZN10POVMS_List6AppendER12POVMS_Object", i32 101, metadata !145, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !148, i32 101} ; [ DW_TAG_subprogram ] [line 101] [Append]
+!145 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !146, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!146 = metadata !{null, metadata !117, metadata !147}
+!147 = metadata !{i32 786448, null, null, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !59} ; [ DW_TAG_reference_type ] [line 0, size 0, align 0, offset 0] [from POVMS_Object]
+!148 = metadata !{i32 786468}
+!149 = metadata !{i32 786478, metadata !15, metadata !111, metadata !"GetNth", metadata !"GetNth", metadata !"_ZN10POVMS_List6GetNthEiR15POVMS_Attribute", i32 102, metadata !150, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !152, i32 102} ; [ DW_TAG_subprogram ] [line 102] [GetNth]
+!150 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !151, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!151 = metadata !{null, metadata !117, metadata !23, metadata !139}
+!152 = metadata !{i32 786468}
+!153 = metadata !{i32 786478, metadata !15, metadata !111, metadata !"GetNth", metadata !"GetNth", metadata !"_ZN10POVMS_List6GetNthEiRS_", i32 103, metadata !154, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !156, i32 103} ; [ DW_TAG_subprogram ] [line 103] [GetNth]
+!154 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !155, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!155 = metadata !{null, metadata !117, metadata !23, metadata !128}
+!156 = metadata !{i32 786468}
+!157 = metadata !{i32 786478, metadata !15, metadata !111, metadata !"GetNth", metadata !"GetNth", metadata !"_ZN10POVMS_List6GetNthEiR12POVMS_Object", i32 104, metadata !158, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !160, i32 104} ; [ DW_TAG_subprogram ] [line 104] [GetNth]
+!158 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !159, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!159 = metadata !{null, metadata !117, metadata !23, metadata !147}
+!160 = metadata !{i32 786468}
+!161 = metadata !{i32 786478, metadata !15, metadata !111, metadata !"SetNth", metadata !"SetNth", metadata !"_ZN10POVMS_List6SetNthEiR15POVMS_Attribute", i32 105, metadata !150, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !162, i32 105} ; [ DW_TAG_subprogram ] [line 105] [SetNth]
+!162 = metadata !{i32 786468}
+!163 = metadata !{i32 786478, metadata !15, metadata !111, metadata !"SetNth", metadata !"SetNth", metadata !"_ZN10POVMS_List6SetNthEiRS_", i32 106, metadata !154, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !164, i32 106} ; [ DW_TAG_subprogram ] [line 106] [SetNth]
+!164 = metadata !{i32 786468}
+!165 = metadata !{i32 786478, metadata !15, metadata !111, metadata !"SetNth", metadata !"SetNth", metadata !"_ZN10POVMS_List6SetNthEiR12POVMS_Object", i32 107, metadata !158, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !166, i32 107} ; [ DW_TAG_subprogram ] [line 107] [SetNth]
+!166 = metadata !{i32 786468}
+!167 = metadata !{i32 786478, metadata !15, metadata !111, metadata !"RemoveNth", metadata !"RemoveNth", metadata !"_ZN10POVMS_List9RemoveNthEi", i32 108, metadata !168, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !170, i32 108} ; [ DW_TAG_subprogram ] [line 108] [RemoveNth]
+!168 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !169, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!169 = metadata !{null, metadata !117, metadata !23}
+!170 = metadata !{i32 786468}
+!171 = metadata !{i32 786478, metadata !15, metadata !111, metadata !"Clear", metadata !"Clear", metadata !"_ZN10POVMS_List5ClearEv", i32 109, metadata !115, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !172, i32 109} ; [ DW_TAG_subprogram ] [line 109] [Clear]
+!172 = metadata !{i32 786468}
+!173 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"POVMS_Object", metadata !"POVMS_Object", metadata !"", i32 117, metadata !174, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !177, i32 117} ; [ DW_TAG_subprogram ] [line 117] [POVMS_Object]
+!174 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !175, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!175 = metadata !{null, metadata !176, metadata !42}
+!176 = metadata !{i32 786447, i32 0, i32 0, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 1088, metadata !59} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [artificial] [from POVMS_Object]
+!177 = metadata !{i32 786468}
+!178 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"POVMS_Object", metadata !"POVMS_Object", metadata !"", i32 118, metadata !179, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !183, i32 118} ; [ DW_TAG_subprogram ] [line 118] [POVMS_Object]
+!179 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !180, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!180 = metadata !{null, metadata !176, metadata !181}
+!181 = metadata !{i32 786448, null, null, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !182} ; [ DW_TAG_reference_type ] [line 0, size 0, align 0, offset 0] [from POVMSObject]
+!182 = metadata !{i32 786454, metadata !15, null, metadata !"POVMSObject", i32 173, i64 0, i64 0, i64 0, i32 0, metadata !66} ; [ DW_TAG_typedef ] [POVMSObject] [line 173, size 0, align 0, offset 0] [from POVMSData]
+!183 = metadata !{i32 786468}
+!184 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"POVMS_Object", metadata !"POVMS_Object", metadata !"", i32 119, metadata !185, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !188, i32 119} ; [ DW_TAG_subprogram ] [line 119] [POVMS_Object]
+!185 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !186, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!186 = metadata !{null, metadata !176, metadata !187}
+!187 = metadata !{i32 786454, metadata !10, null, metadata !"POVMSObjectPtr", i32 173, i64 0, i64 0, i64 0, i32 0, metadata !76} ; [ DW_TAG_typedef ] [POVMSObjectPtr] [line 173, size 0, align 0, offset 0] [from ]
+!188 = metadata !{i32 786468}
+!189 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"POVMS_Object", metadata !"POVMS_Object", metadata !"", i32 120, metadata !190, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !192, i32 120} ; [ DW_TAG_subprogram ] [line 120] [POVMS_Object]
+!190 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !191, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!191 = metadata !{null, metadata !176, metadata !147}
+!192 = metadata !{i32 786468}
+!193 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"~POVMS_Object", metadata !"~POVMS_Object", metadata !"", i32 121, metadata !194, i1 false, i1 false, i32 1, i32 0, metadata !59, i32 256, i1 true, null, null, i32 0, metadata !196, i32 121} ; [ DW_TAG_subprogram ] [line 121] [~POVMS_Object]
+!194 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !195, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!195 = metadata !{null, metadata !176}
+!196 = metadata !{i32 786468}
+!197 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"operator=", metadata !"operator=", metadata !"_ZN12POVMS_ObjectaSERS_", i32 123, metadata !198, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !200, i32 123} ; [ DW_TAG_subprogram ] [line 123] [operator=]
+!198 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !199, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!199 = metadata !{metadata !147, metadata !176, metadata !147}
+!200 = metadata !{i32 786468}
+!201 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"Get", metadata !"Get", metadata !"_ZN12POVMS_Object3GetEjR15POVMS_Attribute", i32 125, metadata !202, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !204, i32 125} ; [ DW_TAG_subprogram ] [line 125] [Get]
+!202 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !203, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!203 = metadata !{null, metadata !176, metadata !42, metadata !139}
+!204 = metadata !{i32 786468}
+!205 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"Get", metadata !"Get", metadata !"_ZN12POVMS_Object3GetEjR10POVMS_List", i32 126, metadata !206, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !208, i32 126} ; [ DW_TAG_subprogram ] [line 126] [Get]
+!206 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !207, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!207 = metadata !{null, metadata !176, metadata !42, metadata !128}
+!208 = metadata !{i32 786468}
+!209 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"Get", metadata !"Get", metadata !"_ZN12POVMS_Object3GetEjRS_", i32 127, metadata !210, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !212, i32 127} ; [ DW_TAG_subprogram ] [line 127] [Get]
+!210 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !211, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!211 = metadata !{null, metadata !176, metadata !42, metadata !147}
+!212 = metadata !{i32 786468}
+!213 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"Set", metadata !"Set", metadata !"_ZN12POVMS_Object3SetEjR15POVMS_Attribute", i32 128, metadata !202, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !214, i32 128} ; [ DW_TAG_subprogram ] [line 128] [Set]
+!214 = metadata !{i32 786468}
+!215 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"Set", metadata !"Set", metadata !"_ZN12POVMS_Object3SetEjR10POVMS_List", i32 129, metadata !206, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !216, i32 129} ; [ DW_TAG_subprogram ] [line 129] [Set]
+!216 = metadata !{i32 786468}
+!217 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"Set", metadata !"Set", metadata !"_ZN12POVMS_Object3SetEjRS_", i32 130, metadata !210, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !218, i32 130} ; [ DW_TAG_subprogram ] [line 130] [Set]
+!218 = metadata !{i32 786468}
+!219 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"Remove", metadata !"Remove", metadata !"_ZN12POVMS_Object6RemoveEj", i32 131, metadata !174, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !220, i32 131} ; [ DW_TAG_subprogram ] [line 131] [Remove]
+!220 = metadata !{i32 786468}
+!221 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"Exist", metadata !"Exist", metadata !"_ZN12POVMS_Object5ExistEj", i32 132, metadata !222, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !224, i32 132} ; [ DW_TAG_subprogram ] [line 132] [Exist]
+!222 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !223, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!223 = metadata !{metadata !104, metadata !176, metadata !42}
+!224 = metadata !{i32 786468}
+!225 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"Merge", metadata !"Merge", metadata !"_ZN12POVMS_Object5MergeERS_", i32 133, metadata !190, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !226, i32 133} ; [ DW_TAG_subprogram ] [line 133] [Merge]
+!226 = metadata !{i32 786468}
+!227 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"operator*", metadata !"operator*", metadata !"_ZNK12POVMS_ObjectdeEv", i32 135, metadata !228, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !234, i32 135} ; [ DW_TAG_subprogram ] [line 135] [operator*]
+!228 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !229, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!229 = metadata !{metadata !230, metadata !232}
+!230 = metadata !{i32 786448, null, null, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !231} ; [ DW_TAG_reference_type ] [line 0, size 0, align 0, offset 0] [from ]
+!231 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !182} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from POVMSObject]
+!232 = metadata !{i32 786447, i32 0, i32 0, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 1088, metadata !233} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [artificial] [from ]
+!233 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !59} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from POVMS_Object]
+!234 = metadata !{i32 786468}
+!235 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"operator->", metadata !"operator->", metadata !"_ZNK12POVMS_ObjectptEv", i32 136, metadata !236, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !239, i32 136} ; [ DW_TAG_subprogram ] [line 136] [operator->]
+!236 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !237, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!237 = metadata !{metadata !238, metadata !232}
+!238 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !187} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from POVMSObjectPtr]
+!239 = metadata !{i32 786468}
+!240 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"operator()", metadata !"operator()", metadata !"_ZN12POVMS_ObjectclEv", i32 137, metadata !241, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !243, i32 137} ; [ DW_TAG_subprogram ] [line 137] [operator()]
+!241 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !242, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!242 = metadata !{metadata !182, metadata !176}
+!243 = metadata !{i32 786468}
+!244 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"SetString", metadata !"SetString", metadata !"_ZN12POVMS_Object9SetStringEjPKc", i32 139, metadata !245, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !250, i32 139} ; [ DW_TAG_subprogram ] [line 139] [SetString]
+!245 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !246, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!246 = metadata !{null, metadata !176, metadata !42, metadata !247}
+!247 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !248} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!248 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !249} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from char]
+!249 = metadata !{i32 786468, null, null, metadata !"char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!250 = metadata !{i32 786468}
+!251 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"SetInt", metadata !"SetInt", metadata !"_ZN12POVMS_Object6SetIntEji", i32 140, metadata !252, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !254, i32 140} ; [ DW_TAG_subprogram ] [line 140] [SetInt]
+!252 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !253, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!253 = metadata !{null, metadata !176, metadata !42, metadata !23}
+!254 = metadata !{i32 786468}
+!255 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"SetLong", metadata !"SetLong", metadata !"_ZN12POVMS_Object7SetLongEjx", i32 141, metadata !256, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !259, i32 141} ; [ DW_TAG_subprogram ] [line 141] [SetLong]
+!256 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !257, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!257 = metadata !{null, metadata !176, metadata !42, metadata !258}
+!258 = metadata !{i32 786468, null, null, metadata !"long long int", i32 0, i64 64, i64 64, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [long long int] [line 0, size 64, align 64, offset 0, enc DW_ATE_signed]
+!259 = metadata !{i32 786468}
+!260 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"SetFloat", metadata !"SetFloat", metadata !"_ZN12POVMS_Object8SetFloatEjf", i32 142, metadata !261, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !264, i32 142} ; [ DW_TAG_subprogram ] [line 142] [SetFloat]
+!261 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !262, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!262 = metadata !{null, metadata !176, metadata !42, metadata !263}
+!263 = metadata !{i32 786468, null, null, metadata !"float", i32 0, i64 32, i64 32, i64 0, i32 0, i32 4} ; [ DW_TAG_base_type ] [float] [line 0, size 32, align 32, offset 0, enc DW_ATE_float]
+!264 = metadata !{i32 786468}
+!265 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"SetBool", metadata !"SetBool", metadata !"_ZN12POVMS_Object7SetBoolEji", i32 143, metadata !252, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !266, i32 143} ; [ DW_TAG_subprogram ] [line 143] [SetBool]
+!266 = metadata !{i32 786468}
+!267 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"SetType", metadata !"SetType", metadata !"_ZN12POVMS_Object7SetTypeEjj", i32 144, metadata !268, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !270, i32 144} ; [ DW_TAG_subprogram ] [line 144] [SetType]
+!268 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !269, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!269 = metadata !{null, metadata !176, metadata !42, metadata !42}
+!270 = metadata !{i32 786468}
+!271 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"GetStringLength", metadata !"GetStringLength", metadata !"_ZN12POVMS_Object15GetStringLengthEj", i32 145, metadata !272, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !274, i32 145} ; [ DW_TAG_subprogram ] [line 145] [GetStringLength]
+!272 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !273, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!273 = metadata !{metadata !23, metadata !176, metadata !42}
+!274 = metadata !{i32 786468}
+!275 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"GetString", metadata !"GetString", metadata !"_ZN12POVMS_Object9GetStringEjPci", i32 146, metadata !276, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !279, i32 146} ; [ DW_TAG_subprogram ] [line 146] [GetString]
+!276 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !277, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!277 = metadata !{metadata !23, metadata !176, metadata !42, metadata !278, metadata !23}
+!278 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !249} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from char]
+!279 = metadata !{i32 786468}
+!280 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"GetInt", metadata !"GetInt", metadata !"_ZN12POVMS_Object6GetIntEj", i32 147, metadata !272, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !281, i32 147} ; [ DW_TAG_subprogram ] [line 147] [GetInt]
+!281 = metadata !{i32 786468}
+!282 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"GetLong", metadata !"GetLong", metadata !"_ZN12POVMS_Object7GetLongEj", i32 148, metadata !283, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !285, i32 148} ; [ DW_TAG_subprogram ] [line 148] [GetLong]
+!283 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !284, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!284 = metadata !{metadata !258, metadata !176, metadata !42}
+!285 = metadata !{i32 786468}
+!286 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"GetFloat", metadata !"GetFloat", metadata !"_ZN12POVMS_Object8GetFloatEj", i32 149, metadata !287, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !289, i32 149} ; [ DW_TAG_subprogram ] [line 149] [GetFloat]
+!287 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !288, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!288 = metadata !{metadata !263, metadata !176, metadata !42}
+!289 = metadata !{i32 786468}
+!290 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"GetBool", metadata !"GetBool", metadata !"_ZN12POVMS_Object7GetBoolEj", i32 150, metadata !272, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !291, i32 150} ; [ DW_TAG_subprogram ] [line 150] [GetBool]
+!291 = metadata !{i32 786468}
+!292 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"GetType", metadata !"GetType", metadata !"_ZN12POVMS_Object7GetTypeEj", i32 151, metadata !293, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !295, i32 151} ; [ DW_TAG_subprogram ] [line 151] [GetType]
+!293 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !294, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!294 = metadata !{metadata !42, metadata !176, metadata !42}
+!295 = metadata !{i32 786468}
+!296 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"ReadHeader", metadata !"ReadHeader", metadata !"_ZN12POVMS_Object10ReadHeaderEPhRi", i32 201, metadata !297, i1 false, i1 false, i32 0, i32 0, null, i32 257, i1 true, null, null, i32 0, metadata !302, i32 201} ; [ DW_TAG_subprogram ] [line 201] [private] [ReadHeader]
+!297 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !298, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!298 = metadata !{metadata !104, metadata !176, metadata !299, metadata !301}
+!299 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !300} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from unsigned char]
+!300 = metadata !{i32 786468, null, null, metadata !"unsigned char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 8} ; [ DW_TAG_base_type ] [unsigned char] [line 0, size 8, align 8, offset 0, enc DW_ATE_unsigned_char]
+!301 = metadata !{i32 786448, null, null, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !23} ; [ DW_TAG_reference_type ] [line 0, size 0, align 0, offset 0] [from int]
+!302 = metadata !{i32 786468}
+!303 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"ReadObject", metadata !"ReadObject", metadata !"_ZN12POVMS_Object10ReadObjectEPhi", i32 202, metadata !304, i1 false, i1 false, i32 0, i32 0, null, i32 257, i1 true, null, null, i32 0, metadata !306, i32 202} ; [ DW_TAG_subprogram ] [line 202] [private] [ReadObject]
+!304 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !305, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!305 = metadata !{metadata !104, metadata !176, metadata !299, metadata !23}
+!306 = metadata !{i32 786468}
+!307 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"WriteHeader", metadata !"WriteHeader", metadata !"_ZN12POVMS_Object11WriteHeaderEPhRi", i32 203, metadata !297, i1 false, i1 false, i32 0, i32 0, null, i32 257, i1 true, null, null, i32 0, metadata !308, i32 203} ; [ DW_TAG_subprogram ] [line 203] [private] [WriteHeader]
+!308 = metadata !{i32 786468}
+!309 = metadata !{i32 786478, metadata !15, metadata !59, metadata !"WriteObject", metadata !"WriteObject", metadata !"_ZN12POVMS_Object11WriteObjectEPhi", i32 204, metadata !304, i1 false, i1 false, i32 0, i32 0, null, i32 257, i1 true, null, null, i32 0, metadata !310, i32 204} ; [ DW_TAG_subprogram ] [line 204] [private] [WriteObject]
+!310 = metadata !{i32 786468}
+!311 = metadata !{i32 786474, null, metadata !59, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !14} ; [ DW_TAG_friend ] [line 0, size 0, align 0, offset 0] [from POVMS_MessageReceiver]
+!312 = metadata !{i32 786474, null, metadata !59, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !56} ; [ DW_TAG_friend ] [line 0, size 0, align 0, offset 0] [from POVMS_Message]
+!313 = metadata !{i32 786478, metadata !15, metadata !56, metadata !"POVMS_Message", metadata !"POVMS_Message", metadata !"", i32 210, metadata !314, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !317, i32 210} ; [ DW_TAG_subprogram ] [line 210] [POVMS_Message]
+!314 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !315, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!315 = metadata !{null, metadata !316, metadata !42, metadata !42, metadata !42}
+!316 = metadata !{i32 786447, i32 0, i32 0, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 1088, metadata !56} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [artificial] [from POVMS_Message]
+!317 = metadata !{i32 786468}
+!318 = metadata !{i32 786478, metadata !15, metadata !56, metadata !"POVMS_Message", metadata !"POVMS_Message", metadata !"", i32 211, metadata !319, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !321, i32 211} ; [ DW_TAG_subprogram ] [line 211] [POVMS_Message]
+!319 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !320, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!320 = metadata !{null, metadata !316, metadata !181}
+!321 = metadata !{i32 786468}
+!322 = metadata !{i32 786478, metadata !15, metadata !56, metadata !"POVMS_Message", metadata !"POVMS_Message", metadata !"", i32 212, metadata !323, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !325, i32 212} ; [ DW_TAG_subprogram ] [line 212] [POVMS_Message]
+!323 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !324, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!324 = metadata !{null, metadata !316, metadata !187}
+!325 = metadata !{i32 786468}
+!326 = metadata !{i32 786478, metadata !15, metadata !56, metadata !"POVMS_Message", metadata !"POVMS_Message", metadata !"", i32 213, metadata !327, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !329, i32 213} ; [ DW_TAG_subprogram ] [line 213] [POVMS_Message]
+!327 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !328, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!328 = metadata !{null, metadata !316, metadata !147}
+!329 = metadata !{i32 786468}
+!330 = metadata !{i32 786478, metadata !15, metadata !56, metadata !"POVMS_Message", metadata !"POVMS_Message", metadata !"", i32 214, metadata !331, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !333, i32 214} ; [ DW_TAG_subprogram ] [line 214] [POVMS_Message]
+!331 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !332, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!332 = metadata !{null, metadata !316, metadata !55}
+!333 = metadata !{i32 786468}
+!334 = metadata !{i32 786478, metadata !15, metadata !56, metadata !"operator=", metadata !"operator=", metadata !"_ZN13POVMS_MessageaSERS_", i32 216, metadata !335, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !337, i32 216} ; [ DW_TAG_subprogram ] [line 216] [operator=]
+!335 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !336, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!336 = metadata !{metadata !55, metadata !316, metadata !55}
+!337 = metadata !{i32 786468}
+!338 = metadata !{i32 786478, metadata !15, metadata !56, metadata !"GetClass", metadata !"GetClass", metadata !"_ZN13POVMS_Message8GetClassEv", i32 218, metadata !339, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !341, i32 218} ; [ DW_TAG_subprogram ] [line 218] [GetClass]
+!339 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !340, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!340 = metadata !{metadata !42, metadata !316}
+!341 = metadata !{i32 786468}
+!342 = metadata !{i32 786478, metadata !15, metadata !56, metadata !"GetIdentifier", metadata !"GetIdentifier", metadata !"_ZN13POVMS_Message13GetIdentifierEv", i32 219, metadata !339, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !343, i32 219} ; [ DW_TAG_subprogram ] [line 219] [GetIdentifier]
+!343 = metadata !{i32 786468}
+!344 = metadata !{i32 786478, metadata !15, metadata !56, metadata !"GetSourceAddress", metadata !"GetSourceAddress", metadata !"_ZN13POVMS_Message16GetSourceAddressEv", i32 221, metadata !345, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !347, i32 221} ; [ DW_TAG_subprogram ] [line 221] [GetSourceAddress]
+!345 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !346, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!346 = metadata !{metadata !26, metadata !316}
+!347 = metadata !{i32 786468}
+!348 = metadata !{i32 786478, metadata !15, metadata !56, metadata !"GetDestinationAddress", metadata !"GetDestinationAddress", metadata !"_ZN13POVMS_Message21GetDestinationAddressEv", i32 222, metadata !345, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !349, i32 222} ; [ DW_TAG_subprogram ] [line 222] [GetDestinationAddress]
+!349 = metadata !{i32 786468}
+!350 = metadata !{i32 786478, metadata !15, metadata !56, metadata !"SetDestinationAddress", metadata !"SetDestinationAddress", metadata !"_ZN13POVMS_Message21SetDestinationAddressEPv", i32 223, metadata !351, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !353, i32 223} ; [ DW_TAG_subprogram ] [line 223] [SetDestinationAddress]
+!351 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !352, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!352 = metadata !{null, metadata !316, metadata !26}
+!353 = metadata !{i32 786468}
+!354 = metadata !{i32 786478, metadata !15, metadata !56, metadata !"~POVMS_Message", metadata !"~POVMS_Message", metadata !"", i32 207, metadata !355, i1 false, i1 false, i32 1, i32 0, metadata !56, i32 320, i1 true, null, null, i32 0, metadata !357, i32 207} ; [ DW_TAG_subprogram ] [line 207] [~POVMS_Message]
+!355 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !356, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!356 = metadata !{null, metadata !316}
+!357 = metadata !{i32 786468}
+!358 = metadata !{i32 786468}
+!359 = metadata !{i32 786478, metadata !15, metadata !48, metadata !"HandlerOO", metadata !"HandlerOO", metadata !"", i32 233, metadata !360, i1 false, i1 false, i32 0, i32 0, null, i32 320, i1 true, null, null, i32 0, metadata !362, i32 233} ; [ DW_TAG_subprogram ] [line 233] [HandlerOO]
+!360 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !361, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!361 = metadata !{null, metadata !54}
+!362 = metadata !{i32 786468}
+!363 = metadata !{i32 786445, metadata !15, metadata !45, metadata !"handlerptr", i32 269, i64 128, i64 64, i64 64, i32 1, metadata !44} ; [ DW_TAG_member ] [handlerptr] [line 269, size 128, align 64, offset 64] [private] [from MemberHandlerPtr]
+!364 = metadata !{i32 786445, metadata !15, metadata !45, metadata !"classptr", i32 270, i64 64, i64 64, i64 192, i32 1, metadata !43} ; [ DW_TAG_member ] [classptr] [line 270, size 64, align 64, offset 192] [private] [from ]
+!365 = metadata !{i32 786478, metadata !15, metadata !45, metadata !"MemberHandlerOO", metadata !"MemberHandlerOO", metadata !"", i32 249, metadata !366, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !369, i32 249} ; [ DW_TAG_subprogram ] [line 249] [MemberHandlerOO]
+!366 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !367, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!367 = metadata !{null, metadata !368}
+!368 = metadata !{i32 786447, i32 0, i32 0, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 1088, metadata !45} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [artificial] [from MemberHandlerOO<pov_frontend::RenderFrontend>]
+!369 = metadata !{i32 786468}
+!370 = metadata !{i32 786478, metadata !15, metadata !45, metadata !"MemberHandlerOO", metadata !"MemberHandlerOO", metadata !"", i32 255, metadata !371, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !373, i32 255} ; [ DW_TAG_subprogram ] [line 255] [MemberHandlerOO]
+!371 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !372, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!372 = metadata !{null, metadata !368, metadata !43, metadata !44}
+!373 = metadata !{i32 786468}
+!374 = metadata !{i32 786478, metadata !15, metadata !45, metadata !"Call", metadata !"Call", metadata !"_ZN21POVMS_MessageReceiver15MemberHandlerOOIN12pov_frontend14RenderFrontendEE4CallER13POVMS_MessageS5_i", i32 261, metadata !375, i1 false, i1 false, i32 1, i32 0, metadata !45, i32 256, i1 true, null, null, i32 0, metadata !377, i32 261} ; [ DW_TAG_subprogram ] [line 261] [Call]
+!375 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !376, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!376 = metadata !{null, metadata !368, metadata !55, metadata !55, metadata !23}
+!377 = metadata !{i32 786468}
+!378 = metadata !{metadata !379}
+!379 = metadata !{i32 786479, null, metadata !"T", metadata !5, null, i32 0, i32 0} ; [ DW_TAG_template_type_parameter ]
+!380 = metadata !{i32 786463, null, null, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !381, metadata !5} ; [ DW_TAG_ptr_to_member_type ] [line 0, size 0, align 0, offset 0] [from ]
+!381 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !382, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!382 = metadata !{null, metadata !383, metadata !55, metadata !55, metadata !23}
+!383 = metadata !{i32 786447, i32 0, i32 0, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 1088, metadata !5} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [artificial] [from RenderFrontend]
+!384 = metadata !{i32 786468}
+!385 = metadata !{i32 786478, metadata !15, metadata !14, metadata !"InstallFront<pov_frontend::RenderFrontend>", metadata !"InstallFront<pov_frontend::RenderFrontend>", metadata !"_ZN21POVMS_MessageReceiver12InstallFrontIN12pov_frontend14RenderFrontendEEEvjjPT_NS_13MemberHandlerIS3_E16MemberHandlerPtrE", i32 368, metadata !386, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, metadata !378, i32 0, metadata !422, i32 368} ; [ DW_TAG_subprogram ] [line 368] [protected] [InstallFront<pov_frontend::RenderFrontend>]
+!386 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !387, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!387 = metadata !{null, metadata !33, metadata !42, metadata !42, metadata !43, metadata !388}
+!388 = metadata !{i32 786454, metadata !15, metadata !389, metadata !"MemberHandlerPtr", i32 276, i64 0, i64 0, i64 0, i32 0, metadata !419} ; [ DW_TAG_typedef ] [MemberHandlerPtr] [line 276, size 0, align 0, offset 0] [from ]
+!389 = metadata !{i32 786434, metadata !15, metadata !14, metadata !"MemberHandler<pov_frontend::RenderFrontend>", i32 273, i64 256, i64 64, i32 0, i32 0, null, metadata !390, i32 0, metadata !392, metadata !378} ; [ DW_TAG_class_type ] [MemberHandler<pov_frontend::RenderFrontend>] [line 273, size 256, align 64, offset 0] [from ]
+!390 = metadata !{metadata !391, metadata !404, metadata !405, metadata !406, metadata !411, metadata !415}
+!391 = metadata !{i32 786460, null, metadata !389, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !392} ; [ DW_TAG_inheritance ] [line 0, size 0, align 0, offset 0] [from Handler]
+!392 = metadata !{i32 786434, metadata !15, metadata !14, metadata !"Handler", i32 238, i64 64, i64 64, i32 0, i32 0, null, metadata !393, i32 0, metadata !392, null} ; [ DW_TAG_class_type ] [Handler] [line 238, size 64, align 64, offset 0] [from ]
+!393 = metadata !{metadata !394, metadata !395, metadata !400}
+!394 = metadata !{i32 786445, metadata !15, metadata !18, metadata !"_vptr$Handler", i32 0, i64 64, i64 0, i64 0, i32 64, metadata !19} ; [ DW_TAG_member ] [_vptr$Handler] [line 0, size 64, align 0, offset 0] [artificial] [from ]
+!395 = metadata !{i32 786478, metadata !15, metadata !392, metadata !"Call", metadata !"Call", metadata !"_ZN21POVMS_MessageReceiver7Handler4CallEP9POVMSDataS2_i", i32 241, metadata !396, i1 false, i1 false, i32 2, i32 0, metadata !392, i32 256, i1 true, null, null, i32 0, metadata !399, i32 241} ; [ DW_TAG_subprogram ] [line 241] [Call]
+!396 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !397, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!397 = metadata !{null, metadata !398, metadata !187, metadata !187, metadata !23}
+!398 = metadata !{i32 786447, i32 0, i32 0, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 1088, metadata !392} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [artificial] [from Handler]
+!399 = metadata !{i32 786468}
+!400 = metadata !{i32 786478, metadata !15, metadata !392, metadata !"Handler", metadata !"Handler", metadata !"", i32 238, metadata !401, i1 false, i1 false, i32 0, i32 0, null, i32 320, i1 true, null, null, i32 0, metadata !403, i32 238} ; [ DW_TAG_subprogram ] [line 238] [Handler]
+!401 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !402, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!402 = metadata !{null, metadata !398}
+!403 = metadata !{i32 786468}
+!404 = metadata !{i32 786445, metadata !15, metadata !389, metadata !"handlerptr", i32 298, i64 128, i64 64, i64 64, i32 1, metadata !388} ; [ DW_TAG_member ] [handlerptr] [line 298, size 128, align 64, offset 64] [private] [from MemberHandlerPtr]
+!405 = metadata !{i32 786445, metadata !15, metadata !389, metadata !"classptr", i32 299, i64 64, i64 64, i64 192, i32 1, metadata !43} ; [ DW_TAG_member ] [classptr] [line 299, size 64, align 64, offset 192] [private] [from ]
+!406 = metadata !{i32 786478, metadata !15, metadata !389, metadata !"MemberHandler", metadata !"MemberHandler", metadata !"", i32 278, metadata !407, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !410, i32 278} ; [ DW_TAG_subprogram ] [line 278] [MemberHandler]
+!407 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !408, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!408 = metadata !{null, metadata !409}
+!409 = metadata !{i32 786447, i32 0, i32 0, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 1088, metadata !389} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [artificial] [from MemberHandler<pov_frontend::RenderFrontend>]
+!410 = metadata !{i32 786468}
+!411 = metadata !{i32 786478, metadata !15, metadata !389, metadata !"MemberHandler", metadata !"MemberHandler", metadata !"", i32 284, metadata !412, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !414, i32 284} ; [ DW_TAG_subprogram ] [line 284] [MemberHandler]
+!412 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !413, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!413 = metadata !{null, metadata !409, metadata !43, metadata !388}
+!414 = metadata !{i32 786468}
+!415 = metadata !{i32 786478, metadata !15, metadata !389, metadata !"Call", metadata !"Call", metadata !"_ZN21POVMS_MessageReceiver13MemberHandlerIN12pov_frontend14RenderFrontendEE4CallEP9POVMSDataS5_i", i32 290, metadata !416, i1 false, i1 false, i32 1, i32 0, metadata !389, i32 256, i1 true, null, null, i32 0, metadata !418, i32 290} ; [ DW_TAG_subprogram ] [line 290] [Call]
+!416 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !417, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!417 = metadata !{null, metadata !409, metadata !187, metadata !187, metadata !23}
+!418 = metadata !{i32 786468}
+!419 = metadata !{i32 786463, null, null, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !420, metadata !5} ; [ DW_TAG_ptr_to_member_type ] [line 0, size 0, align 0, offset 0] [from ]
+!420 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !421, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!421 = metadata !{null, metadata !383, metadata !187, metadata !187, metadata !23}
+!422 = metadata !{i32 786468}
+!423 = metadata !{i32 786478, metadata !15, metadata !14, metadata !"InstallFront", metadata !"InstallFront", metadata !"_ZN21POVMS_MessageReceiver12InstallFrontEjjPFvR13POVMS_MessageS1_iPvES2_", i32 373, metadata !424, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !448, i32 373} ; [ DW_TAG_subprogram ] [line 373] [protected] [InstallFront]
+!424 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !425, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!425 = metadata !{null, metadata !33, metadata !42, metadata !42, metadata !426, metadata !26}
+!426 = metadata !{i32 786454, metadata !15, metadata !427, metadata !"FunctionHandlerPtr", i32 305, i64 0, i64 0, i64 0, i32 0, metadata !445} ; [ DW_TAG_typedef ] [FunctionHandlerPtr] [line 305, size 0, align 0, offset 0] [from ]
+!427 = metadata !{i32 786434, metadata !15, metadata !14, metadata !"FunctionHandlerOO", i32 302, i64 192, i64 64, i32 0, i32 0, null, metadata !428, i32 0, metadata !48, null} ; [ DW_TAG_class_type ] [FunctionHandlerOO] [line 302, size 192, align 64, offset 0] [from ]
+!428 = metadata !{metadata !429, metadata !430, metadata !431, metadata !432, metadata !437, metadata !441}
+!429 = metadata !{i32 786460, null, metadata !427, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !48} ; [ DW_TAG_inheritance ] [line 0, size 0, align 0, offset 0] [from HandlerOO]
+!430 = metadata !{i32 786445, metadata !15, metadata !427, metadata !"handlerptr", i32 327, i64 64, i64 64, i64 64, i32 1, metadata !426} ; [ DW_TAG_member ] [handlerptr] [line 327, size 64, align 64, offset 64] [private] [from FunctionHandlerPtr]
+!431 = metadata !{i32 786445, metadata !15, metadata !427, metadata !"privatedata", i32 328, i64 64, i64 64, i64 128, i32 1, metadata !26} ; [ DW_TAG_member ] [privatedata] [line 328, size 64, align 64, offset 128] [private] [from ]
+!432 = metadata !{i32 786478, metadata !15, metadata !427, metadata !"FunctionHandlerOO", metadata !"FunctionHandlerOO", metadata !"", i32 307, metadata !433, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !436, i32 307} ; [ DW_TAG_subprogram ] [line 307] [FunctionHandlerOO]
+!433 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !434, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!434 = metadata !{null, metadata !435}
+!435 = metadata !{i32 786447, i32 0, i32 0, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 1088, metadata !427} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [artificial] [from FunctionHandlerOO]
+!436 = metadata !{i32 786468}
+!437 = metadata !{i32 786478, metadata !15, metadata !427, metadata !"FunctionHandlerOO", metadata !"FunctionHandlerOO", metadata !"", i32 313, metadata !438, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !440, i32 313} ; [ DW_TAG_subprogram ] [line 313] [FunctionHandlerOO]
+!438 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !439, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!439 = metadata !{null, metadata !435, metadata !426, metadata !26}
+!440 = metadata !{i32 786468}
+!441 = metadata !{i32 786478, metadata !15, metadata !427, metadata !"Call", metadata !"Call", metadata !"_ZN21POVMS_MessageReceiver17FunctionHandlerOO4CallER13POVMS_MessageS2_i", i32 319, metadata !442, i1 false, i1 false, i32 1, i32 0, metadata !427, i32 256, i1 true, null, null, i32 0, metadata !444, i32 319} ; [ DW_TAG_subprogram ] [line 319] [Call]
+!442 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !443, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!443 = metadata !{null, metadata !435, metadata !55, metadata !55, metadata !23}
+!444 = metadata !{i32 786468}
+!445 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !446} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!446 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !447, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!447 = metadata !{null, metadata !55, metadata !55, metadata !23, metadata !26}
+!448 = metadata !{i32 786468}
+!449 = metadata !{i32 786478, metadata !15, metadata !14, metadata !"InstallFront", metadata !"InstallFront", metadata !"_ZN21POVMS_MessageReceiver12InstallFrontEjjPFvP9POVMSDataS1_iPvES2_", i32 378, metadata !450, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !474, i32 378} ; [ DW_TAG_subprogram ] [line 378] [protected] [InstallFront]
+!450 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !451, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!451 = metadata !{null, metadata !33, metadata !42, metadata !42, metadata !452, metadata !26}
+!452 = metadata !{i32 786454, metadata !15, metadata !453, metadata !"FunctionHandlerPtr", i32 334, i64 0, i64 0, i64 0, i32 0, metadata !471} ; [ DW_TAG_typedef ] [FunctionHandlerPtr] [line 334, size 0, align 0, offset 0] [from ]
+!453 = metadata !{i32 786434, metadata !15, metadata !14, metadata !"FunctionHandler", i32 331, i64 192, i64 64, i32 0, i32 0, null, metadata !454, i32 0, metadata !392, null} ; [ DW_TAG_class_type ] [FunctionHandler] [line 331, size 192, align 64, offset 0] [from ]
+!454 = metadata !{metadata !455, metadata !456, metadata !457, metadata !458, metadata !463, metadata !467}
+!455 = metadata !{i32 786460, null, metadata !453, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !392} ; [ DW_TAG_inheritance ] [line 0, size 0, align 0, offset 0] [from Handler]
+!456 = metadata !{i32 786445, metadata !15, metadata !453, metadata !"handlerptr", i32 356, i64 64, i64 64, i64 64, i32 1, metadata !452} ; [ DW_TAG_member ] [handlerptr] [line 356, size 64, align 64, offset 64] [private] [from FunctionHandlerPtr]
+!457 = metadata !{i32 786445, metadata !15, metadata !453, metadata !"privatedata", i32 357, i64 64, i64 64, i64 128, i32 1, metadata !26} ; [ DW_TAG_member ] [privatedata] [line 357, size 64, align 64, offset 128] [private] [from ]
+!458 = metadata !{i32 786478, metadata !15, metadata !453, metadata !"FunctionHandler", metadata !"FunctionHandler", metadata !"", i32 336, metadata !459, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !462, i32 336} ; [ DW_TAG_subprogram ] [line 336] [FunctionHandler]
+!459 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !460, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!460 = metadata !{null, metadata !461}
+!461 = metadata !{i32 786447, i32 0, i32 0, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 1088, metadata !453} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [artificial] [from FunctionHandler]
+!462 = metadata !{i32 786468}
+!463 = metadata !{i32 786478, metadata !15, metadata !453, metadata !"FunctionHandler", metadata !"FunctionHandler", metadata !"", i32 342, metadata !464, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !466, i32 342} ; [ DW_TAG_subprogram ] [line 342] [FunctionHandler]
+!464 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !465, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!465 = metadata !{null, metadata !461, metadata !452, metadata !26}
+!466 = metadata !{i32 786468}
+!467 = metadata !{i32 786478, metadata !15, metadata !453, metadata !"Call", metadata !"Call", metadata !"_ZN21POVMS_MessageReceiver15FunctionHandler4CallEP9POVMSDataS2_i", i32 348, metadata !468, i1 false, i1 false, i32 1, i32 0, metadata !453, i32 256, i1 true, null, null, i32 0, metadata !470, i32 348} ; [ DW_TAG_subprogram ] [line 348] [Call]
+!468 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !469, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!469 = metadata !{null, metadata !461, metadata !187, metadata !187, metadata !23}
+!470 = metadata !{i32 786468}
+!471 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !472} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!472 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !473, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!473 = metadata !{null, metadata !187, metadata !187, metadata !23, metadata !26}
+!474 = metadata !{i32 786468}
+!475 = metadata !{i32 786478, metadata !15, metadata !14, metadata !"InstallBack<pov_frontend::RenderFrontend>", metadata !"InstallBack<pov_frontend::RenderFrontend>", metadata !"_ZN21POVMS_MessageReceiver11InstallBackIN12pov_frontend14RenderFrontendEEEvjjPT_NS_15MemberHandlerOOIS3_E16MemberHandlerPtrE", i32 383, metadata !40, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, metadata !378, i32 0, metadata !476, i32 383} ; [ DW_TAG_subprogram ] [line 383] [protected] [InstallBack<pov_frontend::RenderFrontend>]
+!476 = metadata !{i32 786468}
+!477 = metadata !{i32 786478, metadata !15, metadata !14, metadata !"InstallBack<pov_frontend::RenderFrontend>", metadata !"InstallBack<pov_frontend::RenderFrontend>", metadata !"_ZN21POVMS_MessageReceiver11InstallBackIN12pov_frontend14RenderFrontendEEEvjjPT_NS_13MemberHandlerIS3_E16MemberHandlerPtrE", i32 388, metadata !386, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, metadata !378, i32 0, metadata !478, i32 388} ; [ DW_TAG_subprogram ] [line 388] [protected] [InstallBack<pov_frontend::RenderFrontend>]
+!478 = metadata !{i32 786468}
+!479 = metadata !{i32 786478, metadata !15, metadata !14, metadata !"InstallBack", metadata !"InstallBack", metadata !"_ZN21POVMS_MessageReceiver11InstallBackEjjPFvR13POVMS_MessageS1_iPvES2_", i32 393, metadata !424, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !480, i32 393} ; [ DW_TAG_subprogram ] [line 393] [protected] [InstallBack]
+!480 = metadata !{i32 786468}
+!481 = metadata !{i32 786478, metadata !15, metadata !14, metadata !"InstallBack", metadata !"InstallBack", metadata !"_ZN21POVMS_MessageReceiver11InstallBackEjjPFvP9POVMSDataS1_iPvES2_", i32 398, metadata !450, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !482, i32 398} ; [ DW_TAG_subprogram ] [line 398] [protected] [InstallBack]
+!482 = metadata !{i32 786468}
+!483 = metadata !{i32 786478, metadata !15, metadata !14, metadata !"Remove", metadata !"Remove", metadata !"_ZN21POVMS_MessageReceiver6RemoveEjj", i32 403, metadata !484, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !486, i32 403} ; [ DW_TAG_subprogram ] [line 403] [protected] [Remove]
+!484 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !485, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!485 = metadata !{null, metadata !33, metadata !42, metadata !42}
+!486 = metadata !{i32 786468}
+!487 = metadata !{i32 786478, metadata !15, metadata !14, metadata !"POVMS_MessageReceiver", metadata !"POVMS_MessageReceiver", metadata !"", i32 418, metadata !36, i1 false, i1 false, i32 0, i32 0, null, i32 257, i1 true, null, null, i32 0, metadata !488, i32 418} ; [ DW_TAG_subprogram ] [line 418] [private] [POVMS_MessageReceiver]
+!488 = metadata !{i32 786468}
+!489 = metadata !{i32 786478, metadata !15, metadata !14, metadata !"POVMS_MessageReceiver", metadata !"POVMS_MessageReceiver", metadata !"", i32 419, metadata !490, i1 false, i1 false, i32 0, i32 0, null, i32 257, i1 true, null, null, i32 0, metadata !494, i32 419} ; [ DW_TAG_subprogram ] [line 419] [private] [POVMS_MessageReceiver]
+!490 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !491, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!491 = metadata !{null, metadata !33, metadata !492}
+!492 = metadata !{i32 786448, null, null, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !493} ; [ DW_TAG_reference_type ] [line 0, size 0, align 0, offset 0] [from ]
+!493 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !14} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from POVMS_MessageReceiver]
+!494 = metadata !{i32 786468}
+!495 = metadata !{i32 786478, metadata !15, metadata !14, metadata !"operator=", metadata !"operator=", metadata !"_ZN21POVMS_MessageReceiveraSERKS_", i32 420, metadata !496, i1 false, i1 false, i32 0, i32 0, null, i32 257, i1 true, null, null, i32 0, metadata !499, i32 420} ; [ DW_TAG_subprogram ] [line 420] [private] [operator=]
+!496 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !497, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!497 = metadata !{metadata !498, metadata !33, metadata !492}
+!498 = metadata !{i32 786448, null, null, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !14} ; [ DW_TAG_reference_type ] [line 0, size 0, align 0, offset 0] [from POVMS_MessageReceiver]
+!499 = metadata !{i32 786468}
+!500 = metadata !{i32 786478, metadata !15, metadata !14, metadata !"ReceiveHandler", metadata !"ReceiveHandler", metadata !"_ZN21POVMS_MessageReceiver14ReceiveHandlerEP9POVMSDataS1_iPv", i32 422, metadata !501, i1 false, i1 false, i32 0, i32 0, null, i32 257, i1 true, null, null, i32 0, metadata !503, i32 422} ; [ DW_TAG_subprogram ] [line 422] [private] [ReceiveHandler]
+!501 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !502, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!502 = metadata !{metadata !23, metadata !187, metadata !187, metadata !23, metadata !26}
+!503 = metadata !{i32 786468}
+!504 = metadata !{i32 786478, metadata !15, metadata !14, metadata !"AddNodeFront", metadata !"AddNodeFront", metadata !"_ZN21POVMS_MessageReceiver12AddNodeFrontEjjPNS_9HandlerOOEPNS_7HandlerE", i32 424, metadata !505, i1 false, i1 false, i32 0, i32 0, null, i32 257, i1 true, null, null, i32 0, metadata !509, i32 424} ; [ DW_TAG_subprogram ] [line 424] [private] [AddNodeFront]
+!505 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !506, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!506 = metadata !{null, metadata !33, metadata !42, metadata !42, metadata !507, metadata !508}
+!507 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !48} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from HandlerOO]
+!508 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !392} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from Handler]
+!509 = metadata !{i32 786468}
+!510 = metadata !{i32 786478, metadata !15, metadata !14, metadata !"AddNodeBack", metadata !"AddNodeBack", metadata !"_ZN21POVMS_MessageReceiver11AddNodeBackEjjPNS_9HandlerOOEPNS_7HandlerE", i32 425, metadata !505, i1 false, i1 false, i32 0, i32 0, null, i32 257, i1 true, null, null, i32 0, metadata !511, i32 425} ; [ DW_TAG_subprogram ] [line 425] [private] [AddNodeBack]
+!511 = metadata !{i32 786468}
+!512 = metadata !{i32 786478, metadata !15, metadata !14, metadata !"RemoveNode", metadata !"RemoveNode", metadata !"_ZN21POVMS_MessageReceiver10RemoveNodeEPNS_11HandlerNodeE", i32 426, metadata !513, i1 false, i1 false, i32 0, i32 0, null, i32 257, i1 true, null, null, i32 0, metadata !515, i32 426} ; [ DW_TAG_subprogram ] [line 426] [private] [RemoveNode]
+!513 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !514, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!514 = metadata !{null, metadata !33, metadata !28}
+!515 = metadata !{i32 786468}
+!516 = metadata !{i32 786445, metadata !10, metadata !9, metadata !"streams", i32 64, i64 512, i64 64, i64 192, i32 2, metadata !517} ; [ DW_TAG_member ] [streams] [line 64, size 512, align 64, offset 192] [protected] [from ]
+!517 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 512, i64 64, i32 0, i32 0, metadata !518, metadata !522, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 512, align 64, offset 0] [from ]
+!518 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !519} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from TextStreamBuffer]
+!519 = metadata !{i32 786434, metadata !520, metadata !521, metadata !"TextStreamBuffer", i32 51, i64 0, i64 0, i32 0, i32 4, null, null, i32 0} ; [ DW_TAG_class_type ] [TextStreamBuffer] [line 51, size 0, align 0, offset 0] [fwd] [from ]
+!520 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/textstreambuffer.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!521 = metadata !{i32 786489, metadata !520, null, metadata !"pov_base", i32 49} ; [ DW_TAG_namespace ] [pov_base] [line 49]
+!522 = metadata !{metadata !523}
+!523 = metadata !{i32 786465, i64 0, i64 8}       ; [ DW_TAG_subrange_type ] [0, 7]
+!524 = metadata !{i32 786445, metadata !10, metadata !9, metadata !"streamnames", i32 65, i64 512, i64 64, i64 704, i32 2, metadata !525} ; [ DW_TAG_member ] [streamnames] [line 65, size 512, align 64, offset 704] [protected] [from ]
+!525 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 512, i64 64, i32 0, i32 0, metadata !278, metadata !522, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 512, align 64, offset 0] [from ]
+!526 = metadata !{i32 786445, metadata !10, metadata !9, metadata !"consoleoutput", i32 66, i64 64, i64 8, i64 1216, i32 2, metadata !527} ; [ DW_TAG_member ] [consoleoutput] [line 66, size 64, align 8, offset 1216] [protected] [from ]
+!527 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 64, i64 8, i32 0, i32 0, metadata !104, metadata !522, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 64, align 8, offset 0] [from bool]
+!528 = metadata !{i32 786445, metadata !10, metadata !9, metadata !"output_string_buffer_size", i32 92, i64 32, i64 32, i64 1280, i32 1, metadata !529} ; [ DW_TAG_member ] [output_string_buffer_size] [line 92, size 32, align 32, offset 1280] [private] [from ]
+!529 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !42} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from unsigned int]
+!530 = metadata !{i32 786445, metadata !10, metadata !9, metadata !"output_string_buffer", i32 93, i64 64, i64 64, i64 1344, i32 1, metadata !278} ; [ DW_TAG_member ] [output_string_buffer] [line 93, size 64, align 64, offset 1344] [private] [from ]
+!531 = metadata !{i32 786445, metadata !10, metadata !9, metadata !"status_string_buffer", i32 94, i64 640, i64 8, i64 1408, i32 1, metadata !532} ; [ DW_TAG_member ] [status_string_buffer] [line 94, size 640, align 8, offset 1408] [private] [from ]
+!532 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 640, i64 8, i32 0, i32 0, metadata !249, metadata !533, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 640, align 8, offset 0] [from char]
+!533 = metadata !{metadata !534}
+!534 = metadata !{i32 786465, i64 0, i64 80}      ; [ DW_TAG_subrange_type ] [0, 79]
+!535 = metadata !{i32 786478, metadata !10, metadata !9, metadata !"MessageOutput", metadata !"MessageOutput", metadata !"", i32 48, metadata !536, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !539, i32 48} ; [ DW_TAG_subprogram ] [line 48] [MessageOutput]
+!536 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !537, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!537 = metadata !{null, metadata !538, metadata !25}
+!538 = metadata !{i32 786447, i32 0, i32 0, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 1088, metadata !9} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [artificial] [from MessageOutput]
+!539 = metadata !{i32 786468}
+!540 = metadata !{i32 786478, metadata !10, metadata !9, metadata !"~MessageOutput", metadata !"~MessageOutput", metadata !"", i32 49, metadata !541, i1 false, i1 false, i32 1, i32 0, metadata !9, i32 256, i1 true, null, null, i32 0, metadata !543, i32 49} ; [ DW_TAG_subprogram ] [line 49] [~MessageOutput]
+!541 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !542, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!542 = metadata !{null, metadata !538}
+!543 = metadata !{i32 786468}
+!544 = metadata !{i32 786478, metadata !10, metadata !9, metadata !"OpenStreams", metadata !"OpenStreams", metadata !"_ZN12pov_frontend13MessageOutput11OpenStreamsEb", i32 68, metadata !545, i1 false, i1 false, i32 2, i32 2, metadata !9, i32 258, i1 true, null, null, i32 0, metadata !547, i32 68} ; [ DW_TAG_subprogram ] [line 68] [protected] [OpenStreams]
+!545 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !546, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!546 = metadata !{null, metadata !538, metadata !104}
+!547 = metadata !{i32 786468}
+!548 = metadata !{i32 786478, metadata !10, metadata !9, metadata !"CloseStreams", metadata !"CloseStreams", metadata !"_ZN12pov_frontend13MessageOutput12CloseStreamsEv", i32 69, metadata !541, i1 false, i1 false, i32 2, i32 3, metadata !9, i32 258, i1 true, null, null, i32 0, metadata !549, i32 69} ; [ DW_TAG_subprogram ] [line 69] [protected] [CloseStreams]
+!549 = metadata !{i32 786468}
+!550 = metadata !{i32 786478, metadata !10, metadata !9, metadata !"Printfile", metadata !"Printfile", metadata !"_ZN12pov_frontend13MessageOutput9PrintfileEiPKcmi", i32 71, metadata !551, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !554, i32 71} ; [ DW_TAG_subprogram ] [line 71] [protected] [Printfile]
+!551 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !552, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!552 = metadata !{null, metadata !538, metadata !23, metadata !247, metadata !553, metadata !23}
+!553 = metadata !{i32 786468, null, null, metadata !"long unsigned int", i32 0, i64 64, i64 64, i64 0, i32 0, i32 7} ; [ DW_TAG_base_type ] [long unsigned int] [line 0, size 64, align 64, offset 0, enc DW_ATE_unsigned]
+!554 = metadata !{i32 786468}
+!555 = metadata !{i32 786478, metadata !10, metadata !9, metadata !"Printf", metadata !"Printf", metadata !"_ZN12pov_frontend13MessageOutput6PrintfEiPKcz", i32 72, metadata !556, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !558, i32 72} ; [ DW_TAG_subprogram ] [line 72] [protected] [Printf]
+!556 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !557, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!557 = metadata !{null, metadata !538, metadata !23, metadata !247}
+!558 = metadata !{i32 786468}
+!559 = metadata !{i32 786478, metadata !10, metadata !9, metadata !"Flush", metadata !"Flush", metadata !"_ZN12pov_frontend13MessageOutput5FlushEi", i32 73, metadata !560, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !562, i32 73} ; [ DW_TAG_subprogram ] [line 73] [protected] [Flush]
+!560 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !561, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!561 = metadata !{null, metadata !538, metadata !23}
+!562 = metadata !{i32 786468}
+!563 = metadata !{i32 786478, metadata !10, metadata !9, metadata !"InitInfo", metadata !"InitInfo", metadata !"_ZN12pov_frontend13MessageOutput8InitInfoEP9POVMSDataS2_i", i32 75, metadata !564, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !566, i32 75} ; [ DW_TAG_subprogram ] [line 75] [protected] [InitInfo]
+!564 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !565, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!565 = metadata !{null, metadata !538, metadata !187, metadata !187, metadata !23}
+!566 = metadata !{i32 786468}
+!567 = metadata !{i32 786478, metadata !10, metadata !9, metadata !"RenderOptions", metadata !"RenderOptions", metadata !"_ZN12pov_frontend13MessageOutput13RenderOptionsEP9POVMSDataS2_i", i32 76, metadata !564, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !568, i32 76} ; [ DW_TAG_subprogram ] [line 76] [protected] [RenderOptions]
+!568 = metadata !{i32 786468}
+!569 = metadata !{i32 786478, metadata !10, metadata !9, metadata !"RenderStarted", metadata !"RenderStarted", metadata !"_ZN12pov_frontend13MessageOutput13RenderStartedEP9POVMSDataS2_i", i32 77, metadata !564, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !570, i32 77} ; [ DW_TAG_subprogram ] [line 77] [protected] [RenderStarted]
+!570 = metadata !{i32 786468}
+!571 = metadata !{i32 786478, metadata !10, metadata !9, metadata !"FrameStatistics", metadata !"FrameStatistics", metadata !"_ZN12pov_frontend13MessageOutput15FrameStatisticsEP9POVMSDataS2_i", i32 78, metadata !564, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !572, i32 78} ; [ DW_TAG_subprogram ] [line 78] [protected] [FrameStatistics]
+!572 = metadata !{i32 786468}
+!573 = metadata !{i32 786478, metadata !10, metadata !9, metadata !"ParseStatistics", metadata !"ParseStatistics", metadata !"_ZN12pov_frontend13MessageOutput15ParseStatisticsEP9POVMSDataS2_i", i32 79, metadata !564, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !574, i32 79} ; [ DW_TAG_subprogram ] [line 79] [protected] [ParseStatistics]
+!574 = metadata !{i32 786468}
+!575 = metadata !{i32 786478, metadata !10, metadata !9, metadata !"RenderStatistics", metadata !"RenderStatistics", metadata !"_ZN12pov_frontend13MessageOutput16RenderStatisticsEP9POVMSDataS2_i", i32 80, metadata !564, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !576, i32 80} ; [ DW_TAG_subprogram ] [line 80] [protected] [RenderStatistics]
+!576 = metadata !{i32 786468}
+!577 = metadata !{i32 786478, metadata !10, metadata !9, metadata !"RenderDone", metadata !"RenderDone", metadata !"_ZN12pov_frontend13MessageOutput10RenderDoneEP9POVMSDataS2_i", i32 81, metadata !564, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !578, i32 81} ; [ DW_TAG_subprogram ] [line 81] [protected] [RenderDone]
+!578 = metadata !{i32 786468}
+!579 = metadata !{i32 786478, metadata !10, metadata !9, metadata !"Progress", metadata !"Progress", metadata !"_ZN12pov_frontend13MessageOutput8ProgressEP9POVMSDataS2_i", i32 82, metadata !564, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !580, i32 82} ; [ DW_TAG_subprogram ] [line 82] [protected] [Progress]
+!580 = metadata !{i32 786468}
+!581 = metadata !{i32 786478, metadata !10, metadata !9, metadata !"Warning", metadata !"Warning", metadata !"_ZN12pov_frontend13MessageOutput7WarningEP9POVMSDataS2_i", i32 83, metadata !564, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !582, i32 83} ; [ DW_TAG_subprogram ] [line 83] [protected] [Warning]
+!582 = metadata !{i32 786468}
+!583 = metadata !{i32 786478, metadata !10, metadata !9, metadata !"Error", metadata !"Error", metadata !"_ZN12pov_frontend13MessageOutput5ErrorEP9POVMSDataS2_i", i32 84, metadata !564, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !584, i32 84} ; [ DW_TAG_subprogram ] [line 84] [protected] [Error]
+!584 = metadata !{i32 786468}
+!585 = metadata !{i32 786478, metadata !10, metadata !9, metadata !"FatalError", metadata !"FatalError", metadata !"_ZN12pov_frontend13MessageOutput10FatalErrorEP9POVMSDataS2_i", i32 85, metadata !564, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !586, i32 85} ; [ DW_TAG_subprogram ] [line 85] [protected] [FatalError]
+!586 = metadata !{i32 786468}
+!587 = metadata !{i32 786478, metadata !10, metadata !9, metadata !"DebugInfo", metadata !"DebugInfo", metadata !"_ZN12pov_frontend13MessageOutput9DebugInfoEP9POVMSDataS2_i", i32 86, metadata !564, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !588, i32 86} ; [ DW_TAG_subprogram ] [line 86] [protected] [DebugInfo]
+!588 = metadata !{i32 786468}
+!589 = metadata !{i32 786478, metadata !10, metadata !9, metadata !"FileMessage", metadata !"FileMessage", metadata !"_ZN12pov_frontend13MessageOutput11FileMessageEiP9POVMSData", i32 88, metadata !590, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !592, i32 88} ; [ DW_TAG_subprogram ] [line 88] [protected] [FileMessage]
+!590 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !591, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!591 = metadata !{null, metadata !538, metadata !23, metadata !187}
+!592 = metadata !{i32 786468}
+!593 = metadata !{i32 786478, metadata !10, metadata !9, metadata !"GetOptionSwitchString", metadata !"GetOptionSwitchString", metadata !"_ZN12pov_frontend13MessageOutput21GetOptionSwitchStringEP9POVMSDatajb", i32 90, metadata !594, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !596, i32 90} ; [ DW_TAG_subprogram ] [line 90] [protected] [GetOptionSwitchString]
+!594 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !595, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!595 = metadata !{metadata !247, metadata !538, metadata !187, metadata !42, metadata !104}
+!596 = metadata !{i32 786468}
+!597 = metadata !{i32 786445, metadata !4, metadata !5, metadata !"backendaddress", i32 64, i64 64, i64 64, i64 2048, i32 1, metadata !26} ; [ DW_TAG_member ] [backendaddress] [line 64, size 64, align 64, offset 2048] [private] [from ]
+!598 = metadata !{i32 786445, metadata !4, metadata !5, metadata !"context", i32 65, i64 64, i64 64, i64 2112, i32 1, metadata !25} ; [ DW_TAG_member ] [context] [line 65, size 64, align 64, offset 2112] [private] [from POVMSContext]
+!599 = metadata !{i32 786445, metadata !4, metadata !5, metadata !"state", i32 66, i64 32, i64 32, i64 2176, i32 1, metadata !3} ; [ DW_TAG_member ] [state] [line 66, size 32, align 32, offset 2176] [private] [from EngineState]
+!600 = metadata !{i32 786478, metadata !4, metadata !5, metadata !"RenderFrontend", metadata !"RenderFrontend", metadata !"", i32 53, metadata !601, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !603, i32 53} ; [ DW_TAG_subprogram ] [line 53] [RenderFrontend]
+!601 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !602, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!602 = metadata !{null, metadata !383, metadata !25, metadata !26}
+!603 = metadata !{i32 786468}
+!604 = metadata !{i32 786478, metadata !4, metadata !5, metadata !"~RenderFrontend", metadata !"~RenderFrontend", metadata !"", i32 54, metadata !605, i1 false, i1 false, i32 1, i32 0, metadata !5, i32 256, i1 true, null, null, i32 0, metadata !607, i32 54} ; [ DW_TAG_subprogram ] [line 54] [~RenderFrontend]
+!605 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !606, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!606 = metadata !{null, metadata !383}
+!607 = metadata !{i32 786468}
+!608 = metadata !{i32 786478, metadata !4, metadata !5, metadata !"StartRender", metadata !"StartRender", metadata !"_ZN12pov_frontend14RenderFrontend11StartRenderER12POVMS_Object", i32 56, metadata !609, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !611, i32 56} ; [ DW_TAG_subprogram ] [line 56] [StartRender]
+!609 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !610, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!610 = metadata !{null, metadata !383, metadata !147}
+!611 = metadata !{i32 786468}
+!612 = metadata !{i32 786478, metadata !4, metadata !5, metadata !"StopRender", metadata !"StopRender", metadata !"_ZN12pov_frontend14RenderFrontend10StopRenderEv", i32 57, metadata !605, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !613, i32 57} ; [ DW_TAG_subprogram ] [line 57] [StopRender]
+!613 = metadata !{i32 786468}
+!614 = metadata !{i32 786478, metadata !4, metadata !5, metadata !"GetState", metadata !"GetState", metadata !"_ZN12pov_frontend14RenderFrontend8GetStateEv", i32 59, metadata !615, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !617, i32 59} ; [ DW_TAG_subprogram ] [line 59] [GetState]
+!615 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !616, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!616 = metadata !{metadata !3, metadata !383}
+!617 = metadata !{i32 786468}
+!618 = metadata !{i32 786478, metadata !4, metadata !5, metadata !"RenderStarted", metadata !"RenderStarted", metadata !"_ZN12pov_frontend14RenderFrontend13RenderStartedER13POVMS_MessageS2_i", i32 61, metadata !381, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !619, i32 61} ; [ DW_TAG_subprogram ] [line 61] [protected] [RenderStarted]
+!619 = metadata !{i32 786468}
+!620 = metadata !{i32 786478, metadata !4, metadata !5, metadata !"RenderDone", metadata !"RenderDone", metadata !"_ZN12pov_frontend14RenderFrontend10RenderDoneER13POVMS_MessageS2_i", i32 62, metadata !381, i1 false, i1 false, i32 0, i32 0, null, i32 258, i1 true, null, null, i32 0, metadata !621, i32 62} ; [ DW_TAG_subprogram ] [line 62] [protected] [RenderDone]
+!621 = metadata !{i32 786468}
+!622 = metadata !{metadata !623, metadata !624, metadata !625, metadata !626, metadata !627}
+!623 = metadata !{i32 786472, metadata !"kUnknown", i64 0} ; [ DW_TAG_enumerator ] [kUnknown :: 0]
+!624 = metadata !{i32 786472, metadata !"kReady", i64 1} ; [ DW_TAG_enumerator ] [kReady :: 1]
+!625 = metadata !{i32 786472, metadata !"kStartRequested", i64 2} ; [ DW_TAG_enumerator ] [kStartRequested :: 2]
+!626 = metadata !{i32 786472, metadata !"kRendering", i64 3} ; [ DW_TAG_enumerator ] [kRendering :: 3]
+!627 = metadata !{i32 786472, metadata !"kStopRequested", i64 4} ; [ DW_TAG_enumerator ] [kStopRequested :: 4]
+!628 = metadata !{i32 786436, metadata !629, metadata !630, metadata !"", i32 44, i64 32, i64 32, i32 0, i32 0, null, metadata !631, i32 0, i32 0} ; [ DW_TAG_enumeration_type ] [line 44, size 32, align 32, offset 0] [from ]
+!629 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/pov_err.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!630 = metadata !{i32 786489, metadata !629, null, metadata !"pov_base", i32 41} ; [ DW_TAG_namespace ] [pov_base] [line 41]
+!631 = metadata !{metadata !632, metadata !633, metadata !634, metadata !635, metadata !636, metadata !637, metadata !638, metadata !639, metadata !640, metadata !641, metadata !642, metadata !643, metadata !644, metadata !645, metadata !646, metadata !647, metadata !648, metadata !649, metadata !650, metadata !651, metadata !652, metadata !653, metadata !654, metadata !655}
+!632 = metadata !{i32 786472, metadata !"kNoError", i64 0} ; [ DW_TAG_enumerator ] [kNoError :: 0]
+!633 = metadata !{i32 786472, metadata !"kNoErr", i64 0} ; [ DW_TAG_enumerator ] [kNoErr :: 0]
+!634 = metadata !{i32 786472, metadata !"kParamErr", i64 4294967295} ; [ DW_TAG_enumerator ] [kParamErr :: 4294967295]
+!635 = metadata !{i32 786472, metadata !"kMemFullErr", i64 4294967294} ; [ DW_TAG_enumerator ] [kMemFullErr :: 4294967294]
+!636 = metadata !{i32 786472, metadata !"kOutOfMemoryErr", i64 4294967294} ; [ DW_TAG_enumerator ] [kOutOfMemoryErr :: 4294967294]
+!637 = metadata !{i32 786472, metadata !"kInvalidDataSizeErr", i64 4294967293} ; [ DW_TAG_enumerator ] [kInvalidDataSizeErr :: 4294967293]
+!638 = metadata !{i32 786472, metadata !"kCannotHandleDataErr", i64 4294967292} ; [ DW_TAG_enumerator ] [kCannotHandleDataErr :: 4294967292]
+!639 = metadata !{i32 786472, metadata !"kNullPointerErr", i64 4294967291} ; [ DW_TAG_enumerator ] [kNullPointerErr :: 4294967291]
+!640 = metadata !{i32 786472, metadata !"kChecksumErr", i64 4294967290} ; [ DW_TAG_enumerator ] [kChecksumErr :: 4294967290]
+!641 = metadata !{i32 786472, metadata !"kParseErr", i64 4294967289} ; [ DW_TAG_enumerator ] [kParseErr :: 4294967289]
+!642 = metadata !{i32 786472, metadata !"kCannotOpenFileErr", i64 4294967288} ; [ DW_TAG_enumerator ] [kCannotOpenFileErr :: 4294967288]
+!643 = metadata !{i32 786472, metadata !"kInvalidDestAddrErr", i64 4294967287} ; [ DW_TAG_enumerator ] [kInvalidDestAddrErr :: 4294967287]
+!644 = metadata !{i32 786472, metadata !"kCannotConnectErr", i64 4294967286} ; [ DW_TAG_enumerator ] [kCannotConnectErr :: 4294967286]
+!645 = metadata !{i32 786472, metadata !"kDisconnectedErr", i64 4294967285} ; [ DW_TAG_enumerator ] [kDisconnectedErr :: 4294967285]
+!646 = metadata !{i32 786472, metadata !"kHostDisconnectedErr", i64 4294967284} ; [ DW_TAG_enumerator ] [kHostDisconnectedErr :: 4294967284]
+!647 = metadata !{i32 786472, metadata !"kNetworkDataErr", i64 4294967283} ; [ DW_TAG_enumerator ] [kNetworkDataErr :: 4294967283]
+!648 = metadata !{i32 786472, metadata !"kNetworkConnectionErr", i64 4294967282} ; [ DW_TAG_enumerator ] [kNetworkConnectionErr :: 4294967282]
+!649 = metadata !{i32 786472, metadata !"kObjectAccessErr", i64 4294967281} ; [ DW_TAG_enumerator ] [kObjectAccessErr :: 4294967281]
+!650 = metadata !{i32 786472, metadata !"kVersionErr", i64 4294967280} ; [ DW_TAG_enumerator ] [kVersionErr :: 4294967280]
+!651 = metadata !{i32 786472, metadata !"kFileDataErr", i64 4294967279} ; [ DW_TAG_enumerator ] [kFileDataErr :: 4294967279]
+!652 = metadata !{i32 786472, metadata !"kAuthorisationErr", i64 4294967278} ; [ DW_TAG_enumerator ] [kAuthorisationErr :: 4294967278]
+!653 = metadata !{i32 786472, metadata !"kDataTypeErr", i64 4294967277} ; [ DW_TAG_enumerator ] [kDataTypeErr :: 4294967277]
+!654 = metadata !{i32 786472, metadata !"kTimeoutErr", i64 4294967276} ; [ DW_TAG_enumerator ] [kTimeoutErr :: 4294967276]
+!655 = metadata !{i32 786472, metadata !"kInvalidContextErr", i64 4294967275} ; [ DW_TAG_enumerator ] [kInvalidContextErr :: 4294967275]
+!656 = metadata !{i32 786436, metadata !657, null, metadata !"", i32 69, i64 32, i64 32, i32 0, i32 0, null, metadata !658, i32 0, i32 0} ; [ DW_TAG_enumeration_type ] [line 69, size 32, align 32, offset 0] [from ]
+!657 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/povmsgid.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!658 = metadata !{metadata !659, metadata !660, metadata !661, metadata !662}
+!659 = metadata !{i32 786472, metadata !"kPOVMsgClass_RenderControl", i64 1131704940} ; [ DW_TAG_enumerator ] [kPOVMsgClass_RenderControl :: 1131704940]
+!660 = metadata !{i32 786472, metadata !"kPOVMsgClass_RenderOutput", i64 1333097584} ; [ DW_TAG_enumerator ] [kPOVMsgClass_RenderOutput :: 1333097584]
+!661 = metadata !{i32 786472, metadata !"kPOVMsgClass_IniOptions", i64 1231972687} ; [ DW_TAG_enumerator ] [kPOVMsgClass_IniOptions :: 1231972687]
+!662 = metadata !{i32 786472, metadata !"kPOVMsgClass_Miscellaneous", i64 1298756451} ; [ DW_TAG_enumerator ] [kPOVMsgClass_Miscellaneous :: 1298756451]
+!663 = metadata !{i32 786436, metadata !657, null, metadata !"", i32 78, i64 32, i64 32, i32 0, i32 0, null, metadata !664, i32 0, i32 0} ; [ DW_TAG_enumeration_type ] [line 78, size 32, align 32, offset 0] [from ]
+!664 = metadata !{metadata !665, metadata !666, metadata !667, metadata !668, metadata !669, metadata !670, metadata !671, metadata !672, metadata !673, metadata !674, metadata !675, metadata !676, metadata !677, metadata !678, metadata !679, metadata !680}
+!665 = metadata !{i32 786472, metadata !"kPOVMsgIdent_InitInfo", i64 1231964526} ; [ DW_TAG_enumerator ] [kPOVMsgIdent_InitInfo :: 1231964526]
+!666 = metadata !{i32 786472, metadata !"kPOVMsgIdent_RenderOptions", i64 1380937844} ; [ DW_TAG_enumerator ] [kPOVMsgIdent_RenderOptions :: 1380937844]
+!667 = metadata !{i32 786472, metadata !"kPOVMsgIdent_RenderAll", i64 1380019308} ; [ DW_TAG_enumerator ] [kPOVMsgIdent_RenderAll :: 1380019308]
+!668 = metadata !{i32 786472, metadata !"kPOVMsgIdent_RenderArea", i64 1380020837} ; [ DW_TAG_enumerator ] [kPOVMsgIdent_RenderArea :: 1380020837]
+!669 = metadata !{i32 786472, metadata !"kPOVMsgIdent_RenderPause", i64 1380999541} ; [ DW_TAG_enumerator ] [kPOVMsgIdent_RenderPause :: 1380999541]
+!670 = metadata !{i32 786472, metadata !"kPOVMsgIdent_RenderStop", i64 1381201007} ; [ DW_TAG_enumerator ] [kPOVMsgIdent_RenderStop :: 1381201007]
+!671 = metadata !{i32 786472, metadata !"kPOVMsgIdent_RenderStarted", i64 1381135726} ; [ DW_TAG_enumerator ] [kPOVMsgIdent_RenderStarted :: 1381135726]
+!672 = metadata !{i32 786472, metadata !"kPOVMsgIdent_RenderDone", i64 1380281956} ; [ DW_TAG_enumerator ] [kPOVMsgIdent_RenderDone :: 1380281956]
+!673 = metadata !{i32 786472, metadata !"kPOVMsgIdent_FrameStatistics", i64 1179874401} ; [ DW_TAG_enumerator ] [kPOVMsgIdent_FrameStatistics :: 1179874401]
+!674 = metadata !{i32 786472, metadata !"kPOVMsgIdent_ParseStatistics", i64 1347646561} ; [ DW_TAG_enumerator ] [kPOVMsgIdent_ParseStatistics :: 1347646561]
+!675 = metadata !{i32 786472, metadata !"kPOVMsgIdent_RenderStatistics", i64 1381200993} ; [ DW_TAG_enumerator ] [kPOVMsgIdent_RenderStatistics :: 1381200993]
+!676 = metadata !{i32 786472, metadata !"kPOVMsgIdent_Progress", i64 1349676903} ; [ DW_TAG_enumerator ] [kPOVMsgIdent_Progress :: 1349676903]
+!677 = metadata !{i32 786472, metadata !"kPOVMsgIdent_Warning", i64 1466004078} ; [ DW_TAG_enumerator ] [kPOVMsgIdent_Warning :: 1466004078]
+!678 = metadata !{i32 786472, metadata !"kPOVMsgIdent_Error", i64 1165128279} ; [ DW_TAG_enumerator ] [kPOVMsgIdent_Error :: 1165128279]
+!679 = metadata !{i32 786472, metadata !"kPOVMsgIdent_FatalError", i64 1165128262} ; [ DW_TAG_enumerator ] [kPOVMsgIdent_FatalError :: 1165128262]
+!680 = metadata !{i32 786472, metadata !"kPOVMsgIdent_Debug", i64 1147303271} ; [ DW_TAG_enumerator ] [kPOVMsgIdent_Debug :: 1147303271]
+!681 = metadata !{i32 786436, metadata !629, metadata !630, metadata !"", i32 73, i64 32, i64 32, i32 0, i32 0, null, metadata !682, i32 0, i32 0} ; [ DW_TAG_enumeration_type ] [line 73, size 32, align 32, offset 0] [from ]
+!682 = metadata !{metadata !683, metadata !684, metadata !685, metadata !686}
+!683 = metadata !{i32 786472, metadata !"kFalseErr", i64 1} ; [ DW_TAG_enumerator ] [kFalseErr :: 1]
+!684 = metadata !{i32 786472, metadata !"kOutOfSyncErr", i64 2} ; [ DW_TAG_enumerator ] [kOutOfSyncErr :: 2]
+!685 = metadata !{i32 786472, metadata !"kNotNowErr", i64 2} ; [ DW_TAG_enumerator ] [kNotNowErr :: 2]
+!686 = metadata !{i32 786472, metadata !"kQueueFullErr", i64 3} ; [ DW_TAG_enumerator ] [kQueueFullErr :: 3]
+!687 = metadata !{i32 786436, metadata !657, null, metadata !"", i32 52, i64 32, i64 32, i32 0, i32 0, null, metadata !688, i32 0, i32 0} ; [ DW_TAG_enumeration_type ] [line 52, size 32, align 32, offset 0] [from ]
+!688 = metadata !{metadata !689, metadata !690, metadata !691, metadata !692, metadata !693, metadata !694, metadata !695, metadata !696, metadata !697, metadata !698, metadata !699, metadata !700}
+!689 = metadata !{i32 786472, metadata !"kPOVObjectClass_Rect", i64 1382376308} ; [ DW_TAG_enumerator ] [kPOVObjectClass_Rect :: 1382376308]
+!690 = metadata !{i32 786472, metadata !"kPOVObjectClass_Path", i64 1348564072} ; [ DW_TAG_enumerator ] [kPOVObjectClass_Path :: 1348564072]
+!691 = metadata !{i32 786472, metadata !"kPOVObjectClass_File", i64 1181314149} ; [ DW_TAG_enumerator ] [kPOVObjectClass_File :: 1181314149]
+!692 = metadata !{i32 786472, metadata !"kPOVObjectClass_FileLoc", i64 1179676531} ; [ DW_TAG_enumerator ] [kPOVObjectClass_FileLoc :: 1179676531]
+!693 = metadata !{i32 786472, metadata !"kPOVObjectClass_Command", i64 1131375981} ; [ DW_TAG_enumerator ] [kPOVObjectClass_Command :: 1131375981]
+!694 = metadata !{i32 786472, metadata !"kPOVObjectClass_OIStat", i64 1330205556} ; [ DW_TAG_enumerator ] [kPOVObjectClass_OIStat :: 1330205556]
+!695 = metadata !{i32 786472, metadata !"kPOVObjectClass_ROptions", i64 1380937844} ; [ DW_TAG_enumerator ] [kPOVObjectClass_ROptions :: 1380937844]
+!696 = metadata !{i32 786472, metadata !"kPOVObjectClass_RTime", i64 1381263725} ; [ DW_TAG_enumerator ] [kPOVObjectClass_RTime :: 1381263725]
+!697 = metadata !{i32 786472, metadata !"kPOVObjectClass_FStats", i64 1179874401} ; [ DW_TAG_enumerator ] [kPOVObjectClass_FStats :: 1179874401]
+!698 = metadata !{i32 786472, metadata !"kPOVObjectClass_RStats", i64 1381200993} ; [ DW_TAG_enumerator ] [kPOVObjectClass_RStats :: 1381200993]
+!699 = metadata !{i32 786472, metadata !"kPOVObjectClass_PStats", i64 1347646561} ; [ DW_TAG_enumerator ] [kPOVObjectClass_PStats :: 1347646561]
+!700 = metadata !{i32 786472, metadata !"kPOVObjectClass_Progress", i64 1349676903} ; [ DW_TAG_enumerator ] [kPOVObjectClass_Progress :: 1349676903]
+!701 = metadata !{i32 786436, metadata !67, null, metadata !"", i32 151, i64 32, i64 32, i32 0, i32 0, null, metadata !702, i32 0, i32 0} ; [ DW_TAG_enumeration_type ] [line 151, size 32, align 32, offset 0] [from ]
+!702 = metadata !{metadata !703, metadata !704, metadata !705, metadata !706, metadata !707, metadata !708, metadata !709, metadata !710, metadata !711, metadata !712, metadata !713, metadata !714, metadata !715, metadata !716, metadata !717, metadata !718}
+!703 = metadata !{i32 786472, metadata !"kPOVMSType_Object", i64 1329744453} ; [ DW_TAG_enumerator ] [kPOVMSType_Object :: 1329744453]
+!704 = metadata !{i32 786472, metadata !"kPOVMSType_LockedObject", i64 1280262987} ; [ DW_TAG_enumerator ] [kPOVMSType_LockedObject :: 1280262987]
+!705 = metadata !{i32 786472, metadata !"kPOVMSType_ResultObject", i64 1380275029} ; [ DW_TAG_enumerator ] [kPOVMSType_ResultObject :: 1380275029]
+!706 = metadata !{i32 786472, metadata !"kPOVMSType_Address", i64 1094992978} ; [ DW_TAG_enumerator ] [kPOVMSType_Address :: 1094992978]
+!707 = metadata !{i32 786472, metadata !"kPOVMSType_Null", i64 1314212940} ; [ DW_TAG_enumerator ] [kPOVMSType_Null :: 1314212940]
+!708 = metadata !{i32 786472, metadata !"kPOVMSType_WildCard", i64 707406378} ; [ DW_TAG_enumerator ] [kPOVMSType_WildCard :: 707406378]
+!709 = metadata !{i32 786472, metadata !"kPOVMSType_CString", i64 1129534546} ; [ DW_TAG_enumerator ] [kPOVMSType_CString :: 1129534546]
+!710 = metadata !{i32 786472, metadata !"kPOVMSType_UnicodeText", i64 1431590996} ; [ DW_TAG_enumerator ] [kPOVMSType_UnicodeText :: 1431590996]
+!711 = metadata !{i32 786472, metadata !"kPOVMSType_Int", i64 1229870132} ; [ DW_TAG_enumerator ] [kPOVMSType_Int :: 1229870132]
+!712 = metadata !{i32 786472, metadata !"kPOVMSType_Long", i64 1229870136} ; [ DW_TAG_enumerator ] [kPOVMSType_Long :: 1229870136]
+!713 = metadata !{i32 786472, metadata !"kPOVMSType_Float", i64 1179407412} ; [ DW_TAG_enumerator ] [kPOVMSType_Float :: 1179407412]
+!714 = metadata !{i32 786472, metadata !"kPOVMSType_Double", i64 1179407416} ; [ DW_TAG_enumerator ] [kPOVMSType_Double :: 1179407416]
+!715 = metadata !{i32 786472, metadata !"kPOVMSType_Bool", i64 1112493900} ; [ DW_TAG_enumerator ] [kPOVMSType_Bool :: 1112493900]
+!716 = metadata !{i32 786472, metadata !"kPOVMSType_Pixel", i64 1346983988} ; [ DW_TAG_enumerator ] [kPOVMSType_Pixel :: 1346983988]
+!717 = metadata !{i32 786472, metadata !"kPOVMSType_Type", i64 1415139397} ; [ DW_TAG_enumerator ] [kPOVMSType_Type :: 1415139397]
+!718 = metadata !{i32 786472, metadata !"kPOVMSType_List", i64 1279873876} ; [ DW_TAG_enumerator ] [kPOVMSType_List :: 1279873876]
+!719 = metadata !{i32 786436, metadata !67, null, metadata !"", i32 198, i64 32, i64 32, i32 0, i32 0, null, metadata !720, i32 0, i32 0} ; [ DW_TAG_enumeration_type ] [line 198, size 32, align 32, offset 0] [from ]
+!720 = metadata !{metadata !721, metadata !722, metadata !723, metadata !724}
+!721 = metadata !{i32 786472, metadata !"kPOVMSSendMode_Invalid", i64 0} ; [ DW_TAG_enumerator ] [kPOVMSSendMode_Invalid :: 0]
+!722 = metadata !{i32 786472, metadata !"kPOVMSSendMode_NoReply", i64 1} ; [ DW_TAG_enumerator ] [kPOVMSSendMode_NoReply :: 1]
+!723 = metadata !{i32 786472, metadata !"kPOVMSSendMode_WaitReply", i64 2} ; [ DW_TAG_enumerator ] [kPOVMSSendMode_WaitReply :: 2]
+!724 = metadata !{i32 786472, metadata !"kPOVMSSendMode_WantReceipt", i64 3} ; [ DW_TAG_enumerator ] [kPOVMSSendMode_WantReceipt :: 3]
+!725 = metadata !{i32 0}
+!726 = metadata !{metadata !727, metadata !735, metadata !738, metadata !741, metadata !747, metadata !751, metadata !757, metadata !763, metadata !771, metadata !777, metadata !782, metadata !788, metadata !791, metadata !798, metadata !802}
+!727 = metadata !{i32 786478, metadata !1, metadata !6, metadata !"RenderFrontend", metadata !"RenderFrontend", metadata !"_ZN12pov_frontend14RenderFrontendC2EPvS1_", i32 40, metadata !601, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%"class.pov_frontend::RenderFrontend"*, i8*, i8*)* @_ZN12pov_frontend14RenderFrontendC2EPvS1_, null, metadata !600, metadata !728, i32 41} ; [ DW_TAG_subprogram ] [line 40] [def] [scope 41] [RenderFrontend]
+!728 = metadata !{metadata !729, metadata !731, metadata !732, metadata !733}
+!729 = metadata !{i32 786689, metadata !727, metadata !"this", metadata !730, i32 16777256, metadata !43, i32 1088, i32 0} ; [ DW_TAG_arg_variable ] [this] [line 40]
+!730 = metadata !{i32 786473, metadata !1}        ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/renderfrontend.cpp]
+!731 = metadata !{i32 786689, metadata !727, metadata !"ctx", metadata !730, i32 33554472, metadata !25, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [ctx] [line 40]
+!732 = metadata !{i32 786689, metadata !727, metadata !"baddr", metadata !730, i32 50331688, metadata !26, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [baddr] [line 40]
+!733 = metadata !{i32 786688, metadata !734, metadata !"err", metadata !730, i32 42, metadata !23, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [err] [line 42]
+!734 = metadata !{i32 786443, metadata !1, metadata !727, i32 41, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/renderfrontend.cpp]
+!735 = metadata !{i32 786478, metadata !1, metadata !6, metadata !"~RenderFrontend", metadata !"~RenderFrontend", metadata !"_ZN12pov_frontend14RenderFrontendD0Ev", i32 54, metadata !605, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%"class.pov_frontend::RenderFrontend"*)* @_ZN12pov_frontend14RenderFrontendD0Ev, null, metadata !604, metadata !736, i32 55} ; [ DW_TAG_subprogram ] [line 54] [def] [scope 55] [~RenderFrontend]
+!736 = metadata !{metadata !737}
+!737 = metadata !{i32 786689, metadata !735, metadata !"this", metadata !730, i32 16777270, metadata !43, i32 1088, i32 0} ; [ DW_TAG_arg_variable ] [this] [line 54]
+!738 = metadata !{i32 786478, metadata !1, metadata !6, metadata !"~RenderFrontend", metadata !"~RenderFrontend", metadata !"_ZN12pov_frontend14RenderFrontendD2Ev", i32 54, metadata !605, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%"class.pov_frontend::RenderFrontend"*)* @_ZN12pov_frontend14RenderFrontendD2Ev, null, metadata !604, metadata !739, i32 55} ; [ DW_TAG_subprogram ] [line 54] [def] [scope 55] [~RenderFrontend]
+!739 = metadata !{metadata !740}
+!740 = metadata !{i32 786689, metadata !738, metadata !"this", metadata !730, i32 16777270, metadata !43, i32 1088, i32 0} ; [ DW_TAG_arg_variable ] [this] [line 54]
+!741 = metadata !{i32 786478, metadata !1, metadata !6, metadata !"StartRender", metadata !"StartRender", metadata !"_ZN12pov_frontend14RenderFrontend11StartRenderER12POVMS_Object", i32 59, metadata !609, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%"class.pov_frontend::RenderFrontend"*, %class.POVMS_Object*)* @_ZN12pov_frontend14RenderFrontend11StartRenderER12POVMS_Object, null, metadata !608, metadata !742, i32 60} ; [ DW_TAG_subprogram ] [line 59] [def] [scope 60] [StartRender]
+!742 = metadata !{metadata !743, metadata !744, metadata !745, metadata !746}
+!743 = metadata !{i32 786689, metadata !741, metadata !"this", metadata !730, i32 16777275, metadata !43, i32 1088, i32 0} ; [ DW_TAG_arg_variable ] [this] [line 59]
+!744 = metadata !{i32 786689, metadata !741, metadata !"renderoptions", metadata !730, i32 33554491, metadata !147, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [renderoptions] [line 59]
+!745 = metadata !{i32 786688, metadata !741, metadata !"optionsmsg", metadata !730, i32 64, metadata !56, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [optionsmsg] [line 64]
+!746 = metadata !{i32 786688, metadata !741, metadata !"startmsg", metadata !730, i32 65, metadata !56, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [startmsg] [line 65]
+!747 = metadata !{i32 786478, metadata !1, metadata !6, metadata !"StopRender", metadata !"StopRender", metadata !"_ZN12pov_frontend14RenderFrontend10StopRenderEv", i32 77, metadata !605, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%"class.pov_frontend::RenderFrontend"*)* @_ZN12pov_frontend14RenderFrontend10StopRenderEv, null, metadata !612, metadata !748, i32 78} ; [ DW_TAG_subprogram ] [line 77] [def] [scope 78] [StopRender]
+!748 = metadata !{metadata !749, metadata !750}
+!749 = metadata !{i32 786689, metadata !747, metadata !"this", metadata !730, i32 16777293, metadata !43, i32 1088, i32 0} ; [ DW_TAG_arg_variable ] [this] [line 77]
+!750 = metadata !{i32 786688, metadata !747, metadata !"stopmsg", metadata !730, i32 82, metadata !56, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [stopmsg] [line 82]
+!751 = metadata !{i32 786478, metadata !1, metadata !6, metadata !"RenderStarted", metadata !"RenderStarted", metadata !"_ZN12pov_frontend14RenderFrontend13RenderStartedER13POVMS_MessageS2_i", i32 90, metadata !381, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%"class.pov_frontend::RenderFrontend"*, %class.POVMS_Message*, %class.POVMS_Message*, i32)* @_ZN12pov_frontend14RenderFrontend13RenderStartedER13POVMS_MessageS2_i, null, metadata !618, metadata !752, i32 91} ; [ DW_TAG_subprogram ] [line 90] [def] [scope 91] [RenderStarted]
+!752 = metadata !{metadata !753, metadata !754, metadata !755, metadata !756}
+!753 = metadata !{i32 786689, metadata !751, metadata !"this", metadata !730, i32 16777306, metadata !43, i32 1088, i32 0} ; [ DW_TAG_arg_variable ] [this] [line 90]
+!754 = metadata !{i32 786689, metadata !751, metadata !"", metadata !730, i32 33554522, metadata !55, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [line 90]
+!755 = metadata !{i32 786689, metadata !751, metadata !"", metadata !730, i32 50331738, metadata !55, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [line 90]
+!756 = metadata !{i32 786689, metadata !751, metadata !"", metadata !730, i32 67108954, metadata !23, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [line 90]
+!757 = metadata !{i32 786478, metadata !1, metadata !6, metadata !"RenderDone", metadata !"RenderDone", metadata !"_ZN12pov_frontend14RenderFrontend10RenderDoneER13POVMS_MessageS2_i", i32 95, metadata !381, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%"class.pov_frontend::RenderFrontend"*, %class.POVMS_Message*, %class.POVMS_Message*, i32)* @_ZN12pov_frontend14RenderFrontend10RenderDoneER13POVMS_MessageS2_i, null, metadata !620, metadata !758, i32 96} ; [ DW_TAG_subprogram ] [line 95] [def] [scope 96] [RenderDone]
+!758 = metadata !{metadata !759, metadata !760, metadata !761, metadata !762}
+!759 = metadata !{i32 786689, metadata !757, metadata !"this", metadata !730, i32 16777311, metadata !43, i32 1088, i32 0} ; [ DW_TAG_arg_variable ] [this] [line 95]
+!760 = metadata !{i32 786689, metadata !757, metadata !"", metadata !730, i32 33554527, metadata !55, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [line 95]
+!761 = metadata !{i32 786689, metadata !757, metadata !"", metadata !730, i32 50331743, metadata !55, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [line 95]
+!762 = metadata !{i32 786689, metadata !757, metadata !"", metadata !730, i32 67108959, metadata !23, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [line 95]
+!763 = metadata !{i32 786478, metadata !15, null, metadata !"InstallBack<pov_frontend::RenderFrontend>", metadata !"InstallBack<pov_frontend::RenderFrontend>", metadata !"_ZN21POVMS_MessageReceiver11InstallBackIN12pov_frontend14RenderFrontendEEEvjjPT_NS_15MemberHandlerOOIS3_E16MemberHandlerPtrE", i32 383, metadata !40, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, null, metadata !378, metadata !475, metadata !764, i32 384} ; [ DW_TAG_subprogram ] [line 383] [def] [scope 384] [InstallBack<pov_frontend::RenderFrontend>]
+!764 = metadata !{metadata !765, metadata !767, metadata !768, metadata !769, metadata !770}
+!765 = metadata !{i32 786689, metadata !763, metadata !"this", metadata !18, i32 16777599, metadata !766, i32 1088, i32 0} ; [ DW_TAG_arg_variable ] [this] [line 383]
+!766 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !14} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from POVMS_MessageReceiver]
+!767 = metadata !{i32 786689, metadata !763, metadata !"hclass", metadata !18, i32 33554815, metadata !42, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [hclass] [line 383]
+!768 = metadata !{i32 786689, metadata !763, metadata !"hid", metadata !18, i32 50332031, metadata !42, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [hid] [line 383]
+!769 = metadata !{i32 786689, metadata !763, metadata !"cptr", metadata !18, i32 67109247, metadata !43, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [cptr] [line 383]
+!770 = metadata !{i32 786689, metadata !763, metadata !"hptr", metadata !18, i32 83886463, metadata !44, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [hptr] [line 383]
+!771 = metadata !{i32 786478, metadata !15, metadata !14, metadata !"MemberHandlerOO", metadata !"MemberHandlerOO", metadata !"_ZN21POVMS_MessageReceiver15MemberHandlerOOIN12pov_frontend14RenderFrontendEEC1EPS2_MS2_FvR13POVMS_MessageS6_iE", i32 255, metadata !371, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, null, null, metadata !370, metadata !772, i32 256} ; [ DW_TAG_subprogram ] [line 255] [def] [scope 256] [MemberHandlerOO]
+!772 = metadata !{metadata !773, metadata !775, metadata !776}
+!773 = metadata !{i32 786689, metadata !771, metadata !"this", metadata !18, i32 16777471, metadata !774, i32 1088, i32 0} ; [ DW_TAG_arg_variable ] [this] [line 255]
+!774 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !45} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from MemberHandlerOO<pov_frontend::RenderFrontend>]
+!775 = metadata !{i32 786689, metadata !771, metadata !"cptr", metadata !18, i32 33554687, metadata !43, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [cptr] [line 255]
+!776 = metadata !{i32 786689, metadata !771, metadata !"hptr", metadata !18, i32 50331903, metadata !44, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [hptr] [line 255]
+!777 = metadata !{i32 786478, metadata !15, metadata !14, metadata !"MemberHandlerOO", metadata !"MemberHandlerOO", metadata !"_ZN21POVMS_MessageReceiver15MemberHandlerOOIN12pov_frontend14RenderFrontendEEC2EPS2_MS2_FvR13POVMS_MessageS6_iE", i32 255, metadata !371, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, null, null, metadata !370, metadata !778, i32 256} ; [ DW_TAG_subprogram ] [line 255] [def] [scope 256] [MemberHandlerOO]
+!778 = metadata !{metadata !779, metadata !780, metadata !781}
+!779 = metadata !{i32 786689, metadata !777, metadata !"this", metadata !18, i32 16777471, metadata !774, i32 1088, i32 0} ; [ DW_TAG_arg_variable ] [this] [line 255]
+!780 = metadata !{i32 786689, metadata !777, metadata !"cptr", metadata !18, i32 33554687, metadata !43, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [cptr] [line 255]
+!781 = metadata !{i32 786689, metadata !777, metadata !"hptr", metadata !18, i32 50331903, metadata !44, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [hptr] [line 255]
+!782 = metadata !{i32 786478, metadata !15, metadata !14, metadata !"Call", metadata !"Call", metadata !"_ZN21POVMS_MessageReceiver15MemberHandlerOOIN12pov_frontend14RenderFrontendEE4CallER13POVMS_MessageS5_i", i32 261, metadata !375, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%"class.POVMS_MessageReceiver::MemberHandlerOO"*, %class.POVMS_Message*, %class.POVMS_Message*, i32)* @_ZN21POVMS_MessageReceiver15MemberHandlerOOIN12pov_frontend14RenderFrontendEE4CallER13POVMS_MessageS5_i, null, metadata !374, metadata !783, i32 262} ; [ DW_TAG_subprogram ] [line 261] [def] [scope 262] [Call]
+!783 = metadata !{metadata !784, metadata !785, metadata !786, metadata !787}
+!784 = metadata !{i32 786689, metadata !782, metadata !"this", metadata !18, i32 16777477, metadata !774, i32 1088, i32 0} ; [ DW_TAG_arg_variable ] [this] [line 261]
+!785 = metadata !{i32 786689, metadata !782, metadata !"msg", metadata !18, i32 33554693, metadata !55, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [msg] [line 261]
+!786 = metadata !{i32 786689, metadata !782, metadata !"result", metadata !18, i32 50331909, metadata !55, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [result] [line 261]
+!787 = metadata !{i32 786689, metadata !782, metadata !"mode", metadata !18, i32 67109125, metadata !23, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [mode] [line 261]
+!788 = metadata !{i32 786478, metadata !15, metadata !14, metadata !"HandlerOO", metadata !"HandlerOO", metadata !"_ZN21POVMS_MessageReceiver9HandlerOOC2Ev", i32 233, metadata !360, i1 false, i1 true, i32 0, i32 0, null, i32 320, i1 true, null, null, metadata !359, metadata !789, i32 233} ; [ DW_TAG_subprogram ] [line 233] [def] [HandlerOO]
+!789 = metadata !{metadata !790}
+!790 = metadata !{i32 786689, metadata !788, metadata !"this", metadata !18, i32 16777449, metadata !507, i32 1088, i32 0} ; [ DW_TAG_arg_variable ] [this] [line 233]
+!791 = metadata !{i32 786478, metadata !15, null, metadata !"InstallFront<pov_frontend::RenderFrontend>", metadata !"InstallFront<pov_frontend::RenderFrontend>", metadata !"_ZN21POVMS_MessageReceiver12InstallFrontIN12pov_frontend14RenderFrontendEEEvjjPT_NS_15MemberHandlerOOIS3_E16MemberHandlerPtrE", i32 363, metadata !40, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, null, metadata !378, metadata !39, metadata !792, i32 364} ; [ DW_TAG_subprogram ] [line 363] [def] [scope 364] [InstallFront<pov_frontend::RenderFrontend>]
+!792 = metadata !{metadata !793, metadata !794, metadata !795, metadata !796, metadata !797}
+!793 = metadata !{i32 786689, metadata !791, metadata !"this", metadata !18, i32 16777579, metadata !766, i32 1088, i32 0} ; [ DW_TAG_arg_variable ] [this] [line 363]
+!794 = metadata !{i32 786689, metadata !791, metadata !"hclass", metadata !18, i32 33554795, metadata !42, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [hclass] [line 363]
+!795 = metadata !{i32 786689, metadata !791, metadata !"hid", metadata !18, i32 50332011, metadata !42, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [hid] [line 363]
+!796 = metadata !{i32 786689, metadata !791, metadata !"cptr", metadata !18, i32 67109227, metadata !43, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [cptr] [line 363]
+!797 = metadata !{i32 786689, metadata !791, metadata !"hptr", metadata !18, i32 83886443, metadata !44, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [hptr] [line 363]
+!798 = metadata !{i32 786478, metadata !15, null, metadata !"~POVMS_Message", metadata !"~POVMS_Message", metadata !"_ZN13POVMS_MessageD1Ev", i32 207, metadata !355, i1 false, i1 true, i32 0, i32 0, null, i32 320, i1 true, null, null, metadata !354, metadata !799, i32 207} ; [ DW_TAG_subprogram ] [line 207] [def] [~POVMS_Message]
+!799 = metadata !{metadata !800}
+!800 = metadata !{i32 786689, metadata !798, metadata !"this", metadata !18, i32 16777423, metadata !801, i32 1088, i32 0} ; [ DW_TAG_arg_variable ] [this] [line 207]
+!801 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !56} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from POVMS_Message]
+!802 = metadata !{i32 786478, metadata !15, null, metadata !"~POVMS_Message", metadata !"~POVMS_Message", metadata !"_ZN13POVMS_MessageD2Ev", i32 207, metadata !355, i1 false, i1 true, i32 0, i32 0, null, i32 320, i1 true, null, null, metadata !354, metadata !803, i32 207} ; [ DW_TAG_subprogram ] [line 207] [def] [~POVMS_Message]
+!803 = metadata !{metadata !804}
+!804 = metadata !{i32 786689, metadata !802, metadata !"this", metadata !18, i32 16777423, metadata !801, i32 1088, i32 0} ; [ DW_TAG_arg_variable ] [this] [line 207]
+!805 = metadata !{metadata !806, metadata !809, metadata !810, metadata !811, metadata !812, metadata !813, metadata !814}
+!806 = metadata !{i32 786490, metadata !0, metadata !807, i32 28} ; [ DW_TAG_imported_module ]
+!807 = metadata !{i32 786489, metadata !808, null, metadata !"std", i32 184} ; [ DW_TAG_namespace ] [std] [line 184]
+!808 = metadata !{metadata !"/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../../include/x86_64-linux-gnu/c++/4.8/bits/c++config.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!809 = metadata !{i32 786490, metadata !630, metadata !807, i32 41} ; [ DW_TAG_imported_module ]
+!810 = metadata !{i32 786490, metadata !521, metadata !807, i32 49} ; [ DW_TAG_imported_module ]
+!811 = metadata !{i32 786490, metadata !11, metadata !807, i32 41} ; [ DW_TAG_imported_module ]
+!812 = metadata !{i32 786490, metadata !11, metadata !630, i32 43} ; [ DW_TAG_imported_module ]
+!813 = metadata !{i32 786490, metadata !6, metadata !807, i32 39} ; [ DW_TAG_imported_module ]
+!814 = metadata !{i32 786490, metadata !815, metadata !807, i32 38} ; [ DW_TAG_imported_module ]
+!815 = metadata !{i32 786489, metadata !1, null, metadata !"pov_frontend", i32 38} ; [ DW_TAG_namespace ] [pov_frontend] [line 38]
+!816 = metadata !{i32 40, i32 0, metadata !727, null}
+!817 = metadata !{i32 41, i32 0, metadata !727, null}
+!818 = metadata !{metadata !"vtable pointer", metadata !819}
+!819 = metadata !{metadata !"Simple C/C++ TBAA"}
+!820 = metadata !{i32 42, i32 0, metadata !734, null}
+!821 = metadata !{i32 44, i32 0, metadata !734, null}
+!822 = metadata !{metadata !"any pointer", metadata !823}
+!823 = metadata !{metadata !"omnipotent char", metadata !819}
+!824 = metadata !{i32 45, i32 0, metadata !734, null}
+!825 = metadata !{i32 46, i32 0, metadata !734, null}
+!826 = metadata !{metadata !"_ZTSN12pov_frontend14RenderFrontend11EngineStateE", metadata !823}
+!827 = metadata !{i32 48, i32 0, metadata !734, null}
+!828 = metadata !{i32 786689, metadata !791, metadata !"this", metadata !18, i32 16777579, metadata !766, i32 1088, metadata !827} ; [ DW_TAG_arg_variable ] [this] [line 363]
+!829 = metadata !{i32 363, i32 0, metadata !791, metadata !827}
+!830 = metadata !{i32 1333097584}
+!831 = metadata !{i32 786689, metadata !791, metadata !"hclass", metadata !18, i32 33554795, metadata !42, i32 0, metadata !827} ; [ DW_TAG_arg_variable ] [hclass] [line 363]
+!832 = metadata !{i32 1381135726}
+!833 = metadata !{i32 786689, metadata !791, metadata !"hid", metadata !18, i32 50332011, metadata !42, i32 0, metadata !827} ; [ DW_TAG_arg_variable ] [hid] [line 363]
+!834 = metadata !{i32 786689, metadata !791, metadata !"cptr", metadata !18, i32 67109227, metadata !43, i32 0, metadata !827} ; [ DW_TAG_arg_variable ] [cptr] [line 363]
+!835 = metadata !{{ i64, i64 }* undef}
+!836 = metadata !{i32 786689, metadata !771, metadata !"cptr", metadata !18, i32 33554687, metadata !43, i32 0, metadata !837} ; [ DW_TAG_arg_variable ] [cptr] [line 255]
+!837 = metadata !{i32 365, i32 0, metadata !791, metadata !827}
+!838 = metadata !{i32 255, i32 0, metadata !771, metadata !837}
+!839 = metadata !{i32 786689, metadata !777, metadata !"cptr", metadata !18, i32 33554687, metadata !43, i32 0, metadata !840} ; [ DW_TAG_arg_variable ] [cptr] [line 255]
+!840 = metadata !{i32 259, i32 0, metadata !771, metadata !837}
+!841 = metadata !{i32 255, i32 0, metadata !777, metadata !840}
+!842 = metadata !{i32 256, i32 0, metadata !777, metadata !840}
+!843 = metadata !{i32 257, i32 0, metadata !844, metadata !840}
+!844 = metadata !{i32 786443, metadata !15, metadata !777, i32 256, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/povmscpp.h]
+!845 = metadata !{i32 258, i32 0, metadata !844, metadata !840}
+!846 = metadata !{i32 786689, metadata !763, metadata !"this", metadata !18, i32 16777599, metadata !766, i32 1088, metadata !847} ; [ DW_TAG_arg_variable ] [this] [line 383]
+!847 = metadata !{i32 49, i32 0, metadata !734, null}
+!848 = metadata !{i32 383, i32 0, metadata !763, metadata !847}
+!849 = metadata !{i32 786689, metadata !763, metadata !"hclass", metadata !18, i32 33554815, metadata !42, i32 0, metadata !847} ; [ DW_TAG_arg_variable ] [hclass] [line 383]
+!850 = metadata !{i32 1380281956}
+!851 = metadata !{i32 786689, metadata !763, metadata !"hid", metadata !18, i32 50332031, metadata !42, i32 0, metadata !847} ; [ DW_TAG_arg_variable ] [hid] [line 383]
+!852 = metadata !{i32 786689, metadata !763, metadata !"cptr", metadata !18, i32 67109247, metadata !43, i32 0, metadata !847} ; [ DW_TAG_arg_variable ] [cptr] [line 383]
+!853 = metadata !{i32 786689, metadata !771, metadata !"cptr", metadata !18, i32 33554687, metadata !43, i32 0, metadata !854} ; [ DW_TAG_arg_variable ] [cptr] [line 255]
+!854 = metadata !{i32 385, i32 0, metadata !855, metadata !847}
+!855 = metadata !{i32 786443, metadata !15, metadata !763} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/povmscpp.h]
+!856 = metadata !{i32 255, i32 0, metadata !771, metadata !854}
+!857 = metadata !{i32 786689, metadata !777, metadata !"cptr", metadata !18, i32 33554687, metadata !43, i32 0, metadata !858} ; [ DW_TAG_arg_variable ] [cptr] [line 255]
+!858 = metadata !{i32 259, i32 0, metadata !771, metadata !854}
+!859 = metadata !{i32 255, i32 0, metadata !777, metadata !858}
+!860 = metadata !{i32 256, i32 0, metadata !777, metadata !858}
+!861 = metadata !{i32 257, i32 0, metadata !844, metadata !858}
+!862 = metadata !{i32 258, i32 0, metadata !844, metadata !858}
+!863 = metadata !{i32 51, i32 0, metadata !734, null}
+!864 = metadata !{i32 52, i32 0, metadata !727, null}
+!865 = metadata !{i32 90, i32 0, metadata !751, null}
+!866 = metadata !{i32 92, i32 0, metadata !751, null}
+!867 = metadata !{i32 93, i32 0, metadata !751, null}
+!868 = metadata !{i32 95, i32 0, metadata !757, null}
+!869 = metadata !{i32 97, i32 0, metadata !757, null}
+!870 = metadata !{i32 98, i32 0, metadata !757, null}
+!871 = metadata !{i32 54, i32 0, metadata !735, null}
+!872 = metadata !{i32 786689, metadata !738, metadata !"this", metadata !730, i32 16777270, metadata !43, i32 1088, metadata !873} ; [ DW_TAG_arg_variable ] [this] [line 54]
+!873 = metadata !{i32 55, i32 0, metadata !735, null}
+!874 = metadata !{i32 54, i32 0, metadata !738, metadata !873}
+!875 = metadata !{i32 55, i32 0, metadata !738, metadata !873}
+!876 = metadata !{i32 56, i32 0, metadata !877, metadata !873}
+!877 = metadata !{i32 786443, metadata !1, metadata !738, i32 55, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/renderfrontend.cpp]
+!878 = metadata !{i32 57, i32 0, metadata !877, metadata !873}
+!879 = metadata !{i32 57, i32 0, metadata !735, null}
+!880 = metadata !{i32 54, i32 0, metadata !738, null}
+!881 = metadata !{i32 55, i32 0, metadata !738, null}
+!882 = metadata !{i32 56, i32 0, metadata !877, null}
+!883 = metadata !{i32 57, i32 0, metadata !877, null}
+!884 = metadata !{i32 57, i32 0, metadata !738, null}
+!885 = metadata !{i32 59, i32 0, metadata !741, null}
+!886 = metadata !{i32 61, i32 0, metadata !741, null}
+!887 = metadata !{i32 62, i32 0, metadata !741, null}
+!888 = metadata !{metadata !"int", metadata !823}
+!889 = metadata !{i32 64, i32 0, metadata !741, null}
+!890 = metadata !{i32 65, i32 0, metadata !741, null}
+!891 = metadata !{i32 67, i32 0, metadata !741, null}
+!892 = metadata !{i32 68, i32 0, metadata !741, null}
+!893 = metadata !{i32 69, i32 0, metadata !741, null}
+!894 = metadata !{i32 71, i32 0, metadata !741, null}
+!895 = metadata !{i32 72, i32 0, metadata !741, null}
+!896 = metadata !{i32 74, i32 0, metadata !741, null}
+!897 = metadata !{i32 786689, metadata !798, metadata !"this", metadata !18, i32 16777423, metadata !801, i32 1088, metadata !898} ; [ DW_TAG_arg_variable ] [this] [line 207]
+!898 = metadata !{i32 75, i32 0, metadata !741, null}
+!899 = metadata !{i32 207, i32 0, metadata !798, metadata !898}
+!900 = metadata !{i32 786689, metadata !802, metadata !"this", metadata !18, i32 16777423, metadata !801, i32 1088, metadata !899} ; [ DW_TAG_arg_variable ] [this] [line 207]
+!901 = metadata !{i32 207, i32 0, metadata !802, metadata !899}
+!902 = metadata !{i32 207, i32 0, metadata !903, metadata !899}
+!903 = metadata !{i32 786443, metadata !15, metadata !802, i32 207, i32 0, i32 4} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/povmscpp.h]
+!904 = metadata !{i32 77, i32 0, metadata !747, null}
+!905 = metadata !{i32 79, i32 0, metadata !747, null}
+!906 = metadata !{i32 80, i32 0, metadata !747, null}
+!907 = metadata !{i32 82, i32 0, metadata !747, null}
+!908 = metadata !{i32 84, i32 0, metadata !747, null}
+!909 = metadata !{i32 85, i32 0, metadata !747, null}
+!910 = metadata !{i32 87, i32 0, metadata !747, null}
+!911 = metadata !{i32 786689, metadata !798, metadata !"this", metadata !18, i32 16777423, metadata !801, i32 1088, metadata !912} ; [ DW_TAG_arg_variable ] [this] [line 207]
+!912 = metadata !{i32 88, i32 0, metadata !747, null}
+!913 = metadata !{i32 207, i32 0, metadata !798, metadata !912}
+!914 = metadata !{i32 786689, metadata !802, metadata !"this", metadata !18, i32 16777423, metadata !801, i32 1088, metadata !913} ; [ DW_TAG_arg_variable ] [this] [line 207]
+!915 = metadata !{i32 207, i32 0, metadata !802, metadata !913}
+!916 = metadata !{i32 207, i32 0, metadata !903, metadata !913}
+!917 = metadata !{i32 261, i32 0, metadata !782, null}
+!918 = metadata !{i32 263, i32 0, metadata !782, null}
+!919 = metadata !{i32 264, i32 0, metadata !782, null}
+!920 = metadata !{i32 267, i32 0, metadata !782, null}
+!921 = metadata !{i32 266, i32 0, metadata !782, null}

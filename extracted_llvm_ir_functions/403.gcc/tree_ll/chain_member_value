@@ -1,23 +1,26 @@
-define i32 @chain_member_value(%union.tree_node* %elem, %union.tree_node* %chain) #3 {
+define i32 @chain_member_value(%union.tree_node* %elem, %union.tree_node* %chain) #4 {
 entry:
-  %tobool4 = icmp eq %union.tree_node* %chain, null
-  br i1 %tobool4, label %return, label %while.body
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %elem}, i64 0, metadata !1088), !dbg !2278
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %chain}, i64 0, metadata !1089), !dbg !2278
+  %tobool4 = icmp eq %union.tree_node* %chain, null, !dbg !2279
+  br i1 %tobool4, label %return, label %while.body, !dbg !2279
 
 while.body:                                       ; preds = %entry, %if.end
   %chain.addr.05 = phi %union.tree_node* [ %2, %if.end ], [ %chain, %entry ]
-  %value = getelementptr inbounds %union.tree_node* %chain.addr.05, i64 0, i32 0, i32 2
-  %0 = bitcast i32* %value to %union.tree_node**
-  %1 = load %union.tree_node** %0, align 8, !tbaa !0
-  %cmp = icmp eq %union.tree_node* %1, %elem
-  br i1 %cmp, label %return, label %if.end
+  %value = getelementptr inbounds %union.tree_node* %chain.addr.05, i64 0, i32 0, i32 2, !dbg !2280
+  %0 = bitcast i32* %value to %union.tree_node**, !dbg !2280
+  %1 = load %union.tree_node** %0, align 8, !dbg !2280, !tbaa !1913
+  %cmp = icmp eq %union.tree_node* %1, %elem, !dbg !2280
+  br i1 %cmp, label %return, label %if.end, !dbg !2280
 
 if.end:                                           ; preds = %while.body
-  %chain1 = getelementptr inbounds %union.tree_node* %chain.addr.05, i64 0, i32 0, i32 0, i32 0
-  %2 = load %union.tree_node** %chain1, align 8, !tbaa !0
-  %tobool = icmp eq %union.tree_node* %2, null
-  br i1 %tobool, label %return, label %while.body
+  %chain1 = getelementptr inbounds %union.tree_node* %chain.addr.05, i64 0, i32 0, i32 0, i32 0, !dbg !2282
+  %2 = load %union.tree_node** %chain1, align 8, !dbg !2282, !tbaa !1913
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %2}, i64 0, metadata !1089), !dbg !2282
+  %tobool = icmp eq %union.tree_node* %2, null, !dbg !2279
+  br i1 %tobool, label %return, label %while.body, !dbg !2279
 
 return:                                           ; preds = %if.end, %while.body, %entry
   %retval.0 = phi i32 [ 0, %entry ], [ 1, %while.body ], [ 0, %if.end ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !2283
 }

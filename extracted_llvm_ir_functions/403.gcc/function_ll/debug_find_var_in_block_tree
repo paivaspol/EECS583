@@ -1,41 +1,44 @@
-define %union.tree_node* @debug_find_var_in_block_tree(%union.tree_node* %var, %union.tree_node* %block) #4 {
+define %union.tree_node* @debug_find_var_in_block_tree(%union.tree_node* %var, %union.tree_node* %block) #5 {
 entry:
-  %vars = getelementptr inbounds %union.tree_node* %block, i64 0, i32 0, i32 2
-  %0 = bitcast i32* %vars to %union.tree_node**
-  %t.026 = load %union.tree_node** %0, align 8
-  %tobool27 = icmp eq %union.tree_node* %t.026, null
-  br i1 %tobool27, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %var}, i64 0, metadata !1828), !dbg !4364
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %block}, i64 0, metadata !1829), !dbg !4365
+  %vars = getelementptr inbounds %union.tree_node* %block, i64 0, i32 0, i32 2, !dbg !4366
+  %0 = bitcast i32* %vars to %union.tree_node**, !dbg !4366
+  %t.026 = load %union.tree_node** %0, align 8, !dbg !4366
+  %tobool27 = icmp eq %union.tree_node* %t.026, null, !dbg !4366
+  br i1 %tobool27, label %for.end, label %for.body, !dbg !4366
 
 for.cond:                                         ; preds = %for.body
-  %chain = getelementptr inbounds %union.tree_node* %t.028, i64 0, i32 0, i32 0, i32 0
-  %t.0 = load %union.tree_node** %chain, align 8
-  %tobool = icmp eq %union.tree_node* %t.0, null
-  br i1 %tobool, label %for.end, label %for.body
+  %chain = getelementptr inbounds %union.tree_node* %t.028, i64 0, i32 0, i32 0, i32 0, !dbg !4366
+  %t.0 = load %union.tree_node** %chain, align 8, !dbg !4366
+  %tobool = icmp eq %union.tree_node* %t.0, null, !dbg !4366
+  br i1 %tobool, label %for.end, label %for.body, !dbg !4366
 
 for.body:                                         ; preds = %entry, %for.cond
   %t.028 = phi %union.tree_node* [ %t.0, %for.cond ], [ %t.026, %entry ]
-  %cmp = icmp eq %union.tree_node* %t.028, %var
-  br i1 %cmp, label %return, label %for.cond
+  %cmp = icmp eq %union.tree_node* %t.028, %var, !dbg !4368
+  br i1 %cmp, label %return, label %for.cond, !dbg !4368
 
 for.end:                                          ; preds = %for.cond, %entry
-  %1 = getelementptr inbounds %union.tree_node* %block, i64 0, i32 0, i32 4
-  %t.122 = load %union.tree_node** %1, align 8
-  %tobool423 = icmp eq %union.tree_node* %t.122, null
-  br i1 %tobool423, label %return, label %for.body5
+  %1 = getelementptr inbounds %union.tree_node* %block, i64 0, i32 0, i32 4, !dbg !4369
+  %t.122 = load %union.tree_node** %1, align 8, !dbg !4369
+  %tobool423 = icmp eq %union.tree_node* %t.122, null, !dbg !4369
+  br i1 %tobool423, label %return, label %for.body5, !dbg !4369
 
 for.cond3:                                        ; preds = %for.body5
-  %chain11 = getelementptr inbounds %union.tree_node* %t.124, i64 0, i32 0, i32 0, i32 0
-  %t.1 = load %union.tree_node** %chain11, align 8
-  %tobool4 = icmp eq %union.tree_node* %t.1, null
-  br i1 %tobool4, label %return, label %for.body5
+  %chain11 = getelementptr inbounds %union.tree_node* %t.124, i64 0, i32 0, i32 0, i32 0, !dbg !4369
+  %t.1 = load %union.tree_node** %chain11, align 8, !dbg !4369
+  %tobool4 = icmp eq %union.tree_node* %t.1, null, !dbg !4369
+  br i1 %tobool4, label %return, label %for.body5, !dbg !4369
 
 for.body5:                                        ; preds = %for.end, %for.cond3
   %t.124 = phi %union.tree_node* [ %t.1, %for.cond3 ], [ %t.122, %for.end ]
-  %call = tail call %union.tree_node* @debug_find_var_in_block_tree(%union.tree_node* %var, %union.tree_node* %t.124) #9
-  %tobool6 = icmp eq %union.tree_node* %call, null
-  br i1 %tobool6, label %for.cond3, label %return
+  %call = tail call %union.tree_node* @debug_find_var_in_block_tree(%union.tree_node* %var, %union.tree_node* %t.124) #10, !dbg !4370
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call}, i64 0, metadata !1831), !dbg !4370
+  %tobool6 = icmp eq %union.tree_node* %call, null, !dbg !4371
+  br i1 %tobool6, label %for.cond3, label %return, !dbg !4371
 
 return:                                           ; preds = %for.body, %for.end, %for.body5, %for.cond3
   %retval.0 = phi %union.tree_node* [ null, %for.end ], [ %call, %for.body5 ], [ null, %for.cond3 ], [ %block, %for.body ]
-  ret %union.tree_node* %retval.0
+  ret %union.tree_node* %retval.0, !dbg !4372
 }

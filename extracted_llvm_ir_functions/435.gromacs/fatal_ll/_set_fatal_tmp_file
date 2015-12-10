@@ -1,18 +1,22 @@
-define void @_set_fatal_tmp_file(i8* nocapture readonly %fn, i8* %file, i32 %line) #4 {
-  %1 = load i8** @fatal_tmp_file, align 8, !tbaa !15
-  %2 = icmp eq i8* %1, null
-  br i1 %2, label %3, label %5
+define void @_set_fatal_tmp_file(i8* nocapture %fn, i8* %file, i32 %line) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %fn}, i64 0, metadata !110), !dbg !276
+  tail call void @llvm.dbg.value(metadata !{i8* %file}, i64 0, metadata !111), !dbg !276
+  tail call void @llvm.dbg.value(metadata !{i32 %line}, i64 0, metadata !112), !dbg !276
+  %0 = load i8** @fatal_tmp_file, align 8, !dbg !277, !tbaa !251
+  %cmp = icmp eq i8* %0, null, !dbg !277
+  br i1 %cmp, label %if.then, label %if.else, !dbg !277
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i8* @strdup(i8* %fn) #12
-  store i8* %4, i8** @fatal_tmp_file, align 8, !tbaa !15
-  br label %8
+if.then:                                          ; preds = %entry
+  %call = tail call noalias i8* @strdup(i8* %fn) #11, !dbg !278
+  store i8* %call, i8** @fatal_tmp_file, align 8, !dbg !278, !tbaa !251
+  br label %if.end, !dbg !278
 
-; <label>:5                                       ; preds = %0
-  %6 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !15
-  %7 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %6, i8* getelementptr inbounds ([48 x i8]* @.str4, i64 0, i64 0), i8* %file, i32 %line) #12
-  br label %8
+if.else:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !279, !tbaa !251
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([48 x i8]* @.str4, i64 0, i64 0), i8* %file, i32 %line) #11, !dbg !279
+  br label %if.end
 
-; <label>:8                                       ; preds = %5, %3
-  ret void
+if.end:                                           ; preds = %if.else, %if.then
+  ret void, !dbg !280
 }

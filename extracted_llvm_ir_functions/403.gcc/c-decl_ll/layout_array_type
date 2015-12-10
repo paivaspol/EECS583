@@ -1,19 +1,20 @@
 define internal fastcc void @layout_array_type(%union.tree_node* %t) #0 {
 entry:
-  %type = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 0, i32 1
-  %0 = load %union.tree_node** %type, align 8, !tbaa !0
-  %code = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 0, i32 2
-  %1 = bitcast [4 x i8]* %code to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.clear = and i32 %bf.load, 255
-  %cmp = icmp eq i32 %bf.clear, 18
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %t}, i64 0, metadata !1908), !dbg !4686
+  %type = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 0, i32 1, !dbg !4687
+  %0 = load %union.tree_node** %type, align 8, !dbg !4687, !tbaa !2183
+  %code = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 0, i32 2, !dbg !4687
+  %1 = bitcast [4 x i8]* %code to i32*, !dbg !4687
+  %bf.load = load i32* %1, align 8, !dbg !4687
+  %bf.clear = and i32 %bf.load, 255, !dbg !4687
+  %cmp = icmp eq i32 %bf.clear, 18, !dbg !4687
+  br i1 %cmp, label %if.then, label %if.end, !dbg !4687
 
 if.then:                                          ; preds = %entry
-  tail call fastcc void @layout_array_type(%union.tree_node* %0) #10
-  br label %if.end
+  tail call fastcc void @layout_array_type(%union.tree_node* %0) #11, !dbg !4688
+  br label %if.end, !dbg !4688
 
 if.end:                                           ; preds = %if.then, %entry
-  tail call void @layout_type(%union.tree_node* %t) #8
-  ret void
+  tail call void @layout_type(%union.tree_node* %t) #9, !dbg !4689
+  ret void, !dbg !4690
 }

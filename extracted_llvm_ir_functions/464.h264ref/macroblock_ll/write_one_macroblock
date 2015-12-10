@@ -1,230 +1,234 @@
 define void @write_one_macroblock(i32 %eos_bit) #0 {
 entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3
-  %1 = load i32* %current_mb_nr, align 4, !tbaa !3
-  %idxprom = sext i32 %1 to i64
-  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51
-  %2 = load %struct.macroblock** %mb_data, align 8, !tbaa !0
-  %cmp = icmp eq i32 %1, 0
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i32 %eos_bit}, i64 0, metadata !873), !dbg !3292
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !3293, !tbaa !1576
+  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3, !dbg !3293
+  %1 = load i32* %current_mb_nr, align 4, !dbg !3293, !tbaa !1579
+  %idxprom = sext i32 %1 to i64, !dbg !3293
+  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51, !dbg !3293
+  %2 = load %struct.macroblock** %mb_data, align 8, !dbg !3293, !tbaa !1576
+  %cmp = icmp eq i32 %1, 0, !dbg !3294
+  br i1 %cmp, label %if.then, label %if.end, !dbg !3294
 
 if.then:                                          ; preds = %entry
-  store i32 0, i32* @intras, align 4, !tbaa !3
-  br label %if.end
+  store i32 0, i32* @intras, align 4, !dbg !3295, !tbaa !1579
+  br label %if.end, !dbg !3295
 
 if.end:                                           ; preds = %if.then, %entry
-  %mb_type = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 8
-  %3 = load i32* %mb_type, align 4, !tbaa !3
+  %mb_type = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 8, !dbg !3296
+  %3 = load i32* %mb_type, align 4, !dbg !3296, !tbaa !1579
   switch i32 %3, label %if.end9 [
     i32 9, label %if.then8
     i32 10, label %if.then8
     i32 13, label %if.then8
-  ]
+  ], !dbg !3296
 
 if.then8:                                         ; preds = %if.end, %if.end, %if.end
-  %4 = load i32* @intras, align 4, !tbaa !3
-  %inc = add nsw i32 %4, 1
-  store i32 %inc, i32* @intras, align 4, !tbaa !3
-  br label %if.end9
+  %4 = load i32* @intras, align 4, !dbg !3297, !tbaa !1579
+  %inc = add nsw i32 %4, 1, !dbg !3297
+  store i32 %inc, i32* @intras, align 4, !dbg !3297, !tbaa !1579
+  br label %if.end9, !dbg !3297
 
 if.end9:                                          ; preds = %if.end, %if.then8
-  %5 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %symbol_mode = getelementptr inbounds %struct.InputParameters* %5, i64 0, i32 59
-  %6 = load i32* %symbol_mode, align 4, !tbaa !3
-  %cmp10 = icmp eq i32 %6, 1
-  br i1 %cmp10, label %land.lhs.true, label %if.end15
+  %5 = load %struct.InputParameters** @input, align 8, !dbg !3298, !tbaa !1576
+  %symbol_mode = getelementptr inbounds %struct.InputParameters* %5, i64 0, i32 59, !dbg !3298
+  %6 = load i32* %symbol_mode, align 4, !dbg !3298, !tbaa !1579
+  %cmp10 = icmp eq i32 %6, 1, !dbg !3298
+  br i1 %cmp10, label %land.lhs.true, label %if.end15, !dbg !3298
 
 land.lhs.true:                                    ; preds = %if.end9
-  %7 = load i32* %current_mb_nr, align 4, !tbaa !3
-  %currentSlice = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 50
-  %8 = load %struct.Slice** %currentSlice, align 8, !tbaa !0
-  %start_mb_nr = getelementptr inbounds %struct.Slice* %8, i64 0, i32 3
-  %9 = load i32* %start_mb_nr, align 4, !tbaa !3
-  %cmp12 = icmp eq i32 %7, %9
-  %tobool = icmp eq i32 %eos_bit, 0
-  %or.cond = or i1 %cmp12, %tobool
-  br i1 %or.cond, label %if.end15, label %if.then14
+  %7 = load i32* %current_mb_nr, align 4, !dbg !3298, !tbaa !1579
+  %currentSlice = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 50, !dbg !3298
+  %8 = load %struct.Slice** %currentSlice, align 8, !dbg !3298, !tbaa !1576
+  %start_mb_nr = getelementptr inbounds %struct.Slice* %8, i64 0, i32 3, !dbg !3298
+  %9 = load i32* %start_mb_nr, align 4, !dbg !3298, !tbaa !1579
+  %cmp12 = icmp eq i32 %7, %9, !dbg !3298
+  %tobool = icmp eq i32 %eos_bit, 0, !dbg !3298
+  %or.cond = or i1 %cmp12, %tobool, !dbg !3298
+  br i1 %or.cond, label %if.end15, label %if.then14, !dbg !3298
 
 if.then14:                                        ; preds = %land.lhs.true
-  %partition_mode.i = getelementptr inbounds %struct.InputParameters* %5, i64 0, i32 61
-  %10 = load i32* %partition_mode.i, align 4, !tbaa !3
-  %idxprom.i = sext i32 %10 to i64
-  %arrayidx.i = getelementptr inbounds [2 x i32*]* @assignSE2partition, i64 0, i64 %idxprom.i
-  %11 = load i32** %arrayidx.i, align 8, !tbaa !0
-  %arrayidx1.i = getelementptr inbounds i32* %11, i64 2
-  %12 = load i32* %arrayidx1.i, align 4, !tbaa !3
-  %idxprom2.i = sext i32 %12 to i64
-  %partArr.i = getelementptr inbounds %struct.Slice* %8, i64 0, i32 6
-  %13 = load %struct.datapartition** %partArr.i, align 8, !tbaa !0
-  %bitstream.i = getelementptr inbounds %struct.datapartition* %13, i64 %idxprom2.i, i32 0
-  %14 = load %struct.Bitstream** %bitstream.i, align 8, !tbaa !0
-  %write_flag.i = getelementptr inbounds %struct.Bitstream* %14, i64 0, i32 10
-  store i32 1, i32* %write_flag.i, align 4, !tbaa !3
-  %ee_cabac.i = getelementptr inbounds %struct.datapartition* %13, i64 %idxprom2.i, i32 1
-  tail call void @biari_encode_symbol_final(%struct.EncodingEnvironment* %ee_cabac.i, i16 signext 0) #7
-  br label %if.end15
+  tail call void @llvm.dbg.value(metadata !3299, i64 0, metadata !3300) #5, !dbg !3303
+  %partition_mode.i = getelementptr inbounds %struct.InputParameters* %5, i64 0, i32 61, !dbg !3304
+  %10 = load i32* %partition_mode.i, align 4, !dbg !3304, !tbaa !1579
+  %idxprom.i = sext i32 %10 to i64, !dbg !3304
+  %arrayidx.i = getelementptr inbounds [2 x i32*]* @assignSE2partition, i64 0, i64 %idxprom.i, !dbg !3304
+  %11 = load i32** %arrayidx.i, align 8, !dbg !3304, !tbaa !1576
+  tail call void @llvm.dbg.value(metadata !{i32* %11}, i64 0, metadata !3305) #5, !dbg !3304
+  %arrayidx1.i = getelementptr inbounds i32* %11, i64 2, !dbg !3306
+  %12 = load i32* %arrayidx1.i, align 4, !dbg !3306, !tbaa !1579
+  %idxprom2.i = sext i32 %12 to i64, !dbg !3306
+  %partArr.i = getelementptr inbounds %struct.Slice* %8, i64 0, i32 6, !dbg !3306
+  %13 = load %struct.datapartition** %partArr.i, align 8, !dbg !3306, !tbaa !1576
+  %bitstream.i = getelementptr inbounds %struct.datapartition* %13, i64 %idxprom2.i, i32 0, !dbg !3307
+  %14 = load %struct.Bitstream** %bitstream.i, align 8, !dbg !3307, !tbaa !1576
+  %write_flag.i = getelementptr inbounds %struct.Bitstream* %14, i64 0, i32 10, !dbg !3307
+  store i32 1, i32* %write_flag.i, align 4, !dbg !3307, !tbaa !1579
+  %ee_cabac.i = getelementptr inbounds %struct.datapartition* %13, i64 %idxprom2.i, i32 1, !dbg !3308
+  tail call void @llvm.dbg.value(metadata !{%struct.EncodingEnvironment* %ee_cabac.i}, i64 0, metadata !3309) #5, !dbg !3308
+  tail call void @biari_encode_symbol_final(%struct.EncodingEnvironment* %ee_cabac.i, i16 signext 0) #8, !dbg !3310
+  br label %if.end15, !dbg !3311
 
 if.end15:                                         ; preds = %land.lhs.true, %if.then14, %if.end9
-  store i32 1, i32* @cabac_encoding, align 4, !tbaa !3
-  %call = tail call i32 @writeMBLayer(i32 0) #8
-  %15 = load i32* %mb_type, align 4, !tbaa !3
-  %cmp17 = icmp eq i32 %15, 0
-  br i1 %cmp17, label %lor.lhs.false18, label %if.end38
+  store i32 1, i32* @cabac_encoding, align 4, !dbg !3312, !tbaa !1579
+  %call = tail call i32 @writeMBLayer(i32 0) #9, !dbg !3313
+  %15 = load i32* %mb_type, align 4, !dbg !3314, !tbaa !1579
+  %cmp17 = icmp eq i32 %15, 0, !dbg !3314
+  br i1 %cmp17, label %lor.lhs.false18, label %if.end38, !dbg !3314
 
 lor.lhs.false18:                                  ; preds = %if.end15
-  %16 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type = getelementptr inbounds %struct.ImageParameters* %16, i64 0, i32 6
-  %17 = load i32* %type, align 4, !tbaa !3
-  %cmp19 = icmp eq i32 %17, 1
-  br i1 %cmp19, label %land.lhs.true20, label %for.cond.preheader
+  %16 = load %struct.ImageParameters** @img, align 8, !dbg !3314, !tbaa !1576
+  %type = getelementptr inbounds %struct.ImageParameters* %16, i64 0, i32 6, !dbg !3314
+  %17 = load i32* %type, align 4, !dbg !3314, !tbaa !1579
+  %cmp19 = icmp eq i32 %17, 1, !dbg !3314
+  br i1 %cmp19, label %land.lhs.true20, label %for.cond.preheader, !dbg !3314
 
 land.lhs.true20:                                  ; preds = %lor.lhs.false18
-  %cbp = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 12
-  %18 = load i32* %cbp, align 4, !tbaa !3
-  %cmp21 = icmp eq i32 %18, 0
-  br i1 %cmp21, label %for.cond.preheader, label %if.end38
+  %cbp = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 12, !dbg !3314
+  %18 = load i32* %cbp, align 4, !dbg !3314, !tbaa !1579
+  %cmp21 = icmp eq i32 %18, 0, !dbg !3314
+  br i1 %cmp21, label %for.cond.preheader, label %if.end38, !dbg !3314
 
 for.cond.preheader:                               ; preds = %land.lhs.true20, %lor.lhs.false18
-  %num_blk8x8_uv122 = getelementptr inbounds %struct.ImageParameters* %16, i64 0, i32 157
-  %19 = load i32* %num_blk8x8_uv122, align 4, !tbaa !3
-  %add123 = add nsw i32 %19, 4
-  %cmp23124 = icmp sgt i32 %add123, 0
-  br i1 %cmp23124, label %for.cond24.preheader.lr.ph, label %if.end38
+  %num_blk8x8_uv122 = getelementptr inbounds %struct.ImageParameters* %16, i64 0, i32 157, !dbg !3315
+  %19 = load i32* %num_blk8x8_uv122, align 4, !dbg !3315, !tbaa !1579
+  %add123 = add nsw i32 %19, 4, !dbg !3315
+  %cmp23124 = icmp sgt i32 %add123, 0, !dbg !3315
+  br i1 %cmp23124, label %for.cond24.preheader.lr.ph, label %if.end38, !dbg !3315
 
 for.cond24.preheader.lr.ph:                       ; preds = %for.cond.preheader
-  %current_mb_nr29 = getelementptr inbounds %struct.ImageParameters* %16, i64 0, i32 3
-  %nz_coeff = getelementptr inbounds %struct.ImageParameters* %16, i64 0, i32 28
-  %20 = load i32**** %nz_coeff, align 8, !tbaa !0
-  br label %for.cond24.preheader
+  %current_mb_nr29 = getelementptr inbounds %struct.ImageParameters* %16, i64 0, i32 3, !dbg !3318
+  %nz_coeff = getelementptr inbounds %struct.ImageParameters* %16, i64 0, i32 28, !dbg !3318
+  %20 = load i32**** %nz_coeff, align 8, !dbg !3318, !tbaa !1576
+  br label %for.cond24.preheader, !dbg !3315
 
 for.cond24.preheader:                             ; preds = %for.cond24.preheader.lr.ph, %for.inc35
   %indvars.iv126 = phi i64 [ 0, %for.cond24.preheader.lr.ph ], [ %indvars.iv.next127, %for.inc35 ]
-  br label %for.body26
+  br label %for.body26, !dbg !3320
 
 for.body26:                                       ; preds = %for.body26, %for.cond24.preheader
   %indvars.iv = phi i64 [ 0, %for.cond24.preheader ], [ %indvars.iv.next, %for.body26 ]
-  %21 = load i32* %current_mb_nr29, align 4, !tbaa !3
-  %idxprom30 = sext i32 %21 to i64
-  %arrayidx31 = getelementptr inbounds i32*** %20, i64 %idxprom30
-  %22 = load i32*** %arrayidx31, align 8, !tbaa !0
-  %arrayidx32 = getelementptr inbounds i32** %22, i64 %indvars.iv
-  %23 = load i32** %arrayidx32, align 8, !tbaa !0
-  %arrayidx33 = getelementptr inbounds i32* %23, i64 %indvars.iv126
-  store i32 0, i32* %arrayidx33, align 4, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 4
-  br i1 %exitcond, label %for.inc35, label %for.body26
+  %21 = load i32* %current_mb_nr29, align 4, !dbg !3318, !tbaa !1579
+  %idxprom30 = sext i32 %21 to i64, !dbg !3318
+  %arrayidx31 = getelementptr inbounds i32*** %20, i64 %idxprom30, !dbg !3318
+  %22 = load i32*** %arrayidx31, align 8, !dbg !3318, !tbaa !1576
+  %arrayidx32 = getelementptr inbounds i32** %22, i64 %indvars.iv, !dbg !3318
+  %23 = load i32** %arrayidx32, align 8, !dbg !3318, !tbaa !1576
+  %arrayidx33 = getelementptr inbounds i32* %23, i64 %indvars.iv126, !dbg !3318
+  store i32 0, i32* %arrayidx33, align 4, !dbg !3318, !tbaa !1579
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !3320
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !3320
+  %exitcond = icmp eq i32 %lftr.wideiv, 4, !dbg !3320
+  br i1 %exitcond, label %for.inc35, label %for.body26, !dbg !3320
 
 for.inc35:                                        ; preds = %for.body26
-  %indvars.iv.next127 = add i64 %indvars.iv126, 1
-  %24 = load i32* %num_blk8x8_uv122, align 4, !tbaa !3
-  %25 = add nsw i32 %24, 3
-  %26 = trunc i64 %indvars.iv126 to i32
-  %cmp23 = icmp slt i32 %26, %25
-  br i1 %cmp23, label %for.cond24.preheader, label %if.end38
+  %indvars.iv.next127 = add i64 %indvars.iv126, 1, !dbg !3315
+  %24 = load i32* %num_blk8x8_uv122, align 4, !dbg !3315, !tbaa !1579
+  %25 = add nsw i32 %24, 3, !dbg !3315
+  %26 = trunc i64 %indvars.iv126 to i32, !dbg !3315
+  %cmp23 = icmp slt i32 %26, %25, !dbg !3315
+  br i1 %cmp23, label %for.cond24.preheader, label %if.end38, !dbg !3315
 
 if.end38:                                         ; preds = %for.cond.preheader, %for.inc35, %land.lhs.true20, %if.end15
-  tail call void @set_last_dquant() #8
-  %27 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %UseConstrainedIntraPred = getelementptr inbounds %struct.InputParameters* %27, i64 0, i32 24
-  %28 = load i32* %UseConstrainedIntraPred, align 4, !tbaa !3
-  %tobool39 = icmp eq i32 %28, 0
-  %.pre = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  br i1 %tobool39, label %if.end60, label %land.lhs.true40
+  tail call void @set_last_dquant() #9, !dbg !3321
+  %27 = load %struct.InputParameters** @input, align 8, !dbg !3322, !tbaa !1576
+  %UseConstrainedIntraPred = getelementptr inbounds %struct.InputParameters* %27, i64 0, i32 24, !dbg !3322
+  %28 = load i32* %UseConstrainedIntraPred, align 4, !dbg !3322, !tbaa !1579
+  %tobool39 = icmp eq i32 %28, 0, !dbg !3322
+  %.pre = load %struct.ImageParameters** @img, align 8, !dbg !3323, !tbaa !1576
+  br i1 %tobool39, label %if.end60, label %land.lhs.true40, !dbg !3322
 
 land.lhs.true40:                                  ; preds = %if.end38
-  %type41 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 6
-  %29 = load i32* %type41, align 4, !tbaa !3
-  %switch = icmp ult i32 %29, 2
-  br i1 %switch, label %if.then46, label %if.end60
+  %type41 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 6, !dbg !3322
+  %29 = load i32* %type41, align 4, !dbg !3322, !tbaa !1579
+  %switch = icmp ult i32 %29, 2, !dbg !3322
+  br i1 %switch, label %if.then46, label %if.end60, !dbg !3322
 
 if.then46:                                        ; preds = %land.lhs.true40
-  %30 = load i32* %mb_type, align 4, !tbaa !3
+  %30 = load i32* %mb_type, align 4, !dbg !3324, !tbaa !1579
   switch i32 %30, label %if.then55 [
     i32 9, label %if.end60
     i32 10, label %if.end60
     i32 13, label %if.end60
-  ]
+  ], !dbg !3324
 
 if.then55:                                        ; preds = %if.then46
-  %current_mb_nr56 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 3
-  %31 = load i32* %current_mb_nr56, align 4, !tbaa !3
-  %idxprom57 = sext i32 %31 to i64
-  %intra_block = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 54
-  %32 = load i32** %intra_block, align 8, !tbaa !0
-  %arrayidx58 = getelementptr inbounds i32* %32, i64 %idxprom57
-  store i32 0, i32* %arrayidx58, align 4, !tbaa !3
-  br label %if.end60
+  %current_mb_nr56 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 3, !dbg !3326
+  %31 = load i32* %current_mb_nr56, align 4, !dbg !3326, !tbaa !1579
+  %idxprom57 = sext i32 %31 to i64, !dbg !3326
+  %intra_block = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 54, !dbg !3326
+  %32 = load i32** %intra_block, align 8, !dbg !3326, !tbaa !1576
+  %arrayidx58 = getelementptr inbounds i32* %32, i64 %idxprom57, !dbg !3326
+  store i32 0, i32* %arrayidx58, align 4, !dbg !3326, !tbaa !1579
+  br label %if.end60, !dbg !3328
 
 if.end60:                                         ; preds = %if.end38, %land.lhs.true40, %if.then46, %if.then46, %if.then46, %if.then55
-  %arrayidx61 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 5, i64 2
-  %33 = load i32* %arrayidx61, align 4, !tbaa !3
-  %arrayidx62 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 5, i64 5
-  %34 = load i32* %arrayidx62, align 4, !tbaa !3
-  %add63 = add nsw i32 %34, %33
-  %arrayidx64 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 5, i64 3
-  %35 = load i32* %arrayidx64, align 4, !tbaa !3
-  %add65 = add nsw i32 %add63, %35
-  %arrayidx66 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 5, i64 4
-  %36 = load i32* %arrayidx66, align 4, !tbaa !3
-  %add67 = add nsw i32 %add65, %36
-  %arrayidx68 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 5, i64 7
-  %37 = load i32* %arrayidx68, align 4, !tbaa !3
-  %add69 = add nsw i32 %add67, %37
-  %arrayidx70 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 5, i64 6
-  %38 = load i32* %arrayidx70, align 4, !tbaa !3
-  %add71 = add nsw i32 %add69, %38
-  %arrayidx72 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 5, i64 1
-  store i32 %add71, i32* %arrayidx72, align 4, !tbaa !3
-  %add75 = add nsw i32 %35, %33
-  %add77 = add nsw i32 %add75, %36
-  %add79 = add nsw i32 %add77, %37
-  %NumberofMBHeaderBits = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 125
-  store i32 %add79, i32* %NumberofMBHeaderBits, align 4, !tbaa !3
-  %39 = load i32* %arrayidx62, align 4, !tbaa !3
-  %40 = load i32* %arrayidx70, align 4, !tbaa !3
-  %add82 = add nsw i32 %40, %39
-  %NumberofMBTextureBits = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 124
-  store i32 %add82, i32* %NumberofMBTextureBits, align 4, !tbaa !3
-  %NumberofTextureBits = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 120
-  %41 = load i32* %NumberofTextureBits, align 4, !tbaa !3
-  %add84 = add nsw i32 %41, %add82
-  store i32 %add84, i32* %NumberofTextureBits, align 4, !tbaa !3
-  %NumberofHeaderBits = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 119
-  %42 = load i32* %NumberofHeaderBits, align 4, !tbaa !3
-  %add86 = add nsw i32 %42, %add79
-  store i32 %add86, i32* %NumberofHeaderBits, align 4, !tbaa !3
-  %BasicUnit = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 139
-  %43 = load i32* %BasicUnit, align 4, !tbaa !3
-  %Frame_Total_Number_MB = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 136
-  %44 = load i32* %Frame_Total_Number_MB, align 4, !tbaa !3
-  %cmp87 = icmp slt i32 %43, %44
-  br i1 %cmp87, label %if.then88, label %if.end93
+  %arrayidx61 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 5, i64 2, !dbg !3329
+  %33 = load i32* %arrayidx61, align 4, !dbg !3329, !tbaa !1579
+  %arrayidx62 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 5, i64 5, !dbg !3329
+  %34 = load i32* %arrayidx62, align 4, !dbg !3329, !tbaa !1579
+  %add63 = add nsw i32 %34, %33, !dbg !3329
+  %arrayidx64 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 5, i64 3, !dbg !3329
+  %35 = load i32* %arrayidx64, align 4, !dbg !3329, !tbaa !1579
+  %add65 = add nsw i32 %add63, %35, !dbg !3329
+  %arrayidx66 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 5, i64 4, !dbg !3329
+  %36 = load i32* %arrayidx66, align 4, !dbg !3329, !tbaa !1579
+  %add67 = add nsw i32 %add65, %36, !dbg !3329
+  %arrayidx68 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 5, i64 7, !dbg !3329
+  %37 = load i32* %arrayidx68, align 4, !dbg !3329, !tbaa !1579
+  %add69 = add nsw i32 %add67, %37, !dbg !3329
+  %arrayidx70 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 5, i64 6, !dbg !3329
+  %38 = load i32* %arrayidx70, align 4, !dbg !3329, !tbaa !1579
+  %add71 = add nsw i32 %add69, %38, !dbg !3329
+  %arrayidx72 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 5, i64 1, !dbg !3329
+  store i32 %add71, i32* %arrayidx72, align 4, !dbg !3329, !tbaa !1579
+  %add75 = add nsw i32 %35, %33, !dbg !3323
+  %add77 = add nsw i32 %add75, %36, !dbg !3323
+  %add79 = add nsw i32 %add77, %37, !dbg !3323
+  %NumberofMBHeaderBits = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 125, !dbg !3323
+  store i32 %add79, i32* %NumberofMBHeaderBits, align 4, !dbg !3323, !tbaa !1579
+  %39 = load i32* %arrayidx62, align 4, !dbg !3330, !tbaa !1579
+  %40 = load i32* %arrayidx70, align 4, !dbg !3330, !tbaa !1579
+  %add82 = add nsw i32 %40, %39, !dbg !3330
+  %NumberofMBTextureBits = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 124, !dbg !3330
+  store i32 %add82, i32* %NumberofMBTextureBits, align 4, !dbg !3330, !tbaa !1579
+  %NumberofTextureBits = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 120, !dbg !3331
+  %41 = load i32* %NumberofTextureBits, align 4, !dbg !3331, !tbaa !1579
+  %add84 = add nsw i32 %41, %add82, !dbg !3331
+  store i32 %add84, i32* %NumberofTextureBits, align 4, !dbg !3331, !tbaa !1579
+  %NumberofHeaderBits = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 119, !dbg !3332
+  %42 = load i32* %NumberofHeaderBits, align 4, !dbg !3332, !tbaa !1579
+  %add86 = add nsw i32 %42, %add79, !dbg !3332
+  store i32 %add86, i32* %NumberofHeaderBits, align 4, !dbg !3332, !tbaa !1579
+  %BasicUnit = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 139, !dbg !3333
+  %43 = load i32* %BasicUnit, align 4, !dbg !3333, !tbaa !1579
+  %Frame_Total_Number_MB = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 136, !dbg !3333
+  %44 = load i32* %Frame_Total_Number_MB, align 4, !dbg !3333, !tbaa !1579
+  %cmp87 = icmp slt i32 %43, %44, !dbg !3333
+  br i1 %cmp87, label %if.then88, label %if.end93, !dbg !3333
 
 if.then88:                                        ; preds = %if.end60
-  %NumberofBasicUnitHeaderBits = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 121
-  %45 = load i32* %NumberofBasicUnitHeaderBits, align 4, !tbaa !3
-  %add90 = add nsw i32 %45, %add79
-  store i32 %add90, i32* %NumberofBasicUnitHeaderBits, align 4, !tbaa !3
-  %NumberofBasicUnitTextureBits = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 122
-  %46 = load i32* %NumberofBasicUnitTextureBits, align 4, !tbaa !3
-  %add92 = add nsw i32 %46, %add82
-  store i32 %add92, i32* %NumberofBasicUnitTextureBits, align 4, !tbaa !3
-  br label %if.end93
+  %NumberofBasicUnitHeaderBits = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 121, !dbg !3334
+  %45 = load i32* %NumberofBasicUnitHeaderBits, align 4, !dbg !3334, !tbaa !1579
+  %add90 = add nsw i32 %45, %add79, !dbg !3334
+  store i32 %add90, i32* %NumberofBasicUnitHeaderBits, align 4, !dbg !3334, !tbaa !1579
+  %NumberofBasicUnitTextureBits = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 122, !dbg !3336
+  %46 = load i32* %NumberofBasicUnitTextureBits, align 4, !dbg !3336, !tbaa !1579
+  %add92 = add nsw i32 %46, %add82, !dbg !3336
+  store i32 %add92, i32* %NumberofBasicUnitTextureBits, align 4, !dbg !3336, !tbaa !1579
+  br label %if.end93, !dbg !3337
 
 if.end93:                                         ; preds = %if.then88, %if.end60
-  %NumberofCodedMacroBlocks = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 138
-  %47 = load i32* %NumberofCodedMacroBlocks, align 4, !tbaa !3
-  %inc94 = add nsw i32 %47, 1
-  store i32 %inc94, i32* %NumberofCodedMacroBlocks, align 4, !tbaa !3
-  %48 = load i32* %arrayidx72, align 4, !tbaa !3
-  %49 = load %struct.StatParameters** @stats, align 8, !tbaa !0
-  %bit_slice = getelementptr inbounds %struct.StatParameters* %49, i64 0, i32 6
-  %50 = load i32* %bit_slice, align 4, !tbaa !3
-  %add96 = add nsw i32 %50, %48
-  store i32 %add96, i32* %bit_slice, align 4, !tbaa !3
-  store i32 0, i32* @cabac_encoding, align 4, !tbaa !3
-  ret void
+  %NumberofCodedMacroBlocks = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 138, !dbg !3338
+  %47 = load i32* %NumberofCodedMacroBlocks, align 4, !dbg !3338, !tbaa !1579
+  %inc94 = add nsw i32 %47, 1, !dbg !3338
+  store i32 %inc94, i32* %NumberofCodedMacroBlocks, align 4, !dbg !3338, !tbaa !1579
+  %48 = load i32* %arrayidx72, align 4, !dbg !3339, !tbaa !1579
+  %49 = load %struct.StatParameters** @stats, align 8, !dbg !3339, !tbaa !1576
+  %bit_slice = getelementptr inbounds %struct.StatParameters* %49, i64 0, i32 6, !dbg !3339
+  %50 = load i32* %bit_slice, align 4, !dbg !3339, !tbaa !1579
+  %add96 = add nsw i32 %50, %48, !dbg !3339
+  store i32 %add96, i32* %bit_slice, align 4, !dbg !3339, !tbaa !1579
+  store i32 0, i32* @cabac_encoding, align 4, !dbg !3340, !tbaa !1579
+  ret void, !dbg !3341
 }

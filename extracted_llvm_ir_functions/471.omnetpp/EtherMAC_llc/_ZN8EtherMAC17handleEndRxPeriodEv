@@ -1,0 +1,90 @@
+define void @_ZN8EtherMAC17handleEndRxPeriodEv(%class.EtherMAC* %this) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.EtherMAC* %this}, i64 0, metadata !4940), !dbg !6513
+  %0 = load i32* getelementptr inbounds (%class.cEnvir* @ev, i64 0, i32 1), align 8, !dbg !6514, !tbaa !5376
+  %tobool = icmp eq i32 %0, 0, !dbg !6514
+  br i1 %tobool, label %cond.false, label %cond.end, !dbg !6514
+
+cond.false:                                       ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !5402, i64 0, metadata !6515), !dbg !6516
+  tail call void @llvm.dbg.value(metadata !6517, i64 0, metadata !6518), !dbg !6516
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([26 x i8]* @.str114, i64 0, i64 0)) #11, !dbg !6519
+  br label %cond.end, !dbg !6514
+
+cond.end:                                         ; preds = %entry, %cond.false
+  %1 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 0, !dbg !6520
+  %call2 = tail call double @_ZNK13cSimpleModule7simTimeEv(%class.cSimpleModule* %1) #11, !dbg !6520
+  %channelBusySince = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 34, !dbg !6520
+  %2 = load double* %channelBusySince, align 8, !dbg !6520, !tbaa !5436
+  %sub = fsub double %call2, %2, !dbg !6520
+  tail call void @llvm.dbg.value(metadata !{double %sub}, i64 0, metadata !4941), !dbg !6520
+  %receiveState = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 18, !dbg !6521
+  %3 = load i32* %receiveState, align 4, !dbg !6521, !tbaa !5376
+  %cmp = icmp eq i32 %3, 2, !dbg !6521
+  br i1 %cmp, label %if.then, label %if.else, !dbg !6521
+
+if.then:                                          ; preds = %cond.end
+  %frameBeingReceived = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 25, !dbg !6522
+  %4 = load %class.EtherFrame** %frameBeingReceived, align 8, !dbg !6522, !tbaa !5362
+  tail call void @llvm.dbg.value(metadata !{%class.EtherFrame* %4}, i64 0, metadata !4942), !dbg !6522
+  store %class.EtherFrame* null, %class.EtherFrame** %frameBeingReceived, align 8, !dbg !6523, !tbaa !5362
+  tail call void @_ZN8EtherMAC22frameReceptionCompleteEP10EtherFrame(%class.EtherMAC* %this, %class.EtherFrame* %4) #11, !dbg !6524
+  %totalSuccessfulRxTxTime = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 33, !dbg !6525
+  %5 = load double* %totalSuccessfulRxTxTime, align 8, !dbg !6525, !tbaa !5436
+  %add = fadd double %sub, %5, !dbg !6525
+  store double %add, double* %totalSuccessfulRxTxTime, align 8, !dbg !6525, !tbaa !5436
+  br label %if.end, !dbg !6526
+
+if.else:                                          ; preds = %cond.end
+  %totalCollisionTime = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 32, !dbg !6527
+  %6 = load double* %totalCollisionTime, align 8, !dbg !6527, !tbaa !5436
+  %add4 = fadd double %sub, %6, !dbg !6527
+  store double %add4, double* %totalCollisionTime, align 8, !dbg !6527, !tbaa !5436
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  store i32 1, i32* %receiveState, align 4, !dbg !6529, !tbaa !5376
+  %numConcurrentTransmissions = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 22, !dbg !6530
+  store i32 0, i32* %numConcurrentTransmissions, align 4, !dbg !6530, !tbaa !5376
+  %transmitState = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 17, !dbg !6531
+  %7 = load i32* %transmitState, align 4, !dbg !6531, !tbaa !5376
+  %cmp6 = icmp eq i32 %7, 1, !dbg !6531
+  br i1 %cmp6, label %land.lhs.true, label %if.end15, !dbg !6531
+
+land.lhs.true:                                    ; preds = %if.end
+  %outputbuffer = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 24, !dbg !6531
+  tail call void @llvm.dbg.value(metadata !{%class.cQueue* %outputbuffer}, i64 0, metadata !6532), !dbg !6533
+  %8 = bitcast %class.cQueue* %outputbuffer to i32 (%class.cQueue*)***, !dbg !6534
+  %vtable.i = load i32 (%class.cQueue*)*** %8, align 8, !dbg !6534, !tbaa !5419
+  %vfn.i = getelementptr inbounds i32 (%class.cQueue*)** %vtable.i, i64 23, !dbg !6534
+  %9 = load i32 (%class.cQueue*)** %vfn.i, align 8, !dbg !6534
+  %call.i = tail call i32 %9(%class.cQueue* %outputbuffer) #11, !dbg !6534
+  %cmp.i = icmp eq i32 %call.i, 0, !dbg !6534
+  br i1 %cmp.i, label %if.end15, label %if.then8, !dbg !6531
+
+if.then8:                                         ; preds = %land.lhs.true
+  %10 = load i32* getelementptr inbounds (%class.cEnvir* @ev, i64 0, i32 1), align 8, !dbg !6535, !tbaa !5376
+  %tobool9 = icmp eq i32 %10, 0, !dbg !6535
+  br i1 %tobool9, label %cond.false11, label %cond.end13, !dbg !6535
+
+cond.false11:                                     ; preds = %if.then8
+  tail call void @llvm.dbg.value(metadata !5402, i64 0, metadata !6537), !dbg !6538
+  tail call void @llvm.dbg.value(metadata !6539, i64 0, metadata !6540), !dbg !6538
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([74 x i8]* @.str115, i64 0, i64 0)) #11, !dbg !6541
+  br label %cond.end13, !dbg !6535
+
+cond.end13:                                       ; preds = %if.then8, %cond.false11
+  tail call void @llvm.dbg.value(metadata !{%class.EtherMAC* %this}, i64 0, metadata !6542), !dbg !6544
+  %call.i17 = tail call double @_ZNK13cSimpleModule7simTimeEv(%class.cSimpleModule* %1) #11, !dbg !6545
+  %interFrameGap.i = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 11, !dbg !6545
+  %11 = load double* %interFrameGap.i, align 8, !dbg !6545, !tbaa !5436
+  %add.i = fadd double %call.i17, %11, !dbg !6545
+  %endIFGMsg.i = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 28, !dbg !6545
+  %12 = load %class.cMessage** %endIFGMsg.i, align 8, !dbg !6545, !tbaa !5362
+  %call2.i = tail call i32 @_ZN13cSimpleModule10scheduleAtEdP8cMessage(%class.cSimpleModule* %1, double %add.i, %class.cMessage* %12) #11, !dbg !6545
+  store i32 2, i32* %transmitState, align 4, !dbg !6546, !tbaa !5376
+  br label %if.end15, !dbg !6547
+
+if.end15:                                         ; preds = %cond.end13, %land.lhs.true, %if.end
+  ret void, !dbg !6548
+}

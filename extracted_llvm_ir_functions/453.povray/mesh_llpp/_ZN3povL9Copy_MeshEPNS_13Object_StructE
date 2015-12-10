@@ -1,0 +1,55 @@
+define internal %"struct.pov::Mesh_Struct"* @_ZN3povL9Copy_MeshEPNS_13Object_StructE(%"struct.pov::Object_Struct"* nocapture %Object) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !1430), !dbg !2288
+  %call = tail call %"struct.pov::Mesh_Struct"* @_ZN3pov11Create_MeshEv() #7, !dbg !2289
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Mesh_Struct"* %call}, i64 0, metadata !1431), !dbg !2289
+  %0 = bitcast %"struct.pov::Mesh_Struct"* %call to i8*, !dbg !2290
+  %1 = bitcast %"struct.pov::Object_Struct"* %Object to i8*, !dbg !2290
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 152, i32 8, i1 false), !dbg !2290, !tbaa.struct !2291
+  %Trans = getelementptr inbounds %"struct.pov::Mesh_Struct"* %call, i64 0, i32 10, !dbg !2292
+  %2 = load %"struct.pov::Transform_Struct"** %Trans, align 8, !dbg !2292, !tbaa !1750
+  %call1 = tail call %"struct.pov::Transform_Struct"* @_ZN3pov14Copy_TransformEPNS_16Transform_StructE(%"struct.pov::Transform_Struct"* %2) #7, !dbg !2292
+  store %"struct.pov::Transform_Struct"* %call1, %"struct.pov::Transform_Struct"** %Trans, align 8, !dbg !2292, !tbaa !1750
+  %Data = getelementptr inbounds %"struct.pov::Mesh_Struct"* %call, i64 0, i32 14, !dbg !2293
+  %3 = load %"struct.pov::Mesh_Data_Struct"** %Data, align 8, !dbg !2293, !tbaa !1750
+  %References = getelementptr inbounds %"struct.pov::Mesh_Data_Struct"* %3, i64 0, i32 0, !dbg !2293
+  %4 = load i32* %References, align 4, !dbg !2293, !tbaa !1782
+  %inc = add nsw i32 %4, 1, !dbg !2293
+  store i32 %inc, i32* %References, align 4, !dbg !2293, !tbaa !1782
+  %Textures = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, i32 2, !dbg !2294
+  %5 = load %"struct.pov::Object_Struct"** %Textures, align 8, !dbg !2294
+  %cmp = icmp eq %"struct.pov::Object_Struct"* %5, null, !dbg !2294
+  br i1 %cmp, label %if.end, label %if.then, !dbg !2294
+
+if.then:                                          ; preds = %entry
+  %Number_Of_Textures = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, i32 1, !dbg !2295
+  %6 = bitcast i32* %Number_Of_Textures to i64*, !dbg !2295
+  %7 = load i64* %6, align 8, !dbg !2295, !tbaa !1739
+  %mul = shl i64 %7, 3, !dbg !2295
+  %call3 = tail call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %mul, i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 800, i8* getelementptr inbounds ([19 x i8]* @.str7, i64 0, i64 0)) #7, !dbg !2295
+  %8 = bitcast i8* %call3 to %"struct.pov::Texture_Struct"**, !dbg !2295
+  %Textures4 = getelementptr inbounds %"struct.pov::Mesh_Struct"* %call, i64 0, i32 16, !dbg !2295
+  store %"struct.pov::Texture_Struct"** %8, %"struct.pov::Texture_Struct"*** %Textures4, align 8, !dbg !2295, !tbaa !1750
+  tail call void @llvm.dbg.value(metadata !146, i64 0, metadata !1432), !dbg !2297
+  %9 = load i64* %6, align 8, !dbg !2297, !tbaa !1739
+  %cmp626 = icmp sgt i64 %9, 0, !dbg !2297
+  br i1 %cmp626, label %for.body, label %if.end, !dbg !2297
+
+for.body:                                         ; preds = %if.then, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.then ]
+  %10 = load %"struct.pov::Object_Struct"** %Textures, align 8, !dbg !2299
+  %11 = bitcast %"struct.pov::Object_Struct"* %10 to %"struct.pov::Texture_Struct"**, !dbg !2299
+  %arrayidx = getelementptr inbounds %"struct.pov::Texture_Struct"** %11, i64 %indvars.iv, !dbg !2299
+  %12 = load %"struct.pov::Texture_Struct"** %arrayidx, align 8, !dbg !2299, !tbaa !1750
+  %call8 = tail call %"struct.pov::Texture_Struct"* @_ZN3pov13Copy_TexturesEPNS_14Texture_StructE(%"struct.pov::Texture_Struct"* %12) #7, !dbg !2299
+  %13 = load %"struct.pov::Texture_Struct"*** %Textures4, align 8, !dbg !2299, !tbaa !1750
+  %arrayidx11 = getelementptr inbounds %"struct.pov::Texture_Struct"** %13, i64 %indvars.iv, !dbg !2299
+  store %"struct.pov::Texture_Struct"* %call8, %"struct.pov::Texture_Struct"** %arrayidx11, align 8, !dbg !2299, !tbaa !1750
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2297
+  %14 = load i64* %6, align 8, !dbg !2297, !tbaa !1739
+  %cmp6 = icmp slt i64 %indvars.iv.next, %14, !dbg !2297
+  br i1 %cmp6, label %for.body, label %if.end, !dbg !2297
+
+if.end:                                           ; preds = %if.then, %for.body, %entry
+  ret %"struct.pov::Mesh_Struct"* %call, !dbg !2301
+}

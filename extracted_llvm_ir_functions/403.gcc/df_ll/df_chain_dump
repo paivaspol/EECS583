@@ -1,26 +1,29 @@
 define internal fastcc void @df_chain_dump(%struct.df_link* %link, %struct._IO_FILE* nocapture %file) #0 {
 entry:
-  %0 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str31, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %file)
-  %tobool8 = icmp eq %struct.df_link* %link, null
-  br i1 %tobool8, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct.df_link* %link}, i64 0, metadata !1036), !dbg !3305
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %file}, i64 0, metadata !1037), !dbg !3306
+  %0 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str31, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %file), !dbg !3307
+  %tobool8 = icmp eq %struct.df_link* %link, null, !dbg !3308
+  br i1 %tobool8, label %for.end, label %for.body, !dbg !3308
 
 for.body:                                         ; preds = %entry, %for.body
   %link.addr.09 = phi %struct.df_link* [ %4, %for.body ], [ %link, %entry ]
-  %ref = getelementptr inbounds %struct.df_link* %link.addr.09, i64 0, i32 1
-  %1 = load %struct.ref** %ref, align 8, !tbaa !3
-  %type = getelementptr inbounds %struct.ref* %1, i64 0, i32 4
-  %2 = load i32* %type, align 4, !tbaa !0
-  %cmp = icmp eq i32 %2, 0
-  %cond = select i1 %cmp, i32 100, i32 117
-  %id = getelementptr inbounds %struct.ref* %1, i64 0, i32 5
-  %3 = load i32* %id, align 4, !tbaa !4
-  %call2 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([6 x i8]* @.str28, i64 0, i64 0), i32 %cond, i32 %3) #8
-  %next = getelementptr inbounds %struct.df_link* %link.addr.09, i64 0, i32 0
-  %4 = load %struct.df_link** %next, align 8, !tbaa !3
-  %tobool = icmp eq %struct.df_link* %4, null
-  br i1 %tobool, label %for.end, label %for.body
+  %ref = getelementptr inbounds %struct.df_link* %link.addr.09, i64 0, i32 1, !dbg !3310
+  %1 = load %struct.ref** %ref, align 8, !dbg !3310, !tbaa !1898
+  %type = getelementptr inbounds %struct.ref* %1, i64 0, i32 4, !dbg !3310
+  %2 = load i32* %type, align 4, !dbg !3310, !tbaa !1892
+  %cmp = icmp eq i32 %2, 0, !dbg !3310
+  %cond = select i1 %cmp, i32 100, i32 117, !dbg !3310
+  %id = getelementptr inbounds %struct.ref* %1, i64 0, i32 5, !dbg !3310
+  %3 = load i32* %id, align 4, !dbg !3310, !tbaa !1899
+  %call2 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([6 x i8]* @.str28, i64 0, i64 0), i32 %cond, i32 %3) #9, !dbg !3310
+  %next = getelementptr inbounds %struct.df_link* %link.addr.09, i64 0, i32 0, !dbg !3308
+  %4 = load %struct.df_link** %next, align 8, !dbg !3308, !tbaa !1898
+  tail call void @llvm.dbg.value(metadata !{%struct.df_link* %4}, i64 0, metadata !1036), !dbg !3308
+  %tobool = icmp eq %struct.df_link* %4, null, !dbg !3308
+  br i1 %tobool, label %for.end, label %for.body, !dbg !3308
 
 for.end:                                          ; preds = %for.body, %entry
-  %fputc = tail call i32 @fputc(i32 125, %struct._IO_FILE* %file) #5
-  ret void
+  %fputc = tail call i32 @fputc(i32 125, %struct._IO_FILE* %file) #6, !dbg !3312
+  ret void, !dbg !3313
 }

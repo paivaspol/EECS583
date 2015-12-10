@@ -1,0 +1,41 @@
+define void @_ZN3pov17Destroy_SkysphereEPNS_16Skysphere_StructE(%"struct.pov::Skysphere_Struct"* %Skysphere) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Skysphere_Struct"* %Skysphere}, i64 0, metadata !927), !dbg !1793
+  %cmp = icmp eq %"struct.pov::Skysphere_Struct"* %Skysphere, null, !dbg !1794
+  br i1 %cmp, label %if.end, label %for.cond.preheader, !dbg !1794
+
+for.cond.preheader:                               ; preds = %entry
+  %Count = getelementptr inbounds %"struct.pov::Skysphere_Struct"* %Skysphere, i64 0, i32 0, !dbg !1795
+  %0 = load i32* %Count, align 4, !dbg !1795, !tbaa !1242
+  %cmp112 = icmp sgt i32 %0, 0, !dbg !1795
+  %Pigments = getelementptr inbounds %"struct.pov::Skysphere_Struct"* %Skysphere, i64 0, i32 1, !dbg !1798
+  br i1 %cmp112, label %for.body, label %for.end, !dbg !1795
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %1 = load %"struct.pov::Pigment_Struct"*** %Pigments, align 8, !dbg !1798, !tbaa !1274
+  %arrayidx = getelementptr inbounds %"struct.pov::Pigment_Struct"** %1, i64 %indvars.iv, !dbg !1798
+  %2 = load %"struct.pov::Pigment_Struct"** %arrayidx, align 8, !dbg !1798, !tbaa !1274
+  tail call void @_ZN3pov15Destroy_PigmentEPNS_14Pigment_StructE(%"struct.pov::Pigment_Struct"* %2) #7, !dbg !1798
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1795
+  %3 = load i32* %Count, align 4, !dbg !1795, !tbaa !1242
+  %4 = trunc i64 %indvars.iv.next to i32, !dbg !1795
+  %cmp1 = icmp slt i32 %4, %3, !dbg !1795
+  br i1 %cmp1, label %for.body, label %for.end, !dbg !1795
+
+for.end:                                          ; preds = %for.cond.preheader, %for.body
+  %5 = load %"struct.pov::Pigment_Struct"*** %Pigments, align 8, !dbg !1800, !tbaa !1274
+  %6 = bitcast %"struct.pov::Pigment_Struct"** %5 to i8*, !dbg !1800
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %6, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 1256) #7, !dbg !1800
+  store %"struct.pov::Pigment_Struct"** null, %"struct.pov::Pigment_Struct"*** %Pigments, align 8, !dbg !1800, !tbaa !1274
+  %Trans = getelementptr inbounds %"struct.pov::Skysphere_Struct"* %Skysphere, i64 0, i32 2, !dbg !1802
+  %7 = load %"struct.pov::Transform_Struct"** %Trans, align 8, !dbg !1802, !tbaa !1274
+  tail call void @_ZN3pov17Destroy_TransformEPNS_16Transform_StructE(%"struct.pov::Transform_Struct"* %7) #7, !dbg !1802
+  %8 = bitcast %"struct.pov::Skysphere_Struct"* %Skysphere to i8*, !dbg !1803
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %8, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 1260) #7, !dbg !1803
+  tail call void @llvm.dbg.value(metadata !1805, i64 0, metadata !927), !dbg !1803
+  br label %if.end, !dbg !1806
+
+if.end:                                           ; preds = %entry, %for.end
+  ret void, !dbg !1807
+}

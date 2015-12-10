@@ -1,21 +1,24 @@
 define void @FreePhylo(%struct.phylo_s* nocapture %tree, i32 %N) #0 {
 entry:
-  %sub = add i32 %N, -1
-  %cmp4 = icmp sgt i32 %sub, 0
-  br i1 %cmp4, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{%struct.phylo_s* %tree}, i64 0, metadata !64), !dbg !327
+  tail call void @llvm.dbg.value(metadata !{i32 %N}, i64 0, metadata !65), !dbg !327
+  tail call void @llvm.dbg.value(metadata !9, i64 0, metadata !66), !dbg !328
+  %sub = add i32 %N, -1, !dbg !328
+  %cmp4 = icmp sgt i32 %sub, 0, !dbg !328
+  br i1 %cmp4, label %for.body, label %for.end, !dbg !328
 
 for.body:                                         ; preds = %entry, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
-  %is_in = getelementptr inbounds %struct.phylo_s* %tree, i64 %indvars.iv, i32 6
-  %0 = load i8** %is_in, align 8, !tbaa !0
-  tail call void @free(i8* %0) #4
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %sub
-  br i1 %exitcond, label %for.end, label %for.body
+  %is_in = getelementptr inbounds %struct.phylo_s* %tree, i64 %indvars.iv, i32 6, !dbg !330
+  %0 = load i8** %is_in, align 8, !dbg !330, !tbaa !215
+  tail call void @free(i8* %0) #5, !dbg !330
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !328
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !328
+  %exitcond = icmp eq i32 %lftr.wideiv, %sub, !dbg !328
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !328
 
 for.end:                                          ; preds = %for.body, %entry
-  %1 = bitcast %struct.phylo_s* %tree to i8*
-  tail call void @free(i8* %1) #4
-  ret void
+  %1 = bitcast %struct.phylo_s* %tree to i8*, !dbg !331
+  tail call void @free(i8* %1) #5, !dbg !331
+  ret void, !dbg !332
 }

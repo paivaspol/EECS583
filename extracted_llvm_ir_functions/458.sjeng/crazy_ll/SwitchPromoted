@@ -1,7 +1,18 @@
-define i32 @SwitchPromoted(i32 %piece) #4 {
+define i32 @SwitchPromoted(i32 %piece) #0 {
 entry:
-  %idxprom = sext i32 %piece to i64
-  %arrayidx = getelementptr inbounds [13 x i32]* @SwitchPromoted.t, i64 0, i64 %idxprom
-  %0 = load i32* %arrayidx, align 4, !tbaa !0
-  ret i32 %0
+  tail call void @llvm.dbg.value(metadata !{i32 %piece}, i64 0, metadata !32), !dbg !197
+  tail call void @llvm.dbg.declare(metadata !198, metadata !33), !dbg !199
+  %piece.off = add i32 %piece, -1, !dbg !200
+  %0 = icmp ult i32 %piece.off, 12, !dbg !200
+  br i1 %0, label %cond.end, label %cond.false, !dbg !200
+
+cond.false:                                       ; preds = %entry
+  tail call void @__assert_fail(i8* getelementptr inbounds ([24 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0), i32 209, i8* getelementptr inbounds ([24 x i8]* @__PRETTY_FUNCTION__.SwitchPromoted, i64 0, i64 0)) #8, !dbg !200
+  unreachable, !dbg !200
+
+cond.end:                                         ; preds = %entry
+  %idxprom = sext i32 %piece to i64, !dbg !201
+  %arrayidx = getelementptr inbounds [13 x i32]* @SwitchPromoted.t, i64 0, i64 %idxprom, !dbg !201
+  %1 = load i32* %arrayidx, align 4, !dbg !201, !tbaa !78
+  ret i32 %1, !dbg !202
 }

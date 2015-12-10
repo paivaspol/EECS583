@@ -1,18 +1,40 @@
 define i32 @CCTKi_SetupCache() #1 {
-  %1 = load i64* bitcast (i32* getelementptr inbounds (%struct.anon.0* @cactuspriv_, i64 0, i32 8) to i64*), align 8
-  %2 = trunc i64 %1 to i32
-  %3 = icmp eq i32 %2, 0
-  br i1 %3, label %8, label %4
+entry:
+  %0 = load i64* bitcast (i32* getelementptr inbounds (%struct.anon.0* @cactuspriv_, i64 0, i32 8) to i64*), align 8, !dbg !44
+  %1 = trunc i64 %0 to i32, !dbg !44
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !35), !dbg !44
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !37), !dbg !44
+  %tobool = icmp eq i32 %1, 0, !dbg !45
+  br i1 %tobool, label %if.end, label %if.then, !dbg !45
 
-; <label>:4                                       ; preds = %0
-  %5 = load i32* getelementptr inbounds (%struct.anon.0* @cactuspriv_, i64 0, i32 10), align 8, !tbaa !2
-  %6 = ashr i64 %1, 32
-  %7 = sext i32 %5 to i64
-  br label %8
+if.then:                                          ; preds = %entry
+  %2 = load i32* getelementptr inbounds (%struct.anon.0* @cactuspriv_, i64 0, i32 10), align 8, !dbg !44, !tbaa !46
+  %conv = ashr i64 %0, 32, !dbg !49
+  tail call void @llvm.dbg.value(metadata !{i64 %conv}, i64 0, metadata !16), !dbg !49
+  %conv1 = sext i32 %2 to i64, !dbg !51
+  tail call void @llvm.dbg.value(metadata !{i64 %conv1}, i64 0, metadata !18), !dbg !51
+  br label %if.end, !dbg !52
 
-; <label>:8                                       ; preds = %0, %4
-  %cacheline_bytes.0 = phi i64 [ %7, %4 ], [ 128, %0 ]
-  %cache_size.0 = phi i64 [ %6, %4 ], [ 8388608, %0 ]
-  %9 = tail call i32 @Utili_CacheDataSet(i64 %cacheline_bytes.0, i64 %cache_size.0) #3
-  ret i32 0
+if.end:                                           ; preds = %entry, %if.then
+  %cacheline_bytes.0 = phi i64 [ %conv1, %if.then ], [ 128, %entry ]
+  %cache_size.0 = phi i64 [ %conv, %if.then ], [ 8388608, %entry ]
+  %call = tail call i32 @Utili_CacheDataSet(i64 %cacheline_bytes.0, i64 %cache_size.0) #4, !dbg !53
+  tail call void @llvm.dbg.value(metadata !54, i64 0, metadata !38), !dbg !55
+  tail call void @llvm.dbg.value(metadata !54, i64 0, metadata !38), !dbg !55
+  tail call void @llvm.dbg.value(metadata !54, i64 0, metadata !38), !dbg !55
+  tail call void @llvm.dbg.value(metadata !54, i64 0, metadata !38), !dbg !55
+  tail call void @llvm.dbg.value(metadata !54, i64 0, metadata !38), !dbg !55
+  tail call void @llvm.dbg.value(metadata !54, i64 0, metadata !38), !dbg !55
+  tail call void @llvm.dbg.value(metadata !54, i64 0, metadata !38), !dbg !55
+  tail call void @llvm.dbg.value(metadata !54, i64 0, metadata !38), !dbg !55
+  tail call void @llvm.dbg.value(metadata !54, i64 0, metadata !38), !dbg !55
+  tail call void @llvm.dbg.value(metadata !54, i64 0, metadata !38), !dbg !55
+  tail call void @llvm.dbg.value(metadata !54, i64 0, metadata !38), !dbg !55
+  tail call void @llvm.dbg.value(metadata !54, i64 0, metadata !38), !dbg !55
+  tail call void @llvm.dbg.value(metadata !54, i64 0, metadata !38), !dbg !55
+  tail call void @llvm.dbg.value(metadata !54, i64 0, metadata !38), !dbg !55
+  tail call void @llvm.dbg.value(metadata !54, i64 0, metadata !38), !dbg !55
+  tail call void @llvm.dbg.value(metadata !54, i64 0, metadata !38), !dbg !55
+  tail call void @llvm.dbg.value(metadata !54, i64 0, metadata !38), !dbg !55
+  ret i32 0, !dbg !55
 }

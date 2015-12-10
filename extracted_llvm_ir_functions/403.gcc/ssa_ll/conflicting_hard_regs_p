@@ -1,47 +1,55 @@
 define internal fastcc i32 @conflicting_hard_regs_p(i32 %reg1, i32 %reg2) #0 {
 entry:
-  %call.i = tail call fastcc %struct.rtx_def* @ssa_rename_from_lookup(i32 %reg1) #6
-  %cmp.i = icmp eq %struct.rtx_def* %call.i, null
-  br i1 %cmp.i, label %original_register.exit, label %cond.true.i
+  tail call void @llvm.dbg.value(metadata !{i32 %reg1}, i64 0, metadata !776), !dbg !1934
+  tail call void @llvm.dbg.value(metadata !{i32 %reg2}, i64 0, metadata !777), !dbg !1935
+  tail call void @llvm.dbg.value(metadata !{i32 %reg1}, i64 0, metadata !1936) #5, !dbg !1938
+  %call.i = tail call fastcc %struct.rtx_def* @ssa_rename_from_lookup(i32 %reg1) #7, !dbg !1939
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call.i}, i64 0, metadata !1940) #5, !dbg !1939
+  %cmp.i = icmp eq %struct.rtx_def* %call.i, null, !dbg !1941
+  br i1 %cmp.i, label %original_register.exit, label %cond.true.i, !dbg !1941
 
 cond.true.i:                                      ; preds = %entry
-  %arrayidx.i = getelementptr inbounds %struct.rtx_def* %call.i, i64 0, i32 1, i64 0
-  %rtuint.i = bitcast %union.rtunion_def* %arrayidx.i to i32*
-  %0 = load i32* %rtuint.i, align 4, !tbaa !3
-  br label %original_register.exit
+  %arrayidx.i = getelementptr inbounds %struct.rtx_def* %call.i, i64 0, i32 1, i64 0, !dbg !1941
+  %rtuint.i = bitcast %union.rtunion_def* %arrayidx.i to i32*, !dbg !1941
+  %0 = load i32* %rtuint.i, align 4, !dbg !1941, !tbaa !1224
+  br label %original_register.exit, !dbg !1941
 
 original_register.exit:                           ; preds = %entry, %cond.true.i
-  %cond.i = phi i32 [ %0, %cond.true.i ], [ %reg1, %entry ]
-  %call.i25 = tail call fastcc %struct.rtx_def* @ssa_rename_from_lookup(i32 %reg2) #6
-  %cmp.i26 = icmp eq %struct.rtx_def* %call.i25, null
-  br i1 %cmp.i26, label %original_register.exit31, label %cond.true.i29
+  %cond.i = phi i32 [ %0, %cond.true.i ], [ %reg1, %entry ], !dbg !1941
+  tail call void @llvm.dbg.value(metadata !{i32 %cond.i}, i64 0, metadata !778), !dbg !1937
+  tail call void @llvm.dbg.value(metadata !{i32 %reg2}, i64 0, metadata !1942) #5, !dbg !1944
+  %call.i25 = tail call fastcc %struct.rtx_def* @ssa_rename_from_lookup(i32 %reg2) #7, !dbg !1945
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call.i25}, i64 0, metadata !1946) #5, !dbg !1945
+  %cmp.i26 = icmp eq %struct.rtx_def* %call.i25, null, !dbg !1947
+  br i1 %cmp.i26, label %original_register.exit31, label %cond.true.i29, !dbg !1947
 
 cond.true.i29:                                    ; preds = %original_register.exit
-  %arrayidx.i27 = getelementptr inbounds %struct.rtx_def* %call.i25, i64 0, i32 1, i64 0
-  %rtuint.i28 = bitcast %union.rtunion_def* %arrayidx.i27 to i32*
-  %1 = load i32* %rtuint.i28, align 4, !tbaa !3
-  br label %original_register.exit31
+  %arrayidx.i27 = getelementptr inbounds %struct.rtx_def* %call.i25, i64 0, i32 1, i64 0, !dbg !1947
+  %rtuint.i28 = bitcast %union.rtunion_def* %arrayidx.i27 to i32*, !dbg !1947
+  %1 = load i32* %rtuint.i28, align 4, !dbg !1947, !tbaa !1224
+  br label %original_register.exit31, !dbg !1947
 
 original_register.exit31:                         ; preds = %original_register.exit, %cond.true.i29
-  %cond.i30 = phi i32 [ %1, %cond.true.i29 ], [ %reg2, %original_register.exit ]
-  %cmp = icmp slt i32 %cond.i, 53
-  %cmp2 = icmp slt i32 %cond.i30, 53
-  %or.cond = and i1 %cmp, %cmp2
-  %or.cond.not = xor i1 %or.cond, true
-  %cmp4 = icmp eq i32 %cond.i, %cond.i30
-  %or.cond21 = or i1 %cmp4, %or.cond.not
-  br i1 %or.cond21, label %if.end, label %return
+  %cond.i30 = phi i32 [ %1, %cond.true.i29 ], [ %reg2, %original_register.exit ], !dbg !1947
+  tail call void @llvm.dbg.value(metadata !{i32 %cond.i30}, i64 0, metadata !779), !dbg !1943
+  %cmp = icmp slt i32 %cond.i, 53, !dbg !1948
+  %cmp2 = icmp slt i32 %cond.i30, 53, !dbg !1948
+  %or.cond = and i1 %cmp, %cmp2, !dbg !1948
+  %or.cond.not = xor i1 %or.cond, true, !dbg !1948
+  %cmp4 = icmp eq i32 %cond.i, %cond.i30, !dbg !1948
+  %or.cond21 = or i1 %cmp4, %or.cond.not, !dbg !1948
+  br i1 %or.cond21, label %if.end, label %return, !dbg !1948
 
 if.end:                                           ; preds = %original_register.exit31
-  %cmp.not = xor i1 %cmp, true
-  %or.cond22 = or i1 %cmp2, %cmp.not
-  br i1 %or.cond22, label %if.end9, label %return
+  %cmp.not = xor i1 %cmp, true, !dbg !1949
+  %or.cond22 = or i1 %cmp2, %cmp.not, !dbg !1949
+  br i1 %or.cond22, label %if.end9, label %return, !dbg !1949
 
 if.end9:                                          ; preds = %if.end
-  %or.cond24 = and i1 %cmp2, %cmp.not
-  %. = zext i1 %or.cond24 to i32
-  ret i32 %.
+  %or.cond24 = and i1 %cmp2, %cmp.not, !dbg !1950
+  %. = zext i1 %or.cond24 to i32, !dbg !1950
+  ret i32 %., !dbg !1950
 
 return:                                           ; preds = %if.end, %original_register.exit31
-  ret i32 1
+  ret i32 1, !dbg !1951
 }

@@ -1,42 +1,47 @@
 define i32 @IV_findValue(%struct._IV* %iv, i32 %value) #0 {
 entry:
-  %cmp = icmp eq %struct._IV* %iv, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._IV* %iv}, i64 0, metadata !124), !dbg !382
+  tail call void @llvm.dbg.value(metadata !{i32 %value}, i64 0, metadata !125), !dbg !383
+  %cmp = icmp eq %struct._IV* %iv, null, !dbg !384
+  br i1 %cmp, label %if.then, label %if.end, !dbg !384
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([49 x i8]* @.str20, i64 0, i64 0), %struct._IV* null, i32 %value) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !385, !tbaa !175
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([49 x i8]* @.str20, i64 0, i64 0), %struct._IV* null, i32 %value) #6, !dbg !385
+  tail call void @exit(i32 -1) #7, !dbg !387
+  unreachable, !dbg !387
 
 if.end:                                           ; preds = %entry
-  %size = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0
-  %1 = load i32* %size, align 4, !tbaa !3
-  %cmp1 = icmp slt i32 %1, 1
-  br i1 %cmp1, label %return, label %lor.lhs.false
+  %size = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0, !dbg !388
+  %1 = load i32* %size, align 4, !dbg !388, !tbaa !181
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !127), !dbg !388
+  %cmp1 = icmp slt i32 %1, 1, !dbg !388
+  br i1 %cmp1, label %return, label %lor.lhs.false, !dbg !388
 
 lor.lhs.false:                                    ; preds = %if.end
-  %vec2 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3
-  %2 = load i32** %vec2, align 8, !tbaa !0
-  %cmp3 = icmp eq i32* %2, null
-  br i1 %cmp3, label %return, label %for.body
+  %vec2 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3, !dbg !388
+  %2 = load i32** %vec2, align 8, !dbg !388, !tbaa !175
+  tail call void @llvm.dbg.value(metadata !{i32* %2}, i64 0, metadata !128), !dbg !388
+  %cmp3 = icmp eq i32* %2, null, !dbg !388
+  br i1 %cmp3, label %return, label %for.body, !dbg !388
 
 for.cond:                                         ; preds = %for.body
-  %inc = add nsw i32 %ii.017, 1
-  %3 = trunc i64 %indvars.iv.next to i32
-  %cmp6 = icmp slt i32 %3, %1
-  br i1 %cmp6, label %for.body, label %return
+  %inc = add nsw i32 %ii.017, 1, !dbg !389
+  %3 = trunc i64 %indvars.iv.next to i32, !dbg !389
+  %cmp6 = icmp slt i32 %3, %1, !dbg !389
+  br i1 %cmp6, label %for.body, label %return, !dbg !389
 
 for.body:                                         ; preds = %lor.lhs.false, %for.cond
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %lor.lhs.false ]
   %ii.017 = phi i32 [ %inc, %for.cond ], [ 0, %lor.lhs.false ]
-  %arrayidx = getelementptr inbounds i32* %2, i64 %indvars.iv
-  %4 = load i32* %arrayidx, align 4, !tbaa !3
-  %cmp7 = icmp eq i32 %4, %value
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  br i1 %cmp7, label %return, label %for.cond
+  %arrayidx = getelementptr inbounds i32* %2, i64 %indvars.iv, !dbg !391
+  %4 = load i32* %arrayidx, align 4, !dbg !391, !tbaa !181
+  %cmp7 = icmp eq i32 %4, %value, !dbg !391
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !389
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !126), !dbg !389
+  br i1 %cmp7, label %return, label %for.cond, !dbg !391
 
 return:                                           ; preds = %for.body, %for.cond, %if.end, %lor.lhs.false
   %retval.0 = phi i32 [ -1, %lor.lhs.false ], [ -1, %if.end ], [ %ii.017, %for.body ], [ -1, %for.cond ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !393
 }

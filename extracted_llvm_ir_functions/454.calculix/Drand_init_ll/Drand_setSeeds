@@ -1,44 +1,47 @@
 define void @Drand_setSeeds(%struct._Drand* %drand, i32 %u, i32 %v) #0 {
 entry:
-  %cmp = icmp eq %struct._Drand* %drand, null
-  %cmp1 = icmp slt i32 %u, 1
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %entry.if.then_crit_edge, label %lor.lhs.false2
+  tail call void @llvm.dbg.value(metadata !{%struct._Drand* %drand}, i64 0, metadata !36), !dbg !71
+  tail call void @llvm.dbg.value(metadata !{i32 %u}, i64 0, metadata !37), !dbg !72
+  tail call void @llvm.dbg.value(metadata !{i32 %v}, i64 0, metadata !38), !dbg !73
+  %cmp = icmp eq %struct._Drand* %drand, null, !dbg !74
+  %cmp1 = icmp slt i32 %u, 1, !dbg !74
+  %or.cond = or i1 %cmp, %cmp1, !dbg !74
+  br i1 %or.cond, label %entry.if.then_crit_edge, label %lor.lhs.false2, !dbg !74
 
 entry.if.then_crit_edge:                          ; preds = %entry
   %base112.phi.trans.insert = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 2
-  %.pre = load double* %base112.phi.trans.insert, align 8, !tbaa !3
-  br label %if.then
+  %.pre = load double* %base112.phi.trans.insert, align 8, !dbg !75, !tbaa !66
+  br label %if.then, !dbg !74
 
 lor.lhs.false2:                                   ; preds = %entry
-  %conv = sitofp i32 %u to double
-  %base1 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 2
-  %0 = load double* %base1, align 8, !tbaa !3
-  %cmp3 = fcmp oge double %conv, %0
-  %cmp6 = icmp slt i32 %v, 1
-  %or.cond29 = or i1 %cmp3, %cmp6
-  br i1 %or.cond29, label %if.then, label %lor.lhs.false8
+  %conv = sitofp i32 %u to double, !dbg !74
+  %base1 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 2, !dbg !74
+  %0 = load double* %base1, align 8, !dbg !74, !tbaa !66
+  %cmp3 = fcmp oge double %conv, %0, !dbg !74
+  %cmp6 = icmp slt i32 %v, 1, !dbg !74
+  %or.cond29 = or i1 %cmp3, %cmp6, !dbg !74
+  br i1 %or.cond29, label %if.then, label %lor.lhs.false8, !dbg !74
 
 lor.lhs.false8:                                   ; preds = %lor.lhs.false2
-  %conv9 = sitofp i32 %v to double
-  %base2 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 3
-  %1 = load double* %base2, align 8, !tbaa !3
-  %cmp10 = fcmp ult double %conv9, %1
-  br i1 %cmp10, label %if.end, label %if.then
+  %conv9 = sitofp i32 %v to double, !dbg !74
+  %base2 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 3, !dbg !74
+  %1 = load double* %base2, align 8, !dbg !74, !tbaa !66
+  %cmp10 = fcmp ult double %conv9, %1, !dbg !74
+  br i1 %cmp10, label %if.end, label %if.then, !dbg !74
 
 if.then:                                          ; preds = %lor.lhs.false2, %entry.if.then_crit_edge, %lor.lhs.false8
   %2 = phi double [ %.pre, %entry.if.then_crit_edge ], [ %0, %lor.lhs.false8 ], [ %0, %lor.lhs.false2 ]
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %base213 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 3
-  %4 = load double* %base213, align 8, !tbaa !3
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([108 x i8]* @.str2, i64 0, i64 0), %struct._Drand* %drand, i32 %u, i32 %v, double %2, double %4) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !75, !tbaa !55
+  %base213 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 3, !dbg !75
+  %4 = load double* %base213, align 8, !dbg !75, !tbaa !66
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([108 x i8]* @.str2, i64 0, i64 0), %struct._Drand* %drand, i32 %u, i32 %v, double %2, double %4) #5, !dbg !75
+  tail call void @exit(i32 -1) #6, !dbg !77
+  unreachable, !dbg !77
 
 if.end:                                           ; preds = %lor.lhs.false8
-  %seed1 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 0
-  store double %conv, double* %seed1, align 8, !tbaa !3
-  %seed2 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 1
-  store double %conv9, double* %seed2, align 8, !tbaa !3
-  ret void
+  %seed1 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 0, !dbg !78
+  store double %conv, double* %seed1, align 8, !dbg !78, !tbaa !66
+  %seed2 = getelementptr inbounds %struct._Drand* %drand, i64 0, i32 1, !dbg !79
+  store double %conv9, double* %seed2, align 8, !dbg !79, !tbaa !66
+  ret void, !dbg !80
 }

@@ -1,0 +1,115 @@
+define i32 @_ZN11xercesc_2_56XMLUri15scanHexSequenceEPKtiiRi(i16* nocapture %addr, i32 %index, i32 %end, i32* nocapture %counter) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %addr}, i64 0, metadata !1563), !dbg !4693
+  tail call void @llvm.dbg.value(metadata !{i32 %index}, i64 0, metadata !1564), !dbg !4693
+  tail call void @llvm.dbg.value(metadata !{i32 %end}, i64 0, metadata !1565), !dbg !4693
+  tail call void @llvm.dbg.value(metadata !{i32* %counter}, i64 0, metadata !1566), !dbg !4693
+  tail call void @llvm.dbg.value(metadata !4694, i64 0, metadata !1567), !dbg !4695
+  tail call void @llvm.dbg.value(metadata !928, i64 0, metadata !1568), !dbg !4696
+  tail call void @llvm.dbg.value(metadata !{i32 %index}, i64 0, metadata !1569), !dbg !4697
+  %cmp68 = icmp slt i32 %index, %end, !dbg !4698
+  br i1 %cmp68, label %for.body.lr.ph, label %return, !dbg !4698
+
+for.body.lr.ph:                                   ; preds = %entry
+  %0 = sext i32 %index to i64
+  br label %for.body, !dbg !4698
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ %0, %for.body.lr.ph ], [ %indvars.iv.next.pre-phi, %for.inc ]
+  %index.addr.070 = phi i32 [ %index, %for.body.lr.ph ], [ %inc35, %for.inc ]
+  %numDigits.069 = phi i32 [ 0, %for.body.lr.ph ], [ %numDigits.1, %for.inc ]
+  %arrayidx = getelementptr inbounds i16* %addr, i64 %indvars.iv, !dbg !4699
+  %1 = load i16* %arrayidx, align 2, !dbg !4699, !tbaa !2644
+  tail call void @llvm.dbg.value(metadata !{i16 %1}, i64 0, metadata !1567), !dbg !4699
+  %cmp1 = icmp eq i16 %1, 58, !dbg !4700
+  br i1 %cmp1, label %if.then, label %if.else, !dbg !4700
+
+if.then:                                          ; preds = %for.body
+  %cmp2 = icmp sgt i32 %numDigits.069, 0, !dbg !4701
+  br i1 %cmp2, label %land.lhs.true, label %if.end, !dbg !4701
+
+land.lhs.true:                                    ; preds = %if.then
+  %2 = load i32* %counter, align 4, !dbg !4701, !tbaa !2615
+  %inc = add nsw i32 %2, 1, !dbg !4701
+  store i32 %inc, i32* %counter, align 4, !dbg !4701, !tbaa !2615
+  %cmp3 = icmp sgt i32 %2, 7, !dbg !4701
+  br i1 %cmp3, label %return, label %if.end, !dbg !4701
+
+if.end:                                           ; preds = %land.lhs.true, %if.then
+  %cmp5 = icmp eq i32 %numDigits.069, 0, !dbg !4703
+  br i1 %cmp5, label %return, label %lor.lhs.false, !dbg !4703
+
+lor.lhs.false:                                    ; preds = %if.end
+  %3 = add nsw i64 %indvars.iv, 1, !dbg !4703
+  %4 = trunc i64 %3 to i32, !dbg !4703
+  %cmp6 = icmp slt i32 %4, %end, !dbg !4703
+  br i1 %cmp6, label %land.lhs.true7, label %for.inc, !dbg !4703
+
+land.lhs.true7:                                   ; preds = %lor.lhs.false
+  %arrayidx10 = getelementptr inbounds i16* %addr, i64 %3, !dbg !4703
+  %5 = load i16* %arrayidx10, align 2, !dbg !4703, !tbaa !2644
+  %cmp12 = icmp eq i16 %5, 58, !dbg !4703
+  br i1 %cmp12, label %return, label %for.inc, !dbg !4703
+
+if.else:                                          ; preds = %for.body
+  %call = tail call zeroext i1 @_ZN11xercesc_2_59XMLString5isHexEt(i16 zeroext %1) #9, !dbg !4704
+  br i1 %call, label %if.else28, label %if.then15, !dbg !4704
+
+if.then15:                                        ; preds = %if.else
+  %cmp17 = icmp eq i16 %1, 46, !dbg !4705
+  br i1 %cmp17, label %land.lhs.true18, label %return, !dbg !4705
+
+land.lhs.true18:                                  ; preds = %if.then15
+  %numDigits.0.off = add i32 %numDigits.069, -1, !dbg !4705
+  %6 = icmp ult i32 %numDigits.0.off, 3, !dbg !4705
+  br i1 %6, label %land.lhs.true22, label %return, !dbg !4705
+
+land.lhs.true22:                                  ; preds = %land.lhs.true18
+  %7 = load i32* %counter, align 4, !dbg !4705, !tbaa !2615
+  %cmp23 = icmp slt i32 %7, 7, !dbg !4705
+  br i1 %cmp23, label %if.then24, label %return, !dbg !4705
+
+if.then24:                                        ; preds = %land.lhs.true22
+  %sub = sub nsw i32 %index.addr.070, %numDigits.069, !dbg !4706
+  %sub25 = add nsw i32 %sub, -1, !dbg !4706
+  tail call void @llvm.dbg.value(metadata !{i32 %sub25}, i64 0, metadata !1570), !dbg !4706
+  %cmp26 = icmp sge i32 %sub25, %index, !dbg !4707
+  %cond = select i1 %cmp26, i32 %sub25, i32 %index, !dbg !4707
+  br label %return, !dbg !4707
+
+if.else28:                                        ; preds = %if.else
+  tail call void @llvm.dbg.value(metadata !{i32 %inc29}, i64 0, metadata !1568), !dbg !4708
+  %cmp30 = icmp sgt i32 %numDigits.069, 3, !dbg !4708
+  br i1 %cmp30, label %return, label %if.else28.for.inc_crit_edge, !dbg !4708
+
+if.else28.for.inc_crit_edge:                      ; preds = %if.else28
+  %inc29 = add nsw i32 %numDigits.069, 1, !dbg !4708
+  %indvars.iv.next.pre = add i64 %indvars.iv, 1, !dbg !4698
+  %.pre = trunc i64 %indvars.iv.next.pre to i32, !dbg !4698
+  br label %for.inc, !dbg !4708
+
+for.inc:                                          ; preds = %if.else28.for.inc_crit_edge, %lor.lhs.false, %land.lhs.true7
+  %.pre-phi = phi i32 [ %.pre, %if.else28.for.inc_crit_edge ], [ %4, %lor.lhs.false ], [ %4, %land.lhs.true7 ], !dbg !4698
+  %indvars.iv.next.pre-phi = phi i64 [ %indvars.iv.next.pre, %if.else28.for.inc_crit_edge ], [ %3, %lor.lhs.false ], [ %3, %land.lhs.true7 ], !dbg !4698
+  %numDigits.1 = phi i32 [ %inc29, %if.else28.for.inc_crit_edge ], [ 0, %lor.lhs.false ], [ 0, %land.lhs.true7 ]
+  %inc35 = add nsw i32 %index.addr.070, 1, !dbg !4698
+  tail call void @llvm.dbg.value(metadata !{i32 %inc35}, i64 0, metadata !1564), !dbg !4698
+  %cmp = icmp slt i32 %.pre-phi, %end, !dbg !4698
+  br i1 %cmp, label %for.body, label %for.end, !dbg !4698
+
+for.end:                                          ; preds = %for.inc
+  %cmp36 = icmp sgt i32 %numDigits.1, 0, !dbg !4709
+  br i1 %cmp36, label %land.lhs.true37, label %return, !dbg !4709
+
+land.lhs.true37:                                  ; preds = %for.end
+  %8 = load i32* %counter, align 4, !dbg !4709, !tbaa !2615
+  %inc38 = add nsw i32 %8, 1, !dbg !4709
+  store i32 %inc38, i32* %counter, align 4, !dbg !4709, !tbaa !2615
+  %cmp39 = icmp slt i32 %inc38, 9, !dbg !4709
+  %. = select i1 %cmp39, i32 %end, i32 -1, !dbg !4709
+  br label %return, !dbg !4709
+
+return:                                           ; preds = %entry, %if.else28, %if.end, %land.lhs.true7, %land.lhs.true, %for.end, %land.lhs.true37, %if.then15, %land.lhs.true18, %land.lhs.true22, %if.then24
+  %retval.0 = phi i32 [ %cond, %if.then24 ], [ -1, %land.lhs.true22 ], [ -1, %land.lhs.true18 ], [ -1, %if.then15 ], [ -1, %for.end ], [ %., %land.lhs.true37 ], [ -1, %if.else28 ], [ %index.addr.070, %if.end ], [ %index.addr.070, %land.lhs.true7 ], [ -1, %land.lhs.true ], [ -1, %entry ]
+  ret i32 %retval.0, !dbg !4710
+}

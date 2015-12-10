@@ -1,18 +1,20 @@
 define i32** @CCTK_GroupSizesI(i32 %group) #1 {
-  %1 = icmp sgt i32 %group, -1
-  %2 = load i32* @n_groups, align 4
-  %3 = icmp sgt i32 %2, %group
-  %or.cond = and i1 %1, %3
-  br i1 %or.cond, label %4, label %9
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %group}, i64 0, metadata !277), !dbg !796
+  %cmp = icmp sgt i32 %group, -1, !dbg !797
+  %0 = load i32* @n_groups, align 4, !dbg !797, !tbaa !488
+  %cmp1 = icmp sgt i32 %0, %group, !dbg !797
+  %or.cond = and i1 %cmp, %cmp1, !dbg !797
+  br i1 %or.cond, label %cond.true, label %cond.end, !dbg !797
 
-; <label>:4                                       ; preds = %0
-  %5 = sext i32 %group to i64
-  %6 = load %struct.cGroupDefinition** @groups, align 8, !tbaa !2
-  %7 = getelementptr inbounds %struct.cGroupDefinition* %6, i64 %5, i32 12
-  %8 = load i32*** %7, align 8, !tbaa !26
-  br label %9
+cond.true:                                        ; preds = %entry
+  %idxprom = sext i32 %group to i64, !dbg !797
+  %1 = load %struct.cGroupDefinition** @groups, align 8, !dbg !797, !tbaa !480
+  %size = getelementptr inbounds %struct.cGroupDefinition* %1, i64 %idxprom, i32 12, !dbg !797
+  %2 = load i32*** %size, align 8, !dbg !797, !tbaa !480
+  br label %cond.end, !dbg !797
 
-; <label>:9                                       ; preds = %0, %4
-  %10 = phi i32** [ %8, %4 ], [ null, %0 ]
-  ret i32** %10
+cond.end:                                         ; preds = %entry, %cond.true
+  %cond = phi i32** [ %2, %cond.true ], [ null, %entry ], !dbg !797
+  ret i32** %cond, !dbg !797
 }

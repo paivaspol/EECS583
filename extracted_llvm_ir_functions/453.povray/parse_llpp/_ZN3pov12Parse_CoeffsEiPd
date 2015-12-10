@@ -1,0 +1,54 @@
+define void @_ZN3pov12Parse_CoeffsEiPd(i32 %order, double* nocapture %Coeffs) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %order}, i64 0, metadata !1828), !dbg !9119
+  tail call void @llvm.dbg.value(metadata !{double* %Coeffs}, i64 0, metadata !1829), !dbg !9119
+  tail call void @llvm.dbg.value(metadata !818, i64 0, metadata !1831), !dbg !9120
+  %add = add nsw i32 %order, 1, !dbg !9121
+  %add1 = add nsw i32 %order, 2, !dbg !9121
+  %mul = mul nsw i32 %add, %add1, !dbg !9121
+  %add2 = add nsw i32 %order, 3, !dbg !9121
+  %mul3 = mul nsw i32 %mul, %add2, !dbg !9121
+  %div = sdiv i32 %mul3, 6, !dbg !9121
+  %cmp12 = icmp sgt i32 %mul3, 11, !dbg !9121
+  br label %while.body, !dbg !9120
+
+while.body:                                       ; preds = %sw.default, %entry
+  tail call void @_ZN3pov9Get_TokenEv() #9, !dbg !9125
+  %0 = load i32* getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 0), align 8, !dbg !9125, !tbaa !4092
+  %cond = icmp eq i32 %0, 171, !dbg !9125
+  br i1 %cond, label %sw.bb, label %sw.default, !dbg !9125
+
+sw.bb:                                            ; preds = %while.body
+  %call = tail call double @_ZN3pov11Parse_FloatEv() #9, !dbg !9126
+  store double %call, double* %Coeffs, align 8, !dbg !9126, !tbaa !4128
+  tail call void @llvm.dbg.value(metadata !4220, i64 0, metadata !1830), !dbg !9121
+  br i1 %cmp12, label %for.body, label %for.end, !dbg !9121
+
+for.body:                                         ; preds = %sw.bb, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 1, %sw.bb ]
+  tail call void @_ZN3pov11Parse_CommaEv() #9, !dbg !9127
+  %call4 = tail call double @_ZN3pov11Parse_FloatEv() #9, !dbg !9129
+  %arrayidx5 = getelementptr inbounds double* %Coeffs, i64 %indvars.iv, !dbg !9129
+  store double %call4, double* %arrayidx5, align 8, !dbg !9129, !tbaa !4128
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !9121
+  %1 = trunc i64 %indvars.iv.next to i32, !dbg !9121
+  %cmp = icmp slt i32 %1, %div, !dbg !9121
+  br i1 %cmp, label %for.body, label %for.end, !dbg !9121
+
+for.end:                                          ; preds = %for.body, %sw.bb
+  tail call void @_ZN3pov9Get_TokenEv() #9, !dbg !9130
+  %2 = load i32* getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 0), align 8, !dbg !9130, !tbaa !4092
+  %cmp6 = icmp eq i32 %2, 217, !dbg !9130
+  br i1 %cmp6, label %while.end, label %if.then, !dbg !9130
+
+if.then:                                          ; preds = %for.end
+  tail call void @_ZN3pov11Parse_ErrorEi(i32 217) #9, !dbg !9130
+  br label %while.end, !dbg !9130
+
+sw.default:                                       ; preds = %while.body
+  tail call void @_ZN3pov11Parse_ErrorEi(i32 171) #9, !dbg !9131
+  br label %while.body, !dbg !9120
+
+while.end:                                        ; preds = %for.end, %if.then
+  ret void, !dbg !9132
+}

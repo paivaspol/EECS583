@@ -1,0 +1,53 @@
+define i32 @_ZN8pov_base11pov_stricmpEPKcS1_(i8* nocapture %s1, i8* nocapture %s2) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %s1}, i64 0, metadata !13), !dbg !57
+  tail call void @llvm.dbg.value(metadata !{i8* %s2}, i64 0, metadata !15), !dbg !57
+  br label %while.cond, !dbg !58
+
+while.cond:                                       ; preds = %if.end, %entry
+  %s1.addr.0 = phi i8* [ %s1, %entry ], [ %incdec.ptr, %if.end ]
+  %s2.addr.0 = phi i8* [ %s2, %entry ], [ %incdec.ptr3, %if.end ]
+  %0 = load i8* %s1.addr.0, align 1, !dbg !58, !tbaa !59
+  %cmp = icmp eq i8 %0, 0, !dbg !58
+  br i1 %cmp, label %if.then19, label %land.end, !dbg !58
+
+land.end:                                         ; preds = %while.cond
+  %1 = load i8* %s2.addr.0, align 1, !dbg !58, !tbaa !59
+  %cmp2 = icmp eq i8 %1, 0, !dbg !58
+  br i1 %cmp2, label %while.end, label %while.body
+
+while.body:                                       ; preds = %land.end
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !13), !dbg !61
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr3}, i64 0, metadata !15), !dbg !63
+  tail call void @llvm.dbg.value(metadata !{i8 %1}, i64 0, metadata !17), !dbg !63
+  %conv4 = sext i8 %0 to i32, !dbg !64
+  %call = tail call i32 @toupper(i32 %conv4) #4, !dbg !64
+  %conv6 = sext i8 %1 to i32, !dbg !65
+  %call7 = tail call i32 @toupper(i32 %conv6) #4, !dbg !65
+  %sext = shl i32 %call, 24, !dbg !66
+  %conv9 = ashr exact i32 %sext, 24, !dbg !66
+  %sext31 = shl i32 %call7, 24, !dbg !66
+  %conv10 = ashr exact i32 %sext31, 24, !dbg !66
+  %cmp11 = icmp slt i32 %conv9, %conv10, !dbg !66
+  br i1 %cmp11, label %return, label %if.end, !dbg !66
+
+if.end:                                           ; preds = %while.body
+  %incdec.ptr3 = getelementptr inbounds i8* %s2.addr.0, i64 1, !dbg !63
+  %incdec.ptr = getelementptr inbounds i8* %s1.addr.0, i64 1, !dbg !61
+  %cmp14 = icmp sgt i32 %conv9, %conv10, !dbg !67
+  br i1 %cmp14, label %return, label %while.cond, !dbg !67
+
+while.end:                                        ; preds = %land.end
+  %phitmp = icmp eq i8 %0, 0
+  br i1 %phitmp, label %if.then19, label %return, !dbg !68
+
+if.then19:                                        ; preds = %while.cond, %while.end
+  %2 = load i8* %s2.addr.0, align 1, !dbg !69, !tbaa !59
+  %not.cmp21 = icmp ne i8 %2, 0, !dbg !71
+  %. = sext i1 %not.cmp21 to i32, !dbg !71
+  br label %return, !dbg !71
+
+return:                                           ; preds = %if.end, %while.body, %while.end, %if.then19
+  %retval.0 = phi i32 [ %., %if.then19 ], [ 1, %while.end ], [ 1, %if.end ], [ -1, %while.body ]
+  ret i32 %retval.0, !dbg !72
+}

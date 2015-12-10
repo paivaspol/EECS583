@@ -1,38 +1,46 @@
 define internal fastcc i32 @delete_key(%struct.table_header* nocapture %thp, i8* %key) #1 {
+entry:
   %prev_tep = alloca %struct.table_entry*, align 8
-  %1 = call fastcc %struct.table_entry* @find_table_entry(%struct.table_header* %thp, i8* %key, %struct.table_entry** %prev_tep) #9
-  %2 = icmp eq %struct.table_entry* %1, null
-  br i1 %2, label %18, label %3
+  call void @llvm.dbg.value(metadata !{%struct.table_header* %thp}, i64 0, metadata !535), !dbg !729
+  call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !536), !dbg !729
+  call void @llvm.dbg.declare(metadata !{%struct.table_entry** %prev_tep}, metadata !537), !dbg !730
+  %call = call fastcc %struct.table_entry* @find_table_entry(%struct.table_header* %thp, i8* %key, %struct.table_entry** %prev_tep) #9, !dbg !731
+  call void @llvm.dbg.value(metadata !{%struct.table_entry* %call}, i64 0, metadata !538), !dbg !731
+  %cmp = icmp eq %struct.table_entry* %call, null, !dbg !732
+  br i1 %cmp, label %return, label %if.end, !dbg !732
 
-; <label>:3                                       ; preds = %0
-  %4 = bitcast %struct.table_entry* %1 to i64*
-  %5 = load i64* %4, align 8, !tbaa !12
-  %6 = load %struct.table_entry** %prev_tep, align 8, !tbaa !6
-  %7 = icmp eq %struct.table_entry* %6, null
-  br i1 %7, label %8, label %10
+if.end:                                           ; preds = %entry
+  %next = getelementptr inbounds %struct.table_entry* %call, i64 0, i32 0, !dbg !733
+  %0 = load %struct.table_entry** %next, align 8, !dbg !733, !tbaa !602
+  call void @llvm.dbg.value(metadata !{%struct.table_entry* %0}, i64 0, metadata !540), !dbg !733
+  call void @llvm.dbg.value(metadata !{%struct.table_entry** %prev_tep}, i64 0, metadata !537), !dbg !734
+  %1 = load %struct.table_entry** %prev_tep, align 8, !dbg !734, !tbaa !602
+  %cmp1 = icmp eq %struct.table_entry* %1, null, !dbg !734
+  br i1 %cmp1, label %if.then2, label %if.else, !dbg !734
 
-; <label>:8                                       ; preds = %3
-  %9 = bitcast %struct.table_header* %thp to i64*
-  store i64 %5, i64* %9, align 8, !tbaa !8
-  br label %12
+if.then2:                                         ; preds = %if.end
+  %head = getelementptr inbounds %struct.table_header* %thp, i64 0, i32 0, !dbg !735
+  store %struct.table_entry* %0, %struct.table_entry** %head, align 8, !dbg !735, !tbaa !602
+  br label %if.end4, !dbg !735
 
-; <label>:10                                      ; preds = %3
-  %11 = bitcast %struct.table_entry* %6 to i64*
-  store i64 %5, i64* %11, align 8, !tbaa !12
-  br label %12
+if.else:                                          ; preds = %if.end
+  %next3 = getelementptr inbounds %struct.table_entry* %1, i64 0, i32 0, !dbg !736
+  store %struct.table_entry* %0, %struct.table_entry** %next3, align 8, !dbg !736, !tbaa !602
+  br label %if.end4
 
-; <label>:12                                      ; preds = %10, %8
-  %13 = getelementptr inbounds %struct.table_entry* %1, i64 0, i32 1
-  %14 = load i8** %13, align 8, !tbaa !14
-  call void @free(i8* %14) #10
-  %15 = getelementptr inbounds %struct.table_entry* %1, i64 0, i32 4
-  %16 = load i8** %15, align 8, !tbaa !15
-  call void @free(i8* %16) #10
-  %17 = bitcast %struct.table_entry* %1 to i8*
-  call void @free(i8* %17) #10
-  br label %18
+if.end4:                                          ; preds = %if.else, %if.then2
+  call void @llvm.dbg.value(metadata !{%struct.table_entry* %call}, i64 0, metadata !737) #8, !dbg !739
+  %key.i = getelementptr inbounds %struct.table_entry* %call, i64 0, i32 1, !dbg !740
+  %2 = load i8** %key.i, align 8, !dbg !740, !tbaa !602
+  call void @free(i8* %2) #10, !dbg !740
+  %value.i = getelementptr inbounds %struct.table_entry* %call, i64 0, i32 4, !dbg !741
+  %3 = load i8** %value.i, align 8, !dbg !741, !tbaa !602
+  call void @free(i8* %3) #10, !dbg !741
+  %4 = bitcast %struct.table_entry* %call to i8*, !dbg !742
+  call void @free(i8* %4) #10, !dbg !742
+  br label %return, !dbg !743
 
-; <label>:18                                      ; preds = %0, %12
-  %.0 = phi i32 [ 0, %12 ], [ -103, %0 ]
-  ret i32 %.0
+return:                                           ; preds = %entry, %if.end4
+  %retval.0 = phi i32 [ 0, %if.end4 ], [ -103, %entry ]
+  ret i32 %retval.0, !dbg !744
 }

@@ -1,0 +1,44 @@
+define i32 @_Z30POVMS_RemoveReceiveHandlerNodeP16POVMSContextDataP23POVMSReceiveHandlerNode(%struct.POVMSContextData* nocapture %context, %struct.POVMSReceiveHandlerNode* %thn) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMSContextData* %context}, i64 0, metadata !256), !dbg !994
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMSReceiveHandlerNode* %thn}, i64 0, metadata !257), !dbg !994
+  %receivehandlerroot = getelementptr inbounds %struct.POVMSContextData* %context, i64 0, i32 1, !dbg !995
+  %0 = load %struct.POVMSReceiveHandlerNode** %receivehandlerroot, align 8, !dbg !995, !tbaa !917
+  %cmp = icmp eq %struct.POVMSReceiveHandlerNode* %0, %thn, !dbg !995
+  br i1 %cmp, label %if.then, label %if.end, !dbg !995
+
+if.then:                                          ; preds = %entry
+  %next = getelementptr inbounds %struct.POVMSReceiveHandlerNode* %thn, i64 0, i32 1, !dbg !996
+  %1 = load %struct.POVMSReceiveHandlerNode** %next, align 8, !dbg !996, !tbaa !917
+  store %struct.POVMSReceiveHandlerNode* %1, %struct.POVMSReceiveHandlerNode** %receivehandlerroot, align 8, !dbg !996, !tbaa !917
+  br label %if.end, !dbg !996
+
+if.end:                                           ; preds = %if.then, %entry
+  %last = getelementptr inbounds %struct.POVMSReceiveHandlerNode* %thn, i64 0, i32 0, !dbg !997
+  %2 = load %struct.POVMSReceiveHandlerNode** %last, align 8, !dbg !997, !tbaa !917
+  %cmp3 = icmp eq %struct.POVMSReceiveHandlerNode* %2, null, !dbg !997
+  %next9.pre = getelementptr inbounds %struct.POVMSReceiveHandlerNode* %thn, i64 0, i32 1, !dbg !998
+  br i1 %cmp3, label %if.end8, label %if.then4, !dbg !997
+
+if.then4:                                         ; preds = %if.end
+  %3 = load %struct.POVMSReceiveHandlerNode** %next9.pre, align 8, !dbg !999, !tbaa !917
+  %next7 = getelementptr inbounds %struct.POVMSReceiveHandlerNode* %2, i64 0, i32 1, !dbg !999
+  store %struct.POVMSReceiveHandlerNode* %3, %struct.POVMSReceiveHandlerNode** %next7, align 8, !dbg !999, !tbaa !917
+  br label %if.end8, !dbg !999
+
+if.end8:                                          ; preds = %if.end, %if.then4
+  %4 = load %struct.POVMSReceiveHandlerNode** %next9.pre, align 8, !dbg !998, !tbaa !917
+  %cmp10 = icmp eq %struct.POVMSReceiveHandlerNode* %4, null, !dbg !998
+  br i1 %cmp10, label %if.end15, label %if.then11, !dbg !998
+
+if.then11:                                        ; preds = %if.end8
+  %5 = load %struct.POVMSReceiveHandlerNode** %last, align 8, !dbg !1000, !tbaa !917
+  %last14 = getelementptr inbounds %struct.POVMSReceiveHandlerNode* %4, i64 0, i32 0, !dbg !1000
+  store %struct.POVMSReceiveHandlerNode* %5, %struct.POVMSReceiveHandlerNode** %last14, align 8, !dbg !1000, !tbaa !917
+  br label %if.end15, !dbg !1000
+
+if.end15:                                         ; preds = %if.end8, %if.then11
+  %6 = bitcast %struct.POVMSReceiveHandlerNode* %thn to i8*, !dbg !1001
+  tail call void @free(i8* %6) #9, !dbg !1001
+  ret i32 0, !dbg !1002
+}

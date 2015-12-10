@@ -1,23 +1,24 @@
 define void @BKL_setDefaultFields(%struct._BKL* %bkl) #0 {
 entry:
-  %cmp = icmp eq %struct._BKL* %bkl, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._BKL* %bkl}, i64 0, metadata !83), !dbg !99
+  %cmp = icmp eq %struct._BKL* %bkl, null, !dbg !100
+  br i1 %cmp, label %if.then, label %if.end, !dbg !100
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([54 x i8]* @.str2, i64 0, i64 0), %struct._BKL* null) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !101, !tbaa !94
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([54 x i8]* @.str2, i64 0, i64 0), %struct._BKL* null) #6, !dbg !101
+  tail call void @exit(i32 -1) #7, !dbg !103
+  unreachable, !dbg !103
 
 if.end:                                           ; preds = %entry
-  %colors = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 10
-  %alpha = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 13
-  store float 0.000000e+00, float* %alpha, align 4, !tbaa !3
-  %regwghts = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 12
-  store i32* null, i32** %regwghts, align 8, !tbaa !0
-  %1 = bitcast %struct._BKL* %bkl to i8*
-  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 44, i32 8, i1 false)
-  %2 = bitcast i32** %colors to i8*
-  call void @llvm.memset.p0i8.i64(i8* %2, i8 0, i64 20, i32 8, i1 false)
-  ret void
+  %colors = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 10, !dbg !104
+  %alpha = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 13, !dbg !105
+  store float 0.000000e+00, float* %alpha, align 4, !dbg !105, !tbaa !106
+  %regwghts = getelementptr inbounds %struct._BKL* %bkl, i64 0, i32 12, !dbg !107
+  store i32* null, i32** %regwghts, align 8, !dbg !107, !tbaa !94
+  %1 = bitcast %struct._BKL* %bkl to i8*, !dbg !108
+  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 44, i32 8, i1 false), !dbg !109
+  %2 = bitcast i32** %colors to i8*, !dbg !108
+  call void @llvm.memset.p0i8.i64(i8* %2, i8 0, i64 20, i32 8, i1 false), !dbg !104
+  ret void, !dbg !108
 }

@@ -1,39 +1,41 @@
 define i32 @spec_putc(i8 zeroext %ch, i32 %fd) #0 {
 entry:
-  %0 = load i32* @dbglvl, align 4, !tbaa !3
-  %cmp = icmp sgt i32 %0, 4
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i8 %ch}, i64 0, metadata !99), !dbg !321
+  tail call void @llvm.dbg.value(metadata !{i32 %fd}, i64 0, metadata !100), !dbg !321
+  %0 = load i32* @dbglvl, align 4, !dbg !322, !tbaa !128
+  %cmp = icmp sgt i32 %0, 4, !dbg !322
+  br i1 %cmp, label %if.then, label %if.end, !dbg !322
 
 if.then:                                          ; preds = %entry
-  %conv = zext i8 %ch to i32
-  %call = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([21 x i8]* @.str22, i64 0, i64 0), i32 %conv, i32 %fd) #8
-  br label %if.end
+  %conv = zext i8 %ch to i32, !dbg !322
+  %call = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([21 x i8]* @.str22, i64 0, i64 0), i32 %conv, i32 %fd) #7, !dbg !322
+  br label %if.end, !dbg !322
 
 if.end:                                           ; preds = %if.then, %entry
-  %cmp1 = icmp sgt i32 %fd, 3
-  br i1 %cmp1, label %if.then3, label %if.end5
+  %cmp1 = icmp sgt i32 %fd, 3, !dbg !324
+  br i1 %cmp1, label %if.then3, label %if.end5, !dbg !324
 
 if.then3:                                         ; preds = %if.end
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !4
-  %call4 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([35 x i8]* @.str19, i64 0, i64 0), i32 %fd) #8
-  tail call void @exit(i32 0) #9
-  unreachable
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !325, !tbaa !133
+  %call4 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([35 x i8]* @.str19, i64 0, i64 0), i32 %fd) #7, !dbg !325
+  tail call void @exit(i32 0) #8, !dbg !327
+  unreachable, !dbg !327
 
 if.end5:                                          ; preds = %if.end
-  %idxprom = sext i32 %fd to i64
-  %pos = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom, i32 2
-  %2 = load i32* %pos, align 8, !tbaa !3
-  %inc = add nsw i32 %2, 1
-  store i32 %inc, i32* %pos, align 8, !tbaa !3
-  %idxprom6 = sext i32 %2 to i64
-  %buf = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom, i32 3
-  %3 = load i8** %buf, align 8, !tbaa !4
-  %arrayidx9 = getelementptr inbounds i8* %3, i64 %idxprom6
-  store i8 %ch, i8* %arrayidx9, align 1, !tbaa !1
-  %len = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom, i32 1
-  %4 = load i32* %len, align 4, !tbaa !3
-  %inc12 = add nsw i32 %4, 1
-  store i32 %inc12, i32* %len, align 4, !tbaa !3
-  %conv13 = zext i8 %ch to i32
-  ret i32 %conv13
+  %idxprom = sext i32 %fd to i64, !dbg !328
+  %pos = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom, i32 2, !dbg !328
+  %2 = load i32* %pos, align 8, !dbg !328, !tbaa !128
+  %inc = add nsw i32 %2, 1, !dbg !328
+  store i32 %inc, i32* %pos, align 8, !dbg !328, !tbaa !128
+  %idxprom6 = sext i32 %2 to i64, !dbg !328
+  %buf = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom, i32 3, !dbg !328
+  %3 = load i8** %buf, align 8, !dbg !328, !tbaa !133
+  %arrayidx9 = getelementptr inbounds i8* %3, i64 %idxprom6, !dbg !328
+  store i8 %ch, i8* %arrayidx9, align 1, !dbg !328, !tbaa !116
+  %len = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom, i32 1, !dbg !329
+  %4 = load i32* %len, align 4, !dbg !329, !tbaa !128
+  %inc12 = add nsw i32 %4, 1, !dbg !329
+  store i32 %inc12, i32* %len, align 4, !dbg !329, !tbaa !128
+  %conv13 = zext i8 %ch to i32, !dbg !330
+  ret i32 %conv13, !dbg !330
 }

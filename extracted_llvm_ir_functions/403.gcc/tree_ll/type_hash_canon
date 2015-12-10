@@ -1,28 +1,34 @@
 define %union.tree_node* @type_hash_canon(i32 %hashcode, %union.tree_node* %type) #0 {
 entry:
-  %0 = load i32* @debug_no_type_hash, align 4, !tbaa !4
-  %tobool = icmp eq i32 %0, 0
-  br i1 %tobool, label %if.end, label %return
+  tail call void @llvm.dbg.value(metadata !{i32 %hashcode}, i64 0, metadata !1430), !dbg !2910
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %type}, i64 0, metadata !1431), !dbg !2911
+  %0 = load i32* @debug_no_type_hash, align 4, !dbg !2912, !tbaa !1932
+  %tobool = icmp eq i32 %0, 0, !dbg !2912
+  br i1 %tobool, label %if.end, label %return, !dbg !2912
 
 if.end:                                           ; preds = %entry
-  %call = tail call %union.tree_node* @type_hash_lookup(i32 %hashcode, %union.tree_node* %type) #10
-  %cmp = icmp eq %union.tree_node* %call, null
-  br i1 %cmp, label %if.else, label %return
+  %call = tail call %union.tree_node* @type_hash_lookup(i32 %hashcode, %union.tree_node* %type) #11, !dbg !2913
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call}, i64 0, metadata !1432), !dbg !2913
+  %cmp = icmp eq %union.tree_node* %call, null, !dbg !2914
+  br i1 %cmp, label %if.else, label %return, !dbg !2914
 
 if.else:                                          ; preds = %if.end
-  %call.i = tail call i8* @ggc_alloc(i64 16) #9
-  %conv.i = zext i32 %hashcode to i64
-  %hash.i = bitcast i8* %call.i to i64*
-  store i64 %conv.i, i64* %hash.i, align 8, !tbaa !3
-  %type1.i = getelementptr inbounds i8* %call.i, i64 8
-  %1 = bitcast i8* %type1.i to %union.tree_node**
-  store %union.tree_node* %type, %union.tree_node** %1, align 8, !tbaa !0
-  %2 = load %struct.htab** @type_hash_table, align 8, !tbaa !0
-  %call2.i = tail call i8** @htab_find_slot_with_hash(%struct.htab* %2, i8* %call.i, i32 %hashcode, i32 1) #9
-  store i8* %call.i, i8** %call2.i, align 8, !tbaa !0
-  br label %return
+  tail call void @llvm.dbg.value(metadata !{i32 %hashcode}, i64 0, metadata !2915) #5, !dbg !2918
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %type}, i64 0, metadata !2919) #5, !dbg !2920
+  %call.i = tail call i8* @ggc_alloc(i64 16) #10, !dbg !2921
+  %conv.i = zext i32 %hashcode to i64, !dbg !2922
+  %hash.i = bitcast i8* %call.i to i64*, !dbg !2922
+  store i64 %conv.i, i64* %hash.i, align 8, !dbg !2922, !tbaa !1927
+  %type1.i = getelementptr inbounds i8* %call.i, i64 8, !dbg !2923
+  %1 = bitcast i8* %type1.i to %union.tree_node**, !dbg !2923
+  store %union.tree_node* %type, %union.tree_node** %1, align 8, !dbg !2923, !tbaa !1913
+  %2 = load %struct.htab** @type_hash_table, align 8, !dbg !2924, !tbaa !1913
+  %call2.i = tail call i8** @htab_find_slot_with_hash(%struct.htab* %2, i8* %call.i, i32 %hashcode, i32 1) #10, !dbg !2924
+  tail call void @llvm.dbg.value(metadata !{i8** %call2.i}, i64 0, metadata !2925) #5, !dbg !2924
+  store i8* %call.i, i8** %call2.i, align 8, !dbg !2926, !tbaa !1913
+  br label %return, !dbg !2927
 
 return:                                           ; preds = %if.end, %entry, %if.else
   %retval.0 = phi %union.tree_node* [ %type, %if.else ], [ %type, %entry ], [ %call, %if.end ]
-  ret %union.tree_node* %retval.0
+  ret %union.tree_node* %retval.0, !dbg !2928
 }

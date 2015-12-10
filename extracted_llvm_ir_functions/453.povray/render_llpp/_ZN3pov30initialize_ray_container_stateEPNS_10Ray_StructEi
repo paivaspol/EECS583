@@ -1,0 +1,123 @@
+define void @_ZN3pov30initialize_ray_container_stateEPNS_10Ray_StructEi(%"struct.pov::Ray_Struct"* %Ray, i32 %Compute) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Ray_Struct"* %Ray}, i64 0, metadata !1123), !dbg !3860
+  tail call void @llvm.dbg.value(metadata !{i32 %Compute}, i64 0, metadata !1124), !dbg !3860
+  %tobool = icmp eq i32 %Compute, 0, !dbg !3861
+  br i1 %tobool, label %for.cond13.preheader, label %if.then, !dbg !3861
+
+if.then:                                          ; preds = %entry
+  store i32 -1, i32* @_ZN3povL16Containing_IndexE, align 4, !dbg !3862, !tbaa !1664
+  %0 = load i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 29), align 4, !dbg !3864, !tbaa !1717, !range !1718
+  %tobool1 = icmp eq i8 %0, 0, !dbg !3864
+  br i1 %tobool1, label %for.cond.preheader, label %if.else, !dbg !3864
+
+for.cond.preheader:                               ; preds = %if.then
+  %Object.059 = load %"struct.pov::Object_Struct"** getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 5), align 8, !dbg !3865
+  %cmp60 = icmp eq %"struct.pov::Object_Struct"* %Object.059, null, !dbg !3865
+  br i1 %cmp60, label %for.cond13.preheader, label %for.body.lr.ph, !dbg !3865
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %arraydecay = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 0, i64 0, !dbg !3868
+  br label %for.body, !dbg !3865
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %Object.061 = phi %"struct.pov::Object_Struct"* [ %Object.059, %for.body.lr.ph ], [ %Object.0, %for.inc ]
+  %Methods = getelementptr inbounds %"struct.pov::Object_Struct"* %Object.061, i64 0, i32 0, !dbg !3868
+  %1 = load %"struct.pov::Method_Struct"** %Methods, align 8, !dbg !3868, !tbaa !1667
+  %Inside_Method = getelementptr inbounds %"struct.pov::Method_Struct"* %1, i64 0, i32 1, !dbg !3868
+  %2 = load i32 (double*, %"struct.pov::Object_Struct"*)** %Inside_Method, align 8, !dbg !3868, !tbaa !1667
+  %call = tail call i32 %2(double* %arraydecay, %"struct.pov::Object_Struct"* %Object.061) #8, !dbg !3868
+  %tobool3 = icmp eq i32 %call, 0, !dbg !3868
+  br i1 %tobool3, label %for.inc, label %land.lhs.true, !dbg !3868
+
+land.lhs.true:                                    ; preds = %for.body
+  %Interior = getelementptr inbounds %"struct.pov::Object_Struct"* %Object.061, i64 0, i32 5, !dbg !3868
+  %3 = load %"struct.pov::Interior_Struct"** %Interior, align 8, !dbg !3868, !tbaa !1667
+  %cmp4 = icmp eq %"struct.pov::Interior_Struct"* %3, null, !dbg !3868
+  br i1 %cmp4, label %for.inc, label %if.then5, !dbg !3868
+
+if.then5:                                         ; preds = %land.lhs.true
+  %4 = load i32* @_ZN3povL16Containing_IndexE, align 4, !dbg !3870, !tbaa !1664
+  %inc = add nsw i32 %4, 1, !dbg !3870
+  store i32 %inc, i32* @_ZN3povL16Containing_IndexE, align 4, !dbg !3870, !tbaa !1664
+  %cmp6 = icmp sgt i32 %4, 98, !dbg !3870
+  br i1 %cmp6, label %if.then7, label %if.end, !dbg !3870
+
+if.then7:                                         ; preds = %if.then5
+  %call8 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([24 x i8]* @.str18, i64 0, i64 0)) #8, !dbg !3872
+  %.pre = load %"struct.pov::Interior_Struct"** %Interior, align 8, !dbg !3874, !tbaa !1667
+  %.pre65 = load i32* @_ZN3povL16Containing_IndexE, align 4, !dbg !3874, !tbaa !1664
+  br label %if.end, !dbg !3875
+
+if.end:                                           ; preds = %if.then7, %if.then5
+  %5 = phi i32 [ %.pre65, %if.then7 ], [ %inc, %if.then5 ]
+  %6 = phi %"struct.pov::Interior_Struct"* [ %.pre, %if.then7 ], [ %3, %if.then5 ]
+  %idxprom = sext i32 %5 to i64, !dbg !3874
+  %arrayidx = getelementptr inbounds [100 x %"struct.pov::Interior_Struct"*]* @_ZN3povL20Containing_InteriorsE, i64 0, i64 %idxprom, !dbg !3874
+  store %"struct.pov::Interior_Struct"* %6, %"struct.pov::Interior_Struct"** %arrayidx, align 8, !dbg !3874, !tbaa !1667
+  br label %for.inc, !dbg !3876
+
+for.inc:                                          ; preds = %land.lhs.true, %for.body, %if.end
+  %Sibling = getelementptr inbounds %"struct.pov::Object_Struct"* %Object.061, i64 0, i32 2, !dbg !3865
+  %Object.0 = load %"struct.pov::Object_Struct"** %Sibling, align 8, !dbg !3865
+  %cmp = icmp eq %"struct.pov::Object_Struct"* %Object.0, null, !dbg !3865
+  br i1 %cmp, label %for.cond13.preheader, label %for.body, !dbg !3865
+
+if.else:                                          ; preds = %if.then
+  %7 = load %"struct.pov::BBox_Tree_Struct"** @_ZN3pov11Root_ObjectE, align 8, !dbg !3877, !tbaa !1667
+  tail call fastcc void @_ZN3povL35initialize_ray_container_state_treeEPNS_10Ray_StructEPNS_16BBox_Tree_StructE(%"struct.pov::Ray_Struct"* %Ray, %"struct.pov::BBox_Tree_Struct"* %7) #8, !dbg !3877
+  br label %for.cond13.preheader
+
+for.cond13.preheader:                             ; preds = %for.cond.preheader, %for.inc, %entry, %if.else
+  %8 = load i32* @_ZN3povL16Containing_IndexE, align 4, !dbg !3879, !tbaa !1664
+  %cmp1457 = icmp slt i32 %8, 0, !dbg !3879
+  br i1 %cmp1457, label %for.end22, label %for.body15, !dbg !3879
+
+for.body15:                                       ; preds = %for.cond13.preheader, %for.body15
+  %indvars.iv62 = phi i64 [ %indvars.iv.next63, %for.body15 ], [ 0, %for.cond13.preheader ]
+  %arrayidx17 = getelementptr inbounds [100 x %"struct.pov::Interior_Struct"*]* @_ZN3povL20Containing_InteriorsE, i64 0, i64 %indvars.iv62, !dbg !3881
+  %9 = load %"struct.pov::Interior_Struct"** %arrayidx17, align 8, !dbg !3881, !tbaa !1667
+  %arrayidx19 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 4, i64 %indvars.iv62, !dbg !3881
+  store %"struct.pov::Interior_Struct"* %9, %"struct.pov::Interior_Struct"** %arrayidx19, align 8, !dbg !3881, !tbaa !1667
+  %indvars.iv.next63 = add i64 %indvars.iv62, 1, !dbg !3879
+  %10 = trunc i64 %indvars.iv62 to i32, !dbg !3879
+  %cmp14 = icmp slt i32 %10, %8, !dbg !3879
+  br i1 %cmp14, label %for.body15, label %for.end22, !dbg !3879
+
+for.end22:                                        ; preds = %for.body15, %for.cond13.preheader
+  %Index = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 2, !dbg !3883
+  store i32 %8, i32* %Index, align 4, !dbg !3883, !tbaa !1664
+  %.b = load i1* @_ZN3povL24Primary_Ray_State_TestedE, align 1
+  br i1 %.b, label %if.end40, label %for.cond25.preheader, !dbg !3884
+
+for.cond25.preheader:                             ; preds = %for.end22
+  %11 = load i32* @_ZN3povL16Containing_IndexE, align 4, !dbg !3885, !tbaa !1664
+  %cmp2655 = icmp slt i32 %11, 0, !dbg !3885
+  br i1 %cmp2655, label %if.end39, label %for.body27, !dbg !3885
+
+for.cond25:                                       ; preds = %for.body27
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !3885
+  %12 = trunc i64 %indvars.iv to i32, !dbg !3885
+  %cmp26 = icmp slt i32 %12, %11, !dbg !3885
+  br i1 %cmp26, label %for.body27, label %if.end39, !dbg !3885
+
+for.body27:                                       ; preds = %for.cond25.preheader, %for.cond25
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond25 ], [ 0, %for.cond25.preheader ]
+  %arrayidx29 = getelementptr inbounds [100 x %"struct.pov::Interior_Struct"*]* @_ZN3povL20Containing_InteriorsE, i64 0, i64 %indvars.iv, !dbg !3888
+  %13 = load %"struct.pov::Interior_Struct"** %arrayidx29, align 8, !dbg !3888, !tbaa !1667
+  %hollow = getelementptr inbounds %"struct.pov::Interior_Struct"* %13, i64 0, i32 1, !dbg !3888
+  %14 = load i32* %hollow, align 4, !dbg !3888, !tbaa !1664
+  %tobool30 = icmp eq i32 %14, 0, !dbg !3888
+  br i1 %tobool30, label %if.then37, label %for.cond25, !dbg !3888
+
+if.then37:                                        ; preds = %for.body27
+  %call38 = tail call i32 (i32, i8*, ...)* @_ZN3pov7WarningEjPKcz(i32 0, i8* getelementptr inbounds ([92 x i8]* @.str19, i64 0, i64 0)) #8, !dbg !3890
+  br label %if.end39, !dbg !3892
+
+if.end39:                                         ; preds = %for.cond25.preheader, %for.cond25, %if.then37
+  store i1 true, i1* @_ZN3povL24Primary_Ray_State_TestedE, align 1
+  br label %if.end40, !dbg !3893
+
+if.end40:                                         ; preds = %if.end39, %for.end22
+  ret void, !dbg !3894
+}

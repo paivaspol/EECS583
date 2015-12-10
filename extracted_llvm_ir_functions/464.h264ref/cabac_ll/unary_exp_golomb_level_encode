@@ -1,44 +1,53 @@
 define void @unary_exp_golomb_level_encode(%struct.EncodingEnvironment* %eep_dp, i32 %symbol, %struct.BiContextType* %ctx) #0 {
 entry:
-  %cmp = icmp eq i32 %symbol, 0
-  br i1 %cmp, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata !{%struct.EncodingEnvironment* %eep_dp}, i64 0, metadata !545), !dbg !1702
+  tail call void @llvm.dbg.value(metadata !{i32 %symbol}, i64 0, metadata !546), !dbg !1703
+  tail call void @llvm.dbg.value(metadata !{%struct.BiContextType* %ctx}, i64 0, metadata !547), !dbg !1704
+  tail call void @llvm.dbg.value(metadata !1705, i64 0, metadata !550), !dbg !1706
+  %cmp = icmp eq i32 %symbol, 0, !dbg !1707
+  br i1 %cmp, label %if.then, label %if.else, !dbg !1707
 
 if.then:                                          ; preds = %entry
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %ctx) #5
-  br label %return
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %ctx) #6, !dbg !1708
+  br label %return, !dbg !1710
 
 if.else:                                          ; preds = %entry
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %ctx) #5
-  %cmp117 = icmp eq i32 %symbol, 1
-  br i1 %cmp117, label %if.then4, label %while.body.lr.ph
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %ctx) #6, !dbg !1711
+  tail call void @llvm.dbg.value(metadata !{i32 %symbol}, i64 0, metadata !548), !dbg !1713
+  tail call void @llvm.dbg.value(metadata !1399, i64 0, metadata !549), !dbg !1714
+  %cmp117 = icmp eq i32 %symbol, 1, !dbg !1715
+  tail call void @llvm.dbg.value(metadata !1410, i64 0, metadata !549), !dbg !1715
+  br i1 %cmp117, label %if.then4, label %while.body.lr.ph, !dbg !1715
 
 while.body.lr.ph:                                 ; preds = %if.else
-  %0 = sub i32 1, %symbol
+  %0 = sub i32 1, %symbol, !dbg !1715
   %1 = icmp ugt i32 %0, -12
-  %.op = sub i32 2, %0
-  %2 = select i1 %1, i32 %.op, i32 14
-  br label %while.body
+  %.op = sub i32 2, %0, !dbg !1715
+  %2 = select i1 %1, i32 %.op, i32 14, !dbg !1715
+  br label %while.body, !dbg !1715
 
 while.body:                                       ; preds = %while.body, %while.body.lr.ph
   %k.018 = phi i32 [ 2, %while.body.lr.ph ], [ %phitmp, %while.body ]
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %ctx) #5
-  %phitmp = add i32 %k.018, 1
-  %exitcond = icmp eq i32 %phitmp, %2
-  br i1 %exitcond, label %while.end, label %while.body
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 1, %struct.BiContextType* %ctx) #6, !dbg !1716
+  %phitmp = add i32 %k.018, 1, !dbg !1716
+  tail call void @llvm.dbg.value(metadata !1480, i64 0, metadata !548), !dbg !1715
+  tail call void @llvm.dbg.value(metadata !{i32 %k.018}, i64 0, metadata !549), !dbg !1715
+  %exitcond = icmp eq i32 %phitmp, %2, !dbg !1715
+  br i1 %exitcond, label %while.end, label %while.body, !dbg !1715
 
 while.end:                                        ; preds = %while.body
-  %cmp3 = icmp ult i32 %symbol, 13
-  br i1 %cmp3, label %if.then4, label %if.else5
+  %cmp3 = icmp ult i32 %symbol, 13, !dbg !1717
+  br i1 %cmp3, label %if.then4, label %if.else5, !dbg !1717
 
 if.then4:                                         ; preds = %if.else, %while.end
-  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %ctx) #5
-  br label %return
+  tail call void @biari_encode_symbol(%struct.EncodingEnvironment* %eep_dp, i16 signext 0, %struct.BiContextType* %ctx) #6, !dbg !1717
+  br label %return, !dbg !1717
 
 if.else5:                                         ; preds = %while.end
-  %sub = add i32 %symbol, -13
-  tail call void @exp_golomb_encode_eq_prob(%struct.EncodingEnvironment* %eep_dp, i32 %sub, i32 0) #7
+  %sub = add i32 %symbol, -13, !dbg !1718
+  tail call void @exp_golomb_encode_eq_prob(%struct.EncodingEnvironment* %eep_dp, i32 %sub, i32 0) #8, !dbg !1718
   br label %return
 
 return:                                           ; preds = %if.else5, %if.then4, %if.then
-  ret void
+  ret void, !dbg !1719
 }

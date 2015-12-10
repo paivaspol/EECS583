@@ -1,31 +1,36 @@
-define internal fastcc void @ld_cosines(i32 %src, %struct.t_cosines* %cs) #4 {
-  %1 = getelementptr inbounds %struct.t_cosines* %cs, i64 0, i32 0
-  %2 = bitcast %struct.t_cosines* %cs to i8*
-  tail call void @_blockrx(i32 %src, i32 1, i32 4, i8* %2) #7
-  %3 = load i32* %1, align 4, !tbaa !56
-  %4 = tail call i8* @save_calloc(i8* getelementptr inbounds ([6 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str8, i64 0, i64 0), i32 189, i32 %3, i32 4) #7
-  %5 = getelementptr inbounds %struct.t_cosines* %cs, i64 0, i32 1
-  %6 = bitcast float** %5 to i8**
-  store i8* %4, i8** %6, align 8, !tbaa !58
-  %7 = load i32* %1, align 4, !tbaa !56
-  %8 = tail call i8* @save_calloc(i8* getelementptr inbounds ([8 x i8]* @.str18, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str8, i64 0, i64 0), i32 190, i32 %7, i32 4) #7
-  %9 = getelementptr inbounds %struct.t_cosines* %cs, i64 0, i32 2
-  %10 = bitcast float** %9 to i8**
-  store i8* %8, i8** %10, align 8, !tbaa !59
-  %11 = load i32* %1, align 4, !tbaa !56
-  %12 = icmp sgt i32 %11, 0
-  br i1 %12, label %13, label %19
+define internal fastcc void @ld_cosines(i32 %src, %struct.t_cosines* %cs) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %src}, i64 0, metadata !641), !dbg !954
+  tail call void @llvm.dbg.value(metadata !{%struct.t_cosines* %cs}, i64 0, metadata !642), !dbg !954
+  %n = getelementptr inbounds %struct.t_cosines* %cs, i64 0, i32 0, !dbg !955
+  %0 = bitcast %struct.t_cosines* %cs to i8*, !dbg !955
+  tail call void @_blockrx(i32 %src, i32 1, i32 4, i8* %0) #5, !dbg !955
+  %1 = load i32* %n, align 4, !dbg !956, !tbaa !663
+  %call = tail call i8* @save_calloc(i8* getelementptr inbounds ([6 x i8]* @.str21, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str8, i64 0, i64 0), i32 189, i32 %1, i32 4) #5, !dbg !956
+  %2 = bitcast i8* %call to float*, !dbg !956
+  %a = getelementptr inbounds %struct.t_cosines* %cs, i64 0, i32 1, !dbg !956
+  store float* %2, float** %a, align 8, !dbg !956, !tbaa !666
+  %3 = load i32* %n, align 4, !dbg !957, !tbaa !663
+  %call3 = tail call i8* @save_calloc(i8* getelementptr inbounds ([8 x i8]* @.str22, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str8, i64 0, i64 0), i32 190, i32 %3, i32 4) #5, !dbg !957
+  %4 = bitcast i8* %call3 to float*, !dbg !957
+  %phi = getelementptr inbounds %struct.t_cosines* %cs, i64 0, i32 2, !dbg !957
+  store float* %4, float** %phi, align 8, !dbg !957, !tbaa !666
+  %5 = load i32* %n, align 4, !dbg !958, !tbaa !663
+  %cmp = icmp sgt i32 %5, 0, !dbg !958
+  br i1 %cmp, label %if.then, label %if.end, !dbg !958
 
-; <label>:13                                      ; preds = %0
-  %14 = shl i32 %11, 2
-  %15 = load i8** %6, align 8, !tbaa !58
-  tail call void @_blockrx(i32 %src, i32 1, i32 %14, i8* %15) #7
-  %16 = load i32* %1, align 4, !tbaa !56
-  %17 = shl i32 %16, 2
-  %18 = load i8** %10, align 8, !tbaa !59
-  tail call void @_blockrx(i32 %src, i32 1, i32 %17, i8* %18) #7
-  br label %19
+if.then:                                          ; preds = %entry
+  %mul = shl i32 %5, 2, !dbg !959
+  %6 = load float** %a, align 8, !dbg !959, !tbaa !666
+  %7 = bitcast float* %6 to i8*, !dbg !959
+  tail call void @_blockrx(i32 %src, i32 1, i32 %mul, i8* %7) #5, !dbg !959
+  %8 = load i32* %n, align 4, !dbg !961, !tbaa !663
+  %mul10 = shl i32 %8, 2, !dbg !961
+  %9 = load float** %phi, align 8, !dbg !961, !tbaa !666
+  %10 = bitcast float* %9 to i8*, !dbg !961
+  tail call void @_blockrx(i32 %src, i32 1, i32 %mul10, i8* %10) #5, !dbg !961
+  br label %if.end, !dbg !962
 
-; <label>:19                                      ; preds = %13, %0
-  ret void
+if.end:                                           ; preds = %if.then, %entry
+  ret void, !dbg !963
 }

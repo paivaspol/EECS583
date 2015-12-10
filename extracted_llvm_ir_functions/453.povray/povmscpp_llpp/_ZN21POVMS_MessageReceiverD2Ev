@@ -1,0 +1,23 @@
+define void @_ZN21POVMS_MessageReceiverD2Ev(%class.POVMS_MessageReceiver* nocapture %this) unnamed_addr #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.POVMS_MessageReceiver* %this}, i64 0, metadata !1030), !dbg !1760
+  %0 = getelementptr inbounds %class.POVMS_MessageReceiver* %this, i64 0, i32 0, !dbg !1761
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([4 x i8*]* @_ZTV21POVMS_MessageReceiver, i64 0, i64 2) to i32 (...)**), i32 (...)*** %0, align 8, !dbg !1761, !tbaa !1108
+  %receivers = getelementptr inbounds %class.POVMS_MessageReceiver* %this, i64 0, i32 2, !dbg !1762
+  %1 = load %"struct.POVMS_MessageReceiver::HandlerNode"** %receivers, align 8, !dbg !1762, !tbaa !1116
+  %cmp4 = icmp eq %"struct.POVMS_MessageReceiver::HandlerNode"* %1, null, !dbg !1762
+  br i1 %cmp4, label %while.end, label %while.body, !dbg !1762
+
+while.body:                                       ; preds = %entry, %while.body
+  %2 = phi %"struct.POVMS_MessageReceiver::HandlerNode"* [ %3, %while.body ], [ %1, %entry ]
+  tail call void @_ZN21POVMS_MessageReceiver10RemoveNodeEPNS_11HandlerNodeE(%class.POVMS_MessageReceiver* %this, %"struct.POVMS_MessageReceiver::HandlerNode"* %2) #12, !dbg !1764
+  %3 = load %"struct.POVMS_MessageReceiver::HandlerNode"** %receivers, align 8, !dbg !1762, !tbaa !1116
+  %cmp = icmp eq %"struct.POVMS_MessageReceiver::HandlerNode"* %3, null, !dbg !1762
+  br i1 %cmp, label %while.end, label %while.body, !dbg !1762
+
+while.end:                                        ; preds = %while.body, %entry
+  %context = getelementptr inbounds %class.POVMS_MessageReceiver* %this, i64 0, i32 1, !dbg !1765
+  %4 = bitcast i8** %context to i8*, !dbg !1766
+  call void @llvm.memset.p0i8.i64(i8* %4, i8 0, i64 16, i32 8, i1 false), !dbg !1765
+  ret void, !dbg !1766
+}

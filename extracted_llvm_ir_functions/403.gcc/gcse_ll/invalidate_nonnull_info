@@ -1,71 +1,76 @@
 define internal void @invalidate_nonnull_info(%struct.rtx_def* nocapture %x, %struct.rtx_def* nocapture %setter, i8* nocapture %data) #0 {
 entry:
-  br label %while.cond
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !1110), !dbg !3801
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %setter}, i64 0, metadata !1111), !dbg !3802
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !1112), !dbg !3803
+  br label %while.cond, !dbg !3804
 
 while.cond:                                       ; preds = %while.body, %entry
   %x.addr.0 = phi %struct.rtx_def* [ %x, %entry ], [ %1, %while.body ]
-  %0 = bitcast %struct.rtx_def* %x.addr.0 to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
+  %0 = bitcast %struct.rtx_def* %x.addr.0 to i32*, !dbg !3804
+  %bf.load = load i32* %0, align 8, !dbg !3804
+  %bf.clear = and i32 %bf.load, 65535, !dbg !3804
   switch i32 %bf.clear, label %return [
     i32 63, label %while.body
     i32 61, label %lor.lhs.false
-  ]
+  ], !dbg !3804
 
 while.body:                                       ; preds = %while.cond
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %x.addr.0, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  br label %while.cond
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x.addr.0, i64 0, i32 1, i64 0, !dbg !3805
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !3805
+  %1 = load %struct.rtx_def** %rtx, align 8, !dbg !3805, !tbaa !1729
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %1}, i64 0, metadata !1110), !dbg !3805
+  br label %while.cond, !dbg !3805
 
 lor.lhs.false:                                    ; preds = %while.cond
-  %arrayidx5 = getelementptr inbounds %struct.rtx_def* %x.addr.0, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx5 to i32*
-  %2 = load i32* %rtuint, align 4, !tbaa !3
-  %min_reg = getelementptr inbounds i8* %data, i64 4
-  %3 = bitcast i8* %min_reg to i32*
-  %4 = load i32* %3, align 4, !tbaa !3
-  %cmp6 = icmp ult i32 %2, %4
-  br i1 %cmp6, label %return, label %lor.lhs.false7
+  %arrayidx5 = getelementptr inbounds %struct.rtx_def* %x.addr.0, i64 0, i32 1, i64 0, !dbg !3806
+  %rtuint = bitcast %union.rtunion_def* %arrayidx5 to i32*, !dbg !3806
+  %2 = load i32* %rtuint, align 4, !dbg !3806, !tbaa !1735
+  %min_reg = getelementptr inbounds i8* %data, i64 4, !dbg !3806
+  %3 = bitcast i8* %min_reg to i32*, !dbg !3806
+  %4 = load i32* %3, align 4, !dbg !3806, !tbaa !1735
+  %cmp6 = icmp ult i32 %2, %4, !dbg !3806
+  br i1 %cmp6, label %return, label %lor.lhs.false7, !dbg !3806
 
 lor.lhs.false7:                                   ; preds = %lor.lhs.false
-  %max_reg = getelementptr inbounds i8* %data, i64 8
-  %5 = bitcast i8* %max_reg to i32*
-  %6 = load i32* %5, align 4, !tbaa !3
-  %cmp11 = icmp ult i32 %2, %6
-  br i1 %cmp11, label %if.end, label %return
+  %max_reg = getelementptr inbounds i8* %data, i64 8, !dbg !3806
+  %5 = bitcast i8* %max_reg to i32*, !dbg !3806
+  %6 = load i32* %5, align 4, !dbg !3806, !tbaa !1735
+  %cmp11 = icmp ult i32 %2, %6, !dbg !3806
+  br i1 %cmp11, label %if.end, label %return, !dbg !3806
 
 if.end:                                           ; preds = %lor.lhs.false7
-  %sub = sub i32 %2, %4
-  %rem = and i32 %sub, 63
-  %sh_prom = zext i32 %rem to i64
-  %shl = shl i64 1, %sh_prom
-  %neg = xor i64 %shl, -1
-  %div = lshr i32 %sub, 6
-  %idxprom = zext i32 %div to i64
-  %current_block = bitcast i8* %data to i32*
-  %7 = load i32* %current_block, align 4, !tbaa !3
-  %idxprom16 = sext i32 %7 to i64
-  %nonnull_local = getelementptr inbounds i8* %data, i64 16
-  %8 = bitcast i8* %nonnull_local to %struct.simple_bitmap_def***
-  %9 = load %struct.simple_bitmap_def*** %8, align 8, !tbaa !0
-  %arrayidx17 = getelementptr inbounds %struct.simple_bitmap_def** %9, i64 %idxprom16
-  %10 = load %struct.simple_bitmap_def** %arrayidx17, align 8, !tbaa !0
-  %arrayidx18 = getelementptr inbounds %struct.simple_bitmap_def* %10, i64 0, i32 3, i64 %idxprom
-  %11 = load i64* %arrayidx18, align 8, !tbaa !5
-  %and = and i64 %11, %neg
-  store i64 %and, i64* %arrayidx18, align 8, !tbaa !5
-  %nonnull_killed = getelementptr inbounds i8* %data, i64 24
-  %12 = bitcast i8* %nonnull_killed to %struct.simple_bitmap_def***
-  %13 = load %struct.simple_bitmap_def*** %12, align 8, !tbaa !0
-  %arrayidx26 = getelementptr inbounds %struct.simple_bitmap_def** %13, i64 %idxprom16
-  %14 = load %struct.simple_bitmap_def** %arrayidx26, align 8, !tbaa !0
-  %arrayidx28 = getelementptr inbounds %struct.simple_bitmap_def* %14, i64 0, i32 3, i64 %idxprom
-  %15 = load i64* %arrayidx28, align 8, !tbaa !5
-  %or = or i64 %15, %shl
-  store i64 %or, i64* %arrayidx28, align 8, !tbaa !5
-  br label %return
+  %sub = sub i32 %2, %4, !dbg !3807
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !1113), !dbg !3807
+  %rem = and i32 %sub, 63, !dbg !3808
+  %sh_prom = zext i32 %rem to i64, !dbg !3808
+  %shl = shl i64 1, %sh_prom, !dbg !3808
+  %neg = xor i64 %shl, -1, !dbg !3808
+  %div = lshr i32 %sub, 6, !dbg !3808
+  %idxprom = zext i32 %div to i64, !dbg !3808
+  %current_block = bitcast i8* %data to i32*, !dbg !3808
+  %7 = load i32* %current_block, align 4, !dbg !3808, !tbaa !1735
+  %idxprom16 = sext i32 %7 to i64, !dbg !3808
+  %nonnull_local = getelementptr inbounds i8* %data, i64 16, !dbg !3808
+  %8 = bitcast i8* %nonnull_local to %struct.simple_bitmap_def***, !dbg !3808
+  %9 = load %struct.simple_bitmap_def*** %8, align 8, !dbg !3808, !tbaa !1729
+  %arrayidx17 = getelementptr inbounds %struct.simple_bitmap_def** %9, i64 %idxprom16, !dbg !3808
+  %10 = load %struct.simple_bitmap_def** %arrayidx17, align 8, !dbg !3808, !tbaa !1729
+  %arrayidx18 = getelementptr inbounds %struct.simple_bitmap_def* %10, i64 0, i32 3, i64 %idxprom, !dbg !3808
+  %11 = load i64* %arrayidx18, align 8, !dbg !3808, !tbaa !1854
+  %and = and i64 %11, %neg, !dbg !3808
+  store i64 %and, i64* %arrayidx18, align 8, !dbg !3808, !tbaa !1854
+  %nonnull_killed = getelementptr inbounds i8* %data, i64 24, !dbg !3809
+  %12 = bitcast i8* %nonnull_killed to %struct.simple_bitmap_def***, !dbg !3809
+  %13 = load %struct.simple_bitmap_def*** %12, align 8, !dbg !3809, !tbaa !1729
+  %arrayidx26 = getelementptr inbounds %struct.simple_bitmap_def** %13, i64 %idxprom16, !dbg !3809
+  %14 = load %struct.simple_bitmap_def** %arrayidx26, align 8, !dbg !3809, !tbaa !1729
+  %arrayidx28 = getelementptr inbounds %struct.simple_bitmap_def* %14, i64 0, i32 3, i64 %idxprom, !dbg !3809
+  %15 = load i64* %arrayidx28, align 8, !dbg !3809, !tbaa !1854
+  %or = or i64 %15, %shl, !dbg !3809
+  store i64 %or, i64* %arrayidx28, align 8, !dbg !3809, !tbaa !1854
+  br label %return, !dbg !3809
 
 return:                                           ; preds = %while.cond, %lor.lhs.false7, %lor.lhs.false, %if.end
-  ret void
+  ret void, !dbg !3809
 }

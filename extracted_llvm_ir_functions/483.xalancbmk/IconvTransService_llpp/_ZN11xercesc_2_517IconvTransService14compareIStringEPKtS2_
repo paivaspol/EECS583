@@ -1,0 +1,54 @@
+define i32 @_ZN11xercesc_2_517IconvTransService14compareIStringEPKtS2_(%"class.xercesc_2_5::IconvTransService"* nocapture %this, i16* nocapture %comp1, i16* nocapture %comp2) unnamed_addr #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::IconvTransService"* %this}, i64 0, metadata !661), !dbg !910
+  tail call void @llvm.dbg.value(metadata !{i16* %comp1}, i64 0, metadata !662), !dbg !910
+  tail call void @llvm.dbg.value(metadata !{i16* %comp2}, i64 0, metadata !663), !dbg !911
+  tail call void @llvm.dbg.value(metadata !{i16* %comp1}, i64 0, metadata !664), !dbg !912
+  tail call void @llvm.dbg.value(metadata !{i16* %comp2}, i64 0, metadata !665), !dbg !913
+  %0 = load i16* %comp1, align 2, !dbg !914, !tbaa !915
+  %cmp20 = icmp eq i16 %0, 0, !dbg !914
+  br i1 %cmp20, label %while.end, label %land.rhs, !dbg !914
+
+land.rhs:                                         ; preds = %entry, %if.end
+  %conv23.in = phi i16 [ %3, %if.end ], [ %0, %entry ]
+  %cptr1.022 = phi i16* [ %incdec.ptr, %if.end ], [ %comp1, %entry ]
+  %cptr2.021 = phi i16* [ %incdec.ptr8, %if.end ], [ %comp2, %entry ]
+  %1 = load i16* %cptr2.021, align 2, !dbg !914, !tbaa !915
+  %cmp3 = icmp eq i16 %1, 0, !dbg !914
+  br i1 %cmp3, label %while.end, label %while.body
+
+while.body:                                       ; preds = %land.rhs
+  %conv23 = zext i16 %conv23.in to i32, !dbg !914
+  %call = tail call i32 @towupper(i32 %conv23) #11, !dbg !917
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !666), !dbg !917
+  %2 = load i16* %cptr2.021, align 2, !dbg !918, !tbaa !915
+  %conv5 = zext i16 %2 to i32, !dbg !918
+  %call6 = tail call i32 @towupper(i32 %conv5) #11, !dbg !918
+  tail call void @llvm.dbg.value(metadata !{i32 %call6}, i64 0, metadata !669), !dbg !918
+  %cmp7 = icmp eq i32 %call, %call6, !dbg !919
+  br i1 %cmp7, label %if.end, label %while.body.while.endsplit_crit_edge, !dbg !919
+
+while.body.while.endsplit_crit_edge:              ; preds = %while.body
+  %.pre.pre = load i16* %cptr1.022, align 2, !dbg !920, !tbaa !915
+  br label %while.end, !dbg !919
+
+if.end:                                           ; preds = %while.body
+  %incdec.ptr = getelementptr inbounds i16* %cptr1.022, i64 1, !dbg !921
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !664), !dbg !921
+  %incdec.ptr8 = getelementptr inbounds i16* %cptr2.021, i64 1, !dbg !922
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr8}, i64 0, metadata !665), !dbg !922
+  %3 = load i16* %incdec.ptr, align 2, !dbg !914, !tbaa !915
+  %cmp = icmp eq i16 %3, 0, !dbg !914
+  br i1 %cmp, label %while.end, label %land.rhs, !dbg !914
+
+while.end:                                        ; preds = %if.end, %land.rhs, %while.body.while.endsplit_crit_edge, %entry
+  %4 = phi i16 [ 0, %entry ], [ %.pre.pre, %while.body.while.endsplit_crit_edge ], [ %conv23.in, %land.rhs ], [ 0, %if.end ]
+  %cptr2.0.lcssa = phi i16* [ %comp2, %entry ], [ %cptr2.021, %while.body.while.endsplit_crit_edge ], [ %cptr2.021, %land.rhs ], [ %incdec.ptr8, %if.end ]
+  %conv9 = zext i16 %4 to i32, !dbg !920
+  %call10 = tail call i32 @towupper(i32 %conv9) #11, !dbg !920
+  %5 = load i16* %cptr2.0.lcssa, align 2, !dbg !920, !tbaa !915
+  %conv11 = zext i16 %5 to i32, !dbg !920
+  %call12 = tail call i32 @towupper(i32 %conv11) #11, !dbg !920
+  %sub = sub i32 %call10, %call12, !dbg !920
+  ret i32 %sub, !dbg !920
+}

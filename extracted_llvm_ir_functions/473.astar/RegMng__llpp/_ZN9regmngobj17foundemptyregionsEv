@@ -1,0 +1,39 @@
+define void @_ZN9regmngobj17foundemptyregionsEv(%class.regmngobj* nocapture %this) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.regmngobj* %this}, i64 0, metadata !424), !dbg !893
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !425), !dbg !894
+  %elemqu = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 16, i32 4, !dbg !894
+  %0 = load i32* %elemqu, align 4, !dbg !894, !tbaa !781
+  %cmp12 = icmp sgt i32 %0, 0, !dbg !894
+  br i1 %cmp12, label %for.body.lr.ph, label %for.end, !dbg !894
+
+for.body.lr.ph:                                   ; preds = %entry
+  %ep.i = getelementptr inbounds %class.regmngobj* %this, i64 0, i32 16, i32 0, !dbg !896
+  %1 = load %class.regobj*** %ep.i, align 8, !dbg !896, !tbaa !777
+  br label %for.body, !dbg !894
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  tail call void @llvm.dbg.value(metadata !796, i64 0, metadata !898), !dbg !899
+  %arrayidx.i = getelementptr inbounds %class.regobj** %1, i64 %indvars.iv, !dbg !896
+  %2 = load %class.regobj** %arrayidx.i, align 8, !dbg !897, !tbaa !777
+  %square = getelementptr inbounds %class.regobj* %2, i64 0, i32 4, !dbg !897
+  %3 = load i32* %square, align 4, !dbg !897, !tbaa !781
+  %cmp3 = icmp eq i32 %3, 0, !dbg !897
+  br i1 %cmp3, label %if.then, label %for.inc, !dbg !897
+
+if.then:                                          ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !796, i64 0, metadata !900), !dbg !902
+  %flexist = getelementptr inbounds %class.regobj* %2, i64 0, i32 1, !dbg !901
+  store i8 0, i8* %flexist, align 1, !dbg !901, !tbaa !875
+  br label %for.inc, !dbg !901
+
+for.inc:                                          ; preds = %for.body, %if.then
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !894
+  %4 = trunc i64 %indvars.iv.next to i32, !dbg !894
+  %cmp = icmp slt i32 %4, %0, !dbg !894
+  br i1 %cmp, label %for.body, label %for.end, !dbg !894
+
+for.end:                                          ; preds = %for.inc, %entry
+  ret void, !dbg !903
+}

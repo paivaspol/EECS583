@@ -1,0 +1,26 @@
+define zeroext i1 @_ZN6wayobj5ismapEii(%class.wayobj* nocapture %this, i32 %x, i32 %y) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.wayobj* %this}, i64 0, metadata !309), !dbg !425
+  tail call void @llvm.dbg.value(metadata !{i32 %x}, i64 0, metadata !312), !dbg !425
+  tail call void @llvm.dbg.value(metadata !{i32 %y}, i64 0, metadata !313), !dbg !425
+  %cmp = icmp slt i32 %x, 1, !dbg !426
+  %cmp2 = icmp slt i32 %y, 1, !dbg !427
+  %or.cond = or i1 %cmp, %cmp2, !dbg !426
+  br i1 %or.cond, label %return, label %if.end4, !dbg !426
+
+if.end4:                                          ; preds = %entry
+  %mapmaxx1 = getelementptr inbounds %class.wayobj* %this, i64 0, i32 5, !dbg !428
+  %0 = load i32* %mapmaxx1, align 4, !dbg !428, !tbaa !429
+  %cmp5 = icmp slt i32 %0, %x, !dbg !428
+  br i1 %cmp5, label %return, label %if.end7, !dbg !428
+
+if.end7:                                          ; preds = %if.end4
+  %mapmaxy1 = getelementptr inbounds %class.wayobj* %this, i64 0, i32 6, !dbg !432
+  %1 = load i32* %mapmaxy1, align 4, !dbg !432, !tbaa !429
+  %not.cmp8 = icmp sge i32 %1, %y, !dbg !432
+  br label %return, !dbg !432
+
+return:                                           ; preds = %if.end7, %if.end4, %entry
+  %retval.0 = phi i1 [ false, %entry ], [ false, %if.end4 ], [ %not.cmp8, %if.end7 ]
+  ret i1 %retval.0, !dbg !433
+}

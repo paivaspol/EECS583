@@ -1,0 +1,63 @@
+define i32 @_Z19POVMS_WriteToStdoutPvi(i8* %p, i32 %l) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %p}, i64 0, metadata !831), !dbg !2583
+  tail call void @llvm.dbg.value(metadata !{i32 %l}, i64 0, metadata !832), !dbg !2583
+  tail call void @llvm.dbg.value(metadata !{i8* %p}, i64 0, metadata !833), !dbg !2584
+  %cmp = icmp eq i8* %p, null, !dbg !2585
+  br i1 %cmp, label %return, label %if.end, !dbg !2585
+
+if.end:                                           ; preds = %entry
+  %cmp1 = icmp eq i32 %l, 0, !dbg !2586
+  br i1 %cmp1, label %return, label %if.end3, !dbg !2586
+
+if.end3:                                          ; preds = %if.end
+  %call = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str15, i64 0, i64 0), i32 %l) #8, !dbg !2587
+  tail call void @llvm.dbg.value(metadata !71, i64 0, metadata !834), !dbg !2588
+  %cmp460 = icmp sgt i32 %l, 0, !dbg !2588
+  br i1 %cmp460, label %for.body, label %for.end, !dbg !2588
+
+for.body:                                         ; preds = %if.end3, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %if.end3 ]
+  %arrayidx = getelementptr inbounds i8* %p, i64 %indvars.iv, !dbg !2589
+  %0 = load i8* %arrayidx, align 1, !dbg !2589, !tbaa !918
+  %conv = zext i8 %0 to i32, !dbg !2589
+  %cmp5 = icmp ult i8 %0, 32, !dbg !2589
+  br i1 %cmp5, label %if.then20, label %switch.early.test
+
+switch.early.test:                                ; preds = %for.body
+  switch i8 %0, label %if.else31 [
+    i8 62, label %if.then20
+    i8 60, label %if.then20
+    i8 34, label %if.then20
+    i8 92, label %if.then29
+  ], !dbg !2589
+
+if.then20:                                        ; preds = %switch.early.test, %switch.early.test, %switch.early.test, %for.body
+  %call24 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([7 x i8]* @.str17, i64 0, i64 0), i32 %conv) #8, !dbg !2591
+  br label %for.inc, !dbg !2591
+
+if.then29:                                        ; preds = %switch.early.test
+  %call30 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([3 x i8]* @.str18, i64 0, i64 0)) #8, !dbg !2592
+  br label %for.inc, !dbg !2592
+
+if.else31:                                        ; preds = %switch.early.test
+  %call35 = tail call i32 @putchar(i32 %conv) #8, !dbg !2593
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then20, %if.else31, %if.then29
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2588
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !2588
+  %exitcond = icmp eq i32 %lftr.wideiv, %l, !dbg !2588
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !2588
+
+for.end:                                          ; preds = %for.inc, %if.end3
+  %putchar = tail call i32 @putchar(i32 10), !dbg !2594
+  %1 = load %struct._IO_FILE** @stdout, align 8, !dbg !2595, !tbaa !917
+  %call39 = tail call i32 @fflush(%struct._IO_FILE* %1) #8, !dbg !2595
+  tail call void @free(i8* %p) #9, !dbg !2596
+  br label %return, !dbg !2597
+
+return:                                           ; preds = %if.end, %entry, %for.end
+  %retval.0 = phi i32 [ 0, %for.end ], [ -1, %entry ], [ 0, %if.end ]
+  ret i32 %retval.0, !dbg !2597
+}

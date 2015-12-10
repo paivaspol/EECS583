@@ -1,71 +1,76 @@
 define i32 @CCTKi_ProcessParameterDatabase(%struct.tFleshConfig* %ConfigData) #1 {
-  tail call void @CCTKi_SetParameterSetMask(i32 0) #5
-  %1 = getelementptr inbounds %struct.tFleshConfig* %ConfigData, i64 0, i32 0
-  %2 = load i8** %1, align 8, !tbaa !2
-  %3 = tail call i32 @strcmp(i8* %2, i8* getelementptr inbounds ([2 x i8]* @.str, i64 0, i64 0)) #5
-  %4 = icmp eq i32 %3, 0
-  br i1 %4, label %5, label %7
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.tFleshConfig* %ConfigData}, i64 0, metadata !64), !dbg !124
+  tail call void @CCTKi_SetParameterSetMask(i32 0) #6, !dbg !125
+  %parameter_file_name = getelementptr inbounds %struct.tFleshConfig* %ConfigData, i64 0, i32 0, !dbg !126
+  %0 = load i8** %parameter_file_name, align 8, !dbg !126, !tbaa !127
+  %call = tail call i32 @strcmp(i8* %0, i8* getelementptr inbounds ([2 x i8]* @.str, i64 0, i64 0)) #7, !dbg !126
+  %tobool = icmp eq i32 %call, 0, !dbg !126
+  br i1 %tobool, label %if.then, label %if.else, !dbg !126
 
-; <label>:5                                       ; preds = %0
-  %6 = load %struct.__sFILE** @__stdinp, align 8, !tbaa !8
-  br label %9
+if.then:                                          ; preds = %entry
+  %1 = load %struct._IO_FILE** @stdin, align 8, !dbg !130, !tbaa !127
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %1}, i64 0, metadata !66), !dbg !130
+  br label %if.end, !dbg !132
 
-; <label>:7                                       ; preds = %0
-  %8 = tail call %struct.__sFILE* @"\01_fopen"(i8* %2, i8* getelementptr inbounds ([2 x i8]* @.str1, i64 0, i64 0)) #5
-  br label %9
+if.else:                                          ; preds = %entry
+  %call2 = tail call %struct._IO_FILE* @fopen(i8* %0, i8* getelementptr inbounds ([2 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !133
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %call2}, i64 0, metadata !66), !dbg !133
+  br label %if.end
 
-; <label>:9                                       ; preds = %7, %5
-  %parameter_file.0 = phi %struct.__sFILE* [ %8, %7 ], [ %6, %5 ]
-  %10 = icmp ne %struct.__sFILE* %parameter_file.0, null
-  br i1 %10, label %11, label %34
+if.end:                                           ; preds = %if.else, %if.then
+  %parameter_file.0 = phi %struct._IO_FILE* [ %call2, %if.else ], [ %1, %if.then ]
+  %tobool3 = icmp ne %struct._IO_FILE* %parameter_file.0, null, !dbg !135
+  br i1 %tobool3, label %if.then4, label %if.else28, !dbg !135
 
-; <label>:11                                      ; preds = %9
-  %12 = tail call i32 @ParseFile(%struct.__sFILE* %parameter_file.0, i32 (i8*, i8*, i32)* @CCTKi_SetParameter, %struct.tFleshConfig* %ConfigData) #5
-  %13 = load i8** %1, align 8, !tbaa !2
-  %14 = tail call i32 @strcmp(i8* %13, i8* getelementptr inbounds ([2 x i8]* @.str, i64 0, i64 0)) #5
-  %15 = icmp eq i32 %14, 0
-  br i1 %15, label %18, label %16
+if.then4:                                         ; preds = %if.end
+  %call5 = tail call i32 @ParseFile(%struct._IO_FILE* %parameter_file.0, i32 (i8*, i8*, i32)* @CCTKi_SetParameter, %struct.tFleshConfig* %ConfigData) #6, !dbg !136
+  tail call void @llvm.dbg.value(metadata !{i32 %call5}, i64 0, metadata !65), !dbg !136
+  %2 = load i8** %parameter_file_name, align 8, !dbg !138, !tbaa !127
+  %call7 = tail call i32 @strcmp(i8* %2, i8* getelementptr inbounds ([2 x i8]* @.str, i64 0, i64 0)) #7, !dbg !138
+  %tobool8 = icmp eq i32 %call7, 0, !dbg !138
+  br i1 %tobool8, label %if.end11, label %if.then9, !dbg !138
 
-; <label>:16                                      ; preds = %11
-  %17 = tail call i32 @fclose(%struct.__sFILE* %parameter_file.0) #5
-  br label %18
+if.then9:                                         ; preds = %if.then4
+  %call10 = tail call i32 @fclose(%struct._IO_FILE* %parameter_file.0) #6, !dbg !139
+  br label %if.end11, !dbg !141
 
-; <label>:18                                      ; preds = %11, %16
-  %19 = icmp eq i32 %12, 0
-  br i1 %19, label %22, label %20
+if.end11:                                         ; preds = %if.then4, %if.then9
+  %tobool12 = icmp eq i32 %call5, 0, !dbg !142
+  br i1 %tobool12, label %if.end15, label %if.then13, !dbg !142
 
-; <label>:20                                      ; preds = %18
-  %21 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 0, i32 91, i8* getelementptr inbounds ([93 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str4, i64 0, i64 0), i32 %12) #5
-  br label %22
+if.then13:                                        ; preds = %if.end11
+  %call14 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 0, i32 91, i8* getelementptr inbounds ([81 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str4, i64 0, i64 0), i32 %call5) #6, !dbg !143
+  br label %if.end15, !dbg !145
 
-; <label>:22                                      ; preds = %18, %20
-  %23 = tail call i32 @CCTKi_NumParameterFileErrors(i32 1) #5
-  %24 = icmp eq i32 %23, 0
-  br i1 %24, label %28, label %25
+if.end15:                                         ; preds = %if.end11, %if.then13
+  %call16 = tail call i32 @CCTKi_NumParameterFileErrors(i32 1) #6, !dbg !146
+  %tobool17 = icmp eq i32 %call16, 0, !dbg !146
+  br i1 %tobool17, label %if.end21, label %if.then18, !dbg !146
 
-; <label>:25                                      ; preds = %22
-  %26 = tail call i32 @CCTKi_NumParameterFileErrors(i32 1) #5
-  %27 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 98, i8* getelementptr inbounds ([93 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str5, i64 0, i64 0), i32 %26) #5
-  br label %28
+if.then18:                                        ; preds = %if.end15
+  %call19 = tail call i32 @CCTKi_NumParameterFileErrors(i32 1) #6, !dbg !147
+  %call20 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 98, i8* getelementptr inbounds ([81 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str5, i64 0, i64 0), i32 %call19) #6, !dbg !147
+  br label %if.end21, !dbg !149
 
-; <label>:28                                      ; preds = %22, %25
-  %29 = tail call i32 @CCTKi_NumParameterFileErrors(i32 0) #5
-  %30 = icmp eq i32 %29, 0
-  br i1 %30, label %38, label %31
+if.end21:                                         ; preds = %if.end15, %if.then18
+  %call22 = tail call i32 @CCTKi_NumParameterFileErrors(i32 0) #6, !dbg !150
+  %tobool23 = icmp eq i32 %call22, 0, !dbg !150
+  br i1 %tobool23, label %if.end31, label %if.then24, !dbg !150
 
-; <label>:31                                      ; preds = %28
-  %32 = tail call i32 @CCTKi_NumParameterFileErrors(i32 0) #5
-  %33 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 0, i32 105, i8* getelementptr inbounds ([93 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str6, i64 0, i64 0), i32 %32) #5
-  br label %38
+if.then24:                                        ; preds = %if.end21
+  %call25 = tail call i32 @CCTKi_NumParameterFileErrors(i32 0) #6, !dbg !151
+  %call26 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 0, i32 105, i8* getelementptr inbounds ([81 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str6, i64 0, i64 0), i32 %call25) #6, !dbg !151
+  br label %if.end31, !dbg !153
 
-; <label>:34                                      ; preds = %9
-  %35 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !8
-  %36 = load i8** %1, align 8, !tbaa !2
-  %37 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %35, i8* getelementptr inbounds ([36 x i8]* @.str7, i64 0, i64 0), i8* %36) #5
-  br label %38
+if.else28:                                        ; preds = %if.end
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !154, !tbaa !127
+  %4 = load i8** %parameter_file_name, align 8, !dbg !154, !tbaa !127
+  %call30 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([36 x i8]* @.str7, i64 0, i64 0), i8* %4) #6, !dbg !154
+  br label %if.end31
 
-; <label>:38                                      ; preds = %28, %31, %34
-  %not. = xor i1 %10, true
-  %39 = sext i1 %not. to i32
-  ret i32 %39
+if.end31:                                         ; preds = %if.end21, %if.then24, %if.else28
+  %not.tobool3 = xor i1 %tobool3, true, !dbg !156
+  %cond = sext i1 %not.tobool3 to i32, !dbg !156
+  ret i32 %cond, !dbg !156
 }

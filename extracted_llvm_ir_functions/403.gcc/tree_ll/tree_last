@@ -1,16 +1,18 @@
-define %union.tree_node* @tree_last(%union.tree_node* %chain) #3 {
+define %union.tree_node* @tree_last(%union.tree_node* %chain) #4 {
 entry:
-  %tobool = icmp eq %union.tree_node* %chain, null
-  br i1 %tobool, label %if.end, label %while.cond
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %chain}, i64 0, metadata !1112), !dbg !2310
+  %tobool = icmp eq %union.tree_node* %chain, null, !dbg !2311
+  br i1 %tobool, label %if.end, label %while.cond, !dbg !2311
 
 while.cond:                                       ; preds = %entry, %while.cond
   %chain.addr.0 = phi %union.tree_node* [ %0, %while.cond ], [ %chain, %entry ]
-  %chain1 = getelementptr inbounds %union.tree_node* %chain.addr.0, i64 0, i32 0, i32 0, i32 0
-  %0 = load %union.tree_node** %chain1, align 8, !tbaa !0
-  %tobool2 = icmp eq %union.tree_node* %0, null
-  br i1 %tobool2, label %if.end, label %while.cond
+  %chain1 = getelementptr inbounds %union.tree_node* %chain.addr.0, i64 0, i32 0, i32 0, i32 0, !dbg !2312
+  %0 = load %union.tree_node** %chain1, align 8, !dbg !2312, !tbaa !1913
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %0}, i64 0, metadata !1113), !dbg !2312
+  %tobool2 = icmp eq %union.tree_node* %0, null, !dbg !2312
+  br i1 %tobool2, label %if.end, label %while.cond, !dbg !2312
 
 if.end:                                           ; preds = %while.cond, %entry
   %chain.addr.1 = phi %union.tree_node* [ null, %entry ], [ %chain.addr.0, %while.cond ]
-  ret %union.tree_node* %chain.addr.1
+  ret %union.tree_node* %chain.addr.1, !dbg !2313
 }

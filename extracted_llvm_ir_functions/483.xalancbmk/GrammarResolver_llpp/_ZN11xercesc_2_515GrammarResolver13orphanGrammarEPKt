@@ -1,0 +1,46 @@
+define %"class.xercesc_2_5::Grammar"* @_ZN11xercesc_2_515GrammarResolver13orphanGrammarEPKt(%"class.xercesc_2_5::GrammarResolver"* nocapture %this, i16* %nameSpaceKey) #3 align 2 {
+entry:
+  %hashVal.i = alloca i32, align 4
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::GrammarResolver"* %this}, i64 0, metadata !5617), !dbg !7655
+  call void @llvm.dbg.value(metadata !{i16* %nameSpaceKey}, i64 0, metadata !5618), !dbg !7655
+  %fCacheGrammar = getelementptr inbounds %"class.xercesc_2_5::GrammarResolver"* %this, i64 0, i32 0, !dbg !7656
+  %0 = load i8* %fCacheGrammar, align 1, !dbg !7656, !tbaa !6993, !range !7062
+  %tobool = icmp eq i8 %0, 0, !dbg !7656
+  br i1 %tobool, label %if.else, label %if.then, !dbg !7656
+
+if.then:                                          ; preds = %entry
+  %fGrammarPool = getelementptr inbounds %"class.xercesc_2_5::GrammarResolver"* %this, i64 0, i32 8, !dbg !7657
+  %1 = load %"class.xercesc_2_5::XMLGrammarPool"** %fGrammarPool, align 8, !dbg !7657, !tbaa !6996
+  %2 = bitcast %"class.xercesc_2_5::XMLGrammarPool"* %1 to %"class.xercesc_2_5::Grammar"* (%"class.xercesc_2_5::XMLGrammarPool"*, i16*)***, !dbg !7657
+  %vtable = load %"class.xercesc_2_5::Grammar"* (%"class.xercesc_2_5::XMLGrammarPool"*, i16*)*** %2, align 8, !dbg !7657, !tbaa !7025
+  %vfn = getelementptr inbounds %"class.xercesc_2_5::Grammar"* (%"class.xercesc_2_5::XMLGrammarPool"*, i16*)** %vtable, i64 4, !dbg !7657
+  %3 = load %"class.xercesc_2_5::Grammar"* (%"class.xercesc_2_5::XMLGrammarPool"*, i16*)** %vfn, align 8, !dbg !7657
+  %call = call %"class.xercesc_2_5::Grammar"* %3(%"class.xercesc_2_5::XMLGrammarPool"* %1, i16* %nameSpaceKey) #9, !dbg !7657
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::Grammar"* %call}, i64 0, metadata !5619), !dbg !7657
+  %tobool2 = icmp eq %"class.xercesc_2_5::Grammar"* %call, null, !dbg !7658
+  br i1 %tobool2, label %return, label %if.then3, !dbg !7658
+
+if.then3:                                         ; preds = %if.then
+  %fGrammarFromPool = getelementptr inbounds %"class.xercesc_2_5::GrammarResolver"* %this, i64 0, i32 5, !dbg !7659
+  %4 = load %"class.xercesc_2_5::RefHashTableOf.0"** %fGrammarFromPool, align 8, !dbg !7659, !tbaa !6996
+  %5 = bitcast i16* %nameSpaceKey to i8*, !dbg !7659
+  %6 = bitcast i32* %hashVal.i to i8*, !dbg !7661
+  call void @llvm.lifetime.start(i64 4, i8* %6), !dbg !7661
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefHashTableOf.0"* %4}, i64 0, metadata !7662), !dbg !7661
+  call void @llvm.dbg.value(metadata !{i8* %5}, i64 0, metadata !7663), !dbg !7661
+  call void @llvm.dbg.declare(metadata !{i32* %hashVal.i}, metadata !5817), !dbg !7664
+  call void @_ZN11xercesc_2_514RefHashTableOfINS_7GrammarEE16removeBucketElemEPKvRj(%"class.xercesc_2_5::RefHashTableOf.0"* %4, i8* %5, i32* %hashVal.i) #9, !dbg !7665
+  call void @llvm.lifetime.end(i64 4, i8* %6), !dbg !7666
+  br label %return, !dbg !7667
+
+if.else:                                          ; preds = %entry
+  %fGrammarBucket = getelementptr inbounds %"class.xercesc_2_5::GrammarResolver"* %this, i64 0, i32 4, !dbg !7668
+  %7 = load %"class.xercesc_2_5::RefHashTableOf.0"** %fGrammarBucket, align 8, !dbg !7668, !tbaa !6996
+  %8 = bitcast i16* %nameSpaceKey to i8*, !dbg !7668
+  %call4 = call %"class.xercesc_2_5::Grammar"* @_ZN11xercesc_2_514RefHashTableOfINS_7GrammarEE9orphanKeyEPKv(%"class.xercesc_2_5::RefHashTableOf.0"* %7, i8* %8) #9, !dbg !7668
+  br label %return, !dbg !7668
+
+return:                                           ; preds = %if.then, %if.else, %if.then3
+  %retval.0 = phi %"class.xercesc_2_5::Grammar"* [ %call, %if.then3 ], [ %call4, %if.else ], [ null, %if.then ]
+  ret %"class.xercesc_2_5::Grammar"* %retval.0, !dbg !7670
+}

@@ -1,0 +1,34 @@
+define %struct.POVMSReceiveHandlerNode* @_Z28POVMS_FindReceiveHandlerNodeP16POVMSContextDatajj(%struct.POVMSContextData* nocapture %context, i32 %hclass, i32 %hid) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMSContextData* %context}, i64 0, metadata !262), !dbg !1067
+  tail call void @llvm.dbg.value(metadata !{i32 %hclass}, i64 0, metadata !263), !dbg !1067
+  tail call void @llvm.dbg.value(metadata !{i32 %hid}, i64 0, metadata !264), !dbg !1067
+  tail call void @llvm.dbg.value(metadata !1016, i64 0, metadata !265), !dbg !1068
+  %receivehandlerroot = getelementptr inbounds %struct.POVMSContextData* %context, i64 0, i32 1, !dbg !1069
+  %thn.07 = load %struct.POVMSReceiveHandlerNode** %receivehandlerroot, align 8, !dbg !1069
+  %cmp8 = icmp eq %struct.POVMSReceiveHandlerNode* %thn.07, null, !dbg !1069
+  br i1 %cmp8, label %for.end, label %for.body, !dbg !1069
+
+for.body:                                         ; preds = %entry, %for.inc
+  %thn.09 = phi %struct.POVMSReceiveHandlerNode* [ %thn.0, %for.inc ], [ %thn.07, %entry ]
+  %handledclass = getelementptr inbounds %struct.POVMSReceiveHandlerNode* %thn.09, i64 0, i32 2, !dbg !1070
+  %0 = load i32* %handledclass, align 4, !dbg !1070, !tbaa !937
+  %cmp1 = icmp eq i32 %0, %hclass, !dbg !1070
+  br i1 %cmp1, label %land.lhs.true, label %for.inc, !dbg !1070
+
+land.lhs.true:                                    ; preds = %for.body
+  %handledid = getelementptr inbounds %struct.POVMSReceiveHandlerNode* %thn.09, i64 0, i32 3, !dbg !1070
+  %1 = load i32* %handledid, align 4, !dbg !1070, !tbaa !937
+  %cmp2 = icmp eq i32 %1, %hid, !dbg !1070
+  br i1 %cmp2, label %for.end, label %for.inc, !dbg !1070
+
+for.inc:                                          ; preds = %for.body, %land.lhs.true
+  %next = getelementptr inbounds %struct.POVMSReceiveHandlerNode* %thn.09, i64 0, i32 1, !dbg !1069
+  %thn.0 = load %struct.POVMSReceiveHandlerNode** %next, align 8, !dbg !1069
+  %cmp = icmp eq %struct.POVMSReceiveHandlerNode* %thn.0, null, !dbg !1069
+  br i1 %cmp, label %for.end, label %for.body, !dbg !1069
+
+for.end:                                          ; preds = %for.inc, %land.lhs.true, %entry
+  %thn.0.lcssa = phi %struct.POVMSReceiveHandlerNode* [ null, %entry ], [ %thn.09, %land.lhs.true ], [ null, %for.inc ]
+  ret %struct.POVMSReceiveHandlerNode* %thn.0.lcssa, !dbg !1071
+}

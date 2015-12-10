@@ -1,34 +1,40 @@
 define i32 @Util_asnprintf(i8** nocapture %buffer, i64 %size, i8* %fmt, ...) #1 {
+entry:
   %args = alloca [1 x %struct.__va_list_tag], align 16
-  %1 = getelementptr inbounds [1 x %struct.__va_list_tag]* %args, i64 0, i64 0
-  %2 = bitcast [1 x %struct.__va_list_tag]* %args to i8*
-  call void @llvm.va_start(i8* %2)
-  %3 = call i32 @Util_vsnprintf(i8* null, i64 0, i8* %fmt, %struct.__va_list_tag* %1) #7
-  %4 = sext i32 %3 to i64
-  %5 = add nsw i64 %4, 1
-  %6 = icmp ugt i64 %5, %size
-  %7 = load i8** %buffer, align 8, !tbaa !2
-  br i1 %6, label %8, label %thread-pre-split
+  call void @llvm.dbg.value(metadata !{i8** %buffer}, i64 0, metadata !89), !dbg !200
+  call void @llvm.dbg.value(metadata !{i64 %size}, i64 0, metadata !90), !dbg !200
+  call void @llvm.dbg.value(metadata !{i8* %fmt}, i64 0, metadata !91), !dbg !200
+  call void @llvm.dbg.declare(metadata !{[1 x %struct.__va_list_tag]* %args}, metadata !93), !dbg !201
+  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %args, i64 0, i64 0, !dbg !202
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %args to i8*, !dbg !202
+  call void @llvm.va_start(i8* %arraydecay1), !dbg !202
+  %call = call i32 @Util_vsnprintf(i8* null, i64 0, i8* %fmt, %struct.__va_list_tag* %arraydecay) #10, !dbg !203
+  %conv = sext i32 %call to i64, !dbg !203
+  call void @llvm.dbg.value(metadata !{i64 %conv}, i64 0, metadata !92), !dbg !203
+  %add = add i64 %conv, 1, !dbg !204
+  %cmp = icmp ugt i64 %add, %size, !dbg !204
+  %0 = load i8** %buffer, align 8, !dbg !205, !tbaa !101
+  br i1 %cmp, label %if.then, label %if.end, !dbg !204
 
-; <label>:8                                       ; preds = %0
-  call void @free(i8* %7) #8
-  %9 = call i8* @malloc(i64 %5) #7
-  store i8* %9, i8** %buffer, align 8, !tbaa !2
-  br label %thread-pre-split
+if.then:                                          ; preds = %entry
+  call void @free(i8* %0) #10, !dbg !205
+  %call5 = call noalias i8* @malloc(i64 %add) #10, !dbg !207
+  store i8* %call5, i8** %buffer, align 8, !dbg !207, !tbaa !101
+  br label %if.end, !dbg !208
 
-thread-pre-split:                                 ; preds = %0, %8
-  %10 = phi i8* [ %9, %8 ], [ %7, %0 ]
-  %11 = icmp eq i8* %10, null
-  br i1 %11, label %15, label %12
+if.end:                                           ; preds = %entry, %if.then
+  %1 = phi i8* [ %call5, %if.then ], [ %0, %entry ], !dbg !209
+  %tobool = icmp eq i8* %1, null, !dbg !209
+  br i1 %tobool, label %if.end14, label %if.then6, !dbg !209
 
-; <label>:12                                      ; preds = %thread-pre-split
-  call void @llvm.va_start(i8* %2)
-  %13 = load i8** %buffer, align 8, !tbaa !2
-  %14 = call i32 @Util_vsnprintf(i8* %13, i64 %5, i8* %fmt, %struct.__va_list_tag* %1) #7
-  call void @llvm.va_end(i8* %2)
-  br label %15
+if.then6:                                         ; preds = %if.end
+  call void @llvm.va_start(i8* %arraydecay1), !dbg !210
+  %2 = load i8** %buffer, align 8, !dbg !212, !tbaa !101
+  %call11 = call i32 @Util_vsnprintf(i8* %2, i64 %add, i8* %fmt, %struct.__va_list_tag* %arraydecay) #10, !dbg !212
+  call void @llvm.va_end(i8* %arraydecay1), !dbg !213
+  br label %if.end14, !dbg !214
 
-; <label>:15                                      ; preds = %thread-pre-split, %12
-  %count.0 = phi i32 [ %3, %12 ], [ 0, %thread-pre-split ]
-  ret i32 %count.0
+if.end14:                                         ; preds = %if.end, %if.then6
+  %count.0 = phi i32 [ %call, %if.then6 ], [ 0, %if.end ]
+  ret i32 %count.0, !dbg !215
 }

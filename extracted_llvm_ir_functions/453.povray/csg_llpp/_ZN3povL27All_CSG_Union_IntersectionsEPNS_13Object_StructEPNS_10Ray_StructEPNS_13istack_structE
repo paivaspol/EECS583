@@ -1,0 +1,215 @@
+define internal i32 @_ZN3povL27All_CSG_Union_IntersectionsEPNS_13Object_StructEPNS_10Ray_StructEPNS_13istack_structE(%"struct.pov::Object_Struct"* %Object, %"struct.pov::Ray_Struct"* %Ray, %"struct.pov::istack_struct"* %Depth_Stack) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !1193), !dbg !1281
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Ray_Struct"* %Ray}, i64 0, metadata !1194), !dbg !1281
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istack_struct"* %Depth_Stack}, i64 0, metadata !1195), !dbg !1281
+  tail call void @llvm.dbg.value(metadata !1282, i64 0, metadata !1283), !dbg !1285
+  %0 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 26), align 8, !dbg !1286, !tbaa !1287
+  %inc.i = add nsw i64 %0, 1, !dbg !1286
+  store i64 %inc.i, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 26), align 8, !dbg !1286, !tbaa !1287
+  tail call void @llvm.dbg.value(metadata !142, i64 0, metadata !1196), !dbg !1290
+  %Clip1 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 7, !dbg !1291
+  %1 = load %"struct.pov::Object_Struct"** %Clip1, align 8, !dbg !1291, !tbaa !1292
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %1}, i64 0, metadata !1198), !dbg !1291
+  %cmp = icmp eq %"struct.pov::Object_Struct"* %1, null, !dbg !1291
+  br i1 %cmp, label %if.then, label %if.else, !dbg !1291
+
+if.then:                                          ; preds = %entry
+  %Children = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, !dbg !1293
+  %2 = bitcast %"struct.pov::Object_Struct"* %Children to %"struct.pov::Object_Struct"**, !dbg !1293
+  %Current_Sib.0129 = load %"struct.pov::Object_Struct"** %2, align 8, !dbg !1293
+  %cmp2130 = icmp eq %"struct.pov::Object_Struct"* %Current_Sib.0129, null, !dbg !1293
+  br i1 %cmp2130, label %if.end92, label %for.body, !dbg !1293
+
+for.body:                                         ; preds = %for.inc, %if.then
+  %Current_Sib.0134 = phi %"struct.pov::Object_Struct"* [ %Current_Sib.0129, %if.then ], [ %Current_Sib.0, %for.inc ]
+  %Found.0131 = phi i32 [ 0, %if.then ], [ %Found.1, %for.inc ]
+  %3 = load i32* @_ZN3pov13backtraceFlagE, align 4, !dbg !1296, !tbaa !1298
+  %tobool = icmp eq i32 %3, 0, !dbg !1296
+  %Flags = getelementptr inbounds %"struct.pov::Object_Struct"* %Current_Sib.0134, i64 0, i32 13, !dbg !1296
+  %4 = load i32* %Flags, align 4, !dbg !1296, !tbaa !1298
+  br i1 %tobool, label %land.lhs.true, label %land.lhs.true18, !dbg !1296
+
+land.lhs.true:                                    ; preds = %for.body
+  %and = and i32 %4, 32768, !dbg !1296
+  %tobool3 = icmp ne i32 %and, 0, !dbg !1296
+  %5 = load i8* @_ZN3pov17In_Reflection_RayE, align 1, !dbg !1296, !tbaa !1299, !range !1300
+  %tobool4 = icmp eq i8 %5, 0, !dbg !1296
+  %or.cond = and i1 %tobool3, %tobool4, !dbg !1296
+  br i1 %or.cond, label %for.inc, label %land.lhs.true7, !dbg !1296
+
+land.lhs.true7:                                   ; preds = %land.lhs.true
+  %and10 = and i32 %4, 65536, !dbg !1296
+  %tobool11 = icmp eq i32 %and10, 0, !dbg !1296
+  %or.cond121 = or i1 %tobool11, %tobool4, !dbg !1296
+  br i1 %or.cond121, label %if.then23, label %for.inc, !dbg !1296
+
+land.lhs.true18:                                  ; preds = %for.body
+  %and21 = and i32 %4, 1, !dbg !1296
+  %tobool22 = icmp eq i32 %and21, 0, !dbg !1296
+  br i1 %tobool22, label %if.then23, label %for.inc, !dbg !1296
+
+if.then23:                                        ; preds = %land.lhs.true18, %land.lhs.true7
+  %Bound = getelementptr inbounds %"struct.pov::Object_Struct"* %Current_Sib.0134, i64 0, i32 6, !dbg !1301
+  %6 = load %"struct.pov::Object_Struct"** %Bound, align 8, !dbg !1301, !tbaa !1292
+  %call = tail call zeroext i1 @_ZN3pov12Ray_In_BoundEPNS_10Ray_StructEPNS_13Object_StructE(%"struct.pov::Ray_Struct"* %Ray, %"struct.pov::Object_Struct"* %6) #4, !dbg !1301
+  br i1 %call, label %if.then24, label %for.inc, !dbg !1301
+
+if.then24:                                        ; preds = %if.then23
+  %Methods = getelementptr inbounds %"struct.pov::Object_Struct"* %Current_Sib.0134, i64 0, i32 0, !dbg !1303
+  %7 = load %"struct.pov::Method_Struct"** %Methods, align 8, !dbg !1303, !tbaa !1292
+  %All_Intersections_Method25 = bitcast %"struct.pov::Method_Struct"* %7 to i32 (%"struct.pov::Object_Struct"*, %"struct.pov::Ray_Struct"*, %"struct.pov::istack_struct"*)**, !dbg !1303
+  %8 = load i32 (%"struct.pov::Object_Struct"*, %"struct.pov::Ray_Struct"*, %"struct.pov::istack_struct"*)** %All_Intersections_Method25, align 8, !dbg !1303, !tbaa !1292
+  %call26 = tail call i32 %8(%"struct.pov::Object_Struct"* %Current_Sib.0134, %"struct.pov::Ray_Struct"* %Ray, %"struct.pov::istack_struct"* %Depth_Stack) #4, !dbg !1303
+  %tobool27 = icmp eq i32 %call26, 0, !dbg !1303
+  tail call void @llvm.dbg.value(metadata !1305, i64 0, metadata !1196), !dbg !1306
+  %Found.0. = select i1 %tobool27, i32 %Found.0131, i32 1, !dbg !1303
+  br label %for.inc, !dbg !1303
+
+for.inc:                                          ; preds = %land.lhs.true, %land.lhs.true7, %if.then24, %land.lhs.true18, %if.then23
+  %Found.1 = phi i32 [ %Found.0131, %land.lhs.true18 ], [ %Found.0131, %if.then23 ], [ %Found.0., %if.then24 ], [ %Found.0131, %land.lhs.true7 ], [ %Found.0131, %land.lhs.true ]
+  %Sibling = getelementptr inbounds %"struct.pov::Object_Struct"* %Current_Sib.0134, i64 0, i32 2, !dbg !1293
+  %Current_Sib.0 = load %"struct.pov::Object_Struct"** %Sibling, align 8, !dbg !1293
+  %cmp2 = icmp eq %"struct.pov::Object_Struct"* %Current_Sib.0, null, !dbg !1293
+  br i1 %cmp2, label %if.end89, label %for.body, !dbg !1293
+
+if.else:                                          ; preds = %entry
+  %call31 = tail call %"struct.pov::istack_struct"* @_ZN3pov11open_istackEv() #4, !dbg !1308
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istack_struct"* %call31}, i64 0, metadata !1199), !dbg !1308
+  %Children32 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, !dbg !1310
+  %9 = bitcast %"struct.pov::Object_Struct"* %Children32 to %"struct.pov::Object_Struct"**, !dbg !1310
+  %Current_Sib.1137 = load %"struct.pov::Object_Struct"** %9, align 8, !dbg !1310
+  %cmp34138 = icmp eq %"struct.pov::Object_Struct"* %Current_Sib.1137, null, !dbg !1310
+  br i1 %cmp34138, label %for.end88, label %for.body35.lr.ph, !dbg !1310
+
+for.body35.lr.ph:                                 ; preds = %if.else
+  %top_entry.i = getelementptr inbounds %"struct.pov::istack_struct"* %call31, i64 0, i32 3, !dbg !1312
+  %istack.i = getelementptr inbounds %"struct.pov::istack_struct"* %call31, i64 0, i32 1, !dbg !1312
+  %Flags76 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 13, !dbg !1318
+  %top_entry.i.i = getelementptr inbounds %"struct.pov::istack_struct"* %Depth_Stack, i64 0, i32 3, !dbg !1321
+  %istack.i.i = getelementptr inbounds %"struct.pov::istack_struct"* %Depth_Stack, i64 0, i32 1, !dbg !1321
+  %10 = bitcast %"struct.pov::Object_Struct"* %Object to i8*, !dbg !1325
+  br label %for.body35, !dbg !1310
+
+for.body35:                                       ; preds = %for.inc86, %for.body35.lr.ph
+  %Current_Sib.1140 = phi %"struct.pov::Object_Struct"* [ %Current_Sib.1137, %for.body35.lr.ph ], [ %Current_Sib.1, %for.inc86 ]
+  %Found.2139 = phi i32 [ 0, %for.body35.lr.ph ], [ %Found.4, %for.inc86 ]
+  %11 = load i32* @_ZN3pov13backtraceFlagE, align 4, !dbg !1327, !tbaa !1298
+  %tobool36 = icmp eq i32 %11, 0, !dbg !1327
+  %Flags38 = getelementptr inbounds %"struct.pov::Object_Struct"* %Current_Sib.1140, i64 0, i32 13, !dbg !1327
+  %12 = load i32* %Flags38, align 4, !dbg !1327, !tbaa !1298
+  br i1 %tobool36, label %land.lhs.true37, label %land.lhs.true57, !dbg !1327
+
+land.lhs.true37:                                  ; preds = %for.body35
+  %and40 = and i32 %12, 32768, !dbg !1327
+  %tobool41 = icmp ne i32 %and40, 0, !dbg !1327
+  %13 = load i8* @_ZN3pov17In_Reflection_RayE, align 1, !dbg !1327, !tbaa !1299, !range !1300
+  %tobool43 = icmp eq i8 %13, 0, !dbg !1327
+  %or.cond122 = and i1 %tobool41, %tobool43, !dbg !1327
+  br i1 %or.cond122, label %for.inc86, label %land.lhs.true46, !dbg !1327
+
+land.lhs.true46:                                  ; preds = %land.lhs.true37
+  %and49 = and i32 %12, 65536, !dbg !1327
+  %tobool50 = icmp eq i32 %and49, 0, !dbg !1327
+  %or.cond123 = or i1 %tobool50, %tobool43, !dbg !1327
+  br i1 %or.cond123, label %if.then62, label %for.inc86, !dbg !1327
+
+land.lhs.true57:                                  ; preds = %for.body35
+  %and60 = and i32 %12, 1, !dbg !1327
+  %tobool61 = icmp eq i32 %and60, 0, !dbg !1327
+  br i1 %tobool61, label %if.then62, label %for.inc86, !dbg !1327
+
+if.then62:                                        ; preds = %land.lhs.true57, %land.lhs.true46
+  %Bound63 = getelementptr inbounds %"struct.pov::Object_Struct"* %Current_Sib.1140, i64 0, i32 6, !dbg !1328
+  %14 = load %"struct.pov::Object_Struct"** %Bound63, align 8, !dbg !1328, !tbaa !1292
+  %call64 = tail call zeroext i1 @_ZN3pov12Ray_In_BoundEPNS_10Ray_StructEPNS_13Object_StructE(%"struct.pov::Ray_Struct"* %Ray, %"struct.pov::Object_Struct"* %14) #4, !dbg !1328
+  br i1 %call64, label %if.then65, label %for.inc86, !dbg !1328
+
+if.then65:                                        ; preds = %if.then62
+  %Methods66 = getelementptr inbounds %"struct.pov::Object_Struct"* %Current_Sib.1140, i64 0, i32 0, !dbg !1329
+  %15 = load %"struct.pov::Method_Struct"** %Methods66, align 8, !dbg !1329, !tbaa !1292
+  %All_Intersections_Method68 = bitcast %"struct.pov::Method_Struct"* %15 to i32 (%"struct.pov::Object_Struct"*, %"struct.pov::Ray_Struct"*, %"struct.pov::istack_struct"*)**, !dbg !1329
+  %16 = load i32 (%"struct.pov::Object_Struct"*, %"struct.pov::Ray_Struct"*, %"struct.pov::istack_struct"*)** %All_Intersections_Method68, align 8, !dbg !1329, !tbaa !1292
+  %call69 = tail call i32 %16(%"struct.pov::Object_Struct"* %Current_Sib.1140, %"struct.pov::Ray_Struct"* %Ray, %"struct.pov::istack_struct"* %call31) #4, !dbg !1329
+  %tobool70 = icmp eq i32 %call69, 0, !dbg !1329
+  br i1 %tobool70, label %for.inc86, label %while.cond.outer, !dbg !1329
+
+while.cond.outer:                                 ; preds = %if.then65, %if.end81
+  %Found.3.ph = phi i32 [ 1, %if.end81 ], [ %Found.2139, %if.then65 ]
+  br label %while.cond
+
+while.cond:                                       ; preds = %while.cond.outer, %while.body
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istack_struct"* %call31}, i64 0, metadata !1330), !dbg !1331
+  %17 = load i32* %top_entry.i, align 4, !dbg !1312, !tbaa !1298
+  %cmp.i = icmp eq i32 %17, 0, !dbg !1312
+  br i1 %cmp.i, label %for.inc86, label %_ZN3pov9pop_entryEPNS_13istack_structE.exit, !dbg !1312
+
+_ZN3pov9pop_entryEPNS_13istack_structE.exit:      ; preds = %while.cond
+  %dec.i = add i32 %17, -1, !dbg !1312
+  store i32 %dec.i, i32* %top_entry.i, align 4, !dbg !1312, !tbaa !1298
+  %idxprom.i = zext i32 %dec.i to i64, !dbg !1312
+  %18 = load %"struct.pov::istk_entry"** %istack.i, align 8, !dbg !1312, !tbaa !1292
+  %arrayidx.i = getelementptr inbounds %"struct.pov::istk_entry"* %18, i64 %idxprom.i, !dbg !1312
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istk_entry"* %arrayidx.i}, i64 0, metadata !1200), !dbg !1313
+  %cmp73 = icmp eq %"struct.pov::istk_entry"* %arrayidx.i, null, !dbg !1313
+  br i1 %cmp73, label %for.inc86, label %while.body, !dbg !1313
+
+while.body:                                       ; preds = %_ZN3pov9pop_entryEPNS_13istack_structE.exit
+  %arraydecay = getelementptr inbounds %"struct.pov::istk_entry"* %18, i64 %idxprom.i, i32 1, i64 0, !dbg !1332
+  %call74 = tail call zeroext i1 @_ZN3pov13Point_In_ClipEPdPNS_13Object_StructE(double* %arraydecay, %"struct.pov::Object_Struct"* %1) #4, !dbg !1332
+  br i1 %call74, label %if.then75, label %while.cond, !dbg !1332
+
+if.then75:                                        ; preds = %while.body
+  %19 = load i32* %Flags76, align 4, !dbg !1318, !tbaa !1298
+  %and78 = and i32 %19, 256, !dbg !1318
+  %tobool79 = icmp eq i32 %and78, 0, !dbg !1318
+  br i1 %tobool79, label %if.end81, label %if.then80, !dbg !1318
+
+if.then80:                                        ; preds = %if.then75
+  %Csg = getelementptr inbounds %"struct.pov::istk_entry"* %18, i64 %idxprom.i, i32 18, !dbg !1325
+  store i8* %10, i8** %Csg, align 8, !dbg !1325, !tbaa !1292
+  br label %if.end81, !dbg !1333
+
+if.end81:                                         ; preds = %if.then75, %if.then80
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istack_struct"* %Depth_Stack}, i64 0, metadata !1334), !dbg !1335
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istk_entry"* %arrayidx.i}, i64 0, metadata !1336), !dbg !1335
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istack_struct"* %Depth_Stack}, i64 0, metadata !1337), !dbg !1338
+  %20 = load i32* %top_entry.i.i, align 4, !dbg !1321, !tbaa !1298
+  %idxprom.i.i = zext i32 %20 to i64, !dbg !1321
+  %21 = load %"struct.pov::istk_entry"** %istack.i.i, align 8, !dbg !1321, !tbaa !1292
+  %arrayidx.i.i = getelementptr inbounds %"struct.pov::istk_entry"* %21, i64 %idxprom.i.i, !dbg !1321
+  %22 = bitcast %"struct.pov::istk_entry"* %arrayidx.i.i to i8*, !dbg !1322
+  %23 = bitcast %"struct.pov::istk_entry"* %arrayidx.i to i8*, !dbg !1322
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %22, i8* %23, i64 200, i32 8, i1 false), !dbg !1322, !tbaa.struct !1339
+  tail call void @_ZN3pov8incstackEPNS_13istack_structE(%"struct.pov::istack_struct"* %Depth_Stack) #4, !dbg !1341
+  tail call void @llvm.dbg.value(metadata !1305, i64 0, metadata !1196), !dbg !1342
+  br label %while.cond.outer, !dbg !1343
+
+for.inc86:                                        ; preds = %while.cond, %_ZN3pov9pop_entryEPNS_13istack_structE.exit, %land.lhs.true37, %land.lhs.true46, %land.lhs.true57, %if.then65, %if.then62
+  %Found.4 = phi i32 [ %Found.2139, %land.lhs.true57 ], [ %Found.2139, %if.then65 ], [ %Found.2139, %if.then62 ], [ %Found.2139, %land.lhs.true46 ], [ %Found.2139, %land.lhs.true37 ], [ %Found.3.ph, %_ZN3pov9pop_entryEPNS_13istack_structE.exit ], [ %Found.3.ph, %while.cond ]
+  %Sibling87 = getelementptr inbounds %"struct.pov::Object_Struct"* %Current_Sib.1140, i64 0, i32 2, !dbg !1310
+  %Current_Sib.1 = load %"struct.pov::Object_Struct"** %Sibling87, align 8, !dbg !1310
+  %cmp34 = icmp eq %"struct.pov::Object_Struct"* %Current_Sib.1, null, !dbg !1310
+  br i1 %cmp34, label %for.end88, label %for.body35, !dbg !1310
+
+for.end88:                                        ; preds = %for.inc86, %if.else
+  %Found.2.lcssa = phi i32 [ 0, %if.else ], [ %Found.4, %for.inc86 ]
+  tail call void @_ZN3pov12close_istackEPNS_13istack_structE(%"struct.pov::istack_struct"* %call31) #4, !dbg !1344
+  br label %if.end89
+
+if.end89:                                         ; preds = %for.inc, %for.end88
+  %Found.5 = phi i32 [ %Found.2.lcssa, %for.end88 ], [ %Found.1, %for.inc ]
+  %tobool90 = icmp eq i32 %Found.5, 0, !dbg !1345
+  br i1 %tobool90, label %if.end92, label %if.then91, !dbg !1345
+
+if.then91:                                        ; preds = %if.end89
+  tail call void @llvm.dbg.value(metadata !1346, i64 0, metadata !1347), !dbg !1350
+  %24 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 27), align 8, !dbg !1351, !tbaa !1287
+  %inc.i124 = add nsw i64 %24, 1, !dbg !1351
+  store i64 %inc.i124, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 27), align 8, !dbg !1351, !tbaa !1287
+  br label %if.end92, !dbg !1352
+
+if.end92:                                         ; preds = %if.then, %if.end89, %if.then91
+  %Found.5146 = phi i32 [ 0, %if.end89 ], [ %Found.5, %if.then91 ], [ 0, %if.then ]
+  ret i32 %Found.5146, !dbg !1353
+}

@@ -1,17 +1,19 @@
 define void @SubMtx_free(%struct._SubMtx* %mtx) #0 {
 entry:
-  %cmp = icmp eq %struct._SubMtx* %mtx, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtx* %mtx}, i64 0, metadata !48), !dbg !82
+  %cmp = icmp eq %struct._SubMtx* %mtx, null, !dbg !83
+  br i1 %cmp, label %if.then, label %if.end, !dbg !83
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([45 x i8]* @.str4, i64 0, i64 0), %struct._SubMtx* null) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !84, !tbaa !53
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([45 x i8]* @.str4, i64 0, i64 0), %struct._SubMtx* null) #5, !dbg !84
+  tail call void @exit(i32 -1) #6, !dbg !86
+  unreachable, !dbg !86
 
 if.end:                                           ; preds = %entry
-  tail call void @SubMtx_clearData(%struct._SubMtx* %mtx) #6
-  %1 = bitcast %struct._SubMtx* %mtx to i8*
-  tail call void @free(i8* %1) #4
-  ret void
+  tail call void @SubMtx_clearData(%struct._SubMtx* %mtx) #7, !dbg !87
+  %1 = bitcast %struct._SubMtx* %mtx to i8*, !dbg !88
+  tail call void @free(i8* %1) #5, !dbg !88
+  tail call void @llvm.dbg.value(metadata !90, i64 0, metadata !48), !dbg !88
+  ret void, !dbg !91
 }

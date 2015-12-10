@@ -1,24 +1,27 @@
 define void @IV_sizeAndEntries(%struct._IV* %iv, i32* %psize, i32** %pentries) #0 {
 entry:
-  %cmp = icmp eq %struct._IV* %iv, null
-  %cmp1 = icmp eq i32* %psize, null
-  %or.cond = or i1 %cmp, %cmp1
-  %cmp3 = icmp eq i32** %pentries, null
-  %or.cond11 = or i1 %or.cond, %cmp3
-  br i1 %or.cond11, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._IV* %iv}, i64 0, metadata !43), !dbg !93
+  tail call void @llvm.dbg.value(metadata !{i32* %psize}, i64 0, metadata !44), !dbg !94
+  tail call void @llvm.dbg.value(metadata !{i32** %pentries}, i64 0, metadata !45), !dbg !95
+  %cmp = icmp eq %struct._IV* %iv, null, !dbg !96
+  %cmp1 = icmp eq i32* %psize, null, !dbg !96
+  %or.cond = or i1 %cmp, %cmp1, !dbg !96
+  %cmp3 = icmp eq i32** %pentries, null, !dbg !96
+  %or.cond11 = or i1 %or.cond, %cmp3, !dbg !96
+  br i1 %or.cond11, label %if.then, label %if.end, !dbg !96
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([57 x i8]* @.str4, i64 0, i64 0), %struct._IV* %iv, i32* %psize, i32** %pentries) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !97, !tbaa !59
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([57 x i8]* @.str4, i64 0, i64 0), %struct._IV* %iv, i32* %psize, i32** %pentries) #5, !dbg !97
+  tail call void @exit(i32 -1) #6, !dbg !99
+  unreachable, !dbg !99
 
 if.end:                                           ; preds = %entry
-  %size = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0
-  %1 = load i32* %size, align 4, !tbaa !3
-  store i32 %1, i32* %psize, align 4, !tbaa !3
-  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3
-  %2 = load i32** %vec, align 8, !tbaa !0
-  store i32* %2, i32** %pentries, align 8, !tbaa !0
-  ret void
+  %size = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0, !dbg !100
+  %1 = load i32* %size, align 4, !dbg !100, !tbaa !64
+  store i32 %1, i32* %psize, align 4, !dbg !100, !tbaa !64
+  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3, !dbg !101
+  %2 = load i32** %vec, align 8, !dbg !101, !tbaa !59
+  store i32* %2, i32** %pentries, align 8, !dbg !101, !tbaa !59
+  ret void, !dbg !102
 }

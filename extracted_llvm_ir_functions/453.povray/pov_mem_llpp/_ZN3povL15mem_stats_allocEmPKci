@@ -1,0 +1,39 @@
+define internal fastcc void @_ZN3povL15mem_stats_allocEmPKci(i64 %nbytes) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !511, i64 0, metadata !371), !dbg !512
+  tail call void @llvm.dbg.value(metadata !52, i64 0, metadata !372), !dbg !512
+  %0 = load i64* @_ZN3povL9mem_statsE.0, align 8, !dbg !513, !tbaa !465
+  %conv = trunc i64 %0 to i32, !dbg !513
+  %cmp = icmp slt i32 %conv, 0, !dbg !513
+  %cmp1 = icmp ugt i64 %0, %nbytes, !dbg !513
+  %or.cond = or i1 %cmp, %cmp1, !dbg !513
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !513
+
+if.then:                                          ; preds = %entry
+  store i64 %nbytes, i64* @_ZN3povL9mem_statsE.0, align 8, !dbg !514, !tbaa !465
+  br label %if.end, !dbg !516
+
+if.end:                                           ; preds = %entry, %if.then
+  %1 = load i64* @_ZN3povL9mem_statsE.1, align 8, !dbg !517, !tbaa !465
+  %cmp2 = icmp ult i64 %1, %nbytes, !dbg !517
+  br i1 %cmp2, label %if.then3, label %if.end4, !dbg !517
+
+if.then3:                                         ; preds = %if.end
+  store i64 %nbytes, i64* @_ZN3povL9mem_statsE.1, align 8, !dbg !518, !tbaa !465
+  br label %if.end4, !dbg !520
+
+if.end4:                                          ; preds = %if.then3, %if.end
+  %2 = load i64* @_ZN3povL9mem_statsE.2, align 8, !dbg !521, !tbaa !465
+  %add = add i64 %2, %nbytes, !dbg !521
+  store i64 %add, i64* @_ZN3povL9mem_statsE.2, align 8, !dbg !521, !tbaa !465
+  %3 = load i64* @_ZN3povL9mem_statsE.3, align 8, !dbg !522, !tbaa !465
+  %cmp5 = icmp ugt i64 %add, %3, !dbg !522
+  br i1 %cmp5, label %if.then6, label %if.end7, !dbg !522
+
+if.then6:                                         ; preds = %if.end4
+  store i64 %add, i64* @_ZN3povL9mem_statsE.3, align 8, !dbg !523, !tbaa !465
+  br label %if.end7, !dbg !525
+
+if.end7:                                          ; preds = %if.then6, %if.end4
+  ret void, !dbg !526
+}

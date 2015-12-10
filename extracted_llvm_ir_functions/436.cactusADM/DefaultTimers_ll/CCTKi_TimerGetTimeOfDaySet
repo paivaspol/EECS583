@@ -1,17 +1,21 @@
-define internal void @CCTKi_TimerGetTimeOfDaySet(i32 %timernum, i8* nocapture %idata, %struct.cTimerVal* nocapture readonly %vals) #1 {
-  %1 = getelementptr inbounds %struct.cTimerVal* %vals, i64 0, i32 3
-  %2 = bitcast %union.anon* %1 to double*
-  %3 = load double* %2, align 8, !tbaa !26
-  %4 = fptosi double %3 to i64
-  %5 = bitcast i8* %idata to i64*
-  store i64 %4, i64* %5, align 8, !tbaa !15
-  %6 = fmul double %3, 1.000000e+06
-  %7 = sitofp i64 %4 to double
-  %8 = fsub double %6, %7
-  %9 = fptosi double %8 to i64
-  %10 = trunc i64 %9 to i32
-  %11 = getelementptr inbounds i8* %idata, i64 8
-  %12 = bitcast i8* %11 to i32*
-  store i32 %10, i32* %12, align 4, !tbaa !19
-  ret void
+define internal void @CCTKi_TimerGetTimeOfDaySet(i32 %timernum, i8* nocapture %idata, %struct.cTimerVal* nocapture %vals) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %timernum}, i64 0, metadata !197), !dbg !359
+  tail call void @llvm.dbg.value(metadata !{i8* %idata}, i64 0, metadata !198), !dbg !359
+  tail call void @llvm.dbg.value(metadata !{%struct.cTimerVal* %vals}, i64 0, metadata !199), !dbg !359
+  tail call void @llvm.dbg.value(metadata !{i32 %timernum}, i64 0, metadata !197), !dbg !360
+  %val = getelementptr inbounds %struct.cTimerVal* %vals, i64 0, i32 3, !dbg !361
+  %d = bitcast %union.anon* %val to double*, !dbg !361
+  %0 = load double* %d, align 8, !dbg !361, !tbaa !317
+  %conv = fptosi double %0 to i64, !dbg !361
+  %tv_sec = bitcast i8* %idata to i64*, !dbg !361
+  store i64 %conv, i64* %tv_sec, align 8, !dbg !361, !tbaa !316
+  %mul = fmul double %0, 1.000000e+06, !dbg !362
+  %conv6 = sitofp i64 %conv to double, !dbg !362
+  %sub = fsub double %mul, %conv6, !dbg !362
+  %conv7 = fptosi double %sub to i64, !dbg !362
+  %tv_usec = getelementptr inbounds i8* %idata, i64 8, !dbg !362
+  %1 = bitcast i8* %tv_usec to i64*, !dbg !362
+  store i64 %conv7, i64* %1, align 8, !dbg !362, !tbaa !316
+  ret void, !dbg !363
 }

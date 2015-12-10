@@ -1,40 +1,42 @@
 define void @named_section_flags(i8* %name, i32 %flags) #0 {
 entry:
-  %0 = load i32* @in_section, align 4, !tbaa !0
-  %cmp = icmp eq i32 %0, 3
-  br i1 %cmp, label %lor.lhs.false, label %if.then
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !1193), !dbg !2408
+  tail call void @llvm.dbg.value(metadata !{i32 %flags}, i64 0, metadata !1194), !dbg !2409
+  %0 = load i32* @in_section, align 4, !dbg !2410, !tbaa !2352
+  %cmp = icmp eq i32 %0, 3, !dbg !2410
+  br i1 %cmp, label %lor.lhs.false, label %if.then, !dbg !2410
 
 lor.lhs.false:                                    ; preds = %entry
-  %1 = load i8** @in_named_name, align 8, !tbaa !3
-  %call = tail call i32 @strcmp(i8* %name, i8* %1) #11
-  %cmp1 = icmp eq i32 %call, 0
-  br i1 %cmp1, label %if.end7, label %if.then
+  %1 = load i8** @in_named_name, align 8, !dbg !2410, !tbaa !2357
+  %call = tail call i32 @strcmp(i8* %name, i8* %1) #12, !dbg !2410
+  %cmp1 = icmp eq i32 %call, 0, !dbg !2410
+  br i1 %cmp1, label %if.end7, label %if.then, !dbg !2410
 
 if.then:                                          ; preds = %lor.lhs.false, %entry
-  %call2 = tail call zeroext i1 @set_named_section_flags(i8* %name, i32 %flags) #10
-  br i1 %call2, label %if.end, label %if.then3
+  %call2 = tail call zeroext i1 @set_named_section_flags(i8* %name, i32 %flags) #11, !dbg !2411
+  br i1 %call2, label %if.end, label %if.then3, !dbg !2411
 
 if.then3:                                         ; preds = %if.then
-  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str4, i64 0, i64 0), i32 412, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.named_section_flags, i64 0, i64 0)) #12
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str4, i64 0, i64 0), i32 412, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.named_section_flags, i64 0, i64 0)) #13, !dbg !2413
+  unreachable, !dbg !2413
 
 if.end:                                           ; preds = %if.then
-  %2 = load void (i8*, i32)** getelementptr inbounds (%struct.gcc_target* @targetm, i64 0, i32 0, i32 10), align 8, !tbaa !3
-  tail call void %2(i8* %name, i32 %flags) #9
-  %and = and i32 %flags, 16384
-  %tobool = icmp eq i32 %and, 0
-  br i1 %tobool, label %if.else, label %if.then4
+  %2 = load void (i8*, i32)** getelementptr inbounds (%struct.gcc_target* @targetm, i64 0, i32 0, i32 10), align 8, !dbg !2414, !tbaa !2357
+  tail call void %2(i8* %name, i32 %flags) #10, !dbg !2414
+  %and = and i32 %flags, 16384, !dbg !2415
+  %tobool = icmp eq i32 %and, 0, !dbg !2415
+  br i1 %tobool, label %if.else, label %if.then4, !dbg !2415
 
 if.then4:                                         ; preds = %if.end
-  store i32 0, i32* @in_section, align 4, !tbaa !0
-  br label %if.end7
+  store i32 0, i32* @in_section, align 4, !dbg !2416, !tbaa !2352
+  br label %if.end7, !dbg !2416
 
 if.else:                                          ; preds = %if.end
-  %call5 = tail call i8* @ggc_alloc_string(i8* %name, i32 -1) #9
-  store i8* %call5, i8** @in_named_name, align 8, !tbaa !3
-  store i32 3, i32* @in_section, align 4, !tbaa !0
+  %call5 = tail call i8* @ggc_alloc_string(i8* %name, i32 -1) #10, !dbg !2417
+  store i8* %call5, i8** @in_named_name, align 8, !dbg !2417, !tbaa !2357
+  store i32 3, i32* @in_section, align 4, !dbg !2419, !tbaa !2352
   br label %if.end7
 
 if.end7:                                          ; preds = %lor.lhs.false, %if.then4, %if.else
-  ret void
+  ret void, !dbg !2420
 }

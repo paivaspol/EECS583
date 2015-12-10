@@ -1,40 +1,52 @@
 define internal fastcc i8* @dequote_string(%struct.cpp_reader* %pfile, i8* %str, i32 %len) #0 {
 entry:
   %str.addr = alloca i8*, align 8
-  store i8* %str, i8** %str.addr, align 8, !tbaa !3
-  %add = add i32 %len, 1
-  %conv = zext i32 %add to i64
-  %call = call i8* @_cpp_unaligned_alloc(%struct.cpp_reader* %pfile, i64 %conv) #8
-  %0 = load i8** %str.addr, align 8, !tbaa !3
-  %idx.ext = zext i32 %len to i64
-  %add.ptr = getelementptr inbounds i8* %0, i64 %idx.ext
-  %cmp18 = icmp eq i32 %len, 0
-  br i1 %cmp18, label %while.end, label %while.body
+  call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !899), !dbg !1644
+  call void @llvm.dbg.value(metadata !{i8* %str}, i64 0, metadata !900), !dbg !1645
+  store i8* %str, i8** %str.addr, align 8, !tbaa !1070
+  call void @llvm.dbg.declare(metadata !{i8** %str.addr}, metadata !900), !dbg !1645
+  call void @llvm.dbg.value(metadata !{i32 %len}, i64 0, metadata !901), !dbg !1646
+  %add = add i32 %len, 1, !dbg !1647
+  %conv = zext i32 %add to i64, !dbg !1647
+  %call = call i8* @_cpp_unaligned_alloc(%struct.cpp_reader* %pfile, i64 %conv) #9, !dbg !1647
+  call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !902), !dbg !1647
+  call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !903), !dbg !1648
+  call void @llvm.dbg.value(metadata !{i8** %str.addr}, i64 0, metadata !900), !dbg !1649
+  %0 = load i8** %str.addr, align 8, !dbg !1649, !tbaa !1070
+  %idx.ext = zext i32 %len to i64, !dbg !1649
+  %add.ptr = getelementptr inbounds i8* %0, i64 %idx.ext, !dbg !1649
+  call void @llvm.dbg.value(metadata !{i8* %add.ptr}, i64 0, metadata !904), !dbg !1649
+  call void @llvm.dbg.value(metadata !1650, i64 0, metadata !906), !dbg !1651
+  call void @llvm.dbg.value(metadata !{i8** %str.addr}, i64 0, metadata !900), !dbg !1652
+  %cmp18 = icmp eq i32 %len, 0, !dbg !1652
+  br i1 %cmp18, label %while.end, label %while.body, !dbg !1652
 
 while.body:                                       ; preds = %entry, %while.cond.backedge
   %1 = phi i8* [ %3, %while.cond.backedge ], [ %0, %entry ]
   %dst.019 = phi i8* [ %dst.0.be, %while.cond.backedge ], [ %call, %entry ]
-  %incdec.ptr = getelementptr inbounds i8* %1, i64 1
-  store i8* %incdec.ptr, i8** %str.addr, align 8, !tbaa !3
-  %2 = load i8* %1, align 1, !tbaa !0
-  %cmp3 = icmp eq i8 %2, 92
-  br i1 %cmp3, label %if.else, label %while.cond.backedge
+  %incdec.ptr = getelementptr inbounds i8* %1, i64 1, !dbg !1653
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !900), !dbg !1653
+  store i8* %incdec.ptr, i8** %str.addr, align 8, !dbg !1653, !tbaa !1070
+  %2 = load i8* %1, align 1, !dbg !1653, !tbaa !1061
+  %cmp3 = icmp eq i8 %2, 92, !dbg !1655
+  br i1 %cmp3, label %if.else, label %while.cond.backedge, !dbg !1655
 
 if.else:                                          ; preds = %while.body
-  %call7 = call i32 @cpp_parse_escape(%struct.cpp_reader* %pfile, i8** %str.addr, i8* %add.ptr, i64 255, i32 0) #8
-  %conv8 = trunc i32 %call7 to i8
+  %call7 = call i32 @cpp_parse_escape(%struct.cpp_reader* %pfile, i8** %str.addr, i8* %add.ptr, i64 255, i32 0) #9, !dbg !1656
+  %conv8 = trunc i32 %call7 to i8, !dbg !1656
   br label %while.cond.backedge
 
 while.cond.backedge:                              ; preds = %while.body, %if.else
   %storemerge = phi i8 [ %conv8, %if.else ], [ %2, %while.body ]
-  %dst.0.be = getelementptr inbounds i8* %dst.019, i64 1
-  store i8 %storemerge, i8* %dst.019, align 1, !tbaa !0
-  %3 = load i8** %str.addr, align 8, !tbaa !3
-  %cmp = icmp ult i8* %3, %add.ptr
-  br i1 %cmp, label %while.body, label %while.end
+  %dst.0.be = getelementptr inbounds i8* %dst.019, i64 1, !dbg !1657
+  store i8 %storemerge, i8* %dst.019, align 1, !dbg !1656, !tbaa !1061
+  call void @llvm.dbg.value(metadata !{i8** %str.addr}, i64 0, metadata !900), !dbg !1652
+  %3 = load i8** %str.addr, align 8, !dbg !1652, !tbaa !1070
+  %cmp = icmp ult i8* %3, %add.ptr, !dbg !1652
+  br i1 %cmp, label %while.body, label %while.end, !dbg !1652
 
 while.end:                                        ; preds = %while.cond.backedge, %entry
   %dst.0.lcssa = phi i8* [ %call, %entry ], [ %dst.0.be, %while.cond.backedge ]
-  store i8 0, i8* %dst.0.lcssa, align 1, !tbaa !0
-  ret i8* %call
+  store i8 0, i8* %dst.0.lcssa, align 1, !dbg !1658, !tbaa !1061
+  ret i8* %call, !dbg !1659
 }

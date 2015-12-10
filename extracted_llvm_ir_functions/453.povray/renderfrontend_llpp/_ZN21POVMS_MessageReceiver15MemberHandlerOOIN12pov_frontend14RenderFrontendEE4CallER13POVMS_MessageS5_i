@@ -1,0 +1,52 @@
+define linkonce_odr void @_ZN21POVMS_MessageReceiver15MemberHandlerOOIN12pov_frontend14RenderFrontendEE4CallER13POVMS_MessageS5_i(%"class.POVMS_MessageReceiver::MemberHandlerOO"* nocapture %this, %class.POVMS_Message* %msg, %class.POVMS_Message* %result, i32 %mode) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.POVMS_MessageReceiver::MemberHandlerOO"* %this}, i64 0, metadata !784), !dbg !917
+  tail call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %msg}, i64 0, metadata !785), !dbg !917
+  tail call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %result}, i64 0, metadata !786), !dbg !917
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !787), !dbg !917
+  %classptr = getelementptr inbounds %"class.POVMS_MessageReceiver::MemberHandlerOO"* %this, i64 0, i32 2, !dbg !918
+  %0 = load %"class.pov_frontend::RenderFrontend"** %classptr, align 8, !dbg !918, !tbaa !822
+  %cmp = icmp eq %"class.pov_frontend::RenderFrontend"* %0, null, !dbg !918
+  br i1 %cmp, label %if.else, label %land.lhs.true, !dbg !918
+
+land.lhs.true:                                    ; preds = %entry
+  %handlerptr = getelementptr inbounds %"class.POVMS_MessageReceiver::MemberHandlerOO"* %this, i64 0, i32 1, !dbg !918
+  %1 = load { i64, i64 }* %handlerptr, align 8, !dbg !918, !tbaa !823
+  %lhs.memptr.ptr = extractvalue { i64, i64 } %1, 0, !dbg !918
+  %cmp.ptr = icmp eq i64 %lhs.memptr.ptr, 0, !dbg !918
+  br i1 %cmp.ptr, label %if.else, label %if.then, !dbg !918
+
+if.then:                                          ; preds = %land.lhs.true
+  %lhs.memptr.adj = extractvalue { i64, i64 } %1, 1, !dbg !918
+  %2 = bitcast %"class.pov_frontend::RenderFrontend"* %0 to i8*, !dbg !919
+  %3 = getelementptr inbounds i8* %2, i64 %lhs.memptr.adj, !dbg !919
+  %this.adjusted = bitcast i8* %3 to %"class.pov_frontend::RenderFrontend"*, !dbg !919
+  %4 = and i64 %lhs.memptr.ptr, 1, !dbg !919
+  %memptr.isvirtual = icmp eq i64 %4, 0, !dbg !919
+  br i1 %memptr.isvirtual, label %memptr.nonvirtual, label %memptr.virtual, !dbg !919
+
+memptr.virtual:                                   ; preds = %if.then
+  %5 = bitcast i8* %3 to i8**, !dbg !919
+  %memptr.vtable = load i8** %5, align 8, !dbg !919
+  %6 = add i64 %lhs.memptr.ptr, -1, !dbg !919
+  %7 = getelementptr i8* %memptr.vtable, i64 %6, !dbg !919
+  %8 = bitcast i8* %7 to void (%"class.pov_frontend::RenderFrontend"*, %class.POVMS_Message*, %class.POVMS_Message*, i32)**, !dbg !919
+  %memptr.virtualfn = load void (%"class.pov_frontend::RenderFrontend"*, %class.POVMS_Message*, %class.POVMS_Message*, i32)** %8, align 8, !dbg !919
+  br label %memptr.end, !dbg !919
+
+memptr.nonvirtual:                                ; preds = %if.then
+  %memptr.nonvirtualfn = inttoptr i64 %lhs.memptr.ptr to void (%"class.pov_frontend::RenderFrontend"*, %class.POVMS_Message*, %class.POVMS_Message*, i32)*, !dbg !919
+  br label %memptr.end, !dbg !919
+
+memptr.end:                                       ; preds = %memptr.nonvirtual, %memptr.virtual
+  %9 = phi void (%"class.pov_frontend::RenderFrontend"*, %class.POVMS_Message*, %class.POVMS_Message*, i32)* [ %memptr.virtualfn, %memptr.virtual ], [ %memptr.nonvirtualfn, %memptr.nonvirtual ], !dbg !919
+  tail call void %9(%"class.pov_frontend::RenderFrontend"* %this.adjusted, %class.POVMS_Message* %msg, %class.POVMS_Message* %result, i32 %mode) #6, !dbg !919
+  ret void, !dbg !920
+
+if.else:                                          ; preds = %land.lhs.true, %entry
+  %exception = tail call i8* @__cxa_allocate_exception(i64 4) #8, !dbg !921
+  %10 = bitcast i8* %exception to i32*, !dbg !921
+  store i32 -5, i32* %10, align 4, !dbg !921, !tbaa !888
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast (i8** @_ZTIi to i8*), i8* null) #10, !dbg !921
+  unreachable, !dbg !921
+}

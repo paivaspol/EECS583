@@ -1,95 +1,103 @@
 define internal fastcc void @exchange(i8** nocapture %argv) #0 {
 entry:
-  %0 = load i32* @first_nonopt, align 4, !tbaa !3
-  %1 = load i32* @last_nonopt, align 4, !tbaa !3
-  %2 = load i32* @gg_optind, align 4, !tbaa !3
-  %cmp96 = icmp sgt i32 %2, %1
-  %cmp19297 = icmp sgt i32 %1, %0
-  %or.cond9398 = and i1 %cmp96, %cmp19297
-  br i1 %or.cond9398, label %while.body.lr.ph.lr.ph, label %while.end
+  tail call void @llvm.dbg.value(metadata !{i8** %argv}, i64 0, metadata !69), !dbg !359
+  %0 = load i32* @first_nonopt, align 4, !dbg !360, !tbaa !110
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !70), !dbg !360
+  %1 = load i32* @last_nonopt, align 4, !dbg !361, !tbaa !110
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !71), !dbg !361
+  %2 = load i32* @gg_optind, align 4, !dbg !362, !tbaa !110
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !72), !dbg !362
+  %cmp96 = icmp sgt i32 %2, %1, !dbg !363
+  %cmp19297 = icmp sgt i32 %1, %0, !dbg !363
+  %or.cond9398 = and i1 %cmp96, %cmp19297, !dbg !363
+  br i1 %or.cond9398, label %while.body.lr.ph.lr.ph, label %while.end, !dbg !363
 
 while.body.lr.ph.lr.ph:                           ; preds = %entry
-  %3 = sext i32 %1 to i64
-  br label %while.body.lr.ph
+  %3 = sext i32 %1 to i64, !dbg !363
+  br label %while.body.lr.ph, !dbg !363
 
 while.body.lr.ph:                                 ; preds = %while.body.lr.ph.lr.ph, %for.end
   %bottom.0.ph100 = phi i32 [ %0, %while.body.lr.ph.lr.ph ], [ %bottom.094, %for.end ]
   %top.0.ph99 = phi i32 [ %2, %while.body.lr.ph.lr.ph ], [ %sub7, %for.end ]
-  %sub = sub nsw i32 %top.0.ph99, %1
-  %cmp2487 = icmp sgt i32 %sub, 0
-  %4 = sub i32 %top.0.ph99, %1
+  %sub = sub nsw i32 %top.0.ph99, %1, !dbg !364
+  %cmp2487 = icmp sgt i32 %sub, 0, !dbg !365
+  %4 = sub i32 %top.0.ph99, %1, !dbg !363
   %5 = sext i32 %bottom.0.ph100 to i64
   %6 = sext i32 %4 to i64
-  br label %while.body
+  br label %while.body, !dbg !363
 
 while.body:                                       ; preds = %while.body.lr.ph, %for.end40
   %indvars.iv109 = phi i64 [ %5, %while.body.lr.ph ], [ %indvars.iv.next110, %for.end40 ]
   %bottom.094 = phi i32 [ %bottom.0.ph100, %while.body.lr.ph ], [ %add41, %for.end40 ]
-  %7 = trunc i64 %indvars.iv109 to i32
-  %sub2 = sub nsw i32 %1, %7
-  %cmp3 = icmp sgt i32 %sub, %sub2
-  br i1 %cmp3, label %for.cond.preheader, label %for.cond23.preheader
+  %7 = trunc i64 %indvars.iv109 to i32, !dbg !364
+  %sub2 = sub nsw i32 %1, %7, !dbg !364
+  %cmp3 = icmp sgt i32 %sub, %sub2, !dbg !364
+  br i1 %cmp3, label %for.cond.preheader, label %for.cond23.preheader, !dbg !364
 
 for.cond.preheader:                               ; preds = %while.body
-  %cmp589 = icmp sgt i32 %sub2, 0
-  %sub7 = sub i32 %top.0.ph99, %sub2
-  br i1 %cmp589, label %for.body.lr.ph, label %for.end
+  %cmp589 = icmp sgt i32 %sub2, 0, !dbg !367
+  %sub7 = sub i32 %top.0.ph99, %sub2, !dbg !369
+  br i1 %cmp589, label %for.body.lr.ph, label %for.end, !dbg !367
 
 for.body.lr.ph:                                   ; preds = %for.cond.preheader
-  %8 = sext i32 %bottom.094 to i64
-  %9 = sext i32 %sub7 to i64
-  br label %for.body
+  %8 = sext i32 %bottom.094 to i64, !dbg !367
+  %9 = sext i32 %sub7 to i64, !dbg !367
+  br label %for.body, !dbg !367
 
 for.cond23.preheader:                             ; preds = %while.body
-  br i1 %cmp2487, label %for.body25, label %for.end40
+  br i1 %cmp2487, label %for.body25, label %for.end40, !dbg !365
 
 for.body:                                         ; preds = %for.body, %for.body.lr.ph
   %indvars.iv111 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next112, %for.body ]
-  %10 = add nsw i64 %indvars.iv111, %8
-  %arrayidx = getelementptr inbounds i8** %argv, i64 %10
-  %11 = load i8** %arrayidx, align 8, !tbaa !0
-  %12 = add nsw i64 %9, %indvars.iv111
-  %arrayidx10 = getelementptr inbounds i8** %argv, i64 %12
-  %13 = load i8** %arrayidx10, align 8, !tbaa !0
-  store i8* %13, i8** %arrayidx, align 8, !tbaa !0
-  store i8* %11, i8** %arrayidx10, align 8, !tbaa !0
-  %indvars.iv.next112 = add i64 %indvars.iv111, 1
-  %lftr.wideiv115 = trunc i64 %indvars.iv.next112 to i32
-  %exitcond116 = icmp eq i32 %lftr.wideiv115, %sub2
-  br i1 %exitcond116, label %for.end, label %for.body
+  %10 = add nsw i64 %indvars.iv111, %8, !dbg !371
+  %arrayidx = getelementptr inbounds i8** %argv, i64 %10, !dbg !371
+  %11 = load i8** %arrayidx, align 8, !dbg !371, !tbaa !106
+  tail call void @llvm.dbg.value(metadata !{i8* %11}, i64 0, metadata !73), !dbg !371
+  %12 = add nsw i64 %9, %indvars.iv111, !dbg !369
+  %arrayidx10 = getelementptr inbounds i8** %argv, i64 %12, !dbg !369
+  %13 = load i8** %arrayidx10, align 8, !dbg !369, !tbaa !106
+  store i8* %13, i8** %arrayidx, align 8, !dbg !369, !tbaa !106
+  store i8* %11, i8** %arrayidx10, align 8, !dbg !372, !tbaa !106
+  %indvars.iv.next112 = add i64 %indvars.iv111, 1, !dbg !367
+  %lftr.wideiv115 = trunc i64 %indvars.iv.next112 to i32, !dbg !367
+  %exitcond116 = icmp eq i32 %lftr.wideiv115, %sub2, !dbg !367
+  br i1 %exitcond116, label %for.end, label %for.body, !dbg !367
 
 for.end:                                          ; preds = %for.cond.preheader, %for.body
-  %cmp = icmp sgt i32 %sub7, %1
-  %cmp192 = icmp sgt i32 %1, %bottom.094
-  %or.cond93 = and i1 %cmp, %cmp192
-  br i1 %or.cond93, label %while.body.lr.ph, label %while.end
+  tail call void @llvm.dbg.value(metadata !{i32 %sub7}, i64 0, metadata !72), !dbg !373
+  %cmp = icmp sgt i32 %sub7, %1, !dbg !363
+  %cmp192 = icmp sgt i32 %1, %bottom.094, !dbg !363
+  %or.cond93 = and i1 %cmp, %cmp192, !dbg !363
+  br i1 %or.cond93, label %while.body.lr.ph, label %while.end, !dbg !363
 
 for.body25:                                       ; preds = %for.cond23.preheader, %for.body25
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body25 ], [ 0, %for.cond23.preheader ]
-  %14 = add nsw i64 %indvars.iv, %indvars.iv109
-  %arrayidx28 = getelementptr inbounds i8** %argv, i64 %14
-  %15 = load i8** %arrayidx28, align 8, !tbaa !0
-  %16 = add nsw i64 %indvars.iv, %3
-  %arrayidx31 = getelementptr inbounds i8** %argv, i64 %16
-  %17 = load i8** %arrayidx31, align 8, !tbaa !0
-  store i8* %17, i8** %arrayidx28, align 8, !tbaa !0
-  store i8* %15, i8** %arrayidx31, align 8, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %4
-  br i1 %exitcond, label %for.end40, label %for.body25
+  %14 = add nsw i64 %indvars.iv, %indvars.iv109, !dbg !374
+  %arrayidx28 = getelementptr inbounds i8** %argv, i64 %14, !dbg !374
+  %15 = load i8** %arrayidx28, align 8, !dbg !374, !tbaa !106
+  tail call void @llvm.dbg.value(metadata !{i8* %15}, i64 0, metadata !73), !dbg !374
+  %16 = add nsw i64 %indvars.iv, %3, !dbg !376
+  %arrayidx31 = getelementptr inbounds i8** %argv, i64 %16, !dbg !376
+  %17 = load i8** %arrayidx31, align 8, !dbg !376, !tbaa !106
+  store i8* %17, i8** %arrayidx28, align 8, !dbg !376, !tbaa !106
+  store i8* %15, i8** %arrayidx31, align 8, !dbg !377, !tbaa !106
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !365
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !365
+  %exitcond = icmp eq i32 %lftr.wideiv, %4, !dbg !365
+  br i1 %exitcond, label %for.end40, label %for.body25, !dbg !365
 
 for.end40:                                        ; preds = %for.body25, %for.cond23.preheader
-  %indvars.iv.next110 = add i64 %indvars.iv109, %6
-  %add41 = add nsw i32 %bottom.094, %sub
-  %18 = trunc i64 %indvars.iv.next110 to i32
-  %cmp1 = icmp sgt i32 %1, %18
-  br i1 %cmp1, label %while.body, label %while.end
+  %indvars.iv.next110 = add i64 %indvars.iv109, %6, !dbg !363
+  %add41 = add nsw i32 %bottom.094, %sub, !dbg !378
+  tail call void @llvm.dbg.value(metadata !{i32 %add41}, i64 0, metadata !70), !dbg !378
+  %18 = trunc i64 %indvars.iv.next110 to i32, !dbg !363
+  %cmp1 = icmp sgt i32 %1, %18, !dbg !363
+  br i1 %cmp1, label %while.body, label %while.end, !dbg !363
 
 while.end:                                        ; preds = %entry, %for.end, %for.end40
-  %sub42 = sub i32 %2, %1
-  %add43 = add nsw i32 %sub42, %0
-  store i32 %add43, i32* @first_nonopt, align 4, !tbaa !3
-  store i32 %2, i32* @last_nonopt, align 4, !tbaa !3
-  ret void
+  %sub42 = sub i32 %2, %1, !dbg !379
+  %add43 = add nsw i32 %sub42, %0, !dbg !379
+  store i32 %add43, i32* @first_nonopt, align 4, !dbg !379, !tbaa !110
+  store i32 %2, i32* @last_nonopt, align 4, !dbg !380, !tbaa !110
+  ret void, !dbg !381
 }

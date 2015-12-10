@@ -1,48 +1,57 @@
-define i32 @Hyperslab_GetList(%struct.cGH* %GH, i32 %mapping_handle, i32 %num_arrays, i32* nocapture readonly %vindices, i32* readonly %timelevels, i32* readonly %hdatatypes, i8** nocapture readonly %hdata) #1 {
-  %1 = icmp sgt i32 %num_arrays, 0
-  br i1 %1, label %.lr.ph, label %._crit_edge
+define i32 @Hyperslab_GetList(%struct.cGH* %GH, i32 %mapping_handle, i32 %num_arrays, i32* nocapture %vindices, i32* %timelevels, i32* %hdatatypes, i8** nocapture %hdata) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !115), !dbg !501
+  tail call void @llvm.dbg.value(metadata !{i32 %mapping_handle}, i64 0, metadata !116), !dbg !502
+  tail call void @llvm.dbg.value(metadata !{i32 %num_arrays}, i64 0, metadata !117), !dbg !503
+  tail call void @llvm.dbg.value(metadata !{i32* %vindices}, i64 0, metadata !118), !dbg !504
+  tail call void @llvm.dbg.value(metadata !{i32* %timelevels}, i64 0, metadata !119), !dbg !505
+  tail call void @llvm.dbg.value(metadata !{i32* %hdatatypes}, i64 0, metadata !120), !dbg !506
+  tail call void @llvm.dbg.value(metadata !{i8** %hdata}, i64 0, metadata !121), !dbg !507
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !123), !dbg !508
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !122), !dbg !509
+  %cmp23 = icmp sgt i32 %num_arrays, 0, !dbg !509
+  br i1 %cmp23, label %for.body.lr.ph, label %for.end, !dbg !509
 
-.lr.ph:                                           ; preds = %0
-  %2 = icmp eq i32* %timelevels, null
-  %3 = icmp eq i32* %hdatatypes, null
-  %4 = add i32 %num_arrays, -1
-  br label %5
+for.body.lr.ph:                                   ; preds = %entry
+  %tobool = icmp eq i32* %timelevels, null, !dbg !511
+  %tobool4 = icmp eq i32* %hdatatypes, null, !dbg !511
+  br label %for.body, !dbg !509
 
-; <label>:5                                       ; preds = %16, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %16 ]
-  %retval.02 = phi i32 [ 0, %.lr.ph ], [ %.retval.0, %16 ]
-  %6 = getelementptr inbounds i32* %vindices, i64 %indvars.iv
-  %7 = load i32* %6, align 4, !tbaa !26
-  br i1 %2, label %11, label %8
+for.body:                                         ; preds = %cond.end9, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %cond.end9 ]
+  %retval1.025 = phi i32 [ 0, %for.body.lr.ph ], [ %inc.retval1.0, %cond.end9 ]
+  %arrayidx = getelementptr inbounds i32* %vindices, i64 %indvars.iv, !dbg !511
+  %0 = load i32* %arrayidx, align 4, !dbg !511, !tbaa !314
+  br i1 %tobool, label %cond.end, label %cond.true, !dbg !511
 
-; <label>:8                                       ; preds = %5
-  %9 = getelementptr inbounds i32* %timelevels, i64 %indvars.iv
-  %10 = load i32* %9, align 4, !tbaa !26
-  br label %11
+cond.true:                                        ; preds = %for.body
+  %arrayidx3 = getelementptr inbounds i32* %timelevels, i64 %indvars.iv, !dbg !511
+  %1 = load i32* %arrayidx3, align 4, !dbg !511, !tbaa !314
+  br label %cond.end, !dbg !511
 
-; <label>:11                                      ; preds = %5, %8
-  %12 = phi i32 [ %10, %8 ], [ 0, %5 ]
-  br i1 %3, label %16, label %13
+cond.end:                                         ; preds = %for.body, %cond.true
+  %cond = phi i32 [ %1, %cond.true ], [ 0, %for.body ], !dbg !511
+  br i1 %tobool4, label %cond.end9, label %cond.true5, !dbg !511
 
-; <label>:13                                      ; preds = %11
-  %14 = getelementptr inbounds i32* %hdatatypes, i64 %indvars.iv
-  %15 = load i32* %14, align 4, !tbaa !26
-  br label %16
+cond.true5:                                       ; preds = %cond.end
+  %arrayidx7 = getelementptr inbounds i32* %hdatatypes, i64 %indvars.iv, !dbg !511
+  %2 = load i32* %arrayidx7, align 4, !dbg !511, !tbaa !314
+  br label %cond.end9, !dbg !511
 
-; <label>:16                                      ; preds = %11, %13
-  %17 = phi i32 [ %15, %13 ], [ -1, %11 ]
-  %18 = getelementptr inbounds i8** %hdata, i64 %indvars.iv
-  %19 = load i8** %18, align 8, !tbaa !22
-  %20 = tail call i32 @Hyperslab_Get(%struct.cGH* %GH, i32 %mapping_handle, i32 %7, i32 %12, i32 %17, i8* %19) #7
-  %21 = icmp eq i32 %20, 0
-  %22 = zext i1 %21 to i32
-  %.retval.0 = add nsw i32 %22, %retval.02
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %4
-  br i1 %exitcond, label %._crit_edge, label %5
+cond.end9:                                        ; preds = %cond.end, %cond.true5
+  %cond10 = phi i32 [ %2, %cond.true5 ], [ -1, %cond.end ], !dbg !511
+  %arrayidx12 = getelementptr inbounds i8** %hdata, i64 %indvars.iv, !dbg !511
+  %3 = load i8** %arrayidx12, align 8, !dbg !511, !tbaa !330
+  %call = tail call i32 @Hyperslab_Get(%struct.cGH* %GH, i32 %mapping_handle, i32 %0, i32 %cond, i32 %cond10, i8* %3) #7, !dbg !511
+  %cmp13 = icmp eq i32 %call, 0, !dbg !511
+  %inc = zext i1 %cmp13 to i32, !dbg !511
+  %inc.retval1.0 = add nsw i32 %inc, %retval1.025, !dbg !511
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !509
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !509
+  %exitcond = icmp eq i32 %lftr.wideiv, %num_arrays, !dbg !509
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !509
 
-._crit_edge:                                      ; preds = %16, %0
-  %retval.0.lcssa = phi i32 [ 0, %0 ], [ %.retval.0, %16 ]
-  ret i32 %retval.0.lcssa
+for.end:                                          ; preds = %cond.end9, %entry
+  %retval1.0.lcssa = phi i32 [ 0, %entry ], [ %inc.retval1.0, %cond.end9 ]
+  ret i32 %retval1.0.lcssa, !dbg !513
 }

@@ -1,26 +1,36 @@
-define void @write_pdbfile(%struct.__sFILE* nocapture %out, i8* %title, %struct.t_atoms* nocapture readonly %atoms, [3 x float]* nocapture readonly %x, [3 x float]* readonly %box, i8 signext %chain, i32 %model_nr) #4 {
-  %1 = getelementptr inbounds %struct.t_atoms* %atoms, i64 0, i32 0
-  %2 = load i32* %1, align 4, !tbaa !33
-  %3 = tail call i8* @save_calloc(i8* getelementptr inbounds ([6 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 191, i32 %2, i32 4) #10
-  %4 = bitcast i8* %3 to i32*
-  %5 = load i32* %1, align 4, !tbaa !33
-  %6 = icmp sgt i32 %5, 0
-  br i1 %6, label %.lr.ph, label %._crit_edge
+define void @write_pdbfile(%struct._IO_FILE* nocapture %out, i8* %title, %struct.t_atoms* nocapture %atoms, [3 x float]* nocapture %x, [3 x float]* %box, i8 signext %chain, i32 %model_nr) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %out}, i64 0, metadata !226), !dbg !540
+  tail call void @llvm.dbg.value(metadata !{i8* %title}, i64 0, metadata !227), !dbg !540
+  tail call void @llvm.dbg.value(metadata !{%struct.t_atoms* %atoms}, i64 0, metadata !228), !dbg !540
+  tail call void @llvm.dbg.value(metadata !{[3 x float]* %x}, i64 0, metadata !229), !dbg !540
+  tail call void @llvm.dbg.value(metadata !{[3 x float]* %box}, i64 0, metadata !230), !dbg !541
+  tail call void @llvm.dbg.value(metadata !{i8 %chain}, i64 0, metadata !231), !dbg !541
+  tail call void @llvm.dbg.value(metadata !{i32 %model_nr}, i64 0, metadata !232), !dbg !541
+  %nr = getelementptr inbounds %struct.t_atoms* %atoms, i64 0, i32 0, !dbg !542
+  %0 = load i32* %nr, align 4, !dbg !542, !tbaa !425
+  %call = tail call i8* @save_calloc(i8* getelementptr inbounds ([6 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str13, i64 0, i64 0), i32 191, i32 %0, i32 4) #8, !dbg !542
+  %1 = bitcast i8* %call to i32*, !dbg !542
+  tail call void @llvm.dbg.value(metadata !{i32* %1}, i64 0, metadata !234), !dbg !542
+  tail call void @llvm.dbg.value(metadata !41, i64 0, metadata !233), !dbg !543
+  %2 = load i32* %nr, align 4, !dbg !543, !tbaa !425
+  %cmp11 = icmp sgt i32 %2, 0, !dbg !543
+  br i1 %cmp11, label %for.body, label %for.end, !dbg !543
 
-.lr.ph:                                           ; preds = %0, %.lr.ph
-  %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %0 ]
-  %7 = getelementptr inbounds i32* %4, i64 %indvars.iv
-  %8 = trunc i64 %indvars.iv to i32
-  store i32 %8, i32* %7, align 4, !tbaa !18
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %9 = load i32* %1, align 4, !tbaa !33
-  %10 = sext i32 %9 to i64
-  %11 = icmp slt i64 %indvars.iv.next, %10
-  br i1 %11, label %.lr.ph, label %._crit_edge
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds i32* %1, i64 %indvars.iv, !dbg !545
+  %3 = trunc i64 %indvars.iv to i32, !dbg !545
+  store i32 %3, i32* %arrayidx, align 4, !dbg !545, !tbaa !425
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !543
+  %4 = load i32* %nr, align 4, !dbg !543, !tbaa !425
+  %5 = trunc i64 %indvars.iv.next to i32, !dbg !543
+  %cmp = icmp slt i32 %5, %4, !dbg !543
+  br i1 %cmp, label %for.body, label %for.end, !dbg !543
 
-._crit_edge:                                      ; preds = %.lr.ph, %0
-  %.lcssa = phi i32 [ %5, %0 ], [ %9, %.lr.ph ]
-  tail call void @write_pdbfile_indexed(%struct.__sFILE* %out, i8* %title, %struct.t_atoms* %atoms, [3 x float]* %x, [3 x float]* %box, i8 signext %chain, i32 %model_nr, i32 %.lcssa, i32* %4) #12
-  tail call void @save_free(i8* getelementptr inbounds ([6 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 195, i8* %3) #10
-  ret void
+for.end:                                          ; preds = %for.body, %entry
+  %.lcssa = phi i32 [ %2, %entry ], [ %4, %for.body ]
+  tail call void @write_pdbfile_indexed(%struct._IO_FILE* %out, i8* %title, %struct.t_atoms* %atoms, [3 x float]* %x, [3 x float]* %box, i8 signext %chain, i32 %model_nr, i32 %.lcssa, i32* %1) #9, !dbg !546
+  tail call void @save_free(i8* getelementptr inbounds ([6 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str13, i64 0, i64 0), i32 195, i8* %call) #8, !dbg !547
+  ret void, !dbg !548
 }

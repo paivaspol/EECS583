@@ -1,0 +1,51 @@
+define internal void @_ZN3povL14Transform_MeshEPNS_13Object_StructEPNS_16Transform_StructE(%"struct.pov::Object_Struct"* %Object, %"struct.pov::Transform_Struct"* %Trans) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !1449), !dbg !2311
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Transform_Struct"* %Trans}, i64 0, metadata !1450), !dbg !2311
+  %0 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 10, !dbg !2312
+  %1 = load %"struct.pov::Transform_Struct"** %0, align 8, !dbg !2312, !tbaa !1750
+  %cmp = icmp eq %"struct.pov::Transform_Struct"* %1, null, !dbg !2312
+  br i1 %cmp, label %if.then, label %if.end, !dbg !2312
+
+if.then:                                          ; preds = %entry
+  %call = tail call %"struct.pov::Transform_Struct"* @_ZN3pov16Create_TransformEv() #7, !dbg !2313
+  store %"struct.pov::Transform_Struct"* %call, %"struct.pov::Transform_Struct"** %0, align 8, !dbg !2313, !tbaa !1750
+  br label %if.end, !dbg !2315
+
+if.end:                                           ; preds = %if.then, %entry
+  %BBox = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 9, !dbg !2316
+  tail call void @_ZN3pov14Recompute_BBoxEPNS_19Bounding_Box_StructEPNS_16Transform_StructE(%"struct.pov::Bounding_Box_Struct"* %BBox, %"struct.pov::Transform_Struct"* %Trans) #7, !dbg !2316
+  %2 = load %"struct.pov::Transform_Struct"** %0, align 8, !dbg !2317, !tbaa !1750
+  tail call void @_ZN3pov18Compose_TransformsEPNS_16Transform_StructES1_(%"struct.pov::Transform_Struct"* %2, %"struct.pov::Transform_Struct"* %Trans) #7, !dbg !2317
+  %Flags = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 13, !dbg !2318
+  %3 = load i32* %Flags, align 4, !dbg !2318, !tbaa !1782
+  %and = and i32 %3, 8192, !dbg !2318
+  %tobool = icmp eq i32 %and, 0, !dbg !2318
+  br i1 %tobool, label %for.cond.preheader, label %if.end7, !dbg !2318
+
+for.cond.preheader:                               ; preds = %if.end
+  %Number_Of_Textures = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, i32 1, !dbg !2319
+  %4 = bitcast i32* %Number_Of_Textures to i64*, !dbg !2319
+  %5 = load i64* %4, align 8, !dbg !2319, !tbaa !1739
+  %cmp618 = icmp sgt i64 %5, 0, !dbg !2319
+  br i1 %cmp618, label %for.body.lr.ph, label %if.end7, !dbg !2319
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %Textures = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, i32 2, !dbg !2321
+  br label %for.body, !dbg !2319
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %6 = load %"struct.pov::Object_Struct"** %Textures, align 8, !dbg !2321
+  %7 = bitcast %"struct.pov::Object_Struct"* %6 to %"struct.pov::Texture_Struct"**, !dbg !2321
+  %arrayidx = getelementptr inbounds %"struct.pov::Texture_Struct"** %7, i64 %indvars.iv, !dbg !2321
+  %8 = load %"struct.pov::Texture_Struct"** %arrayidx, align 8, !dbg !2321, !tbaa !1750
+  tail call void @_ZN3pov18Transform_TexturesEPNS_14Texture_StructEPNS_16Transform_StructE(%"struct.pov::Texture_Struct"* %8, %"struct.pov::Transform_Struct"* %Trans) #7, !dbg !2321
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2319
+  %9 = load i64* %4, align 8, !dbg !2319, !tbaa !1739
+  %cmp6 = icmp slt i64 %indvars.iv.next, %9, !dbg !2319
+  br i1 %cmp6, label %for.body, label %if.end7, !dbg !2319
+
+if.end7:                                          ; preds = %for.cond.preheader, %for.body, %if.end
+  ret void, !dbg !2323
+}

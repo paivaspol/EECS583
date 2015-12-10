@@ -1,49 +1,58 @@
 define i32 @seqcmp(i8* nocapture %s1, i8* nocapture %s2, i32 %allow) #0 {
 entry:
-  %0 = load i8* %s1, align 1, !tbaa !0
-  %cmp42 = icmp eq i8 %0, 0
-  br i1 %cmp42, label %while.end24, label %land.lhs.true
+  tail call void @llvm.dbg.value(metadata !{i8* %s1}, i64 0, metadata !28), !dbg !75
+  tail call void @llvm.dbg.value(metadata !{i8* %s2}, i64 0, metadata !29), !dbg !75
+  tail call void @llvm.dbg.value(metadata !{i32 %allow}, i64 0, metadata !30), !dbg !75
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !31), !dbg !76
+  %0 = load i8* %s1, align 1, !dbg !77, !tbaa !78
+  %cmp42 = icmp eq i8 %0, 0, !dbg !77
+  br i1 %cmp42, label %while.end24, label %land.lhs.true, !dbg !77
 
 land.lhs.true:                                    ; preds = %entry, %while.body
   %1 = phi i8 [ %3, %while.body ], [ %0, %entry ]
   %mmat.045 = phi i32 [ %mmat.0.inc, %while.body ], [ 0, %entry ]
   %s1.addr.044 = phi i8* [ %incdec.ptr, %while.body ], [ %s1, %entry ]
   %s2.addr.043 = phi i8* [ %incdec.ptr12, %while.body ], [ %s2, %entry ]
-  %2 = load i8* %s2.addr.043, align 1, !tbaa !0
-  %cmp3 = icmp eq i8 %2, 0
-  %cmp5 = icmp sgt i32 %mmat.045, %allow
-  %or.cond = or i1 %cmp3, %cmp5
-  br i1 %or.cond, label %while.cond13.preheader, label %while.body
+  %2 = load i8* %s2.addr.043, align 1, !dbg !77, !tbaa !78
+  %cmp3 = icmp eq i8 %2, 0, !dbg !77
+  %cmp5 = icmp sgt i32 %mmat.045, %allow, !dbg !77
+  %or.cond = or i1 %cmp3, %cmp5, !dbg !77
+  br i1 %or.cond, label %while.cond13.preheader, label %while.body, !dbg !77
 
 while.cond13.preheader:                           ; preds = %land.lhs.true
-  %cmp1937 = icmp sle i32 %mmat.045, %allow
-  %not.cmp1638 = icmp ne i8 %1, 0
-  %.cmp1939 = and i1 %cmp1937, %not.cmp1638
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr14}, i64 0, metadata !28), !dbg !80
+  %cmp1937 = icmp sle i32 %mmat.045, %allow, !dbg !80
+  %not.cmp1638 = icmp ne i8 %1, 0, !dbg !80
+  %.cmp1939 = and i1 %cmp1937, %not.cmp1638, !dbg !80
   br i1 %.cmp1939, label %while.body22, label %while.end24
 
 while.body:                                       ; preds = %land.lhs.true
-  %and36 = and i8 %2, %1
-  %not.cmp10 = icmp ne i8 %and36, %2
-  %inc = zext i1 %not.cmp10 to i32
-  %mmat.0.inc = add nsw i32 %inc, %mmat.045
-  %incdec.ptr = getelementptr inbounds i8* %s1.addr.044, i64 1
-  %incdec.ptr12 = getelementptr inbounds i8* %s2.addr.043, i64 1
-  %3 = load i8* %incdec.ptr, align 1, !tbaa !0
-  %cmp = icmp eq i8 %3, 0
-  br i1 %cmp, label %while.end24, label %land.lhs.true
+  %and36 = and i8 %2, %1, !dbg !81
+  %not.cmp10 = icmp ne i8 %and36, %2, !dbg !81
+  %inc = zext i1 %not.cmp10 to i32, !dbg !81
+  %mmat.0.inc = add nsw i32 %inc, %mmat.045, !dbg !81
+  %incdec.ptr = getelementptr inbounds i8* %s1.addr.044, i64 1, !dbg !83
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !28), !dbg !83
+  %incdec.ptr12 = getelementptr inbounds i8* %s2.addr.043, i64 1, !dbg !84
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr12}, i64 0, metadata !29), !dbg !84
+  %3 = load i8* %incdec.ptr, align 1, !dbg !77, !tbaa !78
+  %cmp = icmp eq i8 %3, 0, !dbg !77
+  br i1 %cmp, label %while.end24, label %land.lhs.true, !dbg !77
 
 while.body22:                                     ; preds = %while.cond13.preheader, %while.body22
   %mmat.241 = phi i32 [ %inc23, %while.body22 ], [ %mmat.045, %while.cond13.preheader ]
   %s1.addr.140 = phi i8* [ %incdec.ptr14, %while.body22 ], [ %s1.addr.044, %while.cond13.preheader ]
-  %incdec.ptr14 = getelementptr inbounds i8* %s1.addr.140, i64 1
-  %inc23 = add nsw i32 %mmat.241, 1
-  %4 = load i8* %incdec.ptr14, align 1, !tbaa !0
-  %cmp19 = icmp slt i32 %mmat.241, %allow
-  %not.cmp16 = icmp ne i8 %4, 0
-  %.cmp19 = and i1 %cmp19, %not.cmp16
+  %incdec.ptr14 = getelementptr inbounds i8* %s1.addr.140, i64 1, !dbg !80
+  %inc23 = add nsw i32 %mmat.241, 1, !dbg !85
+  tail call void @llvm.dbg.value(metadata !{i32 %inc23}, i64 0, metadata !31), !dbg !85
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr14}, i64 0, metadata !28), !dbg !80
+  %4 = load i8* %incdec.ptr14, align 1, !dbg !80, !tbaa !78
+  %cmp19 = icmp slt i32 %mmat.241, %allow, !dbg !80
+  %not.cmp16 = icmp ne i8 %4, 0, !dbg !80
+  %.cmp19 = and i1 %cmp19, %not.cmp16, !dbg !80
   br i1 %.cmp19, label %while.body22, label %while.end24
 
 while.end24:                                      ; preds = %while.body, %entry, %while.body22, %while.cond13.preheader
   %mmat.2.lcssa = phi i32 [ %mmat.045, %while.cond13.preheader ], [ %inc23, %while.body22 ], [ 0, %entry ], [ %mmat.0.inc, %while.body ]
-  ret i32 %mmat.2.lcssa
+  ret i32 %mmat.2.lcssa, !dbg !86
 }

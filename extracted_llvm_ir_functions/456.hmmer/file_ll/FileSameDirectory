@@ -1,24 +1,32 @@
 define i8* @FileSameDirectory(i8* %file1, i8* %file2) #0 {
 entry:
-  %call = tail call i8* @FileDirname(i8* %file1) #7
-  %call1 = tail call i8* @FileTail(i8* %file2, i32 0) #7
-  %call2 = tail call i32 @strcmp(i8* %file2, i8* %call1) #5
-  %cmp = icmp eq i32 %call2, 0
-  %call3 = tail call i8* @FileConcat(i8* %call, i8* %call1) #7
-  br i1 %cmp, label %if.end7, label %land.lhs.true
+  tail call void @llvm.dbg.value(metadata !{i8* %file1}, i64 0, metadata !29), !dbg !146
+  tail call void @llvm.dbg.value(metadata !{i8* %file2}, i64 0, metadata !30), !dbg !146
+  tail call void @llvm.dbg.value(metadata !131, i64 0, metadata !34), !dbg !147
+  %call = tail call i8* @FileDirname(i8* %file1) #8, !dbg !148
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !31), !dbg !148
+  %call1 = tail call i8* @FileTail(i8* %file2, i32 0) #8, !dbg !149
+  tail call void @llvm.dbg.value(metadata !{i8* %call1}, i64 0, metadata !32), !dbg !149
+  %call2 = tail call i32 @strcmp(i8* %file2, i8* %call1) #6, !dbg !150
+  %cmp = icmp eq i32 %call2, 0, !dbg !150
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !34), !dbg !150
+  %call3 = tail call i8* @FileConcat(i8* %call, i8* %call1) #8, !dbg !151
+  tail call void @llvm.dbg.value(metadata !{i8* %call3}, i64 0, metadata !33), !dbg !151
+  br i1 %cmp, label %if.end7, label %land.lhs.true, !dbg !152
 
 land.lhs.true:                                    ; preds = %entry
-  %call4 = tail call i32 @strcmp(i8* %call3, i8* %file2) #5
-  %cmp5 = icmp eq i32 %call4, 0
-  br i1 %cmp5, label %if.end7, label %if.then6
+  %call4 = tail call i32 @strcmp(i8* %call3, i8* %file2) #6, !dbg !152
+  %cmp5 = icmp eq i32 %call4, 0, !dbg !152
+  br i1 %cmp5, label %if.end7, label %if.then6, !dbg !152
 
 if.then6:                                         ; preds = %land.lhs.true
-  tail call void @free(i8* %call3) #6
-  br label %if.end7
+  tail call void @free(i8* %call3) #7, !dbg !153
+  tail call void @llvm.dbg.value(metadata !155, i64 0, metadata !33), !dbg !153
+  br label %if.end7, !dbg !156
 
 if.end7:                                          ; preds = %land.lhs.true, %if.then6, %entry
   %result.0 = phi i8* [ %call3, %entry ], [ null, %if.then6 ], [ %call3, %land.lhs.true ]
-  tail call void @free(i8* %call) #6
-  tail call void @free(i8* %call1) #6
-  ret i8* %result.0
+  tail call void @free(i8* %call) #7, !dbg !157
+  tail call void @free(i8* %call1) #7, !dbg !158
+  ret i8* %result.0, !dbg !159
 }

@@ -1,0 +1,33 @@
+define zeroext i1 @_ZN3pov13Inside_ObjectEPdPNS_13Object_StructE(double* %IPoint, %"struct.pov::Object_Struct"* %Object) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{double* %IPoint}, i64 0, metadata !929), !dbg !1194
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !930), !dbg !1194
+  %Clip = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 7, !dbg !1195
+  %Sib.07 = load %"struct.pov::Object_Struct"** %Clip, align 8, !dbg !1195
+  %cmp8 = icmp eq %"struct.pov::Object_Struct"* %Sib.07, null, !dbg !1195
+  br i1 %cmp8, label %for.end, label %for.body, !dbg !1195
+
+for.cond:                                         ; preds = %for.body
+  %Sibling = getelementptr inbounds %"struct.pov::Object_Struct"* %Sib.09, i64 0, i32 2, !dbg !1195
+  %Sib.0 = load %"struct.pov::Object_Struct"** %Sibling, align 8, !dbg !1195
+  %cmp = icmp eq %"struct.pov::Object_Struct"* %Sib.0, null, !dbg !1195
+  br i1 %cmp, label %for.end, label %for.body, !dbg !1195
+
+for.body:                                         ; preds = %entry, %for.cond
+  %Sib.09 = phi %"struct.pov::Object_Struct"* [ %Sib.0, %for.cond ], [ %Sib.07, %entry ]
+  %call = tail call zeroext i1 @_ZN3pov13Inside_ObjectEPdPNS_13Object_StructE(double* %IPoint, %"struct.pov::Object_Struct"* %Sib.09) #5, !dbg !1197
+  br i1 %call, label %for.cond, label %return, !dbg !1197
+
+for.end:                                          ; preds = %for.cond, %entry
+  %Methods = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 0, !dbg !1199
+  %0 = load %"struct.pov::Method_Struct"** %Methods, align 8, !dbg !1199, !tbaa !1116
+  %Inside_Method = getelementptr inbounds %"struct.pov::Method_Struct"* %0, i64 0, i32 1, !dbg !1199
+  %1 = load i32 (double*, %"struct.pov::Object_Struct"*)** %Inside_Method, align 8, !dbg !1199, !tbaa !1116
+  %call1 = tail call i32 %1(double* %IPoint, %"struct.pov::Object_Struct"* %Object) #5, !dbg !1199
+  %tobool = icmp ne i32 %call1, 0, !dbg !1199
+  br label %return, !dbg !1199
+
+return:                                           ; preds = %for.body, %for.end
+  %retval.0 = phi i1 [ %tobool, %for.end ], [ false, %for.body ]
+  ret i1 %retval.0, !dbg !1200
+}

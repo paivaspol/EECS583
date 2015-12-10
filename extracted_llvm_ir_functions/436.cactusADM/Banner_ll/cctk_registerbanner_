@@ -1,7 +1,12 @@
 define void @cctk_registerbanner_(i32* nocapture %ierr, i8* %cctk_str1, i32 %cctk_strlen1) #1 {
-  %1 = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #5
-  %2 = tail call i32 @CCTK_RegisterBanner(i8* %1) #6
-  store i32 %2, i32* %ierr, align 4, !tbaa !2
-  tail call void @free(i8* %1) #6
-  ret void
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %ierr}, i64 0, metadata !37), !dbg !95
+  tail call void @llvm.dbg.value(metadata !{i8* %cctk_str1}, i64 0, metadata !38), !dbg !96
+  tail call void @llvm.dbg.value(metadata !{i32 %cctk_strlen1}, i64 0, metadata !39), !dbg !96
+  %call = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #6, !dbg !97
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !40), !dbg !97
+  %call1 = tail call i32 @CCTK_RegisterBanner(i8* %call) #7, !dbg !98
+  store i32 %call1, i32* %ierr, align 4, !dbg !98, !tbaa !69
+  tail call void @free(i8* %call) #6, !dbg !99
+  ret void, !dbg !100
 }

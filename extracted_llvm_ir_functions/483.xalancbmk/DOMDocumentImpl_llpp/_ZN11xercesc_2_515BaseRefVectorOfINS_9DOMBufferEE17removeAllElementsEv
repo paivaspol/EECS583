@@ -1,0 +1,49 @@
+define linkonce_odr void @_ZN11xercesc_2_515BaseRefVectorOfINS_9DOMBufferEE17removeAllElementsEv(%"class.xercesc_2_5::BaseRefVectorOf.2"* nocapture %this) unnamed_addr #8 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf.2"* %this}, i64 0, metadata !7298), !dbg !10980
+  tail call void @llvm.dbg.value(metadata !5365, i64 0, metadata !7299), !dbg !10981
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.2"* %this, i64 0, i32 2, !dbg !10981
+  %0 = load i32* %fCurCount, align 4, !dbg !10981, !tbaa !9059
+  %cmp10 = icmp eq i32 %0, 0, !dbg !10981
+  br i1 %cmp10, label %for.end, label %for.body.lr.ph, !dbg !10981
+
+for.body.lr.ph:                                   ; preds = %entry
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.2"* %this, i64 0, i32 1, !dbg !10982
+  %fElemList3 = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.2"* %this, i64 0, i32 4, !dbg !10984
+  br label %for.body, !dbg !10981
+
+for.body:                                         ; preds = %if.end, %for.body.lr.ph
+  %1 = phi i32 [ %0, %for.body.lr.ph ], [ %6, %if.end ]
+  %index.011 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %if.end ]
+  %2 = load i8* %fAdoptedElems, align 1, !dbg !10982, !tbaa !9060, !range !10006
+  %tobool = icmp eq i8 %2, 0, !dbg !10982
+  %idxprom2.pre = zext i32 %index.011 to i64, !dbg !10984
+  br i1 %tobool, label %if.end, label %if.then, !dbg !10982
+
+if.then:                                          ; preds = %for.body
+  %3 = load %"class.xercesc_2_5::DOMBuffer"*** %fElemList3, align 8, !dbg !10985, !tbaa !9057
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::DOMBuffer"** %3, i64 %idxprom2.pre, !dbg !10985
+  %4 = load %"class.xercesc_2_5::DOMBuffer"** %arrayidx, align 8, !dbg !10985, !tbaa !9057
+  %isnull = icmp eq %"class.xercesc_2_5::DOMBuffer"* %4, null, !dbg !10985
+  br i1 %isnull, label %if.end, label %invoke.cont, !dbg !10985
+
+invoke.cont:                                      ; preds = %if.then
+  %5 = bitcast %"class.xercesc_2_5::DOMBuffer"* %4 to i8*, !dbg !10985
+  tail call void @_ZdlPv(i8* %5) #13, !dbg !10985
+  %.pre = load i32* %fCurCount, align 4, !dbg !10981, !tbaa !9059
+  br label %if.end, !dbg !10985
+
+if.end:                                           ; preds = %for.body, %if.then, %invoke.cont
+  %6 = phi i32 [ %1, %if.then ], [ %.pre, %invoke.cont ], [ %1, %for.body ], !dbg !10984
+  %7 = load %"class.xercesc_2_5::DOMBuffer"*** %fElemList3, align 8, !dbg !10984, !tbaa !9057
+  %arrayidx4 = getelementptr inbounds %"class.xercesc_2_5::DOMBuffer"** %7, i64 %idxprom2.pre, !dbg !10984
+  store %"class.xercesc_2_5::DOMBuffer"* null, %"class.xercesc_2_5::DOMBuffer"** %arrayidx4, align 8, !dbg !10984, !tbaa !9057
+  %inc = add i32 %index.011, 1, !dbg !10981
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !7299), !dbg !10981
+  %cmp = icmp ult i32 %inc, %6, !dbg !10981
+  br i1 %cmp, label %for.body, label %for.end, !dbg !10981
+
+for.end:                                          ; preds = %if.end, %entry
+  store i32 0, i32* %fCurCount, align 4, !dbg !10986, !tbaa !9059
+  ret void, !dbg !10987
+}

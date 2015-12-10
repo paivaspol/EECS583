@@ -1,0 +1,86 @@
+define i8* @_ZN3pov11pov_memmoveEPvS0_m(i8* %dest, i8* %src, i64 %length) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %dest}, i64 0, metadata !345), !dbg !670
+  tail call void @llvm.dbg.value(metadata !{i8* %src}, i64 0, metadata !346), !dbg !670
+  tail call void @llvm.dbg.value(metadata !{i64 %length}, i64 0, metadata !347), !dbg !670
+  tail call void @llvm.dbg.value(metadata !{i8* %src}, i64 0, metadata !348), !dbg !671
+  tail call void @llvm.dbg.value(metadata !{i8* %dest}, i64 0, metadata !349), !dbg !672
+  %cmp = icmp ult i8* %src, %dest, !dbg !673
+  br i1 %cmp, label %land.lhs.true, label %if.else, !dbg !673
+
+land.lhs.true:                                    ; preds = %entry
+  %add.ptr = getelementptr inbounds i8* %src, i64 %length, !dbg !673
+  %cmp1 = icmp ult i8* %add.ptr, %dest, !dbg !673
+  br i1 %cmp1, label %if.else, label %if.then, !dbg !673
+
+if.then:                                          ; preds = %land.lhs.true
+  tail call void @llvm.dbg.value(metadata !{i64 %sub.ptr.sub}, i64 0, metadata !350), !dbg !674
+  %cmp277 = icmp eq i64 %length, 0, !dbg !675
+  br i1 %cmp277, label %if.end31, label %while.body.lr.ph, !dbg !675
+
+while.body.lr.ph:                                 ; preds = %if.then
+  %sub.ptr.rhs.cast = ptrtoint i8* %src to i64, !dbg !674
+  %sub.ptr.lhs.cast = ptrtoint i8* %dest to i64, !dbg !674
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !674
+  br label %while.body, !dbg !675
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.body
+  %size.079 = phi i64 [ %sub.ptr.sub, %while.body.lr.ph ], [ %sub.size.0, %while.body ]
+  %length.addr.078 = phi i64 [ %length, %while.body.lr.ph ], [ %add.ptr3.sum, %while.body ]
+  %add.ptr3.sum = sub i64 %length.addr.078, %size.079, !dbg !676
+  %add.ptr4 = getelementptr inbounds i8* %dest, i64 %add.ptr3.sum, !dbg !676
+  %add.ptr7 = getelementptr inbounds i8* %src, i64 %add.ptr3.sum, !dbg !676
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %add.ptr4, i8* %add.ptr7, i64 %size.079, i32 1, i1 false), !dbg !676
+  tail call void @llvm.dbg.value(metadata !{i64 %add.ptr3.sum}, i64 0, metadata !347), !dbg !678
+  %cmp8 = icmp ult i64 %add.ptr3.sum, %size.079, !dbg !679
+  tail call void @llvm.dbg.value(metadata !{i64 %add.ptr3.sum}, i64 0, metadata !350), !dbg !680
+  %sub.size.0 = select i1 %cmp8, i64 %add.ptr3.sum, i64 %size.079, !dbg !679
+  %cmp2 = icmp eq i64 %length.addr.078, %size.079, !dbg !675
+  br i1 %cmp2, label %if.end31, label %while.body, !dbg !675
+
+if.else:                                          ; preds = %land.lhs.true, %entry
+  %cmp10 = icmp ult i8* %dest, %src, !dbg !681
+  br i1 %cmp10, label %land.lhs.true11, label %if.else29, !dbg !681
+
+land.lhs.true11:                                  ; preds = %if.else
+  %add.ptr12 = getelementptr inbounds i8* %dest, i64 %length, !dbg !681
+  %cmp13 = icmp ult i8* %add.ptr12, %src, !dbg !681
+  br i1 %cmp13, label %if.else29, label %if.then14, !dbg !681
+
+if.then14:                                        ; preds = %land.lhs.true11
+  tail call void @llvm.dbg.value(metadata !{i8* %dest}, i64 0, metadata !352), !dbg !682
+  tail call void @llvm.dbg.value(metadata !{i64 %sub.ptr.sub18}, i64 0, metadata !354), !dbg !683
+  %cmp2071 = icmp eq i64 %length, 0, !dbg !684
+  br i1 %cmp2071, label %if.end31, label %while.body21.lr.ph, !dbg !684
+
+while.body21.lr.ph:                               ; preds = %if.then14
+  %sub.ptr.rhs.cast17 = ptrtoint i8* %dest to i64, !dbg !683
+  %sub.ptr.lhs.cast16 = ptrtoint i8* %src to i64, !dbg !683
+  %sub.ptr.sub18 = sub i64 %sub.ptr.lhs.cast16, %sub.ptr.rhs.cast17, !dbg !683
+  br label %while.body21, !dbg !684
+
+while.body21:                                     ; preds = %while.body21.lr.ph, %while.body21
+  %size15.075 = phi i64 [ %sub.ptr.sub18, %while.body21.lr.ph ], [ %sub24.size15.0, %while.body21 ]
+  %new_dest.074 = phi i8* [ %dest, %while.body21.lr.ph ], [ %add.ptr22, %while.body21 ]
+  %length.addr.173 = phi i64 [ %length, %while.body21.lr.ph ], [ %sub24, %while.body21 ]
+  %csrc.072 = phi i8* [ %src, %while.body21.lr.ph ], [ %add.ptr23, %while.body21 ]
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %new_dest.074, i8* %csrc.072, i64 %length.addr.173, i32 1, i1 false), !dbg !685
+  %add.ptr22 = getelementptr inbounds i8* %new_dest.074, i64 %size15.075, !dbg !687
+  tail call void @llvm.dbg.value(metadata !{i8* %add.ptr22}, i64 0, metadata !352), !dbg !687
+  %add.ptr23 = getelementptr inbounds i8* %csrc.072, i64 %size15.075, !dbg !688
+  tail call void @llvm.dbg.value(metadata !{i8* %add.ptr23}, i64 0, metadata !348), !dbg !688
+  %sub24 = sub i64 %length.addr.173, %size15.075, !dbg !689
+  tail call void @llvm.dbg.value(metadata !{i64 %sub24}, i64 0, metadata !347), !dbg !689
+  %cmp25 = icmp ult i64 %sub24, %size15.075, !dbg !690
+  tail call void @llvm.dbg.value(metadata !{i64 %sub24}, i64 0, metadata !354), !dbg !691
+  %sub24.size15.0 = select i1 %cmp25, i64 %sub24, i64 %size15.075, !dbg !690
+  %cmp20 = icmp eq i64 %length.addr.173, %size15.075, !dbg !684
+  br i1 %cmp20, label %if.end31, label %while.body21, !dbg !684
+
+if.else29:                                        ; preds = %land.lhs.true11, %if.else
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %dest, i8* %src, i64 %length, i32 1, i1 false), !dbg !692
+  br label %if.end31
+
+if.end31:                                         ; preds = %if.then, %while.body, %if.then14, %while.body21, %if.else29
+  ret i8* %dest, !dbg !694
+}

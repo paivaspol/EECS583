@@ -1,79 +1,86 @@
 define void @std_pn_eval(%struct.node* nocapture %this) #0 {
 entry:
   %moves = alloca [512 x %struct.move_s], align 16
-  %0 = bitcast [512 x %struct.move_s]* %moves to i8*
-  call void @llvm.lifetime.start(i64 12288, i8* %0) #2
-  %evaluated = getelementptr inbounds %struct.node* %this, i64 0, i32 3
-  store i8 1, i8* %evaluated, align 1, !tbaa !1
-  %1 = load i32* @white_to_move, align 4, !tbaa !0
-  %tobool = icmp eq i32 %1, 0
-  br i1 %tobool, label %land.lhs.true3, label %land.lhs.true
+  call void @llvm.dbg.value(metadata !{%struct.node* %this}, i64 0, metadata !58), !dbg !342
+  %0 = bitcast [512 x %struct.move_s]* %moves to i8*, !dbg !343
+  call void @llvm.lifetime.start(i64 12288, i8* %0) #3, !dbg !343
+  call void @llvm.dbg.declare(metadata !{[512 x %struct.move_s]* %moves}, metadata !60), !dbg !343
+  %evaluated = getelementptr inbounds %struct.node* %this, i64 0, i32 3, !dbg !344
+  store i8 1, i8* %evaluated, align 1, !dbg !344, !tbaa !206
+  %1 = load i32* @white_to_move, align 4, !dbg !345, !tbaa !205
+  %tobool = icmp eq i32 %1, 0, !dbg !345
+  br i1 %tobool, label %land.lhs.true3, label %land.lhs.true, !dbg !345
 
 land.lhs.true:                                    ; preds = %entry
-  %2 = load i32* @wking_loc, align 4, !tbaa !0
-  %call = call i32 @is_attacked(i32 %2, i32 0) #6
-  %tobool1 = icmp eq i32 %call, 0
-  br i1 %tobool1, label %lor.lhs.false, label %if.then
+  %2 = load i32* @wking_loc, align 4, !dbg !345, !tbaa !205
+  %call = call i32 @is_attacked(i32 %2, i32 0) #7, !dbg !345
+  %tobool1 = icmp eq i32 %call, 0, !dbg !345
+  br i1 %tobool1, label %lor.lhs.false, label %if.then, !dbg !345
 
 lor.lhs.false:                                    ; preds = %land.lhs.true
-  %.pr = load i32* @white_to_move, align 4, !tbaa !0
-  %tobool2 = icmp eq i32 %.pr, 0
-  br i1 %tobool2, label %land.lhs.true3, label %if.else23
+  %.pr = load i32* @white_to_move, align 4, !dbg !345, !tbaa !205
+  %tobool2 = icmp eq i32 %.pr, 0, !dbg !345
+  br i1 %tobool2, label %land.lhs.true3, label %if.else23, !dbg !345
 
 land.lhs.true3:                                   ; preds = %entry, %lor.lhs.false
-  %3 = load i32* @bking_loc, align 4, !tbaa !0
-  %call4 = call i32 @is_attacked(i32 %3, i32 1) #6
-  %tobool5 = icmp eq i32 %call4, 0
-  br i1 %tobool5, label %if.else23, label %if.then
+  %3 = load i32* @bking_loc, align 4, !dbg !346, !tbaa !205
+  %call4 = call i32 @is_attacked(i32 %3, i32 1) #7, !dbg !346
+  %tobool5 = icmp eq i32 %call4, 0, !dbg !346
+  br i1 %tobool5, label %if.else23, label %if.then, !dbg !346
 
 if.then:                                          ; preds = %land.lhs.true, %land.lhs.true3
-  %arrayidx = getelementptr inbounds [512 x %struct.move_s]* %moves, i64 0, i64 0
-  call void @gen(%struct.move_s* %arrayidx) #6
-  %4 = load i32* @numb_moves, align 4, !tbaa !0
-  %cmp35 = icmp sgt i32 %4, 0
-  br i1 %cmp35, label %for.body, label %if.then14.critedge
+  call void @llvm.dbg.value(metadata !8, i64 0, metadata !59), !dbg !347
+  %arrayidx = getelementptr inbounds [512 x %struct.move_s]* %moves, i64 0, i64 0, !dbg !349
+  call void @gen(%struct.move_s* %arrayidx) #7, !dbg !349
+  %4 = load i32* @numb_moves, align 4, !dbg !350, !tbaa !205
+  call void @llvm.dbg.value(metadata !{i32 %4}, i64 0, metadata !59), !dbg !350
+  call void @llvm.dbg.value(metadata !243, i64 0, metadata !64), !dbg !351
+  call void @llvm.dbg.value(metadata !8, i64 0, metadata !65), !dbg !352
+  %cmp35 = icmp sgt i32 %4, 0, !dbg !352
+  br i1 %cmp35, label %for.body, label %if.then14.critedge, !dbg !352
 
 for.cond:                                         ; preds = %for.body
-  %cmp = icmp slt i32 %inc, %4
-  br i1 %cmp, label %for.body, label %if.then14.critedge
+  %cmp = icmp slt i32 %inc, %4, !dbg !352
+  br i1 %cmp, label %for.body, label %if.then14.critedge, !dbg !352
 
 for.body:                                         ; preds = %if.then, %for.cond
   %i.036 = phi i32 [ %inc, %for.cond ], [ 0, %if.then ]
-  call void @make(%struct.move_s* %arrayidx, i32 %i.036) #6
-  %call8 = call i32 @check_legal(%struct.move_s* %arrayidx, i32 %i.036, i32 1) #6
-  %tobool9 = icmp eq i32 %call8, 0
-  call void @unmake(%struct.move_s* %arrayidx, i32 %i.036) #6
-  %inc = add nsw i32 %i.036, 1
-  br i1 %tobool9, label %for.cond, label %if.else20
+  call void @make(%struct.move_s* %arrayidx, i32 %i.036) #7, !dbg !354
+  %call8 = call i32 @check_legal(%struct.move_s* %arrayidx, i32 %i.036, i32 1) #7, !dbg !356
+  %tobool9 = icmp eq i32 %call8, 0, !dbg !356
+  call void @unmake(%struct.move_s* %arrayidx, i32 %i.036) #7, !dbg !357
+  %inc = add nsw i32 %i.036, 1, !dbg !352
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !65), !dbg !352
+  br i1 %tobool9, label %for.cond, label %if.else20, !dbg !356
 
 if.then14.critedge:                               ; preds = %for.cond, %if.then
-  %5 = load i32* @white_to_move, align 4, !tbaa !0
-  %not.tobool15 = icmp eq i32 %5, 0
-  %cond = zext i1 %not.tobool15 to i32
-  %6 = load i32* @root_to_move, align 4, !tbaa !0
-  %cmp16 = icmp eq i32 %cond, %6
-  %value = getelementptr inbounds %struct.node* %this, i64 0, i32 0
-  br i1 %cmp16, label %if.then17, label %if.else
+  %5 = load i32* @white_to_move, align 4, !dbg !358, !tbaa !205
+  %not.tobool15 = icmp eq i32 %5, 0, !dbg !358
+  %cond = zext i1 %not.tobool15 to i32, !dbg !358
+  %6 = load i32* @root_to_move, align 4, !dbg !358, !tbaa !205
+  %cmp16 = icmp eq i32 %cond, %6, !dbg !358
+  %value = getelementptr inbounds %struct.node* %this, i64 0, i32 0, !dbg !360
+  br i1 %cmp16, label %if.then17, label %if.else, !dbg !358
 
 if.then17:                                        ; preds = %if.then14.critedge
-  store i8 0, i8* %value, align 1, !tbaa !1
-  br label %if.end25
+  store i8 0, i8* %value, align 1, !dbg !360, !tbaa !206
+  br label %if.end25, !dbg !362
 
 if.else:                                          ; preds = %if.then14.critedge
-  store i8 1, i8* %value, align 1, !tbaa !1
+  store i8 1, i8* %value, align 1, !dbg !363, !tbaa !206
   br label %if.end25
 
 if.else20:                                        ; preds = %for.body
-  %value21 = getelementptr inbounds %struct.node* %this, i64 0, i32 0
-  store i8 2, i8* %value21, align 1, !tbaa !1
+  %value21 = getelementptr inbounds %struct.node* %this, i64 0, i32 0, !dbg !365
+  store i8 2, i8* %value21, align 1, !dbg !365, !tbaa !206
   br label %if.end25
 
 if.else23:                                        ; preds = %land.lhs.true3, %lor.lhs.false
-  %value24 = getelementptr inbounds %struct.node* %this, i64 0, i32 0
-  store i8 2, i8* %value24, align 1, !tbaa !1
+  %value24 = getelementptr inbounds %struct.node* %this, i64 0, i32 0, !dbg !367
+  store i8 2, i8* %value24, align 1, !dbg !367, !tbaa !206
   br label %if.end25
 
 if.end25:                                         ; preds = %if.else20, %if.else, %if.then17, %if.else23
-  call void @llvm.lifetime.end(i64 12288, i8* %0) #2
-  ret void
+  call void @llvm.lifetime.end(i64 12288, i8* %0) #3, !dbg !369
+  ret void, !dbg !369
 }

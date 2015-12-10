@@ -1,0 +1,56 @@
+define void @_ZN3pov30Promote_Local_Lights_RecursiveEPNS_22Compound_Object_StructEPNS_19Light_Source_StructE(%"struct.pov::Compound_Object_Struct"* nocapture %Object, %"struct.pov::Light_Source_Struct"* %Lights) #2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Compound_Object_Struct"* %Object}, i64 0, metadata !820), !dbg !927
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Light_Source_Struct"* %Lights}, i64 0, metadata !821), !dbg !927
+  tail call void @llvm.dbg.value(metadata !899, i64 0, metadata !822), !dbg !928
+  %Children = getelementptr inbounds %"struct.pov::Compound_Object_Struct"* %Object, i64 0, i32 14, !dbg !929
+  %curObject.028 = load %"struct.pov::Object_Struct"** %Children, align 8, !dbg !929
+  %cmp29 = icmp eq %"struct.pov::Object_Struct"* %curObject.028, null, !dbg !929
+  br i1 %cmp29, label %for.end, label %for.body, !dbg !929
+
+for.body:                                         ; preds = %entry, %for.inc
+  %curObject.030 = phi %"struct.pov::Object_Struct"* [ %curObject.0, %for.inc ], [ %curObject.028, %entry ]
+  %LLights = getelementptr inbounds %"struct.pov::Object_Struct"* %curObject.030, i64 0, i32 8, !dbg !930
+  %0 = load %"struct.pov::Light_Source_Struct"** %LLights, align 8, !dbg !930, !tbaa !912
+  %cmp1 = icmp eq %"struct.pov::Light_Source_Struct"* %0, null, !dbg !930
+  br i1 %cmp1, label %if.else, label %while.cond, !dbg !930
+
+while.cond:                                       ; preds = %for.body, %while.cond
+  %l.0 = phi %"struct.pov::Light_Source_Struct"* [ %1, %while.cond ], [ %0, %for.body ]
+  %Next_Light_Source = getelementptr inbounds %"struct.pov::Light_Source_Struct"* %l.0, i64 0, i32 26, !dbg !931
+  %1 = load %"struct.pov::Light_Source_Struct"** %Next_Light_Source, align 8, !dbg !931, !tbaa !912
+  %cmp4 = icmp ne %"struct.pov::Light_Source_Struct"* %l.0, %Lights, !dbg !931
+  %not.cmp3 = icmp ne %"struct.pov::Light_Source_Struct"* %1, null, !dbg !931
+  %.cmp4 = and i1 %cmp4, %not.cmp3, !dbg !931
+  br i1 %.cmp4, label %while.cond, label %while.end
+
+while.end:                                        ; preds = %while.cond
+  %cmp6 = icmp eq %"struct.pov::Light_Source_Struct"* %l.0, %Lights, !dbg !932
+  br i1 %cmp6, label %for.inc, label %if.then7, !dbg !932
+
+if.then7:                                         ; preds = %while.end
+  store %"struct.pov::Light_Source_Struct"* %Lights, %"struct.pov::Light_Source_Struct"** %Next_Light_Source, align 8, !dbg !933, !tbaa !912
+  br label %for.inc, !dbg !933
+
+if.else:                                          ; preds = %for.body
+  %Type = getelementptr inbounds %"struct.pov::Object_Struct"* %curObject.030, i64 0, i32 1, !dbg !934
+  %2 = load i32* %Type, align 4, !dbg !934, !tbaa !906
+  %and = and i32 %2, 4, !dbg !934
+  %cmp9 = icmp eq i32 %and, 0, !dbg !934
+  store %"struct.pov::Light_Source_Struct"* %Lights, %"struct.pov::Light_Source_Struct"** %LLights, align 8, !dbg !935, !tbaa !912
+  br i1 %cmp9, label %for.inc, label %if.then10, !dbg !934
+
+if.then10:                                        ; preds = %if.else
+  %3 = bitcast %"struct.pov::Object_Struct"* %curObject.030 to %"struct.pov::Compound_Object_Struct"*, !dbg !937
+  tail call void @_ZN3pov30Promote_Local_Lights_RecursiveEPNS_22Compound_Object_StructEPNS_19Light_Source_StructE(%"struct.pov::Compound_Object_Struct"* %3, %"struct.pov::Light_Source_Struct"* %Lights) #5, !dbg !937
+  br label %for.inc, !dbg !938
+
+for.inc:                                          ; preds = %while.end, %if.else, %if.then7, %if.then10
+  %Sibling = getelementptr inbounds %"struct.pov::Object_Struct"* %curObject.030, i64 0, i32 2, !dbg !939
+  %curObject.0 = load %"struct.pov::Object_Struct"** %Sibling, align 8, !dbg !929
+  %cmp = icmp eq %"struct.pov::Object_Struct"* %curObject.0, null, !dbg !929
+  br i1 %cmp, label %for.end, label %for.body, !dbg !929
+
+for.end:                                          ; preds = %for.inc, %entry
+  ret void, !dbg !940
+}

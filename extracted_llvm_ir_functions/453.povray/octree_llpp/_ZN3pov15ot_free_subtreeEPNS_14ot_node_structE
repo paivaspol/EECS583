@@ -1,0 +1,51 @@
+define zeroext i1 @_ZN3pov15ot_free_subtreeEPNS_14ot_node_structE(%"struct.pov::ot_node_struct"* %subtree) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::ot_node_struct"* %subtree}, i64 0, metadata !436), !dbg !905
+  tail call void @llvm.dbg.value(metadata !765, i64 0, metadata !438), !dbg !906
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !437), !dbg !907
+  br label %for.body, !dbg !907
+
+for.body:                                         ; preds = %for.inc, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc ]
+  %arrayidx = getelementptr inbounds %"struct.pov::ot_node_struct"* %subtree, i64 0, i32 2, i64 %indvars.iv, !dbg !909
+  %0 = load %"struct.pov::ot_node_struct"** %arrayidx, align 8, !dbg !909, !tbaa !699
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::ot_node_struct"* %0}, i64 0, metadata !439), !dbg !909
+  %cmp1 = icmp eq %"struct.pov::ot_node_struct"* %0, null, !dbg !911
+  br i1 %cmp1, label %for.inc, label %if.then, !dbg !911
+
+if.then:                                          ; preds = %for.body
+  %call = tail call zeroext i1 @_ZN3pov15ot_free_subtreeEPNS_14ot_node_structE(%"struct.pov::ot_node_struct"* %0) #8, !dbg !912
+  tail call void @llvm.dbg.value(metadata !765, i64 0, metadata !438), !dbg !912
+  br label %for.inc, !dbg !914
+
+for.inc:                                          ; preds = %for.body, %if.then
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !907
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !907
+  %exitcond = icmp eq i32 %lftr.wideiv, 8, !dbg !907
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !907
+
+for.end:                                          ; preds = %for.inc
+  %Values = getelementptr inbounds %"struct.pov::ot_node_struct"* %subtree, i64 0, i32 1, !dbg !915
+  %1 = load %"struct.pov::ot_block_struct"** %Values, align 8, !dbg !915, !tbaa !699
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::ot_block_struct"* %1}, i64 0, metadata !440), !dbg !915
+  %cmp516 = icmp eq %"struct.pov::ot_block_struct"* %1, null, !dbg !916
+  br i1 %cmp516, label %while.end, label %while.body, !dbg !916
+
+while.body:                                       ; preds = %for.end, %while.body
+  %this_block.017 = phi %"struct.pov::ot_block_struct"* [ %2, %while.body ], [ %1, %for.end ]
+  %next = getelementptr inbounds %"struct.pov::ot_block_struct"* %this_block.017, i64 0, i32 0, !dbg !917
+  %2 = load %"struct.pov::ot_block_struct"** %next, align 8, !dbg !917, !tbaa !699
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::ot_block_struct"* %2}, i64 0, metadata !441), !dbg !917
+  %3 = bitcast %"struct.pov::ot_block_struct"* %this_block.017 to i8*, !dbg !919
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %3, i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 1097) #8, !dbg !919
+  tail call void @llvm.dbg.value(metadata !921, i64 0, metadata !440), !dbg !919
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::ot_block_struct"* %2}, i64 0, metadata !440), !dbg !922
+  %cmp5 = icmp eq %"struct.pov::ot_block_struct"* %2, null, !dbg !916
+  br i1 %cmp5, label %while.end, label %while.body, !dbg !916
+
+while.end:                                        ; preds = %while.body, %for.end
+  %4 = bitcast %"struct.pov::ot_node_struct"* %subtree to i8*, !dbg !923
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %4, i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 1102) #8, !dbg !923
+  tail call void @llvm.dbg.value(metadata !925, i64 0, metadata !436), !dbg !923
+  ret i1 true, !dbg !926
+}

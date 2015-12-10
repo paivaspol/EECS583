@@ -1,81 +1,88 @@
 define %struct._IV* @Tree_setSubtreeImetric(%struct._Tree* %tree, %struct._IV* %vmetricIV) #0 {
 entry:
-  %cmp = icmp eq %struct._Tree* %tree, null
-  br i1 %cmp, label %if.then, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata !{%struct._Tree* %tree}, i64 0, metadata !30), !dbg !97
+  tail call void @llvm.dbg.value(metadata !{%struct._IV* %vmetricIV}, i64 0, metadata !31), !dbg !98
+  %cmp = icmp eq %struct._Tree* %tree, null, !dbg !99
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !99
 
 lor.lhs.false:                                    ; preds = %entry
-  %n = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 0
-  %0 = load i32* %n, align 4, !tbaa !0
-  %cmp1 = icmp slt i32 %0, 1
-  %cmp3 = icmp eq %struct._IV* %vmetricIV, null
-  %or.cond = or i1 %cmp1, %cmp3
-  br i1 %or.cond, label %if.then, label %lor.lhs.false4
+  %n = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 0, !dbg !99
+  %0 = load i32* %n, align 4, !dbg !99, !tbaa !100
+  %cmp1 = icmp slt i32 %0, 1, !dbg !99
+  %cmp3 = icmp eq %struct._IV* %vmetricIV, null, !dbg !99
+  %or.cond = or i1 %cmp1, %cmp3, !dbg !99
+  br i1 %or.cond, label %if.then, label %lor.lhs.false4, !dbg !99
 
 lor.lhs.false4:                                   ; preds = %lor.lhs.false
-  %call = tail call i32 @IV_size(%struct._IV* %vmetricIV) #4
-  %cmp6 = icmp eq i32 %0, %call
-  br i1 %cmp6, label %lor.lhs.false7, label %if.then
+  %call = tail call i32 @IV_size(%struct._IV* %vmetricIV) #5, !dbg !103
+  %cmp6 = icmp eq i32 %0, %call, !dbg !103
+  br i1 %cmp6, label %lor.lhs.false7, label %if.then, !dbg !103
 
 lor.lhs.false7:                                   ; preds = %lor.lhs.false4
-  %call8 = tail call i32* @IV_entries(%struct._IV* %vmetricIV) #4
-  %cmp9 = icmp eq i32* %call8, null
-  br i1 %cmp9, label %if.then, label %if.end
+  %call8 = tail call i32* @IV_entries(%struct._IV* %vmetricIV) #5, !dbg !104
+  tail call void @llvm.dbg.value(metadata !{i32* %call8}, i64 0, metadata !35), !dbg !104
+  %cmp9 = icmp eq i32* %call8, null, !dbg !104
+  br i1 %cmp9, label %if.then, label %if.end, !dbg !104
 
 if.then:                                          ; preds = %lor.lhs.false4, %lor.lhs.false7, %lor.lhs.false, %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call10 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([59 x i8]* @.str, i64 0, i64 0), %struct._Tree* %tree, %struct._IV* %vmetricIV) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !105, !tbaa !107
+  %call10 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([59 x i8]* @.str, i64 0, i64 0), %struct._Tree* %tree, %struct._IV* %vmetricIV) #5, !dbg !105
+  tail call void @exit(i32 -1) #6, !dbg !108
+  unreachable, !dbg !108
 
 if.end:                                           ; preds = %lor.lhs.false7
-  %call11 = tail call %struct._IV* @IV_new() #4
-  %2 = load i32* %n, align 4, !tbaa !0
-  tail call void @IV_init(%struct._IV* %call11, i32 %2, i32* null) #4
-  %call13 = tail call i32* @IV_entries(%struct._IV* %call11) #4
-  %call14 = tail call i32 @Tree_postOTfirst(%struct._Tree* %tree) #4
-  %cmp1557 = icmp eq i32 %call14, -1
-  br i1 %cmp1557, label %for.end31, label %for.body.lr.ph
+  %call11 = tail call %struct._IV* @IV_new() #5, !dbg !109
+  tail call void @llvm.dbg.value(metadata !{%struct._IV* %call11}, i64 0, metadata !36), !dbg !109
+  %2 = load i32* %n, align 4, !dbg !110, !tbaa !100
+  tail call void @IV_init(%struct._IV* %call11, i32 %2, i32* null) #5, !dbg !110
+  %call13 = tail call i32* @IV_entries(%struct._IV* %call11) #5, !dbg !111
+  tail call void @llvm.dbg.value(metadata !{i32* %call13}, i64 0, metadata !34), !dbg !111
+  %call14 = tail call i32 @Tree_postOTfirst(%struct._Tree* %tree) #5, !dbg !112
+  tail call void @llvm.dbg.value(metadata !{i32 %call14}, i64 0, metadata !33), !dbg !112
+  %cmp1557 = icmp eq i32 %call14, -1, !dbg !112
+  br i1 %cmp1557, label %for.end31, label %for.body.lr.ph, !dbg !112
 
 for.body.lr.ph:                                   ; preds = %if.end
-  %fch = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 3
-  %sib = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 4
-  br label %for.body
+  %fch = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 3, !dbg !114
+  %sib = getelementptr inbounds %struct._Tree* %tree, i64 0, i32 4, !dbg !114
+  br label %for.body, !dbg !112
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.inc29
   %v.058 = phi i32 [ %call14, %for.body.lr.ph ], [ %call30, %for.inc29 ]
-  %idxprom = sext i32 %v.058 to i64
-  %arrayidx = getelementptr inbounds i32* %call8, i64 %idxprom
-  %3 = load i32* %arrayidx, align 4, !tbaa !0
-  %arrayidx17 = getelementptr inbounds i32* %call13, i64 %idxprom
-  store i32 %3, i32* %arrayidx17, align 4, !tbaa !0
-  %4 = load i32** %fch, align 8, !tbaa !3
-  %arrayidx19 = getelementptr inbounds i32* %4, i64 %idxprom
-  %u.054 = load i32* %arrayidx19, align 4
-  %cmp2155 = icmp eq i32 %u.054, -1
-  br i1 %cmp2155, label %for.inc29, label %for.body22.lr.ph
+  %idxprom = sext i32 %v.058 to i64, !dbg !117
+  %arrayidx = getelementptr inbounds i32* %call8, i64 %idxprom, !dbg !117
+  %3 = load i32* %arrayidx, align 4, !dbg !117, !tbaa !100
+  %arrayidx17 = getelementptr inbounds i32* %call13, i64 %idxprom, !dbg !117
+  store i32 %3, i32* %arrayidx17, align 4, !dbg !117, !tbaa !100
+  %4 = load i32** %fch, align 8, !dbg !114, !tbaa !107
+  %arrayidx19 = getelementptr inbounds i32* %4, i64 %idxprom, !dbg !114
+  %u.054 = load i32* %arrayidx19, align 4, !dbg !114
+  %cmp2155 = icmp eq i32 %u.054, -1, !dbg !114
+  br i1 %cmp2155, label %for.inc29, label %for.body22.lr.ph, !dbg !114
 
 for.body22.lr.ph:                                 ; preds = %for.body
-  %.pre = load i32** %sib, align 8, !tbaa !3
-  br label %for.body22
+  %.pre = load i32** %sib, align 8, !dbg !114, !tbaa !107
+  br label %for.body22, !dbg !114
 
 for.body22:                                       ; preds = %for.body22.lr.ph, %for.body22
-  %5 = phi i32 [ %3, %for.body22.lr.ph ], [ %add, %for.body22 ]
+  %5 = phi i32 [ %3, %for.body22.lr.ph ], [ %add, %for.body22 ], !dbg !118
   %u.056 = phi i32 [ %u.054, %for.body22.lr.ph ], [ %u.0, %for.body22 ]
-  %idxprom23 = sext i32 %u.056 to i64
-  %arrayidx24 = getelementptr inbounds i32* %call13, i64 %idxprom23
-  %6 = load i32* %arrayidx24, align 4, !tbaa !0
-  %add = add nsw i32 %5, %6
-  store i32 %add, i32* %arrayidx17, align 4, !tbaa !0
-  %arrayidx28 = getelementptr inbounds i32* %.pre, i64 %idxprom23
-  %u.0 = load i32* %arrayidx28, align 4
-  %cmp21 = icmp eq i32 %u.0, -1
-  br i1 %cmp21, label %for.inc29, label %for.body22
+  %idxprom23 = sext i32 %u.056 to i64, !dbg !118
+  %arrayidx24 = getelementptr inbounds i32* %call13, i64 %idxprom23, !dbg !118
+  %6 = load i32* %arrayidx24, align 4, !dbg !118, !tbaa !100
+  %add = add nsw i32 %5, %6, !dbg !118
+  store i32 %add, i32* %arrayidx17, align 4, !dbg !118, !tbaa !100
+  %arrayidx28 = getelementptr inbounds i32* %.pre, i64 %idxprom23, !dbg !114
+  %u.0 = load i32* %arrayidx28, align 4, !dbg !114
+  %cmp21 = icmp eq i32 %u.0, -1, !dbg !114
+  br i1 %cmp21, label %for.inc29, label %for.body22, !dbg !114
 
 for.inc29:                                        ; preds = %for.body22, %for.body
-  %call30 = tail call i32 @Tree_postOTnext(%struct._Tree* %tree, i32 %v.058) #4
-  %cmp15 = icmp eq i32 %call30, -1
-  br i1 %cmp15, label %for.end31, label %for.body
+  %call30 = tail call i32 @Tree_postOTnext(%struct._Tree* %tree, i32 %v.058) #5, !dbg !120
+  tail call void @llvm.dbg.value(metadata !{i32 %call30}, i64 0, metadata !33), !dbg !120
+  %cmp15 = icmp eq i32 %call30, -1, !dbg !112
+  br i1 %cmp15, label %for.end31, label %for.body, !dbg !112
 
 for.end31:                                        ; preds = %for.inc29, %if.end
-  ret %struct._IV* %call11
+  ret %struct._IV* %call11, !dbg !121
 }

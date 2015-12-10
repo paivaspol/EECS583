@@ -1,372 +1,400 @@
 define void @updateRCModel() #0 {
 entry:
   %error = alloca [20 x double], align 16
-  %0 = bitcast [20 x double]* %error to i8*
-  call void @llvm.lifetime.start(i64 160, i8* %0) #6
-  %1 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 6
-  %2 = load i32* %type, align 4, !tbaa !3
-  %cmp = icmp eq i32 %2, 0
-  br i1 %cmp, label %if.then, label %if.end210
+  %0 = bitcast [20 x double]* %error to i8*, !dbg !1596
+  call void @llvm.lifetime.start(i64 160, i8* %0) #7, !dbg !1596
+  call void @llvm.dbg.declare(metadata !{[20 x double]* %error}, metadata !95), !dbg !1596
+  call void @llvm.dbg.value(metadata !1597, i64 0, metadata !99), !dbg !1596
+  call void @llvm.dbg.value(metadata !21, i64 0, metadata !102), !dbg !1598
+  %1 = load %struct.ImageParameters** @img, align 8, !dbg !1599, !tbaa !804
+  %type = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 6, !dbg !1599
+  %2 = load i32* %type, align 4, !dbg !1599, !tbaa !807
+  %cmp = icmp eq i32 %2, 0, !dbg !1599
+  br i1 %cmp, label %if.then, label %if.end210, !dbg !1599
 
 if.then:                                          ; preds = %entry
-  %BasicUnit = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 139
-  %3 = load i32* %BasicUnit, align 4, !tbaa !3
-  %Frame_Total_Number_MB = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 136
-  %4 = load i32* %Frame_Total_Number_MB, align 4, !tbaa !3
-  %cmp1 = icmp eq i32 %3, %4
-  br i1 %cmp1, label %if.then2, label %if.else
+  %BasicUnit = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 139, !dbg !1600
+  %3 = load i32* %BasicUnit, align 4, !dbg !1600, !tbaa !807
+  %Frame_Total_Number_MB = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 136, !dbg !1600
+  %4 = load i32* %Frame_Total_Number_MB, align 4, !dbg !1600, !tbaa !807
+  %cmp1 = icmp eq i32 %3, %4, !dbg !1600
+  br i1 %cmp1, label %if.then2, label %if.else, !dbg !1600
 
 if.then2:                                         ; preds = %if.then
-  %cmp7.i = icmp sgt i32 %3, 0
-  br i1 %cmp7.i, label %for.body.lr.ph.i, label %ComputeFrameMAD.exit
+  tail call void @llvm.dbg.value(metadata !1597, i64 0, metadata !1602), !dbg !1605
+  tail call void @llvm.dbg.value(metadata !21, i64 0, metadata !1606), !dbg !1607
+  %cmp7.i = icmp sgt i32 %3, 0, !dbg !1607
+  br i1 %cmp7.i, label %for.body.lr.ph.i, label %ComputeFrameMAD.exit, !dbg !1607
 
 for.body.lr.ph.i:                                 ; preds = %if.then2
   %MADofMB.phi.trans.insert.i = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 131
-  %.pre.i = load double** %MADofMB.phi.trans.insert.i, align 8, !tbaa !0
-  br label %for.body.i
+  %.pre.i = load double** %MADofMB.phi.trans.insert.i, align 8, !dbg !1609, !tbaa !804
+  br label %for.body.i, !dbg !1607
 
 for.body.i:                                       ; preds = %for.body.i, %for.body.lr.ph.i
   %indvars.iv.i = phi i64 [ 0, %for.body.lr.ph.i ], [ %indvars.iv.next.i, %for.body.i ]
   %TotalMAD.08.i = phi double [ 0.000000e+00, %for.body.lr.ph.i ], [ %add.i, %for.body.i ]
-  %arrayidx.i = getelementptr inbounds double* %.pre.i, i64 %indvars.iv.i
-  %5 = load double* %arrayidx.i, align 8, !tbaa !4
-  %add.i = fadd double %TotalMAD.08.i, %5
-  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
-  %lftr.wideiv276 = trunc i64 %indvars.iv.next.i to i32
-  %exitcond277 = icmp eq i32 %lftr.wideiv276, %3
-  br i1 %exitcond277, label %ComputeFrameMAD.exit, label %for.body.i
+  %arrayidx.i = getelementptr inbounds double* %.pre.i, i64 %indvars.iv.i, !dbg !1609
+  %5 = load double* %arrayidx.i, align 8, !dbg !1609, !tbaa !862
+  %add.i = fadd double %TotalMAD.08.i, %5, !dbg !1609
+  tail call void @llvm.dbg.value(metadata !{double %add.i}, i64 0, metadata !1602), !dbg !1609
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1, !dbg !1607
+  %lftr.wideiv276 = trunc i64 %indvars.iv.next.i to i32, !dbg !1607
+  %exitcond277 = icmp eq i32 %lftr.wideiv276, %3, !dbg !1607
+  br i1 %exitcond277, label %ComputeFrameMAD.exit, label %for.body.i, !dbg !1607
 
 ComputeFrameMAD.exit:                             ; preds = %for.body.i, %if.then2
   %TotalMAD.0.lcssa.i = phi double [ 0.000000e+00, %if.then2 ], [ %add.i, %for.body.i ]
-  %conv.i = sitofp i32 %3 to double
-  %div.i = fdiv double %TotalMAD.0.lcssa.i, %conv.i
-  store double %div.i, double* @CurrentFrameMAD, align 8, !tbaa !4
-  %NumberofCodedPFrame = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 127
-  %6 = load i32* %NumberofCodedPFrame, align 4, !tbaa !3
-  br label %if.end67
+  %conv.i = sitofp i32 %3 to double, !dbg !1610
+  %div.i = fdiv double %TotalMAD.0.lcssa.i, %conv.i, !dbg !1610
+  tail call void @llvm.dbg.value(metadata !{double %div.i}, i64 0, metadata !1602), !dbg !1610
+  store double %div.i, double* @CurrentFrameMAD, align 8, !dbg !1603, !tbaa !862
+  %NumberofCodedPFrame = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 127, !dbg !1611
+  %6 = load i32* %NumberofCodedPFrame, align 4, !dbg !1611, !tbaa !807
+  call void @llvm.dbg.value(metadata !{i32 %6}, i64 0, metadata !101), !dbg !1611
+  br label %if.end67, !dbg !1612
 
 if.else:                                          ; preds = %if.then
-  %7 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %MbInterlace = getelementptr inbounds %struct.InputParameters* %7, i64 0, i32 92
-  %8 = load i32* %MbInterlace, align 4, !tbaa !3
-  %tobool = icmp eq i32 %8, 0
-  br i1 %tobool, label %if.else7, label %land.lhs.true
+  %7 = load %struct.InputParameters** @input, align 8, !dbg !1613, !tbaa !804
+  %MbInterlace = getelementptr inbounds %struct.InputParameters* %7, i64 0, i32 92, !dbg !1613
+  %8 = load i32* %MbInterlace, align 4, !dbg !1613, !tbaa !807
+  %tobool = icmp eq i32 %8, 0, !dbg !1613
+  br i1 %tobool, label %if.else7, label %land.lhs.true, !dbg !1613
 
 land.lhs.true:                                    ; preds = %if.else
-  %FieldControl = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 134
-  %9 = load i32* %FieldControl, align 4, !tbaa !3
-  %cmp3 = icmp eq i32 %9, 0
-  br i1 %cmp3, label %if.then4, label %if.else7
+  %FieldControl = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 134, !dbg !1613
+  %9 = load i32* %FieldControl, align 4, !dbg !1613, !tbaa !807
+  %cmp3 = icmp eq i32 %9, 0, !dbg !1613
+  br i1 %cmp3, label %if.then4, label %if.else7, !dbg !1613
 
 if.then4:                                         ; preds = %land.lhs.true
-  %TotalMADBasicUnit = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 123
-  %10 = load double* %TotalMADBasicUnit, align 8, !tbaa !4
-  %conv = sitofp i32 %3 to double
-  %div = fdiv double %10, %conv
-  %div6 = fmul double %div, 5.000000e-01
-  br label %if.end
+  %TotalMADBasicUnit = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 123, !dbg !1615
+  %10 = load double* %TotalMADBasicUnit, align 8, !dbg !1615, !tbaa !862
+  %conv = sitofp i32 %3 to double, !dbg !1615
+  %div = fdiv double %10, %conv, !dbg !1615
+  %div6 = fmul double %div, 5.000000e-01, !dbg !1615
+  br label %if.end, !dbg !1615
 
 if.else7:                                         ; preds = %if.else, %land.lhs.true
-  %TotalMADBasicUnit8 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 123
-  %11 = load double* %TotalMADBasicUnit8, align 8, !tbaa !4
-  %conv10 = sitofp i32 %3 to double
-  %div11 = fdiv double %11, %conv10
+  %TotalMADBasicUnit8 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 123, !dbg !1616
+  %11 = load double* %TotalMADBasicUnit8, align 8, !dbg !1616, !tbaa !862
+  %conv10 = sitofp i32 %3 to double, !dbg !1616
+  %div11 = fdiv double %11, %conv10, !dbg !1616
   br label %if.end
 
 if.end:                                           ; preds = %if.else7, %if.then4
   %storemerge = phi double [ %div11, %if.else7 ], [ %div6, %if.then4 ]
-  store double %storemerge, double* @CurrentFrameMAD, align 8, !tbaa !4
-  %TotalMADBasicUnit12 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 123
-  store double 0.000000e+00, double* %TotalMADBasicUnit12, align 8, !tbaa !4
-  %12 = load i32* @TotalNumberofBasicUnit, align 4, !tbaa !3
-  %13 = load i32* @NumberofBasicUnit, align 4, !tbaa !3
-  %sub = sub nsw i32 %12, %13
-  store i32 %sub, i32* @CodedBasicUnit, align 4, !tbaa !3
-  %cmp13 = icmp sgt i32 %sub, 0
-  br i1 %cmp13, label %if.then15, label %if.end37
+  store double %storemerge, double* @CurrentFrameMAD, align 8, !dbg !1615, !tbaa !862
+  %TotalMADBasicUnit12 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 123, !dbg !1617
+  store double 0.000000e+00, double* %TotalMADBasicUnit12, align 8, !dbg !1617, !tbaa !862
+  %12 = load i32* @TotalNumberofBasicUnit, align 4, !dbg !1618, !tbaa !807
+  %13 = load i32* @NumberofBasicUnit, align 4, !dbg !1618, !tbaa !807
+  %sub = sub nsw i32 %12, %13, !dbg !1618
+  store i32 %sub, i32* @CodedBasicUnit, align 4, !dbg !1618, !tbaa !807
+  %cmp13 = icmp sgt i32 %sub, 0, !dbg !1619
+  br i1 %cmp13, label %if.then15, label %if.end37, !dbg !1619
 
 if.then15:                                        ; preds = %if.end
-  %14 = load i32* @PAveHeaderBits1, align 4, !tbaa !3
-  %sub16 = add nsw i32 %sub, -1
-  %mul = mul nsw i32 %14, %sub16
-  %NumberofBasicUnitHeaderBits = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 121
-  %15 = load i32* %NumberofBasicUnitHeaderBits, align 4, !tbaa !3
-  %add = add nsw i32 %15, %mul
-  %conv17 = sitofp i32 %add to double
-  %conv19 = sitofp i32 %sub to double
-  %div20 = fdiv double %conv17, %conv19
-  %add21 = fadd double %div20, 5.000000e-01
-  %conv22 = fptosi double %add21 to i32
-  store i32 %conv22, i32* @PAveHeaderBits1, align 4, !tbaa !3
-  %16 = load i32* @PAveHeaderBits3, align 4, !tbaa !3
-  %cmp23 = icmp eq i32 %16, 0
-  br i1 %cmp23, label %if.then25, label %if.else26
+  %14 = load i32* @PAveHeaderBits1, align 4, !dbg !1620, !tbaa !807
+  %sub16 = add nsw i32 %sub, -1, !dbg !1620
+  %mul = mul nsw i32 %14, %sub16, !dbg !1620
+  %NumberofBasicUnitHeaderBits = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 121, !dbg !1620
+  %15 = load i32* %NumberofBasicUnitHeaderBits, align 4, !dbg !1620, !tbaa !807
+  %add = add nsw i32 %15, %mul, !dbg !1620
+  %conv17 = sitofp i32 %add to double, !dbg !1620
+  %conv19 = sitofp i32 %sub to double, !dbg !1620
+  %div20 = fdiv double %conv17, %conv19, !dbg !1620
+  %add21 = fadd double %div20, 5.000000e-01, !dbg !1620
+  %conv22 = fptosi double %add21 to i32, !dbg !1620
+  store i32 %conv22, i32* @PAveHeaderBits1, align 4, !dbg !1620, !tbaa !807
+  %16 = load i32* @PAveHeaderBits3, align 4, !dbg !1622, !tbaa !807
+  %cmp23 = icmp eq i32 %16, 0, !dbg !1622
+  br i1 %cmp23, label %if.then25, label %if.else26, !dbg !1622
 
 if.then25:                                        ; preds = %if.then15
-  store i32 %conv22, i32* @PAveHeaderBits2, align 4, !tbaa !3
-  br label %if.end37
+  store i32 %conv22, i32* @PAveHeaderBits2, align 4, !dbg !1623, !tbaa !807
+  br label %if.end37, !dbg !1623
 
 if.else26:                                        ; preds = %if.then15
-  %mul27 = mul nsw i32 %sub, %conv22
-  %mul28 = mul nsw i32 %13, %16
-  %add29 = add nsw i32 %mul28, %mul27
-  %conv30 = sitofp i32 %add29 to double
-  %conv32 = sitofp i32 %12 to double
-  %div33 = fdiv double %conv30, %conv32
-  %add34 = fadd double %div33, 5.000000e-01
-  %conv35 = fptosi double %add34 to i32
-  store i32 %conv35, i32* @PAveHeaderBits2, align 4, !tbaa !3
+  %mul27 = mul nsw i32 %sub, %conv22, !dbg !1624
+  %mul28 = mul nsw i32 %13, %16, !dbg !1624
+  %add29 = add nsw i32 %mul28, %mul27, !dbg !1624
+  %conv30 = sitofp i32 %add29 to double, !dbg !1624
+  %conv32 = sitofp i32 %12 to double, !dbg !1624
+  %div33 = fdiv double %conv30, %conv32, !dbg !1624
+  %add34 = fadd double %div33, 5.000000e-01, !dbg !1624
+  %conv35 = fptosi double %add34 to i32, !dbg !1624
+  store i32 %conv35, i32* @PAveHeaderBits2, align 4, !dbg !1624, !tbaa !807
   br label %if.end37
 
 if.end37:                                         ; preds = %if.then25, %if.else26, %if.end
-  %PicInterlace = getelementptr inbounds %struct.InputParameters* %7, i64 0, i32 91
-  %17 = load i32* %PicInterlace, align 4, !tbaa !3
-  %cmp38 = icmp eq i32 %17, 2
-  br i1 %cmp38, label %land.lhs.true42, label %lor.lhs.false
+  %PicInterlace = getelementptr inbounds %struct.InputParameters* %7, i64 0, i32 91, !dbg !1625
+  %17 = load i32* %PicInterlace, align 4, !dbg !1625, !tbaa !807
+  %cmp38 = icmp eq i32 %17, 2, !dbg !1625
+  br i1 %cmp38, label %land.lhs.true42, label %lor.lhs.false, !dbg !1625
 
 lor.lhs.false:                                    ; preds = %if.end37
-  %18 = load i32* %MbInterlace, align 4, !tbaa !3
-  %tobool41 = icmp eq i32 %18, 0
-  br i1 %tobool41, label %if.else49, label %land.lhs.true42
+  %18 = load i32* %MbInterlace, align 4, !dbg !1625, !tbaa !807
+  %tobool41 = icmp eq i32 %18, 0, !dbg !1625
+  br i1 %tobool41, label %if.else49, label %land.lhs.true42, !dbg !1625
 
 land.lhs.true42:                                  ; preds = %lor.lhs.false, %if.end37
-  %FieldControl43 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 134
-  %19 = load i32* %FieldControl43, align 4, !tbaa !3
-  %cmp44 = icmp eq i32 %19, 1
-  br i1 %cmp44, label %if.then46, label %if.else49
+  %FieldControl43 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 134, !dbg !1625
+  %19 = load i32* %FieldControl43, align 4, !dbg !1625, !tbaa !807
+  %cmp44 = icmp eq i32 %19, 1, !dbg !1625
+  br i1 %cmp44, label %if.then46, label %if.else49, !dbg !1625
 
 if.then46:                                        ; preds = %land.lhs.true42
-  %20 = load double* @CurrentFrameMAD, align 8, !tbaa !4
-  %sub47 = add nsw i32 %12, -1
-  %sub48 = sub i32 %sub47, %13
-  %idxprom = sext i32 %sub48 to i64
-  %21 = load double** @FCBUCFMAD, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds double* %21, i64 %idxprom
-  store double %20, double* %arrayidx, align 8, !tbaa !4
-  br label %if.end54
+  %20 = load double* @CurrentFrameMAD, align 8, !dbg !1626, !tbaa !862
+  %sub47 = add nsw i32 %12, -1, !dbg !1626
+  %sub48 = sub i32 %sub47, %13, !dbg !1626
+  %idxprom = sext i32 %sub48 to i64, !dbg !1626
+  %21 = load double** @FCBUCFMAD, align 8, !dbg !1626, !tbaa !804
+  %arrayidx = getelementptr inbounds double* %21, i64 %idxprom, !dbg !1626
+  store double %20, double* %arrayidx, align 8, !dbg !1626, !tbaa !862
+  br label %if.end54, !dbg !1626
 
 if.else49:                                        ; preds = %lor.lhs.false, %land.lhs.true42
-  %22 = load double* @CurrentFrameMAD, align 8, !tbaa !4
-  %sub50 = add nsw i32 %12, -1
-  %sub51 = sub i32 %sub50, %13
-  %idxprom52 = sext i32 %sub51 to i64
-  %23 = load double** @BUCFMAD, align 8, !tbaa !0
-  %arrayidx53 = getelementptr inbounds double* %23, i64 %idxprom52
-  store double %22, double* %arrayidx53, align 8, !tbaa !4
+  %22 = load double* @CurrentFrameMAD, align 8, !dbg !1627, !tbaa !862
+  %sub50 = add nsw i32 %12, -1, !dbg !1627
+  %sub51 = sub i32 %sub50, %13, !dbg !1627
+  %idxprom52 = sext i32 %sub51 to i64, !dbg !1627
+  %23 = load double** @BUCFMAD, align 8, !dbg !1627, !tbaa !804
+  %arrayidx53 = getelementptr inbounds double* %23, i64 %idxprom52, !dbg !1627
+  store double %22, double* %arrayidx53, align 8, !dbg !1627, !tbaa !862
   br label %if.end54
 
 if.end54:                                         ; preds = %if.else49, %if.then46
-  %cmp55 = icmp eq i32 %13, 0
-  %NumberofCodedPFrame58 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 127
-  %24 = load i32* %NumberofCodedPFrame58, align 4, !tbaa !3
-  br i1 %cmp55, label %if.else61, label %if.then57
+  %cmp55 = icmp eq i32 %13, 0, !dbg !1628
+  %NumberofCodedPFrame58 = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 127, !dbg !1629
+  %24 = load i32* %NumberofCodedPFrame58, align 4, !dbg !1629, !tbaa !807
+  br i1 %cmp55, label %if.else61, label %if.then57, !dbg !1628
 
 if.then57:                                        ; preds = %if.end54
-  %mul59 = mul nsw i32 %12, %24
-  %add60 = add nsw i32 %mul59, %sub
-  br label %if.end67
+  %mul59 = mul nsw i32 %12, %24, !dbg !1629
+  %add60 = add nsw i32 %mul59, %sub, !dbg !1629
+  call void @llvm.dbg.value(metadata !{i32 %add60}, i64 0, metadata !101), !dbg !1629
+  br label %if.end67, !dbg !1629
 
 if.else61:                                        ; preds = %if.end54
-  %sub63 = add nsw i32 %24, -1
-  %mul64 = mul nsw i32 %12, %sub63
-  %add65 = add nsw i32 %mul64, %sub
+  %sub63 = add nsw i32 %24, -1, !dbg !1630
+  %mul64 = mul nsw i32 %12, %sub63, !dbg !1630
+  %add65 = add nsw i32 %mul64, %sub, !dbg !1630
+  call void @llvm.dbg.value(metadata !{i32 %add65}, i64 0, metadata !101), !dbg !1630
   br label %if.end67
 
 if.end67:                                         ; preds = %if.then57, %if.else61, %ComputeFrameMAD.exit
   %m_Nc.0 = phi i32 [ %6, %ComputeFrameMAD.exit ], [ %add60, %if.then57 ], [ %add65, %if.else61 ]
-  %NumberofHeaderBits = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 119
-  %25 = load i32* %NumberofHeaderBits, align 4, !tbaa !3
-  store i32 %25, i32* @PPreHeader, align 4, !tbaa !3
-  br label %for.body
+  call void @llvm.dbg.value(metadata !1631, i64 0, metadata !102), !dbg !1632
+  %NumberofHeaderBits = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 119, !dbg !1633
+  %25 = load i32* %NumberofHeaderBits, align 4, !dbg !1633, !tbaa !807
+  store i32 %25, i32* @PPreHeader, align 4, !dbg !1633, !tbaa !807
+  call void @llvm.dbg.value(metadata !1634, i64 0, metadata !94), !dbg !1635
+  br label %for.body, !dbg !1635
 
 for.body:                                         ; preds = %if.end67, %for.body
   %indvars.iv274 = phi i64 [ 19, %if.end67 ], [ %indvars.iv.next275, %for.body ]
-  %indvars.iv.next275 = add i64 %indvars.iv274, -1
-  %arrayidx76 = getelementptr inbounds [20 x double]* @Pm_rgQp, i64 0, i64 %indvars.iv.next275
-  %26 = load double* %arrayidx76, align 8, !tbaa !4
-  %arrayidx78 = getelementptr inbounds [20 x double]* @Pm_rgQp, i64 0, i64 %indvars.iv274
-  store double %26, double* %arrayidx78, align 8, !tbaa !4
-  %arrayidx82 = getelementptr inbounds [21 x double]* @m_rgQp, i64 0, i64 %indvars.iv274
-  store double %26, double* %arrayidx82, align 8, !tbaa !4
-  %arrayidx85 = getelementptr inbounds [20 x double]* @Pm_rgRp, i64 0, i64 %indvars.iv.next275
-  %27 = load double* %arrayidx85, align 8, !tbaa !4
-  %arrayidx87 = getelementptr inbounds [20 x double]* @Pm_rgRp, i64 0, i64 %indvars.iv274
-  store double %27, double* %arrayidx87, align 8, !tbaa !4
-  %arrayidx91 = getelementptr inbounds [21 x double]* @m_rgRp, i64 0, i64 %indvars.iv274
-  store double %27, double* %arrayidx91, align 8, !tbaa !4
-  %28 = trunc i64 %indvars.iv.next275 to i32
-  %cmp72 = icmp sgt i32 %28, 0
-  br i1 %cmp72, label %for.body, label %for.end
+  %indvars.iv.next275 = add i64 %indvars.iv274, -1, !dbg !1635
+  %arrayidx76 = getelementptr inbounds [20 x double]* @Pm_rgQp, i64 0, i64 %indvars.iv.next275, !dbg !1637
+  %26 = load double* %arrayidx76, align 8, !dbg !1637, !tbaa !862
+  %arrayidx78 = getelementptr inbounds [20 x double]* @Pm_rgQp, i64 0, i64 %indvars.iv274, !dbg !1637
+  store double %26, double* %arrayidx78, align 8, !dbg !1637, !tbaa !862
+  %arrayidx82 = getelementptr inbounds [21 x double]* @m_rgQp, i64 0, i64 %indvars.iv274, !dbg !1639
+  store double %26, double* %arrayidx82, align 8, !dbg !1639, !tbaa !862
+  %arrayidx85 = getelementptr inbounds [20 x double]* @Pm_rgRp, i64 0, i64 %indvars.iv.next275, !dbg !1640
+  %27 = load double* %arrayidx85, align 8, !dbg !1640, !tbaa !862
+  %arrayidx87 = getelementptr inbounds [20 x double]* @Pm_rgRp, i64 0, i64 %indvars.iv274, !dbg !1640
+  store double %27, double* %arrayidx87, align 8, !dbg !1640, !tbaa !862
+  %arrayidx91 = getelementptr inbounds [21 x double]* @m_rgRp, i64 0, i64 %indvars.iv274, !dbg !1641
+  store double %27, double* %arrayidx91, align 8, !dbg !1641, !tbaa !862
+  %28 = trunc i64 %indvars.iv.next275 to i32, !dbg !1635
+  %cmp72 = icmp sgt i32 %28, 0, !dbg !1635
+  br i1 %cmp72, label %for.body, label %for.end, !dbg !1635
 
 for.end:                                          ; preds = %for.body
-  %cmp68 = icmp sgt i32 %m_Nc.0, 1
-  %29 = load i32* @m_Qc, align 4, !tbaa !3
-  %rem.i = srem i32 %29, 6
-  %idxprom.i = sext i32 %rem.i to i64
-  %arrayidx.i254 = getelementptr inbounds [6 x double]* @QP2Qstep.QP2QSTEP, i64 0, i64 %idxprom.i
-  %30 = load double* %arrayidx.i254, align 8, !tbaa !4
-  %div.i255 = sdiv i32 %29, 6
-  %cmp3.i = icmp sgt i32 %29, 5
-  br i1 %cmp3.i, label %for.body.i257, label %QP2Qstep.exit
+  %cmp68 = icmp sgt i32 %m_Nc.0, 1, !dbg !1642
+  %29 = load i32* @m_Qc, align 4, !dbg !1643, !tbaa !807
+  tail call void @llvm.dbg.value(metadata !{i32 %29}, i64 0, metadata !1644), !dbg !1645
+  %rem.i = srem i32 %29, 6, !dbg !1646
+  %idxprom.i = sext i32 %rem.i to i64, !dbg !1646
+  %arrayidx.i254 = getelementptr inbounds [6 x double]* @QP2Qstep.QP2QSTEP, i64 0, i64 %idxprom.i, !dbg !1646
+  %30 = load double* %arrayidx.i254, align 8, !dbg !1646, !tbaa !862
+  tail call void @llvm.dbg.value(metadata !{double %30}, i64 0, metadata !1647), !dbg !1646
+  tail call void @llvm.dbg.value(metadata !21, i64 0, metadata !1648), !dbg !1649
+  %div.i255 = sdiv i32 %29, 6, !dbg !1649
+  %cmp3.i = icmp sgt i32 %29, 5, !dbg !1649
+  br i1 %cmp3.i, label %for.body.i257, label %QP2Qstep.exit, !dbg !1649
 
 for.body.i257:                                    ; preds = %for.end, %for.body.i257
   %Qstep.05.i = phi double [ %mul.i, %for.body.i257 ], [ %30, %for.end ]
   %i.04.i = phi i32 [ %inc.i, %for.body.i257 ], [ 0, %for.end ]
-  %mul.i = fmul double %Qstep.05.i, 2.000000e+00
-  %inc.i = add nsw i32 %i.04.i, 1
-  %cmp.i256 = icmp slt i32 %inc.i, %div.i255
-  br i1 %cmp.i256, label %for.body.i257, label %QP2Qstep.exit
+  %mul.i = fmul double %Qstep.05.i, 2.000000e+00, !dbg !1650
+  tail call void @llvm.dbg.value(metadata !{double %mul.i}, i64 0, metadata !1647), !dbg !1650
+  %inc.i = add nsw i32 %i.04.i, 1, !dbg !1649
+  tail call void @llvm.dbg.value(metadata !{i32 %inc.i}, i64 0, metadata !1648), !dbg !1649
+  %cmp.i256 = icmp slt i32 %inc.i, %div.i255, !dbg !1649
+  br i1 %cmp.i256, label %for.body.i257, label %QP2Qstep.exit, !dbg !1649
 
 QP2Qstep.exit:                                    ; preds = %for.body.i257, %for.end
   %31 = phi double [ %30, %for.end ], [ %mul.i, %for.body.i257 ]
-  store double %31, double* getelementptr inbounds ([20 x double]* @Pm_rgQp, i64 0, i64 0), align 16, !tbaa !4
-  %32 = load i32* %BasicUnit, align 4, !tbaa !3
-  %33 = load i32* %Frame_Total_Number_MB, align 4, !tbaa !3
-  %cmp95 = icmp eq i32 %32, %33
-  br i1 %cmp95, label %if.then97, label %if.else101
+  store double %31, double* getelementptr inbounds ([20 x double]* @Pm_rgQp, i64 0, i64 0), align 16, !dbg !1643, !tbaa !862
+  %32 = load i32* %BasicUnit, align 4, !dbg !1651, !tbaa !807
+  %33 = load i32* %Frame_Total_Number_MB, align 4, !dbg !1651, !tbaa !807
+  %cmp95 = icmp eq i32 %32, %33, !dbg !1651
+  br i1 %cmp95, label %if.then97, label %if.else101, !dbg !1651
 
 if.then97:                                        ; preds = %QP2Qstep.exit
-  %NumberofTextureBits = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 120
-  %34 = load i32* %NumberofTextureBits, align 4, !tbaa !3
-  %conv98 = sitofp i32 %34 to double
-  %35 = load double* @CurrentFrameMAD, align 8, !tbaa !4
-  %div100 = fdiv double %conv98, %35
-  br label %if.end105
+  %NumberofTextureBits = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 120, !dbg !1652
+  %34 = load i32* %NumberofTextureBits, align 4, !dbg !1652, !tbaa !807
+  %conv98 = sitofp i32 %34 to double, !dbg !1652
+  %35 = load double* @CurrentFrameMAD, align 8, !dbg !1652, !tbaa !862
+  %div100 = fdiv double %conv98, %35, !dbg !1652
+  br label %if.end105, !dbg !1652
 
 if.else101:                                       ; preds = %QP2Qstep.exit
-  %NumberofBasicUnitTextureBits = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 122
-  %36 = load i32* %NumberofBasicUnitTextureBits, align 4, !tbaa !3
-  %conv102 = sitofp i32 %36 to double
-  %37 = load double* @CurrentFrameMAD, align 8, !tbaa !4
-  %div104 = fdiv double %conv102, %37
+  %NumberofBasicUnitTextureBits = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 122, !dbg !1653
+  %36 = load i32* %NumberofBasicUnitTextureBits, align 4, !dbg !1653, !tbaa !807
+  %conv102 = sitofp i32 %36 to double, !dbg !1653
+  %37 = load double* @CurrentFrameMAD, align 8, !dbg !1653, !tbaa !862
+  %div104 = fdiv double %conv102, %37, !dbg !1653
   br label %if.end105
 
 if.end105:                                        ; preds = %if.else101, %if.then97
   %38 = phi double [ %35, %if.then97 ], [ %37, %if.else101 ]
   %storemerge253 = phi double [ %div100, %if.then97 ], [ %div104, %if.else101 ]
-  store double %storemerge253, double* getelementptr inbounds ([20 x double]* @Pm_rgRp, i64 0, i64 0), align 16, !tbaa !4
-  store double %31, double* getelementptr inbounds ([21 x double]* @m_rgQp, i64 0, i64 0), align 16, !tbaa !4
-  store double %storemerge253, double* getelementptr inbounds ([21 x double]* @m_rgRp, i64 0, i64 0), align 16, !tbaa !4
-  %39 = load double* @Pm_X1, align 8, !tbaa !4
-  store double %39, double* @m_X1, align 8, !tbaa !4
-  %40 = load double* @Pm_X2, align 8, !tbaa !4
-  store double %40, double* @m_X2, align 8, !tbaa !4
-  %41 = load double* @PreviousFrameMAD, align 8, !tbaa !4
-  %cmp106 = fcmp ogt double %38, %41
-  br i1 %cmp106, label %cond.true, label %cond.false
+  store double %storemerge253, double* getelementptr inbounds ([20 x double]* @Pm_rgRp, i64 0, i64 0), align 16, !dbg !1653, !tbaa !862
+  store double %31, double* getelementptr inbounds ([21 x double]* @m_rgQp, i64 0, i64 0), align 16, !dbg !1654, !tbaa !862
+  store double %storemerge253, double* getelementptr inbounds ([21 x double]* @m_rgRp, i64 0, i64 0), align 16, !dbg !1655, !tbaa !862
+  %39 = load double* @Pm_X1, align 8, !dbg !1656, !tbaa !862
+  store double %39, double* @m_X1, align 8, !dbg !1656, !tbaa !862
+  %40 = load double* @Pm_X2, align 8, !dbg !1657, !tbaa !862
+  store double %40, double* @m_X2, align 8, !dbg !1657, !tbaa !862
+  %41 = load double* @PreviousFrameMAD, align 8, !dbg !1658, !tbaa !862
+  %cmp106 = fcmp ogt double %38, %41, !dbg !1658
+  br i1 %cmp106, label %cond.true, label %cond.false, !dbg !1658
 
 cond.true:                                        ; preds = %if.end105
-  %div108 = fdiv double %41, %38
-  br label %cond.end
+  %div108 = fdiv double %41, %38, !dbg !1658
+  br label %cond.end, !dbg !1658
 
 cond.false:                                       ; preds = %if.end105
-  %div111 = fdiv double %38, %41
-  br label %cond.end
+  %div111 = fdiv double %38, %41, !dbg !1658
+  br label %cond.end, !dbg !1658
 
 cond.end:                                         ; preds = %cond.false, %cond.true
   %div108.sink = phi double [ %div108, %cond.true ], [ %div111, %cond.false ]
-  %mul109 = fmul double %div108.sink, 2.000000e+01
-  %conv110 = fptosi double %mul109 to i32
-  %cmp114 = icmp slt i32 %conv110, 1
-  %cond119 = select i1 %cmp114, i32 1, i32 %conv110
-  %cmp120 = icmp slt i32 %cond119, %m_Nc.0
-  %cond125 = select i1 %cmp120, i32 %cond119, i32 %m_Nc.0
-  %42 = load i32* @m_windowSize, align 4, !tbaa !3
-  %add126 = add nsw i32 %42, 1
-  %cmp127 = icmp slt i32 %cond125, %add126
-  %cond125.add126 = select i1 %cmp127, i32 %cond125, i32 %add126
-  %cmp134 = icmp slt i32 %cond125.add126, 20
-  %cond139 = select i1 %cmp134, i32 %cond125.add126, i32 20
-  store i32 %cond139, i32* @m_windowSize, align 4, !tbaa !3
-  call void @llvm.memset.p0i8.i64(i8* bitcast ([21 x i32]* @m_rgRejected to i8*), i8 0, i64 80, i32 16, i1 false)
-  call void @RCModelEstimator(i32 %cond139) #9
-  %43 = load i32* @m_windowSize, align 4, !tbaa !3
-  %cmp149261 = icmp sgt i32 %43, 0
-  br i1 %cmp149261, label %for.body151.lr.ph, label %cond.false179
+  %mul109 = fmul double %div108.sink, 2.000000e+01, !dbg !1658
+  %conv110 = fptosi double %mul109 to i32, !dbg !1658
+  call void @llvm.dbg.value(metadata !{i32 %conv110}, i64 0, metadata !93), !dbg !1658
+  %cmp114 = icmp slt i32 %conv110, 1, !dbg !1659
+  %cond119 = select i1 %cmp114, i32 1, i32 %conv110, !dbg !1659
+  call void @llvm.dbg.value(metadata !{i32 %cond119}, i64 0, metadata !93), !dbg !1659
+  %cmp120 = icmp slt i32 %cond119, %m_Nc.0, !dbg !1660
+  %cond125 = select i1 %cmp120, i32 %cond119, i32 %m_Nc.0, !dbg !1660
+  call void @llvm.dbg.value(metadata !{i32 %cond125}, i64 0, metadata !93), !dbg !1660
+  %42 = load i32* @m_windowSize, align 4, !dbg !1661, !tbaa !807
+  %add126 = add nsw i32 %42, 1, !dbg !1661
+  %cmp127 = icmp slt i32 %cond125, %add126, !dbg !1661
+  %cond125.add126 = select i1 %cmp127, i32 %cond125, i32 %add126, !dbg !1661
+  call void @llvm.dbg.value(metadata !{i32 %cond125.add126}, i64 0, metadata !93), !dbg !1661
+  %cmp134 = icmp slt i32 %cond125.add126, 20, !dbg !1662
+  %cond139 = select i1 %cmp134, i32 %cond125.add126, i32 20, !dbg !1662
+  call void @llvm.dbg.value(metadata !{i32 %cond139}, i64 0, metadata !93), !dbg !1662
+  store i32 %cond139, i32* @m_windowSize, align 4, !dbg !1663, !tbaa !807
+  call void @llvm.dbg.value(metadata !21, i64 0, metadata !94), !dbg !1664
+  call void @llvm.memset.p0i8.i64(i8* bitcast ([21 x i32]* @m_rgRejected to i8*), i8 0, i64 80, i32 16, i1 false), !dbg !1666
+  call void @RCModelEstimator(i32 %cond139) #10, !dbg !1668
+  %43 = load i32* @m_windowSize, align 4, !dbg !1669, !tbaa !807
+  call void @llvm.dbg.value(metadata !{i32 %43}, i64 0, metadata !93), !dbg !1669
+  call void @llvm.dbg.value(metadata !21, i64 0, metadata !94), !dbg !1670
+  %cmp149261 = icmp sgt i32 %43, 0, !dbg !1670
+  br i1 %cmp149261, label %for.body151.lr.ph, label %cond.false179, !dbg !1670
 
 for.body151.lr.ph:                                ; preds = %cond.end
-  %44 = load double* @m_X1, align 8, !tbaa !4
-  %45 = load double* @m_X2, align 8, !tbaa !4
-  br label %for.body151
+  %44 = load double* @m_X1, align 8, !dbg !1672, !tbaa !862
+  %45 = load double* @m_X2, align 8, !dbg !1672, !tbaa !862
+  br label %for.body151, !dbg !1670
 
 for.body151:                                      ; preds = %for.body151, %for.body151.lr.ph
   %indvars.iv266 = phi i64 [ 0, %for.body151.lr.ph ], [ %indvars.iv.next267, %for.body151 ]
   %std.0263 = phi double [ 0.000000e+00, %for.body151.lr.ph ], [ %add172, %for.body151 ]
-  %arrayidx153 = getelementptr inbounds [21 x double]* @m_rgQp, i64 0, i64 %indvars.iv266
-  %46 = load double* %arrayidx153, align 8, !tbaa !4
-  %div154 = fdiv double %44, %46
-  %mul159 = fmul double %46, %46
-  %div160 = fdiv double %45, %mul159
-  %add161 = fadd double %div154, %div160
-  %arrayidx163 = getelementptr inbounds [21 x double]* @m_rgRp, i64 0, i64 %indvars.iv266
-  %47 = load double* %arrayidx163, align 8, !tbaa !4
-  %sub164 = fsub double %add161, %47
-  %arrayidx166 = getelementptr inbounds [20 x double]* %error, i64 0, i64 %indvars.iv266
-  store double %sub164, double* %arrayidx166, align 8, !tbaa !4
-  %mul171 = fmul double %sub164, %sub164
-  %add172 = fadd double %std.0263, %mul171
-  %indvars.iv.next267 = add i64 %indvars.iv266, 1
-  %lftr.wideiv268 = trunc i64 %indvars.iv.next267 to i32
-  %exitcond269 = icmp eq i32 %lftr.wideiv268, %43
-  br i1 %exitcond269, label %for.end175, label %for.body151
+  %arrayidx153 = getelementptr inbounds [21 x double]* @m_rgQp, i64 0, i64 %indvars.iv266, !dbg !1672
+  %46 = load double* %arrayidx153, align 8, !dbg !1672, !tbaa !862
+  %div154 = fdiv double %44, %46, !dbg !1672
+  %mul159 = fmul double %46, %46, !dbg !1672
+  %div160 = fdiv double %45, %mul159, !dbg !1672
+  %add161 = fadd double %div154, %div160, !dbg !1672
+  %arrayidx163 = getelementptr inbounds [21 x double]* @m_rgRp, i64 0, i64 %indvars.iv266, !dbg !1672
+  %47 = load double* %arrayidx163, align 8, !dbg !1672, !tbaa !862
+  %sub164 = fsub double %add161, %47, !dbg !1672
+  %arrayidx166 = getelementptr inbounds [20 x double]* %error, i64 0, i64 %indvars.iv266, !dbg !1672
+  store double %sub164, double* %arrayidx166, align 8, !dbg !1672, !tbaa !862
+  %mul171 = fmul double %sub164, %sub164, !dbg !1674
+  %add172 = fadd double %std.0263, %mul171, !dbg !1674
+  call void @llvm.dbg.value(metadata !{double %add172}, i64 0, metadata !99), !dbg !1674
+  %indvars.iv.next267 = add i64 %indvars.iv266, 1, !dbg !1670
+  %lftr.wideiv268 = trunc i64 %indvars.iv.next267 to i32, !dbg !1670
+  %exitcond269 = icmp eq i32 %lftr.wideiv268, %43, !dbg !1670
+  br i1 %exitcond269, label %for.end175, label %for.body151, !dbg !1670
 
 for.end175:                                       ; preds = %for.body151
-  %cmp176 = icmp eq i32 %43, 2
-  br i1 %cmp176, label %cond.end183, label %cond.false179
+  %cmp176 = icmp eq i32 %43, 2, !dbg !1675
+  br i1 %cmp176, label %cond.end183, label %cond.false179, !dbg !1675
 
 cond.false179:                                    ; preds = %cond.end, %for.end175
   %std.0.lcssa279 = phi double [ %add172, %for.end175 ], [ 0.000000e+00, %cond.end ]
-  %conv180 = sitofp i32 %43 to double
-  %div181 = fdiv double %std.0.lcssa279, %conv180
-  %call182 = call double @sqrt(double %div181) #7
-  br label %cond.end183
+  %conv180 = sitofp i32 %43 to double, !dbg !1675
+  %div181 = fdiv double %std.0.lcssa279, %conv180, !dbg !1675
+  %call182 = call double @sqrt(double %div181) #8, !dbg !1675
+  br label %cond.end183, !dbg !1675
 
 cond.end183:                                      ; preds = %for.end175, %cond.false179
-  %cond184 = phi double [ %call182, %cond.false179 ], [ 0.000000e+00, %for.end175 ]
-  br i1 %cmp149261, label %for.body188, label %for.end200
+  %cond184 = phi double [ %call182, %cond.false179 ], [ 0.000000e+00, %for.end175 ], !dbg !1675
+  call void @llvm.dbg.value(metadata !{double %cond184}, i64 0, metadata !100), !dbg !1675
+  call void @llvm.dbg.value(metadata !21, i64 0, metadata !94), !dbg !1676
+  br i1 %cmp149261, label %for.body188, label %for.end200, !dbg !1676
 
 for.body188:                                      ; preds = %cond.end183, %for.inc198
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc198 ], [ 0, %cond.end183 ]
-  %arrayidx190 = getelementptr inbounds [20 x double]* %error, i64 0, i64 %indvars.iv
-  %48 = load double* %arrayidx190, align 8, !tbaa !4
-  %call191 = call double @fabs(double %48) #8
-  %cmp192 = fcmp ogt double %call191, %cond184
-  br i1 %cmp192, label %if.then194, label %for.inc198
+  %arrayidx190 = getelementptr inbounds [20 x double]* %error, i64 0, i64 %indvars.iv, !dbg !1678
+  %48 = load double* %arrayidx190, align 8, !dbg !1678, !tbaa !862
+  %call191 = call double @fabs(double %48) #9, !dbg !1678
+  %cmp192 = fcmp ogt double %call191, %cond184, !dbg !1678
+  br i1 %cmp192, label %if.then194, label %for.inc198, !dbg !1678
 
 if.then194:                                       ; preds = %for.body188
-  %arrayidx196 = getelementptr inbounds [21 x i32]* @m_rgRejected, i64 0, i64 %indvars.iv
-  store i32 1, i32* %arrayidx196, align 4, !tbaa !1
-  br label %for.inc198
+  %arrayidx196 = getelementptr inbounds [21 x i32]* @m_rgRejected, i64 0, i64 %indvars.iv, !dbg !1680
+  store i32 1, i32* %arrayidx196, align 4, !dbg !1680, !tbaa !805
+  br label %for.inc198, !dbg !1680
 
 for.inc198:                                       ; preds = %for.body188, %if.then194
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %43
-  br i1 %exitcond, label %for.end200, label %for.body188
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1676
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1676
+  %exitcond = icmp eq i32 %lftr.wideiv, %43, !dbg !1676
+  br i1 %exitcond, label %for.end200, label %for.body188, !dbg !1676
 
 for.end200:                                       ; preds = %for.inc198, %cond.end183
-  store i32 0, i32* getelementptr inbounds ([21 x i32]* @m_rgRejected, i64 0, i64 0), align 16, !tbaa !1
-  call void @RCModelEstimator(i32 %43) #9
-  br i1 %cmp68, label %if.then202, label %if.else203
+  store i32 0, i32* getelementptr inbounds ([21 x i32]* @m_rgRejected, i64 0, i64 0), align 16, !dbg !1681, !tbaa !805
+  call void @RCModelEstimator(i32 %43) #10, !dbg !1682
+  br i1 %cmp68, label %if.then202, label %if.else203, !dbg !1683
 
 if.then202:                                       ; preds = %for.end200
-  call void @updateMADModel() #9
-  br label %if.end210
+  call void @updateMADModel() #10, !dbg !1684
+  br label %if.end210, !dbg !1684
 
 if.else203:                                       ; preds = %for.end200
-  %49 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type204 = getelementptr inbounds %struct.ImageParameters* %49, i64 0, i32 6
-  %50 = load i32* %type204, align 4, !tbaa !3
-  %cmp205 = icmp eq i32 %50, 0
-  br i1 %cmp205, label %if.then207, label %if.end210
+  %49 = load %struct.ImageParameters** @img, align 8, !dbg !1685, !tbaa !804
+  %type204 = getelementptr inbounds %struct.ImageParameters* %49, i64 0, i32 6, !dbg !1685
+  %50 = load i32* %type204, align 4, !dbg !1685, !tbaa !807
+  %cmp205 = icmp eq i32 %50, 0, !dbg !1685
+  br i1 %cmp205, label %if.then207, label %if.end210, !dbg !1685
 
 if.then207:                                       ; preds = %if.else203
-  %51 = load double* @CurrentFrameMAD, align 8, !tbaa !4
-  store double %51, double* getelementptr inbounds ([21 x double]* @PPictureMAD, i64 0, i64 0), align 16, !tbaa !4
-  br label %if.end210
+  %51 = load double* @CurrentFrameMAD, align 8, !dbg !1686, !tbaa !862
+  store double %51, double* getelementptr inbounds ([21 x double]* @PPictureMAD, i64 0, i64 0), align 16, !dbg !1686, !tbaa !862
+  br label %if.end210, !dbg !1686
 
 if.end210:                                        ; preds = %if.then202, %if.then207, %if.else203, %entry
-  call void @llvm.lifetime.end(i64 160, i8* %0) #6
-  ret void
+  call void @llvm.lifetime.end(i64 160, i8* %0) #7, !dbg !1687
+  ret void, !dbg !1687
 }

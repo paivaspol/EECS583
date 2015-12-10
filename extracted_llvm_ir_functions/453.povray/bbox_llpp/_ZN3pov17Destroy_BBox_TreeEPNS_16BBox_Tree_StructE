@@ -1,0 +1,46 @@
+define void @_ZN3pov17Destroy_BBox_TreeEPNS_16BBox_Tree_StructE(%"struct.pov::BBox_Tree_Struct"* %Node) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::BBox_Tree_Struct"* %Node}, i64 0, metadata !225), !dbg !1341
+  %cmp = icmp eq %"struct.pov::BBox_Tree_Struct"* %Node, null, !dbg !1342
+  br i1 %cmp, label %if.end12, label %if.then, !dbg !1342
+
+if.then:                                          ; preds = %entry
+  %Entries = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %Node, i64 0, i32 1, !dbg !1343
+  %0 = load i16* %Entries, align 2, !dbg !1343, !tbaa !1345
+  %cmp1 = icmp sgt i16 %0, 0, !dbg !1343
+  br i1 %cmp1, label %for.body.lr.ph, label %if.end, !dbg !1343
+
+for.body.lr.ph:                                   ; preds = %if.then
+  %Node7 = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %Node, i64 0, i32 3, !dbg !1346
+  br label %for.body, !dbg !1350
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %i.024 = phi i16 [ 0, %for.body.lr.ph ], [ %inc, %for.body ]
+  %idxprom = sext i16 %i.024 to i64, !dbg !1346
+  %1 = load %"struct.pov::BBox_Tree_Struct"*** %Node7, align 8, !dbg !1346, !tbaa !1312
+  %arrayidx = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"** %1, i64 %idxprom, !dbg !1346
+  %2 = load %"struct.pov::BBox_Tree_Struct"** %arrayidx, align 8, !dbg !1346, !tbaa !1312
+  tail call void @_ZN3pov17Destroy_BBox_TreeEPNS_16BBox_Tree_StructE(%"struct.pov::BBox_Tree_Struct"* %2) #6, !dbg !1346
+  %inc = add i16 %i.024, 1, !dbg !1350
+  tail call void @llvm.dbg.value(metadata !{i16 %inc}, i64 0, metadata !226), !dbg !1350
+  %3 = load i16* %Entries, align 2, !dbg !1350, !tbaa !1345
+  %cmp6 = icmp slt i16 %inc, %3, !dbg !1350
+  br i1 %cmp6, label %for.body, label %for.end, !dbg !1350
+
+for.end:                                          ; preds = %for.body
+  %4 = load %"struct.pov::BBox_Tree_Struct"*** %Node7, align 8, !dbg !1351, !tbaa !1312
+  %5 = bitcast %"struct.pov::BBox_Tree_Struct"** %4 to i8*, !dbg !1351
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %5, i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 315) #6, !dbg !1351
+  store i16 0, i16* %Entries, align 2, !dbg !1353, !tbaa !1345
+  store %"struct.pov::BBox_Tree_Struct"** null, %"struct.pov::BBox_Tree_Struct"*** %Node7, align 8, !dbg !1354, !tbaa !1312
+  br label %if.end, !dbg !1355
+
+if.end:                                           ; preds = %for.end, %if.then
+  %6 = bitcast %"struct.pov::BBox_Tree_Struct"* %Node to i8*, !dbg !1356
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %6, i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 322) #6, !dbg !1356
+  tail call void @llvm.dbg.value(metadata !1358, i64 0, metadata !225), !dbg !1356
+  br label %if.end12, !dbg !1359
+
+if.end12:                                         ; preds = %entry, %if.end
+  ret void, !dbg !1360
+}

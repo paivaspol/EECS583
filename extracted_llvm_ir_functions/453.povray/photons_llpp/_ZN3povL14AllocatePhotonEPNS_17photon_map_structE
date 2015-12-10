@@ -1,0 +1,103 @@
+define internal fastcc %"struct.pov::photon_struct"* @_ZN3povL14AllocatePhotonEPNS_17photon_map_structE(%"struct.pov::photon_map_struct"* nocapture %map) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::photon_map_struct"* %map}, i64 0, metadata !1296), !dbg !2726
+  %numPhotons = getelementptr inbounds %"struct.pov::photon_map_struct"* %map, i64 0, i32 2, !dbg !2727
+  %0 = load i32* %numPhotons, align 4, !dbg !2727, !tbaa !1674
+  %and = and i32 %0, 16383, !dbg !2727
+  tail call void @llvm.dbg.value(metadata !{i32 %and}, i64 0, metadata !1297), !dbg !2727
+  %shr = ashr i32 %0, 14, !dbg !2728
+  tail call void @llvm.dbg.value(metadata !{i32 %shr}, i64 0, metadata !1299), !dbg !2728
+  %inc = add nsw i32 %0, 1, !dbg !2729
+  store i32 %inc, i32* %numPhotons, align 4, !dbg !2729, !tbaa !1674
+  %numBlocks = getelementptr inbounds %"struct.pov::photon_map_struct"* %map, i64 0, i32 1, !dbg !2730
+  %1 = load i32* %numBlocks, align 4, !dbg !2730, !tbaa !1674
+  %cmp = icmp eq i32 %shr, %1, !dbg !2730
+  br i1 %cmp, label %if.then, label %entry.if.end_crit_edge, !dbg !2730
+
+entry.if.end_crit_edge:                           ; preds = %entry
+  %head24.phi.trans.insert = getelementptr inbounds %"struct.pov::photon_map_struct"* %map, i64 0, i32 0
+  %.pre70 = load %"struct.pov::photon_struct"*** %head24.phi.trans.insert, align 8, !dbg !2731, !tbaa !1709
+  %idxprom23.pre = sext i32 %shr to i64, !dbg !2731
+  br label %if.end, !dbg !2730
+
+if.then:                                          ; preds = %entry
+  %conv = sext i32 %shr to i64, !dbg !2732
+  %mul4 = shl nsw i64 %conv, 4, !dbg !2732
+  %call = tail call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %mul4, i8* getelementptr inbounds ([56 x i8]* @.str2, i64 0, i64 0), i32 490, i8* getelementptr inbounds ([8 x i8]* @.str12, i64 0, i64 0)) #8, !dbg !2732
+  %2 = bitcast i8* %call to %"struct.pov::photon_struct"**, !dbg !2732
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::photon_struct"** %2}, i64 0, metadata !1301), !dbg !2732
+  %3 = load i32* %numBlocks, align 4, !dbg !2733, !tbaa !1674
+  %mul6 = shl nsw i32 %3, 1, !dbg !2733
+  store i32 %mul6, i32* %numBlocks, align 4, !dbg !2733, !tbaa !1674
+  tail call void @llvm.dbg.value(metadata !172, i64 0, metadata !1300), !dbg !2734
+  %cmp767 = icmp sgt i32 %shr, 0, !dbg !2734
+  br i1 %cmp767, label %for.body.lr.ph, label %for.cond11.preheader, !dbg !2734
+
+for.body.lr.ph:                                   ; preds = %if.then
+  %head = getelementptr inbounds %"struct.pov::photon_map_struct"* %map, i64 0, i32 0, !dbg !2736
+  br label %for.body, !dbg !2734
+
+for.cond11.preheader:                             ; preds = %for.body, %if.then
+  %cmp1365 = icmp slt i32 %shr, %mul6, !dbg !2737
+  br i1 %cmp1365, label %for.body14.lr.ph, label %for.end19, !dbg !2737
+
+for.body14.lr.ph:                                 ; preds = %for.cond11.preheader
+  %4 = shl nsw i64 %conv, 3, !dbg !2737
+  %scevgep = getelementptr i8* %call, i64 %4
+  %5 = add i32 %shr, 1, !dbg !2737
+  %6 = icmp sgt i32 %mul6, %5
+  %smax = select i1 %6, i32 %mul6, i32 %5
+  %7 = add i32 %smax, -1, !dbg !2737
+  %8 = sub i32 %7, %shr, !dbg !2737
+  %9 = zext i32 %8 to i64
+  %10 = shl nuw nsw i64 %9, 3, !dbg !2737
+  %11 = add i64 %10, 8, !dbg !2737
+  call void @llvm.memset.p0i8.i64(i8* %scevgep, i8 0, i64 %11, i32 8, i1 false), !dbg !2739
+  br label %for.end19, !dbg !2737
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %12 = load %"struct.pov::photon_struct"*** %head, align 8, !dbg !2736, !tbaa !1709
+  %arrayidx = getelementptr inbounds %"struct.pov::photon_struct"** %12, i64 %indvars.iv, !dbg !2736
+  %13 = load %"struct.pov::photon_struct"** %arrayidx, align 8, !dbg !2736, !tbaa !1709
+  %arrayidx9 = getelementptr inbounds %"struct.pov::photon_struct"** %2, i64 %indvars.iv, !dbg !2736
+  store %"struct.pov::photon_struct"* %13, %"struct.pov::photon_struct"** %arrayidx9, align 8, !dbg !2736, !tbaa !1709
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2734
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !2734
+  %exitcond = icmp eq i32 %lftr.wideiv, %shr, !dbg !2734
+  br i1 %exitcond, label %for.cond11.preheader, label %for.body, !dbg !2734
+
+for.end19:                                        ; preds = %for.body14.lr.ph, %for.cond11.preheader
+  %head20 = getelementptr inbounds %"struct.pov::photon_map_struct"* %map, i64 0, i32 0, !dbg !2740
+  %14 = load %"struct.pov::photon_struct"*** %head20, align 8, !dbg !2740, !tbaa !1709
+  %15 = bitcast %"struct.pov::photon_struct"** %14 to i8*, !dbg !2740
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %15, i8* getelementptr inbounds ([56 x i8]* @.str2, i64 0, i64 0), i32 502) #8, !dbg !2740
+  store %"struct.pov::photon_struct"** %2, %"struct.pov::photon_struct"*** %head20, align 8, !dbg !2742, !tbaa !1709
+  br label %if.end, !dbg !2743
+
+if.end:                                           ; preds = %entry.if.end_crit_edge, %for.end19
+  %idxprom23.pre-phi = phi i64 [ %idxprom23.pre, %entry.if.end_crit_edge ], [ %conv, %for.end19 ], !dbg !2731
+  %16 = phi %"struct.pov::photon_struct"** [ %.pre70, %entry.if.end_crit_edge ], [ %2, %for.end19 ]
+  %head24 = getelementptr inbounds %"struct.pov::photon_map_struct"* %map, i64 0, i32 0, !dbg !2731
+  %arrayidx25 = getelementptr inbounds %"struct.pov::photon_struct"** %16, i64 %idxprom23.pre-phi, !dbg !2731
+  %17 = load %"struct.pov::photon_struct"** %arrayidx25, align 8, !dbg !2731, !tbaa !1709
+  %cmp26 = icmp eq %"struct.pov::photon_struct"* %17, null, !dbg !2731
+  br i1 %cmp26, label %if.then27, label %if.end32, !dbg !2731
+
+if.then27:                                        ; preds = %if.end
+  %call28 = tail call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 327680, i8* getelementptr inbounds ([56 x i8]* @.str2, i64 0, i64 0), i32 508, i8* getelementptr inbounds ([8 x i8]* @.str12, i64 0, i64 0)) #8, !dbg !2744
+  %18 = bitcast i8* %call28 to %"struct.pov::photon_struct"*, !dbg !2744
+  %19 = load %"struct.pov::photon_struct"*** %head24, align 8, !dbg !2744, !tbaa !1709
+  %arrayidx31 = getelementptr inbounds %"struct.pov::photon_struct"** %19, i64 %idxprom23.pre-phi, !dbg !2744
+  store %"struct.pov::photon_struct"* %18, %"struct.pov::photon_struct"** %arrayidx31, align 8, !dbg !2744, !tbaa !1709
+  %.pre = load %"struct.pov::photon_struct"*** %head24, align 8, !dbg !2745, !tbaa !1709
+  %arrayidx36.phi.trans.insert = getelementptr inbounds %"struct.pov::photon_struct"** %.pre, i64 %idxprom23.pre-phi
+  %.pre69 = load %"struct.pov::photon_struct"** %arrayidx36.phi.trans.insert, align 8, !dbg !2745, !tbaa !1709
+  br label %if.end32, !dbg !2744
+
+if.end32:                                         ; preds = %if.then27, %if.end
+  %20 = phi %"struct.pov::photon_struct"* [ %.pre69, %if.then27 ], [ %17, %if.end ]
+  %idxprom3364 = zext i32 %and to i64, !dbg !2745
+  %arrayidx37 = getelementptr inbounds %"struct.pov::photon_struct"* %20, i64 %idxprom3364, !dbg !2745
+  ret %"struct.pov::photon_struct"* %arrayidx37, !dbg !2745
+}

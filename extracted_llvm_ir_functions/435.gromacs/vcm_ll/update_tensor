@@ -1,52 +1,65 @@
-define internal fastcc void @update_tensor(float* nocapture readonly %x, float %m0, [3 x float]* nocapture %I) #4 {
-  %1 = load float* %x, align 4, !tbaa !14
-  %2 = getelementptr inbounds float* %x, i64 1
-  %3 = load float* %2, align 4, !tbaa !14
-  %4 = fmul float %1, %3
-  %5 = fmul float %4, %m0
-  %6 = getelementptr inbounds float* %x, i64 2
-  %7 = load float* %6, align 4, !tbaa !14
-  %8 = fmul float %1, %7
-  %9 = fmul float %8, %m0
-  %10 = fmul float %3, %7
-  %11 = fmul float %10, %m0
-  %12 = fmul float %1, %1
-  %13 = fmul float %12, %m0
-  %14 = getelementptr inbounds [3 x float]* %I, i64 0, i64 0
-  %15 = load float* %14, align 4, !tbaa !14
-  %16 = fadd float %13, %15
-  store float %16, float* %14, align 4, !tbaa !14
-  %17 = load float* %2, align 4, !tbaa !14
-  %18 = fmul float %17, %17
-  %19 = fmul float %18, %m0
-  %20 = getelementptr inbounds [3 x float]* %I, i64 1, i64 1
-  %21 = load float* %20, align 4, !tbaa !14
-  %22 = fadd float %21, %19
-  store float %22, float* %20, align 4, !tbaa !14
-  %23 = load float* %6, align 4, !tbaa !14
-  %24 = fmul float %23, %23
-  %25 = fmul float %24, %m0
-  %26 = getelementptr inbounds [3 x float]* %I, i64 0, i64 1
-  %27 = load float* %26, align 4, !tbaa !14
-  %28 = fadd float %5, %27
-  store float %28, float* %26, align 4, !tbaa !14
-  %29 = getelementptr inbounds [3 x float]* %I, i64 1, i64 0
-  %30 = load float* %29, align 4, !tbaa !14
-  %31 = fadd float %5, %30
-  store float %31, float* %29, align 4, !tbaa !14
-  %32 = getelementptr inbounds [3 x float]* %I, i64 0, i64 2
-  %33 = load float* %32, align 4, !tbaa !14
-  %34 = fadd float %9, %33
-  store float %34, float* %32, align 4, !tbaa !14
-  %35 = getelementptr inbounds [3 x float]* %I, i64 1, i64 2
-  %36 = bitcast float* %35 to <4 x float>*
-  %37 = load <4 x float>* %36, align 4, !tbaa !14
-  %38 = insertelement <4 x float> undef, float %11, i32 0
-  %39 = insertelement <4 x float> %38, float %9, i32 1
-  %40 = insertelement <4 x float> %39, float %11, i32 2
-  %41 = insertelement <4 x float> %40, float %25, i32 3
-  %42 = fadd <4 x float> %41, %37
-  %43 = bitcast float* %35 to <4 x float>*
-  store <4 x float> %42, <4 x float>* %43, align 4, !tbaa !14
-  ret void
+define internal fastcc void @update_tensor(float* nocapture %x, float %m0, [3 x float]* nocapture %I) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float* %x}, i64 0, metadata !534), !dbg !689
+  tail call void @llvm.dbg.value(metadata !{float %m0}, i64 0, metadata !535), !dbg !689
+  tail call void @llvm.dbg.value(metadata !{[3 x float]* %I}, i64 0, metadata !536), !dbg !689
+  %0 = load float* %x, align 4, !dbg !690, !tbaa !596
+  %arrayidx1 = getelementptr inbounds float* %x, i64 1, !dbg !690
+  %1 = load float* %arrayidx1, align 4, !dbg !690, !tbaa !596
+  %mul = fmul float %0, %1, !dbg !690
+  %mul2 = fmul float %mul, %m0, !dbg !690
+  tail call void @llvm.dbg.value(metadata !{float %mul2}, i64 0, metadata !537), !dbg !690
+  %arrayidx4 = getelementptr inbounds float* %x, i64 2, !dbg !691
+  %2 = load float* %arrayidx4, align 4, !dbg !691, !tbaa !596
+  %mul5 = fmul float %0, %2, !dbg !691
+  %mul6 = fmul float %mul5, %m0, !dbg !691
+  tail call void @llvm.dbg.value(metadata !{float %mul6}, i64 0, metadata !539), !dbg !691
+  %mul9 = fmul float %1, %2, !dbg !692
+  %mul10 = fmul float %mul9, %m0, !dbg !692
+  tail call void @llvm.dbg.value(metadata !{float %mul10}, i64 0, metadata !540), !dbg !692
+  %mul13 = fmul float %0, %0, !dbg !693
+  %mul14 = fmul float %mul13, %m0, !dbg !693
+  %arrayidx16 = getelementptr inbounds [3 x float]* %I, i64 0, i64 0, !dbg !693
+  %3 = load float* %arrayidx16, align 4, !dbg !693, !tbaa !596
+  %add = fadd float %mul14, %3, !dbg !693
+  store float %add, float* %arrayidx16, align 4, !dbg !693, !tbaa !596
+  %4 = load float* %arrayidx1, align 4, !dbg !694, !tbaa !596
+  %mul19 = fmul float %4, %4, !dbg !694
+  %mul20 = fmul float %mul19, %m0, !dbg !694
+  %arrayidx22 = getelementptr inbounds [3 x float]* %I, i64 1, i64 1, !dbg !694
+  %5 = load float* %arrayidx22, align 4, !dbg !694, !tbaa !596
+  %add23 = fadd float %5, %mul20, !dbg !694
+  store float %add23, float* %arrayidx22, align 4, !dbg !694, !tbaa !596
+  %6 = load float* %arrayidx4, align 4, !dbg !695, !tbaa !596
+  %mul26 = fmul float %6, %6, !dbg !695
+  %mul27 = fmul float %mul26, %m0, !dbg !695
+  %arrayidx29 = getelementptr inbounds [3 x float]* %I, i64 2, i64 2, !dbg !695
+  %7 = load float* %arrayidx29, align 4, !dbg !695, !tbaa !596
+  %add30 = fadd float %7, %mul27, !dbg !695
+  store float %add30, float* %arrayidx29, align 4, !dbg !695, !tbaa !596
+  %arrayidx32 = getelementptr inbounds [3 x float]* %I, i64 0, i64 1, !dbg !696
+  %8 = load float* %arrayidx32, align 4, !dbg !696, !tbaa !596
+  %add33 = fadd float %mul2, %8, !dbg !696
+  store float %add33, float* %arrayidx32, align 4, !dbg !696, !tbaa !596
+  %arrayidx35 = getelementptr inbounds [3 x float]* %I, i64 1, i64 0, !dbg !697
+  %9 = load float* %arrayidx35, align 4, !dbg !697, !tbaa !596
+  %add36 = fadd float %mul2, %9, !dbg !697
+  store float %add36, float* %arrayidx35, align 4, !dbg !697, !tbaa !596
+  %arrayidx38 = getelementptr inbounds [3 x float]* %I, i64 0, i64 2, !dbg !698
+  %10 = load float* %arrayidx38, align 4, !dbg !698, !tbaa !596
+  %add39 = fadd float %mul6, %10, !dbg !698
+  store float %add39, float* %arrayidx38, align 4, !dbg !698, !tbaa !596
+  %arrayidx41 = getelementptr inbounds [3 x float]* %I, i64 2, i64 0, !dbg !699
+  %11 = load float* %arrayidx41, align 4, !dbg !699, !tbaa !596
+  %add42 = fadd float %mul6, %11, !dbg !699
+  store float %add42, float* %arrayidx41, align 4, !dbg !699, !tbaa !596
+  %arrayidx44 = getelementptr inbounds [3 x float]* %I, i64 1, i64 2, !dbg !700
+  %12 = load float* %arrayidx44, align 4, !dbg !700, !tbaa !596
+  %add45 = fadd float %mul10, %12, !dbg !700
+  store float %add45, float* %arrayidx44, align 4, !dbg !700, !tbaa !596
+  %arrayidx47 = getelementptr inbounds [3 x float]* %I, i64 2, i64 1, !dbg !701
+  %13 = load float* %arrayidx47, align 4, !dbg !701, !tbaa !596
+  %add48 = fadd float %mul10, %13, !dbg !701
+  store float %add48, float* %arrayidx47, align 4, !dbg !701, !tbaa !596
+  ret void, !dbg !702
 }

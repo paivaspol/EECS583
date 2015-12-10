@@ -1,0 +1,48 @@
+define void @_ZN6soplex5SVSet6removeEPiiS1_(%"class.soplex::SVSet"* nocapture %this, i32* nocapture %nums, i32 %n, i32* nocapture %perm) #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SVSet"* %this}, i64 0, metadata !2163), !dbg !4499
+  tail call void @llvm.dbg.value(metadata !{i32* %nums}, i64 0, metadata !2164), !dbg !4499
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !2165), !dbg !4499
+  tail call void @llvm.dbg.value(metadata !{i32* %perm}, i64 0, metadata !2166), !dbg !4499
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SVSet"* %this}, i64 0, metadata !4500), !dbg !4502
+  %thenum.i.i = getelementptr inbounds %"class.soplex::SVSet"* %this, i64 0, i32 1, i32 4, !dbg !4503
+  %0 = load i32* %thenum.i.i, align 4, !dbg !4503, !tbaa !3751
+  %cmp14 = icmp sgt i32 %0, 0, !dbg !4501
+  br i1 %cmp14, label %for.body.lr.ph, label %while.cond.preheader, !dbg !4501
+
+for.body.lr.ph:                                   ; preds = %entry
+  %1 = sext i32 %0 to i64
+  br label %for.body, !dbg !4501
+
+while.cond.preheader:                             ; preds = %for.body, %entry
+  tail call void @llvm.dbg.value(metadata !{i32 %dec2}, i64 0, metadata !2165), !dbg !4505
+  %tobool10 = icmp eq i32 %n, 0, !dbg !4505
+  br i1 %tobool10, label %while.end, label %while.body, !dbg !4505
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ %1, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !4501
+  %arrayidx = getelementptr inbounds i32* %perm, i64 %indvars.iv.next, !dbg !4506
+  %2 = trunc i64 %indvars.iv.next to i32, !dbg !4506
+  store i32 %2, i32* %arrayidx, align 4, !dbg !4506, !tbaa !3751
+  %cmp = icmp sgt i32 %2, 0, !dbg !4501
+  br i1 %cmp, label %for.body, label %while.cond.preheader, !dbg !4501
+
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %nums.addr.012 = phi i32* [ %incdec.ptr, %while.body ], [ %nums, %while.cond.preheader ]
+  %n.addr.011 = phi i32 [ %dec2, %while.body ], [ %n, %while.cond.preheader ]
+  %dec2 = add nsw i32 %n.addr.011, -1, !dbg !4505
+  %incdec.ptr = getelementptr inbounds i32* %nums.addr.012, i64 1, !dbg !4507
+  tail call void @llvm.dbg.value(metadata !{i32* %incdec.ptr}, i64 0, metadata !2164), !dbg !4507
+  %3 = load i32* %nums.addr.012, align 4, !dbg !4507, !tbaa !3751
+  %idxprom3 = sext i32 %3 to i64, !dbg !4507
+  %arrayidx4 = getelementptr inbounds i32* %perm, i64 %idxprom3, !dbg !4507
+  store i32 -1, i32* %arrayidx4, align 4, !dbg !4507, !tbaa !3751
+  tail call void @llvm.dbg.value(metadata !{i32 %dec2}, i64 0, metadata !2165), !dbg !4505
+  %tobool = icmp eq i32 %dec2, 0, !dbg !4505
+  br i1 %tobool, label %while.end, label %while.body, !dbg !4505
+
+while.end:                                        ; preds = %while.body, %while.cond.preheader
+  tail call void @_ZN6soplex5SVSet6removeEPi(%"class.soplex::SVSet"* %this, i32* %perm) #9, !dbg !4508
+  ret void, !dbg !4509
+}

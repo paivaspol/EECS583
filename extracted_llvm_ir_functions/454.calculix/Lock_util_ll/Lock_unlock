@@ -1,18 +1,19 @@
 define void @Lock_unlock(%struct._Lock* %lock) #0 {
 entry:
-  %cmp = icmp eq %struct._Lock* %lock, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._Lock* %lock}, i64 0, metadata !22), !dbg !34
+  %cmp = icmp eq %struct._Lock* %lock, null, !dbg !35
+  br i1 %cmp, label %if.then, label %if.end, !dbg !35
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([45 x i8]* @.str1, i64 0, i64 0), %struct._Lock* null) #3
-  tail call void @exit(i32 -1) #4
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !36, !tbaa !27
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([45 x i8]* @.str1, i64 0, i64 0), %struct._Lock* null) #4, !dbg !36
+  tail call void @exit(i32 -1) #5, !dbg !38
+  unreachable, !dbg !38
 
 if.end:                                           ; preds = %entry
-  %nunlocks = getelementptr inbounds %struct._Lock* %lock, i64 0, i32 2
-  %1 = load i32* %nunlocks, align 4, !tbaa !3
-  %inc = add nsw i32 %1, 1
-  store i32 %inc, i32* %nunlocks, align 4, !tbaa !3
-  ret void
+  %nunlocks = getelementptr inbounds %struct._Lock* %lock, i64 0, i32 2, !dbg !39
+  %1 = load i32* %nunlocks, align 4, !dbg !39, !tbaa !32
+  %inc = add nsw i32 %1, 1, !dbg !39
+  store i32 %inc, i32* %nunlocks, align 4, !dbg !39, !tbaa !32
+  ret void, !dbg !40
 }

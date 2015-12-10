@@ -1,0 +1,66 @@
+define internal void @_ZN3povL20Destroy_Light_SourceEPNS_13Object_StructE(%"struct.pov::Object_Struct"* %Object) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !869), !dbg !1165
+  %Light_Grid = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 2, i32 12, !dbg !1166
+  %0 = bitcast float* %Light_Grid to [5 x float]***, !dbg !1166
+  %1 = load [5 x float]*** %0, align 8, !dbg !1166, !tbaa !1036
+  %cmp = icmp eq [5 x float]** %1, null, !dbg !1166
+  br i1 %cmp, label %if.end, label %for.cond.preheader, !dbg !1166
+
+for.cond.preheader:                               ; preds = %entry
+  %Area_Size1 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 2, i32 9, i32 1, i64 1, !dbg !1167
+  %2 = bitcast float* %Area_Size1 to i32*, !dbg !1167
+  %3 = load i32* %2, align 4, !dbg !1167, !tbaa !1066
+  %cmp126 = icmp sgt i32 %3, 0, !dbg !1167
+  br i1 %cmp126, label %for.body, label %for.end, !dbg !1167
+
+for.body:                                         ; preds = %for.body, %for.cond.preheader
+  %4 = phi [5 x float]** [ %1, %for.cond.preheader ], [ %.pre28, %for.body ]
+  %indvars.iv = phi i64 [ 0, %for.cond.preheader ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds [5 x float]** %4, i64 %indvars.iv, !dbg !1170
+  %5 = load [5 x float]** %arrayidx, align 8, !dbg !1170, !tbaa !1036
+  %6 = bitcast [5 x float]* %5 to i8*, !dbg !1170
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %6, i8* getelementptr inbounds ([54 x i8]* @.str, i64 0, i64 0), i32 605) #7, !dbg !1170
+  %7 = load [5 x float]*** %0, align 8, !dbg !1170, !tbaa !1036
+  %arrayidx5 = getelementptr inbounds [5 x float]** %7, i64 %indvars.iv, !dbg !1170
+  store [5 x float]* null, [5 x float]** %arrayidx5, align 8, !dbg !1170, !tbaa !1036
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1167
+  %8 = load i32* %2, align 4, !dbg !1167, !tbaa !1066
+  %9 = trunc i64 %indvars.iv.next to i32, !dbg !1167
+  %cmp1 = icmp slt i32 %9, %8, !dbg !1167
+  %.pre28 = load [5 x float]*** %0, align 8, !dbg !1170, !tbaa !1036
+  br i1 %cmp1, label %for.body, label %for.end, !dbg !1167
+
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  %10 = phi [5 x float]** [ %1, %for.cond.preheader ], [ %.pre28, %for.body ]
+  %11 = bitcast [5 x float]** %10 to i8*, !dbg !1173
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %11, i8* getelementptr inbounds ([54 x i8]* @.str, i64 0, i64 0), i32 608) #7, !dbg !1173
+  store [5 x float]** null, [5 x float]*** %0, align 8, !dbg !1173, !tbaa !1036
+  br label %if.end, !dbg !1175
+
+if.end:                                           ; preds = %entry, %for.end
+  %blend_map = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 3, i32 2, !dbg !1176
+  %12 = load %"struct.pov::Object_Struct"** %blend_map, align 8, !dbg !1176
+  %tobool = icmp eq %"struct.pov::Object_Struct"* %12, null, !dbg !1176
+  br i1 %tobool, label %if.end11, label %if.then8, !dbg !1176
+
+if.then8:                                         ; preds = %if.end
+  %13 = bitcast %"struct.pov::Object_Struct"* %12 to %"struct.pov::Blend_Map_Struct"*, !dbg !1176
+  tail call void @_ZN3pov17Destroy_Blend_MapEPNS_16Blend_Map_StructE(%"struct.pov::Blend_Map_Struct"* %13) #7, !dbg !1177
+  store %"struct.pov::Object_Struct"* null, %"struct.pov::Object_Struct"** %blend_map, align 8, !dbg !1179, !tbaa !1036
+  br label %if.end11, !dbg !1180
+
+if.end11:                                         ; preds = %if.end, %if.then8
+  %Children = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, !dbg !1181
+  %14 = bitcast %"struct.pov::Object_Struct"* %Children to %"struct.pov::Object_Struct"**, !dbg !1181
+  %15 = load %"struct.pov::Object_Struct"** %14, align 8, !dbg !1181, !tbaa !1036
+  tail call void @_ZN3pov14Destroy_ObjectEPNS_13Object_StructE(%"struct.pov::Object_Struct"* %15) #7, !dbg !1181
+  %Projected_Through_Object = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 3, i32 1, !dbg !1182
+  %16 = bitcast i32* %Projected_Through_Object to %"struct.pov::Object_Struct"**, !dbg !1182
+  %17 = load %"struct.pov::Object_Struct"** %16, align 8, !dbg !1182, !tbaa !1036
+  tail call void @_ZN3pov14Destroy_ObjectEPNS_13Object_StructE(%"struct.pov::Object_Struct"* %17) #7, !dbg !1182
+  %18 = bitcast %"struct.pov::Object_Struct"* %Object to i8*, !dbg !1183
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %18, i8* getelementptr inbounds ([54 x i8]* @.str, i64 0, i64 0), i32 620) #7, !dbg !1183
+  tail call void @llvm.dbg.value(metadata !1185, i64 0, metadata !869), !dbg !1183
+  ret void, !dbg !1186
+}

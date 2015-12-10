@@ -1,78 +1,90 @@
 define i32 @IVfp80(%struct._IO_FILE* %fp, i32 %size, i32* %y, i32 %column, i32* nocapture %pierr) #0 {
 entry:
-  store i32 1, i32* %pierr, align 4, !tbaa !3
-  %cmp = icmp ne %struct._IO_FILE* %fp, null
-  %cmp1 = icmp sgt i32 %size, 0
-  %or.cond = and i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end25
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !118), !dbg !419
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !119), !dbg !420
+  tail call void @llvm.dbg.value(metadata !{i32* %y}, i64 0, metadata !120), !dbg !421
+  tail call void @llvm.dbg.value(metadata !{i32 %column}, i64 0, metadata !121), !dbg !422
+  tail call void @llvm.dbg.value(metadata !{i32* %pierr}, i64 0, metadata !122), !dbg !423
+  store i32 1, i32* %pierr, align 4, !dbg !424, !tbaa !351
+  %cmp = icmp ne %struct._IO_FILE* %fp, null, !dbg !425
+  %cmp1 = icmp sgt i32 %size, 0, !dbg !425
+  %or.cond = and i1 %cmp, %cmp1, !dbg !425
+  br i1 %or.cond, label %if.then, label %if.end25, !dbg !425
 
 if.then:                                          ; preds = %entry
-  %cmp2 = icmp eq i32* %y, null
-  br i1 %cmp2, label %if.then3, label %for.body
+  %cmp2 = icmp eq i32* %y, null, !dbg !426
+  br i1 %cmp2, label %if.then3, label %for.body, !dbg !426
 
 if.then3:                                         ; preds = %if.then
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([81 x i8]* @.str6, i64 0, i64 0), %struct._IO_FILE* %fp, i32 %size, i32* null, i32 %column) #6
-  tail call void @exit(i32 -1) #7
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !427, !tbaa !341
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([81 x i8]* @.str6, i64 0, i64 0), %struct._IO_FILE* %fp, i32 %size, i32* null, i32 %column) #7, !dbg !427
+  tail call void @exit(i32 -1) #8, !dbg !429
+  unreachable, !dbg !429
 
 for.cond:                                         ; preds = %if.end16
-  %1 = trunc i64 %indvars.iv.next to i32
-  %cmp4 = icmp slt i32 %1, %size
-  br i1 %cmp4, label %for.body, label %if.end25
+  %1 = trunc i64 %indvars.iv.next to i32, !dbg !430
+  %cmp4 = icmp slt i32 %1, %size, !dbg !430
+  br i1 %cmp4, label %for.body, label %if.end25, !dbg !430
 
 for.body:                                         ; preds = %if.then, %for.cond
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %if.then ]
   %column.addr.048 = phi i32 [ %column.addr.1, %for.cond ], [ %column, %if.then ]
-  %arrayidx = getelementptr inbounds i32* %y, i64 %indvars.iv
-  %2 = load i32* %arrayidx, align 4, !tbaa !3
-  %cmp5 = icmp slt i32 %2, 0
-  br i1 %cmp5, label %if.then6, label %if.else7
+  %arrayidx = getelementptr inbounds i32* %y, i64 %indvars.iv, !dbg !432
+  %2 = load i32* %arrayidx, align 4, !dbg !432, !tbaa !351
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !126), !dbg !432
+  %cmp5 = icmp slt i32 %2, 0, !dbg !434
+  br i1 %cmp5, label %if.then6, label %if.else7, !dbg !434
 
 if.then6:                                         ; preds = %for.body
-  %sub = sub nsw i32 0, %2
-  br label %while.cond.preheader
+  %sub = sub nsw i32 0, %2, !dbg !435
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !126), !dbg !435
+  tail call void @llvm.dbg.value(metadata !437, i64 0, metadata !127), !dbg !438
+  br label %while.cond.preheader, !dbg !439
 
 if.else7:                                         ; preds = %for.body
-  %cmp8 = icmp eq i32 %2, 0
-  %. = select i1 %cmp8, i32 2, i32 1
-  br label %while.cond.preheader
+  %cmp8 = icmp eq i32 %2, 0, !dbg !440
+  %. = select i1 %cmp8, i32 2, i32 1, !dbg !441
+  br label %while.cond.preheader, !dbg !441
 
 while.cond.preheader:                             ; preds = %if.then6, %if.else7
   %inum.0.ph = phi i32 [ %2, %if.else7 ], [ %sub, %if.then6 ]
   %nchar.0.ph = phi i32 [ %., %if.else7 ], [ 2, %if.then6 ]
-  %cmp1244 = icmp sgt i32 %inum.0.ph, 0
-  br i1 %cmp1244, label %while.body, label %while.end
+  %cmp1244 = icmp sgt i32 %inum.0.ph, 0, !dbg !443
+  br i1 %cmp1244, label %while.body, label %while.end, !dbg !443
 
 while.body:                                       ; preds = %while.cond.preheader, %while.body
   %nchar.046 = phi i32 [ %inc, %while.body ], [ %nchar.0.ph, %while.cond.preheader ]
   %inum.045 = phi i32 [ %div, %while.body ], [ %inum.0.ph, %while.cond.preheader ]
-  %inc = add nsw i32 %nchar.046, 1
-  %div = sdiv i32 %inum.045, 10
-  %cmp12 = icmp sgt i32 %inum.045, 9
-  br i1 %cmp12, label %while.body, label %while.end
+  %inc = add nsw i32 %nchar.046, 1, !dbg !444
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !127), !dbg !444
+  %div = sdiv i32 %inum.045, 10, !dbg !446
+  tail call void @llvm.dbg.value(metadata !{i32 %div}, i64 0, metadata !126), !dbg !446
+  %cmp12 = icmp sgt i32 %inum.045, 9, !dbg !443
+  br i1 %cmp12, label %while.body, label %while.end, !dbg !443
 
 while.end:                                        ; preds = %while.body, %while.cond.preheader
   %nchar.0.lcssa = phi i32 [ %nchar.0.ph, %while.cond.preheader ], [ %inc, %while.body ]
-  %add = add nsw i32 %nchar.0.lcssa, %column.addr.048
-  %cmp13 = icmp sgt i32 %add, 79
-  br i1 %cmp13, label %if.then14, label %if.end16
+  %add = add nsw i32 %nchar.0.lcssa, %column.addr.048, !dbg !447
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !121), !dbg !447
+  %cmp13 = icmp sgt i32 %add, 79, !dbg !447
+  br i1 %cmp13, label %if.then14, label %if.end16, !dbg !447
 
 if.then14:                                        ; preds = %while.end
-  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %fp)
-  %.pre = load i32* %arrayidx, align 4, !tbaa !3
-  br label %if.end16
+  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %fp), !dbg !448
+  tail call void @llvm.dbg.value(metadata !{i32 %nchar.0.lcssa}, i64 0, metadata !121), !dbg !450
+  %.pre = load i32* %arrayidx, align 4, !dbg !451, !tbaa !351
+  br label %if.end16, !dbg !452
 
 if.end16:                                         ; preds = %if.then14, %while.end
   %3 = phi i32 [ %.pre, %if.then14 ], [ %2, %while.end ]
   %column.addr.1 = phi i32 [ %nchar.0.lcssa, %if.then14 ], [ %add, %while.end ]
-  %call19 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([4 x i8]* @.str7, i64 0, i64 0), i32 %3) #6
-  store i32 %call19, i32* %pierr, align 4, !tbaa !3
-  %cmp20 = icmp slt i32 %call19, 0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  br i1 %cmp20, label %if.end25, label %for.cond
+  %call19 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([4 x i8]* @.str7, i64 0, i64 0), i32 %3) #7, !dbg !451
+  store i32 %call19, i32* %pierr, align 4, !dbg !451, !tbaa !351
+  %cmp20 = icmp slt i32 %call19, 0, !dbg !451
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !430
+  br i1 %cmp20, label %if.end25, label %for.cond, !dbg !451
 
 if.end25:                                         ; preds = %if.end16, %for.cond, %entry
   %column.addr.2 = phi i32 [ %column, %entry ], [ %column.addr.1, %for.cond ], [ %column.addr.1, %if.end16 ]
-  ret i32 %column.addr.2
+  ret i32 %column.addr.2, !dbg !453
 }

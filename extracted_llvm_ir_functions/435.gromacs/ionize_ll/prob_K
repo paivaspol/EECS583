@@ -1,56 +1,64 @@
-define float @prob_K(i32 %eColl, %struct.t_cross_atom* nocapture readonly %ca) #4 {
-  %1 = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 0
-  %2 = load i32* %1, align 4, !tbaa !18
-  %3 = icmp slt i32 %2, 3
-  br i1 %3, label %36, label %4
+define float @prob_K(i32 %eColl, %struct.t_cross_atom* nocapture %ca) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %eColl}, i64 0, metadata !166), !dbg !624
+  tail call void @llvm.dbg.value(metadata !{%struct.t_cross_atom* %ca}, i64 0, metadata !167), !dbg !624
+  tail call void @llvm.dbg.value(metadata !601, i64 0, metadata !170), !dbg !625
+  %z = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 0, !dbg !626
+  %0 = load i32* %z, align 4, !dbg !626, !tbaa !542
+  %cmp = icmp slt i32 %0, 3, !dbg !626
+  br i1 %cmp, label %return, label %lor.lhs.false, !dbg !626
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 1
-  %6 = load i32* %5, align 4, !tbaa !20
-  %7 = icmp eq i32 %2, %6
-  br i1 %7, label %36, label %8
+lor.lhs.false:                                    ; preds = %entry
+  %n = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 1, !dbg !626
+  %1 = load i32* %n, align 4, !dbg !626, !tbaa !542
+  %cmp2 = icmp eq i32 %0, %1, !dbg !626
+  br i1 %cmp2, label %return, label %if.end, !dbg !626
 
-; <label>:8                                       ; preds = %4
-  switch i32 %eColl, label %35 [
-    i32 0, label %9
-    i32 1, label %28
-  ]
+if.end:                                           ; preds = %lor.lhs.false
+  switch i32 %eColl, label %sw.default [
+    i32 0, label %sw.bb
+    i32 1, label %sw.bb20
+  ], !dbg !627
 
-; <label>:9                                       ; preds = %8
-  %10 = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 2
-  %11 = load i32* %10, align 4, !tbaa !21
-  %12 = add i32 %2, -2
-  %13 = sub i32 %12, %6
-  %14 = add i32 %13, %11
-  %15 = sitofp i32 %14 to float
-  %16 = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 3
-  %17 = load float* %16, align 4, !tbaa !35
-  %18 = fsub float 1.000000e+00, %17
-  %19 = fmul float %18, %15
-  %20 = sitofp i32 %12 to float
-  %21 = fdiv float %19, %20
-  %22 = sub nsw i32 2, %11
-  %23 = sitofp i32 %22 to float
-  %24 = fmul float %17, %23
-  %25 = fmul float %24, 5.000000e-01
-  %26 = fadd float %21, %25
-  %27 = fdiv float %25, %26
-  br label %36
+sw.bb:                                            ; preds = %if.end
+  %k = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 2, !dbg !628
+  %2 = load i32* %k, align 4, !dbg !628, !tbaa !542
+  %sub = add i32 %0, -2, !dbg !628
+  %add = sub i32 %sub, %1, !dbg !628
+  %sub5 = add i32 %add, %2, !dbg !628
+  %conv = sitofp i32 %sub5 to float, !dbg !628
+  %fj = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 3, !dbg !628
+  %3 = load float* %fj, align 4, !dbg !628, !tbaa !570
+  %sub6 = fsub float 1.000000e+00, %3, !dbg !628
+  %mul = fmul float %conv, %sub6, !dbg !628
+  %conv9 = sitofp i32 %sub to float, !dbg !628
+  %div = fdiv float %mul, %conv9, !dbg !628
+  tail call void @llvm.dbg.value(metadata !{float %div}, i64 0, metadata !168), !dbg !628
+  %sub11 = sub nsw i32 2, %2, !dbg !630
+  %conv12 = sitofp i32 %sub11 to float, !dbg !630
+  %mul14 = fmul float %3, %conv12, !dbg !630
+  %conv17 = fmul float %mul14, 5.000000e-01, !dbg !630
+  tail call void @llvm.dbg.value(metadata !{float %conv17}, i64 0, metadata !169), !dbg !630
+  %add18 = fadd float %div, %conv17, !dbg !631
+  %div19 = fdiv float %conv17, %add18, !dbg !631
+  tail call void @llvm.dbg.value(metadata !{float %div19}, i64 0, metadata !170), !dbg !631
+  br label %return, !dbg !632
 
-; <label>:28                                      ; preds = %8
-  %29 = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 2
-  %30 = load i32* %29, align 4, !tbaa !21
-  %31 = sub nsw i32 2, %30
-  %32 = sub nsw i32 %2, %6
-  %33 = sdiv i32 %31, %32
-  %34 = sitofp i32 %33 to float
-  br label %36
+sw.bb20:                                          ; preds = %if.end
+  %k21 = getelementptr inbounds %struct.t_cross_atom* %ca, i64 0, i32 2, !dbg !633
+  %4 = load i32* %k21, align 4, !dbg !633, !tbaa !542
+  %sub22 = sub nsw i32 2, %4, !dbg !633
+  %sub25 = sub nsw i32 %0, %1, !dbg !633
+  %div26 = sdiv i32 %sub22, %sub25, !dbg !633
+  %conv27 = sitofp i32 %div26 to float, !dbg !633
+  tail call void @llvm.dbg.value(metadata !{float %conv27}, i64 0, metadata !170), !dbg !633
+  br label %return, !dbg !634
 
-; <label>:35                                      ; preds = %8
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([27 x i8]* @.str10, i64 0, i64 0), i32 %eColl) #12
-  br label %36
+sw.default:                                       ; preds = %if.end
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([27 x i8]* @.str10, i64 0, i64 0), i32 %eColl) #8, !dbg !635
+  br label %return, !dbg !636
 
-; <label>:36                                      ; preds = %9, %28, %35, %0, %4
-  %.0 = phi float [ 0.000000e+00, %4 ], [ 0.000000e+00, %0 ], [ 0.000000e+00, %35 ], [ %34, %28 ], [ %27, %9 ]
-  ret float %.0
+return:                                           ; preds = %sw.bb, %sw.bb20, %sw.default, %entry, %lor.lhs.false
+  %retval.0 = phi float [ 0.000000e+00, %lor.lhs.false ], [ 0.000000e+00, %entry ], [ 0.000000e+00, %sw.default ], [ %conv27, %sw.bb20 ], [ %div19, %sw.bb ]
+  ret float %retval.0, !dbg !637
 }

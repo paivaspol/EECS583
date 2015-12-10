@@ -1,25 +1,29 @@
 define internal %struct.rtx_def* @builtin_memcpy_read_str(i8* nocapture %data, i64 %offset, i32 %mode) #0 {
 entry:
-  %cmp = icmp slt i64 %offset, 0
-  br i1 %cmp, label %if.then, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !2328), !dbg !4366
+  tail call void @llvm.dbg.value(metadata !{i64 %offset}, i64 0, metadata !2329), !dbg !4367
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !2330), !dbg !4368
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !2331), !dbg !4369
+  %cmp = icmp slt i64 %offset, 0, !dbg !4370
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !4370
 
 lor.lhs.false:                                    ; preds = %entry
-  %idxprom = sext i32 %mode to i64
-  %arrayidx = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom
-  %0 = load i8* %arrayidx, align 1, !tbaa !1
-  %conv = zext i8 %0 to i64
-  %add = add i64 %conv, %offset
-  %call = tail call i64 @strlen(i8* %data) #10
-  %add1 = add i64 %call, 1
-  %cmp2 = icmp ugt i64 %add, %add1
-  br i1 %cmp2, label %if.then, label %if.end
+  %idxprom = sext i32 %mode to i64, !dbg !4370
+  %arrayidx = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom, !dbg !4370
+  %0 = load i8* %arrayidx, align 1, !dbg !4370, !tbaa !2684
+  %conv = zext i8 %0 to i64, !dbg !4370
+  %add = add i64 %conv, %offset, !dbg !4370
+  %call = tail call i64 @strlen(i8* %data) #11, !dbg !4371
+  %add1 = add i64 %call, 1, !dbg !4371
+  %cmp2 = icmp ugt i64 %add, %add1, !dbg !4371
+  br i1 %cmp2, label %if.then, label %if.end, !dbg !4371
 
 if.then:                                          ; preds = %lor.lhs.false, %entry
-  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str100, i64 0, i64 0), i32 1912, i8* getelementptr inbounds ([24 x i8]* @__FUNCTION__.builtin_memcpy_read_str, i64 0, i64 0)) #8
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str100, i64 0, i64 0), i32 1912, i8* getelementptr inbounds ([24 x i8]* @__FUNCTION__.builtin_memcpy_read_str, i64 0, i64 0)) #9, !dbg !4372
+  unreachable, !dbg !4372
 
 if.end:                                           ; preds = %lor.lhs.false
-  %add.ptr = getelementptr inbounds i8* %data, i64 %offset
-  %call4 = tail call fastcc %struct.rtx_def* @c_readstr(i8* %add.ptr, i32 %mode) #9
-  ret %struct.rtx_def* %call4
+  %add.ptr = getelementptr inbounds i8* %data, i64 %offset, !dbg !4373
+  %call4 = tail call fastcc %struct.rtx_def* @c_readstr(i8* %add.ptr, i32 %mode) #10, !dbg !4373
+  ret %struct.rtx_def* %call4, !dbg !4373
 }

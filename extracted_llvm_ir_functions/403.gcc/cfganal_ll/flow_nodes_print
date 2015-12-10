@@ -1,61 +1,72 @@
 define void @flow_nodes_print(i8* %str, %struct.simple_bitmap_def* %nodes, %struct._IO_FILE* nocapture %file) #0 {
 entry:
-  %tobool = icmp eq %struct.simple_bitmap_def* %nodes, null
-  br i1 %tobool, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i8* %str}, i64 0, metadata !607), !dbg !1089
+  tail call void @llvm.dbg.value(metadata !{%struct.simple_bitmap_def* %nodes}, i64 0, metadata !608), !dbg !1090
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %file}, i64 0, metadata !609), !dbg !1091
+  %tobool = icmp eq %struct.simple_bitmap_def* %nodes, null, !dbg !1092
+  br i1 %tobool, label %return, label %if.end, !dbg !1092
 
 if.end:                                           ; preds = %entry
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([6 x i8]* @.str15, i64 0, i64 0), i8* %str) #6
-  %size = getelementptr inbounds %struct.simple_bitmap_def* %nodes, i64 0, i32 1
-  %0 = load i32* %size, align 4, !tbaa !3
-  %cmp35 = icmp eq i32 %0, 0
-  br i1 %cmp35, label %do.end, label %for.body
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([6 x i8]* @.str15, i64 0, i64 0), i8* %str) #7, !dbg !1093
+  tail call void @llvm.dbg.value(metadata !255, i64 0, metadata !613), !dbg !1094
+  %size = getelementptr inbounds %struct.simple_bitmap_def* %nodes, i64 0, i32 1, !dbg !1094
+  %0 = load i32* %size, align 4, !dbg !1094, !tbaa !755
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !614), !dbg !1094
+  tail call void @llvm.dbg.value(metadata !255, i64 0, metadata !611), !dbg !1095
+  %cmp35 = icmp eq i32 %0, 0, !dbg !1095
+  br i1 %cmp35, label %do.end, label %for.body, !dbg !1095
 
 for.body:                                         ; preds = %if.end, %for.inc15
   %indvars.iv37 = phi i64 [ %indvars.iv.next38, %for.inc15 ], [ 0, %if.end ]
-  %arrayidx = getelementptr inbounds %struct.simple_bitmap_def* %nodes, i64 0, i32 3, i64 %indvars.iv37
-  %1 = load i64* %arrayidx, align 8, !tbaa !4
-  %cmp1 = icmp eq i64 %1, 0
-  br i1 %cmp1, label %for.inc15, label %for.cond3.preheader
+  %arrayidx = getelementptr inbounds %struct.simple_bitmap_def* %nodes, i64 0, i32 3, i64 %indvars.iv37, !dbg !1096
+  %1 = load i64* %arrayidx, align 8, !dbg !1096, !tbaa !776
+  tail call void @llvm.dbg.value(metadata !{i64 %1}, i64 0, metadata !616), !dbg !1096
+  %cmp1 = icmp eq i64 %1, 0, !dbg !1096
+  br i1 %cmp1, label %for.inc15, label %for.cond3.preheader, !dbg !1096
 
 for.cond3.preheader:                              ; preds = %for.body
-  %2 = trunc i64 %indvars.iv37 to i32
-  %mul = shl i32 %2, 6
-  br label %for.body5
+  %2 = trunc i64 %indvars.iv37 to i32, !dbg !1097
+  %mul = shl i32 %2, 6, !dbg !1097
+  br label %for.body5, !dbg !1099
 
 for.body5:                                        ; preds = %for.cond3.preheader, %for.inc
   %indvars.iv = phi i64 [ 0, %for.cond3.preheader ], [ %indvars.iv.next, %for.inc ]
   %word_.034 = phi i64 [ %1, %for.cond3.preheader ], [ %word_.1, %for.inc ]
-  %shl = shl i64 1, %indvars.iv
-  %and = and i64 %shl, %word_.034
-  %cmp6 = icmp eq i64 %and, 0
-  br i1 %cmp6, label %for.inc, label %if.then7
+  %shl = shl i64 1, %indvars.iv, !dbg !1100
+  tail call void @llvm.dbg.value(metadata !{i64 %shl}, i64 0, metadata !619), !dbg !1100
+  %and = and i64 %shl, %word_.034, !dbg !1100
+  %cmp6 = icmp eq i64 %and, 0, !dbg !1100
+  br i1 %cmp6, label %for.inc, label %if.then7, !dbg !1100
 
 if.then7:                                         ; preds = %for.body5
-  %neg = xor i64 %shl, -1
-  %and8 = and i64 %word_.034, %neg
-  %3 = trunc i64 %indvars.iv to i32
-  %add = add i32 %3, %mul
-  %call9 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str16, i64 0, i64 0), i32 %add) #6
-  %cmp10 = icmp eq i64 %and8, 0
-  br i1 %cmp10, label %for.inc15, label %for.inc
+  %neg = xor i64 %shl, -1, !dbg !1097
+  %and8 = and i64 %word_.034, %neg, !dbg !1097
+  tail call void @llvm.dbg.value(metadata !{i64 %and8}, i64 0, metadata !616), !dbg !1097
+  %3 = trunc i64 %indvars.iv to i32, !dbg !1097
+  %add = add i32 %3, %mul, !dbg !1097
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !610), !dbg !1097
+  %call9 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([4 x i8]* @.str16, i64 0, i64 0), i32 %add) #7, !dbg !1101
+  %cmp10 = icmp eq i64 %and8, 0, !dbg !1097
+  br i1 %cmp10, label %for.inc15, label %for.inc, !dbg !1097
 
 for.inc:                                          ; preds = %for.body5, %if.then7
   %word_.1 = phi i64 [ %and8, %if.then7 ], [ %word_.034, %for.body5 ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %4 = trunc i64 %indvars.iv.next to i32
-  %cmp4 = icmp ult i32 %4, 64
-  br i1 %cmp4, label %for.body5, label %for.inc15
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1099
+  %4 = trunc i64 %indvars.iv.next to i32, !dbg !1099
+  %cmp4 = icmp ult i32 %4, 64, !dbg !1099
+  br i1 %cmp4, label %for.body5, label %for.inc15, !dbg !1099
 
 for.inc15:                                        ; preds = %if.then7, %for.inc, %for.body
-  %indvars.iv.next38 = add i64 %indvars.iv37, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next38 to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %0
-  br i1 %exitcond, label %do.end, label %for.body
+  %indvars.iv.next38 = add i64 %indvars.iv37, 1, !dbg !1095
+  tail call void @llvm.dbg.value(metadata !255, i64 0, metadata !613), !dbg !1095
+  %lftr.wideiv = trunc i64 %indvars.iv.next38 to i32, !dbg !1095
+  %exitcond = icmp eq i32 %lftr.wideiv, %0, !dbg !1095
+  br i1 %exitcond, label %do.end, label %for.body, !dbg !1095
 
 do.end:                                           ; preds = %for.inc15, %if.end
-  %5 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str17, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %file)
-  br label %return
+  %5 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str17, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %file), !dbg !1103
+  br label %return, !dbg !1103
 
 return:                                           ; preds = %entry, %do.end
-  ret void
+  ret void, !dbg !1103
 }

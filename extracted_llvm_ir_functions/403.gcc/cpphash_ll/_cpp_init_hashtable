@@ -1,54 +1,72 @@
 define void @_cpp_init_hashtable(%struct.cpp_reader* %pfile, %struct.ht* %table) #0 {
 entry:
-  %cmp = icmp eq %struct.ht* %table, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !491), !dbg !545
+  tail call void @llvm.dbg.value(metadata !{%struct.ht* %table}, i64 0, metadata !492), !dbg !546
+  %cmp = icmp eq %struct.ht* %table, null, !dbg !547
+  br i1 %cmp, label %if.then, label %if.end, !dbg !547
 
 if.then:                                          ; preds = %entry
-  %our_hashtable = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 40
-  store i8 1, i8* %our_hashtable, align 1, !tbaa !0
-  %call = tail call %struct.ht* @ht_create(i32 13) #3
-  %alloc_node = getelementptr inbounds %struct.ht* %call, i64 0, i32 2
-  store %struct.ht_identifier* (%struct.ht*)* bitcast (%struct.cpp_hashnode* (%struct.ht*)* @alloc_node to %struct.ht_identifier* (%struct.ht*)*), %struct.ht_identifier* (%struct.ht*)** %alloc_node, align 8, !tbaa !2
-  %hash_ob = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 32
-  tail call void @gcc_obstack_init(%struct.obstack* %hash_ob) #3
-  br label %if.end
+  %our_hashtable = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 40, !dbg !548
+  store i8 1, i8* %our_hashtable, align 1, !dbg !548, !tbaa !550
+  %call = tail call %struct.ht* @ht_create(i32 13) #4, !dbg !552
+  tail call void @llvm.dbg.value(metadata !{%struct.ht* %call}, i64 0, metadata !492), !dbg !552
+  %alloc_node = getelementptr inbounds %struct.ht* %call, i64 0, i32 2, !dbg !553
+  store %struct.ht_identifier* (%struct.ht*)* bitcast (%struct.cpp_hashnode* (%struct.ht*)* @alloc_node to %struct.ht_identifier* (%struct.ht*)*), %struct.ht_identifier* (%struct.ht*)** %alloc_node, align 8, !dbg !553, !tbaa !554
+  %hash_ob = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 32, !dbg !555
+  tail call void @gcc_obstack_init(%struct.obstack* %hash_ob) #4, !dbg !555
+  br label %if.end, !dbg !556
 
 if.end:                                           ; preds = %if.then, %entry
   %table.addr.0 = phi %struct.ht* [ %call, %if.then ], [ %table, %entry ]
-  %pfile1 = getelementptr inbounds %struct.ht* %table.addr.0, i64 0, i32 5
-  store %struct.cpp_reader* %pfile, %struct.cpp_reader** %pfile1, align 8, !tbaa !2
-  %hash_table = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 36
-  store %struct.ht* %table.addr.0, %struct.ht** %hash_table, align 8, !tbaa !2
-  tail call void @_cpp_init_directives(%struct.cpp_reader* %pfile) #3
-  tail call void @_cpp_init_internal_pragmas(%struct.cpp_reader* %pfile) #3
-  %0 = load %struct.ht** %hash_table, align 8, !tbaa !2
-  %call.i = tail call %struct.ht_identifier* @ht_lookup(%struct.ht* %0, i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i32 7, i32 1) #3
-  %1 = bitcast %struct.ht_identifier* %call.i to %struct.cpp_hashnode*
-  %n_defined = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 38, i32 0
-  store %struct.cpp_hashnode* %1, %struct.cpp_hashnode** %n_defined, align 8, !tbaa !2
-  %2 = load %struct.ht** %hash_table, align 8, !tbaa !2
-  %call.i29 = tail call %struct.ht_identifier* @ht_lookup(%struct.ht* %2, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i32 4, i32 1) #3
-  %3 = bitcast %struct.ht_identifier* %call.i29 to %struct.cpp_hashnode*
-  %n_true = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 38, i32 1
-  store %struct.cpp_hashnode* %3, %struct.cpp_hashnode** %n_true, align 8, !tbaa !2
-  %4 = load %struct.ht** %hash_table, align 8, !tbaa !2
-  %call.i31 = tail call %struct.ht_identifier* @ht_lookup(%struct.ht* %4, i8* getelementptr inbounds ([6 x i8]* @.str2, i64 0, i64 0), i32 5, i32 1) #3
-  %5 = bitcast %struct.ht_identifier* %call.i31 to %struct.cpp_hashnode*
-  %n_false = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 38, i32 2
-  store %struct.cpp_hashnode* %5, %struct.cpp_hashnode** %n_false, align 8, !tbaa !2
-  %6 = load %struct.ht** %hash_table, align 8, !tbaa !2
-  %call.i33 = tail call %struct.ht_identifier* @ht_lookup(%struct.ht* %6, i8* getelementptr inbounds ([16 x i8]* @.str3, i64 0, i64 0), i32 15, i32 1) #3
-  %7 = bitcast %struct.ht_identifier* %call.i33 to %struct.cpp_hashnode*
-  %n__STRICT_ANSI__ = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 38, i32 3
-  store %struct.cpp_hashnode* %7, %struct.cpp_hashnode** %n__STRICT_ANSI__, align 8, !tbaa !2
-  %8 = load %struct.ht** %hash_table, align 8, !tbaa !2
-  %call.i35 = tail call %struct.ht_identifier* @ht_lookup(%struct.ht* %8, i8* getelementptr inbounds ([12 x i8]* @.str4, i64 0, i64 0), i32 11, i32 1) #3
-  %9 = bitcast %struct.ht_identifier* %call.i35 to %struct.cpp_hashnode*
-  %n__VA_ARGS__ = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 38, i32 4
-  store %struct.cpp_hashnode* %9, %struct.cpp_hashnode** %n__VA_ARGS__, align 8, !tbaa !2
-  %flags = getelementptr inbounds %struct.cpp_hashnode* %9, i64 0, i32 5
-  %10 = load i8* %flags, align 1, !tbaa !0
-  %or = or i8 %10, 8
-  store i8 %or, i8* %flags, align 1, !tbaa !0
-  ret void
+  %pfile1 = getelementptr inbounds %struct.ht* %table.addr.0, i64 0, i32 5, !dbg !557
+  store %struct.cpp_reader* %pfile, %struct.cpp_reader** %pfile1, align 8, !dbg !557, !tbaa !554
+  %hash_table = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 36, !dbg !558
+  store %struct.ht* %table.addr.0, %struct.ht** %hash_table, align 8, !dbg !558, !tbaa !554
+  tail call void @_cpp_init_directives(%struct.cpp_reader* %pfile) #4, !dbg !559
+  tail call void @_cpp_init_internal_pragmas(%struct.cpp_reader* %pfile) #4, !dbg !560
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !561) #2, !dbg !563
+  tail call void @llvm.dbg.value(metadata !564, i64 0, metadata !565) #2, !dbg !566
+  tail call void @llvm.dbg.value(metadata !567, i64 0, metadata !568) #2, !dbg !569
+  %0 = load %struct.ht** %hash_table, align 8, !dbg !570, !tbaa !554
+  %call.i = tail call %struct.ht_identifier* @ht_lookup(%struct.ht* %0, i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i32 7, i32 1) #4, !dbg !570
+  %1 = bitcast %struct.ht_identifier* %call.i to %struct.cpp_hashnode*, !dbg !570
+  %n_defined = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 38, i32 0, !dbg !562
+  store %struct.cpp_hashnode* %1, %struct.cpp_hashnode** %n_defined, align 8, !dbg !562, !tbaa !554
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !571) #2, !dbg !573
+  tail call void @llvm.dbg.value(metadata !574, i64 0, metadata !575) #2, !dbg !576
+  tail call void @llvm.dbg.value(metadata !577, i64 0, metadata !578) #2, !dbg !579
+  %2 = load %struct.ht** %hash_table, align 8, !dbg !580, !tbaa !554
+  %call.i29 = tail call %struct.ht_identifier* @ht_lookup(%struct.ht* %2, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i32 4, i32 1) #4, !dbg !580
+  %3 = bitcast %struct.ht_identifier* %call.i29 to %struct.cpp_hashnode*, !dbg !580
+  %n_true = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 38, i32 1, !dbg !572
+  store %struct.cpp_hashnode* %3, %struct.cpp_hashnode** %n_true, align 8, !dbg !572, !tbaa !554
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !581) #2, !dbg !583
+  tail call void @llvm.dbg.value(metadata !584, i64 0, metadata !585) #2, !dbg !586
+  tail call void @llvm.dbg.value(metadata !587, i64 0, metadata !588) #2, !dbg !589
+  %4 = load %struct.ht** %hash_table, align 8, !dbg !590, !tbaa !554
+  %call.i31 = tail call %struct.ht_identifier* @ht_lookup(%struct.ht* %4, i8* getelementptr inbounds ([6 x i8]* @.str2, i64 0, i64 0), i32 5, i32 1) #4, !dbg !590
+  %5 = bitcast %struct.ht_identifier* %call.i31 to %struct.cpp_hashnode*, !dbg !590
+  %n_false = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 38, i32 2, !dbg !582
+  store %struct.cpp_hashnode* %5, %struct.cpp_hashnode** %n_false, align 8, !dbg !582, !tbaa !554
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !591) #2, !dbg !593
+  tail call void @llvm.dbg.value(metadata !594, i64 0, metadata !595) #2, !dbg !596
+  tail call void @llvm.dbg.value(metadata !597, i64 0, metadata !598) #2, !dbg !599
+  %6 = load %struct.ht** %hash_table, align 8, !dbg !600, !tbaa !554
+  %call.i33 = tail call %struct.ht_identifier* @ht_lookup(%struct.ht* %6, i8* getelementptr inbounds ([16 x i8]* @.str3, i64 0, i64 0), i32 15, i32 1) #4, !dbg !600
+  %7 = bitcast %struct.ht_identifier* %call.i33 to %struct.cpp_hashnode*, !dbg !600
+  %n__STRICT_ANSI__ = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 38, i32 3, !dbg !592
+  store %struct.cpp_hashnode* %7, %struct.cpp_hashnode** %n__STRICT_ANSI__, align 8, !dbg !592, !tbaa !554
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !601) #2, !dbg !603
+  tail call void @llvm.dbg.value(metadata !604, i64 0, metadata !605) #2, !dbg !606
+  tail call void @llvm.dbg.value(metadata !607, i64 0, metadata !608) #2, !dbg !609
+  %8 = load %struct.ht** %hash_table, align 8, !dbg !610, !tbaa !554
+  %call.i35 = tail call %struct.ht_identifier* @ht_lookup(%struct.ht* %8, i8* getelementptr inbounds ([12 x i8]* @.str4, i64 0, i64 0), i32 11, i32 1) #4, !dbg !610
+  %9 = bitcast %struct.ht_identifier* %call.i35 to %struct.cpp_hashnode*, !dbg !610
+  %n__VA_ARGS__ = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 38, i32 4, !dbg !602
+  store %struct.cpp_hashnode* %9, %struct.cpp_hashnode** %n__VA_ARGS__, align 8, !dbg !602, !tbaa !554
+  %flags = getelementptr inbounds %struct.cpp_hashnode* %9, i64 0, i32 5, !dbg !611
+  %10 = load i8* %flags, align 1, !dbg !611, !tbaa !550
+  %or = or i8 %10, 8, !dbg !611
+  store i8 %or, i8* %flags, align 1, !dbg !611, !tbaa !550
+  ret void, !dbg !612
 }

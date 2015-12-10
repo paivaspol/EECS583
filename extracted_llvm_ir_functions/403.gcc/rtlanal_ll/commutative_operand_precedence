@@ -1,19 +1,20 @@
 define i32 @commutative_operand_precedence(%struct.rtx_def* nocapture %op) #0 {
 entry:
-  %0 = bitcast %struct.rtx_def* %op to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 54
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op}, i64 0, metadata !875), !dbg !1874
+  %0 = bitcast %struct.rtx_def* %op to i32*, !dbg !1875
+  %bf.load = load i32* %0, align 8, !dbg !1875
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1875
+  %cmp = icmp eq i32 %bf.clear, 54, !dbg !1875
+  br i1 %cmp, label %return, label %if.end, !dbg !1875
 
 if.end:                                           ; preds = %entry
-  %cmp3 = icmp eq i32 %bf.clear, 55
-  br i1 %cmp3, label %return, label %if.end5
+  %cmp3 = icmp eq i32 %bf.clear, 55, !dbg !1876
+  br i1 %cmp3, label %return, label %if.end5, !dbg !1876
 
 if.end5:                                          ; preds = %if.end
-  %bf.clear.off = add i32 %bf.clear, -67
-  %switch = icmp ult i32 %bf.clear.off, 2
-  br i1 %switch, label %return, label %lor.lhs.false12
+  %bf.clear.off = add i32 %bf.clear, -67, !dbg !1877
+  %switch = icmp ult i32 %bf.clear.off, 2, !dbg !1877
+  br i1 %switch, label %return, label %lor.lhs.false12, !dbg !1877
 
 lor.lhs.false12:                                  ; preds = %if.end5
   switch i32 %bf.clear, label %if.end47 [
@@ -22,20 +23,20 @@ lor.lhs.false12:                                  ; preds = %if.end5
     i32 58, label %return
     i32 56, label %return
     i32 63, label %land.lhs.true
-  ]
+  ], !dbg !1877
 
 land.lhs.true:                                    ; preds = %lor.lhs.false12
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %2 = bitcast %struct.rtx_def* %1 to i32*
-  %bf.load41 = load i32* %2, align 8
-  %bf.clear42 = and i32 %bf.load41, 65535
-  %idxprom101 = zext i32 %bf.clear42 to i64
-  %arrayidx43 = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom101
-  %3 = load i8* %arrayidx43, align 1, !tbaa !1
-  %cmp44 = icmp eq i8 %3, 111
-  br i1 %cmp44, label %return, label %if.end73
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0, !dbg !1878
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !1878
+  %1 = load %struct.rtx_def** %rtx, align 8, !dbg !1878, !tbaa !979
+  %2 = bitcast %struct.rtx_def* %1 to i32*, !dbg !1878
+  %bf.load41 = load i32* %2, align 8, !dbg !1878
+  %bf.clear42 = and i32 %bf.load41, 65535, !dbg !1878
+  %idxprom101 = zext i32 %bf.clear42 to i64, !dbg !1878
+  %arrayidx43 = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom101, !dbg !1878
+  %3 = load i8* %arrayidx43, align 1, !dbg !1878, !tbaa !980
+  %cmp44 = icmp eq i8 %3, 111, !dbg !1878
+  br i1 %cmp44, label %return, label %if.end73, !dbg !1878
 
 if.end47:                                         ; preds = %lor.lhs.false12
   switch i32 %bf.clear, label %if.end73 [
@@ -44,17 +45,17 @@ if.end47:                                         ; preds = %lor.lhs.false12
     i32 78, label %return
     i32 75, label %return
     i32 76, label %return
-  ]
+  ], !dbg !1879
 
 if.end73:                                         ; preds = %land.lhs.true, %if.end47
-  %idxprom76100 = zext i32 %bf.clear to i64
-  %arrayidx77 = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom76100
-  %4 = load i8* %arrayidx77, align 1, !tbaa !1
-  %cmp79 = icmp eq i8 %4, 111
-  %. = sext i1 %cmp79 to i32
-  br label %return
+  %idxprom76100 = zext i32 %bf.clear to i64, !dbg !1880
+  %arrayidx77 = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom76100, !dbg !1880
+  %4 = load i8* %arrayidx77, align 1, !dbg !1880, !tbaa !980
+  %cmp79 = icmp eq i8 %4, 111, !dbg !1880
+  %. = sext i1 %cmp79 to i32, !dbg !1881
+  br label %return, !dbg !1881
 
 return:                                           ; preds = %lor.lhs.false12, %lor.lhs.false12, %lor.lhs.false12, %lor.lhs.false12, %if.end5, %if.end73, %if.end47, %if.end47, %if.end47, %if.end47, %if.end47, %land.lhs.true, %if.end, %entry
   %retval.0 = phi i32 [ -5, %entry ], [ -4, %if.end ], [ -3, %if.end5 ], [ -2, %land.lhs.true ], [ 2, %if.end47 ], [ 2, %if.end47 ], [ 2, %if.end47 ], [ 2, %if.end47 ], [ 2, %if.end47 ], [ %., %if.end73 ], [ -3, %lor.lhs.false12 ], [ -3, %lor.lhs.false12 ], [ -3, %lor.lhs.false12 ], [ -3, %lor.lhs.false12 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1882
 }

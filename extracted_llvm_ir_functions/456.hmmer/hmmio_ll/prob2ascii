@@ -1,14 +1,16 @@
 define internal fastcc i8* @prob2ascii(float %p, float %null) #0 {
 entry:
-  %cmp = fcmp oeq float %p, 0.000000e+00
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{float %p}, i64 0, metadata !283), !dbg !1415
+  tail call void @llvm.dbg.value(metadata !{float %null}, i64 0, metadata !284), !dbg !1415
+  %cmp = fcmp oeq float %p, 0.000000e+00, !dbg !1416
+  br i1 %cmp, label %return, label %if.end, !dbg !1416
 
 if.end:                                           ; preds = %entry
-  %call = tail call i32 @Prob2Score(float %p, float %null) #6
-  %call2 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* getelementptr inbounds ([8 x i8]* @prob2ascii.buffer, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str58, i64 0, i64 0), i32 %call) #6
-  br label %return
+  %call = tail call i32 @Prob2Score(float %p, float %null) #7, !dbg !1417
+  %call2 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* getelementptr inbounds ([8 x i8]* @prob2ascii.buffer, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str58, i64 0, i64 0), i32 %call) #7, !dbg !1417
+  br label %return, !dbg !1418
 
 return:                                           ; preds = %entry, %if.end
   %retval.0 = phi i8* [ getelementptr inbounds ([8 x i8]* @prob2ascii.buffer, i64 0, i64 0), %if.end ], [ getelementptr inbounds ([2 x i8]* @.str52, i64 0, i64 0), %entry ]
-  ret i8* %retval.0
+  ret i8* %retval.0, !dbg !1418
 }

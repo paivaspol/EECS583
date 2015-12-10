@@ -1,83 +1,92 @@
 define internal fastcc void @merge_tlist(%struct.tlist** nocapture %to, %struct.tlist* %add, i32 %copy) #0 {
 entry:
-  br label %while.cond
+  tail call void @llvm.dbg.value(metadata !{%struct.tlist** %to}, i64 0, metadata !2195), !dbg !4226
+  tail call void @llvm.dbg.value(metadata !{%struct.tlist* %add}, i64 0, metadata !2196), !dbg !4227
+  tail call void @llvm.dbg.value(metadata !{i32 %copy}, i64 0, metadata !2197), !dbg !4228
+  tail call void @llvm.dbg.value(metadata !{%struct.tlist** %to}, i64 0, metadata !2198), !dbg !4229
+  br label %while.cond, !dbg !4230
 
 while.cond:                                       ; preds = %while.cond, %entry
   %end.0 = phi %struct.tlist** [ %to, %entry ], [ %next, %while.cond ]
-  %0 = load %struct.tlist** %end.0, align 8, !tbaa !3
-  %tobool = icmp eq %struct.tlist* %0, null
-  %next = getelementptr inbounds %struct.tlist* %0, i64 0, i32 0
-  br i1 %tobool, label %while.cond1.preheader, label %while.cond
+  %0 = load %struct.tlist** %end.0, align 8, !dbg !4230, !tbaa !2305
+  %tobool = icmp eq %struct.tlist* %0, null, !dbg !4230
+  %next = getelementptr inbounds %struct.tlist* %0, i64 0, i32 0, !dbg !4231
+  tail call void @llvm.dbg.value(metadata !{%struct.tlist** %next}, i64 0, metadata !2198), !dbg !4231
+  br i1 %tobool, label %while.cond1.preheader, label %while.cond, !dbg !4230
 
 while.cond1.preheader:                            ; preds = %while.cond
-  %tobool16 = icmp eq i32 %copy, 0
-  br label %while.cond1.outer
+  %tobool16 = icmp eq i32 %copy, 0, !dbg !4232
+  br label %while.cond1.outer, !dbg !4234
 
 while.cond1:                                      ; preds = %while.cond1.outer, %for.end
   %add.addr.0 = phi %struct.tlist* [ %1, %for.end ], [ %add.addr.0.ph, %while.cond1.outer ]
-  %tobool2 = icmp eq %struct.tlist* %add.addr.0, null
-  br i1 %tobool2, label %while.end21, label %while.body3
+  %tobool2 = icmp eq %struct.tlist* %add.addr.0, null, !dbg !4234
+  br i1 %tobool2, label %while.end21, label %while.body3, !dbg !4234
 
 while.body3:                                      ; preds = %while.cond1
-  %next5 = getelementptr inbounds %struct.tlist* %add.addr.0, i64 0, i32 0
-  %1 = load %struct.tlist** %next5, align 8, !tbaa !3
-  %tmp2.036 = load %struct.tlist** %to, align 8
-  %tobool637 = icmp eq %struct.tlist* %tmp2.036, null
-  br i1 %tobool637, label %if.then15, label %for.body.lr.ph
+  tail call void @llvm.dbg.value(metadata !1480, i64 0, metadata !2199), !dbg !4235
+  %next5 = getelementptr inbounds %struct.tlist* %add.addr.0, i64 0, i32 0, !dbg !4236
+  %1 = load %struct.tlist** %next5, align 8, !dbg !4236, !tbaa !2305
+  tail call void @llvm.dbg.value(metadata !{%struct.tlist* %1}, i64 0, metadata !2202), !dbg !4236
+  %tmp2.036 = load %struct.tlist** %to, align 8, !dbg !4237
+  %tobool637 = icmp eq %struct.tlist* %tmp2.036, null, !dbg !4237
+  br i1 %tobool637, label %if.then15, label %for.body.lr.ph, !dbg !4237
 
 for.body.lr.ph:                                   ; preds = %while.body3
-  %expr7 = getelementptr inbounds %struct.tlist* %add.addr.0, i64 0, i32 1
-  %writer10 = getelementptr inbounds %struct.tlist* %add.addr.0, i64 0, i32 2
-  br label %for.body
+  %expr7 = getelementptr inbounds %struct.tlist* %add.addr.0, i64 0, i32 1, !dbg !4239
+  %writer10 = getelementptr inbounds %struct.tlist* %add.addr.0, i64 0, i32 2, !dbg !4240
+  br label %for.body, !dbg !4237
 
 for.body:                                         ; preds = %for.inc, %for.body.lr.ph
   %tmp2.039 = phi %struct.tlist* [ %tmp2.036, %for.body.lr.ph ], [ %tmp2.0, %for.inc ]
   %found.038 = phi i32 [ 0, %for.body.lr.ph ], [ %found.1, %for.inc ]
-  %expr = getelementptr inbounds %struct.tlist* %tmp2.039, i64 0, i32 1
-  %2 = load %union.tree_node** %expr, align 8, !tbaa !3
-  %3 = load %union.tree_node** %expr7, align 8, !tbaa !3
-  %cmp = icmp eq %union.tree_node* %2, %3
-  br i1 %cmp, label %if.then, label %for.inc
+  %expr = getelementptr inbounds %struct.tlist* %tmp2.039, i64 0, i32 1, !dbg !4239
+  %2 = load %union.tree_node** %expr, align 8, !dbg !4239, !tbaa !2305
+  %3 = load %union.tree_node** %expr7, align 8, !dbg !4239, !tbaa !2305
+  %cmp = icmp eq %union.tree_node* %2, %3, !dbg !4239
+  br i1 %cmp, label %if.then, label %for.inc, !dbg !4239
 
 if.then:                                          ; preds = %for.body
-  %writer = getelementptr inbounds %struct.tlist* %tmp2.039, i64 0, i32 2
-  %4 = load %union.tree_node** %writer, align 8, !tbaa !3
-  %tobool8 = icmp eq %union.tree_node* %4, null
-  br i1 %tobool8, label %if.then9, label %for.inc
+  tail call void @llvm.dbg.value(metadata !2420, i64 0, metadata !2199), !dbg !4242
+  %writer = getelementptr inbounds %struct.tlist* %tmp2.039, i64 0, i32 2, !dbg !4243
+  %4 = load %union.tree_node** %writer, align 8, !dbg !4243, !tbaa !2305
+  %tobool8 = icmp eq %union.tree_node* %4, null, !dbg !4243
+  br i1 %tobool8, label %if.then9, label %for.inc, !dbg !4243
 
 if.then9:                                         ; preds = %if.then
-  %5 = load %union.tree_node** %writer10, align 8, !tbaa !3
-  store %union.tree_node* %5, %union.tree_node** %writer, align 8, !tbaa !3
-  br label %for.inc
+  %5 = load %union.tree_node** %writer10, align 8, !dbg !4240, !tbaa !2305
+  store %union.tree_node* %5, %union.tree_node** %writer, align 8, !dbg !4240, !tbaa !2305
+  br label %for.inc, !dbg !4240
 
 for.inc:                                          ; preds = %if.then, %for.body, %if.then9
   %found.1 = phi i32 [ 1, %if.then ], [ 1, %if.then9 ], [ %found.038, %for.body ]
-  %next13 = getelementptr inbounds %struct.tlist* %tmp2.039, i64 0, i32 0
-  %tmp2.0 = load %struct.tlist** %next13, align 8
-  %tobool6 = icmp eq %struct.tlist* %tmp2.0, null
-  br i1 %tobool6, label %for.end, label %for.body
+  %next13 = getelementptr inbounds %struct.tlist* %tmp2.039, i64 0, i32 0, !dbg !4237
+  %tmp2.0 = load %struct.tlist** %next13, align 8, !dbg !4237
+  %tobool6 = icmp eq %struct.tlist* %tmp2.0, null, !dbg !4237
+  br i1 %tobool6, label %for.end, label %for.body, !dbg !4237
 
 for.end:                                          ; preds = %for.inc
-  %tobool14 = icmp eq i32 %found.1, 0
-  br i1 %tobool14, label %if.then15, label %while.cond1
+  %tobool14 = icmp eq i32 %found.1, 0, !dbg !4244
+  br i1 %tobool14, label %if.then15, label %while.cond1, !dbg !4244
 
 if.then15:                                        ; preds = %while.body3, %for.end
-  br i1 %tobool16, label %cond.false, label %cond.end
+  br i1 %tobool16, label %cond.false, label %cond.end, !dbg !4232
 
 cond.false:                                       ; preds = %if.then15
-  %expr17 = getelementptr inbounds %struct.tlist* %add.addr.0, i64 0, i32 1
-  %6 = load %union.tree_node** %expr17, align 8, !tbaa !3
-  %writer18 = getelementptr inbounds %struct.tlist* %add.addr.0, i64 0, i32 2
-  %7 = load %union.tree_node** %writer18, align 8, !tbaa !3
-  %call = tail call fastcc %struct.tlist* @new_tlist(%struct.tlist* null, %union.tree_node* %6, %union.tree_node* %7) #9
-  br label %cond.end
+  %expr17 = getelementptr inbounds %struct.tlist* %add.addr.0, i64 0, i32 1, !dbg !4232
+  %6 = load %union.tree_node** %expr17, align 8, !dbg !4232, !tbaa !2305
+  %writer18 = getelementptr inbounds %struct.tlist* %add.addr.0, i64 0, i32 2, !dbg !4232
+  %7 = load %union.tree_node** %writer18, align 8, !dbg !4232, !tbaa !2305
+  %call = tail call fastcc %struct.tlist* @new_tlist(%struct.tlist* null, %union.tree_node* %6, %union.tree_node* %7) #10, !dbg !4232
+  br label %cond.end, !dbg !4232
 
 cond.end:                                         ; preds = %if.then15, %cond.false
-  %cond = phi %struct.tlist* [ %call, %cond.false ], [ %add.addr.0, %if.then15 ]
-  store %struct.tlist* %cond, %struct.tlist** %end.1.ph, align 8, !tbaa !3
-  %next19 = getelementptr inbounds %struct.tlist* %cond, i64 0, i32 0
-  store %struct.tlist* null, %struct.tlist** %next19, align 8, !tbaa !3
-  br label %while.cond1.outer
+  %cond = phi %struct.tlist* [ %call, %cond.false ], [ %add.addr.0, %if.then15 ], !dbg !4232
+  store %struct.tlist* %cond, %struct.tlist** %end.1.ph, align 8, !dbg !4232, !tbaa !2305
+  %next19 = getelementptr inbounds %struct.tlist* %cond, i64 0, i32 0, !dbg !4245
+  tail call void @llvm.dbg.value(metadata !{%struct.tlist** %next19}, i64 0, metadata !2198), !dbg !4245
+  store %struct.tlist* null, %struct.tlist** %next19, align 8, !dbg !4246, !tbaa !2305
+  br label %while.cond1.outer, !dbg !4247
 
 while.cond1.outer:                                ; preds = %while.cond1.preheader, %cond.end
   %end.1.ph = phi %struct.tlist** [ %next19, %cond.end ], [ %end.0, %while.cond1.preheader ]
@@ -85,5 +94,5 @@ while.cond1.outer:                                ; preds = %while.cond1.prehead
   br label %while.cond1
 
 while.end21:                                      ; preds = %while.cond1
-  ret void
+  ret void, !dbg !4248
 }

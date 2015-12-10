@@ -1,22 +1,27 @@
-define i32 @BZ2_indexIntoF(i32 %indx, i32* nocapture %cftab) #5 {
+define i32 @BZ2_indexIntoF(i32 %indx, i32* nocapture %cftab) #6 {
 entry:
-  br label %do.body
+  tail call void @llvm.dbg.value(metadata !{i32 %indx}, i64 0, metadata !243), !dbg !870
+  tail call void @llvm.dbg.value(metadata !{i32* %cftab}, i64 0, metadata !244), !dbg !870
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !245), !dbg !871
+  tail call void @llvm.dbg.value(metadata !872, i64 0, metadata !246), !dbg !873
+  br label %do.body, !dbg !874
 
 do.body:                                          ; preds = %do.body, %entry
   %na.0 = phi i32 [ 256, %entry ], [ %shr.na.0, %do.body ]
   %nb.0 = phi i32 [ 0, %entry ], [ %nb.0.shr, %do.body ]
-  %add = add nsw i32 %nb.0, %na.0
-  %shr = ashr i32 %add, 1
-  %idxprom = sext i32 %shr to i64
-  %arrayidx = getelementptr inbounds i32* %cftab, i64 %idxprom
-  %0 = load i32* %arrayidx, align 4, !tbaa !3
-  %cmp = icmp sgt i32 %0, %indx
+  %add = add nsw i32 %nb.0, %na.0, !dbg !875
+  %shr = ashr i32 %add, 1, !dbg !875
+  tail call void @llvm.dbg.value(metadata !{i32 %shr}, i64 0, metadata !247), !dbg !875
+  %idxprom = sext i32 %shr to i64, !dbg !877
+  %arrayidx = getelementptr inbounds i32* %cftab, i64 %idxprom, !dbg !877
+  %0 = load i32* %arrayidx, align 4, !dbg !877, !tbaa !651
+  %cmp = icmp sgt i32 %0, %indx, !dbg !877
   %shr.na.0 = select i1 %cmp, i32 %shr, i32 %na.0
   %nb.0.shr = select i1 %cmp, i32 %nb.0, i32 %shr
-  %sub = sub nsw i32 %shr.na.0, %nb.0.shr
-  %cmp1 = icmp eq i32 %sub, 1
-  br i1 %cmp1, label %do.end, label %do.body
+  %sub = sub nsw i32 %shr.na.0, %nb.0.shr, !dbg !878
+  %cmp1 = icmp eq i32 %sub, 1, !dbg !878
+  br i1 %cmp1, label %do.end, label %do.body, !dbg !878
 
 do.end:                                           ; preds = %do.body
-  ret i32 %nb.0.shr
+  ret i32 %nb.0.shr, !dbg !879
 }

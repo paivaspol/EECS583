@@ -1,0 +1,38 @@
+define i32 @_ZN11xercesc_2_518XML88591Transcoder13transcodeFromEPKhjPtjRjPh(%"class.xercesc_2_5::XML88591Transcoder"* nocapture %this, i8* %srcData, i32 %srcCount, i16* nocapture %toFill, i32 %maxChars, i32* nocapture %bytesEaten, i8* nocapture %charSizes) unnamed_addr #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XML88591Transcoder"* %this}, i64 0, metadata !674), !dbg !912
+  tail call void @llvm.dbg.value(metadata !{i8* %srcData}, i64 0, metadata !675), !dbg !912
+  tail call void @llvm.dbg.value(metadata !{i32 %srcCount}, i64 0, metadata !676), !dbg !913
+  tail call void @llvm.dbg.value(metadata !{i16* %toFill}, i64 0, metadata !677), !dbg !914
+  tail call void @llvm.dbg.value(metadata !{i32 %maxChars}, i64 0, metadata !678), !dbg !915
+  tail call void @llvm.dbg.value(metadata !{i32* %bytesEaten}, i64 0, metadata !679), !dbg !916
+  tail call void @llvm.dbg.value(metadata !{i8* %charSizes}, i64 0, metadata !680), !dbg !917
+  %cmp = icmp ult i32 %srcCount, %maxChars, !dbg !918
+  %cond = select i1 %cmp, i32 %srcCount, i32 %maxChars, !dbg !918
+  tail call void @llvm.dbg.value(metadata !{i32 %cond}, i64 0, metadata !681), !dbg !918
+  tail call void @llvm.dbg.value(metadata !{i8* %srcData}, i64 0, metadata !682), !dbg !919
+  tail call void @llvm.dbg.value(metadata !{i16* %toFill}, i64 0, metadata !683), !dbg !920
+  %idx.ext = zext i32 %cond to i64, !dbg !921
+  %add.ptr = getelementptr inbounds i8* %srcData, i64 %idx.ext, !dbg !921
+  tail call void @llvm.dbg.value(metadata !{i8* %add.ptr}, i64 0, metadata !684), !dbg !921
+  %cmp212 = icmp eq i32 %cond, 0, !dbg !922
+  br i1 %cmp212, label %while.end, label %while.body, !dbg !922
+
+while.body:                                       ; preds = %entry, %while.body
+  %srcPtr.014 = phi i8* [ %incdec.ptr, %while.body ], [ %srcData, %entry ]
+  %destPtr.013 = phi i16* [ %incdec.ptr3, %while.body ], [ %toFill, %entry ]
+  %incdec.ptr = getelementptr inbounds i8* %srcPtr.014, i64 1, !dbg !923
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !682), !dbg !923
+  %0 = load i8* %srcPtr.014, align 1, !dbg !923, !tbaa !924
+  %conv = zext i8 %0 to i16, !dbg !923
+  %incdec.ptr3 = getelementptr inbounds i16* %destPtr.013, i64 1, !dbg !923
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr3}, i64 0, metadata !683), !dbg !923
+  store i16 %conv, i16* %destPtr.013, align 2, !dbg !923, !tbaa !925
+  %cmp2 = icmp ult i8* %incdec.ptr, %add.ptr, !dbg !922
+  br i1 %cmp2, label %while.body, label %while.end, !dbg !922
+
+while.end:                                        ; preds = %while.body, %entry
+  store i32 %cond, i32* %bytesEaten, align 4, !dbg !926, !tbaa !927
+  tail call void @llvm.memset.p0i8.i64(i8* %charSizes, i8 1, i64 %idx.ext, i32 1, i1 false), !dbg !928
+  ret i32 %cond, !dbg !929
+}

@@ -1,44 +1,47 @@
 define void @DV_init(%struct._DV* %dv, i32 %size, double* %entries) #0 {
 entry:
-  %cmp = icmp eq %struct._DV* %dv, null
-  %cmp1 = icmp slt i32 %size, 0
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._DV* %dv}, i64 0, metadata !21), !dbg !49
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !22), !dbg !50
+  tail call void @llvm.dbg.value(metadata !{double* %entries}, i64 0, metadata !23), !dbg !51
+  %cmp = icmp eq %struct._DV* %dv, null, !dbg !52
+  %cmp1 = icmp slt i32 %size, 0, !dbg !52
+  %or.cond = or i1 %cmp, %cmp1, !dbg !52
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !52
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([47 x i8]* @.str, i64 0, i64 0), %struct._DV* %dv, i32 %size, double* %entries) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !53, !tbaa !55
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([47 x i8]* @.str, i64 0, i64 0), %struct._DV* %dv, i32 %size, double* %entries) #5, !dbg !53
+  tail call void @exit(i32 -1) #6, !dbg !58
+  unreachable, !dbg !58
 
 if.end:                                           ; preds = %entry
-  tail call void @DV_clearData(%struct._DV* %dv) #4
-  %size2 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0
-  store i32 %size, i32* %size2, align 4, !tbaa !3
-  %maxsize = getelementptr inbounds %struct._DV* %dv, i64 0, i32 1
-  store i32 %size, i32* %maxsize, align 4, !tbaa !3
-  %cmp3 = icmp eq double* %entries, null
-  br i1 %cmp3, label %if.else, label %if.then4
+  tail call void @DV_clearData(%struct._DV* %dv) #5, !dbg !59
+  %size2 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0, !dbg !60
+  store i32 %size, i32* %size2, align 4, !dbg !60, !tbaa !61
+  %maxsize = getelementptr inbounds %struct._DV* %dv, i64 0, i32 1, !dbg !60
+  store i32 %size, i32* %maxsize, align 4, !dbg !60, !tbaa !61
+  %cmp3 = icmp eq double* %entries, null, !dbg !62
+  br i1 %cmp3, label %if.else, label %if.then4, !dbg !62
 
 if.then4:                                         ; preds = %if.end
-  %owned = getelementptr inbounds %struct._DV* %dv, i64 0, i32 2
-  store i32 0, i32* %owned, align 4, !tbaa !3
-  %vec = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3
-  store double* %entries, double** %vec, align 8, !tbaa !0
-  br label %if.end11
+  %owned = getelementptr inbounds %struct._DV* %dv, i64 0, i32 2, !dbg !63
+  store i32 0, i32* %owned, align 4, !dbg !63, !tbaa !61
+  %vec = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !65
+  store double* %entries, double** %vec, align 8, !dbg !65, !tbaa !55
+  br label %if.end11, !dbg !66
 
 if.else:                                          ; preds = %if.end
-  %cmp5 = icmp sgt i32 %size, 0
-  br i1 %cmp5, label %if.then6, label %if.end11
+  %cmp5 = icmp sgt i32 %size, 0, !dbg !67
+  br i1 %cmp5, label %if.then6, label %if.end11, !dbg !67
 
 if.then6:                                         ; preds = %if.else
-  %owned7 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 2
-  store i32 1, i32* %owned7, align 4, !tbaa !3
-  %call8 = tail call double* @DVinit2(i32 %size) #4
-  %vec9 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3
-  store double* %call8, double** %vec9, align 8, !tbaa !0
-  br label %if.end11
+  %owned7 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 2, !dbg !68
+  store i32 1, i32* %owned7, align 4, !dbg !68, !tbaa !61
+  %call8 = tail call double* @DVinit2(i32 %size) #5, !dbg !70
+  %vec9 = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !70
+  store double* %call8, double** %vec9, align 8, !dbg !70, !tbaa !55
+  br label %if.end11, !dbg !71
 
 if.end11:                                         ; preds = %if.else, %if.then6, %if.then4
-  ret void
+  ret void, !dbg !72
 }

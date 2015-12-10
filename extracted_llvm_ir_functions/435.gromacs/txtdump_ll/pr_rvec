@@ -1,46 +1,59 @@
-define void @pr_rvec(%struct.__sFILE* nocapture %fp, i32 %indent, i8* %title, float* readonly %vec, i32 %n) #4 {
-  %1 = icmp eq float* %vec, null
-  br i1 %1, label %available.exit, label %.critedge
+define void @pr_rvec(%struct._IO_FILE* nocapture %fp, i32 %indent, i8* %title, float* %vec, i32 %n) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !290), !dbg !1012
+  tail call void @llvm.dbg.value(metadata !{i32 %indent}, i64 0, metadata !291), !dbg !1012
+  tail call void @llvm.dbg.value(metadata !{i8* %title}, i64 0, metadata !292), !dbg !1012
+  tail call void @llvm.dbg.value(metadata !{float* %vec}, i64 0, metadata !293), !dbg !1012
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !294), !dbg !1012
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !1013) #4, !dbg !1015
+  tail call void @llvm.dbg.value(metadata !{i8* %title}, i64 0, metadata !1016) #4, !dbg !1015
+  %tobool.i = icmp eq float* %vec, null, !dbg !1017
+  br i1 %tobool.i, label %if.then.i, label %if.then, !dbg !1017
 
-available.exit:                                   ; preds = %0
-  %2 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([19 x i8]* @.str, i64 0, i64 0), i8* %title) #8
-  br label %.loopexit
+if.then.i:                                        ; preds = %entry
+  %call.i = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([19 x i8]* @.str, i64 0, i64 0), i8* %title) #5, !dbg !1017
+  br label %if.end, !dbg !1014
 
-.critedge:                                        ; preds = %0
-  %3 = tail call i32 @pr_title_n(%struct.__sFILE* %fp, i32 %indent, i8* %title, i32 %n) #9
-  %4 = icmp sgt i32 %n, 0
-  br i1 %4, label %.lr.ph, label %.loopexit
+if.then:                                          ; preds = %entry
+  %call1 = tail call i32 @pr_title_n(%struct._IO_FILE* %fp, i32 %indent, i8* %title, i32 %n) #6, !dbg !1018
+  tail call void @llvm.dbg.value(metadata !{i32 %call1}, i64 0, metadata !291), !dbg !1018
+  tail call void @llvm.dbg.value(metadata !152, i64 0, metadata !295), !dbg !1020
+  %cmp16 = icmp sgt i32 %n, 0, !dbg !1020
+  br i1 %cmp16, label %for.body.lr.ph, label %if.end, !dbg !1020
 
-.lr.ph:                                           ; preds = %.critedge
-  %5 = icmp sgt i32 %3, 0
-  %6 = add i32 %3, -1
-  %7 = add i32 %n, -1
-  br label %8
+for.body.lr.ph:                                   ; preds = %if.then
+  %cmp3.i = icmp sgt i32 %call1, 0, !dbg !1022
+  br label %for.body, !dbg !1020
 
-; <label>:8                                       ; preds = %pr_indent.exit, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %pr_indent.exit ]
-  br i1 %5, label %.lr.ph.i, label %pr_indent.exit
+for.body:                                         ; preds = %pr_indent.exit, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %pr_indent.exit ]
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !1025) #4, !dbg !1026
+  tail call void @llvm.dbg.value(metadata !{i32 %call1}, i64 0, metadata !1027) #4, !dbg !1026
+  tail call void @llvm.dbg.value(metadata !152, i64 0, metadata !1028) #4, !dbg !1022
+  br i1 %cmp3.i, label %for.body.i, label %pr_indent.exit, !dbg !1022
 
-.lr.ph.i:                                         ; preds = %8, %.lr.ph.i
-  %i.01.i = phi i32 [ %9, %.lr.ph.i ], [ 0, %8 ]
-  %fputc.i = tail call i32 @fputc(i32 32, %struct.__sFILE* %fp) #6
-  %9 = add nuw nsw i32 %i.01.i, 1
-  %exitcond.i = icmp eq i32 %i.01.i, %6
-  br i1 %exitcond.i, label %pr_indent.exit, label %.lr.ph.i
+for.body.i:                                       ; preds = %for.body, %for.body.i
+  %i.04.i = phi i32 [ %inc.i, %for.body.i ], [ 0, %for.body ]
+  %fputc.i = tail call i32 @fputc(i32 32, %struct._IO_FILE* %fp) #4, !dbg !1022
+  %inc.i = add nsw i32 %i.04.i, 1, !dbg !1022
+  tail call void @llvm.dbg.value(metadata !{i32 %inc.i}, i64 0, metadata !1028) #4, !dbg !1022
+  %exitcond.i = icmp eq i32 %inc.i, %call1, !dbg !1022
+  br i1 %exitcond.i, label %pr_indent.exit, label %for.body.i, !dbg !1022
 
-pr_indent.exit:                                   ; preds = %.lr.ph.i, %8
-  %10 = load i32* @bShowNumbers, align 4, !tbaa !8
-  %11 = icmp ne i32 %10, 0
-  %12 = trunc i64 %indvars.iv to i32
-  %13 = select i1 %11, i32 %12, i32 -1
-  %14 = getelementptr inbounds float* %vec, i64 %indvars.iv
-  %15 = load float* %14, align 4, !tbaa !2
-  %16 = fpext float %15 to double
-  %17 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([15 x i8]* @.str10, i64 0, i64 0), i8* %title, i32 %13, double %16) #8
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i32 %12, %7
-  br i1 %exitcond, label %.loopexit, label %8
+pr_indent.exit:                                   ; preds = %for.body.i, %for.body
+  %0 = load i32* @bShowNumbers, align 4, !dbg !1029, !tbaa !930
+  %tobool3 = icmp ne i32 %0, 0, !dbg !1029
+  %1 = trunc i64 %indvars.iv to i32, !dbg !1029
+  %cond = select i1 %tobool3, i32 %1, i32 -1, !dbg !1029
+  %arrayidx = getelementptr inbounds float* %vec, i64 %indvars.iv, !dbg !1029
+  %2 = load float* %arrayidx, align 4, !dbg !1029, !tbaa !1030
+  %conv = fpext float %2 to double, !dbg !1029
+  %call4 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([15 x i8]* @.str10, i64 0, i64 0), i8* %title, i32 %cond, double %conv) #5, !dbg !1029
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1020
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1020
+  %exitcond = icmp eq i32 %lftr.wideiv, %n, !dbg !1020
+  br i1 %exitcond, label %if.end, label %for.body, !dbg !1020
 
-.loopexit:                                        ; preds = %pr_indent.exit, %.critedge, %available.exit
-  ret void
+if.end:                                           ; preds = %if.then, %pr_indent.exit, %if.then.i
+  ret void, !dbg !1031
 }

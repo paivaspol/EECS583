@@ -1,43 +1,61 @@
 define void @DropremoveHolding(i32 %what, i32 %who) #0 {
 entry:
-  %idxprom = sext i32 %what to i64
-  %idxprom1 = sext i32 %who to i64
-  %arrayidx2 = getelementptr inbounds [2 x [16 x i32]]* @holding, i64 0, i64 %idxprom1, i64 %idxprom
-  %0 = load i32* %arrayidx2, align 4, !tbaa !0
-  %idxprom3 = sext i32 %0 to i64
-  %arrayidx6 = getelementptr inbounds [14 x [144 x i32]]* @zobrist, i64 0, i64 %idxprom, i64 %idxprom3
-  %1 = load i32* %arrayidx6, align 4, !tbaa !0
-  %2 = load i32* @hold_hash, align 4, !tbaa !0
-  %xor = xor i32 %2, %1
-  store i32 %xor, i32* @hold_hash, align 4, !tbaa !0
-  %dec = add nsw i32 %0, -1
-  store i32 %dec, i32* %arrayidx2, align 4, !tbaa !0
-  %arrayidx12 = getelementptr inbounds [2 x i32]* @num_holding, i64 0, i64 %idxprom1
-  %3 = load i32* %arrayidx12, align 4, !tbaa !0
-  %dec13 = add nsw i32 %3, -1
-  store i32 %dec13, i32* %arrayidx12, align 4, !tbaa !0
-  %cmp = icmp eq i32 %who, 0
-  %arrayidx15 = getelementptr inbounds [0 x i32]* @hand_value, i64 0, i64 %idxprom
-  %4 = load i32* %arrayidx15, align 4, !tbaa !0
-  br i1 %cmp, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata !{i32 %what}, i64 0, metadata !50), !dbg !238
+  tail call void @llvm.dbg.value(metadata !{i32 %who}, i64 0, metadata !51), !dbg !238
+  %idxprom = sext i32 %what to i64, !dbg !239
+  %idxprom1 = sext i32 %who to i64, !dbg !239
+  %arrayidx2 = getelementptr inbounds [2 x [16 x i32]]* @holding, i64 0, i64 %idxprom1, i64 %idxprom, !dbg !239
+  %0 = load i32* %arrayidx2, align 4, !dbg !239, !tbaa !78
+  %cmp = icmp sgt i32 %0, 0, !dbg !239
+  br i1 %cmp, label %cond.end, label %cond.false, !dbg !239
 
-if.then:                                          ; preds = %entry
-  %5 = load i32* @white_hand_eval, align 4, !tbaa !0
-  %sub = sub nsw i32 %5, %4
-  store i32 %sub, i32* @white_hand_eval, align 4, !tbaa !0
-  br label %if.end
+cond.false:                                       ; preds = %entry
+  tail call void @__assert_fail(i8* getelementptr inbounds ([23 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0), i32 287, i8* getelementptr inbounds ([33 x i8]* @__PRETTY_FUNCTION__.DropremoveHolding, i64 0, i64 0)) #8, !dbg !239
+  unreachable, !dbg !239
 
-if.else:                                          ; preds = %entry
-  %6 = load i32* @black_hand_eval, align 4, !tbaa !0
-  %sub18 = sub nsw i32 %6, %4
-  store i32 %sub18, i32* @black_hand_eval, align 4, !tbaa !0
+cond.end:                                         ; preds = %entry
+  %cmp7 = icmp slt i32 %0, 20, !dbg !240
+  br i1 %cmp7, label %cond.end10, label %cond.false9, !dbg !240
+
+cond.false9:                                      ; preds = %cond.end
+  tail call void @__assert_fail(i8* getelementptr inbounds ([24 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0), i32 289, i8* getelementptr inbounds ([33 x i8]* @__PRETTY_FUNCTION__.DropremoveHolding, i64 0, i64 0)) #8, !dbg !240
+  unreachable, !dbg !240
+
+cond.end10:                                       ; preds = %cond.end
+  %idxprom15 = sext i32 %0 to i64, !dbg !241
+  %arrayidx18 = getelementptr inbounds [14 x [144 x i32]]* @zobrist, i64 0, i64 %idxprom, i64 %idxprom15, !dbg !241
+  %1 = load i32* %arrayidx18, align 4, !dbg !241, !tbaa !78
+  %2 = load i32* @hold_hash, align 4, !dbg !241, !tbaa !78
+  %xor = xor i32 %2, %1, !dbg !241
+  store i32 %xor, i32* @hold_hash, align 4, !dbg !241, !tbaa !78
+  %dec = add nsw i32 %0, -1, !dbg !242
+  store i32 %dec, i32* %arrayidx2, align 4, !dbg !242, !tbaa !78
+  %arrayidx24 = getelementptr inbounds [2 x i32]* @num_holding, i64 0, i64 %idxprom1, !dbg !243
+  %3 = load i32* %arrayidx24, align 4, !dbg !243, !tbaa !78
+  %dec25 = add nsw i32 %3, -1, !dbg !243
+  store i32 %dec25, i32* %arrayidx24, align 4, !dbg !243, !tbaa !78
+  %cmp26 = icmp eq i32 %who, 0, !dbg !244
+  %arrayidx28 = getelementptr inbounds [0 x i32]* @hand_value, i64 0, i64 %idxprom, !dbg !245
+  %4 = load i32* %arrayidx28, align 4, !dbg !245, !tbaa !78
+  br i1 %cmp26, label %if.then, label %if.else, !dbg !244
+
+if.then:                                          ; preds = %cond.end10
+  %5 = load i32* @white_hand_eval, align 4, !dbg !245, !tbaa !78
+  %sub = sub nsw i32 %5, %4, !dbg !245
+  store i32 %sub, i32* @white_hand_eval, align 4, !dbg !245, !tbaa !78
+  br label %if.end, !dbg !245
+
+if.else:                                          ; preds = %cond.end10
+  %6 = load i32* @black_hand_eval, align 4, !dbg !246, !tbaa !78
+  %sub31 = sub nsw i32 %6, %4, !dbg !246
+  store i32 %sub31, i32* @black_hand_eval, align 4, !dbg !246, !tbaa !78
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
-  %arrayidx20 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %idxprom
-  %7 = load i32* %arrayidx20, align 4, !tbaa !0
-  %8 = load i32* @Material, align 4, !tbaa !0
-  %sub21 = sub nsw i32 %8, %7
-  store i32 %sub21, i32* @Material, align 4, !tbaa !0
-  ret void
+  %arrayidx33 = getelementptr inbounds [14 x i32]* @material, i64 0, i64 %idxprom, !dbg !247
+  %7 = load i32* %arrayidx33, align 4, !dbg !247, !tbaa !78
+  %8 = load i32* @Material, align 4, !dbg !247, !tbaa !78
+  %sub34 = sub nsw i32 %8, %7, !dbg !247
+  store i32 %sub34, i32* @Material, align 4, !dbg !247, !tbaa !78
+  ret void, !dbg !248
 }

@@ -1,15 +1,18 @@
 define void @conflict_graph_delete(%struct.conflict_graph_def* %graph) #0 {
 entry:
-  %arc_obstack = getelementptr inbounds %struct.conflict_graph_def* %graph, i64 0, i32 3
-  tail call void @obstack_free(%struct.obstack* %arc_obstack, i8* null) #6
-  %arc_hash_table = getelementptr inbounds %struct.conflict_graph_def* %graph, i64 0, i32 0
-  %0 = load %struct.htab** %arc_hash_table, align 8, !tbaa !3
-  tail call void @htab_delete(%struct.htab* %0) #6
-  %neighbor_heads = getelementptr inbounds %struct.conflict_graph_def* %graph, i64 0, i32 2
-  %1 = load %struct.conflict_graph_arc_def*** %neighbor_heads, align 8, !tbaa !3
-  %2 = bitcast %struct.conflict_graph_arc_def** %1 to i8*
-  tail call void @free(i8* %2) #6
-  %3 = bitcast %struct.conflict_graph_def* %graph to i8*
-  tail call void @free(i8* %3) #6
-  ret void
+  tail call void @llvm.dbg.value(metadata !{%struct.conflict_graph_def* %graph}, i64 0, metadata !367), !dbg !733
+  tail call void @llvm.dbg.value(metadata !{%struct.obstack* %arc_obstack}, i64 0, metadata !368), !dbg !734
+  tail call void @llvm.dbg.value(metadata !735, i64 0, metadata !371), !dbg !734
+  %arc_obstack = getelementptr inbounds %struct.conflict_graph_def* %graph, i64 0, i32 3, !dbg !734
+  tail call void @obstack_free(%struct.obstack* %arc_obstack, i8* null) #7, !dbg !734
+  %arc_hash_table = getelementptr inbounds %struct.conflict_graph_def* %graph, i64 0, i32 0, !dbg !736
+  %0 = load %struct.htab** %arc_hash_table, align 8, !dbg !736, !tbaa !722
+  tail call void @htab_delete(%struct.htab* %0) #7, !dbg !736
+  %neighbor_heads = getelementptr inbounds %struct.conflict_graph_def* %graph, i64 0, i32 2, !dbg !737
+  %1 = load %struct.conflict_graph_arc_def*** %neighbor_heads, align 8, !dbg !737, !tbaa !722
+  %2 = bitcast %struct.conflict_graph_arc_def** %1 to i8*, !dbg !737
+  tail call void @free(i8* %2) #7, !dbg !737
+  %3 = bitcast %struct.conflict_graph_def* %graph to i8*, !dbg !738
+  tail call void @free(i8* %3) #7, !dbg !738
+  ret void, !dbg !739
 }

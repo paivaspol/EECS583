@@ -1,0 +1,115 @@
+define internal fastcc void @_ZN3povL14Parse_Num_TermEPdPi(double* %Express, i32* %Terms) #0 {
+entry:
+  %Local_Express = alloca [5 x double], align 16
+  %Local_Terms = alloca i32, align 4
+  call void @llvm.dbg.value(metadata !{double* %Express}, i64 0, metadata !1642), !dbg !3542
+  call void @llvm.dbg.value(metadata !{i32* %Terms}, i64 0, metadata !1643), !dbg !3542
+  %0 = bitcast [5 x double]* %Local_Express to i8*, !dbg !3543
+  call void @llvm.lifetime.start(i64 40, i8* %0) #2, !dbg !3543
+  call void @llvm.dbg.declare(metadata !{[5 x double]* %Local_Express}, metadata !1645), !dbg !3543
+  call void @llvm.dbg.declare(metadata !{i32* %Local_Terms}, metadata !1646), !dbg !3544
+  call fastcc void @_ZN3povL16Parse_Num_FactorEPdPi(double* %Express, i32* %Terms) #8, !dbg !3545
+  %1 = load i32* %Terms, align 4, !dbg !3546, !tbaa !2099
+  call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !1646), !dbg !3546
+  store i32 %1, i32* %Local_Terms, align 4, !dbg !3546, !tbaa !2099
+  call void @llvm.dbg.value(metadata !592, i64 0, metadata !1647), !dbg !3547
+  %arraydecay = getelementptr inbounds [5 x double]* %Local_Express, i64 0, i64 0, !dbg !3548
+  br label %while.body, !dbg !3547
+
+while.body:                                       ; preds = %for.cond.preheader, %for.body, %for.inc27, %for.cond12.preheader, %entry
+  call void @_ZN3pov9Get_TokenEv() #8, !dbg !3551
+  %2 = load i32* getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 0), align 8, !dbg !3551, !tbaa !2099
+  switch i32 %2, label %while.end [
+    i32 236, label %sw.bb
+    i32 229, label %sw.bb5
+  ], !dbg !3551
+
+sw.bb:                                            ; preds = %while.body
+  call fastcc void @_ZN3povL16Parse_Num_FactorEPdPi(double* %arraydecay, i32* %Local_Terms) #8, !dbg !3548
+  call void @llvm.dbg.value(metadata !{i32* %Local_Terms}, i64 0, metadata !1646), !dbg !3552
+  %3 = load i32* %Local_Terms, align 4, !dbg !3552, !tbaa !2099
+  %4 = load i32* %Terms, align 4, !dbg !3552, !tbaa !2099
+  %cmp = icmp sgt i32 %3, %4, !dbg !3552
+  br i1 %cmp, label %if.then, label %if.else, !dbg !3552
+
+if.then:                                          ; preds = %sw.bb
+  call fastcc void @_ZN3povL15Promote_ExpressEPdPii(double* %Express, i32* %Terms, i32 %3) #8, !dbg !3553
+  br label %for.cond.preheader, !dbg !3553
+
+if.else:                                          ; preds = %sw.bb
+  call fastcc void @_ZN3povL15Promote_ExpressEPdPii(double* %arraydecay, i32* %Local_Terms, i32 %4) #8, !dbg !3554
+  br label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.else, %if.then
+  %5 = load i32* %Terms, align 4, !dbg !3555, !tbaa !2099
+  %cmp255 = icmp sgt i32 %5, 0, !dbg !3555
+  br i1 %cmp255, label %for.body, label %while.body, !dbg !3555
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv58 = phi i64 [ %indvars.iv.next59, %for.body ], [ 0, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds [5 x double]* %Local_Express, i64 0, i64 %indvars.iv58, !dbg !3557
+  %6 = load double* %arrayidx, align 8, !dbg !3557, !tbaa !2113
+  %arrayidx4 = getelementptr inbounds double* %Express, i64 %indvars.iv58, !dbg !3557
+  %7 = load double* %arrayidx4, align 8, !dbg !3557, !tbaa !2113
+  %mul = fmul double %6, %7, !dbg !3557
+  store double %mul, double* %arrayidx4, align 8, !dbg !3557, !tbaa !2113
+  %indvars.iv.next59 = add i64 %indvars.iv58, 1, !dbg !3555
+  %8 = trunc i64 %indvars.iv.next59 to i32, !dbg !3555
+  %cmp2 = icmp slt i32 %8, %5, !dbg !3555
+  br i1 %cmp2, label %for.body, label %while.body, !dbg !3555
+
+sw.bb5:                                           ; preds = %while.body
+  call fastcc void @_ZN3povL16Parse_Num_FactorEPdPi(double* %arraydecay, i32* %Local_Terms) #8, !dbg !3558
+  call void @llvm.dbg.value(metadata !{i32* %Local_Terms}, i64 0, metadata !1646), !dbg !3559
+  %9 = load i32* %Local_Terms, align 4, !dbg !3559, !tbaa !2099
+  %10 = load i32* %Terms, align 4, !dbg !3559, !tbaa !2099
+  %cmp7 = icmp sgt i32 %9, %10, !dbg !3559
+  br i1 %cmp7, label %if.then8, label %if.else9, !dbg !3559
+
+if.then8:                                         ; preds = %sw.bb5
+  call fastcc void @_ZN3povL15Promote_ExpressEPdPii(double* %Express, i32* %Terms, i32 %9) #8, !dbg !3560
+  br label %for.cond12.preheader, !dbg !3560
+
+if.else9:                                         ; preds = %sw.bb5
+  call fastcc void @_ZN3povL15Promote_ExpressEPdPii(double* %arraydecay, i32* %Local_Terms, i32 %10) #8, !dbg !3561
+  br label %for.cond12.preheader
+
+for.cond12.preheader:                             ; preds = %if.else9, %if.then8
+  %11 = load i32* %Terms, align 4, !dbg !3562, !tbaa !2099
+  %cmp1352 = icmp sgt i32 %11, 0, !dbg !3562
+  br i1 %cmp1352, label %for.body14, label %while.body, !dbg !3562
+
+for.body14:                                       ; preds = %for.cond12.preheader, %for.inc27
+  %12 = phi i32 [ %15, %for.inc27 ], [ %11, %for.cond12.preheader ]
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc27 ], [ 0, %for.cond12.preheader ]
+  %arrayidx16 = getelementptr inbounds [5 x double]* %Local_Express, i64 0, i64 %indvars.iv, !dbg !3564
+  %13 = load double* %arrayidx16, align 8, !dbg !3564, !tbaa !2113
+  %cmp17 = fcmp oeq double %13, 0.000000e+00, !dbg !3564
+  %arrayidx20 = getelementptr inbounds double* %Express, i64 %indvars.iv, !dbg !3566
+  br i1 %cmp17, label %if.then18, label %if.else21, !dbg !3564
+
+if.then18:                                        ; preds = %for.body14
+  store double 0x7FF0000000000000, double* %arrayidx20, align 8, !dbg !3566, !tbaa !2113
+  %call = call i32 (i32, i8*, ...)* @_ZN3pov7WarningEjPKcz(i32 0, i8* getelementptr inbounds ([16 x i8]* @.str24, i64 0, i64 0)) #8, !dbg !3568
+  %.pre = load i32* %Terms, align 4, !dbg !3562, !tbaa !2099
+  br label %for.inc27, !dbg !3569
+
+if.else21:                                        ; preds = %for.body14
+  %14 = load double* %arrayidx20, align 8, !dbg !3570, !tbaa !2113
+  %div = fdiv double %14, %13, !dbg !3570
+  store double %div, double* %arrayidx20, align 8, !dbg !3570, !tbaa !2113
+  br label %for.inc27
+
+for.inc27:                                        ; preds = %if.then18, %if.else21
+  %15 = phi i32 [ %.pre, %if.then18 ], [ %12, %if.else21 ], !dbg !3562
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !3562
+  %16 = trunc i64 %indvars.iv.next to i32, !dbg !3562
+  %cmp13 = icmp slt i32 %16, %15, !dbg !3562
+  br i1 %cmp13, label %for.body14, label %while.body, !dbg !3562
+
+while.end:                                        ; preds = %while.body
+  call void @_ZN3pov11Unget_TokenEv() #8, !dbg !3572
+  call void @llvm.dbg.value(metadata !2098, i64 0, metadata !1647), !dbg !3573
+  call void @llvm.lifetime.end(i64 40, i8* %0) #2, !dbg !3574
+  ret void, !dbg !3574
+}

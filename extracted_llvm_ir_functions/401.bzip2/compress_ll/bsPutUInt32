@@ -1,14 +1,188 @@
 define internal fastcc void @bsPutUInt32(%struct.EState* nocapture %s, i32 %u) #0 {
 entry:
-  %shr = lshr i32 %u, 24
-  tail call fastcc void @bsW(%struct.EState* %s, i32 8, i32 %shr) #5
-  %shr2 = lshr i32 %u, 16
-  %and4 = and i32 %shr2, 255
-  tail call fastcc void @bsW(%struct.EState* %s, i32 8, i32 %and4) #5
-  %shr6 = lshr i32 %u, 8
-  %and8 = and i32 %shr6, 255
-  tail call fastcc void @bsW(%struct.EState* %s, i32 8, i32 %and8) #5
-  %and11 = and i32 %u, 255
-  tail call fastcc void @bsW(%struct.EState* %s, i32 8, i32 %and11) #5
-  ret void
+  tail call void @llvm.dbg.value(metadata !{%struct.EState* %s}, i64 0, metadata !218), !dbg !977
+  tail call void @llvm.dbg.value(metadata !{i32 %u}, i64 0, metadata !219), !dbg !977
+  %shr = lshr i32 %u, 24, !dbg !978
+  tail call void @llvm.dbg.value(metadata !{%struct.EState* %s}, i64 0, metadata !979), !dbg !980
+  tail call void @llvm.dbg.value(metadata !262, i64 0, metadata !981), !dbg !980
+  tail call void @llvm.dbg.value(metadata !{i32 %shr}, i64 0, metadata !982), !dbg !980
+  %bsLive.i = getelementptr inbounds %struct.EState* %s, i64 0, i32 25, !dbg !983
+  %0 = load i32* %bsLive.i, align 4, !dbg !983, !tbaa !228
+  %cmp20.i = icmp sgt i32 %0, 7, !dbg !983
+  %bsBuff.i = getelementptr inbounds %struct.EState* %s, i64 0, i32 24, !dbg !984
+  br i1 %cmp20.i, label %while.body.lr.ph.i, label %entry.while.end_crit_edge.i, !dbg !983
+
+entry.while.end_crit_edge.i:                      ; preds = %entry
+  %.pre23.i = load i32* %bsBuff.i, align 4, !dbg !985, !tbaa !228
+  br label %bsW.exit, !dbg !983
+
+while.body.lr.ph.i:                               ; preds = %entry
+  %numZ.i = getelementptr inbounds %struct.EState* %s, i64 0, i32 19, !dbg !984
+  %zbits.i = getelementptr inbounds %struct.EState* %s, i64 0, i32 11, !dbg !984
+  %.pre.i = load i32* %bsBuff.i, align 4, !dbg !984, !tbaa !228
+  %.pre22.i = load i32* %numZ.i, align 4, !dbg !984, !tbaa !228
+  br label %while.body.i, !dbg !983
+
+while.body.i:                                     ; preds = %while.body.i, %while.body.lr.ph.i
+  %1 = phi i32 [ %.pre22.i, %while.body.lr.ph.i ], [ %inc.i, %while.body.i ], !dbg !984
+  %2 = phi i32 [ %.pre.i, %while.body.lr.ph.i ], [ %shl.i, %while.body.i ], !dbg !984
+  %shr.i = lshr i32 %2, 24, !dbg !984
+  %conv.i = trunc i32 %shr.i to i8, !dbg !984
+  %idxprom.i = sext i32 %1 to i64, !dbg !984
+  %3 = load i8** %zbits.i, align 8, !dbg !984, !tbaa !244
+  %arrayidx.i = getelementptr inbounds i8* %3, i64 %idxprom.i, !dbg !984
+  store i8 %conv.i, i8* %arrayidx.i, align 1, !dbg !984, !tbaa !229
+  %4 = load i32* %numZ.i, align 4, !dbg !984, !tbaa !228
+  %inc.i = add nsw i32 %4, 1, !dbg !984
+  store i32 %inc.i, i32* %numZ.i, align 4, !dbg !984, !tbaa !228
+  %5 = load i32* %bsBuff.i, align 4, !dbg !984, !tbaa !228
+  %shl.i = shl i32 %5, 8, !dbg !984
+  store i32 %shl.i, i32* %bsBuff.i, align 4, !dbg !984, !tbaa !228
+  %6 = load i32* %bsLive.i, align 4, !dbg !984, !tbaa !228
+  %sub.i = add nsw i32 %6, -8, !dbg !984
+  store i32 %sub.i, i32* %bsLive.i, align 4, !dbg !984, !tbaa !228
+  %cmp.i = icmp sgt i32 %sub.i, 7, !dbg !983
+  br i1 %cmp.i, label %while.body.i, label %bsW.exit, !dbg !983
+
+bsW.exit:                                         ; preds = %while.body.i, %entry.while.end_crit_edge.i
+  %7 = phi i32 [ %.pre23.i, %entry.while.end_crit_edge.i ], [ %shl.i, %while.body.i ]
+  %8 = phi i32 [ %0, %entry.while.end_crit_edge.i ], [ %sub.i, %while.body.i ]
+  %sub6.i = sub i32 24, %8, !dbg !985
+  %shl7.i = shl i32 %shr, %sub6.i, !dbg !985
+  %or.i = or i32 %shl7.i, %7, !dbg !985
+  store i32 %or.i, i32* %bsBuff.i, align 4, !dbg !985, !tbaa !228
+  %add.i = add nsw i32 %8, 8, !dbg !986
+  store i32 %add.i, i32* %bsLive.i, align 4, !dbg !986, !tbaa !228
+  %shr2 = lshr i32 %u, 16, !dbg !987
+  %and4 = and i32 %shr2, 255, !dbg !987
+  tail call void @llvm.dbg.value(metadata !{%struct.EState* %s}, i64 0, metadata !988), !dbg !989
+  tail call void @llvm.dbg.value(metadata !262, i64 0, metadata !990), !dbg !989
+  tail call void @llvm.dbg.value(metadata !{i32 %and4}, i64 0, metadata !991), !dbg !989
+  %cmp20.i70 = icmp sgt i32 %add.i, 7, !dbg !992
+  br i1 %cmp20.i70, label %while.body.lr.ph.i78, label %bsW.exit93, !dbg !992
+
+while.body.lr.ph.i78:                             ; preds = %bsW.exit
+  %numZ.i74 = getelementptr inbounds %struct.EState* %s, i64 0, i32 19, !dbg !993
+  %zbits.i75 = getelementptr inbounds %struct.EState* %s, i64 0, i32 11, !dbg !993
+  %.pre22.i77 = load i32* %numZ.i74, align 4, !dbg !993, !tbaa !228
+  br label %while.body.i87, !dbg !992
+
+while.body.i87:                                   ; preds = %while.body.i87, %while.body.lr.ph.i78
+  %9 = phi i32 [ %.pre22.i77, %while.body.lr.ph.i78 ], [ %inc.i83, %while.body.i87 ], !dbg !993
+  %10 = phi i32 [ %or.i, %while.body.lr.ph.i78 ], [ %shl.i84, %while.body.i87 ], !dbg !993
+  %shr.i79 = lshr i32 %10, 24, !dbg !993
+  %conv.i80 = trunc i32 %shr.i79 to i8, !dbg !993
+  %idxprom.i81 = sext i32 %9 to i64, !dbg !993
+  %11 = load i8** %zbits.i75, align 8, !dbg !993, !tbaa !244
+  %arrayidx.i82 = getelementptr inbounds i8* %11, i64 %idxprom.i81, !dbg !993
+  store i8 %conv.i80, i8* %arrayidx.i82, align 1, !dbg !993, !tbaa !229
+  %12 = load i32* %numZ.i74, align 4, !dbg !993, !tbaa !228
+  %inc.i83 = add nsw i32 %12, 1, !dbg !993
+  store i32 %inc.i83, i32* %numZ.i74, align 4, !dbg !993, !tbaa !228
+  %13 = load i32* %bsBuff.i, align 4, !dbg !993, !tbaa !228
+  %shl.i84 = shl i32 %13, 8, !dbg !993
+  store i32 %shl.i84, i32* %bsBuff.i, align 4, !dbg !993, !tbaa !228
+  %14 = load i32* %bsLive.i, align 4, !dbg !993, !tbaa !228
+  %sub.i85 = add nsw i32 %14, -8, !dbg !993
+  store i32 %sub.i85, i32* %bsLive.i, align 4, !dbg !993, !tbaa !228
+  %cmp.i86 = icmp sgt i32 %sub.i85, 7, !dbg !992
+  br i1 %cmp.i86, label %while.body.i87, label %bsW.exit93, !dbg !992
+
+bsW.exit93:                                       ; preds = %while.body.i87, %bsW.exit
+  %15 = phi i32 [ %or.i, %bsW.exit ], [ %shl.i84, %while.body.i87 ]
+  %16 = phi i32 [ %add.i, %bsW.exit ], [ %sub.i85, %while.body.i87 ]
+  %sub6.i88 = sub i32 24, %16, !dbg !994
+  %shl7.i89 = shl i32 %and4, %sub6.i88, !dbg !994
+  %or.i91 = or i32 %shl7.i89, %15, !dbg !994
+  store i32 %or.i91, i32* %bsBuff.i, align 4, !dbg !994, !tbaa !228
+  %add.i92 = add nsw i32 %16, 8, !dbg !995
+  store i32 %add.i92, i32* %bsLive.i, align 4, !dbg !995, !tbaa !228
+  %shr6 = lshr i32 %u, 8, !dbg !996
+  %and8 = and i32 %shr6, 255, !dbg !996
+  tail call void @llvm.dbg.value(metadata !{%struct.EState* %s}, i64 0, metadata !997), !dbg !998
+  tail call void @llvm.dbg.value(metadata !262, i64 0, metadata !999), !dbg !998
+  tail call void @llvm.dbg.value(metadata !{i32 %and8}, i64 0, metadata !1000), !dbg !998
+  %cmp20.i45 = icmp sgt i32 %add.i92, 7, !dbg !1001
+  br i1 %cmp20.i45, label %while.body.lr.ph.i53, label %bsW.exit68, !dbg !1001
+
+while.body.lr.ph.i53:                             ; preds = %bsW.exit93
+  %numZ.i49 = getelementptr inbounds %struct.EState* %s, i64 0, i32 19, !dbg !1002
+  %zbits.i50 = getelementptr inbounds %struct.EState* %s, i64 0, i32 11, !dbg !1002
+  %.pre22.i52 = load i32* %numZ.i49, align 4, !dbg !1002, !tbaa !228
+  br label %while.body.i62, !dbg !1001
+
+while.body.i62:                                   ; preds = %while.body.i62, %while.body.lr.ph.i53
+  %17 = phi i32 [ %.pre22.i52, %while.body.lr.ph.i53 ], [ %inc.i58, %while.body.i62 ], !dbg !1002
+  %18 = phi i32 [ %or.i91, %while.body.lr.ph.i53 ], [ %shl.i59, %while.body.i62 ], !dbg !1002
+  %shr.i54 = lshr i32 %18, 24, !dbg !1002
+  %conv.i55 = trunc i32 %shr.i54 to i8, !dbg !1002
+  %idxprom.i56 = sext i32 %17 to i64, !dbg !1002
+  %19 = load i8** %zbits.i50, align 8, !dbg !1002, !tbaa !244
+  %arrayidx.i57 = getelementptr inbounds i8* %19, i64 %idxprom.i56, !dbg !1002
+  store i8 %conv.i55, i8* %arrayidx.i57, align 1, !dbg !1002, !tbaa !229
+  %20 = load i32* %numZ.i49, align 4, !dbg !1002, !tbaa !228
+  %inc.i58 = add nsw i32 %20, 1, !dbg !1002
+  store i32 %inc.i58, i32* %numZ.i49, align 4, !dbg !1002, !tbaa !228
+  %21 = load i32* %bsBuff.i, align 4, !dbg !1002, !tbaa !228
+  %shl.i59 = shl i32 %21, 8, !dbg !1002
+  store i32 %shl.i59, i32* %bsBuff.i, align 4, !dbg !1002, !tbaa !228
+  %22 = load i32* %bsLive.i, align 4, !dbg !1002, !tbaa !228
+  %sub.i60 = add nsw i32 %22, -8, !dbg !1002
+  store i32 %sub.i60, i32* %bsLive.i, align 4, !dbg !1002, !tbaa !228
+  %cmp.i61 = icmp sgt i32 %sub.i60, 7, !dbg !1001
+  br i1 %cmp.i61, label %while.body.i62, label %bsW.exit68, !dbg !1001
+
+bsW.exit68:                                       ; preds = %while.body.i62, %bsW.exit93
+  %23 = phi i32 [ %or.i91, %bsW.exit93 ], [ %shl.i59, %while.body.i62 ]
+  %24 = phi i32 [ %add.i92, %bsW.exit93 ], [ %sub.i60, %while.body.i62 ]
+  %sub6.i63 = sub i32 24, %24, !dbg !1003
+  %shl7.i64 = shl i32 %and8, %sub6.i63, !dbg !1003
+  %or.i66 = or i32 %shl7.i64, %23, !dbg !1003
+  store i32 %or.i66, i32* %bsBuff.i, align 4, !dbg !1003, !tbaa !228
+  %add.i67 = add nsw i32 %24, 8, !dbg !1004
+  store i32 %add.i67, i32* %bsLive.i, align 4, !dbg !1004, !tbaa !228
+  %and11 = and i32 %u, 255, !dbg !1005
+  tail call void @llvm.dbg.value(metadata !{%struct.EState* %s}, i64 0, metadata !1006), !dbg !1007
+  tail call void @llvm.dbg.value(metadata !262, i64 0, metadata !1008), !dbg !1007
+  tail call void @llvm.dbg.value(metadata !{i32 %and11}, i64 0, metadata !1009), !dbg !1007
+  %cmp20.i20 = icmp sgt i32 %add.i67, 7, !dbg !1010
+  br i1 %cmp20.i20, label %while.body.lr.ph.i28, label %bsW.exit43, !dbg !1010
+
+while.body.lr.ph.i28:                             ; preds = %bsW.exit68
+  %numZ.i24 = getelementptr inbounds %struct.EState* %s, i64 0, i32 19, !dbg !1011
+  %zbits.i25 = getelementptr inbounds %struct.EState* %s, i64 0, i32 11, !dbg !1011
+  %.pre22.i27 = load i32* %numZ.i24, align 4, !dbg !1011, !tbaa !228
+  br label %while.body.i37, !dbg !1010
+
+while.body.i37:                                   ; preds = %while.body.i37, %while.body.lr.ph.i28
+  %25 = phi i32 [ %.pre22.i27, %while.body.lr.ph.i28 ], [ %inc.i33, %while.body.i37 ], !dbg !1011
+  %26 = phi i32 [ %or.i66, %while.body.lr.ph.i28 ], [ %shl.i34, %while.body.i37 ], !dbg !1011
+  %shr.i29 = lshr i32 %26, 24, !dbg !1011
+  %conv.i30 = trunc i32 %shr.i29 to i8, !dbg !1011
+  %idxprom.i31 = sext i32 %25 to i64, !dbg !1011
+  %27 = load i8** %zbits.i25, align 8, !dbg !1011, !tbaa !244
+  %arrayidx.i32 = getelementptr inbounds i8* %27, i64 %idxprom.i31, !dbg !1011
+  store i8 %conv.i30, i8* %arrayidx.i32, align 1, !dbg !1011, !tbaa !229
+  %28 = load i32* %numZ.i24, align 4, !dbg !1011, !tbaa !228
+  %inc.i33 = add nsw i32 %28, 1, !dbg !1011
+  store i32 %inc.i33, i32* %numZ.i24, align 4, !dbg !1011, !tbaa !228
+  %29 = load i32* %bsBuff.i, align 4, !dbg !1011, !tbaa !228
+  %shl.i34 = shl i32 %29, 8, !dbg !1011
+  store i32 %shl.i34, i32* %bsBuff.i, align 4, !dbg !1011, !tbaa !228
+  %30 = load i32* %bsLive.i, align 4, !dbg !1011, !tbaa !228
+  %sub.i35 = add nsw i32 %30, -8, !dbg !1011
+  store i32 %sub.i35, i32* %bsLive.i, align 4, !dbg !1011, !tbaa !228
+  %cmp.i36 = icmp sgt i32 %sub.i35, 7, !dbg !1010
+  br i1 %cmp.i36, label %while.body.i37, label %bsW.exit43, !dbg !1010
+
+bsW.exit43:                                       ; preds = %while.body.i37, %bsW.exit68
+  %31 = phi i32 [ %or.i66, %bsW.exit68 ], [ %shl.i34, %while.body.i37 ]
+  %32 = phi i32 [ %add.i67, %bsW.exit68 ], [ %sub.i35, %while.body.i37 ]
+  %sub6.i38 = sub i32 24, %32, !dbg !1012
+  %shl7.i39 = shl i32 %and11, %sub6.i38, !dbg !1012
+  %or.i41 = or i32 %shl7.i39, %31, !dbg !1012
+  store i32 %or.i41, i32* %bsBuff.i, align 4, !dbg !1012, !tbaa !228
+  %add.i42 = add nsw i32 %32, 8, !dbg !1013
+  store i32 %add.i42, i32* %bsLive.i, align 4, !dbg !1013, !tbaa !228
+  ret void, !dbg !1014
 }

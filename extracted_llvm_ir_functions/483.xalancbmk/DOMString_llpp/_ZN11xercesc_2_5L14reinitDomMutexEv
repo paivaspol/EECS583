@@ -1,0 +1,36 @@
+define internal void @_ZN11xercesc_2_5L14reinitDomMutexEv() #1 {
+entry:
+  %0 = load %"class.xercesc_2_5::XMLMutex"** @_ZN11xercesc_2_5L20DOMStringHandleMutexE, align 8, !dbg !2395, !tbaa !1648
+  %isnull = icmp eq %"class.xercesc_2_5::XMLMutex"* %0, null, !dbg !2395
+  br i1 %isnull, label %delete.end, label %delete.notnull, !dbg !2395
+
+delete.notnull:                                   ; preds = %entry
+  invoke void @_ZN11xercesc_2_58XMLMutexD1Ev(%"class.xercesc_2_5::XMLMutex"* %0) #9
+          to label %invoke.cont unwind label %lpad, !dbg !2395
+
+invoke.cont:                                      ; preds = %delete.notnull
+  %1 = bitcast %"class.xercesc_2_5::XMLMutex"* %0 to i8*, !dbg !2395
+  tail call void @_ZN11xercesc_2_57XMemorydlEPv(i8* %1) #9, !dbg !2395
+  br label %delete.end, !dbg !2395
+
+delete.end:                                       ; preds = %invoke.cont, %entry
+  store %"class.xercesc_2_5::XMLMutex"* null, %"class.xercesc_2_5::XMLMutex"** @_ZN11xercesc_2_5L20DOMStringHandleMutexE, align 8, !dbg !2396, !tbaa !1648
+  ret void, !dbg !2397
+
+lpad:                                             ; preds = %delete.notnull
+  %2 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !2395
+  %3 = bitcast %"class.xercesc_2_5::XMLMutex"* %0 to i8*, !dbg !2395
+  invoke void @_ZN11xercesc_2_57XMemorydlEPv(i8* %3) #9
+          to label %eh.resume unwind label %terminate.lpad, !dbg !2395
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %2, !dbg !2395
+
+terminate.lpad:                                   ; preds = %lpad
+  %4 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !2395
+  %5 = extractvalue { i8*, i32 } %4, 0, !dbg !2395
+  tail call void @__clang_call_terminate(i8* %5) #10, !dbg !2395
+  unreachable, !dbg !2395
+}

@@ -1,0 +1,47 @@
+define void @_ZN3pov13Parse_PigmentEPPNS_14Pigment_StructE(%"struct.pov::Pigment_Struct"** nocapture %Pigment_Ptr) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Pigment_Struct"** %Pigment_Ptr}, i64 0, metadata !1396), !dbg !2341
+  tail call void @llvm.dbg.value(metadata !617, i64 0, metadata !1397), !dbg !2342
+  tail call void @_ZN3pov9Get_TokenEv() #6, !dbg !2343
+  %0 = load i32* getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 0), align 8, !dbg !2343, !tbaa !2162
+  %cond = icmp eq i32 %0, 200, !dbg !2343
+  br i1 %cond, label %sw.bb, label %sw.default, !dbg !2343
+
+sw.bb:                                            ; preds = %entry
+  %1 = load %"struct.pov::Pigment_Struct"** %Pigment_Ptr, align 8, !dbg !2345, !tbaa !2214
+  tail call void @_ZN3pov15Destroy_PigmentEPNS_14Pigment_StructE(%"struct.pov::Pigment_Struct"* %1) #6, !dbg !2345
+  %2 = load i8** getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 10), align 8, !dbg !2347, !tbaa !2214
+  %3 = bitcast i8* %2 to %"struct.pov::Pigment_Struct"*, !dbg !2347
+  %call = tail call %"struct.pov::Pigment_Struct"* @_ZN3pov12Copy_PigmentEPNS_14Pigment_StructE(%"struct.pov::Pigment_Struct"* %3) #6, !dbg !2347
+  store %"struct.pov::Pigment_Struct"* %call, %"struct.pov::Pigment_Struct"** %Pigment_Ptr, align 8, !dbg !2347, !tbaa !2214
+  tail call void @llvm.dbg.value(metadata !2189, i64 0, metadata !1397), !dbg !2348
+  br label %while.end, !dbg !2349
+
+sw.default:                                       ; preds = %entry
+  tail call void @_ZN3pov11Unget_TokenEv() #6, !dbg !2350
+  tail call void @llvm.dbg.value(metadata !2189, i64 0, metadata !1397), !dbg !2351
+  %.pre = load %"struct.pov::Pigment_Struct"** %Pigment_Ptr, align 8, !dbg !2352, !tbaa !2214
+  br label %while.end, !dbg !2353
+
+while.end:                                        ; preds = %sw.default, %sw.bb
+  %4 = phi %"struct.pov::Pigment_Struct"* [ %.pre, %sw.default ], [ %call, %sw.bb ]
+  %5 = bitcast %"struct.pov::Pigment_Struct"* %4 to %"struct.pov::Pattern_Struct"*, !dbg !2352
+  tail call fastcc void @_ZN3povL13Parse_PatternEPNS_14Pattern_StructEi(%"struct.pov::Pattern_Struct"* %5, i32 0) #6, !dbg !2352
+  %6 = load i16* @_ZN3pov14Not_In_DefaultE, align 2, !dbg !2354, !tbaa !2213
+  %tobool1 = icmp eq i16 %6, 0, !dbg !2354
+  br i1 %tobool1, label %if.end, label %land.lhs.true, !dbg !2354
+
+land.lhs.true:                                    ; preds = %while.end
+  %7 = load %"struct.pov::Pigment_Struct"** %Pigment_Ptr, align 8, !dbg !2354, !tbaa !2214
+  %Type = getelementptr inbounds %"struct.pov::Pigment_Struct"* %7, i64 0, i32 0, !dbg !2354
+  %8 = load i16* %Type, align 2, !dbg !2354, !tbaa !2213
+  %cmp = icmp eq i16 %8, 0, !dbg !2354
+  br i1 %cmp, label %if.then, label %if.end, !dbg !2354
+
+if.then:                                          ; preds = %land.lhs.true
+  %call2 = tail call i32 (i32, i8*, ...)* @_ZN3pov7WarningEjPKcz(i32 155, i8* getelementptr inbounds ([42 x i8]* @.str8, i64 0, i64 0)) #6, !dbg !2355
+  br label %if.end, !dbg !2357
+
+if.end:                                           ; preds = %while.end, %if.then, %land.lhs.true
+  ret void, !dbg !2358
+}

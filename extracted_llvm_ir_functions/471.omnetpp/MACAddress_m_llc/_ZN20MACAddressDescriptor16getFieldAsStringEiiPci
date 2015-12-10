@@ -1,0 +1,28 @@
+define zeroext i1 @_ZN20MACAddressDescriptor16getFieldAsStringEiiPci(%class.MACAddressDescriptor* nocapture %this, i32 %field, i32 %i, i8* %resultbuf, i32 %bufsize) unnamed_addr #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.MACAddressDescriptor* %this}, i64 0, metadata !2775), !dbg !2959
+  tail call void @llvm.dbg.value(metadata !{i32 %field}, i64 0, metadata !2776), !dbg !2959
+  tail call void @llvm.dbg.value(metadata !{i32 %i}, i64 0, metadata !2777), !dbg !2959
+  tail call void @llvm.dbg.value(metadata !{i8* %resultbuf}, i64 0, metadata !2778), !dbg !2959
+  tail call void @llvm.dbg.value(metadata !{i32 %bufsize}, i64 0, metadata !2779), !dbg !2959
+  %p = getelementptr inbounds %class.MACAddressDescriptor* %this, i64 0, i32 0, i32 1, !dbg !2960
+  %0 = load i8** %p, align 8, !dbg !2960, !tbaa !2913
+  tail call void @llvm.dbg.value(metadata !{%class.MACAddress_Base* %1}, i64 0, metadata !2780), !dbg !2960
+  %cond = icmp eq i32 %field, 0, !dbg !2961
+  br i1 %cond, label %sw.bb, label %return, !dbg !2961
+
+sw.bb:                                            ; preds = %entry
+  %1 = bitcast i8* %0 to %class.MACAddress_Base*, !dbg !2960
+  %2 = bitcast i8* %0 to i8 (%class.MACAddress_Base*, i32)***, !dbg !2962
+  %vtable = load i8 (%class.MACAddress_Base*, i32)*** %2, align 8, !dbg !2962, !tbaa !2889
+  %vfn = getelementptr inbounds i8 (%class.MACAddress_Base*, i32)** %vtable, i64 3, !dbg !2962
+  %3 = load i8 (%class.MACAddress_Base*, i32)** %vfn, align 8, !dbg !2962
+  %call = tail call zeroext i8 %3(%class.MACAddress_Base* %1, i32 %i) #10, !dbg !2962
+  %conv = zext i8 %call to i64, !dbg !2962
+  tail call void @_ZN17cStructDescriptor11long2stringElPci(i64 %conv, i8* %resultbuf, i32 %bufsize) #10, !dbg !2962
+  br label %return, !dbg !2962
+
+return:                                           ; preds = %entry, %sw.bb
+  %retval.0 = phi i1 [ true, %sw.bb ], [ false, %entry ]
+  ret i1 %retval.0, !dbg !2964
+}

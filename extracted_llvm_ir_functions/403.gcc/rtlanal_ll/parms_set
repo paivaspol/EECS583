@@ -1,38 +1,41 @@
-define internal void @parms_set(%struct.rtx_def* nocapture %x, %struct.rtx_def* nocapture %pat, i8* nocapture %data) #1 {
+define internal void @parms_set(%struct.rtx_def* nocapture %x, %struct.rtx_def* nocapture %pat, i8* nocapture %data) #2 {
 entry:
-  %0 = bitcast %struct.rtx_def* %x to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 61
-  br i1 %cmp, label %land.lhs.true, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !947), !dbg !1985
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %pat}, i64 0, metadata !948), !dbg !1985
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !949), !dbg !1986
+  %0 = bitcast %struct.rtx_def* %x to i32*, !dbg !1987
+  %bf.load = load i32* %0, align 8, !dbg !1987
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1987
+  %cmp = icmp eq i32 %bf.clear, 61, !dbg !1987
+  br i1 %cmp, label %land.lhs.true, label %if.end, !dbg !1987
 
 land.lhs.true:                                    ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
-  %1 = load i32* %rtuint, align 4, !tbaa !3
-  %cmp1 = icmp ult i32 %1, 53
-  br i1 %cmp1, label %land.lhs.true2, label %if.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0, !dbg !1987
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*, !dbg !1987
+  %1 = load i32* %rtuint, align 4, !dbg !1987, !tbaa !992
+  %cmp1 = icmp ult i32 %1, 53, !dbg !1987
+  br i1 %cmp1, label %land.lhs.true2, label %if.end, !dbg !1987
 
 land.lhs.true2:                                   ; preds = %land.lhs.true
-  %regs = getelementptr inbounds i8* %data, i64 8
-  %2 = bitcast i8* %regs to i64*
-  %3 = load i64* %2, align 8, !tbaa !4
-  %sh_prom = zext i32 %1 to i64
-  %shl = shl i64 1, %sh_prom
-  %and = and i64 %3, %shl
-  %tobool = icmp eq i64 %and, 0
-  br i1 %tobool, label %if.end, label %if.then
+  %regs = getelementptr inbounds i8* %data, i64 8, !dbg !1987
+  %2 = bitcast i8* %regs to i64*, !dbg !1987
+  %3 = load i64* %2, align 8, !dbg !1987, !tbaa !1051
+  %sh_prom = zext i32 %1 to i64, !dbg !1987
+  %shl = shl i64 1, %sh_prom, !dbg !1987
+  %and = and i64 %3, %shl, !dbg !1987
+  %tobool = icmp eq i64 %and, 0, !dbg !1987
+  br i1 %tobool, label %if.end, label %if.then, !dbg !1987
 
 if.then:                                          ; preds = %land.lhs.true2
-  %neg = xor i64 %shl, -1
-  %and12 = and i64 %3, %neg
-  store i64 %and12, i64* %2, align 8, !tbaa !4
-  %nregs = bitcast i8* %data to i32*
-  %4 = load i32* %nregs, align 4, !tbaa !3
-  %dec = add nsw i32 %4, -1
-  store i32 %dec, i32* %nregs, align 4, !tbaa !3
-  br label %if.end
+  %neg = xor i64 %shl, -1, !dbg !1988
+  %and12 = and i64 %3, %neg, !dbg !1988
+  store i64 %and12, i64* %2, align 8, !dbg !1988, !tbaa !1051
+  %nregs = bitcast i8* %data to i32*, !dbg !1990
+  %4 = load i32* %nregs, align 4, !dbg !1990, !tbaa !992
+  %dec = add nsw i32 %4, -1, !dbg !1990
+  store i32 %dec, i32* %nregs, align 4, !dbg !1990, !tbaa !992
+  br label %if.end, !dbg !1991
 
 if.end:                                           ; preds = %land.lhs.true2, %if.then, %land.lhs.true, %entry
-  ret void
+  ret void, !dbg !1992
 }

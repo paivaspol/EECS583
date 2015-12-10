@@ -1,0 +1,46 @@
+define internal void @Convert_CCTK_COMPLEX16_to_CCTK_COMPLEX8(i8* nocapture %src, i8* nocapture %dst, i32 %nelems, i32 %src_stride, i32 %dst_stride) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %src}, i64 0, metadata !74), !dbg !215
+  tail call void @llvm.dbg.value(metadata !{i8* %dst}, i64 0, metadata !75), !dbg !215
+  tail call void @llvm.dbg.value(metadata !{i32 %nelems}, i64 0, metadata !76), !dbg !215
+  tail call void @llvm.dbg.value(metadata !{i32 %src_stride}, i64 0, metadata !77), !dbg !215
+  tail call void @llvm.dbg.value(metadata !{i32 %dst_stride}, i64 0, metadata !78), !dbg !215
+  tail call void @llvm.dbg.value(metadata !{%struct.CCTK_COMPLEX8* %1}, i64 0, metadata !79), !dbg !215
+  tail call void @llvm.dbg.value(metadata !{%struct.CCTK_COMPLEX16* %0}, i64 0, metadata !80), !dbg !215
+  tail call void @llvm.dbg.value(metadata !{i32 %dec}, i64 0, metadata !76), !dbg !215
+  %tobool10 = icmp eq i32 %nelems, 0, !dbg !215
+  br i1 %tobool10, label %while.end, label %while.body.lr.ph, !dbg !215
+
+while.body.lr.ph:                                 ; preds = %entry
+  %0 = bitcast i8* %src to %struct.CCTK_COMPLEX16*, !dbg !215
+  %1 = bitcast i8* %dst to %struct.CCTK_COMPLEX8*, !dbg !215
+  %idx.ext = sext i32 %src_stride to i64, !dbg !216
+  %idx.ext4 = sext i32 %dst_stride to i64, !dbg !216
+  br label %while.body, !dbg !215
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.body
+  %_src.013 = phi %struct.CCTK_COMPLEX16* [ %0, %while.body.lr.ph ], [ %add.ptr, %while.body ]
+  %_dst.012 = phi %struct.CCTK_COMPLEX8* [ %1, %while.body.lr.ph ], [ %add.ptr5, %while.body ]
+  %nelems.addr.011 = phi i32 [ %nelems, %while.body.lr.ph ], [ %dec, %while.body ]
+  %dec = add nsw i32 %nelems.addr.011, -1, !dbg !215
+  %Re = getelementptr inbounds %struct.CCTK_COMPLEX16* %_src.013, i64 0, i32 0, !dbg !216
+  %2 = load double* %Re, align 8, !dbg !216, !tbaa !206
+  %conv = fptrunc double %2 to float, !dbg !216
+  %Re1 = getelementptr inbounds %struct.CCTK_COMPLEX8* %_dst.012, i64 0, i32 0, !dbg !216
+  store float %conv, float* %Re1, align 4, !dbg !216, !tbaa !207
+  %Im = getelementptr inbounds %struct.CCTK_COMPLEX16* %_src.013, i64 0, i32 1, !dbg !216
+  %3 = load double* %Im, align 8, !dbg !216, !tbaa !206
+  %conv2 = fptrunc double %3 to float, !dbg !216
+  %Im3 = getelementptr inbounds %struct.CCTK_COMPLEX8* %_dst.012, i64 0, i32 1, !dbg !216
+  store float %conv2, float* %Im3, align 4, !dbg !216, !tbaa !207
+  %add.ptr = getelementptr inbounds %struct.CCTK_COMPLEX16* %_src.013, i64 %idx.ext, !dbg !216
+  tail call void @llvm.dbg.value(metadata !{%struct.CCTK_COMPLEX16* %add.ptr}, i64 0, metadata !80), !dbg !216
+  %add.ptr5 = getelementptr inbounds %struct.CCTK_COMPLEX8* %_dst.012, i64 %idx.ext4, !dbg !216
+  tail call void @llvm.dbg.value(metadata !{%struct.CCTK_COMPLEX8* %add.ptr5}, i64 0, metadata !79), !dbg !216
+  tail call void @llvm.dbg.value(metadata !{i32 %dec}, i64 0, metadata !76), !dbg !215
+  %tobool = icmp eq i32 %dec, 0, !dbg !215
+  br i1 %tobool, label %while.end, label %while.body, !dbg !215
+
+while.end:                                        ; preds = %while.body, %entry
+  ret void, !dbg !215
+}

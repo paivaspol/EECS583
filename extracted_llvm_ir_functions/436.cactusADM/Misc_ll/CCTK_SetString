@@ -1,26 +1,30 @@
-define i32 @CCTK_SetString(i8** nocapture %data, i8* %value) #1 {
-  %1 = load i8** %data, align 8, !tbaa !2
-  %2 = icmp eq i8* %1, null
-  br i1 %2, label %4, label %3
+define i32 @CCTK_SetString(i8** nocapture %data, i8* nocapture %value) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8** %data}, i64 0, metadata !174), !dbg !466
+  tail call void @llvm.dbg.value(metadata !{i8* %value}, i64 0, metadata !175), !dbg !466
+  tail call void @llvm.dbg.value(metadata !246, i64 0, metadata !176), !dbg !467
+  %0 = load i8** %data, align 8, !dbg !468, !tbaa !269
+  %tobool = icmp eq i8* %0, null, !dbg !468
+  br i1 %tobool, label %if.end, label %if.then, !dbg !468
 
-; <label>:3                                       ; preds = %0
-  tail call void @free(i8* %1) #8
-  br label %4
+if.then:                                          ; preds = %entry
+  tail call void @free(i8* %0) #7, !dbg !468
+  br label %if.end, !dbg !468
 
-; <label>:4                                       ; preds = %0, %3
-  %5 = tail call i64 @strlen(i8* %value) #7
-  %6 = add i64 %5, 1
-  %7 = tail call i8* @malloc(i64 %6) #7
-  store i8* %7, i8** %data, align 8, !tbaa !2
-  %8 = icmp eq i8* %7, null
-  br i1 %8, label %12, label %9
+if.end:                                           ; preds = %entry, %if.then
+  %call = tail call i64 @strlen(i8* %value) #9, !dbg !469
+  %add = add i64 %call, 1, !dbg !469
+  %call2 = tail call noalias i8* @malloc(i64 %add) #7, !dbg !469
+  store i8* %call2, i8** %data, align 8, !dbg !469, !tbaa !269
+  %tobool3 = icmp eq i8* %call2, null, !dbg !470
+  br i1 %tobool3, label %if.end6, label %if.then4, !dbg !470
 
-; <label>:9                                       ; preds = %4
-  %10 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %7, i1 false)
-  %11 = tail call i8* @__strcpy_chk(i8* %7, i8* %value, i64 %10) #7
-  br label %12
+if.then4:                                         ; preds = %if.end
+  %call5 = tail call i8* @strcpy(i8* %call2, i8* %value) #7, !dbg !471
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !176), !dbg !473
+  br label %if.end6, !dbg !474
 
-; <label>:12                                      ; preds = %4, %9
-  %retval.0 = phi i32 [ 0, %9 ], [ -1, %4 ]
-  ret i32 %retval.0
+if.end6:                                          ; preds = %if.end, %if.then4
+  %retval1.0 = phi i32 [ 0, %if.then4 ], [ -1, %if.end ]
+  ret i32 %retval1.0, !dbg !475
 }

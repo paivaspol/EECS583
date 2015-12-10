@@ -1,23 +1,27 @@
 define internal void @record_set_info(%struct.rtx_def* nocapture %dest, %struct.rtx_def* nocapture %setter, i8* %data) #0 {
 entry:
-  %0 = bitcast i8* %data to %struct.rtx_def*
-  %1 = bitcast %struct.rtx_def* %dest to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 61
-  br i1 %cmp, label %land.lhs.true, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %dest}, i64 0, metadata !694), !dbg !3136
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %setter}, i64 0, metadata !695), !dbg !3136
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !696), !dbg !3137
+  %0 = bitcast i8* %data to %struct.rtx_def*, !dbg !3138
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %0}, i64 0, metadata !697), !dbg !3138
+  %1 = bitcast %struct.rtx_def* %dest to i32*, !dbg !3139
+  %bf.load = load i32* %1, align 8, !dbg !3139
+  %bf.clear = and i32 %bf.load, 65535, !dbg !3139
+  %cmp = icmp eq i32 %bf.clear, 61, !dbg !3139
+  br i1 %cmp, label %land.lhs.true, label %if.end, !dbg !3139
 
 land.lhs.true:                                    ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %dest, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
-  %2 = load i32* %rtuint, align 4, !tbaa !3
-  %cmp1 = icmp ugt i32 %2, 52
-  br i1 %cmp1, label %if.then, label %if.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %dest, i64 0, i32 1, i64 0, !dbg !3139
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*, !dbg !3139
+  %2 = load i32* %rtuint, align 4, !dbg !3139, !tbaa !1735
+  %cmp1 = icmp ugt i32 %2, 52, !dbg !3139
+  br i1 %cmp1, label %if.then, label %if.end, !dbg !3139
 
 if.then:                                          ; preds = %land.lhs.true
-  tail call fastcc void @record_one_set(i32 %2, %struct.rtx_def* %0) #7
-  br label %if.end
+  tail call fastcc void @record_one_set(i32 %2, %struct.rtx_def* %0) #8, !dbg !3140
+  br label %if.end, !dbg !3140
 
 if.end:                                           ; preds = %if.then, %land.lhs.true, %entry
-  ret void
+  ret void, !dbg !3141
 }

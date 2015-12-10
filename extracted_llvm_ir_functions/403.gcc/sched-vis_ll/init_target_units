@@ -1,46 +1,49 @@
 define void @init_target_units() #0 {
 entry:
-  %call = tail call %struct.rtx_def* @get_last_insn() #5
-  %tobool14 = icmp eq %struct.rtx_def* %call, null
-  br i1 %tobool14, label %for.end, label %for.body
+  %call = tail call %struct.rtx_def* @get_last_insn() #6, !dbg !554
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !414), !dbg !554
+  %tobool14 = icmp eq %struct.rtx_def* %call, null, !dbg !554
+  br i1 %tobool14, label %for.end, label %for.body, !dbg !554
 
 for.body:                                         ; preds = %entry, %for.inc
   %insn.015 = phi %struct.rtx_def* [ %4, %for.inc ], [ %call, %entry ]
-  %0 = bitcast %struct.rtx_def* %insn.015 to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %idxprom13 = zext i32 %bf.clear to i64
-  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom13
-  %1 = load i8* %arrayidx, align 1, !tbaa !1
-  %cmp = icmp eq i8 %1, 105
-  br i1 %cmp, label %if.end, label %for.inc
+  %0 = bitcast %struct.rtx_def* %insn.015 to i32*, !dbg !556
+  %bf.load = load i32* %0, align 8, !dbg !556
+  %bf.clear = and i32 %bf.load, 65535, !dbg !556
+  %idxprom13 = zext i32 %bf.clear to i64, !dbg !556
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom13, !dbg !556
+  %1 = load i8* %arrayidx, align 1, !dbg !556, !tbaa !539
+  %cmp = icmp eq i8 %1, 105, !dbg !556
+  br i1 %cmp, label %if.end, label %for.inc, !dbg !556
 
 if.end:                                           ; preds = %for.body
-  %call2 = tail call i32 @insn_unit(%struct.rtx_def* %insn.015) #5
-  %cmp3 = icmp slt i32 %call2, 0
-  br i1 %cmp3, label %if.then5, label %if.else
+  %call2 = tail call i32 @insn_unit(%struct.rtx_def* %insn.015) #6, !dbg !558
+  tail call void @llvm.dbg.value(metadata !{i32 %call2}, i64 0, metadata !415), !dbg !558
+  %cmp3 = icmp slt i32 %call2, 0, !dbg !559
+  br i1 %cmp3, label %if.then5, label %if.else, !dbg !559
 
 if.then5:                                         ; preds = %if.end
-  %neg = xor i32 %call2, -1
-  %2 = load i32* @target_units, align 4, !tbaa !3
-  %or = or i32 %2, %neg
-  store i32 %or, i32* @target_units, align 4, !tbaa !3
-  br label %for.inc
+  %neg = xor i32 %call2, -1, !dbg !560
+  %2 = load i32* @target_units, align 4, !dbg !560, !tbaa !561
+  %or = or i32 %2, %neg, !dbg !560
+  store i32 %or, i32* @target_units, align 4, !dbg !560, !tbaa !561
+  br label %for.inc, !dbg !560
 
 if.else:                                          ; preds = %if.end
-  %shl = shl i32 1, %call2
-  %3 = load i32* @target_units, align 4, !tbaa !3
-  %or6 = or i32 %3, %shl
-  store i32 %or6, i32* @target_units, align 4, !tbaa !3
+  %shl = shl i32 1, %call2, !dbg !562
+  %3 = load i32* @target_units, align 4, !dbg !562, !tbaa !561
+  %or6 = or i32 %3, %shl, !dbg !562
+  store i32 %or6, i32* @target_units, align 4, !dbg !562, !tbaa !561
   br label %for.inc
 
 for.inc:                                          ; preds = %if.then5, %if.else, %for.body
-  %arrayidx8 = getelementptr inbounds %struct.rtx_def* %insn.015, i64 0, i32 1, i64 1
-  %rtx = bitcast %union.rtunion_def* %arrayidx8 to %struct.rtx_def**
-  %4 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %tobool = icmp eq %struct.rtx_def* %4, null
-  br i1 %tobool, label %for.end, label %for.body
+  %arrayidx8 = getelementptr inbounds %struct.rtx_def* %insn.015, i64 0, i32 1, i64 1, !dbg !554
+  %rtx = bitcast %union.rtunion_def* %arrayidx8 to %struct.rtx_def**, !dbg !554
+  %4 = load %struct.rtx_def** %rtx, align 8, !dbg !554, !tbaa !538
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %4}, i64 0, metadata !414), !dbg !554
+  %tobool = icmp eq %struct.rtx_def* %4, null, !dbg !554
+  br i1 %tobool, label %for.end, label %for.body, !dbg !554
 
 for.end:                                          ; preds = %for.inc, %entry
-  ret void
+  ret void, !dbg !563
 }

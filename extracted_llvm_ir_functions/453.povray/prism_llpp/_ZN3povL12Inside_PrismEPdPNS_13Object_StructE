@@ -1,0 +1,85 @@
+define internal i32 @_ZN3povL12Inside_PrismEPdPNS_13Object_StructE(double* %IPoint, %"struct.pov::Object_Struct"* nocapture %Object) #0 {
+entry:
+  %P = alloca [3 x double], align 16
+  call void @llvm.dbg.value(metadata !{double* %IPoint}, i64 0, metadata !1145), !dbg !2047
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !1146), !dbg !2047
+  call void @llvm.dbg.declare(metadata !{[3 x double]* %P}, metadata !1147), !dbg !2048
+  %0 = bitcast %"struct.pov::Object_Struct"* %Object to %"struct.pov::Prism_Struct"*, !dbg !2049
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Prism_Struct"* %0}, i64 0, metadata !1149), !dbg !2049
+  %arraydecay = getelementptr inbounds [3 x double]* %P, i64 0, i64 0, !dbg !2050
+  %1 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 10, !dbg !2050
+  %2 = load %"struct.pov::Transform_Struct"** %1, align 8, !dbg !2050, !tbaa !1332
+  call void @_ZN3pov14MInvTransPointEPdS0_PNS_16Transform_StructE(double* %arraydecay, double* %IPoint, %"struct.pov::Transform_Struct"* %2) #7, !dbg !2050
+  %arrayidx = getelementptr inbounds [3 x double]* %P, i64 0, i64 1, !dbg !2051
+  %3 = load double* %arrayidx, align 8, !dbg !2051, !tbaa !1361
+  %Height1 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, i32 2, !dbg !2051
+  %4 = bitcast %"struct.pov::Object_Struct"** %Height1 to double*, !dbg !2051
+  %5 = load double* %4, align 8, !dbg !2051, !tbaa !1361
+  %cmp = fcmp ult double %3, %5, !dbg !2051
+  br i1 %cmp, label %if.end23, label %land.lhs.true, !dbg !2051
+
+land.lhs.true:                                    ; preds = %entry
+  %Height2 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, i32 3, !dbg !2051
+  %6 = bitcast %"struct.pov::Texture_Struct"** %Height2 to double*, !dbg !2051
+  %7 = load double* %6, align 8, !dbg !2051, !tbaa !1361
+  %cmp2 = fcmp olt double %3, %7, !dbg !2051
+  br i1 %cmp2, label %if.then, label %if.end23, !dbg !2051
+
+if.then:                                          ; preds = %land.lhs.true
+  %8 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, i32 1, !dbg !2052
+  %9 = load i32* %8, align 4, !dbg !2052, !tbaa !1329
+  %cmp3 = icmp eq i32 %9, 2, !dbg !2052
+  br i1 %cmp3, label %if.then4, label %if.then.if.end15_crit_edge, !dbg !2052
+
+if.then.if.end15_crit_edge:                       ; preds = %if.then
+  %.pre = load double* %arraydecay, align 16, !dbg !2054, !tbaa !1361
+  %arrayidx17.phi.trans.insert = getelementptr inbounds [3 x double]* %P, i64 0, i64 2
+  %.pre34 = load double* %arrayidx17.phi.trans.insert, align 16, !dbg !2054, !tbaa !1361
+  br label %if.end15, !dbg !2052
+
+if.then4:                                         ; preds = %if.then
+  %call = call double @fabs(double %3) #8, !dbg !2055
+  %cmp6 = fcmp ogt double %call, 1.000000e-07, !dbg !2055
+  br i1 %cmp6, label %if.then7, label %if.else, !dbg !2055
+
+if.then7:                                         ; preds = %if.then4
+  %10 = load double* %arraydecay, align 16, !dbg !2057, !tbaa !1361
+  %div = fdiv double %10, %3, !dbg !2057
+  store double %div, double* %arraydecay, align 16, !dbg !2057, !tbaa !1361
+  %arrayidx11 = getelementptr inbounds [3 x double]* %P, i64 0, i64 2, !dbg !2059
+  %11 = load double* %arrayidx11, align 16, !dbg !2059, !tbaa !1361
+  %div12 = fdiv double %11, %3, !dbg !2059
+  store double %div12, double* %arrayidx11, align 16, !dbg !2059, !tbaa !1361
+  br label %if.end15, !dbg !2060
+
+if.else:                                          ; preds = %if.then4
+  %arrayidx13 = getelementptr inbounds [3 x double]* %P, i64 0, i64 2, !dbg !2061
+  store double 0x7FF0000000000000, double* %arrayidx13, align 16, !dbg !2061, !tbaa !1361
+  store double 0x7FF0000000000000, double* %arraydecay, align 16, !dbg !2061, !tbaa !1361
+  br label %if.end15
+
+if.end15:                                         ; preds = %if.then.if.end15_crit_edge, %if.then7, %if.else
+  %12 = phi double [ %.pre34, %if.then.if.end15_crit_edge ], [ %div12, %if.then7 ], [ 0x7FF0000000000000, %if.else ]
+  %13 = phi double [ %.pre, %if.then.if.end15_crit_edge ], [ %div, %if.then7 ], [ 0x7FF0000000000000, %if.else ]
+  %call18 = call fastcc i32 @_ZN3povL8in_curveEPNS_12Prism_StructEdd(%"struct.pov::Prism_Struct"* %0, double %13, double %12) #7, !dbg !2054
+  %tobool = icmp eq i32 %call18, 0, !dbg !2054
+  br i1 %tobool, label %if.end23, label %if.then19, !dbg !2054
+
+if.then19:                                        ; preds = %if.end15
+  %14 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 13, !dbg !2063
+  %15 = load i32* %14, align 4, !dbg !2063, !tbaa !1329
+  %and = lshr i32 %15, 2, !dbg !2063
+  %and.lobit = and i32 %and, 1, !dbg !2063
+  %16 = xor i32 %and.lobit, 1, !dbg !2063
+  br label %return, !dbg !2063
+
+if.end23:                                         ; preds = %if.end15, %entry, %land.lhs.true
+  %17 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 13, !dbg !2065
+  %18 = load i32* %17, align 4, !dbg !2065, !tbaa !1329
+  %and26 = and i32 %18, 4, !dbg !2065
+  br label %return, !dbg !2065
+
+return:                                           ; preds = %if.end23, %if.then19
+  %retval.0 = phi i32 [ %16, %if.then19 ], [ %and26, %if.end23 ]
+  ret i32 %retval.0, !dbg !2066
+}

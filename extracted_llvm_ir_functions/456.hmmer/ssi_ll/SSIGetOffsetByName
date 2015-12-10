@@ -1,76 +1,86 @@
 define i32 @SSIGetOffsetByName(%struct.ssifile_s* nocapture %sfp, i8* nocapture %key, i32* nocapture %ret_fh, %struct.ssioffset_s* nocapture %ret_offset) #0 {
 entry:
   %fnum = alloca i16, align 2
-  %plen = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 6
-  %0 = load i32* %plen, align 4, !tbaa !4
-  %poffset = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 12
-  %precsize = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 9
-  %1 = load i32* %precsize, align 4, !tbaa !4
-  %nprimary = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 3
-  %2 = load i32* %nprimary, align 4, !tbaa !4
-  %call = call fastcc i32 @binary_search(%struct.ssifile_s* %sfp, i8* %key, i32 %0, %struct.ssioffset_s* %poffset, i32 %1, i32 %2) #9
+  call void @llvm.dbg.value(metadata !{%struct.ssifile_s* %sfp}, i64 0, metadata !120), !dbg !563
+  call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !121), !dbg !563
+  call void @llvm.dbg.value(metadata !{i32* %ret_fh}, i64 0, metadata !122), !dbg !563
+  call void @llvm.dbg.value(metadata !{%struct.ssioffset_s* %ret_offset}, i64 0, metadata !123), !dbg !564
+  call void @llvm.dbg.declare(metadata !{i16* %fnum}, metadata !125), !dbg !565
+  %plen = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 6, !dbg !566
+  %0 = load i32* %plen, align 4, !dbg !566, !tbaa !521
+  %poffset = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 12, !dbg !566
+  %precsize = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 9, !dbg !566
+  %1 = load i32* %precsize, align 4, !dbg !566, !tbaa !521
+  %nprimary = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 3, !dbg !566
+  %2 = load i32* %nprimary, align 4, !dbg !566, !tbaa !521
+  %call = call fastcc i32 @binary_search(%struct.ssifile_s* %sfp, i8* %key, i32 %0, %struct.ssioffset_s* %poffset, i32 %1, i32 %2) #10, !dbg !566
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !124), !dbg !566
   switch i32 %call, label %return [
     i32 0, label %if.then
     i32 2, label %if.then10
-  ]
+  ], !dbg !567
 
 if.then:                                          ; preds = %entry
-  %fp = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 0
-  %3 = load %struct._IO_FILE** %fp, align 8, !tbaa !0
-  %call1 = call fastcc i32 @read_i16(%struct._IO_FILE* %3, i16* %fnum) #9
-  %tobool = icmp eq i32 %call1, 0
-  br i1 %tobool, label %return, label %if.end
+  %fp = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 0, !dbg !568
+  %3 = load %struct._IO_FILE** %fp, align 8, !dbg !568, !tbaa !498
+  %call1 = call fastcc i32 @read_i16(%struct._IO_FILE* %3, i16* %fnum) #10, !dbg !568
+  %tobool = icmp eq i32 %call1, 0, !dbg !568
+  br i1 %tobool, label %return, label %if.end, !dbg !568
 
 if.end:                                           ; preds = %if.then
-  %4 = load i16* %fnum, align 2, !tbaa !3
-  %conv = zext i16 %4 to i32
-  store i32 %conv, i32* %ret_fh, align 4, !tbaa !4
-  %5 = load %struct._IO_FILE** %fp, align 8, !tbaa !0
-  %smode = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 15
-  %6 = load i8* %smode, align 1, !tbaa !1
-  %call4 = call fastcc i32 @read_offset(%struct._IO_FILE* %5, i8 signext %6, %struct.ssioffset_s* %ret_offset) #9
-  %tobool5 = icmp eq i32 %call4, 0
-  %. = zext i1 %tobool5 to i32
-  br label %return
+  call void @llvm.dbg.value(metadata !{i16* %fnum}, i64 0, metadata !125), !dbg !570
+  %4 = load i16* %fnum, align 2, !dbg !570, !tbaa !517
+  %conv = zext i16 %4 to i32, !dbg !570
+  store i32 %conv, i32* %ret_fh, align 4, !dbg !570, !tbaa !521
+  %5 = load %struct._IO_FILE** %fp, align 8, !dbg !571, !tbaa !498
+  %smode = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 15, !dbg !571
+  %6 = load i8* %smode, align 1, !dbg !571, !tbaa !499
+  %call4 = call fastcc i32 @read_offset(%struct._IO_FILE* %5, i8 signext %6, %struct.ssioffset_s* %ret_offset) #10, !dbg !571
+  %tobool5 = icmp eq i32 %call4, 0, !dbg !571
+  %. = zext i1 %tobool5 to i32, !dbg !571
+  br label %return, !dbg !571
 
 if.then10:                                        ; preds = %entry
-  %nsecondary = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 4
-  %7 = load i32* %nsecondary, align 4, !tbaa !4
-  %cmp11 = icmp eq i32 %7, 0
-  br i1 %cmp11, label %return, label %if.then13
+  %nsecondary = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 4, !dbg !572
+  %7 = load i32* %nsecondary, align 4, !dbg !572, !tbaa !521
+  %cmp11 = icmp eq i32 %7, 0, !dbg !572
+  br i1 %cmp11, label %return, label %if.then13, !dbg !572
 
 if.then13:                                        ; preds = %if.then10
-  %slen = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 7
-  %8 = load i32* %slen, align 4, !tbaa !4
-  %soffset = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 13
-  %srecsize = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 10
-  %9 = load i32* %srecsize, align 4, !tbaa !4
-  %call15 = call fastcc i32 @binary_search(%struct.ssifile_s* %sfp, i8* %key, i32 %8, %struct.ssioffset_s* %soffset, i32 %9, i32 %7) #9
-  %cmp16 = icmp eq i32 %call15, 0
-  br i1 %cmp16, label %if.end19, label %return
+  %slen = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 7, !dbg !573
+  %8 = load i32* %slen, align 4, !dbg !573, !tbaa !521
+  %soffset = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 13, !dbg !573
+  %srecsize = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 10, !dbg !573
+  %9 = load i32* %srecsize, align 4, !dbg !573, !tbaa !521
+  %call15 = call fastcc i32 @binary_search(%struct.ssifile_s* %sfp, i8* %key, i32 %8, %struct.ssioffset_s* %soffset, i32 %9, i32 %7) #10, !dbg !573
+  call void @llvm.dbg.value(metadata !{i32 %call15}, i64 0, metadata !124), !dbg !573
+  %cmp16 = icmp eq i32 %call15, 0, !dbg !574
+  br i1 %cmp16, label %if.end19, label %return, !dbg !574
 
 if.end19:                                         ; preds = %if.then13
-  %10 = load i32* %plen, align 4, !tbaa !4
-  %conv21 = zext i32 %10 to i64
-  %call22 = call noalias i8* @malloc(i64 %conv21) #8
-  %cmp23 = icmp eq i8* %call22, null
-  br i1 %cmp23, label %return, label %if.end26
+  %10 = load i32* %plen, align 4, !dbg !575, !tbaa !521
+  %conv21 = zext i32 %10 to i64, !dbg !575
+  %call22 = call noalias i8* @malloc(i64 %conv21) #9, !dbg !575
+  call void @llvm.dbg.value(metadata !{i8* %call22}, i64 0, metadata !126), !dbg !575
+  %cmp23 = icmp eq i8* %call22, null, !dbg !575
+  br i1 %cmp23, label %return, label %if.end26, !dbg !575
 
 if.end26:                                         ; preds = %if.end19
-  %fp29 = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 0
-  %11 = load %struct._IO_FILE** %fp29, align 8, !tbaa !0
-  %call30 = call i64 @fread(i8* %call22, i64 1, i64 %conv21, %struct._IO_FILE* %11) #8
-  %12 = load i32* %plen, align 4, !tbaa !4
-  %conv32 = zext i32 %12 to i64
-  %cmp33 = icmp eq i64 %call30, %conv32
-  br i1 %cmp33, label %if.end36, label %return
+  %fp29 = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 0, !dbg !576
+  %11 = load %struct._IO_FILE** %fp29, align 8, !dbg !576, !tbaa !498
+  %call30 = call i64 @fread(i8* %call22, i64 1, i64 %conv21, %struct._IO_FILE* %11) #9, !dbg !576
+  %12 = load i32* %plen, align 4, !dbg !576, !tbaa !521
+  %conv32 = zext i32 %12 to i64, !dbg !576
+  %cmp33 = icmp eq i64 %call30, %conv32, !dbg !576
+  br i1 %cmp33, label %if.end36, label %return, !dbg !576
 
 if.end36:                                         ; preds = %if.end26
-  %call37 = call i32 @SSIGetOffsetByName(%struct.ssifile_s* %sfp, i8* %call22, i32* %ret_fh, %struct.ssioffset_s* %ret_offset) #9
-  call void @free(i8* %call22) #8
-  br label %return
+  %call37 = call i32 @SSIGetOffsetByName(%struct.ssifile_s* %sfp, i8* %call22, i32* %ret_fh, %struct.ssioffset_s* %ret_offset) #10, !dbg !577
+  call void @llvm.dbg.value(metadata !{i32 %call37}, i64 0, metadata !124), !dbg !577
+  call void @free(i8* %call22) #9, !dbg !578
+  br label %return, !dbg !579
 
 return:                                           ; preds = %entry, %if.end36, %if.then10, %if.end26, %if.end19, %if.then13, %if.end, %if.then
   %retval.0 = phi i32 [ 1, %if.then ], [ %., %if.end ], [ %call15, %if.then13 ], [ 3, %if.end19 ], [ 1, %if.end26 ], [ %call37, %if.end36 ], [ 2, %if.then10 ], [ %call, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !580
 }

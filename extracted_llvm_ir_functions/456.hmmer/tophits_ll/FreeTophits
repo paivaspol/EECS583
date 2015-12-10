@@ -1,82 +1,84 @@
 define void @FreeTophits(%struct.tophit_s* nocapture %h) #0 {
 entry:
-  %num = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 3
-  %0 = load i32* %num, align 4, !tbaa !3
-  %cmp62 = icmp sgt i32 %0, 0
-  %unsrt = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 1
-  br i1 %cmp62, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{%struct.tophit_s* %h}, i64 0, metadata !66), !dbg !176
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !67), !dbg !177
+  %num = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 3, !dbg !177
+  %0 = load i32* %num, align 4, !dbg !177, !tbaa !168
+  %cmp62 = icmp sgt i32 %0, 0, !dbg !177
+  %unsrt = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 1, !dbg !179
+  br i1 %cmp62, label %for.body, label %for.end, !dbg !177
 
 for.body:                                         ; preds = %entry, %for.inc
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %entry ]
-  %1 = load %struct.hit_s** %unsrt, align 8, !tbaa !0
-  %ali = getelementptr inbounds %struct.hit_s* %1, i64 %indvars.iv, i32 16
-  %2 = load %struct.fancyali_s** %ali, align 8, !tbaa !0
-  %cmp1 = icmp eq %struct.fancyali_s* %2, null
-  br i1 %cmp1, label %if.end, label %if.then
+  %1 = load %struct.hit_s** %unsrt, align 8, !dbg !179, !tbaa !163
+  %ali = getelementptr inbounds %struct.hit_s* %1, i64 %indvars.iv, i32 16, !dbg !179
+  %2 = load %struct.fancyali_s** %ali, align 8, !dbg !179, !tbaa !163
+  %cmp1 = icmp eq %struct.fancyali_s* %2, null, !dbg !179
+  br i1 %cmp1, label %if.end, label %if.then, !dbg !179
 
 if.then:                                          ; preds = %for.body
-  tail call void @FreeFancyAli(%struct.fancyali_s* %2) #7
-  %.pre = load %struct.hit_s** %unsrt, align 8, !tbaa !0
-  br label %if.end
+  tail call void @FreeFancyAli(%struct.fancyali_s* %2) #8, !dbg !179
+  %.pre = load %struct.hit_s** %unsrt, align 8, !dbg !181, !tbaa !163
+  br label %if.end, !dbg !179
 
 if.end:                                           ; preds = %for.body, %if.then
   %3 = phi %struct.hit_s* [ %1, %for.body ], [ %.pre, %if.then ]
-  %name = getelementptr inbounds %struct.hit_s* %3, i64 %indvars.iv, i32 5
-  %4 = load i8** %name, align 8, !tbaa !0
-  %cmp9 = icmp eq i8* %4, null
-  br i1 %cmp9, label %if.end15, label %if.then10
+  %name = getelementptr inbounds %struct.hit_s* %3, i64 %indvars.iv, i32 5, !dbg !181
+  %4 = load i8** %name, align 8, !dbg !181, !tbaa !163
+  %cmp9 = icmp eq i8* %4, null, !dbg !181
+  br i1 %cmp9, label %if.end15, label %if.then10, !dbg !181
 
 if.then10:                                        ; preds = %if.end
-  tail call void @free(i8* %4) #6
-  %.pre64 = load %struct.hit_s** %unsrt, align 8, !tbaa !0
-  br label %if.end15
+  tail call void @free(i8* %4) #7, !dbg !181
+  %.pre64 = load %struct.hit_s** %unsrt, align 8, !dbg !182, !tbaa !163
+  br label %if.end15, !dbg !181
 
 if.end15:                                         ; preds = %if.end, %if.then10
   %5 = phi %struct.hit_s* [ %3, %if.end ], [ %.pre64, %if.then10 ]
-  %acc = getelementptr inbounds %struct.hit_s* %5, i64 %indvars.iv, i32 6
-  %6 = load i8** %acc, align 8, !tbaa !0
-  %cmp19 = icmp eq i8* %6, null
-  br i1 %cmp19, label %if.end25, label %if.then20
+  %acc = getelementptr inbounds %struct.hit_s* %5, i64 %indvars.iv, i32 6, !dbg !182
+  %6 = load i8** %acc, align 8, !dbg !182, !tbaa !163
+  %cmp19 = icmp eq i8* %6, null, !dbg !182
+  br i1 %cmp19, label %if.end25, label %if.then20, !dbg !182
 
 if.then20:                                        ; preds = %if.end15
-  tail call void @free(i8* %6) #6
-  %.pre65 = load %struct.hit_s** %unsrt, align 8, !tbaa !0
-  br label %if.end25
+  tail call void @free(i8* %6) #7, !dbg !182
+  %.pre65 = load %struct.hit_s** %unsrt, align 8, !dbg !183, !tbaa !163
+  br label %if.end25, !dbg !182
 
 if.end25:                                         ; preds = %if.end15, %if.then20
   %7 = phi %struct.hit_s* [ %5, %if.end15 ], [ %.pre65, %if.then20 ]
-  %desc = getelementptr inbounds %struct.hit_s* %7, i64 %indvars.iv, i32 7
-  %8 = load i8** %desc, align 8, !tbaa !0
-  %cmp29 = icmp eq i8* %8, null
-  br i1 %cmp29, label %for.inc, label %if.then30
+  %desc = getelementptr inbounds %struct.hit_s* %7, i64 %indvars.iv, i32 7, !dbg !183
+  %8 = load i8** %desc, align 8, !dbg !183, !tbaa !163
+  %cmp29 = icmp eq i8* %8, null, !dbg !183
+  br i1 %cmp29, label %for.inc, label %if.then30, !dbg !183
 
 if.then30:                                        ; preds = %if.end25
-  tail call void @free(i8* %8) #6
-  br label %for.inc
+  tail call void @free(i8* %8) #7, !dbg !183
+  br label %for.inc, !dbg !183
 
 for.inc:                                          ; preds = %if.end25, %if.then30
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %9 = load i32* %num, align 4, !tbaa !3
-  %10 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %10, %9
-  br i1 %cmp, label %for.body, label %for.end
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !177
+  %9 = load i32* %num, align 4, !dbg !177, !tbaa !168
+  %10 = trunc i64 %indvars.iv.next to i32, !dbg !177
+  %cmp = icmp slt i32 %10, %9, !dbg !177
+  br i1 %cmp, label %for.body, label %for.end, !dbg !177
 
 for.end:                                          ; preds = %entry, %for.inc
-  %11 = load %struct.hit_s** %unsrt, align 8, !tbaa !0
-  %12 = bitcast %struct.hit_s* %11 to i8*
-  tail call void @free(i8* %12) #6
-  %hit = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0
-  %13 = load %struct.hit_s*** %hit, align 8, !tbaa !0
-  %cmp37 = icmp eq %struct.hit_s** %13, null
-  br i1 %cmp37, label %if.end40, label %if.then38
+  %11 = load %struct.hit_s** %unsrt, align 8, !dbg !184, !tbaa !163
+  %12 = bitcast %struct.hit_s* %11 to i8*, !dbg !184
+  tail call void @free(i8* %12) #7, !dbg !184
+  %hit = getelementptr inbounds %struct.tophit_s* %h, i64 0, i32 0, !dbg !185
+  %13 = load %struct.hit_s*** %hit, align 8, !dbg !185, !tbaa !163
+  %cmp37 = icmp eq %struct.hit_s** %13, null, !dbg !185
+  br i1 %cmp37, label %if.end40, label %if.then38, !dbg !185
 
 if.then38:                                        ; preds = %for.end
-  %14 = bitcast %struct.hit_s** %13 to i8*
-  tail call void @free(i8* %14) #6
-  br label %if.end40
+  %14 = bitcast %struct.hit_s** %13 to i8*, !dbg !185
+  tail call void @free(i8* %14) #7, !dbg !185
+  br label %if.end40, !dbg !185
 
 if.end40:                                         ; preds = %for.end, %if.then38
-  %15 = bitcast %struct.tophit_s* %h to i8*
-  tail call void @free(i8* %15) #6
-  ret void
+  %15 = bitcast %struct.tophit_s* %h to i8*, !dbg !186
+  tail call void @free(i8* %15) #7, !dbg !186
+  ret void, !dbg !187
 }

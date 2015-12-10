@@ -1,23 +1,25 @@
 define void @expand_end_all_catch() #0 {
 entry:
-  %0 = load i32* @flag_exceptions, align 4, !tbaa !0
-  %tobool.i = icmp eq i32 %0, 0
-  br i1 %tobool.i, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !732, i64 0, metadata !2532), !dbg !2534
+  %0 = load i32* @flag_exceptions, align 4, !dbg !2535, !tbaa !2220
+  %tobool.i = icmp eq i32 %0, 0, !dbg !2535
+  br i1 %tobool.i, label %return, label %if.end, !dbg !2535
 
 if.end:                                           ; preds = %entry
-  %1 = load %struct.function** @cfun, align 8, !tbaa !3
-  %eh = getelementptr inbounds %struct.function* %1, i64 0, i32 0
-  %2 = load %struct.eh_status** %eh, align 8, !tbaa !3
-  %try_region1 = getelementptr inbounds %struct.eh_status* %2, i64 0, i32 3
-  %3 = load %struct.eh_region** %try_region1, align 8, !tbaa !3
-  %prev_try = getelementptr inbounds %struct.eh_region* %3, i64 0, i32 6, i32 0, i32 2
-  %4 = load %struct.eh_region** %prev_try, align 8, !tbaa !3
-  store %struct.eh_region* %4, %struct.eh_region** %try_region1, align 8, !tbaa !3
-  %continue_label = getelementptr inbounds %struct.eh_region* %3, i64 0, i32 6, i32 0, i32 3
-  %5 = load %struct.rtx_def** %continue_label, align 8, !tbaa !3
-  %call6 = tail call %struct.rtx_def* @emit_label(%struct.rtx_def* %5) #6
-  br label %return
+  %1 = load %struct.function** @cfun, align 8, !dbg !2536, !tbaa !2232
+  %eh = getelementptr inbounds %struct.function* %1, i64 0, i32 0, !dbg !2536
+  %2 = load %struct.eh_status** %eh, align 8, !dbg !2536, !tbaa !2232
+  %try_region1 = getelementptr inbounds %struct.eh_status* %2, i64 0, i32 3, !dbg !2536
+  %3 = load %struct.eh_region** %try_region1, align 8, !dbg !2536, !tbaa !2232
+  tail call void @llvm.dbg.value(metadata !{%struct.eh_region* %3}, i64 0, metadata !1492), !dbg !2536
+  %prev_try = getelementptr inbounds %struct.eh_region* %3, i64 0, i32 6, i32 0, i32 2, !dbg !2537
+  %4 = load %struct.eh_region** %prev_try, align 8, !dbg !2537, !tbaa !2232
+  store %struct.eh_region* %4, %struct.eh_region** %try_region1, align 8, !dbg !2537, !tbaa !2232
+  %continue_label = getelementptr inbounds %struct.eh_region* %3, i64 0, i32 6, i32 0, i32 3, !dbg !2538
+  %5 = load %struct.rtx_def** %continue_label, align 8, !dbg !2538, !tbaa !2232
+  %call6 = tail call %struct.rtx_def* @emit_label(%struct.rtx_def* %5) #7, !dbg !2538
+  br label %return, !dbg !2538
 
 return:                                           ; preds = %entry, %if.end
-  ret void
+  ret void, !dbg !2538
 }

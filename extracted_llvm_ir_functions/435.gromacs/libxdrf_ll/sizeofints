@@ -1,80 +1,96 @@
-define internal fastcc i32 @sizeofints(i32* nocapture readonly %sizes) #8 {
+define internal fastcc i32 @sizeofints(i32* nocapture %sizes) #6 {
+entry:
   %bytes = alloca [32 x i32], align 16
-  %1 = bitcast [32 x i32]* %bytes to i8*
-  call void @llvm.lifetime.start(i64 128, i8* %1) #7
-  %2 = getelementptr inbounds [32 x i32]* %bytes, i64 0, i64 0
-  store i32 1, i32* %2, align 16, !tbaa !23
-  br label %.preheader1
+  call void @llvm.dbg.value(metadata !776, i64 0, metadata !211), !dbg !777
+  %0 = bitcast [32 x i32]* %bytes to i8*, !dbg !778
+  call void @llvm.lifetime.start(i64 128, i8* %0) #5, !dbg !778
+  call void @llvm.dbg.declare(metadata !{[32 x i32]* %bytes}, metadata !217), !dbg !778
+  call void @llvm.dbg.value(metadata !321, i64 0, metadata !215), !dbg !779
+  %arrayidx = getelementptr inbounds [32 x i32]* %bytes, i64 0, i64 0, !dbg !780
+  store i32 1, i32* %arrayidx, align 16, !dbg !780, !tbaa !372
+  call void @llvm.dbg.value(metadata !9, i64 0, metadata !216), !dbg !781
+  call void @llvm.dbg.value(metadata !9, i64 0, metadata !213), !dbg !782
+  br label %for.cond1.preheader, !dbg !782
 
-.preheader1:                                      ; preds = %._crit_edge12, %0
-  %indvars.iv19 = phi i64 [ 0, %0 ], [ %indvars.iv.next20, %._crit_edge12 ]
-  %num_of_bytes.014 = phi i32 [ 1, %0 ], [ %bytecnt.1.lcssa, %._crit_edge12 ]
-  %3 = icmp eq i32 %num_of_bytes.014, 0
-  br i1 %3, label %._crit_edge12, label %.lr.ph6
+for.cond1.preheader:                              ; preds = %while.end, %entry
+  %indvars.iv15 = phi i64 [ 0, %entry ], [ %indvars.iv.next16, %while.end ]
+  %num_of_bytes.013 = phi i32 [ 1, %entry ], [ %bytecnt.1.lcssa, %while.end ]
+  %cmp24 = icmp eq i32 %num_of_bytes.013, 0, !dbg !784
+  br i1 %cmp24, label %while.end, label %for.body3.lr.ph, !dbg !784
 
-.lr.ph6:                                          ; preds = %.preheader1
-  %4 = getelementptr inbounds i32* %sizes, i64 %indvars.iv19
-  %5 = load i32* %4, align 4, !tbaa !23
-  %6 = add i32 %num_of_bytes.014, -1
-  br label %8
+for.body3.lr.ph:                                  ; preds = %for.cond1.preheader
+  %arrayidx6 = getelementptr inbounds i32* %sizes, i64 %indvars.iv15, !dbg !787
+  %1 = load i32* %arrayidx6, align 4, !dbg !787, !tbaa !372
+  br label %for.body3, !dbg !784
 
-.preheader:                                       ; preds = %8
-  %7 = icmp eq i32 %14, 0
-  br i1 %7, label %._crit_edge12, label %.lr.ph11
+for.body3:                                        ; preds = %for.body3, %for.body3.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body3.lr.ph ], [ %indvars.iv.next, %for.body3 ]
+  %tmp.06 = phi i32 [ 0, %for.body3.lr.ph ], [ %shr, %for.body3 ]
+  %arrayidx4 = getelementptr inbounds [32 x i32]* %bytes, i64 0, i64 %indvars.iv, !dbg !787
+  %2 = load i32* %arrayidx4, align 4, !dbg !787, !tbaa !372
+  %mul = mul i32 %1, %2, !dbg !787
+  %add = add i32 %mul, %tmp.06, !dbg !787
+  call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !219), !dbg !787
+  %and = and i32 %add, 255, !dbg !789
+  store i32 %and, i32* %arrayidx4, align 4, !dbg !789, !tbaa !372
+  %shr = lshr i32 %add, 8, !dbg !790
+  call void @llvm.dbg.value(metadata !{i32 %shr}, i64 0, metadata !219), !dbg !790
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !784
+  call void @llvm.dbg.value(metadata !{i32 %num_of_bytes.013}, i64 0, metadata !218), !dbg !784
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !784
+  %exitcond = icmp eq i32 %lftr.wideiv, %num_of_bytes.013, !dbg !784
+  br i1 %exitcond, label %while.cond.loopexit, label %for.body3, !dbg !784
 
-; <label>:8                                       ; preds = %8, %.lr.ph6
-  %indvars.iv = phi i64 [ 0, %.lr.ph6 ], [ %indvars.iv.next, %8 ]
-  %tmp.05 = phi i32 [ 0, %.lr.ph6 ], [ %14, %8 ]
-  %9 = getelementptr inbounds [32 x i32]* %bytes, i64 0, i64 %indvars.iv
-  %10 = load i32* %9, align 4, !tbaa !23
-  %11 = mul i32 %5, %10
-  %12 = add i32 %11, %tmp.05
-  %13 = and i32 %12, 255
-  store i32 %13, i32* %9, align 4, !tbaa !23
-  %14 = lshr i32 %12, 8
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %6
-  br i1 %exitcond, label %.preheader, label %8
+while.cond.loopexit:                              ; preds = %for.body3
+  %cmp99 = icmp eq i32 %shr, 0, !dbg !791
+  br i1 %cmp99, label %while.end, label %while.body, !dbg !791
 
-.lr.ph11:                                         ; preds = %.preheader, %.lr.ph11
-  %tmp.110 = phi i32 [ %19, %.lr.ph11 ], [ %14, %.preheader ]
-  %bytecnt.19 = phi i32 [ %16, %.lr.ph11 ], [ %num_of_bytes.014, %.preheader ]
-  %15 = and i32 %tmp.110, 255
-  %16 = add i32 %bytecnt.19, 1
-  %17 = zext i32 %bytecnt.19 to i64
-  %18 = getelementptr inbounds [32 x i32]* %bytes, i64 0, i64 %17
-  store i32 %15, i32* %18, align 4, !tbaa !23
-  %19 = lshr i32 %tmp.110, 8
-  %20 = icmp eq i32 %19, 0
-  br i1 %20, label %._crit_edge12, label %.lr.ph11
+while.body:                                       ; preds = %while.cond.loopexit, %while.body
+  %tmp.111 = phi i32 [ %shr14, %while.body ], [ %shr, %while.cond.loopexit ]
+  %bytecnt.110 = phi i32 [ %inc11, %while.body ], [ %num_of_bytes.013, %while.cond.loopexit ]
+  %and10 = and i32 %tmp.111, 255, !dbg !792
+  %inc11 = add i32 %bytecnt.110, 1, !dbg !792
+  call void @llvm.dbg.value(metadata !{i32 %inc11}, i64 0, metadata !218), !dbg !792
+  %idxprom12 = zext i32 %bytecnt.110 to i64, !dbg !792
+  %arrayidx13 = getelementptr inbounds [32 x i32]* %bytes, i64 0, i64 %idxprom12, !dbg !792
+  store i32 %and10, i32* %arrayidx13, align 4, !dbg !792, !tbaa !372
+  %shr14 = lshr i32 %tmp.111, 8, !dbg !794
+  call void @llvm.dbg.value(metadata !{i32 %shr14}, i64 0, metadata !219), !dbg !794
+  %cmp9 = icmp eq i32 %shr14, 0, !dbg !791
+  br i1 %cmp9, label %while.end, label %while.body, !dbg !791
 
-._crit_edge12:                                    ; preds = %.lr.ph11, %.preheader1, %.preheader
-  %bytecnt.1.lcssa = phi i32 [ %num_of_bytes.014, %.preheader ], [ 0, %.preheader1 ], [ %16, %.lr.ph11 ]
-  %indvars.iv.next20 = add nuw nsw i64 %indvars.iv19, 1
-  %exitcond21 = icmp eq i64 %indvars.iv.next20, 3
-  br i1 %exitcond21, label %21, label %.preheader1
+while.end:                                        ; preds = %for.cond1.preheader, %while.body, %while.cond.loopexit
+  %bytecnt.1.lcssa = phi i32 [ %num_of_bytes.013, %while.cond.loopexit ], [ %inc11, %while.body ], [ 0, %for.cond1.preheader ]
+  call void @llvm.dbg.value(metadata !{i32 %bytecnt.1.lcssa}, i64 0, metadata !215), !dbg !795
+  %indvars.iv.next16 = add i64 %indvars.iv15, 1, !dbg !782
+  %lftr.wideiv17 = trunc i64 %indvars.iv.next16 to i32, !dbg !782
+  %exitcond18 = icmp eq i32 %lftr.wideiv17, 3, !dbg !782
+  br i1 %exitcond18, label %for.end17, label %for.cond1.preheader, !dbg !782
 
-; <label>:21                                      ; preds = %._crit_edge12
-  %22 = add i32 %bytecnt.1.lcssa, -1
-  %23 = zext i32 %22 to i64
-  %24 = getelementptr inbounds [32 x i32]* %bytes, i64 0, i64 %23
-  %25 = load i32* %24, align 4, !tbaa !23
-  %26 = icmp eq i32 %25, 0
-  br i1 %26, label %._crit_edge, label %.lr.ph
+for.end17:                                        ; preds = %while.end
+  call void @llvm.dbg.value(metadata !321, i64 0, metadata !214), !dbg !796
+  %dec = add i32 %bytecnt.1.lcssa, -1, !dbg !797
+  call void @llvm.dbg.value(metadata !{i32 %dec}, i64 0, metadata !215), !dbg !797
+  %idxprom19 = zext i32 %dec to i64, !dbg !798
+  %arrayidx20 = getelementptr inbounds [32 x i32]* %bytes, i64 0, i64 %idxprom19, !dbg !798
+  %3 = load i32* %arrayidx20, align 4, !dbg !798, !tbaa !372
+  %cmp211 = icmp eq i32 %3, 0, !dbg !798
+  br i1 %cmp211, label %while.end25, label %while.body22, !dbg !798
 
-.lr.ph:                                           ; preds = %21, %.lr.ph
-  %num_of_bits.03 = phi i32 [ %27, %.lr.ph ], [ 0, %21 ]
-  %num.02 = phi i32 [ %28, %.lr.ph ], [ 1, %21 ]
-  %27 = add i32 %num_of_bits.03, 1
-  %28 = shl nsw i32 %num.02, 1
-  %29 = icmp ult i32 %25, %28
-  br i1 %29, label %._crit_edge, label %.lr.ph
+while.body22:                                     ; preds = %for.end17, %while.body22
+  %num_of_bits.03 = phi i32 [ %inc23, %while.body22 ], [ 0, %for.end17 ]
+  %num.02 = phi i32 [ %mul24, %while.body22 ], [ 1, %for.end17 ]
+  %inc23 = add i32 %num_of_bits.03, 1, !dbg !799
+  call void @llvm.dbg.value(metadata !{i32 %inc23}, i64 0, metadata !216), !dbg !799
+  %mul24 = shl nsw i32 %num.02, 1, !dbg !801
+  call void @llvm.dbg.value(metadata !{i32 %mul24}, i64 0, metadata !214), !dbg !801
+  %cmp21 = icmp ult i32 %3, %mul24, !dbg !798
+  br i1 %cmp21, label %while.end25, label %while.body22, !dbg !798
 
-._crit_edge:                                      ; preds = %.lr.ph, %21
-  %num_of_bits.0.lcssa = phi i32 [ 0, %21 ], [ %27, %.lr.ph ]
-  %30 = shl i32 %22, 3
-  %31 = add i32 %num_of_bits.0.lcssa, %30
-  call void @llvm.lifetime.end(i64 128, i8* %1) #7
-  ret i32 %31
+while.end25:                                      ; preds = %while.body22, %for.end17
+  %num_of_bits.0.lcssa = phi i32 [ 0, %for.end17 ], [ %inc23, %while.body22 ]
+  %mul26 = shl i32 %dec, 3, !dbg !802
+  %add27 = add i32 %num_of_bits.0.lcssa, %mul26, !dbg !802
+  call void @llvm.lifetime.end(i64 128, i8* %0) #5, !dbg !803
+  ret i32 %add27, !dbg !803
 }

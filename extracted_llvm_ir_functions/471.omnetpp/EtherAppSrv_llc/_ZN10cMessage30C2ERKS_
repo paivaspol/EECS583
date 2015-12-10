@@ -1,0 +1,48 @@
+define linkonce_odr void @_ZN10cMessage30C2ERKS_(%class.cMessage30* %this, %class.cMessage30* %m) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage30* %this}, i64 0, metadata !4889), !dbg !5381
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage30* %m}, i64 0, metadata !4890), !dbg !5381
+  %0 = getelementptr inbounds %class.cMessage30* %this, i64 0, i32 0, !dbg !5381
+  tail call void @_ZN8cMessageC2EPKcilib(%class.cMessage* %0, i8* null, i32 0, i64 1, i32 0, i1 zeroext false) #10, !dbg !5381
+  %1 = getelementptr inbounds %class.cMessage30* %this, i64 0, i32 0, i32 0, i32 0, !dbg !5381
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([21 x i8*]* @_ZTV10cMessage30, i64 0, i64 2) to i32 (...)**), i32 (...)*** %1, align 8, !dbg !5381, !tbaa !5164
+  %2 = getelementptr inbounds %class.cMessage30* %this, i64 0, i32 0, i32 0, !dbg !5382
+  %namestr.i = getelementptr inbounds %class.cMessage30* %m, i64 0, i32 0, i32 0, i32 1, !dbg !5384
+  %3 = load i8** %namestr.i, align 8, !dbg !5384, !tbaa !5167
+  %tobool.i = icmp eq i8* %3, null, !dbg !5384
+  %..i = select i1 %tobool.i, i8* getelementptr inbounds ([1 x i8]* @.str20, i64 0, i64 0), i8* %3, !dbg !5384
+  invoke void @_ZN7cObject7setNameEPKc(%class.cObject* %2, i8* %..i) #10
+          to label %invoke.cont2 unwind label %lpad, !dbg !5382
+
+invoke.cont2:                                     ; preds = %entry
+  %ctrlp = getelementptr inbounds %class.cMessage30* %this, i64 0, i32 1, !dbg !5382
+  store %class.cPolymorphic* null, %class.cPolymorphic** %ctrlp, align 8, !dbg !5382, !tbaa !5167
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage30* %this}, i64 0, metadata !5385), !dbg !5386
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage30* %m}, i64 0, metadata !5387), !dbg !5386
+  %cmp.i = icmp eq %class.cMessage30* %this, %m, !dbg !5386
+  br i1 %cmp.i, label %invoke.cont3, label %if.end.i, !dbg !5386
+
+if.end.i:                                         ; preds = %invoke.cont2
+  %4 = getelementptr inbounds %class.cMessage30* %m, i64 0, i32 0, !dbg !5386
+  %call.i8 = invoke %class.cMessage* @_ZN8cMessageaSERKS_(%class.cMessage* %0, %class.cMessage* %4) #10
+          to label %invoke.cont3 unwind label %lpad
+
+invoke.cont3:                                     ; preds = %invoke.cont2, %if.end.i
+  ret void, !dbg !5381
+
+lpad:                                             ; preds = %if.end.i, %entry
+  %5 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !5382
+  invoke void @_ZN8cMessageD2Ev(%class.cMessage* %0) #10
+          to label %eh.resume unwind label %terminate.lpad, !dbg !5381
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %5, !dbg !5381
+
+terminate.lpad:                                   ; preds = %lpad
+  %6 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !5381
+  %7 = extractvalue { i8*, i32 } %6, 0, !dbg !5381
+  tail call void @__clang_call_terminate(i8* %7) #12, !dbg !5381
+  unreachable, !dbg !5381
+}

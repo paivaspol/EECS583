@@ -1,21 +1,22 @@
-define void @cselib_update_varray_sizes() #1 {
+define void @cselib_update_varray_sizes() #2 {
 entry:
-  %call = tail call i32 @max_reg_num() #10
-  %0 = load i32* @cselib_nregs, align 4, !tbaa !3
-  %cmp = icmp eq i32 %call, %0
-  br i1 %cmp, label %return, label %if.end
+  %call = tail call i32 @max_reg_num() #11, !dbg !1336
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !477), !dbg !1336
+  %0 = load i32* @cselib_nregs, align 4, !dbg !1337, !tbaa !907
+  %cmp = icmp eq i32 %call, %0, !dbg !1337
+  br i1 %cmp, label %return, label %if.end, !dbg !1337
 
 if.end:                                           ; preds = %entry
-  store i32 %call, i32* @cselib_nregs, align 4, !tbaa !3
-  %1 = load %struct.varray_head_tag** @reg_values, align 8, !tbaa !0
-  %conv = zext i32 %call to i64
-  %call1 = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %1, i64 %conv) #10
-  store %struct.varray_head_tag* %call1, %struct.varray_head_tag** @reg_values, align 8, !tbaa !0
-  %2 = load %struct.varray_head_tag** @used_regs, align 8, !tbaa !0
-  %call3 = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %2, i64 %conv) #10
-  store %struct.varray_head_tag* %call3, %struct.varray_head_tag** @used_regs, align 8, !tbaa !0
-  br label %return
+  store i32 %call, i32* @cselib_nregs, align 4, !dbg !1338, !tbaa !907
+  %1 = load %struct.varray_head_tag** @reg_values, align 8, !dbg !1339, !tbaa !897
+  %conv = zext i32 %call to i64, !dbg !1339
+  %call1 = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %1, i64 %conv) #11, !dbg !1339
+  store %struct.varray_head_tag* %call1, %struct.varray_head_tag** @reg_values, align 8, !dbg !1339, !tbaa !897
+  %2 = load %struct.varray_head_tag** @used_regs, align 8, !dbg !1340, !tbaa !897
+  %call3 = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %2, i64 %conv) #11, !dbg !1340
+  store %struct.varray_head_tag* %call3, %struct.varray_head_tag** @used_regs, align 8, !dbg !1340, !tbaa !897
+  br label %return, !dbg !1340
 
 return:                                           ; preds = %entry, %if.end
-  ret void
+  ret void, !dbg !1340
 }

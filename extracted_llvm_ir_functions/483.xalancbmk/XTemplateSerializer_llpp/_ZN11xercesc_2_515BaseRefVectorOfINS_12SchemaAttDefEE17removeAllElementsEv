@@ -1,0 +1,52 @@
+define linkonce_odr void @_ZN11xercesc_2_515BaseRefVectorOfINS_12SchemaAttDefEE17removeAllElementsEv(%"class.xercesc_2_5::BaseRefVectorOf.20"* nocapture %this) unnamed_addr #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf.20"* %this}, i64 0, metadata !14340), !dbg !21219
+  tail call void @llvm.dbg.value(metadata !1577, i64 0, metadata !14341), !dbg !21220
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.20"* %this, i64 0, i32 2, !dbg !21220
+  %0 = load i32* %fCurCount, align 4, !dbg !21220, !tbaa !14899
+  %cmp9 = icmp eq i32 %0, 0, !dbg !21220
+  br i1 %cmp9, label %for.end, label %for.body.lr.ph, !dbg !21220
+
+for.body.lr.ph:                                   ; preds = %entry
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.20"* %this, i64 0, i32 1, !dbg !21221
+  %fElemList3 = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.20"* %this, i64 0, i32 4, !dbg !21223
+  br label %for.body, !dbg !21220
+
+for.body:                                         ; preds = %if.end, %for.body.lr.ph
+  %1 = phi i32 [ %0, %for.body.lr.ph ], [ %7, %if.end ]
+  %index.010 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %if.end ]
+  %2 = load i8* %fAdoptedElems, align 1, !dbg !21221, !tbaa !14963, !range !15984
+  %tobool = icmp eq i8 %2, 0, !dbg !21221
+  %idxprom2.pre = zext i32 %index.010 to i64, !dbg !21223
+  br i1 %tobool, label %if.end, label %if.then, !dbg !21221
+
+if.then:                                          ; preds = %for.body
+  %3 = load %"class.xercesc_2_5::SchemaAttDef"*** %fElemList3, align 8, !dbg !21224, !tbaa !14906
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::SchemaAttDef"** %3, i64 %idxprom2.pre, !dbg !21224
+  %4 = load %"class.xercesc_2_5::SchemaAttDef"** %arrayidx, align 8, !dbg !21224, !tbaa !14906
+  %isnull = icmp eq %"class.xercesc_2_5::SchemaAttDef"* %4, null, !dbg !21224
+  br i1 %isnull, label %if.end, label %delete.notnull, !dbg !21224
+
+delete.notnull:                                   ; preds = %if.then
+  %5 = bitcast %"class.xercesc_2_5::SchemaAttDef"* %4 to void (%"class.xercesc_2_5::SchemaAttDef"*)***, !dbg !21224
+  %vtable = load void (%"class.xercesc_2_5::SchemaAttDef"*)*** %5, align 8, !dbg !21224, !tbaa !14966
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::SchemaAttDef"*)** %vtable, i64 1, !dbg !21224
+  %6 = load void (%"class.xercesc_2_5::SchemaAttDef"*)** %vfn, align 8, !dbg !21224
+  tail call void %6(%"class.xercesc_2_5::SchemaAttDef"* %4) #12, !dbg !21224
+  %.pre = load i32* %fCurCount, align 4, !dbg !21220, !tbaa !14899
+  br label %if.end, !dbg !21224
+
+if.end:                                           ; preds = %for.body, %if.then, %delete.notnull
+  %7 = phi i32 [ %1, %if.then ], [ %.pre, %delete.notnull ], [ %1, %for.body ], !dbg !21223
+  %8 = load %"class.xercesc_2_5::SchemaAttDef"*** %fElemList3, align 8, !dbg !21223, !tbaa !14906
+  %arrayidx4 = getelementptr inbounds %"class.xercesc_2_5::SchemaAttDef"** %8, i64 %idxprom2.pre, !dbg !21223
+  store %"class.xercesc_2_5::SchemaAttDef"* null, %"class.xercesc_2_5::SchemaAttDef"** %arrayidx4, align 8, !dbg !21223, !tbaa !14906
+  %inc = add i32 %index.010, 1, !dbg !21220
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !14341), !dbg !21220
+  %cmp = icmp ult i32 %inc, %7, !dbg !21220
+  br i1 %cmp, label %for.body, label %for.end, !dbg !21220
+
+for.end:                                          ; preds = %if.end, %entry
+  store i32 0, i32* %fCurCount, align 4, !dbg !21225, !tbaa !14899
+  ret void, !dbg !21226
+}

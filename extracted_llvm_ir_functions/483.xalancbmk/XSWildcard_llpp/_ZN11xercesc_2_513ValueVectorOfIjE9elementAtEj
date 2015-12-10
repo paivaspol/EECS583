@@ -1,0 +1,39 @@
+define linkonce_odr i32* @_ZN11xercesc_2_513ValueVectorOfIjE9elementAtEj(%"class.xercesc_2_5::ValueVectorOf"* nocapture %this, i32 %getAt) #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::ValueVectorOf"* %this}, i64 0, metadata !2847), !dbg !3828
+  tail call void @llvm.dbg.value(metadata !{i32 %getAt}, i64 0, metadata !2849), !dbg !3828
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::ValueVectorOf"* %this, i64 0, i32 1, !dbg !3829
+  %0 = load i32* %fCurCount, align 4, !dbg !3829, !tbaa !3733
+  %cmp = icmp ugt i32 %0, %getAt, !dbg !3829
+  br i1 %cmp, label %if.end, label %if.then, !dbg !3829
+
+if.then:                                          ; preds = %entry
+  %exception = tail call i8* @__cxa_allocate_exception(i64 48) #6, !dbg !3831
+  %1 = bitcast i8* %exception to %"class.xercesc_2_5::ArrayIndexOutOfBoundsException"*, !dbg !3831
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::ValueVectorOf"* %this, i64 0, i32 4, !dbg !3831
+  %2 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !3831, !tbaa !3692
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::ArrayIndexOutOfBoundsException"* %1}, i64 0, metadata !3832), !dbg !3833
+  tail call void @llvm.dbg.value(metadata !3834, i64 0, metadata !3835), !dbg !3833
+  tail call void @llvm.dbg.value(metadata !3836, i64 0, metadata !3837), !dbg !3833
+  tail call void @llvm.dbg.value(metadata !3838, i64 0, metadata !3839), !dbg !3833
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %2}, i64 0, metadata !3840), !dbg !3833
+  invoke void @_ZN11xercesc_2_530ArrayIndexOutOfBoundsExceptionC2EPKcjNS_10XMLExcepts5CodesEPNS_13MemoryManagerE(%"class.xercesc_2_5::ArrayIndexOutOfBoundsException"* %1, i8* getelementptr inbounds ([76 x i8]* @.str, i64 0, i64 0), i32 293, i32 109, %"class.xercesc_2_5::MemoryManager"* %2) #9
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %if.then
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_530ArrayIndexOutOfBoundsExceptionE to i8*), i8* bitcast (void (%"class.xercesc_2_5::ArrayIndexOutOfBoundsException"*)* @_ZN11xercesc_2_530ArrayIndexOutOfBoundsExceptionD1Ev to i8*)) #10, !dbg !3831
+  unreachable, !dbg !3831
+
+lpad:                                             ; preds = %if.then
+  %3 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !3831
+  tail call void @__cxa_free_exception(i8* %exception) #6, !dbg !3831
+  resume { i8*, i32 } %3, !dbg !3831
+
+if.end:                                           ; preds = %entry
+  %idxprom = zext i32 %getAt to i64, !dbg !3841
+  %fElemList = getelementptr inbounds %"class.xercesc_2_5::ValueVectorOf"* %this, i64 0, i32 3, !dbg !3841
+  %4 = load i32** %fElemList, align 8, !dbg !3841, !tbaa !3692
+  %arrayidx = getelementptr inbounds i32* %4, i64 %idxprom, !dbg !3841
+  ret i32* %arrayidx, !dbg !3841
+}

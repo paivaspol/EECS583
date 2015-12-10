@@ -1,24 +1,28 @@
 define void @scalar_mult_su3_vector(%struct.su3_vector* nocapture %a, double %s, %struct.su3_vector* nocapture %c) #0 {
 entry:
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct.su3_vector* %a}, i64 0, metadata !25), !dbg !30
+  tail call void @llvm.dbg.value(metadata !{double %s}, i64 0, metadata !26), !dbg !30
+  tail call void @llvm.dbg.value(metadata !{%struct.su3_vector* %c}, i64 0, metadata !27), !dbg !30
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !28), !dbg !31
+  br label %for.body, !dbg !31
 
 for.body:                                         ; preds = %for.body, %entry
   %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
-  %real = getelementptr inbounds %struct.su3_vector* %a, i64 0, i32 0, i64 %indvars.iv, i32 0
-  %0 = load double* %real, align 8, !tbaa !0
-  %mul = fmul double %0, %s
-  %real5 = getelementptr inbounds %struct.su3_vector* %c, i64 0, i32 0, i64 %indvars.iv, i32 0
-  store double %mul, double* %real5, align 8, !tbaa !0
-  %imag = getelementptr inbounds %struct.su3_vector* %a, i64 0, i32 0, i64 %indvars.iv, i32 1
-  %1 = load double* %imag, align 8, !tbaa !0
-  %mul9 = fmul double %1, %s
-  %imag13 = getelementptr inbounds %struct.su3_vector* %c, i64 0, i32 0, i64 %indvars.iv, i32 1
-  store double %mul9, double* %imag13, align 8, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 3
-  br i1 %exitcond, label %for.end, label %for.body
+  %real = getelementptr inbounds %struct.su3_vector* %a, i64 0, i32 0, i64 %indvars.iv, i32 0, !dbg !33
+  %0 = load double* %real, align 8, !dbg !33, !tbaa !35
+  %mul = fmul double %0, %s, !dbg !33
+  %real5 = getelementptr inbounds %struct.su3_vector* %c, i64 0, i32 0, i64 %indvars.iv, i32 0, !dbg !33
+  store double %mul, double* %real5, align 8, !dbg !33, !tbaa !35
+  %imag = getelementptr inbounds %struct.su3_vector* %a, i64 0, i32 0, i64 %indvars.iv, i32 1, !dbg !38
+  %1 = load double* %imag, align 8, !dbg !38, !tbaa !35
+  %mul9 = fmul double %1, %s, !dbg !38
+  %imag13 = getelementptr inbounds %struct.su3_vector* %c, i64 0, i32 0, i64 %indvars.iv, i32 1, !dbg !38
+  store double %mul9, double* %imag13, align 8, !dbg !38, !tbaa !35
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !31
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !31
+  %exitcond = icmp eq i32 %lftr.wideiv, 3, !dbg !31
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !31
 
 for.end:                                          ; preds = %for.body
-  ret void
+  ret void, !dbg !39
 }

@@ -1,188 +1,202 @@
 define internal fastcc void @compute_dominance_frontiers_1(%struct.simple_bitmap_def** nocapture %frontiers, i32* nocapture %idom, i32 %bb, %struct.simple_bitmap_def* nocapture %done) #0 {
 entry:
-  %idxprom = sext i32 %bb to i64
-  %0 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !0
-  %data = getelementptr inbounds %struct.varray_head_tag* %0, i64 0, i32 4
-  %bb1 = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
-  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb1, i64 0, i64 %idxprom
-  %1 = load %struct.basic_block_def** %arrayidx, align 8, !tbaa !0
-  %rem = and i32 %bb, 63
-  %sh_prom = zext i32 %rem to i64
-  %shl = shl i64 1, %sh_prom
-  %div = lshr i32 %bb, 6
-  %idxprom2 = zext i32 %div to i64
-  %arrayidx3 = getelementptr inbounds %struct.simple_bitmap_def* %done, i64 0, i32 3, i64 %idxprom2
-  %2 = load i64* %arrayidx3, align 8, !tbaa !4
-  %or = or i64 %2, %shl
-  store i64 %or, i64* %arrayidx3, align 8, !tbaa !4
-  %arrayidx5 = getelementptr inbounds %struct.simple_bitmap_def** %frontiers, i64 %idxprom
-  %3 = load %struct.simple_bitmap_def** %arrayidx5, align 8, !tbaa !0
-  tail call void @sbitmap_zero(%struct.simple_bitmap_def* %3) #6
-  %4 = load i32* @n_basic_blocks, align 4, !tbaa !3
-  %cmp158 = icmp sgt i32 %4, 0
-  br i1 %cmp158, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{%struct.simple_bitmap_def** %frontiers}, i64 0, metadata !1076), !dbg !1251
+  tail call void @llvm.dbg.value(metadata !{i32* %idom}, i64 0, metadata !1077), !dbg !1252
+  tail call void @llvm.dbg.value(metadata !{i32 %bb}, i64 0, metadata !1078), !dbg !1253
+  tail call void @llvm.dbg.value(metadata !{%struct.simple_bitmap_def* %done}, i64 0, metadata !1079), !dbg !1254
+  %idxprom = sext i32 %bb to i64, !dbg !1255
+  %0 = load %struct.varray_head_tag** @basic_block_info, align 8, !dbg !1255, !tbaa !1216
+  %data = getelementptr inbounds %struct.varray_head_tag* %0, i64 0, i32 4, !dbg !1255
+  %bb1 = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*, !dbg !1255
+  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb1, i64 0, i64 %idxprom, !dbg !1255
+  %1 = load %struct.basic_block_def** %arrayidx, align 8, !dbg !1255, !tbaa !1216
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %1}, i64 0, metadata !1080), !dbg !1255
+  %rem = and i32 %bb, 63, !dbg !1256
+  %sh_prom = zext i32 %rem to i64, !dbg !1256
+  %shl = shl i64 1, %sh_prom, !dbg !1256
+  %div = lshr i32 %bb, 6, !dbg !1256
+  %idxprom2 = zext i32 %div to i64, !dbg !1256
+  %arrayidx3 = getelementptr inbounds %struct.simple_bitmap_def* %done, i64 0, i32 3, i64 %idxprom2, !dbg !1256
+  %2 = load i64* %arrayidx3, align 8, !dbg !1256, !tbaa !1234
+  %or = or i64 %2, %shl, !dbg !1256
+  store i64 %or, i64* %arrayidx3, align 8, !dbg !1256, !tbaa !1234
+  %arrayidx5 = getelementptr inbounds %struct.simple_bitmap_def** %frontiers, i64 %idxprom, !dbg !1257
+  %3 = load %struct.simple_bitmap_def** %arrayidx5, align 8, !dbg !1257, !tbaa !1216
+  tail call void @sbitmap_zero(%struct.simple_bitmap_def* %3) #7, !dbg !1257
+  tail call void @llvm.dbg.value(metadata !272, i64 0, metadata !1082), !dbg !1258
+  %4 = load i32* @n_basic_blocks, align 4, !dbg !1258, !tbaa !1224
+  %cmp158 = icmp sgt i32 %4, 0, !dbg !1258
+  br i1 %cmp158, label %for.body, label %for.end, !dbg !1258
 
 for.body:                                         ; preds = %entry, %for.inc
   %5 = phi i32 [ %10, %for.inc ], [ %4, %entry ]
   %indvars.iv164 = phi i64 [ %indvars.iv.next165, %for.inc ], [ 0, %entry ]
-  %arrayidx7 = getelementptr inbounds i32* %idom, i64 %indvars.iv164
-  %6 = load i32* %arrayidx7, align 4, !tbaa !3
-  %cmp8 = icmp eq i32 %6, %bb
-  br i1 %cmp8, label %land.lhs.true, label %for.inc
+  %arrayidx7 = getelementptr inbounds i32* %idom, i64 %indvars.iv164, !dbg !1260
+  %6 = load i32* %arrayidx7, align 4, !dbg !1260, !tbaa !1224
+  %cmp8 = icmp eq i32 %6, %bb, !dbg !1260
+  br i1 %cmp8, label %land.lhs.true, label %for.inc, !dbg !1260
 
 land.lhs.true:                                    ; preds = %for.body
-  %div9 = lshr i64 %indvars.iv164, 6
-  %idxprom10 = and i64 %div9, 67108863
-  %arrayidx12 = getelementptr inbounds %struct.simple_bitmap_def* %done, i64 0, i32 3, i64 %idxprom10
-  %7 = load i64* %arrayidx12, align 8, !tbaa !4
-  %rem13 = and i64 %indvars.iv164, 63
-  %8 = shl i64 1, %rem13
-  %and148 = and i64 %7, %8
-  %tobool = icmp eq i64 %and148, 0
-  br i1 %tobool, label %if.then, label %for.inc
+  %div9 = lshr i64 %indvars.iv164, 6, !dbg !1260
+  %idxprom10 = and i64 %div9, 67108863, !dbg !1260
+  %arrayidx12 = getelementptr inbounds %struct.simple_bitmap_def* %done, i64 0, i32 3, i64 %idxprom10, !dbg !1260
+  %7 = load i64* %arrayidx12, align 8, !dbg !1260, !tbaa !1234
+  %rem13 = and i64 %indvars.iv164, 63, !dbg !1260
+  %8 = shl i64 1, %rem13, !dbg !1260
+  %and148 = and i64 %7, %8, !dbg !1260
+  %tobool = icmp eq i64 %and148, 0, !dbg !1260
+  br i1 %tobool, label %if.then, label %for.inc, !dbg !1260
 
 if.then:                                          ; preds = %land.lhs.true
-  %9 = trunc i64 %indvars.iv164 to i32
-  tail call fastcc void @compute_dominance_frontiers_1(%struct.simple_bitmap_def** %frontiers, i32* %idom, i32 %9, %struct.simple_bitmap_def* %done) #7
-  %.pre = load i32* @n_basic_blocks, align 4, !tbaa !3
-  br label %for.inc
+  %9 = trunc i64 %indvars.iv164 to i32, !dbg !1260
+  tail call fastcc void @compute_dominance_frontiers_1(%struct.simple_bitmap_def** %frontiers, i32* %idom, i32 %9, %struct.simple_bitmap_def* %done) #8, !dbg !1261
+  %.pre = load i32* @n_basic_blocks, align 4, !dbg !1258, !tbaa !1224
+  br label %for.inc, !dbg !1261
 
 for.inc:                                          ; preds = %land.lhs.true, %for.body, %if.then
-  %10 = phi i32 [ %5, %land.lhs.true ], [ %5, %for.body ], [ %.pre, %if.then ]
-  %indvars.iv.next165 = add i64 %indvars.iv164, 1
-  %11 = trunc i64 %indvars.iv.next165 to i32
-  %cmp = icmp slt i32 %11, %10
-  br i1 %cmp, label %for.body, label %for.end
+  %10 = phi i32 [ %5, %land.lhs.true ], [ %5, %for.body ], [ %.pre, %if.then ], !dbg !1258
+  %indvars.iv.next165 = add i64 %indvars.iv164, 1, !dbg !1258
+  %11 = trunc i64 %indvars.iv.next165 to i32, !dbg !1258
+  %cmp = icmp slt i32 %11, %10, !dbg !1258
+  br i1 %cmp, label %for.body, label %for.end, !dbg !1258
 
 for.end:                                          ; preds = %for.inc, %entry
   %12 = phi i32 [ %4, %entry ], [ %10, %for.inc ]
-  %succ = getelementptr inbounds %struct.basic_block_def* %1, i64 0, i32 5
-  %e.0155 = load %struct.edge_def** %succ, align 8
-  %tobool16156 = icmp eq %struct.edge_def* %e.0155, null
-  br i1 %tobool16156, label %for.cond43.preheader, label %for.body17
+  %succ = getelementptr inbounds %struct.basic_block_def* %1, i64 0, i32 5, !dbg !1262
+  %e.0155 = load %struct.edge_def** %succ, align 8, !dbg !1262
+  %tobool16156 = icmp eq %struct.edge_def* %e.0155, null, !dbg !1262
+  br i1 %tobool16156, label %for.cond43.preheader, label %for.body17, !dbg !1262
 
 for.cond43.preheader:                             ; preds = %for.inc41, %for.end
-  %cmp44153 = icmp sgt i32 %12, 0
-  br i1 %cmp44153, label %for.body45, label %for.end100
+  %cmp44153 = icmp sgt i32 %12, 0, !dbg !1264
+  br i1 %cmp44153, label %for.body45, label %for.end100, !dbg !1264
 
 for.body17:                                       ; preds = %for.end, %for.inc41
   %e.0157 = phi %struct.edge_def* [ %e.0, %for.inc41 ], [ %e.0155, %for.end ]
-  %dest = getelementptr inbounds %struct.edge_def* %e.0157, i64 0, i32 3
-  %13 = load %struct.basic_block_def** %dest, align 8, !tbaa !0
-  %cmp18 = icmp eq %struct.basic_block_def* %13, getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1)
-  br i1 %cmp18, label %for.inc41, label %if.end20
+  %dest = getelementptr inbounds %struct.edge_def* %e.0157, i64 0, i32 3, !dbg !1265
+  %13 = load %struct.basic_block_def** %dest, align 8, !dbg !1265, !tbaa !1216
+  %cmp18 = icmp eq %struct.basic_block_def* %13, getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1), !dbg !1265
+  br i1 %cmp18, label %for.inc41, label %if.end20, !dbg !1265
 
 if.end20:                                         ; preds = %for.body17
-  %index = getelementptr inbounds %struct.basic_block_def* %13, i64 0, i32 11
-  %14 = load i32* %index, align 4, !tbaa !3
-  %idxprom22 = sext i32 %14 to i64
-  %arrayidx23 = getelementptr inbounds i32* %idom, i64 %idxprom22
-  %15 = load i32* %arrayidx23, align 4, !tbaa !3
-  %cmp24 = icmp eq i32 %15, %bb
-  br i1 %cmp24, label %for.inc41, label %if.then25
+  %index = getelementptr inbounds %struct.basic_block_def* %13, i64 0, i32 11, !dbg !1267
+  %14 = load i32* %index, align 4, !dbg !1267, !tbaa !1224
+  %idxprom22 = sext i32 %14 to i64, !dbg !1267
+  %arrayidx23 = getelementptr inbounds i32* %idom, i64 %idxprom22, !dbg !1267
+  %15 = load i32* %arrayidx23, align 4, !dbg !1267, !tbaa !1224
+  %cmp24 = icmp eq i32 %15, %bb, !dbg !1267
+  br i1 %cmp24, label %for.inc41, label %if.then25, !dbg !1267
 
 if.then25:                                        ; preds = %if.end20
-  %rem28 = and i32 %14, 63
-  %sh_prom29 = zext i32 %rem28 to i64
-  %shl30 = shl i64 1, %sh_prom29
-  %div33 = lshr i32 %14, 6
-  %idxprom34 = zext i32 %div33 to i64
-  %16 = load %struct.simple_bitmap_def** %arrayidx5, align 8, !tbaa !0
-  %arrayidx38 = getelementptr inbounds %struct.simple_bitmap_def* %16, i64 0, i32 3, i64 %idxprom34
-  %17 = load i64* %arrayidx38, align 8, !tbaa !4
-  %or39 = or i64 %17, %shl30
-  store i64 %or39, i64* %arrayidx38, align 8, !tbaa !4
-  br label %for.inc41
+  %rem28 = and i32 %14, 63, !dbg !1268
+  %sh_prom29 = zext i32 %rem28 to i64, !dbg !1268
+  %shl30 = shl i64 1, %sh_prom29, !dbg !1268
+  %div33 = lshr i32 %14, 6, !dbg !1268
+  %idxprom34 = zext i32 %div33 to i64, !dbg !1268
+  %16 = load %struct.simple_bitmap_def** %arrayidx5, align 8, !dbg !1268, !tbaa !1216
+  %arrayidx38 = getelementptr inbounds %struct.simple_bitmap_def* %16, i64 0, i32 3, i64 %idxprom34, !dbg !1268
+  %17 = load i64* %arrayidx38, align 8, !dbg !1268, !tbaa !1234
+  %or39 = or i64 %17, %shl30, !dbg !1268
+  store i64 %or39, i64* %arrayidx38, align 8, !dbg !1268, !tbaa !1234
+  br label %for.inc41, !dbg !1268
 
 for.inc41:                                        ; preds = %if.end20, %if.then25, %for.body17
-  %succ_next = getelementptr inbounds %struct.edge_def* %e.0157, i64 0, i32 1
-  %e.0 = load %struct.edge_def** %succ_next, align 8
-  %tobool16 = icmp eq %struct.edge_def* %e.0, null
-  br i1 %tobool16, label %for.cond43.preheader, label %for.body17
+  %succ_next = getelementptr inbounds %struct.edge_def* %e.0157, i64 0, i32 1, !dbg !1262
+  %e.0 = load %struct.edge_def** %succ_next, align 8, !dbg !1262
+  %tobool16 = icmp eq %struct.edge_def* %e.0, null, !dbg !1262
+  br i1 %tobool16, label %for.cond43.preheader, label %for.body17, !dbg !1262
 
 for.body45:                                       ; preds = %for.cond43.preheader, %for.inc98
   %indvars.iv162 = phi i64 [ %indvars.iv.next163, %for.inc98 ], [ 0, %for.cond43.preheader ]
-  %arrayidx47 = getelementptr inbounds i32* %idom, i64 %indvars.iv162
-  %18 = load i32* %arrayidx47, align 4, !tbaa !3
-  %cmp48 = icmp eq i32 %18, %bb
-  br i1 %cmp48, label %do.body, label %for.inc98
+  %arrayidx47 = getelementptr inbounds i32* %idom, i64 %indvars.iv162, !dbg !1269
+  %18 = load i32* %arrayidx47, align 4, !dbg !1269, !tbaa !1224
+  %cmp48 = icmp eq i32 %18, %bb, !dbg !1269
+  br i1 %cmp48, label %do.body, label %for.inc98, !dbg !1269
 
 do.body:                                          ; preds = %for.body45
-  %arrayidx51 = getelementptr inbounds %struct.simple_bitmap_def** %frontiers, i64 %indvars.iv162
-  %19 = load %struct.simple_bitmap_def** %arrayidx51, align 8, !tbaa !0
-  %size = getelementptr inbounds %struct.simple_bitmap_def* %19, i64 0, i32 1
-  %20 = load i32* %size, align 4, !tbaa !3
-  %cmp56151 = icmp eq i32 %20, 0
-  br i1 %cmp56151, label %for.inc98, label %for.body57
+  tail call void @llvm.dbg.value(metadata !272, i64 0, metadata !1088), !dbg !1270
+  %arrayidx51 = getelementptr inbounds %struct.simple_bitmap_def** %frontiers, i64 %indvars.iv162, !dbg !1270
+  %19 = load %struct.simple_bitmap_def** %arrayidx51, align 8, !dbg !1270, !tbaa !1216
+  %size = getelementptr inbounds %struct.simple_bitmap_def* %19, i64 0, i32 1, !dbg !1270
+  %20 = load i32* %size, align 4, !dbg !1270, !tbaa !1224
+  tail call void @llvm.dbg.value(metadata !{i32 %20}, i64 0, metadata !1089), !dbg !1270
+  tail call void @llvm.dbg.value(metadata !272, i64 0, metadata !1086), !dbg !1271
+  %cmp56151 = icmp eq i32 %20, 0, !dbg !1271
+  br i1 %cmp56151, label %for.inc98, label %for.body57, !dbg !1271
 
 for.body57:                                       ; preds = %do.body, %for.inc94
   %indvars.iv160 = phi i64 [ %indvars.iv.next161, %for.inc94 ], [ 0, %do.body ]
-  %arrayidx59 = getelementptr inbounds %struct.simple_bitmap_def* %19, i64 0, i32 3, i64 %indvars.iv160
-  %21 = load i64* %arrayidx59, align 8, !tbaa !4
-  %cmp60 = icmp eq i64 %21, 0
-  br i1 %cmp60, label %for.inc94, label %for.cond62.preheader
+  %arrayidx59 = getelementptr inbounds %struct.simple_bitmap_def* %19, i64 0, i32 3, i64 %indvars.iv160, !dbg !1272
+  %21 = load i64* %arrayidx59, align 8, !dbg !1272, !tbaa !1234
+  tail call void @llvm.dbg.value(metadata !{i64 %21}, i64 0, metadata !1091), !dbg !1272
+  %cmp60 = icmp eq i64 %21, 0, !dbg !1272
+  br i1 %cmp60, label %for.inc94, label %for.cond62.preheader, !dbg !1272
 
 for.cond62.preheader:                             ; preds = %for.body57
-  %22 = trunc i64 %indvars.iv160 to i32
-  %mul = shl i32 %22, 6
-  br label %for.body64
+  %22 = trunc i64 %indvars.iv160 to i32, !dbg !1273
+  %mul = shl i32 %22, 6, !dbg !1273
+  br label %for.body64, !dbg !1275
 
 for.body64:                                       ; preds = %for.cond62.preheader, %for.inc90
   %indvars.iv = phi i64 [ 0, %for.cond62.preheader ], [ %indvars.iv.next, %for.inc90 ]
   %word_.0150 = phi i64 [ %21, %for.cond62.preheader ], [ %word_.1, %for.inc90 ]
-  %sh_prom65 = and i64 %indvars.iv, 4294967295
-  %shl66 = shl i64 1, %sh_prom65
-  %and67 = and i64 %shl66, %word_.0150
-  %cmp68 = icmp eq i64 %and67, 0
-  br i1 %cmp68, label %for.inc90, label %if.then69
+  %sh_prom65 = and i64 %indvars.iv, 4294967295, !dbg !1276
+  %shl66 = shl i64 1, %sh_prom65, !dbg !1276
+  tail call void @llvm.dbg.value(metadata !{i64 %shl66}, i64 0, metadata !1094), !dbg !1276
+  %and67 = and i64 %shl66, %word_.0150, !dbg !1276
+  %cmp68 = icmp eq i64 %and67, 0, !dbg !1276
+  br i1 %cmp68, label %for.inc90, label %if.then69, !dbg !1276
 
 if.then69:                                        ; preds = %for.body64
-  %23 = trunc i64 %indvars.iv to i32
-  %neg = xor i64 %shl66, -1
-  %and70 = and i64 %word_.0150, %neg
-  %add = add i32 %23, %mul
-  %idxprom71 = sext i32 %add to i64
-  %arrayidx72 = getelementptr inbounds i32* %idom, i64 %idxprom71
-  %24 = load i32* %arrayidx72, align 4, !tbaa !3
-  %cmp73 = icmp eq i32 %24, %bb
-  br i1 %cmp73, label %if.end85, label %if.then74
+  %23 = trunc i64 %indvars.iv to i32, !dbg !1276
+  %neg = xor i64 %shl66, -1, !dbg !1273
+  %and70 = and i64 %word_.0150, %neg, !dbg !1273
+  tail call void @llvm.dbg.value(metadata !{i64 %and70}, i64 0, metadata !1091), !dbg !1273
+  %add = add i32 %23, %mul, !dbg !1273
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !1083), !dbg !1273
+  %idxprom71 = sext i32 %add to i64, !dbg !1277
+  %arrayidx72 = getelementptr inbounds i32* %idom, i64 %idxprom71, !dbg !1277
+  %24 = load i32* %arrayidx72, align 4, !dbg !1277, !tbaa !1224
+  %cmp73 = icmp eq i32 %24, %bb, !dbg !1277
+  br i1 %cmp73, label %if.end85, label %if.then74, !dbg !1277
 
 if.then74:                                        ; preds = %if.then69
-  %rem75 = and i32 %add, 63
-  %sh_prom76 = zext i32 %rem75 to i64
-  %shl77 = shl i64 1, %sh_prom76
-  %div78 = lshr i32 %add, 6
-  %idxprom79 = zext i32 %div78 to i64
-  %25 = load %struct.simple_bitmap_def** %arrayidx5, align 8, !tbaa !0
-  %arrayidx83 = getelementptr inbounds %struct.simple_bitmap_def* %25, i64 0, i32 3, i64 %idxprom79
-  %26 = load i64* %arrayidx83, align 8, !tbaa !4
-  %or84 = or i64 %26, %shl77
-  store i64 %or84, i64* %arrayidx83, align 8, !tbaa !4
-  br label %if.end85
+  %rem75 = and i32 %add, 63, !dbg !1277
+  %sh_prom76 = zext i32 %rem75 to i64, !dbg !1277
+  %shl77 = shl i64 1, %sh_prom76, !dbg !1277
+  %div78 = lshr i32 %add, 6, !dbg !1277
+  %idxprom79 = zext i32 %div78 to i64, !dbg !1277
+  %25 = load %struct.simple_bitmap_def** %arrayidx5, align 8, !dbg !1277, !tbaa !1216
+  %arrayidx83 = getelementptr inbounds %struct.simple_bitmap_def* %25, i64 0, i32 3, i64 %idxprom79, !dbg !1277
+  %26 = load i64* %arrayidx83, align 8, !dbg !1277, !tbaa !1234
+  %or84 = or i64 %26, %shl77, !dbg !1277
+  store i64 %or84, i64* %arrayidx83, align 8, !dbg !1277, !tbaa !1234
+  br label %if.end85, !dbg !1277
 
 if.end85:                                         ; preds = %if.then69, %if.then74
-  %cmp86 = icmp eq i64 %and70, 0
-  br i1 %cmp86, label %for.inc94, label %for.inc90
+  %cmp86 = icmp eq i64 %and70, 0, !dbg !1273
+  br i1 %cmp86, label %for.inc94, label %for.inc90, !dbg !1273
 
 for.inc90:                                        ; preds = %for.body64, %if.end85
   %word_.1 = phi i64 [ %and70, %if.end85 ], [ %word_.0150, %for.body64 ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %27 = trunc i64 %indvars.iv.next to i32
-  %cmp63 = icmp ult i32 %27, 64
-  br i1 %cmp63, label %for.body64, label %for.inc94
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1275
+  %27 = trunc i64 %indvars.iv.next to i32, !dbg !1275
+  %cmp63 = icmp ult i32 %27, 64, !dbg !1275
+  br i1 %cmp63, label %for.body64, label %for.inc94, !dbg !1275
 
 for.inc94:                                        ; preds = %if.end85, %for.inc90, %for.body57
-  %indvars.iv.next161 = add i64 %indvars.iv160, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next161 to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %20
-  br i1 %exitcond, label %for.inc98, label %for.body57
+  %indvars.iv.next161 = add i64 %indvars.iv160, 1, !dbg !1271
+  tail call void @llvm.dbg.value(metadata !272, i64 0, metadata !1088), !dbg !1271
+  %lftr.wideiv = trunc i64 %indvars.iv.next161 to i32, !dbg !1271
+  %exitcond = icmp eq i32 %lftr.wideiv, %20, !dbg !1271
+  br i1 %exitcond, label %for.inc98, label %for.body57, !dbg !1271
 
 for.inc98:                                        ; preds = %do.body, %for.inc94, %for.body45
-  %indvars.iv.next163 = add i64 %indvars.iv162, 1
-  %28 = trunc i64 %indvars.iv.next163 to i32
-  %cmp44 = icmp slt i32 %28, %12
-  br i1 %cmp44, label %for.body45, label %for.end100
+  %indvars.iv.next163 = add i64 %indvars.iv162, 1, !dbg !1264
+  %28 = trunc i64 %indvars.iv.next163 to i32, !dbg !1264
+  %cmp44 = icmp slt i32 %28, %12, !dbg !1264
+  br i1 %cmp44, label %for.body45, label %for.end100, !dbg !1264
 
 for.end100:                                       ; preds = %for.inc98, %for.cond43.preheader
-  ret void
+  ret void, !dbg !1279
 }

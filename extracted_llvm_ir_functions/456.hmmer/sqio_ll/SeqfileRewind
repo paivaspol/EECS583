@@ -1,24 +1,25 @@
 define void @SeqfileRewind(%struct.ReadSeqVars* %sqfp) #0 {
 entry:
-  %do_stdin = getelementptr inbounds %struct.ReadSeqVars* %sqfp, i64 0, i32 22
-  %0 = load i32* %do_stdin, align 4, !tbaa !0
-  %tobool = icmp eq i32 %0, 0
-  br i1 %tobool, label %lor.lhs.false, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.ReadSeqVars* %sqfp}, i64 0, metadata !287), !dbg !683
+  %do_stdin = getelementptr inbounds %struct.ReadSeqVars* %sqfp, i64 0, i32 22, !dbg !684
+  %0 = load i32* %do_stdin, align 4, !dbg !684, !tbaa !600
+  %tobool = icmp eq i32 %0, 0, !dbg !684
+  br i1 %tobool, label %lor.lhs.false, label %if.then, !dbg !684
 
 lor.lhs.false:                                    ; preds = %entry
-  %do_gzip = getelementptr inbounds %struct.ReadSeqVars* %sqfp, i64 0, i32 21
-  %1 = load i32* %do_gzip, align 4, !tbaa !0
-  %tobool1 = icmp eq i32 %1, 0
-  br i1 %tobool1, label %if.end, label %if.then
+  %do_gzip = getelementptr inbounds %struct.ReadSeqVars* %sqfp, i64 0, i32 21, !dbg !684
+  %1 = load i32* %do_gzip, align 4, !dbg !684, !tbaa !600
+  %tobool1 = icmp eq i32 %1, 0, !dbg !684
+  br i1 %tobool1, label %if.end, label %if.then, !dbg !684
 
 if.then:                                          ; preds = %lor.lhs.false, %entry
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([63 x i8]* @.str2, i64 0, i64 0)) #8
-  br label %if.end
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([63 x i8]* @.str2, i64 0, i64 0)) #9, !dbg !685
+  br label %if.end, !dbg !685
 
 if.end:                                           ; preds = %lor.lhs.false, %if.then
-  %f = getelementptr inbounds %struct.ReadSeqVars* %sqfp, i64 0, i32 0
-  %2 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  tail call void @rewind(%struct._IO_FILE* %2) #8
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %sqfp) #7
-  ret void
+  %f = getelementptr inbounds %struct.ReadSeqVars* %sqfp, i64 0, i32 0, !dbg !686
+  %2 = load %struct._IO_FILE** %f, align 8, !dbg !686, !tbaa !612
+  tail call void @rewind(%struct._IO_FILE* %2) #9, !dbg !686
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %sqfp) #8, !dbg !687
+  ret void, !dbg !688
 }

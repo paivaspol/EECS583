@@ -1,33 +1,35 @@
 define i32 @IV_entry(%struct._IV* %iv, i32 %loc) #0 {
 entry:
-  %cmp = icmp eq %struct._IV* %iv, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._IV* %iv}, i64 0, metadata !31), !dbg !77
+  tail call void @llvm.dbg.value(metadata !{i32 %loc}, i64 0, metadata !32), !dbg !78
+  %cmp = icmp eq %struct._IV* %iv, null, !dbg !79
+  br i1 %cmp, label %if.then, label %if.end, !dbg !79
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([44 x i8]* @.str3, i64 0, i64 0), %struct._IV* null) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !80, !tbaa !59
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([44 x i8]* @.str3, i64 0, i64 0), %struct._IV* null) #5, !dbg !80
+  tail call void @exit(i32 -1) #6, !dbg !82
+  unreachable, !dbg !82
 
 if.end:                                           ; preds = %entry
-  %cmp1 = icmp slt i32 %loc, 0
-  br i1 %cmp1, label %return, label %lor.lhs.false
+  %cmp1 = icmp slt i32 %loc, 0, !dbg !83
+  br i1 %cmp1, label %return, label %lor.lhs.false, !dbg !83
 
 lor.lhs.false:                                    ; preds = %if.end
-  %size = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0
-  %1 = load i32* %size, align 4, !tbaa !3
-  %cmp2 = icmp sgt i32 %1, %loc
-  br i1 %cmp2, label %if.else, label %return
+  %size = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0, !dbg !83
+  %1 = load i32* %size, align 4, !dbg !83, !tbaa !64
+  %cmp2 = icmp sgt i32 %1, %loc, !dbg !83
+  br i1 %cmp2, label %if.else, label %return, !dbg !83
 
 if.else:                                          ; preds = %lor.lhs.false
-  %idxprom = sext i32 %loc to i64
-  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3
-  %2 = load i32** %vec, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds i32* %2, i64 %idxprom
-  %3 = load i32* %arrayidx, align 4, !tbaa !3
-  br label %return
+  %idxprom = sext i32 %loc to i64, !dbg !84
+  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3, !dbg !84
+  %2 = load i32** %vec, align 8, !dbg !84, !tbaa !59
+  %arrayidx = getelementptr inbounds i32* %2, i64 %idxprom, !dbg !84
+  %3 = load i32* %arrayidx, align 4, !dbg !84, !tbaa !64
+  br label %return, !dbg !84
 
 return:                                           ; preds = %if.end, %lor.lhs.false, %if.else
   %retval.0 = phi i32 [ %3, %if.else ], [ -1, %lor.lhs.false ], [ -1, %if.end ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !86
 }

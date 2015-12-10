@@ -1,26 +1,33 @@
 define i32 @Util_TableGetString(i32 %handle, i32 %buffer_length, i8* %buffer, i8* %key) #1 {
-  %1 = add nsw i32 %buffer_length, -1
-  %2 = tail call fastcc i32 @internal_get(i32 %handle, i32 1, i32 %1, i8* %buffer, i8* %key) #9
-  %3 = icmp slt i32 %2, 0
-  br i1 %3, label %11, label %4
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %handle}, i64 0, metadata !152), !dbg !895
+  tail call void @llvm.dbg.value(metadata !{i32 %buffer_length}, i64 0, metadata !153), !dbg !896
+  tail call void @llvm.dbg.value(metadata !{i8* %buffer}, i64 0, metadata !154), !dbg !896
+  tail call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !155), !dbg !897
+  %sub = add nsw i32 %buffer_length, -1, !dbg !898
+  %call = tail call fastcc i32 @internal_get(i32 %handle, i32 1, i32 %sub, i8* %buffer, i8* %key) #9, !dbg !898
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !156), !dbg !898
+  %cmp = icmp slt i32 %call, 0, !dbg !899
+  br i1 %cmp, label %return, label %if.end, !dbg !899
 
-; <label>:4                                       ; preds = %0
-  %5 = icmp eq i8* %buffer, null
-  br i1 %5, label %.critedge, label %6
+if.end:                                           ; preds = %entry
+  %cmp1 = icmp eq i8* %buffer, null, !dbg !900
+  br i1 %cmp1, label %cond.false11, label %if.then2, !dbg !900
 
-; <label>:6                                       ; preds = %4
-  %7 = icmp slt i32 %2, %1
-  %. = select i1 %7, i32 %2, i32 %1
-  %8 = sext i32 %. to i64
-  %9 = getelementptr inbounds i8* %buffer, i64 %8
-  store i8 0, i8* %9, align 1, !tbaa !18
-  %10 = icmp sgt i32 %2, %1
-  br i1 %10, label %11, label %.critedge
+if.then2:                                         ; preds = %if.end
+  %cmp4 = icmp slt i32 %call, %sub, !dbg !901
+  %call.sub = select i1 %cmp4, i32 %call, i32 %sub, !dbg !901
+  tail call void @llvm.dbg.value(metadata !{i32 %call.sub}, i64 0, metadata !157), !dbg !901
+  %idxprom = sext i32 %call.sub to i64, !dbg !902
+  %arrayidx = getelementptr inbounds i8* %buffer, i64 %idxprom, !dbg !902
+  store i8 0, i8* %arrayidx, align 1, !dbg !902, !tbaa !596
+  %cmp9 = icmp sgt i32 %call, %sub, !dbg !903
+  br i1 %cmp9, label %return, label %cond.false11, !dbg !903
 
-.critedge:                                        ; preds = %4, %6
-  br label %11
+cond.false11:                                     ; preds = %if.end, %if.then2
+  br label %return, !dbg !903
 
-; <label>:11                                      ; preds = %.critedge, %6, %0
-  %.0 = phi i32 [ %2, %0 ], [ %2, %.critedge ], [ -102, %6 ]
-  ret i32 %.0
+return:                                           ; preds = %cond.false11, %if.then2, %entry
+  %retval.0 = phi i32 [ %call, %entry ], [ %call, %cond.false11 ], [ -102, %if.then2 ]
+  ret i32 %retval.0, !dbg !904
 }

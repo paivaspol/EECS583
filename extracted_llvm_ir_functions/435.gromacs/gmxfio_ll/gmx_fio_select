@@ -1,93 +1,96 @@
-define void @gmx_fio_select(i32 %fio) #1 {
-  %1 = icmp sgt i32 %fio, -1
-  %2 = load i32* @nFIO, align 4
-  %3 = icmp sgt i32 %2, %fio
-  %or.cond.i = and i1 %1, %3
-  br i1 %or.cond.i, label %_gmx_fio_check.exit, label %4
+define void @gmx_fio_select(i32 %fio) #2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %fio}, i64 0, metadata !251), !dbg !622
+  tail call fastcc void @_gmx_fio_check(i32 %fio, i32 757) #10, !dbg !623
+  %idxprom = sext i32 %fio to i64, !dbg !624
+  %0 = load %struct.t_fileio** @FIO, align 8, !dbg !624, !tbaa !514
+  %iFTP = getelementptr inbounds %struct.t_fileio* %0, i64 %idxprom, i32 0, !dbg !624
+  %1 = load i32* %iFTP, align 4, !dbg !624, !tbaa !501
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !625), !dbg !626
+  tail call void @llvm.dbg.value(metadata !562, i64 0, metadata !627), !dbg !626
+  tail call void @llvm.dbg.value(metadata !564, i64 0, metadata !628), !dbg !626
+  tail call void @llvm.dbg.value(metadata !86, i64 0, metadata !629), !dbg !630
+  tail call void @llvm.dbg.value(metadata !86, i64 0, metadata !631), !dbg !632
+  br label %for.body.i
 
-; <label>:4                                       ; preds = %0
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([50 x i8]* @.str32, i64 0, i64 0), i32 %fio, i8* getelementptr inbounds ([66 x i8]* @.str15, i64 0, i64 0), i32 757) #9
-  br label %_gmx_fio_check.exit
+for.body.i:                                       ; preds = %for.body.i, %entry
+  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %for.body.i ], [ 0, %entry ]
+  %bResult.06.i = phi i32 [ %.bResult.0.i, %for.body.i ], [ 0, %entry ]
+  %arrayidx.i = getelementptr inbounds [4 x i32]* @ftpXDR, i64 0, i64 %indvars.iv.i, !dbg !633
+  %2 = load i32* %arrayidx.i, align 4, !dbg !633, !tbaa !501
+  %cmp1.i = icmp eq i32 %2, %1, !dbg !633
+  tail call void @llvm.dbg.value(metadata !504, i64 0, metadata !629), !dbg !634
+  %.bResult.0.i = select i1 %cmp1.i, i32 1, i32 %bResult.06.i, !dbg !633
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1, !dbg !632
+  %lftr.wideiv47 = trunc i64 %indvars.iv.next.i to i32, !dbg !632
+  %exitcond48 = icmp eq i32 %lftr.wideiv47, 4, !dbg !632
+  br i1 %exitcond48, label %in_ftpset.exit, label %for.body.i, !dbg !632
 
-_gmx_fio_check.exit:                              ; preds = %0, %4
-  %5 = sext i32 %fio to i64
-  %6 = load %struct.t_fileio** @FIO, align 8, !tbaa !15
-  %7 = getelementptr inbounds %struct.t_fileio* %6, i64 %5, i32 0
-  %8 = load i32* %7, align 4, !tbaa !18
-  br label %9
+in_ftpset.exit:                                   ; preds = %for.body.i
+  %tobool = icmp eq i32 %.bResult.0.i, 0, !dbg !624
+  br i1 %tobool, label %for.body.i43, label %if.then, !dbg !624
 
-; <label>:9                                       ; preds = %9, %_gmx_fio_check.exit
-  %indvars.iv.i = phi i64 [ 0, %_gmx_fio_check.exit ], [ %indvars.iv.next.i, %9 ]
-  %bResult.02.i = phi i32 [ 0, %_gmx_fio_check.exit ], [ %.bResult.0.i, %9 ]
-  %10 = getelementptr inbounds [4 x i32]* @ftpXDR, i64 0, i64 %indvars.iv.i
-  %11 = load i32* %10, align 4, !tbaa !2
-  %12 = icmp eq i32 %11, %8
-  %.bResult.0.i = select i1 %12, i32 1, i32 %bResult.02.i
-  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1
-  %exitcond16 = icmp eq i64 %indvars.iv.next.i, 4
-  br i1 %exitcond16, label %in_ftpset.exit, label %9
+if.then:                                          ; preds = %in_ftpset.exit
+  store i32 (i8*, i32, i32, i8*, i8*, i32)* @do_xdr, i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !dbg !635, !tbaa !514
+  store i32 (i8*, i32, i32, i8*, i8*, i32)* @do_xdr, i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !dbg !637, !tbaa !514
+  br label %if.end18, !dbg !638
 
-in_ftpset.exit:                                   ; preds = %9
-  %13 = icmp eq i32 %.bResult.0.i, 0
-  br i1 %13, label %.preheader17, label %14
+for.body.i43:                                     ; preds = %in_ftpset.exit, %for.body.i43
+  %indvars.iv.i35 = phi i64 [ %indvars.iv.next.i40, %for.body.i43 ], [ 0, %in_ftpset.exit ]
+  %bResult.06.i36 = phi i32 [ %.bResult.0.i39, %for.body.i43 ], [ 0, %in_ftpset.exit ]
+  %arrayidx.i37 = getelementptr inbounds [3 x i32]* @ftpASC, i64 0, i64 %indvars.iv.i35, !dbg !639
+  %3 = load i32* %arrayidx.i37, align 4, !dbg !639, !tbaa !501
+  %cmp1.i38 = icmp eq i32 %3, %1, !dbg !639
+  tail call void @llvm.dbg.value(metadata !504, i64 0, metadata !641), !dbg !642
+  %.bResult.0.i39 = select i1 %cmp1.i38, i32 1, i32 %bResult.06.i36, !dbg !639
+  %indvars.iv.next.i40 = add i64 %indvars.iv.i35, 1, !dbg !643
+  %lftr.wideiv45 = trunc i64 %indvars.iv.next.i40 to i32, !dbg !643
+  %exitcond46 = icmp eq i32 %lftr.wideiv45, 3, !dbg !643
+  br i1 %exitcond46, label %in_ftpset.exit44, label %for.body.i43, !dbg !643
 
-; <label>:14                                      ; preds = %in_ftpset.exit
-  store i32 (i8*, i32, i32, i8*, i8*, i32)* @do_xdr, i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !tbaa !15
-  store i32 (i8*, i32, i32, i8*, i8*, i32)* @do_xdr, i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !15
-  br label %30
+in_ftpset.exit44:                                 ; preds = %for.body.i43
+  %tobool5 = icmp eq i32 %.bResult.0.i39, 0, !dbg !640
+  br i1 %tobool5, label %for.body.i33, label %if.then6, !dbg !640
 
-.preheader17:                                     ; preds = %in_ftpset.exit, %.preheader17
-  %indvars.iv.i8 = phi i64 [ %indvars.iv.next.i11, %.preheader17 ], [ 0, %in_ftpset.exit ]
-  %bResult.02.i9 = phi i32 [ %.bResult.0.i10, %.preheader17 ], [ 0, %in_ftpset.exit ]
-  %15 = getelementptr inbounds [3 x i32]* @ftpASC, i64 0, i64 %indvars.iv.i8
-  %16 = load i32* %15, align 4, !tbaa !2
-  %17 = icmp eq i32 %16, %8
-  %.bResult.0.i10 = select i1 %17, i32 1, i32 %bResult.02.i9
-  %indvars.iv.next.i11 = add nuw nsw i64 %indvars.iv.i8, 1
-  %exitcond15 = icmp eq i64 %indvars.iv.next.i11, 3
-  br i1 %exitcond15, label %in_ftpset.exit14, label %.preheader17
+if.then6:                                         ; preds = %in_ftpset.exit44
+  store i32 (i8*, i32, i32, i8*, i8*, i32)* @do_ascread, i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !dbg !644, !tbaa !514
+  store i32 (i8*, i32, i32, i8*, i8*, i32)* @do_ascwrite, i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !dbg !646, !tbaa !514
+  br label %if.end18, !dbg !647
 
-in_ftpset.exit14:                                 ; preds = %.preheader17
-  %18 = icmp eq i32 %.bResult.0.i10, 0
-  br i1 %18, label %.preheader, label %19
+for.body.i33:                                     ; preds = %in_ftpset.exit44, %for.body.i33
+  %indvars.iv.i25 = phi i64 [ %indvars.iv.next.i30, %for.body.i33 ], [ 0, %in_ftpset.exit44 ]
+  %bResult.06.i26 = phi i32 [ %.bResult.0.i29, %for.body.i33 ], [ 0, %in_ftpset.exit44 ]
+  %arrayidx.i27 = getelementptr inbounds [4 x i32]* @ftpBIN, i64 0, i64 %indvars.iv.i25, !dbg !648
+  %4 = load i32* %arrayidx.i27, align 4, !dbg !648, !tbaa !501
+  %cmp1.i28 = icmp eq i32 %4, %1, !dbg !648
+  tail call void @llvm.dbg.value(metadata !504, i64 0, metadata !650), !dbg !651
+  %.bResult.0.i29 = select i1 %cmp1.i28, i32 1, i32 %bResult.06.i26, !dbg !648
+  %indvars.iv.next.i30 = add i64 %indvars.iv.i25, 1, !dbg !652
+  %lftr.wideiv = trunc i64 %indvars.iv.next.i30 to i32, !dbg !652
+  %exitcond = icmp eq i32 %lftr.wideiv, 4, !dbg !652
+  br i1 %exitcond, label %in_ftpset.exit34, label %for.body.i33, !dbg !652
 
-; <label>:19                                      ; preds = %in_ftpset.exit14
-  store i32 (i8*, i32, i32, i8*, i8*, i32)* @do_ascread, i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !tbaa !15
-  store i32 (i8*, i32, i32, i8*, i8*, i32)* @do_ascwrite, i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !15
-  br label %30
+in_ftpset.exit34:                                 ; preds = %for.body.i33
+  %tobool12 = icmp eq i32 %.bResult.0.i29, 0, !dbg !649
+  br i1 %tobool12, label %if.else14, label %if.then13, !dbg !649
 
-.preheader:                                       ; preds = %in_ftpset.exit14, %.preheader
-  %indvars.iv.i1 = phi i64 [ %indvars.iv.next.i4, %.preheader ], [ 0, %in_ftpset.exit14 ]
-  %bResult.02.i2 = phi i32 [ %.bResult.0.i3, %.preheader ], [ 0, %in_ftpset.exit14 ]
-  %20 = getelementptr inbounds [4 x i32]* @ftpBIN, i64 0, i64 %indvars.iv.i1
-  %21 = load i32* %20, align 4, !tbaa !2
-  %22 = icmp eq i32 %21, %8
-  %.bResult.0.i3 = select i1 %22, i32 1, i32 %bResult.02.i2
-  %indvars.iv.next.i4 = add nuw nsw i64 %indvars.iv.i1, 1
-  %exitcond = icmp eq i64 %indvars.iv.next.i4, 4
-  br i1 %exitcond, label %in_ftpset.exit7, label %.preheader
+if.then13:                                        ; preds = %in_ftpset.exit34
+  store i32 (i8*, i32, i32, i8*, i8*, i32)* @do_binread, i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !dbg !653, !tbaa !514
+  store i32 (i8*, i32, i32, i8*, i8*, i32)* @do_binwrite, i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !dbg !655, !tbaa !514
+  br label %if.end18, !dbg !656
 
-in_ftpset.exit7:                                  ; preds = %.preheader
-  %23 = icmp eq i32 %.bResult.0.i3, 0
-  br i1 %23, label %25, label %24
+if.else14:                                        ; preds = %in_ftpset.exit34
+  %5 = load %struct.t_fileio** @curfio, align 8, !dbg !657, !tbaa !514
+  %iFTP15 = getelementptr inbounds %struct.t_fileio* %5, i64 0, i32 0, !dbg !657
+  %6 = load i32* %iFTP15, align 4, !dbg !657, !tbaa !501
+  %call16 = tail call i8* @ftp2ext(i32 %6) #8, !dbg !657
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([46 x i8]* @.str29, i64 0, i64 0), i8* %call16) #8, !dbg !657
+  %.pre = load %struct.t_fileio** @FIO, align 8, !dbg !658, !tbaa !514
+  br label %if.end18
 
-; <label>:24                                      ; preds = %in_ftpset.exit7
-  store i32 (i8*, i32, i32, i8*, i8*, i32)* @do_binread, i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !tbaa !15
-  store i32 (i8*, i32, i32, i8*, i8*, i32)* @do_binwrite, i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !15
-  br label %30
-
-; <label>:25                                      ; preds = %in_ftpset.exit7
-  %26 = load %struct.t_fileio** @curfio, align 8, !tbaa !15
-  %27 = getelementptr inbounds %struct.t_fileio* %26, i64 0, i32 0
-  %28 = load i32* %27, align 4, !tbaa !18
-  %29 = tail call i8* @ftp2ext(i32 %28) #9
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([46 x i8]* @.str29, i64 0, i64 0), i8* %29) #9
-  %.pre = load %struct.t_fileio** @FIO, align 8, !tbaa !15
-  br label %30
-
-; <label>:30                                      ; preds = %19, %25, %24, %14
-  %31 = phi %struct.t_fileio* [ %6, %19 ], [ %.pre, %25 ], [ %6, %24 ], [ %6, %14 ]
-  %32 = getelementptr inbounds %struct.t_fileio* %31, i64 %5
-  store %struct.t_fileio* %32, %struct.t_fileio** @curfio, align 8, !tbaa !15
-  ret void
+if.end18:                                         ; preds = %if.then6, %if.else14, %if.then13, %if.then
+  %7 = phi %struct.t_fileio* [ %0, %if.then6 ], [ %.pre, %if.else14 ], [ %0, %if.then13 ], [ %0, %if.then ]
+  %arrayidx20 = getelementptr inbounds %struct.t_fileio* %7, i64 %idxprom, !dbg !658
+  store %struct.t_fileio* %arrayidx20, %struct.t_fileio** @curfio, align 8, !dbg !658, !tbaa !514
+  ret void, !dbg !659
 }

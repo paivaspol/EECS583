@@ -1,36 +1,38 @@
-define float @opt2parg_real(i8* %option, i32 %nparg, %struct.t_pargs* nocapture readonly %pa) #6 {
-  %1 = icmp sgt i32 %nparg, 0
-  br i1 %1, label %.lr.ph, label %._crit_edge
+define float @opt2parg_real(i8* %option, i32 %nparg, %struct.t_pargs* nocapture %pa) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %option}, i64 0, metadata !105), !dbg !328
+  tail call void @llvm.dbg.value(metadata !{i32 %nparg}, i64 0, metadata !106), !dbg !328
+  tail call void @llvm.dbg.value(metadata !{%struct.t_pargs* %pa}, i64 0, metadata !107), !dbg !328
+  tail call void @llvm.dbg.value(metadata !29, i64 0, metadata !108), !dbg !329
+  %cmp9 = icmp sgt i32 %nparg, 0, !dbg !329
+  br i1 %cmp9, label %for.body, label %for.end, !dbg !329
 
-.lr.ph:                                           ; preds = %0
-  %2 = sext i32 %nparg to i64
-  br label %5
+for.cond:                                         ; preds = %for.body
+  %0 = trunc i64 %indvars.iv.next to i32, !dbg !329
+  %cmp = icmp slt i32 %0, %nparg, !dbg !329
+  br i1 %cmp, label %for.body, label %for.end, !dbg !329
 
-; <label>:3                                       ; preds = %5
-  %4 = icmp slt i64 %indvars.iv.next, %2
-  br i1 %4, label %5, label %._crit_edge
+for.body:                                         ; preds = %entry, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %entry ]
+  %option1 = getelementptr inbounds %struct.t_pargs* %pa, i64 %indvars.iv, i32 0, !dbg !331
+  %1 = load i8** %option1, align 8, !dbg !331, !tbaa !222
+  %call = tail call i32 @strcmp(i8* %1, i8* %option) #8, !dbg !331
+  %cmp2 = icmp eq i32 %call, 0, !dbg !331
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !329
+  br i1 %cmp2, label %if.then, label %for.cond, !dbg !331
 
-; <label>:5                                       ; preds = %.lr.ph, %3
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
-  %6 = getelementptr inbounds %struct.t_pargs* %pa, i64 %indvars.iv, i32 0
-  %7 = load i8** %6, align 8, !tbaa !14
-  %8 = tail call i32 @strcmp(i8* %7, i8* %option) #10
-  %9 = icmp eq i32 %8, 0
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  br i1 %9, label %10, label %3
+if.then:                                          ; preds = %for.body
+  %u = getelementptr inbounds %struct.t_pargs* %pa, i64 %indvars.iv, i32 3, !dbg !332
+  %r = bitcast %union.anon* %u to float**, !dbg !332
+  %2 = load float** %r, align 8, !dbg !332, !tbaa !222
+  %3 = load float* %2, align 4, !dbg !332, !tbaa !267
+  br label %return, !dbg !332
 
-; <label>:10                                      ; preds = %5
-  %11 = getelementptr inbounds %struct.t_pargs* %pa, i64 %indvars.iv, i32 3
-  %12 = bitcast %union.anon.2* %11 to float**
-  %13 = load float** %12, align 8, !tbaa !15
-  %14 = load float* %13, align 4, !tbaa !2
-  br label %15
+for.end:                                          ; preds = %for.cond, %entry
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([27 x i8]* @.str11, i64 0, i64 0), i8* %option) #9, !dbg !333
+  br label %return, !dbg !334
 
-._crit_edge:                                      ; preds = %3, %0
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([27 x i8]* @.str11, i64 0, i64 0), i8* %option) #10
-  br label %15
-
-; <label>:15                                      ; preds = %._crit_edge, %10
-  %.0 = phi float [ %14, %10 ], [ 0.000000e+00, %._crit_edge ]
-  ret float %.0
+return:                                           ; preds = %for.end, %if.then
+  %retval.0 = phi float [ %3, %if.then ], [ 0.000000e+00, %for.end ]
+  ret float %retval.0, !dbg !335
 }

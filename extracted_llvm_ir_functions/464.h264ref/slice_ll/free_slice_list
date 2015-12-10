@@ -1,100 +1,104 @@
 define void @free_slice_list(%struct.Picture* nocapture %currPic) #0 {
 entry:
-  %no_slices = getelementptr inbounds %struct.Picture* %currPic, i64 0, i32 0
-  %0 = load i32* %no_slices, align 4, !tbaa !3
-  %cmp9 = icmp sgt i32 %0, 0
-  br i1 %cmp9, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{%struct.Picture* %currPic}, i64 0, metadata !273), !dbg !1120
+  tail call void @llvm.dbg.value(metadata !34, i64 0, metadata !274), !dbg !1121
+  %no_slices = getelementptr inbounds %struct.Picture* %currPic, i64 0, i32 0, !dbg !1121
+  %0 = load i32* %no_slices, align 4, !dbg !1121, !tbaa !769
+  %cmp9 = icmp sgt i32 %0, 0, !dbg !1121
+  br i1 %cmp9, label %for.body, label %for.end, !dbg !1121
 
 for.body:                                         ; preds = %entry, %free_slice.exit
   %indvars.iv = phi i64 [ %indvars.iv.next, %free_slice.exit ], [ 0, %entry ]
-  %arrayidx = getelementptr inbounds %struct.Picture* %currPic, i64 0, i32 2, i64 %indvars.iv
-  %1 = load %struct.Slice** %arrayidx, align 8, !tbaa !0
-  %cmp.i = icmp eq %struct.Slice* %1, null
-  br i1 %cmp.i, label %free_slice.exit, label %for.cond.preheader.i
+  %arrayidx = getelementptr inbounds %struct.Picture* %currPic, i64 0, i32 2, i64 %indvars.iv, !dbg !1123
+  %1 = load %struct.Slice** %arrayidx, align 8, !dbg !1123, !tbaa !765
+  tail call void @llvm.dbg.value(metadata !{%struct.Slice* %1}, i64 0, metadata !1125) #4, !dbg !1126
+  %cmp.i = icmp eq %struct.Slice* %1, null, !dbg !1127
+  br i1 %cmp.i, label %free_slice.exit, label %for.cond.preheader.i, !dbg !1127
 
 for.cond.preheader.i:                             ; preds = %for.body
-  %max_part_nr.i = getelementptr inbounds %struct.Slice* %1, i64 0, i32 4
-  %2 = load i32* %max_part_nr.i, align 4, !tbaa !3
-  %cmp136.i = icmp sgt i32 %2, 0
-  %partArr.i = getelementptr inbounds %struct.Slice* %1, i64 0, i32 6
-  br i1 %cmp136.i, label %for.body.i, label %for.end.i
+  %max_part_nr.i = getelementptr inbounds %struct.Slice* %1, i64 0, i32 4, !dbg !1128
+  %2 = load i32* %max_part_nr.i, align 4, !dbg !1128, !tbaa !769
+  %cmp136.i = icmp sgt i32 %2, 0, !dbg !1128
+  %partArr.i = getelementptr inbounds %struct.Slice* %1, i64 0, i32 6, !dbg !1131
+  br i1 %cmp136.i, label %for.body.i, label %for.end.i, !dbg !1128
 
 for.body.i:                                       ; preds = %for.inc.i, %for.cond.preheader.i
   %indvars.iv.i = phi i64 [ 0, %for.cond.preheader.i ], [ %indvars.iv.next.i, %for.inc.i ]
-  %3 = load %struct.datapartition** %partArr.i, align 8, !tbaa !0
-  %arrayidx.i = getelementptr inbounds %struct.datapartition* %3, i64 %indvars.iv.i
-  %cmp2.i = icmp eq %struct.datapartition* %arrayidx.i, null
-  br i1 %cmp2.i, label %for.inc.i, label %if.then3.i
+  %3 = load %struct.datapartition** %partArr.i, align 8, !dbg !1131, !tbaa !765
+  %arrayidx.i = getelementptr inbounds %struct.datapartition* %3, i64 %indvars.iv.i, !dbg !1131
+  tail call void @llvm.dbg.value(metadata !{%struct.datapartition* %arrayidx.i}, i64 0, metadata !1133) #4, !dbg !1131
+  %cmp2.i = icmp eq %struct.datapartition* %arrayidx.i, null, !dbg !1134
+  br i1 %cmp2.i, label %for.inc.i, label %if.then3.i, !dbg !1134
 
 if.then3.i:                                       ; preds = %for.body.i
-  %bitstream.i = getelementptr inbounds %struct.datapartition* %arrayidx.i, i64 0, i32 0
-  %4 = load %struct.Bitstream** %bitstream.i, align 8, !tbaa !0
-  %streamBuffer.i = getelementptr inbounds %struct.Bitstream* %4, i64 0, i32 9
-  %5 = load i8** %streamBuffer.i, align 8, !tbaa !0
-  %cmp4.i = icmp eq i8* %5, null
-  br i1 %cmp4.i, label %if.end.i, label %if.then5.i
+  %bitstream.i = getelementptr inbounds %struct.datapartition* %arrayidx.i, i64 0, i32 0, !dbg !1135
+  %4 = load %struct.Bitstream** %bitstream.i, align 8, !dbg !1135, !tbaa !765
+  %streamBuffer.i = getelementptr inbounds %struct.Bitstream* %4, i64 0, i32 9, !dbg !1135
+  %5 = load i8** %streamBuffer.i, align 8, !dbg !1135, !tbaa !765
+  %cmp4.i = icmp eq i8* %5, null, !dbg !1135
+  br i1 %cmp4.i, label %if.end.i, label %if.then5.i, !dbg !1135
 
 if.then5.i:                                       ; preds = %if.then3.i
-  tail call void @free(i8* %5) #4
-  %.pr.i = load %struct.Bitstream** %bitstream.i, align 8, !tbaa !0
-  br label %if.end.i
+  tail call void @free(i8* %5) #6, !dbg !1137
+  %.pr.i = load %struct.Bitstream** %bitstream.i, align 8, !dbg !1138, !tbaa !765
+  br label %if.end.i, !dbg !1137
 
 if.end.i:                                         ; preds = %if.then5.i, %if.then3.i
-  %6 = phi %struct.Bitstream* [ %4, %if.then3.i ], [ %.pr.i, %if.then5.i ]
-  %cmp9.i = icmp eq %struct.Bitstream* %6, null
-  br i1 %cmp9.i, label %for.inc.i, label %if.then10.i
+  %6 = phi %struct.Bitstream* [ %4, %if.then3.i ], [ %.pr.i, %if.then5.i ], !dbg !1138
+  %cmp9.i = icmp eq %struct.Bitstream* %6, null, !dbg !1138
+  br i1 %cmp9.i, label %for.inc.i, label %if.then10.i, !dbg !1138
 
 if.then10.i:                                      ; preds = %if.end.i
-  %7 = bitcast %struct.Bitstream* %6 to i8*
-  tail call void @free(i8* %7) #4
-  br label %for.inc.i
+  %7 = bitcast %struct.Bitstream* %6 to i8*, !dbg !1139
+  tail call void @free(i8* %7) #6, !dbg !1139
+  br label %for.inc.i, !dbg !1139
 
 for.inc.i:                                        ; preds = %if.end.i, %if.then10.i, %for.body.i
-  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
-  %8 = load i32* %max_part_nr.i, align 4, !tbaa !3
-  %9 = trunc i64 %indvars.iv.next.i to i32
-  %cmp1.i = icmp slt i32 %9, %8
-  br i1 %cmp1.i, label %for.body.i, label %for.end.i
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1, !dbg !1128
+  %8 = load i32* %max_part_nr.i, align 4, !dbg !1128, !tbaa !769
+  %9 = trunc i64 %indvars.iv.next.i to i32, !dbg !1128
+  %cmp1.i = icmp slt i32 %9, %8, !dbg !1128
+  br i1 %cmp1.i, label %for.body.i, label %for.end.i, !dbg !1128
 
 for.end.i:                                        ; preds = %for.inc.i, %for.cond.preheader.i
-  %10 = load %struct.datapartition** %partArr.i, align 8, !tbaa !0
-  %cmp15.i = icmp eq %struct.datapartition* %10, null
-  br i1 %cmp15.i, label %if.end18.i, label %if.then16.i
+  %10 = load %struct.datapartition** %partArr.i, align 8, !dbg !1140, !tbaa !765
+  %cmp15.i = icmp eq %struct.datapartition* %10, null, !dbg !1140
+  br i1 %cmp15.i, label %if.end18.i, label %if.then16.i, !dbg !1140
 
 if.then16.i:                                      ; preds = %for.end.i
-  %11 = bitcast %struct.datapartition* %10 to i8*
-  tail call void @free(i8* %11) #4
-  br label %if.end18.i
+  %11 = bitcast %struct.datapartition* %10 to i8*, !dbg !1141
+  tail call void @free(i8* %11) #6, !dbg !1141
+  br label %if.end18.i, !dbg !1141
 
 if.end18.i:                                       ; preds = %if.then16.i, %for.end.i
-  %12 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %symbol_mode.i = getelementptr inbounds %struct.InputParameters* %12, i64 0, i32 59
-  %13 = load i32* %symbol_mode.i, align 4, !tbaa !3
-  %cmp19.i = icmp eq i32 %13, 1
-  br i1 %cmp19.i, label %if.then20.i, label %if.end21.i
+  %12 = load %struct.InputParameters** @input, align 8, !dbg !1142, !tbaa !765
+  %symbol_mode.i = getelementptr inbounds %struct.InputParameters* %12, i64 0, i32 59, !dbg !1142
+  %13 = load i32* %symbol_mode.i, align 4, !dbg !1142, !tbaa !769
+  %cmp19.i = icmp eq i32 %13, 1, !dbg !1142
+  br i1 %cmp19.i, label %if.then20.i, label %if.end21.i, !dbg !1142
 
 if.then20.i:                                      ; preds = %if.end18.i
-  %mot_ctx.i = getelementptr inbounds %struct.Slice* %1, i64 0, i32 7
-  %14 = load %struct.MotionInfoContexts** %mot_ctx.i, align 8, !tbaa !0
-  tail call void @delete_contexts_MotionInfo(%struct.MotionInfoContexts* %14) #4
-  %tex_ctx.i = getelementptr inbounds %struct.Slice* %1, i64 0, i32 8
-  %15 = load %struct.TextureInfoContexts** %tex_ctx.i, align 8, !tbaa !0
-  tail call void @delete_contexts_TextureInfo(%struct.TextureInfoContexts* %15) #4
-  br label %if.end21.i
+  %mot_ctx.i = getelementptr inbounds %struct.Slice* %1, i64 0, i32 7, !dbg !1143
+  %14 = load %struct.MotionInfoContexts** %mot_ctx.i, align 8, !dbg !1143, !tbaa !765
+  tail call void @delete_contexts_MotionInfo(%struct.MotionInfoContexts* %14) #6, !dbg !1143
+  %tex_ctx.i = getelementptr inbounds %struct.Slice* %1, i64 0, i32 8, !dbg !1145
+  %15 = load %struct.TextureInfoContexts** %tex_ctx.i, align 8, !dbg !1145, !tbaa !765
+  tail call void @delete_contexts_TextureInfo(%struct.TextureInfoContexts* %15) #6, !dbg !1145
+  br label %if.end21.i, !dbg !1146
 
 if.end21.i:                                       ; preds = %if.then20.i, %if.end18.i
-  %16 = bitcast %struct.Slice* %1 to i8*
-  tail call void @free(i8* %16) #4
-  br label %free_slice.exit
+  %16 = bitcast %struct.Slice* %1 to i8*, !dbg !1147
+  tail call void @free(i8* %16) #6, !dbg !1147
+  br label %free_slice.exit, !dbg !1148
 
 free_slice.exit:                                  ; preds = %for.body, %if.end21.i
-  store %struct.Slice* null, %struct.Slice** %arrayidx, align 8, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %17 = load i32* %no_slices, align 4, !tbaa !3
-  %18 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %18, %17
-  br i1 %cmp, label %for.body, label %for.end
+  store %struct.Slice* null, %struct.Slice** %arrayidx, align 8, !dbg !1149, !tbaa !765
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1121
+  %17 = load i32* %no_slices, align 4, !dbg !1121, !tbaa !769
+  %18 = trunc i64 %indvars.iv.next to i32, !dbg !1121
+  %cmp = icmp slt i32 %18, %17, !dbg !1121
+  br i1 %cmp, label %for.body, label %for.end, !dbg !1121
 
 for.end:                                          ; preds = %free_slice.exit, %entry
-  ret void
+  ret void, !dbg !1150
 }

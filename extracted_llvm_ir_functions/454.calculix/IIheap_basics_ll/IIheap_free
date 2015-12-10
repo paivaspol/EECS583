@@ -1,17 +1,19 @@
 define void @IIheap_free(%struct._IIheap* %heap) #0 {
 entry:
-  %cmp = icmp eq %struct._IIheap* %heap, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._IIheap* %heap}, i64 0, metadata !32), !dbg !189
+  %cmp = icmp eq %struct._IIheap* %heap, null, !dbg !190
+  br i1 %cmp, label %if.then, label %if.end, !dbg !190
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([48 x i8]* @.str4, i64 0, i64 0), %struct._IIheap* null) #6
-  tail call void @exit(i32 -1) #7
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !191, !tbaa !158
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([48 x i8]* @.str4, i64 0, i64 0), %struct._IIheap* null) #7, !dbg !191
+  tail call void @exit(i32 -1) #8, !dbg !193
+  unreachable, !dbg !193
 
 if.end:                                           ; preds = %entry
-  tail call void @IIheap_clearData(%struct._IIheap* %heap) #8
-  %1 = bitcast %struct._IIheap* %heap to i8*
-  tail call void @free(i8* %1) #6
-  ret void
+  tail call void @IIheap_clearData(%struct._IIheap* %heap) #9, !dbg !194
+  %1 = bitcast %struct._IIheap* %heap to i8*, !dbg !195
+  tail call void @free(i8* %1) #7, !dbg !195
+  tail call void @llvm.dbg.value(metadata !197, i64 0, metadata !32), !dbg !195
+  ret void, !dbg !198
 }

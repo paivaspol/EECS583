@@ -1,70 +1,74 @@
 define i32 @Util_TableCreate(i32 %flags) #1 {
-  %1 = icmp slt i32 %flags, 0
-  br i1 %1, label %31, label %2
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %flags}, i64 0, metadata !21), !dbg !592
+  %cmp = icmp slt i32 %flags, 0, !dbg !593
+  br i1 %cmp, label %return, label %if.end, !dbg !593
 
-; <label>:2                                       ; preds = %0
-  %3 = load i32* @N_tables, align 4, !tbaa !2
-  %4 = load i32* @N_thp_array, align 4, !tbaa !2
-  %5 = icmp eq i32 %3, %4
-  br i1 %5, label %6, label %.preheader
+if.end:                                           ; preds = %entry
+  %0 = load i32* @N_tables, align 4, !dbg !594, !tbaa !595
+  %1 = load i32* @N_thp_array, align 4, !dbg !594, !tbaa !595
+  %cmp1 = icmp eq i32 %0, %1, !dbg !594
+  br i1 %cmp1, label %if.then2, label %for.cond.preheader, !dbg !594
 
-; <label>:6                                       ; preds = %2
-  %7 = tail call fastcc i32 @grow_pointer_array(i32* @N_thp_array, i8*** @thp_array) #9
-  %8 = icmp slt i32 %7, 0
-  br i1 %8, label %31, label %..preheader_crit_edge
+if.then2:                                         ; preds = %if.end
+  %call = tail call fastcc i32 @grow_pointer_array(i32* @N_thp_array, i8*** @thp_array) #9, !dbg !598
+  %cmp3 = icmp slt i32 %call, 0, !dbg !598
+  br i1 %cmp3, label %return, label %if.then2.for.cond.preheader_crit_edge, !dbg !598
 
-..preheader_crit_edge:                            ; preds = %6
-  %.pre = load i32* @N_thp_array, align 4, !tbaa !2
-  br label %.preheader
+if.then2.for.cond.preheader_crit_edge:            ; preds = %if.then2
+  %.pre = load i32* @N_thp_array, align 4, !dbg !600, !tbaa !595
+  br label %for.cond.preheader, !dbg !598
 
-.preheader:                                       ; preds = %..preheader_crit_edge, %2
-  %9 = phi i32 [ %.pre, %..preheader_crit_edge ], [ %4, %2 ]
-  %10 = icmp sgt i32 %9, 0
-  br i1 %10, label %.lr.ph, label %._crit_edge
+for.cond.preheader:                               ; preds = %if.then2.for.cond.preheader_crit_edge, %if.end
+  %2 = phi i32 [ %.pre, %if.then2.for.cond.preheader_crit_edge ], [ %1, %if.end ]
+  %cmp731 = icmp sgt i32 %2, 0, !dbg !600
+  br i1 %cmp731, label %for.body.lr.ph, label %for.end, !dbg !600
 
-.lr.ph:                                           ; preds = %.preheader
-  %11 = load i8*** @thp_array, align 8, !tbaa !6
-  %12 = sext i32 %9 to i64
-  br label %13
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %3 = load i8*** @thp_array, align 8, !dbg !601, !tbaa !602
+  br label %for.body, !dbg !600
 
-; <label>:13                                      ; preds = %.lr.ph, %29
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %29 ]
-  %14 = getelementptr inbounds i8** %11, i64 %indvars.iv
-  %15 = load i8** %14, align 8, !tbaa !6
-  %16 = icmp eq i8* %15, null
-  br i1 %16, label %17, label %29
+for.cond:                                         ; preds = %for.body
+  %inc19 = add nsw i32 %handle.032, 1, !dbg !600
+  %4 = trunc i64 %indvars.iv.next to i32, !dbg !600
+  %cmp7 = icmp slt i32 %4, %2, !dbg !600
+  br i1 %cmp7, label %for.body, label %for.end, !dbg !600
 
-; <label>:17                                      ; preds = %13
-  %18 = trunc i64 %indvars.iv to i32
-  %19 = tail call i8* @malloc(i64 16) #10
-  %20 = icmp eq i8* %19, null
-  br i1 %20, label %31, label %21
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.cond ]
+  %handle.032 = phi i32 [ 0, %for.body.lr.ph ], [ %inc19, %for.cond ]
+  %arrayidx = getelementptr inbounds i8** %3, i64 %indvars.iv, !dbg !601
+  %5 = load i8** %arrayidx, align 8, !dbg !601, !tbaa !602
+  %cmp8 = icmp eq i8* %5, null, !dbg !601
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !600
+  tail call void @llvm.dbg.value(metadata !{i32 %inc19}, i64 0, metadata !22), !dbg !600
+  br i1 %cmp8, label %if.then9, label %for.cond, !dbg !601
 
-; <label>:21                                      ; preds = %17
-  %22 = bitcast i8* %19 to %struct.table_entry**
-  store %struct.table_entry* null, %struct.table_entry** %22, align 8, !tbaa !8
-  %23 = getelementptr inbounds i8* %19, i64 8
-  %24 = bitcast i8* %23 to i32*
-  store i32 %flags, i32* %24, align 4, !tbaa !10
-  %25 = getelementptr inbounds i8* %19, i64 12
-  %26 = bitcast i8* %25 to i32*
-  store i32 %18, i32* %26, align 4, !tbaa !11
-  %27 = load i32* @N_tables, align 4, !tbaa !2
-  %28 = add nsw i32 %27, 1
-  store i32 %28, i32* @N_tables, align 4, !tbaa !2
-  store i8* %19, i8** %14, align 8, !tbaa !6
-  br label %31
+if.then9:                                         ; preds = %for.body
+  %call10 = tail call noalias i8* @malloc(i64 16) #10, !dbg !603
+  %cmp11 = icmp eq i8* %call10, null, !dbg !604
+  br i1 %cmp11, label %return, label %if.end13, !dbg !604
 
-; <label>:29                                      ; preds = %13
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %30 = icmp slt i64 %indvars.iv.next, %12
-  br i1 %30, label %13, label %._crit_edge
+if.end13:                                         ; preds = %if.then9
+  %head = bitcast i8* %call10 to %struct.table_entry**, !dbg !605
+  store %struct.table_entry* null, %struct.table_entry** %head, align 8, !dbg !605, !tbaa !602
+  %flags14 = getelementptr inbounds i8* %call10, i64 8, !dbg !606
+  %6 = bitcast i8* %flags14 to i32*, !dbg !606
+  store i32 %flags, i32* %6, align 4, !dbg !606, !tbaa !595
+  %handle15 = getelementptr inbounds i8* %call10, i64 12, !dbg !607
+  %7 = bitcast i8* %handle15 to i32*, !dbg !607
+  store i32 %handle.032, i32* %7, align 4, !dbg !607, !tbaa !595
+  %8 = load i32* @N_tables, align 4, !dbg !608, !tbaa !595
+  %inc = add nsw i32 %8, 1, !dbg !608
+  store i32 %inc, i32* @N_tables, align 4, !dbg !608, !tbaa !595
+  store i8* %call10, i8** %arrayidx, align 8, !dbg !609, !tbaa !602
+  br label %return, !dbg !610
 
-._crit_edge:                                      ; preds = %29, %.preheader
-  tail call void @abort() #11
-  unreachable
+for.end:                                          ; preds = %for.cond, %for.cond.preheader
+  tail call void @abort() #11, !dbg !611
+  unreachable, !dbg !611
 
-; <label>:31                                      ; preds = %17, %6, %0, %21
-  %.0 = phi i32 [ %18, %21 ], [ -100, %0 ], [ -1, %6 ], [ -1, %17 ]
-  ret i32 %.0
+return:                                           ; preds = %if.then9, %if.then2, %entry, %if.end13
+  %retval.0 = phi i32 [ %handle.032, %if.end13 ], [ -100, %entry ], [ -1, %if.then2 ], [ -1, %if.then9 ]
+  ret i32 %retval.0, !dbg !612
 }

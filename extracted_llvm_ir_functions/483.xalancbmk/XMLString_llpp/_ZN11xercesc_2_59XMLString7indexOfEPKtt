@@ -1,0 +1,37 @@
+define i32 @_ZN11xercesc_2_59XMLString7indexOfEPKtt(i16* %toSearch, i16 zeroext %ch) #6 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %toSearch}, i64 0, metadata !1893), !dbg !3632
+  tail call void @llvm.dbg.value(metadata !{i16 %ch}, i64 0, metadata !1894), !dbg !3632
+  %tobool = icmp eq i16* %toSearch, null, !dbg !3633
+  br i1 %tobool, label %return, label %while.cond.preheader, !dbg !3633
+
+while.cond.preheader:                             ; preds = %entry
+  %0 = load i16* %toSearch, align 2, !dbg !3634, !tbaa !2947
+  %tobool112 = icmp eq i16 %0, 0, !dbg !3634
+  br i1 %tobool112, label %return, label %while.body, !dbg !3634
+
+while.cond:                                       ; preds = %while.body
+  %1 = load i16* %incdec.ptr, align 2, !dbg !3634, !tbaa !2947
+  %tobool1 = icmp eq i16 %1, 0, !dbg !3634
+  br i1 %tobool1, label %return, label %while.body, !dbg !3634
+
+while.body:                                       ; preds = %while.cond.preheader, %while.cond
+  %2 = phi i16 [ %1, %while.cond ], [ %0, %while.cond.preheader ]
+  %srcPtr.013 = phi i16* [ %incdec.ptr, %while.cond ], [ %toSearch, %while.cond.preheader ]
+  %cmp = icmp eq i16 %2, %ch, !dbg !3635
+  %incdec.ptr = getelementptr inbounds i16* %srcPtr.013, i64 1, !dbg !3637
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !1895), !dbg !3637
+  br i1 %cmp, label %if.then3, label %while.cond, !dbg !3635
+
+if.then3:                                         ; preds = %while.body
+  %sub.ptr.lhs.cast = ptrtoint i16* %srcPtr.013 to i64, !dbg !3638
+  %sub.ptr.rhs.cast = ptrtoint i16* %toSearch to i64, !dbg !3638
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !3638
+  %sub.ptr.div10 = lshr exact i64 %sub.ptr.sub, 1, !dbg !3638
+  %conv4 = trunc i64 %sub.ptr.div10 to i32, !dbg !3638
+  br label %return, !dbg !3638
+
+return:                                           ; preds = %while.cond.preheader, %while.cond, %entry, %if.then3
+  %retval.0 = phi i32 [ %conv4, %if.then3 ], [ -1, %entry ], [ -1, %while.cond ], [ -1, %while.cond.preheader ]
+  ret i32 %retval.0, !dbg !3639
+}

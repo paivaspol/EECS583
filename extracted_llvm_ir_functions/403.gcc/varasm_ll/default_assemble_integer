@@ -1,6 +1,11 @@
 define zeroext i1 @default_assemble_integer(%struct.rtx_def* %x, i32 %size, i32 %aligned_p) #0 {
 entry:
-  %tobool.i = icmp eq i32 %aligned_p, 0
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !1495), !dbg !3154
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !1496), !dbg !3155
+  tail call void @llvm.dbg.value(metadata !{i32 %aligned_p}, i64 0, metadata !1497), !dbg !3156
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !3157), !dbg !3159
+  tail call void @llvm.dbg.value(metadata !{i32 %aligned_p}, i64 0, metadata !3160), !dbg !3161
+  %tobool.i = icmp eq i32 %aligned_p, 0, !dbg !3162
   %..i = select i1 %tobool.i, %struct.asm_int_op* getelementptr inbounds (%struct.gcc_target* @targetm, i64 0, i32 0, i32 4), %struct.asm_int_op* getelementptr inbounds (%struct.gcc_target* @targetm, i64 0, i32 0, i32 3)
   switch i32 %size, label %land.end [
     i32 1, label %integer_asm_op.exit
@@ -8,35 +13,36 @@ entry:
     i32 4, label %sw.bb2.i
     i32 8, label %sw.bb3.i
     i32 16, label %sw.bb4.i
-  ]
+  ], !dbg !3163
 
 sw.bb1.i:                                         ; preds = %entry
-  %hi.i = getelementptr inbounds %struct.asm_int_op* %..i, i64 0, i32 0
-  br label %integer_asm_op.exit
+  %hi.i = getelementptr inbounds %struct.asm_int_op* %..i, i64 0, i32 0, !dbg !3164
+  br label %integer_asm_op.exit, !dbg !3164
 
 sw.bb2.i:                                         ; preds = %entry
-  %si.i = getelementptr inbounds %struct.asm_int_op* %..i, i64 0, i32 1
-  br label %integer_asm_op.exit
+  %si.i = getelementptr inbounds %struct.asm_int_op* %..i, i64 0, i32 1, !dbg !3165
+  br label %integer_asm_op.exit, !dbg !3165
 
 sw.bb3.i:                                         ; preds = %entry
-  %di.i = getelementptr inbounds %struct.asm_int_op* %..i, i64 0, i32 2
-  br label %integer_asm_op.exit
+  %di.i = getelementptr inbounds %struct.asm_int_op* %..i, i64 0, i32 2, !dbg !3166
+  br label %integer_asm_op.exit, !dbg !3166
 
 sw.bb4.i:                                         ; preds = %entry
-  %ti.i = getelementptr inbounds %struct.asm_int_op* %..i, i64 0, i32 3
-  br label %integer_asm_op.exit
+  %ti.i = getelementptr inbounds %struct.asm_int_op* %..i, i64 0, i32 3, !dbg !3167
+  br label %integer_asm_op.exit, !dbg !3167
 
 integer_asm_op.exit:                              ; preds = %entry, %sw.bb1.i, %sw.bb2.i, %sw.bb3.i, %sw.bb4.i
   %retval.0.i.in = phi i8** [ %ti.i, %sw.bb4.i ], [ %di.i, %sw.bb3.i ], [ %si.i, %sw.bb2.i ], [ %hi.i, %sw.bb1.i ], [ getelementptr inbounds (%struct.gcc_target* @targetm, i64 0, i32 0, i32 2), %entry ]
-  %retval.0.i = load i8** %retval.0.i.in, align 8
-  %tobool = icmp eq i8* %retval.0.i, null
-  br i1 %tobool, label %land.end, label %land.rhs
+  %retval.0.i = load i8** %retval.0.i.in, align 8, !dbg !3167
+  tail call void @llvm.dbg.value(metadata !{i8* %retval.0.i}, i64 0, metadata !1498), !dbg !3158
+  %tobool = icmp eq i8* %retval.0.i, null, !dbg !3168
+  br i1 %tobool, label %land.end, label %land.rhs, !dbg !3168
 
 land.rhs:                                         ; preds = %integer_asm_op.exit
-  tail call void @assemble_integer_with_op(i8* %retval.0.i, %struct.rtx_def* %x) #10
+  tail call void @assemble_integer_with_op(i8* %retval.0.i, %struct.rtx_def* %x) #11, !dbg !3168
   br label %land.end
 
 land.end:                                         ; preds = %entry, %integer_asm_op.exit, %land.rhs
   %0 = phi i1 [ false, %integer_asm_op.exit ], [ true, %land.rhs ], [ false, %entry ]
-  ret i1 %0
+  ret i1 %0, !dbg !3169
 }

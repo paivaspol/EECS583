@@ -1,61 +1,65 @@
 define %struct.rtx_def* @set_unique_reg_note(%struct.rtx_def* %insn, i32 %kind, %struct.rtx_def* %datum) #0 {
 entry:
-  %call = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %insn, i32 %kind, %struct.rtx_def* null) #8
-  %.off = add i32 %kind, -3
-  %switch = icmp ult i32 %.off, 2
-  br i1 %switch, label %sw.bb, label %sw.epilog
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !1961), !dbg !3874
+  tail call void @llvm.dbg.value(metadata !{i32 %kind}, i64 0, metadata !1962), !dbg !3875
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %datum}, i64 0, metadata !1963), !dbg !3876
+  %call = tail call %struct.rtx_def* @find_reg_note(%struct.rtx_def* %insn, i32 %kind, %struct.rtx_def* null) #9, !dbg !3877
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !1964), !dbg !3877
+  %.off = add i32 %kind, -3, !dbg !3878
+  %switch = icmp ult i32 %.off, 2, !dbg !3878
+  br i1 %switch, label %sw.bb, label %sw.epilog, !dbg !3878
 
 sw.bb:                                            ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
-  %1 = bitcast %struct.rtx_def* %0 to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 39
-  br i1 %cmp, label %land.lhs.true, label %if.end4
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 3, !dbg !3879
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !3879
+  %0 = load %struct.rtx_def** %rtx, align 8, !dbg !3879, !tbaa !2272
+  %1 = bitcast %struct.rtx_def* %0 to i32*, !dbg !3879
+  %bf.load = load i32* %1, align 8, !dbg !3879
+  %bf.clear = and i32 %bf.load, 65535, !dbg !3879
+  %cmp = icmp eq i32 %bf.clear, 39, !dbg !3879
+  br i1 %cmp, label %land.lhs.true, label %if.end4, !dbg !3879
 
 land.lhs.true:                                    ; preds = %sw.bb
-  %call1 = tail call i32 @multiple_sets(%struct.rtx_def* %insn) #8
-  %tobool = icmp eq i32 %call1, 0
-  br i1 %tobool, label %if.end4, label %if.then
+  %call1 = tail call i32 @multiple_sets(%struct.rtx_def* %insn) #9, !dbg !3879
+  %tobool = icmp eq i32 %call1, 0, !dbg !3879
+  br i1 %tobool, label %if.end4, label %if.then, !dbg !3879
 
 if.then:                                          ; preds = %land.lhs.true
-  %tobool2 = icmp eq %struct.rtx_def* %call, null
-  br i1 %tobool2, label %return, label %if.then3
+  %tobool2 = icmp eq %struct.rtx_def* %call, null, !dbg !3881
+  br i1 %tobool2, label %return, label %if.then3, !dbg !3881
 
 if.then3:                                         ; preds = %if.then
-  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 4335, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.set_unique_reg_note, i64 0, i64 0)) #10
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([52 x i8]* @.str, i64 0, i64 0), i32 4335, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.set_unique_reg_note, i64 0, i64 0)) #11, !dbg !3883
+  unreachable, !dbg !3883
 
 if.end4:                                          ; preds = %land.lhs.true, %sw.bb
-  %2 = bitcast %struct.rtx_def* %datum to i32*
-  %bf.load5 = load i32* %2, align 8
-  %bf.clear6 = and i32 %bf.load5, 65535
-  %cmp7 = icmp eq i32 %bf.clear6, 41
-  br i1 %cmp7, label %return, label %sw.epilog
+  %2 = bitcast %struct.rtx_def* %datum to i32*, !dbg !3884
+  %bf.load5 = load i32* %2, align 8, !dbg !3884
+  %bf.clear6 = and i32 %bf.load5, 65535, !dbg !3884
+  %cmp7 = icmp eq i32 %bf.clear6, 41, !dbg !3884
+  br i1 %cmp7, label %return, label %sw.epilog, !dbg !3884
 
 sw.epilog:                                        ; preds = %entry, %if.end4
-  %tobool10 = icmp eq %struct.rtx_def* %call, null
-  br i1 %tobool10, label %if.end15, label %if.then11
+  %tobool10 = icmp eq %struct.rtx_def* %call, null, !dbg !3885
+  br i1 %tobool10, label %if.end15, label %if.then11, !dbg !3885
 
 if.then11:                                        ; preds = %sw.epilog
-  %3 = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 0, i32 0
-  %datum.c = ptrtoint %struct.rtx_def* %datum to i64
-  store i64 %datum.c, i64* %3, align 8, !tbaa !4
-  br label %return
+  %3 = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 0, i32 0, !dbg !3886
+  %datum.c = ptrtoint %struct.rtx_def* %datum to i64, !dbg !3886
+  store i64 %datum.c, i64* %3, align 8, !dbg !3886, !tbaa !2272
+  br label %return, !dbg !3888
 
 if.end15:                                         ; preds = %sw.epilog
-  %arrayidx17 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 6
-  %rtx18 = bitcast %union.rtunion_def* %arrayidx17 to %struct.rtx_def**
-  %4 = load %struct.rtx_def** %rtx18, align 8, !tbaa !4
-  %call19 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 3, i32 %kind, %struct.rtx_def* %datum, %struct.rtx_def* %4) #8
-  %5 = getelementptr inbounds %union.rtunion_def* %arrayidx17, i64 0, i32 0
-  %call19.c = ptrtoint %struct.rtx_def* %call19 to i64
-  store i64 %call19.c, i64* %5, align 8, !tbaa !4
-  br label %return
+  %arrayidx17 = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 6, !dbg !3889
+  %rtx18 = bitcast %union.rtunion_def* %arrayidx17 to %struct.rtx_def**, !dbg !3889
+  %4 = load %struct.rtx_def** %rtx18, align 8, !dbg !3889, !tbaa !2272
+  %call19 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 3, i32 %kind, %struct.rtx_def* %datum, %struct.rtx_def* %4) #9, !dbg !3889
+  %5 = getelementptr inbounds %union.rtunion_def* %arrayidx17, i64 0, i32 0, !dbg !3889
+  %call19.c = ptrtoint %struct.rtx_def* %call19 to i64, !dbg !3889
+  store i64 %call19.c, i64* %5, align 8, !dbg !3889, !tbaa !2272
+  br label %return, !dbg !3890
 
 return:                                           ; preds = %if.end4, %if.then, %if.end15, %if.then11
   %retval.0 = phi %struct.rtx_def* [ %call, %if.then11 ], [ %call19, %if.end15 ], [ null, %if.then ], [ null, %if.end4 ]
-  ret %struct.rtx_def* %retval.0
+  ret %struct.rtx_def* %retval.0, !dbg !3891
 }

@@ -1,0 +1,98 @@
+define void @_ZN11xercesc_2_511WFElemStack9addPrefixEPKtj(%"class.xercesc_2_5::WFElemStack"* %this, i16* %prefixToAdd, i32 %uriId) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::WFElemStack"* %this}, i64 0, metadata !2084), !dbg !3345
+  tail call void @llvm.dbg.value(metadata !{i16* %prefixToAdd}, i64 0, metadata !2085), !dbg !3345
+  tail call void @llvm.dbg.value(metadata !{i32 %uriId}, i64 0, metadata !2086), !dbg !3346
+  %fStackTop = getelementptr inbounds %"class.xercesc_2_5::WFElemStack"* %this, i64 0, i32 3, !dbg !3347
+  %0 = load i32* %fStackTop, align 4, !dbg !3347, !tbaa !2939
+  %tobool = icmp eq i32 %0, 0, !dbg !3347
+  br i1 %tobool, label %if.then, label %if.end, !dbg !3347
+
+if.then:                                          ; preds = %entry
+  %exception = tail call i8* @__cxa_allocate_exception(i64 48) #3, !dbg !3348
+  %1 = bitcast i8* %exception to %"class.xercesc_2_5::EmptyStackException"*, !dbg !3348
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::WFElemStack"* %this, i64 0, i32 13, !dbg !3348
+  %2 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !3348, !tbaa !2942
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::EmptyStackException"* %1}, i64 0, metadata !3349), !dbg !3350
+  tail call void @llvm.dbg.value(metadata !3046, i64 0, metadata !3351), !dbg !3350
+  tail call void @llvm.dbg.value(metadata !3352, i64 0, metadata !3353), !dbg !3350
+  tail call void @llvm.dbg.value(metadata !3070, i64 0, metadata !3354), !dbg !3350
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %2}, i64 0, metadata !3355), !dbg !3350
+  invoke void @_ZN11xercesc_2_519EmptyStackExceptionC2EPKcjNS_10XMLExcepts5CodesEPNS_13MemoryManagerE(%"class.xercesc_2_5::EmptyStackException"* %1, i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 784, i32 26, %"class.xercesc_2_5::MemoryManager"* %2) #7
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %if.then
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_519EmptyStackExceptionE to i8*), i8* bitcast (void (%"class.xercesc_2_5::EmptyStackException"*)* @_ZN11xercesc_2_519EmptyStackExceptionD1Ev to i8*)) #8, !dbg !3348
+  unreachable, !dbg !3348
+
+lpad:                                             ; preds = %if.then
+  %3 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !3348
+  tail call void @__cxa_free_exception(i8* %exception) #3, !dbg !3348
+  resume { i8*, i32 } %3, !dbg !3348
+
+if.end:                                           ; preds = %entry
+  %sub = add i32 %0, -1, !dbg !3356
+  %idxprom = zext i32 %sub to i64, !dbg !3356
+  %fStack = getelementptr inbounds %"class.xercesc_2_5::WFElemStack"* %this, i64 0, i32 11, !dbg !3356
+  %4 = load %"struct.xercesc_2_5::WFElemStack::StackElem"*** %fStack, align 8, !dbg !3356, !tbaa !2942
+  %arrayidx = getelementptr inbounds %"struct.xercesc_2_5::WFElemStack::StackElem"** %4, i64 %idxprom, !dbg !3356
+  %5 = load %"struct.xercesc_2_5::WFElemStack::StackElem"** %arrayidx, align 8, !dbg !3356, !tbaa !2942
+  tail call void @llvm.dbg.value(metadata !{%"struct.xercesc_2_5::WFElemStack::StackElem"* %5}, i64 0, metadata !2087), !dbg !3356
+  %fPrefixPool = getelementptr inbounds %"class.xercesc_2_5::WFElemStack"* %this, i64 0, i32 12, !dbg !3357
+  %call = tail call i32 @_ZN11xercesc_2_513XMLStringPool9addOrFindEPKt(%"class.xercesc_2_5::XMLStringPool"* %fPrefixPool, i16* %prefixToAdd) #7, !dbg !3357
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !2088), !dbg !3357
+  %fTopPrefix = getelementptr inbounds %"struct.xercesc_2_5::WFElemStack::StackElem"* %5, i64 0, i32 0, !dbg !3358
+  %6 = load i32* %fTopPrefix, align 4, !dbg !3358, !tbaa !2939
+  %add = add i32 %6, 1, !dbg !3358
+  %fMapCapacity = getelementptr inbounds %"class.xercesc_2_5::WFElemStack"* %this, i64 0, i32 9, !dbg !3358
+  %7 = load i32* %fMapCapacity, align 4, !dbg !3358, !tbaa !2939
+  %cmp = icmp eq i32 %add, %7, !dbg !3358
+  br i1 %cmp, label %if.then3, label %if.end4, !dbg !3358
+
+if.then3:                                         ; preds = %if.end
+  tail call void @_ZN11xercesc_2_511WFElemStack9expandMapEv(%"class.xercesc_2_5::WFElemStack"* %this) #7, !dbg !3359
+  %.pre = load i32* %fTopPrefix, align 4, !dbg !3360, !tbaa !2939
+  br label %if.end4, !dbg !3359
+
+if.end4:                                          ; preds = %if.then3, %if.end
+  %8 = phi i32 [ %.pre, %if.then3 ], [ %6, %if.end ]
+  %add6 = add nsw i32 %8, 1, !dbg !3360
+  %idxprom7 = sext i32 %add6 to i64, !dbg !3360
+  %fMap = getelementptr inbounds %"class.xercesc_2_5::WFElemStack"* %this, i64 0, i32 10, !dbg !3360
+  %9 = load %"struct.xercesc_2_5::PrefMapElem"** %fMap, align 8, !dbg !3360, !tbaa !2942
+  %fPrefId = getelementptr inbounds %"struct.xercesc_2_5::PrefMapElem"* %9, i64 %idxprom7, i32 0, !dbg !3360
+  store i32 %call, i32* %fPrefId, align 4, !dbg !3360, !tbaa !2939
+  %fGlobalPoolId = getelementptr inbounds %"class.xercesc_2_5::WFElemStack"* %this, i64 0, i32 1, !dbg !3361
+  %10 = load i32* %fGlobalPoolId, align 4, !dbg !3361, !tbaa !2939
+  %cmp9 = icmp eq i32 %call, %10, !dbg !3361
+  br i1 %cmp9, label %land.lhs.true, label %if.else, !dbg !3361
+
+land.lhs.true:                                    ; preds = %if.end4
+  %fEmptyNamespaceId = getelementptr inbounds %"class.xercesc_2_5::WFElemStack"* %this, i64 0, i32 0, !dbg !3361
+  %11 = load i32* %fEmptyNamespaceId, align 4, !dbg !3361, !tbaa !2939
+  %cmp10 = icmp eq i32 %11, %uriId, !dbg !3361
+  br i1 %cmp10, label %if.then11, label %if.else, !dbg !3361
+
+if.then11:                                        ; preds = %land.lhs.true
+  %12 = load i32* %fTopPrefix, align 4, !dbg !3362, !tbaa !2939
+  %add14 = add nsw i32 %12, 1, !dbg !3362
+  %idxprom15 = sext i32 %add14 to i64, !dbg !3362
+  %fURIId = getelementptr inbounds %"struct.xercesc_2_5::PrefMapElem"* %9, i64 %idxprom15, i32 1, !dbg !3362
+  store i32 %uriId, i32* %fURIId, align 4, !dbg !3362, !tbaa !2939
+  br label %if.end24, !dbg !3362
+
+if.else:                                          ; preds = %land.lhs.true, %if.end4
+  %13 = load i32* %fTopPrefix, align 4, !dbg !3363, !tbaa !2939
+  %add19 = add nsw i32 %13, 1, !dbg !3363
+  %idxprom20 = sext i32 %add19 to i64, !dbg !3363
+  %fURIId23 = getelementptr inbounds %"struct.xercesc_2_5::PrefMapElem"* %9, i64 %idxprom20, i32 1, !dbg !3363
+  store i32 %uriId, i32* %fURIId23, align 4, !dbg !3363, !tbaa !2939
+  br label %if.end24
+
+if.end24:                                         ; preds = %if.else, %if.then11
+  %14 = load i32* %fTopPrefix, align 4, !dbg !3364, !tbaa !2939
+  %inc = add nsw i32 %14, 1, !dbg !3364
+  store i32 %inc, i32* %fTopPrefix, align 4, !dbg !3364, !tbaa !2939
+  ret void, !dbg !3365
+}

@@ -1,0 +1,58 @@
+define void @_ZN3pov17colour2photonRgbeEPhPf(i8* nocapture %rgbe, float* nocapture %c) #0 {
+entry:
+  %e = alloca i32, align 4
+  call void @llvm.dbg.value(metadata !{i8* %rgbe}, i64 0, metadata !59), !dbg !253
+  call void @llvm.dbg.value(metadata !{float* %c}, i64 0, metadata !60), !dbg !253
+  call void @llvm.dbg.declare(metadata !{i32* %e}, metadata !62), !dbg !254
+  %0 = load float* %c, align 4, !dbg !255, !tbaa !206
+  call void @llvm.dbg.value(metadata !{float %0}, i64 0, metadata !61), !dbg !255
+  %arrayidx1 = getelementptr inbounds float* %c, i64 1, !dbg !256
+  %1 = load float* %arrayidx1, align 4, !dbg !256, !tbaa !206
+  %cmp = fcmp ogt float %1, %0, !dbg !256
+  call void @llvm.dbg.value(metadata !{float %1}, i64 0, metadata !61), !dbg !256
+  %v.0 = select i1 %cmp, float %1, float %0, !dbg !256
+  %arrayidx3 = getelementptr inbounds float* %c, i64 2, !dbg !257
+  %2 = load float* %arrayidx3, align 4, !dbg !257, !tbaa !206
+  %cmp4 = fcmp ogt float %2, %v.0, !dbg !257
+  call void @llvm.dbg.value(metadata !{float %2}, i64 0, metadata !61), !dbg !257
+  %v.1 = select i1 %cmp4, float %2, float %v.0, !dbg !257
+  %conv = fpext float %v.1 to double, !dbg !258
+  %cmp8 = fcmp olt double %conv, 1.000000e-32, !dbg !258
+  br i1 %cmp8, label %if.then9, label %if.else, !dbg !258
+
+if.then9:                                         ; preds = %entry
+  %3 = bitcast i8* %rgbe to i32*, !dbg !259
+  store i32 0, i32* %3, align 1, !dbg !259
+  br label %if.end31, !dbg !261
+
+if.else:                                          ; preds = %entry
+  %call = call double @frexp(double %conv, i32* %e) #5, !dbg !262
+  %mul = fmul double %call, 2.560000e+02, !dbg !262
+  %div = fdiv double %mul, %conv, !dbg !262
+  %conv16 = fptrunc double %div to float, !dbg !262
+  call void @llvm.dbg.value(metadata !{float %conv16}, i64 0, metadata !61), !dbg !262
+  %4 = load float* %c, align 4, !dbg !264, !tbaa !206
+  %mul18 = fmul float %4, %conv16, !dbg !264
+  %conv19 = fptoui float %mul18 to i8, !dbg !264
+  store i8 %conv19, i8* %rgbe, align 1, !dbg !264, !tbaa !202
+  %5 = load float* %arrayidx1, align 4, !dbg !265, !tbaa !206
+  %mul22 = fmul float %conv16, %5, !dbg !265
+  %conv23 = fptoui float %mul22 to i8, !dbg !265
+  %arrayidx24 = getelementptr inbounds i8* %rgbe, i64 1, !dbg !265
+  store i8 %conv23, i8* %arrayidx24, align 1, !dbg !265, !tbaa !202
+  %6 = load float* %arrayidx3, align 4, !dbg !266, !tbaa !206
+  %mul26 = fmul float %conv16, %6, !dbg !266
+  %conv27 = fptoui float %mul26 to i8, !dbg !266
+  %arrayidx28 = getelementptr inbounds i8* %rgbe, i64 2, !dbg !266
+  store i8 %conv27, i8* %arrayidx28, align 1, !dbg !266, !tbaa !202
+  call void @llvm.dbg.value(metadata !{i32* %e}, i64 0, metadata !62), !dbg !267
+  %7 = load i32* %e, align 4, !dbg !267, !tbaa !201
+  %add = add nsw i32 %7, 250, !dbg !267
+  %conv29 = trunc i32 %add to i8, !dbg !267
+  %arrayidx30 = getelementptr inbounds i8* %rgbe, i64 3, !dbg !267
+  store i8 %conv29, i8* %arrayidx30, align 1, !dbg !267, !tbaa !202
+  br label %if.end31
+
+if.end31:                                         ; preds = %if.else, %if.then9
+  ret void, !dbg !268
+}

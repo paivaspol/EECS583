@@ -1,0 +1,616 @@
+; ModuleID = '../../SPEC/benchspec/CPU2006/453.povray/src/optout.cpp'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
+
+%"struct.pov::intersection_stats_info" = type { i32, i32, i32, i8* }
+%struct.POVMSData = type { i32, i32, %union.anon }
+%union.anon = type { i8* }
+
+@.str = private unnamed_addr constant [12 x i8] c"Chris Cason\00", align 1
+@.str1 = private unnamed_addr constant [19 x i8] c"Thorsten Froehlich\00", align 1
+@.str2 = private unnamed_addr constant [12 x i8] c"Nathan Kopp\00", align 1
+@.str3 = private unnamed_addr constant [11 x i8] c"Ron Parker\00", align 1
+@_ZN3pov18Primary_DevelopersE = global [5 x i8*] [i8* getelementptr inbounds ([12 x i8]* @.str, i32 0, i32 0), i8* getelementptr inbounds ([19 x i8]* @.str1, i32 0, i32 0), i8* getelementptr inbounds ([12 x i8]* @.str2, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8]* @.str3, i32 0, i32 0), i8* null], align 16
+@.str4 = private unnamed_addr constant [12 x i8] c"Steve Anger\00", align 1
+@.str5 = private unnamed_addr constant [12 x i8] c"Eric Barish\00", align 1
+@.str6 = private unnamed_addr constant [13 x i8] c"Dieter Bayer\00", align 1
+@.str7 = private unnamed_addr constant [17 x i8] c"Steve A. Bennett\00", align 1
+@.str8 = private unnamed_addr constant [14 x i8] c"David K. Buck\00", align 1
+@.str9 = private unnamed_addr constant [16 x i8] c"Nicolas Calimet\00", align 1
+@.str10 = private unnamed_addr constant [17 x i8] c"Aaron A. Collins\00", align 1
+@.str11 = private unnamed_addr constant [13 x i8] c"Chris Dailey\00", align 1
+@.str12 = private unnamed_addr constant [13 x i8] c"Steve Demlow\00", align 1
+@.str13 = private unnamed_addr constant [15 x i8] c"Andreas Dilger\00", align 1
+@.str14 = private unnamed_addr constant [18 x i8] c"Alexander Enzmann\00", align 1
+@.str15 = private unnamed_addr constant [11 x i8] c"Dan Farmer\00", align 1
+@.str16 = private unnamed_addr constant [12 x i8] c"Mark Gordon\00", align 1
+@.str17 = private unnamed_addr constant [18 x i8] c"Christoph Hormann\00", align 1
+@.str18 = private unnamed_addr constant [11 x i8] c"Mike Hough\00", align 1
+@.str19 = private unnamed_addr constant [11 x i8] c"Chris Huff\00", align 1
+@.str20 = private unnamed_addr constant [14 x i8] c"Kari Kivisalo\00", align 1
+@.str21 = private unnamed_addr constant [17 x i8] c"Lutz Kretzschmar\00", align 1
+@.str22 = private unnamed_addr constant [15 x i8] c"Jochen Lippert\00", align 1
+@.str23 = private unnamed_addr constant [17 x i8] c"Pascal Massimino\00", align 1
+@.str24 = private unnamed_addr constant [14 x i8] c"Jim McElhiney\00", align 1
+@.str25 = private unnamed_addr constant [13 x i8] c"Douglas Muir\00", align 1
+@.str26 = private unnamed_addr constant [14 x i8] c"Juha Nieminen\00", align 1
+@.str27 = private unnamed_addr constant [12 x i8] c"Bill Pulver\00", align 1
+@.str28 = private unnamed_addr constant [14 x i8] c"Eduard Schwan\00", align 1
+@.str29 = private unnamed_addr constant [18 x i8] c"Wlodzimierz Skiba\00", align 1
+@.str30 = private unnamed_addr constant [15 x i8] c"Robert Skinner\00", align 1
+@.str31 = private unnamed_addr constant [17 x i8] c"Yvo Smellenbergh\00", align 1
+@.str32 = private unnamed_addr constant [16 x i8] c"Zsolt Szalavari\00", align 1
+@.str33 = private unnamed_addr constant [13 x i8] c"Scott Taylor\00", align 1
+@.str34 = private unnamed_addr constant [18 x i8] c"Massimo Valentini\00", align 1
+@.str35 = private unnamed_addr constant [15 x i8] c"Timothy Wegner\00", align 1
+@.str36 = private unnamed_addr constant [11 x i8] c"Drew Wells\00", align 1
+@.str37 = private unnamed_addr constant [12 x i8] c"Chris Young\00", align 1
+@_ZN3pov20Contributing_AuthorsE = global [35 x i8*] [i8* getelementptr inbounds ([12 x i8]* @.str4, i32 0, i32 0), i8* getelementptr inbounds ([12 x i8]* @.str5, i32 0, i32 0), i8* getelementptr inbounds ([13 x i8]* @.str6, i32 0, i32 0), i8* getelementptr inbounds ([17 x i8]* @.str7, i32 0, i32 0), i8* getelementptr inbounds ([14 x i8]* @.str8, i32 0, i32 0), i8* getelementptr inbounds ([16 x i8]* @.str9, i32 0, i32 0), i8* getelementptr inbounds ([17 x i8]* @.str10, i32 0, i32 0), i8* getelementptr inbounds ([13 x i8]* @.str11, i32 0, i32 0), i8* getelementptr inbounds ([13 x i8]* @.str12, i32 0, i32 0), i8* getelementptr inbounds ([15 x i8]* @.str13, i32 0, i32 0), i8* getelementptr inbounds ([18 x i8]* @.str14, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8]* @.str15, i32 0, i32 0), i8* getelementptr inbounds ([12 x i8]* @.str16, i32 0, i32 0), i8* getelementptr inbounds ([18 x i8]* @.str17, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8]* @.str18, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8]* @.str19, i32 0, i32 0), i8* getelementptr inbounds ([14 x i8]* @.str20, i32 0, i32 0), i8* getelementptr inbounds ([17 x i8]* @.str21, i32 0, i32 0), i8* getelementptr inbounds ([15 x i8]* @.str22, i32 0, i32 0), i8* getelementptr inbounds ([17 x i8]* @.str23, i32 0, i32 0), i8* getelementptr inbounds ([14 x i8]* @.str24, i32 0, i32 0), i8* getelementptr inbounds ([13 x i8]* @.str25, i32 0, i32 0), i8* getelementptr inbounds ([14 x i8]* @.str26, i32 0, i32 0), i8* getelementptr inbounds ([12 x i8]* @.str27, i32 0, i32 0), i8* getelementptr inbounds ([14 x i8]* @.str28, i32 0, i32 0), i8* getelementptr inbounds ([18 x i8]* @.str29, i32 0, i32 0), i8* getelementptr inbounds ([15 x i8]* @.str30, i32 0, i32 0), i8* getelementptr inbounds ([17 x i8]* @.str31, i32 0, i32 0), i8* getelementptr inbounds ([16 x i8]* @.str32, i32 0, i32 0), i8* getelementptr inbounds ([13 x i8]* @.str33, i32 0, i32 0), i8* getelementptr inbounds ([18 x i8]* @.str34, i32 0, i32 0), i8* getelementptr inbounds ([15 x i8]* @.str35, i32 0, i32 0), i8* getelementptr inbounds ([11 x i8]* @.str36, i32 0, i32 0), i8* getelementptr inbounds ([12 x i8]* @.str37, i32 0, i32 0), i8* null], align 16
+@.str38 = private unnamed_addr constant [13 x i8] c"Bezier Patch\00", align 1
+@.str39 = private unnamed_addr constant [14 x i8] c"Bicubic Patch\00", align 1
+@.str40 = private unnamed_addr constant [5 x i8] c"Blob\00", align 1
+@.str41 = private unnamed_addr constant [15 x i8] c"Blob Component\00", align 1
+@.str42 = private unnamed_addr constant [11 x i8] c"Blob Bound\00", align 1
+@.str43 = private unnamed_addr constant [4 x i8] c"Box\00", align 1
+@.str44 = private unnamed_addr constant [14 x i8] c"Cone/Cylinder\00", align 1
+@.str45 = private unnamed_addr constant [17 x i8] c"CSG Intersection\00", align 1
+@.str46 = private unnamed_addr constant [10 x i8] c"CSG Merge\00", align 1
+@.str47 = private unnamed_addr constant [10 x i8] c"CSG Union\00", align 1
+@.str48 = private unnamed_addr constant [5 x i8] c"Disc\00", align 1
+@.str49 = private unnamed_addr constant [8 x i8] c"Fractal\00", align 1
+@.str50 = private unnamed_addr constant [13 x i8] c"Height Field\00", align 1
+@.str51 = private unnamed_addr constant [17 x i8] c"Height Field Box\00", align 1
+@.str52 = private unnamed_addr constant [22 x i8] c"Height Field Triangle\00", align 1
+@.str53 = private unnamed_addr constant [19 x i8] c"Height Field Block\00", align 1
+@.str54 = private unnamed_addr constant [18 x i8] c"Height Field Cell\00", align 1
+@.str55 = private unnamed_addr constant [11 x i8] c"Isosurface\00", align 1
+@.str56 = private unnamed_addr constant [21 x i8] c"Isosurface Container\00", align 1
+@.str57 = private unnamed_addr constant [17 x i8] c"Isosurface Cache\00", align 1
+@.str58 = private unnamed_addr constant [6 x i8] c"Lathe\00", align 1
+@.str59 = private unnamed_addr constant [12 x i8] c"Lathe Bound\00", align 1
+@.str60 = private unnamed_addr constant [5 x i8] c"Mesh\00", align 1
+@.str61 = private unnamed_addr constant [6 x i8] c"Plane\00", align 1
+@.str62 = private unnamed_addr constant [8 x i8] c"Polygon\00", align 1
+@.str63 = private unnamed_addr constant [6 x i8] c"Prism\00", align 1
+@.str64 = private unnamed_addr constant [12 x i8] c"Prism Bound\00", align 1
+@.str65 = private unnamed_addr constant [11 x i8] c"Parametric\00", align 1
+@.str66 = private unnamed_addr constant [17 x i8] c"Parametric Bound\00", align 1
+@.str67 = private unnamed_addr constant [8 x i8] c"Quadric\00", align 1
+@.str68 = private unnamed_addr constant [13 x i8] c"Quartic/Poly\00", align 1
+@.str69 = private unnamed_addr constant [7 x i8] c"Sphere\00", align 1
+@.str70 = private unnamed_addr constant [13 x i8] c"Sphere Sweep\00", align 1
+@.str71 = private unnamed_addr constant [15 x i8] c"Superellipsoid\00", align 1
+@.str72 = private unnamed_addr constant [22 x i8] c"Surface of Revolution\00", align 1
+@.str73 = private unnamed_addr constant [22 x i8] c"Surface of Rev. Bound\00", align 1
+@.str74 = private unnamed_addr constant [6 x i8] c"Torus\00", align 1
+@.str75 = private unnamed_addr constant [12 x i8] c"Torus Bound\00", align 1
+@.str76 = private unnamed_addr constant [9 x i8] c"Triangle\00", align 1
+@.str77 = private unnamed_addr constant [15 x i8] c"True Type Font\00", align 1
+@.str78 = private unnamed_addr constant [16 x i8] c"Bounding Object\00", align 1
+@.str79 = private unnamed_addr constant [16 x i8] c"Clipping Object\00", align 1
+@.str80 = private unnamed_addr constant [13 x i8] c"Bounding Box\00", align 1
+@.str81 = private unnamed_addr constant [13 x i8] c"Light Buffer\00", align 1
+@.str82 = private unnamed_addr constant [13 x i8] c"Vista Buffer\00", align 1
+@_ZN3pov18intersection_statsE = constant [46 x %"struct.pov::intersection_stats_info"] [%"struct.pov::intersection_stats_info" { i32 45, i32 8, i32 9, i8* getelementptr inbounds ([13 x i8]* @.str38, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 1, i32 10, i32 11, i8* getelementptr inbounds ([14 x i8]* @.str39, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 2, i32 12, i32 13, i8* getelementptr inbounds ([5 x i8]* @.str40, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 3, i32 14, i32 15, i8* getelementptr inbounds ([15 x i8]* @.str41, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 4, i32 16, i32 17, i8* getelementptr inbounds ([11 x i8]* @.str42, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 5, i32 18, i32 19, i8* getelementptr inbounds ([4 x i8]* @.str43, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 6, i32 20, i32 21, i8* getelementptr inbounds ([14 x i8]* @.str44, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 7, i32 22, i32 23, i8* getelementptr inbounds ([17 x i8]* @.str45, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 8, i32 24, i32 25, i8* getelementptr inbounds ([10 x i8]* @.str46, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 9, i32 26, i32 27, i8* getelementptr inbounds ([10 x i8]* @.str47, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 10, i32 28, i32 29, i8* getelementptr inbounds ([5 x i8]* @.str48, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 11, i32 30, i32 31, i8* getelementptr inbounds ([8 x i8]* @.str49, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 12, i32 32, i32 33, i8* getelementptr inbounds ([13 x i8]* @.str50, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 13, i32 34, i32 35, i8* getelementptr inbounds ([17 x i8]* @.str51, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 14, i32 36, i32 37, i8* getelementptr inbounds ([22 x i8]* @.str52, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 15, i32 38, i32 39, i8* getelementptr inbounds ([19 x i8]* @.str53, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 16, i32 40, i32 41, i8* getelementptr inbounds ([18 x i8]* @.str54, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 17, i32 42, i32 43, i8* getelementptr inbounds ([11 x i8]* @.str55, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 18, i32 44, i32 45, i8* getelementptr inbounds ([21 x i8]* @.str56, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 19, i32 46, i32 47, i8* getelementptr inbounds ([17 x i8]* @.str57, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 20, i32 48, i32 49, i8* getelementptr inbounds ([6 x i8]* @.str58, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 21, i32 50, i32 51, i8* getelementptr inbounds ([12 x i8]* @.str59, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 22, i32 52, i32 53, i8* getelementptr inbounds ([5 x i8]* @.str60, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 23, i32 54, i32 55, i8* getelementptr inbounds ([6 x i8]* @.str61, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 24, i32 56, i32 57, i8* getelementptr inbounds ([8 x i8]* @.str62, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 25, i32 58, i32 59, i8* getelementptr inbounds ([6 x i8]* @.str63, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 26, i32 60, i32 61, i8* getelementptr inbounds ([12 x i8]* @.str64, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 27, i32 62, i32 63, i8* getelementptr inbounds ([11 x i8]* @.str65, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 28, i32 64, i32 65, i8* getelementptr inbounds ([17 x i8]* @.str66, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 29, i32 66, i32 67, i8* getelementptr inbounds ([8 x i8]* @.str67, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 30, i32 68, i32 69, i8* getelementptr inbounds ([13 x i8]* @.str68, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 31, i32 70, i32 71, i8* getelementptr inbounds ([7 x i8]* @.str69, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 32, i32 72, i32 73, i8* getelementptr inbounds ([13 x i8]* @.str70, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 33, i32 74, i32 75, i8* getelementptr inbounds ([15 x i8]* @.str71, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 34, i32 76, i32 77, i8* getelementptr inbounds ([22 x i8]* @.str72, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 35, i32 78, i32 79, i8* getelementptr inbounds ([22 x i8]* @.str73, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 36, i32 80, i32 81, i8* getelementptr inbounds ([6 x i8]* @.str74, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 37, i32 82, i32 83, i8* getelementptr inbounds ([12 x i8]* @.str75, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 38, i32 84, i32 85, i8* getelementptr inbounds ([9 x i8]* @.str76, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 39, i32 86, i32 87, i8* getelementptr inbounds ([15 x i8]* @.str77, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 40, i32 88, i32 89, i8* getelementptr inbounds ([16 x i8]* @.str78, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 41, i32 90, i32 91, i8* getelementptr inbounds ([16 x i8]* @.str79, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 42, i32 108, i32 109, i8* getelementptr inbounds ([13 x i8]* @.str80, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 43, i32 97, i32 98, i8* getelementptr inbounds ([13 x i8]* @.str81, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 44, i32 95, i32 96, i8* getelementptr inbounds ([13 x i8]* @.str82, i32 0, i32 0) }, %"struct.pov::intersection_stats_info" { i32 46, i32 126, i32 126, i8* null }], align 16
+@_ZN3pov22LibVersionStringBufferE = global [20 x i8] zeroinitializer, align 16
+@.str83 = private unnamed_addr constant [5 x i8] c".On \00", align 1
+@.str84 = private unnamed_addr constant [5 x i8] c".Off\00", align 1
+
+; Function Attrs: nounwind optsize uwtable
+define i8* @_ZN3pov15Extract_VersionEPKc(i8* nocapture %str) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %str}, i64 0, metadata !144), !dbg !384
+  tail call void @llvm.dbg.value(metadata !134, i64 0, metadata !146), !dbg !385
+  %0 = load i8* %str, align 1, !dbg !386, !tbaa !388
+  %cmp22 = icmp eq i8 %0, 0, !dbg !386
+  br i1 %cmp22, label %for.end, label %for.body, !dbg !386
+
+for.cond:                                         ; preds = %for.body
+  %1 = load i8* %incdec.ptr8, align 1, !dbg !386, !tbaa !388
+  %cmp = icmp eq i8 %1, 0, !dbg !386
+  br i1 %cmp, label %for.end, label %for.body, !dbg !386
+
+for.body:                                         ; preds = %entry, %for.cond
+  %2 = phi i8 [ %1, %for.cond ], [ %0, %entry ]
+  %str.addr.023 = phi i8* [ %incdec.ptr8, %for.cond ], [ %str, %entry ]
+  %conv = sext i8 %2 to i32, !dbg !386
+  %isdigittmp = add i32 %conv, -48, !dbg !390
+  %isdigit = icmp ult i32 %isdigittmp, 10, !dbg !390
+  %incdec.ptr8 = getelementptr inbounds i8* %str.addr.023, i64 1, !dbg !386
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr8}, i64 0, metadata !144), !dbg !386
+  br i1 %isdigit, label %while.cond, label %for.cond, !dbg !390
+
+while.cond:                                       ; preds = %for.body, %while.body
+  %3 = phi i8 [ %.pre, %while.body ], [ %2, %for.body ]
+  %indvars.iv = phi i64 [ %indvars.iv.next, %while.body ], [ 0, %for.body ]
+  %str.addr.1 = phi i8* [ %incdec.ptr, %while.body ], [ %str.addr.023, %for.body ]
+  %pos.0 = phi i32 [ %inc, %while.body ], [ 0, %for.body ]
+  %conv2 = sext i8 %3 to i32, !dbg !392
+  %call3 = tail call i32 @isalnum(i32 %conv2) #5, !dbg !392
+  %tobool4 = icmp eq i32 %call3, 0, !dbg !392
+  br i1 %tobool4, label %lor.lhs.false, label %land.rhs, !dbg !392
+
+lor.lhs.false:                                    ; preds = %while.cond
+  %4 = load i8* %str.addr.1, align 1, !dbg !392, !tbaa !388
+  %cmp6 = icmp eq i8 %4, 46, !dbg !392
+  %5 = trunc i64 %indvars.iv to i32, !dbg !392
+  %cmp7 = icmp slt i32 %5, 10, !dbg !392
+  %or.cond = and i1 %cmp6, %cmp7, !dbg !392
+  br i1 %or.cond, label %while.body, label %for.end, !dbg !392
+
+land.rhs:                                         ; preds = %while.cond
+  %6 = trunc i64 %indvars.iv to i32, !dbg !392
+  %cmp7.old = icmp slt i32 %6, 10, !dbg !392
+  br i1 %cmp7.old, label %land.rhs.while.body_crit_edge, label %for.end
+
+land.rhs.while.body_crit_edge:                    ; preds = %land.rhs
+  %.pre25 = load i8* %str.addr.1, align 1, !dbg !394, !tbaa !388
+  br label %while.body
+
+while.body:                                       ; preds = %land.rhs.while.body_crit_edge, %lor.lhs.false
+  %7 = phi i8 [ %.pre25, %land.rhs.while.body_crit_edge ], [ 46, %lor.lhs.false ]
+  %arrayidx = getelementptr inbounds [20 x i8]* @_ZN3pov22LibVersionStringBufferE, i64 0, i64 %indvars.iv, !dbg !394
+  store i8 %7, i8* %arrayidx, align 1, !dbg !394, !tbaa !388
+  %incdec.ptr = getelementptr inbounds i8* %str.addr.1, i64 1, !dbg !396
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !144), !dbg !396
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !397
+  %inc = add nsw i32 %pos.0, 1, !dbg !398
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !146), !dbg !398
+  %.pre = load i8* %incdec.ptr, align 1, !dbg !392, !tbaa !388
+  br label %while.cond, !dbg !397
+
+for.end:                                          ; preds = %entry, %for.cond, %land.rhs, %lor.lhs.false
+  %pos.1 = phi i32 [ %pos.0, %lor.lhs.false ], [ %pos.0, %land.rhs ], [ 0, %for.cond ], [ 0, %entry ]
+  %idxprom9 = sext i32 %pos.1 to i64, !dbg !399
+  %arrayidx10 = getelementptr inbounds [20 x i8]* @_ZN3pov22LibVersionStringBufferE, i64 0, i64 %idxprom9, !dbg !399
+  store i8 0, i8* %arrayidx10, align 1, !dbg !399, !tbaa !388
+  ret i8* getelementptr inbounds ([20 x i8]* @_ZN3pov22LibVersionStringBufferE, i64 0, i64 0), !dbg !400
+}
+
+; Function Attrs: nounwind readnone
+declare void @llvm.dbg.declare(metadata, metadata) #1
+
+; Function Attrs: nounwind optsize
+declare i32 @isalnum(i32) #2
+
+; Function Attrs: optsize uwtable
+define i8* @_ZN3pov21GetOptionSwitchStringEP9POVMSDataj(%struct.POVMSData* %msg, i32 %key) #3 {
+entry:
+  %b = alloca i32, align 4
+  call void @llvm.dbg.value(metadata !{%struct.POVMSData* %msg}, i64 0, metadata !175), !dbg !401
+  call void @llvm.dbg.value(metadata !{i32 %key}, i64 0, metadata !176), !dbg !401
+  call void @llvm.dbg.declare(metadata !{i32* %b}, metadata !177), !dbg !402
+  call void @llvm.dbg.value(metadata !134, i64 0, metadata !177), !dbg !402
+  store i32 0, i32* %b, align 4, !dbg !402, !tbaa !403
+  %call = call i32 @_Z17POVMSUtil_GetBoolP9POVMSDatajPi(%struct.POVMSData* %msg, i32 %key, i32* %b) #6, !dbg !404
+  call void @llvm.dbg.value(metadata !{i32* %b}, i64 0, metadata !177), !dbg !405
+  %0 = load i32* %b, align 4, !dbg !405, !tbaa !403
+  %cmp = icmp eq i32 %0, 1, !dbg !405
+  %. = select i1 %cmp, i8* getelementptr inbounds ([5 x i8]* @.str83, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str84, i64 0, i64 0), !dbg !406
+  ret i8* %., !dbg !407
+}
+
+; Function Attrs: optsize
+declare i32 @_Z17POVMSUtil_GetBoolP9POVMSDatajPi(%struct.POVMSData*, i32, i32*) #4
+
+; Function Attrs: nounwind readnone
+declare void @llvm.dbg.value(metadata, i64, metadata) #1
+
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind readnone }
+attributes #2 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #4 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #5 = { nounwind optsize }
+attributes #6 = { optsize }
+
+!llvm.dbg.cu = !{!0}
+
+!0 = metadata !{i32 786449, metadata !1, i32 4, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !134, metadata !135, metadata !178, metadata !204, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/optout.cpp] [DW_LANG_C_plus_plus]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/optout.cpp", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{metadata !3}
+!3 = metadata !{i32 786436, metadata !4, metadata !5, metadata !"STATS", i32 148, i64 32, i64 32, i32 0, i32 0, null, metadata !6, i32 0, i32 0} ; [ DW_TAG_enumeration_type ] [STATS] [line 148, size 32, align 32, offset 0] [from ]
+!4 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/povray.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!5 = metadata !{i32 786489, metadata !4, null, metadata !"pov", i32 48} ; [ DW_TAG_namespace ] [pov] [line 48]
+!6 = metadata !{metadata !7, metadata !8, metadata !9, metadata !10, metadata !11, metadata !12, metadata !13, metadata !14, metadata !15, metadata !16, metadata !17, metadata !18, metadata !19, metadata !20, metadata !21, metadata !22, metadata !23, metadata !24, metadata !25, metadata !26, metadata !27, metadata !28, metadata !29, metadata !30, metadata !31, metadata !32, metadata !33, metadata !34, metadata !35, metadata !36, metadata !37, metadata !38, metadata !39, metadata !40, metadata !41, metadata !42, metadata !43, metadata !44, metadata !45, metadata !46, metadata !47, metadata !48, metadata !49, metadata !50, metadata !51, metadata !52, metadata !53, metadata !54, metadata !55, metadata !56, metadata !57, metadata !58, metadata !59, metadata !60, metadata !61, metadata !62, metadata !63, metadata !64, metadata !65, metadata !66, metadata !67, metadata !68, metadata !69, metadata !70, metadata !71, metadata !72, metadata !73, metadata !74, metadata !75, metadata !76, metadata !77, metadata !78, metadata !79, metadata !80, metadata !81, metadata !82, metadata !83, metadata !84, metadata !85, metadata !86, metadata !87, metadata !88, metadata !89, metadata !90, metadata !91, metadata !92, metadata !93, metadata !94, metadata !95, metadata !96, metadata !97, metadata !98, metadata !99, metadata !100, metadata !101, metadata !102, metadata !103, metadata !104, metadata !105, metadata !106, metadata !107, metadata !108, metadata !109, metadata !110, metadata !111, metadata !112, metadata !113, metadata !114, metadata !115, metadata !116, metadata !117, metadata !118, metadata !119, metadata !120, metadata !121, metadata !122, metadata !123, metadata !124, metadata !125, metadata !126, metadata !127, metadata !128, metadata !129, metadata !130, metadata !131, metadata !132, metadata !133}
+!7 = metadata !{i32 786472, metadata !"Number_Of_Pixels", i64 0} ; [ DW_TAG_enumerator ] [Number_Of_Pixels :: 0]
+!8 = metadata !{i32 786472, metadata !"Number_Of_Pixels_Supersampled", i64 1} ; [ DW_TAG_enumerator ] [Number_Of_Pixels_Supersampled :: 1]
+!9 = metadata !{i32 786472, metadata !"Number_Of_Samples", i64 2} ; [ DW_TAG_enumerator ] [Number_Of_Samples :: 2]
+!10 = metadata !{i32 786472, metadata !"Number_Of_Rays", i64 3} ; [ DW_TAG_enumerator ] [Number_Of_Rays :: 3]
+!11 = metadata !{i32 786472, metadata !"Calls_To_DNoise", i64 4} ; [ DW_TAG_enumerator ] [Calls_To_DNoise :: 4]
+!12 = metadata !{i32 786472, metadata !"Calls_To_Noise", i64 5} ; [ DW_TAG_enumerator ] [Calls_To_Noise :: 5]
+!13 = metadata !{i32 786472, metadata !"ADC_Saves", i64 6} ; [ DW_TAG_enumerator ] [ADC_Saves :: 6]
+!14 = metadata !{i32 786472, metadata !"Istack_overflows", i64 7} ; [ DW_TAG_enumerator ] [Istack_overflows :: 7]
+!15 = metadata !{i32 786472, metadata !"Ray_RBezier_Tests", i64 8} ; [ DW_TAG_enumerator ] [Ray_RBezier_Tests :: 8]
+!16 = metadata !{i32 786472, metadata !"Ray_RBezier_Tests_Succeeded", i64 9} ; [ DW_TAG_enumerator ] [Ray_RBezier_Tests_Succeeded :: 9]
+!17 = metadata !{i32 786472, metadata !"Ray_Bicubic_Tests", i64 10} ; [ DW_TAG_enumerator ] [Ray_Bicubic_Tests :: 10]
+!18 = metadata !{i32 786472, metadata !"Ray_Bicubic_Tests_Succeeded", i64 11} ; [ DW_TAG_enumerator ] [Ray_Bicubic_Tests_Succeeded :: 11]
+!19 = metadata !{i32 786472, metadata !"Ray_Blob_Tests", i64 12} ; [ DW_TAG_enumerator ] [Ray_Blob_Tests :: 12]
+!20 = metadata !{i32 786472, metadata !"Ray_Blob_Tests_Succeeded", i64 13} ; [ DW_TAG_enumerator ] [Ray_Blob_Tests_Succeeded :: 13]
+!21 = metadata !{i32 786472, metadata !"Blob_Element_Tests", i64 14} ; [ DW_TAG_enumerator ] [Blob_Element_Tests :: 14]
+!22 = metadata !{i32 786472, metadata !"Blob_Element_Tests_Succeeded", i64 15} ; [ DW_TAG_enumerator ] [Blob_Element_Tests_Succeeded :: 15]
+!23 = metadata !{i32 786472, metadata !"Blob_Bound_Tests", i64 16} ; [ DW_TAG_enumerator ] [Blob_Bound_Tests :: 16]
+!24 = metadata !{i32 786472, metadata !"Blob_Bound_Tests_Succeeded", i64 17} ; [ DW_TAG_enumerator ] [Blob_Bound_Tests_Succeeded :: 17]
+!25 = metadata !{i32 786472, metadata !"Ray_Box_Tests", i64 18} ; [ DW_TAG_enumerator ] [Ray_Box_Tests :: 18]
+!26 = metadata !{i32 786472, metadata !"Ray_Box_Tests_Succeeded", i64 19} ; [ DW_TAG_enumerator ] [Ray_Box_Tests_Succeeded :: 19]
+!27 = metadata !{i32 786472, metadata !"Ray_Cone_Tests", i64 20} ; [ DW_TAG_enumerator ] [Ray_Cone_Tests :: 20]
+!28 = metadata !{i32 786472, metadata !"Ray_Cone_Tests_Succeeded", i64 21} ; [ DW_TAG_enumerator ] [Ray_Cone_Tests_Succeeded :: 21]
+!29 = metadata !{i32 786472, metadata !"Ray_CSG_Intersection_Tests", i64 22} ; [ DW_TAG_enumerator ] [Ray_CSG_Intersection_Tests :: 22]
+!30 = metadata !{i32 786472, metadata !"Ray_CSG_Intersection_Tests_Succeeded", i64 23} ; [ DW_TAG_enumerator ] [Ray_CSG_Intersection_Tests_Succeeded :: 23]
+!31 = metadata !{i32 786472, metadata !"Ray_CSG_Merge_Tests", i64 24} ; [ DW_TAG_enumerator ] [Ray_CSG_Merge_Tests :: 24]
+!32 = metadata !{i32 786472, metadata !"Ray_CSG_Merge_Tests_Succeeded", i64 25} ; [ DW_TAG_enumerator ] [Ray_CSG_Merge_Tests_Succeeded :: 25]
+!33 = metadata !{i32 786472, metadata !"Ray_CSG_Union_Tests", i64 26} ; [ DW_TAG_enumerator ] [Ray_CSG_Union_Tests :: 26]
+!34 = metadata !{i32 786472, metadata !"Ray_CSG_Union_Tests_Succeeded", i64 27} ; [ DW_TAG_enumerator ] [Ray_CSG_Union_Tests_Succeeded :: 27]
+!35 = metadata !{i32 786472, metadata !"Ray_Disc_Tests", i64 28} ; [ DW_TAG_enumerator ] [Ray_Disc_Tests :: 28]
+!36 = metadata !{i32 786472, metadata !"Ray_Disc_Tests_Succeeded", i64 29} ; [ DW_TAG_enumerator ] [Ray_Disc_Tests_Succeeded :: 29]
+!37 = metadata !{i32 786472, metadata !"Ray_Fractal_Tests", i64 30} ; [ DW_TAG_enumerator ] [Ray_Fractal_Tests :: 30]
+!38 = metadata !{i32 786472, metadata !"Ray_Fractal_Tests_Succeeded", i64 31} ; [ DW_TAG_enumerator ] [Ray_Fractal_Tests_Succeeded :: 31]
+!39 = metadata !{i32 786472, metadata !"Ray_HField_Tests", i64 32} ; [ DW_TAG_enumerator ] [Ray_HField_Tests :: 32]
+!40 = metadata !{i32 786472, metadata !"Ray_HField_Tests_Succeeded", i64 33} ; [ DW_TAG_enumerator ] [Ray_HField_Tests_Succeeded :: 33]
+!41 = metadata !{i32 786472, metadata !"Ray_HField_Box_Tests", i64 34} ; [ DW_TAG_enumerator ] [Ray_HField_Box_Tests :: 34]
+!42 = metadata !{i32 786472, metadata !"Ray_HField_Box_Tests_Succeeded", i64 35} ; [ DW_TAG_enumerator ] [Ray_HField_Box_Tests_Succeeded :: 35]
+!43 = metadata !{i32 786472, metadata !"Ray_HField_Triangle_Tests", i64 36} ; [ DW_TAG_enumerator ] [Ray_HField_Triangle_Tests :: 36]
+!44 = metadata !{i32 786472, metadata !"Ray_HField_Triangle_Tests_Succeeded", i64 37} ; [ DW_TAG_enumerator ] [Ray_HField_Triangle_Tests_Succeeded :: 37]
+!45 = metadata !{i32 786472, metadata !"Ray_HField_Block_Tests", i64 38} ; [ DW_TAG_enumerator ] [Ray_HField_Block_Tests :: 38]
+!46 = metadata !{i32 786472, metadata !"Ray_HField_Block_Tests_Succeeded", i64 39} ; [ DW_TAG_enumerator ] [Ray_HField_Block_Tests_Succeeded :: 39]
+!47 = metadata !{i32 786472, metadata !"Ray_HField_Cell_Tests", i64 40} ; [ DW_TAG_enumerator ] [Ray_HField_Cell_Tests :: 40]
+!48 = metadata !{i32 786472, metadata !"Ray_HField_Cell_Tests_Succeeded", i64 41} ; [ DW_TAG_enumerator ] [Ray_HField_Cell_Tests_Succeeded :: 41]
+!49 = metadata !{i32 786472, metadata !"Ray_IsoSurface_Tests", i64 42} ; [ DW_TAG_enumerator ] [Ray_IsoSurface_Tests :: 42]
+!50 = metadata !{i32 786472, metadata !"Ray_IsoSurface_Tests_Succeeded", i64 43} ; [ DW_TAG_enumerator ] [Ray_IsoSurface_Tests_Succeeded :: 43]
+!51 = metadata !{i32 786472, metadata !"Ray_IsoSurface_Bound_Tests", i64 44} ; [ DW_TAG_enumerator ] [Ray_IsoSurface_Bound_Tests :: 44]
+!52 = metadata !{i32 786472, metadata !"Ray_IsoSurface_Bound_Tests_Succeeded", i64 45} ; [ DW_TAG_enumerator ] [Ray_IsoSurface_Bound_Tests_Succeeded :: 45]
+!53 = metadata !{i32 786472, metadata !"Ray_IsoSurface_Cache", i64 46} ; [ DW_TAG_enumerator ] [Ray_IsoSurface_Cache :: 46]
+!54 = metadata !{i32 786472, metadata !"Ray_IsoSurface_Cache_Succeeded", i64 47} ; [ DW_TAG_enumerator ] [Ray_IsoSurface_Cache_Succeeded :: 47]
+!55 = metadata !{i32 786472, metadata !"Ray_Lathe_Tests", i64 48} ; [ DW_TAG_enumerator ] [Ray_Lathe_Tests :: 48]
+!56 = metadata !{i32 786472, metadata !"Ray_Lathe_Tests_Succeeded", i64 49} ; [ DW_TAG_enumerator ] [Ray_Lathe_Tests_Succeeded :: 49]
+!57 = metadata !{i32 786472, metadata !"Lathe_Bound_Tests", i64 50} ; [ DW_TAG_enumerator ] [Lathe_Bound_Tests :: 50]
+!58 = metadata !{i32 786472, metadata !"Lathe_Bound_Tests_Succeeded", i64 51} ; [ DW_TAG_enumerator ] [Lathe_Bound_Tests_Succeeded :: 51]
+!59 = metadata !{i32 786472, metadata !"Ray_Mesh_Tests", i64 52} ; [ DW_TAG_enumerator ] [Ray_Mesh_Tests :: 52]
+!60 = metadata !{i32 786472, metadata !"Ray_Mesh_Tests_Succeeded", i64 53} ; [ DW_TAG_enumerator ] [Ray_Mesh_Tests_Succeeded :: 53]
+!61 = metadata !{i32 786472, metadata !"Ray_Plane_Tests", i64 54} ; [ DW_TAG_enumerator ] [Ray_Plane_Tests :: 54]
+!62 = metadata !{i32 786472, metadata !"Ray_Plane_Tests_Succeeded", i64 55} ; [ DW_TAG_enumerator ] [Ray_Plane_Tests_Succeeded :: 55]
+!63 = metadata !{i32 786472, metadata !"Ray_Polygon_Tests", i64 56} ; [ DW_TAG_enumerator ] [Ray_Polygon_Tests :: 56]
+!64 = metadata !{i32 786472, metadata !"Ray_Polygon_Tests_Succeeded", i64 57} ; [ DW_TAG_enumerator ] [Ray_Polygon_Tests_Succeeded :: 57]
+!65 = metadata !{i32 786472, metadata !"Ray_Prism_Tests", i64 58} ; [ DW_TAG_enumerator ] [Ray_Prism_Tests :: 58]
+!66 = metadata !{i32 786472, metadata !"Ray_Prism_Tests_Succeeded", i64 59} ; [ DW_TAG_enumerator ] [Ray_Prism_Tests_Succeeded :: 59]
+!67 = metadata !{i32 786472, metadata !"Prism_Bound_Tests", i64 60} ; [ DW_TAG_enumerator ] [Prism_Bound_Tests :: 60]
+!68 = metadata !{i32 786472, metadata !"Prism_Bound_Tests_Succeeded", i64 61} ; [ DW_TAG_enumerator ] [Prism_Bound_Tests_Succeeded :: 61]
+!69 = metadata !{i32 786472, metadata !"Ray_Parametric_Tests", i64 62} ; [ DW_TAG_enumerator ] [Ray_Parametric_Tests :: 62]
+!70 = metadata !{i32 786472, metadata !"Ray_Parametric_Tests_Succeeded", i64 63} ; [ DW_TAG_enumerator ] [Ray_Parametric_Tests_Succeeded :: 63]
+!71 = metadata !{i32 786472, metadata !"Ray_Par_Bound_Tests", i64 64} ; [ DW_TAG_enumerator ] [Ray_Par_Bound_Tests :: 64]
+!72 = metadata !{i32 786472, metadata !"Ray_Par_Bound_Tests_Succeeded", i64 65} ; [ DW_TAG_enumerator ] [Ray_Par_Bound_Tests_Succeeded :: 65]
+!73 = metadata !{i32 786472, metadata !"Ray_Quadric_Tests", i64 66} ; [ DW_TAG_enumerator ] [Ray_Quadric_Tests :: 66]
+!74 = metadata !{i32 786472, metadata !"Ray_Quadric_Tests_Succeeded", i64 67} ; [ DW_TAG_enumerator ] [Ray_Quadric_Tests_Succeeded :: 67]
+!75 = metadata !{i32 786472, metadata !"Ray_Poly_Tests", i64 68} ; [ DW_TAG_enumerator ] [Ray_Poly_Tests :: 68]
+!76 = metadata !{i32 786472, metadata !"Ray_Poly_Tests_Succeeded", i64 69} ; [ DW_TAG_enumerator ] [Ray_Poly_Tests_Succeeded :: 69]
+!77 = metadata !{i32 786472, metadata !"Ray_Sphere_Tests", i64 70} ; [ DW_TAG_enumerator ] [Ray_Sphere_Tests :: 70]
+!78 = metadata !{i32 786472, metadata !"Ray_Sphere_Tests_Succeeded", i64 71} ; [ DW_TAG_enumerator ] [Ray_Sphere_Tests_Succeeded :: 71]
+!79 = metadata !{i32 786472, metadata !"Ray_Sphere_Sweep_Tests", i64 72} ; [ DW_TAG_enumerator ] [Ray_Sphere_Sweep_Tests :: 72]
+!80 = metadata !{i32 786472, metadata !"Ray_Sphere_Sweep_Tests_Succeeded", i64 73} ; [ DW_TAG_enumerator ] [Ray_Sphere_Sweep_Tests_Succeeded :: 73]
+!81 = metadata !{i32 786472, metadata !"Ray_Superellipsoid_Tests", i64 74} ; [ DW_TAG_enumerator ] [Ray_Superellipsoid_Tests :: 74]
+!82 = metadata !{i32 786472, metadata !"Ray_Superellipsoid_Tests_Succeeded", i64 75} ; [ DW_TAG_enumerator ] [Ray_Superellipsoid_Tests_Succeeded :: 75]
+!83 = metadata !{i32 786472, metadata !"Ray_Sor_Tests", i64 76} ; [ DW_TAG_enumerator ] [Ray_Sor_Tests :: 76]
+!84 = metadata !{i32 786472, metadata !"Ray_Sor_Tests_Succeeded", i64 77} ; [ DW_TAG_enumerator ] [Ray_Sor_Tests_Succeeded :: 77]
+!85 = metadata !{i32 786472, metadata !"Sor_Bound_Tests", i64 78} ; [ DW_TAG_enumerator ] [Sor_Bound_Tests :: 78]
+!86 = metadata !{i32 786472, metadata !"Sor_Bound_Tests_Succeeded", i64 79} ; [ DW_TAG_enumerator ] [Sor_Bound_Tests_Succeeded :: 79]
+!87 = metadata !{i32 786472, metadata !"Ray_Torus_Tests", i64 80} ; [ DW_TAG_enumerator ] [Ray_Torus_Tests :: 80]
+!88 = metadata !{i32 786472, metadata !"Ray_Torus_Tests_Succeeded", i64 81} ; [ DW_TAG_enumerator ] [Ray_Torus_Tests_Succeeded :: 81]
+!89 = metadata !{i32 786472, metadata !"Torus_Bound_Tests", i64 82} ; [ DW_TAG_enumerator ] [Torus_Bound_Tests :: 82]
+!90 = metadata !{i32 786472, metadata !"Torus_Bound_Tests_Succeeded", i64 83} ; [ DW_TAG_enumerator ] [Torus_Bound_Tests_Succeeded :: 83]
+!91 = metadata !{i32 786472, metadata !"Ray_Triangle_Tests", i64 84} ; [ DW_TAG_enumerator ] [Ray_Triangle_Tests :: 84]
+!92 = metadata !{i32 786472, metadata !"Ray_Triangle_Tests_Succeeded", i64 85} ; [ DW_TAG_enumerator ] [Ray_Triangle_Tests_Succeeded :: 85]
+!93 = metadata !{i32 786472, metadata !"Ray_TTF_Tests", i64 86} ; [ DW_TAG_enumerator ] [Ray_TTF_Tests :: 86]
+!94 = metadata !{i32 786472, metadata !"Ray_TTF_Tests_Succeeded", i64 87} ; [ DW_TAG_enumerator ] [Ray_TTF_Tests_Succeeded :: 87]
+!95 = metadata !{i32 786472, metadata !"Bounding_Region_Tests", i64 88} ; [ DW_TAG_enumerator ] [Bounding_Region_Tests :: 88]
+!96 = metadata !{i32 786472, metadata !"Bounding_Region_Tests_Succeeded", i64 89} ; [ DW_TAG_enumerator ] [Bounding_Region_Tests_Succeeded :: 89]
+!97 = metadata !{i32 786472, metadata !"Clipping_Region_Tests", i64 90} ; [ DW_TAG_enumerator ] [Clipping_Region_Tests :: 90]
+!98 = metadata !{i32 786472, metadata !"Clipping_Region_Tests_Succeeded", i64 91} ; [ DW_TAG_enumerator ] [Clipping_Region_Tests_Succeeded :: 91]
+!99 = metadata !{i32 786472, metadata !"Ray_IsoSurface_Find_Root", i64 92} ; [ DW_TAG_enumerator ] [Ray_IsoSurface_Find_Root :: 92]
+!100 = metadata !{i32 786472, metadata !"Ray_Function_VM_Calls", i64 93} ; [ DW_TAG_enumerator ] [Ray_Function_VM_Calls :: 93]
+!101 = metadata !{i32 786472, metadata !"Ray_Function_VM_Instruction_Est", i64 94} ; [ DW_TAG_enumerator ] [Ray_Function_VM_Instruction_Est :: 94]
+!102 = metadata !{i32 786472, metadata !"VBuffer_Tests", i64 95} ; [ DW_TAG_enumerator ] [VBuffer_Tests :: 95]
+!103 = metadata !{i32 786472, metadata !"VBuffer_Tests_Succeeded", i64 96} ; [ DW_TAG_enumerator ] [VBuffer_Tests_Succeeded :: 96]
+!104 = metadata !{i32 786472, metadata !"LBuffer_Tests", i64 97} ; [ DW_TAG_enumerator ] [LBuffer_Tests :: 97]
+!105 = metadata !{i32 786472, metadata !"LBuffer_Tests_Succeeded", i64 98} ; [ DW_TAG_enumerator ] [LBuffer_Tests_Succeeded :: 98]
+!106 = metadata !{i32 786472, metadata !"Media_Samples", i64 99} ; [ DW_TAG_enumerator ] [Media_Samples :: 99]
+!107 = metadata !{i32 786472, metadata !"Media_Intervals", i64 100} ; [ DW_TAG_enumerator ] [Media_Intervals :: 100]
+!108 = metadata !{i32 786472, metadata !"Reflected_Rays_Traced", i64 101} ; [ DW_TAG_enumerator ] [Reflected_Rays_Traced :: 101]
+!109 = metadata !{i32 786472, metadata !"Refracted_Rays_Traced", i64 102} ; [ DW_TAG_enumerator ] [Refracted_Rays_Traced :: 102]
+!110 = metadata !{i32 786472, metadata !"Transmitted_Rays_Traced", i64 103} ; [ DW_TAG_enumerator ] [Transmitted_Rays_Traced :: 103]
+!111 = metadata !{i32 786472, metadata !"Internal_Reflected_Rays_Traced", i64 104} ; [ DW_TAG_enumerator ] [Internal_Reflected_Rays_Traced :: 104]
+!112 = metadata !{i32 786472, metadata !"Shadow_Cache_Hits", i64 105} ; [ DW_TAG_enumerator ] [Shadow_Cache_Hits :: 105]
+!113 = metadata !{i32 786472, metadata !"Shadow_Rays_Succeeded", i64 106} ; [ DW_TAG_enumerator ] [Shadow_Rays_Succeeded :: 106]
+!114 = metadata !{i32 786472, metadata !"Shadow_Ray_Tests", i64 107} ; [ DW_TAG_enumerator ] [Shadow_Ray_Tests :: 107]
+!115 = metadata !{i32 786472, metadata !"nChecked", i64 108} ; [ DW_TAG_enumerator ] [nChecked :: 108]
+!116 = metadata !{i32 786472, metadata !"nEnqueued", i64 109} ; [ DW_TAG_enumerator ] [nEnqueued :: 109]
+!117 = metadata !{i32 786472, metadata !"totalQueues", i64 110} ; [ DW_TAG_enumerator ] [totalQueues :: 110]
+!118 = metadata !{i32 786472, metadata !"totalQueueResets", i64 111} ; [ DW_TAG_enumerator ] [totalQueueResets :: 111]
+!119 = metadata !{i32 786472, metadata !"totalQueueResizes", i64 112} ; [ DW_TAG_enumerator ] [totalQueueResizes :: 112]
+!120 = metadata !{i32 786472, metadata !"Polynomials_Tested", i64 113} ; [ DW_TAG_enumerator ] [Polynomials_Tested :: 113]
+!121 = metadata !{i32 786472, metadata !"Roots_Eliminated", i64 114} ; [ DW_TAG_enumerator ] [Roots_Eliminated :: 114]
+!122 = metadata !{i32 786472, metadata !"MemStat_Smallest_Alloc", i64 115} ; [ DW_TAG_enumerator ] [MemStat_Smallest_Alloc :: 115]
+!123 = metadata !{i32 786472, metadata !"MemStat_Largest_Alloc", i64 116} ; [ DW_TAG_enumerator ] [MemStat_Largest_Alloc :: 116]
+!124 = metadata !{i32 786472, metadata !"MemStat_Largest_Mem_Usage", i64 117} ; [ DW_TAG_enumerator ] [MemStat_Largest_Mem_Usage :: 117]
+!125 = metadata !{i32 786472, metadata !"Number_Of_Photons_Shot", i64 118} ; [ DW_TAG_enumerator ] [Number_Of_Photons_Shot :: 118]
+!126 = metadata !{i32 786472, metadata !"Number_Of_Photons_Stored", i64 119} ; [ DW_TAG_enumerator ] [Number_Of_Photons_Stored :: 119]
+!127 = metadata !{i32 786472, metadata !"Number_Of_Global_Photons_Stored", i64 120} ; [ DW_TAG_enumerator ] [Number_Of_Global_Photons_Stored :: 120]
+!128 = metadata !{i32 786472, metadata !"Number_Of_Media_Photons_Stored", i64 121} ; [ DW_TAG_enumerator ] [Number_Of_Media_Photons_Stored :: 121]
+!129 = metadata !{i32 786472, metadata !"Priority_Queue_Add", i64 122} ; [ DW_TAG_enumerator ] [Priority_Queue_Add :: 122]
+!130 = metadata !{i32 786472, metadata !"Priority_Queue_Remove", i64 123} ; [ DW_TAG_enumerator ] [Priority_Queue_Remove :: 123]
+!131 = metadata !{i32 786472, metadata !"Gather_Performed_Count", i64 124} ; [ DW_TAG_enumerator ] [Gather_Performed_Count :: 124]
+!132 = metadata !{i32 786472, metadata !"Gather_Expanded_Count", i64 125} ; [ DW_TAG_enumerator ] [Gather_Expanded_Count :: 125]
+!133 = metadata !{i32 786472, metadata !"MaxStat", i64 126} ; [ DW_TAG_enumerator ] [MaxStat :: 126]
+!134 = metadata !{i32 0}
+!135 = metadata !{metadata !136, metadata !148}
+!136 = metadata !{i32 786478, metadata !1, metadata !137, metadata !"Extract_Version", metadata !"Extract_Version", metadata !"_ZN3pov15Extract_VersionEPKc", i32 299, metadata !138, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i8* (i8*)* @_ZN3pov15Extract_VersionEPKc, null, null, metadata !143, i32 300} ; [ DW_TAG_subprogram ] [line 299] [def] [scope 300] [Extract_Version]
+!137 = metadata !{i32 786489, metadata !1, null, metadata !"pov", i32 94} ; [ DW_TAG_namespace ] [pov] [line 94]
+!138 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !139, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!139 = metadata !{metadata !140, metadata !140}
+!140 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !141} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!141 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !142} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from char]
+!142 = metadata !{i32 786468, null, null, metadata !"char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!143 = metadata !{metadata !144, metadata !146}
+!144 = metadata !{i32 786689, metadata !136, metadata !"str", metadata !145, i32 16777515, metadata !140, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [str] [line 299]
+!145 = metadata !{i32 786473, metadata !1}        ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/optout.cpp]
+!146 = metadata !{i32 786688, metadata !136, metadata !"pos", metadata !145, i32 301, metadata !147, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [pos] [line 301]
+!147 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!148 = metadata !{i32 786478, metadata !1, metadata !137, metadata !"GetOptionSwitchString", metadata !"GetOptionSwitchString", metadata !"_ZN3pov21GetOptionSwitchStringEP9POVMSDataj", i32 322, metadata !149, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i8* (%struct.POVMSData*, i32)* @_ZN3pov21GetOptionSwitchStringEP9POVMSDataj, null, null, metadata !174, i32 323} ; [ DW_TAG_subprogram ] [line 322] [def] [scope 323] [GetOptionSwitchString]
+!149 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !150, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!150 = metadata !{metadata !151, metadata !152, metadata !158}
+!151 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !142} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from char]
+!152 = metadata !{i32 786454, metadata !1, null, metadata !"POVMSObjectPtr", i32 173, i64 0, i64 0, i64 0, i32 0, metadata !153} ; [ DW_TAG_typedef ] [POVMSObjectPtr] [line 173, size 0, align 0, offset 0] [from ]
+!153 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !154} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from POVMSData]
+!154 = metadata !{i32 786451, metadata !155, null, metadata !"POVMSData", i32 178, i64 128, i64 64, i32 0, i32 0, null, metadata !156, i32 0, null, null} ; [ DW_TAG_structure_type ] [POVMSData] [line 178, size 128, align 64, offset 0] [from ]
+!155 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/povms.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!156 = metadata !{metadata !157, metadata !159, metadata !160}
+!157 = metadata !{i32 786445, metadata !155, metadata !154, metadata !"type", i32 180, i64 32, i64 32, i64 0, i32 0, metadata !158} ; [ DW_TAG_member ] [type] [line 180, size 32, align 32, offset 0] [from unsigned int]
+!158 = metadata !{i32 786468, null, null, metadata !"unsigned int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 7} ; [ DW_TAG_base_type ] [unsigned int] [line 0, size 32, align 32, offset 0, enc DW_ATE_unsigned]
+!159 = metadata !{i32 786445, metadata !155, metadata !154, metadata !"size", i32 181, i64 32, i64 32, i64 32, i32 0, metadata !147} ; [ DW_TAG_member ] [size] [line 181, size 32, align 32, offset 32] [from int]
+!160 = metadata !{i32 786445, metadata !155, metadata !154, metadata !"", i32 182, i64 64, i64 64, i64 64, i32 0, metadata !161} ; [ DW_TAG_member ] [line 182, size 64, align 64, offset 64] [from ]
+!161 = metadata !{i32 786455, metadata !155, metadata !154, metadata !"", i32 182, i64 64, i64 64, i64 0, i32 0, null, metadata !162, i32 0, null, null} ; [ DW_TAG_union_type ] [line 182, size 64, align 64, offset 0] [from ]
+!162 = metadata !{metadata !163, metadata !165, metadata !166}
+!163 = metadata !{i32 786445, metadata !155, metadata !161, metadata !"ptr", i32 184, i64 64, i64 64, i64 0, i32 0, metadata !164} ; [ DW_TAG_member ] [ptr] [line 184, size 64, align 64, offset 0] [from ]
+!164 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, null} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!165 = metadata !{i32 786445, metadata !155, metadata !161, metadata !"items", i32 185, i64 64, i64 64, i64 0, i32 0, metadata !153} ; [ DW_TAG_member ] [items] [line 185, size 64, align 64, offset 0] [from ]
+!166 = metadata !{i32 786445, metadata !155, metadata !161, metadata !"root", i32 186, i64 64, i64 64, i64 0, i32 0, metadata !167} ; [ DW_TAG_member ] [root] [line 186, size 64, align 64, offset 0] [from ]
+!167 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !168} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from POVMSNode]
+!168 = metadata !{i32 786451, metadata !155, null, metadata !"POVMSNode", i32 190, i64 320, i64 64, i32 0, i32 0, null, metadata !169, i32 0, null, null} ; [ DW_TAG_structure_type ] [POVMSNode] [line 190, size 320, align 64, offset 0] [from ]
+!169 = metadata !{metadata !170, metadata !171, metadata !172, metadata !173}
+!170 = metadata !{i32 786445, metadata !155, metadata !168, metadata !"last", i32 192, i64 64, i64 64, i64 0, i32 0, metadata !167} ; [ DW_TAG_member ] [last] [line 192, size 64, align 64, offset 0] [from ]
+!171 = metadata !{i32 786445, metadata !155, metadata !168, metadata !"next", i32 193, i64 64, i64 64, i64 64, i32 0, metadata !167} ; [ DW_TAG_member ] [next] [line 193, size 64, align 64, offset 64] [from ]
+!172 = metadata !{i32 786445, metadata !155, metadata !168, metadata !"key", i32 194, i64 32, i64 32, i64 128, i32 0, metadata !158} ; [ DW_TAG_member ] [key] [line 194, size 32, align 32, offset 128] [from unsigned int]
+!173 = metadata !{i32 786445, metadata !155, metadata !168, metadata !"data", i32 195, i64 128, i64 64, i64 192, i32 0, metadata !154} ; [ DW_TAG_member ] [data] [line 195, size 128, align 64, offset 192] [from POVMSData]
+!174 = metadata !{metadata !175, metadata !176, metadata !177}
+!175 = metadata !{i32 786689, metadata !148, metadata !"msg", metadata !145, i32 16777538, metadata !152, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [msg] [line 322]
+!176 = metadata !{i32 786689, metadata !148, metadata !"key", metadata !145, i32 33554754, metadata !158, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [key] [line 322]
+!177 = metadata !{i32 786688, metadata !148, metadata !"b", metadata !145, i32 324, metadata !147, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [b] [line 324]
+!178 = metadata !{metadata !179, metadata !183, metadata !187, metadata !200}
+!179 = metadata !{i32 786484, i32 0, metadata !137, metadata !"Primary_Developers", metadata !"Primary_Developers", metadata !"_ZN3pov18Primary_DevelopersE", metadata !145, i32 120, metadata !180, i32 0, i32 1, [5 x i8*]* @_ZN3pov18Primary_DevelopersE, null} ; [ DW_TAG_variable ] [Primary_Developers] [line 120] [def]
+!180 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 320, i64 64, i32 0, i32 0, metadata !140, metadata !181, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 320, align 64, offset 0] [from ]
+!181 = metadata !{metadata !182}
+!182 = metadata !{i32 786465, i64 0, i64 5}       ; [ DW_TAG_subrange_type ] [0, 4]
+!183 = metadata !{i32 786484, i32 0, metadata !137, metadata !"Contributing_Authors", metadata !"Contributing_Authors", metadata !"_ZN3pov20Contributing_AuthorsE", metadata !145, i32 129, metadata !184, i32 0, i32 1, [35 x i8*]* @_ZN3pov20Contributing_AuthorsE, null} ; [ DW_TAG_variable ] [Contributing_Authors] [line 129] [def]
+!184 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 2240, i64 64, i32 0, i32 0, metadata !140, metadata !185, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 2240, align 64, offset 0] [from ]
+!185 = metadata !{metadata !186}
+!186 = metadata !{i32 786465, i64 0, i64 35}      ; [ DW_TAG_subrange_type ] [0, 34]
+!187 = metadata !{i32 786484, i32 0, metadata !137, metadata !"intersection_stats", metadata !"intersection_stats", metadata !"_ZN3pov18intersection_statsE", metadata !145, i32 168, metadata !188, i32 0, i32 1, [46 x %"struct.pov::intersection_stats_info"]* @_ZN3pov18intersection_statsE, null} ; [ DW_TAG_variable ] [intersection_stats] [line 168] [def]
+!188 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 8832, i64 64, i32 0, i32 0, metadata !189, metadata !198, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 8832, align 64, offset 0] [from ]
+!189 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !190} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from INTERSECTION_STATS_INFO]
+!190 = metadata !{i32 786454, metadata !1, metadata !5, metadata !"INTERSECTION_STATS_INFO", i32 313, i64 0, i64 0, i64 0, i32 0, metadata !191} ; [ DW_TAG_typedef ] [INTERSECTION_STATS_INFO] [line 313, size 0, align 0, offset 0] [from intersection_stats_info]
+!191 = metadata !{i32 786451, metadata !4, metadata !5, metadata !"intersection_stats_info", i32 307, i64 192, i64 64, i32 0, i32 0, null, metadata !192, i32 0, null, null} ; [ DW_TAG_structure_type ] [intersection_stats_info] [line 307, size 192, align 64, offset 0] [from ]
+!192 = metadata !{metadata !193, metadata !194, metadata !196, metadata !197}
+!193 = metadata !{i32 786445, metadata !4, metadata !191, metadata !"povms_id", i32 309, i64 32, i64 32, i64 0, i32 0, metadata !147} ; [ DW_TAG_member ] [povms_id] [line 309, size 32, align 32, offset 0] [from int]
+!194 = metadata !{i32 786445, metadata !4, metadata !191, metadata !"stat_test_id", i32 310, i64 32, i64 32, i64 32, i32 0, metadata !195} ; [ DW_TAG_member ] [stat_test_id] [line 310, size 32, align 32, offset 32] [from Stats]
+!195 = metadata !{i32 786454, metadata !4, metadata !5, metadata !"Stats", i32 305, i64 0, i64 0, i64 0, i32 0, metadata !3} ; [ DW_TAG_typedef ] [Stats] [line 305, size 0, align 0, offset 0] [from STATS]
+!196 = metadata !{i32 786445, metadata !4, metadata !191, metadata !"stat_suc_id", i32 311, i64 32, i64 32, i64 64, i32 0, metadata !195} ; [ DW_TAG_member ] [stat_suc_id] [line 311, size 32, align 32, offset 64] [from Stats]
+!197 = metadata !{i32 786445, metadata !4, metadata !191, metadata !"infotext", i32 312, i64 64, i64 64, i64 128, i32 0, metadata !151} ; [ DW_TAG_member ] [infotext] [line 312, size 64, align 64, offset 128] [from ]
+!198 = metadata !{metadata !199}
+!199 = metadata !{i32 786465, i64 0, i64 46}      ; [ DW_TAG_subrange_type ] [0, 45]
+!200 = metadata !{i32 786484, i32 0, metadata !137, metadata !"LibVersionStringBuffer", metadata !"LibVersionStringBuffer", metadata !"_ZN3pov22LibVersionStringBufferE", metadata !145, i32 297, metadata !201, i32 0, i32 1, [20 x i8]* @_ZN3pov22LibVersionStringBufferE, null} ; [ DW_TAG_variable ] [LibVersionStringBuffer] [line 297] [def]
+!201 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 160, i64 8, i32 0, i32 0, metadata !142, metadata !202, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 160, align 8, offset 0] [from char]
+!202 = metadata !{metadata !203}
+!203 = metadata !{i32 786465, i64 0, i64 20}      ; [ DW_TAG_subrange_type ] [0, 19]
+!204 = metadata !{metadata !205, metadata !210, metadata !213, metadata !216, metadata !219, metadata !222, metadata !225, metadata !228, metadata !231, metadata !234, metadata !237, metadata !240, metadata !243, metadata !246, metadata !249, metadata !252, metadata !255, metadata !258, metadata !261, metadata !264, metadata !267, metadata !270, metadata !273, metadata !276, metadata !279, metadata !282, metadata !285, metadata !288, metadata !291, metadata !294, metadata !297, metadata !298, metadata !301, metadata !304, metadata !307, metadata !310, metadata !313, metadata !316, metadata !319, metadata !322, metadata !325, metadata !328, metadata !331, metadata !334, metadata !337, metadata !340, metadata !343, metadata !346, metadata !349, metadata !352, metadata !355, metadata !358, metadata !361, metadata !364, metadata !367, metadata !370, metadata !371, metadata !372, metadata !374, metadata !377, metadata !380, metadata !383}
+!205 = metadata !{i32 786490, metadata !206, metadata !208, i32 56} ; [ DW_TAG_imported_module ]
+!206 = metadata !{i32 786489, metadata !207, null, metadata !"__gnu_debug", i32 54} ; [ DW_TAG_namespace ] [__gnu_debug] [line 54]
+!207 = metadata !{metadata !"/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/debug/debug.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!208 = metadata !{i32 786489, metadata !207, metadata !209, metadata !"__debug", i32 48} ; [ DW_TAG_namespace ] [__debug] [line 48]
+!209 = metadata !{i32 786489, metadata !207, null, metadata !"std", i32 46} ; [ DW_TAG_namespace ] [std] [line 46]
+!210 = metadata !{i32 786490, metadata !0, metadata !211, i32 28} ; [ DW_TAG_imported_module ]
+!211 = metadata !{i32 786489, metadata !212, null, metadata !"std", i32 184} ; [ DW_TAG_namespace ] [std] [line 184]
+!212 = metadata !{metadata !"/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../../include/x86_64-linux-gnu/c++/4.8/bits/c++config.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!213 = metadata !{i32 786490, metadata !214, metadata !211, i32 37} ; [ DW_TAG_imported_module ]
+!214 = metadata !{i32 786489, metadata !215, null, metadata !"pov_base", i32 37} ; [ DW_TAG_namespace ] [pov_base] [line 37]
+!215 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/fileinputoutput.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!216 = metadata !{i32 786490, metadata !217, metadata !211, i32 36} ; [ DW_TAG_imported_module ]
+!217 = metadata !{i32 786489, metadata !218, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!218 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/pov_mem.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!219 = metadata !{i32 786490, metadata !220, metadata !211, i32 72} ; [ DW_TAG_imported_module ]
+!220 = metadata !{i32 786489, metadata !221, null, metadata !"pov", i32 72} ; [ DW_TAG_namespace ] [pov] [line 72]
+!221 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/frame.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!222 = metadata !{i32 786490, metadata !223, metadata !211, i32 37} ; [ DW_TAG_imported_module ]
+!223 = metadata !{i32 786489, metadata !224, null, metadata !"pov", i32 37} ; [ DW_TAG_namespace ] [pov] [line 37]
+!224 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/vector.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!225 = metadata !{i32 786490, metadata !226, metadata !211, i32 36} ; [ DW_TAG_imported_module ]
+!226 = metadata !{i32 786489, metadata !227, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!227 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/atmosph.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!228 = metadata !{i32 786490, metadata !229, metadata !211, i32 36} ; [ DW_TAG_imported_module ]
+!229 = metadata !{i32 786489, metadata !230, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!230 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/bezier.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!231 = metadata !{i32 786490, metadata !232, metadata !211, i32 36} ; [ DW_TAG_imported_module ]
+!232 = metadata !{i32 786489, metadata !233, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!233 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!234 = metadata !{i32 786490, metadata !235, metadata !211, i32 38} ; [ DW_TAG_imported_module ]
+!235 = metadata !{i32 786489, metadata !236, null, metadata !"pov", i32 38} ; [ DW_TAG_namespace ] [pov] [line 38]
+!236 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/blob.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!237 = metadata !{i32 786490, metadata !238, metadata !211, i32 37} ; [ DW_TAG_imported_module ]
+!238 = metadata !{i32 786489, metadata !239, null, metadata !"pov", i32 37} ; [ DW_TAG_namespace ] [pov] [line 37]
+!239 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/bbox.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!240 = metadata !{i32 786490, metadata !241, metadata !211, i32 36} ; [ DW_TAG_imported_module ]
+!241 = metadata !{i32 786489, metadata !242, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!242 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/cones.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!243 = metadata !{i32 786490, metadata !244, metadata !211, i32 36} ; [ DW_TAG_imported_module ]
+!244 = metadata !{i32 786489, metadata !245, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!245 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/csg.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!246 = metadata !{i32 786490, metadata !247, metadata !211, i32 35} ; [ DW_TAG_imported_module ]
+!247 = metadata !{i32 786489, metadata !248, null, metadata !"pov", i32 35} ; [ DW_TAG_namespace ] [pov] [line 35]
+!248 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/discs.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!249 = metadata !{i32 786490, metadata !250, metadata !211, i32 35} ; [ DW_TAG_imported_module ]
+!250 = metadata !{i32 786489, metadata !251, null, metadata !"pov", i32 35} ; [ DW_TAG_namespace ] [pov] [line 35]
+!251 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/fractal.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!252 = metadata !{i32 786490, metadata !253, metadata !211, i32 36} ; [ DW_TAG_imported_module ]
+!253 = metadata !{i32 786489, metadata !254, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!254 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/boxes.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!255 = metadata !{i32 786490, metadata !256, metadata !211, i32 38} ; [ DW_TAG_imported_module ]
+!256 = metadata !{i32 786489, metadata !257, null, metadata !"pov", i32 38} ; [ DW_TAG_namespace ] [pov] [line 38]
+!257 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/hfield.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!258 = metadata !{i32 786490, metadata !259, metadata !211, i32 35} ; [ DW_TAG_imported_module ]
+!259 = metadata !{i32 786489, metadata !260, null, metadata !"pov", i32 35} ; [ DW_TAG_namespace ] [pov] [line 35]
+!260 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/bcyl.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!261 = metadata !{i32 786490, metadata !262, metadata !211, i32 37} ; [ DW_TAG_imported_module ]
+!262 = metadata !{i32 786489, metadata !263, null, metadata !"pov", i32 37} ; [ DW_TAG_namespace ] [pov] [line 37]
+!263 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/lathe.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!264 = metadata !{i32 786490, metadata !265, metadata !211, i32 39} ; [ DW_TAG_imported_module ]
+!265 = metadata !{i32 786489, metadata !266, null, metadata !"pov", i32 39} ; [ DW_TAG_namespace ] [pov] [line 39]
+!266 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/vlbuffer.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!267 = metadata !{i32 786490, metadata !268, metadata !211, i32 38} ; [ DW_TAG_imported_module ]
+!268 = metadata !{i32 786489, metadata !269, null, metadata !"pov", i32 38} ; [ DW_TAG_namespace ] [pov] [line 38]
+!269 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/point.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!270 = metadata !{i32 786490, metadata !271, metadata !211, i32 38} ; [ DW_TAG_imported_module ]
+!271 = metadata !{i32 786489, metadata !272, null, metadata !"pov", i32 38} ; [ DW_TAG_namespace ] [pov] [line 38]
+!272 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/lighting.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!273 = metadata !{i32 786490, metadata !274, metadata !211, i32 38} ; [ DW_TAG_imported_module ]
+!274 = metadata !{i32 786489, metadata !275, null, metadata !"pov", i32 38} ; [ DW_TAG_namespace ] [pov] [line 38]
+!275 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/mesh.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!276 = metadata !{i32 786490, metadata !277, metadata !211, i32 36} ; [ DW_TAG_imported_module ]
+!277 = metadata !{i32 786489, metadata !278, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!278 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/polysolv.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!279 = metadata !{i32 786490, metadata !280, metadata !211, i32 37} ; [ DW_TAG_imported_module ]
+!280 = metadata !{i32 786489, metadata !281, null, metadata !"pov", i32 37} ; [ DW_TAG_namespace ] [pov] [line 37]
+!281 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/objects.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!282 = metadata !{i32 786490, metadata !283, metadata !211, i32 36} ; [ DW_TAG_imported_module ]
+!283 = metadata !{i32 786489, metadata !284, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!284 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/camera.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!285 = metadata !{i32 786490, metadata !286, metadata !211, i32 39} ; [ DW_TAG_imported_module ]
+!286 = metadata !{i32 786489, metadata !287, null, metadata !"pov", i32 39} ; [ DW_TAG_namespace ] [pov] [line 39]
+!287 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/parse.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!288 = metadata !{i32 786490, metadata !289, metadata !211, i32 36} ; [ DW_TAG_imported_module ]
+!289 = metadata !{i32 786489, metadata !290, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!290 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/poly.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!291 = metadata !{i32 786490, metadata !292, metadata !211, i32 36} ; [ DW_TAG_imported_module ]
+!292 = metadata !{i32 786489, metadata !293, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!293 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/polygon.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!294 = metadata !{i32 786490, metadata !295, metadata !211, i32 38} ; [ DW_TAG_imported_module ]
+!295 = metadata !{i32 786489, metadata !296, null, metadata !"pov", i32 38} ; [ DW_TAG_namespace ] [pov] [line 38]
+!296 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/octree.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!297 = metadata !{i32 786490, metadata !295, metadata !214, i32 40} ; [ DW_TAG_imported_module ]
+!298 = metadata !{i32 786490, metadata !299, metadata !211, i32 36} ; [ DW_TAG_imported_module ]
+!299 = metadata !{i32 786489, metadata !300, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!300 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/planes.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!301 = metadata !{i32 786490, metadata !302, metadata !211, i32 38} ; [ DW_TAG_imported_module ]
+!302 = metadata !{i32 786489, metadata !303, null, metadata !"pov", i32 38} ; [ DW_TAG_namespace ] [pov] [line 38]
+!303 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/quadrics.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!304 = metadata !{i32 786490, metadata !305, metadata !211, i32 35} ; [ DW_TAG_imported_module ]
+!305 = metadata !{i32 786489, metadata !306, null, metadata !"pov", i32 35} ; [ DW_TAG_namespace ] [pov] [line 35]
+!306 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/pgm.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!307 = metadata !{i32 786490, metadata !308, metadata !211, i32 35} ; [ DW_TAG_imported_module ]
+!308 = metadata !{i32 786489, metadata !309, null, metadata !"pov", i32 35} ; [ DW_TAG_namespace ] [pov] [line 35]
+!309 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/ppm.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!310 = metadata !{i32 786490, metadata !311, metadata !211, i32 36} ; [ DW_TAG_imported_module ]
+!311 = metadata !{i32 786489, metadata !312, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!312 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/prism.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!313 = metadata !{i32 786490, metadata !314, metadata !211, i32 39} ; [ DW_TAG_imported_module ]
+!314 = metadata !{i32 786489, metadata !315, null, metadata !"pov", i32 39} ; [ DW_TAG_namespace ] [pov] [line 39]
+!315 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/radiosit.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!316 = metadata !{i32 786490, metadata !317, metadata !211, i32 36} ; [ DW_TAG_imported_module ]
+!317 = metadata !{i32 786489, metadata !318, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!318 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/render.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!319 = metadata !{i32 786490, metadata !320, metadata !211, i32 39} ; [ DW_TAG_imported_module ]
+!320 = metadata !{i32 786489, metadata !321, null, metadata !"pov", i32 39} ; [ DW_TAG_namespace ] [pov] [line 39]
+!321 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/sor.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!322 = metadata !{i32 786490, metadata !323, metadata !211, i32 36} ; [ DW_TAG_imported_module ]
+!323 = metadata !{i32 786489, metadata !324, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!324 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/spheres.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!325 = metadata !{i32 786490, metadata !326, metadata !211, i32 35} ; [ DW_TAG_imported_module ]
+!326 = metadata !{i32 786489, metadata !327, null, metadata !"pov", i32 35} ; [ DW_TAG_namespace ] [pov] [line 35]
+!327 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/super.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!328 = metadata !{i32 786490, metadata !329, metadata !211, i32 35} ; [ DW_TAG_imported_module ]
+!329 = metadata !{i32 786489, metadata !330, null, metadata !"pov", i32 35} ; [ DW_TAG_namespace ] [pov] [line 35]
+!330 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/targa.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!331 = metadata !{i32 786490, metadata !332, metadata !211, i32 37} ; [ DW_TAG_imported_module ]
+!332 = metadata !{i32 786489, metadata !333, null, metadata !"pov", i32 37} ; [ DW_TAG_namespace ] [pov] [line 37]
+!333 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/pattern.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!334 = metadata !{i32 786490, metadata !335, metadata !211, i32 37} ; [ DW_TAG_imported_module ]
+!335 = metadata !{i32 786489, metadata !336, null, metadata !"pov", i32 37} ; [ DW_TAG_namespace ] [pov] [line 37]
+!336 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/warps.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!337 = metadata !{i32 786490, metadata !338, metadata !211, i32 3} ; [ DW_TAG_imported_module ]
+!338 = metadata !{i32 786489, metadata !339, null, metadata !"pov", i32 3} ; [ DW_TAG_namespace ] [pov] [line 3]
+!339 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/specrand.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!340 = metadata !{i32 786490, metadata !341, metadata !211, i32 43} ; [ DW_TAG_imported_module ]
+!341 = metadata !{i32 786489, metadata !342, null, metadata !"pov", i32 43} ; [ DW_TAG_namespace ] [pov] [line 43]
+!342 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/texture.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!343 = metadata !{i32 786490, metadata !344, metadata !211, i32 36} ; [ DW_TAG_imported_module ]
+!344 = metadata !{i32 786489, metadata !345, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!345 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/torus.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!346 = metadata !{i32 786490, metadata !347, metadata !211, i32 36} ; [ DW_TAG_imported_module ]
+!347 = metadata !{i32 786489, metadata !348, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!348 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/triangle.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!349 = metadata !{i32 786490, metadata !350, metadata !211, i32 36} ; [ DW_TAG_imported_module ]
+!350 = metadata !{i32 786489, metadata !351, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!351 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/truetype.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!352 = metadata !{i32 786490, metadata !353, metadata !211, i32 36} ; [ DW_TAG_imported_module ]
+!353 = metadata !{i32 786489, metadata !354, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!354 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/userio.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!355 = metadata !{i32 786490, metadata !356, metadata !211, i32 36} ; [ DW_TAG_imported_module ]
+!356 = metadata !{i32 786489, metadata !357, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!357 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/userdisp.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!358 = metadata !{i32 786490, metadata !359, metadata !211, i32 38} ; [ DW_TAG_imported_module ]
+!359 = metadata !{i32 786489, metadata !360, null, metadata !"pov", i32 38} ; [ DW_TAG_namespace ] [pov] [line 38]
+!360 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/lbuffer.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!361 = metadata !{i32 786490, metadata !362, metadata !211, i32 38} ; [ DW_TAG_imported_module ]
+!362 = metadata !{i32 786489, metadata !363, null, metadata !"pov", i32 38} ; [ DW_TAG_namespace ] [pov] [line 38]
+!363 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/vbuffer.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!364 = metadata !{i32 786490, metadata !365, metadata !211, i32 38} ; [ DW_TAG_imported_module ]
+!365 = metadata !{i32 786489, metadata !366, null, metadata !"pov", i32 38} ; [ DW_TAG_namespace ] [pov] [line 38]
+!366 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/media.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!367 = metadata !{i32 786490, metadata !368, metadata !211, i32 37} ; [ DW_TAG_imported_module ]
+!368 = metadata !{i32 786489, metadata !369, null, metadata !"pov", i32 37} ; [ DW_TAG_namespace ] [pov] [line 37]
+!369 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/lightgrp.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!370 = metadata !{i32 786490, metadata !5, metadata !211, i32 48} ; [ DW_TAG_imported_module ]
+!371 = metadata !{i32 786490, metadata !5, metadata !214, i32 50} ; [ DW_TAG_imported_module ]
+!372 = metadata !{i32 786490, metadata !373, metadata !211, i32 479} ; [ DW_TAG_imported_module ]
+!373 = metadata !{i32 786489, metadata !4, null, metadata !"pov", i32 479} ; [ DW_TAG_namespace ] [pov] [line 479]
+!374 = metadata !{i32 786490, metadata !375, metadata !211, i32 41} ; [ DW_TAG_imported_module ]
+!375 = metadata !{i32 786489, metadata !376, null, metadata !"pov", i32 41} ; [ DW_TAG_namespace ] [pov] [line 41]
+!376 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/optout.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!377 = metadata !{i32 786490, metadata !378, metadata !211, i32 38} ; [ DW_TAG_imported_module ]
+!378 = metadata !{i32 786489, metadata !379, null, metadata !"pov", i32 38} ; [ DW_TAG_namespace ] [pov] [line 38]
+!379 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/function.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!380 = metadata !{i32 786490, metadata !381, metadata !211, i32 41} ; [ DW_TAG_imported_module ]
+!381 = metadata !{i32 786489, metadata !382, null, metadata !"pov", i32 41} ; [ DW_TAG_namespace ] [pov] [line 41]
+!382 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/isosurf.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!383 = metadata !{i32 786490, metadata !137, metadata !211, i32 94} ; [ DW_TAG_imported_module ]
+!384 = metadata !{i32 299, i32 0, metadata !136, null}
+!385 = metadata !{i32 301, i32 0, metadata !136, null}
+!386 = metadata !{i32 303, i32 0, metadata !387, null}
+!387 = metadata !{i32 786443, metadata !1, metadata !136, i32 303, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/optout.cpp]
+!388 = metadata !{metadata !"omnipotent char", metadata !389}
+!389 = metadata !{metadata !"Simple C/C++ TBAA"}
+!390 = metadata !{i32 305, i32 0, metadata !391, null}
+!391 = metadata !{i32 786443, metadata !1, metadata !387, i32 304, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/optout.cpp]
+!392 = metadata !{i32 307, i32 0, metadata !393, null}
+!393 = metadata !{i32 786443, metadata !1, metadata !391, i32 306, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/optout.cpp]
+!394 = metadata !{i32 309, i32 0, metadata !395, null}
+!395 = metadata !{i32 786443, metadata !1, metadata !393, i32 308, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/optout.cpp]
+!396 = metadata !{i32 310, i32 0, metadata !395, null}
+!397 = metadata !{i32 312, i32 0, metadata !395, null}
+!398 = metadata !{i32 311, i32 0, metadata !395, null}
+!399 = metadata !{i32 317, i32 0, metadata !136, null}
+!400 = metadata !{i32 319, i32 0, metadata !136, null}
+!401 = metadata !{i32 322, i32 0, metadata !148, null}
+!402 = metadata !{i32 324, i32 0, metadata !148, null}
+!403 = metadata !{metadata !"int", metadata !388}
+!404 = metadata !{i32 326, i32 0, metadata !148, null}
+!405 = metadata !{i32 327, i32 0, metadata !148, null}
+!406 = metadata !{i32 328, i32 0, metadata !148, null}
+!407 = metadata !{i32 330, i32 0, metadata !148, null}

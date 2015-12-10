@@ -1,32 +1,35 @@
 define void @RestoreMV8x8(i32 %dir) #0 {
 entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 6
-  %1 = load i32* %type, align 4, !tbaa !3
-  %cmp = icmp eq i32 %1, 1
-  %conv = zext i1 %cmp to i32
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata !{i32 %dir}, i64 0, metadata !746), !dbg !2491
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !2492, !tbaa !1451
+  %type = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 6, !dbg !2492
+  %1 = load i32* %type, align 4, !dbg !2492, !tbaa !1458
+  %cmp = icmp eq i32 %1, 1, !dbg !2492
+  %conv = zext i1 %cmp to i32, !dbg !2492
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !748), !dbg !2492
+  tail call void @llvm.dbg.value(metadata !60, i64 0, metadata !747), !dbg !2493
+  br label %for.body, !dbg !2493
 
 for.body:                                         ; preds = %for.body, %entry
   %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
-  %arrayidx = getelementptr inbounds [4 x i32]* @part8x8mode, i64 0, i64 %indvars.iv
-  %2 = load i32* %arrayidx, align 4, !tbaa !3
-  %arrayidx4 = getelementptr inbounds [4 x i16]* @part8x8fwref, i64 0, i64 %indvars.iv
-  %3 = load i16* %arrayidx4, align 2, !tbaa !4
-  %conv5 = sext i16 %3 to i32
-  %arrayidx7 = getelementptr inbounds [4 x i16]* @part8x8bwref, i64 0, i64 %indvars.iv
-  %4 = load i16* %arrayidx7, align 2, !tbaa !4
-  %conv8 = sext i16 %4 to i32
-  %arrayidx10 = getelementptr inbounds [4 x i16]* @part8x8pdir, i64 0, i64 %indvars.iv
-  %5 = load i16* %arrayidx10, align 2, !tbaa !4
-  %conv11 = sext i16 %5 to i32
-  %6 = trunc i64 %indvars.iv to i32
-  tail call void @RestoreMVBlock8x8(i32 %dir, i32 %6, i32 %2, i32 %conv5, i32 %conv8, i32 %conv11, i32 %conv) #10
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 4
-  br i1 %exitcond, label %for.end, label %for.body
+  %arrayidx = getelementptr inbounds [4 x i32]* @part8x8mode, i64 0, i64 %indvars.iv, !dbg !2495
+  %2 = load i32* %arrayidx, align 4, !dbg !2495, !tbaa !1458
+  %arrayidx4 = getelementptr inbounds [4 x i16]* @part8x8fwref, i64 0, i64 %indvars.iv, !dbg !2495
+  %3 = load i16* %arrayidx4, align 2, !dbg !2495, !tbaa !1540
+  %conv5 = sext i16 %3 to i32, !dbg !2495
+  %arrayidx7 = getelementptr inbounds [4 x i16]* @part8x8bwref, i64 0, i64 %indvars.iv, !dbg !2495
+  %4 = load i16* %arrayidx7, align 2, !dbg !2495, !tbaa !1540
+  %conv8 = sext i16 %4 to i32, !dbg !2495
+  %arrayidx10 = getelementptr inbounds [4 x i16]* @part8x8pdir, i64 0, i64 %indvars.iv, !dbg !2495
+  %5 = load i16* %arrayidx10, align 2, !dbg !2495, !tbaa !1540
+  %conv11 = sext i16 %5 to i32, !dbg !2495
+  %6 = trunc i64 %indvars.iv to i32, !dbg !2495
+  tail call void @RestoreMVBlock8x8(i32 %dir, i32 %6, i32 %2, i32 %conv5, i32 %conv8, i32 %conv11, i32 %conv) #11, !dbg !2495
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2493
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !2493
+  %exitcond = icmp eq i32 %lftr.wideiv, 4, !dbg !2493
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !2493
 
 for.end:                                          ; preds = %for.body
-  ret void
+  ret void, !dbg !2496
 }

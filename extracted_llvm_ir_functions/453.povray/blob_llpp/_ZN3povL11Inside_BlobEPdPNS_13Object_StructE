@@ -1,0 +1,204 @@
+define internal i32 @_ZN3povL11Inside_BlobEPdPNS_13Object_StructE(double* %Test_Point, %"struct.pov::Object_Struct"* nocapture %Object) #0 {
+entry:
+  %size.i = alloca i32, align 4
+  %New_Point = alloca [3 x double], align 16
+  call void @llvm.dbg.value(metadata !{double* %Test_Point}, i64 0, metadata !1335), !dbg !2027
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !1336), !dbg !2027
+  call void @llvm.dbg.declare(metadata !{[3 x double]* %New_Point}, metadata !1337), !dbg !2028
+  %0 = bitcast %"struct.pov::Object_Struct"* %Object to %"struct.pov::Blob_Struct"*, !dbg !2029
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Blob_Struct"* %0}, i64 0, metadata !1339), !dbg !2029
+  %1 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 10, !dbg !2030
+  %2 = load %"struct.pov::Transform_Struct"** %1, align 8, !dbg !2030, !tbaa !1639
+  %cmp = icmp eq %"struct.pov::Transform_Struct"* %2, null, !dbg !2030
+  %arraydecay = getelementptr inbounds [3 x double]* %New_Point, i64 0, i64 0, !dbg !2031
+  br i1 %cmp, label %if.else, label %if.then, !dbg !2030
+
+if.then:                                          ; preds = %entry
+  call void @_ZN3pov14MInvTransPointEPdS0_PNS_16Transform_StructE(double* %arraydecay, double* %Test_Point, %"struct.pov::Transform_Struct"* %2) #7, !dbg !2031
+  br label %if.end, !dbg !2033
+
+if.else:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{double* %arraydecay}, i64 0, metadata !2034), !dbg !2037
+  tail call void @llvm.dbg.value(metadata !{double* %Test_Point}, i64 0, metadata !2038), !dbg !2037
+  %3 = load double* %Test_Point, align 8, !dbg !2039, !tbaa !1647
+  store double %3, double* %arraydecay, align 16, !dbg !2039, !tbaa !1647
+  %arrayidx2.i = getelementptr inbounds double* %Test_Point, i64 1, !dbg !2040
+  %4 = load double* %arrayidx2.i, align 8, !dbg !2040, !tbaa !1647
+  %arrayidx3.i = getelementptr inbounds [3 x double]* %New_Point, i64 0, i64 1, !dbg !2040
+  store double %4, double* %arrayidx3.i, align 8, !dbg !2040, !tbaa !1647
+  %arrayidx4.i = getelementptr inbounds double* %Test_Point, i64 2, !dbg !2041
+  %5 = load double* %arrayidx4.i, align 8, !dbg !2041, !tbaa !1647
+  %arrayidx5.i = getelementptr inbounds [3 x double]* %New_Point, i64 0, i64 2, !dbg !2041
+  store double %5, double* %arrayidx5.i, align 16, !dbg !2041, !tbaa !1647
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %6 = bitcast i32* %size.i to i8*, !dbg !2042
+  call void @llvm.lifetime.start(i64 4, i8* %6), !dbg !2042
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Blob_Struct"* %0}, i64 0, metadata !2044), !dbg !2042
+  call void @llvm.dbg.value(metadata !{double* %arraydecay}, i64 0, metadata !2045), !dbg !2042
+  call void @llvm.dbg.declare(metadata !{i32* %size.i}, metadata !1347), !dbg !2046
+  call void @llvm.dbg.declare(metadata !1624, metadata !1350), !dbg !2047
+  call void @llvm.dbg.value(metadata !1772, i64 0, metadata !2048), !dbg !2049
+  %Data.i = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, !dbg !2050
+  %7 = bitcast %"struct.pov::Object_Struct"* %Data.i to %"struct.pov::Blob_Data_Struct"**, !dbg !2050
+  %8 = load %"struct.pov::Blob_Data_Struct"** %7, align 8, !dbg !2050, !tbaa !1639
+  %Tree1.i = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %8, i64 0, i32 5, !dbg !2050
+  %9 = load %"struct.pov::BSphere_Tree_Struct"** %Tree1.i, align 8, !dbg !2050, !tbaa !1639
+  %cmp.i = icmp eq %"struct.pov::BSphere_Tree_Struct"* %9, null, !dbg !2050
+  br i1 %cmp.i, label %for.cond.preheader.i, label %while.body.lr.ph.lr.ph.i, !dbg !2050
+
+for.cond.preheader.i:                             ; preds = %if.end
+  %Number_Of_Components70.i = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %8, i64 0, i32 1, !dbg !2051
+  %10 = load i32* %Number_Of_Components70.i, align 4, !dbg !2051, !tbaa !1693
+  %cmp371.i = icmp sgt i32 %10, 0, !dbg !2051
+  br i1 %cmp371.i, label %for.body.i, label %_ZN3povL21calculate_field_valueEPNS_11Blob_StructEPd.exit, !dbg !2051
+
+for.body.i:                                       ; preds = %for.cond.preheader.i, %for.body.i
+  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %for.body.i ], [ 0, %for.cond.preheader.i ]
+  %11 = phi %"struct.pov::Blob_Data_Struct"* [ %13, %for.body.i ], [ %8, %for.cond.preheader.i ]
+  %density.072.i = phi double [ %add.i, %for.body.i ], [ 0.000000e+00, %for.cond.preheader.i ]
+  %Entry.i = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %11, i64 0, i32 3, !dbg !2054
+  %12 = load %"struct.pov::Blob_Element_Struct"** %Entry.i, align 8, !dbg !2054, !tbaa !1639
+  %arrayidx.i = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %12, i64 %indvars.iv.i, !dbg !2054
+  %call.i = call fastcc double @_ZN3povL23calculate_element_fieldEPNS_19Blob_Element_StructEPd(%"struct.pov::Blob_Element_Struct"* %arrayidx.i, double* %arraydecay) #7, !dbg !2054
+  %add.i = fadd double %density.072.i, %call.i, !dbg !2054
+  call void @llvm.dbg.value(metadata !{double %add.i}, i64 0, metadata !2048), !dbg !2054
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1, !dbg !2051
+  %13 = load %"struct.pov::Blob_Data_Struct"** %7, align 8, !dbg !2051, !tbaa !1639
+  %Number_Of_Components.i = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %13, i64 0, i32 1, !dbg !2051
+  %14 = load i32* %Number_Of_Components.i, align 4, !dbg !2051, !tbaa !1693
+  %15 = trunc i64 %indvars.iv.next.i to i32, !dbg !2051
+  %cmp3.i = icmp slt i32 %15, %14, !dbg !2051
+  br i1 %cmp3.i, label %for.body.i, label %_ZN3povL21calculate_field_valueEPNS_11Blob_StructEPd.exit, !dbg !2051
+
+while.body.lr.ph.lr.ph.i:                         ; preds = %if.end
+  call void @llvm.dbg.value(metadata !142, i64 0, metadata !2056), !dbg !2057
+  call void @llvm.dbg.value(metadata !1708, i64 0, metadata !2056), !dbg !2059
+  call void @llvm.dbg.value(metadata !1708, i64 0, metadata !1347), !dbg !2059
+  store i32 1, i32* %size.i, align 4, !dbg !2059, !tbaa !1693
+  %Queue.i = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, i32 2, !dbg !2059
+  %16 = load %"struct.pov::Object_Struct"** %Queue.i, align 8, !dbg !2059
+  %17 = getelementptr inbounds %"struct.pov::Object_Struct"* %16, i64 0, i32 0, !dbg !2059
+  %.c = bitcast %"struct.pov::BSphere_Tree_Struct"* %9 to %"struct.pov::Method_Struct"*, !dbg !2059
+  store %"struct.pov::Method_Struct"* %.c, %"struct.pov::Method_Struct"** %17, align 8, !dbg !2059, !tbaa !1639
+  call void @llvm.dbg.value(metadata !{i32* %size.i}, i64 0, metadata !2056), !dbg !2060
+  %arrayidx3.i.i = getelementptr inbounds [3 x double]* %New_Point, i64 0, i64 1, !dbg !2061
+  %arrayidx7.i.i = getelementptr inbounds [3 x double]* %New_Point, i64 0, i64 2, !dbg !2067
+  br label %while.body.lr.ph.i, !dbg !2060
+
+while.body.lr.ph.i:                               ; preds = %if.then15.i, %while.body.lr.ph.lr.ph.i
+  %18 = phi i32 [ 1, %while.body.lr.ph.lr.ph.i ], [ %dec.i, %if.then15.i ]
+  %density.1.ph82.i = phi double [ 0.000000e+00, %while.body.lr.ph.lr.ph.i ], [ %add17.i, %if.then15.i ]
+  br label %while.body.i, !dbg !2060
+
+while.cond.loopexit.i:                            ; preds = %for.inc38.i
+  call void @llvm.dbg.value(metadata !{i32* %size.i}, i64 0, metadata !2056), !dbg !2060
+  call void @llvm.dbg.value(metadata !{i32* %size.i}, i64 0, metadata !1347), !dbg !2060
+  %.pre.i = load i32* %size.i, align 4, !dbg !2060, !tbaa !1693
+  call void @llvm.dbg.value(metadata !{i32* %size.i}, i64 0, metadata !2056), !dbg !2060
+  %cmp10.i = icmp eq i32 %.pre.i, 0, !dbg !2060
+  br i1 %cmp10.i, label %_ZN3povL21calculate_field_valueEPNS_11Blob_StructEPd.exit, label %while.body.i, !dbg !2060
+
+while.body.i:                                     ; preds = %while.cond.loopexit.i, %while.body.lr.ph.i
+  %19 = phi i32 [ %18, %while.body.lr.ph.i ], [ %.pre.i, %while.cond.loopexit.i ]
+  %dec.i = add i32 %19, -1, !dbg !2068
+  call void @llvm.dbg.value(metadata !{i32 %dec.i}, i64 0, metadata !2056), !dbg !2068
+  call void @llvm.dbg.value(metadata !{i32 %dec.i}, i64 0, metadata !1347), !dbg !2068
+  call void @llvm.dbg.value(metadata !{i32 %dec.i}, i64 0, metadata !1347), !dbg !2068
+  store i32 %dec.i, i32* %size.i, align 4, !dbg !2068, !tbaa !1693
+  %idxprom11.i = zext i32 %dec.i to i64, !dbg !2068
+  %20 = load %"struct.pov::Object_Struct"** %Queue.i, align 8, !dbg !2068
+  %21 = bitcast %"struct.pov::Object_Struct"* %20 to %"struct.pov::BSphere_Tree_Struct"**, !dbg !2068
+  %arrayidx13.i = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"** %21, i64 %idxprom11.i, !dbg !2068
+  %22 = load %"struct.pov::BSphere_Tree_Struct"** %arrayidx13.i, align 8, !dbg !2068, !tbaa !1639
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BSphere_Tree_Struct"* %22}, i64 0, metadata !2069), !dbg !2068
+  %Entries.i = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %22, i64 0, i32 0, !dbg !2070
+  %23 = load i16* %Entries.i, align 2, !dbg !2070, !tbaa !1725
+  %cmp14.i = icmp slt i16 %23, 1, !dbg !2070
+  %Node.i = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %22, i64 0, i32 3, !dbg !2071
+  br i1 %cmp14.i, label %if.then15.i, label %for.body23.i, !dbg !2070
+
+if.then15.i:                                      ; preds = %while.body.i
+  %24 = load %"struct.pov::BSphere_Tree_Struct"*** %Node.i, align 8, !dbg !2071, !tbaa !1639
+  %25 = bitcast %"struct.pov::BSphere_Tree_Struct"** %24 to %"struct.pov::Blob_Element_Struct"*, !dbg !2071
+  %call16.i = call fastcc double @_ZN3povL23calculate_element_fieldEPNS_19Blob_Element_StructEPd(%"struct.pov::Blob_Element_Struct"* %25, double* %arraydecay) #7, !dbg !2071
+  %add17.i = fadd double %density.1.ph82.i, %call16.i, !dbg !2071
+  call void @llvm.dbg.value(metadata !{double %add17.i}, i64 0, metadata !2048), !dbg !2071
+  call void @llvm.dbg.value(metadata !{i32* %size.i}, i64 0, metadata !2056), !dbg !2060
+  %cmp1078.i = icmp eq i32 %dec.i, 0, !dbg !2060
+  br i1 %cmp1078.i, label %_ZN3povL21calculate_field_valueEPNS_11Blob_StructEPd.exit, label %while.body.lr.ph.i, !dbg !2060
+
+for.body23.i:                                     ; preds = %for.inc38.i, %while.body.i
+  %26 = phi i16 [ %23, %while.body.i ], [ %36, %for.inc38.i ]
+  %indvars.iv84.i = phi i64 [ 0, %while.body.i ], [ %indvars.iv.next85.i, %for.inc38.i ]
+  %27 = load %"struct.pov::BSphere_Tree_Struct"*** %Node.i, align 8, !dbg !2062, !tbaa !1639
+  %arrayidx26.i = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"** %27, i64 %indvars.iv84.i, !dbg !2062
+  %28 = load %"struct.pov::BSphere_Tree_Struct"** %arrayidx26.i, align 8, !dbg !2062, !tbaa !1639
+  %arraydecay27.i = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %28, i64 0, i32 1, i64 0, !dbg !2062
+  call void @llvm.dbg.value(metadata !1736, i64 0, metadata !2073), !dbg !2074
+  call void @llvm.dbg.value(metadata !{double* %arraydecay}, i64 0, metadata !2075), !dbg !2074
+  call void @llvm.dbg.value(metadata !{double* %arraydecay27.i}, i64 0, metadata !2076), !dbg !2074
+  %29 = load double* %arraydecay, align 16, !dbg !2077, !tbaa !1647
+  %30 = load double* %arraydecay27.i, align 8, !dbg !2077, !tbaa !1647
+  %sub.i.i = fsub double %29, %30, !dbg !2077
+  %31 = load double* %arrayidx3.i.i, align 8, !dbg !2061, !tbaa !1647
+  %arrayidx4.i.i = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %28, i64 0, i32 1, i64 1, !dbg !2061
+  %32 = load double* %arrayidx4.i.i, align 8, !dbg !2061, !tbaa !1647
+  %sub5.i.i = fsub double %31, %32, !dbg !2061
+  %33 = load double* %arrayidx7.i.i, align 16, !dbg !2067, !tbaa !1647
+  %arrayidx8.i.i = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %28, i64 0, i32 1, i64 2, !dbg !2067
+  %34 = load double* %arrayidx8.i.i, align 8, !dbg !2067, !tbaa !1647
+  %sub9.i.i = fsub double %33, %34, !dbg !2067
+  call void @llvm.dbg.value(metadata !1736, i64 0, metadata !2078), !dbg !2080
+  call void @llvm.dbg.value(metadata !1736, i64 0, metadata !2081), !dbg !2080
+  %mul.i.i = fmul double %sub.i.i, %sub.i.i, !dbg !2082
+  %mul4.i.i = fmul double %sub5.i.i, %sub5.i.i, !dbg !2082
+  %add.i.i = fadd double %mul.i.i, %mul4.i.i, !dbg !2082
+  %mul7.i.i = fmul double %sub9.i.i, %sub9.i.i, !dbg !2082
+  %add8.i.i = fadd double %add.i.i, %mul7.i.i, !dbg !2082
+  call void @llvm.dbg.value(metadata !{double %add8.i.i}, i64 0, metadata !2083), !dbg !2082
+  call void @llvm.dbg.value(metadata !{double %add8.i.i}, i64 0, metadata !2084), !dbg !2080
+  call void @llvm.dbg.value(metadata !{double %add8.i.i}, i64 0, metadata !2085), !dbg !2086
+  %r2.i = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %28, i64 0, i32 2, !dbg !2086
+  %35 = load double* %r2.i, align 8, !dbg !2086, !tbaa !1647
+  %cmp33.i = fcmp ugt double %add8.i.i, %35, !dbg !2086
+  br i1 %cmp33.i, label %for.inc38.i, label %if.then34.i, !dbg !2086
+
+if.then34.i:                                      ; preds = %for.body23.i
+  call fastcc void @_ZN3povL11insert_nodeEPNS_11Blob_StructEPNS_19BSphere_Tree_StructEPj(%"struct.pov::Blob_Struct"* %0, %"struct.pov::BSphere_Tree_Struct"* %28, i32* %size.i) #7, !dbg !2087
+  %.pre88.i = load i16* %Entries.i, align 2, !dbg !2088, !tbaa !1725
+  br label %for.inc38.i, !dbg !2087
+
+for.inc38.i:                                      ; preds = %if.then34.i, %for.body23.i
+  %36 = phi i16 [ %26, %for.body23.i ], [ %.pre88.i, %if.then34.i ], !dbg !2088
+  %indvars.iv.next85.i = add i64 %indvars.iv84.i, 1, !dbg !2088
+  %conv21.i = sext i16 %36 to i32, !dbg !2088
+  %37 = trunc i64 %indvars.iv.next85.i to i32, !dbg !2088
+  %cmp22.i = icmp slt i32 %37, %conv21.i, !dbg !2088
+  br i1 %cmp22.i, label %for.body23.i, label %while.cond.loopexit.i, !dbg !2088
+
+_ZN3povL21calculate_field_valueEPNS_11Blob_StructEPd.exit: ; preds = %if.then15.i, %while.cond.loopexit.i, %for.body.i, %for.cond.preheader.i
+  %density.2.i = phi double [ 0.000000e+00, %for.cond.preheader.i ], [ %add.i, %for.body.i ], [ %density.1.ph82.i, %while.cond.loopexit.i ], [ %add17.i, %if.then15.i ]
+  call void @llvm.lifetime.end(i64 4, i8* %6), !dbg !2089
+  %38 = load %"struct.pov::Blob_Data_Struct"** %7, align 8, !dbg !2043, !tbaa !1639
+  %Threshold = getelementptr inbounds %"struct.pov::Blob_Data_Struct"* %38, i64 0, i32 2, !dbg !2043
+  %39 = load double* %Threshold, align 8, !dbg !2043, !tbaa !1647
+  %sub = fadd double %39, -1.000000e-06, !dbg !2043
+  %cmp4 = fcmp ogt double %density.2.i, %sub, !dbg !2043
+  %40 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 13, !dbg !2090
+  %41 = load i32* %40, align 4, !dbg !2090, !tbaa !1693
+  %conv = zext i32 %41 to i64, !dbg !2090
+  %and = and i64 %conv, 4, !dbg !2090
+  br i1 %cmp4, label %if.then5, label %return, !dbg !2043
+
+if.then5:                                         ; preds = %_ZN3povL21calculate_field_valueEPNS_11Blob_StructEPd.exit
+  %and.lobit = lshr exact i64 %and, 2, !dbg !2090
+  %42 = xor i64 %and.lobit, 1, !dbg !2090
+  br label %return, !dbg !2090
+
+return:                                           ; preds = %_ZN3povL21calculate_field_valueEPNS_11Blob_StructEPd.exit, %if.then5
+  %retval.0.in = phi i64 [ %42, %if.then5 ], [ %and, %_ZN3povL21calculate_field_valueEPNS_11Blob_StructEPd.exit ]
+  %retval.0 = trunc i64 %retval.0.in to i32, !dbg !2090
+  ret i32 %retval.0, !dbg !2092
+}

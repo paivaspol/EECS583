@@ -1,0 +1,33 @@
+define i32 @_ZNK11xercesc_2_523AbstractStringValidator9getLengthEPKtPNS_13MemoryManagerE(%"class.xercesc_2_5::AbstractStringValidator"* nocapture %this, i16* %content, %"class.xercesc_2_5::MemoryManager"* nocapture) unnamed_addr #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::AbstractStringValidator"* %this}, i64 0, metadata !7741), !dbg !9812
+  tail call void @llvm.dbg.value(metadata !{i16* %content}, i64 0, metadata !7742), !dbg !9812
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %0}, i64 0, metadata !7743), !dbg !9813
+  tail call void @llvm.dbg.value(metadata !{i16* %content}, i64 0, metadata !9814), !dbg !9816
+  %cmp.i = icmp eq i16* %content, null, !dbg !9817
+  br i1 %cmp.i, label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, label %lor.lhs.false.i, !dbg !9817
+
+lor.lhs.false.i:                                  ; preds = %entry
+  %1 = load i16* %content, align 2, !dbg !9817, !tbaa !8867
+  %cmp1.i = icmp eq i16 %1, 0, !dbg !9817
+  br i1 %cmp1.i, label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, label %while.cond.i, !dbg !9817
+
+while.cond.i:                                     ; preds = %lor.lhs.false.i, %while.cond.i
+  %src.pn.i = phi i16* [ %pszTmp.0.i, %while.cond.i ], [ %content, %lor.lhs.false.i ]
+  %pszTmp.0.i = getelementptr inbounds i16* %src.pn.i, i64 1, !dbg !9818
+  %2 = load i16* %pszTmp.0.i, align 2, !dbg !9819, !tbaa !8867
+  %tobool.i = icmp eq i16 %2, 0, !dbg !9819
+  br i1 %tobool.i, label %while.end.i, label %while.cond.i, !dbg !9819
+
+while.end.i:                                      ; preds = %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %pszTmp.0.i to i64, !dbg !9820
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %content to i64, !dbg !9820
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !9820
+  %sub.ptr.div7.i = lshr exact i64 %sub.ptr.sub.i, 1, !dbg !9820
+  %conv2.i = trunc i64 %sub.ptr.div7.i to i32, !dbg !9820
+  br label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, !dbg !9820
+
+_ZN11xercesc_2_59XMLString9stringLenEPKt.exit:    ; preds = %entry, %lor.lhs.false.i, %while.end.i
+  %retval.0.i = phi i32 [ %conv2.i, %while.end.i ], [ 0, %lor.lhs.false.i ], [ 0, %entry ]
+  ret i32 %retval.0.i, !dbg !9815
+}

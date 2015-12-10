@@ -1,0 +1,73 @@
+define i32 @_ZNK11xercesc_2_514NamespaceScope21getNamespaceForPrefixEPKti(%"class.xercesc_2_5::NamespaceScope"* %this, i16* %prefixToMap, i32 %depthLevel) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::NamespaceScope"* %this}, i64 0, metadata !839), !dbg !1142
+  tail call void @llvm.dbg.value(metadata !{i16* %prefixToMap}, i64 0, metadata !841), !dbg !1142
+  tail call void @llvm.dbg.value(metadata !{i32 %depthLevel}, i64 0, metadata !842), !dbg !1143
+  %fPrefixPool = getelementptr inbounds %"class.xercesc_2_5::NamespaceScope"* %this, i64 0, i32 3, !dbg !1144
+  %call = tail call i32 @_ZNK11xercesc_2_513XMLStringPool5getIdEPKt(%"class.xercesc_2_5::XMLStringPool"* %fPrefixPool, i16* %prefixToMap) #6, !dbg !1144
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !843), !dbg !1144
+  %tobool = icmp eq i32 %call, 0, !dbg !1145
+  br i1 %tobool, label %if.then, label %for.cond.preheader, !dbg !1145
+
+for.cond.preheader:                               ; preds = %entry
+  %cmp30 = icmp sgt i32 %depthLevel, -1, !dbg !1146
+  br i1 %cmp30, label %for.body.lr.ph, label %for.end18, !dbg !1146
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %fStack = getelementptr inbounds %"class.xercesc_2_5::NamespaceScope"* %this, i64 0, i32 4, !dbg !1147
+  %0 = load %"struct.xercesc_2_5::NamespaceScope::StackElem"*** %fStack, align 8, !dbg !1147, !tbaa !1056
+  %1 = sext i32 %depthLevel to i64
+  br label %for.body, !dbg !1146
+
+if.then:                                          ; preds = %entry
+  %fEmptyNamespaceId = getelementptr inbounds %"class.xercesc_2_5::NamespaceScope"* %this, i64 0, i32 0, !dbg !1148
+  br label %return, !dbg !1148
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc17
+  %indvars.iv = phi i64 [ %1, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc17 ]
+  %arrayidx = getelementptr inbounds %"struct.xercesc_2_5::NamespaceScope::StackElem"** %0, i64 %indvars.iv, !dbg !1147
+  %2 = load %"struct.xercesc_2_5::NamespaceScope::StackElem"** %arrayidx, align 8, !dbg !1147, !tbaa !1056
+  tail call void @llvm.dbg.value(metadata !{%"struct.xercesc_2_5::NamespaceScope::StackElem"* %2}, i64 0, metadata !847), !dbg !1147
+  %fMapCount = getelementptr inbounds %"struct.xercesc_2_5::NamespaceScope::StackElem"* %2, i64 0, i32 2, !dbg !1150
+  %3 = load i32* %fMapCount, align 4, !dbg !1150, !tbaa !1053
+  %tobool2 = icmp eq i32 %3, 0, !dbg !1150
+  br i1 %tobool2, label %for.inc17, label %for.body8.lr.ph, !dbg !1150
+
+for.body8.lr.ph:                                  ; preds = %for.body
+  %fMap = getelementptr inbounds %"struct.xercesc_2_5::NamespaceScope::StackElem"* %2, i64 0, i32 0, !dbg !1151
+  %4 = load %"struct.xercesc_2_5::NamespaceScope::PrefMapElem"** %fMap, align 8, !dbg !1151, !tbaa !1056
+  br label %for.body8, !dbg !1153
+
+for.cond5:                                        ; preds = %for.body8
+  %cmp7 = icmp ult i32 %inc, %3, !dbg !1153
+  br i1 %cmp7, label %for.body8, label %for.inc17, !dbg !1153
+
+for.body8:                                        ; preds = %for.body8.lr.ph, %for.cond5
+  %mapIndex.029 = phi i32 [ 0, %for.body8.lr.ph ], [ %inc, %for.cond5 ]
+  %idxprom9 = zext i32 %mapIndex.029 to i64, !dbg !1151
+  %fPrefId = getelementptr inbounds %"struct.xercesc_2_5::NamespaceScope::PrefMapElem"* %4, i64 %idxprom9, i32 0, !dbg !1151
+  %5 = load i32* %fPrefId, align 4, !dbg !1151, !tbaa !1053
+  %cmp11 = icmp eq i32 %5, %call, !dbg !1151
+  %inc = add i32 %mapIndex.029, 1, !dbg !1153
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !849), !dbg !1153
+  br i1 %cmp11, label %if.then12, label %for.cond5, !dbg !1151
+
+if.then12:                                        ; preds = %for.body8
+  %fURIId = getelementptr inbounds %"struct.xercesc_2_5::NamespaceScope::PrefMapElem"* %4, i64 %idxprom9, i32 1, !dbg !1154
+  br label %return, !dbg !1154
+
+for.inc17:                                        ; preds = %for.cond5, %for.body
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !1146
+  %6 = trunc i64 %indvars.iv to i32, !dbg !1146
+  %cmp = icmp sgt i32 %6, 0, !dbg !1146
+  br i1 %cmp, label %for.body, label %for.end18, !dbg !1146
+
+for.end18:                                        ; preds = %for.inc17, %for.cond.preheader
+  %fEmptyNamespaceId19 = getelementptr inbounds %"class.xercesc_2_5::NamespaceScope"* %this, i64 0, i32 0, !dbg !1155
+  br label %return, !dbg !1155
+
+return:                                           ; preds = %for.end18, %if.then12, %if.then
+  %retval.0.in = phi i32* [ %fURIId, %if.then12 ], [ %fEmptyNamespaceId19, %for.end18 ], [ %fEmptyNamespaceId, %if.then ]
+  %retval.0 = load i32* %retval.0.in, align 4, !dbg !1154
+  ret i32 %retval.0, !dbg !1156
+}

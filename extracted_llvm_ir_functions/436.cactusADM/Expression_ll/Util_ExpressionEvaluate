@@ -1,1171 +1,1186 @@
-define i32 @Util_ExpressionEvaluate(%struct.uExpressionInternals* nocapture readonly %buffer, %struct.uExpressionValue* nocapture %retval, i32 (i32, i8**, %struct.uExpressionValue*, i8*)* nocapture %eval, i8* %data) #1 {
+define i32 @Util_ExpressionEvaluate(%struct.uExpressionInternals* nocapture %buffer, %struct.uExpressionValue* nocapture %retval1, i32 (i32, i8**, %struct.uExpressionValue*, i8*)* nocapture %eval, i8* %data) #1 {
+entry:
   %stack = alloca [256 x %struct.uExpressionValue], align 16
-  %1 = bitcast [256 x %struct.uExpressionValue]* %stack to i8*
-  call void @llvm.lifetime.start(i64 4096, i8* %1) #3
-  %2 = getelementptr inbounds %struct.uExpressionInternals* %buffer, i64 0, i32 2
-  %3 = load i32* %2, align 4, !tbaa !9
-  %4 = sext i32 %3 to i64
-  %5 = shl nsw i64 %4, 4
-  %6 = tail call i8* @malloc(i64 %5) #10
-  %7 = bitcast i8* %6 to %struct.uExpressionValue*
-  %8 = icmp ne i8* %6, null
-  %9 = icmp eq i32 %3, 0
-  %or.cond = or i1 %8, %9
-  br i1 %or.cond, label %10, label %722
-
-; <label>:10                                      ; preds = %0
-  %11 = getelementptr inbounds %struct.uExpressionInternals* %buffer, i64 0, i32 3
-  %12 = load i8*** %11, align 8, !tbaa !10
-  %13 = tail call i32 %eval(i32 %3, i8** %12, %struct.uExpressionValue* %7, i8* %data) #10
-  %14 = getelementptr inbounds %struct.uExpressionInternals* %buffer, i64 0, i32 0
-  %15 = load i32* %14, align 4, !tbaa !2
-  %16 = icmp sgt i32 %15, 0
-  br i1 %16, label %.lr.ph, label %._crit_edge
-
-.lr.ph:                                           ; preds = %10
-  %17 = getelementptr inbounds %struct.uExpressionInternals* %buffer, i64 0, i32 1
-  br label %18
-
-; <label>:18                                      ; preds = %.lr.ph, %EvaluateBinary.exit
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %EvaluateBinary.exit ]
-  %stackpointer.02 = phi i32 [ 0, %.lr.ph ], [ %stackpointer.1, %EvaluateBinary.exit ]
-  %19 = load %struct.uExpressionToken** %17, align 8, !tbaa !8
-  %20 = getelementptr inbounds %struct.uExpressionToken* %19, i64 %indvars.iv, i32 0
-  %21 = load i32* %20, align 4, !tbaa !17
-  switch i32 %21, label %EvaluateBinary.exit [
-    i32 0, label %22
-    i32 2, label %32
-    i32 1, label %521
-  ]
-
-; <label>:22                                      ; preds = %18
-  %23 = sext i32 %stackpointer.02 to i64
-  %24 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %23
-  %25 = getelementptr inbounds %struct.uExpressionToken* %19, i64 %indvars.iv, i32 1, i32 0
-  %26 = load i32* %25, align 4, !tbaa !21
-  %27 = sext i32 %26 to i64
-  %28 = getelementptr inbounds %struct.uExpressionValue* %7, i64 %27
-  %29 = bitcast %struct.uExpressionValue* %24 to i8*
-  %30 = bitcast %struct.uExpressionValue* %28 to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %29, i8* %30, i64 16, i32 8, i1 false), !tbaa.struct !22
-  %31 = add nsw i32 %stackpointer.02, 1
-  br label %EvaluateBinary.exit
-
-; <label>:32                                      ; preds = %18
-  %33 = add nsw i32 %stackpointer.02, -2
-  %34 = sext i32 %33 to i64
-  %35 = getelementptr inbounds %struct.uExpressionToken* %19, i64 %indvars.iv, i32 1, i32 0
-  %36 = load i32* %35, align 4, !tbaa !11
-  %37 = add nsw i32 %stackpointer.02, -1
-  %38 = sext i32 %37 to i64
-  %39 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38
-  %40 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 0
-  %41 = load i32* %40, align 16, !tbaa !25
-  switch i32 %41, label %.thread.i [
-    i32 1, label %42
-    i32 0, label %165
-  ]
-
-; <label>:42                                      ; preds = %32
-  %43 = getelementptr inbounds %struct.uExpressionValue* %39, i64 0, i32 0
-  %44 = load i32* %43, align 16, !tbaa !25
-  switch i32 %44, label %.thread.i [
-    i32 1, label %45
-    i32 0, label %290
-  ]
-
-; <label>:45                                      ; preds = %42
-  store i32 1, i32* %40, align 16, !tbaa !25
-  switch i32 %36, label %160 [
-    i32 8, label %46
-    i32 9, label %54
-    i32 10, label %62
-    i32 11, label %70
-    i32 12, label %78
-    i32 6, label %89
-    i32 7, label %102
-    i32 1, label %115
-    i32 2, label %124
-    i32 4, label %133
-    i32 3, label %142
-    i32 5, label %151
-  ]
-
-; <label>:46                                      ; preds = %45
-  %47 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %48 = bitcast %union.anon.0* %47 to i32*
-  %49 = load i32* %48, align 8, !tbaa !21
-  %50 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1
-  %51 = bitcast %union.anon.0* %50 to i32*
-  %52 = load i32* %51, align 8, !tbaa !21
-  %53 = add nsw i32 %52, %49
-  store i32 %53, i32* %48, align 8, !tbaa !21
-  br label %EvaluateBinary.exit
-
-; <label>:54                                      ; preds = %45
-  %55 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %56 = bitcast %union.anon.0* %55 to i32*
-  %57 = load i32* %56, align 8, !tbaa !21
-  %58 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1
-  %59 = bitcast %union.anon.0* %58 to i32*
-  %60 = load i32* %59, align 8, !tbaa !21
-  %61 = sub nsw i32 %57, %60
-  store i32 %61, i32* %56, align 8, !tbaa !21
-  br label %EvaluateBinary.exit
-
-; <label>:62                                      ; preds = %45
-  %63 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %64 = bitcast %union.anon.0* %63 to i32*
-  %65 = load i32* %64, align 8, !tbaa !21
-  %66 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1
-  %67 = bitcast %union.anon.0* %66 to i32*
-  %68 = load i32* %67, align 8, !tbaa !21
-  %69 = sdiv i32 %65, %68
-  store i32 %69, i32* %64, align 8, !tbaa !21
-  br label %EvaluateBinary.exit
-
-; <label>:70                                      ; preds = %45
-  %71 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %72 = bitcast %union.anon.0* %71 to i32*
-  %73 = load i32* %72, align 8, !tbaa !21
-  %74 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1
-  %75 = bitcast %union.anon.0* %74 to i32*
-  %76 = load i32* %75, align 8, !tbaa !21
-  %77 = mul nsw i32 %76, %73
-  store i32 %77, i32* %72, align 8, !tbaa !21
-  br label %EvaluateBinary.exit
-
-; <label>:78                                      ; preds = %45
-  %79 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %80 = bitcast %union.anon.0* %79 to i32*
-  %81 = load i32* %80, align 8, !tbaa !21
-  %82 = sitofp i32 %81 to double
-  %83 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1
-  %84 = bitcast %union.anon.0* %83 to i32*
-  %85 = load i32* %84, align 8, !tbaa !21
-  %86 = sitofp i32 %85 to double
-  %87 = tail call double @llvm.pow.f64(double %82, double %86) #3
-  %88 = fptosi double %87 to i32
-  store i32 %88, i32* %80, align 8, !tbaa !21
-  br label %EvaluateBinary.exit
-
-; <label>:89                                      ; preds = %45
-  %90 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %91 = bitcast %union.anon.0* %90 to i32*
-  %92 = load i32* %91, align 8, !tbaa !21
-  %93 = icmp eq i32 %92, 0
-  br i1 %93, label %99, label %94
-
-; <label>:94                                      ; preds = %89
-  %95 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1
-  %96 = bitcast %union.anon.0* %95 to i32*
-  %97 = load i32* %96, align 8, !tbaa !21
-  %98 = icmp ne i32 %97, 0
-  br label %99
-
-; <label>:99                                      ; preds = %94, %89
-  %100 = phi i1 [ false, %89 ], [ %98, %94 ]
-  %101 = zext i1 %100 to i32
-  store i32 %101, i32* %91, align 8, !tbaa !21
-  br label %EvaluateBinary.exit
-
-; <label>:102                                     ; preds = %45
-  %103 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %104 = bitcast %union.anon.0* %103 to i32*
-  %105 = load i32* %104, align 8, !tbaa !21
-  %106 = icmp eq i32 %105, 0
-  br i1 %106, label %107, label %112
-
-; <label>:107                                     ; preds = %102
-  %108 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1
-  %109 = bitcast %union.anon.0* %108 to i32*
-  %110 = load i32* %109, align 8, !tbaa !21
-  %111 = icmp ne i32 %110, 0
-  br label %112
-
-; <label>:112                                     ; preds = %107, %102
-  %113 = phi i1 [ true, %102 ], [ %111, %107 ]
-  %114 = zext i1 %113 to i32
-  store i32 %114, i32* %104, align 8, !tbaa !21
-  br label %EvaluateBinary.exit
-
-; <label>:115                                     ; preds = %45
-  %116 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %117 = bitcast %union.anon.0* %116 to i32*
-  %118 = load i32* %117, align 8, !tbaa !21
-  %119 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1
-  %120 = bitcast %union.anon.0* %119 to i32*
-  %121 = load i32* %120, align 8, !tbaa !21
-  %122 = icmp eq i32 %118, %121
-  %123 = zext i1 %122 to i32
-  store i32 %123, i32* %117, align 8, !tbaa !21
-  br label %EvaluateBinary.exit
-
-; <label>:124                                     ; preds = %45
-  %125 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %126 = bitcast %union.anon.0* %125 to i32*
-  %127 = load i32* %126, align 8, !tbaa !21
-  %128 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1
-  %129 = bitcast %union.anon.0* %128 to i32*
-  %130 = load i32* %129, align 8, !tbaa !21
-  %131 = icmp slt i32 %127, %130
-  %132 = zext i1 %131 to i32
-  store i32 %132, i32* %126, align 8, !tbaa !21
-  br label %EvaluateBinary.exit
-
-; <label>:133                                     ; preds = %45
-  %134 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %135 = bitcast %union.anon.0* %134 to i32*
-  %136 = load i32* %135, align 8, !tbaa !21
-  %137 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1
-  %138 = bitcast %union.anon.0* %137 to i32*
-  %139 = load i32* %138, align 8, !tbaa !21
-  %140 = icmp sle i32 %136, %139
-  %141 = zext i1 %140 to i32
-  store i32 %141, i32* %135, align 8, !tbaa !21
-  br label %EvaluateBinary.exit
-
-; <label>:142                                     ; preds = %45
-  %143 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %144 = bitcast %union.anon.0* %143 to i32*
-  %145 = load i32* %144, align 8, !tbaa !21
-  %146 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1
-  %147 = bitcast %union.anon.0* %146 to i32*
-  %148 = load i32* %147, align 8, !tbaa !21
-  %149 = icmp sgt i32 %145, %148
-  %150 = zext i1 %149 to i32
-  store i32 %150, i32* %144, align 8, !tbaa !21
-  br label %EvaluateBinary.exit
-
-; <label>:151                                     ; preds = %45
-  %152 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %153 = bitcast %union.anon.0* %152 to i32*
-  %154 = load i32* %153, align 8, !tbaa !21
-  %155 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1
-  %156 = bitcast %union.anon.0* %155 to i32*
-  %157 = load i32* %156, align 8, !tbaa !21
-  %158 = icmp sge i32 %154, %157
-  %159 = zext i1 %158 to i32
-  store i32 %159, i32* %153, align 8, !tbaa !21
-  br label %EvaluateBinary.exit
-
-; <label>:160                                     ; preds = %45
-  %161 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !16
-  %162 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %161, i8* getelementptr inbounds ([21 x i8]* @.str32, i64 0, i64 0), i32 %36) #10
-  %163 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %164 = bitcast %union.anon.0* %163 to i32*
-  store i32 0, i32* %164, align 8, !tbaa !21
-  br label %EvaluateBinary.exit
-
-; <label>:165                                     ; preds = %32
-  %166 = getelementptr inbounds %struct.uExpressionValue* %39, i64 0, i32 0
-  %167 = load i32* %166, align 16, !tbaa !25
-  %168 = icmp eq i32 %167, 1
-  br i1 %168, label %169, label %.thread.i
-
-; <label>:169                                     ; preds = %165
-  store i32 0, i32* %40, align 16, !tbaa !25
-  switch i32 %36, label %286 [
-    i32 8, label %170
-    i32 9, label %178
-    i32 10, label %186
-    i32 11, label %194
-    i32 12, label %202
-    i32 6, label %210
-    i32 7, label %223
-    i32 1, label %236
-    i32 2, label %246
-    i32 4, label %256
-    i32 3, label %266
-    i32 5, label %276
-  ]
-
-; <label>:170                                     ; preds = %169
-  %171 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  %172 = load double* %171, align 8, !tbaa !23
-  %173 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1
-  %174 = bitcast %union.anon.0* %173 to i32*
-  %175 = load i32* %174, align 8, !tbaa !21
-  %176 = sitofp i32 %175 to double
-  %177 = fadd double %172, %176
-  store double %177, double* %171, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:178                                     ; preds = %169
-  %179 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  %180 = load double* %179, align 8, !tbaa !23
-  %181 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1
-  %182 = bitcast %union.anon.0* %181 to i32*
-  %183 = load i32* %182, align 8, !tbaa !21
-  %184 = sitofp i32 %183 to double
-  %185 = fsub double %180, %184
-  store double %185, double* %179, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:186                                     ; preds = %169
-  %187 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  %188 = load double* %187, align 8, !tbaa !23
-  %189 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1
-  %190 = bitcast %union.anon.0* %189 to i32*
-  %191 = load i32* %190, align 8, !tbaa !21
-  %192 = sitofp i32 %191 to double
-  %193 = fdiv double %188, %192
-  store double %193, double* %187, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:194                                     ; preds = %169
-  %195 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  %196 = load double* %195, align 8, !tbaa !23
-  %197 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1
-  %198 = bitcast %union.anon.0* %197 to i32*
-  %199 = load i32* %198, align 8, !tbaa !21
-  %200 = sitofp i32 %199 to double
-  %201 = fmul double %196, %200
-  store double %201, double* %195, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:202                                     ; preds = %169
-  %203 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  %204 = load double* %203, align 8, !tbaa !23
-  %205 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1
-  %206 = bitcast %union.anon.0* %205 to i32*
-  %207 = load i32* %206, align 8, !tbaa !21
-  %208 = sitofp i32 %207 to double
-  %209 = tail call double @llvm.pow.f64(double %204, double %208) #3
-  store double %209, double* %203, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:210                                     ; preds = %169
-  %211 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  %212 = load double* %211, align 8, !tbaa !23
-  %213 = fcmp une double %212, 0.000000e+00
-  br i1 %213, label %214, label %219
-
-; <label>:214                                     ; preds = %210
-  %215 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1
-  %216 = bitcast %union.anon.0* %215 to i32*
-  %217 = load i32* %216, align 8, !tbaa !21
-  %218 = icmp ne i32 %217, 0
-  br label %219
-
-; <label>:219                                     ; preds = %214, %210
-  %220 = phi i1 [ false, %210 ], [ %218, %214 ]
-  %221 = zext i1 %220 to i32
-  %222 = sitofp i32 %221 to double
-  store double %222, double* %211, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:223                                     ; preds = %169
-  %224 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  %225 = load double* %224, align 8, !tbaa !23
-  %226 = fcmp une double %225, 0.000000e+00
-  br i1 %226, label %232, label %227
-
-; <label>:227                                     ; preds = %223
-  %228 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1
-  %229 = bitcast %union.anon.0* %228 to i32*
-  %230 = load i32* %229, align 8, !tbaa !21
-  %231 = icmp ne i32 %230, 0
-  br label %232
-
-; <label>:232                                     ; preds = %227, %223
-  %233 = phi i1 [ true, %223 ], [ %231, %227 ]
-  %234 = zext i1 %233 to i32
-  %235 = sitofp i32 %234 to double
-  store double %235, double* %224, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:236                                     ; preds = %169
-  %237 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  %238 = load double* %237, align 8, !tbaa !23
-  %239 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1
-  %240 = bitcast %union.anon.0* %239 to i32*
-  %241 = load i32* %240, align 8, !tbaa !21
-  %242 = sitofp i32 %241 to double
-  %243 = fcmp oeq double %238, %242
-  %244 = zext i1 %243 to i32
-  %245 = sitofp i32 %244 to double
-  store double %245, double* %237, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:246                                     ; preds = %169
-  %247 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  %248 = load double* %247, align 8, !tbaa !23
-  %249 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1
-  %250 = bitcast %union.anon.0* %249 to i32*
-  %251 = load i32* %250, align 8, !tbaa !21
-  %252 = sitofp i32 %251 to double
-  %253 = fcmp olt double %248, %252
-  %254 = zext i1 %253 to i32
-  %255 = sitofp i32 %254 to double
-  store double %255, double* %247, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:256                                     ; preds = %169
-  %257 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  %258 = load double* %257, align 8, !tbaa !23
-  %259 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1
-  %260 = bitcast %union.anon.0* %259 to i32*
-  %261 = load i32* %260, align 8, !tbaa !21
-  %262 = sitofp i32 %261 to double
-  %263 = fcmp ole double %258, %262
-  %264 = zext i1 %263 to i32
-  %265 = sitofp i32 %264 to double
-  store double %265, double* %257, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:266                                     ; preds = %169
-  %267 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  %268 = load double* %267, align 8, !tbaa !23
-  %269 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1
-  %270 = bitcast %union.anon.0* %269 to i32*
-  %271 = load i32* %270, align 8, !tbaa !21
-  %272 = sitofp i32 %271 to double
-  %273 = fcmp ogt double %268, %272
-  %274 = zext i1 %273 to i32
-  %275 = sitofp i32 %274 to double
-  store double %275, double* %267, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:276                                     ; preds = %169
-  %277 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  %278 = load double* %277, align 8, !tbaa !23
-  %279 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1
-  %280 = bitcast %union.anon.0* %279 to i32*
-  %281 = load i32* %280, align 8, !tbaa !21
-  %282 = sitofp i32 %281 to double
-  %283 = fcmp oge double %278, %282
-  %284 = zext i1 %283 to i32
-  %285 = sitofp i32 %284 to double
-  store double %285, double* %277, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:286                                     ; preds = %169
-  %287 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !16
-  %288 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %287, i8* getelementptr inbounds ([21 x i8]* @.str32, i64 0, i64 0), i32 %36) #10
-  %289 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  store double 0.000000e+00, double* %289, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:290                                     ; preds = %42
-  store i32 0, i32* %40, align 16, !tbaa !25
-  switch i32 %36, label %419 [
-    i32 8, label %291
-    i32 9, label %300
-    i32 10, label %309
-    i32 11, label %318
-    i32 12, label %327
-    i32 6, label %336
-    i32 7, label %350
-    i32 1, label %364
-    i32 2, label %375
-    i32 4, label %386
-    i32 3, label %397
-    i32 5, label %408
-  ]
-
-; <label>:291                                     ; preds = %290
-  %292 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %293 = bitcast %union.anon.0* %292 to i32*
-  %294 = load i32* %293, align 8, !tbaa !21
-  %295 = sitofp i32 %294 to double
-  %296 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1, i32 0
-  %297 = load double* %296, align 8, !tbaa !23
-  %298 = fadd double %295, %297
-  %299 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  store double %298, double* %299, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:300                                     ; preds = %290
-  %301 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %302 = bitcast %union.anon.0* %301 to i32*
-  %303 = load i32* %302, align 8, !tbaa !21
-  %304 = sitofp i32 %303 to double
-  %305 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1, i32 0
-  %306 = load double* %305, align 8, !tbaa !23
-  %307 = fsub double %304, %306
-  %308 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  store double %307, double* %308, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:309                                     ; preds = %290
-  %310 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %311 = bitcast %union.anon.0* %310 to i32*
-  %312 = load i32* %311, align 8, !tbaa !21
-  %313 = sitofp i32 %312 to double
-  %314 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1, i32 0
-  %315 = load double* %314, align 8, !tbaa !23
-  %316 = fdiv double %313, %315
-  %317 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  store double %316, double* %317, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:318                                     ; preds = %290
-  %319 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %320 = bitcast %union.anon.0* %319 to i32*
-  %321 = load i32* %320, align 8, !tbaa !21
-  %322 = sitofp i32 %321 to double
-  %323 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1, i32 0
-  %324 = load double* %323, align 8, !tbaa !23
-  %325 = fmul double %322, %324
-  %326 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  store double %325, double* %326, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:327                                     ; preds = %290
-  %328 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %329 = bitcast %union.anon.0* %328 to i32*
-  %330 = load i32* %329, align 8, !tbaa !21
-  %331 = sitofp i32 %330 to double
-  %332 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1, i32 0
-  %333 = load double* %332, align 8, !tbaa !23
-  %334 = tail call double @llvm.pow.f64(double %331, double %333) #3
-  %335 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  store double %334, double* %335, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:336                                     ; preds = %290
-  %337 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %338 = bitcast %union.anon.0* %337 to i32*
-  %339 = load i32* %338, align 8, !tbaa !21
-  %340 = icmp eq i32 %339, 0
-  br i1 %340, label %345, label %341
-
-; <label>:341                                     ; preds = %336
-  %342 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1, i32 0
-  %343 = load double* %342, align 8, !tbaa !23
-  %344 = fcmp une double %343, 0.000000e+00
-  br label %345
-
-; <label>:345                                     ; preds = %341, %336
-  %346 = phi i1 [ false, %336 ], [ %344, %341 ]
-  %347 = zext i1 %346 to i32
-  %348 = sitofp i32 %347 to double
-  %349 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  store double %348, double* %349, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:350                                     ; preds = %290
-  %351 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %352 = bitcast %union.anon.0* %351 to i32*
-  %353 = load i32* %352, align 8, !tbaa !21
-  %354 = icmp eq i32 %353, 0
-  br i1 %354, label %355, label %359
-
-; <label>:355                                     ; preds = %350
-  %356 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1, i32 0
-  %357 = load double* %356, align 8, !tbaa !23
-  %358 = fcmp une double %357, 0.000000e+00
-  br label %359
-
-; <label>:359                                     ; preds = %355, %350
-  %360 = phi i1 [ true, %350 ], [ %358, %355 ]
-  %361 = zext i1 %360 to i32
-  %362 = sitofp i32 %361 to double
-  %363 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  store double %362, double* %363, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:364                                     ; preds = %290
-  %365 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %366 = bitcast %union.anon.0* %365 to i32*
-  %367 = load i32* %366, align 8, !tbaa !21
-  %368 = sitofp i32 %367 to double
-  %369 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1, i32 0
-  %370 = load double* %369, align 8, !tbaa !23
-  %371 = fcmp oeq double %368, %370
-  %372 = zext i1 %371 to i32
-  %373 = sitofp i32 %372 to double
-  %374 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  store double %373, double* %374, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:375                                     ; preds = %290
-  %376 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %377 = bitcast %union.anon.0* %376 to i32*
-  %378 = load i32* %377, align 8, !tbaa !21
-  %379 = sitofp i32 %378 to double
-  %380 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1, i32 0
-  %381 = load double* %380, align 8, !tbaa !23
-  %382 = fcmp olt double %379, %381
-  %383 = zext i1 %382 to i32
-  %384 = sitofp i32 %383 to double
-  %385 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  store double %384, double* %385, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:386                                     ; preds = %290
-  %387 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %388 = bitcast %union.anon.0* %387 to i32*
-  %389 = load i32* %388, align 8, !tbaa !21
-  %390 = sitofp i32 %389 to double
-  %391 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1, i32 0
-  %392 = load double* %391, align 8, !tbaa !23
-  %393 = fcmp ole double %390, %392
-  %394 = zext i1 %393 to i32
-  %395 = sitofp i32 %394 to double
-  %396 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  store double %395, double* %396, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:397                                     ; preds = %290
-  %398 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %399 = bitcast %union.anon.0* %398 to i32*
-  %400 = load i32* %399, align 8, !tbaa !21
-  %401 = sitofp i32 %400 to double
-  %402 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1, i32 0
-  %403 = load double* %402, align 8, !tbaa !23
-  %404 = fcmp ogt double %401, %403
-  %405 = zext i1 %404 to i32
-  %406 = sitofp i32 %405 to double
-  %407 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  store double %406, double* %407, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:408                                     ; preds = %290
-  %409 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1
-  %410 = bitcast %union.anon.0* %409 to i32*
-  %411 = load i32* %410, align 8, !tbaa !21
-  %412 = sitofp i32 %411 to double
-  %413 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1, i32 0
-  %414 = load double* %413, align 8, !tbaa !23
-  %415 = fcmp oge double %412, %414
-  %416 = zext i1 %415 to i32
-  %417 = sitofp i32 %416 to double
-  %418 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  store double %417, double* %418, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:419                                     ; preds = %290
-  %420 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !16
-  %421 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %420, i8* getelementptr inbounds ([21 x i8]* @.str32, i64 0, i64 0), i32 %36) #10
-  %422 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  store double 0.000000e+00, double* %422, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-.thread.i:                                        ; preds = %42, %165, %32
-  store i32 0, i32* %40, align 16, !tbaa !25
-  switch i32 %36, label %517 [
-    i32 8, label %423
-    i32 9, label %429
-    i32 10, label %435
-    i32 11, label %441
-    i32 12, label %447
-    i32 6, label %453
-    i32 7, label %465
-    i32 1, label %477
-    i32 2, label %485
-    i32 4, label %493
-    i32 3, label %501
-    i32 5, label %509
-  ]
-
-; <label>:423                                     ; preds = %.thread.i
-  %424 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  %425 = load double* %424, align 8, !tbaa !23
-  %426 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1, i32 0
-  %427 = load double* %426, align 8, !tbaa !23
-  %428 = fadd double %425, %427
-  store double %428, double* %424, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:429                                     ; preds = %.thread.i
-  %430 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  %431 = load double* %430, align 8, !tbaa !23
-  %432 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1, i32 0
-  %433 = load double* %432, align 8, !tbaa !23
-  %434 = fsub double %431, %433
-  store double %434, double* %430, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:435                                     ; preds = %.thread.i
-  %436 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  %437 = load double* %436, align 8, !tbaa !23
-  %438 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1, i32 0
-  %439 = load double* %438, align 8, !tbaa !23
-  %440 = fdiv double %437, %439
-  store double %440, double* %436, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:441                                     ; preds = %.thread.i
-  %442 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  %443 = load double* %442, align 8, !tbaa !23
-  %444 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1, i32 0
-  %445 = load double* %444, align 8, !tbaa !23
-  %446 = fmul double %443, %445
-  store double %446, double* %442, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:447                                     ; preds = %.thread.i
-  %448 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  %449 = load double* %448, align 8, !tbaa !23
-  %450 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1, i32 0
-  %451 = load double* %450, align 8, !tbaa !23
-  %452 = tail call double @llvm.pow.f64(double %449, double %451) #3
-  store double %452, double* %448, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:453                                     ; preds = %.thread.i
-  %454 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  %455 = load double* %454, align 8, !tbaa !23
-  %456 = fcmp une double %455, 0.000000e+00
-  br i1 %456, label %457, label %461
-
-; <label>:457                                     ; preds = %453
-  %458 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1, i32 0
-  %459 = load double* %458, align 8, !tbaa !23
-  %460 = fcmp une double %459, 0.000000e+00
-  br label %461
-
-; <label>:461                                     ; preds = %457, %453
-  %462 = phi i1 [ false, %453 ], [ %460, %457 ]
-  %463 = zext i1 %462 to i32
-  %464 = sitofp i32 %463 to double
-  store double %464, double* %454, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:465                                     ; preds = %.thread.i
-  %466 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  %467 = load double* %466, align 8, !tbaa !23
-  %468 = fcmp une double %467, 0.000000e+00
-  br i1 %468, label %473, label %469
-
-; <label>:469                                     ; preds = %465
-  %470 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1, i32 0
-  %471 = load double* %470, align 8, !tbaa !23
-  %472 = fcmp une double %471, 0.000000e+00
-  br label %473
-
-; <label>:473                                     ; preds = %469, %465
-  %474 = phi i1 [ true, %465 ], [ %472, %469 ]
-  %475 = zext i1 %474 to i32
-  %476 = sitofp i32 %475 to double
-  store double %476, double* %466, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:477                                     ; preds = %.thread.i
-  %478 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  %479 = load double* %478, align 8, !tbaa !23
-  %480 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1, i32 0
-  %481 = load double* %480, align 8, !tbaa !23
-  %482 = fcmp oeq double %479, %481
-  %483 = zext i1 %482 to i32
-  %484 = sitofp i32 %483 to double
-  store double %484, double* %478, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:485                                     ; preds = %.thread.i
-  %486 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  %487 = load double* %486, align 8, !tbaa !23
-  %488 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1, i32 0
-  %489 = load double* %488, align 8, !tbaa !23
-  %490 = fcmp olt double %487, %489
-  %491 = zext i1 %490 to i32
-  %492 = sitofp i32 %491 to double
-  store double %492, double* %486, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:493                                     ; preds = %.thread.i
-  %494 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  %495 = load double* %494, align 8, !tbaa !23
-  %496 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1, i32 0
-  %497 = load double* %496, align 8, !tbaa !23
-  %498 = fcmp ole double %495, %497
-  %499 = zext i1 %498 to i32
-  %500 = sitofp i32 %499 to double
-  store double %500, double* %494, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:501                                     ; preds = %.thread.i
-  %502 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  %503 = load double* %502, align 8, !tbaa !23
-  %504 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1, i32 0
-  %505 = load double* %504, align 8, !tbaa !23
-  %506 = fcmp ogt double %503, %505
-  %507 = zext i1 %506 to i32
-  %508 = sitofp i32 %507 to double
-  store double %508, double* %502, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:509                                     ; preds = %.thread.i
-  %510 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  %511 = load double* %510, align 8, !tbaa !23
-  %512 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %38, i32 1, i32 0
-  %513 = load double* %512, align 8, !tbaa !23
-  %514 = fcmp oge double %511, %513
-  %515 = zext i1 %514 to i32
-  %516 = sitofp i32 %515 to double
-  store double %516, double* %510, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:517                                     ; preds = %.thread.i
-  %518 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !16
-  %519 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %518, i8* getelementptr inbounds ([21 x i8]* @.str32, i64 0, i64 0), i32 %36) #10
-  %520 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %34, i32 1, i32 0
-  store double 0.000000e+00, double* %520, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:521                                     ; preds = %18
-  %522 = add nsw i32 %stackpointer.02, -1
-  %523 = sext i32 %522 to i64
-  %524 = getelementptr inbounds %struct.uExpressionToken* %19, i64 %indvars.iv, i32 1, i32 0
-  %525 = load i32* %524, align 4, !tbaa !11
-  %526 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 0
-  %527 = load i32* %526, align 16, !tbaa !25
-  %528 = icmp eq i32 %527, 1
-  store i32 0, i32* %526, align 16, !tbaa !25
-  br i1 %528, label %529, label %646
-
-; <label>:529                                     ; preds = %521
-  switch i32 %525, label %642 [
-    i32 13, label %530
-    i32 14, label %537
-    i32 15, label %544
-    i32 16, label %551
-    i32 17, label %558
-    i32 18, label %565
-    i32 19, label %572
-    i32 20, label %579
-    i32 21, label %586
-    i32 22, label %593
-    i32 23, label %600
-    i32 24, label %607
-    i32 25, label %614
-    i32 26, label %621
-    i32 27, label %628
-    i32 28, label %635
-  ]
-
-; <label>:530                                     ; preds = %529
-  %531 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1
-  %532 = bitcast %union.anon.0* %531 to i32*
-  %533 = load i32* %532, align 8, !tbaa !21
-  %534 = sitofp i32 %533 to double
-  %535 = tail call double @acos(double %534) #13
-  %536 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  store double %535, double* %536, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:537                                     ; preds = %529
-  %538 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1
-  %539 = bitcast %union.anon.0* %538 to i32*
-  %540 = load i32* %539, align 8, !tbaa !21
-  %541 = sitofp i32 %540 to double
-  %542 = tail call double @asin(double %541) #13
-  %543 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  store double %542, double* %543, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:544                                     ; preds = %529
-  %545 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1
-  %546 = bitcast %union.anon.0* %545 to i32*
-  %547 = load i32* %546, align 8, !tbaa !21
-  %548 = sitofp i32 %547 to double
-  %549 = tail call double @atan(double %548) #13
-  %550 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  store double %549, double* %550, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:551                                     ; preds = %529
-  %552 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1
-  %553 = bitcast %union.anon.0* %552 to i32*
-  %554 = load i32* %553, align 8, !tbaa !21
-  %555 = sitofp i32 %554 to double
-  %556 = tail call double @ceil(double %555) #13
-  %557 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  store double %556, double* %557, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:558                                     ; preds = %529
-  %559 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1
-  %560 = bitcast %union.anon.0* %559 to i32*
-  %561 = load i32* %560, align 8, !tbaa !21
-  %562 = sitofp i32 %561 to double
-  %563 = tail call double @cos(double %562) #13
-  %564 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  store double %563, double* %564, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:565                                     ; preds = %529
-  %566 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1
-  %567 = bitcast %union.anon.0* %566 to i32*
-  %568 = load i32* %567, align 8, !tbaa !21
-  %569 = sitofp i32 %568 to double
-  %570 = tail call double @cosh(double %569) #13
-  %571 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  store double %570, double* %571, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:572                                     ; preds = %529
-  %573 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1
-  %574 = bitcast %union.anon.0* %573 to i32*
-  %575 = load i32* %574, align 8, !tbaa !21
-  %576 = sitofp i32 %575 to double
-  %577 = tail call double @exp(double %576) #13
-  %578 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  store double %577, double* %578, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:579                                     ; preds = %529
-  %580 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1
-  %581 = bitcast %union.anon.0* %580 to i32*
-  %582 = load i32* %581, align 8, !tbaa !21
-  %583 = sitofp i32 %582 to double
-  %584 = tail call double @fabs(double %583) #13
-  %585 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  store double %584, double* %585, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:586                                     ; preds = %529
-  %587 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1
-  %588 = bitcast %union.anon.0* %587 to i32*
-  %589 = load i32* %588, align 8, !tbaa !21
-  %590 = sitofp i32 %589 to double
-  %591 = tail call double @floor(double %590) #13
-  %592 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  store double %591, double* %592, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:593                                     ; preds = %529
-  %594 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1
-  %595 = bitcast %union.anon.0* %594 to i32*
-  %596 = load i32* %595, align 8, !tbaa !21
-  %597 = sitofp i32 %596 to double
-  %598 = tail call double @log(double %597) #13
-  %599 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  store double %598, double* %599, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:600                                     ; preds = %529
-  %601 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1
-  %602 = bitcast %union.anon.0* %601 to i32*
-  %603 = load i32* %602, align 8, !tbaa !21
-  %604 = sitofp i32 %603 to double
-  %605 = tail call double @log10(double %604) #13
-  %606 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  store double %605, double* %606, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:607                                     ; preds = %529
-  %608 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1
-  %609 = bitcast %union.anon.0* %608 to i32*
-  %610 = load i32* %609, align 8, !tbaa !21
-  %611 = sitofp i32 %610 to double
-  %612 = tail call double @sin(double %611) #13
-  %613 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  store double %612, double* %613, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:614                                     ; preds = %529
-  %615 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1
-  %616 = bitcast %union.anon.0* %615 to i32*
-  %617 = load i32* %616, align 8, !tbaa !21
-  %618 = sitofp i32 %617 to double
-  %619 = tail call double @sinh(double %618) #13
-  %620 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  store double %619, double* %620, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:621                                     ; preds = %529
-  %622 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1
-  %623 = bitcast %union.anon.0* %622 to i32*
-  %624 = load i32* %623, align 8, !tbaa !21
-  %625 = sitofp i32 %624 to double
-  %626 = tail call double @sqrt(double %625) #13
-  %627 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  store double %626, double* %627, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:628                                     ; preds = %529
-  %629 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1
-  %630 = bitcast %union.anon.0* %629 to i32*
-  %631 = load i32* %630, align 8, !tbaa !21
-  %632 = sitofp i32 %631 to double
-  %633 = tail call double @tan(double %632) #13
-  %634 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  store double %633, double* %634, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:635                                     ; preds = %529
-  %636 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1
-  %637 = bitcast %union.anon.0* %636 to i32*
-  %638 = load i32* %637, align 8, !tbaa !21
-  %639 = sitofp i32 %638 to double
-  %640 = tail call double @tanh(double %639) #13
-  %641 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  store double %640, double* %641, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:642                                     ; preds = %529
-  %643 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !16
-  %644 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %643, i8* getelementptr inbounds ([21 x i8]* @.str32, i64 0, i64 0), i32 %525) #10
-  %645 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  store double 0.000000e+00, double* %645, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:646                                     ; preds = %521
-  switch i32 %525, label %711 [
-    i32 13, label %647
-    i32 14, label %651
-    i32 15, label %655
-    i32 16, label %659
-    i32 17, label %663
-    i32 18, label %667
-    i32 19, label %671
-    i32 20, label %675
-    i32 21, label %679
-    i32 22, label %683
-    i32 23, label %687
-    i32 24, label %691
-    i32 25, label %695
-    i32 26, label %699
-    i32 27, label %703
-    i32 28, label %707
-  ]
-
-; <label>:647                                     ; preds = %646
-  %648 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  %649 = load double* %648, align 8, !tbaa !23
-  %650 = tail call double @acos(double %649) #13
-  store double %650, double* %648, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:651                                     ; preds = %646
-  %652 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  %653 = load double* %652, align 8, !tbaa !23
-  %654 = tail call double @asin(double %653) #13
-  store double %654, double* %652, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:655                                     ; preds = %646
-  %656 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  %657 = load double* %656, align 8, !tbaa !23
-  %658 = tail call double @atan(double %657) #13
-  store double %658, double* %656, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:659                                     ; preds = %646
-  %660 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  %661 = load double* %660, align 8, !tbaa !23
-  %662 = tail call double @ceil(double %661) #13
-  store double %662, double* %660, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:663                                     ; preds = %646
-  %664 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  %665 = load double* %664, align 8, !tbaa !23
-  %666 = tail call double @cos(double %665) #13
-  store double %666, double* %664, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:667                                     ; preds = %646
-  %668 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  %669 = load double* %668, align 8, !tbaa !23
-  %670 = tail call double @cosh(double %669) #13
-  store double %670, double* %668, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:671                                     ; preds = %646
-  %672 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  %673 = load double* %672, align 8, !tbaa !23
-  %674 = tail call double @exp(double %673) #13
-  store double %674, double* %672, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:675                                     ; preds = %646
-  %676 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  %677 = load double* %676, align 8, !tbaa !23
-  %678 = tail call double @fabs(double %677) #13
-  store double %678, double* %676, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:679                                     ; preds = %646
-  %680 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  %681 = load double* %680, align 8, !tbaa !23
-  %682 = tail call double @floor(double %681) #13
-  store double %682, double* %680, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:683                                     ; preds = %646
-  %684 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  %685 = load double* %684, align 8, !tbaa !23
-  %686 = tail call double @log(double %685) #13
-  store double %686, double* %684, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:687                                     ; preds = %646
-  %688 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  %689 = load double* %688, align 8, !tbaa !23
-  %690 = tail call double @log10(double %689) #13
-  store double %690, double* %688, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:691                                     ; preds = %646
-  %692 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  %693 = load double* %692, align 8, !tbaa !23
-  %694 = tail call double @sin(double %693) #13
-  store double %694, double* %692, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:695                                     ; preds = %646
-  %696 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  %697 = load double* %696, align 8, !tbaa !23
-  %698 = tail call double @sinh(double %697) #13
-  store double %698, double* %696, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:699                                     ; preds = %646
-  %700 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  %701 = load double* %700, align 8, !tbaa !23
-  %702 = tail call double @sqrt(double %701) #13
-  store double %702, double* %700, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:703                                     ; preds = %646
-  %704 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  %705 = load double* %704, align 8, !tbaa !23
-  %706 = tail call double @tan(double %705) #13
-  store double %706, double* %704, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:707                                     ; preds = %646
-  %708 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  %709 = load double* %708, align 8, !tbaa !23
-  %710 = tail call double @tanh(double %709) #13
-  store double %710, double* %708, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-; <label>:711                                     ; preds = %646
-  %712 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !16
-  %713 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %712, i8* getelementptr inbounds ([21 x i8]* @.str32, i64 0, i64 0), i32 %525) #10
-  %714 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %523, i32 1, i32 0
-  store double 0.000000e+00, double* %714, align 8, !tbaa !23
-  br label %EvaluateBinary.exit
-
-EvaluateBinary.exit:                              ; preds = %711, %707, %703, %699, %695, %691, %687, %683, %679, %675, %671, %667, %663, %659, %655, %651, %647, %642, %635, %628, %621, %614, %607, %600, %593, %586, %579, %572, %565, %558, %551, %544, %537, %530, %517, %509, %501, %493, %485, %477, %473, %461, %447, %441, %435, %429, %423, %419, %408, %397, %386, %375, %364, %359, %345, %327, %318, %309, %300, %291, %286, %276, %266, %256, %246, %236, %232, %219, %202, %194, %186, %178, %170, %160, %151, %142, %133, %124, %115, %112, %99, %78, %70, %62, %54, %46, %18, %22
-  %stackpointer.1 = phi i32 [ %31, %22 ], [ %stackpointer.02, %18 ], [ %37, %46 ], [ %37, %54 ], [ %37, %62 ], [ %37, %70 ], [ %37, %78 ], [ %37, %99 ], [ %37, %112 ], [ %37, %115 ], [ %37, %124 ], [ %37, %133 ], [ %37, %142 ], [ %37, %151 ], [ %37, %160 ], [ %37, %170 ], [ %37, %178 ], [ %37, %186 ], [ %37, %194 ], [ %37, %202 ], [ %37, %219 ], [ %37, %232 ], [ %37, %236 ], [ %37, %246 ], [ %37, %256 ], [ %37, %266 ], [ %37, %276 ], [ %37, %286 ], [ %37, %291 ], [ %37, %300 ], [ %37, %309 ], [ %37, %318 ], [ %37, %327 ], [ %37, %345 ], [ %37, %359 ], [ %37, %364 ], [ %37, %375 ], [ %37, %386 ], [ %37, %397 ], [ %37, %408 ], [ %37, %419 ], [ %37, %423 ], [ %37, %429 ], [ %37, %435 ], [ %37, %441 ], [ %37, %447 ], [ %37, %461 ], [ %37, %473 ], [ %37, %477 ], [ %37, %485 ], [ %37, %493 ], [ %37, %501 ], [ %37, %509 ], [ %37, %517 ], [ %stackpointer.02, %530 ], [ %stackpointer.02, %537 ], [ %stackpointer.02, %544 ], [ %stackpointer.02, %551 ], [ %stackpointer.02, %558 ], [ %stackpointer.02, %565 ], [ %stackpointer.02, %572 ], [ %stackpointer.02, %579 ], [ %stackpointer.02, %586 ], [ %stackpointer.02, %593 ], [ %stackpointer.02, %600 ], [ %stackpointer.02, %607 ], [ %stackpointer.02, %614 ], [ %stackpointer.02, %621 ], [ %stackpointer.02, %628 ], [ %stackpointer.02, %635 ], [ %stackpointer.02, %642 ], [ %stackpointer.02, %647 ], [ %stackpointer.02, %651 ], [ %stackpointer.02, %655 ], [ %stackpointer.02, %659 ], [ %stackpointer.02, %663 ], [ %stackpointer.02, %667 ], [ %stackpointer.02, %671 ], [ %stackpointer.02, %675 ], [ %stackpointer.02, %679 ], [ %stackpointer.02, %683 ], [ %stackpointer.02, %687 ], [ %stackpointer.02, %691 ], [ %stackpointer.02, %695 ], [ %stackpointer.02, %699 ], [ %stackpointer.02, %703 ], [ %stackpointer.02, %707 ], [ %stackpointer.02, %711 ]
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %715 = load i32* %14, align 4, !tbaa !2
-  %716 = sext i32 %715 to i64
-  %717 = icmp slt i64 %indvars.iv.next, %716
-  br i1 %717, label %18, label %._crit_edge
-
-._crit_edge:                                      ; preds = %EvaluateBinary.exit, %10
-  %stackpointer.0.lcssa = phi i32 [ 0, %10 ], [ %stackpointer.1, %EvaluateBinary.exit ]
-  br i1 %8, label %718, label %719
-
-; <label>:718                                     ; preds = %._crit_edge
-  tail call void @free(i8* %6) #12
-  br label %719
-
-; <label>:719                                     ; preds = %718, %._crit_edge
-  %720 = bitcast %struct.uExpressionValue* %retval to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %720, i8* %1, i64 16, i32 8, i1 false), !tbaa.struct !22
-  %721 = add nsw i32 %stackpointer.0.lcssa, -1
-  br label %722
-
-; <label>:722                                     ; preds = %0, %719
-  %retcode.0 = phi i32 [ %721, %719 ], [ -1, %0 ]
-  call void @llvm.lifetime.end(i64 4096, i8* %1) #3
-  ret i32 %retcode.0
+  call void @llvm.dbg.value(metadata !{%struct.uExpressionInternals* %buffer}, i64 0, metadata !116), !dbg !501
+  call void @llvm.dbg.value(metadata !{%struct.uExpressionValue* %retval1}, i64 0, metadata !117), !dbg !502
+  call void @llvm.dbg.value(metadata !{i32 (i32, i8**, %struct.uExpressionValue*, i8*)* %eval}, i64 0, metadata !118), !dbg !503
+  call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !119), !dbg !504
+  %0 = bitcast [256 x %struct.uExpressionValue]* %stack to i8*, !dbg !505
+  call void @llvm.lifetime.start(i64 4096, i8* %0) #4, !dbg !505
+  call void @llvm.dbg.declare(metadata !{[256 x %struct.uExpressionValue]* %stack}, metadata !121), !dbg !505
+  call void @llvm.dbg.value(metadata !55, i64 0, metadata !120), !dbg !506
+  call void @llvm.dbg.value(metadata !55, i64 0, metadata !125), !dbg !507
+  %nvars = getelementptr inbounds %struct.uExpressionInternals* %buffer, i64 0, i32 2, !dbg !508
+  %1 = load i32* %nvars, align 4, !dbg !508, !tbaa !268
+  %conv = sext i32 %1 to i64, !dbg !508
+  %mul = shl nsw i64 %conv, 4, !dbg !508
+  %call = call noalias i8* @malloc(i64 %mul) #10, !dbg !508
+  %2 = bitcast i8* %call to %struct.uExpressionValue*, !dbg !508
+  call void @llvm.dbg.value(metadata !{%struct.uExpressionValue* %2}, i64 0, metadata !127), !dbg !508
+  %tobool = icmp ne i8* %call, null, !dbg !509
+  br i1 %tobool, label %if.then, label %lor.lhs.false, !dbg !509
+
+lor.lhs.false:                                    ; preds = %entry
+  %tobool3 = icmp eq i32 %1, 0, !dbg !509
+  br i1 %tobool3, label %if.then, label %if.end54, !dbg !509
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %3 = phi i32 [ 0, %lor.lhs.false ], [ %1, %entry ]
+  %vars = getelementptr inbounds %struct.uExpressionInternals* %buffer, i64 0, i32 3, !dbg !510
+  %4 = load i8*** %vars, align 8, !dbg !510, !tbaa !272
+  %call5 = call i32 %eval(i32 %3, i8** %4, %struct.uExpressionValue* %2, i8* %data) #10, !dbg !510
+  call void @llvm.dbg.value(metadata !55, i64 0, metadata !126), !dbg !512
+  %ntokens = getelementptr inbounds %struct.uExpressionInternals* %buffer, i64 0, i32 0, !dbg !512
+  %5 = load i32* %ntokens, align 4, !dbg !512, !tbaa !268
+  %cmp100 = icmp sgt i32 %5, 0, !dbg !512
+  br i1 %cmp100, label %for.body.lr.ph, label %for.end, !dbg !512
+
+for.body.lr.ph:                                   ; preds = %if.then
+  %tokens = getelementptr inbounds %struct.uExpressionInternals* %buffer, i64 0, i32 1, !dbg !514
+  br label %for.body, !dbg !512
+
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %stackpointer.0102 = phi i32 [ 0, %for.body.lr.ph ], [ %stackpointer.1, %for.inc ]
+  %6 = load %struct.uExpressionToken** %tokens, align 8, !dbg !514, !tbaa !272
+  %type = getelementptr inbounds %struct.uExpressionToken* %6, i64 %indvars.iv, i32 0, !dbg !514
+  %7 = load i32* %type, align 4, !dbg !514, !tbaa !269
+  switch i32 %7, label %for.inc [
+    i32 0, label %if.then9
+    i32 2, label %sw.bb
+    i32 1, label %sw.bb34
+  ], !dbg !514
+
+if.then9:                                         ; preds = %for.body
+  %idxprom10 = sext i32 %stackpointer.0102 to i64, !dbg !516
+  %arrayidx11 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom10, !dbg !516
+  %varnum = getelementptr inbounds %struct.uExpressionToken* %6, i64 %indvars.iv, i32 1, i32 0, !dbg !516
+  %8 = load i32* %varnum, align 4, !dbg !516, !tbaa !268
+  %idxprom15 = sext i32 %8 to i64, !dbg !516
+  %arrayidx16 = getelementptr inbounds %struct.uExpressionValue* %2, i64 %idxprom15, !dbg !516
+  %9 = bitcast %struct.uExpressionValue* %arrayidx11 to i8*, !dbg !516
+  %10 = bitcast %struct.uExpressionValue* %arrayidx16 to i8*, !dbg !516
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %9, i8* %10, i64 16, i32 8, i1 false), !dbg !516, !tbaa.struct !518
+  %inc = add nsw i32 %stackpointer.0102, 1, !dbg !521
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !125), !dbg !521
+  br label %for.inc, !dbg !522
+
+sw.bb:                                            ; preds = %for.body
+  %sub = add nsw i32 %stackpointer.0102, -2, !dbg !523
+  %idxprom21 = sext i32 %sub to i64, !dbg !523
+  %opcode = getelementptr inbounds %struct.uExpressionToken* %6, i64 %indvars.iv, i32 1, i32 0, !dbg !523
+  %11 = load i32* %opcode, align 4, !dbg !523, !tbaa !269
+  %sub30 = add nsw i32 %stackpointer.0102, -1, !dbg !523
+  %idxprom31 = sext i32 %sub30 to i64, !dbg !523
+  %arrayidx32 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, !dbg !523
+  %type.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 0, !dbg !526
+  %12 = load i32* %type.i, align 16, !dbg !526, !tbaa !519
+  switch i32 %12, label %if.else384.i [
+    i32 1, label %land.lhs.true.i
+    i32 0, label %land.lhs.true107.i
+  ], !dbg !526
+
+land.lhs.true.i:                                  ; preds = %sw.bb
+  %type2.i = getelementptr inbounds %struct.uExpressionValue* %arrayidx32, i64 0, i32 0, !dbg !526
+  %13 = load i32* %type2.i, align 16, !dbg !526, !tbaa !519
+  switch i32 %13, label %if.else384.i [
+    i32 1, label %if.then.i
+    i32 0, label %if.then251.i
+  ], !dbg !526
+
+if.then.i:                                        ; preds = %land.lhs.true.i
+  store i32 1, i32* %type.i, align 16, !dbg !527, !tbaa !519
+  switch i32 %11, label %sw.default.i [
+    i32 8, label %sw.bb.i
+    i32 9, label %sw.bb9.i
+    i32 10, label %sw.bb16.i
+    i32 11, label %sw.bb23.i
+    i32 12, label %sw.bb30.i
+    i32 6, label %sw.bb39.i
+    i32 7, label %sw.bb47.i
+    i32 1, label %sw.bb56.i
+    i32 2, label %sw.bb65.i
+    i32 4, label %sw.bb74.i
+    i32 3, label %sw.bb83.i
+    i32 5, label %sw.bb92.i
+  ], !dbg !529
+
+sw.bb.i:                                          ; preds = %if.then.i
+  %value.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !530
+  %ival.i = bitcast %union.anon.0* %value.i to i32*, !dbg !530
+  %14 = load i32* %ival.i, align 8, !dbg !530, !tbaa !268
+  %value5.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, !dbg !530
+  %ival6.i = bitcast %union.anon.0* %value5.i to i32*, !dbg !530
+  %15 = load i32* %ival6.i, align 8, !dbg !530, !tbaa !268
+  %add.i = add nsw i32 %15, %14, !dbg !530
+  store i32 %add.i, i32* %ival.i, align 8, !dbg !530, !tbaa !268
+  br label %for.inc, !dbg !530
+
+sw.bb9.i:                                         ; preds = %if.then.i
+  %value10.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !530
+  %ival11.i = bitcast %union.anon.0* %value10.i to i32*, !dbg !530
+  %16 = load i32* %ival11.i, align 8, !dbg !530, !tbaa !268
+  %value12.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, !dbg !530
+  %ival13.i = bitcast %union.anon.0* %value12.i to i32*, !dbg !530
+  %17 = load i32* %ival13.i, align 8, !dbg !530, !tbaa !268
+  %sub.i = sub nsw i32 %16, %17, !dbg !530
+  store i32 %sub.i, i32* %ival11.i, align 8, !dbg !530, !tbaa !268
+  br label %for.inc, !dbg !530
+
+sw.bb16.i:                                        ; preds = %if.then.i
+  %value17.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !530
+  %ival18.i = bitcast %union.anon.0* %value17.i to i32*, !dbg !530
+  %18 = load i32* %ival18.i, align 8, !dbg !530, !tbaa !268
+  %value19.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, !dbg !530
+  %ival20.i = bitcast %union.anon.0* %value19.i to i32*, !dbg !530
+  %19 = load i32* %ival20.i, align 8, !dbg !530, !tbaa !268
+  %div.i = sdiv i32 %18, %19, !dbg !530
+  store i32 %div.i, i32* %ival18.i, align 8, !dbg !530, !tbaa !268
+  br label %for.inc, !dbg !530
+
+sw.bb23.i:                                        ; preds = %if.then.i
+  %value24.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !530
+  %ival25.i = bitcast %union.anon.0* %value24.i to i32*, !dbg !530
+  %20 = load i32* %ival25.i, align 8, !dbg !530, !tbaa !268
+  %value26.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, !dbg !530
+  %ival27.i = bitcast %union.anon.0* %value26.i to i32*, !dbg !530
+  %21 = load i32* %ival27.i, align 8, !dbg !530, !tbaa !268
+  %mul.i = mul nsw i32 %21, %20, !dbg !530
+  store i32 %mul.i, i32* %ival25.i, align 8, !dbg !530, !tbaa !268
+  br label %for.inc, !dbg !530
+
+sw.bb30.i:                                        ; preds = %if.then.i
+  %value31.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !530
+  %ival32.i = bitcast %union.anon.0* %value31.i to i32*, !dbg !530
+  %22 = load i32* %ival32.i, align 8, !dbg !530, !tbaa !268
+  %conv.i = sitofp i32 %22 to double, !dbg !530
+  %value33.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, !dbg !530
+  %ival34.i = bitcast %union.anon.0* %value33.i to i32*, !dbg !530
+  %23 = load i32* %ival34.i, align 8, !dbg !530, !tbaa !268
+  %conv35.i = sitofp i32 %23 to double, !dbg !530
+  %call.i = call double @pow(double %conv.i, double %conv35.i) #10, !dbg !530
+  %conv36.i = fptosi double %call.i to i32, !dbg !530
+  store i32 %conv36.i, i32* %ival32.i, align 8, !dbg !530, !tbaa !268
+  br label %for.inc, !dbg !530
+
+sw.bb39.i:                                        ; preds = %if.then.i
+  %value40.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !530
+  %ival41.i = bitcast %union.anon.0* %value40.i to i32*, !dbg !530
+  %24 = load i32* %ival41.i, align 8, !dbg !530, !tbaa !268
+  %tobool.i = icmp eq i32 %24, 0, !dbg !530
+  br i1 %tobool.i, label %land.end.i, label %land.rhs.i, !dbg !530
+
+land.rhs.i:                                       ; preds = %sw.bb39.i
+  %value42.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, !dbg !530
+  %ival43.i = bitcast %union.anon.0* %value42.i to i32*, !dbg !530
+  %25 = load i32* %ival43.i, align 8, !dbg !530, !tbaa !268
+  %tobool44.i = icmp ne i32 %25, 0, !dbg !530
+  br label %land.end.i
+
+land.end.i:                                       ; preds = %land.rhs.i, %sw.bb39.i
+  %26 = phi i1 [ false, %sw.bb39.i ], [ %tobool44.i, %land.rhs.i ]
+  %land.ext.i = zext i1 %26 to i32
+  store i32 %land.ext.i, i32* %ival41.i, align 8, !tbaa !268
+  br label %for.inc, !dbg !530
+
+sw.bb47.i:                                        ; preds = %if.then.i
+  %value48.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !530
+  %ival49.i = bitcast %union.anon.0* %value48.i to i32*, !dbg !530
+  %27 = load i32* %ival49.i, align 8, !dbg !530, !tbaa !268
+  %tobool50.i = icmp eq i32 %27, 0, !dbg !530
+  br i1 %tobool50.i, label %lor.rhs.i, label %lor.end.i, !dbg !530
+
+lor.rhs.i:                                        ; preds = %sw.bb47.i
+  %value51.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, !dbg !530
+  %ival52.i = bitcast %union.anon.0* %value51.i to i32*, !dbg !530
+  %28 = load i32* %ival52.i, align 8, !dbg !530, !tbaa !268
+  %tobool53.i = icmp ne i32 %28, 0, !dbg !530
+  br label %lor.end.i, !dbg !530
+
+lor.end.i:                                        ; preds = %lor.rhs.i, %sw.bb47.i
+  %29 = phi i1 [ true, %sw.bb47.i ], [ %tobool53.i, %lor.rhs.i ]
+  %lor.ext.i = zext i1 %29 to i32, !dbg !530
+  store i32 %lor.ext.i, i32* %ival49.i, align 8, !dbg !530, !tbaa !268
+  br label %for.inc, !dbg !530
+
+sw.bb56.i:                                        ; preds = %if.then.i
+  %value57.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !530
+  %ival58.i = bitcast %union.anon.0* %value57.i to i32*, !dbg !530
+  %30 = load i32* %ival58.i, align 8, !dbg !530, !tbaa !268
+  %value59.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, !dbg !530
+  %ival60.i = bitcast %union.anon.0* %value59.i to i32*, !dbg !530
+  %31 = load i32* %ival60.i, align 8, !dbg !530, !tbaa !268
+  %cmp61.i = icmp eq i32 %30, %31, !dbg !530
+  %conv62.i = zext i1 %cmp61.i to i32, !dbg !530
+  store i32 %conv62.i, i32* %ival58.i, align 8, !dbg !530, !tbaa !268
+  br label %for.inc, !dbg !530
+
+sw.bb65.i:                                        ; preds = %if.then.i
+  %value66.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !530
+  %ival67.i = bitcast %union.anon.0* %value66.i to i32*, !dbg !530
+  %32 = load i32* %ival67.i, align 8, !dbg !530, !tbaa !268
+  %value68.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, !dbg !530
+  %ival69.i = bitcast %union.anon.0* %value68.i to i32*, !dbg !530
+  %33 = load i32* %ival69.i, align 8, !dbg !530, !tbaa !268
+  %cmp70.i = icmp slt i32 %32, %33, !dbg !530
+  %conv71.i = zext i1 %cmp70.i to i32, !dbg !530
+  store i32 %conv71.i, i32* %ival67.i, align 8, !dbg !530, !tbaa !268
+  br label %for.inc, !dbg !530
+
+sw.bb74.i:                                        ; preds = %if.then.i
+  %value75.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !530
+  %ival76.i = bitcast %union.anon.0* %value75.i to i32*, !dbg !530
+  %34 = load i32* %ival76.i, align 8, !dbg !530, !tbaa !268
+  %value77.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, !dbg !530
+  %ival78.i = bitcast %union.anon.0* %value77.i to i32*, !dbg !530
+  %35 = load i32* %ival78.i, align 8, !dbg !530, !tbaa !268
+  %cmp79.i = icmp sle i32 %34, %35, !dbg !530
+  %conv80.i = zext i1 %cmp79.i to i32, !dbg !530
+  store i32 %conv80.i, i32* %ival76.i, align 8, !dbg !530, !tbaa !268
+  br label %for.inc, !dbg !530
+
+sw.bb83.i:                                        ; preds = %if.then.i
+  %value84.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !530
+  %ival85.i = bitcast %union.anon.0* %value84.i to i32*, !dbg !530
+  %36 = load i32* %ival85.i, align 8, !dbg !530, !tbaa !268
+  %value86.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, !dbg !530
+  %ival87.i = bitcast %union.anon.0* %value86.i to i32*, !dbg !530
+  %37 = load i32* %ival87.i, align 8, !dbg !530, !tbaa !268
+  %cmp88.i = icmp sgt i32 %36, %37, !dbg !530
+  %conv89.i = zext i1 %cmp88.i to i32, !dbg !530
+  store i32 %conv89.i, i32* %ival85.i, align 8, !dbg !530, !tbaa !268
+  br label %for.inc, !dbg !530
+
+sw.bb92.i:                                        ; preds = %if.then.i
+  %value93.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !530
+  %ival94.i = bitcast %union.anon.0* %value93.i to i32*, !dbg !530
+  %38 = load i32* %ival94.i, align 8, !dbg !530, !tbaa !268
+  %value95.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, !dbg !530
+  %ival96.i = bitcast %union.anon.0* %value95.i to i32*, !dbg !530
+  %39 = load i32* %ival96.i, align 8, !dbg !530, !tbaa !268
+  %cmp97.i = icmp sge i32 %38, %39, !dbg !530
+  %conv98.i = zext i1 %cmp97.i to i32, !dbg !530
+  store i32 %conv98.i, i32* %ival94.i, align 8, !dbg !530, !tbaa !268
+  br label %for.inc, !dbg !530
+
+sw.default.i:                                     ; preds = %if.then.i
+  %40 = load %struct._IO_FILE** @stderr, align 8, !dbg !530, !tbaa !272
+  %call101.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %40, i8* getelementptr inbounds ([21 x i8]* @.str, i64 0, i64 0), i32 %11) #10, !dbg !530
+  %value102.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !530
+  %ival103.i = bitcast %union.anon.0* %value102.i to i32*, !dbg !530
+  store i32 0, i32* %ival103.i, align 8, !dbg !530, !tbaa !268
+  br label %for.inc, !dbg !530
+
+land.lhs.true107.i:                               ; preds = %sw.bb
+  %type108.i = getelementptr inbounds %struct.uExpressionValue* %arrayidx32, i64 0, i32 0, !dbg !532
+  %41 = load i32* %type108.i, align 16, !dbg !532, !tbaa !519
+  %cmp109.i = icmp eq i32 %41, 1, !dbg !532
+  br i1 %cmp109.i, label %if.then111.i, label %if.else384.i, !dbg !532
+
+if.then111.i:                                     ; preds = %land.lhs.true107.i
+  store i32 0, i32* %type.i, align 16, !dbg !533, !tbaa !519
+  switch i32 %11, label %sw.default238.i [
+    i32 8, label %sw.bb113.i
+    i32 9, label %sw.bb121.i
+    i32 10, label %sw.bb130.i
+    i32 11, label %sw.bb139.i
+    i32 12, label %sw.bb148.i
+    i32 6, label %sw.bb157.i
+    i32 7, label %sw.bb170.i
+    i32 1, label %sw.bb183.i
+    i32 2, label %sw.bb194.i
+    i32 4, label %sw.bb205.i
+    i32 3, label %sw.bb216.i
+    i32 5, label %sw.bb227.i
+  ], !dbg !535
+
+sw.bb113.i:                                       ; preds = %if.then111.i
+  %rval.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !536
+  %42 = load double* %rval.i, align 8, !dbg !536, !tbaa !520
+  %value115.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, !dbg !536
+  %ival116.i = bitcast %union.anon.0* %value115.i to i32*, !dbg !536
+  %43 = load i32* %ival116.i, align 8, !dbg !536, !tbaa !268
+  %conv117.i = sitofp i32 %43 to double, !dbg !536
+  %add118.i = fadd double %42, %conv117.i, !dbg !536
+  store double %add118.i, double* %rval.i, align 8, !dbg !536, !tbaa !520
+  br label %for.inc, !dbg !536
+
+sw.bb121.i:                                       ; preds = %if.then111.i
+  %rval123.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !536
+  %44 = load double* %rval123.i, align 8, !dbg !536, !tbaa !520
+  %value124.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, !dbg !536
+  %ival125.i = bitcast %union.anon.0* %value124.i to i32*, !dbg !536
+  %45 = load i32* %ival125.i, align 8, !dbg !536, !tbaa !268
+  %conv126.i = sitofp i32 %45 to double, !dbg !536
+  %sub127.i = fsub double %44, %conv126.i, !dbg !536
+  store double %sub127.i, double* %rval123.i, align 8, !dbg !536, !tbaa !520
+  br label %for.inc, !dbg !536
+
+sw.bb130.i:                                       ; preds = %if.then111.i
+  %rval132.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !536
+  %46 = load double* %rval132.i, align 8, !dbg !536, !tbaa !520
+  %value133.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, !dbg !536
+  %ival134.i = bitcast %union.anon.0* %value133.i to i32*, !dbg !536
+  %47 = load i32* %ival134.i, align 8, !dbg !536, !tbaa !268
+  %conv135.i = sitofp i32 %47 to double, !dbg !536
+  %div136.i = fdiv double %46, %conv135.i, !dbg !536
+  store double %div136.i, double* %rval132.i, align 8, !dbg !536, !tbaa !520
+  br label %for.inc, !dbg !536
+
+sw.bb139.i:                                       ; preds = %if.then111.i
+  %rval141.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !536
+  %48 = load double* %rval141.i, align 8, !dbg !536, !tbaa !520
+  %value142.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, !dbg !536
+  %ival143.i = bitcast %union.anon.0* %value142.i to i32*, !dbg !536
+  %49 = load i32* %ival143.i, align 8, !dbg !536, !tbaa !268
+  %conv144.i = sitofp i32 %49 to double, !dbg !536
+  %mul145.i = fmul double %48, %conv144.i, !dbg !536
+  store double %mul145.i, double* %rval141.i, align 8, !dbg !536, !tbaa !520
+  br label %for.inc, !dbg !536
+
+sw.bb148.i:                                       ; preds = %if.then111.i
+  %rval150.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !536
+  %50 = load double* %rval150.i, align 8, !dbg !536, !tbaa !520
+  %value151.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, !dbg !536
+  %ival152.i = bitcast %union.anon.0* %value151.i to i32*, !dbg !536
+  %51 = load i32* %ival152.i, align 8, !dbg !536, !tbaa !268
+  %conv153.i = sitofp i32 %51 to double, !dbg !536
+  %call154.i = call double @pow(double %50, double %conv153.i) #10, !dbg !536
+  store double %call154.i, double* %rval150.i, align 8, !dbg !536, !tbaa !520
+  br label %for.inc, !dbg !536
+
+sw.bb157.i:                                       ; preds = %if.then111.i
+  %rval159.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !536
+  %52 = load double* %rval159.i, align 8, !dbg !536, !tbaa !520
+  %tobool160.i = fcmp une double %52, 0.000000e+00, !dbg !536
+  br i1 %tobool160.i, label %land.rhs161.i, label %land.end165.i, !dbg !536
+
+land.rhs161.i:                                    ; preds = %sw.bb157.i
+  %value162.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, !dbg !536
+  %ival163.i = bitcast %union.anon.0* %value162.i to i32*, !dbg !536
+  %53 = load i32* %ival163.i, align 8, !dbg !536, !tbaa !268
+  %tobool164.i = icmp ne i32 %53, 0, !dbg !536
+  br label %land.end165.i
+
+land.end165.i:                                    ; preds = %land.rhs161.i, %sw.bb157.i
+  %54 = phi i1 [ false, %sw.bb157.i ], [ %tobool164.i, %land.rhs161.i ]
+  %land.ext166.i = zext i1 %54 to i32
+  %conv167.i = sitofp i32 %land.ext166.i to double
+  store double %conv167.i, double* %rval159.i, align 8, !tbaa !520
+  br label %for.inc, !dbg !536
+
+sw.bb170.i:                                       ; preds = %if.then111.i
+  %rval172.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !536
+  %55 = load double* %rval172.i, align 8, !dbg !536, !tbaa !520
+  %tobool173.i = fcmp une double %55, 0.000000e+00, !dbg !536
+  br i1 %tobool173.i, label %lor.end178.i, label %lor.rhs174.i, !dbg !536
+
+lor.rhs174.i:                                     ; preds = %sw.bb170.i
+  %value175.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, !dbg !536
+  %ival176.i = bitcast %union.anon.0* %value175.i to i32*, !dbg !536
+  %56 = load i32* %ival176.i, align 8, !dbg !536, !tbaa !268
+  %tobool177.i = icmp ne i32 %56, 0, !dbg !536
+  br label %lor.end178.i, !dbg !536
+
+lor.end178.i:                                     ; preds = %lor.rhs174.i, %sw.bb170.i
+  %57 = phi i1 [ true, %sw.bb170.i ], [ %tobool177.i, %lor.rhs174.i ]
+  %lor.ext179.i = zext i1 %57 to i32, !dbg !536
+  %conv180.i = sitofp i32 %lor.ext179.i to double, !dbg !536
+  store double %conv180.i, double* %rval172.i, align 8, !dbg !536, !tbaa !520
+  br label %for.inc, !dbg !536
+
+sw.bb183.i:                                       ; preds = %if.then111.i
+  %rval185.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !536
+  %58 = load double* %rval185.i, align 8, !dbg !536, !tbaa !520
+  %value186.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, !dbg !536
+  %ival187.i = bitcast %union.anon.0* %value186.i to i32*, !dbg !536
+  %59 = load i32* %ival187.i, align 8, !dbg !536, !tbaa !268
+  %conv188.i = sitofp i32 %59 to double, !dbg !536
+  %cmp189.i = fcmp oeq double %58, %conv188.i, !dbg !536
+  %conv190.i = zext i1 %cmp189.i to i32, !dbg !536
+  %conv191.i = sitofp i32 %conv190.i to double, !dbg !536
+  store double %conv191.i, double* %rval185.i, align 8, !dbg !536, !tbaa !520
+  br label %for.inc, !dbg !536
+
+sw.bb194.i:                                       ; preds = %if.then111.i
+  %rval196.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !536
+  %60 = load double* %rval196.i, align 8, !dbg !536, !tbaa !520
+  %value197.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, !dbg !536
+  %ival198.i = bitcast %union.anon.0* %value197.i to i32*, !dbg !536
+  %61 = load i32* %ival198.i, align 8, !dbg !536, !tbaa !268
+  %conv199.i = sitofp i32 %61 to double, !dbg !536
+  %cmp200.i = fcmp olt double %60, %conv199.i, !dbg !536
+  %conv201.i = zext i1 %cmp200.i to i32, !dbg !536
+  %conv202.i = sitofp i32 %conv201.i to double, !dbg !536
+  store double %conv202.i, double* %rval196.i, align 8, !dbg !536, !tbaa !520
+  br label %for.inc, !dbg !536
+
+sw.bb205.i:                                       ; preds = %if.then111.i
+  %rval207.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !536
+  %62 = load double* %rval207.i, align 8, !dbg !536, !tbaa !520
+  %value208.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, !dbg !536
+  %ival209.i = bitcast %union.anon.0* %value208.i to i32*, !dbg !536
+  %63 = load i32* %ival209.i, align 8, !dbg !536, !tbaa !268
+  %conv210.i = sitofp i32 %63 to double, !dbg !536
+  %cmp211.i = fcmp ole double %62, %conv210.i, !dbg !536
+  %conv212.i = zext i1 %cmp211.i to i32, !dbg !536
+  %conv213.i = sitofp i32 %conv212.i to double, !dbg !536
+  store double %conv213.i, double* %rval207.i, align 8, !dbg !536, !tbaa !520
+  br label %for.inc, !dbg !536
+
+sw.bb216.i:                                       ; preds = %if.then111.i
+  %rval218.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !536
+  %64 = load double* %rval218.i, align 8, !dbg !536, !tbaa !520
+  %value219.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, !dbg !536
+  %ival220.i = bitcast %union.anon.0* %value219.i to i32*, !dbg !536
+  %65 = load i32* %ival220.i, align 8, !dbg !536, !tbaa !268
+  %conv221.i = sitofp i32 %65 to double, !dbg !536
+  %cmp222.i = fcmp ogt double %64, %conv221.i, !dbg !536
+  %conv223.i = zext i1 %cmp222.i to i32, !dbg !536
+  %conv224.i = sitofp i32 %conv223.i to double, !dbg !536
+  store double %conv224.i, double* %rval218.i, align 8, !dbg !536, !tbaa !520
+  br label %for.inc, !dbg !536
+
+sw.bb227.i:                                       ; preds = %if.then111.i
+  %rval229.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !536
+  %66 = load double* %rval229.i, align 8, !dbg !536, !tbaa !520
+  %value230.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, !dbg !536
+  %ival231.i = bitcast %union.anon.0* %value230.i to i32*, !dbg !536
+  %67 = load i32* %ival231.i, align 8, !dbg !536, !tbaa !268
+  %conv232.i = sitofp i32 %67 to double, !dbg !536
+  %cmp233.i = fcmp oge double %66, %conv232.i, !dbg !536
+  %conv234.i = zext i1 %cmp233.i to i32, !dbg !536
+  %conv235.i = sitofp i32 %conv234.i to double, !dbg !536
+  store double %conv235.i, double* %rval229.i, align 8, !dbg !536, !tbaa !520
+  br label %for.inc, !dbg !536
+
+sw.default238.i:                                  ; preds = %if.then111.i
+  %68 = load %struct._IO_FILE** @stderr, align 8, !dbg !536, !tbaa !272
+  %call239.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %68, i8* getelementptr inbounds ([21 x i8]* @.str, i64 0, i64 0), i32 %11) #10, !dbg !536
+  %rval241.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !536
+  store double 0.000000e+00, double* %rval241.i, align 8, !dbg !536, !tbaa !520
+  br label %for.inc, !dbg !536
+
+if.then251.i:                                     ; preds = %land.lhs.true.i
+  store i32 0, i32* %type.i, align 16, !dbg !538, !tbaa !519
+  switch i32 %11, label %sw.default379.i [
+    i32 8, label %sw.bb253.i
+    i32 9, label %sw.bb262.i
+    i32 10, label %sw.bb271.i
+    i32 11, label %sw.bb280.i
+    i32 12, label %sw.bb289.i
+    i32 6, label %sw.bb298.i
+    i32 7, label %sw.bb311.i
+    i32 1, label %sw.bb324.i
+    i32 2, label %sw.bb335.i
+    i32 4, label %sw.bb346.i
+    i32 3, label %sw.bb357.i
+    i32 5, label %sw.bb368.i
+  ], !dbg !540
+
+sw.bb253.i:                                       ; preds = %if.then251.i
+  %value254.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !541
+  %ival255.i = bitcast %union.anon.0* %value254.i to i32*, !dbg !541
+  %69 = load i32* %ival255.i, align 8, !dbg !541, !tbaa !268
+  %conv256.i = sitofp i32 %69 to double, !dbg !541
+  %rval258.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, i32 0, !dbg !541
+  %70 = load double* %rval258.i, align 8, !dbg !541, !tbaa !520
+  %add259.i = fadd double %conv256.i, %70, !dbg !541
+  %rval261.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !541
+  store double %add259.i, double* %rval261.i, align 8, !dbg !541, !tbaa !520
+  br label %for.inc, !dbg !541
+
+sw.bb262.i:                                       ; preds = %if.then251.i
+  %value263.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !541
+  %ival264.i = bitcast %union.anon.0* %value263.i to i32*, !dbg !541
+  %71 = load i32* %ival264.i, align 8, !dbg !541, !tbaa !268
+  %conv265.i = sitofp i32 %71 to double, !dbg !541
+  %rval267.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, i32 0, !dbg !541
+  %72 = load double* %rval267.i, align 8, !dbg !541, !tbaa !520
+  %sub268.i = fsub double %conv265.i, %72, !dbg !541
+  %rval270.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !541
+  store double %sub268.i, double* %rval270.i, align 8, !dbg !541, !tbaa !520
+  br label %for.inc, !dbg !541
+
+sw.bb271.i:                                       ; preds = %if.then251.i
+  %value272.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !541
+  %ival273.i = bitcast %union.anon.0* %value272.i to i32*, !dbg !541
+  %73 = load i32* %ival273.i, align 8, !dbg !541, !tbaa !268
+  %conv274.i = sitofp i32 %73 to double, !dbg !541
+  %rval276.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, i32 0, !dbg !541
+  %74 = load double* %rval276.i, align 8, !dbg !541, !tbaa !520
+  %div277.i = fdiv double %conv274.i, %74, !dbg !541
+  %rval279.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !541
+  store double %div277.i, double* %rval279.i, align 8, !dbg !541, !tbaa !520
+  br label %for.inc, !dbg !541
+
+sw.bb280.i:                                       ; preds = %if.then251.i
+  %value281.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !541
+  %ival282.i = bitcast %union.anon.0* %value281.i to i32*, !dbg !541
+  %75 = load i32* %ival282.i, align 8, !dbg !541, !tbaa !268
+  %conv283.i = sitofp i32 %75 to double, !dbg !541
+  %rval285.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, i32 0, !dbg !541
+  %76 = load double* %rval285.i, align 8, !dbg !541, !tbaa !520
+  %mul286.i = fmul double %conv283.i, %76, !dbg !541
+  %rval288.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !541
+  store double %mul286.i, double* %rval288.i, align 8, !dbg !541, !tbaa !520
+  br label %for.inc, !dbg !541
+
+sw.bb289.i:                                       ; preds = %if.then251.i
+  %value290.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !541
+  %ival291.i = bitcast %union.anon.0* %value290.i to i32*, !dbg !541
+  %77 = load i32* %ival291.i, align 8, !dbg !541, !tbaa !268
+  %conv292.i = sitofp i32 %77 to double, !dbg !541
+  %rval294.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, i32 0, !dbg !541
+  %78 = load double* %rval294.i, align 8, !dbg !541, !tbaa !520
+  %call295.i = call double @pow(double %conv292.i, double %78) #10, !dbg !541
+  %rval297.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !541
+  store double %call295.i, double* %rval297.i, align 8, !dbg !541, !tbaa !520
+  br label %for.inc, !dbg !541
+
+sw.bb298.i:                                       ; preds = %if.then251.i
+  %value299.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !541
+  %ival300.i = bitcast %union.anon.0* %value299.i to i32*, !dbg !541
+  %79 = load i32* %ival300.i, align 8, !dbg !541, !tbaa !268
+  %tobool301.i = icmp eq i32 %79, 0, !dbg !541
+  br i1 %tobool301.i, label %land.end306.i, label %land.rhs302.i, !dbg !541
+
+land.rhs302.i:                                    ; preds = %sw.bb298.i
+  %rval304.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, i32 0, !dbg !541
+  %80 = load double* %rval304.i, align 8, !dbg !541, !tbaa !520
+  %tobool305.i = fcmp une double %80, 0.000000e+00, !dbg !541
+  br label %land.end306.i
+
+land.end306.i:                                    ; preds = %land.rhs302.i, %sw.bb298.i
+  %81 = phi i1 [ false, %sw.bb298.i ], [ %tobool305.i, %land.rhs302.i ]
+  %land.ext307.i = zext i1 %81 to i32
+  %conv308.i = sitofp i32 %land.ext307.i to double
+  %rval310.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0
+  store double %conv308.i, double* %rval310.i, align 8, !tbaa !520
+  br label %for.inc, !dbg !541
+
+sw.bb311.i:                                       ; preds = %if.then251.i
+  %value312.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !541
+  %ival313.i = bitcast %union.anon.0* %value312.i to i32*, !dbg !541
+  %82 = load i32* %ival313.i, align 8, !dbg !541, !tbaa !268
+  %tobool314.i = icmp eq i32 %82, 0, !dbg !541
+  br i1 %tobool314.i, label %lor.rhs315.i, label %lor.end319.i, !dbg !541
+
+lor.rhs315.i:                                     ; preds = %sw.bb311.i
+  %rval317.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, i32 0, !dbg !541
+  %83 = load double* %rval317.i, align 8, !dbg !541, !tbaa !520
+  %tobool318.i = fcmp une double %83, 0.000000e+00, !dbg !541
+  br label %lor.end319.i, !dbg !541
+
+lor.end319.i:                                     ; preds = %lor.rhs315.i, %sw.bb311.i
+  %84 = phi i1 [ true, %sw.bb311.i ], [ %tobool318.i, %lor.rhs315.i ]
+  %lor.ext320.i = zext i1 %84 to i32, !dbg !541
+  %conv321.i = sitofp i32 %lor.ext320.i to double, !dbg !541
+  %rval323.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !541
+  store double %conv321.i, double* %rval323.i, align 8, !dbg !541, !tbaa !520
+  br label %for.inc, !dbg !541
+
+sw.bb324.i:                                       ; preds = %if.then251.i
+  %value325.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !541
+  %ival326.i = bitcast %union.anon.0* %value325.i to i32*, !dbg !541
+  %85 = load i32* %ival326.i, align 8, !dbg !541, !tbaa !268
+  %conv327.i = sitofp i32 %85 to double, !dbg !541
+  %rval329.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, i32 0, !dbg !541
+  %86 = load double* %rval329.i, align 8, !dbg !541, !tbaa !520
+  %cmp330.i = fcmp oeq double %conv327.i, %86, !dbg !541
+  %conv331.i = zext i1 %cmp330.i to i32, !dbg !541
+  %conv332.i = sitofp i32 %conv331.i to double, !dbg !541
+  %rval334.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !541
+  store double %conv332.i, double* %rval334.i, align 8, !dbg !541, !tbaa !520
+  br label %for.inc, !dbg !541
+
+sw.bb335.i:                                       ; preds = %if.then251.i
+  %value336.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !541
+  %ival337.i = bitcast %union.anon.0* %value336.i to i32*, !dbg !541
+  %87 = load i32* %ival337.i, align 8, !dbg !541, !tbaa !268
+  %conv338.i = sitofp i32 %87 to double, !dbg !541
+  %rval340.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, i32 0, !dbg !541
+  %88 = load double* %rval340.i, align 8, !dbg !541, !tbaa !520
+  %cmp341.i = fcmp olt double %conv338.i, %88, !dbg !541
+  %conv342.i = zext i1 %cmp341.i to i32, !dbg !541
+  %conv343.i = sitofp i32 %conv342.i to double, !dbg !541
+  %rval345.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !541
+  store double %conv343.i, double* %rval345.i, align 8, !dbg !541, !tbaa !520
+  br label %for.inc, !dbg !541
+
+sw.bb346.i:                                       ; preds = %if.then251.i
+  %value347.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !541
+  %ival348.i = bitcast %union.anon.0* %value347.i to i32*, !dbg !541
+  %89 = load i32* %ival348.i, align 8, !dbg !541, !tbaa !268
+  %conv349.i = sitofp i32 %89 to double, !dbg !541
+  %rval351.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, i32 0, !dbg !541
+  %90 = load double* %rval351.i, align 8, !dbg !541, !tbaa !520
+  %cmp352.i = fcmp ole double %conv349.i, %90, !dbg !541
+  %conv353.i = zext i1 %cmp352.i to i32, !dbg !541
+  %conv354.i = sitofp i32 %conv353.i to double, !dbg !541
+  %rval356.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !541
+  store double %conv354.i, double* %rval356.i, align 8, !dbg !541, !tbaa !520
+  br label %for.inc, !dbg !541
+
+sw.bb357.i:                                       ; preds = %if.then251.i
+  %value358.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !541
+  %ival359.i = bitcast %union.anon.0* %value358.i to i32*, !dbg !541
+  %91 = load i32* %ival359.i, align 8, !dbg !541, !tbaa !268
+  %conv360.i = sitofp i32 %91 to double, !dbg !541
+  %rval362.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, i32 0, !dbg !541
+  %92 = load double* %rval362.i, align 8, !dbg !541, !tbaa !520
+  %cmp363.i = fcmp ogt double %conv360.i, %92, !dbg !541
+  %conv364.i = zext i1 %cmp363.i to i32, !dbg !541
+  %conv365.i = sitofp i32 %conv364.i to double, !dbg !541
+  %rval367.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !541
+  store double %conv365.i, double* %rval367.i, align 8, !dbg !541, !tbaa !520
+  br label %for.inc, !dbg !541
+
+sw.bb368.i:                                       ; preds = %if.then251.i
+  %value369.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, !dbg !541
+  %ival370.i = bitcast %union.anon.0* %value369.i to i32*, !dbg !541
+  %93 = load i32* %ival370.i, align 8, !dbg !541, !tbaa !268
+  %conv371.i = sitofp i32 %93 to double, !dbg !541
+  %rval373.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, i32 0, !dbg !541
+  %94 = load double* %rval373.i, align 8, !dbg !541, !tbaa !520
+  %cmp374.i = fcmp oge double %conv371.i, %94, !dbg !541
+  %conv375.i = zext i1 %cmp374.i to i32, !dbg !541
+  %conv376.i = sitofp i32 %conv375.i to double, !dbg !541
+  %rval378.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !541
+  store double %conv376.i, double* %rval378.i, align 8, !dbg !541, !tbaa !520
+  br label %for.inc, !dbg !541
+
+sw.default379.i:                                  ; preds = %if.then251.i
+  %95 = load %struct._IO_FILE** @stderr, align 8, !dbg !541, !tbaa !272
+  %call380.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %95, i8* getelementptr inbounds ([21 x i8]* @.str, i64 0, i64 0), i32 %11) #10, !dbg !541
+  %rval382.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !541
+  store double 0.000000e+00, double* %rval382.i, align 8, !dbg !541, !tbaa !520
+  br label %for.inc, !dbg !541
+
+if.else384.i:                                     ; preds = %land.lhs.true.i, %land.lhs.true107.i, %sw.bb
+  store i32 0, i32* %type.i, align 16, !dbg !543, !tbaa !519
+  switch i32 %11, label %sw.default502.i [
+    i32 8, label %sw.bb386.i
+    i32 9, label %sw.bb394.i
+    i32 10, label %sw.bb402.i
+    i32 11, label %sw.bb410.i
+    i32 12, label %sw.bb418.i
+    i32 6, label %sw.bb426.i
+    i32 7, label %sw.bb439.i
+    i32 1, label %sw.bb452.i
+    i32 2, label %sw.bb462.i
+    i32 4, label %sw.bb472.i
+    i32 3, label %sw.bb482.i
+    i32 5, label %sw.bb492.i
+  ], !dbg !545
+
+sw.bb386.i:                                       ; preds = %if.else384.i
+  %rval388.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !546
+  %96 = load double* %rval388.i, align 8, !dbg !546, !tbaa !520
+  %rval390.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, i32 0, !dbg !546
+  %97 = load double* %rval390.i, align 8, !dbg !546, !tbaa !520
+  %add391.i = fadd double %96, %97, !dbg !546
+  store double %add391.i, double* %rval388.i, align 8, !dbg !546, !tbaa !520
+  br label %for.inc, !dbg !546
+
+sw.bb394.i:                                       ; preds = %if.else384.i
+  %rval396.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !546
+  %98 = load double* %rval396.i, align 8, !dbg !546, !tbaa !520
+  %rval398.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, i32 0, !dbg !546
+  %99 = load double* %rval398.i, align 8, !dbg !546, !tbaa !520
+  %sub399.i = fsub double %98, %99, !dbg !546
+  store double %sub399.i, double* %rval396.i, align 8, !dbg !546, !tbaa !520
+  br label %for.inc, !dbg !546
+
+sw.bb402.i:                                       ; preds = %if.else384.i
+  %rval404.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !546
+  %100 = load double* %rval404.i, align 8, !dbg !546, !tbaa !520
+  %rval406.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, i32 0, !dbg !546
+  %101 = load double* %rval406.i, align 8, !dbg !546, !tbaa !520
+  %div407.i = fdiv double %100, %101, !dbg !546
+  store double %div407.i, double* %rval404.i, align 8, !dbg !546, !tbaa !520
+  br label %for.inc, !dbg !546
+
+sw.bb410.i:                                       ; preds = %if.else384.i
+  %rval412.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !546
+  %102 = load double* %rval412.i, align 8, !dbg !546, !tbaa !520
+  %rval414.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, i32 0, !dbg !546
+  %103 = load double* %rval414.i, align 8, !dbg !546, !tbaa !520
+  %mul415.i = fmul double %102, %103, !dbg !546
+  store double %mul415.i, double* %rval412.i, align 8, !dbg !546, !tbaa !520
+  br label %for.inc, !dbg !546
+
+sw.bb418.i:                                       ; preds = %if.else384.i
+  %rval420.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !546
+  %104 = load double* %rval420.i, align 8, !dbg !546, !tbaa !520
+  %rval422.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, i32 0, !dbg !546
+  %105 = load double* %rval422.i, align 8, !dbg !546, !tbaa !520
+  %call423.i = call double @pow(double %104, double %105) #10, !dbg !546
+  store double %call423.i, double* %rval420.i, align 8, !dbg !546, !tbaa !520
+  br label %for.inc, !dbg !546
+
+sw.bb426.i:                                       ; preds = %if.else384.i
+  %rval428.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !546
+  %106 = load double* %rval428.i, align 8, !dbg !546, !tbaa !520
+  %tobool429.i = fcmp une double %106, 0.000000e+00, !dbg !546
+  br i1 %tobool429.i, label %land.rhs430.i, label %land.end434.i, !dbg !546
+
+land.rhs430.i:                                    ; preds = %sw.bb426.i
+  %rval432.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, i32 0, !dbg !546
+  %107 = load double* %rval432.i, align 8, !dbg !546, !tbaa !520
+  %tobool433.i = fcmp une double %107, 0.000000e+00, !dbg !546
+  br label %land.end434.i
+
+land.end434.i:                                    ; preds = %land.rhs430.i, %sw.bb426.i
+  %108 = phi i1 [ false, %sw.bb426.i ], [ %tobool433.i, %land.rhs430.i ]
+  %land.ext435.i = zext i1 %108 to i32
+  %conv436.i = sitofp i32 %land.ext435.i to double
+  store double %conv436.i, double* %rval428.i, align 8, !tbaa !520
+  br label %for.inc, !dbg !546
+
+sw.bb439.i:                                       ; preds = %if.else384.i
+  %rval441.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !546
+  %109 = load double* %rval441.i, align 8, !dbg !546, !tbaa !520
+  %tobool442.i = fcmp une double %109, 0.000000e+00, !dbg !546
+  br i1 %tobool442.i, label %lor.end447.i, label %lor.rhs443.i, !dbg !546
+
+lor.rhs443.i:                                     ; preds = %sw.bb439.i
+  %rval445.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, i32 0, !dbg !546
+  %110 = load double* %rval445.i, align 8, !dbg !546, !tbaa !520
+  %tobool446.i = fcmp une double %110, 0.000000e+00, !dbg !546
+  br label %lor.end447.i, !dbg !546
+
+lor.end447.i:                                     ; preds = %lor.rhs443.i, %sw.bb439.i
+  %111 = phi i1 [ true, %sw.bb439.i ], [ %tobool446.i, %lor.rhs443.i ]
+  %lor.ext448.i = zext i1 %111 to i32, !dbg !546
+  %conv449.i = sitofp i32 %lor.ext448.i to double, !dbg !546
+  store double %conv449.i, double* %rval441.i, align 8, !dbg !546, !tbaa !520
+  br label %for.inc, !dbg !546
+
+sw.bb452.i:                                       ; preds = %if.else384.i
+  %rval454.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !546
+  %112 = load double* %rval454.i, align 8, !dbg !546, !tbaa !520
+  %rval456.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, i32 0, !dbg !546
+  %113 = load double* %rval456.i, align 8, !dbg !546, !tbaa !520
+  %cmp457.i = fcmp oeq double %112, %113, !dbg !546
+  %conv458.i = zext i1 %cmp457.i to i32, !dbg !546
+  %conv459.i = sitofp i32 %conv458.i to double, !dbg !546
+  store double %conv459.i, double* %rval454.i, align 8, !dbg !546, !tbaa !520
+  br label %for.inc, !dbg !546
+
+sw.bb462.i:                                       ; preds = %if.else384.i
+  %rval464.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !546
+  %114 = load double* %rval464.i, align 8, !dbg !546, !tbaa !520
+  %rval466.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, i32 0, !dbg !546
+  %115 = load double* %rval466.i, align 8, !dbg !546, !tbaa !520
+  %cmp467.i = fcmp olt double %114, %115, !dbg !546
+  %conv468.i = zext i1 %cmp467.i to i32, !dbg !546
+  %conv469.i = sitofp i32 %conv468.i to double, !dbg !546
+  store double %conv469.i, double* %rval464.i, align 8, !dbg !546, !tbaa !520
+  br label %for.inc, !dbg !546
+
+sw.bb472.i:                                       ; preds = %if.else384.i
+  %rval474.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !546
+  %116 = load double* %rval474.i, align 8, !dbg !546, !tbaa !520
+  %rval476.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, i32 0, !dbg !546
+  %117 = load double* %rval476.i, align 8, !dbg !546, !tbaa !520
+  %cmp477.i = fcmp ole double %116, %117, !dbg !546
+  %conv478.i = zext i1 %cmp477.i to i32, !dbg !546
+  %conv479.i = sitofp i32 %conv478.i to double, !dbg !546
+  store double %conv479.i, double* %rval474.i, align 8, !dbg !546, !tbaa !520
+  br label %for.inc, !dbg !546
+
+sw.bb482.i:                                       ; preds = %if.else384.i
+  %rval484.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !546
+  %118 = load double* %rval484.i, align 8, !dbg !546, !tbaa !520
+  %rval486.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, i32 0, !dbg !546
+  %119 = load double* %rval486.i, align 8, !dbg !546, !tbaa !520
+  %cmp487.i = fcmp ogt double %118, %119, !dbg !546
+  %conv488.i = zext i1 %cmp487.i to i32, !dbg !546
+  %conv489.i = sitofp i32 %conv488.i to double, !dbg !546
+  store double %conv489.i, double* %rval484.i, align 8, !dbg !546, !tbaa !520
+  br label %for.inc, !dbg !546
+
+sw.bb492.i:                                       ; preds = %if.else384.i
+  %rval494.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !546
+  %120 = load double* %rval494.i, align 8, !dbg !546, !tbaa !520
+  %rval496.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom31, i32 1, i32 0, !dbg !546
+  %121 = load double* %rval496.i, align 8, !dbg !546, !tbaa !520
+  %cmp497.i = fcmp oge double %120, %121, !dbg !546
+  %conv498.i = zext i1 %cmp497.i to i32, !dbg !546
+  %conv499.i = sitofp i32 %conv498.i to double, !dbg !546
+  store double %conv499.i, double* %rval494.i, align 8, !dbg !546, !tbaa !520
+  br label %for.inc, !dbg !546
+
+sw.default502.i:                                  ; preds = %if.else384.i
+  %122 = load %struct._IO_FILE** @stderr, align 8, !dbg !546, !tbaa !272
+  %call503.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %122, i8* getelementptr inbounds ([21 x i8]* @.str, i64 0, i64 0), i32 %11) #10, !dbg !546
+  %rval505.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom21, i32 1, i32 0, !dbg !546
+  store double 0.000000e+00, double* %rval505.i, align 8, !dbg !546, !tbaa !520
+  br label %for.inc, !dbg !546
+
+sw.bb34:                                          ; preds = %for.body
+  %sub35 = add nsw i32 %stackpointer.0102, -1, !dbg !548
+  %idxprom36 = sext i32 %sub35 to i64, !dbg !548
+  %opcode42 = getelementptr inbounds %struct.uExpressionToken* %6, i64 %indvars.iv, i32 1, i32 0, !dbg !548
+  %123 = load i32* %opcode42, align 4, !dbg !548, !tbaa !269
+  %type.i82 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 0, !dbg !549
+  %124 = load i32* %type.i82, align 16, !dbg !549, !tbaa !519
+  %cmp.i = icmp eq i32 %124, 1, !dbg !549
+  store i32 0, i32* %type.i82, align 16, !dbg !550, !tbaa !519
+  br i1 %cmp.i, label %if.then.i84, label %if.else.i, !dbg !549
+
+if.then.i84:                                      ; preds = %sw.bb34
+  switch i32 %123, label %sw.default.i97 [
+    i32 13, label %sw.bb.i89
+    i32 14, label %sw.bb5.i
+    i32 15, label %sw.bb12.i
+    i32 16, label %sw.bb19.i
+    i32 17, label %sw.bb26.i
+    i32 18, label %sw.bb33.i
+    i32 19, label %sw.bb40.i
+    i32 20, label %sw.bb47.i93
+    i32 21, label %sw.bb54.i
+    i32 22, label %sw.bb61.i
+    i32 23, label %sw.bb68.i
+    i32 24, label %sw.bb75.i
+    i32 25, label %sw.bb82.i
+    i32 26, label %sw.bb89.i
+    i32 27, label %sw.bb96.i
+    i32 28, label %sw.bb103.i
+  ], !dbg !552
+
+sw.bb.i89:                                        ; preds = %if.then.i84
+  %value3.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, !dbg !553
+  %ival.i85 = bitcast %union.anon.0* %value3.i to i32*, !dbg !553
+  %125 = load i32* %ival.i85, align 8, !dbg !553, !tbaa !268
+  %conv.i86 = sitofp i32 %125 to double, !dbg !553
+  %call.i87 = call double @acos(double %conv.i86) #10, !dbg !553
+  %rval.i88 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !553
+  store double %call.i87, double* %rval.i88, align 8, !dbg !553, !tbaa !520
+  br label %for.inc, !dbg !553
+
+sw.bb5.i:                                         ; preds = %if.then.i84
+  %value6.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, !dbg !553
+  %ival7.i = bitcast %union.anon.0* %value6.i to i32*, !dbg !553
+  %126 = load i32* %ival7.i, align 8, !dbg !553, !tbaa !268
+  %conv8.i = sitofp i32 %126 to double, !dbg !553
+  %call9.i = call double @asin(double %conv8.i) #10, !dbg !553
+  %rval11.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !553
+  store double %call9.i, double* %rval11.i, align 8, !dbg !553, !tbaa !520
+  br label %for.inc, !dbg !553
+
+sw.bb12.i:                                        ; preds = %if.then.i84
+  %value13.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, !dbg !553
+  %ival14.i = bitcast %union.anon.0* %value13.i to i32*, !dbg !553
+  %127 = load i32* %ival14.i, align 8, !dbg !553, !tbaa !268
+  %conv15.i = sitofp i32 %127 to double, !dbg !553
+  %call16.i = call double @atan(double %conv15.i) #10, !dbg !553
+  %rval18.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !553
+  store double %call16.i, double* %rval18.i, align 8, !dbg !553, !tbaa !520
+  br label %for.inc, !dbg !553
+
+sw.bb19.i:                                        ; preds = %if.then.i84
+  %value20.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, !dbg !553
+  %ival21.i = bitcast %union.anon.0* %value20.i to i32*, !dbg !553
+  %128 = load i32* %ival21.i, align 8, !dbg !553, !tbaa !268
+  %conv22.i = sitofp i32 %128 to double, !dbg !553
+  %call23.i = call double @ceil(double %conv22.i) #14, !dbg !553
+  %rval25.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !553
+  store double %call23.i, double* %rval25.i, align 8, !dbg !553, !tbaa !520
+  br label %for.inc, !dbg !553
+
+sw.bb26.i:                                        ; preds = %if.then.i84
+  %value27.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, !dbg !553
+  %ival28.i = bitcast %union.anon.0* %value27.i to i32*, !dbg !553
+  %129 = load i32* %ival28.i, align 8, !dbg !553, !tbaa !268
+  %conv29.i = sitofp i32 %129 to double, !dbg !553
+  %call30.i = call double @cos(double %conv29.i) #10, !dbg !553
+  %rval32.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !553
+  store double %call30.i, double* %rval32.i, align 8, !dbg !553, !tbaa !520
+  br label %for.inc, !dbg !553
+
+sw.bb33.i:                                        ; preds = %if.then.i84
+  %value34.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, !dbg !553
+  %ival35.i = bitcast %union.anon.0* %value34.i to i32*, !dbg !553
+  %130 = load i32* %ival35.i, align 8, !dbg !553, !tbaa !268
+  %conv36.i90 = sitofp i32 %130 to double, !dbg !553
+  %call37.i = call double @cosh(double %conv36.i90) #10, !dbg !553
+  %rval39.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !553
+  store double %call37.i, double* %rval39.i, align 8, !dbg !553, !tbaa !520
+  br label %for.inc, !dbg !553
+
+sw.bb40.i:                                        ; preds = %if.then.i84
+  %value41.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, !dbg !553
+  %ival42.i = bitcast %union.anon.0* %value41.i to i32*, !dbg !553
+  %131 = load i32* %ival42.i, align 8, !dbg !553, !tbaa !268
+  %conv43.i = sitofp i32 %131 to double, !dbg !553
+  %call44.i = call double @exp(double %conv43.i) #10, !dbg !553
+  %rval46.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !553
+  store double %call44.i, double* %rval46.i, align 8, !dbg !553, !tbaa !520
+  br label %for.inc, !dbg !553
+
+sw.bb47.i93:                                      ; preds = %if.then.i84
+  %value48.i91 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, !dbg !553
+  %ival49.i92 = bitcast %union.anon.0* %value48.i91 to i32*, !dbg !553
+  %132 = load i32* %ival49.i92, align 8, !dbg !553, !tbaa !268
+  %conv50.i = sitofp i32 %132 to double, !dbg !553
+  %call51.i = call double @fabs(double %conv50.i) #14, !dbg !553
+  %rval53.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !553
+  store double %call51.i, double* %rval53.i, align 8, !dbg !553, !tbaa !520
+  br label %for.inc, !dbg !553
+
+sw.bb54.i:                                        ; preds = %if.then.i84
+  %value55.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, !dbg !553
+  %ival56.i = bitcast %union.anon.0* %value55.i to i32*, !dbg !553
+  %133 = load i32* %ival56.i, align 8, !dbg !553, !tbaa !268
+  %conv57.i = sitofp i32 %133 to double, !dbg !553
+  %call58.i = call double @floor(double %conv57.i) #14, !dbg !553
+  %rval60.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !553
+  store double %call58.i, double* %rval60.i, align 8, !dbg !553, !tbaa !520
+  br label %for.inc, !dbg !553
+
+sw.bb61.i:                                        ; preds = %if.then.i84
+  %value62.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, !dbg !553
+  %ival63.i = bitcast %union.anon.0* %value62.i to i32*, !dbg !553
+  %134 = load i32* %ival63.i, align 8, !dbg !553, !tbaa !268
+  %conv64.i = sitofp i32 %134 to double, !dbg !553
+  %call65.i = call double @log(double %conv64.i) #10, !dbg !553
+  %rval67.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !553
+  store double %call65.i, double* %rval67.i, align 8, !dbg !553, !tbaa !520
+  br label %for.inc, !dbg !553
+
+sw.bb68.i:                                        ; preds = %if.then.i84
+  %value69.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, !dbg !553
+  %ival70.i = bitcast %union.anon.0* %value69.i to i32*, !dbg !553
+  %135 = load i32* %ival70.i, align 8, !dbg !553, !tbaa !268
+  %conv71.i94 = sitofp i32 %135 to double, !dbg !553
+  %call72.i = call double @log10(double %conv71.i94) #10, !dbg !553
+  %rval74.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !553
+  store double %call72.i, double* %rval74.i, align 8, !dbg !553, !tbaa !520
+  br label %for.inc, !dbg !553
+
+sw.bb75.i:                                        ; preds = %if.then.i84
+  %value76.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, !dbg !553
+  %ival77.i = bitcast %union.anon.0* %value76.i to i32*, !dbg !553
+  %136 = load i32* %ival77.i, align 8, !dbg !553, !tbaa !268
+  %conv78.i = sitofp i32 %136 to double, !dbg !553
+  %call79.i = call double @sin(double %conv78.i) #10, !dbg !553
+  %rval81.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !553
+  store double %call79.i, double* %rval81.i, align 8, !dbg !553, !tbaa !520
+  br label %for.inc, !dbg !553
+
+sw.bb82.i:                                        ; preds = %if.then.i84
+  %value83.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, !dbg !553
+  %ival84.i = bitcast %union.anon.0* %value83.i to i32*, !dbg !553
+  %137 = load i32* %ival84.i, align 8, !dbg !553, !tbaa !268
+  %conv85.i = sitofp i32 %137 to double, !dbg !553
+  %call86.i = call double @sinh(double %conv85.i) #10, !dbg !553
+  %rval88.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !553
+  store double %call86.i, double* %rval88.i, align 8, !dbg !553, !tbaa !520
+  br label %for.inc, !dbg !553
+
+sw.bb89.i:                                        ; preds = %if.then.i84
+  %value90.i95 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, !dbg !553
+  %ival91.i96 = bitcast %union.anon.0* %value90.i95 to i32*, !dbg !553
+  %138 = load i32* %ival91.i96, align 8, !dbg !553, !tbaa !268
+  %conv92.i = sitofp i32 %138 to double, !dbg !553
+  %call93.i = call double @sqrt(double %conv92.i) #10, !dbg !553
+  %rval95.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !553
+  store double %call93.i, double* %rval95.i, align 8, !dbg !553, !tbaa !520
+  br label %for.inc, !dbg !553
+
+sw.bb96.i:                                        ; preds = %if.then.i84
+  %value97.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, !dbg !553
+  %ival98.i = bitcast %union.anon.0* %value97.i to i32*, !dbg !553
+  %139 = load i32* %ival98.i, align 8, !dbg !553, !tbaa !268
+  %conv99.i = sitofp i32 %139 to double, !dbg !553
+  %call100.i = call double @tan(double %conv99.i) #10, !dbg !553
+  %rval102.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !553
+  store double %call100.i, double* %rval102.i, align 8, !dbg !553, !tbaa !520
+  br label %for.inc, !dbg !553
+
+sw.bb103.i:                                       ; preds = %if.then.i84
+  %value104.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, !dbg !553
+  %ival105.i = bitcast %union.anon.0* %value104.i to i32*, !dbg !553
+  %140 = load i32* %ival105.i, align 8, !dbg !553, !tbaa !268
+  %conv106.i = sitofp i32 %140 to double, !dbg !553
+  %call107.i = call double @tanh(double %conv106.i) #10, !dbg !553
+  %rval109.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !553
+  store double %call107.i, double* %rval109.i, align 8, !dbg !553, !tbaa !520
+  br label %for.inc, !dbg !553
+
+sw.default.i97:                                   ; preds = %if.then.i84
+  %141 = load %struct._IO_FILE** @stderr, align 8, !dbg !553, !tbaa !272
+  %call110.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %141, i8* getelementptr inbounds ([21 x i8]* @.str, i64 0, i64 0), i32 %123) #10, !dbg !553
+  %rval112.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !553
+  store double 0.000000e+00, double* %rval112.i, align 8, !dbg !553, !tbaa !520
+  br label %for.inc, !dbg !553
+
+if.else.i:                                        ; preds = %sw.bb34
+  switch i32 %123, label %sw.default210.i [
+    i32 13, label %sw.bb114.i
+    i32 14, label %sw.bb120.i
+    i32 15, label %sw.bb126.i
+    i32 16, label %sw.bb132.i
+    i32 17, label %sw.bb138.i
+    i32 18, label %sw.bb144.i
+    i32 19, label %sw.bb150.i
+    i32 20, label %sw.bb156.i
+    i32 21, label %sw.bb162.i
+    i32 22, label %sw.bb168.i
+    i32 23, label %sw.bb174.i
+    i32 24, label %sw.bb180.i
+    i32 25, label %sw.bb186.i
+    i32 26, label %sw.bb192.i
+    i32 27, label %sw.bb198.i
+    i32 28, label %sw.bb204.i
+  ], !dbg !555
+
+sw.bb114.i:                                       ; preds = %if.else.i
+  %rval116.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !557
+  %142 = load double* %rval116.i, align 8, !dbg !557, !tbaa !520
+  %call117.i = call double @acos(double %142) #10, !dbg !557
+  store double %call117.i, double* %rval116.i, align 8, !dbg !557, !tbaa !520
+  br label %for.inc, !dbg !557
+
+sw.bb120.i:                                       ; preds = %if.else.i
+  %rval122.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !557
+  %143 = load double* %rval122.i, align 8, !dbg !557, !tbaa !520
+  %call123.i = call double @asin(double %143) #10, !dbg !557
+  store double %call123.i, double* %rval122.i, align 8, !dbg !557, !tbaa !520
+  br label %for.inc, !dbg !557
+
+sw.bb126.i:                                       ; preds = %if.else.i
+  %rval128.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !557
+  %144 = load double* %rval128.i, align 8, !dbg !557, !tbaa !520
+  %call129.i = call double @atan(double %144) #10, !dbg !557
+  store double %call129.i, double* %rval128.i, align 8, !dbg !557, !tbaa !520
+  br label %for.inc, !dbg !557
+
+sw.bb132.i:                                       ; preds = %if.else.i
+  %rval134.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !557
+  %145 = load double* %rval134.i, align 8, !dbg !557, !tbaa !520
+  %call135.i = call double @ceil(double %145) #14, !dbg !557
+  store double %call135.i, double* %rval134.i, align 8, !dbg !557, !tbaa !520
+  br label %for.inc, !dbg !557
+
+sw.bb138.i:                                       ; preds = %if.else.i
+  %rval140.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !557
+  %146 = load double* %rval140.i, align 8, !dbg !557, !tbaa !520
+  %call141.i = call double @cos(double %146) #10, !dbg !557
+  store double %call141.i, double* %rval140.i, align 8, !dbg !557, !tbaa !520
+  br label %for.inc, !dbg !557
+
+sw.bb144.i:                                       ; preds = %if.else.i
+  %rval146.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !557
+  %147 = load double* %rval146.i, align 8, !dbg !557, !tbaa !520
+  %call147.i = call double @cosh(double %147) #10, !dbg !557
+  store double %call147.i, double* %rval146.i, align 8, !dbg !557, !tbaa !520
+  br label %for.inc, !dbg !557
+
+sw.bb150.i:                                       ; preds = %if.else.i
+  %rval152.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !557
+  %148 = load double* %rval152.i, align 8, !dbg !557, !tbaa !520
+  %call153.i = call double @exp(double %148) #10, !dbg !557
+  store double %call153.i, double* %rval152.i, align 8, !dbg !557, !tbaa !520
+  br label %for.inc, !dbg !557
+
+sw.bb156.i:                                       ; preds = %if.else.i
+  %rval158.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !557
+  %149 = load double* %rval158.i, align 8, !dbg !557, !tbaa !520
+  %call159.i = call double @fabs(double %149) #14, !dbg !557
+  store double %call159.i, double* %rval158.i, align 8, !dbg !557, !tbaa !520
+  br label %for.inc, !dbg !557
+
+sw.bb162.i:                                       ; preds = %if.else.i
+  %rval164.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !557
+  %150 = load double* %rval164.i, align 8, !dbg !557, !tbaa !520
+  %call165.i = call double @floor(double %150) #14, !dbg !557
+  store double %call165.i, double* %rval164.i, align 8, !dbg !557, !tbaa !520
+  br label %for.inc, !dbg !557
+
+sw.bb168.i:                                       ; preds = %if.else.i
+  %rval170.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !557
+  %151 = load double* %rval170.i, align 8, !dbg !557, !tbaa !520
+  %call171.i = call double @log(double %151) #10, !dbg !557
+  store double %call171.i, double* %rval170.i, align 8, !dbg !557, !tbaa !520
+  br label %for.inc, !dbg !557
+
+sw.bb174.i:                                       ; preds = %if.else.i
+  %rval176.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !557
+  %152 = load double* %rval176.i, align 8, !dbg !557, !tbaa !520
+  %call177.i = call double @log10(double %152) #10, !dbg !557
+  store double %call177.i, double* %rval176.i, align 8, !dbg !557, !tbaa !520
+  br label %for.inc, !dbg !557
+
+sw.bb180.i:                                       ; preds = %if.else.i
+  %rval182.i98 = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !557
+  %153 = load double* %rval182.i98, align 8, !dbg !557, !tbaa !520
+  %call183.i = call double @sin(double %153) #10, !dbg !557
+  store double %call183.i, double* %rval182.i98, align 8, !dbg !557, !tbaa !520
+  br label %for.inc, !dbg !557
+
+sw.bb186.i:                                       ; preds = %if.else.i
+  %rval188.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !557
+  %154 = load double* %rval188.i, align 8, !dbg !557, !tbaa !520
+  %call189.i = call double @sinh(double %154) #10, !dbg !557
+  store double %call189.i, double* %rval188.i, align 8, !dbg !557, !tbaa !520
+  br label %for.inc, !dbg !557
+
+sw.bb192.i:                                       ; preds = %if.else.i
+  %rval194.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !557
+  %155 = load double* %rval194.i, align 8, !dbg !557, !tbaa !520
+  %call195.i = call double @sqrt(double %155) #10, !dbg !557
+  store double %call195.i, double* %rval194.i, align 8, !dbg !557, !tbaa !520
+  br label %for.inc, !dbg !557
+
+sw.bb198.i:                                       ; preds = %if.else.i
+  %rval200.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !557
+  %156 = load double* %rval200.i, align 8, !dbg !557, !tbaa !520
+  %call201.i = call double @tan(double %156) #10, !dbg !557
+  store double %call201.i, double* %rval200.i, align 8, !dbg !557, !tbaa !520
+  br label %for.inc, !dbg !557
+
+sw.bb204.i:                                       ; preds = %if.else.i
+  %rval206.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !557
+  %157 = load double* %rval206.i, align 8, !dbg !557, !tbaa !520
+  %call207.i = call double @tanh(double %157) #10, !dbg !557
+  store double %call207.i, double* %rval206.i, align 8, !dbg !557, !tbaa !520
+  br label %for.inc, !dbg !557
+
+sw.default210.i:                                  ; preds = %if.else.i
+  %158 = load %struct._IO_FILE** @stderr, align 8, !dbg !557, !tbaa !272
+  %call211.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %158, i8* getelementptr inbounds ([21 x i8]* @.str, i64 0, i64 0), i32 %123) #10, !dbg !557
+  %rval213.i = getelementptr inbounds [256 x %struct.uExpressionValue]* %stack, i64 0, i64 %idxprom36, i32 1, i32 0, !dbg !557
+  store double 0.000000e+00, double* %rval213.i, align 8, !dbg !557, !tbaa !520
+  br label %for.inc, !dbg !557
+
+for.inc:                                          ; preds = %sw.default210.i, %sw.bb204.i, %sw.bb198.i, %sw.bb192.i, %sw.bb186.i, %sw.bb180.i, %sw.bb174.i, %sw.bb168.i, %sw.bb162.i, %sw.bb156.i, %sw.bb150.i, %sw.bb144.i, %sw.bb138.i, %sw.bb132.i, %sw.bb126.i, %sw.bb120.i, %sw.bb114.i, %sw.default.i97, %sw.bb103.i, %sw.bb96.i, %sw.bb89.i, %sw.bb82.i, %sw.bb75.i, %sw.bb68.i, %sw.bb61.i, %sw.bb54.i, %sw.bb47.i93, %sw.bb40.i, %sw.bb33.i, %sw.bb26.i, %sw.bb19.i, %sw.bb12.i, %sw.bb5.i, %sw.bb.i89, %sw.default502.i, %sw.bb492.i, %sw.bb482.i, %sw.bb472.i, %sw.bb462.i, %sw.bb452.i, %lor.end447.i, %land.end434.i, %sw.bb418.i, %sw.bb410.i, %sw.bb402.i, %sw.bb394.i, %sw.bb386.i, %sw.default379.i, %sw.bb368.i, %sw.bb357.i, %sw.bb346.i, %sw.bb335.i, %sw.bb324.i, %lor.end319.i, %land.end306.i, %sw.bb289.i, %sw.bb280.i, %sw.bb271.i, %sw.bb262.i, %sw.bb253.i, %sw.default238.i, %sw.bb227.i, %sw.bb216.i, %sw.bb205.i, %sw.bb194.i, %sw.bb183.i, %lor.end178.i, %land.end165.i, %sw.bb148.i, %sw.bb139.i, %sw.bb130.i, %sw.bb121.i, %sw.bb113.i, %sw.default.i, %sw.bb92.i, %sw.bb83.i, %sw.bb74.i, %sw.bb65.i, %sw.bb56.i, %lor.end.i, %land.end.i, %sw.bb30.i, %sw.bb23.i, %sw.bb16.i, %sw.bb9.i, %sw.bb.i, %for.body, %if.then9
+  %stackpointer.1 = phi i32 [ %inc, %if.then9 ], [ %stackpointer.0102, %for.body ], [ %sub30, %sw.bb.i ], [ %sub30, %sw.bb9.i ], [ %sub30, %sw.bb16.i ], [ %sub30, %sw.bb23.i ], [ %sub30, %sw.bb30.i ], [ %sub30, %land.end.i ], [ %sub30, %lor.end.i ], [ %sub30, %sw.bb56.i ], [ %sub30, %sw.bb65.i ], [ %sub30, %sw.bb74.i ], [ %sub30, %sw.bb83.i ], [ %sub30, %sw.bb92.i ], [ %sub30, %sw.default.i ], [ %sub30, %sw.bb113.i ], [ %sub30, %sw.bb121.i ], [ %sub30, %sw.bb130.i ], [ %sub30, %sw.bb139.i ], [ %sub30, %sw.bb148.i ], [ %sub30, %land.end165.i ], [ %sub30, %lor.end178.i ], [ %sub30, %sw.bb183.i ], [ %sub30, %sw.bb194.i ], [ %sub30, %sw.bb205.i ], [ %sub30, %sw.bb216.i ], [ %sub30, %sw.bb227.i ], [ %sub30, %sw.default238.i ], [ %sub30, %sw.bb253.i ], [ %sub30, %sw.bb262.i ], [ %sub30, %sw.bb271.i ], [ %sub30, %sw.bb280.i ], [ %sub30, %sw.bb289.i ], [ %sub30, %land.end306.i ], [ %sub30, %lor.end319.i ], [ %sub30, %sw.bb324.i ], [ %sub30, %sw.bb335.i ], [ %sub30, %sw.bb346.i ], [ %sub30, %sw.bb357.i ], [ %sub30, %sw.bb368.i ], [ %sub30, %sw.default379.i ], [ %sub30, %sw.bb386.i ], [ %sub30, %sw.bb394.i ], [ %sub30, %sw.bb402.i ], [ %sub30, %sw.bb410.i ], [ %sub30, %sw.bb418.i ], [ %sub30, %land.end434.i ], [ %sub30, %lor.end447.i ], [ %sub30, %sw.bb452.i ], [ %sub30, %sw.bb462.i ], [ %sub30, %sw.bb472.i ], [ %sub30, %sw.bb482.i ], [ %sub30, %sw.bb492.i ], [ %sub30, %sw.default502.i ], [ %stackpointer.0102, %sw.bb.i89 ], [ %stackpointer.0102, %sw.bb5.i ], [ %stackpointer.0102, %sw.bb12.i ], [ %stackpointer.0102, %sw.bb19.i ], [ %stackpointer.0102, %sw.bb26.i ], [ %stackpointer.0102, %sw.bb33.i ], [ %stackpointer.0102, %sw.bb40.i ], [ %stackpointer.0102, %sw.bb47.i93 ], [ %stackpointer.0102, %sw.bb54.i ], [ %stackpointer.0102, %sw.bb61.i ], [ %stackpointer.0102, %sw.bb68.i ], [ %stackpointer.0102, %sw.bb75.i ], [ %stackpointer.0102, %sw.bb82.i ], [ %stackpointer.0102, %sw.bb89.i ], [ %stackpointer.0102, %sw.bb96.i ], [ %stackpointer.0102, %sw.bb103.i ], [ %stackpointer.0102, %sw.default.i97 ], [ %stackpointer.0102, %sw.bb114.i ], [ %stackpointer.0102, %sw.bb120.i ], [ %stackpointer.0102, %sw.bb126.i ], [ %stackpointer.0102, %sw.bb132.i ], [ %stackpointer.0102, %sw.bb138.i ], [ %stackpointer.0102, %sw.bb144.i ], [ %stackpointer.0102, %sw.bb150.i ], [ %stackpointer.0102, %sw.bb156.i ], [ %stackpointer.0102, %sw.bb162.i ], [ %stackpointer.0102, %sw.bb168.i ], [ %stackpointer.0102, %sw.bb174.i ], [ %stackpointer.0102, %sw.bb180.i ], [ %stackpointer.0102, %sw.bb186.i ], [ %stackpointer.0102, %sw.bb192.i ], [ %stackpointer.0102, %sw.bb198.i ], [ %stackpointer.0102, %sw.bb204.i ], [ %stackpointer.0102, %sw.default210.i ]
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !512
+  %159 = load i32* %ntokens, align 4, !dbg !512, !tbaa !268
+  %160 = trunc i64 %indvars.iv.next to i32, !dbg !512
+  %cmp = icmp slt i32 %160, %159, !dbg !512
+  br i1 %cmp, label %for.body, label %for.end, !dbg !512
+
+for.end:                                          ; preds = %for.inc, %if.then
+  %stackpointer.0.lcssa = phi i32 [ 0, %if.then ], [ %stackpointer.1, %for.inc ]
+  br i1 %tobool, label %if.then49, label %if.end50, !dbg !559
+
+if.then49:                                        ; preds = %for.end
+  call void @free(i8* %call) #10, !dbg !560
+  br label %if.end50, !dbg !562
+
+if.end50:                                         ; preds = %if.then49, %for.end
+  %161 = bitcast %struct.uExpressionValue* %retval1 to i8*, !dbg !563
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %161, i8* %0, i64 16, i32 8, i1 false), !dbg !563, !tbaa.struct !518
+  %sub52 = add nsw i32 %stackpointer.0.lcssa, -1, !dbg !564
+  call void @llvm.dbg.value(metadata !{i32 %sub52}, i64 0, metadata !120), !dbg !564
+  br label %if.end54, !dbg !565
+
+if.end54:                                         ; preds = %lor.lhs.false, %if.end50
+  %retcode.0 = phi i32 [ %sub52, %if.end50 ], [ -1, %lor.lhs.false ]
+  call void @llvm.lifetime.end(i64 4096, i8* %0) #4, !dbg !566
+  ret i32 %retcode.0, !dbg !566
 }

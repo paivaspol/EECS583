@@ -1,0 +1,31 @@
+define zeroext i1 @_ZNK6soplex11SPxWeightST12isConsistentEv(%"class.soplex::SPxWeightST"* %this) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SPxWeightST"* %this}, i64 0, metadata !7144), !dbg !7976
+  %rowWeight = getelementptr inbounds %"class.soplex::SPxWeightST"* %this, i64 0, i32 4, !dbg !7977
+  %call = tail call zeroext i1 @_ZNK6soplex9DataArrayIdE12isConsistentEv(%"class.soplex::DataArray.0"* %rowWeight) #11, !dbg !7977
+  br i1 %call, label %land.lhs.true, label %land.end, !dbg !7977
+
+land.lhs.true:                                    ; preds = %entry
+  %colWeight = getelementptr inbounds %"class.soplex::SPxWeightST"* %this, i64 0, i32 5, !dbg !7979
+  %call2 = tail call zeroext i1 @_ZNK6soplex9DataArrayIdE12isConsistentEv(%"class.soplex::DataArray.0"* %colWeight) #11, !dbg !7979
+  br i1 %call2, label %land.lhs.true3, label %land.end, !dbg !7979
+
+land.lhs.true3:                                   ; preds = %land.lhs.true
+  %rowRight = getelementptr inbounds %"class.soplex::SPxWeightST"* %this, i64 0, i32 6, !dbg !7980
+  %call4 = tail call zeroext i1 @_ZNK6soplex9DataArrayIbE12isConsistentEv(%"class.soplex::DataArray.1"* %rowRight) #11, !dbg !7980
+  br i1 %call4, label %land.lhs.true5, label %land.end, !dbg !7980
+
+land.lhs.true5:                                   ; preds = %land.lhs.true3
+  %colUp = getelementptr inbounds %"class.soplex::SPxWeightST"* %this, i64 0, i32 7, !dbg !7981
+  %call6 = tail call zeroext i1 @_ZNK6soplex9DataArrayIbE12isConsistentEv(%"class.soplex::DataArray.1"* %colUp) #11, !dbg !7981
+  br i1 %call6, label %land.rhs, label %land.end, !dbg !7981
+
+land.rhs:                                         ; preds = %land.lhs.true5
+  %0 = getelementptr inbounds %"class.soplex::SPxWeightST"* %this, i64 0, i32 0, !dbg !7982
+  %call7 = tail call zeroext i1 @_ZNK6soplex10SPxStarter12isConsistentEv(%"class.soplex::SPxStarter"* %0) #11, !dbg !7982
+  br label %land.end
+
+land.end:                                         ; preds = %land.rhs, %land.lhs.true5, %land.lhs.true3, %land.lhs.true, %entry
+  %1 = phi i1 [ false, %land.lhs.true5 ], [ false, %land.lhs.true3 ], [ false, %land.lhs.true ], [ false, %entry ], [ %call7, %land.rhs ]
+  ret i1 %1, !dbg !7983
+}

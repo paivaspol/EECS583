@@ -1,0 +1,38 @@
+define internal fastcc void @_ZN6soplexL10enQueueMinEPiS0_i(i32* nocapture %heap, i32* nocapture %size, i32 %elem) #2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %heap}, i64 0, metadata !2779), !dbg !3591
+  tail call void @llvm.dbg.value(metadata !{i32* %size}, i64 0, metadata !2780), !dbg !3591
+  tail call void @llvm.dbg.value(metadata !{i32 %elem}, i64 0, metadata !2781), !dbg !3591
+  %0 = load i32* %size, align 4, !dbg !3592, !tbaa !2843
+  %inc = add nsw i32 %0, 1, !dbg !3592
+  store i32 %inc, i32* %size, align 4, !dbg !3592, !tbaa !2843
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !2783), !dbg !3592
+  %cmp17 = icmp sgt i32 %0, 0, !dbg !3593
+  br i1 %cmp17, label %while.body, label %while.end, !dbg !3593
+
+while.body:                                       ; preds = %entry, %if.then
+  %j.018 = phi i32 [ %div, %if.then ], [ %0, %entry ]
+  %sub = add nsw i32 %j.018, -1, !dbg !3594
+  %div = sdiv i32 %sub, 2, !dbg !3594
+  tail call void @llvm.dbg.value(metadata !{i32 %div}, i64 0, metadata !2782), !dbg !3594
+  %idxprom = sext i32 %div to i64, !dbg !3596
+  %arrayidx = getelementptr inbounds i32* %heap, i64 %idxprom, !dbg !3596
+  %1 = load i32* %arrayidx, align 4, !dbg !3596, !tbaa !2843
+  %cmp1 = icmp sgt i32 %1, %elem, !dbg !3596
+  br i1 %cmp1, label %if.then, label %while.end, !dbg !3596
+
+if.then:                                          ; preds = %while.body
+  %idxprom4 = sext i32 %j.018 to i64, !dbg !3597
+  %arrayidx5 = getelementptr inbounds i32* %heap, i64 %idxprom4, !dbg !3597
+  store i32 %1, i32* %arrayidx5, align 4, !dbg !3597, !tbaa !2843
+  tail call void @llvm.dbg.value(metadata !{i32 %div}, i64 0, metadata !2783), !dbg !3599
+  %cmp = icmp sgt i32 %sub, 1, !dbg !3593
+  br i1 %cmp, label %while.body, label %while.end, !dbg !3593
+
+while.end:                                        ; preds = %if.then, %while.body, %entry
+  %j.0.lcssa = phi i32 [ %0, %entry ], [ %j.018, %while.body ], [ %div, %if.then ]
+  %idxprom6 = sext i32 %j.0.lcssa to i64, !dbg !3600
+  %arrayidx7 = getelementptr inbounds i32* %heap, i64 %idxprom6, !dbg !3600
+  store i32 %elem, i32* %arrayidx7, align 4, !dbg !3600, !tbaa !2843
+  ret void, !dbg !3601
+}

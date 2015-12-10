@@ -1,36 +1,42 @@
 define %struct.splay_tree_node_s* @splay_tree_predecessor(%struct.splay_tree_s* %sp, i64 %key) #0 {
 entry:
-  %root = getelementptr inbounds %struct.splay_tree_s* %sp, i64 0, i32 0
-  %0 = load %struct.splay_tree_node_s** %root, align 8, !tbaa !0
-  %tobool = icmp eq %struct.splay_tree_node_s* %0, null
-  br i1 %tobool, label %return, label %splay_tree_splay.exit
+  tail call void @llvm.dbg.value(metadata !{%struct.splay_tree_s* %sp}, i64 0, metadata !110), !dbg !340
+  tail call void @llvm.dbg.value(metadata !{i64 %key}, i64 0, metadata !111), !dbg !341
+  %root = getelementptr inbounds %struct.splay_tree_s* %sp, i64 0, i32 0, !dbg !342
+  %0 = load %struct.splay_tree_node_s** %root, align 8, !dbg !342, !tbaa !211
+  %tobool = icmp eq %struct.splay_tree_node_s* %0, null, !dbg !342
+  br i1 %tobool, label %return, label %splay_tree_splay.exit, !dbg !342
 
 splay_tree_splay.exit:                            ; preds = %entry
-  %call.i = tail call fastcc %struct.splay_tree_node_s* @splay_tree_splay_helper(%struct.splay_tree_s* %sp, i64 %key, %struct.splay_tree_node_s** %root, %struct.splay_tree_node_s** null, %struct.splay_tree_node_s** null) #6
-  %comp = getelementptr inbounds %struct.splay_tree_s* %sp, i64 0, i32 1
-  %1 = load i32 (i64, i64)** %comp, align 8, !tbaa !0
-  %2 = load %struct.splay_tree_node_s** %root, align 8, !tbaa !0
-  %key2 = getelementptr inbounds %struct.splay_tree_node_s* %2, i64 0, i32 0
-  %3 = load i64* %key2, align 8, !tbaa !3
-  %call = tail call i32 %1(i64 %3, i64 %key) #6
-  %cmp = icmp slt i32 %call, 0
-  %4 = load %struct.splay_tree_node_s** %root, align 8, !tbaa !0
-  br i1 %cmp, label %return, label %if.end5
+  tail call void @llvm.dbg.value(metadata !{%struct.splay_tree_s* %sp}, i64 0, metadata !343) #6, !dbg !345
+  tail call void @llvm.dbg.value(metadata !{i64 %key}, i64 0, metadata !346) #6, !dbg !347
+  %call.i = tail call fastcc %struct.splay_tree_node_s* @splay_tree_splay_helper(%struct.splay_tree_s* %sp, i64 %key, %struct.splay_tree_node_s** %root, %struct.splay_tree_node_s** null, %struct.splay_tree_node_s** null) #7, !dbg !348
+  %comp = getelementptr inbounds %struct.splay_tree_s* %sp, i64 0, i32 1, !dbg !349
+  %1 = load i32 (i64, i64)** %comp, align 8, !dbg !349, !tbaa !211
+  %2 = load %struct.splay_tree_node_s** %root, align 8, !dbg !349, !tbaa !211
+  %key2 = getelementptr inbounds %struct.splay_tree_node_s* %2, i64 0, i32 0, !dbg !349
+  %3 = load i64* %key2, align 8, !dbg !349, !tbaa !253
+  %call = tail call i32 %1(i64 %3, i64 %key) #7, !dbg !349
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !112), !dbg !349
+  %cmp = icmp slt i32 %call, 0, !dbg !350
+  %4 = load %struct.splay_tree_node_s** %root, align 8, !dbg !351, !tbaa !211
+  br i1 %cmp, label %return, label %if.end5, !dbg !350
 
 if.end5:                                          ; preds = %splay_tree_splay.exit
-  %left = getelementptr inbounds %struct.splay_tree_node_s* %4, i64 0, i32 2
-  %5 = load %struct.splay_tree_node_s** %left, align 8, !tbaa !0
-  %tobool7 = icmp eq %struct.splay_tree_node_s* %5, null
-  br i1 %tobool7, label %return, label %while.cond
+  %left = getelementptr inbounds %struct.splay_tree_node_s* %4, i64 0, i32 2, !dbg !352
+  %5 = load %struct.splay_tree_node_s** %left, align 8, !dbg !352, !tbaa !211
+  tail call void @llvm.dbg.value(metadata !{%struct.splay_tree_node_s* %5}, i64 0, metadata !113), !dbg !352
+  %tobool7 = icmp eq %struct.splay_tree_node_s* %5, null, !dbg !353
+  br i1 %tobool7, label %return, label %while.cond, !dbg !353
 
 while.cond:                                       ; preds = %if.end5, %while.cond
   %node.0 = phi %struct.splay_tree_node_s* [ %6, %while.cond ], [ %5, %if.end5 ]
-  %right = getelementptr inbounds %struct.splay_tree_node_s* %node.0, i64 0, i32 3
-  %6 = load %struct.splay_tree_node_s** %right, align 8, !tbaa !0
-  %tobool9 = icmp eq %struct.splay_tree_node_s* %6, null
-  br i1 %tobool9, label %return, label %while.cond
+  %right = getelementptr inbounds %struct.splay_tree_node_s* %node.0, i64 0, i32 3, !dbg !354
+  %6 = load %struct.splay_tree_node_s** %right, align 8, !dbg !354, !tbaa !211
+  %tobool9 = icmp eq %struct.splay_tree_node_s* %6, null, !dbg !354
+  br i1 %tobool9, label %return, label %while.cond, !dbg !354
 
 return:                                           ; preds = %while.cond, %if.end5, %splay_tree_splay.exit, %entry
   %retval.0 = phi %struct.splay_tree_node_s* [ null, %entry ], [ %4, %splay_tree_splay.exit ], [ null, %if.end5 ], [ %node.0, %while.cond ]
-  ret %struct.splay_tree_node_s* %retval.0
+  ret %struct.splay_tree_node_s* %retval.0, !dbg !355
 }

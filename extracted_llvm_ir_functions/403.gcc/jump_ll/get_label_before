@@ -1,28 +1,32 @@
 define %struct.rtx_def* @get_label_before(%struct.rtx_def* %insn) #0 {
 entry:
-  %call = tail call %struct.rtx_def* @prev_nonnote_insn(%struct.rtx_def* %insn) #7
-  %cmp = icmp eq %struct.rtx_def* %call, null
-  br i1 %cmp, label %if.then, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !465), !dbg !1089
+  %call = tail call %struct.rtx_def* @prev_nonnote_insn(%struct.rtx_def* %insn) #9, !dbg !1090
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !466), !dbg !1090
+  %cmp = icmp eq %struct.rtx_def* %call, null, !dbg !1091
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !1091
 
 lor.lhs.false:                                    ; preds = %entry
-  %0 = bitcast %struct.rtx_def* %call to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp1 = icmp eq i32 %bf.clear, 36
-  br i1 %cmp1, label %if.end, label %if.then
+  %0 = bitcast %struct.rtx_def* %call to i32*, !dbg !1091
+  %bf.load = load i32* %0, align 8, !dbg !1091
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1091
+  %cmp1 = icmp eq i32 %bf.clear, 36, !dbg !1091
+  br i1 %cmp1, label %if.end, label %if.then, !dbg !1091
 
 if.then:                                          ; preds = %lor.lhs.false, %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 1
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
-  %call2 = tail call %struct.rtx_def* @gen_label_rtx() #7
-  %call3 = tail call %struct.rtx_def* @emit_label_after(%struct.rtx_def* %call2, %struct.rtx_def* %1) #7
-  %arrayidx5 = getelementptr inbounds %struct.rtx_def* %call2, i64 0, i32 1, i64 3
-  %rtint = bitcast %union.rtunion_def* %arrayidx5 to i32*
-  store i32 0, i32* %rtint, align 4, !tbaa !0
-  br label %if.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 1, !dbg !1092
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !1092
+  %1 = load %struct.rtx_def** %rtx, align 8, !dbg !1092, !tbaa !810
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %1}, i64 0, metadata !467), !dbg !1092
+  %call2 = tail call %struct.rtx_def* @gen_label_rtx() #9, !dbg !1093
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call2}, i64 0, metadata !466), !dbg !1093
+  %call3 = tail call %struct.rtx_def* @emit_label_after(%struct.rtx_def* %call2, %struct.rtx_def* %1) #9, !dbg !1094
+  %arrayidx5 = getelementptr inbounds %struct.rtx_def* %call2, i64 0, i32 1, i64 3, !dbg !1095
+  %rtint = bitcast %union.rtunion_def* %arrayidx5 to i32*, !dbg !1095
+  store i32 0, i32* %rtint, align 4, !dbg !1095, !tbaa !806
+  br label %if.end, !dbg !1096
 
 if.end:                                           ; preds = %lor.lhs.false, %if.then
   %label.0 = phi %struct.rtx_def* [ %call2, %if.then ], [ %call, %lor.lhs.false ]
-  ret %struct.rtx_def* %label.0
+  ret %struct.rtx_def* %label.0, !dbg !1097
 }

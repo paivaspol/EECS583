@@ -1,89 +1,109 @@
-define void @rotate(i32 %axis, float %angle, [4 x float]* nocapture %A) #3 {
-  br label %.preheader.i
+define void @rotate(i32 %axis, float %angle, [4 x float]* nocapture %A) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %axis}, i64 0, metadata !117), !dbg !288
+  tail call void @llvm.dbg.value(metadata !{float %angle}, i64 0, metadata !118), !dbg !288
+  tail call void @llvm.dbg.value(metadata !{[4 x float]* %A}, i64 0, metadata !119), !dbg !288
+  tail call void @llvm.dbg.value(metadata !{[4 x float]* %A}, i64 0, metadata !289), !dbg !291
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !292), !dbg !293
+  br label %for.cond1.preheader.i, !dbg !293
 
-.preheader.i:                                     ; preds = %6, %0
-  %indvars.iv3.i = phi i64 [ 0, %0 ], [ %indvars.iv.next4.i, %6 ]
-  %1 = trunc i64 %indvars.iv3.i to i32
-  br label %2
+for.cond1.preheader.i:                            ; preds = %for.inc11.i, %entry
+  %indvars.iv21.i = phi i64 [ 0, %entry ], [ %indvars.iv.next22.i, %for.inc11.i ]
+  %0 = trunc i64 %indvars.iv21.i to i32, !dbg !294
+  br label %for.body3.i, !dbg !295
 
-; <label>:2                                       ; preds = %2, %.preheader.i
-  %indvars.iv.i = phi i64 [ 0, %.preheader.i ], [ %indvars.iv.next.i, %2 ]
-  %3 = trunc i64 %indvars.iv.i to i32
-  %4 = icmp eq i32 %1, %3
-  %5 = getelementptr inbounds [4 x float]* %A, i64 %indvars.iv3.i, i64 %indvars.iv.i
-  %..i = select i1 %4, float 1.000000e+00, float 0.000000e+00
-  store float %..i, float* %5, align 4, !tbaa !14
-  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1
-  %exitcond.i = icmp eq i64 %indvars.iv.next.i, 4
-  br i1 %exitcond.i, label %6, label %2
+for.body3.i:                                      ; preds = %for.body3.i, %for.cond1.preheader.i
+  %indvars.iv.i = phi i64 [ 0, %for.cond1.preheader.i ], [ %indvars.iv.next.i, %for.body3.i ]
+  %1 = trunc i64 %indvars.iv.i to i32, !dbg !294
+  %cmp4.i = icmp eq i32 %0, %1, !dbg !294
+  %arrayidx6.i = getelementptr inbounds [4 x float]* %A, i64 %indvars.iv21.i, i64 %indvars.iv.i, !dbg !296
+  %..i = select i1 %cmp4.i, float 1.000000e+00, float 0.000000e+00, !dbg !296
+  store float %..i, float* %arrayidx6.i, align 4, !dbg !296, !tbaa !242
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1, !dbg !295
+  %lftr.wideiv = trunc i64 %indvars.iv.next.i to i32, !dbg !295
+  %exitcond = icmp eq i32 %lftr.wideiv, 4, !dbg !295
+  br i1 %exitcond, label %for.inc11.i, label %for.body3.i, !dbg !295
 
-; <label>:6                                       ; preds = %2
-  %indvars.iv.next4.i = add nuw nsw i64 %indvars.iv3.i, 1
-  %exitcond5.i = icmp eq i64 %indvars.iv.next4.i, 4
-  br i1 %exitcond5.i, label %unity_m4.exit, label %.preheader.i
+for.inc11.i:                                      ; preds = %for.body3.i
+  %indvars.iv.next22.i = add i64 %indvars.iv21.i, 1, !dbg !293
+  %lftr.wideiv86 = trunc i64 %indvars.iv.next22.i to i32, !dbg !293
+  %exitcond87 = icmp eq i32 %lftr.wideiv86, 4, !dbg !293
+  br i1 %exitcond87, label %unity_m4.exit, label %for.cond1.preheader.i, !dbg !293
 
-unity_m4.exit:                                    ; preds = %6
-  switch i32 %axis, label %40 [
-    i32 0, label %7
-    i32 1, label %18
-    i32 2, label %29
-  ]
+unity_m4.exit:                                    ; preds = %for.inc11.i
+  switch i32 %axis, label %sw.default [
+    i32 0, label %sw.bb
+    i32 1, label %sw.bb18
+    i32 2, label %sw.bb40
+  ], !dbg !297
 
-; <label>:7                                       ; preds = %unity_m4.exit
-  %8 = fpext float %angle to double
-  %9 = tail call double @cos(double %8) #8
-  %10 = fptrunc double %9 to float
-  %11 = getelementptr inbounds [4 x float]* %A, i64 1, i64 1
-  store float %10, float* %11, align 4, !tbaa !14
-  %12 = tail call double @sin(double %8) #8
-  %13 = fptrunc double %12 to float
-  %14 = fsub float -0.000000e+00, %13
-  %15 = getelementptr inbounds [4 x float]* %A, i64 1, i64 2
-  store float %14, float* %15, align 4, !tbaa !14
-  %16 = getelementptr inbounds [4 x float]* %A, i64 2, i64 1
-  store float %13, float* %16, align 4, !tbaa !14
-  %17 = getelementptr inbounds [4 x float]* %A, i64 2, i64 2
-  store float %10, float* %17, align 4, !tbaa !14
-  br label %41
+sw.bb:                                            ; preds = %unity_m4.exit
+  %conv = fpext float %angle to double, !dbg !298
+  %call = tail call double @cos(double %conv) #5, !dbg !298
+  %conv1 = fptrunc double %call to float, !dbg !298
+  %arrayidx2 = getelementptr inbounds [4 x float]* %A, i64 1, i64 1, !dbg !298
+  store float %conv1, float* %arrayidx2, align 4, !dbg !298, !tbaa !242
+  %call4 = tail call double @sin(double %conv) #5, !dbg !300
+  %2 = fptrunc double %call4 to float, !dbg !300
+  %conv5 = fsub float -0.000000e+00, %2, !dbg !300
+  %arrayidx7 = getelementptr inbounds [4 x float]* %A, i64 1, i64 2, !dbg !300
+  store float %conv5, float* %arrayidx7, align 4, !dbg !300, !tbaa !242
+  %call9 = tail call double @sin(double %conv) #5, !dbg !301
+  %conv10 = fptrunc double %call9 to float, !dbg !301
+  %arrayidx12 = getelementptr inbounds [4 x float]* %A, i64 2, i64 1, !dbg !301
+  store float %conv10, float* %arrayidx12, align 4, !dbg !301, !tbaa !242
+  %call14 = tail call double @cos(double %conv) #5, !dbg !302
+  %conv15 = fptrunc double %call14 to float, !dbg !302
+  %arrayidx17 = getelementptr inbounds [4 x float]* %A, i64 2, i64 2, !dbg !302
+  store float %conv15, float* %arrayidx17, align 4, !dbg !302, !tbaa !242
+  br label %sw.epilog, !dbg !303
 
-; <label>:18                                      ; preds = %unity_m4.exit
-  %19 = fpext float %angle to double
-  %20 = tail call double @cos(double %19) #8
-  %21 = fptrunc double %20 to float
-  %22 = getelementptr inbounds [4 x float]* %A, i64 0, i64 0
-  store float %21, float* %22, align 4, !tbaa !14
-  %23 = tail call double @sin(double %19) #8
-  %24 = fptrunc double %23 to float
-  %25 = getelementptr inbounds [4 x float]* %A, i64 0, i64 2
-  store float %24, float* %25, align 4, !tbaa !14
-  %26 = fsub float -0.000000e+00, %24
-  %27 = getelementptr inbounds [4 x float]* %A, i64 2, i64 0
-  store float %26, float* %27, align 4, !tbaa !14
-  %28 = getelementptr inbounds [4 x float]* %A, i64 2, i64 2
-  store float %21, float* %28, align 4, !tbaa !14
-  br label %41
+sw.bb18:                                          ; preds = %unity_m4.exit
+  %conv19 = fpext float %angle to double, !dbg !304
+  %call20 = tail call double @cos(double %conv19) #5, !dbg !304
+  %conv21 = fptrunc double %call20 to float, !dbg !304
+  %arrayidx23 = getelementptr inbounds [4 x float]* %A, i64 0, i64 0, !dbg !304
+  store float %conv21, float* %arrayidx23, align 4, !dbg !304, !tbaa !242
+  %call25 = tail call double @sin(double %conv19) #5, !dbg !305
+  %conv26 = fptrunc double %call25 to float, !dbg !305
+  %arrayidx28 = getelementptr inbounds [4 x float]* %A, i64 0, i64 2, !dbg !305
+  store float %conv26, float* %arrayidx28, align 4, !dbg !305, !tbaa !242
+  %call30 = tail call double @sin(double %conv19) #5, !dbg !306
+  %3 = fptrunc double %call30 to float, !dbg !306
+  %conv32 = fsub float -0.000000e+00, %3, !dbg !306
+  %arrayidx34 = getelementptr inbounds [4 x float]* %A, i64 2, i64 0, !dbg !306
+  store float %conv32, float* %arrayidx34, align 4, !dbg !306, !tbaa !242
+  %call36 = tail call double @cos(double %conv19) #5, !dbg !307
+  %conv37 = fptrunc double %call36 to float, !dbg !307
+  %arrayidx39 = getelementptr inbounds [4 x float]* %A, i64 2, i64 2, !dbg !307
+  store float %conv37, float* %arrayidx39, align 4, !dbg !307, !tbaa !242
+  br label %sw.epilog, !dbg !308
 
-; <label>:29                                      ; preds = %unity_m4.exit
-  %30 = fpext float %angle to double
-  %31 = tail call double @cos(double %30) #8
-  %32 = fptrunc double %31 to float
-  %33 = getelementptr inbounds [4 x float]* %A, i64 0, i64 0
-  store float %32, float* %33, align 4, !tbaa !14
-  %34 = tail call double @sin(double %30) #8
-  %35 = fptrunc double %34 to float
-  %36 = fsub float -0.000000e+00, %35
-  %37 = getelementptr inbounds [4 x float]* %A, i64 0, i64 1
-  store float %36, float* %37, align 4, !tbaa !14
-  %38 = getelementptr inbounds [4 x float]* %A, i64 1, i64 0
-  store float %35, float* %38, align 4, !tbaa !14
-  %39 = getelementptr inbounds [4 x float]* %A, i64 1, i64 1
-  store float %32, float* %39, align 4, !tbaa !14
-  br label %41
+sw.bb40:                                          ; preds = %unity_m4.exit
+  %conv41 = fpext float %angle to double, !dbg !309
+  %call42 = tail call double @cos(double %conv41) #5, !dbg !309
+  %conv43 = fptrunc double %call42 to float, !dbg !309
+  %arrayidx45 = getelementptr inbounds [4 x float]* %A, i64 0, i64 0, !dbg !309
+  store float %conv43, float* %arrayidx45, align 4, !dbg !309, !tbaa !242
+  %call47 = tail call double @sin(double %conv41) #5, !dbg !310
+  %4 = fptrunc double %call47 to float, !dbg !310
+  %conv49 = fsub float -0.000000e+00, %4, !dbg !310
+  %arrayidx51 = getelementptr inbounds [4 x float]* %A, i64 0, i64 1, !dbg !310
+  store float %conv49, float* %arrayidx51, align 4, !dbg !310, !tbaa !242
+  %call53 = tail call double @sin(double %conv41) #5, !dbg !311
+  %conv54 = fptrunc double %call53 to float, !dbg !311
+  %arrayidx56 = getelementptr inbounds [4 x float]* %A, i64 1, i64 0, !dbg !311
+  store float %conv54, float* %arrayidx56, align 4, !dbg !311, !tbaa !242
+  %call58 = tail call double @cos(double %conv41) #5, !dbg !312
+  %conv59 = fptrunc double %call58 to float, !dbg !312
+  %arrayidx61 = getelementptr inbounds [4 x float]* %A, i64 1, i64 1, !dbg !312
+  store float %conv59, float* %arrayidx61, align 4, !dbg !312, !tbaa !242
+  br label %sw.epilog, !dbg !313
 
-; <label>:40                                      ; preds = %unity_m4.exit
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([24 x i8]* @.str4, i64 0, i64 0), i32 %axis) #7
-  br label %41
+sw.default:                                       ; preds = %unity_m4.exit
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([24 x i8]* @.str4, i64 0, i64 0), i32 %axis) #5, !dbg !314
+  br label %sw.epilog, !dbg !315
 
-; <label>:41                                      ; preds = %40, %29, %18, %7
-  ret void
+sw.epilog:                                        ; preds = %sw.default, %sw.bb40, %sw.bb18, %sw.bb
+  ret void, !dbg !316
 }

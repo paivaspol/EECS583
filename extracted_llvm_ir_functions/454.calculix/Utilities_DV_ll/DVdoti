@@ -1,42 +1,47 @@
 define double @DVdoti(i32 %size, double* %y, i32* %index, double* %x) #0 {
 entry:
-  %cmp = icmp slt i32 %size, 0
-  %cmp1 = icmp eq double* %y, null
-  %or.cond = or i1 %cmp, %cmp1
-  %cmp3 = icmp eq i32* %index, null
-  %or.cond23 = or i1 %or.cond, %cmp3
-  %cmp5 = icmp eq double* %x, null
-  %or.cond24 = or i1 %or.cond23, %cmp5
-  br i1 %or.cond24, label %if.then, label %for.cond.preheader
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !79), !dbg !770
+  tail call void @llvm.dbg.value(metadata !{double* %y}, i64 0, metadata !80), !dbg !771
+  tail call void @llvm.dbg.value(metadata !{i32* %index}, i64 0, metadata !81), !dbg !772
+  tail call void @llvm.dbg.value(metadata !{double* %x}, i64 0, metadata !82), !dbg !773
+  %cmp = icmp slt i32 %size, 0, !dbg !774
+  %cmp1 = icmp eq double* %y, null, !dbg !774
+  %or.cond = or i1 %cmp, %cmp1, !dbg !774
+  %cmp3 = icmp eq i32* %index, null, !dbg !774
+  %or.cond23 = or i1 %or.cond, %cmp3, !dbg !774
+  %cmp5 = icmp eq double* %x, null, !dbg !774
+  %or.cond24 = or i1 %or.cond23, %cmp5, !dbg !774
+  br i1 %or.cond24, label %if.then, label %for.cond.preheader, !dbg !774
 
 for.cond.preheader:                               ; preds = %entry
-  %cmp625 = icmp sgt i32 %size, 0
-  br i1 %cmp625, label %for.body, label %for.end
+  %cmp625 = icmp sgt i32 %size, 0, !dbg !775
+  br i1 %cmp625, label %for.body, label %for.end, !dbg !775
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([49 x i8]* @.str6, i64 0, i64 0), i32 %size, double* %y, i32* %index, double* %x) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !777, !tbaa !629
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([49 x i8]* @.str6, i64 0, i64 0), i32 %size, double* %y, i32* %index, double* %x) #6, !dbg !777
+  tail call void @exit(i32 -1) #7, !dbg !779
+  unreachable, !dbg !779
 
 for.body:                                         ; preds = %for.cond.preheader, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
   %sum.026 = phi double [ %add, %for.body ], [ 0.000000e+00, %for.cond.preheader ]
-  %arrayidx = getelementptr inbounds i32* %index, i64 %indvars.iv
-  %1 = load i32* %arrayidx, align 4, !tbaa !4
-  %idxprom7 = sext i32 %1 to i64
-  %arrayidx8 = getelementptr inbounds double* %y, i64 %idxprom7
-  %2 = load double* %arrayidx8, align 8, !tbaa !3
-  %arrayidx10 = getelementptr inbounds double* %x, i64 %indvars.iv
-  %3 = load double* %arrayidx10, align 8, !tbaa !3
-  %mul = fmul double %2, %3
-  %add = fadd double %sum.026, %mul
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %size
-  br i1 %exitcond, label %for.end, label %for.body
+  %arrayidx = getelementptr inbounds i32* %index, i64 %indvars.iv, !dbg !780
+  %1 = load i32* %arrayidx, align 4, !dbg !780, !tbaa !665
+  %idxprom7 = sext i32 %1 to i64, !dbg !780
+  %arrayidx8 = getelementptr inbounds double* %y, i64 %idxprom7, !dbg !780
+  %2 = load double* %arrayidx8, align 8, !dbg !780, !tbaa !635
+  %arrayidx10 = getelementptr inbounds double* %x, i64 %indvars.iv, !dbg !780
+  %3 = load double* %arrayidx10, align 8, !dbg !780, !tbaa !635
+  %mul = fmul double %2, %3, !dbg !780
+  %add = fadd double %sum.026, %mul, !dbg !780
+  tail call void @llvm.dbg.value(metadata !{double %add}, i64 0, metadata !83), !dbg !780
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !775
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !775
+  %exitcond = icmp eq i32 %lftr.wideiv, %size, !dbg !775
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !775
 
 for.end:                                          ; preds = %for.body, %for.cond.preheader
   %sum.0.lcssa = phi double [ 0.000000e+00, %for.cond.preheader ], [ %add, %for.body ]
-  ret double %sum.0.lcssa
+  ret double %sum.0.lcssa, !dbg !782
 }

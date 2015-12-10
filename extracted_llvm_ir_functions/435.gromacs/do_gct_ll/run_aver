@@ -1,11 +1,17 @@
-define float @run_aver(float %old, float %cur, i32 %step, i32 %nmem) #5 {
-  %1 = icmp slt i32 %nmem, 1
-  %2 = select i1 %1, i32 1, i32 %nmem
-  %3 = add nsw i32 %2, -1
-  %4 = sitofp i32 %3 to float
-  %5 = fmul float %4, %old
-  %6 = fadd float %5, %cur
-  %7 = sitofp i32 %2 to float
-  %8 = fdiv float %6, %7
-  ret float %8
+define float @run_aver(float %old, float %cur, i32 %step, i32 %nmem) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float %old}, i64 0, metadata !573), !dbg !977
+  tail call void @llvm.dbg.value(metadata !{float %cur}, i64 0, metadata !574), !dbg !977
+  tail call void @llvm.dbg.value(metadata !{i32 %step}, i64 0, metadata !575), !dbg !977
+  tail call void @llvm.dbg.value(metadata !{i32 %nmem}, i64 0, metadata !576), !dbg !977
+  %cmp = icmp slt i32 %nmem, 1, !dbg !978
+  %cond = select i1 %cmp, i32 1, i32 %nmem, !dbg !978
+  tail call void @llvm.dbg.value(metadata !{i32 %cond}, i64 0, metadata !576), !dbg !978
+  %sub = add nsw i32 %cond, -1, !dbg !979
+  %conv = sitofp i32 %sub to float, !dbg !979
+  %mul = fmul float %conv, %old, !dbg !979
+  %add = fadd float %mul, %cur, !dbg !979
+  %conv1 = sitofp i32 %cond to float, !dbg !979
+  %div = fdiv float %add, %conv1, !dbg !979
+  ret float %div, !dbg !979
 }

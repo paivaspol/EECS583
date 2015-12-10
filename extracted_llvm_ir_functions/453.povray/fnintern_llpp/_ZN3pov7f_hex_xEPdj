@@ -1,0 +1,58 @@
+define double @_ZN3pov7f_hex_xEPdj(double* nocapture %ptr, i32) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{double* %ptr}, i64 0, metadata !249), !dbg !1983
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !250), !dbg !1983
+  %1 = load double* %ptr, align 8, !dbg !1984, !tbaa !1656
+  %call = tail call double @fabs(double %1) #9, !dbg !1984
+  %call2 = tail call double @fmod(double %call, double 0x3FFBB67AE8584CAA) #8, !dbg !1984
+  %sub = fadd double %call2, 0xBFEBB67AE8584CAA, !dbg !1984
+  %call4 = tail call double @fabs(double %sub) #9, !dbg !1984
+  tail call void @llvm.dbg.value(metadata !{double %call4}, i64 0, metadata !251), !dbg !1984
+  %arrayidx5 = getelementptr inbounds double* %ptr, i64 1, !dbg !1985
+  %2 = load double* %arrayidx5, align 8, !dbg !1985, !tbaa !1656
+  %call6 = tail call double @fabs(double %2) #9, !dbg !1985
+  %call7 = tail call double @fmod(double %call6, double 3.000000e+00) #8, !dbg !1985
+  %sub8 = fadd double %call7, -1.500000e+00, !dbg !1985
+  %call9 = tail call double @fabs(double %sub8) #9, !dbg !1985
+  tail call void @llvm.dbg.value(metadata !{double %call9}, i64 0, metadata !252), !dbg !1985
+  %sub12 = fsub double 0x3FEBB67AE8584CAA, %call4, !dbg !1986
+  tail call void @llvm.dbg.value(metadata !{double %sub12}, i64 0, metadata !253), !dbg !1986
+  %sub13 = fsub double 1.500000e+00, %call9, !dbg !1987
+  tail call void @llvm.dbg.value(metadata !{double %sub13}, i64 0, metadata !254), !dbg !1987
+  %mul = fmul double %call4, %call4, !dbg !1988
+  %mul14 = fmul double %call9, %call9, !dbg !1988
+  %add = fadd double %mul, %mul14, !dbg !1988
+  %mul15 = fmul double %sub12, %sub12, !dbg !1988
+  %mul16 = fmul double %sub13, %sub13, !dbg !1988
+  %add17 = fadd double %mul15, %mul16, !dbg !1988
+  %cmp = fcmp ogt double %add, %add17, !dbg !1988
+  tail call void @llvm.dbg.value(metadata !{double %sub12}, i64 0, metadata !251), !dbg !1989
+  tail call void @llvm.dbg.value(metadata !{double %sub13}, i64 0, metadata !252), !dbg !1991
+  %y1.0 = select i1 %cmp, double %sub13, double %call9, !dbg !1988
+  %x1.0 = select i1 %cmp, double %sub12, double %call4, !dbg !1988
+  %cmp18 = fcmp oeq double %x1.0, 0.000000e+00, !dbg !1992
+  %cmp19 = fcmp oeq double %y1.0, 0.000000e+00, !dbg !1992
+  %or.cond = and i1 %cmp18, %cmp19, !dbg !1992
+  br i1 %or.cond, label %if.then20, label %if.end22, !dbg !1992
+
+if.then20:                                        ; preds = %entry
+  store double 1.000000e-06, double* %ptr, align 8, !dbg !1993, !tbaa !1656
+  br label %if.end22, !dbg !1993
+
+if.end22:                                         ; preds = %if.then20, %entry
+  %call23 = tail call double @atan2(double %y1.0, double %x1.0) #8, !dbg !1994
+  tail call void @llvm.dbg.value(metadata !{double %call23}, i64 0, metadata !255), !dbg !1994
+  %cmp24 = fcmp olt double %call23, 0x3FE0C152382D7365, !dbg !1995
+  br i1 %cmp24, label %return, label %if.else, !dbg !1995
+
+if.else:                                          ; preds = %if.end22
+  %mul27 = fmul double %x1.0, 0x3FE0000000000001, !dbg !1996
+  %mul29 = fmul double %y1.0, 0x3FEBB67AE8584CAA, !dbg !1996
+  %add30 = fadd double %mul27, %mul29, !dbg !1996
+  tail call void @llvm.dbg.value(metadata !{double %add30}, i64 0, metadata !251), !dbg !1996
+  br label %return, !dbg !1998
+
+return:                                           ; preds = %if.end22, %if.else
+  %retval.0 = phi double [ %add30, %if.else ], [ %x1.0, %if.end22 ]
+  ret double %retval.0, !dbg !1999
+}

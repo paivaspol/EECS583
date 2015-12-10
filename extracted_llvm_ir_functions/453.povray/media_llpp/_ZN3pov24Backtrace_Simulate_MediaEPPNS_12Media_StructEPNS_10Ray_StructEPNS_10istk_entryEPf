@@ -1,0 +1,486 @@
+define void @_ZN3pov24Backtrace_Simulate_MediaEPPNS_12Media_StructEPNS_10Ray_StructEPNS_10istk_entryEPf(%"struct.pov::Media_Struct"** %Media_List, %"struct.pov::Ray_Struct"* %Ray, %"struct.pov::istk_entry"* nocapture %Inter, float* nocapture %Colour) #0 {
+entry:
+  %C0 = alloca [5 x float], align 16
+  %od0 = alloca [5 x float], align 16
+  %PhotonColour = alloca [5 x float], align 16
+  %TempPoint = alloca [3 x double], align 16
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Media_Struct"** %Media_List}, i64 0, metadata !979), !dbg !1558
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Ray_Struct"* %Ray}, i64 0, metadata !981), !dbg !1558
+  call void @llvm.dbg.value(metadata !{%"struct.pov::istk_entry"* %Inter}, i64 0, metadata !982), !dbg !1558
+  call void @llvm.dbg.value(metadata !{float* %Colour}, i64 0, metadata !983), !dbg !1558
+  call void @llvm.dbg.declare(metadata !1559, metadata !991), !dbg !1560
+  call void @llvm.dbg.declare(metadata !{[5 x float]* %C0}, metadata !1022), !dbg !1561
+  call void @llvm.dbg.declare(metadata !{[5 x float]* %od0}, metadata !1023), !dbg !1562
+  call void @llvm.dbg.declare(metadata !{[5 x float]* %PhotonColour}, metadata !1024), !dbg !1563
+  call void @llvm.dbg.declare(metadata !{[3 x double]* %TempPoint}, metadata !1025), !dbg !1564
+  %0 = load i64* @_ZN3pov14MediaPoolIndexE, align 8, !dbg !1565, !tbaa !1566
+  %inc = add nsw i64 %0, 1, !dbg !1565
+  store i64 %inc, i64* @_ZN3pov14MediaPoolIndexE, align 8, !dbg !1565, !tbaa !1566
+  %cmp = icmp eq %"struct.pov::Media_Struct"** %Media_List, null, !dbg !1569
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !1569
+
+lor.lhs.false:                                    ; preds = %entry
+  %1 = load %"struct.pov::Media_Struct"** %Media_List, align 8, !dbg !1569, !tbaa !1570
+  %cmp1 = icmp eq %"struct.pov::Media_Struct"* %1, null, !dbg !1569
+  br i1 %cmp1, label %if.then, label %for.cond4.preheader, !dbg !1569
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  store i64 %0, i64* @_ZN3pov14MediaPoolIndexE, align 8, !dbg !1571, !tbaa !1566
+  br label %return, !dbg !1573
+
+for.cond4.preheader:                              ; preds = %lor.lhs.false, %for.inc15
+  %2 = phi %"struct.pov::Media_Struct"* [ %8, %for.inc15 ], [ %1, %lor.lhs.false ]
+  %Tmp.0436 = phi %"struct.pov::Media_Struct"** [ %incdec.ptr, %for.inc15 ], [ %Media_List, %lor.lhs.false ]
+  %IMedia.0435 = phi %"struct.pov::Media_Struct"* [ %IMedia.1.lcssa, %for.inc15 ], [ %1, %lor.lhs.false ]
+  %intervals.0434 = phi i32 [ %intervals.1.lcssa, %for.inc15 ], [ 0, %lor.lhs.false ]
+  %ignore_photons.0433 = phi i32 [ %ignore_photons.1.lcssa, %for.inc15 ], [ 1, %lor.lhs.false ]
+  %use_scattering.0432 = phi i32 [ %use_scattering.1.lcssa, %for.inc15 ], [ 0, %lor.lhs.false ]
+  %use_extinction.0431 = phi i32 [ %use_extinction.1.lcssa, %for.inc15 ], [ 0, %lor.lhs.false ]
+  %cmp5418 = icmp eq %"struct.pov::Media_Struct"* %2, null, !dbg !1574
+  br i1 %cmp5418, label %for.inc15, label %for.body6, !dbg !1574
+
+for.body6:                                        ; preds = %for.cond4.preheader, %for.body6
+  %Local.0424 = phi %"struct.pov::Media_Struct"* [ %7, %for.body6 ], [ %2, %for.cond4.preheader ]
+  %IMedia.1423 = phi %"struct.pov::Media_Struct"* [ %Local.0.IMedia.1, %for.body6 ], [ %IMedia.0435, %for.cond4.preheader ]
+  %intervals.1422 = phi i32 [ %.intervals.1, %for.body6 ], [ %intervals.0434, %for.cond4.preheader ]
+  %ignore_photons.1421 = phi i32 [ %and, %for.body6 ], [ %ignore_photons.0433, %for.cond4.preheader ]
+  %use_scattering.1420 = phi i32 [ %or13, %for.body6 ], [ %use_scattering.0432, %for.cond4.preheader ]
+  %use_extinction.1419 = phi i32 [ %or, %for.body6 ], [ %use_extinction.0431, %for.cond4.preheader ]
+  %Intervals = getelementptr inbounds %"struct.pov::Media_Struct"* %Local.0424, i64 0, i32 1, !dbg !1578
+  %3 = load i32* %Intervals, align 4, !dbg !1578, !tbaa !1580
+  %cmp7 = icmp sgt i32 %3, %intervals.1422, !dbg !1578
+  call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !986), !dbg !1581
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Media_Struct"* %Local.0424}, i64 0, metadata !1003), !dbg !1583
+  %.intervals.1 = select i1 %cmp7, i32 %3, i32 %intervals.1422, !dbg !1578
+  %Local.0.IMedia.1 = select i1 %cmp7, %"struct.pov::Media_Struct"* %Local.0424, %"struct.pov::Media_Struct"* %IMedia.1423, !dbg !1578
+  %use_extinction11 = getelementptr inbounds %"struct.pov::Media_Struct"* %Local.0424, i64 0, i32 11, !dbg !1584
+  %4 = load i32* %use_extinction11, align 4, !dbg !1584, !tbaa !1580
+  %or = or i32 %4, %use_extinction.1419, !dbg !1584
+  call void @llvm.dbg.value(metadata !{i32 %or}, i64 0, metadata !987), !dbg !1584
+  %use_scattering12 = getelementptr inbounds %"struct.pov::Media_Struct"* %Local.0424, i64 0, i32 12, !dbg !1585
+  %5 = load i32* %use_scattering12, align 4, !dbg !1585, !tbaa !1580
+  %or13 = or i32 %5, %use_scattering.1420, !dbg !1585
+  call void @llvm.dbg.value(metadata !{i32 %or13}, i64 0, metadata !988), !dbg !1585
+  %ignore_photons14 = getelementptr inbounds %"struct.pov::Media_Struct"* %Local.0424, i64 0, i32 23, !dbg !1586
+  %6 = load i32* %ignore_photons14, align 4, !dbg !1586, !tbaa !1580
+  %and = and i32 %6, %ignore_photons.1421, !dbg !1586
+  call void @llvm.dbg.value(metadata !{i32 %and}, i64 0, metadata !989), !dbg !1586
+  %Next_Media = getelementptr inbounds %"struct.pov::Media_Struct"* %Local.0424, i64 0, i32 25, !dbg !1574
+  %7 = load %"struct.pov::Media_Struct"** %Next_Media, align 8, !dbg !1574, !tbaa !1570
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Media_Struct"* %7}, i64 0, metadata !1005), !dbg !1574
+  %cmp5 = icmp eq %"struct.pov::Media_Struct"* %7, null, !dbg !1574
+  br i1 %cmp5, label %for.inc15, label %for.body6, !dbg !1574
+
+for.inc15:                                        ; preds = %for.body6, %for.cond4.preheader
+  %IMedia.1.lcssa = phi %"struct.pov::Media_Struct"* [ %IMedia.0435, %for.cond4.preheader ], [ %Local.0.IMedia.1, %for.body6 ]
+  %intervals.1.lcssa = phi i32 [ %intervals.0434, %for.cond4.preheader ], [ %.intervals.1, %for.body6 ]
+  %ignore_photons.1.lcssa = phi i32 [ %ignore_photons.0433, %for.cond4.preheader ], [ %and, %for.body6 ]
+  %use_scattering.1.lcssa = phi i32 [ %use_scattering.0432, %for.cond4.preheader ], [ %or13, %for.body6 ]
+  %use_extinction.1.lcssa = phi i32 [ %use_extinction.0431, %for.cond4.preheader ], [ %or, %for.body6 ]
+  %incdec.ptr = getelementptr inbounds %"struct.pov::Media_Struct"** %Tmp.0436, i64 1, !dbg !1587
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Media_Struct"** %incdec.ptr}, i64 0, metadata !1004), !dbg !1587
+  %8 = load %"struct.pov::Media_Struct"** %incdec.ptr, align 8, !dbg !1587, !tbaa !1570
+  %cmp3 = icmp eq %"struct.pov::Media_Struct"* %8, null, !dbg !1587
+  br i1 %cmp3, label %for.end16, label %for.cond4.preheader, !dbg !1587
+
+for.end16:                                        ; preds = %for.inc15
+  %tobool = icmp eq i32 %use_extinction.1.lcssa, 0, !dbg !1588
+  br i1 %tobool, label %if.then17, label %if.end19, !dbg !1588
+
+if.then17:                                        ; preds = %for.end16
+  store i64 %0, i64* @_ZN3pov14MediaPoolIndexE, align 8, !dbg !1589, !tbaa !1566
+  br label %return, !dbg !1591
+
+if.end19:                                         ; preds = %for.end16
+  %9 = load i64* @_ZN3pov17MaxMediaPoolDepthE, align 8, !dbg !1592, !tbaa !1566
+  %cmp20 = icmp slt i64 %inc, %9, !dbg !1592
+  br i1 %cmp20, label %if.end22, label %if.then21, !dbg !1592
+
+if.then21:                                        ; preds = %if.end19
+  %mul = shl nsw i64 %9, 1, !dbg !1593
+  call void @_ZN3pov22ResizeMediaMallocPoolsEl(i64 %mul) #7, !dbg !1593
+  %.pre = load i64* @_ZN3pov14MediaPoolIndexE, align 8, !dbg !1595, !tbaa !1566
+  br label %if.end22, !dbg !1596
+
+if.end22:                                         ; preds = %if.end19, %if.then21
+  %10 = phi i64 [ %inc, %if.end19 ], [ %.pre, %if.then21 ]
+  %11 = load %"struct.pov::Lit_Interval_Struct"*** @_ZN3pov20MediaLitIntervalPoolE, align 8, !dbg !1595, !tbaa !1570
+  %arrayidx23 = getelementptr inbounds %"struct.pov::Lit_Interval_Struct"** %11, i64 %10, !dbg !1595
+  %12 = load %"struct.pov::Lit_Interval_Struct"** %arrayidx23, align 8, !dbg !1595, !tbaa !1570
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Lit_Interval_Struct"* %12}, i64 0, metadata !992), !dbg !1595
+  call void @llvm.dbg.value(metadata !1597, i64 0, metadata !990), !dbg !1598
+  %lit = getelementptr inbounds %"struct.pov::Lit_Interval_Struct"* %12, i64 0, i32 0, !dbg !1599
+  store i32 0, i32* %lit, align 4, !dbg !1599, !tbaa !1580
+  %s0 = getelementptr inbounds %"struct.pov::Lit_Interval_Struct"* %12, i64 0, i32 1, !dbg !1600
+  store double 0.000000e+00, double* %s0, align 8, !dbg !1600, !tbaa !1601
+  %Depth = getelementptr inbounds %"struct.pov::istk_entry"* %Inter, i64 0, i32 0, !dbg !1602
+  %13 = load double* %Depth, align 8, !dbg !1602, !tbaa !1601
+  %ds = getelementptr inbounds %"struct.pov::Lit_Interval_Struct"* %12, i64 0, i32 3, !dbg !1602
+  store double %13, double* %ds, align 8, !dbg !1602, !tbaa !1601
+  %s1 = getelementptr inbounds %"struct.pov::Lit_Interval_Struct"* %12, i64 0, i32 2, !dbg !1602
+  store double %13, double* %s1, align 8, !dbg !1602, !tbaa !1601
+  %Intervals28 = getelementptr inbounds %"struct.pov::Media_Struct"* %IMedia.1.lcssa, i64 0, i32 1, !dbg !1603
+  %14 = load i32* %Intervals28, align 4, !dbg !1603, !tbaa !1580
+  %cmp29 = icmp slt i32 %14, 1, !dbg !1603
+  br i1 %cmp29, label %if.end37, label %if.else, !dbg !1603
+
+if.else:                                          ; preds = %if.end22
+  %mul35 = mul i32 %14, 96, !dbg !1604
+  call void @llvm.dbg.value(metadata !{i32 %mul35}, i64 0, metadata !1027), !dbg !1604
+  %phitmp = sext i32 %mul35 to i64
+  br label %if.end37
+
+if.end37:                                         ; preds = %if.end22, %if.else
+  %thesize.0 = phi i64 [ %phitmp, %if.else ], [ 96, %if.end22 ]
+  %15 = load i64* @_ZN3pov17MaxMediaPoolDepthE, align 8, !dbg !1605, !tbaa !1566
+  %cmp38 = icmp slt i64 %10, %15, !dbg !1605
+  br i1 %cmp38, label %if.end41, label %if.then39, !dbg !1605
+
+if.then39:                                        ; preds = %if.end37
+  %mul40 = shl nsw i64 %15, 1, !dbg !1606
+  call void @_ZN3pov22ResizeMediaMallocPoolsEl(i64 %mul40) #7, !dbg !1606
+  %.pre446 = load i64* @_ZN3pov14MediaPoolIndexE, align 8, !dbg !1608, !tbaa !1566
+  br label %if.end41, !dbg !1609
+
+if.end41:                                         ; preds = %if.end37, %if.then39
+  %16 = phi i64 [ %10, %if.end37 ], [ %.pre446, %if.then39 ]
+  %17 = load i64** @_ZN3pov21MediaIntervalPoolSizeE, align 8, !dbg !1608, !tbaa !1570
+  %arrayidx43 = getelementptr inbounds i64* %17, i64 %16, !dbg !1608
+  %18 = load i64* %arrayidx43, align 8, !dbg !1608, !tbaa !1566
+  %cmp44 = icmp sgt i64 %thesize.0, %18, !dbg !1608
+  %19 = load %"struct.pov::Media_Interval_Struct"*** @_ZN3pov17MediaIntervalPoolE, align 8, !dbg !1610, !tbaa !1570
+  %arrayidx46 = getelementptr inbounds %"struct.pov::Media_Interval_Struct"** %19, i64 %16, !dbg !1610
+  %20 = load %"struct.pov::Media_Interval_Struct"** %arrayidx46, align 8, !dbg !1610, !tbaa !1570
+  br i1 %cmp44, label %if.else47, label %if.end54, !dbg !1608
+
+if.else47:                                        ; preds = %if.end41
+  %21 = bitcast %"struct.pov::Media_Interval_Struct"* %20 to i8*, !dbg !1611
+  call void @_ZN3pov8pov_freeEPvPKci(i8* %21, i8* getelementptr inbounds ([54 x i8]* @.str, i64 0, i64 0), i32 216) #7, !dbg !1611
+  %22 = load i64* @_ZN3pov14MediaPoolIndexE, align 8, !dbg !1611, !tbaa !1566
+  %23 = load %"struct.pov::Media_Interval_Struct"*** @_ZN3pov17MediaIntervalPoolE, align 8, !dbg !1611, !tbaa !1570
+  %arrayidx49 = getelementptr inbounds %"struct.pov::Media_Interval_Struct"** %23, i64 %22, !dbg !1611
+  store %"struct.pov::Media_Interval_Struct"* null, %"struct.pov::Media_Interval_Struct"** %arrayidx49, align 8, !dbg !1611, !tbaa !1570
+  %call = call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %thesize.0, i8* getelementptr inbounds ([54 x i8]* @.str, i64 0, i64 0), i32 217, i8* getelementptr inbounds ([16 x i8]* @.str1, i64 0, i64 0)) #7, !dbg !1614
+  %24 = bitcast i8* %call to %"struct.pov::Media_Interval_Struct"*, !dbg !1614
+  %25 = load i64* @_ZN3pov14MediaPoolIndexE, align 8, !dbg !1614, !tbaa !1566
+  %26 = load %"struct.pov::Media_Interval_Struct"*** @_ZN3pov17MediaIntervalPoolE, align 8, !dbg !1614, !tbaa !1570
+  %arrayidx51 = getelementptr inbounds %"struct.pov::Media_Interval_Struct"** %26, i64 %25, !dbg !1614
+  store %"struct.pov::Media_Interval_Struct"* %24, %"struct.pov::Media_Interval_Struct"** %arrayidx51, align 8, !dbg !1614, !tbaa !1570
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Media_Interval_Struct"* %24}, i64 0, metadata !1006), !dbg !1614
+  %27 = load i64** @_ZN3pov21MediaIntervalPoolSizeE, align 8, !dbg !1615, !tbaa !1570
+  %arrayidx53 = getelementptr inbounds i64* %27, i64 %25, !dbg !1615
+  store i64 %thesize.0, i64* %arrayidx53, align 8, !dbg !1615, !tbaa !1566
+  br label %if.end54
+
+if.end54:                                         ; preds = %if.end41, %if.else47
+  %Media_Interval.0 = phi %"struct.pov::Media_Interval_Struct"* [ %24, %if.else47 ], [ %20, %if.end41 ]
+  %call55 = call fastcc i32 @_ZN3povL25set_up_sampling_intervalsEPNS_21Media_Interval_StructEiPNS_19Lit_Interval_StructEPNS_12Media_StructE(%"struct.pov::Media_Interval_Struct"* %Media_Interval.0, i32 1, %"struct.pov::Lit_Interval_Struct"* %12, %"struct.pov::Media_Struct"* %IMedia.1.lcssa) #7, !dbg !1616
+  call void @llvm.dbg.value(metadata !{i32 %call55}, i64 0, metadata !986), !dbg !1616
+  %arrayidx62 = getelementptr inbounds float* %Colour, i64 1, !dbg !1617
+  %arrayidx64 = getelementptr inbounds float* %Colour, i64 2, !dbg !1618
+  call void @llvm.dbg.value(metadata !204, i64 0, metadata !984), !dbg !1619
+  %cmp67416 = icmp sgt i32 %call55, 0, !dbg !1619
+  br i1 %cmp67416, label %for.body68.lr.ph, label %for.end258, !dbg !1619
+
+for.body68.lr.ph:                                 ; preds = %if.end54
+  %28 = load float* %arrayidx64, align 4, !dbg !1618, !tbaa !1621
+  %29 = load float* %arrayidx62, align 4, !dbg !1617, !tbaa !1621
+  %30 = load float* %Colour, align 4, !dbg !1622, !tbaa !1621
+  %arraydecay = getelementptr inbounds [5 x float]* %C0, i64 0, i64 0, !dbg !1623
+  %arraydecay120 = getelementptr inbounds [5 x float]* %od0, i64 0, i64 0, !dbg !1623
+  %tobool121 = icmp ne i32 %use_scattering.1.lcssa, 0, !dbg !1627
+  %tobool122 = icmp eq i32 %ignore_photons.1.lcssa, 0, !dbg !1627
+  %or.cond = and i1 %tobool121, %tobool122, !dbg !1627
+  %arraydecay142 = getelementptr inbounds [5 x float]* %PhotonColour, i64 0, i64 0, !dbg !1628
+  %arrayidx4.i388 = getelementptr inbounds [5 x float]* %PhotonColour, i64 0, i64 1, !dbg !1631
+  %arrayidx7.i391 = getelementptr inbounds [5 x float]* %PhotonColour, i64 0, i64 2, !dbg !1634
+  %arraydecay191 = getelementptr inbounds [3 x double]* %TempPoint, i64 0, i64 0, !dbg !1635
+  %arraydecay192 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 0, i64 0, !dbg !1635
+  %arraydecay201 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 0, !dbg !1635
+  %arrayidx3.i379 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 0, i64 1, !dbg !1636
+  %arrayidx4.i380 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 1, !dbg !1636
+  %arrayidx7.i = getelementptr inbounds [3 x double]* %TempPoint, i64 0, i64 1, !dbg !1636
+  %arrayidx8.i = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 0, i64 2, !dbg !1638
+  %arrayidx9.i = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 2, !dbg !1638
+  %arrayidx12.i = getelementptr inbounds [3 x double]* %TempPoint, i64 0, i64 2, !dbg !1638
+  br label %for.body68, !dbg !1619
+
+for.cond223.preheader:                            ; preds = %for.inc218
+  br i1 %cmp67416, label %for.body225, label %for.end258, !dbg !1639
+
+for.body68:                                       ; preds = %for.inc218, %for.body68.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body68.lr.ph ], [ %indvars.iv.next, %for.inc218 ]
+  %31 = phi float [ %30, %for.body68.lr.ph ], [ %.lcssa410, %for.inc218 ]
+  %32 = phi float [ %29, %for.body68.lr.ph ], [ %.lcssa409, %for.inc218 ]
+  %33 = phi float [ %28, %for.body68.lr.ph ], [ %.lcssa408, %for.inc218 ]
+  %34 = load %"struct.pov::Light_Source_Struct"** getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 27), align 8, !dbg !1641, !tbaa !1570
+  %Parallel = getelementptr inbounds %"struct.pov::Light_Source_Struct"* %34, i64 0, i32 33, !dbg !1641
+  %35 = load i8* %Parallel, align 1, !dbg !1641, !tbaa !1567
+  %tobool69 = icmp eq i8 %35, 0, !dbg !1641
+  %arrayidx78 = getelementptr inbounds %"struct.pov::Media_Interval_Struct"* %Media_Interval.0, i64 %indvars.iv, !dbg !1642
+  %ds79 = getelementptr inbounds %"struct.pov::Media_Interval_Struct"* %Media_Interval.0, i64 %indvars.iv, i32 4, !dbg !1642
+  %36 = load double* %ds79, align 8, !dbg !1642, !tbaa !1601
+  %37 = load double* getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 16), align 8, !dbg !1642, !tbaa !1601
+  br i1 %tobool69, label %if.then70, label %if.else76, !dbg !1641
+
+if.then70:                                        ; preds = %for.body68
+  %38 = load double* getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 17), align 8, !dbg !1644, !tbaa !1601
+  %mul73 = fmul double %37, %38, !dbg !1644
+  %39 = load double* getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 30), align 8, !dbg !1644, !tbaa !1601
+  %mul74 = fmul double %mul73, %39, !dbg !1644
+  br label %if.end83, !dbg !1646
+
+if.else76:                                        ; preds = %for.body68
+  %40 = load double* getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 30), align 8, !dbg !1642, !tbaa !1601
+  %mul80 = fmul double %37, %40, !dbg !1642
+  br label %if.end83
+
+if.end83:                                         ; preds = %if.else76, %if.then70
+  %41 = phi double [ %40, %if.else76 ], [ %39, %if.then70 ]
+  %mul80.pn = phi double [ %mul80, %if.else76 ], [ %mul74, %if.then70 ]
+  %minSamples.0.in = fdiv double %36, %mul80.pn, !dbg !1642
+  %minSamples.0 = fptosi double %minSamples.0.in to i32, !dbg !1642
+  %42 = load i32* getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 31), align 8, !dbg !1647, !tbaa !1580
+  %cmp84 = icmp sgt i32 %minSamples.0, %42, !dbg !1647
+  br i1 %cmp84, label %if.else86, label %if.end105, !dbg !1647
+
+if.else86:                                        ; preds = %if.end83
+  call void @llvm.dbg.value(metadata !{i32 %42}, i64 0, metadata !1020), !dbg !1648
+  br i1 %tobool69, label %if.then89, label %if.else97, !dbg !1650
+
+if.then89:                                        ; preds = %if.else86
+  %43 = load double* getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 17), align 8, !dbg !1651, !tbaa !1601
+  %mul93 = fmul double %37, %43, !dbg !1651
+  %conv94 = sitofp i32 %42 to double, !dbg !1651
+  %mul95 = fmul double %conv94, %mul93, !dbg !1651
+  %div96 = fdiv double %36, %mul95, !dbg !1651
+  call void @llvm.dbg.value(metadata !{double %div96}, i64 0, metadata !1026), !dbg !1651
+  br label %if.end105, !dbg !1653
+
+if.else97:                                        ; preds = %if.else86
+  %conv101 = sitofp i32 %42 to double, !dbg !1654
+  %mul102 = fmul double %conv101, %37, !dbg !1654
+  %div103 = fdiv double %36, %mul102, !dbg !1654
+  call void @llvm.dbg.value(metadata !{double %div103}, i64 0, metadata !1026), !dbg !1654
+  br label %if.end105
+
+if.end105:                                        ; preds = %if.end83, %if.then89, %if.else97
+  %minSamples.1 = phi i32 [ %42, %if.else97 ], [ %42, %if.then89 ], [ %minSamples.0, %if.end83 ]
+  %mediaSpacingFactor.0 = phi double [ %div103, %if.else97 ], [ %div96, %if.then89 ], [ %41, %if.end83 ]
+  tail call void @llvm.dbg.value(metadata !1656, i64 0, metadata !1657), !dbg !1659
+  %44 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 100), align 8, !dbg !1660, !tbaa !1566
+  %inc.i = add nsw i64 %44, 1, !dbg !1660
+  store i64 %inc.i, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 100), align 8, !dbg !1660, !tbaa !1566
+  call void @llvm.dbg.value(metadata !204, i64 0, metadata !985), !dbg !1662
+  %cmp107411 = icmp sgt i32 %minSamples.1, 0, !dbg !1662
+  br i1 %cmp107411, label %for.body108.lr.ph, label %for.inc218, !dbg !1662
+
+for.body108.lr.ph:                                ; preds = %if.end105
+  %conv116 = sitofp i32 %minSamples.1 to double, !dbg !1663
+  %s0137 = getelementptr inbounds %"struct.pov::Media_Interval_Struct"* %Media_Interval.0, i64 %indvars.iv, i32 2, !dbg !1632
+  %arrayidx151 = getelementptr inbounds %"struct.pov::Media_Interval_Struct"* %Media_Interval.0, i64 %indvars.iv, i32 5, i64 0, !dbg !1664
+  %mul153 = shl nsw i32 %minSamples.1, 1, !dbg !1664
+  %conv154 = sitofp i32 %mul153 to float, !dbg !1664
+  %arrayidx166 = getelementptr inbounds %"struct.pov::Media_Interval_Struct"* %Media_Interval.0, i64 %indvars.iv, i32 5, i64 1, !dbg !1665
+  %arrayidx181 = getelementptr inbounds %"struct.pov::Media_Interval_Struct"* %Media_Interval.0, i64 %indvars.iv, i32 5, i64 2, !dbg !1666
+  br label %for.body108, !dbg !1662
+
+for.body108:                                      ; preds = %for.inc215, %for.body108.lr.ph
+  %j.0412 = phi i32 [ 0, %for.body108.lr.ph ], [ %inc216, %for.inc215 ]
+  %45 = phi float [ %31, %for.body108.lr.ph ], [ %73, %for.inc215 ]
+  %46 = phi float [ %32, %for.body108.lr.ph ], [ %72, %for.inc215 ]
+  %47 = phi float [ %33, %for.body108.lr.ph ], [ %71, %for.inc215 ]
+  %conv109 = sitofp i32 %j.0412 to double, !dbg !1663
+  %add = fadd double %conv109, 5.000000e-01, !dbg !1663
+  %call110 = call i32 @_ZN3pov8POV_RANDEv() #7, !dbg !1663
+  %conv111 = sitofp i32 %call110 to double, !dbg !1663
+  %mul112 = fmul double %conv111, 0x3F0000200040021E, !dbg !1663
+  %48 = load double* getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 7), align 8, !dbg !1663, !tbaa !1601
+  %mul113 = fmul double %48, %mul112, !dbg !1663
+  %add114 = fadd double %add, %mul113, !dbg !1663
+  %mul115 = fmul double %48, 5.000000e-01, !dbg !1663
+  %sub = fsub double %add114, %mul115, !dbg !1663
+  %div117 = fdiv double %sub, %conv116, !dbg !1663
+  call void @llvm.dbg.value(metadata !{double %div117}, i64 0, metadata !1021), !dbg !1663
+  call fastcc void @_ZN3povL12sample_mediaEPNS_17Light_List_StructEiPNS_10Ray_StructEPPNS_12Media_StructEPNS_21Media_Interval_StructEidPfS9_iS1_i(%"struct.pov::Light_List_Struct"* null, i32 0, %"struct.pov::Ray_Struct"* %Ray, %"struct.pov::Media_Struct"** %Media_List, %"struct.pov::Media_Interval_Struct"* %arrayidx78, i32 1, double %div117, float* %arraydecay, float* %arraydecay120, i32 2, %"struct.pov::Light_List_Struct"* null, i32 0) #7, !dbg !1623
+  br i1 %or.cond, label %if.then123, label %for.inc215, !dbg !1627
+
+if.then123:                                       ; preds = %for.body108
+  %49 = load %"struct.pov::Light_Source_Struct"** getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 27), align 8, !dbg !1667, !tbaa !1570
+  %Parallel124 = getelementptr inbounds %"struct.pov::Light_Source_Struct"* %49, i64 0, i32 33, !dbg !1667
+  %50 = load i8* %Parallel124, align 1, !dbg !1667, !tbaa !1567
+  %tobool125 = icmp eq i8 %50, 0, !dbg !1667
+  %51 = load double* getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 16), align 8, !dbg !1628, !tbaa !1601
+  %mul144 = fmul double %mediaSpacingFactor.0, %51, !dbg !1628
+  br i1 %tobool125, label %if.then126, label %if.end146, !dbg !1667
+
+if.then126:                                       ; preds = %if.then123
+  %52 = load double* getelementptr inbounds (%"struct.pov::photon_options_struct"* @_ZN3pov13photonOptionsE, i64 0, i32 17), align 8, !dbg !1632, !tbaa !1601
+  %53 = load double* %ds79, align 8, !dbg !1632, !tbaa !1601
+  %mul133 = fmul double %div117, %53, !dbg !1632
+  %add134 = fadd double %52, %mul133, !dbg !1632
+  %54 = load double* %s0137, align 8, !dbg !1632, !tbaa !1601
+  %add138 = fadd double %54, %add134, !dbg !1632
+  %mul139 = fmul double %mul144, %add138, !dbg !1632
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay142}, i64 0, metadata !1668), !dbg !1669
+  tail call void @llvm.dbg.value(metadata !1670, i64 0, metadata !1671), !dbg !1669
+  tail call void @llvm.dbg.value(metadata !{float %conv140}, i64 0, metadata !1672), !dbg !1669
+  br label %if.end146, !dbg !1673
+
+if.end146:                                        ; preds = %if.then123, %if.then126
+  %mul139.sink = phi double [ %mul139, %if.then126 ], [ %mul144, %if.then123 ]
+  %conv140 = fptrunc double %mul139.sink to float, !dbg !1632
+  %storemerge449 = fmul float %45, %conv140, !dbg !1674
+  store float %storemerge449, float* %arraydecay142, align 16, !dbg !1675, !tbaa !1621
+  %storemerge447 = fmul float %46, %conv140, !dbg !1676
+  store float %storemerge447, float* %arrayidx4.i388, align 4, !dbg !1631, !tbaa !1621
+  %storemerge = fmul float %47, %conv140, !dbg !1677
+  store float %storemerge, float* %arrayidx7.i391, align 8, !dbg !1634, !tbaa !1621
+  %55 = load float* %Colour, align 4, !dbg !1664, !tbaa !1621
+  %conv148 = fpext float %55 to double, !dbg !1664
+  %56 = load float* %arrayidx151, align 4, !dbg !1664, !tbaa !1621
+  %sub152 = fsub float -0.000000e+00, %56, !dbg !1664
+  %div155 = fdiv float %sub152, %conv154, !dbg !1664
+  %conv156 = fpext float %div155 to double, !dbg !1664
+  %call157 = call double @exp(double %conv156) #8, !dbg !1664
+  %mul158 = fmul double %conv148, %call157, !dbg !1664
+  %conv159 = fptrunc double %mul158 to float, !dbg !1664
+  %57 = load float* %arrayidx62, align 4, !dbg !1665, !tbaa !1621
+  %conv162 = fpext float %57 to double, !dbg !1665
+  %58 = load float* %arrayidx166, align 4, !dbg !1665, !tbaa !1621
+  %sub167 = fsub float -0.000000e+00, %58, !dbg !1665
+  %div170 = fdiv float %sub167, %conv154, !dbg !1665
+  %conv171 = fpext float %div170 to double, !dbg !1665
+  %call172 = call double @exp(double %conv171) #8, !dbg !1665
+  %mul173 = fmul double %conv162, %call172, !dbg !1665
+  %conv174 = fptrunc double %mul173 to float, !dbg !1665
+  %59 = load float* %arrayidx64, align 4, !dbg !1666, !tbaa !1621
+  %conv177 = fpext float %59 to double, !dbg !1666
+  %60 = load float* %arrayidx181, align 4, !dbg !1666, !tbaa !1621
+  %sub182 = fsub float -0.000000e+00, %60, !dbg !1666
+  %div185 = fdiv float %sub182, %conv154, !dbg !1666
+  %conv186 = fpext float %div185 to double, !dbg !1666
+  %call187 = call double @exp(double %conv186) #8, !dbg !1666
+  %mul188 = fmul double %conv177, %call187, !dbg !1666
+  %conv189 = fptrunc double %mul188 to float, !dbg !1666
+  %61 = load double* %ds79, align 8, !dbg !1635, !tbaa !1601
+  %mul196 = fmul double %div117, %61, !dbg !1635
+  %62 = load double* %s0137, align 8, !dbg !1635, !tbaa !1601
+  %add200 = fadd double %mul196, %62, !dbg !1635
+  tail call void @llvm.dbg.value(metadata !{double* %arraydecay191}, i64 0, metadata !1678), !dbg !1679
+  tail call void @llvm.dbg.value(metadata !{double* %arraydecay192}, i64 0, metadata !1680), !dbg !1679
+  tail call void @llvm.dbg.value(metadata !{double %add200}, i64 0, metadata !1681), !dbg !1679
+  tail call void @llvm.dbg.value(metadata !{double* %arraydecay201}, i64 0, metadata !1682), !dbg !1679
+  %63 = load double* %arraydecay192, align 8, !dbg !1683, !tbaa !1601
+  %64 = load double* %arraydecay201, align 8, !dbg !1683, !tbaa !1601
+  %mul.i = fmul double %add200, %64, !dbg !1683
+  %add.i = fadd double %63, %mul.i, !dbg !1683
+  store double %add.i, double* %arraydecay191, align 16, !dbg !1683, !tbaa !1601
+  %65 = load double* %arrayidx3.i379, align 8, !dbg !1636, !tbaa !1601
+  %66 = load double* %arrayidx4.i380, align 8, !dbg !1636, !tbaa !1601
+  %mul5.i = fmul double %add200, %66, !dbg !1636
+  %add6.i = fadd double %65, %mul5.i, !dbg !1636
+  store double %add6.i, double* %arrayidx7.i, align 8, !dbg !1636, !tbaa !1601
+  %67 = load double* %arrayidx8.i, align 8, !dbg !1638, !tbaa !1601
+  %68 = load double* %arrayidx9.i, align 8, !dbg !1638, !tbaa !1601
+  %mul10.i = fmul double %add200, %68, !dbg !1638
+  %add11.i = fadd double %67, %mul10.i, !dbg !1638
+  store double %add11.i, double* %arrayidx12.i, align 16, !dbg !1638, !tbaa !1601
+  %69 = load double* %ds79, align 8, !dbg !1684, !tbaa !1601
+  %mul209 = fmul double %div117, %69, !dbg !1684
+  %70 = load double* %s0137, align 8, !dbg !1684, !tbaa !1601
+  %add213 = fadd double %mul209, %70, !dbg !1684
+  call void @_ZN3pov14addMediaPhotonEPdS0_Pfd(double* %arraydecay191, double* %arraydecay192, float* %arraydecay142, double %add213) #7, !dbg !1684
+  br label %for.inc215, !dbg !1685
+
+for.inc215:                                       ; preds = %for.body108, %if.end146
+  %71 = phi float [ %47, %for.body108 ], [ %conv189, %if.end146 ]
+  %72 = phi float [ %46, %for.body108 ], [ %conv174, %if.end146 ]
+  %73 = phi float [ %45, %for.body108 ], [ %conv159, %if.end146 ]
+  %inc216 = add nsw i32 %j.0412, 1, !dbg !1662
+  call void @llvm.dbg.value(metadata !{i32 %inc216}, i64 0, metadata !985), !dbg !1662
+  %exitcond444 = icmp eq i32 %inc216, %minSamples.1, !dbg !1662
+  br i1 %exitcond444, label %for.inc218, label %for.body108, !dbg !1662
+
+for.inc218:                                       ; preds = %for.inc215, %if.end105
+  %.lcssa410 = phi float [ %31, %if.end105 ], [ %73, %for.inc215 ]
+  %.lcssa409 = phi float [ %32, %if.end105 ], [ %72, %for.inc215 ]
+  %.lcssa408 = phi float [ %33, %if.end105 ], [ %71, %for.inc215 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1619
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1619
+  %exitcond445 = icmp eq i32 %lftr.wideiv, %call55, !dbg !1619
+  br i1 %exitcond445, label %for.cond223.preheader, label %for.body68, !dbg !1619
+
+for.body225:                                      ; preds = %for.cond223.preheader, %for.body225
+  %i.1405 = phi i32 [ %inc257, %for.body225 ], [ 0, %for.cond223.preheader ]
+  %curr.0404 = phi %"struct.pov::Media_Interval_Struct"* [ %incdec.ptr255, %for.body225 ], [ %Media_Interval.0, %for.cond223.preheader ]
+  %74 = phi float [ %conv234, %for.body225 ], [ 0.000000e+00, %for.cond223.preheader ]
+  %75 = phi float [ %conv244, %for.body225 ], [ 0.000000e+00, %for.cond223.preheader ]
+  %76 = phi float [ %conv254, %for.body225 ], [ 0.000000e+00, %for.cond223.preheader ]
+  %arrayidx227 = getelementptr inbounds %"struct.pov::Media_Interval_Struct"* %curr.0404, i64 0, i32 5, i64 0, !dbg !1686
+  %77 = load float* %arrayidx227, align 4, !dbg !1686, !tbaa !1621
+  %conv228 = fpext float %77 to double, !dbg !1686
+  %samples = getelementptr inbounds %"struct.pov::Media_Interval_Struct"* %curr.0404, i64 0, i32 1, !dbg !1686
+  %78 = load i32* %samples, align 4, !dbg !1686, !tbaa !1580
+  %conv229 = sitofp i32 %78 to double, !dbg !1686
+  %div230 = fdiv double %conv228, %conv229, !dbg !1686
+  %conv232 = fpext float %74 to double, !dbg !1686
+  %add233 = fadd double %conv232, %div230, !dbg !1686
+  %conv234 = fptrunc double %add233 to float, !dbg !1686
+  %arrayidx236 = getelementptr inbounds %"struct.pov::Media_Interval_Struct"* %curr.0404, i64 0, i32 5, i64 1, !dbg !1688
+  %79 = load float* %arrayidx236, align 4, !dbg !1688, !tbaa !1621
+  %conv237 = fpext float %79 to double, !dbg !1688
+  %div240 = fdiv double %conv237, %conv229, !dbg !1688
+  %conv242 = fpext float %75 to double, !dbg !1688
+  %add243 = fadd double %conv242, %div240, !dbg !1688
+  %conv244 = fptrunc double %add243 to float, !dbg !1688
+  %arrayidx246 = getelementptr inbounds %"struct.pov::Media_Interval_Struct"* %curr.0404, i64 0, i32 5, i64 2, !dbg !1689
+  %80 = load float* %arrayidx246, align 4, !dbg !1689, !tbaa !1621
+  %conv247 = fpext float %80 to double, !dbg !1689
+  %div250 = fdiv double %conv247, %conv229, !dbg !1689
+  %conv252 = fpext float %76 to double, !dbg !1689
+  %add253 = fadd double %conv252, %div250, !dbg !1689
+  %conv254 = fptrunc double %add253 to float, !dbg !1689
+  %incdec.ptr255 = getelementptr inbounds %"struct.pov::Media_Interval_Struct"* %curr.0404, i64 1, !dbg !1690
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Media_Interval_Struct"* %incdec.ptr255}, i64 0, metadata !1019), !dbg !1690
+  %inc257 = add nsw i32 %i.1405, 1, !dbg !1639
+  call void @llvm.dbg.value(metadata !{i32 %inc257}, i64 0, metadata !984), !dbg !1639
+  %exitcond = icmp eq i32 %inc257, %call55, !dbg !1639
+  br i1 %exitcond, label %for.end258, label %for.body225, !dbg !1639
+
+for.end258:                                       ; preds = %if.end54, %for.body225, %for.cond223.preheader
+  %.lcssa402 = phi float [ 0.000000e+00, %for.cond223.preheader ], [ %conv234, %for.body225 ], [ 0.000000e+00, %if.end54 ]
+  %.lcssa401 = phi float [ 0.000000e+00, %for.cond223.preheader ], [ %conv244, %for.body225 ], [ 0.000000e+00, %if.end54 ]
+  %.lcssa = phi float [ 0.000000e+00, %for.cond223.preheader ], [ %conv254, %for.body225 ], [ 0.000000e+00, %if.end54 ]
+  %81 = load float* %Colour, align 4, !dbg !1691, !tbaa !1621
+  %conv260 = fpext float %81 to double, !dbg !1691
+  %sub262 = fsub float -0.000000e+00, %.lcssa402, !dbg !1691
+  %conv263 = fpext float %sub262 to double, !dbg !1691
+  %call264 = call double @exp(double %conv263) #8, !dbg !1691
+  %mul265 = fmul double %conv260, %call264, !dbg !1691
+  %conv266 = fptrunc double %mul265 to float, !dbg !1691
+  store float %conv266, float* %Colour, align 4, !dbg !1691, !tbaa !1621
+  %82 = load float* %arrayidx62, align 4, !dbg !1692, !tbaa !1621
+  %conv269 = fpext float %82 to double, !dbg !1692
+  %sub271 = fsub float -0.000000e+00, %.lcssa401, !dbg !1692
+  %conv272 = fpext float %sub271 to double, !dbg !1692
+  %call273 = call double @exp(double %conv272) #8, !dbg !1692
+  %mul274 = fmul double %conv269, %call273, !dbg !1692
+  %conv275 = fptrunc double %mul274 to float, !dbg !1692
+  store float %conv275, float* %arrayidx62, align 4, !dbg !1692, !tbaa !1621
+  %83 = load float* %arrayidx64, align 4, !dbg !1693, !tbaa !1621
+  %conv278 = fpext float %83 to double, !dbg !1693
+  %sub280 = fsub float -0.000000e+00, %.lcssa, !dbg !1693
+  %conv281 = fpext float %sub280 to double, !dbg !1693
+  %call282 = call double @exp(double %conv281) #8, !dbg !1693
+  %mul283 = fmul double %conv278, %call282, !dbg !1693
+  %conv284 = fptrunc double %mul283 to float, !dbg !1693
+  store float %conv284, float* %arrayidx64, align 4, !dbg !1693, !tbaa !1621
+  %84 = load i64* @_ZN3pov14MediaPoolIndexE, align 8, !dbg !1694, !tbaa !1566
+  %dec286 = add nsw i64 %84, -1, !dbg !1694
+  store i64 %dec286, i64* @_ZN3pov14MediaPoolIndexE, align 8, !dbg !1694, !tbaa !1566
+  br label %return, !dbg !1694
+
+return:                                           ; preds = %for.end258, %if.then17, %if.then
+  ret void, !dbg !1694
+}

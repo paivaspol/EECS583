@@ -1,0 +1,27 @@
+define i32 @_ZN11xercesc_2_59XMLString11lastIndexOfEtPKtj(i16 zeroext %ch, i16* nocapture %toSearch, i32 %toSearchLen) #6 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16 %ch}, i64 0, metadata !1908), !dbg !3664
+  tail call void @llvm.dbg.value(metadata !{i16* %toSearch}, i64 0, metadata !1909), !dbg !3665
+  tail call void @llvm.dbg.value(metadata !{i32 %toSearchLen}, i64 0, metadata !1910), !dbg !3666
+  %0 = sext i32 %toSearchLen to i64
+  br label %for.cond, !dbg !3667
+
+for.cond:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ %0, %entry ]
+  %i.0.in = phi i32 [ %i.0, %for.body ], [ %toSearchLen, %entry ]
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !3668
+  %i.0 = add nsw i32 %i.0.in, -1, !dbg !3667
+  %1 = trunc i64 %indvars.iv to i32, !dbg !3667
+  %cmp = icmp sgt i32 %1, 0, !dbg !3667
+  br i1 %cmp, label %for.body, label %return, !dbg !3667
+
+for.body:                                         ; preds = %for.cond
+  %arrayidx = getelementptr inbounds i16* %toSearch, i64 %indvars.iv.next, !dbg !3668
+  %2 = load i16* %arrayidx, align 2, !dbg !3668, !tbaa !2947
+  %cmp2 = icmp eq i16 %2, %ch, !dbg !3668
+  br i1 %cmp2, label %return, label %for.cond, !dbg !3668
+
+return:                                           ; preds = %for.cond, %for.body
+  %retval.0 = phi i32 [ %i.0, %for.body ], [ -1, %for.cond ]
+  ret i32 %retval.0, !dbg !3670
+}

@@ -1,0 +1,72 @@
+define internal fastcc void @_ZN3povL16Parse_InitalizerEiiPNS_16Pov_Array_StructE(i32 %Sub, i32 %Base, %"struct.pov::Pov_Array_Struct"* %a) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %Sub}, i64 0, metadata !1247), !dbg !3816
+  tail call void @llvm.dbg.value(metadata !{i32 %Base}, i64 0, metadata !1248), !dbg !3816
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Pov_Array_Struct"* %a}, i64 0, metadata !1249), !dbg !3816
+  tail call void @_ZN3pov11Parse_BeginEv() #9, !dbg !3817
+  %Dims = getelementptr inbounds %"struct.pov::Pov_Array_Struct"* %a, i64 0, i32 0, !dbg !3818
+  %0 = load i32* %Dims, align 4, !dbg !3818, !tbaa !1569
+  %cmp = icmp sgt i32 %0, %Sub, !dbg !3818
+  tail call void @llvm.dbg.value(metadata !807, i64 0, metadata !1250), !dbg !3819
+  %idxprom = sext i32 %Sub to i64, !dbg !3819
+  %arrayidx = getelementptr inbounds %"struct.pov::Pov_Array_Struct"* %a, i64 0, i32 3, i64 %idxprom, !dbg !3819
+  %1 = load i32* %arrayidx, align 4, !dbg !3819, !tbaa !1569
+  %cmp138 = icmp sgt i32 %1, 0, !dbg !3819
+  br i1 %cmp, label %for.cond.preheader, label %for.cond5.preheader, !dbg !3818
+
+for.cond5.preheader:                              ; preds = %entry
+  br i1 %cmp138, label %for.body10.lr.ph, label %if.end20, !dbg !3822
+
+for.body10.lr.ph:                                 ; preds = %for.cond5.preheader
+  %Type = getelementptr inbounds %"struct.pov::Pov_Array_Struct"* %a, i64 0, i32 1, !dbg !3825
+  %DataPtrs = getelementptr inbounds %"struct.pov::Pov_Array_Struct"* %a, i64 0, i32 5, !dbg !3825
+  %2 = sext i32 %Base to i64, !dbg !3822
+  br label %for.body10, !dbg !3822
+
+for.cond.preheader:                               ; preds = %entry
+  br i1 %cmp138, label %for.body.lr.ph, label %if.end20, !dbg !3819
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %add = add nsw i32 %Sub, 1, !dbg !3827
+  %arrayidx3 = getelementptr inbounds %"struct.pov::Pov_Array_Struct"* %a, i64 0, i32 4, i64 %idxprom, !dbg !3827
+  br label %for.body, !dbg !3819
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %i.039 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.body ]
+  %3 = load i32* %arrayidx3, align 4, !dbg !3827, !tbaa !1569
+  %mul = mul nsw i32 %3, %i.039, !dbg !3827
+  %add4 = add nsw i32 %mul, %Base, !dbg !3827
+  tail call fastcc void @_ZN3povL16Parse_InitalizerEiiPNS_16Pov_Array_StructE(i32 %add, i32 %add4, %"struct.pov::Pov_Array_Struct"* %a) #9, !dbg !3827
+  %inc = add nsw i32 %i.039, 1, !dbg !3819
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1250), !dbg !3819
+  %4 = load i32* %arrayidx, align 4, !dbg !3819, !tbaa !1569
+  %cmp1 = icmp slt i32 %inc, %4, !dbg !3819
+  br i1 %cmp1, label %for.body, label %if.end20, !dbg !3819
+
+for.body10:                                       ; preds = %for.body10.lr.ph, %if.end
+  %indvars.iv = phi i64 [ 0, %for.body10.lr.ph ], [ %indvars.iv.next, %if.end ]
+  %5 = load i32* %Type, align 4, !dbg !3825, !tbaa !1569
+  %6 = add nsw i64 %indvars.iv, %2, !dbg !3825
+  %7 = load i8*** %DataPtrs, align 8, !dbg !3825, !tbaa !1578
+  %arrayidx14 = getelementptr inbounds i8** %7, i64 %6, !dbg !3825
+  %call = tail call i32 @_ZN3pov12Parse_RValueEiPiPPvPNS_15Sym_Table_EntryEbbbbi(i32 %5, i32* %Type, i8** %arrayidx14, %"struct.pov::Sym_Table_Entry"* null, i1 zeroext false, i1 zeroext false, i1 zeroext true, i1 zeroext false, i32 100) #9, !dbg !3825
+  %tobool = icmp eq i32 %call, 0, !dbg !3825
+  br i1 %tobool, label %if.then15, label %if.end, !dbg !3825
+
+if.then15:                                        ; preds = %for.body10
+  %call16 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([35 x i8]* @.str588, i64 0, i64 0)) #9, !dbg !3829
+  br label %if.end, !dbg !3831
+
+if.end:                                           ; preds = %for.body10, %if.then15
+  tail call void @_ZN3pov11Parse_CommaEv() #9, !dbg !3832
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !3822
+  %8 = load i32* %arrayidx, align 4, !dbg !3822, !tbaa !1569
+  %9 = trunc i64 %indvars.iv.next to i32, !dbg !3822
+  %cmp9 = icmp slt i32 %9, %8, !dbg !3822
+  br i1 %cmp9, label %for.body10, label %if.end20, !dbg !3822
+
+if.end20:                                         ; preds = %for.cond5.preheader, %if.end, %for.cond.preheader, %for.body
+  tail call void @_ZN3pov9Parse_EndEv() #9, !dbg !3833
+  tail call void @_ZN3pov11Parse_CommaEv() #9, !dbg !3834
+  ret void, !dbg !3835
+}

@@ -1,0 +1,39 @@
+define i32 @_ZNK11xercesc_2_56BitSet4hashEj(%"class.xercesc_2_5::BitSet"* nocapture %this, i32 %hashModulus) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BitSet"* %this}, i64 0, metadata !271), !dbg !402
+  tail call void @llvm.dbg.value(metadata !{i32 %hashModulus}, i64 0, metadata !272), !dbg !402
+  tail call void @llvm.dbg.value(metadata !{i8* %2}, i64 0, metadata !273), !dbg !403
+  %fUnitLen = getelementptr inbounds %"class.xercesc_2_5::BitSet"* %this, i64 0, i32 2, !dbg !404
+  %0 = load i32* %fUnitLen, align 4, !dbg !404, !tbaa !304
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !278), !dbg !405
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !279), !dbg !406
+  %mul.mask = and i32 %0, 536870911, !dbg !406
+  %cmp6 = icmp eq i32 %mul.mask, 0, !dbg !406
+  br i1 %cmp6, label %for.end, label %for.body.lr.ph, !dbg !406
+
+for.body.lr.ph:                                   ; preds = %entry
+  %fBits = getelementptr inbounds %"class.xercesc_2_5::BitSet"* %this, i64 0, i32 1, !dbg !403
+  %1 = load i64** %fBits, align 8, !dbg !403, !tbaa !301
+  %2 = bitcast i64* %1 to i8*, !dbg !403
+  %3 = load i8* %2, align 1, !dbg !407, !tbaa !302
+  %conv3 = zext i8 %3 to i32, !dbg !407
+  %4 = shl i32 %0, 3, !dbg !406
+  br label %for.body, !dbg !406
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %index.08 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.body ]
+  %hashVal.07 = phi i32 [ 0, %for.body.lr.ph ], [ %xor, %for.body ]
+  %shl = shl i32 %hashVal.07, 1, !dbg !409
+  tail call void @llvm.dbg.value(metadata !{i32 %shl}, i64 0, metadata !278), !dbg !409
+  %xor = xor i32 %conv3, %shl, !dbg !407
+  tail call void @llvm.dbg.value(metadata !{i32 %xor}, i64 0, metadata !278), !dbg !407
+  %inc = add i32 %index.08, 1, !dbg !406
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !279), !dbg !406
+  %exitcond = icmp eq i32 %inc, %4, !dbg !406
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !406
+
+for.end:                                          ; preds = %for.body, %entry
+  %hashVal.0.lcssa = phi i32 [ 0, %entry ], [ %xor, %for.body ]
+  %rem = urem i32 %hashVal.0.lcssa, %hashModulus, !dbg !410
+  ret i32 %rem, !dbg !410
+}

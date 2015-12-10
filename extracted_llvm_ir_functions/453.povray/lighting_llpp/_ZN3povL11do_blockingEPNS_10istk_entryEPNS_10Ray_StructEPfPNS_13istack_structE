@@ -1,0 +1,59 @@
+define internal fastcc i32 @_ZN3povL11do_blockingEPNS_10istk_entryEPNS_10Ray_StructEPfPNS_13istack_structE(%"struct.pov::istk_entry"* %Local_Intersection, %"struct.pov::Ray_Struct"* %Light_Source_Ray, float* %Light_Colour, %"struct.pov::istack_struct"* nocapture %Local_Stack) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istk_entry"* %Local_Intersection}, i64 0, metadata !1250), !dbg !4629
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Ray_Struct"* %Light_Source_Ray}, i64 0, metadata !1251), !dbg !4629
+  tail call void @llvm.dbg.value(metadata !{float* %Light_Colour}, i64 0, metadata !1252), !dbg !4629
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istack_struct"* %Local_Stack}, i64 0, metadata !1253), !dbg !4629
+  tail call void @llvm.dbg.value(metadata !3409, i64 0, metadata !4630), !dbg !4633
+  %0 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 106), align 8, !dbg !4634, !tbaa !2311
+  %inc.i = add nsw i64 %0, 1, !dbg !4634
+  store i64 %inc.i, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 106), align 8, !dbg !4634, !tbaa !2311
+  tail call fastcc void @_ZN3povL17filter_shadow_rayEPNS_10istk_entryEPNS_10Ray_StructEPf(%"struct.pov::istk_entry"* %Local_Intersection, %"struct.pov::Ray_Struct"* %Light_Source_Ray, float* %Light_Colour) #7, !dbg !4635
+  %1 = load float* %Light_Colour, align 4, !dbg !4636, !tbaa !2644
+  %fabsf = tail call float @fabsf(float %1) #4, !dbg !4636
+  %2 = fpext float %fabsf to double, !dbg !4636
+  %cmp = fcmp olt double %2, 1.000000e-07, !dbg !4636
+  br i1 %cmp, label %land.lhs.true, label %return, !dbg !4636
+
+land.lhs.true:                                    ; preds = %entry
+  %arrayidx1 = getelementptr inbounds float* %Light_Colour, i64 1, !dbg !4637
+  %3 = load float* %arrayidx1, align 4, !dbg !4637, !tbaa !2644
+  %fabsf15 = tail call float @fabsf(float %3) #4, !dbg !4637
+  %4 = fpext float %fabsf15 to double, !dbg !4637
+  %cmp4 = fcmp olt double %4, 1.000000e-07, !dbg !4637
+  br i1 %cmp4, label %land.lhs.true5, label %return, !dbg !4637
+
+land.lhs.true5:                                   ; preds = %land.lhs.true
+  %arrayidx6 = getelementptr inbounds float* %Light_Colour, i64 2, !dbg !4638
+  %5 = load float* %arrayidx6, align 4, !dbg !4638, !tbaa !2644
+  %fabsf16 = tail call float @fabsf(float %5) #4, !dbg !4638
+  %6 = fpext float %fabsf16 to double, !dbg !4638
+  %cmp9 = fcmp olt double %6, 1.000000e-07, !dbg !4638
+  br i1 %cmp9, label %while.cond.preheader, label %return, !dbg !4638
+
+while.cond.preheader:                             ; preds = %land.lhs.true5
+  %top_entry.i = getelementptr inbounds %"struct.pov::istack_struct"* %Local_Stack, i64 0, i32 3, !dbg !4639
+  %istack.i = getelementptr inbounds %"struct.pov::istack_struct"* %Local_Stack, i64 0, i32 1, !dbg !4639
+  %.pre = load i32* %top_entry.i, align 4, !dbg !4639, !tbaa !2301
+  br label %while.cond, !dbg !4642
+
+while.cond:                                       ; preds = %while.cond.preheader, %_ZN3pov9pop_entryEPNS_13istack_structE.exit
+  %7 = phi i32 [ %.pre, %while.cond.preheader ], [ %dec.i, %_ZN3pov9pop_entryEPNS_13istack_structE.exit ]
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istack_struct"* %Local_Stack}, i64 0, metadata !4643), !dbg !4642
+  %cmp.i = icmp eq i32 %7, 0, !dbg !4639
+  br i1 %cmp.i, label %return, label %_ZN3pov9pop_entryEPNS_13istack_structE.exit, !dbg !4639
+
+_ZN3pov9pop_entryEPNS_13istack_structE.exit:      ; preds = %while.cond
+  %dec.i = add i32 %7, -1, !dbg !4639
+  store i32 %dec.i, i32* %top_entry.i, align 4, !dbg !4639, !tbaa !2301
+  %idxprom.i = zext i32 %dec.i to i64, !dbg !4639
+  %8 = load %"struct.pov::istk_entry"** %istack.i, align 8, !dbg !4639, !tbaa !2295
+  %arrayidx.i = getelementptr inbounds %"struct.pov::istk_entry"* %8, i64 %idxprom.i, !dbg !4639
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istk_entry"* %arrayidx.i}, i64 0, metadata !1250), !dbg !4640
+  %cmp11 = icmp eq %"struct.pov::istk_entry"* %arrayidx.i, null, !dbg !4640
+  br i1 %cmp11, label %return, label %while.cond, !dbg !4640
+
+return:                                           ; preds = %while.cond, %_ZN3pov9pop_entryEPNS_13istack_structE.exit, %entry, %land.lhs.true, %land.lhs.true5
+  %retval.0 = phi i32 [ 0, %land.lhs.true5 ], [ 0, %land.lhs.true ], [ 0, %entry ], [ 1, %_ZN3pov9pop_entryEPNS_13istack_structE.exit ], [ 1, %while.cond ]
+  ret i32 %retval.0, !dbg !4644
+}

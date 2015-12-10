@@ -13,25 +13,27 @@ flags = {'403.gcc' :'-DSPEC_CPU -DNDEBUG -I{0} -DSPEC_CPU_LP64',
         '450.soplex': '-DSPEC_CPU -DNDEBUG -DSPEC_CPU_LP64'
 }
 
-cpp = [ '471.omnetpp', '483.xalancbmk' ]
-
 def convert_to_ir(root_dir, benchmark, output_dir):
     for path, dirs, filenames in os.walk(root_dir):
         for filename in filenames:
-            if filename.endswith('.c'):
+            if filename.endswith('.c') or filename.endswith('.cpp') or filename.endswith('.cc'):
                 input_full_path = os.path.join(path, filename)
                 if output_dir is None:
                     output_full_path = input_file_path.replace('.c', '.ll')
                 else:
                     output_full_path = os.path.join(output_dir, filename.replace('.c', '.ll'))
-                compile_flags = flags[benchmark].format(path)
-                if benchmark not in cpp:
-                    convert_command = 'clang -Os -S -emit-llvm ' + compile_flags + ' {0} -o {1}'.format(input_full_path, output_full_path, path)
-                elif benchmark in cpp:
-                    convert_command = 'clang++ -Os -S -emit-llvm ' + compile_flags + ' {0} -o {1}'.format(input_full_path, output_full_path, path)
+                if benchmark in flags:
+                    compile_flags = flags[benchmark].format(path)
+                else:
+                    compile_flags = ''
+
+                if filename.endswith('.c'):
+                    convert_command = 'clang -Os -g -S -emit-llvm ' + compile_flags + ' {0} -o {1}'.format(input_full_path, output_full_path, path)
+                elif filename.endswith('.cpp') or filename.endswith('.cc'):
+                    convert_command = 'clang++ -Os -g -S -emit-llvm ' + compile_flags + ' {0} -o {1}'.format(input_full_path, output_full_path, path)
                 print convert_command
                 # print 'Converting: {0}'.format(input_full_path)
-                # subprocess.call(convert_command, shell=True)
+                subprocess.call(convert_command, shell=True)
 
 if __name__ == '__main__':
     parser = ArgumentParser()

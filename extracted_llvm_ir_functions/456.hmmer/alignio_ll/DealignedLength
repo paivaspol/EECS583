@@ -1,11 +1,13 @@
-define i32 @DealignedLength(i8* nocapture %aseq) #5 {
+define i32 @DealignedLength(i8* nocapture %aseq) #6 {
 entry:
-  br label %for.cond
+  tail call void @llvm.dbg.value(metadata !{i8* %aseq}, i64 0, metadata !152), !dbg !406
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !153), !dbg !407
+  br label %for.cond, !dbg !407
 
 for.cond:                                         ; preds = %for.inc, %entry
   %aseq.addr.0 = phi i8* [ %aseq, %entry ], [ %incdec.ptr, %for.inc ]
   %rlen.0 = phi i32 [ 0, %entry ], [ %rlen.1, %for.inc ]
-  %0 = load i8* %aseq.addr.0, align 1, !tbaa !1
+  %0 = load i8* %aseq.addr.0, align 1, !dbg !407, !tbaa !297
   switch i8 %0, label %if.then [
     i8 0, label %for.end
     i8 32, label %for.inc
@@ -13,17 +15,19 @@ for.cond:                                         ; preds = %for.inc, %entry
     i8 95, label %for.inc
     i8 45, label %for.inc
     i8 126, label %for.inc
-  ]
+  ], !dbg !407
 
 if.then:                                          ; preds = %for.cond
-  %inc = add nsw i32 %rlen.0, 1
-  br label %for.inc
+  %inc = add nsw i32 %rlen.0, 1, !dbg !409
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !153), !dbg !409
+  br label %for.inc, !dbg !409
 
 for.inc:                                          ; preds = %for.cond, %for.cond, %for.cond, %for.cond, %for.cond, %if.then
   %rlen.1 = phi i32 [ %inc, %if.then ], [ %rlen.0, %for.cond ], [ %rlen.0, %for.cond ], [ %rlen.0, %for.cond ], [ %rlen.0, %for.cond ], [ %rlen.0, %for.cond ]
-  %incdec.ptr = getelementptr inbounds i8* %aseq.addr.0, i64 1
-  br label %for.cond
+  %incdec.ptr = getelementptr inbounds i8* %aseq.addr.0, i64 1, !dbg !407
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !152), !dbg !407
+  br label %for.cond, !dbg !407
 
 for.end:                                          ; preds = %for.cond
-  ret i32 %rlen.0
+  ret i32 %rlen.0, !dbg !410
 }

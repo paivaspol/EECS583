@@ -1,37 +1,38 @@
 define internal fastcc %struct.fibnode* @fibnode_remove(%struct.fibnode* %node) #0 {
 entry:
-  %left = getelementptr inbounds %struct.fibnode* %node, i64 0, i32 2
-  %0 = load %struct.fibnode** %left, align 8, !tbaa !0
-  %cmp = icmp eq %struct.fibnode* %0, %node
-  %. = select i1 %cmp, %struct.fibnode* null, %struct.fibnode* %0
-  %parent = getelementptr inbounds %struct.fibnode* %node, i64 0, i32 0
-  %1 = load %struct.fibnode** %parent, align 8, !tbaa !0
-  %cmp2 = icmp eq %struct.fibnode* %1, null
-  br i1 %cmp2, label %if.end8, label %land.lhs.true
+  tail call void @llvm.dbg.value(metadata !{%struct.fibnode* %node}, i64 0, metadata !128), !dbg !537
+  %left = getelementptr inbounds %struct.fibnode* %node, i64 0, i32 2, !dbg !538
+  %0 = load %struct.fibnode** %left, align 8, !dbg !538, !tbaa !204
+  %cmp = icmp eq %struct.fibnode* %0, %node, !dbg !538
+  %. = select i1 %cmp, %struct.fibnode* null, %struct.fibnode* %0, !dbg !539
+  %parent = getelementptr inbounds %struct.fibnode* %node, i64 0, i32 0, !dbg !540
+  %1 = load %struct.fibnode** %parent, align 8, !dbg !540, !tbaa !204
+  %cmp2 = icmp eq %struct.fibnode* %1, null, !dbg !540
+  br i1 %cmp2, label %if.end8, label %land.lhs.true, !dbg !540
 
 land.lhs.true:                                    ; preds = %entry
-  %child = getelementptr inbounds %struct.fibnode* %1, i64 0, i32 1
-  %2 = load %struct.fibnode** %child, align 8, !tbaa !0
-  %cmp4 = icmp eq %struct.fibnode* %2, %node
-  br i1 %cmp4, label %if.then5, label %if.end8
+  %child = getelementptr inbounds %struct.fibnode* %1, i64 0, i32 1, !dbg !540
+  %2 = load %struct.fibnode** %child, align 8, !dbg !540, !tbaa !204
+  %cmp4 = icmp eq %struct.fibnode* %2, %node, !dbg !540
+  br i1 %cmp4, label %if.then5, label %if.end8, !dbg !540
 
 if.then5:                                         ; preds = %land.lhs.true
-  store %struct.fibnode* %., %struct.fibnode** %child, align 8, !tbaa !0
-  %.pre = load %struct.fibnode** %left, align 8, !tbaa !0
-  br label %if.end8
+  store %struct.fibnode* %., %struct.fibnode** %child, align 8, !dbg !541, !tbaa !204
+  %.pre = load %struct.fibnode** %left, align 8, !dbg !542, !tbaa !204
+  br label %if.end8, !dbg !541
 
 if.end8:                                          ; preds = %entry, %if.then5, %land.lhs.true
   %3 = phi %struct.fibnode* [ %0, %entry ], [ %.pre, %if.then5 ], [ %0, %land.lhs.true ]
-  %right = getelementptr inbounds %struct.fibnode* %node, i64 0, i32 3
-  %4 = load %struct.fibnode** %right, align 8, !tbaa !0
-  %left10 = getelementptr inbounds %struct.fibnode* %4, i64 0, i32 2
-  store %struct.fibnode* %3, %struct.fibnode** %left10, align 8, !tbaa !0
-  %5 = load %struct.fibnode** %right, align 8, !tbaa !0
-  %6 = load %struct.fibnode** %left, align 8, !tbaa !0
-  %right13 = getelementptr inbounds %struct.fibnode* %6, i64 0, i32 3
-  store %struct.fibnode* %5, %struct.fibnode** %right13, align 8, !tbaa !0
-  store %struct.fibnode* null, %struct.fibnode** %parent, align 8, !tbaa !0
-  store %struct.fibnode* %node, %struct.fibnode** %left, align 8, !tbaa !0
-  store %struct.fibnode* %node, %struct.fibnode** %right, align 8, !tbaa !0
-  ret %struct.fibnode* %.
+  %right = getelementptr inbounds %struct.fibnode* %node, i64 0, i32 3, !dbg !542
+  %4 = load %struct.fibnode** %right, align 8, !dbg !542, !tbaa !204
+  %left10 = getelementptr inbounds %struct.fibnode* %4, i64 0, i32 2, !dbg !542
+  store %struct.fibnode* %3, %struct.fibnode** %left10, align 8, !dbg !542, !tbaa !204
+  %5 = load %struct.fibnode** %right, align 8, !dbg !543, !tbaa !204
+  %6 = load %struct.fibnode** %left, align 8, !dbg !543, !tbaa !204
+  %right13 = getelementptr inbounds %struct.fibnode* %6, i64 0, i32 3, !dbg !543
+  store %struct.fibnode* %5, %struct.fibnode** %right13, align 8, !dbg !543, !tbaa !204
+  store %struct.fibnode* null, %struct.fibnode** %parent, align 8, !dbg !544, !tbaa !204
+  store %struct.fibnode* %node, %struct.fibnode** %left, align 8, !dbg !545, !tbaa !204
+  store %struct.fibnode* %node, %struct.fibnode** %right, align 8, !dbg !546, !tbaa !204
+  ret %struct.fibnode* %., !dbg !547
 }

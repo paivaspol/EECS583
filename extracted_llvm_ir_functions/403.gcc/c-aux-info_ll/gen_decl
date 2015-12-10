@@ -1,116 +1,129 @@
 define internal fastcc i8* @gen_decl(%union.tree_node* nocapture %decl, i32 %is_func_definition, i32 %style) #0 {
 entry:
-  %name = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 8
-  %0 = load %union.tree_node** %name, align 8, !tbaa !3
-  %tobool = icmp eq %union.tree_node* %0, null
-  br i1 %tobool, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %decl}, i64 0, metadata !619), !dbg !688
+  tail call void @llvm.dbg.value(metadata !{i32 %is_func_definition}, i64 0, metadata !620), !dbg !689
+  tail call void @llvm.dbg.value(metadata !{i32 %style}, i64 0, metadata !621), !dbg !690
+  %name = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 8, !dbg !691
+  %0 = load %union.tree_node** %name, align 8, !dbg !691, !tbaa !675
+  %tobool = icmp eq %union.tree_node* %0, null, !dbg !691
+  br i1 %tobool, label %if.end, label %if.then, !dbg !691
 
 if.then:                                          ; preds = %entry
-  %id = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 1
-  %1 = getelementptr inbounds i8** %id, i64 1
-  %2 = load i8** %1, align 8, !tbaa !3
-  br label %if.end
+  %id = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 1, !dbg !692
+  %1 = getelementptr inbounds i8** %id, i64 1, !dbg !692
+  %2 = load i8** %1, align 8, !dbg !692, !tbaa !675
+  tail call void @llvm.dbg.value(metadata !{i8* %2}, i64 0, metadata !622), !dbg !692
+  br label %if.end, !dbg !692
 
 if.end:                                           ; preds = %entry, %if.then
   %ret_val.0 = phi i8* [ %2, %if.then ], [ getelementptr inbounds ([1 x i8]* @.str4, i64 0, i64 0), %entry ]
-  %cmp = icmp eq i32 %style, 1
-  br i1 %cmp, label %return, label %if.end5
+  %cmp = icmp eq i32 %style, 1, !dbg !693
+  br i1 %cmp, label %return, label %if.end5, !dbg !693
 
 if.end5:                                          ; preds = %if.end
-  %volatile_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 2
-  %3 = bitcast [4 x i8]* %volatile_flag to i32*
-  %bf.load = load i32* %3, align 8
-  %bf.clear = and i32 %bf.load, 2048
-  %tobool6 = icmp eq i32 %bf.clear, 0
-  br i1 %tobool6, label %if.end8, label %if.then7
+  %volatile_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 2, !dbg !694
+  %3 = bitcast [4 x i8]* %volatile_flag to i32*, !dbg !694
+  %bf.load = load i32* %3, align 8, !dbg !694
+  %bf.clear = and i32 %bf.load, 2048, !dbg !694
+  %tobool6 = icmp eq i32 %bf.clear, 0, !dbg !694
+  br i1 %tobool6, label %if.end8, label %if.then7, !dbg !694
 
 if.then7:                                         ; preds = %if.end5
-  %call = tail call noalias i8* (i8*, ...)* @concat(i8* getelementptr inbounds ([10 x i8]* @.str11, i64 0, i64 0), i8* %ret_val.0, i8* null) #7
-  %bf.load10.pre = load i32* %3, align 8
-  br label %if.end8
+  %call = tail call noalias i8* (i8*, ...)* @concat(i8* getelementptr inbounds ([10 x i8]* @.str11, i64 0, i64 0), i8* %ret_val.0, i8* null) #8, !dbg !695
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !622), !dbg !695
+  %bf.load10.pre = load i32* %3, align 8, !dbg !696
+  br label %if.end8, !dbg !695
 
 if.end8:                                          ; preds = %if.end5, %if.then7
   %bf.load10 = phi i32 [ %bf.load10.pre, %if.then7 ], [ %bf.load, %if.end5 ]
   %ret_val.1 = phi i8* [ %call, %if.then7 ], [ %ret_val.0, %if.end5 ]
-  %bf.clear12 = and i32 %bf.load10, 4096
-  %tobool13 = icmp eq i32 %bf.clear12, 0
-  br i1 %tobool13, label %if.end16, label %if.then14
+  %bf.clear12 = and i32 %bf.load10, 4096, !dbg !696
+  %tobool13 = icmp eq i32 %bf.clear12, 0, !dbg !696
+  br i1 %tobool13, label %if.end16, label %if.then14, !dbg !696
 
 if.then14:                                        ; preds = %if.end8
-  %call15 = tail call noalias i8* (i8*, ...)* @concat(i8* getelementptr inbounds ([7 x i8]* @.str12, i64 0, i64 0), i8* %ret_val.1, i8* null) #7
-  br label %if.end16
+  %call15 = tail call noalias i8* (i8*, ...)* @concat(i8* getelementptr inbounds ([7 x i8]* @.str12, i64 0, i64 0), i8* %ret_val.1, i8* null) #8, !dbg !697
+  tail call void @llvm.dbg.value(metadata !{i8* %call15}, i64 0, metadata !622), !dbg !697
+  br label %if.end16, !dbg !697
 
 if.end16:                                         ; preds = %if.end8, %if.then14
   %ret_val.2 = phi i8* [ %call15, %if.then14 ], [ %ret_val.1, %if.end8 ]
-  store i8* getelementptr inbounds ([1 x i8]* @.str4, i64 0, i64 0), i8** @data_type, align 8, !tbaa !3
-  %bf.load18 = load i32* %3, align 8
-  %bf.clear19 = and i32 %bf.load18, 255
-  %cmp20 = icmp ne i32 %bf.clear19, 30
-  %tobool21 = icmp eq i32 %is_func_definition, 0
-  %or.cond = or i1 %cmp20, %tobool21
-  br i1 %or.cond, label %if.else29, label %if.then22
+  store i8* getelementptr inbounds ([1 x i8]* @.str4, i64 0, i64 0), i8** @data_type, align 8, !dbg !698, !tbaa !675
+  %bf.load18 = load i32* %3, align 8, !dbg !699
+  %bf.clear19 = and i32 %bf.load18, 255, !dbg !699
+  %cmp20 = icmp ne i32 %bf.clear19, 30, !dbg !699
+  %tobool21 = icmp eq i32 %is_func_definition, 0, !dbg !699
+  %or.cond = or i1 %cmp20, %tobool21, !dbg !699
+  br i1 %or.cond, label %if.else29, label %if.then22, !dbg !699
 
 if.then22:                                        ; preds = %if.end16
-  %call23 = tail call fastcc i8* @gen_formal_list_for_func_def(%union.tree_node* %decl, i32 0) #6
-  %call24 = tail call noalias i8* (i8*, ...)* @concat(i8* %ret_val.2, i8* %call23, i8* null) #7
-  %type = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 1
-  %4 = load %union.tree_node** %type, align 8, !tbaa !3
-  %type27 = getelementptr inbounds %union.tree_node* %4, i64 0, i32 0, i32 0, i32 1
-  %5 = load %union.tree_node** %type27, align 8, !tbaa !3
-  %call28 = tail call fastcc i8* @gen_type(i8* %call24, %union.tree_node* %5, i32 %style) #6
-  br label %if.end33
+  %call23 = tail call fastcc i8* @gen_formal_list_for_func_def(%union.tree_node* %decl, i32 0) #7, !dbg !700
+  %call24 = tail call noalias i8* (i8*, ...)* @concat(i8* %ret_val.2, i8* %call23, i8* null) #8, !dbg !700
+  tail call void @llvm.dbg.value(metadata !{i8* %call24}, i64 0, metadata !622), !dbg !700
+  %type = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 1, !dbg !702
+  %4 = load %union.tree_node** %type, align 8, !dbg !702, !tbaa !675
+  %type27 = getelementptr inbounds %union.tree_node* %4, i64 0, i32 0, i32 0, i32 1, !dbg !702
+  %5 = load %union.tree_node** %type27, align 8, !dbg !702, !tbaa !675
+  %call28 = tail call fastcc i8* @gen_type(i8* %call24, %union.tree_node* %5, i32 %style) #7, !dbg !702
+  tail call void @llvm.dbg.value(metadata !{i8* %call28}, i64 0, metadata !622), !dbg !702
+  br label %if.end33, !dbg !703
 
 if.else29:                                        ; preds = %if.end16
-  %type31 = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 1
-  %6 = load %union.tree_node** %type31, align 8, !tbaa !3
-  %call32 = tail call fastcc i8* @gen_type(i8* %ret_val.2, %union.tree_node* %6, i32 %style) #6
+  %type31 = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 1, !dbg !704
+  %6 = load %union.tree_node** %type31, align 8, !dbg !704, !tbaa !675
+  %call32 = tail call fastcc i8* @gen_type(i8* %ret_val.2, %union.tree_node* %6, i32 %style) #7, !dbg !704
+  tail call void @llvm.dbg.value(metadata !{i8* %call32}, i64 0, metadata !622), !dbg !704
   br label %if.end33
 
 if.end33:                                         ; preds = %if.else29, %if.then22
   %ret_val.3 = phi i8* [ %call28, %if.then22 ], [ %call32, %if.else29 ]
-  %call34 = tail call fastcc noalias i8* @affix_data_type(i8* %ret_val.3) #6
-  %bf.load37 = load i32* %3, align 8
-  %bf.clear38 = and i32 %bf.load37, 255
-  %cmp39 = icmp eq i32 %bf.clear38, 30
-  br i1 %cmp39, label %if.end48, label %land.lhs.true40
+  %call34 = tail call fastcc noalias i8* @affix_data_type(i8* %ret_val.3) #7, !dbg !705
+  tail call void @llvm.dbg.value(metadata !{i8* %call34}, i64 0, metadata !622), !dbg !705
+  %bf.load37 = load i32* %3, align 8, !dbg !706
+  %bf.clear38 = and i32 %bf.load37, 255, !dbg !706
+  %cmp39 = icmp eq i32 %bf.clear38, 30, !dbg !706
+  br i1 %cmp39, label %if.end48, label %land.lhs.true40, !dbg !706
 
 land.lhs.true40:                                  ; preds = %if.end33
-  %regdecl_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 5
-  %7 = bitcast [8 x i8]* %regdecl_flag to i64*
-  %bf.load42 = load i64* %7, align 8
-  %bf.cast = and i64 %bf.load42, 1024
-  %tobool45 = icmp eq i64 %bf.cast, 0
-  br i1 %tobool45, label %if.end48, label %if.then46
+  %regdecl_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 5, !dbg !706
+  %7 = bitcast [8 x i8]* %regdecl_flag to i64*, !dbg !706
+  %bf.load42 = load i64* %7, align 8, !dbg !706
+  %bf.cast = and i64 %bf.load42, 1024, !dbg !706
+  %tobool45 = icmp eq i64 %bf.cast, 0, !dbg !706
+  br i1 %tobool45, label %if.end48, label %if.then46, !dbg !706
 
 if.then46:                                        ; preds = %land.lhs.true40
-  %call47 = tail call noalias i8* (i8*, ...)* @concat(i8* getelementptr inbounds ([10 x i8]* @.str13, i64 0, i64 0), i8* %call34, i8* null) #7
-  %bf.load50.pre = load i32* %3, align 8
-  br label %if.end48
+  %call47 = tail call noalias i8* (i8*, ...)* @concat(i8* getelementptr inbounds ([10 x i8]* @.str13, i64 0, i64 0), i8* %call34, i8* null) #8, !dbg !707
+  tail call void @llvm.dbg.value(metadata !{i8* %call47}, i64 0, metadata !622), !dbg !707
+  %bf.load50.pre = load i32* %3, align 8, !dbg !708
+  br label %if.end48, !dbg !707
 
 if.end48:                                         ; preds = %land.lhs.true40, %if.end33, %if.then46
   %bf.load50 = phi i32 [ %bf.load50.pre, %if.then46 ], [ %bf.load37, %land.lhs.true40 ], [ %bf.load37, %if.end33 ]
   %ret_val.4 = phi i8* [ %call47, %if.then46 ], [ %call34, %land.lhs.true40 ], [ %call34, %if.end33 ]
-  %bf.clear52 = and i32 %bf.load50, 524288
-  %tobool53 = icmp eq i32 %bf.clear52, 0
-  br i1 %tobool53, label %if.end56, label %if.then54
+  %bf.clear52 = and i32 %bf.load50, 524288, !dbg !708
+  %tobool53 = icmp eq i32 %bf.clear52, 0, !dbg !708
+  br i1 %tobool53, label %if.end56, label %if.then54, !dbg !708
 
 if.then54:                                        ; preds = %if.end48
-  %call55 = tail call noalias i8* (i8*, ...)* @concat(i8* getelementptr inbounds ([8 x i8]* @.str14, i64 0, i64 0), i8* %ret_val.4, i8* null) #7
-  %bf.load59.pre = load i32* %3, align 8
-  br label %if.end56
+  %call55 = tail call noalias i8* (i8*, ...)* @concat(i8* getelementptr inbounds ([8 x i8]* @.str14, i64 0, i64 0), i8* %ret_val.4, i8* null) #8, !dbg !709
+  tail call void @llvm.dbg.value(metadata !{i8* %call55}, i64 0, metadata !622), !dbg !709
+  %bf.load59.pre = load i32* %3, align 8, !dbg !710
+  br label %if.end56, !dbg !709
 
 if.end56:                                         ; preds = %if.end48, %if.then54
   %bf.load59 = phi i32 [ %bf.load59.pre, %if.then54 ], [ %bf.load50, %if.end48 ]
   %ret_val.5 = phi i8* [ %call55, %if.then54 ], [ %ret_val.4, %if.end48 ]
-  %8 = and i32 %bf.load59, 524543
-  %9 = icmp eq i32 %8, 30
-  br i1 %9, label %if.then69, label %return
+  %8 = and i32 %bf.load59, 524543, !dbg !710
+  %9 = icmp eq i32 %8, 30, !dbg !710
+  br i1 %9, label %if.then69, label %return, !dbg !710
 
 if.then69:                                        ; preds = %if.end56
-  %call70 = tail call noalias i8* (i8*, ...)* @concat(i8* getelementptr inbounds ([8 x i8]* @.str15, i64 0, i64 0), i8* %ret_val.5, i8* null) #7
-  br label %return
+  %call70 = tail call noalias i8* (i8*, ...)* @concat(i8* getelementptr inbounds ([8 x i8]* @.str15, i64 0, i64 0), i8* %ret_val.5, i8* null) #8, !dbg !711
+  tail call void @llvm.dbg.value(metadata !{i8* %call70}, i64 0, metadata !622), !dbg !711
+  br label %return, !dbg !711
 
 return:                                           ; preds = %if.end56, %if.then69, %if.end
   %retval.0 = phi i8* [ %ret_val.0, %if.end ], [ %call70, %if.then69 ], [ %ret_val.5, %if.end56 ]
-  ret i8* %retval.0
+  ret i8* %retval.0, !dbg !712
 }

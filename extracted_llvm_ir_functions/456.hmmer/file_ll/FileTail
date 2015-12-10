@@ -1,34 +1,39 @@
 define i8* @FileTail(i8* %file, i32 %noextension) #0 {
 entry:
-  %call = tail call i8* @strrchr(i8* %file, i32 47) #5
-  %call1 = tail call i64 @strlen(i8* %file) #5
-  %add = add i64 %call1, 1
-  %call2 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 105, i64 %add) #6
-  %cmp = icmp eq i8* %call, null
-  br i1 %cmp, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata !{i8* %file}, i64 0, metadata !20), !dbg !136
+  tail call void @llvm.dbg.value(metadata !{i32 %noextension}, i64 0, metadata !21), !dbg !136
+  %call = tail call i8* @strrchr(i8* %file, i32 47) #6, !dbg !137
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !23), !dbg !137
+  %call1 = tail call i64 @strlen(i8* %file) #6, !dbg !138
+  %add = add i64 %call1, 1, !dbg !138
+  %call2 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 105, i64 %add) #7, !dbg !138
+  tail call void @llvm.dbg.value(metadata !{i8* %call2}, i64 0, metadata !22), !dbg !138
+  %cmp = icmp eq i8* %call, null, !dbg !139
+  br i1 %cmp, label %if.then, label %if.else, !dbg !139
 
 if.then:                                          ; preds = %entry
-  %call3 = tail call i8* @strcpy(i8* %call2, i8* %file) #6
-  br label %if.end
+  %call3 = tail call i8* @strcpy(i8* %call2, i8* %file) #7, !dbg !139
+  br label %if.end, !dbg !139
 
 if.else:                                          ; preds = %entry
-  %add.ptr = getelementptr inbounds i8* %call, i64 1
-  %call4 = tail call i8* @strcpy(i8* %call2, i8* %add.ptr) #6
+  %add.ptr = getelementptr inbounds i8* %call, i64 1, !dbg !140
+  %call4 = tail call i8* @strcpy(i8* %call2, i8* %add.ptr) #7, !dbg !140
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
-  %tobool = icmp eq i32 %noextension, 0
-  br i1 %tobool, label %if.end10, label %if.then5
+  %tobool = icmp eq i32 %noextension, 0, !dbg !141
+  br i1 %tobool, label %if.end10, label %if.then5, !dbg !141
 
 if.then5:                                         ; preds = %if.end
-  %call6 = tail call i8* @strrchr(i8* %call2, i32 46) #5
-  %cmp7 = icmp eq i8* %call6, null
-  br i1 %cmp7, label %if.end10, label %if.then8
+  %call6 = tail call i8* @strrchr(i8* %call2, i32 46) #6, !dbg !142
+  tail call void @llvm.dbg.value(metadata !{i8* %call6}, i64 0, metadata !24), !dbg !142
+  %cmp7 = icmp eq i8* %call6, null, !dbg !142
+  br i1 %cmp7, label %if.end10, label %if.then8, !dbg !142
 
 if.then8:                                         ; preds = %if.then5
-  store i8 0, i8* %call6, align 1, !tbaa !0
-  br label %if.end10
+  store i8 0, i8* %call6, align 1, !dbg !144, !tbaa !127
+  br label %if.end10, !dbg !144
 
 if.end10:                                         ; preds = %if.then5, %if.end, %if.then8
-  ret i8* %call2
+  ret i8* %call2, !dbg !145
 }

@@ -1,43 +1,50 @@
 define internal fastcc %struct.rtx_def* @make_memloc(%struct.rtx_def* nocapture %ad, i32 %regno) #0 {
 entry:
-  %idxprom = sext i32 %regno to i64
-  %0 = load %struct.rtx_def*** @reg_equiv_memory_loc, align 8, !tbaa !5
-  %arrayidx = getelementptr inbounds %struct.rtx_def** %0, i64 %idxprom
-  %1 = load %struct.rtx_def** %arrayidx, align 8, !tbaa !5
-  %call = tail call %struct.rtx_def* @eliminate_regs(%struct.rtx_def* %1, i32 0, %struct.rtx_def* null) #6
-  %arrayidx1 = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx1 to %struct.rtx_def**
-  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !5
-  %call2 = tail call i32 @rtx_varies_p(%struct.rtx_def* %2, i32 0) #6
-  %tobool = icmp eq i32 %call2, 0
-  br i1 %tobool, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %ad}, i64 0, metadata !1715), !dbg !4087
+  tail call void @llvm.dbg.value(metadata !{i32 %regno}, i64 0, metadata !1716), !dbg !4088
+  %idxprom = sext i32 %regno to i64, !dbg !4089
+  %0 = load %struct.rtx_def*** @reg_equiv_memory_loc, align 8, !dbg !4089, !tbaa !1970
+  %arrayidx = getelementptr inbounds %struct.rtx_def** %0, i64 %idxprom, !dbg !4089
+  %1 = load %struct.rtx_def** %arrayidx, align 8, !dbg !4089, !tbaa !1970
+  %call = tail call %struct.rtx_def* @eliminate_regs(%struct.rtx_def* %1, i32 0, %struct.rtx_def* null) #7, !dbg !4089
+  %arrayidx1 = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 0, !dbg !4089
+  %rtx = bitcast %union.rtunion_def* %arrayidx1 to %struct.rtx_def**, !dbg !4089
+  %2 = load %struct.rtx_def** %rtx, align 8, !dbg !4089, !tbaa !1970
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %2}, i64 0, metadata !1717), !dbg !4089
+  %call2 = tail call i32 @rtx_varies_p(%struct.rtx_def* %2, i32 0) #7, !dbg !4090
+  %tobool = icmp eq i32 %call2, 0, !dbg !4090
+  br i1 %tobool, label %if.end, label %if.then, !dbg !4090
 
 if.then:                                          ; preds = %entry
-  %call3 = tail call %struct.rtx_def* @copy_rtx(%struct.rtx_def* %2) #6
-  br label %if.end
+  %call3 = tail call %struct.rtx_def* @copy_rtx(%struct.rtx_def* %2) #7, !dbg !4091
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call3}, i64 0, metadata !1717), !dbg !4091
+  br label %if.end, !dbg !4091
 
 if.end:                                           ; preds = %entry, %if.then
   %tem.0 = phi %struct.rtx_def* [ %call3, %if.then ], [ %2, %entry ]
-  %3 = load %struct.rtx_def*** @reg_equiv_memory_loc, align 8, !tbaa !5
-  %arrayidx5 = getelementptr inbounds %struct.rtx_def** %3, i64 %idxprom
-  %4 = load %struct.rtx_def** %arrayidx5, align 8, !tbaa !5
-  %call6 = tail call %struct.rtx_def* @replace_equiv_address_nv(%struct.rtx_def* %4, %struct.rtx_def* %tem.0) #6
-  %5 = bitcast %struct.rtx_def* %ad to i32*
-  %bf.load = load i32* %5, align 8
-  %bf.lshr = lshr i32 %bf.load, 16
-  %bf.clear = and i32 %bf.lshr, 255
-  %call7 = tail call %struct.rtx_def* @adjust_address_1(%struct.rtx_def* %call6, i32 %bf.clear, i64 0, i32 0, i32 1) #6
-  %6 = load %struct.rtx_def*** @reg_equiv_memory_loc, align 8, !tbaa !5
-  %arrayidx9 = getelementptr inbounds %struct.rtx_def** %6, i64 %idxprom
-  %7 = load %struct.rtx_def** %arrayidx9, align 8, !tbaa !5
-  %cmp = icmp eq %struct.rtx_def* %call7, %7
-  br i1 %cmp, label %if.then10, label %if.end12
+  %3 = load %struct.rtx_def*** @reg_equiv_memory_loc, align 8, !dbg !4092, !tbaa !1970
+  %arrayidx5 = getelementptr inbounds %struct.rtx_def** %3, i64 %idxprom, !dbg !4092
+  %4 = load %struct.rtx_def** %arrayidx5, align 8, !dbg !4092, !tbaa !1970
+  %call6 = tail call %struct.rtx_def* @replace_equiv_address_nv(%struct.rtx_def* %4, %struct.rtx_def* %tem.0) #7, !dbg !4092
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call6}, i64 0, metadata !1717), !dbg !4092
+  %5 = bitcast %struct.rtx_def* %ad to i32*, !dbg !4093
+  %bf.load = load i32* %5, align 8, !dbg !4093
+  %bf.lshr = lshr i32 %bf.load, 16, !dbg !4093
+  %bf.clear = and i32 %bf.lshr, 255, !dbg !4093
+  %call7 = tail call %struct.rtx_def* @adjust_address_1(%struct.rtx_def* %call6, i32 %bf.clear, i64 0, i32 0, i32 1) #7, !dbg !4093
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call7}, i64 0, metadata !1717), !dbg !4093
+  %6 = load %struct.rtx_def*** @reg_equiv_memory_loc, align 8, !dbg !4094, !tbaa !1970
+  %arrayidx9 = getelementptr inbounds %struct.rtx_def** %6, i64 %idxprom, !dbg !4094
+  %7 = load %struct.rtx_def** %arrayidx9, align 8, !dbg !4094, !tbaa !1970
+  %cmp = icmp eq %struct.rtx_def* %call7, %7, !dbg !4094
+  br i1 %cmp, label %if.then10, label %if.end12, !dbg !4094
 
 if.then10:                                        ; preds = %if.end
-  %call11 = tail call %struct.rtx_def* @copy_rtx(%struct.rtx_def* %call7) #6
-  br label %if.end12
+  %call11 = tail call %struct.rtx_def* @copy_rtx(%struct.rtx_def* %call7) #7, !dbg !4095
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call11}, i64 0, metadata !1717), !dbg !4095
+  br label %if.end12, !dbg !4095
 
 if.end12:                                         ; preds = %if.then10, %if.end
   %tem.1 = phi %struct.rtx_def* [ %call11, %if.then10 ], [ %call7, %if.end ]
-  ret %struct.rtx_def* %tem.1
+  ret %struct.rtx_def* %tem.1, !dbg !4096
 }

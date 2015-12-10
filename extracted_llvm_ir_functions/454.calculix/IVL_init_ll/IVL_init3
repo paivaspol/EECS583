@@ -1,53 +1,57 @@
 define void @IVL_init3(%struct._IVL* %ivl, i32 %type, i32 %maxnlist, i32* %sizes) #0 {
 entry:
-  %cmp = icmp eq %struct._IVL* %ivl, null
-  br i1 %cmp, label %if.then, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata !{%struct._IVL* %ivl}, i64 0, metadata !48), !dbg !108
+  tail call void @llvm.dbg.value(metadata !{i32 %type}, i64 0, metadata !49), !dbg !109
+  tail call void @llvm.dbg.value(metadata !{i32 %maxnlist}, i64 0, metadata !50), !dbg !110
+  tail call void @llvm.dbg.value(metadata !{i32* %sizes}, i64 0, metadata !51), !dbg !111
+  %cmp = icmp eq %struct._IVL* %ivl, null, !dbg !112
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !112
 
 lor.lhs.false:                                    ; preds = %entry
-  %type.off = add i32 %type, -1
-  %0 = icmp ugt i32 %type.off, 1
-  %cmp4 = icmp slt i32 %maxnlist, 0
-  %or.cond = or i1 %0, %cmp4
-  %cmp6 = icmp eq i32* %sizes, null
-  %or.cond30 = or i1 %or.cond, %cmp6
-  br i1 %or.cond30, label %if.then, label %if.end
+  %type.off = add i32 %type, -1, !dbg !112
+  %0 = icmp ugt i32 %type.off, 1, !dbg !112
+  %cmp4 = icmp slt i32 %maxnlist, 0, !dbg !112
+  %or.cond = or i1 %0, %cmp4, !dbg !112
+  %cmp6 = icmp eq i32* %sizes, null, !dbg !112
+  %or.cond30 = or i1 %or.cond, %cmp6, !dbg !112
+  br i1 %or.cond30, label %if.then, label %if.end, !dbg !112
 
 if.then:                                          ; preds = %lor.lhs.false, %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([51 x i8]* @.str4, i64 0, i64 0), %struct._IVL* %ivl, i32 %type, i32 %maxnlist, i32* %sizes) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !113, !tbaa !72
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([51 x i8]* @.str4, i64 0, i64 0), %struct._IVL* %ivl, i32 %type, i32 %maxnlist, i32* %sizes) #5, !dbg !113
+  tail call void @exit(i32 -1) #6, !dbg !115
+  unreachable, !dbg !115
 
 if.end:                                           ; preds = %lor.lhs.false
   switch i32 %type, label %for.cond.preheader [
     i32 2, label %sw.bb
     i32 1, label %sw.bb7
-  ]
+  ], !dbg !116
 
 sw.bb:                                            ; preds = %if.end
-  tail call void @IVL_init1(%struct._IVL* %ivl, i32 2, i32 %maxnlist) #6
-  br label %for.cond.preheader
+  tail call void @IVL_init1(%struct._IVL* %ivl, i32 2, i32 %maxnlist) #7, !dbg !117
+  br label %for.cond.preheader, !dbg !119
 
 sw.bb7:                                           ; preds = %if.end
-  %call8 = tail call i32 @IVsum(i32 %maxnlist, i32* %sizes) #4
-  tail call void @IVL_init2(%struct._IVL* %ivl, i32 1, i32 %maxnlist, i32 %call8) #6
-  br label %for.cond.preheader
+  %call8 = tail call i32 @IVsum(i32 %maxnlist, i32* %sizes) #5, !dbg !120
+  tail call void @IVL_init2(%struct._IVL* %ivl, i32 1, i32 %maxnlist, i32 %call8) #7, !dbg !120
+  br label %for.cond.preheader, !dbg !121
 
 for.cond.preheader:                               ; preds = %if.end, %sw.bb7, %sw.bb
-  %cmp931 = icmp sgt i32 %maxnlist, 0
-  br i1 %cmp931, label %for.body, label %for.end
+  %cmp931 = icmp sgt i32 %maxnlist, 0, !dbg !122
+  br i1 %cmp931, label %for.body, label %for.end, !dbg !122
 
 for.body:                                         ; preds = %for.cond.preheader, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
-  %arrayidx = getelementptr inbounds i32* %sizes, i64 %indvars.iv
-  %2 = load i32* %arrayidx, align 4, !tbaa !3
-  %3 = trunc i64 %indvars.iv to i32
-  tail call void @IVL_setList(%struct._IVL* %ivl, i32 %3, i32 %2, i32* null) #4
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %maxnlist
-  br i1 %exitcond, label %for.end, label %for.body
+  %arrayidx = getelementptr inbounds i32* %sizes, i64 %indvars.iv, !dbg !124
+  %2 = load i32* %arrayidx, align 4, !dbg !124, !tbaa !78
+  %3 = trunc i64 %indvars.iv to i32, !dbg !124
+  tail call void @IVL_setList(%struct._IVL* %ivl, i32 %3, i32 %2, i32* null) #5, !dbg !124
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !122
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !122
+  %exitcond = icmp eq i32 %lftr.wideiv, %maxnlist, !dbg !122
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !122
 
 for.end:                                          ; preds = %for.body, %for.cond.preheader
-  ret void
+  ret void, !dbg !126
 }

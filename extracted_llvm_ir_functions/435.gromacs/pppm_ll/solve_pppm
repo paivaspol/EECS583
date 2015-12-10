@@ -1,32 +1,42 @@
-define void @solve_pppm(%struct.__sFILE* nocapture readnone %fp, %struct.t_commrec* %cr, %struct.t_fftgrid* %grid, float*** nocapture readonly %ghat, float* nocapture readnone %box, i32 %bVerbose, %struct.t_nrnb* nocapture %nrnb) #1 {
-  tail call void @gmxfft3D(%struct.t_fftgrid* %grid, i32 -1, %struct.t_commrec* %cr) #6
-  tail call void @convolution(%struct.__sFILE* undef, i32 undef, %struct.t_fftgrid* %grid, float*** %ghat, %struct.t_commrec* %cr) #7
-  %1 = icmp eq i32 %bVerbose, 0
-  br i1 %1, label %3, label %2
+define void @solve_pppm(%struct._IO_FILE* nocapture %fp, %struct.t_commrec* %cr, %struct.t_fftgrid* %grid, float*** nocapture %ghat, float* nocapture %box, i32 %bVerbose, %struct.t_nrnb* nocapture %nrnb) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !401), !dbg !874
+  tail call void @llvm.dbg.value(metadata !{%struct.t_commrec* %cr}, i64 0, metadata !402), !dbg !874
+  tail call void @llvm.dbg.value(metadata !{%struct.t_fftgrid* %grid}, i64 0, metadata !403), !dbg !875
+  tail call void @llvm.dbg.value(metadata !{float*** %ghat}, i64 0, metadata !404), !dbg !875
+  tail call void @llvm.dbg.value(metadata !{float* %box}, i64 0, metadata !405), !dbg !875
+  tail call void @llvm.dbg.value(metadata !{i32 %bVerbose}, i64 0, metadata !406), !dbg !876
+  tail call void @llvm.dbg.value(metadata !{%struct.t_nrnb* %nrnb}, i64 0, metadata !407), !dbg !876
+  tail call void @gmxfft3D(%struct.t_fftgrid* %grid, i32 -1, %struct.t_commrec* %cr) #5, !dbg !877
+  tail call void @convolution(%struct._IO_FILE* undef, i32 undef, %struct.t_fftgrid* %grid, float*** %ghat, %struct.t_commrec* %cr) #6, !dbg !878
+  %tobool = icmp eq i32 %bVerbose, 0, !dbg !879
+  br i1 %tobool, label %if.end, label %if.then, !dbg !879
 
-; <label>:2                                       ; preds = %0
-  tail call void @gmxfft3D(%struct.t_fftgrid* %grid, i32 1, %struct.t_commrec* %cr) #6
-  br label %3
+if.then:                                          ; preds = %entry
+  tail call void @gmxfft3D(%struct.t_fftgrid* %grid, i32 1, %struct.t_commrec* %cr) #5, !dbg !880
+  br label %if.end, !dbg !880
 
-; <label>:3                                       ; preds = %0, %2
-  %4 = getelementptr inbounds %struct.t_fftgrid* %grid, i64 0, i32 11
-  %5 = load i32* %4, align 4, !tbaa !21
-  %6 = sitofp i32 %5 to double
-  %7 = sitofp i32 %5 to float
-  %8 = fpext float %7 to double
-  %9 = tail call double @log(double %8) #8
-  %10 = fmul double %6, %9
-  %11 = fdiv double %10, 0x3FE62E42FEFA39EF
-  %12 = fptosi double %11 to i32
-  %13 = shl nsw i32 %12, 1
-  %14 = sitofp i32 %13 to double
-  %15 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 84
-  %16 = bitcast double* %15 to <2 x double>*
-  %17 = load <2 x double>* %16, align 8, !tbaa !12
-  %18 = insertelement <2 x double> undef, double %14, i32 0
-  %19 = insertelement <2 x double> %18, double %6, i32 1
-  %20 = fadd <2 x double> %17, %19
-  %21 = bitcast double* %15 to <2 x double>*
-  store <2 x double> %20, <2 x double>* %21, align 8, !tbaa !12
-  ret void
+if.end:                                           ; preds = %entry, %if.then
+  %nxyz = getelementptr inbounds %struct.t_fftgrid* %grid, i64 0, i32 11, !dbg !881
+  %0 = load i32* %nxyz, align 4, !dbg !881, !tbaa !699
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !408), !dbg !881
+  %conv = sitofp i32 %0 to double, !dbg !882
+  %conv1 = sitofp i32 %0 to float, !dbg !882
+  %conv2 = fpext float %conv1 to double, !dbg !882
+  %call = tail call double @log(double %conv2) #5, !dbg !882
+  %mul = fmul double %conv, %call, !dbg !882
+  %div = fdiv double %mul, 0x3FE62E42FEFA39EF, !dbg !882
+  %conv4 = fptosi double %div to i32, !dbg !882
+  tail call void @llvm.dbg.value(metadata !{i32 %conv4}, i64 0, metadata !409), !dbg !882
+  %mul5 = shl nsw i32 %conv4, 1, !dbg !883
+  %conv6 = sitofp i32 %mul5 to double, !dbg !883
+  %arrayidx = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 84, !dbg !883
+  %1 = load double* %arrayidx, align 8, !dbg !883, !tbaa !805
+  %add = fadd double %1, %conv6, !dbg !883
+  store double %add, double* %arrayidx, align 8, !dbg !883, !tbaa !805
+  %arrayidx9 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 85, !dbg !884
+  %2 = load double* %arrayidx9, align 8, !dbg !884, !tbaa !805
+  %add10 = fadd double %conv, %2, !dbg !884
+  store double %add10, double* %arrayidx9, align 8, !dbg !884, !tbaa !805
+  ret void, !dbg !885
 }

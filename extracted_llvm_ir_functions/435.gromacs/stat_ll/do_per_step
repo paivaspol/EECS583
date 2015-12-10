@@ -1,14 +1,17 @@
-define i32 @do_per_step(i32 %step, i32 %nstep) #6 {
-  %1 = icmp eq i32 %nstep, 0
-  br i1 %1, label %6, label %2
+define i32 @do_per_step(i32 %step, i32 %nstep) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %step}, i64 0, metadata !414), !dbg !633
+  tail call void @llvm.dbg.value(metadata !{i32 %nstep}, i64 0, metadata !415), !dbg !633
+  %cmp = icmp eq i32 %nstep, 0, !dbg !634
+  br i1 %cmp, label %return, label %if.then, !dbg !634
 
-; <label>:2                                       ; preds = %0
-  %3 = srem i32 %step, %nstep
-  %4 = icmp eq i32 %3, 0
-  %5 = zext i1 %4 to i32
-  br label %6
+if.then:                                          ; preds = %entry
+  %rem = srem i32 %step, %nstep, !dbg !635
+  %cmp1 = icmp eq i32 %rem, 0, !dbg !635
+  %conv = zext i1 %cmp1 to i32, !dbg !635
+  br label %return, !dbg !635
 
-; <label>:6                                       ; preds = %0, %2
-  %.0 = phi i32 [ %5, %2 ], [ 0, %0 ]
-  ret i32 %.0
+return:                                           ; preds = %entry, %if.then
+  %retval.0 = phi i32 [ %conv, %if.then ], [ 0, %entry ]
+  ret i32 %retval.0, !dbg !636
 }

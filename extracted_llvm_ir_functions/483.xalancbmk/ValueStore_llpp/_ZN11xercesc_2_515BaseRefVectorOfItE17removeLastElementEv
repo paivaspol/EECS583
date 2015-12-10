@@ -1,0 +1,33 @@
+define linkonce_odr void @_ZN11xercesc_2_515BaseRefVectorOfItE17removeLastElementEv(%"class.xercesc_2_5::BaseRefVectorOf.4"* nocapture %this) unnamed_addr #8 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf.4"* %this}, i64 0, metadata !7016), !dbg !8136
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.4"* %this, i64 0, i32 2, !dbg !8137
+  %0 = load i32* %fCurCount, align 4, !dbg !8137, !tbaa !7208
+  %tobool = icmp eq i32 %0, 0, !dbg !8137
+  br i1 %tobool, label %if.end6, label %if.end, !dbg !8137
+
+if.end:                                           ; preds = %entry
+  %dec = add i32 %0, -1, !dbg !8138
+  store i32 %dec, i32* %fCurCount, align 4, !dbg !8138, !tbaa !7208
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.4"* %this, i64 0, i32 1, !dbg !8139
+  %1 = load i8* %fAdoptedElems, align 1, !dbg !8139, !tbaa !7205, !range !7217
+  %tobool3 = icmp eq i8 %1, 0, !dbg !8139
+  br i1 %tobool3, label %if.end6, label %if.then4, !dbg !8139
+
+if.then4:                                         ; preds = %if.end
+  %idxprom = zext i32 %dec to i64, !dbg !8140
+  %fElemList = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.4"* %this, i64 0, i32 4, !dbg !8140
+  %2 = load i16*** %fElemList, align 8, !dbg !8140, !tbaa !7209
+  %arrayidx = getelementptr inbounds i16** %2, i64 %idxprom, !dbg !8140
+  %3 = load i16** %arrayidx, align 8, !dbg !8140, !tbaa !7209
+  %isnull = icmp eq i16* %3, null, !dbg !8140
+  br i1 %isnull, label %if.end6, label %delete.notnull, !dbg !8140
+
+delete.notnull:                                   ; preds = %if.then4
+  %4 = bitcast i16* %3 to i8*, !dbg !8140
+  tail call void @_ZdlPv(i8* %4) #12, !dbg !8140
+  br label %if.end6, !dbg !8140
+
+if.end6:                                          ; preds = %if.end, %entry, %if.then4, %delete.notnull
+  ret void, !dbg !8140
+}

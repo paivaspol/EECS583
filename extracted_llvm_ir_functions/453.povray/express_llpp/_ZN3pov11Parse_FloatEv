@@ -1,0 +1,41 @@
+define double @_ZN3pov11Parse_FloatEv() #0 {
+entry:
+  %Express = alloca [5 x double], align 16
+  %Terms = alloca i32, align 4
+  %0 = bitcast [5 x double]* %Express to i8*, !dbg !2184
+  call void @llvm.lifetime.start(i64 40, i8* %0) #2, !dbg !2184
+  call void @llvm.dbg.declare(metadata !{[5 x double]* %Express}, metadata !621), !dbg !2184
+  call void @llvm.dbg.declare(metadata !{i32* %Terms}, metadata !622), !dbg !2185
+  %1 = load i8* @_ZN3pov24Allow_Identifier_In_CallE, align 1, !dbg !2186, !tbaa !2103, !range !2104
+  store i8 0, i8* @_ZN3pov24Allow_Identifier_In_CallE, align 1, !dbg !2187, !tbaa !2103
+  call void @llvm.dbg.value(metadata !2098, i64 0, metadata !622), !dbg !2188
+  store i32 1, i32* %Terms, align 4, !dbg !2188, !tbaa !2099
+  %2 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 28), align 8, !dbg !2189, !tbaa !2099
+  %cmp = icmp slt i32 %2, 150, !dbg !2189
+  %arraydecay = getelementptr inbounds [5 x double]* %Express, i64 0, i64 0, !dbg !2190
+  br i1 %cmp, label %if.then, label %if.else, !dbg !2189
+
+if.then:                                          ; preds = %entry
+  call fastcc void @_ZN3povL16Parse_Num_FactorEPdPi(double* %arraydecay, i32* %Terms) #8, !dbg !2190
+  br label %if.end, !dbg !2190
+
+if.else:                                          ; preds = %entry
+  call fastcc void @_ZN3povL16Parse_Rel_FactorEPdPi(double* %arraydecay, i32* %Terms) #8, !dbg !2191
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  call void @llvm.dbg.value(metadata !{i32* %Terms}, i64 0, metadata !622), !dbg !2192
+  %3 = load i32* %Terms, align 4, !dbg !2192, !tbaa !2099
+  %cmp2 = icmp sgt i32 %3, 1, !dbg !2192
+  br i1 %cmp2, label %if.then3, label %if.end4, !dbg !2192
+
+if.then3:                                         ; preds = %if.end
+  %call = call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0)) #8, !dbg !2193
+  br label %if.end4, !dbg !2193
+
+if.end4:                                          ; preds = %if.then3, %if.end
+  store i8 %1, i8* @_ZN3pov24Allow_Identifier_In_CallE, align 1, !dbg !2194, !tbaa !2103
+  %4 = load double* %arraydecay, align 16, !dbg !2195, !tbaa !2113
+  call void @llvm.lifetime.end(i64 40, i8* %0) #2, !dbg !2196
+  ret double %4, !dbg !2196
+}

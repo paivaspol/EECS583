@@ -1,246 +1,279 @@
 define i32 @re_search_2(%struct.re_pattern_buffer* nocapture %bufp, i8* %string1, i32 %size1, i8* %string2, i32 %size2, i32 %startpos, i32 %range, %struct.re_registers* %regs, i32 %stop) #0 {
-  %1 = getelementptr inbounds %struct.re_pattern_buffer* %bufp, i64 0, i32 4
-  %2 = load i8** %1, align 8, !tbaa !6
-  %3 = getelementptr inbounds %struct.re_pattern_buffer* %bufp, i64 0, i32 5
-  %4 = load i8** %3, align 8, !tbaa !16
-  %5 = add nsw i32 %size2, %size1
-  %6 = add nsw i32 %range, %startpos
-  %7 = icmp slt i32 %startpos, 0
-  %8 = icmp slt i32 %5, %startpos
-  %or.cond11 = or i1 %7, %8
-  br i1 %or.cond11, label %.loopexit, label %9
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.re_pattern_buffer* %bufp}, i64 0, metadata !170), !dbg !840
+  tail call void @llvm.dbg.value(metadata !{i8* %string1}, i64 0, metadata !171), !dbg !841
+  tail call void @llvm.dbg.value(metadata !{i32 %size1}, i64 0, metadata !172), !dbg !842
+  tail call void @llvm.dbg.value(metadata !{i8* %string2}, i64 0, metadata !173), !dbg !841
+  tail call void @llvm.dbg.value(metadata !{i32 %size2}, i64 0, metadata !174), !dbg !842
+  tail call void @llvm.dbg.value(metadata !{i32 %startpos}, i64 0, metadata !175), !dbg !843
+  tail call void @llvm.dbg.value(metadata !{i32 %range}, i64 0, metadata !176), !dbg !844
+  tail call void @llvm.dbg.value(metadata !{%struct.re_registers* %regs}, i64 0, metadata !177), !dbg !845
+  tail call void @llvm.dbg.value(metadata !{i32 %stop}, i64 0, metadata !178), !dbg !846
+  %fastmap1 = getelementptr inbounds %struct.re_pattern_buffer* %bufp, i64 0, i32 4, !dbg !847
+  %0 = load i8** %fastmap1, align 8, !dbg !847, !tbaa !722
+  tail call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !180), !dbg !847
+  %translate2 = getelementptr inbounds %struct.re_pattern_buffer* %bufp, i64 0, i32 5, !dbg !848
+  %1 = load i8** %translate2, align 8, !dbg !848, !tbaa !722
+  tail call void @llvm.dbg.value(metadata !{i8* %1}, i64 0, metadata !181), !dbg !848
+  %add = add nsw i32 %size2, %size1, !dbg !849
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !182), !dbg !849
+  %add3 = add nsw i32 %range, %startpos, !dbg !850
+  tail call void @llvm.dbg.value(metadata !{i32 %add3}, i64 0, metadata !183), !dbg !850
+  %cmp = icmp slt i32 %startpos, 0, !dbg !851
+  %cmp4 = icmp slt i32 %add, %startpos, !dbg !851
+  %or.cond = or i1 %cmp, %cmp4, !dbg !851
+  br i1 %or.cond, label %return, label %if.end, !dbg !851
 
-; <label>:9                                       ; preds = %0
-  %10 = icmp slt i32 %6, 0
-  br i1 %10, label %11, label %13
+if.end:                                           ; preds = %entry
+  %cmp5 = icmp slt i32 %add3, 0, !dbg !852
+  br i1 %cmp5, label %if.then6, label %if.else, !dbg !852
 
-; <label>:11                                      ; preds = %9
-  %12 = sub nsw i32 0, %startpos
-  br label %16
+if.then6:                                         ; preds = %if.end
+  %sub = sub nsw i32 0, %startpos, !dbg !853
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !176), !dbg !853
+  br label %if.end11, !dbg !853
 
-; <label>:13                                      ; preds = %9
-  %14 = icmp sgt i32 %6, %5
-  %15 = sub nsw i32 %5, %startpos
-  %.range = select i1 %14, i32 %15, i32 %range
-  br label %16
+if.else:                                          ; preds = %if.end
+  %cmp7 = icmp sgt i32 %add3, %add, !dbg !854
+  %sub9 = sub nsw i32 %add, %startpos, !dbg !855
+  tail call void @llvm.dbg.value(metadata !{i32 %sub9}, i64 0, metadata !176), !dbg !855
+  %sub9.range = select i1 %cmp7, i32 %sub9, i32 %range, !dbg !854
+  br label %if.end11, !dbg !854
 
-; <label>:16                                      ; preds = %13, %11
-  %.07 = phi i32 [ %12, %11 ], [ %.range, %13 ]
-  %17 = getelementptr inbounds %struct.re_pattern_buffer* %bufp, i64 0, i32 2
-  %18 = load i64* %17, align 8, !tbaa !11
-  %19 = icmp ne i64 %18, 0
-  %20 = icmp sgt i32 %.07, 0
-  %or.cond = and i1 %20, %19
-  br i1 %or.cond, label %21, label %31
+if.end11:                                         ; preds = %if.else, %if.then6
+  %range.addr.0 = phi i32 [ %sub, %if.then6 ], [ %sub9.range, %if.else ]
+  %used = getelementptr inbounds %struct.re_pattern_buffer* %bufp, i64 0, i32 2, !dbg !856
+  %2 = load i64* %used, align 8, !dbg !856, !tbaa !713
+  %cmp12 = icmp ne i64 %2, 0, !dbg !856
+  %cmp13 = icmp sgt i32 %range.addr.0, 0, !dbg !856
+  %or.cond242 = and i1 %cmp12, %cmp13, !dbg !856
+  br i1 %or.cond242, label %land.lhs.true14, label %if.end30, !dbg !856
 
-; <label>:21                                      ; preds = %16
-  %22 = getelementptr inbounds %struct.re_pattern_buffer* %bufp, i64 0, i32 0
-  %23 = load i8** %22, align 8, !tbaa !10
-  %24 = load i8* %23, align 1, !tbaa !12
-  switch i8 %24, label %31 [
-    i8 11, label %29
-    i8 9, label %25
-  ]
+land.lhs.true14:                                  ; preds = %if.end11
+  %buffer = getelementptr inbounds %struct.re_pattern_buffer* %bufp, i64 0, i32 0, !dbg !856
+  %3 = load i8** %buffer, align 8, !dbg !856, !tbaa !722
+  %4 = load i8* %3, align 1, !dbg !856, !tbaa !714
+  switch i8 %4, label %if.end30 [
+    i8 11, label %if.then24
+    i8 9, label %land.lhs.true23
+  ], !dbg !856
 
-; <label>:25                                      ; preds = %21
-  %26 = getelementptr inbounds %struct.re_pattern_buffer* %bufp, i64 0, i32 7
-  %27 = load i8* %26, align 8
-  %28 = icmp slt i8 %27, 0
-  br i1 %28, label %31, label %29
+land.lhs.true23:                                  ; preds = %land.lhs.true14
+  %newline_anchor = getelementptr inbounds %struct.re_pattern_buffer* %bufp, i64 0, i32 7, !dbg !856
+  %bf.load = load i8* %newline_anchor, align 8, !dbg !856
+  %tobool = icmp slt i8 %bf.load, 0, !dbg !856
+  br i1 %tobool, label %if.end30, label %if.then24, !dbg !856
 
-; <label>:29                                      ; preds = %21, %25
-  %30 = icmp sgt i32 %startpos, 0
-  br i1 %30, label %.loopexit, label %31
+if.then24:                                        ; preds = %land.lhs.true14, %land.lhs.true23
+  %cmp25 = icmp sgt i32 %startpos, 0, !dbg !857
+  br i1 %cmp25, label %return, label %if.end30, !dbg !857
 
-; <label>:31                                      ; preds = %29, %21, %25, %16
-  %.18 = phi i32 [ %.07, %25 ], [ %.07, %16 ], [ %.07, %21 ], [ 1, %29 ]
-  %32 = icmp ne i8* %2, null
-  %33 = getelementptr inbounds %struct.re_pattern_buffer* %bufp, i64 0, i32 7
-  br i1 %32, label %34, label %.preheader19
+if.end30:                                         ; preds = %if.then24, %land.lhs.true14, %if.end11, %land.lhs.true23
+  %range.addr.1 = phi i32 [ %range.addr.0, %land.lhs.true23 ], [ %range.addr.0, %if.end11 ], [ %range.addr.0, %land.lhs.true14 ], [ 1, %if.then24 ]
+  %tobool31 = icmp ne i8* %0, null, !dbg !859
+  %fastmap_accurate = getelementptr inbounds %struct.re_pattern_buffer* %bufp, i64 0, i32 7, !dbg !859
+  br i1 %tobool31, label %land.lhs.true32, label %for.cond.preheader, !dbg !859
 
-; <label>:34                                      ; preds = %31
-  %35 = load i8* %33, align 8
-  %36 = and i8 %35, 8
-  %37 = icmp eq i8 %36, 0
-  br i1 %37, label %38, label %.preheader19
+land.lhs.true32:                                  ; preds = %if.end30
+  %bf.load33 = load i8* %fastmap_accurate, align 8, !dbg !859
+  %bf.clear = and i8 %bf.load33, 8, !dbg !859
+  %tobool36 = icmp eq i8 %bf.clear, 0, !dbg !859
+  br i1 %tobool36, label %if.then37, label %for.cond.preheader, !dbg !859
 
-; <label>:38                                      ; preds = %34
-  %39 = tail call i32 @re_compile_fastmap(%struct.re_pattern_buffer* %bufp) #8
-  %40 = icmp eq i32 %39, -2
-  br i1 %40, label %.loopexit, label %.preheader19
+if.then37:                                        ; preds = %land.lhs.true32
+  %call = tail call i32 @re_compile_fastmap(%struct.re_pattern_buffer* %bufp) #9, !dbg !860
+  %cmp38 = icmp eq i32 %call, -2, !dbg !860
+  br i1 %cmp38, label %return, label %for.cond.preheader, !dbg !860
 
-.preheader19:                                     ; preds = %31, %38, %34
-  %41 = icmp eq i8* %4, null
-  %42 = sext i32 %size1 to i64
-  %43 = sub nsw i64 0, %42
-  %44 = getelementptr inbounds i8* %string2, i64 %43
-  %45 = icmp ne i32 %size1, 0
-  br label %.backedge
+for.cond.preheader:                               ; preds = %if.end30, %if.then37, %land.lhs.true32
+  %tobool70 = icmp eq i8* %1, null, !dbg !861
+  %idx.ext = sext i32 %size1 to i64, !dbg !862
+  %idx.neg = sub i64 0, %idx.ext, !dbg !862
+  %add.ptr = getelementptr inbounds i8* %string2, i64 %idx.neg, !dbg !862
+  %cmp96 = icmp ne i32 %size1, 0, !dbg !863
+  %tobool31.not = xor i1 %tobool31, true, !dbg !864
+  br label %for.cond, !dbg !865
 
-.backedge:                                        ; preds = %125, %122, %.preheader19
-  %.29 = phi i32 [ %.18, %.preheader19 ], [ %123, %122 ], [ %126, %125 ]
-  %.06 = phi i32 [ %startpos, %.preheader19 ], [ %124, %122 ], [ %127, %125 ]
-  %46 = icmp slt i32 %.06, %5
-  %or.cond12 = and i1 %32, %46
-  br i1 %or.cond12, label %47, label %106
+for.cond:                                         ; preds = %if.else161, %if.then159, %for.cond.preheader
+  %range.addr.2 = phi i32 [ %range.addr.1, %for.cond.preheader ], [ %dec160, %if.then159 ], [ %inc162, %if.else161 ]
+  %startpos.addr.0 = phi i32 [ %startpos, %for.cond.preheader ], [ %inc, %if.then159 ], [ %dec163, %if.else161 ]
+  %cmp45 = icmp slt i32 %startpos.addr.0, %add, !dbg !865
+  %or.cond243 = and i1 %tobool31, %cmp45, !dbg !865
+  br i1 %or.cond243, label %land.lhs.true47, label %if.end129, !dbg !865
 
-; <label>:47                                      ; preds = %.backedge
-  %48 = load i8* %33, align 8
-  %49 = and i8 %48, 1
-  %50 = icmp eq i8 %49, 0
-  br i1 %50, label %51, label %106
+land.lhs.true47:                                  ; preds = %for.cond
+  %bf.load48 = load i8* %fastmap_accurate, align 8, !dbg !865
+  %bf.clear49 = and i8 %bf.load48, 1, !dbg !865
+  %tobool51 = icmp eq i8 %bf.clear49, 0, !dbg !865
+  br i1 %tobool51, label %if.then52, label %if.end129, !dbg !865
 
-; <label>:51                                      ; preds = %47
-  %52 = icmp sgt i32 %.29, 0
-  br i1 %52, label %53, label %87
+if.then52:                                        ; preds = %land.lhs.true47
+  %cmp53 = icmp sgt i32 %range.addr.2, 0, !dbg !866
+  %cmp56 = icmp slt i32 %startpos.addr.0, %size1, !dbg !867
+  br i1 %cmp53, label %if.then55, label %if.else95, !dbg !866
 
-; <label>:53                                      ; preds = %51
-  %54 = icmp sge i32 %.06, %size1
-  %55 = add i32 %.06, %.29
-  %56 = icmp slt i32 %55, %size1
-  %or.cond14 = or i1 %54, %56
-  br i1 %or.cond14, label %60, label %57
+if.then55:                                        ; preds = %if.then52
+  tail call void @llvm.dbg.value(metadata !71, i64 0, metadata !189), !dbg !868
+  tail call void @llvm.dbg.value(metadata !{i32 %range.addr.2}, i64 0, metadata !190), !dbg !869
+  br i1 %cmp56, label %land.lhs.true58, label %cond.end, !dbg !867
 
-; <label>:57                                      ; preds = %53
-  %58 = sub i32 %.29, %size1
-  %59 = add i32 %58, %.06
-  br label %60
+land.lhs.true58:                                  ; preds = %if.then55
+  %add59 = add nsw i32 %startpos.addr.0, %range.addr.2, !dbg !867
+  %cmp60 = icmp slt i32 %add59, %size1, !dbg !867
+  br i1 %cmp60, label %cond.end, label %if.then62, !dbg !867
 
-; <label>:60                                      ; preds = %53, %57
-  %lim.0 = phi i32 [ %59, %57 ], [ 0, %53 ]
-  %61 = icmp slt i32 %.06, %size1
-  %string1. = select i1 %61, i8* %string1, i8* %44
-  %62 = sext i32 %.06 to i64
-  %63 = getelementptr inbounds i8* %string1., i64 %62
-  %64 = icmp sgt i32 %.29, %lim.0
-  br i1 %41, label %.preheader, label %.preheader17
+if.then62:                                        ; preds = %land.lhs.true58
+  %sub63241 = sub i32 %range.addr.2, %size1, !dbg !870
+  %sub64 = add i32 %sub63241, %startpos.addr.0, !dbg !870
+  tail call void @llvm.dbg.value(metadata !{i32 %sub64}, i64 0, metadata !189), !dbg !870
+  br label %cond.end, !dbg !870
 
-.preheader17:                                     ; preds = %60
-  br i1 %64, label %.lr.ph, label %.critedge
+cond.end:                                         ; preds = %if.then55, %if.then62, %land.lhs.true58
+  %lim.0246 = phi i32 [ 0, %land.lhs.true58 ], [ %sub64, %if.then62 ], [ 0, %if.then55 ]
+  %cond = phi i8* [ %string1, %land.lhs.true58 ], [ %string1, %if.then62 ], [ %add.ptr, %if.then55 ], !dbg !862
+  %idx.ext68 = sext i32 %startpos.addr.0 to i64, !dbg !862
+  %add.ptr69 = getelementptr inbounds i8* %cond, i64 %idx.ext68, !dbg !862
+  tail call void @llvm.dbg.value(metadata !{i8* %add.ptr69}, i64 0, metadata !184), !dbg !862
+  %cmp80253 = icmp sgt i32 %range.addr.2, %lim.0246, !dbg !871
+  br i1 %tobool70, label %while.cond79.preheader, label %while.cond.preheader, !dbg !861
 
-.preheader:                                       ; preds = %60
-  br i1 %64, label %.lr.ph26, label %.critedge
+while.cond79.preheader:                           ; preds = %cond.end
+  br i1 %cmp80253, label %land.rhs82, label %if.end92, !dbg !871
 
-.lr.ph:                                           ; preds = %.preheader17, %73
-  %d.021 = phi i8* [ %74, %73 ], [ %63, %.preheader17 ]
-  %.320 = phi i32 [ %75, %73 ], [ %.29, %.preheader17 ]
-  %65 = load i8* %d.021, align 1, !tbaa !12
-  %66 = zext i8 %65 to i64
-  %67 = getelementptr inbounds i8* %4, i64 %66
-  %68 = load i8* %67, align 1, !tbaa !12
-  %69 = zext i8 %68 to i64
-  %70 = getelementptr inbounds i8* %2, i64 %69
-  %71 = load i8* %70, align 1, !tbaa !12
-  %72 = icmp eq i8 %71, 0
-  br i1 %72, label %73, label %.critedge
+while.cond.preheader:                             ; preds = %cond.end
+  br i1 %cmp80253, label %land.rhs, label %if.end92, !dbg !872
 
-; <label>:73                                      ; preds = %.lr.ph
-  %74 = getelementptr inbounds i8* %d.021, i64 1
-  %75 = add nsw i32 %.320, -1
-  %76 = icmp sgt i32 %75, %lim.0
-  br i1 %76, label %.lr.ph, label %.critedge
+land.rhs:                                         ; preds = %while.cond.preheader, %while.body
+  %d.0251 = phi i8* [ %incdec.ptr, %while.body ], [ %add.ptr69, %while.cond.preheader ]
+  %range.addr.3250 = phi i32 [ %dec, %while.body ], [ %range.addr.2, %while.cond.preheader ]
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !184), !dbg !872
+  %5 = load i8* %d.0251, align 1, !dbg !872, !tbaa !714
+  %idxprom = zext i8 %5 to i64, !dbg !872
+  %arrayidx74 = getelementptr inbounds i8* %1, i64 %idxprom, !dbg !872
+  %6 = load i8* %arrayidx74, align 1, !dbg !872, !tbaa !714
+  %idxprom75 = zext i8 %6 to i64, !dbg !872
+  %arrayidx76 = getelementptr inbounds i8* %0, i64 %idxprom75, !dbg !872
+  %7 = load i8* %arrayidx76, align 1, !dbg !872, !tbaa !714
+  %lnot = icmp eq i8 %7, 0, !dbg !872
+  br i1 %lnot, label %while.body, label %if.end92
 
-.lr.ph26:                                         ; preds = %.preheader, %82
-  %d.125 = phi i8* [ %83, %82 ], [ %63, %.preheader ]
-  %.424 = phi i32 [ %84, %82 ], [ %.29, %.preheader ]
-  %77 = load i8* %d.125, align 1, !tbaa !12
-  %78 = zext i8 %77 to i64
-  %79 = getelementptr inbounds i8* %2, i64 %78
-  %80 = load i8* %79, align 1, !tbaa !12
-  %81 = icmp eq i8 %80, 0
-  br i1 %81, label %82, label %.critedge
+while.body:                                       ; preds = %land.rhs
+  %incdec.ptr = getelementptr inbounds i8* %d.0251, i64 1, !dbg !872
+  %dec = add nsw i32 %range.addr.3250, -1, !dbg !873
+  tail call void @llvm.dbg.value(metadata !{i32 %dec}, i64 0, metadata !176), !dbg !873
+  %cmp72 = icmp sgt i32 %dec, %lim.0246, !dbg !872
+  br i1 %cmp72, label %land.rhs, label %if.end92, !dbg !872
 
-; <label>:82                                      ; preds = %.lr.ph26
-  %83 = getelementptr inbounds i8* %d.125, i64 1
-  %84 = add nsw i32 %.424, -1
-  %85 = icmp sgt i32 %84, %lim.0
-  br i1 %85, label %.lr.ph26, label %.critedge
+land.rhs82:                                       ; preds = %while.cond79.preheader, %while.body89
+  %d.1255 = phi i8* [ %incdec.ptr83, %while.body89 ], [ %add.ptr69, %while.cond79.preheader ]
+  %range.addr.4254 = phi i32 [ %dec90, %while.body89 ], [ %range.addr.2, %while.cond79.preheader ]
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr83}, i64 0, metadata !184), !dbg !871
+  %8 = load i8* %d.1255, align 1, !dbg !871, !tbaa !714
+  %idxprom84 = zext i8 %8 to i64, !dbg !871
+  %arrayidx85 = getelementptr inbounds i8* %0, i64 %idxprom84, !dbg !871
+  %9 = load i8* %arrayidx85, align 1, !dbg !871, !tbaa !714
+  %lnot87 = icmp eq i8 %9, 0, !dbg !871
+  br i1 %lnot87, label %while.body89, label %if.end92
 
-.critedge:                                        ; preds = %73, %.lr.ph, %82, %.lr.ph26, %.preheader17, %.preheader
-  %.5 = phi i32 [ %.29, %.preheader ], [ %.29, %.preheader17 ], [ %.424, %.lr.ph26 ], [ %84, %82 ], [ %.320, %.lr.ph ], [ %75, %73 ]
-  %86 = sub i32 %55, %.5
-  br label %106
+while.body89:                                     ; preds = %land.rhs82
+  %incdec.ptr83 = getelementptr inbounds i8* %d.1255, i64 1, !dbg !871
+  %dec90 = add nsw i32 %range.addr.4254, -1, !dbg !874
+  tail call void @llvm.dbg.value(metadata !{i32 %dec90}, i64 0, metadata !176), !dbg !874
+  %cmp80 = icmp sgt i32 %dec90, %lim.0246, !dbg !871
+  br i1 %cmp80, label %land.rhs82, label %if.end92, !dbg !871
 
-; <label>:87                                      ; preds = %51
-  %88 = icmp slt i32 %.06, %size1
-  %or.cond15 = and i1 %45, %88
-  br i1 %or.cond15, label %93, label %89
+if.end92:                                         ; preds = %while.cond79.preheader, %land.rhs82, %while.body89, %while.cond.preheader, %land.rhs, %while.body
+  %range.addr.5 = phi i32 [ %range.addr.2, %while.cond.preheader ], [ %range.addr.3250, %land.rhs ], [ %dec, %while.body ], [ %range.addr.2, %while.cond79.preheader ], [ %range.addr.4254, %land.rhs82 ], [ %dec90, %while.body89 ]
+  %sub93 = add i32 %startpos.addr.0, %range.addr.2, !dbg !875
+  %add94 = sub i32 %sub93, %range.addr.5, !dbg !875
+  tail call void @llvm.dbg.value(metadata !{i32 %add94}, i64 0, metadata !175), !dbg !875
+  br label %if.end129, !dbg !876
 
-; <label>:89                                      ; preds = %87
-  %90 = sub nsw i32 %.06, %size1
-  %91 = sext i32 %90 to i64
-  %92 = getelementptr inbounds i8* %string2, i64 %91
-  br label %96
+if.else95:                                        ; preds = %if.then52
+  %or.cond244 = and i1 %cmp96, %cmp56, !dbg !863
+  br i1 %or.cond244, label %cond.false106, label %cond.true101, !dbg !863
 
-; <label>:93                                      ; preds = %87
-  %94 = sext i32 %.06 to i64
-  %95 = getelementptr inbounds i8* %string1, i64 %94
-  br label %96
+cond.true101:                                     ; preds = %if.else95
+  %sub102 = sub nsw i32 %startpos.addr.0, %size1, !dbg !863
+  %idxprom103 = sext i32 %sub102 to i64, !dbg !863
+  %arrayidx104 = getelementptr inbounds i8* %string2, i64 %idxprom103, !dbg !863
+  br label %cond.end110, !dbg !863
 
-; <label>:96                                      ; preds = %93, %89
-  %.sink.in = phi i8* [ %92, %89 ], [ %95, %93 ]
-  %.sink10 = load i8* %.sink.in, align 1
-  br i1 %41, label %101, label %97
+cond.false106:                                    ; preds = %if.else95
+  %idxprom107 = sext i32 %startpos.addr.0 to i64, !dbg !863
+  %arrayidx108 = getelementptr inbounds i8* %string1, i64 %idxprom107, !dbg !863
+  br label %cond.end110, !dbg !863
 
-; <label>:97                                      ; preds = %96
-  %98 = zext i8 %.sink10 to i64
-  %99 = getelementptr inbounds i8* %4, i64 %98
-  %100 = load i8* %99, align 1, !tbaa !12
-  br label %101
+cond.end110:                                      ; preds = %cond.false106, %cond.true101
+  %.sink.in = phi i8* [ %arrayidx104, %cond.true101 ], [ %arrayidx108, %cond.false106 ]
+  %.sink = load i8* %.sink.in, align 1, !dbg !863
+  tail call void @llvm.dbg.value(metadata !{i8 %.sink}, i64 0, metadata !191), !dbg !863
+  br i1 %tobool70, label %cond.end120, label %cond.true114, !dbg !877
 
-; <label>:101                                     ; preds = %96, %97
-  %.sink3 = phi i8 [ %100, %97 ], [ %.sink10, %96 ]
-  %102 = zext i8 %.sink3 to i64
-  %103 = getelementptr inbounds i8* %2, i64 %102
-  %104 = load i8* %103, align 1, !tbaa !12
-  %105 = icmp eq i8 %104, 0
-  br i1 %105, label %118, label %106
+cond.true114:                                     ; preds = %cond.end110
+  %idxprom115 = zext i8 %.sink to i64, !dbg !877
+  %arrayidx116 = getelementptr inbounds i8* %1, i64 %idxprom115, !dbg !877
+  %10 = load i8* %arrayidx116, align 1, !dbg !877, !tbaa !714
+  br label %cond.end120, !dbg !877
 
-; <label>:106                                     ; preds = %101, %47, %.critedge, %.backedge
-  %.6 = phi i32 [ %.29, %47 ], [ %.5, %.critedge ], [ %.29, %101 ], [ %.29, %.backedge ]
-  %.1 = phi i32 [ %.06, %47 ], [ %86, %.critedge ], [ %.06, %101 ], [ %.06, %.backedge ]
-  %107 = icmp sgt i32 %.6, -1
-  %108 = icmp eq i32 %.1, %5
-  %or.cond5 = and i1 %32, %108
-  %or.cond16 = and i1 %107, %or.cond5
-  br i1 %or.cond16, label %109, label %113
+cond.end120:                                      ; preds = %cond.end110, %cond.true114
+  %.sink166 = phi i8 [ %10, %cond.true114 ], [ %.sink, %cond.end110 ]
+  %idxprom123 = zext i8 %.sink166 to i64, !dbg !877
+  %arrayidx124 = getelementptr inbounds i8* %0, i64 %idxprom123, !dbg !877
+  %11 = load i8* %arrayidx124, align 1, !dbg !877, !tbaa !714
+  %tobool125 = icmp eq i8 %11, 0, !dbg !877
+  br i1 %tobool125, label %advance, label %if.end129, !dbg !877
 
-; <label>:109                                     ; preds = %106
-  %110 = load i8* %33, align 8
-  %111 = and i8 %110, 1
-  %112 = icmp eq i8 %111, 0
-  br i1 %112, label %.loopexit, label %113
+if.end129:                                        ; preds = %cond.end120, %land.lhs.true47, %if.end92, %for.cond
+  %range.addr.6 = phi i32 [ %range.addr.2, %land.lhs.true47 ], [ %range.addr.5, %if.end92 ], [ %range.addr.2, %cond.end120 ], [ %range.addr.2, %for.cond ]
+  %startpos.addr.1 = phi i32 [ %startpos.addr.0, %land.lhs.true47 ], [ %add94, %if.end92 ], [ %startpos.addr.0, %cond.end120 ], [ %startpos.addr.0, %for.cond ]
+  %notlhs = icmp slt i32 %range.addr.6, 0, !dbg !864
+  %notrhs = icmp ne i32 %startpos.addr.1, %add, !dbg !864
+  %or.cond245.not = or i1 %notrhs, %notlhs, !dbg !864
+  %brmerge = or i1 %or.cond245.not, %tobool31.not, !dbg !864
+  br i1 %brmerge, label %if.end144, label %land.lhs.true137, !dbg !864
 
-; <label>:113                                     ; preds = %109, %106
-  %114 = tail call fastcc i32 @re_match_2_internal(%struct.re_pattern_buffer* %bufp, i8* %string1, i32 %size1, i8* %string2, i32 %size2, i32 %.1, %struct.re_registers* %regs, i32 %stop) #8
-  %115 = icmp sgt i32 %114, -1
-  br i1 %115, label %.loopexit, label %116
+land.lhs.true137:                                 ; preds = %if.end129
+  %bf.load139 = load i8* %fastmap_accurate, align 8, !dbg !864
+  %bf.clear140 = and i8 %bf.load139, 1, !dbg !864
+  %tobool142 = icmp eq i8 %bf.clear140, 0, !dbg !864
+  br i1 %tobool142, label %return, label %if.end144, !dbg !864
 
-; <label>:116                                     ; preds = %113
-  %117 = icmp eq i32 %114, -2
-  br i1 %117, label %.loopexit, label %118
+if.end144:                                        ; preds = %if.end129, %land.lhs.true137
+  %call145 = tail call fastcc i32 @re_match_2_internal(%struct.re_pattern_buffer* %bufp, i8* %string1, i32 %size1, i8* %string2, i32 %size2, i32 %startpos.addr.1, %struct.re_registers* %regs, i32 %stop) #9, !dbg !878
+  tail call void @llvm.dbg.value(metadata !{i32 %call145}, i64 0, metadata !179), !dbg !878
+  %cmp146 = icmp sgt i32 %call145, -1, !dbg !879
+  br i1 %cmp146, label %return, label %if.end149, !dbg !879
 
-; <label>:118                                     ; preds = %101, %116
-  %.7 = phi i32 [ %.6, %116 ], [ %.29, %101 ]
-  %.2 = phi i32 [ %.1, %116 ], [ %.06, %101 ]
-  %119 = icmp eq i32 %.7, 0
-  br i1 %119, label %.loopexit, label %120
+if.end149:                                        ; preds = %if.end144
+  %cmp150 = icmp eq i32 %call145, -2, !dbg !880
+  br i1 %cmp150, label %return, label %advance, !dbg !880
 
-; <label>:120                                     ; preds = %118
-  %121 = icmp sgt i32 %.7, 0
-  br i1 %121, label %122, label %125
+advance:                                          ; preds = %cond.end120, %if.end149
+  %range.addr.7 = phi i32 [ %range.addr.6, %if.end149 ], [ %range.addr.2, %cond.end120 ]
+  %startpos.addr.2 = phi i32 [ %startpos.addr.1, %if.end149 ], [ %startpos.addr.0, %cond.end120 ]
+  %tobool154 = icmp eq i32 %range.addr.7, 0, !dbg !881
+  br i1 %tobool154, label %return, label %if.else156, !dbg !881
 
-; <label>:122                                     ; preds = %120
-  %123 = add nsw i32 %.7, -1
-  %124 = add nsw i32 %.2, 1
-  br label %.backedge
+if.else156:                                       ; preds = %advance
+  %cmp157 = icmp sgt i32 %range.addr.7, 0, !dbg !882
+  br i1 %cmp157, label %if.then159, label %if.else161, !dbg !882
 
-; <label>:125                                     ; preds = %120
-  %126 = add nsw i32 %.7, 1
-  %127 = add nsw i32 %.2, -1
-  br label %.backedge
+if.then159:                                       ; preds = %if.else156
+  %dec160 = add nsw i32 %range.addr.7, -1, !dbg !883
+  tail call void @llvm.dbg.value(metadata !{i32 %dec160}, i64 0, metadata !176), !dbg !883
+  %inc = add nsw i32 %startpos.addr.2, 1, !dbg !885
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !175), !dbg !885
+  br label %for.cond, !dbg !886
 
-.loopexit:                                        ; preds = %118, %116, %113, %109, %38, %29, %0
-  %.0 = phi i32 [ -1, %0 ], [ -1, %29 ], [ -2, %38 ], [ -1, %109 ], [ %.1, %113 ], [ -2, %116 ], [ -1, %118 ]
-  ret i32 %.0
+if.else161:                                       ; preds = %if.else156
+  %inc162 = add nsw i32 %range.addr.7, 1, !dbg !887
+  tail call void @llvm.dbg.value(metadata !{i32 %inc162}, i64 0, metadata !176), !dbg !887
+  %dec163 = add nsw i32 %startpos.addr.2, -1, !dbg !889
+  tail call void @llvm.dbg.value(metadata !{i32 %dec163}, i64 0, metadata !175), !dbg !889
+  br label %for.cond
+
+return:                                           ; preds = %advance, %if.end149, %if.end144, %land.lhs.true137, %if.then37, %if.then24, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ -1, %if.then24 ], [ -2, %if.then37 ], [ -1, %advance ], [ -2, %if.end149 ], [ %startpos.addr.1, %if.end144 ], [ -1, %land.lhs.true137 ]
+  ret i32 %retval.0, !dbg !890
 }

@@ -1,33 +1,37 @@
 define i32 @target_isnan(%struct.realvaluetype* byval nocapture align 8 %x) #0 {
 entry:
   %e = alloca [6 x i16], align 2
-  %0 = bitcast [6 x i16]* %e to i8*
-  %1 = bitcast %struct.realvaluetype* %x to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 12, i32 2, i1 false)
-  %arrayidx.i = getelementptr inbounds [6 x i16]* %e, i64 0, i64 5
-  %2 = load i16* %arrayidx.i, align 2, !tbaa !0
-  %and.i = and i16 %2, 32767
-  %cmp.i = icmp eq i16 %and.i, 32767
-  br i1 %cmp.i, label %for.body.i.preheader, label %eisnan.exit
+  call void @llvm.dbg.declare(metadata !{%struct.realvaluetype* %x}, metadata !385), !dbg !2328
+  call void @llvm.dbg.declare(metadata !{[6 x i16]* %e}, metadata !386), !dbg !2329
+  %0 = bitcast [6 x i16]* %e to i8*, !dbg !2330
+  %1 = bitcast %struct.realvaluetype* %x to i8*, !dbg !2330
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 12, i32 2, i1 false), !dbg !2330
+  tail call void @llvm.dbg.value(metadata !{i16* %arraydecay}, i64 0, metadata !2331), !dbg !2333
+  %arrayidx.i = getelementptr inbounds [6 x i16]* %e, i64 0, i64 5, !dbg !2334
+  %2 = load i16* %arrayidx.i, align 2, !dbg !2334, !tbaa !1057
+  %and.i = and i16 %2, 32767, !dbg !2334
+  %cmp.i = icmp eq i16 %and.i, 32767, !dbg !2334
+  br i1 %cmp.i, label %for.body.i.preheader, label %eisnan.exit, !dbg !2334
 
 for.body.i.preheader:                             ; preds = %entry
-  %arraydecay = getelementptr inbounds [6 x i16]* %e, i64 0, i64 0
-  br label %for.body.i
+  %arraydecay = getelementptr inbounds [6 x i16]* %e, i64 0, i64 0, !dbg !2332
+  br label %for.body.i, !dbg !2335
 
 for.body.i:                                       ; preds = %for.body.i.preheader, %for.inc.i
   %i.012.i = phi i32 [ %inc.i, %for.inc.i ], [ 0, %for.body.i.preheader ]
   %x.addr.011.i = phi i16* [ %incdec.ptr.i, %for.inc.i ], [ %arraydecay, %for.body.i.preheader ]
-  %3 = load i16* %x.addr.011.i, align 2, !tbaa !0
-  %cmp5.i = icmp eq i16 %3, 0
-  br i1 %cmp5.i, label %for.inc.i, label %eisnan.exit
+  %3 = load i16* %x.addr.011.i, align 2, !dbg !2335, !tbaa !1057
+  %cmp5.i = icmp eq i16 %3, 0, !dbg !2335
+  br i1 %cmp5.i, label %for.inc.i, label %eisnan.exit, !dbg !2335
 
 for.inc.i:                                        ; preds = %for.body.i
-  %incdec.ptr.i = getelementptr inbounds i16* %x.addr.011.i, i64 1
-  %inc.i = add nsw i32 %i.012.i, 1
-  %cmp2.i = icmp slt i32 %inc.i, 5
-  br i1 %cmp2.i, label %for.body.i, label %eisnan.exit
+  %incdec.ptr.i = getelementptr inbounds i16* %x.addr.011.i, i64 1, !dbg !2335
+  %inc.i = add nsw i32 %i.012.i, 1, !dbg !2336
+  tail call void @llvm.dbg.value(metadata !{i32 %inc.i}, i64 0, metadata !2337), !dbg !2336
+  %cmp2.i = icmp slt i32 %inc.i, 5, !dbg !2336
+  br i1 %cmp2.i, label %for.body.i, label %eisnan.exit, !dbg !2336
 
 eisnan.exit:                                      ; preds = %for.body.i, %for.inc.i, %entry
   %retval.0.i = phi i32 [ 0, %entry ], [ 1, %for.body.i ], [ 0, %for.inc.i ]
-  ret i32 %retval.0.i
+  ret i32 %retval.0.i, !dbg !2332
 }

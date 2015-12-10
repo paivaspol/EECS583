@@ -1,0 +1,41 @@
+define void @_ZN11xercesc_2_510NodeVector15insertElementAtEPNS_8NodeImplEj(%"class.xercesc_2_5::NodeVector"* nocapture %this, %"class.xercesc_2_5::NodeImpl"* %elem, i32 %index) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::NodeVector"* %this}, i64 0, metadata !214), !dbg !306
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::NodeImpl"* %elem}, i64 0, metadata !215), !dbg !306
+  tail call void @llvm.dbg.value(metadata !{i32 %index}, i64 0, metadata !216), !dbg !306
+  tail call void @_ZN11xercesc_2_510NodeVector10checkSpaceEv(%"class.xercesc_2_5::NodeVector"* %this) #4, !dbg !307
+  %nextFreeSlot = getelementptr inbounds %"class.xercesc_2_5::NodeVector"* %this, i64 0, i32 2, !dbg !308
+  %0 = load i32* %nextFreeSlot, align 4, !dbg !308, !tbaa !255
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !217), !dbg !308
+  %cmp13 = icmp ugt i32 %0, %index, !dbg !308
+  %data = getelementptr inbounds %"class.xercesc_2_5::NodeVector"* %this, i64 0, i32 0, !dbg !310
+  br i1 %cmp13, label %for.body.lr.ph, label %for.end, !dbg !308
+
+for.body.lr.ph:                                   ; preds = %entry
+  %1 = zext i32 %0 to i64
+  br label %for.body, !dbg !308
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ %1, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %i.014 = phi i32 [ %0, %for.body.lr.ph ], [ %sub, %for.body ]
+  %sub = add i32 %i.014, -1, !dbg !310
+  %idxprom = zext i32 %sub to i64, !dbg !310
+  %2 = load %"class.xercesc_2_5::NodeImpl"*** %data, align 8, !dbg !310, !tbaa !243
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::NodeImpl"** %2, i64 %idxprom, !dbg !310
+  %3 = load %"class.xercesc_2_5::NodeImpl"** %arrayidx, align 8, !dbg !310, !tbaa !243
+  %arrayidx4 = getelementptr inbounds %"class.xercesc_2_5::NodeImpl"** %2, i64 %indvars.iv, !dbg !310
+  store %"class.xercesc_2_5::NodeImpl"* %3, %"class.xercesc_2_5::NodeImpl"** %arrayidx4, align 8, !dbg !310, !tbaa !243
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !217), !dbg !308
+  %cmp = icmp ugt i32 %sub, %index, !dbg !308
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !308
+  br i1 %cmp, label %for.body, label %for.end, !dbg !308
+
+for.end:                                          ; preds = %entry, %for.body
+  %idxprom5 = zext i32 %index to i64, !dbg !312
+  %4 = load %"class.xercesc_2_5::NodeImpl"*** %data, align 8, !dbg !312, !tbaa !243
+  %arrayidx7 = getelementptr inbounds %"class.xercesc_2_5::NodeImpl"** %4, i64 %idxprom5, !dbg !312
+  store %"class.xercesc_2_5::NodeImpl"* %elem, %"class.xercesc_2_5::NodeImpl"** %arrayidx7, align 8, !dbg !312, !tbaa !243
+  %inc = add i32 %0, 1, !dbg !313
+  store i32 %inc, i32* %nextFreeSlot, align 4, !dbg !313, !tbaa !255
+  ret void, !dbg !314
+}

@@ -1,0 +1,53 @@
+define i32 @_ZN6soplex9CLUFactor10vSolveLeftEdPdPiS1_S2_i(%"class.soplex::CLUFactor"* nocapture %this, double %eps, double* nocapture %vec, i32* nocapture %idx, double* nocapture %rhs, i32* nocapture %ridx, i32 %rn) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::CLUFactor"* %this}, i64 0, metadata !2733), !dbg !3837
+  tail call void @llvm.dbg.value(metadata !{double %eps}, i64 0, metadata !2734), !dbg !3837
+  tail call void @llvm.dbg.value(metadata !{double* %vec}, i64 0, metadata !2735), !dbg !3838
+  tail call void @llvm.dbg.value(metadata !{i32* %idx}, i64 0, metadata !2736), !dbg !3838
+  tail call void @llvm.dbg.value(metadata !{double* %rhs}, i64 0, metadata !2737), !dbg !3839
+  tail call void @llvm.dbg.value(metadata !{i32* %ridx}, i64 0, metadata !2738), !dbg !3839
+  tail call void @llvm.dbg.value(metadata !{i32 %rn}, i64 0, metadata !2739), !dbg !3839
+  %updateType = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 10, i32 8, !dbg !3840
+  %0 = load i32* %updateType, align 4, !dbg !3840, !tbaa !2843
+  %tobool = icmp eq i32 %0, 0, !dbg !3840
+  br i1 %tobool, label %if.then, label %if.else, !dbg !3840
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @_ZN6soplex9CLUFactor15solveUpdateLeftEdPdPii(%"class.soplex::CLUFactor"* %this, double %eps, double* %rhs, i32* %ridx, i32 %rn) #6, !dbg !3841
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !2739), !dbg !3841
+  %call2 = tail call i32 @_ZN6soplex9CLUFactor10solveUleftEdPdPiS1_S2_i(%"class.soplex::CLUFactor"* %this, double %eps, double* %vec, i32* %idx, double* %rhs, i32* %ridx, i32 %call) #6, !dbg !3843
+  tail call void @llvm.dbg.value(metadata !{i32 %call2}, i64 0, metadata !2739), !dbg !3843
+  br label %if.end, !dbg !3844
+
+if.else:                                          ; preds = %entry
+  %call3 = tail call i32 @_ZN6soplex9CLUFactor10solveUleftEdPdPiS1_S2_i(%"class.soplex::CLUFactor"* %this, double %eps, double* %vec, i32* %idx, double* %rhs, i32* %ridx, i32 %rn) #6, !dbg !3845
+  tail call void @llvm.dbg.value(metadata !{i32 %call3}, i64 0, metadata !2739), !dbg !3845
+  %call4 = tail call i32 @_ZN6soplex9CLUFactor16solveLleftForestEdPdPii(%"class.soplex::CLUFactor"* %this, double %eps, double* %vec, i32* %idx, i32 %call3) #6, !dbg !3847
+  tail call void @llvm.dbg.value(metadata !{i32 %call4}, i64 0, metadata !2739), !dbg !3847
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %rn.addr.0 = phi i32 [ %call4, %if.else ], [ %call2, %if.then ]
+  %firstUpdate = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 10, i32 4, !dbg !3848
+  %1 = load i32* %firstUpdate, align 4, !dbg !3848, !tbaa !2843
+  %add = add nsw i32 %1, %rn.addr.0, !dbg !3848
+  %conv = sitofp i32 %add to double, !dbg !3848
+  %thedim = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 1, !dbg !3848
+  %2 = load i32* %thedim, align 4, !dbg !3848, !tbaa !2843
+  %conv6 = sitofp i32 %2 to double, !dbg !3848
+  %mul = fmul double %conv6, 1.000000e-01, !dbg !3848
+  %cmp = fcmp ogt double %conv, %mul, !dbg !3848
+  br i1 %cmp, label %if.then7, label %if.else8, !dbg !3848
+
+if.then7:                                         ; preds = %if.end
+  tail call void @_ZN6soplex9CLUFactor14solveLleftNoNZEPd(%"class.soplex::CLUFactor"* %this, double* %vec) #6, !dbg !3849
+  br label %return, !dbg !3851
+
+if.else8:                                         ; preds = %if.end
+  %call9 = tail call i32 @_ZN6soplex9CLUFactor10solveLleftEdPdPii(%"class.soplex::CLUFactor"* %this, double %eps, double* %vec, i32* %idx, i32 %rn.addr.0) #6, !dbg !3852
+  br label %return, !dbg !3852
+
+return:                                           ; preds = %if.else8, %if.then7
+  %retval.0 = phi i32 [ 0, %if.then7 ], [ %call9, %if.else8 ]
+  ret i32 %retval.0, !dbg !3853
+}

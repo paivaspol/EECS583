@@ -1,56 +1,62 @@
-define void @run_autotest(i8* nocapture %testset) #6 {
+define void @run_autotest(i8* nocapture %testset) #7 {
 entry:
   %readbuff = alloca [256 x i8], align 16
   %tmp = alloca %struct.move_s, align 4
-  %0 = getelementptr inbounds [256 x i8]* %readbuff, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 256, i8* %0) #1
-  %call = call %struct._IO_FILE* @fopen(i8* %testset, i8* getelementptr inbounds ([2 x i8]* @.str6, i64 0, i64 0)) #10
-  %cmp = icmp eq %struct._IO_FILE* %call, null
-  br i1 %cmp, label %if.then, label %if.end
+  call void @llvm.dbg.value(metadata !{i8* %testset}, i64 0, metadata !141), !dbg !323
+  %0 = getelementptr inbounds [256 x i8]* %readbuff, i64 0, i64 0, !dbg !324
+  call void @llvm.lifetime.start(i64 256, i8* %0) #2, !dbg !324
+  call void @llvm.dbg.declare(metadata !{[256 x i8]* %readbuff}, metadata !143), !dbg !324
+  %call = call %struct._IO_FILE* @fopen(i8* %testset, i8* getelementptr inbounds ([2 x i8]* @.str6, i64 0, i64 0)) #11, !dbg !325
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %call}, i64 0, metadata !142), !dbg !325
+  %cmp = icmp eq %struct._IO_FILE* %call, null, !dbg !326
+  br i1 %cmp, label %if.then, label %if.end, !dbg !326
 
 if.then:                                          ; preds = %entry
-  call void @exit(i32 1) #12
-  unreachable
+  call void @exit(i32 1) #13, !dbg !326
+  unreachable, !dbg !326
 
 if.end:                                           ; preds = %entry
-  %call1 = call i64 @rtime() #10
-  %call222 = call i8* @fgets(i8* %0, i32 256, %struct._IO_FILE* %call) #10
-  %cmp323 = icmp eq i8* %call222, null
-  br i1 %cmp323, label %while.end, label %while.body
+  %call1 = call i64 @rtime() #11, !dbg !327
+  call void @llvm.dbg.value(metadata !{i64 %call1}, i64 0, metadata !145), !dbg !327
+  %call222 = call i8* @fgets(i8* %0, i32 256, %struct._IO_FILE* %call) #11, !dbg !328
+  %cmp323 = icmp eq i8* %call222, null, !dbg !328
+  br i1 %cmp323, label %while.end, label %while.body, !dbg !328
 
 while.body:                                       ; preds = %if.end, %if.end12
-  call void @setup_epd_line(i8* %0) #11
-  %1 = load i32* @white_to_move, align 4, !tbaa !0
-  %not.tobool = icmp eq i32 %1, 0
-  %cond = zext i1 %not.tobool to i32
-  store i32 %cond, i32* @root_to_move, align 4, !tbaa !0
-  call void @clear_tt() #10
-  call void @initialize_hash() #10
-  %putchar = call i32 @putchar(i32 10) #1
-  %2 = load %struct._IO_FILE** @stdout, align 8, !tbaa !3
-  call void @display_board(%struct._IO_FILE* %2, i32 1) #10
-  %call7 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([9 x i8]* @.str17, i64 0, i64 0), i8* %0) #10
-  %call9 = call i8* @fgets(i8* %0, i32 256, %struct._IO_FILE* %call) #10
-  %cmp10 = icmp eq i8* %call9, null
-  br i1 %cmp10, label %if.then11, label %if.end12
+  call void @setup_epd_line(i8* %0) #12, !dbg !329
+  %1 = load i32* @white_to_move, align 4, !dbg !331, !tbaa !168
+  %not.tobool = icmp eq i32 %1, 0, !dbg !331
+  %cond = zext i1 %not.tobool to i32, !dbg !331
+  store i32 %cond, i32* @root_to_move, align 4, !dbg !331, !tbaa !168
+  call void @clear_tt() #11, !dbg !332
+  call void @initialize_hash() #11, !dbg !333
+  %putchar = call i32 @putchar(i32 10) #2, !dbg !334
+  %2 = load %struct._IO_FILE** @stdout, align 8, !dbg !335, !tbaa !181
+  call void @display_board(%struct._IO_FILE* %2, i32 1) #11, !dbg !335
+  %call7 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([9 x i8]* @.str17, i64 0, i64 0), i8* %0) #11, !dbg !336
+  %call9 = call i8* @fgets(i8* %0, i32 256, %struct._IO_FILE* %call) #11, !dbg !337
+  %cmp10 = icmp eq i8* %call9, null, !dbg !337
+  br i1 %cmp10, label %if.then11, label %if.end12, !dbg !337
 
 if.then11:                                        ; preds = %while.body
-  call void @exit(i32 1) #12
-  unreachable
+  call void @exit(i32 1) #13, !dbg !337
+  unreachable, !dbg !337
 
 if.end12:                                         ; preds = %while.body
-  %call14 = call i32 @atoi(i8* %0) #9
-  %call15 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([21 x i8]* @.str18, i64 0, i64 0), i32 %call14) #10
-  store i32 %call14, i32* @maxdepth, align 4, !tbaa !0
-  store i32 1000000, i32* @fixed_time, align 4, !tbaa !0
-  call void @think(%struct.move_s* sret %tmp) #10
-  %call2 = call i8* @fgets(i8* %0, i32 256, %struct._IO_FILE* %call) #10
-  %cmp3 = icmp eq i8* %call2, null
-  br i1 %cmp3, label %while.end, label %while.body
+  %call14 = call i32 @atoi(i8* %0) #10, !dbg !338
+  call void @llvm.dbg.value(metadata !{i32 %call14}, i64 0, metadata !144), !dbg !338
+  %call15 = call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([21 x i8]* @.str18, i64 0, i64 0), i32 %call14) #11, !dbg !339
+  store i32 %call14, i32* @maxdepth, align 4, !dbg !340, !tbaa !168
+  store i32 1000000, i32* @fixed_time, align 4, !dbg !341, !tbaa !168
+  call void @think(%struct.move_s* sret %tmp) #11, !dbg !342
+  %call2 = call i8* @fgets(i8* %0, i32 256, %struct._IO_FILE* %call) #11, !dbg !328
+  %cmp3 = icmp eq i8* %call2, null, !dbg !328
+  br i1 %cmp3, label %while.end, label %while.body, !dbg !328
 
 while.end:                                        ; preds = %if.end12, %if.end
-  %call16 = call i64 @rtime() #10
-  %call17 = call i32 @fclose(%struct._IO_FILE* %call) #10
-  call void @exit(i32 0) #12
-  unreachable
+  %call16 = call i64 @rtime() #11, !dbg !343
+  call void @llvm.dbg.value(metadata !{i64 %call16}, i64 0, metadata !149), !dbg !343
+  %call17 = call i32 @fclose(%struct._IO_FILE* %call) #11, !dbg !344
+  call void @exit(i32 0) #13, !dbg !345
+  unreachable, !dbg !345
 }

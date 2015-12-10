@@ -1,19 +1,21 @@
 define i32 @shiftdi_operand(%struct.rtx_def* %op, i32 %mode) #1 {
 entry:
-  %0 = load i32* @target_flags, align 4, !tbaa !0
-  %and = and i32 %0, 33554432
-  %tobool = icmp eq i32 %and, 0
-  br i1 %tobool, label %if.else, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op}, i64 0, metadata !2350), !dbg !6200
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !2351), !dbg !6201
+  %0 = load i32* @target_flags, align 4, !dbg !6202, !tbaa !4347
+  %and = and i32 %0, 33554432, !dbg !6202
+  %tobool = icmp eq i32 %and, 0, !dbg !6202
+  br i1 %tobool, label %if.else, label %if.then, !dbg !6202
 
 if.then:                                          ; preds = %entry
-  %call = tail call i32 @nonimmediate_operand(%struct.rtx_def* %op, i32 %mode) #9
-  br label %return
+  %call = tail call i32 @nonimmediate_operand(%struct.rtx_def* %op, i32 %mode) #10, !dbg !6203
+  br label %return, !dbg !6203
 
 if.else:                                          ; preds = %entry
-  %call1 = tail call i32 @register_operand(%struct.rtx_def* %op, i32 %mode) #9
-  br label %return
+  %call1 = tail call i32 @register_operand(%struct.rtx_def* %op, i32 %mode) #10, !dbg !6204
+  br label %return, !dbg !6204
 
 return:                                           ; preds = %if.else, %if.then
   %retval.0 = phi i32 [ %call, %if.then ], [ %call1, %if.else ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !6205
 }

@@ -1,0 +1,89 @@
+define internal fastcc %"class.xercesc_2_5::XMLMutex"* @_ZN11xercesc_2_5L12getMutex4DOMEv() #4 {
+entry:
+  %lock = alloca %"class.xercesc_2_5::XMLMutexLock", align 8
+  %0 = load atomic i8* bitcast (i64* @_ZGVZN11xercesc_2_5L12getMutex4DOMEvE16mutex4DOMCleanup to i8*) acquire, align 8, !dbg !5617
+  %guard.uninitialized = icmp eq i8 %0, 0, !dbg !5617
+  br i1 %guard.uninitialized, label %init.check, label %init.end, !dbg !5617
+
+init.check:                                       ; preds = %entry
+  %1 = call i32 @__cxa_guard_acquire(i64* @_ZGVZN11xercesc_2_5L12getMutex4DOMEvE16mutex4DOMCleanup) #5, !dbg !5617
+  %tobool = icmp eq i32 %1, 0, !dbg !5617
+  br i1 %tobool, label %init.end, label %invoke.cont, !dbg !5617
+
+invoke.cont:                                      ; preds = %init.check
+  call void @llvm.dbg.value(metadata !5618, i64 0, metadata !5619) #5, !dbg !5620
+  call void @llvm.dbg.value(metadata !5618, i64 0, metadata !5621) #5, !dbg !5623
+  call void @llvm.dbg.value(metadata !5618, i64 0, metadata !5624) #5, !dbg !5626
+  call void @llvm.memset.p0i8.i64(i8* bitcast (%"class.xercesc_2_5::XMLRegisterCleanup"* @_ZZN11xercesc_2_5L12getMutex4DOMEvE16mutex4DOMCleanup to i8*), i8 0, i64 24, i32 8, i1 false) #5, !dbg !5627
+  call void @__cxa_guard_release(i64* @_ZGVZN11xercesc_2_5L12getMutex4DOMEvE16mutex4DOMCleanup) #5, !dbg !5617
+  br label %init.end, !dbg !5617
+
+init.end:                                         ; preds = %init.check, %invoke.cont, %entry
+  %2 = load %"class.xercesc_2_5::XMLMutex"** @_ZN11xercesc_2_5L10sMutex4DOME, align 8, !dbg !5628, !tbaa !5604
+  %tobool1 = icmp eq %"class.xercesc_2_5::XMLMutex"* %2, null, !dbg !5628
+  br i1 %tobool1, label %if.then, label %if.end11, !dbg !5628
+
+if.then:                                          ; preds = %init.end
+  call void @llvm.dbg.declare(metadata !{%"class.xercesc_2_5::XMLMutexLock"* %lock}, metadata !5545), !dbg !5629
+  %3 = load %"class.xercesc_2_5::XMLMutex"** @_ZN11xercesc_2_516XMLPlatformUtils13fgAtomicMutexE, align 8, !dbg !5629, !tbaa !5604
+  call void @_ZN11xercesc_2_512XMLMutexLockC1EPNS_8XMLMutexE(%"class.xercesc_2_5::XMLMutexLock"* %lock, %"class.xercesc_2_5::XMLMutex"* %3) #9, !dbg !5629
+  %4 = load %"class.xercesc_2_5::XMLMutex"** @_ZN11xercesc_2_5L10sMutex4DOME, align 8, !dbg !5630, !tbaa !5604
+  %tobool2 = icmp eq %"class.xercesc_2_5::XMLMutex"* %4, null, !dbg !5630
+  br i1 %tobool2, label %if.then3, label %if.end, !dbg !5630
+
+if.then3:                                         ; preds = %if.then
+  %call = invoke i8* @_ZN11xercesc_2_57XMemorynwEm(i64 8) #9
+          to label %invoke.cont5 unwind label %lpad4, !dbg !5631
+
+invoke.cont5:                                     ; preds = %if.then3
+  %5 = bitcast i8* %call to %"class.xercesc_2_5::XMLMutex"*, !dbg !5631
+  invoke void @_ZN11xercesc_2_58XMLMutexC1Ev(%"class.xercesc_2_5::XMLMutex"* %5) #9
+          to label %invoke.cont7 unwind label %lpad6, !dbg !5631
+
+invoke.cont7:                                     ; preds = %invoke.cont5
+  store %"class.xercesc_2_5::XMLMutex"* %5, %"class.xercesc_2_5::XMLMutex"** @_ZN11xercesc_2_5L10sMutex4DOME, align 8, !dbg !5631, !tbaa !5604
+  invoke void @_ZN11xercesc_2_518XMLRegisterCleanup15registerCleanupEPFvvE(%"class.xercesc_2_5::XMLRegisterCleanup"* @_ZZN11xercesc_2_5L12getMutex4DOMEvE16mutex4DOMCleanup, void ()* @_ZN11xercesc_2_5L15reinitMutex4DOMEv) #9
+          to label %if.end unwind label %lpad4, !dbg !5633
+
+lpad4:                                            ; preds = %invoke.cont7, %if.then3
+  %6 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !5631
+  %7 = extractvalue { i8*, i32 } %6, 0, !dbg !5631
+  %8 = extractvalue { i8*, i32 } %6, 1, !dbg !5631
+  br label %ehcleanup, !dbg !5631
+
+lpad6:                                            ; preds = %invoke.cont5
+  %9 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !5631
+  %10 = extractvalue { i8*, i32 } %9, 0, !dbg !5631
+  %11 = extractvalue { i8*, i32 } %9, 1, !dbg !5631
+  invoke void @_ZN11xercesc_2_57XMemorydlEPv(i8* %call) #9
+          to label %ehcleanup unwind label %terminate.lpad, !dbg !5631
+
+if.end:                                           ; preds = %if.then, %invoke.cont7
+  call void @_ZN11xercesc_2_512XMLMutexLockD1Ev(%"class.xercesc_2_5::XMLMutexLock"* %lock) #9, !dbg !5634
+  %.pre = load %"class.xercesc_2_5::XMLMutex"** @_ZN11xercesc_2_5L10sMutex4DOME, align 8, !dbg !5635, !tbaa !5604
+  br label %if.end11, !dbg !5636
+
+ehcleanup:                                        ; preds = %lpad6, %lpad4
+  %exn.slot.0 = phi i8* [ %7, %lpad4 ], [ %10, %lpad6 ]
+  %ehselector.slot.0 = phi i32 [ %8, %lpad4 ], [ %11, %lpad6 ]
+  invoke void @_ZN11xercesc_2_512XMLMutexLockD1Ev(%"class.xercesc_2_5::XMLMutexLock"* %lock) #9
+          to label %eh.resume unwind label %terminate.lpad, !dbg !5636
+
+if.end11:                                         ; preds = %init.end, %if.end
+  %12 = phi %"class.xercesc_2_5::XMLMutex"* [ %2, %init.end ], [ %.pre, %if.end ]
+  ret %"class.xercesc_2_5::XMLMutex"* %12, !dbg !5635
+
+eh.resume:                                        ; preds = %ehcleanup
+  %lpad.val = insertvalue { i8*, i32 } undef, i8* %exn.slot.0, 0, !dbg !5617
+  %lpad.val12 = insertvalue { i8*, i32 } %lpad.val, i32 %ehselector.slot.0, 1, !dbg !5617
+  resume { i8*, i32 } %lpad.val12, !dbg !5617
+
+terminate.lpad:                                   ; preds = %ehcleanup, %lpad6
+  %13 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !5631
+  %14 = extractvalue { i8*, i32 } %13, 0, !dbg !5631
+  call void @__clang_call_terminate(i8* %14) #8, !dbg !5631
+  unreachable, !dbg !5631
+}

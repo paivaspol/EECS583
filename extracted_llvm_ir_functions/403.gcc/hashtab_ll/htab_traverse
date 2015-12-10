@@ -1,28 +1,35 @@
 define void @htab_traverse(%struct.htab* nocapture %htab, i32 (i8**, i8*)* nocapture %callback, i8* %info) #1 {
 entry:
-  %entries = getelementptr inbounds %struct.htab* %htab, i64 0, i32 3
-  %0 = load i8*** %entries, align 8, !tbaa !0
-  %size = getelementptr inbounds %struct.htab* %htab, i64 0, i32 4
-  %1 = load i64* %size, align 8, !tbaa !3
-  %add.ptr = getelementptr inbounds i8** %0, i64 %1
-  br label %do.body
+  tail call void @llvm.dbg.value(metadata !{%struct.htab* %htab}, i64 0, metadata !130), !dbg !422
+  tail call void @llvm.dbg.value(metadata !{i32 (i8**, i8*)* %callback}, i64 0, metadata !131), !dbg !423
+  tail call void @llvm.dbg.value(metadata !{i8* %info}, i64 0, metadata !132), !dbg !424
+  %entries = getelementptr inbounds %struct.htab* %htab, i64 0, i32 3, !dbg !425
+  %0 = load i8*** %entries, align 8, !dbg !425, !tbaa !221
+  tail call void @llvm.dbg.value(metadata !{i8** %0}, i64 0, metadata !133), !dbg !425
+  %size = getelementptr inbounds %struct.htab* %htab, i64 0, i32 4, !dbg !426
+  %1 = load i64* %size, align 8, !dbg !426, !tbaa !225
+  %add.ptr = getelementptr inbounds i8** %0, i64 %1, !dbg !426
+  tail call void @llvm.dbg.value(metadata !{i8** %add.ptr}, i64 0, metadata !134), !dbg !426
+  br label %do.body, !dbg !427
 
 do.body:                                          ; preds = %do.cond, %entry
   %slot.0 = phi i8** [ %0, %entry ], [ %incdec.ptr, %do.cond ]
-  %2 = load i8** %slot.0, align 8, !tbaa !0
-  %switch = icmp ult i8* %2, inttoptr (i64 2 to i8*)
-  br i1 %switch, label %do.cond, label %if.then
+  %2 = load i8** %slot.0, align 8, !dbg !428, !tbaa !221
+  tail call void @llvm.dbg.value(metadata !{i8* %2}, i64 0, metadata !135), !dbg !428
+  %switch = icmp ult i8* %2, inttoptr (i64 2 to i8*), !dbg !429
+  br i1 %switch, label %do.cond, label %if.then, !dbg !429
 
 if.then:                                          ; preds = %do.body
-  %call = tail call i32 %callback(i8** %slot.0, i8* %info) #8
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %do.end, label %do.cond
+  %call = tail call i32 %callback(i8** %slot.0, i8* %info) #9, !dbg !430
+  %tobool = icmp eq i32 %call, 0, !dbg !430
+  br i1 %tobool, label %do.end, label %do.cond, !dbg !430
 
 do.cond:                                          ; preds = %do.body, %if.then
-  %incdec.ptr = getelementptr inbounds i8** %slot.0, i64 1
-  %cmp4 = icmp ult i8** %incdec.ptr, %add.ptr
-  br i1 %cmp4, label %do.body, label %do.end
+  %incdec.ptr = getelementptr inbounds i8** %slot.0, i64 1, !dbg !431
+  tail call void @llvm.dbg.value(metadata !{i8** %incdec.ptr}, i64 0, metadata !133), !dbg !431
+  %cmp4 = icmp ult i8** %incdec.ptr, %add.ptr, !dbg !431
+  br i1 %cmp4, label %do.body, label %do.end, !dbg !431
 
 do.end:                                           ; preds = %if.then, %do.cond
-  ret void
+  ret void, !dbg !432
 }

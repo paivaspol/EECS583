@@ -1,29 +1,32 @@
-define i32 @TraceDomainNumber(%struct.p7trace_s* nocapture %tr) #5 {
+define i32 @TraceDomainNumber(%struct.p7trace_s* nocapture %tr) #6 {
 entry:
-  %tlen = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 0
-  %0 = load i32* %tlen, align 4, !tbaa !3
-  %cmp8 = icmp sgt i32 %0, 0
-  br i1 %cmp8, label %for.body.lr.ph, label %for.end
+  tail call void @llvm.dbg.value(metadata !{%struct.p7trace_s* %tr}, i64 0, metadata !425), !dbg !977
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !427), !dbg !978
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !426), !dbg !979
+  %tlen = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 0, !dbg !979
+  %0 = load i32* %tlen, align 4, !dbg !979, !tbaa !498
+  %cmp8 = icmp sgt i32 %0, 0, !dbg !979
+  br i1 %cmp8, label %for.body.lr.ph, label %for.end, !dbg !979
 
 for.body.lr.ph:                                   ; preds = %entry
-  %statetype = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 1
-  %1 = load i8** %statetype, align 8, !tbaa !0
-  br label %for.body
+  %statetype = getelementptr inbounds %struct.p7trace_s* %tr, i64 0, i32 1, !dbg !981
+  %1 = load i8** %statetype, align 8, !dbg !981, !tbaa !477
+  br label %for.body, !dbg !979
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.body
   %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
   %ndom.010 = phi i32 [ 0, %for.body.lr.ph ], [ %inc.ndom.0, %for.body ]
-  %arrayidx = getelementptr inbounds i8* %1, i64 %indvars.iv
-  %2 = load i8* %arrayidx, align 1, !tbaa !1
-  %cmp1 = icmp eq i8 %2, 6
-  %inc = zext i1 %cmp1 to i32
-  %inc.ndom.0 = add nsw i32 %inc, %ndom.010
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %3 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %3, %0
-  br i1 %cmp, label %for.body, label %for.end
+  %arrayidx = getelementptr inbounds i8* %1, i64 %indvars.iv, !dbg !981
+  %2 = load i8* %arrayidx, align 1, !dbg !981, !tbaa !478
+  %cmp1 = icmp eq i8 %2, 6, !dbg !981
+  %inc = zext i1 %cmp1 to i32, !dbg !981
+  %inc.ndom.0 = add nsw i32 %inc, %ndom.010, !dbg !981
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !979
+  %3 = trunc i64 %indvars.iv.next to i32, !dbg !979
+  %cmp = icmp slt i32 %3, %0, !dbg !979
+  br i1 %cmp, label %for.body, label %for.end, !dbg !979
 
 for.end:                                          ; preds = %for.body, %entry
   %ndom.0.lcssa = phi i32 [ 0, %entry ], [ %inc.ndom.0, %for.body ]
-  ret i32 %ndom.0.lcssa
+  ret i32 %ndom.0.lcssa, !dbg !982
 }

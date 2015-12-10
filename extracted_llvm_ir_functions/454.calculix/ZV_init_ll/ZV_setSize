@@ -1,45 +1,47 @@
 define void @ZV_setSize(%struct._ZV* %zv, i32 %newsize) #0 {
 entry:
-  %cmp = icmp eq %struct._ZV* %zv, null
-  %cmp1 = icmp slt i32 %newsize, 0
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._ZV* %zv}, i64 0, metadata !47), !dbg !143
+  tail call void @llvm.dbg.value(metadata !{i32 %newsize}, i64 0, metadata !48), !dbg !144
+  %cmp = icmp eq %struct._ZV* %zv, null, !dbg !145
+  %cmp1 = icmp slt i32 %newsize, 0, !dbg !145
+  %or.cond = or i1 %cmp, %cmp1, !dbg !145
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !145
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([47 x i8]* @.str8, i64 0, i64 0), %struct._ZV* %zv, i32 %newsize) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !146, !tbaa !55
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([47 x i8]* @.str8, i64 0, i64 0), %struct._ZV* %zv, i32 %newsize) #5, !dbg !146
+  tail call void @exit(i32 -1) #6, !dbg !148
+  unreachable, !dbg !148
 
 if.end:                                           ; preds = %entry
-  %maxsize = getelementptr inbounds %struct._ZV* %zv, i64 0, i32 1
-  %1 = load i32* %maxsize, align 4, !tbaa !3
-  %cmp2 = icmp sgt i32 %1, 0
-  %cmp4 = icmp slt i32 %1, %newsize
-  %or.cond33 = and i1 %cmp2, %cmp4
-  br i1 %or.cond33, label %land.lhs.true5, label %if.end11
+  %maxsize = getelementptr inbounds %struct._ZV* %zv, i64 0, i32 1, !dbg !149
+  %1 = load i32* %maxsize, align 4, !dbg !149, !tbaa !61
+  %cmp2 = icmp sgt i32 %1, 0, !dbg !149
+  %cmp4 = icmp slt i32 %1, %newsize, !dbg !149
+  %or.cond33 = and i1 %cmp2, %cmp4, !dbg !149
+  br i1 %or.cond33, label %land.lhs.true5, label %if.end11, !dbg !149
 
 land.lhs.true5:                                   ; preds = %if.end
-  %owned = getelementptr inbounds %struct._ZV* %zv, i64 0, i32 2
-  %2 = load i32* %owned, align 4, !tbaa !3
-  %cmp6 = icmp eq i32 %2, 0
-  br i1 %cmp6, label %if.then7, label %if.end11
+  %owned = getelementptr inbounds %struct._ZV* %zv, i64 0, i32 2, !dbg !149
+  %2 = load i32* %owned, align 4, !dbg !149, !tbaa !61
+  %cmp6 = icmp eq i32 %2, 0, !dbg !149
+  br i1 %cmp6, label %if.then7, label %if.end11, !dbg !149
 
 if.then7:                                         ; preds = %land.lhs.true5
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call10 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([84 x i8]* @.str9, i64 0, i64 0), %struct._ZV* %zv, i32 %newsize, i32 %1, i32 %newsize, i32 0) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !150, !tbaa !55
+  %call10 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([84 x i8]* @.str9, i64 0, i64 0), %struct._ZV* %zv, i32 %newsize, i32 %1, i32 %newsize, i32 0) #5, !dbg !150
+  tail call void @exit(i32 -1) #6, !dbg !152
+  unreachable, !dbg !152
 
 if.end11:                                         ; preds = %land.lhs.true5, %if.end
-  br i1 %cmp4, label %if.then14, label %if.end15
+  br i1 %cmp4, label %if.then14, label %if.end15, !dbg !153
 
 if.then14:                                        ; preds = %if.end11
-  tail call void @ZV_setMaxsize(%struct._ZV* %zv, i32 %newsize) #6
-  br label %if.end15
+  tail call void @ZV_setMaxsize(%struct._ZV* %zv, i32 %newsize) #7, !dbg !154
+  br label %if.end15, !dbg !156
 
 if.end15:                                         ; preds = %if.then14, %if.end11
-  %size = getelementptr inbounds %struct._ZV* %zv, i64 0, i32 0
-  store i32 %newsize, i32* %size, align 4, !tbaa !3
-  ret void
+  %size = getelementptr inbounds %struct._ZV* %zv, i64 0, i32 0, !dbg !157
+  store i32 %newsize, i32* %size, align 4, !dbg !157, !tbaa !61
+  ret void, !dbg !158
 }

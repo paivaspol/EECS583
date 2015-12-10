@@ -1,0 +1,68 @@
+define i32 @_ZN3pov18POVFPU_AddConstantEd(double %v) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{double %v}, i64 0, metadata !266), !dbg !514
+  %0 = load double** @_ZN3pov13POVFPU_ConstsE, align 8, !dbg !515, !tbaa !493
+  %cmp = icmp eq double* %0, null, !dbg !515
+  br i1 %cmp, label %if.then, label %for.cond.preheader, !dbg !515
+
+for.cond.preheader:                               ; preds = %entry
+  %1 = load i32* @_ZN3pov15POVFPU_ConstCntE, align 4, !dbg !516, !tbaa !498
+  %cmp121 = icmp eq i32 %1, 0, !dbg !516
+  br i1 %cmp121, label %if.end9, label %for.body, !dbg !516
+
+if.then:                                          ; preds = %entry
+  %call = tail call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 8, i8* getelementptr inbounds ([57 x i8]* @.str51, i64 0, i64 0), i32 1030, i8* getelementptr inbounds ([20 x i8]* @.str55, i64 0, i64 0)) #9, !dbg !518
+  %2 = bitcast i8* %call to double*, !dbg !518
+  store double* %2, double** @_ZN3pov13POVFPU_ConstsE, align 8, !dbg !518, !tbaa !493
+  store double %v, double* %2, align 8, !dbg !520, !tbaa !521
+  store i32 1, i32* @_ZN3pov15POVFPU_ConstCntE, align 4, !dbg !522, !tbaa !498
+  br label %return, !dbg !523
+
+for.cond:                                         ; preds = %for.body
+  %inc = add i32 %i.022, 1, !dbg !516
+  %3 = trunc i64 %indvars.iv.next to i32, !dbg !516
+  %cmp1 = icmp ult i32 %3, %1, !dbg !516
+  br i1 %cmp1, label %for.body, label %for.end, !dbg !516
+
+for.body:                                         ; preds = %for.cond.preheader, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %for.cond.preheader ]
+  %i.022 = phi i32 [ %inc, %for.cond ], [ 0, %for.cond.preheader ]
+  %arrayidx2 = getelementptr inbounds double* %0, i64 %indvars.iv, !dbg !524
+  %4 = load double* %arrayidx2, align 8, !dbg !524, !tbaa !521
+  %cmp3 = fcmp oeq double %4, %v, !dbg !524
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !516
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !267), !dbg !516
+  br i1 %cmp3, label %return, label %for.cond, !dbg !524
+
+for.end:                                          ; preds = %for.cond
+  %phitmp = icmp eq i32 %1, 1048575, !dbg !516
+  br i1 %phitmp, label %if.then7, label %if.end9, !dbg !526
+
+if.then7:                                         ; preds = %for.end
+  %call8 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([59 x i8]* @.str56, i64 0, i64 0), i32 1048575) #9, !dbg !527
+  %.pre = load i32* @_ZN3pov15POVFPU_ConstCntE, align 4, !dbg !528, !tbaa !498
+  %.pre24 = load double** @_ZN3pov13POVFPU_ConstsE, align 8, !dbg !529, !tbaa !493
+  br label %if.end9, !dbg !527
+
+if.end9:                                          ; preds = %for.cond.preheader, %if.then7, %for.end
+  %5 = phi double* [ %.pre24, %if.then7 ], [ %0, %for.end ], [ %0, %for.cond.preheader ]
+  %6 = phi i32 [ %.pre, %if.then7 ], [ %1, %for.end ], [ 0, %for.cond.preheader ]
+  %inc10 = add i32 %6, 1, !dbg !528
+  store i32 %inc10, i32* @_ZN3pov15POVFPU_ConstCntE, align 4, !dbg !528, !tbaa !498
+  %7 = bitcast double* %5 to i8*, !dbg !529
+  %conv = zext i32 %inc10 to i64, !dbg !529
+  %mul = shl nuw nsw i64 %conv, 3, !dbg !529
+  %call11 = tail call i8* @_ZN3pov11pov_reallocEPvmPKciS2_(i8* %7, i64 %mul, i8* getelementptr inbounds ([57 x i8]* @.str51, i64 0, i64 0), i32 1046, i8* getelementptr inbounds ([20 x i8]* @.str55, i64 0, i64 0)) #9, !dbg !529
+  %8 = bitcast i8* %call11 to double*, !dbg !529
+  store double* %8, double** @_ZN3pov13POVFPU_ConstsE, align 8, !dbg !529, !tbaa !493
+  %9 = load i32* @_ZN3pov15POVFPU_ConstCntE, align 4, !dbg !530, !tbaa !498
+  %sub = add i32 %9, -1, !dbg !530
+  %idxprom12 = zext i32 %sub to i64, !dbg !530
+  %arrayidx13 = getelementptr inbounds double* %8, i64 %idxprom12, !dbg !530
+  store double %v, double* %arrayidx13, align 8, !dbg !530, !tbaa !521
+  br label %return, !dbg !531
+
+return:                                           ; preds = %for.body, %if.end9, %if.then
+  %retval.0 = phi i32 [ 0, %if.then ], [ %sub, %if.end9 ], [ %i.022, %for.body ]
+  ret i32 %retval.0, !dbg !532
+}

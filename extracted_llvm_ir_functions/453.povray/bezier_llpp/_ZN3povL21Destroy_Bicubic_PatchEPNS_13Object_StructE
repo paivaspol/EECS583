@@ -1,0 +1,38 @@
+define internal void @_ZN3povL21Destroy_Bicubic_PatchEPNS_13Object_StructE(%"struct.pov::Object_Struct"* %Object) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !1021), !dbg !2058
+  %Patch_Type = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, !dbg !2059
+  %0 = bitcast %"struct.pov::Object_Struct"* %Patch_Type to i32*, !dbg !2059
+  %1 = load i32* %0, align 4, !dbg !2059, !tbaa !1588
+  %cmp = icmp eq i32 %1, 1, !dbg !2059
+  br i1 %cmp, label %if.then, label %if.end4, !dbg !2059
+
+if.then:                                          ; preds = %entry
+  %Node_Tree = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 5, i32 4, !dbg !2060
+  %2 = load %"struct.pov::Texture_Struct"** %Node_Tree, align 8, !dbg !2060
+  %cmp1 = icmp eq %"struct.pov::Texture_Struct"* %2, null, !dbg !2060
+  br i1 %cmp1, label %if.end4, label %if.then2, !dbg !2060
+
+if.then2:                                         ; preds = %if.then
+  %3 = bitcast %"struct.pov::Texture_Struct"* %2 to %"struct.pov::Bezier_Node_Struct"*, !dbg !2060
+  tail call fastcc void @_ZN3povL19bezier_tree_deleterEPNS_18Bezier_Node_StructE(%"struct.pov::Bezier_Node_Struct"* %3) #9, !dbg !2062
+  br label %if.end4, !dbg !2064
+
+if.end4:                                          ; preds = %if.then, %if.then2, %entry
+  %Weights = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 5, i32 5, !dbg !2065
+  %4 = load %"struct.pov::Interior_Struct"** %Weights, align 8, !dbg !2065
+  %cmp5 = icmp eq %"struct.pov::Interior_Struct"* %4, null, !dbg !2065
+  br i1 %cmp5, label %if.end9, label %if.then6, !dbg !2065
+
+if.then6:                                         ; preds = %if.end4
+  %5 = bitcast %"struct.pov::Interior_Struct"* %4 to i8*, !dbg !2066
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %5, i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 2229) #9, !dbg !2066
+  store %"struct.pov::Interior_Struct"* null, %"struct.pov::Interior_Struct"** %Weights, align 8, !dbg !2066, !tbaa !1654
+  br label %if.end9, !dbg !2066
+
+if.end9:                                          ; preds = %if.end4, %if.then6
+  %6 = bitcast %"struct.pov::Object_Struct"* %Object to i8*, !dbg !2068
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %6, i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 2230) #9, !dbg !2068
+  tail call void @llvm.dbg.value(metadata !2070, i64 0, metadata !1022), !dbg !2068
+  ret void, !dbg !2071
+}

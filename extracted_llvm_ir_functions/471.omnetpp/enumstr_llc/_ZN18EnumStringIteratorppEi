@@ -1,0 +1,130 @@
+define i32 @_ZN18EnumStringIteratorppEi(%class.EnumStringIterator* nocapture %this, i32) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.EnumStringIterator* %this}, i64 0, metadata !38), !dbg !70
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !39), !dbg !70
+  %err = getelementptr inbounds %class.EnumStringIterator* %this, i64 0, i32 3, !dbg !71
+  %1 = load i32* %err, align 4, !dbg !71, !tbaa !60
+  %tobool = icmp eq i32 %1, 0, !dbg !71
+  br i1 %tobool, label %lor.lhs.false, label %return, !dbg !71
+
+lor.lhs.false:                                    ; preds = %entry
+  %str = getelementptr inbounds %class.EnumStringIterator* %this, i64 0, i32 0, !dbg !71
+  %2 = load i8** %str, align 8, !dbg !71, !tbaa !56
+  %tobool2 = icmp eq i8* %2, null, !dbg !71
+  br i1 %tobool2, label %return, label %if.end, !dbg !71
+
+if.end:                                           ; preds = %lor.lhs.false
+  %current = getelementptr inbounds %class.EnumStringIterator* %this, i64 0, i32 1, !dbg !72
+  %3 = load i32* %current, align 4, !dbg !72, !tbaa !60
+  %until = getelementptr inbounds %class.EnumStringIterator* %this, i64 0, i32 2, !dbg !72
+  %4 = load i32* %until, align 4, !dbg !72, !tbaa !60
+  %cmp = icmp slt i32 %3, %4, !dbg !72
+  br i1 %cmp, label %if.then3, label %while.cond.i, !dbg !72
+
+if.then3:                                         ; preds = %if.end
+  %inc = add nsw i32 %3, 1, !dbg !73
+  store i32 %inc, i32* %current, align 4, !dbg !73, !tbaa !60
+  br label %return, !dbg !73
+
+while.cond.i:                                     ; preds = %if.end, %while.body.i
+  %5 = phi i8* [ %incdec.ptr.i, %while.body.i ], [ %2, %if.end ]
+  %6 = load i8* %5, align 1, !dbg !74, !tbaa !57
+  switch i8 %6, label %if.end11 [
+    i8 32, label %while.body.i
+    i8 9, label %while.body.i
+    i8 0, label %if.then9
+  ], !dbg !74
+
+while.body.i:                                     ; preds = %while.cond.i, %while.cond.i
+  %incdec.ptr.i = getelementptr inbounds i8* %5, i64 1, !dbg !74
+  store i8* %incdec.ptr.i, i8** %str, align 8, !dbg !74, !tbaa !56
+  br label %while.cond.i, !dbg !74
+
+if.then9:                                         ; preds = %while.cond.i
+  store i32 -1, i32* %current, align 4, !dbg !76, !tbaa !60
+  br label %return, !dbg !76
+
+if.end11:                                         ; preds = %while.cond.i
+  %call = tail call fastcc i32 @_ZL10get_numberRPKcRi(i8** %str, i32* %current) #3, !dbg !77
+  %tobool14 = icmp eq i32 %call, 0, !dbg !77
+  br i1 %tobool14, label %if.then15, label %if.end17, !dbg !77
+
+if.then15:                                        ; preds = %if.end11
+  store i32 1, i32* %err, align 4, !dbg !78, !tbaa !60
+  br label %return, !dbg !78
+
+if.end17:                                         ; preds = %if.end11
+  store i32 -1, i32* %until, align 4, !dbg !80, !tbaa !60
+  %7 = load i8** %str, align 8, !dbg !81, !tbaa !56
+  %8 = load i8* %7, align 1, !dbg !81, !tbaa !57
+  switch i8 %8, label %if.else59 [
+    i8 0, label %if.end63
+    i8 44, label %if.then26
+    i8 45, label %while.cond.i71
+  ], !dbg !81
+
+if.then26:                                        ; preds = %if.end17
+  %incdec.ptr = getelementptr inbounds i8* %7, i64 1, !dbg !82
+  store i8* %incdec.ptr, i8** %str, align 8, !dbg !82, !tbaa !56
+  br label %if.end63, !dbg !82
+
+while.cond.i71:                                   ; preds = %while.cond.i71, %while.cond.i71, %if.end17
+  %storemerge.sink = phi i8* [ %7, %if.end17 ], [ %incdec.ptr.i72, %while.cond.i71 ], [ %incdec.ptr.i72, %while.cond.i71 ]
+  %incdec.ptr.i72 = getelementptr inbounds i8* %storemerge.sink, i64 1, !dbg !83
+  store i8* %incdec.ptr.i72, i8** %str, align 8, !dbg !83, !tbaa !56
+  %9 = load i8* %incdec.ptr.i72, align 1, !dbg !83, !tbaa !57
+  switch i8 %9, label %_ZL15skip_whitespaceRPKc.exit74 [
+    i8 32, label %while.cond.i71
+    i8 9, label %while.cond.i71
+  ], !dbg !83
+
+_ZL15skip_whitespaceRPKc.exit74:                  ; preds = %while.cond.i71
+  %call38 = tail call fastcc i32 @_ZL10get_numberRPKcRi(i8** %str, i32* %until) #3, !dbg !86
+  %tobool39 = icmp eq i32 %call38, 0, !dbg !86
+  br i1 %tobool39, label %if.then40, label %if.end42, !dbg !86
+
+if.then40:                                        ; preds = %_ZL15skip_whitespaceRPKc.exit74
+  store i32 1, i32* %err, align 4, !dbg !87, !tbaa !60
+  br label %return, !dbg !87
+
+if.end42:                                         ; preds = %_ZL15skip_whitespaceRPKc.exit74
+  tail call void @llvm.dbg.value(metadata !{i8** %str}, i64 0, metadata !89), !dbg !91
+  %.pre.i65 = load i8** %str, align 8, !dbg !92, !tbaa !56
+  br label %while.cond.i66, !dbg !92
+
+while.cond.i66:                                   ; preds = %while.body.i68, %if.end42
+  %10 = phi i8* [ %incdec.ptr.i67, %while.body.i68 ], [ %.pre.i65, %if.end42 ]
+  %11 = load i8* %10, align 1, !dbg !92, !tbaa !57
+  switch i8 %11, label %if.else55 [
+    i8 32, label %while.body.i68
+    i8 9, label %while.body.i68
+    i8 0, label %if.end63
+    i8 44, label %if.then52
+  ], !dbg !92
+
+while.body.i68:                                   ; preds = %while.cond.i66, %while.cond.i66
+  %incdec.ptr.i67 = getelementptr inbounds i8* %10, i64 1, !dbg !92
+  store i8* %incdec.ptr.i67, i8** %str, align 8, !dbg !92, !tbaa !56
+  br label %while.cond.i66, !dbg !92
+
+if.then52:                                        ; preds = %while.cond.i66
+  %incdec.ptr54 = getelementptr inbounds i8* %10, i64 1, !dbg !93
+  store i8* %incdec.ptr54, i8** %str, align 8, !dbg !93, !tbaa !56
+  br label %if.end63
+
+if.else55:                                        ; preds = %while.cond.i66
+  store i32 1, i32* %err, align 4, !dbg !94, !tbaa !60
+  br label %return, !dbg !94
+
+if.else59:                                        ; preds = %if.end17
+  store i32 1, i32* %err, align 4, !dbg !96, !tbaa !60
+  br label %return, !dbg !96
+
+if.end63:                                         ; preds = %while.cond.i66, %if.end17, %if.then26, %if.then52
+  %12 = load i32* %current, align 4, !dbg !98, !tbaa !60
+  br label %return, !dbg !98
+
+return:                                           ; preds = %entry, %lor.lhs.false, %if.end63, %if.else59, %if.else55, %if.then40, %if.then15, %if.then9, %if.then3
+  %retval.0 = phi i32 [ %inc, %if.then3 ], [ -1, %if.then9 ], [ %12, %if.end63 ], [ -1, %if.else55 ], [ -1, %if.then40 ], [ -1, %if.else59 ], [ -1, %if.then15 ], [ -1, %lor.lhs.false ], [ -1, %entry ]
+  ret i32 %retval.0, !dbg !99
+}

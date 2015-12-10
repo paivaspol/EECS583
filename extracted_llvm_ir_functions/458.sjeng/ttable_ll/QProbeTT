@@ -1,52 +1,55 @@
 define i32 @QProbeTT(i32* nocapture %score, i32* nocapture %best) #0 {
 entry:
-  %0 = load i32* @TTProbes, align 4, !tbaa !3
-  %inc = add i32 %0, 1
-  store i32 %inc, i32* @TTProbes, align 4, !tbaa !3
-  %1 = load i32* @hash, align 4, !tbaa !3
-  %2 = load i32* @TTSize, align 4, !tbaa !3
-  %rem = urem i32 %1, %2
-  %idxprom = zext i32 %rem to i64
-  %3 = load %struct.QTType** @QS_TTable, align 8, !tbaa !0
-  %HashKey = getelementptr inbounds %struct.QTType* %3, i64 %idxprom, i32 3
-  %4 = load i32* %HashKey, align 4, !tbaa !3
-  %cmp = icmp eq i32 %4, %1
-  br i1 %cmp, label %land.lhs.true, label %return
+  tail call void @llvm.dbg.value(metadata !{i32* %score}, i64 0, metadata !71), !dbg !268
+  tail call void @llvm.dbg.value(metadata !{i32* %best}, i64 0, metadata !72), !dbg !268
+  %0 = load i32* @TTProbes, align 4, !dbg !269, !tbaa !117
+  %inc = add i32 %0, 1, !dbg !269
+  store i32 %inc, i32* @TTProbes, align 4, !dbg !269, !tbaa !117
+  %1 = load i32* @hash, align 4, !dbg !270, !tbaa !117
+  %2 = load i32* @TTSize, align 4, !dbg !270, !tbaa !117
+  %rem = urem i32 %1, %2, !dbg !270
+  tail call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !73), !dbg !270
+  %idxprom = zext i32 %rem to i64, !dbg !271
+  %3 = load %struct.QTType** @QS_TTable, align 8, !dbg !271, !tbaa !114
+  %HashKey = getelementptr inbounds %struct.QTType* %3, i64 %idxprom, i32 3, !dbg !271
+  %4 = load i32* %HashKey, align 4, !dbg !271, !tbaa !117
+  %cmp = icmp eq i32 %4, %1, !dbg !271
+  br i1 %cmp, label %land.lhs.true, label %return, !dbg !271
 
 land.lhs.true:                                    ; preds = %entry
-  %Hold_hash = getelementptr inbounds %struct.QTType* %3, i64 %idxprom, i32 4
-  %5 = load i32* %Hold_hash, align 4, !tbaa !3
-  %6 = load i32* @hold_hash, align 4, !tbaa !3
-  %cmp3 = icmp eq i32 %5, %6
-  br i1 %cmp3, label %land.lhs.true4, label %return
+  %Hold_hash = getelementptr inbounds %struct.QTType* %3, i64 %idxprom, i32 4, !dbg !271
+  %5 = load i32* %Hold_hash, align 4, !dbg !271, !tbaa !117
+  %6 = load i32* @hold_hash, align 4, !dbg !271, !tbaa !117
+  %cmp3 = icmp eq i32 %5, %6, !dbg !271
+  br i1 %cmp3, label %land.lhs.true4, label %return, !dbg !271
 
 land.lhs.true4:                                   ; preds = %land.lhs.true
-  %OnMove = getelementptr inbounds %struct.QTType* %3, i64 %idxprom, i32 0
-  %7 = load i8* %OnMove, align 1, !tbaa !1
-  %conv = sext i8 %7 to i32
-  %8 = load i32* @white_to_move, align 4, !tbaa !3
-  %not.tobool = icmp eq i32 %8, 0
-  %conv8 = zext i1 %not.tobool to i32
-  %cmp9 = icmp eq i32 %conv, %conv8
-  br i1 %cmp9, label %if.then, label %return
+  %OnMove = getelementptr inbounds %struct.QTType* %3, i64 %idxprom, i32 0, !dbg !271
+  %7 = load i8* %OnMove, align 1, !dbg !271, !tbaa !115
+  %conv = sext i8 %7 to i32, !dbg !271
+  %8 = load i32* @white_to_move, align 4, !dbg !271, !tbaa !117
+  %not.tobool = icmp eq i32 %8, 0, !dbg !271
+  %conv8 = zext i1 %not.tobool to i32, !dbg !271
+  %cmp9 = icmp eq i32 %conv, %conv8, !dbg !271
+  br i1 %cmp9, label %if.then, label %return, !dbg !271
 
 if.then:                                          ; preds = %land.lhs.true4
-  %9 = load i32* @TTHits, align 4, !tbaa !3
-  %inc11 = add i32 %9, 1
-  store i32 %inc11, i32* @TTHits, align 4, !tbaa !3
-  %Bound = getelementptr inbounds %struct.QTType* %3, i64 %idxprom, i32 5
-  %10 = load i32* %Bound, align 4, !tbaa !3
-  store i32 %10, i32* %score, align 4, !tbaa !3
-  %Bestmove = getelementptr inbounds %struct.QTType* %3, i64 %idxprom, i32 2
-  %11 = load i16* %Bestmove, align 2, !tbaa !4
-  %conv16 = zext i16 %11 to i32
-  store i32 %conv16, i32* %best, align 4, !tbaa !3
-  %Type = getelementptr inbounds %struct.QTType* %3, i64 %idxprom, i32 1
-  %12 = load i8* %Type, align 1, !tbaa !1
-  %conv19 = sext i8 %12 to i32
-  br label %return
+  %9 = load i32* @TTHits, align 4, !dbg !272, !tbaa !117
+  %inc11 = add i32 %9, 1, !dbg !272
+  store i32 %inc11, i32* @TTHits, align 4, !dbg !272, !tbaa !117
+  %Bound = getelementptr inbounds %struct.QTType* %3, i64 %idxprom, i32 5, !dbg !274
+  %10 = load i32* %Bound, align 4, !dbg !274, !tbaa !117
+  store i32 %10, i32* %score, align 4, !dbg !274, !tbaa !117
+  %Bestmove = getelementptr inbounds %struct.QTType* %3, i64 %idxprom, i32 2, !dbg !275
+  %11 = load i16* %Bestmove, align 2, !dbg !275, !tbaa !153
+  %conv16 = zext i16 %11 to i32, !dbg !275
+  store i32 %conv16, i32* %best, align 4, !dbg !275, !tbaa !117
+  %Type = getelementptr inbounds %struct.QTType* %3, i64 %idxprom, i32 1, !dbg !276
+  %12 = load i8* %Type, align 1, !dbg !276, !tbaa !115
+  %conv19 = sext i8 %12 to i32, !dbg !276
+  br label %return, !dbg !276
 
 return:                                           ; preds = %entry, %land.lhs.true, %land.lhs.true4, %if.then
   %retval.0 = phi i32 [ %conv19, %if.then ], [ 4, %land.lhs.true4 ], [ 4, %land.lhs.true ], [ 4, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !277
 }

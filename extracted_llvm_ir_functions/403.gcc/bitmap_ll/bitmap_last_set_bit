@@ -1,95 +1,112 @@
-define i32 @bitmap_last_set_bit(%struct.bitmap_head_def* nocapture %a) #2 {
+define i32 @bitmap_last_set_bit(%struct.bitmap_head_def* nocapture %a) #3 {
 entry:
-  %first = getelementptr inbounds %struct.bitmap_head_def* %a, i64 0, i32 0
-  %0 = load %struct.bitmap_element_def** %first, align 8, !tbaa !0
-  %cmp = icmp eq %struct.bitmap_element_def* %0, null
-  br i1 %cmp, label %return, label %while.cond
+  tail call void @llvm.dbg.value(metadata !{%struct.bitmap_head_def* %a}, i64 0, metadata !136), !dbg !556
+  %first = getelementptr inbounds %struct.bitmap_head_def* %a, i64 0, i32 0, !dbg !557
+  %0 = load %struct.bitmap_element_def** %first, align 8, !dbg !557, !tbaa !368
+  tail call void @llvm.dbg.value(metadata !{%struct.bitmap_element_def* %0}, i64 0, metadata !137), !dbg !557
+  %cmp = icmp eq %struct.bitmap_element_def* %0, null, !dbg !558
+  br i1 %cmp, label %return, label %while.cond, !dbg !558
 
 while.cond:                                       ; preds = %entry, %while.cond
   %ptr.0 = phi %struct.bitmap_element_def* [ %1, %while.cond ], [ %0, %entry ]
-  %next = getelementptr inbounds %struct.bitmap_element_def* %ptr.0, i64 0, i32 0
-  %1 = load %struct.bitmap_element_def** %next, align 8, !tbaa !0
-  %cmp1 = icmp eq %struct.bitmap_element_def* %1, null
-  br i1 %cmp1, label %while.end, label %while.cond
+  %next = getelementptr inbounds %struct.bitmap_element_def* %ptr.0, i64 0, i32 0, !dbg !559
+  %1 = load %struct.bitmap_element_def** %next, align 8, !dbg !559, !tbaa !368
+  %cmp1 = icmp eq %struct.bitmap_element_def* %1, null, !dbg !559
+  br i1 %cmp1, label %while.end, label %while.cond, !dbg !559
 
 while.end:                                        ; preds = %while.cond
-  %arrayidx = getelementptr inbounds %struct.bitmap_element_def* %ptr.0, i64 0, i32 3, i64 1
-  %2 = load i64* %arrayidx, align 8, !tbaa !4
-  %cmp3 = icmp eq i64 %2, 0
-  br i1 %cmp3, label %if.then4, label %if.end7
+  tail call void @llvm.dbg.value(metadata !538, i64 0, metadata !139), !dbg !560
+  %arrayidx = getelementptr inbounds %struct.bitmap_element_def* %ptr.0, i64 0, i32 3, i64 1, !dbg !560
+  %2 = load i64* %arrayidx, align 8, !dbg !560, !tbaa !408
+  tail call void @llvm.dbg.value(metadata !{i64 %2}, i64 0, metadata !138), !dbg !560
+  %cmp3 = icmp eq i64 %2, 0, !dbg !561
+  br i1 %cmp3, label %if.then4, label %if.end7, !dbg !561
 
 if.then4:                                         ; preds = %while.end
-  %arrayidx6 = getelementptr inbounds %struct.bitmap_element_def* %ptr.0, i64 0, i32 3, i64 0
-  %3 = load i64* %arrayidx6, align 8, !tbaa !4
-  br label %if.end7
+  tail call void @llvm.dbg.value(metadata !11, i64 0, metadata !139), !dbg !562
+  %arrayidx6 = getelementptr inbounds %struct.bitmap_element_def* %ptr.0, i64 0, i32 3, i64 0, !dbg !562
+  %3 = load i64* %arrayidx6, align 8, !dbg !562, !tbaa !408
+  tail call void @llvm.dbg.value(metadata !{i64 %3}, i64 0, metadata !138), !dbg !562
+  br label %if.end7, !dbg !562
 
 if.end7:                                          ; preds = %if.then4, %while.end
   %word.0 = phi i64 [ %3, %if.then4 ], [ %2, %while.end ]
   %word_num.0 = phi i32 [ 0, %if.then4 ], [ 64, %while.end ]
-  %tobool = icmp ugt i64 %word.0, 4294967295
-  %shr = lshr i64 %word.0, 32
-  %shr.word.0 = select i1 %tobool, i64 %shr, i64 %word.0
-  %. = select i1 %tobool, i32 32, i32 0
-  %and10 = and i64 %shr.word.0, 4294901760
-  %tobool11 = icmp eq i64 %and10, 0
-  br i1 %tobool11, label %if.end15, label %if.then12
+  tail call void @llvm.dbg.value(metadata !11, i64 0, metadata !140), !dbg !563
+  %tobool = icmp ugt i64 %word.0, 4294967295, !dbg !564
+  %shr = lshr i64 %word.0, 32, !dbg !565
+  tail call void @llvm.dbg.value(metadata !{i64 %shr}, i64 0, metadata !138), !dbg !565
+  tail call void @llvm.dbg.value(metadata !544, i64 0, metadata !140), !dbg !565
+  %shr.word.0 = select i1 %tobool, i64 %shr, i64 %word.0, !dbg !564
+  %. = select i1 %tobool, i32 32, i32 0, !dbg !564
+  %and10 = and i64 %shr.word.0, 4294901760, !dbg !566
+  %tobool11 = icmp eq i64 %and10, 0, !dbg !566
+  br i1 %tobool11, label %if.end15, label %if.then12, !dbg !566
 
 if.then12:                                        ; preds = %if.end7
-  %shr13 = lshr i64 %shr.word.0, 16
-  %add1464 = or i32 %., 16
-  br label %if.end15
+  %shr13 = lshr i64 %shr.word.0, 16, !dbg !567
+  tail call void @llvm.dbg.value(metadata !{i64 %shr13}, i64 0, metadata !138), !dbg !567
+  %add1464 = or i32 %., 16, !dbg !567
+  tail call void @llvm.dbg.value(metadata !{i32 %add1464}, i64 0, metadata !140), !dbg !567
+  br label %if.end15, !dbg !567
 
 if.end15:                                         ; preds = %if.end7, %if.then12
   %word.2 = phi i64 [ %shr13, %if.then12 ], [ %shr.word.0, %if.end7 ]
   %bit_num.1 = phi i32 [ %add1464, %if.then12 ], [ %., %if.end7 ]
-  %and16 = and i64 %word.2, 65280
-  %tobool17 = icmp eq i64 %and16, 0
-  br i1 %tobool17, label %if.end21, label %if.then18
+  %and16 = and i64 %word.2, 65280, !dbg !568
+  %tobool17 = icmp eq i64 %and16, 0, !dbg !568
+  br i1 %tobool17, label %if.end21, label %if.then18, !dbg !568
 
 if.then18:                                        ; preds = %if.end15
-  %shr19 = lshr i64 %word.2, 8
-  %add20 = add i32 %bit_num.1, 8
-  br label %if.end21
+  %shr19 = lshr i64 %word.2, 8, !dbg !569
+  tail call void @llvm.dbg.value(metadata !{i64 %shr19}, i64 0, metadata !138), !dbg !569
+  %add20 = add i32 %bit_num.1, 8, !dbg !569
+  tail call void @llvm.dbg.value(metadata !{i32 %add20}, i64 0, metadata !140), !dbg !569
+  br label %if.end21, !dbg !569
 
 if.end21:                                         ; preds = %if.end15, %if.then18
   %word.3 = phi i64 [ %shr19, %if.then18 ], [ %word.2, %if.end15 ]
   %bit_num.2 = phi i32 [ %add20, %if.then18 ], [ %bit_num.1, %if.end15 ]
-  %and22 = and i64 %word.3, 240
-  %tobool23 = icmp eq i64 %and22, 0
-  br i1 %tobool23, label %if.end27, label %if.then24
+  %and22 = and i64 %word.3, 240, !dbg !570
+  %tobool23 = icmp eq i64 %and22, 0, !dbg !570
+  br i1 %tobool23, label %if.end27, label %if.then24, !dbg !570
 
 if.then24:                                        ; preds = %if.end21
-  %shr25 = lshr i64 %word.3, 4
-  %add26 = add i32 %bit_num.2, 4
-  br label %if.end27
+  %shr25 = lshr i64 %word.3, 4, !dbg !571
+  tail call void @llvm.dbg.value(metadata !{i64 %shr25}, i64 0, metadata !138), !dbg !571
+  %add26 = add i32 %bit_num.2, 4, !dbg !571
+  tail call void @llvm.dbg.value(metadata !{i32 %add26}, i64 0, metadata !140), !dbg !571
+  br label %if.end27, !dbg !571
 
 if.end27:                                         ; preds = %if.end21, %if.then24
   %word.4 = phi i64 [ %shr25, %if.then24 ], [ %word.3, %if.end21 ]
   %bit_num.3 = phi i32 [ %add26, %if.then24 ], [ %bit_num.2, %if.end21 ]
-  %and28 = and i64 %word.4, 12
-  %tobool29 = icmp eq i64 %and28, 0
-  br i1 %tobool29, label %if.end33, label %if.then30
+  %and28 = and i64 %word.4, 12, !dbg !572
+  %tobool29 = icmp eq i64 %and28, 0, !dbg !572
+  br i1 %tobool29, label %if.end33, label %if.then30, !dbg !572
 
 if.then30:                                        ; preds = %if.end27
-  %shr31 = lshr i64 %word.4, 2
-  %add32 = add i32 %bit_num.3, 2
-  br label %if.end33
+  %shr31 = lshr i64 %word.4, 2, !dbg !573
+  tail call void @llvm.dbg.value(metadata !{i64 %shr31}, i64 0, metadata !138), !dbg !573
+  %add32 = add i32 %bit_num.3, 2, !dbg !573
+  tail call void @llvm.dbg.value(metadata !{i32 %add32}, i64 0, metadata !140), !dbg !573
+  br label %if.end33, !dbg !573
 
 if.end33:                                         ; preds = %if.end27, %if.then30
   %word.5 = phi i64 [ %shr31, %if.then30 ], [ %word.4, %if.end27 ]
   %bit_num.4 = phi i32 [ %add32, %if.then30 ], [ %bit_num.3, %if.end27 ]
-  %and34 = lshr i64 %word.5, 1
-  %and34.tr = trunc i64 %and34 to i32
-  %add37 = and i32 %and34.tr, 1
-  %bit_num.4.add37 = add i32 %add37, %bit_num.4
-  %indx = getelementptr inbounds %struct.bitmap_element_def* %ptr.0, i64 0, i32 2
-  %4 = load i32* %indx, align 4, !tbaa !3
-  %mul = shl i32 %4, 7
-  %add40 = or i32 %mul, %word_num.0
-  %add41 = add i32 %bit_num.4.add37, %add40
-  br label %return
+  %and34 = lshr i64 %word.5, 1, !dbg !574
+  %and34.tr = trunc i64 %and34 to i32, !dbg !574
+  %add37 = and i32 %and34.tr, 1, !dbg !574
+  %bit_num.4.add37 = add i32 %add37, %bit_num.4, !dbg !574
+  %indx = getelementptr inbounds %struct.bitmap_element_def* %ptr.0, i64 0, i32 2, !dbg !575
+  %4 = load i32* %indx, align 4, !dbg !575, !tbaa !406
+  %mul = shl i32 %4, 7, !dbg !575
+  %add40 = or i32 %mul, %word_num.0, !dbg !575
+  %add41 = add i32 %bit_num.4.add37, %add40, !dbg !575
+  br label %return, !dbg !575
 
 return:                                           ; preds = %entry, %if.end33
   %retval.0 = phi i32 [ %add41, %if.end33 ], [ -1, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !576
 }

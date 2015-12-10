@@ -1,246 +1,252 @@
-define internal void @AssignReductionList(i32 %vindex, i8* %optstring, i8* nocapture readonly %arg) #1 {
-  %1 = load i8** getelementptr inbounds (%struct.anon* @iobasicpriv_, i64 0, i32 0), align 8, !tbaa !31
-  %2 = sext i32 %vindex to i64
-  %3 = getelementptr inbounds i8* %arg, i64 48
-  %4 = bitcast i8* %3 to %struct.IOBASIC_REDUCTIONLIST**
-  %5 = load %struct.IOBASIC_REDUCTIONLIST** %4, align 8, !tbaa !15
-  %6 = getelementptr inbounds %struct.IOBASIC_REDUCTIONLIST* %5, i64 %2
-  %7 = tail call i32 @CCTK_GroupTypeFromVarI(i32 %vindex) #8
-  %8 = icmp eq i32 %7, 1
-  br i1 %8, label %9, label %42
+define internal void @AssignReductionList(i32 %vindex, i8* %optstring, i8* nocapture %arg) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %vindex}, i64 0, metadata !239), !dbg !468
+  tail call void @llvm.dbg.value(metadata !{i8* %optstring}, i64 0, metadata !240), !dbg !468
+  tail call void @llvm.dbg.value(metadata !{i8* %arg}, i64 0, metadata !241), !dbg !468
+  %0 = load i8** getelementptr inbounds (%struct.anon* @iobasicpriv_, i64 0, i32 0), align 8, !dbg !469, !tbaa !286
+  tail call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !242), !dbg !469
+  %idxprom = sext i32 %vindex to i64, !dbg !470
+  %info_reductions = getelementptr inbounds i8* %arg, i64 48, !dbg !470
+  %1 = bitcast i8* %info_reductions to %struct.IOBASIC_REDUCTIONLIST**, !dbg !470
+  %2 = load %struct.IOBASIC_REDUCTIONLIST** %1, align 8, !dbg !470, !tbaa !286
+  %arrayidx = getelementptr inbounds %struct.IOBASIC_REDUCTIONLIST* %2, i64 %idxprom, !dbg !470
+  tail call void @llvm.dbg.value(metadata !{%struct.IOBASIC_REDUCTIONLIST* %arrayidx}, i64 0, metadata !263), !dbg !470
+  %call = tail call i32 @CCTK_GroupTypeFromVarI(i32 %vindex) #8, !dbg !471
+  %cmp = icmp eq i32 %call, 1, !dbg !471
+  br i1 %cmp, label %if.then, label %if.end28, !dbg !471
 
-; <label>:9                                       ; preds = %0
-  %10 = icmp eq i8* %optstring, null
-  br i1 %10, label %14, label %11
+if.then:                                          ; preds = %entry
+  %tobool = icmp eq i8* %optstring, null, !dbg !472
+  br i1 %tobool, label %if.end, label %if.then1, !dbg !472
 
-; <label>:11                                      ; preds = %9
-  %12 = tail call i8* @CCTK_VarName(i32 %vindex) #8
-  %13 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 5, i32 431, i8* getelementptr inbounds ([80 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([43 x i8]* @.str15, i64 0, i64 0), i8* %optstring, i8* %12) #8
-  br label %14
+if.then1:                                         ; preds = %if.then
+  %call2 = tail call i8* @CCTK_VarName(i32 %vindex) #8, !dbg !474
+  %call3 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 5, i32 431, i8* getelementptr inbounds ([68 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([43 x i8]* @.str24, i64 0, i64 0), i8* %optstring, i8* %call2) #8, !dbg !474
+  br label %if.end, !dbg !476
 
-; <label>:14                                      ; preds = %9, %11
-  %15 = tail call i8* @malloc(i64 40) #8
-  %16 = getelementptr inbounds %struct.IOBASIC_REDUCTIONLIST* %5, i64 %2, i32 1
-  %17 = bitcast %struct.IOBASIC_REDUCTION** %16 to i8**
-  store i8* %15, i8** %17, align 8, !tbaa !29
-  %18 = tail call i32 @CCTK_VarTypeI(i32 %vindex) #8
-  %19 = tail call i8* @CCTK_VarTypeName(i32 %18) #8
-  %20 = tail call i32 @strncmp(i8* %19, i8* getelementptr inbounds ([22 x i8]* @.str16, i64 0, i64 0), i64 21) #8
-  %21 = icmp eq i32 %20, 0
-  %22 = getelementptr inbounds %struct.IOBASIC_REDUCTIONLIST* %6, i64 0, i32 0
-  br i1 %21, label %28, label %23
+if.end:                                           ; preds = %if.then, %if.then1
+  %call4 = tail call noalias i8* @malloc(i64 40) #8, !dbg !477
+  %3 = bitcast i8* %call4 to %struct.IOBASIC_REDUCTION*, !dbg !477
+  %reductions = getelementptr inbounds %struct.IOBASIC_REDUCTIONLIST* %2, i64 %idxprom, i32 1, !dbg !477
+  store %struct.IOBASIC_REDUCTION* %3, %struct.IOBASIC_REDUCTION** %reductions, align 8, !dbg !477, !tbaa !286
+  %call5 = tail call i32 @CCTK_VarTypeI(i32 %vindex) #8, !dbg !478
+  %call6 = tail call i8* @CCTK_VarTypeName(i32 %call5) #8, !dbg !478
+  %call7 = tail call i32 @strncmp(i8* %call6, i8* getelementptr inbounds ([22 x i8]* @.str25, i64 0, i64 0), i64 21) #10, !dbg !478
+  %tobool8 = icmp eq i32 %call7, 0, !dbg !478
+  %num_reductions = getelementptr inbounds %struct.IOBASIC_REDUCTIONLIST* %arrayidx, i64 0, i32 0, !dbg !479
+  br i1 %tobool8, label %if.else, label %if.then9, !dbg !478
 
-; <label>:23                                      ; preds = %14
-  store i32 1, i32* %22, align 4, !tbaa !16
-  %24 = tail call i8* @strdup(i8* getelementptr inbounds ([13 x i8]* @.str17, i64 0, i64 0)) #8
-  %25 = load %struct.IOBASIC_REDUCTION** %16, align 8, !tbaa !29
-  %26 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %25, i64 0, i32 1
-  store i8* %24, i8** %26, align 8, !tbaa !18
-  %27 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %25, i64 0, i32 4
-  store %struct.IOBASIC_REDUCTION* null, %struct.IOBASIC_REDUCTION** %27, align 8, !tbaa !30
-  br label %131
+if.then9:                                         ; preds = %if.end
+  store i32 1, i32* %num_reductions, align 4, !dbg !479, !tbaa !275
+  %call10 = tail call noalias i8* @strdup(i8* getelementptr inbounds ([13 x i8]* @.str26, i64 0, i64 0)) #8, !dbg !481
+  %4 = load %struct.IOBASIC_REDUCTION** %reductions, align 8, !dbg !481, !tbaa !286
+  %name = getelementptr inbounds %struct.IOBASIC_REDUCTION* %4, i64 0, i32 1, !dbg !481
+  store i8* %call10, i8** %name, align 8, !dbg !481, !tbaa !286
+  %5 = load %struct.IOBASIC_REDUCTION** %reductions, align 8, !dbg !482, !tbaa !286
+  %next = getelementptr inbounds %struct.IOBASIC_REDUCTION* %5, i64 0, i32 4, !dbg !482
+  store %struct.IOBASIC_REDUCTION* null, %struct.IOBASIC_REDUCTION** %next, align 8, !dbg !482, !tbaa !286
+  br label %return, !dbg !483
 
-; <label>:28                                      ; preds = %14
-  store i32 2, i32* %22, align 4, !tbaa !16
-  %29 = tail call i8* @strdup(i8* getelementptr inbounds ([10 x i8]* @.str18, i64 0, i64 0)) #8
-  %30 = load %struct.IOBASIC_REDUCTION** %16, align 8, !tbaa !29
-  %31 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %30, i64 0, i32 1
-  store i8* %29, i8** %31, align 8, !tbaa !18
-  %32 = tail call i8* @malloc(i64 40) #8
-  %33 = load %struct.IOBASIC_REDUCTION** %16, align 8, !tbaa !29
-  %34 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %33, i64 0, i32 4
-  %35 = bitcast %struct.IOBASIC_REDUCTION** %34 to i8**
-  store i8* %32, i8** %35, align 8, !tbaa !30
-  %36 = tail call i8* @strdup(i8* getelementptr inbounds ([10 x i8]* @.str19, i64 0, i64 0)) #8
-  %37 = load %struct.IOBASIC_REDUCTION** %16, align 8, !tbaa !29
-  %38 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %37, i64 0, i32 4
-  %39 = load %struct.IOBASIC_REDUCTION** %38, align 8, !tbaa !30
-  %40 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %39, i64 0, i32 1
-  store i8* %36, i8** %40, align 8, !tbaa !18
-  %41 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %39, i64 0, i32 4
-  store %struct.IOBASIC_REDUCTION* null, %struct.IOBASIC_REDUCTION** %41, align 8, !tbaa !30
-  br label %131
+if.else:                                          ; preds = %if.end
+  store i32 2, i32* %num_reductions, align 4, !dbg !484, !tbaa !275
+  %call14 = tail call noalias i8* @strdup(i8* getelementptr inbounds ([10 x i8]* @.str27, i64 0, i64 0)) #8, !dbg !486
+  %6 = load %struct.IOBASIC_REDUCTION** %reductions, align 8, !dbg !486, !tbaa !286
+  %name16 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %6, i64 0, i32 1, !dbg !486
+  store i8* %call14, i8** %name16, align 8, !dbg !486, !tbaa !286
+  %call17 = tail call noalias i8* @malloc(i64 40) #8, !dbg !487
+  %7 = bitcast i8* %call17 to %struct.IOBASIC_REDUCTION*, !dbg !487
+  %8 = load %struct.IOBASIC_REDUCTION** %reductions, align 8, !dbg !487, !tbaa !286
+  %next19 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %8, i64 0, i32 4, !dbg !487
+  store %struct.IOBASIC_REDUCTION* %7, %struct.IOBASIC_REDUCTION** %next19, align 8, !dbg !487, !tbaa !286
+  %call20 = tail call noalias i8* @strdup(i8* getelementptr inbounds ([10 x i8]* @.str28, i64 0, i64 0)) #8, !dbg !488
+  %9 = load %struct.IOBASIC_REDUCTION** %reductions, align 8, !dbg !488, !tbaa !286
+  %next22 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %9, i64 0, i32 4, !dbg !488
+  %10 = load %struct.IOBASIC_REDUCTION** %next22, align 8, !dbg !488, !tbaa !286
+  %name23 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %10, i64 0, i32 1, !dbg !488
+  store i8* %call20, i8** %name23, align 8, !dbg !488, !tbaa !286
+  %11 = load %struct.IOBASIC_REDUCTION** %reductions, align 8, !dbg !489, !tbaa !286
+  %next25 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %11, i64 0, i32 4, !dbg !489
+  %12 = load %struct.IOBASIC_REDUCTION** %next25, align 8, !dbg !489, !tbaa !286
+  %next26 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %12, i64 0, i32 4, !dbg !489
+  store %struct.IOBASIC_REDUCTION* null, %struct.IOBASIC_REDUCTION** %next26, align 8, !dbg !489, !tbaa !286
+  br label %return
 
-; <label>:42                                      ; preds = %0
-  %43 = getelementptr inbounds %struct.IOBASIC_REDUCTIONLIST* %6, i64 0, i32 0
-  store i32 0, i32* %43, align 4, !tbaa !16
-  %44 = getelementptr inbounds %struct.IOBASIC_REDUCTIONLIST* %5, i64 %2, i32 1
-  store %struct.IOBASIC_REDUCTION* null, %struct.IOBASIC_REDUCTION** %44, align 8, !tbaa !29
-  %45 = icmp eq i8* %optstring, null
-  br i1 %45, label %63, label %46
+if.end28:                                         ; preds = %entry
+  %num_reductions29 = getelementptr inbounds %struct.IOBASIC_REDUCTIONLIST* %arrayidx, i64 0, i32 0, !dbg !490
+  store i32 0, i32* %num_reductions29, align 4, !dbg !490, !tbaa !275
+  %reductions30 = getelementptr inbounds %struct.IOBASIC_REDUCTIONLIST* %2, i64 %idxprom, i32 1, !dbg !491
+  store %struct.IOBASIC_REDUCTION* null, %struct.IOBASIC_REDUCTION** %reductions30, align 8, !dbg !491, !tbaa !286
+  %tobool31 = icmp eq i8* %optstring, null, !dbg !492
+  br i1 %tobool31, label %if.else47, label %if.then32, !dbg !492
 
-; <label>:46                                      ; preds = %42
-  %47 = tail call i32 @strncmp(i8* %optstring, i8* getelementptr inbounds ([13 x i8]* @.str20, i64 0, i64 0), i64 12) #8
-  %48 = icmp eq i32 %47, 0
-  br i1 %48, label %49, label %61
+if.then32:                                        ; preds = %if.end28
+  %call33 = tail call i32 @strncmp(i8* %optstring, i8* getelementptr inbounds ([13 x i8]* @.str29, i64 0, i64 0), i64 12) #10, !dbg !493
+  %cmp34 = icmp eq i32 %call33, 0, !dbg !493
+  br i1 %cmp34, label %land.lhs.true, label %if.else44, !dbg !493
 
-; <label>:49                                      ; preds = %46
-  %50 = tail call i64 @strlen(i8* %optstring) #8
-  %51 = add i64 %50, -1
-  %52 = getelementptr inbounds i8* %optstring, i64 %51
-  %53 = load i8* %52, align 1, !tbaa !32
-  %54 = icmp eq i8 %53, 62
-  br i1 %54, label %55, label %61
+land.lhs.true:                                    ; preds = %if.then32
+  %call35 = tail call i64 @strlen(i8* %optstring) #10, !dbg !495
+  %sub = add i64 %call35, -1, !dbg !495
+  %arrayidx36 = getelementptr inbounds i8* %optstring, i64 %sub, !dbg !495
+  %13 = load i8* %arrayidx36, align 1, !dbg !495, !tbaa !276
+  %cmp37 = icmp eq i8 %13, 62, !dbg !495
+  br i1 %cmp37, label %if.then39, label %if.else44, !dbg !495
 
-; <label>:55                                      ; preds = %49
-  %56 = getelementptr inbounds i8* %optstring, i64 12
-  %57 = tail call i8* @strdup(i8* %56) #8
-  %58 = tail call i64 @strlen(i8* %57) #8
-  %59 = add i64 %58, -1
-  %60 = getelementptr inbounds i8* %57, i64 %59
-  store i8 0, i8* %60, align 1, !tbaa !32
-  br label %65
+if.then39:                                        ; preds = %land.lhs.true
+  %add.ptr = getelementptr inbounds i8* %optstring, i64 12, !dbg !496
+  %call40 = tail call noalias i8* @strdup(i8* %add.ptr) #8, !dbg !496
+  tail call void @llvm.dbg.value(metadata !{i8* %call40}, i64 0, metadata !261), !dbg !496
+  %call41 = tail call i64 @strlen(i8* %call40) #10, !dbg !498
+  %sub42 = add i64 %call41, -1, !dbg !498
+  %arrayidx43 = getelementptr inbounds i8* %call40, i64 %sub42, !dbg !498
+  store i8 0, i8* %arrayidx43, align 1, !dbg !498, !tbaa !276
+  br label %if.end49, !dbg !499
 
-; <label>:61                                      ; preds = %49, %46
-  %62 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 5, i32 476, i8* getelementptr inbounds ([80 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([57 x i8]* @.str21, i64 0, i64 0), i8* %optstring) #8
-  br label %131
+if.else44:                                        ; preds = %land.lhs.true, %if.then32
+  %call45 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 5, i32 476, i8* getelementptr inbounds ([68 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([57 x i8]* @.str30, i64 0, i64 0), i8* %optstring) #8, !dbg !500
+  br label %return, !dbg !502
 
-; <label>:63                                      ; preds = %42
-  %64 = tail call i8* @strdup(i8* %1) #8
-  br label %65
+if.else47:                                        ; preds = %if.end28
+  %call48 = tail call noalias i8* @strdup(i8* %0) #8, !dbg !503
+  tail call void @llvm.dbg.value(metadata !{i8* %call48}, i64 0, metadata !261), !dbg !503
+  br label %if.end49
 
-; <label>:65                                      ; preds = %63, %55
-  %reduction_op_list.0 = phi i8* [ %57, %55 ], [ %64, %63 ]
-  %66 = tail call i64 @strlen(i8* %reduction_op_list.0) #8
-  %67 = add i64 %66, 1
-  %68 = tail call i8* @malloc(i64 %67) #8
-  %69 = icmp eq i8* %reduction_op_list.0, null
-  br i1 %69, label %.critedge, label %.lr.ph15
+if.end49:                                         ; preds = %if.else47, %if.then39
+  %reduction_op_list.0 = phi i8* [ %call40, %if.then39 ], [ %call48, %if.else47 ]
+  tail call void @llvm.dbg.value(metadata !{i8* %reduction_op_list.0}, i64 0, metadata !258), !dbg !505
+  %call50 = tail call i64 @strlen(i8* %reduction_op_list.0) #10, !dbg !506
+  %add = add i64 %call50, 1, !dbg !506
+  %call51 = tail call noalias i8* @malloc(i64 %add) #8, !dbg !506
+  tail call void @llvm.dbg.value(metadata !{i8* %call51}, i64 0, metadata !260), !dbg !506
+  %tobool52174 = icmp eq i8* %reduction_op_list.0, null, !dbg !507
+  br i1 %tobool52174, label %while.end115, label %land.rhs, !dbg !507
 
-.lr.ph15:                                         ; preds = %65
-  %70 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %68, i1 false)
-  %71 = load i8* %reduction_op_list.0, align 1, !tbaa !32
-  %72 = icmp eq i8 %71, 0
-  br i1 %72, label %.critedge, label %.preheader11
+land.rhs:                                         ; preds = %if.end109, %if.then107, %if.then90, %if.end49
+  %string_start.0175 = phi i8* [ %reduction_op_list.0, %if.end49 ], [ %string_end.0, %if.then90 ], [ %string_end.0, %if.then107 ], [ %string_end.0, %if.end109 ]
+  %14 = load i8* %string_start.0175, align 1, !dbg !507, !tbaa !276
+  %tobool54 = icmp eq i8 %14, 0, !dbg !507
+  br i1 %tobool54, label %while.end115, label %while.cond55.preheader
 
-.preheader11:                                     ; preds = %.backedge.backedge, %.lr.ph15, %isspace.exit._crit_edge
-  %73 = phi i8 [ %.pre, %isspace.exit._crit_edge ], [ %108, %.backedge.backedge ], [ %71, %.lr.ph15 ]
-  %string_start.1 = phi i8* [ %82, %isspace.exit._crit_edge ], [ %string_end.0, %.backedge.backedge ], [ %reduction_op_list.0, %.lr.ph15 ]
-  %isascii.i.i8 = icmp sgt i8 %73, -1
-  br i1 %isascii.i.i8, label %74, label %79
+while.cond55.preheader:                           ; preds = %land.rhs
+  %call58 = tail call i16** @__ctype_b_loc() #11, !dbg !508
+  %15 = load i16** %call58, align 8, !dbg !508, !tbaa !286
+  br label %while.cond55, !dbg !508
 
-; <label>:74                                      ; preds = %.preheader11
-  %75 = sext i8 %73 to i64
-  %76 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %75
-  %77 = load i32* %76, align 4, !tbaa !22
-  %78 = and i32 %77, 16384
-  br label %isspace.exit
+while.cond55:                                     ; preds = %while.cond55.while.cond55_crit_edge, %while.cond55.preheader
+  %16 = phi i8 [ %.pre, %while.cond55.while.cond55_crit_edge ], [ %14, %while.cond55.preheader ]
+  %string_start.1 = phi i8* [ %incdec.ptr, %while.cond55.while.cond55_crit_edge ], [ %string_start.0175, %while.cond55.preheader ]
+  %idxprom57 = sext i8 %16 to i64, !dbg !508
+  %arrayidx59 = getelementptr inbounds i16* %15, i64 %idxprom57, !dbg !508
+  %17 = load i16* %arrayidx59, align 2, !dbg !508, !tbaa !510
+  %and = and i16 %17, 8192, !dbg !508
+  %tobool61 = icmp eq i16 %and, 0, !dbg !508
+  %incdec.ptr = getelementptr inbounds i8* %string_start.1, i64 1, !dbg !511
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !258), !dbg !511
+  br i1 %tobool61, label %while.end, label %while.cond55.while.cond55_crit_edge, !dbg !508
 
-; <label>:79                                      ; preds = %.preheader11
-  %80 = sext i8 %73 to i32
-  %81 = tail call i32 @__maskrune(i32 %80, i64 16384) #8
-  br label %isspace.exit
+while.cond55.while.cond55_crit_edge:              ; preds = %while.cond55
+  %.pre = load i8* %incdec.ptr, align 1, !dbg !508, !tbaa !276
+  br label %while.cond55, !dbg !508
 
-isspace.exit:                                     ; preds = %74, %79
-  %.sink.i.in.i = phi i32 [ %78, %74 ], [ %81, %79 ]
-  %.sink.i.i = icmp eq i32 %.sink.i.in.i, 0
-  %82 = getelementptr inbounds i8* %string_start.1, i64 1
-  br i1 %.sink.i.i, label %83, label %isspace.exit._crit_edge
+while.end:                                        ; preds = %while.cond55
+  %tobool63 = icmp eq i8 %16, 0, !dbg !513
+  br i1 %tobool63, label %while.end115, label %while.cond67, !dbg !513
 
-isspace.exit._crit_edge:                          ; preds = %isspace.exit
-  %.pre = load i8* %82, align 1, !tbaa !32
-  br label %.preheader11
+while.cond67:                                     ; preds = %while.end, %land.rhs70
+  %string_start.1.pn = phi i8* [ %string_end.0, %land.rhs70 ], [ %string_start.1, %while.end ]
+  %string_end.0 = getelementptr inbounds i8* %string_start.1.pn, i64 1, !dbg !514
+  %18 = load i8* %string_end.0, align 1, !dbg !515, !tbaa !276
+  %tobool69 = icmp eq i8 %18, 0, !dbg !515
+  br i1 %tobool69, label %while.end81, label %land.rhs70, !dbg !515
 
-; <label>:83                                      ; preds = %isspace.exit
-  %84 = load i8* %string_start.1, align 1, !tbaa !32
-  %85 = icmp eq i8 %84, 0
-  br i1 %85, label %.critedge, label %.preheader10
+land.rhs70:                                       ; preds = %while.cond67
+  %idxprom72 = sext i8 %18 to i64, !dbg !515
+  %arrayidx74 = getelementptr inbounds i16* %15, i64 %idxprom72, !dbg !515
+  %19 = load i16* %arrayidx74, align 2, !dbg !515, !tbaa !510
+  %and76 = and i16 %19, 8192, !dbg !515
+  %lnot = icmp eq i16 %and76, 0, !dbg !515
+  br i1 %lnot, label %while.cond67, label %while.end81
 
-.preheader10:                                     ; preds = %83, %isspace.exit5
-  %string_start.1.pn = phi i8* [ %string_end.0, %isspace.exit5 ], [ %string_start.1, %83 ]
-  %string_end.0 = getelementptr inbounds i8* %string_start.1.pn, i64 1
-  %86 = load i8* %string_end.0, align 1, !tbaa !32
-  %87 = icmp eq i8 %86, 0
-  br i1 %87, label %.critedge1, label %88
+while.end81:                                      ; preds = %while.cond67, %land.rhs70
+  %sub.ptr.lhs.cast = ptrtoint i8* %string_end.0 to i64, !dbg !516
+  %sub.ptr.rhs.cast = ptrtoint i8* %string_start.1 to i64, !dbg !516
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !516
+  %call82 = tail call i8* @strncpy(i8* %call51, i8* %string_start.1, i64 %sub.ptr.sub) #8, !dbg !516
+  %arrayidx86 = getelementptr inbounds i8* %call51, i64 %sub.ptr.sub, !dbg !517
+  store i8 0, i8* %arrayidx86, align 1, !dbg !517, !tbaa !276
+  tail call void @llvm.dbg.value(metadata !{i8* %string_end.0}, i64 0, metadata !258), !dbg !518
+  %call87 = tail call i32 @CCTK_ReductionHandle(i8* %call51) #8, !dbg !519
+  tail call void @llvm.dbg.value(metadata !{i32 %call87}, i64 0, metadata !262), !dbg !519
+  %cmp88 = icmp slt i32 %call87, 0, !dbg !520
+  br i1 %cmp88, label %if.then90, label %while.cond94.preheader, !dbg !520
 
-; <label>:88                                      ; preds = %.preheader10
-  %isascii.i.i29 = icmp sgt i8 %86, -1
-  br i1 %isascii.i.i29, label %89, label %94
+while.cond94.preheader:                           ; preds = %while.end81
+  %20 = load %struct.IOBASIC_REDUCTION** %reductions30, align 8, !dbg !521, !tbaa !286
+  %tobool95173 = icmp eq %struct.IOBASIC_REDUCTION* %20, null, !dbg !521
+  br i1 %tobool95173, label %if.end109, label %while.body96, !dbg !521
 
-; <label>:89                                      ; preds = %88
-  %90 = sext i8 %86 to i64
-  %91 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %90
-  %92 = load i32* %91, align 4, !tbaa !22
-  %93 = and i32 %92, 16384
-  br label %isspace.exit5
+if.then90:                                        ; preds = %while.end81
+  %call91 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 5, i32 518, i8* getelementptr inbounds ([68 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str31, i64 0, i64 0), i8* %call51) #8, !dbg !522
+  br label %land.rhs, !dbg !524
 
-; <label>:94                                      ; preds = %88
-  %95 = sext i8 %86 to i32
-  %96 = tail call i32 @__maskrune(i32 %95, i64 16384) #8
-  br label %isspace.exit5
+while.cond94:                                     ; preds = %while.body96
+  %21 = load %struct.IOBASIC_REDUCTION** %next103, align 8, !dbg !521, !tbaa !286
+  %tobool95 = icmp eq %struct.IOBASIC_REDUCTION* %21, null, !dbg !521
+  br i1 %tobool95, label %if.end109, label %while.body96, !dbg !521
 
-isspace.exit5:                                    ; preds = %89, %94
-  %.sink.i.in.i3 = phi i32 [ %93, %89 ], [ %96, %94 ]
-  %.sink.i.i4 = icmp eq i32 %.sink.i.in.i3, 0
-  br i1 %.sink.i.i4, label %.preheader10, label %.critedge1
+while.body96:                                     ; preds = %while.cond94.preheader, %while.cond94
+  %22 = phi %struct.IOBASIC_REDUCTION* [ %21, %while.cond94 ], [ %20, %while.cond94.preheader ]
+  %name97 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %22, i64 0, i32 1, !dbg !525
+  %23 = load i8** %name97, align 8, !dbg !525, !tbaa !286
+  %call98 = tail call i32 @strcmp(i8* %23, i8* %call51) #10, !dbg !525
+  %cmp99 = icmp eq i32 %call98, 0, !dbg !525
+  %next103 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %22, i64 0, i32 4, !dbg !527
+  tail call void @llvm.dbg.value(metadata !{%struct.IOBASIC_REDUCTION** %next103}, i64 0, metadata !264), !dbg !527
+  br i1 %cmp99, label %if.then107, label %while.cond94, !dbg !525
 
-.critedge1:                                       ; preds = %isspace.exit5, %.preheader10
-  %97 = ptrtoint i8* %string_end.0 to i64
-  %98 = ptrtoint i8* %string_start.1 to i64
-  %99 = sub i64 %97, %98
-  %100 = tail call i8* @__strncpy_chk(i8* %68, i8* %string_start.1, i64 %99, i64 %70) #8
-  %101 = getelementptr inbounds i8* %68, i64 %99
-  store i8 0, i8* %101, align 1, !tbaa !32
-  %102 = tail call i32 @CCTK_ReductionHandle(i8* %68) #8
-  %103 = icmp slt i32 %102, 0
-  br i1 %103, label %106, label %.preheader
+if.then107:                                       ; preds = %while.body96
+  %call108 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 3, i32 537, i8* getelementptr inbounds ([68 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([71 x i8]* @.str32, i64 0, i64 0), i8* %call51) #8, !dbg !528
+  br label %land.rhs, !dbg !530
 
-.preheader:                                       ; preds = %.critedge1
-  %104 = load %struct.IOBASIC_REDUCTION** %44, align 8, !tbaa !14
-  %105 = icmp eq %struct.IOBASIC_REDUCTION* %104, null
-  br i1 %105, label %._crit_edge, label %.lr.ph
+if.end109:                                        ; preds = %while.cond94, %while.cond94.preheader
+  %new_reduction.0.lcssa = phi %struct.IOBASIC_REDUCTION** [ %reductions30, %while.cond94.preheader ], [ %next103, %while.cond94 ]
+  %call110 = tail call noalias i8* @malloc(i64 40) #8, !dbg !531
+  %24 = bitcast i8* %call110 to %struct.IOBASIC_REDUCTION*, !dbg !531
+  store %struct.IOBASIC_REDUCTION* %24, %struct.IOBASIC_REDUCTION** %new_reduction.0.lcssa, align 8, !dbg !531, !tbaa !286
+  %handle = bitcast i8* %call110 to i32*, !dbg !532
+  store i32 %call87, i32* %handle, align 4, !dbg !532, !tbaa !275
+  %call111 = tail call noalias i8* @strdup(i8* %call51) #8, !dbg !533
+  %25 = load %struct.IOBASIC_REDUCTION** %new_reduction.0.lcssa, align 8, !dbg !533, !tbaa !286
+  %name112 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %25, i64 0, i32 1, !dbg !533
+  store i8* %call111, i8** %name112, align 8, !dbg !533, !tbaa !286
+  %26 = load %struct.IOBASIC_REDUCTION** %new_reduction.0.lcssa, align 8, !dbg !534, !tbaa !286
+  %next113 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %26, i64 0, i32 4, !dbg !534
+  store %struct.IOBASIC_REDUCTION* null, %struct.IOBASIC_REDUCTION** %next113, align 8, !dbg !534, !tbaa !286
+  %27 = load i32* %num_reductions29, align 4, !dbg !535, !tbaa !275
+  %inc = add i32 %27, 1, !dbg !535
+  store i32 %inc, i32* %num_reductions29, align 4, !dbg !535, !tbaa !275
+  br label %land.rhs, !dbg !536
 
-; <label>:106                                     ; preds = %.critedge1
-  %107 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 5, i32 518, i8* getelementptr inbounds ([80 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str22, i64 0, i64 0), i8* %68) #8
-  br label %.backedge.backedge
+while.end115:                                     ; preds = %while.end, %land.rhs, %if.end49
+  tail call void @free(i8* %reduction_op_list.0) #8, !dbg !537
+  tail call void @free(i8* %call51) #8, !dbg !538
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !256), !dbg !539
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !256), !dbg !539
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !256), !dbg !539
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !256), !dbg !539
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !256), !dbg !539
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !256), !dbg !539
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !256), !dbg !539
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !256), !dbg !539
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !256), !dbg !539
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !256), !dbg !539
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !256), !dbg !539
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !256), !dbg !539
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !256), !dbg !539
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !256), !dbg !539
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !256), !dbg !539
+  br label %return, !dbg !539
 
-.backedge.backedge:                               ; preds = %106, %119, %._crit_edge
-  %108 = load i8* %string_end.0, align 1, !tbaa !32
-  %109 = icmp eq i8 %108, 0
-  br i1 %109, label %.critedge, label %.preheader11
-
-; <label>:110                                     ; preds = %.lr.ph
-  %111 = load %struct.IOBASIC_REDUCTION** %118, align 8, !tbaa !14
-  %112 = icmp eq %struct.IOBASIC_REDUCTION* %111, null
-  br i1 %112, label %._crit_edge, label %.lr.ph
-
-.lr.ph:                                           ; preds = %.preheader, %110
-  %113 = phi %struct.IOBASIC_REDUCTION* [ %111, %110 ], [ %104, %.preheader ]
-  %114 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %113, i64 0, i32 1
-  %115 = load i8** %114, align 8, !tbaa !18
-  %116 = tail call i32 @strcmp(i8* %115, i8* %68) #8
-  %117 = icmp eq i32 %116, 0
-  %118 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %113, i64 0, i32 4
-  br i1 %117, label %119, label %110
-
-; <label>:119                                     ; preds = %.lr.ph
-  %120 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 3, i32 537, i8* getelementptr inbounds ([80 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([71 x i8]* @.str23, i64 0, i64 0), i8* %68) #8
-  br label %.backedge.backedge
-
-._crit_edge:                                      ; preds = %110, %.preheader
-  %new_reduction.0.lcssa = phi %struct.IOBASIC_REDUCTION** [ %44, %.preheader ], [ %118, %110 ]
-  %121 = tail call i8* @malloc(i64 40) #8
-  %122 = bitcast %struct.IOBASIC_REDUCTION** %new_reduction.0.lcssa to i8**
-  store i8* %121, i8** %122, align 8, !tbaa !14
-  %123 = bitcast i8* %121 to i32*
-  store i32 %102, i32* %123, align 4, !tbaa !33
-  %124 = tail call i8* @strdup(i8* %68) #8
-  %125 = load %struct.IOBASIC_REDUCTION** %new_reduction.0.lcssa, align 8, !tbaa !14
-  %126 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %125, i64 0, i32 1
-  store i8* %124, i8** %126, align 8, !tbaa !18
-  %127 = load %struct.IOBASIC_REDUCTION** %new_reduction.0.lcssa, align 8, !tbaa !14
-  %128 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %127, i64 0, i32 4
-  store %struct.IOBASIC_REDUCTION* null, %struct.IOBASIC_REDUCTION** %128, align 8, !tbaa !30
-  %129 = load i32* %43, align 4, !tbaa !16
-  %130 = add i32 %129, 1
-  store i32 %130, i32* %43, align 4, !tbaa !16
-  br label %.backedge.backedge
-
-.critedge:                                        ; preds = %.lr.ph15, %83, %.backedge.backedge, %65
-  tail call void @free(i8* %reduction_op_list.0) #9
-  tail call void @free(i8* %68) #9
-  br label %131
-
-; <label>:131                                     ; preds = %23, %28, %.critedge, %61
-  ret void
+return:                                           ; preds = %if.then9, %if.else, %while.end115, %if.else44
+  ret void, !dbg !539
 }

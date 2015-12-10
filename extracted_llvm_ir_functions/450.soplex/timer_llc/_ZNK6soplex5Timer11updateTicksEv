@@ -1,0 +1,35 @@
+define void @_ZNK6soplex5Timer11updateTicksEv(%"class.soplex::Timer"* nocapture %this) #3 align 2 {
+entry:
+  %now = alloca %struct.tms, align 8
+  call void @llvm.dbg.value(metadata !{%"class.soplex::Timer"* %this}, i64 0, metadata !1434), !dbg !1506
+  call void @llvm.dbg.declare(metadata !{%struct.tms* %now}, metadata !1436), !dbg !1507
+  %call = call i64 @times(%struct.tms* %now) #5, !dbg !1508
+  call void @llvm.dbg.value(metadata !{i64 %call}, i64 0, metadata !1451), !dbg !1508
+  %cmp = icmp eq i64 %call, -1, !dbg !1509
+  br i1 %cmp, label %if.then, label %entry.if.end_crit_edge, !dbg !1509
+
+entry.if.end_crit_edge:                           ; preds = %entry
+  %tms_utime2.phi.trans.insert = getelementptr inbounds %struct.tms* %now, i64 0, i32 0
+  %.pre = load i64* %tms_utime2.phi.trans.insert, align 8, !dbg !1510, !tbaa !1511
+  %tms_stime3.phi.trans.insert = getelementptr inbounds %struct.tms* %now, i64 0, i32 1
+  %.pre5 = load i64* %tms_stime3.phi.trans.insert, align 8, !dbg !1514, !tbaa !1511
+  br label %if.end, !dbg !1509
+
+if.then:                                          ; preds = %entry
+  call void @llvm.dbg.value(metadata !1515, i64 0, metadata !1451), !dbg !1516
+  %0 = bitcast %struct.tms* %now to i8*, !dbg !1516
+  call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 16, i32 8, i1 false), !dbg !1516
+  br label %if.end, !dbg !1516
+
+if.end:                                           ; preds = %entry.if.end_crit_edge, %if.then
+  %1 = phi i64 [ 0, %if.then ], [ %.pre5, %entry.if.end_crit_edge ]
+  %2 = phi i64 [ 0, %if.then ], [ %.pre, %entry.if.end_crit_edge ]
+  %ret.0 = phi i64 [ 0, %if.then ], [ %call, %entry.if.end_crit_edge ]
+  %uTicks = getelementptr inbounds %"class.soplex::Timer"* %this, i64 0, i32 4, !dbg !1510
+  store i64 %2, i64* %uTicks, align 8, !dbg !1510, !tbaa !1511
+  %sTicks = getelementptr inbounds %"class.soplex::Timer"* %this, i64 0, i32 5, !dbg !1514
+  store i64 %1, i64* %sTicks, align 8, !dbg !1514, !tbaa !1511
+  %rTicks = getelementptr inbounds %"class.soplex::Timer"* %this, i64 0, i32 6, !dbg !1517
+  store i64 %ret.0, i64* %rTicks, align 8, !dbg !1517, !tbaa !1511
+  ret void, !dbg !1518
+}

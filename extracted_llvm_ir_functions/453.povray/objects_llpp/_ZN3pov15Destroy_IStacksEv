@@ -1,0 +1,28 @@
+define void @_ZN3pov15Destroy_IStacksEv() #0 {
+entry:
+  %0 = load %"struct.pov::istack_struct"** @_ZN3pov11free_istackE, align 8, !dbg !1382, !tbaa !1116
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istack_struct"* %0}, i64 0, metadata !992), !dbg !1382
+  %cmp6 = icmp eq %"struct.pov::istack_struct"* %0, null, !dbg !1383
+  br i1 %cmp6, label %while.end, label %while.body, !dbg !1383
+
+while.body:                                       ; preds = %entry, %while.body
+  %istk.07 = phi %"struct.pov::istack_struct"* [ %1, %while.body ], [ %0, %entry ]
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istack_struct"* %istk.07}, i64 0, metadata !993), !dbg !1384
+  %next = getelementptr inbounds %"struct.pov::istack_struct"* %istk.07, i64 0, i32 0, !dbg !1386
+  %1 = load %"struct.pov::istack_struct"** %next, align 8, !dbg !1386, !tbaa !1116
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istack_struct"* %1}, i64 0, metadata !992), !dbg !1386
+  %istack = getelementptr inbounds %"struct.pov::istack_struct"* %istk.07, i64 0, i32 1, !dbg !1387
+  %2 = load %"struct.pov::istk_entry"** %istack, align 8, !dbg !1387, !tbaa !1116
+  %3 = bitcast %"struct.pov::istk_entry"* %2 to i8*, !dbg !1387
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %3, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 887) #5, !dbg !1387
+  store %"struct.pov::istk_entry"* null, %"struct.pov::istk_entry"** %istack, align 8, !dbg !1387, !tbaa !1116
+  %4 = bitcast %"struct.pov::istack_struct"* %istk.07 to i8*, !dbg !1389
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %4, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 889) #5, !dbg !1389
+  tail call void @llvm.dbg.value(metadata !1391, i64 0, metadata !993), !dbg !1389
+  %cmp = icmp eq %"struct.pov::istack_struct"* %1, null, !dbg !1383
+  br i1 %cmp, label %while.end, label %while.body, !dbg !1383
+
+while.end:                                        ; preds = %while.body, %entry
+  store %"struct.pov::istack_struct"* null, %"struct.pov::istack_struct"** @_ZN3pov11free_istackE, align 8, !dbg !1392, !tbaa !1116
+  ret void, !dbg !1393
+}

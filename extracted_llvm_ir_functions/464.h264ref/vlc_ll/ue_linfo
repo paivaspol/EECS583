@@ -1,29 +1,35 @@
 define void @ue_linfo(i32 %ue, i32 %dummy, i32* nocapture %len, i32* nocapture %info) #0 {
 entry:
-  %add = add nsw i32 %ue, 1
-  br label %land.rhs
+  tail call void @llvm.dbg.value(metadata !{i32 %ue}, i64 0, metadata !151), !dbg !816
+  tail call void @llvm.dbg.value(metadata !{i32 %dummy}, i64 0, metadata !152), !dbg !816
+  tail call void @llvm.dbg.value(metadata !{i32* %len}, i64 0, metadata !153), !dbg !816
+  tail call void @llvm.dbg.value(metadata !{i32* %info}, i64 0, metadata !154), !dbg !816
+  %add = add nsw i32 %ue, 1, !dbg !817
+  tail call void @llvm.dbg.value(metadata !33, i64 0, metadata !155), !dbg !818
+  br label %land.rhs, !dbg !818
 
 for.cond:                                         ; preds = %land.rhs
-  %nn.015 = sdiv i32 %nn.015.in, 2
-  %cmp = icmp slt i32 %inc, 16
-  br i1 %cmp, label %land.rhs, label %for.end
+  %nn.015 = sdiv i32 %nn.015.in, 2, !dbg !817
+  %cmp = icmp slt i32 %inc, 16, !dbg !818
+  br i1 %cmp, label %land.rhs, label %for.end, !dbg !818
 
 land.rhs:                                         ; preds = %entry, %for.cond
   %nn.015.in = phi i32 [ %add, %entry ], [ %nn.015, %for.cond ]
   %i.013 = phi i32 [ 0, %entry ], [ %inc, %for.cond ]
-  %nn.0.in.off = add i32 %nn.015.in, 1
-  %0 = icmp ugt i32 %nn.0.in.off, 2
-  %inc = add nsw i32 %i.013, 1
+  %nn.0.in.off = add i32 %nn.015.in, 1, !dbg !818
+  %0 = icmp ugt i32 %nn.0.in.off, 2, !dbg !818
+  %inc = add nsw i32 %i.013, 1, !dbg !818
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !155), !dbg !818
   br i1 %0, label %for.cond, label %for.end
 
 for.end:                                          ; preds = %for.cond, %land.rhs
   %i.0.lcssa = phi i32 [ %inc, %for.cond ], [ %i.013, %land.rhs ]
-  %mul = shl nsw i32 %i.0.lcssa, 1
-  %add311 = or i32 %mul, 1
-  store i32 %add311, i32* %len, align 4, !tbaa !0
-  %1 = tail call double @ldexp(double 1.000000e+00, i32 %i.0.lcssa) #1
-  %conv5 = fptosi double %1 to i32
-  %sub = sub nsw i32 %add, %conv5
-  store i32 %sub, i32* %info, align 4, !tbaa !0
-  ret void
+  %mul = shl nsw i32 %i.0.lcssa, 1, !dbg !820
+  %add311 = or i32 %mul, 1, !dbg !820
+  store i32 %add311, i32* %len, align 4, !dbg !820, !tbaa !806
+  %1 = tail call double @ldexp(double 1.000000e+00, i32 %i.0.lcssa) #2, !dbg !821
+  %conv5 = fptosi double %1 to i32, !dbg !821
+  %sub = sub nsw i32 %add, %conv5, !dbg !821
+  store i32 %sub, i32* %info, align 4, !dbg !821, !tbaa !806
+  ret void, !dbg !822
 }

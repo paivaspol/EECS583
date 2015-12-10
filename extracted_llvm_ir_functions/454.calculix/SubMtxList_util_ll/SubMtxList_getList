@@ -1,80 +1,84 @@
 define %struct._SubMtx* @SubMtxList_getList(%struct._SubMtxList* %list, i32 %ilist) #0 {
 entry:
-  %cmp = icmp eq %struct._SubMtxList* %list, null
-  %cmp1 = icmp slt i32 %ilist, 0
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtxList* %list}, i64 0, metadata !78), !dbg !135
+  tail call void @llvm.dbg.value(metadata !{i32 %ilist}, i64 0, metadata !79), !dbg !136
+  %cmp = icmp eq %struct._SubMtxList* %list, null, !dbg !137
+  %cmp1 = icmp slt i32 %ilist, 0, !dbg !137
+  %or.cond = or i1 %cmp, %cmp1, !dbg !137
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2, !dbg !137
 
 lor.lhs.false2:                                   ; preds = %entry
-  %nlist = getelementptr inbounds %struct._SubMtxList* %list, i64 0, i32 0
-  %0 = load i32* %nlist, align 4, !tbaa !0
-  %cmp3 = icmp sgt i32 %0, %ilist
-  br i1 %cmp3, label %if.end, label %if.then
+  %nlist = getelementptr inbounds %struct._SubMtxList* %list, i64 0, i32 0, !dbg !137
+  %0 = load i32* %nlist, align 4, !dbg !137, !tbaa !84
+  %cmp3 = icmp sgt i32 %0, %ilist, !dbg !137
+  br i1 %cmp3, label %if.end, label %if.then, !dbg !137
 
 if.then:                                          ; preds = %lor.lhs.false2, %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([55 x i8]* @.str3, i64 0, i64 0), %struct._SubMtxList* %list, i32 %ilist) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !138, !tbaa !89
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([55 x i8]* @.str3, i64 0, i64 0), %struct._SubMtxList* %list, i32 %ilist) #5, !dbg !138
+  tail call void @exit(i32 -1) #6, !dbg !140
+  unreachable, !dbg !140
 
 if.end:                                           ; preds = %lor.lhs.false2
-  %idxprom = sext i32 %ilist to i64
-  %heads = getelementptr inbounds %struct._SubMtxList* %list, i64 0, i32 1
-  %2 = load %struct._SubMtx*** %heads, align 8, !tbaa !3
-  %arrayidx = getelementptr inbounds %struct._SubMtx** %2, i64 %idxprom
-  %3 = load %struct._SubMtx** %arrayidx, align 8, !tbaa !3
-  %cmp4 = icmp eq %struct._SubMtx* %3, null
-  br i1 %cmp4, label %if.end40, label %if.then5
+  %idxprom = sext i32 %ilist to i64, !dbg !141
+  %heads = getelementptr inbounds %struct._SubMtxList* %list, i64 0, i32 1, !dbg !141
+  %2 = load %struct._SubMtx*** %heads, align 8, !dbg !141, !tbaa !89
+  %arrayidx = getelementptr inbounds %struct._SubMtx** %2, i64 %idxprom, !dbg !141
+  %3 = load %struct._SubMtx** %arrayidx, align 8, !dbg !141, !tbaa !89
+  %cmp4 = icmp eq %struct._SubMtx* %3, null, !dbg !141
+  br i1 %cmp4, label %if.end40, label %if.then5, !dbg !141
 
 if.then5:                                         ; preds = %if.end
-  %lock = getelementptr inbounds %struct._SubMtxList* %list, i64 0, i32 3
-  %4 = load %struct._Lock** %lock, align 8, !tbaa !3
-  %cmp6 = icmp eq %struct._Lock* %4, null
-  br i1 %cmp6, label %if.then23, label %lor.lhs.false7
+  %lock = getelementptr inbounds %struct._SubMtxList* %list, i64 0, i32 3, !dbg !142
+  %4 = load %struct._Lock** %lock, align 8, !dbg !142, !tbaa !89
+  %cmp6 = icmp eq %struct._Lock* %4, null, !dbg !142
+  br i1 %cmp6, label %if.then23, label %lor.lhs.false7, !dbg !142
 
 lor.lhs.false7:                                   ; preds = %if.then5
-  %flags = getelementptr inbounds %struct._SubMtxList* %list, i64 0, i32 4
-  %5 = load i8** %flags, align 8, !tbaa !3
-  %cmp8 = icmp eq i8* %5, null
-  br i1 %cmp8, label %lor.lhs.false14, label %land.lhs.true
+  %flags = getelementptr inbounds %struct._SubMtxList* %list, i64 0, i32 4, !dbg !142
+  %5 = load i8** %flags, align 8, !dbg !142, !tbaa !89
+  %cmp8 = icmp eq i8* %5, null, !dbg !142
+  br i1 %cmp8, label %lor.lhs.false14, label %land.lhs.true, !dbg !142
 
 land.lhs.true:                                    ; preds = %lor.lhs.false7
-  %arrayidx11 = getelementptr inbounds i8* %5, i64 %idxprom
-  %6 = load i8* %arrayidx11, align 1, !tbaa !1
-  %cmp12 = icmp eq i8 %6, 78
-  br i1 %cmp12, label %if.then23, label %lor.lhs.false14
+  %arrayidx11 = getelementptr inbounds i8* %5, i64 %idxprom, !dbg !142
+  %6 = load i8* %arrayidx11, align 1, !dbg !142, !tbaa !85
+  %cmp12 = icmp eq i8 %6, 78, !dbg !142
+  br i1 %cmp12, label %if.then23, label %lor.lhs.false14, !dbg !142
 
 lor.lhs.false14:                                  ; preds = %lor.lhs.false7, %land.lhs.true
-  %counts = getelementptr inbounds %struct._SubMtxList* %list, i64 0, i32 2
-  %7 = load i32** %counts, align 8, !tbaa !3
-  %cmp15 = icmp eq i32* %7, null
-  br i1 %cmp15, label %if.else, label %land.lhs.true17
+  %counts = getelementptr inbounds %struct._SubMtxList* %list, i64 0, i32 2, !dbg !142
+  %7 = load i32** %counts, align 8, !dbg !142, !tbaa !89
+  %cmp15 = icmp eq i32* %7, null, !dbg !142
+  br i1 %cmp15, label %if.else, label %land.lhs.true17, !dbg !142
 
 land.lhs.true17:                                  ; preds = %lor.lhs.false14
-  %arrayidx20 = getelementptr inbounds i32* %7, i64 %idxprom
-  %8 = load i32* %arrayidx20, align 4, !tbaa !0
-  %cmp21 = icmp eq i32 %8, 0
-  br i1 %cmp21, label %if.then23, label %if.else
+  %arrayidx20 = getelementptr inbounds i32* %7, i64 %idxprom, !dbg !142
+  %8 = load i32* %arrayidx20, align 4, !dbg !142, !tbaa !84
+  %cmp21 = icmp eq i32 %8, 0, !dbg !142
+  br i1 %cmp21, label %if.then23, label %if.else, !dbg !142
 
 if.then23:                                        ; preds = %land.lhs.true17, %land.lhs.true, %if.then5
-  store %struct._SubMtx* null, %struct._SubMtx** %arrayidx, align 8, !tbaa !3
-  br label %if.end40
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtx* %3}, i64 0, metadata !80), !dbg !144
+  store %struct._SubMtx* null, %struct._SubMtx** %arrayidx, align 8, !dbg !146, !tbaa !89
+  br label %if.end40, !dbg !147
 
 if.else:                                          ; preds = %lor.lhs.false14, %land.lhs.true17
-  tail call void @Lock_lock(%struct._Lock* %4) #4
-  %9 = load %struct._SubMtx*** %heads, align 8, !tbaa !3
-  %arrayidx33 = getelementptr inbounds %struct._SubMtx** %9, i64 %idxprom
-  %10 = load %struct._SubMtx** %arrayidx33, align 8, !tbaa !3
-  store %struct._SubMtx* null, %struct._SubMtx** %arrayidx33, align 8, !tbaa !3
-  %nlocks = getelementptr inbounds %struct._SubMtxList* %list, i64 0, i32 5
-  %11 = load i32* %nlocks, align 4, !tbaa !0
-  %inc = add nsw i32 %11, 1
-  store i32 %inc, i32* %nlocks, align 4, !tbaa !0
-  %12 = load %struct._Lock** %lock, align 8, !tbaa !3
-  tail call void @Lock_unlock(%struct._Lock* %12) #4
+  tail call void @Lock_lock(%struct._Lock* %4) #5, !dbg !148
+  %9 = load %struct._SubMtx*** %heads, align 8, !dbg !150, !tbaa !89
+  %arrayidx33 = getelementptr inbounds %struct._SubMtx** %9, i64 %idxprom, !dbg !150
+  %10 = load %struct._SubMtx** %arrayidx33, align 8, !dbg !150, !tbaa !89
+  tail call void @llvm.dbg.value(metadata !{%struct._SubMtx* %10}, i64 0, metadata !80), !dbg !150
+  store %struct._SubMtx* null, %struct._SubMtx** %arrayidx33, align 8, !dbg !151, !tbaa !89
+  %nlocks = getelementptr inbounds %struct._SubMtxList* %list, i64 0, i32 5, !dbg !152
+  %11 = load i32* %nlocks, align 4, !dbg !152, !tbaa !84
+  %inc = add nsw i32 %11, 1, !dbg !152
+  store i32 %inc, i32* %nlocks, align 4, !dbg !152, !tbaa !84
+  %12 = load %struct._Lock** %lock, align 8, !dbg !153, !tbaa !89
+  tail call void @Lock_unlock(%struct._Lock* %12) #5, !dbg !153
   br label %if.end40
 
 if.end40:                                         ; preds = %if.end, %if.then23, %if.else
   %mtx.0 = phi %struct._SubMtx* [ %3, %if.then23 ], [ %10, %if.else ], [ null, %if.end ]
-  ret %struct._SubMtx* %mtx.0
+  ret %struct._SubMtx* %mtx.0, !dbg !154
 }

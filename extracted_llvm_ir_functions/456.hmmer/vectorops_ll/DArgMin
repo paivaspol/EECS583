@@ -1,25 +1,30 @@
 define i32 @DArgMin(double* nocapture %vec, i32 %n) #1 {
 entry:
-  %cmp9 = icmp sgt i32 %n, 1
-  br i1 %cmp9, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{double* %vec}, i64 0, metadata !142), !dbg !298
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !143), !dbg !298
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !145), !dbg !299
+  tail call void @llvm.dbg.value(metadata !262, i64 0, metadata !144), !dbg !300
+  %cmp9 = icmp sgt i32 %n, 1, !dbg !300
+  br i1 %cmp9, label %for.body, label %for.end, !dbg !300
 
 for.body:                                         ; preds = %entry, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 1, %entry ]
   %best.011 = phi i32 [ %best.1, %for.body ], [ 0, %entry ]
-  %arrayidx = getelementptr inbounds double* %vec, i64 %indvars.iv
-  %0 = load double* %arrayidx, align 8, !tbaa !0
-  %idxprom1 = sext i32 %best.011 to i64
-  %arrayidx2 = getelementptr inbounds double* %vec, i64 %idxprom1
-  %1 = load double* %arrayidx2, align 8, !tbaa !0
-  %cmp3 = fcmp olt double %0, %1
-  %2 = trunc i64 %indvars.iv to i32
-  %best.1 = select i1 %cmp3, i32 %2, i32 %best.011
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n
-  br i1 %exitcond, label %for.end, label %for.body
+  %arrayidx = getelementptr inbounds double* %vec, i64 %indvars.iv, !dbg !302
+  %0 = load double* %arrayidx, align 8, !dbg !302, !tbaa !205
+  %idxprom1 = sext i32 %best.011 to i64, !dbg !302
+  %arrayidx2 = getelementptr inbounds double* %vec, i64 %idxprom1, !dbg !302
+  %1 = load double* %arrayidx2, align 8, !dbg !302, !tbaa !205
+  %cmp3 = fcmp olt double %0, %1, !dbg !302
+  tail call void @llvm.dbg.value(metadata !290, i64 0, metadata !145), !dbg !302
+  %2 = trunc i64 %indvars.iv to i32, !dbg !302
+  %best.1 = select i1 %cmp3, i32 %2, i32 %best.011, !dbg !302
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !300
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !300
+  %exitcond = icmp eq i32 %lftr.wideiv, %n, !dbg !300
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !300
 
 for.end:                                          ; preds = %for.body, %entry
   %best.0.lcssa = phi i32 [ 0, %entry ], [ %best.1, %for.body ]
-  ret i32 %best.0.lcssa
+  ret i32 %best.0.lcssa, !dbg !303
 }

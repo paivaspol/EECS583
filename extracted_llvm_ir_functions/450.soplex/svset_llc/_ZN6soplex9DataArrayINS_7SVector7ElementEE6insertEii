@@ -1,0 +1,37 @@
+define linkonce_odr void @_ZN6soplex9DataArrayINS_7SVector7ElementEE6insertEii(%"class.soplex::DataArray"* nocapture %this, i32 %i, i32 %n) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataArray"* %this}, i64 0, metadata !3483), !dbg !4044
+  tail call void @llvm.dbg.value(metadata !{i32 %i}, i64 0, metadata !3484), !dbg !4044
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !3485), !dbg !4044
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataArray"* %this}, i64 0, metadata !4045), !dbg !4047
+  %thesize.i = getelementptr inbounds %"class.soplex::DataArray"* %this, i64 0, i32 0, !dbg !4048
+  %0 = load i32* %thesize.i, align 4, !dbg !4048, !tbaa !3751
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !3486), !dbg !4046
+  %add = add nsw i32 %0, %n, !dbg !4049
+  tail call void @_ZN6soplex9DataArrayINS_7SVector7ElementEE6reSizeEi(%"class.soplex::DataArray"* %this, i32 %add) #9, !dbg !4049
+  %cmp10 = icmp sgt i32 %0, %i, !dbg !4050
+  br i1 %cmp10, label %while.body.lr.ph, label %while.end, !dbg !4050
+
+while.body.lr.ph:                                 ; preds = %entry
+  %data = getelementptr inbounds %"class.soplex::DataArray"* %this, i64 0, i32 2, !dbg !4051
+  %1 = sext i32 %0 to i64
+  %2 = sext i32 %n to i64, !dbg !4050
+  br label %while.body, !dbg !4050
+
+while.body:                                       ; preds = %while.body.lr.ph, %while.body
+  %indvars.iv = phi i64 [ %1, %while.body.lr.ph ], [ %indvars.iv.next, %while.body ]
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !4050
+  %3 = add nsw i64 %indvars.iv.next, %2, !dbg !4051
+  %4 = load %"struct.soplex::SVector::Element"** %data, align 8, !dbg !4051, !tbaa !3778
+  %arrayidx = getelementptr inbounds %"struct.soplex::SVector::Element"* %4, i64 %3, !dbg !4051
+  %arrayidx5 = getelementptr inbounds %"struct.soplex::SVector::Element"* %4, i64 %indvars.iv.next, !dbg !4051
+  %5 = bitcast %"struct.soplex::SVector::Element"* %arrayidx to i8*, !dbg !4051
+  %6 = bitcast %"struct.soplex::SVector::Element"* %arrayidx5 to i8*, !dbg !4051
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %5, i8* %6, i64 16, i32 8, i1 false), !dbg !4051, !tbaa.struct !4052
+  %7 = trunc i64 %indvars.iv.next to i32, !dbg !4050
+  %cmp = icmp sgt i32 %7, %i, !dbg !4050
+  br i1 %cmp, label %while.body, label %while.end, !dbg !4050
+
+while.end:                                        ; preds = %while.body, %entry
+  ret void, !dbg !4053
+}

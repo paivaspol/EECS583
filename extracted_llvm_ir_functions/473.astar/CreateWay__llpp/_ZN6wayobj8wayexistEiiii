@@ -1,0 +1,44 @@
+define zeroext i1 @_ZN6wayobj8wayexistEiiii(%class.wayobj* %this, i32 %startx, i32 %starty, i32 %endx, i32 %endy) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.wayobj* %this}, i64 0, metadata !429), !dbg !876
+  tail call void @llvm.dbg.value(metadata !{i32 %startx}, i64 0, metadata !430), !dbg !876
+  tail call void @llvm.dbg.value(metadata !{i32 %starty}, i64 0, metadata !431), !dbg !876
+  tail call void @llvm.dbg.value(metadata !{i32 %endx}, i64 0, metadata !432), !dbg !876
+  tail call void @llvm.dbg.value(metadata !{i32 %endy}, i64 0, metadata !433), !dbg !876
+  %call = tail call zeroext i1 @_ZN6wayobj5ismapEii(%class.wayobj* %this, i32 %startx, i32 %starty) #6, !dbg !877
+  br i1 %call, label %lor.lhs.false, label %return, !dbg !877
+
+lor.lhs.false:                                    ; preds = %entry
+  %call2 = tail call zeroext i1 @_ZN6wayobj5ismapEii(%class.wayobj* %this, i32 %endx, i32 %endy) #6, !dbg !877
+  br i1 %call2, label %if.end, label %return, !dbg !877
+
+if.end:                                           ; preds = %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata !{%class.wayobj* %this}, i64 0, metadata !878), !dbg !880
+  tail call void @llvm.dbg.value(metadata !{i32 %endx}, i64 0, metadata !881), !dbg !880
+  tail call void @llvm.dbg.value(metadata !{i32 %endy}, i64 0, metadata !882), !dbg !880
+  %shift.i = getelementptr inbounds %class.wayobj* %this, i64 0, i32 2, !dbg !880
+  %0 = load i32* %shift.i, align 4, !dbg !880, !tbaa !539
+  %shl.i = shl i32 %endy, %0, !dbg !880
+  %or.i = or i32 %shl.i, %endx, !dbg !880
+  %idxprom.i = sext i32 %or.i to i64, !dbg !880
+  %maparp.i = getelementptr inbounds %class.wayobj* %this, i64 0, i32 16, !dbg !880
+  %1 = load i16** %maparp.i, align 8, !dbg !880, !tbaa !533
+  %arrayidx.i = getelementptr inbounds i16* %1, i64 %idxprom.i, !dbg !880
+  %2 = load i16* %arrayidx.i, align 2, !dbg !879, !tbaa !526
+  %cmp = icmp eq i16 %2, 0, !dbg !879
+  br i1 %cmp, label %if.end5, label %return, !dbg !879
+
+if.end5:                                          ; preds = %if.end
+  %cmp6 = icmp eq i32 %startx, %endx, !dbg !883
+  %cmp7 = icmp eq i32 %starty, %endy, !dbg !883
+  %or.cond = and i1 %cmp6, %cmp7, !dbg !883
+  br i1 %or.cond, label %return, label %if.end9, !dbg !883
+
+if.end9:                                          ; preds = %if.end5
+  %call10 = tail call zeroext i1 @_ZN6wayobj4fillEiiii(%class.wayobj* %this, i32 %startx, i32 %starty, i32 %endx, i32 %endy) #6, !dbg !884
+  br label %return, !dbg !884
+
+return:                                           ; preds = %if.end5, %if.end, %entry, %lor.lhs.false, %if.end9
+  %retval.0 = phi i1 [ %call10, %if.end9 ], [ false, %lor.lhs.false ], [ false, %entry ], [ false, %if.end ], [ true, %if.end5 ]
+  ret i1 %retval.0, !dbg !885
+}

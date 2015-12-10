@@ -1,32 +1,34 @@
 define %union.tree_node* @non_lvalue(%union.tree_node* %x) #0 {
 entry:
-  %code = getelementptr inbounds %union.tree_node* %x, i64 0, i32 0, i32 0, i32 2
-  %0 = bitcast [4 x i8]* %code to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 255
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %x}, i64 0, metadata !921), !dbg !3871
+  %code = getelementptr inbounds %union.tree_node* %x, i64 0, i32 0, i32 0, i32 2, !dbg !3872
+  %0 = bitcast [4 x i8]* %code to i32*, !dbg !3872
+  %bf.load = load i32* %0, align 8, !dbg !3872
+  %bf.clear = and i32 %bf.load, 255, !dbg !3872
   switch i32 %bf.clear, label %if.end [
     i32 116, label %return
     i32 25, label %return
     i32 26, label %return
     i32 29, label %return
     i32 121, label %return
-  ]
+  ], !dbg !3872
 
 if.end:                                           ; preds = %entry
-  %type = getelementptr inbounds %union.tree_node* %x, i64 0, i32 0, i32 0, i32 1
-  %1 = load %union.tree_node** %type, align 8, !tbaa !3
-  %call = tail call %union.tree_node* @build1(i32 116, %union.tree_node* %1, %union.tree_node* %x) #9
-  %bf.load26 = load i32* %0, align 8
-  %bf.clear27 = and i32 %bf.load26, 512
-  %constant_flag29 = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 0, i32 2
-  %2 = bitcast [4 x i8]* %constant_flag29 to i32*
-  %bf.load30 = load i32* %2, align 8
-  %bf.clear31 = and i32 %bf.load30, -513
-  %bf.set = or i32 %bf.clear31, %bf.clear27
-  store i32 %bf.set, i32* %2, align 8
-  br label %return
+  %type = getelementptr inbounds %union.tree_node* %x, i64 0, i32 0, i32 0, i32 1, !dbg !3873
+  %1 = load %union.tree_node** %type, align 8, !dbg !3873, !tbaa !1705
+  %call = tail call %union.tree_node* @build1(i32 116, %union.tree_node* %1, %union.tree_node* %x) #9, !dbg !3873
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call}, i64 0, metadata !922), !dbg !3873
+  %bf.load26 = load i32* %0, align 8, !dbg !3874
+  %bf.clear27 = and i32 %bf.load26, 512, !dbg !3874
+  %constant_flag29 = getelementptr inbounds %union.tree_node* %call, i64 0, i32 0, i32 0, i32 2, !dbg !3874
+  %2 = bitcast [4 x i8]* %constant_flag29 to i32*, !dbg !3874
+  %bf.load30 = load i32* %2, align 8, !dbg !3874
+  %bf.clear31 = and i32 %bf.load30, -513, !dbg !3874
+  %bf.set = or i32 %bf.clear31, %bf.clear27, !dbg !3874
+  store i32 %bf.set, i32* %2, align 8, !dbg !3874
+  br label %return, !dbg !3875
 
 return:                                           ; preds = %entry, %entry, %entry, %entry, %entry, %if.end
   %retval.0 = phi %union.tree_node* [ %call, %if.end ], [ %x, %entry ], [ %x, %entry ], [ %x, %entry ], [ %x, %entry ], [ %x, %entry ]
-  ret %union.tree_node* %retval.0
+  ret %union.tree_node* %retval.0, !dbg !3876
 }

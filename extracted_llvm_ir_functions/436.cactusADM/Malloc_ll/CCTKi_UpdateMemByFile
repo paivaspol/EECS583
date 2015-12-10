@@ -1,50 +1,63 @@
 define i32 @CCTKi_UpdateMemByFile(i32 %size, i32 %line, i8* %file) #1 {
-  %memfile = alloca i8*, align 8
-  %1 = load %struct.cHandledData** @memfileDB, align 8, !tbaa !2
-  %2 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %file, i8** %memfile) #6
-  %3 = icmp sgt i32 %2, -1
-  br i1 %3, label %4, label %16
+entry:
+  %memfile = alloca %struct.t_memhash*, align 8
+  call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !39), !dbg !131
+  call void @llvm.dbg.value(metadata !{i32 %line}, i64 0, metadata !40), !dbg !131
+  call void @llvm.dbg.value(metadata !{i8* %file}, i64 0, metadata !41), !dbg !131
+  call void @llvm.dbg.declare(metadata !{%struct.t_memhash** %memfile}, metadata !42), !dbg !132
+  call void @llvm.dbg.value(metadata !133, i64 0, metadata !51), !dbg !134
+  call void @llvm.dbg.value(metadata !{i32 %line}, i64 0, metadata !40), !dbg !135
+  %0 = load %struct.cHandledData** @memfileDB, align 8, !dbg !136, !tbaa !117
+  %1 = bitcast %struct.t_memhash** %memfile to i8**, !dbg !136
+  %call = call i32 @Util_GetHandle(%struct.cHandledData* %0, i8* %file, i8** %1) #7, !dbg !136
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !50), !dbg !136
+  %cmp = icmp sgt i32 %call, -1, !dbg !136
+  br i1 %cmp, label %if.then, label %if.else7, !dbg !136
 
-; <label>:4                                       ; preds = %0
-  %5 = load %struct.cHandledData** @memfileDB, align 8, !tbaa !2
-  %6 = call i8* @Util_GetHandledData(%struct.cHandledData* %5, i32 %2) #6
-  store i8* %6, i8** %memfile, align 8, !tbaa !2
-  %7 = icmp eq i8* %6, null
-  br i1 %7, label %30, label %8
+if.then:                                          ; preds = %entry
+  %2 = load %struct.cHandledData** @memfileDB, align 8, !dbg !137, !tbaa !117
+  %call2 = call i8* @Util_GetHandledData(%struct.cHandledData* %2, i32 %call) #7, !dbg !137
+  %3 = bitcast i8* %call2 to %struct.t_memhash*, !dbg !137
+  call void @llvm.dbg.value(metadata !{%struct.t_memhash* %3}, i64 0, metadata !42), !dbg !137
+  store %struct.t_memhash* %3, %struct.t_memhash** %memfile, align 8, !dbg !137, !tbaa !117
+  %tobool = icmp eq i8* %call2, null, !dbg !139
+  br i1 %tobool, label %if.end22, label %if.then3, !dbg !139
 
-; <label>:8                                       ; preds = %4
-  %9 = sext i32 %size to i64
-  %10 = bitcast i8* %6 to <2 x i64>*
-  %11 = load <2 x i64>* %10, align 8, !tbaa !14
-  %12 = insertelement <2 x i64> undef, i64 %9, i32 0
-  %13 = insertelement <2 x i64> %12, i64 %9, i32 1
-  %14 = add <2 x i64> %11, %13
-  %15 = bitcast i8* %6 to <2 x i64>*
-  store <2 x i64> %14, <2 x i64>* %15, align 8, !tbaa !14
-  br label %30
+if.then3:                                         ; preds = %if.then
+  %conv = sext i32 %size to i64, !dbg !140
+  %size4 = bitcast i8* %call2 to i64*, !dbg !140
+  %4 = load i64* %size4, align 8, !dbg !140, !tbaa !122
+  %add = add i64 %4, %conv, !dbg !140
+  store i64 %add, i64* %size4, align 8, !dbg !140, !tbaa !122
+  call void @llvm.dbg.value(metadata !{%struct.t_memhash** %memfile}, i64 0, metadata !42), !dbg !142
+  %tsize = getelementptr inbounds i8* %call2, i64 8, !dbg !142
+  %5 = bitcast i8* %tsize to i64*, !dbg !142
+  %6 = load i64* %5, align 8, !dbg !142, !tbaa !122
+  %add6 = add i64 %6, %conv, !dbg !142
+  store i64 %add6, i64* %5, align 8, !dbg !142, !tbaa !122
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !51), !dbg !143
+  br label %if.end22, !dbg !144
 
-; <label>:16                                      ; preds = %0
-  %17 = call i8* @malloc(i64 24) #6
-  store i8* %17, i8** %memfile, align 8, !tbaa !2
-  %18 = icmp eq i8* %17, null
-  br i1 %18, label %30, label %19
+if.else7:                                         ; preds = %entry
+  %call8 = call noalias i8* @malloc(i64 24) #7, !dbg !145
+  %7 = bitcast i8* %call8 to %struct.t_memhash*, !dbg !145
+  call void @llvm.dbg.value(metadata !{%struct.t_memhash* %7}, i64 0, metadata !42), !dbg !145
+  store %struct.t_memhash* %7, %struct.t_memhash** %memfile, align 8, !dbg !145, !tbaa !117
+  %tobool9 = icmp eq i8* %call8, null, !dbg !147
+  br i1 %tobool9, label %if.end22, label %if.then10, !dbg !147
 
-; <label>:19                                      ; preds = %16
-  %20 = sext i32 %size to i64
-  %21 = add nsw i64 %20, 24
-  %22 = getelementptr inbounds i8* %17, i64 8
-  %23 = bitcast i8* %22 to i64*
-  %24 = load i64* %23, align 8, !tbaa !15
-  %25 = add i64 %21, %24
-  store i64 %25, i64* %23, align 8, !tbaa !15
-  %26 = getelementptr inbounds i8* %17, i64 16
-  %27 = bitcast i8* %26 to i8**
-  store i8* %file, i8** %27, align 8, !tbaa !17
-  %28 = load i8** %memfile, align 8, !tbaa !2
-  %29 = call i32 @Util_NewHandle(%struct.cHandledData** @memfileDB, i8* %file, i8* %28) #6
-  br label %30
+if.then10:                                        ; preds = %if.else7
+  call void @llvm.dbg.value(metadata !{%struct.t_memhash** %memfile}, i64 0, metadata !42), !dbg !148
+  call void @llvm.dbg.value(metadata !{%struct.t_memhash** %memfile}, i64 0, metadata !42), !dbg !150
+  %file18 = getelementptr inbounds i8* %call8, i64 16, !dbg !150
+  %8 = bitcast i8* %file18 to i8**, !dbg !150
+  store i8* %file, i8** %8, align 8, !dbg !150, !tbaa !117
+  call void @llvm.dbg.value(metadata !{%struct.t_memhash** %memfile}, i64 0, metadata !42), !dbg !151
+  %call19 = call i32 @Util_NewHandle(%struct.cHandledData** @memfileDB, i8* %file, i8* %call8) #7, !dbg !151
+  call void @llvm.dbg.value(metadata !{i32 %call19}, i64 0, metadata !51), !dbg !151
+  br label %if.end22, !dbg !152
 
-; <label>:30                                      ; preds = %16, %4, %19, %8
-  %retval.0 = phi i32 [ 0, %8 ], [ %29, %19 ], [ -3, %4 ], [ -1, %16 ]
-  ret i32 %retval.0
+if.end22:                                         ; preds = %if.else7, %if.then, %if.then10, %if.then3
+  %retval1.0 = phi i32 [ 0, %if.then3 ], [ %call19, %if.then10 ], [ -3, %if.then ], [ -1, %if.else7 ]
+  ret i32 %retval1.0, !dbg !153
 }

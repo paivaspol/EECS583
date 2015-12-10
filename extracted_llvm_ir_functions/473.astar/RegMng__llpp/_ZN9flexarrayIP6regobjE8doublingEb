@@ -1,0 +1,35 @@
+define linkonce_odr void @_ZN9flexarrayIP6regobjE8doublingEb(%class.flexarray* nocapture %this, i1 zeroext %flcopy) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.flexarray* %this}, i64 0, metadata !692), !dbg !1511
+  tail call void @llvm.dbg.value(metadata !{i1 %flcopy}, i64 0, metadata !693), !dbg !1511
+  %maxelemqu = getelementptr inbounds %class.flexarray* %this, i64 0, i32 2, !dbg !1512
+  %0 = load i32* %maxelemqu, align 4, !dbg !1512, !tbaa !781
+  %shl = shl i32 %0, 1, !dbg !1512
+  tail call void @llvm.dbg.value(metadata !{i32 %shl}, i64 0, metadata !695), !dbg !1512
+  %mul = shl i32 %0, 4, !dbg !1513
+  tail call void @llvm.dbg.value(metadata !{i32 %mul}, i64 0, metadata !1514) #5, !dbg !1515
+  tail call void @llvm.dbg.value(metadata !796, i64 0, metadata !1516) #5, !dbg !1515
+  %conv.i = sext i32 %mul to i64, !dbg !1517
+  %call.i = tail call noalias i8* @malloc(i64 %conv.i) #8, !dbg !1517
+  %1 = bitcast i8* %call.i to %class.regobj**, !dbg !1513
+  tail call void @llvm.dbg.value(metadata !{%class.regobj** %1}, i64 0, metadata !694), !dbg !1513
+  %ep = getelementptr inbounds %class.flexarray* %this, i64 0, i32 0, !dbg !1518
+  %2 = load %class.regobj*** %ep, align 8, !dbg !1518, !tbaa !777
+  br i1 %flcopy, label %if.then, label %if.end, !dbg !1519
+
+if.then:                                          ; preds = %entry
+  %3 = bitcast %class.regobj** %2 to i8*, !dbg !1518
+  %conv4 = sext i32 %0 to i64, !dbg !1518
+  %mul5 = shl nsw i64 %conv4, 3, !dbg !1518
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call.i, i8* %3, i64 %mul5, i32 8, i1 false), !dbg !1518
+  br label %if.end, !dbg !1518
+
+if.end:                                           ; preds = %entry, %if.then
+  %ep6 = getelementptr inbounds %class.flexarray* %this, i64 0, i32 0, !dbg !1520
+  %4 = bitcast %class.regobj** %2 to i8*, !dbg !1520
+  tail call void @llvm.dbg.value(metadata !{i8* %4}, i64 0, metadata !1521) #5, !dbg !1522
+  tail call void @free(i8* %4) #8, !dbg !1523
+  store %class.regobj** %1, %class.regobj*** %ep6, align 8, !dbg !1524, !tbaa !777
+  store i32 %shl, i32* %maxelemqu, align 4, !dbg !1525, !tbaa !781
+  ret void, !dbg !1526
+}

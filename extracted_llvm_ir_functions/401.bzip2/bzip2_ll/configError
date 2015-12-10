@@ -1,8 +1,18 @@
 define internal fastcc void @configError() #4 {
 entry:
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %1 = tail call i64 @fwrite(i8* getelementptr inbounds ([236 x i8]* @.str10, i64 0, i64 0), i64 235, i64 1, %struct._IO_FILE* %0)
-  store i32 0, i32* @exitValue, align 4, !tbaa !0
-  tail call void @exit(i32 0) #8
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !1452, !tbaa !484
+  %1 = tail call i64 @fwrite(i8* getelementptr inbounds ([236 x i8]* @.str66, i64 0, i64 0), i64 235, i64 1, %struct._IO_FILE* %0) #7, !dbg !1452
+  tail call void @llvm.dbg.value(metadata !1453, i64 0, metadata !1454), !dbg !1456
+  %2 = load i32* @exitValue, align 4, !dbg !1457, !tbaa !492
+  %cmp.i = icmp slt i32 %2, 3, !dbg !1457
+  br i1 %cmp.i, label %if.then.i, label %setExit.exit, !dbg !1457
+
+if.then.i:                                        ; preds = %entry
+  store i32 3, i32* @exitValue, align 4, !dbg !1457, !tbaa !492
+  br label %setExit.exit, !dbg !1457
+
+setExit.exit:                                     ; preds = %entry, %if.then.i
+  %3 = phi i32 [ %2, %entry ], [ 3, %if.then.i ]
+  tail call void @exit(i32 %3) #13, !dbg !1458
+  unreachable, !dbg !1458
 }

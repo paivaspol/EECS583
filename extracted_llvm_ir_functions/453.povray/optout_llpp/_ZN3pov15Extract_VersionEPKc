@@ -1,0 +1,69 @@
+define i8* @_ZN3pov15Extract_VersionEPKc(i8* nocapture %str) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %str}, i64 0, metadata !144), !dbg !384
+  tail call void @llvm.dbg.value(metadata !134, i64 0, metadata !146), !dbg !385
+  %0 = load i8* %str, align 1, !dbg !386, !tbaa !388
+  %cmp22 = icmp eq i8 %0, 0, !dbg !386
+  br i1 %cmp22, label %for.end, label %for.body, !dbg !386
+
+for.cond:                                         ; preds = %for.body
+  %1 = load i8* %incdec.ptr8, align 1, !dbg !386, !tbaa !388
+  %cmp = icmp eq i8 %1, 0, !dbg !386
+  br i1 %cmp, label %for.end, label %for.body, !dbg !386
+
+for.body:                                         ; preds = %entry, %for.cond
+  %2 = phi i8 [ %1, %for.cond ], [ %0, %entry ]
+  %str.addr.023 = phi i8* [ %incdec.ptr8, %for.cond ], [ %str, %entry ]
+  %conv = sext i8 %2 to i32, !dbg !386
+  %isdigittmp = add i32 %conv, -48, !dbg !390
+  %isdigit = icmp ult i32 %isdigittmp, 10, !dbg !390
+  %incdec.ptr8 = getelementptr inbounds i8* %str.addr.023, i64 1, !dbg !386
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr8}, i64 0, metadata !144), !dbg !386
+  br i1 %isdigit, label %while.cond, label %for.cond, !dbg !390
+
+while.cond:                                       ; preds = %for.body, %while.body
+  %3 = phi i8 [ %.pre, %while.body ], [ %2, %for.body ]
+  %indvars.iv = phi i64 [ %indvars.iv.next, %while.body ], [ 0, %for.body ]
+  %str.addr.1 = phi i8* [ %incdec.ptr, %while.body ], [ %str.addr.023, %for.body ]
+  %pos.0 = phi i32 [ %inc, %while.body ], [ 0, %for.body ]
+  %conv2 = sext i8 %3 to i32, !dbg !392
+  %call3 = tail call i32 @isalnum(i32 %conv2) #5, !dbg !392
+  %tobool4 = icmp eq i32 %call3, 0, !dbg !392
+  br i1 %tobool4, label %lor.lhs.false, label %land.rhs, !dbg !392
+
+lor.lhs.false:                                    ; preds = %while.cond
+  %4 = load i8* %str.addr.1, align 1, !dbg !392, !tbaa !388
+  %cmp6 = icmp eq i8 %4, 46, !dbg !392
+  %5 = trunc i64 %indvars.iv to i32, !dbg !392
+  %cmp7 = icmp slt i32 %5, 10, !dbg !392
+  %or.cond = and i1 %cmp6, %cmp7, !dbg !392
+  br i1 %or.cond, label %while.body, label %for.end, !dbg !392
+
+land.rhs:                                         ; preds = %while.cond
+  %6 = trunc i64 %indvars.iv to i32, !dbg !392
+  %cmp7.old = icmp slt i32 %6, 10, !dbg !392
+  br i1 %cmp7.old, label %land.rhs.while.body_crit_edge, label %for.end
+
+land.rhs.while.body_crit_edge:                    ; preds = %land.rhs
+  %.pre25 = load i8* %str.addr.1, align 1, !dbg !394, !tbaa !388
+  br label %while.body
+
+while.body:                                       ; preds = %land.rhs.while.body_crit_edge, %lor.lhs.false
+  %7 = phi i8 [ %.pre25, %land.rhs.while.body_crit_edge ], [ 46, %lor.lhs.false ]
+  %arrayidx = getelementptr inbounds [20 x i8]* @_ZN3pov22LibVersionStringBufferE, i64 0, i64 %indvars.iv, !dbg !394
+  store i8 %7, i8* %arrayidx, align 1, !dbg !394, !tbaa !388
+  %incdec.ptr = getelementptr inbounds i8* %str.addr.1, i64 1, !dbg !396
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !144), !dbg !396
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !397
+  %inc = add nsw i32 %pos.0, 1, !dbg !398
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !146), !dbg !398
+  %.pre = load i8* %incdec.ptr, align 1, !dbg !392, !tbaa !388
+  br label %while.cond, !dbg !397
+
+for.end:                                          ; preds = %entry, %for.cond, %land.rhs, %lor.lhs.false
+  %pos.1 = phi i32 [ %pos.0, %lor.lhs.false ], [ %pos.0, %land.rhs ], [ 0, %for.cond ], [ 0, %entry ]
+  %idxprom9 = sext i32 %pos.1 to i64, !dbg !399
+  %arrayidx10 = getelementptr inbounds [20 x i8]* @_ZN3pov22LibVersionStringBufferE, i64 0, i64 %idxprom9, !dbg !399
+  store i8 0, i8* %arrayidx10, align 1, !dbg !399, !tbaa !388
+  ret i8* getelementptr inbounds ([20 x i8]* @_ZN3pov22LibVersionStringBufferE, i64 0, i64 0), !dbg !400
+}

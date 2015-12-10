@@ -1,18 +1,21 @@
-define void @cp_nrnb(%struct.t_nrnb* nocapture %dest, %struct.t_nrnb* nocapture readonly %src) #3 {
-  br label %1
+define void @cp_nrnb(%struct.t_nrnb* nocapture %dest, %struct.t_nrnb* nocapture %src) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.t_nrnb* %dest}, i64 0, metadata !160), !dbg !324
+  tail call void @llvm.dbg.value(metadata !{%struct.t_nrnb* %src}, i64 0, metadata !161), !dbg !324
+  tail call void @llvm.dbg.value(metadata !137, i64 0, metadata !162), !dbg !325
+  br label %for.body, !dbg !325
 
-; <label>:1                                       ; preds = %1, %0
-  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %1 ]
-  %2 = getelementptr inbounds %struct.t_nrnb* %src, i64 0, i32 0, i64 %indvars.iv
-  %3 = bitcast double* %2 to i64*
-  %4 = load i64* %3, align 8, !tbaa !14
-  %5 = getelementptr inbounds %struct.t_nrnb* %dest, i64 0, i32 0, i64 %indvars.iv
-  %6 = bitcast double* %5 to i64*
-  store i64 %4, i64* %6, align 8, !tbaa !14
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i64 %indvars.iv.next, 129
-  br i1 %exitcond, label %7, label %1
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds %struct.t_nrnb* %src, i64 0, i32 0, i64 %indvars.iv, !dbg !327
+  %0 = load double* %arrayidx, align 8, !dbg !327, !tbaa !328
+  %arrayidx3 = getelementptr inbounds %struct.t_nrnb* %dest, i64 0, i32 0, i64 %indvars.iv, !dbg !327
+  store double %0, double* %arrayidx3, align 8, !dbg !327, !tbaa !328
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !325
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !325
+  %exitcond = icmp eq i32 %lftr.wideiv, 129, !dbg !325
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !325
 
-; <label>:7                                       ; preds = %1
-  ret void
+for.end:                                          ; preds = %for.body
+  ret void, !dbg !331
 }

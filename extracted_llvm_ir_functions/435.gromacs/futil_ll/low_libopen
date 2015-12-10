@@ -1,24 +1,32 @@
-define %struct.__sFILE* @low_libopen(i8* %file, i32 %bFatal) #1 {
-  %1 = tail call i32 @fexist(i8* %file) #8
-  %2 = icmp eq i32 %1, 0
-  %3 = icmp eq i8* %file, null
-  %4 = or i1 %3, %2
-  br i1 %4, label %12, label %5
+define noalias %struct._IO_FILE* @low_libopen(i8* %file, i32 %bFatal) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %file}, i64 0, metadata !188), !dbg !364
+  tail call void @llvm.dbg.value(metadata !{i32 %bFatal}, i64 0, metadata !189), !dbg !364
+  tail call void @llvm.dbg.value(metadata !{i8* %file}, i64 0, metadata !365) #5, !dbg !367
+  tail call void @llvm.dbg.value(metadata !368, i64 0, metadata !369) #5, !dbg !367
+  tail call void @llvm.dbg.value(metadata !308, i64 0, metadata !370) #5, !dbg !371
+  %call.i = tail call i32 @fexist(i8* %file) #7, !dbg !372
+  %tobool.i = icmp eq i32 %call.i, 0, !dbg !372
+  %.file.i = select i1 %tobool.i, i8* null, i8* %file
+  tail call void @llvm.dbg.value(metadata !{i8* %.file.i}, i64 0, metadata !191), !dbg !366
+  %cmp = icmp eq i8* %.file.i, null, !dbg !373
+  br i1 %cmp, label %if.end4, label %if.else, !dbg !373
 
-; <label>:5                                       ; preds = %0
-  %6 = icmp eq i32 %bFatal, 0
-  br i1 %6, label %10, label %7
+if.else:                                          ; preds = %entry
+  %tobool = icmp eq i32 %bFatal, 0, !dbg !374
+  br i1 %tobool, label %if.end, label %if.then1, !dbg !374
 
-; <label>:7                                       ; preds = %5
-  %8 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !8
-  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %8, i8* getelementptr inbounds ([25 x i8]* @.str24, i64 0, i64 0), i8* %file) #8
-  br label %10
+if.then1:                                         ; preds = %if.else
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !376, !tbaa !223
+  %call2 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([25 x i8]* @.str24, i64 0, i64 0), i8* %.file.i) #7, !dbg !376
+  br label %if.end, !dbg !376
 
-; <label>:10                                      ; preds = %5, %7
-  %11 = tail call %struct.__sFILE* @"\01_fopen"(i8* %file, i8* getelementptr inbounds ([2 x i8]* @.str8, i64 0, i64 0)) #8
-  br label %12
+if.end:                                           ; preds = %if.else, %if.then1
+  %call3 = tail call %struct._IO_FILE* @fopen(i8* %.file.i, i8* getelementptr inbounds ([2 x i8]* @.str8, i64 0, i64 0)) #7, !dbg !377
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %call3}, i64 0, metadata !190), !dbg !377
+  br label %if.end4
 
-; <label>:12                                      ; preds = %0, %10
-  %ff.0 = phi %struct.__sFILE* [ %11, %10 ], [ null, %0 ]
-  ret %struct.__sFILE* %ff.0
+if.end4:                                          ; preds = %entry, %if.end
+  %ff.0 = phi %struct._IO_FILE* [ %call3, %if.end ], [ null, %entry ]
+  ret %struct._IO_FILE* %ff.0, !dbg !378
 }

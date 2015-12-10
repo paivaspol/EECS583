@@ -1,52 +1,56 @@
 define i32 @IV_writeToBinaryFile(%struct._IV* %iv, %struct._IO_FILE* %fp) #0 {
 entry:
-  %cmp = icmp eq %struct._IV* %iv, null
-  %cmp1 = icmp eq %struct._IO_FILE* %fp, null
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+  tail call void @llvm.dbg.value(metadata !{%struct._IV* %iv}, i64 0, metadata !113), !dbg !280
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !114), !dbg !281
+  %cmp = icmp eq %struct._IV* %iv, null, !dbg !282
+  %cmp1 = icmp eq %struct._IO_FILE* %fp, null, !dbg !282
+  %or.cond = or i1 %cmp, %cmp1, !dbg !282
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2, !dbg !282
 
 lor.lhs.false2:                                   ; preds = %entry
-  %size = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0
-  %0 = load i32* %size, align 4, !tbaa !3
-  %cmp3 = icmp slt i32 %0, 1
-  br i1 %cmp3, label %if.then, label %if.end
+  %size = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0, !dbg !282
+  %0 = load i32* %size, align 4, !dbg !282, !tbaa !205
+  %cmp3 = icmp slt i32 %0, 1, !dbg !282
+  br i1 %cmp3, label %if.then, label %if.end, !dbg !282
 
 if.then:                                          ; preds = %lor.lhs.false2, %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([57 x i8]* @.str22, i64 0, i64 0), %struct._IV* %iv, %struct._IO_FILE* %fp) #5
-  tail call void @exit(i32 -1) #8
-  unreachable
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !283, !tbaa !156
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([57 x i8]* @.str22, i64 0, i64 0), %struct._IV* %iv, %struct._IO_FILE* %fp) #6, !dbg !283
+  tail call void @exit(i32 -1) #9, !dbg !285
+  unreachable, !dbg !285
 
 if.end:                                           ; preds = %lor.lhs.false2
-  %2 = bitcast %struct._IV* %iv to i8*
-  %call5 = tail call i64 @fwrite(i8* %2, i64 4, i64 1, %struct._IO_FILE* %fp) #5
-  %conv = trunc i64 %call5 to i32
-  %cmp6 = icmp eq i32 %conv, 1
-  br i1 %cmp6, label %if.end10, label %if.then8
+  %2 = bitcast %struct._IV* %iv to i8*, !dbg !286
+  %call5 = tail call i64 @fwrite(i8* %2, i64 4, i64 1, %struct._IO_FILE* %fp) #6, !dbg !286
+  %conv = trunc i64 %call5 to i32, !dbg !286
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !115), !dbg !286
+  %cmp6 = icmp eq i32 %conv, 1, !dbg !287
+  br i1 %cmp6, label %if.end10, label %if.then8, !dbg !287
 
 if.then8:                                         ; preds = %if.end
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call9 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([71 x i8]* @.str23, i64 0, i64 0), %struct._IV* %iv, %struct._IO_FILE* %fp, i32 %conv, i32 1) #5
-  br label %return
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !288, !tbaa !156
+  %call9 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([71 x i8]* @.str23, i64 0, i64 0), %struct._IV* %iv, %struct._IO_FILE* %fp, i32 %conv, i32 1) #6, !dbg !288
+  br label %return, !dbg !290
 
 if.end10:                                         ; preds = %if.end
-  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3
-  %4 = load i32** %vec, align 8, !tbaa !0
-  %5 = bitcast i32* %4 to i8*
-  %6 = load i32* %size, align 4, !tbaa !3
-  %conv12 = sext i32 %6 to i64
-  %call13 = tail call i64 @fwrite(i8* %5, i64 4, i64 %conv12, %struct._IO_FILE* %fp) #5
-  %conv14 = trunc i64 %call13 to i32
-  %7 = load i32* %size, align 4, !tbaa !3
-  %cmp16 = icmp eq i32 %conv14, %7
-  br i1 %cmp16, label %return, label %if.then18
+  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3, !dbg !291
+  %4 = load i32** %vec, align 8, !dbg !291, !tbaa !156
+  %5 = bitcast i32* %4 to i8*, !dbg !291
+  %6 = load i32* %size, align 4, !dbg !291, !tbaa !205
+  %conv12 = sext i32 %6 to i64, !dbg !291
+  %call13 = tail call i64 @fwrite(i8* %5, i64 4, i64 %conv12, %struct._IO_FILE* %fp) #6, !dbg !291
+  %conv14 = trunc i64 %call13 to i32, !dbg !291
+  tail call void @llvm.dbg.value(metadata !{i32 %conv14}, i64 0, metadata !115), !dbg !291
+  %7 = load i32* %size, align 4, !dbg !292, !tbaa !205
+  %cmp16 = icmp eq i32 %conv14, %7, !dbg !292
+  br i1 %cmp16, label %return, label %if.then18, !dbg !292
 
 if.then18:                                        ; preds = %if.end10
-  %8 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call20 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %8, i8* getelementptr inbounds ([75 x i8]* @.str24, i64 0, i64 0), %struct._IV* %iv, %struct._IO_FILE* %fp, i32 %conv14, i32 %7) #5
-  br label %return
+  %8 = load %struct._IO_FILE** @stderr, align 8, !dbg !293, !tbaa !156
+  %call20 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %8, i8* getelementptr inbounds ([75 x i8]* @.str24, i64 0, i64 0), %struct._IV* %iv, %struct._IO_FILE* %fp, i32 %conv14, i32 %7) #6, !dbg !293
+  br label %return, !dbg !295
 
 return:                                           ; preds = %if.end10, %if.then18, %if.then8
   %retval.0 = phi i32 [ 0, %if.then8 ], [ 0, %if.then18 ], [ 1, %if.end10 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !296
 }

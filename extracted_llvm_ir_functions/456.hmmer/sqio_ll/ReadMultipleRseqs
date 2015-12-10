@@ -1,54 +1,66 @@
 define i32 @ReadMultipleRseqs(i8* %seqfile, i32 %fformat, i8*** nocapture %ret_rseqs, %struct.seqinfo_s** nocapture %ret_sqinfo, i32* nocapture %ret_num) #0 {
 entry:
-  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([50 x i8]* @.str78, i64 0, i64 0), i32 1732, i64 128) #8
-  %call3 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([50 x i8]* @.str78, i64 0, i64 0), i32 1733, i64 5760) #8
-  %call.i = tail call fastcc %struct.ReadSeqVars* @seqfile_open(i8* %seqfile, i32 %fformat, i8* null, i32 -1) #8
-  %cmp = icmp eq %struct.ReadSeqVars* %call.i, null
-  br i1 %cmp, label %return, label %while.cond.outer
+  tail call void @llvm.dbg.value(metadata !{i8* %seqfile}, i64 0, metadata !452), !dbg !1372
+  tail call void @llvm.dbg.value(metadata !{i32 %fformat}, i64 0, metadata !453), !dbg !1373
+  tail call void @llvm.dbg.value(metadata !{i8*** %ret_rseqs}, i64 0, metadata !454), !dbg !1374
+  tail call void @llvm.dbg.value(metadata !{%struct.seqinfo_s** %ret_sqinfo}, i64 0, metadata !455), !dbg !1375
+  tail call void @llvm.dbg.value(metadata !{i32* %ret_num}, i64 0, metadata !456), !dbg !1376
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !461), !dbg !1377
+  tail call void @llvm.dbg.value(metadata !1378, i64 0, metadata !460), !dbg !1379
+  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([50 x i8]* @.str78, i64 0, i64 0), i32 1732, i64 128) #9, !dbg !1380
+  %call3 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([50 x i8]* @.str78, i64 0, i64 0), i32 1733, i64 5760) #9, !dbg !1381
+  tail call void @llvm.dbg.value(metadata !{i8* %seqfile}, i64 0, metadata !1382) #6, !dbg !1384
+  tail call void @llvm.dbg.value(metadata !{i32 %fformat}, i64 0, metadata !1385) #6, !dbg !1384
+  tail call void @llvm.dbg.value(metadata !1093, i64 0, metadata !1386) #6, !dbg !1384
+  %call.i = tail call fastcc %struct.ReadSeqVars* @seqfile_open(i8* %seqfile, i32 %fformat, i8* null, i32 -1) #9, !dbg !1387
+  tail call void @llvm.dbg.value(metadata !{%struct.ReadSeqVars* %call.i}, i64 0, metadata !458), !dbg !1383
+  %cmp = icmp eq %struct.ReadSeqVars* %call.i, null, !dbg !1383
+  br i1 %cmp, label %return, label %while.cond.outer, !dbg !1383
 
 while.cond.outer:                                 ; preds = %entry, %if.then11
   %indvars.iv36 = phi i64 [ %indvars.iv.next37, %if.then11 ], [ 16, %entry ]
   %sqinfo.0.ph.in = phi i8* [ %call17, %if.then11 ], [ %call3, %entry ]
   %rseqs.0.ph.in = phi i8* [ %call14, %if.then11 ], [ %call, %entry ]
   %num.0.ph = phi i32 [ %inc, %if.then11 ], [ 0, %entry ]
-  %rseqs.0.ph = bitcast i8* %rseqs.0.ph.in to i8**
-  %sqinfo.0.ph = bitcast i8* %sqinfo.0.ph.in to %struct.seqinfo_s*
+  %rseqs.0.ph = bitcast i8* %rseqs.0.ph.in to i8**, !dbg !1388
+  %sqinfo.0.ph = bitcast i8* %sqinfo.0.ph.in to %struct.seqinfo_s*, !dbg !1391
   %0 = sext i32 %num.0.ph to i64
   br label %while.cond
 
 while.cond:                                       ; preds = %while.cond.outer, %while.body
   %indvars.iv = phi i64 [ %0, %while.cond.outer ], [ %indvars.iv.next, %while.body ]
   %num.0 = phi i32 [ %num.0.ph, %while.cond.outer ], [ %inc, %while.body ]
-  %arrayidx = getelementptr inbounds i8** %rseqs.0.ph, i64 %indvars.iv
-  %arrayidx7 = getelementptr inbounds %struct.seqinfo_s* %sqinfo.0.ph, i64 %indvars.iv
-  %call8 = tail call i32 @ReadSeq(%struct.ReadSeqVars* %call.i, i32 undef, i8** %arrayidx, %struct.seqinfo_s* %arrayidx7) #7
-  %tobool = icmp eq i32 %call8, 0
-  br i1 %tobool, label %while.end, label %while.body
+  %arrayidx = getelementptr inbounds i8** %rseqs.0.ph, i64 %indvars.iv, !dbg !1392
+  %arrayidx7 = getelementptr inbounds %struct.seqinfo_s* %sqinfo.0.ph, i64 %indvars.iv, !dbg !1392
+  %call8 = tail call i32 @ReadSeq(%struct.ReadSeqVars* %call.i, i32 undef, i8** %arrayidx, %struct.seqinfo_s* %arrayidx7) #8, !dbg !1392
+  %tobool = icmp eq i32 %call8, 0, !dbg !1392
+  br i1 %tobool, label %while.end, label %while.body, !dbg !1392
 
 while.body:                                       ; preds = %while.cond
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %inc = add nsw i32 %num.0, 1
-  %1 = trunc i64 %indvars.iv.next to i32
-  %2 = trunc i64 %indvars.iv36 to i32
-  %cmp9 = icmp eq i32 %1, %2
-  br i1 %cmp9, label %if.then11, label %while.cond
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1393
+  %inc = add nsw i32 %num.0, 1, !dbg !1394
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !461), !dbg !1394
+  %1 = trunc i64 %indvars.iv.next to i32, !dbg !1393
+  %2 = trunc i64 %indvars.iv36 to i32, !dbg !1393
+  %cmp9 = icmp eq i32 %1, %2, !dbg !1393
+  br i1 %cmp9, label %if.then11, label %while.cond, !dbg !1393
 
 if.then11:                                        ; preds = %while.body
-  %indvars.iv.next37 = add i64 %indvars.iv36, 16
-  %mul13 = shl nsw i64 %indvars.iv.next37, 3
-  %call14 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([50 x i8]* @.str78, i64 0, i64 0), i32 1742, i8* %rseqs.0.ph.in, i64 %mul13) #8
-  %mul16 = mul i64 %indvars.iv.next37, 360
-  %call17 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([50 x i8]* @.str78, i64 0, i64 0), i32 1743, i8* %sqinfo.0.ph.in, i64 %mul16) #8
-  br label %while.cond.outer
+  %indvars.iv.next37 = add i64 %indvars.iv36, 16, !dbg !1395
+  %mul13 = shl nsw i64 %indvars.iv.next37, 3, !dbg !1388
+  %call14 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([50 x i8]* @.str78, i64 0, i64 0), i32 1742, i8* %rseqs.0.ph.in, i64 %mul13) #9, !dbg !1388
+  %mul16 = mul i64 %indvars.iv.next37, 360, !dbg !1391
+  %call17 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([50 x i8]* @.str78, i64 0, i64 0), i32 1743, i8* %sqinfo.0.ph.in, i64 %mul16) #9, !dbg !1391
+  br label %while.cond.outer, !dbg !1395
 
 while.end:                                        ; preds = %while.cond
-  tail call void @SeqfileClose(%struct.ReadSeqVars* %call.i) #7
-  store i8** %rseqs.0.ph, i8*** %ret_rseqs, align 8, !tbaa !3
-  store %struct.seqinfo_s* %sqinfo.0.ph, %struct.seqinfo_s** %ret_sqinfo, align 8, !tbaa !3
-  store i32 %num.0, i32* %ret_num, align 4, !tbaa !0
-  br label %return
+  tail call void @SeqfileClose(%struct.ReadSeqVars* %call.i) #8, !dbg !1396
+  store i8** %rseqs.0.ph, i8*** %ret_rseqs, align 8, !dbg !1397, !tbaa !612
+  store %struct.seqinfo_s* %sqinfo.0.ph, %struct.seqinfo_s** %ret_sqinfo, align 8, !dbg !1398, !tbaa !612
+  store i32 %num.0, i32* %ret_num, align 4, !dbg !1399, !tbaa !600
+  br label %return, !dbg !1400
 
 return:                                           ; preds = %entry, %while.end
   %retval.0 = phi i32 [ 1, %while.end ], [ 0, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1400
 }

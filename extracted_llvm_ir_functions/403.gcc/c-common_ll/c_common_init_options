@@ -1,18 +1,19 @@
 define void @c_common_init_options(i32 %lang) #0 {
 entry:
-  store i32 %lang, i32* @c_language, align 4, !tbaa !5
-  %cmp = icmp eq i32 %lang, 0
-  br i1 %cmp, label %cond.end, label %cond.false
+  tail call void @llvm.dbg.value(metadata !{i32 %lang}, i64 0, metadata !1960), !dbg !3767
+  store i32 %lang, i32* @c_language, align 4, !dbg !3768, !tbaa !2473
+  %cmp = icmp eq i32 %lang, 0, !dbg !3769
+  br i1 %cmp, label %cond.end, label %cond.false, !dbg !3769
 
 cond.false:                                       ; preds = %entry
-  %cmp1 = icmp eq i32 %lang, 1
-  %cond = select i1 %cmp1, i32 5, i32 7
-  br label %cond.end
+  %cmp1 = icmp eq i32 %lang, 1, !dbg !3769
+  %cond = select i1 %cmp1, i32 5, i32 7, !dbg !3769
+  br label %cond.end, !dbg !3769
 
 cond.end:                                         ; preds = %entry, %cond.false
-  %cond2 = phi i32 [ %cond, %cond.false ], [ 0, %entry ]
-  %call = tail call %struct.cpp_reader* @cpp_create_reader(i32 %cond2) #8
-  store %struct.cpp_reader* %call, %struct.cpp_reader** @parse_in, align 8, !tbaa !3
-  store i32 -1, i32* @flag_bounds_check, align 4, !tbaa !0
-  ret void
+  %cond2 = phi i32 [ %cond, %cond.false ], [ 0, %entry ], !dbg !3769
+  %call = tail call %struct.cpp_reader* @cpp_create_reader(i32 %cond2) #9, !dbg !3769
+  store %struct.cpp_reader* %call, %struct.cpp_reader** @parse_in, align 8, !dbg !3769, !tbaa !2305
+  store i32 -1, i32* @flag_bounds_check, align 4, !dbg !3770, !tbaa !2299
+  ret void, !dbg !3771
 }

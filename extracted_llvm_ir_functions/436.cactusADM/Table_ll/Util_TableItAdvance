@@ -1,34 +1,37 @@
 define i32 @Util_TableItAdvance(i32 %ihandle) #1 {
-  %1 = icmp sgt i32 %ihandle, -1
-  %2 = load i32* @N_ip_array, align 4
-  %3 = icmp sgt i32 %2, %ihandle
-  %or.cond.i = and i1 %1, %3
-  br i1 %or.cond.i, label %get_iterator_ptr.exit, label %get_iterator_ptr.exit.thread
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %ihandle}, i64 0, metadata !474), !dbg !1218
+  tail call void @llvm.dbg.value(metadata !{i32 %ihandle}, i64 0, metadata !1219), !dbg !1221
+  %cmp.i = icmp sgt i32 %ihandle, -1, !dbg !1222
+  %0 = load i32* @N_ip_array, align 4, !dbg !1222, !tbaa !595
+  %cmp1.i = icmp sgt i32 %0, %ihandle, !dbg !1222
+  %or.cond.i = and i1 %cmp.i, %cmp1.i, !dbg !1222
+  br i1 %or.cond.i, label %get_iterator_ptr.exit, label %return, !dbg !1222
 
-get_iterator_ptr.exit:                            ; preds = %0
-  %4 = sext i32 %ihandle to i64
-  %5 = load i8*** @ip_array, align 8, !tbaa !6
-  %6 = getelementptr inbounds i8** %5, i64 %4
-  %7 = bitcast i8** %6 to %struct.iterator**
-  %8 = load %struct.iterator** %7, align 8, !tbaa !6
-  %9 = icmp eq %struct.iterator* %8, null
-  br i1 %9, label %get_iterator_ptr.exit.thread, label %10
+get_iterator_ptr.exit:                            ; preds = %entry
+  %idxprom.i = sext i32 %ihandle to i64, !dbg !1222
+  %1 = load i8*** @ip_array, align 8, !dbg !1222, !tbaa !602
+  %arrayidx.i = getelementptr inbounds i8** %1, i64 %idxprom.i, !dbg !1222
+  %2 = load i8** %arrayidx.i, align 8, !dbg !1222, !tbaa !602
+  %cmp = icmp eq i8* %2, null, !dbg !1223
+  br i1 %cmp, label %return, label %if.end, !dbg !1223
 
-; <label>:10                                      ; preds = %get_iterator_ptr.exit
-  %11 = getelementptr inbounds %struct.iterator* %8, i64 0, i32 1
-  %12 = load %struct.table_entry** %11, align 8, !tbaa !23
-  %13 = icmp eq %struct.table_entry* %12, null
-  br i1 %13, label %get_iterator_ptr.exit.thread, label %14
+if.end:                                           ; preds = %get_iterator_ptr.exit
+  %tep = getelementptr inbounds i8* %2, i64 8, !dbg !1224
+  %3 = bitcast i8* %tep to %struct.table_entry**, !dbg !1224
+  %4 = load %struct.table_entry** %3, align 8, !dbg !1224, !tbaa !602
+  %cmp1 = icmp eq %struct.table_entry* %4, null, !dbg !1224
+  br i1 %cmp1, label %return, label %if.end3, !dbg !1224
 
-; <label>:14                                      ; preds = %10
-  %15 = getelementptr inbounds %struct.table_entry* %12, i64 0, i32 0
-  %16 = load %struct.table_entry** %15, align 8, !tbaa !12
-  store %struct.table_entry* %16, %struct.table_entry** %11, align 8, !tbaa !23
-  %not. = icmp ne %struct.table_entry* %16, null
-  %17 = zext i1 %not. to i32
-  br label %get_iterator_ptr.exit.thread
+if.end3:                                          ; preds = %if.end
+  %next = getelementptr inbounds %struct.table_entry* %4, i64 0, i32 0, !dbg !1225
+  %5 = load %struct.table_entry** %next, align 8, !dbg !1225, !tbaa !602
+  store %struct.table_entry* %5, %struct.table_entry** %3, align 8, !dbg !1225, !tbaa !602
+  %not.cmp7 = icmp ne %struct.table_entry* %5, null, !dbg !1226
+  %cond = zext i1 %not.cmp7 to i32, !dbg !1226
+  br label %return, !dbg !1226
 
-get_iterator_ptr.exit.thread:                     ; preds = %0, %10, %get_iterator_ptr.exit, %14
-  %.0 = phi i32 [ %17, %14 ], [ -2, %get_iterator_ptr.exit ], [ 0, %10 ], [ -2, %0 ]
-  ret i32 %.0
+return:                                           ; preds = %entry, %if.end, %get_iterator_ptr.exit, %if.end3
+  %retval.0 = phi i32 [ %cond, %if.end3 ], [ -2, %get_iterator_ptr.exit ], [ 0, %if.end ], [ -2, %entry ]
+  ret i32 %retval.0, !dbg !1227
 }

@@ -1,17 +1,21 @@
 define void @FSet(float* nocapture %vec, i32 %n, float %value) #0 {
 entry:
-  %cmp3 = icmp sgt i32 %n, 0
-  br i1 %cmp3, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{float* %vec}, i64 0, metadata !22), !dbg !209
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !23), !dbg !209
+  tail call void @llvm.dbg.value(metadata !{float %value}, i64 0, metadata !24), !dbg !209
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !25), !dbg !210
+  %cmp3 = icmp sgt i32 %n, 0, !dbg !210
+  br i1 %cmp3, label %for.body, label %for.end, !dbg !210
 
 for.body:                                         ; preds = %entry, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
-  %arrayidx = getelementptr inbounds float* %vec, i64 %indvars.iv
-  store float %value, float* %arrayidx, align 4, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n
-  br i1 %exitcond, label %for.end, label %for.body
+  %arrayidx = getelementptr inbounds float* %vec, i64 %indvars.iv, !dbg !210
+  store float %value, float* %arrayidx, align 4, !dbg !210, !tbaa !212
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !210
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !210
+  %exitcond = icmp eq i32 %lftr.wideiv, %n, !dbg !210
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !210
 
 for.end:                                          ; preds = %for.body, %entry
-  ret void
+  ret void, !dbg !213
 }

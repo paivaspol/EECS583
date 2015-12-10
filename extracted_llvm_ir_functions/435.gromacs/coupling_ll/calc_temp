@@ -1,17 +1,20 @@
-define float @calc_temp(float %ekin, float %nrdf) #5 {
-  %1 = fcmp ogt float %nrdf, 0.000000e+00
-  br i1 %1, label %2, label %9
+define float @calc_temp(float %ekin, float %nrdf) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float %ekin}, i64 0, metadata !178), !dbg !517
+  tail call void @llvm.dbg.value(metadata !{float %nrdf}, i64 0, metadata !179), !dbg !517
+  %cmp = fcmp ogt float %nrdf, 0.000000e+00, !dbg !518
+  br i1 %cmp, label %if.then, label %return, !dbg !518
 
-; <label>:2                                       ; preds = %0
-  %3 = fpext float %ekin to double
-  %4 = fmul double %3, 2.000000e+00
-  %5 = fpext float %nrdf to double
-  %6 = fmul double %5, 0x3F810732CDE67DC4
-  %7 = fdiv double %4, %6
-  %8 = fptrunc double %7 to float
-  br label %9
+if.then:                                          ; preds = %entry
+  %conv = fpext float %ekin to double, !dbg !519
+  %mul = fmul double %conv, 2.000000e+00, !dbg !519
+  %conv1 = fpext float %nrdf to double, !dbg !519
+  %mul2 = fmul double %conv1, 0x3F810732CDE67DC4, !dbg !519
+  %div = fdiv double %mul, %mul2, !dbg !519
+  %conv3 = fptrunc double %div to float, !dbg !519
+  br label %return, !dbg !519
 
-; <label>:9                                       ; preds = %0, %2
-  %.0 = phi float [ %8, %2 ], [ 0.000000e+00, %0 ]
-  ret float %.0
+return:                                           ; preds = %entry, %if.then
+  %retval.0 = phi float [ %conv3, %if.then ], [ 0.000000e+00, %entry ]
+  ret float %retval.0, !dbg !520
 }

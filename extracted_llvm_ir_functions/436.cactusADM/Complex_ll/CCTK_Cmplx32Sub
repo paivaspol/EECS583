@@ -1,17 +1,30 @@
-define void @CCTK_Cmplx32Sub(%struct.CCTK_COMPLEX32* noalias nocapture sret %agg.result, %struct.CCTK_COMPLEX32* byval nocapture readonly align 16 %a, %struct.CCTK_COMPLEX32* byval nocapture readonly align 16 %b) #3 {
-  %1 = getelementptr inbounds %struct.CCTK_COMPLEX32* %a, i64 0, i32 0
-  %2 = load x86_fp80* %1, align 16, !tbaa !2
-  %3 = getelementptr inbounds %struct.CCTK_COMPLEX32* %b, i64 0, i32 0
-  %4 = load x86_fp80* %3, align 16, !tbaa !2
-  %5 = fsub x86_fp80 %2, %4
-  %6 = getelementptr inbounds %struct.CCTK_COMPLEX32* %a, i64 0, i32 1
-  %7 = load x86_fp80* %6, align 16, !tbaa !7
-  %8 = getelementptr inbounds %struct.CCTK_COMPLEX32* %b, i64 0, i32 1
-  %9 = load x86_fp80* %8, align 16, !tbaa !7
-  %10 = fsub x86_fp80 %7, %9
-  %11 = getelementptr inbounds %struct.CCTK_COMPLEX32* %agg.result, i64 0, i32 0
-  store x86_fp80 %5, x86_fp80* %11, align 16
-  %12 = getelementptr inbounds %struct.CCTK_COMPLEX32* %agg.result, i64 0, i32 1
-  store x86_fp80 %10, x86_fp80* %12, align 16
-  ret void
+define void @CCTK_Cmplx32Sub(%struct.CCTK_COMPLEX32* noalias nocapture sret %agg.result, %struct.CCTK_COMPLEX32* byval nocapture align 16 %a, %struct.CCTK_COMPLEX32* byval nocapture align 16 %b) #3 {
+entry:
+  %result.sroa.1 = alloca [6 x i8], align 2
+  %result.sroa.3 = alloca [6 x i8], align 2
+  call void @llvm.dbg.declare(metadata !{%struct.CCTK_COMPLEX32* %a}, metadata !201), !dbg !314
+  call void @llvm.dbg.declare(metadata !{%struct.CCTK_COMPLEX32* %b}, metadata !202), !dbg !314
+  call void @llvm.dbg.declare(metadata !305, metadata !203), !dbg !314
+  %Re = getelementptr inbounds %struct.CCTK_COMPLEX32* %a, i64 0, i32 0, !dbg !314
+  %0 = load x86_fp80* %Re, align 16, !dbg !314, !tbaa !307
+  %Re1 = getelementptr inbounds %struct.CCTK_COMPLEX32* %b, i64 0, i32 0, !dbg !314
+  %1 = load x86_fp80* %Re1, align 16, !dbg !314, !tbaa !307
+  %sub = fsub x86_fp80 %0, %1, !dbg !314
+  %Im = getelementptr inbounds %struct.CCTK_COMPLEX32* %a, i64 0, i32 1, !dbg !314
+  %2 = load x86_fp80* %Im, align 16, !dbg !314, !tbaa !307
+  %Im3 = getelementptr inbounds %struct.CCTK_COMPLEX32* %b, i64 0, i32 1, !dbg !314
+  %3 = load x86_fp80* %Im3, align 16, !dbg !314, !tbaa !307
+  %sub4 = fsub x86_fp80 %2, %3, !dbg !314
+  %result.sroa.0.0.idx = getelementptr inbounds %struct.CCTK_COMPLEX32* %agg.result, i64 0, i32 0, !dbg !314
+  store x86_fp80 %sub, x86_fp80* %result.sroa.0.0.idx, align 16, !dbg !314
+  %result.sroa.1.10.raw_cast = bitcast %struct.CCTK_COMPLEX32* %agg.result to i8*, !dbg !314
+  %result.sroa.1.10.raw_idx = getelementptr inbounds i8* %result.sroa.1.10.raw_cast, i64 10, !dbg !314
+  %result.sroa.1.10.idx = getelementptr inbounds [6 x i8]* %result.sroa.1, i64 0, i64 0, !dbg !314
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %result.sroa.1.10.raw_idx, i8* %result.sroa.1.10.idx, i64 6, i32 2, i1 false), !dbg !314
+  %result.sroa.2.16.idx6 = getelementptr inbounds %struct.CCTK_COMPLEX32* %agg.result, i64 0, i32 1, !dbg !314
+  store x86_fp80 %sub4, x86_fp80* %result.sroa.2.16.idx6, align 16, !dbg !314
+  %result.sroa.3.26.raw_idx = getelementptr inbounds i8* %result.sroa.1.10.raw_cast, i64 26, !dbg !314
+  %result.sroa.3.26.idx = getelementptr inbounds [6 x i8]* %result.sroa.3, i64 0, i64 0, !dbg !314
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %result.sroa.3.26.raw_idx, i8* %result.sroa.3.26.idx, i64 6, i32 2, i1 false), !dbg !314
+  ret void, !dbg !314
 }

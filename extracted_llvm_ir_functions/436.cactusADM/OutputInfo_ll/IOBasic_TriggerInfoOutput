@@ -1,20 +1,39 @@
 define i32 @IOBasic_TriggerInfoOutput(%struct.cGH* %GH, i32 %vindex) #1 {
-  %1 = tail call i8* @CCTK_GHExtension(%struct.cGH* %GH, i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0)) #8
-  %2 = tail call i32 @IOBasic_WriteInfo(%struct.cGH* %GH, i32 %vindex) #8
-  %3 = icmp eq i32 %2, 0
-  br i1 %3, label %4, label %12
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !162), !dbg !460
+  tail call void @llvm.dbg.value(metadata !{i32 %vindex}, i64 0, metadata !163), !dbg !460
+  %call = tail call i8* @CCTK_GHExtension(%struct.cGH* %GH, i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0)) #8, !dbg !461
+  %call2 = tail call i32 @IOBasic_WriteInfo(%struct.cGH* %GH, i32 %vindex) #8, !dbg !462
+  tail call void @llvm.dbg.value(metadata !{i32 %call2}, i64 0, metadata !164), !dbg !462
+  %cmp = icmp eq i32 %call2, 0, !dbg !463
+  br i1 %cmp, label %if.then, label %if.end, !dbg !463
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 1
-  %6 = load i32* %5, align 4, !tbaa !8
-  %7 = sext i32 %vindex to i64
-  %8 = getelementptr inbounds i8* %1, i64 32
-  %9 = bitcast i8* %8 to i32**
-  %10 = load i32** %9, align 8, !tbaa !21
-  %11 = getelementptr inbounds i32* %10, i64 %7
-  store i32 %6, i32* %11, align 4, !tbaa !22
-  br label %12
+if.then:                                          ; preds = %entry
+  %cctk_iteration = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 1, !dbg !464
+  %0 = load i32* %cctk_iteration, align 4, !dbg !464, !tbaa !275
+  %idxprom = sext i32 %vindex to i64, !dbg !464
+  %outInfo_last = getelementptr inbounds i8* %call, i64 32, !dbg !464
+  %1 = bitcast i8* %outInfo_last to i32**, !dbg !464
+  %2 = load i32** %1, align 8, !dbg !464, !tbaa !286
+  %arrayidx = getelementptr inbounds i32* %2, i64 %idxprom, !dbg !464
+  store i32 %0, i32* %arrayidx, align 4, !dbg !464, !tbaa !275
+  br label %if.end, !dbg !466
 
-; <label>:12                                      ; preds = %4, %0
-  ret i32 %2
+if.end:                                           ; preds = %if.then, %entry
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !180), !dbg !467
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !180), !dbg !467
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !180), !dbg !467
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !180), !dbg !467
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !180), !dbg !467
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !180), !dbg !467
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !180), !dbg !467
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !180), !dbg !467
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !180), !dbg !467
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !180), !dbg !467
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !180), !dbg !467
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !180), !dbg !467
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !180), !dbg !467
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !180), !dbg !467
+  tail call void @llvm.dbg.value(metadata !367, i64 0, metadata !180), !dbg !467
+  ret i32 %call2, !dbg !467
 }

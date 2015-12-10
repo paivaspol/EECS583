@@ -1,62 +1,71 @@
 define i32 @CCTK_ScheduleTraverse(i8* %where, i8* %GH, i32 (i8*, %struct.cFunctionData*, i8*)* %CallFunction) #1 {
-  br label %1
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %where}, i64 0, metadata !223), !dbg !693
+  tail call void @llvm.dbg.value(metadata !{i8* %GH}, i64 0, metadata !224), !dbg !694
+  tail call void @llvm.dbg.value(metadata !{i32 (i8*, %struct.cFunctionData*, i8*)* %CallFunction}, i64 0, metadata !225), !dbg !695
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !227), !dbg !696
+  tail call void @llvm.dbg.value(metadata !{i8* %where}, i64 0, metadata !228), !dbg !697
+  br label %for.cond, !dbg !697
 
-; <label>:1                                       ; preds = %3, %0
-  %current.0 = phi i8* [ %where, %0 ], [ %4, %3 ]
-  %2 = load i8* %current.0, align 1, !tbaa !10
-  switch i8 %2, label %3 [
-    i8 0, label %5
-    i8 36, label %.critedge
-  ]
+for.cond:                                         ; preds = %for.inc, %entry
+  %current.0 = phi i8* [ %where, %entry ], [ %incdec.ptr, %for.inc ]
+  %0 = load i8* %current.0, align 1, !dbg !697, !tbaa !489
+  switch i8 %0, label %for.inc [
+    i8 0, label %if.else
+    i8 36, label %if.then3.critedge
+  ], !dbg !697
 
-; <label>:3                                       ; preds = %1
-  %4 = getelementptr inbounds i8* %current.0, i64 1
-  br label %1
+for.inc:                                          ; preds = %for.cond
+  %incdec.ptr = getelementptr inbounds i8* %current.0, i64 1, !dbg !697
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !228), !dbg !697
+  br label %for.cond, !dbg !697
 
-.critedge:                                        ; preds = %1
-  tail call fastcc void @ScheduleTraverse(i8* %where, i8* %GH, i32 (i8*, %struct.cFunctionData*, i8*)* %CallFunction) #9
-  br label %.thread2
+if.then3.critedge:                                ; preds = %for.cond
+  tail call void @llvm.dbg.value(metadata !699, i64 0, metadata !227), !dbg !700
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !226), !dbg !703
+  tail call fastcc void @ScheduleTraverse(i8* %where, i8* %GH, i32 (i8*, %struct.cFunctionData*, i8*)* %CallFunction) #9, !dbg !704
+  br label %if.end28, !dbg !706
 
-; <label>:5                                       ; preds = %1
-  %6 = load i32* @CCTK_ScheduleTraverse.current_length, align 4, !tbaa !38
-  %7 = zext i32 %6 to i64
-  %8 = tail call i64 @strlen(i8* %where) #8
-  %9 = add i64 %8, 7
-  %10 = icmp ult i64 %7, %9
-  br i1 %10, label %11, label %._crit_edge
+if.else:                                          ; preds = %for.cond
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !226), !dbg !703
+  %1 = load i32* @CCTK_ScheduleTraverse.current_length, align 4, !dbg !707, !tbaa !592
+  %conv4 = zext i32 %1 to i64, !dbg !707
+  %call5 = tail call i64 @strlen(i8* %where) #11, !dbg !707
+  %add = add i64 %call5, 7, !dbg !707
+  %cmp6 = icmp ult i64 %conv4, %add, !dbg !707
+  br i1 %cmp6, label %if.then8, label %if.else.if.then21_crit_edge, !dbg !707
 
-._crit_edge:                                      ; preds = %5
-  %.pre = load i8** @CCTK_ScheduleTraverse.current_point, align 8, !tbaa !13
-  br label %18
+if.else.if.then21_crit_edge:                      ; preds = %if.else
+  %.pre = load i8** @CCTK_ScheduleTraverse.current_point, align 8, !dbg !709, !tbaa !504
+  br label %if.then21, !dbg !707
 
-; <label>:11                                      ; preds = %5
-  %12 = trunc i64 %9 to i32
-  store i32 %12, i32* @CCTK_ScheduleTraverse.current_length, align 4, !tbaa !38
-  %13 = load i8** @CCTK_ScheduleTraverse.current_point, align 8, !tbaa !13
-  %14 = and i64 %9, 4294967295
-  %15 = tail call i8* @realloc(i8* %13, i64 %14) #8
-  %16 = icmp eq i8* %15, null
-  br i1 %16, label %.thread2, label %17
+if.then8:                                         ; preds = %if.else
+  %conv11 = trunc i64 %add to i32, !dbg !711
+  store i32 %conv11, i32* @CCTK_ScheduleTraverse.current_length, align 4, !dbg !711, !tbaa !592
+  %2 = load i8** @CCTK_ScheduleTraverse.current_point, align 8, !dbg !713, !tbaa !504
+  %conv12 = and i64 %add, 4294967295, !dbg !713
+  %call13 = tail call i8* @realloc(i8* %2, i64 %conv12) #8, !dbg !713
+  tail call void @llvm.dbg.value(metadata !{i8* %call13}, i64 0, metadata !229), !dbg !713
+  %tobool14 = icmp eq i8* %call13, null, !dbg !714
+  br i1 %tobool14, label %if.end28, label %if.then15, !dbg !714
 
-; <label>:17                                      ; preds = %11
-  store i8* %15, i8** @CCTK_ScheduleTraverse.current_point, align 8, !tbaa !13
-  br label %18
+if.then15:                                        ; preds = %if.then8
+  store i8* %call13, i8** @CCTK_ScheduleTraverse.current_point, align 8, !dbg !715, !tbaa !504
+  br label %if.then21, !dbg !717
 
-; <label>:18                                      ; preds = %._crit_edge, %17
-  %19 = phi i8* [ %.pre, %._crit_edge ], [ %15, %17 ]
-  %20 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %19, i1 false)
-  %21 = tail call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %19, i32 0, i64 %20, i8* getelementptr inbounds ([6 x i8]* @.str5, i64 0, i64 0), i8* %where, i8* getelementptr inbounds ([6 x i8]* @.str6, i64 0, i64 0)) #8
-  %22 = load i8** @CCTK_ScheduleTraverse.current_point, align 8, !tbaa !13
-  tail call fastcc void @ScheduleTraverse(i8* %22, i8* %GH, i32 (i8*, %struct.cFunctionData*, i8*)* %CallFunction) #9
-  tail call fastcc void @ScheduleTraverse(i8* %where, i8* %GH, i32 (i8*, %struct.cFunctionData*, i8*)* %CallFunction) #9
-  %23 = load i8** @CCTK_ScheduleTraverse.current_point, align 8, !tbaa !13
-  %24 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %23, i1 false)
-  %25 = tail call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %23, i32 0, i64 %24, i8* getelementptr inbounds ([6 x i8]* @.str5, i64 0, i64 0), i8* %where, i8* getelementptr inbounds ([5 x i8]* @.str7, i64 0, i64 0)) #8
-  %26 = load i8** @CCTK_ScheduleTraverse.current_point, align 8, !tbaa !13
-  tail call fastcc void @ScheduleTraverse(i8* %26, i8* %GH, i32 (i8*, %struct.cFunctionData*, i8*)* %CallFunction) #9
-  br label %.thread2
+if.then21:                                        ; preds = %if.else.if.then21_crit_edge, %if.then15
+  %3 = phi i8* [ %.pre, %if.else.if.then21_crit_edge ], [ %call13, %if.then15 ]
+  %call22 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* %3, i8* getelementptr inbounds ([6 x i8]* @.str5, i64 0, i64 0), i8* %where, i8* getelementptr inbounds ([6 x i8]* @.str6, i64 0, i64 0)) #8, !dbg !709
+  %4 = load i8** @CCTK_ScheduleTraverse.current_point, align 8, !dbg !718, !tbaa !504
+  tail call fastcc void @ScheduleTraverse(i8* %4, i8* %GH, i32 (i8*, %struct.cFunctionData*, i8*)* %CallFunction) #9, !dbg !718
+  tail call fastcc void @ScheduleTraverse(i8* %where, i8* %GH, i32 (i8*, %struct.cFunctionData*, i8*)* %CallFunction) #9, !dbg !719
+  %5 = load i8** @CCTK_ScheduleTraverse.current_point, align 8, !dbg !720, !tbaa !504
+  %call25 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* %5, i8* getelementptr inbounds ([6 x i8]* @.str5, i64 0, i64 0), i8* %where, i8* getelementptr inbounds ([5 x i8]* @.str7, i64 0, i64 0)) #8, !dbg !720
+  %6 = load i8** @CCTK_ScheduleTraverse.current_point, align 8, !dbg !721, !tbaa !504
+  tail call fastcc void @ScheduleTraverse(i8* %6, i8* %GH, i32 (i8*, %struct.cFunctionData*, i8*)* %CallFunction) #9, !dbg !721
+  br label %if.end28, !dbg !722
 
-.thread2:                                         ; preds = %11, %18, %.critedge
-  %retcode.1 = phi i32 [ 0, %.critedge ], [ 0, %18 ], [ 1, %11 ]
-  ret i32 %retcode.1
+if.end28:                                         ; preds = %if.then8, %if.then21, %if.then3.critedge
+  %retcode.1 = phi i32 [ 0, %if.then3.critedge ], [ 0, %if.then21 ], [ 1, %if.then8 ]
+  ret i32 %retcode.1, !dbg !723
 }

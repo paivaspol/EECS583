@@ -1,27 +1,30 @@
 define %struct.rtx_def* @get_exception_pointer(%struct.function* %fun) #0 {
 entry:
-  %eh = getelementptr inbounds %struct.function* %fun, i64 0, i32 0
-  %0 = load %struct.eh_status** %eh, align 8, !tbaa !3
-  %exc_ptr1 = getelementptr inbounds %struct.eh_status* %0, i64 0, i32 6
-  %1 = load %struct.rtx_def** %exc_ptr1, align 8, !tbaa !3
-  %2 = load %struct.function** @cfun, align 8, !tbaa !3
-  %cmp = icmp eq %struct.function* %2, %fun
-  %tobool = icmp eq %struct.rtx_def* %1, null
-  %or.cond = and i1 %cmp, %tobool
-  br i1 %or.cond, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.function* %fun}, i64 0, metadata !1518), !dbg !2432
+  %eh = getelementptr inbounds %struct.function* %fun, i64 0, i32 0, !dbg !2433
+  %0 = load %struct.eh_status** %eh, align 8, !dbg !2433, !tbaa !2232
+  %exc_ptr1 = getelementptr inbounds %struct.eh_status* %0, i64 0, i32 6, !dbg !2433
+  %1 = load %struct.rtx_def** %exc_ptr1, align 8, !dbg !2433, !tbaa !2232
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %1}, i64 0, metadata !1519), !dbg !2433
+  %2 = load %struct.function** @cfun, align 8, !dbg !2434, !tbaa !2232
+  %cmp = icmp eq %struct.function* %2, %fun, !dbg !2434
+  %tobool = icmp eq %struct.rtx_def* %1, null, !dbg !2434
+  %or.cond = and i1 %cmp, %tobool, !dbg !2434
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !2434
 
 if.then:                                          ; preds = %entry
-  %3 = load i32* @target_flags, align 4, !tbaa !0
-  %and = lshr i32 %3, 25
-  %4 = and i32 %and, 1
-  %5 = or i32 %4, 4
-  %call = tail call %struct.rtx_def* @gen_reg_rtx(i32 %5) #6
-  %6 = load %struct.eh_status** %eh, align 8, !tbaa !3
-  %exc_ptr4 = getelementptr inbounds %struct.eh_status* %6, i64 0, i32 6
-  store %struct.rtx_def* %call, %struct.rtx_def** %exc_ptr4, align 8, !tbaa !3
-  br label %if.end
+  %3 = load i32* @target_flags, align 4, !dbg !2435, !tbaa !2220
+  %and = lshr i32 %3, 25, !dbg !2435
+  %4 = and i32 %and, 1, !dbg !2435
+  %5 = or i32 %4, 4, !dbg !2435
+  %call = tail call %struct.rtx_def* @gen_reg_rtx(i32 %5) #7, !dbg !2435
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !1519), !dbg !2435
+  %6 = load %struct.eh_status** %eh, align 8, !dbg !2437, !tbaa !2232
+  %exc_ptr4 = getelementptr inbounds %struct.eh_status* %6, i64 0, i32 6, !dbg !2437
+  store %struct.rtx_def* %call, %struct.rtx_def** %exc_ptr4, align 8, !dbg !2437, !tbaa !2232
+  br label %if.end, !dbg !2438
 
 if.end:                                           ; preds = %if.then, %entry
   %exc_ptr.0 = phi %struct.rtx_def* [ %call, %if.then ], [ %1, %entry ]
-  ret %struct.rtx_def* %exc_ptr.0
+  ret %struct.rtx_def* %exc_ptr.0, !dbg !2439
 }

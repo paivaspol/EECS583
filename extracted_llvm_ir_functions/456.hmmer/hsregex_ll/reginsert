@@ -1,0 +1,41 @@
+define internal fastcc void @reginsert(%struct.comp* %cp, i32, i8* %opnd) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.comp* %cp, i64 0, metadata !174, metadata !274), !dbg !1443
+  tail call void @llvm.dbg.value(metadata i8 %op, i64 0, metadata !175, metadata !274), !dbg !1444
+  tail call void @llvm.dbg.value(metadata i8* %opnd, i64 0, metadata !176, metadata !274), !dbg !1445
+  %2 = getelementptr inbounds %struct.comp* %cp, i64 0, i32 2, !dbg !1446
+  %3 = load i8** %2, align 8, !dbg !1446, !tbaa !356
+  %4 = getelementptr inbounds %struct.comp* %cp, i64 0, i32 3, i64 0, !dbg !1446
+  %5 = icmp eq i8* %3, %4, !dbg !1446
+  br i1 %5, label %6, label %10, !dbg !1448
+
+; <label>:6                                       ; preds = %1
+  %7 = getelementptr inbounds %struct.comp* %cp, i64 0, i32 4, !dbg !1449
+  %8 = load i64* %7, align 8, !dbg !1451, !tbaa !362
+  %9 = add nsw i64 %8, 3, !dbg !1451
+  store i64 %9, i64* %7, align 8, !dbg !1451, !tbaa !362
+  br label %21, !dbg !1452
+
+; <label>:10                                      ; preds = %1
+  %op = trunc i32 %0 to i8
+  %11 = getelementptr inbounds i8* %opnd, i64 3, !dbg !1453
+  %12 = ptrtoint i8* %3 to i64, !dbg !1453
+  %13 = ptrtoint i8* %opnd to i64, !dbg !1453
+  %14 = sub i64 %12, %13, !dbg !1453
+  %15 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %11, i1 false), !dbg !1453
+  %16 = tail call i8* @__memmove_chk(i8* %11, i8* %opnd, i64 %14, i64 %15) #8, !dbg !1453
+  %17 = load i8** %2, align 8, !dbg !1454, !tbaa !356
+  %18 = getelementptr inbounds i8* %17, i64 3, !dbg !1454
+  store i8* %18, i8** %2, align 8, !dbg !1454, !tbaa !356
+  tail call void @llvm.dbg.value(metadata i8* %opnd, i64 0, metadata !177, metadata !274), !dbg !1455
+  %19 = getelementptr inbounds i8* %opnd, i64 1, !dbg !1456
+  tail call void @llvm.dbg.value(metadata i8* %19, i64 0, metadata !177, metadata !274), !dbg !1455
+  store i8 %op, i8* %opnd, align 1, !dbg !1457, !tbaa !325
+  %20 = getelementptr inbounds i8* %opnd, i64 2, !dbg !1458
+  tail call void @llvm.dbg.value(metadata i8* %20, i64 0, metadata !177, metadata !274), !dbg !1455
+  store i8 0, i8* %19, align 1, !dbg !1459, !tbaa !325
+  store i8 0, i8* %20, align 1, !dbg !1460, !tbaa !325
+  br label %21, !dbg !1461
+
+; <label>:21                                      ; preds = %10, %6
+  ret void, !dbg !1461
+}

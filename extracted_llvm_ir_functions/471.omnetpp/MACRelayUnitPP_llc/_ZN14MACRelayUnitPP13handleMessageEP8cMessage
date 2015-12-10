@@ -1,0 +1,34 @@
+define void @_ZN14MACRelayUnitPP13handleMessageEP8cMessage(%class.MACRelayUnitPP* %this, %class.cMessage* %msg) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.MACRelayUnitPP* %this}, i64 0, metadata !5478), !dbg !6185
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage* %msg}, i64 0, metadata !5479), !dbg !6185
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage* %msg}, i64 0, metadata !6186), !dbg !6188
+  %togate.i = getelementptr inbounds %class.cMessage* %msg, i64 0, i32 12, !dbg !6188
+  %0 = load i32* %togate.i, align 4, !dbg !6188, !tbaa !6041
+  %cmp.i = icmp eq i32 %0, -1, !dbg !6188
+  br i1 %cmp.i, label %if.else, label %if.then, !dbg !6187
+
+if.then:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage* %msg}, i64 0, metadata !6189), !dbg !6192
+  %msgkind.i = getelementptr inbounds %class.cMessage* %msg, i64 0, i32 1, !dbg !6192
+  %1 = load i32* %msgkind.i, align 4, !dbg !6192, !tbaa !6041
+  %cmp = icmp eq i32 %1, 2001, !dbg !6190
+  br i1 %cmp, label %if.end, label %if.then3, !dbg !6190
+
+if.then3:                                         ; preds = %if.then
+  %2 = getelementptr inbounds %class.MACRelayUnitPP* %this, i64 0, i32 0, i32 0, !dbg !6193
+  tail call void (%class.cSimpleModule*, i8*, ...)* @_ZNK13cSimpleModule5errorEPKcz(%class.cSimpleModule* %2, i8* getelementptr inbounds ([23 x i8]* @.str21, i64 0, i64 0)) #9, !dbg !6193
+  br label %if.end, !dbg !6193
+
+if.end:                                           ; preds = %if.then, %if.then3
+  %3 = bitcast %class.cMessage* %msg to %class.EtherFrame*, !dbg !6194
+  tail call void @_ZN14MACRelayUnitPP19handleIncomingFrameEP10EtherFrame(%class.MACRelayUnitPP* %this, %class.EtherFrame* %3) #9, !dbg !6194
+  br label %if.end4, !dbg !6195
+
+if.else:                                          ; preds = %entry
+  tail call void @_ZN14MACRelayUnitPP12processFrameEP8cMessage(%class.MACRelayUnitPP* %this, %class.cMessage* %msg) #9, !dbg !6196
+  br label %if.end4
+
+if.end4:                                          ; preds = %if.else, %if.end
+  ret void, !dbg !6198
+}

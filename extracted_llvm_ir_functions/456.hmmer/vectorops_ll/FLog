@@ -1,29 +1,32 @@
 define void @FLog(float* nocapture %vec, i32 %n) #0 {
 entry:
-  %cmp17 = icmp sgt i32 %n, 0
-  br i1 %cmp17, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{float* %vec}, i64 0, metadata !175), !dbg !345
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !176), !dbg !345
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !177), !dbg !346
+  %cmp17 = icmp sgt i32 %n, 0, !dbg !346
+  br i1 %cmp17, label %for.body, label %for.end, !dbg !346
 
 for.body:                                         ; preds = %entry, %for.inc
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %entry ]
-  %arrayidx = getelementptr inbounds float* %vec, i64 %indvars.iv
-  %0 = load float* %arrayidx, align 4, !tbaa !3
-  %cmp1 = fcmp ogt float %0, 0.000000e+00
-  br i1 %cmp1, label %if.then, label %for.inc
+  %arrayidx = getelementptr inbounds float* %vec, i64 %indvars.iv, !dbg !348
+  %0 = load float* %arrayidx, align 4, !dbg !348, !tbaa !212
+  %cmp1 = fcmp ogt float %0, 0.000000e+00, !dbg !348
+  br i1 %cmp1, label %if.then, label %for.inc, !dbg !348
 
 if.then:                                          ; preds = %for.body
-  %conv = fpext float %0 to double
-  %call = tail call double @log(double %conv) #3
-  %conv6 = fptrunc double %call to float
-  br label %for.inc
+  %conv = fpext float %0 to double, !dbg !348
+  %call = tail call double @log(double %conv) #4, !dbg !348
+  %conv6 = fptrunc double %call to float, !dbg !348
+  br label %for.inc, !dbg !348
 
 for.inc:                                          ; preds = %for.body, %if.then
   %storemerge = phi float [ %conv6, %if.then ], [ 0xC7EFFFFFE0000000, %for.body ]
-  store float %storemerge, float* %arrayidx, align 4, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n
-  br i1 %exitcond, label %for.end, label %for.body
+  store float %storemerge, float* %arrayidx, align 4, !dbg !348, !tbaa !212
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !346
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !346
+  %exitcond = icmp eq i32 %lftr.wideiv, %n, !dbg !346
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !346
 
 for.end:                                          ; preds = %for.inc, %entry
-  ret void
+  ret void, !dbg !349
 }

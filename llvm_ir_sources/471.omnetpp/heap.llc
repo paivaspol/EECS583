@@ -1,0 +1,345 @@
+; ModuleID = '../../SPEC/benchspec/CPU2006/471.omnetpp/src/libs/cmdenv/heap.cc'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
+
+%class.MemManager = type { i8*, i32, i8 }
+
+@_ZL10memManager = internal global %class.MemManager zeroinitializer, align 8
+@__dso_handle = external global i8
+@.str = private unnamed_addr constant [30 x i8] c"\0A[NEW (%lu) FAILED,exiting!]\0A\00", align 1
+@llvm.global_ctors = appending global [1 x { i32, void ()* }] [{ i32, void ()* } { i32 65535, void ()* @_GLOBAL__I_a }]
+
+@_ZN10MemManagerC1Ei = alias void (%class.MemManager*, i32)* @_ZN10MemManagerC2Ei
+@_ZN10MemManagerD1Ev = alias void (%class.MemManager*)* @_ZN10MemManagerD2Ev
+
+; Function Attrs: nounwind optsize uwtable
+define void @_ZN10MemManagerC2Ei(%class.MemManager* nocapture %this, i32 %mps) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.MemManager* %this}, i64 0, metadata !31), !dbg !70
+  tail call void @llvm.dbg.value(metadata !{i32 %mps}, i64 0, metadata !34), !dbg !70
+  %maxpoolsize = getelementptr inbounds %class.MemManager* %this, i64 0, i32 1, !dbg !71
+  store i32 %mps, i32* %maxpoolsize, align 4, !dbg !71, !tbaa !73
+  %conv = sext i32 %mps to i64, !dbg !76
+  %call = tail call noalias i8* @malloc(i64 %conv) #8, !dbg !76
+  %safetypool = getelementptr inbounds %class.MemManager* %this, i64 0, i32 0, !dbg !76
+  store i8* %call, i8** %safetypool, align 8, !dbg !76, !tbaa !77
+  %cmp = icmp eq i8* %call, null, !dbg !78
+  %lowmem = getelementptr inbounds %class.MemManager* %this, i64 0, i32 2, !dbg !78
+  %frombool = zext i1 %cmp to i8, !dbg !78
+  store i8 %frombool, i8* %lowmem, align 1, !dbg !78, !tbaa !79
+  ret void, !dbg !80
+}
+
+; Function Attrs: nounwind optsize
+declare noalias i8* @malloc(i64) #1
+
+; Function Attrs: nounwind optsize uwtable
+define void @_ZN10MemManagerD2Ev(%class.MemManager* nocapture %this) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.MemManager* %this}, i64 0, metadata !37), !dbg !81
+  %safetypool = getelementptr inbounds %class.MemManager* %this, i64 0, i32 0, !dbg !82
+  %0 = load i8** %safetypool, align 8, !dbg !82, !tbaa !77
+  tail call void @free(i8* %0) #8, !dbg !82
+  store i8* null, i8** %safetypool, align 8, !dbg !84, !tbaa !77
+  %maxpoolsize = getelementptr inbounds %class.MemManager* %this, i64 0, i32 1, !dbg !85
+  store i32 0, i32* %maxpoolsize, align 4, !dbg !85, !tbaa !73
+  %lowmem = getelementptr inbounds %class.MemManager* %this, i64 0, i32 2, !dbg !86
+  store i8 0, i8* %lowmem, align 1, !dbg !86, !tbaa !79
+  ret void, !dbg !87
+}
+
+; Function Attrs: nounwind optsize
+declare void @free(i8* nocapture) #1
+
+; Function Attrs: nounwind optsize uwtable
+define void @_ZN10MemManager8makeRoomEv(%class.MemManager* nocapture %this) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.MemManager* %this}, i64 0, metadata !40), !dbg !88
+  %lowmem = getelementptr inbounds %class.MemManager* %this, i64 0, i32 2, !dbg !89
+  store i8 1, i8* %lowmem, align 1, !dbg !89, !tbaa !79
+  %safetypool = getelementptr inbounds %class.MemManager* %this, i64 0, i32 0, !dbg !90
+  %0 = load i8** %safetypool, align 8, !dbg !90, !tbaa !77
+  tail call void @free(i8* %0) #8, !dbg !90
+  store i8* null, i8** %safetypool, align 8, !dbg !91, !tbaa !77
+  ret void, !dbg !92
+}
+
+; Function Attrs: nounwind optsize uwtable
+define void @_ZN10MemManager11restorePoolEv(%class.MemManager* nocapture %this) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.MemManager* %this}, i64 0, metadata !43), !dbg !93
+  %lowmem = getelementptr inbounds %class.MemManager* %this, i64 0, i32 2, !dbg !94
+  %0 = load i8* %lowmem, align 1, !dbg !94, !tbaa !79, !range !95
+  %tobool = icmp eq i8 %0, 0, !dbg !94
+  br i1 %tobool, label %if.end6, label %if.then, !dbg !94
+
+if.then:                                          ; preds = %entry
+  %maxpoolsize = getelementptr inbounds %class.MemManager* %this, i64 0, i32 1, !dbg !96
+  %1 = load i32* %maxpoolsize, align 4, !dbg !96, !tbaa !73
+  %conv = sext i32 %1 to i64, !dbg !96
+  %call = tail call noalias i8* @malloc(i64 %conv) #8, !dbg !96
+  %safetypool = getelementptr inbounds %class.MemManager* %this, i64 0, i32 0, !dbg !96
+  store i8* %call, i8** %safetypool, align 8, !dbg !96, !tbaa !77
+  %tobool3 = icmp eq i8* %call, null, !dbg !98
+  br i1 %tobool3, label %if.end6, label %if.then4, !dbg !98
+
+if.then4:                                         ; preds = %if.then
+  store i8 0, i8* %lowmem, align 1, !dbg !99, !tbaa !79
+  br label %if.end6, !dbg !99
+
+if.end6:                                          ; preds = %if.then, %entry, %if.then4
+  ret void, !dbg !100
+}
+
+; Function Attrs: nounwind
+declare i32 @__cxa_atexit(void (i8*)*, i8*, i8*) #2
+
+; Function Attrs: nounwind optsize readonly uwtable
+define zeroext i1 @_Z17cmdenvMemoryIsLowv() #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !101, i64 0, metadata !102), !dbg !104
+  %0 = load i8* getelementptr inbounds (%class.MemManager* @_ZL10memManager, i64 0, i32 2), align 4, !dbg !104, !tbaa !79, !range !95
+  %tobool.i = icmp ne i8 %0, 0, !dbg !104
+  ret i1 %tobool.i, !dbg !103
+}
+
+; Function Attrs: optsize uwtable
+define noalias i8* @_Znwm(i64 %m) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i64 %m}, i64 0, metadata !56), !dbg !105
+  %cmp = icmp eq i64 %m, 0, !dbg !106
+  br i1 %cmp, label %return, label %if.end, !dbg !106
+
+if.end:                                           ; preds = %entry
+  %call = tail call noalias i8* @malloc(i64 %m) #8, !dbg !107
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !57), !dbg !107
+  %cmp1 = icmp eq i8* %call, null, !dbg !107
+  br i1 %cmp1, label %if.else, label %return, !dbg !107
+
+if.else:                                          ; preds = %if.end
+  tail call void @llvm.dbg.value(metadata !101, i64 0, metadata !108), !dbg !110
+  %0 = load i8* getelementptr inbounds (%class.MemManager* @_ZL10memManager, i64 0, i32 2), align 4, !dbg !110, !tbaa !79, !range !95
+  %tobool.i = icmp eq i8 %0, 0, !dbg !110
+  br i1 %tobool.i, label %if.then4, label %if.else6, !dbg !109
+
+if.then4:                                         ; preds = %if.else
+  tail call void @llvm.dbg.value(metadata !101, i64 0, metadata !111) #2, !dbg !114
+  store i8 1, i8* getelementptr inbounds (%class.MemManager* @_ZL10memManager, i64 0, i32 2), align 4, !dbg !115, !tbaa !79
+  %1 = load i8** getelementptr inbounds (%class.MemManager* @_ZL10memManager, i64 0, i32 0), align 8, !dbg !116, !tbaa !77
+  tail call void @free(i8* %1) #8, !dbg !116
+  store i8* null, i8** getelementptr inbounds (%class.MemManager* @_ZL10memManager, i64 0, i32 0), align 8, !dbg !117, !tbaa !77
+  %call5 = tail call noalias i8* @_Znam(i64 %m) #9, !dbg !118
+  br label %return, !dbg !118
+
+if.else6:                                         ; preds = %if.else
+  %call7 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([30 x i8]* @.str, i64 0, i64 0), i64 %m) #9, !dbg !119
+  tail call void @exit(i32 1) #10, !dbg !121
+  unreachable, !dbg !121
+
+return:                                           ; preds = %if.end, %entry, %if.then4
+  %retval.0 = phi i8* [ %call5, %if.then4 ], [ null, %entry ], [ %call, %if.end ]
+  ret i8* %retval.0, !dbg !122
+}
+
+; Function Attrs: optsize
+declare noalias i8* @_Znam(i64) #5
+
+; Function Attrs: nounwind optsize
+declare i32 @printf(i8* nocapture, ...) #1
+
+; Function Attrs: noreturn nounwind optsize
+declare void @exit(i32) #6
+
+; Function Attrs: nounwind optsize uwtable
+define void @_ZdlPv(i8* %p) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %p}, i64 0, metadata !62), !dbg !123
+  %cmp = icmp eq i8* %p, null, !dbg !124
+  br i1 %cmp, label %if.end3, label %if.end, !dbg !124
+
+if.end:                                           ; preds = %entry
+  tail call void @free(i8* %p) #8, !dbg !125
+  tail call void @llvm.dbg.value(metadata !101, i64 0, metadata !126), !dbg !128
+  %0 = load i8* getelementptr inbounds (%class.MemManager* @_ZL10memManager, i64 0, i32 2), align 4, !dbg !128, !tbaa !79, !range !95
+  %tobool.i = icmp eq i8 %0, 0, !dbg !128
+  br i1 %tobool.i, label %if.end3, label %if.then1, !dbg !127
+
+if.then1:                                         ; preds = %if.end
+  tail call void @_ZN10MemManager11restorePoolEv(%class.MemManager* @_ZL10memManager) #9, !dbg !129
+  br label %if.end3, !dbg !129
+
+if.end3:                                          ; preds = %if.end, %entry, %if.then1
+  ret void, !dbg !129
+}
+
+; Function Attrs: nounwind
+define internal void @_GLOBAL__I_a() #2 section ".text.startup" {
+entry:
+  tail call void @llvm.dbg.value(metadata !101, i64 0, metadata !130) #2, !dbg !133
+  tail call void @llvm.dbg.value(metadata !134, i64 0, metadata !135) #2, !dbg !133
+  store i32 16384, i32* getelementptr inbounds (%class.MemManager* @_ZL10memManager, i64 0, i32 1), align 8, !dbg !136, !tbaa !73
+  %call.i.i = tail call noalias i8* @malloc(i64 16384) #8, !dbg !137
+  store i8* %call.i.i, i8** getelementptr inbounds (%class.MemManager* @_ZL10memManager, i64 0, i32 0), align 8, !dbg !137, !tbaa !77
+  %cmp.i.i = icmp eq i8* %call.i.i, null, !dbg !138
+  %frombool.i.i = zext i1 %cmp.i.i to i8, !dbg !138
+  store i8 %frombool.i.i, i8* getelementptr inbounds (%class.MemManager* @_ZL10memManager, i64 0, i32 2), align 4, !dbg !138, !tbaa !79
+  %0 = tail call i32 @__cxa_atexit(void (i8*)* bitcast (void (%class.MemManager*)* @_ZN10MemManagerD2Ev to void (i8*)*), i8* bitcast (%class.MemManager* @_ZL10memManager to i8*), i8* @__dso_handle) #2, !dbg !131
+  ret void, !dbg !132
+}
+
+; Function Attrs: nounwind readnone
+declare void @llvm.dbg.value(metadata, i64, metadata) #7
+
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { nounwind }
+attributes #3 = { nounwind optsize readonly uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #4 = { optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #5 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #6 = { noreturn nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #7 = { nounwind readnone }
+attributes #8 = { nounwind optsize }
+attributes #9 = { optsize }
+attributes #10 = { noreturn nounwind optsize }
+
+!llvm.dbg.cu = !{!0}
+
+!0 = metadata !{i32 786449, metadata !1, i32 4, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !68, metadata !2, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/471.omnetpp/src/libs/cmdenv/heap.cc] [DW_LANG_C_plus_plus]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/471.omnetpp/src/libs/cmdenv/heap.cc", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4, metadata !35, metadata !38, metadata !41, metadata !44, metadata !47, metadata !50, metadata !58, metadata !63, metadata !66}
+!4 = metadata !{i32 786478, metadata !1, null, metadata !"MemManager", metadata !"MemManager", metadata !"_ZN10MemManagerC2Ei", i32 114, metadata !5, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%class.MemManager*, i32)* @_ZN10MemManagerC2Ei, null, metadata !16, metadata !30, i32 115} ; [ DW_TAG_subprogram ] [line 114] [def] [scope 115] [MemManager]
+!5 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !6, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!6 = metadata !{null, metadata !7, metadata !13}
+!7 = metadata !{i32 786447, i32 0, i32 0, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 1088, metadata !8} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [artificial] [from MemManager]
+!8 = metadata !{i32 786434, metadata !1, null, metadata !"MemManager", i32 100, i64 128, i64 64, i32 0, i32 0, null, metadata !9, i32 0, null, null} ; [ DW_TAG_class_type ] [MemManager] [line 100, size 128, align 64, offset 0] [from ]
+!9 = metadata !{metadata !10, metadata !12, metadata !14, metadata !16, metadata !18, metadata !22, metadata !24, metadata !26}
+!10 = metadata !{i32 786445, metadata !1, metadata !8, metadata !"safetypool", i32 103, i64 64, i64 64, i64 0, i32 1, metadata !11} ; [ DW_TAG_member ] [safetypool] [line 103, size 64, align 64, offset 0] [private] [from ]
+!11 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, null} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!12 = metadata !{i32 786445, metadata !1, metadata !8, metadata !"maxpoolsize", i32 104, i64 32, i64 32, i64 64, i32 1, metadata !13} ; [ DW_TAG_member ] [maxpoolsize] [line 104, size 32, align 32, offset 64] [private] [from int]
+!13 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!14 = metadata !{i32 786445, metadata !1, metadata !8, metadata !"lowmem", i32 105, i64 8, i64 8, i64 96, i32 1, metadata !15} ; [ DW_TAG_member ] [lowmem] [line 105, size 8, align 8, offset 96] [private] [from bool]
+!15 = metadata !{i32 786468, null, null, metadata !"bool", i32 0, i64 8, i64 8, i64 0, i32 0, i32 2} ; [ DW_TAG_base_type ] [bool] [line 0, size 8, align 8, offset 0, enc DW_ATE_boolean]
+!16 = metadata !{i32 786478, metadata !1, metadata !8, metadata !"MemManager", metadata !"MemManager", metadata !"", i32 107, metadata !5, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !17, i32 107} ; [ DW_TAG_subprogram ] [line 107] [MemManager]
+!17 = metadata !{i32 786468}
+!18 = metadata !{i32 786478, metadata !1, metadata !8, metadata !"~MemManager", metadata !"~MemManager", metadata !"", i32 108, metadata !19, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !21, i32 108} ; [ DW_TAG_subprogram ] [line 108] [~MemManager]
+!19 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !20, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!20 = metadata !{null, metadata !7}
+!21 = metadata !{i32 786468}
+!22 = metadata !{i32 786478, metadata !1, metadata !8, metadata !"makeRoom", metadata !"makeRoom", metadata !"_ZN10MemManager8makeRoomEv", i32 109, metadata !19, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !23, i32 109} ; [ DW_TAG_subprogram ] [line 109] [makeRoom]
+!23 = metadata !{i32 786468}
+!24 = metadata !{i32 786478, metadata !1, metadata !8, metadata !"restorePool", metadata !"restorePool", metadata !"_ZN10MemManager11restorePoolEv", i32 110, metadata !19, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !25, i32 110} ; [ DW_TAG_subprogram ] [line 110] [restorePool]
+!25 = metadata !{i32 786468}
+!26 = metadata !{i32 786478, metadata !1, metadata !8, metadata !"lowMemory", metadata !"lowMemory", metadata !"_ZN10MemManager9lowMemoryEv", i32 111, metadata !27, i1 false, i1 false, i32 0, i32 0, null, i32 256, i1 true, null, null, i32 0, metadata !29, i32 111} ; [ DW_TAG_subprogram ] [line 111] [lowMemory]
+!27 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !28, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!28 = metadata !{metadata !15, metadata !7}
+!29 = metadata !{i32 786468}
+!30 = metadata !{metadata !31, metadata !34}
+!31 = metadata !{i32 786689, metadata !4, metadata !"this", metadata !32, i32 16777330, metadata !33, i32 1088, i32 0} ; [ DW_TAG_arg_variable ] [this] [line 114]
+!32 = metadata !{i32 786473, metadata !1}         ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/471.omnetpp/src/libs/cmdenv/heap.cc]
+!33 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !8} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from MemManager]
+!34 = metadata !{i32 786689, metadata !4, metadata !"mps", metadata !32, i32 33554546, metadata !13, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [mps] [line 114]
+!35 = metadata !{i32 786478, metadata !1, null, metadata !"~MemManager", metadata !"~MemManager", metadata !"_ZN10MemManagerD2Ev", i32 121, metadata !19, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%class.MemManager*)* @_ZN10MemManagerD2Ev, null, metadata !18, metadata !36, i32 122} ; [ DW_TAG_subprogram ] [line 121] [def] [scope 122] [~MemManager]
+!36 = metadata !{metadata !37}
+!37 = metadata !{i32 786689, metadata !35, metadata !"this", metadata !32, i32 16777337, metadata !33, i32 1088, i32 0} ; [ DW_TAG_arg_variable ] [this] [line 121]
+!38 = metadata !{i32 786478, metadata !1, null, metadata !"makeRoom", metadata !"makeRoom", metadata !"_ZN10MemManager8makeRoomEv", i32 129, metadata !19, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%class.MemManager*)* @_ZN10MemManager8makeRoomEv, null, metadata !22, metadata !39, i32 130} ; [ DW_TAG_subprogram ] [line 129] [def] [scope 130] [makeRoom]
+!39 = metadata !{metadata !40}
+!40 = metadata !{i32 786689, metadata !38, metadata !"this", metadata !32, i32 16777345, metadata !33, i32 1088, i32 0} ; [ DW_TAG_arg_variable ] [this] [line 129]
+!41 = metadata !{i32 786478, metadata !1, null, metadata !"restorePool", metadata !"restorePool", metadata !"_ZN10MemManager11restorePoolEv", i32 136, metadata !19, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%class.MemManager*)* @_ZN10MemManager11restorePoolEv, null, metadata !24, metadata !42, i32 137} ; [ DW_TAG_subprogram ] [line 136] [def] [scope 137] [restorePool]
+!42 = metadata !{metadata !43}
+!43 = metadata !{i32 786689, metadata !41, metadata !"this", metadata !32, i32 16777352, metadata !33, i32 1088, i32 0} ; [ DW_TAG_arg_variable ] [this] [line 136]
+!44 = metadata !{i32 786478, metadata !1, metadata !32, metadata !"__cxx_global_var_init", metadata !"__cxx_global_var_init", metadata !"", i32 148, metadata !45, i1 true, i1 true, i32 0, i32 0, null, i32 256, i1 true, null, null, null, metadata !2, i32 148} ; [ DW_TAG_subprogram ] [line 148] [local] [def] [__cxx_global_var_init]
+!45 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !46, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!46 = metadata !{null}
+!47 = metadata !{i32 786478, metadata !1, metadata !32, metadata !"cmdenvMemoryIsLow", metadata !"cmdenvMemoryIsLow", metadata !"_Z17cmdenvMemoryIsLowv", i32 150, metadata !48, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i1 ()* @_Z17cmdenvMemoryIsLowv, null, null, metadata !2, i32 151} ; [ DW_TAG_subprogram ] [line 150] [def] [scope 151] [cmdenvMemoryIsLow]
+!48 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !49, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!49 = metadata !{metadata !15}
+!50 = metadata !{i32 786478, metadata !1, metadata !32, metadata !"operator new", metadata !"operator new", metadata !"_Znwm", i32 298, metadata !51, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i8* (i64)* @_Znwm, null, null, metadata !55, i32 299} ; [ DW_TAG_subprogram ] [line 298] [def] [scope 299] [operator new]
+!51 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !52, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!52 = metadata !{metadata !11, metadata !53}
+!53 = metadata !{i32 786454, metadata !1, null, metadata !"size_t", i32 42, i64 0, i64 0, i64 0, i32 0, metadata !54} ; [ DW_TAG_typedef ] [size_t] [line 42, size 0, align 0, offset 0] [from long unsigned int]
+!54 = metadata !{i32 786468, null, null, metadata !"long unsigned int", i32 0, i64 64, i64 64, i64 0, i32 0, i32 7} ; [ DW_TAG_base_type ] [long unsigned int] [line 0, size 64, align 64, offset 0, enc DW_ATE_unsigned]
+!55 = metadata !{metadata !56, metadata !57}
+!56 = metadata !{i32 786689, metadata !50, metadata !"m", metadata !32, i32 16777514, metadata !53, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [m] [line 298]
+!57 = metadata !{i32 786688, metadata !50, metadata !"p", metadata !32, i32 304, metadata !11, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [p] [line 304]
+!58 = metadata !{i32 786478, metadata !1, metadata !32, metadata !"operator delete", metadata !"operator delete", metadata !"_ZdlPv", i32 359, metadata !59, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i8*)* @_ZdlPv, null, null, metadata !61, i32 360} ; [ DW_TAG_subprogram ] [line 359] [def] [scope 360] [operator delete]
+!59 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !60, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!60 = metadata !{null, metadata !11}
+!61 = metadata !{metadata !62}
+!62 = metadata !{i32 786689, metadata !58, metadata !"p", metadata !32, i32 16777575, metadata !11, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [p] [line 359]
+!63 = metadata !{i32 786478, metadata !1, null, metadata !"lowMemory", metadata !"lowMemory", metadata !"_ZN10MemManager9lowMemoryEv", i32 111, metadata !27, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, null, null, metadata !26, metadata !64, i32 111} ; [ DW_TAG_subprogram ] [line 111] [def] [lowMemory]
+!64 = metadata !{metadata !65}
+!65 = metadata !{i32 786689, metadata !63, metadata !"this", metadata !32, i32 16777327, metadata !33, i32 1088, i32 0} ; [ DW_TAG_arg_variable ] [this] [line 111]
+!66 = metadata !{i32 786478, metadata !1, metadata !32, metadata !"_GLOBAL__I_a", metadata !"_GLOBAL__I_a", metadata !"", i32 111, metadata !67, i1 true, i1 true, i32 0, i32 0, null, i32 64, i1 true, void ()* @_GLOBAL__I_a, null, null, metadata !2, i32 111} ; [ DW_TAG_subprogram ] [line 111] [local] [def] [_GLOBAL__I_a]
+!67 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !2, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!68 = metadata !{metadata !69}
+!69 = metadata !{i32 786484, i32 0, null, metadata !"memManager", metadata !"memManager", metadata !"_ZL10memManager", metadata !32, i32 148, metadata !8, i32 1, i32 1, %class.MemManager* @_ZL10memManager, null} ; [ DW_TAG_variable ] [memManager] [line 148] [local] [def]
+!70 = metadata !{i32 114, i32 0, metadata !4, null}
+!71 = metadata !{i32 116, i32 0, metadata !72, null}
+!72 = metadata !{i32 786443, metadata !1, metadata !4, i32 115, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/471.omnetpp/src/libs/cmdenv/heap.cc]
+!73 = metadata !{metadata !"int", metadata !74}
+!74 = metadata !{metadata !"omnipotent char", metadata !75}
+!75 = metadata !{metadata !"Simple C/C++ TBAA"}
+!76 = metadata !{i32 117, i32 0, metadata !72, null}
+!77 = metadata !{metadata !"any pointer", metadata !74}
+!78 = metadata !{i32 118, i32 0, metadata !72, null}
+!79 = metadata !{metadata !"bool", metadata !74}
+!80 = metadata !{i32 119, i32 0, metadata !4, null}
+!81 = metadata !{i32 121, i32 0, metadata !35, null}
+!82 = metadata !{i32 123, i32 0, metadata !83, null}
+!83 = metadata !{i32 786443, metadata !1, metadata !35, i32 122, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/471.omnetpp/src/libs/cmdenv/heap.cc]
+!84 = metadata !{i32 124, i32 0, metadata !83, null}
+!85 = metadata !{i32 125, i32 0, metadata !83, null}
+!86 = metadata !{i32 126, i32 0, metadata !83, null}
+!87 = metadata !{i32 127, i32 0, metadata !35, null}
+!88 = metadata !{i32 129, i32 0, metadata !38, null}
+!89 = metadata !{i32 131, i32 0, metadata !38, null}
+!90 = metadata !{i32 132, i32 0, metadata !38, null}
+!91 = metadata !{i32 133, i32 0, metadata !38, null}
+!92 = metadata !{i32 134, i32 0, metadata !38, null}
+!93 = metadata !{i32 136, i32 0, metadata !41, null}
+!94 = metadata !{i32 138, i32 0, metadata !41, null}
+!95 = metadata !{i8 0, i8 2}
+!96 = metadata !{i32 140, i32 0, metadata !97, null}
+!97 = metadata !{i32 786443, metadata !1, metadata !41, i32 139, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/471.omnetpp/src/libs/cmdenv/heap.cc]
+!98 = metadata !{i32 141, i32 0, metadata !97, null}
+!99 = metadata !{i32 142, i32 0, metadata !97, null}
+!100 = metadata !{i32 144, i32 0, metadata !41, null}
+!101 = metadata !{%class.MemManager* @_ZL10memManager}
+!102 = metadata !{i32 786689, metadata !63, metadata !"this", metadata !32, i32 16777327, metadata !33, i32 1088, metadata !103} ; [ DW_TAG_arg_variable ] [this] [line 111]
+!103 = metadata !{i32 152, i32 0, metadata !47, null}
+!104 = metadata !{i32 111, i32 0, metadata !63, metadata !103}
+!105 = metadata !{i32 298, i32 0, metadata !50, null}
+!106 = metadata !{i32 303, i32 0, metadata !50, null}
+!107 = metadata !{i32 305, i32 0, metadata !50, null}
+!108 = metadata !{i32 786689, metadata !63, metadata !"this", metadata !32, i32 16777327, metadata !33, i32 1088, metadata !109} ; [ DW_TAG_arg_variable ] [this] [line 111]
+!109 = metadata !{i32 331, i32 0, metadata !50, null}
+!110 = metadata !{i32 111, i32 0, metadata !63, metadata !109}
+!111 = metadata !{i32 786689, metadata !38, metadata !"this", metadata !32, i32 16777345, metadata !33, i32 1088, metadata !112} ; [ DW_TAG_arg_variable ] [this] [line 129]
+!112 = metadata !{i32 334, i32 0, metadata !113, null}
+!113 = metadata !{i32 786443, metadata !1, metadata !50, i32 332, i32 0, i32 4} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/471.omnetpp/src/libs/cmdenv/heap.cc]
+!114 = metadata !{i32 129, i32 0, metadata !38, metadata !112}
+!115 = metadata !{i32 131, i32 0, metadata !38, metadata !112}
+!116 = metadata !{i32 132, i32 0, metadata !38, metadata !112}
+!117 = metadata !{i32 133, i32 0, metadata !38, metadata !112}
+!118 = metadata !{i32 335, i32 0, metadata !113, null}
+!119 = metadata !{i32 353, i32 0, metadata !120, null}
+!120 = metadata !{i32 786443, metadata !1, metadata !50, i32 338, i32 0, i32 5} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/471.omnetpp/src/libs/cmdenv/heap.cc]
+!121 = metadata !{i32 354, i32 0, metadata !120, null}
+!122 = metadata !{i32 357, i32 0, metadata !50, null}
+!123 = metadata !{i32 359, i32 0, metadata !58, null}
+!124 = metadata !{i32 364, i32 0, metadata !58, null}
+!125 = metadata !{i32 396, i32 0, metadata !58, null}
+!126 = metadata !{i32 786689, metadata !63, metadata !"this", metadata !32, i32 16777327, metadata !33, i32 1088, metadata !127} ; [ DW_TAG_arg_variable ] [this] [line 111]
+!127 = metadata !{i32 397, i32 0, metadata !58, null}
+!128 = metadata !{i32 111, i32 0, metadata !63, metadata !127}
+!129 = metadata !{i32 398, i32 0, metadata !58, null}
+!130 = metadata !{i32 786689, metadata !4, metadata !"this", metadata !32, i32 16777330, metadata !33, i32 1088, metadata !131} ; [ DW_TAG_arg_variable ] [this] [line 114]
+!131 = metadata !{i32 148, i32 0, metadata !44, metadata !132}
+!132 = metadata !{i32 111, i32 0, metadata !66, null}
+!133 = metadata !{i32 114, i32 0, metadata !4, metadata !131}
+!134 = metadata !{i32 16384}
+!135 = metadata !{i32 786689, metadata !4, metadata !"mps", metadata !32, i32 33554546, metadata !13, i32 0, metadata !131} ; [ DW_TAG_arg_variable ] [mps] [line 114]
+!136 = metadata !{i32 116, i32 0, metadata !72, metadata !131}
+!137 = metadata !{i32 117, i32 0, metadata !72, metadata !131}
+!138 = metadata !{i32 118, i32 0, metadata !72, metadata !131}

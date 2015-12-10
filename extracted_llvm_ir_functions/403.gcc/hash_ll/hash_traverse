@@ -1,45 +1,50 @@
 define void @hash_traverse(%struct.hash_table* nocapture %table, i1 (%struct.hash_entry*, i8*)* nocapture %func, i8* %info) #0 {
 entry:
-  %size = getelementptr inbounds %struct.hash_table* %table, i64 0, i32 1
-  %0 = load i32* %size, align 4, !tbaa !3
-  %cmp16 = icmp eq i32 %0, 0
-  br i1 %cmp16, label %for.end6, label %for.body.lr.ph
+  tail call void @llvm.dbg.value(metadata !{%struct.hash_table* %table}, i64 0, metadata !146), !dbg !242
+  tail call void @llvm.dbg.value(metadata !{i1 (%struct.hash_entry*, i8*)* %func}, i64 0, metadata !147), !dbg !243
+  tail call void @llvm.dbg.value(metadata !{i8* %info}, i64 0, metadata !148), !dbg !244
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !149), !dbg !245
+  %size = getelementptr inbounds %struct.hash_table* %table, i64 0, i32 1, !dbg !245
+  %0 = load i32* %size, align 4, !dbg !245, !tbaa !192
+  %cmp16 = icmp eq i32 %0, 0, !dbg !245
+  br i1 %cmp16, label %for.end6, label %for.body.lr.ph, !dbg !245
 
 for.body.lr.ph:                                   ; preds = %entry
-  %table1 = getelementptr inbounds %struct.hash_table* %table, i64 0, i32 0
-  br label %for.body
+  %table1 = getelementptr inbounds %struct.hash_table* %table, i64 0, i32 0, !dbg !247
+  br label %for.body, !dbg !245
 
 for.body:                                         ; preds = %for.inc5, %for.body.lr.ph
   %1 = phi i32 [ %0, %for.body.lr.ph ], [ %3, %for.inc5 ]
   %i.017 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.inc5 ]
-  %idxprom = zext i32 %i.017 to i64
-  %2 = load %struct.hash_entry*** %table1, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds %struct.hash_entry** %2, i64 %idxprom
-  %p.012 = load %struct.hash_entry** %arrayidx, align 8
-  %cmp313 = icmp eq %struct.hash_entry* %p.012, null
-  br i1 %cmp313, label %for.inc5, label %for.body4
+  %idxprom = zext i32 %i.017 to i64, !dbg !247
+  %2 = load %struct.hash_entry*** %table1, align 8, !dbg !247, !tbaa !188
+  %arrayidx = getelementptr inbounds %struct.hash_entry** %2, i64 %idxprom, !dbg !247
+  %p.012 = load %struct.hash_entry** %arrayidx, align 8, !dbg !247
+  %cmp313 = icmp eq %struct.hash_entry* %p.012, null, !dbg !247
+  br i1 %cmp313, label %for.inc5, label %for.body4, !dbg !247
 
 for.cond2:                                        ; preds = %for.body4
-  %next = getelementptr inbounds %struct.hash_entry* %p.014, i64 0, i32 0
-  %p.0 = load %struct.hash_entry** %next, align 8
-  %cmp3 = icmp eq %struct.hash_entry* %p.0, null
-  br i1 %cmp3, label %for.cond2.for.inc5_crit_edge, label %for.body4
+  %next = getelementptr inbounds %struct.hash_entry* %p.014, i64 0, i32 0, !dbg !247
+  %p.0 = load %struct.hash_entry** %next, align 8, !dbg !247
+  %cmp3 = icmp eq %struct.hash_entry* %p.0, null, !dbg !247
+  br i1 %cmp3, label %for.cond2.for.inc5_crit_edge, label %for.body4, !dbg !247
 
 for.body4:                                        ; preds = %for.body, %for.cond2
   %p.014 = phi %struct.hash_entry* [ %p.0, %for.cond2 ], [ %p.012, %for.body ]
-  %call = tail call zeroext i1 %func(%struct.hash_entry* %p.014, i8* %info) #6
-  br i1 %call, label %for.cond2, label %for.end6
+  %call = tail call zeroext i1 %func(%struct.hash_entry* %p.014, i8* %info) #7, !dbg !249
+  br i1 %call, label %for.cond2, label %for.end6, !dbg !249
 
 for.cond2.for.inc5_crit_edge:                     ; preds = %for.cond2
-  %.pre = load i32* %size, align 4, !tbaa !3
-  br label %for.inc5
+  %.pre = load i32* %size, align 4, !dbg !245, !tbaa !192
+  br label %for.inc5, !dbg !247
 
 for.inc5:                                         ; preds = %for.cond2.for.inc5_crit_edge, %for.body
-  %3 = phi i32 [ %.pre, %for.cond2.for.inc5_crit_edge ], [ %1, %for.body ]
-  %inc = add i32 %i.017, 1
-  %cmp = icmp ult i32 %inc, %3
-  br i1 %cmp, label %for.body, label %for.end6
+  %3 = phi i32 [ %.pre, %for.cond2.for.inc5_crit_edge ], [ %1, %for.body ], !dbg !245
+  %inc = add i32 %i.017, 1, !dbg !245
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !149), !dbg !245
+  %cmp = icmp ult i32 %inc, %3, !dbg !245
+  br i1 %cmp, label %for.body, label %for.end6, !dbg !245
 
 for.end6:                                         ; preds = %entry, %for.inc5, %for.body4
-  ret void
+  ret void, !dbg !250
 }

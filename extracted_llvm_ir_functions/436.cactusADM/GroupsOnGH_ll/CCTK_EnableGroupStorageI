@@ -1,15 +1,20 @@
 define i32 @CCTK_EnableGroupStorageI(%struct.cGH* %GH, i32 %group) #1 {
-  %1 = tail call i8* @CCTK_GroupName(i32 %group) #6
-  %2 = icmp eq i8* %1, null
-  br i1 %2, label %6, label %3
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !86), !dbg !582
+  tail call void @llvm.dbg.value(metadata !{i32 %group}, i64 0, metadata !87), !dbg !582
+  %call = tail call i8* @CCTK_GroupName(i32 %group) #6, !dbg !583
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !89), !dbg !583
+  %tobool = icmp eq i8* %call, null, !dbg !584
+  br i1 %tobool, label %if.end, label %if.then, !dbg !584
 
-; <label>:3                                       ; preds = %0
-  %4 = load i32 (%struct.cGH*, i8*)** @CCTK_EnableGroupStorage, align 8, !tbaa !9
-  %5 = tail call i32 %4(%struct.cGH* %GH, i8* %1) #6
-  tail call void @free(i8* %1) #7
-  br label %6
+if.then:                                          ; preds = %entry
+  %0 = load i32 (%struct.cGH*, i8*)** @CCTK_EnableGroupStorage, align 8, !dbg !585, !tbaa !554
+  %call1 = tail call i32 %0(%struct.cGH* %GH, i8* %call) #6, !dbg !585
+  tail call void @llvm.dbg.value(metadata !{i32 %call1}, i64 0, metadata !88), !dbg !585
+  tail call void @free(i8* %call) #6, !dbg !587
+  br label %if.end, !dbg !588
 
-; <label>:6                                       ; preds = %0, %3
-  %retcode.0 = phi i32 [ %5, %3 ], [ 0, %0 ]
-  ret i32 %retcode.0
+if.end:                                           ; preds = %entry, %if.then
+  %retcode.0 = phi i32 [ %call1, %if.then ], [ 0, %entry ]
+  ret i32 %retcode.0, !dbg !589
 }

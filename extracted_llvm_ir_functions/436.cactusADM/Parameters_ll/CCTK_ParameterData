@@ -1,14 +1,18 @@
 define %struct.PARAM_PROPS* @CCTK_ParameterData(i8* %name, i8* %thorn) #1 {
-  %1 = tail call fastcc %struct.PARAM* @ParameterFind(i8* %name, i8* %thorn, i32 5) #7
-  %2 = icmp eq %struct.PARAM* %1, null
-  br i1 %2, label %6, label %3
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !206), !dbg !751
+  tail call void @llvm.dbg.value(metadata !{i8* %thorn}, i64 0, metadata !207), !dbg !752
+  %call = tail call fastcc %struct.PARAM* @ParameterFind(i8* %name, i8* %thorn, i32 5) #7, !dbg !753
+  tail call void @llvm.dbg.value(metadata !{%struct.PARAM* %call}, i64 0, metadata !208), !dbg !753
+  %tobool = icmp eq %struct.PARAM* %call, null, !dbg !754
+  br i1 %tobool, label %cond.end, label %cond.true, !dbg !754
 
-; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds %struct.PARAM* %1, i64 0, i32 0
-  %5 = load %struct.PARAM_PROPS** %4, align 8, !tbaa !2
-  br label %6
+cond.true:                                        ; preds = %entry
+  %props = getelementptr inbounds %struct.PARAM* %call, i64 0, i32 0, !dbg !754
+  %0 = load %struct.PARAM_PROPS** %props, align 8, !dbg !754, !tbaa !386
+  br label %cond.end, !dbg !754
 
-; <label>:6                                       ; preds = %0, %3
-  %7 = phi %struct.PARAM_PROPS* [ %5, %3 ], [ null, %0 ]
-  ret %struct.PARAM_PROPS* %7
+cond.end:                                         ; preds = %entry, %cond.true
+  %cond = phi %struct.PARAM_PROPS* [ %0, %cond.true ], [ null, %entry ], !dbg !754
+  ret %struct.PARAM_PROPS* %cond, !dbg !754
 }

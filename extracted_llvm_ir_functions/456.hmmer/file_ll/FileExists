@@ -1,14 +1,16 @@
 define i32 @FileExists(i8* nocapture %filename) #0 {
 entry:
-  %call = tail call %struct._IO_FILE* @fopen(i8* %filename, i8* getelementptr inbounds ([2 x i8]* @.str4, i64 0, i64 0)) #6
-  %tobool = icmp eq %struct._IO_FILE* %call, null
-  br i1 %tobool, label %return, label %if.then
+  tail call void @llvm.dbg.value(metadata !{i8* %filename}, i64 0, metadata !119), !dbg !189
+  %call = tail call %struct._IO_FILE* @fopen(i8* %filename, i8* getelementptr inbounds ([2 x i8]* @.str4, i64 0, i64 0)) #7, !dbg !190
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %call}, i64 0, metadata !120), !dbg !190
+  %tobool = icmp eq %struct._IO_FILE* %call, null, !dbg !190
+  br i1 %tobool, label %return, label %if.then, !dbg !190
 
 if.then:                                          ; preds = %entry
-  %call1 = tail call i32 @fclose(%struct._IO_FILE* %call) #6
-  br label %return
+  %call1 = tail call i32 @fclose(%struct._IO_FILE* %call) #7, !dbg !191
+  br label %return, !dbg !191
 
 return:                                           ; preds = %entry, %if.then
   %retval.0 = phi i32 [ 1, %if.then ], [ 0, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !193
 }

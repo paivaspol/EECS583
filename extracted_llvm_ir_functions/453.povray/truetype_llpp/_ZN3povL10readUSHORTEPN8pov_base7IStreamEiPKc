@@ -1,0 +1,45 @@
+define internal fastcc zeroext i16 @_ZN3povL10readUSHORTEPN8pov_base7IStreamEiPKc(%"class.pov_base::IStream"* nocapture %infile, i32 %line) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !3715, i64 0, metadata !1708), !dbg !3734
+  tail call void @llvm.dbg.value(metadata !308, i64 0, metadata !1711), !dbg !3735
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::IStream"* %infile}, i64 0, metadata !3736) #4, !dbg !3738
+  %fail.i = getelementptr inbounds %"class.pov_base::IStream"* %infile, i64 0, i32 0, i32 1, !dbg !3739
+  %0 = load i8* %fail.i, align 1, !dbg !3739, !tbaa !2748, !range !2749
+  %tobool.i = icmp eq i8 %0, 0, !dbg !3739
+  br i1 %tobool.i, label %_ZN8pov_base7IStream9Read_ByteEv.exit, label %if.then, !dbg !3739
+
+_ZN8pov_base7IStream9Read_ByteEv.exit:            ; preds = %entry
+  %f.i = getelementptr inbounds %"class.pov_base::IStream"* %infile, i64 0, i32 0, i32 2, !dbg !3739
+  %1 = load %struct._IO_FILE** %f.i, align 8, !dbg !3739, !tbaa !2052
+  %call.i = tail call i32 @fgetc(%struct._IO_FILE* %1) #10, !dbg !3739
+  tail call void @llvm.dbg.value(metadata !{i32 %cond.i9}, i64 0, metadata !1709), !dbg !3737
+  %cmp = icmp eq i32 %call.i, -1, !dbg !3737
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !3737
+
+lor.lhs.false:                                    ; preds = %_ZN8pov_base7IStream9Read_ByteEv.exit
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::IStream"* %infile}, i64 0, metadata !3740) #4, !dbg !3742
+  %2 = load i8* %fail.i, align 1, !dbg !3743, !tbaa !2748, !range !2749
+  %tobool.i2 = icmp eq i8 %2, 0, !dbg !3743
+  br i1 %tobool.i2, label %_ZN8pov_base7IStream9Read_ByteEv.exit7, label %if.then, !dbg !3743
+
+_ZN8pov_base7IStream9Read_ByteEv.exit7:           ; preds = %lor.lhs.false
+  %3 = load %struct._IO_FILE** %f.i, align 8, !dbg !3743, !tbaa !2052
+  %call.i4 = tail call i32 @fgetc(%struct._IO_FILE* %3) #10, !dbg !3743
+  tail call void @llvm.dbg.value(metadata !{i32 %call.i4}, i64 0, metadata !1711), !dbg !3741
+  %cmp2 = icmp eq i32 %call.i4, -1, !dbg !3741
+  br i1 %cmp2, label %if.then, label %if.end, !dbg !3741
+
+if.then:                                          ; preds = %lor.lhs.false, %entry, %_ZN8pov_base7IStream9Read_ByteEv.exit7, %_ZN8pov_base7IStream9Read_ByteEv.exit
+  %cond.i10 = phi i32 [ -1, %_ZN8pov_base7IStream9Read_ByteEv.exit ], [ %call.i, %_ZN8pov_base7IStream9Read_ByteEv.exit7 ], [ -1, %entry ], [ %call.i, %lor.lhs.false ]
+  %i1.0 = phi i32 [ 0, %_ZN8pov_base7IStream9Read_ByteEv.exit ], [ -1, %_ZN8pov_base7IStream9Read_ByteEv.exit7 ], [ 0, %entry ], [ -1, %lor.lhs.false ]
+  %call3 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([48 x i8]* @.str6, i64 0, i64 0), i32 %line, i8* getelementptr inbounds ([57 x i8]* @.str1, i64 0, i64 0)) #8, !dbg !3744
+  br label %if.end, !dbg !3746
+
+if.end:                                           ; preds = %if.then, %_ZN8pov_base7IStream9Read_ByteEv.exit7
+  %cond.i9 = phi i32 [ %cond.i10, %if.then ], [ %call.i, %_ZN8pov_base7IStream9Read_ByteEv.exit7 ]
+  %i1.1 = phi i32 [ %i1.0, %if.then ], [ %call.i4, %_ZN8pov_base7IStream9Read_ByteEv.exit7 ]
+  %conv4 = shl i32 %cond.i9, 8, !dbg !3747
+  %or = or i32 %conv4, %i1.1, !dbg !3747
+  %conv7 = trunc i32 %or to i16, !dbg !3747
+  ret i16 %conv7, !dbg !3747
+}

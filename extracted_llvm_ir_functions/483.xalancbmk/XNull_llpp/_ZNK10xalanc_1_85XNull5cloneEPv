@@ -1,0 +1,40 @@
+define %"class.xalanc_1_8::XNull"* @_ZNK10xalanc_1_85XNull5cloneEPv(%"class.xalanc_1_8::XNull"* %this, i8* %theAddress) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XNull"* %this}, i64 0, metadata !2135), !dbg !2300
+  tail call void @llvm.dbg.value(metadata !{i8* %theAddress}, i64 0, metadata !2137), !dbg !2300
+  %cmp = icmp eq i8* %theAddress, null, !dbg !2301
+  br i1 %cmp, label %if.then, label %new.notnull, !dbg !2301
+
+if.then:                                          ; preds = %entry
+  %call = tail call noalias i8* @_Znwm(i64 24) #6, !dbg !2302
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XNull"* %this}, i64 0, metadata !2304), !dbg !2305
+  %0 = bitcast i8* %call to %"class.xalanc_1_8::XObject"*, !dbg !2306
+  %1 = getelementptr inbounds %"class.xalanc_1_8::XNull"* %this, i64 0, i32 0, !dbg !2306
+  invoke void @_ZN10xalanc_1_87XObjectC2ERKS0_(%"class.xalanc_1_8::XObject"* %0, %"class.xalanc_1_8::XObject"* %1) #6
+          to label %_ZN10xalanc_1_85XNullC2ERKS0_.exit unwind label %lpad
+
+_ZN10xalanc_1_85XNullC2ERKS0_.exit:               ; preds = %if.then
+  %2 = bitcast i8* %call to i8***, !dbg !2306
+  store i8** getelementptr inbounds ([20 x i8*]* @_ZTVN10xalanc_1_85XNullE, i64 0, i64 2), i8*** %2, align 8, !dbg !2306, !tbaa !2284
+  br label %return, !dbg !2307
+
+lpad:                                             ; preds = %if.then
+  %3 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !2302
+  tail call void @_ZdlPv(i8* %call) #7, !dbg !2302
+  resume { i8*, i32 } %3, !dbg !2302
+
+new.notnull:                                      ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XNull"* %this}, i64 0, metadata !2308), !dbg !2311
+  %4 = bitcast i8* %theAddress to %"class.xalanc_1_8::XObject"*, !dbg !2312
+  %5 = getelementptr inbounds %"class.xalanc_1_8::XNull"* %this, i64 0, i32 0, !dbg !2312
+  tail call void @_ZN10xalanc_1_87XObjectC2ERKS0_(%"class.xalanc_1_8::XObject"* %4, %"class.xalanc_1_8::XObject"* %5) #6, !dbg !2312
+  %6 = bitcast i8* %theAddress to i8***, !dbg !2312
+  store i8** getelementptr inbounds ([20 x i8*]* @_ZTVN10xalanc_1_85XNullE, i64 0, i64 2), i8*** %6, align 8, !dbg !2312, !tbaa !2284
+  br label %return, !dbg !2309
+
+return:                                           ; preds = %_ZN10xalanc_1_85XNullC2ERKS0_.exit, %new.notnull
+  %retval.0.in = phi i8* [ %theAddress, %new.notnull ], [ %call, %_ZN10xalanc_1_85XNullC2ERKS0_.exit ]
+  %retval.0 = bitcast i8* %retval.0.in to %"class.xalanc_1_8::XNull"*, !dbg !2309
+  ret %"class.xalanc_1_8::XNull"* %retval.0, !dbg !2313
+}

@@ -1,17 +1,19 @@
 define void @ChvList_free(%struct._ChvList* %chvlist) #0 {
 entry:
-  %cmp = icmp eq %struct._ChvList* %chvlist, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._ChvList* %chvlist}, i64 0, metadata !73), !dbg !115
+  %cmp = icmp eq %struct._ChvList* %chvlist, null, !dbg !116
+  br i1 %cmp, label %if.then, label %if.end, !dbg !116
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([46 x i8]* @.str4, i64 0, i64 0), %struct._ChvList* null) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !117, !tbaa !78
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([46 x i8]* @.str4, i64 0, i64 0), %struct._ChvList* null) #6, !dbg !117
+  tail call void @exit(i32 -1) #7, !dbg !119
+  unreachable, !dbg !119
 
 if.end:                                           ; preds = %entry
-  tail call void @ChvList_clearData(%struct._ChvList* %chvlist) #7
-  %1 = bitcast %struct._ChvList* %chvlist to i8*
-  tail call void @free(i8* %1) #5
-  ret void
+  tail call void @ChvList_clearData(%struct._ChvList* %chvlist) #8, !dbg !120
+  %1 = bitcast %struct._ChvList* %chvlist to i8*, !dbg !121
+  tail call void @free(i8* %1) #6, !dbg !121
+  tail call void @llvm.dbg.value(metadata !123, i64 0, metadata !73), !dbg !121
+  ret void, !dbg !124
 }

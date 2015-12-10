@@ -1,0 +1,65 @@
+define internal i32 @_ZN3povL16Inside_EllipsoidEPdPNS_13Object_StructE(double* %IPoint, %"struct.pov::Object_Struct"* nocapture %Object) #0 {
+entry:
+  %New_Point = alloca [3 x double], align 16
+  call void @llvm.dbg.value(metadata !{double* %IPoint}, i64 0, metadata !1103), !dbg !1686
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !1104), !dbg !1686
+  call void @llvm.dbg.declare(metadata !1372, metadata !1107), !dbg !1687
+  call void @llvm.dbg.declare(metadata !{[3 x double]* %New_Point}, metadata !1108), !dbg !1687
+  %arraydecay = getelementptr inbounds [3 x double]* %New_Point, i64 0, i64 0, !dbg !1688
+  %0 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 10, !dbg !1688
+  %1 = load %"struct.pov::Transform_Struct"** %0, align 8, !dbg !1688, !tbaa !1277
+  call void @_ZN3pov14MInvTransPointEPdS0_PNS_16Transform_StructE(double* %arraydecay, double* %IPoint, %"struct.pov::Transform_Struct"* %1) #8, !dbg !1688
+  %Center = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, !dbg !1689
+  %arraydecay2 = bitcast %"struct.pov::Object_Struct"* %Center to double*, !dbg !1689
+  tail call void @llvm.dbg.value(metadata !1375, i64 0, metadata !1690), !dbg !1691
+  tail call void @llvm.dbg.value(metadata !{double* %arraydecay2}, i64 0, metadata !1692), !dbg !1691
+  tail call void @llvm.dbg.value(metadata !{double* %arraydecay}, i64 0, metadata !1693), !dbg !1691
+  %2 = load double* %arraydecay2, align 8, !dbg !1694, !tbaa !1256
+  %3 = load double* %arraydecay, align 16, !dbg !1694, !tbaa !1256
+  %sub.i = fsub double %2, %3, !dbg !1694
+  %arrayidx3.i = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, i32 1, !dbg !1695
+  %4 = bitcast i32* %arrayidx3.i to double*, !dbg !1695
+  %5 = load double* %4, align 8, !dbg !1695, !tbaa !1256
+  %arrayidx4.i = getelementptr inbounds [3 x double]* %New_Point, i64 0, i64 1, !dbg !1695
+  %6 = load double* %arrayidx4.i, align 8, !dbg !1695, !tbaa !1256
+  %sub5.i = fsub double %5, %6, !dbg !1695
+  %arrayidx7.i = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, i32 2, !dbg !1696
+  %7 = bitcast %"struct.pov::Object_Struct"** %arrayidx7.i to double*, !dbg !1696
+  %8 = load double* %7, align 8, !dbg !1696, !tbaa !1256
+  %arrayidx8.i = getelementptr inbounds [3 x double]* %New_Point, i64 0, i64 2, !dbg !1696
+  %9 = load double* %arrayidx8.i, align 16, !dbg !1696, !tbaa !1256
+  %sub9.i = fsub double %8, %9, !dbg !1696
+  tail call void @llvm.dbg.value(metadata !1375, i64 0, metadata !1697), !dbg !1699
+  tail call void @llvm.dbg.value(metadata !1375, i64 0, metadata !1700), !dbg !1699
+  %mul.i14 = fmul double %sub.i, %sub.i, !dbg !1701
+  %mul4.i = fmul double %sub5.i, %sub5.i, !dbg !1701
+  %add.i = fadd double %mul.i14, %mul4.i, !dbg !1701
+  %mul7.i = fmul double %sub9.i, %sub9.i, !dbg !1701
+  %add8.i = fadd double %add.i, %mul7.i, !dbg !1701
+  call void @llvm.dbg.value(metadata !{double %add8.i}, i64 0, metadata !1105), !dbg !1701
+  call void @llvm.dbg.value(metadata !{double %add8.i}, i64 0, metadata !1702), !dbg !1699
+  call void @llvm.dbg.value(metadata !{double %add8.i}, i64 0, metadata !1105), !dbg !1703
+  %Flags = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 13, !dbg !1705
+  %10 = load i32* %Flags, align 4, !dbg !1705, !tbaa !1290
+  %and = and i32 %10, 4, !dbg !1705
+  %tobool = icmp eq i32 %and, 0, !dbg !1705
+  %Radius = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, i32 3, !dbg !1706
+  %11 = bitcast %"struct.pov::Texture_Struct"** %Radius to double*, !dbg !1706
+  %12 = load double* %11, align 8, !dbg !1706, !tbaa !1256
+  tail call void @llvm.dbg.value(metadata !{double %12}, i64 0, metadata !1707), !dbg !1708
+  %mul.i = fmul double %12, %12, !dbg !1709
+  br i1 %tobool, label %if.else, label %if.then, !dbg !1705
+
+if.then:                                          ; preds = %entry
+  %cmp = fcmp ogt double %add8.i, %mul.i, !dbg !1706
+  br label %return, !dbg !1706
+
+if.else:                                          ; preds = %entry
+  %cmp9 = fcmp olt double %add8.i, %mul.i, !dbg !1710
+  br label %return, !dbg !1710
+
+return:                                           ; preds = %if.else, %if.then
+  %cmp.sink = phi i1 [ %cmp, %if.then ], [ %cmp9, %if.else ]
+  %conv6 = zext i1 %cmp.sink to i32, !dbg !1706
+  ret i32 %conv6, !dbg !1712
+}

@@ -1,14 +1,15 @@
 define void @xexit(i32 %code) #0 {
 entry:
-  %0 = load void ()** @_xexit_cleanup, align 8, !tbaa !0
-  %cmp = icmp eq void ()* %0, null
-  br i1 %cmp, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{i32 %code}, i64 0, metadata !10), !dbg !16
+  %0 = load void ()** @_xexit_cleanup, align 8, !dbg !17, !tbaa !18
+  %cmp = icmp eq void ()* %0, null, !dbg !17
+  br i1 %cmp, label %if.end, label %if.then, !dbg !17
 
 if.then:                                          ; preds = %entry
-  tail call void %0() #2
-  br label %if.end
+  tail call void %0() #3, !dbg !21
+  br label %if.end, !dbg !21
 
 if.end:                                           ; preds = %entry, %if.then
-  tail call void @exit(i32 %code) #3
-  unreachable
+  tail call void @exit(i32 %code) #4, !dbg !22
+  unreachable, !dbg !22
 }

@@ -1,0 +1,50 @@
+define internal fastcc void @_ZN3povL11insert_nodeEPNS_11Blob_StructEPNS_19BSphere_Tree_StructEPj(%"struct.pov::Blob_Struct"* nocapture %Blob, %"struct.pov::BSphere_Tree_Struct"* %Node, i32* nocapture %size) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Blob_Struct"* %Blob}, i64 0, metadata !1098), !dbg !2603
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::BSphere_Tree_Struct"* %Node}, i64 0, metadata !1099), !dbg !2603
+  tail call void @llvm.dbg.value(metadata !{i32* %size}, i64 0, metadata !1100), !dbg !2603
+  %0 = load i32* %size, align 4, !dbg !2604, !tbaa !1693
+  %Max_Queue_Size = getelementptr inbounds %"struct.pov::Blob_Struct"* %Blob, i64 0, i32 17, !dbg !2604
+  %1 = load i32* %Max_Queue_Size, align 4, !dbg !2604, !tbaa !1693
+  %cmp = icmp ult i32 %0, %1, !dbg !2604
+  br i1 %cmp, label %entry.if.end9_crit_edge, label %if.then, !dbg !2604
+
+entry.if.end9_crit_edge:                          ; preds = %entry
+  %Queue10.phi.trans.insert = getelementptr inbounds %"struct.pov::Blob_Struct"* %Blob, i64 0, i32 16
+  %.pre19 = load %"struct.pov::BSphere_Tree_Struct"*** %Queue10.phi.trans.insert, align 8, !dbg !2605, !tbaa !1639
+  br label %if.end9, !dbg !2604
+
+if.then:                                          ; preds = %entry
+  %cmp2 = icmp ugt i32 %1, 2147483646, !dbg !2606
+  br i1 %cmp2, label %if.then3, label %if.end, !dbg !2606
+
+if.then3:                                         ; preds = %if.then
+  %call = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([21 x i8]* @.str11, i64 0, i64 0)) #7, !dbg !2608
+  %.pre18 = load i32* %Max_Queue_Size, align 4, !dbg !2609, !tbaa !1693
+  br label %if.end, !dbg !2608
+
+if.end:                                           ; preds = %if.then3, %if.then
+  %2 = phi i32 [ %.pre18, %if.then3 ], [ %1, %if.then ]
+  %mul = shl i32 %2, 1, !dbg !2609
+  store i32 %mul, i32* %Max_Queue_Size, align 4, !dbg !2609, !tbaa !1693
+  %Queue = getelementptr inbounds %"struct.pov::Blob_Struct"* %Blob, i64 0, i32 16, !dbg !2610
+  %3 = load %"struct.pov::BSphere_Tree_Struct"*** %Queue, align 8, !dbg !2610, !tbaa !1639
+  %4 = bitcast %"struct.pov::BSphere_Tree_Struct"** %3 to i8*, !dbg !2610
+  %conv = zext i32 %mul to i64, !dbg !2610
+  %mul6 = shl nuw nsw i64 %conv, 3, !dbg !2610
+  %call7 = tail call i8* @_ZN3pov11pov_reallocEPvmPKciS2_(i8* %4, i64 %mul6, i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 3430, i8* getelementptr inbounds ([11 x i8]* @.str2, i64 0, i64 0)) #7, !dbg !2610
+  %5 = bitcast i8* %call7 to %"struct.pov::BSphere_Tree_Struct"**, !dbg !2610
+  store %"struct.pov::BSphere_Tree_Struct"** %5, %"struct.pov::BSphere_Tree_Struct"*** %Queue, align 8, !dbg !2610, !tbaa !1639
+  %.pre = load i32* %size, align 4, !dbg !2605, !tbaa !1693
+  br label %if.end9, !dbg !2611
+
+if.end9:                                          ; preds = %entry.if.end9_crit_edge, %if.end
+  %6 = phi %"struct.pov::BSphere_Tree_Struct"** [ %.pre19, %entry.if.end9_crit_edge ], [ %5, %if.end ]
+  %7 = phi i32 [ %0, %entry.if.end9_crit_edge ], [ %.pre, %if.end ]
+  %inc = add i32 %7, 1, !dbg !2605
+  store i32 %inc, i32* %size, align 4, !dbg !2605, !tbaa !1693
+  %idxprom = zext i32 %7 to i64, !dbg !2605
+  %arrayidx = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"** %6, i64 %idxprom, !dbg !2605
+  store %"struct.pov::BSphere_Tree_Struct"* %Node, %"struct.pov::BSphere_Tree_Struct"** %arrayidx, align 8, !dbg !2605, !tbaa !1639
+  ret void, !dbg !2612
+}

@@ -1,38 +1,54 @@
-define i32 @gmx_strncasecmp(i8* nocapture readonly %str1, i8* nocapture readonly %str2, i32 %n) #3 {
-  %1 = icmp eq i32 %n, 0
-  br i1 %1, label %.critedge, label %.preheader
+define i32 @gmx_strncasecmp(i8* nocapture %str1, i8* nocapture %str2, i32 %n) #5 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %str1}, i64 0, metadata !152), !dbg !260
+  tail call void @llvm.dbg.value(metadata !{i8* %str2}, i64 0, metadata !153), !dbg !260
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !154), !dbg !260
+  %cmp = icmp eq i32 %n, 0, !dbg !261
+  br i1 %cmp, label %return, label %do.body.preheader, !dbg !261
 
-.preheader:                                       ; preds = %0, %13
-  %.04 = phi i8* [ %14, %13 ], [ %str2, %0 ]
-  %.03 = phi i32 [ %16, %13 ], [ %n, %0 ]
-  %.02 = phi i8* [ %15, %13 ], [ %str1, %0 ]
-  %2 = load i8* %.02, align 1, !tbaa !13
-  %3 = sext i8 %2 to i32
-  %4 = tail call i32 @__toupper(i32 %3) #10
-  %5 = load i8* %.04, align 1, !tbaa !13
-  %6 = sext i8 %5 to i32
-  %7 = tail call i32 @__toupper(i32 %6) #10
-  %sext = shl i32 %4, 24
-  %8 = ashr exact i32 %sext, 24
-  %sext5 = shl i32 %7, 24
-  %9 = ashr exact i32 %sext5, 24
-  %10 = icmp eq i32 %8, %9
-  br i1 %10, label %13, label %11
+do.body.preheader:                                ; preds = %entry
+  %call = tail call i32** @__ctype_toupper_loc() #11, !dbg !262
+  %0 = load i32** %call, align 8, !dbg !262, !tbaa !213
+  br label %do.body, !dbg !262
 
-; <label>:11                                      ; preds = %.preheader
-  %12 = sub nsw i32 %8, %9
-  br label %.critedge
+do.body:                                          ; preds = %do.body.preheader, %if.end16
+  %n.addr.0 = phi i32 [ %dec, %if.end16 ], [ %n, %do.body.preheader ]
+  %str2.addr.0 = phi i8* [ %incdec.ptr3, %if.end16 ], [ %str2, %do.body.preheader ]
+  %str1.addr.0 = phi i8* [ %incdec.ptr, %if.end16 ], [ %str1, %do.body.preheader ]
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !152), !dbg !262
+  %1 = load i8* %str1.addr.0, align 1, !dbg !262, !tbaa !189
+  %idxprom = sext i8 %1 to i64, !dbg !262
+  %arrayidx = getelementptr inbounds i32* %0, i64 %idxprom, !dbg !262
+  %2 = load i32* %arrayidx, align 4, !dbg !262, !tbaa !214
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !157), !dbg !262
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr3}, i64 0, metadata !153), !dbg !263
+  %3 = load i8* %str2.addr.0, align 1, !dbg !263, !tbaa !189
+  %idxprom5 = sext i8 %3 to i64, !dbg !263
+  %arrayidx7 = getelementptr inbounds i32* %0, i64 %idxprom5, !dbg !263
+  %4 = load i32* %arrayidx7, align 4, !dbg !263, !tbaa !214
+  tail call void @llvm.dbg.value(metadata !{i32 %4}, i64 0, metadata !160), !dbg !263
+  %sext = shl i32 %2, 24, !dbg !264
+  %conv9 = ashr exact i32 %sext, 24, !dbg !264
+  %sext24 = shl i32 %4, 24, !dbg !264
+  %conv10 = ashr exact i32 %sext24, 24, !dbg !264
+  %cmp11 = icmp eq i32 %conv9, %conv10, !dbg !264
+  br i1 %cmp11, label %if.end16, label %if.then13, !dbg !264
 
-; <label>:13                                      ; preds = %.preheader
-  %14 = getelementptr inbounds i8* %.04, i64 1
-  %15 = getelementptr inbounds i8* %.02, i64 1
-  %16 = add nsw i32 %.03, -1
-  %17 = icmp ne i32 %8, 0
-  %18 = icmp ne i32 %16, 0
-  %or.cond = and i1 %18, %17
-  br i1 %or.cond, label %.preheader, label %.critedge
+if.then13:                                        ; preds = %do.body
+  %sub = sub nsw i32 %conv9, %conv10, !dbg !264
+  br label %return, !dbg !264
 
-.critedge:                                        ; preds = %13, %0, %11
-  %.0 = phi i32 [ %12, %11 ], [ 0, %0 ], [ 0, %13 ]
-  ret i32 %.0
+if.end16:                                         ; preds = %do.body
+  %incdec.ptr3 = getelementptr inbounds i8* %str2.addr.0, i64 1, !dbg !263
+  %incdec.ptr = getelementptr inbounds i8* %str1.addr.0, i64 1, !dbg !262
+  %dec = add nsw i32 %n.addr.0, -1, !dbg !265
+  tail call void @llvm.dbg.value(metadata !{i32 %dec}, i64 0, metadata !154), !dbg !265
+  %tobool = icmp eq i32 %conv9, 0, !dbg !266
+  %tobool18 = icmp eq i32 %dec, 0, !dbg !266
+  %or.cond = or i1 %tobool, %tobool18, !dbg !266
+  br i1 %or.cond, label %return, label %do.body, !dbg !266
+
+return:                                           ; preds = %if.end16, %entry, %if.then13
+  %retval.0 = phi i32 [ %sub, %if.then13 ], [ 0, %entry ], [ 0, %if.end16 ]
+  ret i32 %retval.0, !dbg !267
 }

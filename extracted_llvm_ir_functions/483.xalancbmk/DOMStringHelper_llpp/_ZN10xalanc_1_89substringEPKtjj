@@ -1,0 +1,44 @@
+define void @_ZN10xalanc_1_89substringEPKtjj(%"class.xalanc_1_8::XalanDOMString"* noalias sret %agg.result, i16* %theString, i32 %theStartIndex, i32 %theEndIndex) #5 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %theString}, i64 0, metadata !4237), !dbg !7043
+  tail call void @llvm.dbg.value(metadata !{i32 %theStartIndex}, i64 0, metadata !4238), !dbg !7044
+  tail call void @llvm.dbg.value(metadata !{i32 %theEndIndex}, i64 0, metadata !4239), !dbg !7045
+  tail call void @llvm.dbg.value(metadata !{i16* %theString}, i64 0, metadata !7046), !dbg !7048
+  tail call void @llvm.dbg.value(metadata !{i16* %theString}, i64 0, metadata !7049), !dbg !7050
+  br label %while.cond.i, !dbg !7051
+
+while.cond.i:                                     ; preds = %while.cond.i, %entry
+  %theBufferPointer.0.i = phi i16* [ %theString, %entry ], [ %incdec.ptr.i, %while.cond.i ]
+  %0 = load i16* %theBufferPointer.0.i, align 2, !dbg !7051, !tbaa !6609
+  %cmp.i = icmp eq i16 %0, 0, !dbg !7051
+  %incdec.ptr.i = getelementptr inbounds i16* %theBufferPointer.0.i, i64 1, !dbg !7052
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr.i}, i64 0, metadata !7049), !dbg !7052
+  br i1 %cmp.i, label %_ZN10xalanc_1_86lengthEPKt.exit, label %while.cond.i, !dbg !7051
+
+_ZN10xalanc_1_86lengthEPKt.exit:                  ; preds = %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %theBufferPointer.0.i to i64, !dbg !7053
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %theString to i64, !dbg !7053
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !7053
+  %sub.ptr.div4.i = lshr exact i64 %sub.ptr.sub.i, 1, !dbg !7053
+  %conv1.i = trunc i64 %sub.ptr.div4.i to i32, !dbg !7053
+  tail call void @llvm.dbg.value(metadata !{i32 %conv1.i}, i64 0, metadata !4240), !dbg !7047
+  %cmp = icmp eq i32 %conv1.i, %theStartIndex, !dbg !7054
+  br i1 %cmp, label %if.then, label %if.else, !dbg !7054
+
+if.then:                                          ; preds = %_ZN10xalanc_1_86lengthEPKt.exit
+  tail call void @_ZN10xalanc_1_814XalanDOMStringC1Ev(%"class.xalanc_1_8::XalanDOMString"* %agg.result) #12, !dbg !7055
+  br label %return, !dbg !7055
+
+if.else:                                          ; preds = %_ZN10xalanc_1_86lengthEPKt.exit
+  %cmp1 = icmp eq i32 %theEndIndex, -1, !dbg !7057
+  %call.theEndIndex = select i1 %cmp1, i32 %conv1.i, i32 %theEndIndex, !dbg !7057
+  %cond = sub i32 %call.theEndIndex, %theStartIndex, !dbg !7057
+  tail call void @llvm.dbg.value(metadata !{i32 %cond}, i64 0, metadata !4241), !dbg !7057
+  %idx.ext = zext i32 %theStartIndex to i64, !dbg !7058
+  %add.ptr = getelementptr inbounds i16* %theString, i64 %idx.ext, !dbg !7058
+  tail call void @_ZN10xalanc_1_814XalanDOMStringC1EPKtj(%"class.xalanc_1_8::XalanDOMString"* %agg.result, i16* %add.ptr, i32 %cond) #12, !dbg !7058
+  br label %return, !dbg !7058
+
+return:                                           ; preds = %if.else, %if.then
+  ret void, !dbg !7059
+}

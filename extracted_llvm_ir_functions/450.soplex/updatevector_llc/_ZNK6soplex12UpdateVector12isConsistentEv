@@ -1,0 +1,29 @@
+define zeroext i1 @_ZNK6soplex12UpdateVector12isConsistentEv(%"class.soplex::UpdateVector"* %this) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::UpdateVector"* %this}, i64 0, metadata !1797), !dbg !1866
+  %dimen.i = getelementptr inbounds %"class.soplex::UpdateVector"* %this, i64 0, i32 0, i32 0, i32 0, !dbg !1867
+  %0 = load i32* %dimen.i, align 4, !dbg !1867, !tbaa !1859
+  %thedelta = getelementptr inbounds %"class.soplex::UpdateVector"* %this, i64 0, i32 2, !dbg !1868
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %thedelta}, i64 0, metadata !1869), !dbg !1870
+  %dimen.i7 = getelementptr inbounds %"class.soplex::SSVector"* %thedelta, i64 0, i32 0, i32 0, i32 0, !dbg !1871
+  %1 = load i32* %dimen.i7, align 4, !dbg !1871, !tbaa !1859
+  %cmp = icmp eq i32 %0, %1, !dbg !1868
+  br i1 %cmp, label %if.end, label %if.then, !dbg !1868
+
+if.then:                                          ; preds = %entry
+  %call3 = tail call zeroext i1 @_ZN6soplex15msginconsistentEPKcS1_i(i8* getelementptr inbounds ([13 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([60 x i8]* @.str1, i64 0, i64 0), i32 40) #4, !dbg !1873
+  br label %return, !dbg !1873
+
+if.end:                                           ; preds = %entry
+  %2 = getelementptr inbounds %"class.soplex::UpdateVector"* %this, i64 0, i32 0, !dbg !1874
+  %call4 = tail call zeroext i1 @_ZNK6soplex7DVector12isConsistentEv(%"class.soplex::DVector"* %2) #4, !dbg !1874
+  br i1 %call4, label %land.rhs, label %return, !dbg !1874
+
+land.rhs:                                         ; preds = %if.end
+  %call6 = tail call zeroext i1 @_ZNK6soplex8SSVector12isConsistentEv(%"class.soplex::SSVector"* %thedelta) #4, !dbg !1874
+  br label %return
+
+return:                                           ; preds = %if.end, %land.rhs, %if.then
+  %retval.0 = phi i1 [ %call3, %if.then ], [ false, %if.end ], [ %call6, %land.rhs ]
+  ret i1 %retval.0, !dbg !1875
+}

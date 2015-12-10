@@ -1,0 +1,52 @@
+define linkonce_odr void @_ZN11xercesc_2_515BaseRefVectorOfINS_17DatatypeValidatorEE17removeAllElementsEv(%"class.xercesc_2_5::BaseRefVectorOf.22"* nocapture %this) unnamed_addr #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf.22"* %this}, i64 0, metadata !13756), !dbg !20677
+  tail call void @llvm.dbg.value(metadata !1577, i64 0, metadata !13757), !dbg !20678
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.22"* %this, i64 0, i32 2, !dbg !20678
+  %0 = load i32* %fCurCount, align 4, !dbg !20678, !tbaa !14899
+  %cmp9 = icmp eq i32 %0, 0, !dbg !20678
+  br i1 %cmp9, label %for.end, label %for.body.lr.ph, !dbg !20678
+
+for.body.lr.ph:                                   ; preds = %entry
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.22"* %this, i64 0, i32 1, !dbg !20679
+  %fElemList3 = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.22"* %this, i64 0, i32 4, !dbg !20681
+  br label %for.body, !dbg !20678
+
+for.body:                                         ; preds = %if.end, %for.body.lr.ph
+  %1 = phi i32 [ %0, %for.body.lr.ph ], [ %7, %if.end ]
+  %index.010 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %if.end ]
+  %2 = load i8* %fAdoptedElems, align 1, !dbg !20679, !tbaa !14963, !range !15984
+  %tobool = icmp eq i8 %2, 0, !dbg !20679
+  %idxprom2.pre = zext i32 %index.010 to i64, !dbg !20681
+  br i1 %tobool, label %if.end, label %if.then, !dbg !20679
+
+if.then:                                          ; preds = %for.body
+  %3 = load %"class.xercesc_2_5::DatatypeValidator"*** %fElemList3, align 8, !dbg !20682, !tbaa !14906
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::DatatypeValidator"** %3, i64 %idxprom2.pre, !dbg !20682
+  %4 = load %"class.xercesc_2_5::DatatypeValidator"** %arrayidx, align 8, !dbg !20682, !tbaa !14906
+  %isnull = icmp eq %"class.xercesc_2_5::DatatypeValidator"* %4, null, !dbg !20682
+  br i1 %isnull, label %if.end, label %delete.notnull, !dbg !20682
+
+delete.notnull:                                   ; preds = %if.then
+  %5 = bitcast %"class.xercesc_2_5::DatatypeValidator"* %4 to void (%"class.xercesc_2_5::DatatypeValidator"*)***, !dbg !20682
+  %vtable = load void (%"class.xercesc_2_5::DatatypeValidator"*)*** %5, align 8, !dbg !20682, !tbaa !14966
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::DatatypeValidator"*)** %vtable, i64 1, !dbg !20682
+  %6 = load void (%"class.xercesc_2_5::DatatypeValidator"*)** %vfn, align 8, !dbg !20682
+  tail call void %6(%"class.xercesc_2_5::DatatypeValidator"* %4) #12, !dbg !20682
+  %.pre = load i32* %fCurCount, align 4, !dbg !20678, !tbaa !14899
+  br label %if.end, !dbg !20682
+
+if.end:                                           ; preds = %for.body, %if.then, %delete.notnull
+  %7 = phi i32 [ %1, %if.then ], [ %.pre, %delete.notnull ], [ %1, %for.body ], !dbg !20681
+  %8 = load %"class.xercesc_2_5::DatatypeValidator"*** %fElemList3, align 8, !dbg !20681, !tbaa !14906
+  %arrayidx4 = getelementptr inbounds %"class.xercesc_2_5::DatatypeValidator"** %8, i64 %idxprom2.pre, !dbg !20681
+  store %"class.xercesc_2_5::DatatypeValidator"* null, %"class.xercesc_2_5::DatatypeValidator"** %arrayidx4, align 8, !dbg !20681, !tbaa !14906
+  %inc = add i32 %index.010, 1, !dbg !20678
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !13757), !dbg !20678
+  %cmp = icmp ult i32 %inc, %7, !dbg !20678
+  br i1 %cmp, label %for.body, label %for.end, !dbg !20678
+
+for.end:                                          ; preds = %if.end, %entry
+  store i32 0, i32* %fCurCount, align 4, !dbg !20683, !tbaa !14899
+  ret void, !dbg !20684
+}

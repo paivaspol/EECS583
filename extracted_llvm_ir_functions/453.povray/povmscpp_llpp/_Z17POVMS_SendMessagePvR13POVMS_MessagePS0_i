@@ -1,0 +1,42 @@
+define void @_Z17POVMS_SendMessagePvR13POVMS_MessagePS0_i(i8* %contextref, %class.POVMS_Message* %msg, %class.POVMS_Message* %result, i32 %mode) #5 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %contextref}, i64 0, metadata !1084), !dbg !1929
+  tail call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %msg}, i64 0, metadata !1085), !dbg !1929
+  tail call void @llvm.dbg.value(metadata !{%class.POVMS_Message* %result}, i64 0, metadata !1086), !dbg !1929
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !1087), !dbg !1929
+  %cmp = icmp eq %class.POVMS_Message* %result, null, !dbg !1930
+  %data = getelementptr inbounds %class.POVMS_Message* %msg, i64 0, i32 0, i32 0, i32 1, !dbg !1931
+  br i1 %cmp, label %if.else, label %if.then, !dbg !1930
+
+if.then:                                          ; preds = %entry
+  %data1 = getelementptr inbounds %class.POVMS_Message* %result, i64 0, i32 0, i32 0, i32 1, !dbg !1931
+  %call = tail call i32 @_Z10POVMS_SendPvP9POVMSDataS1_i(i8* %contextref, %struct.POVMSData* %data, %struct.POVMSData* %data1, i32 %mode) #12, !dbg !1931
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !1088), !dbg !1931
+  br label %if.end, !dbg !1931
+
+if.else:                                          ; preds = %entry
+  %call3 = tail call i32 @_Z10POVMS_SendPvP9POVMSDataS1_i(i8* %contextref, %struct.POVMSData* %data, %struct.POVMSData* null, i32 %mode) #12, !dbg !1932
+  tail call void @llvm.dbg.value(metadata !{i32 %call3}, i64 0, metadata !1088), !dbg !1932
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %err.0 = phi i32 [ %call, %if.then ], [ %call3, %if.else ]
+  %cmp4 = icmp eq i32 %err.0, 0, !dbg !1933
+  br i1 %cmp4, label %if.end6, label %if.then5, !dbg !1933
+
+if.then5:                                         ; preds = %if.end
+  %exception = tail call i8* @__cxa_allocate_exception(i64 4) #9, !dbg !1934
+  %0 = bitcast i8* %exception to i32*, !dbg !1934
+  store i32 %err.0, i32* %0, align 4, !dbg !1934, !tbaa !1112
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast (i8** @_ZTIi to i8*), i8* null) #13, !dbg !1934
+  unreachable, !dbg !1934
+
+if.end6:                                          ; preds = %if.end
+  %type.i = getelementptr inbounds %class.POVMS_Message* %msg, i64 0, i32 0, i32 0, i32 1, i32 0, !dbg !1935
+  store i32 1314212940, i32* %type.i, align 4, !dbg !1935, !tbaa !1112
+  %size.i = getelementptr inbounds %class.POVMS_Message* %msg, i64 0, i32 0, i32 0, i32 1, i32 1, !dbg !1937
+  store i32 0, i32* %size.i, align 4, !dbg !1937, !tbaa !1112
+  %ptr.i = getelementptr inbounds %class.POVMS_Message* %msg, i64 0, i32 0, i32 0, i32 1, i32 2, i32 0, !dbg !1938
+  store i8* null, i8** %ptr.i, align 8, !dbg !1938, !tbaa !1116
+  ret void, !dbg !1939
+}

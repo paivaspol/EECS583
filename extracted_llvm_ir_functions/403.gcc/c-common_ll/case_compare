@@ -1,23 +1,25 @@
 define i32 @case_compare(i64 %k1, i64 %k2) #0 {
 entry:
-  %tobool = icmp eq i64 %k1, 0
-  %tobool2 = icmp ne i64 %k2, 0
-  br i1 %tobool, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata !{i64 %k1}, i64 0, metadata !1814), !dbg !3538
+  tail call void @llvm.dbg.value(metadata !{i64 %k2}, i64 0, metadata !1815), !dbg !3539
+  %tobool = icmp eq i64 %k1, 0, !dbg !3540
+  %tobool2 = icmp ne i64 %k2, 0, !dbg !3541
+  br i1 %tobool, label %if.then, label %if.else, !dbg !3540
 
 if.then:                                          ; preds = %entry
-  %cond = sext i1 %tobool2 to i32
-  br label %return
+  %cond = sext i1 %tobool2 to i32, !dbg !3542
+  br label %return, !dbg !3542
 
 if.else:                                          ; preds = %entry
-  br i1 %tobool2, label %if.end6, label %return
+  br i1 %tobool2, label %if.end6, label %return, !dbg !3541
 
 if.end6:                                          ; preds = %if.else
-  %0 = inttoptr i64 %k1 to %union.tree_node*
-  %1 = inttoptr i64 %k2 to %union.tree_node*
-  %call = tail call i32 @tree_int_cst_compare(%union.tree_node* %0, %union.tree_node* %1) #8
-  br label %return
+  %0 = inttoptr i64 %k1 to %union.tree_node*, !dbg !3543
+  %1 = inttoptr i64 %k2 to %union.tree_node*, !dbg !3543
+  %call = tail call i32 @tree_int_cst_compare(%union.tree_node* %0, %union.tree_node* %1) #9, !dbg !3543
+  br label %return, !dbg !3543
 
 return:                                           ; preds = %if.else, %if.end6, %if.then
   %retval.0 = phi i32 [ %call, %if.end6 ], [ %cond, %if.then ], [ 1, %if.else ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !3544
 }

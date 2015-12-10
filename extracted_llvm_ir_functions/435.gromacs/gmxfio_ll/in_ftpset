@@ -1,24 +1,27 @@
-define i32 @in_ftpset(i32 %ftp, i32 %nset, i32* nocapture readonly %set) #3 {
-  %1 = icmp sgt i32 %nset, 0
-  br i1 %1, label %.lr.ph, label %._crit_edge
+define i32 @in_ftpset(i32 %ftp, i32 %nset, i32* nocapture %set) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %ftp}, i64 0, metadata !95), !dbg !496
+  tail call void @llvm.dbg.value(metadata !{i32 %nset}, i64 0, metadata !96), !dbg !496
+  tail call void @llvm.dbg.value(metadata !{i32* %set}, i64 0, metadata !97), !dbg !496
+  tail call void @llvm.dbg.value(metadata !86, i64 0, metadata !99), !dbg !497
+  tail call void @llvm.dbg.value(metadata !86, i64 0, metadata !98), !dbg !498
+  %cmp4 = icmp sgt i32 %nset, 0, !dbg !498
+  br i1 %cmp4, label %for.body, label %for.end, !dbg !498
 
-.lr.ph:                                           ; preds = %0
-  %2 = add i32 %nset, -1
-  br label %3
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %bResult.06 = phi i32 [ %.bResult.0, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds i32* %set, i64 %indvars.iv, !dbg !500
+  %0 = load i32* %arrayidx, align 4, !dbg !500, !tbaa !501
+  %cmp1 = icmp eq i32 %0, %ftp, !dbg !500
+  tail call void @llvm.dbg.value(metadata !504, i64 0, metadata !99), !dbg !505
+  %.bResult.0 = select i1 %cmp1, i32 1, i32 %bResult.06, !dbg !500
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !498
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !498
+  %exitcond = icmp eq i32 %lftr.wideiv, %nset, !dbg !498
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !498
 
-; <label>:3                                       ; preds = %3, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
-  %bResult.02 = phi i32 [ 0, %.lr.ph ], [ %.bResult.0, %3 ]
-  %4 = getelementptr inbounds i32* %set, i64 %indvars.iv
-  %5 = load i32* %4, align 4, !tbaa !2
-  %6 = icmp eq i32 %5, %ftp
-  %.bResult.0 = select i1 %6, i32 1, i32 %bResult.02
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %2
-  br i1 %exitcond, label %._crit_edge, label %3
-
-._crit_edge:                                      ; preds = %3, %0
-  %bResult.0.lcssa = phi i32 [ 0, %0 ], [ %.bResult.0, %3 ]
-  ret i32 %bResult.0.lcssa
+for.end:                                          ; preds = %for.body, %entry
+  %bResult.0.lcssa = phi i32 [ 0, %entry ], [ %.bResult.0, %for.body ]
+  ret i32 %bResult.0.lcssa, !dbg !506
 }

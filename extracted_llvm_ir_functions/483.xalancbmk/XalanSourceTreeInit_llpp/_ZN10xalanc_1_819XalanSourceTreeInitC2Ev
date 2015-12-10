@@ -1,0 +1,82 @@
+define void @_ZN10xalanc_1_819XalanSourceTreeInitC2Ev(%"class.xalanc_1_8::XalanSourceTreeInit"* %this) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XalanSourceTreeInit"* %this}, i64 0, metadata !151), !dbg !167
+  %m_platformSupportInit = getelementptr inbounds %"class.xalanc_1_8::XalanSourceTreeInit"* %this, i64 0, i32 0, !dbg !168
+  tail call void @_ZN10xalanc_1_819PlatformSupportInitC1Ev(%"class.xalanc_1_8::PlatformSupportInit"* %m_platformSupportInit) #4, !dbg !168
+  %m_domSupportInit = getelementptr inbounds %"class.xalanc_1_8::XalanSourceTreeInit"* %this, i64 0, i32 1, !dbg !168
+  invoke void @_ZN10xalanc_1_814DOMSupportInitC1Ev(%"class.xalanc_1_8::DOMSupportInit"* %m_domSupportInit) #4
+          to label %invoke.cont unwind label %lpad, !dbg !168
+
+invoke.cont:                                      ; preds = %entry
+  %m_xmlSupportInit = getelementptr inbounds %"class.xalanc_1_8::XalanSourceTreeInit"* %this, i64 0, i32 2, !dbg !168
+  invoke void @_ZN10xalanc_1_814XMLSupportInitC1Ev(%"class.xalanc_1_8::XMLSupportInit"* %m_xmlSupportInit) #4
+          to label %invoke.cont3 unwind label %lpad2, !dbg !168
+
+invoke.cont3:                                     ; preds = %invoke.cont
+  %0 = load i64* @_ZN10xalanc_1_819XalanSourceTreeInit13s_initCounterE, align 8, !dbg !169, !tbaa !171
+  %inc = add i64 %0, 1, !dbg !169
+  store i64 %inc, i64* @_ZN10xalanc_1_819XalanSourceTreeInit13s_initCounterE, align 8, !dbg !169, !tbaa !171
+  %cmp = icmp eq i64 %0, 0, !dbg !174
+  br i1 %cmp, label %if.then, label %if.end, !dbg !174
+
+if.then:                                          ; preds = %invoke.cont3
+  invoke void @_ZN10xalanc_1_823XalanSourceTreeDocument10initializeEv() #4
+          to label %.noexc unwind label %lpad4
+
+.noexc:                                           ; preds = %if.then
+  invoke void @_ZN10xalanc_1_822XalanSourceTreeComment10initializeEv() #4
+          to label %.noexc11 unwind label %lpad4
+
+.noexc11:                                         ; preds = %.noexc
+  invoke void @_ZN10xalanc_1_819XalanSourceTreeText10initializeEv() #4
+          to label %if.end unwind label %lpad4
+
+lpad:                                             ; preds = %entry
+  %1 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !168
+  %2 = extractvalue { i8*, i32 } %1, 0, !dbg !168
+  %3 = extractvalue { i8*, i32 } %1, 1, !dbg !168
+  br label %ehcleanup8, !dbg !168
+
+lpad2:                                            ; preds = %invoke.cont
+  %4 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !168
+  %5 = extractvalue { i8*, i32 } %4, 0, !dbg !168
+  %6 = extractvalue { i8*, i32 } %4, 1, !dbg !168
+  br label %ehcleanup, !dbg !168
+
+lpad4:                                            ; preds = %.noexc11, %.noexc, %if.then
+  %7 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !175
+  %8 = extractvalue { i8*, i32 } %7, 0, !dbg !175
+  %9 = extractvalue { i8*, i32 } %7, 1, !dbg !175
+  invoke void @_ZN10xalanc_1_814XMLSupportInitD1Ev(%"class.xalanc_1_8::XMLSupportInit"* %m_xmlSupportInit) #4
+          to label %ehcleanup unwind label %terminate.lpad, !dbg !177
+
+if.end:                                           ; preds = %.noexc11, %invoke.cont3
+  ret void, !dbg !177
+
+ehcleanup:                                        ; preds = %lpad4, %lpad2
+  %exn.slot.0 = phi i8* [ %8, %lpad4 ], [ %5, %lpad2 ]
+  %ehselector.slot.0 = phi i32 [ %9, %lpad4 ], [ %6, %lpad2 ]
+  invoke void @_ZN10xalanc_1_814DOMSupportInitD1Ev(%"class.xalanc_1_8::DOMSupportInit"* %m_domSupportInit) #4
+          to label %ehcleanup8 unwind label %terminate.lpad, !dbg !177
+
+ehcleanup8:                                       ; preds = %ehcleanup, %lpad
+  %exn.slot.1 = phi i8* [ %exn.slot.0, %ehcleanup ], [ %2, %lpad ]
+  %ehselector.slot.1 = phi i32 [ %ehselector.slot.0, %ehcleanup ], [ %3, %lpad ]
+  invoke void @_ZN10xalanc_1_819PlatformSupportInitD1Ev(%"class.xalanc_1_8::PlatformSupportInit"* %m_platformSupportInit) #4
+          to label %eh.resume unwind label %terminate.lpad, !dbg !177
+
+eh.resume:                                        ; preds = %ehcleanup8
+  %lpad.val = insertvalue { i8*, i32 } undef, i8* %exn.slot.1, 0, !dbg !177
+  %lpad.val10 = insertvalue { i8*, i32 } %lpad.val, i32 %ehselector.slot.1, 1, !dbg !177
+  resume { i8*, i32 } %lpad.val10, !dbg !177
+
+terminate.lpad:                                   ; preds = %ehcleanup8, %ehcleanup, %lpad4
+  %10 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !177
+  %11 = extractvalue { i8*, i32 } %10, 0, !dbg !177
+  tail call void @__clang_call_terminate(i8* %11) #5, !dbg !177
+  unreachable, !dbg !177
+}

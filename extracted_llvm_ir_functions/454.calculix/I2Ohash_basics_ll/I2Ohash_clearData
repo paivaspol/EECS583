@@ -1,43 +1,46 @@
 define void @I2Ohash_clearData(%struct._I2Ohash* %hashtable) #0 {
 entry:
-  %cmp = icmp eq %struct._I2Ohash* %hashtable, null
-  br i1 %cmp, label %if.then, label %while.cond.preheader
+  tail call void @llvm.dbg.value(metadata !{%struct._I2Ohash* %hashtable}, i64 0, metadata !42), !dbg !67
+  %cmp = icmp eq %struct._I2Ohash* %hashtable, null, !dbg !68
+  br i1 %cmp, label %if.then, label %while.cond.preheader, !dbg !68
 
 while.cond.preheader:                             ; preds = %entry
-  %baseI2OP = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 3
-  %0 = load %struct._I2OP** %baseI2OP, align 8, !tbaa !0
-  %cmp121 = icmp eq %struct._I2OP* %0, null
-  br i1 %cmp121, label %while.end, label %while.body
+  %baseI2OP = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 3, !dbg !69
+  %0 = load %struct._I2OP** %baseI2OP, align 8, !dbg !69, !tbaa !51
+  tail call void @llvm.dbg.value(metadata !{%struct._I2OP* %0}, i64 0, metadata !43), !dbg !69
+  %cmp121 = icmp eq %struct._I2OP* %0, null, !dbg !69
+  br i1 %cmp121, label %while.end, label %while.body, !dbg !69
 
 if.then:                                          ; preds = %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([59 x i8]* @.str3, i64 0, i64 0), %struct._I2Ohash* null) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !70, !tbaa !51
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([59 x i8]* @.str3, i64 0, i64 0), %struct._I2Ohash* null) #6, !dbg !70
+  tail call void @exit(i32 -1) #7, !dbg !72
+  unreachable, !dbg !72
 
 while.body:                                       ; preds = %while.cond.preheader, %while.body
   %2 = phi %struct._I2OP* [ %4, %while.body ], [ %0, %while.cond.preheader ]
-  %next = getelementptr inbounds %struct._I2OP* %2, i64 0, i32 3
-  %3 = load %struct._I2OP** %next, align 8, !tbaa !0
-  store %struct._I2OP* %3, %struct._I2OP** %baseI2OP, align 8, !tbaa !0
-  tail call void @I2OP_free(%struct._I2OP* %2) #5
-  %4 = load %struct._I2OP** %baseI2OP, align 8, !tbaa !0
-  %cmp1 = icmp eq %struct._I2OP* %4, null
-  br i1 %cmp1, label %while.end, label %while.body
+  %next = getelementptr inbounds %struct._I2OP* %2, i64 0, i32 3, !dbg !73
+  %3 = load %struct._I2OP** %next, align 8, !dbg !73, !tbaa !51
+  store %struct._I2OP* %3, %struct._I2OP** %baseI2OP, align 8, !dbg !73, !tbaa !51
+  tail call void @I2OP_free(%struct._I2OP* %2) #6, !dbg !75
+  %4 = load %struct._I2OP** %baseI2OP, align 8, !dbg !69, !tbaa !51
+  tail call void @llvm.dbg.value(metadata !{%struct._I2OP* %2}, i64 0, metadata !43), !dbg !69
+  %cmp1 = icmp eq %struct._I2OP* %4, null, !dbg !69
+  br i1 %cmp1, label %while.end, label %while.body, !dbg !69
 
 while.end:                                        ; preds = %while.body, %while.cond.preheader
-  %heads = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 5
-  %5 = load %struct._I2OP*** %heads, align 8, !tbaa !0
-  %cmp3 = icmp eq %struct._I2OP** %5, null
-  br i1 %cmp3, label %if.end11, label %if.then7
+  %heads = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 5, !dbg !76
+  %5 = load %struct._I2OP*** %heads, align 8, !dbg !76, !tbaa !51
+  %cmp3 = icmp eq %struct._I2OP** %5, null, !dbg !76
+  br i1 %cmp3, label %if.end11, label %if.then7, !dbg !76
 
 if.then7:                                         ; preds = %while.end
-  %6 = bitcast %struct._I2OP** %5 to i8*
-  tail call void @free(i8* %6) #5
-  store %struct._I2OP** null, %struct._I2OP*** %heads, align 8, !tbaa !0
-  br label %if.end11
+  %6 = bitcast %struct._I2OP** %5 to i8*, !dbg !77
+  tail call void @free(i8* %6) #6, !dbg !77
+  store %struct._I2OP** null, %struct._I2OP*** %heads, align 8, !dbg !77, !tbaa !51
+  br label %if.end11, !dbg !77
 
 if.end11:                                         ; preds = %while.end, %if.then7
-  tail call void @I2Ohash_setDefaultFields(%struct._I2Ohash* %hashtable) #7
-  ret void
+  tail call void @I2Ohash_setDefaultFields(%struct._I2Ohash* %hashtable) #8, !dbg !80
+  ret void, !dbg !81
 }

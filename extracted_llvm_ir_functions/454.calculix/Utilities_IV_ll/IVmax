@@ -1,47 +1,57 @@
 define i32 @IVmax(i32 %size, i32* %y, i32* %ploc) #0 {
 entry:
-  %cmp = icmp sgt i32 %size, 0
-  br i1 %cmp, label %if.then, label %if.end10
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !189), !dbg !547
+  tail call void @llvm.dbg.value(metadata !{i32* %y}, i64 0, metadata !190), !dbg !548
+  tail call void @llvm.dbg.value(metadata !{i32* %ploc}, i64 0, metadata !191), !dbg !549
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !192), !dbg !550
+  tail call void @llvm.dbg.value(metadata !551, i64 0, metadata !193), !dbg !552
+  %cmp = icmp sgt i32 %size, 0, !dbg !553
+  br i1 %cmp, label %if.then, label %if.end10, !dbg !553
 
 if.then:                                          ; preds = %entry
-  %cmp1 = icmp eq i32* %y, null
-  br i1 %cmp1, label %if.then2, label %if.else
+  %cmp1 = icmp eq i32* %y, null, !dbg !554
+  br i1 %cmp1, label %if.then2, label %if.else, !dbg !554
 
 if.then2:                                         ; preds = %if.then
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([68 x i8]* @.str16, i64 0, i64 0), i32 %size, i32* null, i32* %ploc) #6
-  tail call void @exit(i32 -1) #7
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !555, !tbaa !341
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([68 x i8]* @.str16, i64 0, i64 0), i32 %size, i32* null, i32* %ploc) #7, !dbg !555
+  tail call void @exit(i32 -1) #8, !dbg !557
+  unreachable, !dbg !557
 
 if.else:                                          ; preds = %if.then
-  %1 = load i32* %y, align 4, !tbaa !3
-  %cmp325 = icmp sgt i32 %size, 1
-  br i1 %cmp325, label %for.body, label %for.end
+  %1 = load i32* %y, align 4, !dbg !558, !tbaa !351
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !192), !dbg !558
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !193), !dbg !559
+  tail call void @llvm.dbg.value(metadata !346, i64 0, metadata !194), !dbg !560
+  %cmp325 = icmp sgt i32 %size, 1, !dbg !560
+  br i1 %cmp325, label %for.body, label %for.end, !dbg !560
 
 for.body:                                         ; preds = %if.else, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 1, %if.else ]
   %loc.027 = phi i32 [ %i.0.loc.0, %for.body ], [ 0, %if.else ]
   %maxval.026 = phi i32 [ %.maxval.0, %for.body ], [ %1, %if.else ]
-  %arrayidx4 = getelementptr inbounds i32* %y, i64 %indvars.iv
-  %2 = load i32* %arrayidx4, align 4, !tbaa !3
-  %cmp5 = icmp slt i32 %maxval.026, %2
-  %.maxval.0 = select i1 %cmp5, i32 %2, i32 %maxval.026
-  %3 = trunc i64 %indvars.iv to i32
-  %i.0.loc.0 = select i1 %cmp5, i32 %3, i32 %loc.027
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %size
-  br i1 %exitcond, label %for.end, label %for.body
+  %arrayidx4 = getelementptr inbounds i32* %y, i64 %indvars.iv, !dbg !562
+  %2 = load i32* %arrayidx4, align 4, !dbg !562, !tbaa !351
+  %cmp5 = icmp slt i32 %maxval.026, %2, !dbg !562
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !192), !dbg !564
+  tail call void @llvm.dbg.value(metadata !566, i64 0, metadata !193), !dbg !567
+  %.maxval.0 = select i1 %cmp5, i32 %2, i32 %maxval.026, !dbg !562
+  %3 = trunc i64 %indvars.iv to i32, !dbg !562
+  %i.0.loc.0 = select i1 %cmp5, i32 %3, i32 %loc.027, !dbg !562
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !560
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !560
+  %exitcond = icmp eq i32 %lftr.wideiv, %size, !dbg !560
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !560
 
 for.end:                                          ; preds = %for.body, %if.else
   %loc.0.lcssa = phi i32 [ 0, %if.else ], [ %i.0.loc.0, %for.body ]
   %maxval.0.lcssa = phi i32 [ %1, %if.else ], [ %.maxval.0, %for.body ]
-  store i32 %loc.0.lcssa, i32* %ploc, align 4, !tbaa !3
-  br label %if.end10
+  store i32 %loc.0.lcssa, i32* %ploc, align 4, !dbg !568, !tbaa !351
+  br label %if.end10, !dbg !569
 
 if.end10:                                         ; preds = %for.end, %entry
   %maxval.2 = phi i32 [ %maxval.0.lcssa, %for.end ], [ 0, %entry ]
   %loc.2 = phi i32 [ %loc.0.lcssa, %for.end ], [ -1, %entry ]
-  store i32 %loc.2, i32* %ploc, align 4, !tbaa !3
-  ret i32 %maxval.2
+  store i32 %loc.2, i32* %ploc, align 4, !dbg !570, !tbaa !351
+  ret i32 %maxval.2, !dbg !571
 }

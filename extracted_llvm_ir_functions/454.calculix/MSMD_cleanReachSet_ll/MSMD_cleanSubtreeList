@@ -1,94 +1,102 @@
 define void @MSMD_cleanSubtreeList(%struct._MSMD* %msmd, %struct._MSMDvtx* %v, %struct._MSMDinfo* %info) #0 {
 entry:
-  %cmp = icmp eq %struct._MSMD* %msmd, null
-  %cmp1 = icmp eq %struct._MSMDvtx* %v, null
-  %or.cond = or i1 %cmp, %cmp1
-  %cmp3 = icmp eq %struct._MSMDinfo* %info, null
-  %or.cond50 = or i1 %or.cond, %cmp3
-  br i1 %or.cond50, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._MSMD* %msmd}, i64 0, metadata !166), !dbg !227
+  tail call void @llvm.dbg.value(metadata !{%struct._MSMDvtx* %v}, i64 0, metadata !167), !dbg !228
+  tail call void @llvm.dbg.value(metadata !{%struct._MSMDinfo* %info}, i64 0, metadata !168), !dbg !229
+  %cmp = icmp eq %struct._MSMD* %msmd, null, !dbg !230
+  %cmp1 = icmp eq %struct._MSMDvtx* %v, null, !dbg !230
+  %or.cond = or i1 %cmp, %cmp1, !dbg !230
+  %cmp3 = icmp eq %struct._MSMDinfo* %info, null, !dbg !230
+  %or.cond50 = or i1 %or.cond, %cmp3, !dbg !230
+  br i1 %or.cond50, label %if.then, label %if.end, !dbg !230
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([53 x i8]* @.str3, i64 0, i64 0), %struct._MSMD* %msmd, %struct._MSMDvtx* %v, %struct._MSMDinfo* %info) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !231, !tbaa !193
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([53 x i8]* @.str3, i64 0, i64 0), %struct._MSMD* %msmd, %struct._MSMDvtx* %v, %struct._MSMDinfo* %info) #5, !dbg !231
+  tail call void @exit(i32 -1) #6, !dbg !233
+  unreachable, !dbg !233
 
 if.end:                                           ; preds = %entry
-  %msglvl = getelementptr inbounds %struct._MSMDinfo* %info, i64 0, i32 4
-  %1 = load i32* %msglvl, align 4, !tbaa !3
-  %cmp4 = icmp sgt i32 %1, 4
-  br i1 %cmp4, label %land.lhs.true, label %if.end11
+  %msglvl = getelementptr inbounds %struct._MSMDinfo* %info, i64 0, i32 4, !dbg !234
+  %1 = load i32* %msglvl, align 4, !dbg !234, !tbaa !202
+  %cmp4 = icmp sgt i32 %1, 4, !dbg !234
+  br i1 %cmp4, label %land.lhs.true, label %if.end11, !dbg !234
 
 land.lhs.true:                                    ; preds = %if.end
-  %msgFile = getelementptr inbounds %struct._MSMDinfo* %info, i64 0, i32 5
-  %2 = load %struct._IO_FILE** %msgFile, align 8, !tbaa !0
-  %cmp5 = icmp eq %struct._IO_FILE* %2, null
-  br i1 %cmp5, label %if.end11, label %if.then6
+  %msgFile = getelementptr inbounds %struct._MSMDinfo* %info, i64 0, i32 5, !dbg !234
+  %2 = load %struct._IO_FILE** %msgFile, align 8, !dbg !234, !tbaa !193
+  %cmp5 = icmp eq %struct._IO_FILE* %2, null, !dbg !234
+  br i1 %cmp5, label %if.end11, label %if.then6, !dbg !234
 
 if.then6:                                         ; preds = %land.lhs.true
-  %id = getelementptr inbounds %struct._MSMDvtx* %v, i64 0, i32 0
-  %3 = load i32* %id, align 4, !tbaa !3
-  %call8 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([35 x i8]* @.str4, i64 0, i64 0), i32 %3) #4
-  %4 = load %struct._IO_FILE** %msgFile, align 8, !tbaa !0
-  %call10 = tail call i32 @fflush(%struct._IO_FILE* %4) #4
-  br label %if.end11
+  %id = getelementptr inbounds %struct._MSMDvtx* %v, i64 0, i32 0, !dbg !235
+  %3 = load i32* %id, align 4, !dbg !235, !tbaa !202
+  %call8 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([35 x i8]* @.str4, i64 0, i64 0), i32 %3) #5, !dbg !235
+  %4 = load %struct._IO_FILE** %msgFile, align 8, !dbg !237, !tbaa !193
+  %call10 = tail call i32 @fflush(%struct._IO_FILE* %4) #5, !dbg !237
+  br label %if.end11, !dbg !238
 
 if.end11:                                         ; preds = %land.lhs.true, %if.then6, %if.end
-  %subtrees = getelementptr inbounds %struct._MSMDvtx* %v, i64 0, i32 9
-  %5 = load %struct._IP** %subtrees, align 8, !tbaa !0
-  store %struct._IP* null, %struct._IP** %subtrees, align 8, !tbaa !0
-  %cmp135254 = icmp eq %struct._IP* %5, null
-  br i1 %cmp135254, label %while.end, label %while.body.lr.ph.lr.ph
+  %subtrees = getelementptr inbounds %struct._MSMDvtx* %v, i64 0, i32 9, !dbg !239
+  %5 = load %struct._IP** %subtrees, align 8, !dbg !239, !tbaa !193
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %5}, i64 0, metadata !170), !dbg !239
+  tail call void @llvm.dbg.value(metadata !240, i64 0, metadata !172), !dbg !241
+  store %struct._IP* null, %struct._IP** %subtrees, align 8, !dbg !241, !tbaa !193
+  %cmp135254 = icmp eq %struct._IP* %5, null, !dbg !242
+  br i1 %cmp135254, label %while.end, label %while.body.lr.ph.lr.ph, !dbg !242
 
 while.body.lr.ph.lr.ph:                           ; preds = %if.end11
-  %vertices = getelementptr inbounds %struct._MSMD* %msmd, i64 0, i32 5
-  %freeIP = getelementptr inbounds %struct._MSMD* %msmd, i64 0, i32 4
-  br label %while.body.lr.ph
+  %vertices = getelementptr inbounds %struct._MSMD* %msmd, i64 0, i32 5, !dbg !243
+  %freeIP = getelementptr inbounds %struct._MSMD* %msmd, i64 0, i32 4, !dbg !245
+  br label %while.body.lr.ph, !dbg !242
 
 while.body.lr.ph:                                 ; preds = %while.body.lr.ph.lr.ph, %if.end20
   %ip.0.ph56 = phi %struct._IP* [ %5, %while.body.lr.ph.lr.ph ], [ %6, %if.end20 ]
   %prev.0.ph55 = phi %struct._IP* [ null, %while.body.lr.ph.lr.ph ], [ %ip.053, %if.end20 ]
-  br label %while.body
+  br label %while.body, !dbg !242
 
 while.body:                                       ; preds = %while.body.lr.ph, %if.else22
   %ip.053 = phi %struct._IP* [ %ip.0.ph56, %while.body.lr.ph ], [ %6, %if.else22 ]
-  %next = getelementptr inbounds %struct._IP* %ip.053, i64 0, i32 1
-  %6 = load %struct._IP** %next, align 8, !tbaa !0
-  %val = getelementptr inbounds %struct._IP* %ip.053, i64 0, i32 0
-  %7 = load i32* %val, align 4, !tbaa !3
-  %8 = load %struct._MSMDvtx** %vertices, align 8, !tbaa !0
-  %idx.ext = sext i32 %7 to i64
-  %par = getelementptr inbounds %struct._MSMDvtx* %8, i64 %idx.ext, i32 8
-  %9 = load %struct._MSMDvtx** %par, align 8, !tbaa !0
-  %cmp14 = icmp eq %struct._MSMDvtx* %9, null
-  br i1 %cmp14, label %if.then15, label %if.else22
+  %next = getelementptr inbounds %struct._IP* %ip.053, i64 0, i32 1, !dbg !247
+  %6 = load %struct._IP** %next, align 8, !dbg !247, !tbaa !193
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %6}, i64 0, metadata !171), !dbg !247
+  %val = getelementptr inbounds %struct._IP* %ip.053, i64 0, i32 0, !dbg !248
+  %7 = load i32* %val, align 4, !dbg !248, !tbaa !202
+  tail call void @llvm.dbg.value(metadata !{i32 %7}, i64 0, metadata !169), !dbg !248
+  %8 = load %struct._MSMDvtx** %vertices, align 8, !dbg !243, !tbaa !193
+  %idx.ext = sext i32 %7 to i64, !dbg !243
+  %par = getelementptr inbounds %struct._MSMDvtx* %8, i64 %idx.ext, i32 8, !dbg !249
+  %9 = load %struct._MSMDvtx** %par, align 8, !dbg !249, !tbaa !193
+  %cmp14 = icmp eq %struct._MSMDvtx* %9, null, !dbg !249
+  br i1 %cmp14, label %if.then15, label %if.else22, !dbg !249
 
 if.then15:                                        ; preds = %while.body
-  %cmp16 = icmp eq %struct._IP* %prev.0.ph55, null
-  br i1 %cmp16, label %if.then17, label %if.else
+  %cmp16 = icmp eq %struct._IP* %prev.0.ph55, null, !dbg !250
+  br i1 %cmp16, label %if.then17, label %if.else, !dbg !250
 
 if.then17:                                        ; preds = %if.then15
-  store %struct._IP* %ip.053, %struct._IP** %subtrees, align 8, !tbaa !0
-  br label %if.end20
+  store %struct._IP* %ip.053, %struct._IP** %subtrees, align 8, !dbg !252, !tbaa !193
+  br label %if.end20, !dbg !254
 
 if.else:                                          ; preds = %if.then15
-  %next19 = getelementptr inbounds %struct._IP* %prev.0.ph55, i64 0, i32 1
-  store %struct._IP* %ip.053, %struct._IP** %next19, align 8, !tbaa !0
+  %next19 = getelementptr inbounds %struct._IP* %prev.0.ph55, i64 0, i32 1, !dbg !255
+  store %struct._IP* %ip.053, %struct._IP** %next19, align 8, !dbg !255, !tbaa !193
   br label %if.end20
 
 if.end20:                                         ; preds = %if.else, %if.then17
-  store %struct._IP* null, %struct._IP** %next, align 8, !tbaa !0
-  %cmp1352 = icmp eq %struct._IP* %6, null
-  br i1 %cmp1352, label %while.end, label %while.body.lr.ph
+  tail call void @llvm.dbg.value(metadata !{%struct._IP* %ip.053}, i64 0, metadata !172), !dbg !257
+  store %struct._IP* null, %struct._IP** %next, align 8, !dbg !258, !tbaa !193
+  %cmp1352 = icmp eq %struct._IP* %6, null, !dbg !242
+  br i1 %cmp1352, label %while.end, label %while.body.lr.ph, !dbg !242
 
 if.else22:                                        ; preds = %while.body
-  store i32 -1, i32* %val, align 4, !tbaa !3
-  %10 = load %struct._IP** %freeIP, align 8, !tbaa !0
-  store %struct._IP* %10, %struct._IP** %next, align 8, !tbaa !0
-  store %struct._IP* %ip.053, %struct._IP** %freeIP, align 8, !tbaa !0
-  %cmp13 = icmp eq %struct._IP* %6, null
-  br i1 %cmp13, label %while.end, label %while.body
+  store i32 -1, i32* %val, align 4, !dbg !259, !tbaa !202
+  %10 = load %struct._IP** %freeIP, align 8, !dbg !245, !tbaa !193
+  store %struct._IP* %10, %struct._IP** %next, align 8, !dbg !245, !tbaa !193
+  store %struct._IP* %ip.053, %struct._IP** %freeIP, align 8, !dbg !260, !tbaa !193
+  %cmp13 = icmp eq %struct._IP* %6, null, !dbg !242
+  br i1 %cmp13, label %while.end, label %while.body, !dbg !242
 
 while.end:                                        ; preds = %if.end11, %if.end20, %if.else22
-  ret void
+  ret void, !dbg !261
 }

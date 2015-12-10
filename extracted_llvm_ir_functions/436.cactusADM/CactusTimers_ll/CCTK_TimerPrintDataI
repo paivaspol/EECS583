@@ -1,118 +1,135 @@
 define i32 @CCTK_TimerPrintDataI(i32 %this_timer, i32 %this_clock) #1 {
-  %1 = icmp eq i32 %this_timer, -1
-  br i1 %1, label %9, label %2
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %this_timer}, i64 0, metadata !246), !dbg !650
+  tail call void @llvm.dbg.value(metadata !{i32 %this_clock}, i64 0, metadata !247), !dbg !650
+  tail call void @llvm.dbg.value(metadata !10, i64 0, metadata !251), !dbg !651
+  %cmp = icmp eq i32 %this_timer, -1, !dbg !652
+  br i1 %cmp, label %if.end7, label %if.else, !dbg !652
 
-; <label>:2                                       ; preds = %0
-  %3 = icmp slt i32 %this_timer, 0
-  br i1 %3, label %.thread11, label %4
+if.else:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{i32 %this_timer}, i64 0, metadata !254), !dbg !653
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !255), !dbg !655
+  %cmp2 = icmp slt i32 %this_timer, 0, !dbg !656
+  br i1 %cmp2, label %if.end7.thread108, label %lor.lhs.false, !dbg !656
 
-; <label>:4                                       ; preds = %2
-  %5 = add nsw i32 %this_timer, 1
-  %6 = load i32* @n_timers, align 4, !tbaa !11
-  %7 = icmp slt i32 %6, %this_timer
-  br i1 %7, label %.thread11, label %.lr.ph4
+lor.lhs.false:                                    ; preds = %if.else
+  %add = add nsw i32 %this_timer, 1, !dbg !655
+  %0 = load i32* @n_timers, align 4, !dbg !657, !tbaa !359
+  %cmp4 = icmp slt i32 %0, %this_timer, !dbg !656
+  br i1 %cmp4, label %if.end7.thread108, label %for.body.lr.ph, !dbg !656
 
-.thread11:                                        ; preds = %2, %4
-  %8 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 1235, i8* getelementptr inbounds ([81 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([41 x i8]* @.str11, i64 0, i64 0), i32 %this_timer) #7
-  br label %._crit_edge5
+if.end7.thread108:                                ; preds = %if.else, %lor.lhs.false
+  %call6 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 1235, i8* getelementptr inbounds ([69 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([41 x i8]* @.str11, i64 0, i64 0), i32 %this_timer) #8, !dbg !658
+  tail call void @llvm.dbg.value(metadata !660, i64 0, metadata !251), !dbg !661
+  tail call void @llvm.dbg.value(metadata !{i32 %this_timer}, i64 0, metadata !255), !dbg !662
+  tail call void @llvm.dbg.value(metadata !{i32 %firsttimer.0106}, i64 0, metadata !250), !dbg !663
+  br label %for.end64, !dbg !663
 
-; <label>:9                                       ; preds = %0
-  %10 = load i32* @n_timers, align 4, !tbaa !11
-  %11 = icmp sgt i32 %10, 0
-  br i1 %11, label %.lr.ph4, label %._crit_edge5
+if.end7:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !10, i64 0, metadata !254), !dbg !665
+  %1 = load i32* @n_timers, align 4, !dbg !667, !tbaa !359
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !255), !dbg !668
+  tail call void @llvm.dbg.value(metadata !{i32 %firsttimer.0106}, i64 0, metadata !250), !dbg !663
+  %cmp8101 = icmp sgt i32 %1, 0, !dbg !663
+  br i1 %cmp8101, label %for.body.lr.ph, label %for.end64, !dbg !663
 
-.lr.ph4:                                          ; preds = %4, %9
-  %lasttimer.010 = phi i32 [ %10, %9 ], [ %5, %4 ]
-  %firsttimer.09 = phi i32 [ 0, %9 ], [ %this_timer, %4 ]
-  %12 = icmp eq i32 %this_clock, -1
-  %13 = add nsw i32 %this_clock, 1
-  %14 = add i32 %lasttimer.010, -1
-  br label %15
+for.body.lr.ph:                                   ; preds = %lor.lhs.false, %if.end7
+  %lasttimer.0107 = phi i32 [ %1, %if.end7 ], [ %add, %lor.lhs.false ]
+  %firsttimer.0106 = phi i32 [ 0, %if.end7 ], [ %this_timer, %lor.lhs.false ]
+  %cmp13 = icmp eq i32 %this_clock, -1, !dbg !669
+  %add16 = add nsw i32 %this_clock, 1, !dbg !671
+  br label %for.body, !dbg !663
 
-; <label>:15                                      ; preds = %._crit_edge, %.lr.ph4
-  %timer.02 = phi i32 [ %firsttimer.09, %.lr.ph4 ], [ %63, %._crit_edge ]
-  %16 = tail call %struct.cTimerData* @CCTK_TimerCreateData() #8
-  %17 = tail call i32 @CCTK_TimerI(i32 %timer.02, %struct.cTimerData* %16) #8
-  %18 = load %struct.cHandledData** @timers, align 8, !tbaa !9
-  %19 = tail call i8* @Util_GetHandleName(%struct.cHandledData* %18, i32 %timer.02) #7
-  %20 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([26 x i8]* @.str12, i64 0, i64 0), i8* %19) #7
-  br i1 %12, label %21, label %.lr.ph
+for.body:                                         ; preds = %for.end, %for.body.lr.ph
+  %timer.0102 = phi i32 [ %firsttimer.0106, %for.body.lr.ph ], [ %inc63, %for.end ]
+  %call9 = tail call %struct.cTimerData* @CCTK_TimerCreateData() #10, !dbg !673
+  tail call void @llvm.dbg.value(metadata !{%struct.cTimerData* %call9}, i64 0, metadata !248), !dbg !673
+  %call10 = tail call i32 @CCTK_TimerI(i32 %timer.0102, %struct.cTimerData* %call9) #10, !dbg !674
+  tail call void @llvm.dbg.value(metadata !{i32 %timer.0102}, i64 0, metadata !675) #7, !dbg !677
+  %2 = load %struct.cHandledData** @timers, align 8, !dbg !678, !tbaa !355
+  %call.i = tail call i8* @Util_GetHandleName(%struct.cHandledData* %2, i32 %timer.0102) #8, !dbg !678
+  tail call void @llvm.dbg.value(metadata !{i8* %call.i}, i64 0, metadata !679) #7, !dbg !678
+  %call12 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([26 x i8]* @.str12, i64 0, i64 0), i8* %call.i) #8, !dbg !676
+  br i1 %cmp13, label %if.end17, label %for.body20.lr.ph, !dbg !669
 
-; <label>:21                                      ; preds = %15
-  %22 = getelementptr inbounds %struct.cTimerData* %16, i64 0, i32 0
-  %23 = load i32* %22, align 4, !tbaa !22
-  %24 = icmp sgt i32 %23, 0
-  br i1 %24, label %.lr.ph, label %._crit_edge
+if.end17:                                         ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !10, i64 0, metadata !252), !dbg !680
+  %n_vals = getelementptr inbounds %struct.cTimerData* %call9, i64 0, i32 0, !dbg !682
+  %3 = load i32* %n_vals, align 4, !dbg !682, !tbaa !359
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !253), !dbg !682
+  tail call void @llvm.dbg.value(metadata !{i32 %firstclock.0111}, i64 0, metadata !249), !dbg !683
+  %cmp1999 = icmp sgt i32 %3, 0, !dbg !683
+  br i1 %cmp1999, label %for.body20.lr.ph, label %for.end, !dbg !683
 
-.lr.ph:                                           ; preds = %15, %21
-  %lastclock.014 = phi i32 [ %23, %21 ], [ %13, %15 ]
-  %firstclock.013 = phi i32 [ 0, %21 ], [ %this_clock, %15 ]
-  %25 = getelementptr inbounds %struct.cTimerData* %16, i64 0, i32 1
-  %26 = sext i32 %firstclock.013 to i64
-  %27 = add i32 %lastclock.014, -1
-  br label %28
+for.body20.lr.ph:                                 ; preds = %for.body, %if.end17
+  %lastclock.0112 = phi i32 [ %3, %if.end17 ], [ %add16, %for.body ]
+  %firstclock.0111 = phi i32 [ 0, %if.end17 ], [ %this_clock, %for.body ]
+  %vals = getelementptr inbounds %struct.cTimerData* %call9, i64 0, i32 1, !dbg !685
+  %4 = sext i32 %firstclock.0111 to i64
+  br label %for.body20, !dbg !683
 
-; <label>:28                                      ; preds = %61, %.lr.ph
-  %indvars.iv = phi i64 [ %26, %.lr.ph ], [ %indvars.iv.next, %61 ]
-  %29 = load %struct.cTimerVal** %25, align 8, !tbaa !20
-  %30 = getelementptr inbounds %struct.cTimerVal* %29, i64 %indvars.iv, i32 0
-  %31 = load i32* %30, align 4, !tbaa !23
-  switch i32 %31, label %59 [
-    i32 1, label %32
-    i32 2, label %41
-    i32 3, label %50
-  ]
+for.body20:                                       ; preds = %for.body20.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ %4, %for.body20.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %5 = load %struct.cTimerVal** %vals, align 8, !dbg !685, !tbaa !355
+  %type = getelementptr inbounds %struct.cTimerVal* %5, i64 %indvars.iv, i32 0, !dbg !685
+  %6 = load i32* %type, align 4, !dbg !685, !tbaa !356
+  switch i32 %6, label %sw.default [
+    i32 1, label %sw.bb
+    i32 2, label %sw.bb32
+    i32 3, label %sw.bb46
+  ], !dbg !685
 
-; <label>:32                                      ; preds = %28
-  %33 = getelementptr inbounds %struct.cTimerVal* %29, i64 %indvars.iv, i32 1
-  %34 = load i8** %33, align 8, !tbaa !25
-  %35 = getelementptr inbounds %struct.cTimerVal* %29, i64 %indvars.iv, i32 3
-  %36 = bitcast %union.anon* %35 to i32*
-  %37 = load i32* %36, align 4, !tbaa !11
-  %38 = getelementptr inbounds %struct.cTimerVal* %29, i64 %indvars.iv, i32 2
-  %39 = load i8** %38, align 8, !tbaa !26
-  %40 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([12 x i8]* @.str13, i64 0, i64 0), i8* %34, i32 %37, i8* %39) #7
-  br label %61
+sw.bb:                                            ; preds = %for.body20
+  %heading = getelementptr inbounds %struct.cTimerVal* %5, i64 %indvars.iv, i32 1, !dbg !687
+  %7 = load i8** %heading, align 8, !dbg !687, !tbaa !355
+  %val = getelementptr inbounds %struct.cTimerVal* %5, i64 %indvars.iv, i32 3, !dbg !687
+  %i27 = bitcast %union.anon* %val to i32*, !dbg !687
+  %8 = load i32* %i27, align 4, !dbg !687, !tbaa !359
+  %units = getelementptr inbounds %struct.cTimerVal* %5, i64 %indvars.iv, i32 2, !dbg !687
+  %9 = load i8** %units, align 8, !dbg !687, !tbaa !355
+  %call31 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([12 x i8]* @.str13, i64 0, i64 0), i8* %7, i32 %8, i8* %9) #8, !dbg !687
+  br label %for.inc, !dbg !689
 
-; <label>:41                                      ; preds = %28
-  %42 = getelementptr inbounds %struct.cTimerVal* %29, i64 %indvars.iv, i32 1
-  %43 = load i8** %42, align 8, !tbaa !25
-  %44 = getelementptr inbounds %struct.cTimerVal* %29, i64 %indvars.iv, i32 3, i32 0
-  %45 = load i64* %44, align 8, !tbaa !27
-  %46 = trunc i64 %45 to i32
-  %47 = getelementptr inbounds %struct.cTimerVal* %29, i64 %indvars.iv, i32 2
-  %48 = load i8** %47, align 8, !tbaa !26
-  %49 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([12 x i8]* @.str13, i64 0, i64 0), i8* %43, i32 %46, i8* %48) #7
-  br label %61
+sw.bb32:                                          ; preds = %for.body20
+  %heading36 = getelementptr inbounds %struct.cTimerVal* %5, i64 %indvars.iv, i32 1, !dbg !690
+  %10 = load i8** %heading36, align 8, !dbg !690, !tbaa !355
+  %l = getelementptr inbounds %struct.cTimerVal* %5, i64 %indvars.iv, i32 3, i32 0, !dbg !690
+  %11 = load i64* %l, align 8, !dbg !690, !tbaa !691
+  %conv = trunc i64 %11 to i32, !dbg !690
+  %units44 = getelementptr inbounds %struct.cTimerVal* %5, i64 %indvars.iv, i32 2, !dbg !690
+  %12 = load i8** %units44, align 8, !dbg !690, !tbaa !355
+  %call45 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([12 x i8]* @.str13, i64 0, i64 0), i8* %10, i32 %conv, i8* %12) #8, !dbg !690
+  br label %for.inc, !dbg !692
 
-; <label>:50                                      ; preds = %28
-  %51 = getelementptr inbounds %struct.cTimerVal* %29, i64 %indvars.iv, i32 1
-  %52 = load i8** %51, align 8, !tbaa !25
-  %53 = getelementptr inbounds %struct.cTimerVal* %29, i64 %indvars.iv, i32 3
-  %54 = bitcast %union.anon* %53 to double*
-  %55 = load double* %54, align 8, !tbaa !29
-  %56 = getelementptr inbounds %struct.cTimerVal* %29, i64 %indvars.iv, i32 2
-  %57 = load i8** %56, align 8, !tbaa !26
-  %58 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([14 x i8]* @.str14, i64 0, i64 0), i8* %52, double %55, i8* %57) #7
-  br label %61
+sw.bb46:                                          ; preds = %for.body20
+  %heading50 = getelementptr inbounds %struct.cTimerVal* %5, i64 %indvars.iv, i32 1, !dbg !693
+  %13 = load i8** %heading50, align 8, !dbg !693, !tbaa !355
+  %val54 = getelementptr inbounds %struct.cTimerVal* %5, i64 %indvars.iv, i32 3, !dbg !693
+  %d = bitcast %union.anon* %val54 to double*, !dbg !693
+  %14 = load double* %d, align 8, !dbg !693, !tbaa !694
+  %units58 = getelementptr inbounds %struct.cTimerVal* %5, i64 %indvars.iv, i32 2, !dbg !693
+  %15 = load i8** %units58, align 8, !dbg !693, !tbaa !355
+  %call59 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([14 x i8]* @.str14, i64 0, i64 0), i8* %13, double %14, i8* %15) #8, !dbg !693
+  br label %for.inc, !dbg !695
 
-; <label>:59                                      ; preds = %28
-  %60 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 1280, i8* getelementptr inbounds ([81 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str15, i64 0, i64 0)) #7
-  br label %61
+sw.default:                                       ; preds = %for.body20
+  %call60 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 1280, i8* getelementptr inbounds ([69 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str15, i64 0, i64 0)) #8, !dbg !696
+  br label %for.inc, !dbg !697
 
-; <label>:61                                      ; preds = %32, %41, %50, %59
-  %indvars.iv.next = add nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %27
-  br i1 %exitcond, label %._crit_edge, label %28
+for.inc:                                          ; preds = %sw.bb, %sw.bb32, %sw.bb46, %sw.default
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !683
+  %16 = trunc i64 %indvars.iv.next to i32, !dbg !683
+  %cmp19 = icmp slt i32 %16, %lastclock.0112, !dbg !683
+  br i1 %cmp19, label %for.body20, label %for.end, !dbg !683
 
-._crit_edge:                                      ; preds = %61, %21
-  %62 = tail call i32 @CCTK_TimerDestroyData(%struct.cTimerData* %16) #8
-  %63 = add nsw i32 %timer.02, 1
-  %exitcond6 = icmp eq i32 %timer.02, %14
-  br i1 %exitcond6, label %._crit_edge5, label %15
+for.end:                                          ; preds = %for.inc, %if.end17
+  %call61 = tail call i32 @CCTK_TimerDestroyData(%struct.cTimerData* %call9) #10, !dbg !698
+  %inc63 = add nsw i32 %timer.0102, 1, !dbg !663
+  tail call void @llvm.dbg.value(metadata !{i32 %inc63}, i64 0, metadata !250), !dbg !663
+  %exitcond = icmp eq i32 %inc63, %lasttimer.0107, !dbg !663
+  br i1 %exitcond, label %for.end64, label %for.body, !dbg !663
 
-._crit_edge5:                                     ; preds = %._crit_edge, %.thread11, %9
-  %retval.07 = phi i32 [ 0, %9 ], [ -1, %.thread11 ], [ 0, %._crit_edge ]
-  ret i32 %retval.07
+for.end64:                                        ; preds = %for.end, %if.end7.thread108, %if.end7
+  %retval1.0104 = phi i32 [ 0, %if.end7 ], [ -1, %if.end7.thread108 ], [ 0, %for.end ]
+  ret i32 %retval1.0104, !dbg !699
 }

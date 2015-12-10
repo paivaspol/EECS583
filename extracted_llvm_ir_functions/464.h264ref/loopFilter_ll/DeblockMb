@@ -4,251 +4,287 @@ entry:
   %mb_x = alloca i32, align 4
   %mb_y = alloca i32, align 4
   %filterNon8x8LumaEdgesFlag = alloca [4 x i32], align 16
-  %0 = bitcast [4 x i32]* %filterNon8x8LumaEdgesFlag to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* bitcast ([4 x i32]* @DeblockMb.filterNon8x8LumaEdgesFlag to i8*), i64 16, i32 16, i1 false)
-  %DeblockCall = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 143
-  store i32 1, i32* %DeblockCall, align 4, !tbaa !0
-  call void @get_mb_pos(i32 %MbQAddr, i32* %mb_x, i32* %mb_y) #4
-  %1 = load i32* %mb_x, align 4, !tbaa !0
-  %cmp = icmp ne i32 %1, 0
-  %conv = zext i1 %cmp to i32
-  %2 = load i32* %mb_y, align 4, !tbaa !0
-  %cmp1 = icmp ne i32 %2, 0
-  %conv2 = zext i1 %cmp1 to i32
-  %idxprom = sext i32 %MbQAddr to i64
-  %mb_data = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 51
-  %3 = load %struct.macroblock** %mb_data, align 8, !tbaa !3
-  %luma_transform_size_8x8_flag = getelementptr inbounds %struct.macroblock* %3, i64 %idxprom, i32 32
-  %4 = load i32* %luma_transform_size_8x8_flag, align 4, !tbaa !0
-  %lnot = icmp eq i32 %4, 0
-  %lnot.ext = zext i1 %lnot to i32
-  %arrayidx5 = getelementptr inbounds [4 x i32]* %filterNon8x8LumaEdgesFlag, i64 0, i64 3
-  store i32 %lnot.ext, i32* %arrayidx5, align 4, !tbaa !0
-  %arrayidx6 = getelementptr inbounds [4 x i32]* %filterNon8x8LumaEdgesFlag, i64 0, i64 1
-  store i32 %lnot.ext, i32* %arrayidx6, align 4, !tbaa !0
-  %MbaffFrameFlag = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 90
-  %5 = load i32* %MbaffFrameFlag, align 4, !tbaa !0
-  %tobool7 = icmp eq i32 %5, 0
-  %tobool7.not = xor i1 %tobool7, true
-  %cmp8 = icmp eq i32 %2, 16
-  %or.cond263 = and i1 %cmp8, %tobool7.not
-  br i1 %or.cond263, label %land.lhs.true10, label %if.end13
+  call void @llvm.dbg.value(metadata !{%struct.ImageParameters* %img}, i64 0, metadata !514), !dbg !982
+  call void @llvm.dbg.value(metadata !{i16** %imgY}, i64 0, metadata !515), !dbg !982
+  call void @llvm.dbg.value(metadata !{i16*** %imgUV}, i64 0, metadata !516), !dbg !982
+  call void @llvm.dbg.value(metadata !{i32 %MbQAddr}, i64 0, metadata !517), !dbg !982
+  call void @llvm.dbg.declare(metadata !{[16 x i8]* %Strength}, metadata !521), !dbg !983
+  call void @llvm.dbg.declare(metadata !{i32* %mb_x}, metadata !523), !dbg !984
+  call void @llvm.dbg.declare(metadata !{i32* %mb_y}, metadata !524), !dbg !984
+  call void @llvm.dbg.declare(metadata !{[4 x i32]* %filterNon8x8LumaEdgesFlag}, metadata !525), !dbg !985
+  %0 = bitcast [4 x i32]* %filterNon8x8LumaEdgesFlag to i8*, !dbg !985
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* bitcast ([4 x i32]* @DeblockMb.filterNon8x8LumaEdgesFlag to i8*), i64 16, i32 16, i1 false), !dbg !985
+  call void @llvm.dbg.value(metadata !986, i64 0, metadata !529), !dbg !987
+  %DeblockCall = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 143, !dbg !988
+  store i32 1, i32* %DeblockCall, align 4, !dbg !988, !tbaa !976
+  call void @get_mb_pos(i32 %MbQAddr, i32* %mb_x, i32* %mb_y) #6, !dbg !989
+  call void @llvm.dbg.value(metadata !{i32* %mb_x}, i64 0, metadata !523), !dbg !990
+  %1 = load i32* %mb_x, align 4, !dbg !990, !tbaa !976
+  %cmp = icmp ne i32 %1, 0, !dbg !990
+  %conv = zext i1 %cmp to i32, !dbg !990
+  call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !526), !dbg !990
+  call void @llvm.dbg.value(metadata !{i32* %mb_y}, i64 0, metadata !524), !dbg !991
+  %2 = load i32* %mb_y, align 4, !dbg !991, !tbaa !976
+  %cmp1 = icmp ne i32 %2, 0, !dbg !991
+  %conv2 = zext i1 %cmp1 to i32, !dbg !991
+  call void @llvm.dbg.value(metadata !{i32 %conv2}, i64 0, metadata !527), !dbg !991
+  %idxprom = sext i32 %MbQAddr to i64, !dbg !992
+  %mb_data = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 51, !dbg !992
+  %3 = load %struct.macroblock** %mb_data, align 8, !dbg !992, !tbaa !993
+  %mb_type = getelementptr inbounds %struct.macroblock* %3, i64 %idxprom, i32 8, !dbg !994
+  %4 = load i32* %mb_type, align 4, !dbg !994, !tbaa !976
+  %cmp3 = icmp eq i32 %4, 13, !dbg !994
+  %luma_transform_size_8x8_flag = getelementptr inbounds %struct.macroblock* %3, i64 %idxprom, i32 32, !dbg !995
+  %5 = load i32* %luma_transform_size_8x8_flag, align 4, !dbg !995, !tbaa !976
+  %tobool = icmp eq i32 %5, 0, !dbg !995
+  %or.cond266 = and i1 %cmp3, %tobool, !dbg !994
+  br i1 %or.cond266, label %cond.false, label %if.end, !dbg !994
 
-land.lhs.true10:                                  ; preds = %entry
-  %mb_field = getelementptr inbounds %struct.macroblock* %3, i64 %idxprom, i32 22
-  %6 = load i32* %mb_field, align 4, !tbaa !0
-  %tobool11 = icmp eq i32 %6, 0
-  %conv2. = select i1 %tobool11, i32 %conv2, i32 0
-  br label %if.end13
+cond.false:                                       ; preds = %entry
+  call void @__assert_fail(i8* getelementptr inbounds ([34 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([58 x i8]* @.str1, i64 0, i64 0), i32 121, i8* getelementptr inbounds ([78 x i8]* @__PRETTY_FUNCTION__.DeblockMb, i64 0, i64 0)) #7, !dbg !995
+  unreachable, !dbg !995
 
-if.end13:                                         ; preds = %entry, %land.lhs.true10
-  %filterTopMbEdgeFlag.0 = phi i32 [ %conv2, %entry ], [ %conv2., %land.lhs.true10 ]
-  %structure = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 7
-  %7 = load i32* %structure, align 4, !tbaa !0
-  %cmp14.not = icmp ne i32 %7, 0
-  %brmerge264 = or i1 %cmp14.not, %tobool7
-  %.mux = select i1 %cmp14.not, i32 2, i32 4
-  br i1 %brmerge264, label %lor.end, label %land.rhs
+if.end:                                           ; preds = %entry
+  %lnot = icmp eq i32 %5, 0, !dbg !996
+  %lnot.ext = zext i1 %lnot to i32, !dbg !996
+  %arrayidx7 = getelementptr inbounds [4 x i32]* %filterNon8x8LumaEdgesFlag, i64 0, i64 3, !dbg !996
+  store i32 %lnot.ext, i32* %arrayidx7, align 4, !dbg !996, !tbaa !976
+  %arrayidx8 = getelementptr inbounds [4 x i32]* %filterNon8x8LumaEdgesFlag, i64 0, i64 1, !dbg !996
+  store i32 %lnot.ext, i32* %arrayidx8, align 4, !dbg !996, !tbaa !976
+  %MbaffFrameFlag = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 90, !dbg !997
+  %6 = load i32* %MbaffFrameFlag, align 4, !dbg !997, !tbaa !976
+  %tobool9 = icmp eq i32 %6, 0, !dbg !997
+  %tobool9.not = xor i1 %tobool9, true, !dbg !997
+  %cmp10 = icmp eq i32 %2, 16, !dbg !997
+  %or.cond267 = and i1 %cmp10, %tobool9.not, !dbg !997
+  call void @llvm.dbg.value(metadata !{i32* %mb_y}, i64 0, metadata !524), !dbg !997
+  br i1 %or.cond267, label %land.lhs.true12, label %if.end15, !dbg !997
 
-land.rhs:                                         ; preds = %if.end13
-  %mb_field18 = getelementptr inbounds %struct.macroblock* %3, i64 %idxprom, i32 22
-  %8 = load i32* %mb_field18, align 4, !tbaa !0
-  %tobool19 = icmp ne i32 %8, 0
-  %phitmp = select i1 %tobool19, i32 2, i32 4
+land.lhs.true12:                                  ; preds = %if.end
+  %mb_field = getelementptr inbounds %struct.macroblock* %3, i64 %idxprom, i32 22, !dbg !997
+  %7 = load i32* %mb_field, align 4, !dbg !997, !tbaa !976
+  %tobool13 = icmp eq i32 %7, 0, !dbg !997
+  call void @llvm.dbg.value(metadata !21, i64 0, metadata !527), !dbg !998
+  %conv2. = select i1 %tobool13, i32 %conv2, i32 0, !dbg !997
+  br label %if.end15, !dbg !997
+
+if.end15:                                         ; preds = %if.end, %land.lhs.true12
+  %filterTopMbEdgeFlag.0 = phi i32 [ %conv2, %if.end ], [ %conv2., %land.lhs.true12 ]
+  %structure = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 7, !dbg !999
+  %8 = load i32* %structure, align 4, !dbg !999, !tbaa !976
+  %cmp16.not = icmp ne i32 %8, 0, !dbg !999
+  %brmerge268 = or i1 %cmp16.not, %tobool9, !dbg !999
+  %.mux = select i1 %cmp16.not, i32 2, i32 4, !dbg !999
+  br i1 %brmerge268, label %lor.end, label %land.rhs, !dbg !999
+
+land.rhs:                                         ; preds = %if.end15
+  %mb_field20 = getelementptr inbounds %struct.macroblock* %3, i64 %idxprom, i32 22, !dbg !999
+  %9 = load i32* %mb_field20, align 4, !dbg !999, !tbaa !976
+  %tobool21 = icmp ne i32 %9, 0, !dbg !999
+  %phitmp = select i1 %tobool21, i32 2, i32 4
   br label %lor.end
 
-lor.end:                                          ; preds = %if.end13, %land.rhs
-  %9 = phi i32 [ %.mux, %if.end13 ], [ %phitmp, %land.rhs ]
-  %LFDisableIdc = getelementptr inbounds %struct.macroblock* %3, i64 %idxprom, i32 41
-  %10 = load i32* %LFDisableIdc, align 4, !tbaa !0
-  switch i32 %10, label %if.end41 [
+lor.end:                                          ; preds = %if.end15, %land.rhs
+  %10 = phi i32 [ %.mux, %if.end15 ], [ %phitmp, %land.rhs ]
+  call void @llvm.dbg.value(metadata !1000, i64 0, metadata !529), !dbg !1001
+  %LFDisableIdc = getelementptr inbounds %struct.macroblock* %3, i64 %idxprom, i32 41, !dbg !1002
+  %11 = load i32* %LFDisableIdc, align 4, !dbg !1002, !tbaa !976
+  switch i32 %11, label %if.end43 [
     i32 1, label %return
-    i32 2, label %if.then31
-  ]
+    i32 2, label %if.then33
+  ], !dbg !1002
 
-if.then31:                                        ; preds = %lor.end
-  %mbAvailA = getelementptr inbounds %struct.macroblock* %3, i64 %idxprom, i32 27
-  %11 = load i32* %mbAvailA, align 4, !tbaa !0
-  br i1 %tobool7, label %if.else, label %land.lhs.true34
+if.then33:                                        ; preds = %lor.end
+  %mbAvailA = getelementptr inbounds %struct.macroblock* %3, i64 %idxprom, i32 27, !dbg !1003
+  %12 = load i32* %mbAvailA, align 4, !dbg !1003, !tbaa !976
+  call void @llvm.dbg.value(metadata !{i32 %12}, i64 0, metadata !526), !dbg !1003
+  br i1 %tobool9, label %if.else, label %land.lhs.true36, !dbg !1005
 
-land.lhs.true34:                                  ; preds = %if.then31
-  %mb_field35 = getelementptr inbounds %struct.macroblock* %3, i64 %idxprom, i32 22
-  %12 = load i32* %mb_field35, align 4, !tbaa !0
-  %tobool36 = icmp eq i32 %12, 0
-  br i1 %tobool36, label %land.lhs.true37, label %if.else
+land.lhs.true36:                                  ; preds = %if.then33
+  %mb_field37 = getelementptr inbounds %struct.macroblock* %3, i64 %idxprom, i32 22, !dbg !1005
+  %13 = load i32* %mb_field37, align 4, !dbg !1005, !tbaa !976
+  %tobool38 = icmp eq i32 %13, 0, !dbg !1005
+  br i1 %tobool38, label %land.lhs.true39, label %if.else, !dbg !1005
 
-land.lhs.true37:                                  ; preds = %land.lhs.true34
-  %rem245 = and i32 %MbQAddr, 1
-  %tobool38 = icmp eq i32 %rem245, 0
-  br i1 %tobool38, label %if.else, label %if.end41
+land.lhs.true39:                                  ; preds = %land.lhs.true36
+  %rem248 = and i32 %MbQAddr, 1, !dbg !1005
+  %tobool40 = icmp eq i32 %rem248, 0, !dbg !1005
+  br i1 %tobool40, label %if.else, label %if.end43, !dbg !1005
 
-if.else:                                          ; preds = %land.lhs.true37, %land.lhs.true34, %if.then31
-  %mbAvailB = getelementptr inbounds %struct.macroblock* %3, i64 %idxprom, i32 28
-  %13 = load i32* %mbAvailB, align 4, !tbaa !0
-  br label %if.end41
+if.else:                                          ; preds = %land.lhs.true39, %land.lhs.true36, %if.then33
+  %mbAvailB = getelementptr inbounds %struct.macroblock* %3, i64 %idxprom, i32 28, !dbg !1006
+  %14 = load i32* %mbAvailB, align 4, !dbg !1006, !tbaa !976
+  call void @llvm.dbg.value(metadata !{i32 %14}, i64 0, metadata !527), !dbg !1006
+  br label %if.end43
 
-if.end41:                                         ; preds = %land.lhs.true37, %lor.end, %if.else
-  %filterTopMbEdgeFlag.1 = phi i32 [ %13, %if.else ], [ %filterTopMbEdgeFlag.0, %lor.end ], [ 1, %land.lhs.true37 ]
-  %filterLeftMbEdgeFlag.0 = phi i32 [ %11, %if.else ], [ %conv, %lor.end ], [ %11, %land.lhs.true37 ]
-  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 3
-  store i32 %MbQAddr, i32* %current_mb_nr, align 4, !tbaa !0
-  call void (...)* @CheckAvailabilityOfNeighbors() #4
-  %tobool46 = icmp eq i32 %filterTopMbEdgeFlag.1, 0
-  %tobool50 = icmp ne i32 %filterLeftMbEdgeFlag.0, 0
-  %yuv_format = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 159
-  %arraydecay = getelementptr inbounds [16 x i8]* %Strength, i64 0, i64 0
-  %mb_field106 = getelementptr inbounds %struct.macroblock* %3, i64 %idxprom, i32 22
-  %14 = bitcast [16 x i8]* %Strength to i32*
-  %cmp126 = icmp ne i16*** %imgUV, null
-  %LFAlphaC0Offset134 = getelementptr inbounds %struct.macroblock* %3, i64 %idxprom, i32 42
-  %LFBetaOffset135 = getelementptr inbounds %struct.macroblock* %3, i64 %idxprom, i32 43
-  %width_cr136 = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 14
-  %arrayidx137 = getelementptr inbounds i16*** %imgUV, i64 1
-  %width124 = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 13
-  br label %for.body
+if.end43:                                         ; preds = %land.lhs.true39, %lor.end, %if.else
+  %filterTopMbEdgeFlag.1 = phi i32 [ %14, %if.else ], [ %filterTopMbEdgeFlag.0, %lor.end ], [ 1, %land.lhs.true39 ]
+  %filterLeftMbEdgeFlag.0 = phi i32 [ %12, %if.else ], [ %conv, %lor.end ], [ %12, %land.lhs.true39 ]
+  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 3, !dbg !1007
+  store i32 %MbQAddr, i32* %current_mb_nr, align 4, !dbg !1007, !tbaa !976
+  call void (...)* @CheckAvailabilityOfNeighbors() #6, !dbg !1008
+  call void @llvm.dbg.value(metadata !21, i64 0, metadata !519), !dbg !1009
+  %tobool48 = icmp eq i32 %filterTopMbEdgeFlag.1, 0, !dbg !1011
+  %tobool52 = icmp ne i32 %filterLeftMbEdgeFlag.0, 0, !dbg !1011
+  %yuv_format = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 159, !dbg !1013
+  %arraydecay = getelementptr inbounds [16 x i8]* %Strength, i64 0, i64 0, !dbg !1017
+  %mb_field108 = getelementptr inbounds %struct.macroblock* %3, i64 %idxprom, i32 22, !dbg !1018
+  %15 = bitcast [16 x i8]* %Strength to i32*, !dbg !1019
+  %cmp128 = icmp ne i16*** %imgUV, null, !dbg !1021
+  %LFAlphaC0Offset136 = getelementptr inbounds %struct.macroblock* %3, i64 %idxprom, i32 42, !dbg !1023
+  %LFBetaOffset137 = getelementptr inbounds %struct.macroblock* %3, i64 %idxprom, i32 43, !dbg !1023
+  %width_cr138 = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 14, !dbg !1023
+  %arrayidx139 = getelementptr inbounds i16*** %imgUV, i64 1, !dbg !1025
+  %width126 = getelementptr inbounds %struct.ImageParameters* %img, i64 0, i32 13, !dbg !1026
+  br label %for.body, !dbg !1009
 
-for.body:                                         ; preds = %for.inc150, %if.end41
-  %indvars.iv259 = phi i64 [ 0, %if.end41 ], [ %indvars.iv.next260, %for.inc150 ]
-  %15 = trunc i64 %indvars.iv259 to i32
-  %tobool44.not = icmp eq i32 %15, 0
-  %or.cond = or i1 %tobool46, %tobool44.not
-  %.tobool50 = and i1 %tobool50, %tobool44.not
-  %not.or.cond = xor i1 %or.cond, true
-  %.tobool50. = or i1 %.tobool50, %not.or.cond
-  br label %for.body57
+for.body:                                         ; preds = %for.inc152, %if.end43
+  %indvars.iv262 = phi i64 [ 0, %if.end43 ], [ %indvars.iv.next263, %for.inc152 ]
+  %16 = trunc i64 %indvars.iv262 to i32, !dbg !1011
+  %tobool46.not = icmp eq i32 %16, 0, !dbg !1011
+  %or.cond = or i1 %tobool48, %tobool46.not, !dbg !1011
+  %.tobool52 = and i1 %tobool52, %tobool46.not, !dbg !1011
+  %not.or.cond = xor i1 %or.cond, true, !dbg !1011
+  %.tobool52. = or i1 %.tobool52, %not.or.cond, !dbg !1011
+  call void @llvm.dbg.value(metadata !21, i64 0, metadata !520), !dbg !1027
+  br label %for.body59, !dbg !1027
 
-for.body57:                                       ; preds = %for.inc147, %for.body
-  %indvars.iv255 = phi i64 [ 0, %for.body ], [ %indvars.iv.next256, %for.inc147 ]
-  %16 = trunc i64 %indvars.iv255 to i32
-  %tobool58 = icmp ne i32 %16, 0
-  %brmerge = or i1 %tobool58, %.tobool50.
-  br i1 %brmerge, label %if.then60, label %for.inc147
+for.body59:                                       ; preds = %for.inc149, %for.body
+  %indvars.iv258 = phi i64 [ 0, %for.body ], [ %indvars.iv.next259, %for.inc149 ]
+  %17 = trunc i64 %indvars.iv258 to i32, !dbg !1028
+  %tobool60 = icmp ne i32 %17, 0, !dbg !1028
+  %brmerge = or i1 %tobool60, %.tobool52., !dbg !1028
+  br i1 %brmerge, label %if.then62, label %for.inc149, !dbg !1028
 
-if.then60:                                        ; preds = %for.body57
-  %17 = load i32* %yuv_format, align 4, !tbaa !0
-  %idxprom61 = sext i32 %17 to i64
-  %arrayidx66 = getelementptr inbounds [2 x [4 x [4 x i8]]]* @chroma_edge, i64 0, i64 %indvars.iv259, i64 %indvars.iv255, i64 %idxprom61
-  %18 = load i8* %arrayidx66, align 1, !tbaa !1
-  call void @GetStrength(i8* %arraydecay, %struct.ImageParameters* %img, i32 %MbQAddr, i32 %15, i32 %16, i32 %9) #3
-  %19 = load i8* %arraydecay, align 16, !tbaa !1
-  %conv69 = zext i8 %19 to i32
-  br label %for.body73
+if.then62:                                        ; preds = %for.body59
+  %18 = load i32* %yuv_format, align 4, !dbg !1013, !tbaa !976
+  %idxprom63 = sext i32 %18 to i64, !dbg !1013
+  %arrayidx68 = getelementptr inbounds [2 x [4 x [4 x i8]]]* @chroma_edge, i64 0, i64 %indvars.iv262, i64 %indvars.iv258, i64 %idxprom63, !dbg !1013
+  %19 = load i8* %arrayidx68, align 1, !dbg !1013, !tbaa !977
+  call void @llvm.dbg.value(metadata !{i32 %conv69}, i64 0, metadata !533), !dbg !1013
+  call void @GetStrength(i8* %arraydecay, %struct.ImageParameters* %img, i32 %MbQAddr, i32 %16, i32 %17, i32 %10) #5, !dbg !1017
+  %20 = load i8* %arraydecay, align 16, !dbg !1029, !tbaa !977
+  %conv71 = zext i8 %20 to i32, !dbg !1029
+  call void @llvm.dbg.value(metadata !{i32 %conv71}, i64 0, metadata !531), !dbg !1029
+  call void @llvm.dbg.value(metadata !1030, i64 0, metadata !530), !dbg !1031
+  br label %for.body75, !dbg !1031
 
-for.body73:                                       ; preds = %for.body73, %if.then60
-  %indvars.iv = phi i64 [ 1, %if.then60 ], [ %indvars.iv.next, %for.body73 ]
-  %StrengthSum.0252 = phi i32 [ %conv69, %if.then60 ], [ %add, %for.body73 ]
-  %arrayidx75 = getelementptr inbounds [16 x i8]* %Strength, i64 0, i64 %indvars.iv
-  %20 = load i8* %arrayidx75, align 1, !tbaa !1
-  %conv76 = zext i8 %20 to i32
-  %add = add nsw i32 %conv76, %StrengthSum.0252
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 16
-  br i1 %exitcond, label %for.end, label %for.body73
+for.body75:                                       ; preds = %for.body75, %if.then62
+  %indvars.iv = phi i64 [ 1, %if.then62 ], [ %indvars.iv.next, %for.body75 ]
+  %StrengthSum.0255 = phi i32 [ %conv71, %if.then62 ], [ %add, %for.body75 ]
+  %arrayidx77 = getelementptr inbounds [16 x i8]* %Strength, i64 0, i64 %indvars.iv, !dbg !1031
+  %21 = load i8* %arrayidx77, align 1, !dbg !1031, !tbaa !977
+  %conv78 = zext i8 %21 to i32, !dbg !1031
+  %add = add nsw i32 %conv78, %StrengthSum.0255, !dbg !1031
+  call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !531), !dbg !1031
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1031
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1031
+  %exitcond = icmp eq i32 %lftr.wideiv, 16, !dbg !1031
+  br i1 %exitcond, label %for.end, label %for.body75, !dbg !1031
 
-for.end:                                          ; preds = %for.body73
-  %conv67 = sext i8 %18 to i32
-  %tobool77 = icmp eq i32 %add, 0
-  br i1 %tobool77, label %if.end101, label %if.then78
+for.end:                                          ; preds = %for.body75
+  %conv69 = sext i8 %19 to i32, !dbg !1013
+  %tobool79 = icmp eq i32 %add, 0, !dbg !1033
+  br i1 %tobool79, label %if.end103, label %if.then80, !dbg !1033
 
-if.then78:                                        ; preds = %for.end
-  %arrayidx80 = getelementptr inbounds [4 x i32]* %filterNon8x8LumaEdgesFlag, i64 0, i64 %indvars.iv255
-  %21 = load i32* %arrayidx80, align 4, !tbaa !0
-  %tobool81 = icmp eq i32 %21, 0
-  br i1 %tobool81, label %if.end84, label %if.then82
+if.then80:                                        ; preds = %for.end
+  %arrayidx82 = getelementptr inbounds [4 x i32]* %filterNon8x8LumaEdgesFlag, i64 0, i64 %indvars.iv258, !dbg !1034
+  %22 = load i32* %arrayidx82, align 4, !dbg !1034, !tbaa !976
+  %tobool83 = icmp eq i32 %22, 0, !dbg !1034
+  br i1 %tobool83, label %if.end86, label %if.then84, !dbg !1034
 
-if.then82:                                        ; preds = %if.then78
-  %22 = load i32* %LFAlphaC0Offset134, align 4, !tbaa !0
-  %23 = load i32* %LFBetaOffset135, align 4, !tbaa !0
-  %24 = load i32* %width124, align 4, !tbaa !0
-  call void @EdgeLoop(i16** %imgY, i8* %arraydecay, %struct.ImageParameters* %img, i32 %MbQAddr, i32 %22, i32 %23, i32 %15, i32 %16, i32 %24, i32 0, i32 0) #3
-  br label %if.end84
+if.then84:                                        ; preds = %if.then80
+  %23 = load i32* %LFAlphaC0Offset136, align 4, !dbg !1036, !tbaa !976
+  %24 = load i32* %LFBetaOffset137, align 4, !dbg !1036, !tbaa !976
+  %25 = load i32* %width126, align 4, !dbg !1036, !tbaa !976
+  call void @EdgeLoop(i16** %imgY, i8* %arraydecay, %struct.ImageParameters* %img, i32 %MbQAddr, i32 %23, i32 %24, i32 %16, i32 %17, i32 %25, i32 0, i32 0) #5, !dbg !1036
+  br label %if.end86, !dbg !1036
 
-if.end84:                                         ; preds = %if.then78, %if.then82
-  %cmp88 = icmp sgt i8 %18, -1
-  %or.cond246 = and i1 %cmp126, %cmp88
-  br i1 %or.cond246, label %if.then90, label %if.end101
+if.end86:                                         ; preds = %if.then80, %if.then84
+  %cmp90 = icmp sgt i8 %19, -1, !dbg !1037
+  %or.cond249 = and i1 %cmp128, %cmp90, !dbg !1037
+  br i1 %or.cond249, label %if.then92, label %if.end103, !dbg !1037
 
-if.then90:                                        ; preds = %if.end84
-  %25 = load i16*** %imgUV, align 8, !tbaa !3
-  %26 = load i32* %LFAlphaC0Offset134, align 4, !tbaa !0
-  %27 = load i32* %LFBetaOffset135, align 4, !tbaa !0
-  %28 = load i32* %width_cr136, align 4, !tbaa !0
-  call void @EdgeLoop(i16** %25, i8* %arraydecay, %struct.ImageParameters* %img, i32 %MbQAddr, i32 %26, i32 %27, i32 %15, i32 %conv67, i32 %28, i32 1, i32 0) #3
-  %29 = load i16*** %arrayidx137, align 8, !tbaa !3
-  %30 = load i32* %LFAlphaC0Offset134, align 4, !tbaa !0
-  %31 = load i32* %LFBetaOffset135, align 4, !tbaa !0
-  %32 = load i32* %width_cr136, align 4, !tbaa !0
-  call void @EdgeLoop(i16** %29, i8* %arraydecay, %struct.ImageParameters* %img, i32 %MbQAddr, i32 %30, i32 %31, i32 %15, i32 %conv67, i32 %32, i32 1, i32 1) #3
-  br label %if.end101
+if.then92:                                        ; preds = %if.end86
+  %26 = load i16*** %imgUV, align 8, !dbg !1038, !tbaa !993
+  %27 = load i32* %LFAlphaC0Offset136, align 4, !dbg !1038, !tbaa !976
+  %28 = load i32* %LFBetaOffset137, align 4, !dbg !1038, !tbaa !976
+  %29 = load i32* %width_cr138, align 4, !dbg !1038, !tbaa !976
+  call void @EdgeLoop(i16** %26, i8* %arraydecay, %struct.ImageParameters* %img, i32 %MbQAddr, i32 %27, i32 %28, i32 %16, i32 %conv69, i32 %29, i32 1, i32 0) #5, !dbg !1038
+  %30 = load i16*** %arrayidx139, align 8, !dbg !1040, !tbaa !993
+  %31 = load i32* %LFAlphaC0Offset136, align 4, !dbg !1040, !tbaa !976
+  %32 = load i32* %LFBetaOffset137, align 4, !dbg !1040, !tbaa !976
+  %33 = load i32* %width_cr138, align 4, !dbg !1040, !tbaa !976
+  call void @EdgeLoop(i16** %30, i8* %arraydecay, %struct.ImageParameters* %img, i32 %MbQAddr, i32 %31, i32 %32, i32 %16, i32 %conv69, i32 %33, i32 1, i32 1) #5, !dbg !1040
+  br label %if.end103, !dbg !1041
 
-if.end101:                                        ; preds = %if.end84, %for.end, %if.then90
-  %brmerge248 = or i1 %tobool58, %tobool44.not
-  br i1 %brmerge248, label %for.inc147, label %land.lhs.true105
+if.end103:                                        ; preds = %if.end86, %for.end, %if.then92
+  %brmerge251 = or i1 %tobool60, %tobool46.not, !dbg !1018
+  br i1 %brmerge251, label %for.inc149, label %land.lhs.true107, !dbg !1018
 
-land.lhs.true105:                                 ; preds = %if.end101
-  %33 = load i32* %mb_field106, align 4, !tbaa !0
-  %tobool107 = icmp ne i32 %33, 0
-  %34 = load i8* @mixedModeEdgeFlag, align 1, !tbaa !1
-  %tobool110 = icmp eq i8 %34, 0
-  %or.cond249 = or i1 %tobool107, %tobool110
-  br i1 %or.cond249, label %for.inc147, label %if.then111
+land.lhs.true107:                                 ; preds = %if.end103
+  %34 = load i32* %mb_field108, align 4, !dbg !1018, !tbaa !976
+  %tobool109 = icmp ne i32 %34, 0, !dbg !1018
+  %35 = load i8* @mixedModeEdgeFlag, align 1, !dbg !1018, !tbaa !977
+  %tobool112 = icmp eq i8 %35, 0, !dbg !1018
+  %or.cond252 = or i1 %tobool109, %tobool112, !dbg !1018
+  br i1 %or.cond252, label %for.inc149, label %if.then113, !dbg !1018
 
-if.then111:                                       ; preds = %land.lhs.true105
-  store i32 2, i32* %DeblockCall, align 4, !tbaa !0
-  call void @GetStrength(i8* %arraydecay, %struct.ImageParameters* %img, i32 %MbQAddr, i32 %15, i32 4, i32 %9) #3
-  %35 = load i32* %14, align 16, !tbaa !0
-  %tobool115 = icmp eq i32 %35, 0
-  br i1 %tobool115, label %if.end143, label %if.then116
+if.then113:                                       ; preds = %land.lhs.true107
+  store i32 2, i32* %DeblockCall, align 4, !dbg !1042, !tbaa !976
+  call void @GetStrength(i8* %arraydecay, %struct.ImageParameters* %img, i32 %MbQAddr, i32 %16, i32 4, i32 %10) #5, !dbg !1043
+  %36 = load i32* %15, align 16, !dbg !1019, !tbaa !976
+  %tobool117 = icmp eq i32 %36, 0, !dbg !1019
+  br i1 %tobool117, label %if.end145, label %if.then118, !dbg !1019
 
-if.then116:                                       ; preds = %if.then111
-  %arrayidx118 = getelementptr inbounds [4 x i32]* %filterNon8x8LumaEdgesFlag, i64 0, i64 %indvars.iv255
-  %36 = load i32* %arrayidx118, align 4, !tbaa !0
-  %tobool119 = icmp eq i32 %36, 0
-  br i1 %tobool119, label %if.end125, label %if.then120
+if.then118:                                       ; preds = %if.then113
+  %arrayidx120 = getelementptr inbounds [4 x i32]* %filterNon8x8LumaEdgesFlag, i64 0, i64 %indvars.iv258, !dbg !1044
+  %37 = load i32* %arrayidx120, align 4, !dbg !1044, !tbaa !976
+  %tobool121 = icmp eq i32 %37, 0, !dbg !1044
+  br i1 %tobool121, label %if.end127, label %if.then122, !dbg !1044
 
-if.then120:                                       ; preds = %if.then116
-  %37 = load i32* %LFAlphaC0Offset134, align 4, !tbaa !0
-  %38 = load i32* %LFBetaOffset135, align 4, !tbaa !0
-  %39 = load i32* %width124, align 4, !tbaa !0
-  call void @EdgeLoop(i16** %imgY, i8* %arraydecay, %struct.ImageParameters* %img, i32 %MbQAddr, i32 %37, i32 %38, i32 %15, i32 4, i32 %39, i32 0, i32 0) #3
-  br label %if.end125
+if.then122:                                       ; preds = %if.then118
+  %38 = load i32* %LFAlphaC0Offset136, align 4, !dbg !1026, !tbaa !976
+  %39 = load i32* %LFBetaOffset137, align 4, !dbg !1026, !tbaa !976
+  %40 = load i32* %width126, align 4, !dbg !1026, !tbaa !976
+  call void @EdgeLoop(i16** %imgY, i8* %arraydecay, %struct.ImageParameters* %img, i32 %MbQAddr, i32 %38, i32 %39, i32 %16, i32 4, i32 %40, i32 0, i32 0) #5, !dbg !1026
+  br label %if.end127, !dbg !1026
 
-if.end125:                                        ; preds = %if.then116, %if.then120
-  %cmp129 = icmp sgt i8 %18, -1
-  %or.cond250 = and i1 %cmp126, %cmp129
-  br i1 %or.cond250, label %if.then131, label %if.end143
+if.end127:                                        ; preds = %if.then118, %if.then122
+  %cmp131 = icmp sgt i8 %19, -1, !dbg !1021
+  %or.cond253 = and i1 %cmp128, %cmp131, !dbg !1021
+  br i1 %or.cond253, label %if.then133, label %if.end145, !dbg !1021
 
-if.then131:                                       ; preds = %if.end125
-  %40 = load i16*** %imgUV, align 8, !tbaa !3
-  %41 = load i32* %LFAlphaC0Offset134, align 4, !tbaa !0
-  %42 = load i32* %LFBetaOffset135, align 4, !tbaa !0
-  %43 = load i32* %width_cr136, align 4, !tbaa !0
-  call void @EdgeLoop(i16** %40, i8* %arraydecay, %struct.ImageParameters* %img, i32 %MbQAddr, i32 %41, i32 %42, i32 %15, i32 4, i32 %43, i32 1, i32 0) #3
-  %44 = load i16*** %arrayidx137, align 8, !tbaa !3
-  %45 = load i32* %LFAlphaC0Offset134, align 4, !tbaa !0
-  %46 = load i32* %LFBetaOffset135, align 4, !tbaa !0
-  %47 = load i32* %width_cr136, align 4, !tbaa !0
-  call void @EdgeLoop(i16** %44, i8* %arraydecay, %struct.ImageParameters* %img, i32 %MbQAddr, i32 %45, i32 %46, i32 %15, i32 4, i32 %47, i32 1, i32 1) #3
-  br label %if.end143
+if.then133:                                       ; preds = %if.end127
+  %41 = load i16*** %imgUV, align 8, !dbg !1023, !tbaa !993
+  %42 = load i32* %LFAlphaC0Offset136, align 4, !dbg !1023, !tbaa !976
+  %43 = load i32* %LFBetaOffset137, align 4, !dbg !1023, !tbaa !976
+  %44 = load i32* %width_cr138, align 4, !dbg !1023, !tbaa !976
+  call void @EdgeLoop(i16** %41, i8* %arraydecay, %struct.ImageParameters* %img, i32 %MbQAddr, i32 %42, i32 %43, i32 %16, i32 4, i32 %44, i32 1, i32 0) #5, !dbg !1023
+  %45 = load i16*** %arrayidx139, align 8, !dbg !1025, !tbaa !993
+  %46 = load i32* %LFAlphaC0Offset136, align 4, !dbg !1025, !tbaa !976
+  %47 = load i32* %LFBetaOffset137, align 4, !dbg !1025, !tbaa !976
+  %48 = load i32* %width_cr138, align 4, !dbg !1025, !tbaa !976
+  call void @EdgeLoop(i16** %45, i8* %arraydecay, %struct.ImageParameters* %img, i32 %MbQAddr, i32 %46, i32 %47, i32 %16, i32 4, i32 %48, i32 1, i32 1) #5, !dbg !1025
+  br label %if.end145, !dbg !1045
 
-if.end143:                                        ; preds = %if.end125, %if.then111, %if.then131
-  store i32 1, i32* %DeblockCall, align 4, !tbaa !0
-  br label %for.inc147
+if.end145:                                        ; preds = %if.end127, %if.then113, %if.then133
+  store i32 1, i32* %DeblockCall, align 4, !dbg !1046, !tbaa !976
+  br label %for.inc149, !dbg !1047
 
-for.inc147:                                       ; preds = %land.lhs.true105, %if.end101, %for.body57, %if.end143
-  %indvars.iv.next256 = add i64 %indvars.iv255, 1
-  %lftr.wideiv257 = trunc i64 %indvars.iv.next256 to i32
-  %exitcond258 = icmp eq i32 %lftr.wideiv257, 4
-  br i1 %exitcond258, label %for.inc150, label %for.body57
+for.inc149:                                       ; preds = %land.lhs.true107, %if.end103, %for.body59, %if.end145
+  %indvars.iv.next259 = add i64 %indvars.iv258, 1, !dbg !1027
+  %lftr.wideiv260 = trunc i64 %indvars.iv.next259 to i32, !dbg !1027
+  %exitcond261 = icmp eq i32 %lftr.wideiv260, 4, !dbg !1027
+  br i1 %exitcond261, label %for.inc152, label %for.body59, !dbg !1027
 
-for.inc150:                                       ; preds = %for.inc147
-  %indvars.iv.next260 = add i64 %indvars.iv259, 1
-  %lftr.wideiv261 = trunc i64 %indvars.iv.next260 to i32
-  %exitcond262 = icmp eq i32 %lftr.wideiv261, 2
-  br i1 %exitcond262, label %return, label %for.body
+for.inc152:                                       ; preds = %for.inc149
+  %indvars.iv.next263 = add i64 %indvars.iv262, 1, !dbg !1009
+  %lftr.wideiv264 = trunc i64 %indvars.iv.next263 to i32, !dbg !1009
+  %exitcond265 = icmp eq i32 %lftr.wideiv264, 2, !dbg !1009
+  br i1 %exitcond265, label %return, label %for.body, !dbg !1009
 
-return:                                           ; preds = %for.inc150, %lor.end
-  store i32 0, i32* %DeblockCall, align 4, !tbaa !0
-  ret void
+return:                                           ; preds = %for.inc152, %lor.end
+  store i32 0, i32* %DeblockCall, align 4, !dbg !1048, !tbaa !976
+  ret void, !dbg !1050
 }

@@ -1,20 +1,27 @@
 define i32 @CCTK_ParameterQueryTimesSet(i8* %name, i8* %thorn) #1 {
-  %1 = tail call fastcc %struct.PARAM* @ParameterFind(i8* %name, i8* %thorn, i32 5) #8
-  %2 = icmp eq %struct.PARAM* %1, null
-  br i1 %2, label %CCTK_ParameterData.exit.thread, label %CCTK_ParameterData.exit
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !128), !dbg !741
+  tail call void @llvm.dbg.value(metadata !{i8* %thorn}, i64 0, metadata !129), !dbg !741
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !742) #3, !dbg !744
+  tail call void @llvm.dbg.value(metadata !{i8* %thorn}, i64 0, metadata !745) #3, !dbg !746
+  %call.i = tail call fastcc %struct.PARAM* @ParameterFind(i8* %name, i8* %thorn, i32 5) #8, !dbg !747
+  tail call void @llvm.dbg.value(metadata !{%struct.PARAM* %call.i}, i64 0, metadata !748) #3, !dbg !747
+  %tobool.i = icmp eq %struct.PARAM* %call.i, null, !dbg !749
+  br i1 %tobool.i, label %cond.end, label %CCTK_ParameterData.exit, !dbg !749
 
-CCTK_ParameterData.exit:                          ; preds = %0
-  %3 = getelementptr inbounds %struct.PARAM* %1, i64 0, i32 0
-  %4 = load %struct.PARAM_PROPS** %3, align 8, !tbaa !2
-  %5 = icmp eq %struct.PARAM_PROPS* %4, null
-  br i1 %5, label %CCTK_ParameterData.exit.thread, label %6
+CCTK_ParameterData.exit:                          ; preds = %entry
+  %props.i = getelementptr inbounds %struct.PARAM* %call.i, i64 0, i32 0, !dbg !749
+  %0 = load %struct.PARAM_PROPS** %props.i, align 8, !dbg !749, !tbaa !386
+  tail call void @llvm.dbg.value(metadata !{%struct.PARAM_PROPS* %0}, i64 0, metadata !130), !dbg !743
+  %tobool = icmp eq %struct.PARAM_PROPS* %0, null, !dbg !750
+  br i1 %tobool, label %cond.end, label %cond.true, !dbg !750
 
-; <label>:6                                       ; preds = %CCTK_ParameterData.exit
-  %7 = getelementptr inbounds %struct.PARAM_PROPS* %4, i64 0, i32 7
-  %8 = load i32* %7, align 4, !tbaa !17
-  br label %CCTK_ParameterData.exit.thread
+cond.true:                                        ; preds = %CCTK_ParameterData.exit
+  %n_set = getelementptr inbounds %struct.PARAM_PROPS* %0, i64 0, i32 7, !dbg !750
+  %1 = load i32* %n_set, align 4, !dbg !750, !tbaa !396
+  br label %cond.end, !dbg !750
 
-CCTK_ParameterData.exit.thread:                   ; preds = %0, %CCTK_ParameterData.exit, %6
-  %9 = phi i32 [ %8, %6 ], [ -1, %CCTK_ParameterData.exit ], [ -1, %0 ]
-  ret i32 %9
+cond.end:                                         ; preds = %entry, %CCTK_ParameterData.exit, %cond.true
+  %cond = phi i32 [ %1, %cond.true ], [ -1, %CCTK_ParameterData.exit ], [ -1, %entry ], !dbg !750
+  ret i32 %cond, !dbg !750
 }

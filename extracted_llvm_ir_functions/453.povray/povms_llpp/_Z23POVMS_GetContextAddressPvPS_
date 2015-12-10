@@ -1,0 +1,30 @@
+define i32 @_Z23POVMS_GetContextAddressPvPS_(i8* %contextref, i8** %addrptr) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %contextref}, i64 0, metadata !149), !dbg !1003
+  tail call void @llvm.dbg.value(metadata !{i8** %addrptr}, i64 0, metadata !150), !dbg !1003
+  %cmp = icmp eq i8* %contextref, null, !dbg !1004
+  br i1 %cmp, label %return, label %if.end, !dbg !1004
+
+if.end:                                           ; preds = %entry
+  %valid = bitcast i8* %contextref to i32*, !dbg !1005
+  %0 = load i32* %valid, align 4, !dbg !1005, !tbaa !937
+  %cmp1 = icmp eq i32 %0, 0, !dbg !1005
+  br i1 %cmp1, label %return, label %if.end3, !dbg !1005
+
+if.end3:                                          ; preds = %if.end
+  %cmp4 = icmp eq i8** %addrptr, null, !dbg !1006
+  br i1 %cmp4, label %return, label %if.end6, !dbg !1006
+
+if.end6:                                          ; preds = %if.end3
+  %queue = getelementptr inbounds i8* %contextref, i64 16, !dbg !1007
+  %1 = bitcast i8* %queue to %struct.POVMS_Sys_QueueNode_Default**, !dbg !1007
+  %2 = load %struct.POVMS_Sys_QueueNode_Default** %1, align 8, !dbg !1007, !tbaa !917
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMS_Sys_QueueNode_Default* %2}, i64 0, metadata !1008), !dbg !1009
+  %3 = bitcast %struct.POVMS_Sys_QueueNode_Default* %2 to i8*, !dbg !1010
+  store i8* %3, i8** %addrptr, align 8, !dbg !1007, !tbaa !917
+  br label %return, !dbg !1011
+
+return:                                           ; preds = %if.end3, %if.end, %entry, %if.end6
+  %retval.0 = phi i32 [ 0, %if.end6 ], [ -1, %entry ], [ -21, %if.end ], [ -1, %if.end3 ]
+  ret i32 %retval.0, !dbg !1011
+}

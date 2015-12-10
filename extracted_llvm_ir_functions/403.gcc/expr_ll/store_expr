@@ -4,271 +4,294 @@ entry:
 
 tailrecurse:                                      ; preds = %if.then, %entry
   %exp.tr = phi %union.tree_node* [ %exp, %entry ], [ %4, %if.then ]
-  %code = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 0, i32 2
-  %0 = bitcast [4 x i8]* %code to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 255
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %exp.tr}, i64 0, metadata !2319), !dbg !5842
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %target}, i64 0, metadata !2320), !dbg !5843
+  tail call void @llvm.dbg.value(metadata !{i32 %want_value}, i64 0, metadata !2321), !dbg !5844
+  tail call void @llvm.dbg.value(metadata !1351, i64 0, metadata !2323), !dbg !5845
+  tail call void @llvm.dbg.value(metadata !1351, i64 0, metadata !2324), !dbg !5846
+  %code = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 0, i32 2, !dbg !5847
+  %0 = bitcast [4 x i8]* %code to i32*, !dbg !5847
+  %bf.load = load i32* %0, align 8, !dbg !5847
+  %bf.clear = and i32 %bf.load, 255, !dbg !5847
   switch i32 %bf.clear, label %if.else36 [
     i32 47, label %if.then
     i32 51, label %land.lhs.true
-  ]
+  ], !dbg !5847
 
 if.then:                                          ; preds = %tailrecurse
-  %operands = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 2
-  %arrayidx = bitcast i32* %operands to %union.tree_node**
-  %1 = load %union.tree_node** %arrayidx, align 8, !tbaa !0
-  %2 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !0
-  %call = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %1, %struct.rtx_def* %2, i32 0, i32 0) #10
-  tail call void @emit_queue() #10
-  %arrayidx4 = getelementptr inbounds i32* %operands, i64 2
-  %3 = bitcast i32* %arrayidx4 to %union.tree_node**
-  %4 = load %union.tree_node** %3, align 8, !tbaa !0
-  br label %tailrecurse
+  %operands = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 2, !dbg !5848
+  %arrayidx = bitcast i32* %operands to %union.tree_node**, !dbg !5848
+  %1 = load %union.tree_node** %arrayidx, align 8, !dbg !5848, !tbaa !3154
+  %2 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !dbg !5848, !tbaa !3154
+  %call = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %1, %struct.rtx_def* %2, i32 0, i32 0) #11, !dbg !5848
+  tail call void @emit_queue() #11, !dbg !5850
+  %arrayidx4 = getelementptr inbounds i32* %operands, i64 2, !dbg !5851
+  %3 = bitcast i32* %arrayidx4 to %union.tree_node**, !dbg !5851
+  %4 = load %union.tree_node** %3, align 8, !dbg !5851, !tbaa !3154
+  br label %tailrecurse, !dbg !5851
 
 land.lhs.true:                                    ; preds = %tailrecurse
-  %5 = bitcast %struct.rtx_def* %target to i32*
-  %bf.load11 = load i32* %5, align 8
-  %bf.clear12 = and i32 %bf.load11, 16711680
-  %cmp13 = icmp eq i32 %bf.clear12, 3342336
-  br i1 %cmp13, label %if.then14, label %if.else36
+  %5 = bitcast %struct.rtx_def* %target to i32*, !dbg !5852
+  %bf.load11 = load i32* %5, align 8, !dbg !5852
+  %bf.clear12 = and i32 %bf.load11, 16711680, !dbg !5852
+  %cmp13 = icmp eq i32 %bf.clear12, 3342336, !dbg !5852
+  br i1 %cmp13, label %if.then14, label %if.else36, !dbg !5852
 
 if.then14:                                        ; preds = %land.lhs.true
-  %call15 = tail call %struct.rtx_def* @gen_label_rtx() #8
-  %call16 = tail call %struct.rtx_def* @gen_label_rtx() #8
-  tail call void @emit_queue() #10
-  %call17 = tail call %struct.rtx_def* @protect_from_queue(%struct.rtx_def* %target, i32 1) #10
-  tail call void @do_pending_stack_adjust() #10
-  %6 = load %struct.function** @cfun, align 8, !tbaa !0
-  %expr = getelementptr inbounds %struct.function* %6, i64 0, i32 2
-  %7 = load %struct.expr_status** %expr, align 8, !tbaa !0
-  %x_inhibit_defer_pop = getelementptr inbounds %struct.expr_status* %7, i64 0, i32 1
-  %8 = load i32* %x_inhibit_defer_pop, align 4, !tbaa !3
-  %add = add nsw i32 %8, 1
-  store i32 %add, i32* %x_inhibit_defer_pop, align 4, !tbaa !3
-  %operands19 = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 2
-  %arrayidx20 = bitcast i32* %operands19 to %union.tree_node**
-  %9 = load %union.tree_node** %arrayidx20, align 8, !tbaa !0
-  tail call void @do_jump(%union.tree_node* %9, %struct.rtx_def* %call15, %struct.rtx_def* null) #8
-  tail call void @start_cleanup_deferral() #8
-  %arrayidx23 = getelementptr inbounds i32* %operands19, i64 2
-  %10 = bitcast i32* %arrayidx23 to %union.tree_node**
-  %11 = load %union.tree_node** %10, align 8, !tbaa !0
-  %call24 = tail call %struct.rtx_def* @store_expr(%union.tree_node* %11, %struct.rtx_def* %call17, i32 0) #10
-  tail call void @end_cleanup_deferral() #8
-  tail call void @emit_queue() #10
-  %call25 = tail call %struct.rtx_def* @gen_jump(%struct.rtx_def* %call16) #8
-  %call26 = tail call %struct.rtx_def* @emit_jump_insn(%struct.rtx_def* %call25) #8
-  %call27 = tail call %struct.rtx_def* @emit_barrier() #8
-  %call28 = tail call %struct.rtx_def* @emit_label(%struct.rtx_def* %call15) #8
-  tail call void @start_cleanup_deferral() #8
-  %arrayidx31 = getelementptr inbounds i32* %operands19, i64 4
-  %12 = bitcast i32* %arrayidx31 to %union.tree_node**
-  %13 = load %union.tree_node** %12, align 8, !tbaa !0
-  %call32 = tail call %struct.rtx_def* @store_expr(%union.tree_node* %13, %struct.rtx_def* %call17, i32 0) #10
-  tail call void @end_cleanup_deferral() #8
-  tail call void @emit_queue() #10
-  %call33 = tail call %struct.rtx_def* @emit_label(%struct.rtx_def* %call16) #8
-  %14 = load %struct.function** @cfun, align 8, !tbaa !0
-  %expr34 = getelementptr inbounds %struct.function* %14, i64 0, i32 2
-  %15 = load %struct.expr_status** %expr34, align 8, !tbaa !0
-  %x_inhibit_defer_pop35 = getelementptr inbounds %struct.expr_status* %15, i64 0, i32 1
-  %16 = load i32* %x_inhibit_defer_pop35, align 4, !tbaa !3
-  %sub = add nsw i32 %16, -1
-  store i32 %sub, i32* %x_inhibit_defer_pop35, align 4, !tbaa !3
-  %tobool = icmp ne i32 %want_value, 0
-  %cond = select i1 %tobool, %struct.rtx_def* %call17, %struct.rtx_def* null
-  ret %struct.rtx_def* %cond
+  %call15 = tail call %struct.rtx_def* @gen_label_rtx() #9, !dbg !5853
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call15}, i64 0, metadata !2325), !dbg !5853
+  %call16 = tail call %struct.rtx_def* @gen_label_rtx() #9, !dbg !5853
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call16}, i64 0, metadata !2327), !dbg !5853
+  tail call void @emit_queue() #11, !dbg !5854
+  %call17 = tail call %struct.rtx_def* @protect_from_queue(%struct.rtx_def* %target, i32 1) #11, !dbg !5855
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call17}, i64 0, metadata !2320), !dbg !5855
+  tail call void @do_pending_stack_adjust() #11, !dbg !5856
+  %6 = load %struct.function** @cfun, align 8, !dbg !5857, !tbaa !3154
+  %expr = getelementptr inbounds %struct.function* %6, i64 0, i32 2, !dbg !5857
+  %7 = load %struct.expr_status** %expr, align 8, !dbg !5857, !tbaa !3154
+  %x_inhibit_defer_pop = getelementptr inbounds %struct.expr_status* %7, i64 0, i32 1, !dbg !5857
+  %8 = load i32* %x_inhibit_defer_pop, align 4, !dbg !5857, !tbaa !3192
+  %add = add nsw i32 %8, 1, !dbg !5857
+  store i32 %add, i32* %x_inhibit_defer_pop, align 4, !dbg !5857, !tbaa !3192
+  %operands19 = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 2, !dbg !5858
+  %arrayidx20 = bitcast i32* %operands19 to %union.tree_node**, !dbg !5858
+  %9 = load %union.tree_node** %arrayidx20, align 8, !dbg !5858, !tbaa !3154
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !5859) #6, !dbg !5860
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call15}, i64 0, metadata !5861) #6, !dbg !5862
+  tail call void @do_jump(%union.tree_node* %9, %struct.rtx_def* %call15, %struct.rtx_def* null) #9, !dbg !5863
+  tail call void @start_cleanup_deferral() #9, !dbg !5864
+  %arrayidx23 = getelementptr inbounds i32* %operands19, i64 2, !dbg !5865
+  %10 = bitcast i32* %arrayidx23 to %union.tree_node**, !dbg !5865
+  %11 = load %union.tree_node** %10, align 8, !dbg !5865, !tbaa !3154
+  %call24 = tail call %struct.rtx_def* @store_expr(%union.tree_node* %11, %struct.rtx_def* %call17, i32 0) #11, !dbg !5865
+  tail call void @end_cleanup_deferral() #9, !dbg !5866
+  tail call void @emit_queue() #11, !dbg !5867
+  %call25 = tail call %struct.rtx_def* @gen_jump(%struct.rtx_def* %call16) #9, !dbg !5868
+  %call26 = tail call %struct.rtx_def* @emit_jump_insn(%struct.rtx_def* %call25) #9, !dbg !5868
+  %call27 = tail call %struct.rtx_def* @emit_barrier() #9, !dbg !5869
+  %call28 = tail call %struct.rtx_def* @emit_label(%struct.rtx_def* %call15) #9, !dbg !5870
+  tail call void @start_cleanup_deferral() #9, !dbg !5871
+  %arrayidx31 = getelementptr inbounds i32* %operands19, i64 4, !dbg !5872
+  %12 = bitcast i32* %arrayidx31 to %union.tree_node**, !dbg !5872
+  %13 = load %union.tree_node** %12, align 8, !dbg !5872, !tbaa !3154
+  %call32 = tail call %struct.rtx_def* @store_expr(%union.tree_node* %13, %struct.rtx_def* %call17, i32 0) #11, !dbg !5872
+  tail call void @end_cleanup_deferral() #9, !dbg !5873
+  tail call void @emit_queue() #11, !dbg !5874
+  %call33 = tail call %struct.rtx_def* @emit_label(%struct.rtx_def* %call16) #9, !dbg !5875
+  %14 = load %struct.function** @cfun, align 8, !dbg !5876, !tbaa !3154
+  %expr34 = getelementptr inbounds %struct.function* %14, i64 0, i32 2, !dbg !5876
+  %15 = load %struct.expr_status** %expr34, align 8, !dbg !5876, !tbaa !3154
+  %x_inhibit_defer_pop35 = getelementptr inbounds %struct.expr_status* %15, i64 0, i32 1, !dbg !5876
+  %16 = load i32* %x_inhibit_defer_pop35, align 4, !dbg !5876, !tbaa !3192
+  %sub = add nsw i32 %16, -1, !dbg !5876
+  store i32 %sub, i32* %x_inhibit_defer_pop35, align 4, !dbg !5876, !tbaa !3192
+  %tobool = icmp ne i32 %want_value, 0, !dbg !5877
+  %cond = select i1 %tobool, %struct.rtx_def* %call17, %struct.rtx_def* null, !dbg !5877
+  ret %struct.rtx_def* %cond, !dbg !5878
 
 if.else36:                                        ; preds = %tailrecurse, %land.lhs.true
-  %call37 = tail call i32 @queued_subexp_p(%struct.rtx_def* %target) #10
-  %tobool38 = icmp eq i32 %call37, 0
-  br i1 %tobool38, label %if.else71, label %if.then39
+  %call37 = tail call i32 @queued_subexp_p(%struct.rtx_def* %target) #11, !dbg !5879
+  %tobool38 = icmp eq i32 %call37, 0, !dbg !5879
+  br i1 %tobool38, label %if.else71, label %if.then39, !dbg !5879
 
 if.then39:                                        ; preds = %if.else36
-  %17 = bitcast %struct.rtx_def* %target to i32*
-  %bf.load40 = load i32* %17, align 8
-  %bf.lshr41 = lshr i32 %bf.load40, 16
-  %bf.clear42 = and i32 %bf.lshr41, 255
+  %17 = bitcast %struct.rtx_def* %target to i32*, !dbg !5880
+  %bf.load40 = load i32* %17, align 8, !dbg !5880
+  %bf.lshr41 = lshr i32 %bf.load40, 16, !dbg !5880
+  %bf.clear42 = and i32 %bf.lshr41, 255, !dbg !5880
   switch i32 %bf.clear42, label %if.then49 [
     i32 51, label %if.else58
     i32 0, label %if.else58
-  ]
+  ], !dbg !5880
 
 if.then49:                                        ; preds = %if.then39
-  %call53 = tail call %struct.rtx_def* @gen_reg_rtx(i32 %bf.clear42) #8
-  %bf.load54 = load i32* %17, align 8
-  %bf.lshr55 = lshr i32 %bf.load54, 16
-  %bf.clear56 = and i32 %bf.lshr55, 255
-  %call57 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %exp.tr, %struct.rtx_def* %call53, i32 %bf.clear56, i32 0) #10
-  br label %if.end
+  %call53 = tail call %struct.rtx_def* @gen_reg_rtx(i32 %bf.clear42) #9, !dbg !5882
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call53}, i64 0, metadata !2322), !dbg !5882
+  %bf.load54 = load i32* %17, align 8, !dbg !5884
+  %bf.lshr55 = lshr i32 %bf.load54, 16, !dbg !5884
+  %bf.clear56 = and i32 %bf.lshr55, 255, !dbg !5884
+  %call57 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %exp.tr, %struct.rtx_def* %call53, i32 %bf.clear56, i32 0) #11, !dbg !5884
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call57}, i64 0, metadata !2322), !dbg !5884
+  br label %if.end, !dbg !5885
 
 if.else58:                                        ; preds = %if.then39, %if.then39
-  %call62 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %exp.tr, %struct.rtx_def* null, i32 %bf.clear42, i32 0) #10
+  %call62 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %exp.tr, %struct.rtx_def* null, i32 %bf.clear42, i32 0) #11, !dbg !5886
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call62}, i64 0, metadata !2322), !dbg !5886
   br label %if.end
 
 if.end:                                           ; preds = %if.else58, %if.then49
   %temp.0 = phi %struct.rtx_def* [ %call57, %if.then49 ], [ %call62, %if.else58 ]
-  %bf.load63 = load i32* %17, align 8
-  %tobool68 = icmp eq i32 %want_value, 0
-  %bf.clear65 = lshr i32 %bf.load63, 27
-  %bf.clear65.lobit = and i32 %bf.clear65, 1
-  %tobool68903 = zext i1 %tobool68 to i32
-  %18 = or i32 %bf.clear65.lobit, %tobool68903
-  %. = xor i32 %18, 1
-  br label %if.end403
+  %bf.load63 = load i32* %17, align 8, !dbg !5887
+  %tobool68 = icmp eq i32 %want_value, 0, !dbg !5887
+  tail call void @llvm.dbg.value(metadata !3392, i64 0, metadata !2323), !dbg !5888
+  %bf.clear65 = lshr i32 %bf.load63, 27, !dbg !5887
+  %bf.clear65.lobit = and i32 %bf.clear65, 1, !dbg !5887
+  %tobool68903 = zext i1 %tobool68 to i32, !dbg !5887
+  %18 = or i32 %bf.clear65.lobit, %tobool68903, !dbg !5887
+  %. = xor i32 %18, 1, !dbg !5887
+  br label %if.end403, !dbg !5887
 
 if.else71:                                        ; preds = %if.else36
-  %tobool72 = icmp ne i32 %want_value, 0
-  %19 = bitcast %struct.rtx_def* %target to i32*
-  %bf.load74 = load i32* %19, align 8
-  br i1 %tobool72, label %land.lhs.true73, label %if.else115
+  %tobool72 = icmp ne i32 %want_value, 0, !dbg !5889
+  %19 = bitcast %struct.rtx_def* %target to i32*, !dbg !5889
+  %bf.load74 = load i32* %19, align 8, !dbg !5889
+  br i1 %tobool72, label %land.lhs.true73, label %if.else115, !dbg !5889
 
 land.lhs.true73:                                  ; preds = %if.else71
-  %20 = and i32 %bf.load74, 134283263
-  %21 = icmp eq i32 %20, 66
-  br i1 %21, label %land.lhs.true82, label %if.else115
+  %20 = and i32 %bf.load74, 134283263, !dbg !5889
+  %21 = icmp eq i32 %20, 66, !dbg !5889
+  br i1 %21, label %land.lhs.true82, label %if.else115, !dbg !5889
 
 land.lhs.true82:                                  ; preds = %land.lhs.true73
-  %bf.lshr84 = lshr i32 %bf.load74, 16
-  %bf.clear85 = and i32 %bf.lshr84, 255
-  %cmp86 = icmp eq i32 %bf.clear85, 51
-  br i1 %cmp86, label %if.else115, label %if.then87
+  %bf.lshr84 = lshr i32 %bf.load74, 16, !dbg !5889
+  %bf.clear85 = and i32 %bf.lshr84, 255, !dbg !5889
+  %cmp86 = icmp eq i32 %bf.clear85, 51, !dbg !5889
+  br i1 %cmp86, label %if.else115, label %if.then87, !dbg !5889
 
 if.then87:                                        ; preds = %land.lhs.true82
-  %call91 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %exp.tr, %struct.rtx_def* %target, i32 %bf.clear85, i32 0) #10
-  %22 = bitcast %struct.rtx_def* %call91 to i32*
-  %bf.load92 = load i32* %22, align 8
-  %bf.lshr93 = lshr i32 %bf.load92, 16
-  %bf.clear94 = and i32 %bf.lshr93, 255
+  %call91 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %exp.tr, %struct.rtx_def* %target, i32 %bf.clear85, i32 0) #11, !dbg !5890
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call91}, i64 0, metadata !2322), !dbg !5890
+  %22 = bitcast %struct.rtx_def* %call91 to i32*, !dbg !5892
+  %bf.load92 = load i32* %22, align 8, !dbg !5892
+  %bf.lshr93 = lshr i32 %bf.load92, 16, !dbg !5892
+  %bf.clear94 = and i32 %bf.lshr93, 255, !dbg !5892
   switch i32 %bf.clear94, label %if.then101 [
     i32 51, label %if.end403
     i32 0, label %if.end403
-  ]
+  ], !dbg !5892
 
 if.then101:                                       ; preds = %if.then87
-  %cmp102 = icmp eq %struct.rtx_def* %call91, %target
-  br i1 %cmp102, label %if.then111, label %lor.lhs.false
+  %cmp102 = icmp eq %struct.rtx_def* %call91, %target, !dbg !5893
+  br i1 %cmp102, label %if.then111, label %lor.lhs.false, !dbg !5893
 
 lor.lhs.false:                                    ; preds = %if.then101
-  %call103 = tail call i32 @rtx_equal_p(%struct.rtx_def* %call91, %struct.rtx_def* %target) #8
-  %tobool104 = icmp eq i32 %call103, 0
-  br i1 %tobool104, label %if.end112, label %land.lhs.true105
+  %call103 = tail call i32 @rtx_equal_p(%struct.rtx_def* %call91, %struct.rtx_def* %target) #9, !dbg !5895
+  %tobool104 = icmp eq i32 %call103, 0, !dbg !5895
+  br i1 %tobool104, label %if.end112, label %land.lhs.true105, !dbg !5895
 
 land.lhs.true105:                                 ; preds = %lor.lhs.false
-  %call106 = tail call i32 @side_effects_p(%struct.rtx_def* %call91) #8
-  %tobool107 = icmp eq i32 %call106, 0
-  br i1 %tobool107, label %land.lhs.true108, label %if.end112
+  %call106 = tail call i32 @side_effects_p(%struct.rtx_def* %call91) #9, !dbg !5896
+  %tobool107 = icmp eq i32 %call106, 0, !dbg !5896
+  br i1 %tobool107, label %land.lhs.true108, label %if.end112, !dbg !5896
 
 land.lhs.true108:                                 ; preds = %land.lhs.true105
-  %call109 = tail call i32 @side_effects_p(%struct.rtx_def* %target) #8
-  %tobool110 = icmp eq i32 %call109, 0
-  br i1 %tobool110, label %if.then111, label %if.end112
+  %call109 = tail call i32 @side_effects_p(%struct.rtx_def* %target) #9, !dbg !5896
+  %tobool110 = icmp eq i32 %call109, 0, !dbg !5896
+  br i1 %tobool110, label %if.then111, label %if.end112, !dbg !5896
 
 if.then111:                                       ; preds = %land.lhs.true108, %if.then101
-  br label %if.end112
+  tail call void @llvm.dbg.value(metadata !3392, i64 0, metadata !2324), !dbg !5897
+  br label %if.end112, !dbg !5897
 
 if.end112:                                        ; preds = %land.lhs.true108, %land.lhs.true105, %lor.lhs.false, %if.then111
   %dont_store_target.0 = phi i32 [ 1, %if.then111 ], [ 0, %land.lhs.true105 ], [ 0, %land.lhs.true108 ], [ 0, %lor.lhs.false ]
-  %call113 = tail call %struct.rtx_def* @copy_to_reg(%struct.rtx_def* %call91) #8
-  br label %if.end403
+  %call113 = tail call %struct.rtx_def* @copy_to_reg(%struct.rtx_def* %call91) #9, !dbg !5898
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call113}, i64 0, metadata !2322), !dbg !5898
+  br label %if.end403, !dbg !5899
 
 if.else115:                                       ; preds = %if.else71, %land.lhs.true82, %land.lhs.true73
-  %23 = bitcast %struct.rtx_def* %target to i32*
-  %24 = and i32 %bf.load74, 268500991
-  %25 = icmp eq i32 %24, 268435519
-  br i1 %25, label %if.then124, label %if.else337
+  %23 = bitcast %struct.rtx_def* %target to i32*, !dbg !5900
+  %24 = and i32 %bf.load74, 268500991, !dbg !5900
+  %25 = icmp eq i32 %24, 268435519, !dbg !5900
+  br i1 %25, label %if.then124, label %if.else337, !dbg !5900
 
 if.then124:                                       ; preds = %if.else115
-  br i1 %tobool72, label %if.end195, label %land.lhs.true126
+  tail call void @llvm.dbg.value(metadata !3322, i64 0, metadata !2328), !dbg !5901
+  br i1 %tobool72, label %if.end195, label %land.lhs.true126, !dbg !5902
 
 land.lhs.true126:                                 ; preds = %if.then124
-  %type = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 0, i32 1
-  %26 = load %union.tree_node** %type, align 8, !tbaa !0
-  %code129 = getelementptr inbounds %union.tree_node* %26, i64 0, i32 0, i32 0, i32 2
-  %27 = bitcast [4 x i8]* %code129 to i32*
-  %bf.load130 = load i32* %27, align 8
-  %bf.clear131 = and i32 %bf.load130, 255
+  %type = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 0, i32 1, !dbg !5902
+  %26 = load %union.tree_node** %type, align 8, !dbg !5902, !tbaa !3154
+  %code129 = getelementptr inbounds %union.tree_node* %26, i64 0, i32 0, i32 0, i32 2, !dbg !5902
+  %27 = bitcast [4 x i8]* %code129 to i32*, !dbg !5902
+  %bf.load130 = load i32* %27, align 8, !dbg !5902
+  %bf.clear131 = and i32 %bf.load130, 255, !dbg !5902
   switch i32 %bf.clear131, label %if.end195 [
     i32 6, label %land.lhs.true157
     i32 10, label %land.lhs.true157
     i32 11, label %land.lhs.true157
     i32 12, label %land.lhs.true157
-  ]
+  ], !dbg !5902
 
 land.lhs.true157:                                 ; preds = %land.lhs.true126, %land.lhs.true126, %land.lhs.true126, %land.lhs.true126
-  %type161 = getelementptr inbounds %union.tree_node* %26, i64 0, i32 0, i32 0, i32 1
-  %28 = load %union.tree_node** %type161, align 8, !tbaa !0
-  %cmp162 = icmp eq %union.tree_node* %28, null
-  br i1 %cmp162, label %if.then163, label %if.end195
+  %type161 = getelementptr inbounds %union.tree_node* %26, i64 0, i32 0, i32 0, i32 1, !dbg !5902
+  %28 = load %union.tree_node** %type161, align 8, !dbg !5902, !tbaa !3154
+  %cmp162 = icmp eq %union.tree_node* %28, null, !dbg !5902
+  br i1 %cmp162, label %if.then163, label %if.end195, !dbg !5902
 
 if.then163:                                       ; preds = %land.lhs.true157
-  %bf.lshr168 = lshr i32 %bf.load130, 13
-  %bf.clear169 = and i32 %bf.lshr168, 1
-  %bf.lshr171 = lshr i32 %bf.load74, 26
-  %bf.clear172 = and i32 %bf.lshr171, 1
-  %cmp173 = icmp eq i32 %bf.clear169, %bf.clear172
-  br i1 %cmp173, label %if.end182, label %if.then174
+  %bf.lshr168 = lshr i32 %bf.load130, 13, !dbg !5903
+  %bf.clear169 = and i32 %bf.lshr168, 1, !dbg !5903
+  %bf.lshr171 = lshr i32 %bf.load74, 26, !dbg !5903
+  %bf.clear172 = and i32 %bf.lshr171, 1, !dbg !5903
+  %cmp173 = icmp eq i32 %bf.clear169, %bf.clear172, !dbg !5903
+  br i1 %cmp173, label %if.end182, label %if.then174, !dbg !5903
 
 if.then174:                                       ; preds = %if.then163
-  %call180 = tail call %union.tree_node* @signed_or_unsigned_type(i32 %bf.clear172, %union.tree_node* %26) #8
-  %call181 = tail call %union.tree_node* @convert(%union.tree_node* %call180, %union.tree_node* %exp.tr) #8
-  %bf.load187.pre = load i32* %23, align 8
-  br label %if.end182
+  %call180 = tail call %union.tree_node* @signed_or_unsigned_type(i32 %bf.clear172, %union.tree_node* %26) #9, !dbg !5905
+  %call181 = tail call %union.tree_node* @convert(%union.tree_node* %call180, %union.tree_node* %exp.tr) #9, !dbg !5905
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call181}, i64 0, metadata !2319), !dbg !5905
+  %bf.load187.pre = load i32* %23, align 8, !dbg !5906
+  br label %if.end182, !dbg !5905
 
 if.end182:                                        ; preds = %if.then163, %if.then174
   %bf.load187 = phi i32 [ %bf.load187.pre, %if.then174 ], [ %bf.load74, %if.then163 ]
   %exp.addr.0 = phi %union.tree_node* [ %call181, %if.then174 ], [ %exp.tr, %if.then163 ]
-  %arrayidx183 = getelementptr inbounds %struct.rtx_def* %target, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx183 to %struct.rtx_def**
-  %29 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %30 = bitcast %struct.rtx_def* %29 to i32*
-  %bf.load184 = load i32* %30, align 8
-  %bf.lshr185 = lshr i32 %bf.load184, 16
-  %bf.clear186 = and i32 %bf.lshr185, 255
-  %bf.lshr188 = lshr i32 %bf.load187, 26
-  %bf.clear189 = and i32 %bf.lshr188, 1
-  %call190 = tail call %union.tree_node* @type_for_mode(i32 %bf.clear186, i32 %bf.clear189) #8
-  %call191 = tail call %union.tree_node* @convert(%union.tree_node* %call190, %union.tree_node* %exp.addr.0) #8
-  %31 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  br label %if.end195
+  %arrayidx183 = getelementptr inbounds %struct.rtx_def* %target, i64 0, i32 1, i64 0, !dbg !5906
+  %rtx = bitcast %union.rtunion_def* %arrayidx183 to %struct.rtx_def**, !dbg !5906
+  %29 = load %struct.rtx_def** %rtx, align 8, !dbg !5906, !tbaa !3154
+  %30 = bitcast %struct.rtx_def* %29 to i32*, !dbg !5906
+  %bf.load184 = load i32* %30, align 8, !dbg !5906
+  %bf.lshr185 = lshr i32 %bf.load184, 16, !dbg !5906
+  %bf.clear186 = and i32 %bf.lshr185, 255, !dbg !5906
+  %bf.lshr188 = lshr i32 %bf.load187, 26, !dbg !5906
+  %bf.clear189 = and i32 %bf.lshr188, 1, !dbg !5906
+  %call190 = tail call %union.tree_node* @type_for_mode(i32 %bf.clear186, i32 %bf.clear189) #9, !dbg !5906
+  %call191 = tail call %union.tree_node* @convert(%union.tree_node* %call190, %union.tree_node* %exp.addr.0) #9, !dbg !5906
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call191}, i64 0, metadata !2319), !dbg !5906
+  %31 = load %struct.rtx_def** %rtx, align 8, !dbg !5907, !tbaa !3154
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %31}, i64 0, metadata !2328), !dbg !5907
+  br label %if.end195, !dbg !5908
 
 if.end195:                                        ; preds = %land.lhs.true126, %if.end182, %land.lhs.true157, %if.then124
   %inner_target.0 = phi %struct.rtx_def* [ null, %if.then124 ], [ %31, %if.end182 ], [ null, %land.lhs.true157 ], [ null, %land.lhs.true126 ]
   %exp.addr.1 = phi %union.tree_node* [ %exp.tr, %if.then124 ], [ %call191, %if.end182 ], [ %exp.tr, %land.lhs.true157 ], [ %exp.tr, %land.lhs.true126 ]
-  %call196 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %exp.addr.1, %struct.rtx_def* %inner_target.0, i32 0, i32 0) #10
-  %32 = bitcast %struct.rtx_def* %call196 to i32*
-  %bf.load197 = load i32* %32, align 8
-  %bf.clear198 = and i32 %bf.load197, 65535
-  %cmp199.not = icmp ne i32 %bf.clear198, 66
-  %tobool72.not = xor i1 %tobool72, true
-  %brmerge = or i1 %cmp199.not, %tobool72.not
-  br i1 %brmerge, label %if.end218, label %land.lhs.true202
+  %call196 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %exp.addr.1, %struct.rtx_def* %inner_target.0, i32 0, i32 0) #11, !dbg !5909
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call196}, i64 0, metadata !2322), !dbg !5909
+  %32 = bitcast %struct.rtx_def* %call196 to i32*, !dbg !5910
+  %bf.load197 = load i32* %32, align 8, !dbg !5910
+  %bf.clear198 = and i32 %bf.load197, 65535, !dbg !5910
+  %cmp199.not = icmp ne i32 %bf.clear198, 66, !dbg !5910
+  %tobool72.not = xor i1 %tobool72, true, !dbg !5910
+  %brmerge = or i1 %cmp199.not, %tobool72.not, !dbg !5910
+  br i1 %brmerge, label %if.end218, label %land.lhs.true202, !dbg !5910
 
 land.lhs.true202:                                 ; preds = %if.end195
-  %bf.clear205 = and i32 %bf.load197, 134217728
-  %tobool206 = icmp eq i32 %bf.clear205, 0
-  br i1 %tobool206, label %lor.lhs.false207, label %if.then216
+  %bf.clear205 = and i32 %bf.load197, 134217728, !dbg !5910
+  %tobool206 = icmp eq i32 %bf.clear205, 0, !dbg !5910
+  br i1 %tobool206, label %lor.lhs.false207, label %if.then216, !dbg !5910
 
 lor.lhs.false207:                                 ; preds = %land.lhs.true202
-  %arrayidx209 = getelementptr inbounds %struct.rtx_def* %target, i64 0, i32 1, i64 0
-  %rtx210 = bitcast %union.rtunion_def* %arrayidx209 to %struct.rtx_def**
-  %33 = load %struct.rtx_def** %rtx210, align 8, !tbaa !0
-  %arrayidx212 = getelementptr inbounds %struct.rtx_def* %call196, i64 0, i32 1, i64 0
-  %rtx213 = bitcast %union.rtunion_def* %arrayidx212 to %struct.rtx_def**
-  %34 = load %struct.rtx_def** %rtx213, align 8, !tbaa !0
-  %call214 = tail call i32 @reg_mentioned_p(%struct.rtx_def* %33, %struct.rtx_def* %34) #8
-  %tobool215 = icmp eq i32 %call214, 0
-  br i1 %tobool215, label %if.end218, label %if.then216
+  %arrayidx209 = getelementptr inbounds %struct.rtx_def* %target, i64 0, i32 1, i64 0, !dbg !5911
+  %rtx210 = bitcast %union.rtunion_def* %arrayidx209 to %struct.rtx_def**, !dbg !5911
+  %33 = load %struct.rtx_def** %rtx210, align 8, !dbg !5911, !tbaa !3154
+  %arrayidx212 = getelementptr inbounds %struct.rtx_def* %call196, i64 0, i32 1, i64 0, !dbg !5911
+  %rtx213 = bitcast %union.rtunion_def* %arrayidx212 to %struct.rtx_def**, !dbg !5911
+  %34 = load %struct.rtx_def** %rtx213, align 8, !dbg !5911, !tbaa !3154
+  %call214 = tail call i32 @reg_mentioned_p(%struct.rtx_def* %33, %struct.rtx_def* %34) #9, !dbg !5911
+  %tobool215 = icmp eq i32 %call214, 0, !dbg !5911
+  br i1 %tobool215, label %if.end218, label %if.then216, !dbg !5911
 
 if.then216:                                       ; preds = %lor.lhs.false207, %land.lhs.true202
-  %call217 = tail call %struct.rtx_def* @copy_to_reg(%struct.rtx_def* %call196) #8
-  br label %if.end218
+  %call217 = tail call %struct.rtx_def* @copy_to_reg(%struct.rtx_def* %call196) #9, !dbg !5912
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call217}, i64 0, metadata !2322), !dbg !5912
+  br label %if.end218, !dbg !5912
 
 if.end218:                                        ; preds = %lor.lhs.false207, %if.end195, %if.then216
   %temp.2 = phi %struct.rtx_def* [ %call217, %if.then216 ], [ %call196, %if.end195 ], [ %call196, %lor.lhs.false207 ]
-  %35 = bitcast %struct.rtx_def* %temp.2 to i32*
-  %bf.load219 = load i32* %35, align 8
-  %bf.clear220 = and i32 %bf.load219, 65535
+  %35 = bitcast %struct.rtx_def* %temp.2 to i32*, !dbg !5913
+  %bf.load219 = load i32* %35, align 8, !dbg !5913
+  %bf.clear220 = and i32 %bf.load219, 65535, !dbg !5913
   switch i32 %bf.clear220, label %if.end282 [
     i32 67, label %land.lhs.true250
     i32 68, label %land.lhs.true250
@@ -278,132 +301,137 @@ if.end218:                                        ; preds = %lor.lhs.false207, %
     i32 134, label %land.lhs.true250
     i32 56, label %land.lhs.true250
     i32 140, label %land.lhs.true250
-  ]
+  ], !dbg !5913
 
 land.lhs.true250:                                 ; preds = %if.end218, %if.end218, %if.end218, %if.end218, %if.end218, %if.end218, %if.end218, %if.end218
-  %bf.clear253 = and i32 %bf.load219, 16711680
-  %cmp254 = icmp eq i32 %bf.clear253, 0
-  br i1 %cmp254, label %if.then255, label %if.end282
+  %bf.clear253 = and i32 %bf.load219, 16711680, !dbg !5913
+  %cmp254 = icmp eq i32 %bf.clear253, 0, !dbg !5913
+  br i1 %cmp254, label %if.then255, label %if.end282, !dbg !5913
 
 if.then255:                                       ; preds = %land.lhs.true250
-  %bf.load256 = load i32* %23, align 8
-  %bf.lshr257 = lshr i32 %bf.load256, 16
-  %bf.clear258 = and i32 %bf.lshr257, 255
-  %type260 = getelementptr inbounds %union.tree_node* %exp.addr.1, i64 0, i32 0, i32 0, i32 1
-  %36 = load %union.tree_node** %type260, align 8, !tbaa !0
-  %type261 = bitcast %union.tree_node* %36 to %struct.tree_type*
-  %mode = getelementptr inbounds %struct.tree_type* %type261, i64 0, i32 6
-  %37 = bitcast [4 x i8]* %mode to i32*
-  %bf.load262 = load i32* %37, align 4
-  %bf.lshr263 = lshr i32 %bf.load262, 9
-  %bf.clear264 = and i32 %bf.lshr263, 127
-  %bf.lshr266 = lshr i32 %bf.load256, 26
-  %bf.clear267 = and i32 %bf.lshr266, 1
-  %call268 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear258, i32 %bf.clear264, %struct.rtx_def* %temp.2, i32 %bf.clear267) #10
-  %arrayidx270 = getelementptr inbounds %struct.rtx_def* %target, i64 0, i32 1, i64 0
-  %rtx271 = bitcast %union.rtunion_def* %arrayidx270 to %struct.rtx_def**
-  %38 = load %struct.rtx_def** %rtx271, align 8, !tbaa !0
-  %39 = bitcast %struct.rtx_def* %38 to i32*
-  %bf.load272 = load i32* %39, align 8
-  %bf.lshr273 = lshr i32 %bf.load272, 16
-  %bf.clear274 = and i32 %bf.lshr273, 255
-  %bf.load275 = load i32* %23, align 8
-  %bf.lshr276 = lshr i32 %bf.load275, 16
-  %bf.clear277 = and i32 %bf.lshr276, 255
-  %bf.lshr279 = lshr i32 %bf.load275, 26
-  %bf.clear280 = and i32 %bf.lshr279, 1
-  %call281 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear274, i32 %bf.clear277, %struct.rtx_def* %call268, i32 %bf.clear280) #10
-  br label %if.end282
+  %bf.load256 = load i32* %23, align 8, !dbg !5914
+  %bf.lshr257 = lshr i32 %bf.load256, 16, !dbg !5914
+  %bf.clear258 = and i32 %bf.lshr257, 255, !dbg !5914
+  %type260 = getelementptr inbounds %union.tree_node* %exp.addr.1, i64 0, i32 0, i32 0, i32 1, !dbg !5914
+  %36 = load %union.tree_node** %type260, align 8, !dbg !5914, !tbaa !3154
+  %type261 = bitcast %union.tree_node* %36 to %struct.tree_type*, !dbg !5914
+  %mode = getelementptr inbounds %struct.tree_type* %type261, i64 0, i32 6, !dbg !5914
+  %37 = bitcast [4 x i8]* %mode to i32*, !dbg !5914
+  %bf.load262 = load i32* %37, align 4, !dbg !5914
+  %bf.lshr263 = lshr i32 %bf.load262, 9, !dbg !5914
+  %bf.clear264 = and i32 %bf.lshr263, 127, !dbg !5914
+  %bf.lshr266 = lshr i32 %bf.load256, 26, !dbg !5914
+  %bf.clear267 = and i32 %bf.lshr266, 1, !dbg !5914
+  %call268 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear258, i32 %bf.clear264, %struct.rtx_def* %temp.2, i32 %bf.clear267) #11, !dbg !5914
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call268}, i64 0, metadata !2322), !dbg !5914
+  %arrayidx270 = getelementptr inbounds %struct.rtx_def* %target, i64 0, i32 1, i64 0, !dbg !5916
+  %rtx271 = bitcast %union.rtunion_def* %arrayidx270 to %struct.rtx_def**, !dbg !5916
+  %38 = load %struct.rtx_def** %rtx271, align 8, !dbg !5916, !tbaa !3154
+  %39 = bitcast %struct.rtx_def* %38 to i32*, !dbg !5916
+  %bf.load272 = load i32* %39, align 8, !dbg !5916
+  %bf.lshr273 = lshr i32 %bf.load272, 16, !dbg !5916
+  %bf.clear274 = and i32 %bf.lshr273, 255, !dbg !5916
+  %bf.load275 = load i32* %23, align 8, !dbg !5916
+  %bf.lshr276 = lshr i32 %bf.load275, 16, !dbg !5916
+  %bf.clear277 = and i32 %bf.lshr276, 255, !dbg !5916
+  %bf.lshr279 = lshr i32 %bf.load275, 26, !dbg !5916
+  %bf.clear280 = and i32 %bf.lshr279, 1, !dbg !5916
+  %call281 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear274, i32 %bf.clear277, %struct.rtx_def* %call268, i32 %bf.clear280) #11, !dbg !5916
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call281}, i64 0, metadata !2322), !dbg !5916
+  br label %if.end282, !dbg !5917
 
 if.end282:                                        ; preds = %if.end218, %if.then255, %land.lhs.true250
   %temp.3 = phi %struct.rtx_def* [ %call281, %if.then255 ], [ %temp.2, %land.lhs.true250 ], [ %temp.2, %if.end218 ]
-  %arrayidx284 = getelementptr inbounds %struct.rtx_def* %target, i64 0, i32 1, i64 0
-  %rtx285 = bitcast %union.rtunion_def* %arrayidx284 to %struct.rtx_def**
-  %40 = load %struct.rtx_def** %rtx285, align 8, !tbaa !0
-  %bf.load286 = load i32* %23, align 8
-  %bf.lshr287 = lshr i32 %bf.load286, 26
-  %bf.clear288 = and i32 %bf.lshr287, 1
-  tail call void @convert_move(%struct.rtx_def* %40, %struct.rtx_def* %temp.3, i32 %bf.clear288) #10
-  br i1 %tobool72, label %land.lhs.true290, label %if.end331
+  %arrayidx284 = getelementptr inbounds %struct.rtx_def* %target, i64 0, i32 1, i64 0, !dbg !5918
+  %rtx285 = bitcast %union.rtunion_def* %arrayidx284 to %struct.rtx_def**, !dbg !5918
+  %40 = load %struct.rtx_def** %rtx285, align 8, !dbg !5918, !tbaa !3154
+  %bf.load286 = load i32* %23, align 8, !dbg !5918
+  %bf.lshr287 = lshr i32 %bf.load286, 26, !dbg !5918
+  %bf.clear288 = and i32 %bf.lshr287, 1, !dbg !5918
+  tail call void @convert_move(%struct.rtx_def* %40, %struct.rtx_def* %temp.3, i32 %bf.clear288) #11, !dbg !5918
+  br i1 %tobool72, label %land.lhs.true290, label %if.end331, !dbg !5919
 
 land.lhs.true290:                                 ; preds = %if.end282
-  %41 = bitcast %struct.rtx_def* %temp.3 to i32*
-  %bf.load291 = load i32* %41, align 8
-  %bf.lshr292 = lshr i32 %bf.load291, 16
-  %bf.clear293 = and i32 %bf.lshr292, 255
-  %bf.load294 = load i32* %23, align 8
-  %bf.lshr295 = lshr i32 %bf.load294, 16
-  %bf.clear296 = and i32 %bf.lshr295, 255
-  %cmp297 = icmp eq i32 %bf.clear293, %bf.clear296
-  br i1 %cmp297, label %if.end331, label %if.then298
+  %41 = bitcast %struct.rtx_def* %temp.3 to i32*, !dbg !5919
+  %bf.load291 = load i32* %41, align 8, !dbg !5919
+  %bf.lshr292 = lshr i32 %bf.load291, 16, !dbg !5919
+  %bf.clear293 = and i32 %bf.lshr292, 255, !dbg !5919
+  %bf.load294 = load i32* %23, align 8, !dbg !5919
+  %bf.lshr295 = lshr i32 %bf.load294, 16, !dbg !5919
+  %bf.clear296 = and i32 %bf.lshr295, 255, !dbg !5919
+  %cmp297 = icmp eq i32 %bf.clear293, %bf.clear296, !dbg !5919
+  br i1 %cmp297, label %if.end331, label %if.then298, !dbg !5919
 
 if.then298:                                       ; preds = %land.lhs.true290
-  %cmp302 = icmp eq i32 %bf.clear293, 0
-  br i1 %cmp302, label %if.else316, label %if.then303
+  %cmp302 = icmp eq i32 %bf.clear293, 0, !dbg !5920
+  br i1 %cmp302, label %if.else316, label %if.then303, !dbg !5920
 
 if.then303:                                       ; preds = %if.then298
-  %call307 = tail call %struct.rtx_def* @gen_lowpart_SUBREG(i32 %bf.clear296, %struct.rtx_def* %temp.3) #8
-  %42 = bitcast %struct.rtx_def* %call307 to i32*
-  %bf.load308 = load i32* %42, align 8
-  %bf.set = or i32 %bf.load308, 268435456
-  store i32 %bf.set, i32* %42, align 8
-  %bf.load310 = load i32* %23, align 8
-  %bf.clear312 = and i32 %bf.load310, 67108864
-  %bf.clear314 = and i32 %bf.set, -67108865
-  %bf.set315 = or i32 %bf.clear314, %bf.clear312
-  store i32 %bf.set315, i32* %42, align 8
-  br label %if.end331
+  %call307 = tail call %struct.rtx_def* @gen_lowpart_SUBREG(i32 %bf.clear296, %struct.rtx_def* %temp.3) #9, !dbg !5922
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call307}, i64 0, metadata !2322), !dbg !5922
+  %42 = bitcast %struct.rtx_def* %call307 to i32*, !dbg !5924
+  %bf.load308 = load i32* %42, align 8, !dbg !5924
+  %bf.set = or i32 %bf.load308, 268435456, !dbg !5924
+  store i32 %bf.set, i32* %42, align 8, !dbg !5924
+  %bf.load310 = load i32* %23, align 8, !dbg !5925
+  %bf.clear312 = and i32 %bf.load310, 67108864, !dbg !5925
+  %bf.clear314 = and i32 %bf.set, -67108865, !dbg !5925
+  %bf.set315 = or i32 %bf.clear314, %bf.clear312, !dbg !5925
+  store i32 %bf.set315, i32* %42, align 8, !dbg !5925
+  br label %if.end331, !dbg !5926
 
 if.else316:                                       ; preds = %if.then298
-  %43 = load %struct.rtx_def** %rtx285, align 8, !tbaa !0
-  %44 = bitcast %struct.rtx_def* %43 to i32*
-  %bf.load323 = load i32* %44, align 8
-  %bf.lshr324 = lshr i32 %bf.load323, 16
-  %bf.clear325 = and i32 %bf.lshr324, 255
-  %bf.lshr327 = lshr i32 %bf.load294, 26
-  %bf.clear328 = and i32 %bf.lshr327, 1
-  %call329 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear296, i32 %bf.clear325, %struct.rtx_def* %temp.3, i32 %bf.clear328) #10
+  %43 = load %struct.rtx_def** %rtx285, align 8, !dbg !5927, !tbaa !3154
+  %44 = bitcast %struct.rtx_def* %43 to i32*, !dbg !5927
+  %bf.load323 = load i32* %44, align 8, !dbg !5927
+  %bf.lshr324 = lshr i32 %bf.load323, 16, !dbg !5927
+  %bf.clear325 = and i32 %bf.lshr324, 255, !dbg !5927
+  %bf.lshr327 = lshr i32 %bf.load294, 26, !dbg !5927
+  %bf.clear328 = and i32 %bf.lshr327, 1, !dbg !5927
+  %call329 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear296, i32 %bf.clear325, %struct.rtx_def* %temp.3, i32 %bf.clear328) #11, !dbg !5927
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call329}, i64 0, metadata !2322), !dbg !5927
   br label %if.end331
 
 if.end331:                                        ; preds = %land.lhs.true290, %if.then303, %if.else316, %if.end282
   %temp.4 = phi %struct.rtx_def* [ %call307, %if.then303 ], [ %call329, %if.else316 ], [ %temp.3, %land.lhs.true290 ], [ %temp.3, %if.end282 ]
-  %cond336 = select i1 %tobool72, %struct.rtx_def* %temp.4, %struct.rtx_def* null
-  br label %return
+  %cond336 = select i1 %tobool72, %struct.rtx_def* %temp.4, %struct.rtx_def* null, !dbg !5928
+  br label %return, !dbg !5928
 
 if.else337:                                       ; preds = %if.else115
-  %bf.lshr339 = lshr i32 %bf.load74, 16
-  %bf.clear340 = and i32 %bf.lshr339, 255
-  %call341 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %exp.tr, %struct.rtx_def* %target, i32 %bf.clear340, i32 0) #10
-  %tobool342 = icmp eq %struct.rtx_def* %target, null
-  %bf.load352.pre = load i32* %23, align 8
-  br i1 %tobool342, label %land.lhs.true351, label %land.lhs.true343
+  %bf.lshr339 = lshr i32 %bf.load74, 16, !dbg !5929
+  %bf.clear340 = and i32 %bf.lshr339, 255, !dbg !5929
+  %call341 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %exp.tr, %struct.rtx_def* %target, i32 %bf.clear340, i32 0) #11, !dbg !5929
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call341}, i64 0, metadata !2322), !dbg !5929
+  %tobool342 = icmp eq %struct.rtx_def* %target, null, !dbg !5931
+  %bf.load352.pre = load i32* %23, align 8, !dbg !5931
+  br i1 %tobool342, label %land.lhs.true351, label %land.lhs.true343, !dbg !5931
 
 land.lhs.true343:                                 ; preds = %if.else337
-  %bf.clear345 = and i32 %bf.load352.pre, 65535
-  %cmp346 = icmp eq i32 %bf.clear345, 61
-  br i1 %cmp346, label %land.lhs.true347, label %land.lhs.true351
+  %bf.clear345 = and i32 %bf.load352.pre, 65535, !dbg !5931
+  %cmp346 = icmp eq i32 %bf.clear345, 61, !dbg !5931
+  br i1 %cmp346, label %land.lhs.true347, label %land.lhs.true351, !dbg !5931
 
 land.lhs.true347:                                 ; preds = %land.lhs.true343
-  %arrayidx349 = getelementptr inbounds %struct.rtx_def* %target, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx349 to i32*
-  %45 = load i32* %rtuint, align 4, !tbaa !3
-  %cmp350 = icmp ult i32 %45, 53
-  br i1 %cmp350, label %if.end403, label %land.lhs.true351
+  %arrayidx349 = getelementptr inbounds %struct.rtx_def* %target, i64 0, i32 1, i64 0, !dbg !5931
+  %rtuint = bitcast %union.rtunion_def* %arrayidx349 to i32*, !dbg !5931
+  %45 = load i32* %rtuint, align 4, !dbg !5931, !tbaa !3192
+  %cmp350 = icmp ult i32 %45, 53, !dbg !5931
+  br i1 %cmp350, label %if.end403, label %land.lhs.true351, !dbg !5931
 
 land.lhs.true351:                                 ; preds = %if.else337, %land.lhs.true347, %land.lhs.true343
-  %46 = and i32 %bf.load352.pre, 134283263
-  %47 = icmp eq i32 %46, 134217794
-  br i1 %47, label %if.end403, label %land.lhs.true360
+  %46 = and i32 %bf.load352.pre, 134283263, !dbg !5931
+  %47 = icmp eq i32 %46, 134217794, !dbg !5931
+  br i1 %47, label %if.end403, label %land.lhs.true360, !dbg !5931
 
 land.lhs.true360:                                 ; preds = %land.lhs.true351
-  %call361 = tail call i32 @rtx_equal_p(%struct.rtx_def* %call341, %struct.rtx_def* %target) #8
-  %tobool362 = icmp eq i32 %call361, 0
-  br i1 %tobool362, label %land.lhs.true363, label %if.end403
+  %call361 = tail call i32 @rtx_equal_p(%struct.rtx_def* %call341, %struct.rtx_def* %target) #9, !dbg !5932
+  %tobool362 = icmp eq i32 %call361, 0, !dbg !5932
+  br i1 %tobool362, label %land.lhs.true363, label %if.end403, !dbg !5932
 
 land.lhs.true363:                                 ; preds = %land.lhs.true360
-  %48 = bitcast %struct.rtx_def* %call341 to i32*
-  %bf.load364 = load i32* %48, align 8
-  %bf.clear365 = and i32 %bf.load364, 65535
+  %48 = bitcast %struct.rtx_def* %call341 to i32*, !dbg !5932
+  %bf.load364 = load i32* %48, align 8, !dbg !5932
+  %bf.clear365 = and i32 %bf.load364, 65535, !dbg !5932
   switch i32 %bf.clear365, label %lor.lhs.false395 [
     i32 67, label %if.then397
     i32 68, label %if.then397
@@ -413,21 +441,22 @@ land.lhs.true363:                                 ; preds = %land.lhs.true360
     i32 134, label %if.then397
     i32 56, label %if.then397
     i32 140, label %if.then397
-  ]
+  ], !dbg !5932
 
 lor.lhs.false395:                                 ; preds = %land.lhs.true363
-  br i1 %tobool72, label %if.then397, label %if.end403
+  br i1 %tobool72, label %if.then397, label %if.end403, !dbg !5932
 
 if.then397:                                       ; preds = %land.lhs.true363, %land.lhs.true363, %land.lhs.true363, %land.lhs.true363, %land.lhs.true363, %land.lhs.true363, %land.lhs.true363, %land.lhs.true363, %lor.lhs.false395
-  br label %if.end403
+  tail call void @llvm.dbg.value(metadata !3392, i64 0, metadata !2323), !dbg !5933
+  br label %if.end403, !dbg !5933
 
 if.end403:                                        ; preds = %land.lhs.true360, %land.lhs.true351, %land.lhs.true347, %if.end, %if.end112, %if.then87, %if.then87, %lor.lhs.false395, %if.then397
   %dont_return_target.0 = phi i32 [ 1, %if.then397 ], [ 0, %lor.lhs.false395 ], [ 1, %if.then87 ], [ 1, %if.then87 ], [ 1, %if.end112 ], [ %., %if.end ], [ 0, %land.lhs.true347 ], [ 0, %land.lhs.true351 ], [ 0, %land.lhs.true360 ]
   %dont_store_target.2 = phi i32 [ 0, %if.then397 ], [ 0, %lor.lhs.false395 ], [ 0, %if.then87 ], [ 0, %if.then87 ], [ %dont_store_target.0, %if.end112 ], [ 0, %if.end ], [ 0, %land.lhs.true347 ], [ 0, %land.lhs.true351 ], [ 0, %land.lhs.true360 ]
   %temp.5 = phi %struct.rtx_def* [ %call341, %if.then397 ], [ %call341, %lor.lhs.false395 ], [ %call91, %if.then87 ], [ %call91, %if.then87 ], [ %call113, %if.end112 ], [ %temp.0, %if.end ], [ %call341, %land.lhs.true347 ], [ %call341, %land.lhs.true351 ], [ %call341, %land.lhs.true360 ]
-  %49 = bitcast %struct.rtx_def* %temp.5 to i32*
-  %bf.load404 = load i32* %49, align 8
-  %bf.clear405 = and i32 %bf.load404, 65535
+  %49 = bitcast %struct.rtx_def* %temp.5 to i32*, !dbg !5934
+  %bf.load404 = load i32* %49, align 8, !dbg !5934
+  %bf.clear405 = and i32 %bf.load404, 65535, !dbg !5934
   switch i32 %bf.clear405, label %if.end477 [
     i32 67, label %land.lhs.true435
     i32 68, label %land.lhs.true435
@@ -437,291 +466,311 @@ if.end403:                                        ; preds = %land.lhs.true360, %
     i32 134, label %land.lhs.true435
     i32 56, label %land.lhs.true435
     i32 140, label %land.lhs.true435
-  ]
+  ], !dbg !5934
 
 land.lhs.true435:                                 ; preds = %if.end403, %if.end403, %if.end403, %if.end403, %if.end403, %if.end403, %if.end403, %if.end403
-  %bf.clear438 = and i32 %bf.load404, 16711680
-  %cmp439 = icmp eq i32 %bf.clear438, 0
-  br i1 %cmp439, label %land.lhs.true440, label %if.end477
+  %bf.clear438 = and i32 %bf.load404, 16711680, !dbg !5934
+  %cmp439 = icmp eq i32 %bf.clear438, 0, !dbg !5934
+  br i1 %cmp439, label %land.lhs.true440, label %if.end477, !dbg !5934
 
 land.lhs.true440:                                 ; preds = %land.lhs.true435
-  %bf.load443 = load i32* %0, align 8
-  %bf.clear444 = and i32 %bf.load443, 255
-  %cmp445 = icmp eq i32 %bf.clear444, 0
-  br i1 %cmp445, label %if.end477, label %land.lhs.true446
+  %bf.load443 = load i32* %0, align 8, !dbg !5934
+  %bf.clear444 = and i32 %bf.load443, 255, !dbg !5934
+  %cmp445 = icmp eq i32 %bf.clear444, 0, !dbg !5934
+  br i1 %cmp445, label %if.end477, label %land.lhs.true446, !dbg !5934
 
 land.lhs.true446:                                 ; preds = %land.lhs.true440
-  %50 = bitcast %struct.rtx_def* %target to i32*
-  %bf.load447 = load i32* %50, align 8
-  %bf.lshr448 = lshr i32 %bf.load447, 16
-  %bf.clear449 = and i32 %bf.lshr448, 255
-  %type451 = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 0, i32 1
-  %51 = load %union.tree_node** %type451, align 8, !tbaa !0
-  %type452 = bitcast %union.tree_node* %51 to %struct.tree_type*
-  %mode453 = getelementptr inbounds %struct.tree_type* %type452, i64 0, i32 6
-  %52 = bitcast [4 x i8]* %mode453 to i32*
-  %bf.load454 = load i32* %52, align 4
-  %bf.lshr455 = lshr i32 %bf.load454, 9
-  %bf.clear456 = and i32 %bf.lshr455, 127
-  %cmp457 = icmp eq i32 %bf.clear449, %bf.clear456
-  br i1 %cmp457, label %if.end477, label %if.then458
+  %50 = bitcast %struct.rtx_def* %target to i32*, !dbg !5934
+  %bf.load447 = load i32* %50, align 8, !dbg !5934
+  %bf.lshr448 = lshr i32 %bf.load447, 16, !dbg !5934
+  %bf.clear449 = and i32 %bf.lshr448, 255, !dbg !5934
+  %type451 = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 0, i32 1, !dbg !5934
+  %51 = load %union.tree_node** %type451, align 8, !dbg !5934, !tbaa !3154
+  %type452 = bitcast %union.tree_node* %51 to %struct.tree_type*, !dbg !5934
+  %mode453 = getelementptr inbounds %struct.tree_type* %type452, i64 0, i32 6, !dbg !5934
+  %52 = bitcast [4 x i8]* %mode453 to i32*, !dbg !5934
+  %bf.load454 = load i32* %52, align 4, !dbg !5934
+  %bf.lshr455 = lshr i32 %bf.load454, 9, !dbg !5934
+  %bf.clear456 = and i32 %bf.lshr455, 127, !dbg !5934
+  %cmp457 = icmp eq i32 %bf.clear449, %bf.clear456, !dbg !5934
+  br i1 %cmp457, label %if.end477, label %if.then458, !dbg !5934
 
 if.then458:                                       ; preds = %land.lhs.true446
-  %unsigned_flag472 = getelementptr inbounds %union.tree_node* %51, i64 0, i32 0, i32 0, i32 2
-  %53 = bitcast [4 x i8]* %unsigned_flag472 to i32*
-  %bf.load473 = load i32* %53, align 8
-  %bf.lshr474 = lshr i32 %bf.load473, 13
-  %bf.clear475 = and i32 %bf.lshr474, 1
-  %call476 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear449, i32 %bf.clear456, %struct.rtx_def* %temp.5, i32 %bf.clear475) #10
-  br label %if.end477
+  %unsigned_flag472 = getelementptr inbounds %union.tree_node* %51, i64 0, i32 0, i32 0, i32 2, !dbg !5935
+  %53 = bitcast [4 x i8]* %unsigned_flag472 to i32*, !dbg !5935
+  %bf.load473 = load i32* %53, align 8, !dbg !5935
+  %bf.lshr474 = lshr i32 %bf.load473, 13, !dbg !5935
+  %bf.clear475 = and i32 %bf.lshr474, 1, !dbg !5935
+  %call476 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear449, i32 %bf.clear456, %struct.rtx_def* %temp.5, i32 %bf.clear475) #11, !dbg !5935
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call476}, i64 0, metadata !2322), !dbg !5935
+  br label %if.end477, !dbg !5935
 
 if.end477:                                        ; preds = %if.end403, %land.lhs.true446, %land.lhs.true440, %if.then458, %land.lhs.true435
   %temp.6 = phi %struct.rtx_def* [ %call476, %if.then458 ], [ %temp.5, %land.lhs.true446 ], [ %temp.5, %land.lhs.true440 ], [ %temp.5, %land.lhs.true435 ], [ %temp.5, %if.end403 ]
-  %call478 = tail call i32 @rtx_equal_p(%struct.rtx_def* %temp.6, %struct.rtx_def* %target) #8
-  %tobool479 = icmp eq i32 %call478, 0
-  br i1 %tobool479, label %land.lhs.true488, label %lor.lhs.false480
+  %call478 = tail call i32 @rtx_equal_p(%struct.rtx_def* %temp.6, %struct.rtx_def* %target) #9, !dbg !5936
+  %tobool479 = icmp eq i32 %call478, 0, !dbg !5936
+  br i1 %tobool479, label %land.lhs.true488, label %lor.lhs.false480, !dbg !5936
 
 lor.lhs.false480:                                 ; preds = %if.end477
-  %cmp481 = icmp eq %struct.rtx_def* %temp.6, %target
-  br i1 %cmp481, label %if.end657, label %land.lhs.true482
+  %cmp481 = icmp eq %struct.rtx_def* %temp.6, %target, !dbg !5936
+  br i1 %cmp481, label %if.end657, label %land.lhs.true482, !dbg !5936
 
 land.lhs.true482:                                 ; preds = %lor.lhs.false480
-  %call483 = tail call i32 @side_effects_p(%struct.rtx_def* %temp.6) #8
-  %tobool484 = icmp eq i32 %call483, 0
-  br i1 %tobool484, label %lor.lhs.false485, label %land.lhs.true488
+  %call483 = tail call i32 @side_effects_p(%struct.rtx_def* %temp.6) #9, !dbg !5937
+  %tobool484 = icmp eq i32 %call483, 0, !dbg !5937
+  br i1 %tobool484, label %lor.lhs.false485, label %land.lhs.true488, !dbg !5937
 
 lor.lhs.false485:                                 ; preds = %land.lhs.true482
-  %call486 = tail call i32 @side_effects_p(%struct.rtx_def* %target) #8
-  %tobool487 = icmp eq i32 %call486, 0
-  br i1 %tobool487, label %if.end657, label %land.lhs.true488
+  %call486 = tail call i32 @side_effects_p(%struct.rtx_def* %target) #9, !dbg !5938
+  %tobool487 = icmp eq i32 %call486, 0, !dbg !5938
+  br i1 %tobool487, label %if.end657, label %land.lhs.true488, !dbg !5938
 
 land.lhs.true488:                                 ; preds = %lor.lhs.false485, %land.lhs.true482, %if.end477
-  %bf.load491 = load i32* %0, align 8
-  %bf.clear492 = and i32 %bf.load491, 255
-  %cmp493 = icmp ne i32 %bf.clear492, 0
-  %tobool495 = icmp eq i32 %dont_store_target.2, 0
-  %or.cond898 = and i1 %cmp493, %tobool495
-  br i1 %or.cond898, label %land.lhs.true496, label %if.end657
+  %bf.load491 = load i32* %0, align 8, !dbg !5938
+  %bf.clear492 = and i32 %bf.load491, 255, !dbg !5938
+  %cmp493 = icmp ne i32 %bf.clear492, 0, !dbg !5938
+  %tobool495 = icmp eq i32 %dont_store_target.2, 0, !dbg !5938
+  %or.cond898 = and i1 %cmp493, %tobool495, !dbg !5938
+  br i1 %or.cond898, label %land.lhs.true496, label %if.end657, !dbg !5938
 
 land.lhs.true496:                                 ; preds = %land.lhs.true488
-  %idxprom894 = zext i32 %bf.clear492 to i64
-  %arrayidx501 = getelementptr inbounds [256 x i8]* @tree_code_type, i64 0, i64 %idxprom894
-  %54 = load i8* %arrayidx501, align 1, !tbaa !1
-  %cmp502 = icmp eq i8 %54, 100
-  br i1 %cmp502, label %lor.lhs.false504, label %if.then524
+  %idxprom894 = zext i32 %bf.clear492 to i64, !dbg !5938
+  %arrayidx501 = getelementptr inbounds [256 x i8]* @tree_code_type, i64 0, i64 %idxprom894, !dbg !5938
+  %54 = load i8* %arrayidx501, align 1, !dbg !5938, !tbaa !3155
+  %cmp502 = icmp eq i8 %54, 100, !dbg !5938
+  br i1 %cmp502, label %lor.lhs.false504, label %if.then524, !dbg !5938
 
 lor.lhs.false504:                                 ; preds = %land.lhs.true496
-  %rtl = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 17
-  %55 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
-  %cmp522 = icmp eq %struct.rtx_def* %55, %target
-  br i1 %cmp522, label %if.end657, label %if.then524
+  %rtl = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 17, !dbg !5938
+  %55 = load %struct.rtx_def** %rtl, align 8, !dbg !5938, !tbaa !3154
+  %cmp522 = icmp eq %struct.rtx_def* %55, %target, !dbg !5939
+  br i1 %cmp522, label %if.end657, label %if.then524, !dbg !5939
 
 if.then524:                                       ; preds = %lor.lhs.false504, %land.lhs.true496
-  %call525 = tail call %struct.rtx_def* @protect_from_queue(%struct.rtx_def* %target, i32 1) #10
-  %56 = bitcast %struct.rtx_def* %temp.6 to i32*
-  %bf.load526 = load i32* %56, align 8
-  %bf.lshr527 = lshr i32 %bf.load526, 16
-  %bf.clear528 = and i32 %bf.lshr527, 255
-  %57 = bitcast %struct.rtx_def* %call525 to i32*
-  %bf.load529 = load i32* %57, align 8
-  %bf.lshr530 = lshr i32 %bf.load529, 16
-  %bf.clear531 = and i32 %bf.lshr530, 255
-  %cmp532 = icmp eq i32 %bf.clear528, %bf.clear531
-  %cmp538 = icmp eq i32 %bf.clear528, 0
-  %or.cond899 = or i1 %cmp532, %cmp538
-  br i1 %or.cond899, label %if.else557, label %if.then540
+  %call525 = tail call %struct.rtx_def* @protect_from_queue(%struct.rtx_def* %target, i32 1) #11, !dbg !5940
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call525}, i64 0, metadata !2320), !dbg !5940
+  %56 = bitcast %struct.rtx_def* %temp.6 to i32*, !dbg !5941
+  %bf.load526 = load i32* %56, align 8, !dbg !5941
+  %bf.lshr527 = lshr i32 %bf.load526, 16, !dbg !5941
+  %bf.clear528 = and i32 %bf.lshr527, 255, !dbg !5941
+  %57 = bitcast %struct.rtx_def* %call525 to i32*, !dbg !5941
+  %bf.load529 = load i32* %57, align 8, !dbg !5941
+  %bf.lshr530 = lshr i32 %bf.load529, 16, !dbg !5941
+  %bf.clear531 = and i32 %bf.lshr530, 255, !dbg !5941
+  %cmp532 = icmp eq i32 %bf.clear528, %bf.clear531, !dbg !5941
+  %cmp538 = icmp eq i32 %bf.clear528, 0, !dbg !5941
+  %or.cond899 = or i1 %cmp532, %cmp538, !dbg !5941
+  br i1 %or.cond899, label %if.else557, label %if.then540, !dbg !5941
 
 if.then540:                                       ; preds = %if.then524
-  %type542 = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 0, i32 1
-  %58 = load %union.tree_node** %type542, align 8, !tbaa !0
-  %unsigned_flag544 = getelementptr inbounds %union.tree_node* %58, i64 0, i32 0, i32 0, i32 2
-  %59 = bitcast [4 x i8]* %unsigned_flag544 to i32*
-  %bf.load545 = load i32* %59, align 8
-  %bf.lshr546 = lshr i32 %bf.load545, 13
-  %bf.clear547 = and i32 %bf.lshr546, 1
-  %tobool548 = icmp eq i32 %dont_return_target.0, 0
-  br i1 %tobool548, label %if.else555, label %if.then549
+  %type542 = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 0, i32 1, !dbg !5942
+  %58 = load %union.tree_node** %type542, align 8, !dbg !5942, !tbaa !3154
+  %unsigned_flag544 = getelementptr inbounds %union.tree_node* %58, i64 0, i32 0, i32 0, i32 2, !dbg !5942
+  %59 = bitcast [4 x i8]* %unsigned_flag544 to i32*, !dbg !5942
+  %bf.load545 = load i32* %59, align 8, !dbg !5942
+  %bf.lshr546 = lshr i32 %bf.load545, 13, !dbg !5942
+  %bf.clear547 = and i32 %bf.lshr546, 1, !dbg !5942
+  tail call void @llvm.dbg.value(metadata !{i32 %bf.clear547}, i64 0, metadata !2330), !dbg !5942
+  %tobool548 = icmp eq i32 %dont_return_target.0, 0, !dbg !5943
+  br i1 %tobool548, label %if.else555, label %if.then549, !dbg !5943
 
 if.then549:                                       ; preds = %if.then540
-  %call.i901 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear531, i32 0, %struct.rtx_def* %temp.6, i32 %bf.clear547) #8
-  %call554 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call525, %struct.rtx_def* %call.i901) #10
-  br label %if.end657
+  tail call void @llvm.dbg.value(metadata !{i32 %bf.clear531}, i64 0, metadata !5944) #6, !dbg !5947
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %temp.6}, i64 0, metadata !5948) #6, !dbg !5949
+  tail call void @llvm.dbg.value(metadata !{i32 %bf.clear547}, i64 0, metadata !5950) #6, !dbg !5951
+  %call.i901 = tail call %struct.rtx_def* @convert_modes(i32 %bf.clear531, i32 0, %struct.rtx_def* %temp.6, i32 %bf.clear547) #9, !dbg !5952
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call.i901}, i64 0, metadata !2322), !dbg !5945
+  %call554 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call525, %struct.rtx_def* %call.i901) #11, !dbg !5953
+  br label %if.end657, !dbg !5954
 
 if.else555:                                       ; preds = %if.then540
-  tail call void @convert_move(%struct.rtx_def* %call525, %struct.rtx_def* %temp.6, i32 %bf.clear547) #10
+  tail call void @convert_move(%struct.rtx_def* %call525, %struct.rtx_def* %temp.6, i32 %bf.clear547) #11, !dbg !5955
   br label %if.end657
 
 if.else557:                                       ; preds = %if.then524
-  %bf.clear560 = and i32 %bf.load526, 16711680
-  %cmp561 = icmp eq i32 %bf.clear560, 3342336
-  br i1 %cmp561, label %land.lhs.true563, label %if.else632
+  %bf.clear560 = and i32 %bf.load526, 16711680, !dbg !5956
+  %cmp561 = icmp eq i32 %bf.clear560, 3342336, !dbg !5956
+  br i1 %cmp561, label %land.lhs.true563, label %if.else632, !dbg !5956
 
 land.lhs.true563:                                 ; preds = %if.else557
-  %bf.load566 = load i32* %0, align 8
-  %bf.clear567 = and i32 %bf.load566, 255
-  %cmp568 = icmp eq i32 %bf.clear567, 29
-  br i1 %cmp568, label %if.then570, label %if.else632
+  %bf.load566 = load i32* %0, align 8, !dbg !5956
+  %bf.clear567 = and i32 %bf.load566, 255, !dbg !5956
+  %cmp568 = icmp eq i32 %bf.clear567, 29, !dbg !5956
+  br i1 %cmp568, label %if.then570, label %if.else632, !dbg !5956
 
 if.then570:                                       ; preds = %land.lhs.true563
-  %call571 = tail call %struct.rtx_def* @expr_size(%union.tree_node* %exp.tr) #8
-  %60 = bitcast %struct.rtx_def* %call571 to i32*
-  %bf.load572 = load i32* %60, align 8
-  %bf.clear573 = and i32 %bf.load572, 65535
-  %cmp574 = icmp eq i32 %bf.clear573, 54
-  br i1 %cmp574, label %land.lhs.true576, label %if.then570.if.else584_crit_edge
+  %call571 = tail call %struct.rtx_def* @expr_size(%union.tree_node* %exp.tr) #9, !dbg !5957
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call571}, i64 0, metadata !2333), !dbg !5957
+  %60 = bitcast %struct.rtx_def* %call571 to i32*, !dbg !5958
+  %bf.load572 = load i32* %60, align 8, !dbg !5958
+  %bf.clear573 = and i32 %bf.load572, 65535, !dbg !5958
+  %cmp574 = icmp eq i32 %bf.clear573, 54, !dbg !5958
+  br i1 %cmp574, label %land.lhs.true576, label %if.then570.if.else584_crit_edge, !dbg !5958
 
 if.then570.if.else584_crit_edge:                  ; preds = %if.then570
-  %.pre = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 2
-  br label %if.else584
+  %.pre = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 2, !dbg !5959
+  br label %if.else584, !dbg !5958
 
 land.lhs.true576:                                 ; preds = %if.then570
-  %rtwint = getelementptr inbounds %struct.rtx_def* %call571, i64 0, i32 1, i64 0, i32 0
-  %61 = load i64* %rtwint, align 8, !tbaa !7
-  %62 = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 2
-  %63 = load i32* %62, align 4, !tbaa !3
-  %conv579 = sext i32 %63 to i64
-  %cmp580 = icmp slt i64 %61, %conv579
-  br i1 %cmp580, label %if.then582, label %if.else584
+  %rtwint = getelementptr inbounds %struct.rtx_def* %call571, i64 0, i32 1, i64 0, i32 0, !dbg !5958
+  %61 = load i64* %rtwint, align 8, !dbg !5958, !tbaa !3595
+  %62 = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 2, !dbg !5958
+  %63 = load i32* %62, align 4, !dbg !5958, !tbaa !3192
+  %conv579 = sext i32 %63 to i64, !dbg !5958
+  %cmp580 = icmp slt i64 %61, %conv579, !dbg !5958
+  br i1 %cmp580, label %if.then582, label %if.else584, !dbg !5958
 
 if.then582:                                       ; preds = %land.lhs.true576
-  %call583 = tail call %struct.rtx_def* @emit_block_move(%struct.rtx_def* %call525, %struct.rtx_def* %temp.6, %struct.rtx_def* %call571) #10
-  br label %if.end657
+  %call583 = tail call %struct.rtx_def* @emit_block_move(%struct.rtx_def* %call525, %struct.rtx_def* %temp.6, %struct.rtx_def* %call571) #11, !dbg !5960
+  br label %if.end657, !dbg !5960
 
 if.else584:                                       ; preds = %if.then570.if.else584_crit_edge, %land.lhs.true576
-  %.pre-phi = phi i32* [ %.pre, %if.then570.if.else584_crit_edge ], [ %62, %land.lhs.true576 ]
-  %64 = load %union.tree_node** getelementptr inbounds ([6 x %union.tree_node*]* @sizetype_tab, i64 0, i64 0), align 8, !tbaa !0
-  %call585 = tail call %union.tree_node* @make_tree(%union.tree_node* %64, %struct.rtx_def* %call571) #8
-  %65 = load i32* %.pre-phi, align 4, !tbaa !3
-  %conv588 = sext i32 %65 to i64
-  %call589 = tail call %union.tree_node* @size_int_wide(i64 %conv588, i32 0) #8
-  %call590 = tail call %union.tree_node* @size_binop(i32 78, %union.tree_node* %call585, %union.tree_node* %call589) #8
-  %call591 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %call590, %struct.rtx_def* null, i32 0, i32 0) #10
-  %66 = load i32* @ptr_mode, align 4, !tbaa !6
-  %call.i = tail call %struct.rtx_def* @convert_modes(i32 %66, i32 0, %struct.rtx_def* %call591, i32 0) #8
-  %call593 = tail call %struct.rtx_def* @emit_block_move(%struct.rtx_def* %call525, %struct.rtx_def* %temp.6, %struct.rtx_def* %call.i) #10
-  %67 = bitcast %struct.rtx_def* %call.i to i32*
-  %bf.load594 = load i32* %67, align 8
-  %bf.clear595 = and i32 %bf.load594, 65535
-  %cmp596 = icmp eq i32 %bf.clear595, 54
-  br i1 %cmp596, label %if.then598, label %if.else608
+  %.pre-phi = phi i32* [ %.pre, %if.then570.if.else584_crit_edge ], [ %62, %land.lhs.true576 ], !dbg !5959
+  %64 = load %union.tree_node** getelementptr inbounds ([6 x %union.tree_node*]* @sizetype_tab, i64 0, i64 0), align 8, !dbg !5961, !tbaa !3154
+  %call585 = tail call %union.tree_node* @make_tree(%union.tree_node* %64, %struct.rtx_def* %call571) #9, !dbg !5961
+  %65 = load i32* %.pre-phi, align 4, !dbg !5959, !tbaa !3192
+  %conv588 = sext i32 %65 to i64, !dbg !5959
+  %call589 = tail call %union.tree_node* @size_int_wide(i64 %conv588, i32 0) #9, !dbg !5959
+  %call590 = tail call %union.tree_node* @size_binop(i32 78, %union.tree_node* %call585, %union.tree_node* %call589) #9, !dbg !5959
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call590}, i64 0, metadata !2335), !dbg !5959
+  %call591 = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %call590, %struct.rtx_def* null, i32 0, i32 0) #11, !dbg !5962
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call591}, i64 0, metadata !2337), !dbg !5962
+  tail call void @llvm.dbg.value(metadata !3322, i64 0, metadata !2338), !dbg !5963
+  %66 = load i32* @ptr_mode, align 4, !dbg !5964, !tbaa !3359
+  tail call void @llvm.dbg.value(metadata !{i32 %66}, i64 0, metadata !5965) #6, !dbg !5966
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call591}, i64 0, metadata !5967) #6, !dbg !5968
+  tail call void @llvm.dbg.value(metadata !1351, i64 0, metadata !5969) #6, !dbg !5970
+  %call.i = tail call %struct.rtx_def* @convert_modes(i32 %66, i32 0, %struct.rtx_def* %call591, i32 0) #9, !dbg !5971
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call.i}, i64 0, metadata !2337), !dbg !5964
+  %call593 = tail call %struct.rtx_def* @emit_block_move(%struct.rtx_def* %call525, %struct.rtx_def* %temp.6, %struct.rtx_def* %call.i) #11, !dbg !5972
+  %67 = bitcast %struct.rtx_def* %call.i to i32*, !dbg !5973
+  %bf.load594 = load i32* %67, align 8, !dbg !5973
+  %bf.clear595 = and i32 %bf.load594, 65535, !dbg !5973
+  %cmp596 = icmp eq i32 %bf.clear595, 54, !dbg !5973
+  br i1 %cmp596, label %if.then598, label %if.else608, !dbg !5973
 
 if.then598:                                       ; preds = %if.else584
-  %rtwint601 = getelementptr inbounds %struct.rtx_def* %call.i, i64 0, i32 1, i64 0, i32 0
-  %68 = load i64* %rtwint601, align 8, !tbaa !7
-  %sub602 = sub nsw i64 0, %68
-  %call603 = tail call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %call571, i64 %sub602) #8
-  %69 = load i64* %rtwint601, align 8, !tbaa !7
-  %call607 = tail call %struct.rtx_def* @adjust_address_1(%struct.rtx_def* %call525, i32 51, i64 %69, i32 1, i32 1) #8
-  br label %if.end621
+  %rtwint601 = getelementptr inbounds %struct.rtx_def* %call.i, i64 0, i32 1, i64 0, i32 0, !dbg !5974
+  %68 = load i64* %rtwint601, align 8, !dbg !5974, !tbaa !3595
+  %sub602 = sub nsw i64 0, %68, !dbg !5974
+  %call603 = tail call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %call571, i64 %sub602) #9, !dbg !5974
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call603}, i64 0, metadata !2333), !dbg !5974
+  %69 = load i64* %rtwint601, align 8, !dbg !5976, !tbaa !3595
+  %call607 = tail call %struct.rtx_def* @adjust_address_1(%struct.rtx_def* %call525, i32 51, i64 %69, i32 1, i32 1) #9, !dbg !5976
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call607}, i64 0, metadata !2320), !dbg !5976
+  br label %if.end621, !dbg !5977
 
 if.else608:                                       ; preds = %if.else584
-  %70 = load %union.tree_node** getelementptr inbounds ([6 x %union.tree_node*]* @sizetype_tab, i64 0, i64 0), align 8, !tbaa !0
-  %type609 = bitcast %union.tree_node* %70 to %struct.tree_type*
-  %mode610 = getelementptr inbounds %struct.tree_type* %type609, i64 0, i32 6
-  %71 = bitcast [4 x i8]* %mode610 to i32*
-  %bf.load611 = load i32* %71, align 4
-  %bf.lshr612 = lshr i32 %bf.load611, 9
-  %bf.clear613 = and i32 %bf.lshr612, 127
-  %72 = load %struct.optab** getelementptr inbounds ([49 x %struct.optab*]* @optab_table, i64 0, i64 2), align 8, !tbaa !0
-  %call614 = tail call %struct.rtx_def* @expand_binop(i32 %bf.clear613, %struct.optab* %72, %struct.rtx_def* %call571, %struct.rtx_def* %call.i, %struct.rtx_def* null, i32 0, i32 3) #8
-  %call615 = tail call fastcc i64 @highest_pow2_factor(%union.tree_node* %call590) #10
-  %call616 = tail call %struct.rtx_def* @offset_address(%struct.rtx_def* %call525, %struct.rtx_def* %call.i, i64 %call615) #8
-  %call617 = tail call %struct.rtx_def* @gen_label_rtx() #8
-  %73 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !0
-  %74 = bitcast %struct.rtx_def* %call614 to i32*
-  %bf.load618 = load i32* %74, align 8
-  %bf.lshr619 = lshr i32 %bf.load618, 16
-  %bf.clear620 = and i32 %bf.lshr619, 255
-  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %call614, %struct.rtx_def* %73, i32 107, %struct.rtx_def* null, i32 %bf.clear620, i32 0, %struct.rtx_def* %call617) #8
+  %70 = load %union.tree_node** getelementptr inbounds ([6 x %union.tree_node*]* @sizetype_tab, i64 0, i64 0), align 8, !dbg !5978, !tbaa !3154
+  %type609 = bitcast %union.tree_node* %70 to %struct.tree_type*, !dbg !5978
+  %mode610 = getelementptr inbounds %struct.tree_type* %type609, i64 0, i32 6, !dbg !5978
+  %71 = bitcast [4 x i8]* %mode610 to i32*, !dbg !5978
+  %bf.load611 = load i32* %71, align 4, !dbg !5978
+  %bf.lshr612 = lshr i32 %bf.load611, 9, !dbg !5978
+  %bf.clear613 = and i32 %bf.lshr612, 127, !dbg !5978
+  %72 = load %struct.optab** getelementptr inbounds ([49 x %struct.optab*]* @optab_table, i64 0, i64 2), align 8, !dbg !5978, !tbaa !3154
+  %call614 = tail call %struct.rtx_def* @expand_binop(i32 %bf.clear613, %struct.optab* %72, %struct.rtx_def* %call571, %struct.rtx_def* %call.i, %struct.rtx_def* null, i32 0, i32 3) #9, !dbg !5978
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call614}, i64 0, metadata !2333), !dbg !5978
+  %call615 = tail call fastcc i64 @highest_pow2_factor(%union.tree_node* %call590) #11, !dbg !5980
+  %call616 = tail call %struct.rtx_def* @offset_address(%struct.rtx_def* %call525, %struct.rtx_def* %call.i, i64 %call615) #9, !dbg !5980
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call616}, i64 0, metadata !2320), !dbg !5980
+  %call617 = tail call %struct.rtx_def* @gen_label_rtx() #9, !dbg !5981
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call617}, i64 0, metadata !2338), !dbg !5981
+  %73 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !dbg !5982, !tbaa !3154
+  %74 = bitcast %struct.rtx_def* %call614 to i32*, !dbg !5982
+  %bf.load618 = load i32* %74, align 8, !dbg !5982
+  %bf.lshr619 = lshr i32 %bf.load618, 16, !dbg !5982
+  %bf.clear620 = and i32 %bf.lshr619, 255, !dbg !5982
+  tail call void @emit_cmp_and_jump_insns(%struct.rtx_def* %call614, %struct.rtx_def* %73, i32 107, %struct.rtx_def* null, i32 %bf.clear620, i32 0, %struct.rtx_def* %call617) #9, !dbg !5982
   br label %if.end621
 
 if.end621:                                        ; preds = %if.else608, %if.then598
   %target.addr.0 = phi %struct.rtx_def* [ %call607, %if.then598 ], [ %call616, %if.else608 ]
   %size.0 = phi %struct.rtx_def* [ %call603, %if.then598 ], [ %call614, %if.else608 ]
   %label.0 = phi %struct.rtx_def* [ null, %if.then598 ], [ %call617, %if.else608 ]
-  %75 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !0
-  %cmp622 = icmp eq %struct.rtx_def* %size.0, %75
-  br i1 %cmp622, label %if.end626, label %if.then624
+  %75 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !dbg !5983, !tbaa !3154
+  %cmp622 = icmp eq %struct.rtx_def* %size.0, %75, !dbg !5983
+  br i1 %cmp622, label %if.end626, label %if.then624, !dbg !5983
 
 if.then624:                                       ; preds = %if.end621
-  %call625 = tail call %struct.rtx_def* @clear_storage(%struct.rtx_def* %target.addr.0, %struct.rtx_def* %size.0) #10
-  br label %if.end626
+  %call625 = tail call %struct.rtx_def* @clear_storage(%struct.rtx_def* %target.addr.0, %struct.rtx_def* %size.0) #11, !dbg !5984
+  br label %if.end626, !dbg !5984
 
 if.end626:                                        ; preds = %if.end621, %if.then624
-  %tobool627 = icmp eq %struct.rtx_def* %label.0, null
-  br i1 %tobool627, label %if.end657, label %if.then628
+  %tobool627 = icmp eq %struct.rtx_def* %label.0, null, !dbg !5985
+  br i1 %tobool627, label %if.end657, label %if.then628, !dbg !5985
 
 if.then628:                                       ; preds = %if.end626
-  %call629 = tail call %struct.rtx_def* @emit_label(%struct.rtx_def* %label.0) #8
-  br label %if.end657
+  %call629 = tail call %struct.rtx_def* @emit_label(%struct.rtx_def* %label.0) #9, !dbg !5986
+  br label %if.end657, !dbg !5986
 
 if.else632:                                       ; preds = %land.lhs.true563, %if.else557
-  %bf.clear634 = and i32 %bf.load529, 65535
-  %cmp635 = icmp eq i32 %bf.clear634, 39
-  br i1 %cmp635, label %if.then637, label %if.else642
+  %bf.clear634 = and i32 %bf.load529, 65535, !dbg !5987
+  %cmp635 = icmp eq i32 %bf.clear634, 39, !dbg !5987
+  br i1 %cmp635, label %if.then637, label %if.else642, !dbg !5987
 
 if.then637:                                       ; preds = %if.else632
-  %type639 = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 0, i32 1
-  %76 = load %union.tree_node** %type639, align 8, !tbaa !0
-  %call640 = tail call i64 @int_size_in_bytes(%union.tree_node* %76) #8
-  %conv641 = trunc i64 %call640 to i32
-  tail call void @emit_group_load(%struct.rtx_def* %call525, %struct.rtx_def* %temp.6, i32 %conv641) #10
-  br label %if.end657
+  %type639 = getelementptr inbounds %union.tree_node* %exp.tr, i64 0, i32 0, i32 0, i32 1, !dbg !5988
+  %76 = load %union.tree_node** %type639, align 8, !dbg !5988, !tbaa !3154
+  %call640 = tail call i64 @int_size_in_bytes(%union.tree_node* %76) #9, !dbg !5988
+  %conv641 = trunc i64 %call640 to i32, !dbg !5988
+  tail call void @emit_group_load(%struct.rtx_def* %call525, %struct.rtx_def* %temp.6, i32 %conv641) #11, !dbg !5988
+  br label %if.end657, !dbg !5988
 
 if.else642:                                       ; preds = %if.else632
-  br i1 %cmp561, label %if.then648, label %if.else651
+  br i1 %cmp561, label %if.then648, label %if.else651, !dbg !5989
 
 if.then648:                                       ; preds = %if.else642
-  %call649 = tail call %struct.rtx_def* @expr_size(%union.tree_node* %exp.tr) #8
-  %call650 = tail call %struct.rtx_def* @emit_block_move(%struct.rtx_def* %call525, %struct.rtx_def* %temp.6, %struct.rtx_def* %call649) #10
-  br label %if.end657
+  %call649 = tail call %struct.rtx_def* @expr_size(%union.tree_node* %exp.tr) #9, !dbg !5990
+  %call650 = tail call %struct.rtx_def* @emit_block_move(%struct.rtx_def* %call525, %struct.rtx_def* %temp.6, %struct.rtx_def* %call649) #11, !dbg !5990
+  br label %if.end657, !dbg !5990
 
 if.else651:                                       ; preds = %if.else642
-  %call652 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call525, %struct.rtx_def* %temp.6) #10
+  %call652 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call525, %struct.rtx_def* %temp.6) #11, !dbg !5991
   br label %if.end657
 
 if.end657:                                        ; preds = %land.lhs.true488, %lor.lhs.false485, %lor.lhs.false480, %if.end626, %lor.lhs.false504, %if.else555, %if.then549, %if.then637, %if.else651, %if.then648, %if.then582, %if.then628
   %temp.7 = phi %struct.rtx_def* [ %call.i901, %if.then549 ], [ %temp.6, %if.else555 ], [ %temp.6, %if.then582 ], [ %temp.6, %if.then628 ], [ %temp.6, %if.end626 ], [ %temp.6, %if.then637 ], [ %temp.6, %if.then648 ], [ %temp.6, %if.else651 ], [ %temp.6, %lor.lhs.false504 ], [ %temp.6, %land.lhs.true488 ], [ %temp.6, %lor.lhs.false485 ], [ %target, %lor.lhs.false480 ]
   %target.addr.1 = phi %struct.rtx_def* [ %call525, %if.then549 ], [ %call525, %if.else555 ], [ %call525, %if.then582 ], [ %target.addr.0, %if.then628 ], [ %target.addr.0, %if.end626 ], [ %call525, %if.then637 ], [ %call525, %if.then648 ], [ %call525, %if.else651 ], [ %target, %lor.lhs.false504 ], [ %target, %land.lhs.true488 ], [ %target, %lor.lhs.false485 ], [ %target, %lor.lhs.false480 ]
-  %tobool658 = icmp eq i32 %want_value, 0
-  br i1 %tobool658, label %return, label %if.else660
+  %tobool658 = icmp eq i32 %want_value, 0, !dbg !5992
+  br i1 %tobool658, label %return, label %if.else660, !dbg !5992
 
 if.else660:                                       ; preds = %if.end657
-  %tobool661 = icmp eq i32 %dont_return_target.0, 0
-  br i1 %tobool661, label %land.lhs.true670, label %land.lhs.true662
+  %tobool661 = icmp eq i32 %dont_return_target.0, 0, !dbg !5993
+  br i1 %tobool661, label %land.lhs.true670, label %land.lhs.true662, !dbg !5993
 
 land.lhs.true662:                                 ; preds = %if.else660
-  %77 = bitcast %struct.rtx_def* %temp.7 to i32*
-  %bf.load663 = load i32* %77, align 8
-  %bf.clear664 = and i32 %bf.load663, 65535
-  %cmp665.not = icmp ne i32 %bf.clear664, 66
-  %temp.7.mux = select i1 %cmp665.not, %struct.rtx_def* %temp.7, %struct.rtx_def* %target.addr.1
-  br i1 %cmp665.not, label %return, label %land.lhs.true670
+  %77 = bitcast %struct.rtx_def* %temp.7 to i32*, !dbg !5993
+  %bf.load663 = load i32* %77, align 8, !dbg !5993
+  %bf.clear664 = and i32 %bf.load663, 65535, !dbg !5993
+  %cmp665.not = icmp ne i32 %bf.clear664, 66, !dbg !5993
+  %temp.7.mux = select i1 %cmp665.not, %struct.rtx_def* %temp.7, %struct.rtx_def* %target.addr.1, !dbg !5993
+  br i1 %cmp665.not, label %return, label %land.lhs.true670, !dbg !5993
 
 land.lhs.true670:                                 ; preds = %if.else660, %land.lhs.true662
-  %78 = bitcast %struct.rtx_def* %target.addr.1 to i32*
-  %bf.load671 = load i32* %78, align 8
-  %bf.clear673 = and i32 %bf.load671, 16711680
-  %cmp674 = icmp eq i32 %bf.clear673, 3342336
-  br i1 %cmp674, label %return, label %land.lhs.true676
+  %78 = bitcast %struct.rtx_def* %target.addr.1 to i32*, !dbg !5994
+  %bf.load671 = load i32* %78, align 8, !dbg !5994
+  %bf.clear673 = and i32 %bf.load671, 16711680, !dbg !5994
+  %cmp674 = icmp eq i32 %bf.clear673, 3342336, !dbg !5994
+  br i1 %cmp674, label %return, label %land.lhs.true676, !dbg !5994
 
 land.lhs.true676:                                 ; preds = %land.lhs.true670
-  %bf.clear678 = and i32 %bf.load671, 65535
-  %cmp679 = icmp eq i32 %bf.clear678, 61
-  br i1 %cmp679, label %land.lhs.true681, label %if.then687
+  %bf.clear678 = and i32 %bf.load671, 65535, !dbg !5994
+  %cmp679 = icmp eq i32 %bf.clear678, 61, !dbg !5994
+  br i1 %cmp679, label %land.lhs.true681, label %if.then687, !dbg !5994
 
 land.lhs.true681:                                 ; preds = %land.lhs.true676
-  %arrayidx683 = getelementptr inbounds %struct.rtx_def* %target.addr.1, i64 0, i32 1, i64 0
-  %rtuint684 = bitcast %union.rtunion_def* %arrayidx683 to i32*
-  %79 = load i32* %rtuint684, align 4, !tbaa !3
-  %cmp685 = icmp ult i32 %79, 53
-  br i1 %cmp685, label %return, label %if.then687
+  %arrayidx683 = getelementptr inbounds %struct.rtx_def* %target.addr.1, i64 0, i32 1, i64 0, !dbg !5994
+  %rtuint684 = bitcast %union.rtunion_def* %arrayidx683 to i32*, !dbg !5994
+  %79 = load i32* %rtuint684, align 4, !dbg !5994, !tbaa !3192
+  %cmp685 = icmp ult i32 %79, 53, !dbg !5994
+  br i1 %cmp685, label %return, label %if.then687, !dbg !5994
 
 if.then687:                                       ; preds = %land.lhs.true681, %land.lhs.true676
-  %call688 = tail call %struct.rtx_def* @copy_to_reg(%struct.rtx_def* %target.addr.1) #8
-  br label %return
+  %call688 = tail call %struct.rtx_def* @copy_to_reg(%struct.rtx_def* %target.addr.1) #9, !dbg !5995
+  br label %return, !dbg !5995
 
 return:                                           ; preds = %if.end657, %land.lhs.true662, %land.lhs.true681, %land.lhs.true670, %if.then687, %if.end331
   %retval.0 = phi %struct.rtx_def* [ %call688, %if.then687 ], [ %cond336, %if.end331 ], [ null, %if.end657 ], [ %temp.7.mux, %land.lhs.true662 ], [ %target.addr.1, %land.lhs.true670 ], [ %target.addr.1, %land.lhs.true681 ]
-  ret %struct.rtx_def* %retval.0
+  ret %struct.rtx_def* %retval.0, !dbg !5878
 }

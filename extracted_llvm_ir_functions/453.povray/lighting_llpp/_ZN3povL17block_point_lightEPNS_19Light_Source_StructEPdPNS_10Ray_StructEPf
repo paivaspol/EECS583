@@ -1,0 +1,426 @@
+define internal fastcc void @_ZN3povL17block_point_lightEPNS_19Light_Source_StructEPdPNS_10Ray_StructEPf(%"struct.pov::Light_Source_Struct"* nocapture %Light_Source, double* nocapture %Light_Source_Depth, %"struct.pov::Ray_Struct"* %Light_Source_Ray, float* %Light_Colour) #0 {
+entry:
+  %Blocking_Object = alloca %"struct.pov::Object_Struct"*, align 8
+  %Bounded_Intersection = alloca %"struct.pov::istk_entry", align 8
+  %Temp_Intersection = alloca %"struct.pov::istk_entry", align 8
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Light_Source_Struct"* %Light_Source}, i64 0, metadata !1194), !dbg !4472
+  call void @llvm.dbg.value(metadata !{double* %Light_Source_Depth}, i64 0, metadata !1195), !dbg !4472
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Ray_Struct"* %Light_Source_Ray}, i64 0, metadata !1196), !dbg !4472
+  call void @llvm.dbg.value(metadata !{float* %Light_Colour}, i64 0, metadata !1197), !dbg !4472
+  call void @llvm.dbg.declare(metadata !{%"struct.pov::Object_Struct"** %Blocking_Object}, metadata !1198), !dbg !4473
+  %0 = bitcast %"struct.pov::istk_entry"* %Bounded_Intersection to i8*, !dbg !4474
+  call void @llvm.lifetime.start(i64 200, i8* %0) #6, !dbg !4474
+  call void @llvm.dbg.declare(metadata !{%"struct.pov::istk_entry"* %Bounded_Intersection}, metadata !1204), !dbg !4474
+  %1 = bitcast %"struct.pov::istk_entry"* %Temp_Intersection to i8*, !dbg !4474
+  call void @llvm.lifetime.start(i64 200, i8* %1) #6, !dbg !4474
+  call void @llvm.dbg.declare(metadata !{%"struct.pov::istk_entry"* %Temp_Intersection}, metadata !1205), !dbg !4474
+  call void @llvm.dbg.value(metadata !3304, i64 0, metadata !1207), !dbg !4475
+  %Projected_Through_Object = getelementptr inbounds %"struct.pov::Light_Source_Struct"* %Light_Source, i64 0, i32 42, !dbg !4476
+  %2 = load %"struct.pov::Object_Struct"** %Projected_Through_Object, align 8, !dbg !4476, !tbaa !2295
+  %cmp = icmp eq %"struct.pov::Object_Struct"* %2, null, !dbg !4476
+  br i1 %cmp, label %if.end18, label %if.then, !dbg !4476
+
+if.then:                                          ; preds = %entry
+  %call = call zeroext i1 @_ZN3pov12IntersectionEPNS_10istk_entryEPNS_13Object_StructEPNS_10Ray_StructE(%"struct.pov::istk_entry"* %Temp_Intersection, %"struct.pov::Object_Struct"* %2, %"struct.pov::Ray_Struct"* %Light_Source_Ray) #7, !dbg !4477
+  br i1 %call, label %if.then2, label %if.else10, !dbg !4477
+
+if.then2:                                         ; preds = %if.then
+  %Depth = getelementptr inbounds %"struct.pov::istk_entry"* %Temp_Intersection, i64 0, i32 0, !dbg !4479
+  %3 = load double* %Depth, align 8, !dbg !4479, !tbaa !2552
+  %4 = load double* %Light_Source_Depth, align 8, !dbg !4479, !tbaa !2552
+  %sub = fsub double %3, %4, !dbg !4479
+  %cmp3 = fcmp olt double %sub, 0.000000e+00, !dbg !4479
+  br i1 %cmp3, label %if.then4, label %if.else, !dbg !4479
+
+if.then4:                                         ; preds = %if.then2
+  %call6 = call double @fabs(double %3) #9, !dbg !4481
+  %sub7 = fsub double %4, %call6, !dbg !4481
+  %add = fadd double %sub7, 1.000000e-03, !dbg !4481
+  call void @llvm.dbg.value(metadata !{double %add}, i64 0, metadata !1207), !dbg !4481
+  %Light_Type = getelementptr inbounds %"struct.pov::Light_Source_Struct"* %Light_Source, i64 0, i32 27, !dbg !4483
+  %5 = load i8* %Light_Type, align 1, !dbg !4483, !tbaa !2296
+  %cmp15 = icmp eq i8 %5, 3, !dbg !4483
+  br i1 %cmp15, label %cleanup, label %if.end18, !dbg !4483
+
+if.else:                                          ; preds = %if.then2
+  %arrayidx = getelementptr inbounds float* %Light_Colour, i64 2, !dbg !4484
+  store float 0.000000e+00, float* %arrayidx, align 4, !dbg !4484, !tbaa !2644
+  %arrayidx8 = getelementptr inbounds float* %Light_Colour, i64 1, !dbg !4484
+  store float 0.000000e+00, float* %arrayidx8, align 4, !dbg !4484, !tbaa !2644
+  store float 0.000000e+00, float* %Light_Colour, align 4, !dbg !4484, !tbaa !2644
+  br label %cleanup, !dbg !4486
+
+if.else10:                                        ; preds = %if.then
+  %arrayidx11 = getelementptr inbounds float* %Light_Colour, i64 2, !dbg !4487
+  store float 0.000000e+00, float* %arrayidx11, align 4, !dbg !4487, !tbaa !2644
+  %arrayidx12 = getelementptr inbounds float* %Light_Colour, i64 1, !dbg !4487
+  store float 0.000000e+00, float* %arrayidx12, align 4, !dbg !4487, !tbaa !2644
+  store float 0.000000e+00, float* %Light_Colour, align 4, !dbg !4487, !tbaa !2644
+  br label %cleanup, !dbg !4489
+
+if.end18:                                         ; preds = %entry, %if.then4
+  %Projected_Depth.0 = phi double [ %add, %if.then4 ], [ 0.000000e+00, %entry ]
+  %call19 = call %"struct.pov::istack_struct"* @_ZN3pov11open_istackEv() #7, !dbg !4490
+  call void @llvm.dbg.value(metadata !{%"struct.pov::istack_struct"* %call19}, i64 0, metadata !1206), !dbg !4490
+  call void @llvm.dbg.value(metadata !208, i64 0, metadata !1199), !dbg !4491
+  %Shadow_Cached_Object = getelementptr inbounds %"struct.pov::Light_Source_Struct"* %Light_Source, i64 0, i32 41, !dbg !4492
+  %6 = load %"struct.pov::Object_Struct"** %Shadow_Cached_Object, align 8, !dbg !4492, !tbaa !2295
+  %cmp20 = icmp eq %"struct.pov::Object_Struct"* %6, null, !dbg !4492
+  br i1 %cmp20, label %if.end54, label %if.then21, !dbg !4492
+
+if.then21:                                        ; preds = %if.end18
+  tail call void @llvm.dbg.value(metadata !3326, i64 0, metadata !4493), !dbg !4496
+  %7 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 107), align 8, !dbg !4497, !tbaa !2311
+  %inc.i = add nsw i64 %7, 1, !dbg !4497
+  store i64 %inc.i, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 107), align 8, !dbg !4497, !tbaa !2311
+  %Bound = getelementptr inbounds %"struct.pov::Object_Struct"* %6, i64 0, i32 6, !dbg !4498
+  %8 = load %"struct.pov::Object_Struct"** %Bound, align 8, !dbg !4498, !tbaa !2295
+  %call23 = call zeroext i1 @_ZN3pov12Ray_In_BoundEPNS_10Ray_StructEPNS_13Object_StructE(%"struct.pov::Ray_Struct"* %Light_Source_Ray, %"struct.pov::Object_Struct"* %8) #7, !dbg !4498
+  br i1 %call23, label %if.then24, label %if.end54, !dbg !4498
+
+if.then24:                                        ; preds = %if.then21
+  %9 = load %"struct.pov::Object_Struct"** %Shadow_Cached_Object, align 8, !dbg !4499, !tbaa !2295
+  %Methods = getelementptr inbounds %"struct.pov::Object_Struct"* %9, i64 0, i32 0, !dbg !4499
+  %10 = load %"struct.pov::Method_Struct"** %Methods, align 8, !dbg !4499, !tbaa !2295
+  %All_Intersections_Method = getelementptr inbounds %"struct.pov::Method_Struct"* %10, i64 0, i32 0, !dbg !4499
+  %11 = load i32 (%"struct.pov::Object_Struct"*, %"struct.pov::Ray_Struct"*, %"struct.pov::istack_struct"*)** %All_Intersections_Method, align 8, !dbg !4499, !tbaa !2295
+  %call27 = call i32 %11(%"struct.pov::Object_Struct"* %9, %"struct.pov::Ray_Struct"* %Light_Source_Ray, %"struct.pov::istack_struct"* %call19) #7, !dbg !4499
+  %tobool = icmp eq i32 %call27, 0, !dbg !4499
+  br i1 %tobool, label %if.end54, label %while.cond.preheader, !dbg !4499
+
+while.cond.preheader:                             ; preds = %if.then24
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istack_struct"* %call19}, i64 0, metadata !4501), !dbg !4504
+  %top_entry.i = getelementptr inbounds %"struct.pov::istack_struct"* %call19, i64 0, i32 3, !dbg !4505
+  %12 = load i32* %top_entry.i, align 4, !dbg !4505, !tbaa !2301
+  %cmp.i252 = icmp eq i32 %12, 0, !dbg !4505
+  br i1 %cmp.i252, label %if.end54, label %_ZN3pov9pop_entryEPNS_13istack_structE.exit.lr.ph, !dbg !4505
+
+_ZN3pov9pop_entryEPNS_13istack_structE.exit.lr.ph: ; preds = %while.cond.preheader
+  %istack.i = getelementptr inbounds %"struct.pov::istack_struct"* %call19, i64 0, i32 1, !dbg !4505
+  br label %_ZN3pov9pop_entryEPNS_13istack_structE.exit, !dbg !4505
+
+_ZN3pov9pop_entryEPNS_13istack_structE.exit:      ; preds = %while.cond.backedge, %_ZN3pov9pop_entryEPNS_13istack_structE.exit.lr.ph
+  %13 = phi i32 [ %12, %_ZN3pov9pop_entryEPNS_13istack_structE.exit.lr.ph ], [ %19, %while.cond.backedge ]
+  %dec.i = add i32 %13, -1, !dbg !4505
+  store i32 %dec.i, i32* %top_entry.i, align 4, !dbg !4505, !tbaa !2301
+  %idxprom.i = zext i32 %dec.i to i64, !dbg !4505
+  %14 = load %"struct.pov::istk_entry"** %istack.i, align 8, !dbg !4505, !tbaa !2295
+  %arrayidx.i = getelementptr inbounds %"struct.pov::istk_entry"* %14, i64 %idxprom.i, !dbg !4505
+  call void @llvm.dbg.value(metadata !{%"struct.pov::istk_entry"* %arrayidx.i}, i64 0, metadata !1203), !dbg !4502
+  %cmp30 = icmp eq %"struct.pov::istk_entry"* %arrayidx.i, null, !dbg !4502
+  br i1 %cmp30, label %if.end54, label %while.body, !dbg !4502
+
+while.body:                                       ; preds = %_ZN3pov9pop_entryEPNS_13istack_structE.exit
+  %Object = getelementptr inbounds %"struct.pov::istk_entry"* %14, i64 %idxprom.i, i32 5, !dbg !4506
+  %15 = load %"struct.pov::Object_Struct"** %Object, align 8, !dbg !4506, !tbaa !2295
+  %Flags = getelementptr inbounds %"struct.pov::Object_Struct"* %15, i64 0, i32 13, !dbg !4506
+  %16 = load i32* %Flags, align 4, !dbg !4506, !tbaa !2301
+  %and = and i32 %16, 1, !dbg !4506
+  %tobool32 = icmp eq i32 %and, 0, !dbg !4506
+  br i1 %tobool32, label %land.lhs.true, label %while.cond.backedge, !dbg !4506
+
+land.lhs.true:                                    ; preds = %while.body
+  %Depth33 = getelementptr inbounds %"struct.pov::istk_entry"* %arrayidx.i, i64 0, i32 0, !dbg !4506
+  %17 = load double* %Depth33, align 8, !dbg !4506, !tbaa !2552
+  %18 = load double* %Light_Source_Depth, align 8, !dbg !4506, !tbaa !2552
+  %sub34 = fadd double %18, -1.000000e-03, !dbg !4506
+  %cmp35 = fcmp olt double %17, %sub34, !dbg !4506
+  %sub38 = fsub double %18, %17, !dbg !4506
+  %cmp39 = fcmp ogt double %sub38, %Projected_Depth.0, !dbg !4506
+  %or.cond = and i1 %cmp35, %cmp39, !dbg !4506
+  %cmp42 = fcmp ogt double %17, 1.000000e-03, !dbg !4506
+  %or.cond230 = and i1 %or.cond, %cmp42, !dbg !4506
+  br i1 %or.cond230, label %if.then43, label %while.cond.backedge, !dbg !4506
+
+while.cond.backedge:                              ; preds = %if.then43.while.cond.backedge_crit_edge, %land.lhs.true, %while.body
+  %19 = phi i32 [ %.pre, %if.then43.while.cond.backedge_crit_edge ], [ %dec.i, %land.lhs.true ], [ %dec.i, %while.body ]
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istack_struct"* %call19}, i64 0, metadata !4501), !dbg !4504
+  %cmp.i = icmp eq i32 %19, 0, !dbg !4505
+  br i1 %cmp.i, label %if.end54, label %_ZN3pov9pop_entryEPNS_13istack_structE.exit, !dbg !4505
+
+if.then43:                                        ; preds = %land.lhs.true
+  %call44 = call fastcc i32 @_ZN3povL11do_blockingEPNS_10istk_entryEPNS_10Ray_StructEPfPNS_13istack_structE(%"struct.pov::istk_entry"* %arrayidx.i, %"struct.pov::Ray_Struct"* %Light_Source_Ray, float* %Light_Colour, %"struct.pov::istack_struct"* %call19) #7, !dbg !4508
+  %tobool45 = icmp eq i32 %call44, 0, !dbg !4508
+  br i1 %tobool45, label %if.then43.while.cond.backedge_crit_edge, label %if.then52, !dbg !4508
+
+if.then43.while.cond.backedge_crit_edge:          ; preds = %if.then43
+  %.pre = load i32* %top_entry.i, align 4, !dbg !4505, !tbaa !2301
+  br label %while.cond.backedge, !dbg !4508
+
+if.then52:                                        ; preds = %if.then43
+  call void @llvm.dbg.value(metadata !2354, i64 0, metadata !1199), !dbg !4510
+  tail call void @llvm.dbg.value(metadata !3348, i64 0, metadata !4512), !dbg !4514
+  %20 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 105), align 8, !dbg !4515, !tbaa !2311
+  %inc.i231 = add nsw i64 %20, 1, !dbg !4515
+  store i64 %inc.i231, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 105), align 8, !dbg !4515, !tbaa !2311
+  call void @_ZN3pov12close_istackEPNS_13istack_structE(%"struct.pov::istack_struct"* %call19) #7, !dbg !4516
+  br label %cleanup, !dbg !4518
+
+if.end54:                                         ; preds = %while.cond.preheader, %_ZN3pov9pop_entryEPNS_13istack_structE.exit, %while.cond.backedge, %if.then21, %if.then24, %if.end18
+  call void @llvm.dbg.value(metadata !2354, i64 0, metadata !1200), !dbg !4519
+  call void @llvm.dbg.value(metadata !208, i64 0, metadata !1201), !dbg !4520
+  %21 = load i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 29), align 4, !dbg !4521, !tbaa !3674, !range !3675
+  %tobool55 = icmp eq i8 %21, 0, !dbg !4521
+  br i1 %tobool55, label %while.body59.preheader, label %if.else112, !dbg !4521
+
+while.body59.preheader:                           ; preds = %if.end54
+  %Object60 = getelementptr inbounds %"struct.pov::istk_entry"* %Bounded_Intersection, i64 0, i32 5, !dbg !4522
+  %Depth62 = getelementptr inbounds %"struct.pov::istk_entry"* %Bounded_Intersection, i64 0, i32 0, !dbg !4525
+  %arrayidx89 = getelementptr inbounds float* %Light_Colour, i64 1, !dbg !4526
+  %arrayidx94 = getelementptr inbounds float* %Light_Colour, i64 2, !dbg !4528
+  %arraydecay = getelementptr inbounds %"struct.pov::Ray_Struct"* %Light_Source_Ray, i64 0, i32 0, i64 0, !dbg !4529
+  %arraydecay108 = getelementptr inbounds %"struct.pov::istk_entry"* %Bounded_Intersection, i64 0, i32 1, i64 0, !dbg !4529
+  %arrayidx2.i = getelementptr inbounds %"struct.pov::istk_entry"* %Bounded_Intersection, i64 0, i32 1, i64 1, !dbg !4530
+  %arrayidx3.i = getelementptr inbounds %"struct.pov::Ray_Struct"* %Light_Source_Ray, i64 0, i32 0, i64 1, !dbg !4530
+  %arrayidx4.i = getelementptr inbounds %"struct.pov::istk_entry"* %Bounded_Intersection, i64 0, i32 1, i64 2, !dbg !4531
+  %arrayidx5.i = getelementptr inbounds %"struct.pov::Ray_Struct"* %Light_Source_Ray, i64 0, i32 0, i64 2, !dbg !4531
+  %Depth74 = getelementptr inbounds %"struct.pov::istk_entry"* %Temp_Intersection, i64 0, i32 0, !dbg !4532
+  br label %while.body59, !dbg !4538
+
+while.body59:                                     ; preds = %while.body59.preheader, %if.end105
+  %Not_Found_Shadow.0 = phi i32 [ 0, %if.end105 ], [ 1, %while.body59.preheader ]
+  call void @llvm.dbg.value(metadata !208, i64 0, metadata !1202), !dbg !4538
+  store %"struct.pov::Object_Struct"* null, %"struct.pov::Object_Struct"** %Object60, align 8, !dbg !4522, !tbaa !2295
+  %22 = load double* %Light_Source_Depth, align 8, !dbg !4525, !tbaa !2552
+  %sub61 = fsub double %22, %Projected_Depth.0, !dbg !4525
+  store double %sub61, double* %Depth62, align 8, !dbg !4525, !tbaa !2552
+  %storemerge243 = load %"struct.pov::Object_Struct"** getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 5), align 8, !dbg !4539
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %storemerge243}, i64 0, metadata !1198), !dbg !4539
+  store %"struct.pov::Object_Struct"* %storemerge243, %"struct.pov::Object_Struct"** %Blocking_Object, align 8, !dbg !4539, !tbaa !2295
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"** %Blocking_Object}, i64 0, metadata !1198), !dbg !4539
+  %cmp63244 = icmp eq %"struct.pov::Object_Struct"* %storemerge243, null, !dbg !4539
+  br i1 %cmp63244, label %if.end170, label %for.body, !dbg !4539
+
+for.body:                                         ; preds = %for.inc, %while.body59
+  %23 = phi %"struct.pov::Object_Struct"* [ %storemerge243, %while.body59 ], [ %storemerge, %for.inc ]
+  %Maybe_Found.0245 = phi i32 [ 0, %while.body59 ], [ %Maybe_Found.1, %for.inc ]
+  %24 = load %"struct.pov::Object_Struct"** %Shadow_Cached_Object, align 8, !dbg !4540, !tbaa !2295
+  %cmp65 = icmp eq %"struct.pov::Object_Struct"* %23, %24, !dbg !4540
+  br i1 %cmp65, label %for.inc, label %if.then66, !dbg !4540
+
+if.then66:                                        ; preds = %for.body
+  %Flags67 = getelementptr inbounds %"struct.pov::Object_Struct"* %23, i64 0, i32 13, !dbg !4541
+  %25 = load i32* %Flags67, align 4, !dbg !4541, !tbaa !2301
+  %and69 = and i32 %25, 1, !dbg !4541
+  %tobool70 = icmp eq i32 %and69, 0, !dbg !4541
+  br i1 %tobool70, label %if.then71, label %for.inc, !dbg !4541
+
+if.then71:                                        ; preds = %if.then66
+  tail call void @llvm.dbg.value(metadata !3326, i64 0, metadata !4542), !dbg !4544
+  %26 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 107), align 8, !dbg !4545, !tbaa !2311
+  %inc.i232 = add nsw i64 %26, 1, !dbg !4545
+  store i64 %inc.i232, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 107), align 8, !dbg !4545, !tbaa !2311
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"** %Blocking_Object}, i64 0, metadata !1198), !dbg !4546
+  %call72 = call zeroext i1 @_ZN3pov12IntersectionEPNS_10istk_entryEPNS_13Object_StructEPNS_10Ray_StructE(%"struct.pov::istk_entry"* %Temp_Intersection, %"struct.pov::Object_Struct"* %23, %"struct.pov::Ray_Struct"* %Light_Source_Ray) #7, !dbg !4546
+  br i1 %call72, label %if.then73, label %for.inc, !dbg !4546
+
+if.then73:                                        ; preds = %if.then71
+  %27 = load double* %Depth74, align 8, !dbg !4532, !tbaa !2552
+  %28 = load double* %Depth62, align 8, !dbg !4532, !tbaa !2552
+  %cmp76 = fcmp olt double %27, %28, !dbg !4532
+  br i1 %cmp76, label %if.then77, label %for.inc, !dbg !4532
+
+if.then77:                                        ; preds = %if.then73
+  call void @llvm.dbg.value(metadata !2354, i64 0, metadata !1202), !dbg !4547
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %1, i64 200, i32 8, i1 false), !dbg !4549, !tbaa.struct !4550
+  br label %for.inc, !dbg !4551
+
+for.inc:                                          ; preds = %if.then73, %if.then71, %if.then66, %for.body, %if.then77
+  %Maybe_Found.1 = phi i32 [ %Maybe_Found.0245, %if.then66 ], [ 1, %if.then77 ], [ %Maybe_Found.0245, %for.body ], [ %Maybe_Found.0245, %if.then71 ], [ %Maybe_Found.0245, %if.then73 ]
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"** %Blocking_Object}, i64 0, metadata !1198), !dbg !4539
+  %29 = load %"struct.pov::Object_Struct"** %Blocking_Object, align 8, !dbg !4539, !tbaa !2295
+  %Sibling = getelementptr inbounds %"struct.pov::Object_Struct"* %29, i64 0, i32 2, !dbg !4539
+  %storemerge = load %"struct.pov::Object_Struct"** %Sibling, align 8, !dbg !4539
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %23}, i64 0, metadata !1198), !dbg !4539
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %storemerge}, i64 0, metadata !1198), !dbg !4539
+  store %"struct.pov::Object_Struct"* %storemerge, %"struct.pov::Object_Struct"** %Blocking_Object, align 8, !dbg !4539, !tbaa !2295
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"** %Blocking_Object}, i64 0, metadata !1198), !dbg !4539
+  %cmp63 = icmp eq %"struct.pov::Object_Struct"* %storemerge, null, !dbg !4539
+  br i1 %cmp63, label %for.end, label %for.body, !dbg !4539
+
+for.end:                                          ; preds = %for.inc
+  %tobool82 = icmp eq i32 %Maybe_Found.1, 0, !dbg !4552
+  br i1 %tobool82, label %if.end170, label %if.then83, !dbg !4552
+
+if.then83:                                        ; preds = %for.end
+  tail call void @llvm.dbg.value(metadata !3409, i64 0, metadata !4553), !dbg !4555
+  %30 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 106), align 8, !dbg !4556, !tbaa !2311
+  %inc.i233 = add nsw i64 %30, 1, !dbg !4556
+  store i64 %inc.i233, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 106), align 8, !dbg !4556, !tbaa !2311
+  call fastcc void @_ZN3povL17filter_shadow_rayEPNS_10istk_entryEPNS_10Ray_StructEPf(%"struct.pov::istk_entry"* %Bounded_Intersection, %"struct.pov::Ray_Struct"* %Light_Source_Ray, float* %Light_Colour) #7, !dbg !4557
+  %31 = load float* %Light_Colour, align 4, !dbg !4558, !tbaa !2644
+  %fabsf = call float @fabsf(float %31) #4, !dbg !4558
+  %32 = fpext float %fabsf to double, !dbg !4558
+  %cmp87 = fcmp olt double %32, 1.000000e-07, !dbg !4558
+  br i1 %cmp87, label %land.lhs.true88, label %if.end105, !dbg !4558
+
+land.lhs.true88:                                  ; preds = %if.then83
+  %33 = load float* %arrayidx89, align 4, !dbg !4526, !tbaa !2644
+  %fabsf225 = call float @fabsf(float %33) #4, !dbg !4526
+  %34 = fpext float %fabsf225 to double, !dbg !4526
+  %cmp92 = fcmp olt double %34, 1.000000e-07, !dbg !4526
+  br i1 %cmp92, label %land.lhs.true93, label %if.end105, !dbg !4526
+
+land.lhs.true93:                                  ; preds = %land.lhs.true88
+  %35 = load float* %arrayidx94, align 4, !dbg !4528, !tbaa !2644
+  %fabsf226 = call float @fabsf(float %35) #4, !dbg !4528
+  %36 = fpext float %fabsf226 to double, !dbg !4528
+  %cmp97 = fcmp olt double %36, 1.000000e-07, !dbg !4528
+  br i1 %cmp97, label %land.lhs.true98, label %if.end105, !dbg !4528
+
+land.lhs.true98:                                  ; preds = %land.lhs.true93
+  %37 = load %"struct.pov::Object_Struct"** %Object60, align 8, !dbg !4528, !tbaa !2295
+  %Flags100 = getelementptr inbounds %"struct.pov::Object_Struct"* %37, i64 0, i32 13, !dbg !4528
+  %38 = load i32* %Flags100, align 4, !dbg !4528, !tbaa !2301
+  %and102 = and i32 %38, 128, !dbg !4528
+  %tobool103 = icmp eq i32 %and102, 0, !dbg !4528
+  br i1 %tobool103, label %if.end105, label %if.end166, !dbg !4528
+
+if.end105:                                        ; preds = %land.lhs.true98, %land.lhs.true93, %land.lhs.true88, %if.then83
+  %39 = load double* %Depth62, align 8, !dbg !4559, !tbaa !2552
+  %40 = load double* %Light_Source_Depth, align 8, !dbg !4559, !tbaa !2552
+  %sub107 = fsub double %40, %39, !dbg !4559
+  store double %sub107, double* %Light_Source_Depth, align 8, !dbg !4559, !tbaa !2552
+  tail call void @llvm.dbg.value(metadata !{double* %arraydecay}, i64 0, metadata !4560), !dbg !4561
+  tail call void @llvm.dbg.value(metadata !{double* %arraydecay108}, i64 0, metadata !4562), !dbg !4561
+  %41 = load double* %arraydecay108, align 8, !dbg !4563, !tbaa !2552
+  store double %41, double* %arraydecay, align 8, !dbg !4563, !tbaa !2552
+  %42 = load double* %arrayidx2.i, align 8, !dbg !4530, !tbaa !2552
+  store double %42, double* %arrayidx3.i, align 8, !dbg !4530, !tbaa !2552
+  %43 = load double* %arrayidx4.i, align 8, !dbg !4531, !tbaa !2552
+  store double %43, double* %arrayidx5.i, align 8, !dbg !4531, !tbaa !2552
+  call void @llvm.dbg.value(metadata !208, i64 0, metadata !1200), !dbg !4564
+  br label %while.body59, !dbg !4565
+
+if.else112:                                       ; preds = %if.end54
+  store i8 1, i8* @_ZN3pov13In_Shadow_RayE, align 1, !dbg !4566, !tbaa !3674
+  tail call void @llvm.dbg.value(metadata !3326, i64 0, metadata !4568), !dbg !4571
+  %44 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 107), align 8, !dbg !4572, !tbaa !2311
+  %inc.i234248 = add nsw i64 %44, 1, !dbg !4572
+  store i64 %inc.i234248, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 107), align 8, !dbg !4572, !tbaa !2311
+  %45 = load double* %Light_Source_Depth, align 8, !dbg !4573, !tbaa !2552
+  %Depth117 = getelementptr inbounds %"struct.pov::istk_entry"* %Bounded_Intersection, i64 0, i32 0, !dbg !4573
+  store double %45, double* %Depth117, align 8, !dbg !4573, !tbaa !2552
+  %46 = load %"struct.pov::BBox_Tree_Struct"** @_ZN3pov11Root_ObjectE, align 8, !dbg !4574, !tbaa !2295
+  %call118249 = call zeroext i1 @_ZN3pov19Intersect_BBox_TreeEPNS_16BBox_Tree_StructEPNS_10Ray_StructEPNS_10istk_entryEPPNS_13Object_StructEb(%"struct.pov::BBox_Tree_Struct"* %46, %"struct.pov::Ray_Struct"* %Light_Source_Ray, %"struct.pov::istk_entry"* %Bounded_Intersection, %"struct.pov::Object_Struct"** %Blocking_Object, i1 zeroext true) #7, !dbg !4574
+  br i1 %call118249, label %if.then119.lr.ph, label %while.end165, !dbg !4574
+
+if.then119.lr.ph:                                 ; preds = %if.else112
+  %Object125 = getelementptr inbounds %"struct.pov::istk_entry"* %Bounded_Intersection, i64 0, i32 5, !dbg !4575
+  %arrayidx139 = getelementptr inbounds float* %Light_Colour, i64 1, !dbg !4577
+  %arrayidx144 = getelementptr inbounds float* %Light_Colour, i64 2, !dbg !4580
+  %arraydecay160 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Light_Source_Ray, i64 0, i32 0, i64 0, !dbg !4581
+  %arraydecay162 = getelementptr inbounds %"struct.pov::istk_entry"* %Bounded_Intersection, i64 0, i32 1, i64 0, !dbg !4581
+  %arrayidx2.i236 = getelementptr inbounds %"struct.pov::istk_entry"* %Bounded_Intersection, i64 0, i32 1, i64 1, !dbg !4582
+  %arrayidx3.i237 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Light_Source_Ray, i64 0, i32 0, i64 1, !dbg !4582
+  %arrayidx4.i238 = getelementptr inbounds %"struct.pov::istk_entry"* %Bounded_Intersection, i64 0, i32 1, i64 2, !dbg !4583
+  %arrayidx5.i239 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Light_Source_Ray, i64 0, i32 0, i64 2, !dbg !4583
+  br label %if.then119, !dbg !4574
+
+if.then119:                                       ; preds = %if.then119.lr.ph, %if.end156
+  %Not_Found_Shadow.1250 = phi i32 [ 1, %if.then119.lr.ph ], [ 0, %if.end156 ]
+  %47 = load double* %Depth117, align 8, !dbg !4584, !tbaa !2552
+  %48 = load double* %Light_Source_Depth, align 8, !dbg !4584, !tbaa !2552
+  %sub121 = fsub double %48, %Projected_Depth.0, !dbg !4584
+  %cmp122 = fcmp ogt double %47, %sub121, !dbg !4584
+  br i1 %cmp122, label %while.end165, label %if.end124, !dbg !4584
+
+if.end124:                                        ; preds = %if.then119
+  %49 = load %"struct.pov::Object_Struct"** %Object125, align 8, !dbg !4575, !tbaa !2295
+  %Flags126 = getelementptr inbounds %"struct.pov::Object_Struct"* %49, i64 0, i32 13, !dbg !4575
+  %50 = load i32* %Flags126, align 4, !dbg !4575, !tbaa !2301
+  %and128 = and i32 %50, 1, !dbg !4575
+  %tobool129 = icmp eq i32 %and128, 0, !dbg !4575
+  br i1 %tobool129, label %if.then130, label %if.end156, !dbg !4575
+
+if.then130:                                       ; preds = %if.end124
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"** %Blocking_Object}, i64 0, metadata !1198), !dbg !4585
+  %51 = load %"struct.pov::Object_Struct"** %Blocking_Object, align 8, !dbg !4585, !tbaa !2295
+  %52 = load %"struct.pov::Object_Struct"** %Shadow_Cached_Object, align 8, !dbg !4585, !tbaa !2295
+  %cmp132 = icmp eq %"struct.pov::Object_Struct"* %51, %52, !dbg !4585
+  br i1 %cmp132, label %if.end156, label %if.then133, !dbg !4585
+
+if.then133:                                       ; preds = %if.then130
+  tail call void @llvm.dbg.value(metadata !3409, i64 0, metadata !4586), !dbg !4588
+  %53 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 106), align 8, !dbg !4589, !tbaa !2311
+  %inc.i235 = add nsw i64 %53, 1, !dbg !4589
+  store i64 %inc.i235, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 106), align 8, !dbg !4589, !tbaa !2311
+  call fastcc void @_ZN3povL17filter_shadow_rayEPNS_10istk_entryEPNS_10Ray_StructEPf(%"struct.pov::istk_entry"* %Bounded_Intersection, %"struct.pov::Ray_Struct"* %Light_Source_Ray, float* %Light_Colour) #7, !dbg !4590
+  %54 = load float* %Light_Colour, align 4, !dbg !4591, !tbaa !2644
+  %fabsf227 = call float @fabsf(float %54) #4, !dbg !4591
+  %55 = fpext float %fabsf227 to double, !dbg !4591
+  %cmp137 = fcmp olt double %55, 1.000000e-07, !dbg !4591
+  br i1 %cmp137, label %land.lhs.true138, label %if.end156, !dbg !4591
+
+land.lhs.true138:                                 ; preds = %if.then133
+  %56 = load float* %arrayidx139, align 4, !dbg !4577, !tbaa !2644
+  %fabsf228 = call float @fabsf(float %56) #4, !dbg !4577
+  %57 = fpext float %fabsf228 to double, !dbg !4577
+  %cmp142 = fcmp olt double %57, 1.000000e-07, !dbg !4577
+  br i1 %cmp142, label %land.lhs.true143, label %if.end156, !dbg !4577
+
+land.lhs.true143:                                 ; preds = %land.lhs.true138
+  %58 = load float* %arrayidx144, align 4, !dbg !4580, !tbaa !2644
+  %fabsf229 = call float @fabsf(float %58) #4, !dbg !4580
+  %59 = fpext float %fabsf229 to double, !dbg !4580
+  %cmp147 = fcmp olt double %59, 1.000000e-07, !dbg !4580
+  br i1 %cmp147, label %land.lhs.true148, label %if.end156, !dbg !4580
+
+land.lhs.true148:                                 ; preds = %land.lhs.true143
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"** %Blocking_Object}, i64 0, metadata !1198), !dbg !4580
+  %60 = load %"struct.pov::Object_Struct"** %Blocking_Object, align 8, !dbg !4580, !tbaa !2295
+  %Flags149 = getelementptr inbounds %"struct.pov::Object_Struct"* %60, i64 0, i32 13, !dbg !4580
+  %61 = load i32* %Flags149, align 4, !dbg !4580, !tbaa !2301
+  %and151 = and i32 %61, 128, !dbg !4580
+  %tobool152 = icmp eq i32 %and151, 0, !dbg !4580
+  br i1 %tobool152, label %if.end156, label %while.end165, !dbg !4580
+
+if.end156:                                        ; preds = %land.lhs.true148, %land.lhs.true143, %land.lhs.true138, %if.then133, %if.then130, %if.end124
+  %62 = load double* %Depth117, align 8, !dbg !4592, !tbaa !2552
+  %63 = load double* %Light_Source_Depth, align 8, !dbg !4592, !tbaa !2552
+  %sub158 = fsub double %63, %62, !dbg !4592
+  store double %sub158, double* %Light_Source_Depth, align 8, !dbg !4592, !tbaa !2552
+  tail call void @llvm.dbg.value(metadata !{double* %arraydecay160}, i64 0, metadata !4593), !dbg !4594
+  tail call void @llvm.dbg.value(metadata !{double* %arraydecay162}, i64 0, metadata !4595), !dbg !4594
+  %64 = load double* %arraydecay162, align 8, !dbg !4596, !tbaa !2552
+  store double %64, double* %arraydecay160, align 8, !dbg !4596, !tbaa !2552
+  %65 = load double* %arrayidx2.i236, align 8, !dbg !4582, !tbaa !2552
+  store double %65, double* %arrayidx3.i237, align 8, !dbg !4582, !tbaa !2552
+  %66 = load double* %arrayidx4.i238, align 8, !dbg !4583, !tbaa !2552
+  store double %66, double* %arrayidx5.i239, align 8, !dbg !4583, !tbaa !2552
+  call void @llvm.dbg.value(metadata !208, i64 0, metadata !1200), !dbg !4597
+  tail call void @llvm.dbg.value(metadata !3326, i64 0, metadata !4568), !dbg !4571
+  %67 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 107), align 8, !dbg !4572, !tbaa !2311
+  %inc.i234 = add nsw i64 %67, 1, !dbg !4572
+  store i64 %inc.i234, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 107), align 8, !dbg !4572, !tbaa !2311
+  %68 = load double* %Light_Source_Depth, align 8, !dbg !4573, !tbaa !2552
+  store double %68, double* %Depth117, align 8, !dbg !4573, !tbaa !2552
+  %69 = load %"struct.pov::BBox_Tree_Struct"** @_ZN3pov11Root_ObjectE, align 8, !dbg !4574, !tbaa !2295
+  %call118 = call zeroext i1 @_ZN3pov19Intersect_BBox_TreeEPNS_16BBox_Tree_StructEPNS_10Ray_StructEPNS_10istk_entryEPPNS_13Object_StructEb(%"struct.pov::BBox_Tree_Struct"* %69, %"struct.pov::Ray_Struct"* %Light_Source_Ray, %"struct.pov::istk_entry"* %Bounded_Intersection, %"struct.pov::Object_Struct"** %Blocking_Object, i1 zeroext true) #7, !dbg !4574
+  br i1 %call118, label %if.then119, label %while.end165, !dbg !4574
+
+while.end165:                                     ; preds = %if.end156, %land.lhs.true148, %if.then119, %if.else112
+  %Cache_Me.0 = phi i32 [ 0, %if.else112 ], [ %Not_Found_Shadow.1250, %land.lhs.true148 ], [ 0, %if.then119 ], [ 0, %if.end156 ]
+  store i8 0, i8* @_ZN3pov13In_Shadow_RayE, align 1, !dbg !4598, !tbaa !3674
+  br label %if.end166
+
+if.end166:                                        ; preds = %land.lhs.true98, %while.end165
+  %Cache_Me.1 = phi i32 [ %Cache_Me.0, %while.end165 ], [ %Not_Found_Shadow.0, %land.lhs.true98 ]
+  %tobool167 = icmp eq i32 %Cache_Me.1, 0, !dbg !4599
+  br i1 %tobool167, label %if.end170, label %if.then168, !dbg !4599
+
+if.then168:                                       ; preds = %if.end166
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"** %Blocking_Object}, i64 0, metadata !1198), !dbg !4600
+  %70 = load %"struct.pov::Object_Struct"** %Blocking_Object, align 8, !dbg !4600, !tbaa !2295
+  store %"struct.pov::Object_Struct"* %70, %"struct.pov::Object_Struct"** %Shadow_Cached_Object, align 8, !dbg !4600, !tbaa !2295
+  br label %if.end170, !dbg !4602
+
+if.end170:                                        ; preds = %while.body59, %for.end, %if.end166, %if.then168
+  call void @_ZN3pov12close_istackEPNS_13istack_structE(%"struct.pov::istack_struct"* %call19) #7, !dbg !4603
+  br label %cleanup, !dbg !4603
+
+cleanup:                                          ; preds = %if.then4, %if.end170, %if.then52, %if.else10, %if.else
+  call void @llvm.lifetime.end(i64 200, i8* %1) #6, !dbg !4603
+  call void @llvm.lifetime.end(i64 200, i8* %0) #6, !dbg !4603
+  ret void, !dbg !4604
+}

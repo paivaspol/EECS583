@@ -1,22 +1,27 @@
 define i32 @CCTK_TimerDestroy(i8* %timername) #1 {
+entry:
   %timer = alloca %struct.t_Timer*, align 8
-  %1 = load %struct.cHandledData** @timers, align 8, !tbaa !9
-  %2 = bitcast %struct.t_Timer** %timer to i8**
-  %3 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %timername, i8** %2) #7
-  %4 = icmp sgt i32 %3, -1
-  br i1 %4, label %5, label %7
+  call void @llvm.dbg.value(metadata !{i8* %timername}, i64 0, metadata !133), !dbg !452
+  call void @llvm.dbg.declare(metadata !{%struct.t_Timer** %timer}, metadata !134), !dbg !453
+  %0 = load %struct.cHandledData** @timers, align 8, !dbg !454, !tbaa !355
+  %1 = bitcast %struct.t_Timer** %timer to i8**, !dbg !454
+  %call = call i32 @Util_GetHandle(%struct.cHandledData* %0, i8* %timername, i8** %1) #8, !dbg !454
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !135), !dbg !454
+  %cmp = icmp sgt i32 %call, -1, !dbg !455
+  br i1 %cmp, label %if.then, label %if.else, !dbg !455
 
-; <label>:5                                       ; preds = %0
-  %6 = load %struct.t_Timer** %timer, align 8, !tbaa !9
-  call fastcc void @CCTKi_TimerDestroy(i32 %3, %struct.t_Timer* %6) #8
-  br label %9
+if.then:                                          ; preds = %entry
+  call void @llvm.dbg.value(metadata !{%struct.t_Timer** %timer}, i64 0, metadata !134), !dbg !456
+  %2 = load %struct.t_Timer** %timer, align 8, !dbg !456, !tbaa !355
+  call fastcc void @CCTKi_TimerDestroy(i32 %call, %struct.t_Timer* %2) #10, !dbg !456
+  br label %if.end, !dbg !458
 
-; <label>:7                                       ; preds = %0
-  %8 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 493, i8* getelementptr inbounds ([81 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([40 x i8]* @.str3, i64 0, i64 0), i8* %timername) #7
-  br label %9
+if.else:                                          ; preds = %entry
+  %call1 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 493, i8* getelementptr inbounds ([69 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([40 x i8]* @.str3, i64 0, i64 0), i8* %timername) #8, !dbg !459
+  br label %if.end
 
-; <label>:9                                       ; preds = %7, %5
-  %not. = xor i1 %4, true
-  %10 = sext i1 %not. to i32
-  ret i32 %10
+if.end:                                           ; preds = %if.else, %if.then
+  %not.cmp = xor i1 %cmp, true, !dbg !461
+  %cond = sext i1 %not.cmp to i32, !dbg !461
+  ret i32 %cond, !dbg !461
 }

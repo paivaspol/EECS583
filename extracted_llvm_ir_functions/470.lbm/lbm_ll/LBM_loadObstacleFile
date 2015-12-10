@@ -1,58 +1,63 @@
 define void @LBM_loadObstacleFile(double* nocapture %grid, i8* nocapture %filename) #0 {
 entry:
-  %call = tail call %struct._IO_FILE* @fopen(i8* %filename, i8* getelementptr inbounds ([3 x i8]* @.str1, i64 0, i64 0)) #4
-  br label %for.cond1.preheader
+  tail call void @llvm.dbg.value(metadata !{double* %grid}, i64 0, metadata !87), !dbg !356
+  tail call void @llvm.dbg.value(metadata !{i8* %filename}, i64 0, metadata !88), !dbg !356
+  %call = tail call %struct._IO_FILE* @fopen(i8* %filename, i8* getelementptr inbounds ([3 x i8]* @.str2, i64 0, i64 0)) #5, !dbg !357
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %call}, i64 0, metadata !92), !dbg !357
+  tail call void @llvm.dbg.value(metadata !32, i64 0, metadata !91), !dbg !358
+  br label %for.cond1.preheader, !dbg !358
 
 for.cond1.preheader:                              ; preds = %for.end17, %entry
   %indvars.iv45 = phi i64 [ 0, %entry ], [ %indvars.iv.next46, %for.end17 ]
-  %0 = mul i64 %indvars.iv45, 10000
-  br label %for.cond4.preheader
+  %0 = mul i64 %indvars.iv45, 10000, !dbg !359
+  br label %for.cond4.preheader, !dbg !360
 
 for.cond4.preheader:                              ; preds = %for.inc15, %for.cond1.preheader
   %indvars.iv39 = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next40, %for.inc15 ]
-  %call731 = tail call i32 @fgetc(%struct._IO_FILE* %call) #4
-  %1 = mul nsw i64 %indvars.iv39, 100
-  %2 = add i64 %1, %0
-  br label %for.body6
+  %call731 = tail call i32 @fgetc(%struct._IO_FILE* %call) #5, !dbg !361
+  %1 = mul nsw i64 %indvars.iv39, 100, !dbg !359
+  %2 = add i64 %1, %0, !dbg !359
+  br label %for.body6, !dbg !362
 
 for.body6:                                        ; preds = %for.inc, %for.cond4.preheader
   %indvars.iv = phi i64 [ 0, %for.cond4.preheader ], [ %indvars.iv.next, %for.inc ]
   %call733 = phi i32 [ %call731, %for.cond4.preheader ], [ %call7, %for.inc ]
-  %cmp8 = icmp eq i32 %call733, 46
-  br i1 %cmp8, label %for.inc, label %if.then
+  %cmp8 = icmp eq i32 %call733, 46, !dbg !361
+  br i1 %cmp8, label %for.inc, label %if.then, !dbg !361
 
 if.then:                                          ; preds = %for.body6
-  %3 = add i64 %2, %indvars.iv
-  %4 = mul nsw i64 %3, 20
-  %5 = add nsw i64 %4, 19
-  %arrayidx = getelementptr inbounds double* %grid, i64 %5
-  %6 = bitcast double* %arrayidx to i32*
-  %7 = load i32* %6, align 4, !tbaa !4
-  %or = or i32 %7, 1
-  store i32 %or, i32* %6, align 4, !tbaa !4
-  br label %for.inc
+  %3 = add i64 %2, %indvars.iv, !dbg !359
+  %4 = mul nsw i64 %3, 20, !dbg !359
+  %5 = add nsw i64 %4, 19, !dbg !359
+  %arrayidx = getelementptr inbounds double* %grid, i64 %5, !dbg !359
+  %6 = bitcast double* %arrayidx to i32*, !dbg !359
+  tail call void @llvm.dbg.value(metadata !{i32* %6}, i64 0, metadata !147), !dbg !359
+  %7 = load i32* %6, align 4, !dbg !359, !tbaa !349
+  %or = or i32 %7, 1, !dbg !359
+  store i32 %or, i32* %6, align 4, !dbg !359, !tbaa !349
+  br label %for.inc, !dbg !359
 
 for.inc:                                          ; preds = %for.body6, %if.then
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %call7 = tail call i32 @fgetc(%struct._IO_FILE* %call) #4
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 100
-  br i1 %exitcond, label %for.inc15, label %for.body6
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !362
+  %call7 = tail call i32 @fgetc(%struct._IO_FILE* %call) #5, !dbg !361
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !362
+  %exitcond = icmp eq i32 %lftr.wideiv, 100, !dbg !362
+  br i1 %exitcond, label %for.inc15, label %for.body6, !dbg !362
 
 for.inc15:                                        ; preds = %for.inc
-  %indvars.iv.next40 = add i64 %indvars.iv39, 1
-  %lftr.wideiv43 = trunc i64 %indvars.iv.next40 to i32
-  %exitcond44 = icmp eq i32 %lftr.wideiv43, 100
-  br i1 %exitcond44, label %for.end17, label %for.cond4.preheader
+  %indvars.iv.next40 = add i64 %indvars.iv39, 1, !dbg !360
+  %lftr.wideiv43 = trunc i64 %indvars.iv.next40 to i32, !dbg !360
+  %exitcond44 = icmp eq i32 %lftr.wideiv43, 100, !dbg !360
+  br i1 %exitcond44, label %for.end17, label %for.cond4.preheader, !dbg !360
 
 for.end17:                                        ; preds = %for.inc15
-  %call18 = tail call i32 @fgetc(%struct._IO_FILE* %call) #4
-  %indvars.iv.next46 = add i64 %indvars.iv45, 1
-  %lftr.wideiv48 = trunc i64 %indvars.iv.next46 to i32
-  %exitcond49 = icmp eq i32 %lftr.wideiv48, 130
-  br i1 %exitcond49, label %for.end21, label %for.cond1.preheader
+  %call18 = tail call i32 @fgetc(%struct._IO_FILE* %call) #5, !dbg !363
+  %indvars.iv.next46 = add i64 %indvars.iv45, 1, !dbg !358
+  %lftr.wideiv48 = trunc i64 %indvars.iv.next46 to i32, !dbg !358
+  %exitcond49 = icmp eq i32 %lftr.wideiv48, 130, !dbg !358
+  br i1 %exitcond49, label %for.end21, label %for.cond1.preheader, !dbg !358
 
 for.end21:                                        ; preds = %for.end17
-  %call22 = tail call i32 @fclose(%struct._IO_FILE* %call) #4
-  ret void
+  %call22 = tail call i32 @fclose(%struct._IO_FILE* %call) #5, !dbg !364
+  ret void, !dbg !365
 }

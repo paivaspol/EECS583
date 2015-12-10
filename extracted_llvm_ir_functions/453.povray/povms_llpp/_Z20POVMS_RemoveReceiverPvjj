@@ -1,0 +1,57 @@
+define i32 @_Z20POVMS_RemoveReceiverPvjj(i8* %contextref, i32 %hclass, i32 %hid) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %contextref}, i64 0, metadata !178), !dbg !1049
+  tail call void @llvm.dbg.value(metadata !{i32 %hclass}, i64 0, metadata !179), !dbg !1049
+  tail call void @llvm.dbg.value(metadata !{i32 %hid}, i64 0, metadata !180), !dbg !1049
+  %0 = bitcast i8* %contextref to %struct.POVMSContextData*, !dbg !1050
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMSContextData* %0}, i64 0, metadata !181), !dbg !1050
+  tail call void @llvm.dbg.value(metadata !71, i64 0, metadata !182), !dbg !1051
+  %cmp = icmp eq i8* %contextref, null, !dbg !1052
+  br i1 %cmp, label %return, label %if.end, !dbg !1052
+
+if.end:                                           ; preds = %entry
+  %valid = bitcast i8* %contextref to i32*, !dbg !1053
+  %1 = load i32* %valid, align 4, !dbg !1053, !tbaa !937
+  %cmp1 = icmp eq i32 %1, 0, !dbg !1053
+  br i1 %cmp1, label %return, label %if.then5, !dbg !1053
+
+if.then5:                                         ; preds = %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMSContextData* %0}, i64 0, metadata !1054), !dbg !1056
+  tail call void @llvm.dbg.value(metadata !{i32 %hclass}, i64 0, metadata !1057), !dbg !1056
+  tail call void @llvm.dbg.value(metadata !{i32 %hid}, i64 0, metadata !1058), !dbg !1056
+  tail call void @llvm.dbg.value(metadata !1016, i64 0, metadata !1059), !dbg !1060
+  %receivehandlerroot.i = getelementptr inbounds i8* %contextref, i64 8, !dbg !1061
+  %2 = bitcast i8* %receivehandlerroot.i to %struct.POVMSReceiveHandlerNode**, !dbg !1061
+  %thn.07.i = load %struct.POVMSReceiveHandlerNode** %2, align 8, !dbg !1061
+  %cmp8.i = icmp eq %struct.POVMSReceiveHandlerNode* %thn.07.i, null, !dbg !1061
+  br i1 %cmp8.i, label %_Z28POVMS_FindReceiveHandlerNodeP16POVMSContextDatajj.exit, label %for.body.i, !dbg !1061
+
+for.body.i:                                       ; preds = %if.then5, %for.inc.i
+  %thn.09.i = phi %struct.POVMSReceiveHandlerNode* [ %thn.0.i, %for.inc.i ], [ %thn.07.i, %if.then5 ]
+  %handledclass.i = getelementptr inbounds %struct.POVMSReceiveHandlerNode* %thn.09.i, i64 0, i32 2, !dbg !1063
+  %3 = load i32* %handledclass.i, align 4, !dbg !1063, !tbaa !937
+  %cmp1.i = icmp eq i32 %3, %hclass, !dbg !1063
+  br i1 %cmp1.i, label %land.lhs.true.i, label %for.inc.i, !dbg !1063
+
+land.lhs.true.i:                                  ; preds = %for.body.i
+  %handledid.i = getelementptr inbounds %struct.POVMSReceiveHandlerNode* %thn.09.i, i64 0, i32 3, !dbg !1063
+  %4 = load i32* %handledid.i, align 4, !dbg !1063, !tbaa !937
+  %cmp2.i = icmp eq i32 %4, %hid, !dbg !1063
+  br i1 %cmp2.i, label %_Z28POVMS_FindReceiveHandlerNodeP16POVMSContextDatajj.exit, label %for.inc.i, !dbg !1063
+
+for.inc.i:                                        ; preds = %land.lhs.true.i, %for.body.i
+  %next.i = getelementptr inbounds %struct.POVMSReceiveHandlerNode* %thn.09.i, i64 0, i32 1, !dbg !1061
+  %thn.0.i = load %struct.POVMSReceiveHandlerNode** %next.i, align 8, !dbg !1061
+  %cmp.i = icmp eq %struct.POVMSReceiveHandlerNode* %thn.0.i, null, !dbg !1061
+  br i1 %cmp.i, label %_Z28POVMS_FindReceiveHandlerNodeP16POVMSContextDatajj.exit, label %for.body.i, !dbg !1061
+
+_Z28POVMS_FindReceiveHandlerNodeP16POVMSContextDatajj.exit: ; preds = %land.lhs.true.i, %for.inc.i, %if.then5
+  %thn.0.lcssa.i = phi %struct.POVMSReceiveHandlerNode* [ null, %if.then5 ], [ %thn.09.i, %land.lhs.true.i ], [ null, %for.inc.i ]
+  %call6 = tail call i32 @_Z30POVMS_RemoveReceiveHandlerNodeP16POVMSContextDataP23POVMSReceiveHandlerNode(%struct.POVMSContextData* %0, %struct.POVMSReceiveHandlerNode* %thn.0.lcssa.i) #8, !dbg !1055
+  tail call void @llvm.dbg.value(metadata !71, i64 0, metadata !182), !dbg !1055
+  br label %return, !dbg !1065
+
+return:                                           ; preds = %if.end, %entry, %_Z28POVMS_FindReceiveHandlerNodeP16POVMSContextDatajj.exit
+  %retval.0 = phi i32 [ 0, %_Z28POVMS_FindReceiveHandlerNodeP16POVMSContextDatajj.exit ], [ -1, %entry ], [ -21, %if.end ]
+  ret i32 %retval.0, !dbg !1066
+}

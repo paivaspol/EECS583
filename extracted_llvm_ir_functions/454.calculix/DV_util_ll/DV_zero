@@ -1,26 +1,27 @@
 define void @DV_zero(%struct._DV* %dv) #0 {
 entry:
-  %cmp = icmp eq %struct._DV* %dv, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._DV* %dv}, i64 0, metadata !86), !dbg !227
+  %cmp = icmp eq %struct._DV* %dv, null, !dbg !228
+  br i1 %cmp, label %if.then, label %if.end, !dbg !228
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([41 x i8]* @.str14, i64 0, i64 0), %struct._DV* null) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !229, !tbaa !102
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([41 x i8]* @.str14, i64 0, i64 0), %struct._DV* null) #5, !dbg !229
+  tail call void @exit(i32 -1) #6, !dbg !231
+  unreachable, !dbg !231
 
 if.end:                                           ; preds = %entry
-  %size = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0
-  %1 = load i32* %size, align 4, !tbaa !3
-  %cmp1 = icmp sgt i32 %1, 0
-  br i1 %cmp1, label %if.then2, label %if.end4
+  %size = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0, !dbg !232
+  %1 = load i32* %size, align 4, !dbg !232, !tbaa !108
+  %cmp1 = icmp sgt i32 %1, 0, !dbg !232
+  br i1 %cmp1, label %if.then2, label %if.end4, !dbg !232
 
 if.then2:                                         ; preds = %if.end
-  %vec = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3
-  %2 = load double** %vec, align 8, !tbaa !0
-  tail call void @DVzero(i32 %1, double* %2) #4
-  br label %if.end4
+  %vec = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !233
+  %2 = load double** %vec, align 8, !dbg !233, !tbaa !102
+  tail call void @DVzero(i32 %1, double* %2) #5, !dbg !233
+  br label %if.end4, !dbg !235
 
 if.end4:                                          ; preds = %if.then2, %if.end
-  ret void
+  ret void, !dbg !236
 }

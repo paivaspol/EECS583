@@ -1,0 +1,205 @@
+define void @_ZN8EtherLLC28processPacketFromHigherLayerEP8cMessage(%class.EtherLLC* %this, %class.cMessage* %msg) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.EtherLLC* %this}, i64 0, metadata !5248), !dbg !6215
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage* %msg}, i64 0, metadata !5249), !dbg !6215
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage* %msg}, i64 0, metadata !6216), !dbg !6218
+  %len.i = getelementptr inbounds %class.cMessage* %msg, i64 0, i32 3, !dbg !6219
+  %0 = load i64* %len.i, align 8, !dbg !6219, !tbaa !6221
+  %cmp = icmp sgt i64 %0, 11976, !dbg !6217
+  br i1 %cmp, label %if.then, label %if.end, !dbg !6217
+
+if.then:                                          ; preds = %entry
+  %1 = getelementptr inbounds %class.EtherLLC* %this, i64 0, i32 0, !dbg !6222
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage* %msg}, i64 0, metadata !6223), !dbg !6224
+  %div = sdiv i64 %0, 8, !dbg !6222
+  tail call void (%class.cSimpleModule*, i8*, ...)* @_ZNK13cSimpleModule5errorEPKcz(%class.cSimpleModule* %1, i8* getelementptr inbounds ([96 x i8]* @.str8, i64 0, i64 0), i64 %div, i32 1500) #11, !dbg !6222
+  br label %if.end, !dbg !6222
+
+if.end:                                           ; preds = %if.then, %entry
+  %totalFromHigherLayer = getelementptr inbounds %class.EtherLLC* %this, i64 0, i32 4, !dbg !6225
+  %2 = load i64* %totalFromHigherLayer, align 8, !dbg !6225, !tbaa !6221
+  %inc = add nsw i64 %2, 1, !dbg !6225
+  store i64 %inc, i64* %totalFromHigherLayer, align 8, !dbg !6225, !tbaa !6221
+  %3 = load i32* getelementptr inbounds (%class.cEnvir* @ev, i64 0, i32 1), align 8, !dbg !6226, !tbaa !6114
+  %tobool = icmp eq i32 %3, 0, !dbg !6226
+  br i1 %tobool, label %cond.end, label %cond.end22, !dbg !6226
+
+cond.end:                                         ; preds = %if.end
+  tail call void @llvm.dbg.value(metadata !6227, i64 0, metadata !6228), !dbg !6229
+  tail call void @llvm.dbg.value(metadata !6230, i64 0, metadata !6231), !dbg !6229
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([36 x i8]* @.str9, i64 0, i64 0)) #11, !dbg !6232
+  %namestr.i = getelementptr inbounds %class.cMessage* %msg, i64 0, i32 0, i32 1, !dbg !6233
+  %4 = load i8** %namestr.i, align 8, !dbg !6233, !tbaa !6128
+  %tobool.i = icmp eq i8* %4, null, !dbg !6233
+  %..i = select i1 %tobool.i, i8* getelementptr inbounds ([1 x i8]* @.str41, i64 0, i64 0), i8* %4, !dbg !6233
+  tail call void @llvm.dbg.value(metadata !6227, i64 0, metadata !6228), !dbg !6229
+  tail call void @llvm.dbg.value(metadata !{i8* %..i}, i64 0, metadata !6231), !dbg !6229
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* %..i) #11, !dbg !6232
+  tail call void @llvm.dbg.value(metadata !6227, i64 0, metadata !6228), !dbg !6229
+  tail call void @llvm.dbg.value(metadata !6234, i64 0, metadata !6231), !dbg !6229
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([11 x i8]* @.str10, i64 0, i64 0)) #11, !dbg !6232
+  %.pr = load i32* getelementptr inbounds (%class.cEnvir* @ev, i64 0, i32 1), align 8, !dbg !6235, !tbaa !6114
+  %tobool7 = icmp eq i32 %.pr, 0, !dbg !6235
+  br i1 %tobool7, label %cond.false9, label %cond.end22, !dbg !6235
+
+cond.false9:                                      ; preds = %cond.end
+  tail call void @llvm.dbg.value(metadata !6227, i64 0, metadata !6236), !dbg !6237
+  tail call void @llvm.dbg.value(metadata !6238, i64 0, metadata !6239), !dbg !6237
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([11 x i8]* @.str11, i64 0, i64 0)) #11, !dbg !6240
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage* %msg}, i64 0, metadata !6241), !dbg !6242
+  %frommod.i = getelementptr inbounds %class.cMessage* %msg, i64 0, i32 9, !dbg !6242
+  %5 = load i32* %frommod.i, align 4, !dbg !6242, !tbaa !6114
+  tail call void @llvm.dbg.value(metadata !6243, i64 0, metadata !6244), !dbg !6245
+  tail call void @llvm.dbg.value(metadata !{i32 %5}, i64 0, metadata !6246), !dbg !6245
+  %idxprom.i = sext i32 %5 to i64, !dbg !6247
+  %6 = load %class.cModule*** getelementptr inbounds (%class.cSimulation* @simulation, i64 0, i32 3), align 8, !dbg !6247, !tbaa !6128
+  %arrayidx.i = getelementptr inbounds %class.cModule** %6, i64 %idxprom.i, !dbg !6247
+  %7 = load %class.cModule** %arrayidx.i, align 8, !dbg !6247, !tbaa !6128
+  %8 = bitcast %class.cModule* %7 to i8* (%class.cModule*)***, !dbg !6235
+  %vtable = load i8* (%class.cModule*)*** %8, align 8, !dbg !6235, !tbaa !6125
+  %vfn = getelementptr inbounds i8* (%class.cModule*)** %vtable, i64 4, !dbg !6235
+  %9 = load i8* (%class.cModule*)** %vfn, align 8, !dbg !6235
+  %call13 = tail call i8* %9(%class.cModule* %7) #11, !dbg !6235
+  tail call void @llvm.dbg.value(metadata !6227, i64 0, metadata !6236), !dbg !6237
+  tail call void @llvm.dbg.value(metadata !{i8* %call13}, i64 0, metadata !6239), !dbg !6237
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* %call13) #11, !dbg !6240
+  tail call void @llvm.dbg.value(metadata !6227, i64 0, metadata !6236), !dbg !6237
+  tail call void @llvm.dbg.value(metadata !6249, i64 0, metadata !6239), !dbg !6237
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([5 x i8]* @.str12, i64 0, i64 0)) #11, !dbg !6240
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage* %msg}, i64 0, metadata !6250), !dbg !6251
+  %sent.i = getelementptr inbounds %class.cMessage* %msg, i64 0, i32 14, !dbg !6251
+  %10 = load double* %sent.i, align 8, !dbg !6251, !tbaa !6252
+  tail call void @llvm.dbg.value(metadata !6227, i64 0, metadata !6253), !dbg !6254
+  tail call void @llvm.dbg.value(metadata !{double %10}, i64 0, metadata !6255), !dbg !6254
+  tail call void (%class.cEnvir*, i8*, ...)* @_ZN6cEnvir6printfEPKcz(%class.cEnvir* @ev, i8* getelementptr inbounds ([3 x i8]* @.str40, i64 0, i64 0), double %10) #11, !dbg !6256
+  tail call void @llvm.dbg.value(metadata !6227, i64 0, metadata !6236), !dbg !6237
+  tail call void @llvm.dbg.value(metadata !6258, i64 0, metadata !6239), !dbg !6237
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([18 x i8]* @.str13, i64 0, i64 0)) #11, !dbg !6240
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage* %msg}, i64 0, metadata !6259), !dbg !6260
+  %created.i = getelementptr inbounds %class.cMessage* %msg, i64 0, i32 13, !dbg !6261
+  %11 = load double* %created.i, align 8, !dbg !6261, !tbaa !6252
+  tail call void @llvm.dbg.value(metadata !6227, i64 0, metadata !6253), !dbg !6254
+  tail call void @llvm.dbg.value(metadata !{double %11}, i64 0, metadata !6255), !dbg !6254
+  tail call void (%class.cEnvir*, i8*, ...)* @_ZN6cEnvir6printfEPKcz(%class.cEnvir* @ev, i8* getelementptr inbounds ([3 x i8]* @.str40, i64 0, i64 0), double %11) #11, !dbg !6256
+  tail call void @llvm.dbg.value(metadata !6227, i64 0, metadata !6236), !dbg !6237
+  tail call void @llvm.dbg.value(metadata !6263, i64 0, metadata !6239), !dbg !6237
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([2 x i8]* @.str14, i64 0, i64 0)) #11, !dbg !6240
+  br label %cond.end22, !dbg !6235
+
+cond.end22:                                       ; preds = %if.end, %cond.end, %cond.false9
+  %12 = getelementptr inbounds %class.cMessage* %msg, i64 0, i32 0, !dbg !6264
+  %call24 = tail call %class.cMessage30* @_Z14check_and_castIP10cMessage30ET_P7cObject(%class.cObject* %12) #11, !dbg !6264
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage30* %call24}, i64 0, metadata !6265), !dbg !6266
+  %ctrlp.i = getelementptr inbounds %class.cMessage30* %call24, i64 0, i32 1, !dbg !6267
+  %13 = load %class.cPolymorphic** %ctrlp.i, align 8, !dbg !6267, !tbaa !6128
+  tail call void @llvm.dbg.value(metadata !{%class.cPolymorphic* %13}, i64 0, metadata !6268), !dbg !6267
+  store %class.cPolymorphic* null, %class.cPolymorphic** %ctrlp.i, align 8, !dbg !6267, !tbaa !6128
+  %14 = icmp eq %class.cPolymorphic* %13, null, !dbg !6264
+  br i1 %14, label %if.then27, label %dynamic_cast.end, !dbg !6264
+
+dynamic_cast.end:                                 ; preds = %cond.end22
+  %15 = bitcast %class.cPolymorphic* %13 to i8*, !dbg !6264
+  %16 = tail call i8* @__dynamic_cast(i8* %15, i8* bitcast ({ i8*, i8* }* @_ZTI12cPolymorphic to i8*), i8* bitcast (i8** @_ZTI9EtherCtrl to i8*), i64 0) #1, !dbg !6264
+  tail call void @llvm.dbg.value(metadata !{%class.EtherCtrl* %20}, i64 0, metadata !5250), !dbg !6264
+  %tobool26 = icmp eq i8* %16, null, !dbg !6269
+  br i1 %tobool26, label %if.then27, label %dynamic_cast.end.if.end29_crit_edge, !dbg !6269
+
+dynamic_cast.end.if.end29_crit_edge:              ; preds = %dynamic_cast.end
+  %17 = bitcast i8* %16 to %class.EtherCtrl*, !dbg !6264
+  %namestr.i84.pre = getelementptr inbounds %class.cMessage* %msg, i64 0, i32 0, i32 1, !dbg !6270
+  br label %if.end29, !dbg !6269
+
+if.then27:                                        ; preds = %cond.end22, %dynamic_cast.end
+  %18 = getelementptr inbounds %class.EtherLLC* %this, i64 0, i32 0, !dbg !6272
+  tail call void @llvm.dbg.value(metadata !{%class.cObject* %12}, i64 0, metadata !6273), !dbg !6274
+  %namestr.i81 = getelementptr inbounds %class.cMessage* %msg, i64 0, i32 0, i32 1, !dbg !6275
+  %19 = load i8** %namestr.i81, align 8, !dbg !6275, !tbaa !6128
+  %tobool.i82 = icmp eq i8* %19, null, !dbg !6275
+  %..i83 = select i1 %tobool.i82, i8* getelementptr inbounds ([1 x i8]* @.str41, i64 0, i64 0), i8* %19, !dbg !6275
+  tail call void (%class.cSimpleModule*, i8*, ...)* @_ZNK13cSimpleModule5errorEPKcz(%class.cSimpleModule* %18, i8* getelementptr inbounds ([57 x i8]* @.str15, i64 0, i64 0), i8* %..i83) #11, !dbg !6272
+  br label %if.end29, !dbg !6272
+
+if.end29:                                         ; preds = %dynamic_cast.end.if.end29_crit_edge, %if.then27
+  %namestr.i84.pre-phi = phi i8** [ %namestr.i84.pre, %dynamic_cast.end.if.end29_crit_edge ], [ %namestr.i81, %if.then27 ], !dbg !6270
+  %tobool2689 = phi i1 [ false, %dynamic_cast.end.if.end29_crit_edge ], [ true, %if.then27 ]
+  %20 = phi %class.EtherCtrl* [ %17, %dynamic_cast.end.if.end29_crit_edge ], [ null, %if.then27 ]
+  %call30 = tail call i8* @_ZN7cObjectnwEm(i64 216) #11, !dbg !6271
+  %21 = bitcast i8* %call30 to %class.EtherFrameWithLLC*, !dbg !6271
+  tail call void @llvm.dbg.value(metadata !{%class.cObject* %12}, i64 0, metadata !6276), !dbg !6277
+  %22 = load i8** %namestr.i84.pre-phi, align 8, !dbg !6270, !tbaa !6128
+  %tobool.i85 = icmp eq i8* %22, null, !dbg !6270
+  %..i86 = select i1 %tobool.i85, i8* getelementptr inbounds ([1 x i8]* @.str41, i64 0, i64 0), i8* %22, !dbg !6270
+  invoke void @_ZN17EtherFrameWithLLCC1EPKci(%class.EtherFrameWithLLC* %21, i8* %..i86, i32 2001) #11
+          to label %invoke.cont32 unwind label %lpad, !dbg !6271
+
+invoke.cont32:                                    ; preds = %if.end29
+  tail call void @llvm.dbg.value(metadata !{%class.EtherFrameWithLLC* %21}, i64 0, metadata !5332), !dbg !6271
+  %23 = bitcast i8* %call30 to void (%class.EtherFrameWithLLC*, i32)***, !dbg !6278
+  %vtable33 = load void (%class.EtherFrameWithLLC*, i32)*** %23, align 8, !dbg !6278, !tbaa !6125
+  %vfn34 = getelementptr inbounds void (%class.EtherFrameWithLLC*, i32)** %vtable33, i64 28, !dbg !6278
+  %24 = load void (%class.EtherFrameWithLLC*, i32)** %vfn34, align 8, !dbg !6278
+  tail call void %24(%class.EtherFrameWithLLC* %21, i32 0) #11, !dbg !6278
+  %vtable35 = load void (%class.EtherFrameWithLLC*, i32)*** %23, align 8, !dbg !6279, !tbaa !6125
+  %vfn36 = getelementptr inbounds void (%class.EtherFrameWithLLC*, i32)** %vtable35, i64 24, !dbg !6279
+  %25 = load void (%class.EtherFrameWithLLC*, i32)** %vfn36, align 8, !dbg !6279
+  %26 = bitcast %class.EtherCtrl* %20 to i32 (%class.EtherCtrl*)***, !dbg !6279
+  %vtable37 = load i32 (%class.EtherCtrl*)*** %26, align 8, !dbg !6279, !tbaa !6125
+  %vfn38 = getelementptr inbounds i32 (%class.EtherCtrl*)** %vtable37, i64 11, !dbg !6279
+  %27 = load i32 (%class.EtherCtrl*)** %vfn38, align 8, !dbg !6279
+  %call39 = tail call i32 %27(%class.EtherCtrl* %20) #11, !dbg !6279
+  tail call void %25(%class.EtherFrameWithLLC* %21, i32 %call39) #11, !dbg !6279
+  %vtable40 = load void (%class.EtherFrameWithLLC*, i32)*** %23, align 8, !dbg !6280, !tbaa !6125
+  %vfn41 = getelementptr inbounds void (%class.EtherFrameWithLLC*, i32)** %vtable40, i64 26, !dbg !6280
+  %28 = load void (%class.EtherFrameWithLLC*, i32)** %vfn41, align 8, !dbg !6280
+  %vtable42 = load i32 (%class.EtherCtrl*)*** %26, align 8, !dbg !6280, !tbaa !6125
+  %vfn43 = getelementptr inbounds i32 (%class.EtherCtrl*)** %vtable42, i64 13, !dbg !6280
+  %29 = load i32 (%class.EtherCtrl*)** %vfn43, align 8, !dbg !6280
+  %call44 = tail call i32 %29(%class.EtherCtrl* %20) #11, !dbg !6280
+  tail call void %28(%class.EtherFrameWithLLC* %21, i32 %call44) #11, !dbg !6280
+  %30 = bitcast i8* %call30 to %class.EtherFrame*, !dbg !6281
+  %31 = bitcast i8* %call30 to void (%class.EtherFrame*, %class.MACAddress*)***, !dbg !6281
+  %vtable45 = load void (%class.EtherFrame*, %class.MACAddress*)*** %31, align 8, !dbg !6281, !tbaa !6125
+  %vfn46 = getelementptr inbounds void (%class.EtherFrame*, %class.MACAddress*)** %vtable45, i64 20, !dbg !6281
+  %32 = load void (%class.EtherFrame*, %class.MACAddress*)** %vfn46, align 8, !dbg !6281
+  %33 = bitcast %class.EtherCtrl* %20 to %class.MACAddress* (%class.EtherCtrl*)***, !dbg !6281
+  %vtable47 = load %class.MACAddress* (%class.EtherCtrl*)*** %33, align 8, !dbg !6281, !tbaa !6125
+  %vfn48 = getelementptr inbounds %class.MACAddress* (%class.EtherCtrl*)** %vtable47, i64 7, !dbg !6281
+  %34 = load %class.MACAddress* (%class.EtherCtrl*)** %vfn48, align 8, !dbg !6281
+  %call49 = tail call %class.MACAddress* %34(%class.EtherCtrl* %20) #11, !dbg !6281
+  tail call void %32(%class.EtherFrame* %30, %class.MACAddress* %call49) #11, !dbg !6281
+  %35 = bitcast i8* %call30 to %class.cMessage*, !dbg !6282
+  tail call void @_ZN8cMessage9setLengthEl(%class.cMessage* %35, i64 168) #11, !dbg !6282
+  br i1 %tobool2689, label %delete.end, label %delete.notnull, !dbg !6283
+
+delete.notnull:                                   ; preds = %invoke.cont32
+  %36 = bitcast %class.EtherCtrl* %20 to void (%class.EtherCtrl*)***, !dbg !6283
+  %vtable50 = load void (%class.EtherCtrl*)*** %36, align 8, !dbg !6283, !tbaa !6125
+  %vfn51 = getelementptr inbounds void (%class.EtherCtrl*)** %vtable50, i64 1, !dbg !6283
+  %37 = load void (%class.EtherCtrl*)** %vfn51, align 8, !dbg !6283
+  tail call void %37(%class.EtherCtrl* %20) #11, !dbg !6283
+  br label %delete.end, !dbg !6283
+
+delete.end:                                       ; preds = %delete.notnull, %invoke.cont32
+  tail call void @_ZN8cMessage11encapsulateEPS_(%class.cMessage* %35, %class.cMessage* %msg) #11, !dbg !6284
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage* %35}, i64 0, metadata !6285), !dbg !6287
+  %len.i79 = getelementptr inbounds i8* %call30, i64 64, !dbg !6288
+  %38 = bitcast i8* %len.i79 to i64*, !dbg !6288
+  %39 = load i64* %38, align 8, !dbg !6288, !tbaa !6221
+  %cmp53 = icmp slt i64 %39, 512, !dbg !6286
+  br i1 %cmp53, label %if.then54, label %if.end55, !dbg !6286
+
+if.then54:                                        ; preds = %delete.end
+  tail call void @_ZN8cMessage9setLengthEl(%class.cMessage* %35, i64 512) #11, !dbg !6289
+  br label %if.end55, !dbg !6289
+
+lpad:                                             ; preds = %if.end29
+  %40 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !6271
+  tail call void @_ZdlPv(i8* %call30) #12, !dbg !6271
+  resume { i8*, i32 } %40, !dbg !6271
+
+if.end55:                                         ; preds = %if.then54, %delete.end
+  %41 = getelementptr inbounds %class.EtherLLC* %this, i64 0, i32 0, !dbg !6290
+  %call56 = tail call i32 @_ZN13cSimpleModule4sendEP8cMessagePKci(%class.cSimpleModule* %41, %class.cMessage* %35, i8* getelementptr inbounds ([14 x i8]* @.str16, i64 0, i64 0), i32 -1) #11, !dbg !6290
+  ret void, !dbg !6291
+}

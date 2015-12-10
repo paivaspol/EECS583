@@ -1,49 +1,58 @@
 define i32 @IV_readFromBinaryFile(%struct._IV* %iv, %struct._IO_FILE* %fp) #0 {
 entry:
   %size = alloca i32, align 4
-  %cmp = icmp eq %struct._IV* %iv, null
-  %cmp1 = icmp eq %struct._IO_FILE* %fp, null
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end
+  call void @llvm.dbg.value(metadata !{%struct._IV* %iv}, i64 0, metadata !93), !dbg !192
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !94), !dbg !193
+  call void @llvm.dbg.declare(metadata !{i32* %size}, metadata !96), !dbg !194
+  %cmp = icmp eq %struct._IV* %iv, null, !dbg !195
+  %cmp1 = icmp eq %struct._IO_FILE* %fp, null, !dbg !195
+  %or.cond = or i1 %cmp, %cmp1, !dbg !195
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !195
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([58 x i8]* @.str9, i64 0, i64 0), %struct._IV* %iv, %struct._IO_FILE* %fp) #5
-  br label %return
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !196, !tbaa !156
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([58 x i8]* @.str9, i64 0, i64 0), %struct._IV* %iv, %struct._IO_FILE* %fp) #6, !dbg !196
+  br label %return, !dbg !198
 
 if.end:                                           ; preds = %entry
-  call void @IV_clearData(%struct._IV* %iv) #5
-  %1 = bitcast i32* %size to i8*
-  %call2 = call i64 @fread(i8* %1, i64 4, i64 1, %struct._IO_FILE* %fp) #5
-  %conv = trunc i64 %call2 to i32
-  %cmp3 = icmp eq i32 %conv, 1
-  br i1 %cmp3, label %if.end7, label %if.then5
+  call void @IV_clearData(%struct._IV* %iv) #6, !dbg !199
+  %1 = bitcast i32* %size to i8*, !dbg !200
+  %call2 = call i64 @fread(i8* %1, i64 4, i64 1, %struct._IO_FILE* %fp) #6, !dbg !200
+  %conv = trunc i64 %call2 to i32, !dbg !200
+  call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !95), !dbg !200
+  %cmp3 = icmp eq i32 %conv, 1, !dbg !200
+  br i1 %cmp3, label %if.end7, label %if.then5, !dbg !200
 
 if.then5:                                         ; preds = %if.end
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call6 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([73 x i8]* @.str10, i64 0, i64 0), %struct._IV* %iv, %struct._IO_FILE* %fp, i32 %conv, i32 1) #5
-  br label %return
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !201, !tbaa !156
+  %call6 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([73 x i8]* @.str10, i64 0, i64 0), %struct._IV* %iv, %struct._IO_FILE* %fp, i32 %conv, i32 1) #6, !dbg !201
+  br label %return, !dbg !203
 
 if.end7:                                          ; preds = %if.end
-  %3 = load i32* %size, align 4, !tbaa !3
-  call void @IV_init(%struct._IV* %iv, i32 %3, i32* null) #5
-  %size8 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0
-  store i32 %3, i32* %size8, align 4, !tbaa !3
-  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3
-  %4 = load i32** %vec, align 8, !tbaa !0
-  %5 = bitcast i32* %4 to i8*
-  %conv9 = sext i32 %3 to i64
-  %call10 = call i64 @fread(i8* %5, i64 4, i64 %conv9, %struct._IO_FILE* %fp) #5
-  %conv11 = trunc i64 %call10 to i32
-  %cmp12 = icmp eq i32 %conv11, %3
-  br i1 %cmp12, label %return, label %if.then14
+  call void @llvm.dbg.value(metadata !{i32* %size}, i64 0, metadata !96), !dbg !204
+  %3 = load i32* %size, align 4, !dbg !204, !tbaa !205
+  call void @IV_init(%struct._IV* %iv, i32 %3, i32* null) #6, !dbg !204
+  call void @llvm.dbg.value(metadata !{i32* %size}, i64 0, metadata !96), !dbg !206
+  %size8 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0, !dbg !206
+  store i32 %3, i32* %size8, align 4, !dbg !206, !tbaa !205
+  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3, !dbg !207
+  %4 = load i32** %vec, align 8, !dbg !207, !tbaa !156
+  %5 = bitcast i32* %4 to i8*, !dbg !207
+  call void @llvm.dbg.value(metadata !{i32* %size}, i64 0, metadata !96), !dbg !207
+  %conv9 = sext i32 %3 to i64, !dbg !207
+  %call10 = call i64 @fread(i8* %5, i64 4, i64 %conv9, %struct._IO_FILE* %fp) #6, !dbg !207
+  %conv11 = trunc i64 %call10 to i32, !dbg !207
+  call void @llvm.dbg.value(metadata !{i32 %conv11}, i64 0, metadata !95), !dbg !207
+  call void @llvm.dbg.value(metadata !{i32* %size}, i64 0, metadata !96), !dbg !207
+  %cmp12 = icmp eq i32 %conv11, %3, !dbg !207
+  br i1 %cmp12, label %return, label %if.then14, !dbg !207
 
 if.then14:                                        ; preds = %if.end7
-  %6 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call15 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %6, i8* getelementptr inbounds ([74 x i8]* @.str11, i64 0, i64 0), %struct._IV* %iv, %struct._IO_FILE* %fp, i32 %3, i32 %conv11, i32 %3) #5
-  br label %return
+  %6 = load %struct._IO_FILE** @stderr, align 8, !dbg !208, !tbaa !156
+  %call15 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %6, i8* getelementptr inbounds ([74 x i8]* @.str11, i64 0, i64 0), %struct._IV* %iv, %struct._IO_FILE* %fp, i32 %3, i32 %conv11, i32 %3) #6, !dbg !208
+  br label %return, !dbg !210
 
 return:                                           ; preds = %if.end7, %if.then14, %if.then5, %if.then
   %retval.0 = phi i32 [ 0, %if.then ], [ 0, %if.then5 ], [ 0, %if.then14 ], [ 1, %if.end7 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !211
 }

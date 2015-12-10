@@ -1,65 +1,68 @@
 define void @init_reg_sets() #0 {
 entry:
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata !316, i64 0, metadata !323), !dbg !949
+  br label %for.body, !dbg !949
 
 for.body:                                         ; preds = %for.inc11, %entry
   %indvars.iv44 = phi i64 [ 0, %entry ], [ %indvars.iv.next45, %for.inc11 ]
-  %arrayidx = getelementptr inbounds [25 x i64]* @reg_class_contents, i64 0, i64 %indvars.iv44
-  store i64 0, i64* %arrayidx, align 8, !tbaa !0
-  br label %for.body3
+  %arrayidx = getelementptr inbounds [25 x i64]* @reg_class_contents, i64 0, i64 %indvars.iv44, !dbg !951
+  store i64 0, i64* %arrayidx, align 8, !dbg !951, !tbaa !953
+  tail call void @llvm.dbg.value(metadata !316, i64 0, metadata !325), !dbg !956
+  br label %for.body3, !dbg !956
 
 for.body3:                                        ; preds = %for.inc, %for.body
   %0 = phi i64 [ 0, %for.body ], [ %3, %for.inc ]
   %indvars.iv40 = phi i64 [ 0, %for.body ], [ %indvars.iv.next41, %for.inc ]
-  %1 = trunc i64 %indvars.iv40 to i32
-  %div = sdiv i32 %1, 32
-  %idxprom4 = sext i32 %div to i64
-  %arrayidx7 = getelementptr inbounds [25 x [2 x i32]]* @int_reg_class_contents, i64 0, i64 %indvars.iv44, i64 %idxprom4
-  %2 = load i32* %arrayidx7, align 4, !tbaa !3
-  %rem36 = and i32 %1, 31
-  %shl = shl i32 1, %rem36
-  %and = and i32 %2, %shl
-  %tobool = icmp eq i32 %and, 0
-  br i1 %tobool, label %for.inc, label %if.then
+  %1 = trunc i64 %indvars.iv40 to i32, !dbg !958
+  %div = sdiv i32 %1, 32, !dbg !958
+  %idxprom4 = sext i32 %div to i64, !dbg !958
+  %arrayidx7 = getelementptr inbounds [25 x [2 x i32]]* @int_reg_class_contents, i64 0, i64 %indvars.iv44, i64 %idxprom4, !dbg !958
+  %2 = load i32* %arrayidx7, align 4, !dbg !958, !tbaa !959
+  %rem36 = and i32 %1, 31, !dbg !958
+  %shl = shl i32 1, %rem36, !dbg !958
+  %and = and i32 %2, %shl, !dbg !958
+  %tobool = icmp eq i32 %and, 0, !dbg !958
+  br i1 %tobool, label %for.inc, label %if.then, !dbg !958
 
 if.then:                                          ; preds = %for.body3
-  %shl8 = shl i64 1, %indvars.iv40
-  %or = or i64 %0, %shl8
-  store i64 %or, i64* %arrayidx, align 8, !tbaa !0
-  br label %for.inc
+  %shl8 = shl i64 1, %indvars.iv40, !dbg !960
+  %or = or i64 %0, %shl8, !dbg !960
+  store i64 %or, i64* %arrayidx, align 8, !dbg !960, !tbaa !953
+  br label %for.inc, !dbg !960
 
 for.inc:                                          ; preds = %for.body3, %if.then
   %3 = phi i64 [ %0, %for.body3 ], [ %or, %if.then ]
-  %indvars.iv.next41 = add i64 %indvars.iv40, 1
-  %lftr.wideiv42 = trunc i64 %indvars.iv.next41 to i32
-  %exitcond43 = icmp eq i32 %lftr.wideiv42, 53
-  br i1 %exitcond43, label %for.inc11, label %for.body3
+  %indvars.iv.next41 = add i64 %indvars.iv40, 1, !dbg !956
+  %lftr.wideiv42 = trunc i64 %indvars.iv.next41 to i32, !dbg !956
+  %exitcond43 = icmp eq i32 %lftr.wideiv42, 53, !dbg !956
+  br i1 %exitcond43, label %for.inc11, label %for.body3, !dbg !956
 
 for.inc11:                                        ; preds = %for.inc
-  %indvars.iv.next45 = add i64 %indvars.iv44, 1
-  %lftr.wideiv46 = trunc i64 %indvars.iv.next45 to i32
-  %exitcond47 = icmp eq i32 %lftr.wideiv46, 25
-  br i1 %exitcond47, label %for.end13, label %for.body
+  %indvars.iv.next45 = add i64 %indvars.iv44, 1, !dbg !949
+  %lftr.wideiv46 = trunc i64 %indvars.iv.next45 to i32, !dbg !949
+  %exitcond47 = icmp eq i32 %lftr.wideiv46, 25, !dbg !949
+  br i1 %exitcond47, label %for.end13, label %for.body, !dbg !949
 
 for.end13:                                        ; preds = %for.inc11
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* getelementptr inbounds ([53 x i8]* @fixed_regs, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @initial_fixed_regs, i64 0, i64 0), i64 53, i32 16, i1 false)
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* getelementptr inbounds ([53 x i8]* @call_used_regs, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @initial_call_used_regs, i64 0, i64 0), i64 53, i32 16, i1 false)
-  tail call void @llvm.memset.p0i8.i64(i8* getelementptr inbounds ([53 x i8]* @global_regs, i64 0, i64 0), i8 0, i64 53, i32 16, i1 false)
-  br label %for.body16
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* getelementptr inbounds ([53 x i8]* @fixed_regs, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @initial_fixed_regs, i64 0, i64 0), i64 53, i32 16, i1 false), !dbg !961
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* getelementptr inbounds ([53 x i8]* @call_used_regs, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @initial_call_used_regs, i64 0, i64 0), i64 53, i32 16, i1 false), !dbg !962
+  tail call void @llvm.memset.p0i8.i64(i8* getelementptr inbounds ([53 x i8]* @global_regs, i64 0, i64 0), i8 0, i64 53, i32 16, i1 false), !dbg !963
+  tail call void @llvm.dbg.value(metadata !316, i64 0, metadata !323), !dbg !964
+  br label %for.body16, !dbg !964
 
 for.body16:                                       ; preds = %for.body16, %for.end13
   %indvars.iv = phi i64 [ 0, %for.end13 ], [ %indvars.iv.next, %for.body16 ]
-  %arrayidx18 = getelementptr inbounds [53 x i32]* @reg_alloc_order, i64 0, i64 %indvars.iv
-  %4 = load i32* %arrayidx18, align 4, !tbaa !3
-  %idxprom19 = sext i32 %4 to i64
-  %arrayidx20 = getelementptr inbounds [53 x i32]* @inv_reg_alloc_order, i64 0, i64 %idxprom19
-  %5 = trunc i64 %indvars.iv to i32
-  store i32 %5, i32* %arrayidx20, align 4, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 53
-  br i1 %exitcond, label %for.end23, label %for.body16
+  %arrayidx18 = getelementptr inbounds [53 x i32]* @reg_alloc_order, i64 0, i64 %indvars.iv, !dbg !966
+  %4 = load i32* %arrayidx18, align 4, !dbg !966, !tbaa !959
+  %idxprom19 = sext i32 %4 to i64, !dbg !966
+  %arrayidx20 = getelementptr inbounds [53 x i32]* @inv_reg_alloc_order, i64 0, i64 %idxprom19, !dbg !966
+  %5 = trunc i64 %indvars.iv to i32, !dbg !966
+  store i32 %5, i32* %arrayidx20, align 4, !dbg !966, !tbaa !959
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !964
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !964
+  %exitcond = icmp eq i32 %lftr.wideiv, 53, !dbg !964
+  br i1 %exitcond, label %for.end23, label %for.body16, !dbg !964
 
 for.end23:                                        ; preds = %for.body16
-  ret void
+  ret void, !dbg !967
 }

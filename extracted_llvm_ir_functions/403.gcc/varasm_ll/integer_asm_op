@@ -1,6 +1,8 @@
 define i8* @integer_asm_op(i32 %size, i32 %aligned_p) #2 {
 entry:
-  %tobool = icmp eq i32 %aligned_p, 0
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !1474), !dbg !3137
+  tail call void @llvm.dbg.value(metadata !{i32 %aligned_p}, i64 0, metadata !1475), !dbg !3138
+  %tobool = icmp eq i32 %aligned_p, 0, !dbg !3139
   %. = select i1 %tobool, %struct.asm_int_op* getelementptr inbounds (%struct.gcc_target* @targetm, i64 0, i32 0, i32 4), %struct.asm_int_op* getelementptr inbounds (%struct.gcc_target* @targetm, i64 0, i32 0, i32 3)
   switch i32 %size, label %return [
     i32 1, label %sw.bb
@@ -8,33 +10,33 @@ entry:
     i32 4, label %sw.bb2
     i32 8, label %sw.bb3
     i32 16, label %sw.bb4
-  ]
+  ], !dbg !3140
 
 sw.bb:                                            ; preds = %entry
-  %0 = load i8** getelementptr inbounds (%struct.gcc_target* @targetm, i64 0, i32 0, i32 2), align 8, !tbaa !3
-  br label %return
+  %0 = load i8** getelementptr inbounds (%struct.gcc_target* @targetm, i64 0, i32 0, i32 2), align 8, !dbg !3141, !tbaa !2357
+  br label %return, !dbg !3141
 
 sw.bb1:                                           ; preds = %entry
-  %hi = getelementptr inbounds %struct.asm_int_op* %., i64 0, i32 0
-  %1 = load i8** %hi, align 8, !tbaa !3
-  br label %return
+  %hi = getelementptr inbounds %struct.asm_int_op* %., i64 0, i32 0, !dbg !3143
+  %1 = load i8** %hi, align 8, !dbg !3143, !tbaa !2357
+  br label %return, !dbg !3143
 
 sw.bb2:                                           ; preds = %entry
-  %si = getelementptr inbounds %struct.asm_int_op* %., i64 0, i32 1
-  %2 = load i8** %si, align 8, !tbaa !3
-  br label %return
+  %si = getelementptr inbounds %struct.asm_int_op* %., i64 0, i32 1, !dbg !3144
+  %2 = load i8** %si, align 8, !dbg !3144, !tbaa !2357
+  br label %return, !dbg !3144
 
 sw.bb3:                                           ; preds = %entry
-  %di = getelementptr inbounds %struct.asm_int_op* %., i64 0, i32 2
-  %3 = load i8** %di, align 8, !tbaa !3
-  br label %return
+  %di = getelementptr inbounds %struct.asm_int_op* %., i64 0, i32 2, !dbg !3145
+  %3 = load i8** %di, align 8, !dbg !3145, !tbaa !2357
+  br label %return, !dbg !3145
 
 sw.bb4:                                           ; preds = %entry
-  %ti = getelementptr inbounds %struct.asm_int_op* %., i64 0, i32 3
-  %4 = load i8** %ti, align 8, !tbaa !3
-  br label %return
+  %ti = getelementptr inbounds %struct.asm_int_op* %., i64 0, i32 3, !dbg !3146
+  %4 = load i8** %ti, align 8, !dbg !3146, !tbaa !2357
+  br label %return, !dbg !3146
 
 return:                                           ; preds = %entry, %sw.bb4, %sw.bb3, %sw.bb2, %sw.bb1, %sw.bb
   %retval.0 = phi i8* [ %4, %sw.bb4 ], [ %3, %sw.bb3 ], [ %2, %sw.bb2 ], [ %1, %sw.bb1 ], [ %0, %sw.bb ], [ null, %entry ]
-  ret i8* %retval.0
+  ret i8* %retval.0, !dbg !3147
 }

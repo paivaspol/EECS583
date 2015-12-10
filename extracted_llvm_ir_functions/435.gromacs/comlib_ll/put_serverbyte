@@ -1,14 +1,16 @@
 define void @put_serverbyte(i8 zeroext %data) #0 {
-  store volatile i8 %data, i8* inttoptr (i64 2952794328 to i8*), align 8, !tbaa !2
-  store volatile i8 1, i8* inttoptr (i64 2952794312 to i8*), align 8, !tbaa !2
-  br label %1
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8 %data}, i64 0, metadata !10), !dbg !36
+  store volatile i8 %data, i8* inttoptr (i64 2952794328 to i8*), align 8, !dbg !37, !tbaa !38
+  store volatile i8 1, i8* inttoptr (i64 2952794312 to i8*), align 8, !dbg !40, !tbaa !38
+  br label %while.cond, !dbg !41
 
-; <label>:1                                       ; preds = %1, %0
-  %2 = load volatile i8* inttoptr (i64 2952794312 to i8*), align 8, !tbaa !2
-  %3 = and i8 %2, 1
-  %4 = icmp eq i8 %3, 0
-  br i1 %4, label %5, label %1
+while.cond:                                       ; preds = %while.cond, %entry
+  %0 = load volatile i8* inttoptr (i64 2952794312 to i8*), align 8, !dbg !41, !tbaa !38
+  %and = and i8 %0, 1, !dbg !41
+  %tobool = icmp eq i8 %and, 0, !dbg !41
+  br i1 %tobool, label %while.end, label %while.cond, !dbg !41
 
-; <label>:5                                       ; preds = %1
-  ret void
+while.end:                                        ; preds = %while.cond
+  ret void, !dbg !42
 }

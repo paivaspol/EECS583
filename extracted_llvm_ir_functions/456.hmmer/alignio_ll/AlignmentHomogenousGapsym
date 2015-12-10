@@ -1,49 +1,54 @@
 define void @AlignmentHomogenousGapsym(i8** nocapture %aseq, i32 %nseq, i32 %alen, i8 signext %gapsym) #0 {
 entry:
-  %cmp67 = icmp sgt i32 %nseq, 0
-  br i1 %cmp67, label %for.cond1.preheader.lr.ph, label %for.end45
+  tail call void @llvm.dbg.value(metadata !{i8** %aseq}, i64 0, metadata !283), !dbg !568
+  tail call void @llvm.dbg.value(metadata !{i32 %nseq}, i64 0, metadata !284), !dbg !568
+  tail call void @llvm.dbg.value(metadata !{i32 %alen}, i64 0, metadata !285), !dbg !568
+  tail call void @llvm.dbg.value(metadata !{i8 %gapsym}, i64 0, metadata !286), !dbg !568
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !287), !dbg !569
+  %cmp67 = icmp sgt i32 %nseq, 0, !dbg !569
+  br i1 %cmp67, label %for.cond1.preheader.lr.ph, label %for.end45, !dbg !569
 
 for.cond1.preheader.lr.ph:                        ; preds = %entry
-  %cmp265 = icmp sgt i32 %alen, 0
-  br label %for.cond1.preheader
+  %cmp265 = icmp sgt i32 %alen, 0, !dbg !571
+  br label %for.cond1.preheader, !dbg !569
 
 for.cond1.preheader:                              ; preds = %for.inc43, %for.cond1.preheader.lr.ph
   %indvars.iv69 = phi i64 [ 0, %for.cond1.preheader.lr.ph ], [ %indvars.iv.next70, %for.inc43 ]
-  br i1 %cmp265, label %for.body3.lr.ph, label %for.inc43
+  br i1 %cmp265, label %for.body3.lr.ph, label %for.inc43, !dbg !571
 
 for.body3.lr.ph:                                  ; preds = %for.cond1.preheader
-  %arrayidx = getelementptr inbounds i8** %aseq, i64 %indvars.iv69
-  br label %for.body3
+  %arrayidx = getelementptr inbounds i8** %aseq, i64 %indvars.iv69, !dbg !573
+  br label %for.body3, !dbg !571
 
 for.body3:                                        ; preds = %for.inc, %for.body3.lr.ph
   %indvars.iv = phi i64 [ 0, %for.body3.lr.ph ], [ %indvars.iv.next, %for.inc ]
-  %0 = load i8** %arrayidx, align 8, !tbaa !3
-  %arrayidx5 = getelementptr inbounds i8* %0, i64 %indvars.iv
-  %1 = load i8* %arrayidx5, align 1, !tbaa !1
+  %0 = load i8** %arrayidx, align 8, !dbg !573, !tbaa !305
+  %arrayidx5 = getelementptr inbounds i8* %0, i64 %indvars.iv, !dbg !573
+  %1 = load i8* %arrayidx5, align 1, !dbg !573, !tbaa !297
   switch i8 %1, label %for.inc [
     i8 32, label %if.then
     i8 46, label %if.then
     i8 95, label %if.then
     i8 45, label %if.then
     i8 126, label %if.then
-  ]
+  ], !dbg !573
 
 if.then:                                          ; preds = %for.body3, %for.body3, %for.body3, %for.body3, %for.body3
-  store i8 %gapsym, i8* %arrayidx5, align 1, !tbaa !1
-  br label %for.inc
+  store i8 %gapsym, i8* %arrayidx5, align 1, !dbg !573, !tbaa !297
+  br label %for.inc, !dbg !573
 
 for.inc:                                          ; preds = %for.body3, %if.then
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %alen
-  br i1 %exitcond, label %for.inc43, label %for.body3
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !571
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !571
+  %exitcond = icmp eq i32 %lftr.wideiv, %alen, !dbg !571
+  br i1 %exitcond, label %for.inc43, label %for.body3, !dbg !571
 
 for.inc43:                                        ; preds = %for.inc, %for.cond1.preheader
-  %indvars.iv.next70 = add i64 %indvars.iv69, 1
-  %lftr.wideiv71 = trunc i64 %indvars.iv.next70 to i32
-  %exitcond72 = icmp eq i32 %lftr.wideiv71, %nseq
-  br i1 %exitcond72, label %for.end45, label %for.cond1.preheader
+  %indvars.iv.next70 = add i64 %indvars.iv69, 1, !dbg !569
+  %lftr.wideiv71 = trunc i64 %indvars.iv.next70 to i32, !dbg !569
+  %exitcond72 = icmp eq i32 %lftr.wideiv71, %nseq, !dbg !569
+  br i1 %exitcond72, label %for.end45, label %for.cond1.preheader, !dbg !569
 
 for.end45:                                        ; preds = %for.inc43, %entry
-  ret void
+  ret void, !dbg !574
 }

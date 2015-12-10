@@ -1,20 +1,22 @@
-define internal fastcc void @fe(i32 %eio, i8* %desc, i32 %line) #1 {
-  %1 = load %struct.t_fileio** @curfio, align 8, !tbaa !15
-  %2 = getelementptr inbounds %struct.t_fileio* %1, i64 0, i32 2
-  %3 = load i32* %2, align 4, !tbaa !23
-  %4 = icmp ne i32 %3, 0
-  %5 = select i1 %4, i8* getelementptr inbounds ([5 x i8]* @.str38, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str39, i64 0, i64 0)
-  %6 = icmp ult i32 %eio, 8
-  br i1 %6, label %7, label %11
+define internal fastcc void @fe(i32 %eio, i8* %desc, i32 %line) #2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !617, i64 0, metadata !329), !dbg !985
+  %0 = load %struct.t_fileio** @curfio, align 8, !dbg !986, !tbaa !514
+  %bRead = getelementptr inbounds %struct.t_fileio* %0, i64 0, i32 2, !dbg !986
+  %1 = load i32* %bRead, align 4, !dbg !986, !tbaa !501
+  %tobool = icmp ne i32 %1, 0, !dbg !986
+  %cond = select i1 %tobool, i8* getelementptr inbounds ([5 x i8]* @.str42, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str43, i64 0, i64 0), !dbg !986
+  %2 = icmp ult i32 %eio, 8, !dbg !986
+  br i1 %2, label %cond.true, label %cond.end, !dbg !986
 
-; <label>:7                                       ; preds = %0
-  %8 = sext i32 %eio to i64
-  %9 = getelementptr inbounds [8 x i8*]* @eioNames, i64 0, i64 %8
-  %10 = load i8** %9, align 8, !tbaa !15
-  br label %11
+cond.true:                                        ; preds = %entry
+  %idxprom = sext i32 %eio to i64, !dbg !986
+  %arrayidx = getelementptr inbounds [8 x i8*]* @eioNames, i64 0, i64 %idxprom, !dbg !986
+  %3 = load i8** %arrayidx, align 8, !dbg !986, !tbaa !514
+  br label %cond.end, !dbg !986
 
-; <label>:11                                      ; preds = %0, %7
-  %12 = phi i8* [ %10, %7 ], [ getelementptr inbounds ([8 x i8]* @.str40, i64 0, i64 0), %0 ]
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([46 x i8]* @.str37, i64 0, i64 0), i8* %5, i8* %desc, i32 %eio, i8* %12, i8* getelementptr inbounds ([66 x i8]* @.str15, i64 0, i64 0), i32 %line) #9
-  ret void
+cond.end:                                         ; preds = %entry, %cond.true
+  %cond2 = phi i8* [ %3, %cond.true ], [ getelementptr inbounds ([8 x i8]* @.str44, i64 0, i64 0), %entry ], !dbg !986
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([46 x i8]* @.str41, i64 0, i64 0), i8* %cond, i8* %desc, i32 %eio, i8* %cond2, i8* getelementptr inbounds ([54 x i8]* @.str15, i64 0, i64 0), i32 %line) #8, !dbg !986
+  ret void, !dbg !987
 }

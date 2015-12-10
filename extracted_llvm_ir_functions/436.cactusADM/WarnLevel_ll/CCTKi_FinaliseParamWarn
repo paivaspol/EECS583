@@ -1,44 +1,47 @@
 define void @CCTKi_FinaliseParamWarn() #1 {
+entry:
   %param_type = alloca i32, align 4
-  %1 = load i32* @param_errors, align 4, !tbaa !6
-  %2 = icmp eq i32 %1, 0
-  br i1 %2, label %25, label %3
+  call void @llvm.dbg.declare(metadata !{i32* %param_type}, metadata !179), !dbg !488
+  %0 = load i32* @param_errors, align 4, !dbg !489, !tbaa !250
+  %tobool = icmp eq i32 %0, 0, !dbg !489
+  br i1 %tobool, label %if.end11, label %if.then, !dbg !489
 
-; <label>:3                                       ; preds = %0
-  %4 = call i8* @CCTK_ParameterGet(i8* getelementptr inbounds ([24 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i32* %param_type) #8
-  %5 = bitcast i8* %4 to i32*
-  %6 = load i32* %5, align 4, !tbaa !6
-  %7 = icmp eq i32 %6, 0
-  br i1 %7, label %14, label %8
+if.then:                                          ; preds = %entry
+  %call = call i8* @CCTK_ParameterGet(i8* getelementptr inbounds ([24 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i32* %param_type) #9, !dbg !490
+  %1 = bitcast i8* %call to i32*, !dbg !490
+  call void @llvm.dbg.value(metadata !{i32* %1}, i64 0, metadata !180), !dbg !490
+  %2 = load i32* %1, align 4, !dbg !492, !tbaa !250
+  %tobool1 = icmp eq i32 %2, 0, !dbg !492
+  br i1 %tobool1, label %if.else, label %if.then2, !dbg !492
 
-; <label>:8                                       ; preds = %3
-  %9 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !2
-  %10 = load i32* @param_errors, align 4, !tbaa !6
-  %11 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %9, i8* getelementptr inbounds ([38 x i8]* @.str21, i64 0, i64 0), i32 %10) #8
-  %12 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !2
-  %13 = call i32 @fflush(%struct.__sFILE* %12) #8
-  call void @exit(i32 99) #9
-  unreachable
+if.then2:                                         ; preds = %if.then
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !493, !tbaa !218
+  %4 = load i32* @param_errors, align 4, !dbg !493, !tbaa !250
+  %call3 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([38 x i8]* @.str21, i64 0, i64 0), i32 %4) #9, !dbg !493
+  %5 = load %struct._IO_FILE** @stderr, align 8, !dbg !495, !tbaa !218
+  %call4 = call i32 @fflush(%struct._IO_FILE* %5) #9, !dbg !495
+  call void @exit(i32 99) #10, !dbg !496
+  unreachable, !dbg !496
 
-; <label>:14                                      ; preds = %3
-  %15 = load i32* @param_errors, align 4, !tbaa !6
-  %16 = icmp eq i32 %15, 1
-  %17 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !2
-  br i1 %16, label %18, label %20
+if.else:                                          ; preds = %if.then
+  %6 = load i32* @param_errors, align 4, !dbg !497, !tbaa !250
+  %cmp = icmp eq i32 %6, 1, !dbg !497
+  %7 = load %struct._IO_FILE** @stderr, align 8, !dbg !499, !tbaa !218
+  br i1 %cmp, label %if.then5, label %if.else7, !dbg !497
 
-; <label>:18                                      ; preds = %14
-  %19 = call i64 @fwrite(i8* getelementptr inbounds ([33 x i8]* @.str22, i64 0, i64 0), i64 32, i64 1, %struct.__sFILE* %17)
-  br label %22
+if.then5:                                         ; preds = %if.else
+  %8 = call i64 @fwrite(i8* getelementptr inbounds ([33 x i8]* @.str22, i64 0, i64 0), i64 32, i64 1, %struct._IO_FILE* %7), !dbg !499
+  br label %if.end, !dbg !501
 
-; <label>:20                                      ; preds = %14
-  %21 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %17, i8* getelementptr inbounds ([36 x i8]* @.str23, i64 0, i64 0), i32 %15) #8
-  br label %22
+if.else7:                                         ; preds = %if.else
+  %call8 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %7, i8* getelementptr inbounds ([36 x i8]* @.str23, i64 0, i64 0), i32 %6) #9, !dbg !502
+  br label %if.end
 
-; <label>:22                                      ; preds = %20, %18
-  %23 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !2
-  %24 = call i32 @fflush(%struct.__sFILE* %23) #8
-  br label %25
+if.end:                                           ; preds = %if.else7, %if.then5
+  %9 = load %struct._IO_FILE** @stderr, align 8, !dbg !504, !tbaa !218
+  %call9 = call i32 @fflush(%struct._IO_FILE* %9) #9, !dbg !504
+  br label %if.end11, !dbg !505
 
-; <label>:25                                      ; preds = %0, %22
-  ret void
+if.end11:                                         ; preds = %entry, %if.end
+  ret void, !dbg !506
 }

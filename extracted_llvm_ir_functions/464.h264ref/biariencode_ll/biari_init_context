@@ -1,43 +1,47 @@
 define void @biari_init_context(%struct.BiContextType* nocapture %ctx, i32* nocapture %ini) #0 {
 entry:
-  %0 = load i32* %ini, align 4, !tbaa !0
-  %1 = load %struct.ImageParameters** @img, align 8, !tbaa !3
-  %qp = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 10
-  %2 = load i32* %qp, align 4, !tbaa !0
-  %cmp = icmp slt i32 %2, 0
-  %. = select i1 %cmp, i32 0, i32 %2
-  %mul = mul nsw i32 %., %0
-  %shr = ashr i32 %mul, 4
-  %arrayidx2 = getelementptr inbounds i32* %ini, i64 1
-  %3 = load i32* %arrayidx2, align 4, !tbaa !0
-  %add = add nsw i32 %shr, %3
-  %cmp3 = icmp slt i32 %add, 1
-  %cond7 = select i1 %cmp3, i32 1, i32 %add
-  %cmp8 = icmp slt i32 %cond7, 126
-  %cond17 = select i1 %cmp8, i32 %cond7, i32 126
-  %cmp18 = icmp sgt i32 %cond17, 63
-  br i1 %cmp18, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata !{%struct.BiContextType* %ctx}, i64 0, metadata !111), !dbg !870
+  tail call void @llvm.dbg.value(metadata !{i32* %ini}, i64 0, metadata !112), !dbg !870
+  %0 = load i32* %ini, align 4, !dbg !871, !tbaa !637
+  %1 = load %struct.ImageParameters** @img, align 8, !dbg !871, !tbaa !644
+  %qp = getelementptr inbounds %struct.ImageParameters* %1, i64 0, i32 10, !dbg !871
+  %2 = load i32* %qp, align 4, !dbg !871, !tbaa !637
+  %cmp = icmp slt i32 %2, 0, !dbg !871
+  %. = select i1 %cmp, i32 0, i32 %2, !dbg !871
+  %mul = mul nsw i32 %., %0, !dbg !871
+  %shr = ashr i32 %mul, 4, !dbg !871
+  %arrayidx2 = getelementptr inbounds i32* %ini, i64 1, !dbg !871
+  %3 = load i32* %arrayidx2, align 4, !dbg !871, !tbaa !637
+  %add = add nsw i32 %shr, %3, !dbg !871
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !113), !dbg !871
+  %cmp3 = icmp slt i32 %add, 1, !dbg !872
+  %cond7 = select i1 %cmp3, i32 1, i32 %add, !dbg !872
+  %cmp8 = icmp slt i32 %cond7, 126, !dbg !872
+  %cond17 = select i1 %cmp8, i32 %cond7, i32 126, !dbg !872
+  tail call void @llvm.dbg.value(metadata !{i32 %cond17}, i64 0, metadata !113), !dbg !872
+  %cmp18 = icmp sgt i32 %cond17, 63, !dbg !873
+  br i1 %cmp18, label %if.then, label %if.else, !dbg !873
 
 if.then:                                          ; preds = %entry
-  %sub = add nsw i32 %cond17, 65472
-  %conv = trunc i32 %sub to i16
-  %state = getelementptr inbounds %struct.BiContextType* %ctx, i64 0, i32 0
-  store i16 %conv, i16* %state, align 2, !tbaa !4
-  %MPS = getelementptr inbounds %struct.BiContextType* %ctx, i64 0, i32 1
-  store i8 1, i8* %MPS, align 1, !tbaa !1
-  br label %if.end
+  %sub = add nsw i32 %cond17, 65472, !dbg !874
+  %conv = trunc i32 %sub to i16, !dbg !874
+  %state = getelementptr inbounds %struct.BiContextType* %ctx, i64 0, i32 0, !dbg !874
+  store i16 %conv, i16* %state, align 2, !dbg !874, !tbaa !699
+  %MPS = getelementptr inbounds %struct.BiContextType* %ctx, i64 0, i32 1, !dbg !876
+  store i8 1, i8* %MPS, align 1, !dbg !876, !tbaa !638
+  br label %if.end, !dbg !877
 
 if.else:                                          ; preds = %entry
-  %sub19 = sub nsw i32 63, %cond17
-  %conv20 = trunc i32 %sub19 to i16
-  %state21 = getelementptr inbounds %struct.BiContextType* %ctx, i64 0, i32 0
-  store i16 %conv20, i16* %state21, align 2, !tbaa !4
-  %MPS22 = getelementptr inbounds %struct.BiContextType* %ctx, i64 0, i32 1
-  store i8 0, i8* %MPS22, align 1, !tbaa !1
+  %sub19 = sub nsw i32 63, %cond17, !dbg !878
+  %conv20 = trunc i32 %sub19 to i16, !dbg !878
+  %state21 = getelementptr inbounds %struct.BiContextType* %ctx, i64 0, i32 0, !dbg !878
+  store i16 %conv20, i16* %state21, align 2, !dbg !878, !tbaa !699
+  %MPS22 = getelementptr inbounds %struct.BiContextType* %ctx, i64 0, i32 1, !dbg !880
+  store i8 0, i8* %MPS22, align 1, !dbg !880, !tbaa !638
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
-  %count = getelementptr inbounds %struct.BiContextType* %ctx, i64 0, i32 2
-  store i64 0, i64* %count, align 8, !tbaa !5
-  ret void
+  %count = getelementptr inbounds %struct.BiContextType* %ctx, i64 0, i32 2, !dbg !881
+  store i64 0, i64* %count, align 8, !dbg !881, !tbaa !703
+  ret void, !dbg !882
 }

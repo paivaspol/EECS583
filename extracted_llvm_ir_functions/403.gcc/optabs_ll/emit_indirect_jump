@@ -1,28 +1,30 @@
 define void @emit_indirect_jump(%struct.rtx_def* %loc) #0 {
 entry:
-  %0 = load %struct.insn_operand_data** getelementptr inbounds ([0 x %struct.insn_data]* @insn_data, i64 0, i64 1159, i32 3), align 8, !tbaa !0
-  %predicate = getelementptr inbounds %struct.insn_operand_data* %0, i64 0, i32 0
-  %1 = load i32 (%struct.rtx_def*, i32)** %predicate, align 8, !tbaa !0
-  %2 = load i32* @target_flags, align 4, !tbaa !5
-  %and = lshr i32 %2, 25
-  %3 = and i32 %and, 1
-  %4 = or i32 %3, 4
-  %call = tail call i32 %1(%struct.rtx_def* %loc, i32 %4) #8
-  %tobool1 = icmp eq i32 %call, 0
-  br i1 %tobool1, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %loc}, i64 0, metadata !2223), !dbg !4090
+  %0 = load %struct.insn_operand_data** getelementptr inbounds ([0 x %struct.insn_data]* @insn_data, i64 0, i64 1159, i32 3), align 8, !dbg !4091, !tbaa !2642
+  %predicate = getelementptr inbounds %struct.insn_operand_data* %0, i64 0, i32 0, !dbg !4091
+  %1 = load i32 (%struct.rtx_def*, i32)** %predicate, align 8, !dbg !4091, !tbaa !2642
+  %2 = load i32* @target_flags, align 4, !dbg !4091, !tbaa !2668
+  %and = lshr i32 %2, 25, !dbg !4091
+  %3 = and i32 %and, 1, !dbg !4091
+  %4 = or i32 %3, 4, !dbg !4091
+  %call = tail call i32 %1(%struct.rtx_def* %loc, i32 %4) #9, !dbg !4091
+  %tobool1 = icmp eq i32 %call, 0, !dbg !4091
+  br i1 %tobool1, label %if.then, label %if.end, !dbg !4091
 
 if.then:                                          ; preds = %entry
-  %5 = load i32* @target_flags, align 4, !tbaa !5
-  %and2 = lshr i32 %5, 25
-  %6 = and i32 %and2, 1
-  %7 = or i32 %6, 4
-  %call5 = tail call %struct.rtx_def* @copy_to_mode_reg(i32 %7, %struct.rtx_def* %loc) #8
-  br label %if.end
+  %5 = load i32* @target_flags, align 4, !dbg !4092, !tbaa !2668
+  %and2 = lshr i32 %5, 25, !dbg !4092
+  %6 = and i32 %and2, 1, !dbg !4092
+  %7 = or i32 %6, 4, !dbg !4092
+  %call5 = tail call %struct.rtx_def* @copy_to_mode_reg(i32 %7, %struct.rtx_def* %loc) #9, !dbg !4092
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call5}, i64 0, metadata !2223), !dbg !4092
+  br label %if.end, !dbg !4092
 
 if.end:                                           ; preds = %entry, %if.then
   %loc.addr.0 = phi %struct.rtx_def* [ %loc, %entry ], [ %call5, %if.then ]
-  %call6 = tail call %struct.rtx_def* @gen_indirect_jump(%struct.rtx_def* %loc.addr.0) #8
-  %call7 = tail call %struct.rtx_def* @emit_jump_insn(%struct.rtx_def* %call6) #8
-  %call8 = tail call %struct.rtx_def* @emit_barrier() #8
-  ret void
+  %call6 = tail call %struct.rtx_def* @gen_indirect_jump(%struct.rtx_def* %loc.addr.0) #9, !dbg !4093
+  %call7 = tail call %struct.rtx_def* @emit_jump_insn(%struct.rtx_def* %call6) #9, !dbg !4093
+  %call8 = tail call %struct.rtx_def* @emit_barrier() #9, !dbg !4094
+  ret void, !dbg !4095
 }

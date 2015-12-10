@@ -1,22 +1,33 @@
-define %struct.PGExtras* @PUGH_SetupPGExtras(i32 %dim, i32* nocapture readonly %perme, i32 %stagger, i32* nocapture readonly %sh, i32* nocapture readonly %nghosts, i32 %total_procs, i32* %nprocs, i32 %this_proc) #1 {
-  %1 = tail call i8* @malloc(i64 296) #7
-  %2 = bitcast i8* %1 to %struct.PGExtras*
-  %3 = icmp eq i8* %1, null
-  br i1 %3, label %12, label %4
+define %struct.PGExtras* @PUGH_SetupPGExtras(i32 %dim, i32* nocapture %perme, i32 %stagger, i32* nocapture %sh, i32* nocapture %nghosts, i32 %total_procs, i32* %nprocs, i32 %this_proc) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %dim}, i64 0, metadata !45), !dbg !366
+  tail call void @llvm.dbg.value(metadata !{i32* %perme}, i64 0, metadata !46), !dbg !367
+  tail call void @llvm.dbg.value(metadata !{i32 %stagger}, i64 0, metadata !47), !dbg !368
+  tail call void @llvm.dbg.value(metadata !{i32* %sh}, i64 0, metadata !48), !dbg !369
+  tail call void @llvm.dbg.value(metadata !{i32* %nghosts}, i64 0, metadata !49), !dbg !370
+  tail call void @llvm.dbg.value(metadata !{i32 %total_procs}, i64 0, metadata !50), !dbg !371
+  tail call void @llvm.dbg.value(metadata !{i32* %nprocs}, i64 0, metadata !51), !dbg !372
+  tail call void @llvm.dbg.value(metadata !{i32 %this_proc}, i64 0, metadata !52), !dbg !373
+  %call = tail call noalias i8* @malloc(i64 296) #7, !dbg !374
+  %0 = bitcast i8* %call to %struct.PGExtras*, !dbg !374
+  tail call void @llvm.dbg.value(metadata !{%struct.PGExtras* %0}, i64 0, metadata !54), !dbg !374
+  %tobool = icmp eq i8* %call, null, !dbg !375
+  br i1 %tobool, label %if.end8, label %if.then, !dbg !375
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i32 @PUGH_SetupPGExtrasMemory(i32 %dim, i32 %total_procs, i32* undef, %struct.PGExtras* %2) #8
-  %6 = icmp eq i32 %5, 0
-  br i1 %6, label %7, label %12
+if.then:                                          ; preds = %entry
+  %call1 = tail call i32 @PUGH_SetupPGExtrasMemory(i32 %dim, i32 %total_procs, i32* undef, %struct.PGExtras* %0) #8, !dbg !376
+  tail call void @llvm.dbg.value(metadata !{i32 %call1}, i64 0, metadata !53), !dbg !376
+  %tobool2 = icmp eq i32 %call1, 0, !dbg !378
+  br i1 %tobool2, label %if.then3, label %if.end8, !dbg !378
 
-; <label>:7                                       ; preds = %4
-  %8 = bitcast i8* %1 to i32*
-  store i32 %dim, i32* %8, align 4, !tbaa !2
-  %9 = tail call i32 @PUGH_SetupPGExtrasSizes(i32 %dim, i32* %perme, i32 %stagger, i32* %sh, i32* %nghosts, i32 %total_procs, i32* %nprocs, i32 %this_proc, %struct.PGExtras* %2) #8
-  %10 = tail call i32 @PUGH_SetupPGExtrasOwnership(i32 %dim, i32* %perme, i32 undef, i32* undef, i32* undef, i32 undef, i32* undef, i32 %this_proc, %struct.PGExtras* %2) #8
-  %11 = tail call i32 @PUGH_SetupPGExtrasStaggering(i32 %dim, i32* undef, i32 undef, i32* undef, i32* undef, i32 undef, i32* undef, i32 %this_proc, %struct.PGExtras* %2) #8
-  br label %12
+if.then3:                                         ; preds = %if.then
+  %dim4 = bitcast i8* %call to i32*, !dbg !379
+  store i32 %dim, i32* %dim4, align 4, !dbg !379, !tbaa !381
+  %call5 = tail call i32 @PUGH_SetupPGExtrasSizes(i32 %dim, i32* %perme, i32 %stagger, i32* %sh, i32* %nghosts, i32 %total_procs, i32* %nprocs, i32 %this_proc, %struct.PGExtras* %0) #8, !dbg !384
+  %call6 = tail call i32 @PUGH_SetupPGExtrasOwnership(i32 %dim, i32* %perme, i32 undef, i32* undef, i32* undef, i32 undef, i32* undef, i32 %this_proc, %struct.PGExtras* %0) #8, !dbg !385
+  %call7 = tail call i32 @PUGH_SetupPGExtrasStaggering(i32 %dim, i32* undef, i32 undef, i32* undef, i32* undef, i32 undef, i32* undef, i32 %this_proc, %struct.PGExtras* %0) #8, !dbg !386
+  br label %if.end8, !dbg !387
 
-; <label>:12                                      ; preds = %4, %0, %7
-  ret %struct.PGExtras* %2
+if.end8:                                          ; preds = %if.then, %entry, %if.then3
+  ret %struct.PGExtras* %0, !dbg !388
 }

@@ -1,0 +1,57 @@
+define internal fastcc double @_ZN3povL10evaluate_gEddd(double %x, double %y, double %e) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{double %x}, i64 0, metadata !1073), !dbg !1892
+  tail call void @llvm.dbg.value(metadata !{double %y}, i64 0, metadata !1074), !dbg !1892
+  tail call void @llvm.dbg.value(metadata !{double %e}, i64 0, metadata !1075), !dbg !1892
+  tail call void @llvm.dbg.value(metadata !1428, i64 0, metadata !1076), !dbg !1893
+  %cmp = fcmp ogt double %x, %y, !dbg !1894
+  br i1 %cmp, label %if.then, label %if.else, !dbg !1894
+
+if.then:                                          ; preds = %entry
+  %div = fdiv double %y, %x, !dbg !1895
+  %call = tail call fastcc double @_ZN3povL5powerEdd(double %div, double %e) #8, !dbg !1895
+  %add = fadd double %call, 1.000000e+00, !dbg !1895
+  tail call void @llvm.dbg.value(metadata !{double %add}, i64 0, metadata !1076), !dbg !1895
+  %cmp1 = fcmp une double %add, 1.000000e+00, !dbg !1897
+  br i1 %cmp1, label %if.then2, label %if.end, !dbg !1897
+
+if.then2:                                         ; preds = %if.then
+  %div3 = fdiv double 1.000000e+00, %e, !dbg !1898
+  %call4 = tail call fastcc double @_ZN3povL5powerEdd(double %add, double %div3) #8, !dbg !1898
+  tail call void @llvm.dbg.value(metadata !{double %call4}, i64 0, metadata !1076), !dbg !1898
+  br label %if.end, !dbg !1898
+
+if.end:                                           ; preds = %if.then2, %if.then
+  %g.0 = phi double [ %call4, %if.then2 ], [ %add, %if.then ]
+  %mul = fmul double %g.0, %x, !dbg !1899
+  tail call void @llvm.dbg.value(metadata !{double %mul}, i64 0, metadata !1076), !dbg !1899
+  br label %if.end17, !dbg !1900
+
+if.else:                                          ; preds = %entry
+  %cmp5 = fcmp une double %y, 0.000000e+00, !dbg !1901
+  br i1 %cmp5, label %if.then6, label %if.end17, !dbg !1901
+
+if.then6:                                         ; preds = %if.else
+  %div7 = fdiv double %x, %y, !dbg !1902
+  %call8 = tail call fastcc double @_ZN3povL5powerEdd(double %div7, double %e) #8, !dbg !1902
+  %add9 = fadd double %call8, 1.000000e+00, !dbg !1902
+  tail call void @llvm.dbg.value(metadata !{double %add9}, i64 0, metadata !1076), !dbg !1902
+  %cmp10 = fcmp une double %add9, 1.000000e+00, !dbg !1904
+  br i1 %cmp10, label %if.then11, label %if.end14, !dbg !1904
+
+if.then11:                                        ; preds = %if.then6
+  %div12 = fdiv double 1.000000e+00, %e, !dbg !1905
+  %call13 = tail call fastcc double @_ZN3povL5powerEdd(double %add9, double %div12) #8, !dbg !1905
+  tail call void @llvm.dbg.value(metadata !{double %call13}, i64 0, metadata !1076), !dbg !1905
+  br label %if.end14, !dbg !1905
+
+if.end14:                                         ; preds = %if.then11, %if.then6
+  %g.1 = phi double [ %call13, %if.then11 ], [ %add9, %if.then6 ]
+  %mul15 = fmul double %g.1, %y, !dbg !1906
+  tail call void @llvm.dbg.value(metadata !{double %mul15}, i64 0, metadata !1076), !dbg !1906
+  br label %if.end17, !dbg !1907
+
+if.end17:                                         ; preds = %if.else, %if.end14, %if.end
+  %g.2 = phi double [ %mul, %if.end ], [ %mul15, %if.end14 ], [ 0.000000e+00, %if.else ]
+  ret double %g.2, !dbg !1908
+}

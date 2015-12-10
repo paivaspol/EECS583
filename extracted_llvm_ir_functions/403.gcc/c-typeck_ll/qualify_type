@@ -1,26 +1,28 @@
 define internal fastcc %union.tree_node* @qualify_type(%union.tree_node* %type, %union.tree_node* nocapture %like) #0 {
 entry:
-  %readonly_flag = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 0, i32 2
-  %0 = bitcast [4 x i8]* %readonly_flag to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.lshr = lshr i32 %bf.load, 12
-  %bf.clear = and i32 %bf.lshr, 1
-  %1 = lshr i32 %bf.load, 10
-  %mul5 = and i32 %1, 2
-  %type6 = bitcast %union.tree_node* %type to %struct.tree_type*
-  %restrict_flag = getelementptr inbounds %struct.tree_type* %type6, i64 0, i32 6
-  %2 = bitcast [4 x i8]* %restrict_flag to i32*
-  %bf.load7 = load i32* %2, align 4
-  %3 = lshr i32 %bf.load7, 19
-  %mul10 = and i32 %3, 4
-  %bf.clear14 = and i32 %bf.load, 255
-  %cmp = icmp eq i32 %bf.clear14, 20
-  br i1 %cmp, label %land.rhs, label %land.end
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %type}, i64 0, metadata !1825), !dbg !3428
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %like}, i64 0, metadata !1826), !dbg !3428
+  %readonly_flag = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 0, i32 2, !dbg !3429
+  %0 = bitcast [4 x i8]* %readonly_flag to i32*, !dbg !3429
+  %bf.load = load i32* %0, align 8, !dbg !3429
+  %bf.lshr = lshr i32 %bf.load, 12, !dbg !3429
+  %bf.clear = and i32 %bf.lshr, 1, !dbg !3429
+  %1 = lshr i32 %bf.load, 10, !dbg !3429
+  %mul5 = and i32 %1, 2, !dbg !3429
+  %type6 = bitcast %union.tree_node* %type to %struct.tree_type*, !dbg !3429
+  %restrict_flag = getelementptr inbounds %struct.tree_type* %type6, i64 0, i32 6, !dbg !3429
+  %2 = bitcast [4 x i8]* %restrict_flag to i32*, !dbg !3429
+  %bf.load7 = load i32* %2, align 4, !dbg !3429
+  %3 = lshr i32 %bf.load7, 19, !dbg !3429
+  %mul10 = and i32 %3, 4, !dbg !3429
+  %bf.clear14 = and i32 %bf.load, 255, !dbg !3429
+  %cmp = icmp eq i32 %bf.clear14, 20, !dbg !3429
+  br i1 %cmp, label %land.rhs, label %land.end, !dbg !3429
 
 land.rhs:                                         ; preds = %entry
-  %type16 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 0, i32 1
-  %4 = load %union.tree_node** %type16, align 8, !tbaa !0
-  %tobool = icmp ne %union.tree_node* %4, null
+  %type16 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 0, i32 1, !dbg !3429
+  %4 = load %union.tree_node** %type16, align 8, !dbg !3429, !tbaa !1977
+  %tobool = icmp ne %union.tree_node* %4, null, !dbg !3429
   br label %land.end
 
 land.end:                                         ; preds = %land.rhs, %entry
@@ -46,7 +48,7 @@ land.end:                                         ; preds = %land.rhs, %entry
 
 land.rhs44:                                       ; preds = %land.end
   %type46 = getelementptr inbounds %union.tree_node* %like, i64 0, i32 0, i32 0, i32 1
-  %10 = load %union.tree_node** %type46, align 8, !tbaa !0
+  %10 = load %union.tree_node** %type46, align 8, !tbaa !1977
   %tobool47 = icmp ne %union.tree_node* %10, null
   br label %land.end48
 
@@ -57,10 +59,10 @@ land.end48:                                       ; preds = %land.rhs44, %land.e
   %or31 = or i32 %bf.clear, %mul5
   %or38 = or i32 %or31, %mul10
   %or51 = or i32 %or38, %mul17
-  %or = or i32 %or51, %mul30
-  %or11 = or i32 %or, %bf.clear23
+  %or = or i32 %or51, %mul30, !dbg !3429
+  %or11 = or i32 %or, %bf.clear23, !dbg !3429
   %or18 = or i32 %or11, %mul37
   %or52 = or i32 %or18, %mul50
-  %call = tail call %union.tree_node* @c_build_qualified_type(%union.tree_node* %type, i32 %or52) #8
-  ret %union.tree_node* %call
+  %call = tail call %union.tree_node* @c_build_qualified_type(%union.tree_node* %type, i32 %or52) #9
+  ret %union.tree_node* %call, !dbg !3430
 }

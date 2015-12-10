@@ -1,18 +1,36 @@
 define void @re_set_registers(%struct.re_pattern_buffer* nocapture %bufp, %struct.re_registers* nocapture %regs, i32 %num_regs, i32* %starts, i32* %ends) #0 {
-  %1 = icmp eq i32 %num_regs, 0
-  %2 = getelementptr inbounds %struct.re_pattern_buffer* %bufp, i64 0, i32 7
-  %3 = load i8* %2, align 8
-  %4 = and i8 %3, -7
-  %5 = or i8 %4, 2
-  %. = select i1 %1, i8 %4, i8 %5
-  %.ends = select i1 %1, i32* null, i32* %ends
-  %.starts = select i1 %1, i32* null, i32* %starts
-  store i8 %., i8* %2, align 8
-  %6 = getelementptr inbounds %struct.re_registers* %regs, i64 0, i32 0
-  store i32 %num_regs, i32* %6, align 4
-  %7 = getelementptr inbounds %struct.re_registers* %regs, i64 0, i32 2
-  store i32* %.ends, i32** %7, align 8
-  %8 = getelementptr inbounds %struct.re_registers* %regs, i64 0, i32 1
-  store i32* %.starts, i32** %8, align 8
-  ret void
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.re_pattern_buffer* %bufp}, i64 0, metadata !149), !dbg !819
+  tail call void @llvm.dbg.value(metadata !{%struct.re_registers* %regs}, i64 0, metadata !150), !dbg !820
+  tail call void @llvm.dbg.value(metadata !{i32 %num_regs}, i64 0, metadata !151), !dbg !821
+  tail call void @llvm.dbg.value(metadata !{i32* %starts}, i64 0, metadata !152), !dbg !822
+  tail call void @llvm.dbg.value(metadata !{i32* %ends}, i64 0, metadata !153), !dbg !822
+  %tobool = icmp eq i32 %num_regs, 0, !dbg !823
+  %regs_allocated = getelementptr inbounds %struct.re_pattern_buffer* %bufp, i64 0, i32 7, !dbg !824
+  %bf.load = load i8* %regs_allocated, align 8, !dbg !824
+  %bf.clear = and i8 %bf.load, -7, !dbg !824
+  br i1 %tobool, label %if.else, label %if.then, !dbg !823
+
+if.then:                                          ; preds = %entry
+  %bf.set = or i8 %bf.clear, 2, !dbg !824
+  store i8 %bf.set, i8* %regs_allocated, align 8, !dbg !824
+  %num_regs1 = getelementptr inbounds %struct.re_registers* %regs, i64 0, i32 0, !dbg !826
+  store i32 %num_regs, i32* %num_regs1, align 4, !dbg !826, !tbaa !795
+  %start = getelementptr inbounds %struct.re_registers* %regs, i64 0, i32 1, !dbg !827
+  store i32* %starts, i32** %start, align 8, !dbg !827, !tbaa !722
+  %end = getelementptr inbounds %struct.re_registers* %regs, i64 0, i32 2, !dbg !828
+  store i32* %ends, i32** %end, align 8, !dbg !828, !tbaa !722
+  br label %if.end, !dbg !829
+
+if.else:                                          ; preds = %entry
+  store i8 %bf.clear, i8* %regs_allocated, align 8, !dbg !830
+  %num_regs5 = getelementptr inbounds %struct.re_registers* %regs, i64 0, i32 0, !dbg !832
+  store i32 0, i32* %num_regs5, align 4, !dbg !832, !tbaa !795
+  %start7 = getelementptr inbounds %struct.re_registers* %regs, i64 0, i32 1, !dbg !833
+  %0 = bitcast i32** %start7 to i8*
+  call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 16, i32 8, i1 false), !dbg !833
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret void, !dbg !834
 }

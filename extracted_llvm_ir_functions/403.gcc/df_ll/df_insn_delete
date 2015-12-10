@@ -1,19 +1,22 @@
 define %struct.rtx_def* @df_insn_delete(%struct.df* nocapture %df, %struct.basic_block_def* nocapture %bb, %struct.rtx_def* %insn) #0 {
 entry:
-  %head = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 0
-  %0 = load %struct.rtx_def** %head, align 8, !tbaa !3
-  %cmp = icmp eq %struct.rtx_def* %0, %insn
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.df* %df}, i64 0, metadata !516), !dbg !2876
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %bb}, i64 0, metadata !517), !dbg !2877
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !518), !dbg !2878
+  %head = getelementptr inbounds %struct.basic_block_def* %bb, i64 0, i32 0, !dbg !2879
+  %0 = load %struct.rtx_def** %head, align 8, !dbg !2879, !tbaa !1898
+  %cmp = icmp eq %struct.rtx_def* %0, %insn, !dbg !2879
+  br i1 %cmp, label %if.then, label %if.end, !dbg !2879
 
 if.then:                                          ; preds = %entry
-  tail call void @fancy_abort(i8* getelementptr inbounds ([46 x i8]* @.str, i64 0, i64 0), i32 2434, i8* getelementptr inbounds ([15 x i8]* @__FUNCTION__.df_insn_delete, i64 0, i64 0)) #7
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([46 x i8]* @.str, i64 0, i64 0), i32 2434, i8* getelementptr inbounds ([15 x i8]* @__FUNCTION__.df_insn_delete, i64 0, i64 0)) #8, !dbg !2880
+  unreachable, !dbg !2880
 
 if.end:                                           ; preds = %entry
-  %call = tail call %struct.rtx_def* @delete_insn(%struct.rtx_def* %insn) #8
-  tail call void @df_insn_modify(%struct.df* %df, %struct.basic_block_def* %bb, %struct.rtx_def* %insn) #6
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 2
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
-  ret %struct.rtx_def* %1
+  %call = tail call %struct.rtx_def* @delete_insn(%struct.rtx_def* %insn) #9, !dbg !2881
+  tail call void @df_insn_modify(%struct.df* %df, %struct.basic_block_def* %bb, %struct.rtx_def* %insn) #7, !dbg !2882
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 2, !dbg !2883
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !2883
+  %1 = load %struct.rtx_def** %rtx, align 8, !dbg !2883, !tbaa !1898
+  ret %struct.rtx_def* %1, !dbg !2883
 }

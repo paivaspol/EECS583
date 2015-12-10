@@ -1,28 +1,31 @@
 define i32 @DV_sizeOf(%struct._DV* %dv) #0 {
 entry:
-  %cmp = icmp eq %struct._DV* %dv, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._DV* %dv}, i64 0, metadata !65), !dbg !179
+  %cmp = icmp eq %struct._DV* %dv, null, !dbg !180
+  br i1 %cmp, label %if.then, label %if.end, !dbg !180
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([44 x i8]* @.str9, i64 0, i64 0), %struct._DV* null) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !181, !tbaa !102
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([44 x i8]* @.str9, i64 0, i64 0), %struct._DV* null) #5, !dbg !181
+  tail call void @exit(i32 -1) #6, !dbg !183
+  unreachable, !dbg !183
 
 if.end:                                           ; preds = %entry
-  %owned = getelementptr inbounds %struct._DV* %dv, i64 0, i32 2
-  %1 = load i32* %owned, align 4, !tbaa !3
-  %cmp1 = icmp eq i32 %1, 1
-  br i1 %cmp1, label %if.then2, label %if.end5
+  tail call void @llvm.dbg.value(metadata !184, i64 0, metadata !66), !dbg !185
+  %owned = getelementptr inbounds %struct._DV* %dv, i64 0, i32 2, !dbg !186
+  %1 = load i32* %owned, align 4, !dbg !186, !tbaa !108
+  %cmp1 = icmp eq i32 %1, 1, !dbg !186
+  br i1 %cmp1, label %if.then2, label %if.end5, !dbg !186
 
 if.then2:                                         ; preds = %if.end
-  %maxsize = getelementptr inbounds %struct._DV* %dv, i64 0, i32 1
-  %2 = load i32* %maxsize, align 4, !tbaa !3
-  %mul = shl i32 %2, 3
-  %add = add i32 %mul, 24
-  br label %if.end5
+  %maxsize = getelementptr inbounds %struct._DV* %dv, i64 0, i32 1, !dbg !187
+  %2 = load i32* %maxsize, align 4, !dbg !187, !tbaa !108
+  %mul = shl i32 %2, 3, !dbg !187
+  %add = add i32 %mul, 24, !dbg !187
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !66), !dbg !187
+  br label %if.end5, !dbg !189
 
 if.end5:                                          ; preds = %if.then2, %if.end
   %nbytes.0 = phi i32 [ %add, %if.then2 ], [ 24, %if.end ]
-  ret i32 %nbytes.0
+  ret i32 %nbytes.0, !dbg !190
 }

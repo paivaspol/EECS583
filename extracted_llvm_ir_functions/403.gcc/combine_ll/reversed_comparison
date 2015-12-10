@@ -1,14 +1,19 @@
 define internal fastcc %struct.rtx_def* @reversed_comparison(%struct.rtx_def* %exp, i32 %mode, %struct.rtx_def* %op0, %struct.rtx_def* %op1) #0 {
 entry:
-  %call = tail call fastcc i32 @combine_reversed_comparison_code(%struct.rtx_def* %exp) #7
-  %cmp = icmp eq i32 %call, 0
-  br i1 %cmp, label %return, label %if.else
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %exp}, i64 0, metadata !1428), !dbg !5600
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !1429), !dbg !5601
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op0}, i64 0, metadata !1430), !dbg !5600
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op1}, i64 0, metadata !1431), !dbg !5600
+  %call = tail call fastcc i32 @combine_reversed_comparison_code(%struct.rtx_def* %exp) #8, !dbg !5602
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !1432), !dbg !5602
+  %cmp = icmp eq i32 %call, 0, !dbg !5603
+  br i1 %cmp, label %return, label %if.else, !dbg !5603
 
 if.else:                                          ; preds = %entry
-  %call1 = tail call fastcc %struct.rtx_def* @gen_binary(i32 %call, i32 %mode, %struct.rtx_def* %op0, %struct.rtx_def* %op1) #7
-  br label %return
+  %call1 = tail call fastcc %struct.rtx_def* @gen_binary(i32 %call, i32 %mode, %struct.rtx_def* %op0, %struct.rtx_def* %op1) #8, !dbg !5604
+  br label %return, !dbg !5604
 
 return:                                           ; preds = %entry, %if.else
   %retval.0 = phi %struct.rtx_def* [ %call1, %if.else ], [ null, %entry ]
-  ret %struct.rtx_def* %retval.0
+  ret %struct.rtx_def* %retval.0, !dbg !5605
 }

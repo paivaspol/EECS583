@@ -1,29 +1,33 @@
 define internal fastcc void @upcase(i8* nocapture %S) #0 {
 entry:
-  %call = tail call i64 @strlen(i8* %S) #11
-  %conv = trunc i64 %call to i32
-  %cmp14 = icmp sgt i32 %conv, 0
-  br i1 %cmp14, label %for.body.lr.ph, label %for.end
+  tail call void @llvm.dbg.value(metadata !{i8* %S}, i64 0, metadata !518), !dbg !639
+  %call = tail call i64 @strlen(i8* %S) #12, !dbg !640
+  %conv = trunc i64 %call to i32, !dbg !640
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !520), !dbg !640
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !519), !dbg !641
+  %cmp14 = icmp sgt i32 %conv, 0, !dbg !641
+  br i1 %cmp14, label %for.body.lr.ph, label %for.end, !dbg !641
 
 for.body.lr.ph:                                   ; preds = %entry
-  %call4 = tail call i32** @__ctype_toupper_loc() #12
-  br label %for.body
+  %call4 = tail call i32** @__ctype_toupper_loc() #13, !dbg !642
+  br label %for.body, !dbg !641
 
 for.body:                                         ; preds = %for.body, %for.body.lr.ph
   %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
-  %arrayidx = getelementptr inbounds i8* %S, i64 %indvars.iv
-  %0 = load i8* %arrayidx, align 1, !tbaa !1
-  %idxprom3 = sext i8 %0 to i64
-  %1 = load i32** %call4, align 8, !tbaa !0
-  %arrayidx5 = getelementptr inbounds i32* %1, i64 %idxprom3
-  %2 = load i32* %arrayidx5, align 4, !tbaa !3
-  %conv6 = trunc i32 %2 to i8
-  store i8 %conv6, i8* %arrayidx, align 1, !tbaa !1
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %conv
-  br i1 %exitcond, label %for.end, label %for.body
+  %arrayidx = getelementptr inbounds i8* %S, i64 %indvars.iv, !dbg !642
+  %0 = load i8* %arrayidx, align 1, !dbg !642, !tbaa !564
+  %idxprom3 = sext i8 %0 to i64, !dbg !642
+  %1 = load i32** %call4, align 8, !dbg !642, !tbaa !563
+  %arrayidx5 = getelementptr inbounds i32* %1, i64 %idxprom3, !dbg !642
+  %2 = load i32* %arrayidx5, align 4, !dbg !642, !tbaa !572
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !521), !dbg !642
+  %conv6 = trunc i32 %2 to i8, !dbg !642
+  store i8 %conv6, i8* %arrayidx, align 1, !dbg !642, !tbaa !564
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !641
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !641
+  %exitcond = icmp eq i32 %lftr.wideiv, %conv, !dbg !641
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !641
 
 for.end:                                          ; preds = %for.body, %entry
-  ret void
+  ret void, !dbg !643
 }

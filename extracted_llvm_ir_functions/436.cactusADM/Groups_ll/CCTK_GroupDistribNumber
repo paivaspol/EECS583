@@ -1,15 +1,17 @@
-define i32 @CCTK_GroupDistribNumber(i8* nocapture readonly %dtype) #1 {
-  %1 = tail call i32 @strcmp(i8* %dtype, i8* getelementptr inbounds ([9 x i8]* @.str38, i64 0, i64 0)) #10
-  %2 = icmp eq i32 %1, 0
-  br i1 %2, label %6, label %3
+define i32 @CCTK_GroupDistribNumber(i8* nocapture %dtype) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %dtype}, i64 0, metadata !169), !dbg !686
+  %call = tail call i32 @strcmp(i8* %dtype, i8* getelementptr inbounds ([9 x i8]* @.str38, i64 0, i64 0)) #12, !dbg !687
+  %tobool = icmp eq i32 %call, 0, !dbg !687
+  br i1 %tobool, label %if.end6, label %if.else, !dbg !687
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i32 @strcmp(i8* %dtype, i8* getelementptr inbounds ([8 x i8]* @.str39, i64 0, i64 0)) #10
-  %5 = icmp eq i32 %4, 0
-  %. = select i1 %5, i32 2, i32 -1
-  br label %6
+if.else:                                          ; preds = %entry
+  %call2 = tail call i32 @strcmp(i8* %dtype, i8* getelementptr inbounds ([8 x i8]* @.str39, i64 0, i64 0)) #12, !dbg !688
+  %tobool3 = icmp eq i32 %call2, 0, !dbg !688
+  %. = select i1 %tobool3, i32 2, i32 -1, !dbg !689
+  br label %if.end6, !dbg !689
 
-; <label>:6                                       ; preds = %3, %0
-  %retval.0 = phi i32 [ 1, %0 ], [ %., %3 ]
-  ret i32 %retval.0
+if.end6:                                          ; preds = %if.else, %entry
+  %retval1.0 = phi i32 [ 1, %entry ], [ %., %if.else ]
+  ret i32 %retval1.0, !dbg !691
 }

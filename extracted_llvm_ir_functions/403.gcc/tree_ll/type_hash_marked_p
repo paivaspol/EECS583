@@ -1,21 +1,23 @@
 define internal i32 @type_hash_marked_p(i8* nocapture %p) #0 {
 entry:
-  %type1 = getelementptr inbounds i8* %p, i64 8
-  %0 = bitcast i8* %type1 to %union.tree_node**
-  %1 = load %union.tree_node** %0, align 8, !tbaa !0
-  %2 = bitcast %union.tree_node* %1 to i8*
-  %call = tail call i32 @ggc_marked_p(i8* %2) #9
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %lor.rhs, label %lor.end
+  tail call void @llvm.dbg.value(metadata !{i8* %p}, i64 0, metadata !1812), !dbg !1937
+  %type1 = getelementptr inbounds i8* %p, i64 8, !dbg !1938
+  %0 = bitcast i8* %type1 to %union.tree_node**, !dbg !1938
+  %1 = load %union.tree_node** %0, align 8, !dbg !1938, !tbaa !1913
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %1}, i64 0, metadata !1813), !dbg !1938
+  %2 = bitcast %union.tree_node* %1 to i8*, !dbg !1939
+  %call = tail call i32 @ggc_marked_p(i8* %2) #10, !dbg !1939
+  %tobool = icmp eq i32 %call, 0, !dbg !1939
+  br i1 %tobool, label %lor.rhs, label %lor.end, !dbg !1939
 
 lor.rhs:                                          ; preds = %entry
-  %symtab = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 10
-  %pointer5 = load %union.tree_node** %symtab, align 8
-  %tobool3 = icmp ne %union.tree_node* %pointer5, null
-  br label %lor.end
+  %symtab = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 10, !dbg !1939
+  %pointer5 = load %union.tree_node** %symtab, align 8, !dbg !1939
+  %tobool3 = icmp ne %union.tree_node* %pointer5, null, !dbg !1939
+  br label %lor.end, !dbg !1939
 
 lor.end:                                          ; preds = %entry, %lor.rhs
   %3 = phi i1 [ true, %entry ], [ %tobool3, %lor.rhs ]
-  %lor.ext = zext i1 %3 to i32
-  ret i32 %lor.ext
+  %lor.ext = zext i1 %3 to i32, !dbg !1939
+  ret i32 %lor.ext, !dbg !1939
 }

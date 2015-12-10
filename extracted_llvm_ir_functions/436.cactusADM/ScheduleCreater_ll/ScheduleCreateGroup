@@ -1,53 +1,63 @@
 define internal fastcc i32 @ScheduleCreateGroup(i8* %name) #1 {
+entry:
   %this_group = alloca %struct.t_sched_group*, align 8
-  %1 = load %struct.cHandledData** @schedule_groups, align 8, !tbaa !9
-  %2 = bitcast %struct.t_sched_group** %this_group to i8**
-  %3 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %name, i8** %2) #8
-  %4 = icmp sgt i32 %3, -1
-  br i1 %4, label %31, label %5
+  call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !181), !dbg !240
+  call void @llvm.dbg.declare(metadata !{%struct.t_sched_group** %this_group}, metadata !184), !dbg !241
+  %0 = load %struct.cHandledData** @schedule_groups, align 8, !dbg !242, !tbaa !197
+  %1 = bitcast %struct.t_sched_group** %this_group to i8**, !dbg !242
+  %call = call i32 @Util_GetHandle(%struct.cHandledData* %0, i8* %name, i8** %1) #8, !dbg !242
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !183), !dbg !242
+  %cmp = icmp sgt i32 %call, -1, !dbg !243
+  br i1 %cmp, label %if.end15, label %if.else, !dbg !243
 
-; <label>:5                                       ; preds = %0
-  %6 = call i8* @malloc(i64 32) #8
-  store i8* %6, i8** %2, align 8, !tbaa !9
-  %7 = icmp eq i8* %6, null
-  br i1 %7, label %31, label %8
+if.else:                                          ; preds = %entry
+  %call1 = call noalias i8* @malloc(i64 32) #8, !dbg !244
+  %2 = bitcast i8* %call1 to %struct.t_sched_group*, !dbg !244
+  call void @llvm.dbg.value(metadata !{%struct.t_sched_group* %2}, i64 0, metadata !184), !dbg !244
+  store %struct.t_sched_group* %2, %struct.t_sched_group** %this_group, align 8, !dbg !244, !tbaa !197
+  %tobool = icmp eq i8* %call1, null, !dbg !246
+  br i1 %tobool, label %if.end15, label %if.then2, !dbg !246
 
-; <label>:8                                       ; preds = %5
-  %9 = call i64 @strlen(i8* %name) #8
-  %10 = add i64 %9, 1
-  %11 = call i8* @malloc(i64 %10) #8
-  %12 = bitcast i8* %6 to i8**
-  store i8* %11, i8** %12, align 8, !tbaa !14
-  %13 = load %struct.t_sched_group** %this_group, align 8, !tbaa !9
-  %14 = getelementptr inbounds %struct.t_sched_group* %13, i64 0, i32 0
-  %15 = load i8** %14, align 8, !tbaa !14
-  %16 = icmp eq i8* %15, null
-  br i1 %16, label %29, label %17
+if.then2:                                         ; preds = %if.else
+  %call3 = call i64 @strlen(i8* %name) #9, !dbg !247
+  %add = add i64 %call3, 1, !dbg !247
+  %call4 = call noalias i8* @malloc(i64 %add) #8, !dbg !247
+  call void @llvm.dbg.value(metadata !{%struct.t_sched_group** %this_group}, i64 0, metadata !184), !dbg !247
+  %name5 = bitcast i8* %call1 to i8**, !dbg !247
+  store i8* %call4, i8** %name5, align 8, !dbg !247, !tbaa !197
+  call void @llvm.dbg.value(metadata !{%struct.t_sched_group** %this_group}, i64 0, metadata !184), !dbg !249
+  %tobool7 = icmp eq i8* %call4, null, !dbg !249
+  br i1 %tobool7, label %if.else12, label %if.then8, !dbg !249
 
-; <label>:17                                      ; preds = %8
-  %18 = call i64 @llvm.objectsize.i64.p0i8(i8* %15, i1 false)
-  %19 = call i8* @__strcpy_chk(i8* %15, i8* %name, i64 %18) #8
-  %20 = load %struct.t_sched_group** %this_group, align 8, !tbaa !9
-  %21 = getelementptr inbounds %struct.t_sched_group* %20, i64 0, i32 1
-  store i32* null, i32** %21, align 8, !tbaa !16
-  %22 = load %struct.t_sched_group** %this_group, align 8, !tbaa !9
-  %23 = getelementptr inbounds %struct.t_sched_group* %22, i64 0, i32 2
-  store i32 0, i32* %23, align 4, !tbaa !17
-  %24 = getelementptr inbounds %struct.t_sched_group* %22, i64 0, i32 3
-  store %struct.t_sched_item* null, %struct.t_sched_item** %24, align 8, !tbaa !18
-  %25 = load i8** %2, align 8, !tbaa !9
-  %26 = call i32 @Util_NewHandle(%struct.cHandledData** @schedule_groups, i8* %name, i8* %25) #8
-  %27 = load i32* @n_schedule_groups, align 4, !tbaa !19
-  %28 = add nsw i32 %27, 1
-  store i32 %28, i32* @n_schedule_groups, align 4, !tbaa !19
-  br label %31
+if.then8:                                         ; preds = %if.then2
+  %call10 = call i8* @strcpy(i8* %call4, i8* %name) #8, !dbg !250
+  call void @llvm.dbg.value(metadata !{%struct.t_sched_group** %this_group}, i64 0, metadata !184), !dbg !252
+  %3 = load %struct.t_sched_group** %this_group, align 8, !dbg !252, !tbaa !197
+  %order = getelementptr inbounds %struct.t_sched_group* %3, i64 0, i32 1, !dbg !252
+  store i32* null, i32** %order, align 8, !dbg !252, !tbaa !197
+  call void @llvm.dbg.value(metadata !{%struct.t_sched_group** %this_group}, i64 0, metadata !184), !dbg !253
+  %4 = load %struct.t_sched_group** %this_group, align 8, !dbg !253, !tbaa !197
+  %n_scheditems = getelementptr inbounds %struct.t_sched_group* %4, i64 0, i32 2, !dbg !253
+  store i32 0, i32* %n_scheditems, align 4, !dbg !253, !tbaa !254
+  call void @llvm.dbg.value(metadata !{%struct.t_sched_group** %this_group}, i64 0, metadata !184), !dbg !255
+  %scheditems = getelementptr inbounds %struct.t_sched_group* %4, i64 0, i32 3, !dbg !255
+  store %struct.t_sched_item* null, %struct.t_sched_item** %scheditems, align 8, !dbg !255, !tbaa !197
+  call void @llvm.dbg.value(metadata !{%struct.t_sched_group** %this_group}, i64 0, metadata !184), !dbg !256
+  %5 = load %struct.t_sched_group** %this_group, align 8, !dbg !256, !tbaa !197
+  %6 = bitcast %struct.t_sched_group* %5 to i8*, !dbg !256
+  %call11 = call i32 @Util_NewHandle(%struct.cHandledData** @schedule_groups, i8* %name, i8* %6) #8, !dbg !256
+  call void @llvm.dbg.value(metadata !{i32 %call11}, i64 0, metadata !182), !dbg !256
+  %7 = load i32* @n_schedule_groups, align 4, !dbg !257, !tbaa !254
+  %inc = add nsw i32 %7, 1, !dbg !257
+  store i32 %inc, i32* @n_schedule_groups, align 4, !dbg !257, !tbaa !254
+  br label %if.end15, !dbg !258
 
-; <label>:29                                      ; preds = %8
-  %30 = bitcast %struct.t_sched_group* %13 to i8*
-  call void @free(i8* %30) #9
-  br label %31
+if.else12:                                        ; preds = %if.then2
+  call void @free(i8* %call1) #8, !dbg !259
+  call void @llvm.dbg.value(metadata !261, i64 0, metadata !182), !dbg !262
+  br label %if.end15
 
-; <label>:31                                      ; preds = %5, %0, %29, %17
-  %retcode.0 = phi i32 [ %26, %17 ], [ -2, %29 ], [ -1, %0 ], [ -2, %5 ]
-  ret i32 %retcode.0
+if.end15:                                         ; preds = %if.else, %entry, %if.else12, %if.then8
+  %retcode.0 = phi i32 [ %call11, %if.then8 ], [ -2, %if.else12 ], [ -1, %entry ], [ -2, %if.else ]
+  ret i32 %retcode.0, !dbg !263
 }

@@ -1,0 +1,51 @@
+define linkonce_odr i16* @_ZN10xalanc_1_819XalanArrayAllocatorItE8allocateEm(%"class.xalanc_1_8::XalanArrayAllocator"* %this, i64 %theCount) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XalanArrayAllocator"* %this}, i64 0, metadata !42310), !dbg !49045
+  tail call void @llvm.dbg.value(metadata !{i64 %theCount}, i64 0, metadata !42313), !dbg !49045
+  %m_blockSize = getelementptr inbounds %"class.xalanc_1_8::XalanArrayAllocator"* %this, i64 0, i32 1, !dbg !49046
+  %0 = load i64* %m_blockSize, align 8, !dbg !49046, !tbaa !47105
+  %cmp = icmp ugt i64 %0, %theCount, !dbg !49046
+  br i1 %cmp, label %if.else, label %if.then, !dbg !49046
+
+if.then:                                          ; preds = %entry
+  %call = tail call i16* @_ZN10xalanc_1_819XalanArrayAllocatorItE11createEntryEmm(%"class.xalanc_1_8::XalanArrayAllocator"* %this, i64 %theCount, i64 %theCount) #10, !dbg !49047
+  br label %return, !dbg !49047
+
+if.else:                                          ; preds = %entry
+  %call2 = tail call %"struct.std::pair"* @_ZN10xalanc_1_819XalanArrayAllocatorItE9findEntryEm(%"class.xalanc_1_8::XalanArrayAllocator"* %this, i64 %theCount) #10, !dbg !49049
+  tail call void @llvm.dbg.value(metadata !{%"struct.std::pair"* %call2}, i64 0, metadata !42314), !dbg !49049
+  %cmp3 = icmp eq %"struct.std::pair"* %call2, null, !dbg !49050
+  br i1 %cmp3, label %if.then4, label %if.else7, !dbg !49050
+
+if.then4:                                         ; preds = %if.else
+  %1 = load i64* %m_blockSize, align 8, !dbg !49051, !tbaa !47105
+  %call6 = tail call i16* @_ZN10xalanc_1_819XalanArrayAllocatorItE11createEntryEmm(%"class.xalanc_1_8::XalanArrayAllocator"* %this, i64 %1, i64 %theCount) #10, !dbg !49051
+  br label %return, !dbg !49051
+
+if.else7:                                         ; preds = %if.else
+  %_M_start.i = getelementptr inbounds %"struct.std::pair"* %call2, i64 0, i32 1, i32 0, i32 0, i32 0, !dbg !49053
+  tail call void @llvm.dbg.value(metadata !49056, i64 0, metadata !49057), !dbg !49058
+  tail call void @llvm.dbg.value(metadata !{i16** %_M_start.i}, i64 0, metadata !49059), !dbg !49058
+  tail call void @llvm.dbg.value(metadata !49056, i64 0, metadata !49060), !dbg !49063
+  tail call void @llvm.dbg.value(metadata !{i16** %_M_start.i}, i64 0, metadata !49064), !dbg !49063
+  %2 = load i16** %_M_start.i, align 8, !dbg !49063, !tbaa !47078
+  tail call void @llvm.dbg.value(metadata !49056, i64 0, metadata !49065), !dbg !49066
+  %_M_finish.i = getelementptr inbounds %"struct.std::pair"* %call2, i64 0, i32 1, i32 0, i32 0, i32 1, !dbg !49067
+  %3 = load i16** %_M_finish.i, align 8, !dbg !49067, !tbaa !47078
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %3 to i64, !dbg !49067
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %2 to i64, !dbg !49067
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !49067
+  %sub.ptr.div.i = ashr exact i64 %sub.ptr.sub.i, 1, !dbg !49067
+  %first = getelementptr inbounds %"struct.std::pair"* %call2, i64 0, i32 0, !dbg !49055
+  %4 = load i64* %first, align 8, !dbg !49055, !tbaa !47105
+  %sub = sub i64 %sub.ptr.div.i, %4, !dbg !49055
+  %add.ptr = getelementptr inbounds i16* %2, i64 %sub, !dbg !49055
+  tail call void @llvm.dbg.value(metadata !{i16* %add.ptr}, i64 0, metadata !42317), !dbg !49055
+  %sub13 = sub i64 %4, %theCount, !dbg !49069
+  store i64 %sub13, i64* %first, align 8, !dbg !49069, !tbaa !47105
+  br label %return, !dbg !49070
+
+return:                                           ; preds = %if.else7, %if.then4, %if.then
+  %retval.0 = phi i16* [ %call, %if.then ], [ %call6, %if.then4 ], [ %add.ptr, %if.else7 ]
+  ret i16* %retval.0, !dbg !49071
+}

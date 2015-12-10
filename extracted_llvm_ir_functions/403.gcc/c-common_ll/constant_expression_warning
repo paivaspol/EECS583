@@ -1,25 +1,26 @@
 define void @constant_expression_warning(%union.tree_node* nocapture %value) #0 {
 entry:
-  %code = getelementptr inbounds %union.tree_node* %value, i64 0, i32 0, i32 0, i32 2
-  %0 = bitcast [4 x i8]* %code to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 255
-  %bf.clear.off = add i32 %bf.clear, -25
-  %switch = icmp ult i32 %bf.clear.off, 4
-  br i1 %switch, label %land.lhs.true, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %value}, i64 0, metadata !1584), !dbg !2485
+  %code = getelementptr inbounds %union.tree_node* %value, i64 0, i32 0, i32 0, i32 2, !dbg !2486
+  %0 = bitcast [4 x i8]* %code to i32*, !dbg !2486
+  %bf.load = load i32* %0, align 8, !dbg !2486
+  %bf.clear = and i32 %bf.load, 255, !dbg !2486
+  %bf.clear.off = add i32 %bf.clear, -25, !dbg !2486
+  %switch = icmp ult i32 %bf.clear.off, 4, !dbg !2486
+  br i1 %switch, label %land.lhs.true, label %if.end, !dbg !2486
 
 land.lhs.true:                                    ; preds = %entry
-  %bf.clear20 = and i32 %bf.load, 262144
-  %tobool = icmp ne i32 %bf.clear20, 0
-  %1 = load i32* @pedantic, align 4, !tbaa !0
-  %tobool22 = icmp ne i32 %1, 0
-  %or.cond = and i1 %tobool, %tobool22
-  br i1 %or.cond, label %if.then, label %if.end
+  %bf.clear20 = and i32 %bf.load, 262144, !dbg !2486
+  %tobool = icmp ne i32 %bf.clear20, 0, !dbg !2486
+  %1 = load i32* @pedantic, align 4, !dbg !2486, !tbaa !2299
+  %tobool22 = icmp ne i32 %1, 0, !dbg !2486
+  %or.cond = and i1 %tobool, %tobool22, !dbg !2486
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !2486
 
 if.then:                                          ; preds = %land.lhs.true
-  tail call void (i8*, ...)* @pedwarn(i8* getelementptr inbounds ([32 x i8]* @.str6, i64 0, i64 0)) #8
-  br label %if.end
+  tail call void (i8*, ...)* @pedwarn(i8* getelementptr inbounds ([32 x i8]* @.str6, i64 0, i64 0)) #9, !dbg !2487
+  br label %if.end, !dbg !2487
 
 if.end:                                           ; preds = %entry, %if.then, %land.lhs.true
-  ret void
+  ret void, !dbg !2488
 }

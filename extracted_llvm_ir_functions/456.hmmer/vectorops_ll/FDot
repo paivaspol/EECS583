@@ -1,23 +1,29 @@
 define float @FDot(float* nocapture %vec1, float* nocapture %vec2, i32 %n) #1 {
 entry:
-  %cmp7 = icmp sgt i32 %n, 0
-  br i1 %cmp7, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{float* %vec1}, i64 0, metadata !95), !dbg !255
+  tail call void @llvm.dbg.value(metadata !{float* %vec2}, i64 0, metadata !96), !dbg !255
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !97), !dbg !255
+  tail call void @llvm.dbg.value(metadata !229, i64 0, metadata !98), !dbg !256
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !99), !dbg !257
+  %cmp7 = icmp sgt i32 %n, 0, !dbg !257
+  br i1 %cmp7, label %for.body, label %for.end, !dbg !257
 
 for.body:                                         ; preds = %entry, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
   %result.08 = phi float [ %add, %for.body ], [ 0.000000e+00, %entry ]
-  %arrayidx = getelementptr inbounds float* %vec1, i64 %indvars.iv
-  %0 = load float* %arrayidx, align 4, !tbaa !3
-  %arrayidx2 = getelementptr inbounds float* %vec2, i64 %indvars.iv
-  %1 = load float* %arrayidx2, align 4, !tbaa !3
-  %mul = fmul float %0, %1
-  %add = fadd float %result.08, %mul
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n
-  br i1 %exitcond, label %for.end, label %for.body
+  %arrayidx = getelementptr inbounds float* %vec1, i64 %indvars.iv, !dbg !257
+  %0 = load float* %arrayidx, align 4, !dbg !257, !tbaa !212
+  %arrayidx2 = getelementptr inbounds float* %vec2, i64 %indvars.iv, !dbg !257
+  %1 = load float* %arrayidx2, align 4, !dbg !257, !tbaa !212
+  %mul = fmul float %0, %1, !dbg !257
+  %add = fadd float %result.08, %mul, !dbg !257
+  tail call void @llvm.dbg.value(metadata !{float %add}, i64 0, metadata !98), !dbg !257
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !257
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !257
+  %exitcond = icmp eq i32 %lftr.wideiv, %n, !dbg !257
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !257
 
 for.end:                                          ; preds = %for.body, %entry
   %result.0.lcssa = phi float [ 0.000000e+00, %entry ], [ %add, %for.body ]
-  ret float %result.0.lcssa
+  ret float %result.0.lcssa, !dbg !259
 }

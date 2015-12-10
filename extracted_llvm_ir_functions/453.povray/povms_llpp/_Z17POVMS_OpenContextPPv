@@ -1,0 +1,56 @@
+define i32 @_Z17POVMS_OpenContextPPv(i8** %contextrefptr) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8** %contextrefptr}, i64 0, metadata !82), !dbg !910
+  tail call void @llvm.dbg.value(metadata !911, i64 0, metadata !83), !dbg !912
+  tail call void @llvm.dbg.value(metadata !71, i64 0, metadata !137), !dbg !913
+  %cmp = icmp eq i8** %contextrefptr, null, !dbg !914
+  br i1 %cmp, label %return, label %if.end, !dbg !914
+
+if.end:                                           ; preds = %entry
+  tail call void @_Z16POVMSStream_Initv() #8, !dbg !915
+  store i8* null, i8** %contextrefptr, align 8, !dbg !916, !tbaa !917
+  %call = tail call noalias i8* @malloc(i64 40) #9, !dbg !920
+  %cmp1 = icmp eq i8* %call, null, !dbg !921
+  tail call void @llvm.dbg.value(metadata !922, i64 0, metadata !923) #6, !dbg !924
+  tail call void @llvm.dbg.value(metadata !925, i64 0, metadata !926) #6, !dbg !924
+  tail call void @llvm.dbg.value(metadata !927, i64 0, metadata !928) #6, !dbg !924
+  br i1 %cmp1, label %_Z20POVMS_AssertFunctioniPKcS0_i.exit.thread, label %if.end5, !dbg !929
+
+_Z20POVMS_AssertFunctioniPKcS0_i.exit.thread:     ; preds = %if.end
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !930, !tbaa !917
+  %call.i = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([39 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 283, i8* getelementptr inbounds ([41 x i8]* @.str, i64 0, i64 0)) #9, !dbg !930
+  br label %return, !dbg !921
+
+if.end5:                                          ; preds = %if.end
+  %receivehandlerroot = getelementptr inbounds i8* %call, i64 8, !dbg !932
+  %1 = bitcast i8* %receivehandlerroot to %struct.POVMSReceiveHandlerNode**, !dbg !932
+  store %struct.POVMSReceiveHandlerNode* null, %struct.POVMSReceiveHandlerNode** %1, align 8, !dbg !932, !tbaa !917
+  %call.i14 = tail call noalias i8* @malloc(i64 24) #9, !dbg !933
+  %cmp.i15 = icmp eq i8* %call.i14, null, !dbg !935
+  br i1 %cmp.i15, label %_Z27POVMS_Sys_QueueOpen_Defaultv.exit, label %if.end.i, !dbg !935
+
+if.end.i:                                         ; preds = %if.end5
+  %2 = bitcast i8* %call.i14 to %struct.POVMS_Sys_QueueNode_Default*, !dbg !933
+  %magic.i = bitcast i8* %call.i14 to i32*, !dbg !936
+  store i32 305419896, i32* %magic.i, align 4, !dbg !936, !tbaa !937
+  %entries.i = getelementptr inbounds i8* %call.i14, i64 4, !dbg !938
+  tail call void @llvm.memset.p0i8.i64(i8* %entries.i, i8 0, i64 20, i32 4, i1 false) #6, !dbg !939
+  br label %_Z27POVMS_Sys_QueueOpen_Defaultv.exit, !dbg !940
+
+_Z27POVMS_Sys_QueueOpen_Defaultv.exit:            ; preds = %if.end5, %if.end.i
+  %retval.0.i16 = phi %struct.POVMS_Sys_QueueNode_Default* [ %2, %if.end.i ], [ null, %if.end5 ]
+  %queue = getelementptr inbounds i8* %call, i64 16, !dbg !934
+  %3 = bitcast i8* %queue to %struct.POVMS_Sys_QueueNode_Default**, !dbg !934
+  store %struct.POVMS_Sys_QueueNode_Default* %retval.0.i16, %struct.POVMS_Sys_QueueNode_Default** %3, align 8, !dbg !934, !tbaa !917
+  %result = getelementptr inbounds i8* %call, i64 24, !dbg !941
+  %type = bitcast i8* %result to i32*, !dbg !941
+  store i32 1314212940, i32* %type, align 4, !dbg !941, !tbaa !937
+  %valid = bitcast i8* %call to i32*, !dbg !942
+  store i32 1, i32* %valid, align 4, !dbg !942, !tbaa !937
+  store i8* %call, i8** %contextrefptr, align 8, !dbg !943, !tbaa !917
+  br label %return, !dbg !944
+
+return:                                           ; preds = %_Z20POVMS_AssertFunctioniPKcS0_i.exit.thread, %entry, %_Z27POVMS_Sys_QueueOpen_Defaultv.exit
+  %retval.0 = phi i32 [ 0, %_Z27POVMS_Sys_QueueOpen_Defaultv.exit ], [ -1, %entry ], [ -2, %_Z20POVMS_AssertFunctioniPKcS0_i.exit.thread ]
+  ret i32 %retval.0, !dbg !944
+}

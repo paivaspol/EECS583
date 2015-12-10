@@ -1,0 +1,135 @@
+define void @_ZN6soplex9CLUFactor16eliminateNucleusEdd(%"class.soplex::CLUFactor"* %this, double %eps, double %threshold) #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::CLUFactor"* %this}, i64 0, metadata !2559), !dbg !4912
+  tail call void @llvm.dbg.value(metadata !{double %eps}, i64 0, metadata !2560), !dbg !4912
+  tail call void @llvm.dbg.value(metadata !{double %threshold}, i64 0, metadata !2561), !dbg !4913
+  %pivots = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 16, i32 4, !dbg !4914
+  %mkwtz = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 16, i32 4, i32 4, !dbg !4914
+  store i32 -1, i32* %mkwtz, align 4, !dbg !4914, !tbaa !3862
+  %idx = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 16, i32 4, i32 2, !dbg !4915
+  store i32 -1, i32* %idx, align 4, !dbg !4915, !tbaa !3862
+  %pos = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 16, i32 4, i32 3, !dbg !4916
+  store i32 -1, i32* %pos, align 4, !dbg !4916, !tbaa !3862
+  %stage = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 16, i32 3, !dbg !4917
+  %thedim = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 1, !dbg !4917
+  %pivot_rowNZ = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 16, i32 8, !dbg !4918
+  %pivot_colNZ = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 16, i32 6, !dbg !4920
+  %next25 = getelementptr inbounds %"class.soplex::CLUFactor::Pring"* %pivots, i64 0, i32 0, !dbg !4921
+  %prev = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 16, i32 4, i32 1, !dbg !4921
+  br label %while.cond, !dbg !4917
+
+while.cond:                                       ; preds = %lor.lhs.false, %entry
+  %0 = load i32* %stage, align 4, !dbg !4917, !tbaa !3862
+  %1 = load i32* %thedim, align 4, !dbg !4917, !tbaa !3862
+  %sub = add nsw i32 %1, -1, !dbg !4917
+  %cmp = icmp slt i32 %0, %sub, !dbg !4917
+  br i1 %cmp, label %while.body, label %while.end, !dbg !4917
+
+while.body:                                       ; preds = %while.cond
+  %2 = load %"class.soplex::CLUFactor::Pring"** %pivot_rowNZ, align 8, !dbg !4918, !tbaa !3853
+  %arrayidx = getelementptr inbounds %"class.soplex::CLUFactor::Pring"* %2, i64 1, !dbg !4918
+  %next = getelementptr inbounds %"class.soplex::CLUFactor::Pring"* %arrayidx, i64 0, i32 0, !dbg !4918
+  %3 = load %"class.soplex::CLUFactor::Pring"** %next, align 8, !dbg !4918, !tbaa !3853
+  %cmp11 = icmp eq %"class.soplex::CLUFactor::Pring"* %3, %arrayidx, !dbg !4918
+  br i1 %cmp11, label %if.else, label %if.then, !dbg !4918
+
+if.then:                                          ; preds = %while.body
+  tail call void @_ZN6soplex9CLUFactor22eliminateRowSingletonsEv(%"class.soplex::CLUFactor"* %this) #11, !dbg !4923
+  br label %if.end37, !dbg !4923
+
+if.else:                                          ; preds = %while.body
+  %4 = load %"class.soplex::CLUFactor::Pring"** %pivot_colNZ, align 8, !dbg !4920, !tbaa !3853
+  %arrayidx13 = getelementptr inbounds %"class.soplex::CLUFactor::Pring"* %4, i64 1, !dbg !4920
+  %next14 = getelementptr inbounds %"class.soplex::CLUFactor::Pring"* %arrayidx13, i64 0, i32 0, !dbg !4920
+  %5 = load %"class.soplex::CLUFactor::Pring"** %next14, align 8, !dbg !4920, !tbaa !3853
+  %cmp18 = icmp eq %"class.soplex::CLUFactor::Pring"* %5, %arrayidx13, !dbg !4920
+  br i1 %cmp18, label %if.else20, label %if.then19, !dbg !4920
+
+if.then19:                                        ; preds = %if.else
+  tail call void @_ZN6soplex9CLUFactor22eliminateColSingletonsEv(%"class.soplex::CLUFactor"* %this) #11, !dbg !4924
+  br label %if.end37, !dbg !4924
+
+if.else20:                                        ; preds = %if.else
+  store %"class.soplex::CLUFactor::Pring"* %pivots, %"class.soplex::CLUFactor::Pring"** %next25, align 8, !dbg !4921, !tbaa !3853
+  store %"class.soplex::CLUFactor::Pring"* %pivots, %"class.soplex::CLUFactor::Pring"** %prev, align 8, !dbg !4921, !tbaa !3853
+  tail call void @_ZN6soplex9CLUFactor12selectPivotsEd(%"class.soplex::CLUFactor"* %this, double %threshold) #11, !dbg !4925
+  %pivot.089 = load %"class.soplex::CLUFactor::Pring"** %next25, align 8, !dbg !4926
+  %cmp3390 = icmp eq %"class.soplex::CLUFactor::Pring"* %pivot.089, %pivots, !dbg !4926
+  br i1 %cmp3390, label %if.end37, label %for.body, !dbg !4926
+
+for.body:                                         ; preds = %if.else20, %for.body
+  %pivot.091 = phi %"class.soplex::CLUFactor::Pring"* [ %pivot.0, %for.body ], [ %pivot.089, %if.else20 ]
+  %idx34 = getelementptr inbounds %"class.soplex::CLUFactor::Pring"* %pivot.091, i64 0, i32 2, !dbg !4928
+  %6 = load i32* %idx34, align 4, !dbg !4928, !tbaa !3862
+  %pos35 = getelementptr inbounds %"class.soplex::CLUFactor::Pring"* %pivot.091, i64 0, i32 3, !dbg !4928
+  %7 = load i32* %pos35, align 4, !dbg !4928, !tbaa !3862
+  tail call void @_ZN6soplex9CLUFactor14eliminatePivotEiid(%"class.soplex::CLUFactor"* %this, i32 %6, i32 %7, double %eps) #11, !dbg !4928
+  %next36 = getelementptr inbounds %"class.soplex::CLUFactor::Pring"* %pivot.091, i64 0, i32 0, !dbg !4930
+  %pivot.0 = load %"class.soplex::CLUFactor::Pring"** %next36, align 8, !dbg !4926
+  %cmp33 = icmp eq %"class.soplex::CLUFactor::Pring"* %pivot.0, %pivots, !dbg !4926
+  br i1 %cmp33, label %if.end37, label %for.body, !dbg !4926
+
+if.end37:                                         ; preds = %if.else20, %for.body, %if.then19, %if.then
+  %8 = load %"class.soplex::CLUFactor::Pring"** %pivot_rowNZ, align 8, !dbg !4931, !tbaa !3853
+  %next40 = getelementptr inbounds %"class.soplex::CLUFactor::Pring"* %8, i64 0, i32 0, !dbg !4931
+  %9 = load %"class.soplex::CLUFactor::Pring"** %next40, align 8, !dbg !4931, !tbaa !3853
+  %cmp43 = icmp eq %"class.soplex::CLUFactor::Pring"* %9, %8, !dbg !4931
+  br i1 %cmp43, label %lor.lhs.false, label %if.then50, !dbg !4931
+
+lor.lhs.false:                                    ; preds = %if.end37
+  %10 = load %"class.soplex::CLUFactor::Pring"** %pivot_colNZ, align 8, !dbg !4931, !tbaa !3853
+  %next46 = getelementptr inbounds %"class.soplex::CLUFactor::Pring"* %10, i64 0, i32 0, !dbg !4931
+  %11 = load %"class.soplex::CLUFactor::Pring"** %next46, align 8, !dbg !4931, !tbaa !3853
+  %cmp49 = icmp eq %"class.soplex::CLUFactor::Pring"* %11, %10, !dbg !4931
+  br i1 %cmp49, label %while.cond, label %if.then50, !dbg !4931
+
+if.then50:                                        ; preds = %lor.lhs.false, %if.end37
+  %stat = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 0, !dbg !4932
+  store i32 2, i32* %stat, align 4, !dbg !4932, !tbaa !4251
+  br label %if.end82, !dbg !4934
+
+while.end:                                        ; preds = %while.cond
+  %cmp55 = icmp slt i32 %0, %1, !dbg !4935
+  br i1 %cmp55, label %if.then56, label %if.end82, !dbg !4935
+
+if.then56:                                        ; preds = %while.end
+  %12 = load %"class.soplex::CLUFactor::Pring"** %pivot_rowNZ, align 8, !dbg !4936, !tbaa !3853
+  %next60 = getelementptr inbounds %"class.soplex::CLUFactor::Pring"* %12, i64 1, i32 0, !dbg !4936
+  %13 = load %"class.soplex::CLUFactor::Pring"** %next60, align 8, !dbg !4936, !tbaa !3853
+  %idx61 = getelementptr inbounds %"class.soplex::CLUFactor::Pring"* %13, i64 0, i32 2, !dbg !4936
+  %14 = load i32* %idx61, align 4, !dbg !4936, !tbaa !3862
+  tail call void @llvm.dbg.value(metadata !{i32 %14}, i64 0, metadata !2562), !dbg !4936
+  %15 = load %"class.soplex::CLUFactor::Pring"** %pivot_colNZ, align 8, !dbg !4938, !tbaa !3853
+  %next65 = getelementptr inbounds %"class.soplex::CLUFactor::Pring"* %15, i64 1, i32 0, !dbg !4938
+  %16 = load %"class.soplex::CLUFactor::Pring"** %next65, align 8, !dbg !4938, !tbaa !3853
+  %idx66 = getelementptr inbounds %"class.soplex::CLUFactor::Pring"* %16, i64 0, i32 2, !dbg !4938
+  %17 = load i32* %idx66, align 4, !dbg !4938, !tbaa !3862
+  tail call void @llvm.dbg.value(metadata !{i32 %17}, i64 0, metadata !2563), !dbg !4938
+  %idxprom = sext i32 %14 to i64, !dbg !4939
+  %len = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 12, i32 0, i32 7, !dbg !4939
+  %18 = load i32** %len, align 8, !dbg !4939, !tbaa !3853
+  %arrayidx67 = getelementptr inbounds i32* %18, i64 %idxprom, !dbg !4939
+  store i32 0, i32* %arrayidx67, align 4, !dbg !4939, !tbaa !3862
+  %idxprom68 = sext i32 %17 to i64, !dbg !4940
+  %len70 = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 12, i32 1, i32 7, !dbg !4940
+  %19 = load i32** %len70, align 8, !dbg !4940, !tbaa !3853
+  %arrayidx71 = getelementptr inbounds i32* %19, i64 %idxprom68, !dbg !4940
+  %20 = load i32* %arrayidx71, align 4, !dbg !4940, !tbaa !3862
+  %dec = add nsw i32 %20, -1, !dbg !4940
+  store i32 %dec, i32* %arrayidx71, align 4, !dbg !4940, !tbaa !3862
+  %21 = load i32* %stage, align 4, !dbg !4941, !tbaa !3862
+  %start = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 12, i32 0, i32 6, !dbg !4941
+  %22 = load i32** %start, align 8, !dbg !4941, !tbaa !3853
+  %arrayidx77 = getelementptr inbounds i32* %22, i64 %idxprom, !dbg !4941
+  %23 = load i32* %arrayidx77, align 4, !dbg !4941, !tbaa !3862
+  %idxprom78 = sext i32 %23 to i64, !dbg !4941
+  %val = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 12, i32 0, i32 4, !dbg !4941
+  %24 = load double** %val, align 8, !dbg !4941, !tbaa !3853
+  %arrayidx81 = getelementptr inbounds double* %24, i64 %idxprom78, !dbg !4941
+  %25 = load double* %arrayidx81, align 8, !dbg !4941, !tbaa !4057
+  tail call void @_ZN6soplex9CLUFactor8setPivotEiiid(%"class.soplex::CLUFactor"* %this, i32 %21, i32 %17, i32 %14, double %25) #11, !dbg !4941
+  br label %if.end82, !dbg !4942
+
+if.end82:                                         ; preds = %if.then50, %if.then56, %while.end
+  ret void, !dbg !4943
+}

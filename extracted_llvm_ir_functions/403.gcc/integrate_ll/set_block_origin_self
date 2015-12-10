@@ -1,43 +1,44 @@
 define internal fastcc void @set_block_origin_self(%union.tree_node* %stmt) #0 {
 entry:
-  %abstract_origin = getelementptr inbounds %union.tree_node* %stmt, i64 0, i32 0, i32 6
-  %0 = bitcast %union.anon* %abstract_origin to %union.tree_node**
-  %1 = load %union.tree_node** %0, align 8, !tbaa !0
-  %cmp = icmp eq %union.tree_node* %1, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %stmt}, i64 0, metadata !1644), !dbg !2895
+  %abstract_origin = getelementptr inbounds %union.tree_node* %stmt, i64 0, i32 0, i32 6, !dbg !2896
+  %0 = bitcast %union.anon* %abstract_origin to %union.tree_node**, !dbg !2896
+  %1 = load %union.tree_node** %0, align 8, !dbg !2896, !tbaa !1854
+  %cmp = icmp eq %union.tree_node* %1, null, !dbg !2896
+  br i1 %cmp, label %if.then, label %if.end, !dbg !2896
 
 if.then:                                          ; preds = %entry
-  %2 = getelementptr inbounds %union.anon* %abstract_origin, i64 0, i32 0
-  %stmt.c = ptrtoint %union.tree_node* %stmt to i64
-  store i64 %stmt.c, i64* %2, align 8, !tbaa !0
-  %vars = getelementptr inbounds %union.tree_node* %stmt, i64 0, i32 0, i32 2
-  %3 = bitcast i32* %vars to %union.tree_node**
-  %local_decl.024 = load %union.tree_node** %3, align 8
-  %cmp425 = icmp eq %union.tree_node* %local_decl.024, null
-  br i1 %cmp425, label %for.end, label %for.body
+  %2 = getelementptr inbounds %union.anon* %abstract_origin, i64 0, i32 0, !dbg !2897
+  %stmt.c = ptrtoint %union.tree_node* %stmt to i64, !dbg !2897
+  store i64 %stmt.c, i64* %2, align 8, !dbg !2897, !tbaa !1854
+  %vars = getelementptr inbounds %union.tree_node* %stmt, i64 0, i32 0, i32 2, !dbg !2898
+  %3 = bitcast i32* %vars to %union.tree_node**, !dbg !2898
+  %local_decl.024 = load %union.tree_node** %3, align 8, !dbg !2898
+  %cmp425 = icmp eq %union.tree_node* %local_decl.024, null, !dbg !2898
+  br i1 %cmp425, label %for.end, label %for.body, !dbg !2898
 
 for.body:                                         ; preds = %if.then, %for.body
   %local_decl.026 = phi %union.tree_node* [ %local_decl.0, %for.body ], [ %local_decl.024, %if.then ]
-  tail call void @set_decl_origin_self(%union.tree_node* %local_decl.026) #8
-  %chain = getelementptr inbounds %union.tree_node* %local_decl.026, i64 0, i32 0, i32 0, i32 0
-  %local_decl.0 = load %union.tree_node** %chain, align 8
-  %cmp4 = icmp eq %union.tree_node* %local_decl.0, null
-  br i1 %cmp4, label %for.end, label %for.body
+  tail call void @set_decl_origin_self(%union.tree_node* %local_decl.026) #9, !dbg !2900
+  %chain = getelementptr inbounds %union.tree_node* %local_decl.026, i64 0, i32 0, i32 0, i32 0, !dbg !2901
+  %local_decl.0 = load %union.tree_node** %chain, align 8, !dbg !2898
+  %cmp4 = icmp eq %union.tree_node* %local_decl.0, null, !dbg !2898
+  br i1 %cmp4, label %for.end, label %for.body, !dbg !2898
 
 for.end:                                          ; preds = %for.body, %if.then
-  %4 = getelementptr inbounds %union.tree_node* %stmt, i64 0, i32 0, i32 4
-  %subblock.021 = load %union.tree_node** %4, align 8
-  %cmp722 = icmp eq %union.tree_node* %subblock.021, null
-  br i1 %cmp722, label %if.end, label %for.body8
+  %4 = getelementptr inbounds %union.tree_node* %stmt, i64 0, i32 0, i32 4, !dbg !2902
+  %subblock.021 = load %union.tree_node** %4, align 8, !dbg !2902
+  %cmp722 = icmp eq %union.tree_node* %subblock.021, null, !dbg !2902
+  br i1 %cmp722, label %if.end, label %for.body8, !dbg !2902
 
 for.body8:                                        ; preds = %for.end, %for.body8
   %subblock.023 = phi %union.tree_node* [ %subblock.0, %for.body8 ], [ %subblock.021, %for.end ]
-  tail call fastcc void @set_block_origin_self(%union.tree_node* %subblock.023) #8
-  %chain11 = getelementptr inbounds %union.tree_node* %subblock.023, i64 0, i32 0, i32 0, i32 0
-  %subblock.0 = load %union.tree_node** %chain11, align 8
-  %cmp7 = icmp eq %union.tree_node* %subblock.0, null
-  br i1 %cmp7, label %if.end, label %for.body8
+  tail call fastcc void @set_block_origin_self(%union.tree_node* %subblock.023) #9, !dbg !2904
+  %chain11 = getelementptr inbounds %union.tree_node* %subblock.023, i64 0, i32 0, i32 0, i32 0, !dbg !2905
+  %subblock.0 = load %union.tree_node** %chain11, align 8, !dbg !2902
+  %cmp7 = icmp eq %union.tree_node* %subblock.0, null, !dbg !2902
+  br i1 %cmp7, label %if.end, label %for.body8, !dbg !2902
 
 if.end:                                           ; preds = %for.end, %for.body8, %entry
-  ret void
+  ret void, !dbg !2906
 }

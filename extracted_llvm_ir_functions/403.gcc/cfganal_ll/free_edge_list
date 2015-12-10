@@ -1,17 +1,18 @@
 define void @free_edge_list(%struct.edge_list* %elist) #0 {
 entry:
-  %tobool = icmp eq %struct.edge_list* %elist, null
-  br i1 %tobool, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.edge_list* %elist}, i64 0, metadata !507), !dbg !909
+  %tobool = icmp eq %struct.edge_list* %elist, null, !dbg !910
+  br i1 %tobool, label %if.end, label %if.then, !dbg !910
 
 if.then:                                          ; preds = %entry
-  %index_to_edge = getelementptr inbounds %struct.edge_list* %elist, i64 0, i32 2
-  %0 = load %struct.edge_def*** %index_to_edge, align 8, !tbaa !0
-  %1 = bitcast %struct.edge_def** %0 to i8*
-  tail call void @free(i8* %1) #6
-  %2 = bitcast %struct.edge_list* %elist to i8*
-  tail call void @free(i8* %2) #6
-  br label %if.end
+  %index_to_edge = getelementptr inbounds %struct.edge_list* %elist, i64 0, i32 2, !dbg !911
+  %0 = load %struct.edge_def*** %index_to_edge, align 8, !dbg !911, !tbaa !741
+  %1 = bitcast %struct.edge_def** %0 to i8*, !dbg !911
+  tail call void @free(i8* %1) #7, !dbg !911
+  %2 = bitcast %struct.edge_list* %elist to i8*, !dbg !913
+  tail call void @free(i8* %2) #7, !dbg !913
+  br label %if.end, !dbg !914
 
 if.end:                                           ; preds = %entry, %if.then
-  ret void
+  ret void, !dbg !915
 }

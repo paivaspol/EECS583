@@ -1,0 +1,80 @@
+define void @_ZN3pov13Test_RedefineEiPiPvb(i32 %Previous, i32* nocapture %NumberPtr, i8* %Data, i1 zeroext %allow_redefine) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %Previous}, i64 0, metadata !2103), !dbg !9628
+  tail call void @llvm.dbg.value(metadata !{i32* %NumberPtr}, i64 0, metadata !2104), !dbg !9628
+  tail call void @llvm.dbg.value(metadata !{i8* %Data}, i64 0, metadata !2105), !dbg !9628
+  tail call void @llvm.dbg.value(metadata !{i1 %allow_redefine}, i64 0, metadata !2106), !dbg !9628
+  switch i32 %Previous, label %if.end [
+    i32 432, label %if.end9
+    i32 161, label %if.end9
+  ], !dbg !9629
+
+if.end:                                           ; preds = %entry
+  br i1 %allow_redefine, label %if.then2, label %if.else, !dbg !9630
+
+if.then2:                                         ; preds = %if.end
+  tail call void @_ZN3pov18Destroy_Ident_DataEPvi(i8* %Data, i32 %Previous) #9, !dbg !9631
+  br label %if.end9, !dbg !9633
+
+if.else:                                          ; preds = %if.end
+  %0 = load i32* %NumberPtr, align 4, !dbg !9634, !tbaa !4092
+  %cmp3 = icmp eq i32 %0, %Previous, !dbg !9634
+  br i1 %cmp3, label %if.then4, label %for.body.i, !dbg !9634
+
+if.then4:                                         ; preds = %if.else
+  tail call void @_ZN3pov18Destroy_Ident_DataEPvi(i8* %Data, i32 %Previous) #9, !dbg !9635
+  br label %if.end9, !dbg !9637
+
+for.cond.i:                                       ; preds = %for.body.i
+  %1 = trunc i64 %indvars.iv.next.i to i32, !dbg !9638
+  %cmp.i = icmp slt i32 %1, 535, !dbg !9638
+  br i1 %cmp.i, label %for.body.i, label %_ZN3pov16Get_Token_StringEi.exit, !dbg !9638
+
+for.body.i:                                       ; preds = %if.else, %for.cond.i
+  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %for.cond.i ], [ 0, %if.else ]
+  %Token_Number.i = getelementptr inbounds [535 x %"struct.pov::Reserved_Word_Struct"]* @_ZN3pov14Reserved_WordsE, i64 0, i64 %indvars.iv.i, i32 0, !dbg !9640
+  %2 = load i32* %Token_Number.i, align 8, !dbg !9640, !tbaa !4092
+  %cmp1.i = icmp eq i32 %2, %Previous, !dbg !9640
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1, !dbg !9638
+  br i1 %cmp1.i, label %if.then.i, label %for.cond.i, !dbg !9640
+
+if.then.i:                                        ; preds = %for.body.i
+  %Token_Name.i = getelementptr inbounds [535 x %"struct.pov::Reserved_Word_Struct"]* @_ZN3pov14Reserved_WordsE, i64 0, i64 %indvars.iv.i, i32 1, !dbg !9641
+  %3 = load i8** %Token_Name.i, align 8, !dbg !9641, !tbaa !4088
+  br label %_ZN3pov16Get_Token_StringEi.exit, !dbg !9641
+
+_ZN3pov16Get_Token_StringEi.exit:                 ; preds = %for.cond.i, %if.then.i
+  %retval.0.i = phi i8* [ %3, %if.then.i ], [ getelementptr inbounds ([1 x i8]* @.str40, i64 0, i64 0), %for.cond.i ]
+  tail call void @llvm.dbg.value(metadata !{i8* %retval.0.i}, i64 0, metadata !2107), !dbg !9639
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !9642), !dbg !9644
+  tail call void @llvm.dbg.value(metadata !818, i64 0, metadata !9645), !dbg !9646
+  br label %for.body.i25, !dbg !9646
+
+for.cond.i20:                                     ; preds = %for.body.i25
+  %4 = trunc i64 %indvars.iv.next.i24 to i32, !dbg !9646
+  %cmp.i19 = icmp slt i32 %4, 535, !dbg !9646
+  br i1 %cmp.i19, label %for.body.i25, label %_ZN3pov16Get_Token_StringEi.exit29, !dbg !9646
+
+for.body.i25:                                     ; preds = %for.cond.i20, %_ZN3pov16Get_Token_StringEi.exit
+  %indvars.iv.i21 = phi i64 [ 0, %_ZN3pov16Get_Token_StringEi.exit ], [ %indvars.iv.next.i24, %for.cond.i20 ]
+  %Token_Number.i22 = getelementptr inbounds [535 x %"struct.pov::Reserved_Word_Struct"]* @_ZN3pov14Reserved_WordsE, i64 0, i64 %indvars.iv.i21, i32 0, !dbg !9647
+  %5 = load i32* %Token_Number.i22, align 8, !dbg !9647, !tbaa !4092
+  %cmp1.i23 = icmp eq i32 %5, %0, !dbg !9647
+  %indvars.iv.next.i24 = add i64 %indvars.iv.i21, 1, !dbg !9646
+  br i1 %cmp1.i23, label %if.then.i27, label %for.cond.i20, !dbg !9647
+
+if.then.i27:                                      ; preds = %for.body.i25
+  %Token_Name.i26 = getelementptr inbounds [535 x %"struct.pov::Reserved_Word_Struct"]* @_ZN3pov14Reserved_WordsE, i64 0, i64 %indvars.iv.i21, i32 1, !dbg !9648
+  %6 = load i8** %Token_Name.i26, align 8, !dbg !9648, !tbaa !4088
+  br label %_ZN3pov16Get_Token_StringEi.exit29, !dbg !9648
+
+_ZN3pov16Get_Token_StringEi.exit29:               ; preds = %for.cond.i20, %if.then.i27
+  %retval.0.i28 = phi i8* [ %6, %if.then.i27 ], [ getelementptr inbounds ([1 x i8]* @.str40, i64 0, i64 0), %for.cond.i20 ]
+  tail call void @llvm.dbg.value(metadata !{i8* %retval.0.i28}, i64 0, metadata !2110), !dbg !9643
+  store i32 %Previous, i32* %NumberPtr, align 4, !dbg !9649, !tbaa !4092
+  %call7 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([32 x i8]* @.str43, i64 0, i64 0), i8* %retval.0.i, i8* %retval.0.i28) #9, !dbg !9650
+  br label %if.end9
+
+if.end9:                                          ; preds = %entry, %entry, %if.then4, %_ZN3pov16Get_Token_StringEi.exit29, %if.then2
+  ret void, !dbg !9651
+}

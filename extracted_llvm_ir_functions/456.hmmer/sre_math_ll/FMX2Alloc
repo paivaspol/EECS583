@@ -1,36 +1,40 @@
 define float** @FMX2Alloc(i32 %rows, i32 %cols) #0 {
 entry:
-  %conv = sext i32 %rows to i64
-  %mul = shl nsw i64 %conv, 3
-  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([54 x i8]* @.str, i64 0, i64 0), i32 172, i64 %mul) #4
-  %0 = bitcast i8* %call to float**
-  %mul2 = shl nsw i64 %conv, 2
-  %conv3 = sext i32 %cols to i64
-  %mul4 = mul i64 %mul2, %conv3
-  %call5 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([54 x i8]* @.str, i64 0, i64 0), i32 173, i64 %mul4) #4
-  %1 = bitcast i8* %call5 to float*
-  store float* %1, float** %0, align 8, !tbaa !4
-  %cmp18 = icmp sgt i32 %rows, 1
-  br i1 %cmp18, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{i32 %rows}, i64 0, metadata !59), !dbg !176
+  tail call void @llvm.dbg.value(metadata !{i32 %cols}, i64 0, metadata !60), !dbg !176
+  %conv = sext i32 %rows to i64, !dbg !177
+  %mul = shl nsw i64 %conv, 3, !dbg !177
+  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([54 x i8]* @.str, i64 0, i64 0), i32 172, i64 %mul) #5, !dbg !177
+  %0 = bitcast i8* %call to float**, !dbg !177
+  tail call void @llvm.dbg.value(metadata !{float** %0}, i64 0, metadata !61), !dbg !177
+  %mul2 = shl nsw i64 %conv, 2, !dbg !178
+  %conv3 = sext i32 %cols to i64, !dbg !178
+  %mul4 = mul i64 %mul2, %conv3, !dbg !178
+  %call5 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([54 x i8]* @.str, i64 0, i64 0), i32 173, i64 %mul4) #5, !dbg !178
+  %1 = bitcast i8* %call5 to float*, !dbg !178
+  store float* %1, float** %0, align 8, !dbg !178, !tbaa !179
+  tail call void @llvm.dbg.value(metadata !180, i64 0, metadata !62), !dbg !181
+  %cmp18 = icmp sgt i32 %rows, 1, !dbg !181
+  br i1 %cmp18, label %for.body, label %for.end, !dbg !181
 
 for.body:                                         ; preds = %entry, %for.body.for.body_crit_edge
   %2 = phi float* [ %.pre, %for.body.for.body_crit_edge ], [ %1, %entry ]
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body.for.body_crit_edge ], [ 1, %entry ]
-  %3 = trunc i64 %indvars.iv to i32
-  %mul8 = mul nsw i32 %3, %cols
-  %idx.ext = sext i32 %mul8 to i64
-  %add.ptr = getelementptr inbounds float* %2, i64 %idx.ext
-  %arrayidx9 = getelementptr inbounds float** %0, i64 %indvars.iv
-  store float* %add.ptr, float** %arrayidx9, align 8, !tbaa !4
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %rows
-  br i1 %exitcond, label %for.end, label %for.body.for.body_crit_edge
+  %3 = trunc i64 %indvars.iv to i32, !dbg !183
+  %mul8 = mul nsw i32 %3, %cols, !dbg !183
+  %idx.ext = sext i32 %mul8 to i64, !dbg !183
+  %add.ptr = getelementptr inbounds float* %2, i64 %idx.ext, !dbg !183
+  %arrayidx9 = getelementptr inbounds float** %0, i64 %indvars.iv, !dbg !183
+  store float* %add.ptr, float** %arrayidx9, align 8, !dbg !183, !tbaa !179
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !181
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !181
+  %exitcond = icmp eq i32 %lftr.wideiv, %rows, !dbg !181
+  br i1 %exitcond, label %for.end, label %for.body.for.body_crit_edge, !dbg !181
 
 for.body.for.body_crit_edge:                      ; preds = %for.body
-  %.pre = load float** %0, align 8, !tbaa !4
-  br label %for.body
+  %.pre = load float** %0, align 8, !dbg !183, !tbaa !179
+  br label %for.body, !dbg !181
 
 for.end:                                          ; preds = %for.body, %entry
-  ret float** %0
+  ret float** %0, !dbg !184
 }

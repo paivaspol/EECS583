@@ -1,17 +1,19 @@
 define void @ETree_free(%struct._ETree* %etree) #0 {
 entry:
-  %cmp = icmp eq %struct._ETree* %etree, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._ETree* %etree}, i64 0, metadata !52), !dbg !92
+  %cmp = icmp eq %struct._ETree* %etree, null, !dbg !93
+  br i1 %cmp, label %if.then, label %if.end, !dbg !93
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([48 x i8]* @.str4, i64 0, i64 0), %struct._ETree* null) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !94, !tbaa !57
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([48 x i8]* @.str4, i64 0, i64 0), %struct._ETree* null) #6, !dbg !94
+  tail call void @exit(i32 -1) #7, !dbg !96
+  unreachable, !dbg !96
 
 if.end:                                           ; preds = %entry
-  tail call void @ETree_clearData(%struct._ETree* %etree) #7
-  %1 = bitcast %struct._ETree* %etree to i8*
-  tail call void @free(i8* %1) #5
-  ret void
+  tail call void @ETree_clearData(%struct._ETree* %etree) #8, !dbg !97
+  %1 = bitcast %struct._ETree* %etree to i8*, !dbg !98
+  tail call void @free(i8* %1) #6, !dbg !98
+  tail call void @llvm.dbg.value(metadata !100, i64 0, metadata !52), !dbg !98
+  ret void, !dbg !101
 }

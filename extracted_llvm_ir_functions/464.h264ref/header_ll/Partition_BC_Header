@@ -1,45 +1,77 @@
 define i32 @Partition_BC_Header(i32 %PartNo) #0 {
 entry:
   %symbol = alloca %struct.syntaxelement, align 8
-  %idxprom = sext i32 %PartNo to i64
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %currentSlice = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 50
-  %1 = load %struct.Slice** %currentSlice, align 8, !tbaa !0
-  %partArr = getelementptr inbounds %struct.Slice* %1, i64 0, i32 6
-  %2 = load %struct.datapartition** %partArr, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds %struct.datapartition* %2, i64 %idxprom
-  %3 = bitcast %struct.syntaxelement* %symbol to i8*
-  call void @llvm.lifetime.start(i64 48, i8* %3) #4
-  %type = getelementptr inbounds %struct.syntaxelement* %symbol, i64 0, i32 0
-  store i32 0, i32* %type, align 8, !tbaa !3
-  %mapping = getelementptr inbounds %struct.syntaxelement* %symbol, i64 0, i32 8
-  store void (i32, i32, i32*, i32*)* @ue_linfo, void (i32, i32, i32*, i32*)** %mapping, align 8, !tbaa !0
-  %value2 = getelementptr inbounds %struct.syntaxelement* %symbol, i64 0, i32 2
-  store i32 0, i32* %value2, align 8, !tbaa !3
-  %current_slice_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 5
-  %4 = load i32* %current_slice_nr, align 4, !tbaa !3
-  %value1 = getelementptr inbounds %struct.syntaxelement* %symbol, i64 0, i32 1
-  store i32 %4, i32* %value1, align 4, !tbaa !3
-  %call = call i32 @writeSyntaxElement_UVLC(%struct.syntaxelement* %symbol, %struct.datapartition* %arrayidx) #5
-  %5 = load %struct.pic_parameter_set_rbsp_t** @active_pps, align 8, !tbaa !0
-  %redundant_pic_cnt_present_flag = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %5, i64 0, i32 28
-  %6 = load i32* %redundant_pic_cnt_present_flag, align 4, !tbaa !1
-  %tobool = icmp eq i32 %6, 0
-  br i1 %tobool, label %if.end, label %if.then
+  call void @llvm.dbg.value(metadata !{i32 %PartNo}, i64 0, metadata !258), !dbg !929
+  %idxprom = sext i32 %PartNo to i64, !dbg !930
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !930, !tbaa !676
+  %currentSlice = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 50, !dbg !930
+  %1 = load %struct.Slice** %currentSlice, align 8, !dbg !930, !tbaa !676
+  %partArr = getelementptr inbounds %struct.Slice* %1, i64 0, i32 6, !dbg !930
+  %2 = load %struct.datapartition** %partArr, align 8, !dbg !930, !tbaa !676
+  %arrayidx = getelementptr inbounds %struct.datapartition* %2, i64 %idxprom, !dbg !930
+  call void @llvm.dbg.value(metadata !{%struct.datapartition* %arrayidx}, i64 0, metadata !259), !dbg !930
+  %3 = bitcast %struct.syntaxelement* %symbol to i8*, !dbg !931
+  call void @llvm.lifetime.start(i64 48, i8* %3) #6, !dbg !931
+  call void @llvm.dbg.declare(metadata !{%struct.syntaxelement* %symbol}, metadata !260), !dbg !931
+  call void @llvm.dbg.value(metadata !{%struct.syntaxelement* %symbol}, i64 0, metadata !261), !dbg !931
+  call void @llvm.dbg.value(metadata !53, i64 0, metadata !262), !dbg !932
+  %4 = load %struct.InputParameters** @input, align 8, !dbg !933, !tbaa !676
+  %of_mode = getelementptr inbounds %struct.InputParameters* %4, i64 0, i32 60, !dbg !933
+  %5 = load i32* %of_mode, align 4, !dbg !933, !tbaa !679
+  %cmp = icmp eq i32 %5, 1, !dbg !933
+  br i1 %cmp, label %cond.end, label %cond.false, !dbg !933
 
-if.then:                                          ; preds = %entry
-  %7 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %currentSlice1 = getelementptr inbounds %struct.ImageParameters* %7, i64 0, i32 50
-  %8 = load %struct.Slice** %currentSlice1, align 8, !tbaa !0
-  %picture_id = getelementptr inbounds %struct.Slice* %8, i64 0, i32 0
-  %9 = load i32* %picture_id, align 4, !tbaa !3
-  store i32 %9, i32* %value1, align 4, !tbaa !3
-  %call3 = call i32 @writeSyntaxElement_UVLC(%struct.syntaxelement* %symbol, %struct.datapartition* %arrayidx) #5
-  %add4 = add nsw i32 %call3, %call
-  br label %if.end
+cond.false:                                       ; preds = %entry
+  call void @__assert_fail(i8* getelementptr inbounds ([29 x i8]* @.str28, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str5, i64 0, i64 0), i32 536, i8* getelementptr inbounds ([29 x i8]* @__PRETTY_FUNCTION__.Partition_BC_Header, i64 0, i64 0)) #9, !dbg !933
+  unreachable, !dbg !933
 
-if.end:                                           ; preds = %entry, %if.then
-  %len.0 = phi i32 [ %add4, %if.then ], [ %call, %entry ]
-  call void @llvm.lifetime.end(i64 48, i8* %3) #4
-  ret i32 %len.0
+cond.end:                                         ; preds = %entry
+  %cmp1 = icmp sgt i32 %PartNo, 0, !dbg !934
+  br i1 %cmp1, label %land.lhs.true, label %cond.false5, !dbg !934
+
+land.lhs.true:                                    ; preds = %cond.end
+  %max_part_nr = getelementptr inbounds %struct.Slice* %1, i64 0, i32 4, !dbg !934
+  %6 = load i32* %max_part_nr, align 4, !dbg !934, !tbaa !679
+  %cmp3 = icmp sgt i32 %6, %PartNo, !dbg !934
+  br i1 %cmp3, label %cond.end6, label %cond.false5, !dbg !934
+
+cond.false5:                                      ; preds = %land.lhs.true, %cond.end
+  call void @__assert_fail(i8* getelementptr inbounds ([54 x i8]* @.str29, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str5, i64 0, i64 0), i32 537, i8* getelementptr inbounds ([29 x i8]* @__PRETTY_FUNCTION__.Partition_BC_Header, i64 0, i64 0)) #9, !dbg !934
+  unreachable, !dbg !934
+
+cond.end6:                                        ; preds = %land.lhs.true
+  %type = getelementptr inbounds %struct.syntaxelement* %symbol, i64 0, i32 0, !dbg !935
+  store i32 0, i32* %type, align 8, !dbg !935, !tbaa !679
+  %mapping = getelementptr inbounds %struct.syntaxelement* %symbol, i64 0, i32 8, !dbg !936
+  store void (i32, i32, i32*, i32*)* @ue_linfo, void (i32, i32, i32*, i32*)** %mapping, align 8, !dbg !936, !tbaa !676
+  %value2 = getelementptr inbounds %struct.syntaxelement* %symbol, i64 0, i32 2, !dbg !937
+  store i32 0, i32* %value2, align 8, !dbg !937, !tbaa !679
+  %current_slice_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 5, !dbg !938
+  %7 = load i32* %current_slice_nr, align 4, !dbg !938, !tbaa !679
+  %value1 = getelementptr inbounds %struct.syntaxelement* %symbol, i64 0, i32 1, !dbg !938
+  store i32 %7, i32* %value1, align 4, !dbg !938, !tbaa !679
+  %call = call i32 @writeSyntaxElement_UVLC(%struct.syntaxelement* %symbol, %struct.datapartition* %arrayidx) #7, !dbg !939
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !262), !dbg !939
+  %8 = load %struct.pic_parameter_set_rbsp_t** @active_pps, align 8, !dbg !940, !tbaa !676
+  %redundant_pic_cnt_present_flag = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %8, i64 0, i32 28, !dbg !940
+  %9 = load i32* %redundant_pic_cnt_present_flag, align 4, !dbg !940, !tbaa !677
+  %tobool = icmp eq i32 %9, 0, !dbg !940
+  br i1 %tobool, label %if.end, label %if.then, !dbg !940
+
+if.then:                                          ; preds = %cond.end6
+  %10 = load %struct.ImageParameters** @img, align 8, !dbg !941, !tbaa !676
+  %currentSlice7 = getelementptr inbounds %struct.ImageParameters* %10, i64 0, i32 50, !dbg !941
+  %11 = load %struct.Slice** %currentSlice7, align 8, !dbg !941, !tbaa !676
+  %picture_id = getelementptr inbounds %struct.Slice* %11, i64 0, i32 0, !dbg !941
+  %12 = load i32* %picture_id, align 4, !dbg !941, !tbaa !679
+  store i32 %12, i32* %value1, align 4, !dbg !941, !tbaa !679
+  %call9 = call i32 @writeSyntaxElement_UVLC(%struct.syntaxelement* %symbol, %struct.datapartition* %arrayidx) #7, !dbg !943
+  %add10 = add nsw i32 %call9, %call, !dbg !943
+  call void @llvm.dbg.value(metadata !{i32 %add10}, i64 0, metadata !262), !dbg !943
+  br label %if.end, !dbg !944
+
+if.end:                                           ; preds = %cond.end6, %if.then
+  %len.0 = phi i32 [ %add10, %if.then ], [ %call, %cond.end6 ]
+  call void @llvm.lifetime.end(i64 48, i8* %3) #6, !dbg !945
+  ret i32 %len.0, !dbg !945
 }

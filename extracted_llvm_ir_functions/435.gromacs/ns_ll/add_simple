@@ -1,33 +1,46 @@
-define internal fastcc void @add_simple(%struct.t_ns_buf* nocapture %nsbuf, i32 %nrj, i32 %cg_j, i32* nocapture readonly %bHaveLJ, i32 %ngid, %struct.t_mdatoms* nocapture readonly %md, i32 %icg, i32 %jgid, %struct.t_block* nocapture readonly %cgs, i64* nocapture readonly %bexcl, i32 %shift, %struct.t_forcerec* %fr) #3 {
-  %1 = getelementptr inbounds %struct.t_ns_buf* %nsbuf, i64 0, i32 0
-  %2 = load i32* %1, align 4, !tbaa !78
-  %3 = icmp sgt i32 %2, 1023
-  br i1 %3, label %4, label %._crit_edge
+define internal fastcc void @add_simple(%struct.t_ns_buf* nocapture %nsbuf, i32 %nrj, i32 %cg_j, i32* nocapture %bHaveLJ, i32 %ngid, %struct.t_mdatoms* nocapture %md, i32 %icg, i32 %jgid, %struct.t_block* nocapture %cgs, i64* nocapture %bexcl, i32 %shift, %struct.t_forcerec* %fr) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.t_ns_buf* %nsbuf}, i64 0, metadata !1022), !dbg !2818
+  tail call void @llvm.dbg.value(metadata !{i32 %nrj}, i64 0, metadata !1023), !dbg !2818
+  tail call void @llvm.dbg.value(metadata !{i32 %cg_j}, i64 0, metadata !1024), !dbg !2818
+  tail call void @llvm.dbg.value(metadata !{i32* %bHaveLJ}, i64 0, metadata !1025), !dbg !2819
+  tail call void @llvm.dbg.value(metadata !{i32 %ngid}, i64 0, metadata !1026), !dbg !2819
+  tail call void @llvm.dbg.value(metadata !{%struct.t_mdatoms* %md}, i64 0, metadata !1027), !dbg !2819
+  tail call void @llvm.dbg.value(metadata !{i32 %icg}, i64 0, metadata !1028), !dbg !2820
+  tail call void @llvm.dbg.value(metadata !{i32 %jgid}, i64 0, metadata !1029), !dbg !2820
+  tail call void @llvm.dbg.value(metadata !{%struct.t_block* %cgs}, i64 0, metadata !1030), !dbg !2820
+  tail call void @llvm.dbg.value(metadata !{i64* %bexcl}, i64 0, metadata !1031), !dbg !2820
+  tail call void @llvm.dbg.value(metadata !{i32 %shift}, i64 0, metadata !1032), !dbg !2821
+  tail call void @llvm.dbg.value(metadata !{%struct.t_forcerec* %fr}, i64 0, metadata !1033), !dbg !2821
+  %ncg = getelementptr inbounds %struct.t_ns_buf* %nsbuf, i64 0, i32 0, !dbg !2822
+  %0 = load i32* %ncg, align 4, !dbg !2822, !tbaa !1398
+  %cmp = icmp sgt i32 %0, 1023, !dbg !2822
+  br i1 %cmp, label %if.then, label %entry.if.end_crit_edge, !dbg !2822
 
-._crit_edge:                                      ; preds = %0
-  %.pre = getelementptr inbounds %struct.t_ns_buf* %nsbuf, i64 0, i32 1
-  br label %9
+entry.if.end_crit_edge:                           ; preds = %entry
+  %nj5.pre = getelementptr inbounds %struct.t_ns_buf* %nsbuf, i64 0, i32 1, !dbg !2824
+  br label %if.end, !dbg !2822
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds %struct.t_ns_buf* %nsbuf, i64 0, i32 2, i64 0
-  %6 = getelementptr inbounds %struct.t_block* %cgs, i64 0, i32 2
-  %7 = load i32** %6, align 8, !tbaa !50
-  tail call fastcc void @put_in_list(i32* %bHaveLJ, i32 %ngid, %struct.t_mdatoms* %md, i32 %icg, i32 %jgid, i32 %2, i32* %5, i32* %7, i64* %bexcl, i32 %shift, %struct.t_forcerec* %fr, i32 0, i32 0, i32 0) #9
-  %8 = getelementptr inbounds %struct.t_ns_buf* %nsbuf, i64 0, i32 1
-  store i32 0, i32* %8, align 4, !tbaa !80
-  store i32 0, i32* %1, align 4, !tbaa !78
-  br label %9
+if.then:                                          ; preds = %entry
+  %arraydecay = getelementptr inbounds %struct.t_ns_buf* %nsbuf, i64 0, i32 2, i64 0, !dbg !2825
+  %index = getelementptr inbounds %struct.t_block* %cgs, i64 0, i32 2, !dbg !2825
+  %1 = load i32** %index, align 8, !dbg !2825, !tbaa !1403
+  tail call fastcc void @put_in_list(i32* %bHaveLJ, i32 %ngid, %struct.t_mdatoms* %md, i32 %icg, i32 %jgid, i32 %0, i32* %arraydecay, i32* %1, i64* %bexcl, i32 %shift, %struct.t_forcerec* %fr, i32 0, i32 0, i32 0) #7, !dbg !2825
+  %nj = getelementptr inbounds %struct.t_ns_buf* %nsbuf, i64 0, i32 1, !dbg !2827
+  store i32 0, i32* %nj, align 4, !dbg !2827, !tbaa !1398
+  store i32 0, i32* %ncg, align 4, !dbg !2827, !tbaa !1398
+  br label %if.end, !dbg !2828
 
-; <label>:9                                       ; preds = %._crit_edge, %4
-  %.pre-phi = phi i32* [ %.pre, %._crit_edge ], [ %8, %4 ]
-  %10 = phi i32 [ %2, %._crit_edge ], [ 0, %4 ]
-  %11 = add nsw i32 %10, 1
-  store i32 %11, i32* %1, align 4, !tbaa !78
-  %12 = sext i32 %10 to i64
-  %13 = getelementptr inbounds %struct.t_ns_buf* %nsbuf, i64 0, i32 2, i64 %12
-  store i32 %cg_j, i32* %13, align 4, !tbaa !17
-  %14 = load i32* %.pre-phi, align 4, !tbaa !80
-  %15 = add nsw i32 %14, %nrj
-  store i32 %15, i32* %.pre-phi, align 4, !tbaa !80
-  ret void
+if.end:                                           ; preds = %entry.if.end_crit_edge, %if.then
+  %nj5.pre-phi = phi i32* [ %nj5.pre, %entry.if.end_crit_edge ], [ %nj, %if.then ], !dbg !2824
+  %2 = phi i32 [ %0, %entry.if.end_crit_edge ], [ 0, %if.then ]
+  %inc = add nsw i32 %2, 1, !dbg !2829
+  store i32 %inc, i32* %ncg, align 4, !dbg !2829, !tbaa !1398
+  %idxprom = sext i32 %2 to i64, !dbg !2829
+  %arrayidx = getelementptr inbounds %struct.t_ns_buf* %nsbuf, i64 0, i32 2, i64 %idxprom, !dbg !2829
+  store i32 %cg_j, i32* %arrayidx, align 4, !dbg !2829, !tbaa !1398
+  %3 = load i32* %nj5.pre-phi, align 4, !dbg !2824, !tbaa !1398
+  %add = add nsw i32 %3, %nrj, !dbg !2824
+  store i32 %add, i32* %nj5.pre-phi, align 4, !dbg !2824, !tbaa !1398
+  ret void, !dbg !2830
 }

@@ -1,0 +1,26 @@
+define i32 @_Z22POVMSObjectStream_SizeP9POVMSDataPi(%struct.POVMSData* %object, i32* %streamsize) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMSData* %object}, i64 0, metadata !552), !dbg !2175
+  tail call void @llvm.dbg.value(metadata !{i32* %streamsize}, i64 0, metadata !553), !dbg !2175
+  %cmp = icmp eq %struct.POVMSData* %object, null, !dbg !2176
+  br i1 %cmp, label %return, label %if.end, !dbg !2176
+
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct.POVMSData* %object, i64 0, i32 0, !dbg !2177
+  %0 = load i32* %type, align 4, !dbg !2177, !tbaa !937
+  %cmp1 = icmp eq i32 %0, 1280262987, !dbg !2177
+  br i1 %cmp1, label %return, label %if.end3, !dbg !2177
+
+if.end3:                                          ; preds = %if.end
+  %cmp4 = icmp eq i32* %streamsize, null, !dbg !2178
+  br i1 %cmp4, label %return, label %if.end6, !dbg !2178
+
+if.end6:                                          ; preds = %if.end3
+  %call = tail call i32 @_Z16POVMSStream_SizeP9POVMSData(%struct.POVMSData* %object) #8, !dbg !2179
+  store i32 %call, i32* %streamsize, align 4, !dbg !2179, !tbaa !937
+  br label %return, !dbg !2180
+
+return:                                           ; preds = %if.end3, %if.end, %entry, %if.end6
+  %retval.0 = phi i32 [ 0, %if.end6 ], [ -1, %entry ], [ 2, %if.end ], [ -1, %if.end3 ]
+  ret i32 %retval.0, !dbg !2180
+}

@@ -1,39 +1,40 @@
 define void @Init_QMatrix() #0 {
 entry:
-  %0 = load %struct.InputParameters** @input, align 8, !tbaa !3
-  %ScalingMatrixPresentFlag = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 132
-  %1 = load i32* %ScalingMatrixPresentFlag, align 4, !tbaa !0
-  %tobool = icmp eq i32 %1, 0
-  br i1 %tobool, label %if.end8, label %if.then
+  %0 = load %struct.InputParameters** @input, align 8, !dbg !805, !tbaa !703
+  %ScalingMatrixPresentFlag = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 132, !dbg !805
+  %1 = load i32* %ScalingMatrixPresentFlag, align 4, !dbg !805, !tbaa !659
+  %tobool = icmp eq i32 %1, 0, !dbg !805
+  br i1 %tobool, label %if.end8, label %if.then, !dbg !805
 
 if.then:                                          ; preds = %entry
-  %arraydecay = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 30, i64 0
-  %call = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([25 x i8]* @.str9, i64 0, i64 0), i8* %arraydecay) #7
-  %2 = load %struct.InputParameters** @input, align 8, !tbaa !3
-  %arraydecay2 = getelementptr inbounds %struct.InputParameters* %2, i64 0, i32 30, i64 0
-  %call3 = tail call i8* @GetConfigFileContent(i8* %arraydecay2, i32 0) #7
-  %cmp = icmp eq i8* %call3, null
-  br i1 %cmp, label %if.else, label %if.then4
+  %arraydecay = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 30, i64 0, !dbg !806
+  %call = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([25 x i8]* @.str9, i64 0, i64 0), i8* %arraydecay) #8, !dbg !806
+  %2 = load %struct.InputParameters** @input, align 8, !dbg !808, !tbaa !703
+  %arraydecay2 = getelementptr inbounds %struct.InputParameters* %2, i64 0, i32 30, i64 0, !dbg !808
+  %call3 = tail call i8* @GetConfigFileContent(i8* %arraydecay2, i32 0) #8, !dbg !808
+  tail call void @llvm.dbg.value(metadata !{i8* %call3}, i64 0, metadata !57), !dbg !808
+  %cmp = icmp eq i8* %call3, null, !dbg !809
+  br i1 %cmp, label %if.else, label %if.then4, !dbg !809
 
 if.then4:                                         ; preds = %if.then
-  %call5 = tail call i64 @strlen(i8* %call3) #5
-  %conv = trunc i64 %call5 to i32
-  tail call void @ParseMatrix(i8* %call3, i32 %conv) #6
-  br label %if.end
+  %call5 = tail call i64 @strlen(i8* %call3) #6, !dbg !810
+  %conv = trunc i64 %call5 to i32, !dbg !810
+  tail call void @ParseMatrix(i8* %call3, i32 %conv) #7, !dbg !810
+  br label %if.end, !dbg !810
 
 if.else:                                          ; preds = %if.then
-  %call6 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([60 x i8]* @.str10, i64 0, i64 0), i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0)) #7
+  %call6 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([60 x i8]* @.str10, i64 0, i64 0), i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0)) #8, !dbg !811
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then4
-  tail call void @PatchMatrix() #6
-  %putchar = tail call i32 @putchar(i32 10) #2
-  tail call void @llvm.memset.p0i8.i64(i8* bitcast ([6 x i16]* @UseDefaultScalingMatrix4x4Flag to i8*), i8 0, i64 12, i32 2, i1 false)
-  store i16 0, i16* getelementptr inbounds ([2 x i16]* @UseDefaultScalingMatrix8x8Flag, i64 0, i64 1), align 2, !tbaa !4
-  store i16 0, i16* getelementptr inbounds ([2 x i16]* @UseDefaultScalingMatrix8x8Flag, i64 0, i64 0), align 2, !tbaa !4
-  tail call void @free(i8* %call3) #7
-  br label %if.end8
+  tail call void @PatchMatrix() #7, !dbg !812
+  %putchar = tail call i32 @putchar(i32 10) #3, !dbg !813
+  tail call void @llvm.memset.p0i8.i64(i8* bitcast ([6 x i16]* @UseDefaultScalingMatrix4x4Flag to i8*), i8 0, i64 12, i32 2, i1 false), !dbg !814
+  store i16 0, i16* getelementptr inbounds ([2 x i16]* @UseDefaultScalingMatrix8x8Flag, i64 0, i64 1), align 2, !dbg !815, !tbaa !759
+  store i16 0, i16* getelementptr inbounds ([2 x i16]* @UseDefaultScalingMatrix8x8Flag, i64 0, i64 0), align 2, !dbg !815, !tbaa !759
+  tail call void @free(i8* %call3) #8, !dbg !816
+  br label %if.end8, !dbg !817
 
 if.end8:                                          ; preds = %entry, %if.end
-  ret void
+  ret void, !dbg !818
 }

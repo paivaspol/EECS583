@@ -1,38 +1,43 @@
 define void @primal_update_flow(%struct.node* %iplus, %struct.node* %jplus, %struct.node* %w) #0 {
 entry:
-  %cmp26 = icmp eq %struct.node* %iplus, %w
-  br i1 %cmp26, label %for.cond2.preheader, label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct.node* %iplus}, i64 0, metadata !46), !dbg !49
+  tail call void @llvm.dbg.value(metadata !{%struct.node* %jplus}, i64 0, metadata !47), !dbg !50
+  tail call void @llvm.dbg.value(metadata !{%struct.node* %w}, i64 0, metadata !48), !dbg !51
+  %cmp26 = icmp eq %struct.node* %iplus, %w, !dbg !52
+  br i1 %cmp26, label %for.cond2.preheader, label %for.body, !dbg !52
 
 for.cond2.preheader:                              ; preds = %for.body, %entry
-  %cmp324 = icmp eq %struct.node* %jplus, %w
-  br i1 %cmp324, label %for.end14, label %for.body4
+  %cmp324 = icmp eq %struct.node* %jplus, %w, !dbg !54
+  br i1 %cmp324, label %for.end14, label %for.body4, !dbg !54
 
 for.body:                                         ; preds = %entry, %for.body
   %iplus.addr.027 = phi %struct.node* [ %1, %for.body ], [ %iplus, %entry ]
-  %orientation = getelementptr inbounds %struct.node* %iplus.addr.027, i64 0, i32 1
-  %0 = load i32* %orientation, align 4, !tbaa !0
-  %tobool = icmp eq i32 %0, 0
-  %flow = getelementptr inbounds %struct.node* %iplus.addr.027, i64 0, i32 10
+  %orientation = getelementptr inbounds %struct.node* %iplus.addr.027, i64 0, i32 1, !dbg !56
+  %0 = load i32* %orientation, align 4, !dbg !56, !tbaa !58
+  %tobool = icmp eq i32 %0, 0, !dbg !56
+  %flow = getelementptr inbounds %struct.node* %iplus.addr.027, i64 0, i32 10, !dbg !61
   %. = zext i1 %tobool to i64
-  store i64 %., i64* %flow, align 8, !tbaa !3
-  %pred = getelementptr inbounds %struct.node* %iplus.addr.027, i64 0, i32 3
-  %1 = load %struct.node** %pred, align 8, !tbaa !4
-  %cmp = icmp eq %struct.node* %1, %w
-  br i1 %cmp, label %for.cond2.preheader, label %for.body
+  store i64 %., i64* %flow, align 8, !dbg !61, !tbaa !62
+  %pred = getelementptr inbounds %struct.node* %iplus.addr.027, i64 0, i32 3, !dbg !52
+  %1 = load %struct.node** %pred, align 8, !dbg !52, !tbaa !63
+  tail call void @llvm.dbg.value(metadata !{%struct.node* %1}, i64 0, metadata !46), !dbg !52
+  %cmp = icmp eq %struct.node* %1, %w, !dbg !52
+  br i1 %cmp, label %for.cond2.preheader, label %for.body, !dbg !52
 
 for.body4:                                        ; preds = %for.cond2.preheader, %for.body4
   %jplus.addr.025 = phi %struct.node* [ %3, %for.body4 ], [ %jplus, %for.cond2.preheader ]
-  %orientation5 = getelementptr inbounds %struct.node* %jplus.addr.025, i64 0, i32 1
-  %2 = load i32* %orientation5, align 4, !tbaa !0
-  %flow8 = getelementptr inbounds %struct.node* %jplus.addr.025, i64 0, i32 10
+  %orientation5 = getelementptr inbounds %struct.node* %jplus.addr.025, i64 0, i32 1, !dbg !64
+  %2 = load i32* %orientation5, align 4, !dbg !64, !tbaa !58
+  %flow8 = getelementptr inbounds %struct.node* %jplus.addr.025, i64 0, i32 10, !dbg !66
   %not.tobool6 = icmp ne i32 %2, 0
   %.23 = zext i1 %not.tobool6 to i64
-  store i64 %.23, i64* %flow8, align 8, !tbaa !3
-  %pred13 = getelementptr inbounds %struct.node* %jplus.addr.025, i64 0, i32 3
-  %3 = load %struct.node** %pred13, align 8, !tbaa !4
-  %cmp3 = icmp eq %struct.node* %3, %w
-  br i1 %cmp3, label %for.end14, label %for.body4
+  store i64 %.23, i64* %flow8, align 8, !dbg !66, !tbaa !62
+  %pred13 = getelementptr inbounds %struct.node* %jplus.addr.025, i64 0, i32 3, !dbg !54
+  %3 = load %struct.node** %pred13, align 8, !dbg !54, !tbaa !63
+  tail call void @llvm.dbg.value(metadata !{%struct.node* %3}, i64 0, metadata !47), !dbg !54
+  %cmp3 = icmp eq %struct.node* %3, %w, !dbg !54
+  br i1 %cmp3, label %for.end14, label %for.body4, !dbg !54
 
 for.end14:                                        ; preds = %for.body4, %for.cond2.preheader
-  ret void
+  ret void, !dbg !67
 }

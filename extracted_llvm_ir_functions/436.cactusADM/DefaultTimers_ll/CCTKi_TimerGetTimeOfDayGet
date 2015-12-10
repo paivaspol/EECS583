@@ -1,21 +1,26 @@
-define internal void @CCTKi_TimerGetTimeOfDayGet(i32 %timernum, i8* nocapture readonly %idata, %struct.cTimerVal* nocapture %vals) #1 {
-  %1 = getelementptr inbounds %struct.cTimerVal* %vals, i64 0, i32 0
-  store i32 3, i32* %1, align 4, !tbaa !22
-  %2 = getelementptr inbounds %struct.cTimerVal* %vals, i64 0, i32 1
-  store i8* getelementptr inbounds ([13 x i8]* @.str2, i64 0, i64 0), i8** %2, align 8, !tbaa !24
-  %3 = getelementptr inbounds %struct.cTimerVal* %vals, i64 0, i32 2
-  store i8* getelementptr inbounds ([5 x i8]* @.str3, i64 0, i64 0), i8** %3, align 8, !tbaa !25
-  %4 = bitcast i8* %idata to i64*
-  %5 = load i64* %4, align 8, !tbaa !15
-  %6 = sitofp i64 %5 to double
-  %7 = getelementptr inbounds i8* %idata, i64 8
-  %8 = bitcast i8* %7 to i32*
-  %9 = load i32* %8, align 4, !tbaa !19
-  %10 = sitofp i32 %9 to double
-  %11 = fdiv double %10, 1.000000e+06
-  %12 = fadd double %6, %11
-  %13 = getelementptr inbounds %struct.cTimerVal* %vals, i64 0, i32 3
-  %14 = bitcast %union.anon* %13 to double*
-  store double %12, double* %14, align 8, !tbaa !26
-  ret void
+define internal void @CCTKi_TimerGetTimeOfDayGet(i32 %timernum, i8* nocapture %idata, %struct.cTimerVal* nocapture %vals) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %timernum}, i64 0, metadata !209), !dbg !352
+  tail call void @llvm.dbg.value(metadata !{i8* %idata}, i64 0, metadata !210), !dbg !352
+  tail call void @llvm.dbg.value(metadata !{%struct.cTimerVal* %vals}, i64 0, metadata !211), !dbg !352
+  tail call void @llvm.dbg.value(metadata !{i32 %timernum}, i64 0, metadata !209), !dbg !353
+  %type = getelementptr inbounds %struct.cTimerVal* %vals, i64 0, i32 0, !dbg !354
+  store i32 3, i32* %type, align 4, !dbg !354, !tbaa !257
+  %heading = getelementptr inbounds %struct.cTimerVal* %vals, i64 0, i32 1, !dbg !355
+  store i8* getelementptr inbounds ([13 x i8]* @.str4, i64 0, i64 0), i8** %heading, align 8, !dbg !355, !tbaa !260
+  %units = getelementptr inbounds %struct.cTimerVal* %vals, i64 0, i32 2, !dbg !356
+  store i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8** %units, align 8, !dbg !356, !tbaa !260
+  %tv_sec = bitcast i8* %idata to i64*, !dbg !357
+  %0 = load i64* %tv_sec, align 8, !dbg !357, !tbaa !316
+  %conv = sitofp i64 %0 to double, !dbg !357
+  %tv_usec = getelementptr inbounds i8* %idata, i64 8, !dbg !357
+  %1 = bitcast i8* %tv_usec to i64*, !dbg !357
+  %2 = load i64* %1, align 8, !dbg !357, !tbaa !316
+  %conv4 = sitofp i64 %2 to double, !dbg !357
+  %div = fdiv double %conv4, 1.000000e+06, !dbg !357
+  %add = fadd double %conv, %div, !dbg !357
+  %val = getelementptr inbounds %struct.cTimerVal* %vals, i64 0, i32 3, !dbg !357
+  %d = bitcast %union.anon* %val to double*, !dbg !357
+  store double %add, double* %d, align 8, !dbg !357, !tbaa !317
+  ret void, !dbg !358
 }

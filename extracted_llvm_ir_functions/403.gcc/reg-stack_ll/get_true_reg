@@ -1,65 +1,71 @@
 define internal fastcc %struct.rtx_def** @get_true_reg(%struct.rtx_def** %pat) #0 {
 entry:
-  br label %for.cond
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %pat}, i64 0, metadata !1286), !dbg !2343
+  br label %for.cond, !dbg !2344
 
 for.cond:                                         ; preds = %sw.bb37, %entry
   %pat.addr.0 = phi %struct.rtx_def** [ %pat, %entry ], [ %rtx40, %sw.bb37 ]
-  %0 = load %struct.rtx_def** %pat.addr.0, align 8, !tbaa !2
-  %1 = bitcast %struct.rtx_def* %0 to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.clear = and i32 %bf.load, 65535
+  %0 = load %struct.rtx_def** %pat.addr.0, align 8, !dbg !2345, !tbaa !1563
+  %1 = bitcast %struct.rtx_def* %0 to i32*, !dbg !2345
+  %bf.load = load i32* %1, align 8, !dbg !2345
+  %bf.clear = and i32 %bf.load, 65535, !dbg !2345
   switch i32 %bf.clear, label %sw.default [
     i32 63, label %sw.bb
     i32 125, label %sw.bb37
     i32 126, label %sw.bb37
     i32 123, label %sw.bb37
-  ]
+  ], !dbg !2345
 
 sw.bb:                                            ; preds = %for.cond
-  %fld = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1
-  %rtx = bitcast [1 x %union.rtunion_def]* %fld to %struct.rtx_def**
-  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !2
-  %3 = bitcast %struct.rtx_def* %2 to i32*
-  %bf.load1 = load i32* %3, align 8
-  %bf.clear2 = and i32 %bf.load1, 65535
-  %cmp = icmp eq i32 %bf.clear2, 61
-  br i1 %cmp, label %land.lhs.true, label %sw.bb37
+  %fld = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, !dbg !2346
+  %rtx = bitcast [1 x %union.rtunion_def]* %fld to %struct.rtx_def**, !dbg !2346
+  %2 = load %struct.rtx_def** %rtx, align 8, !dbg !2346, !tbaa !1563
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %2}, i64 0, metadata !1287), !dbg !2346
+  %3 = bitcast %struct.rtx_def* %2 to i32*, !dbg !2346
+  %bf.load1 = load i32* %3, align 8, !dbg !2346
+  %bf.clear2 = and i32 %bf.load1, 65535, !dbg !2346
+  %cmp = icmp eq i32 %bf.clear2, 61, !dbg !2346
+  br i1 %cmp, label %land.lhs.true, label %sw.bb37, !dbg !2346
 
 land.lhs.true:                                    ; preds = %sw.bb
-  %arrayidx7 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx7 to i32*
-  %4 = load i32* %rtuint, align 4, !tbaa !3
-  %.off = add i32 %4, -8
-  %5 = icmp ult i32 %.off, 8
-  br i1 %5, label %if.then, label %sw.bb37
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %2}, i64 0, metadata !1287), !dbg !2346
+  %arrayidx7 = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0, !dbg !2346
+  %rtuint = bitcast %union.rtunion_def* %arrayidx7 to i32*, !dbg !2346
+  %4 = load i32* %rtuint, align 4, !dbg !2346, !tbaa !1565
+  %.off = add i32 %4, -8, !dbg !2346
+  %5 = icmp ult i32 %.off, 8, !dbg !2346
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %2}, i64 0, metadata !1287), !dbg !2346
+  br i1 %5, label %if.then, label %sw.bb37, !dbg !2346
 
 if.then:                                          ; preds = %land.lhs.true
-  %bf.lshr = lshr i32 %bf.load1, 16
-  %bf.clear21 = and i32 %bf.lshr, 255
-  %arrayidx23 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 1
-  %rtuint24 = bitcast %union.rtunion_def* %arrayidx23 to i32*
-  %6 = load i32* %rtuint24, align 4, !tbaa !3
-  %bf.lshr26 = lshr i32 %bf.load, 16
-  %bf.clear27 = and i32 %bf.lshr26, 255
-  %call = tail call i32 @subreg_regno_offset(i32 %4, i32 %bf.clear21, i32 %6, i32 %bf.clear27) #6
-  %bf.load28 = load i32* %3, align 8
-  %bf.lshr29 = lshr i32 %bf.load28, 16
-  %bf.clear30 = and i32 %bf.lshr29, 255
-  %idxprom52 = zext i32 %bf.clear30 to i64
-  %7 = load i32* %rtuint, align 4, !tbaa !3
-  %add = add i32 %call, -8
-  %sub = add i32 %add, %7
-  %idxprom34 = zext i32 %sub to i64
-  %arrayidx36 = getelementptr inbounds [8 x [59 x %struct.rtx_def*]]* @FP_mode_reg, i64 0, i64 %idxprom34, i64 %idxprom52
-  %8 = load %struct.rtx_def** %arrayidx36, align 8, !tbaa !2
-  store %struct.rtx_def* %8, %struct.rtx_def** %pat.addr.0, align 8, !tbaa !2
-  br label %sw.default
+  %bf.lshr = lshr i32 %bf.load1, 16, !dbg !2347
+  %bf.clear21 = and i32 %bf.lshr, 255, !dbg !2347
+  %arrayidx23 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 1, !dbg !2347
+  %rtuint24 = bitcast %union.rtunion_def* %arrayidx23 to i32*, !dbg !2347
+  %6 = load i32* %rtuint24, align 4, !dbg !2347, !tbaa !1565
+  %bf.lshr26 = lshr i32 %bf.load, 16, !dbg !2347
+  %bf.clear27 = and i32 %bf.lshr26, 255, !dbg !2347
+  %call = tail call i32 @subreg_regno_offset(i32 %4, i32 %bf.clear21, i32 %6, i32 %bf.clear27) #7, !dbg !2347
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !1291), !dbg !2347
+  %bf.load28 = load i32* %3, align 8, !dbg !2348
+  %bf.lshr29 = lshr i32 %bf.load28, 16, !dbg !2348
+  %bf.clear30 = and i32 %bf.lshr29, 255, !dbg !2348
+  %idxprom52 = zext i32 %bf.clear30 to i64, !dbg !2348
+  %7 = load i32* %rtuint, align 4, !dbg !2348, !tbaa !1565
+  %add = add i32 %call, -8, !dbg !2348
+  %sub = add i32 %add, %7, !dbg !2348
+  %idxprom34 = zext i32 %sub to i64, !dbg !2348
+  %arrayidx36 = getelementptr inbounds [8 x [59 x %struct.rtx_def*]]* @FP_mode_reg, i64 0, i64 %idxprom34, i64 %idxprom52, !dbg !2348
+  %8 = load %struct.rtx_def** %arrayidx36, align 8, !dbg !2348, !tbaa !1563
+  store %struct.rtx_def* %8, %struct.rtx_def** %pat.addr.0, align 8, !dbg !2348, !tbaa !1563
+  br label %sw.default, !dbg !2348
 
 sw.default:                                       ; preds = %for.cond, %if.then
-  ret %struct.rtx_def** %pat.addr.0
+  ret %struct.rtx_def** %pat.addr.0, !dbg !2349
 
 sw.bb37:                                          ; preds = %sw.bb, %land.lhs.true, %for.cond, %for.cond, %for.cond
-  %arrayidx39 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
-  %rtx40 = bitcast %union.rtunion_def* %arrayidx39 to %struct.rtx_def**
-  br label %for.cond
+  %arrayidx39 = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0, !dbg !2350
+  %rtx40 = bitcast %union.rtunion_def* %arrayidx39 to %struct.rtx_def**, !dbg !2350
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %rtx40}, i64 0, metadata !1286), !dbg !2350
+  br label %for.cond, !dbg !2351
 }

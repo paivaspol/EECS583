@@ -1,0 +1,154 @@
+define internal fastcc void @_ZN3povL15Precomp_Par_IntEidddd(i32 %depth, double %umin, double %vmin, double %umax, double %vmax) #0 {
+entry:
+  %low = alloca [2 x double], align 16
+  %hi = alloca [2 x double], align 16
+  call void @llvm.dbg.value(metadata !{i32 %depth}, i64 0, metadata !1082), !dbg !2091
+  call void @llvm.dbg.value(metadata !{double %umin}, i64 0, metadata !1083), !dbg !2091
+  call void @llvm.dbg.value(metadata !{double %vmin}, i64 0, metadata !1084), !dbg !2091
+  call void @llvm.dbg.value(metadata !{double %umax}, i64 0, metadata !1085), !dbg !2091
+  call void @llvm.dbg.value(metadata !{double %vmax}, i64 0, metadata !1086), !dbg !2091
+  %0 = load i32* @_ZN3povL16PrecompLastDepthE, align 4, !dbg !2092, !tbaa !1456
+  %div = sdiv i32 %0, 2, !dbg !2092
+  %cmp = icmp eq i32 %div, %depth, !dbg !2092
+  br i1 %cmp, label %if.then, label %if.end, !dbg !2092
+
+if.then:                                          ; preds = %entry
+  call void @_ZN3pov12Do_CooperateEi(i32 1) #9, !dbg !2093
+  %.pre = load i32* @_ZN3povL16PrecompLastDepthE, align 4, !dbg !2094, !tbaa !1456
+  br label %if.end, !dbg !2093
+
+if.end:                                           ; preds = %if.then, %entry
+  %1 = phi i32 [ %.pre, %if.then ], [ %0, %entry ]
+  %cmp1 = icmp sgt i32 %1, %depth, !dbg !2094
+  br i1 %cmp1, label %if.else, label %for.cond.preheader, !dbg !2094
+
+for.cond.preheader:                               ; preds = %if.end
+  %arrayidx = getelementptr inbounds [2 x double]* %low, i64 0, i64 0, !dbg !2095
+  %arrayidx5 = getelementptr inbounds [2 x double]* %hi, i64 0, i64 0, !dbg !2096
+  %arrayidx6 = getelementptr inbounds [2 x double]* %low, i64 0, i64 1, !dbg !2097
+  %arrayidx7 = getelementptr inbounds [2 x double]* %hi, i64 0, i64 1, !dbg !2098
+  %idxprom10 = sext i32 %depth to i64, !dbg !2099
+  br label %for.body, !dbg !2100
+
+for.body:                                         ; preds = %for.inc, %for.cond.preheader
+  %indvars.iv194 = phi i64 [ 0, %for.cond.preheader ], [ %indvars.iv.next195, %for.inc ]
+  %2 = load %"struct.pov::PrecompParValues_Struct"** @_ZN3povL11PrecParDataE, align 8, !dbg !2101, !tbaa !1438
+  %flags = getelementptr inbounds %"struct.pov::PrecompParValues_Struct"* %2, i64 0, i32 2, !dbg !2101
+  %3 = load i8* %flags, align 1, !dbg !2101, !tbaa !1439
+  %conv = sext i8 %3 to i32, !dbg !2101
+  %4 = trunc i64 %indvars.iv194 to i32, !dbg !2101
+  %shl = shl i32 1, %4, !dbg !2101
+  %and = and i32 %conv, %shl, !dbg !2101
+  %tobool = icmp eq i32 %and, 0, !dbg !2101
+  br i1 %tobool, label %for.inc, label %if.then4, !dbg !2101
+
+if.then4:                                         ; preds = %for.body
+  call void @llvm.dbg.declare(metadata !{[2 x double]* %low}, metadata !1089), !dbg !2102
+  call void @llvm.dbg.declare(metadata !{[2 x double]* %hi}, metadata !1094), !dbg !2102
+  store double %umin, double* %arrayidx, align 16, !dbg !2095, !tbaa !1468
+  store double %umax, double* %arrayidx5, align 16, !dbg !2096, !tbaa !1468
+  store double %vmin, double* %arrayidx6, align 8, !dbg !2097, !tbaa !1468
+  store double %vmax, double* %arrayidx7, align 8, !dbg !2098, !tbaa !1468
+  %5 = load %"struct.pov::Parametric_Struct"** @_ZN3povL14PrecompParFuncE, align 8, !dbg !2099, !tbaa !1438
+  %arrayidx8 = getelementptr inbounds %"struct.pov::Parametric_Struct"* %5, i64 0, i32 14, i64 %indvars.iv194, !dbg !2099
+  %6 = load i32** %arrayidx8, align 8, !dbg !2099, !tbaa !1438
+  %7 = load i32* %6, align 4, !dbg !2099, !tbaa !1456
+  %accuracy = getelementptr inbounds %"struct.pov::Parametric_Struct"* %5, i64 0, i32 19, !dbg !2099
+  %8 = load double* %accuracy, align 8, !dbg !2099, !tbaa !1468
+  %max_gradient = getelementptr inbounds %"struct.pov::Parametric_Struct"* %5, i64 0, i32 20, !dbg !2099
+  %9 = load double* %max_gradient, align 8, !dbg !2099, !tbaa !1468
+  %arrayidx12 = getelementptr inbounds %"struct.pov::PrecompParValues_Struct"* %2, i64 0, i32 3, i64 %indvars.iv194, !dbg !2099
+  %10 = load double** %arrayidx12, align 8, !dbg !2099, !tbaa !1438
+  %arrayidx13 = getelementptr inbounds double* %10, i64 %idxprom10, !dbg !2099
+  %arrayidx16 = getelementptr inbounds %"struct.pov::PrecompParValues_Struct"* %2, i64 0, i32 4, i64 %indvars.iv194, !dbg !2099
+  %11 = load double** %arrayidx16, align 8, !dbg !2099, !tbaa !1438
+  %arrayidx17 = getelementptr inbounds double* %11, i64 %idxprom10, !dbg !2099
+  call void @_ZN3pov29Evaluate_Function_Interval_UVEjdPdS0_dRdS1_(i32 %7, double %8, double* %arrayidx, double* %arrayidx5, double %9, double* %arrayidx13, double* %arrayidx17) #9, !dbg !2099
+  br label %for.inc, !dbg !2103
+
+for.inc:                                          ; preds = %for.body, %if.then4
+  %indvars.iv.next195 = add i64 %indvars.iv194, 1, !dbg !2100
+  %lftr.wideiv196 = trunc i64 %indvars.iv.next195 to i32, !dbg !2100
+  %exitcond197 = icmp eq i32 %lftr.wideiv196, 3, !dbg !2100
+  br i1 %exitcond197, label %if.end129, label %for.body, !dbg !2100
+
+if.else:                                          ; preds = %if.end
+  %sub = fsub double %umax, %umin, !dbg !2104
+  %sub19 = fsub double %vmax, %vmin, !dbg !2104
+  %cmp20 = fcmp olt double %sub, %sub19, !dbg !2104
+  %mul = shl nsw i32 %depth, 1, !dbg !2106
+  br i1 %cmp20, label %if.then21, label %if.else27, !dbg !2104
+
+if.then21:                                        ; preds = %if.else
+  %add = fadd double %vmin, %vmax, !dbg !2106
+  %div22 = fmul double %add, 5.000000e-01, !dbg !2106
+  call fastcc void @_ZN3povL15Precomp_Par_IntEidddd(i32 %mul, double %umin, double %vmin, double %umax, double %div22) #9, !dbg !2106
+  %add24190 = or i32 %mul, 1, !dbg !2108
+  call fastcc void @_ZN3povL15Precomp_Par_IntEidddd(i32 %add24190, double %umin, double %div22, double %umax, double %vmax) #9, !dbg !2108
+  br label %for.cond36.preheader, !dbg !2109
+
+if.else27:                                        ; preds = %if.else
+  %add29 = fadd double %umin, %umax, !dbg !2110
+  %div30 = fmul double %add29, 5.000000e-01, !dbg !2110
+  call fastcc void @_ZN3povL15Precomp_Par_IntEidddd(i32 %mul, double %umin, double %vmin, double %div30, double %vmax) #9, !dbg !2110
+  %add32188 = or i32 %mul, 1, !dbg !2112
+  call fastcc void @_ZN3povL15Precomp_Par_IntEidddd(i32 %add32188, double %div30, double %vmin, double %umax, double %vmax) #9, !dbg !2112
+  br label %for.cond36.preheader
+
+for.cond36.preheader:                             ; preds = %if.else27, %if.then21
+  %idxprom46 = sext i32 %mul to i64, !dbg !2113
+  %add52189 = or i32 %mul, 1, !dbg !2113
+  %idxprom53 = sext i32 %add52189 to i64, !dbg !2113
+  %idxprom66 = sext i32 %depth to i64, !dbg !2117
+  %.pre198 = load %"struct.pov::PrecompParValues_Struct"** @_ZN3povL11PrecParDataE, align 8, !dbg !2118, !tbaa !1438
+  br label %for.body38, !dbg !2119
+
+for.body38:                                       ; preds = %for.inc126, %for.cond36.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond36.preheader ], [ %indvars.iv.next, %for.inc126 ]
+  %flags39 = getelementptr inbounds %"struct.pov::PrecompParValues_Struct"* %.pre198, i64 0, i32 2, !dbg !2118
+  %12 = load i8* %flags39, align 1, !dbg !2118, !tbaa !1439
+  %conv40 = sext i8 %12 to i32, !dbg !2118
+  %13 = trunc i64 %indvars.iv to i32, !dbg !2118
+  %shl41 = shl i32 1, %13, !dbg !2118
+  %and42 = and i32 %conv40, %shl41, !dbg !2118
+  %tobool43 = icmp eq i32 %and42, 0, !dbg !2118
+  br i1 %tobool43, label %for.inc126, label %if.then44, !dbg !2118
+
+if.then44:                                        ; preds = %for.body38
+  %arrayidx49 = getelementptr inbounds %"struct.pov::PrecompParValues_Struct"* %.pre198, i64 0, i32 4, i64 %indvars.iv, !dbg !2113
+  %14 = load double** %arrayidx49, align 8, !dbg !2113, !tbaa !1438
+  %arrayidx50 = getelementptr inbounds double* %14, i64 %idxprom46, !dbg !2113
+  %15 = load double* %arrayidx50, align 8, !dbg !2113, !tbaa !1468
+  %arrayidx57 = getelementptr inbounds double* %14, i64 %idxprom53, !dbg !2113
+  %16 = load double* %arrayidx57, align 8, !dbg !2113, !tbaa !1468
+  %cmp58 = fcmp ogt double %15, %16, !dbg !2113
+  %arrayidx70 = getelementptr inbounds double* %14, i64 %idxprom66, !dbg !2117
+  %. = select i1 %cmp58, double %15, double %16, !dbg !2117
+  store double %., double* %arrayidx70, align 8, !dbg !2117, !tbaa !1468
+  %arrayidx89 = getelementptr inbounds %"struct.pov::PrecompParValues_Struct"* %.pre198, i64 0, i32 3, i64 %indvars.iv, !dbg !2120
+  %17 = load double** %arrayidx89, align 8, !dbg !2120, !tbaa !1438
+  %arrayidx90 = getelementptr inbounds double* %17, i64 %idxprom46, !dbg !2120
+  %18 = load double* %arrayidx90, align 8, !dbg !2120, !tbaa !1468
+  %arrayidx97 = getelementptr inbounds double* %17, i64 %idxprom53, !dbg !2120
+  %19 = load double* %arrayidx97, align 8, !dbg !2120, !tbaa !1468
+  %cmp98 = fcmp olt double %18, %19, !dbg !2120
+  %arrayidx110 = getelementptr inbounds double* %17, i64 %idxprom66, !dbg !2121
+  br i1 %cmp98, label %if.then99, label %if.else111, !dbg !2120
+
+if.then99:                                        ; preds = %if.then44
+  store double %18, double* %arrayidx110, align 8, !dbg !2121, !tbaa !1468
+  br label %for.inc126, !dbg !2121
+
+if.else111:                                       ; preds = %if.then44
+  store double %19, double* %arrayidx110, align 8, !dbg !2122, !tbaa !1468
+  br label %for.inc126
+
+for.inc126:                                       ; preds = %for.body38, %if.else111, %if.then99
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2119
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !2119
+  %exitcond = icmp eq i32 %lftr.wideiv, 3, !dbg !2119
+  br i1 %exitcond, label %if.end129, label %for.body38, !dbg !2119
+
+if.end129:                                        ; preds = %for.inc, %for.inc126
+  ret void, !dbg !2123
+}

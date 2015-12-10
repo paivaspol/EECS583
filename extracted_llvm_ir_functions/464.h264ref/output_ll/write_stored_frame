@@ -1,23 +1,28 @@
-define void @write_stored_frame(%struct.frame_store* %fs, i32 %p_out) #1 {
+define void @write_stored_frame(%struct.frame_store* %fs, i32 %p_out) #2 {
 entry:
-  tail call void @flush_direct_output(i32 %p_out) #5
-  %is_used = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 0
-  %0 = load i32* %is_used, align 4, !tbaa !3
-  %cmp = icmp slt i32 %0, 3
-  br i1 %cmp, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata !{%struct.frame_store* %fs}, i64 0, metadata !195), !dbg !851
+  tail call void @llvm.dbg.value(metadata !{i32 %p_out}, i64 0, metadata !196), !dbg !851
+  tail call void @flush_direct_output(i32 %p_out) #7, !dbg !852
+  %is_used = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 0, !dbg !853
+  %0 = load i32* %is_used, align 4, !dbg !853, !tbaa !752
+  %cmp = icmp slt i32 %0, 3, !dbg !853
+  br i1 %cmp, label %if.then, label %if.else, !dbg !853
 
 if.then:                                          ; preds = %entry
-  tail call void @write_unpaired_field(%struct.frame_store* %fs, i32 %p_out) #5
-  br label %if.end
+  tail call void @write_unpaired_field(%struct.frame_store* %fs, i32 %p_out) #7, !dbg !854
+  br label %if.end, !dbg !856
 
 if.else:                                          ; preds = %entry
-  %frame = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 10
-  %1 = load %struct.storable_picture** %frame, align 8, !tbaa !0
-  tail call void @write_out_picture(%struct.storable_picture* %1, i32 %p_out) #6
+  %frame = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 10, !dbg !857
+  %1 = load %struct.storable_picture** %frame, align 8, !dbg !857, !tbaa !739
+  tail call void @llvm.dbg.value(metadata !{%struct.storable_picture* %1}, i64 0, metadata !859) #3, !dbg !860
+  tail call void @llvm.dbg.value(metadata !{i32 %p_out}, i64 0, metadata !861) #3, !dbg !860
+  tail call void @llvm.dbg.value(metadata !822, i64 0, metadata !862) #3, !dbg !860
+  tail call void @write_out_picture(%struct.storable_picture* %1, i32 %p_out) #8, !dbg !863
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
-  %is_output = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 8
-  store i32 1, i32* %is_output, align 4, !tbaa !3
-  ret void
+  %is_output = getelementptr inbounds %struct.frame_store* %fs, i64 0, i32 8, !dbg !864
+  store i32 1, i32* %is_output, align 4, !dbg !864, !tbaa !752
+  ret void, !dbg !865
 }

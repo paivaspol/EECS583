@@ -1,0 +1,47 @@
+define void @_ZN3pov17photonRgbe2colourEPfPh(float* nocapture %c, i8* nocapture %rgbe) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float* %c}, i64 0, metadata !67), !dbg !269
+  tail call void @llvm.dbg.value(metadata !{i8* %rgbe}, i64 0, metadata !68), !dbg !269
+  %arrayidx = getelementptr inbounds i8* %rgbe, i64 3, !dbg !270
+  %0 = load i8* %arrayidx, align 1, !dbg !270, !tbaa !202
+  %tobool = icmp eq i8 %0, 0, !dbg !270
+  br i1 %tobool, label %if.else, label %if.then, !dbg !270
+
+if.then:                                          ; preds = %entry
+  %conv = zext i8 %0 to i32, !dbg !271
+  %sub = add nsw i32 %conv, -258, !dbg !271
+  %call = tail call double @ldexp(double 1.000000e+00, i32 %sub) #5, !dbg !271
+  %conv2 = fptrunc double %call to float, !dbg !271
+  tail call void @llvm.dbg.value(metadata !{float %conv2}, i64 0, metadata !69), !dbg !271
+  %1 = load i8* %rgbe, align 1, !dbg !273, !tbaa !202
+  %conv4 = zext i8 %1 to i32, !dbg !273
+  %conv5 = sitofp i32 %conv4 to float, !dbg !273
+  %mul = fmul float %conv2, %conv5, !dbg !273
+  store float %mul, float* %c, align 4, !dbg !273, !tbaa !206
+  %arrayidx7 = getelementptr inbounds i8* %rgbe, i64 1, !dbg !274
+  %2 = load i8* %arrayidx7, align 1, !dbg !274, !tbaa !202
+  %conv8 = zext i8 %2 to i32, !dbg !274
+  %conv9 = sitofp i32 %conv8 to float, !dbg !274
+  %mul10 = fmul float %conv2, %conv9, !dbg !274
+  %arrayidx11 = getelementptr inbounds float* %c, i64 1, !dbg !274
+  store float %mul10, float* %arrayidx11, align 4, !dbg !274, !tbaa !206
+  %arrayidx12 = getelementptr inbounds i8* %rgbe, i64 2, !dbg !275
+  %3 = load i8* %arrayidx12, align 1, !dbg !275, !tbaa !202
+  %conv13 = zext i8 %3 to i32, !dbg !275
+  %conv14 = sitofp i32 %conv13 to float, !dbg !275
+  %mul15 = fmul float %conv2, %conv14, !dbg !275
+  %arrayidx16 = getelementptr inbounds float* %c, i64 2, !dbg !275
+  store float %mul15, float* %arrayidx16, align 4, !dbg !275, !tbaa !206
+  br label %if.end, !dbg !276
+
+if.else:                                          ; preds = %entry
+  %arrayidx17 = getelementptr inbounds float* %c, i64 2, !dbg !277
+  store float 0.000000e+00, float* %arrayidx17, align 4, !dbg !277, !tbaa !206
+  %arrayidx18 = getelementptr inbounds float* %c, i64 1, !dbg !277
+  store float 0.000000e+00, float* %arrayidx18, align 4, !dbg !277, !tbaa !206
+  store float 0.000000e+00, float* %c, align 4, !dbg !277, !tbaa !206
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret void, !dbg !278
+}

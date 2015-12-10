@@ -1,0 +1,71 @@
+define internal fastcc double @_ZN3povL5powerEdd(double %x, double %e) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{double %x}, i64 0, metadata !1045), !dbg !1856
+  tail call void @llvm.dbg.value(metadata !{double %e}, i64 0, metadata !1046), !dbg !1856
+  tail call void @llvm.dbg.value(metadata !{double %x}, i64 0, metadata !1049), !dbg !1857
+  %conv = fptosi double %e to i32, !dbg !1858
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !1047), !dbg !1858
+  %conv1 = sitofp i32 %conv to double, !dbg !1859
+  %cmp = fcmp oeq double %conv1, %e, !dbg !1859
+  br i1 %cmp, label %if.then, label %if.else, !dbg !1859
+
+if.then:                                          ; preds = %entry
+  switch i32 %conv, label %sw.default [
+    i32 0, label %return
+    i32 1, label %sw.bb2
+    i32 2, label %sw.bb3
+    i32 3, label %sw.bb4
+    i32 4, label %sw.bb6
+    i32 5, label %sw.bb9
+    i32 6, label %sw.bb13
+  ], !dbg !1860
+
+sw.bb2:                                           ; preds = %if.then
+  br label %return, !dbg !1862
+
+sw.bb3:                                           ; preds = %if.then
+  tail call void @llvm.dbg.value(metadata !{double %x}, i64 0, metadata !1864), !dbg !1866
+  %mul.i = fmul double %x, %x, !dbg !1867
+  br label %return, !dbg !1865
+
+sw.bb4:                                           ; preds = %if.then
+  tail call void @llvm.dbg.value(metadata !{double %x}, i64 0, metadata !1869), !dbg !1871
+  %mul.i42 = fmul double %x, %x, !dbg !1872
+  %mul = fmul double %mul.i42, %x, !dbg !1870
+  br label %return, !dbg !1870
+
+sw.bb6:                                           ; preds = %if.then
+  %mul7 = fmul double %x, %x, !dbg !1873
+  tail call void @llvm.dbg.value(metadata !{double %mul7}, i64 0, metadata !1049), !dbg !1873
+  tail call void @llvm.dbg.value(metadata !{double %mul7}, i64 0, metadata !1874), !dbg !1876
+  %mul.i41 = fmul double %mul7, %mul7, !dbg !1877
+  br label %return, !dbg !1875
+
+sw.bb9:                                           ; preds = %if.then
+  %mul10 = fmul double %x, %x, !dbg !1878
+  tail call void @llvm.dbg.value(metadata !{double %mul10}, i64 0, metadata !1049), !dbg !1878
+  tail call void @llvm.dbg.value(metadata !{double %mul10}, i64 0, metadata !1879), !dbg !1881
+  %mul.i40 = fmul double %mul10, %mul10, !dbg !1882
+  %mul12 = fmul double %mul.i40, %x, !dbg !1880
+  br label %return, !dbg !1880
+
+sw.bb13:                                          ; preds = %if.then
+  %mul14 = fmul double %x, %x, !dbg !1883
+  tail call void @llvm.dbg.value(metadata !{double %mul14}, i64 0, metadata !1049), !dbg !1883
+  tail call void @llvm.dbg.value(metadata !{double %mul14}, i64 0, metadata !1884), !dbg !1886
+  %mul.i39 = fmul double %mul14, %mul14, !dbg !1887
+  %mul16 = fmul double %mul14, %mul.i39, !dbg !1885
+  br label %return, !dbg !1885
+
+sw.default:                                       ; preds = %if.then
+  %call17 = tail call double @pow(double %x, double %e) #9, !dbg !1888
+  br label %return, !dbg !1888
+
+if.else:                                          ; preds = %entry
+  %call18 = tail call double @pow(double %x, double %e) #9, !dbg !1889
+  br label %return, !dbg !1889
+
+return:                                           ; preds = %if.then, %if.else, %sw.default, %sw.bb13, %sw.bb9, %sw.bb6, %sw.bb4, %sw.bb3, %sw.bb2
+  %retval.0 = phi double [ %call17, %sw.default ], [ %mul16, %sw.bb13 ], [ %mul12, %sw.bb9 ], [ %mul.i41, %sw.bb6 ], [ %mul, %sw.bb4 ], [ %mul.i, %sw.bb3 ], [ %x, %sw.bb2 ], [ %call18, %if.else ], [ 1.000000e+00, %if.then ]
+  ret double %retval.0, !dbg !1891
+}

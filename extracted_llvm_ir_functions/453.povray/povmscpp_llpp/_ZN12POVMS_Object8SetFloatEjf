@@ -1,0 +1,21 @@
+define void @_ZN12POVMS_Object8SetFloatEjf(%class.POVMS_Object* %this, i32 %key, float %value) #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.POVMS_Object* %this}, i64 0, metadata !874), !dbg !1562
+  tail call void @llvm.dbg.value(metadata !{i32 %key}, i64 0, metadata !875), !dbg !1562
+  tail call void @llvm.dbg.value(metadata !{float %value}, i64 0, metadata !876), !dbg !1562
+  %data = getelementptr inbounds %class.POVMS_Object* %this, i64 0, i32 0, i32 1, !dbg !1563
+  %call = tail call i32 @_Z18POVMSUtil_SetFloatP9POVMSDatajf(%struct.POVMSData* %data, i32 %key, float %value) #12, !dbg !1563
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !877), !dbg !1563
+  %cmp = icmp eq i32 %call, 0, !dbg !1564
+  br i1 %cmp, label %if.end, label %if.then, !dbg !1564
+
+if.then:                                          ; preds = %entry
+  %exception = tail call i8* @__cxa_allocate_exception(i64 4) #9, !dbg !1565
+  %0 = bitcast i8* %exception to i32*, !dbg !1565
+  store i32 %call, i32* %0, align 4, !dbg !1565, !tbaa !1112
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast (i8** @_ZTIi to i8*), i8* null) #13, !dbg !1565
+  unreachable, !dbg !1565
+
+if.end:                                           ; preds = %entry
+  ret void, !dbg !1566
+}

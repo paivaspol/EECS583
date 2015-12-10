@@ -1,27 +1,32 @@
-define void @unity_m4([4 x float]* nocapture %m) #3 {
-  br label %.preheader
+define void @unity_m4([4 x float]* nocapture %m) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{[4 x float]* %m}, i64 0, metadata !25), !dbg !246
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !26), !dbg !247
+  br label %for.cond1.preheader, !dbg !247
 
-.preheader:                                       ; preds = %6, %0
-  %indvars.iv3 = phi i64 [ 0, %0 ], [ %indvars.iv.next4, %6 ]
-  br label %1
+for.cond1.preheader:                              ; preds = %for.inc11, %entry
+  %indvars.iv21 = phi i64 [ 0, %entry ], [ %indvars.iv.next22, %for.inc11 ]
+  br label %for.body3, !dbg !249
 
-; <label>:1                                       ; preds = %1, %.preheader
-  %indvars.iv = phi i64 [ 0, %.preheader ], [ %indvars.iv.next, %1 ]
-  %2 = trunc i64 %indvars.iv to i32
-  %3 = trunc i64 %indvars.iv3 to i32
-  %4 = icmp eq i32 %3, %2
-  %5 = getelementptr inbounds [4 x float]* %m, i64 %indvars.iv3, i64 %indvars.iv
-  %. = select i1 %4, float 1.000000e+00, float 0.000000e+00
-  store float %., float* %5, align 4, !tbaa !14
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i64 %indvars.iv.next, 4
-  br i1 %exitcond, label %6, label %1
+for.body3:                                        ; preds = %for.body3, %for.cond1.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next, %for.body3 ]
+  %0 = trunc i64 %indvars.iv to i32, !dbg !251
+  %1 = trunc i64 %indvars.iv21 to i32, !dbg !251
+  %cmp4 = icmp eq i32 %1, %0, !dbg !251
+  %arrayidx6 = getelementptr inbounds [4 x float]* %m, i64 %indvars.iv21, i64 %indvars.iv, !dbg !252
+  %. = select i1 %cmp4, float 1.000000e+00, float 0.000000e+00, !dbg !252
+  store float %., float* %arrayidx6, align 4, !dbg !252, !tbaa !242
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !249
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !249
+  %exitcond = icmp eq i32 %lftr.wideiv, 4, !dbg !249
+  br i1 %exitcond, label %for.inc11, label %for.body3, !dbg !249
 
-; <label>:6                                       ; preds = %1
-  %indvars.iv.next4 = add nuw nsw i64 %indvars.iv3, 1
-  %exitcond5 = icmp eq i64 %indvars.iv.next4, 4
-  br i1 %exitcond5, label %7, label %.preheader
+for.inc11:                                        ; preds = %for.body3
+  %indvars.iv.next22 = add i64 %indvars.iv21, 1, !dbg !247
+  %lftr.wideiv23 = trunc i64 %indvars.iv.next22 to i32, !dbg !247
+  %exitcond24 = icmp eq i32 %lftr.wideiv23, 4, !dbg !247
+  br i1 %exitcond24, label %for.end13, label %for.cond1.preheader, !dbg !247
 
-; <label>:7                                       ; preds = %6
-  ret void
+for.end13:                                        ; preds = %for.inc11
+  ret void, !dbg !253
 }

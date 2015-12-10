@@ -1,0 +1,63 @@
+define i32 @_ZN3pov19Send_ProgressUpdateEii(i32 %progressState, i32 %t) #0 {
+entry:
+  %msg = alloca %struct.POVMSData, align 8
+  call void @llvm.dbg.value(metadata !{i32 %progressState}, i64 0, metadata !582), !dbg !1396
+  call void @llvm.dbg.value(metadata !{i32 %t}, i64 0, metadata !583), !dbg !1396
+  call void @llvm.dbg.declare(metadata !{%struct.POVMSData* %msg}, metadata !584), !dbg !1397
+  call void @llvm.dbg.value(metadata !426, i64 0, metadata !585), !dbg !1398
+  %call = call i64 @time(i64* @_ZN3pov5tstopE) #8, !dbg !1399
+  %0 = load i64* @_ZN3pov5tstopE, align 8, !dbg !1400, !tbaa !929
+  %1 = load i64* @_ZN3pov6tstartE, align 8, !dbg !1400, !tbaa !929
+  %call1 = call double @difftime(i64 %0, i64 %1) #9, !dbg !1400
+  call void @llvm.dbg.value(metadata !{double %call1}, i64 0, metadata !586), !dbg !1400
+  %2 = load double* @_ZN3pov10Previous_tE, align 8, !dbg !1401, !tbaa !783
+  %sub = fsub double %call1, %2, !dbg !1401
+  %call2 = call double @fabs(double %sub) #9, !dbg !1401
+  %conv = sitofp i32 %t to double, !dbg !1401
+  %cmp = fcmp oge double %call2, %conv, !dbg !1401
+  %cmp3 = icmp eq i32 %t, 0, !dbg !1401
+  %or.cond = or i1 %cmp, %cmp3, !dbg !1401
+  br i1 %or.cond, label %if.then, label %if.end28, !dbg !1401
+
+if.then:                                          ; preds = %entry
+  store double %call1, double* @_ZN3pov10Previous_tE, align 8, !dbg !1402, !tbaa !783
+  %call6 = call i32 @_Z15POVMSObject_NewP9POVMSDataj(%struct.POVMSData* %msg, i32 1349676903) #6, !dbg !1404
+  call void @llvm.dbg.value(metadata !{i32 %call6}, i64 0, metadata !585), !dbg !1404
+  %cmp7 = icmp eq i32 %call6, 0, !dbg !1405
+  br i1 %cmp7, label %if.end10, label %if.end28, !dbg !1405
+
+if.end10:                                         ; preds = %if.then
+  %call9 = call i32 @_Z17POVMSUtil_SetBoolP9POVMSDataji(%struct.POVMSData* %msg, i32 1349676883, i32 1) #6, !dbg !1406
+  call void @llvm.dbg.value(metadata !{i32 %call9}, i64 0, metadata !585), !dbg !1406
+  %cmp11 = icmp eq i32 %call9, 0, !dbg !1407
+  br i1 %cmp11, label %if.end14, label %if.end28, !dbg !1407
+
+if.end14:                                         ; preds = %if.end10
+  %call13 = call i32 @_ZN3pov13BuildProgressEP9POVMSDatai(%struct.POVMSData* %msg, i32 %progressState) #6, !dbg !1408
+  call void @llvm.dbg.value(metadata !{i32 %call13}, i64 0, metadata !585), !dbg !1408
+  %cmp15 = icmp eq i32 %call13, 0, !dbg !1409
+  br i1 %cmp15, label %if.end18, label %if.end28, !dbg !1409
+
+if.end18:                                         ; preds = %if.end14
+  %call17 = call i32 @_Z21POVMSMsg_SetupMessageP9POVMSDatajj(%struct.POVMSData* %msg, i32 1333097584, i32 1349676903) #6, !dbg !1410
+  call void @llvm.dbg.value(metadata !{i32 %call17}, i64 0, metadata !585), !dbg !1410
+  %cmp19 = icmp eq i32 %call17, 0, !dbg !1411
+  br i1 %cmp19, label %if.end23, label %if.end28, !dbg !1411
+
+if.end23:                                         ; preds = %if.end18
+  %call21 = call i8* @_Z23povray_getoutputcontextv() #6, !dbg !1412
+  %call22 = call i32 @_Z30POVMSMsg_SetDestinationAddressP9POVMSDataPv(%struct.POVMSData* %msg, i8* %call21) #6, !dbg !1412
+  call void @llvm.dbg.value(metadata !{i32 %call22}, i64 0, metadata !585), !dbg !1412
+  %cmp24 = icmp eq i32 %call22, 0, !dbg !1413
+  br i1 %cmp24, label %if.then25, label %if.end28, !dbg !1413
+
+if.then25:                                        ; preds = %if.end23
+  %3 = load i8** @POVMS_Render_Context, align 8, !dbg !1414, !tbaa !914
+  %call26 = call i32 @_Z10POVMS_SendPvP9POVMSDataS1_i(i8* %3, %struct.POVMSData* %msg, %struct.POVMSData* null, i32 1) #6, !dbg !1414
+  call void @llvm.dbg.value(metadata !{i32 %call26}, i64 0, metadata !585), !dbg !1414
+  br label %if.end28, !dbg !1414
+
+if.end28:                                         ; preds = %if.then, %if.end10, %if.end14, %if.end18, %if.end23, %if.then25, %entry
+  %err.5 = phi i32 [ %call26, %if.then25 ], [ %call22, %if.end23 ], [ 0, %entry ], [ %call17, %if.end18 ], [ %call13, %if.end14 ], [ %call9, %if.end10 ], [ %call6, %if.then ]
+  ret i32 %err.5, !dbg !1415
+}

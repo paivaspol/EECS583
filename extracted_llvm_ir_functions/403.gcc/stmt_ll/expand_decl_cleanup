@@ -1,119 +1,132 @@
 define i32 @expand_decl_cleanup(%union.tree_node* %decl, %union.tree_node* %cleanup) #0 {
 entry:
-  %0 = load %struct.function** @cfun, align 8, !tbaa !0
-  %cmp = icmp eq %struct.function* %0, null
-  br i1 %cmp, label %return, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %decl}, i64 0, metadata !1784), !dbg !3930
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %cleanup}, i64 0, metadata !1785), !dbg !3930
+  %0 = load %struct.function** @cfun, align 8, !dbg !3931, !tbaa !2438
+  %cmp = icmp eq %struct.function* %0, null, !dbg !3931
+  br i1 %cmp, label %return, label %lor.lhs.false, !dbg !3931
 
 lor.lhs.false:                                    ; preds = %entry
-  %stmt = getelementptr inbounds %struct.function* %0, i64 0, i32 1
-  %1 = load %struct.stmt_status** %stmt, align 8, !tbaa !0
-  %x_block_stack = getelementptr inbounds %struct.stmt_status* %1, i64 0, i32 0
-  %2 = load %struct.nesting** %x_block_stack, align 8, !tbaa !0
-  %cmp1 = icmp eq %struct.nesting* %2, null
-  br i1 %cmp1, label %return, label %if.end
+  %stmt = getelementptr inbounds %struct.function* %0, i64 0, i32 1, !dbg !3931
+  %1 = load %struct.stmt_status** %stmt, align 8, !dbg !3931, !tbaa !2438
+  %x_block_stack = getelementptr inbounds %struct.stmt_status* %1, i64 0, i32 0, !dbg !3931
+  %2 = load %struct.nesting** %x_block_stack, align 8, !dbg !3931, !tbaa !2438
+  %cmp1 = icmp eq %struct.nesting* %2, null, !dbg !3931
+  br i1 %cmp1, label %return, label %if.end, !dbg !3931
 
 if.end:                                           ; preds = %lor.lhs.false
-  %cmp4 = icmp eq %union.tree_node* %cleanup, null
-  br i1 %cmp4, label %return, label %conditional_context.exit
+  tail call void @llvm.dbg.value(metadata !{%struct.nesting* %2}, i64 0, metadata !1786), !dbg !3932
+  %cmp4 = icmp eq %union.tree_node* %cleanup, null, !dbg !3933
+  br i1 %cmp4, label %return, label %conditional_context.exit, !dbg !3933
 
 conditional_context.exit:                         ; preds = %if.end
-  %cleanups6 = getelementptr inbounds %struct.nesting* %2, i64 0, i32 4, i32 0, i32 4
-  %conditional_code.i = getelementptr inbounds %struct.nesting* %2, i64 0, i32 4, i32 0, i32 10
-  %3 = load i32* %conditional_code.i, align 4, !tbaa !4
-  %tobool3.i = icmp ne i32 %3, 0
-  br i1 %tobool3.i, label %if.then7, label %if.end26
+  %cleanups6 = getelementptr inbounds %struct.nesting* %2, i64 0, i32 4, i32 0, i32 4, !dbg !3934
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node** %cleanups6}, i64 0, metadata !1790), !dbg !3934
+  %conditional_code.i = getelementptr inbounds %struct.nesting* %2, i64 0, i32 4, i32 0, i32 10, !dbg !3935
+  %3 = load i32* %conditional_code.i, align 4, !dbg !3935, !tbaa !2561
+  %tobool3.i = icmp ne i32 %3, 0, !dbg !3935
+  br i1 %tobool3.i, label %if.then7, label %if.end26, !dbg !3937
 
 if.then7:                                         ; preds = %conditional_context.exit
-  %4 = load i32* @word_mode, align 4, !tbaa !8
-  %call8 = tail call %struct.rtx_def* @gen_reg_rtx(i32 %4) #7
-  tail call void @start_sequence() #7
-  %5 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !0
-  %call9 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call8, %struct.rtx_def* %5) #7
-  %call10 = tail call %struct.rtx_def* @get_insns() #7
-  tail call void @end_sequence() #7
-  %last_unconditional_cleanup = getelementptr inbounds %struct.nesting* %2, i64 0, i32 4, i32 0, i32 11
-  %6 = load %struct.rtx_def** %last_unconditional_cleanup, align 8, !tbaa !0
-  %call13 = tail call %struct.rtx_def* @emit_insns_after(%struct.rtx_def* %call10, %struct.rtx_def* %6) #7
-  store %struct.rtx_def* %call13, %struct.rtx_def** %last_unconditional_cleanup, align 8, !tbaa !0
-  %7 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 65), align 8, !tbaa !0
-  %call17 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call8, %struct.rtx_def* %7) #7
-  %8 = load i32* @word_mode, align 4, !tbaa !8
-  %call18 = tail call %union.tree_node* @type_for_mode(i32 %8, i32 1) #7
-  %call19 = tail call %union.tree_node* @build_decl(i32 34, %union.tree_node* null, %union.tree_node* %call18) #7
-  %rtl = getelementptr inbounds %union.tree_node* %call19, i64 0, i32 0, i32 17
-  store %struct.rtx_def* %call8, %struct.rtx_def** %rtl, align 8, !tbaa !0
-  %9 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 27), align 8, !tbaa !0
-  %call21 = tail call %union.tree_node* @truthvalue_conversion(%union.tree_node* %call19) #7
-  %10 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 11), align 8, !tbaa !0
-  %call22 = tail call %union.tree_node* (i32, %union.tree_node*, ...)* @build(i32 51, %union.tree_node* %9, %union.tree_node* %call21, %union.tree_node* %cleanup, %union.tree_node* %10) #7
-  %call23 = tail call %union.tree_node* @fold(%union.tree_node* %call22) #7
-  %cleanup_ptr = getelementptr inbounds %struct.nesting* %2, i64 0, i32 4, i32 0, i32 12
-  %11 = load %union.tree_node*** %cleanup_ptr, align 8, !tbaa !0
-  br label %if.end26
+  %4 = load i32* @word_mode, align 4, !dbg !3938, !tbaa !3058
+  %call8 = tail call %struct.rtx_def* @gen_reg_rtx(i32 %4) #8, !dbg !3938
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call8}, i64 0, metadata !1792), !dbg !3938
+  tail call void @start_sequence() #8, !dbg !3939
+  %5 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !dbg !3940, !tbaa !2438
+  %call9 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call8, %struct.rtx_def* %5) #8, !dbg !3940
+  %call10 = tail call %struct.rtx_def* @get_insns() #8, !dbg !3941
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call10}, i64 0, metadata !1794), !dbg !3941
+  tail call void @end_sequence() #8, !dbg !3942
+  %last_unconditional_cleanup = getelementptr inbounds %struct.nesting* %2, i64 0, i32 4, i32 0, i32 11, !dbg !3943
+  %6 = load %struct.rtx_def** %last_unconditional_cleanup, align 8, !dbg !3943, !tbaa !2438
+  %call13 = tail call %struct.rtx_def* @emit_insns_after(%struct.rtx_def* %call10, %struct.rtx_def* %6) #8, !dbg !3943
+  store %struct.rtx_def* %call13, %struct.rtx_def** %last_unconditional_cleanup, align 8, !dbg !3943, !tbaa !2438
+  %7 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 65), align 8, !dbg !3944, !tbaa !2438
+  %call17 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call8, %struct.rtx_def* %7) #8, !dbg !3944
+  %8 = load i32* @word_mode, align 4, !dbg !3945, !tbaa !3058
+  %call18 = tail call %union.tree_node* @type_for_mode(i32 %8, i32 1) #8, !dbg !3945
+  %call19 = tail call %union.tree_node* @build_decl(i32 34, %union.tree_node* null, %union.tree_node* %call18) #8, !dbg !3945
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call19}, i64 0, metadata !1795), !dbg !3945
+  %rtl = getelementptr inbounds %union.tree_node* %call19, i64 0, i32 0, i32 17, !dbg !3946
+  store %struct.rtx_def* %call8, %struct.rtx_def** %rtl, align 8, !dbg !3946, !tbaa !2438
+  %9 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 27), align 8, !dbg !3947, !tbaa !2438
+  %call21 = tail call %union.tree_node* @truthvalue_conversion(%union.tree_node* %call19) #8, !dbg !3948
+  %10 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 11), align 8, !dbg !3948, !tbaa !2438
+  %call22 = tail call %union.tree_node* (i32, %union.tree_node*, ...)* @build(i32 51, %union.tree_node* %9, %union.tree_node* %call21, %union.tree_node* %cleanup, %union.tree_node* %10) #8, !dbg !3948
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call22}, i64 0, metadata !1785), !dbg !3948
+  %call23 = tail call %union.tree_node* @fold(%union.tree_node* %call22) #8, !dbg !3949
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call23}, i64 0, metadata !1785), !dbg !3949
+  %cleanup_ptr = getelementptr inbounds %struct.nesting* %2, i64 0, i32 4, i32 0, i32 12, !dbg !3950
+  %11 = load %union.tree_node*** %cleanup_ptr, align 8, !dbg !3950, !tbaa !2438
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node** %11}, i64 0, metadata !1790), !dbg !3950
+  br label %if.end26, !dbg !3951
 
 if.end26:                                         ; preds = %if.then7, %conditional_context.exit
   %cleanups.0 = phi %union.tree_node** [ %11, %if.then7 ], [ %cleanups6, %conditional_context.exit ]
   %cleanup.addr.0 = phi %union.tree_node* [ %call23, %if.then7 ], [ %cleanup, %conditional_context.exit ]
-  %call27 = tail call %union.tree_node* @unsave_expr(%union.tree_node* %cleanup.addr.0) #7
-  %12 = load %union.tree_node** %cleanups.0, align 8, !tbaa !0
-  %call28 = tail call %union.tree_node* @tree_cons(%union.tree_node* %decl, %union.tree_node* %call27, %union.tree_node* %12) #7
-  store %union.tree_node* %call28, %union.tree_node** %cleanups.0, align 8, !tbaa !0
-  br i1 %tobool3.i, label %if.then34, label %if.then30
+  %call27 = tail call %union.tree_node* @unsave_expr(%union.tree_node* %cleanup.addr.0) #8, !dbg !3952
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call27}, i64 0, metadata !1785), !dbg !3952
+  %12 = load %union.tree_node** %cleanups.0, align 8, !dbg !3953, !tbaa !2438
+  %call28 = tail call %union.tree_node* @tree_cons(%union.tree_node* %decl, %union.tree_node* %call27, %union.tree_node* %12) #8, !dbg !3953
+  store %union.tree_node* %call28, %union.tree_node** %cleanups.0, align 8, !dbg !3953, !tbaa !2438
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call28}, i64 0, metadata !1787), !dbg !3953
+  br i1 %tobool3.i, label %if.then34, label %if.then30, !dbg !3954
 
 if.then30:                                        ; preds = %if.end26
-  %13 = load %struct.function** @cfun, align 8, !tbaa !0
-  %stmt31 = getelementptr inbounds %struct.function* %13, i64 0, i32 1
-  %14 = load %struct.stmt_status** %stmt31, align 8, !tbaa !0
-  %x_stack_block_stack = getelementptr inbounds %struct.stmt_status* %14, i64 0, i32 1
-  store %struct.nesting* %2, %struct.nesting** %x_stack_block_stack, align 8, !tbaa !0
-  br label %if.end35
+  %13 = load %struct.function** @cfun, align 8, !dbg !3955, !tbaa !2438
+  %stmt31 = getelementptr inbounds %struct.function* %13, i64 0, i32 1, !dbg !3955
+  %14 = load %struct.stmt_status** %stmt31, align 8, !dbg !3955, !tbaa !2438
+  %x_stack_block_stack = getelementptr inbounds %struct.stmt_status* %14, i64 0, i32 1, !dbg !3955
+  store %struct.nesting* %2, %struct.nesting** %x_stack_block_stack, align 8, !dbg !3955, !tbaa !2438
+  br label %if.end35, !dbg !3956
 
 if.then34:                                        ; preds = %if.end26
-  tail call void @start_sequence() #7
-  br label %if.end35
+  tail call void @start_sequence() #8, !dbg !3957
+  br label %if.end35, !dbg !3959
 
 if.end35:                                         ; preds = %if.then30, %if.then34
   %.b = load i1* @using_eh_for_cleanups_p, align 1
-  br i1 %.b, label %if.else, label %if.then37
+  br i1 %.b, label %if.else, label %if.then37, !dbg !3960
 
 if.then37:                                        ; preds = %if.end35
-  %addressable_flag = getelementptr inbounds %union.tree_node* %call28, i64 0, i32 0, i32 0, i32 2
-  %15 = bitcast [4 x i8]* %addressable_flag to i32*
-  %bf.load = load i32* %15, align 8
-  %bf.set = or i32 %bf.load, 1024
-  store i32 %bf.set, i32* %15, align 8
-  br label %if.end38
+  %addressable_flag = getelementptr inbounds %union.tree_node* %call28, i64 0, i32 0, i32 0, i32 2, !dbg !3961
+  %15 = bitcast [4 x i8]* %addressable_flag to i32*, !dbg !3961
+  %bf.load = load i32* %15, align 8, !dbg !3961
+  %bf.set = or i32 %bf.load, 1024, !dbg !3961
+  store i32 %bf.set, i32* %15, align 8, !dbg !3961
+  br label %if.end38, !dbg !3961
 
 if.else:                                          ; preds = %if.end35
-  tail call void @expand_eh_region_start() #7
+  tail call void @expand_eh_region_start() #8, !dbg !3962
   br label %if.end38
 
 if.end38:                                         ; preds = %if.else, %if.then37
-  br i1 %tobool3.i, label %if.then40, label %if.else52
+  br i1 %tobool3.i, label %if.then40, label %if.else52, !dbg !3963
 
 if.then40:                                        ; preds = %if.end38
-  %call41 = tail call %struct.rtx_def* @get_insns() #7
-  tail call void @end_sequence() #7
-  %tobool42 = icmp eq %struct.rtx_def* %call41, null
-  br i1 %tobool42, label %return, label %if.then43
+  %call41 = tail call %struct.rtx_def* @get_insns() #8, !dbg !3964
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call41}, i64 0, metadata !1789), !dbg !3964
+  tail call void @end_sequence() #8, !dbg !3966
+  %tobool42 = icmp eq %struct.rtx_def* %call41, null, !dbg !3967
+  br i1 %tobool42, label %return, label %if.then43, !dbg !3967
 
 if.then43:                                        ; preds = %if.then40
-  %last_unconditional_cleanup46 = getelementptr inbounds %struct.nesting* %2, i64 0, i32 4, i32 0, i32 11
-  %16 = load %struct.rtx_def** %last_unconditional_cleanup46, align 8, !tbaa !0
-  %call47 = tail call %struct.rtx_def* @emit_insns_after(%struct.rtx_def* %call41, %struct.rtx_def* %16) #7
-  store %struct.rtx_def* %call47, %struct.rtx_def** %last_unconditional_cleanup46, align 8, !tbaa !0
-  br label %return
+  %last_unconditional_cleanup46 = getelementptr inbounds %struct.nesting* %2, i64 0, i32 4, i32 0, i32 11, !dbg !3968
+  %16 = load %struct.rtx_def** %last_unconditional_cleanup46, align 8, !dbg !3968, !tbaa !2438
+  %call47 = tail call %struct.rtx_def* @emit_insns_after(%struct.rtx_def* %call41, %struct.rtx_def* %16) #8, !dbg !3968
+  store %struct.rtx_def* %call47, %struct.rtx_def** %last_unconditional_cleanup46, align 8, !dbg !3968, !tbaa !2438
+  br label %return, !dbg !3968
 
 if.else52:                                        ; preds = %if.end38
-  %call53 = tail call %struct.rtx_def* @get_last_insn() #7
-  %last_unconditional_cleanup56 = getelementptr inbounds %struct.nesting* %2, i64 0, i32 4, i32 0, i32 11
-  store %struct.rtx_def* %call53, %struct.rtx_def** %last_unconditional_cleanup56, align 8, !tbaa !0
-  %call57 = tail call %struct.rtx_def* @emit_note(i8* null, i32 -99) #7
-  %cleanup_ptr63 = getelementptr inbounds %struct.nesting* %2, i64 0, i32 4, i32 0, i32 12
-  store %union.tree_node** %cleanups6, %union.tree_node*** %cleanup_ptr63, align 8, !tbaa !0
+  %call53 = tail call %struct.rtx_def* @get_last_insn() #8, !dbg !3969
+  %last_unconditional_cleanup56 = getelementptr inbounds %struct.nesting* %2, i64 0, i32 4, i32 0, i32 11, !dbg !3969
+  store %struct.rtx_def* %call53, %struct.rtx_def** %last_unconditional_cleanup56, align 8, !dbg !3969, !tbaa !2438
+  %call57 = tail call %struct.rtx_def* @emit_note(i8* null, i32 -99) #8, !dbg !3971
+  %cleanup_ptr63 = getelementptr inbounds %struct.nesting* %2, i64 0, i32 4, i32 0, i32 12, !dbg !3972
+  store %union.tree_node** %cleanups6, %union.tree_node*** %cleanup_ptr63, align 8, !dbg !3972, !tbaa !2438
   br label %return
 
 return:                                           ; preds = %if.then43, %if.else52, %if.end, %if.then40, %entry, %lor.lhs.false
   %retval.0 = phi i32 [ 0, %lor.lhs.false ], [ 0, %entry ], [ 1, %if.then40 ], [ 1, %if.end ], [ 1, %if.else52 ], [ 1, %if.then43 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !3973
 }

@@ -1,0 +1,32 @@
+define zeroext i1 @_ZN11xercesc_2_59XMLReader11isAllSpacesEPKtj(%"class.xercesc_2_5::XMLReader"* nocapture %this, i16* %toCheck, i32 %count) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLReader"* %this}, i64 0, metadata !1405), !dbg !2393
+  tail call void @llvm.dbg.value(metadata !{i16* %toCheck}, i64 0, metadata !1408), !dbg !2393
+  tail call void @llvm.dbg.value(metadata !{i32 %count}, i64 0, metadata !1409), !dbg !2394
+  tail call void @llvm.dbg.value(metadata !{i16* %toCheck}, i64 0, metadata !1410), !dbg !2395
+  %idx.ext = zext i32 %count to i64, !dbg !2396
+  %add.ptr = getelementptr inbounds i16* %toCheck, i64 %idx.ext, !dbg !2396
+  tail call void @llvm.dbg.value(metadata !{i16* %add.ptr}, i64 0, metadata !1412), !dbg !2396
+  %fgCharCharsTable = getelementptr inbounds %"class.xercesc_2_5::XMLReader"* %this, i64 0, i32 27, !dbg !2397
+  br label %while.cond, !dbg !2399
+
+while.cond:                                       ; preds = %while.body, %entry
+  %curCh.0 = phi i16* [ %toCheck, %entry ], [ %incdec.ptr, %while.body ]
+  %cmp = icmp ult i16* %curCh.0, %add.ptr, !dbg !2399
+  br i1 %cmp, label %while.body, label %return, !dbg !2399
+
+while.body:                                       ; preds = %while.cond
+  %incdec.ptr = getelementptr inbounds i16* %curCh.0, i64 1, !dbg !2397
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !1410), !dbg !2397
+  %0 = load i16* %curCh.0, align 2, !dbg !2397, !tbaa !2400
+  %idxprom = zext i16 %0 to i64, !dbg !2397
+  %1 = load i8** %fgCharCharsTable, align 8, !dbg !2397, !tbaa !2403
+  %arrayidx = getelementptr inbounds i8* %1, i64 %idxprom, !dbg !2397
+  %2 = load i8* %arrayidx, align 1, !dbg !2397, !tbaa !2401
+  %tobool = icmp slt i8 %2, 0, !dbg !2397
+  br i1 %tobool, label %while.cond, label %return, !dbg !2397
+
+return:                                           ; preds = %while.cond, %while.body
+  %retval.0 = phi i1 [ false, %while.body ], [ true, %while.cond ]
+  ret i1 %retval.0, !dbg !2404
+}

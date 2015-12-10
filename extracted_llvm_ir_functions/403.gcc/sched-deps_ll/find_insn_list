@@ -1,24 +1,27 @@
 define %struct.rtx_def* @find_insn_list(%struct.rtx_def* %insn, %struct.rtx_def* %list) #0 {
 entry:
-  %tobool6 = icmp eq %struct.rtx_def* %list, null
-  br i1 %tobool6, label %return, label %while.body
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !484), !dbg !902
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %list}, i64 0, metadata !485), !dbg !903
+  %tobool6 = icmp eq %struct.rtx_def* %list, null, !dbg !904
+  br i1 %tobool6, label %return, label %while.body, !dbg !904
 
 while.body:                                       ; preds = %entry, %if.end
   %list.addr.07 = phi %struct.rtx_def* [ %1, %if.end ], [ %list, %entry ]
-  %fld = getelementptr inbounds %struct.rtx_def* %list.addr.07, i64 0, i32 1
-  %rtx = bitcast [1 x %union.rtunion_def]* %fld to %struct.rtx_def**
-  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %cmp = icmp eq %struct.rtx_def* %0, %insn
-  br i1 %cmp, label %return, label %if.end
+  %fld = getelementptr inbounds %struct.rtx_def* %list.addr.07, i64 0, i32 1, !dbg !905
+  %rtx = bitcast [1 x %union.rtunion_def]* %fld to %struct.rtx_def**, !dbg !905
+  %0 = load %struct.rtx_def** %rtx, align 8, !dbg !905, !tbaa !907
+  %cmp = icmp eq %struct.rtx_def* %0, %insn, !dbg !905
+  br i1 %cmp, label %return, label %if.end, !dbg !905
 
 if.end:                                           ; preds = %while.body
-  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %list.addr.07, i64 0, i32 1, i64 1
-  %rtx3 = bitcast %union.rtunion_def* %arrayidx2 to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx3, align 8, !tbaa !0
-  %tobool = icmp eq %struct.rtx_def* %1, null
-  br i1 %tobool, label %return, label %while.body
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %list.addr.07, i64 0, i32 1, i64 1, !dbg !910
+  %rtx3 = bitcast %union.rtunion_def* %arrayidx2 to %struct.rtx_def**, !dbg !910
+  %1 = load %struct.rtx_def** %rtx3, align 8, !dbg !910, !tbaa !907
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %1}, i64 0, metadata !485), !dbg !910
+  %tobool = icmp eq %struct.rtx_def* %1, null, !dbg !904
+  br i1 %tobool, label %return, label %while.body, !dbg !904
 
 return:                                           ; preds = %if.end, %while.body, %entry
   %retval.0 = phi %struct.rtx_def* [ null, %entry ], [ %list.addr.07, %while.body ], [ null, %if.end ]
-  ret %struct.rtx_def* %retval.0
+  ret %struct.rtx_def* %retval.0, !dbg !911
 }

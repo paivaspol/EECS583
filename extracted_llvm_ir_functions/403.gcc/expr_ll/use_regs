@@ -1,34 +1,37 @@
 define void @use_regs(%struct.rtx_def** nocapture %call_fusage, i32 %regno, i32 %nregs) #0 {
 entry:
-  %add = add nsw i32 %nregs, %regno
-  %cmp = icmp sgt i32 %add, 53
-  br i1 %cmp, label %if.then, label %for.cond.preheader
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %call_fusage}, i64 0, metadata !2097), !dbg !5098
+  tail call void @llvm.dbg.value(metadata !{i32 %regno}, i64 0, metadata !2098), !dbg !5099
+  tail call void @llvm.dbg.value(metadata !{i32 %nregs}, i64 0, metadata !2099), !dbg !5100
+  %add = add nsw i32 %nregs, %regno, !dbg !5101
+  %cmp = icmp sgt i32 %add, 53, !dbg !5101
+  br i1 %cmp, label %if.then, label %for.cond.preheader, !dbg !5101
 
 for.cond.preheader:                               ; preds = %entry
-  %cmp110 = icmp sgt i32 %nregs, 0
-  br i1 %cmp110, label %for.body.lr.ph, label %for.end
+  %cmp110 = icmp sgt i32 %nregs, 0, !dbg !5102
+  br i1 %cmp110, label %for.body.lr.ph, label %for.end, !dbg !5102
 
 for.body.lr.ph:                                   ; preds = %for.cond.preheader
-  %0 = sext i32 %regno to i64
-  br label %for.body
+  %0 = sext i32 %regno to i64, !dbg !5102
+  br label %for.body, !dbg !5102
 
 if.then:                                          ; preds = %entry
-  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str, i64 0, i64 0), i32 2280, i8* getelementptr inbounds ([9 x i8]* @__FUNCTION__.use_regs, i64 0, i64 0)) #9
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str, i64 0, i64 0), i32 2280, i8* getelementptr inbounds ([9 x i8]* @__FUNCTION__.use_regs, i64 0, i64 0)) #10, !dbg !5104
+  unreachable, !dbg !5104
 
 for.body:                                         ; preds = %for.body, %for.body.lr.ph
   %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
-  %1 = add nsw i64 %indvars.iv, %0
-  %arrayidx = getelementptr inbounds [53 x i32]* @reg_raw_mode, i64 0, i64 %1
-  %2 = load i32* %arrayidx, align 4, !tbaa !6
-  %3 = trunc i64 %1 to i32
-  %call = tail call %struct.rtx_def* @gen_rtx_REG(i32 %2, i32 %3) #8
-  tail call void @use_reg(%struct.rtx_def** %call_fusage, %struct.rtx_def* %call) #10
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %nregs
-  br i1 %exitcond, label %for.end, label %for.body
+  %1 = add nsw i64 %indvars.iv, %0, !dbg !5105
+  %arrayidx = getelementptr inbounds [53 x i32]* @reg_raw_mode, i64 0, i64 %1, !dbg !5105
+  %2 = load i32* %arrayidx, align 4, !dbg !5105, !tbaa !3359
+  %3 = trunc i64 %1 to i32, !dbg !5105
+  %call = tail call %struct.rtx_def* @gen_rtx_REG(i32 %2, i32 %3) #9, !dbg !5105
+  tail call void @use_reg(%struct.rtx_def** %call_fusage, %struct.rtx_def* %call) #11, !dbg !5105
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !5102
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !5102
+  %exitcond = icmp eq i32 %lftr.wideiv, %nregs, !dbg !5102
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !5102
 
 for.end:                                          ; preds = %for.body, %for.cond.preheader
-  ret void
+  ret void, !dbg !5106
 }

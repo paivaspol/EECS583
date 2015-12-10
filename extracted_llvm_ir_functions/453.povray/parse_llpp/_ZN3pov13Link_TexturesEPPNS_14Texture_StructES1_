@@ -1,0 +1,96 @@
+define void @_ZN3pov13Link_TexturesEPPNS_14Texture_StructES1_(%"struct.pov::Texture_Struct"** nocapture %Old_Textures, %"struct.pov::Texture_Struct"* %New_Textures) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Texture_Struct"** %Old_Textures}, i64 0, metadata !2080), !dbg !8988
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Texture_Struct"* %New_Textures}, i64 0, metadata !2081), !dbg !8988
+  %cmp = icmp eq %"struct.pov::Texture_Struct"* %New_Textures, null, !dbg !8989
+  br i1 %cmp, label %if.end26, label %if.end, !dbg !8989
+
+if.end:                                           ; preds = %entry
+  %0 = load %"struct.pov::Texture_Struct"** %Old_Textures, align 8, !dbg !8990, !tbaa !4088
+  %cmp1 = icmp eq %"struct.pov::Texture_Struct"* %0, null, !dbg !8990
+  br i1 %cmp1, label %for.cond.preheader, label %if.then2, !dbg !8990
+
+if.then2:                                         ; preds = %if.end
+  %Type = getelementptr inbounds %"struct.pov::Texture_Struct"* %0, i64 0, i32 0, !dbg !8991
+  %1 = load i16* %Type, align 2, !dbg !8991, !tbaa !4099
+  %cmp3 = icmp eq i16 %1, 1, !dbg !8991
+  br i1 %cmp3, label %for.cond.preheader, label %if.then4, !dbg !8991
+
+if.then4:                                         ; preds = %if.then2
+  %call = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([39 x i8]* @.str38, i64 0, i64 0)) #9, !dbg !8993
+  br label %for.cond.preheader, !dbg !8995
+
+for.cond.preheader:                               ; preds = %if.then2, %if.end, %if.then4
+  %Next39 = getelementptr inbounds %"struct.pov::Texture_Struct"* %New_Textures, i64 0, i32 8, !dbg !8996
+  %2 = load %"struct.pov::Pattern_Struct"** %Next39, align 8, !dbg !8996, !tbaa !4088
+  %cmp740 = icmp eq %"struct.pov::Pattern_Struct"* %2, null, !dbg !8996
+  %3 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 28), align 8, !dbg !8998, !tbaa !4092
+  %cmp841 = icmp slt i32 %3, 311, !dbg !8998
+  br i1 %cmp740, label %for.end, label %for.body, !dbg !8996
+
+for.body:                                         ; preds = %for.cond.preheader, %for.inc
+  %4 = phi i32 [ %7, %for.inc ], [ %3, %for.cond.preheader ]
+  %5 = phi %"struct.pov::Pattern_Struct"* [ %11, %for.inc ], [ %2, %for.cond.preheader ]
+  %cmp844 = phi i1 [ %cmp8, %for.inc ], [ %cmp841, %for.cond.preheader ]
+  %Next43 = phi %"struct.pov::Pattern_Struct"** [ %10, %for.inc ], [ %Next39, %for.cond.preheader ]
+  %Layer.042 = phi %"struct.pov::Texture_Struct"* [ %9, %for.inc ], [ %New_Textures, %for.cond.preheader ]
+  br i1 %cmp844, label %if.then9, label %for.inc, !dbg !8998
+
+if.then9:                                         ; preds = %for.body
+  %Pigment = getelementptr inbounds %"struct.pov::Texture_Struct"* %Layer.042, i64 0, i32 12, !dbg !9000
+  %6 = load %"struct.pov::Pigment_Struct"** %Pigment, align 8, !dbg !9000, !tbaa !4088
+  tail call fastcc void @_ZN3povL26Convert_Filter_To_TransmitEPNS_14Pigment_StructE(%"struct.pov::Pigment_Struct"* %6) #9, !dbg !9000
+  %.pre = load %"struct.pov::Pattern_Struct"** %Next43, align 8, !dbg !9001, !tbaa !4088
+  %.pre49 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 28), align 8, !dbg !8998, !tbaa !4092
+  br label %for.inc, !dbg !9000
+
+for.inc:                                          ; preds = %for.body, %if.then9
+  %7 = phi i32 [ %4, %for.body ], [ %.pre49, %if.then9 ], !dbg !9001
+  %8 = phi %"struct.pov::Pattern_Struct"* [ %5, %for.body ], [ %.pre, %if.then9 ], !dbg !9001
+  %9 = bitcast %"struct.pov::Pattern_Struct"* %8 to %"struct.pov::Texture_Struct"*, !dbg !9001
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Texture_Struct"* %9}, i64 0, metadata !2082), !dbg !9001
+  %10 = getelementptr inbounds %"struct.pov::Pattern_Struct"* %8, i64 0, i32 8, !dbg !8996
+  %11 = load %"struct.pov::Pattern_Struct"** %10, align 8, !dbg !8996, !tbaa !4088
+  %cmp7 = icmp eq %"struct.pov::Pattern_Struct"* %11, null, !dbg !8996
+  %cmp8 = icmp slt i32 %7, 311, !dbg !8998
+  br i1 %cmp7, label %for.end, label %for.body, !dbg !8996
+
+for.end:                                          ; preds = %for.inc, %for.cond.preheader
+  %cmp8.lcssa = phi i1 [ %cmp841, %for.cond.preheader ], [ %cmp8, %for.inc ]
+  %Next.lcssa = phi %"struct.pov::Pattern_Struct"** [ %Next39, %for.cond.preheader ], [ %10, %for.inc ]
+  %Layer.0.lcssa = phi %"struct.pov::Texture_Struct"* [ %New_Textures, %for.cond.preheader ], [ %9, %for.inc ]
+  br i1 %cmp8.lcssa, label %land.lhs.true, label %if.end16, !dbg !9002
+
+land.lhs.true:                                    ; preds = %for.end
+  %12 = load %"struct.pov::Texture_Struct"** %Old_Textures, align 8, !dbg !9002, !tbaa !4088
+  %cmp13 = icmp eq %"struct.pov::Texture_Struct"* %12, null, !dbg !9002
+  br i1 %cmp13, label %if.end16, label %if.then14, !dbg !9002
+
+if.then14:                                        ; preds = %land.lhs.true
+  %Pigment15 = getelementptr inbounds %"struct.pov::Texture_Struct"* %Layer.0.lcssa, i64 0, i32 12, !dbg !9003
+  %13 = load %"struct.pov::Pigment_Struct"** %Pigment15, align 8, !dbg !9003, !tbaa !4088
+  tail call fastcc void @_ZN3povL26Convert_Filter_To_TransmitEPNS_14Pigment_StructE(%"struct.pov::Pigment_Struct"* %13) #9, !dbg !9003
+  br label %if.end16, !dbg !9003
+
+if.end16:                                         ; preds = %for.end, %land.lhs.true, %if.then14
+  %14 = load %"struct.pov::Texture_Struct"** %Old_Textures, align 8, !dbg !9004, !tbaa !4088
+  %15 = bitcast %"struct.pov::Texture_Struct"* %14 to %"struct.pov::Pattern_Struct"*, !dbg !9004
+  store %"struct.pov::Pattern_Struct"* %15, %"struct.pov::Pattern_Struct"** %Next.lcssa, align 8, !dbg !9004, !tbaa !4088
+  store %"struct.pov::Texture_Struct"* %New_Textures, %"struct.pov::Texture_Struct"** %Old_Textures, align 8, !dbg !9005, !tbaa !4088
+  %Type18 = getelementptr inbounds %"struct.pov::Texture_Struct"* %New_Textures, i64 0, i32 0, !dbg !9006
+  %16 = load i16* %Type18, align 2, !dbg !9006, !tbaa !4099
+  %cmp20 = icmp eq i16 %16, 1, !dbg !9006
+  br i1 %cmp20, label %if.end26, label %land.lhs.true21, !dbg !9006
+
+land.lhs.true21:                                  ; preds = %if.end16
+  %17 = load %"struct.pov::Pattern_Struct"** %Next39, align 8, !dbg !9006, !tbaa !4088
+  %cmp23 = icmp eq %"struct.pov::Pattern_Struct"* %17, null, !dbg !9006
+  br i1 %cmp23, label %if.end26, label %if.then24, !dbg !9006
+
+if.then24:                                        ; preds = %land.lhs.true21
+  %call25 = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([47 x i8]* @.str39, i64 0, i64 0)) #9, !dbg !9007
+  br label %if.end26, !dbg !9009
+
+if.end26:                                         ; preds = %land.lhs.true21, %if.end16, %entry, %if.then24
+  ret void, !dbg !9010
+}

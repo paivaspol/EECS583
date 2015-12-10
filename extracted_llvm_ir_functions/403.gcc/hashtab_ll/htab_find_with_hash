@@ -1,78 +1,88 @@
 define i8* @htab_find_with_hash(%struct.htab* nocapture %htab, i8* %element, i32 %hash) #1 {
 entry:
-  %searches = getelementptr inbounds %struct.htab* %htab, i64 0, i32 7
-  %0 = load i32* %searches, align 4, !tbaa !4
-  %inc = add i32 %0, 1
-  store i32 %inc, i32* %searches, align 4, !tbaa !4
-  %size2 = getelementptr inbounds %struct.htab* %htab, i64 0, i32 4
-  %1 = load i64* %size2, align 8, !tbaa !3
-  %conv = zext i32 %hash to i64
-  %rem = urem i64 %conv, %1
-  %conv3 = trunc i64 %rem to i32
-  %entries = getelementptr inbounds %struct.htab* %htab, i64 0, i32 3
-  %2 = load i8*** %entries, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds i8** %2, i64 %rem
-  %3 = load i8** %arrayidx, align 8, !tbaa !0
-  %magicptr = ptrtoint i8* %3 to i64
+  tail call void @llvm.dbg.value(metadata !{%struct.htab* %htab}, i64 0, metadata !76), !dbg !282
+  tail call void @llvm.dbg.value(metadata !{i8* %element}, i64 0, metadata !77), !dbg !283
+  tail call void @llvm.dbg.value(metadata !{i32 %hash}, i64 0, metadata !78), !dbg !284
+  %searches = getelementptr inbounds %struct.htab* %htab, i64 0, i32 7, !dbg !285
+  %0 = load i32* %searches, align 4, !dbg !285, !tbaa !230
+  %inc = add i32 %0, 1, !dbg !285
+  store i32 %inc, i32* %searches, align 4, !dbg !285, !tbaa !230
+  %size2 = getelementptr inbounds %struct.htab* %htab, i64 0, i32 4, !dbg !286
+  %1 = load i64* %size2, align 8, !dbg !286, !tbaa !225
+  tail call void @llvm.dbg.value(metadata !{i64 %1}, i64 0, metadata !81), !dbg !286
+  %conv = zext i32 %hash to i64, !dbg !287
+  %rem = urem i64 %conv, %1, !dbg !287
+  %conv3 = trunc i64 %rem to i32, !dbg !287
+  tail call void @llvm.dbg.value(metadata !{i32 %conv3}, i64 0, metadata !79), !dbg !287
+  %entries = getelementptr inbounds %struct.htab* %htab, i64 0, i32 3, !dbg !288
+  %2 = load i8*** %entries, align 8, !dbg !288, !tbaa !221
+  %arrayidx = getelementptr inbounds i8** %2, i64 %rem, !dbg !288
+  %3 = load i8** %arrayidx, align 8, !dbg !288, !tbaa !221
+  tail call void @llvm.dbg.value(metadata !{i8* %3}, i64 0, metadata !82), !dbg !288
+  %magicptr = ptrtoint i8* %3 to i64, !dbg !289
   switch i64 %magicptr, label %land.lhs.true [
     i64 0, label %return
     i64 1, label %entry.if.end_crit_edge
-  ]
+  ], !dbg !289
 
 entry.if.end_crit_edge:                           ; preds = %entry
-  %eq_f29.pre = getelementptr inbounds %struct.htab* %htab, i64 0, i32 1
-  br label %if.end
+  %eq_f29.pre = getelementptr inbounds %struct.htab* %htab, i64 0, i32 1, !dbg !290
+  br label %if.end, !dbg !289
 
 land.lhs.true:                                    ; preds = %entry
-  %eq_f = getelementptr inbounds %struct.htab* %htab, i64 0, i32 1
-  %4 = load i32 (i8*, i8*)** %eq_f, align 8, !tbaa !0
-  %call = tail call i32 %4(i8* %3, i8* %element) #8
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %if.end, label %return
+  %eq_f = getelementptr inbounds %struct.htab* %htab, i64 0, i32 1, !dbg !293
+  %4 = load i32 (i8*, i8*)** %eq_f, align 8, !dbg !293, !tbaa !221
+  %call = tail call i32 %4(i8* %3, i8* %element) #9, !dbg !293
+  %tobool = icmp eq i32 %call, 0, !dbg !293
+  br i1 %tobool, label %if.end, label %return, !dbg !293
 
 if.end:                                           ; preds = %entry.if.end_crit_edge, %land.lhs.true
-  %eq_f29.pre-phi = phi i32 (i8*, i8*)** [ %eq_f29.pre, %entry.if.end_crit_edge ], [ %eq_f, %land.lhs.true ]
-  %sub = add i64 %1, -2
-  %rem8 = urem i64 %conv, %sub
-  %add = add i64 %rem8, 1
-  %conv9 = trunc i64 %add to i32
-  %collisions = getelementptr inbounds %struct.htab* %htab, i64 0, i32 8
-  br label %for.cond
+  %eq_f29.pre-phi = phi i32 (i8*, i8*)** [ %eq_f29.pre, %entry.if.end_crit_edge ], [ %eq_f, %land.lhs.true ], !dbg !290
+  %sub = add i64 %1, -2, !dbg !294
+  %rem8 = urem i64 %conv, %sub, !dbg !294
+  %add = add i64 %rem8, 1, !dbg !294
+  %conv9 = trunc i64 %add to i32, !dbg !294
+  tail call void @llvm.dbg.value(metadata !{i32 %conv9}, i64 0, metadata !80), !dbg !294
+  %collisions = getelementptr inbounds %struct.htab* %htab, i64 0, i32 8, !dbg !295
+  br label %for.cond, !dbg !296
 
 for.cond:                                         ; preds = %if.end19, %land.lhs.true28, %if.end
   %index.0 = phi i32 [ %conv3, %if.end ], [ %index.1, %land.lhs.true28 ], [ %index.1, %if.end19 ]
-  %5 = load i32* %collisions, align 4, !tbaa !4
-  %inc10 = add i32 %5, 1
-  store i32 %inc10, i32* %collisions, align 4, !tbaa !4
-  %add11 = add i32 %index.0, %conv9
-  %conv12 = zext i32 %add11 to i64
-  %cmp13 = icmp ult i64 %conv12, %1
-  br i1 %cmp13, label %if.end19, label %if.then15
+  %5 = load i32* %collisions, align 4, !dbg !295, !tbaa !230
+  %inc10 = add i32 %5, 1, !dbg !295
+  store i32 %inc10, i32* %collisions, align 4, !dbg !295, !tbaa !230
+  %add11 = add i32 %index.0, %conv9, !dbg !297
+  tail call void @llvm.dbg.value(metadata !{i32 %add11}, i64 0, metadata !79), !dbg !297
+  %conv12 = zext i32 %add11 to i64, !dbg !298
+  %cmp13 = icmp ult i64 %conv12, %1, !dbg !298
+  br i1 %cmp13, label %if.end19, label %if.then15, !dbg !298
 
 if.then15:                                        ; preds = %for.cond
-  %sub17 = sub i64 %conv12, %1
-  %conv18 = trunc i64 %sub17 to i32
-  br label %if.end19
+  %sub17 = sub i64 %conv12, %1, !dbg !299
+  %conv18 = trunc i64 %sub17 to i32, !dbg !299
+  tail call void @llvm.dbg.value(metadata !{i32 %conv18}, i64 0, metadata !79), !dbg !299
+  br label %if.end19, !dbg !299
 
 if.end19:                                         ; preds = %for.cond, %if.then15
   %index.1 = phi i32 [ %conv18, %if.then15 ], [ %add11, %for.cond ]
-  %idxprom20 = zext i32 %index.1 to i64
-  %6 = load i8*** %entries, align 8, !tbaa !0
-  %arrayidx22 = getelementptr inbounds i8** %6, i64 %idxprom20
-  %7 = load i8** %arrayidx22, align 8, !tbaa !0
-  %magicptr56 = ptrtoint i8* %7 to i64
+  %idxprom20 = zext i32 %index.1 to i64, !dbg !300
+  %6 = load i8*** %entries, align 8, !dbg !300, !tbaa !221
+  %arrayidx22 = getelementptr inbounds i8** %6, i64 %idxprom20, !dbg !300
+  %7 = load i8** %arrayidx22, align 8, !dbg !300, !tbaa !221
+  tail call void @llvm.dbg.value(metadata !{i8* %7}, i64 0, metadata !82), !dbg !300
+  %magicptr56 = ptrtoint i8* %7 to i64, !dbg !301
   switch i64 %magicptr56, label %land.lhs.true28 [
     i64 0, label %return
     i64 1, label %for.cond
-  ]
+  ], !dbg !301
 
 land.lhs.true28:                                  ; preds = %if.end19
-  %8 = load i32 (i8*, i8*)** %eq_f29.pre-phi, align 8, !tbaa !0
-  %call30 = tail call i32 %8(i8* %7, i8* %element) #8
-  %tobool31 = icmp eq i32 %call30, 0
-  br i1 %tobool31, label %for.cond, label %return
+  %8 = load i32 (i8*, i8*)** %eq_f29.pre-phi, align 8, !dbg !290, !tbaa !221
+  %call30 = tail call i32 %8(i8* %7, i8* %element) #9, !dbg !290
+  %tobool31 = icmp eq i32 %call30, 0, !dbg !290
+  br i1 %tobool31, label %for.cond, label %return, !dbg !290
 
 return:                                           ; preds = %land.lhs.true28, %if.end19, %land.lhs.true, %entry
   %retval.0 = phi i8* [ %3, %entry ], [ %3, %land.lhs.true ], [ %7, %if.end19 ], [ %7, %land.lhs.true28 ]
-  ret i8* %retval.0
+  ret i8* %retval.0, !dbg !302
 }

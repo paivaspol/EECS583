@@ -1,83 +1,95 @@
-define i32 @Rook(i32 %sq, i32 %c) #1 {
+define i32 @Rook(i32 %sq, i32 %c) #2 {
 entry:
-  %xor = xor i32 %c, 1
-  %idxprom = sext i32 %xor to i64
-  %arrayidx = getelementptr inbounds [2 x i32]* @king_locs, i64 0, i64 %idxprom
-  %0 = load i32* %arrayidx, align 4, !tbaa !0
-  %idxprom1 = sext i32 %0 to i64
-  %idxprom2 = sext i32 %sq to i64
-  %arrayidx4 = getelementptr inbounds [144 x [144 x i32]]* @rookdistance, i64 0, i64 %idxprom2, i64 %idxprom1
-  %1 = load i32* %arrayidx4, align 4, !tbaa !0
-  %idxprom5 = sext i32 %1 to i64
-  %arrayidx6 = getelementptr inbounds [16 x i32]* @std_r_tropism, i64 0, i64 %idxprom5
-  %2 = load i32* %arrayidx6, align 4, !tbaa !0
-  %add7 = add nsw i32 %2, 500
-  %call = tail call fastcc i32 @rook_mobility(i32 %sq) #5
-  %shl = shl i32 %call, 1
-  %cmp = icmp slt i32 %shl, 3
-  %sub = add nsw i32 %shl, -5
-  %sub.shl = select i1 %cmp, i32 %sub, i32 %shl
-  %add8 = add nsw i32 %add7, %sub.shl
-  %sub9 = add nsw i32 %sq, -1
-  %idxprom10 = sext i32 %sub9 to i64
-  %arrayidx11 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom10
-  %3 = load i32* %arrayidx11, align 4, !tbaa !0
-  %cmp12 = icmp eq i32 %3, 13
-  br i1 %cmp12, label %if.end19, label %land.lhs.true
+  tail call void @llvm.dbg.value(metadata !{i32 %sq}, i64 0, metadata !36), !dbg !246
+  tail call void @llvm.dbg.value(metadata !{i32 %c}, i64 0, metadata !37), !dbg !246
+  tail call void @llvm.dbg.value(metadata !8, i64 0, metadata !38), !dbg !247
+  %xor = xor i32 %c, 1, !dbg !248
+  tail call void @llvm.dbg.value(metadata !{i32 %xor}, i64 0, metadata !40), !dbg !248
+  tail call void @llvm.dbg.value(metadata !249, i64 0, metadata !38), !dbg !250
+  %idxprom = sext i32 %xor to i64, !dbg !251
+  %arrayidx = getelementptr inbounds [2 x i32]* @king_locs, i64 0, i64 %idxprom, !dbg !251
+  %0 = load i32* %arrayidx, align 4, !dbg !251, !tbaa !177
+  %idxprom1 = sext i32 %0 to i64, !dbg !251
+  %idxprom2 = sext i32 %sq to i64, !dbg !251
+  %arrayidx4 = getelementptr inbounds [144 x [144 x i32]]* @rookdistance, i64 0, i64 %idxprom2, i64 %idxprom1, !dbg !251
+  %1 = load i32* %arrayidx4, align 4, !dbg !251, !tbaa !177
+  %idxprom5 = sext i32 %1 to i64, !dbg !251
+  %arrayidx6 = getelementptr inbounds [16 x i32]* @std_r_tropism, i64 0, i64 %idxprom5, !dbg !251
+  %2 = load i32* %arrayidx6, align 4, !dbg !251, !tbaa !177
+  %add7 = add nsw i32 %2, 500, !dbg !251
+  tail call void @llvm.dbg.value(metadata !{i32 %add7}, i64 0, metadata !38), !dbg !251
+  %call = tail call fastcc i32 @rook_mobility(i32 %sq) #7, !dbg !252
+  %shl = shl i32 %call, 1, !dbg !252
+  tail call void @llvm.dbg.value(metadata !{i32 %shl}, i64 0, metadata !39), !dbg !252
+  %cmp = icmp slt i32 %shl, 3, !dbg !253
+  %sub = add nsw i32 %shl, -5, !dbg !253
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !39), !dbg !253
+  %sub.shl = select i1 %cmp, i32 %sub, i32 %shl, !dbg !253
+  %add8 = add nsw i32 %add7, %sub.shl, !dbg !254
+  tail call void @llvm.dbg.value(metadata !{i32 %add8}, i64 0, metadata !38), !dbg !254
+  %sub9 = add nsw i32 %sq, -1, !dbg !255
+  %idxprom10 = sext i32 %sub9 to i64, !dbg !255
+  %arrayidx11 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom10, !dbg !255
+  %3 = load i32* %arrayidx11, align 4, !dbg !255, !tbaa !177
+  %cmp12 = icmp eq i32 %3, 13, !dbg !255
+  br i1 %cmp12, label %if.end19, label %land.lhs.true, !dbg !255
 
 land.lhs.true:                                    ; preds = %entry
-  %add13 = add nsw i32 %sq, 1
-  %idxprom14 = sext i32 %add13 to i64
-  %arrayidx15 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom14
-  %4 = load i32* %arrayidx15, align 4, !tbaa !0
-  %cmp16 = icmp eq i32 %4, 13
-  %sub18 = add nsw i32 %add8, -5
-  %add8.sub18 = select i1 %cmp16, i32 %add8, i32 %sub18
-  br label %if.end19
+  %add13 = add nsw i32 %sq, 1, !dbg !255
+  %idxprom14 = sext i32 %add13 to i64, !dbg !255
+  %arrayidx15 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom14, !dbg !255
+  %4 = load i32* %arrayidx15, align 4, !dbg !255, !tbaa !177
+  %cmp16 = icmp eq i32 %4, 13, !dbg !255
+  %sub18 = add nsw i32 %add8, -5, !dbg !256
+  tail call void @llvm.dbg.value(metadata !{i32 %sub18}, i64 0, metadata !38), !dbg !256
+  %add8.sub18 = select i1 %cmp16, i32 %add8, i32 %sub18, !dbg !255
+  br label %if.end19, !dbg !255
 
 if.end19:                                         ; preds = %land.lhs.true, %entry
   %s.0 = phi i32 [ %add8, %entry ], [ %add8.sub18, %land.lhs.true ]
-  %5 = load i32* @wmat, align 4, !tbaa !0
-  %cmp20 = icmp ne i32 %5, 1300
-  %6 = load i32* @bmat, align 4, !tbaa !0
-  %cmp21 = icmp ne i32 %6, 1300
-  %or.cond = or i1 %cmp20, %cmp21
-  br i1 %or.cond, label %if.then22, label %if.end54
+  %5 = load i32* @wmat, align 4, !dbg !258, !tbaa !177
+  %cmp20 = icmp ne i32 %5, 1300, !dbg !258
+  %6 = load i32* @bmat, align 4, !dbg !258, !tbaa !177
+  %cmp21 = icmp ne i32 %6, 1300, !dbg !258
+  %or.cond = or i1 %cmp20, %cmp21, !dbg !258
+  br i1 %or.cond, label %if.then22, label %if.end54, !dbg !258
 
 if.then22:                                        ; preds = %if.end19
-  %idxprom23 = sext i32 %c to i64
-  %arrayidx24 = getelementptr inbounds [2 x i32]* @Rook.square_d1, i64 0, i64 %idxprom23
-  %7 = load i32* %arrayidx24, align 4, !tbaa !0
-  %cmp25 = icmp eq i32 %7, %sq
-  br i1 %cmp25, label %if.then26, label %if.end46
+  %idxprom23 = sext i32 %c to i64, !dbg !259
+  %arrayidx24 = getelementptr inbounds [2 x i32]* @Rook.square_d1, i64 0, i64 %idxprom23, !dbg !259
+  %7 = load i32* %arrayidx24, align 4, !dbg !259, !tbaa !177
+  %cmp25 = icmp eq i32 %7, %sq, !dbg !259
+  br i1 %cmp25, label %if.then26, label %if.end46, !dbg !259
 
 if.then26:                                        ; preds = %if.then22
-  %add30 = add nsw i32 %sq, 1
-  %idxprom31 = sext i32 %add30 to i64
-  %arrayidx32 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom31
-  %8 = load i32* %arrayidx32, align 4, !tbaa !0
-  %add33 = add nsw i32 %8, 1
-  %shr.mask = and i32 %add33, -2
-  %cmp34 = icmp eq i32 %shr.mask, 8
-  %and = and i32 %add33, 1
-  %cmp42 = icmp eq i32 %and, %c
-  %or.cond80 = and i1 %cmp34, %cmp42
-  %add44.add27.v = select i1 %or.cond80, i32 15, i32 10
-  %add44.add27 = add i32 %add44.add27.v, %s.0
-  br label %if.end46
+  %add30 = add nsw i32 %sq, 1, !dbg !261
+  %idxprom31 = sext i32 %add30 to i64, !dbg !261
+  %arrayidx32 = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %idxprom31, !dbg !261
+  %8 = load i32* %arrayidx32, align 4, !dbg !261, !tbaa !177
+  %add33 = add nsw i32 %8, 1, !dbg !261
+  %shr.mask = and i32 %add33, -2, !dbg !261
+  %cmp34 = icmp eq i32 %shr.mask, 8, !dbg !261
+  %and = and i32 %add33, 1, !dbg !261
+  %cmp42 = icmp eq i32 %and, %c, !dbg !261
+  %or.cond80 = and i1 %cmp34, %cmp42, !dbg !261
+  %add44.add27.v = select i1 %or.cond80, i32 15, i32 10, !dbg !261
+  %add44.add27 = add i32 %add44.add27.v, %s.0, !dbg !261
+  br label %if.end46, !dbg !261
 
 if.end46:                                         ; preds = %if.then26, %if.then22
   %s.1 = phi i32 [ %s.0, %if.then22 ], [ %add44.add27, %if.then26 ]
-  %add49 = add nsw i32 %7, 1
-  %cmp50 = icmp eq i32 %add49, %sq
-  %add52 = add nsw i32 %s.1, 10
-  %add52.s.1 = select i1 %cmp50, i32 %add52, i32 %s.1
-  br label %if.end54
+  %add49 = add nsw i32 %7, 1, !dbg !263
+  %cmp50 = icmp eq i32 %add49, %sq, !dbg !263
+  %add52 = add nsw i32 %s.1, 10, !dbg !264
+  tail call void @llvm.dbg.value(metadata !{i32 %add52}, i64 0, metadata !38), !dbg !264
+  %add52.s.1 = select i1 %cmp50, i32 %add52, i32 %s.1, !dbg !263
+  br label %if.end54, !dbg !263
 
 if.end54:                                         ; preds = %if.end46, %if.end19
   %s.2 = phi i32 [ %s.0, %if.end19 ], [ %add52.s.1, %if.end46 ]
-  %cmp55 = icmp eq i32 %c, 1
-  %sub57 = sub nsw i32 0, %s.2
-  %sub57.s.2 = select i1 %cmp55, i32 %sub57, i32 %s.2
-  ret i32 %sub57.s.2
+  %cmp55 = icmp eq i32 %c, 1, !dbg !266
+  %sub57 = sub nsw i32 0, %s.2, !dbg !267
+  tail call void @llvm.dbg.value(metadata !{i32 %sub57}, i64 0, metadata !38), !dbg !267
+  %sub57.s.2 = select i1 %cmp55, i32 %sub57, i32 %s.2, !dbg !266
+  ret i32 %sub57.s.2, !dbg !268
 }

@@ -1,0 +1,106 @@
+define void @_ZN11xercesc_2_59DOMString10appendDataEt(%"class.xercesc_2_5::DOMString"* nocapture %this, i16 zeroext %ch) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMString"* %this}, i64 0, metadata !1024), !dbg !2000
+  tail call void @llvm.dbg.value(metadata !{i16 %ch}, i64 0, metadata !1025), !dbg !2000
+  tail call void @llvm.dbg.value(metadata !835, i64 0, metadata !1026), !dbg !2001
+  %fHandle = getelementptr inbounds %"class.xercesc_2_5::DOMString"* %this, i64 0, i32 0, !dbg !2002
+  %0 = load %"class.xercesc_2_5::DOMStringHandle"** %fHandle, align 8, !dbg !2002, !tbaa !1648
+  %cmp = icmp eq %"class.xercesc_2_5::DOMStringHandle"* %0, null, !dbg !2002
+  br i1 %cmp, label %if.then, label %if.else, !dbg !2002
+
+if.then:                                          ; preds = %entry
+  %call = tail call %"class.xercesc_2_5::DOMStringHandle"* @_ZN11xercesc_2_515DOMStringHandle21createNewStringHandleEj(i32 1) #9, !dbg !2003
+  store %"class.xercesc_2_5::DOMStringHandle"* %call, %"class.xercesc_2_5::DOMStringHandle"** %fHandle, align 8, !dbg !2003, !tbaa !1648
+  tail call void @llvm.dbg.value(metadata !1701, i64 0, metadata !1026), !dbg !2005
+  br label %if.end, !dbg !2006
+
+if.else:                                          ; preds = %entry
+  %fLength = getelementptr inbounds %"class.xercesc_2_5::DOMStringHandle"* %0, i64 0, i32 0, !dbg !2007
+  %1 = load i32* %fLength, align 4, !dbg !2007, !tbaa !1682
+  %add = add i32 %1, 1, !dbg !2007
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !1026), !dbg !2007
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %2 = phi %"class.xercesc_2_5::DOMStringHandle"* [ %call, %if.then ], [ %0, %if.else ]
+  %newLength.0 = phi i32 [ 1, %if.then ], [ %add, %if.else ]
+  %fDSData = getelementptr inbounds %"class.xercesc_2_5::DOMStringHandle"* %2, i64 0, i32 2, !dbg !2008
+  %3 = load %"class.xercesc_2_5::DOMStringData"** %fDSData, align 8, !dbg !2008, !tbaa !1648
+  %fBufferLength = getelementptr inbounds %"class.xercesc_2_5::DOMStringData"* %3, i64 0, i32 0, !dbg !2008
+  %4 = load i32* %fBufferLength, align 4, !dbg !2008, !tbaa !1682
+  %cmp5 = icmp ult i32 %newLength.0, %4, !dbg !2008
+  br i1 %cmp5, label %lor.lhs.false, label %if.then9, !dbg !2008
+
+lor.lhs.false:                                    ; preds = %if.end
+  %fRefCount = getelementptr inbounds %"class.xercesc_2_5::DOMStringData"* %3, i64 0, i32 1, !dbg !2008
+  %5 = load i32* %fRefCount, align 4, !dbg !2008, !tbaa !1682
+  %cmp8 = icmp sgt i32 %5, 1, !dbg !2008
+  br i1 %cmp8, label %if.then9, label %if.end24, !dbg !2008
+
+if.then9:                                         ; preds = %if.end, %lor.lhs.false
+  %call10 = tail call %"class.xercesc_2_5::DOMStringData"* @_ZN11xercesc_2_513DOMStringData14allocateBufferEj(i32 %newLength.0) #9, !dbg !2009
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMStringData"* %call10}, i64 0, metadata !1027), !dbg !2009
+  %6 = load %"class.xercesc_2_5::DOMStringHandle"** %fHandle, align 8, !dbg !2010, !tbaa !1648
+  %fDSData12 = getelementptr inbounds %"class.xercesc_2_5::DOMStringHandle"* %6, i64 0, i32 2, !dbg !2010
+  %7 = load %"class.xercesc_2_5::DOMStringData"** %fDSData12, align 8, !dbg !2010, !tbaa !1648
+  tail call void @llvm.dbg.value(metadata !835, i64 0, metadata !1031), !dbg !2011
+  %fLength1641 = getelementptr inbounds %"class.xercesc_2_5::DOMStringHandle"* %6, i64 0, i32 0, !dbg !2011
+  %8 = load i32* %fLength1641, align 4, !dbg !2011, !tbaa !1682
+  %cmp1742 = icmp eq i32 %8, 0, !dbg !2011
+  br i1 %cmp1742, label %for.end, label %for.body, !dbg !2011
+
+for.body:                                         ; preds = %if.then9, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.then9 ]
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::DOMStringData"* %7, i64 0, i32 2, i64 %indvars.iv, !dbg !2013
+  %9 = load i16* %arrayidx, align 2, !dbg !2013, !tbaa !1685
+  %arrayidx19 = getelementptr inbounds %"class.xercesc_2_5::DOMStringData"* %call10, i64 0, i32 2, i64 %indvars.iv, !dbg !2013
+  store i16 %9, i16* %arrayidx19, align 2, !dbg !2013, !tbaa !1685
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2011
+  %10 = trunc i64 %indvars.iv.next to i32, !dbg !2011
+  %cmp17 = icmp ult i32 %10, %8, !dbg !2011
+  br i1 %cmp17, label %for.body, label %for.end, !dbg !2011
+
+for.end:                                          ; preds = %for.body, %if.then9
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMStringData"* %7}, i64 0, metadata !2014), !dbg !2016
+  %fRefCount.i = getelementptr inbounds %"class.xercesc_2_5::DOMStringData"* %7, i64 0, i32 1, !dbg !2017
+  %call.i = tail call i32 @_ZN11xercesc_2_516XMLPlatformUtils15atomicDecrementERi(i32* %fRefCount.i) #9, !dbg !2017
+  tail call void @llvm.dbg.value(metadata !{i32 %call.i}, i64 0, metadata !2018), !dbg !2017
+  %cmp.i = icmp eq i32 %call.i, 0, !dbg !2019
+  br i1 %cmp.i, label %if.then.i, label %_ZN11xercesc_2_513DOMStringData9removeRefEv.exit, !dbg !2019
+
+if.then.i:                                        ; preds = %for.end
+  %fBufferLength.i = getelementptr inbounds %"class.xercesc_2_5::DOMStringData"* %7, i64 0, i32 0, !dbg !2020
+  store i32 52428, i32* %fBufferLength.i, align 4, !dbg !2020, !tbaa !1682
+  store i32 52428, i32* %fRefCount.i, align 4, !dbg !2021, !tbaa !1682
+  %11 = load %"class.xercesc_2_5::MemoryManager"** @_ZN11xercesc_2_516XMLPlatformUtils15fgMemoryManagerE, align 8, !dbg !2022, !tbaa !1648
+  %12 = bitcast %"class.xercesc_2_5::MemoryManager"* %11 to void (%"class.xercesc_2_5::MemoryManager"*, i8*)***, !dbg !2022
+  %vtable.i = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)*** %12, align 8, !dbg !2022, !tbaa !1652
+  %vfn.i = getelementptr inbounds void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vtable.i, i64 3, !dbg !2022
+  %13 = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vfn.i, align 8, !dbg !2022
+  %14 = bitcast %"class.xercesc_2_5::DOMStringData"* %7 to i8*, !dbg !2022
+  tail call void %13(%"class.xercesc_2_5::MemoryManager"* %11, i8* %14) #9, !dbg !2022
+  %call3.i = tail call i32 @_ZN11xercesc_2_516XMLPlatformUtils15atomicDecrementERi(i32* @_ZN11xercesc_2_59DOMString20gLiveStringDataCountE) #9, !dbg !2023
+  br label %_ZN11xercesc_2_513DOMStringData9removeRefEv.exit, !dbg !2024
+
+_ZN11xercesc_2_513DOMStringData9removeRefEv.exit: ; preds = %for.end, %if.then.i
+  %15 = load %"class.xercesc_2_5::DOMStringHandle"** %fHandle, align 8, !dbg !2025, !tbaa !1648
+  %fDSData23 = getelementptr inbounds %"class.xercesc_2_5::DOMStringHandle"* %15, i64 0, i32 2, !dbg !2025
+  store %"class.xercesc_2_5::DOMStringData"* %call10, %"class.xercesc_2_5::DOMStringData"** %fDSData23, align 8, !dbg !2025, !tbaa !1648
+  %.pre = load %"class.xercesc_2_5::DOMStringHandle"** %fHandle, align 8, !dbg !2026, !tbaa !1648
+  %fDSData29.phi.trans.insert = getelementptr inbounds %"class.xercesc_2_5::DOMStringHandle"* %.pre, i64 0, i32 2
+  %.pre45 = load %"class.xercesc_2_5::DOMStringData"** %fDSData29.phi.trans.insert, align 8, !dbg !2026, !tbaa !1648
+  br label %if.end24, !dbg !2027
+
+if.end24:                                         ; preds = %_ZN11xercesc_2_513DOMStringData9removeRefEv.exit, %lor.lhs.false
+  %16 = phi %"class.xercesc_2_5::DOMStringData"* [ %.pre45, %_ZN11xercesc_2_513DOMStringData9removeRefEv.exit ], [ %3, %lor.lhs.false ]
+  %17 = phi %"class.xercesc_2_5::DOMStringHandle"* [ %.pre, %_ZN11xercesc_2_513DOMStringData9removeRefEv.exit ], [ %2, %lor.lhs.false ]
+  %fLength26 = getelementptr inbounds %"class.xercesc_2_5::DOMStringHandle"* %17, i64 0, i32 0, !dbg !2026
+  %18 = load i32* %fLength26, align 4, !dbg !2026, !tbaa !1682
+  %idxprom27 = zext i32 %18 to i64, !dbg !2026
+  %arrayidx31 = getelementptr inbounds %"class.xercesc_2_5::DOMStringData"* %16, i64 0, i32 2, i64 %idxprom27, !dbg !2026
+  tail call void @llvm.dbg.value(metadata !{i16* %arrayidx31}, i64 0, metadata !1032), !dbg !2026
+  store i16 %ch, i16* %arrayidx31, align 2, !dbg !2028, !tbaa !1685
+  %inc35 = add i32 %18, 1, !dbg !2029
+  store i32 %inc35, i32* %fLength26, align 4, !dbg !2029, !tbaa !1682
+  ret void, !dbg !2030
+}

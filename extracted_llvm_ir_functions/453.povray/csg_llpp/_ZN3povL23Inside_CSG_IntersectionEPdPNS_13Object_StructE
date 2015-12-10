@@ -1,0 +1,39 @@
+define internal i32 @_ZN3povL23Inside_CSG_IntersectionEPdPNS_13Object_StructE(double* %IPoint, %"struct.pov::Object_Struct"* nocapture %Object) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{double* %IPoint}, i64 0, metadata !1135), !dbg !1550
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !1136), !dbg !1550
+  %Children = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, !dbg !1551
+  %0 = bitcast %"struct.pov::Object_Struct"* %Children to %"struct.pov::Object_Struct"**, !dbg !1551
+  %Current_Sib.09 = load %"struct.pov::Object_Struct"** %0, align 8, !dbg !1551
+  %cmp10 = icmp eq %"struct.pov::Object_Struct"* %Current_Sib.09, null, !dbg !1551
+  br i1 %cmp10, label %return, label %for.body, !dbg !1551
+
+for.body:                                         ; preds = %entry, %for.inc
+  %Current_Sib.011 = phi %"struct.pov::Object_Struct"* [ %Current_Sib.0, %for.inc ], [ %Current_Sib.09, %entry ]
+  %Type = getelementptr inbounds %"struct.pov::Object_Struct"* %Current_Sib.011, i64 0, i32 1, !dbg !1553
+  %1 = load i32* %Type, align 4, !dbg !1553, !tbaa !1298
+  %and = and i32 %1, 32, !dbg !1553
+  %tobool = icmp eq i32 %and, 0, !dbg !1553
+  br i1 %tobool, label %if.then, label %lor.lhs.false, !dbg !1553
+
+lor.lhs.false:                                    ; preds = %for.body
+  %Children1 = getelementptr inbounds %"struct.pov::Object_Struct"* %Current_Sib.011, i64 1, !dbg !1553
+  %2 = bitcast %"struct.pov::Object_Struct"* %Children1 to %"struct.pov::Object_Struct"**, !dbg !1553
+  %3 = load %"struct.pov::Object_Struct"** %2, align 8, !dbg !1553, !tbaa !1292
+  %tobool2 = icmp eq %"struct.pov::Object_Struct"* %3, null, !dbg !1553
+  br i1 %tobool2, label %for.inc, label %if.then, !dbg !1553
+
+if.then:                                          ; preds = %lor.lhs.false, %for.body
+  %call = tail call zeroext i1 @_ZN3pov13Inside_ObjectEPdPNS_13Object_StructE(double* %IPoint, %"struct.pov::Object_Struct"* %Current_Sib.011) #4, !dbg !1555
+  br i1 %call, label %for.inc, label %return, !dbg !1555
+
+for.inc:                                          ; preds = %lor.lhs.false, %if.then
+  %Sibling = getelementptr inbounds %"struct.pov::Object_Struct"* %Current_Sib.011, i64 0, i32 2, !dbg !1551
+  %Current_Sib.0 = load %"struct.pov::Object_Struct"** %Sibling, align 8, !dbg !1551
+  %cmp = icmp eq %"struct.pov::Object_Struct"* %Current_Sib.0, null, !dbg !1551
+  br i1 %cmp, label %return, label %for.body, !dbg !1551
+
+return:                                           ; preds = %for.inc, %if.then, %entry
+  %retval.0 = phi i32 [ 1, %entry ], [ 0, %if.then ], [ 1, %for.inc ]
+  ret i32 %retval.0, !dbg !1557
+}

@@ -1,18 +1,19 @@
-define i32 @prologue_epilogue_contains(%struct.rtx_def* nocapture %insn) #4 {
+define i32 @prologue_epilogue_contains(%struct.rtx_def* nocapture %insn) #5 {
 entry:
-  %0 = load %struct.varray_head_tag** @prologue, align 8, !tbaa !0
-  %call = tail call fastcc i32 @contains(%struct.rtx_def* %insn, %struct.varray_head_tag* %0) #9
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %if.end, label %return
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !1943), !dbg !4740
+  %0 = load %struct.varray_head_tag** @prologue, align 8, !dbg !4741, !tbaa !2729
+  %call = tail call fastcc i32 @contains(%struct.rtx_def* %insn, %struct.varray_head_tag* %0) #10, !dbg !4741
+  %tobool = icmp eq i32 %call, 0, !dbg !4741
+  br i1 %tobool, label %if.end, label %return, !dbg !4741
 
 if.end:                                           ; preds = %entry
-  %1 = load %struct.varray_head_tag** @epilogue, align 8, !tbaa !0
-  %call1 = tail call fastcc i32 @contains(%struct.rtx_def* %insn, %struct.varray_head_tag* %1) #9
-  %not.tobool2 = icmp ne i32 %call1, 0
-  %. = zext i1 %not.tobool2 to i32
-  br label %return
+  %1 = load %struct.varray_head_tag** @epilogue, align 8, !dbg !4742, !tbaa !2729
+  %call1 = tail call fastcc i32 @contains(%struct.rtx_def* %insn, %struct.varray_head_tag* %1) #10, !dbg !4742
+  %not.tobool2 = icmp ne i32 %call1, 0, !dbg !4743
+  %. = zext i1 %not.tobool2 to i32, !dbg !4743
+  br label %return, !dbg !4743
 
 return:                                           ; preds = %if.end, %entry
   %retval.0 = phi i32 [ 1, %entry ], [ %., %if.end ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !4743
 }

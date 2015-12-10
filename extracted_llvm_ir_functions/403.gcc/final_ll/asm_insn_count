@@ -1,40 +1,46 @@
 define internal fastcc i32 @asm_insn_count(%struct.rtx_def* %body) #0 {
 entry:
-  %0 = bitcast %struct.rtx_def* %body to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 40
-  br i1 %cmp, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %body}, i64 0, metadata !1415), !dbg !1673
+  tail call void @llvm.dbg.value(metadata !1674, i64 0, metadata !1417), !dbg !1675
+  %0 = bitcast %struct.rtx_def* %body to i32*, !dbg !1676
+  %bf.load = load i32* %0, align 8, !dbg !1676
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1676
+  %cmp = icmp eq i32 %bf.clear, 40, !dbg !1676
+  br i1 %cmp, label %if.then, label %if.else, !dbg !1676
 
 if.then:                                          ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %body, i64 0, i32 1, i64 0
-  %rtstr = bitcast %union.rtunion_def* %arrayidx to i8**
-  %1 = load i8** %rtstr, align 8, !tbaa !0
-  br label %for.cond
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %body, i64 0, i32 1, i64 0, !dbg !1677
+  %rtstr = bitcast %union.rtunion_def* %arrayidx to i8**, !dbg !1677
+  %1 = load i8** %rtstr, align 8, !dbg !1677, !tbaa !1555
+  tail call void @llvm.dbg.value(metadata !{i8* %1}, i64 0, metadata !1416), !dbg !1677
+  br label %for.cond, !dbg !1677
 
 if.else:                                          ; preds = %entry
-  %call = tail call i8* @decode_asm_operands(%struct.rtx_def* %body, %struct.rtx_def** null, %struct.rtx_def*** null, i8** null, i32* null) #8
+  %call = tail call i8* @decode_asm_operands(%struct.rtx_def* %body, %struct.rtx_def** null, %struct.rtx_def*** null, i8** null, i32* null) #9, !dbg !1678
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !1416), !dbg !1678
   br label %for.cond
 
 for.cond:                                         ; preds = %if.then, %if.else, %for.inc
   %template.0 = phi i8* [ %incdec.ptr, %for.inc ], [ %1, %if.then ], [ %call, %if.else ]
   %count.0 = phi i32 [ %count.1, %for.inc ], [ 1, %if.then ], [ 1, %if.else ]
-  %2 = load i8* %template.0, align 1, !tbaa !1
+  %2 = load i8* %template.0, align 1, !dbg !1679, !tbaa !1556
   switch i8 %2, label %for.inc [
     i8 0, label %for.end
     i8 59, label %if.then6
     i8 10, label %if.then6
-  ]
+  ], !dbg !1679
 
 if.then6:                                         ; preds = %for.cond, %for.cond
-  %inc = add nsw i32 %count.0, 1
-  br label %for.inc
+  %inc = add nsw i32 %count.0, 1, !dbg !1681
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1417), !dbg !1681
+  br label %for.inc, !dbg !1681
 
 for.inc:                                          ; preds = %for.cond, %if.then6
   %count.1 = phi i32 [ %inc, %if.then6 ], [ %count.0, %for.cond ]
-  %incdec.ptr = getelementptr inbounds i8* %template.0, i64 1
-  br label %for.cond
+  %incdec.ptr = getelementptr inbounds i8* %template.0, i64 1, !dbg !1679
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !1416), !dbg !1679
+  br label %for.cond, !dbg !1679
 
 for.end:                                          ; preds = %for.cond
-  ret i32 %count.0
+  ret i32 %count.0, !dbg !1682
 }

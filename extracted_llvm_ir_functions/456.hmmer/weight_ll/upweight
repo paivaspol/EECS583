@@ -1,49 +1,56 @@
 define internal fastcc void @upweight(%struct.phylo_s* %tree, i32 %nseq, float* %lwt, float* %rwt, i32 %node) #0 {
 entry:
-  %sub = sub nsw i32 %node, %nseq
-  %idxprom = sext i32 %sub to i64
-  %left = getelementptr inbounds %struct.phylo_s* %tree, i64 %idxprom, i32 1
-  %0 = load i32* %left, align 4, !tbaa !4
-  %cmp = icmp slt i32 %0, %nseq
-  br i1 %cmp, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.phylo_s* %tree}, i64 0, metadata !278), !dbg !312
+  tail call void @llvm.dbg.value(metadata !{i32 %nseq}, i64 0, metadata !279), !dbg !312
+  tail call void @llvm.dbg.value(metadata !{float* %lwt}, i64 0, metadata !280), !dbg !312
+  tail call void @llvm.dbg.value(metadata !{float* %rwt}, i64 0, metadata !281), !dbg !312
+  tail call void @llvm.dbg.value(metadata !{i32 %node}, i64 0, metadata !282), !dbg !312
+  %sub = sub nsw i32 %node, %nseq, !dbg !313
+  %idxprom = sext i32 %sub to i64, !dbg !313
+  %left = getelementptr inbounds %struct.phylo_s* %tree, i64 %idxprom, i32 1, !dbg !313
+  %0 = load i32* %left, align 4, !dbg !313, !tbaa !314
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !283), !dbg !313
+  %cmp = icmp slt i32 %0, %nseq, !dbg !315
+  br i1 %cmp, label %if.end, label %if.then, !dbg !315
 
 if.then:                                          ; preds = %entry
-  tail call fastcc void @upweight(%struct.phylo_s* %tree, i32 %nseq, float* %lwt, float* %rwt, i32 %0) #6
-  br label %if.end
+  tail call fastcc void @upweight(%struct.phylo_s* %tree, i32 %nseq, float* %lwt, float* %rwt, i32 %0) #7, !dbg !315
+  br label %if.end, !dbg !315
 
 if.end:                                           ; preds = %entry, %if.then
-  %right = getelementptr inbounds %struct.phylo_s* %tree, i64 %idxprom, i32 2
-  %1 = load i32* %right, align 4, !tbaa !4
-  %cmp4 = icmp slt i32 %1, %nseq
-  br i1 %cmp4, label %if.end6, label %if.then5
+  %right = getelementptr inbounds %struct.phylo_s* %tree, i64 %idxprom, i32 2, !dbg !316
+  %1 = load i32* %right, align 4, !dbg !316, !tbaa !314
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !284), !dbg !316
+  %cmp4 = icmp slt i32 %1, %nseq, !dbg !317
+  br i1 %cmp4, label %if.end6, label %if.then5, !dbg !317
 
 if.then5:                                         ; preds = %if.end
-  tail call fastcc void @upweight(%struct.phylo_s* %tree, i32 %nseq, float* %lwt, float* %rwt, i32 %1) #6
-  br label %if.end6
+  tail call fastcc void @upweight(%struct.phylo_s* %tree, i32 %nseq, float* %lwt, float* %rwt, i32 %1) #7, !dbg !317
+  br label %if.end6, !dbg !317
 
 if.end6:                                          ; preds = %if.end, %if.then5
-  %idxprom7 = sext i32 %0 to i64
-  %arrayidx8 = getelementptr inbounds float* %lwt, i64 %idxprom7
-  %2 = load float* %arrayidx8, align 4, !tbaa !0
-  %arrayidx10 = getelementptr inbounds float* %rwt, i64 %idxprom7
-  %3 = load float* %arrayidx10, align 4, !tbaa !0
-  %add = fadd float %2, %3
-  %lblen = getelementptr inbounds %struct.phylo_s* %tree, i64 %idxprom, i32 4
-  %4 = load float* %lblen, align 4, !tbaa !0
-  %add14 = fadd float %add, %4
-  %idxprom15 = sext i32 %node to i64
-  %arrayidx16 = getelementptr inbounds float* %lwt, i64 %idxprom15
-  store float %add14, float* %arrayidx16, align 4, !tbaa !0
-  %idxprom17 = sext i32 %1 to i64
-  %arrayidx18 = getelementptr inbounds float* %lwt, i64 %idxprom17
-  %5 = load float* %arrayidx18, align 4, !tbaa !0
-  %arrayidx20 = getelementptr inbounds float* %rwt, i64 %idxprom17
-  %6 = load float* %arrayidx20, align 4, !tbaa !0
-  %add21 = fadd float %5, %6
-  %rblen = getelementptr inbounds %struct.phylo_s* %tree, i64 %idxprom, i32 5
-  %7 = load float* %rblen, align 4, !tbaa !0
-  %add25 = fadd float %add21, %7
-  %arrayidx27 = getelementptr inbounds float* %rwt, i64 %idxprom15
-  store float %add25, float* %arrayidx27, align 4, !tbaa !0
-  ret void
+  %idxprom7 = sext i32 %0 to i64, !dbg !318
+  %arrayidx8 = getelementptr inbounds float* %lwt, i64 %idxprom7, !dbg !318
+  %2 = load float* %arrayidx8, align 4, !dbg !318, !tbaa !291
+  %arrayidx10 = getelementptr inbounds float* %rwt, i64 %idxprom7, !dbg !318
+  %3 = load float* %arrayidx10, align 4, !dbg !318, !tbaa !291
+  %add = fadd float %2, %3, !dbg !318
+  %lblen = getelementptr inbounds %struct.phylo_s* %tree, i64 %idxprom, i32 4, !dbg !318
+  %4 = load float* %lblen, align 4, !dbg !318, !tbaa !291
+  %add14 = fadd float %add, %4, !dbg !318
+  %idxprom15 = sext i32 %node to i64, !dbg !318
+  %arrayidx16 = getelementptr inbounds float* %lwt, i64 %idxprom15, !dbg !318
+  store float %add14, float* %arrayidx16, align 4, !dbg !318, !tbaa !291
+  %idxprom17 = sext i32 %1 to i64, !dbg !319
+  %arrayidx18 = getelementptr inbounds float* %lwt, i64 %idxprom17, !dbg !319
+  %5 = load float* %arrayidx18, align 4, !dbg !319, !tbaa !291
+  %arrayidx20 = getelementptr inbounds float* %rwt, i64 %idxprom17, !dbg !319
+  %6 = load float* %arrayidx20, align 4, !dbg !319, !tbaa !291
+  %add21 = fadd float %5, %6, !dbg !319
+  %rblen = getelementptr inbounds %struct.phylo_s* %tree, i64 %idxprom, i32 5, !dbg !319
+  %7 = load float* %rblen, align 4, !dbg !319, !tbaa !291
+  %add25 = fadd float %add21, %7, !dbg !319
+  %arrayidx27 = getelementptr inbounds float* %rwt, i64 %idxprom15, !dbg !319
+  store float %add25, float* %arrayidx27, align 4, !dbg !319, !tbaa !291
+  ret void, !dbg !320
 }

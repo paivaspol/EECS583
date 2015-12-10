@@ -1,16 +1,19 @@
 define i8* @CCTK_CoordSystemName(i32 %handle) #1 {
-  %1 = load %struct.cHandledData** @CoordSystems, align 8, !tbaa !2
-  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %handle) #5
-  %3 = icmp eq i8* %2, null
-  br i1 %3, label %8, label %4
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %handle}, i64 0, metadata !201), !dbg !640
+  %0 = load %struct.cHandledData** @CoordSystems, align 8, !dbg !641, !tbaa !392
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %0, i32 %handle) #6, !dbg !641
+  %tobool = icmp eq i8* %call, null, !dbg !642
+  br i1 %tobool, label %if.end, label %if.then, !dbg !642
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds i8* %2, i64 16
-  %6 = bitcast i8* %5 to i8**
-  %7 = load i8** %6, align 8, !tbaa !10
-  br label %8
+if.then:                                          ; preds = %entry
+  %systemname1 = getelementptr inbounds i8* %call, i64 16, !dbg !643
+  %1 = bitcast i8* %systemname1 to i8**, !dbg !643
+  %2 = load i8** %1, align 8, !dbg !643, !tbaa !392
+  tail call void @llvm.dbg.value(metadata !{i8* %2}, i64 0, metadata !202), !dbg !643
+  br label %if.end, !dbg !645
 
-; <label>:8                                       ; preds = %0, %4
-  %systemname.0 = phi i8* [ %7, %4 ], [ null, %0 ]
-  ret i8* %systemname.0
+if.end:                                           ; preds = %entry, %if.then
+  %systemname.0 = phi i8* [ %2, %if.then ], [ null, %entry ]
+  ret i8* %systemname.0, !dbg !646
 }

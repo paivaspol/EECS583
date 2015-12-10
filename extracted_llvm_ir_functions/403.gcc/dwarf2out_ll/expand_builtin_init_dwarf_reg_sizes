@@ -1,55 +1,62 @@
 define void @expand_builtin_init_dwarf_reg_sizes(%union.tree_node* %address) #1 {
 entry:
-  %0 = load %union.tree_node** getelementptr inbounds ([11 x %union.tree_node*]* @integer_types, i64 0, i64 0), align 8, !tbaa !4
-  %type = bitcast %union.tree_node* %0 to %struct.tree_type*
-  %mode1 = getelementptr inbounds %struct.tree_type* %type, i64 0, i32 6
-  %1 = bitcast [4 x i8]* %mode1 to i32*
-  %bf.load = load i32* %1, align 4
-  %bf.lshr = lshr i32 %bf.load, 9
-  %bf.clear = and i32 %bf.lshr, 127
-  %call = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %address, %struct.rtx_def* null, i32 0, i32 0) #9
-  %call2 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 51, %struct.rtx_def* %call) #9
-  %idxprom1637 = zext i32 %bf.clear to i64
-  %arrayidx17 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom1637
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %address}, i64 0, metadata !1697), !dbg !3766
+  %0 = load %union.tree_node** getelementptr inbounds ([11 x %union.tree_node*]* @integer_types, i64 0, i64 0), align 8, !dbg !3767, !tbaa !3768
+  %type = bitcast %union.tree_node* %0 to %struct.tree_type*, !dbg !3767
+  %mode1 = getelementptr inbounds %struct.tree_type* %type, i64 0, i32 6, !dbg !3767
+  %1 = bitcast [4 x i8]* %mode1 to i32*, !dbg !3767
+  %bf.load = load i32* %1, align 4, !dbg !3767
+  %bf.lshr = lshr i32 %bf.load, 9, !dbg !3767
+  %bf.clear = and i32 %bf.lshr, 127, !dbg !3767
+  tail call void @llvm.dbg.value(metadata !{i32 %bf.clear}, i64 0, metadata !1699), !dbg !3767
+  %call = tail call %struct.rtx_def* @expand_expr(%union.tree_node* %address, %struct.rtx_def* null, i32 0, i32 0) #10, !dbg !3769
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !1700), !dbg !3769
+  %call2 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 51, %struct.rtx_def* %call) #10, !dbg !3770
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call2}, i64 0, metadata !1701), !dbg !3770
+  tail call void @llvm.dbg.value(metadata !1204, i64 0, metadata !1698), !dbg !3771
+  %idxprom1637 = zext i32 %bf.clear to i64, !dbg !3772
+  %arrayidx17 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom1637, !dbg !3772
+  br label %for.body, !dbg !3771
 
 for.body:                                         ; preds = %for.inc, %entry
   %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc ]
-  %2 = load i32* @target_flags, align 4, !tbaa !0
-  %and = and i32 %2, 33554432
-  %tobool = icmp eq i32 %and, 0
-  %svr4_dbx_register_map.dbx64_register_map = select i1 %tobool, [53 x i32]* @svr4_dbx_register_map, [53 x i32]* @dbx64_register_map
-  %cond.in = getelementptr inbounds [53 x i32]* %svr4_dbx_register_map.dbx64_register_map, i64 0, i64 %indvars.iv
-  %cond = load i32* %cond.in, align 4
-  %cmp5 = icmp slt i32 %cond, 17
-  br i1 %cmp5, label %if.then, label %for.inc
+  %2 = load i32* @target_flags, align 4, !dbg !3773, !tbaa !3758
+  %and = and i32 %2, 33554432, !dbg !3773
+  %tobool = icmp eq i32 %and, 0, !dbg !3773
+  %svr4_dbx_register_map.dbx64_register_map = select i1 %tobool, [53 x i32]* @svr4_dbx_register_map, [53 x i32]* @dbx64_register_map, !dbg !3773
+  %cond.in = getelementptr inbounds [53 x i32]* %svr4_dbx_register_map.dbx64_register_map, i64 0, i64 %indvars.iv, !dbg !3773
+  %cond = load i32* %cond.in, align 4, !dbg !3773
+  %cmp5 = icmp slt i32 %cond, 17, !dbg !3773
+  br i1 %cmp5, label %if.then, label %for.inc, !dbg !3773
 
 if.then:                                          ; preds = %for.body
-  %3 = load i8* %arrayidx17, align 1, !tbaa !1
-  %conv = zext i8 %3 to i32
-  %mul = mul nsw i32 %conv, %cond
-  %cmp24 = icmp slt i32 %mul, 0
-  br i1 %cmp24, label %for.inc, label %if.end
+  %3 = load i8* %arrayidx17, align 1, !dbg !3772, !tbaa !3759
+  %conv = zext i8 %3 to i32, !dbg !3772
+  %mul = mul nsw i32 %conv, %cond, !dbg !3772
+  tail call void @llvm.dbg.value(metadata !{i64 %conv18}, i64 0, metadata !1702), !dbg !3772
+  tail call void @llvm.dbg.value(metadata !{i64 %conv23}, i64 0, metadata !1705), !dbg !3774
+  %cmp24 = icmp slt i32 %mul, 0, !dbg !3775
+  br i1 %cmp24, label %for.inc, label %if.end, !dbg !3775
 
 if.end:                                           ; preds = %if.then
-  %arrayidx20 = getelementptr inbounds [53 x i32]* @reg_raw_mode, i64 0, i64 %indvars.iv
-  %4 = load i32* %arrayidx20, align 4, !tbaa !5
-  %idxprom21 = sext i32 %4 to i64
-  %arrayidx22 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom21
-  %5 = load i8* %arrayidx22, align 1, !tbaa !1
-  %conv18 = sext i32 %mul to i64
-  %conv23 = zext i8 %5 to i64
-  %call27 = tail call %struct.rtx_def* @adjust_address_1(%struct.rtx_def* %call2, i32 %bf.clear, i64 %conv18, i32 1, i32 1) #9
-  %call28 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %conv23) #9
-  %call29 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call27, %struct.rtx_def* %call28) #9
-  br label %for.inc
+  %arrayidx20 = getelementptr inbounds [53 x i32]* @reg_raw_mode, i64 0, i64 %indvars.iv, !dbg !3774
+  %4 = load i32* %arrayidx20, align 4, !dbg !3774, !tbaa !3776
+  %idxprom21 = sext i32 %4 to i64, !dbg !3774
+  %arrayidx22 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom21, !dbg !3774
+  %5 = load i8* %arrayidx22, align 1, !dbg !3774, !tbaa !3759
+  %conv18 = sext i32 %mul to i64, !dbg !3772
+  %conv23 = zext i8 %5 to i64, !dbg !3774
+  %call27 = tail call %struct.rtx_def* @adjust_address_1(%struct.rtx_def* %call2, i32 %bf.clear, i64 %conv18, i32 1, i32 1) #10, !dbg !3777
+  %call28 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %conv23) #10, !dbg !3777
+  %call29 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call27, %struct.rtx_def* %call28) #10, !dbg !3777
+  br label %for.inc, !dbg !3778
 
 for.inc:                                          ; preds = %for.body, %if.end, %if.then
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 53
-  br i1 %exitcond, label %for.end, label %for.body
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !3771
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !3771
+  %exitcond = icmp eq i32 %lftr.wideiv, 53, !dbg !3771
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !3771
 
 for.end:                                          ; preds = %for.inc
-  ret void
+  ret void, !dbg !3779
 }

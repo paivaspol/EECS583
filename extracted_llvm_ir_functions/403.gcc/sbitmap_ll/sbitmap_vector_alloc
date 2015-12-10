@@ -1,42 +1,56 @@
 define %struct.simple_bitmap_def** @sbitmap_vector_alloc(i32 %n_vecs, i32 %n_elms) #0 {
 entry:
-  %sub = add i32 %n_elms, 63
-  %div = lshr i32 %sub, 6
-  %mul = shl nuw nsw i32 %div, 3
-  %sub4 = add i32 %mul, 16
-  %mul7 = shl i32 %n_vecs, 3
-  %mul13 = mul i32 %sub4, %n_vecs
-  %add14 = add i32 %mul13, %mul7
-  %conv15 = zext i32 %add14 to i64
-  %call = tail call noalias i8* @xmalloc(i64 %conv15) #6
-  %0 = bitcast i8* %call to %struct.simple_bitmap_def**
-  %cmp38 = icmp eq i32 %n_vecs, 0
-  br i1 %cmp38, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !{i32 %n_vecs}, i64 0, metadata !97), !dbg !565
+  tail call void @llvm.dbg.value(metadata !{i32 %n_elms}, i64 0, metadata !98), !dbg !565
+  %sub = add i32 %n_elms, 63, !dbg !566
+  %div = lshr i32 %sub, 6, !dbg !566
+  tail call void @llvm.dbg.value(metadata !{i32 %div}, i64 0, metadata !103), !dbg !566
+  %mul = shl nuw nsw i32 %div, 3, !dbg !567
+  tail call void @llvm.dbg.value(metadata !{i32 %mul}, i64 0, metadata !100), !dbg !567
+  %sub4 = add i32 %mul, 16, !dbg !568
+  tail call void @llvm.dbg.value(metadata !{i32 %sub4}, i64 0, metadata !102), !dbg !568
+  %mul7 = shl i32 %n_vecs, 3, !dbg !569
+  tail call void @llvm.dbg.value(metadata !{i32 %mul7}, i64 0, metadata !105), !dbg !569
+  tail call void @llvm.dbg.value(metadata !570, i64 0, metadata !114), !dbg !571
+  tail call void @llvm.dbg.value(metadata !{i32 %mul7}, i64 0, metadata !105), !dbg !572
+  %mul13 = mul i32 %sub4, %n_vecs, !dbg !573
+  %add14 = add i32 %mul13, %mul7, !dbg !573
+  tail call void @llvm.dbg.value(metadata !{i32 %add14}, i64 0, metadata !104), !dbg !573
+  %conv15 = zext i32 %add14 to i64, !dbg !574
+  %call = tail call noalias i8* @xmalloc(i64 %conv15) #7, !dbg !574
+  %0 = bitcast i8* %call to %struct.simple_bitmap_def**, !dbg !574
+  tail call void @llvm.dbg.value(metadata !{%struct.simple_bitmap_def** %0}, i64 0, metadata !106), !dbg !574
+  tail call void @llvm.dbg.value(metadata !66, i64 0, metadata !99), !dbg !575
+  tail call void @llvm.dbg.value(metadata !{i32 %mul7}, i64 0, metadata !101), !dbg !575
+  %cmp38 = icmp eq i32 %n_vecs, 0, !dbg !575
+  br i1 %cmp38, label %for.end, label %for.body, !dbg !575
 
 for.body:                                         ; preds = %entry, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
   %offset.039 = phi i32 [ %add19, %for.body ], [ %mul7, %entry ]
-  %idx.ext = zext i32 %offset.039 to i64
-  %add.ptr = getelementptr inbounds i8* %call, i64 %idx.ext
-  %1 = bitcast i8* %add.ptr to %struct.simple_bitmap_def*
-  %arrayidx = getelementptr inbounds %struct.simple_bitmap_def** %0, i64 %indvars.iv
-  store %struct.simple_bitmap_def* %1, %struct.simple_bitmap_def** %arrayidx, align 8, !tbaa !3
-  %n_bits = bitcast i8* %add.ptr to i32*
-  store i32 %n_elms, i32* %n_bits, align 4, !tbaa !0
-  %add.ptr.sum37 = or i64 %idx.ext, 4
-  %size17 = getelementptr inbounds i8* %call, i64 %add.ptr.sum37
-  %2 = bitcast i8* %size17 to i32*
-  store i32 %div, i32* %2, align 4, !tbaa !0
-  %add.ptr.sum = add i64 %idx.ext, 8
-  %bytes18 = getelementptr inbounds i8* %call, i64 %add.ptr.sum
-  %3 = bitcast i8* %bytes18 to i32*
-  store i32 %mul, i32* %3, align 4, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %add19 = add i32 %offset.039, %sub4
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n_vecs
-  br i1 %exitcond, label %for.end, label %for.body
+  %idx.ext = zext i32 %offset.039 to i64, !dbg !576
+  %add.ptr = getelementptr inbounds i8* %call, i64 %idx.ext, !dbg !576
+  %1 = bitcast i8* %add.ptr to %struct.simple_bitmap_def*, !dbg !576
+  tail call void @llvm.dbg.value(metadata !{%struct.simple_bitmap_def* %1}, i64 0, metadata !116), !dbg !576
+  %arrayidx = getelementptr inbounds %struct.simple_bitmap_def** %0, i64 %indvars.iv, !dbg !577
+  store %struct.simple_bitmap_def* %1, %struct.simple_bitmap_def** %arrayidx, align 8, !dbg !577, !tbaa !578
+  %n_bits = bitcast i8* %add.ptr to i32*, !dbg !579
+  store i32 %n_elms, i32* %n_bits, align 4, !dbg !579, !tbaa !559
+  %add.ptr.sum37 = or i64 %idx.ext, 4, !dbg !580
+  %size17 = getelementptr inbounds i8* %call, i64 %add.ptr.sum37, !dbg !580
+  %2 = bitcast i8* %size17 to i32*, !dbg !580
+  store i32 %div, i32* %2, align 4, !dbg !580, !tbaa !559
+  %add.ptr.sum = add i64 %idx.ext, 8, !dbg !581
+  %bytes18 = getelementptr inbounds i8* %call, i64 %add.ptr.sum, !dbg !581
+  %3 = bitcast i8* %bytes18 to i32*, !dbg !581
+  store i32 %mul, i32* %3, align 4, !dbg !581, !tbaa !559
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !575
+  %add19 = add i32 %offset.039, %sub4, !dbg !575
+  tail call void @llvm.dbg.value(metadata !{i32 %add19}, i64 0, metadata !101), !dbg !575
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !575
+  %exitcond = icmp eq i32 %lftr.wideiv, %n_vecs, !dbg !575
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !575
 
 for.end:                                          ; preds = %for.body, %entry
-  ret %struct.simple_bitmap_def** %0
+  ret %struct.simple_bitmap_def** %0, !dbg !582
 }

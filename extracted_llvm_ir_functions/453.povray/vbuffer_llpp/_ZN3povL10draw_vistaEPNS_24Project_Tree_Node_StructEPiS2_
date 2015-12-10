@@ -1,0 +1,59 @@
+define internal fastcc void @_ZN3povL10draw_vistaEPNS_24Project_Tree_Node_StructEPiS2_(%"struct.pov::Project_Tree_Node_Struct"* nocapture %Tree, i32* nocapture %BigRed, i32* nocapture %BigBlue) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Project_Tree_Node_Struct"* %Tree}, i64 0, metadata !995), !dbg !2285
+  tail call void @llvm.dbg.value(metadata !{i32* %BigRed}, i64 0, metadata !996), !dbg !2285
+  tail call void @llvm.dbg.value(metadata !{i32* %BigBlue}, i64 0, metadata !997), !dbg !2285
+  tail call void @_ZN3pov12Do_CooperateEi(i32 1) #7, !dbg !2286
+  tail call void @_ZN3pov16Check_User_AbortEi(i32 0) #7, !dbg !2287
+  %is_leaf = getelementptr inbounds %"struct.pov::Project_Tree_Node_Struct"* %Tree, i64 0, i32 0, !dbg !2288
+  %0 = load i16* %is_leaf, align 2, !dbg !2288, !tbaa !1502
+  %tobool = icmp eq i16 %0, 0, !dbg !2288
+  br i1 %tobool, label %for.cond.preheader, label %if.then, !dbg !2288
+
+for.cond.preheader:                               ; preds = %entry
+  %Entries = getelementptr inbounds %"struct.pov::Project_Tree_Node_Struct"* %Tree, i64 0, i32 3, !dbg !2289
+  %1 = load i16* %Entries, align 2, !dbg !2289, !tbaa !1502
+  %cmp16 = icmp eq i16 %1, 0, !dbg !2289
+  br i1 %cmp16, label %if.end7, label %for.body.lr.ph, !dbg !2289
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %Entry = getelementptr inbounds %"struct.pov::Project_Tree_Node_Struct"* %Tree, i64 0, i32 4, !dbg !2292
+  br label %for.body, !dbg !2289
+
+if.then:                                          ; preds = %entry
+  %2 = getelementptr inbounds %"struct.pov::Project_Tree_Node_Struct"* %Tree, i64 0, i32 1, !dbg !2294
+  %3 = load %"struct.pov::BBox_Tree_Struct"** %2, align 8, !dbg !2294, !tbaa !1488
+  %Node1 = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %3, i64 0, i32 3, !dbg !2294
+  %4 = load %"struct.pov::BBox_Tree_Struct"*** %Node1, align 8, !dbg !2294, !tbaa !1488
+  %Type = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"** %4, i64 1, !dbg !2294
+  %5 = bitcast %"struct.pov::BBox_Tree_Struct"** %Type to i32*, !dbg !2294
+  %6 = load i32* %5, align 4, !dbg !2294, !tbaa !1492
+  %and = and i32 %6, 4, !dbg !2294
+  %tobool2 = icmp eq i32 %and, 0, !dbg !2294
+  %7 = getelementptr inbounds %"struct.pov::Project_Tree_Node_Struct"* %Tree, i64 0, i32 2, !dbg !2296
+  br i1 %tobool2, label %if.else, label %if.then3, !dbg !2294
+
+if.then3:                                         ; preds = %if.then
+  tail call fastcc void @_ZN3povL15draw_projectionEPNS_14Project_StructEiPiS2_(%"struct.pov::Project_Struct"* %7, i32 2, i32* %BigRed, i32* %BigBlue) #7, !dbg !2296
+  br label %if.end7, !dbg !2298
+
+if.else:                                          ; preds = %if.then
+  tail call fastcc void @_ZN3povL15draw_projectionEPNS_14Project_StructEiPiS2_(%"struct.pov::Project_Struct"* %7, i32 0, i32* %BigRed, i32* %BigBlue) #7, !dbg !2299
+  br label %if.end7
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %i.017 = phi i16 [ 0, %for.body.lr.ph ], [ %inc, %for.body ]
+  %idxprom = zext i16 %i.017 to i64, !dbg !2292
+  %8 = load %"struct.pov::Project_Tree_Node_Struct"*** %Entry, align 8, !dbg !2292, !tbaa !1488
+  %arrayidx = getelementptr inbounds %"struct.pov::Project_Tree_Node_Struct"** %8, i64 %idxprom, !dbg !2292
+  %9 = load %"struct.pov::Project_Tree_Node_Struct"** %arrayidx, align 8, !dbg !2292, !tbaa !1488
+  tail call fastcc void @_ZN3povL10draw_vistaEPNS_24Project_Tree_Node_StructEPiS2_(%"struct.pov::Project_Tree_Node_Struct"* %9, i32* %BigRed, i32* %BigBlue) #7, !dbg !2292
+  %inc = add i16 %i.017, 1, !dbg !2289
+  tail call void @llvm.dbg.value(metadata !{i16 %inc}, i64 0, metadata !998), !dbg !2289
+  %10 = load i16* %Entries, align 2, !dbg !2289, !tbaa !1502
+  %cmp = icmp ult i16 %inc, %10, !dbg !2289
+  br i1 %cmp, label %for.body, label %if.end7, !dbg !2289
+
+if.end7:                                          ; preds = %for.cond.preheader, %for.body, %if.then3, %if.else
+  ret void, !dbg !2301
+}

@@ -1,24 +1,28 @@
-define void @translate_view(%struct.t_3dview* nocapture %view, i32 %axis, i32 %bPositive) #3 {
-  %1 = icmp eq i32 %bPositive, 0
-  %2 = sext i32 %axis to i64
-  %3 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 %2, i64 %2
-  %4 = load float* %3, align 4, !tbaa !14
-  %5 = fmul float %4, 1.250000e-01
-  %6 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 2, i64 %2
-  %7 = load float* %6, align 4, !tbaa !14
-  br i1 %1, label %10, label %8
+define void @translate_view(%struct.t_3dview* nocapture %view, i32 %axis, i32 %bPositive) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.t_3dview* %view}, i64 0, metadata !196), !dbg !463
+  tail call void @llvm.dbg.value(metadata !{i32 %axis}, i64 0, metadata !197), !dbg !463
+  tail call void @llvm.dbg.value(metadata !{i32 %bPositive}, i64 0, metadata !198), !dbg !463
+  %tobool = icmp eq i32 %bPositive, 0, !dbg !464
+  %idxprom = sext i32 %axis to i64, !dbg !465
+  %arrayidx2 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 0, i64 %idxprom, i64 %idxprom, !dbg !465
+  %0 = load float* %arrayidx2, align 4, !dbg !465, !tbaa !242
+  %div = fmul float %0, 1.250000e-01, !dbg !465
+  %arrayidx4 = getelementptr inbounds %struct.t_3dview* %view, i64 0, i32 2, i64 %idxprom, !dbg !465
+  %1 = load float* %arrayidx4, align 4, !dbg !465, !tbaa !242
+  br i1 %tobool, label %if.else, label %if.then, !dbg !464
 
-; <label>:8                                       ; preds = %0
-  %9 = fadd float %7, %5
-  br label %12
+if.then:                                          ; preds = %entry
+  %add = fadd float %1, %div, !dbg !465
+  br label %if.end, !dbg !465
 
-; <label>:10                                      ; preds = %0
-  %11 = fsub float %7, %5
-  br label %12
+if.else:                                          ; preds = %entry
+  %sub = fsub float %1, %div, !dbg !466
+  br label %if.end
 
-; <label>:12                                      ; preds = %10, %8
-  %storemerge = phi float [ %11, %10 ], [ %9, %8 ]
-  store float %storemerge, float* %6, align 4, !tbaa !14
-  tail call void @calculate_view(%struct.t_3dview* %view) #9
-  ret void
+if.end:                                           ; preds = %if.else, %if.then
+  %storemerge = phi float [ %sub, %if.else ], [ %add, %if.then ]
+  store float %storemerge, float* %arrayidx4, align 4, !dbg !465, !tbaa !242
+  tail call void @calculate_view(%struct.t_3dview* %view) #6, !dbg !467
+  ret void, !dbg !468
 }

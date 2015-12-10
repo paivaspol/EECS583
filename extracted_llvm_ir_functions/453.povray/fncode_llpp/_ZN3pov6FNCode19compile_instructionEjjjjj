@@ -1,0 +1,35 @@
+define i32 @_ZN3pov6FNCode19compile_instructionEjjjjj(%"class.pov::FNCode"* nocapture %this, i32 %pos, i32 %op, i32 %rs, i32 %rd, i32 %k) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.pov::FNCode"* %this}, i64 0, metadata !993), !dbg !1402
+  tail call void @llvm.dbg.value(metadata !{i32 %pos}, i64 0, metadata !994), !dbg !1402
+  tail call void @llvm.dbg.value(metadata !{i32 %op}, i64 0, metadata !995), !dbg !1402
+  tail call void @llvm.dbg.value(metadata !{i32 %rs}, i64 0, metadata !996), !dbg !1402
+  tail call void @llvm.dbg.value(metadata !{i32 %rd}, i64 0, metadata !997), !dbg !1402
+  tail call void @llvm.dbg.value(metadata !{i32 %k}, i64 0, metadata !998), !dbg !1402
+  %function = getelementptr inbounds %"class.pov::FNCode"* %this, i64 0, i32 0, !dbg !1403
+  %0 = load %"struct.pov::FunctionCode"** %function, align 8, !dbg !1403, !tbaa !1112
+  %program_size = getelementptr inbounds %"struct.pov::FunctionCode"* %0, i64 0, i32 1, !dbg !1403
+  %1 = load i32* %program_size, align 4, !dbg !1403, !tbaa !1117
+  %cmp = icmp ugt i32 %1, %pos, !dbg !1403
+  br i1 %cmp, label %if.end, label %if.then, !dbg !1403
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([60 x i8]* @.str40, i64 0, i64 0)) #7, !dbg !1404
+  %.pre = load %"struct.pov::FunctionCode"** %function, align 8, !dbg !1405, !tbaa !1112
+  br label %if.end, !dbg !1404
+
+if.end:                                           ; preds = %entry, %if.then
+  %2 = phi %"struct.pov::FunctionCode"* [ %0, %entry ], [ %.pre, %if.then ]
+  %shl = shl i32 %k, 12, !dbg !1405
+  %shl2 = shl i32 %rs, 3, !dbg !1405
+  %or = or i32 %shl2, %op, !dbg !1405
+  %or3 = or i32 %or, %rd, !dbg !1405
+  %and4 = and i32 %or3, 4095, !dbg !1405
+  %or5 = or i32 %and4, %shl, !dbg !1405
+  %idxprom = zext i32 %pos to i64, !dbg !1405
+  %program = getelementptr inbounds %"struct.pov::FunctionCode"* %2, i64 0, i32 0, !dbg !1405
+  %3 = load i32** %program, align 8, !dbg !1405, !tbaa !1112
+  %arrayidx = getelementptr inbounds i32* %3, i64 %idxprom, !dbg !1405
+  store i32 %or5, i32* %arrayidx, align 4, !dbg !1405, !tbaa !1117
+  ret i32 %pos, !dbg !1406
+}

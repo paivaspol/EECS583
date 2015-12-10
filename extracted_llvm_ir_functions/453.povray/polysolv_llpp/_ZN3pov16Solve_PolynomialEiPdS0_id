@@ -1,0 +1,456 @@
+define i32 @_ZN3pov16Solve_PolynomialEiPdS0_id(i32 %n, double* nocapture %c0, double* %r, i32 %sturm, double %epsilon) #0 {
+entry:
+  %cubic.i = alloca [4 x double], align 16
+  %roots.i = alloca [3 x double], align 16
+  call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !144), !dbg !409
+  call void @llvm.dbg.value(metadata !{double* %c0}, i64 0, metadata !146), !dbg !409
+  call void @llvm.dbg.value(metadata !{double* %r}, i64 0, metadata !147), !dbg !409
+  call void @llvm.dbg.value(metadata !{i32 %sturm}, i64 0, metadata !148), !dbg !409
+  call void @llvm.dbg.value(metadata !{double %epsilon}, i64 0, metadata !149), !dbg !409
+  tail call void @llvm.dbg.value(metadata !410, i64 0, metadata !411), !dbg !413
+  %0 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 113), align 8, !dbg !414, !tbaa !416
+  %inc.i = add nsw i64 %0, 1, !dbg !414
+  store i64 %inc.i, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 113), align 8, !dbg !414, !tbaa !416
+  call void @llvm.dbg.value(metadata !134, i64 0, metadata !150), !dbg !419
+  call void @llvm.dbg.value(metadata !134, i64 0, metadata !151), !dbg !420
+  br label %while.cond, !dbg !421
+
+while.cond:                                       ; preds = %while.cond, %entry
+  %indvars.iv = phi i64 [ %indvars.iv.next, %while.cond ], [ 0, %entry ]
+  %i.0 = phi i32 [ %inc, %while.cond ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds double* %c0, i64 %indvars.iv, !dbg !421
+  %1 = load double* %arrayidx, align 8, !dbg !421, !tbaa !422
+  %call = call double @fabs(double %1) #6, !dbg !421
+  %cmp = fcmp olt double %call, 1.000000e-10, !dbg !421
+  %2 = trunc i64 %indvars.iv to i32, !dbg !421
+  %cmp1 = icmp slt i32 %2, %n, !dbg !421
+  %3 = and i1 %cmp, %cmp1, !dbg !421
+  %indvars.iv.next = add i64 %indvars.iv, 1
+  %inc = add nsw i32 %i.0, 1, !dbg !423
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !151), !dbg !423
+  br i1 %3, label %while.cond, label %while.end
+
+while.end:                                        ; preds = %while.cond
+  %sub = sub nsw i32 %n, %i.0, !dbg !425
+  call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !144), !dbg !425
+  call void @llvm.dbg.value(metadata !{double* %arrayidx}, i64 0, metadata !152), !dbg !426
+  switch i32 %sub, label %sw.default [
+    i32 0, label %sw.epilog
+    i32 1, label %sw.bb
+    i32 2, label %sw.bb12
+    i32 3, label %sw.bb14
+    i32 4, label %sw.bb32
+  ], !dbg !427
+
+sw.bb:                                            ; preds = %while.end
+  %cmp5 = fcmp une double %1, 0.000000e+00, !dbg !428
+  br i1 %cmp5, label %if.then, label %sw.epilog, !dbg !428
+
+if.then:                                          ; preds = %sw.bb
+  %arrayidx6 = getelementptr inbounds double* %c0, i64 %indvars.iv.next, !dbg !430
+  %4 = load double* %arrayidx6, align 8, !dbg !430, !tbaa !422
+  %sub7 = fsub double -0.000000e+00, %4, !dbg !430
+  %div = fdiv double %sub7, %1, !dbg !430
+  call void @llvm.dbg.value(metadata !432, i64 0, metadata !150), !dbg !430
+  store double %div, double* %r, align 8, !dbg !430, !tbaa !422
+  br label %sw.epilog, !dbg !433
+
+sw.bb12:                                          ; preds = %while.end
+  %call13 = call fastcc i32 @_ZN3povL15solve_quadraticEPdS0_(double* %arrayidx, double* %r) #7, !dbg !434
+  call void @llvm.dbg.value(metadata !{i32 %call13}, i64 0, metadata !150), !dbg !434
+  br label %sw.epilog, !dbg !435
+
+sw.bb14:                                          ; preds = %while.end
+  %cmp15 = fcmp ogt double %epsilon, 0.000000e+00, !dbg !436
+  br i1 %cmp15, label %if.then16, label %if.end27, !dbg !436
+
+if.then16:                                        ; preds = %sw.bb14
+  %arrayidx.sum129 = add i64 %indvars.iv, 2, !dbg !437
+  %arrayidx17 = getelementptr inbounds double* %c0, i64 %arrayidx.sum129, !dbg !437
+  %5 = load double* %arrayidx17, align 8, !dbg !437, !tbaa !422
+  %cmp18 = fcmp une double %5, 0.000000e+00, !dbg !437
+  br i1 %cmp18, label %land.lhs.true, label %if.end27, !dbg !437
+
+land.lhs.true:                                    ; preds = %if.then16
+  %arrayidx.sum130 = add i64 %indvars.iv, 3, !dbg !437
+  %arrayidx19 = getelementptr inbounds double* %c0, i64 %arrayidx.sum130, !dbg !437
+  %6 = load double* %arrayidx19, align 8, !dbg !437, !tbaa !422
+  %div21 = fdiv double %6, %5, !dbg !437
+  %call22 = call double @fabs(double %div21) #6, !dbg !437
+  %cmp23 = fcmp olt double %call22, %epsilon, !dbg !437
+  br i1 %cmp23, label %if.then24, label %if.end27, !dbg !437
+
+if.then24:                                        ; preds = %land.lhs.true
+  tail call void @llvm.dbg.value(metadata !439, i64 0, metadata !440), !dbg !443
+  %7 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 114), align 8, !dbg !444, !tbaa !416
+  %inc.i134 = add nsw i64 %7, 1, !dbg !444
+  store i64 %inc.i134, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 114), align 8, !dbg !444, !tbaa !416
+  %call25 = call fastcc i32 @_ZN3povL15solve_quadraticEPdS0_(double* %arrayidx, double* %r) #7, !dbg !445
+  call void @llvm.dbg.value(metadata !{i32 %call25}, i64 0, metadata !150), !dbg !445
+  br label %sw.epilog, !dbg !446
+
+if.end27:                                         ; preds = %if.then16, %land.lhs.true, %sw.bb14
+  %tobool = icmp eq i32 %sturm, 0, !dbg !447
+  br i1 %tobool, label %if.else, label %if.then28, !dbg !447
+
+if.then28:                                        ; preds = %if.end27
+  %call29 = call fastcc i32 @_ZN3povL9polysolveEiPdS0_(i32 3, double* %arrayidx, double* %r) #7, !dbg !448
+  call void @llvm.dbg.value(metadata !{i32 %call29}, i64 0, metadata !150), !dbg !448
+  br label %sw.epilog, !dbg !450
+
+if.else:                                          ; preds = %if.end27
+  %call30 = call fastcc i32 @_ZN3povL11solve_cubicEPdS0_(double* %arrayidx, double* %r) #7, !dbg !451
+  call void @llvm.dbg.value(metadata !{i32 %call30}, i64 0, metadata !150), !dbg !451
+  br label %sw.epilog
+
+sw.bb32:                                          ; preds = %while.end
+  %cmp33 = fcmp ogt double %epsilon, 0.000000e+00, !dbg !453
+  br i1 %cmp33, label %if.then34, label %for.body.i, !dbg !453
+
+if.then34:                                        ; preds = %sw.bb32
+  %arrayidx.sum = add i64 %indvars.iv, 3, !dbg !454
+  %arrayidx35 = getelementptr inbounds double* %c0, i64 %arrayidx.sum, !dbg !454
+  %8 = load double* %arrayidx35, align 8, !dbg !454, !tbaa !422
+  %cmp36 = fcmp une double %8, 0.000000e+00, !dbg !454
+  br i1 %cmp36, label %land.lhs.true37, label %for.body.i, !dbg !454
+
+land.lhs.true37:                                  ; preds = %if.then34
+  %arrayidx.sum128 = add i64 %indvars.iv, 4, !dbg !454
+  %arrayidx38 = getelementptr inbounds double* %c0, i64 %arrayidx.sum128, !dbg !454
+  %9 = load double* %arrayidx38, align 8, !dbg !454, !tbaa !422
+  %div40 = fdiv double %9, %8, !dbg !454
+  %call41 = call double @fabs(double %div40) #6, !dbg !454
+  %cmp42 = fcmp olt double %call41, %epsilon, !dbg !454
+  br i1 %cmp42, label %if.then43, label %for.body.i, !dbg !454
+
+if.then43:                                        ; preds = %land.lhs.true37
+  tail call void @llvm.dbg.value(metadata !439, i64 0, metadata !456), !dbg !459
+  %10 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 114), align 8, !dbg !460, !tbaa !416
+  %inc.i135 = add nsw i64 %10, 1, !dbg !460
+  store i64 %inc.i135, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 114), align 8, !dbg !460, !tbaa !416
+  %tobool44 = icmp eq i32 %sturm, 0, !dbg !461
+  br i1 %tobool44, label %if.else47, label %if.then45, !dbg !461
+
+if.then45:                                        ; preds = %if.then43
+  %call46 = call fastcc i32 @_ZN3povL9polysolveEiPdS0_(i32 3, double* %arrayidx, double* %r) #7, !dbg !462
+  call void @llvm.dbg.value(metadata !{i32 %call46}, i64 0, metadata !150), !dbg !462
+  br label %sw.epilog, !dbg !464
+
+if.else47:                                        ; preds = %if.then43
+  %call48 = call fastcc i32 @_ZN3povL11solve_cubicEPdS0_(double* %arrayidx, double* %r) #7, !dbg !465
+  call void @llvm.dbg.value(metadata !{i32 %call48}, i64 0, metadata !150), !dbg !465
+  br label %sw.epilog
+
+for.body.i:                                       ; preds = %sw.bb32, %land.lhs.true37, %if.then34, %for.body.i
+  %indvars.iv4.i = phi i64 [ %indvars.iv.next5.i, %for.body.i ], [ 0, %if.then34 ], [ 0, %land.lhs.true37 ], [ 0, %sw.bb32 ]
+  %biggest.03.i = phi double [ %biggest.1.i, %for.body.i ], [ 0.000000e+00, %if.then34 ], [ 0.000000e+00, %land.lhs.true37 ], [ 0.000000e+00, %sw.bb32 ]
+  %arrayidx.sum144 = add i64 %indvars.iv4.i, %indvars.iv, !dbg !467
+  %arrayidx.i = getelementptr inbounds double* %c0, i64 %arrayidx.sum144, !dbg !467
+  %11 = load double* %arrayidx.i, align 8, !dbg !467, !tbaa !422
+  %call.i137 = call double @fabs(double %11) #6, !dbg !467
+  %cmp1.i = fcmp ogt double %call.i137, %biggest.03.i, !dbg !467
+  call void @llvm.dbg.value(metadata !{double %11}, i64 0, metadata !471) #4, !dbg !472
+  %biggest.1.i = select i1 %cmp1.i, double %11, double %biggest.03.i, !dbg !467
+  %indvars.iv.next5.i = add i64 %indvars.iv4.i, 1, !dbg !474
+  %lftr.wideiv = trunc i64 %indvars.iv.next5.i to i32, !dbg !474
+  %exitcond = icmp eq i32 %lftr.wideiv, 5, !dbg !474
+  br i1 %exitcond, label %for.end.i, label %for.body.i, !dbg !474
+
+for.end.i:                                        ; preds = %for.body.i
+  %cmp4.i = fcmp oeq double %biggest.1.i, 0.000000e+00, !dbg !475
+  br i1 %cmp4.i, label %_ZN3povL16difficult_coeffsEiPd.exit, label %for.body9.i, !dbg !475
+
+for.body9.i:                                      ; preds = %for.end.i, %for.inc21.i
+  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %for.inc21.i ], [ 0, %for.end.i ]
+  %arrayidx.sum145 = add i64 %indvars.iv.i, %indvars.iv, !dbg !476
+  %arrayidx11.i138 = getelementptr inbounds double* %c0, i64 %arrayidx.sum145, !dbg !476
+  %12 = load double* %arrayidx11.i138, align 8, !dbg !476, !tbaa !422
+  %cmp12.i = fcmp une double %12, 0.000000e+00, !dbg !476
+  br i1 %cmp12.i, label %if.then13.i, label %for.inc21.i, !dbg !476
+
+if.then13.i:                                      ; preds = %for.body9.i
+  %div.i139 = fdiv double %biggest.1.i, %12, !dbg !479
+  %call16.i = call double @fabs(double %div.i139) #6, !dbg !479
+  %cmp17.i = fcmp ogt double %call16.i, 1.000000e+12, !dbg !479
+  br i1 %cmp17.i, label %if.then57, label %for.inc21.i, !dbg !479
+
+for.inc21.i:                                      ; preds = %if.then13.i, %for.body9.i
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1, !dbg !481
+  %13 = trunc i64 %indvars.iv.next.i to i32, !dbg !481
+  %cmp8.i = icmp slt i32 %13, 5, !dbg !481
+  br i1 %cmp8.i, label %for.body9.i, label %_ZN3povL16difficult_coeffsEiPd.exit, !dbg !481
+
+_ZN3povL16difficult_coeffsEiPd.exit:              ; preds = %for.inc21.i, %for.end.i
+  call void @llvm.dbg.value(metadata !432, i64 0, metadata !148), !dbg !482
+  %tobool56 = icmp eq i32 %sturm, 0, !dbg !484
+  br i1 %tobool56, label %if.else59, label %if.then57, !dbg !484
+
+if.then57:                                        ; preds = %if.then13.i, %_ZN3povL16difficult_coeffsEiPd.exit
+  %call58 = call fastcc i32 @_ZN3povL9polysolveEiPdS0_(i32 4, double* %arrayidx, double* %r) #7, !dbg !485
+  call void @llvm.dbg.value(metadata !{i32 %call58}, i64 0, metadata !150), !dbg !485
+  br label %sw.epilog, !dbg !487
+
+if.else59:                                        ; preds = %_ZN3povL16difficult_coeffsEiPd.exit
+  %14 = bitcast [4 x double]* %cubic.i to i8*, !dbg !488
+  call void @llvm.lifetime.start(i64 32, i8* %14) #4, !dbg !488
+  %15 = bitcast [3 x double]* %roots.i to i8*, !dbg !488
+  call void @llvm.lifetime.start(i64 24, i8* %15) #4, !dbg !488
+  call void @llvm.dbg.value(metadata !{double* %arrayidx}, i64 0, metadata !491) #4, !dbg !488
+  call void @llvm.dbg.value(metadata !{double* %r}, i64 0, metadata !492) #4, !dbg !488
+  call void @llvm.dbg.declare(metadata !{[4 x double]* %cubic.i}, metadata !159) #4, !dbg !493
+  call void @llvm.dbg.declare(metadata !{[3 x double]* %roots.i}, metadata !163) #4, !dbg !494
+  call void @llvm.dbg.value(metadata !{double %1}, i64 0, metadata !495) #4, !dbg !496
+  %cmp.i = fcmp une double %1, 1.000000e+00, !dbg !497
+  %arrayidx1.i = getelementptr inbounds double* %c0, i64 %indvars.iv.next, !dbg !498
+  %16 = load double* %arrayidx1.i, align 8, !dbg !498, !tbaa !422
+  br i1 %cmp.i, label %if.then.i, label %if.else.i, !dbg !497
+
+if.then.i:                                        ; preds = %if.else59
+  %div.i = fdiv double %16, %1, !dbg !498
+  call void @llvm.dbg.value(metadata !{double %div.i}, i64 0, metadata !500) #4, !dbg !498
+  %arrayidx.sum150 = add i64 %indvars.iv, 2, !dbg !501
+  %arrayidx2.i = getelementptr inbounds double* %c0, i64 %arrayidx.sum150, !dbg !501
+  %17 = load double* %arrayidx2.i, align 8, !dbg !501, !tbaa !422
+  %div3.i = fdiv double %17, %1, !dbg !501
+  call void @llvm.dbg.value(metadata !{double %div3.i}, i64 0, metadata !502) #4, !dbg !501
+  %arrayidx.sum151 = add i64 %indvars.iv, 3, !dbg !503
+  %arrayidx4.i = getelementptr inbounds double* %c0, i64 %arrayidx.sum151, !dbg !503
+  %18 = load double* %arrayidx4.i, align 8, !dbg !503, !tbaa !422
+  %div5.i = fdiv double %18, %1, !dbg !503
+  call void @llvm.dbg.value(metadata !{double %div5.i}, i64 0, metadata !504) #4, !dbg !503
+  %arrayidx.sum152 = add i64 %indvars.iv, 4, !dbg !505
+  %arrayidx6.i = getelementptr inbounds double* %c0, i64 %arrayidx.sum152, !dbg !505
+  %19 = load double* %arrayidx6.i, align 8, !dbg !505, !tbaa !422
+  %div7.i = fdiv double %19, %1, !dbg !505
+  call void @llvm.dbg.value(metadata !{double %div7.i}, i64 0, metadata !506) #4, !dbg !505
+  br label %if.end.i, !dbg !507
+
+if.else.i:                                        ; preds = %if.else59
+  call void @llvm.dbg.value(metadata !{double %16}, i64 0, metadata !500) #4, !dbg !508
+  %arrayidx.sum147 = add i64 %indvars.iv, 2, !dbg !510
+  %arrayidx9.i = getelementptr inbounds double* %c0, i64 %arrayidx.sum147, !dbg !510
+  %20 = load double* %arrayidx9.i, align 8, !dbg !510, !tbaa !422
+  call void @llvm.dbg.value(metadata !{double %20}, i64 0, metadata !502) #4, !dbg !510
+  %arrayidx.sum148 = add i64 %indvars.iv, 3, !dbg !511
+  %arrayidx10.i = getelementptr inbounds double* %c0, i64 %arrayidx.sum148, !dbg !511
+  %21 = load double* %arrayidx10.i, align 8, !dbg !511, !tbaa !422
+  call void @llvm.dbg.value(metadata !{double %21}, i64 0, metadata !504) #4, !dbg !511
+  %arrayidx.sum149 = add i64 %indvars.iv, 4, !dbg !512
+  %arrayidx11.i = getelementptr inbounds double* %c0, i64 %arrayidx.sum149, !dbg !512
+  %22 = load double* %arrayidx11.i, align 8, !dbg !512, !tbaa !422
+  call void @llvm.dbg.value(metadata !{double %22}, i64 0, metadata !506) #4, !dbg !512
+  br label %if.end.i
+
+if.end.i:                                         ; preds = %if.else.i, %if.then.i
+  %c1.0.i = phi double [ %div.i, %if.then.i ], [ %16, %if.else.i ]
+  %c2.0.i = phi double [ %div3.i, %if.then.i ], [ %20, %if.else.i ]
+  %c3.0.i = phi double [ %div5.i, %if.then.i ], [ %21, %if.else.i ]
+  %c4.0.i = phi double [ %div7.i, %if.then.i ], [ %22, %if.else.i ]
+  %mul.i = fmul double %c1.0.i, %c1.0.i, !dbg !513
+  call void @llvm.dbg.value(metadata !{double %mul.i}, i64 0, metadata !514) #4, !dbg !513
+  %mul12.i = fmul double %mul.i, -3.750000e-01, !dbg !515
+  %add.i = fadd double %c2.0.i, %mul12.i, !dbg !515
+  call void @llvm.dbg.value(metadata !{double %add.i}, i64 0, metadata !516) #4, !dbg !515
+  %mul13.i = fmul double %mul.i, 1.250000e-01, !dbg !517
+  %mul14.i = fmul double %c1.0.i, %mul13.i, !dbg !517
+  %mul15.i = fmul double %c1.0.i, 5.000000e-01, !dbg !517
+  %mul16.i = fmul double %mul15.i, %c2.0.i, !dbg !517
+  %sub.i = fsub double %mul14.i, %mul16.i, !dbg !517
+  %add17.i = fadd double %c3.0.i, %sub.i, !dbg !517
+  call void @llvm.dbg.value(metadata !{double %add17.i}, i64 0, metadata !518) #4, !dbg !517
+  %mul18.i = fmul double %mul.i, -1.171875e-02, !dbg !519
+  %mul19.i = fmul double %mul.i, %mul18.i, !dbg !519
+  %mul20.i = fmul double %mul.i, 6.250000e-02, !dbg !519
+  %mul21.i = fmul double %c2.0.i, %mul20.i, !dbg !519
+  %add22.i = fadd double %mul19.i, %mul21.i, !dbg !519
+  %mul23.i = fmul double %c1.0.i, 2.500000e-01, !dbg !519
+  %mul24.i = fmul double %mul23.i, %c3.0.i, !dbg !519
+  %sub25.i = fsub double %add22.i, %mul24.i, !dbg !519
+  %add26.i = fadd double %c4.0.i, %sub25.i, !dbg !519
+  call void @llvm.dbg.value(metadata !{double %add26.i}, i64 0, metadata !520) #4, !dbg !519
+  %arrayidx27.i = getelementptr inbounds [4 x double]* %cubic.i, i64 0, i64 0, !dbg !521
+  store double 1.000000e+00, double* %arrayidx27.i, align 16, !dbg !521, !tbaa !422
+  %mul28.i = fmul double %add.i, -5.000000e-01, !dbg !522
+  %arrayidx29.i = getelementptr inbounds [4 x double]* %cubic.i, i64 0, i64 1, !dbg !522
+  store double %mul28.i, double* %arrayidx29.i, align 8, !dbg !522, !tbaa !422
+  %sub30.i = fsub double -0.000000e+00, %add26.i, !dbg !523
+  %arrayidx31.i = getelementptr inbounds [4 x double]* %cubic.i, i64 0, i64 2, !dbg !523
+  store double %sub30.i, double* %arrayidx31.i, align 16, !dbg !523, !tbaa !422
+  %mul32.i = fmul double %add26.i, 5.000000e-01, !dbg !524
+  %mul33.i = fmul double %add.i, %mul32.i, !dbg !524
+  %mul34.i = fmul double %add17.i, 1.250000e-01, !dbg !524
+  %mul35.i = fmul double %add17.i, %mul34.i, !dbg !524
+  %sub36.i = fsub double %mul33.i, %mul35.i, !dbg !524
+  %arrayidx37.i = getelementptr inbounds [4 x double]* %cubic.i, i64 0, i64 3, !dbg !524
+  store double %sub36.i, double* %arrayidx37.i, align 8, !dbg !524, !tbaa !422
+  %arraydecay38.i = getelementptr inbounds [3 x double]* %roots.i, i64 0, i64 0, !dbg !525
+  %call.i = call fastcc i32 @_ZN3povL11solve_cubicEPdS0_(double* %arrayidx27.i, double* %arraydecay38.i) #8, !dbg !525
+  call void @llvm.dbg.value(metadata !{i32 %call.i}, i64 0, metadata !526) #4, !dbg !525
+  %cmp39.i = icmp sgt i32 %call.i, 0, !dbg !527
+  br i1 %cmp39.i, label %if.then40.i, label %sw.epilog, !dbg !527
+
+if.then40.i:                                      ; preds = %if.end.i
+  %23 = load double* %arraydecay38.i, align 16, !dbg !528, !tbaa !422
+  call void @llvm.dbg.value(metadata !{double %23}, i64 0, metadata !530) #4, !dbg !528
+  %mul44.i = fmul double %23, 2.000000e+00, !dbg !531
+  %sub45.i = fsub double %mul44.i, %add.i, !dbg !531
+  call void @llvm.dbg.value(metadata !{double %sub45.i}, i64 0, metadata !532) #4, !dbg !531
+  %cmp46.i = fcmp olt double %sub45.i, 0.000000e+00, !dbg !533
+  br i1 %cmp46.i, label %if.then47.i, label %if.end52.i, !dbg !533
+
+if.then47.i:                                      ; preds = %if.then40.i
+  %cmp48.i = fcmp ogt double %sub45.i, -1.000000e-10, !dbg !534
+  br i1 %cmp48.i, label %if.then54.i, label %sw.epilog, !dbg !534
+
+if.end52.i:                                       ; preds = %if.then40.i
+  %cmp53.i = fcmp olt double %sub45.i, 1.000000e-10, !dbg !536
+  br i1 %cmp53.i, label %if.then54.i, label %if.else61.i, !dbg !536
+
+if.then54.i:                                      ; preds = %if.end52.i, %if.then47.i
+  %d1.0202.i = phi double [ %sub45.i, %if.end52.i ], [ 0.000000e+00, %if.then47.i ]
+  %mul55.i = fmul double %23, %23, !dbg !537
+  %sub56.i = fsub double %mul55.i, %add26.i, !dbg !537
+  call void @llvm.dbg.value(metadata !{double %sub56.i}, i64 0, metadata !539) #4, !dbg !537
+  %cmp57.i = fcmp olt double %sub56.i, 0.000000e+00, !dbg !540
+  br i1 %cmp57.i, label %sw.epilog, label %if.end59.i, !dbg !540
+
+if.end59.i:                                       ; preds = %if.then54.i
+  %call60.i = call double @sqrt(double %sub56.i) #8, !dbg !541
+  call void @llvm.dbg.value(metadata !{double %call60.i}, i64 0, metadata !539) #4, !dbg !541
+  br label %if.end65.i, !dbg !542
+
+if.else61.i:                                      ; preds = %if.end52.i
+  %call62.i = call double @sqrt(double %sub45.i) #8, !dbg !543
+  call void @llvm.dbg.value(metadata !{double %call62.i}, i64 0, metadata !532) #4, !dbg !543
+  %mul63.i = fmul double %add17.i, 5.000000e-01, !dbg !545
+  %div64.i = fdiv double %mul63.i, %call62.i, !dbg !545
+  call void @llvm.dbg.value(metadata !{double %div64.i}, i64 0, metadata !539) #4, !dbg !545
+  br label %if.end65.i
+
+if.end65.i:                                       ; preds = %if.else61.i, %if.end59.i
+  %d1.1.i = phi double [ %d1.0202.i, %if.end59.i ], [ %call62.i, %if.else61.i ]
+  %d2.0.i = phi double [ %call60.i, %if.end59.i ], [ %div64.i, %if.else61.i ]
+  %mul66.i = fmul double %d1.1.i, %d1.1.i, !dbg !546
+  call void @llvm.dbg.value(metadata !{double %mul66.i}, i64 0, metadata !547) #4, !dbg !546
+  %mul67.i = fmul double %c1.0.i, -2.500000e-01, !dbg !548
+  call void @llvm.dbg.value(metadata !{double %mul67.i}, i64 0, metadata !549) #4, !dbg !548
+  call void @llvm.dbg.value(metadata !134, i64 0, metadata !526) #4, !dbg !550
+  %sub68.i = fsub double %23, %d2.0.i, !dbg !551
+  %mul69.i = fmul double %sub68.i, 4.000000e+00, !dbg !551
+  %sub70.i = fsub double %mul66.i, %mul69.i, !dbg !551
+  call void @llvm.dbg.value(metadata !{double %sub70.i}, i64 0, metadata !516) #4, !dbg !551
+  %cmp71.i = fcmp oeq double %sub70.i, 0.000000e+00, !dbg !552
+  br i1 %cmp71.i, label %if.then72.i, label %if.else76.i, !dbg !552
+
+if.then72.i:                                      ; preds = %if.end65.i
+  %mul73.i = fmul double %d1.1.i, -5.000000e-01, !dbg !553
+  %sub74.i = fsub double %mul73.i, %mul67.i, !dbg !553
+  call void @llvm.dbg.value(metadata !432, i64 0, metadata !526) #4, !dbg !553
+  store double %sub74.i, double* %r, align 8, !dbg !553, !tbaa !422
+  br label %if.end93.i, !dbg !555
+
+if.else76.i:                                      ; preds = %if.end65.i
+  %cmp77.i = fcmp ogt double %sub70.i, 0.000000e+00, !dbg !556
+  br i1 %cmp77.i, label %if.then78.i, label %if.end93.i, !dbg !556
+
+if.then78.i:                                      ; preds = %if.else76.i
+  %call79.i = call double @sqrt(double %sub70.i) #8, !dbg !558
+  call void @llvm.dbg.value(metadata !{double %call79.i}, i64 0, metadata !516) #4, !dbg !558
+  %add80.i = fadd double %d1.1.i, %call79.i, !dbg !560
+  %mul81.i = fmul double %add80.i, -5.000000e-01, !dbg !560
+  %add82.i = fadd double %mul67.i, %mul81.i, !dbg !560
+  call void @llvm.dbg.value(metadata !432, i64 0, metadata !526) #4, !dbg !560
+  store double %add82.i, double* %r, align 8, !dbg !560, !tbaa !422
+  %sub86.i = fsub double %d1.1.i, %call79.i, !dbg !561
+  %mul87.i = fmul double %sub86.i, -5.000000e-01, !dbg !561
+  %add88.i = fadd double %mul67.i, %mul87.i, !dbg !561
+  call void @llvm.dbg.value(metadata !562, i64 0, metadata !526) #4, !dbg !561
+  %arrayidx91.i = getelementptr inbounds double* %r, i64 1, !dbg !561
+  store double %add88.i, double* %arrayidx91.i, align 8, !dbg !561, !tbaa !422
+  br label %if.end93.i, !dbg !563
+
+if.end93.i:                                       ; preds = %if.then78.i, %if.else76.i, %if.then72.i
+  %i.0.i = phi i32 [ 1, %if.then72.i ], [ 2, %if.then78.i ], [ 0, %if.else76.i ]
+  %add94.i = fadd double %23, %d2.0.i, !dbg !564
+  %mul95.i = fmul double %add94.i, 4.000000e+00, !dbg !564
+  %sub96.i = fsub double %mul66.i, %mul95.i, !dbg !564
+  call void @llvm.dbg.value(metadata !{double %sub96.i}, i64 0, metadata !516) #4, !dbg !564
+  %cmp97.i = fcmp oeq double %sub96.i, 0.000000e+00, !dbg !565
+  br i1 %cmp97.i, label %if.then98.i, label %if.else104.i, !dbg !565
+
+if.then98.i:                                      ; preds = %if.end93.i
+  %mul99.i = fmul double %d1.1.i, 5.000000e-01, !dbg !566
+  %sub100.i = fsub double %mul99.i, %mul67.i, !dbg !566
+  %inc101.i = add nsw i32 %i.0.i, 1, !dbg !566
+  call void @llvm.dbg.value(metadata !{i32 %inc101.i}, i64 0, metadata !526) #4, !dbg !566
+  %idxprom102200.i = zext i32 %i.0.i to i64, !dbg !566
+  %arrayidx103.i = getelementptr inbounds double* %r, i64 %idxprom102200.i, !dbg !566
+  store double %sub100.i, double* %arrayidx103.i, align 8, !dbg !566, !tbaa !422
+  br label %sw.epilog, !dbg !568
+
+if.else104.i:                                     ; preds = %if.end93.i
+  %cmp105.i = fcmp ogt double %sub96.i, 0.000000e+00, !dbg !569
+  br i1 %cmp105.i, label %if.then106.i, label %sw.epilog, !dbg !569
+
+if.then106.i:                                     ; preds = %if.else104.i
+  %call107.i = call double @sqrt(double %sub96.i) #8, !dbg !571
+  call void @llvm.dbg.value(metadata !{double %call107.i}, i64 0, metadata !516) #4, !dbg !571
+  %add108.i = fadd double %d1.1.i, %call107.i, !dbg !573
+  %mul109.i = fmul double %add108.i, 5.000000e-01, !dbg !573
+  %add110.i = fadd double %mul67.i, %mul109.i, !dbg !573
+  %inc111.i = add nsw i32 %i.0.i, 1, !dbg !573
+  call void @llvm.dbg.value(metadata !{i32 %inc111.i}, i64 0, metadata !526) #4, !dbg !573
+  %idxprom112198.i = zext i32 %i.0.i to i64, !dbg !573
+  %arrayidx113.i = getelementptr inbounds double* %r, i64 %idxprom112198.i, !dbg !573
+  store double %add110.i, double* %arrayidx113.i, align 8, !dbg !573, !tbaa !422
+  %sub114.i = fsub double %d1.1.i, %call107.i, !dbg !574
+  %mul115.i = fmul double %sub114.i, 5.000000e-01, !dbg !574
+  %add116.i = fadd double %mul67.i, %mul115.i, !dbg !574
+  %inc117.i = add nsw i32 %i.0.i, 2, !dbg !574
+  call void @llvm.dbg.value(metadata !{i32 %inc117.i}, i64 0, metadata !526) #4, !dbg !574
+  %idxprom118199.i = zext i32 %inc111.i to i64, !dbg !574
+  %arrayidx119.i = getelementptr inbounds double* %r, i64 %idxprom118199.i, !dbg !574
+  store double %add116.i, double* %arrayidx119.i, align 8, !dbg !574, !tbaa !422
+  br label %sw.epilog, !dbg !575
+
+sw.default:                                       ; preds = %while.end
+  %cmp62 = fcmp ogt double %epsilon, 0.000000e+00, !dbg !576
+  br i1 %cmp62, label %if.then63, label %if.end81, !dbg !576
+
+if.then63:                                        ; preds = %sw.default
+  %sub64 = add nsw i32 %sub, -1, !dbg !577
+  %idxprom65 = sext i32 %sub64 to i64, !dbg !577
+  %arrayidx.sum132 = add i64 %idxprom65, %indvars.iv, !dbg !577
+  %arrayidx66 = getelementptr inbounds double* %c0, i64 %arrayidx.sum132, !dbg !577
+  %24 = load double* %arrayidx66, align 8, !dbg !577, !tbaa !422
+  %cmp67 = fcmp une double %24, 0.000000e+00, !dbg !577
+  br i1 %cmp67, label %land.lhs.true68, label %if.end81, !dbg !577
+
+land.lhs.true68:                                  ; preds = %if.then63
+  %idxprom69 = sext i32 %sub to i64, !dbg !577
+  %arrayidx.sum133 = add i64 %idxprom69, %indvars.iv, !dbg !577
+  %arrayidx70 = getelementptr inbounds double* %c0, i64 %arrayidx.sum133, !dbg !577
+  %25 = load double* %arrayidx70, align 8, !dbg !577, !tbaa !422
+  %div74 = fdiv double %25, %24, !dbg !577
+  %call75 = call double @fabs(double %div74) #6, !dbg !577
+  %cmp76 = fcmp olt double %call75, %epsilon, !dbg !577
+  br i1 %cmp76, label %if.then77, label %if.end81, !dbg !577
+
+if.then77:                                        ; preds = %land.lhs.true68
+  tail call void @llvm.dbg.value(metadata !439, i64 0, metadata !579), !dbg !582
+  %26 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 114), align 8, !dbg !583, !tbaa !416
+  %inc.i136 = add nsw i64 %26, 1, !dbg !583
+  store i64 %inc.i136, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 114), align 8, !dbg !583, !tbaa !416
+  %call79 = call fastcc i32 @_ZN3povL9polysolveEiPdS0_(i32 %sub64, double* %arrayidx, double* %r) #7, !dbg !584
+  call void @llvm.dbg.value(metadata !{i32 %call79}, i64 0, metadata !150), !dbg !584
+  br label %if.end81, !dbg !585
+
+if.end81:                                         ; preds = %if.then63, %land.lhs.true68, %if.then77, %sw.default
+  %call82 = call fastcc i32 @_ZN3povL9polysolveEiPdS0_(i32 %sub, double* %arrayidx, double* %r) #7, !dbg !586
+  call void @llvm.dbg.value(metadata !{i32 %call82}, i64 0, metadata !150), !dbg !586
+  br label %sw.epilog, !dbg !587
+
+sw.epilog:                                        ; preds = %if.then106.i, %if.else104.i, %if.then98.i, %if.then54.i, %if.then47.i, %if.end.i, %if.then57, %if.then45, %if.else47, %if.then28, %if.else, %sw.bb, %if.then, %if.end81, %if.then24, %sw.bb12, %while.end
+  %roots.0 = phi i32 [ %call82, %if.end81 ], [ %call46, %if.then45 ], [ %call48, %if.else47 ], [ %call58, %if.then57 ], [ %call25, %if.then24 ], [ %call29, %if.then28 ], [ %call30, %if.else ], [ %call13, %sw.bb12 ], [ 1, %if.then ], [ 0, %sw.bb ], [ 0, %while.end ], [ 0, %if.end.i ], [ 0, %if.then47.i ], [ 0, %if.then54.i ], [ %inc101.i, %if.then98.i ], [ %inc117.i, %if.then106.i ], [ %i.0.i, %if.else104.i ]
+  ret i32 %roots.0, !dbg !588
+}

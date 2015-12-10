@@ -1,16 +1,20 @@
 define i32 @CCTK_TimerI(i32 %this_timer, %struct.cTimerData* nocapture %info) #1 {
-  %1 = load %struct.cHandledData** @timers, align 8, !tbaa !9
-  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %this_timer) #7
-  %3 = icmp ne i8* %2, null
-  br i1 %3, label %4, label %6
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %this_timer}, i64 0, metadata !229), !dbg !621
+  tail call void @llvm.dbg.value(metadata !{%struct.cTimerData* %info}, i64 0, metadata !230), !dbg !621
+  %0 = load %struct.cHandledData** @timers, align 8, !dbg !622, !tbaa !355
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %0, i32 %this_timer) #8, !dbg !622
+  tail call void @llvm.dbg.value(metadata !{%struct.t_Timer* %1}, i64 0, metadata !231), !dbg !622
+  %tobool = icmp ne i8* %call, null, !dbg !623
+  br i1 %tobool, label %if.then, label %if.end, !dbg !623
 
-; <label>:4                                       ; preds = %0
-  %5 = bitcast i8* %2 to %struct.t_Timer*
-  tail call fastcc void @CCTKi_Timer(i32 %this_timer, %struct.t_Timer* %5, %struct.cTimerData* %info) #8
-  br label %6
+if.then:                                          ; preds = %entry
+  %1 = bitcast i8* %call to %struct.t_Timer*, !dbg !622
+  tail call fastcc void @CCTKi_Timer(i32 %this_timer, %struct.t_Timer* %1, %struct.cTimerData* %info) #10, !dbg !624
+  br label %if.end, !dbg !626
 
-; <label>:6                                       ; preds = %4, %0
-  %not. = xor i1 %3, true
-  %7 = sext i1 %not. to i32
-  ret i32 %7
+if.end:                                           ; preds = %if.then, %entry
+  %not.tobool = xor i1 %tobool, true, !dbg !627
+  %cond = sext i1 %not.tobool to i32, !dbg !627
+  ret i32 %cond, !dbg !627
 }

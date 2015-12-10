@@ -1,33 +1,37 @@
 define i32 @CCTKi_SetWarnLevel(i32 %level) #1 {
-  %1 = load i32* @warning_level, align 4, !tbaa !6
-  %2 = icmp eq i32 %1, %level
-  br i1 %2, label %8, label %3
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %level}, i64 0, metadata !117), !dbg !330
+  %0 = load i32* @warning_level, align 4, !dbg !331, !tbaa !250
+  %cmp = icmp eq i32 %0, %level, !dbg !331
+  br i1 %cmp, label %if.else, label %if.then, !dbg !331
 
-; <label>:3                                       ; preds = %0
-  %4 = icmp slt i32 %1, %level
-  %5 = select i1 %4, i32 1, i32 -1
-  %6 = select i1 %4, i8* getelementptr inbounds ([11 x i8]* @.str14, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str15, i64 0, i64 0)
-  %7 = tail call i32 (i8*, i8*, ...)* @CCTK_VInfo(i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([31 x i8]* @.str13, i64 0, i64 0), i8* %6, i32 %1, i32 %level) #7
-  store i32 %level, i32* @warning_level, align 4, !tbaa !6
-  br label %10
+if.then:                                          ; preds = %entry
+  %cmp2 = icmp slt i32 %0, %level, !dbg !332
+  %cond = select i1 %cmp2, i32 1, i32 -1, !dbg !332
+  tail call void @llvm.dbg.value(metadata !{i32 %cond}, i64 0, metadata !118), !dbg !332
+  %cond4 = select i1 %cmp2, i8* getelementptr inbounds ([11 x i8]* @.str14, i64 0, i64 0), i8* getelementptr inbounds ([11 x i8]* @.str15, i64 0, i64 0), !dbg !334
+  %call = tail call i32 (i8*, i8*, ...)* @CCTK_VInfo(i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([31 x i8]* @.str13, i64 0, i64 0), i8* %cond4, i32 %0, i32 %level) #8, !dbg !334
+  store i32 %level, i32* @warning_level, align 4, !dbg !335, !tbaa !250
+  br label %if.end, !dbg !336
 
-; <label>:8                                       ; preds = %0
-  %9 = tail call i32 (i8*, i8*, ...)* @CCTK_VInfo(i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([28 x i8]* @.str16, i64 0, i64 0), i32 %level) #7
-  %.pre = load i32* @warning_level, align 4, !tbaa !6
-  br label %10
+if.else:                                          ; preds = %entry
+  %call5 = tail call i32 (i8*, i8*, ...)* @CCTK_VInfo(i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([28 x i8]* @.str16, i64 0, i64 0), i32 %level) #8, !dbg !337
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !118), !dbg !339
+  %.pre = load i32* @warning_level, align 4, !dbg !340, !tbaa !250
+  br label %if.end
 
-; <label>:10                                      ; preds = %8, %3
-  %11 = phi i32 [ %level, %3 ], [ %.pre, %8 ]
-  %retval.0 = phi i32 [ %5, %3 ], [ 0, %8 ]
-  %12 = load i32* @error_level, align 4, !tbaa !6
-  %13 = icmp slt i32 %11, %12
-  br i1 %13, label %14, label %16
+if.end:                                           ; preds = %if.else, %if.then
+  %1 = phi i32 [ %level, %if.then ], [ %.pre, %if.else ]
+  %retval1.0 = phi i32 [ %cond, %if.then ], [ 0, %if.else ]
+  %2 = load i32* @error_level, align 4, !dbg !340, !tbaa !250
+  %cmp6 = icmp slt i32 %1, %2, !dbg !340
+  br i1 %cmp6, label %if.then7, label %if.end9, !dbg !340
 
-; <label>:14                                      ; preds = %10
-  store i32 %11, i32* @error_level, align 4, !tbaa !6
-  %15 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 541, i8* getelementptr inbounds ([78 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([44 x i8]* @.str17, i64 0, i64 0), i32 %11) #7
-  br label %16
+if.then7:                                         ; preds = %if.end
+  store i32 %1, i32* @error_level, align 4, !dbg !341, !tbaa !250
+  %call8 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 541, i8* getelementptr inbounds ([66 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([44 x i8]* @.str17, i64 0, i64 0), i32 %1) #8, !dbg !343
+  br label %if.end9, !dbg !344
 
-; <label>:16                                      ; preds = %14, %10
-  ret i32 %retval.0
+if.end9:                                          ; preds = %if.then7, %if.end
+  ret i32 %retval1.0, !dbg !345
 }

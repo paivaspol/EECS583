@@ -1,89 +1,102 @@
 define void @DetermineAlphabet(i8** nocapture %rseqs, i32 %nseq) #0 {
 entry:
-  %cmp40 = icmp sgt i32 %nseq, 0
-  br i1 %cmp40, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{i8** %rseqs}, i64 0, metadata !13), !dbg !158
+  tail call void @llvm.dbg.value(metadata !{i32 %nseq}, i64 0, metadata !14), !dbg !158
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !19), !dbg !159
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !18), !dbg !160
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !17), !dbg !160
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !16), !dbg !160
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !15), !dbg !161
+  %cmp40 = icmp sgt i32 %nseq, 0, !dbg !161
+  br i1 %cmp40, label %for.body, label %for.end, !dbg !161
 
 for.body:                                         ; preds = %entry, %for.inc
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %entry ]
   %amino.044 = phi i32 [ %amino.1, %for.inc ], [ 0, %entry ]
   %nucleic.043 = phi i32 [ %nucleic.1, %for.inc ], [ 0, %entry ]
   %other.042 = phi i32 [ %other.1, %for.inc ], [ 0, %entry ]
-  %arrayidx = getelementptr inbounds i8** %rseqs, i64 %indvars.iv
-  %0 = load i8** %arrayidx, align 8, !tbaa !0
-  %call = tail call i32 @Seqtype(i8* %0) #5
+  %arrayidx = getelementptr inbounds i8** %rseqs, i64 %indvars.iv, !dbg !163
+  %0 = load i8** %arrayidx, align 8, !dbg !163, !tbaa !165
+  %call = tail call i32 @Seqtype(i8* %0) #6, !dbg !163
   switch i32 %call, label %sw.default [
     i32 2, label %sw.bb
     i32 1, label %sw.bb1
     i32 3, label %sw.bb3
     i32 0, label %sw.bb5
-  ]
+  ], !dbg !163
 
 sw.bb:                                            ; preds = %for.body
-  %inc = add nsw i32 %nucleic.043, 1
-  br label %for.inc
+  %inc = add nsw i32 %nucleic.043, 1, !dbg !168
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !17), !dbg !168
+  br label %for.inc, !dbg !168
 
 sw.bb1:                                           ; preds = %for.body
-  %inc2 = add nsw i32 %nucleic.043, 1
-  br label %for.inc
+  %inc2 = add nsw i32 %nucleic.043, 1, !dbg !170
+  tail call void @llvm.dbg.value(metadata !{i32 %inc2}, i64 0, metadata !17), !dbg !170
+  br label %for.inc, !dbg !170
 
 sw.bb3:                                           ; preds = %for.body
-  %inc4 = add nsw i32 %amino.044, 1
-  br label %for.inc
+  %inc4 = add nsw i32 %amino.044, 1, !dbg !171
+  tail call void @llvm.dbg.value(metadata !{i32 %inc4}, i64 0, metadata !18), !dbg !171
+  br label %for.inc, !dbg !171
 
 sw.bb5:                                           ; preds = %for.body
-  %inc6 = add nsw i32 %other.042, 1
-  br label %for.inc
+  %inc6 = add nsw i32 %other.042, 1, !dbg !172
+  tail call void @llvm.dbg.value(metadata !{i32 %inc6}, i64 0, metadata !16), !dbg !172
+  br label %for.inc, !dbg !172
 
 sw.default:                                       ; preds = %for.body
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([22 x i8]* @.str, i64 0, i64 0)) #5
-  br label %for.inc
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([22 x i8]* @.str, i64 0, i64 0)) #6, !dbg !173
+  br label %for.inc, !dbg !174
 
 for.inc:                                          ; preds = %sw.bb, %sw.bb1, %sw.bb3, %sw.bb5, %sw.default
   %other.1 = phi i32 [ %other.042, %sw.default ], [ %inc6, %sw.bb5 ], [ %other.042, %sw.bb3 ], [ %other.042, %sw.bb1 ], [ %other.042, %sw.bb ]
   %nucleic.1 = phi i32 [ %nucleic.043, %sw.default ], [ %nucleic.043, %sw.bb5 ], [ %nucleic.043, %sw.bb3 ], [ %inc2, %sw.bb1 ], [ %inc, %sw.bb ]
   %amino.1 = phi i32 [ %amino.044, %sw.default ], [ %amino.044, %sw.bb5 ], [ %inc4, %sw.bb3 ], [ %amino.044, %sw.bb1 ], [ %amino.044, %sw.bb ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %nseq
-  br i1 %exitcond, label %for.end, label %for.body
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !161
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !161
+  %exitcond = icmp eq i32 %lftr.wideiv, %nseq, !dbg !161
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !161
 
 for.end:                                          ; preds = %for.inc, %entry
   %amino.0.lcssa = phi i32 [ 0, %entry ], [ %amino.1, %for.inc ]
   %nucleic.0.lcssa = phi i32 [ 0, %entry ], [ %nucleic.1, %for.inc ]
   %other.0.lcssa = phi i32 [ 0, %entry ], [ %other.1, %for.inc ]
-  %cmp8 = icmp eq i32 %nucleic.0.lcssa, %nseq
-  br i1 %cmp8, label %if.end23, label %if.else
+  %cmp8 = icmp eq i32 %nucleic.0.lcssa, %nseq, !dbg !175
+  br i1 %cmp8, label %if.end23, label %if.else, !dbg !175
 
 if.else:                                          ; preds = %for.end
-  %cmp9 = icmp eq i32 %amino.0.lcssa, %nseq
-  br i1 %cmp9, label %if.end23, label %if.else11
+  %cmp9 = icmp eq i32 %amino.0.lcssa, %nseq, !dbg !176
+  br i1 %cmp9, label %if.end23, label %if.else11, !dbg !176
 
 if.else11:                                        ; preds = %if.else
-  %cmp12 = icmp sgt i32 %nucleic.0.lcssa, %amino.0.lcssa
-  %cmp13 = icmp sgt i32 %nucleic.0.lcssa, %other.0.lcssa
-  %or.cond = and i1 %cmp12, %cmp13
-  br i1 %or.cond, label %if.then14, label %if.else15
+  %cmp12 = icmp sgt i32 %nucleic.0.lcssa, %amino.0.lcssa, !dbg !177
+  %cmp13 = icmp sgt i32 %nucleic.0.lcssa, %other.0.lcssa, !dbg !177
+  %or.cond = and i1 %cmp12, %cmp13, !dbg !177
+  br i1 %or.cond, label %if.then14, label %if.else15, !dbg !177
 
 if.then14:                                        ; preds = %if.else11
-  tail call void (i8*, ...)* @Warn(i8* getelementptr inbounds ([52 x i8]* @.str1, i64 0, i64 0)) #5
-  br label %if.end23
+  tail call void (i8*, ...)* @Warn(i8* getelementptr inbounds ([52 x i8]* @.str1, i64 0, i64 0)) #6, !dbg !178
+  tail call void @llvm.dbg.value(metadata !180, i64 0, metadata !19), !dbg !181
+  br label %if.end23, !dbg !182
 
 if.else15:                                        ; preds = %if.else11
-  %cmp16 = icmp sgt i32 %amino.0.lcssa, %nucleic.0.lcssa
-  %cmp18 = icmp sgt i32 %amino.0.lcssa, %other.0.lcssa
-  %or.cond39 = and i1 %cmp16, %cmp18
-  br i1 %or.cond39, label %if.then19, label %if.else20
+  %cmp16 = icmp sgt i32 %amino.0.lcssa, %nucleic.0.lcssa, !dbg !183
+  %cmp18 = icmp sgt i32 %amino.0.lcssa, %other.0.lcssa, !dbg !183
+  %or.cond39 = and i1 %cmp16, %cmp18, !dbg !183
+  br i1 %or.cond39, label %if.then19, label %if.else20, !dbg !183
 
 if.then19:                                        ; preds = %if.else15
-  tail call void (i8*, ...)* @Warn(i8* getelementptr inbounds ([50 x i8]* @.str2, i64 0, i64 0)) #5
-  br label %if.end23
+  tail call void (i8*, ...)* @Warn(i8* getelementptr inbounds ([50 x i8]* @.str2, i64 0, i64 0)) #6, !dbg !184
+  tail call void @llvm.dbg.value(metadata !186, i64 0, metadata !19), !dbg !187
+  br label %if.end23, !dbg !188
 
 if.else20:                                        ; preds = %if.else15
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([45 x i8]* @.str3, i64 0, i64 0)) #5
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([45 x i8]* @.str3, i64 0, i64 0)) #6, !dbg !189
   br label %if.end23
 
 if.end23:                                         ; preds = %if.else, %for.end, %if.then19, %if.else20, %if.then14
   %type.0 = phi i32 [ 2, %if.then14 ], [ 3, %if.then19 ], [ 0, %if.else20 ], [ 2, %for.end ], [ 3, %if.else ]
-  tail call void @SetAlphabet(i32 %type.0) #6
-  ret void
+  tail call void @SetAlphabet(i32 %type.0) #7, !dbg !190
+  ret void, !dbg !191
 }

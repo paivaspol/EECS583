@@ -1,86 +1,100 @@
 define i32 @actual_hazard_this_instance(i32 %unit, i32 %instance, %struct.rtx_def* %insn, i32 %clock, i32 %cost) #0 {
 entry:
-  %idxprom = sext i32 %instance to i64
-  %arrayidx = getelementptr inbounds [78 x i32]* @unit_tick, i64 0, i64 %idxprom
-  %0 = load i32* %arrayidx, align 4, !tbaa !0
-  %sub = sub nsw i32 %0, %clock
-  %cmp = icmp sgt i32 %sub, %cost
-  br i1 %cmp, label %if.then, label %if.end28
+  tail call void @llvm.dbg.value(metadata !{i32 %unit}, i64 0, metadata !452), !dbg !944
+  tail call void @llvm.dbg.value(metadata !{i32 %instance}, i64 0, metadata !453), !dbg !944
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !454), !dbg !945
+  tail call void @llvm.dbg.value(metadata !{i32 %clock}, i64 0, metadata !455), !dbg !944
+  tail call void @llvm.dbg.value(metadata !{i32 %cost}, i64 0, metadata !456), !dbg !944
+  %idxprom = sext i32 %instance to i64, !dbg !946
+  %arrayidx = getelementptr inbounds [78 x i32]* @unit_tick, i64 0, i64 %idxprom, !dbg !946
+  %0 = load i32* %arrayidx, align 4, !dbg !946, !tbaa !899
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !457), !dbg !946
+  %sub = sub nsw i32 %0, %clock, !dbg !947
+  %cmp = icmp sgt i32 %sub, %cost, !dbg !947
+  br i1 %cmp, label %if.then, label %if.end28, !dbg !947
 
 if.then:                                          ; preds = %entry
-  %idxprom1 = sext i32 %unit to i64
-  %blockage_range_function = getelementptr inbounds [0 x %struct.function_unit_desc]* @function_units, i64 0, i64 %idxprom1, i32 9
-  %1 = load i32 (%struct.rtx_def*)** %blockage_range_function, align 8, !tbaa !3
-  %tobool = icmp eq i32 (%struct.rtx_def*)* %1, null
-  br i1 %tobool, label %if.end22, label %if.then3
+  %idxprom1 = sext i32 %unit to i64, !dbg !948
+  %blockage_range_function = getelementptr inbounds [0 x %struct.function_unit_desc]* @function_units, i64 0, i64 %idxprom1, i32 9, !dbg !948
+  %1 = load i32 (%struct.rtx_def*)** %blockage_range_function, align 8, !dbg !948, !tbaa !906
+  %tobool = icmp eq i32 (%struct.rtx_def*)* %1, null, !dbg !948
+  br i1 %tobool, label %if.end22, label %if.then3, !dbg !948
 
 if.then3:                                         ; preds = %if.then
-  %blockage_function = getelementptr inbounds [0 x %struct.function_unit_desc]* @function_units, i64 0, i64 %idxprom1, i32 10
-  %2 = load i32 (%struct.rtx_def*, %struct.rtx_def*)** %blockage_function, align 8, !tbaa !3
-  %tobool6 = icmp eq i32 (%struct.rtx_def*, %struct.rtx_def*)* %2, null
-  br i1 %tobool6, label %if.else, label %if.then7
+  %blockage_function = getelementptr inbounds [0 x %struct.function_unit_desc]* @function_units, i64 0, i64 %idxprom1, i32 10, !dbg !950
+  %2 = load i32 (%struct.rtx_def*, %struct.rtx_def*)** %blockage_function, align 8, !dbg !950, !tbaa !906
+  %tobool6 = icmp eq i32 (%struct.rtx_def*, %struct.rtx_def*)* %2, null, !dbg !950
+  br i1 %tobool6, label %if.else, label %if.then7, !dbg !950
 
 if.then7:                                         ; preds = %if.then3
-  %arrayidx12 = getelementptr inbounds [78 x %struct.rtx_def*]* @unit_last_insn, i64 0, i64 %idxprom
-  %3 = load %struct.rtx_def** %arrayidx12, align 8, !tbaa !3
-  %call = tail call i32 %2(%struct.rtx_def* %3, %struct.rtx_def* %insn) #9
-  %max_blockage = getelementptr inbounds [0 x %struct.function_unit_desc]* @function_units, i64 0, i64 %idxprom1, i32 8
-  %4 = load i32* %max_blockage, align 8, !tbaa !0
-  %sub15 = add i32 %call, %0
-  %add = sub i32 %sub15, %4
-  br label %if.end22
+  %arrayidx12 = getelementptr inbounds [78 x %struct.rtx_def*]* @unit_last_insn, i64 0, i64 %idxprom, !dbg !952
+  %3 = load %struct.rtx_def** %arrayidx12, align 8, !dbg !952, !tbaa !906
+  %call = tail call i32 %2(%struct.rtx_def* %3, %struct.rtx_def* %insn) #10, !dbg !952
+  %max_blockage = getelementptr inbounds [0 x %struct.function_unit_desc]* @function_units, i64 0, i64 %idxprom1, i32 8, !dbg !952
+  %4 = load i32* %max_blockage, align 8, !dbg !952, !tbaa !899
+  %sub15 = add i32 %call, %0, !dbg !952
+  %add = sub i32 %sub15, %4, !dbg !952
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !457), !dbg !952
+  br label %if.end22, !dbg !952
 
 if.else:                                          ; preds = %if.then3
-  %arrayidx.i = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 0
-  %rtint.i = bitcast %union.rtunion_def* %arrayidx.i to i32*
-  %5 = load i32* %rtint.i, align 4, !tbaa !0
-  %idxprom.i = sext i32 %5 to i64
-  %6 = load %struct.haifa_insn_data** @h_i_d, align 8, !tbaa !3
-  %blockage2.i = getelementptr inbounds %struct.haifa_insn_data* %6, i64 %idxprom.i, i32 5
-  %7 = load i32* %blockage2.i, align 4, !tbaa !0
-  %shr.i = lshr i32 %7, 16
-  %add.i = add nsw i32 %unit, 1
-  %cmp.i = icmp eq i32 %shr.i, %add.i
-  br i1 %cmp.i, label %if.else.i, label %if.then.i
+  tail call void @llvm.dbg.value(metadata !{i32 %unit}, i64 0, metadata !953) #6, !dbg !955
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !956) #6, !dbg !957
+  %arrayidx.i = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 0, !dbg !958
+  %rtint.i = bitcast %union.rtunion_def* %arrayidx.i to i32*, !dbg !958
+  %5 = load i32* %rtint.i, align 4, !dbg !958, !tbaa !899
+  %idxprom.i = sext i32 %5 to i64, !dbg !958
+  %6 = load %struct.haifa_insn_data** @h_i_d, align 8, !dbg !958, !tbaa !906
+  %blockage2.i = getelementptr inbounds %struct.haifa_insn_data* %6, i64 %idxprom.i, i32 5, !dbg !958
+  %7 = load i32* %blockage2.i, align 4, !dbg !958, !tbaa !899
+  tail call void @llvm.dbg.value(metadata !{i32 %7}, i64 0, metadata !959) #6, !dbg !958
+  %shr.i = lshr i32 %7, 16, !dbg !960
+  %add.i = add nsw i32 %unit, 1, !dbg !960
+  %cmp.i = icmp eq i32 %shr.i, %add.i, !dbg !960
+  br i1 %cmp.i, label %if.else.i, label %if.then.i, !dbg !960
 
 if.then.i:                                        ; preds = %if.else
-  %call.i = tail call i32 %1(%struct.rtx_def* %insn) #9
-  %shl.i = shl i32 %add.i, 8
-  %shr6.i = lshr i32 %call.i, 16
-  %or.i = or i32 %shr6.i, %shl.i
-  %shl7.i = shl i32 %or.i, 8
-  %and.i = and i32 %call.i, 65535
-  %or8.i = or i32 %shl7.i, %and.i
-  %8 = load i32* %rtint.i, align 4, !tbaa !0
-  %idxprom12.i = sext i32 %8 to i64
-  %9 = load %struct.haifa_insn_data** @h_i_d, align 8, !tbaa !3
-  %blockage14.i = getelementptr inbounds %struct.haifa_insn_data* %9, i64 %idxprom12.i, i32 5
-  store i32 %or8.i, i32* %blockage14.i, align 4, !tbaa !0
-  br label %blockage_range.exit
+  %call.i = tail call i32 %1(%struct.rtx_def* %insn) #10, !dbg !961
+  tail call void @llvm.dbg.value(metadata !{i32 %call.i}, i64 0, metadata !963) #6, !dbg !961
+  %shl.i = shl i32 %add.i, 8, !dbg !964
+  %shr6.i = lshr i32 %call.i, 16, !dbg !964
+  %or.i = or i32 %shr6.i, %shl.i, !dbg !964
+  %shl7.i = shl i32 %or.i, 8, !dbg !964
+  %and.i = and i32 %call.i, 65535, !dbg !964
+  %or8.i = or i32 %shl7.i, %and.i, !dbg !964
+  %8 = load i32* %rtint.i, align 4, !dbg !964, !tbaa !899
+  %idxprom12.i = sext i32 %8 to i64, !dbg !964
+  %9 = load %struct.haifa_insn_data** @h_i_d, align 8, !dbg !964, !tbaa !906
+  %blockage14.i = getelementptr inbounds %struct.haifa_insn_data* %9, i64 %idxprom12.i, i32 5, !dbg !964
+  store i32 %or8.i, i32* %blockage14.i, align 4, !dbg !964, !tbaa !899
+  br label %blockage_range.exit, !dbg !965
 
 if.else.i:                                        ; preds = %if.else
-  %10 = shl i32 %7, 8
-  %shl17.i = and i32 %10, 16711680
-  %and18.i = and i32 %7, 255
-  %or19.i = or i32 %shl17.i, %and18.i
+  %10 = shl i32 %7, 8, !dbg !966
+  %shl17.i = and i32 %10, 16711680, !dbg !966
+  %and18.i = and i32 %7, 255, !dbg !966
+  %or19.i = or i32 %shl17.i, %and18.i, !dbg !966
+  tail call void @llvm.dbg.value(metadata !{i32 %or19.i}, i64 0, metadata !963) #6, !dbg !966
   br label %blockage_range.exit
 
 blockage_range.exit:                              ; preds = %if.then.i, %if.else.i
   %range.0.i = phi i32 [ %call.i, %if.then.i ], [ %or19.i, %if.else.i ]
-  %and = and i32 %range.0.i, 65535
-  %max_blockage19 = getelementptr inbounds [0 x %struct.function_unit_desc]* @function_units, i64 0, i64 %idxprom1, i32 8
-  %11 = load i32* %max_blockage19, align 8, !tbaa !0
-  %sub20 = sub i32 %0, %11
-  %add21 = add i32 %sub20, %and
+  %and = and i32 %range.0.i, 65535, !dbg !954
+  %max_blockage19 = getelementptr inbounds [0 x %struct.function_unit_desc]* @function_units, i64 0, i64 %idxprom1, i32 8, !dbg !954
+  %11 = load i32* %max_blockage19, align 8, !dbg !954, !tbaa !899
+  %sub20 = sub i32 %0, %11, !dbg !954
+  %add21 = add i32 %sub20, %and, !dbg !954
+  tail call void @llvm.dbg.value(metadata !{i32 %add21}, i64 0, metadata !457), !dbg !954
   br label %if.end22
 
 if.end22:                                         ; preds = %if.then, %if.then7, %blockage_range.exit
   %tick.0 = phi i32 [ %add, %if.then7 ], [ %add21, %blockage_range.exit ], [ %0, %if.then ]
-  %sub23 = sub nsw i32 %tick.0, %clock
-  %cmp24 = icmp sgt i32 %sub23, %cost
-  %sub23.cost = select i1 %cmp24, i32 %sub23, i32 %cost
-  ret i32 %sub23.cost
+  %sub23 = sub nsw i32 %tick.0, %clock, !dbg !967
+  %cmp24 = icmp sgt i32 %sub23, %cost, !dbg !967
+  tail call void @llvm.dbg.value(metadata !{i32 %sub23}, i64 0, metadata !456), !dbg !968
+  %sub23.cost = select i1 %cmp24, i32 %sub23, i32 %cost, !dbg !967
+  ret i32 %sub23.cost, !dbg !967
 
 if.end28:                                         ; preds = %entry
-  ret i32 %cost
+  ret i32 %cost, !dbg !969
 }

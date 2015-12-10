@@ -1,0 +1,42 @@
+define i8* @_ZN27EtherFrameWithLLCDescriptor21getFieldStructPointerEii(%class.EtherFrameWithLLCDescriptor* nocapture %this, i32 %field, i32 %i) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.EtherFrameWithLLCDescriptor* %this}, i64 0, metadata !3702), !dbg !4944
+  tail call void @llvm.dbg.value(metadata !{i32 %field}, i64 0, metadata !3703), !dbg !4944
+  tail call void @llvm.dbg.value(metadata !{i32 %i}, i64 0, metadata !3704), !dbg !4944
+  %cmp = icmp slt i32 %field, 2, !dbg !4945
+  br i1 %cmp, label %if.then, label %return, !dbg !4945
+
+if.then:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{i32 %field}, i64 0, metadata !4946), !dbg !4948
+  tail call void @llvm.dbg.value(metadata !4796, i64 0, metadata !4949), !dbg !4948
+  %p.i = getelementptr inbounds %class.EtherFrameWithLLCDescriptor* %this, i64 0, i32 0, i32 0, i32 1, !dbg !4950
+  %0 = load i8** %p.i, align 8, !dbg !4950, !tbaa !4556
+  %1 = bitcast i8* %0 to %class.EtherFrame*, !dbg !4950
+  tail call void @llvm.dbg.value(metadata !{%class.EtherFrame* %1}, i64 0, metadata !4951), !dbg !4950
+  switch i32 %field, label %return [
+    i32 0, label %sw.bb.i
+    i32 1, label %sw.bb2.i
+  ], !dbg !4952
+
+sw.bb.i:                                          ; preds = %if.then
+  %2 = bitcast i8* %0 to %class.MACAddress* (%class.EtherFrame*)***, !dbg !4953
+  %vtable.i = load %class.MACAddress* (%class.EtherFrame*)*** %2, align 8, !dbg !4953, !tbaa !4540
+  %vfn.i = getelementptr inbounds %class.MACAddress* (%class.EtherFrame*)** %vtable.i, i64 19, !dbg !4953
+  %3 = load %class.MACAddress* (%class.EtherFrame*)** %vfn.i, align 8, !dbg !4953
+  %call.i = tail call %class.MACAddress* %3(%class.EtherFrame* %1) #9, !dbg !4953
+  %4 = bitcast %class.MACAddress* %call.i to i8*, !dbg !4953
+  br label %return, !dbg !4953
+
+sw.bb2.i:                                         ; preds = %if.then
+  %5 = bitcast i8* %0 to %class.MACAddress* (%class.EtherFrame*)***, !dbg !4954
+  %vtable3.i = load %class.MACAddress* (%class.EtherFrame*)*** %5, align 8, !dbg !4954, !tbaa !4540
+  %vfn4.i = getelementptr inbounds %class.MACAddress* (%class.EtherFrame*)** %vtable3.i, i64 21, !dbg !4954
+  %6 = load %class.MACAddress* (%class.EtherFrame*)** %vfn4.i, align 8, !dbg !4954
+  %call5.i = tail call %class.MACAddress* %6(%class.EtherFrame* %1) #9, !dbg !4954
+  %7 = bitcast %class.MACAddress* %call5.i to i8*, !dbg !4954
+  br label %return, !dbg !4954
+
+return:                                           ; preds = %entry, %sw.bb2.i, %sw.bb.i, %if.then
+  %retval.0 = phi i8* [ %7, %sw.bb2.i ], [ %4, %sw.bb.i ], [ null, %if.then ], [ null, %entry ]
+  ret i8* %retval.0, !dbg !4955
+}

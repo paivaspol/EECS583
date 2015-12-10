@@ -1,0 +1,56 @@
+define void @_ZN11xercesc_2_59XMLString9catStringEPtPKt(i16* %target, i16* nocapture %src) #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %target}, i64 0, metadata !1790), !dbg !3376
+  tail call void @llvm.dbg.value(metadata !{i16* %src}, i64 0, metadata !1791), !dbg !3376
+  tail call void @llvm.dbg.value(metadata !{i16* %target}, i64 0, metadata !3377), !dbg !3379
+  %cmp.i = icmp eq i16* %target, null, !dbg !3380
+  br i1 %cmp.i, label %while.cond.preheader, label %lor.lhs.false.i, !dbg !3380
+
+lor.lhs.false.i:                                  ; preds = %entry
+  %0 = load i16* %target, align 2, !dbg !3380, !tbaa !2947
+  %cmp1.i = icmp eq i16 %0, 0, !dbg !3380
+  br i1 %cmp1.i, label %while.cond.preheader, label %while.cond.i, !dbg !3380
+
+while.cond.i:                                     ; preds = %lor.lhs.false.i, %while.cond.i
+  %src.pn.i = phi i16* [ %pszTmp.0.i, %while.cond.i ], [ %target, %lor.lhs.false.i ]
+  %pszTmp.0.i = getelementptr inbounds i16* %src.pn.i, i64 1, !dbg !3381
+  %1 = load i16* %pszTmp.0.i, align 2, !dbg !3382, !tbaa !2947
+  %tobool.i = icmp eq i16 %1, 0, !dbg !3382
+  br i1 %tobool.i, label %while.end.i, label %while.cond.i, !dbg !3382
+
+while.end.i:                                      ; preds = %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %pszTmp.0.i to i64, !dbg !3383
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %target to i64, !dbg !3383
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !3383
+  %sub.ptr.div7.i = lshr exact i64 %sub.ptr.sub.i, 1, !dbg !3383
+  %conv2.i = trunc i64 %sub.ptr.div7.i to i32, !dbg !3383
+  br label %while.cond.preheader, !dbg !3383
+
+while.cond.preheader:                             ; preds = %entry, %lor.lhs.false.i, %while.end.i
+  %index.0.ph = phi i32 [ %conv2.i, %while.end.i ], [ 0, %lor.lhs.false.i ], [ 0, %entry ]
+  %2 = load i16* %src, align 2, !dbg !3384, !tbaa !2947
+  %tobool7 = icmp eq i16 %2, 0, !dbg !3384
+  br i1 %tobool7, label %while.end, label %while.body, !dbg !3384
+
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %3 = phi i16 [ %4, %while.body ], [ %2, %while.cond.preheader ]
+  %pszTmp.09 = phi i16* [ %incdec.ptr, %while.body ], [ %src, %while.cond.preheader ]
+  %index.08 = phi i32 [ %inc, %while.body ], [ %index.0.ph, %while.cond.preheader ]
+  %incdec.ptr = getelementptr inbounds i16* %pszTmp.09, i64 1, !dbg !3385
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !1793), !dbg !3385
+  %inc = add i32 %index.08, 1, !dbg !3385
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1792), !dbg !3385
+  %idxprom = zext i32 %index.08 to i64, !dbg !3385
+  %arrayidx = getelementptr inbounds i16* %target, i64 %idxprom, !dbg !3385
+  store i16 %3, i16* %arrayidx, align 2, !dbg !3385, !tbaa !2947
+  %4 = load i16* %incdec.ptr, align 2, !dbg !3384, !tbaa !2947
+  %tobool = icmp eq i16 %4, 0, !dbg !3384
+  br i1 %tobool, label %while.end, label %while.body, !dbg !3384
+
+while.end:                                        ; preds = %while.body, %while.cond.preheader
+  %index.0.lcssa = phi i32 [ %index.0.ph, %while.cond.preheader ], [ %inc, %while.body ]
+  %idxprom1 = zext i32 %index.0.lcssa to i64, !dbg !3386
+  %arrayidx2 = getelementptr inbounds i16* %target, i64 %idxprom1, !dbg !3386
+  store i16 0, i16* %arrayidx2, align 2, !dbg !3386, !tbaa !2947
+  ret void, !dbg !3387
+}

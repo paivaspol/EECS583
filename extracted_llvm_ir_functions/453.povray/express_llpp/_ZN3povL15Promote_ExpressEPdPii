@@ -1,0 +1,46 @@
+define internal fastcc void @_ZN3povL15Promote_ExpressEPdPii(double* nocapture %Express, i32* nocapture %Old_Terms, i32 %New_Terms) #5 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{double* %Express}, i64 0, metadata !1636), !dbg !3575
+  tail call void @llvm.dbg.value(metadata !{i32* %Old_Terms}, i64 0, metadata !1637), !dbg !3575
+  tail call void @llvm.dbg.value(metadata !{i32 %New_Terms}, i64 0, metadata !1638), !dbg !3575
+  %0 = load i32* %Old_Terms, align 4, !dbg !3576, !tbaa !2099
+  %cmp = icmp slt i32 %0, %New_Terms, !dbg !3576
+  br i1 %cmp, label %if.end, label %return, !dbg !3576
+
+if.end:                                           ; preds = %entry
+  %cmp1 = icmp eq i32 %0, 1, !dbg !3577
+  br i1 %cmp1, label %for.cond.preheader, label %if.end13.loopexit29, !dbg !3577
+
+for.cond.preheader:                               ; preds = %if.end
+  %cmp327 = icmp sgt i32 %New_Terms, 1, !dbg !3578
+  br i1 %cmp327, label %for.body, label %if.end13, !dbg !3578
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 1, %for.cond.preheader ]
+  %1 = load double* %Express, align 8, !dbg !3581, !tbaa !2113
+  %arrayidx4 = getelementptr inbounds double* %Express, i64 %indvars.iv, !dbg !3581
+  store double %1, double* %arrayidx4, align 8, !dbg !3581, !tbaa !2113
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !3578
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !3578
+  %exitcond = icmp eq i32 %lftr.wideiv, %New_Terms, !dbg !3578
+  br i1 %exitcond, label %if.end13, label %for.body, !dbg !3578
+
+if.end13.loopexit29:                              ; preds = %if.end
+  %2 = sext i32 %0 to i64
+  %scevgep = getelementptr double* %Express, i64 %2
+  %scevgep34 = bitcast double* %scevgep to i8*
+  %3 = add i32 %New_Terms, -1, !dbg !3583
+  %4 = sub i32 %3, %0, !dbg !3583
+  %5 = zext i32 %4 to i64
+  %6 = shl nuw nsw i64 %5, 3, !dbg !3583
+  %7 = add i64 %6, 8, !dbg !3583
+  call void @llvm.memset.p0i8.i64(i8* %scevgep34, i8 0, i64 %7, i32 8, i1 false), !dbg !3586
+  br label %if.end13
+
+if.end13:                                         ; preds = %for.cond.preheader, %for.body, %if.end13.loopexit29
+  store i32 %New_Terms, i32* %Old_Terms, align 4, !dbg !3588, !tbaa !2099
+  br label %return, !dbg !3588
+
+return:                                           ; preds = %entry, %if.end13
+  ret void, !dbg !3588
+}

@@ -1,0 +1,54 @@
+define i32 @_Z20POVMSAttrList_SetNthP9POVMSDataiS0_(%struct.POVMSData* %attr, i32 %index, %struct.POVMSData* %item) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMSData* %attr}, i64 0, metadata !648), !dbg !2358
+  tail call void @llvm.dbg.value(metadata !{i32 %index}, i64 0, metadata !649), !dbg !2358
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMSData* %item}, i64 0, metadata !650), !dbg !2358
+  %cmp = icmp eq %struct.POVMSData* %attr, null, !dbg !2359
+  br i1 %cmp, label %return, label %if.end, !dbg !2359
+
+if.end:                                           ; preds = %entry
+  %type = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 0, !dbg !2360
+  %0 = load i32* %type, align 4, !dbg !2360, !tbaa !937
+  %cmp1 = icmp eq i32 %0, 1279873876, !dbg !2360
+  br i1 %cmp1, label %if.end3, label %return, !dbg !2360
+
+if.end3:                                          ; preds = %if.end
+  %cmp4 = icmp eq %struct.POVMSData* %item, null, !dbg !2361
+  br i1 %cmp4, label %return, label %if.end6, !dbg !2361
+
+if.end6:                                          ; preds = %if.end3
+  %1 = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 2, !dbg !2362
+  %items = bitcast %union.anon* %1 to %struct.POVMSData**, !dbg !2362
+  %2 = load %struct.POVMSData** %items, align 8, !dbg !2362, !tbaa !917
+  %cmp7 = icmp eq %struct.POVMSData* %2, null, !dbg !2362
+  %cmp10 = icmp slt i32 %index, 1, !dbg !2363
+  %or.cond = or i1 %cmp7, %cmp10, !dbg !2362
+  br i1 %or.cond, label %return, label %if.end12, !dbg !2362
+
+if.end12:                                         ; preds = %if.end6
+  %size = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 1, !dbg !2364
+  %3 = load i32* %size, align 4, !dbg !2364, !tbaa !937
+  %cmp13 = icmp slt i32 %3, %index, !dbg !2364
+  br i1 %cmp13, label %return, label %if.end15, !dbg !2364
+
+if.end15:                                         ; preds = %if.end12
+  %sub = add nsw i32 %index, -1, !dbg !2365
+  %idxprom = sext i32 %sub to i64, !dbg !2365
+  %arrayidx = getelementptr inbounds %struct.POVMSData* %2, i64 %idxprom, !dbg !2365
+  %call = tail call i32 @_Z16POVMSAttr_DeleteP9POVMSData(%struct.POVMSData* %arrayidx) #8, !dbg !2365
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !651), !dbg !2365
+  %cmp17 = icmp eq i32 %call, 0, !dbg !2366
+  br i1 %cmp17, label %if.then18, label %return, !dbg !2366
+
+if.then18:                                        ; preds = %if.end15
+  %4 = load %struct.POVMSData** %items, align 8, !dbg !2367, !tbaa !917
+  %arrayidx22 = getelementptr inbounds %struct.POVMSData* %4, i64 %idxprom, !dbg !2367
+  %5 = bitcast %struct.POVMSData* %arrayidx22 to i8*, !dbg !2367
+  %6 = bitcast %struct.POVMSData* %item to i8*, !dbg !2367
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %5, i8* %6, i64 16, i32 8, i1 false), !dbg !2367, !tbaa.struct !1505
+  br label %return, !dbg !2367
+
+return:                                           ; preds = %if.end15, %if.then18, %if.end12, %if.end6, %if.end3, %if.end, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ -19, %if.end ], [ -1, %if.end3 ], [ -1, %if.end6 ], [ -1, %if.end12 ], [ 0, %if.then18 ], [ %call, %if.end15 ]
+  ret i32 %retval.0, !dbg !2368
+}

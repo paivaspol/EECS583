@@ -1,23 +1,26 @@
 define noalias double* @DVinit2(i32 %size) #0 {
 entry:
-  %cmp = icmp sgt i32 %size, 0
-  br i1 %cmp, label %if.then2, label %if.end19
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !218), !dbg !871
+  tail call void @llvm.dbg.value(metadata !728, i64 0, metadata !219), !dbg !872
+  %cmp = icmp sgt i32 %size, 0, !dbg !873
+  br i1 %cmp, label %if.then2, label %if.end19, !dbg !873
 
 if.then2:                                         ; preds = %entry
-  %conv = sext i32 %size to i64
-  %mul = shl nsw i64 %conv, 3
-  %call = tail call noalias i8* @malloc(i64 %mul) #5
-  %0 = bitcast i8* %call to double*
-  %cmp3 = icmp eq i8* %call, null
-  br i1 %cmp3, label %if.then5, label %if.end19
+  %conv = sext i32 %size to i64, !dbg !874
+  %mul = shl nsw i64 %conv, 3, !dbg !874
+  %call = tail call noalias i8* @malloc(i64 %mul) #6, !dbg !874
+  %0 = bitcast i8* %call to double*, !dbg !874
+  tail call void @llvm.dbg.value(metadata !{double* %0}, i64 0, metadata !219), !dbg !874
+  %cmp3 = icmp eq i8* %call, null, !dbg !874
+  br i1 %cmp3, label %if.then5, label %if.end19, !dbg !874
 
 if.then5:                                         ; preds = %if.then2
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call8 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([49 x i8]* @.str16, i64 0, i64 0), i64 %mul, i32 517, i8* getelementptr inbounds ([83 x i8]* @.str17, i64 0, i64 0)) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !877, !tbaa !629
+  %call8 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([49 x i8]* @.str16, i64 0, i64 0), i64 %mul, i32 517, i8* getelementptr inbounds ([83 x i8]* @.str17, i64 0, i64 0)) #6, !dbg !877
+  tail call void @exit(i32 -1) #7, !dbg !877
+  unreachable, !dbg !877
 
 if.end19:                                         ; preds = %if.then2, %entry
   %y.0 = phi double* [ %0, %if.then2 ], [ null, %entry ]
-  ret double* %y.0
+  ret double* %y.0, !dbg !879
 }

@@ -1,68 +1,72 @@
 define i32 @sre_strcat(i8** nocapture %dest, i32 %ldest, i8* %src, i32 %lsrc) #0 {
 entry:
-  %cmp = icmp slt i32 %ldest, 0
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i8** %dest}, i64 0, metadata !176), !dbg !313
+  tail call void @llvm.dbg.value(metadata !{i32 %ldest}, i64 0, metadata !177), !dbg !313
+  tail call void @llvm.dbg.value(metadata !{i8* %src}, i64 0, metadata !178), !dbg !313
+  tail call void @llvm.dbg.value(metadata !{i32 %lsrc}, i64 0, metadata !179), !dbg !313
+  %cmp = icmp slt i32 %ldest, 0, !dbg !314
+  br i1 %cmp, label %if.then, label %if.end, !dbg !314
 
 if.then:                                          ; preds = %entry
-  %0 = load i8** %dest, align 8, !tbaa !0
-  %cmp1 = icmp eq i8* %0, null
-  br i1 %cmp1, label %if.end, label %cond.false
+  %0 = load i8** %dest, align 8, !dbg !314, !tbaa !220
+  %cmp1 = icmp eq i8* %0, null, !dbg !314
+  br i1 %cmp1, label %if.end, label %cond.false, !dbg !314
 
 cond.false:                                       ; preds = %if.then
-  %call = tail call i64 @strlen(i8* %0) #7
-  %phitmp51 = trunc i64 %call to i32
-  br label %if.end
+  %call = tail call i64 @strlen(i8* %0) #8, !dbg !314
+  %phitmp51 = trunc i64 %call to i32, !dbg !314
+  br label %if.end, !dbg !314
 
 if.end:                                           ; preds = %entry, %cond.false, %if.then
   %len1.0 = phi i32 [ %phitmp51, %cond.false ], [ 0, %if.then ], [ %ldest, %entry ]
-  %cmp2 = icmp slt i32 %lsrc, 0
-  br i1 %cmp2, label %if.then4, label %if.end14
+  %cmp2 = icmp slt i32 %lsrc, 0, !dbg !315
+  br i1 %cmp2, label %if.then4, label %if.end14, !dbg !315
 
 if.then4:                                         ; preds = %if.end
-  %cmp5 = icmp eq i8* %src, null
-  br i1 %cmp5, label %return, label %cond.false8
+  %cmp5 = icmp eq i8* %src, null, !dbg !315
+  br i1 %cmp5, label %return, label %cond.false8, !dbg !315
 
 cond.false8:                                      ; preds = %if.then4
-  %call9 = tail call i64 @strlen(i8* %src) #7
-  %phitmp = trunc i64 %call9 to i32
-  br label %if.end14
+  %call9 = tail call i64 @strlen(i8* %src) #8, !dbg !315
+  %phitmp = trunc i64 %call9 to i32, !dbg !315
+  br label %if.end14, !dbg !315
 
 if.end14:                                         ; preds = %if.end, %cond.false8
   %len2.0 = phi i32 [ %phitmp, %cond.false8 ], [ %lsrc, %if.end ]
-  %cmp15 = icmp eq i32 %len2.0, 0
-  br i1 %cmp15, label %return, label %if.end18
+  %cmp15 = icmp eq i32 %len2.0, 0, !dbg !316
+  br i1 %cmp15, label %return, label %if.end18, !dbg !316
 
 if.end18:                                         ; preds = %if.end14
-  %1 = load i8** %dest, align 8, !tbaa !0
-  %cmp19 = icmp eq i8* %1, null
-  br i1 %cmp19, label %if.then21, label %if.else24
+  %1 = load i8** %dest, align 8, !dbg !317, !tbaa !220
+  %cmp19 = icmp eq i8* %1, null, !dbg !317
+  br i1 %cmp19, label %if.then21, label %if.else24, !dbg !317
 
 if.then21:                                        ; preds = %if.end18
-  %add = add nsw i32 %len2.0, 1
-  %conv22 = sext i32 %add to i64
-  %call23 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([56 x i8]* @.str2, i64 0, i64 0), i32 344, i64 %conv22) #10
-  br label %if.end30
+  %add = add nsw i32 %len2.0, 1, !dbg !317
+  %conv22 = sext i32 %add to i64, !dbg !317
+  %call23 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([56 x i8]* @.str2, i64 0, i64 0), i32 344, i64 %conv22) #11, !dbg !317
+  br label %if.end30, !dbg !317
 
 if.else24:                                        ; preds = %if.end18
-  %add25 = add i32 %len1.0, 1
-  %add26 = add i32 %add25, %len2.0
-  %conv27 = sext i32 %add26 to i64
-  %call29 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([56 x i8]* @.str2, i64 0, i64 0), i32 345, i8* %1, i64 %conv27) #10
-  %add31.pre = add nsw i32 %len2.0, 1
-  %conv32.pre = sext i32 %add31.pre to i64
+  %add25 = add i32 %len1.0, 1, !dbg !318
+  %add26 = add i32 %add25, %len2.0, !dbg !318
+  %conv27 = sext i32 %add26 to i64, !dbg !318
+  %call29 = tail call i8* @sre_realloc(i8* getelementptr inbounds ([56 x i8]* @.str2, i64 0, i64 0), i32 345, i8* %1, i64 %conv27) #11, !dbg !318
+  %add31.pre = add nsw i32 %len2.0, 1, !dbg !319
+  %conv32.pre = sext i32 %add31.pre to i64, !dbg !319
   br label %if.end30
 
 if.end30:                                         ; preds = %if.else24, %if.then21
-  %conv32.pre-phi = phi i64 [ %conv32.pre, %if.else24 ], [ %conv22, %if.then21 ]
+  %conv32.pre-phi = phi i64 [ %conv32.pre, %if.else24 ], [ %conv22, %if.then21 ], !dbg !319
   %storemerge = phi i8* [ %call29, %if.else24 ], [ %call23, %if.then21 ]
-  store i8* %storemerge, i8** %dest, align 8, !tbaa !0
-  %idx.ext = sext i32 %len1.0 to i64
-  %add.ptr = getelementptr inbounds i8* %storemerge, i64 %idx.ext
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %add.ptr, i8* %src, i64 %conv32.pre-phi, i32 1, i1 false)
-  %add33 = add nsw i32 %len2.0, %len1.0
-  br label %return
+  store i8* %storemerge, i8** %dest, align 8, !dbg !317, !tbaa !220
+  %idx.ext = sext i32 %len1.0 to i64, !dbg !319
+  %add.ptr = getelementptr inbounds i8* %storemerge, i64 %idx.ext, !dbg !319
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %add.ptr, i8* %src, i64 %conv32.pre-phi, i32 1, i1 false), !dbg !319
+  %add33 = add nsw i32 %len2.0, %len1.0, !dbg !320
+  br label %return, !dbg !320
 
 return:                                           ; preds = %if.then4, %if.end14, %if.end30
   %retval.0 = phi i32 [ %add33, %if.end30 ], [ %len1.0, %if.end14 ], [ %len1.0, %if.then4 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !321
 }

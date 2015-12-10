@@ -1,23 +1,28 @@
 define void @predict_edge(%struct.edge_def* nocapture %e, i32 %predictor, i32 %probability) #0 {
 entry:
-  %src = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 2
-  %0 = load %struct.basic_block_def** %src, align 8, !tbaa !0
-  %end = getelementptr inbounds %struct.basic_block_def* %0, i64 0, i32 1
-  %1 = load %struct.rtx_def** %end, align 8, !tbaa !0
-  %call = tail call i32 @any_condjump_p(%struct.rtx_def* %1) #5
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.edge_def* %e}, i64 0, metadata !973), !dbg !1245
+  tail call void @llvm.dbg.value(metadata !{i32 %predictor}, i64 0, metadata !974), !dbg !1246
+  tail call void @llvm.dbg.value(metadata !{i32 %probability}, i64 0, metadata !975), !dbg !1247
+  %src = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 2, !dbg !1248
+  %0 = load %struct.basic_block_def** %src, align 8, !dbg !1248, !tbaa !1232
+  %end = getelementptr inbounds %struct.basic_block_def* %0, i64 0, i32 1, !dbg !1248
+  %1 = load %struct.rtx_def** %end, align 8, !dbg !1248, !tbaa !1232
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %1}, i64 0, metadata !976), !dbg !1248
+  %call = tail call i32 @any_condjump_p(%struct.rtx_def* %1) #6, !dbg !1249
+  %tobool = icmp eq i32 %call, 0, !dbg !1249
+  br i1 %tobool, label %return, label %if.end, !dbg !1249
 
 if.end:                                           ; preds = %entry
-  %flags = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 6
-  %2 = load i32* %flags, align 4, !tbaa !3
-  %and = and i32 %2, 1
-  %tobool1 = icmp eq i32 %and, 0
-  %sub = sub nsw i32 10000, %probability
-  %probability.sub = select i1 %tobool1, i32 %probability, i32 %sub
-  tail call void @predict_insn(%struct.rtx_def* %1, i32 %predictor, i32 %probability.sub) #7
-  br label %return
+  %flags = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 6, !dbg !1250
+  %2 = load i32* %flags, align 4, !dbg !1250, !tbaa !1240
+  %and = and i32 %2, 1, !dbg !1250
+  %tobool1 = icmp eq i32 %and, 0, !dbg !1250
+  %sub = sub nsw i32 10000, %probability, !dbg !1251
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !975), !dbg !1251
+  %probability.sub = select i1 %tobool1, i32 %probability, i32 %sub, !dbg !1250
+  tail call void @predict_insn(%struct.rtx_def* %1, i32 %predictor, i32 %probability.sub) #8, !dbg !1252
+  br label %return, !dbg !1252
 
 return:                                           ; preds = %entry, %if.end
-  ret void
+  ret void, !dbg !1252
 }

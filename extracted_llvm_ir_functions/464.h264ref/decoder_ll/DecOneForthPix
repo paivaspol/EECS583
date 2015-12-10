@@ -1,46 +1,50 @@
 define void @DecOneForthPix(i16** nocapture %dY, i16*** nocapture %dref) #0 {
 entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %height8 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 15
-  %1 = load i32* %height8, align 4, !tbaa !3
-  %cmp9 = icmp sgt i32 %1, 0
-  br i1 %cmp9, label %for.body.lr.ph, label %for.end
+  tail call void @llvm.dbg.value(metadata !{i16** %dY}, i64 0, metadata !179), !dbg !1016
+  tail call void @llvm.dbg.value(metadata !{i16*** %dref}, i64 0, metadata !180), !dbg !1016
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !1017, !tbaa !758
+  tail call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !182), !dbg !1017
+  tail call void @llvm.dbg.value(metadata !21, i64 0, metadata !181), !dbg !1018
+  %height8 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 15, !dbg !1018
+  %1 = load i32* %height8, align 4, !dbg !1018, !tbaa !761
+  %cmp9 = icmp sgt i32 %1, 0, !dbg !1018
+  br i1 %cmp9, label %for.body.lr.ph, label %for.end, !dbg !1018
 
 for.body.lr.ph:                                   ; preds = %entry
-  %number = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 0
-  %buf_cycle = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 84
-  %2 = load i32* @start_frame_no_in_this_IGOP, align 4, !tbaa !3
-  %3 = load i32* %number, align 4, !tbaa !3
-  %4 = load i32* %buf_cycle, align 4, !tbaa !3
-  %sub = sub nsw i32 %3, %2
-  %rem = srem i32 %sub, %4
-  %idxprom1 = sext i32 %rem to i64
-  %arrayidx = getelementptr inbounds i16*** %dref, i64 %idxprom1
-  br label %for.body
+  %number = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 0, !dbg !1017
+  %buf_cycle = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 84, !dbg !1017
+  %2 = load i32* @start_frame_no_in_this_IGOP, align 4, !dbg !1017, !tbaa !761
+  %3 = load i32* %number, align 4, !dbg !1017, !tbaa !761
+  %4 = load i32* %buf_cycle, align 4, !dbg !1017, !tbaa !761
+  %sub = sub nsw i32 %3, %2, !dbg !1017
+  %rem = srem i32 %sub, %4, !dbg !1017
+  %idxprom1 = sext i32 %rem to i64, !dbg !1020
+  %arrayidx = getelementptr inbounds i16*** %dref, i64 %idxprom1, !dbg !1020
+  br label %for.body, !dbg !1018
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.body
   %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
   %5 = phi %struct.ImageParameters* [ %0, %for.body.lr.ph ], [ %12, %for.body ]
-  %6 = load i16*** %arrayidx, align 8, !tbaa !0
-  %arrayidx2 = getelementptr inbounds i16** %6, i64 %indvars.iv
-  %7 = load i16** %arrayidx2, align 8, !tbaa !0
-  %8 = bitcast i16* %7 to i8*
-  %arrayidx4 = getelementptr inbounds i16** %dY, i64 %indvars.iv
-  %9 = load i16** %arrayidx4, align 8, !tbaa !0
-  %10 = bitcast i16* %9 to i8*
-  %width = getelementptr inbounds %struct.ImageParameters* %5, i64 0, i32 13
-  %11 = load i32* %width, align 4, !tbaa !3
-  %conv = sext i32 %11 to i64
-  %mul = shl nsw i64 %conv, 1
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %8, i8* %10, i64 %mul, i32 2, i1 false)
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %12 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %height = getelementptr inbounds %struct.ImageParameters* %12, i64 0, i32 15
-  %13 = load i32* %height, align 4, !tbaa !3
-  %14 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %14, %13
-  br i1 %cmp, label %for.body, label %for.end
+  %6 = load i16*** %arrayidx, align 8, !dbg !1020, !tbaa !758
+  %arrayidx2 = getelementptr inbounds i16** %6, i64 %indvars.iv, !dbg !1020
+  %7 = load i16** %arrayidx2, align 8, !dbg !1020, !tbaa !758
+  %8 = bitcast i16* %7 to i8*, !dbg !1020
+  %arrayidx4 = getelementptr inbounds i16** %dY, i64 %indvars.iv, !dbg !1020
+  %9 = load i16** %arrayidx4, align 8, !dbg !1020, !tbaa !758
+  %10 = bitcast i16* %9 to i8*, !dbg !1020
+  %width = getelementptr inbounds %struct.ImageParameters* %5, i64 0, i32 13, !dbg !1020
+  %11 = load i32* %width, align 4, !dbg !1020, !tbaa !761
+  %conv = sext i32 %11 to i64, !dbg !1020
+  %mul = shl nsw i64 %conv, 1, !dbg !1020
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %8, i8* %10, i64 %mul, i32 2, i1 false), !dbg !1020
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1018
+  %12 = load %struct.ImageParameters** @img, align 8, !dbg !1018, !tbaa !758
+  %height = getelementptr inbounds %struct.ImageParameters* %12, i64 0, i32 15, !dbg !1018
+  %13 = load i32* %height, align 4, !dbg !1018, !tbaa !761
+  %14 = trunc i64 %indvars.iv.next to i32, !dbg !1018
+  %cmp = icmp slt i32 %14, %13, !dbg !1018
+  br i1 %cmp, label %for.body, label %for.end, !dbg !1018
 
 for.end:                                          ; preds = %for.body, %entry
-  ret void
+  ret void, !dbg !1021
 }

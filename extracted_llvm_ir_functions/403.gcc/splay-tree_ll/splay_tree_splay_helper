@@ -1,151 +1,163 @@
 define internal fastcc %struct.splay_tree_node_s* @splay_tree_splay_helper(%struct.splay_tree_s* nocapture %sp, i64 %key, %struct.splay_tree_node_s** %node, %struct.splay_tree_node_s** %parent, %struct.splay_tree_node_s** %grandparent) #0 {
 entry:
-  %0 = load %struct.splay_tree_node_s** %node, align 8, !tbaa !0
-  %tobool = icmp eq %struct.splay_tree_node_s* %0, null
-  br i1 %tobool, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.splay_tree_s* %sp}, i64 0, metadata !157), !dbg !397
+  tail call void @llvm.dbg.value(metadata !{i64 %key}, i64 0, metadata !158), !dbg !398
+  tail call void @llvm.dbg.value(metadata !{%struct.splay_tree_node_s** %node}, i64 0, metadata !159), !dbg !399
+  tail call void @llvm.dbg.value(metadata !{%struct.splay_tree_node_s** %parent}, i64 0, metadata !160), !dbg !400
+  tail call void @llvm.dbg.value(metadata !{%struct.splay_tree_node_s** %grandparent}, i64 0, metadata !161), !dbg !401
+  %0 = load %struct.splay_tree_node_s** %node, align 8, !dbg !402, !tbaa !211
+  tail call void @llvm.dbg.value(metadata !{%struct.splay_tree_node_s* %0}, i64 0, metadata !163), !dbg !402
+  %tobool = icmp eq %struct.splay_tree_node_s* %0, null, !dbg !403
+  br i1 %tobool, label %if.then, label %if.end, !dbg !403
 
 if.then:                                          ; preds = %entry
-  %1 = load %struct.splay_tree_node_s** %parent, align 8, !tbaa !0
-  br label %return
+  %1 = load %struct.splay_tree_node_s** %parent, align 8, !dbg !404, !tbaa !211
+  br label %return, !dbg !404
 
 if.end:                                           ; preds = %entry
-  %comp = getelementptr inbounds %struct.splay_tree_s* %sp, i64 0, i32 1
-  %2 = load i32 (i64, i64)** %comp, align 8, !tbaa !0
-  %key1 = getelementptr inbounds %struct.splay_tree_node_s* %0, i64 0, i32 0
-  %3 = load i64* %key1, align 8, !tbaa !3
-  %call = tail call i32 %2(i64 %key, i64 %3) #6
-  %cmp = icmp eq i32 %call, 0
-  br i1 %cmp, label %if.end14, label %if.else
+  %comp = getelementptr inbounds %struct.splay_tree_s* %sp, i64 0, i32 1, !dbg !405
+  %2 = load i32 (i64, i64)** %comp, align 8, !dbg !405, !tbaa !211
+  %key1 = getelementptr inbounds %struct.splay_tree_node_s* %0, i64 0, i32 0, !dbg !405
+  %3 = load i64* %key1, align 8, !dbg !405, !tbaa !253
+  %call = tail call i32 %2(i64 %key, i64 %3) #7, !dbg !405
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !164), !dbg !405
+  %cmp = icmp eq i32 %call, 0, !dbg !406
+  br i1 %cmp, label %if.end14, label %if.else, !dbg !406
 
 if.else:                                          ; preds = %if.end
-  %cmp3 = icmp slt i32 %call, 0
-  %left = getelementptr inbounds %struct.splay_tree_node_s* %0, i64 0, i32 2
-  %right = getelementptr inbounds %struct.splay_tree_node_s* %0, i64 0, i32 3
-  %next.0.ph = select i1 %cmp3, %struct.splay_tree_node_s** %left, %struct.splay_tree_node_s** %right
-  %call10 = tail call fastcc %struct.splay_tree_node_s* @splay_tree_splay_helper(%struct.splay_tree_s* %sp, i64 %key, %struct.splay_tree_node_s** %next.0.ph, %struct.splay_tree_node_s** %node, %struct.splay_tree_node_s** %parent) #7
-  %4 = load %struct.splay_tree_node_s** %node, align 8, !tbaa !0
-  %cmp11 = icmp eq %struct.splay_tree_node_s* %4, %call10
-  br i1 %cmp11, label %if.end14, label %return
+  %cmp3 = icmp slt i32 %call, 0, !dbg !407
+  %left = getelementptr inbounds %struct.splay_tree_node_s* %0, i64 0, i32 2, !dbg !408
+  tail call void @llvm.dbg.value(metadata !{%struct.splay_tree_node_s** %left}, i64 0, metadata !162), !dbg !408
+  %right = getelementptr inbounds %struct.splay_tree_node_s* %0, i64 0, i32 3, !dbg !409
+  tail call void @llvm.dbg.value(metadata !{%struct.splay_tree_node_s** %right}, i64 0, metadata !162), !dbg !409
+  %next.0.ph = select i1 %cmp3, %struct.splay_tree_node_s** %left, %struct.splay_tree_node_s** %right, !dbg !407
+  %call10 = tail call fastcc %struct.splay_tree_node_s* @splay_tree_splay_helper(%struct.splay_tree_s* %sp, i64 %key, %struct.splay_tree_node_s** %next.0.ph, %struct.splay_tree_node_s** %node, %struct.splay_tree_node_s** %parent) #8, !dbg !410
+  tail call void @llvm.dbg.value(metadata !{%struct.splay_tree_node_s* %call10}, i64 0, metadata !163), !dbg !410
+  %4 = load %struct.splay_tree_node_s** %node, align 8, !dbg !412, !tbaa !211
+  %cmp11 = icmp eq %struct.splay_tree_node_s* %4, %call10, !dbg !412
+  br i1 %cmp11, label %if.end14, label %return, !dbg !412
 
 if.end14:                                         ; preds = %if.end, %if.else
   %n.0 = phi %struct.splay_tree_node_s* [ %call10, %if.else ], [ %0, %if.end ]
-  %tobool15 = icmp eq %struct.splay_tree_node_s** %parent, null
-  br i1 %tobool15, label %return, label %if.end17
+  %tobool15 = icmp eq %struct.splay_tree_node_s** %parent, null, !dbg !413
+  br i1 %tobool15, label %return, label %if.end17, !dbg !413
 
 if.end17:                                         ; preds = %if.end14
-  %tobool18 = icmp eq %struct.splay_tree_node_s** %grandparent, null
-  %5 = load %struct.splay_tree_node_s** %parent, align 8, !tbaa !0
-  %left30 = getelementptr inbounds %struct.splay_tree_node_s* %5, i64 0, i32 2
-  %6 = load %struct.splay_tree_node_s** %left30, align 8, !tbaa !0
-  %cmp31 = icmp eq %struct.splay_tree_node_s* %n.0, %6
-  br i1 %tobool18, label %if.then19, label %if.end29
+  %tobool18 = icmp eq %struct.splay_tree_node_s** %grandparent, null, !dbg !414
+  %5 = load %struct.splay_tree_node_s** %parent, align 8, !dbg !415, !tbaa !211
+  %left30 = getelementptr inbounds %struct.splay_tree_node_s* %5, i64 0, i32 2, !dbg !415
+  %6 = load %struct.splay_tree_node_s** %left30, align 8, !dbg !415, !tbaa !211
+  %cmp31 = icmp eq %struct.splay_tree_node_s* %n.0, %6, !dbg !415
+  br i1 %tobool18, label %if.then19, label %if.end29, !dbg !414
 
 if.then19:                                        ; preds = %if.end17
-  br i1 %cmp31, label %if.then22, label %if.else25
+  br i1 %cmp31, label %if.then22, label %if.else25, !dbg !416
 
 if.then22:                                        ; preds = %if.then19
-  %right23 = getelementptr inbounds %struct.splay_tree_node_s* %n.0, i64 0, i32 3
-  %7 = load %struct.splay_tree_node_s** %right23, align 8, !tbaa !0
-  store %struct.splay_tree_node_s* %7, %struct.splay_tree_node_s** %node, align 8, !tbaa !0
-  %8 = load %struct.splay_tree_node_s** %parent, align 8, !tbaa !0
-  store %struct.splay_tree_node_s* %8, %struct.splay_tree_node_s** %right23, align 8, !tbaa !0
-  br label %if.end28
+  %right23 = getelementptr inbounds %struct.splay_tree_node_s* %n.0, i64 0, i32 3, !dbg !418
+  %7 = load %struct.splay_tree_node_s** %right23, align 8, !dbg !418, !tbaa !211
+  store %struct.splay_tree_node_s* %7, %struct.splay_tree_node_s** %node, align 8, !dbg !418, !tbaa !211
+  %8 = load %struct.splay_tree_node_s** %parent, align 8, !dbg !420, !tbaa !211
+  store %struct.splay_tree_node_s* %8, %struct.splay_tree_node_s** %right23, align 8, !dbg !420, !tbaa !211
+  br label %if.end28, !dbg !421
 
 if.else25:                                        ; preds = %if.then19
-  %left26 = getelementptr inbounds %struct.splay_tree_node_s* %n.0, i64 0, i32 2
-  %9 = load %struct.splay_tree_node_s** %left26, align 8, !tbaa !0
-  store %struct.splay_tree_node_s* %9, %struct.splay_tree_node_s** %node, align 8, !tbaa !0
-  %10 = load %struct.splay_tree_node_s** %parent, align 8, !tbaa !0
-  store %struct.splay_tree_node_s* %10, %struct.splay_tree_node_s** %left26, align 8, !tbaa !0
+  %left26 = getelementptr inbounds %struct.splay_tree_node_s* %n.0, i64 0, i32 2, !dbg !422
+  %9 = load %struct.splay_tree_node_s** %left26, align 8, !dbg !422, !tbaa !211
+  store %struct.splay_tree_node_s* %9, %struct.splay_tree_node_s** %node, align 8, !dbg !422, !tbaa !211
+  %10 = load %struct.splay_tree_node_s** %parent, align 8, !dbg !424, !tbaa !211
+  store %struct.splay_tree_node_s* %10, %struct.splay_tree_node_s** %left26, align 8, !dbg !424, !tbaa !211
   br label %if.end28
 
 if.end28:                                         ; preds = %if.else25, %if.then22
-  store %struct.splay_tree_node_s* %n.0, %struct.splay_tree_node_s** %parent, align 8, !tbaa !0
-  br label %return
+  store %struct.splay_tree_node_s* %n.0, %struct.splay_tree_node_s** %parent, align 8, !dbg !425, !tbaa !211
+  br label %return, !dbg !426
 
 if.end29:                                         ; preds = %if.end17
-  br i1 %cmp31, label %land.lhs.true, label %if.else41
+  br i1 %cmp31, label %land.lhs.true, label %if.else41, !dbg !415
 
 land.lhs.true:                                    ; preds = %if.end29
-  %11 = load %struct.splay_tree_node_s** %grandparent, align 8, !tbaa !0
-  %left32 = getelementptr inbounds %struct.splay_tree_node_s* %11, i64 0, i32 2
-  %12 = load %struct.splay_tree_node_s** %left32, align 8, !tbaa !0
-  %cmp33 = icmp eq %struct.splay_tree_node_s* %5, %12
-  br i1 %cmp33, label %if.then34, label %if.else41
+  %11 = load %struct.splay_tree_node_s** %grandparent, align 8, !dbg !415, !tbaa !211
+  %left32 = getelementptr inbounds %struct.splay_tree_node_s* %11, i64 0, i32 2, !dbg !415
+  %12 = load %struct.splay_tree_node_s** %left32, align 8, !dbg !415, !tbaa !211
+  %cmp33 = icmp eq %struct.splay_tree_node_s* %5, %12, !dbg !415
+  br i1 %cmp33, label %if.then34, label %if.else41, !dbg !415
 
 if.then34:                                        ; preds = %land.lhs.true
-  %right35 = getelementptr inbounds %struct.splay_tree_node_s* %5, i64 0, i32 3
-  %13 = load %struct.splay_tree_node_s** %right35, align 8, !tbaa !0
-  store %struct.splay_tree_node_s* %13, %struct.splay_tree_node_s** %left32, align 8, !tbaa !0
-  %14 = load %struct.splay_tree_node_s** %grandparent, align 8, !tbaa !0
-  store %struct.splay_tree_node_s* %14, %struct.splay_tree_node_s** %right35, align 8, !tbaa !0
-  %right38 = getelementptr inbounds %struct.splay_tree_node_s* %n.0, i64 0, i32 3
-  %15 = load %struct.splay_tree_node_s** %right38, align 8, !tbaa !0
-  store %struct.splay_tree_node_s* %15, %struct.splay_tree_node_s** %left30, align 8, !tbaa !0
-  store %struct.splay_tree_node_s* %5, %struct.splay_tree_node_s** %right38, align 8, !tbaa !0
-  store %struct.splay_tree_node_s* %n.0, %struct.splay_tree_node_s** %grandparent, align 8, !tbaa !0
-  br label %return
+  tail call void @llvm.dbg.value(metadata !{%struct.splay_tree_node_s* %5}, i64 0, metadata !165), !dbg !427
+  %right35 = getelementptr inbounds %struct.splay_tree_node_s* %5, i64 0, i32 3, !dbg !428
+  %13 = load %struct.splay_tree_node_s** %right35, align 8, !dbg !428, !tbaa !211
+  store %struct.splay_tree_node_s* %13, %struct.splay_tree_node_s** %left32, align 8, !dbg !428, !tbaa !211
+  %14 = load %struct.splay_tree_node_s** %grandparent, align 8, !dbg !429, !tbaa !211
+  store %struct.splay_tree_node_s* %14, %struct.splay_tree_node_s** %right35, align 8, !dbg !429, !tbaa !211
+  %right38 = getelementptr inbounds %struct.splay_tree_node_s* %n.0, i64 0, i32 3, !dbg !430
+  %15 = load %struct.splay_tree_node_s** %right38, align 8, !dbg !430, !tbaa !211
+  store %struct.splay_tree_node_s* %15, %struct.splay_tree_node_s** %left30, align 8, !dbg !430, !tbaa !211
+  store %struct.splay_tree_node_s* %5, %struct.splay_tree_node_s** %right38, align 8, !dbg !431, !tbaa !211
+  store %struct.splay_tree_node_s* %n.0, %struct.splay_tree_node_s** %grandparent, align 8, !dbg !432, !tbaa !211
+  br label %return, !dbg !433
 
 if.else41:                                        ; preds = %land.lhs.true, %if.end29
-  %right42 = getelementptr inbounds %struct.splay_tree_node_s* %5, i64 0, i32 3
-  %16 = load %struct.splay_tree_node_s** %right42, align 8, !tbaa !0
-  %cmp43 = icmp eq %struct.splay_tree_node_s* %n.0, %16
-  br i1 %cmp43, label %land.lhs.true44, label %if.end56
+  %right42 = getelementptr inbounds %struct.splay_tree_node_s* %5, i64 0, i32 3, !dbg !434
+  %16 = load %struct.splay_tree_node_s** %right42, align 8, !dbg !434, !tbaa !211
+  %cmp43 = icmp eq %struct.splay_tree_node_s* %n.0, %16, !dbg !434
+  br i1 %cmp43, label %land.lhs.true44, label %if.end56, !dbg !434
 
 land.lhs.true44:                                  ; preds = %if.else41
-  %17 = load %struct.splay_tree_node_s** %grandparent, align 8, !tbaa !0
-  %right45 = getelementptr inbounds %struct.splay_tree_node_s* %17, i64 0, i32 3
-  %18 = load %struct.splay_tree_node_s** %right45, align 8, !tbaa !0
-  %cmp46 = icmp eq %struct.splay_tree_node_s* %5, %18
-  br i1 %cmp46, label %if.then47, label %if.end56
+  %17 = load %struct.splay_tree_node_s** %grandparent, align 8, !dbg !434, !tbaa !211
+  %right45 = getelementptr inbounds %struct.splay_tree_node_s* %17, i64 0, i32 3, !dbg !434
+  %18 = load %struct.splay_tree_node_s** %right45, align 8, !dbg !434, !tbaa !211
+  %cmp46 = icmp eq %struct.splay_tree_node_s* %5, %18, !dbg !434
+  br i1 %cmp46, label %if.then47, label %if.end56, !dbg !434
 
 if.then47:                                        ; preds = %land.lhs.true44
-  store %struct.splay_tree_node_s* %6, %struct.splay_tree_node_s** %right45, align 8, !tbaa !0
-  %19 = load %struct.splay_tree_node_s** %grandparent, align 8, !tbaa !0
-  store %struct.splay_tree_node_s* %19, %struct.splay_tree_node_s** %left30, align 8, !tbaa !0
-  %left52 = getelementptr inbounds %struct.splay_tree_node_s* %n.0, i64 0, i32 2
-  %20 = load %struct.splay_tree_node_s** %left52, align 8, !tbaa !0
-  store %struct.splay_tree_node_s* %20, %struct.splay_tree_node_s** %right42, align 8, !tbaa !0
-  store %struct.splay_tree_node_s* %5, %struct.splay_tree_node_s** %left52, align 8, !tbaa !0
-  store %struct.splay_tree_node_s* %n.0, %struct.splay_tree_node_s** %grandparent, align 8, !tbaa !0
-  br label %return
+  tail call void @llvm.dbg.value(metadata !{%struct.splay_tree_node_s* %5}, i64 0, metadata !167), !dbg !435
+  store %struct.splay_tree_node_s* %6, %struct.splay_tree_node_s** %right45, align 8, !dbg !436, !tbaa !211
+  %19 = load %struct.splay_tree_node_s** %grandparent, align 8, !dbg !437, !tbaa !211
+  store %struct.splay_tree_node_s* %19, %struct.splay_tree_node_s** %left30, align 8, !dbg !437, !tbaa !211
+  %left52 = getelementptr inbounds %struct.splay_tree_node_s* %n.0, i64 0, i32 2, !dbg !438
+  %20 = load %struct.splay_tree_node_s** %left52, align 8, !dbg !438, !tbaa !211
+  store %struct.splay_tree_node_s* %20, %struct.splay_tree_node_s** %right42, align 8, !dbg !438, !tbaa !211
+  store %struct.splay_tree_node_s* %5, %struct.splay_tree_node_s** %left52, align 8, !dbg !439, !tbaa !211
+  store %struct.splay_tree_node_s* %n.0, %struct.splay_tree_node_s** %grandparent, align 8, !dbg !440, !tbaa !211
+  br label %return, !dbg !441
 
 if.end56:                                         ; preds = %if.else41, %land.lhs.true44
-  br i1 %cmp31, label %if.then59, label %if.else66
+  br i1 %cmp31, label %if.then59, label %if.else66, !dbg !442
 
 if.then59:                                        ; preds = %if.end56
-  %right60 = getelementptr inbounds %struct.splay_tree_node_s* %n.0, i64 0, i32 3
-  %21 = load %struct.splay_tree_node_s** %right60, align 8, !tbaa !0
-  store %struct.splay_tree_node_s* %21, %struct.splay_tree_node_s** %left30, align 8, !tbaa !0
-  %22 = load %struct.splay_tree_node_s** %parent, align 8, !tbaa !0
-  store %struct.splay_tree_node_s* %22, %struct.splay_tree_node_s** %right60, align 8, !tbaa !0
-  %left63 = getelementptr inbounds %struct.splay_tree_node_s* %n.0, i64 0, i32 2
-  %23 = load %struct.splay_tree_node_s** %left63, align 8, !tbaa !0
-  %24 = load %struct.splay_tree_node_s** %grandparent, align 8, !tbaa !0
-  %right64 = getelementptr inbounds %struct.splay_tree_node_s* %24, i64 0, i32 3
-  store %struct.splay_tree_node_s* %23, %struct.splay_tree_node_s** %right64, align 8, !tbaa !0
-  %25 = load %struct.splay_tree_node_s** %grandparent, align 8, !tbaa !0
-  store %struct.splay_tree_node_s* %25, %struct.splay_tree_node_s** %left63, align 8, !tbaa !0
-  store %struct.splay_tree_node_s* %n.0, %struct.splay_tree_node_s** %grandparent, align 8, !tbaa !0
-  br label %return
+  %right60 = getelementptr inbounds %struct.splay_tree_node_s* %n.0, i64 0, i32 3, !dbg !443
+  %21 = load %struct.splay_tree_node_s** %right60, align 8, !dbg !443, !tbaa !211
+  store %struct.splay_tree_node_s* %21, %struct.splay_tree_node_s** %left30, align 8, !dbg !443, !tbaa !211
+  %22 = load %struct.splay_tree_node_s** %parent, align 8, !dbg !445, !tbaa !211
+  store %struct.splay_tree_node_s* %22, %struct.splay_tree_node_s** %right60, align 8, !dbg !445, !tbaa !211
+  %left63 = getelementptr inbounds %struct.splay_tree_node_s* %n.0, i64 0, i32 2, !dbg !446
+  %23 = load %struct.splay_tree_node_s** %left63, align 8, !dbg !446, !tbaa !211
+  %24 = load %struct.splay_tree_node_s** %grandparent, align 8, !dbg !446, !tbaa !211
+  %right64 = getelementptr inbounds %struct.splay_tree_node_s* %24, i64 0, i32 3, !dbg !446
+  store %struct.splay_tree_node_s* %23, %struct.splay_tree_node_s** %right64, align 8, !dbg !446, !tbaa !211
+  %25 = load %struct.splay_tree_node_s** %grandparent, align 8, !dbg !447, !tbaa !211
+  store %struct.splay_tree_node_s* %25, %struct.splay_tree_node_s** %left63, align 8, !dbg !447, !tbaa !211
+  store %struct.splay_tree_node_s* %n.0, %struct.splay_tree_node_s** %grandparent, align 8, !dbg !448, !tbaa !211
+  br label %return, !dbg !449
 
 if.else66:                                        ; preds = %if.end56
-  %left67 = getelementptr inbounds %struct.splay_tree_node_s* %n.0, i64 0, i32 2
-  %26 = load %struct.splay_tree_node_s** %left67, align 8, !tbaa !0
-  store %struct.splay_tree_node_s* %26, %struct.splay_tree_node_s** %right42, align 8, !tbaa !0
-  %27 = load %struct.splay_tree_node_s** %parent, align 8, !tbaa !0
-  store %struct.splay_tree_node_s* %27, %struct.splay_tree_node_s** %left67, align 8, !tbaa !0
-  %right70 = getelementptr inbounds %struct.splay_tree_node_s* %n.0, i64 0, i32 3
-  %28 = load %struct.splay_tree_node_s** %right70, align 8, !tbaa !0
-  %29 = load %struct.splay_tree_node_s** %grandparent, align 8, !tbaa !0
-  %left71 = getelementptr inbounds %struct.splay_tree_node_s* %29, i64 0, i32 2
-  store %struct.splay_tree_node_s* %28, %struct.splay_tree_node_s** %left71, align 8, !tbaa !0
-  %30 = load %struct.splay_tree_node_s** %grandparent, align 8, !tbaa !0
-  store %struct.splay_tree_node_s* %30, %struct.splay_tree_node_s** %right70, align 8, !tbaa !0
-  store %struct.splay_tree_node_s* %n.0, %struct.splay_tree_node_s** %grandparent, align 8, !tbaa !0
-  br label %return
+  %left67 = getelementptr inbounds %struct.splay_tree_node_s* %n.0, i64 0, i32 2, !dbg !450
+  %26 = load %struct.splay_tree_node_s** %left67, align 8, !dbg !450, !tbaa !211
+  store %struct.splay_tree_node_s* %26, %struct.splay_tree_node_s** %right42, align 8, !dbg !450, !tbaa !211
+  %27 = load %struct.splay_tree_node_s** %parent, align 8, !dbg !452, !tbaa !211
+  store %struct.splay_tree_node_s* %27, %struct.splay_tree_node_s** %left67, align 8, !dbg !452, !tbaa !211
+  %right70 = getelementptr inbounds %struct.splay_tree_node_s* %n.0, i64 0, i32 3, !dbg !453
+  %28 = load %struct.splay_tree_node_s** %right70, align 8, !dbg !453, !tbaa !211
+  %29 = load %struct.splay_tree_node_s** %grandparent, align 8, !dbg !453, !tbaa !211
+  %left71 = getelementptr inbounds %struct.splay_tree_node_s* %29, i64 0, i32 2, !dbg !453
+  store %struct.splay_tree_node_s* %28, %struct.splay_tree_node_s** %left71, align 8, !dbg !453, !tbaa !211
+  %30 = load %struct.splay_tree_node_s** %grandparent, align 8, !dbg !454, !tbaa !211
+  store %struct.splay_tree_node_s* %30, %struct.splay_tree_node_s** %right70, align 8, !dbg !454, !tbaa !211
+  store %struct.splay_tree_node_s* %n.0, %struct.splay_tree_node_s** %grandparent, align 8, !dbg !455, !tbaa !211
+  br label %return, !dbg !456
 
 return:                                           ; preds = %if.end14, %if.else, %if.else66, %if.then59, %if.then47, %if.then34, %if.end28, %if.then
   %retval.0 = phi %struct.splay_tree_node_s* [ %n.0, %if.then34 ], [ %n.0, %if.then47 ], [ %n.0, %if.then59 ], [ %n.0, %if.else66 ], [ %n.0, %if.end28 ], [ %1, %if.then ], [ %call10, %if.else ], [ %n.0, %if.end14 ]
-  ret %struct.splay_tree_node_s* %retval.0
+  ret %struct.splay_tree_node_s* %retval.0, !dbg !457
 }

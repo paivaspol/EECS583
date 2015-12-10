@@ -1,93 +1,108 @@
-define noalias %struct.PGA* @PUGH_SetupGArray(i8* %parent, %struct.PGExtras* %extras, %struct.PConnectivity* %connectivity, %struct.PComm* %groupcomm, i8* %name, i32 %id, i32 %arrayid, i32 %varsize, i32 %vtype, i32 %stagger, i32 %vector_size, i32 %vector_entry, %struct.PGA* %vector_base) #1 {
-  %1 = tail call i8* @malloc(i64 104) #7
-  %2 = bitcast i8* %1 to %struct.PGA*
-  %3 = icmp eq i8* %1, null
-  br i1 %3, label %51, label %4
+define noalias %struct.PGA* @PUGH_SetupGArray(i8* %parent, %struct.PGExtras* %extras, %struct.PConnectivity* %connectivity, %struct.PComm* %groupcomm, i8* nocapture %name, i32 %id, i32 %arrayid, i32 %varsize, i32 %vtype, i32 %stagger, i32 %vector_size, i32 %vector_entry, %struct.PGA* %vector_base) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %parent}, i64 0, metadata !326), !dbg !1074
+  tail call void @llvm.dbg.value(metadata !{%struct.PGExtras* %extras}, i64 0, metadata !327), !dbg !1075
+  tail call void @llvm.dbg.value(metadata !{%struct.PConnectivity* %connectivity}, i64 0, metadata !328), !dbg !1076
+  tail call void @llvm.dbg.value(metadata !{%struct.PComm* %groupcomm}, i64 0, metadata !329), !dbg !1077
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !330), !dbg !1078
+  tail call void @llvm.dbg.value(metadata !{i32 %id}, i64 0, metadata !331), !dbg !1079
+  tail call void @llvm.dbg.value(metadata !{i32 %arrayid}, i64 0, metadata !332), !dbg !1080
+  tail call void @llvm.dbg.value(metadata !{i32 %varsize}, i64 0, metadata !333), !dbg !1081
+  tail call void @llvm.dbg.value(metadata !{i32 %vtype}, i64 0, metadata !334), !dbg !1082
+  tail call void @llvm.dbg.value(metadata !{i32 %stagger}, i64 0, metadata !335), !dbg !1083
+  tail call void @llvm.dbg.value(metadata !{i32 %vector_size}, i64 0, metadata !336), !dbg !1084
+  tail call void @llvm.dbg.value(metadata !{i32 %vector_entry}, i64 0, metadata !337), !dbg !1085
+  tail call void @llvm.dbg.value(metadata !{%struct.PGA* %vector_base}, i64 0, metadata !338), !dbg !1086
+  %call = tail call noalias i8* @malloc(i64 104) #7, !dbg !1087
+  %0 = bitcast i8* %call to %struct.PGA*, !dbg !1087
+  tail call void @llvm.dbg.value(metadata !{%struct.PGA* %0}, i64 0, metadata !339), !dbg !1087
+  %tobool = icmp eq i8* %call, null, !dbg !1088
+  br i1 %tobool, label %if.end35, label %if.then, !dbg !1088
 
-; <label>:4                                       ; preds = %0
-  %5 = getelementptr inbounds i8* %1, i64 56
-  %6 = bitcast i8* %5 to %struct.PGExtras**
-  store %struct.PGExtras* %extras, %struct.PGExtras** %6, align 8, !tbaa !37
-  %7 = getelementptr inbounds i8* %1, i64 64
-  %8 = bitcast i8* %7 to %struct.PConnectivity**
-  store %struct.PConnectivity* %connectivity, %struct.PConnectivity** %8, align 8, !tbaa !39
-  %9 = getelementptr inbounds i8* %1, i64 72
-  %10 = bitcast i8* %9 to %struct.PComm**
-  store %struct.PComm* null, %struct.PComm** %10, align 8, !tbaa !40
-  %11 = getelementptr inbounds i8* %1, i64 80
-  %12 = bitcast i8* %11 to %struct.PComm**
-  store %struct.PComm* %groupcomm, %struct.PComm** %12, align 8, !tbaa !41
-  %13 = getelementptr inbounds i8* %1, i64 40
-  %14 = bitcast i8* %13 to i8**
-  store i8* %parent, i8** %14, align 8, !tbaa !42
-  %15 = getelementptr inbounds i8* %1, i64 48
-  %16 = bitcast i8* %15 to i32*
-  store i32 %varsize, i32* %16, align 4, !tbaa !43
-  %17 = getelementptr inbounds i8* %1, i64 52
-  %18 = bitcast i8* %17 to i32*
-  store i32 %vtype, i32* %18, align 4, !tbaa !44
-  %19 = getelementptr inbounds i8* %1, i64 36
-  %20 = bitcast i8* %19 to i32*
-  store i32 %stagger, i32* %20, align 4, !tbaa !45
-  %21 = getelementptr inbounds i8* %1, i64 8
-  %22 = bitcast i8* %21 to i32*
-  store i32 %id, i32* %22, align 4, !tbaa !46
-  %23 = getelementptr inbounds i8* %1, i64 12
-  %24 = bitcast i8* %23 to i32*
-  store i32 %arrayid, i32* %24, align 4, !tbaa !47
-  %25 = getelementptr inbounds i8* %1, i64 32
-  %26 = bitcast i8* %25 to i32*
-  store i32 0, i32* %26, align 4, !tbaa !48
-  %27 = tail call i64 @strlen(i8* %name) #7
-  %28 = add i64 %27, 1
-  %29 = tail call i8* @malloc(i64 %28) #7
-  %30 = bitcast i8* %1 to i8**
-  store i8* %29, i8** %30, align 8, !tbaa !49
-  %31 = sext i32 %varsize to i64
-  %32 = tail call i8* @calloc(i64 1, i64 %31) #7
-  %33 = getelementptr inbounds i8* %1, i64 16
-  %34 = bitcast i8* %33 to i8**
-  store i8* %32, i8** %34, align 8, !tbaa !50
-  %35 = getelementptr inbounds i8* %1, i64 24
-  %36 = bitcast i8* %35 to i8**
-  store i8* %32, i8** %36, align 8, !tbaa !51
-  %37 = getelementptr inbounds i8* %1, i64 88
-  %38 = bitcast i8* %37 to i32*
-  store i32 %vector_size, i32* %38, align 4, !tbaa !52
-  %39 = getelementptr inbounds i8* %1, i64 92
-  %40 = bitcast i8* %39 to i32*
-  store i32 %vector_entry, i32* %40, align 4, !tbaa !53
-  %41 = getelementptr inbounds i8* %1, i64 96
-  %42 = bitcast i8* %41 to %struct.PGA**
-  store %struct.PGA* %vector_base, %struct.PGA** %42, align 8, !tbaa !54
-  %43 = icmp eq i8* %29, null
-  %44 = icmp eq i8* %32, null
-  br i1 %43, label %.thread, label %45
+if.then:                                          ; preds = %entry
+  %extras1 = getelementptr inbounds i8* %call, i64 56, !dbg !1089
+  %1 = bitcast i8* %extras1 to %struct.PGExtras**, !dbg !1089
+  store %struct.PGExtras* %extras, %struct.PGExtras** %1, align 8, !dbg !1089, !tbaa !397
+  %connectivity2 = getelementptr inbounds i8* %call, i64 64, !dbg !1091
+  %2 = bitcast i8* %connectivity2 to %struct.PConnectivity**, !dbg !1091
+  store %struct.PConnectivity* %connectivity, %struct.PConnectivity** %2, align 8, !dbg !1091, !tbaa !397
+  %comm = getelementptr inbounds i8* %call, i64 72, !dbg !1092
+  %3 = bitcast i8* %comm to %struct.PComm**, !dbg !1092
+  store %struct.PComm* null, %struct.PComm** %3, align 8, !dbg !1092, !tbaa !397
+  %groupcomm3 = getelementptr inbounds i8* %call, i64 80, !dbg !1093
+  %4 = bitcast i8* %groupcomm3 to %struct.PComm**, !dbg !1093
+  store %struct.PComm* %groupcomm, %struct.PComm** %4, align 8, !dbg !1093, !tbaa !397
+  %parent4 = getelementptr inbounds i8* %call, i64 40, !dbg !1094
+  %5 = bitcast i8* %parent4 to i8**, !dbg !1094
+  store i8* %parent, i8** %5, align 8, !dbg !1094, !tbaa !397
+  %varsize5 = getelementptr inbounds i8* %call, i64 48, !dbg !1095
+  %6 = bitcast i8* %varsize5 to i32*, !dbg !1095
+  store i32 %varsize, i32* %6, align 4, !dbg !1095, !tbaa !381
+  %vtype6 = getelementptr inbounds i8* %call, i64 52, !dbg !1096
+  %7 = bitcast i8* %vtype6 to i32*, !dbg !1096
+  store i32 %vtype, i32* %7, align 4, !dbg !1096, !tbaa !381
+  %stagger7 = getelementptr inbounds i8* %call, i64 36, !dbg !1097
+  %8 = bitcast i8* %stagger7 to i32*, !dbg !1097
+  store i32 %stagger, i32* %8, align 4, !dbg !1097, !tbaa !381
+  %id8 = getelementptr inbounds i8* %call, i64 8, !dbg !1098
+  %9 = bitcast i8* %id8 to i32*, !dbg !1098
+  store i32 %id, i32* %9, align 4, !dbg !1098, !tbaa !381
+  %arrayid9 = getelementptr inbounds i8* %call, i64 12, !dbg !1099
+  %10 = bitcast i8* %arrayid9 to i32*, !dbg !1099
+  store i32 %arrayid, i32* %10, align 4, !dbg !1099, !tbaa !381
+  %storage = getelementptr inbounds i8* %call, i64 32, !dbg !1100
+  %11 = bitcast i8* %storage to i32*, !dbg !1100
+  store i32 0, i32* %11, align 4, !dbg !1100, !tbaa !381
+  %call10 = tail call i64 @strlen(i8* %name) #9, !dbg !1101
+  %add = add i64 %call10, 1, !dbg !1101
+  %call11 = tail call noalias i8* @malloc(i64 %add) #7, !dbg !1101
+  %name12 = bitcast i8* %call to i8**, !dbg !1101
+  store i8* %call11, i8** %name12, align 8, !dbg !1101, !tbaa !397
+  %conv = sext i32 %varsize to i64, !dbg !1102
+  %call13 = tail call noalias i8* @calloc(i64 1, i64 %conv) #7, !dbg !1102
+  %padddata = getelementptr inbounds i8* %call, i64 16, !dbg !1102
+  %12 = bitcast i8* %padddata to i8**, !dbg !1102
+  store i8* %call13, i8** %12, align 8, !dbg !1102, !tbaa !397
+  %data = getelementptr inbounds i8* %call, i64 24, !dbg !1103
+  %13 = bitcast i8* %data to i8**, !dbg !1103
+  store i8* %call13, i8** %13, align 8, !dbg !1103, !tbaa !397
+  %vector_size15 = getelementptr inbounds i8* %call, i64 88, !dbg !1104
+  %14 = bitcast i8* %vector_size15 to i32*, !dbg !1104
+  store i32 %vector_size, i32* %14, align 4, !dbg !1104, !tbaa !381
+  %vector_entry16 = getelementptr inbounds i8* %call, i64 92, !dbg !1105
+  %15 = bitcast i8* %vector_entry16 to i32*, !dbg !1105
+  store i32 %vector_entry, i32* %15, align 4, !dbg !1105, !tbaa !381
+  %vector_base17 = getelementptr inbounds i8* %call, i64 96, !dbg !1106
+  %16 = bitcast i8* %vector_base17 to %struct.PGA**, !dbg !1106
+  store %struct.PGA* %vector_base, %struct.PGA** %16, align 8, !dbg !1106, !tbaa !397
+  %tobool19 = icmp eq i8* %call11, null, !dbg !1107
+  %tobool30 = icmp eq i8* %call13, null, !dbg !1108
+  br i1 %tobool19, label %if.end, label %land.lhs.true, !dbg !1107
 
-; <label>:45                                      ; preds = %4
-  br i1 %44, label %.thread.thread, label %46
+land.lhs.true:                                    ; preds = %if.then
+  br i1 %tobool30, label %if.end.thread, label %if.then22, !dbg !1107
 
-; <label>:46                                      ; preds = %45
-  %47 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %29, i1 false)
-  %48 = tail call i8* @__strcpy_chk(i8* %29, i8* %name, i64 %47) #7
-  br label %51
+if.then22:                                        ; preds = %land.lhs.true
+  %call24 = tail call i8* @strcpy(i8* %call11, i8* %name) #7, !dbg !1110
+  br label %if.end35, !dbg !1112
 
-.thread.thread:                                   ; preds = %45
-  tail call void @free(i8* %29) #8
-  br label %50
+if.end.thread:                                    ; preds = %land.lhs.true
+  tail call void @free(i8* %call11) #7, !dbg !1113
+  br label %if.end33, !dbg !1108
 
-.thread:                                          ; preds = %4
-  br i1 %44, label %50, label %49
+if.end:                                           ; preds = %if.then
+  br i1 %tobool30, label %if.end33, label %if.then31, !dbg !1108
 
-; <label>:49                                      ; preds = %.thread
-  tail call void @free(i8* %32) #8
-  br label %50
+if.then31:                                        ; preds = %if.end
+  tail call void @free(i8* %call13) #7, !dbg !1115
+  br label %if.end33, !dbg !1117
 
-; <label>:50                                      ; preds = %.thread.thread, %.thread, %49
-  tail call void @free(i8* %1) #8
-  br label %51
+if.end33:                                         ; preds = %if.end.thread, %if.end, %if.then31
+  tail call void @free(i8* %call) #7, !dbg !1118
+  tail call void @llvm.dbg.value(metadata !1119, i64 0, metadata !339), !dbg !1120
+  br label %if.end35
 
-; <label>:51                                      ; preds = %0, %46, %50
-  %this.0 = phi %struct.PGA* [ %2, %46 ], [ null, %50 ], [ %2, %0 ]
-  ret %struct.PGA* %this.0
+if.end35:                                         ; preds = %entry, %if.then22, %if.end33
+  %this.0 = phi %struct.PGA* [ %0, %if.then22 ], [ null, %if.end33 ], [ %0, %entry ]
+  ret %struct.PGA* %this.0, !dbg !1121
 }

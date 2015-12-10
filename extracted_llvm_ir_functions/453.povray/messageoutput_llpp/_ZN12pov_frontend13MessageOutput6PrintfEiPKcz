@@ -1,0 +1,40 @@
+define void @_ZN12pov_frontend13MessageOutput6PrintfEiPKcz(%"class.pov_frontend::MessageOutput"* nocapture %this, i32 %stream, i8* nocapture %format, ...) #0 align 2 {
+entry:
+  %marker = alloca [1 x %struct.__va_list_tag], align 16
+  %localvsbuffer = alloca [1024 x i8], align 16
+  call void @llvm.dbg.value(metadata !{%"class.pov_frontend::MessageOutput"* %this}, i64 0, metadata !709), !dbg !1845
+  call void @llvm.dbg.value(metadata !{i32 %stream}, i64 0, metadata !710), !dbg !1845
+  call void @llvm.dbg.value(metadata !{i8* %format}, i64 0, metadata !711), !dbg !1845
+  call void @llvm.dbg.declare(metadata !{[1 x %struct.__va_list_tag]* %marker}, metadata !712), !dbg !1846
+  %0 = getelementptr inbounds [1024 x i8]* %localvsbuffer, i64 0, i64 0, !dbg !1847
+  call void @llvm.lifetime.start(i64 1024, i8* %0) #5, !dbg !1847
+  call void @llvm.dbg.declare(metadata !{[1024 x i8]* %localvsbuffer}, metadata !729), !dbg !1847
+  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %marker, i64 0, i64 0, !dbg !1848
+  %arraydecay2 = bitcast [1 x %struct.__va_list_tag]* %marker to i8*, !dbg !1848
+  call void @llvm.va_start(i8* %arraydecay2), !dbg !1848
+  %call = call i32 @vsnprintf(i8* %0, i64 1023, i8* %format, %struct.__va_list_tag* %arraydecay) #8, !dbg !1849
+  call void @llvm.va_end(i8* %arraydecay2), !dbg !1850
+  %idxprom = sext i32 %stream to i64, !dbg !1851
+  %arrayidx = getelementptr inbounds %"class.pov_frontend::MessageOutput"* %this, i64 0, i32 1, i64 %idxprom, !dbg !1851
+  %1 = load %"class.pov_base::TextStreamBuffer"** %arrayidx, align 8, !dbg !1851, !tbaa !984
+  %cmp = icmp eq %"class.pov_base::TextStreamBuffer"* %1, null, !dbg !1851
+  br i1 %cmp, label %if.end, label %if.then, !dbg !1851
+
+if.then:                                          ; preds = %entry
+  call void @_ZN8pov_base16TextStreamBuffer5printEPKc(%"class.pov_base::TextStreamBuffer"* %1, i8* %0) #6, !dbg !1852
+  br label %if.end, !dbg !1852
+
+if.end:                                           ; preds = %entry, %if.then
+  %arrayidx12 = getelementptr inbounds %"class.pov_frontend::MessageOutput"* %this, i64 0, i32 1, i64 7, !dbg !1853
+  %2 = load %"class.pov_base::TextStreamBuffer"** %arrayidx12, align 8, !dbg !1853, !tbaa !984
+  %cmp13 = icmp eq %"class.pov_base::TextStreamBuffer"* %2, null, !dbg !1853
+  br i1 %cmp13, label %if.end18, label %if.then14, !dbg !1853
+
+if.then14:                                        ; preds = %if.end
+  call void @_ZN8pov_base16TextStreamBuffer5printEPKc(%"class.pov_base::TextStreamBuffer"* %2, i8* %0) #6, !dbg !1854
+  br label %if.end18, !dbg !1854
+
+if.end18:                                         ; preds = %if.end, %if.then14
+  call void @llvm.lifetime.end(i64 1024, i8* %0) #5, !dbg !1855
+  ret void, !dbg !1855
+}

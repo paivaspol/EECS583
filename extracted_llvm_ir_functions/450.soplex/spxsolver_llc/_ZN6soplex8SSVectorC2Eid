@@ -1,0 +1,57 @@
+define linkonce_odr void @_ZN6soplex8SSVectorC2Eid(%"class.soplex::SSVector"* %this, i32 %p_dim, double %p_eps) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %this}, i64 0, metadata !8822), !dbg !9901
+  tail call void @llvm.dbg.value(metadata !{i32 %p_dim}, i64 0, metadata !8823), !dbg !9901
+  tail call void @llvm.dbg.value(metadata !{double %p_eps}, i64 0, metadata !8824), !dbg !9901
+  %0 = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 0, !dbg !9902
+  tail call void @_ZN6soplex7DVectorC2Ei(%"class.soplex::DVector"* %0, i32 %p_dim) #13, !dbg !9902
+  %1 = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 1, !dbg !9902
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::IdxSet"* %1}, i64 0, metadata !9903) #1, !dbg !9904
+  %2 = bitcast %"class.soplex::IdxSet"* %1 to i8*, !dbg !9905
+  tail call void @llvm.memset.p0i8.i64(i8* %2, i8 0, i64 16, i32 4, i1 false) #1, !dbg !9907
+  %setupStatus = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 2, !dbg !9902
+  store i8 1, i8* %setupStatus, align 1, !dbg !9902, !tbaa !9268
+  %epsilon = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 3, !dbg !9902
+  store double %p_eps, double* %epsilon, align 8, !dbg !9902, !tbaa !9264
+  %cmp = icmp slt i32 %p_dim, 1, !dbg !9908
+  %cond = select i1 %cmp, i32 1, i32 %p_dim, !dbg !9908
+  %len = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 1, i32 1, !dbg !9908
+  store i32 %cond, i32* %len, align 4, !dbg !9908, !tbaa !8999
+  %idx = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 1, i32 2, !dbg !9910
+  invoke void @_ZN6soplex9spx_allocIPiEEvRT_i(i32** %idx, i32 %cond) #13
+          to label %invoke.cont5 unwind label %lpad, !dbg !9910
+
+invoke.cont5:                                     ; preds = %entry
+  %dimen.i = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 0, i32 0, i32 0, !dbg !9911
+  %3 = load i32* %dimen.i, align 4, !dbg !9911, !tbaa !8999
+  %tobool.i = icmp eq i32 %3, 0, !dbg !9911
+  br i1 %tobool.i, label %_ZN6soplex6Vector5clearEv.exit, label %if.then.i, !dbg !9911
+
+if.then.i:                                        ; preds = %invoke.cont5
+  %val.i = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 0, i32 0, i32 1, !dbg !9914
+  %4 = load double** %val.i, align 8, !dbg !9914, !tbaa !8887
+  %5 = bitcast double* %4 to i8*, !dbg !9914
+  %conv.i = sext i32 %3 to i64, !dbg !9914
+  %mul.i = shl nsw i64 %conv.i, 3, !dbg !9914
+  tail call void @llvm.memset.p0i8.i64(i8* %5, i8 0, i64 %mul.i, i32 8, i1 false) #1, !dbg !9914
+  br label %_ZN6soplex6Vector5clearEv.exit, !dbg !9914
+
+_ZN6soplex6Vector5clearEv.exit:                   ; preds = %invoke.cont5, %if.then.i
+  ret void, !dbg !9915
+
+lpad:                                             ; preds = %entry
+  %6 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !9902
+  invoke void @_ZN6soplex7DVectorD2Ev(%"class.soplex::DVector"* %0) #13
+          to label %eh.resume unwind label %terminate.lpad, !dbg !9915
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %6, !dbg !9915
+
+terminate.lpad:                                   ; preds = %lpad
+  %7 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !9915
+  %8 = extractvalue { i8*, i32 } %7, 0, !dbg !9915
+  tail call void @__clang_call_terminate(i8* %8) #15, !dbg !9915
+  unreachable, !dbg !9915
+}

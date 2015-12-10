@@ -1,0 +1,45 @@
+define void @_ZN13MessageTracer8assignedEP9MessageId(%class.MessageTracer* nocapture %this, %class.MessageId* %m) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.MessageTracer* %this}, i64 0, metadata !1287), !dbg !3957
+  tail call void @llvm.dbg.value(metadata !{%class.MessageId* %m}, i64 0, metadata !1288), !dbg !3957
+  %f = getelementptr inbounds %class.MessageTracer* %this, i64 0, i32 0, !dbg !3958
+  %0 = load %struct._IO_FILE** %f, align 8, !dbg !3958, !tbaa !3919
+  %tobool = icmp eq %struct._IO_FILE* %0, null, !dbg !3958
+  br i1 %tobool, label %if.then, label %if.end, !dbg !3958
+
+if.then:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{%class.MessageTracer* %this}, i64 0, metadata !3959) #1, !dbg !3960
+  %call.i = tail call %struct._IO_FILE* @fopen(i8* getelementptr inbounds ([13 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str2, i64 0, i64 0)) #9, !dbg !3961
+  store %struct._IO_FILE* %call.i, %struct._IO_FILE** %f, align 8, !dbg !3961, !tbaa !3919
+  br label %if.end, !dbg !3958
+
+if.end:                                           ; preds = %entry, %if.then
+  %1 = phi %struct._IO_FILE* [ %0, %entry ], [ %call.i, %if.then ]
+  %id = getelementptr inbounds %class.MessageId* %m, i64 0, i32 0, !dbg !3962
+  %2 = load i32* %id, align 4, !dbg !3962, !tbaa !3931
+  %treeId = getelementptr inbounds %class.MessageId* %m, i64 0, i32 1, !dbg !3962
+  %3 = load i32* %treeId, align 4, !dbg !3962, !tbaa !3931
+  %parentId = getelementptr inbounds %class.MessageId* %m, i64 0, i32 2, !dbg !3962
+  %4 = load i32* %parentId, align 4, !dbg !3962, !tbaa !3931
+  tail call void @llvm.dbg.value(metadata !3932, i64 0, metadata !3963), !dbg !3965
+  %5 = load i64* getelementptr inbounds (%class.cSimulation* @simulation, i64 0, i32 12), align 8, !dbg !3965, !tbaa !3936
+  tail call void @llvm.dbg.value(metadata !3932, i64 0, metadata !3966), !dbg !3967
+  %6 = load %class.cModule** getelementptr inbounds (%class.cSimulation* @simulation, i64 0, i32 7), align 8, !dbg !3968, !tbaa !3919
+  %7 = bitcast %class.cModule* %6 to i8* (%class.cModule*)***, !dbg !3964
+  %vtable = load i8* (%class.cModule*)*** %7, align 8, !dbg !3964, !tbaa !3941
+  %vfn = getelementptr inbounds i8* (%class.cModule*)** %vtable, i64 4, !dbg !3964
+  %8 = load i8* (%class.cModule*)** %vfn, align 8, !dbg !3964
+  %call4 = tail call i8* %8(%class.cModule* %6) #7, !dbg !3964
+  %call5 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([27 x i8]* @.str5, i64 0, i64 0), i32 %2, i32 %3, i32 %4, i64 %5, i8* %call4) #7, !dbg !3964
+  %lastId = getelementptr inbounds %class.MessageTracer* %this, i64 0, i32 1, !dbg !3969
+  %9 = load %class.MessageId** %lastId, align 8, !dbg !3969, !tbaa !3919
+  %cmp = icmp eq %class.MessageId* %9, %m, !dbg !3969
+  br i1 %cmp, label %if.then6, label %if.end8, !dbg !3969
+
+if.then6:                                         ; preds = %if.end
+  store %class.MessageId* null, %class.MessageId** %lastId, align 8, !dbg !3969, !tbaa !3919
+  br label %if.end8, !dbg !3969
+
+if.end8:                                          ; preds = %if.then6, %if.end
+  ret void, !dbg !3970
+}

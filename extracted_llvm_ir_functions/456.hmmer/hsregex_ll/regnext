@@ -1,27 +1,29 @@
-define internal fastcc i8* @regnext(i8* %p) #5 {
+define internal fastcc i8* @regnext(i8* %p) #6 {
 entry:
-  %add.ptr = getelementptr inbounds i8* %p, i64 1
-  %0 = load i8* %add.ptr, align 1, !tbaa !1
-  %conv15 = zext i8 %0 to i32
-  %and = shl nuw nsw i32 %conv15, 8
-  %shl = and i32 %and, 32512
-  %add.ptr1 = getelementptr inbounds i8* %p, i64 2
-  %1 = load i8* %add.ptr1, align 1, !tbaa !1
-  %conv216 = zext i8 %1 to i32
-  %add = or i32 %shl, %conv216
-  %cmp = icmp eq i32 %add, 0
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i8* %p}, i64 0, metadata !127), !dbg !471
+  %add.ptr = getelementptr inbounds i8* %p, i64 1, !dbg !472
+  %0 = load i8* %add.ptr, align 1, !dbg !472, !tbaa !271
+  %conv15 = zext i8 %0 to i32, !dbg !472
+  %and = shl nuw nsw i32 %conv15, 8, !dbg !472
+  %shl = and i32 %and, 32512, !dbg !472
+  %add.ptr1 = getelementptr inbounds i8* %p, i64 2, !dbg !472
+  %1 = load i8* %add.ptr1, align 1, !dbg !472, !tbaa !271
+  %conv216 = zext i8 %1 to i32, !dbg !472
+  %add = or i32 %shl, %conv216, !dbg !472
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !128), !dbg !472
+  %cmp = icmp eq i32 %add, 0, !dbg !473
+  br i1 %cmp, label %return, label %if.end, !dbg !473
 
 if.end:                                           ; preds = %entry
-  %2 = load i8* %p, align 1, !tbaa !1
-  %cmp6 = icmp eq i8 %2, 7
-  %idx.ext17 = zext i32 %add to i64
-  %idx.neg = sub i64 0, %idx.ext17
-  %idx.neg.sink = select i1 %cmp6, i64 %idx.neg, i64 %idx.ext17
-  %add.ptr8 = getelementptr inbounds i8* %p, i64 %idx.neg.sink
-  br label %return
+  %2 = load i8* %p, align 1, !dbg !474, !tbaa !271
+  %cmp6 = icmp eq i8 %2, 7, !dbg !474
+  %idx.ext17 = zext i32 %add to i64, !dbg !474
+  %idx.neg = sub i64 0, %idx.ext17, !dbg !474
+  %idx.neg.sink = select i1 %cmp6, i64 %idx.neg, i64 %idx.ext17, !dbg !474
+  %add.ptr8 = getelementptr inbounds i8* %p, i64 %idx.neg.sink, !dbg !474
+  br label %return, !dbg !474
 
 return:                                           ; preds = %entry, %if.end
   %retval.0 = phi i8* [ %add.ptr8, %if.end ], [ null, %entry ]
-  ret i8* %retval.0
+  ret i8* %retval.0, !dbg !475
 }

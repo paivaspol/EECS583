@@ -1,76 +1,94 @@
-define internal fastcc float @rms_force(%struct.t_commrec* %cr, [3 x float]* nocapture readonly %f, i32 %ns, %struct.t_shell* nocapture readonly %s, i32 %ndir, float %sf_dir) #4 {
+define internal fastcc float @rms_force(%struct.t_commrec* %cr, [3 x float]* nocapture %f, i32 %ns, %struct.t_shell* nocapture %s, i32 %ndir, float %sf_dir) #0 {
+entry:
   %ntot = alloca i32, align 4
   %df2 = alloca float, align 4
-  %1 = add nsw i32 %ndir, %ns
-  store i32 %1, i32* %ntot, align 4, !tbaa !20
-  %2 = icmp eq i32 %1, 0
-  br i1 %2, label %38, label %3
+  call void @llvm.dbg.value(metadata !{%struct.t_commrec* %cr}, i64 0, metadata !948), !dbg !1522
+  call void @llvm.dbg.value(metadata !{[3 x float]* %f}, i64 0, metadata !949), !dbg !1522
+  call void @llvm.dbg.value(metadata !{i32 %ns}, i64 0, metadata !950), !dbg !1522
+  call void @llvm.dbg.value(metadata !{%struct.t_shell* %s}, i64 0, metadata !951), !dbg !1522
+  call void @llvm.dbg.value(metadata !{i32 %ndir}, i64 0, metadata !952), !dbg !1523
+  call void @llvm.dbg.value(metadata !{float %sf_dir}, i64 0, metadata !953), !dbg !1523
+  call void @llvm.dbg.declare(metadata !{i32* %ntot}, metadata !956), !dbg !1524
+  call void @llvm.dbg.declare(metadata !{float* %df2}, metadata !957), !dbg !1525
+  %add = add nsw i32 %ndir, %ns, !dbg !1526
+  call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !956), !dbg !1526
+  store i32 %add, i32* %ntot, align 4, !dbg !1526, !tbaa !1086
+  %tobool = icmp eq i32 %add, 0, !dbg !1527
+  br i1 %tobool, label %return, label %if.end, !dbg !1527
 
-; <label>:3                                       ; preds = %0
-  store float %sf_dir, float* %df2, align 4, !tbaa !14
-  %4 = icmp sgt i32 %ns, 0
-  br i1 %4, label %.lr.ph, label %23
+if.end:                                           ; preds = %entry
+  call void @llvm.dbg.value(metadata !{float %sf_dir}, i64 0, metadata !957), !dbg !1528
+  store float %sf_dir, float* %df2, align 4, !dbg !1528, !tbaa !1081
+  call void @llvm.dbg.value(metadata !74, i64 0, metadata !954), !dbg !1529
+  %cmp23 = icmp sgt i32 %ns, 0, !dbg !1529
+  br i1 %cmp23, label %for.body, label %for.end, !dbg !1529
 
-.lr.ph:                                           ; preds = %3
-  %5 = add i32 %ns, -1
-  br label %6
+for.body:                                         ; preds = %if.end, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.end ]
+  %add725 = phi float [ %add7, %for.body ], [ %sf_dir, %if.end ], !dbg !1531
+  %shell1 = getelementptr inbounds %struct.t_shell* %s, i64 %indvars.iv, i32 1, !dbg !1531
+  %0 = load i32* %shell1, align 4, !dbg !1531, !tbaa !1086
+  call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !955), !dbg !1531
+  %idxprom2 = sext i32 %0 to i64, !dbg !1533
+  %arraydecay = getelementptr inbounds [3 x float]* %f, i64 %idxprom2, i64 0, !dbg !1533
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay}, i64 0, metadata !1534), !dbg !1535
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay}, i64 0, metadata !1536), !dbg !1535
+  %1 = load float* %arraydecay, align 4, !dbg !1537, !tbaa !1081
+  %mul.i = fmul float %1, %1, !dbg !1537
+  %arrayidx2.i = getelementptr inbounds [3 x float]* %f, i64 %idxprom2, i64 1, !dbg !1537
+  %2 = load float* %arrayidx2.i, align 4, !dbg !1537, !tbaa !1081
+  %mul4.i = fmul float %2, %2, !dbg !1537
+  %add.i = fadd float %mul.i, %mul4.i, !dbg !1537
+  %arrayidx5.i = getelementptr inbounds [3 x float]* %f, i64 %idxprom2, i64 2, !dbg !1537
+  %3 = load float* %arrayidx5.i, align 4, !dbg !1537, !tbaa !1081
+  %mul7.i = fmul float %3, %3, !dbg !1537
+  %add8.i = fadd float %add.i, %mul7.i, !dbg !1537
+  call void @llvm.dbg.value(metadata !{float* %df2}, i64 0, metadata !957), !dbg !1533
+  %add7 = fadd float %add725, %add8.i, !dbg !1533
+  call void @llvm.dbg.value(metadata !{float %add7}, i64 0, metadata !957), !dbg !1533
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1529
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1529
+  %exitcond = icmp eq i32 %lftr.wideiv, %ns, !dbg !1529
+  br i1 %exitcond, label %for.cond.for.end_crit_edge, label %for.body, !dbg !1529
 
-; <label>:6                                       ; preds = %6, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %6 ]
-  %7 = phi float [ %sf_dir, %.lr.ph ], [ %22, %6 ]
-  %8 = getelementptr inbounds %struct.t_shell* %s, i64 %indvars.iv, i32 1
-  %9 = load i32* %8, align 4, !tbaa !40
-  %10 = sext i32 %9 to i64
-  %11 = getelementptr inbounds [3 x float]* %f, i64 %10, i64 0
-  %12 = load float* %11, align 4, !tbaa !14
-  %13 = fmul float %12, %12
-  %14 = getelementptr inbounds [3 x float]* %f, i64 %10, i64 1
-  %15 = bitcast float* %14 to <2 x float>*
-  %16 = load <2 x float>* %15, align 4, !tbaa !14
-  %17 = fmul <2 x float> %16, %16
-  %18 = extractelement <2 x float> %17, i32 0
-  %19 = fadd float %13, %18
-  %20 = extractelement <2 x float> %17, i32 1
-  %21 = fadd float %19, %20
-  %22 = fadd float %7, %21
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %5
-  br i1 %exitcond, label %._crit_edge, label %6
+for.cond.for.end_crit_edge:                       ; preds = %for.body
+  call void @llvm.dbg.value(metadata !{float %add7}, i64 0, metadata !957), !dbg !1533
+  store float %add7, float* %df2, align 4, !dbg !1533, !tbaa !1081
+  br label %for.end, !dbg !1529
 
-._crit_edge:                                      ; preds = %6
-  store float %22, float* %df2, align 4, !tbaa !14
-  br label %23
+for.end:                                          ; preds = %for.cond.for.end_crit_edge, %if.end
+  %4 = phi float [ %add7, %for.cond.for.end_crit_edge ], [ %sf_dir, %if.end ]
+  %nnodes = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1, !dbg !1539
+  %5 = load i32* %nnodes, align 4, !dbg !1539, !tbaa !1086
+  %cmp8 = icmp sgt i32 %5, 1, !dbg !1539
+  br i1 %cmp8, label %if.then10, label %lor.lhs.false, !dbg !1539
 
-; <label>:23                                      ; preds = %._crit_edge, %3
-  %24 = phi float [ %22, %._crit_edge ], [ %sf_dir, %3 ]
-  %25 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1
-  %26 = load i32* %25, align 4, !tbaa !46
-  %27 = icmp sgt i32 %26, 1
-  br i1 %27, label %32, label %28
+lor.lhs.false:                                    ; preds = %for.end
+  %nthreads = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 5, !dbg !1539
+  %6 = load i32* %nthreads, align 4, !dbg !1539, !tbaa !1086
+  %cmp9 = icmp sgt i32 %6, 1, !dbg !1539
+  br i1 %cmp9, label %if.then10, label %if.end11, !dbg !1539
 
-; <label>:28                                      ; preds = %23
-  %29 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 5
-  %30 = load i32* %29, align 4, !tbaa !48
-  %31 = icmp sgt i32 %30, 1
-  br i1 %31, label %32, label %33
+if.then10:                                        ; preds = %lor.lhs.false, %for.end
+  call void @gmx_sumf(i32 1, float* %df2, %struct.t_commrec* %cr) #6, !dbg !1540
+  call void @gmx_sumi(i32 1, i32* %ntot, %struct.t_commrec* %cr) #6, !dbg !1542
+  call void @llvm.dbg.value(metadata !{float* %df2}, i64 0, metadata !957), !dbg !1543
+  %.pre = load float* %df2, align 4, !dbg !1543, !tbaa !1081
+  call void @llvm.dbg.value(metadata !{i32* %ntot}, i64 0, metadata !956), !dbg !1543
+  %.pre26 = load i32* %ntot, align 4, !dbg !1543, !tbaa !1086
+  br label %if.end11, !dbg !1544
 
-; <label>:32                                      ; preds = %28, %23
-  call void @gmx_sumf(i32 1, float* %df2, %struct.t_commrec* %cr) #8
-  call void @gmx_sumi(i32 1, i32* %ntot, %struct.t_commrec* %cr) #8
-  %.pre = load float* %df2, align 4, !tbaa !14
-  %.pre2 = load i32* %ntot, align 4, !tbaa !20
-  br label %33
+if.end11:                                         ; preds = %if.then10, %lor.lhs.false
+  %7 = phi i32 [ %.pre26, %if.then10 ], [ %add, %lor.lhs.false ]
+  %8 = phi float [ %.pre, %if.then10 ], [ %4, %lor.lhs.false ]
+  call void @llvm.dbg.value(metadata !{float* %df2}, i64 0, metadata !957), !dbg !1543
+  call void @llvm.dbg.value(metadata !{i32* %ntot}, i64 0, metadata !956), !dbg !1543
+  %conv = sitofp i32 %7 to float, !dbg !1543
+  %div = fdiv float %8, %conv, !dbg !1543
+  %conv14 = call float @sqrtf(float %div) #4, !dbg !1543
+  br label %return, !dbg !1543
 
-; <label>:33                                      ; preds = %32, %28
-  %34 = phi i32 [ %.pre2, %32 ], [ %1, %28 ]
-  %35 = phi float [ %.pre, %32 ], [ %24, %28 ]
-  %36 = sitofp i32 %34 to float
-  %37 = fdiv float %35, %36
-  %sqrtf = call float @sqrtf(float %37) #7
-  br label %38
-
-; <label>:38                                      ; preds = %0, %33
-  %.0 = phi float [ %sqrtf, %33 ], [ 0.000000e+00, %0 ]
-  ret float %.0
+return:                                           ; preds = %entry, %if.end11
+  %retval.0 = phi float [ %conv14, %if.end11 ], [ 0.000000e+00, %entry ]
+  ret float %retval.0, !dbg !1545
 }

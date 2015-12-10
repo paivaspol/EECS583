@@ -1,34 +1,35 @@
 define void @initialize_hash() #0 {
 entry:
-  store i32 -559038737, i32* @hash, align 4, !tbaa !3
-  br label %for.body
+  store i32 -559038737, i32* @hash, align 4, !dbg !134, !tbaa !117
+  tail call void @llvm.dbg.value(metadata !8, i64 0, metadata !22), !dbg !135
+  br label %for.body, !dbg !135
 
 for.body:                                         ; preds = %for.inc, %entry
   %0 = phi i32 [ -559038737, %entry ], [ %3, %for.inc ]
   %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc ]
-  %arrayidx = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %indvars.iv
-  %1 = load i32* %arrayidx, align 4, !tbaa !3
+  %arrayidx = getelementptr inbounds [144 x i32]* @board, i64 0, i64 %indvars.iv, !dbg !137
+  %1 = load i32* %arrayidx, align 4, !dbg !137, !tbaa !117
   switch i32 %1, label %if.then [
     i32 13, label %for.inc
     i32 0, label %for.inc
-  ]
+  ], !dbg !137
 
 if.then:                                          ; preds = %for.body
-  %idxprom8 = sext i32 %1 to i64
-  %arrayidx10 = getelementptr inbounds [14 x [144 x i32]]* @zobrist, i64 0, i64 %idxprom8, i64 %indvars.iv
-  %2 = load i32* %arrayidx10, align 4, !tbaa !3
-  %xor = xor i32 %2, %0
-  store i32 %xor, i32* @hash, align 4, !tbaa !3
-  br label %for.inc
+  %idxprom8 = sext i32 %1 to i64, !dbg !139
+  %arrayidx10 = getelementptr inbounds [14 x [144 x i32]]* @zobrist, i64 0, i64 %idxprom8, i64 %indvars.iv, !dbg !139
+  %2 = load i32* %arrayidx10, align 4, !dbg !139, !tbaa !117
+  %xor = xor i32 %2, %0, !dbg !139
+  store i32 %xor, i32* @hash, align 4, !dbg !139, !tbaa !117
+  br label %for.inc, !dbg !139
 
 for.inc:                                          ; preds = %for.body, %for.body, %if.then
   %3 = phi i32 [ %0, %for.body ], [ %0, %for.body ], [ %xor, %if.then ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 144
-  br i1 %exitcond, label %for.end, label %for.body
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !135
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !135
+  %exitcond = icmp eq i32 %lftr.wideiv, 144, !dbg !135
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !135
 
 for.end:                                          ; preds = %for.inc
-  store i32 -1056969216, i32* @hold_hash, align 4, !tbaa !3
-  ret void
+  store i32 -1056969216, i32* @hold_hash, align 4, !dbg !140, !tbaa !117
+  ret void, !dbg !141
 }

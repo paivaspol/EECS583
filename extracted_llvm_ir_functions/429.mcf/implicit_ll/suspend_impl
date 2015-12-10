@@ -1,122 +1,133 @@
 define i64 @suspend_impl(%struct.network* %net, i64 %threshold, i64 %all) #0 {
 entry:
-  %tobool = icmp eq i64 %all, 0
-  br i1 %tobool, label %if.else, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.network* %net}, i64 0, metadata !143), !dbg !306
+  tail call void @llvm.dbg.value(metadata !{i64 %threshold}, i64 0, metadata !144), !dbg !306
+  tail call void @llvm.dbg.value(metadata !{i64 %all}, i64 0, metadata !145), !dbg !306
+  %tobool = icmp eq i64 %all, 0, !dbg !307
+  br i1 %tobool, label %if.else, label %if.then, !dbg !307
 
 if.then:                                          ; preds = %entry
-  %m_impl = getelementptr inbounds %struct.network* %net, i64 0, i32 7
-  %0 = load i64* %m_impl, align 8, !tbaa !0
-  br label %if.end25
+  %m_impl = getelementptr inbounds %struct.network* %net, i64 0, i32 7, !dbg !308
+  %0 = load i64* %m_impl, align 8, !dbg !308, !tbaa !154
+  tail call void @llvm.dbg.value(metadata !{i64 %0}, i64 0, metadata !146), !dbg !308
+  br label %if.end25, !dbg !308
 
 if.else:                                          ; preds = %entry
-  %stop_arcs = getelementptr inbounds %struct.network* %net, i64 0, i32 24
-  %1 = load %struct.arc** %stop_arcs, align 8, !tbaa !3
-  %m = getelementptr inbounds %struct.network* %net, i64 0, i32 5
-  %2 = load i64* %m, align 8, !tbaa !0
-  %m_impl1 = getelementptr inbounds %struct.network* %net, i64 0, i32 7
-  %3 = load i64* %m_impl1, align 8, !tbaa !0
-  %sub = sub nsw i64 %2, %3
-  %arcs = getelementptr inbounds %struct.network* %net, i64 0, i32 23
-  %4 = load %struct.arc** %arcs, align 8, !tbaa !3
-  %arrayidx = getelementptr inbounds %struct.arc* %4, i64 %sub
-  %cmp62 = icmp ult %struct.arc* %arrayidx, %1
-  br i1 %cmp62, label %for.body, label %if.end34
+  %stop_arcs = getelementptr inbounds %struct.network* %net, i64 0, i32 24, !dbg !309
+  %1 = load %struct.arc** %stop_arcs, align 8, !dbg !309, !tbaa !160
+  %m = getelementptr inbounds %struct.network* %net, i64 0, i32 5, !dbg !311
+  %2 = load i64* %m, align 8, !dbg !311, !tbaa !154
+  %m_impl1 = getelementptr inbounds %struct.network* %net, i64 0, i32 7, !dbg !311
+  %3 = load i64* %m_impl1, align 8, !dbg !311, !tbaa !154
+  %sub = sub nsw i64 %2, %3, !dbg !311
+  %arcs = getelementptr inbounds %struct.network* %net, i64 0, i32 23, !dbg !311
+  %4 = load %struct.arc** %arcs, align 8, !dbg !311, !tbaa !160
+  %arrayidx = getelementptr inbounds %struct.arc* %4, i64 %sub, !dbg !311
+  tail call void @llvm.dbg.value(metadata !{%struct.arc* %arrayidx}, i64 0, metadata !148), !dbg !311
+  tail call void @llvm.dbg.value(metadata !226, i64 0, metadata !146), !dbg !312
+  tail call void @llvm.dbg.value(metadata !{%struct.arc* %arrayidx}, i64 0, metadata !149), !dbg !312
+  %cmp62 = icmp ult %struct.arc* %arrayidx, %1, !dbg !312
+  br i1 %cmp62, label %for.body, label %if.end34, !dbg !312
 
 for.body:                                         ; preds = %if.else, %for.inc
   %susp.065 = phi i64 [ %susp.1, %for.inc ], [ 0, %if.else ]
   %arc.064 = phi %struct.arc* [ %incdec.ptr24, %for.inc ], [ %arrayidx, %if.else ]
   %new_arc.063 = phi %struct.arc* [ %new_arc.1, %for.inc ], [ %arrayidx, %if.else ]
-  %ident = getelementptr inbounds %struct.arc* %arc.064, i64 0, i32 3
-  %5 = load i32* %ident, align 4, !tbaa !4
+  %ident = getelementptr inbounds %struct.arc* %arc.064, i64 0, i32 3, !dbg !314
+  %5 = load i32* %ident, align 4, !dbg !314, !tbaa !248
   switch i32 %5, label %if.end19 [
     i32 1, label %if.then3
     i32 0, label %if.then9
-  ]
+  ], !dbg !314
 
 if.then3:                                         ; preds = %for.body
-  %cost = getelementptr inbounds %struct.arc* %arc.064, i64 0, i32 0
-  %6 = load i64* %cost, align 8, !tbaa !0
-  %tail = getelementptr inbounds %struct.arc* %arc.064, i64 0, i32 1
-  %7 = load %struct.node** %tail, align 8, !tbaa !3
-  %potential = getelementptr inbounds %struct.node* %7, i64 0, i32 0
-  %8 = load i64* %potential, align 8, !tbaa !0
-  %sub4 = sub i64 %6, %8
-  %head = getelementptr inbounds %struct.arc* %arc.064, i64 0, i32 2
-  %9 = load %struct.node** %head, align 8, !tbaa !3
-  %potential5 = getelementptr inbounds %struct.node* %9, i64 0, i32 0
-  %10 = load i64* %potential5, align 8, !tbaa !0
-  %add = add nsw i64 %sub4, %10
-  br label %if.end19
+  %cost = getelementptr inbounds %struct.arc* %arc.064, i64 0, i32 0, !dbg !316
+  %6 = load i64* %cost, align 8, !dbg !316, !tbaa !154
+  %tail = getelementptr inbounds %struct.arc* %arc.064, i64 0, i32 1, !dbg !316
+  %7 = load %struct.node** %tail, align 8, !dbg !316, !tbaa !160
+  %potential = getelementptr inbounds %struct.node* %7, i64 0, i32 0, !dbg !316
+  %8 = load i64* %potential, align 8, !dbg !316, !tbaa !154
+  %sub4 = sub i64 %6, %8, !dbg !316
+  %head = getelementptr inbounds %struct.arc* %arc.064, i64 0, i32 2, !dbg !316
+  %9 = load %struct.node** %head, align 8, !dbg !316, !tbaa !160
+  %potential5 = getelementptr inbounds %struct.node* %9, i64 0, i32 0, !dbg !316
+  %10 = load i64* %potential5, align 8, !dbg !316, !tbaa !154
+  %add = add nsw i64 %sub4, %10, !dbg !316
+  tail call void @llvm.dbg.value(metadata !{i64 %add}, i64 0, metadata !147), !dbg !316
+  br label %if.end19, !dbg !316
 
 if.then9:                                         ; preds = %for.body
-  %tail10 = getelementptr inbounds %struct.arc* %arc.064, i64 0, i32 1
-  %11 = load %struct.node** %tail10, align 8, !tbaa !3
-  %basic_arc = getelementptr inbounds %struct.node* %11, i64 0, i32 6
-  %12 = load %struct.arc** %basic_arc, align 8, !tbaa !3
-  %cmp11 = icmp eq %struct.arc* %12, %arc.064
-  br i1 %cmp11, label %if.then12, label %if.else15
+  %tail10 = getelementptr inbounds %struct.arc* %arc.064, i64 0, i32 1, !dbg !317
+  %11 = load %struct.node** %tail10, align 8, !dbg !317, !tbaa !160
+  %basic_arc = getelementptr inbounds %struct.node* %11, i64 0, i32 6, !dbg !317
+  %12 = load %struct.arc** %basic_arc, align 8, !dbg !317, !tbaa !160
+  %cmp11 = icmp eq %struct.arc* %12, %arc.064, !dbg !317
+  br i1 %cmp11, label %if.then12, label %if.else15, !dbg !317
 
 if.then12:                                        ; preds = %if.then9
-  store %struct.arc* %new_arc.063, %struct.arc** %basic_arc, align 8, !tbaa !3
-  br label %if.end19
+  store %struct.arc* %new_arc.063, %struct.arc** %basic_arc, align 8, !dbg !320, !tbaa !160
+  br label %if.end19, !dbg !320
 
 if.else15:                                        ; preds = %if.then9
-  %head16 = getelementptr inbounds %struct.arc* %arc.064, i64 0, i32 2
-  %13 = load %struct.node** %head16, align 8, !tbaa !3
-  %basic_arc17 = getelementptr inbounds %struct.node* %13, i64 0, i32 6
-  store %struct.arc* %new_arc.063, %struct.arc** %basic_arc17, align 8, !tbaa !3
+  %head16 = getelementptr inbounds %struct.arc* %arc.064, i64 0, i32 2, !dbg !321
+  %13 = load %struct.node** %head16, align 8, !dbg !321, !tbaa !160
+  %basic_arc17 = getelementptr inbounds %struct.node* %13, i64 0, i32 6, !dbg !321
+  store %struct.arc* %new_arc.063, %struct.arc** %basic_arc17, align 8, !dbg !321, !tbaa !160
   br label %if.end19
 
 if.end19:                                         ; preds = %for.body, %if.else15, %if.then12, %if.then3
   %red_cost.0 = phi i64 [ %add, %if.then3 ], [ -2, %if.then12 ], [ -2, %if.else15 ], [ -2, %for.body ]
-  %cmp20 = icmp sgt i64 %red_cost.0, %threshold
-  br i1 %cmp20, label %if.then21, label %if.else22
+  %cmp20 = icmp sgt i64 %red_cost.0, %threshold, !dbg !322
+  br i1 %cmp20, label %if.then21, label %if.else22, !dbg !322
 
 if.then21:                                        ; preds = %if.end19
-  %inc = add nsw i64 %susp.065, 1
-  br label %for.inc
+  %inc = add nsw i64 %susp.065, 1, !dbg !323
+  tail call void @llvm.dbg.value(metadata !{i64 %inc}, i64 0, metadata !146), !dbg !323
+  br label %for.inc, !dbg !323
 
 if.else22:                                        ; preds = %if.end19
-  %14 = bitcast %struct.arc* %new_arc.063 to i8*
-  %15 = bitcast %struct.arc* %arc.064 to i8*
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %14, i8* %15, i64 64, i32 8, i1 false), !tbaa.struct !5
-  %incdec.ptr = getelementptr inbounds %struct.arc* %new_arc.063, i64 1
+  %14 = bitcast %struct.arc* %new_arc.063 to i8*, !dbg !324
+  %15 = bitcast %struct.arc* %arc.064 to i8*, !dbg !324
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %14, i8* %15, i64 64, i32 8, i1 false), !dbg !324, !tbaa.struct !326
+  %incdec.ptr = getelementptr inbounds %struct.arc* %new_arc.063, i64 1, !dbg !327
+  tail call void @llvm.dbg.value(metadata !{%struct.arc* %incdec.ptr}, i64 0, metadata !148), !dbg !327
   br label %for.inc
 
 for.inc:                                          ; preds = %if.then21, %if.else22
   %new_arc.1 = phi %struct.arc* [ %new_arc.063, %if.then21 ], [ %incdec.ptr, %if.else22 ]
   %susp.1 = phi i64 [ %inc, %if.then21 ], [ %susp.065, %if.else22 ]
-  %incdec.ptr24 = getelementptr inbounds %struct.arc* %arc.064, i64 1
-  %cmp = icmp ult %struct.arc* %incdec.ptr24, %1
-  br i1 %cmp, label %for.body, label %if.end25
+  %incdec.ptr24 = getelementptr inbounds %struct.arc* %arc.064, i64 1, !dbg !312
+  tail call void @llvm.dbg.value(metadata !{%struct.arc* %incdec.ptr24}, i64 0, metadata !149), !dbg !312
+  %cmp = icmp ult %struct.arc* %incdec.ptr24, %1, !dbg !312
+  br i1 %cmp, label %for.body, label %if.end25, !dbg !312
 
 if.end25:                                         ; preds = %for.inc, %if.then
   %susp.2 = phi i64 [ %0, %if.then ], [ %susp.1, %for.inc ]
-  %tobool26 = icmp eq i64 %susp.2, 0
-  br i1 %tobool26, label %if.end34, label %if.then27
+  %tobool26 = icmp eq i64 %susp.2, 0, !dbg !328
+  br i1 %tobool26, label %if.end34, label %if.then27, !dbg !328
 
 if.then27:                                        ; preds = %if.end25
-  %m28 = getelementptr inbounds %struct.network* %net, i64 0, i32 5
-  %16 = load i64* %m28, align 8, !tbaa !0
-  %sub29 = sub nsw i64 %16, %susp.2
-  store i64 %sub29, i64* %m28, align 8, !tbaa !0
-  %m_impl30 = getelementptr inbounds %struct.network* %net, i64 0, i32 7
-  %17 = load i64* %m_impl30, align 8, !tbaa !0
-  %sub31 = sub nsw i64 %17, %susp.2
-  store i64 %sub31, i64* %m_impl30, align 8, !tbaa !0
-  %stop_arcs32 = getelementptr inbounds %struct.network* %net, i64 0, i32 24
-  %18 = load %struct.arc** %stop_arcs32, align 8, !tbaa !3
-  %idx.neg = sub i64 0, %susp.2
-  %add.ptr = getelementptr inbounds %struct.arc* %18, i64 %idx.neg
-  store %struct.arc* %add.ptr, %struct.arc** %stop_arcs32, align 8, !tbaa !3
-  %max_residual_new_m = getelementptr inbounds %struct.network* %net, i64 0, i32 8
-  %19 = load i64* %max_residual_new_m, align 8, !tbaa !0
-  %add33 = add nsw i64 %19, %susp.2
-  store i64 %add33, i64* %max_residual_new_m, align 8, !tbaa !0
-  tail call void @refresh_neighbour_lists(%struct.network* %net) #4
-  br label %if.end34
+  %m28 = getelementptr inbounds %struct.network* %net, i64 0, i32 5, !dbg !329
+  %16 = load i64* %m28, align 8, !dbg !329, !tbaa !154
+  %sub29 = sub nsw i64 %16, %susp.2, !dbg !329
+  store i64 %sub29, i64* %m28, align 8, !dbg !329, !tbaa !154
+  %m_impl30 = getelementptr inbounds %struct.network* %net, i64 0, i32 7, !dbg !331
+  %17 = load i64* %m_impl30, align 8, !dbg !331, !tbaa !154
+  %sub31 = sub nsw i64 %17, %susp.2, !dbg !331
+  store i64 %sub31, i64* %m_impl30, align 8, !dbg !331, !tbaa !154
+  %stop_arcs32 = getelementptr inbounds %struct.network* %net, i64 0, i32 24, !dbg !332
+  %18 = load %struct.arc** %stop_arcs32, align 8, !dbg !332, !tbaa !160
+  %idx.neg = sub i64 0, %susp.2, !dbg !332
+  %add.ptr = getelementptr inbounds %struct.arc* %18, i64 %idx.neg, !dbg !332
+  store %struct.arc* %add.ptr, %struct.arc** %stop_arcs32, align 8, !dbg !332, !tbaa !160
+  %max_residual_new_m = getelementptr inbounds %struct.network* %net, i64 0, i32 8, !dbg !333
+  %19 = load i64* %max_residual_new_m, align 8, !dbg !333, !tbaa !154
+  %add33 = add nsw i64 %19, %susp.2, !dbg !333
+  store i64 %add33, i64* %max_residual_new_m, align 8, !dbg !333, !tbaa !154
+  tail call void @refresh_neighbour_lists(%struct.network* %net) #7, !dbg !334
+  br label %if.end34, !dbg !335
 
 if.end34:                                         ; preds = %if.else, %if.end25, %if.then27
   %susp.267 = phi i64 [ 0, %if.end25 ], [ %susp.2, %if.then27 ], [ 0, %if.else ]
-  ret i64 %susp.267
+  ret i64 %susp.267, !dbg !336
 }

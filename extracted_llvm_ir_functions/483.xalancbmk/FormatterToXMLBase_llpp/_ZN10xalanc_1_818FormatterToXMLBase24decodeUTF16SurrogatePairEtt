@@ -1,0 +1,21 @@
+define i32 @_ZN10xalanc_1_818FormatterToXMLBase24decodeUTF16SurrogatePairEtt(i16 zeroext %theHighSurrogate, i16 zeroext %theLowSurrogate) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16 %theHighSurrogate}, i64 0, metadata !3155), !dbg !4378
+  tail call void @llvm.dbg.value(metadata !{i16 %theLowSurrogate}, i64 0, metadata !3156), !dbg !4379
+  tail call void @llvm.dbg.value(metadata !{i16 %theLowSurrogate}, i64 0, metadata !4380), !dbg !4382
+  %theChar.off.i = add i16 %theLowSurrogate, 9216, !dbg !4383
+  %0 = icmp ult i16 %theChar.off.i, 1024, !dbg !4383
+  br i1 %0, label %if.end, label %if.then, !dbg !4381
+
+if.then:                                          ; preds = %entry
+  tail call void @_ZN10xalanc_1_818FormatterToXMLBase35throwInvalidUTF16SurrogateExceptionEtt(i16 zeroext %theHighSurrogate, i16 zeroext %theLowSurrogate) #9, !dbg !4385
+  unreachable
+
+if.end:                                           ; preds = %entry
+  %conv1 = zext i16 %theHighSurrogate to i32, !dbg !4387
+  %sub = shl nuw nsw i32 %conv1, 10, !dbg !4387
+  %conv2 = zext i16 %theLowSurrogate to i32, !dbg !4387
+  %add = add i32 %sub, -56613888, !dbg !4387
+  %add4 = add i32 %add, %conv2, !dbg !4387
+  ret i32 %add4, !dbg !4387
+}

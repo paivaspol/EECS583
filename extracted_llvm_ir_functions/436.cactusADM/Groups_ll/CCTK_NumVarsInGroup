@@ -1,19 +1,22 @@
 define i32 @CCTK_NumVarsInGroup(i8* %groupname) #2 {
-  %1 = tail call i32 @CCTK_GroupIndex(i8* %groupname) #9
-  %2 = icmp sgt i32 %1, -1
-  %3 = load i32* @n_groups, align 4
-  %4 = icmp sgt i32 %3, %1
-  %or.cond.i = and i1 %2, %4
-  br i1 %or.cond.i, label %5, label %CCTK_NumVarsInGroupI.exit
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %groupname}, i64 0, metadata !228), !dbg !746
+  %call = tail call i32 @CCTK_GroupIndex(i8* %groupname) #10, !dbg !747
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !748), !dbg !749
+  %cmp.i = icmp sgt i32 %call, -1, !dbg !750
+  %0 = load i32* @n_groups, align 4, !dbg !750, !tbaa !488
+  %cmp1.i = icmp sgt i32 %0, %call, !dbg !750
+  %or.cond.i = and i1 %cmp.i, %cmp1.i, !dbg !750
+  br i1 %or.cond.i, label %cond.true.i, label %CCTK_NumVarsInGroupI.exit, !dbg !750
 
-; <label>:5                                       ; preds = %0
-  %6 = sext i32 %1 to i64
-  %7 = load %struct.cGroupDefinition** @groups, align 8, !tbaa !2
-  %8 = getelementptr inbounds %struct.cGroupDefinition* %7, i64 %6, i32 11
-  %9 = load i32* %8, align 4, !tbaa !11
-  br label %CCTK_NumVarsInGroupI.exit
+cond.true.i:                                      ; preds = %entry
+  %idxprom.i = sext i32 %call to i64, !dbg !750
+  %1 = load %struct.cGroupDefinition** @groups, align 8, !dbg !750, !tbaa !480
+  %n_variables.i = getelementptr inbounds %struct.cGroupDefinition* %1, i64 %idxprom.i, i32 11, !dbg !750
+  %2 = load i32* %n_variables.i, align 4, !dbg !750, !tbaa !488
+  br label %CCTK_NumVarsInGroupI.exit, !dbg !750
 
-CCTK_NumVarsInGroupI.exit:                        ; preds = %0, %5
-  %10 = phi i32 [ %9, %5 ], [ -1, %0 ]
-  ret i32 %10
+CCTK_NumVarsInGroupI.exit:                        ; preds = %entry, %cond.true.i
+  %cond.i = phi i32 [ %2, %cond.true.i ], [ -1, %entry ], !dbg !750
+  ret i32 %cond.i, !dbg !747
 }

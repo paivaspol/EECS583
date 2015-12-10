@@ -1,144 +1,158 @@
 define i32 @SSIGetSubseqOffset(%struct.ssifile_s* nocapture %sfp, i8* nocapture %key, i32 %requested_start, i32* nocapture %ret_fh, %struct.ssioffset_s* nocapture %record_offset, %struct.ssioffset_s* nocapture %data_offset, i32* nocapture %ret_actual_start) #0 {
 entry:
   %len = alloca i32, align 4
-  %call = call i32 @SSIGetOffsetByName(%struct.ssifile_s* %sfp, i8* %key, i32* %ret_fh, %struct.ssioffset_s* %record_offset) #9
-  %cmp = icmp eq i32 %call, 0
-  br i1 %cmp, label %if.end, label %return
+  call void @llvm.dbg.value(metadata !{%struct.ssifile_s* %sfp}, i64 0, metadata !143), !dbg !658
+  call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !144), !dbg !658
+  call void @llvm.dbg.value(metadata !{i32 %requested_start}, i64 0, metadata !145), !dbg !658
+  call void @llvm.dbg.value(metadata !{i32* %ret_fh}, i64 0, metadata !146), !dbg !659
+  call void @llvm.dbg.value(metadata !{%struct.ssioffset_s* %record_offset}, i64 0, metadata !147), !dbg !659
+  call void @llvm.dbg.value(metadata !{%struct.ssioffset_s* %data_offset}, i64 0, metadata !148), !dbg !660
+  call void @llvm.dbg.value(metadata !{i32* %ret_actual_start}, i64 0, metadata !149), !dbg !660
+  call void @llvm.dbg.declare(metadata !{i32* %len}, metadata !151), !dbg !661
+  %call = call i32 @SSIGetOffsetByName(%struct.ssifile_s* %sfp, i8* %key, i32* %ret_fh, %struct.ssioffset_s* %record_offset) #10, !dbg !662
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !150), !dbg !662
+  %cmp = icmp eq i32 %call, 0, !dbg !663
+  br i1 %cmp, label %if.end, label %return, !dbg !663
 
 if.end:                                           ; preds = %entry
-  %0 = load i32* %ret_fh, align 4, !tbaa !4
-  %idxprom = sext i32 %0 to i64
-  %fileflags = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 18
-  %1 = load i32** %fileflags, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds i32* %1, i64 %idxprom
-  %2 = load i32* %arrayidx, align 4, !tbaa !4
-  %and = and i32 %2, 1
-  %tobool = icmp eq i32 %and, 0
-  br i1 %tobool, label %return, label %if.end2
+  %0 = load i32* %ret_fh, align 4, !dbg !664, !tbaa !521
+  %idxprom = sext i32 %0 to i64, !dbg !664
+  %fileflags = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 18, !dbg !664
+  %1 = load i32** %fileflags, align 8, !dbg !664, !tbaa !498
+  %arrayidx = getelementptr inbounds i32* %1, i64 %idxprom, !dbg !664
+  %2 = load i32* %arrayidx, align 4, !dbg !664, !tbaa !521
+  %and = and i32 %2, 1, !dbg !664
+  %tobool = icmp eq i32 %and, 0, !dbg !664
+  br i1 %tobool, label %return, label %if.end2, !dbg !664
 
 if.end2:                                          ; preds = %if.end
-  %fp = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 0
-  %3 = load %struct._IO_FILE** %fp, align 8, !tbaa !0
-  %smode = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 15
-  %4 = load i8* %smode, align 1, !tbaa !1
-  %call3 = call fastcc i32 @read_offset(%struct._IO_FILE* %3, i8 signext %4, %struct.ssioffset_s* %data_offset) #9
-  %tobool4 = icmp eq i32 %call3, 0
-  br i1 %tobool4, label %return, label %if.end6
+  %fp = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 0, !dbg !665
+  %3 = load %struct._IO_FILE** %fp, align 8, !dbg !665, !tbaa !498
+  %smode = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 15, !dbg !665
+  %4 = load i8* %smode, align 1, !dbg !665, !tbaa !499
+  %call3 = call fastcc i32 @read_offset(%struct._IO_FILE* %3, i8 signext %4, %struct.ssioffset_s* %data_offset) #10, !dbg !665
+  %tobool4 = icmp eq i32 %call3, 0, !dbg !665
+  br i1 %tobool4, label %return, label %if.end6, !dbg !665
 
 if.end6:                                          ; preds = %if.end2
-  %5 = load %struct._IO_FILE** %fp, align 8, !tbaa !0
-  %call8 = call fastcc i32 @read_i32(%struct._IO_FILE* %5, i32* %len) #9
-  %tobool9 = icmp eq i32 %call8, 0
-  br i1 %tobool9, label %return, label %if.end11
+  %5 = load %struct._IO_FILE** %fp, align 8, !dbg !666, !tbaa !498
+  %call8 = call fastcc i32 @read_i32(%struct._IO_FILE* %5, i32* %len) #10, !dbg !666
+  %tobool9 = icmp eq i32 %call8, 0, !dbg !666
+  br i1 %tobool9, label %return, label %if.end11, !dbg !666
 
 if.end11:                                         ; preds = %if.end6
-  %6 = load i32* %ret_fh, align 4, !tbaa !4
-  %idxprom12 = sext i32 %6 to i64
-  %rpl = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 20
-  %7 = load i32** %rpl, align 8, !tbaa !0
-  %arrayidx13 = getelementptr inbounds i32* %7, i64 %idxprom12
-  %8 = load i32* %arrayidx13, align 4, !tbaa !4
-  %bpl = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 19
-  %9 = load i32** %bpl, align 8, !tbaa !0
-  %arrayidx15 = getelementptr inbounds i32* %9, i64 %idxprom12
-  %10 = load i32* %arrayidx15, align 4, !tbaa !4
-  %sub = add nsw i32 %requested_start, -1
-  %div = sdiv i32 %sub, %8
-  %cmp16 = icmp eq i32 %8, 0
-  %cmp17 = icmp eq i32 %10, 0
-  %or.cond = or i1 %cmp16, %cmp17
-  br i1 %or.cond, label %return, label %if.end19
+  %6 = load i32* %ret_fh, align 4, !dbg !667, !tbaa !521
+  %idxprom12 = sext i32 %6 to i64, !dbg !667
+  %rpl = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 20, !dbg !667
+  %7 = load i32** %rpl, align 8, !dbg !667, !tbaa !498
+  %arrayidx13 = getelementptr inbounds i32* %7, i64 %idxprom12, !dbg !667
+  %8 = load i32* %arrayidx13, align 4, !dbg !667, !tbaa !521
+  call void @llvm.dbg.value(metadata !{i32 %8}, i64 0, metadata !152), !dbg !667
+  %bpl = getelementptr inbounds %struct.ssifile_s* %sfp, i64 0, i32 19, !dbg !668
+  %9 = load i32** %bpl, align 8, !dbg !668, !tbaa !498
+  %arrayidx15 = getelementptr inbounds i32* %9, i64 %idxprom12, !dbg !668
+  %10 = load i32* %arrayidx15, align 4, !dbg !668, !tbaa !521
+  call void @llvm.dbg.value(metadata !{i32 %10}, i64 0, metadata !153), !dbg !668
+  call void @llvm.dbg.value(metadata !{i32 %requested_start}, i64 0, metadata !154), !dbg !669
+  %sub = add nsw i32 %requested_start, -1, !dbg !670
+  %div = sdiv i32 %sub, %8, !dbg !670
+  call void @llvm.dbg.value(metadata !{i32 %div}, i64 0, metadata !155), !dbg !670
+  %cmp16 = icmp eq i32 %8, 0, !dbg !671
+  %cmp17 = icmp eq i32 %10, 0, !dbg !671
+  %or.cond = or i1 %cmp16, %cmp17, !dbg !671
+  br i1 %or.cond, label %return, label %if.end19, !dbg !671
 
 if.end19:                                         ; preds = %if.end11
-  %cmp20 = icmp slt i32 %requested_start, 0
-  br i1 %cmp20, label %return, label %lor.lhs.false21
+  %cmp20 = icmp slt i32 %requested_start, 0, !dbg !672
+  br i1 %cmp20, label %return, label %lor.lhs.false21, !dbg !672
 
 lor.lhs.false21:                                  ; preds = %if.end19
-  %11 = load i32* %len, align 4, !tbaa !4
-  %cmp22 = icmp ult i32 %11, %requested_start
-  br i1 %cmp22, label %return, label %if.end24
+  call void @llvm.dbg.value(metadata !{i32* %len}, i64 0, metadata !151), !dbg !672
+  %11 = load i32* %len, align 4, !dbg !672, !tbaa !521
+  %cmp22 = icmp ult i32 %11, %requested_start, !dbg !672
+  br i1 %cmp22, label %return, label %if.end24, !dbg !672
 
 if.end24:                                         ; preds = %lor.lhs.false21
-  %add = add nsw i32 %8, 1
-  %cmp25 = icmp eq i32 %10, %add
-  %12 = load i8* %smode, align 1, !tbaa !1
-  %cmp28 = icmp eq i8 %12, 0
-  br i1 %cmp25, label %if.then26, label %if.else54
+  %add = add nsw i32 %8, 1, !dbg !673
+  %cmp25 = icmp eq i32 %10, %add, !dbg !673
+  %12 = load i8* %smode, align 1, !dbg !674, !tbaa !499
+  %cmp28 = icmp eq i8 %12, 0, !dbg !674
+  br i1 %cmp25, label %if.then26, label %if.else54, !dbg !673
 
 if.then26:                                        ; preds = %if.end24
-  br i1 %cmp28, label %if.then30, label %if.else
+  br i1 %cmp28, label %if.then30, label %if.else, !dbg !674
 
 if.then30:                                        ; preds = %if.then26
-  %mode = getelementptr inbounds %struct.ssioffset_s* %data_offset, i64 0, i32 0
-  store i8 0, i8* %mode, align 1, !tbaa !1
-  %off = getelementptr inbounds %struct.ssioffset_s* %data_offset, i64 0, i32 1
-  %i32 = bitcast %union.anon* %off to i32*
-  %13 = load i32* %i32, align 4, !tbaa !4
-  %mul = mul nsw i32 %div, %10
-  %add31 = add i32 %13, %mul
-  %rem = srem i32 %sub, %8
-  %add33 = add i32 %add31, %rem
-  store i32 %add33, i32* %i32, align 4, !tbaa !4
-  br label %if.end85
+  %mode = getelementptr inbounds %struct.ssioffset_s* %data_offset, i64 0, i32 0, !dbg !676
+  store i8 0, i8* %mode, align 1, !dbg !676, !tbaa !499
+  %off = getelementptr inbounds %struct.ssioffset_s* %data_offset, i64 0, i32 1, !dbg !678
+  %i32 = bitcast %union.anon* %off to i32*, !dbg !678
+  %13 = load i32* %i32, align 4, !dbg !678, !tbaa !521
+  %mul = mul nsw i32 %div, %10, !dbg !678
+  %add31 = add i32 %13, %mul, !dbg !678
+  %rem = srem i32 %sub, %8, !dbg !678
+  %add33 = add i32 %add31, %rem, !dbg !678
+  store i32 %add33, i32* %i32, align 4, !dbg !678, !tbaa !521
+  br label %if.end85, !dbg !679
 
 if.else:                                          ; preds = %if.then26
-  %cmp38 = icmp eq i8 %12, 1
-  br i1 %cmp38, label %if.then40, label %if.end85
+  %cmp38 = icmp eq i8 %12, 1, !dbg !680
+  br i1 %cmp38, label %if.then40, label %if.end85, !dbg !680
 
 if.then40:                                        ; preds = %if.else
-  %mode41 = getelementptr inbounds %struct.ssioffset_s* %data_offset, i64 0, i32 0
-  store i8 1, i8* %mode41, align 1, !tbaa !1
-  %i64 = getelementptr inbounds %struct.ssioffset_s* %data_offset, i64 0, i32 1, i32 0
-  %14 = load i64* %i64, align 8, !tbaa !5
-  %mul43 = mul nsw i32 %div, %10
-  %conv44 = sext i32 %mul43 to i64
-  %add45 = add i64 %14, %conv44
-  %rem47 = srem i32 %sub, %8
-  %conv48 = sext i32 %rem47 to i64
-  %add49 = add i64 %add45, %conv48
-  store i64 %add49, i64* %i64, align 8, !tbaa !5
-  br label %if.end85
+  %mode41 = getelementptr inbounds %struct.ssioffset_s* %data_offset, i64 0, i32 0, !dbg !681
+  store i8 1, i8* %mode41, align 1, !dbg !681, !tbaa !499
+  %i64 = getelementptr inbounds %struct.ssioffset_s* %data_offset, i64 0, i32 1, i32 0, !dbg !683
+  %14 = load i64* %i64, align 8, !dbg !683, !tbaa !629
+  %mul43 = mul nsw i32 %div, %10, !dbg !683
+  %conv44 = sext i32 %mul43 to i64, !dbg !683
+  %add45 = add i64 %14, %conv44, !dbg !683
+  %rem47 = srem i32 %sub, %8, !dbg !683
+  %conv48 = sext i32 %rem47 to i64, !dbg !683
+  %add49 = add i64 %add45, %conv48, !dbg !683
+  store i64 %add49, i64* %i64, align 8, !dbg !683, !tbaa !629
+  br label %if.end85, !dbg !684
 
 if.else54:                                        ; preds = %if.end24
-  br i1 %cmp28, label %if.then59, label %if.else67
+  br i1 %cmp28, label %if.then59, label %if.else67, !dbg !685
 
 if.then59:                                        ; preds = %if.else54
-  %mode60 = getelementptr inbounds %struct.ssioffset_s* %data_offset, i64 0, i32 0
-  store i8 0, i8* %mode60, align 1, !tbaa !1
-  %off61 = getelementptr inbounds %struct.ssioffset_s* %data_offset, i64 0, i32 1
-  %i3262 = bitcast %union.anon* %off61 to i32*
-  %15 = load i32* %i3262, align 4, !tbaa !4
-  %mul63 = mul nsw i32 %div, %10
-  %add64 = add i32 %15, %mul63
-  store i32 %add64, i32* %i3262, align 4, !tbaa !4
-  br label %if.end82
+  %mode60 = getelementptr inbounds %struct.ssioffset_s* %data_offset, i64 0, i32 0, !dbg !687
+  store i8 0, i8* %mode60, align 1, !dbg !687, !tbaa !499
+  %off61 = getelementptr inbounds %struct.ssioffset_s* %data_offset, i64 0, i32 1, !dbg !689
+  %i3262 = bitcast %union.anon* %off61 to i32*, !dbg !689
+  %15 = load i32* %i3262, align 4, !dbg !689, !tbaa !521
+  %mul63 = mul nsw i32 %div, %10, !dbg !689
+  %add64 = add i32 %15, %mul63, !dbg !689
+  store i32 %add64, i32* %i3262, align 4, !dbg !689, !tbaa !521
+  br label %if.end82, !dbg !690
 
 if.else67:                                        ; preds = %if.else54
-  %cmp70 = icmp eq i8 %12, 1
-  br i1 %cmp70, label %if.then72, label %if.end82
+  %cmp70 = icmp eq i8 %12, 1, !dbg !691
+  br i1 %cmp70, label %if.then72, label %if.end82, !dbg !691
 
 if.then72:                                        ; preds = %if.else67
-  %mode73 = getelementptr inbounds %struct.ssioffset_s* %data_offset, i64 0, i32 0
-  store i8 1, i8* %mode73, align 1, !tbaa !1
-  %i6475 = getelementptr inbounds %struct.ssioffset_s* %data_offset, i64 0, i32 1, i32 0
-  %16 = load i64* %i6475, align 8, !tbaa !5
-  %mul76 = mul nsw i32 %div, %10
-  %conv77 = sext i32 %mul76 to i64
-  %add78 = add i64 %16, %conv77
-  store i64 %add78, i64* %i6475, align 8, !tbaa !5
-  br label %if.end82
+  %mode73 = getelementptr inbounds %struct.ssioffset_s* %data_offset, i64 0, i32 0, !dbg !692
+  store i8 1, i8* %mode73, align 1, !dbg !692, !tbaa !499
+  %i6475 = getelementptr inbounds %struct.ssioffset_s* %data_offset, i64 0, i32 1, i32 0, !dbg !694
+  %16 = load i64* %i6475, align 8, !dbg !694, !tbaa !629
+  %mul76 = mul nsw i32 %div, %10, !dbg !694
+  %conv77 = sext i32 %mul76 to i64, !dbg !694
+  %add78 = add i64 %16, %conv77, !dbg !694
+  store i64 %add78, i64* %i6475, align 8, !dbg !694, !tbaa !629
+  br label %if.end82, !dbg !695
 
 if.end82:                                         ; preds = %if.else67, %if.then72, %if.then59
-  %mul83 = mul nsw i32 %div, %8
-  %add84 = add nsw i32 %mul83, 1
+  %mul83 = mul nsw i32 %div, %8, !dbg !696
+  %add84 = add nsw i32 %mul83, 1, !dbg !696
   br label %if.end85
 
 if.end85:                                         ; preds = %if.then30, %if.then40, %if.else, %if.end82
   %storemerge = phi i32 [ %add84, %if.end82 ], [ %requested_start, %if.else ], [ %requested_start, %if.then40 ], [ %requested_start, %if.then30 ]
-  store i32 %storemerge, i32* %ret_actual_start, align 4, !tbaa !4
-  br label %return
+  store i32 %storemerge, i32* %ret_actual_start, align 4, !dbg !697, !tbaa !521
+  br label %return, !dbg !698
 
 return:                                           ; preds = %if.end19, %lor.lhs.false21, %if.end11, %if.end6, %if.end2, %if.end, %entry, %if.end85
   %retval.0 = phi i32 [ 0, %if.end85 ], [ %call, %entry ], [ 10, %if.end ], [ 1, %if.end2 ], [ 1, %if.end6 ], [ 10, %if.end11 ], [ 11, %lor.lhs.false21 ], [ 11, %if.end19 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !699
 }

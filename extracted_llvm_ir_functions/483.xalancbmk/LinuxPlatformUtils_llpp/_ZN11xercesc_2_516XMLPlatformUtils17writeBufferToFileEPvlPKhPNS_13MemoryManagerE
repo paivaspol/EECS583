@@ -1,0 +1,64 @@
+define void @_ZN11xercesc_2_516XMLPlatformUtils17writeBufferToFileEPvlPKhPNS_13MemoryManagerE(i8* %theFile, i64 %toWrite, i8* %toFlush, %"class.xercesc_2_5::MemoryManager"* %manager) #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %theFile}, i64 0, metadata !1219), !dbg !2105
+  tail call void @llvm.dbg.value(metadata !{i64 %toWrite}, i64 0, metadata !1220), !dbg !2106
+  tail call void @llvm.dbg.value(metadata !{i8* %toFlush}, i64 0, metadata !1221), !dbg !2107
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %manager}, i64 0, metadata !1222), !dbg !2108
+  %tobool = icmp eq i8* %theFile, null, !dbg !2109
+  %cmp = icmp slt i64 %toWrite, 1, !dbg !2109
+  %or.cond = or i1 %tobool, %cmp, !dbg !2109
+  %tobool2 = icmp eq i8* %toFlush, null, !dbg !2109
+  %or.cond20 = or i1 %or.cond, %tobool2, !dbg !2109
+  br i1 %or.cond20, label %return, label %while.body.preheader, !dbg !2109
+
+while.body.preheader:                             ; preds = %entry
+  %0 = bitcast i8* %theFile to %struct._IO_FILE*, !dbg !2110
+  %call21 = tail call i64 @fwrite(i8* %toFlush, i64 1, i64 %toWrite, %struct._IO_FILE* %0) #11, !dbg !2110
+  tail call void @llvm.dbg.value(metadata !{i64 %call21}, i64 0, metadata !1224), !dbg !2110
+  %call322 = tail call i32 @ferror(%struct._IO_FILE* %0) #13, !dbg !2112
+  %tobool423 = icmp eq i32 %call322, 0, !dbg !2112
+  br i1 %tobool423, label %if.end6, label %if.then5, !dbg !2112
+
+if.then5:                                         ; preds = %if.then8, %while.body.preheader
+  %exception = tail call i8* @__cxa_allocate_exception(i64 48) #8, !dbg !2113
+  %1 = bitcast i8* %exception to %"class.xercesc_2_5::XMLPlatformUtilsException"*, !dbg !2113
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLPlatformUtilsException"* %1}, i64 0, metadata !2115), !dbg !2116
+  tail call void @llvm.dbg.value(metadata !1956, i64 0, metadata !2117), !dbg !2116
+  tail call void @llvm.dbg.value(metadata !2118, i64 0, metadata !2119), !dbg !2116
+  tail call void @llvm.dbg.value(metadata !2120, i64 0, metadata !2121), !dbg !2116
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %manager}, i64 0, metadata !2122), !dbg !2116
+  invoke void @_ZN11xercesc_2_525XMLPlatformUtilsExceptionC2EPKcjNS_10XMLExcepts5CodesEPNS_13MemoryManagerE(%"class.xercesc_2_5::XMLPlatformUtilsException"* %1, i8* getelementptr inbounds ([70 x i8]* @.str, i64 0, i64 0), i32 482, i32 38, %"class.xercesc_2_5::MemoryManager"* %manager) #11
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %if.then5
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_525XMLPlatformUtilsExceptionE to i8*), i8* bitcast (void (%"class.xercesc_2_5::XMLPlatformUtilsException"*)* @_ZN11xercesc_2_525XMLPlatformUtilsExceptionD1Ev to i8*)) #12, !dbg !2113
+  unreachable, !dbg !2113
+
+lpad:                                             ; preds = %if.then5
+  %2 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !2113
+  tail call void @__cxa_free_exception(i8* %exception) #8, !dbg !2113
+  resume { i8*, i32 } %2, !dbg !2113
+
+if.end6:                                          ; preds = %while.body.preheader, %if.then8
+  %call26 = phi i64 [ %call, %if.then8 ], [ %call21, %while.body.preheader ]
+  %toWrite.addr.025 = phi i64 [ %sub, %if.then8 ], [ %toWrite, %while.body.preheader ]
+  %tmpFlush.024 = phi i8* [ %add.ptr, %if.then8 ], [ %toFlush, %while.body.preheader ]
+  %cmp7 = icmp ult i64 %call26, %toWrite.addr.025, !dbg !2123
+  br i1 %cmp7, label %if.then8, label %return, !dbg !2123
+
+if.then8:                                         ; preds = %if.end6
+  %add.ptr = getelementptr inbounds i8* %tmpFlush.024, i64 %call26, !dbg !2124
+  tail call void @llvm.dbg.value(metadata !{i8* %add.ptr}, i64 0, metadata !1223), !dbg !2124
+  %sub = sub i64 %toWrite.addr.025, %call26, !dbg !2126
+  tail call void @llvm.dbg.value(metadata !{i64 %sub}, i64 0, metadata !1220), !dbg !2126
+  tail call void @llvm.dbg.value(metadata !2127, i64 0, metadata !1224), !dbg !2128
+  %call = tail call i64 @fwrite(i8* %add.ptr, i64 1, i64 %sub, %struct._IO_FILE* %0) #11, !dbg !2110
+  tail call void @llvm.dbg.value(metadata !{i64 %call26}, i64 0, metadata !1224), !dbg !2110
+  %call3 = tail call i32 @ferror(%struct._IO_FILE* %0) #13, !dbg !2112
+  %tobool4 = icmp eq i32 %call3, 0, !dbg !2112
+  br i1 %tobool4, label %if.end6, label %if.then5, !dbg !2112
+
+return:                                           ; preds = %if.end6, %entry
+  ret void, !dbg !2129
+}

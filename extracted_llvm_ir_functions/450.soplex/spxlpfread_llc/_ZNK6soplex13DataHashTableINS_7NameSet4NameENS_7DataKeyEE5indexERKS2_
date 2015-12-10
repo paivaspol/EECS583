@@ -1,0 +1,57 @@
+define linkonce_odr i32 @_ZNK6soplex13DataHashTableINS_7NameSet4NameENS_7DataKeyEE5indexERKS2_(%"class.soplex::DataHashTable"* nocapture %this, %"class.soplex::NameSet::Name"* %h) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataHashTable"* %this}, i64 0, metadata !5469), !dbg !6593
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::NameSet::Name"* %h}, i64 0, metadata !5470), !dbg !6593
+  %m_used = getelementptr inbounds %"class.soplex::DataHashTable"* %this, i64 0, i32 2, !dbg !6594
+  %0 = load i32* %m_used, align 4, !dbg !6594, !tbaa !5868
+  %cmp = icmp eq i32 %0, 0, !dbg !6594
+  br i1 %cmp, label %return, label %if.end, !dbg !6594
+
+if.end:                                           ; preds = %entry
+  %m_hashfun = getelementptr inbounds %"class.soplex::DataHashTable"* %this, i64 0, i32 3, !dbg !6595
+  %1 = load i32 (%"class.soplex::NameSet::Name"*)** %m_hashfun, align 8, !dbg !6595, !tbaa !5855
+  %call = tail call i32 %1(%"class.soplex::NameSet::Name"* %h) #13, !dbg !6595
+  %thesize.i = getelementptr inbounds %"class.soplex::DataHashTable"* %this, i64 0, i32 0, i32 0, !dbg !6596
+  %2 = load i32* %thesize.i, align 4, !dbg !6596, !tbaa !5868
+  %rem = srem i32 %call, %2, !dbg !6595
+  tail call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !5471), !dbg !6595
+  tail call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !5473), !dbg !6598
+  %data.i = getelementptr inbounds %"class.soplex::DataHashTable"* %this, i64 0, i32 0, i32 2, !dbg !6599
+  %3 = load %"class.soplex::DataHashTable<soplex::NameSet::Name, soplex::DataKey>::Element"** %data.i, align 8, !dbg !6599, !tbaa !5855
+  %m_hashsize = getelementptr inbounds %"class.soplex::DataHashTable"* %this, i64 0, i32 1, !dbg !6601
+  %name1.i = getelementptr inbounds %"class.soplex::NameSet::Name"* %h, i64 0, i32 0, !dbg !6603
+  br label %while.cond, !dbg !6600
+
+while.cond:                                       ; preds = %if.end14, %if.end
+  %i.0 = phi i32 [ %rem, %if.end ], [ %rem17, %if.end14 ]
+  tail call void @llvm.dbg.value(metadata !{i32 %i.0}, i64 0, metadata !6606), !dbg !6607
+  %idxprom.i = sext i32 %i.0 to i64, !dbg !6599
+  %stat = getelementptr inbounds %"class.soplex::DataHashTable<soplex::NameSet::Name, soplex::DataKey>::Element"* %3, i64 %idxprom.i, i32 2, !dbg !6600
+  %4 = load i32* %stat, align 4, !dbg !6600, !tbaa !6608
+  switch i32 %4, label %if.end14 [
+    i32 0, label %return
+    i32 2, label %land.lhs.true
+  ], !dbg !6600
+
+land.lhs.true:                                    ; preds = %while.cond
+  tail call void @llvm.dbg.value(metadata !{i32 %i.0}, i64 0, metadata !6609), !dbg !6610
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::NameSet::Name"* %h}, i64 0, metadata !6611) #1, !dbg !6612
+  %name.i = getelementptr inbounds %"class.soplex::DataHashTable<soplex::NameSet::Name, soplex::DataKey>::Element"* %3, i64 %idxprom.i, i32 0, i32 0, !dbg !6603
+  %5 = load i8** %name.i, align 8, !dbg !6603, !tbaa !5855
+  %6 = load i8** %name1.i, align 8, !dbg !6603, !tbaa !5855
+  %call.i = tail call i32 @strcmp(i8* %5, i8* %6) #14, !dbg !6603
+  %cmp.i = icmp eq i32 %call.i, 0, !dbg !6603
+  br i1 %cmp.i, label %return, label %if.end14, !dbg !6605
+
+if.end14:                                         ; preds = %land.lhs.true, %while.cond
+  %7 = load i32* %m_hashsize, align 4, !dbg !6601, !tbaa !5868
+  %add = add nsw i32 %7, %i.0, !dbg !6601
+  %rem17 = srem i32 %add, %2, !dbg !6601
+  tail call void @llvm.dbg.value(metadata !{i32 %rem17}, i64 0, metadata !5471), !dbg !6601
+  %cmp18 = icmp eq i32 %rem17, %rem, !dbg !6613
+  br i1 %cmp18, label %return, label %while.cond, !dbg !6613
+
+return:                                           ; preds = %land.lhs.true, %while.cond, %if.end14, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ %i.0, %land.lhs.true ], [ -1, %while.cond ], [ -1, %if.end14 ]
+  ret i32 %retval.0, !dbg !6614
+}

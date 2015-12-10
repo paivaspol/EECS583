@@ -1,16 +1,18 @@
 define i32 @splay_tree_compare_ints(i64 %k1, i64 %k2) #2 {
 entry:
-  %conv = trunc i64 %k1 to i32
-  %conv1 = trunc i64 %k2 to i32
-  %cmp = icmp slt i32 %conv, %conv1
-  br i1 %cmp, label %return, label %if.else
+  tail call void @llvm.dbg.value(metadata !{i64 %k1}, i64 0, metadata !133), !dbg !385
+  tail call void @llvm.dbg.value(metadata !{i64 %k2}, i64 0, metadata !134), !dbg !386
+  %conv = trunc i64 %k1 to i32, !dbg !387
+  %conv1 = trunc i64 %k2 to i32, !dbg !387
+  %cmp = icmp slt i32 %conv, %conv1, !dbg !387
+  br i1 %cmp, label %return, label %if.else, !dbg !387
 
 if.else:                                          ; preds = %entry
-  %cmp5 = icmp sgt i32 %conv, %conv1
-  %. = zext i1 %cmp5 to i32
-  br label %return
+  %cmp5 = icmp sgt i32 %conv, %conv1, !dbg !388
+  %. = zext i1 %cmp5 to i32, !dbg !389
+  br label %return, !dbg !389
 
 return:                                           ; preds = %if.else, %entry
   %retval.0 = phi i32 [ -1, %entry ], [ %., %if.else ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !390
 }

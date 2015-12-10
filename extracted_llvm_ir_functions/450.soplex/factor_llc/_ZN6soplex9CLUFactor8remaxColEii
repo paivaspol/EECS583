@@ -1,0 +1,203 @@
+define void @_ZN6soplex9CLUFactor8remaxColEii(%"class.soplex::CLUFactor"* %this, i32 %p_col, i32 %len) #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::CLUFactor"* %this}, i64 0, metadata !2395), !dbg !4167
+  tail call void @llvm.dbg.value(metadata !{i32 %p_col}, i64 0, metadata !2396), !dbg !4167
+  tail call void @llvm.dbg.value(metadata !{i32 %len}, i64 0, metadata !2397), !dbg !4167
+  %idxprom = sext i32 %p_col to i64, !dbg !4168
+  %elem = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 12, i32 1, i32 1, !dbg !4168
+  %0 = load %"struct.soplex::CLUFactor::Dring"** %elem, align 8, !dbg !4168, !tbaa !3853
+  %next = getelementptr inbounds %"struct.soplex::CLUFactor::Dring"* %0, i64 %idxprom, i32 0, !dbg !4168
+  %1 = load %"struct.soplex::CLUFactor::Dring"** %next, align 8, !dbg !4168, !tbaa !3853
+  %list = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 12, i32 1, i32 0, !dbg !4168
+  %cmp = icmp eq %"struct.soplex::CLUFactor::Dring"* %1, %list, !dbg !4168
+  br i1 %cmp, label %if.then, label %if.else, !dbg !4168
+
+if.then:                                          ; preds = %entry
+  %max = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 12, i32 1, i32 8, !dbg !4169
+  %2 = load i32** %max, align 8, !dbg !4169, !tbaa !3853
+  %arrayidx7 = getelementptr inbounds i32* %2, i64 %idxprom, !dbg !4169
+  %3 = load i32* %arrayidx7, align 4, !dbg !4169, !tbaa !3862
+  %sub = sub nsw i32 %len, %3, !dbg !4169
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !2398), !dbg !4169
+  %size = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 12, i32 1, i32 2, !dbg !4170
+  %4 = load i32* %size, align 4, !dbg !4170, !tbaa !3862
+  %used = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 12, i32 1, i32 3, !dbg !4170
+  %5 = load i32* %used, align 4, !dbg !4170, !tbaa !3862
+  %sub12 = sub nsw i32 %4, %5, !dbg !4170
+  %cmp13 = icmp sgt i32 %sub, %sub12, !dbg !4170
+  br i1 %cmp13, label %if.then14, label %if.end36, !dbg !4170
+
+if.then14:                                        ; preds = %if.then
+  tail call void @_ZN6soplex9CLUFactor11packColumnsEv(%"class.soplex::CLUFactor"* %this) #11, !dbg !4171
+  %6 = load i32** %max, align 8, !dbg !4173, !tbaa !3853
+  %arrayidx19 = getelementptr inbounds i32* %6, i64 %idxprom, !dbg !4173
+  %7 = load i32* %arrayidx19, align 4, !dbg !4173, !tbaa !3862
+  %sub20 = sub nsw i32 %len, %7, !dbg !4173
+  tail call void @llvm.dbg.value(metadata !{i32 %sub20}, i64 0, metadata !2398), !dbg !4173
+  %8 = load i32* %size, align 4, !dbg !4174, !tbaa !3862
+  %conv = sitofp i32 %8 to double, !dbg !4174
+  %colMemMult = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 6, !dbg !4174
+  %9 = load double* %colMemMult, align 8, !dbg !4174, !tbaa !4057
+  %10 = load i32* %used, align 4, !dbg !4174, !tbaa !3862
+  %conv27 = sitofp i32 %10 to double, !dbg !4174
+  %mul = fmul double %9, %conv27, !dbg !4174
+  %conv28 = sitofp i32 %len to double, !dbg !4174
+  %add = fadd double %conv28, %mul, !dbg !4174
+  %cmp29 = fcmp olt double %conv, %add, !dbg !4174
+  br i1 %cmp29, label %if.then30, label %if.end36, !dbg !4174
+
+if.then30:                                        ; preds = %if.then14
+  %mul34 = shl nsw i32 %10, 1, !dbg !4175
+  %add35 = add nsw i32 %mul34, %len, !dbg !4175
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::CLUFactor"* %this}, i64 0, metadata !4176), !dbg !4177
+  tail call void @llvm.dbg.value(metadata !{i32 %add35}, i64 0, metadata !4178), !dbg !4177
+  %cmp.i = icmp slt i32 %8, %add35, !dbg !4179
+  br i1 %cmp.i, label %if.then.i, label %if.end36, !dbg !4179
+
+if.then.i:                                        ; preds = %if.then30
+  store i32 %add35, i32* %size, align 4, !dbg !4180, !tbaa !3862
+  %idx.i = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 12, i32 1, i32 4, !dbg !4182
+  tail call void @_ZN6soplex11spx_reallocIPiEEvRT_i(i32** %idx.i, i32 %add35) #11, !dbg !4182
+  %.pre = load i32* %used, align 4, !dbg !4183, !tbaa !3862
+  %.pre236 = load i32** %max, align 8, !dbg !4184, !tbaa !3853
+  br label %if.end36, !dbg !4185
+
+if.end36:                                         ; preds = %if.then.i, %if.then30, %if.then14, %if.then
+  %11 = phi i32* [ %6, %if.then14 ], [ %2, %if.then ], [ %6, %if.then30 ], [ %.pre236, %if.then.i ]
+  %12 = phi i32 [ %10, %if.then14 ], [ %5, %if.then ], [ %10, %if.then30 ], [ %.pre, %if.then.i ]
+  %delta.0 = phi i32 [ %sub20, %if.then14 ], [ %sub, %if.then ], [ %sub20, %if.then30 ], [ %sub20, %if.then.i ]
+  %add40 = add nsw i32 %12, %delta.0, !dbg !4183
+  store i32 %add40, i32* %used, align 4, !dbg !4183, !tbaa !3862
+  %arrayidx45 = getelementptr inbounds i32* %11, i64 %idxprom, !dbg !4184
+  store i32 %len, i32* %arrayidx45, align 4, !dbg !4184, !tbaa !3862
+  br label %if.end190, !dbg !4186
+
+if.else:                                          ; preds = %entry
+  %size48 = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 12, i32 1, i32 2, !dbg !4187
+  %13 = load i32* %size48, align 4, !dbg !4187, !tbaa !3862
+  %used51 = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 12, i32 1, i32 3, !dbg !4187
+  %14 = load i32* %used51, align 4, !dbg !4187, !tbaa !3862
+  %sub52 = sub nsw i32 %13, %14, !dbg !4187
+  %cmp53 = icmp slt i32 %sub52, %len, !dbg !4187
+  br i1 %cmp53, label %if.then54, label %if.end75, !dbg !4187
+
+if.then54:                                        ; preds = %if.else
+  tail call void @_ZN6soplex9CLUFactor11packColumnsEv(%"class.soplex::CLUFactor"* %this) #11, !dbg !4188
+  %15 = load i32* %size48, align 4, !dbg !4190, !tbaa !3862
+  %conv58 = sitofp i32 %15 to double, !dbg !4190
+  %colMemMult59 = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 6, !dbg !4190
+  %16 = load double* %colMemMult59, align 8, !dbg !4190, !tbaa !4057
+  %17 = load i32* %used51, align 4, !dbg !4190, !tbaa !3862
+  %conv63 = sitofp i32 %17 to double, !dbg !4190
+  %mul64 = fmul double %16, %conv63, !dbg !4190
+  %conv65 = sitofp i32 %len to double, !dbg !4190
+  %add66 = fadd double %conv65, %mul64, !dbg !4190
+  %cmp67 = fcmp olt double %conv58, %add66, !dbg !4190
+  br i1 %cmp67, label %if.then68, label %if.end75, !dbg !4190
+
+if.then68:                                        ; preds = %if.then54
+  %mul72 = shl nsw i32 %17, 1, !dbg !4191
+  %add73 = add nsw i32 %mul72, %len, !dbg !4191
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::CLUFactor"* %this}, i64 0, metadata !4192), !dbg !4193
+  tail call void @llvm.dbg.value(metadata !{i32 %add73}, i64 0, metadata !4194), !dbg !4193
+  %cmp.i226 = icmp slt i32 %15, %add73, !dbg !4195
+  br i1 %cmp.i226, label %if.then.i228, label %if.end75, !dbg !4195
+
+if.then.i228:                                     ; preds = %if.then68
+  store i32 %add73, i32* %size48, align 4, !dbg !4196, !tbaa !3862
+  %idx.i227 = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 12, i32 1, i32 4, !dbg !4197
+  tail call void @_ZN6soplex11spx_reallocIPiEEvRT_i(i32** %idx.i227, i32 %add73) #11, !dbg !4197
+  %.pre237 = load i32* %used51, align 4, !dbg !4198, !tbaa !3862
+  br label %if.end75, !dbg !4199
+
+if.end75:                                         ; preds = %if.then68, %if.then54, %if.then.i228, %if.else
+  %18 = phi i32 [ %.pre237, %if.then.i228 ], [ %14, %if.else ], [ %17, %if.then54 ], [ %17, %if.then68 ]
+  tail call void @llvm.dbg.value(metadata !{i32 %18}, i64 0, metadata !2402), !dbg !4198
+  %start = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 12, i32 1, i32 6, !dbg !4200
+  %19 = load i32** %start, align 8, !dbg !4200, !tbaa !3853
+  %arrayidx82 = getelementptr inbounds i32* %19, i64 %idxprom, !dbg !4200
+  %20 = load i32* %arrayidx82, align 4, !dbg !4200, !tbaa !3862
+  tail call void @llvm.dbg.value(metadata !{i32 %20}, i64 0, metadata !2400), !dbg !4200
+  %len86 = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 12, i32 1, i32 7, !dbg !4201
+  %21 = load i32** %len86, align 8, !dbg !4201, !tbaa !3853
+  %arrayidx87 = getelementptr inbounds i32* %21, i64 %idxprom, !dbg !4201
+  %22 = load i32* %arrayidx87, align 4, !dbg !4201, !tbaa !3862
+  %add88 = add nsw i32 %22, %20, !dbg !4201
+  tail call void @llvm.dbg.value(metadata !{i32 %add88}, i64 0, metadata !2403), !dbg !4201
+  store i32 %18, i32* %arrayidx82, align 4, !dbg !4202, !tbaa !3862
+  %23 = load i32* %used51, align 4, !dbg !4203, !tbaa !3862
+  %add97 = add nsw i32 %23, %len, !dbg !4203
+  store i32 %add97, i32* %used51, align 4, !dbg !4203, !tbaa !3862
+  %max101 = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 12, i32 1, i32 8, !dbg !4204
+  %24 = load i32** %max101, align 8, !dbg !4204, !tbaa !3853
+  %arrayidx102 = getelementptr inbounds i32* %24, i64 %idxprom, !dbg !4204
+  %25 = load i32* %arrayidx102, align 4, !dbg !4204, !tbaa !3862
+  %26 = load %"struct.soplex::CLUFactor::Dring"** %elem, align 8, !dbg !4204, !tbaa !3853
+  %prev = getelementptr inbounds %"struct.soplex::CLUFactor::Dring"* %26, i64 %idxprom, i32 1, !dbg !4204
+  %27 = load %"struct.soplex::CLUFactor::Dring"** %prev, align 8, !dbg !4204, !tbaa !3853
+  %idx108 = getelementptr inbounds %"struct.soplex::CLUFactor::Dring"* %27, i64 0, i32 2, !dbg !4204
+  %28 = load i32* %idx108, align 4, !dbg !4204, !tbaa !3862
+  %idxprom109 = sext i32 %28 to i64, !dbg !4204
+  %arrayidx113 = getelementptr inbounds i32* %24, i64 %idxprom109, !dbg !4204
+  %29 = load i32* %arrayidx113, align 4, !dbg !4204, !tbaa !3862
+  %add114 = add nsw i32 %29, %25, !dbg !4204
+  store i32 %add114, i32* %arrayidx113, align 4, !dbg !4204, !tbaa !3862
+  store i32 %len, i32* %arrayidx102, align 4, !dbg !4205, !tbaa !3862
+  %next131 = getelementptr inbounds %"struct.soplex::CLUFactor::Dring"* %26, i64 %idxprom, i32 0, !dbg !4206
+  %30 = load %"struct.soplex::CLUFactor::Dring"** %next131, align 8, !dbg !4206, !tbaa !3853
+  %prev132 = getelementptr inbounds %"struct.soplex::CLUFactor::Dring"* %30, i64 0, i32 1, !dbg !4206
+  store %"struct.soplex::CLUFactor::Dring"* %27, %"struct.soplex::CLUFactor::Dring"** %prev132, align 8, !dbg !4206, !tbaa !3853
+  %31 = load %"struct.soplex::CLUFactor::Dring"** %elem, align 8, !dbg !4206, !tbaa !3853
+  %next138 = getelementptr inbounds %"struct.soplex::CLUFactor::Dring"* %31, i64 %idxprom, i32 0, !dbg !4206
+  %32 = load %"struct.soplex::CLUFactor::Dring"** %next138, align 8, !dbg !4206, !tbaa !3853
+  %prev144 = getelementptr inbounds %"struct.soplex::CLUFactor::Dring"* %31, i64 %idxprom, i32 1, !dbg !4206
+  %33 = load %"struct.soplex::CLUFactor::Dring"** %prev144, align 8, !dbg !4206, !tbaa !3853
+  %next145 = getelementptr inbounds %"struct.soplex::CLUFactor::Dring"* %33, i64 0, i32 0, !dbg !4206
+  store %"struct.soplex::CLUFactor::Dring"* %32, %"struct.soplex::CLUFactor::Dring"** %next145, align 8, !dbg !4206, !tbaa !3853
+  %prev149 = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 12, i32 1, i32 0, i32 1, !dbg !4208
+  %34 = load %"struct.soplex::CLUFactor::Dring"** %prev149, align 8, !dbg !4208, !tbaa !3853
+  tail call void @llvm.dbg.value(metadata !{%"struct.soplex::CLUFactor::Dring"* %34}, i64 0, metadata !2405), !dbg !4208
+  %next150 = getelementptr inbounds %"struct.soplex::CLUFactor::Dring"* %34, i64 0, i32 0, !dbg !4209
+  %35 = load %"struct.soplex::CLUFactor::Dring"** %next150, align 8, !dbg !4209, !tbaa !3853
+  %36 = load %"struct.soplex::CLUFactor::Dring"** %elem, align 8, !dbg !4209, !tbaa !3853
+  %next156 = getelementptr inbounds %"struct.soplex::CLUFactor::Dring"* %36, i64 %idxprom, i32 0, !dbg !4209
+  store %"struct.soplex::CLUFactor::Dring"* %35, %"struct.soplex::CLUFactor::Dring"** %next156, align 8, !dbg !4209, !tbaa !3853
+  %37 = load %"struct.soplex::CLUFactor::Dring"** %elem, align 8, !dbg !4209, !tbaa !3853
+  %arrayidx161 = getelementptr inbounds %"struct.soplex::CLUFactor::Dring"* %37, i64 %idxprom, !dbg !4209
+  %next167 = getelementptr inbounds %"struct.soplex::CLUFactor::Dring"* %arrayidx161, i64 0, i32 0, !dbg !4209
+  %38 = load %"struct.soplex::CLUFactor::Dring"** %next167, align 8, !dbg !4209, !tbaa !3853
+  %prev168 = getelementptr inbounds %"struct.soplex::CLUFactor::Dring"* %38, i64 0, i32 1, !dbg !4209
+  store %"struct.soplex::CLUFactor::Dring"* %arrayidx161, %"struct.soplex::CLUFactor::Dring"** %prev168, align 8, !dbg !4209, !tbaa !3853
+  %39 = load %"struct.soplex::CLUFactor::Dring"** %elem, align 8, !dbg !4209, !tbaa !3853
+  %prev174 = getelementptr inbounds %"struct.soplex::CLUFactor::Dring"* %39, i64 %idxprom, i32 1, !dbg !4209
+  store %"struct.soplex::CLUFactor::Dring"* %34, %"struct.soplex::CLUFactor::Dring"** %prev174, align 8, !dbg !4209, !tbaa !3853
+  %40 = load %"struct.soplex::CLUFactor::Dring"** %elem, align 8, !dbg !4209, !tbaa !3853
+  %arrayidx179 = getelementptr inbounds %"struct.soplex::CLUFactor::Dring"* %40, i64 %idxprom, !dbg !4209
+  store %"struct.soplex::CLUFactor::Dring"* %arrayidx179, %"struct.soplex::CLUFactor::Dring"** %next150, align 8, !dbg !4209, !tbaa !3853
+  %idx183 = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 12, i32 1, i32 4, !dbg !4211
+  %41 = load i32** %idx183, align 8, !dbg !4211, !tbaa !3853
+  tail call void @llvm.dbg.value(metadata !{i32* %41}, i64 0, metadata !2404), !dbg !4211
+  %cmp184230 = icmp sgt i32 %22, 0, !dbg !4212
+  br i1 %cmp184230, label %for.body.lr.ph, label %if.end190, !dbg !4212
+
+for.body.lr.ph:                                   ; preds = %if.end75
+  %42 = sext i32 %20 to i64
+  %43 = sext i32 %18 to i64, !dbg !4212
+  br label %for.body, !dbg !4212
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv233 = phi i64 [ %43, %for.body.lr.ph ], [ %indvars.iv.next234, %for.body ], !dbg !4212
+  %indvars.iv = phi i64 [ %42, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %arrayidx186 = getelementptr inbounds i32* %41, i64 %indvars.iv, !dbg !4214
+  %44 = load i32* %arrayidx186, align 4, !dbg !4214, !tbaa !3862
+  %indvars.iv.next234 = add i64 %indvars.iv233, 1, !dbg !4212
+  %arrayidx188 = getelementptr inbounds i32* %41, i64 %indvars.iv233, !dbg !4214
+  store i32 %44, i32* %arrayidx188, align 4, !dbg !4214, !tbaa !3862
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !4212
+  %45 = trunc i64 %indvars.iv.next to i32, !dbg !4212
+  %cmp184 = icmp slt i32 %45, %add88, !dbg !4212
+  br i1 %cmp184, label %for.body, label %if.end190, !dbg !4212
+
+if.end190:                                        ; preds = %if.end75, %for.body, %if.end36
+  ret void, !dbg !4215
+}

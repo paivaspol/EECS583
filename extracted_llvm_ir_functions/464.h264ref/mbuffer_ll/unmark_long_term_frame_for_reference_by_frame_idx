@@ -1,32 +1,35 @@
-define internal fastcc void @unmark_long_term_frame_for_reference_by_frame_idx(i32 %long_term_frame_idx) #1 {
+define internal fastcc void @unmark_long_term_frame_for_reference_by_frame_idx(i32 %long_term_frame_idx) #2 {
 entry:
-  %0 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 6), align 4, !tbaa !3
-  %cmp8 = icmp eq i32 %0, 0
-  br i1 %cmp8, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !{i32 %long_term_frame_idx}, i64 0, metadata !900), !dbg !3390
+  tail call void @llvm.dbg.value(metadata !21, i64 0, metadata !901), !dbg !3391
+  %0 = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 6), align 4, !dbg !3391, !tbaa !1366
+  %cmp8 = icmp eq i32 %0, 0, !dbg !3391
+  br i1 %cmp8, label %for.end, label %for.body, !dbg !3391
 
 for.body:                                         ; preds = %for.inc, %entry
   %1 = phi i32 [ %0, %entry ], [ %5, %for.inc ]
   %i.09 = phi i32 [ 0, %entry ], [ %inc, %for.inc ]
-  %idxprom = zext i32 %i.09 to i64
-  %2 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 2), align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds %struct.frame_store** %2, i64 %idxprom
-  %3 = load %struct.frame_store** %arrayidx, align 8, !tbaa !0
-  %long_term_frame_idx1 = getelementptr inbounds %struct.frame_store* %3, i64 0, i32 7
-  %4 = load i32* %long_term_frame_idx1, align 4, !tbaa !3
-  %cmp2 = icmp eq i32 %4, %long_term_frame_idx
-  br i1 %cmp2, label %if.then, label %for.inc
+  %idxprom = zext i32 %i.09 to i64, !dbg !3393
+  %2 = load %struct.frame_store*** getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 2), align 8, !dbg !3393, !tbaa !1363
+  %arrayidx = getelementptr inbounds %struct.frame_store** %2, i64 %idxprom, !dbg !3393
+  %3 = load %struct.frame_store** %arrayidx, align 8, !dbg !3393, !tbaa !1363
+  %long_term_frame_idx1 = getelementptr inbounds %struct.frame_store* %3, i64 0, i32 7, !dbg !3393
+  %4 = load i32* %long_term_frame_idx1, align 4, !dbg !3393, !tbaa !1366
+  %cmp2 = icmp eq i32 %4, %long_term_frame_idx, !dbg !3393
+  br i1 %cmp2, label %if.then, label %for.inc, !dbg !3393
 
 if.then:                                          ; preds = %for.body
-  tail call fastcc void @unmark_for_long_term_reference(%struct.frame_store* %3) #7
-  %.pre = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 6), align 4, !tbaa !3
-  br label %for.inc
+  tail call fastcc void @unmark_for_long_term_reference(%struct.frame_store* %3) #9, !dbg !3395
+  %.pre = load i32* getelementptr inbounds (%struct.decoded_picture_buffer* @dpb, i64 0, i32 6), align 4, !dbg !3391, !tbaa !1366
+  br label %for.inc, !dbg !3395
 
 for.inc:                                          ; preds = %for.body, %if.then
-  %5 = phi i32 [ %1, %for.body ], [ %.pre, %if.then ]
-  %inc = add i32 %i.09, 1
-  %cmp = icmp ult i32 %inc, %5
-  br i1 %cmp, label %for.body, label %for.end
+  %5 = phi i32 [ %1, %for.body ], [ %.pre, %if.then ], !dbg !3391
+  %inc = add i32 %i.09, 1, !dbg !3391
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !901), !dbg !3391
+  %cmp = icmp ult i32 %inc, %5, !dbg !3391
+  br i1 %cmp, label %for.body, label %for.end, !dbg !3391
 
 for.end:                                          ; preds = %for.inc, %entry
-  ret void
+  ret void, !dbg !3396
 }

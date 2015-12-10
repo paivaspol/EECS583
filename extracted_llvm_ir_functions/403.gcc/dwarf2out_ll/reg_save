@@ -1,54 +1,67 @@
 define internal fastcc void @reg_save(i8* %label, i32 %reg, i32 %sreg, i64 %offset) #1 {
 entry:
-  %call.i = tail call noalias i8* @xmalloc(i64 32) #9
-  %0 = bitcast i8* %call.i to %struct.dw_cfi_struct*
-  %dw_cfi_next.i = bitcast i8* %call.i to %struct.dw_cfi_struct**
-  store %struct.dw_cfi_struct* null, %struct.dw_cfi_struct** %dw_cfi_next.i, align 8, !tbaa !4
-  %dw_cfi_oprnd1.i = getelementptr inbounds i8* %call.i, i64 16
-  tail call void @llvm.memset.p0i8.i64(i8* %dw_cfi_oprnd1.i, i8 0, i64 16, i32 8, i1 false) #5
-  %conv = zext i32 %reg to i64
-  %1 = bitcast i8* %dw_cfi_oprnd1.i to i64*
-  store i64 %conv, i64* %1, align 8, !tbaa !6
-  %cmp = icmp eq i32 %sreg, -1
-  br i1 %cmp, label %if.then, label %if.else12
+  tail call void @llvm.dbg.value(metadata !{i8* %label}, i64 0, metadata !3521), !dbg !4011
+  tail call void @llvm.dbg.value(metadata !{i32 %reg}, i64 0, metadata !3522), !dbg !4012
+  tail call void @llvm.dbg.value(metadata !{i32 %sreg}, i64 0, metadata !3523), !dbg !4013
+  tail call void @llvm.dbg.value(metadata !{i64 %offset}, i64 0, metadata !3524), !dbg !4014
+  %call.i = tail call noalias i8* @xmalloc(i64 32) #10, !dbg !4015
+  %0 = bitcast i8* %call.i to %struct.dw_cfi_struct*, !dbg !4015
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_cfi_struct* %0}, i64 0, metadata !4017) #6, !dbg !4015
+  %dw_cfi_next.i = bitcast i8* %call.i to %struct.dw_cfi_struct**, !dbg !4018
+  store %struct.dw_cfi_struct* null, %struct.dw_cfi_struct** %dw_cfi_next.i, align 8, !dbg !4018, !tbaa !3768
+  %dw_cfi_oprnd1.i = getelementptr inbounds i8* %call.i, i64 16, !dbg !4019
+  tail call void @llvm.memset.p0i8.i64(i8* %dw_cfi_oprnd1.i, i8 0, i64 16, i32 8, i1 false) #6, !dbg !4019
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_cfi_struct* %0}, i64 0, metadata !3525), !dbg !4016
+  %conv = zext i32 %reg to i64, !dbg !4020
+  %1 = bitcast i8* %dw_cfi_oprnd1.i to i64*, !dbg !4020
+  store i64 %conv, i64* %1, align 8, !dbg !4020, !tbaa !3782
+  %cmp = icmp eq i32 %sreg, -1, !dbg !4021
+  br i1 %cmp, label %if.then, label %if.else12, !dbg !4021
 
 if.then:                                          ; preds = %entry
-  %tobool = icmp ugt i32 %reg, 63
-  %dw_cfi_opc = getelementptr inbounds i8* %call.i, i64 8
-  %2 = bitcast i8* %dw_cfi_opc to i32*
-  %. = select i1 %tobool, i32 5, i32 128
-  %3 = load i32* @target_flags, align 4, !tbaa !0
-  %and4 = lshr i32 %3, 23
-  %4 = and i32 %and4, 4
-  %sub = sub i32 -4, %4
-  %conv6 = sext i32 %sub to i64
-  %div = sdiv i64 %offset, %conv6
-  %cmp7 = icmp slt i64 %div, 0
-  %.. = select i1 %cmp7, i32 17, i32 %.
-  store i32 %.., i32* %2, align 4, !tbaa !8
-  %dw_cfi_offset = getelementptr inbounds i8* %call.i, i64 24
-  %5 = bitcast i8* %dw_cfi_offset to i64*
-  store i64 %div, i64* %5, align 8, !tbaa !6
-  br label %if.end22
+  %tobool = icmp ugt i32 %reg, 63, !dbg !4022
+  %dw_cfi_opc = getelementptr inbounds i8* %call.i, i64 8, !dbg !4024
+  %2 = bitcast i8* %dw_cfi_opc to i32*, !dbg !4024
+  %. = select i1 %tobool, i32 5, i32 128, !dbg !4024
+  store i32 %., i32* %2, align 4, !dbg !4024, !tbaa !3815
+  %3 = load i32* @target_flags, align 4, !dbg !4025, !tbaa !3758
+  %and4 = lshr i32 %3, 23, !dbg !4025
+  %4 = and i32 %and4, 4, !dbg !4025
+  %sub = sub i32 -4, %4, !dbg !4025
+  %conv6 = sext i32 %sub to i64, !dbg !4025
+  %div = sdiv i64 %offset, %conv6, !dbg !4025
+  tail call void @llvm.dbg.value(metadata !{i64 %div}, i64 0, metadata !3524), !dbg !4025
+  %cmp7 = icmp slt i64 %div, 0, !dbg !4026
+  br i1 %cmp7, label %if.then9, label %if.end11, !dbg !4026
+
+if.then9:                                         ; preds = %if.then
+  store i32 17, i32* %2, align 4, !dbg !4027, !tbaa !3815
+  br label %if.end11, !dbg !4027
+
+if.end11:                                         ; preds = %if.then9, %if.then
+  %dw_cfi_offset = getelementptr inbounds i8* %call.i, i64 24, !dbg !4028
+  %5 = bitcast i8* %dw_cfi_offset to i64*, !dbg !4028
+  store i64 %div, i64* %5, align 8, !dbg !4028, !tbaa !3782
+  br label %if.end22, !dbg !4029
 
 if.else12:                                        ; preds = %entry
-  %cmp13 = icmp eq i32 %sreg, %reg
-  br i1 %cmp13, label %return, label %if.else16
+  %cmp13 = icmp eq i32 %sreg, %reg, !dbg !4030
+  br i1 %cmp13, label %return, label %if.else16, !dbg !4030
 
 if.else16:                                        ; preds = %if.else12
-  %dw_cfi_opc17 = getelementptr inbounds i8* %call.i, i64 8
-  %6 = bitcast i8* %dw_cfi_opc17 to i32*
-  store i32 9, i32* %6, align 4, !tbaa !8
-  %conv18 = zext i32 %sreg to i64
-  %dw_cfi_reg_num20 = getelementptr inbounds i8* %call.i, i64 24
-  %7 = bitcast i8* %dw_cfi_reg_num20 to i64*
-  store i64 %conv18, i64* %7, align 8, !tbaa !6
+  %dw_cfi_opc17 = getelementptr inbounds i8* %call.i, i64 8, !dbg !4031
+  %6 = bitcast i8* %dw_cfi_opc17 to i32*, !dbg !4031
+  store i32 9, i32* %6, align 4, !dbg !4031, !tbaa !3815
+  %conv18 = zext i32 %sreg to i64, !dbg !4033
+  %dw_cfi_reg_num20 = getelementptr inbounds i8* %call.i, i64 24, !dbg !4033
+  %7 = bitcast i8* %dw_cfi_reg_num20 to i64*, !dbg !4033
+  store i64 %conv18, i64* %7, align 8, !dbg !4033, !tbaa !3782
   br label %if.end22
 
-if.end22:                                         ; preds = %if.else16, %if.then
-  tail call fastcc void @add_fde_cfi(i8* %label, %struct.dw_cfi_struct* %0) #10
-  br label %return
+if.end22:                                         ; preds = %if.else16, %if.end11
+  tail call fastcc void @add_fde_cfi(i8* %label, %struct.dw_cfi_struct* %0) #11, !dbg !4034
+  br label %return, !dbg !4034
 
 return:                                           ; preds = %if.else12, %if.end22
-  ret void
+  ret void, !dbg !4034
 }

@@ -1,47 +1,53 @@
 define void @DefineThresholdMB() #0 {
 entry:
-  %0 = load %struct.InputParameters** @input, align 8, !tbaa !3
-  %qpN = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 4
-  %1 = load i32* %qpN, align 4, !tbaa !4
-  %div = sdiv i32 %1, 6
-  %rem = srem i32 %1, 6
-  %add = add nsw i32 %div, 15
-  %2 = load %struct.ImageParameters** @img, align 8, !tbaa !3
-  %type = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 6
-  %3 = load i32* %type, align 4, !tbaa !4
-  %cmp = icmp eq i32 %3, 2
-  %shl = shl i32 1, %add
-  br i1 %cmp, label %if.then, label %if.else
+  %0 = load %struct.InputParameters** @input, align 8, !dbg !894, !tbaa !895
+  %qpN = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 4, !dbg !894
+  %1 = load i32* %qpN, align 4, !dbg !894, !tbaa !896
+  %div = sdiv i32 %1, 6, !dbg !894
+  tail call void @llvm.dbg.value(metadata !{i32 %div}, i64 0, metadata !34), !dbg !894
+  %rem = srem i32 %1, 6, !dbg !897
+  tail call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !36), !dbg !897
+  %add = add nsw i32 %div, 15, !dbg !898
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !37), !dbg !898
+  %2 = load %struct.ImageParameters** @img, align 8, !dbg !899, !tbaa !895
+  %type = getelementptr inbounds %struct.ImageParameters* %2, i64 0, i32 6, !dbg !899
+  %3 = load i32* %type, align 4, !dbg !899, !tbaa !896
+  %cmp = icmp eq i32 %3, 2, !dbg !899
+  %shl = shl i32 1, %add, !dbg !900
+  br i1 %cmp, label %if.then, label %if.else, !dbg !899
 
 if.then:                                          ; preds = %entry
-  %div3 = sdiv i32 %shl, 3
-  br label %if.end
+  %div3 = sdiv i32 %shl, 3, !dbg !900
+  tail call void @llvm.dbg.value(metadata !{i32 %div3}, i64 0, metadata !38), !dbg !900
+  br label %if.end, !dbg !900
 
 if.else:                                          ; preds = %entry
-  %div5 = sdiv i32 %shl, 6
+  %div5 = sdiv i32 %shl, 6, !dbg !901
+  tail call void @llvm.dbg.value(metadata !{i32 %div5}, i64 0, metadata !38), !dbg !901
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
   %gb_qp_const.0 = phi i32 [ %div3, %if.then ], [ %div5, %if.else ]
-  %sub7 = sub nsw i32 %shl, %gb_qp_const.0
-  %idxprom = sext i32 %rem to i64
-  %arrayidx9 = getelementptr inbounds [6 x [4 x [4 x i32]]]* @quant_coef, i64 0, i64 %idxprom, i64 0, i64 0
-  %4 = load i32* %arrayidx9, align 16, !tbaa !4
-  %div10 = sdiv i32 %sub7, %4
-  %conv = sitofp i32 %div10 to float
-  %div11 = fdiv float %conv, 0x403670A3E0000000
-  store float %div11, float* @Quantize_step, align 4, !tbaa !0
-  %mul = fmul float %div11, 2.560000e+02
-  store float %mul, float* getelementptr inbounds ([8 x float]* @Bsize, i64 0, i64 7), align 4, !tbaa !0
-  %mul12 = fmul float %mul, 4.000000e+00
-  store float %mul12, float* getelementptr inbounds ([8 x float]* @Bsize, i64 0, i64 6), align 8, !tbaa !0
-  store float %mul12, float* getelementptr inbounds ([8 x float]* @Bsize, i64 0, i64 5), align 4, !tbaa !0
-  %mul14 = fmul float %mul12, 4.000000e+00
-  store float %mul14, float* getelementptr inbounds ([8 x float]* @Bsize, i64 0, i64 4), align 16, !tbaa !0
-  %mul15 = fmul float %mul14, 4.000000e+00
-  store float %mul15, float* getelementptr inbounds ([8 x float]* @Bsize, i64 0, i64 3), align 4, !tbaa !0
-  store float %mul15, float* getelementptr inbounds ([8 x float]* @Bsize, i64 0, i64 2), align 8, !tbaa !0
-  %mul17 = fmul float %mul15, 4.000000e+00
-  store float %mul17, float* getelementptr inbounds ([8 x float]* @Bsize, i64 0, i64 1), align 4, !tbaa !0
-  ret void
+  %sub7 = sub nsw i32 %shl, %gb_qp_const.0, !dbg !902
+  %idxprom = sext i32 %rem to i64, !dbg !902
+  %arrayidx9 = getelementptr inbounds [6 x [4 x [4 x i32]]]* @quant_coef, i64 0, i64 %idxprom, i64 0, i64 0, !dbg !902
+  %4 = load i32* %arrayidx9, align 16, !dbg !902, !tbaa !896
+  %div10 = sdiv i32 %sub7, %4, !dbg !902
+  tail call void @llvm.dbg.value(metadata !{i32 %div10}, i64 0, metadata !39), !dbg !902
+  %conv = sitofp i32 %div10 to float, !dbg !903
+  %div11 = fdiv float %conv, 0x403670A3E0000000, !dbg !903
+  store float %div11, float* @Quantize_step, align 4, !dbg !903, !tbaa !876
+  %mul = fmul float %div11, 2.560000e+02, !dbg !904
+  store float %mul, float* getelementptr inbounds ([8 x float]* @Bsize, i64 0, i64 7), align 4, !dbg !904, !tbaa !876
+  %mul12 = fmul float %mul, 4.000000e+00, !dbg !905
+  store float %mul12, float* getelementptr inbounds ([8 x float]* @Bsize, i64 0, i64 6), align 8, !dbg !905, !tbaa !876
+  store float %mul12, float* getelementptr inbounds ([8 x float]* @Bsize, i64 0, i64 5), align 4, !dbg !906, !tbaa !876
+  %mul14 = fmul float %mul12, 4.000000e+00, !dbg !907
+  store float %mul14, float* getelementptr inbounds ([8 x float]* @Bsize, i64 0, i64 4), align 16, !dbg !907, !tbaa !876
+  %mul15 = fmul float %mul14, 4.000000e+00, !dbg !908
+  store float %mul15, float* getelementptr inbounds ([8 x float]* @Bsize, i64 0, i64 3), align 4, !dbg !908, !tbaa !876
+  store float %mul15, float* getelementptr inbounds ([8 x float]* @Bsize, i64 0, i64 2), align 8, !dbg !909, !tbaa !876
+  %mul17 = fmul float %mul15, 4.000000e+00, !dbg !910
+  store float %mul17, float* getelementptr inbounds ([8 x float]* @Bsize, i64 0, i64 1), align 4, !dbg !910, !tbaa !876
+  ret void, !dbg !911
 }

@@ -1,27 +1,32 @@
 define i8* @xrealloc(i8* %oldmem, i64 %size) #0 {
 entry:
-  %cmp = icmp eq i64 %size, 0
-  %.size = select i1 %cmp, i64 1, i64 %size
-  %tobool = icmp eq i8* %oldmem, null
-  br i1 %tobool, label %if.then1, label %if.else
+  tail call void @llvm.dbg.value(metadata !{i8* %oldmem}, i64 0, metadata !38), !dbg !67
+  tail call void @llvm.dbg.value(metadata !{i64 %size}, i64 0, metadata !39), !dbg !68
+  %cmp = icmp eq i64 %size, 0, !dbg !69
+  %.size = select i1 %cmp, i64 1, i64 %size, !dbg !69
+  tail call void @llvm.dbg.value(metadata !{i64 %.size}, i64 0, metadata !39), !dbg !70
+  %tobool = icmp eq i8* %oldmem, null, !dbg !71
+  br i1 %tobool, label %if.then1, label %if.else, !dbg !71
 
 if.then1:                                         ; preds = %entry
-  %call = tail call i8* @malloc(i64 %.size) #4
-  br label %if.end3
+  %call = tail call i8* @malloc(i64 %.size) #5, !dbg !72
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !40), !dbg !72
+  br label %if.end3, !dbg !72
 
 if.else:                                          ; preds = %entry
-  %call2 = tail call i8* @realloc(i8* %oldmem, i64 %.size) #4
+  %call2 = tail call i8* @realloc(i8* %oldmem, i64 %.size) #5, !dbg !73
+  tail call void @llvm.dbg.value(metadata !{i8* %call2}, i64 0, metadata !40), !dbg !73
   br label %if.end3
 
 if.end3:                                          ; preds = %if.else, %if.then1
   %newmem.0 = phi i8* [ %call2, %if.else ], [ %call, %if.then1 ]
-  %tobool4 = icmp eq i8* %newmem.0, null
-  br i1 %tobool4, label %if.then5, label %if.end6
+  %tobool4 = icmp eq i8* %newmem.0, null, !dbg !74
+  br i1 %tobool4, label %if.then5, label %if.end6, !dbg !74
 
 if.then5:                                         ; preds = %if.end3
-  tail call void @xmalloc_failed(i64 %.size) #6
-  unreachable
+  tail call void @xmalloc_failed(i64 %.size) #7, !dbg !75
+  unreachable, !dbg !75
 
 if.end6:                                          ; preds = %if.end3
-  ret i8* %newmem.0
+  ret i8* %newmem.0, !dbg !76
 }

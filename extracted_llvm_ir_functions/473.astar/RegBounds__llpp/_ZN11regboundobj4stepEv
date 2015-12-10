@@ -1,0 +1,47 @@
+define zeroext i1 @_ZN11regboundobj4stepEv(%class.regboundobj* nocapture %this) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.regboundobj* %this}, i64 0, metadata !427), !dbg !766
+  %boundl = getelementptr inbounds %class.regboundobj* %this, i64 0, i32 3, !dbg !767
+  %0 = load i32* %boundl, align 4, !dbg !767, !tbaa !522
+  %cmp = icmp eq i32 %0, 0, !dbg !767
+  br i1 %cmp, label %return, label %lor.lhs.false, !dbg !767
+
+lor.lhs.false:                                    ; preds = %entry
+  %flexist = getelementptr inbounds %class.regboundobj* %this, i64 0, i32 16, !dbg !767
+  %1 = load i8* %flexist, align 1, !dbg !767, !tbaa !526, !range !527
+  %cmp2 = icmp eq i8 %1, 0, !dbg !767
+  br i1 %cmp2, label %return, label %if.end, !dbg !767
+
+if.end:                                           ; preds = %lor.lhs.false
+  %flodd = getelementptr inbounds %class.regboundobj* %this, i64 0, i32 2, !dbg !768
+  %2 = load i8* %flodd, align 1, !dbg !768, !tbaa !526, !range !527
+  %cmp5 = icmp eq i8 %2, 0, !dbg !768
+  br i1 %cmp5, label %if.then6, label %if.else, !dbg !768
+
+if.then6:                                         ; preds = %if.end
+  %boundar = getelementptr inbounds %class.regboundobj* %this, i64 0, i32 0, !dbg !769
+  %bound2arp = getelementptr inbounds %class.regboundobj* %this, i64 0, i32 1, !dbg !769
+  tail call void @_ZN11regboundobj10makebound2ER9flexarrayI6pointtES3_(%class.regboundobj* %this, %class.flexarray.1* %boundar, %class.flexarray.1* %bound2arp) #5, !dbg !769
+  %elemqu = getelementptr inbounds %class.regboundobj* %this, i64 0, i32 1, i32 1, !dbg !771
+  br label %if.end16, !dbg !772
+
+if.else:                                          ; preds = %if.end
+  %bound2arp10 = getelementptr inbounds %class.regboundobj* %this, i64 0, i32 1, !dbg !773
+  %boundar11 = getelementptr inbounds %class.regboundobj* %this, i64 0, i32 0, !dbg !773
+  tail call void @_ZN11regboundobj10makebound2ER9flexarrayI6pointtES3_(%class.regboundobj* %this, %class.flexarray.1* %bound2arp10, %class.flexarray.1* %boundar11) #5, !dbg !773
+  %elemqu13 = getelementptr inbounds %class.regboundobj* %this, i64 0, i32 0, i32 1, !dbg !775
+  br label %if.end16
+
+if.end16:                                         ; preds = %if.else, %if.then6
+  %storemerge21.in = phi i32* [ %elemqu, %if.then6 ], [ %elemqu13, %if.else ]
+  %storemerge = phi i8 [ 1, %if.then6 ], [ 0, %if.else ]
+  %storemerge21 = load i32* %storemerge21.in, align 4, !dbg !771
+  store i32 %storemerge21, i32* %boundl, align 4, !dbg !775, !tbaa !522
+  store i8 %storemerge, i8* %flodd, align 1, !dbg !776, !tbaa !526
+  %not.cmp18 = icmp ne i32 %storemerge21, 0, !dbg !777
+  br label %return, !dbg !777
+
+return:                                           ; preds = %if.end16, %entry, %lor.lhs.false
+  %retval.0 = phi i1 [ false, %lor.lhs.false ], [ false, %entry ], [ %not.cmp18, %if.end16 ]
+  ret i1 %retval.0, !dbg !778
+}

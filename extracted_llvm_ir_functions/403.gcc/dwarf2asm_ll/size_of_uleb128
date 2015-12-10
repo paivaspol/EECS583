@@ -1,15 +1,19 @@
-define i32 @size_of_uleb128(i64 %value) #5 {
+define i32 @size_of_uleb128(i64 %value) #6 {
 entry:
-  br label %do.body
+  tail call void @llvm.dbg.value(metadata !{i64 %value}, i64 0, metadata !1000), !dbg !1276
+  tail call void @llvm.dbg.value(metadata !561, i64 0, metadata !1001), !dbg !1277
+  br label %do.body, !dbg !1278
 
 do.body:                                          ; preds = %do.body, %entry
   %size.0 = phi i32 [ 0, %entry ], [ %add, %do.body ]
   %value.addr.0 = phi i64 [ %value, %entry ], [ %shr, %do.body ]
-  %shr = lshr i64 %value.addr.0, 7
-  %add = add nsw i32 %size.0, 1
-  %cmp = icmp eq i64 %shr, 0
-  br i1 %cmp, label %do.end, label %do.body
+  %shr = lshr i64 %value.addr.0, 7, !dbg !1279
+  tail call void @llvm.dbg.value(metadata !{i64 %shr}, i64 0, metadata !1000), !dbg !1279
+  %add = add nsw i32 %size.0, 1, !dbg !1281
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !1001), !dbg !1281
+  %cmp = icmp eq i64 %shr, 0, !dbg !1282
+  br i1 %cmp, label %do.end, label %do.body, !dbg !1282
 
 do.end:                                           ; preds = %do.body
-  ret i32 %add
+  ret i32 %add, !dbg !1283
 }

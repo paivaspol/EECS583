@@ -1,0 +1,70 @@
+define void @_ZN3pov17Test_Mesh_OpacityEPNS_11Mesh_StructE(%"struct.pov::Mesh_Struct"* nocapture %Mesh) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Mesh_Struct"* %Mesh}, i64 0, metadata !1121), !dbg !3017
+  %Texture = getelementptr inbounds %"struct.pov::Mesh_Struct"* %Mesh, i64 0, i32 3, !dbg !3018
+  %0 = load %"struct.pov::Texture_Struct"** %Texture, align 8, !dbg !3018, !tbaa !1750
+  %cmp = icmp eq %"struct.pov::Texture_Struct"* %0, null, !dbg !3018
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !3018
+
+lor.lhs.false:                                    ; preds = %entry
+  %call = tail call i32 @_ZN3pov12Test_OpacityEPNS_14Texture_StructE(%"struct.pov::Texture_Struct"* %0) #7, !dbg !3018
+  %tobool = icmp eq i32 %call, 0, !dbg !3018
+  br i1 %tobool, label %lor.lhs.false.if.end_crit_edge, label %if.then, !dbg !3018
+
+lor.lhs.false.if.end_crit_edge:                   ; preds = %lor.lhs.false
+  %Flags3.phi.trans.insert = getelementptr inbounds %"struct.pov::Mesh_Struct"* %Mesh, i64 0, i32 13
+  %.pre = load i32* %Flags3.phi.trans.insert, align 4, !dbg !3019, !tbaa !1782
+  br label %if.end, !dbg !3018
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %Flags = getelementptr inbounds %"struct.pov::Mesh_Struct"* %Mesh, i64 0, i32 13, !dbg !3020
+  %1 = load i32* %Flags, align 4, !dbg !3020, !tbaa !1782
+  %or = or i32 %1, 128, !dbg !3020
+  store i32 %or, i32* %Flags, align 4, !dbg !3020, !tbaa !1782
+  br label %if.end, !dbg !3023
+
+if.end:                                           ; preds = %lor.lhs.false.if.end_crit_edge, %if.then
+  %2 = phi i32 [ %.pre, %lor.lhs.false.if.end_crit_edge ], [ %or, %if.then ]
+  %Flags3 = getelementptr inbounds %"struct.pov::Mesh_Struct"* %Mesh, i64 0, i32 13, !dbg !3019
+  %and = and i32 %2, 256, !dbg !3019
+  %tobool5 = icmp eq i32 %and, 0, !dbg !3019
+  br i1 %tobool5, label %if.end23, label %for.cond.preheader, !dbg !3019
+
+for.cond.preheader:                               ; preds = %if.end
+  %Number_Of_Textures = getelementptr inbounds %"struct.pov::Mesh_Struct"* %Mesh, i64 0, i32 15, !dbg !3024
+  %3 = load i64* %Number_Of_Textures, align 8, !dbg !3024, !tbaa !1739
+  %cmp834 = icmp sgt i64 %3, 0, !dbg !3024
+  br i1 %cmp834, label %for.body.lr.ph, label %if.end23, !dbg !3024
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %Textures = getelementptr inbounds %"struct.pov::Mesh_Struct"* %Mesh, i64 0, i32 16, !dbg !3027
+  br label %for.body, !dbg !3024
+
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %4 = load %"struct.pov::Texture_Struct"*** %Textures, align 8, !dbg !3027, !tbaa !1750
+  %arrayidx = getelementptr inbounds %"struct.pov::Texture_Struct"** %4, i64 %indvars.iv, !dbg !3027
+  %5 = load %"struct.pov::Texture_Struct"** %arrayidx, align 8, !dbg !3027, !tbaa !1750
+  %cmp9 = icmp eq %"struct.pov::Texture_Struct"* %5, null, !dbg !3027
+  br i1 %cmp9, label %for.inc, label %if.then10, !dbg !3027
+
+if.then10:                                        ; preds = %for.body
+  %call14 = tail call i32 @_ZN3pov12Test_OpacityEPNS_14Texture_StructE(%"struct.pov::Texture_Struct"* %5) #7, !dbg !3029
+  %tobool15 = icmp eq i32 %call14, 0, !dbg !3029
+  br i1 %tobool15, label %if.then16, label %for.inc, !dbg !3029
+
+if.then16:                                        ; preds = %if.then10
+  %6 = load i32* %Flags3, align 4, !dbg !3031, !tbaa !1782
+  %and19 = and i32 %6, -129, !dbg !3031
+  store i32 %and19, i32* %Flags3, align 4, !dbg !3031, !tbaa !1782
+  br label %for.inc, !dbg !3034
+
+for.inc:                                          ; preds = %if.then10, %for.body, %if.then16
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !3024
+  %7 = load i64* %Number_Of_Textures, align 8, !dbg !3024, !tbaa !1739
+  %cmp8 = icmp slt i64 %indvars.iv.next, %7, !dbg !3024
+  br i1 %cmp8, label %for.body, label %if.end23, !dbg !3024
+
+if.end23:                                         ; preds = %for.cond.preheader, %for.inc, %if.end
+  ret void, !dbg !3035
+}

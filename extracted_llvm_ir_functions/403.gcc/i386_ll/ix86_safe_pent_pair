@@ -1,21 +1,22 @@
 define internal fastcc i32 @ix86_safe_pent_pair(%struct.rtx_def* %insn) #1 {
 entry:
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 4
-  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
-  %0 = load i32* %rtint, align 4, !tbaa !0
-  %cmp = icmp sgt i32 %0, -1
-  br i1 %cmp, label %if.then, label %cond.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !3598), !dbg !9705
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 4, !dbg !9706
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*, !dbg !9706
+  %0 = load i32* %rtint, align 4, !dbg !9706, !tbaa !4347
+  %cmp = icmp sgt i32 %0, -1, !dbg !9706
+  br i1 %cmp, label %if.then, label %cond.end, !dbg !9706
 
 cond.end:                                         ; preds = %entry
-  %call = tail call i32 @recog_memoized_1(%struct.rtx_def* %insn) #9
-  %cmp4 = icmp sgt i32 %call, -1
-  br i1 %cmp4, label %if.then, label %return
+  %call = tail call i32 @recog_memoized_1(%struct.rtx_def* %insn) #10, !dbg !9706
+  %cmp4 = icmp sgt i32 %call, -1, !dbg !9706
+  br i1 %cmp4, label %if.then, label %return, !dbg !9706
 
 if.then:                                          ; preds = %entry, %cond.end
-  %call5 = tail call i32 @get_attr_pent_pair(%struct.rtx_def* %insn) #9
-  br label %return
+  %call5 = tail call i32 @get_attr_pent_pair(%struct.rtx_def* %insn) #10, !dbg !9707
+  br label %return, !dbg !9707
 
 return:                                           ; preds = %cond.end, %if.then
   %retval.0 = phi i32 [ %call5, %if.then ], [ 3, %cond.end ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !9708
 }

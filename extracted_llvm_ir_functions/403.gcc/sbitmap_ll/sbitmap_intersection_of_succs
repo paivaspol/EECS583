@@ -1,95 +1,105 @@
 define void @sbitmap_intersection_of_succs(%struct.simple_bitmap_def* nocapture %dst, %struct.simple_bitmap_def** nocapture %src, i32 %bb) #0 {
 entry:
-  %idxprom = sext i32 %bb to i64
-  %0 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !3
-  %data = getelementptr inbounds %struct.varray_head_tag* %0, i64 0, i32 4
-  %bb1 = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
-  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb1, i64 0, i64 %idxprom
-  %1 = load %struct.basic_block_def** %arrayidx, align 8, !tbaa !3
-  %size = getelementptr inbounds %struct.simple_bitmap_def* %dst, i64 0, i32 1
-  %2 = load i32* %size, align 4, !tbaa !0
-  %succ = getelementptr inbounds %struct.basic_block_def* %1, i64 0, i32 5
-  %e.055 = load %struct.edge_def** %succ, align 8
-  %cond56 = icmp eq %struct.edge_def* %e.055, null
-  br i1 %cond56, label %if.then7, label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct.simple_bitmap_def* %dst}, i64 0, metadata !271), !dbg !695
+  tail call void @llvm.dbg.value(metadata !{%struct.simple_bitmap_def** %src}, i64 0, metadata !272), !dbg !696
+  tail call void @llvm.dbg.value(metadata !{i32 %bb}, i64 0, metadata !273), !dbg !697
+  %idxprom = sext i32 %bb to i64, !dbg !698
+  %0 = load %struct.varray_head_tag** @basic_block_info, align 8, !dbg !698, !tbaa !578
+  %data = getelementptr inbounds %struct.varray_head_tag* %0, i64 0, i32 4, !dbg !698
+  %bb1 = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*, !dbg !698
+  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb1, i64 0, i64 %idxprom, !dbg !698
+  %1 = load %struct.basic_block_def** %arrayidx, align 8, !dbg !698, !tbaa !578
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %1}, i64 0, metadata !274), !dbg !698
+  %size = getelementptr inbounds %struct.simple_bitmap_def* %dst, i64 0, i32 1, !dbg !699
+  %2 = load i32* %size, align 4, !dbg !699, !tbaa !559
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !402), !dbg !699
+  %succ = getelementptr inbounds %struct.basic_block_def* %1, i64 0, i32 5, !dbg !700
+  %e.055 = load %struct.edge_def** %succ, align 8, !dbg !700
+  %cond56 = icmp eq %struct.edge_def* %e.055, null, !dbg !700
+  br i1 %cond56, label %if.then7, label %for.body, !dbg !700
 
 for.cond:                                         ; preds = %for.body
-  %succ_next = getelementptr inbounds %struct.edge_def* %e.057, i64 0, i32 1
-  %e.0 = load %struct.edge_def** %succ_next, align 8
-  %cond = icmp eq %struct.edge_def* %e.0, null
-  br i1 %cond, label %if.then7, label %for.body
+  %succ_next = getelementptr inbounds %struct.edge_def* %e.057, i64 0, i32 1, !dbg !700
+  %e.0 = load %struct.edge_def** %succ_next, align 8, !dbg !700
+  %cond = icmp eq %struct.edge_def* %e.0, null, !dbg !700
+  br i1 %cond, label %if.then7, label %for.body, !dbg !700
 
 for.body:                                         ; preds = %entry, %for.cond
   %e.057 = phi %struct.edge_def* [ %e.0, %for.cond ], [ %e.055, %entry ]
-  %dest = getelementptr inbounds %struct.edge_def* %e.057, i64 0, i32 3
-  %3 = load %struct.basic_block_def** %dest, align 8, !tbaa !3
-  %cmp2 = icmp eq %struct.basic_block_def* %3, getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1)
-  br i1 %cmp2, label %for.cond, label %for.cond9.preheader
+  %dest = getelementptr inbounds %struct.edge_def* %e.057, i64 0, i32 3, !dbg !702
+  %3 = load %struct.basic_block_def** %dest, align 8, !dbg !702, !tbaa !578
+  %cmp2 = icmp eq %struct.basic_block_def* %3, getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1), !dbg !702
+  br i1 %cmp2, label %for.cond, label %for.cond9.preheader, !dbg !702
 
 for.cond9.preheader:                              ; preds = %for.body
-  %index = getelementptr inbounds %struct.basic_block_def* %3, i64 0, i32 11
-  %4 = load i32* %index, align 4, !tbaa !0
-  %idxprom4 = sext i32 %4 to i64
-  %arrayidx5 = getelementptr inbounds %struct.simple_bitmap_def** %src, i64 %idxprom4
-  %5 = load %struct.simple_bitmap_def** %arrayidx5, align 8, !tbaa !3
-  %elms.i = getelementptr inbounds %struct.simple_bitmap_def* %dst, i64 0, i32 3
-  %6 = bitcast [1 x i64]* %elms.i to i8*
-  %elms1.i = getelementptr inbounds %struct.simple_bitmap_def* %5, i64 0, i32 3
-  %7 = bitcast [1 x i64]* %elms1.i to i8*
-  %conv.i = zext i32 %2 to i64
-  %mul.i = shl nuw nsw i64 %conv.i, 3
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %6, i8* %7, i64 %mul.i, i32 8, i1 false) #2
-  %e.1.in50 = getelementptr inbounds %struct.edge_def* %e.057, i64 0, i32 1
-  %e.151 = load %struct.edge_def** %e.1.in50, align 8
-  %cmp1052 = icmp eq %struct.edge_def* %e.151, null
-  br i1 %cmp1052, label %if.end31, label %for.body11.lr.ph
+  %index = getelementptr inbounds %struct.basic_block_def* %3, i64 0, i32 11, !dbg !704
+  %4 = load i32* %index, align 4, !dbg !704, !tbaa !559
+  %idxprom4 = sext i32 %4 to i64, !dbg !704
+  %arrayidx5 = getelementptr inbounds %struct.simple_bitmap_def** %src, i64 %idxprom4, !dbg !704
+  %5 = load %struct.simple_bitmap_def** %arrayidx5, align 8, !dbg !704, !tbaa !578
+  tail call void @llvm.dbg.value(metadata !{%struct.simple_bitmap_def* %dst}, i64 0, metadata !705) #2, !dbg !706
+  tail call void @llvm.dbg.value(metadata !{%struct.simple_bitmap_def* %5}, i64 0, metadata !707) #2, !dbg !706
+  %elms.i = getelementptr inbounds %struct.simple_bitmap_def* %dst, i64 0, i32 3, !dbg !708
+  %6 = bitcast [1 x i64]* %elms.i to i8*, !dbg !708
+  %elms1.i = getelementptr inbounds %struct.simple_bitmap_def* %5, i64 0, i32 3, !dbg !708
+  %7 = bitcast [1 x i64]* %elms1.i to i8*, !dbg !708
+  %conv.i = zext i32 %2 to i64, !dbg !708
+  %mul.i = shl nuw nsw i64 %conv.i, 3, !dbg !708
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %6, i8* %7, i64 %mul.i, i32 8, i1 false) #2, !dbg !708
+  %e.1.in50 = getelementptr inbounds %struct.edge_def* %e.057, i64 0, i32 1, !dbg !709
+  %e.151 = load %struct.edge_def** %e.1.in50, align 8, !dbg !709
+  %cmp1052 = icmp eq %struct.edge_def* %e.151, null, !dbg !709
+  br i1 %cmp1052, label %if.end31, label %for.body11.lr.ph, !dbg !709
 
 for.body11.lr.ph:                                 ; preds = %for.cond9.preheader
-  %arraydecay21 = getelementptr inbounds %struct.simple_bitmap_def* %dst, i64 0, i32 3, i64 0
-  %cmp2346 = icmp eq i32 %2, 0
-  br label %for.body11
+  %arraydecay21 = getelementptr inbounds %struct.simple_bitmap_def* %dst, i64 0, i32 3, i64 0, !dbg !710
+  %cmp2346 = icmp eq i32 %2, 0, !dbg !711
+  br label %for.body11, !dbg !709
 
 if.then7:                                         ; preds = %entry, %for.cond
-  tail call void @sbitmap_ones(%struct.simple_bitmap_def* %dst) #8
-  br label %if.end31
+  tail call void @sbitmap_ones(%struct.simple_bitmap_def* %dst) #9, !dbg !713
+  br label %if.end31, !dbg !713
 
 for.body11:                                       ; preds = %for.body11.lr.ph, %for.cond9.backedge
   %e.153 = phi %struct.edge_def* [ %e.151, %for.body11.lr.ph ], [ %e.1, %for.cond9.backedge ]
-  %dest12 = getelementptr inbounds %struct.edge_def* %e.153, i64 0, i32 3
-  %8 = load %struct.basic_block_def** %dest12, align 8, !tbaa !3
-  %cmp13 = icmp eq %struct.basic_block_def* %8, getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1)
-  %brmerge = or i1 %cmp13, %cmp2346
-  br i1 %brmerge, label %for.cond9.backedge, label %for.body24.lr.ph
+  %dest12 = getelementptr inbounds %struct.edge_def* %e.153, i64 0, i32 3, !dbg !714
+  %8 = load %struct.basic_block_def** %dest12, align 8, !dbg !714, !tbaa !578
+  %cmp13 = icmp eq %struct.basic_block_def* %8, getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 1), !dbg !714
+  %brmerge = or i1 %cmp13, %cmp2346, !dbg !714
+  br i1 %brmerge, label %for.cond9.backedge, label %for.body24.lr.ph, !dbg !714
 
 for.cond9.backedge:                               ; preds = %for.body11, %for.body24
-  %e.1.in = getelementptr inbounds %struct.edge_def* %e.153, i64 0, i32 1
-  %e.1 = load %struct.edge_def** %e.1.in, align 8
-  %cmp10 = icmp eq %struct.edge_def* %e.1, null
-  br i1 %cmp10, label %if.end31, label %for.body11
+  %e.1.in = getelementptr inbounds %struct.edge_def* %e.153, i64 0, i32 1, !dbg !709
+  %e.1 = load %struct.edge_def** %e.1.in, align 8, !dbg !709
+  %cmp10 = icmp eq %struct.edge_def* %e.1, null, !dbg !709
+  br i1 %cmp10, label %if.end31, label %for.body11, !dbg !709
 
 for.body24.lr.ph:                                 ; preds = %for.body11
-  %index17 = getelementptr inbounds %struct.basic_block_def* %8, i64 0, i32 11
-  %9 = load i32* %index17, align 4, !tbaa !0
-  %idxprom18 = sext i32 %9 to i64
-  %arrayidx19 = getelementptr inbounds %struct.simple_bitmap_def** %src, i64 %idxprom18
-  %10 = load %struct.simple_bitmap_def** %arrayidx19, align 8, !tbaa !3
-  %arraydecay = getelementptr inbounds %struct.simple_bitmap_def* %10, i64 0, i32 3, i64 0
-  br label %for.body24
+  %index17 = getelementptr inbounds %struct.basic_block_def* %8, i64 0, i32 11, !dbg !715
+  %9 = load i32* %index17, align 4, !dbg !715, !tbaa !559
+  %idxprom18 = sext i32 %9 to i64, !dbg !715
+  %arrayidx19 = getelementptr inbounds %struct.simple_bitmap_def** %src, i64 %idxprom18, !dbg !715
+  %10 = load %struct.simple_bitmap_def** %arrayidx19, align 8, !dbg !715, !tbaa !578
+  %arraydecay = getelementptr inbounds %struct.simple_bitmap_def* %10, i64 0, i32 3, i64 0, !dbg !715
+  br label %for.body24, !dbg !711
 
 for.body24:                                       ; preds = %for.body24, %for.body24.lr.ph
   %r.049 = phi i64* [ %arraydecay21, %for.body24.lr.ph ], [ %incdec.ptr25, %for.body24 ]
   %p.048 = phi i64* [ %arraydecay, %for.body24.lr.ph ], [ %incdec.ptr, %for.body24 ]
   %i.047 = phi i32 [ 0, %for.body24.lr.ph ], [ %inc, %for.body24 ]
-  %incdec.ptr = getelementptr inbounds i64* %p.048, i64 1
-  %11 = load i64* %p.048, align 8, !tbaa !4
-  %incdec.ptr25 = getelementptr inbounds i64* %r.049, i64 1
-  %12 = load i64* %r.049, align 8, !tbaa !4
-  %and = and i64 %12, %11
-  store i64 %and, i64* %r.049, align 8, !tbaa !4
-  %inc = add i32 %i.047, 1
-  %exitcond = icmp eq i32 %inc, %2
-  br i1 %exitcond, label %for.cond9.backedge, label %for.body24
+  %incdec.ptr = getelementptr inbounds i64* %p.048, i64 1, !dbg !716
+  tail call void @llvm.dbg.value(metadata !{i64* %incdec.ptr}, i64 0, metadata !407), !dbg !716
+  %11 = load i64* %p.048, align 8, !dbg !716, !tbaa !596
+  %incdec.ptr25 = getelementptr inbounds i64* %r.049, i64 1, !dbg !716
+  tail call void @llvm.dbg.value(metadata !{i64* %incdec.ptr25}, i64 0, metadata !408), !dbg !716
+  %12 = load i64* %r.049, align 8, !dbg !716, !tbaa !596
+  %and = and i64 %12, %11, !dbg !716
+  store i64 %and, i64* %r.049, align 8, !dbg !716, !tbaa !596
+  %inc = add i32 %i.047, 1, !dbg !711
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !404), !dbg !711
+  %exitcond = icmp eq i32 %inc, %2, !dbg !711
+  br i1 %exitcond, label %for.cond9.backedge, label %for.body24, !dbg !711
 
 if.end31:                                         ; preds = %for.cond9.preheader, %for.cond9.backedge, %if.then7
-  ret void
+  ret void, !dbg !717
 }

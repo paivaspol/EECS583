@@ -1,0 +1,116 @@
+define void @_ZN3pov21POVFPU_RemoveFunctionEj(i32 %fn) #4 {
+entry:
+  %f = alloca %"struct.pov::FunctionEntry_Struct", align 8
+  call void @llvm.dbg.value(metadata !{i32 %fn}, i64 0, metadata !278), !dbg !657
+  %0 = load %"struct.pov::FunctionEntry_Struct"** @_ZN3pov16POVFPU_FunctionsE, align 8, !dbg !658, !tbaa !493
+  %cmp = icmp ne %"struct.pov::FunctionEntry_Struct"* %0, null, !dbg !658
+  %1 = load i32* @_ZN3pov18POVFPU_FunctionCntE, align 4, !dbg !658, !tbaa !498
+  %cmp1 = icmp ugt i32 %1, %fn, !dbg !658
+  %or.cond = and i1 %cmp, %cmp1, !dbg !658
+  br i1 %or.cond, label %if.end, label %if.end46, !dbg !658
+
+if.end:                                           ; preds = %entry
+  %idxprom = zext i32 %fn to i64, !dbg !659
+  %reference_count = getelementptr inbounds %"struct.pov::FunctionEntry_Struct"* %0, i64 %idxprom, i32 1, !dbg !659
+  %2 = load i32* %reference_count, align 4, !dbg !659, !tbaa !498
+  %cmp2 = icmp eq i32 %2, 0, !dbg !659
+  br i1 %cmp2, label %if.end46, label %if.then3, !dbg !659
+
+if.then3:                                         ; preds = %if.end
+  %dec = add i32 %2, -1, !dbg !660
+  store i32 %dec, i32* %reference_count, align 4, !dbg !660, !tbaa !498
+  %cmp10 = icmp eq i32 %dec, 0, !dbg !661
+  br i1 %cmp10, label %if.then11, label %if.end46, !dbg !661
+
+if.then11:                                        ; preds = %if.then3
+  %3 = bitcast %"struct.pov::FunctionEntry_Struct"* %f to i8*, !dbg !662
+  call void @llvm.lifetime.start(i64 1208, i8* %3) #7, !dbg !662
+  call void @llvm.dbg.declare(metadata !{%"struct.pov::FunctionEntry_Struct"* %f}, metadata !279), !dbg !662
+  %arrayidx13 = getelementptr inbounds %"struct.pov::FunctionEntry_Struct"* %0, i64 %idxprom, !dbg !662
+  %4 = bitcast %"struct.pov::FunctionEntry_Struct"* %arrayidx13 to i8*, !dbg !662
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %3, i8* %4, i64 1208, i32 8, i1 false), !dbg !662, !tbaa.struct !663
+  call void @llvm.dbg.value(metadata !134, i64 0, metadata !295), !dbg !664
+  %program_size = getelementptr inbounds %"struct.pov::FunctionEntry_Struct"* %f, i64 0, i32 0, i32 1, !dbg !665
+  %5 = load i32* %program_size, align 8, !dbg !665, !tbaa !498
+  %cmp1560 = icmp eq i32 %5, 0, !dbg !665
+  br i1 %cmp1560, label %for.end, label %for.body.lr.ph, !dbg !665
+
+for.body.lr.ph:                                   ; preds = %if.then11
+  %program = getelementptr inbounds %"struct.pov::FunctionEntry_Struct"* %f, i64 0, i32 0, i32 0, !dbg !667
+  br label %for.body, !dbg !665
+
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %6 = phi i32 [ %5, %for.body.lr.ph ], [ %9, %for.inc ]
+  %i.061 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.inc ]
+  %idxprom16 = zext i32 %i.061 to i64, !dbg !667
+  %7 = load i32** %program, align 8, !dbg !667, !tbaa !493
+  %arrayidx18 = getelementptr inbounds i32* %7, i64 %idxprom16, !dbg !667
+  %8 = load i32* %arrayidx18, align 4, !dbg !667, !tbaa !498
+  %and = and i32 %8, 4095, !dbg !667
+  %cmp19 = icmp eq i32 %and, 963, !dbg !667
+  br i1 %cmp19, label %if.then20, label %for.inc, !dbg !667
+
+if.then20:                                        ; preds = %for.body
+  %shr = lshr i32 %8, 12, !dbg !669
+  call void @_ZN3pov21POVFPU_RemoveFunctionEj(i32 %shr) #9, !dbg !669
+  %.pre = load i32* %program_size, align 8, !dbg !665, !tbaa !498
+  br label %for.inc, !dbg !669
+
+for.inc:                                          ; preds = %for.body, %if.then20
+  %9 = phi i32 [ %6, %for.body ], [ %.pre, %if.then20 ], !dbg !665
+  %inc = add i32 %i.061, 1, !dbg !665
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !295), !dbg !665
+  %cmp15 = icmp ult i32 %inc, %9, !dbg !665
+  br i1 %cmp15, label %for.body, label %for.end, !dbg !665
+
+for.end:                                          ; preds = %for.inc, %if.then11
+  %fn14 = getelementptr inbounds %"struct.pov::FunctionEntry_Struct"* %f, i64 0, i32 0, !dbg !665
+  call void @_ZN3pov13FNCode_DeleteEPNS_12FunctionCodeE(%"struct.pov::FunctionCode"* %fn14) #9, !dbg !670
+  %10 = load i32* @_ZN3pov18POVFPU_FunctionCntE, align 4, !dbg !671, !tbaa !498
+  %i.157 = add i32 %10, -1, !dbg !671
+  %cmp2958 = icmp eq i32 %i.157, 0, !dbg !671
+  %.pre62 = load %"struct.pov::FunctionEntry_Struct"** @_ZN3pov16POVFPU_FunctionsE, align 8, !dbg !673, !tbaa !493
+  br i1 %cmp2958, label %for.end40, label %for.body30, !dbg !671
+
+for.body30:                                       ; preds = %for.end, %if.then35
+  %11 = phi i32 [ %dec36, %if.then35 ], [ %10, %for.end ]
+  %i.159 = phi i32 [ %i.1, %if.then35 ], [ %i.157, %for.end ]
+  %idxprom31 = zext i32 %i.159 to i64, !dbg !676
+  %reference_count33 = getelementptr inbounds %"struct.pov::FunctionEntry_Struct"* %.pre62, i64 %idxprom31, i32 1, !dbg !676
+  %12 = load i32* %reference_count33, align 4, !dbg !676, !tbaa !498
+  %cmp34 = icmp eq i32 %12, 0, !dbg !676
+  br i1 %cmp34, label %if.then35, label %for.end40, !dbg !676
+
+if.then35:                                        ; preds = %for.body30
+  %dec36 = add i32 %11, -1, !dbg !678
+  store i32 %dec36, i32* @_ZN3pov18POVFPU_FunctionCntE, align 4, !dbg !678, !tbaa !498
+  %i.1 = add i32 %i.159, -1, !dbg !671
+  %cmp29 = icmp eq i32 %i.1, 0, !dbg !671
+  br i1 %cmp29, label %for.end40, label %for.body30, !dbg !671
+
+for.end40:                                        ; preds = %for.end, %if.then35, %for.body30
+  %13 = phi i32 [ %11, %for.body30 ], [ %dec36, %if.then35 ], [ %10, %for.end ]
+  %cmp41 = icmp eq i32 %13, 0, !dbg !679
+  %14 = bitcast %"struct.pov::FunctionEntry_Struct"* %.pre62 to i8*, !dbg !673
+  br i1 %cmp41, label %if.then42, label %if.else43, !dbg !679
+
+if.then42:                                        ; preds = %for.end40
+  call void @_ZN3pov8pov_freeEPvPKci(i8* %14, i8* getelementptr inbounds ([57 x i8]* @.str51, i64 0, i64 0), i32 1190) #9, !dbg !673
+  br label %if.end44, !dbg !680
+
+if.else43:                                        ; preds = %for.end40
+  %conv = zext i32 %13 to i64, !dbg !681
+  %mul = mul i64 %conv, 1208, !dbg !681
+  %call = call i8* @_ZN3pov11pov_reallocEPvmPKciS2_(i8* %14, i64 %mul, i8* getelementptr inbounds ([57 x i8]* @.str51, i64 0, i64 0), i32 1194, i8* getelementptr inbounds ([18 x i8]* @.str57, i64 0, i64 0)) #9, !dbg !681
+  %15 = bitcast i8* %call to %"struct.pov::FunctionEntry_Struct"*, !dbg !681
+  br label %if.end44
+
+if.end44:                                         ; preds = %if.else43, %if.then42
+  %storemerge = phi %"struct.pov::FunctionEntry_Struct"* [ %15, %if.else43 ], [ null, %if.then42 ]
+  store %"struct.pov::FunctionEntry_Struct"* %storemerge, %"struct.pov::FunctionEntry_Struct"** @_ZN3pov16POVFPU_FunctionsE, align 8, !dbg !682, !tbaa !493
+  call void @llvm.lifetime.end(i64 1208, i8* %3) #7, !dbg !683
+  br label %if.end46, !dbg !683
+
+if.end46:                                         ; preds = %entry, %if.end, %if.then3, %if.end44
+  ret void, !dbg !684
+}

@@ -1,26 +1,29 @@
 define i32 @SymbolIndex(i8 signext %sym) #0 {
 entry:
-  %conv = sext i8 %sym to i32
-  %call = tail call i32 @toupper(i32 %conv) #5
-  %sext = shl i32 %call, 24
-  %conv2 = ashr exact i32 %sext, 24
-  %call3 = tail call i8* @strchr(i8* getelementptr inbounds ([25 x i8]* @Alphabet, i64 0, i64 0), i32 %conv2) #7
-  %cmp = icmp eq i8* %call3, null
-  br i1 %cmp, label %cond.true, label %cond.false
+  tail call void @llvm.dbg.value(metadata !{i8 %sym}, i64 0, metadata !30), !dbg !256
+  %conv = sext i8 %sym to i32, !dbg !257
+  %call = tail call i32 @toupper(i32 %conv) #6, !dbg !257
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !32), !dbg !257
+  %sext = shl i32 %call, 24, !dbg !259
+  %conv2 = ashr exact i32 %sext, 24, !dbg !259
+  %call3 = tail call i8* @strchr(i8* getelementptr inbounds ([25 x i8]* @Alphabet, i64 0, i64 0), i32 %conv2) #8, !dbg !259
+  tail call void @llvm.dbg.value(metadata !{i8* %call3}, i64 0, metadata !31), !dbg !259
+  %cmp = icmp eq i8* %call3, null, !dbg !259
+  br i1 %cmp, label %cond.true, label %cond.false, !dbg !259
 
 cond.true:                                        ; preds = %entry
-  %0 = load i32* @Alphabet_iupac, align 4, !tbaa !3
-  %sub = add nsw i32 %0, -1
-  %conv5 = sext i32 %sub to i64
-  br label %cond.end
+  %0 = load i32* @Alphabet_iupac, align 4, !dbg !259, !tbaa !194
+  %sub = add nsw i32 %0, -1, !dbg !259
+  %conv5 = sext i32 %sub to i64, !dbg !259
+  br label %cond.end, !dbg !259
 
 cond.false:                                       ; preds = %entry
-  %sub.ptr.lhs.cast = ptrtoint i8* %call3 to i64
-  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, ptrtoint ([25 x i8]* @Alphabet to i64)
-  br label %cond.end
+  %sub.ptr.lhs.cast = ptrtoint i8* %call3 to i64, !dbg !259
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, ptrtoint ([25 x i8]* @Alphabet to i64), !dbg !259
+  br label %cond.end, !dbg !259
 
 cond.end:                                         ; preds = %cond.false, %cond.true
-  %cond = phi i64 [ %conv5, %cond.true ], [ %sub.ptr.sub, %cond.false ]
-  %conv6 = trunc i64 %cond to i32
-  ret i32 %conv6
+  %cond = phi i64 [ %conv5, %cond.true ], [ %sub.ptr.sub, %cond.false ], !dbg !259
+  %conv6 = trunc i64 %cond to i32, !dbg !259
+  ret i32 %conv6, !dbg !259
 }

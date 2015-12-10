@@ -1,109 +1,114 @@
 define void @ChvList_init(%struct._ChvList* %chvlist, i32 %nlist, i32* %counts, i32 %lockflag, i8* %flags) #0 {
 entry:
-  %cmp = icmp eq %struct._ChvList* %chvlist, null
-  %cmp1 = icmp slt i32 %nlist, 1
-  %or.cond = or i1 %cmp, %cmp1
-  %0 = icmp ugt i32 %lockflag, 1
-  %or.cond84 = or i1 %or.cond, %0
-  br i1 %or.cond84, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._ChvList* %chvlist}, i64 0, metadata !62), !dbg !68
+  tail call void @llvm.dbg.value(metadata !{i32 %nlist}, i64 0, metadata !63), !dbg !69
+  tail call void @llvm.dbg.value(metadata !{i32* %counts}, i64 0, metadata !64), !dbg !70
+  tail call void @llvm.dbg.value(metadata !{i32 %lockflag}, i64 0, metadata !65), !dbg !71
+  tail call void @llvm.dbg.value(metadata !{i8* %flags}, i64 0, metadata !66), !dbg !72
+  %cmp = icmp eq %struct._ChvList* %chvlist, null, !dbg !73
+  %cmp1 = icmp slt i32 %nlist, 1, !dbg !73
+  %or.cond = or i1 %cmp, %cmp1, !dbg !73
+  %0 = icmp ugt i32 %lockflag, 1, !dbg !73
+  %or.cond84 = or i1 %or.cond, %0, !dbg !73
+  br i1 %or.cond84, label %if.then, label %if.end, !dbg !73
 
 if.then:                                          ; preds = %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([58 x i8]* @.str, i64 0, i64 0), %struct._ChvList* %chvlist, i32 %nlist, i32* %counts, i32 %lockflag, i8* %flags) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !74, !tbaa !76
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([58 x i8]* @.str, i64 0, i64 0), %struct._ChvList* %chvlist, i32 %nlist, i32* %counts, i32 %lockflag, i8* %flags) #5, !dbg !74
+  tail call void @exit(i32 -1) #6, !dbg !79
+  unreachable, !dbg !79
 
 if.end:                                           ; preds = %entry
-  tail call void @ChvList_clearData(%struct._ChvList* %chvlist) #4
-  %nlist6 = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 0
-  store i32 %nlist, i32* %nlist6, align 4, !tbaa !3
-  %cmp7 = icmp sgt i32 %nlist, 0
-  br i1 %cmp7, label %if.then8, label %if.else17
+  tail call void @ChvList_clearData(%struct._ChvList* %chvlist) #5, !dbg !80
+  %nlist6 = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 0, !dbg !81
+  store i32 %nlist, i32* %nlist6, align 4, !dbg !81, !tbaa !82
+  %cmp7 = icmp sgt i32 %nlist, 0, !dbg !83
+  br i1 %cmp7, label %if.then8, label %if.else17, !dbg !83
 
 if.then8:                                         ; preds = %if.end
-  %conv = sext i32 %nlist to i64
-  %mul = shl nsw i64 %conv, 3
-  %call9 = tail call noalias i8* @malloc(i64 %mul) #4
-  %2 = bitcast i8* %call9 to %struct._Chv**
-  %heads = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 1
-  store %struct._Chv** %2, %struct._Chv*** %heads, align 8, !tbaa !0
-  %cmp10 = icmp eq i8* %call9, null
-  br i1 %cmp10, label %if.then12, label %for.body.lr.ph
+  %conv = sext i32 %nlist to i64, !dbg !84
+  %mul = shl nsw i64 %conv, 3, !dbg !84
+  %call9 = tail call noalias i8* @malloc(i64 %mul) #5, !dbg !84
+  %2 = bitcast i8* %call9 to %struct._Chv**, !dbg !84
+  %heads = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 1, !dbg !84
+  store %struct._Chv** %2, %struct._Chv*** %heads, align 8, !dbg !84, !tbaa !76
+  %cmp10 = icmp eq i8* %call9, null, !dbg !84
+  br i1 %cmp10, label %if.then12, label %for.body.lr.ph, !dbg !84
 
 if.then12:                                        ; preds = %if.then8
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call15 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([49 x i8]* @.str1, i64 0, i64 0), i64 %mul, i32 61, i8* getelementptr inbounds ([81 x i8]* @.str2, i64 0, i64 0)) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !86, !tbaa !76
+  %call15 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([49 x i8]* @.str1, i64 0, i64 0), i64 %mul, i32 61, i8* getelementptr inbounds ([81 x i8]* @.str2, i64 0, i64 0)) #5, !dbg !86
+  tail call void @exit(i32 -1) #6, !dbg !86
+  unreachable, !dbg !86
 
 if.else17:                                        ; preds = %if.end
-  %cmp18 = icmp eq i32 %nlist, 0
-  br i1 %cmp18, label %for.cond.preheader, label %if.else22
+  %cmp18 = icmp eq i32 %nlist, 0, !dbg !83
+  br i1 %cmp18, label %for.cond.preheader, label %if.else22, !dbg !83
 
 for.cond.preheader:                               ; preds = %if.else17
-  %heads21 = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 1
-  store %struct._Chv** null, %struct._Chv*** %heads21, align 8, !tbaa !0
+  %heads21 = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 1, !dbg !88
+  store %struct._Chv** null, %struct._Chv*** %heads21, align 8, !dbg !88, !tbaa !76
   br label %for.end
 
 for.body.lr.ph:                                   ; preds = %if.then8
-  %heads30 = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 1
-  br label %for.body
+  %heads30 = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 1, !dbg !90
+  br label %for.body, !dbg !93
 
 if.else22:                                        ; preds = %if.else17
-  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %conv23 = sext i32 %nlist to i64
-  %mul24 = shl nsw i64 %conv23, 3
-  %call25 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([47 x i8]* @.str3, i64 0, i64 0), i64 %mul24, i32 61, i8* getelementptr inbounds ([81 x i8]* @.str2, i64 0, i64 0)) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %4 = load %struct._IO_FILE** @stderr, align 8, !dbg !94, !tbaa !76
+  %conv23 = sext i32 %nlist to i64, !dbg !94
+  %mul24 = shl nsw i64 %conv23, 3, !dbg !94
+  %call25 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([47 x i8]* @.str3, i64 0, i64 0), i64 %mul24, i32 61, i8* getelementptr inbounds ([81 x i8]* @.str2, i64 0, i64 0)) #5, !dbg !94
+  tail call void @exit(i32 -1) #6, !dbg !94
+  unreachable, !dbg !94
 
 for.body:                                         ; preds = %for.body.for.body_crit_edge, %for.body.lr.ph
   %5 = phi %struct._Chv** [ %2, %for.body.lr.ph ], [ %.pre, %for.body.for.body_crit_edge ]
   %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body.for.body_crit_edge ]
-  %arrayidx = getelementptr inbounds %struct._Chv** %5, i64 %indvars.iv
-  store %struct._Chv* null, %struct._Chv** %arrayidx, align 8, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %nlist
-  br i1 %exitcond, label %for.end, label %for.body.for.body_crit_edge
+  %arrayidx = getelementptr inbounds %struct._Chv** %5, i64 %indvars.iv, !dbg !90
+  store %struct._Chv* null, %struct._Chv** %arrayidx, align 8, !dbg !90, !tbaa !76
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !93
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !93
+  %exitcond = icmp eq i32 %lftr.wideiv, %nlist, !dbg !93
+  br i1 %exitcond, label %for.end, label %for.body.for.body_crit_edge, !dbg !93
 
 for.body.for.body_crit_edge:                      ; preds = %for.body
-  %.pre = load %struct._Chv*** %heads30, align 8, !tbaa !0
-  br label %for.body
+  %.pre = load %struct._Chv*** %heads30, align 8, !dbg !90, !tbaa !76
+  br label %for.body, !dbg !93
 
 for.end:                                          ; preds = %for.body, %for.cond.preheader
-  %cmp31 = icmp eq i32* %counts, null
-  br i1 %cmp31, label %if.end37, label %if.then33
+  %cmp31 = icmp eq i32* %counts, null, !dbg !96
+  br i1 %cmp31, label %if.end37, label %if.then33, !dbg !96
 
 if.then33:                                        ; preds = %for.end
-  %call34 = tail call i32* @IVinit(i32 %nlist, i32 0) #4
-  %counts35 = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 2
-  store i32* %call34, i32** %counts35, align 8, !tbaa !0
-  tail call void @IVcopy(i32 %nlist, i32* %call34, i32* %counts) #4
-  br label %if.end37
+  %call34 = tail call i32* @IVinit(i32 %nlist, i32 0) #5, !dbg !97
+  %counts35 = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 2, !dbg !97
+  store i32* %call34, i32** %counts35, align 8, !dbg !97, !tbaa !76
+  tail call void @IVcopy(i32 %nlist, i32* %call34, i32* %counts) #5, !dbg !99
+  br label %if.end37, !dbg !100
 
 if.end37:                                         ; preds = %for.end, %if.then33
-  %cmp38 = icmp sgt i32 %lockflag, 0
-  br i1 %cmp38, label %if.then40, label %if.end43
+  %cmp38 = icmp sgt i32 %lockflag, 0, !dbg !101
+  br i1 %cmp38, label %if.then40, label %if.end43, !dbg !101
 
 if.then40:                                        ; preds = %if.end37
-  %call41 = tail call %struct._Lock* @Lock_new() #4
-  %lock = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 3
-  store %struct._Lock* %call41, %struct._Lock** %lock, align 8, !tbaa !0
-  tail call void @Lock_init(%struct._Lock* %call41, i32 %lockflag) #4
-  br label %if.end43
+  %call41 = tail call %struct._Lock* @Lock_new() #5, !dbg !102
+  %lock = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 3, !dbg !102
+  store %struct._Lock* %call41, %struct._Lock** %lock, align 8, !dbg !102, !tbaa !76
+  tail call void @Lock_init(%struct._Lock* %call41, i32 %lockflag) #5, !dbg !104
+  br label %if.end43, !dbg !105
 
 if.end43:                                         ; preds = %if.then40, %if.end37
-  %cmp44 = icmp eq i8* %flags, null
-  br i1 %cmp44, label %if.end50, label %if.then46
+  %cmp44 = icmp eq i8* %flags, null, !dbg !106
+  br i1 %cmp44, label %if.end50, label %if.then46, !dbg !106
 
 if.then46:                                        ; preds = %if.end43
-  %call47 = tail call i8* @CVinit(i32 %nlist, i8 signext 78) #4
-  %flags48 = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 4
-  store i8* %call47, i8** %flags48, align 8, !tbaa !0
-  tail call void @CVcopy(i32 %nlist, i8* %call47, i8* %flags) #4
-  br label %if.end50
+  %call47 = tail call i8* @CVinit(i32 %nlist, i8 signext 78) #5, !dbg !107
+  %flags48 = getelementptr inbounds %struct._ChvList* %chvlist, i64 0, i32 4, !dbg !107
+  store i8* %call47, i8** %flags48, align 8, !dbg !107, !tbaa !76
+  tail call void @CVcopy(i32 %nlist, i8* %call47, i8* %flags) #5, !dbg !109
+  br label %if.end50, !dbg !110
 
 if.end50:                                         ; preds = %if.end43, %if.then46
-  ret void
+  ret void, !dbg !111
 }

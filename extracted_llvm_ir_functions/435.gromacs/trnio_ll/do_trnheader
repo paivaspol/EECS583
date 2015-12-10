@@ -1,565 +1,577 @@
-define internal fastcc i32 @do_trnheader(i32 %fp, i32 %bRead, %struct.t_trnheader* %sh, i32* %bOK) #3 {
+define internal fastcc i32 @do_trnheader(i32 %fp, i32 %bRead, %struct.t_trnheader* %sh, i32* %bOK) #0 {
+entry:
   %buf = alloca [256 x i8], align 16
-  %1 = getelementptr inbounds [256 x i8]* %buf, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 256, i8* %1) #5
-  store i32 1, i32* %bOK, align 4, !tbaa !24
-  tail call void @gmx_fio_select(i32 %fp) #6
-  %2 = icmp ne i32 %bRead, 0
-  br i1 %2, label %3, label %7
+  call void @llvm.dbg.value(metadata !{i32 %fp}, i64 0, metadata !239), !dbg !300
+  call void @llvm.dbg.value(metadata !{i32 %bRead}, i64 0, metadata !240), !dbg !300
+  call void @llvm.dbg.value(metadata !{%struct.t_trnheader* %sh}, i64 0, metadata !241), !dbg !300
+  call void @llvm.dbg.value(metadata !{i32* %bOK}, i64 0, metadata !242), !dbg !300
+  %0 = getelementptr inbounds [256 x i8]* %buf, i64 0, i64 0, !dbg !301
+  call void @llvm.lifetime.start(i64 256, i8* %0) #4, !dbg !301
+  call void @llvm.dbg.declare(metadata !{[256 x i8]* %buf}, metadata !243), !dbg !301
+  store i32 1, i32* %bOK, align 4, !dbg !302, !tbaa !263
+  call void @gmx_fio_select(i32 %fp) #5, !dbg !303
+  %tobool = icmp ne i32 %bRead, 0, !dbg !304
+  br i1 %tobool, label %cond.true, label %cond.false, !dbg !304
 
-; <label>:3                                       ; preds = %0
-  %4 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !tbaa !25
-  %5 = tail call i32 %4(i8* bitcast (i32* @do_trnheader.magic to i8*), i32 1, i32 1, i8* getelementptr inbounds ([6 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 79) #6
-  %6 = icmp eq i32 %5, 0
-  br i1 %6, label %301, label %11
+cond.true:                                        ; preds = %entry
+  %1 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !dbg !304, !tbaa !305
+  %call = call i32 %1(i8* bitcast (i32* @do_trnheader.magic to i8*), i32 1, i32 1, i8* getelementptr inbounds ([6 x i8]* @.str23, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 79) #5, !dbg !304
+  %tobool1 = icmp eq i32 %call, 0, !dbg !304
+  br i1 %tobool1, label %cleanup, label %if.then5, !dbg !304
 
-; <label>:7                                       ; preds = %0
-  %8 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !25
-  %9 = tail call i32 %8(i8* bitcast (i32* @do_trnheader.magic to i8*), i32 1, i32 1, i8* getelementptr inbounds ([6 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 79) #6
-  %10 = icmp eq i32 %9, 0
-  br i1 %10, label %301, label %24
+cond.false:                                       ; preds = %entry
+  %2 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !dbg !304, !tbaa !305
+  %call2 = call i32 %2(i8* bitcast (i32* @do_trnheader.magic to i8*), i32 1, i32 1, i8* getelementptr inbounds ([6 x i8]* @.str23, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 79) #5, !dbg !304
+  %tobool3 = icmp eq i32 %call2, 0, !dbg !304
+  br i1 %tobool3, label %cleanup, label %if.else, !dbg !304
 
-; <label>:11                                      ; preds = %3
-  %12 = load i32* %bOK, align 4, !tbaa !24
-  %13 = icmp eq i32 %12, 0
-  br i1 %13, label %18, label %14
+if.then5:                                         ; preds = %cond.true
+  %3 = load i32* %bOK, align 4, !dbg !306, !tbaa !263
+  %tobool6317 = icmp eq i32 %3, 0, !dbg !306
+  br i1 %tobool6317, label %land.end, label %cond.end, !dbg !306
 
-; <label>:14                                      ; preds = %11
-  %15 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !tbaa !25
-  %16 = call i32 %15(i8* %1, i32 1, i32 7, i8* getelementptr inbounds ([4 x i8]* @.str14, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 83) #6
-  %17 = icmp ne i32 %16, 0
-  br label %18
+cond.end:                                         ; preds = %if.then5
+  %4 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !dbg !306, !tbaa !305
+  %call9 = call i32 %4(i8* %0, i32 1, i32 7, i8* getelementptr inbounds ([4 x i8]* @.str24, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 83) #5, !dbg !306
+  %tobool13 = icmp ne i32 %call9, 0, !dbg !306
+  br label %land.end
 
-; <label>:18                                      ; preds = %11, %14
-  %19 = phi i1 [ false, %11 ], [ %17, %14 ]
-  %20 = zext i1 %19 to i32
-  store i32 %20, i32* %bOK, align 4, !tbaa !24
+land.end:                                         ; preds = %if.then5, %cond.end
+  %5 = phi i1 [ false, %if.then5 ], [ %tobool13, %cond.end ]
+  %land.ext = zext i1 %5 to i32
+  store i32 %land.ext, i32* %bOK, align 4, !tbaa !263
   %.b = load i1* @do_trnheader.bFirst, align 1
-  br i1 %.b, label %34, label %21
+  br i1 %.b, label %if.end31, label %if.then15, !dbg !308
 
-; <label>:21                                      ; preds = %18
-  %22 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !25
-  %23 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %22, i8* getelementptr inbounds ([17 x i8]* @.str15, i64 0, i64 0), i8* %1) #6
+if.then15:                                        ; preds = %land.end
+  %6 = load %struct._IO_FILE** @stderr, align 8, !dbg !309, !tbaa !305
+  %call17 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %6, i8* getelementptr inbounds ([17 x i8]* @.str25, i64 0, i64 0), i8* %0) #5, !dbg !309
   store i1 true, i1* @do_trnheader.bFirst, align 1
-  %.pr = load i32* %bOK, align 4, !tbaa !24
-  br label %34
-
-; <label>:24                                      ; preds = %7
-  %25 = load i32* %bOK, align 4, !tbaa !24
-  %26 = icmp eq i32 %25, 0
-  br i1 %26, label %31, label %27
-
-; <label>:27                                      ; preds = %24
-  %28 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !25
-  %29 = tail call i32 %28(i8* getelementptr inbounds ([13 x i8]* @.str11, i64 0, i64 0), i32 1, i32 7, i8* getelementptr inbounds ([8 x i8]* @.str16, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 90) #6
-  %30 = icmp ne i32 %29, 0
-  br label %31
-
-; <label>:31                                      ; preds = %24, %27
-  %32 = phi i1 [ false, %24 ], [ %30, %27 ]
-  %33 = zext i1 %32 to i32
-  store i32 %33, i32* %bOK, align 4, !tbaa !24
-  br label %34
-
-; <label>:34                                      ; preds = %18, %21, %31
-  %35 = phi i32 [ %20, %18 ], [ %.pr, %21 ], [ %33, %31 ]
-  %36 = icmp eq i32 %35, 0
-  br i1 %36, label %.thread, label %37
-
-.thread:                                          ; preds = %34
-  store i32 0, i32* %bOK, align 4, !tbaa !24
-  br label %.thread1
-
-; <label>:37                                      ; preds = %34
-  br i1 %2, label %38, label %42
-
-; <label>:38                                      ; preds = %37
-  %39 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !tbaa !25
-  %40 = bitcast %struct.t_trnheader* %sh to i8*
-  %41 = call i32 %39(i8* %40, i32 1, i32 1, i8* getelementptr inbounds ([12 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 91) #6
-  br label %46
-
-; <label>:42                                      ; preds = %37
-  %43 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !25
-  %44 = bitcast %struct.t_trnheader* %sh to i8*
-  %45 = call i32 %43(i8* %44, i32 1, i32 1, i8* getelementptr inbounds ([12 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 91) #6
-  br label %46
-
-; <label>:46                                      ; preds = %38, %42
-  %47 = phi i32 [ %41, %38 ], [ %45, %42 ]
-  %48 = icmp ne i32 %47, 0
-  %49 = zext i1 %48 to i32
-  store i32 %49, i32* %bOK, align 4, !tbaa !24
-  br i1 %48, label %50, label %.thread1
-
-; <label>:50                                      ; preds = %46
-  br i1 %2, label %51, label %56
-
-; <label>:51                                      ; preds = %50
-  %52 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !tbaa !25
-  %53 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 1
-  %54 = bitcast i32* %53 to i8*
-  %55 = call i32 %52(i8* %54, i32 1, i32 1, i8* getelementptr inbounds ([11 x i8]* @.str18, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 92) #6
-  br label %61
-
-; <label>:56                                      ; preds = %50
-  %57 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !25
-  %58 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 1
-  %59 = bitcast i32* %58 to i8*
-  %60 = call i32 %57(i8* %59, i32 1, i32 1, i8* getelementptr inbounds ([11 x i8]* @.str18, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 92) #6
-  br label %61
-
-.thread1:                                         ; preds = %46, %.thread
-  store i32 0, i32* %bOK, align 4, !tbaa !24
-  br label %.thread3
-
-; <label>:61                                      ; preds = %51, %56
-  %62 = phi i32 [ %55, %51 ], [ %60, %56 ]
-  %63 = icmp ne i32 %62, 0
-  %64 = zext i1 %63 to i32
-  store i32 %64, i32* %bOK, align 4, !tbaa !24
-  br i1 %63, label %65, label %.thread3
-
-; <label>:65                                      ; preds = %61
-  br i1 %2, label %66, label %71
-
-; <label>:66                                      ; preds = %65
-  %67 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !tbaa !25
-  %68 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 2
-  %69 = bitcast i32* %68 to i8*
-  %70 = call i32 %67(i8* %69, i32 1, i32 1, i8* getelementptr inbounds ([13 x i8]* @.str19, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 93) #6
-  br label %76
-
-; <label>:71                                      ; preds = %65
-  %72 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !25
-  %73 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 2
-  %74 = bitcast i32* %73 to i8*
-  %75 = call i32 %72(i8* %74, i32 1, i32 1, i8* getelementptr inbounds ([13 x i8]* @.str19, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 93) #6
-  br label %76
-
-.thread3:                                         ; preds = %61, %.thread1
-  store i32 0, i32* %bOK, align 4, !tbaa !24
-  br label %.thread5
-
-; <label>:76                                      ; preds = %66, %71
-  %77 = phi i32 [ %70, %66 ], [ %75, %71 ]
-  %78 = icmp ne i32 %77, 0
-  %79 = zext i1 %78 to i32
-  store i32 %79, i32* %bOK, align 4, !tbaa !24
-  br i1 %78, label %80, label %.thread5
-
-; <label>:80                                      ; preds = %76
-  br i1 %2, label %81, label %86
-
-; <label>:81                                      ; preds = %80
-  %82 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !tbaa !25
-  %83 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 3
-  %84 = bitcast i32* %83 to i8*
-  %85 = call i32 %82(i8* %84, i32 1, i32 1, i8* getelementptr inbounds ([13 x i8]* @.str20, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 94) #6
-  br label %91
-
-; <label>:86                                      ; preds = %80
-  %87 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !25
-  %88 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 3
-  %89 = bitcast i32* %88 to i8*
-  %90 = call i32 %87(i8* %89, i32 1, i32 1, i8* getelementptr inbounds ([13 x i8]* @.str20, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 94) #6
-  br label %91
-
-.thread5:                                         ; preds = %76, %.thread3
-  store i32 0, i32* %bOK, align 4, !tbaa !24
-  br label %.thread7
-
-; <label>:91                                      ; preds = %81, %86
-  %92 = phi i32 [ %85, %81 ], [ %90, %86 ]
-  %93 = icmp ne i32 %92, 0
-  %94 = zext i1 %93 to i32
-  store i32 %94, i32* %bOK, align 4, !tbaa !24
-  br i1 %93, label %95, label %.thread7
-
-; <label>:95                                      ; preds = %91
-  br i1 %2, label %96, label %101
-
-; <label>:96                                      ; preds = %95
-  %97 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !tbaa !25
-  %98 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 4
-  %99 = bitcast i32* %98 to i8*
-  %100 = call i32 %97(i8* %99, i32 1, i32 1, i8* getelementptr inbounds ([14 x i8]* @.str21, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 95) #6
-  br label %106
-
-; <label>:101                                     ; preds = %95
-  %102 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !25
-  %103 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 4
-  %104 = bitcast i32* %103 to i8*
-  %105 = call i32 %102(i8* %104, i32 1, i32 1, i8* getelementptr inbounds ([14 x i8]* @.str21, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 95) #6
-  br label %106
-
-.thread7:                                         ; preds = %91, %.thread5
-  store i32 0, i32* %bOK, align 4, !tbaa !24
-  br label %.thread9
-
-; <label>:106                                     ; preds = %96, %101
-  %107 = phi i32 [ %100, %96 ], [ %105, %101 ]
-  %108 = icmp ne i32 %107, 0
-  %109 = zext i1 %108 to i32
-  store i32 %109, i32* %bOK, align 4, !tbaa !24
-  br i1 %108, label %110, label %.thread9
-
-; <label>:110                                     ; preds = %106
-  br i1 %2, label %111, label %116
-
-; <label>:111                                     ; preds = %110
-  %112 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !tbaa !25
-  %113 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 5
-  %114 = bitcast i32* %113 to i8*
-  %115 = call i32 %112(i8* %114, i32 1, i32 1, i8* getelementptr inbounds ([13 x i8]* @.str22, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 96) #6
-  br label %121
-
-; <label>:116                                     ; preds = %110
-  %117 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !25
-  %118 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 5
-  %119 = bitcast i32* %118 to i8*
-  %120 = call i32 %117(i8* %119, i32 1, i32 1, i8* getelementptr inbounds ([13 x i8]* @.str22, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 96) #6
-  br label %121
-
-.thread9:                                         ; preds = %106, %.thread7
-  store i32 0, i32* %bOK, align 4, !tbaa !24
-  br label %.thread11
-
-; <label>:121                                     ; preds = %111, %116
-  %122 = phi i32 [ %115, %111 ], [ %120, %116 ]
-  %123 = icmp ne i32 %122, 0
-  %124 = zext i1 %123 to i32
-  store i32 %124, i32* %bOK, align 4, !tbaa !24
-  br i1 %123, label %125, label %.thread11
-
-; <label>:125                                     ; preds = %121
-  br i1 %2, label %126, label %131
-
-; <label>:126                                     ; preds = %125
-  %127 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !tbaa !25
-  %128 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 6
-  %129 = bitcast i32* %128 to i8*
-  %130 = call i32 %127(i8* %129, i32 1, i32 1, i8* getelementptr inbounds ([13 x i8]* @.str23, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 97) #6
-  br label %136
-
-; <label>:131                                     ; preds = %125
-  %132 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !25
-  %133 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 6
-  %134 = bitcast i32* %133 to i8*
-  %135 = call i32 %132(i8* %134, i32 1, i32 1, i8* getelementptr inbounds ([13 x i8]* @.str23, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 97) #6
-  br label %136
-
-.thread11:                                        ; preds = %121, %.thread9
-  store i32 0, i32* %bOK, align 4, !tbaa !24
-  br label %.thread13
-
-; <label>:136                                     ; preds = %126, %131
-  %137 = phi i32 [ %130, %126 ], [ %135, %131 ]
-  %138 = icmp ne i32 %137, 0
-  %139 = zext i1 %138 to i32
-  store i32 %139, i32* %bOK, align 4, !tbaa !24
-  br i1 %138, label %140, label %.thread13
-
-; <label>:140                                     ; preds = %136
-  br i1 %2, label %141, label %146
-
-; <label>:141                                     ; preds = %140
-  %142 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !tbaa !25
-  %143 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 7
-  %144 = bitcast i32* %143 to i8*
-  %145 = call i32 %142(i8* %144, i32 1, i32 1, i8* getelementptr inbounds ([11 x i8]* @.str24, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 98) #6
-  br label %151
-
-; <label>:146                                     ; preds = %140
-  %147 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !25
-  %148 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 7
-  %149 = bitcast i32* %148 to i8*
-  %150 = call i32 %147(i8* %149, i32 1, i32 1, i8* getelementptr inbounds ([11 x i8]* @.str24, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 98) #6
-  br label %151
-
-.thread13:                                        ; preds = %136, %.thread11
-  store i32 0, i32* %bOK, align 4, !tbaa !24
-  br label %.thread15
-
-; <label>:151                                     ; preds = %141, %146
-  %152 = phi i32 [ %145, %141 ], [ %150, %146 ]
-  %153 = icmp ne i32 %152, 0
-  %154 = zext i1 %153 to i32
-  store i32 %154, i32* %bOK, align 4, !tbaa !24
-  br i1 %153, label %155, label %.thread15
-
-; <label>:155                                     ; preds = %151
-  br i1 %2, label %156, label %161
-
-; <label>:156                                     ; preds = %155
-  %157 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !tbaa !25
-  %158 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 8
-  %159 = bitcast i32* %158 to i8*
-  %160 = call i32 %157(i8* %159, i32 1, i32 1, i8* getelementptr inbounds ([11 x i8]* @.str25, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 99) #6
-  br label %166
-
-; <label>:161                                     ; preds = %155
-  %162 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !25
-  %163 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 8
-  %164 = bitcast i32* %163 to i8*
-  %165 = call i32 %162(i8* %164, i32 1, i32 1, i8* getelementptr inbounds ([11 x i8]* @.str25, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 99) #6
-  br label %166
-
-.thread15:                                        ; preds = %151, %.thread13
-  store i32 0, i32* %bOK, align 4, !tbaa !24
-  br label %.thread17
-
-; <label>:166                                     ; preds = %156, %161
-  %167 = phi i32 [ %160, %156 ], [ %165, %161 ]
-  %168 = icmp ne i32 %167, 0
-  %169 = zext i1 %168 to i32
-  store i32 %169, i32* %bOK, align 4, !tbaa !24
-  br i1 %168, label %170, label %.thread17
-
-; <label>:170                                     ; preds = %166
-  br i1 %2, label %171, label %176
-
-; <label>:171                                     ; preds = %170
-  %172 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !tbaa !25
-  %173 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 9
-  %174 = bitcast i32* %173 to i8*
-  %175 = call i32 %172(i8* %174, i32 1, i32 1, i8* getelementptr inbounds ([11 x i8]* @.str26, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 100) #6
-  br label %181
-
-; <label>:176                                     ; preds = %170
-  %177 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !25
-  %178 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 9
-  %179 = bitcast i32* %178 to i8*
-  %180 = call i32 %177(i8* %179, i32 1, i32 1, i8* getelementptr inbounds ([11 x i8]* @.str26, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 100) #6
-  br label %181
-
-.thread17:                                        ; preds = %166, %.thread15
-  store i32 0, i32* %bOK, align 4, !tbaa !24
-  br label %301
-
-; <label>:181                                     ; preds = %171, %176
-  %182 = phi i32 [ %175, %171 ], [ %180, %176 ]
-  %183 = icmp ne i32 %182, 0
-  %184 = zext i1 %183 to i32
-  store i32 %184, i32* %bOK, align 4, !tbaa !24
-  br i1 %183, label %185, label %301
-
-; <label>:185                                     ; preds = %181
-  %186 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 2
-  %187 = load i32* %186, align 4, !tbaa !14
-  %188 = icmp eq i32 %187, 0
-  br i1 %188, label %191, label %189
-
-; <label>:189                                     ; preds = %185
-  %190 = sdiv i32 %187, 9
-  br label %218
-
-; <label>:191                                     ; preds = %185
-  %192 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 7
-  %193 = load i32* %192, align 4, !tbaa !17
-  %194 = icmp eq i32 %193, 0
-  br i1 %194, label %200, label %195
-
-; <label>:195                                     ; preds = %191
-  %196 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 10
-  %197 = load i32* %196, align 4, !tbaa !20
-  %198 = mul nsw i32 %197, 3
-  %199 = sdiv i32 %193, %198
-  br label %218
-
-; <label>:200                                     ; preds = %191
-  %201 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 8
-  %202 = load i32* %201, align 4, !tbaa !18
-  %203 = icmp eq i32 %202, 0
-  br i1 %203, label %209, label %204
-
-; <label>:204                                     ; preds = %200
-  %205 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 10
-  %206 = load i32* %205, align 4, !tbaa !20
-  %207 = mul nsw i32 %206, 3
-  %208 = sdiv i32 %202, %207
-  br label %218
-
-; <label>:209                                     ; preds = %200
-  %210 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 9
-  %211 = load i32* %210, align 4, !tbaa !19
-  %212 = icmp eq i32 %211, 0
-  br i1 %212, label %.thread.i, label %213
-
-; <label>:213                                     ; preds = %209
-  %214 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 10
-  %215 = load i32* %214, align 4, !tbaa !20
-  %216 = mul nsw i32 %215, 3
-  %217 = sdiv i32 %211, %216
-  br label %218
-
-.thread.i:                                        ; preds = %209
-  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([47 x i8]* @.str32, i64 0, i64 0)) #6
-  br label %219
-
-; <label>:218                                     ; preds = %213, %204, %195, %189
-  %nflsize.0.i = phi i32 [ %190, %189 ], [ %199, %195 ], [ %208, %204 ], [ %217, %213 ]
-  switch i32 %nflsize.0.i, label %219 [
+  %.pr = load i32* %bOK, align 4, !dbg !311, !tbaa !263
+  br label %if.end31, !dbg !312
+
+if.else:                                          ; preds = %cond.false
+  %7 = load i32* %bOK, align 4, !dbg !306, !tbaa !263
+  %tobool6 = icmp eq i32 %7, 0, !dbg !306
+  br i1 %tobool6, label %land.end29, label %cond.end26, !dbg !313
+
+cond.end26:                                       ; preds = %if.else
+  %8 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !dbg !313, !tbaa !305
+  %call25 = call i32 %8(i8* getelementptr inbounds ([13 x i8]* @.str22, i64 0, i64 0), i32 1, i32 7, i8* getelementptr inbounds ([8 x i8]* @.str26, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 90) #5, !dbg !313
+  %tobool28 = icmp ne i32 %call25, 0, !dbg !313
+  br label %land.end29
+
+land.end29:                                       ; preds = %if.else, %cond.end26
+  %9 = phi i1 [ false, %if.else ], [ %tobool28, %cond.end26 ]
+  %land.ext30 = zext i1 %9 to i32
+  store i32 %land.ext30, i32* %bOK, align 4, !tbaa !263
+  br label %if.end31
+
+if.end31:                                         ; preds = %land.end, %if.then15, %land.end29
+  %10 = phi i32 [ %land.ext, %land.end ], [ %.pr, %if.then15 ], [ %land.ext30, %land.end29 ], !dbg !311
+  %tobool32 = icmp eq i32 %10, 0, !dbg !311
+  br i1 %tobool32, label %land.end43.thread, label %land.rhs33, !dbg !311
+
+land.end43.thread:                                ; preds = %if.end31
+  store i32 0, i32* %bOK, align 4, !tbaa !263
+  br label %land.end56.thread, !dbg !314
+
+land.rhs33:                                       ; preds = %if.end31
+  br i1 %tobool, label %cond.true35, label %cond.false37, !dbg !311
+
+cond.true35:                                      ; preds = %land.rhs33
+  %11 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !dbg !311, !tbaa !305
+  %12 = bitcast %struct.t_trnheader* %sh to i8*, !dbg !311
+  %call36 = call i32 %11(i8* %12, i32 1, i32 1, i8* getelementptr inbounds ([12 x i8]* @.str27, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 91) #5, !dbg !311
+  br label %land.end43, !dbg !311
+
+cond.false37:                                     ; preds = %land.rhs33
+  %13 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !dbg !311, !tbaa !305
+  %14 = bitcast %struct.t_trnheader* %sh to i8*, !dbg !311
+  %call39 = call i32 %13(i8* %14, i32 1, i32 1, i8* getelementptr inbounds ([12 x i8]* @.str27, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 91) #5, !dbg !311
+  br label %land.end43, !dbg !311
+
+land.end43:                                       ; preds = %cond.true35, %cond.false37
+  %cond41 = phi i32 [ %call36, %cond.true35 ], [ %call39, %cond.false37 ], !dbg !311
+  %tobool42 = icmp ne i32 %cond41, 0, !dbg !311
+  %land.ext44 = zext i1 %tobool42 to i32
+  store i32 %land.ext44, i32* %bOK, align 4, !tbaa !263
+  br i1 %tobool42, label %land.rhs46, label %land.end56.thread, !dbg !314
+
+land.rhs46:                                       ; preds = %land.end43
+  br i1 %tobool, label %cond.true48, label %cond.false50, !dbg !314
+
+cond.true48:                                      ; preds = %land.rhs46
+  %15 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !dbg !314, !tbaa !305
+  %e_size = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 1, !dbg !314
+  %16 = bitcast i32* %e_size to i8*, !dbg !314
+  %call49 = call i32 %15(i8* %16, i32 1, i32 1, i8* getelementptr inbounds ([11 x i8]* @.str28, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 92) #5, !dbg !314
+  br label %land.end56, !dbg !314
+
+cond.false50:                                     ; preds = %land.rhs46
+  %17 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !dbg !314, !tbaa !305
+  %e_size51 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 1, !dbg !314
+  %18 = bitcast i32* %e_size51 to i8*, !dbg !314
+  %call52 = call i32 %17(i8* %18, i32 1, i32 1, i8* getelementptr inbounds ([11 x i8]* @.str28, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 92) #5, !dbg !314
+  br label %land.end56, !dbg !314
+
+land.end56.thread:                                ; preds = %land.end43, %land.end43.thread
+  store i32 0, i32* %bOK, align 4, !tbaa !263
+  br label %land.end69.thread, !dbg !315
+
+land.end56:                                       ; preds = %cond.true48, %cond.false50
+  %cond54 = phi i32 [ %call49, %cond.true48 ], [ %call52, %cond.false50 ], !dbg !314
+  %tobool55 = icmp ne i32 %cond54, 0, !dbg !314
+  %land.ext57 = zext i1 %tobool55 to i32
+  store i32 %land.ext57, i32* %bOK, align 4, !tbaa !263
+  br i1 %tobool55, label %land.rhs59, label %land.end69.thread, !dbg !315
+
+land.rhs59:                                       ; preds = %land.end56
+  br i1 %tobool, label %cond.true61, label %cond.false63, !dbg !315
+
+cond.true61:                                      ; preds = %land.rhs59
+  %19 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !dbg !315, !tbaa !305
+  %box_size = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 2, !dbg !315
+  %20 = bitcast i32* %box_size to i8*, !dbg !315
+  %call62 = call i32 %19(i8* %20, i32 1, i32 1, i8* getelementptr inbounds ([13 x i8]* @.str29, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 93) #5, !dbg !315
+  br label %land.end69, !dbg !315
+
+cond.false63:                                     ; preds = %land.rhs59
+  %21 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !dbg !315, !tbaa !305
+  %box_size64 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 2, !dbg !315
+  %22 = bitcast i32* %box_size64 to i8*, !dbg !315
+  %call65 = call i32 %21(i8* %22, i32 1, i32 1, i8* getelementptr inbounds ([13 x i8]* @.str29, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 93) #5, !dbg !315
+  br label %land.end69, !dbg !315
+
+land.end69.thread:                                ; preds = %land.end56, %land.end56.thread
+  store i32 0, i32* %bOK, align 4, !tbaa !263
+  br label %land.end82.thread, !dbg !316
+
+land.end69:                                       ; preds = %cond.true61, %cond.false63
+  %cond67 = phi i32 [ %call62, %cond.true61 ], [ %call65, %cond.false63 ], !dbg !315
+  %tobool68 = icmp ne i32 %cond67, 0, !dbg !315
+  %land.ext70 = zext i1 %tobool68 to i32
+  store i32 %land.ext70, i32* %bOK, align 4, !tbaa !263
+  br i1 %tobool68, label %land.rhs72, label %land.end82.thread, !dbg !316
+
+land.rhs72:                                       ; preds = %land.end69
+  br i1 %tobool, label %cond.true74, label %cond.false76, !dbg !316
+
+cond.true74:                                      ; preds = %land.rhs72
+  %23 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !dbg !316, !tbaa !305
+  %vir_size = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 3, !dbg !316
+  %24 = bitcast i32* %vir_size to i8*, !dbg !316
+  %call75 = call i32 %23(i8* %24, i32 1, i32 1, i8* getelementptr inbounds ([13 x i8]* @.str30, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 94) #5, !dbg !316
+  br label %land.end82, !dbg !316
+
+cond.false76:                                     ; preds = %land.rhs72
+  %25 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !dbg !316, !tbaa !305
+  %vir_size77 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 3, !dbg !316
+  %26 = bitcast i32* %vir_size77 to i8*, !dbg !316
+  %call78 = call i32 %25(i8* %26, i32 1, i32 1, i8* getelementptr inbounds ([13 x i8]* @.str30, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 94) #5, !dbg !316
+  br label %land.end82, !dbg !316
+
+land.end82.thread:                                ; preds = %land.end69, %land.end69.thread
+  store i32 0, i32* %bOK, align 4, !tbaa !263
+  br label %land.end95.thread, !dbg !317
+
+land.end82:                                       ; preds = %cond.true74, %cond.false76
+  %cond80 = phi i32 [ %call75, %cond.true74 ], [ %call78, %cond.false76 ], !dbg !316
+  %tobool81 = icmp ne i32 %cond80, 0, !dbg !316
+  %land.ext83 = zext i1 %tobool81 to i32
+  store i32 %land.ext83, i32* %bOK, align 4, !tbaa !263
+  br i1 %tobool81, label %land.rhs85, label %land.end95.thread, !dbg !317
+
+land.rhs85:                                       ; preds = %land.end82
+  br i1 %tobool, label %cond.true87, label %cond.false89, !dbg !317
+
+cond.true87:                                      ; preds = %land.rhs85
+  %27 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !dbg !317, !tbaa !305
+  %pres_size = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 4, !dbg !317
+  %28 = bitcast i32* %pres_size to i8*, !dbg !317
+  %call88 = call i32 %27(i8* %28, i32 1, i32 1, i8* getelementptr inbounds ([14 x i8]* @.str31, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 95) #5, !dbg !317
+  br label %land.end95, !dbg !317
+
+cond.false89:                                     ; preds = %land.rhs85
+  %29 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !dbg !317, !tbaa !305
+  %pres_size90 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 4, !dbg !317
+  %30 = bitcast i32* %pres_size90 to i8*, !dbg !317
+  %call91 = call i32 %29(i8* %30, i32 1, i32 1, i8* getelementptr inbounds ([14 x i8]* @.str31, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 95) #5, !dbg !317
+  br label %land.end95, !dbg !317
+
+land.end95.thread:                                ; preds = %land.end82, %land.end82.thread
+  store i32 0, i32* %bOK, align 4, !tbaa !263
+  br label %land.end108.thread, !dbg !318
+
+land.end95:                                       ; preds = %cond.true87, %cond.false89
+  %cond93 = phi i32 [ %call88, %cond.true87 ], [ %call91, %cond.false89 ], !dbg !317
+  %tobool94 = icmp ne i32 %cond93, 0, !dbg !317
+  %land.ext96 = zext i1 %tobool94 to i32
+  store i32 %land.ext96, i32* %bOK, align 4, !tbaa !263
+  br i1 %tobool94, label %land.rhs98, label %land.end108.thread, !dbg !318
+
+land.rhs98:                                       ; preds = %land.end95
+  br i1 %tobool, label %cond.true100, label %cond.false102, !dbg !318
+
+cond.true100:                                     ; preds = %land.rhs98
+  %31 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !dbg !318, !tbaa !305
+  %top_size = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 5, !dbg !318
+  %32 = bitcast i32* %top_size to i8*, !dbg !318
+  %call101 = call i32 %31(i8* %32, i32 1, i32 1, i8* getelementptr inbounds ([13 x i8]* @.str32, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 96) #5, !dbg !318
+  br label %land.end108, !dbg !318
+
+cond.false102:                                    ; preds = %land.rhs98
+  %33 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !dbg !318, !tbaa !305
+  %top_size103 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 5, !dbg !318
+  %34 = bitcast i32* %top_size103 to i8*, !dbg !318
+  %call104 = call i32 %33(i8* %34, i32 1, i32 1, i8* getelementptr inbounds ([13 x i8]* @.str32, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 96) #5, !dbg !318
+  br label %land.end108, !dbg !318
+
+land.end108.thread:                               ; preds = %land.end95, %land.end95.thread
+  store i32 0, i32* %bOK, align 4, !tbaa !263
+  br label %land.end121.thread, !dbg !319
+
+land.end108:                                      ; preds = %cond.true100, %cond.false102
+  %cond106 = phi i32 [ %call101, %cond.true100 ], [ %call104, %cond.false102 ], !dbg !318
+  %tobool107 = icmp ne i32 %cond106, 0, !dbg !318
+  %land.ext109 = zext i1 %tobool107 to i32
+  store i32 %land.ext109, i32* %bOK, align 4, !tbaa !263
+  br i1 %tobool107, label %land.rhs111, label %land.end121.thread, !dbg !319
+
+land.rhs111:                                      ; preds = %land.end108
+  br i1 %tobool, label %cond.true113, label %cond.false115, !dbg !319
+
+cond.true113:                                     ; preds = %land.rhs111
+  %35 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !dbg !319, !tbaa !305
+  %sym_size = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 6, !dbg !319
+  %36 = bitcast i32* %sym_size to i8*, !dbg !319
+  %call114 = call i32 %35(i8* %36, i32 1, i32 1, i8* getelementptr inbounds ([13 x i8]* @.str33, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 97) #5, !dbg !319
+  br label %land.end121, !dbg !319
+
+cond.false115:                                    ; preds = %land.rhs111
+  %37 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !dbg !319, !tbaa !305
+  %sym_size116 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 6, !dbg !319
+  %38 = bitcast i32* %sym_size116 to i8*, !dbg !319
+  %call117 = call i32 %37(i8* %38, i32 1, i32 1, i8* getelementptr inbounds ([13 x i8]* @.str33, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 97) #5, !dbg !319
+  br label %land.end121, !dbg !319
+
+land.end121.thread:                               ; preds = %land.end108, %land.end108.thread
+  store i32 0, i32* %bOK, align 4, !tbaa !263
+  br label %land.end134.thread, !dbg !320
+
+land.end121:                                      ; preds = %cond.true113, %cond.false115
+  %cond119 = phi i32 [ %call114, %cond.true113 ], [ %call117, %cond.false115 ], !dbg !319
+  %tobool120 = icmp ne i32 %cond119, 0, !dbg !319
+  %land.ext122 = zext i1 %tobool120 to i32
+  store i32 %land.ext122, i32* %bOK, align 4, !tbaa !263
+  br i1 %tobool120, label %land.rhs124, label %land.end134.thread, !dbg !320
+
+land.rhs124:                                      ; preds = %land.end121
+  br i1 %tobool, label %cond.true126, label %cond.false128, !dbg !320
+
+cond.true126:                                     ; preds = %land.rhs124
+  %39 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !dbg !320, !tbaa !305
+  %x_size = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 7, !dbg !320
+  %40 = bitcast i32* %x_size to i8*, !dbg !320
+  %call127 = call i32 %39(i8* %40, i32 1, i32 1, i8* getelementptr inbounds ([11 x i8]* @.str34, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 98) #5, !dbg !320
+  br label %land.end134, !dbg !320
+
+cond.false128:                                    ; preds = %land.rhs124
+  %41 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !dbg !320, !tbaa !305
+  %x_size129 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 7, !dbg !320
+  %42 = bitcast i32* %x_size129 to i8*, !dbg !320
+  %call130 = call i32 %41(i8* %42, i32 1, i32 1, i8* getelementptr inbounds ([11 x i8]* @.str34, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 98) #5, !dbg !320
+  br label %land.end134, !dbg !320
+
+land.end134.thread:                               ; preds = %land.end121, %land.end121.thread
+  store i32 0, i32* %bOK, align 4, !tbaa !263
+  br label %land.end147.thread, !dbg !321
+
+land.end134:                                      ; preds = %cond.true126, %cond.false128
+  %cond132 = phi i32 [ %call127, %cond.true126 ], [ %call130, %cond.false128 ], !dbg !320
+  %tobool133 = icmp ne i32 %cond132, 0, !dbg !320
+  %land.ext135 = zext i1 %tobool133 to i32
+  store i32 %land.ext135, i32* %bOK, align 4, !tbaa !263
+  br i1 %tobool133, label %land.rhs137, label %land.end147.thread, !dbg !321
+
+land.rhs137:                                      ; preds = %land.end134
+  br i1 %tobool, label %cond.true139, label %cond.false141, !dbg !321
+
+cond.true139:                                     ; preds = %land.rhs137
+  %43 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !dbg !321, !tbaa !305
+  %v_size = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 8, !dbg !321
+  %44 = bitcast i32* %v_size to i8*, !dbg !321
+  %call140 = call i32 %43(i8* %44, i32 1, i32 1, i8* getelementptr inbounds ([11 x i8]* @.str35, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 99) #5, !dbg !321
+  br label %land.end147, !dbg !321
+
+cond.false141:                                    ; preds = %land.rhs137
+  %45 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !dbg !321, !tbaa !305
+  %v_size142 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 8, !dbg !321
+  %46 = bitcast i32* %v_size142 to i8*, !dbg !321
+  %call143 = call i32 %45(i8* %46, i32 1, i32 1, i8* getelementptr inbounds ([11 x i8]* @.str35, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 99) #5, !dbg !321
+  br label %land.end147, !dbg !321
+
+land.end147.thread:                               ; preds = %land.end134, %land.end134.thread
+  store i32 0, i32* %bOK, align 4, !tbaa !263
+  br label %land.end160.thread, !dbg !322
+
+land.end147:                                      ; preds = %cond.true139, %cond.false141
+  %cond145 = phi i32 [ %call140, %cond.true139 ], [ %call143, %cond.false141 ], !dbg !321
+  %tobool146 = icmp ne i32 %cond145, 0, !dbg !321
+  %land.ext148 = zext i1 %tobool146 to i32
+  store i32 %land.ext148, i32* %bOK, align 4, !tbaa !263
+  br i1 %tobool146, label %land.rhs150, label %land.end160.thread, !dbg !322
+
+land.rhs150:                                      ; preds = %land.end147
+  br i1 %tobool, label %cond.true152, label %cond.false154, !dbg !322
+
+cond.true152:                                     ; preds = %land.rhs150
+  %47 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !dbg !322, !tbaa !305
+  %f_size = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 9, !dbg !322
+  %48 = bitcast i32* %f_size to i8*, !dbg !322
+  %call153 = call i32 %47(i8* %48, i32 1, i32 1, i8* getelementptr inbounds ([11 x i8]* @.str36, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 100) #5, !dbg !322
+  br label %land.end160, !dbg !322
+
+cond.false154:                                    ; preds = %land.rhs150
+  %49 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !dbg !322, !tbaa !305
+  %f_size155 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 9, !dbg !322
+  %50 = bitcast i32* %f_size155 to i8*, !dbg !322
+  %call156 = call i32 %49(i8* %50, i32 1, i32 1, i8* getelementptr inbounds ([11 x i8]* @.str36, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 100) #5, !dbg !322
+  br label %land.end160, !dbg !322
+
+land.end160.thread:                               ; preds = %land.end147, %land.end147.thread
+  store i32 0, i32* %bOK, align 4, !tbaa !263
+  br label %cleanup, !dbg !323
+
+land.end160:                                      ; preds = %cond.true152, %cond.false154
+  %cond158 = phi i32 [ %call153, %cond.true152 ], [ %call156, %cond.false154 ], !dbg !322
+  %tobool159 = icmp ne i32 %cond158, 0, !dbg !322
+  %land.ext161 = zext i1 %tobool159 to i32
+  store i32 %land.ext161, i32* %bOK, align 4, !tbaa !263
+  br i1 %tobool159, label %if.end164, label %cleanup, !dbg !323
+
+if.end164:                                        ; preds = %land.end160
+  call void @llvm.dbg.value(metadata !{%struct.t_trnheader* %sh}, i64 0, metadata !324) #4, !dbg !326
+  call void @llvm.dbg.value(metadata !15, i64 0, metadata !327) #4, !dbg !328
+  %box_size.i = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 2, !dbg !329
+  %51 = load i32* %box_size.i, align 4, !dbg !329, !tbaa !263
+  %tobool.i = icmp eq i32 %51, 0, !dbg !329
+  br i1 %tobool.i, label %if.else.i, label %if.then.i, !dbg !329
+
+if.then.i:                                        ; preds = %if.end164
+  %div.i = sdiv i32 %51, 9, !dbg !330
+  call void @llvm.dbg.value(metadata !{i32 %div.i}, i64 0, metadata !327) #4, !dbg !330
+  br label %if.end23.i, !dbg !330
+
+if.else.i:                                        ; preds = %if.end164
+  %x_size.i = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 7, !dbg !331
+  %52 = load i32* %x_size.i, align 4, !dbg !331, !tbaa !263
+  %tobool2.i = icmp eq i32 %52, 0, !dbg !331
+  br i1 %tobool2.i, label %if.else6.i, label %if.then3.i, !dbg !331
+
+if.then3.i:                                       ; preds = %if.else.i
+  %natoms.i = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 10, !dbg !332
+  %53 = load i32* %natoms.i, align 4, !dbg !332, !tbaa !263
+  %mul.i = mul nsw i32 %53, 3, !dbg !332
+  %div5.i = sdiv i32 %52, %mul.i, !dbg !332
+  call void @llvm.dbg.value(metadata !{i32 %div5.i}, i64 0, metadata !327) #4, !dbg !332
+  br label %if.end23.i, !dbg !332
+
+if.else6.i:                                       ; preds = %if.else.i
+  %v_size.i = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 8, !dbg !333
+  %54 = load i32* %v_size.i, align 4, !dbg !333, !tbaa !263
+  %tobool7.i = icmp eq i32 %54, 0, !dbg !333
+  br i1 %tobool7.i, label %if.else13.i, label %if.then8.i, !dbg !333
+
+if.then8.i:                                       ; preds = %if.else6.i
+  %natoms10.i = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 10, !dbg !334
+  %55 = load i32* %natoms10.i, align 4, !dbg !334, !tbaa !263
+  %mul11.i = mul nsw i32 %55, 3, !dbg !334
+  %div12.i = sdiv i32 %54, %mul11.i, !dbg !334
+  call void @llvm.dbg.value(metadata !{i32 %div12.i}, i64 0, metadata !327) #4, !dbg !334
+  br label %if.end23.i, !dbg !334
+
+if.else13.i:                                      ; preds = %if.else6.i
+  %f_size.i = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 9, !dbg !335
+  %56 = load i32* %f_size.i, align 4, !dbg !335, !tbaa !263
+  %tobool14.i = icmp eq i32 %56, 0, !dbg !335
+  br i1 %tobool14.i, label %if.end23.thread.i, label %if.then15.i, !dbg !335
+
+if.then15.i:                                      ; preds = %if.else13.i
+  %natoms17.i = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 10, !dbg !336
+  %57 = load i32* %natoms17.i, align 4, !dbg !336, !tbaa !263
+  %mul18.i = mul nsw i32 %57, 3, !dbg !336
+  %div19.i = sdiv i32 %56, %mul18.i, !dbg !336
+  call void @llvm.dbg.value(metadata !{i32 %div19.i}, i64 0, metadata !327) #4, !dbg !336
+  br label %if.end23.i, !dbg !336
+
+if.end23.thread.i:                                ; preds = %if.else13.i
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([47 x i8]* @.str42, i64 0, i64 0)) #5, !dbg !337
+  br label %if.then28.i, !dbg !338
+
+if.end23.i:                                       ; preds = %if.then15.i, %if.then8.i, %if.then3.i, %if.then.i
+  %nflsize.0.i = phi i32 [ %div.i, %if.then.i ], [ %div5.i, %if.then3.i ], [ %div12.i, %if.then8.i ], [ %div19.i, %if.then15.i ]
+  switch i32 %nflsize.0.i, label %if.then28.i [
     i32 4, label %nFloatSize.exit
     i32 8, label %nFloatSize.exit
-  ]
+  ], !dbg !338
 
-; <label>:219                                     ; preds = %218, %.thread.i
-  %nflsize.01.i = phi i32 [ 0, %.thread.i ], [ %nflsize.0.i, %218 ]
-  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([36 x i8]* @.str33, i64 0, i64 0), i32 %nflsize.01.i) #6
-  br label %nFloatSize.exit
+if.then28.i:                                      ; preds = %if.end23.i, %if.end23.thread.i
+  %nflsize.040.i = phi i32 [ 0, %if.end23.thread.i ], [ %nflsize.0.i, %if.end23.i ]
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([36 x i8]* @.str43, i64 0, i64 0), i32 %nflsize.040.i) #5, !dbg !339
+  br label %nFloatSize.exit, !dbg !339
 
-nFloatSize.exit:                                  ; preds = %218, %218, %219
-  %nflsize.02.i = phi i32 [ %nflsize.0.i, %218 ], [ %nflsize.0.i, %218 ], [ %nflsize.01.i, %219 ]
-  %220 = icmp eq i32 %nflsize.02.i, 8
-  %221 = zext i1 %220 to i32
-  call void @gmx_fio_setprecision(i32 %fp, i32 %221) #6
-  %222 = load i32* %bOK, align 4, !tbaa !24
-  %223 = icmp eq i32 %222, 0
-  br i1 %223, label %.thread18, label %224
+nFloatSize.exit:                                  ; preds = %if.end23.i, %if.end23.i, %if.then28.i
+  %nflsize.041.i = phi i32 [ %nflsize.0.i, %if.end23.i ], [ %nflsize.0.i, %if.end23.i ], [ %nflsize.040.i, %if.then28.i ]
+  %cmp = icmp eq i32 %nflsize.041.i, 8, !dbg !325
+  %conv166 = zext i1 %cmp to i32, !dbg !325
+  call void @gmx_fio_setprecision(i32 %fp, i32 %conv166) #5, !dbg !325
+  %58 = load i32* %bOK, align 4, !dbg !340, !tbaa !263
+  %tobool167 = icmp eq i32 %58, 0, !dbg !340
+  br i1 %tobool167, label %land.end178.thread, label %land.rhs168, !dbg !340
 
-.thread18:                                        ; preds = %nFloatSize.exit
-  store i32 0, i32* %bOK, align 4, !tbaa !24
-  br label %.thread20
+land.end178.thread:                               ; preds = %nFloatSize.exit
+  store i32 0, i32* %bOK, align 4, !tbaa !263
+  br label %land.end191.thread, !dbg !341
 
-; <label>:224                                     ; preds = %nFloatSize.exit
-  br i1 %2, label %225, label %230
+land.rhs168:                                      ; preds = %nFloatSize.exit
+  br i1 %tobool, label %cond.true170, label %cond.false172, !dbg !340
 
-; <label>:225                                     ; preds = %224
-  %226 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !tbaa !25
-  %227 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 10
-  %228 = bitcast i32* %227 to i8*
-  %229 = call i32 %226(i8* %228, i32 1, i32 1, i8* getelementptr inbounds ([11 x i8]* @.str27, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 105) #6
-  br label %235
+cond.true170:                                     ; preds = %land.rhs168
+  %59 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !dbg !340, !tbaa !305
+  %natoms = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 10, !dbg !340
+  %60 = bitcast i32* %natoms to i8*, !dbg !340
+  %call171 = call i32 %59(i8* %60, i32 1, i32 1, i8* getelementptr inbounds ([11 x i8]* @.str37, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 105) #5, !dbg !340
+  br label %land.end178, !dbg !340
 
-; <label>:230                                     ; preds = %224
-  %231 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !25
-  %232 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 10
-  %233 = bitcast i32* %232 to i8*
-  %234 = call i32 %231(i8* %233, i32 1, i32 1, i8* getelementptr inbounds ([11 x i8]* @.str27, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 105) #6
-  br label %235
+cond.false172:                                    ; preds = %land.rhs168
+  %61 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !dbg !340, !tbaa !305
+  %natoms173 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 10, !dbg !340
+  %62 = bitcast i32* %natoms173 to i8*, !dbg !340
+  %call174 = call i32 %61(i8* %62, i32 1, i32 1, i8* getelementptr inbounds ([11 x i8]* @.str37, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 105) #5, !dbg !340
+  br label %land.end178, !dbg !340
 
-; <label>:235                                     ; preds = %225, %230
-  %236 = phi i32 [ %229, %225 ], [ %234, %230 ]
-  %237 = icmp ne i32 %236, 0
-  %238 = zext i1 %237 to i32
-  store i32 %238, i32* %bOK, align 4, !tbaa !24
-  br i1 %237, label %239, label %.thread20
+land.end178:                                      ; preds = %cond.true170, %cond.false172
+  %cond176 = phi i32 [ %call171, %cond.true170 ], [ %call174, %cond.false172 ], !dbg !340
+  %tobool177 = icmp ne i32 %cond176, 0, !dbg !340
+  %land.ext179 = zext i1 %tobool177 to i32
+  store i32 %land.ext179, i32* %bOK, align 4, !tbaa !263
+  br i1 %tobool177, label %land.rhs181, label %land.end191.thread, !dbg !341
 
-; <label>:239                                     ; preds = %235
-  br i1 %2, label %240, label %245
+land.rhs181:                                      ; preds = %land.end178
+  br i1 %tobool, label %cond.true183, label %cond.false185, !dbg !341
 
-; <label>:240                                     ; preds = %239
-  %241 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !tbaa !25
-  %242 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 11
-  %243 = bitcast i32* %242 to i8*
-  %244 = call i32 %241(i8* %243, i32 1, i32 1, i8* getelementptr inbounds ([9 x i8]* @.str28, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 106) #6
-  br label %250
+cond.true183:                                     ; preds = %land.rhs181
+  %63 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !dbg !341, !tbaa !305
+  %step = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 11, !dbg !341
+  %64 = bitcast i32* %step to i8*, !dbg !341
+  %call184 = call i32 %63(i8* %64, i32 1, i32 1, i8* getelementptr inbounds ([9 x i8]* @.str38, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 106) #5, !dbg !341
+  br label %land.end191, !dbg !341
 
-; <label>:245                                     ; preds = %239
-  %246 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !25
-  %247 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 11
-  %248 = bitcast i32* %247 to i8*
-  %249 = call i32 %246(i8* %248, i32 1, i32 1, i8* getelementptr inbounds ([9 x i8]* @.str28, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 106) #6
-  br label %250
+cond.false185:                                    ; preds = %land.rhs181
+  %65 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !dbg !341, !tbaa !305
+  %step186 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 11, !dbg !341
+  %66 = bitcast i32* %step186 to i8*, !dbg !341
+  %call187 = call i32 %65(i8* %66, i32 1, i32 1, i8* getelementptr inbounds ([9 x i8]* @.str38, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 106) #5, !dbg !341
+  br label %land.end191, !dbg !341
 
-.thread20:                                        ; preds = %235, %.thread18
-  store i32 0, i32* %bOK, align 4, !tbaa !24
-  br label %.thread22
+land.end191.thread:                               ; preds = %land.end178, %land.end178.thread
+  store i32 0, i32* %bOK, align 4, !tbaa !263
+  br label %land.end204.thread, !dbg !342
 
-; <label>:250                                     ; preds = %240, %245
-  %251 = phi i32 [ %244, %240 ], [ %249, %245 ]
-  %252 = icmp ne i32 %251, 0
-  %253 = zext i1 %252 to i32
-  store i32 %253, i32* %bOK, align 4, !tbaa !24
-  br i1 %252, label %254, label %.thread22
+land.end191:                                      ; preds = %cond.true183, %cond.false185
+  %cond189 = phi i32 [ %call184, %cond.true183 ], [ %call187, %cond.false185 ], !dbg !341
+  %tobool190 = icmp ne i32 %cond189, 0, !dbg !341
+  %land.ext192 = zext i1 %tobool190 to i32
+  store i32 %land.ext192, i32* %bOK, align 4, !tbaa !263
+  br i1 %tobool190, label %land.rhs194, label %land.end204.thread, !dbg !342
 
-; <label>:254                                     ; preds = %250
-  br i1 %2, label %255, label %260
+land.rhs194:                                      ; preds = %land.end191
+  br i1 %tobool, label %cond.true196, label %cond.false198, !dbg !342
 
-; <label>:255                                     ; preds = %254
-  %256 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !tbaa !25
-  %257 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 12
-  %258 = bitcast i32* %257 to i8*
-  %259 = call i32 %256(i8* %258, i32 1, i32 1, i8* getelementptr inbounds ([8 x i8]* @.str29, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 107) #6
-  br label %265
+cond.true196:                                     ; preds = %land.rhs194
+  %67 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !dbg !342, !tbaa !305
+  %nre = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 12, !dbg !342
+  %68 = bitcast i32* %nre to i8*, !dbg !342
+  %call197 = call i32 %67(i8* %68, i32 1, i32 1, i8* getelementptr inbounds ([8 x i8]* @.str39, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 107) #5, !dbg !342
+  br label %land.end204, !dbg !342
 
-; <label>:260                                     ; preds = %254
-  %261 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !25
-  %262 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 12
-  %263 = bitcast i32* %262 to i8*
-  %264 = call i32 %261(i8* %263, i32 1, i32 1, i8* getelementptr inbounds ([8 x i8]* @.str29, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 107) #6
-  br label %265
+cond.false198:                                    ; preds = %land.rhs194
+  %69 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !dbg !342, !tbaa !305
+  %nre199 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 12, !dbg !342
+  %70 = bitcast i32* %nre199 to i8*, !dbg !342
+  %call200 = call i32 %69(i8* %70, i32 1, i32 1, i8* getelementptr inbounds ([8 x i8]* @.str39, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 107) #5, !dbg !342
+  br label %land.end204, !dbg !342
 
-.thread22:                                        ; preds = %250, %.thread20
-  store i32 0, i32* %bOK, align 4, !tbaa !24
-  br label %.thread24
+land.end204.thread:                               ; preds = %land.end191, %land.end191.thread
+  store i32 0, i32* %bOK, align 4, !tbaa !263
+  br label %land.end217.thread, !dbg !343
 
-; <label>:265                                     ; preds = %255, %260
-  %266 = phi i32 [ %259, %255 ], [ %264, %260 ]
-  %267 = icmp ne i32 %266, 0
-  %268 = zext i1 %267 to i32
-  store i32 %268, i32* %bOK, align 4, !tbaa !24
-  br i1 %267, label %269, label %.thread24
+land.end204:                                      ; preds = %cond.true196, %cond.false198
+  %cond202 = phi i32 [ %call197, %cond.true196 ], [ %call200, %cond.false198 ], !dbg !342
+  %tobool203 = icmp ne i32 %cond202, 0, !dbg !342
+  %land.ext205 = zext i1 %tobool203 to i32
+  store i32 %land.ext205, i32* %bOK, align 4, !tbaa !263
+  br i1 %tobool203, label %land.rhs207, label %land.end217.thread, !dbg !343
 
-; <label>:269                                     ; preds = %265
-  br i1 %2, label %270, label %275
+land.rhs207:                                      ; preds = %land.end204
+  br i1 %tobool, label %cond.true209, label %cond.false211, !dbg !343
 
-; <label>:270                                     ; preds = %269
-  %271 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !tbaa !25
-  %272 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 13
-  %273 = bitcast float* %272 to i8*
-  %274 = call i32 %271(i8* %273, i32 1, i32 0, i8* getelementptr inbounds ([6 x i8]* @.str30, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 108) #6
-  br label %280
+cond.true209:                                     ; preds = %land.rhs207
+  %71 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !dbg !343, !tbaa !305
+  %t = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 13, !dbg !343
+  %72 = bitcast float* %t to i8*, !dbg !343
+  %call210 = call i32 %71(i8* %72, i32 1, i32 0, i8* getelementptr inbounds ([6 x i8]* @.str40, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 108) #5, !dbg !343
+  br label %land.end217, !dbg !343
 
-; <label>:275                                     ; preds = %269
-  %276 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !25
-  %277 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 13
-  %278 = bitcast float* %277 to i8*
-  %279 = call i32 %276(i8* %278, i32 1, i32 0, i8* getelementptr inbounds ([6 x i8]* @.str30, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 108) #6
-  br label %280
+cond.false211:                                    ; preds = %land.rhs207
+  %73 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !dbg !343, !tbaa !305
+  %t212 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 13, !dbg !343
+  %74 = bitcast float* %t212 to i8*, !dbg !343
+  %call213 = call i32 %73(i8* %74, i32 1, i32 0, i8* getelementptr inbounds ([6 x i8]* @.str40, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 108) #5, !dbg !343
+  br label %land.end217, !dbg !343
 
-.thread24:                                        ; preds = %265, %.thread22
-  store i32 0, i32* %bOK, align 4, !tbaa !24
-  br label %298
+land.end217.thread:                               ; preds = %land.end204, %land.end204.thread
+  store i32 0, i32* %bOK, align 4, !tbaa !263
+  br label %land.end230, !dbg !344
 
-; <label>:280                                     ; preds = %270, %275
-  %281 = phi i32 [ %274, %270 ], [ %279, %275 ]
-  %282 = icmp ne i32 %281, 0
-  %283 = zext i1 %282 to i32
-  store i32 %283, i32* %bOK, align 4, !tbaa !24
-  br i1 %282, label %284, label %298
+land.end217:                                      ; preds = %cond.true209, %cond.false211
+  %cond215 = phi i32 [ %call210, %cond.true209 ], [ %call213, %cond.false211 ], !dbg !343
+  %tobool216 = icmp ne i32 %cond215, 0, !dbg !343
+  %land.ext218 = zext i1 %tobool216 to i32
+  store i32 %land.ext218, i32* %bOK, align 4, !tbaa !263
+  br i1 %tobool216, label %land.rhs220, label %land.end230, !dbg !344
 
-; <label>:284                                     ; preds = %280
-  br i1 %2, label %285, label %290
+land.rhs220:                                      ; preds = %land.end217
+  br i1 %tobool, label %cond.true222, label %cond.false224, !dbg !344
 
-; <label>:285                                     ; preds = %284
-  %286 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !tbaa !25
-  %287 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 14
-  %288 = bitcast float* %287 to i8*
-  %289 = call i32 %286(i8* %288, i32 1, i32 0, i8* getelementptr inbounds ([11 x i8]* @.str31, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 109) #6
-  br label %295
+cond.true222:                                     ; preds = %land.rhs220
+  %75 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_read, align 8, !dbg !344, !tbaa !305
+  %lambda = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 14, !dbg !344
+  %76 = bitcast float* %lambda to i8*, !dbg !344
+  %call223 = call i32 %75(i8* %76, i32 1, i32 0, i8* getelementptr inbounds ([11 x i8]* @.str41, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 109) #5, !dbg !344
+  br label %cond.end227, !dbg !344
 
-; <label>:290                                     ; preds = %284
-  %291 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !tbaa !25
-  %292 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 14
-  %293 = bitcast float* %292 to i8*
-  %294 = call i32 %291(i8* %293, i32 1, i32 0, i8* getelementptr inbounds ([11 x i8]* @.str31, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str13, i64 0, i64 0), i32 109) #6
-  br label %295
+cond.false224:                                    ; preds = %land.rhs220
+  %77 = load i32 (i8*, i32, i32, i8*, i8*, i32)** @do_write, align 8, !dbg !344, !tbaa !305
+  %lambda225 = getelementptr inbounds %struct.t_trnheader* %sh, i64 0, i32 14, !dbg !344
+  %78 = bitcast float* %lambda225 to i8*, !dbg !344
+  %call226 = call i32 %77(i8* %78, i32 1, i32 0, i8* getelementptr inbounds ([11 x i8]* @.str41, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str12, i64 0, i64 0), i32 109) #5, !dbg !344
+  br label %cond.end227, !dbg !344
 
-; <label>:295                                     ; preds = %290, %285
-  %296 = phi i32 [ %289, %285 ], [ %294, %290 ]
-  %297 = icmp ne i32 %296, 0
-  br label %298
+cond.end227:                                      ; preds = %cond.false224, %cond.true222
+  %cond228 = phi i32 [ %call223, %cond.true222 ], [ %call226, %cond.false224 ], !dbg !344
+  %tobool229 = icmp ne i32 %cond228, 0, !dbg !344
+  br label %land.end230
 
-; <label>:298                                     ; preds = %.thread24, %295, %280
-  %299 = phi i1 [ false, %280 ], [ %297, %295 ], [ false, %.thread24 ]
-  %300 = zext i1 %299 to i32
-  store i32 %300, i32* %bOK, align 4, !tbaa !24
-  br label %301
+land.end230:                                      ; preds = %land.end217.thread, %cond.end227, %land.end217
+  %79 = phi i1 [ false, %land.end217 ], [ %tobool229, %cond.end227 ], [ false, %land.end217.thread ]
+  %land.ext231 = zext i1 %79 to i32
+  store i32 %land.ext231, i32* %bOK, align 4, !tbaa !263
+  br label %cleanup, !dbg !345
 
-; <label>:301                                     ; preds = %.thread17, %181, %7, %3, %298
-  %.0 = phi i32 [ %300, %298 ], [ 0, %3 ], [ 0, %7 ], [ %184, %181 ], [ 0, %.thread17 ]
-  call void @llvm.lifetime.end(i64 256, i8* %1) #5
-  ret i32 %.0
+cleanup:                                          ; preds = %land.end160.thread, %land.end160, %cond.false, %cond.true, %land.end230
+  %retval.0 = phi i32 [ %land.ext231, %land.end230 ], [ 0, %cond.true ], [ 0, %cond.false ], [ %land.ext161, %land.end160 ], [ 0, %land.end160.thread ]
+  call void @llvm.lifetime.end(i64 256, i8* %0) #4, !dbg !346
+  ret i32 %retval.0, !dbg !346
 }

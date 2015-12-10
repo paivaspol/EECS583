@@ -1,18 +1,19 @@
 define void @UnfitHistogram(%struct.histogram_s* nocapture %h) #0 {
 entry:
-  %expect = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 7
-  %0 = load float** %expect, align 8, !tbaa !3
-  %cmp = icmp eq float* %0, null
-  br i1 %cmp, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.histogram_s* %h}, i64 0, metadata !45), !dbg !382
+  %expect = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 7, !dbg !383
+  %0 = load float** %expect, align 8, !dbg !383, !tbaa !371
+  %cmp = icmp eq float* %0, null, !dbg !383
+  br i1 %cmp, label %if.end, label %if.then, !dbg !383
 
 if.then:                                          ; preds = %entry
-  %1 = bitcast float* %0 to i8*
-  tail call void @free(i8* %1) #4
-  br label %if.end
+  %1 = bitcast float* %0 to i8*, !dbg !383
+  tail call void @free(i8* %1) #5, !dbg !383
+  br label %if.end, !dbg !383
 
 if.end:                                           ; preds = %entry, %if.then
-  store float* null, float** %expect, align 8, !tbaa !3
-  %fit_type = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 8
-  store i32 0, i32* %fit_type, align 4, !tbaa !0
-  ret void
+  store float* null, float** %expect, align 8, !dbg !384, !tbaa !371
+  %fit_type = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 8, !dbg !385
+  store i32 0, i32* %fit_type, align 4, !dbg !385, !tbaa !362
+  ret void, !dbg !386
 }

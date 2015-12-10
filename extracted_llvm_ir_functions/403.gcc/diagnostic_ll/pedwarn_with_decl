@@ -1,23 +1,26 @@
 define void @pedwarn_with_decl(%union.tree_node* %decl, i8* %msgid, ...) #2 {
 entry:
   %ap = alloca [1 x %struct.__va_list_tag], align 16
-  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
-  call void @llvm.va_start(i8* %arraydecay1)
-  %in_system_header_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 5
-  %0 = bitcast [8 x i8]* %in_system_header_flag to i64*
-  %bf.load = load i64* %0, align 8
-  %bf.cast = and i64 %bf.load, 65536
-  %tobool = icmp eq i64 %bf.cast, 0
-  br i1 %tobool, label %if.then, label %if.end
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %decl}, i64 0, metadata !869), !dbg !1691
+  call void @llvm.dbg.value(metadata !{i8* %msgid}, i64 0, metadata !870), !dbg !1691
+  call void @llvm.dbg.declare(metadata !{[1 x %struct.__va_list_tag]* %ap}, metadata !871), !dbg !1692
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*, !dbg !1692
+  call void @llvm.va_start(i8* %arraydecay1), !dbg !1692
+  %in_system_header_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 5, !dbg !1693
+  %0 = bitcast [8 x i8]* %in_system_header_flag to i64*, !dbg !1693
+  %bf.load = load i64* %0, align 8, !dbg !1693
+  %bf.cast = and i64 %bf.load, 65536, !dbg !1693
+  %tobool = icmp eq i64 %bf.cast, 0, !dbg !1693
+  br i1 %tobool, label %if.then, label %if.end, !dbg !1693
 
 if.then:                                          ; preds = %entry
-  %1 = load i32* @flag_pedantic_errors, align 4, !tbaa !0
-  %lnot = icmp eq i32 %1, 0
-  %lnot.ext = zext i1 %lnot to i32
-  call fastcc void @diagnostic_for_decl(%union.tree_node* %decl, i8* %msgid, [1 x %struct.__va_list_tag]* %ap, i32 %lnot.ext) #11
-  br label %if.end
+  %1 = load i32* @flag_pedantic_errors, align 4, !dbg !1695, !tbaa !1172
+  %lnot = icmp eq i32 %1, 0, !dbg !1695
+  %lnot.ext = zext i1 %lnot to i32, !dbg !1695
+  call fastcc void @diagnostic_for_decl(%union.tree_node* %decl, i8* %msgid, [1 x %struct.__va_list_tag]* %ap, i32 %lnot.ext) #12, !dbg !1695
+  br label %if.end, !dbg !1695
 
 if.end:                                           ; preds = %entry, %if.then
-  call void @llvm.va_end(i8* %arraydecay1)
-  ret void
+  call void @llvm.va_end(i8* %arraydecay1), !dbg !1696
+  ret void, !dbg !1697
 }

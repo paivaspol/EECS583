@@ -1,0 +1,42 @@
+define void @_ZN6soplex9SPxFastRT7tightenEv(%"class.soplex::SPxFastRT"* nocapture %this) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SPxFastRT"* %this}, i64 0, metadata !6920), !dbg !7773
+  %delta = getelementptr inbounds %"class.soplex::SPxFastRT"* %this, i64 0, i32 3, !dbg !7774
+  %0 = load double* %delta, align 8, !dbg !7774, !tbaa !7769
+  %delta0 = getelementptr inbounds %"class.soplex::SPxFastRT"* %this, i64 0, i32 4, !dbg !7774
+  %1 = load double* %delta0, align 8, !dbg !7774, !tbaa !7769
+  %add = fadd double %1, 1.000000e-05, !dbg !7774
+  %cmp = fcmp ult double %0, %add, !dbg !7774
+  br i1 %cmp, label %if.end8, label %if.then, !dbg !7774
+
+if.then:                                          ; preds = %entry
+  %sub = fadd double %0, -1.000000e-05, !dbg !7775
+  store double %sub, double* %delta, align 8, !dbg !7775, !tbaa !7769
+  %cmp4 = fcmp ogt double %sub, 1.000000e-04, !dbg !7777
+  br i1 %cmp4, label %if.then5, label %if.end8, !dbg !7777
+
+if.then5:                                         ; preds = %if.then
+  %sub7 = fadd double %sub, -2.000000e-05, !dbg !7778
+  store double %sub7, double* %delta, align 8, !dbg !7778, !tbaa !7769
+  br label %if.end8, !dbg !7778
+
+if.end8:                                          ; preds = %entry, %if.then, %if.then5
+  %minStab = getelementptr inbounds %"class.soplex::SPxFastRT"* %this, i64 0, i32 1, !dbg !7779
+  %2 = load double* %minStab, align 8, !dbg !7779, !tbaa !7769
+  %cmp9 = fcmp olt double %2, 1.000000e-05, !dbg !7779
+  br i1 %cmp9, label %if.then10, label %if.end18, !dbg !7779
+
+if.then10:                                        ; preds = %if.end8
+  %div = fdiv double %2, 9.000000e-01, !dbg !7780
+  store double %div, double* %minStab, align 8, !dbg !7780, !tbaa !7769
+  %cmp13 = fcmp olt double %div, 1.000000e-06, !dbg !7782
+  br i1 %cmp13, label %if.then14, label %if.end18, !dbg !7782
+
+if.then14:                                        ; preds = %if.then10
+  %div16 = fdiv double %div, 9.000000e-01, !dbg !7783
+  store double %div16, double* %minStab, align 8, !dbg !7783, !tbaa !7769
+  br label %if.end18, !dbg !7783
+
+if.end18:                                         ; preds = %if.then10, %if.then14, %if.end8
+  ret void, !dbg !7784
+}

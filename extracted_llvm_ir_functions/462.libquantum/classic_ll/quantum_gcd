@@ -1,16 +1,21 @@
 define i32 @quantum_gcd(i32 %u, i32 %v) #0 {
 entry:
-  %tobool3 = icmp eq i32 %v, 0
-  br i1 %tobool3, label %while.end, label %while.body
+  tail call void @llvm.dbg.value(metadata !{i32 %u}, i64 0, metadata !16), !dbg !55
+  tail call void @llvm.dbg.value(metadata !{i32 %v}, i64 0, metadata !17), !dbg !55
+  %tobool3 = icmp eq i32 %v, 0, !dbg !56
+  br i1 %tobool3, label %while.end, label %while.body, !dbg !56
 
 while.body:                                       ; preds = %entry, %while.body
   %u.addr.05 = phi i32 [ %v.addr.04, %while.body ], [ %u, %entry ]
   %v.addr.04 = phi i32 [ %rem, %while.body ], [ %v, %entry ]
-  %rem = srem i32 %u.addr.05, %v.addr.04
-  %tobool = icmp eq i32 %rem, 0
-  br i1 %tobool, label %while.end, label %while.body
+  %rem = srem i32 %u.addr.05, %v.addr.04, !dbg !57
+  tail call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !18), !dbg !57
+  tail call void @llvm.dbg.value(metadata !{i32 %v.addr.04}, i64 0, metadata !16), !dbg !59
+  tail call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !17), !dbg !60
+  %tobool = icmp eq i32 %rem, 0, !dbg !56
+  br i1 %tobool, label %while.end, label %while.body, !dbg !56
 
 while.end:                                        ; preds = %while.body, %entry
   %u.addr.0.lcssa = phi i32 [ %u, %entry ], [ %v.addr.04, %while.body ]
-  ret i32 %u.addr.0.lcssa
+  ret i32 %u.addr.0.lcssa, !dbg !61
 }

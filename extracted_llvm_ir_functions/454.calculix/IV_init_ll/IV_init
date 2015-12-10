@@ -1,44 +1,47 @@
 define void @IV_init(%struct._IV* %iv, i32 %size, i32* %entries) #0 {
 entry:
-  %cmp = icmp eq %struct._IV* %iv, null
-  %cmp1 = icmp slt i32 %size, 0
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._IV* %iv}, i64 0, metadata !20), !dbg !48
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !21), !dbg !49
+  tail call void @llvm.dbg.value(metadata !{i32* %entries}, i64 0, metadata !22), !dbg !50
+  %cmp = icmp eq %struct._IV* %iv, null, !dbg !51
+  %cmp1 = icmp slt i32 %size, 0, !dbg !51
+  %or.cond = or i1 %cmp, %cmp1, !dbg !51
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !51
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([47 x i8]* @.str, i64 0, i64 0), %struct._IV* %iv, i32 %size, i32* %entries) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !52, !tbaa !54
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([47 x i8]* @.str, i64 0, i64 0), %struct._IV* %iv, i32 %size, i32* %entries) #5, !dbg !52
+  tail call void @exit(i32 -1) #6, !dbg !57
+  unreachable, !dbg !57
 
 if.end:                                           ; preds = %entry
-  tail call void @IV_clearData(%struct._IV* %iv) #4
-  %size2 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0
-  store i32 %size, i32* %size2, align 4, !tbaa !3
-  %maxsize = getelementptr inbounds %struct._IV* %iv, i64 0, i32 1
-  store i32 %size, i32* %maxsize, align 4, !tbaa !3
-  %cmp3 = icmp eq i32* %entries, null
-  br i1 %cmp3, label %if.else, label %if.then4
+  tail call void @IV_clearData(%struct._IV* %iv) #5, !dbg !58
+  %size2 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0, !dbg !59
+  store i32 %size, i32* %size2, align 4, !dbg !59, !tbaa !60
+  %maxsize = getelementptr inbounds %struct._IV* %iv, i64 0, i32 1, !dbg !59
+  store i32 %size, i32* %maxsize, align 4, !dbg !59, !tbaa !60
+  %cmp3 = icmp eq i32* %entries, null, !dbg !61
+  br i1 %cmp3, label %if.else, label %if.then4, !dbg !61
 
 if.then4:                                         ; preds = %if.end
-  %owned = getelementptr inbounds %struct._IV* %iv, i64 0, i32 2
-  store i32 0, i32* %owned, align 4, !tbaa !3
-  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3
-  store i32* %entries, i32** %vec, align 8, !tbaa !0
-  br label %if.end11
+  %owned = getelementptr inbounds %struct._IV* %iv, i64 0, i32 2, !dbg !62
+  store i32 0, i32* %owned, align 4, !dbg !62, !tbaa !60
+  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3, !dbg !64
+  store i32* %entries, i32** %vec, align 8, !dbg !64, !tbaa !54
+  br label %if.end11, !dbg !65
 
 if.else:                                          ; preds = %if.end
-  %cmp5 = icmp sgt i32 %size, 0
-  br i1 %cmp5, label %if.then6, label %if.end11
+  %cmp5 = icmp sgt i32 %size, 0, !dbg !66
+  br i1 %cmp5, label %if.then6, label %if.end11, !dbg !66
 
 if.then6:                                         ; preds = %if.else
-  %owned7 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 2
-  store i32 1, i32* %owned7, align 4, !tbaa !3
-  %call8 = tail call i32* @IVinit(i32 %size, i32 -1) #4
-  %vec9 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3
-  store i32* %call8, i32** %vec9, align 8, !tbaa !0
-  br label %if.end11
+  %owned7 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 2, !dbg !67
+  store i32 1, i32* %owned7, align 4, !dbg !67, !tbaa !60
+  %call8 = tail call i32* @IVinit(i32 %size, i32 -1) #5, !dbg !69
+  %vec9 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3, !dbg !69
+  store i32* %call8, i32** %vec9, align 8, !dbg !69, !tbaa !54
+  br label %if.end11, !dbg !70
 
 if.end11:                                         ; preds = %if.else, %if.then6, %if.then4
-  ret void
+  ret void, !dbg !71
 }

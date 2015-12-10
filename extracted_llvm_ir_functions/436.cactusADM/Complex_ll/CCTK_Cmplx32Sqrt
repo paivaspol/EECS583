@@ -1,89 +1,97 @@
-define void @CCTK_Cmplx32Sqrt(%struct.CCTK_COMPLEX32* noalias nocapture sret %agg.result, %struct.CCTK_COMPLEX32* byval nocapture readonly align 16 %complex_number) #3 {
-  %result.sroa.4 = alloca [6 x i8], align 2
-  %result.sroa.7 = alloca [6 x i8], align 2
-  %1 = getelementptr inbounds %struct.CCTK_COMPLEX32* %complex_number, i64 0, i32 0
-  %2 = load x86_fp80* %1, align 16, !tbaa !2
-  %3 = fcmp oeq x86_fp80 %2, 0xK00000000000000000000
-  %4 = getelementptr inbounds %struct.CCTK_COMPLEX32* %complex_number, i64 0, i32 1
-  %5 = load x86_fp80* %4, align 16, !tbaa !7
-  %6 = fcmp oeq x86_fp80 %5, 0xK00000000000000000000
-  %or.cond = and i1 %3, %6
-  br i1 %or.cond, label %49, label %._crit_edge
+define void @CCTK_Cmplx32Sqrt(%struct.CCTK_COMPLEX32* noalias nocapture sret %agg.result, %struct.CCTK_COMPLEX32* byval nocapture align 16 %complex_number) #3 {
+entry:
+  %result.sroa.1 = alloca [6 x i8], align 2
+  %result.sroa.3 = alloca [6 x i8], align 2
+  call void @llvm.dbg.declare(metadata !{%struct.CCTK_COMPLEX32* %complex_number}, metadata !231), !dbg !328
+  call void @llvm.dbg.declare(metadata !305, metadata !236), !dbg !328
+  %Re = getelementptr inbounds %struct.CCTK_COMPLEX32* %complex_number, i64 0, i32 0, !dbg !328
+  %0 = load x86_fp80* %Re, align 16, !dbg !328, !tbaa !307
+  %cmp = fcmp oeq x86_fp80 %0, 0xK00000000000000000000, !dbg !328
+  %Im = getelementptr inbounds %struct.CCTK_COMPLEX32* %complex_number, i64 0, i32 1, !dbg !328
+  %1 = load x86_fp80* %Im, align 16, !dbg !328, !tbaa !307
+  %cmp1 = fcmp oeq x86_fp80 %1, 0xK00000000000000000000, !dbg !328
+  %or.cond = and i1 %cmp, %cmp1, !dbg !328
+  br i1 %or.cond, label %if.end56, label %if.else, !dbg !328
 
-._crit_edge:                                      ; preds = %0
-  %7 = fptrunc x86_fp80 %2 to double
-  %8 = tail call double @fabs(double %7) #5
-  %9 = fpext double %8 to x86_fp80
-  %10 = fptrunc x86_fp80 %5 to double
-  %11 = tail call double @fabs(double %10) #5
-  %12 = fpext double %11 to x86_fp80
-  %13 = fcmp ult double %8, %11
-  br i1 %13, label %24, label %14
+if.else:                                          ; preds = %entry
+  %conv = fptrunc x86_fp80 %0 to double, !dbg !329
+  %call = call double @fabs(double %conv) #8, !dbg !329
+  %conv5 = fpext double %call to x86_fp80, !dbg !329
+  call void @llvm.dbg.value(metadata !{x86_fp80 %conv5}, i64 0, metadata !232), !dbg !329
+  %conv7 = fptrunc x86_fp80 %1 to double, !dbg !329
+  %call8 = call double @fabs(double %conv7) #8, !dbg !329
+  %conv9 = fpext double %call8 to x86_fp80, !dbg !329
+  call void @llvm.dbg.value(metadata !{x86_fp80 %conv9}, i64 0, metadata !233), !dbg !329
+  %cmp10 = fcmp ult double %call, %call8, !dbg !329
+  br i1 %cmp10, label %if.else22, label %if.then12, !dbg !329
 
-; <label>:14                                      ; preds = %._crit_edge
-  %15 = fdiv x86_fp80 %12, %9
-  %16 = tail call double @sqrt(double %8) #5
-  %17 = fmul x86_fp80 %15, %15
-  %18 = fptrunc x86_fp80 %17 to double
-  %19 = tail call double @sqrt(double %18) #5
-  %20 = fadd double %19, 1.000000e+00
-  %21 = fmul double %20, 5.000000e-01
-  %22 = tail call double @sqrt(double %21) #5
-  %23 = fmul double %16, %22
-  br label %36
+if.then12:                                        ; preds = %if.else
+  %div = fdiv x86_fp80 %conv9, %conv5, !dbg !331
+  call void @llvm.dbg.value(metadata !{x86_fp80 %div}, i64 0, metadata !235), !dbg !331
+  %call14 = call double @sqrt(double %call) #7, !dbg !331
+  %mul15 = fmul x86_fp80 %div, %div, !dbg !331
+  %conv16 = fptrunc x86_fp80 %mul15 to double, !dbg !331
+  %call17 = call double @sqrt(double %conv16) #7, !dbg !331
+  %add = fadd double %call17, 1.000000e+00, !dbg !331
+  %mul18 = fmul double %add, 5.000000e-01, !dbg !331
+  %call19 = call double @sqrt(double %mul18) #7, !dbg !331
+  %mul20 = fmul double %call14, %call19, !dbg !331
+  br label %if.end, !dbg !331
 
-; <label>:24                                      ; preds = %._crit_edge
-  %25 = fdiv x86_fp80 %9, %12
-  %26 = tail call double @sqrt(double %11) #5
-  %27 = fmul x86_fp80 %25, %25
-  %28 = fptrunc x86_fp80 %27 to double
-  %29 = tail call double @sqrt(double %28) #5
-  %30 = fpext double %29 to x86_fp80
-  %31 = fadd x86_fp80 %25, %30
-  %32 = fmul x86_fp80 %31, 0xK3FFE8000000000000000
-  %33 = fptrunc x86_fp80 %32 to double
-  %34 = tail call double @sqrt(double %33) #5
-  %35 = fmul double %26, %34
-  br label %36
+if.else22:                                        ; preds = %if.else
+  %div23 = fdiv x86_fp80 %conv5, %conv9, !dbg !333
+  call void @llvm.dbg.value(metadata !{x86_fp80 %div23}, i64 0, metadata !235), !dbg !333
+  %call25 = call double @sqrt(double %call8) #7, !dbg !333
+  %mul27 = fmul x86_fp80 %div23, %div23, !dbg !333
+  %conv28 = fptrunc x86_fp80 %mul27 to double, !dbg !333
+  %call29 = call double @sqrt(double %conv28) #7, !dbg !333
+  %conv30 = fpext double %call29 to x86_fp80, !dbg !333
+  %add31 = fadd x86_fp80 %div23, %conv30, !dbg !333
+  %mul32 = fmul x86_fp80 %add31, 0xK3FFE8000000000000000, !dbg !333
+  %conv33 = fptrunc x86_fp80 %mul32 to double, !dbg !333
+  %call34 = call double @sqrt(double %conv33) #7, !dbg !333
+  %mul35 = fmul double %call25, %call34, !dbg !333
+  br label %if.end
 
-; <label>:36                                      ; preds = %24, %14
-  %w.0.in = phi double [ %23, %14 ], [ %35, %24 ]
-  %w.0 = fpext double %w.0.in to x86_fp80
-  %37 = fcmp ult x86_fp80 %2, 0xK00000000000000000000
-  br i1 %37, label %41, label %38
+if.end:                                           ; preds = %if.else22, %if.then12
+  %w.0.in = phi double [ %mul20, %if.then12 ], [ %mul35, %if.else22 ]
+  %w.0 = fpext double %w.0.in to x86_fp80, !dbg !331
+  %cmp38 = fcmp ult x86_fp80 %0, 0xK00000000000000000000, !dbg !329
+  br i1 %cmp38, label %if.else46, label %if.then40, !dbg !329
 
-; <label>:38                                      ; preds = %36
-  %39 = fmul x86_fp80 %w.0, 0xK40008000000000000000
-  %40 = fdiv x86_fp80 %5, %39
-  br label %49
+if.then40:                                        ; preds = %if.end
+  %mul43 = fmul x86_fp80 %w.0, 0xK40008000000000000000, !dbg !335
+  %div44 = fdiv x86_fp80 %1, %mul43, !dbg !335
+  br label %if.end56, !dbg !335
 
-; <label>:41                                      ; preds = %36
-  %42 = fcmp ult x86_fp80 %5, 0xK00000000000000000000
-  br i1 %42, label %43, label %45
+if.else46:                                        ; preds = %if.end
+  %cmp48 = fcmp ult x86_fp80 %1, 0xK00000000000000000000, !dbg !337
+  br i1 %cmp48, label %cond.false, label %cond.end, !dbg !337
 
-; <label>:43                                      ; preds = %41
-  %44 = fsub x86_fp80 0xK80000000000000000000, %w.0
-  br label %45
+cond.false:                                       ; preds = %if.else46
+  %sub = fsub x86_fp80 0xK80000000000000000000, %w.0, !dbg !337
+  br label %cond.end, !dbg !337
 
-; <label>:45                                      ; preds = %41, %43
-  %46 = phi x86_fp80 [ %44, %43 ], [ %w.0, %41 ]
-  %47 = fmul x86_fp80 %46, 0xK40008000000000000000
-  %48 = fdiv x86_fp80 %5, %47
-  br label %49
+cond.end:                                         ; preds = %if.else46, %cond.false
+  %cond = phi x86_fp80 [ %sub, %cond.false ], [ %w.0, %if.else46 ], !dbg !337
+  call void @llvm.dbg.value(metadata !{x86_fp80 %cond}, i64 0, metadata !232), !dbg !337
+  %mul51 = fmul x86_fp80 %cond, 0xK40008000000000000000, !dbg !337
+  %div52 = fdiv x86_fp80 %1, %mul51, !dbg !337
+  br label %if.end56
 
-; <label>:49                                      ; preds = %0, %38, %45
-  %result.sroa.41.0 = phi x86_fp80 [ %40, %38 ], [ %46, %45 ], [ 0xK00000000000000000000, %0 ]
-  %result.sroa.0.0 = phi x86_fp80 [ %w.0, %38 ], [ %48, %45 ], [ 0xK00000000000000000000, %0 ]
-  %50 = getelementptr inbounds %struct.CCTK_COMPLEX32* %agg.result, i64 0, i32 0
-  store x86_fp80 %result.sroa.0.0, x86_fp80* %50, align 16
-  %51 = bitcast %struct.CCTK_COMPLEX32* %agg.result to i8*
-  %52 = getelementptr inbounds i8* %51, i64 10
-  %53 = getelementptr inbounds [6 x i8]* %result.sroa.4, i64 0, i64 0
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %52, i8* %53, i64 6, i32 2, i1 false)
-  %54 = getelementptr inbounds %struct.CCTK_COMPLEX32* %agg.result, i64 0, i32 1
-  store x86_fp80 %result.sroa.41.0, x86_fp80* %54, align 16
-  %55 = getelementptr inbounds i8* %51, i64 26
-  %56 = getelementptr inbounds [6 x i8]* %result.sroa.7, i64 0, i64 0
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %55, i8* %56, i64 6, i32 2, i1 false)
-  ret void
+if.end56:                                         ; preds = %entry, %if.then40, %cond.end
+  %result.sroa.2.0 = phi x86_fp80 [ %div44, %if.then40 ], [ %cond, %cond.end ], [ 0xK00000000000000000000, %entry ]
+  %result.sroa.0.0 = phi x86_fp80 [ %w.0, %if.then40 ], [ %div52, %cond.end ], [ 0xK00000000000000000000, %entry ]
+  %result.sroa.0.0.idx = getelementptr inbounds %struct.CCTK_COMPLEX32* %agg.result, i64 0, i32 0, !dbg !328
+  store x86_fp80 %result.sroa.0.0, x86_fp80* %result.sroa.0.0.idx, align 16, !dbg !328
+  %result.sroa.1.10.raw_cast = bitcast %struct.CCTK_COMPLEX32* %agg.result to i8*, !dbg !328
+  %result.sroa.1.10.raw_idx = getelementptr inbounds i8* %result.sroa.1.10.raw_cast, i64 10, !dbg !328
+  %result.sroa.1.10.idx = getelementptr inbounds [6 x i8]* %result.sroa.1, i64 0, i64 0, !dbg !328
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %result.sroa.1.10.raw_idx, i8* %result.sroa.1.10.idx, i64 6, i32 2, i1 false), !dbg !328
+  %result.sroa.2.16.idx57 = getelementptr inbounds %struct.CCTK_COMPLEX32* %agg.result, i64 0, i32 1, !dbg !328
+  store x86_fp80 %result.sroa.2.0, x86_fp80* %result.sroa.2.16.idx57, align 16, !dbg !328
+  %result.sroa.3.26.raw_idx = getelementptr inbounds i8* %result.sroa.1.10.raw_cast, i64 26, !dbg !328
+  %result.sroa.3.26.idx = getelementptr inbounds [6 x i8]* %result.sroa.3, i64 0, i64 0, !dbg !328
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %result.sroa.3.26.raw_idx, i8* %result.sroa.3.26.idx, i64 6, i32 2, i1 false), !dbg !328
+  ret void, !dbg !328
 }

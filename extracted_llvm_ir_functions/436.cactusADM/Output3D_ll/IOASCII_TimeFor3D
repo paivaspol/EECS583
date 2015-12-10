@@ -1,46 +1,52 @@
 define i32 @IOASCII_TimeFor3D(%struct.cGH* %GH, i32 %vindex) #1 {
-  %1 = tail call i8* @CCTK_GHExtension(%struct.cGH* %GH, i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0)) #5
-  %2 = bitcast i8* %1 to %struct.IOASCIIGH*
-  tail call fastcc void @CheckSteerableParameters(%struct.IOASCIIGH* %2) #6
-  %3 = getelementptr inbounds i8* %1, i64 8
-  %4 = bitcast i8* %3 to i32*
-  %5 = load i32* %4, align 4, !tbaa !2
-  %6 = icmp slt i32 %5, 1
-  br i1 %6, label %30, label %7
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !107), !dbg !293
+  tail call void @llvm.dbg.value(metadata !{i32 %vindex}, i64 0, metadata !108), !dbg !293
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !109), !dbg !294
+  %call = tail call i8* @CCTK_GHExtension(%struct.cGH* %GH, i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0)) #6, !dbg !295
+  %0 = bitcast i8* %call to %struct.IOASCIIGH*, !dbg !295
+  tail call void @llvm.dbg.value(metadata !{%struct.IOASCIIGH* %0}, i64 0, metadata !110), !dbg !295
+  tail call fastcc void @CheckSteerableParameters(%struct.IOASCIIGH* %0) #7, !dbg !296
+  %out3D_every = getelementptr inbounds i8* %call, i64 8, !dbg !297
+  %1 = bitcast i8* %out3D_every to i32*, !dbg !297
+  %2 = load i32* %1, align 4, !dbg !297, !tbaa !231
+  %cmp = icmp slt i32 %2, 1, !dbg !297
+  br i1 %cmp, label %return, label %if.end, !dbg !297
 
-; <label>:7                                       ; preds = %0
-  %8 = sext i32 %vindex to i64
-  %9 = getelementptr inbounds i8* %1, i64 32
-  %10 = bitcast i8* %9 to i8**
-  %11 = load i8** %10, align 8, !tbaa !19
-  %12 = getelementptr inbounds i8* %11, i64 %8
-  %13 = load i8* %12, align 1, !tbaa !21
-  %14 = icmp eq i8 %13, 0
-  br i1 %14, label %30, label %15
+if.end:                                           ; preds = %entry
+  %idxprom = sext i32 %vindex to i64, !dbg !298
+  %do_out3D = getelementptr inbounds i8* %call, i64 32, !dbg !298
+  %3 = bitcast i8* %do_out3D to i8**, !dbg !298
+  %4 = load i8** %3, align 8, !dbg !298, !tbaa !242
+  %arrayidx = getelementptr inbounds i8* %4, i64 %idxprom, !dbg !298
+  %5 = load i8* %arrayidx, align 1, !dbg !298, !tbaa !232
+  %tobool = icmp eq i8 %5, 0, !dbg !298
+  br i1 %tobool, label %return, label %land.lhs.true, !dbg !298
 
-; <label>:15                                      ; preds = %7
-  %16 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 1
-  %17 = load i32* %16, align 4, !tbaa !8
-  %18 = srem i32 %17, %5
-  %19 = icmp eq i32 %18, 0
-  br i1 %19, label %20, label %30
+land.lhs.true:                                    ; preds = %if.end
+  %cctk_iteration = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 1, !dbg !298
+  %6 = load i32* %cctk_iteration, align 4, !dbg !298, !tbaa !231
+  %rem = srem i32 %6, %2, !dbg !298
+  %cmp2 = icmp eq i32 %rem, 0, !dbg !298
+  br i1 %cmp2, label %if.then4, label %return, !dbg !298
 
-; <label>:20                                      ; preds = %15
-  %21 = getelementptr inbounds i8* %1, i64 80
-  %22 = bitcast i8* %21 to i32**
-  %23 = load i32** %22, align 8, !tbaa !11
-  %24 = getelementptr inbounds i32* %23, i64 %8
-  %25 = load i32* %24, align 4, !tbaa !12
-  %26 = icmp eq i32 %25, %17
-  br i1 %26, label %27, label %30
+if.then4:                                         ; preds = %land.lhs.true
+  %out3D_last = getelementptr inbounds i8* %call, i64 80, !dbg !299
+  %7 = bitcast i8* %out3D_last to i32**, !dbg !299
+  %8 = load i32** %7, align 8, !dbg !299, !tbaa !242
+  %arrayidx6 = getelementptr inbounds i32* %8, i64 %idxprom, !dbg !299
+  %9 = load i32* %arrayidx6, align 4, !dbg !299, !tbaa !231
+  %cmp8 = icmp eq i32 %9, %6, !dbg !299
+  br i1 %cmp8, label %if.then10, label %return, !dbg !299
 
-; <label>:27                                      ; preds = %20
-  %28 = tail call i8* @CCTK_FullName(i32 %vindex) #5
-  %29 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 5, i32 224, i8* getelementptr inbounds ([78 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([85 x i8]* @.str2, i64 0, i64 0), i8* %28) #5
-  tail call void @free(i8* %28) #6
-  br label %30
+if.then10:                                        ; preds = %if.then4
+  %call11 = tail call i8* @CCTK_FullName(i32 %vindex) #6, !dbg !301
+  tail call void @llvm.dbg.value(metadata !{i8* %call11}, i64 0, metadata !111), !dbg !301
+  %call12 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 5, i32 224, i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([85 x i8]* @.str2, i64 0, i64 0), i8* %call11) #6, !dbg !303
+  tail call void @free(i8* %call11) #6, !dbg !304
+  br label %return, !dbg !305
 
-; <label>:30                                      ; preds = %15, %27, %7, %20, %0
-  %.0 = phi i32 [ 0, %0 ], [ 0, %27 ], [ 0, %15 ], [ 0, %7 ], [ 1, %20 ]
-  ret i32 %.0
+return:                                           ; preds = %land.lhs.true, %if.then10, %if.end, %if.then4, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ 0, %if.then10 ], [ 0, %land.lhs.true ], [ 0, %if.end ], [ 1, %if.then4 ]
+  ret i32 %retval.0, !dbg !306
 }

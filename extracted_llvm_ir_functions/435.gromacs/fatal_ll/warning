@@ -1,51 +1,57 @@
-define void @warning(i8* %s) #4 {
+define void @warning(i8* %s) #1 {
+entry:
   %linenobuf = alloca [32 x i8], align 16
-  %1 = load i32* @nwarn, align 4, !tbaa !14
-  %2 = add nsw i32 %1, 1
-  store i32 %2, i32* @nwarn, align 4, !tbaa !14
-  %3 = icmp eq i8* %s, null
-  %.s = select i1 %3, i8* getelementptr inbounds ([1024 x i8]* @warn_buf, i64 0, i64 0), i8* %s
-  %4 = load i32* @lineno, align 4, !tbaa !14
-  %5 = icmp eq i32 %4, -1
-  %6 = getelementptr inbounds [32 x i8]* %linenobuf, i64 0, i64 0
-  br i1 %5, label %9, label %7
+  call void @llvm.dbg.value(metadata !{i8* %s}, i64 0, metadata !170), !dbg !403
+  call void @llvm.dbg.declare(metadata !{[32 x i8]* %linenobuf}, metadata !171), !dbg !404
+  %0 = load i32* @nwarn, align 4, !dbg !405, !tbaa !264
+  %inc = add nsw i32 %0, 1, !dbg !405
+  store i32 %inc, i32* @nwarn, align 4, !dbg !405, !tbaa !264
+  %cmp = icmp eq i8* %s, null, !dbg !406
+  call void @llvm.dbg.value(metadata !407, i64 0, metadata !170), !dbg !408
+  %.s = select i1 %cmp, i8* getelementptr inbounds ([1024 x i8]* @warn_buf, i64 0, i64 0), i8* %s, !dbg !406
+  %1 = load i32* @lineno, align 4, !dbg !409, !tbaa !264
+  %cmp1 = icmp eq i32 %1, -1, !dbg !409
+  %arraydecay = getelementptr inbounds [32 x i8]* %linenobuf, i64 0, i64 0, !dbg !410
+  br i1 %cmp1, label %if.else, label %if.then2, !dbg !409
 
-; <label>:7                                       ; preds = %0
-  %8 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %6, i32 0, i64 32, i8* getelementptr inbounds ([3 x i8]* @.str13, i64 0, i64 0), i32 %4) #12
-  br label %11
+if.then2:                                         ; preds = %entry
+  %call = call i32 (i8*, i8*, ...)* @sprintf(i8* %arraydecay, i8* getelementptr inbounds ([3 x i8]* @.str13, i64 0, i64 0), i32 %1) #11, !dbg !410
+  br label %if.end5, !dbg !410
 
-; <label>:9                                       ; preds = %0
-  %10 = bitcast [32 x i8]* %linenobuf to i64*
-  store i64 31093567915781749, i64* %10, align 16
-  br label %11
+if.else:                                          ; preds = %entry
+  %2 = bitcast [32 x i8]* %linenobuf to i64*, !dbg !411
+  store i64 31093567915781749, i64* %2, align 16, !dbg !411
+  br label %if.end5
 
-; <label>:11                                      ; preds = %9, %7
-  %12 = call i64 @strlen(i8* %.s) #12
-  %13 = add i64 %12, 3
-  %14 = trunc i64 %13 to i32
-  %15 = call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str6, i64 0, i64 0), i32 315, i32 %14, i32 1) #12
-  %16 = bitcast i8* %15 to i16*
-  store i16 8224, i16* %16, align 1
-  %17 = getelementptr inbounds i8* %15, i64 2
-  store i8 0, i8* %17, align 1, !tbaa !13
-  %18 = call i64 @llvm.objectsize.i64.p0i8(i8* %15, i1 false)
-  %19 = call i8* @__strcat_chk(i8* %15, i8* %.s, i64 %18) #12
-  %20 = call i8* @wrap_lines(i8* %15, i32 79, i32 2) #12
-  %21 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !15
-  %22 = load i32* @nwarn, align 4, !tbaa !14
-  %23 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %21, i8* getelementptr inbounds ([35 x i8]* @.str16, i64 0, i64 0), i32 %22, i8* getelementptr inbounds ([256 x i8]* @filenm, i64 0, i64 0), i8* %6, i8* %20) #12
-  call void @save_free(i8* getelementptr inbounds ([5 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str6, i64 0, i64 0), i32 323, i8* %15) #12
-  call void @save_free(i8* getelementptr inbounds ([6 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str6, i64 0, i64 0), i32 324, i8* %20) #12
-  %24 = load i32* @nwarn, align 4, !tbaa !14
-  %25 = load i32* @maxwarn, align 4, !tbaa !14
-  %26 = icmp slt i32 %24, %25
-  br i1 %26, label %29, label %27
+if.end5:                                          ; preds = %if.else, %if.then2
+  %call6 = call i64 @strlen(i8* %.s) #14, !dbg !412
+  %add7 = add i64 %call6, 3, !dbg !412
+  %conv = trunc i64 %add7 to i32, !dbg !412
+  %call8 = call i8* @save_calloc(i8* getelementptr inbounds ([5 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str6, i64 0, i64 0), i32 315, i32 %conv, i32 1) #11, !dbg !412
+  call void @llvm.dbg.value(metadata !{i8* %call8}, i64 0, metadata !175), !dbg !412
+  call void @llvm.dbg.value(metadata !18, i64 0, metadata !177), !dbg !413
+  %3 = bitcast i8* %call8 to i16*, !dbg !415
+  store i16 8224, i16* %3, align 1, !dbg !415
+  %arrayidx12 = getelementptr inbounds i8* %call8, i64 2, !dbg !416
+  store i8 0, i8* %arrayidx12, align 1, !dbg !416, !tbaa !252
+  %call13 = call i8* @strcat(i8* %call8, i8* %.s) #11, !dbg !417
+  %call14 = call i8* @wrap_lines(i8* %call8, i32 79, i32 2) #11, !dbg !418
+  call void @llvm.dbg.value(metadata !{i8* %call14}, i64 0, metadata !176), !dbg !418
+  %4 = load %struct._IO_FILE** @stderr, align 8, !dbg !419, !tbaa !251
+  %5 = load i32* @nwarn, align 4, !dbg !419, !tbaa !264
+  %call16 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([35 x i8]* @.str16, i64 0, i64 0), i32 %5, i8* getelementptr inbounds ([256 x i8]* @filenm, i64 0, i64 0), i8* %arraydecay, i8* %call14) #11, !dbg !419
+  call void @save_free(i8* getelementptr inbounds ([5 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str6, i64 0, i64 0), i32 323, i8* %call8) #11, !dbg !420
+  call void @save_free(i8* getelementptr inbounds ([6 x i8]* @.str17, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str6, i64 0, i64 0), i32 324, i8* %call14) #11, !dbg !421
+  %6 = load i32* @nwarn, align 4, !dbg !422, !tbaa !264
+  %7 = load i32* @maxwarn, align 4, !dbg !422, !tbaa !264
+  %cmp17 = icmp slt i32 %6, %7, !dbg !422
+  br i1 %cmp17, label %if.end21, label %if.then19, !dbg !422
 
-; <label>:27                                      ; preds = %11
-  %28 = call i8* @Program() #12
-  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([33 x i8]* @.str18, i64 0, i64 0), i8* %28) #13
+if.then19:                                        ; preds = %if.end5
+  %call20 = call i8* @Program() #11, !dbg !423
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([33 x i8]* @.str18, i64 0, i64 0), i8* %call20) #15, !dbg !423
   unreachable
 
-; <label>:29                                      ; preds = %11
-  ret void
+if.end21:                                         ; preds = %if.end5
+  ret void, !dbg !424
 }

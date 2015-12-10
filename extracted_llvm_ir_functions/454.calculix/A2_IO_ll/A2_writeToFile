@@ -1,95 +1,103 @@
 define void @A2_writeToFile(%struct._A2* %mtx, i8* %fn) #0 {
 entry:
-  %cmp = icmp eq %struct._A2* %mtx, null
-  %cmp1 = icmp eq i8* %fn, null
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._A2* %mtx}, i64 0, metadata !110), !dbg !262
+  tail call void @llvm.dbg.value(metadata !{i8* %fn}, i64 0, metadata !111), !dbg !263
+  %cmp = icmp eq %struct._A2* %mtx, null, !dbg !264
+  %cmp1 = icmp eq i8* %fn, null, !dbg !264
+  %or.cond = or i1 %cmp, %cmp1, !dbg !264
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !264
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([50 x i8]* @.str11, i64 0, i64 0), %struct._A2* %mtx, i8* %fn) #5
-  br label %if.end
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !265, !tbaa !171
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([50 x i8]* @.str11, i64 0, i64 0), %struct._A2* %mtx, i8* %fn) #6, !dbg !265
+  br label %if.end, !dbg !267
 
 if.end:                                           ; preds = %entry, %if.then
-  %call2 = tail call i64 @strlen(i8* %fn) #6
-  %conv = trunc i64 %call2 to i32
-  %cmp5 = icmp sgt i32 %conv, 4
-  br i1 %cmp5, label %if.then7, label %if.else46
+  %call2 = tail call i64 @strlen(i8* %fn) #7, !dbg !268
+  %conv = trunc i64 %call2 to i32, !dbg !268
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !113), !dbg !268
+  tail call void @llvm.dbg.value(metadata !176, i64 0, metadata !114), !dbg !269
+  %cmp5 = icmp sgt i32 %conv, 4, !dbg !270
+  br i1 %cmp5, label %if.then7, label %if.else46, !dbg !270
 
 if.then7:                                         ; preds = %if.end
-  %sub = shl i64 %call2, 32
-  %sext = add i64 %sub, -17179869184
-  %idxprom = ashr exact i64 %sext, 32
-  %arrayidx = getelementptr inbounds i8* %fn, i64 %idxprom
-  %call8 = tail call i32 @strcmp(i8* %arrayidx, i8* getelementptr inbounds ([5 x i8]* @.str33, i64 0, i64 0)) #6
-  %cmp9 = icmp eq i32 %call8, 0
-  br i1 %cmp9, label %if.then11, label %if.else19
+  %sub = shl i64 %call2, 32, !dbg !271
+  %sext = add i64 %sub, -17179869184, !dbg !271
+  %idxprom = ashr exact i64 %sext, 32, !dbg !271
+  %arrayidx = getelementptr inbounds i8* %fn, i64 %idxprom, !dbg !271
+  %call8 = tail call i32 @strcmp(i8* %arrayidx, i8* getelementptr inbounds ([5 x i8]* @.str33, i64 0, i64 0)) #7, !dbg !271
+  %cmp9 = icmp eq i32 %call8, 0, !dbg !271
+  br i1 %cmp9, label %if.then11, label %if.else19, !dbg !271
 
 if.then11:                                        ; preds = %if.then7
-  %call12 = tail call %struct._IO_FILE* @fopen(i8* %fn, i8* getelementptr inbounds ([3 x i8]* @.str12, i64 0, i64 0)) #5
-  %cmp13 = icmp eq %struct._IO_FILE* %call12, null
-  br i1 %cmp13, label %if.then15, label %if.else
+  %call12 = tail call %struct._IO_FILE* @fopen(i8* %fn, i8* getelementptr inbounds ([3 x i8]* @.str12, i64 0, i64 0)) #6, !dbg !273
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %call12}, i64 0, metadata !112), !dbg !273
+  %cmp13 = icmp eq %struct._IO_FILE* %call12, null, !dbg !273
+  br i1 %cmp13, label %if.then15, label %if.else, !dbg !273
 
 if.then15:                                        ; preds = %if.then11
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call16 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([52 x i8]* @.str13, i64 0, i64 0), i8* %fn) #5
-  br label %if.end55
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !275, !tbaa !171
+  %call16 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([52 x i8]* @.str13, i64 0, i64 0), i8* %fn) #6, !dbg !275
+  br label %if.end55, !dbg !277
 
 if.else:                                          ; preds = %if.then11
-  tail call void @A2_writeToBinaryFile(%struct._A2* %mtx, %struct._IO_FILE* %call12) #7
-  %call17 = tail call i32 @fclose(%struct._IO_FILE* %call12) #5
+  tail call void @A2_writeToBinaryFile(%struct._A2* %mtx, %struct._IO_FILE* %call12) #8, !dbg !278
+  %call17 = tail call i32 @fclose(%struct._IO_FILE* %call12) #6, !dbg !280
   br label %if.end55
 
 if.else19:                                        ; preds = %if.then7
-  %call23 = tail call i32 @strcmp(i8* %arrayidx, i8* getelementptr inbounds ([5 x i8]* @.str32, i64 0, i64 0)) #6
-  %cmp24 = icmp eq i32 %call23, 0
-  br i1 %cmp24, label %if.then26, label %if.else35
+  %call23 = tail call i32 @strcmp(i8* %arrayidx, i8* getelementptr inbounds ([5 x i8]* @.str32, i64 0, i64 0)) #7, !dbg !281
+  %cmp24 = icmp eq i32 %call23, 0, !dbg !281
+  br i1 %cmp24, label %if.then26, label %if.else35, !dbg !281
 
 if.then26:                                        ; preds = %if.else19
-  %call27 = tail call %struct._IO_FILE* @fopen(i8* %fn, i8* getelementptr inbounds ([2 x i8]* @.str14, i64 0, i64 0)) #5
-  %cmp28 = icmp eq %struct._IO_FILE* %call27, null
-  br i1 %cmp28, label %if.then30, label %if.else32
+  %call27 = tail call %struct._IO_FILE* @fopen(i8* %fn, i8* getelementptr inbounds ([2 x i8]* @.str14, i64 0, i64 0)) #6, !dbg !282
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %call27}, i64 0, metadata !112), !dbg !282
+  %cmp28 = icmp eq %struct._IO_FILE* %call27, null, !dbg !282
+  br i1 %cmp28, label %if.then30, label %if.else32, !dbg !282
 
 if.then30:                                        ; preds = %if.then26
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call31 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([52 x i8]* @.str13, i64 0, i64 0), i8* %fn) #5
-  br label %if.end55
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !284, !tbaa !171
+  %call31 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([52 x i8]* @.str13, i64 0, i64 0), i8* %fn) #6, !dbg !284
+  br label %if.end55, !dbg !286
 
 if.else32:                                        ; preds = %if.then26
-  tail call void @A2_writeToFormattedFile(%struct._A2* %mtx, %struct._IO_FILE* %call27) #7
-  %call33 = tail call i32 @fclose(%struct._IO_FILE* %call27) #5
+  tail call void @A2_writeToFormattedFile(%struct._A2* %mtx, %struct._IO_FILE* %call27) #8, !dbg !287
+  %call33 = tail call i32 @fclose(%struct._IO_FILE* %call27) #6, !dbg !289
   br label %if.end55
 
 if.else35:                                        ; preds = %if.else19
-  %call36 = tail call %struct._IO_FILE* @fopen(i8* %fn, i8* getelementptr inbounds ([2 x i8]* @.str15, i64 0, i64 0)) #5
-  %cmp37 = icmp eq %struct._IO_FILE* %call36, null
-  br i1 %cmp37, label %if.then39, label %if.else41
+  %call36 = tail call %struct._IO_FILE* @fopen(i8* %fn, i8* getelementptr inbounds ([2 x i8]* @.str15, i64 0, i64 0)) #6, !dbg !290
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %call36}, i64 0, metadata !112), !dbg !290
+  %cmp37 = icmp eq %struct._IO_FILE* %call36, null, !dbg !290
+  br i1 %cmp37, label %if.then39, label %if.else41, !dbg !290
 
 if.then39:                                        ; preds = %if.else35
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call40 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([52 x i8]* @.str13, i64 0, i64 0), i8* %fn) #5
-  br label %if.end55
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !292, !tbaa !171
+  %call40 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([52 x i8]* @.str13, i64 0, i64 0), i8* %fn) #6, !dbg !292
+  br label %if.end55, !dbg !294
 
 if.else41:                                        ; preds = %if.else35
-  tail call void @A2_writeForHumanEye(%struct._A2* %mtx, %struct._IO_FILE* %call36) #7
-  %call42 = tail call i32 @fclose(%struct._IO_FILE* %call36) #5
+  tail call void @A2_writeForHumanEye(%struct._A2* %mtx, %struct._IO_FILE* %call36) #8, !dbg !295
+  %call42 = tail call i32 @fclose(%struct._IO_FILE* %call36) #6, !dbg !297
   br label %if.end55
 
 if.else46:                                        ; preds = %if.end
-  %call47 = tail call %struct._IO_FILE* @fopen(i8* %fn, i8* getelementptr inbounds ([2 x i8]* @.str15, i64 0, i64 0)) #5
-  %cmp48 = icmp eq %struct._IO_FILE* %call47, null
-  br i1 %cmp48, label %if.then50, label %if.else52
+  %call47 = tail call %struct._IO_FILE* @fopen(i8* %fn, i8* getelementptr inbounds ([2 x i8]* @.str15, i64 0, i64 0)) #6, !dbg !298
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %call47}, i64 0, metadata !112), !dbg !298
+  %cmp48 = icmp eq %struct._IO_FILE* %call47, null, !dbg !298
+  br i1 %cmp48, label %if.then50, label %if.else52, !dbg !298
 
 if.then50:                                        ; preds = %if.else46
-  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call51 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([50 x i8]* @.str16, i64 0, i64 0), i8* %fn) #5
-  br label %if.end55
+  %4 = load %struct._IO_FILE** @stderr, align 8, !dbg !300, !tbaa !171
+  %call51 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([50 x i8]* @.str16, i64 0, i64 0), i8* %fn) #6, !dbg !300
+  br label %if.end55, !dbg !302
 
 if.else52:                                        ; preds = %if.else46
-  tail call void @A2_writeForHumanEye(%struct._A2* %mtx, %struct._IO_FILE* %call47) #7
-  %call53 = tail call i32 @fclose(%struct._IO_FILE* %call47) #5
+  tail call void @A2_writeForHumanEye(%struct._A2* %mtx, %struct._IO_FILE* %call47) #8, !dbg !303
+  %call53 = tail call i32 @fclose(%struct._IO_FILE* %call47) #6, !dbg !305
   br label %if.end55
 
 if.end55:                                         ; preds = %if.then50, %if.else52, %if.else, %if.then15, %if.then39, %if.else41, %if.then30, %if.else32
-  ret void
+  ret void, !dbg !306
 }

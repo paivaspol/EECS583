@@ -1,0 +1,160 @@
+define internal fastcc void @_ZN3povL16sortAndSubdivideEiii(i32 %start, i32 %end) #0 {
+entry:
+  %min = alloca [3 x float], align 4
+  %max = alloca [3 x float], align 4
+  call void @llvm.dbg.value(metadata !172, i64 0, metadata !1221), !dbg !3119
+  call void @llvm.dbg.declare(metadata !{[3 x float]* %min}, metadata !1224), !dbg !3120
+  call void @llvm.dbg.declare(metadata !{[3 x float]* %max}, metadata !1225), !dbg !3120
+  %cmp = icmp eq i32 %end, %start, !dbg !3121
+  br i1 %cmp, label %if.then, label %if.end, !dbg !3121
+
+if.then:                                          ; preds = %entry
+  %and = and i32 %end, 16383, !dbg !3122
+  %idxprom4 = zext i32 %and to i64, !dbg !3122
+  %shr = ashr i32 %end, 14, !dbg !3122
+  %idxprom1 = sext i32 %shr to i64, !dbg !3122
+  %0 = load %"struct.pov::photon_struct"*** @_ZN3povL5map_sE, align 8, !dbg !3122, !tbaa !1709
+  %arrayidx = getelementptr inbounds %"struct.pov::photon_struct"** %0, i64 %idxprom1, !dbg !3122
+  %1 = load %"struct.pov::photon_struct"** %arrayidx, align 8, !dbg !3122, !tbaa !1709
+  %info = getelementptr inbounds %"struct.pov::photon_struct"* %1, i64 %idxprom4, i32 2, !dbg !3122
+  store i8 0, i8* %info, align 1, !dbg !3122, !tbaa !1675
+  br label %return, !dbg !3124
+
+if.end:                                           ; preds = %entry
+  %cmp3 = icmp slt i32 %end, %start, !dbg !3125
+  br i1 %cmp3, label %return, label %for.cond8.preheader.lr.ph, !dbg !3125
+
+for.cond8.preheader.lr.ph:                        ; preds = %if.end
+  call void @_ZN3pov12Do_CooperateEi(i32 1) #8, !dbg !3126
+  %arraydecay = getelementptr inbounds [3 x float]* %min, i64 0, i64 0, !dbg !3127
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay}, i64 0, metadata !3128), !dbg !3129
+  tail call void @llvm.dbg.value(metadata !3130, i64 0, metadata !3131), !dbg !3129
+  tail call void @llvm.dbg.value(metadata !3130, i64 0, metadata !3132), !dbg !3129
+  tail call void @llvm.dbg.value(metadata !3130, i64 0, metadata !3133), !dbg !3129
+  store float 1.000000e+07, float* %arraydecay, align 4, !dbg !3134, !tbaa !2022
+  %arrayidx1.i = getelementptr inbounds [3 x float]* %min, i64 0, i64 1, !dbg !3136
+  store float 1.000000e+07, float* %arrayidx1.i, align 4, !dbg !3136, !tbaa !2022
+  %arrayidx2.i = getelementptr inbounds [3 x float]* %min, i64 0, i64 2, !dbg !3137
+  store float 1.000000e+07, float* %arrayidx2.i, align 4, !dbg !3137, !tbaa !2022
+  %arraydecay6 = getelementptr inbounds [3 x float]* %max, i64 0, i64 0, !dbg !3138
+  tail call void @llvm.dbg.value(metadata !{float* %arraydecay6}, i64 0, metadata !3139), !dbg !3140
+  tail call void @llvm.dbg.value(metadata !3141, i64 0, metadata !3142), !dbg !3140
+  tail call void @llvm.dbg.value(metadata !3141, i64 0, metadata !3143), !dbg !3140
+  tail call void @llvm.dbg.value(metadata !3141, i64 0, metadata !3144), !dbg !3140
+  store float -1.000000e+07, float* %arraydecay6, align 4, !dbg !3145, !tbaa !2022
+  %arrayidx1.i5 = getelementptr inbounds [3 x float]* %max, i64 0, i64 1, !dbg !3146
+  store float -1.000000e+07, float* %arrayidx1.i5, align 4, !dbg !3146, !tbaa !2022
+  %arrayidx2.i6 = getelementptr inbounds [3 x float]* %max, i64 0, i64 2, !dbg !3147
+  store float -1.000000e+07, float* %arrayidx2.i6, align 4, !dbg !3147, !tbaa !2022
+  %2 = load %"struct.pov::photon_struct"*** @_ZN3povL5map_sE, align 8, !dbg !3148, !tbaa !1709
+  br label %for.cond8.preheader, !dbg !3149
+
+for.cond8.preheader:                              ; preds = %for.inc42, %for.cond8.preheader.lr.ph
+  %i.09 = phi i32 [ %start, %for.cond8.preheader.lr.ph ], [ %inc43, %for.inc42 ]
+  %and11 = and i32 %i.09, 16383, !dbg !3148
+  %idxprom123 = zext i32 %and11 to i64, !dbg !3148
+  %shr13 = ashr i32 %i.09, 14, !dbg !3148
+  %idxprom14 = sext i32 %shr13 to i64, !dbg !3148
+  %arrayidx15 = getelementptr inbounds %"struct.pov::photon_struct"** %2, i64 %idxprom14, !dbg !3148
+  %3 = load %"struct.pov::photon_struct"** %arrayidx15, align 8, !dbg !3148, !tbaa !1709
+  br label %for.body10, !dbg !3150
+
+for.body10:                                       ; preds = %for.inc, %for.cond8.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond8.preheader ], [ %indvars.iv.next, %for.inc ]
+  %arrayidx18 = getelementptr inbounds %"struct.pov::photon_struct"* %3, i64 %idxprom123, i32 0, i64 %indvars.iv, !dbg !3151
+  %4 = load float* %arrayidx18, align 4, !dbg !3151, !tbaa !2022
+  %arrayidx20 = getelementptr inbounds [3 x float]* %min, i64 0, i64 %indvars.iv, !dbg !3151
+  %5 = load float* %arrayidx20, align 4, !dbg !3151, !tbaa !2022
+  %cmp21 = fcmp olt float %4, %5, !dbg !3151
+  br i1 %cmp21, label %if.then22, label %if.end28, !dbg !3151
+
+if.then22:                                        ; preds = %for.body10
+  store float %4, float* %arrayidx20, align 4, !dbg !3152, !tbaa !2022
+  br label %if.end28, !dbg !3152
+
+if.end28:                                         ; preds = %for.body10, %if.then22
+  %arrayidx33 = getelementptr inbounds [3 x float]* %max, i64 0, i64 %indvars.iv, !dbg !3153
+  %6 = load float* %arrayidx33, align 4, !dbg !3153, !tbaa !2022
+  %cmp34 = fcmp ogt float %4, %6, !dbg !3153
+  br i1 %cmp34, label %if.then35, label %for.inc, !dbg !3153
+
+if.then35:                                        ; preds = %if.end28
+  store float %4, float* %arrayidx33, align 4, !dbg !3154, !tbaa !2022
+  br label %for.inc, !dbg !3154
+
+for.inc:                                          ; preds = %if.end28, %if.then35
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !3150
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !3150
+  %exitcond = icmp eq i32 %lftr.wideiv, 3, !dbg !3150
+  br i1 %exitcond, label %for.inc42, label %for.body10, !dbg !3150
+
+for.inc42:                                        ; preds = %for.inc
+  %inc43 = add nsw i32 %i.09, 1, !dbg !3149
+  call void @llvm.dbg.value(metadata !{i32 %inc43}, i64 0, metadata !1222), !dbg !3149
+  %cmp7 = icmp slt i32 %i.09, %end, !dbg !3149
+  br i1 %cmp7, label %for.cond8.preheader, label %for.end44, !dbg !3149
+
+for.end44:                                        ; preds = %for.inc42
+  %.pre = load float* %arrayidx1.i5, align 4, !dbg !3155, !tbaa !2022
+  %.pre10 = load float* %arrayidx1.i, align 4, !dbg !3155, !tbaa !2022
+  %.pre11 = load float* %arraydecay6, align 4, !dbg !3155, !tbaa !2022
+  %.pre12 = load float* %arraydecay, align 4, !dbg !3155, !tbaa !2022
+  %.pre13 = load float* %arrayidx2.i6, align 4, !dbg !3156, !tbaa !2022
+  %.pre14 = load float* %arrayidx2.i, align 4, !dbg !3156, !tbaa !2022
+  call void @llvm.dbg.value(metadata !172, i64 0, metadata !1226), !dbg !3157
+  %sub = fsub float %.pre, %.pre10, !dbg !3155
+  %sub51 = fsub float %.pre11, %.pre12, !dbg !3155
+  %cmp52 = fcmp ogt float %sub, %sub51, !dbg !3155
+  call void @llvm.dbg.value(metadata !1969, i64 0, metadata !1226), !dbg !3158
+  %DimToUse.0 = zext i1 %cmp52 to i32, !dbg !3155
+  %sub57 = fsub float %.pre13, %.pre14, !dbg !3156
+  %idxprom581 = zext i1 %cmp52 to i64, !dbg !3156
+  %arrayidx59 = getelementptr inbounds [3 x float]* %max, i64 0, i64 %idxprom581, !dbg !3156
+  %7 = load float* %arrayidx59, align 4, !dbg !3156, !tbaa !2022
+  %arrayidx61 = getelementptr inbounds [3 x float]* %min, i64 0, i64 %idxprom581, !dbg !3156
+  %8 = load float* %arrayidx61, align 4, !dbg !3156, !tbaa !2022
+  %sub62 = fsub float %7, %8, !dbg !3156
+  %cmp63 = fcmp ogt float %sub57, %sub62, !dbg !3156
+  call void @llvm.dbg.value(metadata !2888, i64 0, metadata !1226), !dbg !3159
+  %DimToUse.1 = select i1 %cmp63, i32 2, i32 %DimToUse.0, !dbg !3156
+  %add = add nsw i32 %end, %start, !dbg !3160
+  %shr66 = ashr i32 %add, 1, !dbg !3160
+  call void @llvm.dbg.value(metadata !{i32 %shr66}, i64 0, metadata !1227), !dbg !3160
+  %sub67 = sub nsw i32 %end, %start, !dbg !3161
+  call void @llvm.dbg.value(metadata !{i32 %sub67}, i64 0, metadata !1228), !dbg !3161
+  %cmp68 = icmp sgt i32 %sub67, 1, !dbg !3162
+  br i1 %cmp68, label %if.then69, label %if.end73, !dbg !3162
+
+if.then69:                                        ; preds = %for.end44
+  %cmp70 = icmp sgt i32 %sub67, 1000, !dbg !3163
+  br i1 %cmp70, label %if.then71, label %if.end72, !dbg !3163
+
+if.then71:                                        ; preds = %if.then69
+  store i32 %end, i32* @_ZN3pov15gPhotonStat_endE, align 4, !dbg !3165, !tbaa !1674
+  %call = call i32 @_ZN3pov19Send_ProgressUpdateEii(i32 7, i32 1) #8, !dbg !3167
+  br label %if.end72, !dbg !3168
+
+if.end72:                                         ; preds = %if.then71, %if.then69
+  call fastcc void @_ZN3povL11halfSortRecEiiii(i32 %start, i32 %end, i32 %DimToUse.1, i32 %shr66) #8, !dbg !3169
+  br label %if.end73, !dbg !3170
+
+if.end73:                                         ; preds = %for.end44, %if.end72
+  %conv = trunc i32 %DimToUse.1 to i8, !dbg !3171
+  %and74 = and i32 %shr66, 16383, !dbg !3171
+  %idxprom752 = zext i32 %and74 to i64, !dbg !3171
+  %shr76 = ashr i32 %add, 15, !dbg !3171
+  %idxprom77 = sext i32 %shr76 to i64, !dbg !3171
+  %9 = load %"struct.pov::photon_struct"*** @_ZN3povL5map_sE, align 8, !dbg !3171, !tbaa !1709
+  %arrayidx78 = getelementptr inbounds %"struct.pov::photon_struct"** %9, i64 %idxprom77, !dbg !3171
+  %10 = load %"struct.pov::photon_struct"** %arrayidx78, align 8, !dbg !3171, !tbaa !1709
+  %info80 = getelementptr inbounds %"struct.pov::photon_struct"* %10, i64 %idxprom752, i32 2, !dbg !3171
+  store i8 %conv, i8* %info80, align 1, !dbg !3171, !tbaa !1675
+  %sub81 = add nsw i32 %shr66, -1, !dbg !3172
+  call fastcc void @_ZN3povL16sortAndSubdivideEiii(i32 %start, i32 %sub81) #8, !dbg !3172
+  %add82 = add nsw i32 %shr66, 1, !dbg !3173
+  call fastcc void @_ZN3povL16sortAndSubdivideEiii(i32 %add82, i32 %end) #8, !dbg !3173
+  br label %return, !dbg !3173
+
+return:                                           ; preds = %if.end, %if.end73, %if.then
+  ret void, !dbg !3173
+}

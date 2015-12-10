@@ -1,0 +1,50 @@
+define void @_ZNK6soplex6SoPlex8dumpFileEPKc(%"class.soplex::SoPlex"* %this, i8* %filename) unnamed_addr #2 align 2 {
+invoke.cont:
+  %file = alloca %"class.std::basic_ofstream", align 8
+  call void @llvm.dbg.value(metadata !{%"class.soplex::SoPlex"* %this}, i64 0, metadata !7702), !dbg !9644
+  call void @llvm.dbg.value(metadata !{i8* %filename}, i64 0, metadata !7704), !dbg !9644
+  %0 = bitcast %"class.std::basic_ofstream"* %file to i8*, !dbg !9645
+  call void @llvm.lifetime.start(i64 512, i8* %0) #1, !dbg !9645
+  call void @llvm.dbg.declare(metadata !{%"class.std::basic_ofstream"* %file}, metadata !7705), !dbg !9645
+  tail call void @llvm.dbg.value(metadata !9646, i64 0, metadata !9647), !dbg !9648
+  tail call void @llvm.dbg.value(metadata !9649, i64 0, metadata !9650), !dbg !9648
+  call void @_ZNSt14basic_ofstreamIcSt11char_traitsIcEEC1EPKcSt13_Ios_Openmode(%"class.std::basic_ofstream"* %file, i8* %filename, i32 48) #12, !dbg !9645
+  %1 = bitcast %"class.std::basic_ofstream"* %file to i8**, !dbg !9651
+  %vtable = load i8** %1, align 8, !dbg !9651, !tbaa !9001
+  %vbase.offset.ptr = getelementptr i8* %vtable, i64 -24, !dbg !9651
+  %2 = bitcast i8* %vbase.offset.ptr to i64*, !dbg !9651
+  %vbase.offset = load i64* %2, align 8, !dbg !9651
+  %add.ptr.sum = add i64 %vbase.offset, 32, !dbg !9652
+  %_M_streambuf_state.i.i = getelementptr inbounds i8* %0, i64 %add.ptr.sum, !dbg !9652
+  %3 = bitcast i8* %_M_streambuf_state.i.i to i32*, !dbg !9652
+  %4 = load i32* %3, align 4, !dbg !9652, !tbaa !9577
+  %cmp.i = icmp eq i32 %4, 0, !dbg !9653
+  br i1 %cmp.i, label %if.then, label %if.end, !dbg !9651
+
+if.then:                                          ; preds = %invoke.cont
+  %5 = bitcast %"class.std::basic_ofstream"* %file to %"class.std::basic_ostream"*, !dbg !9655
+  %6 = getelementptr inbounds %"class.soplex::SoPlex"* %this, i64 0, i32 0, !dbg !9655
+  %call4 = invoke %"class.std::basic_ostream"* @_ZN6soplexlsERSoRKNS_5SPxLPE(%"class.std::basic_ostream"* %5, %"class.soplex::SPxLP"* %6) #12
+          to label %if.end unwind label %lpad, !dbg !9655
+
+lpad:                                             ; preds = %if.then
+  %7 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !9651
+  invoke void @_ZNSt14basic_ofstreamIcSt11char_traitsIcEED1Ev(%"class.std::basic_ofstream"* %file) #12
+          to label %eh.resume unwind label %terminate.lpad, !dbg !9656
+
+if.end:                                           ; preds = %if.then, %invoke.cont
+  call void @_ZNSt14basic_ofstreamIcSt11char_traitsIcEED1Ev(%"class.std::basic_ofstream"* %file) #12, !dbg !9656
+  call void @llvm.lifetime.end(i64 512, i8* %0) #1, !dbg !9656
+  ret void, !dbg !9656
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %7, !dbg !9656
+
+terminate.lpad:                                   ; preds = %lpad
+  %8 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !9656
+  %9 = extractvalue { i8*, i32 } %8, 0, !dbg !9656
+  call void @__clang_call_terminate(i8* %9) #13, !dbg !9656
+  unreachable, !dbg !9656
+}

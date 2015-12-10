@@ -1,31 +1,33 @@
 define i32 @expand_continue_loop(%struct.nesting* %whichloop) #0 {
 entry:
-  %0 = load %struct.function** @cfun, align 8, !tbaa !0
-  %stmt = getelementptr inbounds %struct.function* %0, i64 0, i32 1
-  %1 = load %struct.stmt_status** %stmt, align 8, !tbaa !0
-  %x_last_expr_type = getelementptr inbounds %struct.stmt_status* %1, i64 0, i32 8
-  store %union.tree_node* null, %union.tree_node** %x_last_expr_type, align 8, !tbaa !0
-  %cmp = icmp eq %struct.nesting* %whichloop, null
-  br i1 %cmp, label %if.end, label %if.end4
+  tail call void @llvm.dbg.value(metadata !{%struct.nesting* %whichloop}, i64 0, metadata !1634), !dbg !3428
+  %0 = load %struct.function** @cfun, align 8, !dbg !3429, !tbaa !2438
+  %stmt = getelementptr inbounds %struct.function* %0, i64 0, i32 1, !dbg !3429
+  %1 = load %struct.stmt_status** %stmt, align 8, !dbg !3429, !tbaa !2438
+  %x_last_expr_type = getelementptr inbounds %struct.stmt_status* %1, i64 0, i32 8, !dbg !3429
+  store %union.tree_node* null, %union.tree_node** %x_last_expr_type, align 8, !dbg !3429, !tbaa !2438
+  %cmp = icmp eq %struct.nesting* %whichloop, null, !dbg !3430
+  br i1 %cmp, label %if.end, label %if.end4, !dbg !3430
 
 if.end:                                           ; preds = %entry
-  %2 = load %struct.function** @cfun, align 8, !tbaa !0
-  %stmt1 = getelementptr inbounds %struct.function* %2, i64 0, i32 1
-  %3 = load %struct.stmt_status** %stmt1, align 8, !tbaa !0
-  %x_loop_stack = getelementptr inbounds %struct.stmt_status* %3, i64 0, i32 3
-  %4 = load %struct.nesting** %x_loop_stack, align 8, !tbaa !0
-  %cmp2 = icmp eq %struct.nesting* %4, null
-  br i1 %cmp2, label %return, label %if.end4
+  %2 = load %struct.function** @cfun, align 8, !dbg !3431, !tbaa !2438
+  %stmt1 = getelementptr inbounds %struct.function* %2, i64 0, i32 1, !dbg !3431
+  %3 = load %struct.stmt_status** %stmt1, align 8, !dbg !3431, !tbaa !2438
+  %x_loop_stack = getelementptr inbounds %struct.stmt_status* %3, i64 0, i32 3, !dbg !3431
+  %4 = load %struct.nesting** %x_loop_stack, align 8, !dbg !3431, !tbaa !2438
+  tail call void @llvm.dbg.value(metadata !{%struct.nesting* %4}, i64 0, metadata !1634), !dbg !3431
+  %cmp2 = icmp eq %struct.nesting* %4, null, !dbg !3432
+  br i1 %cmp2, label %return, label %if.end4, !dbg !3432
 
 if.end4:                                          ; preds = %entry, %if.end
   %whichloop.addr.08 = phi %struct.nesting* [ %4, %if.end ], [ %whichloop, %entry ]
-  %continue_label = getelementptr inbounds %struct.nesting* %whichloop.addr.08, i64 0, i32 4, i32 0, i32 3
-  %5 = load %struct.nesting** %continue_label, align 8
-  %6 = bitcast %struct.nesting* %5 to %struct.rtx_def*
-  tail call fastcc void @expand_goto_internal(%union.tree_node* null, %struct.rtx_def* %6, %struct.rtx_def* null) #9
-  br label %return
+  %continue_label = getelementptr inbounds %struct.nesting* %whichloop.addr.08, i64 0, i32 4, i32 0, i32 3, !dbg !3433
+  %5 = load %struct.nesting** %continue_label, align 8, !dbg !3433
+  %6 = bitcast %struct.nesting* %5 to %struct.rtx_def*, !dbg !3433
+  tail call fastcc void @expand_goto_internal(%union.tree_node* null, %struct.rtx_def* %6, %struct.rtx_def* null) #10, !dbg !3433
+  br label %return, !dbg !3434
 
 return:                                           ; preds = %if.end, %if.end4
   %retval.0 = phi i32 [ 1, %if.end4 ], [ 0, %if.end ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !3434
 }

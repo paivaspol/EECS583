@@ -1,0 +1,25 @@
+define void @_ZN8pov_base11OTextStream7putcharEi(%"class.pov_base::OTextStream"* nocapture %this, i32 %chr) #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::OTextStream"* %this}, i64 0, metadata !508), !dbg !771
+  tail call void @llvm.dbg.value(metadata !{i32 %chr}, i64 0, metadata !509), !dbg !771
+  %stream = getelementptr inbounds %"class.pov_base::OTextStream"* %this, i64 0, i32 1, !dbg !772
+  %0 = load %"class.pov_base::OStream"** %stream, align 8, !dbg !772, !tbaa !590
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::OStream"* %0}, i64 0, metadata !773) #7, !dbg !774
+  %fail.i = getelementptr inbounds %"class.pov_base::OStream"* %0, i64 0, i32 0, i32 1, !dbg !775
+  %1 = load i8* %fail.i, align 1, !dbg !775, !tbaa !625, !range !626
+  %tobool.i = icmp eq i8 %1, 0, !dbg !775
+  br i1 %tobool.i, label %if.then.i, label %_ZN8pov_base7OStream10Write_ByteEh.exit, !dbg !775
+
+if.then.i:                                        ; preds = %entry
+  %conv.i = and i32 %chr, 255, !dbg !775
+  %f.i = getelementptr inbounds %"class.pov_base::OStream"* %0, i64 0, i32 0, i32 2, !dbg !775
+  %2 = load %struct._IO_FILE** %f.i, align 8, !dbg !775, !tbaa !590
+  %call.i = tail call i32 @fputc(i32 %conv.i, %struct._IO_FILE* %2) #11, !dbg !775
+  %cmp.i = icmp ne i32 %call.i, %conv.i, !dbg !775
+  %frombool.i = zext i1 %cmp.i to i8, !dbg !775
+  store i8 %frombool.i, i8* %fail.i, align 1, !dbg !775, !tbaa !625
+  br label %_ZN8pov_base7OStream10Write_ByteEh.exit, !dbg !775
+
+_ZN8pov_base7OStream10Write_ByteEh.exit:          ; preds = %entry, %if.then.i
+  ret void, !dbg !777
+}

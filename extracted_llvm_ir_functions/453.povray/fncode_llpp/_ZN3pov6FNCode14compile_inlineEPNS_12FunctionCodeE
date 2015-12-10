@@ -1,0 +1,58 @@
+define void @_ZN3pov6FNCode14compile_inlineEPNS_12FunctionCodeE(%"class.pov::FNCode"* nocapture %this, %"struct.pov::FunctionCode"* nocapture %f) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.pov::FNCode"* %this}, i64 0, metadata !958), !dbg !2060
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::FunctionCode"* %f}, i64 0, metadata !959), !dbg !2060
+  %function = getelementptr inbounds %"class.pov::FNCode"* %this, i64 0, i32 0, !dbg !2061
+  %0 = load %"struct.pov::FunctionCode"** %function, align 8, !dbg !2061, !tbaa !1112
+  %program_size = getelementptr inbounds %"struct.pov::FunctionCode"* %0, i64 0, i32 1, !dbg !2061
+  %1 = load i32* %program_size, align 4, !dbg !2061, !tbaa !1117
+  %sub = add i32 %1, -1, !dbg !2061
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !960), !dbg !2061
+  tail call void @llvm.dbg.value(metadata !600, i64 0, metadata !963), !dbg !2062
+  %program_size2 = getelementptr inbounds %"struct.pov::FunctionCode"* %f, i64 0, i32 1, !dbg !2063
+  %2 = load i32* %program_size2, align 4, !dbg !2063, !tbaa !1117
+  %cmp28 = icmp eq i32 %2, 1, !dbg !2063
+  br i1 %cmp28, label %for.end, label %for.body.lr.ph, !dbg !2063
+
+for.body.lr.ph:                                   ; preds = %entry
+  %program = getelementptr inbounds %"struct.pov::FunctionCode"* %f, i64 0, i32 0, !dbg !2065
+  br label %for.body, !dbg !2063
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %i.029 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.inc ]
+  %idxprom = zext i32 %i.029 to i64, !dbg !2065
+  %3 = load i32** %program, align 8, !dbg !2065, !tbaa !1112
+  %arrayidx = getelementptr inbounds i32* %3, i64 %idxprom, !dbg !2065
+  %4 = load i32* %arrayidx, align 4, !dbg !2065, !tbaa !1117
+  %and = and i32 %4, 4095, !dbg !2065
+  tail call void @llvm.dbg.value(metadata !{i32 %and}, i64 0, metadata !961), !dbg !2065
+  tail call void @llvm.dbg.value(metadata !{i32 %shr}, i64 0, metadata !962), !dbg !2067
+  %and.off = add i32 %and, -832, !dbg !2068
+  %5 = icmp ult i32 %and.off, 41, !dbg !2068
+  %cmp10 = icmp eq i32 %and, 961, !dbg !2068
+  %or.cond18 = or i1 %5, %cmp10, !dbg !2068
+  br i1 %or.cond18, label %if.then, label %if.else, !dbg !2068
+
+if.then:                                          ; preds = %for.body
+  %shr = lshr i32 %4, 12, !dbg !2067
+  %add = add i32 %sub, %shr, !dbg !2069
+  %shr12 = lshr i32 %add, 12, !dbg !2069
+  %call = tail call i32 @_ZN3pov6FNCode19compile_instructionEjjjj(%"class.pov::FNCode"* %this, i32 %and, i32 0, i32 0, i32 %shr12) #7, !dbg !2069
+  br label %for.inc, !dbg !2069
+
+if.else:                                          ; preds = %for.body
+  %shr15 = lshr i32 %4, 24, !dbg !2070
+  %call17 = tail call i32 @_ZN3pov6FNCode19compile_instructionEjjjj(%"class.pov::FNCode"* %this, i32 %and, i32 0, i32 0, i32 %shr15) #7, !dbg !2070
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then, %if.else
+  %inc = add i32 %i.029, 1, !dbg !2063
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !963), !dbg !2063
+  %6 = load i32* %program_size2, align 4, !dbg !2063, !tbaa !1117
+  %sub3 = add i32 %6, -1, !dbg !2063
+  %cmp = icmp ult i32 %inc, %sub3, !dbg !2063
+  br i1 %cmp, label %for.body, label %for.end, !dbg !2063
+
+for.end:                                          ; preds = %for.inc, %entry
+  ret void, !dbg !2071
+}

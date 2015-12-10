@@ -1,31 +1,33 @@
-define internal fastcc %struct.rtx_def* @wrap_constant(i32 %mode, %struct.rtx_def* %x) #1 {
+define internal fastcc %struct.rtx_def* @wrap_constant(i32 %mode, %struct.rtx_def* %x) #2 {
 entry:
-  %0 = bitcast %struct.rtx_def* %x to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !686), !dbg !1137
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !687), !dbg !1138
+  %0 = bitcast %struct.rtx_def* %x to i32*, !dbg !1139
+  %bf.load = load i32* %0, align 8, !dbg !1139
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1139
   switch i32 %bf.clear, label %return [
     i32 54, label %if.end
     i32 55, label %lor.lhs.false
-  ]
+  ], !dbg !1139
 
 lor.lhs.false:                                    ; preds = %entry
-  %bf.clear5 = and i32 %bf.load, 16711680
-  %cmp6 = icmp eq i32 %bf.clear5, 0
-  br i1 %cmp6, label %if.end, label %return
+  %bf.clear5 = and i32 %bf.load, 16711680, !dbg !1139
+  %cmp6 = icmp eq i32 %bf.clear5, 0, !dbg !1139
+  br i1 %cmp6, label %if.end, label %return, !dbg !1139
 
 if.end:                                           ; preds = %entry, %lor.lhs.false
-  %cmp7 = icmp eq i32 %mode, 0
-  br i1 %cmp7, label %if.then8, label %if.end9
+  %cmp7 = icmp eq i32 %mode, 0, !dbg !1140
+  br i1 %cmp7, label %if.then8, label %if.end9, !dbg !1140
 
 if.then8:                                         ; preds = %if.end
-  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 548, i8* getelementptr inbounds ([14 x i8]* @__FUNCTION__.wrap_constant, i64 0, i64 0)) #9
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), i32 548, i8* getelementptr inbounds ([14 x i8]* @__FUNCTION__.wrap_constant, i64 0, i64 0)) #10, !dbg !1141
+  unreachable, !dbg !1141
 
 if.end9:                                          ; preds = %if.end
-  %call = tail call %struct.rtx_def* @gen_rtx_fmt_e(i32 58, i32 %mode, %struct.rtx_def* %x) #10
-  br label %return
+  %call = tail call %struct.rtx_def* @gen_rtx_fmt_e(i32 58, i32 %mode, %struct.rtx_def* %x) #11, !dbg !1142
+  br label %return, !dbg !1142
 
 return:                                           ; preds = %lor.lhs.false, %entry, %if.end9
   %retval.0 = phi %struct.rtx_def* [ %call, %if.end9 ], [ %x, %entry ], [ %x, %lor.lhs.false ]
-  ret %struct.rtx_def* %retval.0
+  ret %struct.rtx_def* %retval.0, !dbg !1143
 }

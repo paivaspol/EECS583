@@ -1,76 +1,79 @@
 define %struct.gsi_s* @GSIOpen(i8* nocapture %gsifile) #0 {
 entry:
   %magic = alloca [32 x i8], align 16
-  %call = call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 58, i64 16) #6
-  %0 = bitcast i8* %call to %struct.gsi_s*
-  %call1 = call %struct._IO_FILE* @fopen(i8* %gsifile, i8* getelementptr inbounds ([2 x i8]* @.str1, i64 0, i64 0)) #6
-  %gsifp = bitcast i8* %call to %struct._IO_FILE**
-  store %struct._IO_FILE* %call1, %struct._IO_FILE** %gsifp, align 8, !tbaa !0
-  %cmp = icmp eq %struct._IO_FILE* %call1, null
-  br i1 %cmp, label %if.then, label %if.end
+  call void @llvm.dbg.value(metadata !{i8* %gsifile}, i64 0, metadata !78), !dbg !213
+  call void @llvm.dbg.declare(metadata !{[32 x i8]* %magic}, metadata !80), !dbg !214
+  %call = call i8* @sre_malloc(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 58, i64 16) #7, !dbg !215
+  %0 = bitcast i8* %call to %struct.gsi_s*, !dbg !215
+  call void @llvm.dbg.value(metadata !{%struct.gsi_s* %0}, i64 0, metadata !79), !dbg !215
+  %call1 = call %struct._IO_FILE* @fopen(i8* %gsifile, i8* getelementptr inbounds ([2 x i8]* @.str1, i64 0, i64 0)) #7, !dbg !216
+  %gsifp = bitcast i8* %call to %struct._IO_FILE**, !dbg !216
+  store %struct._IO_FILE* %call1, %struct._IO_FILE** %gsifp, align 8, !dbg !216, !tbaa !217
+  %cmp = icmp eq %struct._IO_FILE* %call1, null, !dbg !216
+  br i1 %cmp, label %if.then, label %if.end, !dbg !216
 
 if.then:                                          ; preds = %entry
-  call void @free(i8* %call) #6
-  store i32 4, i32* @squid_errno, align 4, !tbaa !3
-  br label %return
+  call void @free(i8* %call) #7, !dbg !220
+  store i32 4, i32* @squid_errno, align 4, !dbg !220, !tbaa !222
+  br label %return, !dbg !220
 
 if.end:                                           ; preds = %entry
-  %arraydecay = getelementptr inbounds [32 x i8]* %magic, i64 0, i64 0
-  %call3 = call i64 @fread(i8* %arraydecay, i64 1, i64 32, %struct._IO_FILE* %call1) #6
-  %tobool = icmp eq i64 %call3, 0
-  br i1 %tobool, label %if.then4, label %if.end5
+  %arraydecay = getelementptr inbounds [32 x i8]* %magic, i64 0, i64 0, !dbg !223
+  %call3 = call i64 @fread(i8* %arraydecay, i64 1, i64 32, %struct._IO_FILE* %call1) #7, !dbg !223
+  %tobool = icmp eq i64 %call3, 0, !dbg !223
+  br i1 %tobool, label %if.then4, label %if.end5, !dbg !223
 
 if.then4:                                         ; preds = %if.end
-  call void @free(i8* %call) #6
-  store i32 2, i32* @squid_errno, align 4, !tbaa !3
-  br label %return
+  call void @free(i8* %call) #7, !dbg !224
+  store i32 2, i32* @squid_errno, align 4, !dbg !224, !tbaa !222
+  br label %return, !dbg !224
 
 if.end5:                                          ; preds = %if.end
-  %call7 = call i32 @strcmp(i8* %arraydecay, i8* getelementptr inbounds ([4 x i8]* @.str2, i64 0, i64 0)) #7
-  %cmp8 = icmp eq i32 %call7, 0
-  br i1 %cmp8, label %if.end10, label %if.then9
+  %call7 = call i32 @strcmp(i8* %arraydecay, i8* getelementptr inbounds ([4 x i8]* @.str2, i64 0, i64 0)) #8, !dbg !226
+  %cmp8 = icmp eq i32 %call7, 0, !dbg !226
+  br i1 %cmp8, label %if.end10, label %if.then9, !dbg !226
 
 if.then9:                                         ; preds = %if.end5
-  call void @free(i8* %call) #6
-  store i32 5, i32* @squid_errno, align 4, !tbaa !3
-  br label %return
+  call void @free(i8* %call) #7, !dbg !227
+  store i32 5, i32* @squid_errno, align 4, !dbg !227, !tbaa !222
+  br label %return, !dbg !227
 
 if.end10:                                         ; preds = %if.end5
-  %nfiles = getelementptr inbounds i8* %call, i64 8
-  %1 = bitcast i8* %nfiles to i16*
-  %2 = load %struct._IO_FILE** %gsifp, align 8, !tbaa !0
-  %call12 = call i64 @fread(i8* %nfiles, i64 2, i64 1, %struct._IO_FILE* %2) #6
-  %tobool13 = icmp eq i64 %call12, 0
-  br i1 %tobool13, label %if.then14, label %if.end15
+  %nfiles = getelementptr inbounds i8* %call, i64 8, !dbg !229
+  %1 = bitcast i8* %nfiles to i16*, !dbg !229
+  %2 = load %struct._IO_FILE** %gsifp, align 8, !dbg !229, !tbaa !217
+  %call12 = call i64 @fread(i8* %nfiles, i64 2, i64 1, %struct._IO_FILE* %2) #7, !dbg !229
+  %tobool13 = icmp eq i64 %call12, 0, !dbg !229
+  br i1 %tobool13, label %if.then14, label %if.end15, !dbg !229
 
 if.then14:                                        ; preds = %if.end10
-  call void @free(i8* %call) #6
-  store i32 2, i32* @squid_errno, align 4, !tbaa !3
-  br label %return
+  call void @free(i8* %call) #7, !dbg !230
+  store i32 2, i32* @squid_errno, align 4, !dbg !230, !tbaa !222
+  br label %return, !dbg !230
 
 if.end15:                                         ; preds = %if.end10
-  %recnum = getelementptr inbounds i8* %call, i64 12
-  %3 = bitcast i8* %recnum to i32*
-  %4 = load %struct._IO_FILE** %gsifp, align 8, !tbaa !0
-  %call17 = call i64 @fread(i8* %recnum, i64 4, i64 1, %struct._IO_FILE* %4) #6
-  %tobool18 = icmp eq i64 %call17, 0
-  br i1 %tobool18, label %if.then19, label %if.end20
+  %recnum = getelementptr inbounds i8* %call, i64 12, !dbg !232
+  %3 = bitcast i8* %recnum to i32*, !dbg !232
+  %4 = load %struct._IO_FILE** %gsifp, align 8, !dbg !232, !tbaa !217
+  %call17 = call i64 @fread(i8* %recnum, i64 4, i64 1, %struct._IO_FILE* %4) #7, !dbg !232
+  %tobool18 = icmp eq i64 %call17, 0, !dbg !232
+  br i1 %tobool18, label %if.then19, label %if.end20, !dbg !232
 
 if.then19:                                        ; preds = %if.end15
-  call void @free(i8* %call) #6
-  store i32 2, i32* @squid_errno, align 4, !tbaa !3
-  br label %return
+  call void @free(i8* %call) #7, !dbg !233
+  store i32 2, i32* @squid_errno, align 4, !dbg !233, !tbaa !222
+  br label %return, !dbg !233
 
 if.end20:                                         ; preds = %if.end15
-  %5 = load i16* %1, align 2, !tbaa !4
-  %call22 = call zeroext i16 @sre_ntoh16(i16 zeroext %5) #6
-  store i16 %call22, i16* %1, align 2, !tbaa !4
-  %6 = load i32* %3, align 4, !tbaa !3
-  %call25 = call i32 @sre_ntoh32(i32 %6) #6
-  store i32 %call25, i32* %3, align 4, !tbaa !3
-  br label %return
+  %5 = load i16* %1, align 2, !dbg !235, !tbaa !236
+  %call22 = call zeroext i16 @sre_ntoh16(i16 zeroext %5) #7, !dbg !235
+  store i16 %call22, i16* %1, align 2, !dbg !235, !tbaa !236
+  %6 = load i32* %3, align 4, !dbg !237, !tbaa !222
+  %call25 = call i32 @sre_ntoh32(i32 %6) #7, !dbg !237
+  store i32 %call25, i32* %3, align 4, !dbg !237, !tbaa !222
+  br label %return, !dbg !238
 
 return:                                           ; preds = %if.end20, %if.then19, %if.then14, %if.then9, %if.then4, %if.then
   %retval.0 = phi %struct.gsi_s* [ null, %if.then ], [ null, %if.then9 ], [ %0, %if.end20 ], [ null, %if.then19 ], [ null, %if.then14 ], [ null, %if.then4 ]
-  ret %struct.gsi_s* %retval.0
+  ret %struct.gsi_s* %retval.0, !dbg !239
 }

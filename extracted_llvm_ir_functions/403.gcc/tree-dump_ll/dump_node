@@ -2,149 +2,163 @@ define void @dump_node(%union.tree_node* %t, i32 %flags, %struct._IO_FILE* %stre
 entry:
   %buffer.i = alloca [32 x i8], align 16
   %di = alloca %struct.dump_info, align 8
-  %0 = bitcast %struct.dump_info* %di to i8*
-  call void @llvm.lifetime.start(i64 64, i8* %0) #5
-  %stream1 = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 0
-  store %struct._IO_FILE* %stream, %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %index = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 3
-  store i32 0, i32* %index, align 4, !tbaa !4
-  %column = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 4
-  store i32 0, i32* %column, align 8, !tbaa !4
-  %queue = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 5
-  %queue_end = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 6
-  %free_list = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 7
-  %flags2 = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 2
-  %1 = bitcast %struct.dump_queue** %queue to i8*
-  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 24, i32 8, i1 false)
-  store i32 %flags, i32* %flags2, align 8, !tbaa !4
-  %node = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 1
-  store %union.tree_node* %t, %union.tree_node** %node, align 8, !tbaa !0
-  %call = call %struct.splay_tree_s* @splay_tree_new(i32 (i64, i64)* @splay_tree_compare_pointers, void (i64)* null, void (i64)* bitcast (void (i8*)* @free to void (i64)*)) #7
-  %nodes = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 8
-  store %struct.splay_tree_s* %call, %struct.splay_tree_s** %nodes, align 8, !tbaa !0
-  %call3 = call fastcc i32 @queue(%struct.dump_info* %di, %union.tree_node* %t, i32 0) #8
-  %2 = load %struct.dump_queue** %queue, align 8, !tbaa !0
-  %tobool13 = icmp eq %struct.dump_queue* %2, null
-  br i1 %tobool13, label %while.end, label %while.body.lr.ph
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %t}, i64 0, metadata !708), !dbg !944
+  call void @llvm.dbg.value(metadata !{i32 %flags}, i64 0, metadata !709), !dbg !945
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %stream}, i64 0, metadata !710), !dbg !946
+  %0 = bitcast %struct.dump_info* %di to i8*, !dbg !947
+  call void @llvm.lifetime.start(i64 64, i8* %0) #6, !dbg !947
+  call void @llvm.dbg.declare(metadata !{%struct.dump_info* %di}, metadata !711), !dbg !947
+  %stream1 = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 0, !dbg !948
+  store %struct._IO_FILE* %stream, %struct._IO_FILE** %stream1, align 8, !dbg !948, !tbaa !844
+  %index = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 3, !dbg !949
+  store i32 0, i32* %index, align 4, !dbg !949, !tbaa !850
+  %column = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 4, !dbg !950
+  store i32 0, i32* %column, align 8, !dbg !950, !tbaa !850
+  %queue = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 5, !dbg !951
+  %queue_end = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 6, !dbg !952
+  %free_list = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 7, !dbg !953
+  %flags2 = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 2, !dbg !954
+  %1 = bitcast %struct.dump_queue** %queue to i8*, !dbg !954
+  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 24, i32 8, i1 false), !dbg !951
+  store i32 %flags, i32* %flags2, align 8, !dbg !954, !tbaa !850
+  %node = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 1, !dbg !955
+  store %union.tree_node* %t, %union.tree_node** %node, align 8, !dbg !955, !tbaa !844
+  %call = call %struct.splay_tree_s* @splay_tree_new(i32 (i64, i64)* @splay_tree_compare_pointers, void (i64)* null, void (i64)* bitcast (void (i8*)* @free to void (i64)*)) #8, !dbg !956
+  %nodes = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 8, !dbg !956
+  store %struct.splay_tree_s* %call, %struct.splay_tree_s** %nodes, align 8, !dbg !956, !tbaa !844
+  %call3 = call fastcc i32 @queue(%struct.dump_info* %di, %union.tree_node* %t, i32 0) #9, !dbg !957
+  %2 = load %struct.dump_queue** %queue, align 8, !dbg !958, !tbaa !844
+  %tobool13 = icmp eq %struct.dump_queue* %2, null, !dbg !958
+  br i1 %tobool13, label %while.end, label %while.body.lr.ph, !dbg !958
 
 while.body.lr.ph:                                 ; preds = %entry
-  %3 = getelementptr inbounds [32 x i8]* %buffer.i, i64 0, i64 0
-  %4 = load i32 (i8*, %union.tree_node*)** getelementptr inbounds (%struct.lang_hooks* @lang_hooks, i64 0, i32 20, i32 0), align 8, !tbaa !0
-  %5 = load i32 (%union.tree_node*)** getelementptr inbounds (%struct.lang_hooks* @lang_hooks, i64 0, i32 20, i32 1), align 8, !tbaa !0
-  br label %while.body
+  %3 = getelementptr inbounds [32 x i8]* %buffer.i, i64 0, i64 0, !dbg !959
+  %4 = load i32 (i8*, %union.tree_node*)** getelementptr inbounds (%struct.lang_hooks* @lang_hooks, i64 0, i32 20, i32 0), align 8, !dbg !961, !tbaa !844
+  %5 = load i32 (%union.tree_node*)** getelementptr inbounds (%struct.lang_hooks* @lang_hooks, i64 0, i32 20, i32 1), align 8, !dbg !962, !tbaa !844
+  br label %while.body, !dbg !958
 
 while.body:                                       ; preds = %while.body.lr.ph, %dequeue_and_dump.exit
   %6 = phi %struct.dump_queue* [ %2, %while.body.lr.ph ], [ %243, %dequeue_and_dump.exit ]
-  call void @llvm.lifetime.start(i64 32, i8* %3) #5
-  %node.i = getelementptr inbounds %struct.dump_queue* %6, i64 0, i32 0
-  %7 = load %struct.splay_tree_node_s** %node.i, align 8, !tbaa !0
-  %key.i = getelementptr inbounds %struct.splay_tree_node_s* %7, i64 0, i32 0
-  %8 = load i64* %key.i, align 8, !tbaa !3
-  %9 = inttoptr i64 %8 to %union.tree_node*
-  %value.i = getelementptr inbounds %struct.splay_tree_node_s* %7, i64 0, i32 1
-  %10 = load i64* %value.i, align 8, !tbaa !3
-  %11 = inttoptr i64 %10 to %struct.dump_node_info*
-  %index1.i = getelementptr inbounds %struct.dump_node_info* %11, i64 0, i32 0
-  %12 = load i32* %index1.i, align 4, !tbaa !4
-  %next.i = getelementptr inbounds %struct.dump_queue* %6, i64 0, i32 1
-  %13 = load %struct.dump_queue** %next.i, align 8, !tbaa !0
-  store %struct.dump_queue* %13, %struct.dump_queue** %queue, align 8, !tbaa !0
-  %tobool.i = icmp eq %struct.dump_queue* %13, null
-  br i1 %tobool.i, label %if.then.i, label %if.end.i
+  call void @llvm.lifetime.start(i64 32, i8* %3) #6, !dbg !959
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !963) #6, !dbg !959
+  call void @llvm.dbg.value(metadata !{%struct.dump_queue* %6}, i64 0, metadata !964) #6, !dbg !965
+  %node.i = getelementptr inbounds %struct.dump_queue* %6, i64 0, i32 0, !dbg !966
+  %7 = load %struct.splay_tree_node_s** %node.i, align 8, !dbg !966, !tbaa !844
+  call void @llvm.dbg.value(metadata !{%struct.splay_tree_node_s* %7}, i64 0, metadata !967) #6, !dbg !966
+  %key.i = getelementptr inbounds %struct.splay_tree_node_s* %7, i64 0, i32 0, !dbg !968
+  %8 = load i64* %key.i, align 8, !dbg !968, !tbaa !849
+  %9 = inttoptr i64 %8 to %union.tree_node*, !dbg !968
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !969) #6, !dbg !968
+  %value.i = getelementptr inbounds %struct.splay_tree_node_s* %7, i64 0, i32 1, !dbg !970
+  %10 = load i64* %value.i, align 8, !dbg !970, !tbaa !849
+  %11 = inttoptr i64 %10 to %struct.dump_node_info*, !dbg !970
+  call void @llvm.dbg.value(metadata !{%struct.dump_node_info* %11}, i64 0, metadata !971) #6, !dbg !970
+  %index1.i = getelementptr inbounds %struct.dump_node_info* %11, i64 0, i32 0, !dbg !972
+  %12 = load i32* %index1.i, align 4, !dbg !972, !tbaa !850
+  call void @llvm.dbg.value(metadata !{i32 %12}, i64 0, metadata !973) #6, !dbg !972
+  %next.i = getelementptr inbounds %struct.dump_queue* %6, i64 0, i32 1, !dbg !974
+  %13 = load %struct.dump_queue** %next.i, align 8, !dbg !974, !tbaa !844
+  store %struct.dump_queue* %13, %struct.dump_queue** %queue, align 8, !dbg !974, !tbaa !844
+  %tobool.i = icmp eq %struct.dump_queue* %13, null, !dbg !975
+  br i1 %tobool.i, label %if.then.i, label %if.end.i, !dbg !975
 
 if.then.i:                                        ; preds = %while.body
-  store %struct.dump_queue* null, %struct.dump_queue** %queue_end, align 8, !tbaa !0
-  br label %if.end.i
+  store %struct.dump_queue* null, %struct.dump_queue** %queue_end, align 8, !dbg !976, !tbaa !844
+  br label %if.end.i, !dbg !976
 
 if.end.i:                                         ; preds = %if.then.i, %while.body
-  %14 = load %struct.dump_queue** %free_list, align 8, !tbaa !0
-  store %struct.dump_queue* %14, %struct.dump_queue** %next.i, align 8, !tbaa !0
-  store %struct.dump_queue* %6, %struct.dump_queue** %free_list, align 8, !tbaa !0
-  %15 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %15, i8* getelementptr inbounds ([7 x i8]* @.str106, i64 0, i64 0), i32 %12) #7
-  %16 = load i32* %column, align 8, !tbaa !4
-  %add.i.i = add i32 %16, 8
-  store i32 %add.i.i, i32* %column, align 8, !tbaa !4
-  %binfo_p.i = getelementptr inbounds %struct.dump_node_info* %11, i64 0, i32 1
-  %bf.load.i = load i8* %binfo_p.i, align 4
-  %bf.clear.i = and i8 %bf.load.i, 1
-  %tobool6.i = icmp eq i8 %bf.clear.i, 0
-  %code8.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 2
-  %17 = bitcast [4 x i8]* %code8.i to i32*
-  br i1 %tobool6.i, label %if.else.i, label %if.end11.i
+  %14 = load %struct.dump_queue** %free_list, align 8, !dbg !977, !tbaa !844
+  store %struct.dump_queue* %14, %struct.dump_queue** %next.i, align 8, !dbg !977, !tbaa !844
+  store %struct.dump_queue* %6, %struct.dump_queue** %free_list, align 8, !dbg !978, !tbaa !844
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !979) #6, !dbg !981
+  call void @llvm.dbg.value(metadata !{i32 %12}, i64 0, metadata !982) #6, !dbg !983
+  %15 = load %struct._IO_FILE** %stream1, align 8, !dbg !984, !tbaa !844
+  %call.i.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %15, i8* getelementptr inbounds ([7 x i8]* @.str106, i64 0, i64 0), i32 %12) #8, !dbg !984
+  %16 = load i32* %column, align 8, !dbg !985, !tbaa !850
+  %add.i.i = add i32 %16, 8, !dbg !985
+  store i32 %add.i.i, i32* %column, align 8, !dbg !985, !tbaa !850
+  %binfo_p.i = getelementptr inbounds %struct.dump_node_info* %11, i64 0, i32 1, !dbg !986
+  %bf.load.i = load i8* %binfo_p.i, align 4, !dbg !986
+  %bf.clear.i = and i8 %bf.load.i, 1, !dbg !986
+  %tobool6.i = icmp eq i8 %bf.clear.i, 0, !dbg !986
+  %code8.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 2, !dbg !987
+  %17 = bitcast [4 x i8]* %code8.i to i32*, !dbg !987
+  br i1 %tobool6.i, label %if.else.i, label %if.end11.i, !dbg !986
 
 if.else.i:                                        ; preds = %if.end.i
-  %bf.load9.i = load i32* %17, align 8
-  %bf.clear10.i = and i32 %bf.load9.i, 255
-  %idxprom954.i = zext i32 %bf.clear10.i to i64
-  %arrayidx.i = getelementptr inbounds [256 x i8*]* @tree_code_name, i64 0, i64 %idxprom954.i
-  %18 = load i8** %arrayidx.i, align 8, !tbaa !0
+  %bf.load9.i = load i32* %17, align 8, !dbg !987
+  %bf.clear10.i = and i32 %bf.load9.i, 255, !dbg !987
+  %idxprom954.i = zext i32 %bf.clear10.i to i64, !dbg !987
+  %arrayidx.i = getelementptr inbounds [256 x i8*]* @tree_code_name, i64 0, i64 %idxprom954.i, !dbg !987
+  %18 = load i8** %arrayidx.i, align 8, !dbg !987, !tbaa !844
+  call void @llvm.dbg.value(metadata !{i8* %18}, i64 0, metadata !988) #6, !dbg !987
   br label %if.end11.i
 
 if.end11.i:                                       ; preds = %if.else.i, %if.end.i
   %code_name.0.i = phi i8* [ %18, %if.else.i ], [ getelementptr inbounds ([6 x i8]* @.str24, i64 0, i64 0), %if.end.i ]
-  %19 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %19, i8* getelementptr inbounds ([7 x i8]* @.str25, i64 0, i64 0), i8* %code_name.0.i) #7
-  store i32 25, i32* %column, align 8, !tbaa !4
-  %bf.load14.i = load i32* %17, align 8
-  %bf.clear15.i = and i32 %bf.load14.i, 255
-  %bf.load19.i = load i8* %binfo_p.i, align 4
-  %bf.clear20.i = and i8 %bf.load19.i, 1
-  %tobool22.i = icmp eq i8 %bf.clear20.i, 0
-  br i1 %tobool22.i, label %if.end55.i, label %if.then23.i
+  %19 = load %struct._IO_FILE** %stream1, align 8, !dbg !989, !tbaa !844
+  %call.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %19, i8* getelementptr inbounds ([7 x i8]* @.str25, i64 0, i64 0), i8* %code_name.0.i) #8, !dbg !989
+  store i32 25, i32* %column, align 8, !dbg !990, !tbaa !850
+  %bf.load14.i = load i32* %17, align 8, !dbg !991
+  %bf.clear15.i = and i32 %bf.load14.i, 255, !dbg !991
+  call void @llvm.dbg.value(metadata !{i32 %bf.clear15.i}, i64 0, metadata !992) #6, !dbg !991
+  %bf.load19.i = load i8* %binfo_p.i, align 4, !dbg !993
+  %bf.clear20.i = and i8 %bf.load19.i, 1, !dbg !993
+  %tobool22.i = icmp eq i8 %bf.clear20.i, 0, !dbg !993
+  br i1 %tobool22.i, label %if.end55.i, label %if.then23.i, !dbg !993
 
 if.then23.i:                                      ; preds = %if.end11.i
-  %bf.clear26.i = and i32 %bf.load14.i, 524288
-  %tobool27.i = icmp eq i32 %bf.clear26.i, 0
-  br i1 %tobool27.i, label %if.else29.i, label %if.then28.i
+  %bf.clear26.i = and i32 %bf.load14.i, 524288, !dbg !994
+  %tobool27.i = icmp eq i32 %bf.clear26.i, 0, !dbg !994
+  br i1 %tobool27.i, label %if.else29.i, label %if.then28.i, !dbg !994
 
 if.then28.i:                                      ; preds = %if.then23.i
-  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([4 x i8]* @.str26, i64 0, i64 0)) #7
-  br label %if.end45.i
+  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([4 x i8]* @.str26, i64 0, i64 0)) #8, !dbg !996
+  br label %if.end45.i, !dbg !996
 
 if.else29.i:                                      ; preds = %if.then23.i
-  %bf.clear33.i = and i32 %bf.load14.i, 2097152
-  %tobool34.i = icmp eq i32 %bf.clear33.i, 0
-  br i1 %tobool34.i, label %if.else36.i, label %if.then35.i
+  %bf.clear33.i = and i32 %bf.load14.i, 2097152, !dbg !997
+  %tobool34.i = icmp eq i32 %bf.clear33.i, 0, !dbg !997
+  br i1 %tobool34.i, label %if.else36.i, label %if.then35.i, !dbg !997
 
 if.then35.i:                                      ; preds = %if.else29.i
-  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str27, i64 0, i64 0)) #7
-  br label %if.end45.i
+  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str27, i64 0, i64 0)) #8, !dbg !998
+  br label %if.end45.i, !dbg !998
 
 if.else36.i:                                      ; preds = %if.else29.i
-  %bf.clear40.i = and i32 %bf.load14.i, 1048576
-  %tobool41.i = icmp eq i32 %bf.clear40.i, 0
-  br i1 %tobool41.i, label %if.end45.i, label %if.then42.i
+  %bf.clear40.i = and i32 %bf.load14.i, 1048576, !dbg !999
+  %tobool41.i = icmp eq i32 %bf.clear40.i, 0, !dbg !999
+  br i1 %tobool41.i, label %if.end45.i, label %if.then42.i, !dbg !999
 
 if.then42.i:                                      ; preds = %if.else36.i
-  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str28, i64 0, i64 0)) #7
-  br label %if.end45.i
+  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str28, i64 0, i64 0)) #8, !dbg !1000
+  br label %if.end45.i, !dbg !1000
 
 if.end45.i:                                       ; preds = %if.then42.i, %if.else36.i, %if.then35.i, %if.then28.i
-  %bf.load47.i = load i32* %17, align 8
-  %bf.clear49.i = and i32 %bf.load47.i, 262144
-  %tobool50.i = icmp eq i32 %bf.clear49.i, 0
-  br i1 %tobool50.i, label %if.end52.i, label %if.then51.i
+  %bf.load47.i = load i32* %17, align 8, !dbg !1001
+  %bf.clear49.i = and i32 %bf.load47.i, 262144, !dbg !1001
+  %tobool50.i = icmp eq i32 %bf.clear49.i, 0, !dbg !1001
+  br i1 %tobool50.i, label %if.end52.i, label %if.then51.i, !dbg !1001
 
 if.then51.i:                                      ; preds = %if.end45.i
-  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str29, i64 0, i64 0)) #7
-  br label %if.end52.i
+  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str29, i64 0, i64 0)) #8, !dbg !1002
+  br label %if.end52.i, !dbg !1002
 
 if.end52.i:                                       ; preds = %if.then51.i, %if.end45.i
-  %type.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 1
-  %20 = load %union.tree_node** %type.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), %union.tree_node* %20, i32 0) #7
-  %vec.i = inttoptr i64 %8 to %struct.tree_vec*
-  %arrayidx54.i = getelementptr inbounds %struct.tree_vec* %vec.i, i64 0, i32 2, i64 4
-  %21 = load %union.tree_node** %arrayidx54.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str30, i64 0, i64 0), %union.tree_node* %21, i32 0) #7
-  br label %done.i
+  %type.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 1, !dbg !1003
+  %20 = load %union.tree_node** %type.i, align 8, !dbg !1003, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), %union.tree_node* %20, i32 0) #8, !dbg !1003
+  %vec.i = inttoptr i64 %8 to %struct.tree_vec*, !dbg !1004
+  %arrayidx54.i = getelementptr inbounds %struct.tree_vec* %vec.i, i64 0, i32 2, i64 4, !dbg !1004
+  %21 = load %union.tree_node** %arrayidx54.i, align 8, !dbg !1004, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str30, i64 0, i64 0), %union.tree_node* %21, i32 0) #8, !dbg !1004
+  br label %done.i, !dbg !1005
 
 if.end55.i:                                       ; preds = %if.end11.i
-  %idxprom16955.i = zext i32 %bf.clear15.i to i64
-  %arrayidx17.i = getelementptr inbounds [256 x i8]* @tree_code_type, i64 0, i64 %idxprom16955.i
-  %22 = load i8* %arrayidx17.i, align 1, !tbaa !1
-  %conv.i = sext i8 %22 to i32
+  %idxprom16955.i = zext i32 %bf.clear15.i to i64, !dbg !1006
+  %arrayidx17.i = getelementptr inbounds [256 x i8]* @tree_code_type, i64 0, i64 %idxprom16955.i, !dbg !1006
+  %22 = load i8* %arrayidx17.i, align 1, !dbg !1006, !tbaa !845
+  %conv.i = sext i8 %22 to i32, !dbg !1007
   switch i8 %22, label %if.end199.i [
     i8 60, label %if.then68.i
     i8 49, label %if.then68.i
@@ -153,189 +167,204 @@ if.end55.i:                                       ; preds = %if.end11.i
     i8 100, label %if.then88.i
     i8 116, label %if.then163.i
     i8 99, label %if.then195.i
-  ]
+  ], !dbg !1007
 
 if.then68.i:                                      ; preds = %if.end55.i, %if.end55.i, %if.end55.i, %if.end55.i
-  %type.i.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 1
-  %23 = load %union.tree_node** %type.i.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), %union.tree_node* %23, i32 0) #7
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1008) #6, !dbg !1011
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1012) #6, !dbg !1013
+  %type.i.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 1, !dbg !1014
+  %23 = load %union.tree_node** %type.i.i, align 8, !dbg !1014, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), %union.tree_node* %23, i32 0) #8, !dbg !1014
   switch i32 %conv.i, label %sw.default.i [
     i32 49, label %sw.bb.i
     i32 50, label %sw.bb71.i
     i32 60, label %sw.bb71.i
     i32 101, label %if.end199.i
-  ]
+  ], !dbg !1015
 
 sw.bb.i:                                          ; preds = %if.then68.i
-  %exp.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx70.i = getelementptr inbounds %struct.tree_exp* %exp.i, i64 0, i32 2, i64 0
-  %24 = load %union.tree_node** %arrayidx70.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str31, i64 0, i64 0), %union.tree_node* %24, i32 0) #7
-  br label %if.end199.i
+  %exp.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1016
+  %arrayidx70.i = getelementptr inbounds %struct.tree_exp* %exp.i, i64 0, i32 2, i64 0, !dbg !1016
+  %24 = load %union.tree_node** %arrayidx70.i, align 8, !dbg !1016, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str31, i64 0, i64 0), %union.tree_node* %24, i32 0) #8, !dbg !1016
+  br label %if.end199.i, !dbg !1018
 
 sw.bb71.i:                                        ; preds = %if.then68.i, %if.then68.i
-  %exp72.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx74.i = getelementptr inbounds %struct.tree_exp* %exp72.i, i64 0, i32 2, i64 0
-  %25 = load %union.tree_node** %arrayidx74.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str31, i64 0, i64 0), %union.tree_node* %25, i32 0) #7
-  %arrayidx77.i = getelementptr inbounds %struct.tree_exp* %exp72.i, i64 0, i32 2, i64 1
-  %26 = load %union.tree_node** %arrayidx77.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str32, i64 0, i64 0), %union.tree_node* %26, i32 0) #7
-  br label %if.end199.i
+  %exp72.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1019
+  %arrayidx74.i = getelementptr inbounds %struct.tree_exp* %exp72.i, i64 0, i32 2, i64 0, !dbg !1019
+  %25 = load %union.tree_node** %arrayidx74.i, align 8, !dbg !1019, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str31, i64 0, i64 0), %union.tree_node* %25, i32 0) #8, !dbg !1019
+  %arrayidx77.i = getelementptr inbounds %struct.tree_exp* %exp72.i, i64 0, i32 2, i64 1, !dbg !1020
+  %26 = load %union.tree_node** %arrayidx77.i, align 8, !dbg !1020, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str32, i64 0, i64 0), %union.tree_node* %26, i32 0) #8, !dbg !1020
+  br label %if.end199.i, !dbg !1021
 
 sw.default.i:                                     ; preds = %if.then68.i
-  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str33, i64 0, i64 0), i32 334, i8* getelementptr inbounds ([17 x i8]* @__FUNCTION__.dequeue_and_dump, i64 0, i64 0)) #10
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str33, i64 0, i64 0), i32 334, i8* getelementptr inbounds ([17 x i8]* @__FUNCTION__.dequeue_and_dump, i64 0, i64 0)) #11, !dbg !1022
+  unreachable, !dbg !1022
 
 if.then88.i:                                      ; preds = %if.end55.i
-  %name.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 8
-  %27 = load %union.tree_node** %name.i, align 8, !tbaa !0
-  %tobool89.i = icmp eq %union.tree_node* %27, null
-  br i1 %tobool89.i, label %if.end93.i, label %if.then90.i
+  %name.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 8, !dbg !1023
+  %27 = load %union.tree_node** %name.i, align 8, !dbg !1023, !tbaa !844
+  %tobool89.i = icmp eq %union.tree_node* %27, null, !dbg !1023
+  br i1 %tobool89.i, label %if.end93.i, label %if.then90.i, !dbg !1023
 
 if.then90.i:                                      ; preds = %if.then88.i
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str34, i64 0, i64 0), %union.tree_node* %27, i32 0) #7
-  br label %if.end93.i
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str34, i64 0, i64 0), %union.tree_node* %27, i32 0) #8, !dbg !1024
+  br label %if.end93.i, !dbg !1024
 
 if.end93.i:                                       ; preds = %if.then90.i, %if.then88.i
-  %assembler_name.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 14
-  %28 = load %union.tree_node** %assembler_name.i, align 8, !tbaa !0
-  %cmp95.i = icmp eq %union.tree_node* %28, null
-  br i1 %cmp95.i, label %if.end117.i, label %cond.end.i
+  %assembler_name.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 14, !dbg !1025
+  %28 = load %union.tree_node** %assembler_name.i, align 8, !dbg !1025, !tbaa !844
+  %cmp95.i = icmp eq %union.tree_node* %28, null, !dbg !1025
+  br i1 %cmp95.i, label %if.end117.i, label %cond.end.i, !dbg !1025
 
 cond.end.i:                                       ; preds = %if.end93.i
-  %29 = load %union.tree_node** %name.i, align 8, !tbaa !0
-  %cmp105.i = icmp eq %union.tree_node* %28, %29
-  br i1 %cmp105.i, label %if.end117.i, label %cond.end114.i
+  %29 = load %union.tree_node** %name.i, align 8, !dbg !1026, !tbaa !844
+  %cmp105.i = icmp eq %union.tree_node* %28, %29, !dbg !1026
+  br i1 %cmp105.i, label %if.end117.i, label %cond.end114.i, !dbg !1026
 
 cond.end114.i:                                    ; preds = %cond.end.i
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str35, i64 0, i64 0), %union.tree_node* %28, i32 0) #7
-  br label %if.end117.i
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str35, i64 0, i64 0), %union.tree_node* %28, i32 0) #8, !dbg !1027
+  br label %if.end117.i, !dbg !1027
 
 if.end117.i:                                      ; preds = %cond.end114.i, %cond.end.i, %if.end93.i
-  %type.i956.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 1
-  %30 = load %union.tree_node** %type.i956.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), %union.tree_node* %30, i32 0) #7
-  %context.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 9
-  %31 = load %union.tree_node** %context.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str36, i64 0, i64 0), %union.tree_node* %31, i32 0) #7
-  %filename.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1
-  %32 = load i8** %filename.i, align 8, !tbaa !0
-  %tobool120.i = icmp eq i8* %32, null
-  br i1 %tobool120.i, label %if.end141.i, label %if.then121.i
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1028) #6, !dbg !1030
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1031) #6, !dbg !1032
+  %type.i956.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 1, !dbg !1033
+  %30 = load %union.tree_node** %type.i956.i, align 8, !dbg !1033, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), %union.tree_node* %30, i32 0) #8, !dbg !1033
+  %context.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 9, !dbg !1034
+  %31 = load %union.tree_node** %context.i, align 8, !dbg !1034, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str36, i64 0, i64 0), %union.tree_node* %31, i32 0) #8, !dbg !1034
+  %filename.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1, !dbg !1035
+  %32 = load i8** %filename.i, align 8, !dbg !1035, !tbaa !844
+  %tobool120.i = icmp eq i8* %32, null, !dbg !1035
+  br i1 %tobool120.i, label %if.end141.i, label %if.then121.i, !dbg !1035
 
 if.then121.i:                                     ; preds = %if.end117.i
-  %call125.i = call i8* @strrchr(i8* %32, i32 47) #9
-  %tobool126.i = icmp eq i8* %call125.i, null
-  %incdec.ptr.i = getelementptr inbounds i8* %call125.i, i64 1
-  %filename122.0.i = select i1 %tobool126.i, i8* %32, i8* %incdec.ptr.i
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %33 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %linenum.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 2
-  %34 = load i32* %linenum.i, align 4, !tbaa !4
-  %call134.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %33, i8* getelementptr inbounds ([15 x i8]* @.str37, i64 0, i64 0), i8* %filename122.0.i, i32 %34) #7
-  %call135.i = call i64 @strlen(i8* %filename122.0.i) #9
-  %add136.i = add i64 %call135.i, 14
-  %35 = load i32* %column, align 8, !tbaa !4
-  %conv138.i = zext i32 %35 to i64
-  %add139.i = add i64 %add136.i, %conv138.i
-  %conv140.i = trunc i64 %add139.i to i32
-  store i32 %conv140.i, i32* %column, align 8, !tbaa !4
-  br label %if.end141.i
+  %call125.i = call i8* @strrchr(i8* %32, i32 47) #10, !dbg !1036
+  call void @llvm.dbg.value(metadata !{i8* %call125.i}, i64 0, metadata !1037) #6, !dbg !1036
+  %tobool126.i = icmp eq i8* %call125.i, null, !dbg !1038
+  %incdec.ptr.i = getelementptr inbounds i8* %call125.i, i64 1, !dbg !1039
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr.i}, i64 0, metadata !1037) #6, !dbg !1039
+  %filename122.0.i = select i1 %tobool126.i, i8* %32, i8* %incdec.ptr.i, !dbg !1038
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1040
+  %33 = load %struct._IO_FILE** %stream1, align 8, !dbg !1041, !tbaa !844
+  %linenum.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 2, !dbg !1041
+  %34 = load i32* %linenum.i, align 4, !dbg !1041, !tbaa !850
+  %call134.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %33, i8* getelementptr inbounds ([15 x i8]* @.str37, i64 0, i64 0), i8* %filename122.0.i, i32 %34) #8, !dbg !1041
+  %call135.i = call i64 @strlen(i8* %filename122.0.i) #10, !dbg !1042
+  %add136.i = add i64 %call135.i, 14, !dbg !1042
+  %35 = load i32* %column, align 8, !dbg !1042, !tbaa !850
+  %conv138.i = zext i32 %35 to i64, !dbg !1042
+  %add139.i = add i64 %add136.i, %conv138.i, !dbg !1042
+  %conv140.i = trunc i64 %add139.i to i32, !dbg !1042
+  store i32 %conv140.i, i32* %column, align 8, !dbg !1042, !tbaa !850
+  br label %if.end141.i, !dbg !1043
 
 if.end141.i:                                      ; preds = %if.then121.i, %if.end117.i
-  %artificial_flag.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 5
-  %36 = bitcast [8 x i8]* %artificial_flag.i to i64*
-  %bf.load143.i = load i64* %36, align 8
-  %bf.cast146.i = and i64 %bf.load143.i, 4194304
-  %tobool147.i = icmp eq i64 %bf.cast146.i, 0
-  br i1 %tobool147.i, label %if.end149.i, label %if.then148.i
+  %artificial_flag.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 5, !dbg !1044
+  %36 = bitcast [8 x i8]* %artificial_flag.i to i64*, !dbg !1044
+  %bf.load143.i = load i64* %36, align 8, !dbg !1044
+  %bf.cast146.i = and i64 %bf.load143.i, 4194304, !dbg !1044
+  %tobool147.i = icmp eq i64 %bf.cast146.i, 0, !dbg !1044
+  br i1 %tobool147.i, label %if.end149.i, label %if.then148.i, !dbg !1044
 
 if.then148.i:                                     ; preds = %if.end141.i
-  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([11 x i8]* @.str38, i64 0, i64 0)) #7
-  br label %if.end149.i
+  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([11 x i8]* @.str38, i64 0, i64 0)) #8, !dbg !1045
+  br label %if.end149.i, !dbg !1045
 
 if.end149.i:                                      ; preds = %if.then148.i, %if.end141.i
-  %chain.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0
-  %37 = load %union.tree_node** %chain.i, align 8, !tbaa !0
-  %tobool151.i = icmp eq %union.tree_node* %37, null
-  br i1 %tobool151.i, label %if.end199.i, label %land.lhs.true152.i
+  %chain.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0, !dbg !1046
+  %37 = load %union.tree_node** %chain.i, align 8, !dbg !1046, !tbaa !844
+  %tobool151.i = icmp eq %union.tree_node* %37, null, !dbg !1046
+  br i1 %tobool151.i, label %if.end199.i, label %land.lhs.true152.i, !dbg !1046
 
 land.lhs.true152.i:                               ; preds = %if.end149.i
-  %38 = load i32* %flags2, align 8, !tbaa !4
-  %and.i.i = and i32 %38, 2
-  %tobool.i.i = icmp eq i32 %and.i.i, 0
-  br i1 %tobool.i.i, label %if.then155.i, label %land.rhs.i.i
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1047) #6, !dbg !1048
+  call void @llvm.dbg.value(metadata !1049, i64 0, metadata !1050) #6, !dbg !1051
+  call void @llvm.dbg.value(metadata !1052, i64 0, metadata !1053) #6, !dbg !1054
+  %38 = load i32* %flags2, align 8, !dbg !1055, !tbaa !850
+  %and.i.i = and i32 %38, 2, !dbg !1055
+  %tobool.i.i = icmp eq i32 %and.i.i, 0, !dbg !1055
+  br i1 %tobool.i.i, label %if.then155.i, label %land.rhs.i.i, !dbg !1055
 
 land.rhs.i.i:                                     ; preds = %land.lhs.true152.i
-  %39 = load %union.tree_node** %node, align 8, !tbaa !0
-  %cmp.i.i = icmp eq %union.tree_node* %39, null
-  br i1 %cmp.i.i, label %if.then155.i, label %if.end199.i
+  %39 = load %union.tree_node** %node, align 8, !dbg !1055, !tbaa !844
+  %cmp.i.i = icmp eq %union.tree_node* %39, null, !dbg !1055
+  br i1 %cmp.i.i, label %if.then155.i, label %if.end199.i, !dbg !1046
 
 if.then155.i:                                     ; preds = %land.rhs.i.i, %land.lhs.true152.i
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str39, i64 0, i64 0), %union.tree_node* %37, i32 0) #7
-  br label %if.end199.i
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str39, i64 0, i64 0), %union.tree_node* %37, i32 0) #8, !dbg !1056
+  br label %if.end199.i, !dbg !1056
 
 if.then163.i:                                     ; preds = %if.end55.i
-  %call164.i = call i32 %5(%union.tree_node* %9) #7
-  %cmp165.i = icmp eq i32 %call164.i, 0
-  br i1 %cmp165.i, label %if.end179.i, label %if.then167.i
+  %call164.i = call i32 %5(%union.tree_node* %9) #8, !dbg !962
+  call void @llvm.dbg.value(metadata !{i32 %call164.i}, i64 0, metadata !1057) #6, !dbg !962
+  %cmp165.i = icmp eq i32 %call164.i, 0, !dbg !1058
+  br i1 %cmp165.i, label %if.end179.i, label %if.then167.i, !dbg !1058
 
 if.then167.i:                                     ; preds = %if.then163.i
-  %40 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %and.i = and i32 %call164.i, 1
-  %tobool169.i = icmp ne i32 %and.i, 0
-  %cond.i = select i1 %tobool169.i, i32 99, i32 32
-  %and170.i = and i32 %call164.i, 2
-  %tobool171.i = icmp ne i32 %and170.i, 0
-  %cond172.i = select i1 %tobool171.i, i32 118, i32 32
-  %and173.i = and i32 %call164.i, 4
-  %tobool174.i = icmp ne i32 %and173.i, 0
-  %cond175.i = select i1 %tobool174.i, i32 114, i32 32
-  %call176.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %40, i8* getelementptr inbounds ([18 x i8]* @.str40, i64 0, i64 0), i32 %cond.i, i32 %cond172.i, i32 %cond175.i) #7
-  %41 = load i32* %column, align 8, !tbaa !4
-  %add178.i = add i32 %41, 14
-  store i32 %add178.i, i32* %column, align 8, !tbaa !4
-  br label %if.end179.i
+  %40 = load %struct._IO_FILE** %stream1, align 8, !dbg !1059, !tbaa !844
+  %and.i = and i32 %call164.i, 1, !dbg !1059
+  %tobool169.i = icmp ne i32 %and.i, 0, !dbg !1059
+  %cond.i = select i1 %tobool169.i, i32 99, i32 32, !dbg !1059
+  %and170.i = and i32 %call164.i, 2, !dbg !1059
+  %tobool171.i = icmp ne i32 %and170.i, 0, !dbg !1059
+  %cond172.i = select i1 %tobool171.i, i32 118, i32 32, !dbg !1059
+  %and173.i = and i32 %call164.i, 4, !dbg !1059
+  %tobool174.i = icmp ne i32 %and173.i, 0, !dbg !1059
+  %cond175.i = select i1 %tobool174.i, i32 114, i32 32, !dbg !1059
+  %call176.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %40, i8* getelementptr inbounds ([18 x i8]* @.str40, i64 0, i64 0), i32 %cond.i, i32 %cond172.i, i32 %cond175.i) #8, !dbg !1059
+  %41 = load i32* %column, align 8, !dbg !1061, !tbaa !850
+  %add178.i = add i32 %41, 14, !dbg !1061
+  store i32 %add178.i, i32* %column, align 8, !dbg !1061, !tbaa !850
+  br label %if.end179.i, !dbg !1062
 
 if.end179.i:                                      ; preds = %if.then167.i, %if.then163.i
-  %type180.i = inttoptr i64 %8 to %struct.tree_type*
-  %name181.i = getelementptr inbounds %struct.tree_type* %type180.i, i64 0, i32 11
-  %42 = load %union.tree_node** %name181.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str34, i64 0, i64 0), %union.tree_node* %42, i32 0) #7
-  %main_variant.i = getelementptr inbounds %struct.tree_type* %type180.i, i64 0, i32 15
-  %43 = load %union.tree_node** %main_variant.i, align 8, !tbaa !0
-  %cmp183.i = icmp eq %union.tree_node* %43, %9
-  br i1 %cmp183.i, label %if.end188.i, label %if.then185.i
+  %type180.i = inttoptr i64 %8 to %struct.tree_type*, !dbg !1063
+  %name181.i = getelementptr inbounds %struct.tree_type* %type180.i, i64 0, i32 11, !dbg !1063
+  %42 = load %union.tree_node** %name181.i, align 8, !dbg !1063, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str34, i64 0, i64 0), %union.tree_node* %42, i32 0) #8, !dbg !1063
+  %main_variant.i = getelementptr inbounds %struct.tree_type* %type180.i, i64 0, i32 15, !dbg !1064
+  %43 = load %union.tree_node** %main_variant.i, align 8, !dbg !1064, !tbaa !844
+  %cmp183.i = icmp eq %union.tree_node* %43, %9, !dbg !1064
+  br i1 %cmp183.i, label %if.end188.i, label %if.then185.i, !dbg !1064
 
 if.then185.i:                                     ; preds = %if.end179.i
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str41, i64 0, i64 0), %union.tree_node* %43, i32 0) #7
-  br label %if.end188.i
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str41, i64 0, i64 0), %union.tree_node* %43, i32 0) #8, !dbg !1065
+  br label %if.end188.i, !dbg !1065
 
 if.end188.i:                                      ; preds = %if.then185.i, %if.end179.i
-  %size.i = getelementptr inbounds %struct.tree_type* %type180.i, i64 0, i32 2
-  %44 = load %union.tree_node** %size.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str42, i64 0, i64 0), %union.tree_node* %44, i32 0) #7
-  %align.i = getelementptr inbounds %struct.tree_type* %type180.i, i64 0, i32 7
-  %45 = load i32* %align.i, align 4, !tbaa !4
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %46 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i962.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %46, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str43, i64 0, i64 0), i32 %45) #7
-  %47 = load i32* %column, align 8, !tbaa !4
-  %add.i964.i = add i32 %47, 14
-  store i32 %add.i964.i, i32* %column, align 8, !tbaa !4
-  br label %if.end199.i
+  %size.i = getelementptr inbounds %struct.tree_type* %type180.i, i64 0, i32 2, !dbg !1066
+  %44 = load %union.tree_node** %size.i, align 8, !dbg !1066, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str42, i64 0, i64 0), %union.tree_node* %44, i32 0) #8, !dbg !1066
+  %align.i = getelementptr inbounds %struct.tree_type* %type180.i, i64 0, i32 7, !dbg !1067
+  %45 = load i32* %align.i, align 4, !dbg !1067, !tbaa !850
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1068) #6, !dbg !1069
+  call void @llvm.dbg.value(metadata !1070, i64 0, metadata !1071) #6, !dbg !1072
+  call void @llvm.dbg.value(metadata !{i32 %45}, i64 0, metadata !1073) #6, !dbg !1074
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1075
+  %46 = load %struct._IO_FILE** %stream1, align 8, !dbg !1076, !tbaa !844
+  %call.i962.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %46, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str43, i64 0, i64 0), i32 %45) #8, !dbg !1076
+  %47 = load i32* %column, align 8, !dbg !1077, !tbaa !850
+  %add.i964.i = add i32 %47, 14, !dbg !1077
+  store i32 %add.i964.i, i32* %column, align 8, !dbg !1077, !tbaa !850
+  br label %if.end199.i, !dbg !1078
 
 if.then195.i:                                     ; preds = %if.end55.i
-  %type.i965.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 1
-  %48 = load %union.tree_node** %type.i965.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), %union.tree_node* %48, i32 0) #7
-  br label %if.end199.i
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1079) #6, !dbg !1081
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1082) #6, !dbg !1083
+  %type.i965.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 1, !dbg !1084
+  %48 = load %union.tree_node** %type.i965.i, align 8, !dbg !1084, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), %union.tree_node* %48, i32 0) #8, !dbg !1084
+  br label %if.end199.i, !dbg !1080
 
 if.end199.i:                                      ; preds = %if.then195.i, %if.end188.i, %if.then155.i, %land.rhs.i.i, %if.end149.i, %sw.bb71.i, %sw.bb.i, %if.then68.i, %if.end55.i
-  %call200.i = call i32 %4(i8* %0, %union.tree_node* %9) #7
-  %tobool201.i = icmp eq i32 %call200.i, 0
-  br i1 %tobool201.i, label %if.end203.i, label %done.i
+  %call200.i = call i32 %4(i8* %0, %union.tree_node* %9) #8, !dbg !961
+  %tobool201.i = icmp eq i32 %call200.i, 0, !dbg !961
+  br i1 %tobool201.i, label %if.end203.i, label %done.i, !dbg !961
 
 if.end203.i:                                      ; preds = %if.end199.i
   switch i32 %bf.clear15.i, label %done.i [
@@ -402,907 +431,1054 @@ if.end203.i:                                      ; preds = %if.end199.i
     i32 140, label %sw.bb571.i
     i32 50, label %sw.bb575.i
     i32 144, label %sw.bb588.i
-  ]
+  ], !dbg !1085
 
 if.end203.sw.bb256_crit_edge.i:                   ; preds = %if.end203.i
-  %type259.pre.i = inttoptr i64 %8 to %struct.tree_type*
-  br label %sw.bb256.i
+  %type259.pre.i = inttoptr i64 %8 to %struct.tree_type*, !dbg !1086
+  br label %sw.bb256.i, !dbg !1085
 
 sw.bb204.i:                                       ; preds = %if.end203.i
-  %identifier.i = inttoptr i64 %8 to %struct.tree_identifier*
-  %str.i = getelementptr inbounds %struct.tree_identifier* %identifier.i, i64 0, i32 1, i32 1
-  %49 = load i8** %str.i, align 8, !tbaa !0
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %50 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i967.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %50, i8* getelementptr inbounds ([12 x i8]* @.str102, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str44, i64 0, i64 0), i8* %49) #7
-  %call1.i.i = call i64 @strlen(i8* %49) #9
-  %cmp.i968.i = icmp ugt i64 %call1.i.i, 7
-  br i1 %cmp.i968.i, label %if.then.i.i, label %if.else.i.i
+  %identifier.i = inttoptr i64 %8 to %struct.tree_identifier*, !dbg !1087
+  %str.i = getelementptr inbounds %struct.tree_identifier* %identifier.i, i64 0, i32 1, i32 1, !dbg !1087
+  %49 = load i8** %str.i, align 8, !dbg !1087, !tbaa !844
+  call void @llvm.dbg.value(metadata !1088, i64 0, metadata !1089) #6, !dbg !1090
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1091
+  %50 = load %struct._IO_FILE** %stream1, align 8, !dbg !1092, !tbaa !844
+  %call.i967.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %50, i8* getelementptr inbounds ([12 x i8]* @.str102, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str44, i64 0, i64 0), i8* %49) #8, !dbg !1092
+  %call1.i.i = call i64 @strlen(i8* %49) #10, !dbg !1093
+  %cmp.i968.i = icmp ugt i64 %call1.i.i, 7, !dbg !1093
+  br i1 %cmp.i968.i, label %if.then.i.i, label %if.else.i.i, !dbg !1093
 
 if.then.i.i:                                      ; preds = %sw.bb204.i
-  %add3.i.i = add i64 %call1.i.i, 7
-  %51 = load i32* %column, align 8, !tbaa !4
-  %conv.i.i = zext i32 %51 to i64
-  %add4.i.i = add i64 %add3.i.i, %conv.i.i
-  %conv5.i.i = trunc i64 %add4.i.i to i32
-  br label %dump_string_field.exit.i
+  %add3.i.i = add i64 %call1.i.i, 7, !dbg !1094
+  %51 = load i32* %column, align 8, !dbg !1094, !tbaa !850
+  %conv.i.i = zext i32 %51 to i64, !dbg !1094
+  %add4.i.i = add i64 %add3.i.i, %conv.i.i, !dbg !1094
+  %conv5.i.i = trunc i64 %add4.i.i to i32, !dbg !1094
+  br label %dump_string_field.exit.i, !dbg !1094
 
 if.else.i.i:                                      ; preds = %sw.bb204.i
-  %52 = load i32* %column, align 8, !tbaa !4
-  %add7.i.i = add i32 %52, 14
+  %52 = load i32* %column, align 8, !dbg !1095, !tbaa !850
+  %add7.i.i = add i32 %52, 14, !dbg !1095
   br label %dump_string_field.exit.i
 
 dump_string_field.exit.i:                         ; preds = %if.else.i.i, %if.then.i.i
   %storemerge.i = phi i32 [ %add7.i.i, %if.else.i.i ], [ %conv5.i.i, %if.then.i.i ]
-  store i32 %storemerge.i, i32* %column, align 8, !tbaa !4
-  %len.i = getelementptr inbounds %struct.tree_identifier* %identifier.i, i64 0, i32 1, i32 0
-  %53 = load i32* %len.i, align 4, !tbaa !4
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %54 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i971.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %54, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str45, i64 0, i64 0), i32 %53) #7
-  %55 = load i32* %column, align 8, !tbaa !4
-  %add.i973.i = add i32 %55, 14
-  store i32 %add.i973.i, i32* %column, align 8, !tbaa !4
-  br label %done.i
+  store i32 %storemerge.i, i32* %column, align 8, !dbg !1094, !tbaa !850
+  %len.i = getelementptr inbounds %struct.tree_identifier* %identifier.i, i64 0, i32 1, i32 0, !dbg !1096
+  %53 = load i32* %len.i, align 4, !dbg !1096, !tbaa !850
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1097) #6, !dbg !1098
+  call void @llvm.dbg.value(metadata !1099, i64 0, metadata !1100) #6, !dbg !1101
+  call void @llvm.dbg.value(metadata !{i32 %53}, i64 0, metadata !1102) #6, !dbg !1103
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1104
+  %54 = load %struct._IO_FILE** %stream1, align 8, !dbg !1105, !tbaa !844
+  %call.i971.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %54, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str45, i64 0, i64 0), i32 %53) #8, !dbg !1105
+  %55 = load i32* %column, align 8, !dbg !1106, !tbaa !850
+  %add.i973.i = add i32 %55, 14, !dbg !1106
+  store i32 %add.i973.i, i32* %column, align 8, !dbg !1106, !tbaa !850
+  br label %done.i, !dbg !1107
 
 sw.bb207.i:                                       ; preds = %if.end203.i
-  %list.i = inttoptr i64 %8 to %struct.tree_list*
-  %purpose.i = getelementptr inbounds %struct.tree_list* %list.i, i64 0, i32 1
-  %56 = load %union.tree_node** %purpose.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str46, i64 0, i64 0), %union.tree_node* %56, i32 0) #7
-  %value209.i = getelementptr inbounds %struct.tree_list* %list.i, i64 0, i32 2
-  %57 = load %union.tree_node** %value209.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str47, i64 0, i64 0), %union.tree_node* %57, i32 0) #7
-  %chain211.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0
-  %58 = load %union.tree_node** %chain211.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str39, i64 0, i64 0), %union.tree_node* %58, i32 0) #7
-  br label %done.i
+  %list.i = inttoptr i64 %8 to %struct.tree_list*, !dbg !1108
+  %purpose.i = getelementptr inbounds %struct.tree_list* %list.i, i64 0, i32 1, !dbg !1108
+  %56 = load %union.tree_node** %purpose.i, align 8, !dbg !1108, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str46, i64 0, i64 0), %union.tree_node* %56, i32 0) #8, !dbg !1108
+  %value209.i = getelementptr inbounds %struct.tree_list* %list.i, i64 0, i32 2, !dbg !1109
+  %57 = load %union.tree_node** %value209.i, align 8, !dbg !1109, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str47, i64 0, i64 0), %union.tree_node* %57, i32 0) #8, !dbg !1109
+  %chain211.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0, !dbg !1110
+  %58 = load %union.tree_node** %chain211.i, align 8, !dbg !1110, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str39, i64 0, i64 0), %union.tree_node* %58, i32 0) #8, !dbg !1110
+  br label %done.i, !dbg !1111
 
 sw.bb212.i:                                       ; preds = %if.end203.i
-  %vec213.i = inttoptr i64 %8 to %struct.tree_vec*
-  %length.i = getelementptr inbounds %struct.tree_vec* %vec213.i, i64 0, i32 1
-  %59 = load i32* %length.i, align 4, !tbaa !4
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %60 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i975.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %60, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str45, i64 0, i64 0), i32 %59) #7
-  %61 = load i32* %column, align 8, !tbaa !4
-  %add.i977.i = add i32 %61, 14
-  store i32 %add.i977.i, i32* %column, align 8, !tbaa !4
-  %62 = load i32* %length.i, align 4, !tbaa !4
-  %cmp2161107.i = icmp sgt i32 %62, 0
-  br i1 %cmp2161107.i, label %for.body.i, label %done.i
+  %vec213.i = inttoptr i64 %8 to %struct.tree_vec*, !dbg !1112
+  %length.i = getelementptr inbounds %struct.tree_vec* %vec213.i, i64 0, i32 1, !dbg !1112
+  %59 = load i32* %length.i, align 4, !dbg !1112, !tbaa !850
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1113) #6, !dbg !1114
+  call void @llvm.dbg.value(metadata !1099, i64 0, metadata !1115) #6, !dbg !1116
+  call void @llvm.dbg.value(metadata !{i32 %59}, i64 0, metadata !1117) #6, !dbg !1118
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1119
+  %60 = load %struct._IO_FILE** %stream1, align 8, !dbg !1120, !tbaa !844
+  %call.i975.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %60, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str45, i64 0, i64 0), i32 %59) #8, !dbg !1120
+  %61 = load i32* %column, align 8, !dbg !1121, !tbaa !850
+  %add.i977.i = add i32 %61, 14, !dbg !1121
+  store i32 %add.i977.i, i32* %column, align 8, !dbg !1121, !tbaa !850
+  %62 = load i32* %length.i, align 4, !dbg !1122, !tbaa !850
+  %cmp2161107.i = icmp sgt i32 %62, 0, !dbg !1122
+  br i1 %cmp2161107.i, label %for.body.i, label %done.i, !dbg !1122
 
 for.body.i:                                       ; preds = %sw.bb212.i, %for.body.i
   %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %for.body.i ], [ 0, %sw.bb212.i ]
-  %63 = trunc i64 %indvars.iv.i to i32
-  %call218.i = call i32 (i8*, i8*, ...)* @sprintf(i8* %3, i8* getelementptr inbounds ([3 x i8]* @.str48, i64 0, i64 0), i32 %63) #7
-  %arrayidx223.i = getelementptr inbounds %struct.tree_vec* %vec213.i, i64 0, i32 2, i64 %indvars.iv.i
-  %64 = load %union.tree_node** %arrayidx223.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* %3, %union.tree_node* %64, i32 0) #7
-  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
-  %65 = load i32* %length.i, align 4, !tbaa !4
-  %66 = trunc i64 %indvars.iv.next.i to i32
-  %cmp216.i = icmp slt i32 %66, %65
-  br i1 %cmp216.i, label %for.body.i, label %done.i
+  call void @llvm.dbg.declare(metadata !{[32 x i8]* %buffer.i}, metadata !786) #6, !dbg !1123
+  %63 = trunc i64 %indvars.iv.i to i32, !dbg !1124
+  %call218.i = call i32 (i8*, i8*, ...)* @sprintf(i8* %3, i8* getelementptr inbounds ([3 x i8]* @.str48, i64 0, i64 0), i32 %63) #8, !dbg !1124
+  %arrayidx223.i = getelementptr inbounds %struct.tree_vec* %vec213.i, i64 0, i32 2, i64 %indvars.iv.i, !dbg !1125
+  %64 = load %union.tree_node** %arrayidx223.i, align 8, !dbg !1125, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* %3, %union.tree_node* %64, i32 0) #8, !dbg !1125
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1, !dbg !1122
+  %65 = load i32* %length.i, align 4, !dbg !1122, !tbaa !850
+  %66 = trunc i64 %indvars.iv.next.i to i32, !dbg !1122
+  %cmp216.i = icmp slt i32 %66, %65, !dbg !1122
+  br i1 %cmp216.i, label %for.body.i, label %done.i, !dbg !1122
 
 sw.bb224.i:                                       ; preds = %if.end203.i, %if.end203.i
-  %type225.i = inttoptr i64 %8 to %struct.tree_type*
-  %precision.i = getelementptr inbounds %struct.tree_type* %type225.i, i64 0, i32 6
-  %67 = bitcast [4 x i8]* %precision.i to i32*
-  %bf.load226.i = load i32* %67, align 4
-  %bf.clear227.i = and i32 %bf.load226.i, 511
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %68 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i979.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %68, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str49, i64 0, i64 0), i32 %bf.clear227.i) #7
-  %69 = load i32* %column, align 8, !tbaa !4
-  %add.i981.i = add i32 %69, 14
-  store i32 %add.i981.i, i32* %column, align 8, !tbaa !4
-  %bf.load229.i = load i32* %17, align 8
-  %bf.clear231.i = and i32 %bf.load229.i, 8192
-  %tobool232.i = icmp eq i32 %bf.clear231.i, 0
-  br i1 %tobool232.i, label %if.end234.i, label %if.then233.i
+  %type225.i = inttoptr i64 %8 to %struct.tree_type*, !dbg !1126
+  %precision.i = getelementptr inbounds %struct.tree_type* %type225.i, i64 0, i32 6, !dbg !1126
+  %67 = bitcast [4 x i8]* %precision.i to i32*, !dbg !1126
+  %bf.load226.i = load i32* %67, align 4, !dbg !1126
+  %bf.clear227.i = and i32 %bf.load226.i, 511, !dbg !1126
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1127) #6, !dbg !1128
+  call void @llvm.dbg.value(metadata !1129, i64 0, metadata !1130) #6, !dbg !1131
+  call void @llvm.dbg.value(metadata !{i32 %bf.clear227.i}, i64 0, metadata !1132) #6, !dbg !1133
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1134
+  %68 = load %struct._IO_FILE** %stream1, align 8, !dbg !1135, !tbaa !844
+  %call.i979.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %68, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str49, i64 0, i64 0), i32 %bf.clear227.i) #8, !dbg !1135
+  %69 = load i32* %column, align 8, !dbg !1136, !tbaa !850
+  %add.i981.i = add i32 %69, 14, !dbg !1136
+  store i32 %add.i981.i, i32* %column, align 8, !dbg !1136, !tbaa !850
+  %bf.load229.i = load i32* %17, align 8, !dbg !1137
+  %bf.clear231.i = and i32 %bf.load229.i, 8192, !dbg !1137
+  %tobool232.i = icmp eq i32 %bf.clear231.i, 0, !dbg !1137
+  br i1 %tobool232.i, label %if.end234.i, label %if.then233.i, !dbg !1137
 
 if.then233.i:                                     ; preds = %sw.bb224.i
-  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([9 x i8]* @.str50, i64 0, i64 0)) #7
-  br label %if.end234.i
+  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([9 x i8]* @.str50, i64 0, i64 0)) #8, !dbg !1138
+  br label %if.end234.i, !dbg !1138
 
 if.end234.i:                                      ; preds = %if.then233.i, %sw.bb224.i
-  %minval.i = getelementptr inbounds %struct.tree_type* %type225.i, i64 0, i32 12
-  %70 = load %union.tree_node** %minval.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([4 x i8]* @.str51, i64 0, i64 0), %union.tree_node* %70, i32 0) #7
-  %maxval.i = getelementptr inbounds %struct.tree_type* %type225.i, i64 0, i32 13
-  %71 = load %union.tree_node** %maxval.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([4 x i8]* @.str52, i64 0, i64 0), %union.tree_node* %71, i32 0) #7
-  %cmp237.i = icmp eq i32 %bf.clear15.i, 10
-  br i1 %cmp237.i, label %if.then239.i, label %done.i
+  %minval.i = getelementptr inbounds %struct.tree_type* %type225.i, i64 0, i32 12, !dbg !1139
+  %70 = load %union.tree_node** %minval.i, align 8, !dbg !1139, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([4 x i8]* @.str51, i64 0, i64 0), %union.tree_node* %70, i32 0) #8, !dbg !1139
+  %maxval.i = getelementptr inbounds %struct.tree_type* %type225.i, i64 0, i32 13, !dbg !1140
+  %71 = load %union.tree_node** %maxval.i, align 8, !dbg !1140, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([4 x i8]* @.str52, i64 0, i64 0), %union.tree_node* %71, i32 0) #8, !dbg !1140
+  %cmp237.i = icmp eq i32 %bf.clear15.i, 10, !dbg !1141
+  br i1 %cmp237.i, label %if.then239.i, label %done.i, !dbg !1141
 
 if.then239.i:                                     ; preds = %if.end234.i
-  %values.i = getelementptr inbounds %struct.tree_type* %type225.i, i64 0, i32 1
-  %72 = load %union.tree_node** %values.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str53, i64 0, i64 0), %union.tree_node* %72, i32 0) #7
-  br label %done.i
+  %values.i = getelementptr inbounds %struct.tree_type* %type225.i, i64 0, i32 1, !dbg !1142
+  %72 = load %union.tree_node** %values.i, align 8, !dbg !1142, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str53, i64 0, i64 0), %union.tree_node* %72, i32 0) #8, !dbg !1142
+  br label %done.i, !dbg !1142
 
 sw.bb242.i:                                       ; preds = %if.end203.i
-  %type243.i = inttoptr i64 %8 to %struct.tree_type*
-  %precision244.i = getelementptr inbounds %struct.tree_type* %type243.i, i64 0, i32 6
-  %73 = bitcast [4 x i8]* %precision244.i to i32*
-  %bf.load245.i = load i32* %73, align 4
-  %bf.clear246.i = and i32 %bf.load245.i, 511
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %74 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i983.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %74, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str49, i64 0, i64 0), i32 %bf.clear246.i) #7
-  %75 = load i32* %column, align 8, !tbaa !4
-  %add.i985.i = add i32 %75, 14
-  store i32 %add.i985.i, i32* %column, align 8, !tbaa !4
-  br label %done.i
+  %type243.i = inttoptr i64 %8 to %struct.tree_type*, !dbg !1143
+  %precision244.i = getelementptr inbounds %struct.tree_type* %type243.i, i64 0, i32 6, !dbg !1143
+  %73 = bitcast [4 x i8]* %precision244.i to i32*, !dbg !1143
+  %bf.load245.i = load i32* %73, align 4, !dbg !1143
+  %bf.clear246.i = and i32 %bf.load245.i, 511, !dbg !1143
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1144) #6, !dbg !1145
+  call void @llvm.dbg.value(metadata !1129, i64 0, metadata !1146) #6, !dbg !1147
+  call void @llvm.dbg.value(metadata !{i32 %bf.clear246.i}, i64 0, metadata !1148) #6, !dbg !1149
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1150
+  %74 = load %struct._IO_FILE** %stream1, align 8, !dbg !1151, !tbaa !844
+  %call.i983.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %74, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str49, i64 0, i64 0), i32 %bf.clear246.i) #8, !dbg !1151
+  %75 = load i32* %column, align 8, !dbg !1152, !tbaa !850
+  %add.i985.i = add i32 %75, 14, !dbg !1152
+  store i32 %add.i985.i, i32* %column, align 8, !dbg !1152, !tbaa !850
+  br label %done.i, !dbg !1153
 
 sw.bb247.i:                                       ; preds = %if.end203.i
-  %type249.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 1
-  %76 = load %union.tree_node** %type249.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([4 x i8]* @.str54, i64 0, i64 0), %union.tree_node* %76, i32 0) #7
-  br label %done.i
+  %type249.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 1, !dbg !1154
+  %76 = load %union.tree_node** %type249.i, align 8, !dbg !1154, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([4 x i8]* @.str54, i64 0, i64 0), %union.tree_node* %76, i32 0) #8, !dbg !1154
+  br label %done.i, !dbg !1155
 
 sw.bb250.i:                                       ; preds = %if.end203.i
-  %type252.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 1
-  %77 = load %union.tree_node** %type252.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str55, i64 0, i64 0), %union.tree_node* %77, i32 0) #7
-  br label %done.i
+  %type252.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 1, !dbg !1156
+  %77 = load %union.tree_node** %type252.i, align 8, !dbg !1156, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str55, i64 0, i64 0), %union.tree_node* %77, i32 0) #8, !dbg !1156
+  br label %done.i, !dbg !1157
 
 sw.bb253.i:                                       ; preds = %if.end203.i
-  %type254.i = inttoptr i64 %8 to %struct.tree_type*
-  %maxval255.i = getelementptr inbounds %struct.tree_type* %type254.i, i64 0, i32 13
-  %78 = load %union.tree_node** %maxval255.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str56, i64 0, i64 0), %union.tree_node* %78, i32 0) #7
-  br label %sw.bb256.i
+  %type254.i = inttoptr i64 %8 to %struct.tree_type*, !dbg !1158
+  %maxval255.i = getelementptr inbounds %struct.tree_type* %type254.i, i64 0, i32 13, !dbg !1158
+  %78 = load %union.tree_node** %maxval255.i, align 8, !dbg !1158, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str56, i64 0, i64 0), %union.tree_node* %78, i32 0) #8, !dbg !1158
+  br label %sw.bb256.i, !dbg !1158
 
 sw.bb256.i:                                       ; preds = %sw.bb253.i, %if.end203.sw.bb256_crit_edge.i
-  %type259.pre-phi.i = phi %struct.tree_type* [ %type259.pre.i, %if.end203.sw.bb256_crit_edge.i ], [ %type254.i, %sw.bb253.i ]
-  %type258.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 1
-  %79 = load %union.tree_node** %type258.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str57, i64 0, i64 0), %union.tree_node* %79, i32 0) #7
-  %values260.i = getelementptr inbounds %struct.tree_type* %type259.pre-phi.i, i64 0, i32 1
-  %80 = load %union.tree_node** %values260.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str58, i64 0, i64 0), %union.tree_node* %80, i32 0) #7
-  br label %done.i
+  %type259.pre-phi.i = phi %struct.tree_type* [ %type259.pre.i, %if.end203.sw.bb256_crit_edge.i ], [ %type254.i, %sw.bb253.i ], !dbg !1086
+  %type258.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 1, !dbg !1159
+  %79 = load %union.tree_node** %type258.i, align 8, !dbg !1159, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str57, i64 0, i64 0), %union.tree_node* %79, i32 0) #8, !dbg !1159
+  %values260.i = getelementptr inbounds %struct.tree_type* %type259.pre-phi.i, i64 0, i32 1, !dbg !1086
+  %80 = load %union.tree_node** %values260.i, align 8, !dbg !1086, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str58, i64 0, i64 0), %union.tree_node* %80, i32 0) #8, !dbg !1086
+  br label %done.i, !dbg !1160
 
 sw.bb261.i:                                       ; preds = %if.end203.i
-  %type263.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 1
-  %81 = load %union.tree_node** %type263.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str59, i64 0, i64 0), %union.tree_node* %81, i32 0) #7
-  %type264.i = inttoptr i64 %8 to %struct.tree_type*
-  %values265.i = getelementptr inbounds %struct.tree_type* %type264.i, i64 0, i32 1
-  %82 = load %union.tree_node** %values265.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str60, i64 0, i64 0), %union.tree_node* %82, i32 0) #7
-  br label %done.i
+  %type263.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 1, !dbg !1161
+  %81 = load %union.tree_node** %type263.i, align 8, !dbg !1161, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str59, i64 0, i64 0), %union.tree_node* %81, i32 0) #8, !dbg !1161
+  %type264.i = inttoptr i64 %8 to %struct.tree_type*, !dbg !1162
+  %values265.i = getelementptr inbounds %struct.tree_type* %type264.i, i64 0, i32 1, !dbg !1162
+  %82 = load %union.tree_node** %values265.i, align 8, !dbg !1162, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str60, i64 0, i64 0), %union.tree_node* %82, i32 0) #8, !dbg !1162
+  br label %done.i, !dbg !1163
 
 sw.bb266.i:                                       ; preds = %if.end203.i, %if.end203.i
-  %bf.load269.i = load i32* %17, align 8
-  %bf.clear270.i = and i32 %bf.load269.i, 255
-  %cmp271.i = icmp eq i32 %bf.clear270.i, 20
-  br i1 %cmp271.i, label %if.then273.i, label %if.else274.i
+  %bf.load269.i = load i32* %17, align 8, !dbg !1164
+  %bf.clear270.i = and i32 %bf.load269.i, 255, !dbg !1164
+  %cmp271.i = icmp eq i32 %bf.clear270.i, 20, !dbg !1164
+  br i1 %cmp271.i, label %if.then273.i, label %if.else274.i, !dbg !1164
 
 if.then273.i:                                     ; preds = %sw.bb266.i
-  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([7 x i8]* @.str61, i64 0, i64 0)) #7
-  br label %if.end275.i
+  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([7 x i8]* @.str61, i64 0, i64 0)) #8, !dbg !1165
+  br label %if.end275.i, !dbg !1165
 
 if.else274.i:                                     ; preds = %sw.bb266.i
-  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([6 x i8]* @.str62, i64 0, i64 0)) #7
+  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([6 x i8]* @.str62, i64 0, i64 0)) #8, !dbg !1166
   br label %if.end275.i
 
 if.end275.i:                                      ; preds = %if.else274.i, %if.then273.i
-  %type276.i = inttoptr i64 %8 to %struct.tree_type*
-  %values277.i = getelementptr inbounds %struct.tree_type* %type276.i, i64 0, i32 1
-  %83 = load %union.tree_node** %values277.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str63, i64 0, i64 0), %union.tree_node* %83, i32 0) #7
-  %maxval279.i = getelementptr inbounds %struct.tree_type* %type276.i, i64 0, i32 13
-  %84 = load %union.tree_node** %maxval279.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str64, i64 0, i64 0), %union.tree_node* %84, i32 0) #7
-  %binfo.i = getelementptr inbounds %struct.tree_type* %type276.i, i64 0, i32 16
-  %85 = load %union.tree_node** %binfo.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str65, i64 0, i64 0), %union.tree_node* %85, i32 1) #7
-  br label %done.i
+  %type276.i = inttoptr i64 %8 to %struct.tree_type*, !dbg !1167
+  %values277.i = getelementptr inbounds %struct.tree_type* %type276.i, i64 0, i32 1, !dbg !1167
+  %83 = load %union.tree_node** %values277.i, align 8, !dbg !1167, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str63, i64 0, i64 0), %union.tree_node* %83, i32 0) #8, !dbg !1167
+  %maxval279.i = getelementptr inbounds %struct.tree_type* %type276.i, i64 0, i32 13, !dbg !1168
+  %84 = load %union.tree_node** %maxval279.i, align 8, !dbg !1168, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str64, i64 0, i64 0), %union.tree_node* %84, i32 0) #8, !dbg !1168
+  %binfo.i = getelementptr inbounds %struct.tree_type* %type276.i, i64 0, i32 16, !dbg !1169
+  %85 = load %union.tree_node** %binfo.i, align 8, !dbg !1169, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str65, i64 0, i64 0), %union.tree_node* %85, i32 1) #8, !dbg !1169
+  br label %done.i, !dbg !1170
 
 sw.bb281.i:                                       ; preds = %if.end203.i
-  %initial.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 12
-  %86 = load %union.tree_node** %initial.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str66, i64 0, i64 0), %union.tree_node* %86, i32 0) #7
-  br label %done.i
+  %initial.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 12, !dbg !1171
+  %86 = load %union.tree_node** %initial.i, align 8, !dbg !1171, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str66, i64 0, i64 0), %union.tree_node* %86, i32 0) #8, !dbg !1171
+  br label %done.i, !dbg !1172
 
 sw.bb283.i:                                       ; preds = %if.end203.i, %if.end203.i, %if.end203.i, %if.end203.i
-  %bf.load286.i = load i32* %17, align 8
-  %bf.clear287.i = and i32 %bf.load286.i, 255
-  %cmp288.i = icmp eq i32 %bf.clear287.i, 35
-  %initial292.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 12
-  %87 = load %union.tree_node** %initial292.i, align 8, !tbaa !0
-  br i1 %cmp288.i, label %if.then290.i, label %if.else293.i
+  %bf.load286.i = load i32* %17, align 8, !dbg !1173
+  %bf.clear287.i = and i32 %bf.load286.i, 255, !dbg !1173
+  %cmp288.i = icmp eq i32 %bf.clear287.i, 35, !dbg !1173
+  %initial292.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 12, !dbg !1174
+  %87 = load %union.tree_node** %initial292.i, align 8, !dbg !1174, !tbaa !844
+  br i1 %cmp288.i, label %if.then290.i, label %if.else293.i, !dbg !1173
 
 if.then290.i:                                     ; preds = %sw.bb283.i
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str67, i64 0, i64 0), %union.tree_node* %87, i32 0) #7
-  br label %if.end296.i
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str67, i64 0, i64 0), %union.tree_node* %87, i32 0) #8, !dbg !1174
+  br label %if.end296.i, !dbg !1174
 
 if.else293.i:                                     ; preds = %sw.bb283.i
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str68, i64 0, i64 0), %union.tree_node* %87, i32 0) #7
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str68, i64 0, i64 0), %union.tree_node* %87, i32 0) #8, !dbg !1175
   br label %if.end296.i
 
 if.end296.i:                                      ; preds = %if.else293.i, %if.then290.i
-  %size298.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 4
-  %88 = load %union.tree_node** %size298.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str42, i64 0, i64 0), %union.tree_node* %88, i32 0) #7
-  %u1.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 6
-  %89 = bitcast %union.anon* %u1.i to i32*
-  %bf.load301.i = load i32* %89, align 4
-  %bf.clear302.i = and i32 %bf.load301.i, 16777215
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %90 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i987.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %90, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str43, i64 0, i64 0), i32 %bf.clear302.i) #7
-  %91 = load i32* %column, align 8, !tbaa !4
-  %add.i989.i = add i32 %91, 14
-  store i32 %add.i989.i, i32* %column, align 8, !tbaa !4
-  %bf.load305.i = load i32* %17, align 8
-  %bf.clear306.i = and i32 %bf.load305.i, 255
+  %size298.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 4, !dbg !1176
+  %88 = load %union.tree_node** %size298.i, align 8, !dbg !1176, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str42, i64 0, i64 0), %union.tree_node* %88, i32 0) #8, !dbg !1176
+  %u1.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 6, !dbg !1177
+  %89 = bitcast %union.anon* %u1.i to i32*, !dbg !1177
+  %bf.load301.i = load i32* %89, align 4, !dbg !1177
+  %bf.clear302.i = and i32 %bf.load301.i, 16777215, !dbg !1177
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1178) #6, !dbg !1179
+  call void @llvm.dbg.value(metadata !1070, i64 0, metadata !1180) #6, !dbg !1181
+  call void @llvm.dbg.value(metadata !{i32 %bf.clear302.i}, i64 0, metadata !1182) #6, !dbg !1183
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1184
+  %90 = load %struct._IO_FILE** %stream1, align 8, !dbg !1185, !tbaa !844
+  %call.i987.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %90, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str43, i64 0, i64 0), i32 %bf.clear302.i) #8, !dbg !1185
+  %91 = load i32* %column, align 8, !dbg !1186, !tbaa !850
+  %add.i989.i = add i32 %91, 14, !dbg !1186
+  store i32 %add.i989.i, i32* %column, align 8, !dbg !1186, !tbaa !850
+  %bf.load305.i = load i32* %17, align 8, !dbg !1187
+  %bf.clear306.i = and i32 %bf.load305.i, 255, !dbg !1187
   switch i32 %bf.clear306.i, label %done.i [
     i32 37, label %if.then309.i
     i32 34, label %if.then338.i
     i32 35, label %if.then338.i
-  ]
+  ], !dbg !1187
 
 if.then309.i:                                     ; preds = %if.end296.i
-  %lang_flag_4.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 5
-  %92 = bitcast [8 x i8]* %lang_flag_4.i to i64*
-  %bf.load311.i = load i64* %92, align 8
-  %bf.cast314.i = and i64 %bf.load311.i, 2199023255552
-  %cmp315.i = icmp eq i64 %bf.cast314.i, 0
-  br i1 %cmp315.i, label %if.end318.i, label %if.then317.i
+  %lang_flag_4.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 5, !dbg !1188
+  %92 = bitcast [8 x i8]* %lang_flag_4.i to i64*, !dbg !1188
+  %bf.load311.i = load i64* %92, align 8, !dbg !1188
+  %bf.cast314.i = and i64 %bf.load311.i, 2199023255552, !dbg !1188
+  %cmp315.i = icmp eq i64 %bf.cast314.i, 0, !dbg !1188
+  br i1 %cmp315.i, label %if.end318.i, label %if.then317.i, !dbg !1188
 
 if.then317.i:                                     ; preds = %if.then309.i
-  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([9 x i8]* @.str69, i64 0, i64 0)) #7
-  br label %if.end318.i
+  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([9 x i8]* @.str69, i64 0, i64 0)) #8, !dbg !1190
+  br label %if.end318.i, !dbg !1190
 
 if.end318.i:                                      ; preds = %if.then317.i, %if.then309.i
-  %arguments.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 10
-  %93 = load %union.tree_node** %arguments.i, align 8, !tbaa !0
-  %tobool320.i = icmp eq %union.tree_node* %93, null
-  br i1 %tobool320.i, label %done.i, label %if.then321.i
+  %arguments.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 10, !dbg !1191
+  %93 = load %union.tree_node** %arguments.i, align 8, !dbg !1191, !tbaa !844
+  %tobool320.i = icmp eq %union.tree_node* %93, null, !dbg !1191
+  br i1 %tobool320.i, label %done.i, label %if.then321.i, !dbg !1191
 
 if.then321.i:                                     ; preds = %if.end318.i
-  %call322.i = call %union.tree_node* @bit_position(%union.tree_node* %9) #7
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str70, i64 0, i64 0), %union.tree_node* %call322.i, i32 0) #7
-  br label %done.i
+  %call322.i = call %union.tree_node* @bit_position(%union.tree_node* %9) #8, !dbg !1192
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str70, i64 0, i64 0), %union.tree_node* %call322.i, i32 0) #8, !dbg !1192
+  br label %done.i, !dbg !1192
 
 if.then338.i:                                     ; preds = %if.end296.i, %if.end296.i
-  %bf.lshr341.i = lshr i32 %bf.load305.i, 16
-  %bf.clear342.i = and i32 %bf.lshr341.i, 1
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %94 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i991.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %94, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str71, i64 0, i64 0), i32 %bf.clear342.i) #7
-  %95 = load i32* %column, align 8, !tbaa !4
-  %add.i993.i = add i32 %95, 14
-  store i32 %add.i993.i, i32* %column, align 8, !tbaa !4
-  %regdecl_flag.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 5
-  %96 = bitcast [8 x i8]* %regdecl_flag.i to i64*
-  %bf.load344.i = load i64* %96, align 8
-  %bf.cast347.i = and i64 %bf.load344.i, 1024
-  %tobool348.i = icmp eq i64 %bf.cast347.i, 0
-  br i1 %tobool348.i, label %done.i, label %if.then349.i
+  %bf.lshr341.i = lshr i32 %bf.load305.i, 16, !dbg !1193
+  %bf.clear342.i = and i32 %bf.lshr341.i, 1, !dbg !1193
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1195) #6, !dbg !1196
+  call void @llvm.dbg.value(metadata !1197, i64 0, metadata !1198) #6, !dbg !1199
+  call void @llvm.dbg.value(metadata !{i32 %bf.clear342.i}, i64 0, metadata !1200) #6, !dbg !1201
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1202
+  %94 = load %struct._IO_FILE** %stream1, align 8, !dbg !1203, !tbaa !844
+  %call.i991.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %94, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str71, i64 0, i64 0), i32 %bf.clear342.i) #8, !dbg !1203
+  %95 = load i32* %column, align 8, !dbg !1204, !tbaa !850
+  %add.i993.i = add i32 %95, 14, !dbg !1204
+  store i32 %add.i993.i, i32* %column, align 8, !dbg !1204, !tbaa !850
+  %regdecl_flag.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 5, !dbg !1205
+  %96 = bitcast [8 x i8]* %regdecl_flag.i to i64*, !dbg !1205
+  %bf.load344.i = load i64* %96, align 8, !dbg !1205
+  %bf.cast347.i = and i64 %bf.load344.i, 1024, !dbg !1205
+  %tobool348.i = icmp eq i64 %bf.cast347.i, 0, !dbg !1205
+  br i1 %tobool348.i, label %done.i, label %if.then349.i, !dbg !1205
 
 if.then349.i:                                     ; preds = %if.then338.i
-  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([9 x i8]* @.str72, i64 0, i64 0)) #7
-  br label %done.i
+  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([9 x i8]* @.str72, i64 0, i64 0)) #8, !dbg !1206
+  br label %done.i, !dbg !1206
 
 sw.bb353.i:                                       ; preds = %if.end203.i
-  %arguments355.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 10
-  %97 = load %union.tree_node** %arguments355.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str73, i64 0, i64 0), %union.tree_node* %97, i32 0) #7
-  %external_flag.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 5
-  %98 = bitcast [8 x i8]* %external_flag.i to i64*
-  %bf.load357.i = load i64* %98, align 8
-  %bf.cast360.i = and i64 %bf.load357.i, 256
-  %tobool361.i = icmp eq i64 %bf.cast360.i, 0
-  br i1 %tobool361.i, label %if.end363.i, label %if.then362.i
+  %arguments355.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 10, !dbg !1207
+  %97 = load %union.tree_node** %arguments355.i, align 8, !dbg !1207, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str73, i64 0, i64 0), %union.tree_node* %97, i32 0) #8, !dbg !1207
+  %external_flag.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 5, !dbg !1208
+  %98 = bitcast [8 x i8]* %external_flag.i to i64*, !dbg !1208
+  %bf.load357.i = load i64* %98, align 8, !dbg !1208
+  %bf.cast360.i = and i64 %bf.load357.i, 256, !dbg !1208
+  %tobool361.i = icmp eq i64 %bf.cast360.i, 0, !dbg !1208
+  br i1 %tobool361.i, label %if.end363.i, label %if.then362.i, !dbg !1208
 
 if.then362.i:                                     ; preds = %sw.bb353.i
-  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([10 x i8]* @.str74, i64 0, i64 0)) #7
-  br label %if.end363.i
+  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([10 x i8]* @.str74, i64 0, i64 0)) #8, !dbg !1209
+  br label %if.end363.i, !dbg !1209
 
 if.end363.i:                                      ; preds = %if.then362.i, %sw.bb353.i
-  %bf.load366.i = load i32* %17, align 8
-  %bf.clear368.i = and i32 %bf.load366.i, 524288
-  %tobool369.i = icmp eq i32 %bf.clear368.i, 0
-  br i1 %tobool369.i, label %if.else371.i, label %if.then370.i
+  %bf.load366.i = load i32* %17, align 8, !dbg !1210
+  %bf.clear368.i = and i32 %bf.load366.i, 524288, !dbg !1210
+  %tobool369.i = icmp eq i32 %bf.clear368.i, 0, !dbg !1210
+  br i1 %tobool369.i, label %if.else371.i, label %if.then370.i, !dbg !1210
 
 if.then370.i:                                     ; preds = %if.end363.i
-  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([7 x i8]* @.str75, i64 0, i64 0)) #7
-  br label %if.end372.i
+  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([7 x i8]* @.str75, i64 0, i64 0)) #8, !dbg !1211
+  br label %if.end372.i, !dbg !1211
 
 if.else371.i:                                     ; preds = %if.end363.i
-  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([7 x i8]* @.str76, i64 0, i64 0)) #7
+  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([7 x i8]* @.str76, i64 0, i64 0)) #8, !dbg !1212
   br label %if.end372.i
 
 if.end372.i:                                      ; preds = %if.else371.i, %if.then370.i
-  %lang_specific.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 24
-  %99 = load %struct.lang_decl** %lang_specific.i, align 8, !tbaa !0
-  %tobool374.i = icmp eq %struct.lang_decl* %99, null
-  br i1 %tobool374.i, label %done.i, label %land.lhs.true375.i
+  %lang_specific.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 24, !dbg !1213
+  %99 = load %struct.lang_decl** %lang_specific.i, align 8, !dbg !1213, !tbaa !844
+  %tobool374.i = icmp eq %struct.lang_decl* %99, null, !dbg !1213
+  br i1 %tobool374.i, label %done.i, label %land.lhs.true375.i, !dbg !1213
 
 land.lhs.true375.i:                               ; preds = %if.end372.i
-  %100 = load i32* %flags2, align 8, !tbaa !4
-  %and.i995.i = and i32 %100, 2
-  %tobool.i996.i = icmp eq i32 %and.i995.i, 0
-  br i1 %tobool.i996.i, label %if.then378.i, label %land.rhs.i999.i
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1214) #6, !dbg !1215
+  call void @llvm.dbg.value(metadata !1049, i64 0, metadata !1216) #6, !dbg !1217
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1218) #6, !dbg !1219
+  %100 = load i32* %flags2, align 8, !dbg !1220, !tbaa !850
+  %and.i995.i = and i32 %100, 2, !dbg !1220
+  %tobool.i996.i = icmp eq i32 %and.i995.i, 0, !dbg !1220
+  br i1 %tobool.i996.i, label %if.then378.i, label %land.rhs.i999.i, !dbg !1220
 
 land.rhs.i999.i:                                  ; preds = %land.lhs.true375.i
-  %101 = load %union.tree_node** %node, align 8, !tbaa !0
-  %cmp.i998.i = icmp eq %union.tree_node* %101, %9
-  br i1 %cmp.i998.i, label %if.then378.i, label %done.i
+  %101 = load %union.tree_node** %node, align 8, !dbg !1220, !tbaa !844
+  %cmp.i998.i = icmp eq %union.tree_node* %101, %9, !dbg !1220
+  br i1 %cmp.i998.i, label %if.then378.i, label %done.i, !dbg !1213
 
 if.then378.i:                                     ; preds = %land.rhs.i999.i, %land.lhs.true375.i
-  %saved_tree.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 20
-  %102 = load %union.tree_node** %saved_tree.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str77, i64 0, i64 0), %union.tree_node* %102, i32 0) #7
-  br label %done.i
+  %saved_tree.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 20, !dbg !1221
+  %102 = load %union.tree_node** %saved_tree.i, align 8, !dbg !1221, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str77, i64 0, i64 0), %union.tree_node* %102, i32 0) #8, !dbg !1221
+  br label %done.i, !dbg !1221
 
 sw.bb381.i:                                       ; preds = %if.end203.i
-  %complexity.i.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1
-  %103 = bitcast i8** %complexity.i.i to i32*
-  %104 = load i32* %103, align 4, !tbaa !4
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %105 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i.i.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %105, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %104) #7
-  %106 = load i32* %column, align 8, !tbaa !4
-  %add.i.i.i = add i32 %106, 14
-  store i32 %add.i.i.i, i32* %column, align 8, !tbaa !4
-  %exp382.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx384.i = getelementptr inbounds %struct.tree_exp* %exp382.i, i64 0, i32 2, i64 0
-  %107 = load %union.tree_node** %arrayidx384.i, align 8, !tbaa !0
-  %cmp385.i = icmp eq %union.tree_node* %107, null
-  br i1 %cmp385.i, label %if.end388.i, label %if.then387.i
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1222) #6, !dbg !1224
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1225) #6, !dbg !1226
+  %complexity.i.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1, !dbg !1227
+  %103 = bitcast i8** %complexity.i.i to i32*, !dbg !1227
+  %104 = load i32* %103, align 4, !dbg !1227, !tbaa !850
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1228) #6, !dbg !1229
+  call void @llvm.dbg.value(metadata !926, i64 0, metadata !1230) #6, !dbg !1231
+  call void @llvm.dbg.value(metadata !{i32 %104}, i64 0, metadata !1232) #6, !dbg !1233
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1234
+  %105 = load %struct._IO_FILE** %stream1, align 8, !dbg !1235, !tbaa !844
+  %call.i.i.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %105, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %104) #8, !dbg !1235
+  %106 = load i32* %column, align 8, !dbg !1236, !tbaa !850
+  %add.i.i.i = add i32 %106, 14, !dbg !1236
+  store i32 %add.i.i.i, i32* %column, align 8, !dbg !1236, !tbaa !850
+  %exp382.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1237
+  %arrayidx384.i = getelementptr inbounds %struct.tree_exp* %exp382.i, i64 0, i32 2, i64 0, !dbg !1237
+  %107 = load %union.tree_node** %arrayidx384.i, align 8, !dbg !1237, !tbaa !844
+  %cmp385.i = icmp eq %union.tree_node* %107, null, !dbg !1237
+  br i1 %cmp385.i, label %if.end388.i, label %if.then387.i, !dbg !1237
 
 if.then387.i:                                     ; preds = %sw.bb381.i
-  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([9 x i8]* @.str78, i64 0, i64 0)) #7
-  br label %if.end388.i
+  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([9 x i8]* @.str78, i64 0, i64 0)) #8, !dbg !1238
+  br label %if.end388.i, !dbg !1238
 
 if.end388.i:                                      ; preds = %if.then387.i, %sw.bb381.i
-  %arrayidx391.i = getelementptr inbounds %struct.tree_exp* %exp382.i, i64 0, i32 2, i64 1
-  %108 = load %union.tree_node** %arrayidx391.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str44, i64 0, i64 0), %union.tree_node* %108, i32 0) #7
-  %arrayidx394.i = getelementptr inbounds %struct.tree_exp* %exp382.i, i64 0, i32 2, i64 2
-  %109 = load %union.tree_node** %arrayidx394.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str79, i64 0, i64 0), %union.tree_node* %109, i32 0) #7
-  %arrayidx397.i = getelementptr inbounds %struct.tree_exp* %exp382.i, i64 0, i32 2, i64 3
-  %110 = load %union.tree_node** %arrayidx397.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([4 x i8]* @.str80, i64 0, i64 0), %union.tree_node* %110, i32 0) #7
-  %arrayidx400.i = getelementptr inbounds %struct.tree_exp* %exp382.i, i64 0, i32 2, i64 4
-  %111 = load %union.tree_node** %arrayidx400.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str81, i64 0, i64 0), %union.tree_node* %111, i32 0) #7
-  %chain.i.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0
-  %112 = load %union.tree_node** %chain.i.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %112, i32 0) #7
-  br label %done.i
+  %arrayidx391.i = getelementptr inbounds %struct.tree_exp* %exp382.i, i64 0, i32 2, i64 1, !dbg !1239
+  %108 = load %union.tree_node** %arrayidx391.i, align 8, !dbg !1239, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str44, i64 0, i64 0), %union.tree_node* %108, i32 0) #8, !dbg !1239
+  %arrayidx394.i = getelementptr inbounds %struct.tree_exp* %exp382.i, i64 0, i32 2, i64 2, !dbg !1240
+  %109 = load %union.tree_node** %arrayidx394.i, align 8, !dbg !1240, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str79, i64 0, i64 0), %union.tree_node* %109, i32 0) #8, !dbg !1240
+  %arrayidx397.i = getelementptr inbounds %struct.tree_exp* %exp382.i, i64 0, i32 2, i64 3, !dbg !1241
+  %110 = load %union.tree_node** %arrayidx397.i, align 8, !dbg !1241, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([4 x i8]* @.str80, i64 0, i64 0), %union.tree_node* %110, i32 0) #8, !dbg !1241
+  %arrayidx400.i = getelementptr inbounds %struct.tree_exp* %exp382.i, i64 0, i32 2, i64 4, !dbg !1242
+  %111 = load %union.tree_node** %arrayidx400.i, align 8, !dbg !1242, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str81, i64 0, i64 0), %union.tree_node* %111, i32 0) #8, !dbg !1242
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1243) #6, !dbg !1245
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1246) #6, !dbg !1247
+  %chain.i.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0, !dbg !1248
+  %112 = load %union.tree_node** %chain.i.i, align 8, !dbg !1248, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %112, i32 0) #8, !dbg !1248
+  br label %done.i, !dbg !1249
 
 sw.bb401.i:                                       ; preds = %if.end203.i, %if.end203.i
-  %complexity.i1002.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1
-  %113 = bitcast i8** %complexity.i1002.i to i32*
-  %114 = load i32* %113, align 4, !tbaa !4
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %115 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i.i1004.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %115, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %114) #7
-  %116 = load i32* %column, align 8, !tbaa !4
-  %add.i.i1006.i = add i32 %116, 14
-  store i32 %add.i.i1006.i, i32* %column, align 8, !tbaa !4
-  %chain.i1007.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0
-  %117 = load %union.tree_node** %chain.i1007.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %117, i32 0) #7
-  br label %done.i
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1250) #6, !dbg !1252
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1253) #6, !dbg !1254
+  %complexity.i1002.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1, !dbg !1255
+  %113 = bitcast i8** %complexity.i1002.i to i32*, !dbg !1255
+  %114 = load i32* %113, align 4, !dbg !1255, !tbaa !850
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1256) #6, !dbg !1257
+  call void @llvm.dbg.value(metadata !926, i64 0, metadata !1258) #6, !dbg !1259
+  call void @llvm.dbg.value(metadata !{i32 %114}, i64 0, metadata !1260) #6, !dbg !1261
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1262
+  %115 = load %struct._IO_FILE** %stream1, align 8, !dbg !1263, !tbaa !844
+  %call.i.i1004.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %115, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %114) #8, !dbg !1263
+  %116 = load i32* %column, align 8, !dbg !1264, !tbaa !850
+  %add.i.i1006.i = add i32 %116, 14, !dbg !1264
+  store i32 %add.i.i1006.i, i32* %column, align 8, !dbg !1264, !tbaa !850
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1265) #6, !dbg !1267
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1268) #6, !dbg !1269
+  %chain.i1007.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0, !dbg !1270
+  %117 = load %union.tree_node** %chain.i1007.i, align 8, !dbg !1270, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %117, i32 0) #8, !dbg !1270
+  br label %done.i, !dbg !1271
 
 sw.bb402.i:                                       ; preds = %if.end203.i
-  %exp403.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx405.i = getelementptr inbounds %struct.tree_exp* %exp403.i, i64 0, i32 2, i64 0
-  %118 = load %union.tree_node** %arrayidx405.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([4 x i8]* @.str82, i64 0, i64 0), %union.tree_node* %118, i32 0) #7
-  %arrayidx408.i = getelementptr inbounds %struct.tree_exp* %exp403.i, i64 0, i32 2, i64 1
-  %119 = load %union.tree_node** %arrayidx408.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str83, i64 0, i64 0), %union.tree_node* %119, i32 0) #7
-  %chain.i1008.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0
-  %120 = load %union.tree_node** %chain.i1008.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %120, i32 0) #7
-  br label %done.i
+  %exp403.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1272
+  %arrayidx405.i = getelementptr inbounds %struct.tree_exp* %exp403.i, i64 0, i32 2, i64 0, !dbg !1272
+  %118 = load %union.tree_node** %arrayidx405.i, align 8, !dbg !1272, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([4 x i8]* @.str82, i64 0, i64 0), %union.tree_node* %118, i32 0) #8, !dbg !1272
+  %arrayidx408.i = getelementptr inbounds %struct.tree_exp* %exp403.i, i64 0, i32 2, i64 1, !dbg !1273
+  %119 = load %union.tree_node** %arrayidx408.i, align 8, !dbg !1273, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str83, i64 0, i64 0), %union.tree_node* %119, i32 0) #8, !dbg !1273
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1274) #6, !dbg !1276
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1277) #6, !dbg !1278
+  %chain.i1008.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0, !dbg !1279
+  %120 = load %union.tree_node** %chain.i1008.i, align 8, !dbg !1279, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %120, i32 0) #8, !dbg !1279
+  br label %done.i, !dbg !1280
 
 sw.bb409.i:                                       ; preds = %if.end203.i
-  %complexity.i1009.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1
-  %121 = bitcast i8** %complexity.i1009.i to i32*
-  %122 = load i32* %121, align 4, !tbaa !4
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %123 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i.i1011.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %123, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %122) #7
-  %124 = load i32* %column, align 8, !tbaa !4
-  %add.i.i1013.i = add i32 %124, 14
-  store i32 %add.i.i1013.i, i32* %column, align 8, !tbaa !4
-  %exp410.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx412.i = getelementptr inbounds %struct.tree_exp* %exp410.i, i64 0, i32 2, i64 0
-  %125 = load %union.tree_node** %arrayidx412.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str84, i64 0, i64 0), %union.tree_node* %125, i32 0) #7
-  %arrayidx415.i = getelementptr inbounds %struct.tree_exp* %exp410.i, i64 0, i32 2, i64 1
-  %126 = load %union.tree_node** %arrayidx415.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str85, i64 0, i64 0), %union.tree_node* %126, i32 0) #7
-  %chain.i1014.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0
-  %127 = load %union.tree_node** %chain.i1014.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %127, i32 0) #7
-  br label %done.i
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1281) #6, !dbg !1283
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1284) #6, !dbg !1285
+  %complexity.i1009.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1, !dbg !1286
+  %121 = bitcast i8** %complexity.i1009.i to i32*, !dbg !1286
+  %122 = load i32* %121, align 4, !dbg !1286, !tbaa !850
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1287) #6, !dbg !1288
+  call void @llvm.dbg.value(metadata !926, i64 0, metadata !1289) #6, !dbg !1290
+  call void @llvm.dbg.value(metadata !{i32 %122}, i64 0, metadata !1291) #6, !dbg !1292
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1293
+  %123 = load %struct._IO_FILE** %stream1, align 8, !dbg !1294, !tbaa !844
+  %call.i.i1011.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %123, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %122) #8, !dbg !1294
+  %124 = load i32* %column, align 8, !dbg !1295, !tbaa !850
+  %add.i.i1013.i = add i32 %124, 14, !dbg !1295
+  store i32 %add.i.i1013.i, i32* %column, align 8, !dbg !1295, !tbaa !850
+  %exp410.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1296
+  %arrayidx412.i = getelementptr inbounds %struct.tree_exp* %exp410.i, i64 0, i32 2, i64 0, !dbg !1296
+  %125 = load %union.tree_node** %arrayidx412.i, align 8, !dbg !1296, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str84, i64 0, i64 0), %union.tree_node* %125, i32 0) #8, !dbg !1296
+  %arrayidx415.i = getelementptr inbounds %struct.tree_exp* %exp410.i, i64 0, i32 2, i64 1, !dbg !1297
+  %126 = load %union.tree_node** %arrayidx415.i, align 8, !dbg !1297, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str85, i64 0, i64 0), %union.tree_node* %126, i32 0) #8, !dbg !1297
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1298) #6, !dbg !1300
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1301) #6, !dbg !1302
+  %chain.i1014.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0, !dbg !1303
+  %127 = load %union.tree_node** %chain.i1014.i, align 8, !dbg !1303, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %127, i32 0) #8, !dbg !1303
+  br label %done.i, !dbg !1304
 
 sw.bb416.i:                                       ; preds = %if.end203.i
-  %complexity.i1015.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1
-  %128 = bitcast i8** %complexity.i1015.i to i32*
-  %129 = load i32* %128, align 4, !tbaa !4
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %130 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i.i1017.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %130, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %129) #7
-  %131 = load i32* %column, align 8, !tbaa !4
-  %add.i.i1019.i = add i32 %131, 14
-  store i32 %add.i.i1019.i, i32* %column, align 8, !tbaa !4
-  %exp417.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx419.i = getelementptr inbounds %struct.tree_exp* %exp417.i, i64 0, i32 2, i64 0
-  %132 = load %union.tree_node** %arrayidx419.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str77, i64 0, i64 0), %union.tree_node* %132, i32 0) #7
-  %chain.i1020.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0
-  %133 = load %union.tree_node** %chain.i1020.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %133, i32 0) #7
-  br label %done.i
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1305) #6, !dbg !1307
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1308) #6, !dbg !1309
+  %complexity.i1015.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1, !dbg !1310
+  %128 = bitcast i8** %complexity.i1015.i to i32*, !dbg !1310
+  %129 = load i32* %128, align 4, !dbg !1310, !tbaa !850
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1311) #6, !dbg !1312
+  call void @llvm.dbg.value(metadata !926, i64 0, metadata !1313) #6, !dbg !1314
+  call void @llvm.dbg.value(metadata !{i32 %129}, i64 0, metadata !1315) #6, !dbg !1316
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1317
+  %130 = load %struct._IO_FILE** %stream1, align 8, !dbg !1318, !tbaa !844
+  %call.i.i1017.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %130, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %129) #8, !dbg !1318
+  %131 = load i32* %column, align 8, !dbg !1319, !tbaa !850
+  %add.i.i1019.i = add i32 %131, 14, !dbg !1319
+  store i32 %add.i.i1019.i, i32* %column, align 8, !dbg !1319, !tbaa !850
+  %exp417.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1320
+  %arrayidx419.i = getelementptr inbounds %struct.tree_exp* %exp417.i, i64 0, i32 2, i64 0, !dbg !1320
+  %132 = load %union.tree_node** %arrayidx419.i, align 8, !dbg !1320, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str77, i64 0, i64 0), %union.tree_node* %132, i32 0) #8, !dbg !1320
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1321) #6, !dbg !1323
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1324) #6, !dbg !1325
+  %chain.i1020.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0, !dbg !1326
+  %133 = load %union.tree_node** %chain.i1020.i, align 8, !dbg !1326, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %133, i32 0) #8, !dbg !1326
+  br label %done.i, !dbg !1327
 
 sw.bb420.i:                                       ; preds = %if.end203.i
-  %complexity.i1021.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1
-  %134 = bitcast i8** %complexity.i1021.i to i32*
-  %135 = load i32* %134, align 4, !tbaa !4
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %136 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i.i1023.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %136, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %135) #7
-  %137 = load i32* %column, align 8, !tbaa !4
-  %add.i.i1025.i = add i32 %137, 14
-  store i32 %add.i.i1025.i, i32* %column, align 8, !tbaa !4
-  %exp421.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx423.i = getelementptr inbounds %struct.tree_exp* %exp421.i, i64 0, i32 2, i64 0
-  %138 = load %union.tree_node** %arrayidx423.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str84, i64 0, i64 0), %union.tree_node* %138, i32 0) #7
-  %chain.i1026.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0
-  %139 = load %union.tree_node** %chain.i1026.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %139, i32 0) #7
-  br label %done.i
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1328) #6, !dbg !1330
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1331) #6, !dbg !1332
+  %complexity.i1021.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1, !dbg !1333
+  %134 = bitcast i8** %complexity.i1021.i to i32*, !dbg !1333
+  %135 = load i32* %134, align 4, !dbg !1333, !tbaa !850
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1334) #6, !dbg !1335
+  call void @llvm.dbg.value(metadata !926, i64 0, metadata !1336) #6, !dbg !1337
+  call void @llvm.dbg.value(metadata !{i32 %135}, i64 0, metadata !1338) #6, !dbg !1339
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1340
+  %136 = load %struct._IO_FILE** %stream1, align 8, !dbg !1341, !tbaa !844
+  %call.i.i1023.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %136, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %135) #8, !dbg !1341
+  %137 = load i32* %column, align 8, !dbg !1342, !tbaa !850
+  %add.i.i1025.i = add i32 %137, 14, !dbg !1342
+  store i32 %add.i.i1025.i, i32* %column, align 8, !dbg !1342, !tbaa !850
+  %exp421.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1343
+  %arrayidx423.i = getelementptr inbounds %struct.tree_exp* %exp421.i, i64 0, i32 2, i64 0, !dbg !1343
+  %138 = load %union.tree_node** %arrayidx423.i, align 8, !dbg !1343, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str84, i64 0, i64 0), %union.tree_node* %138, i32 0) #8, !dbg !1343
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1344) #6, !dbg !1346
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1347) #6, !dbg !1348
+  %chain.i1026.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0, !dbg !1349
+  %139 = load %union.tree_node** %chain.i1026.i, align 8, !dbg !1349, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %139, i32 0) #8, !dbg !1349
+  br label %done.i, !dbg !1350
 
 sw.bb424.i:                                       ; preds = %if.end203.i
-  %complexity.i1027.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1
-  %140 = bitcast i8** %complexity.i1027.i to i32*
-  %141 = load i32* %140, align 4, !tbaa !4
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %142 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i.i1029.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %142, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %141) #7
-  %143 = load i32* %column, align 8, !tbaa !4
-  %add.i.i1031.i = add i32 %143, 14
-  store i32 %add.i.i1031.i, i32* %column, align 8, !tbaa !4
-  %exp425.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx427.i = getelementptr inbounds %struct.tree_exp* %exp425.i, i64 0, i32 2, i64 1
-  %144 = load %union.tree_node** %arrayidx427.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str77, i64 0, i64 0), %union.tree_node* %144, i32 0) #7
-  %arrayidx430.i = getelementptr inbounds %struct.tree_exp* %exp425.i, i64 0, i32 2, i64 0
-  %145 = load %union.tree_node** %arrayidx430.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str86, i64 0, i64 0), %union.tree_node* %145, i32 0) #7
-  %chain.i1032.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0
-  %146 = load %union.tree_node** %chain.i1032.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %146, i32 0) #7
-  br label %done.i
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1351) #6, !dbg !1353
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1354) #6, !dbg !1355
+  %complexity.i1027.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1, !dbg !1356
+  %140 = bitcast i8** %complexity.i1027.i to i32*, !dbg !1356
+  %141 = load i32* %140, align 4, !dbg !1356, !tbaa !850
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1357) #6, !dbg !1358
+  call void @llvm.dbg.value(metadata !926, i64 0, metadata !1359) #6, !dbg !1360
+  call void @llvm.dbg.value(metadata !{i32 %141}, i64 0, metadata !1361) #6, !dbg !1362
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1363
+  %142 = load %struct._IO_FILE** %stream1, align 8, !dbg !1364, !tbaa !844
+  %call.i.i1029.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %142, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %141) #8, !dbg !1364
+  %143 = load i32* %column, align 8, !dbg !1365, !tbaa !850
+  %add.i.i1031.i = add i32 %143, 14, !dbg !1365
+  store i32 %add.i.i1031.i, i32* %column, align 8, !dbg !1365, !tbaa !850
+  %exp425.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1366
+  %arrayidx427.i = getelementptr inbounds %struct.tree_exp* %exp425.i, i64 0, i32 2, i64 1, !dbg !1366
+  %144 = load %union.tree_node** %arrayidx427.i, align 8, !dbg !1366, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str77, i64 0, i64 0), %union.tree_node* %144, i32 0) #8, !dbg !1366
+  %arrayidx430.i = getelementptr inbounds %struct.tree_exp* %exp425.i, i64 0, i32 2, i64 0, !dbg !1367
+  %145 = load %union.tree_node** %arrayidx430.i, align 8, !dbg !1367, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str86, i64 0, i64 0), %union.tree_node* %145, i32 0) #8, !dbg !1367
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1368) #6, !dbg !1370
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1371) #6, !dbg !1372
+  %chain.i1032.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0, !dbg !1373
+  %146 = load %union.tree_node** %chain.i1032.i, align 8, !dbg !1373, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %146, i32 0) #8, !dbg !1373
+  br label %done.i, !dbg !1374
 
 sw.bb431.i:                                       ; preds = %if.end203.i
-  %complexity.i1033.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1
-  %147 = bitcast i8** %complexity.i1033.i to i32*
-  %148 = load i32* %147, align 4, !tbaa !4
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %149 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i.i1035.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %149, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %148) #7
-  %150 = load i32* %column, align 8, !tbaa !4
-  %add.i.i1037.i = add i32 %150, 14
-  store i32 %add.i.i1037.i, i32* %column, align 8, !tbaa !4
-  %exp432.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx434.i = getelementptr inbounds %struct.tree_exp* %exp432.i, i64 0, i32 2, i64 0
-  %151 = load %union.tree_node** %arrayidx434.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str85, i64 0, i64 0), %union.tree_node* %151, i32 0) #7
-  %chain.i1038.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0
-  %152 = load %union.tree_node** %chain.i1038.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %152, i32 0) #7
-  br label %done.i
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1375) #6, !dbg !1377
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1378) #6, !dbg !1379
+  %complexity.i1033.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1, !dbg !1380
+  %147 = bitcast i8** %complexity.i1033.i to i32*, !dbg !1380
+  %148 = load i32* %147, align 4, !dbg !1380, !tbaa !850
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1381) #6, !dbg !1382
+  call void @llvm.dbg.value(metadata !926, i64 0, metadata !1383) #6, !dbg !1384
+  call void @llvm.dbg.value(metadata !{i32 %148}, i64 0, metadata !1385) #6, !dbg !1386
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1387
+  %149 = load %struct._IO_FILE** %stream1, align 8, !dbg !1388, !tbaa !844
+  %call.i.i1035.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %149, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %148) #8, !dbg !1388
+  %150 = load i32* %column, align 8, !dbg !1389, !tbaa !850
+  %add.i.i1037.i = add i32 %150, 14, !dbg !1389
+  store i32 %add.i.i1037.i, i32* %column, align 8, !dbg !1389, !tbaa !850
+  %exp432.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1390
+  %arrayidx434.i = getelementptr inbounds %struct.tree_exp* %exp432.i, i64 0, i32 2, i64 0, !dbg !1390
+  %151 = load %union.tree_node** %arrayidx434.i, align 8, !dbg !1390, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str85, i64 0, i64 0), %union.tree_node* %151, i32 0) #8, !dbg !1390
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1391) #6, !dbg !1393
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1394) #6, !dbg !1395
+  %chain.i1038.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0, !dbg !1396
+  %152 = load %union.tree_node** %chain.i1038.i, align 8, !dbg !1396, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %152, i32 0) #8, !dbg !1396
+  br label %done.i, !dbg !1397
 
 sw.bb435.i:                                       ; preds = %if.end203.i
-  %complexity.i1039.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1
-  %153 = bitcast i8** %complexity.i1039.i to i32*
-  %154 = load i32* %153, align 4, !tbaa !4
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %155 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i.i1041.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %155, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %154) #7
-  %156 = load i32* %column, align 8, !tbaa !4
-  %add.i.i1043.i = add i32 %156, 14
-  store i32 %add.i.i1043.i, i32* %column, align 8, !tbaa !4
-  %exp436.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx438.i = getelementptr inbounds %struct.tree_exp* %exp436.i, i64 0, i32 2, i64 0
-  %157 = load %union.tree_node** %arrayidx438.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str68, i64 0, i64 0), %union.tree_node* %157, i32 0) #7
-  %arrayidx441.i = getelementptr inbounds %struct.tree_exp* %exp436.i, i64 0, i32 2, i64 1
-  %158 = load %union.tree_node** %arrayidx441.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str86, i64 0, i64 0), %union.tree_node* %158, i32 0) #7
-  %arrayidx444.i = getelementptr inbounds %struct.tree_exp* %exp436.i, i64 0, i32 2, i64 2
-  %159 = load %union.tree_node** %arrayidx444.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str85, i64 0, i64 0), %union.tree_node* %159, i32 0) #7
-  %arrayidx447.i = getelementptr inbounds %struct.tree_exp* %exp436.i, i64 0, i32 2, i64 3
-  %160 = load %union.tree_node** %arrayidx447.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str77, i64 0, i64 0), %union.tree_node* %160, i32 0) #7
-  %chain.i1044.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0
-  %161 = load %union.tree_node** %chain.i1044.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %161, i32 0) #7
-  br label %done.i
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1398) #6, !dbg !1400
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1401) #6, !dbg !1402
+  %complexity.i1039.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1, !dbg !1403
+  %153 = bitcast i8** %complexity.i1039.i to i32*, !dbg !1403
+  %154 = load i32* %153, align 4, !dbg !1403, !tbaa !850
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1404) #6, !dbg !1405
+  call void @llvm.dbg.value(metadata !926, i64 0, metadata !1406) #6, !dbg !1407
+  call void @llvm.dbg.value(metadata !{i32 %154}, i64 0, metadata !1408) #6, !dbg !1409
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1410
+  %155 = load %struct._IO_FILE** %stream1, align 8, !dbg !1411, !tbaa !844
+  %call.i.i1041.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %155, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %154) #8, !dbg !1411
+  %156 = load i32* %column, align 8, !dbg !1412, !tbaa !850
+  %add.i.i1043.i = add i32 %156, 14, !dbg !1412
+  store i32 %add.i.i1043.i, i32* %column, align 8, !dbg !1412, !tbaa !850
+  %exp436.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1413
+  %arrayidx438.i = getelementptr inbounds %struct.tree_exp* %exp436.i, i64 0, i32 2, i64 0, !dbg !1413
+  %157 = load %union.tree_node** %arrayidx438.i, align 8, !dbg !1413, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str68, i64 0, i64 0), %union.tree_node* %157, i32 0) #8, !dbg !1413
+  %arrayidx441.i = getelementptr inbounds %struct.tree_exp* %exp436.i, i64 0, i32 2, i64 1, !dbg !1414
+  %158 = load %union.tree_node** %arrayidx441.i, align 8, !dbg !1414, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str86, i64 0, i64 0), %union.tree_node* %158, i32 0) #8, !dbg !1414
+  %arrayidx444.i = getelementptr inbounds %struct.tree_exp* %exp436.i, i64 0, i32 2, i64 2, !dbg !1415
+  %159 = load %union.tree_node** %arrayidx444.i, align 8, !dbg !1415, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str85, i64 0, i64 0), %union.tree_node* %159, i32 0) #8, !dbg !1415
+  %arrayidx447.i = getelementptr inbounds %struct.tree_exp* %exp436.i, i64 0, i32 2, i64 3, !dbg !1416
+  %160 = load %union.tree_node** %arrayidx447.i, align 8, !dbg !1416, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str77, i64 0, i64 0), %union.tree_node* %160, i32 0) #8, !dbg !1416
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1417) #6, !dbg !1419
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1420) #6, !dbg !1421
+  %chain.i1044.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0, !dbg !1422
+  %161 = load %union.tree_node** %chain.i1044.i, align 8, !dbg !1422, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %161, i32 0) #8, !dbg !1422
+  br label %done.i, !dbg !1423
 
 sw.bb448.i:                                       ; preds = %if.end203.i
-  %complexity.i1045.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1
-  %162 = bitcast i8** %complexity.i1045.i to i32*
-  %163 = load i32* %162, align 4, !tbaa !4
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %164 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i.i1047.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %164, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %163) #7
-  %165 = load i32* %column, align 8, !tbaa !4
-  %add.i.i1049.i = add i32 %165, 14
-  store i32 %add.i.i1049.i, i32* %column, align 8, !tbaa !4
-  %exp449.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx451.i = getelementptr inbounds %struct.tree_exp* %exp449.i, i64 0, i32 2, i64 0
-  %166 = load %union.tree_node** %arrayidx451.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str87, i64 0, i64 0), %union.tree_node* %166, i32 0) #7
-  %chain.i1050.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0
-  %167 = load %union.tree_node** %chain.i1050.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %167, i32 0) #7
-  br label %done.i
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1424) #6, !dbg !1426
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1427) #6, !dbg !1428
+  %complexity.i1045.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1, !dbg !1429
+  %162 = bitcast i8** %complexity.i1045.i to i32*, !dbg !1429
+  %163 = load i32* %162, align 4, !dbg !1429, !tbaa !850
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1430) #6, !dbg !1431
+  call void @llvm.dbg.value(metadata !926, i64 0, metadata !1432) #6, !dbg !1433
+  call void @llvm.dbg.value(metadata !{i32 %163}, i64 0, metadata !1434) #6, !dbg !1435
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1436
+  %164 = load %struct._IO_FILE** %stream1, align 8, !dbg !1437, !tbaa !844
+  %call.i.i1047.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %164, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %163) #8, !dbg !1437
+  %165 = load i32* %column, align 8, !dbg !1438, !tbaa !850
+  %add.i.i1049.i = add i32 %165, 14, !dbg !1438
+  store i32 %add.i.i1049.i, i32* %column, align 8, !dbg !1438, !tbaa !850
+  %exp449.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1439
+  %arrayidx451.i = getelementptr inbounds %struct.tree_exp* %exp449.i, i64 0, i32 2, i64 0, !dbg !1439
+  %166 = load %union.tree_node** %arrayidx451.i, align 8, !dbg !1439, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str87, i64 0, i64 0), %union.tree_node* %166, i32 0) #8, !dbg !1439
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1440) #6, !dbg !1442
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1443) #6, !dbg !1444
+  %chain.i1050.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0, !dbg !1445
+  %167 = load %union.tree_node** %chain.i1050.i, align 8, !dbg !1445, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %167, i32 0) #8, !dbg !1445
+  br label %done.i, !dbg !1446
 
 sw.bb452.i:                                       ; preds = %if.end203.i
-  %complexity.i1051.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1
-  %168 = bitcast i8** %complexity.i1051.i to i32*
-  %169 = load i32* %168, align 4, !tbaa !4
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %170 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i.i1053.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %170, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %169) #7
-  %171 = load i32* %column, align 8, !tbaa !4
-  %add.i.i1055.i = add i32 %171, 14
-  store i32 %add.i.i1055.i, i32* %column, align 8, !tbaa !4
-  %exp453.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx455.i = getelementptr inbounds %struct.tree_exp* %exp453.i, i64 0, i32 2, i64 0
-  %172 = load %union.tree_node** %arrayidx455.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str86, i64 0, i64 0), %union.tree_node* %172, i32 0) #7
-  %arrayidx458.i = getelementptr inbounds %struct.tree_exp* %exp453.i, i64 0, i32 2, i64 1
-  %173 = load %union.tree_node** %arrayidx458.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str88, i64 0, i64 0), %union.tree_node* %173, i32 0) #7
-  %arrayidx461.i = getelementptr inbounds %struct.tree_exp* %exp453.i, i64 0, i32 2, i64 2
-  %174 = load %union.tree_node** %arrayidx461.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str89, i64 0, i64 0), %union.tree_node* %174, i32 0) #7
-  %chain.i1056.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0
-  %175 = load %union.tree_node** %chain.i1056.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %175, i32 0) #7
-  br label %done.i
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1447) #6, !dbg !1449
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1450) #6, !dbg !1451
+  %complexity.i1051.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1, !dbg !1452
+  %168 = bitcast i8** %complexity.i1051.i to i32*, !dbg !1452
+  %169 = load i32* %168, align 4, !dbg !1452, !tbaa !850
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1453) #6, !dbg !1454
+  call void @llvm.dbg.value(metadata !926, i64 0, metadata !1455) #6, !dbg !1456
+  call void @llvm.dbg.value(metadata !{i32 %169}, i64 0, metadata !1457) #6, !dbg !1458
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1459
+  %170 = load %struct._IO_FILE** %stream1, align 8, !dbg !1460, !tbaa !844
+  %call.i.i1053.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %170, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %169) #8, !dbg !1460
+  %171 = load i32* %column, align 8, !dbg !1461, !tbaa !850
+  %add.i.i1055.i = add i32 %171, 14, !dbg !1461
+  store i32 %add.i.i1055.i, i32* %column, align 8, !dbg !1461, !tbaa !850
+  %exp453.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1462
+  %arrayidx455.i = getelementptr inbounds %struct.tree_exp* %exp453.i, i64 0, i32 2, i64 0, !dbg !1462
+  %172 = load %union.tree_node** %arrayidx455.i, align 8, !dbg !1462, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str86, i64 0, i64 0), %union.tree_node* %172, i32 0) #8, !dbg !1462
+  %arrayidx458.i = getelementptr inbounds %struct.tree_exp* %exp453.i, i64 0, i32 2, i64 1, !dbg !1463
+  %173 = load %union.tree_node** %arrayidx458.i, align 8, !dbg !1463, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str88, i64 0, i64 0), %union.tree_node* %173, i32 0) #8, !dbg !1463
+  %arrayidx461.i = getelementptr inbounds %struct.tree_exp* %exp453.i, i64 0, i32 2, i64 2, !dbg !1464
+  %174 = load %union.tree_node** %arrayidx461.i, align 8, !dbg !1464, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str89, i64 0, i64 0), %union.tree_node* %174, i32 0) #8, !dbg !1464
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1465) #6, !dbg !1467
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1468) #6, !dbg !1469
+  %chain.i1056.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0, !dbg !1470
+  %175 = load %union.tree_node** %chain.i1056.i, align 8, !dbg !1470, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %175, i32 0) #8, !dbg !1470
+  br label %done.i, !dbg !1471
 
 sw.bb462.i:                                       ; preds = %if.end203.i
-  %complexity.i1057.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1
-  %176 = bitcast i8** %complexity.i1057.i to i32*
-  %177 = load i32* %176, align 4, !tbaa !4
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %178 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i.i1059.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %178, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %177) #7
-  %179 = load i32* %column, align 8, !tbaa !4
-  %add.i.i1061.i = add i32 %179, 14
-  store i32 %add.i.i1061.i, i32* %column, align 8, !tbaa !4
-  %exp463.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx465.i = getelementptr inbounds %struct.tree_exp* %exp463.i, i64 0, i32 2, i64 0
-  %180 = load %union.tree_node** %arrayidx465.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str90, i64 0, i64 0), %union.tree_node* %180, i32 0) #7
-  %chain.i1062.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0
-  %181 = load %union.tree_node** %chain.i1062.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %181, i32 0) #7
-  br label %done.i
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1472) #6, !dbg !1474
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1475) #6, !dbg !1476
+  %complexity.i1057.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1, !dbg !1477
+  %176 = bitcast i8** %complexity.i1057.i to i32*, !dbg !1477
+  %177 = load i32* %176, align 4, !dbg !1477, !tbaa !850
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1478) #6, !dbg !1479
+  call void @llvm.dbg.value(metadata !926, i64 0, metadata !1480) #6, !dbg !1481
+  call void @llvm.dbg.value(metadata !{i32 %177}, i64 0, metadata !1482) #6, !dbg !1483
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1484
+  %178 = load %struct._IO_FILE** %stream1, align 8, !dbg !1485, !tbaa !844
+  %call.i.i1059.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %178, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %177) #8, !dbg !1485
+  %179 = load i32* %column, align 8, !dbg !1486, !tbaa !850
+  %add.i.i1061.i = add i32 %179, 14, !dbg !1486
+  store i32 %add.i.i1061.i, i32* %column, align 8, !dbg !1486, !tbaa !850
+  %exp463.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1487
+  %arrayidx465.i = getelementptr inbounds %struct.tree_exp* %exp463.i, i64 0, i32 2, i64 0, !dbg !1487
+  %180 = load %union.tree_node** %arrayidx465.i, align 8, !dbg !1487, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str90, i64 0, i64 0), %union.tree_node* %180, i32 0) #8, !dbg !1487
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1488) #6, !dbg !1490
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1491) #6, !dbg !1492
+  %chain.i1062.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0, !dbg !1493
+  %181 = load %union.tree_node** %chain.i1062.i, align 8, !dbg !1493, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %181, i32 0) #8, !dbg !1493
+  br label %done.i, !dbg !1494
 
 sw.bb466.i:                                       ; preds = %if.end203.i
-  %complexity.i1063.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1
-  %182 = bitcast i8** %complexity.i1063.i to i32*
-  %183 = load i32* %182, align 4, !tbaa !4
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %184 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i.i1065.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %184, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %183) #7
-  %185 = load i32* %column, align 8, !tbaa !4
-  %add.i.i1067.i = add i32 %185, 14
-  store i32 %add.i.i1067.i, i32* %column, align 8, !tbaa !4
-  %exp467.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx469.i = getelementptr inbounds %struct.tree_exp* %exp467.i, i64 0, i32 2, i64 0
-  %186 = load %union.tree_node** %arrayidx469.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str85, i64 0, i64 0), %union.tree_node* %186, i32 0) #7
-  %chain.i1068.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0
-  %187 = load %union.tree_node** %chain.i1068.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %187, i32 0) #7
-  br label %done.i
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1495) #6, !dbg !1497
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1498) #6, !dbg !1499
+  %complexity.i1063.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1, !dbg !1500
+  %182 = bitcast i8** %complexity.i1063.i to i32*, !dbg !1500
+  %183 = load i32* %182, align 4, !dbg !1500, !tbaa !850
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1501) #6, !dbg !1502
+  call void @llvm.dbg.value(metadata !926, i64 0, metadata !1503) #6, !dbg !1504
+  call void @llvm.dbg.value(metadata !{i32 %183}, i64 0, metadata !1505) #6, !dbg !1506
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1507
+  %184 = load %struct._IO_FILE** %stream1, align 8, !dbg !1508, !tbaa !844
+  %call.i.i1065.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %184, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %183) #8, !dbg !1508
+  %185 = load i32* %column, align 8, !dbg !1509, !tbaa !850
+  %add.i.i1067.i = add i32 %185, 14, !dbg !1509
+  store i32 %add.i.i1067.i, i32* %column, align 8, !dbg !1509, !tbaa !850
+  %exp467.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1510
+  %arrayidx469.i = getelementptr inbounds %struct.tree_exp* %exp467.i, i64 0, i32 2, i64 0, !dbg !1510
+  %186 = load %union.tree_node** %arrayidx469.i, align 8, !dbg !1510, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str85, i64 0, i64 0), %union.tree_node* %186, i32 0) #8, !dbg !1510
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1511) #6, !dbg !1513
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1514) #6, !dbg !1515
+  %chain.i1068.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0, !dbg !1516
+  %187 = load %union.tree_node** %chain.i1068.i, align 8, !dbg !1516, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %187, i32 0) #8, !dbg !1516
+  br label %done.i, !dbg !1517
 
 sw.bb470.i:                                       ; preds = %if.end203.i
-  %complexity.i1069.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1
-  %188 = bitcast i8** %complexity.i1069.i to i32*
-  %189 = load i32* %188, align 4, !tbaa !4
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %190 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i.i1071.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %190, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %189) #7
-  %191 = load i32* %column, align 8, !tbaa !4
-  %add.i.i1073.i = add i32 %191, 14
-  store i32 %add.i.i1073.i, i32* %column, align 8, !tbaa !4
-  %exp471.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx473.i = getelementptr inbounds %struct.tree_exp* %exp471.i, i64 0, i32 2, i64 0
-  %192 = load %union.tree_node** %arrayidx473.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str86, i64 0, i64 0), %union.tree_node* %192, i32 0) #7
-  %arrayidx476.i = getelementptr inbounds %struct.tree_exp* %exp471.i, i64 0, i32 2, i64 1
-  %193 = load %union.tree_node** %arrayidx476.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str77, i64 0, i64 0), %union.tree_node* %193, i32 0) #7
-  %chain.i1074.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0
-  %194 = load %union.tree_node** %chain.i1074.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %194, i32 0) #7
-  br label %done.i
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1518) #6, !dbg !1520
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1521) #6, !dbg !1522
+  %complexity.i1069.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1, !dbg !1523
+  %188 = bitcast i8** %complexity.i1069.i to i32*, !dbg !1523
+  %189 = load i32* %188, align 4, !dbg !1523, !tbaa !850
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1524) #6, !dbg !1525
+  call void @llvm.dbg.value(metadata !926, i64 0, metadata !1526) #6, !dbg !1527
+  call void @llvm.dbg.value(metadata !{i32 %189}, i64 0, metadata !1528) #6, !dbg !1529
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1530
+  %190 = load %struct._IO_FILE** %stream1, align 8, !dbg !1531, !tbaa !844
+  %call.i.i1071.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %190, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %189) #8, !dbg !1531
+  %191 = load i32* %column, align 8, !dbg !1532, !tbaa !850
+  %add.i.i1073.i = add i32 %191, 14, !dbg !1532
+  store i32 %add.i.i1073.i, i32* %column, align 8, !dbg !1532, !tbaa !850
+  %exp471.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1533
+  %arrayidx473.i = getelementptr inbounds %struct.tree_exp* %exp471.i, i64 0, i32 2, i64 0, !dbg !1533
+  %192 = load %union.tree_node** %arrayidx473.i, align 8, !dbg !1533, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str86, i64 0, i64 0), %union.tree_node* %192, i32 0) #8, !dbg !1533
+  %arrayidx476.i = getelementptr inbounds %struct.tree_exp* %exp471.i, i64 0, i32 2, i64 1, !dbg !1534
+  %193 = load %union.tree_node** %arrayidx476.i, align 8, !dbg !1534, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str77, i64 0, i64 0), %union.tree_node* %193, i32 0) #8, !dbg !1534
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1535) #6, !dbg !1537
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1538) #6, !dbg !1539
+  %chain.i1074.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0, !dbg !1540
+  %194 = load %union.tree_node** %chain.i1074.i, align 8, !dbg !1540, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %194, i32 0) #8, !dbg !1540
+  br label %done.i, !dbg !1541
 
 sw.bb477.i:                                       ; preds = %if.end203.i
-  %complexity.i1075.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1
-  %195 = bitcast i8** %complexity.i1075.i to i32*
-  %196 = load i32* %195, align 4, !tbaa !4
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %197 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i.i1077.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %197, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %196) #7
-  %198 = load i32* %column, align 8, !tbaa !4
-  %add.i.i1079.i = add i32 %198, 14
-  store i32 %add.i.i1079.i, i32* %column, align 8, !tbaa !4
-  %exp478.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx480.i = getelementptr inbounds %struct.tree_exp* %exp478.i, i64 0, i32 2, i64 0
-  %199 = load %union.tree_node** %arrayidx480.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str86, i64 0, i64 0), %union.tree_node* %199, i32 0) #7
-  %arrayidx483.i = getelementptr inbounds %struct.tree_exp* %exp478.i, i64 0, i32 2, i64 1
-  %200 = load %union.tree_node** %arrayidx483.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str77, i64 0, i64 0), %union.tree_node* %200, i32 0) #7
-  %chain.i1080.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0
-  %201 = load %union.tree_node** %chain.i1080.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %201, i32 0) #7
-  br label %done.i
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1542) #6, !dbg !1544
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1545) #6, !dbg !1546
+  %complexity.i1075.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1, !dbg !1547
+  %195 = bitcast i8** %complexity.i1075.i to i32*, !dbg !1547
+  %196 = load i32* %195, align 4, !dbg !1547, !tbaa !850
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1548) #6, !dbg !1549
+  call void @llvm.dbg.value(metadata !926, i64 0, metadata !1550) #6, !dbg !1551
+  call void @llvm.dbg.value(metadata !{i32 %196}, i64 0, metadata !1552) #6, !dbg !1553
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1554
+  %197 = load %struct._IO_FILE** %stream1, align 8, !dbg !1555, !tbaa !844
+  %call.i.i1077.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %197, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %196) #8, !dbg !1555
+  %198 = load i32* %column, align 8, !dbg !1556, !tbaa !850
+  %add.i.i1079.i = add i32 %198, 14, !dbg !1556
+  store i32 %add.i.i1079.i, i32* %column, align 8, !dbg !1556, !tbaa !850
+  %exp478.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1557
+  %arrayidx480.i = getelementptr inbounds %struct.tree_exp* %exp478.i, i64 0, i32 2, i64 0, !dbg !1557
+  %199 = load %union.tree_node** %arrayidx480.i, align 8, !dbg !1557, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str86, i64 0, i64 0), %union.tree_node* %199, i32 0) #8, !dbg !1557
+  %arrayidx483.i = getelementptr inbounds %struct.tree_exp* %exp478.i, i64 0, i32 2, i64 1, !dbg !1558
+  %200 = load %union.tree_node** %arrayidx483.i, align 8, !dbg !1558, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str77, i64 0, i64 0), %union.tree_node* %200, i32 0) #8, !dbg !1558
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1559) #6, !dbg !1561
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1562) #6, !dbg !1563
+  %chain.i1080.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0, !dbg !1564
+  %201 = load %union.tree_node** %chain.i1080.i, align 8, !dbg !1564, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %201, i32 0) #8, !dbg !1564
+  br label %done.i, !dbg !1565
 
 sw.bb484.i:                                       ; preds = %if.end203.i
-  %complexity.i1081.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1
-  %202 = bitcast i8** %complexity.i1081.i to i32*
-  %203 = load i32* %202, align 4, !tbaa !4
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %204 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i.i1083.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %204, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %203) #7
-  %205 = load i32* %column, align 8, !tbaa !4
-  %add.i.i1085.i = add i32 %205, 14
-  store i32 %add.i.i1085.i, i32* %column, align 8, !tbaa !4
-  %bf.load486.i = load i32* %17, align 8
-  %bf.clear488.i = and i32 %bf.load486.i, 16777216
-  %tobool489.i = icmp eq i32 %bf.clear488.i, 0
-  br i1 %tobool489.i, label %if.else491.i, label %if.then490.i
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1566) #6, !dbg !1568
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1569) #6, !dbg !1570
+  %complexity.i1081.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 1, !dbg !1571
+  %202 = bitcast i8** %complexity.i1081.i to i32*, !dbg !1571
+  %203 = load i32* %202, align 4, !dbg !1571, !tbaa !850
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1572) #6, !dbg !1573
+  call void @llvm.dbg.value(metadata !926, i64 0, metadata !1574) #6, !dbg !1575
+  call void @llvm.dbg.value(metadata !{i32 %203}, i64 0, metadata !1576) #6, !dbg !1577
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1578
+  %204 = load %struct._IO_FILE** %stream1, align 8, !dbg !1579, !tbaa !844
+  %call.i.i1083.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %204, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str5, i64 0, i64 0), i32 %203) #8, !dbg !1579
+  %205 = load i32* %column, align 8, !dbg !1580, !tbaa !850
+  %add.i.i1085.i = add i32 %205, 14, !dbg !1580
+  store i32 %add.i.i1085.i, i32* %column, align 8, !dbg !1580, !tbaa !850
+  %bf.load486.i = load i32* %17, align 8, !dbg !1581
+  %bf.clear488.i = and i32 %bf.load486.i, 16777216, !dbg !1581
+  %tobool489.i = icmp eq i32 %bf.clear488.i, 0, !dbg !1581
+  br i1 %tobool489.i, label %if.else491.i, label %if.then490.i, !dbg !1581
 
 if.then490.i:                                     ; preds = %sw.bb484.i
-  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str91, i64 0, i64 0)) #7
-  br label %if.end492.i
+  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str91, i64 0, i64 0)) #8, !dbg !1582
+  br label %if.end492.i, !dbg !1582
 
 if.else491.i:                                     ; preds = %sw.bb484.i
-  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([4 x i8]* @.str92, i64 0, i64 0)) #7
+  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([4 x i8]* @.str92, i64 0, i64 0)) #8, !dbg !1583
   br label %if.end492.i
 
 if.end492.i:                                      ; preds = %if.else491.i, %if.then490.i
-  %exp493.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx495.i = getelementptr inbounds %struct.tree_exp* %exp493.i, i64 0, i32 2, i64 0
-  %206 = load %union.tree_node** %arrayidx495.i, align 8, !tbaa !0
-  %cmp496.i = icmp eq %union.tree_node* %206, null
-  br i1 %cmp496.i, label %if.then498.i, label %if.end499.i
+  %exp493.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1584
+  %arrayidx495.i = getelementptr inbounds %struct.tree_exp* %exp493.i, i64 0, i32 2, i64 0, !dbg !1584
+  %206 = load %union.tree_node** %arrayidx495.i, align 8, !dbg !1584, !tbaa !844
+  %cmp496.i = icmp eq %union.tree_node* %206, null, !dbg !1584
+  br i1 %cmp496.i, label %if.then498.i, label %if.end499.i, !dbg !1584
 
 if.then498.i:                                     ; preds = %if.end492.i
-  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str93, i64 0, i64 0)) #7
-  br label %if.end499.i
+  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str93, i64 0, i64 0)) #8, !dbg !1585
+  br label %if.end499.i, !dbg !1585
 
 if.end499.i:                                      ; preds = %if.then498.i, %if.end492.i
-  %bf.load501.i = load i32* %17, align 8
-  %bf.clear503.i = and i32 %bf.load501.i, 134217728
-  %tobool504.i = icmp eq i32 %bf.clear503.i, 0
-  br i1 %tobool504.i, label %if.then505.i, label %if.end506.i
+  %bf.load501.i = load i32* %17, align 8, !dbg !1586
+  %bf.clear503.i = and i32 %bf.load501.i, 134217728, !dbg !1586
+  %tobool504.i = icmp eq i32 %bf.clear503.i, 0, !dbg !1586
+  br i1 %tobool504.i, label %if.then505.i, label %if.end506.i, !dbg !1586
 
 if.then505.i:                                     ; preds = %if.end499.i
-  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str94, i64 0, i64 0)) #7
-  br label %if.end506.i
+  call void @dump_string(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str94, i64 0, i64 0)) #8, !dbg !1587
+  br label %if.end506.i, !dbg !1587
 
 if.end506.i:                                      ; preds = %if.then505.i, %if.end499.i
-  %chain.i1086.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0
-  %207 = load %union.tree_node** %chain.i1086.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %207, i32 0) #7
-  br label %done.i
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1588) #6, !dbg !1590
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %9}, i64 0, metadata !1591) #6, !dbg !1592
+  %chain.i1086.i = getelementptr inbounds %union.tree_node* %9, i64 0, i32 0, i32 0, i32 0, !dbg !1593
+  %207 = load %union.tree_node** %chain.i1086.i, align 8, !dbg !1593, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str6, i64 0, i64 0), %union.tree_node* %207, i32 0) #8, !dbg !1593
+  br label %done.i, !dbg !1594
 
 sw.bb507.i:                                       ; preds = %if.end203.i
-  %int_cst.i = inttoptr i64 %8 to %struct.tree_int_cst*
-  %high.i = getelementptr inbounds %struct.tree_int_cst* %int_cst.i, i64 0, i32 2, i32 1
-  %208 = load i64* %high.i, align 8, !tbaa !3
-  %tobool509.i = icmp eq i64 %208, 0
-  br i1 %tobool509.i, label %if.end515.i, label %if.then510.i
+  %int_cst.i = inttoptr i64 %8 to %struct.tree_int_cst*, !dbg !1595
+  %high.i = getelementptr inbounds %struct.tree_int_cst* %int_cst.i, i64 0, i32 2, i32 1, !dbg !1595
+  %208 = load i64* %high.i, align 8, !dbg !1595, !tbaa !849
+  %tobool509.i = icmp eq i64 %208, 0, !dbg !1595
+  br i1 %tobool509.i, label %if.end515.i, label %if.then510.i, !dbg !1595
 
 if.then510.i:                                     ; preds = %sw.bb507.i
-  %conv514.i = trunc i64 %208 to i32
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %209 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i1088.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %209, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str83, i64 0, i64 0), i32 %conv514.i) #7
-  %210 = load i32* %column, align 8, !tbaa !4
-  %add.i1090.i = add i32 %210, 14
-  store i32 %add.i1090.i, i32* %column, align 8, !tbaa !4
-  br label %if.end515.i
+  %conv514.i = trunc i64 %208 to i32, !dbg !1596
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1597) #6, !dbg !1598
+  call void @llvm.dbg.value(metadata !1599, i64 0, metadata !1600) #6, !dbg !1601
+  call void @llvm.dbg.value(metadata !{i32 %conv514.i}, i64 0, metadata !1602) #6, !dbg !1603
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1604
+  %209 = load %struct._IO_FILE** %stream1, align 8, !dbg !1605, !tbaa !844
+  %call.i1088.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %209, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str83, i64 0, i64 0), i32 %conv514.i) #8, !dbg !1605
+  %210 = load i32* %column, align 8, !dbg !1606, !tbaa !850
+  %add.i1090.i = add i32 %210, 14, !dbg !1606
+  store i32 %add.i1090.i, i32* %column, align 8, !dbg !1606, !tbaa !850
+  br label %if.end515.i, !dbg !1596
 
 if.end515.i:                                      ; preds = %if.then510.i, %sw.bb507.i
-  %low.i = getelementptr inbounds %struct.tree_int_cst* %int_cst.i, i64 0, i32 2, i32 0
-  %211 = load i64* %low.i, align 8, !tbaa !3
-  %conv518.i = trunc i64 %211 to i32
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %212 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i1092.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %212, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str82, i64 0, i64 0), i32 %conv518.i) #7
-  %213 = load i32* %column, align 8, !tbaa !4
-  %add.i1094.i = add i32 %213, 14
-  store i32 %add.i1094.i, i32* %column, align 8, !tbaa !4
-  br label %done.i
+  %low.i = getelementptr inbounds %struct.tree_int_cst* %int_cst.i, i64 0, i32 2, i32 0, !dbg !1607
+  %211 = load i64* %low.i, align 8, !dbg !1607, !tbaa !849
+  %conv518.i = trunc i64 %211 to i32, !dbg !1607
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1608) #6, !dbg !1609
+  call void @llvm.dbg.value(metadata !1610, i64 0, metadata !1611) #6, !dbg !1612
+  call void @llvm.dbg.value(metadata !{i32 %conv518.i}, i64 0, metadata !1613) #6, !dbg !1614
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1615
+  %212 = load %struct._IO_FILE** %stream1, align 8, !dbg !1616, !tbaa !844
+  %call.i1092.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %212, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str82, i64 0, i64 0), i32 %conv518.i) #8, !dbg !1616
+  %213 = load i32* %column, align 8, !dbg !1617, !tbaa !850
+  %add.i1094.i = add i32 %213, 14, !dbg !1617
+  store i32 %add.i1094.i, i32* %column, align 8, !dbg !1617, !tbaa !850
+  br label %done.i, !dbg !1618
 
 sw.bb519.i:                                       ; preds = %if.end203.i
-  %214 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %string.i = inttoptr i64 %8 to %struct.tree_string*
-  %pointer.i = getelementptr inbounds %struct.tree_string* %string.i, i64 0, i32 3
-  %215 = load i8** %pointer.i, align 8, !tbaa !0
-  %call521.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %214, i8* getelementptr inbounds ([12 x i8]* @.str95, i64 0, i64 0), i8* %215) #7
-  %length523.i = getelementptr inbounds %struct.tree_string* %string.i, i64 0, i32 2
-  %216 = load i32* %length523.i, align 4, !tbaa !4
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %217 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i1096.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %217, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str45, i64 0, i64 0), i32 %216) #7
-  %218 = load i32* %column, align 8, !tbaa !4
-  %add.i1098.i = add i32 %218, 14
-  store i32 %add.i1098.i, i32* %column, align 8, !tbaa !4
-  br label %done.i
+  %214 = load %struct._IO_FILE** %stream1, align 8, !dbg !1619, !tbaa !844
+  %string.i = inttoptr i64 %8 to %struct.tree_string*, !dbg !1619
+  %pointer.i = getelementptr inbounds %struct.tree_string* %string.i, i64 0, i32 3, !dbg !1619
+  %215 = load i8** %pointer.i, align 8, !dbg !1619, !tbaa !844
+  %call521.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %214, i8* getelementptr inbounds ([12 x i8]* @.str95, i64 0, i64 0), i8* %215) #8, !dbg !1619
+  %length523.i = getelementptr inbounds %struct.tree_string* %string.i, i64 0, i32 2, !dbg !1620
+  %216 = load i32* %length523.i, align 4, !dbg !1620, !tbaa !850
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1621) #6, !dbg !1622
+  call void @llvm.dbg.value(metadata !1099, i64 0, metadata !1623) #6, !dbg !1624
+  call void @llvm.dbg.value(metadata !{i32 %216}, i64 0, metadata !1625) #6, !dbg !1626
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1627
+  %217 = load %struct._IO_FILE** %stream1, align 8, !dbg !1628, !tbaa !844
+  %call.i1096.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %217, i8* getelementptr inbounds ([12 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str45, i64 0, i64 0), i32 %216) #8, !dbg !1628
+  %218 = load i32* %column, align 8, !dbg !1629, !tbaa !850
+  %add.i1098.i = add i32 %218, 14, !dbg !1629
+  store i32 %add.i1098.i, i32* %column, align 8, !dbg !1629, !tbaa !850
+  br label %done.i, !dbg !1630
 
 sw.bb524.i:                                       ; preds = %if.end203.i, %if.end203.i, %if.end203.i, %if.end203.i, %if.end203.i
-  %exp525.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx527.i = getelementptr inbounds %struct.tree_exp* %exp525.i, i64 0, i32 2, i64 0
-  %219 = load %union.tree_node** %arrayidx527.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str31, i64 0, i64 0), %union.tree_node* %219, i32 0) #7
-  br label %done.i
+  %exp525.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1631
+  %arrayidx527.i = getelementptr inbounds %struct.tree_exp* %exp525.i, i64 0, i32 2, i64 0, !dbg !1631
+  %219 = load %union.tree_node** %arrayidx527.i, align 8, !dbg !1631, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str31, i64 0, i64 0), %union.tree_node* %219, i32 0) #8, !dbg !1631
+  br label %done.i, !dbg !1632
 
 sw.bb528.i:                                       ; preds = %if.end203.i, %if.end203.i, %if.end203.i, %if.end203.i, %if.end203.i, %if.end203.i, %if.end203.i, %if.end203.i, %if.end203.i, %if.end203.i, %if.end203.i
-  %exp529.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx531.i = getelementptr inbounds %struct.tree_exp* %exp529.i, i64 0, i32 2, i64 0
-  %220 = load %union.tree_node** %arrayidx531.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str31, i64 0, i64 0), %union.tree_node* %220, i32 0) #7
-  %arrayidx534.i = getelementptr inbounds %struct.tree_exp* %exp529.i, i64 0, i32 2, i64 1
-  %221 = load %union.tree_node** %arrayidx534.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str32, i64 0, i64 0), %union.tree_node* %221, i32 0) #7
-  br label %done.i
+  %exp529.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1633
+  %arrayidx531.i = getelementptr inbounds %struct.tree_exp* %exp529.i, i64 0, i32 2, i64 0, !dbg !1633
+  %220 = load %union.tree_node** %arrayidx531.i, align 8, !dbg !1633, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str31, i64 0, i64 0), %union.tree_node* %220, i32 0) #8, !dbg !1633
+  %arrayidx534.i = getelementptr inbounds %struct.tree_exp* %exp529.i, i64 0, i32 2, i64 1, !dbg !1634
+  %221 = load %union.tree_node** %arrayidx534.i, align 8, !dbg !1634, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str32, i64 0, i64 0), %union.tree_node* %221, i32 0) #8, !dbg !1634
+  br label %done.i, !dbg !1635
 
 sw.bb535.i:                                       ; preds = %if.end203.i
-  %exp536.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx538.i = getelementptr inbounds %struct.tree_exp* %exp536.i, i64 0, i32 2, i64 0
-  %222 = load %union.tree_node** %arrayidx538.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str31, i64 0, i64 0), %union.tree_node* %222, i32 0) #7
-  %arrayidx541.i = getelementptr inbounds %struct.tree_exp* %exp536.i, i64 0, i32 2, i64 1
-  %223 = load %union.tree_node** %arrayidx541.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str32, i64 0, i64 0), %union.tree_node* %223, i32 0) #7
-  %arrayidx544.i = getelementptr inbounds %struct.tree_exp* %exp536.i, i64 0, i32 2, i64 2
-  %224 = load %union.tree_node** %arrayidx544.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str96, i64 0, i64 0), %union.tree_node* %224, i32 0) #7
-  br label %done.i
+  %exp536.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1636
+  %arrayidx538.i = getelementptr inbounds %struct.tree_exp* %exp536.i, i64 0, i32 2, i64 0, !dbg !1636
+  %222 = load %union.tree_node** %arrayidx538.i, align 8, !dbg !1636, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str31, i64 0, i64 0), %union.tree_node* %222, i32 0) #8, !dbg !1636
+  %arrayidx541.i = getelementptr inbounds %struct.tree_exp* %exp536.i, i64 0, i32 2, i64 1, !dbg !1637
+  %223 = load %union.tree_node** %arrayidx541.i, align 8, !dbg !1637, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str32, i64 0, i64 0), %union.tree_node* %223, i32 0) #8, !dbg !1637
+  %arrayidx544.i = getelementptr inbounds %struct.tree_exp* %exp536.i, i64 0, i32 2, i64 2, !dbg !1638
+  %224 = load %union.tree_node** %arrayidx544.i, align 8, !dbg !1638, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str96, i64 0, i64 0), %union.tree_node* %224, i32 0) #8, !dbg !1638
+  br label %done.i, !dbg !1639
 
 sw.bb545.i:                                       ; preds = %if.end203.i
-  %exp546.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx548.i = getelementptr inbounds %struct.tree_exp* %exp546.i, i64 0, i32 2, i64 0
-  %225 = load %union.tree_node** %arrayidx548.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([3 x i8]* @.str97, i64 0, i64 0), %union.tree_node* %225, i32 0) #7
-  %arrayidx551.i = getelementptr inbounds %struct.tree_exp* %exp546.i, i64 0, i32 2, i64 1
-  %226 = load %union.tree_node** %arrayidx551.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str73, i64 0, i64 0), %union.tree_node* %226, i32 0) #7
-  br label %done.i
+  %exp546.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1640
+  %arrayidx548.i = getelementptr inbounds %struct.tree_exp* %exp546.i, i64 0, i32 2, i64 0, !dbg !1640
+  %225 = load %union.tree_node** %arrayidx548.i, align 8, !dbg !1640, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([3 x i8]* @.str97, i64 0, i64 0), %union.tree_node* %225, i32 0) #8, !dbg !1640
+  %arrayidx551.i = getelementptr inbounds %struct.tree_exp* %exp546.i, i64 0, i32 2, i64 1, !dbg !1641
+  %226 = load %union.tree_node** %arrayidx551.i, align 8, !dbg !1641, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str73, i64 0, i64 0), %union.tree_node* %226, i32 0) #8, !dbg !1641
+  br label %done.i, !dbg !1642
 
 sw.bb552.i:                                       ; preds = %if.end203.i
-  %exp553.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx555.i = getelementptr inbounds %struct.tree_exp* %exp553.i, i64 0, i32 2, i64 1
-  %227 = load %union.tree_node** %arrayidx555.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str59, i64 0, i64 0), %union.tree_node* %227, i32 0) #7
-  br label %done.i
+  %exp553.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1643
+  %arrayidx555.i = getelementptr inbounds %struct.tree_exp* %exp553.i, i64 0, i32 2, i64 1, !dbg !1643
+  %227 = load %union.tree_node** %arrayidx555.i, align 8, !dbg !1643, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str59, i64 0, i64 0), %union.tree_node* %227, i32 0) #8, !dbg !1643
+  br label %done.i, !dbg !1644
 
 sw.bb556.i:                                       ; preds = %if.end203.i
-  %exp557.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx559.i = getelementptr inbounds %struct.tree_exp* %exp557.i, i64 0, i32 2, i64 0
-  %228 = load %union.tree_node** %arrayidx559.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str98, i64 0, i64 0), %union.tree_node* %228, i32 0) #7
-  br label %done.i
+  %exp557.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1645
+  %arrayidx559.i = getelementptr inbounds %struct.tree_exp* %exp557.i, i64 0, i32 2, i64 0, !dbg !1645
+  %228 = load %union.tree_node** %arrayidx559.i, align 8, !dbg !1645, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str98, i64 0, i64 0), %union.tree_node* %228, i32 0) #8, !dbg !1645
+  br label %done.i, !dbg !1646
 
 sw.bb560.i:                                       ; preds = %if.end203.i
-  %exp561.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx563.i = getelementptr inbounds %struct.tree_exp* %exp561.i, i64 0, i32 2, i64 0
-  %229 = load %union.tree_node** %arrayidx563.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str99, i64 0, i64 0), %union.tree_node* %229, i32 0) #7
-  %arrayidx566.i = getelementptr inbounds %struct.tree_exp* %exp561.i, i64 0, i32 2, i64 1
-  %230 = load %union.tree_node** %arrayidx566.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str77, i64 0, i64 0), %union.tree_node* %230, i32 0) #7
-  br label %done.i
+  %exp561.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1647
+  %arrayidx563.i = getelementptr inbounds %struct.tree_exp* %exp561.i, i64 0, i32 2, i64 0, !dbg !1647
+  %229 = load %union.tree_node** %arrayidx563.i, align 8, !dbg !1647, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str99, i64 0, i64 0), %union.tree_node* %229, i32 0) #8, !dbg !1647
+  %arrayidx566.i = getelementptr inbounds %struct.tree_exp* %exp561.i, i64 0, i32 2, i64 1, !dbg !1648
+  %230 = load %union.tree_node** %arrayidx566.i, align 8, !dbg !1648, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str77, i64 0, i64 0), %union.tree_node* %230, i32 0) #8, !dbg !1648
+  br label %done.i, !dbg !1649
 
 sw.bb567.i:                                       ; preds = %if.end203.i
-  %exp568.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx570.i = getelementptr inbounds %struct.tree_exp* %exp568.i, i64 0, i32 2, i64 0
-  %231 = load %union.tree_node** %arrayidx570.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str77, i64 0, i64 0), %union.tree_node* %231, i32 0) #7
-  br label %done.i
+  %exp568.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1650
+  %arrayidx570.i = getelementptr inbounds %struct.tree_exp* %exp568.i, i64 0, i32 2, i64 0, !dbg !1650
+  %231 = load %union.tree_node** %arrayidx570.i, align 8, !dbg !1650, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str77, i64 0, i64 0), %union.tree_node* %231, i32 0) #8, !dbg !1650
+  br label %done.i, !dbg !1651
 
 sw.bb571.i:                                       ; preds = %if.end203.i
-  %exp572.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx574.i = getelementptr inbounds %struct.tree_exp* %exp572.i, i64 0, i32 2, i64 0
-  %232 = load %union.tree_node** %arrayidx574.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str86, i64 0, i64 0), %union.tree_node* %232, i32 0) #7
-  br label %done.i
+  %exp572.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1652
+  %arrayidx574.i = getelementptr inbounds %struct.tree_exp* %exp572.i, i64 0, i32 2, i64 0, !dbg !1652
+  %232 = load %union.tree_node** %arrayidx574.i, align 8, !dbg !1652, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str86, i64 0, i64 0), %union.tree_node* %232, i32 0) #8, !dbg !1652
+  br label %done.i, !dbg !1653
 
 sw.bb575.i:                                       ; preds = %if.end203.i
-  %exp576.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx578.i = getelementptr inbounds %struct.tree_exp* %exp576.i, i64 0, i32 2, i64 0
-  %233 = load %union.tree_node** %arrayidx578.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str84, i64 0, i64 0), %union.tree_node* %233, i32 0) #7
-  %arrayidx581.i = getelementptr inbounds %struct.tree_exp* %exp576.i, i64 0, i32 2, i64 1
-  %234 = load %union.tree_node** %arrayidx581.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str68, i64 0, i64 0), %union.tree_node* %234, i32 0) #7
-  %arrayidx584.i = getelementptr inbounds %struct.tree_exp* %exp576.i, i64 0, i32 2, i64 2
-  %235 = load %union.tree_node** %arrayidx584.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str94, i64 0, i64 0), %union.tree_node* %235, i32 0) #7
-  %arrayidx587.i = getelementptr inbounds %struct.tree_exp* %exp576.i, i64 0, i32 2, i64 3
-  %236 = load %union.tree_node** %arrayidx587.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str68, i64 0, i64 0), %union.tree_node* %236, i32 0) #7
-  br label %done.i
+  %exp576.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1654
+  %arrayidx578.i = getelementptr inbounds %struct.tree_exp* %exp576.i, i64 0, i32 2, i64 0, !dbg !1654
+  %233 = load %union.tree_node** %arrayidx578.i, align 8, !dbg !1654, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str84, i64 0, i64 0), %union.tree_node* %233, i32 0) #8, !dbg !1654
+  %arrayidx581.i = getelementptr inbounds %struct.tree_exp* %exp576.i, i64 0, i32 2, i64 1, !dbg !1655
+  %234 = load %union.tree_node** %arrayidx581.i, align 8, !dbg !1655, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str68, i64 0, i64 0), %union.tree_node* %234, i32 0) #8, !dbg !1655
+  %arrayidx584.i = getelementptr inbounds %struct.tree_exp* %exp576.i, i64 0, i32 2, i64 2, !dbg !1656
+  %235 = load %union.tree_node** %arrayidx584.i, align 8, !dbg !1656, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str94, i64 0, i64 0), %union.tree_node* %235, i32 0) #8, !dbg !1656
+  %arrayidx587.i = getelementptr inbounds %struct.tree_exp* %exp576.i, i64 0, i32 2, i64 3, !dbg !1657
+  %236 = load %union.tree_node** %arrayidx587.i, align 8, !dbg !1657, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str68, i64 0, i64 0), %union.tree_node* %236, i32 0) #8, !dbg !1657
+  br label %done.i, !dbg !1658
 
 sw.bb588.i:                                       ; preds = %if.end203.i
-  %exp589.i = inttoptr i64 %8 to %struct.tree_exp*
-  %arrayidx591.i = getelementptr inbounds %struct.tree_exp* %exp589.i, i64 0, i32 2, i64 0
-  %237 = load %union.tree_node** %arrayidx591.i, align 8, !tbaa !0
-  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str85, i64 0, i64 0), %union.tree_node* %237, i32 0) #7
-  br label %done.i
+  %exp589.i = inttoptr i64 %8 to %struct.tree_exp*, !dbg !1659
+  %arrayidx591.i = getelementptr inbounds %struct.tree_exp* %exp589.i, i64 0, i32 2, i64 0, !dbg !1659
+  %237 = load %union.tree_node** %arrayidx591.i, align 8, !dbg !1659, !tbaa !844
+  call void @queue_and_dump_index(%struct.dump_info* %di, i8* getelementptr inbounds ([5 x i8]* @.str85, i64 0, i64 0), %union.tree_node* %237, i32 0) #8, !dbg !1659
+  br label %done.i, !dbg !1660
 
 done.i:                                           ; preds = %for.body.i, %if.end372.i, %if.then338.i, %if.end318.i, %if.end296.i, %if.end234.i, %sw.bb212.i, %if.end203.i, %if.end199.i, %sw.bb588.i, %sw.bb575.i, %sw.bb571.i, %sw.bb567.i, %sw.bb560.i, %sw.bb556.i, %sw.bb552.i, %sw.bb545.i, %sw.bb535.i, %sw.bb528.i, %sw.bb524.i, %sw.bb519.i, %if.end515.i, %if.end506.i, %sw.bb477.i, %sw.bb470.i, %sw.bb466.i, %sw.bb462.i, %sw.bb452.i, %sw.bb448.i, %sw.bb435.i, %sw.bb431.i, %sw.bb424.i, %sw.bb420.i, %sw.bb416.i, %sw.bb409.i, %sw.bb402.i, %sw.bb401.i, %if.end388.i, %if.then378.i, %land.rhs.i999.i, %if.then349.i, %if.then321.i, %sw.bb281.i, %if.end275.i, %sw.bb261.i, %sw.bb256.i, %sw.bb250.i, %sw.bb247.i, %sw.bb242.i, %if.then239.i, %sw.bb207.i, %dump_string_field.exit.i, %if.end52.i
-  %238 = load i32* %flags2, align 8, !tbaa !4
-  %and.i1100.i = and i32 %238, 1
-  %tobool.i1101.i = icmp eq i32 %and.i1100.i, 0
-  br i1 %tobool.i1101.i, label %dequeue_and_dump.exit, label %land.rhs.i1104.i
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1661) #6, !dbg !1663
+  call void @llvm.dbg.value(metadata !1664, i64 0, metadata !1665) #6, !dbg !1666
+  call void @llvm.dbg.value(metadata !1052, i64 0, metadata !1667) #6, !dbg !1668
+  %238 = load i32* %flags2, align 8, !dbg !1669, !tbaa !850
+  %and.i1100.i = and i32 %238, 1, !dbg !1669
+  %tobool.i1101.i = icmp eq i32 %and.i1100.i, 0, !dbg !1669
+  br i1 %tobool.i1101.i, label %dequeue_and_dump.exit, label %land.rhs.i1104.i, !dbg !1669
 
 land.rhs.i1104.i:                                 ; preds = %done.i
-  %239 = load %union.tree_node** %node, align 8, !tbaa !0
-  %cmp.i1103.i = icmp eq %union.tree_node* %239, null
-  br i1 %cmp.i1103.i, label %dequeue_and_dump.exit, label %if.then596.i
+  %239 = load %union.tree_node** %node, align 8, !dbg !1669, !tbaa !844
+  %cmp.i1103.i = icmp eq %union.tree_node* %239, null, !dbg !1669
+  br i1 %cmp.i1103.i, label %dequeue_and_dump.exit, label %if.then596.i, !dbg !1662
 
 if.then596.i:                                     ; preds = %land.rhs.i1104.i
-  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #7
-  %240 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %call.i958.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %240, i8* getelementptr inbounds ([13 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str100, i64 0, i64 0), i64 %8) #7
-  %241 = load i32* %column, align 8, !tbaa !4
-  %add.i960.i = add i32 %241, 15
-  store i32 %add.i960.i, i32* %column, align 8, !tbaa !4
-  br label %dequeue_and_dump.exit
+  call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !1670) #6, !dbg !1672
+  call void @llvm.dbg.value(metadata !1673, i64 0, metadata !1674) #6, !dbg !1675
+  call fastcc void @dump_maybe_newline(%struct.dump_info* %di) #8, !dbg !1676
+  %240 = load %struct._IO_FILE** %stream1, align 8, !dbg !1677, !tbaa !844
+  %call.i958.i = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %240, i8* getelementptr inbounds ([13 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str100, i64 0, i64 0), i64 %8) #8, !dbg !1677
+  %241 = load i32* %column, align 8, !dbg !1678, !tbaa !850
+  %add.i960.i = add i32 %241, 15, !dbg !1678
+  store i32 %add.i960.i, i32* %column, align 8, !dbg !1678, !tbaa !850
+  br label %dequeue_and_dump.exit, !dbg !1671
 
 dequeue_and_dump.exit:                            ; preds = %done.i, %land.rhs.i1104.i, %if.then596.i
-  %242 = load %struct._IO_FILE** %stream1, align 8, !tbaa !0
-  %fputc.i = call i32 @fputc(i32 10, %struct._IO_FILE* %242) #5
-  call void @llvm.lifetime.end(i64 32, i8* %3) #5
-  %243 = load %struct.dump_queue** %queue, align 8, !tbaa !0
-  %tobool = icmp eq %struct.dump_queue* %243, null
-  br i1 %tobool, label %while.end, label %while.body
+  %242 = load %struct._IO_FILE** %stream1, align 8, !dbg !1679, !tbaa !844
+  %fputc.i = call i32 @fputc(i32 10, %struct._IO_FILE* %242) #6, !dbg !1679
+  call void @llvm.lifetime.end(i64 32, i8* %3) #6, !dbg !1680
+  %243 = load %struct.dump_queue** %queue, align 8, !dbg !958, !tbaa !844
+  %tobool = icmp eq %struct.dump_queue* %243, null, !dbg !958
+  br i1 %tobool, label %while.end, label %while.body, !dbg !958
 
 while.end:                                        ; preds = %dequeue_and_dump.exit, %entry
-  %244 = load %struct.dump_queue** %free_list, align 8, !tbaa !0
-  %tobool611 = icmp eq %struct.dump_queue* %244, null
-  br i1 %tobool611, label %for.end, label %for.body
+  %244 = load %struct.dump_queue** %free_list, align 8, !dbg !1681, !tbaa !844
+  call void @llvm.dbg.value(metadata !{%struct.dump_queue* %244}, i64 0, metadata !712), !dbg !1681
+  %tobool611 = icmp eq %struct.dump_queue* %244, null, !dbg !1681
+  br i1 %tobool611, label %for.end, label %for.body, !dbg !1681
 
 for.body:                                         ; preds = %while.end, %for.body
   %dq.012 = phi %struct.dump_queue* [ %245, %for.body ], [ %244, %while.end ]
-  %next = getelementptr inbounds %struct.dump_queue* %dq.012, i64 0, i32 1
-  %245 = load %struct.dump_queue** %next, align 8, !tbaa !0
-  %246 = bitcast %struct.dump_queue* %dq.012 to i8*
-  call void @free(i8* %246) #7
-  %tobool6 = icmp eq %struct.dump_queue* %245, null
-  br i1 %tobool6, label %for.end, label %for.body
+  %next = getelementptr inbounds %struct.dump_queue* %dq.012, i64 0, i32 1, !dbg !1683
+  %245 = load %struct.dump_queue** %next, align 8, !dbg !1683, !tbaa !844
+  call void @llvm.dbg.value(metadata !{%struct.dump_queue* %245}, i64 0, metadata !713), !dbg !1683
+  %246 = bitcast %struct.dump_queue* %dq.012 to i8*, !dbg !1685
+  call void @free(i8* %246) #8, !dbg !1685
+  call void @llvm.dbg.value(metadata !{%struct.dump_queue* %245}, i64 0, metadata !712), !dbg !1681
+  %tobool6 = icmp eq %struct.dump_queue* %245, null, !dbg !1681
+  br i1 %tobool6, label %for.end, label %for.body, !dbg !1681
 
 for.end:                                          ; preds = %for.body, %while.end
-  %247 = load %struct.splay_tree_s** %nodes, align 8, !tbaa !0
-  call void @splay_tree_delete(%struct.splay_tree_s* %247) #7
-  call void @llvm.lifetime.end(i64 64, i8* %0) #5
-  ret void
+  %247 = load %struct.splay_tree_s** %nodes, align 8, !dbg !1686, !tbaa !844
+  call void @splay_tree_delete(%struct.splay_tree_s* %247) #8, !dbg !1686
+  call void @llvm.lifetime.end(i64 64, i8* %0) #6, !dbg !1687
+  ret void, !dbg !1687
 }

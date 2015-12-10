@@ -1,24 +1,27 @@
 define internal fastcc %struct.rtx_def* @get_exception_filter(%struct.function* %fun) #0 {
 entry:
-  %eh = getelementptr inbounds %struct.function* %fun, i64 0, i32 0
-  %0 = load %struct.eh_status** %eh, align 8, !tbaa !3
-  %filter1 = getelementptr inbounds %struct.eh_status* %0, i64 0, i32 5
-  %1 = load %struct.rtx_def** %filter1, align 8, !tbaa !3
-  %2 = load %struct.function** @cfun, align 8, !tbaa !3
-  %cmp = icmp eq %struct.function* %2, %fun
-  %tobool = icmp eq %struct.rtx_def* %1, null
-  %or.cond = and i1 %cmp, %tobool
-  br i1 %or.cond, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.function* %fun}, i64 0, metadata !2155), !dbg !2440
+  %eh = getelementptr inbounds %struct.function* %fun, i64 0, i32 0, !dbg !2441
+  %0 = load %struct.eh_status** %eh, align 8, !dbg !2441, !tbaa !2232
+  %filter1 = getelementptr inbounds %struct.eh_status* %0, i64 0, i32 5, !dbg !2441
+  %1 = load %struct.rtx_def** %filter1, align 8, !dbg !2441, !tbaa !2232
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %1}, i64 0, metadata !2156), !dbg !2441
+  %2 = load %struct.function** @cfun, align 8, !dbg !2442, !tbaa !2232
+  %cmp = icmp eq %struct.function* %2, %fun, !dbg !2442
+  %tobool = icmp eq %struct.rtx_def* %1, null, !dbg !2442
+  %or.cond = and i1 %cmp, %tobool, !dbg !2442
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !2442
 
 if.then:                                          ; preds = %entry
-  %3 = load i32* @word_mode, align 4, !tbaa !6
-  %call = tail call %struct.rtx_def* @gen_reg_rtx(i32 %3) #6
-  %4 = load %struct.eh_status** %eh, align 8, !tbaa !3
-  %filter3 = getelementptr inbounds %struct.eh_status* %4, i64 0, i32 5
-  store %struct.rtx_def* %call, %struct.rtx_def** %filter3, align 8, !tbaa !3
-  br label %if.end
+  %3 = load i32* @word_mode, align 4, !dbg !2443, !tbaa !2421
+  %call = tail call %struct.rtx_def* @gen_reg_rtx(i32 %3) #7, !dbg !2443
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !2156), !dbg !2443
+  %4 = load %struct.eh_status** %eh, align 8, !dbg !2445, !tbaa !2232
+  %filter3 = getelementptr inbounds %struct.eh_status* %4, i64 0, i32 5, !dbg !2445
+  store %struct.rtx_def* %call, %struct.rtx_def** %filter3, align 8, !dbg !2445, !tbaa !2232
+  br label %if.end, !dbg !2446
 
 if.end:                                           ; preds = %if.then, %entry
   %filter.0 = phi %struct.rtx_def* [ %call, %if.then ], [ %1, %entry ]
-  ret %struct.rtx_def* %filter.0
+  ret %struct.rtx_def* %filter.0, !dbg !2447
 }

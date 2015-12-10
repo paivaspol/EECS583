@@ -1,0 +1,47 @@
+define void @_ZN11xercesc_2_514XMLElementDecl14setElementNameEPKtS2_i(%"class.xercesc_2_5::XMLElementDecl"* nocapture %this, i16* %prefix, i16* %localPart, i32 %uriId) #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLElementDecl"* %this}, i64 0, metadata !1496), !dbg !1625
+  tail call void @llvm.dbg.value(metadata !{i16* %prefix}, i64 0, metadata !1497), !dbg !1625
+  tail call void @llvm.dbg.value(metadata !{i16* %localPart}, i64 0, metadata !1498), !dbg !1626
+  tail call void @llvm.dbg.value(metadata !{i32 %uriId}, i64 0, metadata !1499), !dbg !1627
+  %fElementName = getelementptr inbounds %"class.xercesc_2_5::XMLElementDecl"* %this, i64 0, i32 2, !dbg !1628
+  %0 = load %"class.xercesc_2_5::QName"** %fElementName, align 8, !dbg !1628, !tbaa !1618
+  %tobool = icmp eq %"class.xercesc_2_5::QName"* %0, null, !dbg !1628
+  br i1 %tobool, label %if.else, label %if.then, !dbg !1628
+
+if.then:                                          ; preds = %entry
+  tail call void @_ZN11xercesc_2_55QName7setNameEPKtS2_j(%"class.xercesc_2_5::QName"* %0, i16* %prefix, i16* %localPart, i32 %uriId) #8, !dbg !1629
+  br label %if.end, !dbg !1629
+
+if.else:                                          ; preds = %entry
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::XMLElementDecl"* %this, i64 0, i32 1, !dbg !1630
+  %1 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !1630, !tbaa !1618
+  %call = tail call i8* @_ZN11xercesc_2_57XMemorynwEmPNS_13MemoryManagerE(i64 64, %"class.xercesc_2_5::MemoryManager"* %1) #8, !dbg !1630
+  %2 = bitcast i8* %call to %"class.xercesc_2_5::QName"*, !dbg !1630
+  %3 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !1630, !tbaa !1618
+  invoke void @_ZN11xercesc_2_55QNameC1EPKtS2_jPNS_13MemoryManagerE(%"class.xercesc_2_5::QName"* %2, i16* %prefix, i16* %localPart, i32 %uriId, %"class.xercesc_2_5::MemoryManager"* %3) #8
+          to label %invoke.cont unwind label %lpad, !dbg !1630
+
+invoke.cont:                                      ; preds = %if.else
+  store %"class.xercesc_2_5::QName"* %2, %"class.xercesc_2_5::QName"** %fElementName, align 8, !dbg !1630, !tbaa !1618
+  br label %if.end
+
+lpad:                                             ; preds = %if.else
+  %4 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !1630
+  invoke void @_ZN11xercesc_2_57XMemorydlEPvPNS_13MemoryManagerE(i8* %call, %"class.xercesc_2_5::MemoryManager"* %1) #8
+          to label %eh.resume unwind label %terminate.lpad, !dbg !1630
+
+if.end:                                           ; preds = %invoke.cont, %if.then
+  ret void, !dbg !1631
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %4, !dbg !1630
+
+terminate.lpad:                                   ; preds = %lpad
+  %5 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !1630
+  %6 = extractvalue { i8*, i32 } %5, 0, !dbg !1630
+  tail call void @__clang_call_terminate(i8* %6) #7, !dbg !1630
+  unreachable, !dbg !1630
+}

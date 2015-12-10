@@ -1,0 +1,25 @@
+define void @_ZN3pov13CleanupStringEPc(i8* nocapture %str) #7 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %str}, i64 0, metadata !539), !dbg !758
+  br label %while.cond, !dbg !759
+
+while.cond:                                       ; preds = %if.end, %entry
+  %str.addr.0 = phi i8* [ %str, %entry ], [ %incdec.ptr, %if.end ]
+  %0 = load i8* %str.addr.0, align 1, !dbg !759, !tbaa !693
+  switch i8 %0, label %if.end [
+    i8 0, label %while.end
+    i8 10, label %if.then
+  ], !dbg !759
+
+if.then:                                          ; preds = %while.cond
+  store i8 32, i8* %str.addr.0, align 1, !dbg !760, !tbaa !693
+  br label %if.end, !dbg !760
+
+if.end:                                           ; preds = %while.cond, %if.then
+  %incdec.ptr = getelementptr inbounds i8* %str.addr.0, i64 1, !dbg !761
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !539), !dbg !761
+  br label %while.cond, !dbg !762
+
+while.end:                                        ; preds = %while.cond
+  ret void, !dbg !763
+}

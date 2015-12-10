@@ -2,25 +2,29 @@ define i32 @MSAFilePositionByIndex(%struct.msafile_struct* nocapture %afp, i32 %
 entry:
   %fh = alloca i32, align 4
   %offset = alloca %struct.ssioffset_s, align 8
-  %ssi = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 5
-  %0 = load %struct.ssifile_s** %ssi, align 8, !tbaa !0
-  %cmp = icmp eq %struct.ssifile_s* %0, null
-  br i1 %cmp, label %return, label %if.end
+  call void @llvm.dbg.value(metadata !{%struct.msafile_struct* %afp}, i64 0, metadata !310), !dbg !849
+  call void @llvm.dbg.value(metadata !{i32 %idx}, i64 0, metadata !311), !dbg !849
+  call void @llvm.dbg.declare(metadata !{i32* %fh}, metadata !312), !dbg !850
+  call void @llvm.dbg.declare(metadata !{%struct.ssioffset_s* %offset}, metadata !313), !dbg !851
+  %ssi = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 5, !dbg !852
+  %0 = load %struct.ssifile_s** %ssi, align 8, !dbg !852, !tbaa !466
+  %cmp = icmp eq %struct.ssifile_s* %0, null, !dbg !852
+  br i1 %cmp, label %return, label %if.end, !dbg !852
 
 if.end:                                           ; preds = %entry
-  %call = call i32 @SSIGetOffsetByNumber(%struct.ssifile_s* %0, i32 %idx, i32* %fh, %struct.ssioffset_s* %offset) #6
-  %cmp2 = icmp eq i32 %call, 0
-  br i1 %cmp2, label %if.end4, label %return
+  %call = call i32 @SSIGetOffsetByNumber(%struct.ssifile_s* %0, i32 %idx, i32* %fh, %struct.ssioffset_s* %offset) #7, !dbg !853
+  %cmp2 = icmp eq i32 %call, 0, !dbg !853
+  br i1 %cmp2, label %if.end4, label %return, !dbg !853
 
 if.end4:                                          ; preds = %if.end
-  %f = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 0
-  %1 = load %struct._IO_FILE** %f, align 8, !tbaa !0
-  %call5 = call i32 @SSISetFilePosition(%struct._IO_FILE* %1, %struct.ssioffset_s* %offset) #6
-  %cmp6 = icmp eq i32 %call5, 0
-  %. = zext i1 %cmp6 to i32
-  br label %return
+  %f = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 0, !dbg !854
+  %1 = load %struct._IO_FILE** %f, align 8, !dbg !854, !tbaa !466
+  %call5 = call i32 @SSISetFilePosition(%struct._IO_FILE* %1, %struct.ssioffset_s* %offset) #7, !dbg !854
+  %cmp6 = icmp eq i32 %call5, 0, !dbg !854
+  %. = zext i1 %cmp6 to i32, !dbg !855
+  br label %return, !dbg !855
 
 return:                                           ; preds = %if.end4, %if.end, %entry
   %retval.0 = phi i32 [ 0, %entry ], [ 0, %if.end ], [ %., %if.end4 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !855
 }

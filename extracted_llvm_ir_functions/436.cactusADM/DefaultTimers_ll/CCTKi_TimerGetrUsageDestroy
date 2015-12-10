@@ -1,11 +1,15 @@
 define internal void @CCTKi_TimerGetrUsageDestroy(i32 %timernum, i8* %data) #1 {
-  %1 = icmp eq i8* %data, null
-  br i1 %1, label %3, label %2
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %timernum}, i64 0, metadata !186), !dbg !290
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !187), !dbg !290
+  tail call void @llvm.dbg.value(metadata !{i32 %timernum}, i64 0, metadata !186), !dbg !291
+  %tobool = icmp eq i8* %data, null, !dbg !292
+  br i1 %tobool, label %if.end, label %if.then, !dbg !292
 
-; <label>:2                                       ; preds = %0
-  tail call void @free(i8* %data) #6
-  br label %3
+if.then:                                          ; preds = %entry
+  tail call void @free(i8* %data) #6, !dbg !293
+  br label %if.end, !dbg !295
 
-; <label>:3                                       ; preds = %0, %2
-  ret void
+if.end:                                           ; preds = %entry, %if.then
+  ret void, !dbg !296
 }

@@ -1,19 +1,21 @@
 define i32 @sre_tolower(i32 %c) #0 {
 entry:
-  %idxprom = sext i32 %c to i64
-  %call = tail call i16** @__ctype_b_loc() #3
-  %0 = load i16** %call, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds i16* %0, i64 %idxprom
-  %1 = load i16* %arrayidx, align 2, !tbaa !3
-  %and = and i16 %1, 256
-  %tobool = icmp eq i16 %and, 0
-  br i1 %tobool, label %return, label %if.then
+  tail call void @llvm.dbg.value(metadata !{i32 %c}, i64 0, metadata !26), !dbg !34
+  %idxprom = sext i32 %c to i64, !dbg !35
+  %call = tail call i16** @__ctype_b_loc() #4, !dbg !35
+  %0 = load i16** %call, align 8, !dbg !35, !tbaa !36
+  %arrayidx = getelementptr inbounds i16* %0, i64 %idxprom, !dbg !35
+  %1 = load i16* %arrayidx, align 2, !dbg !35, !tbaa !39
+  %and = and i16 %1, 256, !dbg !35
+  %tobool = icmp eq i16 %and, 0, !dbg !35
+  br i1 %tobool, label %return, label %if.then, !dbg !35
 
 if.then:                                          ; preds = %entry
-  %call1 = tail call i32 @tolower(i32 %c) #4
-  br label %return
+  %call1 = tail call i32 @tolower(i32 %c) #5, !dbg !40
+  tail call void @llvm.dbg.value(metadata !{i32 %call1}, i64 0, metadata !27), !dbg !40
+  br label %return, !dbg !42
 
 return:                                           ; preds = %entry, %if.then
   %retval.0 = phi i32 [ %call1, %if.then ], [ %c, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !43
 }

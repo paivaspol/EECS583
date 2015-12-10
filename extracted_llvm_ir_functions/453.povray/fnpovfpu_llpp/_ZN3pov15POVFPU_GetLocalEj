@@ -1,0 +1,21 @@
+define double @_ZN3pov15POVFPU_GetLocalEj(i32 %k) #6 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %k}, i64 0, metadata !171), !dbg !600
+  %0 = load %"struct.pov::FPUContext_Struct"** @_ZN3pov22POVFPU_Current_ContextE, align 8, !dbg !601, !tbaa !493
+  %maxdblstacksize = getelementptr inbounds %"struct.pov::FPUContext_Struct"* %0, i64 0, i32 3, !dbg !601
+  %1 = load i32* %maxdblstacksize, align 4, !dbg !601, !tbaa !498
+  %cmp = icmp ugt i32 %1, %k, !dbg !601
+  br i1 %cmp, label %if.end, label %return, !dbg !601
+
+if.end:                                           ; preds = %entry
+  %idxprom = zext i32 %k to i64, !dbg !602
+  %dblstackbase = getelementptr inbounds %"struct.pov::FPUContext_Struct"* %0, i64 0, i32 2, !dbg !602
+  %2 = load double** %dblstackbase, align 8, !dbg !602, !tbaa !493
+  %arrayidx = getelementptr inbounds double* %2, i64 %idxprom, !dbg !602
+  %3 = load double* %arrayidx, align 8, !dbg !602, !tbaa !521
+  br label %return, !dbg !602
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi double [ %3, %if.end ], [ 0.000000e+00, %entry ]
+  ret double %retval.0, !dbg !603
+}

@@ -1,0 +1,47 @@
+define zeroext i1 @_ZN11xercesc_2_517XObjectComparator12isEquivalentEPNS_7GrammarES2_(%"class.xercesc_2_5::Grammar"* %lValue, %"class.xercesc_2_5::Grammar"* %rValue) #3 align 2 {
+entry:
+  %cmp = icmp eq %"class.xercesc_2_5::Grammar"* %lValue, %rValue, !dbg !9967
+  %tobool = icmp ne %"class.xercesc_2_5::Grammar"* %lValue, null, !dbg !9967
+  %tobool1 = icmp eq %"class.xercesc_2_5::Grammar"* %rValue, null, !dbg !9967
+  %or.cond31 = xor i1 %tobool, %tobool1, !dbg !9967
+  %0 = bitcast %"class.xercesc_2_5::Grammar"* %lValue to i32 (%"class.xercesc_2_5::Grammar"*)***, !dbg !9968
+  %1 = bitcast %"class.xercesc_2_5::Grammar"* %rValue to i32 (%"class.xercesc_2_5::Grammar"*)***, !dbg !9968
+  br label %tailrecurse
+
+tailrecurse:                                      ; preds = %if.end12, %entry
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::Grammar"* %lValue}, i64 0, metadata !8707), !dbg !9969
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::Grammar"* %rValue}, i64 0, metadata !8708), !dbg !9970
+  %or.cond31.not = xor i1 %or.cond31, true, !dbg !9967
+  %brmerge = or i1 %cmp, %or.cond31.not, !dbg !9967
+  br i1 %brmerge, label %return, label %if.end6, !dbg !9967
+
+if.end6:                                          ; preds = %tailrecurse
+  %vtable = load i32 (%"class.xercesc_2_5::Grammar"*)*** %0, align 8, !dbg !9968, !tbaa !9895
+  %vfn = getelementptr inbounds i32 (%"class.xercesc_2_5::Grammar"*)** %vtable, i64 5, !dbg !9968
+  %2 = load i32 (%"class.xercesc_2_5::Grammar"*)** %vfn, align 8, !dbg !9968
+  %call = tail call i32 %2(%"class.xercesc_2_5::Grammar"* %lValue) #10, !dbg !9968
+  %vtable7 = load i32 (%"class.xercesc_2_5::Grammar"*)*** %1, align 8, !dbg !9968, !tbaa !9895
+  %vfn8 = getelementptr inbounds i32 (%"class.xercesc_2_5::Grammar"*)** %vtable7, i64 5, !dbg !9968
+  %3 = load i32 (%"class.xercesc_2_5::Grammar"*)** %vfn8, align 8, !dbg !9968
+  %call9 = tail call i32 %3(%"class.xercesc_2_5::Grammar"* %rValue) #10, !dbg !9968
+  %cmp10 = icmp eq i32 %call, %call9, !dbg !9968
+  br i1 %cmp10, label %if.end12, label %return, !dbg !9968
+
+if.end12:                                         ; preds = %if.end6
+  %vtable13 = load i32 (%"class.xercesc_2_5::Grammar"*)*** %0, align 8, !dbg !9971, !tbaa !9895
+  %vfn14 = getelementptr inbounds i32 (%"class.xercesc_2_5::Grammar"*)** %vtable13, i64 5, !dbg !9971
+  %4 = load i32 (%"class.xercesc_2_5::Grammar"*)** %vfn14, align 8, !dbg !9971
+  %call15 = tail call i32 %4(%"class.xercesc_2_5::Grammar"* %lValue) #10, !dbg !9971
+  %cmp16 = icmp eq i32 %call15, 1, !dbg !9971
+  br i1 %cmp16, label %if.then17, label %tailrecurse, !dbg !9971
+
+if.then17:                                        ; preds = %if.end12
+  %5 = bitcast %"class.xercesc_2_5::Grammar"* %lValue to %"class.xercesc_2_5::SchemaGrammar"*, !dbg !9972
+  %6 = bitcast %"class.xercesc_2_5::Grammar"* %rValue to %"class.xercesc_2_5::SchemaGrammar"*, !dbg !9972
+  %call18 = tail call zeroext i1 @_ZN11xercesc_2_517XObjectComparator12isEquivalentEPNS_13SchemaGrammarES2_(%"class.xercesc_2_5::SchemaGrammar"* %5, %"class.xercesc_2_5::SchemaGrammar"* %6) #10, !dbg !9972
+  br label %return, !dbg !9972
+
+return:                                           ; preds = %tailrecurse, %if.end6, %if.then17
+  %retval.0 = phi i1 [ %call18, %if.then17 ], [ false, %if.end6 ], [ %cmp, %tailrecurse ]
+  ret i1 %retval.0, !dbg !9974
+}

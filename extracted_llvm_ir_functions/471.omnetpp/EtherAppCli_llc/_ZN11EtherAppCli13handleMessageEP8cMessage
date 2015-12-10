@@ -1,0 +1,29 @@
+define void @_ZN11EtherAppCli13handleMessageEP8cMessage(%class.EtherAppCli* %this, %class.cMessage* %msg) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.EtherAppCli* %this}, i64 0, metadata !4942), !dbg !5741
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage* %msg}, i64 0, metadata !4943), !dbg !5741
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage* %msg}, i64 0, metadata !5742), !dbg !5744
+  %togate.i = getelementptr inbounds %class.cMessage* %msg, i64 0, i32 12, !dbg !5745
+  %0 = load i32* %togate.i, align 4, !dbg !5745, !tbaa !5567
+  %cmp.i = icmp eq i32 %0, -1, !dbg !5745
+  br i1 %cmp.i, label %if.then, label %if.else, !dbg !5743
+
+if.then:                                          ; preds = %entry
+  tail call void @_ZN11EtherAppCli10sendPacketEv(%class.EtherAppCli* %this) #10, !dbg !5747
+  %waitTime = getelementptr inbounds %class.EtherAppCli* %this, i64 0, i32 4, !dbg !5748
+  %1 = load %class.cPar** %waitTime, align 8, !dbg !5748, !tbaa !5561
+  %call2 = tail call double @_ZN4cPar11doubleValueEv(%class.cPar* %1) #10, !dbg !5748
+  tail call void @llvm.dbg.value(metadata !{double %call2}, i64 0, metadata !4944), !dbg !5748
+  %2 = getelementptr inbounds %class.EtherAppCli* %this, i64 0, i32 0, !dbg !5749
+  %call3 = tail call double @_ZNK13cSimpleModule7simTimeEv(%class.cSimpleModule* %2) #10, !dbg !5749
+  %add = fadd double %call2, %call3, !dbg !5749
+  %call4 = tail call i32 @_ZN13cSimpleModule10scheduleAtEdP8cMessage(%class.cSimpleModule* %2, double %add, %class.cMessage* %msg) #10, !dbg !5749
+  br label %if.end, !dbg !5750
+
+if.else:                                          ; preds = %entry
+  tail call void @_ZN11EtherAppCli13receivePacketEP8cMessage(%class.EtherAppCli* %this, %class.cMessage* %msg) #10, !dbg !5751
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret void, !dbg !5753
+}

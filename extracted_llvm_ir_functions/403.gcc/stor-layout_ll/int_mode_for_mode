@@ -1,8 +1,9 @@
 define i32 @int_mode_for_mode(i32 %mode) #0 {
 entry:
-  %idxprom = sext i32 %mode to i64
-  %arrayidx = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom
-  %0 = load i32* %arrayidx, align 4, !tbaa !7
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !940), !dbg !1252
+  %idxprom = sext i32 %mode to i64, !dbg !1253
+  %arrayidx = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom, !dbg !1253
+  %0 = load i32* %arrayidx, align 4, !dbg !1253, !tbaa !1254
   switch i32 %0, label %sw.default [
     i32 1, label %sw.epilog
     i32 3, label %sw.epilog
@@ -12,39 +13,43 @@ entry:
     i32 7, label %sw.bb1
     i32 8, label %sw.bb1
     i32 0, label %sw.bb4
-  ]
+  ], !dbg !1253
 
 sw.bb1:                                           ; preds = %entry, %entry, %entry, %entry, %entry
-  %arrayidx3 = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom
-  %1 = load i16* %arrayidx3, align 2, !tbaa !4
-  %2 = load i32* getelementptr inbounds ([9 x i32]* @class_narrowest_mode, i64 0, i64 1), align 4, !tbaa !5
-  %cmp217.i = icmp eq i32 %2, 0
-  br i1 %cmp217.i, label %sw.epilog, label %for.body.i
+  %arrayidx3 = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom, !dbg !1255
+  %1 = load i16* %arrayidx3, align 2, !dbg !1255, !tbaa !1229
+  tail call void @llvm.dbg.value(metadata !1257, i64 0, metadata !1258), !dbg !1259
+  tail call void @llvm.dbg.value(metadata !404, i64 0, metadata !1260), !dbg !1261
+  %2 = load i32* getelementptr inbounds ([9 x i32]* @class_narrowest_mode, i64 0, i64 1), align 4, !dbg !1262, !tbaa !1232
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !1263), !dbg !1262
+  %cmp217.i = icmp eq i32 %2, 0, !dbg !1262
+  br i1 %cmp217.i, label %sw.epilog, label %for.body.i, !dbg !1262
 
 for.body.i:                                       ; preds = %sw.bb1, %for.inc.i
   %mode.018.i = phi i32 [ %conv13.i, %for.inc.i ], [ %2, %sw.bb1 ]
-  %idxprom4.i = sext i32 %mode.018.i to i64
-  %arrayidx5.i = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom4.i
-  %3 = load i16* %arrayidx5.i, align 2, !tbaa !4
-  %cmp7.i = icmp eq i16 %3, %1
-  br i1 %cmp7.i, label %sw.epilog, label %for.inc.i
+  %idxprom4.i = sext i32 %mode.018.i to i64, !dbg !1264
+  %arrayidx5.i = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom4.i, !dbg !1264
+  %3 = load i16* %arrayidx5.i, align 2, !dbg !1264, !tbaa !1229
+  %cmp7.i = icmp eq i16 %3, %1, !dbg !1264
+  br i1 %cmp7.i, label %sw.epilog, label %for.inc.i, !dbg !1264
 
 for.inc.i:                                        ; preds = %for.body.i
-  %arrayidx12.i = getelementptr inbounds [59 x i8]* @mode_wider_mode, i64 0, i64 %idxprom4.i
-  %4 = load i8* %arrayidx12.i, align 1, !tbaa !1
-  %conv13.i = zext i8 %4 to i32
-  %cmp2.i = icmp eq i8 %4, 0
-  br i1 %cmp2.i, label %sw.epilog, label %for.body.i
+  %arrayidx12.i = getelementptr inbounds [59 x i8]* @mode_wider_mode, i64 0, i64 %idxprom4.i, !dbg !1265
+  %4 = load i8* %arrayidx12.i, align 1, !dbg !1265, !tbaa !1184
+  %conv13.i = zext i8 %4 to i32, !dbg !1265
+  tail call void @llvm.dbg.value(metadata !{i32 %conv13.i}, i64 0, metadata !1263), !dbg !1265
+  %cmp2.i = icmp eq i8 %4, 0, !dbg !1262
+  br i1 %cmp2.i, label %sw.epilog, label %for.body.i, !dbg !1262
 
 sw.bb4:                                           ; preds = %entry
-  %cmp = icmp eq i32 %mode, 51
-  br i1 %cmp, label %sw.epilog, label %sw.default
+  %cmp = icmp eq i32 %mode, 51, !dbg !1266
+  br i1 %cmp, label %sw.epilog, label %sw.default, !dbg !1266
 
 sw.default:                                       ; preds = %sw.bb4, %entry
-  tail call void @fancy_abort(i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 290, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.int_mode_for_mode, i64 0, i64 0)) #8
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0), i32 290, i8* getelementptr inbounds ([18 x i8]* @__FUNCTION__.int_mode_for_mode, i64 0, i64 0)) #9, !dbg !1267
+  unreachable, !dbg !1267
 
 sw.epilog:                                        ; preds = %for.inc.i, %for.body.i, %sw.bb1, %sw.bb4, %entry, %entry
   %mode.addr.0 = phi i32 [ 51, %sw.bb4 ], [ %mode, %entry ], [ %mode, %entry ], [ 51, %sw.bb1 ], [ 51, %for.inc.i ], [ %mode.018.i, %for.body.i ]
-  ret i32 %mode.addr.0
+  ret i32 %mode.addr.0, !dbg !1268
 }

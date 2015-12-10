@@ -1,89 +1,94 @@
 define internal fastcc void @normalize_coefficients(%struct.subscript* nocapture %coefficients, %struct.loop* %loop_ptr, i32 %count) #0 {
 entry:
-  %cmp67 = icmp slt i32 %count, 1
-  br i1 %cmp67, label %for.end38, label %for.cond1.preheader.lr.ph
+  tail call void @llvm.dbg.value(metadata !{%struct.subscript* %coefficients}, i64 0, metadata !1085), !dbg !1817
+  tail call void @llvm.dbg.value(metadata !{%struct.loop* %loop_ptr}, i64 0, metadata !1086), !dbg !1818
+  tail call void @llvm.dbg.value(metadata !{i32 %count}, i64 0, metadata !1087), !dbg !1819
+  tail call void @llvm.dbg.value(metadata !1271, i64 0, metadata !1090), !dbg !1820
+  %cmp67 = icmp slt i32 %count, 1, !dbg !1820
+  br i1 %cmp67, label %for.end38, label %for.cond1.preheader.lr.ph, !dbg !1820
 
 for.cond1.preheader.lr.ph:                        ; preds = %entry
-  %tobool65 = icmp eq %struct.loop* %loop_ptr, null
-  %0 = add i32 %count, 1
-  br label %for.cond1.preheader
+  %tobool65 = icmp eq %struct.loop* %loop_ptr, null, !dbg !1822
+  %0 = add i32 %count, 1, !dbg !1820
+  br label %for.cond1.preheader, !dbg !1820
 
 for.cond1.preheader:                              ; preds = %for.inc37, %for.cond1.preheader.lr.ph
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc37 ], [ 1, %for.cond1.preheader.lr.ph ]
-  br i1 %tobool65, label %for.inc37, label %for.body2.lr.ph
+  br i1 %tobool65, label %for.inc37, label %for.body2.lr.ph, !dbg !1822
 
 for.body2.lr.ph:                                  ; preds = %for.cond1.preheader
-  %variable = getelementptr inbounds %struct.subscript* %coefficients, i64 %indvars.iv, i32 3
-  br label %for.body2
+  %variable = getelementptr inbounds %struct.subscript* %coefficients, i64 %indvars.iv, i32 3, !dbg !1825
+  br label %for.body2, !dbg !1822
 
 for.body2:                                        ; preds = %for.body2.lr.ph, %for.inc35
   %ck_loop_ptr.066 = phi %struct.loop* [ %loop_ptr, %for.body2.lr.ph ], [ %8, %for.inc35 ]
-  %ind = getelementptr inbounds %struct.loop* %ck_loop_ptr.066, i64 0, i32 5
-  %ind_ptr.062 = load %struct.induction** %ind, align 8
-  %tobool463 = icmp eq %struct.induction* %ind_ptr.062, null
-  br i1 %tobool463, label %for.inc35, label %for.body5.lr.ph
+  %ind = getelementptr inbounds %struct.loop* %ck_loop_ptr.066, i64 0, i32 5, !dbg !1828
+  %ind_ptr.062 = load %struct.induction** %ind, align 8, !dbg !1828
+  %tobool463 = icmp eq %struct.induction* %ind_ptr.062, null, !dbg !1828
+  br i1 %tobool463, label %for.inc35, label %for.body5.lr.ph, !dbg !1828
 
 for.body5.lr.ph:                                  ; preds = %for.body2
-  %1 = load i8** %variable, align 8, !tbaa !0
-  br label %for.body5
+  %1 = load i8** %variable, align 8, !dbg !1825, !tbaa !1257
+  br label %for.body5, !dbg !1828
 
 for.cond3:                                        ; preds = %for.body5
-  %next = getelementptr inbounds %struct.induction* %ind_ptr.064, i64 0, i32 4
-  %ind_ptr.0 = load %struct.induction** %next, align 8
-  %tobool4 = icmp eq %struct.induction* %ind_ptr.0, null
-  br i1 %tobool4, label %for.inc35, label %for.body5
+  %next = getelementptr inbounds %struct.induction* %ind_ptr.064, i64 0, i32 4, !dbg !1828
+  %ind_ptr.0 = load %struct.induction** %next, align 8, !dbg !1828
+  %tobool4 = icmp eq %struct.induction* %ind_ptr.0, null, !dbg !1828
+  br i1 %tobool4, label %for.inc35, label %for.body5, !dbg !1828
 
 for.body5:                                        ; preds = %for.body5.lr.ph, %for.cond3
   %ind_ptr.064 = phi %struct.induction* [ %ind_ptr.062, %for.body5.lr.ph ], [ %ind_ptr.0, %for.cond3 ]
-  %variable6 = getelementptr inbounds %struct.induction* %ind_ptr.064, i64 0, i32 0
-  %2 = load i8** %variable6, align 8, !tbaa !0
-  %cmp7 = icmp eq i8* %1, %2
-  br i1 %cmp7, label %if.then, label %for.cond3
+  %variable6 = getelementptr inbounds %struct.induction* %ind_ptr.064, i64 0, i32 0, !dbg !1825
+  %2 = load i8** %variable6, align 8, !dbg !1825, !tbaa !1257
+  %cmp7 = icmp eq i8* %1, %2, !dbg !1825
+  br i1 %cmp7, label %if.then, label %for.cond3, !dbg !1825
 
 if.then:                                          ; preds = %for.body5
-  %low_bound = getelementptr inbounds %struct.induction* %ind_ptr.064, i64 0, i32 2
-  %3 = load i32* %low_bound, align 4, !tbaa !4
-  %high_bound = getelementptr inbounds %struct.induction* %ind_ptr.064, i64 0, i32 3
-  %4 = load i32* %high_bound, align 4, !tbaa !4
-  %cmp8 = icmp slt i32 %3, %4
-  br i1 %cmp8, label %if.then9, label %if.else
+  %low_bound = getelementptr inbounds %struct.induction* %ind_ptr.064, i64 0, i32 2, !dbg !1829
+  %3 = load i32* %low_bound, align 4, !dbg !1829, !tbaa !1279
+  %high_bound = getelementptr inbounds %struct.induction* %ind_ptr.064, i64 0, i32 3, !dbg !1829
+  %4 = load i32* %high_bound, align 4, !dbg !1829, !tbaa !1279
+  %cmp8 = icmp slt i32 %3, %4, !dbg !1829
+  br i1 %cmp8, label %if.then9, label %if.else, !dbg !1829
 
 if.then9:                                         ; preds = %if.then
-  %coefficient = getelementptr inbounds %struct.subscript* %coefficients, i64 %indvars.iv, i32 1
-  %5 = load i32* %coefficient, align 4, !tbaa !4
-  %mul = mul nsw i32 %5, %3
-  %offset = getelementptr inbounds %struct.subscript* %coefficients, i64 %indvars.iv, i32 2
-  %6 = load i32* %offset, align 4, !tbaa !4
-  %add = add nsw i32 %6, %mul
-  store i32 %add, i32* %offset, align 4, !tbaa !4
-  br label %for.inc35
+  %coefficient = getelementptr inbounds %struct.subscript* %coefficients, i64 %indvars.iv, i32 1, !dbg !1831
+  %5 = load i32* %coefficient, align 4, !dbg !1831, !tbaa !1279
+  %mul = mul nsw i32 %5, %3, !dbg !1831
+  %offset = getelementptr inbounds %struct.subscript* %coefficients, i64 %indvars.iv, i32 2, !dbg !1831
+  %6 = load i32* %offset, align 4, !dbg !1831, !tbaa !1279
+  %add = add nsw i32 %6, %mul, !dbg !1831
+  store i32 %add, i32* %offset, align 4, !dbg !1831, !tbaa !1279
+  br label %for.inc35, !dbg !1831
 
 if.else:                                          ; preds = %if.then
-  %cmp16 = icmp eq i32 %4, -2147483648
-  br i1 %cmp16, label %for.inc35, label %if.then17
+  %cmp16 = icmp eq i32 %4, -2147483648, !dbg !1832
+  br i1 %cmp16, label %for.inc35, label %if.then17, !dbg !1832
 
 if.then17:                                        ; preds = %if.else
-  %coefficient20 = getelementptr inbounds %struct.subscript* %coefficients, i64 %indvars.iv, i32 1
-  %7 = load i32* %coefficient20, align 4, !tbaa !4
-  %mul22 = mul nsw i32 %7, %4
-  %offset25 = getelementptr inbounds %struct.subscript* %coefficients, i64 %indvars.iv, i32 2
-  store i32 %mul22, i32* %offset25, align 4, !tbaa !4
-  %mul29 = sub i32 0, %7
-  store i32 %mul29, i32* %coefficient20, align 4, !tbaa !4
-  br label %for.inc35
+  %coefficient20 = getelementptr inbounds %struct.subscript* %coefficients, i64 %indvars.iv, i32 1, !dbg !1833
+  %7 = load i32* %coefficient20, align 4, !dbg !1833, !tbaa !1279
+  %mul22 = mul nsw i32 %7, %4, !dbg !1833
+  %offset25 = getelementptr inbounds %struct.subscript* %coefficients, i64 %indvars.iv, i32 2, !dbg !1833
+  store i32 %mul22, i32* %offset25, align 4, !dbg !1833, !tbaa !1279
+  %mul29 = sub i32 0, %7, !dbg !1835
+  store i32 %mul29, i32* %coefficient20, align 4, !dbg !1835, !tbaa !1279
+  br label %for.inc35, !dbg !1836
 
 for.inc35:                                        ; preds = %for.body2, %for.cond3, %if.else, %if.then17, %if.then9
-  %next_nest = getelementptr inbounds %struct.loop* %ck_loop_ptr.066, i64 0, i32 4
-  %8 = load %struct.loop** %next_nest, align 8, !tbaa !0
-  %tobool = icmp eq %struct.loop* %8, null
-  br i1 %tobool, label %for.inc37, label %for.body2
+  %next_nest = getelementptr inbounds %struct.loop* %ck_loop_ptr.066, i64 0, i32 4, !dbg !1837
+  %8 = load %struct.loop** %next_nest, align 8, !dbg !1837, !tbaa !1257
+  tail call void @llvm.dbg.value(metadata !{%struct.loop* %8}, i64 0, metadata !1089), !dbg !1837
+  %tobool = icmp eq %struct.loop* %8, null, !dbg !1822
+  br i1 %tobool, label %for.inc37, label %for.body2, !dbg !1822
 
 for.inc37:                                        ; preds = %for.inc35, %for.cond1.preheader
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %0
-  br i1 %exitcond, label %for.end38, label %for.cond1.preheader
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1820
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1820
+  %exitcond = icmp eq i32 %lftr.wideiv, %0, !dbg !1820
+  br i1 %exitcond, label %for.end38, label %for.cond1.preheader, !dbg !1820
 
 for.end38:                                        ; preds = %for.inc37, %entry
-  ret void
+  ret void, !dbg !1838
 }

@@ -1,0 +1,29 @@
+define linkonce_odr zeroext i1 @_ZNK10xalanc_1_818ReusableArenaBlockINS_7XNumberEE18shouldDestroyBlockEPKS1_(%"class.xalanc_1_8::ReusableArenaBlock"* %this, %"class.xalanc_1_8::XNumber"* %theObject) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::ReusableArenaBlock"* %this}, i64 0, metadata !3883), !dbg !5115
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XNumber"* %theObject}, i64 0, metadata !3884), !dbg !5115
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::ReusableArenaBlock"* %this}, i64 0, metadata !5116), !dbg !5118
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XNumber"* %theObject}, i64 0, metadata !5119), !dbg !5118
+  %m_freeBlockCount.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 2, !dbg !5120
+  %0 = load i64* %m_freeBlockCount.i, align 8, !dbg !5120, !tbaa !4270
+  %cmp.i = icmp eq i64 %0, 0, !dbg !5120
+  br i1 %cmp.i, label %_ZNK10xalanc_1_818ReusableArenaBlockINS_7XNumberEE12isOnFreeListEPKS1_.exit, label %if.else.i, !dbg !5120
+
+if.else.i:                                        ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XNumber"* %theObject}, i64 0, metadata !5121), !dbg !5123
+  %m_objectBlock.i.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 0, i32 4, !dbg !5124
+  %1 = load %"class.xalanc_1_8::XNumber"** %m_objectBlock.i.i, align 8, !dbg !5124, !tbaa !4284
+  %sub.ptr.lhs.cast.i.i = ptrtoint %"class.xalanc_1_8::XNumber"* %theObject to i64, !dbg !5124
+  %sub.ptr.rhs.cast.i.i = ptrtoint %"class.xalanc_1_8::XNumber"* %1 to i64, !dbg !5124
+  %sub.ptr.sub.i.i = sub i64 %sub.ptr.lhs.cast.i.i, %sub.ptr.rhs.cast.i.i, !dbg !5124
+  %sub.ptr.div.i.i = ashr exact i64 %sub.ptr.sub.i.i, 6, !dbg !5124
+  tail call void @llvm.dbg.value(metadata !{i64 %sub.ptr.div.i.i}, i64 0, metadata !5125), !dbg !5122
+  %m_freeList.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 1, !dbg !5126
+  %call2.i = tail call zeroext i1 @_ZNK10xalanc_1_811XalanBitmap5isSetEm(%"class.xalanc_1_8::XalanBitmap"* %m_freeList.i, i64 %sub.ptr.div.i.i) #10, !dbg !5126
+  %phitmp = xor i1 %call2.i, true, !dbg !5126
+  br label %_ZNK10xalanc_1_818ReusableArenaBlockINS_7XNumberEE12isOnFreeListEPKS1_.exit, !dbg !5126
+
+_ZNK10xalanc_1_818ReusableArenaBlockINS_7XNumberEE12isOnFreeListEPKS1_.exit: ; preds = %entry, %if.else.i
+  %retval.0.i = phi i1 [ %phitmp, %if.else.i ], [ true, %entry ]
+  ret i1 %retval.0.i, !dbg !5117
+}

@@ -2,231 +2,244 @@ define internal fastcc zeroext i1 @compensate_edge(%struct.edge_def* %e, %struct
 entry:
   %regstack = alloca %struct.stack_def, align 8
   %tmpstack = alloca %struct.stack_def, align 8
-  %src = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 2
-  %0 = load %struct.basic_block_def** %src, align 8, !tbaa !2
-  %dest = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 3
-  %1 = load %struct.basic_block_def** %dest, align 8, !tbaa !2
-  %aux = getelementptr inbounds %struct.basic_block_def* %0, i64 0, i32 10
-  %2 = load i8** %aux, align 8, !tbaa !2
-  %aux1 = getelementptr inbounds %struct.basic_block_def* %1, i64 0, i32 10
-  %3 = load i8** %aux1, align 8, !tbaa !2
-  %stack_in = bitcast i8* %3 to %struct.stack_def*
-  store %struct.basic_block_def* %0, %struct.basic_block_def** @current_block, align 8, !tbaa !2
-  %stack_out = getelementptr inbounds i8* %2, i64 24
-  %4 = bitcast %struct.stack_def* %regstack to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %4, i8* %stack_out, i64 24, i32 8, i1 false), !tbaa.struct !7
-  %tobool = icmp ne %struct._IO_FILE* %file, null
-  br i1 %tobool, label %if.then, label %if.end
+  call void @llvm.dbg.value(metadata !{%struct.edge_def* %e}, i64 0, metadata !1414), !dbg !1853
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %file}, i64 0, metadata !1415), !dbg !1854
+  %src = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 2, !dbg !1855
+  %0 = load %struct.basic_block_def** %src, align 8, !dbg !1855, !tbaa !1563
+  call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %0}, i64 0, metadata !1416), !dbg !1855
+  %dest = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 3, !dbg !1855
+  %1 = load %struct.basic_block_def** %dest, align 8, !dbg !1855, !tbaa !1563
+  call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %1}, i64 0, metadata !1417), !dbg !1855
+  %aux = getelementptr inbounds %struct.basic_block_def* %0, i64 0, i32 10, !dbg !1856
+  %2 = load i8** %aux, align 8, !dbg !1856, !tbaa !1563
+  call void @llvm.dbg.declare(metadata !{%struct.stack_def* %regstack}, metadata !1419), !dbg !1857
+  call void @llvm.dbg.declare(metadata !{%struct.stack_def* %tmpstack}, metadata !1420), !dbg !1857
+  %aux1 = getelementptr inbounds %struct.basic_block_def* %1, i64 0, i32 10, !dbg !1858
+  %3 = load i8** %aux1, align 8, !dbg !1858, !tbaa !1563
+  %stack_in = bitcast i8* %3 to %struct.stack_def*, !dbg !1858
+  call void @llvm.dbg.value(metadata !{%struct.stack_def* %stack_in}, i64 0, metadata !1421), !dbg !1858
+  store %struct.basic_block_def* %0, %struct.basic_block_def** @current_block, align 8, !dbg !1859, !tbaa !1563
+  %stack_out = getelementptr inbounds i8* %2, i64 24, !dbg !1860
+  %4 = bitcast %struct.stack_def* %regstack to i8*, !dbg !1860
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %4, i8* %stack_out, i64 24, i32 8, i1 false), !dbg !1860, !tbaa.struct !1776
+  %tobool = icmp ne %struct._IO_FILE* %file, null, !dbg !1861
+  br i1 %tobool, label %if.then, label %if.end, !dbg !1861
 
 if.then:                                          ; preds = %entry
-  %index = getelementptr inbounds %struct.basic_block_def* %0, i64 0, i32 11
-  %5 = load i32* %index, align 4, !tbaa !3
-  %index2 = getelementptr inbounds %struct.basic_block_def* %1, i64 0, i32 11
-  %6 = load i32* %index2, align 4, !tbaa !3
-  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([14 x i8]* @.str18, i64 0, i64 0), i32 %5, i32 %6) #6
-  br label %if.end
+  %index = getelementptr inbounds %struct.basic_block_def* %0, i64 0, i32 11, !dbg !1862
+  %5 = load i32* %index, align 4, !dbg !1862, !tbaa !1565
+  %index2 = getelementptr inbounds %struct.basic_block_def* %1, i64 0, i32 11, !dbg !1862
+  %6 = load i32* %index2, align 4, !dbg !1862, !tbaa !1565
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %file, i8* getelementptr inbounds ([14 x i8]* @.str18, i64 0, i64 0), i32 %5, i32 %6) #7, !dbg !1862
+  br label %if.end, !dbg !1862
 
 if.end:                                           ; preds = %if.then, %entry
-  %top = bitcast i8* %3 to i32*
-  %7 = load i32* %top, align 4, !tbaa !3
-  %cmp = icmp eq i32 %7, -2
-  %top4 = getelementptr inbounds %struct.stack_def* %regstack, i64 0, i32 0
-  %8 = load i32* %top4, align 8, !tbaa !3
-  br i1 %cmp, label %for.cond.preheader, label %if.else
+  %top = bitcast i8* %3 to i32*, !dbg !1863
+  %7 = load i32* %top, align 4, !dbg !1863, !tbaa !1565
+  %cmp = icmp eq i32 %7, -2, !dbg !1863
+  %top4 = getelementptr inbounds %struct.stack_def* %regstack, i64 0, i32 0, !dbg !1864
+  %8 = load i32* %top4, align 8, !dbg !1864, !tbaa !1565
+  br i1 %cmp, label %for.cond.preheader, label %if.else, !dbg !1863
 
 for.cond.preheader:                               ; preds = %if.end
-  %cmp5149 = icmp sgt i32 %8, -1
-  br i1 %cmp5149, label %for.body.lr.ph, label %for.end
+  %cmp5149 = icmp sgt i32 %8, -1, !dbg !1864
+  br i1 %cmp5149, label %for.body.lr.ph, label %for.end, !dbg !1864
 
 for.body.lr.ph:                                   ; preds = %for.cond.preheader
-  %reg_set = getelementptr inbounds i8* %3, i64 8
-  %9 = bitcast i8* %reg_set to i64*
-  %10 = load i64* %9, align 8, !tbaa !4
+  %reg_set = getelementptr inbounds i8* %3, i64 8, !dbg !1867
+  %9 = bitcast i8* %reg_set to i64*, !dbg !1867
+  %10 = load i64* %9, align 8, !dbg !1867, !tbaa !1567
   %11 = sext i32 %8 to i64
-  br label %for.body
+  br label %for.body, !dbg !1864
 
 for.cond:                                         ; preds = %for.body
-  %indvars.iv.next = add i64 %indvars.iv, -1
-  %12 = trunc i64 %indvars.iv to i32
-  %cmp5 = icmp sgt i32 %12, 0
-  br i1 %cmp5, label %for.body, label %for.end
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !1864
+  %12 = trunc i64 %indvars.iv to i32, !dbg !1864
+  %cmp5 = icmp sgt i32 %12, 0, !dbg !1864
+  br i1 %cmp5, label %for.body, label %for.end, !dbg !1864
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.cond
   %indvars.iv = phi i64 [ %11, %for.body.lr.ph ], [ %indvars.iv.next, %for.cond ]
   %reg.0150 = phi i32 [ %8, %for.body.lr.ph ], [ %dec, %for.cond ]
-  %arrayidx = getelementptr inbounds %struct.stack_def* %regstack, i64 0, i32 2, i64 %indvars.iv
-  %13 = load i8* %arrayidx, align 1, !tbaa !0
-  %sh_prom = zext i8 %13 to i64
-  %shl = shl i64 1, %sh_prom
-  %and = and i64 %shl, %10
-  %tobool7 = icmp eq i64 %and, 0
-  %dec = add nsw i32 %reg.0150, -1
-  br i1 %tobool7, label %for.end, label %for.cond
+  %arrayidx = getelementptr inbounds %struct.stack_def* %regstack, i64 0, i32 2, i64 %indvars.iv, !dbg !1867
+  %13 = load i8* %arrayidx, align 1, !dbg !1867, !tbaa !1561
+  %sh_prom = zext i8 %13 to i64, !dbg !1867
+  %shl = shl i64 1, %sh_prom, !dbg !1867
+  %and = and i64 %shl, %10, !dbg !1867
+  %tobool7 = icmp eq i64 %and, 0, !dbg !1867
+  %dec = add nsw i32 %reg.0150, -1, !dbg !1864
+  call void @llvm.dbg.value(metadata !{i32 %dec}, i64 0, metadata !1422), !dbg !1864
+  br i1 %tobool7, label %for.end, label %for.cond, !dbg !1867
 
 for.end:                                          ; preds = %for.cond, %for.body, %for.cond.preheader
   %reg.0.lcssa = phi i32 [ %8, %for.cond.preheader ], [ %reg.0150, %for.body ], [ %dec, %for.cond ]
-  %cmp10 = icmp eq i32 %reg.0.lcssa, -1
-  br i1 %cmp10, label %if.then12, label %if.end17
+  %cmp10 = icmp eq i32 %reg.0.lcssa, -1, !dbg !1868
+  br i1 %cmp10, label %if.then12, label %if.end17, !dbg !1868
 
 if.then12:                                        ; preds = %for.end
-  br i1 %tobool, label %if.then14, label %if.end16
+  br i1 %tobool, label %if.then14, label %if.end16, !dbg !1869
 
 if.then14:                                        ; preds = %if.then12
-  %14 = call i64 @fwrite(i8* getelementptr inbounds ([35 x i8]* @.str19, i64 0, i64 0), i64 34, i64 1, %struct._IO_FILE* %file)
-  br label %if.end16
+  %14 = call i64 @fwrite(i8* getelementptr inbounds ([35 x i8]* @.str19, i64 0, i64 0), i64 34, i64 1, %struct._IO_FILE* %file), !dbg !1871
+  br label %if.end16, !dbg !1871
 
 if.end16:                                         ; preds = %if.then14, %if.then12
-  %15 = bitcast %struct.stack_def* %tmpstack to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %15, i8* %4, i64 24, i32 8, i1 false), !tbaa.struct !7
-  %end = getelementptr inbounds %struct.basic_block_def* %0, i64 0, i32 1
-  %16 = load %struct.rtx_def** %end, align 8, !tbaa !2
-  call fastcc void @change_stack(%struct.rtx_def* %16, %struct.stack_def* %tmpstack, %struct.stack_def* %stack_in, i32 0) #7
-  br label %return
+  %15 = bitcast %struct.stack_def* %tmpstack to i8*, !dbg !1872
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %15, i8* %4, i64 24, i32 8, i1 false), !dbg !1872, !tbaa.struct !1776
+  %end = getelementptr inbounds %struct.basic_block_def* %0, i64 0, i32 1, !dbg !1873
+  %16 = load %struct.rtx_def** %end, align 8, !dbg !1873, !tbaa !1563
+  call fastcc void @change_stack(%struct.rtx_def* %16, %struct.stack_def* %tmpstack, %struct.stack_def* %stack_in, i32 0) #8, !dbg !1873
+  br label %return, !dbg !1874
 
 if.end17:                                         ; preds = %for.end
-  br i1 %tobool, label %if.then19, label %if.end60
+  br i1 %tobool, label %if.then19, label %if.end60, !dbg !1875
 
 if.then19:                                        ; preds = %if.end17
-  %17 = call i64 @fwrite(i8* getelementptr inbounds ([24 x i8]* @.str20, i64 0, i64 0), i64 23, i64 1, %struct._IO_FILE* %file)
-  br label %if.end60
+  %17 = call i64 @fwrite(i8* getelementptr inbounds ([24 x i8]* @.str20, i64 0, i64 0), i64 23, i64 1, %struct._IO_FILE* %file), !dbg !1876
+  br label %if.end60, !dbg !1876
 
 if.else:                                          ; preds = %if.end
-  %cmp24 = icmp eq i32 %7, %8
-  br i1 %cmp24, label %for.cond28.preheader, label %if.end55
+  %cmp24 = icmp eq i32 %7, %8, !dbg !1877
+  br i1 %cmp24, label %for.cond28.preheader, label %if.end55, !dbg !1877
 
 for.cond28.preheader:                             ; preds = %if.else
-  %cmp29151 = icmp sgt i32 %7, -1
-  br i1 %cmp29151, label %for.body31.lr.ph, label %for.end46
+  %cmp29151 = icmp sgt i32 %7, -1, !dbg !1879
+  br i1 %cmp29151, label %for.body31.lr.ph, label %for.end46, !dbg !1879
 
 for.body31.lr.ph:                                 ; preds = %for.cond28.preheader
   %18 = sext i32 %7 to i64
-  br label %for.body31
+  br label %for.body31, !dbg !1879
 
 for.cond28:                                       ; preds = %for.body31
-  %indvars.iv.next159 = add i64 %indvars.iv158, -1
-  %19 = trunc i64 %indvars.iv158 to i32
-  %cmp29 = icmp sgt i32 %19, 0
-  br i1 %cmp29, label %for.body31, label %for.end46
+  %indvars.iv.next159 = add i64 %indvars.iv158, -1, !dbg !1879
+  %19 = trunc i64 %indvars.iv158 to i32, !dbg !1879
+  %cmp29 = icmp sgt i32 %19, 0, !dbg !1879
+  br i1 %cmp29, label %for.body31, label %for.end46, !dbg !1879
 
 for.body31:                                       ; preds = %for.body31.lr.ph, %for.cond28
   %indvars.iv158 = phi i64 [ %18, %for.body31.lr.ph ], [ %indvars.iv.next159, %for.cond28 ]
   %reg.1152 = phi i32 [ %7, %for.body31.lr.ph ], [ %dec45, %for.cond28 ]
-  %reg33.sum = add i64 %indvars.iv158, 16
-  %arrayidx34 = getelementptr inbounds i8* %3, i64 %reg33.sum
-  %20 = load i8* %arrayidx34, align 1, !tbaa !0
-  %arrayidx38 = getelementptr inbounds %struct.stack_def* %regstack, i64 0, i32 2, i64 %indvars.iv158
-  %21 = load i8* %arrayidx38, align 1, !tbaa !0
-  %cmp40 = icmp eq i8 %20, %21
-  %dec45 = add nsw i32 %reg.1152, -1
-  br i1 %cmp40, label %for.cond28, label %for.end46
+  %reg33.sum = add i64 %indvars.iv158, 16, !dbg !1882
+  %arrayidx34 = getelementptr inbounds i8* %3, i64 %reg33.sum, !dbg !1882
+  %20 = load i8* %arrayidx34, align 1, !dbg !1882, !tbaa !1561
+  %arrayidx38 = getelementptr inbounds %struct.stack_def* %regstack, i64 0, i32 2, i64 %indvars.iv158, !dbg !1882
+  %21 = load i8* %arrayidx38, align 1, !dbg !1882, !tbaa !1561
+  %cmp40 = icmp eq i8 %20, %21, !dbg !1882
+  %dec45 = add nsw i32 %reg.1152, -1, !dbg !1879
+  call void @llvm.dbg.value(metadata !{i32 %dec45}, i64 0, metadata !1422), !dbg !1879
+  br i1 %cmp40, label %for.cond28, label %for.end46, !dbg !1882
 
 for.end46:                                        ; preds = %for.cond28, %for.body31, %for.cond28.preheader
   %reg.1.lcssa = phi i32 [ %7, %for.cond28.preheader ], [ %reg.1152, %for.body31 ], [ %dec45, %for.cond28 ]
-  %cmp47 = icmp eq i32 %reg.1.lcssa, -1
-  br i1 %cmp47, label %if.then49, label %if.end55
+  %cmp47 = icmp eq i32 %reg.1.lcssa, -1, !dbg !1883
+  br i1 %cmp47, label %if.then49, label %if.end55, !dbg !1883
 
 if.then49:                                        ; preds = %for.end46
-  br i1 %tobool, label %if.then51, label %return
+  br i1 %tobool, label %if.then51, label %return, !dbg !1884
 
 if.then51:                                        ; preds = %if.then49
-  %22 = call i64 @fwrite(i8* getelementptr inbounds ([19 x i8]* @.str21, i64 0, i64 0), i64 18, i64 1, %struct._IO_FILE* %file)
-  br label %return
+  %22 = call i64 @fwrite(i8* getelementptr inbounds ([19 x i8]* @.str21, i64 0, i64 0), i64 18, i64 1, %struct._IO_FILE* %file), !dbg !1886
+  br label %return, !dbg !1886
 
 if.end55:                                         ; preds = %for.end46, %if.else
-  br i1 %tobool, label %if.then57, label %if.end60
+  br i1 %tobool, label %if.then57, label %if.end60, !dbg !1887
 
 if.then57:                                        ; preds = %if.end55
-  %23 = call i64 @fwrite(i8* getelementptr inbounds ([21 x i8]* @.str22, i64 0, i64 0), i64 20, i64 1, %struct._IO_FILE* %file)
-  call fastcc void @print_stack(%struct._IO_FILE* %file, %struct.stack_def* %stack_in) #7
-  br label %if.end60
+  %23 = call i64 @fwrite(i8* getelementptr inbounds ([21 x i8]* @.str22, i64 0, i64 0), i64 20, i64 1, %struct._IO_FILE* %file), !dbg !1888
+  call fastcc void @print_stack(%struct._IO_FILE* %file, %struct.stack_def* %stack_in) #8, !dbg !1890
+  br label %if.end60, !dbg !1891
 
 if.end60:                                         ; preds = %if.end55, %if.then57, %if.end17, %if.then19
-  %flags = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 6
-  %24 = load i32* %flags, align 4, !tbaa !3
-  %and61 = and i32 %24, 12
-  %cmp62 = icmp eq i32 %and61, 8
-  br i1 %cmp62, label %if.then64, label %if.else66
+  %flags = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 6, !dbg !1892
+  %24 = load i32* %flags, align 4, !dbg !1892, !tbaa !1565
+  %and61 = and i32 %24, 12, !dbg !1892
+  %cmp62 = icmp eq i32 %and61, 8, !dbg !1892
+  br i1 %cmp62, label %if.then64, label %if.else66, !dbg !1892
 
 if.then64:                                        ; preds = %if.end60
-  store i32 -1, i32* %top, align 4, !tbaa !3
-  br label %return
+  store i32 -1, i32* %top, align 4, !dbg !1893, !tbaa !1565
+  br label %return, !dbg !1893
 
 if.else66:                                        ; preds = %if.end60
-  %and68 = and i32 %24, 4
-  %tobool69 = icmp eq i32 %and68, 0
-  br i1 %tobool69, label %if.else82, label %if.then70
+  %and68 = and i32 %24, 4, !dbg !1894
+  %tobool69 = icmp eq i32 %and68, 0, !dbg !1894
+  br i1 %tobool69, label %if.else82, label %if.then70, !dbg !1894
 
 if.then70:                                        ; preds = %if.else66
-  %reg_set71 = getelementptr inbounds i8* %3, i64 8
-  %25 = bitcast i8* %reg_set71 to i64*
-  %26 = load i64* %25, align 8, !tbaa !4
-  %cmp72 = icmp eq i64 %26, 0
-  br i1 %cmp72, label %eh1, label %if.end75
+  call void @llvm.dbg.value(metadata !1895, i64 0, metadata !1423), !dbg !1896
+  %reg_set71 = getelementptr inbounds i8* %3, i64 8, !dbg !1897
+  %25 = bitcast i8* %reg_set71 to i64*, !dbg !1897
+  %26 = load i64* %25, align 8, !dbg !1897, !tbaa !1567
+  %cmp72 = icmp eq i64 %26, 0, !dbg !1897
+  br i1 %cmp72, label %eh1, label %if.end75, !dbg !1897
 
 if.end75:                                         ; preds = %if.then70
-  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), i32 2559, i8* getelementptr inbounds ([16 x i8]* @__FUNCTION__.compensate_edge, i64 0, i64 0)) #8
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), i32 2559, i8* getelementptr inbounds ([16 x i8]* @__FUNCTION__.compensate_edge, i64 0, i64 0)) #9, !dbg !1898
+  unreachable, !dbg !1898
 
 eh1:                                              ; preds = %if.then70
-  %reg_set76 = getelementptr inbounds %struct.stack_def* %regstack, i64 0, i32 1
-  %27 = load i64* %reg_set76, align 8, !tbaa !4
-  %cmp77 = icmp eq i64 %27, 256
-  br i1 %cmp77, label %eh2, label %if.end80
+  call void @llvm.dbg.value(metadata !1899, i64 0, metadata !1423), !dbg !1900
+  %reg_set76 = getelementptr inbounds %struct.stack_def* %regstack, i64 0, i32 1, !dbg !1901
+  %27 = load i64* %reg_set76, align 8, !dbg !1901, !tbaa !1567
+  %cmp77 = icmp eq i64 %27, 256, !dbg !1901
+  br i1 %cmp77, label %eh2, label %if.end80, !dbg !1901
 
 if.end80:                                         ; preds = %eh1
-  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), i32 2564, i8* getelementptr inbounds ([16 x i8]* @__FUNCTION__.compensate_edge, i64 0, i64 0)) #8
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), i32 2564, i8* getelementptr inbounds ([16 x i8]* @__FUNCTION__.compensate_edge, i64 0, i64 0)) #9, !dbg !1902
+  unreachable, !dbg !1902
 
 eh2:                                              ; preds = %eh1
-  store i32 -1, i32* %top, align 4, !tbaa !3
-  br label %return
+  store i32 -1, i32* %top, align 4, !dbg !1903, !tbaa !1565
+  br label %return, !dbg !1904
 
 if.else82:                                        ; preds = %if.else66
-  %succ = getelementptr inbounds %struct.basic_block_def* %0, i64 0, i32 5
-  %28 = load %struct.edge_def** %succ, align 8, !tbaa !2
-  %succ_next = getelementptr inbounds %struct.edge_def* %28, i64 0, i32 1
-  %29 = load %struct.edge_def** %succ_next, align 8, !tbaa !2
-  %cmp83 = icmp eq %struct.edge_def* %29, null
-  %and86 = and i32 %24, 2
-  %tobool87 = icmp eq i32 %and86, 0
-  br i1 %cmp83, label %land.lhs.true, label %if.else93
+  %succ = getelementptr inbounds %struct.basic_block_def* %0, i64 0, i32 5, !dbg !1905
+  %28 = load %struct.edge_def** %succ, align 8, !dbg !1905, !tbaa !1563
+  %succ_next = getelementptr inbounds %struct.edge_def* %28, i64 0, i32 1, !dbg !1905
+  %29 = load %struct.edge_def** %succ_next, align 8, !dbg !1905, !tbaa !1563
+  %cmp83 = icmp eq %struct.edge_def* %29, null, !dbg !1905
+  %and86 = and i32 %24, 2, !dbg !1905
+  %tobool87 = icmp eq i32 %and86, 0, !dbg !1905
+  br i1 %cmp83, label %land.lhs.true, label %if.else93, !dbg !1905
 
 land.lhs.true:                                    ; preds = %if.else82
-  br i1 %tobool87, label %if.then88, label %if.then99
+  br i1 %tobool87, label %if.then88, label %if.then99, !dbg !1905
 
 if.then88:                                        ; preds = %land.lhs.true
-  %30 = bitcast %struct.stack_def* %tmpstack to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %30, i8* %4, i64 24, i32 8, i1 false), !tbaa.struct !7
-  %end89 = getelementptr inbounds %struct.basic_block_def* %0, i64 0, i32 1
-  %31 = load %struct.rtx_def** %end89, align 8, !tbaa !2
-  %32 = bitcast %struct.rtx_def* %31 to i32*
-  %bf.load = load i32* %32, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp91 = icmp eq i32 %bf.clear, 33
-  %cond = zext i1 %cmp91 to i32
-  call fastcc void @change_stack(%struct.rtx_def* %31, %struct.stack_def* %tmpstack, %struct.stack_def* %stack_in, i32 %cond) #7
+  %30 = bitcast %struct.stack_def* %tmpstack to i8*, !dbg !1906
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %30, i8* %4, i64 24, i32 8, i1 false), !dbg !1906, !tbaa.struct !1776
+  %end89 = getelementptr inbounds %struct.basic_block_def* %0, i64 0, i32 1, !dbg !1908
+  %31 = load %struct.rtx_def** %end89, align 8, !dbg !1908, !tbaa !1563
+  %32 = bitcast %struct.rtx_def* %31 to i32*, !dbg !1908
+  %bf.load = load i32* %32, align 8, !dbg !1908
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1908
+  %cmp91 = icmp eq i32 %bf.clear, 33, !dbg !1908
+  %cond = zext i1 %cmp91 to i32, !dbg !1908
+  call fastcc void @change_stack(%struct.rtx_def* %31, %struct.stack_def* %tmpstack, %struct.stack_def* %stack_in, i32 %cond) #8, !dbg !1908
   br label %return
 
 if.else93:                                        ; preds = %if.else82
-  br i1 %tobool87, label %if.end100, label %if.then99
+  br i1 %tobool87, label %if.end100, label %if.then99, !dbg !1909
 
 if.then99:                                        ; preds = %land.lhs.true, %if.else93
-  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), i32 2591, i8* getelementptr inbounds ([16 x i8]* @__FUNCTION__.compensate_edge, i64 0, i64 0)) #8
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), i32 2591, i8* getelementptr inbounds ([16 x i8]* @__FUNCTION__.compensate_edge, i64 0, i64 0)) #9, !dbg !1910
+  unreachable, !dbg !1910
 
 if.end100:                                        ; preds = %if.else93
-  store %struct.basic_block_def* null, %struct.basic_block_def** @current_block, align 8, !tbaa !2
-  call void @start_sequence() #6
-  %call101 = call %struct.rtx_def* @emit_note(i8* null, i32 -99) #6
-  %33 = bitcast %struct.stack_def* %tmpstack to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %33, i8* %4, i64 24, i32 8, i1 false), !tbaa.struct !7
-  call fastcc void @change_stack(%struct.rtx_def* %call101, %struct.stack_def* %tmpstack, %struct.stack_def* %stack_in, i32 1) #7
-  %call102 = call %struct.rtx_def* @gen_sequence() #6
-  call void @end_sequence() #6
-  call void @insert_insn_on_edge(%struct.rtx_def* %call102, %struct.edge_def* %e) #6
-  br label %return
+  store %struct.basic_block_def* null, %struct.basic_block_def** @current_block, align 8, !dbg !1911, !tbaa !1563
+  call void @start_sequence() #7, !dbg !1912
+  %call101 = call %struct.rtx_def* @emit_note(i8* null, i32 -99) #7, !dbg !1913
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call101}, i64 0, metadata !1427), !dbg !1913
+  %33 = bitcast %struct.stack_def* %tmpstack to i8*, !dbg !1914
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %33, i8* %4, i64 24, i32 8, i1 false), !dbg !1914, !tbaa.struct !1776
+  call fastcc void @change_stack(%struct.rtx_def* %call101, %struct.stack_def* %tmpstack, %struct.stack_def* %stack_in, i32 1) #8, !dbg !1915
+  %call102 = call %struct.rtx_def* @gen_sequence() #7, !dbg !1916
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call102}, i64 0, metadata !1425), !dbg !1916
+  call void @end_sequence() #7, !dbg !1917
+  call void @insert_insn_on_edge(%struct.rtx_def* %call102, %struct.edge_def* %e) #7, !dbg !1918
+  br label %return, !dbg !1919
 
 return:                                           ; preds = %if.then64, %if.then88, %eh2, %if.then49, %if.then51, %if.end100, %if.end16
   %retval.0 = phi i1 [ false, %if.end16 ], [ true, %if.end100 ], [ false, %if.then51 ], [ false, %if.then49 ], [ false, %eh2 ], [ false, %if.then88 ], [ false, %if.then64 ]
-  ret i1 %retval.0
+  ret i1 %retval.0, !dbg !1920
 }

@@ -1,46 +1,48 @@
-define i32 @ZeroRef(%struct.macroblock* nocapture %currMB) #2 {
+define i32 @ZeroRef(%struct.macroblock* nocapture %currMB) #3 {
 entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %block_y = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 32
-  %1 = load i32* %block_y, align 4, !tbaa !3
-  %block_x = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 31
-  %2 = load i32* %block_x, align 4, !tbaa !3
-  %3 = load %struct.storable_picture** @enc_picture, align 8, !tbaa !0
-  %ref_idx = getelementptr inbounds %struct.storable_picture* %3, i64 0, i32 32
-  %4 = load i16**** %ref_idx, align 8, !tbaa !0
-  %5 = load i16*** %4, align 8, !tbaa !0
-  %6 = sext i32 %2 to i64
-  %7 = sext i32 %1 to i64
-  br label %for.cond1.preheader
+  tail call void @llvm.dbg.value(metadata !{%struct.macroblock* %currMB}, i64 0, metadata !792), !dbg !2953
+  tail call void @llvm.dbg.value(metadata !72, i64 0, metadata !794), !dbg !2954
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !2956, !tbaa !1576
+  %block_y = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 32, !dbg !2956
+  %1 = load i32* %block_y, align 4, !dbg !2956, !tbaa !1579
+  %block_x = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 31, !dbg !2956
+  %2 = load i32* %block_x, align 4, !dbg !2956, !tbaa !1579
+  %3 = load %struct.storable_picture** @enc_picture, align 8, !dbg !2956, !tbaa !1576
+  %ref_idx = getelementptr inbounds %struct.storable_picture* %3, i64 0, i32 32, !dbg !2956
+  %4 = load i16**** %ref_idx, align 8, !dbg !2956, !tbaa !1576
+  %5 = load i16*** %4, align 8, !dbg !2956, !tbaa !1576
+  %6 = sext i32 %2 to i64, !dbg !2954
+  %7 = sext i32 %1 to i64, !dbg !2954
+  br label %for.cond1.preheader, !dbg !2954
 
 for.cond1.preheader:                              ; preds = %entry, %for.inc10
   %indvars.iv21 = phi i64 [ 0, %entry ], [ %indvars.iv.next22, %for.inc10 ]
-  %8 = add nsw i64 %7, %indvars.iv21
-  br label %for.body3
+  %8 = add nsw i64 %7, %indvars.iv21, !dbg !2956
+  br label %for.body3, !dbg !2959
 
 for.cond1:                                        ; preds = %for.body3
-  %9 = trunc i64 %indvars.iv.next to i32
-  %cmp2 = icmp slt i32 %9, 4
-  br i1 %cmp2, label %for.body3, label %for.inc10
+  %9 = trunc i64 %indvars.iv.next to i32, !dbg !2959
+  %cmp2 = icmp slt i32 %9, 4, !dbg !2959
+  br i1 %cmp2, label %for.body3, label %for.inc10, !dbg !2959
 
 for.body3:                                        ; preds = %for.cond1.preheader, %for.cond1
   %indvars.iv = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next, %for.cond1 ]
-  %10 = add nsw i64 %6, %indvars.iv
-  %arrayidx6 = getelementptr inbounds i16** %5, i64 %10
-  %11 = load i16** %arrayidx6, align 8, !tbaa !0
-  %arrayidx7 = getelementptr inbounds i16* %11, i64 %8
-  %12 = load i16* %arrayidx7, align 2, !tbaa !4
-  %cmp8 = icmp eq i16 %12, 0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  br i1 %cmp8, label %for.cond1, label %return
+  %10 = add nsw i64 %6, %indvars.iv, !dbg !2956
+  %arrayidx6 = getelementptr inbounds i16** %5, i64 %10, !dbg !2956
+  %11 = load i16** %arrayidx6, align 8, !dbg !2956, !tbaa !1576
+  %arrayidx7 = getelementptr inbounds i16* %11, i64 %8, !dbg !2956
+  %12 = load i16* %arrayidx7, align 2, !dbg !2956, !tbaa !1878
+  %cmp8 = icmp eq i16 %12, 0, !dbg !2956
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2959
+  br i1 %cmp8, label %for.cond1, label %return, !dbg !2956
 
 for.inc10:                                        ; preds = %for.cond1
-  %indvars.iv.next22 = add i64 %indvars.iv21, 1
-  %13 = trunc i64 %indvars.iv.next22 to i32
-  %cmp = icmp slt i32 %13, 4
-  br i1 %cmp, label %for.cond1.preheader, label %return
+  %indvars.iv.next22 = add i64 %indvars.iv21, 1, !dbg !2954
+  %13 = trunc i64 %indvars.iv.next22 to i32, !dbg !2954
+  %cmp = icmp slt i32 %13, 4, !dbg !2954
+  br i1 %cmp, label %for.cond1.preheader, label %return, !dbg !2954
 
 return:                                           ; preds = %for.inc10, %for.body3
   %retval.0 = phi i32 [ 0, %for.body3 ], [ 1, %for.inc10 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !2960
 }

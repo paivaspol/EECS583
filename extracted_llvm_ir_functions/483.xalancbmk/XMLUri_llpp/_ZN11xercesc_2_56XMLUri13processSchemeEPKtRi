@@ -1,0 +1,23 @@
+define zeroext i1 @_ZN11xercesc_2_56XMLUri13processSchemeEPKtRi(i16* %schemeStr, i32* nocapture %index) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %schemeStr}, i64 0, metadata !1633), !dbg !4918
+  tail call void @llvm.dbg.value(metadata !{i32* %index}, i64 0, metadata !1634), !dbg !4918
+  %call = tail call i16* @_ZN11xercesc_2_59XMLString7findAnyEPKtS2_(i16* %schemeStr, i16* getelementptr inbounds ([5 x i16]* @_ZN11xercesc_2_5L17SCHEME_SEPARATORSE, i64 0, i64 0)) #9, !dbg !4919
+  tail call void @llvm.dbg.value(metadata !{i16* %call}, i64 0, metadata !1635), !dbg !4919
+  %tobool = icmp eq i16* %call, null, !dbg !4920
+  br i1 %tobool, label %return, label %if.then, !dbg !4920
+
+if.then:                                          ; preds = %entry
+  %sub.ptr.lhs.cast = ptrtoint i16* %call to i64, !dbg !4921
+  %sub.ptr.rhs.cast = ptrtoint i16* %schemeStr to i64, !dbg !4921
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !4921
+  %sub.ptr.div6 = lshr exact i64 %sub.ptr.sub, 1, !dbg !4921
+  %conv = trunc i64 %sub.ptr.div6 to i32, !dbg !4921
+  store i32 %conv, i32* %index, align 4, !dbg !4921, !tbaa !2615
+  %call1 = tail call zeroext i1 @_ZN11xercesc_2_56XMLUri22isConformantSchemeNameEPKti(i16* %schemeStr, i32 %conv) #9, !dbg !4923
+  br label %return, !dbg !4923
+
+return:                                           ; preds = %entry, %if.then
+  %retval.0 = phi i1 [ %call1, %if.then ], [ false, %entry ]
+  ret i1 %retval.0, !dbg !4924
+}

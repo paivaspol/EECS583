@@ -1,14 +1,19 @@
 define internal void @SetOutputFlag(i32 %vindex, i8* %optstring, i8* nocapture %arg) #1 {
-  %1 = sext i32 %vindex to i64
-  %2 = getelementptr inbounds i8* %arg, i64 %1
-  store i8 1, i8* %2, align 1, !tbaa !21
-  %3 = icmp eq i8* %optstring, null
-  br i1 %3, label %6, label %4
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %vindex}, i64 0, metadata !161), !dbg !281
+  tail call void @llvm.dbg.value(metadata !{i8* %optstring}, i64 0, metadata !162), !dbg !281
+  tail call void @llvm.dbg.value(metadata !{i8* %arg}, i64 0, metadata !163), !dbg !281
+  tail call void @llvm.dbg.value(metadata !{i8* %arg}, i64 0, metadata !164), !dbg !282
+  %idxprom = sext i32 %vindex to i64, !dbg !283
+  %arrayidx = getelementptr inbounds i8* %arg, i64 %idxprom, !dbg !283
+  store i8 1, i8* %arrayidx, align 1, !dbg !283, !tbaa !174
+  %tobool = icmp eq i8* %optstring, null, !dbg !284
+  br i1 %tobool, label %if.end, label %if.then, !dbg !284
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 5, i32 396, i8* getelementptr inbounds ([82 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([46 x i8]* @.str10, i64 0, i64 0), i8* %optstring) #5
-  br label %6
+if.then:                                          ; preds = %entry
+  %call = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 5, i32 396, i8* getelementptr inbounds ([70 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([46 x i8]* @.str9, i64 0, i64 0), i8* %optstring) #6, !dbg !285
+  br label %if.end, !dbg !287
 
-; <label>:6                                       ; preds = %0, %4
-  ret void
+if.end:                                           ; preds = %entry, %if.then
+  ret void, !dbg !288
 }

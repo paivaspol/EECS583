@@ -1,0 +1,31 @@
+define zeroext i1 @_ZN25EthernetIIFrameDescriptor16setFieldAsStringEiiPKc(%class.EthernetIIFrameDescriptor* nocapture %this, i32 %field, i32 %i, i8* %value) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.EthernetIIFrameDescriptor* %this}, i64 0, metadata !3470), !dbg !4776
+  tail call void @llvm.dbg.value(metadata !{i32 %field}, i64 0, metadata !3471), !dbg !4776
+  tail call void @llvm.dbg.value(metadata !{i32 %i}, i64 0, metadata !3472), !dbg !4776
+  tail call void @llvm.dbg.value(metadata !{i8* %value}, i64 0, metadata !3473), !dbg !4776
+  %cmp = icmp slt i32 %field, 2, !dbg !4777
+  br i1 %cmp, label %return, label %if.end, !dbg !4777
+
+if.end:                                           ; preds = %entry
+  %p = getelementptr inbounds %class.EthernetIIFrameDescriptor* %this, i64 0, i32 0, i32 0, i32 1, !dbg !4778
+  %0 = load i8** %p, align 8, !dbg !4778, !tbaa !4556
+  tail call void @llvm.dbg.value(metadata !{%class.EthernetIIFrame* %1}, i64 0, metadata !3474), !dbg !4778
+  %cond = icmp eq i32 %field, 2, !dbg !4779
+  br i1 %cond, label %sw.bb, label %return, !dbg !4779
+
+sw.bb:                                            ; preds = %if.end
+  %1 = bitcast i8* %0 to %class.EthernetIIFrame*, !dbg !4778
+  %2 = bitcast i8* %0 to void (%class.EthernetIIFrame*, i32)***, !dbg !4780
+  %vtable = load void (%class.EthernetIIFrame*, i32)*** %2, align 8, !dbg !4780, !tbaa !4540
+  %vfn = getelementptr inbounds void (%class.EthernetIIFrame*, i32)** %vtable, i64 24, !dbg !4780
+  %3 = load void (%class.EthernetIIFrame*, i32)** %vfn, align 8, !dbg !4780
+  %call4 = tail call i64 @_ZN17cStructDescriptor11string2longEPKc(i8* %value) #9, !dbg !4780
+  %conv = trunc i64 %call4 to i32, !dbg !4780
+  tail call void %3(%class.EthernetIIFrame* %1, i32 %conv) #9, !dbg !4780
+  br label %return, !dbg !4780
+
+return:                                           ; preds = %entry, %if.end, %sw.bb
+  %retval.0 = phi i1 [ true, %sw.bb ], [ false, %if.end ], [ false, %entry ]
+  ret i1 %retval.0, !dbg !4782
+}

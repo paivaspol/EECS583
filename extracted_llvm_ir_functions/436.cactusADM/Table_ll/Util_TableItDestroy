@@ -1,29 +1,30 @@
 define i32 @Util_TableItDestroy(i32 %ihandle) #1 {
-  %1 = icmp sgt i32 %ihandle, -1
-  %2 = load i32* @N_ip_array, align 4
-  %3 = icmp sgt i32 %2, %ihandle
-  %or.cond.i = and i1 %1, %3
-  br i1 %or.cond.i, label %get_iterator_ptr.exit, label %get_iterator_ptr.exit.thread
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %ihandle}, i64 0, metadata !439), !dbg !1161
+  tail call void @llvm.dbg.value(metadata !{i32 %ihandle}, i64 0, metadata !1162), !dbg !1164
+  %cmp.i = icmp sgt i32 %ihandle, -1, !dbg !1165
+  %0 = load i32* @N_ip_array, align 4, !dbg !1165, !tbaa !595
+  %cmp1.i = icmp sgt i32 %0, %ihandle, !dbg !1165
+  %or.cond.i = and i1 %cmp.i, %cmp1.i, !dbg !1165
+  br i1 %or.cond.i, label %get_iterator_ptr.exit, label %return, !dbg !1165
 
-get_iterator_ptr.exit:                            ; preds = %0
-  %4 = sext i32 %ihandle to i64
-  %5 = load i8*** @ip_array, align 8, !tbaa !6
-  %6 = getelementptr inbounds i8** %5, i64 %4
-  %7 = bitcast i8** %6 to %struct.iterator**
-  %8 = load %struct.iterator** %7, align 8, !tbaa !6
-  %9 = icmp eq %struct.iterator* %8, null
-  br i1 %9, label %get_iterator_ptr.exit.thread, label %10
+get_iterator_ptr.exit:                            ; preds = %entry
+  %idxprom.i = sext i32 %ihandle to i64, !dbg !1165
+  %1 = load i8*** @ip_array, align 8, !dbg !1165, !tbaa !602
+  %arrayidx.i = getelementptr inbounds i8** %1, i64 %idxprom.i, !dbg !1165
+  %2 = load i8** %arrayidx.i, align 8, !dbg !1165, !tbaa !602
+  %cmp = icmp eq i8* %2, null, !dbg !1166
+  br i1 %cmp, label %return, label %if.end, !dbg !1166
 
-; <label>:10                                      ; preds = %get_iterator_ptr.exit
-  %11 = load i32* @N_iterators, align 4, !tbaa !2
-  %12 = add nsw i32 %11, -1
-  store i32 %12, i32* @N_iterators, align 4, !tbaa !2
-  store i8* null, i8** %6, align 8, !tbaa !6
-  %13 = bitcast %struct.iterator* %8 to i8*
-  tail call void @free(i8* %13) #9
-  br label %get_iterator_ptr.exit.thread
+if.end:                                           ; preds = %get_iterator_ptr.exit
+  %3 = load i32* @N_iterators, align 4, !dbg !1167, !tbaa !595
+  %dec = add nsw i32 %3, -1, !dbg !1167
+  store i32 %dec, i32* @N_iterators, align 4, !dbg !1167, !tbaa !595
+  store i8* null, i8** %arrayidx.i, align 8, !dbg !1168, !tbaa !602
+  tail call void @free(i8* %2) #10, !dbg !1169
+  br label %return, !dbg !1170
 
-get_iterator_ptr.exit.thread:                     ; preds = %0, %get_iterator_ptr.exit, %10
-  %.0 = phi i32 [ 0, %10 ], [ -2, %get_iterator_ptr.exit ], [ -2, %0 ]
-  ret i32 %.0
+return:                                           ; preds = %entry, %get_iterator_ptr.exit, %if.end
+  %retval.0 = phi i32 [ 0, %if.end ], [ -2, %get_iterator_ptr.exit ], [ -2, %entry ]
+  ret i32 %retval.0, !dbg !1170
 }

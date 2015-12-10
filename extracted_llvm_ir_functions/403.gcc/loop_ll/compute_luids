@@ -1,54 +1,59 @@
 define internal fastcc void @compute_luids(%struct.rtx_def* %start) #0 {
 entry:
-  %cmp3 = icmp eq %struct.rtx_def* %start, null
-  br i1 %cmp3, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !3133, i64 0, metadata !2948), !dbg !3201
+  tail call void @llvm.dbg.value(metadata !907, i64 0, metadata !2949), !dbg !3202
+  tail call void @llvm.dbg.value(metadata !907, i64 0, metadata !2950), !dbg !3203
+  %cmp3 = icmp eq %struct.rtx_def* %start, null, !dbg !3203
+  br i1 %cmp3, label %for.end, label %for.body, !dbg !3203
 
 for.body:                                         ; preds = %for.inc, %entry
   %insn.05 = phi %struct.rtx_def* [ %start, %entry ], [ %6, %for.inc ]
   %i.04 = phi i32 [ 0, %entry ], [ %i.1, %for.inc ]
-  %fld = getelementptr inbounds %struct.rtx_def* %insn.05, i64 0, i32 1
-  %rtint = bitcast [1 x %union.rtunion_def]* %fld to i32*
-  %0 = load i32* %rtint, align 4, !tbaa !3
-  %1 = load i32* @max_uid_for_loop, align 4, !tbaa !3
-  %cmp1 = icmp slt i32 %0, %1
-  br i1 %cmp1, label %if.end, label %for.inc
+  %fld = getelementptr inbounds %struct.rtx_def* %insn.05, i64 0, i32 1, !dbg !3205
+  %rtint = bitcast [1 x %union.rtunion_def]* %fld to i32*, !dbg !3205
+  %0 = load i32* %rtint, align 4, !dbg !3205, !tbaa !2973
+  %1 = load i32* @max_uid_for_loop, align 4, !dbg !3205, !tbaa !2973
+  %cmp1 = icmp slt i32 %0, %1, !dbg !3205
+  br i1 %cmp1, label %if.end, label %for.inc, !dbg !3205
 
 if.end:                                           ; preds = %for.body
-  %2 = bitcast %struct.rtx_def* %insn.05 to i32*
-  %bf.load = load i32* %2, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp2 = icmp eq i32 %bf.clear, 37
-  br i1 %cmp2, label %lor.lhs.false, label %if.then7
+  %2 = bitcast %struct.rtx_def* %insn.05 to i32*, !dbg !3207
+  %bf.load = load i32* %2, align 8, !dbg !3207
+  %bf.clear = and i32 %bf.load, 65535, !dbg !3207
+  %cmp2 = icmp eq i32 %bf.clear, 37, !dbg !3207
+  br i1 %cmp2, label %lor.lhs.false, label %if.then7, !dbg !3207
 
 lor.lhs.false:                                    ; preds = %if.end
-  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %insn.05, i64 0, i32 1, i64 4
-  %rtint5 = bitcast %union.rtunion_def* %arrayidx4 to i32*
-  %3 = load i32* %rtint5, align 4, !tbaa !3
-  %cmp6 = icmp slt i32 %3, 1
-  br i1 %cmp6, label %if.then7, label %if.else
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %insn.05, i64 0, i32 1, i64 4, !dbg !3207
+  %rtint5 = bitcast %union.rtunion_def* %arrayidx4 to i32*, !dbg !3207
+  %3 = load i32* %rtint5, align 4, !dbg !3207, !tbaa !2973
+  %cmp6 = icmp slt i32 %3, 1, !dbg !3207
+  br i1 %cmp6, label %if.then7, label %if.else, !dbg !3207
 
 if.then7:                                         ; preds = %lor.lhs.false, %if.end
-  %inc = add nsw i32 %i.04, 1
-  %idxprom = sext i32 %0 to i64
-  %4 = load i32** @uid_luid, align 8, !tbaa !4
-  %arrayidx11 = getelementptr inbounds i32* %4, i64 %idxprom
-  store i32 %inc, i32* %arrayidx11, align 4, !tbaa !3
-  br label %for.inc
+  %inc = add nsw i32 %i.04, 1, !dbg !3208
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !2950), !dbg !3208
+  %idxprom = sext i32 %0 to i64, !dbg !3208
+  %4 = load i32** @uid_luid, align 8, !dbg !3208, !tbaa !2982
+  %arrayidx11 = getelementptr inbounds i32* %4, i64 %idxprom, !dbg !3208
+  store i32 %inc, i32* %arrayidx11, align 4, !dbg !3208, !tbaa !2973
+  br label %for.inc, !dbg !3208
 
 if.else:                                          ; preds = %lor.lhs.false
-  %idxprom15 = sext i32 %0 to i64
-  %5 = load i32** @uid_luid, align 8, !tbaa !4
-  %arrayidx16 = getelementptr inbounds i32* %5, i64 %idxprom15
-  store i32 %i.04, i32* %arrayidx16, align 4, !tbaa !3
+  %idxprom15 = sext i32 %0 to i64, !dbg !3209
+  %5 = load i32** @uid_luid, align 8, !dbg !3209, !tbaa !2982
+  %arrayidx16 = getelementptr inbounds i32* %5, i64 %idxprom15, !dbg !3209
+  store i32 %i.04, i32* %arrayidx16, align 4, !dbg !3209, !tbaa !2973
   br label %for.inc
 
 for.inc:                                          ; preds = %for.body, %if.then7, %if.else
   %i.1 = phi i32 [ %i.04, %for.body ], [ %inc, %if.then7 ], [ %i.04, %if.else ]
-  %arrayidx19 = getelementptr inbounds %struct.rtx_def* %insn.05, i64 0, i32 1, i64 2
-  %rtx = bitcast %union.rtunion_def* %arrayidx19 to %struct.rtx_def**
-  %6 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
-  %cmp = icmp eq %struct.rtx_def* %6, null
-  br i1 %cmp, label %for.end, label %for.body
+  %arrayidx19 = getelementptr inbounds %struct.rtx_def* %insn.05, i64 0, i32 1, i64 2, !dbg !3203
+  %rtx = bitcast %union.rtunion_def* %arrayidx19 to %struct.rtx_def**, !dbg !3203
+  %6 = load %struct.rtx_def** %rtx, align 8, !dbg !3203, !tbaa !2982
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %6}, i64 0, metadata !2951), !dbg !3203
+  %cmp = icmp eq %struct.rtx_def* %6, null, !dbg !3203
+  br i1 %cmp, label %for.end, label %for.body, !dbg !3203
 
 for.end:                                          ; preds = %for.inc, %entry
   ret void

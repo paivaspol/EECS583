@@ -1,43 +1,46 @@
 define internal fastcc %struct.rtx_def* @skip_use_of_return_value(%struct.rtx_def* %orig_insn, i32 %code) #0 {
 entry:
-  %call = tail call %struct.rtx_def* @next_nonnote_insn(%struct.rtx_def* %orig_insn) #4
-  %tobool = icmp eq %struct.rtx_def* %call, null
-  br i1 %tobool, label %if.end, label %land.lhs.true
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %orig_insn}, i64 0, metadata !980), !dbg !1266
+  tail call void @llvm.dbg.value(metadata !{i32 %code}, i64 0, metadata !981), !dbg !1267
+  %call = tail call %struct.rtx_def* @next_nonnote_insn(%struct.rtx_def* %orig_insn) #5, !dbg !1268
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !982), !dbg !1268
+  %tobool = icmp eq %struct.rtx_def* %call, null, !dbg !1269
+  br i1 %tobool, label %if.end, label %land.lhs.true, !dbg !1269
 
 land.lhs.true:                                    ; preds = %entry
-  %0 = bitcast %struct.rtx_def* %call to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 32
-  br i1 %cmp, label %land.lhs.true1, label %if.end
+  %0 = bitcast %struct.rtx_def* %call to i32*, !dbg !1269
+  %bf.load = load i32* %0, align 8, !dbg !1269
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1269
+  %cmp = icmp eq i32 %bf.clear, 32, !dbg !1269
+  br i1 %cmp, label %land.lhs.true1, label %if.end, !dbg !1269
 
 land.lhs.true1:                                   ; preds = %land.lhs.true
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 3
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %2 = bitcast %struct.rtx_def* %1 to i32*
-  %bf.load2 = load i32* %2, align 8
-  %bf.clear3 = and i32 %bf.load2, 65535
-  %cmp4 = icmp eq i32 %bf.clear3, %code
-  br i1 %cmp4, label %land.lhs.true5, label %if.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %call, i64 0, i32 1, i64 3, !dbg !1269
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !1269
+  %1 = load %struct.rtx_def** %rtx, align 8, !dbg !1269, !tbaa !1032
+  %2 = bitcast %struct.rtx_def* %1 to i32*, !dbg !1269
+  %bf.load2 = load i32* %2, align 8, !dbg !1269
+  %bf.clear3 = and i32 %bf.load2, 65535, !dbg !1269
+  %cmp4 = icmp eq i32 %bf.clear3, %code, !dbg !1269
+  br i1 %cmp4, label %land.lhs.true5, label %if.end, !dbg !1269
 
 land.lhs.true5:                                   ; preds = %land.lhs.true1
-  %arrayidx10 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0
-  %rtx11 = bitcast %union.rtunion_def* %arrayidx10 to %struct.rtx_def**
-  %3 = load %struct.rtx_def** %rtx11, align 8, !tbaa !0
-  %4 = load %struct.function** @cfun, align 8, !tbaa !0
-  %return_rtx = getelementptr inbounds %struct.function* %4, i64 0, i32 14
-  %5 = load %struct.rtx_def** %return_rtx, align 8, !tbaa !0
-  %cmp12 = icmp eq %struct.rtx_def* %3, %5
-  %6 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !tbaa !0
-  %cmp19 = icmp eq %struct.rtx_def* %3, %6
-  %or.cond = or i1 %cmp12, %cmp19
-  br i1 %or.cond, label %return, label %if.end
+  %arrayidx10 = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0, !dbg !1269
+  %rtx11 = bitcast %union.rtunion_def* %arrayidx10 to %struct.rtx_def**, !dbg !1269
+  %3 = load %struct.rtx_def** %rtx11, align 8, !dbg !1269, !tbaa !1032
+  %4 = load %struct.function** @cfun, align 8, !dbg !1269, !tbaa !1032
+  %return_rtx = getelementptr inbounds %struct.function* %4, i64 0, i32 14, !dbg !1269
+  %5 = load %struct.rtx_def** %return_rtx, align 8, !dbg !1269, !tbaa !1032
+  %cmp12 = icmp eq %struct.rtx_def* %3, %5, !dbg !1269
+  %6 = load %struct.rtx_def** getelementptr inbounds ([129 x %struct.rtx_def*]* @const_int_rtx, i64 0, i64 64), align 8, !dbg !1269, !tbaa !1032
+  %cmp19 = icmp eq %struct.rtx_def* %3, %6, !dbg !1269
+  %or.cond = or i1 %cmp12, %cmp19, !dbg !1269
+  br i1 %or.cond, label %return, label %if.end, !dbg !1269
 
 if.end:                                           ; preds = %land.lhs.true5, %entry, %land.lhs.true1, %land.lhs.true
-  br label %return
+  br label %return, !dbg !1270
 
 return:                                           ; preds = %land.lhs.true5, %if.end
   %retval.0 = phi %struct.rtx_def* [ %orig_insn, %if.end ], [ %call, %land.lhs.true5 ]
-  ret %struct.rtx_def* %retval.0
+  ret %struct.rtx_def* %retval.0, !dbg !1271
 }

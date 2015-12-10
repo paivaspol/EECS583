@@ -1,0 +1,253 @@
+define void @_ZN8EtherMAC26processFrameFromUpperLayerEP10EtherFrame(%class.EtherMAC* %this, %class.EtherFrame* %frame) #2 align 2 {
+entry:
+  %buf = alloca [20 x i8], align 16
+  call void @llvm.dbg.value(metadata !{%class.EtherMAC* %this}, i64 0, metadata !4908), !dbg !5921
+  call void @llvm.dbg.value(metadata !{%class.EtherFrame* %frame}, i64 0, metadata !4909), !dbg !5921
+  %msgkind.i = getelementptr inbounds %class.EtherFrame* %frame, i64 0, i32 0, i32 1, !dbg !5922
+  %0 = load i32* %msgkind.i, align 4, !dbg !5922, !tbaa !5376
+  %.off = add i32 %0, -2001, !dbg !5923
+  %switch = icmp ult i32 %.off, 2, !dbg !5923
+  br i1 %switch, label %if.end, label %if.then, !dbg !5923
+
+if.then:                                          ; preds = %entry
+  %1 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 0, !dbg !5924
+  call void (%class.cSimpleModule*, i8*, ...)* @_ZNK13cSimpleModule5errorEPKcz(%class.cSimpleModule* %1, i8* getelementptr inbounds ([66 x i8]* @.str78, i64 0, i64 0), i32 %0) #11, !dbg !5924
+  br label %if.end, !dbg !5924
+
+if.end:                                           ; preds = %entry, %if.then
+  %2 = bitcast %class.EtherFrame* %frame to %class.MACAddress* (%class.EtherFrame*)***, !dbg !5925
+  %vtable = load %class.MACAddress* (%class.EtherFrame*)*** %2, align 8, !dbg !5925, !tbaa !5419
+  %vfn = getelementptr inbounds %class.MACAddress* (%class.EtherFrame*)** %vtable, i64 19, !dbg !5925
+  %3 = load %class.MACAddress* (%class.EtherFrame*)** %vfn, align 8, !dbg !5925
+  %call5 = call %class.MACAddress* %3(%class.EtherFrame* %frame) #11, !dbg !5925
+  %myaddress = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 2, !dbg !5925
+  %call6 = call zeroext i1 @_ZNK10MACAddress6equalsERKS_(%class.MACAddress* %call5, %class.MACAddress* %myaddress) #11, !dbg !5925
+  br i1 %call6, label %if.then7, label %if.end15, !dbg !5925
+
+if.then7:                                         ; preds = %if.end
+  call void @llvm.dbg.declare(metadata !{[20 x i8]* %buf}, metadata !4910), !dbg !5926
+  %4 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 0, !dbg !5927
+  %5 = getelementptr inbounds %class.EtherFrame* %frame, i64 0, i32 0, i32 0, !dbg !5928
+  %6 = bitcast %class.EtherFrame* %frame to i8* (%class.cObject*)***, !dbg !5928
+  %vtable8 = load i8* (%class.cObject*)*** %6, align 8, !dbg !5928, !tbaa !5419
+  %vfn9 = getelementptr inbounds i8* (%class.cObject*)** %vtable8, i64 3, !dbg !5928
+  %7 = load i8* (%class.cObject*)** %vfn9, align 8, !dbg !5928
+  %call10 = call i8* %7(%class.cObject* %5) #11, !dbg !5928
+  %vtable11 = load %class.MACAddress* (%class.EtherFrame*)*** %2, align 8, !dbg !5928, !tbaa !5419
+  %vfn12 = getelementptr inbounds %class.MACAddress* (%class.EtherFrame*)** %vtable11, i64 19, !dbg !5928
+  %8 = load %class.MACAddress* (%class.EtherFrame*)** %vfn12, align 8, !dbg !5928
+  %call13 = call %class.MACAddress* %8(%class.EtherFrame* %frame) #11, !dbg !5928
+  %arraydecay = getelementptr inbounds [20 x i8]* %buf, i64 0, i64 0, !dbg !5928
+  %call14 = call i8* @_ZNK10MACAddress11toHexStringEPc(%class.MACAddress* %call13, i8* %arraydecay) #11, !dbg !5928
+  call void (%class.cSimpleModule*, i8*, ...)* @_ZNK13cSimpleModule5errorEPKcz(%class.cSimpleModule* %4, i8* getelementptr inbounds ([75 x i8]* @.str79, i64 0, i64 0), i8* %call10, i8* %call14) #11, !dbg !5928
+  br label %if.end15, !dbg !5929
+
+if.end15:                                         ; preds = %if.then7, %if.end
+  %len.i = getelementptr inbounds %class.EtherFrame* %frame, i64 0, i32 0, i32 3, !dbg !5930
+  %9 = load i64* %len.i, align 8, !dbg !5930, !tbaa !5932
+  %cmp17 = icmp sgt i64 %9, 12144, !dbg !5931
+  br i1 %cmp17, label %if.then18, label %if.end20, !dbg !5931
+
+if.then18:                                        ; preds = %if.end15
+  %10 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 0, !dbg !5933
+  %div = sdiv i64 %9, 8, !dbg !5933
+  call void (%class.cSimpleModule*, i8*, ...)* @_ZNK13cSimpleModule5errorEPKcz(%class.cSimpleModule* %10, i8* getelementptr inbounds ([77 x i8]* @.str80, i64 0, i64 0), i64 %div, i32 1518) #11, !dbg !5933
+  br label %if.end20, !dbg !5933
+
+if.end20:                                         ; preds = %if.then18, %if.end15
+  %11 = load i32* %msgkind.i, align 4, !dbg !5934, !tbaa !5376
+  %cmp22 = icmp eq i32 %11, 2002, !dbg !5935
+  br i1 %cmp22, label %if.else, label %if.then23, !dbg !5936
+
+if.then23:                                        ; preds = %if.end20
+  %numFramesFromHL = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 39, !dbg !5937
+  %12 = load i64* %numFramesFromHL, align 8, !dbg !5937, !tbaa !5932
+  %inc = add i64 %12, 1, !dbg !5937
+  store i64 %inc, i64* %numFramesFromHL, align 8, !dbg !5937, !tbaa !5932
+  %outputbuffer = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 24, !dbg !5939
+  %call24 = call i32 @_ZNK6cQueue6lengthEv(%class.cQueue* %outputbuffer) #11, !dbg !5939
+  %maxQueueSize = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 7, !dbg !5939
+  %13 = load i32* %maxQueueSize, align 4, !dbg !5939, !tbaa !5376
+  %cmp25 = icmp slt i32 %call24, %13, !dbg !5939
+  br i1 %cmp25, label %if.end36, label %if.then26, !dbg !5939
+
+if.then26:                                        ; preds = %if.then23
+  %14 = load i32* getelementptr inbounds (%class.cEnvir* @ev, i64 0, i32 1), align 8, !dbg !5940, !tbaa !5376
+  %tobool27 = icmp eq i32 %14, 0, !dbg !5940
+  br i1 %tobool27, label %cond.false, label %cond.end, !dbg !5940
+
+cond.false:                                       ; preds = %if.then26
+  call void @llvm.dbg.value(metadata !5402, i64 0, metadata !5942), !dbg !5943
+  call void @llvm.dbg.value(metadata !5944, i64 0, metadata !5945), !dbg !5943
+  call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([8 x i8]* @.str81, i64 0, i64 0)) #11, !dbg !5946
+  call void @llvm.dbg.value(metadata !5402, i64 0, metadata !5947), !dbg !5948
+  %15 = getelementptr inbounds %class.EtherFrame* %frame, i64 0, i32 0, i32 0, !dbg !5949
+  %16 = bitcast %class.EtherFrame* %frame to i8* (%class.cObject*)***, !dbg !5949
+  %vtable.i106 = load i8* (%class.cObject*)*** %16, align 8, !dbg !5949, !tbaa !5419
+  %vfn.i107 = getelementptr inbounds i8* (%class.cObject*)** %vtable.i106, i64 7, !dbg !5949
+  %17 = load i8* (%class.cObject*)** %vfn.i107, align 8, !dbg !5949
+  %call.i108 = call i8* %17(%class.cObject* %15) #11, !dbg !5949
+  %vtable1.i = load i8* (%class.cObject*)*** %16, align 8, !dbg !5949, !tbaa !5419
+  %vfn2.i = getelementptr inbounds i8* (%class.cObject*)** %vtable1.i, i64 3, !dbg !5949
+  %18 = load i8* (%class.cObject*)** %vfn2.i, align 8, !dbg !5949
+  %call3.i = call i8* %18(%class.cObject* %15) #11, !dbg !5949
+  call void (%class.cEnvir*, i8*, ...)* @_ZN6cEnvir6printfEPKcz(%class.cEnvir* @ev, i8* getelementptr inbounds ([7 x i8]* @.str175, i64 0, i64 0), i8* %call.i108, i8* %call3.i) #11, !dbg !5949
+  call void @llvm.dbg.value(metadata !5402, i64 0, metadata !5942), !dbg !5943
+  call void @llvm.dbg.value(metadata !5950, i64 0, metadata !5945), !dbg !5943
+  call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([54 x i8]* @.str82, i64 0, i64 0)) #11, !dbg !5946
+  br label %cond.end, !dbg !5940
+
+cond.end:                                         ; preds = %if.then26, %cond.false
+  %numFramesFromHLDropped = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 40, !dbg !5951
+  %19 = load i64* %numFramesFromHLDropped, align 8, !dbg !5951, !tbaa !5932
+  %inc31 = add i64 %19, 1, !dbg !5951
+  store i64 %inc31, i64* %numFramesFromHLDropped, align 8, !dbg !5951, !tbaa !5932
+  %numFramesFromHLDroppedVector = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 52, !dbg !5952
+  %conv = uitofp i64 %inc31 to double, !dbg !5952
+  %call33 = call zeroext i1 @_ZN10cOutVector6recordEd(%class.cOutVector* %numFramesFromHLDroppedVector, double %conv) #11, !dbg !5952
+  %isnull = icmp eq %class.EtherFrame* %frame, null, !dbg !5953
+  br i1 %isnull, label %if.end84, label %delete.notnull, !dbg !5953
+
+delete.notnull:                                   ; preds = %cond.end
+  %20 = bitcast %class.EtherFrame* %frame to void (%class.EtherFrame*)***, !dbg !5953
+  %vtable34 = load void (%class.EtherFrame*)*** %20, align 8, !dbg !5953, !tbaa !5419
+  %vfn35 = getelementptr inbounds void (%class.EtherFrame*)** %vtable34, i64 1, !dbg !5953
+  %21 = load void (%class.EtherFrame*)** %vfn35, align 8, !dbg !5953
+  call void %21(%class.EtherFrame* %frame) #11, !dbg !5953
+  br label %if.end84, !dbg !5953
+
+if.end36:                                         ; preds = %if.then23
+  %vtable37 = load %class.MACAddress* (%class.EtherFrame*)*** %2, align 8, !dbg !5954, !tbaa !5419
+  %vfn38 = getelementptr inbounds %class.MACAddress* (%class.EtherFrame*)** %vtable37, i64 21, !dbg !5954
+  %22 = load %class.MACAddress* (%class.EtherFrame*)** %vfn38, align 8, !dbg !5954
+  %call39 = call %class.MACAddress* %22(%class.EtherFrame* %frame) #11, !dbg !5954
+  %call40 = call zeroext i1 @_ZNK10MACAddress7isEmptyEv(%class.MACAddress* %call39) #11, !dbg !5954
+  br i1 %call40, label %if.then41, label %if.end45, !dbg !5954
+
+if.then41:                                        ; preds = %if.end36
+  %23 = bitcast %class.EtherFrame* %frame to void (%class.EtherFrame*, %class.MACAddress*)***, !dbg !5955
+  %vtable42 = load void (%class.EtherFrame*, %class.MACAddress*)*** %23, align 8, !dbg !5955, !tbaa !5419
+  %vfn43 = getelementptr inbounds void (%class.EtherFrame*, %class.MACAddress*)** %vtable42, i64 22, !dbg !5955
+  %24 = load void (%class.EtherFrame*, %class.MACAddress*)** %vfn43, align 8, !dbg !5955
+  call void %24(%class.EtherFrame* %frame, %class.MACAddress* %myaddress) #11, !dbg !5955
+  br label %if.end45, !dbg !5955
+
+if.end45:                                         ; preds = %if.then41, %if.end36
+  %25 = load i32* getelementptr inbounds (%class.cEnvir* @ev, i64 0, i32 1), align 8, !dbg !5956, !tbaa !5376
+  %tobool46 = icmp eq i32 %25, 0, !dbg !5956
+  br i1 %tobool46, label %cond.false48, label %if.end45.cond.end52_crit_edge, !dbg !5956
+
+if.end45.cond.end52_crit_edge:                    ; preds = %if.end45
+  %.pre = getelementptr inbounds %class.EtherFrame* %frame, i64 0, i32 0, i32 0, !dbg !5957
+  br label %cond.end52, !dbg !5956
+
+cond.false48:                                     ; preds = %if.end45
+  call void @llvm.dbg.value(metadata !5402, i64 0, metadata !5958), !dbg !5959
+  call void @llvm.dbg.value(metadata !5944, i64 0, metadata !5960), !dbg !5959
+  call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([8 x i8]* @.str81, i64 0, i64 0)) #11, !dbg !5961
+  call void @llvm.dbg.value(metadata !5402, i64 0, metadata !5962), !dbg !5963
+  %26 = getelementptr inbounds %class.EtherFrame* %frame, i64 0, i32 0, i32 0, !dbg !5964
+  %27 = bitcast %class.EtherFrame* %frame to i8* (%class.cObject*)***, !dbg !5964
+  %vtable.i109 = load i8* (%class.cObject*)*** %27, align 8, !dbg !5964, !tbaa !5419
+  %vfn.i110 = getelementptr inbounds i8* (%class.cObject*)** %vtable.i109, i64 7, !dbg !5964
+  %28 = load i8* (%class.cObject*)** %vfn.i110, align 8, !dbg !5964
+  %call.i111 = call i8* %28(%class.cObject* %26) #11, !dbg !5964
+  %vtable1.i112 = load i8* (%class.cObject*)*** %27, align 8, !dbg !5964, !tbaa !5419
+  %vfn2.i113 = getelementptr inbounds i8* (%class.cObject*)** %vtable1.i112, i64 3, !dbg !5964
+  %29 = load i8* (%class.cObject*)** %vfn2.i113, align 8, !dbg !5964
+  %call3.i114 = call i8* %29(%class.cObject* %26) #11, !dbg !5964
+  call void (%class.cEnvir*, i8*, ...)* @_ZN6cEnvir6printfEPKcz(%class.cEnvir* @ev, i8* getelementptr inbounds ([7 x i8]* @.str175, i64 0, i64 0), i8* %call.i111, i8* %call3.i114) #11, !dbg !5964
+  call void @llvm.dbg.value(metadata !5402, i64 0, metadata !5958), !dbg !5959
+  call void @llvm.dbg.value(metadata !5965, i64 0, metadata !5960), !dbg !5959
+  call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([41 x i8]* @.str83, i64 0, i64 0)) #11, !dbg !5961
+  br label %cond.end52, !dbg !5956
+
+cond.end52:                                       ; preds = %if.end45.cond.end52_crit_edge, %cond.false48
+  %.pre-phi = phi %class.cObject* [ %.pre, %if.end45.cond.end52_crit_edge ], [ %26, %cond.false48 ], !dbg !5957
+  call void @_ZN6cQueue6insertEP7cObject(%class.cQueue* %outputbuffer, %class.cObject* %.pre-phi) #11, !dbg !5957
+  br label %if.end70, !dbg !5966
+
+if.else:                                          ; preds = %if.end20
+  %30 = load i32* getelementptr inbounds (%class.cEnvir* @ev, i64 0, i32 1), align 8, !dbg !5967, !tbaa !5376
+  %tobool55 = icmp eq i32 %30, 0, !dbg !5967
+  br i1 %tobool55, label %cond.false57, label %cond.end59, !dbg !5967
+
+cond.false57:                                     ; preds = %if.else
+  call void @llvm.dbg.value(metadata !5402, i64 0, metadata !5969), !dbg !5970
+  call void @llvm.dbg.value(metadata !5971, i64 0, metadata !5972), !dbg !5970
+  call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([34 x i8]* @.str84, i64 0, i64 0)) #11, !dbg !5973
+  br label %cond.end59, !dbg !5967
+
+cond.end59:                                       ; preds = %if.else, %cond.false57
+  %outputbuffer61 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 24, !dbg !5974
+  call void @llvm.dbg.value(metadata !{%class.cQueue* %outputbuffer61}, i64 0, metadata !5975), !dbg !5976
+  %31 = bitcast %class.cQueue* %outputbuffer61 to i32 (%class.cQueue*)***, !dbg !5977
+  %vtable.i = load i32 (%class.cQueue*)*** %31, align 8, !dbg !5977, !tbaa !5419
+  %vfn.i = getelementptr inbounds i32 (%class.cQueue*)** %vtable.i, i64 23, !dbg !5977
+  %32 = load i32 (%class.cQueue*)** %vfn.i, align 8, !dbg !5977
+  %call.i103 = call i32 %32(%class.cQueue* %outputbuffer61) #11, !dbg !5977
+  %cmp.i = icmp eq i32 %call.i103, 0, !dbg !5977
+  br i1 %cmp.i, label %if.else67, label %if.then63, !dbg !5974
+
+if.then63:                                        ; preds = %cond.end59
+  %call66 = call %class.cObject* @_ZNK6cQueue4tailEv(%class.cQueue* %outputbuffer61) #11, !dbg !5978
+  %33 = getelementptr inbounds %class.EtherFrame* %frame, i64 0, i32 0, i32 0, !dbg !5978
+  call void @_ZN6cQueue12insertBeforeEP7cObjectS1_(%class.cQueue* %outputbuffer61, %class.cObject* %call66, %class.cObject* %33) #11, !dbg !5978
+  br label %if.end70, !dbg !5978
+
+if.else67:                                        ; preds = %cond.end59
+  %34 = getelementptr inbounds %class.EtherFrame* %frame, i64 0, i32 0, i32 0, !dbg !5979
+  call void @_ZN6cQueue6insertEP7cObject(%class.cQueue* %outputbuffer61, %class.cObject* %34) #11, !dbg !5979
+  br label %if.end70
+
+if.end70:                                         ; preds = %if.then63, %if.else67, %cond.end52
+  %autoconfigInProgress = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 14, !dbg !5980
+  %35 = load i8* %autoconfigInProgress, align 1, !dbg !5980, !tbaa !5393, !range !5425
+  %tobool71 = icmp eq i8 %35, 0, !dbg !5980
+  br i1 %tobool71, label %land.lhs.true72, label %if.end84, !dbg !5980
+
+land.lhs.true72:                                  ; preds = %if.end70
+  %duplexMode = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 4, !dbg !5980
+  %36 = load i8* %duplexMode, align 1, !dbg !5980, !tbaa !5393, !range !5425
+  %tobool73 = icmp eq i8 %36, 0, !dbg !5980
+  br i1 %tobool73, label %lor.lhs.false, label %land.lhs.true75, !dbg !5980
+
+lor.lhs.false:                                    ; preds = %land.lhs.true72
+  %receiveState = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 18, !dbg !5980
+  %37 = load i32* %receiveState, align 4, !dbg !5980, !tbaa !5376
+  %cmp74 = icmp eq i32 %37, 1, !dbg !5980
+  br i1 %cmp74, label %land.lhs.true75, label %if.end84, !dbg !5980
+
+land.lhs.true75:                                  ; preds = %land.lhs.true72, %lor.lhs.false
+  %transmitState = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 17, !dbg !5980
+  %38 = load i32* %transmitState, align 4, !dbg !5980, !tbaa !5376
+  %cmp76 = icmp eq i32 %38, 1, !dbg !5980
+  br i1 %cmp76, label %if.then77, label %if.end84, !dbg !5980
+
+if.then77:                                        ; preds = %land.lhs.true75
+  %39 = load i32* getelementptr inbounds (%class.cEnvir* @ev, i64 0, i32 1), align 8, !dbg !5981, !tbaa !5376
+  %tobool78 = icmp eq i32 %39, 0, !dbg !5981
+  br i1 %tobool78, label %cond.false80, label %cond.end82, !dbg !5981
+
+cond.false80:                                     ; preds = %if.then77
+  call void @llvm.dbg.value(metadata !5402, i64 0, metadata !5983), !dbg !5984
+  call void @llvm.dbg.value(metadata !5985, i64 0, metadata !5986), !dbg !5984
+  call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([75 x i8]* @.str85, i64 0, i64 0)) #11, !dbg !5987
+  br label %cond.end82, !dbg !5981
+
+cond.end82:                                       ; preds = %if.then77, %cond.false80
+  call void @llvm.dbg.value(metadata !{%class.EtherMAC* %this}, i64 0, metadata !5988), !dbg !5990
+  %40 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 0, !dbg !5991
+  %call.i = call double @_ZNK13cSimpleModule7simTimeEv(%class.cSimpleModule* %40) #11, !dbg !5991
+  %interFrameGap.i = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 11, !dbg !5991
+  %41 = load double* %interFrameGap.i, align 8, !dbg !5991, !tbaa !5436
+  %add.i = fadd double %call.i, %41, !dbg !5991
+  %endIFGMsg.i = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 28, !dbg !5991
+  %42 = load %class.cMessage** %endIFGMsg.i, align 8, !dbg !5991, !tbaa !5362
+  %call2.i = call i32 @_ZN13cSimpleModule10scheduleAtEdP8cMessage(%class.cSimpleModule* %40, double %add.i, %class.cMessage* %42) #11, !dbg !5991
+  store i32 2, i32* %transmitState, align 4, !dbg !5992, !tbaa !5376
+  br label %if.end84, !dbg !5993
+
+if.end84:                                         ; preds = %if.end70, %cond.end, %delete.notnull, %cond.end82, %land.lhs.true75, %lor.lhs.false
+  ret void, !dbg !5994
+}

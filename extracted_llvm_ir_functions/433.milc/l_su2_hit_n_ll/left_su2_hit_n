@@ -1,19 +1,24 @@
 define void @left_su2_hit_n(%struct.su2_matrix* %u, i32 %p, i32 %q, %struct.su3_matrix* %link) #0 {
 entry:
-  %idxprom1 = sext i32 %p to i64
-  %idxprom4 = sext i32 %q to i64
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct.su2_matrix* %u}, i64 0, metadata !34), !dbg !39
+  tail call void @llvm.dbg.value(metadata !{i32 %p}, i64 0, metadata !35), !dbg !39
+  tail call void @llvm.dbg.value(metadata !{i32 %q}, i64 0, metadata !36), !dbg !39
+  tail call void @llvm.dbg.value(metadata !{%struct.su3_matrix* %link}, i64 0, metadata !37), !dbg !39
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !38), !dbg !40
+  %idxprom1 = sext i32 %p to i64, !dbg !42
+  %idxprom4 = sext i32 %q to i64, !dbg !42
+  br label %for.body, !dbg !40
 
 for.body:                                         ; preds = %for.body, %entry
   %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
-  %arrayidx2 = getelementptr inbounds %struct.su3_matrix* %link, i64 0, i32 0, i64 %idxprom1, i64 %indvars.iv
-  %arrayidx7 = getelementptr inbounds %struct.su3_matrix* %link, i64 0, i32 0, i64 %idxprom4, i64 %indvars.iv
-  tail call void @mult_su2_mat_vec_elem_n(%struct.su2_matrix* %u, %struct.complex* %arrayidx2, %struct.complex* %arrayidx7) #2
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 3
-  br i1 %exitcond, label %for.end, label %for.body
+  %arrayidx2 = getelementptr inbounds %struct.su3_matrix* %link, i64 0, i32 0, i64 %idxprom1, i64 %indvars.iv, !dbg !42
+  %arrayidx7 = getelementptr inbounds %struct.su3_matrix* %link, i64 0, i32 0, i64 %idxprom4, i64 %indvars.iv, !dbg !42
+  tail call void @mult_su2_mat_vec_elem_n(%struct.su2_matrix* %u, %struct.complex* %arrayidx2, %struct.complex* %arrayidx7) #3, !dbg !42
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !40
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !40
+  %exitcond = icmp eq i32 %lftr.wideiv, 3, !dbg !40
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !40
 
 for.end:                                          ; preds = %for.body
-  ret void
+  ret void, !dbg !43
 }

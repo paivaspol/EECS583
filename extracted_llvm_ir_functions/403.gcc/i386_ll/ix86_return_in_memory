@@ -2,66 +2,69 @@ define i32 @ix86_return_in_memory(%union.tree_node* %type) #1 {
 entry:
   %needed_intregs = alloca i32, align 4
   %needed_sseregs = alloca i32, align 4
-  %0 = load i32* @target_flags, align 4, !tbaa !0
-  %and = and i32 %0, 33554432
-  %tobool = icmp eq i32 %and, 0
-  %type1 = bitcast %union.tree_node* %type to %struct.tree_type*
-  %mode = getelementptr inbounds %struct.tree_type* %type1, i64 0, i32 6
-  %1 = bitcast [4 x i8]* %mode to i32*
-  %bf.load = load i32* %1, align 4
-  %bf.lshr = lshr i32 %bf.load, 9
-  %bf.clear = and i32 %bf.lshr, 127
-  br i1 %tobool, label %if.else, label %if.then
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %type}, i64 0, metadata !2167), !dbg !5795
+  call void @llvm.dbg.declare(metadata !{i32* %needed_intregs}, metadata !2168), !dbg !5796
+  call void @llvm.dbg.declare(metadata !{i32* %needed_sseregs}, metadata !2169), !dbg !5796
+  %0 = load i32* @target_flags, align 4, !dbg !5797, !tbaa !4347
+  %and = and i32 %0, 33554432, !dbg !5797
+  %tobool = icmp eq i32 %and, 0, !dbg !5797
+  %type1 = bitcast %union.tree_node* %type to %struct.tree_type*, !dbg !5798
+  %mode = getelementptr inbounds %struct.tree_type* %type1, i64 0, i32 6, !dbg !5798
+  %1 = bitcast [4 x i8]* %mode to i32*, !dbg !5798
+  %bf.load = load i32* %1, align 4, !dbg !5798
+  %bf.lshr = lshr i32 %bf.load, 9, !dbg !5798
+  %bf.clear = and i32 %bf.lshr, 127, !dbg !5798
+  br i1 %tobool, label %if.else, label %if.then, !dbg !5797
 
 if.then:                                          ; preds = %entry
-  %call = call fastcc i32 @examine_argument(i32 %bf.clear, %union.tree_node* %type, i32 1, i32* %needed_intregs, i32* %needed_sseregs) #10
-  %lnot = icmp eq i32 %call, 0
-  %lnot.ext = zext i1 %lnot to i32
-  br label %return
+  %call = call fastcc i32 @examine_argument(i32 %bf.clear, %union.tree_node* %type, i32 1, i32* %needed_intregs, i32* %needed_sseregs) #11, !dbg !5798
+  %lnot = icmp eq i32 %call, 0, !dbg !5798
+  %lnot.ext = zext i1 %lnot to i32, !dbg !5798
+  br label %return, !dbg !5798
 
 if.else:                                          ; preds = %entry
-  %cmp = icmp eq i32 %bf.clear, 51
-  br i1 %cmp, label %return, label %lor.lhs.false
+  %cmp = icmp eq i32 %bf.clear, 51, !dbg !5800
+  br i1 %cmp, label %return, label %lor.lhs.false, !dbg !5800
 
 lor.lhs.false:                                    ; preds = %if.else
-  %idxprom70 = zext i32 %bf.clear to i64
-  %arrayidx = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom70
-  %2 = load i32* %arrayidx, align 4, !tbaa !9
-  %.off = add i32 %2, -7
-  %switch = icmp ult i32 %.off, 2
-  br i1 %switch, label %land.lhs.true, label %lor.lhs.false25
+  %idxprom70 = zext i32 %bf.clear to i64, !dbg !5800
+  %arrayidx = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom70, !dbg !5800
+  %2 = load i32* %arrayidx, align 4, !dbg !5800, !tbaa !5198
+  %.off = add i32 %2, -7, !dbg !5800
+  %switch = icmp ult i32 %.off, 2, !dbg !5800
+  br i1 %switch, label %land.lhs.true, label %lor.lhs.false25, !dbg !5800
 
 land.lhs.true:                                    ; preds = %lor.lhs.false
-  %call23 = call i64 @int_size_in_bytes(%union.tree_node* %type) #9
-  %cmp24 = icmp eq i64 %call23, 8
-  br i1 %cmp24, label %return, label %lor.lhs.false25
+  %call23 = call i64 @int_size_in_bytes(%union.tree_node* %type) #10, !dbg !5802
+  %cmp24 = icmp eq i64 %call23, 8, !dbg !5802
+  br i1 %cmp24, label %return, label %lor.lhs.false25, !dbg !5802
 
 lor.lhs.false25:                                  ; preds = %lor.lhs.false, %land.lhs.true
-  %call26 = call i64 @int_size_in_bytes(%union.tree_node* %type) #9
-  %cmp27 = icmp sgt i64 %call26, 12
-  br i1 %cmp27, label %land.lhs.true28, label %if.end
+  %call26 = call i64 @int_size_in_bytes(%union.tree_node* %type) #10, !dbg !5803
+  %cmp27 = icmp sgt i64 %call26, 12, !dbg !5803
+  br i1 %cmp27, label %land.lhs.true28, label %if.end, !dbg !5803
 
 land.lhs.true28:                                  ; preds = %lor.lhs.false25
-  %bf.load31 = load i32* %1, align 4
-  %bf.lshr32 = lshr i32 %bf.load31, 9
-  %bf.clear33 = and i32 %bf.lshr32, 127
+  %bf.load31 = load i32* %1, align 4, !dbg !5803
+  %bf.lshr32 = lshr i32 %bf.load31, 9, !dbg !5803
+  %bf.clear33 = and i32 %bf.lshr32, 127, !dbg !5803
   switch i32 %bf.clear33, label %land.lhs.true42 [
     i32 6, label %if.end
     i32 18, label %if.end
-  ]
+  ], !dbg !5803
 
 land.lhs.true42:                                  ; preds = %land.lhs.true28
-  %idxprom4871 = zext i32 %bf.clear33 to i64
-  %arrayidx49 = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom4871
-  %3 = load i32* %arrayidx49, align 4, !tbaa !9
-  %.off72 = add i32 %3, -7
-  %switch73 = icmp ult i32 %.off72, 2
-  br i1 %switch73, label %if.end, label %return
+  %idxprom4871 = zext i32 %bf.clear33 to i64, !dbg !5803
+  %arrayidx49 = getelementptr inbounds [59 x i32]* @mode_class, i64 0, i64 %idxprom4871, !dbg !5803
+  %3 = load i32* %arrayidx49, align 4, !dbg !5803, !tbaa !5198
+  %.off72 = add i32 %3, -7, !dbg !5803
+  %switch73 = icmp ult i32 %.off72, 2, !dbg !5803
+  br i1 %switch73, label %if.end, label %return, !dbg !5803
 
 if.end:                                           ; preds = %land.lhs.true42, %land.lhs.true28, %land.lhs.true28, %lor.lhs.false25
-  br label %return
+  br label %return, !dbg !5804
 
 return:                                           ; preds = %land.lhs.true42, %if.else, %land.lhs.true, %if.end, %if.then
   %retval.0 = phi i32 [ %lnot.ext, %if.then ], [ 0, %if.end ], [ 1, %land.lhs.true42 ], [ 1, %land.lhs.true ], [ 1, %if.else ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !5805
 }

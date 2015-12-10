@@ -1,53 +1,57 @@
 define internal fastcc void @df_use_unlink(%struct.df* nocapture %df, %struct.ref* %use) #0 {
 entry:
-  %reg = getelementptr inbounds %struct.ref* %use, i64 0, i32 0
-  %0 = load %struct.rtx_def** %reg, align 8, !tbaa !3
-  %1 = bitcast %struct.rtx_def* %0 to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 63
-  br i1 %cmp, label %cond.true, label %cond.end
+  tail call void @llvm.dbg.value(metadata !{%struct.df* %df}, i64 0, metadata !1862), !dbg !1938
+  tail call void @llvm.dbg.value(metadata !{%struct.ref* %use}, i64 0, metadata !1863), !dbg !1939
+  %reg = getelementptr inbounds %struct.ref* %use, i64 0, i32 0, !dbg !1940
+  %0 = load %struct.rtx_def** %reg, align 8, !dbg !1940, !tbaa !1898
+  %1 = bitcast %struct.rtx_def* %0 to i32*, !dbg !1940
+  %bf.load = load i32* %1, align 8, !dbg !1940
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1940
+  %cmp = icmp eq i32 %bf.clear, 63, !dbg !1940
+  br i1 %cmp, label %cond.true, label %cond.end, !dbg !1940
 
 cond.true:                                        ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
-  br label %cond.end
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0, !dbg !1940
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !1940
+  %2 = load %struct.rtx_def** %rtx, align 8, !dbg !1940, !tbaa !1898
+  br label %cond.end, !dbg !1940
 
 cond.end:                                         ; preds = %entry, %cond.true
-  %cond = phi %struct.rtx_def* [ %2, %cond.true ], [ %0, %entry ]
-  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %cond, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx4 to i32*
-  %3 = load i32* %rtuint, align 4, !tbaa !4
-  %chain = getelementptr inbounds %struct.ref* %use, i64 0, i32 3
-  %ud_link.021 = load %struct.df_link** %chain, align 8
-  %tobool22 = icmp eq %struct.df_link* %ud_link.021, null
-  br i1 %tobool22, label %for.end, label %for.body
+  %cond = phi %struct.rtx_def* [ %2, %cond.true ], [ %0, %entry ], !dbg !1940
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %cond, i64 0, i32 1, i64 0, !dbg !1940
+  %rtuint = bitcast %union.rtunion_def* %arrayidx4 to i32*, !dbg !1940
+  %3 = load i32* %rtuint, align 4, !dbg !1940, !tbaa !1899
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !1865), !dbg !1940
+  %chain = getelementptr inbounds %struct.ref* %use, i64 0, i32 3, !dbg !1941
+  %ud_link.021 = load %struct.df_link** %chain, align 8, !dbg !1941
+  %tobool22 = icmp eq %struct.df_link* %ud_link.021, null, !dbg !1941
+  br i1 %tobool22, label %for.end, label %for.body, !dbg !1941
 
 for.body:                                         ; preds = %cond.end, %for.body
   %ud_link.023 = phi %struct.df_link* [ %ud_link.0, %for.body ], [ %ud_link.021, %cond.end ]
-  %ref = getelementptr inbounds %struct.df_link* %ud_link.023, i64 0, i32 1
-  %4 = load %struct.ref** %ref, align 8, !tbaa !3
-  %chain5 = getelementptr inbounds %struct.ref* %4, i64 0, i32 3
-  %call = tail call fastcc %struct.df_link* @df_ref_unlink(%struct.df_link** %chain5, %struct.ref* %use) #6
-  %next = getelementptr inbounds %struct.df_link* %ud_link.023, i64 0, i32 0
-  %ud_link.0 = load %struct.df_link** %next, align 8
-  %tobool = icmp eq %struct.df_link* %ud_link.0, null
-  br i1 %tobool, label %for.end, label %for.body
+  %ref = getelementptr inbounds %struct.df_link* %ud_link.023, i64 0, i32 1, !dbg !1942
+  %4 = load %struct.ref** %ref, align 8, !dbg !1942, !tbaa !1898
+  tail call void @llvm.dbg.value(metadata !{%struct.ref* %4}, i64 0, metadata !1866), !dbg !1942
+  %chain5 = getelementptr inbounds %struct.ref* %4, i64 0, i32 3, !dbg !1943
+  %call = tail call fastcc %struct.df_link* @df_ref_unlink(%struct.df_link** %chain5, %struct.ref* %use) #7, !dbg !1943
+  %next = getelementptr inbounds %struct.df_link* %ud_link.023, i64 0, i32 0, !dbg !1941
+  %ud_link.0 = load %struct.df_link** %next, align 8, !dbg !1941
+  %tobool = icmp eq %struct.df_link* %ud_link.0, null, !dbg !1941
+  br i1 %tobool, label %for.end, label %for.body, !dbg !1941
 
 for.end:                                          ; preds = %for.body, %cond.end
-  store %struct.df_link* null, %struct.df_link** %chain, align 8, !tbaa !3
-  %idxprom = zext i32 %3 to i64
-  %regs = getelementptr inbounds %struct.df* %df, i64 0, i32 5
-  %5 = load %struct.reg_info** %regs, align 8, !tbaa !3
-  %uses = getelementptr inbounds %struct.reg_info* %5, i64 %idxprom, i32 1
-  %call8 = tail call fastcc %struct.df_link* @df_ref_unlink(%struct.df_link** %uses, %struct.ref* %use) #6
-  %id = getelementptr inbounds %struct.ref* %use, i64 0, i32 5
-  %6 = load i32* %id, align 4, !tbaa !4
-  %idxprom9 = sext i32 %6 to i64
-  %uses10 = getelementptr inbounds %struct.df* %df, i64 0, i32 3
-  %7 = load %struct.ref*** %uses10, align 8, !tbaa !3
-  %arrayidx11 = getelementptr inbounds %struct.ref** %7, i64 %idxprom9
-  store %struct.ref* null, %struct.ref** %arrayidx11, align 8, !tbaa !3
-  ret void
+  store %struct.df_link* null, %struct.df_link** %chain, align 8, !dbg !1944, !tbaa !1898
+  %idxprom = zext i32 %3 to i64, !dbg !1945
+  %regs = getelementptr inbounds %struct.df* %df, i64 0, i32 5, !dbg !1945
+  %5 = load %struct.reg_info** %regs, align 8, !dbg !1945, !tbaa !1898
+  %uses = getelementptr inbounds %struct.reg_info* %5, i64 %idxprom, i32 1, !dbg !1945
+  %call8 = tail call fastcc %struct.df_link* @df_ref_unlink(%struct.df_link** %uses, %struct.ref* %use) #7, !dbg !1945
+  %id = getelementptr inbounds %struct.ref* %use, i64 0, i32 5, !dbg !1946
+  %6 = load i32* %id, align 4, !dbg !1946, !tbaa !1899
+  %idxprom9 = sext i32 %6 to i64, !dbg !1946
+  %uses10 = getelementptr inbounds %struct.df* %df, i64 0, i32 3, !dbg !1946
+  %7 = load %struct.ref*** %uses10, align 8, !dbg !1946, !tbaa !1898
+  %arrayidx11 = getelementptr inbounds %struct.ref** %7, i64 %idxprom9, !dbg !1946
+  store %struct.ref* null, %struct.ref** %arrayidx11, align 8, !dbg !1946, !tbaa !1898
+  ret void, !dbg !1947
 }

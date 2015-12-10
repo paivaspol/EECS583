@@ -1,14 +1,21 @@
-define i8* @Util_HashData(%struct.T_HASH* nocapture readonly %hash, i32 %klen, i8* nocapture readonly %key, i32 %hashval) #1 {
-  %1 = tail call fastcc %struct.T_HASH_ENTRY* @HashFind(%struct.T_HASH* %hash, i32 %klen, i8* %key, i32 %hashval) #6
-  %2 = icmp eq %struct.T_HASH_ENTRY* %1, null
-  br i1 %2, label %6, label %3
+define i8* @Util_HashData(%struct.T_HASH* nocapture %hash, i32 %klen, i8* nocapture %key, i32 %hashval) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.T_HASH* %hash}, i64 0, metadata !95), !dbg !382
+  tail call void @llvm.dbg.value(metadata !{i32 %klen}, i64 0, metadata !96), !dbg !383
+  tail call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !97), !dbg !384
+  tail call void @llvm.dbg.value(metadata !{i32 %hashval}, i64 0, metadata !98), !dbg !385
+  %call = tail call fastcc %struct.T_HASH_ENTRY* @HashFind(%struct.T_HASH* %hash, i32 %klen, i8* %key, i32 %hashval) #7, !dbg !386
+  tail call void @llvm.dbg.value(metadata !{%struct.T_HASH_ENTRY* %call}, i64 0, metadata !100), !dbg !386
+  %tobool = icmp eq %struct.T_HASH_ENTRY* %call, null, !dbg !387
+  br i1 %tobool, label %if.end, label %if.then, !dbg !387
 
-; <label>:3                                       ; preds = %0
-  %4 = getelementptr inbounds %struct.T_HASH_ENTRY* %1, i64 0, i32 5
-  %5 = load i8** %4, align 8, !tbaa !15
-  br label %6
+if.then:                                          ; preds = %entry
+  %data = getelementptr inbounds %struct.T_HASH_ENTRY* %call, i64 0, i32 5, !dbg !388
+  %0 = load i8** %data, align 8, !dbg !388, !tbaa !151
+  tail call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !99), !dbg !388
+  br label %if.end, !dbg !390
 
-; <label>:6                                       ; preds = %0, %3
-  %retval.0 = phi i8* [ %5, %3 ], [ null, %0 ]
-  ret i8* %retval.0
+if.end:                                           ; preds = %entry, %if.then
+  %retval1.0 = phi i8* [ %0, %if.then ], [ null, %entry ]
+  ret i8* %retval1.0, !dbg !391
 }

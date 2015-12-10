@@ -1,63 +1,66 @@
 define i32 @spec_ungetc(i8 zeroext %ch, i32 %fd) #0 {
 entry:
-  %0 = load i32* @dbglvl, align 4, !tbaa !3
-  %cmp = icmp sgt i32 %0, 4
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i8 %ch}, i64 0, metadata !77), !dbg !269
+  tail call void @llvm.dbg.value(metadata !{i32 %fd}, i64 0, metadata !78), !dbg !269
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !79), !dbg !270
+  %0 = load i32* @dbglvl, align 4, !dbg !271, !tbaa !128
+  %cmp = icmp sgt i32 %0, 4, !dbg !271
+  br i1 %cmp, label %if.then, label %if.end, !dbg !271
 
 if.then:                                          ; preds = %entry
-  %call = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([19 x i8]* @.str15, i64 0, i64 0), i32 %fd) #8
-  br label %if.end
+  %call = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([19 x i8]* @.str15, i64 0, i64 0), i32 %fd) #7, !dbg !271
+  br label %if.end, !dbg !271
 
 if.end:                                           ; preds = %if.then, %entry
-  %cmp1 = icmp sgt i32 %fd, 3
-  br i1 %cmp1, label %if.then2, label %if.end4
+  %cmp1 = icmp sgt i32 %fd, 3, !dbg !273
+  br i1 %cmp1, label %if.then2, label %if.end4, !dbg !273
 
 if.then2:                                         ; preds = %if.end
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !4
-  %call3 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([34 x i8]* @.str9, i64 0, i64 0), i32 %fd) #8
-  tail call void @exit(i32 0) #9
-  unreachable
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !274, !tbaa !133
+  %call3 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([34 x i8]* @.str9, i64 0, i64 0), i32 %fd) #7, !dbg !274
+  tail call void @exit(i32 0) #8, !dbg !276
+  unreachable, !dbg !276
 
 if.end4:                                          ; preds = %if.end
-  %idxprom = sext i32 %fd to i64
-  %pos = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom, i32 2
-  %2 = load i32* %pos, align 8, !tbaa !3
-  %cmp5 = icmp slt i32 %2, 1
-  br i1 %cmp5, label %if.then6, label %if.end11
+  %idxprom = sext i32 %fd to i64, !dbg !277
+  %pos = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom, i32 2, !dbg !277
+  %2 = load i32* %pos, align 8, !dbg !277, !tbaa !128
+  %cmp5 = icmp slt i32 %2, 1, !dbg !277
+  br i1 %cmp5, label %if.then6, label %if.end11, !dbg !277
 
 if.then6:                                         ; preds = %if.end4
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !4
-  %call10 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([26 x i8]* @.str16, i64 0, i64 0), i32 %2) #8
-  tail call void @exit(i32 0) #9
-  unreachable
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !278, !tbaa !133
+  %call10 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([26 x i8]* @.str16, i64 0, i64 0), i32 %2) #7, !dbg !278
+  tail call void @exit(i32 0) #8, !dbg !280
+  unreachable, !dbg !280
 
 if.end11:                                         ; preds = %if.end4
-  %dec = add nsw i32 %2, -1
-  store i32 %dec, i32* %pos, align 8, !tbaa !3
-  %idxprom15 = sext i32 %dec to i64
-  %buf = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom, i32 3
-  %4 = load i8** %buf, align 8, !tbaa !4
-  %arrayidx18 = getelementptr inbounds i8* %4, i64 %idxprom15
-  %5 = load i8* %arrayidx18, align 1, !tbaa !1
-  %conv19 = zext i8 %ch to i32
-  %cmp20 = icmp eq i8 %5, %ch
-  br i1 %cmp20, label %if.end24, label %if.then22
+  %dec = add nsw i32 %2, -1, !dbg !281
+  store i32 %dec, i32* %pos, align 8, !dbg !281, !tbaa !128
+  %idxprom15 = sext i32 %dec to i64, !dbg !281
+  %buf = getelementptr inbounds [3 x %struct.spec_fd_t]* @spec_fd, i64 0, i64 %idxprom, i32 3, !dbg !281
+  %4 = load i8** %buf, align 8, !dbg !281, !tbaa !133
+  %arrayidx18 = getelementptr inbounds i8* %4, i64 %idxprom15, !dbg !281
+  %5 = load i8* %arrayidx18, align 1, !dbg !281, !tbaa !116
+  %conv19 = zext i8 %ch to i32, !dbg !281
+  %cmp20 = icmp eq i8 %5, %ch, !dbg !281
+  br i1 %cmp20, label %if.end24, label %if.then22, !dbg !281
 
 if.then22:                                        ; preds = %if.end11
-  %6 = load %struct._IO_FILE** @stderr, align 8, !tbaa !4
-  %7 = tail call i64 @fwrite(i8* getelementptr inbounds ([72 x i8]* @.str17, i64 0, i64 0), i64 71, i64 1, %struct._IO_FILE* %6)
-  tail call void @exit(i32 0) #9
-  unreachable
+  %6 = load %struct._IO_FILE** @stderr, align 8, !dbg !282, !tbaa !133
+  %7 = tail call i64 @fwrite(i8* getelementptr inbounds ([72 x i8]* @.str17, i64 0, i64 0), i64 71, i64 1, %struct._IO_FILE* %6), !dbg !282
+  tail call void @exit(i32 0) #8, !dbg !284
+  unreachable, !dbg !284
 
 if.end24:                                         ; preds = %if.end11
-  %8 = load i32* @dbglvl, align 4, !tbaa !3
-  %cmp25 = icmp sgt i32 %8, 4
-  br i1 %cmp25, label %if.then27, label %if.end29
+  %8 = load i32* @dbglvl, align 4, !dbg !285, !tbaa !128
+  %cmp25 = icmp sgt i32 %8, 4, !dbg !285
+  br i1 %cmp25, label %if.then27, label %if.end29, !dbg !285
 
 if.then27:                                        ; preds = %if.end24
-  %call28 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str11, i64 0, i64 0), i32 0) #8
-  br label %if.end29
+  %call28 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str11, i64 0, i64 0), i32 0) #7, !dbg !285
+  br label %if.end29, !dbg !285
 
 if.end29:                                         ; preds = %if.then27, %if.end24
-  ret i32 %conv19
+  ret i32 %conv19, !dbg !287
 }

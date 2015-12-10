@@ -1,47 +1,52 @@
 define void @output_quoted_string(%struct._IO_FILE* nocapture %asm_file, i8* nocapture %string) #0 {
 entry:
-  %call = tail call i32 @_IO_putc(i32 34, %struct._IO_FILE* %asm_file) #11
-  %0 = load i8* %string, align 1, !tbaa !1
-  %cmp30 = icmp eq i8 %0, 0
-  br i1 %cmp30, label %while.end, label %while.body
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %asm_file}, i64 0, metadata !829), !dbg !2139
+  tail call void @llvm.dbg.value(metadata !{i8* %string}, i64 0, metadata !830), !dbg !2140
+  %call = tail call i32 @_IO_putc(i32 34, %struct._IO_FILE* %asm_file) #12, !dbg !2141
+  %0 = load i8* %string, align 1, !dbg !2142, !tbaa !2060
+  tail call void @llvm.dbg.value(metadata !{i8 %0}, i64 0, metadata !831), !dbg !2142
+  %cmp30 = icmp eq i8 %0, 0, !dbg !2142
+  br i1 %cmp30, label %while.end, label %while.body, !dbg !2142
 
 while.body:                                       ; preds = %entry, %while.cond.backedge
   %conv32.in = phi i8 [ %2, %while.cond.backedge ], [ %0, %entry ]
   %string.pn = phi i8* [ %incdec.ptr31, %while.cond.backedge ], [ %string, %entry ]
-  %incdec.ptr31 = getelementptr inbounds i8* %string.pn, i64 1
-  %conv32 = sext i8 %conv32.in to i32
-  %and = and i32 %conv32, 255
-  %idxprom27 = zext i32 %and to i64
-  %arrayidx = getelementptr inbounds [256 x i16]* @_sch_istable, i64 0, i64 %idxprom27
-  %1 = load i16* %arrayidx, align 2, !tbaa !3
-  %and4 = and i16 %1, 16
-  %tobool = icmp eq i16 %and4, 0
-  br i1 %tobool, label %if.else, label %if.then
+  %incdec.ptr31 = getelementptr inbounds i8* %string.pn, i64 1, !dbg !2142
+  %conv32 = sext i8 %conv32.in to i32, !dbg !2142
+  %and = and i32 %conv32, 255, !dbg !2143
+  %idxprom27 = zext i32 %and to i64, !dbg !2143
+  %arrayidx = getelementptr inbounds [256 x i16]* @_sch_istable, i64 0, i64 %idxprom27, !dbg !2143
+  %1 = load i16* %arrayidx, align 2, !dbg !2143, !tbaa !2085
+  %and4 = and i16 %1, 16, !dbg !2143
+  %tobool = icmp eq i16 %and4, 0, !dbg !2143
+  br i1 %tobool, label %if.else, label %if.then, !dbg !2143
 
 if.then:                                          ; preds = %while.body
   switch i8 %conv32.in, label %if.end [
     i8 34, label %if.then11
     i8 92, label %if.then11
-  ]
+  ], !dbg !2145
 
 if.then11:                                        ; preds = %if.then, %if.then
-  %call12 = tail call i32 @_IO_putc(i32 92, %struct._IO_FILE* %asm_file) #11
-  br label %if.end
+  %call12 = tail call i32 @_IO_putc(i32 92, %struct._IO_FILE* %asm_file) #12, !dbg !2147
+  br label %if.end, !dbg !2147
 
 if.end:                                           ; preds = %if.then, %if.then11
-  %call14 = tail call i32 @_IO_putc(i32 %conv32, %struct._IO_FILE* %asm_file) #11
-  br label %while.cond.backedge
+  %call14 = tail call i32 @_IO_putc(i32 %conv32, %struct._IO_FILE* %asm_file) #12, !dbg !2148
+  br label %while.cond.backedge, !dbg !2149
 
 if.else:                                          ; preds = %while.body
-  %call16 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %asm_file, i8* getelementptr inbounds ([6 x i8]* @.str2, i64 0, i64 0), i32 %conv32) #11
+  %call16 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %asm_file, i8* getelementptr inbounds ([6 x i8]* @.str2, i64 0, i64 0), i32 %conv32) #12, !dbg !2150
   br label %while.cond.backedge
 
 while.cond.backedge:                              ; preds = %if.else, %if.end
-  %2 = load i8* %incdec.ptr31, align 1, !tbaa !1
-  %cmp = icmp eq i8 %2, 0
-  br i1 %cmp, label %while.end, label %while.body
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr31}, i64 0, metadata !830), !dbg !2142
+  %2 = load i8* %incdec.ptr31, align 1, !dbg !2142, !tbaa !2060
+  tail call void @llvm.dbg.value(metadata !{i8 %conv32.in}, i64 0, metadata !831), !dbg !2142
+  %cmp = icmp eq i8 %2, 0, !dbg !2142
+  br i1 %cmp, label %while.end, label %while.body, !dbg !2142
 
 while.end:                                        ; preds = %while.cond.backedge, %entry
-  %call18 = tail call i32 @_IO_putc(i32 34, %struct._IO_FILE* %asm_file) #11
-  ret void
+  %call18 = tail call i32 @_IO_putc(i32 34, %struct._IO_FILE* %asm_file) #12, !dbg !2151
+  ret void, !dbg !2152
 }

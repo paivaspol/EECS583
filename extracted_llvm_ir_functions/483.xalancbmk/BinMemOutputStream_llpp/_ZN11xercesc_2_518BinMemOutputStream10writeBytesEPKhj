@@ -1,0 +1,26 @@
+define void @_ZN11xercesc_2_518BinMemOutputStream10writeBytesEPKhj(%"class.xercesc_2_5::BinMemOutputStream"* nocapture %this, i8* nocapture %toGo, i32 %maxToWrite) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BinMemOutputStream"* %this}, i64 0, metadata !223), !dbg !269
+  tail call void @llvm.dbg.value(metadata !{i8* %toGo}, i64 0, metadata !224), !dbg !269
+  tail call void @llvm.dbg.value(metadata !{i32 %maxToWrite}, i64 0, metadata !225), !dbg !270
+  %tobool = icmp eq i32 %maxToWrite, 0, !dbg !271
+  br i1 %tobool, label %if.end, label %if.then, !dbg !271
+
+if.then:                                          ; preds = %entry
+  tail call void @_ZN11xercesc_2_518BinMemOutputStream14insureCapacityEj(%"class.xercesc_2_5::BinMemOutputStream"* %this, i32 %maxToWrite) #7, !dbg !272
+  %fIndex = getelementptr inbounds %"class.xercesc_2_5::BinMemOutputStream"* %this, i64 0, i32 3, !dbg !274
+  %0 = load i32* %fIndex, align 4, !dbg !274, !tbaa !255
+  %idxprom = zext i32 %0 to i64, !dbg !274
+  %fDataBuf = getelementptr inbounds %"class.xercesc_2_5::BinMemOutputStream"* %this, i64 0, i32 2, !dbg !274
+  %1 = load i8** %fDataBuf, align 8, !dbg !274, !tbaa !253
+  %arrayidx = getelementptr inbounds i8* %1, i64 %idxprom, !dbg !274
+  %conv = zext i32 %maxToWrite to i64, !dbg !274
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %arrayidx, i8* %toGo, i64 %conv, i32 1, i1 false), !dbg !274
+  %2 = load i32* %fIndex, align 4, !dbg !275, !tbaa !255
+  %add = add i32 %2, %maxToWrite, !dbg !275
+  store i32 %add, i32* %fIndex, align 4, !dbg !275, !tbaa !255
+  br label %if.end, !dbg !276
+
+if.end:                                           ; preds = %entry, %if.then
+  ret void, !dbg !277
+}

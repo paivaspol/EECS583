@@ -1,56 +1,69 @@
 define i32 @start_sequence() #4 {
 entry:
-  %0 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %GenerateMultiplePPS = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 15
-  %1 = load i32* %GenerateMultiplePPS, align 4, !tbaa !3
-  %tobool = icmp ne i32 %1, 0
-  %cond = select i1 %tobool, i32 3, i32 1
-  %of_mode = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 60
-  %2 = load i32* %of_mode, align 4, !tbaa !3
+  tail call void @llvm.dbg.value(metadata !8, i64 0, metadata !48), !dbg !602
+  %0 = load %struct.InputParameters** @input, align 8, !dbg !602, !tbaa !590
+  %GenerateMultiplePPS = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 15, !dbg !602
+  %1 = load i32* %GenerateMultiplePPS, align 4, !dbg !602, !tbaa !603
+  %tobool = icmp ne i32 %1, 0, !dbg !602
+  %cond = select i1 %tobool, i32 3, i32 1, !dbg !602
+  tail call void @llvm.dbg.value(metadata !{i32 %cond}, i64 0, metadata !49), !dbg !602
+  %of_mode = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 60, !dbg !604
+  %2 = load i32* %of_mode, align 4, !dbg !604, !tbaa !603
   switch i32 %2, label %sw.default [
     i32 0, label %sw.bb
     i32 1, label %sw.bb1
-  ]
+  ], !dbg !604
 
 sw.bb:                                            ; preds = %entry
-  %arraydecay = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 27, i64 0
-  tail call void @OpenAnnexbFile(i8* %arraydecay) #5
-  br label %sw.epilog
+  %arraydecay = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 27, i64 0, !dbg !605
+  tail call void @OpenAnnexbFile(i8* %arraydecay) #6, !dbg !605
+  br label %sw.epilog, !dbg !607
 
 sw.bb1:                                           ; preds = %entry
-  %arraydecay3 = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 27, i64 0
-  tail call void @OpenRTPFile(i8* %arraydecay3) #5
-  br label %sw.epilog
+  %arraydecay3 = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 27, i64 0, !dbg !608
+  tail call void @OpenRTPFile(i8* %arraydecay3) #6, !dbg !608
+  br label %sw.epilog, !dbg !609
 
 sw.default:                                       ; preds = %entry
-  %call = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([34 x i8]* @.str1, i64 0, i64 0), i32 %2) #5
-  tail call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 1) #7
+  %call = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([34 x i8]* @.str1, i64 0, i64 0), i32 %2) #6, !dbg !610
+  tail call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 1) #8, !dbg !611
   unreachable
 
 sw.epilog:                                        ; preds = %sw.bb1, %sw.bb
   %storemerge = phi i32 (%struct.NALU_t*)* [ @WriteRTPNALU, %sw.bb1 ], [ @WriteAnnexbNALU, %sw.bb ]
-  store i32 (%struct.NALU_t*)* %storemerge, i32 (%struct.NALU_t*)** @WriteNALU, align 8, !tbaa !0
-  %call5 = tail call %struct.NALU_t* (...)* @GenerateSeq_parameter_set_NALU() #5
-  %3 = load i32 (%struct.NALU_t*)** @WriteNALU, align 8, !tbaa !0
-  %call6 = tail call i32 %3(%struct.NALU_t* %call5) #5
-  tail call void @FreeNALU(%struct.NALU_t* %call5) #5
-  br label %for.body
+  store i32 (%struct.NALU_t*)* %storemerge, i32 (%struct.NALU_t*)** @WriteNALU, align 8, !dbg !612, !tbaa !590
+  tail call void @llvm.dbg.value(metadata !596, i64 0, metadata !50), !dbg !613
+  %call5 = tail call %struct.NALU_t* (...)* @GenerateSeq_parameter_set_NALU() #6, !dbg !614
+  tail call void @llvm.dbg.value(metadata !{%struct.NALU_t* %call5}, i64 0, metadata !50), !dbg !614
+  %3 = load i32 (%struct.NALU_t*)** @WriteNALU, align 8, !dbg !615, !tbaa !590
+  %call6 = tail call i32 %3(%struct.NALU_t* %call5) #6, !dbg !615
+  tail call void @llvm.dbg.value(metadata !{i32 %call6}, i64 0, metadata !48), !dbg !615
+  tail call void @FreeNALU(%struct.NALU_t* %call5) #6, !dbg !616
+  tail call void @llvm.dbg.value(metadata !8, i64 0, metadata !47), !dbg !617
+  br label %for.body, !dbg !617
 
 for.body:                                         ; preds = %sw.epilog, %for.body
   %i.013 = phi i32 [ 0, %sw.epilog ], [ %inc, %for.body ]
   %len.012 = phi i32 [ %call6, %sw.epilog ], [ %add.i, %for.body ]
-  %call.i = tail call %struct.NALU_t* @GeneratePic_parameter_set_NALU(i32 %i.013) #5
-  %4 = load i32 (%struct.NALU_t*)** @WriteNALU, align 8, !tbaa !0
-  %call1.i = tail call i32 %4(%struct.NALU_t* %call.i) #5
-  %add.i = add nsw i32 %call1.i, %len.012
-  tail call void @FreeNALU(%struct.NALU_t* %call.i) #5
-  %inc = add nsw i32 %i.013, 1
-  %cmp = icmp slt i32 %inc, %cond
-  br i1 %cmp, label %for.body, label %return
+  tail call void @llvm.dbg.value(metadata !{i32 %add.i}, i64 0, metadata !619) #9, !dbg !622
+  tail call void @llvm.dbg.value(metadata !{i32 %i.013}, i64 0, metadata !623) #9, !dbg !622
+  tail call void @llvm.dbg.value(metadata !596, i64 0, metadata !624) #9, !dbg !625
+  %call.i = tail call %struct.NALU_t* @GeneratePic_parameter_set_NALU(i32 %i.013) #6, !dbg !626
+  tail call void @llvm.dbg.value(metadata !{%struct.NALU_t* %call.i}, i64 0, metadata !624) #9, !dbg !626
+  %4 = load i32 (%struct.NALU_t*)** @WriteNALU, align 8, !dbg !627, !tbaa !590
+  %call1.i = tail call i32 %4(%struct.NALU_t* %call.i) #6, !dbg !627
+  %add.i = add nsw i32 %call1.i, %len.012, !dbg !627
+  tail call void @llvm.dbg.value(metadata !{i32 %add.i}, i64 0, metadata !619) #9, !dbg !627
+  tail call void @FreeNALU(%struct.NALU_t* %call.i) #6, !dbg !628
+  tail call void @llvm.dbg.value(metadata !{i32 %add.i}, i64 0, metadata !48), !dbg !620
+  %inc = add nsw i32 %i.013, 1, !dbg !617
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !47), !dbg !617
+  %cmp = icmp slt i32 %inc, %cond, !dbg !617
+  br i1 %cmp, label %for.body, label %return, !dbg !617
 
 return:                                           ; preds = %for.body
-  %5 = load %struct.StatParameters** @stats, align 8, !tbaa !0
-  %bit_ctr_parametersets_n = getelementptr inbounds %struct.StatParameters* %5, i64 0, i32 33
-  store i32 %add.i, i32* %bit_ctr_parametersets_n, align 4, !tbaa !3
-  ret i32 0
+  %5 = load %struct.StatParameters** @stats, align 8, !dbg !629, !tbaa !590
+  %bit_ctr_parametersets_n = getelementptr inbounds %struct.StatParameters* %5, i64 0, i32 33, !dbg !629
+  store i32 %add.i, i32* %bit_ctr_parametersets_n, align 4, !dbg !629, !tbaa !603
+  ret i32 0, !dbg !630
 }

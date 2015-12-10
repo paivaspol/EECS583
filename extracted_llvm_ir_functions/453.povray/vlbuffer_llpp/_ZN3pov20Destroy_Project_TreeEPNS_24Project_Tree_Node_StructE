@@ -1,0 +1,49 @@
+define void @_ZN3pov20Destroy_Project_TreeEPNS_24Project_Tree_Node_StructE(%"struct.pov::Project_Tree_Node_Struct"* %Node) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Project_Tree_Node_Struct"* %Node}, i64 0, metadata !103), !dbg !592
+  %is_leaf = getelementptr inbounds %"struct.pov::Project_Tree_Node_Struct"* %Node, i64 0, i32 0, !dbg !593
+  %0 = load i16* %is_leaf, align 2, !dbg !593, !tbaa !594
+  %and = and i16 %0, 1, !dbg !593
+  %tobool = icmp eq i16 %and, 0, !dbg !593
+  br i1 %tobool, label %for.cond.preheader, label %if.then, !dbg !593
+
+for.cond.preheader:                               ; preds = %entry
+  %Entries = getelementptr inbounds %"struct.pov::Project_Tree_Node_Struct"* %Node, i64 0, i32 3, !dbg !595
+  %1 = load i16* %Entries, align 2, !dbg !595, !tbaa !594
+  %cmp13 = icmp eq i16 %1, 0, !dbg !595
+  %Entry3.pre = getelementptr inbounds %"struct.pov::Project_Tree_Node_Struct"* %Node, i64 0, i32 4, !dbg !598
+  br i1 %cmp13, label %for.end, label %for.body, !dbg !595
+
+if.then:                                          ; preds = %entry
+  tail call void @_ZN3pov12Do_CooperateEi(i32 1) #5, !dbg !600
+  %2 = bitcast %"struct.pov::Project_Tree_Node_Struct"* %Node to i8*, !dbg !602
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %2, i8* getelementptr inbounds ([57 x i8]* @.str, i64 0, i64 0), i32 579) #5, !dbg !602
+  tail call void @llvm.dbg.value(metadata !604, i64 0, metadata !103), !dbg !602
+  br label %if.end, !dbg !605
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %i.014 = phi i16 [ %inc, %for.body ], [ 0, %for.cond.preheader ]
+  %idxprom = zext i16 %i.014 to i64, !dbg !606
+  %3 = load %"struct.pov::Project_Tree_Node_Struct"*** %Entry3.pre, align 8, !dbg !606, !tbaa !191
+  %arrayidx = getelementptr inbounds %"struct.pov::Project_Tree_Node_Struct"** %3, i64 %idxprom, !dbg !606
+  %4 = load %"struct.pov::Project_Tree_Node_Struct"** %arrayidx, align 8, !dbg !606, !tbaa !191
+  tail call void @_ZN3pov20Destroy_Project_TreeEPNS_24Project_Tree_Node_StructE(%"struct.pov::Project_Tree_Node_Struct"* %4) #5, !dbg !606
+  %inc = add i16 %i.014, 1, !dbg !595
+  tail call void @llvm.dbg.value(metadata !{i16 %inc}, i64 0, metadata !104), !dbg !595
+  %5 = load i16* %Entries, align 2, !dbg !595, !tbaa !594
+  %cmp = icmp ult i16 %inc, %5, !dbg !595
+  br i1 %cmp, label %for.body, label %for.end, !dbg !595
+
+for.end:                                          ; preds = %for.cond.preheader, %for.body
+  %6 = load %"struct.pov::Project_Tree_Node_Struct"*** %Entry3.pre, align 8, !dbg !598, !tbaa !191
+  %7 = bitcast %"struct.pov::Project_Tree_Node_Struct"** %6 to i8*, !dbg !598
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %7, i8* getelementptr inbounds ([57 x i8]* @.str, i64 0, i64 0), i32 588) #5, !dbg !598
+  store %"struct.pov::Project_Tree_Node_Struct"** null, %"struct.pov::Project_Tree_Node_Struct"*** %Entry3.pre, align 8, !dbg !598, !tbaa !191
+  %8 = bitcast %"struct.pov::Project_Tree_Node_Struct"* %Node to i8*, !dbg !608
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %8, i8* getelementptr inbounds ([57 x i8]* @.str, i64 0, i64 0), i32 590) #5, !dbg !608
+  tail call void @llvm.dbg.value(metadata !604, i64 0, metadata !103), !dbg !608
+  br label %if.end
+
+if.end:                                           ; preds = %for.end, %if.then
+  ret void, !dbg !610
+}

@@ -1,17 +1,18 @@
 define i8* @DenseMtx_workspace(%struct._DenseMtx* %mtx) #0 {
 entry:
-  %cmp = icmp eq %struct._DenseMtx* %mtx, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._DenseMtx* %mtx}, i64 0, metadata !80), !dbg !194
+  %cmp = icmp eq %struct._DenseMtx* %mtx, null, !dbg !195
+  br i1 %cmp, label %if.then, label %if.end, !dbg !195
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([52 x i8]* @.str8, i64 0, i64 0), %struct._DenseMtx* null) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !196, !tbaa !134
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([52 x i8]* @.str8, i64 0, i64 0), %struct._DenseMtx* null) #6, !dbg !196
+  tail call void @exit(i32 -1) #7, !dbg !198
+  unreachable, !dbg !198
 
 if.end:                                           ; preds = %entry
-  %wrkDV = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 10
-  %call1 = tail call double* @DV_entries(%struct._DV* %wrkDV) #5
-  %1 = bitcast double* %call1 to i8*
-  ret i8* %1
+  %wrkDV = getelementptr inbounds %struct._DenseMtx* %mtx, i64 0, i32 10, !dbg !199
+  %call1 = tail call double* @DV_entries(%struct._DV* %wrkDV) #6, !dbg !199
+  %1 = bitcast double* %call1 to i8*, !dbg !199
+  ret i8* %1, !dbg !199
 }

@@ -1,0 +1,68 @@
+define zeroext i1 @_ZN11xercesc_2_56XMLUri29isValidRegistryBasedAuthorityEPKti(i16* nocapture %authority, i32 %authLen) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %authority}, i64 0, metadata !1516), !dbg !4626
+  tail call void @llvm.dbg.value(metadata !{i32 %authLen}, i64 0, metadata !1517), !dbg !4627
+  tail call void @llvm.dbg.value(metadata !928, i64 0, metadata !1518), !dbg !4628
+  %cmp33 = icmp sgt i32 %authLen, 0, !dbg !4629
+  br i1 %cmp33, label %while.body, label %return, !dbg !4629
+
+while.body:                                       ; preds = %entry, %while.cond.backedge
+  %index.034 = phi i32 [ %index.0.be, %while.cond.backedge ], [ 0, %entry ]
+  %idxprom = sext i32 %index.034 to i64, !dbg !4630
+  %arrayidx = getelementptr inbounds i16* %authority, i64 %idxprom, !dbg !4630
+  %0 = load i16* %arrayidx, align 2, !dbg !4630, !tbaa !2644
+  tail call void @llvm.dbg.value(metadata !{i16 %0}, i64 0, metadata !4632), !dbg !4633
+  %call.i = tail call zeroext i1 @_ZN11xercesc_2_59XMLString10isAlphaNumEt(i16 zeroext %0) #9, !dbg !4634
+  br i1 %call.i, label %if.then, label %_ZN11xercesc_2_56XMLUri21isUnreservedCharacterEt.exit, !dbg !4634
+
+_ZN11xercesc_2_56XMLUri21isUnreservedCharacterEt.exit: ; preds = %while.body
+  %call1.i = tail call i32 @_ZN11xercesc_2_59XMLString7indexOfEPKtt(i16* getelementptr inbounds ([10 x i16]* @_ZN11xercesc_2_56XMLUri15MARK_CHARACTERSE, i64 0, i64 0), i16 zeroext %0) #9, !dbg !4635
+  %cmp.i = icmp eq i32 %call1.i, -1, !dbg !4635
+  br i1 %cmp.i, label %lor.lhs.false, label %if.then, !dbg !4630
+
+lor.lhs.false:                                    ; preds = %_ZN11xercesc_2_56XMLUri21isUnreservedCharacterEt.exit
+  %1 = load i16* %arrayidx, align 2, !dbg !4636, !tbaa !2644
+  %call3 = tail call i32 @_ZN11xercesc_2_59XMLString7indexOfEPKtt(i16* getelementptr inbounds ([9 x i16]* @_ZN11xercesc_2_56XMLUri19REG_NAME_CHARACTERSE, i64 0, i64 0), i16 zeroext %1) #9, !dbg !4636
+  %cmp4 = icmp eq i32 %call3, -1, !dbg !4636
+  br i1 %cmp4, label %if.else, label %if.then, !dbg !4636
+
+if.then:                                          ; preds = %_ZN11xercesc_2_56XMLUri21isUnreservedCharacterEt.exit, %while.body, %lor.lhs.false
+  %inc = add nsw i32 %index.034, 1, !dbg !4637
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1518), !dbg !4637
+  br label %while.cond.backedge, !dbg !4639
+
+if.else:                                          ; preds = %lor.lhs.false
+  %2 = load i16* %arrayidx, align 2, !dbg !4640, !tbaa !2644
+  %cmp7 = icmp eq i16 %2, 37, !dbg !4640
+  br i1 %cmp7, label %if.then8, label %return, !dbg !4640
+
+if.then8:                                         ; preds = %if.else
+  %add = add nsw i32 %index.034, 1, !dbg !4641
+  %idxprom9 = sext i32 %add to i64, !dbg !4641
+  %arrayidx10 = getelementptr inbounds i16* %authority, i64 %idxprom9, !dbg !4641
+  %3 = load i16* %arrayidx10, align 2, !dbg !4641, !tbaa !2644
+  %call11 = tail call zeroext i1 @_ZN11xercesc_2_59XMLString5isHexEt(i16 zeroext %3) #9, !dbg !4641
+  br i1 %call11, label %land.lhs.true, label %return, !dbg !4641
+
+land.lhs.true:                                    ; preds = %if.then8
+  %add12 = add nsw i32 %index.034, 2, !dbg !4643
+  %idxprom13 = sext i32 %add12 to i64, !dbg !4643
+  %arrayidx14 = getelementptr inbounds i16* %authority, i64 %idxprom13, !dbg !4643
+  %4 = load i16* %arrayidx14, align 2, !dbg !4643, !tbaa !2644
+  %call15 = tail call zeroext i1 @_ZN11xercesc_2_59XMLString5isHexEt(i16 zeroext %4) #9, !dbg !4643
+  br i1 %call15, label %if.then16, label %return, !dbg !4643
+
+if.then16:                                        ; preds = %land.lhs.true
+  %add17 = add nsw i32 %index.034, 3, !dbg !4644
+  tail call void @llvm.dbg.value(metadata !{i32 %add17}, i64 0, metadata !1518), !dbg !4644
+  br label %while.cond.backedge
+
+while.cond.backedge:                              ; preds = %if.then16, %if.then
+  %index.0.be = phi i32 [ %inc, %if.then ], [ %add17, %if.then16 ]
+  %cmp = icmp slt i32 %index.0.be, %authLen, !dbg !4629
+  br i1 %cmp, label %while.body, label %return, !dbg !4629
+
+return:                                           ; preds = %while.cond.backedge, %if.else, %if.then8, %land.lhs.true, %entry
+  %retval.0 = phi i1 [ true, %entry ], [ false, %land.lhs.true ], [ false, %if.then8 ], [ false, %if.else ], [ true, %while.cond.backedge ]
+  ret i1 %retval.0, !dbg !4645
+}

@@ -1,30 +1,33 @@
 define void @strip_off_ending(i8* nocapture %name, i32 %len) #0 {
 entry:
-  %cmp114 = icmp sgt i32 %len, 2
-  br i1 %cmp114, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !772), !dbg !2128
+  tail call void @llvm.dbg.value(metadata !{i32 %len}, i64 0, metadata !773), !dbg !2129
+  tail call void @llvm.dbg.value(metadata !2130, i64 0, metadata !774), !dbg !2131
+  %cmp114 = icmp sgt i32 %len, 2, !dbg !2131
+  br i1 %cmp114, label %for.body, label %for.end, !dbg !2131
 
 for.cond:                                         ; preds = %for.body
-  %0 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %0, 6
-  %cmp1 = icmp slt i32 %0, %len
-  %or.cond = and i1 %cmp, %cmp1
-  br i1 %or.cond, label %for.body, label %for.end
+  %0 = trunc i64 %indvars.iv.next to i32, !dbg !2131
+  %cmp = icmp slt i32 %0, 6, !dbg !2131
+  %cmp1 = icmp slt i32 %0, %len, !dbg !2131
+  %or.cond = and i1 %cmp, %cmp1, !dbg !2131
+  br i1 %or.cond, label %for.body, label %for.end, !dbg !2131
 
 for.body:                                         ; preds = %entry, %for.cond
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 2, %entry ]
-  %1 = trunc i64 %indvars.iv to i32
-  %sub = sub nsw i32 %len, %1
-  %idxprom = sext i32 %sub to i64
-  %arrayidx = getelementptr inbounds i8* %name, i64 %idxprom
-  %2 = load i8* %arrayidx, align 1, !tbaa !1
-  %cmp2 = icmp eq i8 %2, 46
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  br i1 %cmp2, label %if.then, label %for.cond
+  %1 = trunc i64 %indvars.iv to i32, !dbg !2133
+  %sub = sub nsw i32 %len, %1, !dbg !2133
+  %idxprom = sext i32 %sub to i64, !dbg !2133
+  %arrayidx = getelementptr inbounds i8* %name, i64 %idxprom, !dbg !2133
+  %2 = load i8* %arrayidx, align 1, !dbg !2133, !tbaa !2060
+  %cmp2 = icmp eq i8 %2, 46, !dbg !2133
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2131
+  br i1 %cmp2, label %if.then, label %for.cond, !dbg !2133
 
 if.then:                                          ; preds = %for.body
-  store i8 0, i8* %arrayidx, align 1, !tbaa !1
-  br label %for.end
+  store i8 0, i8* %arrayidx, align 1, !dbg !2135, !tbaa !2060
+  br label %for.end, !dbg !2137
 
 for.end:                                          ; preds = %entry, %for.cond, %if.then
-  ret void
+  ret void, !dbg !2138
 }

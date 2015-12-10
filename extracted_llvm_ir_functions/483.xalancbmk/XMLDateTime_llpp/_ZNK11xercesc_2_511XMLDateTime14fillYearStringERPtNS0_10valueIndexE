@@ -1,0 +1,115 @@
+define i32 @_ZNK11xercesc_2_511XMLDateTime14fillYearStringERPtNS0_10valueIndexE(%"class.xercesc_2_5::XMLDateTime"* nocapture %this, i16** nocapture %ptr, i32 %ind) #1 align 2 {
+entry:
+  %strBuffer = alloca [16 x i16], align 16
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLDateTime"* %this}, i64 0, metadata !1510), !dbg !3985
+  call void @llvm.dbg.value(metadata !{i16** %ptr}, i64 0, metadata !1511), !dbg !3985
+  call void @llvm.dbg.value(metadata !{i32 %ind}, i64 0, metadata !1512), !dbg !3985
+  call void @llvm.dbg.declare(metadata !{[16 x i16]* %strBuffer}, metadata !1513), !dbg !3986
+  %idxprom = zext i32 %ind to i64, !dbg !3987
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::XMLDateTime"* %this, i64 0, i32 1, i64 %idxprom, !dbg !3987
+  %0 = load i32* %arrayidx, align 4, !dbg !3987, !tbaa !2454
+  %arraydecay = getelementptr inbounds [16 x i16]* %strBuffer, i64 0, i64 0, !dbg !3987
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::XMLDateTime"* %this, i64 0, i32 7, !dbg !3987
+  %1 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !3987, !tbaa !2446
+  call void @_ZN11xercesc_2_59XMLString9binToTextEiPtjjPNS_13MemoryManagerE(i32 %0, i16* %arraydecay, i32 15, i32 10, %"class.xercesc_2_5::MemoryManager"* %1) #9, !dbg !3987
+  tail call void @llvm.dbg.value(metadata !{i16* %arraydecay}, i64 0, metadata !3988), !dbg !3990
+  %2 = load i16* %arraydecay, align 16, !dbg !3991, !tbaa !2552
+  %cmp1.i = icmp eq i16 %2, 0, !dbg !3991
+  br i1 %cmp1.i, label %if.end, label %while.cond.i, !dbg !3991
+
+while.cond.i:                                     ; preds = %entry, %while.cond.i
+  %src.pn.i = phi i16* [ %pszTmp.0.i, %while.cond.i ], [ %arraydecay, %entry ]
+  %pszTmp.0.i = getelementptr inbounds i16* %src.pn.i, i64 1, !dbg !3992
+  %3 = load i16* %pszTmp.0.i, align 2, !dbg !3993, !tbaa !2552
+  %tobool.i = icmp eq i16 %3, 0, !dbg !3993
+  br i1 %tobool.i, label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, label %while.cond.i, !dbg !3993
+
+_ZN11xercesc_2_59XMLString9stringLenEPKt.exit:    ; preds = %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %pszTmp.0.i to i64, !dbg !3994
+  %sub.ptr.rhs.cast.i = ptrtoint [16 x i16]* %strBuffer to i64, !dbg !3994
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !3994
+  %sub.ptr.div7.i = lshr exact i64 %sub.ptr.sub.i, 1, !dbg !3994
+  %conv2.i = trunc i64 %sub.ptr.div7.i to i32, !dbg !3994
+  call void @llvm.dbg.value(metadata !{i32 %retval.0.i31}, i64 0, metadata !1514), !dbg !3989
+  call void @llvm.dbg.value(metadata !1251, i64 0, metadata !1515), !dbg !3995
+  %cmp = icmp eq i16 %2, 45, !dbg !3996
+  br i1 %cmp, label %if.then, label %if.end, !dbg !3996
+
+if.then:                                          ; preds = %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit
+  %4 = load i16** %ptr, align 8, !dbg !3997, !tbaa !2446
+  %incdec.ptr = getelementptr inbounds i16* %4, i64 1, !dbg !3997
+  store i16* %incdec.ptr, i16** %ptr, align 8, !dbg !3997, !tbaa !2446
+  store i16 45, i16* %4, align 2, !dbg !3997, !tbaa !2552
+  call void @llvm.dbg.value(metadata !2554, i64 0, metadata !1515), !dbg !3999
+  br label %if.end, !dbg !4000
+
+if.end:                                           ; preds = %entry, %if.then, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit
+  %retval.0.i31 = phi i32 [ %conv2.i, %if.then ], [ %conv2.i, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit ], [ 0, %entry ]
+  %negativeYear.0 = phi i32 [ 1, %if.then ], [ 0, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit ], [ 0, %entry ]
+  call void @llvm.dbg.value(metadata !1251, i64 0, metadata !1516), !dbg !4001
+  %sub = sub i32 4, %retval.0.i31, !dbg !4001
+  %add = add nsw i32 %sub, %negativeYear.0, !dbg !4001
+  %cmp535 = icmp sgt i32 %add, 0, !dbg !4001
+  br i1 %cmp535, label %for.body.lr.ph, label %for.cond7.preheader, !dbg !4001
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %ptr.promoted37 = load i16** %ptr, align 8, !dbg !4003, !tbaa !2446
+  %5 = add i32 %negativeYear.0, 3, !dbg !4001
+  %6 = sub i32 %5, %retval.0.i31, !dbg !4001
+  %7 = zext i32 %6 to i64
+  %8 = add i64 %7, 1, !dbg !4001
+  %9 = or i32 %negativeYear.0, 4, !dbg !4001
+  %10 = sub i32 %9, %retval.0.i31, !dbg !4001
+  br label %for.body, !dbg !4001
+
+for.cond.for.cond7.preheader_crit_edge:           ; preds = %for.body
+  %scevgep40 = getelementptr i16* %ptr.promoted37, i64 %8
+  store i16* %scevgep40, i16** %ptr, align 8, !dbg !4003, !tbaa !2446
+  br label %for.cond7.preheader, !dbg !4001
+
+for.cond7.preheader:                              ; preds = %for.cond.for.cond7.preheader_crit_edge, %if.end
+  %cmp832 = icmp slt i32 %negativeYear.0, %retval.0.i31, !dbg !4005
+  br i1 %cmp832, label %for.body9.lr.ph, label %for.end15, !dbg !4005
+
+for.body9.lr.ph:                                  ; preds = %for.cond7.preheader
+  %ptr.promoted = load i16** %ptr, align 8, !dbg !4007, !tbaa !2446
+  %11 = zext i32 %negativeYear.0 to i64
+  %12 = add i32 %retval.0.i31, -1, !dbg !4005
+  %13 = sub i32 %12, %negativeYear.0, !dbg !4005
+  %14 = zext i32 %13 to i64, !dbg !4005
+  %15 = add i64 %14, 1, !dbg !4005
+  br label %for.body9, !dbg !4005
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %incdec.ptr638 = phi i16* [ %ptr.promoted37, %for.body.lr.ph ], [ %incdec.ptr6, %for.body ], !dbg !4003
+  %i.036 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.body ]
+  %incdec.ptr6 = getelementptr inbounds i16* %incdec.ptr638, i64 1, !dbg !4003
+  store i16 48, i16* %incdec.ptr638, align 2, !dbg !4003, !tbaa !2552
+  %inc = add nsw i32 %i.036, 1, !dbg !4001
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1516), !dbg !4001
+  %exitcond41 = icmp eq i32 %inc, %10, !dbg !4001
+  br i1 %exitcond41, label %for.cond.for.cond7.preheader_crit_edge, label %for.body, !dbg !4001
+
+for.body9:                                        ; preds = %for.body9, %for.body9.lr.ph
+  %indvars.iv = phi i64 [ %11, %for.body9.lr.ph ], [ %indvars.iv.next, %for.body9 ]
+  %incdec.ptr1234 = phi i16* [ %ptr.promoted, %for.body9.lr.ph ], [ %incdec.ptr12, %for.body9 ], !dbg !4007
+  %arrayidx11 = getelementptr inbounds [16 x i16]* %strBuffer, i64 0, i64 %indvars.iv, !dbg !4007
+  %16 = load i16* %arrayidx11, align 2, !dbg !4007, !tbaa !2552
+  %incdec.ptr12 = getelementptr inbounds i16* %incdec.ptr1234, i64 1, !dbg !4007
+  store i16 %16, i16* %incdec.ptr1234, align 2, !dbg !4007, !tbaa !2552
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !4005
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !4005
+  %exitcond = icmp eq i32 %lftr.wideiv, %retval.0.i31, !dbg !4005
+  br i1 %exitcond, label %for.cond7.for.end15_crit_edge, label %for.body9, !dbg !4005
+
+for.cond7.for.end15_crit_edge:                    ; preds = %for.body9
+  %scevgep = getelementptr i16* %ptr.promoted, i64 %15, !dbg !4005
+  store i16* %scevgep, i16** %ptr, align 8, !dbg !4007, !tbaa !2446
+  br label %for.end15, !dbg !4005
+
+for.end15:                                        ; preds = %for.cond7.for.end15_crit_edge, %for.cond7.preheader
+  %cmp16 = icmp sgt i32 %retval.0.i31, 4, !dbg !4009
+  %sub18 = add nsw i32 %retval.0.i31, -4, !dbg !4010
+  %retval.0 = select i1 %cmp16, i32 %sub18, i32 0, !dbg !4009
+  ret i32 %retval.0, !dbg !4011
+}

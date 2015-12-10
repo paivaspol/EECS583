@@ -1,20 +1,25 @@
-define float @get_weight(float %x, float %r, float %w) #6 {
-  %1 = fcmp olt float %x, %r
-  br i1 %1, label %10, label %2
+define float @get_weight(float %x, float %r, float %w) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float %x}, i64 0, metadata !243), !dbg !648
+  tail call void @llvm.dbg.value(metadata !{float %r}, i64 0, metadata !244), !dbg !648
+  tail call void @llvm.dbg.value(metadata !{float %w}, i64 0, metadata !245), !dbg !648
+  %cmp = fcmp olt float %x, %r, !dbg !649
+  br i1 %cmp, label %if.end7, label %if.else, !dbg !649
 
-; <label>:2                                       ; preds = %0
-  %3 = fcmp ogt float %x, %w
-  br i1 %3, label %10, label %4
+if.else:                                          ; preds = %entry
+  %cmp1 = fcmp ogt float %x, %w, !dbg !650
+  br i1 %cmp1, label %if.end7, label %if.else3, !dbg !650
 
-; <label>:4                                       ; preds = %2
-  %5 = fsub float -0.000000e+00, %w
-  %6 = fsub float %r, %w
-  %7 = fdiv float %5, %6
-  %8 = fdiv float %x, %6
-  %9 = fadd float %7, %8
-  br label %10
+if.else3:                                         ; preds = %if.else
+  %sub = fsub float -0.000000e+00, %w, !dbg !651
+  %sub4 = fsub float %r, %w, !dbg !651
+  %div = fdiv float %sub, %sub4, !dbg !651
+  %div6 = fdiv float %x, %sub4, !dbg !651
+  %add = fadd float %div, %div6, !dbg !651
+  tail call void @llvm.dbg.value(metadata !{float %add}, i64 0, metadata !246), !dbg !651
+  br label %if.end7
 
-; <label>:10                                      ; preds = %2, %0, %4
-  %weight.0 = phi float [ %9, %4 ], [ 1.000000e+00, %0 ], [ 0.000000e+00, %2 ]
-  ret float %weight.0
+if.end7:                                          ; preds = %if.else, %entry, %if.else3
+  %weight.0 = phi float [ %add, %if.else3 ], [ 1.000000e+00, %entry ], [ 0.000000e+00, %if.else ]
+  ret float %weight.0, !dbg !652
 }

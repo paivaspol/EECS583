@@ -1,0 +1,36 @@
+define void @_ZN12InMemHandler10charactersEPKtj(%class.InMemHandler* %this, i16* nocapture %chars, i32 %length) unnamed_addr #4 align 2 {
+entry:
+  %buffer = alloca [20 x i8], align 16
+  call void @llvm.dbg.value(metadata !{%class.InMemHandler* %this}, i64 0, metadata !1997), !dbg !2513
+  call void @llvm.dbg.value(metadata !{i16* %chars}, i64 0, metadata !1998), !dbg !2513
+  call void @llvm.dbg.value(metadata !{i32 %length}, i64 0, metadata !1999), !dbg !2514
+  %m_startCollectingCharacters = getelementptr inbounds %class.InMemHandler* %this, i64 0, i32 0, i32 3, !dbg !2515
+  %0 = load i8* %m_startCollectingCharacters, align 1, !dbg !2515, !tbaa !2465, !range !2516
+  %tobool = icmp eq i8 %0, 0, !dbg !2515
+  %cmp211 = icmp eq i32 %length, 0, !dbg !2517
+  %or.cond = or i1 %tobool, %cmp211, !dbg !2515
+  br i1 %or.cond, label %if.end, label %for.body.lr.ph, !dbg !2515
+
+for.body.lr.ph:                                   ; preds = %entry
+  %arrayidx = getelementptr inbounds [20 x i8]* %buffer, i64 0, i64 0, !dbg !2518
+  %m_fStream = getelementptr inbounds %class.InMemHandler* %this, i64 0, i32 1, !dbg !2520
+  br label %for.body, !dbg !2517
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  store i8 0, i8* %arrayidx, align 16, !dbg !2518, !tbaa !2466
+  %arrayidx3 = getelementptr inbounds i16* %chars, i64 %indvars.iv, !dbg !2521
+  %1 = load i16* %arrayidx3, align 2, !dbg !2521, !tbaa !2522
+  %conv4 = zext i16 %1 to i32, !dbg !2521
+  %call = call i32 (i8*, i8*, ...)* @sprintf(i8* %arrayidx, i8* getelementptr inbounds ([8 x i8]* @.str2, i64 0, i64 0), i32 %conv4) #11, !dbg !2521
+  %call7 = call i64 @strlen(i8* %arrayidx) #12, !dbg !2520
+  %conv8 = trunc i64 %call7 to i32, !dbg !2520
+  call void @_ZN21XalanFileOutputStream12writeAsASCIIEPKcj(%class.XalanFileOutputStream* %m_fStream, i8* %arrayidx, i32 %conv8) #9, !dbg !2520
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2517
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !2517
+  %exitcond = icmp eq i32 %lftr.wideiv, %length, !dbg !2517
+  br i1 %exitcond, label %if.end, label %for.body, !dbg !2517
+
+if.end:                                           ; preds = %for.body, %entry
+  ret void, !dbg !2523
+}

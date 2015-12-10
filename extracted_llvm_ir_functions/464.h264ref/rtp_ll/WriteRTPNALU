@@ -1,116 +1,146 @@
-define i32 @WriteRTPNALU(%struct.NALU_t* nocapture %n) #0 {
+define i32 @WriteRTPNALU(%struct.NALU_t* %n) #0 {
 entry:
-  %forbidden_bit = getelementptr inbounds %struct.NALU_t* %n, i64 0, i32 5
-  %0 = load i32* %forbidden_bit, align 4, !tbaa !0
-  %shl = shl i32 %0, 7
-  %nal_reference_idc = getelementptr inbounds %struct.NALU_t* %n, i64 0, i32 4
-  %1 = load i32* %nal_reference_idc, align 4, !tbaa !0
-  %shl1 = shl i32 %1, 5
-  %or = or i32 %shl1, %shl
-  %nal_unit_type = getelementptr inbounds %struct.NALU_t* %n, i64 0, i32 3
-  %2 = load i32* %nal_unit_type, align 4, !tbaa !0
-  %or2 = or i32 %or, %2
-  %conv = trunc i32 %or2 to i8
-  %buf = getelementptr inbounds %struct.NALU_t* %n, i64 0, i32 6
-  %3 = load i8** %buf, align 8, !tbaa !3
-  store i8 %conv, i8* %3, align 1, !tbaa !1
-  %call = tail call noalias i8* @malloc(i64 72) #5
-  %4 = bitcast i8* %call to %struct.RTPpacket_t*
-  %cmp = icmp eq i8* %call, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.NALU_t* %n}, i64 0, metadata !119), !dbg !651
+  %0 = load %struct._IO_FILE** @f, align 8, !dbg !652, !tbaa !630
+  %cmp = icmp eq %struct._IO_FILE* %0, null, !dbg !652
+  br i1 %cmp, label %cond.false, label %cond.end, !dbg !652
 
-if.then:                                          ; preds = %entry
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([15 x i8]* @.str, i64 0, i64 0)) #5
-  br label %if.end
+cond.false:                                       ; preds = %entry
+  tail call void @__assert_fail(i8* getelementptr inbounds ([16 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0), i32 176, i8* getelementptr inbounds ([27 x i8]* @__PRETTY_FUNCTION__.WriteRTPNALU, i64 0, i64 0)) #6, !dbg !652
+  unreachable, !dbg !652
 
-if.end:                                           ; preds = %if.then, %entry
-  %call4 = tail call noalias i8* @malloc(i64 65508) #5
-  %packet = getelementptr inbounds i8* %call, i64 56
-  %5 = bitcast i8* %packet to i8**
-  store i8* %call4, i8** %5, align 8, !tbaa !3
-  %cmp5 = icmp eq i8* %call4, null
-  br i1 %cmp5, label %if.then7, label %if.end8
+cond.end:                                         ; preds = %entry
+  %cmp1 = icmp eq %struct.NALU_t* %n, null, !dbg !653
+  br i1 %cmp1, label %cond.false3, label %cond.end4, !dbg !653
 
-if.then7:                                         ; preds = %if.end
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([15 x i8]* @.str1, i64 0, i64 0)) #5
-  br label %if.end8
+cond.false3:                                      ; preds = %cond.end
+  tail call void @__assert_fail(i8* getelementptr inbounds ([16 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0), i32 177, i8* getelementptr inbounds ([27 x i8]* @__PRETTY_FUNCTION__.WriteRTPNALU, i64 0, i64 0)) #6, !dbg !653
+  unreachable, !dbg !653
 
-if.end8:                                          ; preds = %if.then7, %if.end
-  %call9 = tail call noalias i8* @malloc(i64 65508) #5
-  %payload = getelementptr inbounds i8* %call, i64 40
-  %6 = bitcast i8* %payload to i8**
-  store i8* %call9, i8** %6, align 8, !tbaa !3
-  %cmp10 = icmp eq i8* %call9, null
-  br i1 %cmp10, label %if.then12, label %if.end13
+cond.end4:                                        ; preds = %cond.end
+  %len = getelementptr inbounds %struct.NALU_t* %n, i64 0, i32 1, !dbg !654
+  %1 = load i32* %len, align 4, !dbg !654, !tbaa !620
+  %cmp5 = icmp ult i32 %1, 65000, !dbg !654
+  br i1 %cmp5, label %cond.end8, label %cond.false7, !dbg !654
 
-if.then12:                                        ; preds = %if.end8
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([15 x i8]* @.str2, i64 0, i64 0)) #5
-  br label %if.end13
+cond.false7:                                      ; preds = %cond.end4
+  tail call void @__assert_fail(i8* getelementptr inbounds ([15 x i8]* @.str14, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0), i32 178, i8* getelementptr inbounds ([27 x i8]* @__PRETTY_FUNCTION__.WriteRTPNALU, i64 0, i64 0)) #6, !dbg !654
+  unreachable, !dbg !654
 
-if.end13:                                         ; preds = %if.then12, %if.end8
-  %v = bitcast i8* %call to i32*
-  store i32 2, i32* %v, align 4, !tbaa !0
-  %p14 = getelementptr inbounds i8* %call, i64 4
-  %7 = bitcast i8* %p14 to i32*
-  store i32 0, i32* %7, align 4, !tbaa !0
-  %x = getelementptr inbounds i8* %call, i64 8
-  %8 = bitcast i8* %x to i32*
-  store i32 0, i32* %8, align 4, !tbaa !0
-  %cc = getelementptr inbounds i8* %call, i64 12
-  %9 = bitcast i8* %cc to i32*
-  store i32 0, i32* %9, align 4, !tbaa !0
-  %startcodeprefix_len = getelementptr inbounds %struct.NALU_t* %n, i64 0, i32 0
-  %10 = load i32* %startcodeprefix_len, align 4, !tbaa !0
-  %cmp15 = icmp eq i32 %10, 4
-  %conv16 = zext i1 %cmp15 to i32
-  %m = getelementptr inbounds i8* %call, i64 16
-  %11 = bitcast i8* %m to i32*
-  store i32 %conv16, i32* %11, align 4, !tbaa !0
-  %pt = getelementptr inbounds i8* %call, i64 20
-  %12 = bitcast i8* %pt to i32*
-  store i32 105, i32* %12, align 4, !tbaa !0
-  %13 = load i32* @CurrentRTPSequenceNumber, align 4, !tbaa !0
-  %inc = add nsw i32 %13, 1
-  store i32 %inc, i32* @CurrentRTPSequenceNumber, align 4, !tbaa !0
-  %seq = getelementptr inbounds i8* %call, i64 24
-  %14 = bitcast i8* %seq to i32*
-  store i32 %13, i32* %14, align 4, !tbaa !0
-  %15 = load i32* @CurrentRTPTimestamp, align 4, !tbaa !0
-  %timestamp = getelementptr inbounds i8* %call, i64 28
-  %16 = bitcast i8* %timestamp to i32*
-  store i32 %15, i32* %16, align 4, !tbaa !0
-  %ssrc = getelementptr inbounds i8* %call, i64 32
-  %17 = bitcast i8* %ssrc to i32*
-  store i32 305419896, i32* %17, align 4, !tbaa !0
-  %len = getelementptr inbounds %struct.NALU_t* %n, i64 0, i32 1
-  %18 = load i32* %len, align 4, !tbaa !0
-  %paylen = getelementptr inbounds i8* %call, i64 48
-  %19 = bitcast i8* %paylen to i32*
-  store i32 %18, i32* %19, align 4, !tbaa !0
-  %20 = load i8** %buf, align 8, !tbaa !3
-  %conv20 = zext i32 %18 to i64
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call9, i8* %20, i64 %conv20, i32 1, i1 false)
-  %call21 = tail call i32 @ComposeRTPPacket(%struct.RTPpacket_t* %4) #6
-  %21 = load %struct._IO_FILE** @f, align 8, !tbaa !3
-  %call27 = tail call i32 @WriteRTPPacket(%struct.RTPpacket_t* %4, %struct._IO_FILE* %21) #6
-  %cmp28 = icmp slt i32 %call27, 0
-  br i1 %cmp28, label %if.then30, label %if.end32
+cond.end8:                                        ; preds = %cond.end4
+  %forbidden_bit = getelementptr inbounds %struct.NALU_t* %n, i64 0, i32 5, !dbg !655
+  %2 = load i32* %forbidden_bit, align 4, !dbg !655, !tbaa !620
+  %shl = shl i32 %2, 7, !dbg !655
+  %nal_reference_idc = getelementptr inbounds %struct.NALU_t* %n, i64 0, i32 4, !dbg !655
+  %3 = load i32* %nal_reference_idc, align 4, !dbg !655, !tbaa !620
+  %shl9 = shl i32 %3, 5, !dbg !655
+  %or = or i32 %shl9, %shl, !dbg !655
+  %nal_unit_type = getelementptr inbounds %struct.NALU_t* %n, i64 0, i32 3, !dbg !655
+  %4 = load i32* %nal_unit_type, align 4, !dbg !655, !tbaa !620
+  %or10 = or i32 %or, %4, !dbg !655
+  %conv = trunc i32 %or10 to i8, !dbg !655
+  %buf = getelementptr inbounds %struct.NALU_t* %n, i64 0, i32 6, !dbg !655
+  %5 = load i8** %buf, align 8, !dbg !655, !tbaa !630
+  store i8 %conv, i8* %5, align 1, !dbg !655, !tbaa !621
+  %call = tail call noalias i8* @malloc(i64 72) #7, !dbg !656
+  %6 = bitcast i8* %call to %struct.RTPpacket_t*, !dbg !656
+  tail call void @llvm.dbg.value(metadata !{%struct.RTPpacket_t* %6}, i64 0, metadata !120), !dbg !656
+  %cmp11 = icmp eq i8* %call, null, !dbg !656
+  br i1 %cmp11, label %if.then, label %if.end, !dbg !656
 
-if.then30:                                        ; preds = %if.end13
-  %packlen = getelementptr inbounds i8* %call, i64 64
-  %22 = bitcast i8* %packlen to i32*
-  %23 = load i32* %22, align 4, !tbaa !0
-  %call31 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([54 x i8]* @.str4, i64 0, i64 0), i32 %23) #5
-  tail call void @exit(i32 -1) #7
-  unreachable
+if.then:                                          ; preds = %cond.end8
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([15 x i8]* @.str15, i64 0, i64 0)) #7, !dbg !657
+  br label %if.end, !dbg !657
 
-if.end32:                                         ; preds = %if.end13
-  %24 = load i8** %5, align 8, !tbaa !3
-  tail call void @free(i8* %24) #5
-  %25 = load i8** %6, align 8, !tbaa !3
-  tail call void @free(i8* %25) #5
-  tail call void @free(i8* %call) #5
-  %26 = load i32* %len, align 4, !tbaa !0
-  %mul = shl i32 %26, 3
-  ret i32 %mul
+if.end:                                           ; preds = %if.then, %cond.end8
+  %call13 = tail call noalias i8* @malloc(i64 65508) #7, !dbg !658
+  %packet = getelementptr inbounds i8* %call, i64 56, !dbg !658
+  %7 = bitcast i8* %packet to i8**, !dbg !658
+  store i8* %call13, i8** %7, align 8, !dbg !658, !tbaa !630
+  %cmp14 = icmp eq i8* %call13, null, !dbg !658
+  br i1 %cmp14, label %if.then16, label %if.end17, !dbg !658
+
+if.then16:                                        ; preds = %if.end
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([15 x i8]* @.str16, i64 0, i64 0)) #7, !dbg !659
+  br label %if.end17, !dbg !659
+
+if.end17:                                         ; preds = %if.then16, %if.end
+  %call18 = tail call noalias i8* @malloc(i64 65508) #7, !dbg !660
+  %payload = getelementptr inbounds i8* %call, i64 40, !dbg !660
+  %8 = bitcast i8* %payload to i8**, !dbg !660
+  store i8* %call18, i8** %8, align 8, !dbg !660, !tbaa !630
+  %cmp19 = icmp eq i8* %call18, null, !dbg !660
+  br i1 %cmp19, label %if.then21, label %if.end22, !dbg !660
+
+if.then21:                                        ; preds = %if.end17
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([15 x i8]* @.str17, i64 0, i64 0)) #7, !dbg !661
+  %.pre = load i8** %8, align 8, !dbg !662, !tbaa !630
+  br label %if.end22, !dbg !661
+
+if.end22:                                         ; preds = %if.then21, %if.end17
+  %9 = phi i8* [ %.pre, %if.then21 ], [ %call18, %if.end17 ]
+  %v = bitcast i8* %call to i32*, !dbg !663
+  store i32 2, i32* %v, align 4, !dbg !663, !tbaa !620
+  %p23 = getelementptr inbounds i8* %call, i64 4, !dbg !664
+  %10 = bitcast i8* %p23 to i32*, !dbg !664
+  store i32 0, i32* %10, align 4, !dbg !664, !tbaa !620
+  %x = getelementptr inbounds i8* %call, i64 8, !dbg !665
+  %11 = bitcast i8* %x to i32*, !dbg !665
+  store i32 0, i32* %11, align 4, !dbg !665, !tbaa !620
+  %cc = getelementptr inbounds i8* %call, i64 12, !dbg !666
+  %12 = bitcast i8* %cc to i32*, !dbg !666
+  store i32 0, i32* %12, align 4, !dbg !666, !tbaa !620
+  %startcodeprefix_len = getelementptr inbounds %struct.NALU_t* %n, i64 0, i32 0, !dbg !667
+  %13 = load i32* %startcodeprefix_len, align 4, !dbg !667, !tbaa !620
+  %cmp24 = icmp eq i32 %13, 4, !dbg !667
+  %conv25 = zext i1 %cmp24 to i32, !dbg !667
+  %m = getelementptr inbounds i8* %call, i64 16, !dbg !667
+  %14 = bitcast i8* %m to i32*, !dbg !667
+  store i32 %conv25, i32* %14, align 4, !dbg !667, !tbaa !620
+  %pt = getelementptr inbounds i8* %call, i64 20, !dbg !668
+  %15 = bitcast i8* %pt to i32*, !dbg !668
+  store i32 105, i32* %15, align 4, !dbg !668, !tbaa !620
+  %16 = load i32* @CurrentRTPSequenceNumber, align 4, !dbg !669, !tbaa !620
+  %inc = add nsw i32 %16, 1, !dbg !669
+  store i32 %inc, i32* @CurrentRTPSequenceNumber, align 4, !dbg !669, !tbaa !620
+  %seq = getelementptr inbounds i8* %call, i64 24, !dbg !669
+  %17 = bitcast i8* %seq to i32*, !dbg !669
+  store i32 %16, i32* %17, align 4, !dbg !669, !tbaa !620
+  %18 = load i32* @CurrentRTPTimestamp, align 4, !dbg !670, !tbaa !620
+  %timestamp = getelementptr inbounds i8* %call, i64 28, !dbg !670
+  %19 = bitcast i8* %timestamp to i32*, !dbg !670
+  store i32 %18, i32* %19, align 4, !dbg !670, !tbaa !620
+  %ssrc = getelementptr inbounds i8* %call, i64 32, !dbg !671
+  %20 = bitcast i8* %ssrc to i32*, !dbg !671
+  store i32 305419896, i32* %20, align 4, !dbg !671, !tbaa !620
+  %21 = load i32* %len, align 4, !dbg !672, !tbaa !620
+  %paylen = getelementptr inbounds i8* %call, i64 48, !dbg !672
+  %22 = bitcast i8* %paylen to i32*, !dbg !672
+  store i32 %21, i32* %22, align 4, !dbg !672, !tbaa !620
+  %23 = load i8** %buf, align 8, !dbg !662, !tbaa !630
+  %conv30 = zext i32 %21 to i64, !dbg !662
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %9, i8* %23, i64 %conv30, i32 1, i1 false), !dbg !662
+  %call31 = tail call i32 @ComposeRTPPacket(%struct.RTPpacket_t* %6) #8, !dbg !673
+  %24 = load %struct._IO_FILE** @f, align 8, !dbg !674, !tbaa !630
+  %call37 = tail call i32 @WriteRTPPacket(%struct.RTPpacket_t* %6, %struct._IO_FILE* %24) #8, !dbg !674
+  %cmp38 = icmp slt i32 %call37, 0, !dbg !674
+  br i1 %cmp38, label %if.then40, label %if.end42, !dbg !674
+
+if.then40:                                        ; preds = %if.end22
+  %packlen = getelementptr inbounds i8* %call, i64 64, !dbg !675
+  %25 = bitcast i8* %packlen to i32*, !dbg !675
+  %26 = load i32* %25, align 4, !dbg !675, !tbaa !620
+  %call41 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([54 x i8]* @.str19, i64 0, i64 0), i32 %26) #7, !dbg !675
+  tail call void @exit(i32 -1) #6, !dbg !677
+  unreachable, !dbg !677
+
+if.end42:                                         ; preds = %if.end22
+  %27 = load i8** %7, align 8, !dbg !678, !tbaa !630
+  tail call void @free(i8* %27) #7, !dbg !678
+  %28 = load i8** %8, align 8, !dbg !679, !tbaa !630
+  tail call void @free(i8* %28) #7, !dbg !679
+  tail call void @free(i8* %call) #7, !dbg !680
+  %29 = load i32* %len, align 4, !dbg !681, !tbaa !620
+  %mul = shl i32 %29, 3, !dbg !681
+  ret i32 %mul, !dbg !681
 }

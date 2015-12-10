@@ -1,27 +1,29 @@
 define void @DV_shiftBase(%struct._DV* %dv, i32 %offset) #0 {
 entry:
-  %cmp = icmp eq %struct._DV* %dv, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._DV* %dv}, i64 0, metadata !21), !dbg !97
+  tail call void @llvm.dbg.value(metadata !{i32 %offset}, i64 0, metadata !22), !dbg !98
+  %cmp = icmp eq %struct._DV* %dv, null, !dbg !99
+  br i1 %cmp, label %if.then, label %if.end, !dbg !99
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), %struct._DV* null, i32 %offset) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !100, !tbaa !102
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), %struct._DV* null, i32 %offset) #5, !dbg !100
+  tail call void @exit(i32 -1) #6, !dbg !105
+  unreachable, !dbg !105
 
 if.end:                                           ; preds = %entry
-  %vec = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3
-  %1 = load double** %vec, align 8, !tbaa !0
-  %idx.ext = sext i32 %offset to i64
-  %add.ptr = getelementptr inbounds double* %1, i64 %idx.ext
-  store double* %add.ptr, double** %vec, align 8, !tbaa !0
-  %maxsize = getelementptr inbounds %struct._DV* %dv, i64 0, i32 1
-  %2 = load i32* %maxsize, align 4, !tbaa !3
-  %sub = sub nsw i32 %2, %offset
-  store i32 %sub, i32* %maxsize, align 4, !tbaa !3
-  %size = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0
-  %3 = load i32* %size, align 4, !tbaa !3
-  %sub1 = sub nsw i32 %3, %offset
-  store i32 %sub1, i32* %size, align 4, !tbaa !3
-  ret void
+  %vec = getelementptr inbounds %struct._DV* %dv, i64 0, i32 3, !dbg !106
+  %1 = load double** %vec, align 8, !dbg !106, !tbaa !102
+  %idx.ext = sext i32 %offset to i64, !dbg !106
+  %add.ptr = getelementptr inbounds double* %1, i64 %idx.ext, !dbg !106
+  store double* %add.ptr, double** %vec, align 8, !dbg !106, !tbaa !102
+  %maxsize = getelementptr inbounds %struct._DV* %dv, i64 0, i32 1, !dbg !107
+  %2 = load i32* %maxsize, align 4, !dbg !107, !tbaa !108
+  %sub = sub nsw i32 %2, %offset, !dbg !107
+  store i32 %sub, i32* %maxsize, align 4, !dbg !107, !tbaa !108
+  %size = getelementptr inbounds %struct._DV* %dv, i64 0, i32 0, !dbg !109
+  %3 = load i32* %size, align 4, !dbg !109, !tbaa !108
+  %sub1 = sub nsw i32 %3, %offset, !dbg !109
+  store i32 %sub1, i32* %size, align 4, !dbg !109, !tbaa !108
+  ret void, !dbg !110
 }

@@ -1,45 +1,51 @@
 define internal fastcc void @ix86_emit_restore_regs_using_mov(%struct.rtx_def* %pointer, i32 %offset, i32 %maybe_eh_return) #1 {
 entry:
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %pointer}, i64 0, metadata !3869), !dbg !6761
+  tail call void @llvm.dbg.value(metadata !{i32 %offset}, i64 0, metadata !3870), !dbg !6762
+  tail call void @llvm.dbg.value(metadata !{i32 %maybe_eh_return}, i64 0, metadata !3871), !dbg !6763
+  tail call void @llvm.dbg.value(metadata !1550, i64 0, metadata !3872), !dbg !6764
+  br label %for.body, !dbg !6764
 
 for.body:                                         ; preds = %for.inc, %entry
   %regno.020 = phi i32 [ 0, %entry ], [ %inc, %for.inc ]
   %offset.addr.019 = phi i32 [ %offset, %entry ], [ %offset.addr.1, %for.inc ]
-  %call = tail call fastcc i32 @ix86_save_reg(i32 %regno.020, i32 %maybe_eh_return) #10
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %for.inc, label %if.then
+  %call = tail call fastcc i32 @ix86_save_reg(i32 %regno.020, i32 %maybe_eh_return) #11, !dbg !6766
+  %tobool = icmp eq i32 %call, 0, !dbg !6766
+  br i1 %tobool, label %for.inc, label %if.then, !dbg !6766
 
 if.then:                                          ; preds = %for.body
-  %0 = load i32* @target_flags, align 4, !tbaa !0
-  %and = lshr i32 %0, 25
-  %1 = and i32 %and, 1
-  %2 = or i32 %1, 4
-  %call2 = tail call %struct.rtx_def* @gen_rtx_REG(i32 %2, i32 %regno.020) #9
-  %3 = load i32* @target_flags, align 4, !tbaa !0
-  %and3 = lshr i32 %3, 25
-  %4 = and i32 %and3, 1
-  %5 = or i32 %4, 4
-  %call6 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 %5, %struct.rtx_def* %pointer) #9
-  %6 = load i32* @target_flags, align 4, !tbaa !0
-  %and7 = lshr i32 %6, 25
-  %7 = and i32 %and7, 1
-  %8 = or i32 %7, 4
-  %conv = sext i32 %offset.addr.019 to i64
-  %call10 = tail call %struct.rtx_def* @adjust_address_1(%struct.rtx_def* %call6, i32 %8, i64 %conv, i32 1, i32 1) #9
-  %call11 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call2, %struct.rtx_def* %call10) #9
-  %9 = load i32* @target_flags, align 4, !tbaa !0
-  %and12 = lshr i32 %9, 23
-  %10 = and i32 %and12, 4
-  %11 = add i32 %offset.addr.019, 4
-  %add = add i32 %11, %10
-  br label %for.inc
+  %0 = load i32* @target_flags, align 4, !dbg !6767, !tbaa !4347
+  %and = lshr i32 %0, 25, !dbg !6767
+  %1 = and i32 %and, 1, !dbg !6767
+  %2 = or i32 %1, 4, !dbg !6767
+  %call2 = tail call %struct.rtx_def* @gen_rtx_REG(i32 %2, i32 %regno.020) #10, !dbg !6767
+  %3 = load i32* @target_flags, align 4, !dbg !6769, !tbaa !4347
+  %and3 = lshr i32 %3, 25, !dbg !6769
+  %4 = and i32 %and3, 1, !dbg !6769
+  %5 = or i32 %4, 4, !dbg !6769
+  %call6 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 %5, %struct.rtx_def* %pointer) #10, !dbg !6769
+  %6 = load i32* @target_flags, align 4, !dbg !6769, !tbaa !4347
+  %and7 = lshr i32 %6, 25, !dbg !6769
+  %7 = and i32 %and7, 1, !dbg !6769
+  %8 = or i32 %7, 4, !dbg !6769
+  %conv = sext i32 %offset.addr.019 to i64, !dbg !6769
+  %call10 = tail call %struct.rtx_def* @adjust_address_1(%struct.rtx_def* %call6, i32 %8, i64 %conv, i32 1, i32 1) #10, !dbg !6769
+  %call11 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call2, %struct.rtx_def* %call10) #10, !dbg !6769
+  %9 = load i32* @target_flags, align 4, !dbg !6770, !tbaa !4347
+  %and12 = lshr i32 %9, 23, !dbg !6770
+  %10 = and i32 %and12, 4, !dbg !6770
+  %11 = add i32 %offset.addr.019, 4, !dbg !6770
+  %add = add i32 %11, %10, !dbg !6770
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !3870), !dbg !6770
+  br label %for.inc, !dbg !6771
 
 for.inc:                                          ; preds = %for.body, %if.then
   %offset.addr.1 = phi i32 [ %add, %if.then ], [ %offset.addr.019, %for.body ]
-  %inc = add nsw i32 %regno.020, 1
-  %exitcond = icmp eq i32 %inc, 53
-  br i1 %exitcond, label %for.end, label %for.body
+  %inc = add nsw i32 %regno.020, 1, !dbg !6764
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !3872), !dbg !6764
+  %exitcond = icmp eq i32 %inc, 53, !dbg !6764
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !6764
 
 for.end:                                          ; preds = %for.inc
-  ret void
+  ret void, !dbg !6772
 }

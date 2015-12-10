@@ -1,17 +1,23 @@
 define i32 @quantum_ipow(i32 %a, i32 %b) #0 {
 entry:
-  %cmp3 = icmp sgt i32 %b, 0
-  br i1 %cmp3, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{i32 %a}, i64 0, metadata !10), !dbg !48
+  tail call void @llvm.dbg.value(metadata !{i32 %b}, i64 0, metadata !11), !dbg !48
+  tail call void @llvm.dbg.value(metadata !49, i64 0, metadata !13), !dbg !50
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !12), !dbg !51
+  %cmp3 = icmp sgt i32 %b, 0, !dbg !51
+  br i1 %cmp3, label %for.body, label %for.end, !dbg !51
 
 for.body:                                         ; preds = %entry, %for.body
   %r.05 = phi i32 [ %mul, %for.body ], [ 1, %entry ]
   %i.04 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
-  %mul = mul nsw i32 %r.05, %a
-  %inc = add nsw i32 %i.04, 1
-  %exitcond = icmp eq i32 %inc, %b
-  br i1 %exitcond, label %for.end, label %for.body
+  %mul = mul nsw i32 %r.05, %a, !dbg !53
+  tail call void @llvm.dbg.value(metadata !{i32 %mul}, i64 0, metadata !13), !dbg !53
+  %inc = add nsw i32 %i.04, 1, !dbg !51
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !12), !dbg !51
+  %exitcond = icmp eq i32 %inc, %b, !dbg !51
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !51
 
 for.end:                                          ; preds = %for.body, %entry
   %r.0.lcssa = phi i32 [ 1, %entry ], [ %mul, %for.body ]
-  ret i32 %r.0.lcssa
+  ret i32 %r.0.lcssa, !dbg !54
 }

@@ -1,0 +1,48 @@
+define linkonce_odr i64 @_ZN6soplex7DataSetIiE5reMaxEi(%"class.soplex::DataSet"* nocapture %this, i32 %newmax) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataSet"* %this}, i64 0, metadata !3176), !dbg !4132
+  tail call void @llvm.dbg.value(metadata !{i32 %newmax}, i64 0, metadata !3177), !dbg !4132
+  %theitem = getelementptr inbounds %"class.soplex::DataSet"* %this, i64 0, i32 0, !dbg !4133
+  %0 = load %"struct.soplex::DataSet<int>::Item"** %theitem, align 8, !dbg !4133, !tbaa !3479
+  tail call void @llvm.dbg.value(metadata !{%"struct.soplex::DataSet<int>::Item"* %0}, i64 0, metadata !3178), !dbg !4133
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataSet"* %this}, i64 0, metadata !4134), !dbg !4136
+  %thesize.i = getelementptr inbounds %"class.soplex::DataSet"* %this, i64 0, i32 3, !dbg !4137
+  %1 = load i32* %thesize.i, align 4, !dbg !4137, !tbaa !3494
+  %cmp = icmp sgt i32 %1, %newmax, !dbg !4135
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataSet"* %this}, i64 0, metadata !4134), !dbg !4136
+  %.newmax = select i1 %cmp, i32 %1, i32 %newmax, !dbg !4135
+  tail call void @llvm.dbg.value(metadata !{i32 %.newmax}, i64 0, metadata !3177), !dbg !4135
+  %firstfree = getelementptr inbounds %"class.soplex::DataSet"* %this, i64 0, i32 5, !dbg !4138
+  tail call void @llvm.dbg.value(metadata !{i32* %firstfree}, i64 0, metadata !3180), !dbg !4138
+  %2 = load i32* %firstfree, align 4, !dbg !4139, !tbaa !3494
+  %themax = getelementptr inbounds %"class.soplex::DataSet"* %this, i64 0, i32 2, !dbg !4139
+  %3 = load i32* %themax, align 4, !dbg !4139, !tbaa !3494
+  %sub320 = xor i32 %3, -1, !dbg !4139
+  %cmp421 = icmp eq i32 %2, %sub320, !dbg !4139
+  br i1 %cmp421, label %while.end, label %while.body, !dbg !4139
+
+while.body:                                       ; preds = %entry, %while.body
+  %4 = phi i32 [ %5, %while.body ], [ %2, %entry ]
+  %sub5 = xor i32 %4, -1, !dbg !4140
+  %idxprom = sext i32 %sub5 to i64, !dbg !4140
+  %info = getelementptr inbounds %"struct.soplex::DataSet<int>::Item"* %0, i64 %idxprom, i32 1, !dbg !4140
+  tail call void @llvm.dbg.value(metadata !{i32* %info}, i64 0, metadata !3180), !dbg !4140
+  %5 = load i32* %info, align 4, !dbg !4139, !tbaa !3494
+  %cmp4 = icmp eq i32 %5, %sub320, !dbg !4139
+  br i1 %cmp4, label %while.end, label %while.body, !dbg !4139
+
+while.end:                                        ; preds = %while.body, %entry
+  %lastfree.0.lcssa = phi i32* [ %firstfree, %entry ], [ %info, %while.body ]
+  %sub8 = xor i32 %.newmax, -1, !dbg !4141
+  store i32 %sub8, i32* %lastfree.0.lcssa, align 4, !dbg !4141, !tbaa !3494
+  store i32 %.newmax, i32* %themax, align 4, !dbg !4142, !tbaa !3494
+  tail call void @_ZN6soplex11spx_reallocIPNS_7DataSetIiE4ItemEEEvRT_i(%"struct.soplex::DataSet<int>::Item"** %theitem, i32 %.newmax) #11, !dbg !4143
+  %thekey = getelementptr inbounds %"class.soplex::DataSet"* %this, i64 0, i32 1, !dbg !4144
+  %6 = load i32* %themax, align 4, !dbg !4144, !tbaa !3494
+  tail call void @_ZN6soplex11spx_reallocIPNS_7DataKeyEEEvRT_i(%"class.soplex::DataKey"** %thekey, i32 %6) #11, !dbg !4144
+  %7 = load %"struct.soplex::DataSet<int>::Item"** %theitem, align 8, !dbg !4145, !tbaa !3479
+  %sub.ptr.lhs.cast = ptrtoint %"struct.soplex::DataSet<int>::Item"* %7 to i64, !dbg !4145
+  %sub.ptr.rhs.cast = ptrtoint %"struct.soplex::DataSet<int>::Item"* %0 to i64, !dbg !4145
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !4145
+  ret i64 %sub.ptr.sub, !dbg !4145
+}

@@ -1,0 +1,36 @@
+define linkonce_odr zeroext i1 @_ZNK6soplex9DataArrayIdE12isConsistentEv(%"class.soplex::DataArray.0"* nocapture %this) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataArray.0"* %this}, i64 0, metadata !5294), !dbg !6410
+  %data = getelementptr inbounds %"class.soplex::DataArray.0"* %this, i64 0, i32 2, !dbg !6411
+  %0 = load double** %data, align 8, !dbg !6411, !tbaa !5661
+  %cmp = icmp eq double* %0, null, !dbg !6411
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !6411
+
+lor.lhs.false:                                    ; preds = %entry
+  %themax = getelementptr inbounds %"class.soplex::DataArray.0"* %this, i64 0, i32 1, !dbg !6411
+  %1 = load i32* %themax, align 4, !dbg !6411, !tbaa !5732
+  %cmp2 = icmp slt i32 %1, 1, !dbg !6411
+  br i1 %cmp2, label %if.then, label %lor.lhs.false3, !dbg !6411
+
+lor.lhs.false3:                                   ; preds = %lor.lhs.false
+  %thesize = getelementptr inbounds %"class.soplex::DataArray.0"* %this, i64 0, i32 0, !dbg !6411
+  %2 = load i32* %thesize, align 4, !dbg !6411, !tbaa !5732
+  %cmp5 = icmp slt i32 %1, %2, !dbg !6411
+  %cmp8 = icmp slt i32 %2, 0, !dbg !6411
+  %or.cond = or i1 %cmp5, %cmp8, !dbg !6411
+  br i1 %or.cond, label %if.then, label %lor.lhs.false9, !dbg !6411
+
+lor.lhs.false9:                                   ; preds = %lor.lhs.false3
+  %memFactor = getelementptr inbounds %"class.soplex::DataArray.0"* %this, i64 0, i32 3, !dbg !6411
+  %3 = load double* %memFactor, align 8, !dbg !6411, !tbaa !5739
+  %cmp10 = fcmp olt double %3, 1.000000e+00, !dbg !6411
+  br i1 %cmp10, label %if.then, label %return, !dbg !6411
+
+if.then:                                          ; preds = %lor.lhs.false9, %lor.lhs.false3, %lor.lhs.false, %entry
+  %call = tail call zeroext i1 @_ZN6soplex15msginconsistentEPKcS1_i(i8* getelementptr inbounds ([10 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([56 x i8]* @.str7, i64 0, i64 0), i32 280) #10, !dbg !6413
+  br label %return, !dbg !6413
+
+return:                                           ; preds = %lor.lhs.false9, %if.then
+  %retval.0 = phi i1 [ %call, %if.then ], [ true, %lor.lhs.false9 ]
+  ret i1 %retval.0, !dbg !6414
+}

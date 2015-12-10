@@ -1,0 +1,14 @@
+define void @MAIN_startClock(%struct.MAIN_Time* nocapture %time) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.MAIN_Time* %time}, i64 0, metadata !342), !dbg !454
+  %call = tail call i64 @sysconf(i32 2) #8, !dbg !455
+  %conv = sitofp i64 %call to double, !dbg !455
+  %div = fdiv double 1.000000e+00, %conv, !dbg !455
+  %timeScale = getelementptr inbounds %struct.MAIN_Time* %time, i64 0, i32 0, !dbg !455
+  store double %div, double* %timeScale, align 8, !dbg !455, !tbaa !381
+  %timeStart = getelementptr inbounds %struct.MAIN_Time* %time, i64 0, i32 3, !dbg !456
+  %call1 = tail call i64 @times(%struct.tms* %timeStart) #8, !dbg !456
+  %tickStart = getelementptr inbounds %struct.MAIN_Time* %time, i64 0, i32 1, !dbg !456
+  store i64 %call1, i64* %tickStart, align 8, !dbg !456, !tbaa !383
+  ret void, !dbg !457
+}

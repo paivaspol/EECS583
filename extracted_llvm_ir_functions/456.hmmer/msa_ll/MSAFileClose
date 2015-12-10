@@ -1,48 +1,61 @@
 define void @MSAFileClose(%struct.msafile_struct* nocapture %afp) #0 {
 entry:
-  %do_stdin = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 7
-  %0 = load i32* %do_stdin, align 4, !tbaa !3
-  %tobool = icmp eq i32 %0, 0
-  br i1 %tobool, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.msafile_struct* %afp}, i64 0, metadata !324), !dbg !870
+  %do_gzip = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 6, !dbg !871
+  %0 = load i32* %do_gzip, align 4, !dbg !871, !tbaa !478
+  %tobool = icmp eq i32 %0, 0, !dbg !871
+  br i1 %tobool, label %if.end, label %if.then, !dbg !871
 
 if.then:                                          ; preds = %entry
-  %f = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 0
-  %1 = load %struct._IO_FILE** %f, align 8, !tbaa !0
-  %call = tail call i32 @fclose(%struct._IO_FILE* %1) #6
-  br label %if.end
+  %f = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 0, !dbg !871
+  %1 = load %struct._IO_FILE** %f, align 8, !dbg !871, !tbaa !466
+  %call = tail call i32 @pclose(%struct._IO_FILE* %1) #7, !dbg !871
+  br label %if.end, !dbg !871
 
 if.end:                                           ; preds = %entry, %if.then
-  %buf = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 3
-  %2 = load i8** %buf, align 8, !tbaa !0
-  %cmp = icmp eq i8* %2, null
-  br i1 %cmp, label %if.end3, label %if.then1
+  %do_stdin = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 7, !dbg !872
+  %2 = load i32* %do_stdin, align 4, !dbg !872, !tbaa !478
+  %tobool1 = icmp eq i32 %2, 0, !dbg !872
+  br i1 %tobool1, label %if.then2, label %if.end5, !dbg !872
 
-if.then1:                                         ; preds = %if.end
-  tail call void @free(i8* %2) #6
-  br label %if.end3
+if.then2:                                         ; preds = %if.end
+  %f3 = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 0, !dbg !872
+  %3 = load %struct._IO_FILE** %f3, align 8, !dbg !872, !tbaa !466
+  %call4 = tail call i32 @fclose(%struct._IO_FILE* %3) #7, !dbg !872
+  br label %if.end5, !dbg !872
 
-if.end3:                                          ; preds = %if.end, %if.then1
-  %ssi = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 5
-  %3 = load %struct.ssifile_s** %ssi, align 8, !tbaa !0
-  %cmp4 = icmp eq %struct.ssifile_s* %3, null
-  br i1 %cmp4, label %if.end7, label %if.then5
+if.end5:                                          ; preds = %if.end, %if.then2
+  %buf = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 3, !dbg !873
+  %4 = load i8** %buf, align 8, !dbg !873, !tbaa !466
+  %cmp = icmp eq i8* %4, null, !dbg !873
+  br i1 %cmp, label %if.end8, label %if.then6, !dbg !873
 
-if.then5:                                         ; preds = %if.end3
-  tail call void @SSIClose(%struct.ssifile_s* %3) #6
-  br label %if.end7
+if.then6:                                         ; preds = %if.end5
+  tail call void @free(i8* %4) #7, !dbg !873
+  br label %if.end8, !dbg !873
 
-if.end7:                                          ; preds = %if.end3, %if.then5
-  %fname = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 1
-  %4 = load i8** %fname, align 8, !tbaa !0
-  %cmp8 = icmp eq i8* %4, null
-  br i1 %cmp8, label %if.end11, label %if.then9
+if.end8:                                          ; preds = %if.end5, %if.then6
+  %ssi = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 5, !dbg !874
+  %5 = load %struct.ssifile_s** %ssi, align 8, !dbg !874, !tbaa !466
+  %cmp9 = icmp eq %struct.ssifile_s* %5, null, !dbg !874
+  br i1 %cmp9, label %if.end12, label %if.then10, !dbg !874
 
-if.then9:                                         ; preds = %if.end7
-  tail call void @free(i8* %4) #6
-  br label %if.end11
+if.then10:                                        ; preds = %if.end8
+  tail call void @SSIClose(%struct.ssifile_s* %5) #7, !dbg !874
+  br label %if.end12, !dbg !874
 
-if.end11:                                         ; preds = %if.end7, %if.then9
-  %5 = bitcast %struct.msafile_struct* %afp to i8*
-  tail call void @free(i8* %5) #6
-  ret void
+if.end12:                                         ; preds = %if.end8, %if.then10
+  %fname = getelementptr inbounds %struct.msafile_struct* %afp, i64 0, i32 1, !dbg !875
+  %6 = load i8** %fname, align 8, !dbg !875, !tbaa !466
+  %cmp13 = icmp eq i8* %6, null, !dbg !875
+  br i1 %cmp13, label %if.end16, label %if.then14, !dbg !875
+
+if.then14:                                        ; preds = %if.end12
+  tail call void @free(i8* %6) #7, !dbg !875
+  br label %if.end16, !dbg !875
+
+if.end16:                                         ; preds = %if.end12, %if.then14
+  %7 = bitcast %struct.msafile_struct* %afp to i8*, !dbg !876
+  tail call void @free(i8* %7) #7, !dbg !876
+  ret void, !dbg !877
 }

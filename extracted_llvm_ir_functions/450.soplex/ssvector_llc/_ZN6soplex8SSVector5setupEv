@@ -1,0 +1,75 @@
+define void @_ZN6soplex8SSVector5setupEv(%"class.soplex::SSVector"* nocapture %this) #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %this}, i64 0, metadata !2404), !dbg !4064
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %this}, i64 0, metadata !4065), !dbg !4067
+  %setupStatus.i = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 2, !dbg !4068
+  %0 = load i8* %setupStatus.i, align 1, !dbg !4068, !tbaa !4010, !range !4011
+  %tobool.i = icmp eq i8 %0, 0, !dbg !4068
+  br i1 %tobool.i, label %if.then, label %if.end23, !dbg !4066
+
+if.then:                                          ; preds = %entry
+  %num.i = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 1, i32 0, !dbg !4069
+  store i32 0, i32* %num.i, align 4, !dbg !4071, !tbaa !3918
+  tail call void @llvm.dbg.value(metadata !1145, i64 0, metadata !2405), !dbg !4072
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %this}, i64 0, metadata !4073), !dbg !4074
+  %dimen.i = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 0, i32 0, i32 0, !dbg !4075
+  %1 = load i32* %dimen.i, align 4, !dbg !4075, !tbaa !3918
+  %cmp28 = icmp sgt i32 %1, 0, !dbg !4072
+  br i1 %cmp28, label %for.body.lr.ph, label %for.end, !dbg !4072
+
+for.body.lr.ph:                                   ; preds = %if.then
+  %val = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 0, i32 0, i32 1, !dbg !4077
+  %2 = load double** %val, align 8, !dbg !4077, !tbaa !3926
+  %epsilon = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 3, !dbg !4079
+  %idx = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 1, i32 2, !dbg !4081
+  br label %for.body, !dbg !4072
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %3 = phi i32 [ %1, %for.body.lr.ph ], [ %10, %for.inc ]
+  %4 = phi i32 [ 0, %for.body.lr.ph ], [ %11, %for.inc ]
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %arrayidx = getelementptr inbounds double* %2, i64 %indvars.iv, !dbg !4077
+  %5 = load double* %arrayidx, align 8, !dbg !4077, !tbaa !4014
+  %cmp4 = fcmp une double %5, 0.000000e+00, !dbg !4077
+  br i1 %cmp4, label %if.then5, label %for.inc, !dbg !4077
+
+if.then5:                                         ; preds = %for.body
+  %6 = load double* %epsilon, align 8, !dbg !4079, !tbaa !4014
+  tail call void @llvm.dbg.value(metadata !{double %5}, i64 0, metadata !4083) #1, !dbg !4084
+  tail call void @llvm.dbg.value(metadata !{double %6}, i64 0, metadata !4085) #1, !dbg !4084
+  %call.i = tail call double @fabs(double %5) #15, !dbg !4086
+  %cmp.i = fcmp ugt double %call.i, %6, !dbg !4086
+  br i1 %cmp.i, label %if.else, label %if.then10, !dbg !4079
+
+if.then10:                                        ; preds = %if.then5
+  store double 0.000000e+00, double* %arrayidx, align 8, !dbg !4088, !tbaa !4014
+  br label %for.inc, !dbg !4088
+
+if.else:                                          ; preds = %if.then5
+  %idxprom16 = sext i32 %4 to i64, !dbg !4081
+  %7 = load i32** %idx, align 8, !dbg !4081, !tbaa !3926
+  %arrayidx18 = getelementptr inbounds i32* %7, i64 %idxprom16, !dbg !4081
+  %8 = trunc i64 %indvars.iv to i32, !dbg !4081
+  store i32 %8, i32* %arrayidx18, align 4, !dbg !4081, !tbaa !3918
+  %9 = load i32* %num.i, align 4, !dbg !4089, !tbaa !3918
+  %inc = add nsw i32 %9, 1, !dbg !4089
+  store i32 %inc, i32* %num.i, align 4, !dbg !4089, !tbaa !3918
+  %.pre = load i32* %dimen.i, align 4, !dbg !4075, !tbaa !3918
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.body, %if.else, %if.then10
+  %10 = phi i32 [ %3, %for.body ], [ %.pre, %if.else ], [ %3, %if.then10 ], !dbg !4072
+  %11 = phi i32 [ %4, %for.body ], [ %inc, %if.else ], [ %4, %if.then10 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !4072
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %this}, i64 0, metadata !4073), !dbg !4074
+  %12 = trunc i64 %indvars.iv.next to i32, !dbg !4072
+  %cmp = icmp slt i32 %12, %10, !dbg !4072
+  br i1 %cmp, label %for.body, label %for.end, !dbg !4072
+
+for.end:                                          ; preds = %for.inc, %if.then
+  store i8 1, i8* %setupStatus.i, align 1, !dbg !4090, !tbaa !4010
+  br label %if.end23, !dbg !4091
+
+if.end23:                                         ; preds = %entry, %for.end
+  ret void, !dbg !4092
+}

@@ -1,33 +1,35 @@
 define internal fastcc void @invalidate_mems_from_autoinc(%struct.propagate_block_info* nocapture %pbi, %struct.rtx_def* nocapture %insn) #0 {
 entry:
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 6
-  %note.0.in14 = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %note.015 = load %struct.rtx_def** %note.0.in14, align 8
-  %tobool16 = icmp eq %struct.rtx_def* %note.015, null
-  br i1 %tobool16, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct.propagate_block_info* %pbi}, i64 0, metadata !1713), !dbg !3356
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !1714), !dbg !3357
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 6, !dbg !3358
+  %note.0.in14 = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !3358
+  %note.015 = load %struct.rtx_def** %note.0.in14, align 8, !dbg !3359
+  %tobool16 = icmp eq %struct.rtx_def* %note.015, null, !dbg !3359
+  br i1 %tobool16, label %for.end, label %for.body, !dbg !3359
 
 for.body:                                         ; preds = %entry, %for.inc
   %note.017 = phi %struct.rtx_def* [ %note.0, %for.inc ], [ %note.015, %entry ]
-  %0 = bitcast %struct.rtx_def* %note.017 to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 16711680
-  %cmp = icmp eq i32 %bf.clear, 131072
-  br i1 %cmp, label %if.then, label %for.inc
+  %0 = bitcast %struct.rtx_def* %note.017 to i32*, !dbg !3361
+  %bf.load = load i32* %0, align 8, !dbg !3361
+  %bf.clear = and i32 %bf.load, 16711680, !dbg !3361
+  %cmp = icmp eq i32 %bf.clear, 131072, !dbg !3361
+  br i1 %cmp, label %if.then, label %for.inc, !dbg !3361
 
 if.then:                                          ; preds = %for.body
-  %arrayidx5 = getelementptr inbounds %struct.rtx_def* %note.017, i64 0, i32 1, i64 0
-  %rtx6 = bitcast %union.rtunion_def* %arrayidx5 to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx6, align 8, !tbaa !3
-  tail call fastcc void @invalidate_mems_from_set(%struct.propagate_block_info* %pbi, %struct.rtx_def* %1) #8
-  br label %for.inc
+  %arrayidx5 = getelementptr inbounds %struct.rtx_def* %note.017, i64 0, i32 1, i64 0, !dbg !3362
+  %rtx6 = bitcast %union.rtunion_def* %arrayidx5 to %struct.rtx_def**, !dbg !3362
+  %1 = load %struct.rtx_def** %rtx6, align 8, !dbg !3362, !tbaa !2131
+  tail call fastcc void @invalidate_mems_from_set(%struct.propagate_block_info* %pbi, %struct.rtx_def* %1) #9, !dbg !3362
+  br label %for.inc, !dbg !3362
 
 for.inc:                                          ; preds = %for.body, %if.then
-  %arrayidx8 = getelementptr inbounds %struct.rtx_def* %note.017, i64 0, i32 1, i64 1
-  %note.0.in = bitcast %union.rtunion_def* %arrayidx8 to %struct.rtx_def**
-  %note.0 = load %struct.rtx_def** %note.0.in, align 8
-  %tobool = icmp eq %struct.rtx_def* %note.0, null
-  br i1 %tobool, label %for.end, label %for.body
+  %arrayidx8 = getelementptr inbounds %struct.rtx_def* %note.017, i64 0, i32 1, i64 1, !dbg !3359
+  %note.0.in = bitcast %union.rtunion_def* %arrayidx8 to %struct.rtx_def**, !dbg !3358
+  %note.0 = load %struct.rtx_def** %note.0.in, align 8, !dbg !3359
+  %tobool = icmp eq %struct.rtx_def* %note.0, null, !dbg !3359
+  br i1 %tobool, label %for.end, label %for.body, !dbg !3359
 
 for.end:                                          ; preds = %for.inc, %entry
-  ret void
+  ret void, !dbg !3363
 }

@@ -1,26 +1,29 @@
 define i32 @mode_for_size_tree(%union.tree_node* %size, i32 %class, i32 %limit) #0 {
 entry:
-  %code = getelementptr inbounds %union.tree_node* %size, i64 0, i32 0, i32 0, i32 2
-  %0 = bitcast [4 x i8]* %code to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 255
-  %cmp = icmp eq i32 %bf.clear, 25
-  br i1 %cmp, label %lor.lhs.false, label %return
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %size}, i64 0, metadata !926), !dbg !1236
+  tail call void @llvm.dbg.value(metadata !{i32 %class}, i64 0, metadata !927), !dbg !1237
+  tail call void @llvm.dbg.value(metadata !{i32 %limit}, i64 0, metadata !928), !dbg !1238
+  %code = getelementptr inbounds %union.tree_node* %size, i64 0, i32 0, i32 0, i32 2, !dbg !1239
+  %0 = bitcast [4 x i8]* %code to i32*, !dbg !1239
+  %bf.load = load i32* %0, align 8, !dbg !1239
+  %bf.clear = and i32 %bf.load, 255, !dbg !1239
+  %cmp = icmp eq i32 %bf.clear, 25, !dbg !1239
+  br i1 %cmp, label %lor.lhs.false, label %return, !dbg !1239
 
 lor.lhs.false:                                    ; preds = %entry
-  %call = tail call i32 @compare_tree_int(%union.tree_node* %size, i64 1000) #7
-  %cmp1 = icmp sgt i32 %call, 0
-  br i1 %cmp1, label %return, label %if.else
+  %call = tail call i32 @compare_tree_int(%union.tree_node* %size, i64 1000) #8, !dbg !1240
+  %cmp1 = icmp sgt i32 %call, 0, !dbg !1240
+  br i1 %cmp1, label %return, label %if.else, !dbg !1240
 
 if.else:                                          ; preds = %lor.lhs.false
-  %int_cst2 = getelementptr inbounds %union.tree_node* %size, i64 0, i32 0, i32 2
-  %low = bitcast i32* %int_cst2 to i64*
-  %1 = load i64* %low, align 8, !tbaa !6
-  %conv = trunc i64 %1 to i32
-  %call3 = tail call i32 @mode_for_size(i32 %conv, i32 %class, i32 %limit) #9
-  br label %return
+  %int_cst2 = getelementptr inbounds %union.tree_node* %size, i64 0, i32 0, i32 2, !dbg !1241
+  %low = bitcast i32* %int_cst2 to i64*, !dbg !1241
+  %1 = load i64* %low, align 8, !dbg !1241, !tbaa !1242
+  %conv = trunc i64 %1 to i32, !dbg !1241
+  %call3 = tail call i32 @mode_for_size(i32 %conv, i32 %class, i32 %limit) #10, !dbg !1241
+  br label %return, !dbg !1241
 
 return:                                           ; preds = %lor.lhs.false, %entry, %if.else
   %retval.0 = phi i32 [ %call3, %if.else ], [ 51, %entry ], [ 51, %lor.lhs.false ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1243
 }

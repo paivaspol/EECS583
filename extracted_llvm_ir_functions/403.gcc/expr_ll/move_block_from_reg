@@ -1,51 +1,58 @@
 define void @move_block_from_reg(i32 %regno, %struct.rtx_def* %x, i32 %nregs, i32 %size) #0 {
 entry:
-  %cmp = icmp eq i32 %nregs, 0
-  br i1 %cmp, label %for.end, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i32 %regno}, i64 0, metadata !2023), !dbg !4945
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !2024), !dbg !4946
+  tail call void @llvm.dbg.value(metadata !{i32 %nregs}, i64 0, metadata !2025), !dbg !4947
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !2026), !dbg !4948
+  %cmp = icmp eq i32 %nregs, 0, !dbg !4949
+  br i1 %cmp, label %for.end, label %if.end, !dbg !4949
 
 if.end:                                           ; preds = %entry
-  %0 = load i32* @target_flags, align 4, !tbaa !3
-  %and = lshr i32 %0, 23
-  %1 = and i32 %and, 4
-  %2 = add i32 %1, 4
-  %cmp1 = icmp slt i32 %2, %size
-  br i1 %cmp1, label %for.cond.preheader, label %land.lhs.true
+  %0 = load i32* @target_flags, align 4, !dbg !4950, !tbaa !3192
+  %and = lshr i32 %0, 23, !dbg !4950
+  %1 = and i32 %and, 4, !dbg !4950
+  %2 = add i32 %1, 4, !dbg !4950
+  %cmp1 = icmp slt i32 %2, %size, !dbg !4950
+  br i1 %cmp1, label %for.cond.preheader, label %land.lhs.true, !dbg !4950
 
 for.cond.preheader:                               ; preds = %land.lhs.true, %if.end
-  %cmp2747 = icmp sgt i32 %nregs, 0
-  br i1 %cmp2747, label %for.body, label %for.end
+  %cmp2747 = icmp sgt i32 %nregs, 0, !dbg !4951
+  br i1 %cmp2747, label %for.body, label %for.end, !dbg !4951
 
 land.lhs.true:                                    ; preds = %if.end
-  %mul = shl nsw i32 %size, 3
-  %call = tail call i32 @mode_for_size(i32 %mul, i32 1, i32 0) #8
-  %cmp2 = icmp eq i32 %call, 51
-  br i1 %cmp2, label %for.cond.preheader, label %if.then3
+  %mul = shl nsw i32 %size, 3, !dbg !4952
+  %call = tail call i32 @mode_for_size(i32 %mul, i32 1, i32 0) #9, !dbg !4952
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !2028), !dbg !4952
+  %cmp2 = icmp eq i32 %call, 51, !dbg !4952
+  br i1 %cmp2, label %for.cond.preheader, label %if.then3, !dbg !4952
 
 if.then3:                                         ; preds = %land.lhs.true
-  %call4 = tail call %struct.rtx_def* @adjust_address_1(%struct.rtx_def* %x, i32 %call, i64 0, i32 1, i32 1) #8
-  %call5 = tail call %struct.rtx_def* @gen_rtx_REG(i32 %call, i32 %regno) #8
-  %call6 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call4, %struct.rtx_def* %call5) #10
-  br label %for.end
+  %call4 = tail call %struct.rtx_def* @adjust_address_1(%struct.rtx_def* %x, i32 %call, i64 0, i32 1, i32 1) #9, !dbg !4953
+  %call5 = tail call %struct.rtx_def* @gen_rtx_REG(i32 %call, i32 %regno) #9, !dbg !4953
+  %call6 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call4, %struct.rtx_def* %call5) #11, !dbg !4953
+  br label %for.end, !dbg !4955
 
 for.body:                                         ; preds = %for.cond.preheader, %if.end34
   %i.048 = phi i32 [ %inc, %if.end34 ], [ 0, %for.cond.preheader ]
-  %call30 = tail call %struct.rtx_def* @operand_subword(%struct.rtx_def* %x, i32 %i.048, i32 1, i32 51) #8
-  %cmp31 = icmp eq %struct.rtx_def* %call30, null
-  br i1 %cmp31, label %if.then33, label %if.end34
+  %call30 = tail call %struct.rtx_def* @operand_subword(%struct.rtx_def* %x, i32 %i.048, i32 1, i32 51) #9, !dbg !4956
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call30}, i64 0, metadata !2032), !dbg !4956
+  %cmp31 = icmp eq %struct.rtx_def* %call30, null, !dbg !4957
+  br i1 %cmp31, label %if.then33, label %if.end34, !dbg !4957
 
 if.then33:                                        ; preds = %for.body
-  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str, i64 0, i64 0), i32 1928, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.move_block_from_reg, i64 0, i64 0)) #9
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([48 x i8]* @.str, i64 0, i64 0), i32 1928, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.move_block_from_reg, i64 0, i64 0)) #10, !dbg !4958
+  unreachable, !dbg !4958
 
 if.end34:                                         ; preds = %for.body
-  %3 = load i32* @word_mode, align 4, !tbaa !6
-  %add = add nsw i32 %i.048, %regno
-  %call35 = tail call %struct.rtx_def* @gen_rtx_REG(i32 %3, i32 %add) #8
-  %call36 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call30, %struct.rtx_def* %call35) #10
-  %inc = add nsw i32 %i.048, 1
-  %cmp27 = icmp slt i32 %inc, %nregs
-  br i1 %cmp27, label %for.body, label %for.end
+  %3 = load i32* @word_mode, align 4, !dbg !4959, !tbaa !3359
+  %add = add nsw i32 %i.048, %regno, !dbg !4959
+  %call35 = tail call %struct.rtx_def* @gen_rtx_REG(i32 %3, i32 %add) #9, !dbg !4959
+  %call36 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call30, %struct.rtx_def* %call35) #11, !dbg !4959
+  %inc = add nsw i32 %i.048, 1, !dbg !4951
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !2027), !dbg !4951
+  %cmp27 = icmp slt i32 %inc, %nregs, !dbg !4951
+  br i1 %cmp27, label %for.body, label %for.end, !dbg !4951
 
 for.end:                                          ; preds = %for.cond.preheader, %if.end34, %entry, %if.then3
-  ret void
+  ret void, !dbg !4960
 }

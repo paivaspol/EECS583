@@ -1,23 +1,25 @@
-define i32 @__wcwidth(i32 %_c) #1 {
-  %1 = icmp eq i32 %_c, 0
-  br i1 %1, label %11, label %2
+define i32 @__wcwidth(i32 %_c) #2 {
+  tail call void @llvm.dbg.value(metadata i32 %_c, i64 0, metadata !176, metadata !602), !dbg !629
+  %1 = icmp eq i32 %_c, 0, !dbg !630
+  br i1 %1, label %11, label %2, !dbg !632
 
 ; <label>:2                                       ; preds = %0
-  %3 = tail call i32 @__maskrune(i32 %_c, i64 3758358528) #9
-  %4 = icmp ult i32 %3, 536870912
-  br i1 %4, label %7, label %5
+  %3 = tail call i32 @__maskrune(i32 %_c, i64 3758358528) #10, !dbg !633
+  tail call void @llvm.dbg.value(metadata i32 %3, i64 0, metadata !177, metadata !602), !dbg !634
+  %4 = icmp ult i32 %3, 536870912, !dbg !635
+  br i1 %4, label %7, label %5, !dbg !637
 
 ; <label>:5                                       ; preds = %2
-  %6 = lshr i32 %3, 30
-  br label %11
+  %6 = lshr i32 %3, 30, !dbg !638
+  br label %11, !dbg !639
 
 ; <label>:7                                       ; preds = %2
-  %8 = lshr i32 %3, 17
-  %9 = and i32 %8, 2
-  %10 = add nsw i32 %9, -1
-  br label %11
+  %8 = lshr i32 %3, 17, !dbg !640
+  %9 = and i32 %8, 2, !dbg !640
+  %10 = add nsw i32 %9, -1, !dbg !640
+  br label %11, !dbg !641
 
 ; <label>:11                                      ; preds = %0, %7, %5
   %.0 = phi i32 [ %6, %5 ], [ %10, %7 ], [ 0, %0 ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !642
 }

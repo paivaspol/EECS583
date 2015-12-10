@@ -1,224 +1,236 @@
 define %struct.rtx_def* @force_const_mem(i32 %mode, %struct.rtx_def* %x) #0 {
 entry:
   %label = alloca [256 x i8], align 16
-  %0 = getelementptr inbounds [256 x i8]* %label, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 256, i8* %0) #6
-  %call = call fastcc i32 @const_hash_rtx(i32 %mode, %struct.rtx_def* %x) #10
-  %idxprom = sext i32 %call to i64
-  %1 = load %struct.function** @cfun, align 8, !tbaa !3
-  %varasm = getelementptr inbounds %struct.function* %1, i64 0, i32 4
-  %2 = load %struct.varasm_status** %varasm, align 8, !tbaa !3
-  %x_const_rtx_hash_table = getelementptr inbounds %struct.varasm_status* %2, i64 0, i32 0
-  %3 = load %struct.constant_descriptor*** %x_const_rtx_hash_table, align 8, !tbaa !3
-  %arrayidx = getelementptr inbounds %struct.constant_descriptor** %3, i64 %idxprom
-  %desc.0135 = load %struct.constant_descriptor** %arrayidx, align 8
-  %tobool136 = icmp eq %struct.constant_descriptor* %desc.0135, null
-  br i1 %tobool136, label %for.end, label %for.body
+  call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !1666), !dbg !3651
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !1667), !dbg !3652
+  %0 = getelementptr inbounds [256 x i8]* %label, i64 0, i64 0, !dbg !3653
+  call void @llvm.lifetime.start(i64 256, i8* %0) #7, !dbg !3653
+  call void @llvm.dbg.declare(metadata !{[256 x i8]* %label}, metadata !1670), !dbg !3653
+  %call = call fastcc i32 @const_hash_rtx(i32 %mode, %struct.rtx_def* %x) #11, !dbg !3654
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !1668), !dbg !3654
+  %idxprom = sext i32 %call to i64, !dbg !3655
+  %1 = load %struct.function** @cfun, align 8, !dbg !3655, !tbaa !2357
+  %varasm = getelementptr inbounds %struct.function* %1, i64 0, i32 4, !dbg !3655
+  %2 = load %struct.varasm_status** %varasm, align 8, !dbg !3655, !tbaa !2357
+  %x_const_rtx_hash_table = getelementptr inbounds %struct.varasm_status* %2, i64 0, i32 0, !dbg !3655
+  %3 = load %struct.constant_descriptor*** %x_const_rtx_hash_table, align 8, !dbg !3655, !tbaa !2357
+  %arrayidx = getelementptr inbounds %struct.constant_descriptor** %3, i64 %idxprom, !dbg !3655
+  %desc.0135 = load %struct.constant_descriptor** %arrayidx, align 8, !dbg !3655
+  %tobool136 = icmp eq %struct.constant_descriptor* %desc.0135, null, !dbg !3655
+  br i1 %tobool136, label %for.end, label %for.body, !dbg !3655
 
 for.cond:                                         ; preds = %for.body
-  %next = getelementptr inbounds %struct.constant_descriptor* %desc.0137, i64 0, i32 0
-  %desc.0 = load %struct.constant_descriptor** %next, align 8
-  %tobool = icmp eq %struct.constant_descriptor* %desc.0, null
-  br i1 %tobool, label %for.end, label %for.body
+  %next = getelementptr inbounds %struct.constant_descriptor* %desc.0137, i64 0, i32 0, !dbg !3655
+  %desc.0 = load %struct.constant_descriptor** %next, align 8, !dbg !3655
+  %tobool = icmp eq %struct.constant_descriptor* %desc.0, null, !dbg !3655
+  br i1 %tobool, label %for.end, label %for.body, !dbg !3655
 
 for.body:                                         ; preds = %entry, %for.cond
   %desc.0137 = phi %struct.constant_descriptor* [ %desc.0, %for.cond ], [ %desc.0135, %entry ]
-  %call1 = call fastcc i32 @compare_constant_rtx(i32 %mode, %struct.rtx_def* %x, %struct.constant_descriptor* %desc.0137) #10
-  %tobool2 = icmp eq i32 %call1, 0
-  br i1 %tobool2, label %for.cond, label %if.then
+  %call1 = call fastcc i32 @compare_constant_rtx(i32 %mode, %struct.rtx_def* %x, %struct.constant_descriptor* %desc.0137) #11, !dbg !3657
+  %tobool2 = icmp eq i32 %call1, 0, !dbg !3657
+  br i1 %tobool2, label %for.cond, label %if.then, !dbg !3657
 
 if.then:                                          ; preds = %for.body
-  %rtl = getelementptr inbounds %struct.constant_descriptor* %desc.0137, i64 0, i32 2
-  %4 = load %struct.rtx_def** %rtl, align 8, !tbaa !3
-  br label %cleanup
+  %rtl = getelementptr inbounds %struct.constant_descriptor* %desc.0137, i64 0, i32 2, !dbg !3658
+  %4 = load %struct.rtx_def** %rtl, align 8, !dbg !3658, !tbaa !2357
+  br label %cleanup, !dbg !3658
 
 for.end:                                          ; preds = %for.cond, %entry
-  %call.i = call noalias i8* @xcalloc(i64 1, i64 168) #9
-  %5 = bitcast i8* %call.i to %struct.constant_descriptor*
-  %u.i = getelementptr inbounds i8* %call.i, i64 32
-  %6 = bitcast i8* %u.i to %struct.rtx_const*
-  call fastcc void @decode_rtx_const(i32 %mode, %struct.rtx_def* %x, %struct.rtx_const* %6) #9
-  %7 = load %struct.function** @cfun, align 8, !tbaa !3
-  %varasm5 = getelementptr inbounds %struct.function* %7, i64 0, i32 4
-  %8 = load %struct.varasm_status** %varasm5, align 8, !tbaa !3
-  %x_const_rtx_hash_table6 = getelementptr inbounds %struct.varasm_status* %8, i64 0, i32 0
-  %9 = load %struct.constant_descriptor*** %x_const_rtx_hash_table6, align 8, !tbaa !3
-  %arrayidx7 = getelementptr inbounds %struct.constant_descriptor** %9, i64 %idxprom
-  %10 = load %struct.constant_descriptor** %arrayidx7, align 8, !tbaa !3
-  %next8 = bitcast i8* %call.i to %struct.constant_descriptor**
-  store %struct.constant_descriptor* %10, %struct.constant_descriptor** %next8, align 8, !tbaa !3
-  %11 = load %struct.varasm_status** %varasm5, align 8, !tbaa !3
-  %x_const_rtx_hash_table11 = getelementptr inbounds %struct.varasm_status* %11, i64 0, i32 0
-  %12 = load %struct.constant_descriptor*** %x_const_rtx_hash_table11, align 8, !tbaa !3
-  %arrayidx12 = getelementptr inbounds %struct.constant_descriptor** %12, i64 %idxprom
-  store %struct.constant_descriptor* %5, %struct.constant_descriptor** %arrayidx12, align 8, !tbaa !3
-  %cmp = icmp eq i32 %mode, 0
-  %13 = load i32* @word_mode, align 4, !tbaa !9
-  %cond = select i1 %cmp, i32 %13, i32 %mode
-  %call13 = call i32 @get_mode_alignment(i32 %cond) #9
-  %call14 = call %union.tree_node* @type_for_mode(i32 %mode, i32 0) #9
-  %call15 = call %union.tree_node* @make_tree(%union.tree_node* %call14, %struct.rtx_def* %x) #9
-  %call16 = call i32 @ix86_constant_alignment(%union.tree_node* %call15, i32 %call13) #9
-  %div = lshr i32 %call16, 3
-  %sub = add i32 %div, -1
-  %conv = zext i32 %sub to i64
-  %14 = load %struct.function** @cfun, align 8, !tbaa !3
-  %varasm17 = getelementptr inbounds %struct.function* %14, i64 0, i32 4
-  %15 = load %struct.varasm_status** %varasm17, align 8, !tbaa !3
-  %x_pool_offset = getelementptr inbounds %struct.varasm_status* %15, i64 0, i32 4
-  %16 = load i64* %x_pool_offset, align 8, !tbaa !10
-  %add = add nsw i64 %16, %conv
-  %neg = sub i32 0, %div
-  %conv20 = zext i32 %neg to i64
-  %and = and i64 %add, %conv20
-  store i64 %and, i64* %x_pool_offset, align 8, !tbaa !10
-  %17 = bitcast %struct.rtx_def* %x to i32*
-  %bf.load = load i32* %17, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp23 = icmp eq i32 %bf.clear, 67
-  br i1 %cmp23, label %if.then25, label %if.end29
+  call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !3659) #7, !dbg !3661
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !3662) #7, !dbg !3663
+  %call.i = call noalias i8* @xcalloc(i64 1, i64 168) #10, !dbg !3664
+  %5 = bitcast i8* %call.i to %struct.constant_descriptor*, !dbg !3664
+  call void @llvm.dbg.value(metadata !{%struct.constant_descriptor* %5}, i64 0, metadata !3665) #7, !dbg !3664
+  %u.i = getelementptr inbounds i8* %call.i, i64 32, !dbg !3666
+  %6 = bitcast i8* %u.i to %struct.rtx_const*, !dbg !3666
+  call fastcc void @decode_rtx_const(i32 %mode, %struct.rtx_def* %x, %struct.rtx_const* %6) #10, !dbg !3666
+  call void @llvm.dbg.value(metadata !{%struct.constant_descriptor* %5}, i64 0, metadata !1669), !dbg !3660
+  %7 = load %struct.function** @cfun, align 8, !dbg !3667, !tbaa !2357
+  %varasm5 = getelementptr inbounds %struct.function* %7, i64 0, i32 4, !dbg !3667
+  %8 = load %struct.varasm_status** %varasm5, align 8, !dbg !3667, !tbaa !2357
+  %x_const_rtx_hash_table6 = getelementptr inbounds %struct.varasm_status* %8, i64 0, i32 0, !dbg !3667
+  %9 = load %struct.constant_descriptor*** %x_const_rtx_hash_table6, align 8, !dbg !3667, !tbaa !2357
+  %arrayidx7 = getelementptr inbounds %struct.constant_descriptor** %9, i64 %idxprom, !dbg !3667
+  %10 = load %struct.constant_descriptor** %arrayidx7, align 8, !dbg !3667, !tbaa !2357
+  %next8 = bitcast i8* %call.i to %struct.constant_descriptor**, !dbg !3667
+  store %struct.constant_descriptor* %10, %struct.constant_descriptor** %next8, align 8, !dbg !3667, !tbaa !2357
+  %11 = load %struct.varasm_status** %varasm5, align 8, !dbg !3668, !tbaa !2357
+  %x_const_rtx_hash_table11 = getelementptr inbounds %struct.varasm_status* %11, i64 0, i32 0, !dbg !3668
+  %12 = load %struct.constant_descriptor*** %x_const_rtx_hash_table11, align 8, !dbg !3668, !tbaa !2357
+  %arrayidx12 = getelementptr inbounds %struct.constant_descriptor** %12, i64 %idxprom, !dbg !3668
+  store %struct.constant_descriptor* %5, %struct.constant_descriptor** %arrayidx12, align 8, !dbg !3668, !tbaa !2357
+  %cmp = icmp eq i32 %mode, 0, !dbg !3669
+  %13 = load i32* @word_mode, align 4, !dbg !3669, !tbaa !2809
+  %cond = select i1 %cmp, i32 %13, i32 %mode, !dbg !3669
+  %call13 = call i32 @get_mode_alignment(i32 %cond) #10, !dbg !3669
+  call void @llvm.dbg.value(metadata !{i32 %call13}, i64 0, metadata !1673), !dbg !3669
+  %call14 = call %union.tree_node* @type_for_mode(i32 %mode, i32 0) #10, !dbg !3670
+  %call15 = call %union.tree_node* @make_tree(%union.tree_node* %call14, %struct.rtx_def* %x) #10, !dbg !3670
+  %call16 = call i32 @ix86_constant_alignment(%union.tree_node* %call15, i32 %call13) #10, !dbg !3670
+  call void @llvm.dbg.value(metadata !{i32 %call16}, i64 0, metadata !1673), !dbg !3670
+  %div = lshr i32 %call16, 3, !dbg !3671
+  %sub = add i32 %div, -1, !dbg !3671
+  %conv = zext i32 %sub to i64, !dbg !3671
+  %14 = load %struct.function** @cfun, align 8, !dbg !3671, !tbaa !2357
+  %varasm17 = getelementptr inbounds %struct.function* %14, i64 0, i32 4, !dbg !3671
+  %15 = load %struct.varasm_status** %varasm17, align 8, !dbg !3671, !tbaa !2357
+  %x_pool_offset = getelementptr inbounds %struct.varasm_status* %15, i64 0, i32 4, !dbg !3671
+  %16 = load i64* %x_pool_offset, align 8, !dbg !3671, !tbaa !3187
+  %add = add nsw i64 %16, %conv, !dbg !3671
+  %neg = sub i32 0, %div, !dbg !3672
+  %conv20 = zext i32 %neg to i64, !dbg !3672
+  %and = and i64 %add, %conv20, !dbg !3672
+  store i64 %and, i64* %x_pool_offset, align 8, !dbg !3672, !tbaa !3187
+  %17 = bitcast %struct.rtx_def* %x to i32*, !dbg !3673
+  %bf.load = load i32* %17, align 8, !dbg !3673
+  %bf.clear = and i32 %bf.load, 65535, !dbg !3673
+  %cmp23 = icmp eq i32 %bf.clear, 67, !dbg !3673
+  br i1 %cmp23, label %if.then25, label %if.end29, !dbg !3673
 
 if.then25:                                        ; preds = %for.end
-  %arrayidx26 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx26 to %struct.rtx_def**
-  %18 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
-  %19 = bitcast %struct.rtx_def* %18 to i32*
-  %bf.load27 = load i32* %19, align 8
-  %bf.set = or i32 %bf.load27, 268435456
-  store i32 %bf.set, i32* %19, align 8
-  br label %if.end29
+  %arrayidx26 = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0, !dbg !3674
+  %rtx = bitcast %union.rtunion_def* %arrayidx26 to %struct.rtx_def**, !dbg !3674
+  %18 = load %struct.rtx_def** %rtx, align 8, !dbg !3674, !tbaa !2357
+  %19 = bitcast %struct.rtx_def* %18 to i32*, !dbg !3674
+  %bf.load27 = load i32* %19, align 8, !dbg !3674
+  %bf.set = or i32 %bf.load27, 268435456, !dbg !3674
+  store i32 %bf.set, i32* %19, align 8, !dbg !3674
+  br label %if.end29, !dbg !3674
 
 if.end29:                                         ; preds = %if.then25, %for.end
-  %call30 = call i8* @ggc_alloc(i64 64) #9
-  %20 = bitcast i8* %call30 to %struct.pool_constant*
-  %desc31 = bitcast i8* %call30 to %struct.constant_descriptor**
-  store %struct.constant_descriptor* %5, %struct.constant_descriptor** %desc31, align 8, !tbaa !3
-  %constant = getelementptr inbounds i8* %call30, i64 24
-  %21 = bitcast i8* %constant to %struct.rtx_def**
-  store %struct.rtx_def* %x, %struct.rtx_def** %21, align 8, !tbaa !3
-  %mode32 = getelementptr inbounds i8* %call30, i64 32
-  %22 = bitcast i8* %mode32 to i32*
-  store i32 %mode, i32* %22, align 4, !tbaa !9
-  %23 = load i32* @const_labelno, align 4, !tbaa !4
-  %labelno = getelementptr inbounds i8* %call30, i64 36
-  %24 = bitcast i8* %labelno to i32*
-  store i32 %23, i32* %24, align 4, !tbaa !4
-  %align33 = getelementptr inbounds i8* %call30, i64 40
-  %25 = bitcast i8* %align33 to i32*
-  store i32 %call16, i32* %25, align 4, !tbaa !4
-  %26 = load %struct.function** @cfun, align 8, !tbaa !3
-  %varasm34 = getelementptr inbounds %struct.function* %26, i64 0, i32 4
-  %27 = load %struct.varasm_status** %varasm34, align 8, !tbaa !3
-  %x_pool_offset35 = getelementptr inbounds %struct.varasm_status* %27, i64 0, i32 4
-  %28 = load i64* %x_pool_offset35, align 8, !tbaa !10
-  %offset = getelementptr inbounds i8* %call30, i64 48
-  %29 = bitcast i8* %offset to i64*
-  store i64 %28, i64* %29, align 8, !tbaa !10
-  %mark = getelementptr inbounds i8* %call30, i64 56
-  %30 = bitcast i8* %mark to i32*
-  store i32 1, i32* %30, align 4, !tbaa !4
-  %next36 = getelementptr inbounds i8* %call30, i64 8
-  %31 = bitcast i8* %next36 to %struct.pool_constant**
-  store %struct.pool_constant* null, %struct.pool_constant** %31, align 8, !tbaa !3
-  %32 = load %struct.function** @cfun, align 8, !tbaa !3
-  %varasm37 = getelementptr inbounds %struct.function* %32, i64 0, i32 4
-  %33 = load %struct.varasm_status** %varasm37, align 8, !tbaa !3
-  %x_last_pool = getelementptr inbounds %struct.varasm_status* %33, i64 0, i32 3
-  %34 = load %struct.pool_constant** %x_last_pool, align 8, !tbaa !3
-  %cmp38 = icmp eq %struct.pool_constant* %34, null
-  br i1 %cmp38, label %if.then40, label %if.else
+  %call30 = call i8* @ggc_alloc(i64 64) #10, !dbg !3675
+  %20 = bitcast i8* %call30 to %struct.pool_constant*, !dbg !3675
+  call void @llvm.dbg.value(metadata !{%struct.pool_constant* %20}, i64 0, metadata !1672), !dbg !3675
+  %desc31 = bitcast i8* %call30 to %struct.constant_descriptor**, !dbg !3676
+  store %struct.constant_descriptor* %5, %struct.constant_descriptor** %desc31, align 8, !dbg !3676, !tbaa !2357
+  %constant = getelementptr inbounds i8* %call30, i64 24, !dbg !3677
+  %21 = bitcast i8* %constant to %struct.rtx_def**, !dbg !3677
+  store %struct.rtx_def* %x, %struct.rtx_def** %21, align 8, !dbg !3677, !tbaa !2357
+  %mode32 = getelementptr inbounds i8* %call30, i64 32, !dbg !3678
+  %22 = bitcast i8* %mode32 to i32*, !dbg !3678
+  store i32 %mode, i32* %22, align 4, !dbg !3678, !tbaa !2809
+  %23 = load i32* @const_labelno, align 4, !dbg !3679, !tbaa !2382
+  %labelno = getelementptr inbounds i8* %call30, i64 36, !dbg !3679
+  %24 = bitcast i8* %labelno to i32*, !dbg !3679
+  store i32 %23, i32* %24, align 4, !dbg !3679, !tbaa !2382
+  %align33 = getelementptr inbounds i8* %call30, i64 40, !dbg !3680
+  %25 = bitcast i8* %align33 to i32*, !dbg !3680
+  store i32 %call16, i32* %25, align 4, !dbg !3680, !tbaa !2382
+  %26 = load %struct.function** @cfun, align 8, !dbg !3681, !tbaa !2357
+  %varasm34 = getelementptr inbounds %struct.function* %26, i64 0, i32 4, !dbg !3681
+  %27 = load %struct.varasm_status** %varasm34, align 8, !dbg !3681, !tbaa !2357
+  %x_pool_offset35 = getelementptr inbounds %struct.varasm_status* %27, i64 0, i32 4, !dbg !3681
+  %28 = load i64* %x_pool_offset35, align 8, !dbg !3681, !tbaa !3187
+  %offset = getelementptr inbounds i8* %call30, i64 48, !dbg !3681
+  %29 = bitcast i8* %offset to i64*, !dbg !3681
+  store i64 %28, i64* %29, align 8, !dbg !3681, !tbaa !3187
+  %mark = getelementptr inbounds i8* %call30, i64 56, !dbg !3682
+  %30 = bitcast i8* %mark to i32*, !dbg !3682
+  store i32 1, i32* %30, align 4, !dbg !3682, !tbaa !2382
+  %next36 = getelementptr inbounds i8* %call30, i64 8, !dbg !3683
+  %31 = bitcast i8* %next36 to %struct.pool_constant**, !dbg !3683
+  store %struct.pool_constant* null, %struct.pool_constant** %31, align 8, !dbg !3683, !tbaa !2357
+  %32 = load %struct.function** @cfun, align 8, !dbg !3684, !tbaa !2357
+  %varasm37 = getelementptr inbounds %struct.function* %32, i64 0, i32 4, !dbg !3684
+  %33 = load %struct.varasm_status** %varasm37, align 8, !dbg !3684, !tbaa !2357
+  %x_last_pool = getelementptr inbounds %struct.varasm_status* %33, i64 0, i32 3, !dbg !3684
+  %34 = load %struct.pool_constant** %x_last_pool, align 8, !dbg !3684, !tbaa !2357
+  %cmp38 = icmp eq %struct.pool_constant* %34, null, !dbg !3684
+  br i1 %cmp38, label %if.then40, label %if.else, !dbg !3684
 
 if.then40:                                        ; preds = %if.end29
-  %x_first_pool = getelementptr inbounds %struct.varasm_status* %33, i64 0, i32 2
-  store %struct.pool_constant* %20, %struct.pool_constant** %x_first_pool, align 8, !tbaa !3
-  br label %if.end45
+  %x_first_pool = getelementptr inbounds %struct.varasm_status* %33, i64 0, i32 2, !dbg !3685
+  store %struct.pool_constant* %20, %struct.pool_constant** %x_first_pool, align 8, !dbg !3685, !tbaa !2357
+  br label %if.end45, !dbg !3685
 
 if.else:                                          ; preds = %if.end29
-  %next44 = getelementptr inbounds %struct.pool_constant* %34, i64 0, i32 1
-  store %struct.pool_constant* %20, %struct.pool_constant** %next44, align 8, !tbaa !3
+  %next44 = getelementptr inbounds %struct.pool_constant* %34, i64 0, i32 1, !dbg !3686
+  store %struct.pool_constant* %20, %struct.pool_constant** %next44, align 8, !dbg !3686, !tbaa !2357
   br label %if.end45
 
 if.end45:                                         ; preds = %if.else, %if.then40
-  %35 = load %struct.function** @cfun, align 8, !tbaa !3
-  %varasm46 = getelementptr inbounds %struct.function* %35, i64 0, i32 4
-  %36 = load %struct.varasm_status** %varasm46, align 8, !tbaa !3
-  %x_last_pool47 = getelementptr inbounds %struct.varasm_status* %36, i64 0, i32 3
-  store %struct.pool_constant* %20, %struct.pool_constant** %x_last_pool47, align 8, !tbaa !3
-  %idxprom48 = sext i32 %mode to i64
-  %arrayidx49 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom48
-  %37 = load i8* %arrayidx49, align 1, !tbaa !1
-  %conv50 = zext i8 %37 to i64
-  %38 = load %struct.function** @cfun, align 8, !tbaa !3
-  %varasm51 = getelementptr inbounds %struct.function* %38, i64 0, i32 4
-  %39 = load %struct.varasm_status** %varasm51, align 8, !tbaa !3
-  %x_pool_offset52 = getelementptr inbounds %struct.varasm_status* %39, i64 0, i32 4
-  %40 = load i64* %x_pool_offset52, align 8, !tbaa !10
-  %add53 = add nsw i64 %40, %conv50
-  store i64 %add53, i64* %x_pool_offset52, align 8, !tbaa !10
-  %41 = load i32* @const_labelno, align 4, !tbaa !4
-  %call54 = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([7 x i8]* @.str74, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str100, i64 0, i64 0), i32 %41) #9
-  %42 = load i32* @const_labelno, align 4, !tbaa !4
-  %inc = add nsw i32 %42, 1
-  store i32 %inc, i32* @const_labelno, align 4, !tbaa !4
-  %43 = load i32* @target_flags, align 4, !tbaa !4
-  %and55 = lshr i32 %43, 25
-  %44 = and i32 %and55, 1
-  %45 = or i32 %44, 4
-  %call59 = call i8* @ggc_alloc_string(i8* %0, i32 -1) #9
-  %call60 = call %struct.rtx_def* @gen_rtx_fmt_s(i32 68, i32 %45, i8* %call59) #9
-  %call61 = call %struct.rtx_def* @gen_rtx_MEM(i32 %mode, %struct.rtx_def* %call60) #9
-  %46 = load %struct.constant_descriptor** %desc31, align 8, !tbaa !3
-  %rtl63 = getelementptr inbounds %struct.constant_descriptor* %46, i64 0, i32 2
-  store %struct.rtx_def* %call61, %struct.rtx_def** %rtl63, align 8, !tbaa !3
-  %47 = load i64* @const_alias_set, align 8, !tbaa !10
-  call void @set_mem_alias_set(%struct.rtx_def* %call61, i64 %47) #9
-  %call64 = call %union.tree_node* @type_for_mode(i32 %mode, i32 0) #9
-  call void @set_mem_attributes(%struct.rtx_def* %call61, %union.tree_node* %call64, i32 1) #9
-  %48 = bitcast %struct.rtx_def* %call61 to i32*
-  %bf.load65 = load i32* %48, align 8
-  %bf.set67 = or i32 %bf.load65, 67108864
-  store i32 %bf.set67, i32* %48, align 8
-  %arrayidx69 = getelementptr inbounds %struct.rtx_def* %call61, i64 0, i32 1, i64 0
-  %rtx70 = bitcast %union.rtunion_def* %arrayidx69 to %struct.rtx_def**
-  %49 = load %struct.rtx_def** %rtx70, align 8, !tbaa !3
-  %arrayidx72 = getelementptr inbounds %struct.rtx_def* %49, i64 0, i32 1, i64 0
-  %rtstr = bitcast %union.rtunion_def* %arrayidx72 to i8**
-  %50 = load i8** %rtstr, align 8, !tbaa !3
-  %51 = ptrtoint i8* %50 to i64
-  %and73 = and i64 %51, 1073741823
-  %rem = urem i64 %and73, 61
-  %52 = load %struct.function** @cfun, align 8, !tbaa !3
-  %varasm76 = getelementptr inbounds %struct.function* %52, i64 0, i32 4
-  %53 = load %struct.varasm_status** %varasm76, align 8, !tbaa !3
-  %x_const_rtx_sym_hash_table = getelementptr inbounds %struct.varasm_status* %53, i64 0, i32 1
-  %54 = load %struct.pool_constant*** %x_const_rtx_sym_hash_table, align 8, !tbaa !3
-  %arrayidx77 = getelementptr inbounds %struct.pool_constant** %54, i64 %rem
-  %55 = load %struct.pool_constant** %arrayidx77, align 8, !tbaa !3
-  %next_sym = getelementptr inbounds i8* %call30, i64 16
-  %56 = bitcast i8* %next_sym to %struct.pool_constant**
-  store %struct.pool_constant* %55, %struct.pool_constant** %56, align 8, !tbaa !3
-  %57 = load %struct.function** @cfun, align 8, !tbaa !3
-  %varasm79 = getelementptr inbounds %struct.function* %57, i64 0, i32 4
-  %58 = load %struct.varasm_status** %varasm79, align 8, !tbaa !3
-  %x_const_rtx_sym_hash_table80 = getelementptr inbounds %struct.varasm_status* %58, i64 0, i32 1
-  %59 = load %struct.pool_constant*** %x_const_rtx_sym_hash_table80, align 8, !tbaa !3
-  %arrayidx81 = getelementptr inbounds %struct.pool_constant** %59, i64 %rem
-  store %struct.pool_constant* %20, %struct.pool_constant** %arrayidx81, align 8, !tbaa !3
-  %60 = load %struct.rtx_def** %rtx70, align 8, !tbaa !3
-  %61 = bitcast %struct.rtx_def* %60 to i32*
-  %bf.load85 = load i32* %61, align 8
-  %bf.set87 = or i32 %bf.load85, 67108864
-  store i32 %bf.set87, i32* %61, align 8
-  %62 = load %struct.function** @cfun, align 8, !tbaa !3
-  %uses_const_pool = getelementptr inbounds %struct.function* %62, i64 0, i32 56
-  %63 = bitcast [4 x i8]* %uses_const_pool to i32*
-  %bf.load88 = load i32* %63, align 8
-  %bf.set90 = or i32 %bf.load88, 1048576
-  store i32 %bf.set90, i32* %63, align 8
-  br label %cleanup
+  %35 = load %struct.function** @cfun, align 8, !dbg !3687, !tbaa !2357
+  %varasm46 = getelementptr inbounds %struct.function* %35, i64 0, i32 4, !dbg !3687
+  %36 = load %struct.varasm_status** %varasm46, align 8, !dbg !3687, !tbaa !2357
+  %x_last_pool47 = getelementptr inbounds %struct.varasm_status* %36, i64 0, i32 3, !dbg !3687
+  store %struct.pool_constant* %20, %struct.pool_constant** %x_last_pool47, align 8, !dbg !3687, !tbaa !2357
+  %idxprom48 = sext i32 %mode to i64, !dbg !3688
+  %arrayidx49 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom48, !dbg !3688
+  %37 = load i8* %arrayidx49, align 1, !dbg !3688, !tbaa !2353
+  %conv50 = zext i8 %37 to i64, !dbg !3688
+  %38 = load %struct.function** @cfun, align 8, !dbg !3688, !tbaa !2357
+  %varasm51 = getelementptr inbounds %struct.function* %38, i64 0, i32 4, !dbg !3688
+  %39 = load %struct.varasm_status** %varasm51, align 8, !dbg !3688, !tbaa !2357
+  %x_pool_offset52 = getelementptr inbounds %struct.varasm_status* %39, i64 0, i32 4, !dbg !3688
+  %40 = load i64* %x_pool_offset52, align 8, !dbg !3688, !tbaa !3187
+  %add53 = add nsw i64 %40, %conv50, !dbg !3688
+  store i64 %add53, i64* %x_pool_offset52, align 8, !dbg !3688, !tbaa !3187
+  %41 = load i32* @const_labelno, align 4, !dbg !3689, !tbaa !2382
+  %call54 = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([7 x i8]* @.str74, i64 0, i64 0), i8* getelementptr inbounds ([3 x i8]* @.str100, i64 0, i64 0), i32 %41) #10, !dbg !3689
+  %42 = load i32* @const_labelno, align 4, !dbg !3691, !tbaa !2382
+  %inc = add nsw i32 %42, 1, !dbg !3691
+  store i32 %inc, i32* @const_labelno, align 4, !dbg !3691, !tbaa !2382
+  %43 = load i32* @target_flags, align 4, !dbg !3692, !tbaa !2382
+  %and55 = lshr i32 %43, 25, !dbg !3692
+  %44 = and i32 %and55, 1, !dbg !3692
+  %45 = or i32 %44, 4, !dbg !3692
+  %call59 = call i8* @ggc_alloc_string(i8* %0, i32 -1) #10, !dbg !3692
+  %call60 = call %struct.rtx_def* @gen_rtx_fmt_s(i32 68, i32 %45, i8* %call59) #10, !dbg !3692
+  %call61 = call %struct.rtx_def* @gen_rtx_MEM(i32 %mode, %struct.rtx_def* %call60) #10, !dbg !3692
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call61}, i64 0, metadata !1671), !dbg !3692
+  %46 = load %struct.constant_descriptor** %desc31, align 8, !dbg !3692, !tbaa !2357
+  %rtl63 = getelementptr inbounds %struct.constant_descriptor* %46, i64 0, i32 2, !dbg !3692
+  store %struct.rtx_def* %call61, %struct.rtx_def** %rtl63, align 8, !dbg !3692, !tbaa !2357
+  %47 = load i64* @const_alias_set, align 8, !dbg !3693, !tbaa !3187
+  call void @set_mem_alias_set(%struct.rtx_def* %call61, i64 %47) #10, !dbg !3693
+  %call64 = call %union.tree_node* @type_for_mode(i32 %mode, i32 0) #10, !dbg !3694
+  call void @set_mem_attributes(%struct.rtx_def* %call61, %union.tree_node* %call64, i32 1) #10, !dbg !3694
+  %48 = bitcast %struct.rtx_def* %call61 to i32*, !dbg !3695
+  %bf.load65 = load i32* %48, align 8, !dbg !3695
+  %bf.set67 = or i32 %bf.load65, 67108864, !dbg !3695
+  store i32 %bf.set67, i32* %48, align 8, !dbg !3695
+  %arrayidx69 = getelementptr inbounds %struct.rtx_def* %call61, i64 0, i32 1, i64 0, !dbg !3696
+  %rtx70 = bitcast %union.rtunion_def* %arrayidx69 to %struct.rtx_def**, !dbg !3696
+  %49 = load %struct.rtx_def** %rtx70, align 8, !dbg !3696, !tbaa !2357
+  %arrayidx72 = getelementptr inbounds %struct.rtx_def* %49, i64 0, i32 1, i64 0, !dbg !3696
+  %rtstr = bitcast %union.rtunion_def* %arrayidx72 to i8**, !dbg !3696
+  %50 = load i8** %rtstr, align 8, !dbg !3696, !tbaa !2357
+  %51 = ptrtoint i8* %50 to i64, !dbg !3696
+  %and73 = and i64 %51, 1073741823, !dbg !3696
+  %rem = urem i64 %and73, 61, !dbg !3696
+  %52 = load %struct.function** @cfun, align 8, !dbg !3697, !tbaa !2357
+  %varasm76 = getelementptr inbounds %struct.function* %52, i64 0, i32 4, !dbg !3697
+  %53 = load %struct.varasm_status** %varasm76, align 8, !dbg !3697, !tbaa !2357
+  %x_const_rtx_sym_hash_table = getelementptr inbounds %struct.varasm_status* %53, i64 0, i32 1, !dbg !3697
+  %54 = load %struct.pool_constant*** %x_const_rtx_sym_hash_table, align 8, !dbg !3697, !tbaa !2357
+  %arrayidx77 = getelementptr inbounds %struct.pool_constant** %54, i64 %rem, !dbg !3697
+  %55 = load %struct.pool_constant** %arrayidx77, align 8, !dbg !3697, !tbaa !2357
+  %next_sym = getelementptr inbounds i8* %call30, i64 16, !dbg !3697
+  %56 = bitcast i8* %next_sym to %struct.pool_constant**, !dbg !3697
+  store %struct.pool_constant* %55, %struct.pool_constant** %56, align 8, !dbg !3697, !tbaa !2357
+  %57 = load %struct.function** @cfun, align 8, !dbg !3698, !tbaa !2357
+  %varasm79 = getelementptr inbounds %struct.function* %57, i64 0, i32 4, !dbg !3698
+  %58 = load %struct.varasm_status** %varasm79, align 8, !dbg !3698, !tbaa !2357
+  %x_const_rtx_sym_hash_table80 = getelementptr inbounds %struct.varasm_status* %58, i64 0, i32 1, !dbg !3698
+  %59 = load %struct.pool_constant*** %x_const_rtx_sym_hash_table80, align 8, !dbg !3698, !tbaa !2357
+  %arrayidx81 = getelementptr inbounds %struct.pool_constant** %59, i64 %rem, !dbg !3698
+  store %struct.pool_constant* %20, %struct.pool_constant** %arrayidx81, align 8, !dbg !3698, !tbaa !2357
+  %60 = load %struct.rtx_def** %rtx70, align 8, !dbg !3699, !tbaa !2357
+  %61 = bitcast %struct.rtx_def* %60 to i32*, !dbg !3699
+  %bf.load85 = load i32* %61, align 8, !dbg !3699
+  %bf.set87 = or i32 %bf.load85, 67108864, !dbg !3699
+  store i32 %bf.set87, i32* %61, align 8, !dbg !3699
+  %62 = load %struct.function** @cfun, align 8, !dbg !3700, !tbaa !2357
+  %uses_const_pool = getelementptr inbounds %struct.function* %62, i64 0, i32 56, !dbg !3700
+  %63 = bitcast [4 x i8]* %uses_const_pool to i32*, !dbg !3700
+  %bf.load88 = load i32* %63, align 8, !dbg !3700
+  %bf.set90 = or i32 %bf.load88, 1048576, !dbg !3700
+  store i32 %bf.set90, i32* %63, align 8, !dbg !3700
+  br label %cleanup, !dbg !3701
 
 cleanup:                                          ; preds = %if.end45, %if.then
   %retval.0 = phi %struct.rtx_def* [ %4, %if.then ], [ %call61, %if.end45 ]
-  call void @llvm.lifetime.end(i64 256, i8* %0) #6
-  ret %struct.rtx_def* %retval.0
+  call void @llvm.lifetime.end(i64 256, i8* %0) #7, !dbg !3702
+  ret %struct.rtx_def* %retval.0, !dbg !3702
 }

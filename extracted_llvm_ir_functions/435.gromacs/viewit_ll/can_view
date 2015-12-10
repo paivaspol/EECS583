@@ -1,21 +1,26 @@
-define i32 @can_view(i32 %ftp) #3 {
-  br label %1
+define i32 @can_view(i32 %ftp) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %ftp}, i64 0, metadata !61), !dbg !111
+  tail call void @llvm.dbg.value(metadata !112, i64 0, metadata !62), !dbg !113
+  br label %for.body, !dbg !113
 
-; <label>:1                                       ; preds = %0, %6
-  %indvars.iv = phi i64 [ 1, %0 ], [ %indvars.iv.next, %6 ]
-  %2 = getelementptr inbounds [5 x i32]* @can_view_ftp, i64 0, i64 %indvars.iv
-  %3 = load i32* %2, align 4, !tbaa !14
-  %4 = icmp eq i32 %3, %ftp
-  %5 = trunc i64 %indvars.iv to i32
-  br i1 %4, label %9, label %6
+for.cond:                                         ; preds = %for.body
+  %inc = add nsw i32 %i.06, 1, !dbg !113
+  %0 = trunc i64 %indvars.iv.next to i32, !dbg !113
+  %cmp = icmp ult i32 %0, 5, !dbg !113
+  br i1 %cmp, label %for.body, label %return, !dbg !113
 
-; <label>:6                                       ; preds = %1
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %7 = trunc i64 %indvars.iv.next to i32
-  %8 = icmp ult i32 %7, 5
-  br i1 %8, label %1, label %9
+for.body:                                         ; preds = %entry, %for.cond
+  %indvars.iv = phi i64 [ 1, %entry ], [ %indvars.iv.next, %for.cond ]
+  %i.06 = phi i32 [ 1, %entry ], [ %inc, %for.cond ]
+  %arrayidx = getelementptr inbounds [5 x i32]* @can_view_ftp, i64 0, i64 %indvars.iv, !dbg !115
+  %1 = load i32* %arrayidx, align 4, !dbg !115, !tbaa !116
+  %cmp2 = icmp eq i32 %1, %ftp, !dbg !115
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !113
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !62), !dbg !113
+  br i1 %cmp2, label %return, label %for.cond, !dbg !115
 
-; <label>:9                                       ; preds = %6, %1
-  %.0 = phi i32 [ %5, %1 ], [ 0, %6 ]
-  ret i32 %.0
+return:                                           ; preds = %for.cond, %for.body
+  %retval.0 = phi i32 [ %i.06, %for.body ], [ 0, %for.cond ]
+  ret i32 %retval.0, !dbg !119
 }

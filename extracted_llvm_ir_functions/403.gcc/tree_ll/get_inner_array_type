@@ -1,18 +1,19 @@
-define %union.tree_node* @get_inner_array_type(%union.tree_node* nocapture %array) #3 {
+define %union.tree_node* @get_inner_array_type(%union.tree_node* nocapture %array) #4 {
 entry:
-  br label %while.cond
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %array}, i64 0, metadata !1586), !dbg !3286
+  br label %while.cond, !dbg !3287
 
 while.cond:                                       ; preds = %while.cond, %entry
   %array.pn = phi %union.tree_node* [ %array, %entry ], [ %type.0, %while.cond ]
-  %type.0.in = getelementptr inbounds %union.tree_node* %array.pn, i64 0, i32 0, i32 0, i32 1
-  %type.0 = load %union.tree_node** %type.0.in, align 8
-  %code = getelementptr inbounds %union.tree_node* %type.0, i64 0, i32 0, i32 0, i32 2
-  %0 = bitcast [4 x i8]* %code to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 255
-  %cmp = icmp eq i32 %bf.clear, 18
-  br i1 %cmp, label %while.cond, label %while.end
+  %type.0.in = getelementptr inbounds %union.tree_node* %array.pn, i64 0, i32 0, i32 0, i32 1, !dbg !3288
+  %type.0 = load %union.tree_node** %type.0.in, align 8, !dbg !3288
+  %code = getelementptr inbounds %union.tree_node* %type.0, i64 0, i32 0, i32 0, i32 2, !dbg !3287
+  %0 = bitcast [4 x i8]* %code to i32*, !dbg !3287
+  %bf.load = load i32* %0, align 8, !dbg !3287
+  %bf.clear = and i32 %bf.load, 255, !dbg !3287
+  %cmp = icmp eq i32 %bf.clear, 18, !dbg !3287
+  br i1 %cmp, label %while.cond, label %while.end, !dbg !3287
 
 while.end:                                        ; preds = %while.cond
-  ret %union.tree_node* %type.0
+  ret %union.tree_node* %type.0, !dbg !3289
 }

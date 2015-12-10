@@ -1,22 +1,27 @@
 define void @record_builtin_type(i32 %rid_index, i8* %name, %union.tree_node* %type) #0 {
 entry:
-  %cmp = icmp eq i8* %name, null
-  br i1 %cmp, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata !{i32 %rid_index}, i64 0, metadata !1884), !dbg !5345
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !1885), !dbg !5346
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %type}, i64 0, metadata !1886), !dbg !5347
+  %cmp = icmp eq i8* %name, null, !dbg !5348
+  br i1 %cmp, label %if.then, label %if.else, !dbg !5348
 
 if.then:                                          ; preds = %entry
-  %idxprom = sext i32 %rid_index to i64
-  %0 = load %union.tree_node*** @ridpointers, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds %union.tree_node** %0, i64 %idxprom
-  %1 = load %union.tree_node** %arrayidx, align 8, !tbaa !0
-  br label %if.end
+  %idxprom = sext i32 %rid_index to i64, !dbg !5349
+  %0 = load %union.tree_node*** @ridpointers, align 8, !dbg !5349, !tbaa !2183
+  %arrayidx = getelementptr inbounds %union.tree_node** %0, i64 %idxprom, !dbg !5349
+  %1 = load %union.tree_node** %arrayidx, align 8, !dbg !5349, !tbaa !2183
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %1}, i64 0, metadata !1887), !dbg !5349
+  br label %if.end, !dbg !5349
 
 if.else:                                          ; preds = %entry
-  %call = tail call %union.tree_node* @get_identifier(i8* %name) #8
+  %call = tail call %union.tree_node* @get_identifier(i8* %name) #9, !dbg !5350
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call}, i64 0, metadata !1887), !dbg !5350
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
   %id.0 = phi %union.tree_node* [ %1, %if.then ], [ %call, %if.else ]
-  %call1 = tail call %union.tree_node* @build_decl(i32 33, %union.tree_node* %id.0, %union.tree_node* %type) #8
-  %call2 = tail call %union.tree_node* @pushdecl(%union.tree_node* %call1) #10
-  ret void
+  %call1 = tail call %union.tree_node* @build_decl(i32 33, %union.tree_node* %id.0, %union.tree_node* %type) #9, !dbg !5351
+  %call2 = tail call %union.tree_node* @pushdecl(%union.tree_node* %call1) #11, !dbg !5351
+  ret void, !dbg !5352
 }

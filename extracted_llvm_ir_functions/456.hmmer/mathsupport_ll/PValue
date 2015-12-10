@@ -1,45 +1,50 @@
 define double @PValue(%struct.plan7_s* %hmm, float %sc) #0 {
 entry:
-  %conv = fpext float %sc to double
-  %cmp = fcmp ult double %conv, 0x408FFFFFFFAB5002
-  br i1 %cmp, label %if.else, label %if.end13
+  tail call void @llvm.dbg.value(metadata !{%struct.plan7_s* %hmm}, i64 0, metadata !95), !dbg !189
+  tail call void @llvm.dbg.value(metadata !{float %sc}, i64 0, metadata !96), !dbg !189
+  %conv = fpext float %sc to double, !dbg !190
+  %cmp = fcmp ult double %conv, 0x408FFFFFFFAB5002, !dbg !190
+  br i1 %cmp, label %if.else, label %if.end13, !dbg !190
 
 if.else:                                          ; preds = %entry
-  %cmp6 = fcmp ugt double %conv, 0xC08FFFFFFFAB5002
-  br i1 %cmp6, label %if.else9, label %if.end13
+  %cmp6 = fcmp ugt double %conv, 0xC08FFFFFFFAB5002, !dbg !191
+  br i1 %cmp6, label %if.else9, label %if.end13, !dbg !191
 
 if.else9:                                         ; preds = %if.else
-  %mul11 = fmul double %conv, 0x3FE62E42FEAD449C
-  %call12 = tail call double @exp(double %mul11) #5
-  %add = fadd double %call12, 1.000000e+00
-  %div = fdiv double 1.000000e+00, %add
+  %mul11 = fmul double %conv, 0x3FE62E42FEAD449C, !dbg !192
+  %call12 = tail call double @exp(double %mul11) #6, !dbg !192
+  %add = fadd double %call12, 1.000000e+00, !dbg !192
+  %div = fdiv double 1.000000e+00, %add, !dbg !192
+  tail call void @llvm.dbg.value(metadata !{double %div}, i64 0, metadata !97), !dbg !192
   br label %if.end13
 
 if.end13:                                         ; preds = %if.else, %entry, %if.else9
   %pval.0 = phi double [ %div, %if.else9 ], [ 0.000000e+00, %entry ], [ 1.000000e+00, %if.else ]
-  %cmp14 = icmp eq %struct.plan7_s* %hmm, null
-  br i1 %cmp14, label %if.end22, label %land.lhs.true
+  %cmp14 = icmp eq %struct.plan7_s* %hmm, null, !dbg !193
+  br i1 %cmp14, label %if.end22, label %land.lhs.true, !dbg !193
 
 land.lhs.true:                                    ; preds = %if.end13
-  %flags = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 47
-  %0 = load i32* %flags, align 4, !tbaa !0
-  %and = and i32 %0, 128
-  %tobool = icmp eq i32 %and, 0
-  br i1 %tobool, label %if.end22, label %if.then16
+  %flags = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 47, !dbg !193
+  %0 = load i32* %flags, align 4, !dbg !193, !tbaa !194
+  %and = and i32 %0, 128, !dbg !193
+  %tobool = icmp eq i32 %and, 0, !dbg !193
+  br i1 %tobool, label %if.end22, label %if.then16, !dbg !193
 
 if.then16:                                        ; preds = %land.lhs.true
-  %mu = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 45
-  %1 = load float* %mu, align 4, !tbaa !3
-  %lambda = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 46
-  %2 = load float* %lambda, align 4, !tbaa !3
-  %call17 = tail call double @ExtremeValueP(float %sc, float %1, float %2) #5
-  %cmp18 = fcmp olt double %call17, %pval.0
-  br i1 %cmp18, label %if.then20, label %if.end22
+  %mu = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 45, !dbg !197
+  %1 = load float* %mu, align 4, !dbg !197, !tbaa !199
+  %lambda = getelementptr inbounds %struct.plan7_s* %hmm, i64 0, i32 46, !dbg !197
+  %2 = load float* %lambda, align 4, !dbg !197, !tbaa !199
+  %call17 = tail call double @ExtremeValueP(float %sc, float %1, float %2) #6, !dbg !197
+  tail call void @llvm.dbg.value(metadata !{double %call17}, i64 0, metadata !98), !dbg !197
+  %cmp18 = fcmp olt double %call17, %pval.0, !dbg !200
+  br i1 %cmp18, label %if.then20, label %if.end22, !dbg !200
 
 if.then20:                                        ; preds = %if.then16
-  br label %if.end22
+  tail call void @llvm.dbg.value(metadata !{double %call17}, i64 0, metadata !97), !dbg !200
+  br label %if.end22, !dbg !200
 
 if.end22:                                         ; preds = %land.lhs.true, %if.end13, %if.then16, %if.then20
   %pval.1 = phi double [ %call17, %if.then20 ], [ %pval.0, %if.then16 ], [ %pval.0, %land.lhs.true ], [ %pval.0, %if.end13 ]
-  ret double %pval.1
+  ret double %pval.1, !dbg !201
 }

@@ -1,50 +1,53 @@
 define void @P7CountSymbol(float* nocapture %counters, i8 signext %symidx, float %wt) #0 {
 entry:
-  %conv = sext i8 %symidx to i32
-  %0 = load i32* @Alphabet_size, align 4, !tbaa !3
-  %cmp = icmp slt i32 %conv, %0
-  br i1 %cmp, label %if.then, label %for.cond.preheader
+  tail call void @llvm.dbg.value(metadata !{float* %counters}, i64 0, metadata !137), !dbg !290
+  tail call void @llvm.dbg.value(metadata !{i8 %symidx}, i64 0, metadata !138), !dbg !290
+  tail call void @llvm.dbg.value(metadata !{float %wt}, i64 0, metadata !139), !dbg !290
+  %conv = sext i8 %symidx to i32, !dbg !291
+  %0 = load i32* @Alphabet_size, align 4, !dbg !291, !tbaa !194
+  %cmp = icmp slt i32 %conv, %0, !dbg !291
+  br i1 %cmp, label %if.then, label %for.cond.preheader, !dbg !291
 
 for.cond.preheader:                               ; preds = %entry
-  %cmp327 = icmp sgt i32 %0, 0
-  br i1 %cmp327, label %for.body.lr.ph, label %if.end18
+  %cmp327 = icmp sgt i32 %0, 0, !dbg !292
+  br i1 %cmp327, label %for.body.lr.ph, label %if.end18, !dbg !292
 
 for.body.lr.ph:                                   ; preds = %for.cond.preheader
-  %idxprom7 = sext i8 %symidx to i64
-  %arrayidx13 = getelementptr inbounds [24 x i32]* @DegenCount, i64 0, i64 %idxprom7
-  br label %for.body
+  %idxprom7 = sext i8 %symidx to i64, !dbg !294
+  %arrayidx13 = getelementptr inbounds [24 x i32]* @DegenCount, i64 0, i64 %idxprom7, !dbg !296
+  br label %for.body, !dbg !292
 
 if.then:                                          ; preds = %entry
-  %idxprom = sext i8 %symidx to i64
-  %arrayidx = getelementptr inbounds float* %counters, i64 %idxprom
-  %1 = load float* %arrayidx, align 4, !tbaa !4
-  %add = fadd float %1, %wt
-  store float %add, float* %arrayidx, align 4, !tbaa !4
-  br label %if.end18
+  %idxprom = sext i8 %symidx to i64, !dbg !297
+  %arrayidx = getelementptr inbounds float* %counters, i64 %idxprom, !dbg !297
+  %1 = load float* %arrayidx, align 4, !dbg !297, !tbaa !298
+  %add = fadd float %1, %wt, !dbg !297
+  store float %add, float* %arrayidx, align 4, !dbg !297, !tbaa !298
+  br label %if.end18, !dbg !297
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.inc
   %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
-  %arrayidx9 = getelementptr inbounds [24 x [20 x i8]]* @Degenerate, i64 0, i64 %idxprom7, i64 %indvars.iv
-  %2 = load i8* %arrayidx9, align 1, !tbaa !1
-  %tobool = icmp eq i8 %2, 0
-  br i1 %tobool, label %for.inc, label %if.then10
+  %arrayidx9 = getelementptr inbounds [24 x [20 x i8]]* @Degenerate, i64 0, i64 %idxprom7, i64 %indvars.iv, !dbg !294
+  %2 = load i8* %arrayidx9, align 1, !dbg !294, !tbaa !166
+  %tobool = icmp eq i8 %2, 0, !dbg !294
+  br i1 %tobool, label %for.inc, label %if.then10, !dbg !294
 
 if.then10:                                        ; preds = %for.body
-  %3 = load i32* %arrayidx13, align 4, !tbaa !3
-  %conv14 = sitofp i32 %3 to float
-  %div = fdiv float %wt, %conv14
-  %arrayidx16 = getelementptr inbounds float* %counters, i64 %indvars.iv
-  %4 = load float* %arrayidx16, align 4, !tbaa !4
-  %add17 = fadd float %div, %4
-  store float %add17, float* %arrayidx16, align 4, !tbaa !4
-  br label %for.inc
+  %3 = load i32* %arrayidx13, align 4, !dbg !296, !tbaa !194
+  %conv14 = sitofp i32 %3 to float, !dbg !296
+  %div = fdiv float %wt, %conv14, !dbg !296
+  %arrayidx16 = getelementptr inbounds float* %counters, i64 %indvars.iv, !dbg !296
+  %4 = load float* %arrayidx16, align 4, !dbg !296, !tbaa !298
+  %add17 = fadd float %div, %4, !dbg !296
+  store float %add17, float* %arrayidx16, align 4, !dbg !296, !tbaa !298
+  br label %for.inc, !dbg !296
 
 for.inc:                                          ; preds = %for.body, %if.then10
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %5 = trunc i64 %indvars.iv.next to i32
-  %cmp3 = icmp slt i32 %5, %0
-  br i1 %cmp3, label %for.body, label %if.end18
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !292
+  %5 = trunc i64 %indvars.iv.next to i32, !dbg !292
+  %cmp3 = icmp slt i32 %5, %0, !dbg !292
+  br i1 %cmp3, label %for.body, label %if.end18, !dbg !292
 
 if.end18:                                         ; preds = %for.cond.preheader, %for.inc, %if.then
-  ret void
+  ret void, !dbg !299
 }

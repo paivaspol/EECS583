@@ -1,0 +1,27 @@
+define void @_ZN3pov8pov_freeEPvPKci(i8* %ptr, i8* %file, i32 %line) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %ptr}, i64 0, metadata !115), !dbg !569
+  tail call void @llvm.dbg.value(metadata !{i8* %file}, i64 0, metadata !116), !dbg !569
+  tail call void @llvm.dbg.value(metadata !{i32 %line}, i64 0, metadata !117), !dbg !569
+  %cmp = icmp eq i8* %ptr, null, !dbg !570
+  br i1 %cmp, label %if.then, label %if.end, !dbg !570
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([50 x i8]* @.str2, i64 0, i64 0), i8* %file, i32 %line) #8, !dbg !571
+  br label %if.end, !dbg !571
+
+if.end:                                           ; preds = %if.then, %entry
+  %add.ptr = getelementptr inbounds i8* %ptr, i64 -48, !dbg !572
+  tail call void @llvm.dbg.value(metadata !{i8* %add.ptr}, i64 0, metadata !118), !dbg !572
+  %0 = bitcast i8* %add.ptr to %"struct.pov::mem_node"*, !dbg !573
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::mem_node"* %0}, i64 0, metadata !119), !dbg !573
+  tail call fastcc void @_ZN3povL11remove_nodeEPNS_8mem_nodeE(%"struct.pov::mem_node"* %0) #8, !dbg !574
+  %size = bitcast i8* %add.ptr to i64*, !dbg !575
+  %1 = load i64* %size, align 8, !dbg !575, !tbaa !465
+  tail call void @llvm.dbg.value(metadata !{i64 %1}, i64 0, metadata !576), !dbg !577
+  %2 = load i64* @_ZN3povL9mem_statsE.2, align 8, !dbg !578, !tbaa !465
+  %sub.i = sub i64 %2, %1, !dbg !578
+  store i64 %sub.i, i64* @_ZN3povL9mem_statsE.2, align 8, !dbg !578, !tbaa !465
+  tail call void @free(i8* %add.ptr) #9, !dbg !579
+  ret void, !dbg !580
+}

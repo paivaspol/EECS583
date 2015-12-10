@@ -1,49 +1,56 @@
 define void @DVshuffle(i32 %size, double* %y, i32 %seed) #0 {
 entry:
   %drand = alloca %struct._Drand, align 8
-  %cmp = icmp sgt i32 %size, 0
-  %cmp1 = icmp slt i32 %seed, 1
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end13
+  call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !390), !dbg !1150
+  call void @llvm.dbg.value(metadata !{double* %y}, i64 0, metadata !391), !dbg !1151
+  call void @llvm.dbg.value(metadata !{i32 %seed}, i64 0, metadata !392), !dbg !1152
+  %cmp = icmp sgt i32 %size, 0, !dbg !1153
+  %cmp1 = icmp slt i32 %seed, 1, !dbg !1153
+  %or.cond = or i1 %cmp, %cmp1, !dbg !1153
+  br i1 %or.cond, label %if.then, label %if.end13, !dbg !1153
 
 if.then:                                          ; preds = %entry
-  %cmp2 = icmp eq double* %y, null
-  br i1 %cmp2, label %if.then3, label %if.else
+  %cmp2 = icmp eq double* %y, null, !dbg !1154
+  br i1 %cmp2, label %if.then3, label %if.else, !dbg !1154
 
 if.then3:                                         ; preds = %if.then
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([72 x i8]* @.str36, i64 0, i64 0), i32 %size, double* null, i32 %seed) #5
-  call void @exit(i32 -1) #6
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !1155, !tbaa !629
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([72 x i8]* @.str36, i64 0, i64 0), i32 %size, double* null, i32 %seed) #6, !dbg !1155
+  call void @exit(i32 -1) #7, !dbg !1157
+  unreachable, !dbg !1157
 
 if.else:                                          ; preds = %if.then
-  %1 = bitcast %struct._Drand* %drand to i8*
-  call void @llvm.lifetime.start(i64 72, i8* %1) #4
-  call void @Drand_setDefaultFields(%struct._Drand* %drand) #5
-  call void @Drand_setSeed(%struct._Drand* %drand, i32 %seed) #5
-  br i1 %cmp, label %for.body.lr.ph, label %if.end13
+  %1 = bitcast %struct._Drand* %drand to i8*, !dbg !1158
+  call void @llvm.lifetime.start(i64 72, i8* %1) #5, !dbg !1158
+  call void @llvm.dbg.declare(metadata !{%struct._Drand* %drand}, metadata !393), !dbg !1158
+  call void @Drand_setDefaultFields(%struct._Drand* %drand) #6, !dbg !1159
+  call void @Drand_setSeed(%struct._Drand* %drand, i32 %seed) #6, !dbg !1160
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !410), !dbg !1161
+  br i1 %cmp, label %for.body.lr.ph, label %if.end13, !dbg !1161
 
 for.body.lr.ph:                                   ; preds = %if.else
-  %conv = sitofp i32 %size to double
-  br label %for.body
+  %conv = sitofp i32 %size to double, !dbg !1163
+  br label %for.body, !dbg !1161
 
 for.body:                                         ; preds = %for.body, %for.body.lr.ph
   %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
-  %call5 = call double @Drand_value(%struct._Drand* %drand) #5
-  %mul = fmul double %conv, %call5
-  %conv6 = fptosi double %mul to i32
-  %arrayidx = getelementptr inbounds double* %y, i64 %indvars.iv
-  %2 = load double* %arrayidx, align 8, !tbaa !3
-  %idxprom7 = sext i32 %conv6 to i64
-  %arrayidx8 = getelementptr inbounds double* %y, i64 %idxprom7
-  %3 = load double* %arrayidx8, align 8, !tbaa !3
-  store double %3, double* %arrayidx, align 8, !tbaa !3
-  store double %2, double* %arrayidx8, align 8, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %size
-  br i1 %exitcond, label %if.end13, label %for.body
+  %call5 = call double @Drand_value(%struct._Drand* %drand) #6, !dbg !1163
+  %mul = fmul double %conv, %call5, !dbg !1163
+  %conv6 = fptosi double %mul to i32, !dbg !1163
+  call void @llvm.dbg.value(metadata !{i32 %conv6}, i64 0, metadata !411), !dbg !1163
+  %arrayidx = getelementptr inbounds double* %y, i64 %indvars.iv, !dbg !1165
+  %2 = load double* %arrayidx, align 8, !dbg !1165, !tbaa !635
+  call void @llvm.dbg.value(metadata !{double %2}, i64 0, metadata !409), !dbg !1165
+  %idxprom7 = sext i32 %conv6 to i64, !dbg !1166
+  %arrayidx8 = getelementptr inbounds double* %y, i64 %idxprom7, !dbg !1166
+  %3 = load double* %arrayidx8, align 8, !dbg !1166, !tbaa !635
+  store double %3, double* %arrayidx, align 8, !dbg !1166, !tbaa !635
+  store double %2, double* %arrayidx8, align 8, !dbg !1167, !tbaa !635
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1161
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1161
+  %exitcond = icmp eq i32 %lftr.wideiv, %size, !dbg !1161
+  br i1 %exitcond, label %if.end13, label %for.body, !dbg !1161
 
 if.end13:                                         ; preds = %if.else, %for.body, %entry
-  ret void
+  ret void, !dbg !1168
 }

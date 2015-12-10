@@ -1,17 +1,19 @@
 define internal i32 @endGB(i8* %s, i32* nocapture %addend) #0 {
 entry:
-  store i32 0, i32* %addend, align 4, !tbaa !0
-  %call = tail call i8* @strstr(i8* %s, i8* getelementptr inbounds ([3 x i8]* @.str137, i64 0, i64 0)) #9
-  %cmp = icmp eq i8* %call, null
-  br i1 %cmp, label %lor.rhs, label %lor.end
+  tail call void @llvm.dbg.value(metadata !{i8* %s}, i64 0, metadata !558), !dbg !1558
+  tail call void @llvm.dbg.value(metadata !{i32* %addend}, i64 0, metadata !559), !dbg !1558
+  store i32 0, i32* %addend, align 4, !dbg !1559, !tbaa !600
+  %call = tail call i8* @strstr(i8* %s, i8* getelementptr inbounds ([3 x i8]* @.str137, i64 0, i64 0)) #10, !dbg !1560
+  %cmp = icmp eq i8* %call, null, !dbg !1560
+  br i1 %cmp, label %lor.rhs, label %lor.end, !dbg !1560
 
 lor.rhs:                                          ; preds = %entry
-  %strncmp = tail call i32 @strncmp(i8* %s, i8* getelementptr inbounds ([6 x i8]* @.str132, i64 0, i64 0), i64 5)
-  %cmp5 = icmp eq i32 %strncmp, 0
-  br label %lor.end
+  %strncmp = tail call i32 @strncmp(i8* %s, i8* getelementptr inbounds ([6 x i8]* @.str132, i64 0, i64 0), i64 5), !dbg !1560
+  %cmp5 = icmp eq i32 %strncmp, 0, !dbg !1560
+  br label %lor.end, !dbg !1560
 
 lor.end:                                          ; preds = %entry, %lor.rhs
   %0 = phi i1 [ true, %entry ], [ %cmp5, %lor.rhs ]
-  %lor.ext = zext i1 %0 to i32
-  ret i32 %lor.ext
+  %lor.ext = zext i1 %0 to i32, !dbg !1560
+  ret i32 %lor.ext, !dbg !1560
 }

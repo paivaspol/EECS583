@@ -1,37 +1,38 @@
 define void @init_alias_once() #0 {
 entry:
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata !597, i64 0, metadata !1337), !dbg !2371
+  br label %for.body, !dbg !2371
 
 for.body:                                         ; preds = %for.inc, %entry
   %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc ]
-  %0 = trunc i64 %indvars.iv to i32
-  %call = tail call zeroext i1 @ix86_function_arg_regno_p(i32 %0) #7
-  br i1 %call, label %land.lhs.true, label %for.inc
+  %0 = trunc i64 %indvars.iv to i32, !dbg !2373
+  %call = tail call zeroext i1 @ix86_function_arg_regno_p(i32 %0) #8, !dbg !2373
+  br i1 %call, label %land.lhs.true, label %for.inc, !dbg !2373
 
 land.lhs.true:                                    ; preds = %for.body
-  %1 = load i32* @target_flags, align 4, !tbaa !4
-  %and = lshr i32 %1, 25
-  %2 = and i32 %and, 1
-  %3 = or i32 %2, 4
-  %call1 = tail call i32 @ix86_hard_regno_mode_ok(i32 %0, i32 %3) #7
-  %tobool2 = icmp eq i32 %call1, 0
-  br i1 %tobool2, label %for.inc, label %if.then
+  %1 = load i32* @target_flags, align 4, !dbg !2374, !tbaa !1586
+  %and = lshr i32 %1, 25, !dbg !2374
+  %2 = and i32 %and, 1, !dbg !2374
+  %3 = or i32 %2, 4, !dbg !2374
+  %call1 = tail call i32 @ix86_hard_regno_mode_ok(i32 %0, i32 %3) #8, !dbg !2374
+  %tobool2 = icmp eq i32 %call1, 0, !dbg !2374
+  br i1 %tobool2, label %for.inc, label %if.then, !dbg !2374
 
 if.then:                                          ; preds = %land.lhs.true
-  %shl = shl i64 1, %indvars.iv
-  %4 = load i64* @argument_registers, align 8, !tbaa !3
-  %or = or i64 %4, %shl
-  store i64 %or, i64* @argument_registers, align 8, !tbaa !3
-  br label %for.inc
+  %shl = shl i64 1, %indvars.iv, !dbg !2375
+  %4 = load i64* @argument_registers, align 8, !dbg !2375, !tbaa !1584
+  %or = or i64 %4, %shl, !dbg !2375
+  store i64 %or, i64* @argument_registers, align 8, !dbg !2375, !tbaa !1584
+  br label %for.inc, !dbg !2375
 
 for.inc:                                          ; preds = %land.lhs.true, %for.body, %if.then
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 53
-  br i1 %exitcond, label %for.end, label %for.body
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2371
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !2371
+  %exitcond = icmp eq i32 %lftr.wideiv, 53, !dbg !2371
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !2371
 
 for.end:                                          ; preds = %for.inc
-  %call3 = tail call %struct.splay_tree_s* @splay_tree_new(i32 (i64, i64)* @splay_tree_compare_ints, void (i64)* null, void (i64)* null) #7
-  store %struct.splay_tree_s* %call3, %struct.splay_tree_s** @alias_sets, align 8, !tbaa !0
-  ret void
+  %call3 = tail call %struct.splay_tree_s* @splay_tree_new(i32 (i64, i64)* @splay_tree_compare_ints, void (i64)* null, void (i64)* null) #8, !dbg !2376
+  store %struct.splay_tree_s* %call3, %struct.splay_tree_s** @alias_sets, align 8, !dbg !2376, !tbaa !1579
+  ret void, !dbg !2377
 }

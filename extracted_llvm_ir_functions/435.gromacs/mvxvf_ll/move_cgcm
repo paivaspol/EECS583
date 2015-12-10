@@ -1,77 +1,91 @@
-define void @move_cgcm(%struct.__sFILE* nocapture readnone %log, %struct.t_commrec* nocapture readonly %cr, [3 x float]* %cg_cm, i32* nocapture readonly %nload) #4 {
-  %1 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1
-  %2 = load i32* %1, align 4, !tbaa !24
-  %3 = icmp sgt i32 %2, 1
-  br i1 %3, label %.lr.ph, label %._crit_edge
+define void @move_cgcm(%struct._IO_FILE* nocapture %log, %struct.t_commrec* nocapture %cr, [3 x float]* %cg_cm, i32* nocapture %nload) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %log}, i64 0, metadata !290), !dbg !403
+  tail call void @llvm.dbg.value(metadata !{%struct.t_commrec* %cr}, i64 0, metadata !291), !dbg !403
+  tail call void @llvm.dbg.value(metadata !{[3 x float]* %cg_cm}, i64 0, metadata !292), !dbg !403
+  tail call void @llvm.dbg.value(metadata !{i32* %nload}, i64 0, metadata !293), !dbg !403
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !297), !dbg !404
+  tail call void @llvm.dbg.value(metadata !137, i64 0, metadata !294), !dbg !405
+  %nnodes = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1, !dbg !405
+  %0 = load i32* %nnodes, align 4, !dbg !405, !tbaa !324
+  %sub63 = add nsw i32 %0, -1, !dbg !405
+  %cmp64 = icmp sgt i32 %sub63, 0, !dbg !405
+  br i1 %cmp64, label %for.body.lr.ph, label %for.end, !dbg !405
 
-.lr.ph:                                           ; preds = %0
-  %4 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0
-  %5 = load i32* %4, align 4, !tbaa !26
-  %6 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 2
-  %7 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 3
-  br label %8
+for.body.lr.ph:                                   ; preds = %entry
+  %nodeid = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0, !dbg !404
+  %1 = load i32* %nodeid, align 4, !dbg !404, !tbaa !324
+  %left = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 2, !dbg !407
+  %right = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 3, !dbg !409
+  br label %for.body, !dbg !405
 
-; <label>:8                                       ; preds = %.lr.ph, %35
-  %cur.02 = phi i32 [ %5, %.lr.ph ], [ %49, %35 ]
-  %i.01 = phi i32 [ 0, %.lr.ph ], [ %50, %35 ]
-  %9 = icmp eq i32 %cur.02, 0
-  br i1 %9, label %15, label %10
+for.body:                                         ; preds = %for.body.lr.ph, %cond.end20
+  %cur.066 = phi i32 [ %1, %for.body.lr.ph ], [ %rem38, %cond.end20 ]
+  %i.065 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %cond.end20 ]
+  %cmp1 = icmp eq i32 %cur.066, 0, !dbg !410
+  br i1 %cmp1, label %cond.end, label %cond.false, !dbg !410
 
-; <label>:10                                      ; preds = %8
-  %11 = add nsw i32 %cur.02, -1
-  %12 = sext i32 %11 to i64
-  %13 = getelementptr inbounds i32* %nload, i64 %12
-  %14 = load i32* %13, align 4, !tbaa !22
-  br label %15
+cond.false:                                       ; preds = %for.body
+  %sub2 = add nsw i32 %cur.066, -1, !dbg !410
+  %idxprom = sext i32 %sub2 to i64, !dbg !410
+  %arrayidx = getelementptr inbounds i32* %nload, i64 %idxprom, !dbg !410
+  %2 = load i32* %arrayidx, align 4, !dbg !410, !tbaa !324
+  br label %cond.end, !dbg !410
 
-; <label>:15                                      ; preds = %8, %10
-  %16 = phi i32 [ %14, %10 ], [ 0, %8 ]
-  %17 = sext i32 %cur.02 to i64
-  %18 = getelementptr inbounds i32* %nload, i64 %17
-  %19 = load i32* %18, align 4, !tbaa !22
-  %20 = sub nsw i32 %19, %16
-  %21 = load i32* %6, align 4, !tbaa !27
-  %22 = sext i32 %16 to i64
-  %23 = getelementptr inbounds [3 x float]* %cg_cm, i64 %22, i64 0
-  %24 = bitcast float* %23 to i8*
-  %25 = mul i32 %20, 12
-  tail call void @gmx_tx(i32 %21, i8* %24, i32 %25) #5
-  %26 = add nsw i32 %cur.02, 1
-  %27 = load i32* %1, align 4, !tbaa !24
-  %28 = srem i32 %26, %27
-  %29 = icmp eq i32 %28, 0
-  br i1 %29, label %35, label %30
+cond.end:                                         ; preds = %for.body, %cond.false
+  %cond = phi i32 [ %2, %cond.false ], [ 0, %for.body ], !dbg !410
+  tail call void @llvm.dbg.value(metadata !{i32 %cond}, i64 0, metadata !295), !dbg !410
+  %idxprom3 = sext i32 %cur.066 to i64, !dbg !411
+  %arrayidx4 = getelementptr inbounds i32* %nload, i64 %idxprom3, !dbg !411
+  %3 = load i32* %arrayidx4, align 4, !dbg !411, !tbaa !324
+  %sub5 = sub nsw i32 %3, %cond, !dbg !411
+  tail call void @llvm.dbg.value(metadata !{i32 %sub5}, i64 0, metadata !296), !dbg !411
+  %4 = load i32* %left, align 4, !dbg !407, !tbaa !324
+  %idxprom6 = sext i32 %cond to i64, !dbg !407
+  %arraydecay = getelementptr inbounds [3 x float]* %cg_cm, i64 %idxprom6, i64 0, !dbg !407
+  %5 = bitcast float* %arraydecay to i8*, !dbg !407
+  %mul = mul i32 %sub5, 12, !dbg !407
+  tail call void @gmx_tx(i32 %4, i8* %5, i32 %mul) #3, !dbg !407
+  %add = add nsw i32 %cur.066, 1, !dbg !412
+  %6 = load i32* %nnodes, align 4, !dbg !412, !tbaa !324
+  %rem = srem i32 %add, %6, !dbg !412
+  %cmp10 = icmp eq i32 %rem, 0, !dbg !412
+  br i1 %cmp10, label %cond.end20, label %cond.false13, !dbg !412
 
-; <label>:30                                      ; preds = %15
-  %31 = add nsw i32 %28, -1
-  %32 = sext i32 %31 to i64
-  %33 = getelementptr inbounds i32* %nload, i64 %32
-  %34 = load i32* %33, align 4, !tbaa !22
-  br label %35
+cond.false13:                                     ; preds = %cond.end
+  %sub17 = add nsw i32 %rem, -1, !dbg !412
+  %idxprom18 = sext i32 %sub17 to i64, !dbg !412
+  %arrayidx19 = getelementptr inbounds i32* %nload, i64 %idxprom18, !dbg !412
+  %7 = load i32* %arrayidx19, align 4, !dbg !412, !tbaa !324
+  br label %cond.end20, !dbg !412
 
-; <label>:35                                      ; preds = %15, %30
-  %36 = phi i32 [ %34, %30 ], [ 0, %15 ]
-  %37 = sext i32 %28 to i64
-  %38 = getelementptr inbounds i32* %nload, i64 %37
-  %39 = load i32* %38, align 4, !tbaa !22
-  %40 = sub nsw i32 %39, %36
-  %41 = load i32* %7, align 4, !tbaa !28
-  %42 = sext i32 %36 to i64
-  %43 = getelementptr inbounds [3 x float]* %cg_cm, i64 %42, i64 0
-  %44 = bitcast float* %43 to i8*
-  %45 = mul i32 %40, 12
-  tail call void @gmx_rx(i32 %41, i8* %44, i32 %45) #5
-  %46 = load i32* %6, align 4, !tbaa !27
-  tail call void @gmx_tx_wait(i32 %46) #5
-  %47 = load i32* %7, align 4, !tbaa !28
-  tail call void @gmx_rx_wait(i32 %47) #5
-  %48 = load i32* %1, align 4, !tbaa !24
-  %49 = srem i32 %26, %48
-  %50 = add nuw nsw i32 %i.01, 1
-  %51 = add nsw i32 %48, -1
-  %52 = icmp slt i32 %50, %51
-  br i1 %52, label %8, label %._crit_edge
+cond.end20:                                       ; preds = %cond.end, %cond.false13
+  %cond21 = phi i32 [ %7, %cond.false13 ], [ 0, %cond.end ], !dbg !412
+  tail call void @llvm.dbg.value(metadata !{i32 %cond21}, i64 0, metadata !295), !dbg !412
+  %idxprom25 = sext i32 %rem to i64, !dbg !413
+  %arrayidx26 = getelementptr inbounds i32* %nload, i64 %idxprom25, !dbg !413
+  %8 = load i32* %arrayidx26, align 4, !dbg !413, !tbaa !324
+  %sub27 = sub nsw i32 %8, %cond21, !dbg !413
+  tail call void @llvm.dbg.value(metadata !{i32 %sub27}, i64 0, metadata !296), !dbg !413
+  %9 = load i32* %right, align 4, !dbg !409, !tbaa !324
+  %idxprom28 = sext i32 %cond21 to i64, !dbg !409
+  %arraydecay30 = getelementptr inbounds [3 x float]* %cg_cm, i64 %idxprom28, i64 0, !dbg !409
+  %10 = bitcast float* %arraydecay30 to i8*, !dbg !409
+  %mul32 = mul i32 %sub27, 12, !dbg !409
+  tail call void @gmx_rx(i32 %9, i8* %10, i32 %mul32) #3, !dbg !409
+  %11 = load i32* %left, align 4, !dbg !414, !tbaa !324
+  tail call void @gmx_tx_wait(i32 %11) #3, !dbg !414
+  %12 = load i32* %right, align 4, !dbg !415, !tbaa !324
+  tail call void @gmx_rx_wait(i32 %12) #3, !dbg !415
+  %13 = load i32* %nnodes, align 4, !dbg !416, !tbaa !324
+  %rem38 = srem i32 %add, %13, !dbg !416
+  tail call void @llvm.dbg.value(metadata !{i32 %rem38}, i64 0, metadata !297), !dbg !416
+  %inc = add nsw i32 %i.065, 1, !dbg !405
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !294), !dbg !405
+  %sub = add nsw i32 %13, -1, !dbg !405
+  %cmp = icmp slt i32 %inc, %sub, !dbg !405
+  br i1 %cmp, label %for.body, label %for.end, !dbg !405
 
-._crit_edge:                                      ; preds = %35, %0
-  ret void
+for.end:                                          ; preds = %cond.end20, %entry
+  ret void, !dbg !417
 }

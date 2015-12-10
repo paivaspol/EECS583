@@ -1,0 +1,72 @@
+define %"class.soplex::SSVector"* @_ZN6soplex8SSVectormIERKS0_(%"class.soplex::SSVector"* %this, %"class.soplex::SSVector"* nocapture %vec) #2 align 2 {
+entry:
+  %ref.tmp = alloca %"class.soplex::Vector", align 8
+  call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %this}, i64 0, metadata !2432), !dbg !4165
+  call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %vec}, i64 0, metadata !2433), !dbg !4165
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %vec}, i64 0, metadata !4166), !dbg !4168
+  %setupStatus.i = getelementptr inbounds %"class.soplex::SSVector"* %vec, i64 0, i32 2, !dbg !4169
+  %0 = load i8* %setupStatus.i, align 1, !dbg !4169, !tbaa !4010, !range !4011
+  %tobool.i = icmp eq i8 %0, 0, !dbg !4169
+  br i1 %tobool.i, label %if.else, label %for.cond.preheader, !dbg !4167
+
+for.cond.preheader:                               ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %vec}, i64 0, metadata !4170), !dbg !4172
+  %num.i.i = getelementptr inbounds %"class.soplex::SSVector"* %vec, i64 0, i32 1, i32 0, !dbg !4173
+  %1 = load i32* %num.i.i, align 4, !dbg !4173, !tbaa !3918
+  %cmp18 = icmp sgt i32 %1, 0, !dbg !4171
+  br i1 %cmp18, label %for.body.lr.ph, label %if.end, !dbg !4171
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %idx.i = getelementptr inbounds %"class.soplex::SSVector"* %vec, i64 0, i32 1, i32 2, !dbg !4175
+  %2 = load i32** %idx.i, align 8, !dbg !4175, !tbaa !3926
+  %val.i = getelementptr inbounds %"class.soplex::SSVector"* %vec, i64 0, i32 0, i32 0, i32 1, !dbg !4175
+  %3 = load double** %val.i, align 8, !dbg !4175, !tbaa !3926
+  %val = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 0, i32 0, i32 1, !dbg !4176
+  %4 = load double** %val, align 8, !dbg !4176, !tbaa !3926
+  br label %for.body, !dbg !4171
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %vec}, i64 0, metadata !4177), !dbg !4178
+  tail call void @llvm.dbg.value(metadata !4126, i64 0, metadata !4179), !dbg !4178
+  %arrayidx.i = getelementptr inbounds i32* %2, i64 %indvars.iv, !dbg !4175
+  %5 = load i32* %arrayidx.i, align 4, !dbg !4175, !tbaa !3918
+  %idxprom2.i = sext i32 %5 to i64, !dbg !4175
+  %arrayidx3.i = getelementptr inbounds double* %3, i64 %idxprom2.i, !dbg !4175
+  %6 = load double* %arrayidx3.i, align 8, !dbg !4175, !tbaa !4014
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %vec}, i64 0, metadata !4180), !dbg !4181
+  tail call void @llvm.dbg.value(metadata !4126, i64 0, metadata !4182), !dbg !4181
+  tail call void @llvm.dbg.value(metadata !4126, i64 0, metadata !4183), !dbg !4185
+  %arrayidx = getelementptr inbounds double* %4, i64 %idxprom2.i, !dbg !4176
+  %7 = load double* %arrayidx, align 8, !dbg !4176, !tbaa !4014
+  %sub = fsub double %7, %6, !dbg !4176
+  store double %sub, double* %arrayidx, align 8, !dbg !4176, !tbaa !4014
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !4171
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %vec}, i64 0, metadata !4170), !dbg !4172
+  %8 = trunc i64 %indvars.iv.next to i32, !dbg !4171
+  %cmp = icmp slt i32 %8, %1, !dbg !4171
+  br i1 %cmp, label %for.body, label %if.end, !dbg !4171
+
+if.else:                                          ; preds = %entry
+  %9 = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 0, i32 0, !dbg !4186
+  %10 = bitcast %"class.soplex::Vector"* %ref.tmp to i8*, !dbg !4186
+  %11 = bitcast %"class.soplex::SSVector"* %vec to i8*, !dbg !4186
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %10, i8* %11, i64 16, i32 8, i1 false), !dbg !4186, !tbaa.struct !4188
+  %call5 = call %"class.soplex::Vector"* @_ZN6soplex6VectormIERKS0_(%"class.soplex::Vector"* %9, %"class.soplex::Vector"* %ref.tmp) #11, !dbg !4186
+  br label %if.end
+
+if.end:                                           ; preds = %for.cond.preheader, %for.body, %if.else
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SSVector"* %this}, i64 0, metadata !4189), !dbg !4191
+  %setupStatus.i16 = getelementptr inbounds %"class.soplex::SSVector"* %this, i64 0, i32 2, !dbg !4192
+  %12 = load i8* %setupStatus.i16, align 1, !dbg !4192, !tbaa !4010, !range !4011
+  %tobool.i17 = icmp eq i8 %12, 0, !dbg !4192
+  br i1 %tobool.i17, label %if.end8, label %if.then7, !dbg !4190
+
+if.then7:                                         ; preds = %if.end
+  store i8 0, i8* %setupStatus.i16, align 1, !dbg !4193, !tbaa !4010
+  call void @_ZN6soplex8SSVector5setupEv(%"class.soplex::SSVector"* %this) #11, !dbg !4195
+  br label %if.end8, !dbg !4196
+
+if.end8:                                          ; preds = %if.end, %if.then7
+  ret %"class.soplex::SSVector"* %this, !dbg !4197
+}

@@ -1,0 +1,54 @@
+define void @_ZN11EtherAppCli13receivePacketEP8cMessage(%class.EtherAppCli* %this, %class.cMessage* %msg) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.EtherAppCli* %this}, i64 0, metadata !5125), !dbg !5773
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage* %msg}, i64 0, metadata !5126), !dbg !5773
+  %0 = load i32* getelementptr inbounds (%class.cEnvir* @ev, i64 0, i32 1), align 8, !dbg !5774, !tbaa !5567
+  %tobool = icmp eq i32 %0, 0, !dbg !5774
+  br i1 %tobool, label %cond.false, label %cond.end, !dbg !5774
+
+cond.false:                                       ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !5709, i64 0, metadata !5775), !dbg !5776
+  tail call void @llvm.dbg.value(metadata !5777, i64 0, metadata !5778), !dbg !5776
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([18 x i8]* @.str20, i64 0, i64 0)) #10, !dbg !5779
+  %namestr.i = getelementptr inbounds %class.cMessage* %msg, i64 0, i32 0, i32 1, !dbg !5780
+  %1 = load i8** %namestr.i, align 8, !dbg !5780, !tbaa !5561
+  %tobool.i = icmp eq i8* %1, null, !dbg !5780
+  %..i = select i1 %tobool.i, i8* getelementptr inbounds ([1 x i8]* @.str11, i64 0, i64 0), i8* %1, !dbg !5780
+  tail call void @llvm.dbg.value(metadata !5709, i64 0, metadata !5775), !dbg !5776
+  tail call void @llvm.dbg.value(metadata !{i8* %..i}, i64 0, metadata !5778), !dbg !5776
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* %..i) #10, !dbg !5779
+  tail call void @llvm.dbg.value(metadata !5709, i64 0, metadata !5775), !dbg !5776
+  tail call void @llvm.dbg.value(metadata !5782, i64 0, metadata !5778), !dbg !5776
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([3 x i8]* @.str21, i64 0, i64 0)) #10, !dbg !5779
+  br label %cond.end, !dbg !5774
+
+cond.end:                                         ; preds = %entry, %cond.false
+  %packetsReceived = getelementptr inbounds %class.EtherAppCli* %this, i64 0, i32 9, !dbg !5783
+  %2 = load i64* %packetsReceived, align 8, !dbg !5783, !tbaa !5570
+  %inc = add nsw i64 %2, 1, !dbg !5783
+  store i64 %inc, i64* %packetsReceived, align 8, !dbg !5783, !tbaa !5570
+  %3 = getelementptr inbounds %class.EtherAppCli* %this, i64 0, i32 0, !dbg !5784
+  %call5 = tail call double @_ZNK13cSimpleModule7simTimeEv(%class.cSimpleModule* %3) #10, !dbg !5784
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage* %msg}, i64 0, metadata !5785), !dbg !5786
+  %created.i = getelementptr inbounds %class.cMessage* %msg, i64 0, i32 13, !dbg !5787
+  %4 = load double* %created.i, align 8, !dbg !5787, !tbaa !5789
+  %sub = fsub double %call5, %4, !dbg !5784
+  tail call void @llvm.dbg.value(metadata !{double %sub}, i64 0, metadata !5127), !dbg !5784
+  %eedVector = getelementptr inbounds %class.EtherAppCli* %this, i64 0, i32 10, !dbg !5790
+  %call7 = tail call zeroext i1 @_ZN10cOutVector6recordEd(%class.cOutVector* %eedVector, double %sub) #10, !dbg !5790
+  %eedStats = getelementptr inbounds %class.EtherAppCli* %this, i64 0, i32 11, !dbg !5791
+  tail call void @_ZN7cStdDev7collectEd(%class.cStdDev* %eedStats, double %sub) #10, !dbg !5791
+  %isnull = icmp eq %class.cMessage* %msg, null, !dbg !5792
+  br i1 %isnull, label %delete.end, label %delete.notnull, !dbg !5792
+
+delete.notnull:                                   ; preds = %cond.end
+  %5 = bitcast %class.cMessage* %msg to void (%class.cMessage*)***, !dbg !5792
+  %vtable = load void (%class.cMessage*)*** %5, align 8, !dbg !5792, !tbaa !5581
+  %vfn = getelementptr inbounds void (%class.cMessage*)** %vtable, i64 1, !dbg !5792
+  %6 = load void (%class.cMessage*)** %vfn, align 8, !dbg !5792
+  tail call void %6(%class.cMessage* %msg) #10, !dbg !5792
+  br label %delete.end, !dbg !5792
+
+delete.end:                                       ; preds = %delete.notnull, %cond.end
+  ret void, !dbg !5793
+}

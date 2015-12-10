@@ -1,39 +1,41 @@
-define i32 @field_flag_inference() #2 {
+define i32 @field_flag_inference() #3 {
 entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3
-  %1 = load i32* %current_mb_nr, align 4, !tbaa !3
-  %idxprom = sext i32 %1 to i64
-  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51
-  %2 = load %struct.macroblock** %mb_data, align 8, !tbaa !0
-  %mbAvailA = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 27
-  %3 = load i32* %mbAvailA, align 4, !tbaa !3
-  %tobool = icmp eq i32 %3, 0
-  br i1 %tobool, label %if.else, label %if.then
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !3078, !tbaa !1451
+  %current_mb_nr = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 3, !dbg !3078
+  %1 = load i32* %current_mb_nr, align 4, !dbg !3078, !tbaa !1458
+  %idxprom = sext i32 %1 to i64, !dbg !3078
+  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51, !dbg !3078
+  %2 = load %struct.macroblock** %mb_data, align 8, !dbg !3078, !tbaa !1451
+  %mbAvailA = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 27, !dbg !3079
+  %3 = load i32* %mbAvailA, align 4, !dbg !3079, !tbaa !1458
+  %tobool = icmp eq i32 %3, 0, !dbg !3079
+  br i1 %tobool, label %if.else, label %if.then, !dbg !3079
 
 if.then:                                          ; preds = %entry
-  %mbAddrA = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 23
-  %4 = load i32* %mbAddrA, align 4, !tbaa !3
-  %idxprom1 = sext i32 %4 to i64
-  %mb_field4 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom1, i32 22
-  %5 = load i32* %mb_field4, align 4, !tbaa !3
-  br label %if.end12
+  %mbAddrA = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 23, !dbg !3080
+  %4 = load i32* %mbAddrA, align 4, !dbg !3080, !tbaa !1458
+  %idxprom1 = sext i32 %4 to i64, !dbg !3080
+  %mb_field4 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom1, i32 22, !dbg !3080
+  %5 = load i32* %mb_field4, align 4, !dbg !3080, !tbaa !1458
+  tail call void @llvm.dbg.value(metadata !{i32 %5}, i64 0, metadata !701), !dbg !3080
+  br label %if.end12, !dbg !3082
 
 if.else:                                          ; preds = %entry
-  %mbAvailB = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 28
-  %6 = load i32* %mbAvailB, align 4, !tbaa !3
-  %tobool5 = icmp eq i32 %6, 0
-  br i1 %tobool5, label %if.end12, label %if.then6
+  %mbAvailB = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 28, !dbg !3083
+  %6 = load i32* %mbAvailB, align 4, !dbg !3083, !tbaa !1458
+  %tobool5 = icmp eq i32 %6, 0, !dbg !3083
+  br i1 %tobool5, label %if.end12, label %if.then6, !dbg !3083
 
 if.then6:                                         ; preds = %if.else
-  %mbAddrB = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 24
-  %7 = load i32* %mbAddrB, align 4, !tbaa !3
-  %idxprom7 = sext i32 %7 to i64
-  %mb_field10 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom7, i32 22
-  %8 = load i32* %mb_field10, align 4, !tbaa !3
-  br label %if.end12
+  %mbAddrB = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom, i32 24, !dbg !3085
+  %7 = load i32* %mbAddrB, align 4, !dbg !3085, !tbaa !1458
+  %idxprom7 = sext i32 %7 to i64, !dbg !3085
+  %mb_field10 = getelementptr inbounds %struct.macroblock* %2, i64 %idxprom7, i32 22, !dbg !3085
+  %8 = load i32* %mb_field10, align 4, !dbg !3085, !tbaa !1458
+  tail call void @llvm.dbg.value(metadata !{i32 %8}, i64 0, metadata !701), !dbg !3085
+  br label %if.end12, !dbg !3087
 
 if.end12:                                         ; preds = %if.else, %if.then6, %if.then
   %mb_field.0 = phi i32 [ %5, %if.then ], [ %8, %if.then6 ], [ 0, %if.else ]
-  ret i32 %mb_field.0
+  ret i32 %mb_field.0, !dbg !3088
 }

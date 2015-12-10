@@ -1,109 +1,116 @@
 define %struct._Chv* @ChvManager_newObjectOfSizeNbytes(%struct._ChvManager* %manager, i32 %nbytesNeeded) #0 {
 entry:
-  %cmp = icmp eq %struct._ChvManager* %manager, null
-  %cmp1 = icmp slt i32 %nbytesNeeded, 1
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._ChvManager* %manager}, i64 0, metadata !64), !dbg !89
+  tail call void @llvm.dbg.value(metadata !{i32 %nbytesNeeded}, i64 0, metadata !65), !dbg !90
+  %cmp = icmp eq %struct._ChvManager* %manager, null, !dbg !91
+  %cmp1 = icmp slt i32 %nbytesNeeded, 1, !dbg !91
+  %or.cond = or i1 %cmp, %cmp1, !dbg !91
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !91
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([70 x i8]* @.str, i64 0, i64 0), %struct._ChvManager* %manager, i32 %nbytesNeeded) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !92, !tbaa !94
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([70 x i8]* @.str, i64 0, i64 0), %struct._ChvManager* %manager, i32 %nbytesNeeded) #5, !dbg !92
+  tail call void @exit(i32 -1) #6, !dbg !97
+  unreachable, !dbg !97
 
 if.end:                                           ; preds = %entry
-  %lock = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 1
-  %1 = load %struct._Lock** %lock, align 8, !tbaa !0
-  %cmp2 = icmp eq %struct._Lock* %1, null
-  br i1 %cmp2, label %if.end5, label %if.then3
+  %lock = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 1, !dbg !98
+  %1 = load %struct._Lock** %lock, align 8, !dbg !98, !tbaa !94
+  %cmp2 = icmp eq %struct._Lock* %1, null, !dbg !98
+  br i1 %cmp2, label %if.end5, label %if.then3, !dbg !98
 
 if.then3:                                         ; preds = %if.end
-  tail call void @Lock_lock(%struct._Lock* %1) #4
-  %nlocks = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 9
-  %2 = load i32* %nlocks, align 4, !tbaa !3
-  %inc = add nsw i32 %2, 1
-  store i32 %inc, i32* %nlocks, align 4, !tbaa !3
-  br label %if.end5
+  tail call void @Lock_lock(%struct._Lock* %1) #5, !dbg !99
+  %nlocks = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 9, !dbg !101
+  %2 = load i32* %nlocks, align 4, !dbg !101, !tbaa !102
+  %inc = add nsw i32 %2, 1, !dbg !101
+  store i32 %inc, i32* %nlocks, align 4, !dbg !101, !tbaa !102
+  br label %if.end5, !dbg !103
 
 if.end5:                                          ; preds = %if.end, %if.then3
-  %head = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 0
-  %chv.072 = load %struct._Chv** %head, align 8
-  %cmp673 = icmp eq %struct._Chv* %chv.072, null
-  br i1 %cmp673, label %if.then26, label %for.body
+  %head = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 0, !dbg !104
+  tail call void @llvm.dbg.value(metadata !106, i64 0, metadata !67), !dbg !104
+  %chv.072 = load %struct._Chv** %head, align 8, !dbg !104
+  %cmp673 = icmp eq %struct._Chv* %chv.072, null, !dbg !104
+  br i1 %cmp673, label %if.then26, label %for.body, !dbg !104
 
 for.cond:                                         ; preds = %for.body
-  %next = getelementptr inbounds %struct._Chv* %chv.075, i64 0, i32 10
-  %chv.0 = load %struct._Chv** %next, align 8
-  %cmp6 = icmp eq %struct._Chv* %chv.0, null
-  br i1 %cmp6, label %if.then26, label %for.body
+  %next = getelementptr inbounds %struct._Chv* %chv.075, i64 0, i32 10, !dbg !107
+  %chv.0 = load %struct._Chv** %next, align 8, !dbg !104
+  %cmp6 = icmp eq %struct._Chv* %chv.0, null, !dbg !104
+  br i1 %cmp6, label %if.then26, label %for.body, !dbg !104
 
 for.body:                                         ; preds = %if.end5, %for.cond
   %chv.075 = phi %struct._Chv* [ %chv.0, %for.cond ], [ %chv.072, %if.end5 ]
   %prev.074 = phi %struct._Chv* [ %chv.075, %for.cond ], [ null, %if.end5 ]
-  %call7 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %chv.075) #4
-  %cmp8 = icmp slt i32 %call7, %nbytesNeeded
-  br i1 %cmp8, label %for.cond, label %if.then12
+  %call7 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %chv.075) #5, !dbg !108
+  tail call void @llvm.dbg.value(metadata !{i32 %call7}, i64 0, metadata !68), !dbg !108
+  %cmp8 = icmp slt i32 %call7, %nbytesNeeded, !dbg !110
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %chv.075}, i64 0, metadata !67), !dbg !111
+  br i1 %cmp8, label %for.cond, label %if.then12, !dbg !110
 
 if.then12:                                        ; preds = %for.body
-  %cmp13 = icmp eq %struct._Chv* %prev.074, null
-  %next15 = getelementptr inbounds %struct._Chv* %chv.075, i64 0, i32 10
-  %3 = load %struct._Chv** %next15, align 8, !tbaa !0
-  br i1 %cmp13, label %if.then14, label %if.else
+  %cmp13 = icmp eq %struct._Chv* %prev.074, null, !dbg !112
+  %next15 = getelementptr inbounds %struct._Chv* %chv.075, i64 0, i32 10, !dbg !114
+  %3 = load %struct._Chv** %next15, align 8, !dbg !114, !tbaa !94
+  br i1 %cmp13, label %if.then14, label %if.else, !dbg !112
 
 if.then14:                                        ; preds = %if.then12
-  store %struct._Chv* %3, %struct._Chv** %head, align 8, !tbaa !0
-  br label %if.end28
+  store %struct._Chv* %3, %struct._Chv** %head, align 8, !dbg !114, !tbaa !94
+  br label %if.end28, !dbg !116
 
 if.else:                                          ; preds = %if.then12
-  %next18 = getelementptr inbounds %struct._Chv* %prev.074, i64 0, i32 10
-  store %struct._Chv* %3, %struct._Chv** %next18, align 8, !tbaa !0
+  %next18 = getelementptr inbounds %struct._Chv* %prev.074, i64 0, i32 10, !dbg !117
+  store %struct._Chv* %3, %struct._Chv** %next18, align 8, !dbg !117, !tbaa !94
   br label %if.end28
 
 if.then26:                                        ; preds = %for.cond, %if.end5
-  %call21 = tail call %struct._Chv* @Chv_new() #4
-  %wrkDV = getelementptr inbounds %struct._Chv* %call21, i64 0, i32 9
-  %conv = sext i32 %nbytesNeeded to i64
-  %div = lshr i64 %conv, 3
-  %conv22 = trunc i64 %div to i32
-  tail call void @DV_setSize(%struct._DV* %wrkDV, i32 %conv22) #4
-  %call27 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %call21) #4
-  %nbytesalloc = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 6
-  %4 = load i32* %nbytesalloc, align 4, !tbaa !3
-  %add = add nsw i32 %4, %call27
-  store i32 %add, i32* %nbytesalloc, align 4, !tbaa !3
-  br label %if.end28
+  %call21 = tail call %struct._Chv* @Chv_new() #5, !dbg !119
+  tail call void @llvm.dbg.value(metadata !{%struct._Chv* %call21}, i64 0, metadata !66), !dbg !119
+  tail call void @llvm.dbg.value(metadata !121, i64 0, metadata !69), !dbg !122
+  %wrkDV = getelementptr inbounds %struct._Chv* %call21, i64 0, i32 9, !dbg !123
+  %conv = sext i32 %nbytesNeeded to i64, !dbg !123
+  %div = lshr i64 %conv, 3, !dbg !123
+  %conv22 = trunc i64 %div to i32, !dbg !123
+  tail call void @DV_setSize(%struct._DV* %wrkDV, i32 %conv22) #5, !dbg !123
+  %call27 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %call21) #5, !dbg !124
+  %nbytesalloc = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 6, !dbg !124
+  %4 = load i32* %nbytesalloc, align 4, !dbg !124, !tbaa !102
+  %add = add nsw i32 %4, %call27, !dbg !124
+  store i32 %add, i32* %nbytesalloc, align 4, !dbg !124, !tbaa !102
+  br label %if.end28, !dbg !126
 
 if.end28:                                         ; preds = %if.then14, %if.else, %if.then26
   %chv.169 = phi %struct._Chv* [ %call21, %if.then26 ], [ %chv.075, %if.else ], [ %chv.075, %if.then14 ]
-  %nactive = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 3
-  %5 = load i32* %nactive, align 4, !tbaa !3
-  %inc29 = add nsw i32 %5, 1
-  store i32 %inc29, i32* %nactive, align 4, !tbaa !3
-  %call30 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %chv.169) #4
-  %nbytesactive = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 4
-  %6 = load i32* %nbytesactive, align 4, !tbaa !3
-  %add31 = add nsw i32 %6, %call30
-  store i32 %add31, i32* %nbytesactive, align 4, !tbaa !3
-  %nbytesrequested = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 5
-  %7 = load i32* %nbytesrequested, align 4, !tbaa !3
-  %add32 = add nsw i32 %7, %nbytesNeeded
-  store i32 %add32, i32* %nbytesrequested, align 4, !tbaa !3
-  %nrequests = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 7
-  %8 = load i32* %nrequests, align 4, !tbaa !3
-  %inc33 = add nsw i32 %8, 1
-  store i32 %inc33, i32* %nrequests, align 4, !tbaa !3
-  %9 = load %struct._Lock** %lock, align 8, !tbaa !0
-  %cmp35 = icmp eq %struct._Lock* %9, null
-  br i1 %cmp35, label %if.end40, label %if.then37
+  %nactive = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 3, !dbg !127
+  %5 = load i32* %nactive, align 4, !dbg !127, !tbaa !102
+  %inc29 = add nsw i32 %5, 1, !dbg !127
+  store i32 %inc29, i32* %nactive, align 4, !dbg !127, !tbaa !102
+  %call30 = tail call i32 @Chv_nbytesInWorkspace(%struct._Chv* %chv.169) #5, !dbg !128
+  %nbytesactive = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 4, !dbg !128
+  %6 = load i32* %nbytesactive, align 4, !dbg !128, !tbaa !102
+  %add31 = add nsw i32 %6, %call30, !dbg !128
+  store i32 %add31, i32* %nbytesactive, align 4, !dbg !128, !tbaa !102
+  %nbytesrequested = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 5, !dbg !129
+  %7 = load i32* %nbytesrequested, align 4, !dbg !129, !tbaa !102
+  %add32 = add nsw i32 %7, %nbytesNeeded, !dbg !129
+  store i32 %add32, i32* %nbytesrequested, align 4, !dbg !129, !tbaa !102
+  %nrequests = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 7, !dbg !130
+  %8 = load i32* %nrequests, align 4, !dbg !130, !tbaa !102
+  %inc33 = add nsw i32 %8, 1, !dbg !130
+  store i32 %inc33, i32* %nrequests, align 4, !dbg !130, !tbaa !102
+  %9 = load %struct._Lock** %lock, align 8, !dbg !131, !tbaa !94
+  %cmp35 = icmp eq %struct._Lock* %9, null, !dbg !131
+  br i1 %cmp35, label %if.end40, label %if.then37, !dbg !131
 
 if.then37:                                        ; preds = %if.end28
-  %nunlocks = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 10
-  %10 = load i32* %nunlocks, align 4, !tbaa !3
-  %inc38 = add nsw i32 %10, 1
-  store i32 %inc38, i32* %nunlocks, align 4, !tbaa !3
-  tail call void @Lock_unlock(%struct._Lock* %9) #4
-  br label %if.end40
+  %nunlocks = getelementptr inbounds %struct._ChvManager* %manager, i64 0, i32 10, !dbg !132
+  %10 = load i32* %nunlocks, align 4, !dbg !132, !tbaa !102
+  %inc38 = add nsw i32 %10, 1, !dbg !132
+  store i32 %inc38, i32* %nunlocks, align 4, !dbg !132, !tbaa !102
+  tail call void @Lock_unlock(%struct._Lock* %9) #5, !dbg !134
+  br label %if.end40, !dbg !135
 
 if.end40:                                         ; preds = %if.end28, %if.then37
-  ret %struct._Chv* %chv.169
+  ret %struct._Chv* %chv.169, !dbg !136
 }

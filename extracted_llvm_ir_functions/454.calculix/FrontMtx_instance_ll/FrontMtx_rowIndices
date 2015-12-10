@@ -1,59 +1,63 @@
 define void @FrontMtx_rowIndices(%struct._FrontMtx* %frontmtx, i32 %J, i32* %pnrow, i32** %prowind) #0 {
 entry:
-  %cmp = icmp eq %struct._FrontMtx* %frontmtx, null
-  %cmp1 = icmp slt i32 %J, 0
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+  tail call void @llvm.dbg.value(metadata !{%struct._FrontMtx* %frontmtx}, i64 0, metadata !230), !dbg !363
+  tail call void @llvm.dbg.value(metadata !{i32 %J}, i64 0, metadata !231), !dbg !364
+  tail call void @llvm.dbg.value(metadata !{i32* %pnrow}, i64 0, metadata !232), !dbg !365
+  tail call void @llvm.dbg.value(metadata !{i32** %prowind}, i64 0, metadata !233), !dbg !366
+  %cmp = icmp eq %struct._FrontMtx* %frontmtx, null, !dbg !367
+  %cmp1 = icmp slt i32 %J, 0, !dbg !367
+  %or.cond = or i1 %cmp, %cmp1, !dbg !367
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2, !dbg !367
 
 lor.lhs.false2:                                   ; preds = %entry
-  %nfront = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 0
-  %0 = load i32* %nfront, align 4, !tbaa !3
-  %cmp3 = icmp sle i32 %0, %J
-  %cmp5 = icmp eq i32* %pnrow, null
-  %or.cond43 = or i1 %cmp3, %cmp5
-  %cmp7 = icmp eq i32** %prowind, null
-  %or.cond44 = or i1 %or.cond43, %cmp7
-  br i1 %or.cond44, label %if.then, label %if.end
+  %nfront = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 0, !dbg !367
+  %0 = load i32* %nfront, align 4, !dbg !367, !tbaa !293
+  %cmp3 = icmp sle i32 %0, %J, !dbg !367
+  %cmp5 = icmp eq i32* %pnrow, null, !dbg !367
+  %or.cond43 = or i1 %cmp3, %cmp5, !dbg !367
+  %cmp7 = icmp eq i32** %prowind, null, !dbg !367
+  %or.cond44 = or i1 %or.cond43, %cmp7, !dbg !367
+  br i1 %or.cond44, label %if.then, label %if.end, !dbg !367
 
 if.then:                                          ; preds = %lor.lhs.false2, %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([62 x i8]* @.str9, i64 0, i64 0), %struct._FrontMtx* %frontmtx, i32 %J, i32* %pnrow, i32** %prowind) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !368, !tbaa !288
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([62 x i8]* @.str9, i64 0, i64 0), %struct._FrontMtx* %frontmtx, i32 %J, i32* %pnrow, i32** %prowind) #6, !dbg !368
+  tail call void @exit(i32 -1) #7, !dbg !370
+  unreachable, !dbg !370
 
 if.end:                                           ; preds = %lor.lhs.false2
-  %pivotingflag = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 5
-  %2 = load i32* %pivotingflag, align 4, !tbaa !3
-  %cmp8 = icmp eq i32 %2, 1
-  br i1 %cmp8, label %if.else, label %if.then9
+  %pivotingflag = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 5, !dbg !371
+  %2 = load i32* %pivotingflag, align 4, !dbg !371, !tbaa !293
+  %cmp8 = icmp eq i32 %2, 1, !dbg !371
+  br i1 %cmp8, label %if.else, label %if.then9, !dbg !371
 
 if.then9:                                         ; preds = %if.end
-  %symbfacIVL = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 13
-  %3 = load %struct._IVL** %symbfacIVL, align 8, !tbaa !0
-  tail call void @IVL_listAndSize(%struct._IVL* %3, i32 %J, i32* %pnrow, i32** %prowind) #5
-  br label %if.end21
+  %symbfacIVL = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 13, !dbg !372
+  %3 = load %struct._IVL** %symbfacIVL, align 8, !dbg !372, !tbaa !288
+  tail call void @IVL_listAndSize(%struct._IVL* %3, i32 %J, i32* %pnrow, i32** %prowind) #6, !dbg !372
+  br label %if.end21, !dbg !374
 
 if.else:                                          ; preds = %if.end
-  %symmetryflag = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 3
-  %4 = load i32* %symmetryflag, align 4, !tbaa !3
+  %symmetryflag = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 3, !dbg !375
+  %4 = load i32* %symmetryflag, align 4, !dbg !375, !tbaa !293
   switch i32 %4, label %if.end21 [
     i32 0, label %if.then14
     i32 1, label %if.then14
     i32 2, label %if.then18
-  ]
+  ], !dbg !375
 
 if.then14:                                        ; preds = %if.else, %if.else
-  %coladjIVL = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 15
-  %5 = load %struct._IVL** %coladjIVL, align 8, !tbaa !0
-  tail call void @IVL_listAndSize(%struct._IVL* %5, i32 %J, i32* %pnrow, i32** %prowind) #5
-  br label %if.end21
+  %coladjIVL = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 15, !dbg !376
+  %5 = load %struct._IVL** %coladjIVL, align 8, !dbg !376, !tbaa !288
+  tail call void @IVL_listAndSize(%struct._IVL* %5, i32 %J, i32* %pnrow, i32** %prowind) #6, !dbg !376
+  br label %if.end21, !dbg !378
 
 if.then18:                                        ; preds = %if.else
-  %rowadjIVL = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 14
-  %6 = load %struct._IVL** %rowadjIVL, align 8, !tbaa !0
-  tail call void @IVL_listAndSize(%struct._IVL* %6, i32 %J, i32* %pnrow, i32** %prowind) #5
-  br label %if.end21
+  %rowadjIVL = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 14, !dbg !379
+  %6 = load %struct._IVL** %rowadjIVL, align 8, !dbg !379, !tbaa !288
+  tail call void @IVL_listAndSize(%struct._IVL* %6, i32 %J, i32* %pnrow, i32** %prowind) #6, !dbg !379
+  br label %if.end21, !dbg !381
 
 if.end21:                                         ; preds = %if.else, %if.then14, %if.then18, %if.then9
-  ret void
+  ret void, !dbg !382
 }

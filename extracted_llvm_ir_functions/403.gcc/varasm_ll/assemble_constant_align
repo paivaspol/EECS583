@@ -1,28 +1,31 @@
 define void @assemble_constant_align(%union.tree_node* %exp) #0 {
 entry:
-  %type = getelementptr inbounds %union.tree_node* %exp, i64 0, i32 0, i32 0, i32 1
-  %0 = load %union.tree_node** %type, align 8, !tbaa !3
-  %align2 = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 7
-  %1 = bitcast %union.tree_node** %align2 to i32*
-  %2 = load i32* %1, align 4, !tbaa !4
-  %call = tail call i32 @ix86_constant_alignment(%union.tree_node* %exp, i32 %2) #9
-  %cmp = icmp sgt i32 %call, 8
-  br i1 %cmp, label %if.then, label %if.end11
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %exp}, i64 0, metadata !1281), !dbg !2659
+  %type = getelementptr inbounds %union.tree_node* %exp, i64 0, i32 0, i32 0, i32 1, !dbg !2660
+  %0 = load %union.tree_node** %type, align 8, !dbg !2660, !tbaa !2357
+  %align2 = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 7, !dbg !2660
+  %1 = bitcast %union.tree_node** %align2 to i32*, !dbg !2660
+  %2 = load i32* %1, align 4, !dbg !2660, !tbaa !2382
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !1282), !dbg !2660
+  %call = tail call i32 @ix86_constant_alignment(%union.tree_node* %exp, i32 %2) #10, !dbg !2661
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !1282), !dbg !2661
+  %cmp = icmp sgt i32 %call, 8, !dbg !2662
+  br i1 %cmp, label %if.then, label %if.end11, !dbg !2662
 
 if.then:                                          ; preds = %entry
-  %div = sdiv i32 %call, 8
-  %conv = sext i32 %div to i64
-  %call3 = tail call i32 @floor_log2_wide(i64 %conv) #9
-  %cmp4 = icmp eq i32 %call3, 0
-  br i1 %cmp4, label %if.end11, label %if.then6
+  %div = sdiv i32 %call, 8, !dbg !2663
+  %conv = sext i32 %div to i64, !dbg !2663
+  %call3 = tail call i32 @floor_log2_wide(i64 %conv) #10, !dbg !2663
+  %cmp4 = icmp eq i32 %call3, 0, !dbg !2663
+  br i1 %cmp4, label %if.end11, label %if.then6, !dbg !2663
 
 if.then6:                                         ; preds = %if.then
-  %3 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !3
-  %call9 = tail call i32 @floor_log2_wide(i64 %conv) #9
-  %shl = shl i32 1, %call9
-  %call10 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([12 x i8]* @.str58, i64 0, i64 0), i32 %shl) #9
-  br label %if.end11
+  %3 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !2663, !tbaa !2357
+  %call9 = tail call i32 @floor_log2_wide(i64 %conv) #10, !dbg !2663
+  %shl = shl i32 1, %call9, !dbg !2663
+  %call10 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([12 x i8]* @.str58, i64 0, i64 0), i32 %shl) #10, !dbg !2663
+  br label %if.end11, !dbg !2663
 
 if.end11:                                         ; preds = %if.then, %if.then6, %entry
-  ret void
+  ret void, !dbg !2665
 }

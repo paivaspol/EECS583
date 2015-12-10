@@ -1,0 +1,67 @@
+define void @_ZN3pov13Complex_PowerEPNS_5cmplxES1_S1_(%"struct.pov::cmplx"* nocapture %target, %"struct.pov::cmplx"* nocapture %source1, %"struct.pov::cmplx"* nocapture %source2) #0 {
+entry:
+  %cLog = alloca %"struct.pov::cmplx", align 8
+  call void @llvm.dbg.value(metadata !{%"struct.pov::cmplx"* %target}, i64 0, metadata !1192), !dbg !1987
+  call void @llvm.dbg.value(metadata !{%"struct.pov::cmplx"* %source1}, i64 0, metadata !1193), !dbg !1987
+  call void @llvm.dbg.value(metadata !{%"struct.pov::cmplx"* %source2}, i64 0, metadata !1194), !dbg !1987
+  call void @llvm.dbg.declare(metadata !{%"struct.pov::cmplx"* %cLog}, metadata !1195), !dbg !1988
+  call void @llvm.dbg.declare(metadata !1758, metadata !1196), !dbg !1988
+  %x = getelementptr inbounds %"struct.pov::cmplx"* %source1, i64 0, i32 0, !dbg !1989
+  %0 = load double* %x, align 8, !dbg !1989, !tbaa !1314
+  %cmp = fcmp oeq double %0, 0.000000e+00, !dbg !1989
+  br i1 %cmp, label %land.lhs.true, label %if.end, !dbg !1989
+
+land.lhs.true:                                    ; preds = %entry
+  %y = getelementptr inbounds %"struct.pov::cmplx"* %source1, i64 0, i32 1, !dbg !1989
+  %1 = load double* %y, align 8, !dbg !1989, !tbaa !1314
+  %cmp1 = fcmp oeq double %1, 0.000000e+00, !dbg !1989
+  br i1 %cmp1, label %if.then, label %if.end, !dbg !1989
+
+if.then:                                          ; preds = %land.lhs.true
+  %2 = bitcast %"struct.pov::cmplx"* %target to i8*, !dbg !1990
+  call void @llvm.memset.p0i8.i64(i8* %2, i8 0, i64 16, i32 8, i1 false), !dbg !1992
+  br label %return, !dbg !1990
+
+if.end:                                           ; preds = %land.lhs.true, %entry
+  call void @_ZN3pov10Complex_LnEPNS_5cmplxES1_(%"struct.pov::cmplx"* %cLog, %"struct.pov::cmplx"* %source1) #7, !dbg !1993
+  tail call void @llvm.dbg.value(metadata !1758, i64 0, metadata !1994), !dbg !1996
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::cmplx"* %cLog}, i64 0, metadata !1997), !dbg !1996
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::cmplx"* %source2}, i64 0, metadata !1998), !dbg !1996
+  %x.i = getelementptr inbounds %"struct.pov::cmplx"* %cLog, i64 0, i32 0, !dbg !1999
+  %3 = load double* %x.i, align 8, !dbg !1999, !tbaa !1314
+  %x1.i = getelementptr inbounds %"struct.pov::cmplx"* %source2, i64 0, i32 0, !dbg !1999
+  %4 = load double* %x1.i, align 8, !dbg !1999, !tbaa !1314
+  %mul.i = fmul double %3, %4, !dbg !1999
+  %y.i = getelementptr inbounds %"struct.pov::cmplx"* %cLog, i64 0, i32 1, !dbg !1999
+  %5 = load double* %y.i, align 8, !dbg !1999, !tbaa !1314
+  %y2.i = getelementptr inbounds %"struct.pov::cmplx"* %source2, i64 0, i32 1, !dbg !1999
+  %6 = load double* %y2.i, align 8, !dbg !1999, !tbaa !1314
+  %mul3.i = fmul double %5, %6, !dbg !1999
+  %sub.i = fsub double %mul.i, %mul3.i, !dbg !1999
+  tail call void @llvm.dbg.value(metadata !{double %sub.i}, i64 0, metadata !2000), !dbg !1999
+  %mul6.i = fmul double %3, %6, !dbg !2001
+  %mul9.i = fmul double %4, %5, !dbg !2001
+  %add.i = fadd double %mul9.i, %mul6.i, !dbg !2001
+  %cmp5 = fcmp olt double %sub.i, -6.900000e+02, !dbg !2002
+  br i1 %cmp5, label %if.end8, label %if.else, !dbg !2002
+
+if.else:                                          ; preds = %if.end
+  %call = call double @exp(double %sub.i) #8, !dbg !2003
+  call void @llvm.dbg.value(metadata !{double %call}, i64 0, metadata !1197), !dbg !2003
+  br label %if.end8
+
+if.end8:                                          ; preds = %if.end, %if.else
+  %e2x.0 = phi double [ %call, %if.else ], [ 0.000000e+00, %if.end ]
+  %call10 = call double @cos(double %add.i) #8, !dbg !2004
+  %mul = fmul double %e2x.0, %call10, !dbg !2004
+  %x11 = getelementptr inbounds %"struct.pov::cmplx"* %target, i64 0, i32 0, !dbg !2004
+  store double %mul, double* %x11, align 8, !dbg !2004, !tbaa !1314
+  %call13 = call double @sin(double %add.i) #8, !dbg !2005
+  %mul14 = fmul double %e2x.0, %call13, !dbg !2005
+  %y15 = getelementptr inbounds %"struct.pov::cmplx"* %target, i64 0, i32 1, !dbg !2005
+  store double %mul14, double* %y15, align 8, !dbg !2005, !tbaa !1314
+  br label %return, !dbg !2005
+
+return:                                           ; preds = %if.end8, %if.then
+  ret void, !dbg !2005
+}

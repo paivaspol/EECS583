@@ -1,14 +1,17 @@
 define i32 @quantum_getwidth(i32 %n) #0 {
 entry:
-  br label %for.cond
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !41), !dbg !85
+  tail call void @llvm.dbg.value(metadata !49, i64 0, metadata !42), !dbg !86
+  br label %for.cond, !dbg !86
 
 for.cond:                                         ; preds = %for.cond, %entry
   %i.0 = phi i32 [ 1, %entry ], [ %inc, %for.cond ]
-  %shl = shl i32 1, %i.0
-  %cmp = icmp slt i32 %shl, %n
-  %inc = add nsw i32 %i.0, 1
-  br i1 %cmp, label %for.cond, label %for.end
+  %shl = shl i32 1, %i.0, !dbg !86
+  %cmp = icmp slt i32 %shl, %n, !dbg !86
+  %inc = add nsw i32 %i.0, 1, !dbg !86
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !42), !dbg !86
+  br i1 %cmp, label %for.cond, label %for.end, !dbg !86
 
 for.end:                                          ; preds = %for.cond
-  ret i32 %i.0
+  ret i32 %i.0, !dbg !88
 }

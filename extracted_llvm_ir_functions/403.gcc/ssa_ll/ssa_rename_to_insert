@@ -1,30 +1,32 @@
 define internal fastcc void @ssa_rename_to_insert(%struct.rtx_def* nocapture %reg, %struct.rtx_def* %r) #0 {
 entry:
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
-  %0 = load i32* %rtuint, align 4, !tbaa !3
-  %cmp = icmp ult i32 %0, 53
-  br i1 %cmp, label %if.else, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %reg}, i64 0, metadata !912), !dbg !2139
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %r}, i64 0, metadata !913), !dbg !2140
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 0, !dbg !2141
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*, !dbg !2141
+  %0 = load i32* %rtuint, align 4, !dbg !2141, !tbaa !1224
+  %cmp = icmp ult i32 %0, 53, !dbg !2141
+  br i1 %cmp, label %if.else, label %if.then, !dbg !2141
 
 if.then:                                          ; preds = %entry
-  %sub = add i32 %0, -53
-  %idxprom = zext i32 %sub to i64
-  %1 = load %struct.rtx_def*** @ssa_rename_to_pseudo, align 8, !tbaa !0
-  %arrayidx4 = getelementptr inbounds %struct.rtx_def** %1, i64 %idxprom
-  store %struct.rtx_def* %r, %struct.rtx_def** %arrayidx4, align 8, !tbaa !0
-  br label %if.end
+  %sub = add i32 %0, -53, !dbg !2142
+  %idxprom = zext i32 %sub to i64, !dbg !2142
+  %1 = load %struct.rtx_def*** @ssa_rename_to_pseudo, align 8, !dbg !2142, !tbaa !1216
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def** %1, i64 %idxprom, !dbg !2142
+  store %struct.rtx_def* %r, %struct.rtx_def** %arrayidx4, align 8, !dbg !2142, !tbaa !1216
+  br label %if.end, !dbg !2142
 
 if.else:                                          ; preds = %entry
-  %2 = bitcast %struct.rtx_def* %reg to i32*
-  %bf.load = load i32* %2, align 8
-  %bf.lshr = lshr i32 %bf.load, 16
-  %bf.clear = and i32 %bf.lshr, 255
-  %idxprom5 = zext i32 %bf.clear to i64
-  %idxprom9 = zext i32 %0 to i64
-  %arrayidx11 = getelementptr inbounds [53 x [59 x %struct.rtx_def*]]* @ssa_rename_to_hard, i64 0, i64 %idxprom9, i64 %idxprom5
-  store %struct.rtx_def* %r, %struct.rtx_def** %arrayidx11, align 8, !tbaa !0
+  %2 = bitcast %struct.rtx_def* %reg to i32*, !dbg !2143
+  %bf.load = load i32* %2, align 8, !dbg !2143
+  %bf.lshr = lshr i32 %bf.load, 16, !dbg !2143
+  %bf.clear = and i32 %bf.lshr, 255, !dbg !2143
+  %idxprom5 = zext i32 %bf.clear to i64, !dbg !2143
+  %idxprom9 = zext i32 %0 to i64, !dbg !2143
+  %arrayidx11 = getelementptr inbounds [53 x [59 x %struct.rtx_def*]]* @ssa_rename_to_hard, i64 0, i64 %idxprom9, i64 %idxprom5, !dbg !2143
+  store %struct.rtx_def* %r, %struct.rtx_def** %arrayidx11, align 8, !dbg !2143, !tbaa !1216
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
-  ret void
+  ret void, !dbg !2144
 }

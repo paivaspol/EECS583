@@ -1,36 +1,46 @@
-define i32 @CartApplySym1Di(%struct.cGH* nocapture readnone %GH, i32* nocapture readonly %doSym, i32* nocapture readonly %cntstag, i32* nocapture readnone %lssh, i32* nocapture readonly %ghostz, i32* nocapture readonly %sym, double* nocapture %var) #1 {
-  %1 = load i32* %doSym, align 4, !tbaa !2
-  %2 = icmp eq i32 %1, 1
-  br i1 %2, label %.preheader, label %.loopexit
+define i32 @CartApplySym1Di(%struct.cGH* nocapture %GH, i32* nocapture %doSym, i32* nocapture %cntstag, i32* nocapture %lssh, i32* nocapture %ghostz, i32* nocapture %sym, double* nocapture %var) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !76), !dbg !152
+  tail call void @llvm.dbg.value(metadata !{i32* %doSym}, i64 0, metadata !77), !dbg !152
+  tail call void @llvm.dbg.value(metadata !{i32* %cntstag}, i64 0, metadata !78), !dbg !152
+  tail call void @llvm.dbg.value(metadata !{i32* %lssh}, i64 0, metadata !79), !dbg !153
+  tail call void @llvm.dbg.value(metadata !{i32* %ghostz}, i64 0, metadata !80), !dbg !153
+  tail call void @llvm.dbg.value(metadata !{i32* %sym}, i64 0, metadata !81), !dbg !153
+  tail call void @llvm.dbg.value(metadata !{double* %var}, i64 0, metadata !82), !dbg !153
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !76), !dbg !154
+  tail call void @llvm.dbg.value(metadata !{i32* %lssh}, i64 0, metadata !79), !dbg !155
+  %0 = load i32* %doSym, align 4, !dbg !156, !tbaa !90
+  %cmp = icmp eq i32 %0, 1, !dbg !156
+  br i1 %cmp, label %for.cond.preheader, label %if.end, !dbg !156
 
-.preheader:                                       ; preds = %0
-  %3 = load i32* %ghostz, align 4, !tbaa !2
-  %4 = icmp sgt i32 %3, 0
-  br i1 %4, label %.lr.ph, label %.loopexit
+for.cond.preheader:                               ; preds = %entry
+  %1 = load i32* %ghostz, align 4, !dbg !157, !tbaa !90
+  %cmp216 = icmp sgt i32 %1, 0, !dbg !157
+  br i1 %cmp216, label %for.body.lr.ph, label %if.end, !dbg !157
 
-.lr.ph:                                           ; preds = %.preheader
-  %5 = load i32* %sym, align 4, !tbaa !2
-  %6 = sitofp i32 %5 to double
-  %7 = load i32* %cntstag, align 4, !tbaa !2
-  %8 = sext i32 %3 to i64
-  br label %9
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %2 = load i32* %sym, align 4, !dbg !160, !tbaa !90
+  %conv = sitofp i32 %2 to double, !dbg !160
+  %3 = load i32* %cntstag, align 4, !dbg !160, !tbaa !90
+  br label %for.body, !dbg !157
 
-; <label>:9                                       ; preds = %.lr.ph, %9
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %9 ]
-  %10 = shl nsw i32 %3, 1
-  %11 = trunc i64 %indvars.iv to i32
-  %12 = sub i32 %10, %11
-  %13 = sub i32 %12, %7
-  %14 = sext i32 %13 to i64
-  %15 = getelementptr inbounds double* %var, i64 %14
-  %16 = load double* %15, align 8, !tbaa !10
-  %17 = fmul double %6, %16
-  %18 = getelementptr inbounds double* %var, i64 %indvars.iv
-  store double %17, double* %18, align 8, !tbaa !10
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %19 = icmp slt i64 %indvars.iv.next, %8
-  br i1 %19, label %9, label %.loopexit
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %mul = shl nsw i32 %1, 1, !dbg !160
+  %4 = trunc i64 %indvars.iv to i32, !dbg !160
+  %sub = sub i32 %mul, %4, !dbg !160
+  %sub6 = sub i32 %sub, %3, !dbg !160
+  %idxprom = sext i32 %sub6 to i64, !dbg !160
+  %arrayidx7 = getelementptr inbounds double* %var, i64 %idxprom, !dbg !160
+  %5 = load double* %arrayidx7, align 8, !dbg !160, !tbaa !105
+  %mul8 = fmul double %conv, %5, !dbg !160
+  %arrayidx10 = getelementptr inbounds double* %var, i64 %indvars.iv, !dbg !160
+  store double %mul8, double* %arrayidx10, align 8, !dbg !160, !tbaa !105
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !157
+  %6 = trunc i64 %indvars.iv.next to i32, !dbg !157
+  %cmp2 = icmp slt i32 %6, %1, !dbg !157
+  br i1 %cmp2, label %for.body, label %if.end, !dbg !157
 
-.loopexit:                                        ; preds = %9, %.preheader, %0
-  ret i32 0
+if.end:                                           ; preds = %for.cond.preheader, %for.body, %entry
+  ret i32 0, !dbg !162
 }

@@ -1,18 +1,20 @@
-define void @set_default_file_name(i8* nocapture readonly %name) #3 {
-  %1 = tail call i8* @strdup(i8* %name) #9
-  store i8* %1, i8** @default_file_name, align 8, !tbaa !14
-  %.cast = ptrtoint i8* %1 to i64
-  br label %2
+define void @set_default_file_name(i8* nocapture %name) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !62), !dbg !361
+  %call = tail call noalias i8* @strdup(i8* %name) #7, !dbg !362
+  store i8* %call, i8** @default_file_name, align 8, !dbg !362, !tbaa !363
+  tail call void @llvm.dbg.value(metadata !53, i64 0, metadata !63), !dbg !366
+  br label %for.body, !dbg !366
 
-; <label>:2                                       ; preds = %2, %0
-  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %2 ]
-  %3 = getelementptr inbounds [46 x %struct.t_deffile]* @deffile, i64 0, i64 %indvars.iv, i32 2
-  %4 = bitcast i8** %3 to i64*
-  store i64 %.cast, i64* %4, align 8, !tbaa !15
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i64 %indvars.iv.next, 46
-  br i1 %exitcond, label %5, label %2
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %defnm = getelementptr inbounds [46 x %struct.t_deffile]* @deffile, i64 0, i64 %indvars.iv, i32 2, !dbg !368
+  store i8* %call, i8** %defnm, align 8, !dbg !368, !tbaa !363
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !366
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !366
+  %exitcond = icmp eq i32 %lftr.wideiv, 46, !dbg !366
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !366
 
-; <label>:5                                       ; preds = %2
-  ret void
+for.end:                                          ; preds = %for.body
+  ret void, !dbg !369
 }

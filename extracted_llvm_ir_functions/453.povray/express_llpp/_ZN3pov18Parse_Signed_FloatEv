@@ -1,0 +1,56 @@
+define double @_ZN3pov18Parse_Signed_FloatEv() #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !2248, i64 0, metadata !1584), !dbg !3523
+  tail call void @llvm.dbg.value(metadata !2496, i64 0, metadata !1585), !dbg !3524
+  %0 = load i8* @_ZN3pov24Allow_Identifier_In_CallE, align 1, !dbg !3525, !tbaa !2103, !range !2104
+  store i8 0, i8* @_ZN3pov24Allow_Identifier_In_CallE, align 1, !dbg !3526, !tbaa !2103
+  tail call void @llvm.dbg.value(metadata !592, i64 0, metadata !1587), !dbg !3527
+  br label %while.body.lr.ph.lr.ph, !dbg !3527
+
+while.body.lr.ph.lr.ph:                           ; preds = %if.else, %entry
+  %Sign.0.ph618 = phi double [ %Sign.1, %if.else ], [ 1.000000e+00, %entry ]
+  br label %while.body, !dbg !3527
+
+while.body:                                       ; preds = %sw.default, %while.body.lr.ph.lr.ph, %while.body
+  tail call void @_ZN3pov9Get_TokenEv() #8, !dbg !3528
+  %1 = load i64* bitcast (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE to i64*), align 8, !dbg !3528
+  %2 = trunc i64 %1 to i32, !dbg !3528
+  switch i32 %2, label %sw.default [
+    i32 203, label %while.body
+    i32 133, label %sw.bb
+    i32 64, label %sw.bb2.loopexit
+  ], !dbg !3528
+
+sw.bb:                                            ; preds = %while.body
+  tail call void @llvm.dbg.value(metadata !2254, i64 0, metadata !1584), !dbg !3530
+  tail call void @_ZN3pov9Get_TokenEv() #8, !dbg !3532
+  %.pre = load i32* getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 1), align 4, !dbg !3533, !tbaa !2099
+  br label %sw.bb2, !dbg !3532
+
+sw.bb2.loopexit:                                  ; preds = %while.body
+  %3 = lshr i64 %1, 32
+  %4 = trunc i64 %3 to i32
+  br label %sw.bb2
+
+sw.bb2:                                           ; preds = %sw.bb2.loopexit, %sw.bb
+  %5 = phi i32 [ %.pre, %sw.bb ], [ %4, %sw.bb2.loopexit ]
+  %Sign.1 = phi double [ -1.000000e+00, %sw.bb ], [ %Sign.0.ph618, %sw.bb2.loopexit ]
+  %cmp = icmp eq i32 %5, 11, !dbg !3533
+  br i1 %cmp, label %while.end, label %if.else, !dbg !3533
+
+if.else:                                          ; preds = %sw.bb2
+  tail call void @_ZN3pov11Parse_ErrorEi(i32 11) #8, !dbg !3534
+  br label %while.body.lr.ph.lr.ph, !dbg !3527
+
+sw.default:                                       ; preds = %while.body
+  tail call void @_ZN3pov11Parse_ErrorEi(i32 11) #8, !dbg !3536
+  br label %while.body, !dbg !3527
+
+while.end:                                        ; preds = %sw.bb2
+  tail call void @llvm.dbg.value(metadata !{double %mul}, i64 0, metadata !1585), !dbg !3537
+  tail call void @llvm.dbg.value(metadata !2098, i64 0, metadata !1587), !dbg !3539
+  %6 = load double* getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 6), align 8, !dbg !3537, !tbaa !2113
+  %mul = fmul double %Sign.1, %6, !dbg !3537
+  store i8 %0, i8* @_ZN3pov24Allow_Identifier_In_CallE, align 1, !dbg !3540, !tbaa !2103
+  ret double %mul, !dbg !3541
+}

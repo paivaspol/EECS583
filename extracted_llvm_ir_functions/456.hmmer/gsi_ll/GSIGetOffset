@@ -4,72 +4,91 @@ entry:
   %offset = alloca i32, align 4
   %filenum = alloca i16, align 2
   %fmt = alloca i32, align 4
-  %0 = getelementptr inbounds [33 x i8]* %name, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 33, i8* %0) #4
-  %arrayidx = getelementptr inbounds [33 x i8]* %name, i64 0, i64 32
-  store i8 0, i8* %arrayidx, align 16, !tbaa !1
-  %nfiles = getelementptr inbounds %struct.gsi_s* %gsi, i64 0, i32 1
-  %1 = load i16* %nfiles, align 2, !tbaa !4
-  %conv = zext i16 %1 to i32
-  %add = add nsw i32 %conv, 1
-  %recnum = getelementptr inbounds %struct.gsi_s* %gsi, i64 0, i32 2
-  %2 = load i32* %recnum, align 4, !tbaa !3
-  %add3 = add i32 %conv, %2
-  %add4 = add i32 %add, %add3
-  %div = lshr i32 %add4, 1
-  %gsifp = getelementptr inbounds %struct.gsi_s* %gsi, i64 0, i32 0
-  %3 = load %struct._IO_FILE** %gsifp, align 8, !tbaa !0
-  %mul = mul i32 %div, 38
-  %conv5 = zext i32 %mul to i64
-  %call = call i32 @fseek(%struct._IO_FILE* %3, i64 %conv5, i32 0) #6
-  %call656 = call i32 @GSIGetRecord(%struct.gsi_s* %gsi, i8* %0, i16* %filenum, i32* %offset) #8
-  %tobool57 = icmp eq i32 %call656, 0
-  br i1 %tobool57, label %while.end, label %while.body
+  call void @llvm.dbg.value(metadata !{%struct.gsi_s* %gsi}, i64 0, metadata !100), !dbg !256
+  call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !101), !dbg !256
+  call void @llvm.dbg.value(metadata !{i8* %ret_seqfile}, i64 0, metadata !102), !dbg !256
+  call void @llvm.dbg.value(metadata !{i32* %ret_format}, i64 0, metadata !103), !dbg !257
+  call void @llvm.dbg.value(metadata !{i64* %ret_offset}, i64 0, metadata !104), !dbg !257
+  %0 = getelementptr inbounds [33 x i8]* %name, i64 0, i64 0, !dbg !258
+  call void @llvm.lifetime.start(i64 33, i8* %0) #5, !dbg !258
+  call void @llvm.dbg.declare(metadata !{[33 x i8]* %name}, metadata !109), !dbg !258
+  call void @llvm.dbg.declare(metadata !{i32* %offset}, metadata !113), !dbg !259
+  call void @llvm.dbg.declare(metadata !{i16* %filenum}, metadata !114), !dbg !260
+  call void @llvm.dbg.declare(metadata !{i32* %fmt}, metadata !115), !dbg !261
+  %arrayidx = getelementptr inbounds [33 x i8]* %name, i64 0, i64 32, !dbg !262
+  store i8 0, i8* %arrayidx, align 16, !dbg !262, !tbaa !218
+  %nfiles = getelementptr inbounds %struct.gsi_s* %gsi, i64 0, i32 1, !dbg !263
+  %1 = load i16* %nfiles, align 2, !dbg !263, !tbaa !236
+  %conv = zext i16 %1 to i32, !dbg !263
+  %add = add nsw i32 %conv, 1, !dbg !263
+  call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !105), !dbg !263
+  %recnum = getelementptr inbounds %struct.gsi_s* %gsi, i64 0, i32 2, !dbg !264
+  %2 = load i32* %recnum, align 4, !dbg !264, !tbaa !222
+  %add3 = add i32 %conv, %2, !dbg !264
+  call void @llvm.dbg.value(metadata !{i32 %add3}, i64 0, metadata !106), !dbg !264
+  %add4 = add i32 %add, %add3, !dbg !265
+  %div = lshr i32 %add4, 1, !dbg !265
+  call void @llvm.dbg.value(metadata !{i32 %div}, i64 0, metadata !107), !dbg !265
+  %gsifp = getelementptr inbounds %struct.gsi_s* %gsi, i64 0, i32 0, !dbg !266
+  %3 = load %struct._IO_FILE** %gsifp, align 8, !dbg !266, !tbaa !217
+  %mul = mul i32 %div, 38, !dbg !266
+  %conv5 = zext i32 %mul to i64, !dbg !266
+  %call = call i32 @fseek(%struct._IO_FILE* %3, i64 %conv5, i32 0) #7, !dbg !266
+  %call656 = call i32 @GSIGetRecord(%struct.gsi_s* %gsi, i8* %0, i16* %filenum, i32* %offset) #9, !dbg !267
+  %tobool57 = icmp eq i32 %call656, 0, !dbg !267
+  br i1 %tobool57, label %while.end, label %while.body, !dbg !267
 
 while.body:                                       ; preds = %entry, %if.else14
   %mid.060 = phi i32 [ %div27, %if.else14 ], [ %div, %entry ]
   %right.059 = phi i32 [ %right.1, %if.else14 ], [ %add3, %entry ]
   %left.058 = phi i32 [ %left.1, %if.else14 ], [ %add, %entry ]
-  %call8 = call i32 @strcmp(i8* %0, i8* %key) #7
-  %cmp9 = icmp eq i32 %call8, 0
-  br i1 %cmp9, label %while.end, label %if.else
+  %call8 = call i32 @strcmp(i8* %0, i8* %key) #8, !dbg !268
+  call void @llvm.dbg.value(metadata !{i32 %call8}, i64 0, metadata !108), !dbg !268
+  %cmp9 = icmp eq i32 %call8, 0, !dbg !270
+  br i1 %cmp9, label %while.end, label %if.else, !dbg !270
 
 if.else:                                          ; preds = %while.body
-  %cmp11 = icmp ult i32 %left.058, %right.059
-  br i1 %cmp11, label %if.else14, label %cleanup
+  %cmp11 = icmp ult i32 %left.058, %right.059, !dbg !271
+  br i1 %cmp11, label %if.else14, label %cleanup, !dbg !271
 
 if.else14:                                        ; preds = %if.else
-  %cmp15 = icmp slt i32 %call8, 0
-  %add18 = add i32 %mid.060, 1
-  %sub = add i32 %mid.060, -1
-  %left.1 = select i1 %cmp15, i32 %add18, i32 %left.058
-  %right.1 = select i1 %cmp15, i32 %right.059, i32 %sub
-  %add26 = add i32 %left.1, %right.1
-  %div27 = lshr i32 %add26, 1
-  %4 = load %struct._IO_FILE** %gsifp, align 8, !tbaa !0
-  %mul29 = mul i32 %div27, 38
-  %conv30 = zext i32 %mul29 to i64
-  %call31 = call i32 @fseek(%struct._IO_FILE* %4, i64 %conv30, i32 0) #6
-  %call6 = call i32 @GSIGetRecord(%struct.gsi_s* %gsi, i8* %0, i16* %filenum, i32* %offset) #8
-  %tobool = icmp eq i32 %call6, 0
-  br i1 %tobool, label %while.end, label %while.body
+  %cmp15 = icmp slt i32 %call8, 0, !dbg !272
+  %add18 = add i32 %mid.060, 1, !dbg !272
+  call void @llvm.dbg.value(metadata !{i32 %add18}, i64 0, metadata !105), !dbg !272
+  %sub = add i32 %mid.060, -1, !dbg !273
+  call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !106), !dbg !273
+  %left.1 = select i1 %cmp15, i32 %add18, i32 %left.058, !dbg !272
+  %right.1 = select i1 %cmp15, i32 %right.059, i32 %sub, !dbg !272
+  %add26 = add i32 %left.1, %right.1, !dbg !274
+  %div27 = lshr i32 %add26, 1, !dbg !274
+  call void @llvm.dbg.value(metadata !{i32 %div27}, i64 0, metadata !107), !dbg !274
+  %4 = load %struct._IO_FILE** %gsifp, align 8, !dbg !275, !tbaa !217
+  %mul29 = mul i32 %div27, 38, !dbg !275
+  %conv30 = zext i32 %mul29 to i64, !dbg !275
+  %call31 = call i32 @fseek(%struct._IO_FILE* %4, i64 %conv30, i32 0) #7, !dbg !275
+  %call6 = call i32 @GSIGetRecord(%struct.gsi_s* %gsi, i8* %0, i16* %filenum, i32* %offset) #9, !dbg !267
+  %tobool = icmp eq i32 %call6, 0, !dbg !267
+  br i1 %tobool, label %while.end, label %while.body, !dbg !267
 
 while.end:                                        ; preds = %if.else14, %while.body, %entry
-  %5 = load %struct._IO_FILE** %gsifp, align 8, !tbaa !0
-  %6 = load i16* %filenum, align 2, !tbaa !4
-  %conv33 = zext i16 %6 to i64
-  %mul34 = mul i64 %conv33, 38
-  %call36 = call i32 @fseek(%struct._IO_FILE* %5, i64 %mul34, i32 0) #6
-  %call37 = call i32 @GSIGetRecord(%struct.gsi_s* %gsi, i8* %ret_seqfile, i16* null, i32* %fmt) #8
-  %7 = load i32* %fmt, align 4, !tbaa !3
-  store i32 %7, i32* %ret_format, align 4, !tbaa !3
-  %8 = load i32* %offset, align 4, !tbaa !3
-  %conv38 = zext i32 %8 to i64
-  store i64 %conv38, i64* %ret_offset, align 8, !tbaa !5
-  br label %cleanup
+  %5 = load %struct._IO_FILE** %gsifp, align 8, !dbg !276, !tbaa !217
+  call void @llvm.dbg.value(metadata !{i16* %filenum}, i64 0, metadata !114), !dbg !276
+  %6 = load i16* %filenum, align 2, !dbg !276, !tbaa !236
+  %conv33 = zext i16 %6 to i64, !dbg !276
+  %mul34 = mul i64 %conv33, 38, !dbg !276
+  %call36 = call i32 @fseek(%struct._IO_FILE* %5, i64 %mul34, i32 0) #7, !dbg !276
+  %call37 = call i32 @GSIGetRecord(%struct.gsi_s* %gsi, i8* %ret_seqfile, i16* null, i32* %fmt) #9, !dbg !277
+  call void @llvm.dbg.value(metadata !{i32* %fmt}, i64 0, metadata !115), !dbg !278
+  %7 = load i32* %fmt, align 4, !dbg !278, !tbaa !222
+  store i32 %7, i32* %ret_format, align 4, !dbg !278, !tbaa !222
+  call void @llvm.dbg.value(metadata !{i32* %offset}, i64 0, metadata !113), !dbg !279
+  %8 = load i32* %offset, align 4, !dbg !279, !tbaa !222
+  %conv38 = zext i32 %8 to i64, !dbg !279
+  store i64 %conv38, i64* %ret_offset, align 8, !dbg !279, !tbaa !280
+  br label %cleanup, !dbg !281
 
 cleanup:                                          ; preds = %if.else, %while.end
   %retval.0 = phi i32 [ 1, %while.end ], [ 0, %if.else ]
-  call void @llvm.lifetime.end(i64 33, i8* %0) #4
-  ret i32 %retval.0
+  call void @llvm.lifetime.end(i64 33, i8* %0) #5, !dbg !281
+  ret i32 %retval.0, !dbg !282
 }

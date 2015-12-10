@@ -1,89 +1,91 @@
 define internal fastcc i32 @lookup_filename(i8* %file_name) #1 {
 entry:
-  %call = tail call i32 @strcmp(i8* %file_name, i8* getelementptr inbounds ([11 x i8]* @.str411, i64 0, i64 0)) #11
-  %cmp = icmp eq i32 %call, 0
-  br i1 %cmp, label %return, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata !{i8* %file_name}, i64 0, metadata !3029), !dbg !5860
+  %call = tail call i32 @strcmp(i8* %file_name, i8* getelementptr inbounds ([11 x i8]* @.str411, i64 0, i64 0)) #12, !dbg !5861
+  %cmp = icmp eq i32 %call, 0, !dbg !5861
+  br i1 %cmp, label %return, label %lor.lhs.false, !dbg !5861
 
 lor.lhs.false:                                    ; preds = %entry
-  %call1 = tail call i32 @strcmp(i8* %file_name, i8* getelementptr inbounds ([11 x i8]* @.str412, i64 0, i64 0)) #11
-  %cmp2 = icmp eq i32 %call1, 0
-  br i1 %cmp2, label %return, label %if.end
+  %call1 = tail call i32 @strcmp(i8* %file_name, i8* getelementptr inbounds ([11 x i8]* @.str412, i64 0, i64 0)) #12, !dbg !5862
+  %cmp2 = icmp eq i32 %call1, 0, !dbg !5862
+  br i1 %cmp2, label %return, label %if.end, !dbg !5862
 
 if.end:                                           ; preds = %lor.lhs.false
-  %0 = load i32* @file_table.3, align 8, !tbaa !0
-  %cmp3 = icmp eq i32 %0, 0
-  br i1 %cmp3, label %for.cond.preheader, label %if.then4
+  %0 = load i32* @file_table.3, align 8, !dbg !5863, !tbaa !3758
+  %cmp3 = icmp eq i32 %0, 0, !dbg !5863
+  br i1 %cmp3, label %for.cond.preheader, label %if.then4, !dbg !5863
 
 if.then4:                                         ; preds = %if.end
-  %idxprom = zext i32 %0 to i64
-  %1 = load i8*** @file_table.0, align 8, !tbaa !4
-  %arrayidx = getelementptr inbounds i8** %1, i64 %idxprom
-  %2 = load i8** %arrayidx, align 8, !tbaa !4
-  %call5 = tail call i32 @strcmp(i8* %file_name, i8* %2) #11
-  %cmp6 = icmp eq i32 %call5, 0
-  br i1 %cmp6, label %return, label %for.cond.preheader
+  %idxprom = zext i32 %0 to i64, !dbg !5864
+  %1 = load i8*** @file_table.0, align 8, !dbg !5864, !tbaa !3768
+  %arrayidx = getelementptr inbounds i8** %1, i64 %idxprom, !dbg !5864
+  %2 = load i8** %arrayidx, align 8, !dbg !5864, !tbaa !3768
+  %call5 = tail call i32 @strcmp(i8* %file_name, i8* %2) #12, !dbg !5864
+  %cmp6 = icmp eq i32 %call5, 0, !dbg !5864
+  br i1 %cmp6, label %return, label %for.cond.preheader, !dbg !5864
 
 for.cond.preheader:                               ; preds = %if.end, %if.then4
-  %3 = load i32* @file_table.2, align 4, !tbaa !0
-  %cmp1042 = icmp ugt i32 %3, 1
-  br i1 %cmp1042, label %for.body.lr.ph, label %for.end
+  %3 = load i32* @file_table.2, align 4, !dbg !5865, !tbaa !3758
+  %cmp1042 = icmp ugt i32 %3, 1, !dbg !5865
+  br i1 %cmp1042, label %for.body.lr.ph, label %for.end, !dbg !5865
 
 for.body.lr.ph:                                   ; preds = %for.cond.preheader
-  %4 = load i8*** @file_table.0, align 8, !tbaa !4
-  br label %for.body
+  %4 = load i8*** @file_table.0, align 8, !dbg !5867, !tbaa !3768
+  br label %for.body, !dbg !5865
 
 for.cond:                                         ; preds = %for.body
-  %5 = trunc i64 %indvars.iv.next to i32
-  %cmp10 = icmp ult i32 %5, %3
-  br i1 %cmp10, label %for.body, label %for.end
+  %5 = trunc i64 %indvars.iv.next to i32, !dbg !5865
+  %cmp10 = icmp ult i32 %5, %3, !dbg !5865
+  br i1 %cmp10, label %for.body, label %for.end, !dbg !5865
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.cond
   %indvars.iv = phi i64 [ 1, %for.body.lr.ph ], [ %indvars.iv.next, %for.cond ]
   %i.043 = phi i32 [ 1, %for.body.lr.ph ], [ %inc, %for.cond ]
-  %arrayidx12 = getelementptr inbounds i8** %4, i64 %indvars.iv
-  %6 = load i8** %arrayidx12, align 8, !tbaa !4
-  %call13 = tail call i32 @strcmp(i8* %file_name, i8* %6) #11
-  %cmp14 = icmp eq i32 %call13, 0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %inc = add i32 %i.043, 1
-  br i1 %cmp14, label %if.then15, label %for.cond
+  %arrayidx12 = getelementptr inbounds i8** %4, i64 %indvars.iv, !dbg !5867
+  %6 = load i8** %arrayidx12, align 8, !dbg !5867, !tbaa !3768
+  %call13 = tail call i32 @strcmp(i8* %file_name, i8* %6) #12, !dbg !5867
+  %cmp14 = icmp eq i32 %call13, 0, !dbg !5867
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !5865
+  %inc = add i32 %i.043, 1, !dbg !5865
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !3030), !dbg !5865
+  br i1 %cmp14, label %if.then15, label %for.cond, !dbg !5867
 
 if.then15:                                        ; preds = %for.body
-  store i32 %i.043, i32* @file_table.3, align 8, !tbaa !0
-  br label %return
+  store i32 %i.043, i32* @file_table.3, align 8, !dbg !5868, !tbaa !3758
+  br label %return, !dbg !5870
 
 for.end:                                          ; preds = %for.cond, %for.cond.preheader
   %i.0.lcssa = phi i32 [ 1, %for.cond.preheader ], [ %inc, %for.cond ]
-  %7 = load i32* @file_table.1, align 8, !tbaa !0
-  %cmp17 = icmp eq i32 %i.0.lcssa, %7
-  br i1 %cmp17, label %if.then18, label %if.end20
+  %7 = load i32* @file_table.1, align 8, !dbg !5871, !tbaa !3758
+  %cmp17 = icmp eq i32 %i.0.lcssa, %7, !dbg !5871
+  br i1 %cmp17, label %if.then18, label %if.end20, !dbg !5871
 
 if.then18:                                        ; preds = %for.end
-  %add = add i32 %i.0.lcssa, 64
-  store i32 %add, i32* @file_table.1, align 8, !tbaa !0
-  %8 = load i8*** @file_table.0, align 8, !tbaa !4
-  %9 = bitcast i8** %8 to i8*
-  %conv = zext i32 %add to i64
-  %mul = shl nuw nsw i64 %conv, 3
-  %call19 = tail call i8* @xrealloc(i8* %9, i64 %mul) #9
-  %10 = bitcast i8* %call19 to i8**
-  store i8** %10, i8*** @file_table.0, align 8, !tbaa !4
-  br label %if.end20
+  %add = add i32 %i.0.lcssa, 64, !dbg !5872
+  store i32 %add, i32* @file_table.1, align 8, !dbg !5872, !tbaa !3758
+  %8 = load i8*** @file_table.0, align 8, !dbg !5874, !tbaa !3768
+  %9 = bitcast i8** %8 to i8*, !dbg !5874
+  %conv = zext i32 %add to i64, !dbg !5874
+  %mul = shl nuw nsw i64 %conv, 3, !dbg !5874
+  %call19 = tail call i8* @xrealloc(i8* %9, i64 %mul) #10, !dbg !5874
+  %10 = bitcast i8* %call19 to i8**, !dbg !5874
+  store i8** %10, i8*** @file_table.0, align 8, !dbg !5874, !tbaa !3768
+  br label %if.end20, !dbg !5875
 
 if.end20:                                         ; preds = %if.then18, %for.end
-  %call21 = tail call noalias i8* @xstrdup(i8* %file_name) #9
-  %idxprom22 = zext i32 %i.0.lcssa to i64
-  %11 = load i8*** @file_table.0, align 8, !tbaa !4
-  %arrayidx23 = getelementptr inbounds i8** %11, i64 %idxprom22
-  store i8* %call21, i8** %arrayidx23, align 8, !tbaa !4
-  %add24 = add i32 %i.0.lcssa, 1
-  store i32 %add24, i32* @file_table.2, align 4, !tbaa !0
-  store i32 %i.0.lcssa, i32* @file_table.3, align 8, !tbaa !0
-  %12 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !4
-  %call25 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %12, i8* getelementptr inbounds ([16 x i8]* @.str413, i64 0, i64 0), i32 %i.0.lcssa, i8* %file_name) #9
-  br label %return
+  %call21 = tail call noalias i8* @xstrdup(i8* %file_name) #10, !dbg !5876
+  %idxprom22 = zext i32 %i.0.lcssa to i64, !dbg !5876
+  %11 = load i8*** @file_table.0, align 8, !dbg !5876, !tbaa !3768
+  %arrayidx23 = getelementptr inbounds i8** %11, i64 %idxprom22, !dbg !5876
+  store i8* %call21, i8** %arrayidx23, align 8, !dbg !5876, !tbaa !3768
+  %add24 = add i32 %i.0.lcssa, 1, !dbg !5877
+  store i32 %add24, i32* @file_table.2, align 4, !dbg !5877, !tbaa !3758
+  store i32 %i.0.lcssa, i32* @file_table.3, align 8, !dbg !5878, !tbaa !3758
+  %12 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !5879, !tbaa !3768
+  %call25 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %12, i8* getelementptr inbounds ([16 x i8]* @.str413, i64 0, i64 0), i32 %i.0.lcssa, i8* %file_name) #10, !dbg !5879
+  br label %return, !dbg !5880
 
 return:                                           ; preds = %if.then4, %entry, %lor.lhs.false, %if.end20, %if.then15
   %retval.0 = phi i32 [ %i.043, %if.then15 ], [ %i.0.lcssa, %if.end20 ], [ 0, %lor.lhs.false ], [ 0, %entry ], [ %0, %if.then4 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !5881
 }

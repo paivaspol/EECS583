@@ -1,27 +1,28 @@
 define internal fastcc i32 @perhaps_ends_bb_p(%struct.rtx_def* %insn) #0 {
 entry:
-  %0 = bitcast %struct.rtx_def* %insn to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !794), !dbg !1693
+  %0 = bitcast %struct.rtx_def* %insn to i32*, !dbg !1694
+  %bf.load = load i32* %0, align 8, !dbg !1694
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1694
   switch i32 %bf.clear, label %sw.default [
     i32 36, label %return
     i32 33, label %return
     i32 34, label %sw.bb1
-  ]
+  ], !dbg !1694
 
 sw.bb1:                                           ; preds = %entry
-  %1 = load %struct.function** @cfun, align 8, !tbaa !4
-  %x_nonlocal_goto_handler_labels = getelementptr inbounds %struct.function* %1, i64 0, i32 21
-  %2 = load %struct.rtx_def** %x_nonlocal_goto_handler_labels, align 8, !tbaa !4
-  %tobool = icmp eq %struct.rtx_def* %2, null
-  br i1 %tobool, label %sw.default, label %return
+  %1 = load %struct.function** @cfun, align 8, !dbg !1695, !tbaa !935
+  %x_nonlocal_goto_handler_labels = getelementptr inbounds %struct.function* %1, i64 0, i32 21, !dbg !1695
+  %2 = load %struct.rtx_def** %x_nonlocal_goto_handler_labels, align 8, !dbg !1695, !tbaa !935
+  %tobool = icmp eq %struct.rtx_def* %2, null, !dbg !1695
+  br i1 %tobool, label %sw.default, label %return, !dbg !1695
 
 sw.default:                                       ; preds = %sw.bb1, %entry
-  %call = tail call zeroext i1 @can_throw_internal(%struct.rtx_def* %insn) #5
-  %conv = zext i1 %call to i32
-  br label %return
+  %call = tail call zeroext i1 @can_throw_internal(%struct.rtx_def* %insn) #6, !dbg !1697
+  %conv = zext i1 %call to i32, !dbg !1697
+  br label %return, !dbg !1697
 
 return:                                           ; preds = %sw.bb1, %entry, %entry, %sw.default
   %retval.0 = phi i32 [ %conv, %sw.default ], [ 1, %entry ], [ 1, %entry ], [ 1, %sw.bb1 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1698
 }

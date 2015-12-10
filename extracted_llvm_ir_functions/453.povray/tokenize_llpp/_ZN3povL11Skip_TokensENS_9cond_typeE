@@ -1,0 +1,48 @@
+define internal fastcc void @_ZN3povL11Skip_TokensENS_9cond_typeE(i32 %cond) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %cond}, i64 0, metadata !1324), !dbg !3482
+  %0 = load i32* @_ZN3pov8CS_IndexE, align 4, !dbg !3483, !tbaa !1569
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !1325), !dbg !3483
+  %1 = load i32* @_ZN3pov8SkippingE, align 4, !dbg !3484, !tbaa !1569
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !1326), !dbg !3484
+  store i32 1, i32* @_ZN3pov8SkippingE, align 4, !dbg !3485, !tbaa !1569
+  br label %while.cond, !dbg !3486
+
+while.cond:                                       ; preds = %while.body, %entry
+  %2 = phi i32 [ %.pre, %while.body ], [ %0, %entry ]
+  %cmp = icmp sgt i32 %2, %0, !dbg !3486
+  br i1 %cmp, label %while.body, label %lor.rhs, !dbg !3486
+
+lor.rhs:                                          ; preds = %while.cond
+  %cmp1 = icmp eq i32 %2, %0, !dbg !3486
+  br i1 %cmp1, label %land.rhs, label %while.end, !dbg !3486
+
+land.rhs:                                         ; preds = %lor.rhs
+  %idxprom = sext i32 %0 to i64, !dbg !3486
+  %3 = load %"struct.pov::Cond_Stack_Entry"** @_ZN3pov10Cond_StackE, align 8, !dbg !3486, !tbaa !1578
+  %Cond_Type = getelementptr inbounds %"struct.pov::Cond_Stack_Entry"* %3, i64 %idxprom, i32 0, !dbg !3486
+  %4 = load i32* %Cond_Type, align 4, !dbg !3486, !tbaa !1595
+  %cmp2 = icmp eq i32 %4, %cond, !dbg !3486
+  br i1 %cmp2, label %while.body, label %while.end
+
+while.body:                                       ; preds = %while.cond, %land.rhs
+  tail call void @_ZN3pov9Get_TokenEv() #9, !dbg !3487
+  %.pre = load i32* @_ZN3pov8CS_IndexE, align 4, !dbg !3486, !tbaa !1569
+  br label %while.cond, !dbg !3489
+
+while.end:                                        ; preds = %lor.rhs, %land.rhs
+  store i32 %1, i32* @_ZN3pov8SkippingE, align 4, !dbg !3490, !tbaa !1569
+  %5 = load i32* getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 0), align 8, !dbg !3491, !tbaa !1569
+  %cmp3 = icmp eq i32 %5, 157, !dbg !3491
+  br i1 %cmp3, label %if.then, label %if.end, !dbg !3491
+
+if.then:                                          ; preds = %while.end
+  store i32 143, i32* getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 0), align 8, !dbg !3492, !tbaa !1569
+  store i8 0, i8* getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 13), align 8, !dbg !3494, !tbaa !1591
+  br label %if.end, !dbg !3495
+
+if.end:                                           ; preds = %while.end, %if.then
+  %storemerge = phi i32 [ 0, %if.then ], [ 1, %while.end ]
+  store i32 %storemerge, i32* getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 7), align 8, !dbg !3496, !tbaa !1569
+  ret void, !dbg !3497
+}

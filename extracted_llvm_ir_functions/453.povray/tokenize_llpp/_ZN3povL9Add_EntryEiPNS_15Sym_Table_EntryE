@@ -1,0 +1,45 @@
+define internal fastcc void @_ZN3povL9Add_EntryEiPNS_15Sym_Table_EntryE(i32 %Index, %"struct.pov::Sym_Table_Entry"* %Table_Entry) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %Index}, i64 0, metadata !1292), !dbg !3738
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Sym_Table_Entry"* %Table_Entry}, i64 0, metadata !1293), !dbg !3738
+  %Token_Name = getelementptr inbounds %"struct.pov::Sym_Table_Entry"* %Table_Entry, i64 0, i32 1, !dbg !3739
+  %0 = load i8** %Token_Name, align 8, !dbg !3739, !tbaa !1578
+  tail call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !3740), !dbg !3741
+  tail call void @llvm.dbg.value(metadata !807, i64 0, metadata !3742), !dbg !3743
+  %1 = load i8* %0, align 1, !dbg !3744, !tbaa !1570
+  %tobool2.i = icmp eq i8 %1, 0, !dbg !3744
+  br i1 %tobool2.i, label %_ZN3povL14get_hash_valueEPc.exit, label %while.body.i, !dbg !3744
+
+while.body.i:                                     ; preds = %entry, %while.body.i
+  %2 = phi i8 [ %3, %while.body.i ], [ %1, %entry ]
+  %i.04.i = phi i32 [ %xor.i, %while.body.i ], [ 0, %entry ]
+  %s.addr.03.i = phi i8* [ %incdec.ptr.i, %while.body.i ], [ %0, %entry ]
+  %shl.i = shl i32 %i.04.i, 1, !dbg !3745
+  %incdec.ptr.i = getelementptr inbounds i8* %s.addr.03.i, i64 1, !dbg !3745
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr.i}, i64 0, metadata !3740), !dbg !3745
+  %conv.i = sext i8 %2 to i32, !dbg !3745
+  %xor.i = xor i32 %shl.i, %conv.i, !dbg !3745
+  tail call void @llvm.dbg.value(metadata !{i32 %xor.i}, i64 0, metadata !3742), !dbg !3745
+  %3 = load i8* %incdec.ptr.i, align 1, !dbg !3744, !tbaa !1570
+  %tobool.i = icmp eq i8 %3, 0, !dbg !3744
+  br i1 %tobool.i, label %while.cond.while.end_crit_edge.i, label %while.body.i, !dbg !3744
+
+while.cond.while.end_crit_edge.i:                 ; preds = %while.body.i
+  %phitmp.i = urem i32 %xor.i, 257, !dbg !3744
+  %phitmp12 = zext i32 %phitmp.i to i64, !dbg !3744
+  br label %_ZN3povL14get_hash_valueEPc.exit, !dbg !3744
+
+_ZN3povL14get_hash_valueEPc.exit:                 ; preds = %entry, %while.cond.while.end_crit_edge.i
+  %i.0.lcssa.i = phi i64 [ %phitmp12, %while.cond.while.end_crit_edge.i ], [ 0, %entry ]
+  %idxprom1 = sext i32 %Index to i64, !dbg !3746
+  %arrayidx = getelementptr inbounds [100 x %"struct.pov::Sym_Table_Struct"*]* @_ZN3pov6TablesE, i64 0, i64 %idxprom1, !dbg !3746
+  %4 = load %"struct.pov::Sym_Table_Struct"** %arrayidx, align 8, !dbg !3746, !tbaa !1578
+  %arrayidx2 = getelementptr inbounds %"struct.pov::Sym_Table_Struct"* %4, i64 0, i32 1, i64 %i.0.lcssa.i, !dbg !3746
+  %5 = load %"struct.pov::Sym_Table_Entry"** %arrayidx2, align 8, !dbg !3746, !tbaa !1578
+  %next = getelementptr inbounds %"struct.pov::Sym_Table_Entry"* %Table_Entry, i64 0, i32 0, !dbg !3746
+  store %"struct.pov::Sym_Table_Entry"* %5, %"struct.pov::Sym_Table_Entry"** %next, align 8, !dbg !3746, !tbaa !1578
+  %6 = load %"struct.pov::Sym_Table_Struct"** %arrayidx, align 8, !dbg !3747, !tbaa !1578
+  %arrayidx7 = getelementptr inbounds %"struct.pov::Sym_Table_Struct"* %6, i64 0, i32 1, i64 %i.0.lcssa.i, !dbg !3747
+  store %"struct.pov::Sym_Table_Entry"* %Table_Entry, %"struct.pov::Sym_Table_Entry"** %arrayidx7, align 8, !dbg !3747, !tbaa !1578
+  ret void, !dbg !3748
+}

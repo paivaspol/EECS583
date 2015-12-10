@@ -1,53 +1,60 @@
 define internal fastcc void @df_insns_modify(%struct.df* nocapture %df, %struct.basic_block_def* nocapture %bb, %struct.rtx_def* %first_insn, %struct.rtx_def* %last_insn) #0 {
 entry:
-  %0 = bitcast %struct.rtx_def* %first_insn to i32*
-  %bf.load23 = load i32* %0, align 8
-  %bf.clear24 = and i32 %bf.load23, 65535
-  %1 = and i32 %bf.load23, 67174399
-  %2 = icmp eq i32 %1, 34
-  %cmp525 = icmp eq i32 %bf.clear24, 36
-  %or.cond2226 = or i1 %2, %cmp525
-  br i1 %or.cond2226, label %if.then, label %if.end.lr.ph
+  tail call void @llvm.dbg.value(metadata !{%struct.df* %df}, i64 0, metadata !1107), !dbg !3032
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %bb}, i64 0, metadata !1108), !dbg !3033
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %first_insn}, i64 0, metadata !1109), !dbg !3034
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %last_insn}, i64 0, metadata !1110), !dbg !3035
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %first_insn}, i64 0, metadata !1111), !dbg !3036
+  %0 = bitcast %struct.rtx_def* %first_insn to i32*, !dbg !3037
+  %bf.load23 = load i32* %0, align 8, !dbg !3037
+  %bf.clear24 = and i32 %bf.load23, 65535, !dbg !3037
+  %1 = and i32 %bf.load23, 67174399, !dbg !3037
+  %2 = icmp eq i32 %1, 34, !dbg !3037
+  %cmp525 = icmp eq i32 %bf.clear24, 36, !dbg !3037
+  %or.cond2226 = or i1 %2, %cmp525, !dbg !3037
+  br i1 %or.cond2226, label %if.then, label %if.end.lr.ph, !dbg !3037
 
 if.end.lr.ph:                                     ; preds = %entry
-  %insn_size = getelementptr inbounds %struct.df* %df, i64 0, i32 8
-  br label %if.end
+  %insn_size = getelementptr inbounds %struct.df* %df, i64 0, i32 8, !dbg !3038
+  br label %if.end, !dbg !3037
 
 if.then:                                          ; preds = %for.inc, %entry
-  tail call void @fancy_abort(i8* getelementptr inbounds ([46 x i8]* @.str, i64 0, i64 0), i32 2742, i8* getelementptr inbounds ([16 x i8]* @__FUNCTION__.df_insns_modify, i64 0, i64 0)) #7
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([46 x i8]* @.str, i64 0, i64 0), i32 2742, i8* getelementptr inbounds ([16 x i8]* @__FUNCTION__.df_insns_modify, i64 0, i64 0)) #8, !dbg !3039
+  unreachable, !dbg !3039
 
 if.end:                                           ; preds = %if.end.lr.ph, %for.inc
   %insn.027 = phi %struct.rtx_def* [ %first_insn, %if.end.lr.ph ], [ %5, %for.inc ]
-  %fld = getelementptr inbounds %struct.rtx_def* %insn.027, i64 0, i32 1
-  %rtint = bitcast [1 x %union.rtunion_def]* %fld to i32*
-  %3 = load i32* %rtint, align 4, !tbaa !4
-  %4 = load i32* %insn_size, align 4, !tbaa !4
-  %cmp6 = icmp ult i32 %3, %4
-  br i1 %cmp6, label %if.end8, label %if.then7
+  %fld = getelementptr inbounds %struct.rtx_def* %insn.027, i64 0, i32 1, !dbg !3040
+  %rtint = bitcast [1 x %union.rtunion_def]* %fld to i32*, !dbg !3040
+  %3 = load i32* %rtint, align 4, !dbg !3040, !tbaa !1899
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !1112), !dbg !3040
+  %4 = load i32* %insn_size, align 4, !dbg !3038, !tbaa !1899
+  %cmp6 = icmp ult i32 %3, %4, !dbg !3038
+  br i1 %cmp6, label %if.end8, label %if.then7, !dbg !3038
 
 if.then7:                                         ; preds = %if.end
-  tail call fastcc void @df_insn_table_realloc(%struct.df* %df, i32 0) #6
-  br label %if.end8
+  tail call fastcc void @df_insn_table_realloc(%struct.df* %df, i32 0) #7, !dbg !3041
+  br label %if.end8, !dbg !3041
 
 if.end8:                                          ; preds = %if.end, %if.then7
-  tail call void @df_insn_modify(%struct.df* %df, %struct.basic_block_def* %bb, %struct.rtx_def* %insn.027) #6
-  %cmp9 = icmp eq %struct.rtx_def* %insn.027, %last_insn
-  br i1 %cmp9, label %for.end, label %for.inc
+  tail call void @df_insn_modify(%struct.df* %df, %struct.basic_block_def* %bb, %struct.rtx_def* %insn.027) #7, !dbg !3042
+  %cmp9 = icmp eq %struct.rtx_def* %insn.027, %last_insn, !dbg !3043
+  br i1 %cmp9, label %for.end, label %for.inc, !dbg !3043
 
 for.inc:                                          ; preds = %if.end8
-  %arrayidx13 = getelementptr inbounds %struct.rtx_def* %insn.027, i64 0, i32 1, i64 2
-  %rtx = bitcast %union.rtunion_def* %arrayidx13 to %struct.rtx_def**
-  %5 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
-  %6 = bitcast %struct.rtx_def* %5 to i32*
-  %bf.load = load i32* %6, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %7 = and i32 %bf.load, 67174399
-  %8 = icmp eq i32 %7, 34
-  %cmp5 = icmp eq i32 %bf.clear, 36
-  %or.cond22 = or i1 %8, %cmp5
-  br i1 %or.cond22, label %if.then, label %if.end
+  %arrayidx13 = getelementptr inbounds %struct.rtx_def* %insn.027, i64 0, i32 1, i64 2, !dbg !3036
+  %rtx = bitcast %union.rtunion_def* %arrayidx13 to %struct.rtx_def**, !dbg !3036
+  %5 = load %struct.rtx_def** %rtx, align 8, !dbg !3036, !tbaa !1898
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %5}, i64 0, metadata !1111), !dbg !3036
+  %6 = bitcast %struct.rtx_def* %5 to i32*, !dbg !3037
+  %bf.load = load i32* %6, align 8, !dbg !3037
+  %bf.clear = and i32 %bf.load, 65535, !dbg !3037
+  %7 = and i32 %bf.load, 67174399, !dbg !3037
+  %8 = icmp eq i32 %7, 34, !dbg !3037
+  %cmp5 = icmp eq i32 %bf.clear, 36, !dbg !3037
+  %or.cond22 = or i1 %8, %cmp5, !dbg !3037
+  br i1 %or.cond22, label %if.then, label %if.end, !dbg !3037
 
 for.end:                                          ; preds = %if.end8
-  ret void
+  ret void, !dbg !3044
 }

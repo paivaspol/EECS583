@@ -1,61 +1,64 @@
-define i8* @line2string(i8** nocapture %line) #3 {
-  %1 = load i8** %line, align 8, !tbaa !14
-  %2 = icmp eq i8* %1, null
-  br i1 %2, label %21, label %.preheader
+define i8* @line2string(i8** nocapture %line) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8** %line}, i64 0, metadata !224), !dbg !568
+  %0 = load i8** %line, align 8, !dbg !569, !tbaa !463
+  %cmp = icmp eq i8* %0, null, !dbg !569
+  br i1 %cmp, label %return, label %while.cond.preheader, !dbg !569
 
-.preheader:                                       ; preds = %0
-  %3 = load i8* %1, align 1, !tbaa !13
-  %4 = icmp eq i8 %3, 34
-  %5 = icmp ne i8 %3, 0
-  %not.6 = xor i1 %4, true
-  %.7 = and i1 %5, %not.6
-  br i1 %.7, label %.lr.ph, label %._crit_edge
+while.cond.preheader:                             ; preds = %entry
+  %1 = load i8* %0, align 1, !dbg !570, !tbaa !464
+  %cmp150 = icmp eq i8 %1, 34, !dbg !570
+  %cmp551 = icmp ne i8 %1, 0, !dbg !570
+  %not.cmp152 = xor i1 %cmp150, true, !dbg !570
+  %.cmp553 = and i1 %cmp551, %not.cmp152, !dbg !570
+  br i1 %.cmp553, label %while.body, label %while.end
 
-.lr.ph:                                           ; preds = %.preheader, %.lr.ph
-  %6 = phi i8* [ %7, %.lr.ph ], [ %1, %.preheader ]
-  %7 = getelementptr inbounds i8* %6, i64 1
-  store i8* %7, i8** %line, align 8, !tbaa !14
-  %8 = load i8* %7, align 1, !tbaa !13
-  %9 = icmp eq i8 %8, 34
-  %10 = icmp ne i8 %8, 0
-  %not. = xor i1 %9, true
-  %. = and i1 %10, %not.
-  br i1 %., label %.lr.ph, label %._crit_edge
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %2 = phi i8* [ %incdec.ptr, %while.body ], [ %0, %while.cond.preheader ]
+  %incdec.ptr = getelementptr inbounds i8* %2, i64 1, !dbg !572
+  store i8* %incdec.ptr, i8** %line, align 8, !dbg !572, !tbaa !463
+  %3 = load i8* %incdec.ptr, align 1, !dbg !570, !tbaa !464
+  %cmp1 = icmp eq i8 %3, 34, !dbg !570
+  %cmp5 = icmp ne i8 %3, 0, !dbg !570
+  %not.cmp1 = xor i1 %cmp1, true, !dbg !570
+  %.cmp5 = and i1 %cmp5, %not.cmp1, !dbg !570
+  br i1 %.cmp5, label %while.body, label %while.end
 
-._crit_edge:                                      ; preds = %.lr.ph, %.preheader
-  %.lcssa5 = phi i1 [ %4, %.preheader ], [ %9, %.lr.ph ]
-  %.lcssa4 = phi i8* [ %1, %.preheader ], [ %7, %.lr.ph ]
-  br i1 %.lcssa5, label %11, label %21
+while.end:                                        ; preds = %while.body, %while.cond.preheader
+  %cmp1.lcssa = phi i1 [ %cmp150, %while.cond.preheader ], [ %cmp1, %while.body ]
+  %.lcssa = phi i8* [ %0, %while.cond.preheader ], [ %incdec.ptr, %while.body ]
+  br i1 %cmp1.lcssa, label %if.end, label %return, !dbg !573
 
-; <label>:11                                      ; preds = %._crit_edge
-  %12 = getelementptr inbounds i8* %.lcssa4, i64 1
-  store i8* %12, i8** %line, align 8, !tbaa !14
-  br label %13
+if.end:                                           ; preds = %while.end
+  %incdec.ptr12 = getelementptr inbounds i8* %.lcssa, i64 1, !dbg !574
+  store i8* %incdec.ptr12, i8** %line, align 8, !dbg !574, !tbaa !463
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !225), !dbg !575
+  br label %while.cond13, !dbg !576
 
-; <label>:13                                      ; preds = %13, %11
-  %indvars.iv = phi i64 [ %.sum, %13 ], [ 0, %11 ]
-  %.sum = add nuw i64 %indvars.iv, 1
-  %14 = getelementptr inbounds i8* %.lcssa4, i64 %.sum
-  %15 = load i8* %14, align 1, !tbaa !13
-  %16 = icmp eq i8 %15, 34
-  %17 = icmp ne i8 %15, 0
-  %not.2 = xor i1 %16, true
-  %.1 = and i1 %17, %not.2
-  br i1 %.1, label %13, label %18
+while.cond13:                                     ; preds = %while.cond13, %if.end
+  %indvars.iv = phi i64 [ %incdec.ptr12.sum, %while.cond13 ], [ 0, %if.end ]
+  %incdec.ptr12.sum = add i64 %indvars.iv, 1, !dbg !576
+  %arrayidx14 = getelementptr inbounds i8* %.lcssa, i64 %incdec.ptr12.sum, !dbg !576
+  %4 = load i8* %arrayidx14, align 1, !dbg !576, !tbaa !464
+  %cmp16 = icmp eq i8 %4, 34, !dbg !576
+  %cmp22 = icmp ne i8 %4, 0, !dbg !576
+  %not.cmp16 = xor i1 %cmp16, true, !dbg !576
+  %.cmp22 = and i1 %cmp22, %not.cmp16, !dbg !576
+  br i1 %.cmp22, label %while.cond13, label %while.end26
 
-; <label>:18                                      ; preds = %13
-  br i1 %16, label %20, label %19
+while.end26:                                      ; preds = %while.cond13
+  br i1 %cmp16, label %if.else, label %if.then32, !dbg !577
 
-; <label>:19                                      ; preds = %18
-  store i8* null, i8** %line, align 8, !tbaa !14
-  br label %21
+if.then32:                                        ; preds = %while.end26
+  store i8* null, i8** %line, align 8, !dbg !578, !tbaa !463
+  br label %return, !dbg !578
 
-; <label>:20                                      ; preds = %18
-  store i8 0, i8* %14, align 1, !tbaa !13
-  %.pre = load i8** %line, align 8, !tbaa !14
-  br label %21
+if.else:                                          ; preds = %while.end26
+  store i8 0, i8* %arrayidx14, align 1, !dbg !579, !tbaa !464
+  %.pre = load i8** %line, align 8, !dbg !580, !tbaa !463
+  br label %return
 
-; <label>:21                                      ; preds = %20, %19, %0, %._crit_edge
-  %.0 = phi i8* [ null, %._crit_edge ], [ null, %0 ], [ null, %19 ], [ %.pre, %20 ]
-  ret i8* %.0
+return:                                           ; preds = %if.else, %if.then32, %entry, %while.end
+  %retval.0 = phi i8* [ null, %while.end ], [ null, %entry ], [ null, %if.then32 ], [ %.pre, %if.else ]
+  ret i8* %retval.0, !dbg !581
 }

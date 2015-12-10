@@ -1,33 +1,36 @@
 define void @clobber_return_register() #0 {
 entry:
-  tail call void @diddle_return_value(void (%struct.rtx_def*, i8*)* @do_clobber_return_reg, i8* null) #9
-  %0 = load %union.tree_node** @current_function_decl, align 8, !tbaa !0
-  %result = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 11
-  %1 = load %union.tree_node** %result, align 8, !tbaa !0
-  %rtl = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 17
-  %2 = load %struct.rtx_def** %rtl, align 8, !tbaa !0
-  %cmp = icmp eq %struct.rtx_def* %2, null
-  br i1 %cmp, label %if.end13, label %cond.end
+  tail call void @diddle_return_value(void (%struct.rtx_def*, i8*)* @do_clobber_return_reg, i8* null) #10, !dbg !4594
+  %0 = load %union.tree_node** @current_function_decl, align 8, !dbg !4595, !tbaa !2729
+  %result = getelementptr inbounds %union.tree_node* %0, i64 0, i32 0, i32 11, !dbg !4595
+  %1 = load %union.tree_node** %result, align 8, !dbg !4595, !tbaa !2729
+  %rtl = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 17, !dbg !4595
+  %2 = load %struct.rtx_def** %rtl, align 8, !dbg !4595, !tbaa !2729
+  %cmp = icmp eq %struct.rtx_def* %2, null, !dbg !4595
+  br i1 %cmp, label %if.end13, label %cond.end, !dbg !4595
 
 cond.end:                                         ; preds = %entry
-  %3 = bitcast %struct.rtx_def* %2 to i32*
-  %bf.load = load i32* %3, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp10 = icmp eq i32 %bf.clear, 61
-  br i1 %cmp10, label %land.lhs.true, label %if.end13
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %2}, i64 0, metadata !1893), !dbg !4596
+  %3 = bitcast %struct.rtx_def* %2 to i32*, !dbg !4597
+  %bf.load = load i32* %3, align 8, !dbg !4597
+  %bf.clear = and i32 %bf.load, 65535, !dbg !4597
+  %cmp10 = icmp eq i32 %bf.clear, 61, !dbg !4597
+  br i1 %cmp10, label %land.lhs.true, label %if.end13, !dbg !4597
 
 land.lhs.true:                                    ; preds = %cond.end
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
-  %4 = load i32* %rtuint, align 4, !tbaa !4
-  %cmp11 = icmp ugt i32 %4, 52
-  br i1 %cmp11, label %if.then12, label %if.end13
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %2, i64 0, i32 1, i64 0, !dbg !4597
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*, !dbg !4597
+  %4 = load i32* %rtuint, align 4, !dbg !4597, !tbaa !2768
+  %cmp11 = icmp ugt i32 %4, 52, !dbg !4597
+  br i1 %cmp11, label %if.then12, label %if.end13, !dbg !4597
 
 if.then12:                                        ; preds = %land.lhs.true
-  %call.i = tail call %struct.rtx_def* @gen_rtx_fmt_e(i32 49, i32 0, %struct.rtx_def* %2) #10
-  %call1.i = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call.i) #10
-  br label %if.end13
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %2}, i64 0, metadata !4598) #6, !dbg !4601
+  tail call void @llvm.dbg.value(metadata !4602, i64 0, metadata !4603) #6, !dbg !4604
+  %call.i = tail call %struct.rtx_def* @gen_rtx_fmt_e(i32 49, i32 0, %struct.rtx_def* %2) #11, !dbg !4605
+  %call1.i = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call.i) #11, !dbg !4605
+  br label %if.end13, !dbg !4606
 
 if.end13:                                         ; preds = %entry, %cond.end, %land.lhs.true, %if.then12
-  ret void
+  ret void, !dbg !4607
 }

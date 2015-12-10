@@ -1,59 +1,61 @@
 define i32 @CCTKi_ScheduleGHInit(i8* %GH) #1 {
-  %1 = tail call i32 @CCTK_TimerCreate(i8* getelementptr inbounds ([16 x i8]* @.str8, i64 0, i64 0)) #8
-  store i32 %1, i32* @total_timer, align 4, !tbaa !38
-  %2 = icmp sgt i32 %1, -1
-  br i1 %2, label %3, label %5
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %GH}, i64 0, metadata !232), !dbg !732
+  %call = tail call i32 @CCTK_TimerCreate(i8* getelementptr inbounds ([16 x i8]* @.str8, i64 0, i64 0)) #8, !dbg !733
+  store i32 %call, i32* @total_timer, align 4, !dbg !733, !tbaa !592
+  %cmp = icmp sgt i32 %call, -1, !dbg !734
+  br i1 %cmp, label %if.then, label %if.else, !dbg !734
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i32 @CCTK_TimerStartI(i32 %1) #8
-  br label %.preheader1
+if.then:                                          ; preds = %entry
+  %call1 = tail call i32 @CCTK_TimerStartI(i32 %call) #8, !dbg !735
+  br label %for.cond.preheader, !dbg !737
 
-; <label>:5                                       ; preds = %0
-  %6 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 767, i8* getelementptr inbounds ([86 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([75 x i8]* @.str9, i64 0, i64 0)) #8
-  br label %.preheader1
+if.else:                                          ; preds = %entry
+  %call2 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 767, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([75 x i8]* @.str9, i64 0, i64 0)) #8, !dbg !738
+  br label %for.cond.preheader
 
-.preheader1:                                      ; preds = %5, %3
-  %7 = load i32* @n_scheduled_storage_groups, align 4, !tbaa !38
-  %8 = icmp sgt i32 %7, 0
-  br i1 %8, label %.lr.ph4, label %.preheader
+for.cond.preheader:                               ; preds = %if.else, %if.then
+  %0 = load i32* @n_scheduled_storage_groups, align 4, !dbg !740, !tbaa !592
+  %cmp322 = icmp sgt i32 %0, 0, !dbg !740
+  br i1 %cmp322, label %for.body.lr.ph, label %for.cond5.preheader, !dbg !740
 
-.lr.ph4:                                          ; preds = %.preheader1
-  %9 = bitcast i8* %GH to %struct.cGH*
-  br label %13
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %1 = bitcast i8* %GH to %struct.cGH*, !dbg !742
+  br label %for.body, !dbg !740
 
-.preheader:                                       ; preds = %13, %.preheader1
-  %10 = load i32* @n_scheduled_comm_groups, align 4, !tbaa !38
-  %11 = icmp sgt i32 %10, 0
-  br i1 %11, label %.lr.ph, label %._crit_edge
+for.cond5.preheader:                              ; preds = %for.body, %for.cond.preheader
+  %2 = load i32* @n_scheduled_comm_groups, align 4, !dbg !744, !tbaa !592
+  %cmp620 = icmp sgt i32 %2, 0, !dbg !744
+  br i1 %cmp620, label %for.body7.lr.ph, label %for.end13, !dbg !744
 
-.lr.ph:                                           ; preds = %.preheader
-  %12 = bitcast i8* %GH to %struct.cGH*
-  br label %21
+for.body7.lr.ph:                                  ; preds = %for.cond5.preheader
+  %3 = bitcast i8* %GH to %struct.cGH*, !dbg !746
+  br label %for.body7, !dbg !744
 
-; <label>:13                                      ; preds = %.lr.ph4, %13
-  %indvars.iv5 = phi i64 [ 0, %.lr.ph4 ], [ %indvars.iv.next6, %13 ]
-  %14 = load i32** @scheduled_storage_groups, align 8, !tbaa !13
-  %15 = getelementptr inbounds i32* %14, i64 %indvars.iv5
-  %16 = load i32* %15, align 4, !tbaa !38
-  %17 = tail call i32 @CCTK_EnableGroupStorageI(%struct.cGH* %9, i32 %16) #8
-  %indvars.iv.next6 = add nuw nsw i64 %indvars.iv5, 1
-  %18 = load i32* @n_scheduled_storage_groups, align 4, !tbaa !38
-  %19 = sext i32 %18 to i64
-  %20 = icmp slt i64 %indvars.iv.next6, %19
-  br i1 %20, label %13, label %.preheader
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %indvars.iv24 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next25, %for.body ]
+  %4 = load i32** @scheduled_storage_groups, align 8, !dbg !742, !tbaa !504
+  %arrayidx = getelementptr inbounds i32* %4, i64 %indvars.iv24, !dbg !742
+  %5 = load i32* %arrayidx, align 4, !dbg !742, !tbaa !592
+  %call4 = tail call i32 @CCTK_EnableGroupStorageI(%struct.cGH* %1, i32 %5) #8, !dbg !742
+  %indvars.iv.next25 = add i64 %indvars.iv24, 1, !dbg !740
+  %6 = load i32* @n_scheduled_storage_groups, align 4, !dbg !740, !tbaa !592
+  %7 = trunc i64 %indvars.iv.next25 to i32, !dbg !740
+  %cmp3 = icmp slt i32 %7, %6, !dbg !740
+  br i1 %cmp3, label %for.body, label %for.cond5.preheader, !dbg !740
 
-; <label>:21                                      ; preds = %.lr.ph, %21
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %21 ]
-  %22 = load i32** @scheduled_comm_groups, align 8, !tbaa !13
-  %23 = getelementptr inbounds i32* %22, i64 %indvars.iv
-  %24 = load i32* %23, align 4, !tbaa !38
-  %25 = tail call i32 @CCTK_EnableGroupCommI(%struct.cGH* %12, i32 %24) #8
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %26 = load i32* @n_scheduled_comm_groups, align 4, !tbaa !38
-  %27 = sext i32 %26 to i64
-  %28 = icmp slt i64 %indvars.iv.next, %27
-  br i1 %28, label %21, label %._crit_edge
+for.body7:                                        ; preds = %for.body7.lr.ph, %for.body7
+  %indvars.iv = phi i64 [ 0, %for.body7.lr.ph ], [ %indvars.iv.next, %for.body7 ]
+  %8 = load i32** @scheduled_comm_groups, align 8, !dbg !746, !tbaa !504
+  %arrayidx9 = getelementptr inbounds i32* %8, i64 %indvars.iv, !dbg !746
+  %9 = load i32* %arrayidx9, align 4, !dbg !746, !tbaa !592
+  %call10 = tail call i32 @CCTK_EnableGroupCommI(%struct.cGH* %3, i32 %9) #8, !dbg !746
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !744
+  %10 = load i32* @n_scheduled_comm_groups, align 4, !dbg !744, !tbaa !592
+  %11 = trunc i64 %indvars.iv.next to i32, !dbg !744
+  %cmp6 = icmp slt i32 %11, %10, !dbg !744
+  br i1 %cmp6, label %for.body7, label %for.end13, !dbg !744
 
-._crit_edge:                                      ; preds = %21, %.preheader
-  ret i32 0
+for.end13:                                        ; preds = %for.body7, %for.cond5.preheader
+  ret i32 0, !dbg !748
 }

@@ -1,0 +1,42 @@
+define void @_ZN11xercesc_2_510ParentNode11setReadOnlyEbb(%"class.xercesc_2_5::ParentNode"* %this, i1 zeroext %readOnl, i1 zeroext %deep) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::ParentNode"* %this}, i64 0, metadata !3247), !dbg !3772
+  tail call void @llvm.dbg.value(metadata !{i1 %readOnl}, i64 0, metadata !3248), !dbg !3772
+  tail call void @llvm.dbg.value(metadata !{i1 %deep}, i64 0, metadata !3249), !dbg !3772
+  %0 = getelementptr inbounds %"class.xercesc_2_5::ParentNode"* %this, i64 0, i32 0, i32 0, !dbg !3773
+  tail call void @_ZN11xercesc_2_58NodeImpl11setReadOnlyEbb(%"class.xercesc_2_5::NodeImpl"* %0, i1 zeroext %readOnl, i1 zeroext %deep) #9, !dbg !3773
+  br i1 %deep, label %if.then, label %if.end9, !dbg !3774
+
+if.then:                                          ; preds = %entry
+  %firstChild = getelementptr inbounds %"class.xercesc_2_5::ParentNode"* %this, i64 0, i32 2, !dbg !3775
+  %mykid.015 = load %"class.xercesc_2_5::ChildNode"** %firstChild, align 8, !dbg !3775
+  %cmp16 = icmp eq %"class.xercesc_2_5::ChildNode"* %mykid.015, null, !dbg !3775
+  br i1 %cmp16, label %if.end9, label %for.body, !dbg !3775
+
+for.body:                                         ; preds = %if.then, %for.inc
+  %mykid.017 = phi %"class.xercesc_2_5::ChildNode"* [ %mykid.0, %for.inc ], [ %mykid.015, %if.then ]
+  %1 = getelementptr inbounds %"class.xercesc_2_5::ChildNode"* %mykid.017, i64 0, i32 0, !dbg !3776
+  %2 = bitcast %"class.xercesc_2_5::ChildNode"* %mykid.017 to i1 (%"class.xercesc_2_5::NodeImpl"*)***, !dbg !3776
+  %vtable = load i1 (%"class.xercesc_2_5::NodeImpl"*)*** %2, align 8, !dbg !3776, !tbaa !3461
+  %vfn = getelementptr inbounds i1 (%"class.xercesc_2_5::NodeImpl"*)** %vtable, i64 12, !dbg !3776
+  %3 = load i1 (%"class.xercesc_2_5::NodeImpl"*)** %vfn, align 8, !dbg !3776
+  %call = tail call zeroext i1 %3(%"class.xercesc_2_5::NodeImpl"* %1) #9, !dbg !3776
+  br i1 %call, label %for.inc, label %if.then5, !dbg !3776
+
+if.then5:                                         ; preds = %for.body
+  %4 = bitcast %"class.xercesc_2_5::ChildNode"* %mykid.017 to void (%"class.xercesc_2_5::NodeImpl"*, i1, i1)***, !dbg !3777
+  %vtable6 = load void (%"class.xercesc_2_5::NodeImpl"*, i1, i1)*** %4, align 8, !dbg !3777, !tbaa !3461
+  %vfn7 = getelementptr inbounds void (%"class.xercesc_2_5::NodeImpl"*, i1, i1)** %vtable6, i64 35, !dbg !3777
+  %5 = load void (%"class.xercesc_2_5::NodeImpl"*, i1, i1)** %vfn7, align 8, !dbg !3777
+  tail call void %5(%"class.xercesc_2_5::NodeImpl"* %1, i1 zeroext %readOnl, i1 zeroext true) #9, !dbg !3777
+  br label %for.inc, !dbg !3777
+
+for.inc:                                          ; preds = %for.body, %if.then5
+  %nextSibling = getelementptr inbounds %"class.xercesc_2_5::ChildNode"* %mykid.017, i64 0, i32 2, !dbg !3778
+  %mykid.0 = load %"class.xercesc_2_5::ChildNode"** %nextSibling, align 8, !dbg !3775
+  %cmp = icmp eq %"class.xercesc_2_5::ChildNode"* %mykid.0, null, !dbg !3775
+  br i1 %cmp, label %if.end9, label %for.body, !dbg !3775
+
+if.end9:                                          ; preds = %if.then, %for.inc, %entry
+  ret void, !dbg !3779
+}

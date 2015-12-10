@@ -1,0 +1,43 @@
+define zeroext i1 @_ZN11xercesc_2_510XMLChar1_013isValidNCNameEPKtj(i16* %toCheck, i32 %count) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %toCheck}, i64 0, metadata !131), !dbg !272
+  tail call void @llvm.dbg.value(metadata !{i32 %count}, i64 0, metadata !132), !dbg !273
+  tail call void @llvm.dbg.value(metadata !{i16* %toCheck}, i64 0, metadata !133), !dbg !274
+  %idx.ext = zext i32 %count to i64, !dbg !275
+  %add.ptr = getelementptr inbounds i16* %toCheck, i64 %idx.ext, !dbg !275
+  tail call void @llvm.dbg.value(metadata !{i16* %add.ptr}, i64 0, metadata !134), !dbg !275
+  %0 = load i16* %toCheck, align 2, !dbg !276, !tbaa !260
+  %cmp = icmp eq i16 %0, 58, !dbg !276
+  br i1 %cmp, label %return, label %lor.lhs.false, !dbg !276
+
+lor.lhs.false:                                    ; preds = %entry
+  %idxprom = zext i16 %0 to i64, !dbg !276
+  %arrayidx = getelementptr inbounds [65536 x i8]* @_ZN11xercesc_2_510XMLChar1_019fgCharCharsTable1_0E, i64 0, i64 %idxprom, !dbg !276
+  %1 = load i8* %arrayidx, align 1, !dbg !276, !tbaa !261
+  %and = and i8 %1, 2, !dbg !276
+  %tobool = icmp eq i8 %and, 0, !dbg !276
+  br i1 %tobool, label %return, label %while.cond, !dbg !276
+
+while.cond:                                       ; preds = %lor.lhs.false, %lor.lhs.false5
+  %toCheck.pn = phi i16* [ %curCh.0, %lor.lhs.false5 ], [ %toCheck, %lor.lhs.false ]
+  %curCh.0 = getelementptr inbounds i16* %toCheck.pn, i64 1, !dbg !276
+  %cmp2 = icmp ult i16* %curCh.0, %add.ptr, !dbg !277
+  br i1 %cmp2, label %while.body, label %return, !dbg !277
+
+while.body:                                       ; preds = %while.cond
+  %2 = load i16* %curCh.0, align 2, !dbg !278, !tbaa !260
+  %cmp4 = icmp eq i16 %2, 58, !dbg !278
+  br i1 %cmp4, label %return, label %lor.lhs.false5, !dbg !278
+
+lor.lhs.false5:                                   ; preds = %while.body
+  %idxprom7 = zext i16 %2 to i64, !dbg !278
+  %arrayidx8 = getelementptr inbounds [65536 x i8]* @_ZN11xercesc_2_510XMLChar1_019fgCharCharsTable1_0E, i64 0, i64 %idxprom7, !dbg !278
+  %3 = load i8* %arrayidx8, align 1, !dbg !278, !tbaa !261
+  %and10 = and i8 %3, 4, !dbg !278
+  %tobool11 = icmp eq i8 %and10, 0, !dbg !278
+  br i1 %tobool11, label %return, label %while.cond, !dbg !278
+
+return:                                           ; preds = %while.cond, %while.body, %lor.lhs.false5, %entry, %lor.lhs.false
+  %retval.0 = phi i1 [ false, %lor.lhs.false ], [ false, %entry ], [ true, %while.cond ], [ false, %while.body ], [ false, %lor.lhs.false5 ]
+  ret i1 %retval.0, !dbg !280
+}

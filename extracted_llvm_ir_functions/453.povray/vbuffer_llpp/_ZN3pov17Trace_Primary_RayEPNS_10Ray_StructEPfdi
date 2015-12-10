@@ -1,0 +1,380 @@
+define double @_ZN3pov17Trace_Primary_RayEPNS_10Ray_StructEPfdi(%"struct.pov::Ray_Struct"* %Ray, float* %Colour, double %Weight, i32 %x) #0 {
+entry:
+  %New_Intersection.i = alloca %"struct.pov::istk_entry", align 8
+  %rayinfo.i = alloca %"struct.pov::Rayinfo_Struct", align 8
+  %key.i = alloca double, align 8
+  %BBox_Node.i = alloca %"struct.pov::BBox_Tree_Struct"*, align 8
+  %Best_Intersection = alloca %"struct.pov::istk_entry", align 8
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Ray_Struct"* %Ray}, i64 0, metadata !972), !dbg !1552
+  call void @llvm.dbg.value(metadata !{float* %Colour}, i64 0, metadata !973), !dbg !1552
+  call void @llvm.dbg.value(metadata !{double %Weight}, i64 0, metadata !974), !dbg !1552
+  call void @llvm.dbg.value(metadata !{i32 %x}, i64 0, metadata !975), !dbg !1552
+  %0 = bitcast %"struct.pov::istk_entry"* %Best_Intersection to i8*, !dbg !1553
+  call void @llvm.lifetime.start(i64 200, i8* %0) #3, !dbg !1553
+  call void @llvm.dbg.declare(metadata !{%"struct.pov::istk_entry"* %Best_Intersection}, metadata !979), !dbg !1553
+  call void @_ZN3pov12Do_CooperateEi(i32 1) #7, !dbg !1554
+  tail call void @llvm.dbg.value(metadata !1555, i64 0, metadata !1556), !dbg !1558
+  %1 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 3), align 8, !dbg !1559, !tbaa !1498
+  %inc.i = add nsw i64 %1, 1, !dbg !1559
+  store i64 %inc.i, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 3), align 8, !dbg !1559, !tbaa !1498
+  tail call void @llvm.dbg.value(metadata !{float* %Colour}, i64 0, metadata !1560), !dbg !1562
+  tail call void @llvm.dbg.value(metadata !1563, i64 0, metadata !1564), !dbg !1562
+  tail call void @llvm.dbg.value(metadata !1563, i64 0, metadata !1565), !dbg !1562
+  tail call void @llvm.dbg.value(metadata !1563, i64 0, metadata !1566), !dbg !1562
+  tail call void @llvm.dbg.value(metadata !1563, i64 0, metadata !1567), !dbg !1562
+  tail call void @llvm.dbg.value(metadata !1563, i64 0, metadata !1568), !dbg !1562
+  %2 = bitcast float* %Colour to i8*, !dbg !1569
+  call void @llvm.memset.p0i8.i64(i8* %2, i8 0, i64 20, i32 4, i1 false), !dbg !1570
+  %3 = load i32* @_ZN3pov11Trace_LevelE, align 4, !dbg !1569, !tbaa !1492
+  %4 = load i32* @_ZN3pov15Max_Trace_LevelE, align 4, !dbg !1569, !tbaa !1492
+  %cmp = icmp sgt i32 %3, %4, !dbg !1569
+  %5 = load double* @_ZN3pov11ADC_BailoutE, align 8, !dbg !1569, !tbaa !1572
+  %cmp1 = fcmp ogt double %5, %Weight, !dbg !1569
+  %or.cond = or i1 %cmp, %cmp1, !dbg !1569
+  br i1 %or.cond, label %if.then, label %if.end4, !dbg !1569
+
+if.then:                                          ; preds = %entry
+  br i1 %cmp1, label %if.then3, label %cleanup, !dbg !1573
+
+if.then3:                                         ; preds = %if.then
+  tail call void @llvm.dbg.value(metadata !1575, i64 0, metadata !1576), !dbg !1579
+  %6 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 6), align 8, !dbg !1580, !tbaa !1498
+  %inc.i38 = add nsw i64 %6, 1, !dbg !1580
+  store i64 %inc.i38, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 6), align 8, !dbg !1580, !tbaa !1498
+  br label %cleanup, !dbg !1581
+
+if.end4:                                          ; preds = %entry
+  %7 = load i32* @_ZN3pov19Highest_Trace_LevelE, align 4, !dbg !1582, !tbaa !1492
+  %cmp5 = icmp sgt i32 %3, %7, !dbg !1582
+  br i1 %cmp5, label %if.then6, label %if.end7, !dbg !1582
+
+if.then6:                                         ; preds = %if.end4
+  store i32 %3, i32* @_ZN3pov19Highest_Trace_LevelE, align 4, !dbg !1583, !tbaa !1492
+  br label %if.end7, !dbg !1585
+
+if.end7:                                          ; preds = %if.then6, %if.end4
+  %Depth = getelementptr inbounds %"struct.pov::istk_entry"* %Best_Intersection, i64 0, i32 0, !dbg !1586
+  store double 2.000000e+10, double* %Depth, align 8, !dbg !1586, !tbaa !1572
+  %Object = getelementptr inbounds %"struct.pov::istk_entry"* %Best_Intersection, i64 0, i32 5, !dbg !1587
+  store %"struct.pov::Object_Struct"* null, %"struct.pov::Object_Struct"** %Object, align 8, !dbg !1587, !tbaa !1488
+  %8 = load %"struct.pov::Project_Tree_Node_Struct"** @_ZN3povL10Root_VistaE, align 8, !dbg !1588, !tbaa !1488
+  %9 = bitcast double* %key.i to i8*, !dbg !1589
+  call void @llvm.lifetime.start(i64 8, i8* %9), !dbg !1589
+  %10 = bitcast %"struct.pov::BBox_Tree_Struct"** %BBox_Node.i to i8*, !dbg !1589
+  call void @llvm.lifetime.start(i64 8, i8* %10), !dbg !1589
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Ray_Struct"* %Ray}, i64 0, metadata !1590), !dbg !1589
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Project_Tree_Node_Struct"* %8}, i64 0, metadata !1591), !dbg !1589
+  call void @llvm.dbg.value(metadata !{i32 %x}, i64 0, metadata !1592), !dbg !1589
+  call void @llvm.dbg.value(metadata !{%"struct.pov::istk_entry"* %Best_Intersection}, i64 0, metadata !1593), !dbg !1589
+  %11 = bitcast %"struct.pov::istk_entry"* %New_Intersection.i to i8*, !dbg !1594
+  call void @llvm.lifetime.start(i64 200, i8* %11) #3, !dbg !1594
+  call void @llvm.dbg.declare(metadata !{%"struct.pov::istk_entry"* %New_Intersection.i}, metadata !1348), !dbg !1594
+  %12 = bitcast %"struct.pov::Rayinfo_Struct"* %rayinfo.i to i8*, !dbg !1595
+  call void @llvm.lifetime.start(i64 72, i8* %12) #3, !dbg !1595
+  call void @llvm.dbg.declare(metadata !{%"struct.pov::Rayinfo_Struct"* %rayinfo.i}, metadata !1352), !dbg !1595
+  call void @llvm.dbg.declare(metadata !{double* %key.i}, metadata !1369), !dbg !1596
+  call void @llvm.dbg.declare(metadata !{%"struct.pov::BBox_Tree_Struct"** %BBox_Node.i}, metadata !1370), !dbg !1597
+  %cmp.i = icmp eq %"struct.pov::Project_Tree_Node_Struct"* %8, null, !dbg !1598
+  br i1 %cmp.i, label %_ZN3povL20intersect_vista_treeEPNS_10Ray_StructEPNS_24Project_Tree_Node_StructEiPNS_10istk_entryE.exit, label %if.end.i, !dbg !1598
+
+if.end.i:                                         ; preds = %if.end7
+  %Object.i = getelementptr inbounds %"struct.pov::istk_entry"* %New_Intersection.i, i64 0, i32 5, !dbg !1599
+  store %"struct.pov::Object_Struct"* null, %"struct.pov::Object_Struct"** %Object.i, align 8, !dbg !1599, !tbaa !1488
+  %13 = load %"struct.pov::Priority_Queue_Struct"** @_ZN3pov14VLBuffer_QueueE, align 8, !dbg !1600, !tbaa !1488
+  %QSize.i = getelementptr inbounds %"struct.pov::Priority_Queue_Struct"* %13, i64 0, i32 0, !dbg !1600
+  store i32 0, i32* %QSize.i, align 4, !dbg !1600, !tbaa !1492
+  call void @llvm.dbg.value(metadata !172, i64 0, metadata !1601), !dbg !1602
+  call void @llvm.dbg.value(metadata !1603, i64 0, metadata !1604), !dbg !1606
+  %14 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 111), align 8, !dbg !1607, !tbaa !1498
+  %inc.i.i = add nsw i64 %14, 1, !dbg !1607
+  store i64 %inc.i.i, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 111), align 8, !dbg !1607, !tbaa !1498
+  %15 = load %"struct.pov::Project_Queue_Struct"** @_ZN3pov10Node_QueueE, align 8, !dbg !1608, !tbaa !1488
+  %QSize1.i = getelementptr inbounds %"struct.pov::Project_Queue_Struct"* %15, i64 0, i32 0, !dbg !1608
+  store i32 0, i32* %QSize1.i, align 4, !dbg !1608, !tbaa !1492
+  call void @_ZN3pov14Create_RayinfoEPNS_10Ray_StructEPNS_14Rayinfo_StructE(%"struct.pov::Ray_Struct"* %Ray, %"struct.pov::Rayinfo_Struct"* %rayinfo.i) #7, !dbg !1609
+  call void @llvm.dbg.value(metadata !1493, i64 0, metadata !1610), !dbg !1612
+  %16 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 95), align 8, !dbg !1613, !tbaa !1498
+  %inc.i109.i = add nsw i64 %16, 1, !dbg !1613
+  store i64 %inc.i109.i, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 95), align 8, !dbg !1613, !tbaa !1498
+  %x1.i = getelementptr inbounds %"struct.pov::Project_Tree_Node_Struct"* %8, i64 0, i32 2, i32 0, !dbg !1614
+  %17 = load i32* %x1.i, align 4, !dbg !1614, !tbaa !1492
+  %cmp2.i = icmp sgt i32 %17, %x, !dbg !1614
+  br i1 %cmp2.i, label %while.cond.preheader.i, label %land.lhs.true.i, !dbg !1614
+
+land.lhs.true.i:                                  ; preds = %if.end.i
+  %x2.i = getelementptr inbounds %"struct.pov::Project_Tree_Node_Struct"* %8, i64 0, i32 2, i32 2, !dbg !1614
+  %18 = load i32* %x2.i, align 4, !dbg !1614, !tbaa !1492
+  %cmp4.i = icmp slt i32 %18, %x, !dbg !1614
+  br i1 %cmp4.i, label %while.cond.preheader.i, label %if.then5.i, !dbg !1614
+
+if.then5.i:                                       ; preds = %land.lhs.true.i
+  call void @llvm.dbg.value(metadata !1504, i64 0, metadata !1615), !dbg !1618
+  %19 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 96), align 8, !dbg !1619, !tbaa !1498
+  %inc.i108.i = add nsw i64 %19, 1, !dbg !1619
+  store i64 %inc.i108.i, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 96), align 8, !dbg !1619, !tbaa !1498
+  %20 = load %"struct.pov::Project_Queue_Struct"** @_ZN3pov10Node_QueueE, align 8, !dbg !1620, !tbaa !1488
+  %QSize6.i = getelementptr inbounds %"struct.pov::Project_Queue_Struct"* %20, i64 0, i32 0, !dbg !1620
+  %21 = load i32* %QSize6.i, align 4, !dbg !1620, !tbaa !1492
+  %inc.i37 = add i32 %21, 1, !dbg !1620
+  store i32 %inc.i37, i32* %QSize6.i, align 4, !dbg !1620, !tbaa !1492
+  %idxprom.i = zext i32 %21 to i64, !dbg !1620
+  %Queue.i = getelementptr inbounds %"struct.pov::Project_Queue_Struct"* %20, i64 0, i32 2, !dbg !1620
+  %22 = load %"struct.pov::Project_Tree_Node_Struct"*** %Queue.i, align 8, !dbg !1620, !tbaa !1488
+  %arrayidx.i = getelementptr inbounds %"struct.pov::Project_Tree_Node_Struct"** %22, i64 %idxprom.i, !dbg !1620
+  store %"struct.pov::Project_Tree_Node_Struct"* %8, %"struct.pov::Project_Tree_Node_Struct"** %arrayidx.i, align 8, !dbg !1620, !tbaa !1488
+  br label %while.cond.preheader.i, !dbg !1621
+
+while.cond.preheader.i:                           ; preds = %if.then5.i, %land.lhs.true.i, %if.end.i
+  %23 = load %"struct.pov::Project_Queue_Struct"** @_ZN3pov10Node_QueueE, align 8, !dbg !1622, !tbaa !1488
+  %QSize8115.i = getelementptr inbounds %"struct.pov::Project_Queue_Struct"* %23, i64 0, i32 0, !dbg !1622
+  %24 = load i32* %QSize8115.i, align 4, !dbg !1622, !tbaa !1492
+  %cmp9116.i = icmp eq i32 %24, 0, !dbg !1622
+  br i1 %cmp9116.i, label %while.cond42.preheader.i, label %while.body.i, !dbg !1622
+
+while.cond42.preheader.i:                         ; preds = %while.cond.backedge.i, %while.cond.preheader.i
+  %25 = load %"struct.pov::Priority_Queue_Struct"** @_ZN3pov14VLBuffer_QueueE, align 8, !dbg !1623, !tbaa !1488
+  %QSize43111121.i = getelementptr inbounds %"struct.pov::Priority_Queue_Struct"* %25, i64 0, i32 0, !dbg !1623
+  %26 = load i32* %QSize43111121.i, align 4, !dbg !1623, !tbaa !1492
+  %cmp44112122.i = icmp eq i32 %26, 0, !dbg !1623
+  br i1 %cmp44112122.i, label %_ZN3povL20intersect_vista_treeEPNS_10Ray_StructEPNS_24Project_Tree_Node_StructEiPNS_10istk_entryE.exit, label %while.body45.lr.ph.lr.ph.i, !dbg !1623
+
+while.body45.lr.ph.lr.ph.i:                       ; preds = %while.cond42.preheader.i
+  %Depth77.i = getelementptr inbounds %"struct.pov::istk_entry"* %New_Intersection.i, i64 0, i32 0, !dbg !1624
+  br label %while.body45.lr.ph.i, !dbg !1623
+
+while.body.i:                                     ; preds = %while.cond.preheader.i, %while.cond.backedge.i
+  %27 = phi %"struct.pov::Project_Queue_Struct"* [ %32, %while.cond.backedge.i ], [ %23, %while.cond.preheader.i ]
+  %28 = phi i32 [ %33, %while.cond.backedge.i ], [ %24, %while.cond.preheader.i ]
+  %QSize8117.i = phi i32* [ %QSize8.i, %while.cond.backedge.i ], [ %QSize8115.i, %while.cond.preheader.i ]
+  %dec.i = add i32 %28, -1, !dbg !1628
+  store i32 %dec.i, i32* %QSize8117.i, align 4, !dbg !1628, !tbaa !1492
+  %idxprom11.i = zext i32 %dec.i to i64, !dbg !1628
+  %Queue12.i = getelementptr inbounds %"struct.pov::Project_Queue_Struct"* %27, i64 0, i32 2, !dbg !1628
+  %29 = load %"struct.pov::Project_Tree_Node_Struct"*** %Queue12.i, align 8, !dbg !1628, !tbaa !1488
+  %arrayidx13.i = getelementptr inbounds %"struct.pov::Project_Tree_Node_Struct"** %29, i64 %idxprom11.i, !dbg !1628
+  %30 = load %"struct.pov::Project_Tree_Node_Struct"** %arrayidx13.i, align 8, !dbg !1628, !tbaa !1488
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Project_Tree_Node_Struct"* %30}, i64 0, metadata !1591), !dbg !1628
+  %is_leaf.i = getelementptr inbounds %"struct.pov::Project_Tree_Node_Struct"* %30, i64 0, i32 0, !dbg !1630
+  %31 = load i16* %is_leaf.i, align 2, !dbg !1630, !tbaa !1502
+  %conv.i = zext i16 %31 to i32, !dbg !1630
+  switch i32 %conv.i, label %while.cond.backedge.i [
+    i32 0, label %for.cond.preheader.i
+    i32 1, label %sw.bb39.i
+  ], !dbg !1630
+
+while.cond.backedge.i:                            ; preds = %for.inc.i, %sw.bb39.i, %for.cond.preheader.i, %while.body.i
+  %32 = load %"struct.pov::Project_Queue_Struct"** @_ZN3pov10Node_QueueE, align 8, !dbg !1622, !tbaa !1488
+  %QSize8.i = getelementptr inbounds %"struct.pov::Project_Queue_Struct"* %32, i64 0, i32 0, !dbg !1622
+  %33 = load i32* %QSize8.i, align 4, !dbg !1622, !tbaa !1492
+  %cmp9.i = icmp eq i32 %33, 0, !dbg !1622
+  br i1 %cmp9.i, label %while.cond42.preheader.i, label %while.body.i, !dbg !1622
+
+for.cond.preheader.i:                             ; preds = %while.body.i
+  %Entries.i = getelementptr inbounds %"struct.pov::Project_Tree_Node_Struct"* %30, i64 0, i32 3, !dbg !1631
+  %34 = load i16* %Entries.i, align 2, !dbg !1631, !tbaa !1502
+  %cmp16113.i = icmp eq i16 %34, 0, !dbg !1631
+  br i1 %cmp16113.i, label %while.cond.backedge.i, label %for.body.lr.ph.i, !dbg !1631
+
+for.body.lr.ph.i:                                 ; preds = %for.cond.preheader.i
+  %Entry.i = getelementptr inbounds %"struct.pov::Project_Tree_Node_Struct"* %30, i64 0, i32 4, !dbg !1634
+  br label %for.body.i, !dbg !1631
+
+for.body.i:                                       ; preds = %for.inc.i, %for.body.lr.ph.i
+  %35 = phi i16 [ %34, %for.body.lr.ph.i ], [ %46, %for.inc.i ]
+  %i.0114.i = phi i16 [ 0, %for.body.lr.ph.i ], [ %inc38.i, %for.inc.i ]
+  %idxprom17.i = zext i16 %i.0114.i to i64, !dbg !1634
+  %36 = load %"struct.pov::Project_Tree_Node_Struct"*** %Entry.i, align 8, !dbg !1634, !tbaa !1488
+  %arrayidx18.i = getelementptr inbounds %"struct.pov::Project_Tree_Node_Struct"** %36, i64 %idxprom17.i, !dbg !1634
+  %37 = load %"struct.pov::Project_Tree_Node_Struct"** %arrayidx18.i, align 8, !dbg !1634, !tbaa !1488
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Project_Tree_Node_Struct"* %37}, i64 0, metadata !1636), !dbg !1634
+  %is_leaf19.i = getelementptr inbounds %"struct.pov::Project_Tree_Node_Struct"* %37, i64 0, i32 0, !dbg !1637
+  %38 = load i16* %is_leaf19.i, align 2, !dbg !1637, !tbaa !1502
+  %cmp21.i = icmp ult i16 %38, 128, !dbg !1637
+  br i1 %cmp21.i, label %if.then22.i, label %for.inc.i, !dbg !1637
+
+if.then22.i:                                      ; preds = %for.body.i
+  call void @llvm.dbg.value(metadata !1493, i64 0, metadata !1638), !dbg !1641
+  %39 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 95), align 8, !dbg !1642, !tbaa !1498
+  %inc.i107.i = add nsw i64 %39, 1, !dbg !1642
+  store i64 %inc.i107.i, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 95), align 8, !dbg !1642, !tbaa !1498
+  %x124.i = getelementptr inbounds %"struct.pov::Project_Tree_Node_Struct"* %37, i64 0, i32 2, i32 0, !dbg !1643
+  %40 = load i32* %x124.i, align 4, !dbg !1643, !tbaa !1492
+  %cmp25.i = icmp sgt i32 %40, %x, !dbg !1643
+  br i1 %cmp25.i, label %for.inc.i, label %land.lhs.true26.i, !dbg !1643
+
+land.lhs.true26.i:                                ; preds = %if.then22.i
+  %x228.i = getelementptr inbounds %"struct.pov::Project_Tree_Node_Struct"* %37, i64 0, i32 2, i32 2, !dbg !1643
+  %41 = load i32* %x228.i, align 4, !dbg !1643, !tbaa !1492
+  %cmp29.i = icmp slt i32 %41, %x, !dbg !1643
+  br i1 %cmp29.i, label %for.inc.i, label %if.then30.i, !dbg !1643
+
+if.then30.i:                                      ; preds = %land.lhs.true26.i
+  call void @llvm.dbg.value(metadata !1504, i64 0, metadata !1644), !dbg !1647
+  %42 = load i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 96), align 8, !dbg !1648, !tbaa !1498
+  %inc.i106.i = add nsw i64 %42, 1, !dbg !1648
+  store i64 %inc.i106.i, i64* getelementptr inbounds ([126 x i64]* @_ZN3pov5statsE, i64 0, i64 96), align 8, !dbg !1648, !tbaa !1498
+  call void @_ZN3pov26Reinitialize_VLBuffer_CodeEv() #7, !dbg !1649
+  %43 = load %"struct.pov::Project_Queue_Struct"** @_ZN3pov10Node_QueueE, align 8, !dbg !1650, !tbaa !1488
+  %QSize31.i = getelementptr inbounds %"struct.pov::Project_Queue_Struct"* %43, i64 0, i32 0, !dbg !1650
+  %44 = load i32* %QSize31.i, align 4, !dbg !1650, !tbaa !1492
+  %inc32.i = add i32 %44, 1, !dbg !1650
+  store i32 %inc32.i, i32* %QSize31.i, align 4, !dbg !1650, !tbaa !1492
+  %idxprom33.i = zext i32 %44 to i64, !dbg !1650
+  %Queue34.i = getelementptr inbounds %"struct.pov::Project_Queue_Struct"* %43, i64 0, i32 2, !dbg !1650
+  %45 = load %"struct.pov::Project_Tree_Node_Struct"*** %Queue34.i, align 8, !dbg !1650, !tbaa !1488
+  %arrayidx35.i = getelementptr inbounds %"struct.pov::Project_Tree_Node_Struct"** %45, i64 %idxprom33.i, !dbg !1650
+  store %"struct.pov::Project_Tree_Node_Struct"* %37, %"struct.pov::Project_Tree_Node_Struct"** %arrayidx35.i, align 8, !dbg !1650, !tbaa !1488
+  %.pre.i = load i16* %Entries.i, align 2, !dbg !1631, !tbaa !1502
+  br label %for.inc.i, !dbg !1651
+
+for.inc.i:                                        ; preds = %if.then30.i, %land.lhs.true26.i, %if.then22.i, %for.body.i
+  %46 = phi i16 [ %35, %land.lhs.true26.i ], [ %35, %if.then22.i ], [ %35, %for.body.i ], [ %.pre.i, %if.then30.i ], !dbg !1631
+  %inc38.i = add i16 %i.0114.i, 1, !dbg !1631
+  call void @llvm.dbg.value(metadata !{i16 %inc38.i}, i64 0, metadata !1652), !dbg !1631
+  %cmp16.i = icmp ult i16 %inc38.i, %46, !dbg !1631
+  br i1 %cmp16.i, label %for.body.i, label %while.cond.backedge.i, !dbg !1631
+
+sw.bb39.i:                                        ; preds = %while.body.i
+  %47 = load %"struct.pov::Priority_Queue_Struct"** @_ZN3pov14VLBuffer_QueueE, align 8, !dbg !1653, !tbaa !1488
+  %48 = getelementptr inbounds %"struct.pov::Project_Tree_Node_Struct"* %30, i64 0, i32 1, !dbg !1653
+  %49 = load %"struct.pov::BBox_Tree_Struct"** %48, align 8, !dbg !1653, !tbaa !1488
+  %BBox.i = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %49, i64 0, i32 2, !dbg !1653
+  call void @_ZN3pov17Check_And_EnqueueEPNS_21Priority_Queue_StructEPNS_16BBox_Tree_StructEPNS_19Bounding_Box_StructEPNS_14Rayinfo_StructE(%"struct.pov::Priority_Queue_Struct"* %47, %"struct.pov::BBox_Tree_Struct"* %49, %"struct.pov::Bounding_Box_Struct"* %BBox.i, %"struct.pov::Rayinfo_Struct"* %rayinfo.i) #7, !dbg !1653
+  br label %while.cond.backedge.i, !dbg !1654
+
+while.body45.i:                                   ; preds = %while.body45.lr.ph.i, %while.cond42.backedge.i
+  %50 = phi %"struct.pov::Priority_Queue_Struct"* [ %65, %while.body45.lr.ph.i ], [ %59, %while.cond42.backedge.i ]
+  call void @_ZN3pov21Priority_Queue_DeleteEPNS_21Priority_Queue_StructEPdPPNS_16BBox_Tree_StructE(%"struct.pov::Priority_Queue_Struct"* %50, double* %key.i, %"struct.pov::BBox_Tree_Struct"** %BBox_Node.i) #7, !dbg !1655
+  call void @llvm.dbg.value(metadata !{double* %key.i}, i64 0, metadata !1656), !dbg !1657
+  call void @llvm.dbg.value(metadata !{double* %key.i}, i64 0, metadata !1369), !dbg !1657
+  %51 = load double* %key.i, align 8, !dbg !1657, !tbaa !1572
+  %52 = load double* %Depth, align 8, !dbg !1657, !tbaa !1572
+  %cmp46.i = fcmp ogt double %51, %52, !dbg !1657
+  br i1 %cmp46.i, label %_ZN3povL20intersect_vista_treeEPNS_10Ray_StructEPNS_24Project_Tree_Node_StructEiPNS_10istk_entryE.exit, label %if.end48.i, !dbg !1657
+
+if.end48.i:                                       ; preds = %while.body45.i
+  %53 = load i32* @_ZN3pov13backtraceFlagE, align 4, !dbg !1658, !tbaa !1492
+  %tobool.i = icmp eq i32 %53, 0, !dbg !1658
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BBox_Tree_Struct"** %BBox_Node.i}, i64 0, metadata !1659), !dbg !1658
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BBox_Tree_Struct"** %BBox_Node.i}, i64 0, metadata !1370), !dbg !1658
+  %54 = load %"struct.pov::BBox_Tree_Struct"** %BBox_Node.i, align 8, !dbg !1658, !tbaa !1488
+  %Node50.i = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %54, i64 0, i32 3, !dbg !1658
+  %55 = load %"struct.pov::BBox_Tree_Struct"*** %Node50.i, align 8, !dbg !1658, !tbaa !1488
+  %56 = bitcast %"struct.pov::BBox_Tree_Struct"** %55 to %"struct.pov::Object_Struct"*, !dbg !1658
+  %Flags.i = getelementptr inbounds %"struct.pov::Object_Struct"* %56, i64 0, i32 13, !dbg !1658
+  %57 = load i32* %Flags.i, align 4, !dbg !1658, !tbaa !1492
+  br i1 %tobool.i, label %land.lhs.true49.i, label %land.lhs.true68.i, !dbg !1658
+
+land.lhs.true49.i:                                ; preds = %if.end48.i
+  %and.i = and i32 %57, 32768, !dbg !1658
+  %tobool52.i = icmp ne i32 %and.i, 0, !dbg !1658
+  %58 = load i8* @_ZN3pov17In_Reflection_RayE, align 1, !dbg !1658, !tbaa !1660, !range !1661
+  %tobool53.i = icmp eq i8 %58, 0, !dbg !1658
+  %or.cond.i = and i1 %tobool52.i, %tobool53.i, !dbg !1658
+  br i1 %or.cond.i, label %while.cond42.backedge.i, label %land.lhs.true56.i, !dbg !1658
+
+land.lhs.true56.i:                                ; preds = %land.lhs.true49.i
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BBox_Tree_Struct"** %BBox_Node.i}, i64 0, metadata !1659), !dbg !1658
+  %and60.i = and i32 %57, 65536, !dbg !1658
+  %tobool61.i = icmp eq i32 %and60.i, 0, !dbg !1658
+  %or.cond105.i = or i1 %tobool61.i, %tobool53.i, !dbg !1658
+  br i1 %or.cond105.i, label %if.then74.i, label %while.cond42.backedge.i, !dbg !1658
+
+land.lhs.true68.i:                                ; preds = %if.end48.i
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BBox_Tree_Struct"** %BBox_Node.i}, i64 0, metadata !1659), !dbg !1658
+  %and72.i = and i32 %57, 1, !dbg !1658
+  %tobool73.i = icmp eq i32 %and72.i, 0, !dbg !1658
+  br i1 %tobool73.i, label %if.then74.i, label %while.cond42.backedge.i, !dbg !1658
+
+if.then74.i:                                      ; preds = %land.lhs.true68.i, %land.lhs.true56.i
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BBox_Tree_Struct"** %BBox_Node.i}, i64 0, metadata !1659), !dbg !1662
+  %call.i = call zeroext i1 @_ZN3pov12IntersectionEPNS_10istk_entryEPNS_13Object_StructEPNS_10Ray_StructE(%"struct.pov::istk_entry"* %New_Intersection.i, %"struct.pov::Object_Struct"* %56, %"struct.pov::Ray_Struct"* %Ray) #7, !dbg !1662
+  br i1 %call.i, label %if.then76.i, label %while.cond42.backedge.i, !dbg !1662
+
+while.cond42.backedge.i:                          ; preds = %if.then76.i, %if.then74.i, %land.lhs.true68.i, %land.lhs.true56.i, %land.lhs.true49.i
+  %59 = load %"struct.pov::Priority_Queue_Struct"** @_ZN3pov14VLBuffer_QueueE, align 8, !dbg !1623, !tbaa !1488
+  %QSize43.i = getelementptr inbounds %"struct.pov::Priority_Queue_Struct"* %59, i64 0, i32 0, !dbg !1623
+  %60 = load i32* %QSize43.i, align 4, !dbg !1623, !tbaa !1492
+  %cmp44.i = icmp eq i32 %60, 0, !dbg !1623
+  br i1 %cmp44.i, label %_ZN3povL20intersect_vista_treeEPNS_10Ray_StructEPNS_24Project_Tree_Node_StructEiPNS_10istk_entryE.exit, label %while.body45.i, !dbg !1623
+
+if.then76.i:                                      ; preds = %if.then74.i
+  %61 = load double* %Depth77.i, align 8, !dbg !1624, !tbaa !1572
+  %62 = load double* %Depth, align 8, !dbg !1624, !tbaa !1572
+  %cmp79.i = fcmp olt double %61, %62, !dbg !1624
+  br i1 %cmp79.i, label %if.then80.i, label %while.cond42.backedge.i, !dbg !1624
+
+if.then80.i:                                      ; preds = %if.then76.i
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %11, i64 200, i32 8, i1 false), !dbg !1663, !tbaa.struct !1665
+  call void @llvm.dbg.value(metadata !1666, i64 0, metadata !1601), !dbg !1667
+  %63 = load %"struct.pov::Priority_Queue_Struct"** @_ZN3pov14VLBuffer_QueueE, align 8, !dbg !1623, !tbaa !1488
+  %QSize43111.i = getelementptr inbounds %"struct.pov::Priority_Queue_Struct"* %63, i64 0, i32 0, !dbg !1623
+  %64 = load i32* %QSize43111.i, align 4, !dbg !1623, !tbaa !1492
+  %cmp44112.i = icmp eq i32 %64, 0, !dbg !1623
+  br i1 %cmp44112.i, label %_ZN3povL20intersect_vista_treeEPNS_10Ray_StructEPNS_24Project_Tree_Node_StructEiPNS_10istk_entryE.exit, label %while.body45.lr.ph.i, !dbg !1623
+
+while.body45.lr.ph.i:                             ; preds = %if.then80.i, %while.body45.lr.ph.lr.ph.i
+  %65 = phi %"struct.pov::Priority_Queue_Struct"* [ %25, %while.body45.lr.ph.lr.ph.i ], [ %63, %if.then80.i ]
+  %Found.0.ph123.i = phi i32 [ 0, %while.body45.lr.ph.lr.ph.i ], [ 1, %if.then80.i ]
+  br label %while.body45.i, !dbg !1623
+
+_ZN3povL20intersect_vista_treeEPNS_10Ray_StructEPNS_24Project_Tree_Node_StructEiPNS_10istk_entryE.exit: ; preds = %if.then80.i, %while.body45.i, %while.cond42.backedge.i, %if.end7, %while.cond42.preheader.i
+  %retval.0.i = phi i32 [ 0, %if.end7 ], [ 0, %while.cond42.preheader.i ], [ %Found.0.ph123.i, %while.cond42.backedge.i ], [ %Found.0.ph123.i, %while.body45.i ], [ 1, %if.then80.i ]
+  call void @llvm.lifetime.end(i64 72, i8* %12) #3, !dbg !1668
+  call void @llvm.lifetime.end(i64 200, i8* %11) #3, !dbg !1668
+  call void @llvm.lifetime.end(i64 8, i8* %9), !dbg !1668
+  call void @llvm.lifetime.end(i64 8, i8* %10), !dbg !1668
+  call void @llvm.dbg.value(metadata !{i32 %retval.0.i}, i64 0, metadata !977), !dbg !1588
+  %tobool = icmp eq i32 %retval.0.i, 0, !dbg !1669
+  br i1 %tobool, label %if.else, label %if.then8, !dbg !1669
+
+if.then8:                                         ; preds = %_ZN3povL20intersect_vista_treeEPNS_10Ray_StructEPNS_24Project_Tree_Node_StructEiPNS_10istk_entryE.exit
+  call void @_ZN3pov25Determine_Apparent_ColourEPNS_10istk_entryEPfPNS_10Ray_StructEd(%"struct.pov::istk_entry"* %Best_Intersection, float* %Colour, %"struct.pov::Ray_Struct"* %Ray, double 1.000000e+00) #7, !dbg !1670
+  br label %if.end10, !dbg !1672
+
+if.else:                                          ; preds = %_ZN3povL20intersect_vista_treeEPNS_10Ray_StructEPNS_24Project_Tree_Node_StructEiPNS_10istk_entryE.exit
+  store double 1.000000e+07, double* %Depth, align 8, !dbg !1673, !tbaa !1572
+  call void @_ZN3pov22Do_Infinite_AtmosphereEPNS_10Ray_StructEPf(%"struct.pov::Ray_Struct"* %Ray, float* %Colour) #7, !dbg !1675
+  br label %if.end10
+
+if.end10:                                         ; preds = %if.else, %if.then8
+  call void @llvm.dbg.value(metadata !1666, i64 0, metadata !978), !dbg !1676
+  %Index = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 2, !dbg !1677
+  %66 = load i32* %Index, align 4, !dbg !1677, !tbaa !1492
+  %cmp11 = icmp sgt i32 %66, -1, !dbg !1677
+  br i1 %cmp11, label %for.body, label %land.lhs.true, !dbg !1677
+
+for.cond:                                         ; preds = %for.body
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1678
+  %67 = trunc i64 %indvars.iv to i32, !dbg !1678
+  %cmp14 = icmp slt i32 %67, %66, !dbg !1678
+  br i1 %cmp14, label %for.body, label %land.lhs.true, !dbg !1678
+
+for.body:                                         ; preds = %if.end10, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %if.end10 ]
+  %arrayidx = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 4, i64 %indvars.iv, !dbg !1681
+  %68 = load %"struct.pov::Interior_Struct"** %arrayidx, align 8, !dbg !1681, !tbaa !1488
+  %hollow = getelementptr inbounds %"struct.pov::Interior_Struct"* %68, i64 0, i32 1, !dbg !1681
+  %69 = load i32* %hollow, align 4, !dbg !1681, !tbaa !1492
+  %tobool15 = icmp eq i32 %69, 0, !dbg !1681
+  br i1 %tobool15, label %if.end22, label %for.cond, !dbg !1681
+
+land.lhs.true:                                    ; preds = %for.cond, %if.end10
+  %70 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 13), align 8, !dbg !1683, !tbaa !1492
+  %and = and i32 %70, 128, !dbg !1683
+  %tobool20 = icmp eq i32 %and, 0, !dbg !1683
+  br i1 %tobool20, label %if.end22, label %if.then21, !dbg !1683
+
+if.then21:                                        ; preds = %land.lhs.true
+  call void @_ZN3pov20Do_Finite_AtmosphereEPNS_10Ray_StructEPNS_10istk_entryEPfi(%"struct.pov::Ray_Struct"* %Ray, %"struct.pov::istk_entry"* %Best_Intersection, float* %Colour, i32 0) #7, !dbg !1684
+  br label %if.end22, !dbg !1686
+
+if.end22:                                         ; preds = %for.body, %land.lhs.true, %if.then21
+  %71 = load double* %Depth, align 8, !dbg !1687, !tbaa !1572
+  br label %cleanup, !dbg !1687
+
+cleanup:                                          ; preds = %if.then, %if.then3, %if.end22
+  %retval.0 = phi double [ %71, %if.end22 ], [ 2.000000e+10, %if.then3 ], [ 2.000000e+10, %if.then ]
+  call void @llvm.lifetime.end(i64 200, i8* %0) #3, !dbg !1688
+  ret double %retval.0, !dbg !1688
+}

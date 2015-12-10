@@ -1,0 +1,39 @@
+define i32 @_ZN11xercesc_2_513XMLStringPool9addOrFindEPKt(%"class.xercesc_2_5::XMLStringPool"* nocapture %this, i16* %newString) unnamed_addr #1 align 2 {
+entry:
+  %hashVal.i = alloca i32, align 4
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLStringPool"* %this}, i64 0, metadata !1313), !dbg !2333
+  call void @llvm.dbg.value(metadata !{i16* %newString}, i64 0, metadata !1314), !dbg !2333
+  %fHashTable = getelementptr inbounds %"class.xercesc_2_5::XMLStringPool"* %this, i64 0, i32 3, !dbg !2334
+  %0 = load %"class.xercesc_2_5::RefHashTableOf"** %fHashTable, align 8, !dbg !2334, !tbaa !2258
+  %1 = bitcast i16* %newString to i8*, !dbg !2334
+  %2 = bitcast i32* %hashVal.i to i8*, !dbg !2335
+  call void @llvm.lifetime.start(i64 4, i8* %2), !dbg !2335
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefHashTableOf"* %0}, i64 0, metadata !2336), !dbg !2335
+  call void @llvm.dbg.value(metadata !{i8* %1}, i64 0, metadata !2337), !dbg !2335
+  call void @llvm.dbg.declare(metadata !{i32* %hashVal.i}, metadata !1612), !dbg !2338
+  %call.i = call %"struct.xercesc_2_5::RefHashTableBucketElem"* @_ZN11xercesc_2_514RefHashTableOfINS_13XMLStringPool8PoolElemEE14findBucketElemEPKvRj(%"class.xercesc_2_5::RefHashTableOf"* %0, i8* %1, i32* %hashVal.i) #7, !dbg !2339
+  call void @llvm.dbg.value(metadata !{%"struct.xercesc_2_5::RefHashTableBucketElem"* %call.i}, i64 0, metadata !2340), !dbg !2339
+  %tobool.i = icmp eq %"struct.xercesc_2_5::RefHashTableBucketElem"* %call.i, null, !dbg !2341
+  br i1 %tobool.i, label %if.end, label %_ZN11xercesc_2_514RefHashTableOfINS_13XMLStringPool8PoolElemEE3getEPKv.exit, !dbg !2341
+
+_ZN11xercesc_2_514RefHashTableOfINS_13XMLStringPool8PoolElemEE3getEPKv.exit: ; preds = %entry
+  %fData.i = getelementptr inbounds %"struct.xercesc_2_5::RefHashTableBucketElem"* %call.i, i64 0, i32 0, !dbg !2342
+  %3 = load %"class.xercesc_2_5::XMLStringPool::PoolElem"** %fData.i, align 8, !dbg !2342, !tbaa !2258
+  call void @llvm.lifetime.end(i64 4, i8* %2), !dbg !2343
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLStringPool::PoolElem"* %3}, i64 0, metadata !1315), !dbg !2334
+  %tobool = icmp eq %"class.xercesc_2_5::XMLStringPool::PoolElem"* %3, null, !dbg !2344
+  br i1 %tobool, label %if.end, label %if.then, !dbg !2344
+
+if.then:                                          ; preds = %_ZN11xercesc_2_514RefHashTableOfINS_13XMLStringPool8PoolElemEE3getEPKv.exit
+  %fId = getelementptr inbounds %"class.xercesc_2_5::XMLStringPool::PoolElem"* %3, i64 0, i32 0, !dbg !2345
+  %4 = load i32* %fId, align 4, !dbg !2345, !tbaa !2255
+  br label %return, !dbg !2345
+
+if.end:                                           ; preds = %entry, %_ZN11xercesc_2_514RefHashTableOfINS_13XMLStringPool8PoolElemEE3getEPKv.exit
+  %call2 = call i32 @_ZN11xercesc_2_513XMLStringPool11addNewEntryEPKt(%"class.xercesc_2_5::XMLStringPool"* %this, i16* %newString) #7, !dbg !2346
+  br label %return, !dbg !2346
+
+return:                                           ; preds = %if.end, %if.then
+  %retval.0 = phi i32 [ %4, %if.then ], [ %call2, %if.end ]
+  ret i32 %retval.0, !dbg !2347
+}

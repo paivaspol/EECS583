@@ -1,0 +1,30 @@
+define void @_ZN3pov19Rotate_Blob_ElementEPNS_19Blob_Element_StructEPd(%"struct.pov::Blob_Element_Struct"* %Element, double* %Vector) #0 {
+entry:
+  %Trans = alloca %"struct.pov::Transform_Struct", align 8
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Blob_Element_Struct"* %Element}, i64 0, metadata !1064), !dbg !2639
+  call void @llvm.dbg.value(metadata !{double* %Vector}, i64 0, metadata !1065), !dbg !2639
+  %0 = bitcast %"struct.pov::Transform_Struct"* %Trans to i8*, !dbg !2640
+  call void @llvm.lifetime.start(i64 256, i8* %0) #5, !dbg !2640
+  call void @llvm.dbg.declare(metadata !{%"struct.pov::Transform_Struct"* %Trans}, metadata !1066), !dbg !2640
+  call void @_ZN3pov26Compute_Rotation_TransformEPNS_16Transform_StructEPd(%"struct.pov::Transform_Struct"* %Trans, double* %Vector) #7, !dbg !2641
+  %Trans1 = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %Element, i64 0, i32 8, !dbg !2642
+  %1 = load %"struct.pov::Transform_Struct"** %Trans1, align 8, !dbg !2642, !tbaa !1639
+  %cmp = icmp eq %"struct.pov::Transform_Struct"* %1, null, !dbg !2642
+  br i1 %cmp, label %if.then, label %if.else, !dbg !2642
+
+if.then:                                          ; preds = %entry
+  %arraydecay = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %Element, i64 0, i32 2, i64 0, !dbg !2643
+  call void @_ZN3pov11MTransPointEPdS0_PNS_16Transform_StructE(double* %arraydecay, double* %arraydecay, %"struct.pov::Transform_Struct"* %Trans) #7, !dbg !2643
+  %Texture = getelementptr inbounds %"struct.pov::Blob_Element_Struct"* %Element, i64 0, i32 7, !dbg !2645
+  %2 = load %"struct.pov::Texture_Struct"** %Texture, align 8, !dbg !2645, !tbaa !1639
+  call void @_ZN3pov18Transform_TexturesEPNS_14Texture_StructEPNS_16Transform_StructE(%"struct.pov::Texture_Struct"* %2, %"struct.pov::Transform_Struct"* %Trans) #7, !dbg !2645
+  br label %if.end, !dbg !2646
+
+if.else:                                          ; preds = %entry
+  call void @_ZN3pov22Transform_Blob_ElementEPNS_19Blob_Element_StructEPNS_16Transform_StructE(%"struct.pov::Blob_Element_Struct"* %Element, %"struct.pov::Transform_Struct"* %Trans) #7, !dbg !2647
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  call void @llvm.lifetime.end(i64 256, i8* %0) #5, !dbg !2649
+  ret void, !dbg !2649
+}

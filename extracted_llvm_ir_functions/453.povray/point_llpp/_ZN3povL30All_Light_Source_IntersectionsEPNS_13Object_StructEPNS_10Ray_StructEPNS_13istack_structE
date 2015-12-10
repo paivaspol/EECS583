@@ -1,0 +1,34 @@
+define internal i32 @_ZN3povL30All_Light_Source_IntersectionsEPNS_13Object_StructEPNS_10Ray_StructEPNS_13istack_structE(%"struct.pov::Object_Struct"* nocapture %Object, %"struct.pov::Ray_Struct"* %Ray, %"struct.pov::istack_struct"* %Depth_Stack) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !970), !dbg !1034
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Ray_Struct"* %Ray}, i64 0, metadata !971), !dbg !1034
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istack_struct"* %Depth_Stack}, i64 0, metadata !972), !dbg !1034
+  %Children = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, !dbg !1035
+  %0 = bitcast %"struct.pov::Object_Struct"* %Children to %"struct.pov::Object_Struct"**, !dbg !1035
+  %1 = load %"struct.pov::Object_Struct"** %0, align 8, !dbg !1035, !tbaa !1036
+  %cmp = icmp eq %"struct.pov::Object_Struct"* %1, null, !dbg !1035
+  br i1 %cmp, label %if.end9, label %if.then, !dbg !1035
+
+if.then:                                          ; preds = %entry
+  %Bound = getelementptr inbounds %"struct.pov::Object_Struct"* %1, i64 0, i32 6, !dbg !1039
+  %2 = load %"struct.pov::Object_Struct"** %Bound, align 8, !dbg !1039, !tbaa !1036
+  %call = tail call zeroext i1 @_ZN3pov12Ray_In_BoundEPNS_10Ray_StructEPNS_13Object_StructE(%"struct.pov::Ray_Struct"* %Ray, %"struct.pov::Object_Struct"* %2) #7, !dbg !1039
+  br i1 %call, label %if.then2, label %if.end9, !dbg !1039
+
+if.then2:                                         ; preds = %if.then
+  %3 = load %"struct.pov::Object_Struct"** %0, align 8, !dbg !1041, !tbaa !1036
+  %Methods = getelementptr inbounds %"struct.pov::Object_Struct"* %3, i64 0, i32 0, !dbg !1041
+  %4 = load %"struct.pov::Method_Struct"** %Methods, align 8, !dbg !1041, !tbaa !1036
+  %All_Intersections_Method4 = bitcast %"struct.pov::Method_Struct"* %4 to i32 (%"struct.pov::Object_Struct"*, %"struct.pov::Ray_Struct"*, %"struct.pov::istack_struct"*)**, !dbg !1041
+  %5 = load i32 (%"struct.pov::Object_Struct"*, %"struct.pov::Ray_Struct"*, %"struct.pov::istack_struct"*)** %All_Intersections_Method4, align 8, !dbg !1041, !tbaa !1036
+  %call6 = tail call i32 %5(%"struct.pov::Object_Struct"* %3, %"struct.pov::Ray_Struct"* %Ray, %"struct.pov::istack_struct"* %Depth_Stack) #7, !dbg !1041
+  %tobool = icmp eq i32 %call6, 0, !dbg !1041
+  br i1 %tobool, label %if.end9, label %return, !dbg !1041
+
+if.end9:                                          ; preds = %if.then2, %entry, %if.then
+  br label %return, !dbg !1043
+
+return:                                           ; preds = %if.then2, %if.end9
+  %retval.0 = phi i32 [ 0, %if.end9 ], [ 1, %if.then2 ]
+  ret i32 %retval.0, !dbg !1043
+}

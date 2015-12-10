@@ -1,42 +1,51 @@
-define i8* @get_estr(i32* nocapture %ninp, %struct.t_inpfile** %inp, i8* %name, i8* %def) #1 {
+define i8* @get_estr(i32* nocapture %ninp, %struct.t_inpfile** %inp, i8* %name, i8* %def) #0 {
+entry:
   %buf = alloca [32 x i8], align 16
-  %1 = tail call fastcc i32 @get_einp(i32* %ninp, %struct.t_inpfile** %inp, i8* %name) #8
-  %2 = icmp eq i32 %1, -1
-  br i1 %2, label %3, label %20
+  call void @llvm.dbg.value(metadata !{i32* %ninp}, i64 0, metadata !133), !dbg !317
+  call void @llvm.dbg.value(metadata !{%struct.t_inpfile** %inp}, i64 0, metadata !134), !dbg !317
+  call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !135), !dbg !317
+  call void @llvm.dbg.value(metadata !{i8* %def}, i64 0, metadata !136), !dbg !317
+  call void @llvm.dbg.declare(metadata !{[32 x i8]* %buf}, metadata !137), !dbg !318
+  %call = call fastcc i32 @get_einp(i32* %ninp, %struct.t_inpfile** %inp, i8* %name) #10, !dbg !319
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !138), !dbg !319
+  %cmp = icmp eq i32 %call, -1, !dbg !320
+  br i1 %cmp, label %if.then, label %if.else9, !dbg !320
 
-; <label>:3                                       ; preds = %0
-  %4 = icmp eq i8* %def, null
-  br i1 %4, label %14, label %5
+if.then:                                          ; preds = %entry
+  %tobool = icmp eq i8* %def, null, !dbg !321
+  br i1 %tobool, label %if.else, label %if.then1, !dbg !321
 
-; <label>:5                                       ; preds = %3
-  %6 = getelementptr inbounds [32 x i8]* %buf, i64 0, i64 0
-  %7 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %6, i32 0, i64 32, i8* getelementptr inbounds ([3 x i8]* @.str14, i64 0, i64 0), i8* %def) #7
-  %8 = call i8* @strdup(i8* %6) #7
-  %9 = load i32* %ninp, align 4, !tbaa !6
-  %10 = add nsw i32 %9, -1
-  %11 = sext i32 %10 to i64
-  %12 = load %struct.t_inpfile** %inp, align 8, !tbaa !2
-  %13 = getelementptr inbounds %struct.t_inpfile* %12, i64 %11, i32 3
-  store i8* %8, i8** %13, align 8, !tbaa !13
-  br label %25
+if.then1:                                         ; preds = %if.then
+  %arraydecay = getelementptr inbounds [32 x i8]* %buf, i64 0, i64 0, !dbg !323
+  %strlen = call i64 @strlen(i8* %def), !dbg !323
+  %leninc = add i64 %strlen, 1, !dbg !323
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %arraydecay, i8* %def, i64 %leninc, i32 1, i1 false), !dbg !323
+  %call4 = call noalias i8* @strdup(i8* %arraydecay) #8, !dbg !325
+  %0 = load i32* %ninp, align 4, !dbg !325, !tbaa !198
+  %sub = add nsw i32 %0, -1, !dbg !325
+  %idxprom = sext i32 %sub to i64, !dbg !325
+  %1 = load %struct.t_inpfile** %inp, align 8, !dbg !325, !tbaa !193
+  %value = getelementptr inbounds %struct.t_inpfile* %1, i64 %idxprom, i32 3, !dbg !325
+  store i8* %call4, i8** %value, align 8, !dbg !325, !tbaa !193
+  br label %return, !dbg !326
 
-; <label>:14                                      ; preds = %3
-  %15 = load i32* %ninp, align 4, !tbaa !6
-  %16 = add nsw i32 %15, -1
-  %17 = sext i32 %16 to i64
-  %18 = load %struct.t_inpfile** %inp, align 8, !tbaa !2
-  %19 = getelementptr inbounds %struct.t_inpfile* %18, i64 %17, i32 3
-  store i8* null, i8** %19, align 8, !tbaa !13
-  br label %25
+if.else:                                          ; preds = %if.then
+  %2 = load i32* %ninp, align 4, !dbg !327, !tbaa !198
+  %sub5 = add nsw i32 %2, -1, !dbg !327
+  %idxprom6 = sext i32 %sub5 to i64, !dbg !327
+  %3 = load %struct.t_inpfile** %inp, align 8, !dbg !327, !tbaa !193
+  %value8 = getelementptr inbounds %struct.t_inpfile* %3, i64 %idxprom6, i32 3, !dbg !327
+  store i8* null, i8** %value8, align 8, !dbg !327, !tbaa !193
+  br label %return
 
-; <label>:20                                      ; preds = %0
-  %21 = sext i32 %1 to i64
-  %22 = load %struct.t_inpfile** %inp, align 8, !tbaa !2
-  %23 = getelementptr inbounds %struct.t_inpfile* %22, i64 %21, i32 3
-  %24 = load i8** %23, align 8, !tbaa !13
-  br label %25
+if.else9:                                         ; preds = %entry
+  %idxprom10 = sext i32 %call to i64, !dbg !328
+  %4 = load %struct.t_inpfile** %inp, align 8, !dbg !328, !tbaa !193
+  %value12 = getelementptr inbounds %struct.t_inpfile* %4, i64 %idxprom10, i32 3, !dbg !328
+  %5 = load i8** %value12, align 8, !dbg !328, !tbaa !193
+  br label %return, !dbg !328
 
-; <label>:25                                      ; preds = %5, %14, %20
-  %.0 = phi i8* [ %24, %20 ], [ null, %14 ], [ %def, %5 ]
-  ret i8* %.0
+return:                                           ; preds = %if.then1, %if.else, %if.else9
+  %retval.0 = phi i8* [ %5, %if.else9 ], [ null, %if.else ], [ %def, %if.then1 ]
+  ret i8* %retval.0, !dbg !329
 }

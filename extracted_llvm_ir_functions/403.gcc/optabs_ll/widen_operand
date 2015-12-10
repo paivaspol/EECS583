@@ -1,61 +1,67 @@
 define internal fastcc %struct.rtx_def* @widen_operand(%struct.rtx_def* %op, i32 %mode, i32 %oldmode, i32 %unsignedp, i32 %no_extend) #0 {
 entry:
-  %tobool = icmp eq i32 %no_extend, 0
-  br i1 %tobool, label %if.then15, label %land.lhs.true
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op}, i64 0, metadata !2586), !dbg !3324
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !2587), !dbg !3325
+  tail call void @llvm.dbg.value(metadata !{i32 %oldmode}, i64 0, metadata !2588), !dbg !3325
+  tail call void @llvm.dbg.value(metadata !{i32 %unsignedp}, i64 0, metadata !2589), !dbg !3326
+  tail call void @llvm.dbg.value(metadata !{i32 %no_extend}, i64 0, metadata !2590), !dbg !3327
+  %tobool = icmp eq i32 %no_extend, 0, !dbg !3328
+  br i1 %tobool, label %if.then15, label %land.lhs.true, !dbg !3328
 
 land.lhs.true:                                    ; preds = %entry
-  %0 = bitcast %struct.rtx_def* %op to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 16711680
-  %cmp = icmp eq i32 %bf.clear, 0
-  br i1 %cmp, label %return, label %lor.lhs.false
+  %0 = bitcast %struct.rtx_def* %op to i32*, !dbg !3328
+  %bf.load = load i32* %0, align 8, !dbg !3328
+  %bf.clear = and i32 %bf.load, 16711680, !dbg !3328
+  %cmp = icmp eq i32 %bf.clear, 0, !dbg !3328
+  br i1 %cmp, label %return, label %lor.lhs.false, !dbg !3328
 
 lor.lhs.false:                                    ; preds = %land.lhs.true
-  %1 = and i32 %bf.load, 268500991
-  %2 = icmp eq i32 %1, 268435519
-  br i1 %2, label %land.lhs.true10, label %if.end16
+  %1 = and i32 %bf.load, 268500991, !dbg !3329
+  %2 = icmp eq i32 %1, 268435519, !dbg !3329
+  br i1 %2, label %land.lhs.true10, label %if.end16, !dbg !3329
 
 land.lhs.true10:                                  ; preds = %lor.lhs.false
-  %bf.lshr12 = lshr i32 %bf.load, 26
-  %bf.clear13 = and i32 %bf.lshr12, 1
-  %cmp14 = icmp eq i32 %bf.clear13, %unsignedp
-  br i1 %cmp14, label %if.then15, label %if.end16
+  %bf.lshr12 = lshr i32 %bf.load, 26, !dbg !3329
+  %bf.clear13 = and i32 %bf.lshr12, 1, !dbg !3329
+  %cmp14 = icmp eq i32 %bf.clear13, %unsignedp, !dbg !3329
+  br i1 %cmp14, label %if.then15, label %if.end16, !dbg !3329
 
 if.then15:                                        ; preds = %entry, %land.lhs.true10
-  %call = tail call %struct.rtx_def* @convert_modes(i32 %mode, i32 %oldmode, %struct.rtx_def* %op, i32 %unsignedp) #8
-  br label %return
+  %call = tail call %struct.rtx_def* @convert_modes(i32 %mode, i32 %oldmode, %struct.rtx_def* %op, i32 %unsignedp) #9, !dbg !3330
+  br label %return, !dbg !3330
 
 if.end16:                                         ; preds = %lor.lhs.false, %land.lhs.true10
-  %idxprom = sext i32 %mode to i64
-  %arrayidx = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom
-  %3 = load i8* %arrayidx, align 1, !tbaa !1
-  %conv = zext i8 %3 to i32
-  %4 = load i32* @target_flags, align 4, !tbaa !5
-  %and = lshr i32 %4, 23
-  %5 = and i32 %and, 4
-  %6 = add i32 %5, 4
-  %cmp18 = icmp ugt i32 %conv, %6
-  br i1 %cmp18, label %if.end26, label %if.then20
+  %idxprom = sext i32 %mode to i64, !dbg !3331
+  %arrayidx = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom, !dbg !3331
+  %3 = load i8* %arrayidx, align 1, !dbg !3331, !tbaa !2643
+  %conv = zext i8 %3 to i32, !dbg !3331
+  %4 = load i32* @target_flags, align 4, !dbg !3331, !tbaa !2668
+  %and = lshr i32 %4, 23, !dbg !3331
+  %5 = and i32 %and, 4, !dbg !3331
+  %6 = add i32 %5, 4, !dbg !3331
+  %cmp18 = icmp ugt i32 %conv, %6, !dbg !3331
+  br i1 %cmp18, label %if.end26, label %if.then20, !dbg !3331
 
 if.then20:                                        ; preds = %if.end16
-  %bf.lshr22 = lshr i32 %bf.load, 16
-  %bf.clear23 = and i32 %bf.lshr22, 255
-  %call24 = tail call %struct.rtx_def* @force_reg(i32 %bf.clear23, %struct.rtx_def* %op) #8
-  %call25 = tail call %struct.rtx_def* @gen_rtx_SUBREG(i32 %mode, %struct.rtx_def* %call24, i32 0) #8
-  br label %return
+  %bf.lshr22 = lshr i32 %bf.load, 16, !dbg !3332
+  %bf.clear23 = and i32 %bf.lshr22, 255, !dbg !3332
+  %call24 = tail call %struct.rtx_def* @force_reg(i32 %bf.clear23, %struct.rtx_def* %op) #9, !dbg !3332
+  %call25 = tail call %struct.rtx_def* @gen_rtx_SUBREG(i32 %mode, %struct.rtx_def* %call24, i32 0) #9, !dbg !3332
+  br label %return, !dbg !3332
 
 if.end26:                                         ; preds = %if.end16
-  %call27 = tail call %struct.rtx_def* @gen_reg_rtx(i32 %mode) #8
-  %call28 = tail call %struct.rtx_def* @gen_rtx_fmt_e(i32 49, i32 0, %struct.rtx_def* %call27) #8
-  %call29 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call28) #8
-  %bf.load30 = load i32* %0, align 8
-  %bf.lshr31 = lshr i32 %bf.load30, 16
-  %bf.clear32 = and i32 %bf.lshr31, 255
-  %call33 = tail call %struct.rtx_def* @gen_lowpart(i32 %bf.clear32, %struct.rtx_def* %call27) #8
-  %call34 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call33, %struct.rtx_def* %op) #8
-  br label %return
+  %call27 = tail call %struct.rtx_def* @gen_reg_rtx(i32 %mode) #9, !dbg !3333
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call27}, i64 0, metadata !2591), !dbg !3333
+  %call28 = tail call %struct.rtx_def* @gen_rtx_fmt_e(i32 49, i32 0, %struct.rtx_def* %call27) #9, !dbg !3334
+  %call29 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call28) #9, !dbg !3334
+  %bf.load30 = load i32* %0, align 8, !dbg !3335
+  %bf.lshr31 = lshr i32 %bf.load30, 16, !dbg !3335
+  %bf.clear32 = and i32 %bf.lshr31, 255, !dbg !3335
+  %call33 = tail call %struct.rtx_def* @gen_lowpart(i32 %bf.clear32, %struct.rtx_def* %call27) #9, !dbg !3335
+  %call34 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call33, %struct.rtx_def* %op) #9, !dbg !3335
+  br label %return, !dbg !3336
 
 return:                                           ; preds = %land.lhs.true, %if.end26, %if.then20, %if.then15
   %retval.0 = phi %struct.rtx_def* [ %call, %if.then15 ], [ %call25, %if.then20 ], [ %call27, %if.end26 ], [ %op, %land.lhs.true ]
-  ret %struct.rtx_def* %retval.0
+  ret %struct.rtx_def* %retval.0, !dbg !3337
 }

@@ -1,37 +1,47 @@
 define internal fastcc double @Dcentervalue(i32 %n, double* nocapture %a) #0 {
 entry:
-  %div = sdiv i32 %n, 2
-  %cmp = icmp sgt i32 %n, 7
-  br i1 %cmp, label %if.then, label %if.end14
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !471), !dbg !1448
+  tail call void @llvm.dbg.value(metadata !{double* %a}, i64 0, metadata !472), !dbg !1449
+  %div = sdiv i32 %n, 2, !dbg !1450
+  tail call void @llvm.dbg.value(metadata !{i32 %div}, i64 0, metadata !474), !dbg !1450
+  %cmp = icmp sgt i32 %n, 7, !dbg !1451
+  br i1 %cmp, label %if.then, label %if.end14, !dbg !1451
 
 if.then:                                          ; preds = %entry
-  %sub = add nsw i32 %n, -1
-  %cmp1 = icmp sgt i32 %n, 39
-  br i1 %cmp1, label %if.then2, label %if.end
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !473), !dbg !1452
+  %sub = add nsw i32 %n, -1, !dbg !1454
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !475), !dbg !1454
+  %cmp1 = icmp sgt i32 %n, 39, !dbg !1455
+  br i1 %cmp1, label %if.then2, label %if.end, !dbg !1455
 
 if.then2:                                         ; preds = %if.then
-  %div3 = sdiv i32 %n, 8
-  %add5 = shl nsw i32 %div3, 1
-  %call = tail call fastcc i32 @Dmedian3(i32 0, i32 %div3, i32 %add5, double* %a) #2
-  %sub6 = sub nsw i32 %div, %div3
-  %add7 = add nsw i32 %div3, %div
-  %call8 = tail call fastcc i32 @Dmedian3(i32 %sub6, i32 %div, i32 %add7, double* %a) #2
-  %sub9 = sub nsw i32 %sub, %div3
-  %sub10 = sub nsw i32 %sub9, %div3
-  %call12 = tail call fastcc i32 @Dmedian3(i32 %sub10, i32 %sub9, i32 %sub, double* %a) #2
-  br label %if.end
+  %div3 = sdiv i32 %n, 8, !dbg !1456
+  tail call void @llvm.dbg.value(metadata !{i32 %div3}, i64 0, metadata !476), !dbg !1456
+  %add5 = shl nsw i32 %div3, 1, !dbg !1458
+  %call = tail call fastcc i32 @Dmedian3(i32 0, i32 %div3, i32 %add5, double* %a) #3, !dbg !1458
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !473), !dbg !1458
+  %sub6 = sub nsw i32 %div, %div3, !dbg !1459
+  %add7 = add nsw i32 %div3, %div, !dbg !1459
+  %call8 = tail call fastcc i32 @Dmedian3(i32 %sub6, i32 %div, i32 %add7, double* %a) #3, !dbg !1459
+  tail call void @llvm.dbg.value(metadata !{i32 %call8}, i64 0, metadata !474), !dbg !1459
+  %sub9 = sub nsw i32 %sub, %div3, !dbg !1460
+  %sub10 = sub nsw i32 %sub9, %div3, !dbg !1460
+  %call12 = tail call fastcc i32 @Dmedian3(i32 %sub10, i32 %sub9, i32 %sub, double* %a) #3, !dbg !1460
+  tail call void @llvm.dbg.value(metadata !{i32 %call12}, i64 0, metadata !475), !dbg !1460
+  br label %if.end, !dbg !1461
 
 if.end:                                           ; preds = %if.then2, %if.then
   %j.0 = phi i32 [ %call8, %if.then2 ], [ %div, %if.then ]
   %k.0 = phi i32 [ %call12, %if.then2 ], [ %sub, %if.then ]
   %i.0 = phi i32 [ %call, %if.then2 ], [ 0, %if.then ]
-  %call13 = tail call fastcc i32 @Dmedian3(i32 %i.0, i32 %j.0, i32 %k.0, double* %a) #2
-  br label %if.end14
+  %call13 = tail call fastcc i32 @Dmedian3(i32 %i.0, i32 %j.0, i32 %k.0, double* %a) #3, !dbg !1462
+  tail call void @llvm.dbg.value(metadata !{i32 %call13}, i64 0, metadata !474), !dbg !1462
+  br label %if.end14, !dbg !1463
 
 if.end14:                                         ; preds = %if.end, %entry
   %j.1 = phi i32 [ %call13, %if.end ], [ %div, %entry ]
-  %idxprom = sext i32 %j.1 to i64
-  %arrayidx = getelementptr inbounds double* %a, i64 %idxprom
-  %0 = load double* %arrayidx, align 8, !tbaa !3
-  ret double %0
+  %idxprom = sext i32 %j.1 to i64, !dbg !1464
+  %arrayidx = getelementptr inbounds double* %a, i64 %idxprom, !dbg !1464
+  %0 = load double* %arrayidx, align 8, !dbg !1464, !tbaa !529
+  ret double %0, !dbg !1464
 }

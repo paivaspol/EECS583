@@ -1,63 +1,69 @@
 define internal fastcc void @set_page_table_entry(i8* %p, %struct.page_entry* %entry1) #0 {
 entry:
-  %0 = ptrtoint i8* %p to i64
-  %and = and i64 %0, -4294967296
-  %table.035 = load %struct.page_table_chain** getelementptr inbounds (%struct.globals* @G, i64 0, i32 2), align 8
-  %tobool36 = icmp eq %struct.page_table_chain* %table.035, null
-  br i1 %tobool36, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !{i8* %p}, i64 0, metadata !213), !dbg !758
+  tail call void @llvm.dbg.value(metadata !{%struct.page_entry* %entry1}, i64 0, metadata !214), !dbg !759
+  %0 = ptrtoint i8* %p to i64, !dbg !760
+  %and = and i64 %0, -4294967296, !dbg !760
+  tail call void @llvm.dbg.value(metadata !{i64 %and}, i64 0, metadata !229), !dbg !760
+  %table.035 = load %struct.page_table_chain** getelementptr inbounds (%struct.globals* @G, i64 0, i32 2), align 8, !dbg !761
+  %tobool36 = icmp eq %struct.page_table_chain* %table.035, null, !dbg !761
+  br i1 %tobool36, label %for.end, label %for.body, !dbg !761
 
 for.cond:                                         ; preds = %for.body
-  %next = getelementptr inbounds %struct.page_table_chain* %table.037, i64 0, i32 0
-  %table.0 = load %struct.page_table_chain** %next, align 8
-  %tobool = icmp eq %struct.page_table_chain* %table.0, null
-  br i1 %tobool, label %for.end, label %for.body
+  %next = getelementptr inbounds %struct.page_table_chain* %table.037, i64 0, i32 0, !dbg !761
+  %table.0 = load %struct.page_table_chain** %next, align 8, !dbg !761
+  %tobool = icmp eq %struct.page_table_chain* %table.0, null, !dbg !761
+  br i1 %tobool, label %for.end, label %for.body, !dbg !761
 
 for.body:                                         ; preds = %entry, %for.cond
   %table.037 = phi %struct.page_table_chain* [ %table.0, %for.cond ], [ %table.035, %entry ]
-  %high_bits2 = getelementptr inbounds %struct.page_table_chain* %table.037, i64 0, i32 1
-  %1 = load i64* %high_bits2, align 8, !tbaa !4
-  %cmp = icmp eq i64 %1, %and
-  br i1 %cmp, label %found, label %for.cond
+  %high_bits2 = getelementptr inbounds %struct.page_table_chain* %table.037, i64 0, i32 1, !dbg !763
+  %1 = load i64* %high_bits2, align 8, !dbg !763, !tbaa !393
+  %cmp = icmp eq i64 %1, %and, !dbg !763
+  br i1 %cmp, label %found, label %for.cond, !dbg !763
 
 for.end:                                          ; preds = %for.cond, %entry
-  %call = tail call noalias i8* @xcalloc(i64 1, i64 2064) #8
-  %2 = bitcast i8* %call to %struct.page_table_chain*
-  %3 = load %struct.page_table_chain** getelementptr inbounds (%struct.globals* @G, i64 0, i32 2), align 8, !tbaa !0
-  %next3 = bitcast i8* %call to %struct.page_table_chain**
-  store %struct.page_table_chain* %3, %struct.page_table_chain** %next3, align 8, !tbaa !0
-  %high_bits4 = getelementptr inbounds i8* %call, i64 8
-  %4 = bitcast i8* %high_bits4 to i64*
-  store i64 %and, i64* %4, align 8, !tbaa !4
-  store %struct.page_table_chain* %2, %struct.page_table_chain** getelementptr inbounds (%struct.globals* @G, i64 0, i32 2), align 8, !tbaa !0
-  br label %found
+  %call = tail call noalias i8* @xcalloc(i64 1, i64 2064) #9, !dbg !764
+  %2 = bitcast i8* %call to %struct.page_table_chain*, !dbg !764
+  tail call void @llvm.dbg.value(metadata !{%struct.page_table_chain* %2}, i64 0, metadata !220), !dbg !764
+  %3 = load %struct.page_table_chain** getelementptr inbounds (%struct.globals* @G, i64 0, i32 2), align 8, !dbg !765, !tbaa !376
+  %next3 = bitcast i8* %call to %struct.page_table_chain**, !dbg !765
+  store %struct.page_table_chain* %3, %struct.page_table_chain** %next3, align 8, !dbg !765, !tbaa !376
+  %high_bits4 = getelementptr inbounds i8* %call, i64 8, !dbg !766
+  %4 = bitcast i8* %high_bits4 to i64*, !dbg !766
+  store i64 %and, i64* %4, align 8, !dbg !766, !tbaa !393
+  store %struct.page_table_chain* %2, %struct.page_table_chain** getelementptr inbounds (%struct.globals* @G, i64 0, i32 2), align 8, !dbg !767, !tbaa !376
+  br label %found, !dbg !767
 
 found:                                            ; preds = %for.body, %for.end
   %table.1 = phi %struct.page_table_chain* [ %2, %for.end ], [ %table.037, %for.body ]
-  %shr = lshr i64 %0, 24
-  %and6 = and i64 %shr, 255
-  %5 = load i64* getelementptr inbounds (%struct.globals* @G, i64 0, i32 4), align 8, !tbaa !4
-  %shr7 = lshr i64 %0, %5
-  %sub = sub i64 24, %5
-  %sh_prom = trunc i64 %sub to i32
-  %shl = shl i32 1, %sh_prom
-  %sub8 = add nsw i32 %shl, -1
-  %conv = sext i32 %sub8 to i64
-  %and9 = and i64 %conv, %shr7
-  %arrayidx10 = getelementptr inbounds %struct.page_table_chain* %table.1, i64 0, i32 2, i64 %and6
-  %6 = load %struct.page_entry*** %arrayidx10, align 8, !tbaa !0
-  %cmp11 = icmp eq %struct.page_entry** %6, null
-  br i1 %cmp11, label %if.then13, label %if.end18
+  %shr = lshr i64 %0, 24, !dbg !768
+  %and6 = and i64 %shr, 255, !dbg !768
+  tail call void @llvm.dbg.value(metadata !{i64 %and6}, i64 0, metadata !218), !dbg !768
+  %5 = load i64* getelementptr inbounds (%struct.globals* @G, i64 0, i32 4), align 8, !dbg !769, !tbaa !393
+  %shr7 = lshr i64 %0, %5, !dbg !769
+  %sub = sub i64 24, %5, !dbg !769
+  %sh_prom = trunc i64 %sub to i32, !dbg !769
+  %shl = shl i32 1, %sh_prom, !dbg !769
+  %sub8 = add nsw i32 %shl, -1, !dbg !769
+  %conv = sext i32 %sub8 to i64, !dbg !769
+  %and9 = and i64 %conv, %shr7, !dbg !769
+  tail call void @llvm.dbg.value(metadata !{i64 %and9}, i64 0, metadata !219), !dbg !769
+  %arrayidx10 = getelementptr inbounds %struct.page_table_chain* %table.1, i64 0, i32 2, i64 %and6, !dbg !770
+  %6 = load %struct.page_entry*** %arrayidx10, align 8, !dbg !770, !tbaa !376
+  %cmp11 = icmp eq %struct.page_entry** %6, null, !dbg !770
+  br i1 %cmp11, label %if.then13, label %if.end18, !dbg !770
 
 if.then13:                                        ; preds = %found
-  %shl15 = shl i64 1, %sub
-  %call16 = tail call noalias i8* @xcalloc(i64 %shl15, i64 8) #8
-  %7 = bitcast i8* %call16 to %struct.page_entry**
-  store %struct.page_entry** %7, %struct.page_entry*** %arrayidx10, align 8, !tbaa !0
-  br label %if.end18
+  %shl15 = shl i64 1, %sub, !dbg !771
+  %call16 = tail call noalias i8* @xcalloc(i64 %shl15, i64 8) #9, !dbg !771
+  %7 = bitcast i8* %call16 to %struct.page_entry**, !dbg !771
+  store %struct.page_entry** %7, %struct.page_entry*** %arrayidx10, align 8, !dbg !771, !tbaa !376
+  br label %if.end18, !dbg !771
 
 if.end18:                                         ; preds = %if.then13, %found
   %8 = phi %struct.page_entry** [ %7, %if.then13 ], [ %6, %found ]
-  %arrayidx20 = getelementptr inbounds %struct.page_entry** %8, i64 %and9
-  store %struct.page_entry* %entry1, %struct.page_entry** %arrayidx20, align 8, !tbaa !0
-  ret void
+  %arrayidx20 = getelementptr inbounds %struct.page_entry** %8, i64 %and9, !dbg !772
+  store %struct.page_entry* %entry1, %struct.page_entry** %arrayidx20, align 8, !dbg !772, !tbaa !376
+  ret void, !dbg !773
 }

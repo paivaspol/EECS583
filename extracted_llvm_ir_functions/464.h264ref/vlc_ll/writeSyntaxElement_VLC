@@ -1,37 +1,42 @@
 define i32 @writeSyntaxElement_VLC(%struct.syntaxelement* nocapture %se, %struct.datapartition* nocapture %this_dataPart) #0 {
 entry:
-  %value1 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1
-  %0 = load i32* %value1, align 4, !tbaa !0
-  %inf = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 4
-  store i32 %0, i32* %inf, align 4, !tbaa !0
-  %value2 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 2
-  %1 = load i32* %value2, align 4, !tbaa !0
-  %len = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 3
-  store i32 %1, i32* %len, align 4, !tbaa !0
-  %bitpattern.i = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 5
-  store i32 0, i32* %bitpattern.i, align 4, !tbaa !0
-  %cmp10.i = icmp sgt i32 %1, 0
-  br i1 %cmp10.i, label %while.body.i, label %symbol2vlc.exit
+  tail call void @llvm.dbg.value(metadata !{%struct.syntaxelement* %se}, i64 0, metadata !256), !dbg !1016
+  tail call void @llvm.dbg.value(metadata !{%struct.datapartition* %this_dataPart}, i64 0, metadata !257), !dbg !1016
+  %value1 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 1, !dbg !1017
+  %0 = load i32* %value1, align 4, !dbg !1017, !tbaa !806
+  %inf = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 4, !dbg !1017
+  store i32 %0, i32* %inf, align 4, !dbg !1017, !tbaa !806
+  %value2 = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 2, !dbg !1018
+  %1 = load i32* %value2, align 4, !dbg !1018, !tbaa !806
+  %len = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 3, !dbg !1018
+  store i32 %1, i32* %len, align 4, !dbg !1018, !tbaa !806
+  tail call void @llvm.dbg.value(metadata !{%struct.syntaxelement* %se}, i64 0, metadata !1019), !dbg !1021
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !1022), !dbg !1023
+  %bitpattern.i = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 5, !dbg !1024
+  store i32 0, i32* %bitpattern.i, align 4, !dbg !1025, !tbaa !806
+  %cmp10.i = icmp sgt i32 %1, 0, !dbg !1026
+  br i1 %cmp10.i, label %while.body.i, label %symbol2vlc.exit, !dbg !1026
 
 while.body.i:                                     ; preds = %entry, %while.body.i
   %dec12.in.i = phi i32 [ %dec12.i, %while.body.i ], [ %1, %entry ]
   %storemerge11.i = phi i32 [ %or.i, %while.body.i ], [ 0, %entry ]
-  %dec12.i = add nsw i32 %dec12.in.i, -1
-  %shl.i = shl i32 %storemerge11.i, 1
-  %shr8.i = lshr i32 %0, %dec12.i
-  %and.i = and i32 %shr8.i, 1
-  %or.i = or i32 %and.i, %shl.i
-  %cmp.i = icmp sgt i32 %dec12.i, 0
-  br i1 %cmp.i, label %while.body.i, label %while.cond.while.end_crit_edge.i
+  %dec12.i = add nsw i32 %dec12.in.i, -1, !dbg !1026
+  %shl.i = shl i32 %storemerge11.i, 1, !dbg !1027
+  %shr8.i = lshr i32 %0, %dec12.i, !dbg !1025
+  %and.i = and i32 %shr8.i, 1, !dbg !1025
+  %or.i = or i32 %and.i, %shl.i, !dbg !1025
+  tail call void @llvm.dbg.value(metadata !{i32 %dec12.i}, i64 0, metadata !1022), !dbg !1026
+  %cmp.i = icmp sgt i32 %dec12.i, 0, !dbg !1026
+  br i1 %cmp.i, label %while.body.i, label %while.cond.while.end_crit_edge.i, !dbg !1026
 
 while.cond.while.end_crit_edge.i:                 ; preds = %while.body.i
-  store i32 %or.i, i32* %bitpattern.i, align 4, !tbaa !0
-  br label %symbol2vlc.exit
+  store i32 %or.i, i32* %bitpattern.i, align 4, !dbg !1025, !tbaa !806
+  br label %symbol2vlc.exit, !dbg !1026
 
 symbol2vlc.exit:                                  ; preds = %entry, %while.cond.while.end_crit_edge.i
-  %bitstream = getelementptr inbounds %struct.datapartition* %this_dataPart, i64 0, i32 0
-  %2 = load %struct.Bitstream** %bitstream, align 8, !tbaa !3
-  tail call void @writeUVLC2buffer(%struct.syntaxelement* %se, %struct.Bitstream* %2) #4
-  %3 = load i32* %len, align 4, !tbaa !0
-  ret i32 %3
+  %bitstream = getelementptr inbounds %struct.datapartition* %this_dataPart, i64 0, i32 0, !dbg !1028
+  %2 = load %struct.Bitstream** %bitstream, align 8, !dbg !1028, !tbaa !810
+  tail call void @writeUVLC2buffer(%struct.syntaxelement* %se, %struct.Bitstream* %2) #6, !dbg !1028
+  %3 = load i32* %len, align 4, !dbg !1029, !tbaa !806
+  ret i32 %3, !dbg !1029
 }

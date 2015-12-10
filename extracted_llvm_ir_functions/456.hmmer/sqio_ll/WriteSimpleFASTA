@@ -1,29 +1,36 @@
 define void @WriteSimpleFASTA(%struct._IO_FILE* nocapture %fp, i8* nocapture %seq, i8* %name, i8* %desc) #0 {
 entry:
   %buf = alloca [61 x i8], align 16
-  %0 = getelementptr inbounds [61 x i8]* %buf, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 61, i8* %0) #5
-  %call = call i64 @strlen(i8* %seq) #9
-  %conv = trunc i64 %call to i32
-  %arrayidx = getelementptr inbounds [61 x i8]* %buf, i64 0, i64 60
-  store i8 0, i8* %arrayidx, align 4, !tbaa !1
-  %cmp = icmp ne i8* %desc, null
-  %cond = select i1 %cmp, i8* %desc, i8* getelementptr inbounds ([1 x i8]* @.str40, i64 0, i64 0)
-  %call2 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([8 x i8]* @.str39, i64 0, i64 0), i8* %name, i8* %cond) #8
-  %cmp313 = icmp sgt i32 %conv, 0
-  br i1 %cmp313, label %for.body, label %for.end
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !406), !dbg !1236
+  call void @llvm.dbg.value(metadata !{i8* %seq}, i64 0, metadata !407), !dbg !1236
+  call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !408), !dbg !1236
+  call void @llvm.dbg.value(metadata !{i8* %desc}, i64 0, metadata !409), !dbg !1236
+  %0 = getelementptr inbounds [61 x i8]* %buf, i64 0, i64 0, !dbg !1237
+  call void @llvm.lifetime.start(i64 61, i8* %0) #6, !dbg !1237
+  call void @llvm.dbg.declare(metadata !{[61 x i8]* %buf}, metadata !410), !dbg !1237
+  %call = call i64 @strlen(i8* %seq) #10, !dbg !1238
+  %conv = trunc i64 %call to i32, !dbg !1238
+  call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !414), !dbg !1238
+  %arrayidx = getelementptr inbounds [61 x i8]* %buf, i64 0, i64 60, !dbg !1239
+  store i8 0, i8* %arrayidx, align 4, !dbg !1239, !tbaa !601
+  %cmp = icmp ne i8* %desc, null, !dbg !1240
+  %cond = select i1 %cmp, i8* %desc, i8* getelementptr inbounds ([1 x i8]* @.str40, i64 0, i64 0), !dbg !1240
+  %call2 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([8 x i8]* @.str39, i64 0, i64 0), i8* %name, i8* %cond) #9, !dbg !1240
+  call void @llvm.dbg.value(metadata !18, i64 0, metadata !415), !dbg !1241
+  %cmp313 = icmp sgt i32 %conv, 0, !dbg !1241
+  br i1 %cmp313, label %for.body, label %for.end, !dbg !1241
 
 for.body:                                         ; preds = %entry, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
-  %add.ptr = getelementptr inbounds i8* %seq, i64 %indvars.iv
-  %call5 = call i8* @strncpy(i8* %0, i8* %add.ptr, i64 60) #8
-  %call7 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([4 x i8]* @.str41, i64 0, i64 0), i8* %0) #8
-  %indvars.iv.next = add i64 %indvars.iv, 60
-  %1 = trunc i64 %indvars.iv.next to i32
-  %cmp3 = icmp slt i32 %1, %conv
-  br i1 %cmp3, label %for.body, label %for.end
+  %add.ptr = getelementptr inbounds i8* %seq, i64 %indvars.iv, !dbg !1243
+  %call5 = call i8* @strncpy(i8* %0, i8* %add.ptr, i64 60) #9, !dbg !1243
+  %call7 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([4 x i8]* @.str41, i64 0, i64 0), i8* %0) #9, !dbg !1245
+  %indvars.iv.next = add i64 %indvars.iv, 60, !dbg !1241
+  %1 = trunc i64 %indvars.iv.next to i32, !dbg !1241
+  %cmp3 = icmp slt i32 %1, %conv, !dbg !1241
+  br i1 %cmp3, label %for.body, label %for.end, !dbg !1241
 
 for.end:                                          ; preds = %for.body, %entry
-  call void @llvm.lifetime.end(i64 61, i8* %0) #5
-  ret void
+  call void @llvm.lifetime.end(i64 61, i8* %0) #6, !dbg !1246
+  ret void, !dbg !1246
 }

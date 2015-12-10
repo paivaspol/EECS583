@@ -1,0 +1,36 @@
+define linkonce_odr void @_ZN11xercesc_2_515BaseRefVectorOfINS_10XercesStepEE17removeLastElementEv(%"class.xercesc_2_5::BaseRefVectorOf"* nocapture %this) unnamed_addr #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf"* %this}, i64 0, metadata !7791), !dbg !10557
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf"* %this, i64 0, i32 2, !dbg !10558
+  %0 = load i32* %fCurCount, align 4, !dbg !10558, !tbaa !8839
+  %tobool = icmp eq i32 %0, 0, !dbg !10558
+  br i1 %tobool, label %if.end6, label %if.end, !dbg !10558
+
+if.end:                                           ; preds = %entry
+  %dec = add i32 %0, -1, !dbg !10559
+  store i32 %dec, i32* %fCurCount, align 4, !dbg !10559, !tbaa !8839
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf"* %this, i64 0, i32 1, !dbg !10560
+  %1 = load i8* %fAdoptedElems, align 1, !dbg !10560, !tbaa !9119, !range !10443
+  %tobool3 = icmp eq i8 %1, 0, !dbg !10560
+  br i1 %tobool3, label %if.end6, label %if.then4, !dbg !10560
+
+if.then4:                                         ; preds = %if.end
+  %idxprom = zext i32 %dec to i64, !dbg !10561
+  %fElemList = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf"* %this, i64 0, i32 4, !dbg !10561
+  %2 = load %"class.xercesc_2_5::XercesStep"*** %fElemList, align 8, !dbg !10561, !tbaa !8842
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::XercesStep"** %2, i64 %idxprom, !dbg !10561
+  %3 = load %"class.xercesc_2_5::XercesStep"** %arrayidx, align 8, !dbg !10561, !tbaa !8842
+  %isnull = icmp eq %"class.xercesc_2_5::XercesStep"* %3, null, !dbg !10561
+  br i1 %isnull, label %if.end6, label %delete.notnull, !dbg !10561
+
+delete.notnull:                                   ; preds = %if.then4
+  %4 = bitcast %"class.xercesc_2_5::XercesStep"* %3 to void (%"class.xercesc_2_5::XercesStep"*)***, !dbg !10561
+  %vtable = load void (%"class.xercesc_2_5::XercesStep"*)*** %4, align 8, !dbg !10561, !tbaa !8849
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::XercesStep"*)** %vtable, i64 1, !dbg !10561
+  %5 = load void (%"class.xercesc_2_5::XercesStep"*)** %vfn, align 8, !dbg !10561
+  tail call void %5(%"class.xercesc_2_5::XercesStep"* %3) #9, !dbg !10561
+  br label %if.end6, !dbg !10561
+
+if.end6:                                          ; preds = %if.end, %entry, %if.then4, %delete.notnull
+  ret void, !dbg !10561
+}

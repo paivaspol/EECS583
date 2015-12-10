@@ -1,23 +1,25 @@
 define void @i386_dwarf_output_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %x) #1 {
 entry:
-  %0 = load i32* @target_flags, align 4, !tbaa !0
-  %and = and i32 %0, 33554432
-  %tobool = icmp ne i32 %and, 0
-  %cond = select i1 %tobool, i8* getelementptr inbounds ([8 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str3, i64 0, i64 0)
-  %1 = tail call i64 @fwrite(i8* %cond, i64 7, i64 1, %struct._IO_FILE* %file)
-  %2 = load i32* @flag_pic, align 4, !tbaa !0
-  %tobool1 = icmp eq i32 %2, 0
-  br i1 %tobool1, label %if.else, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %file}, i64 0, metadata !2673), !dbg !7069
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !2674), !dbg !7070
+  %0 = load i32* @target_flags, align 4, !dbg !7071, !tbaa !4347
+  %and = and i32 %0, 33554432, !dbg !7071
+  %tobool = icmp ne i32 %and, 0, !dbg !7071
+  %cond = select i1 %tobool, i8* getelementptr inbounds ([8 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str3, i64 0, i64 0), !dbg !7071
+  %1 = tail call i64 @fwrite(i8* %cond, i64 7, i64 1, %struct._IO_FILE* %file), !dbg !7071
+  %2 = load i32* @flag_pic, align 4, !dbg !7072, !tbaa !4347
+  %tobool1 = icmp eq i32 %2, 0, !dbg !7072
+  br i1 %tobool1, label %if.else, label %if.then, !dbg !7072
 
 if.then:                                          ; preds = %entry
-  tail call fastcc void @output_pic_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %x, i32 0) #10
-  br label %if.end
+  tail call fastcc void @output_pic_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %x, i32 0) #11, !dbg !7073
+  br label %if.end, !dbg !7073
 
 if.else:                                          ; preds = %entry
-  tail call void @output_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %x) #9
+  tail call void @output_addr_const(%struct._IO_FILE* %file, %struct.rtx_def* %x) #10, !dbg !7074
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
-  %call2 = tail call i32 @fputc(i32 10, %struct._IO_FILE* %file) #9
-  ret void
+  %call2 = tail call i32 @fputc(i32 10, %struct._IO_FILE* %file) #10, !dbg !7075
+  ret void, !dbg !7076
 }

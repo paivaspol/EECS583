@@ -1,46 +1,53 @@
 define i32 @xdr_float(%struct.XDR* %xdrs, float* nocapture %fp) #0 {
+entry:
   %tmp = alloca i64, align 8
-  %tmp1 = alloca i64, align 8
-  %1 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 0
-  %2 = load i32* %1, align 4, !tbaa !2
-  switch i32 %2, label %23 [
-    i32 0, label %3
-    i32 1, label %12
-    i32 2, label %24
-  ]
+  %tmp3 = alloca i64, align 8
+  call void @llvm.dbg.value(metadata !{%struct.XDR* %xdrs}, i64 0, metadata !175), !dbg !481
+  call void @llvm.dbg.value(metadata !{float* %fp}, i64 0, metadata !176), !dbg !482
+  %x_op = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 0, !dbg !483
+  %0 = load i32* %x_op, align 4, !dbg !483, !tbaa !346
+  switch i32 %0, label %sw.epilog [
+    i32 0, label %sw.bb
+    i32 1, label %sw.bb1
+    i32 2, label %return
+  ], !dbg !483
 
-; <label>:3                                       ; preds = %0
-  %4 = bitcast float* %fp to i32*
-  %5 = load i32* %4, align 4, !tbaa !8
-  %6 = sext i32 %5 to i64
-  store i64 %6, i64* %tmp, align 8, !tbaa !9
-  %7 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 1
-  %8 = load %struct.xdr_ops** %7, align 8, !tbaa !11
-  %9 = getelementptr inbounds %struct.xdr_ops* %8, i64 0, i32 1
-  %10 = load i32 (%struct.XDR*, i64*)** %9, align 8, !tbaa !12
-  %11 = call i32 %10(%struct.XDR* %xdrs, i64* %tmp) #6
-  br label %24
+sw.bb:                                            ; preds = %entry
+  call void @llvm.dbg.declare(metadata !{i64* %tmp}, metadata !177), !dbg !484
+  %1 = bitcast float* %fp to i32*, !dbg !484
+  %2 = load i32* %1, align 4, !dbg !484, !tbaa !357
+  %conv = sext i32 %2 to i64, !dbg !484
+  call void @llvm.dbg.value(metadata !{i64 %conv}, i64 0, metadata !177), !dbg !484
+  store i64 %conv, i64* %tmp, align 8, !dbg !484, !tbaa !358
+  %x_ops = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 1, !dbg !485
+  %3 = load %struct.xdr_ops** %x_ops, align 8, !dbg !485, !tbaa !360
+  %x_putlong = getelementptr inbounds %struct.xdr_ops* %3, i64 0, i32 1, !dbg !485
+  %4 = load i32 (%struct.XDR*, i64*)** %x_putlong, align 8, !dbg !485, !tbaa !360
+  %call = call i32 %4(%struct.XDR* %xdrs, i64* %tmp) #6, !dbg !485
+  br label %return, !dbg !485
 
-; <label>:12                                      ; preds = %0
-  %13 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 1
-  %14 = load %struct.xdr_ops** %13, align 8, !tbaa !11
-  %15 = getelementptr inbounds %struct.xdr_ops* %14, i64 0, i32 0
-  %16 = load i32 (%struct.XDR*, i64*)** %15, align 8, !tbaa !14
-  %17 = call i32 %16(%struct.XDR* %xdrs, i64* %tmp1) #6
-  %18 = icmp eq i32 %17, 0
-  br i1 %18, label %23, label %19
+sw.bb1:                                           ; preds = %entry
+  call void @llvm.dbg.declare(metadata !{i64* %tmp3}, metadata !180), !dbg !486
+  %x_ops4 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 1, !dbg !487
+  %5 = load %struct.xdr_ops** %x_ops4, align 8, !dbg !487, !tbaa !360
+  %x_getlong = getelementptr inbounds %struct.xdr_ops* %5, i64 0, i32 0, !dbg !487
+  %6 = load i32 (%struct.XDR*, i64*)** %x_getlong, align 8, !dbg !487, !tbaa !360
+  %call5 = call i32 %6(%struct.XDR* %xdrs, i64* %tmp3) #6, !dbg !487
+  %tobool = icmp eq i32 %call5, 0, !dbg !487
+  br i1 %tobool, label %sw.epilog, label %if.then, !dbg !487
 
-; <label>:19                                      ; preds = %12
-  %20 = load i64* %tmp1, align 8, !tbaa !9
-  %21 = trunc i64 %20 to i32
-  %22 = bitcast float* %fp to i32*
-  store i32 %21, i32* %22, align 4, !tbaa !8
-  br label %24
+if.then:                                          ; preds = %sw.bb1
+  call void @llvm.dbg.value(metadata !{i64* %tmp3}, i64 0, metadata !180), !dbg !488
+  %7 = load i64* %tmp3, align 8, !dbg !488, !tbaa !358
+  %conv6 = trunc i64 %7 to i32, !dbg !488
+  %8 = bitcast float* %fp to i32*, !dbg !488
+  store i32 %conv6, i32* %8, align 4, !dbg !488, !tbaa !357
+  br label %return, !dbg !490
 
-; <label>:23                                      ; preds = %12, %0
-  br label %24
+sw.epilog:                                        ; preds = %sw.bb1, %entry
+  br label %return, !dbg !491
 
-; <label>:24                                      ; preds = %0, %23, %19, %3
-  %.0 = phi i32 [ 0, %23 ], [ 1, %19 ], [ %11, %3 ], [ 1, %0 ]
-  ret i32 %.0
+return:                                           ; preds = %entry, %sw.epilog, %if.then, %sw.bb
+  %retval.0 = phi i32 [ 0, %sw.epilog ], [ 1, %if.then ], [ %call, %sw.bb ], [ 1, %entry ]
+  ret i32 %retval.0, !dbg !492
 }

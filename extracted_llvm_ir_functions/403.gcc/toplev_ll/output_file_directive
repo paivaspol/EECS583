@@ -1,25 +1,28 @@
 define void @output_file_directive(%struct._IO_FILE* nocapture %asm_file, i8* %input_name) #0 {
 entry:
-  %call = tail call i64 @strlen(i8* %input_name) #12
-  %sext = shl i64 %call, 32
-  %idx.ext = ashr exact i64 %sext, 32
-  %add.ptr = getelementptr inbounds i8* %input_name, i64 %idx.ext
-  br label %while.cond
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %asm_file}, i64 0, metadata !834), !dbg !2153
+  tail call void @llvm.dbg.value(metadata !{i8* %input_name}, i64 0, metadata !835), !dbg !2154
+  %call = tail call i64 @strlen(i8* %input_name) #13, !dbg !2155
+  %sext = shl i64 %call, 32, !dbg !2156
+  %idx.ext = ashr exact i64 %sext, 32, !dbg !2156
+  %add.ptr = getelementptr inbounds i8* %input_name, i64 %idx.ext, !dbg !2156
+  tail call void @llvm.dbg.value(metadata !{i8* %add.ptr}, i64 0, metadata !837), !dbg !2156
+  br label %while.cond, !dbg !2157
 
 while.cond:                                       ; preds = %while.body, %entry
   %na.0 = phi i8* [ %add.ptr, %entry ], [ %arrayidx, %while.body ]
-  %cmp = icmp ugt i8* %na.0, %input_name
-  br i1 %cmp, label %while.body, label %while.end
+  %cmp = icmp ugt i8* %na.0, %input_name, !dbg !2157
+  br i1 %cmp, label %while.body, label %while.end, !dbg !2157
 
 while.body:                                       ; preds = %while.cond
-  %arrayidx = getelementptr inbounds i8* %na.0, i64 -1
-  %0 = load i8* %arrayidx, align 1, !tbaa !1
-  %cmp3 = icmp eq i8 %0, 47
-  br i1 %cmp3, label %while.end, label %while.cond
+  %arrayidx = getelementptr inbounds i8* %na.0, i64 -1, !dbg !2158
+  %0 = load i8* %arrayidx, align 1, !dbg !2158, !tbaa !2060
+  %cmp3 = icmp eq i8 %0, 47, !dbg !2158
+  br i1 %cmp3, label %while.end, label %while.cond, !dbg !2158
 
 while.end:                                        ; preds = %while.body, %while.cond
-  %1 = tail call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str3, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %asm_file)
-  tail call void @output_quoted_string(%struct._IO_FILE* %asm_file, i8* %na.0) #15
-  %call6 = tail call i32 @fputc(i32 10, %struct._IO_FILE* %asm_file) #11
-  ret void
+  %1 = tail call i64 @fwrite(i8* getelementptr inbounds ([8 x i8]* @.str3, i64 0, i64 0), i64 7, i64 1, %struct._IO_FILE* %asm_file), !dbg !2160
+  tail call void @output_quoted_string(%struct._IO_FILE* %asm_file, i8* %na.0) #16, !dbg !2161
+  %call6 = tail call i32 @fputc(i32 10, %struct._IO_FILE* %asm_file) #12, !dbg !2162
+  ret void, !dbg !2163
 }

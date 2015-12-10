@@ -1,94 +1,99 @@
 define i32 @validate_change(%struct.rtx_def* %object, %struct.rtx_def** %loc, %struct.rtx_def* %new, i32 %in_group) #0 {
 entry:
-  %0 = load %struct.rtx_def** %loc, align 8, !tbaa !3
-  %cmp = icmp eq %struct.rtx_def* %0, %new
-  br i1 %cmp, label %return, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %object}, i64 0, metadata !532), !dbg !1534
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %loc}, i64 0, metadata !533), !dbg !1535
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %new}, i64 0, metadata !534), !dbg !1536
+  tail call void @llvm.dbg.value(metadata !{i32 %in_group}, i64 0, metadata !535), !dbg !1537
+  %0 = load %struct.rtx_def** %loc, align 8, !dbg !1538, !tbaa !1177
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %0}, i64 0, metadata !536), !dbg !1538
+  %cmp = icmp eq %struct.rtx_def* %0, %new, !dbg !1539
+  br i1 %cmp, label %return, label %lor.lhs.false, !dbg !1539
 
 lor.lhs.false:                                    ; preds = %entry
-  %call = tail call i32 @rtx_equal_p(%struct.rtx_def* %0, %struct.rtx_def* %new) #6
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %if.end, label %return
+  %call = tail call i32 @rtx_equal_p(%struct.rtx_def* %0, %struct.rtx_def* %new) #7, !dbg !1539
+  %tobool = icmp eq i32 %call, 0, !dbg !1539
+  br i1 %tobool, label %if.end, label %return, !dbg !1539
 
 if.end:                                           ; preds = %lor.lhs.false
-  %cmp1 = icmp eq i32 %in_group, 0
-  %1 = load i32* @num_changes, align 4, !tbaa !0
-  %cmp2 = icmp ne i32 %1, 0
-  %or.cond = and i1 %cmp1, %cmp2
-  br i1 %or.cond, label %if.then3, label %if.end4
+  %cmp1 = icmp eq i32 %in_group, 0, !dbg !1540
+  %1 = load i32* @num_changes, align 4, !dbg !1540, !tbaa !1168
+  %cmp2 = icmp ne i32 %1, 0, !dbg !1540
+  %or.cond = and i1 %cmp1, %cmp2, !dbg !1540
+  br i1 %or.cond, label %if.then3, label %if.end4, !dbg !1540
 
 if.then3:                                         ; preds = %if.end
-  tail call void @fancy_abort(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 216, i8* getelementptr inbounds ([16 x i8]* @__FUNCTION__.validate_change, i64 0, i64 0)) #8
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([49 x i8]* @.str, i64 0, i64 0), i32 216, i8* getelementptr inbounds ([16 x i8]* @__FUNCTION__.validate_change, i64 0, i64 0)) #9, !dbg !1541
+  unreachable, !dbg !1541
 
 if.end4:                                          ; preds = %if.end
-  store %struct.rtx_def* %new, %struct.rtx_def** %loc, align 8, !tbaa !3
-  %2 = load i32* @changes_allocated, align 4, !tbaa !0
-  %cmp5 = icmp slt i32 %1, %2
-  br i1 %cmp5, label %if.end4.if.end12_crit_edge, label %if.then6
+  store %struct.rtx_def* %new, %struct.rtx_def** %loc, align 8, !dbg !1542, !tbaa !1177
+  %2 = load i32* @changes_allocated, align 4, !dbg !1543, !tbaa !1168
+  %cmp5 = icmp slt i32 %1, %2, !dbg !1543
+  br i1 %cmp5, label %if.end4.if.end12_crit_edge, label %if.then6, !dbg !1543
 
 if.end4.if.end12_crit_edge:                       ; preds = %if.end4
-  %.pre48 = load %struct.change_t** @changes, align 8, !tbaa !3
-  br label %if.end12
+  %.pre48 = load %struct.change_t** @changes, align 8, !dbg !1544, !tbaa !1177
+  br label %if.end12, !dbg !1543
 
 if.then6:                                         ; preds = %if.end4
-  %cmp7 = icmp eq i32 %2, 0
-  %mul = shl nsw i32 %2, 1
-  %storemerge = select i1 %cmp7, i32 150, i32 %mul
-  store i32 %storemerge, i32* @changes_allocated, align 4, !tbaa !0
-  %3 = load %struct.change_t** @changes, align 8, !tbaa !3
-  %4 = bitcast %struct.change_t* %3 to i8*
-  %conv = sext i32 %storemerge to i64
-  %mul10 = shl nsw i64 %conv, 5
-  %call11 = tail call i8* @xrealloc(i8* %4, i64 %mul10) #6
-  %5 = bitcast i8* %call11 to %struct.change_t*
-  store %struct.change_t* %5, %struct.change_t** @changes, align 8, !tbaa !3
-  %.pre = load i32* @num_changes, align 4, !tbaa !0
-  br label %if.end12
+  %cmp7 = icmp eq i32 %2, 0, !dbg !1545
+  %mul = shl nsw i32 %2, 1, !dbg !1547
+  %storemerge = select i1 %cmp7, i32 150, i32 %mul, !dbg !1545
+  store i32 %storemerge, i32* @changes_allocated, align 4, !dbg !1548, !tbaa !1168
+  %3 = load %struct.change_t** @changes, align 8, !dbg !1549, !tbaa !1177
+  %4 = bitcast %struct.change_t* %3 to i8*, !dbg !1549
+  %conv = sext i32 %storemerge to i64, !dbg !1549
+  %mul10 = shl nsw i64 %conv, 5, !dbg !1549
+  %call11 = tail call i8* @xrealloc(i8* %4, i64 %mul10) #7, !dbg !1549
+  %5 = bitcast i8* %call11 to %struct.change_t*, !dbg !1549
+  store %struct.change_t* %5, %struct.change_t** @changes, align 8, !dbg !1549, !tbaa !1177
+  %.pre = load i32* @num_changes, align 4, !dbg !1544, !tbaa !1168
+  br label %if.end12, !dbg !1550
 
 if.end12:                                         ; preds = %if.end4.if.end12_crit_edge, %if.then6
   %6 = phi %struct.change_t* [ %.pre48, %if.end4.if.end12_crit_edge ], [ %5, %if.then6 ]
   %7 = phi i32 [ %1, %if.end4.if.end12_crit_edge ], [ %.pre, %if.then6 ]
-  %idxprom = sext i32 %7 to i64
-  %object13 = getelementptr inbounds %struct.change_t* %6, i64 %idxprom, i32 0
-  store %struct.rtx_def* %object, %struct.rtx_def** %object13, align 8, !tbaa !3
-  %8 = load %struct.change_t** @changes, align 8, !tbaa !3
-  %loc16 = getelementptr inbounds %struct.change_t* %8, i64 %idxprom, i32 2
-  store %struct.rtx_def** %loc, %struct.rtx_def*** %loc16, align 8, !tbaa !3
-  %9 = load %struct.change_t** @changes, align 8, !tbaa !3
-  %old19 = getelementptr inbounds %struct.change_t* %9, i64 %idxprom, i32 3
-  store %struct.rtx_def* %0, %struct.rtx_def** %old19, align 8, !tbaa !3
-  %tobool20 = icmp eq %struct.rtx_def* %object, null
-  br i1 %tobool20, label %if.end31, label %land.lhs.true21
+  %idxprom = sext i32 %7 to i64, !dbg !1544
+  %object13 = getelementptr inbounds %struct.change_t* %6, i64 %idxprom, i32 0, !dbg !1544
+  store %struct.rtx_def* %object, %struct.rtx_def** %object13, align 8, !dbg !1544, !tbaa !1177
+  %8 = load %struct.change_t** @changes, align 8, !dbg !1551, !tbaa !1177
+  %loc16 = getelementptr inbounds %struct.change_t* %8, i64 %idxprom, i32 2, !dbg !1551
+  store %struct.rtx_def** %loc, %struct.rtx_def*** %loc16, align 8, !dbg !1551, !tbaa !1177
+  %9 = load %struct.change_t** @changes, align 8, !dbg !1552, !tbaa !1177
+  %old19 = getelementptr inbounds %struct.change_t* %9, i64 %idxprom, i32 3, !dbg !1552
+  store %struct.rtx_def* %0, %struct.rtx_def** %old19, align 8, !dbg !1552, !tbaa !1177
+  %tobool20 = icmp eq %struct.rtx_def* %object, null, !dbg !1553
+  br i1 %tobool20, label %if.end31, label %land.lhs.true21, !dbg !1553
 
 land.lhs.true21:                                  ; preds = %if.end12
-  %10 = bitcast %struct.rtx_def* %object to i32*
-  %bf.load = load i32* %10, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp22 = icmp eq i32 %bf.clear, 66
-  br i1 %cmp22, label %if.end31, label %if.then24
+  %10 = bitcast %struct.rtx_def* %object to i32*, !dbg !1553
+  %bf.load = load i32* %10, align 8, !dbg !1553
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1553
+  %cmp22 = icmp eq i32 %bf.clear, 66, !dbg !1553
+  br i1 %cmp22, label %if.end31, label %if.then24, !dbg !1553
 
 if.then24:                                        ; preds = %land.lhs.true21
-  %arrayidx25 = getelementptr inbounds %struct.rtx_def* %object, i64 0, i32 1, i64 4
-  %rtint = bitcast %union.rtunion_def* %arrayidx25 to i32*
-  %11 = load i32* %rtint, align 4, !tbaa !0
-  %12 = load %struct.change_t** @changes, align 8, !tbaa !3
-  %old_code = getelementptr inbounds %struct.change_t* %12, i64 %idxprom, i32 1
-  store i32 %11, i32* %old_code, align 4, !tbaa !0
-  store i32 -1, i32* %rtint, align 4, !tbaa !0
-  %.pre47 = load i32* @num_changes, align 4, !tbaa !0
-  br label %if.end31
+  %arrayidx25 = getelementptr inbounds %struct.rtx_def* %object, i64 0, i32 1, i64 4, !dbg !1554
+  %rtint = bitcast %union.rtunion_def* %arrayidx25 to i32*, !dbg !1554
+  %11 = load i32* %rtint, align 4, !dbg !1554, !tbaa !1168
+  %12 = load %struct.change_t** @changes, align 8, !dbg !1554, !tbaa !1177
+  %old_code = getelementptr inbounds %struct.change_t* %12, i64 %idxprom, i32 1, !dbg !1554
+  store i32 %11, i32* %old_code, align 4, !dbg !1554, !tbaa !1168
+  store i32 -1, i32* %rtint, align 4, !dbg !1556, !tbaa !1168
+  %.pre47 = load i32* @num_changes, align 4, !dbg !1557, !tbaa !1168
+  br label %if.end31, !dbg !1558
 
 if.end31:                                         ; preds = %land.lhs.true21, %if.end12, %if.then24
   %13 = phi i32 [ %7, %land.lhs.true21 ], [ %7, %if.end12 ], [ %.pre47, %if.then24 ]
-  %inc = add nsw i32 %13, 1
-  store i32 %inc, i32* @num_changes, align 4, !tbaa !0
-  br i1 %cmp1, label %if.else34, label %return
+  %inc = add nsw i32 %13, 1, !dbg !1557
+  store i32 %inc, i32* @num_changes, align 4, !dbg !1557, !tbaa !1168
+  br i1 %cmp1, label %if.else34, label %return, !dbg !1559
 
 if.else34:                                        ; preds = %if.end31
-  %call35 = tail call i32 @apply_change_group() #7
-  br label %return
+  %call35 = tail call i32 @apply_change_group() #8, !dbg !1560
+  br label %return, !dbg !1560
 
 return:                                           ; preds = %if.end31, %entry, %lor.lhs.false, %if.else34
   %retval.0 = phi i32 [ %call35, %if.else34 ], [ 1, %lor.lhs.false ], [ 1, %entry ], [ 1, %if.end31 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1561
 }

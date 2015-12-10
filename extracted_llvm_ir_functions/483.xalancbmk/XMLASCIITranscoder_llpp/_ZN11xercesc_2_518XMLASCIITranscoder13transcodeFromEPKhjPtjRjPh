@@ -1,0 +1,86 @@
+define i32 @_ZN11xercesc_2_518XMLASCIITranscoder13transcodeFromEPKhjPtjRjPh(%"class.xercesc_2_5::XMLASCIITranscoder"* nocapture %this, i8* nocapture %srcData, i32 %srcCount, i16* nocapture %toFill, i32 %maxChars, i32* nocapture %bytesEaten, i8* nocapture %charSizes) unnamed_addr #1 align 2 {
+entry:
+  %tmpBuf = alloca [17 x i16], align 16
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLASCIITranscoder"* %this}, i64 0, metadata !674), !dbg !916
+  call void @llvm.dbg.value(metadata !{i8* %srcData}, i64 0, metadata !675), !dbg !916
+  call void @llvm.dbg.value(metadata !{i32 %srcCount}, i64 0, metadata !676), !dbg !917
+  call void @llvm.dbg.value(metadata !{i16* %toFill}, i64 0, metadata !677), !dbg !918
+  call void @llvm.dbg.value(metadata !{i32 %maxChars}, i64 0, metadata !678), !dbg !919
+  call void @llvm.dbg.value(metadata !{i32* %bytesEaten}, i64 0, metadata !679), !dbg !920
+  call void @llvm.dbg.value(metadata !{i8* %charSizes}, i64 0, metadata !680), !dbg !921
+  %cmp = icmp ult i32 %srcCount, %maxChars, !dbg !922
+  %cond = select i1 %cmp, i32 %srcCount, i32 %maxChars, !dbg !922
+  call void @llvm.dbg.value(metadata !{i32 %cond}, i64 0, metadata !681), !dbg !922
+  call void @llvm.dbg.value(metadata !{i8* %srcData}, i64 0, metadata !682), !dbg !923
+  call void @llvm.dbg.value(metadata !{i16* %toFill}, i64 0, metadata !683), !dbg !924
+  call void @llvm.dbg.value(metadata !584, i64 0, metadata !684), !dbg !925
+  %cmp230 = icmp eq i32 %cond, 0, !dbg !926
+  br i1 %cmp230, label %for.end, label %for.body, !dbg !926
+
+for.body:                                         ; preds = %entry, %if.then
+  %srcPtr.033 = phi i8* [ %incdec.ptr, %if.then ], [ %srcData, %entry ]
+  %outPtr.032 = phi i16* [ %incdec.ptr5, %if.then ], [ %toFill, %entry ]
+  %countDone.031 = phi i32 [ %inc, %if.then ], [ 0, %entry ]
+  %0 = load i8* %srcPtr.033, align 1, !dbg !927, !tbaa !928
+  %cmp3 = icmp sgt i8 %0, -1, !dbg !927
+  br i1 %cmp3, label %if.then, label %if.end, !dbg !927
+
+if.then:                                          ; preds = %for.body
+  %incdec.ptr = getelementptr inbounds i8* %srcPtr.033, i64 1, !dbg !929
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !682), !dbg !929
+  %conv4 = zext i8 %0 to i16, !dbg !929
+  %incdec.ptr5 = getelementptr inbounds i16* %outPtr.032, i64 1, !dbg !929
+  call void @llvm.dbg.value(metadata !{i16* %incdec.ptr5}, i64 0, metadata !683), !dbg !929
+  store i16 %conv4, i16* %outPtr.032, align 2, !dbg !929, !tbaa !931
+  %inc = add i32 %countDone.031, 1, !dbg !926
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !684), !dbg !926
+  %cmp2 = icmp ult i32 %inc, %cond, !dbg !926
+  br i1 %cmp2, label %for.body, label %for.end, !dbg !926
+
+if.end:                                           ; preds = %for.body
+  %cmp6 = icmp ugt i32 %countDone.031, 32, !dbg !932
+  br i1 %cmp6, label %for.end, label %if.end8, !dbg !932
+
+if.end8:                                          ; preds = %if.end
+  %1 = bitcast [17 x i16]* %tmpBuf to i8*, !dbg !933
+  call void @llvm.lifetime.start(i64 34, i8* %1) #4, !dbg !933
+  call void @llvm.dbg.declare(metadata !{[17 x i16]* %tmpBuf}, metadata !685), !dbg !933
+  %conv9 = zext i8 %0 to i32, !dbg !934
+  %arraydecay = getelementptr inbounds [17 x i16]* %tmpBuf, i64 0, i64 0, !dbg !934
+  %fMemoryManager.i = getelementptr inbounds %"class.xercesc_2_5::XMLASCIITranscoder"* %this, i64 0, i32 0, i32 3, !dbg !935
+  %2 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager.i, align 8, !dbg !935, !tbaa !938
+  call void @_ZN11xercesc_2_59XMLString9binToTextEjPtjjPNS_13MemoryManagerE(i32 %conv9, i16* %arraydecay, i32 16, i32 16, %"class.xercesc_2_5::MemoryManager"* %2) #6, !dbg !937
+  %exception = call i8* @__cxa_allocate_exception(i64 48) #4, !dbg !939
+  %3 = bitcast i8* %exception to %"class.xercesc_2_5::TranscodingException"*, !dbg !939
+  %fEncodingName.i = getelementptr inbounds %"class.xercesc_2_5::XMLASCIITranscoder"* %this, i64 0, i32 0, i32 2, !dbg !940
+  %4 = load i16** %fEncodingName.i, align 8, !dbg !940, !tbaa !938
+  %5 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager.i, align 8, !dbg !942, !tbaa !938
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::TranscodingException"* %3}, i64 0, metadata !943), !dbg !944
+  call void @llvm.dbg.value(metadata !945, i64 0, metadata !946), !dbg !944
+  call void @llvm.dbg.value(metadata !947, i64 0, metadata !948), !dbg !944
+  call void @llvm.dbg.value(metadata !949, i64 0, metadata !950), !dbg !944
+  call void @llvm.dbg.value(metadata !{i16* %arraydecay}, i64 0, metadata !951), !dbg !944
+  call void @llvm.dbg.value(metadata !{i16* %4}, i64 0, metadata !952), !dbg !944
+  call void @llvm.dbg.value(metadata !953, i64 0, metadata !954), !dbg !944
+  call void @llvm.dbg.value(metadata !953, i64 0, metadata !955), !dbg !944
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %5}, i64 0, metadata !956), !dbg !944
+  invoke void @_ZN11xercesc_2_520TranscodingExceptionC2EPKcjNS_10XMLExcepts5CodesEPKtS6_S6_S6_PNS_13MemoryManagerE(%"class.xercesc_2_5::TranscodingException"* %3, i8* getelementptr inbounds ([70 x i8]* @.str, i64 0, i64 0), i32 141, i32 90, i16* %arraydecay, i16* %4, i16* null, i16* null, %"class.xercesc_2_5::MemoryManager"* %5) #6
+          to label %invoke.cont14 unwind label %lpad
+
+invoke.cont14:                                    ; preds = %if.end8
+  call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_520TranscodingExceptionE to i8*), i8* bitcast (void (%"class.xercesc_2_5::TranscodingException"*)* @_ZN11xercesc_2_520TranscodingExceptionD1Ev to i8*)) #8, !dbg !939
+  unreachable, !dbg !939
+
+lpad:                                             ; preds = %if.end8
+  %6 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !939
+  call void @__cxa_free_exception(i8* %exception) #4, !dbg !939
+  resume { i8*, i32 } %6, !dbg !939
+
+for.end:                                          ; preds = %entry, %if.then, %if.end
+  %countDone.028 = phi i32 [ %countDone.031, %if.end ], [ 0, %entry ], [ %inc, %if.then ]
+  store i32 %countDone.028, i32* %bytesEaten, align 4, !dbg !957, !tbaa !958
+  %conv15 = zext i32 %countDone.028 to i64, !dbg !959
+  call void @llvm.memset.p0i8.i64(i8* %charSizes, i8 1, i64 %conv15, i32 1, i1 false), !dbg !959
+  ret i32 %countDone.028, !dbg !960
+}

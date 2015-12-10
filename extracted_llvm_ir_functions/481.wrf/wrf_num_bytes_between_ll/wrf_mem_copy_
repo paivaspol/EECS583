@@ -1,21 +1,29 @@
-define i32 @wrf_mem_copy_(i8* nocapture readonly %a, i8* nocapture %b, i32* nocapture readonly %n) #0 {
-  %1 = load i32* %n, align 4, !tbaa !2
-  %2 = icmp sgt i32 %1, 0
-  br i1 %2, label %.lr.ph, label %._crit_edge
+define i32 @wrf_mem_copy_(i8* nocapture %a, i8* nocapture %b, i32* nocapture %n) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %a}, i64 0, metadata !30), !dbg !50
+  tail call void @llvm.dbg.value(metadata !{i8* %b}, i64 0, metadata !31), !dbg !51
+  tail call void @llvm.dbg.value(metadata !{i32* %n}, i64 0, metadata !32), !dbg !52
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !33), !dbg !53
+  %0 = load i32* %n, align 4, !dbg !53, !tbaa !39
+  %cmp3 = icmp sgt i32 %0, 0, !dbg !53
+  br i1 %cmp3, label %for.body, label %for.end, !dbg !53
 
-.lr.ph:                                           ; preds = %0, %.lr.ph
-  %i.04 = phi i32 [ %6, %.lr.ph ], [ 0, %0 ]
-  %.03 = phi i8* [ %3, %.lr.ph ], [ %a, %0 ]
-  %.012 = phi i8* [ %5, %.lr.ph ], [ %b, %0 ]
-  %3 = getelementptr inbounds i8* %.03, i64 1
-  %4 = load i8* %.03, align 1, !tbaa !8
-  %5 = getelementptr inbounds i8* %.012, i64 1
-  store i8 %4, i8* %.012, align 1, !tbaa !8
-  %6 = add nuw nsw i32 %i.04, 1
-  %7 = load i32* %n, align 4, !tbaa !2
-  %8 = icmp slt i32 %6, %7
-  br i1 %8, label %.lr.ph, label %._crit_edge
+for.body:                                         ; preds = %entry, %for.body
+  %i.06 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
+  %a.addr.05 = phi i8* [ %incdec.ptr, %for.body ], [ %a, %entry ]
+  %b.addr.04 = phi i8* [ %incdec.ptr1, %for.body ], [ %b, %entry ]
+  %incdec.ptr = getelementptr inbounds i8* %a.addr.05, i64 1, !dbg !55
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !30), !dbg !55
+  %1 = load i8* %a.addr.05, align 1, !dbg !55, !tbaa !40
+  %incdec.ptr1 = getelementptr inbounds i8* %b.addr.04, i64 1, !dbg !55
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr1}, i64 0, metadata !31), !dbg !55
+  store i8 %1, i8* %b.addr.04, align 1, !dbg !55, !tbaa !40
+  %inc = add nsw i32 %i.06, 1, !dbg !53
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !33), !dbg !53
+  %2 = load i32* %n, align 4, !dbg !53, !tbaa !39
+  %cmp = icmp slt i32 %inc, %2, !dbg !53
+  br i1 %cmp, label %for.body, label %for.end, !dbg !53
 
-._crit_edge:                                      ; preds = %.lr.ph, %0
-  ret i32 undef
+for.end:                                          ; preds = %for.body, %entry
+  ret i32 undef, !dbg !57
 }

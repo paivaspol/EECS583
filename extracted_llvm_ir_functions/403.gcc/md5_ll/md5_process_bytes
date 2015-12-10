@@ -1,68 +1,77 @@
 define void @md5_process_bytes(i8* %buffer, i64 %len, %struct.md5_ctx* %ctx) #0 {
 entry:
-  %buflen = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 5
-  %0 = load i32* %buflen, align 4, !tbaa !0
-  %cmp = icmp eq i32 %0, 0
-  br i1 %cmp, label %if.end28, label %if.then
+  tail call void @llvm.dbg.value(metadata !{i8* %buffer}, i64 0, metadata !133), !dbg !394
+  tail call void @llvm.dbg.value(metadata !{i64 %len}, i64 0, metadata !134), !dbg !395
+  tail call void @llvm.dbg.value(metadata !{%struct.md5_ctx* %ctx}, i64 0, metadata !135), !dbg !396
+  %buflen = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 5, !dbg !397
+  %0 = load i32* %buflen, align 4, !dbg !397, !tbaa !173
+  %cmp = icmp eq i32 %0, 0, !dbg !397
+  br i1 %cmp, label %if.end28, label %if.then, !dbg !397
 
 if.then:                                          ; preds = %entry
-  %conv = zext i32 %0 to i64
-  %sub = sub i64 128, %conv
-  %cmp2 = icmp ugt i64 %sub, %len
-  %len.sub = select i1 %cmp2, i64 %len, i64 %sub
-  %arrayidx = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 %conv
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %arrayidx, i8* %buffer, i64 %len.sub, i32 1, i1 false)
-  %1 = load i32* %buflen, align 4, !tbaa !0
-  %conv7 = zext i32 %1 to i64
-  %add8 = add i64 %conv7, %len.sub
-  %conv9 = trunc i64 %add8 to i32
-  store i32 %conv9, i32* %buflen, align 4, !tbaa !0
-  %add10 = add i64 %len.sub, %conv
-  %cmp11 = icmp ugt i64 %add10, 64
-  br i1 %cmp11, label %if.then13, label %if.end
+  %conv = zext i32 %0 to i64, !dbg !398
+  tail call void @llvm.dbg.value(metadata !{i64 %conv}, i64 0, metadata !136), !dbg !398
+  %sub = sub i64 128, %conv, !dbg !399
+  %cmp2 = icmp ugt i64 %sub, %len, !dbg !399
+  %len.sub = select i1 %cmp2, i64 %len, i64 %sub, !dbg !399
+  tail call void @llvm.dbg.value(metadata !{i64 %len.sub}, i64 0, metadata !138), !dbg !399
+  %arrayidx = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 %conv, !dbg !400
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %arrayidx, i8* %buffer, i64 %len.sub, i32 1, i1 false), !dbg !400
+  %1 = load i32* %buflen, align 4, !dbg !401, !tbaa !173
+  %conv7 = zext i32 %1 to i64, !dbg !401
+  %add8 = add i64 %conv7, %len.sub, !dbg !401
+  %conv9 = trunc i64 %add8 to i32, !dbg !401
+  store i32 %conv9, i32* %buflen, align 4, !dbg !401, !tbaa !173
+  %add10 = add i64 %len.sub, %conv, !dbg !402
+  %cmp11 = icmp ugt i64 %add10, 64, !dbg !402
+  br i1 %cmp11, label %if.then13, label %if.end, !dbg !402
 
 if.then13:                                        ; preds = %if.then
-  %arraydecay = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 0
-  %and = and i64 %add10, -64
-  tail call void @md5_process_block(i8* %arraydecay, i64 %and, %struct.md5_ctx* %ctx) #5
-  %arrayidx20 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 %and
-  %and22 = and i64 %add10, 63
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %arraydecay, i8* %arrayidx20, i64 %and22, i32 1, i1 false)
-  %conv25 = trunc i64 %and22 to i32
-  store i32 %conv25, i32* %buflen, align 4, !tbaa !0
-  br label %if.end
+  %arraydecay = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 0, !dbg !403
+  %and = and i64 %add10, -64, !dbg !403
+  tail call void @md5_process_block(i8* %arraydecay, i64 %and, %struct.md5_ctx* %ctx) #5, !dbg !403
+  %arrayidx20 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 %and, !dbg !405
+  %and22 = and i64 %add10, 63, !dbg !405
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %arraydecay, i8* %arrayidx20, i64 %and22, i32 1, i1 false), !dbg !405
+  %conv25 = trunc i64 %and22 to i32, !dbg !406
+  store i32 %conv25, i32* %buflen, align 4, !dbg !406, !tbaa !173
+  br label %if.end, !dbg !407
 
 if.end:                                           ; preds = %if.then13, %if.then
-  %add.ptr = getelementptr inbounds i8* %buffer, i64 %len.sub
-  %sub27 = sub i64 %len, %len.sub
-  br label %if.end28
+  %add.ptr = getelementptr inbounds i8* %buffer, i64 %len.sub, !dbg !408
+  tail call void @llvm.dbg.value(metadata !{i8* %add.ptr}, i64 0, metadata !133), !dbg !408
+  %sub27 = sub i64 %len, %len.sub, !dbg !409
+  tail call void @llvm.dbg.value(metadata !{i64 %sub27}, i64 0, metadata !134), !dbg !409
+  br label %if.end28, !dbg !410
 
 if.end28:                                         ; preds = %entry, %if.end
   %len.addr.0 = phi i64 [ %sub27, %if.end ], [ %len, %entry ]
   %buffer.addr.0 = phi i8* [ %add.ptr, %if.end ], [ %buffer, %entry ]
-  %cmp29 = icmp ugt i64 %len.addr.0, 64
-  br i1 %cmp29, label %if.then31, label %if.end36
+  %cmp29 = icmp ugt i64 %len.addr.0, 64, !dbg !411
+  br i1 %cmp29, label %if.then31, label %if.end36, !dbg !411
 
 if.then31:                                        ; preds = %if.end28
-  %and32 = and i64 %len.addr.0, -64
-  tail call void @md5_process_block(i8* %buffer.addr.0, i64 %and32, %struct.md5_ctx* %ctx) #5
-  %add.ptr34 = getelementptr inbounds i8* %buffer.addr.0, i64 %and32
-  %and35 = and i64 %len.addr.0, 63
-  br label %if.end36
+  %and32 = and i64 %len.addr.0, -64, !dbg !412
+  tail call void @md5_process_block(i8* %buffer.addr.0, i64 %and32, %struct.md5_ctx* %ctx) #5, !dbg !412
+  %add.ptr34 = getelementptr inbounds i8* %buffer.addr.0, i64 %and32, !dbg !414
+  tail call void @llvm.dbg.value(metadata !{i8* %add.ptr34}, i64 0, metadata !133), !dbg !414
+  %and35 = and i64 %len.addr.0, 63, !dbg !415
+  tail call void @llvm.dbg.value(metadata !{i64 %and35}, i64 0, metadata !134), !dbg !415
+  br label %if.end36, !dbg !416
 
 if.end36:                                         ; preds = %if.then31, %if.end28
   %len.addr.1 = phi i64 [ %and35, %if.then31 ], [ %len.addr.0, %if.end28 ]
   %buffer.addr.1 = phi i8* [ %add.ptr34, %if.then31 ], [ %buffer.addr.0, %if.end28 ]
-  %cmp37 = icmp eq i64 %len.addr.1, 0
-  br i1 %cmp37, label %if.end43, label %if.then39
+  %cmp37 = icmp eq i64 %len.addr.1, 0, !dbg !417
+  br i1 %cmp37, label %if.end43, label %if.then39, !dbg !417
 
 if.then39:                                        ; preds = %if.end36
-  %2 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 0
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %2, i8* %buffer.addr.1, i64 %len.addr.1, i32 1, i1 false)
-  %conv41 = trunc i64 %len.addr.1 to i32
-  store i32 %conv41, i32* %buflen, align 4, !tbaa !0
-  br label %if.end43
+  %2 = getelementptr inbounds %struct.md5_ctx* %ctx, i64 0, i32 6, i64 0, !dbg !418
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %2, i8* %buffer.addr.1, i64 %len.addr.1, i32 1, i1 false), !dbg !418
+  %conv41 = trunc i64 %len.addr.1 to i32, !dbg !420
+  store i32 %conv41, i32* %buflen, align 4, !dbg !420, !tbaa !173
+  br label %if.end43, !dbg !421
 
 if.end43:                                         ; preds = %if.end36, %if.then39
-  ret void
+  ret void, !dbg !422
 }

@@ -1,30 +1,32 @@
 define i32 @drop_through_at_end_p() #0 {
 entry:
-  %call = tail call %struct.rtx_def* @get_last_insn() #7
-  %tobool10 = icmp eq %struct.rtx_def* %call, null
-  br i1 %tobool10, label %land.end6, label %land.rhs
+  %call = tail call %struct.rtx_def* @get_last_insn() #8, !dbg !3609
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !1690), !dbg !3609
+  %tobool10 = icmp eq %struct.rtx_def* %call, null, !dbg !3610
+  br i1 %tobool10, label %land.end6, label %land.rhs, !dbg !3610
 
 land.rhs:                                         ; preds = %entry, %while.body
   %insn.011 = phi %struct.rtx_def* [ %1, %while.body ], [ %call, %entry ]
-  %0 = bitcast %struct.rtx_def* %insn.011 to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 37
+  %0 = bitcast %struct.rtx_def* %insn.011 to i32*, !dbg !3610
+  %bf.load = load i32* %0, align 8, !dbg !3610
+  %bf.clear = and i32 %bf.load, 65535, !dbg !3610
+  %cmp = icmp eq i32 %bf.clear, 37, !dbg !3610
   br i1 %cmp, label %while.body, label %land.rhs2
 
 while.body:                                       ; preds = %land.rhs
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn.011, i64 0, i32 1, i64 1
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %tobool = icmp eq %struct.rtx_def* %1, null
-  br i1 %tobool, label %land.end6, label %land.rhs
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn.011, i64 0, i32 1, i64 1, !dbg !3611
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !3611
+  %1 = load %struct.rtx_def** %rtx, align 8, !dbg !3611, !tbaa !2438
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %1}, i64 0, metadata !1690), !dbg !3611
+  %tobool = icmp eq %struct.rtx_def* %1, null, !dbg !3610
+  br i1 %tobool, label %land.end6, label %land.rhs, !dbg !3610
 
 land.rhs2:                                        ; preds = %land.rhs
-  %cmp5 = icmp ne i32 %bf.clear, 35
+  %cmp5 = icmp ne i32 %bf.clear, 35, !dbg !3612
   br label %land.end6
 
 land.end6:                                        ; preds = %entry, %while.body, %land.rhs2
   %2 = phi i1 [ %cmp5, %land.rhs2 ], [ false, %while.body ], [ false, %entry ]
   %land.ext = zext i1 %2 to i32
-  ret i32 %land.ext
+  ret i32 %land.ext, !dbg !3613
 }

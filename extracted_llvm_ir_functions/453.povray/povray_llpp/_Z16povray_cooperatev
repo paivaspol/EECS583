@@ -1,0 +1,61 @@
+define void @_Z16povray_cooperatev() #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !1567, i64 0, metadata !1187), !dbg !1568
+  %0 = load i32* @_ZN3pov21Cooperate_Render_FlagE, align 4, !dbg !1569, !tbaa !1500
+  switch i32 %0, label %sw.epilog [
+    i32 0, label %sw.bb
+    i32 1, label %sw.bb1
+    i32 2, label %sw.bb2
+    i32 3, label %sw.bb5
+  ], !dbg !1569
+
+sw.bb:                                            ; preds = %entry
+  store i32 1, i32* @_ZN3pov21Cooperate_Render_FlagE, align 4, !dbg !1571, !tbaa !1500
+  tail call void @_Z11povray_initv() #9, !dbg !1573
+  store i32 2, i32* @_ZN3pov5StageE, align 4, !dbg !1574, !tbaa !1500
+  tail call void @_ZN3pov13Send_InitInfoEv() #9, !dbg !1575
+  tail call void @_ZN3pov9init_varsEv() #9, !dbg !1576
+  br label %sw.epilog, !dbg !1577
+
+sw.bb1:                                           ; preds = %entry
+  %1 = load i8** @POVMS_Render_Context, align 8, !dbg !1578, !tbaa !1456
+  %call = tail call i32 @_Z21POVMS_ProcessMessagesPvi(i8* %1, i32 1) #9, !dbg !1578
+  br label %sw.epilog, !dbg !1579
+
+sw.bb2:                                           ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !1580, i64 0, metadata !1187), !dbg !1581
+  %2 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !1582, !tbaa !1500
+  %and = and i32 %2, 128, !dbg !1582
+  %tobool = icmp ne i32 %and, 0, !dbg !1582
+  %call3 = tail call i32 @_ZN3pov18Send_RenderStartedEb(i1 zeroext %tobool) #9, !dbg !1582
+  tail call void @_ZN3pov17fix_up_scene_nameEv() #9, !dbg !1583
+  tail call void @_ZN3pov23fix_up_animation_valuesEv() #9, !dbg !1584
+  tail call void @_ZN3pov23fix_up_rendering_windowEv() #9, !dbg !1585
+  tail call void @_ZN3pov23init_output_file_handleEv() #9, !dbg !1586
+  %call4 = tail call i32 @_ZN3pov18Send_RenderOptionsEv() #9, !dbg !1587
+  tail call void @_ZN3pov9FrameLoopEv() #9, !dbg !1588
+  br label %sw.bb5, !dbg !1588
+
+sw.bb5:                                           ; preds = %entry, %sw.bb2
+  %withtime.0 = phi i1 [ false, %entry ], [ true, %sw.bb2 ]
+  tail call void @_ZN3pov9close_allEv() #9, !dbg !1589
+  tail call void @_ZN3pov15mem_release_allEv() #9, !dbg !1590
+  %call7 = tail call i32 @_ZN3pov15Send_RenderDoneEb(i1 zeroext %withtime.0) #9, !dbg !1591
+  tail call void @llvm.dbg.value(metadata !1567, i64 0, metadata !1187), !dbg !1592
+  store i32 1, i32* @_ZN3pov21Cooperate_Render_FlagE, align 4, !dbg !1593, !tbaa !1500
+  %3 = load i8* @Binary_POVMS_Stream_Mode, align 1, !dbg !1594, !tbaa !1474, !range !1595
+  %cmp = icmp eq i8 %3, 0, !dbg !1594
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1594
+
+if.then:                                          ; preds = %sw.bb5
+  store i32 -1, i32* @_ZN3pov21Cooperate_Render_FlagE, align 4, !dbg !1596, !tbaa !1500
+  br label %sw.epilog, !dbg !1598
+
+if.end:                                           ; preds = %sw.bb5
+  tail call void @_ZN3pov9init_varsEv() #9, !dbg !1599
+  br label %sw.epilog, !dbg !1600
+
+sw.epilog:                                        ; preds = %entry, %if.end, %if.then, %sw.bb1, %sw.bb
+  tail call void @_ZN3pov12Do_CooperateEi(i32 2) #9, !dbg !1601
+  ret void, !dbg !1602
+}

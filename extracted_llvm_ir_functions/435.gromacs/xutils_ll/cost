@@ -1,9 +1,12 @@
-define float @cost(float %rmsf, float %energy) #4 {
-  %1 = load float* @ratio, align 4, !tbaa !14
-  %2 = fmul float %1, %rmsf
-  %3 = load float* @epot, align 4, !tbaa !14
-  %4 = fsub float %energy, %3
-  %fabsf = tail call float @fabsf(float %4) #6
-  %5 = fadd float %2, %fabsf
-  ret float %5
+define float @cost(float %rmsf, float %energy) #2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float %rmsf}, i64 0, metadata !422), !dbg !806
+  tail call void @llvm.dbg.value(metadata !{float %energy}, i64 0, metadata !423), !dbg !806
+  %0 = load float* @ratio, align 4, !dbg !807, !tbaa !770
+  %mul = fmul float %0, %rmsf, !dbg !807
+  %1 = load float* @epot, align 4, !dbg !807, !tbaa !770
+  %sub = fsub float %energy, %1, !dbg !807
+  %fabsf = tail call float @fabsf(float %sub) #8, !dbg !807
+  %conv2 = fadd float %mul, %fabsf, !dbg !807
+  ret float %conv2, !dbg !807
 }

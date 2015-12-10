@@ -1,0 +1,1275 @@
+; ModuleID = '../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
+
+%"struct.pov::BSphere_Tree_Struct" = type { i16, [3 x double], double, %"struct.pov::BSphere_Tree_Struct"** }
+
+@_ZN3povL11maxelementsE = internal unnamed_addr global i32 0, align 4
+@.str = private unnamed_addr constant [56 x i8] c"../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp\00", align 1
+@_ZN3povL4AxisE = internal unnamed_addr global i32 0, align 4
+@.str1 = private unnamed_addr constant [24 x i8] c"blob bounding hierarchy\00", align 1
+@.str2 = private unnamed_addr constant [27 x i8] c"Reallocing elements to %d\0A\00", align 1
+@.str3 = private unnamed_addr constant [15 x i8] c"bounding slabs\00", align 1
+
+; Function Attrs: optsize uwtable
+define void @_ZN3pov31Build_Bounding_Sphere_HierarchyEPPNS_19BSphere_Tree_StructEiPS2_(%"struct.pov::BSphere_Tree_Struct"** %Root, i32 %nElem, %"struct.pov::BSphere_Tree_Struct"*** %Elements) #0 {
+entry:
+  %nElem.addr = alloca i32, align 4
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BSphere_Tree_Struct"** %Root}, i64 0, metadata !40), !dbg !257
+  call void @llvm.dbg.value(metadata !{i32 %nElem}, i64 0, metadata !42), !dbg !257
+  store i32 %nElem, i32* %nElem.addr, align 4, !tbaa !258
+  call void @llvm.dbg.declare(metadata !{i32* %nElem.addr}, metadata !42), !dbg !257
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BSphere_Tree_Struct"*** %Elements}, i64 0, metadata !43), !dbg !257
+  %mul = shl nsw i32 %nElem, 1, !dbg !261
+  store i32 %mul, i32* @_ZN3povL11maxelementsE, align 4, !dbg !261, !tbaa !258
+  call void @llvm.dbg.value(metadata !{i32* %nElem.addr}, i64 0, metadata !42), !dbg !262
+  %cmp = icmp sgt i32 %nElem, 0, !dbg !262
+  br i1 %cmp, label %while.cond.preheader, label %if.end, !dbg !262
+
+while.cond.preheader:                             ; preds = %entry
+  %call3 = call fastcc i32 @_ZN3povL14sort_and_splitEPPNS_19BSphere_Tree_StructEPS2_Piii(%"struct.pov::BSphere_Tree_Struct"** %Root, %"struct.pov::BSphere_Tree_Struct"*** %Elements, i32* %nElem.addr, i32 0, i32 %nElem) #7, !dbg !263
+  %cmp14 = icmp eq i32 %call3, 0, !dbg !263
+  br i1 %cmp14, label %while.body, label %if.end, !dbg !263
+
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %high.05 = phi i32 [ %0, %while.body ], [ %nElem, %while.cond.preheader ]
+  call void @llvm.dbg.value(metadata !{i32 %high.05}, i64 0, metadata !44), !dbg !265
+  call void @llvm.dbg.value(metadata !{i32* %nElem.addr}, i64 0, metadata !42), !dbg !267
+  %0 = load i32* %nElem.addr, align 4, !dbg !267, !tbaa !258
+  call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !45), !dbg !267
+  call void @_ZN3pov12Do_CooperateEi(i32 0) #7, !dbg !268
+  %call = call fastcc i32 @_ZN3povL14sort_and_splitEPPNS_19BSphere_Tree_StructEPS2_Piii(%"struct.pov::BSphere_Tree_Struct"** %Root, %"struct.pov::BSphere_Tree_Struct"*** %Elements, i32* %nElem.addr, i32 %high.05, i32 %0) #7, !dbg !263
+  %cmp1 = icmp eq i32 %call, 0, !dbg !263
+  br i1 %cmp1, label %while.body, label %if.end, !dbg !263
+
+if.end:                                           ; preds = %while.cond.preheader, %while.body, %entry
+  ret void, !dbg !269
+}
+
+; Function Attrs: nounwind readnone
+declare void @llvm.dbg.declare(metadata, metadata) #1
+
+; Function Attrs: optsize uwtable
+define internal fastcc i32 @_ZN3povL14sort_and_splitEPPNS_19BSphere_Tree_StructEPS2_Piii(%"struct.pov::BSphere_Tree_Struct"** %Root, %"struct.pov::BSphere_Tree_Struct"*** %Elements, i32* %nElem, i32 %first, i32 %last) #0 {
+entry:
+  %r2.i = alloca double, align 8
+  %C.i = alloca [3 x double], align 16
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BSphere_Tree_Struct"** %Root}, i64 0, metadata !57), !dbg !270
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BSphere_Tree_Struct"*** %Elements}, i64 0, metadata !58), !dbg !270
+  call void @llvm.dbg.value(metadata !{i32* %nElem}, i64 0, metadata !59), !dbg !270
+  call void @llvm.dbg.value(metadata !{i32 %first}, i64 0, metadata !60), !dbg !270
+  call void @llvm.dbg.value(metadata !{i32 %last}, i64 0, metadata !61), !dbg !270
+  %0 = load %"struct.pov::BSphere_Tree_Struct"*** %Elements, align 8, !dbg !271, !tbaa !272
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::BSphere_Tree_Struct"** %0}, i64 0, metadata !273), !dbg !274
+  tail call void @llvm.dbg.value(metadata !{i32 %first}, i64 0, metadata !275), !dbg !274
+  tail call void @llvm.dbg.value(metadata !{i32 %last}, i64 0, metadata !276), !dbg !274
+  tail call void @llvm.dbg.value(metadata !11, i64 0, metadata !277), !dbg !278
+  tail call void @llvm.dbg.value(metadata !279, i64 0, metadata !280), !dbg !281
+  tail call void @llvm.dbg.declare(metadata !282, metadata !167), !dbg !283
+  tail call void @llvm.dbg.declare(metadata !282, metadata !168), !dbg !283
+  tail call void @llvm.dbg.declare(metadata !282, metadata !169), !dbg !283
+  tail call void @llvm.dbg.value(metadata !284, i64 0, metadata !285), !dbg !287
+  tail call void @llvm.dbg.value(metadata !288, i64 0, metadata !289), !dbg !287
+  tail call void @llvm.dbg.value(metadata !288, i64 0, metadata !290), !dbg !287
+  tail call void @llvm.dbg.value(metadata !288, i64 0, metadata !291), !dbg !287
+  tail call void @llvm.dbg.value(metadata !284, i64 0, metadata !292), !dbg !294
+  tail call void @llvm.dbg.value(metadata !279, i64 0, metadata !295), !dbg !294
+  tail call void @llvm.dbg.value(metadata !279, i64 0, metadata !296), !dbg !294
+  tail call void @llvm.dbg.value(metadata !279, i64 0, metadata !297), !dbg !294
+  tail call void @llvm.dbg.value(metadata !{i32 %first}, i64 0, metadata !298), !dbg !299
+  %cmp105.i = icmp slt i32 %first, %last, !dbg !299
+  br i1 %cmp105.i, label %for.body.lr.ph.i, label %_ZN3povL9find_axisEPPNS_19BSphere_Tree_StructEii.exit, !dbg !299
+
+for.body.lr.ph.i:                                 ; preds = %entry
+  %1 = sext i32 %first to i64
+  br label %for.body.i, !dbg !299
+
+for.body.i:                                       ; preds = %for.body.i, %for.body.lr.ph.i
+  %indvars.iv.i = phi i64 [ %1, %for.body.lr.ph.i ], [ %indvars.iv.next.i, %for.body.i ]
+  %maxs.sroa.0.0.load6599111.i = phi double [ -2.000000e+10, %for.body.lr.ph.i ], [ %.sroa.speculated.i, %for.body.i ]
+  %maxs.sroa.1.8.load70100110.i = phi double [ -2.000000e+10, %for.body.lr.ph.i ], [ %.sroa.speculated68.i, %for.body.i ]
+  %maxs.sroa.2.16.load75101109.i = phi double [ -2.000000e+10, %for.body.lr.ph.i ], [ %.sroa.speculated73.i, %for.body.i ]
+  %mins.sroa.0.0.load79102108.i = phi double [ 2.000000e+10, %for.body.lr.ph.i ], [ %.sroa.speculated77.i, %for.body.i ]
+  %mins.sroa.1.8.load84103107.i = phi double [ 2.000000e+10, %for.body.lr.ph.i ], [ %.sroa.speculated82.i, %for.body.i ]
+  %mins.sroa.2.16.load89104106.i = phi double [ 2.000000e+10, %for.body.lr.ph.i ], [ %.sroa.speculated87.i, %for.body.i ]
+  %arrayidx.i = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"** %0, i64 %indvars.iv.i, !dbg !301
+  %2 = load %"struct.pov::BSphere_Tree_Struct"** %arrayidx.i, align 8, !dbg !301, !tbaa !272
+  %arraydecay4.i = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %2, i64 0, i32 1, i64 0, !dbg !301
+  tail call void @llvm.dbg.value(metadata !284, i64 0, metadata !303), !dbg !304
+  tail call void @llvm.dbg.value(metadata !{double* %arraydecay4.i}, i64 0, metadata !305), !dbg !304
+  %3 = load double* %arraydecay4.i, align 8, !dbg !306, !tbaa !308
+  %arrayidx2.i61.i = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %2, i64 0, i32 1, i64 1, !dbg !309
+  %4 = load double* %arrayidx2.i61.i, align 8, !dbg !309, !tbaa !308
+  %arrayidx4.i.i = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %2, i64 0, i32 1, i64 2, !dbg !310
+  %5 = load double* %arrayidx4.i.i, align 8, !dbg !310, !tbaa !308
+  tail call void @llvm.dbg.value(metadata !284, i64 0, metadata !311), !dbg !313
+  tail call void @llvm.dbg.value(metadata !284, i64 0, metadata !314), !dbg !313
+  %cmp.i59.i = fcmp olt double %3, %mins.sroa.0.0.load79102108.i, !dbg !315
+  %.sroa.speculated77.i = select i1 %cmp.i59.i, double %3, double %mins.sroa.0.0.load79102108.i, !dbg !312
+  tail call void @llvm.dbg.value(metadata !284, i64 0, metadata !316), !dbg !318
+  tail call void @llvm.dbg.value(metadata !284, i64 0, metadata !319), !dbg !318
+  %cmp.i57.i = fcmp olt double %maxs.sroa.0.0.load6599111.i, %3, !dbg !320
+  %.sroa.speculated.i = select i1 %cmp.i57.i, double %3, double %maxs.sroa.0.0.load6599111.i, !dbg !317
+  tail call void @llvm.dbg.value(metadata !284, i64 0, metadata !323), !dbg !325
+  tail call void @llvm.dbg.value(metadata !284, i64 0, metadata !326), !dbg !325
+  %cmp.i55.i = fcmp olt double %4, %mins.sroa.1.8.load84103107.i, !dbg !327
+  %.sroa.speculated82.i = select i1 %cmp.i55.i, double %4, double %mins.sroa.1.8.load84103107.i, !dbg !324
+  tail call void @llvm.dbg.value(metadata !284, i64 0, metadata !328), !dbg !330
+  tail call void @llvm.dbg.value(metadata !284, i64 0, metadata !331), !dbg !330
+  %cmp.i53.i = fcmp olt double %maxs.sroa.1.8.load70100110.i, %4, !dbg !332
+  %.sroa.speculated68.i = select i1 %cmp.i53.i, double %4, double %maxs.sroa.1.8.load70100110.i, !dbg !329
+  tail call void @llvm.dbg.value(metadata !284, i64 0, metadata !333), !dbg !335
+  tail call void @llvm.dbg.value(metadata !284, i64 0, metadata !336), !dbg !335
+  %cmp.i51.i = fcmp olt double %5, %mins.sroa.2.16.load89104106.i, !dbg !337
+  %.sroa.speculated87.i = select i1 %cmp.i51.i, double %5, double %mins.sroa.2.16.load89104106.i, !dbg !334
+  tail call void @llvm.dbg.value(metadata !284, i64 0, metadata !338), !dbg !340
+  tail call void @llvm.dbg.value(metadata !284, i64 0, metadata !341), !dbg !340
+  %cmp.i.i = fcmp olt double %maxs.sroa.2.16.load75101109.i, %5, !dbg !342
+  %.sroa.speculated73.i = select i1 %cmp.i.i, double %5, double %maxs.sroa.2.16.load75101109.i, !dbg !339
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1, !dbg !299
+  %6 = trunc i64 %indvars.iv.next.i to i32, !dbg !299
+  %cmp.i = icmp slt i32 %6, %last, !dbg !299
+  br i1 %cmp.i, label %for.body.i, label %_ZN3povL9find_axisEPPNS_19BSphere_Tree_StructEii.exit, !dbg !299
+
+_ZN3povL9find_axisEPPNS_19BSphere_Tree_StructEii.exit: ; preds = %for.body.i, %entry
+  %maxs.sroa.0.0.load6599.lcssa.i = phi double [ -2.000000e+10, %entry ], [ %.sroa.speculated.i, %for.body.i ]
+  %maxs.sroa.1.8.load70100.lcssa.i = phi double [ -2.000000e+10, %entry ], [ %.sroa.speculated68.i, %for.body.i ]
+  %maxs.sroa.2.16.load75101.lcssa.i = phi double [ -2.000000e+10, %entry ], [ %.sroa.speculated73.i, %for.body.i ]
+  %mins.sroa.0.0.load79102.lcssa.i = phi double [ 2.000000e+10, %entry ], [ %.sroa.speculated77.i, %for.body.i ]
+  %mins.sroa.1.8.load84103.lcssa.i = phi double [ 2.000000e+10, %entry ], [ %.sroa.speculated82.i, %for.body.i ]
+  %mins.sroa.2.16.load89104.lcssa.i = phi double [ 2.000000e+10, %entry ], [ %.sroa.speculated87.i, %for.body.i ]
+  %sub.i = fsub double %maxs.sroa.0.0.load6599.lcssa.i, %mins.sroa.0.0.load79102.lcssa.i, !dbg !343
+  tail call void @llvm.dbg.value(metadata !{double %sub.i}, i64 0, metadata !344), !dbg !343
+  %cmp30.i = fcmp ogt double %sub.i, -2.000000e+10, !dbg !345
+  tail call void @llvm.dbg.value(metadata !{double %sub.i}, i64 0, metadata !280), !dbg !346
+  tail call void @llvm.dbg.value(metadata !11, i64 0, metadata !277), !dbg !346
+  %d.0.i = select i1 %cmp30.i, double %sub.i, double -2.000000e+10, !dbg !345
+  %sub33.i = fsub double %maxs.sroa.1.8.load70100.lcssa.i, %mins.sroa.1.8.load84103.lcssa.i, !dbg !348
+  tail call void @llvm.dbg.value(metadata !{double %sub33.i}, i64 0, metadata !344), !dbg !348
+  %cmp34.i = fcmp ogt double %sub33.i, %d.0.i, !dbg !349
+  tail call void @llvm.dbg.value(metadata !{double %sub33.i}, i64 0, metadata !280), !dbg !350
+  tail call void @llvm.dbg.value(metadata !352, i64 0, metadata !277), !dbg !350
+  %which.1.i = zext i1 %cmp34.i to i32, !dbg !349
+  %d.1.i = select i1 %cmp34.i, double %sub33.i, double %d.0.i, !dbg !349
+  %sub39.i = fsub double %maxs.sroa.2.16.load75101.lcssa.i, %mins.sroa.2.16.load89104.lcssa.i, !dbg !353
+  tail call void @llvm.dbg.value(metadata !{double %sub39.i}, i64 0, metadata !344), !dbg !353
+  %cmp40.i = fcmp ogt double %sub39.i, %d.1.i, !dbg !354
+  tail call void @llvm.dbg.value(metadata !355, i64 0, metadata !277), !dbg !356
+  %which.2.i = select i1 %cmp40.i, i32 2, i32 %which.1.i, !dbg !354
+  store i32 %which.2.i, i32* @_ZN3povL4AxisE, align 4, !dbg !271, !tbaa !258
+  %sub = sub i32 %last, %first, !dbg !358
+  call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !62), !dbg !358
+  %cmp = icmp slt i32 %sub, 1, !dbg !359
+  br i1 %cmp, label %return, label %if.end, !dbg !359
+
+if.end:                                           ; preds = %_ZN3povL9find_axisEPPNS_19BSphere_Tree_StructEii.exit
+  call void @_ZN3pov12Do_CooperateEi(i32 1) #7, !dbg !360
+  %7 = load %"struct.pov::BSphere_Tree_Struct"*** %Elements, align 8, !dbg !361, !tbaa !272
+  %idx.ext = sext i32 %first to i64, !dbg !361
+  %add.ptr = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"** %7, i64 %idx.ext, !dbg !361
+  %8 = bitcast %"struct.pov::BSphere_Tree_Struct"** %add.ptr to i8*, !dbg !361
+  call void @_ZN3pov10spec_qsortEPviiPFiS0_S0_E(i8* %8, i32 %sub, i32 8, i32 (i8*, i8*)* @_ZN3povL13comp_elementsEPvS0_) #7, !dbg !361
+  %conv = sext i32 %sub to i64, !dbg !362
+  %mul = shl nsw i64 %conv, 3, !dbg !362
+  %call1 = call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %mul, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 455, i8* getelementptr inbounds ([24 x i8]* @.str1, i64 0, i64 0)) #7, !dbg !362
+  %9 = bitcast i8* %call1 to double*, !dbg !362
+  call void @llvm.dbg.value(metadata !{double* %9}, i64 0, metadata !65), !dbg !362
+  %call4 = call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %mul, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 456, i8* getelementptr inbounds ([24 x i8]* @.str1, i64 0, i64 0)) #7, !dbg !363
+  %10 = bitcast i8* %call4 to double*, !dbg !363
+  call void @llvm.dbg.value(metadata !{double* %10}, i64 0, metadata !67), !dbg !363
+  %11 = load %"struct.pov::BSphere_Tree_Struct"*** %Elements, align 8, !dbg !364, !tbaa !272
+  %sub5 = add i32 %last, -1, !dbg !364
+  call fastcc void @_ZN3povL16build_area_tableEPPNS_19BSphere_Tree_StructEiiPd(%"struct.pov::BSphere_Tree_Struct"** %11, i32 %first, i32 %sub5, double* %9) #7, !dbg !364
+  %12 = load %"struct.pov::BSphere_Tree_Struct"*** %Elements, align 8, !dbg !365, !tbaa !272
+  call fastcc void @_ZN3povL16build_area_tableEPPNS_19BSphere_Tree_StructEiiPd(%"struct.pov::BSphere_Tree_Struct"** %12, i32 %sub5, i32 %first, double* %10) #7, !dbg !365
+  call void @llvm.dbg.value(metadata !{double %mul9}, i64 0, metadata !68), !dbg !366
+  call void @llvm.dbg.value(metadata !367, i64 0, metadata !64), !dbg !368
+  call void @llvm.dbg.value(metadata !11, i64 0, metadata !63), !dbg !369
+  %sub10 = add nsw i32 %sub, -1, !dbg !369
+  %cmp11133 = icmp sgt i32 %sub10, 0, !dbg !369
+  br i1 %cmp11133, label %for.body.lr.ph, label %for.end, !dbg !369
+
+for.body.lr.ph:                                   ; preds = %if.end
+  %conv7 = sitofp i32 %sub to double, !dbg !366
+  %sub8 = fadd double %conv7, -3.000000e+00, !dbg !366
+  %13 = load double* %10, align 8, !dbg !366, !tbaa !308
+  %mul9 = fmul double %sub8, %13, !dbg !366
+  %14 = sub i32 %sub5, %first, !dbg !369
+  br label %for.body, !dbg !369
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %indvars.iv138 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next139, %for.body ]
+  %best_index.0135 = phi double [ %mul9, %for.body.lr.ph ], [ %best_index.1, %for.body ]
+  %best_loc.0134 = phi i32 [ -1, %for.body.lr.ph ], [ %best_loc.1, %for.body ]
+  %indvars.iv.next139 = add i64 %indvars.iv138, 1, !dbg !369
+  %15 = trunc i64 %indvars.iv.next139 to i32, !dbg !371
+  %conv12 = sitofp i32 %15 to double, !dbg !371
+  %arrayidx13 = getelementptr inbounds double* %9, i64 %indvars.iv138, !dbg !371
+  %16 = load double* %arrayidx13, align 8, !dbg !371, !tbaa !308
+  %mul14 = fmul double %conv12, %16, !dbg !371
+  %17 = trunc i64 %indvars.iv138 to i32, !dbg !371
+  %sub16 = sub nsw i32 %sub10, %17, !dbg !371
+  %conv17 = sitofp i32 %sub16 to double, !dbg !371
+  %arrayidx20 = getelementptr inbounds double* %10, i64 %indvars.iv.next139, !dbg !371
+  %18 = load double* %arrayidx20, align 8, !dbg !371, !tbaa !308
+  %mul21 = fmul double %conv17, %18, !dbg !371
+  %add22 = fadd double %mul14, %mul21, !dbg !371
+  call void @llvm.dbg.value(metadata !{double %add22}, i64 0, metadata !69), !dbg !371
+  %cmp23 = fcmp olt double %add22, %best_index.0135, !dbg !373
+  call void @llvm.dbg.value(metadata !{double %add22}, i64 0, metadata !68), !dbg !374
+  %19 = add nsw i64 %indvars.iv138, %idx.ext, !dbg !376
+  %20 = trunc i64 %19 to i32, !dbg !373
+  %best_loc.1 = select i1 %cmp23, i32 %20, i32 %best_loc.0134, !dbg !373
+  %best_index.1 = select i1 %cmp23, double %add22, double %best_index.0135, !dbg !373
+  %exitcond142 = icmp eq i32 %15, %14, !dbg !369
+  br i1 %exitcond142, label %for.end, label %for.body, !dbg !369
+
+for.end:                                          ; preds = %for.body, %if.end
+  %best_loc.0.lcssa = phi i32 [ -1, %if.end ], [ %best_loc.1, %for.body ]
+  call void @_ZN3pov8pov_freeEPvPKci(i8* %call1, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 485) #7, !dbg !377
+  call void @llvm.dbg.value(metadata !379, i64 0, metadata !65), !dbg !377
+  call void @_ZN3pov8pov_freeEPvPKci(i8* %call4, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 486) #7, !dbg !380
+  call void @llvm.dbg.value(metadata !379, i64 0, metadata !67), !dbg !380
+  %cmp27 = icmp slt i32 %sub, 5, !dbg !382
+  %cmp28 = icmp slt i32 %best_loc.0.lcssa, 0, !dbg !382
+  %or.cond = or i1 %cmp27, %cmp28, !dbg !382
+  br i1 %or.cond, label %if.then29, label %if.else, !dbg !382
+
+if.then29:                                        ; preds = %for.end
+  %call30 = call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 48, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 495, i8* getelementptr inbounds ([24 x i8]* @.str1, i64 0, i64 0)) #7, !dbg !383
+  %21 = bitcast i8* %call30 to %"struct.pov::BSphere_Tree_Struct"*, !dbg !383
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BSphere_Tree_Struct"* %21}, i64 0, metadata !70), !dbg !383
+  %conv31 = trunc i32 %sub to i16, !dbg !385
+  %Entries = bitcast i8* %call30 to i16*, !dbg !385
+  store i16 %conv31, i16* %Entries, align 2, !dbg !385, !tbaa !386
+  %call34 = call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %mul, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 499, i8* getelementptr inbounds ([24 x i8]* @.str1, i64 0, i64 0)) #7, !dbg !387
+  %22 = bitcast i8* %call34 to %"struct.pov::BSphere_Tree_Struct"**, !dbg !387
+  %Node = getelementptr inbounds i8* %call30, i64 40, !dbg !387
+  %23 = bitcast i8* %Node to %"struct.pov::BSphere_Tree_Struct"***, !dbg !387
+  store %"struct.pov::BSphere_Tree_Struct"** %22, %"struct.pov::BSphere_Tree_Struct"*** %23, align 8, !dbg !387, !tbaa !272
+  call void @llvm.dbg.value(metadata !11, i64 0, metadata !63), !dbg !388
+  %cmp36131 = icmp sgt i32 %sub, 0, !dbg !388
+  br i1 %cmp36131, label %for.body37, label %for.end46, !dbg !388
+
+for.body37:                                       ; preds = %for.body37, %if.then29
+  %24 = phi %"struct.pov::BSphere_Tree_Struct"** [ %22, %if.then29 ], [ %.pre, %for.body37 ]
+  %indvars.iv = phi i64 [ 0, %if.then29 ], [ %indvars.iv.next, %for.body37 ]
+  %25 = add nsw i64 %indvars.iv, %idx.ext, !dbg !390
+  %26 = load %"struct.pov::BSphere_Tree_Struct"*** %Elements, align 8, !dbg !390, !tbaa !272
+  %arrayidx40 = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"** %26, i64 %25, !dbg !390
+  %27 = load %"struct.pov::BSphere_Tree_Struct"** %arrayidx40, align 8, !dbg !390, !tbaa !272
+  %arrayidx43 = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"** %24, i64 %indvars.iv, !dbg !390
+  store %"struct.pov::BSphere_Tree_Struct"* %27, %"struct.pov::BSphere_Tree_Struct"** %arrayidx43, align 8, !dbg !390, !tbaa !272
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !388
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !388
+  %exitcond = icmp eq i32 %lftr.wideiv, %sub, !dbg !388
+  %.pre = load %"struct.pov::BSphere_Tree_Struct"*** %23, align 8, !dbg !392, !tbaa !272
+  br i1 %exitcond, label %for.end46, label %for.body37, !dbg !388
+
+for.end46:                                        ; preds = %for.body37, %if.then29
+  %28 = phi %"struct.pov::BSphere_Tree_Struct"** [ %22, %if.then29 ], [ %.pre, %for.body37 ]
+  %29 = bitcast double* %r2.i to i8*, !dbg !394
+  call void @llvm.lifetime.start(i64 8, i8* %29) #6, !dbg !394
+  %30 = bitcast [3 x double]* %C.i to i8*, !dbg !394
+  call void @llvm.lifetime.start(i64 24, i8* %30) #6, !dbg !394
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BSphere_Tree_Struct"* %21}, i64 0, metadata !395) #6, !dbg !394
+  call void @llvm.dbg.declare(metadata !{double* %r2.i}, metadata !75) #6, !dbg !396
+  call void @llvm.dbg.declare(metadata !{[3 x double]* %C.i}, metadata !76) #6, !dbg !397
+  %arraydecay.i = getelementptr inbounds [3 x double]* %C.i, i64 0, i64 0, !dbg !392
+  %31 = load %"struct.pov::BSphere_Tree_Struct"** %28, align 8, !dbg !392, !tbaa !272
+  %arraydecay3.i = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %31, i64 0, i32 1, i64 0, !dbg !392
+  call void @llvm.dbg.value(metadata !{double* %arraydecay.i}, i64 0, metadata !398) #6, !dbg !399
+  call void @llvm.dbg.value(metadata !{double* %arraydecay3.i}, i64 0, metadata !400) #6, !dbg !399
+  %32 = load double* %arraydecay3.i, align 8, !dbg !401, !tbaa !308
+  store double %32, double* %arraydecay.i, align 16, !dbg !401, !tbaa !308
+  %arrayidx2.i.i = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %31, i64 0, i32 1, i64 1, !dbg !402
+  %33 = load double* %arrayidx2.i.i, align 8, !dbg !402, !tbaa !308
+  %arrayidx3.i.i = getelementptr inbounds [3 x double]* %C.i, i64 0, i64 1, !dbg !402
+  store double %33, double* %arrayidx3.i.i, align 8, !dbg !402, !tbaa !308
+  %arrayidx4.i.i123 = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %31, i64 0, i32 1, i64 2, !dbg !403
+  %34 = load double* %arrayidx4.i.i123, align 8, !dbg !403, !tbaa !308
+  %arrayidx5.i.i = getelementptr inbounds [3 x double]* %C.i, i64 0, i64 2, !dbg !403
+  store double %34, double* %arrayidx5.i.i, align 16, !dbg !403, !tbaa !308
+  %r26.i = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %31, i64 0, i32 2, !dbg !404
+  %35 = load double* %r26.i, align 8, !dbg !404, !tbaa !308
+  call void @llvm.dbg.value(metadata !{double %35}, i64 0, metadata !405) #6, !dbg !404
+  call void @llvm.dbg.value(metadata !{double %35}, i64 0, metadata !75), !dbg !404
+  store double %35, double* %r2.i, align 8, !dbg !404, !tbaa !308
+  call void @llvm.dbg.value(metadata !406, i64 0, metadata !407) #6, !dbg !408
+  %36 = load i16* %Entries, align 2, !dbg !408, !tbaa !386
+  %cmp35.i = icmp sgt i16 %36, 1, !dbg !408
+  br i1 %cmp35.i, label %for.body.i125.preheader, label %_ZN3povL15recompute_boundEPNS_19BSphere_Tree_StructE.exit, !dbg !408
+
+for.body.i125.preheader:                          ; preds = %for.end46
+  call void @llvm.dbg.value(metadata !{double* %r2.i}, i64 0, metadata !405) #6, !dbg !410
+  %arrayidx11.i126 = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"** %28, i64 1, !dbg !410
+  %37 = load %"struct.pov::BSphere_Tree_Struct"** %arrayidx11.i126, align 8, !dbg !410, !tbaa !272
+  %arraydecay13.i127 = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %37, i64 0, i32 1, i64 0, !dbg !410
+  %r217.i128 = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %37, i64 0, i32 2, !dbg !410
+  %38 = load double* %r217.i128, align 8, !dbg !410, !tbaa !308
+  call fastcc void @_ZN3povL13merge_spheresEPdS0_S0_dS0_d(double* %arraydecay.i, double* %r2.i, double* %arraydecay.i, double %35, double* %arraydecay13.i127, double %38) #8, !dbg !410
+  call void @llvm.dbg.value(metadata !412, i64 0, metadata !407) #6, !dbg !408
+  %39 = load i16* %Entries, align 2, !dbg !408, !tbaa !386
+  %cmp.i124129 = icmp sgt i16 %39, 2, !dbg !408
+  br i1 %cmp.i124129, label %for.body.for.body_crit_edge.i, label %for.cond.for.end_crit_edge.i, !dbg !408
+
+for.body.for.body_crit_edge.i:                    ; preds = %for.body.i125.preheader, %for.body.for.body_crit_edge.i
+  %inc.i130 = phi i16 [ %inc.i, %for.body.for.body_crit_edge.i ], [ 2, %for.body.i125.preheader ]
+  call void @llvm.dbg.value(metadata !{double* %r2.i}, i64 0, metadata !405) #6, !dbg !410
+  call void @llvm.dbg.value(metadata !{double* %r2.i}, i64 0, metadata !75), !dbg !410
+  %.pre40.i = load double* %r2.i, align 8, !dbg !410, !tbaa !308
+  %.pre41.i = load %"struct.pov::BSphere_Tree_Struct"*** %23, align 8, !dbg !410, !tbaa !272
+  call void @llvm.dbg.value(metadata !{double* %r2.i}, i64 0, metadata !405) #6, !dbg !410
+  %idxprom.i = sext i16 %inc.i130 to i64, !dbg !410
+  %arrayidx11.i = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"** %.pre41.i, i64 %idxprom.i, !dbg !410
+  %40 = load %"struct.pov::BSphere_Tree_Struct"** %arrayidx11.i, align 8, !dbg !410, !tbaa !272
+  %arraydecay13.i = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %40, i64 0, i32 1, i64 0, !dbg !410
+  %r217.i = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %40, i64 0, i32 2, !dbg !410
+  %41 = load double* %r217.i, align 8, !dbg !410, !tbaa !308
+  call fastcc void @_ZN3povL13merge_spheresEPdS0_S0_dS0_d(double* %arraydecay.i, double* %r2.i, double* %arraydecay.i, double %.pre40.i, double* %arraydecay13.i, double %41) #8, !dbg !410
+  %inc.i = add i16 %inc.i130, 1, !dbg !408
+  call void @llvm.dbg.value(metadata !{i16 %inc.i130}, i64 0, metadata !407) #6, !dbg !408
+  %42 = load i16* %Entries, align 2, !dbg !408, !tbaa !386
+  %cmp.i124 = icmp slt i16 %inc.i, %42, !dbg !408
+  br i1 %cmp.i124, label %for.body.for.body_crit_edge.i, label %for.cond.for.end_crit_edge.i, !dbg !408
+
+for.cond.for.end_crit_edge.i:                     ; preds = %for.body.for.body_crit_edge.i, %for.body.i125.preheader
+  %.pre.i = load double* %arraydecay.i, align 16, !dbg !413, !tbaa !308
+  %.pre37.i = load double* %arrayidx3.i.i, align 8, !dbg !415, !tbaa !308
+  %.pre38.i = load double* %arrayidx5.i.i, align 16, !dbg !416, !tbaa !308
+  call void @llvm.dbg.value(metadata !{double* %r2.i}, i64 0, metadata !405) #6, !dbg !417
+  call void @llvm.dbg.value(metadata !{double* %r2.i}, i64 0, metadata !75), !dbg !417
+  %.pre39.i = load double* %r2.i, align 8, !dbg !417, !tbaa !308
+  br label %_ZN3povL15recompute_boundEPNS_19BSphere_Tree_StructE.exit, !dbg !408
+
+_ZN3povL15recompute_boundEPNS_19BSphere_Tree_StructE.exit: ; preds = %for.end46, %for.cond.for.end_crit_edge.i
+  %43 = phi double [ %.pre39.i, %for.cond.for.end_crit_edge.i ], [ %35, %for.end46 ]
+  %44 = phi double [ %.pre38.i, %for.cond.for.end_crit_edge.i ], [ %34, %for.end46 ]
+  %45 = phi double [ %.pre37.i, %for.cond.for.end_crit_edge.i ], [ %33, %for.end46 ]
+  %46 = phi double [ %.pre.i, %for.cond.for.end_crit_edge.i ], [ %32, %for.end46 ]
+  %arraydecay19.i = getelementptr inbounds i8* %call30, i64 8, !dbg !414
+  %47 = bitcast i8* %arraydecay19.i to double*, !dbg !414
+  call void @llvm.dbg.value(metadata !{double* %47}, i64 0, metadata !418) #6, !dbg !419
+  call void @llvm.dbg.value(metadata !{double* %arraydecay.i}, i64 0, metadata !420) #6, !dbg !419
+  store double %46, double* %47, align 8, !dbg !413, !tbaa !308
+  %arrayidx3.i32.i = getelementptr inbounds i8* %call30, i64 16, !dbg !415
+  %48 = bitcast i8* %arrayidx3.i32.i to double*, !dbg !415
+  store double %45, double* %48, align 8, !dbg !415, !tbaa !308
+  %arrayidx5.i34.i = getelementptr inbounds i8* %call30, i64 24, !dbg !416
+  %49 = bitcast i8* %arrayidx5.i34.i to double*, !dbg !416
+  store double %44, double* %49, align 8, !dbg !416, !tbaa !308
+  call void @llvm.dbg.value(metadata !{double* %r2.i}, i64 0, metadata !405) #6, !dbg !417
+  %r221.i = getelementptr inbounds i8* %call30, i64 32, !dbg !417
+  %50 = bitcast i8* %r221.i to double*, !dbg !417
+  store double %43, double* %50, align 8, !dbg !417, !tbaa !308
+  call void @llvm.lifetime.end(i64 8, i8* %29) #6, !dbg !421
+  call void @llvm.lifetime.end(i64 24, i8* %30) #6, !dbg !421
+  store %"struct.pov::BSphere_Tree_Struct"* %21, %"struct.pov::BSphere_Tree_Struct"** %Root, align 8, !dbg !422, !tbaa !272
+  %51 = load i32* %nElem, align 4, !dbg !423, !tbaa !258
+  %52 = load i32* @_ZN3povL11maxelementsE, align 4, !dbg !423, !tbaa !258
+  %cmp47 = icmp slt i32 %51, %52, !dbg !423
+  br i1 %cmp47, label %_ZN3povL15recompute_boundEPNS_19BSphere_Tree_StructE.exit.if.end56_crit_edge, label %if.then48, !dbg !423
+
+_ZN3povL15recompute_boundEPNS_19BSphere_Tree_StructE.exit.if.end56_crit_edge: ; preds = %_ZN3povL15recompute_boundEPNS_19BSphere_Tree_StructE.exit
+  %.pre144 = load %"struct.pov::BSphere_Tree_Struct"*** %Elements, align 8, !dbg !424, !tbaa !272
+  br label %if.end56, !dbg !423
+
+if.then48:                                        ; preds = %_ZN3povL15recompute_boundEPNS_19BSphere_Tree_StructE.exit
+  %conv49 = sitofp i32 %52 to double, !dbg !425
+  %mul50 = fmul double %conv49, 1.500000e+00, !dbg !425
+  %conv51 = fptosi double %mul50 to i32, !dbg !425
+  store i32 %conv51, i32* @_ZN3povL11maxelementsE, align 4, !dbg !425, !tbaa !258
+  %call52 = call i32 (i8*, ...)* @_ZN3pov10Debug_InfoEPKcz(i8* getelementptr inbounds ([27 x i8]* @.str2, i64 0, i64 0), i32 %conv51) #7, !dbg !427
+  %53 = load %"struct.pov::BSphere_Tree_Struct"*** %Elements, align 8, !dbg !428, !tbaa !272
+  %54 = bitcast %"struct.pov::BSphere_Tree_Struct"** %53 to i8*, !dbg !428
+  %55 = load i32* @_ZN3povL11maxelementsE, align 4, !dbg !428, !tbaa !258
+  %conv53 = sext i32 %55 to i64, !dbg !428
+  %mul54 = shl nsw i64 %conv53, 3, !dbg !428
+  %call55 = call i8* @_ZN3pov11pov_reallocEPvmPKciS2_(i8* %54, i64 %mul54, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 520, i8* getelementptr inbounds ([15 x i8]* @.str3, i64 0, i64 0)) #7, !dbg !428
+  %56 = bitcast i8* %call55 to %"struct.pov::BSphere_Tree_Struct"**, !dbg !428
+  store %"struct.pov::BSphere_Tree_Struct"** %56, %"struct.pov::BSphere_Tree_Struct"*** %Elements, align 8, !dbg !428, !tbaa !272
+  %.pre143 = load i32* %nElem, align 4, !dbg !424, !tbaa !258
+  br label %if.end56, !dbg !429
+
+if.end56:                                         ; preds = %_ZN3povL15recompute_boundEPNS_19BSphere_Tree_StructE.exit.if.end56_crit_edge, %if.then48
+  %57 = phi %"struct.pov::BSphere_Tree_Struct"** [ %.pre144, %_ZN3povL15recompute_boundEPNS_19BSphere_Tree_StructE.exit.if.end56_crit_edge ], [ %56, %if.then48 ]
+  %58 = phi i32 [ %51, %_ZN3povL15recompute_boundEPNS_19BSphere_Tree_StructE.exit.if.end56_crit_edge ], [ %.pre143, %if.then48 ]
+  %idxprom57 = sext i32 %58 to i64, !dbg !424
+  %arrayidx58 = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"** %57, i64 %idxprom57, !dbg !424
+  store %"struct.pov::BSphere_Tree_Struct"* %21, %"struct.pov::BSphere_Tree_Struct"** %arrayidx58, align 8, !dbg !424, !tbaa !272
+  %inc59 = add nsw i32 %58, 1, !dbg !430
+  store i32 %inc59, i32* %nElem, align 4, !dbg !430, !tbaa !258
+  br label %return, !dbg !431
+
+if.else:                                          ; preds = %for.end
+  %add60 = add nsw i32 %best_loc.0.lcssa, 1, !dbg !432
+  %call61 = call fastcc i32 @_ZN3povL14sort_and_splitEPPNS_19BSphere_Tree_StructEPS2_Piii(%"struct.pov::BSphere_Tree_Struct"** %Root, %"struct.pov::BSphere_Tree_Struct"*** %Elements, i32* %nElem, i32 %first, i32 %add60) #7, !dbg !432
+  %call63 = call fastcc i32 @_ZN3povL14sort_and_splitEPPNS_19BSphere_Tree_StructEPS2_Piii(%"struct.pov::BSphere_Tree_Struct"** %Root, %"struct.pov::BSphere_Tree_Struct"*** %Elements, i32* %nElem, i32 %add60, i32 %last) #7, !dbg !434
+  br label %return, !dbg !435
+
+return:                                           ; preds = %_ZN3povL9find_axisEPPNS_19BSphere_Tree_StructEii.exit, %if.else, %if.end56
+  %retval.0 = phi i32 [ 1, %if.end56 ], [ 0, %if.else ], [ 1, %_ZN3povL9find_axisEPPNS_19BSphere_Tree_StructEii.exit ]
+  ret i32 %retval.0, !dbg !436
+}
+
+; Function Attrs: optsize
+declare void @_ZN3pov12Do_CooperateEi(i32) #2
+
+; Function Attrs: optsize uwtable
+define void @_ZN3pov33Destroy_Bounding_Sphere_HierarchyEPNS_19BSphere_Tree_StructE(%"struct.pov::BSphere_Tree_Struct"* %Node) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::BSphere_Tree_Struct"* %Node}, i64 0, metadata !50), !dbg !437
+  %cmp = icmp eq %"struct.pov::BSphere_Tree_Struct"* %Node, null, !dbg !438
+  br i1 %cmp, label %if.end10, label %if.then, !dbg !438
+
+if.then:                                          ; preds = %entry
+  %Entries = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %Node, i64 0, i32 0, !dbg !439
+  %0 = load i16* %Entries, align 2, !dbg !439, !tbaa !386
+  %cmp1 = icmp sgt i16 %0, 0, !dbg !439
+  br i1 %cmp1, label %for.body.lr.ph, label %if.end, !dbg !439
+
+for.body.lr.ph:                                   ; preds = %if.then
+  %Node7 = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %Node, i64 0, i32 3, !dbg !441
+  br label %for.body, !dbg !445
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %i.020 = phi i16 [ 0, %for.body.lr.ph ], [ %inc, %for.body ]
+  %idxprom = sext i16 %i.020 to i64, !dbg !441
+  %1 = load %"struct.pov::BSphere_Tree_Struct"*** %Node7, align 8, !dbg !441, !tbaa !272
+  %arrayidx = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"** %1, i64 %idxprom, !dbg !441
+  %2 = load %"struct.pov::BSphere_Tree_Struct"** %arrayidx, align 8, !dbg !441, !tbaa !272
+  tail call void @_ZN3pov33Destroy_Bounding_Sphere_HierarchyEPNS_19BSphere_Tree_StructE(%"struct.pov::BSphere_Tree_Struct"* %2) #7, !dbg !441
+  %inc = add i16 %i.020, 1, !dbg !445
+  tail call void @llvm.dbg.value(metadata !{i16 %inc}, i64 0, metadata !51), !dbg !445
+  %3 = load i16* %Entries, align 2, !dbg !445, !tbaa !386
+  %cmp6 = icmp slt i16 %inc, %3, !dbg !445
+  br i1 %cmp6, label %for.body, label %for.end, !dbg !445
+
+for.end:                                          ; preds = %for.body
+  %4 = load %"struct.pov::BSphere_Tree_Struct"*** %Node7, align 8, !dbg !446, !tbaa !272
+  %5 = bitcast %"struct.pov::BSphere_Tree_Struct"** %4 to i8*, !dbg !446
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %5, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 655) #7, !dbg !446
+  store %"struct.pov::BSphere_Tree_Struct"** null, %"struct.pov::BSphere_Tree_Struct"*** %Node7, align 8, !dbg !446, !tbaa !272
+  br label %if.end, !dbg !448
+
+if.end:                                           ; preds = %for.end, %if.then
+  %6 = bitcast %"struct.pov::BSphere_Tree_Struct"* %Node to i8*, !dbg !449
+  tail call void @_ZN3pov8pov_freeEPvPKci(i8* %6, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 658) #7, !dbg !449
+  tail call void @llvm.dbg.value(metadata !451, i64 0, metadata !50), !dbg !449
+  br label %if.end10, !dbg !452
+
+if.end10:                                         ; preds = %entry, %if.end
+  ret void, !dbg !453
+}
+
+; Function Attrs: optsize
+declare void @_ZN3pov8pov_freeEPvPKci(i8*, i8*, i32) #2
+
+; Function Attrs: optsize
+declare void @_ZN3pov10spec_qsortEPviiPFiS0_S0_E(i8*, i32, i32, i32 (i8*, i8*)*) #2
+
+; Function Attrs: nounwind optsize readonly uwtable
+define internal i32 @_ZN3povL13comp_elementsEPvS0_(i8* nocapture %in_a, i8* nocapture %in_b) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %in_a}, i64 0, metadata !152), !dbg !454
+  tail call void @llvm.dbg.value(metadata !{i8* %in_b}, i64 0, metadata !153), !dbg !454
+  %0 = load i32* @_ZN3povL4AxisE, align 4, !dbg !455, !tbaa !258
+  %idxprom = sext i32 %0 to i64, !dbg !455
+  %1 = bitcast i8* %in_a to %"struct.pov::BSphere_Tree_Struct"**, !dbg !455
+  %2 = load %"struct.pov::BSphere_Tree_Struct"** %1, align 8, !dbg !455, !tbaa !272
+  %arrayidx = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %2, i64 0, i32 1, i64 %idxprom, !dbg !455
+  %3 = load double* %arrayidx, align 8, !dbg !455, !tbaa !308
+  tail call void @llvm.dbg.value(metadata !{double %3}, i64 0, metadata !154), !dbg !455
+  %4 = bitcast i8* %in_b to %"struct.pov::BSphere_Tree_Struct"**, !dbg !456
+  %5 = load %"struct.pov::BSphere_Tree_Struct"** %4, align 8, !dbg !456, !tbaa !272
+  %arrayidx3 = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %5, i64 0, i32 1, i64 %idxprom, !dbg !456
+  %6 = load double* %arrayidx3, align 8, !dbg !456, !tbaa !308
+  tail call void @llvm.dbg.value(metadata !{double %6}, i64 0, metadata !155), !dbg !456
+  %sub = fadd double %6, -1.000000e-07, !dbg !457
+  %cmp = fcmp olt double %3, %sub, !dbg !457
+  br i1 %cmp, label %return, label %if.else, !dbg !457
+
+if.else:                                          ; preds = %entry
+  %add = fadd double %6, 1.000000e-07, !dbg !458
+  %cmp4 = fcmp ogt double %3, %add, !dbg !458
+  %. = zext i1 %cmp4 to i32, !dbg !460
+  br label %return, !dbg !460
+
+return:                                           ; preds = %if.else, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ %., %if.else ]
+  ret i32 %retval.0, !dbg !462
+}
+
+; Function Attrs: optsize
+declare i8* @_ZN3pov10pov_mallocEmPKciS1_(i64, i8*, i32, i8*) #2
+
+; Function Attrs: nounwind optsize uwtable
+define internal fastcc void @_ZN3povL16build_area_tableEPPNS_19BSphere_Tree_StructEiiPd(%"struct.pov::BSphere_Tree_Struct"** nocapture %Elements, i32 %a, i32 %b, double* nocapture %areas) #4 {
+entry:
+  %r2 = alloca double, align 8
+  %C = alloca [3 x double], align 16
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BSphere_Tree_Struct"** %Elements}, i64 0, metadata !137), !dbg !463
+  call void @llvm.dbg.value(metadata !{i32 %a}, i64 0, metadata !138), !dbg !463
+  call void @llvm.dbg.value(metadata !{i32 %b}, i64 0, metadata !139), !dbg !463
+  call void @llvm.dbg.value(metadata !{double* %areas}, i64 0, metadata !140), !dbg !463
+  call void @llvm.dbg.declare(metadata !{double* %r2}, metadata !145), !dbg !464
+  call void @llvm.dbg.declare(metadata !{[3 x double]* %C}, metadata !146), !dbg !465
+  %cmp = icmp slt i32 %a, %b, !dbg !466
+  %a.b = select i1 %cmp, i32 %a, i32 %b, !dbg !467
+  %. = select i1 %cmp, i32 1, i32 -1, !dbg !467
+  %arraydecay = getelementptr inbounds [3 x double]* %C, i64 0, i64 0, !dbg !469
+  %idxprom = sext i32 %a to i64, !dbg !469
+  %arrayidx = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"** %Elements, i64 %idxprom, !dbg !469
+  %0 = load %"struct.pov::BSphere_Tree_Struct"** %arrayidx, align 8, !dbg !469, !tbaa !272
+  %arraydecay2 = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %0, i64 0, i32 1, i64 0, !dbg !469
+  tail call void @llvm.dbg.value(metadata !{double* %arraydecay}, i64 0, metadata !470), !dbg !471
+  tail call void @llvm.dbg.value(metadata !{double* %arraydecay2}, i64 0, metadata !472), !dbg !471
+  %1 = load double* %arraydecay2, align 8, !dbg !473, !tbaa !308
+  store double %1, double* %arraydecay, align 16, !dbg !473, !tbaa !308
+  %arrayidx2.i = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %0, i64 0, i32 1, i64 1, !dbg !474
+  %2 = load double* %arrayidx2.i, align 8, !dbg !474, !tbaa !308
+  %arrayidx3.i = getelementptr inbounds [3 x double]* %C, i64 0, i64 1, !dbg !474
+  store double %2, double* %arrayidx3.i, align 8, !dbg !474, !tbaa !308
+  %arrayidx4.i = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %0, i64 0, i32 1, i64 2, !dbg !475
+  %3 = load double* %arrayidx4.i, align 8, !dbg !475, !tbaa !308
+  %arrayidx5.i = getelementptr inbounds [3 x double]* %C, i64 0, i64 2, !dbg !475
+  store double %3, double* %arrayidx5.i, align 16, !dbg !475, !tbaa !308
+  %r25 = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %0, i64 0, i32 2, !dbg !476
+  %4 = load double* %r25, align 8, !dbg !476, !tbaa !308
+  call void @llvm.dbg.value(metadata !{double %4}, i64 0, metadata !145), !dbg !476
+  store double %4, double* %r2, align 8, !dbg !476, !tbaa !308
+  call void @llvm.dbg.value(metadata !{i32 %a}, i64 0, metadata !141), !dbg !477
+  %add = add nsw i32 %., %b, !dbg !477
+  %cmp633 = icmp eq i32 %add, %a, !dbg !477
+  br i1 %cmp633, label %for.end, label %for.body.lr.ph, !dbg !477
+
+for.body.lr.ph:                                   ; preds = %entry
+  %5 = sext i32 %. to i64
+  br label %for.body, !dbg !477
+
+for.body:                                         ; preds = %for.body.for.body_crit_edge, %for.body.lr.ph
+  %6 = phi double [ %4, %for.body.lr.ph ], [ %.pre35, %for.body.for.body_crit_edge ]
+  %7 = phi %"struct.pov::BSphere_Tree_Struct"* [ %0, %for.body.lr.ph ], [ %.pre, %for.body.for.body_crit_edge ]
+  %8 = phi double [ %4, %for.body.lr.ph ], [ %9, %for.body.for.body_crit_edge ], !dbg !479
+  %indvars.iv = phi i64 [ %idxprom, %for.body.lr.ph ], [ %indvars.iv.next, %for.body.for.body_crit_edge ]
+  call void @llvm.dbg.value(metadata !{double* %r2}, i64 0, metadata !145), !dbg !479
+  %arraydecay12 = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %7, i64 0, i32 1, i64 0, !dbg !479
+  call fastcc void @_ZN3povL13merge_spheresEPdS0_S0_dS0_d(double* %arraydecay, double* %r2, double* %arraydecay, double %8, double* %arraydecay12, double %6) #7, !dbg !479
+  call void @llvm.dbg.value(metadata !{double* %r2}, i64 0, metadata !145), !dbg !481
+  %9 = load double* %r2, align 8, !dbg !481, !tbaa !308
+  %10 = trunc i64 %indvars.iv to i32, !dbg !481
+  %sub = sub nsw i32 %10, %a.b, !dbg !481
+  %idxprom16 = sext i32 %sub to i64, !dbg !481
+  %arrayidx17 = getelementptr inbounds double* %areas, i64 %idxprom16, !dbg !481
+  store double %9, double* %arrayidx17, align 8, !dbg !481, !tbaa !308
+  %indvars.iv.next = add i64 %indvars.iv, %5, !dbg !477
+  %11 = trunc i64 %indvars.iv.next to i32, !dbg !477
+  %cmp6 = icmp eq i32 %11, %add, !dbg !477
+  br i1 %cmp6, label %for.end, label %for.body.for.body_crit_edge, !dbg !477
+
+for.body.for.body_crit_edge:                      ; preds = %for.body
+  %arrayidx10.phi.trans.insert = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"** %Elements, i64 %indvars.iv.next
+  %.pre = load %"struct.pov::BSphere_Tree_Struct"** %arrayidx10.phi.trans.insert, align 8, !dbg !479, !tbaa !272
+  %r215.phi.trans.insert = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %.pre, i64 0, i32 2
+  %.pre35 = load double* %r215.phi.trans.insert, align 8, !dbg !479, !tbaa !308
+  br label %for.body, !dbg !477
+
+for.end:                                          ; preds = %for.body, %entry
+  ret void, !dbg !482
+}
+
+; Function Attrs: optsize
+declare i32 @_ZN3pov10Debug_InfoEPKcz(i8*, ...) #2
+
+; Function Attrs: optsize
+declare i8* @_ZN3pov11pov_reallocEPvmPKciS2_(i8*, i64, i8*, i32, i8*) #2
+
+; Function Attrs: nounwind optsize uwtable
+define internal fastcc void @_ZN3povL13merge_spheresEPdS0_S0_dS0_d(double* nocapture %C, double* nocapture %r, double* nocapture %C1, double %r1, double* nocapture %C2, double %r2) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{double* %C}, i64 0, metadata !81), !dbg !483
+  tail call void @llvm.dbg.value(metadata !{double* %r}, i64 0, metadata !82), !dbg !483
+  tail call void @llvm.dbg.value(metadata !{double* %C1}, i64 0, metadata !83), !dbg !483
+  tail call void @llvm.dbg.value(metadata !{double %r1}, i64 0, metadata !84), !dbg !483
+  tail call void @llvm.dbg.value(metadata !{double* %C2}, i64 0, metadata !85), !dbg !483
+  tail call void @llvm.dbg.value(metadata !{double %r2}, i64 0, metadata !86), !dbg !483
+  tail call void @llvm.dbg.declare(metadata !282, metadata !92), !dbg !484
+  tail call void @llvm.dbg.value(metadata !284, i64 0, metadata !485), !dbg !487
+  tail call void @llvm.dbg.value(metadata !{double* %C1}, i64 0, metadata !488), !dbg !487
+  tail call void @llvm.dbg.value(metadata !{double* %C2}, i64 0, metadata !489), !dbg !487
+  %0 = load double* %C1, align 8, !dbg !490, !tbaa !308
+  %1 = load double* %C2, align 8, !dbg !490, !tbaa !308
+  %sub.i = fsub double %0, %1, !dbg !490
+  %arrayidx3.i = getelementptr inbounds double* %C1, i64 1, !dbg !491
+  %2 = load double* %arrayidx3.i, align 8, !dbg !491, !tbaa !308
+  %arrayidx4.i = getelementptr inbounds double* %C2, i64 1, !dbg !491
+  %3 = load double* %arrayidx4.i, align 8, !dbg !491, !tbaa !308
+  %sub5.i = fsub double %2, %3, !dbg !491
+  %arrayidx7.i = getelementptr inbounds double* %C1, i64 2, !dbg !492
+  %4 = load double* %arrayidx7.i, align 8, !dbg !492, !tbaa !308
+  %arrayidx8.i = getelementptr inbounds double* %C2, i64 2, !dbg !492
+  %5 = load double* %arrayidx8.i, align 8, !dbg !492, !tbaa !308
+  %sub9.i = fsub double %4, %5, !dbg !492
+  tail call void @llvm.dbg.value(metadata !284, i64 0, metadata !493) #6, !dbg !495
+  %mul.i45 = fmul double %sub.i, %sub.i, !dbg !496
+  %mul4.i = fmul double %sub5.i, %sub5.i, !dbg !496
+  %add.i47 = fadd double %mul.i45, %mul4.i, !dbg !496
+  %mul7.i49 = fmul double %sub9.i, %sub9.i, !dbg !496
+  %add8.i50 = fadd double %add.i47, %mul7.i49, !dbg !496
+  %call.i = tail call double @sqrt(double %add8.i50) #8, !dbg !496
+  tail call void @llvm.dbg.value(metadata !{double %call.i}, i64 0, metadata !87), !dbg !496
+  tail call void @llvm.dbg.value(metadata !{double %call.i}, i64 0, metadata !497), !dbg !495
+  tail call void @llvm.dbg.value(metadata !{double %call.i}, i64 0, metadata !87), !dbg !498
+  tail call void @llvm.dbg.value(metadata !{double %call.i}, i64 0, metadata !87), !dbg !499
+  %call = tail call double @sqrt(double %r1) #8, !dbg !500
+  tail call void @llvm.dbg.value(metadata !{double %call}, i64 0, metadata !88), !dbg !500
+  %call2 = tail call double @sqrt(double %r2) #8, !dbg !501
+  tail call void @llvm.dbg.value(metadata !{double %call2}, i64 0, metadata !89), !dbg !501
+  %add = fadd double %call.i, %call, !dbg !498
+  %cmp = fcmp ugt double %add, %call2, !dbg !498
+  br i1 %cmp, label %if.end, label %if.then, !dbg !498
+
+if.then:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{double* %C}, i64 0, metadata !502), !dbg !505
+  tail call void @llvm.dbg.value(metadata !{double* %C2}, i64 0, metadata !506), !dbg !505
+  %6 = load double* %C2, align 8, !dbg !507, !tbaa !308
+  store double %6, double* %C, align 8, !dbg !507, !tbaa !308
+  %7 = load double* %arrayidx4.i, align 8, !dbg !508, !tbaa !308
+  %arrayidx3.i42 = getelementptr inbounds double* %C, i64 1, !dbg !508
+  store double %7, double* %arrayidx3.i42, align 8, !dbg !508, !tbaa !308
+  %8 = load double* %arrayidx8.i, align 8, !dbg !509, !tbaa !308
+  %arrayidx5.i44 = getelementptr inbounds double* %C, i64 2, !dbg !509
+  store double %8, double* %arrayidx5.i44, align 8, !dbg !509, !tbaa !308
+  store double %r2, double* %r, align 8, !dbg !510, !tbaa !308
+  br label %return, !dbg !511
+
+if.end:                                           ; preds = %entry
+  %add3 = fadd double %call.i, %call2, !dbg !512
+  %cmp4 = fcmp ugt double %add3, %call, !dbg !512
+  br i1 %cmp4, label %if.end6, label %if.then5, !dbg !512
+
+if.then5:                                         ; preds = %if.end
+  tail call void @llvm.dbg.value(metadata !{double* %C}, i64 0, metadata !513), !dbg !516
+  tail call void @llvm.dbg.value(metadata !{double* %C1}, i64 0, metadata !517), !dbg !516
+  %9 = load double* %C1, align 8, !dbg !518, !tbaa !308
+  store double %9, double* %C, align 8, !dbg !518, !tbaa !308
+  %10 = load double* %arrayidx3.i, align 8, !dbg !519, !tbaa !308
+  %arrayidx3.i39 = getelementptr inbounds double* %C, i64 1, !dbg !519
+  store double %10, double* %arrayidx3.i39, align 8, !dbg !519, !tbaa !308
+  %11 = load double* %arrayidx7.i, align 8, !dbg !520, !tbaa !308
+  %arrayidx5.i = getelementptr inbounds double* %C, i64 2, !dbg !520
+  store double %11, double* %arrayidx5.i, align 8, !dbg !520, !tbaa !308
+  store double %r1, double* %r, align 8, !dbg !521, !tbaa !308
+  br label %return, !dbg !522
+
+if.end6:                                          ; preds = %if.end
+  %sub = fsub double %call, %call2, !dbg !523
+  %div = fdiv double %sub, %call.i, !dbg !523
+  %add7 = fadd double %div, 1.000000e+00, !dbg !523
+  %div8 = fmul double %add7, 5.000000e-01, !dbg !523
+  tail call void @llvm.dbg.value(metadata !{double %div8}, i64 0, metadata !90), !dbg !523
+  %sub9 = fsub double %call2, %call, !dbg !524
+  %div10 = fdiv double %sub9, %call.i, !dbg !524
+  %add11 = fadd double %div10, 1.000000e+00, !dbg !524
+  %div12 = fmul double %add11, 5.000000e-01, !dbg !524
+  tail call void @llvm.dbg.value(metadata !{double %div12}, i64 0, metadata !91), !dbg !524
+  tail call void @llvm.dbg.value(metadata !{double* %C}, i64 0, metadata !525), !dbg !527
+  tail call void @llvm.dbg.value(metadata !{double %div8}, i64 0, metadata !528), !dbg !527
+  tail call void @llvm.dbg.value(metadata !{double* %C1}, i64 0, metadata !529), !dbg !527
+  tail call void @llvm.dbg.value(metadata !{double %div12}, i64 0, metadata !530), !dbg !527
+  tail call void @llvm.dbg.value(metadata !{double* %C2}, i64 0, metadata !531), !dbg !527
+  %12 = load double* %C1, align 8, !dbg !532, !tbaa !308
+  %mul.i35 = fmul double %12, %div8, !dbg !532
+  %13 = load double* %C2, align 8, !dbg !532, !tbaa !308
+  %mul2.i = fmul double %13, %div12, !dbg !532
+  %add.i = fadd double %mul.i35, %mul2.i, !dbg !532
+  store double %add.i, double* %C, align 8, !dbg !532, !tbaa !308
+  %14 = load double* %arrayidx3.i, align 8, !dbg !533, !tbaa !308
+  %mul5.i = fmul double %div8, %14, !dbg !533
+  %15 = load double* %arrayidx4.i, align 8, !dbg !533, !tbaa !308
+  %mul7.i = fmul double %div12, %15, !dbg !533
+  %add8.i = fadd double %mul5.i, %mul7.i, !dbg !533
+  %arrayidx9.i = getelementptr inbounds double* %C, i64 1, !dbg !533
+  store double %add8.i, double* %arrayidx9.i, align 8, !dbg !533, !tbaa !308
+  %16 = load double* %arrayidx7.i, align 8, !dbg !534, !tbaa !308
+  %mul11.i = fmul double %div8, %16, !dbg !534
+  %17 = load double* %arrayidx8.i, align 8, !dbg !534, !tbaa !308
+  %mul13.i = fmul double %div12, %17, !dbg !534
+  %add14.i = fadd double %mul11.i, %mul13.i, !dbg !534
+  %arrayidx15.i = getelementptr inbounds double* %C, i64 2, !dbg !534
+  store double %add14.i, double* %arrayidx15.i, align 8, !dbg !534, !tbaa !308
+  %add14 = fadd double %add, %call2, !dbg !499
+  %div15 = fmul double %add14, 5.000000e-01, !dbg !499
+  tail call void @llvm.dbg.value(metadata !{double %div15}, i64 0, metadata !535), !dbg !536
+  %mul.i = fmul double %div15, %div15, !dbg !537
+  store double %mul.i, double* %r, align 8, !dbg !499, !tbaa !308
+  br label %return, !dbg !539
+
+return:                                           ; preds = %if.end6, %if.then5, %if.then
+  ret void, !dbg !539
+}
+
+; Function Attrs: nounwind optsize
+declare double @sqrt(double) #5
+
+; Function Attrs: nounwind readnone
+declare void @llvm.dbg.value(metadata, i64, metadata) #1
+
+; Function Attrs: nounwind
+declare void @llvm.lifetime.start(i64, i8* nocapture) #6
+
+; Function Attrs: nounwind
+declare void @llvm.lifetime.end(i64, i8* nocapture) #6
+
+attributes #0 = { optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind readnone }
+attributes #2 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { nounwind optsize readonly uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #4 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #5 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #6 = { nounwind }
+attributes #7 = { optsize }
+attributes #8 = { nounwind optsize }
+
+!llvm.dbg.cu = !{!0}
+
+!0 = metadata !{i32 786449, metadata !1, i32 4, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !11, metadata !12, metadata !194, metadata !199, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp] [DW_LANG_C_plus_plus]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{metadata !3}
+!3 = metadata !{i32 786436, metadata !4, metadata !5, metadata !"", i32 692, i64 32, i64 32, i32 0, i32 0, null, metadata !6, i32 0, i32 0} ; [ DW_TAG_enumeration_type ] [line 692, size 32, align 32, offset 0] [from ]
+!4 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/frame.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!5 = metadata !{i32 786489, metadata !4, null, metadata !"pov", i32 72} ; [ DW_TAG_namespace ] [pov] [line 72]
+!6 = metadata !{metadata !7, metadata !8, metadata !9, metadata !10}
+!7 = metadata !{i32 786472, metadata !"X", i64 0} ; [ DW_TAG_enumerator ] [X :: 0]
+!8 = metadata !{i32 786472, metadata !"Y", i64 1} ; [ DW_TAG_enumerator ] [Y :: 1]
+!9 = metadata !{i32 786472, metadata !"Z", i64 2} ; [ DW_TAG_enumerator ] [Z :: 2]
+!10 = metadata !{i32 786472, metadata !"T", i64 3} ; [ DW_TAG_enumerator ] [T :: 3]
+!11 = metadata !{i32 0}
+!12 = metadata !{metadata !13, metadata !46, metadata !52, metadata !71, metadata !77, metadata !93, metadata !101, metadata !112, metadata !119, metadata !126, metadata !133, metadata !147, metadata !156, metadata !170, metadata !182, metadata !186}
+!13 = metadata !{i32 786478, metadata !1, metadata !14, metadata !"Build_Bounding_Sphere_Hierarchy", metadata !"Build_Bounding_Sphere_Hierarchy", metadata !"_ZN3pov31Build_Bounding_Sphere_HierarchyEPPNS_19BSphere_Tree_StructEiPS2_", i32 575, metadata !15, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%"struct.pov::BSphere_Tree_Struct"**, i32, %"struct.pov::BSphere_Tree_Struct"***)* @_ZN3pov31Build_Bounding_Sphere_HierarchyEPPNS_19BSphere_Tree_StructEiPS2_, null, null, metadata !39, i32 576} ; [ DW_TAG_subprogram ] [line 575] [def] [scope 576] [Build_Bounding_Sphere_Hierarchy]
+!14 = metadata !{i32 786489, metadata !1, null, metadata !"pov", i32 40} ; [ DW_TAG_namespace ] [pov] [line 40]
+!15 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !16, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!16 = metadata !{null, metadata !17, metadata !37, metadata !38}
+!17 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !18} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!18 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !19} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from BSPHERE_TREE]
+!19 = metadata !{i32 786454, metadata !1, metadata !20, metadata !"BSPHERE_TREE", i32 48, i64 0, i64 0, i64 0, i32 0, metadata !22} ; [ DW_TAG_typedef ] [BSPHERE_TREE] [line 48, size 0, align 0, offset 0] [from BSphere_Tree_Struct]
+!20 = metadata !{i32 786489, metadata !21, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!21 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!22 = metadata !{i32 786451, metadata !21, metadata !20, metadata !"BSphere_Tree_Struct", i32 50, i64 384, i64 64, i32 0, i32 0, null, metadata !23, i32 0, null, null} ; [ DW_TAG_structure_type ] [BSphere_Tree_Struct] [line 50, size 384, align 64, offset 0] [from ]
+!23 = metadata !{metadata !24, metadata !26, metadata !32, metadata !33}
+!24 = metadata !{i32 786445, metadata !21, metadata !22, metadata !"Entries", i32 52, i64 16, i64 16, i64 0, i32 0, metadata !25} ; [ DW_TAG_member ] [Entries] [line 52, size 16, align 16, offset 0] [from short]
+!25 = metadata !{i32 786468, null, null, metadata !"short", i32 0, i64 16, i64 16, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [short] [line 0, size 16, align 16, offset 0, enc DW_ATE_signed]
+!26 = metadata !{i32 786445, metadata !21, metadata !22, metadata !"C", i32 53, i64 192, i64 64, i64 64, i32 0, metadata !27} ; [ DW_TAG_member ] [C] [line 53, size 192, align 64, offset 64] [from VECTOR]
+!27 = metadata !{i32 786454, metadata !21, metadata !5, metadata !"VECTOR", i32 677, i64 0, i64 0, i64 0, i32 0, metadata !28} ; [ DW_TAG_typedef ] [VECTOR] [line 677, size 0, align 0, offset 0] [from ]
+!28 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 192, i64 64, i32 0, i32 0, metadata !29, metadata !30, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 192, align 64, offset 0] [from double]
+!29 = metadata !{i32 786468, null, null, metadata !"double", i32 0, i64 64, i64 64, i64 0, i32 0, i32 4} ; [ DW_TAG_base_type ] [double] [line 0, size 64, align 64, offset 0, enc DW_ATE_float]
+!30 = metadata !{metadata !31}
+!31 = metadata !{i32 786465, i64 0, i64 3}        ; [ DW_TAG_subrange_type ] [0, 2]
+!32 = metadata !{i32 786445, metadata !21, metadata !22, metadata !"r2", i32 54, i64 64, i64 64, i64 256, i32 0, metadata !29} ; [ DW_TAG_member ] [r2] [line 54, size 64, align 64, offset 256] [from double]
+!33 = metadata !{i32 786445, metadata !21, metadata !22, metadata !"Node", i32 55, i64 64, i64 64, i64 320, i32 0, metadata !34} ; [ DW_TAG_member ] [Node] [line 55, size 64, align 64, offset 320] [from ]
+!34 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !35} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!35 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !36} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from BSPHERE_TREE]
+!36 = metadata !{i32 786454, metadata !21, metadata !20, metadata !"BSPHERE_TREE", i32 48, i64 0, i64 0, i64 0, i32 0, metadata !22} ; [ DW_TAG_typedef ] [BSPHERE_TREE] [line 48, size 0, align 0, offset 0] [from BSphere_Tree_Struct]
+!37 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!38 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !17} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!39 = metadata !{metadata !40, metadata !42, metadata !43, metadata !44, metadata !45}
+!40 = metadata !{i32 786689, metadata !13, metadata !"Root", metadata !41, i32 16777791, metadata !17, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [Root] [line 575]
+!41 = metadata !{i32 786473, metadata !1}         ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!42 = metadata !{i32 786689, metadata !13, metadata !"nElem", metadata !41, i32 33555007, metadata !37, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [nElem] [line 575]
+!43 = metadata !{i32 786689, metadata !13, metadata !"Elements", metadata !41, i32 50332223, metadata !38, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [Elements] [line 575]
+!44 = metadata !{i32 786688, metadata !13, metadata !"low", metadata !41, i32 577, metadata !37, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [low] [line 577]
+!45 = metadata !{i32 786688, metadata !13, metadata !"high", metadata !41, i32 577, metadata !37, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [high] [line 577]
+!46 = metadata !{i32 786478, metadata !1, metadata !14, metadata !"Destroy_Bounding_Sphere_Hierarchy", metadata !"Destroy_Bounding_Sphere_Hierarchy", metadata !"_ZN3pov33Destroy_Bounding_Sphere_HierarchyEPNS_19BSphere_Tree_StructE", i32 640, metadata !47, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%"struct.pov::BSphere_Tree_Struct"*)* @_ZN3pov33Destroy_Bounding_Sphere_HierarchyEPNS_19BSphere_Tree_StructE, null, null, metadata !49, i32 641} ; [ DW_TAG_subprogram ] [line 640] [def] [scope 641] [Destroy_Bounding_Sphere_Hierarchy]
+!47 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !48, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!48 = metadata !{null, metadata !18}
+!49 = metadata !{metadata !50, metadata !51}
+!50 = metadata !{i32 786689, metadata !46, metadata !"Node", metadata !41, i32 16777856, metadata !18, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [Node] [line 640]
+!51 = metadata !{i32 786688, metadata !46, metadata !"i", metadata !41, i32 642, metadata !25, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i] [line 642]
+!52 = metadata !{i32 786478, metadata !1, metadata !14, metadata !"sort_and_split", metadata !"sort_and_split", metadata !"_ZN3povL14sort_and_splitEPPNS_19BSphere_Tree_StructEPS2_Piii", i32 418, metadata !53, i1 true, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (%"struct.pov::BSphere_Tree_Struct"**, %"struct.pov::BSphere_Tree_Struct"***, i32*, i32, i32)* @_ZN3povL14sort_and_splitEPPNS_19BSphere_Tree_StructEPS2_Piii, null, null, metadata !56, i32 419} ; [ DW_TAG_subprogram ] [line 418] [local] [def] [scope 419] [sort_and_split]
+!53 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !54, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!54 = metadata !{metadata !37, metadata !17, metadata !38, metadata !55, metadata !37, metadata !37}
+!55 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !37} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from int]
+!56 = metadata !{metadata !57, metadata !58, metadata !59, metadata !60, metadata !61, metadata !62, metadata !63, metadata !64, metadata !65, metadata !67, metadata !68, metadata !69, metadata !70}
+!57 = metadata !{i32 786689, metadata !52, metadata !"Root", metadata !41, i32 16777634, metadata !17, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [Root] [line 418]
+!58 = metadata !{i32 786689, metadata !52, metadata !"Elements", metadata !41, i32 33554850, metadata !38, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [Elements] [line 418]
+!59 = metadata !{i32 786689, metadata !52, metadata !"nElem", metadata !41, i32 50332066, metadata !55, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [nElem] [line 418]
+!60 = metadata !{i32 786689, metadata !52, metadata !"first", metadata !41, i32 67109282, metadata !37, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [first] [line 418]
+!61 = metadata !{i32 786689, metadata !52, metadata !"last", metadata !41, i32 83886498, metadata !37, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [last] [line 418]
+!62 = metadata !{i32 786688, metadata !52, metadata !"size", metadata !41, i32 420, metadata !37, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [size] [line 420]
+!63 = metadata !{i32 786688, metadata !52, metadata !"i", metadata !41, i32 420, metadata !37, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i] [line 420]
+!64 = metadata !{i32 786688, metadata !52, metadata !"best_loc", metadata !41, i32 420, metadata !37, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [best_loc] [line 420]
+!65 = metadata !{i32 786688, metadata !52, metadata !"area_left", metadata !41, i32 421, metadata !66, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [area_left] [line 421]
+!66 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !29} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from double]
+!67 = metadata !{i32 786688, metadata !52, metadata !"area_right", metadata !41, i32 421, metadata !66, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [area_right] [line 421]
+!68 = metadata !{i32 786688, metadata !52, metadata !"best_index", metadata !41, i32 422, metadata !29, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [best_index] [line 422]
+!69 = metadata !{i32 786688, metadata !52, metadata !"new_index", metadata !41, i32 422, metadata !29, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [new_index] [line 422]
+!70 = metadata !{i32 786688, metadata !52, metadata !"cd", metadata !41, i32 423, metadata !18, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [cd] [line 423]
+!71 = metadata !{i32 786478, metadata !1, metadata !14, metadata !"recompute_bound", metadata !"recompute_bound", metadata !"_ZN3povL15recompute_boundEPNS_19BSphere_Tree_StructE", i32 183, metadata !47, i1 true, i1 true, i32 0, i32 0, null, i32 256, i1 true, null, null, null, metadata !72, i32 184} ; [ DW_TAG_subprogram ] [line 183] [local] [def] [scope 184] [recompute_bound]
+!72 = metadata !{metadata !73, metadata !74, metadata !75, metadata !76}
+!73 = metadata !{i32 786689, metadata !71, metadata !"Node", metadata !41, i32 16777399, metadata !18, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [Node] [line 183]
+!74 = metadata !{i32 786688, metadata !71, metadata !"i", metadata !41, i32 185, metadata !25, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i] [line 185]
+!75 = metadata !{i32 786688, metadata !71, metadata !"r2", metadata !41, i32 186, metadata !29, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [r2] [line 186]
+!76 = metadata !{i32 786688, metadata !71, metadata !"C", metadata !41, i32 187, metadata !27, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [C] [line 187]
+!77 = metadata !{i32 786478, metadata !1, metadata !14, metadata !"merge_spheres", metadata !"merge_spheres", metadata !"_ZN3povL13merge_spheresEPdS0_S0_dS0_d", i32 105, metadata !78, i1 true, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (double*, double*, double*, double, double*, double)* @_ZN3povL13merge_spheresEPdS0_S0_dS0_d, null, null, metadata !80, i32 106} ; [ DW_TAG_subprogram ] [line 105] [local] [def] [scope 106] [merge_spheres]
+!78 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !79, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!79 = metadata !{null, metadata !66, metadata !66, metadata !66, metadata !29, metadata !66, metadata !29}
+!80 = metadata !{metadata !81, metadata !82, metadata !83, metadata !84, metadata !85, metadata !86, metadata !87, metadata !88, metadata !89, metadata !90, metadata !91, metadata !92}
+!81 = metadata !{i32 786689, metadata !77, metadata !"C", metadata !41, i32 16777321, metadata !66, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [C] [line 105]
+!82 = metadata !{i32 786689, metadata !77, metadata !"r", metadata !41, i32 33554537, metadata !66, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [r] [line 105]
+!83 = metadata !{i32 786689, metadata !77, metadata !"C1", metadata !41, i32 50331753, metadata !66, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [C1] [line 105]
+!84 = metadata !{i32 786689, metadata !77, metadata !"r1", metadata !41, i32 67108969, metadata !29, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [r1] [line 105]
+!85 = metadata !{i32 786689, metadata !77, metadata !"C2", metadata !41, i32 83886185, metadata !66, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [C2] [line 105]
+!86 = metadata !{i32 786689, metadata !77, metadata !"r2", metadata !41, i32 100663401, metadata !29, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [r2] [line 105]
+!87 = metadata !{i32 786688, metadata !77, metadata !"l", metadata !41, i32 107, metadata !29, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [l] [line 107]
+!88 = metadata !{i32 786688, metadata !77, metadata !"r1r", metadata !41, i32 107, metadata !29, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [r1r] [line 107]
+!89 = metadata !{i32 786688, metadata !77, metadata !"r2r", metadata !41, i32 107, metadata !29, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [r2r] [line 107]
+!90 = metadata !{i32 786688, metadata !77, metadata !"k1", metadata !41, i32 107, metadata !29, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [k1] [line 107]
+!91 = metadata !{i32 786688, metadata !77, metadata !"k2", metadata !41, i32 107, metadata !29, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [k2] [line 107]
+!92 = metadata !{i32 786688, metadata !77, metadata !"D", metadata !41, i32 108, metadata !27, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [D] [line 108]
+!93 = metadata !{i32 786478, metadata !94, metadata !95, metadata !"Sqr", metadata !"Sqr", metadata !"_ZN3pov3SqrEd", i32 294, metadata !96, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, null, null, null, metadata !98, i32 295} ; [ DW_TAG_subprogram ] [line 294] [def] [scope 295] [Sqr]
+!94 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/vector.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!95 = metadata !{i32 786489, metadata !94, null, metadata !"pov", i32 37} ; [ DW_TAG_namespace ] [pov] [line 37]
+!96 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !97, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!97 = metadata !{metadata !29, metadata !29}
+!98 = metadata !{metadata !99}
+!99 = metadata !{i32 786689, metadata !93, metadata !"a", metadata !100, i32 16777510, metadata !29, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [a] [line 294]
+!100 = metadata !{i32 786473, metadata !94}       ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/vector.h]
+!101 = metadata !{i32 786478, metadata !94, metadata !95, metadata !"VLinComb2", metadata !"VLinComb2", metadata !"_ZN3pov9VLinComb2EPddPKddS2_", i32 369, metadata !102, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, null, null, null, metadata !106, i32 370} ; [ DW_TAG_subprogram ] [line 369] [def] [scope 370] [VLinComb2]
+!102 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !103, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!103 = metadata !{null, metadata !66, metadata !29, metadata !104, metadata !29, metadata !104}
+!104 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, metadata !105} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!105 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !29} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from double]
+!106 = metadata !{metadata !107, metadata !108, metadata !109, metadata !110, metadata !111}
+!107 = metadata !{i32 786689, metadata !101, metadata !"v", metadata !100, i32 16777585, metadata !66, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [v] [line 369]
+!108 = metadata !{i32 786689, metadata !101, metadata !"k1", metadata !100, i32 33554801, metadata !29, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [k1] [line 369]
+!109 = metadata !{i32 786689, metadata !101, metadata !"v1", metadata !100, i32 50332017, metadata !104, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [v1] [line 369]
+!110 = metadata !{i32 786689, metadata !101, metadata !"k2", metadata !100, i32 67109233, metadata !29, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [k2] [line 369]
+!111 = metadata !{i32 786689, metadata !101, metadata !"v2", metadata !100, i32 83886449, metadata !104, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [v2] [line 369]
+!112 = metadata !{i32 786478, metadata !94, metadata !95, metadata !"VLength", metadata !"VLength", metadata !"_ZN3pov7VLengthERdPKd", i32 313, metadata !113, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, null, null, null, metadata !116, i32 314} ; [ DW_TAG_subprogram ] [line 313] [def] [scope 314] [VLength]
+!113 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !114, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!114 = metadata !{null, metadata !115, metadata !104}
+!115 = metadata !{i32 786448, null, null, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !29} ; [ DW_TAG_reference_type ] [line 0, size 0, align 0, offset 0] [from double]
+!116 = metadata !{metadata !117, metadata !118}
+!117 = metadata !{i32 786689, metadata !112, metadata !"a", metadata !100, i32 16777529, metadata !115, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [a] [line 313]
+!118 = metadata !{i32 786689, metadata !112, metadata !"b", metadata !100, i32 33554745, metadata !104, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [b] [line 313]
+!119 = metadata !{i32 786478, metadata !94, metadata !95, metadata !"VSub", metadata !"VSub", metadata !"_ZN3pov4VSubEPdPKdS2_", i32 87, metadata !120, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, null, null, null, metadata !122, i32 88} ; [ DW_TAG_subprogram ] [line 87] [def] [scope 88] [VSub]
+!120 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !121, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!121 = metadata !{null, metadata !66, metadata !104, metadata !104}
+!122 = metadata !{metadata !123, metadata !124, metadata !125}
+!123 = metadata !{i32 786689, metadata !119, metadata !"a", metadata !100, i32 16777303, metadata !66, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [a] [line 87]
+!124 = metadata !{i32 786689, metadata !119, metadata !"b", metadata !100, i32 33554519, metadata !104, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [b] [line 87]
+!125 = metadata !{i32 786689, metadata !119, metadata !"c", metadata !100, i32 50331735, metadata !104, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [c] [line 87]
+!126 = metadata !{i32 786478, metadata !4, metadata !5, metadata !"Assign_Vector", metadata !"Assign_Vector", metadata !"_ZN3pov13Assign_VectorEPdS0_", i32 712, metadata !127, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, null, null, null, metadata !129, i32 713} ; [ DW_TAG_subprogram ] [line 712] [def] [scope 713] [Assign_Vector]
+!127 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !128, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!128 = metadata !{null, metadata !66, metadata !66}
+!129 = metadata !{metadata !130, metadata !132}
+!130 = metadata !{i32 786689, metadata !126, metadata !"d", metadata !131, i32 16777928, metadata !66, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [d] [line 712]
+!131 = metadata !{i32 786473, metadata !4}        ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/frame.h]
+!132 = metadata !{i32 786689, metadata !126, metadata !"s", metadata !131, i32 33555144, metadata !66, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [s] [line 712]
+!133 = metadata !{i32 786478, metadata !1, metadata !14, metadata !"build_area_table", metadata !"build_area_table", metadata !"_ZN3povL16build_area_tableEPPNS_19BSphere_Tree_StructEiiPd", i32 363, metadata !134, i1 true, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (%"struct.pov::BSphere_Tree_Struct"**, i32, i32, double*)* @_ZN3povL16build_area_tableEPPNS_19BSphere_Tree_StructEiiPd, null, null, metadata !136, i32 364} ; [ DW_TAG_subprogram ] [line 363] [local] [def] [scope 364] [build_area_table]
+!134 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !135, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!135 = metadata !{null, metadata !17, metadata !37, metadata !37, metadata !66}
+!136 = metadata !{metadata !137, metadata !138, metadata !139, metadata !140, metadata !141, metadata !143, metadata !144, metadata !145, metadata !146}
+!137 = metadata !{i32 786689, metadata !133, metadata !"Elements", metadata !41, i32 16777579, metadata !17, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [Elements] [line 363]
+!138 = metadata !{i32 786689, metadata !133, metadata !"a", metadata !41, i32 33554795, metadata !37, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [a] [line 363]
+!139 = metadata !{i32 786689, metadata !133, metadata !"b", metadata !41, i32 50332011, metadata !37, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [b] [line 363]
+!140 = metadata !{i32 786689, metadata !133, metadata !"areas", metadata !41, i32 67109227, metadata !66, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [areas] [line 363]
+!141 = metadata !{i32 786688, metadata !142, metadata !"i", metadata !41, i32 365, metadata !37, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i] [line 365]
+!142 = metadata !{i32 786443, metadata !1, metadata !133} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!143 = metadata !{i32 786688, metadata !142, metadata !"imin", metadata !41, i32 365, metadata !37, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [imin] [line 365]
+!144 = metadata !{i32 786688, metadata !142, metadata !"dir", metadata !41, i32 365, metadata !37, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [dir] [line 365]
+!145 = metadata !{i32 786688, metadata !142, metadata !"r2", metadata !41, i32 366, metadata !29, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [r2] [line 366]
+!146 = metadata !{i32 786688, metadata !142, metadata !"C", metadata !41, i32 367, metadata !27, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [C] [line 367]
+!147 = metadata !{i32 786478, metadata !1, metadata !14, metadata !"comp_elements", metadata !"comp_elements", metadata !"_ZN3povL13comp_elementsEPvS0_", i32 235, metadata !148, i1 true, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i8*, i8*)* @_ZN3povL13comp_elementsEPvS0_, null, null, metadata !151, i32 236} ; [ DW_TAG_subprogram ] [line 235] [local] [def] [scope 236] [comp_elements]
+!148 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !149, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!149 = metadata !{metadata !37, metadata !150, metadata !150}
+!150 = metadata !{i32 786447, null, null, metadata !"", i32 0, i64 64, i64 64, i64 0, i32 0, null} ; [ DW_TAG_pointer_type ] [line 0, size 64, align 64, offset 0] [from ]
+!151 = metadata !{metadata !152, metadata !153, metadata !154, metadata !155}
+!152 = metadata !{i32 786689, metadata !147, metadata !"in_a", metadata !41, i32 16777451, metadata !150, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [in_a] [line 235]
+!153 = metadata !{i32 786689, metadata !147, metadata !"in_b", metadata !41, i32 33554667, metadata !150, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [in_b] [line 235]
+!154 = metadata !{i32 786688, metadata !147, metadata !"am", metadata !41, i32 237, metadata !29, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [am] [line 237]
+!155 = metadata !{i32 786688, metadata !147, metadata !"bm", metadata !41, i32 237, metadata !29, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [bm] [line 237]
+!156 = metadata !{i32 786478, metadata !1, metadata !14, metadata !"find_axis", metadata !"find_axis", metadata !"_ZN3povL9find_axisEPPNS_19BSphere_Tree_StructEii", i32 287, metadata !157, i1 true, i1 true, i32 0, i32 0, null, i32 256, i1 true, null, null, null, metadata !159, i32 288} ; [ DW_TAG_subprogram ] [line 287] [local] [def] [scope 288] [find_axis]
+!157 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !158, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!158 = metadata !{metadata !37, metadata !17, metadata !37, metadata !37}
+!159 = metadata !{metadata !160, metadata !161, metadata !162, metadata !163, metadata !164, metadata !165, metadata !166, metadata !167, metadata !168, metadata !169}
+!160 = metadata !{i32 786689, metadata !156, metadata !"Elements", metadata !41, i32 16777503, metadata !17, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [Elements] [line 287]
+!161 = metadata !{i32 786689, metadata !156, metadata !"first", metadata !41, i32 33554719, metadata !37, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [first] [line 287]
+!162 = metadata !{i32 786689, metadata !156, metadata !"last", metadata !41, i32 50331935, metadata !37, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [last] [line 287]
+!163 = metadata !{i32 786688, metadata !156, metadata !"which", metadata !41, i32 289, metadata !37, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [which] [line 289]
+!164 = metadata !{i32 786688, metadata !156, metadata !"i", metadata !41, i32 290, metadata !37, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [i] [line 290]
+!165 = metadata !{i32 786688, metadata !156, metadata !"e", metadata !41, i32 291, metadata !29, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [e] [line 291]
+!166 = metadata !{i32 786688, metadata !156, metadata !"d", metadata !41, i32 291, metadata !29, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [d] [line 291]
+!167 = metadata !{i32 786688, metadata !156, metadata !"C", metadata !41, i32 292, metadata !27, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [C] [line 292]
+!168 = metadata !{i32 786688, metadata !156, metadata !"mins", metadata !41, i32 292, metadata !27, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [mins] [line 292]
+!169 = metadata !{i32 786688, metadata !156, metadata !"maxs", metadata !41, i32 292, metadata !27, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [maxs] [line 292]
+!170 = metadata !{i32 786478, metadata !171, metadata !172, metadata !"max<double>", metadata !"max<double>", metadata !"_ZSt3maxIdERKT_S2_S2_", i32 356, metadata !173, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, null, metadata !176, null, metadata !178, i32 217} ; [ DW_TAG_subprogram ] [line 356] [def] [scope 217] [max<double>]
+!171 = metadata !{metadata !"/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/bits/algorithmfwd.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!172 = metadata !{i32 786489, metadata !171, null, metadata !"std", i32 42} ; [ DW_TAG_namespace ] [std] [line 42]
+!173 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !174, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!174 = metadata !{metadata !175, metadata !175, metadata !175}
+!175 = metadata !{i32 786448, null, null, null, i32 0, i64 0, i64 0, i64 0, i32 0, metadata !105} ; [ DW_TAG_reference_type ] [line 0, size 0, align 0, offset 0] [from ]
+!176 = metadata !{metadata !177}
+!177 = metadata !{i32 786479, null, metadata !"_Tp", metadata !29, null, i32 0, i32 0} ; [ DW_TAG_template_type_parameter ]
+!178 = metadata !{metadata !179, metadata !181}
+!179 = metadata !{i32 786689, metadata !170, metadata !"__a", metadata !180, i32 16777572, metadata !175, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [__a] [line 356]
+!180 = metadata !{i32 786473, metadata !171}      ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts//usr/lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/bits/algorithmfwd.h]
+!181 = metadata !{i32 786689, metadata !170, metadata !"__b", metadata !180, i32 33554788, metadata !175, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [__b] [line 356]
+!182 = metadata !{i32 786478, metadata !171, metadata !172, metadata !"min<double>", metadata !"min<double>", metadata !"_ZSt3minIdERKT_S2_S2_", i32 367, metadata !173, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, null, metadata !176, null, metadata !183, i32 194} ; [ DW_TAG_subprogram ] [line 367] [def] [scope 194] [min<double>]
+!183 = metadata !{metadata !184, metadata !185}
+!184 = metadata !{i32 786689, metadata !182, metadata !"__a", metadata !180, i32 16777583, metadata !175, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [__a] [line 367]
+!185 = metadata !{i32 786689, metadata !182, metadata !"__b", metadata !180, i32 33554799, metadata !175, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [__b] [line 367]
+!186 = metadata !{i32 786478, metadata !4, metadata !5, metadata !"Make_Vector", metadata !"Make_Vector", metadata !"_ZN3pov11Make_VectorEPdddd", i32 806, metadata !187, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, null, null, null, metadata !189, i32 807} ; [ DW_TAG_subprogram ] [line 806] [def] [scope 807] [Make_Vector]
+!187 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !188, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!188 = metadata !{null, metadata !66, metadata !29, metadata !29, metadata !29}
+!189 = metadata !{metadata !190, metadata !191, metadata !192, metadata !193}
+!190 = metadata !{i32 786689, metadata !186, metadata !"v", metadata !131, i32 16778022, metadata !66, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [v] [line 806]
+!191 = metadata !{i32 786689, metadata !186, metadata !"a", metadata !131, i32 33555238, metadata !29, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [a] [line 806]
+!192 = metadata !{i32 786689, metadata !186, metadata !"b", metadata !131, i32 50332454, metadata !29, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [b] [line 806]
+!193 = metadata !{i32 786689, metadata !186, metadata !"c", metadata !131, i32 67109670, metadata !29, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [c] [line 806]
+!194 = metadata !{metadata !195, metadata !197, metadata !198}
+!195 = metadata !{i32 786484, i32 0, metadata !41, metadata !"BRANCHING_FACTOR", metadata !"BRANCHING_FACTOR", metadata !"BRANCHING_FACTOR", metadata !41, i32 46, metadata !196, i32 1, i32 1, i32 4, null} ; [ DW_TAG_variable ] [BRANCHING_FACTOR] [line 46] [local] [def]
+!196 = metadata !{i32 786470, null, null, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, metadata !37} ; [ DW_TAG_const_type ] [line 0, size 0, align 0, offset 0] [from int]
+!197 = metadata !{i32 786484, i32 0, metadata !14, metadata !"Axis", metadata !"Axis", metadata !"_ZN3povL4AxisE", metadata !41, i32 60, metadata !37, i32 1, i32 1, i32* @_ZN3povL4AxisE, null} ; [ DW_TAG_variable ] [Axis] [line 60] [local] [def]
+!198 = metadata !{i32 786484, i32 0, metadata !14, metadata !"maxelements", metadata !"maxelements", metadata !"_ZN3povL11maxelementsE", metadata !41, i32 60, metadata !37, i32 1, i32 1, i32* @_ZN3povL11maxelementsE, null} ; [ DW_TAG_variable ] [maxelements] [line 60] [local] [def]
+!199 = metadata !{metadata !200, metadata !203, metadata !206, metadata !209, metadata !210, metadata !211, metadata !212, metadata !215, metadata !218, metadata !221, metadata !224, metadata !227, metadata !230, metadata !233, metadata !236, metadata !239, metadata !242, metadata !245, metadata !246, metadata !248, metadata !251, metadata !256}
+!200 = metadata !{i32 786490, metadata !0, metadata !201, i32 28} ; [ DW_TAG_imported_module ]
+!201 = metadata !{i32 786489, metadata !202, null, metadata !"std", i32 26} ; [ DW_TAG_namespace ] [std] [line 26]
+!202 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/config.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!203 = metadata !{i32 786490, metadata !204, metadata !201, i32 37} ; [ DW_TAG_imported_module ]
+!204 = metadata !{i32 786489, metadata !205, null, metadata !"pov_base", i32 37} ; [ DW_TAG_namespace ] [pov_base] [line 37]
+!205 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/fileinputoutput.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!206 = metadata !{i32 786490, metadata !207, metadata !201, i32 36} ; [ DW_TAG_imported_module ]
+!207 = metadata !{i32 786489, metadata !208, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!208 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/pov_mem.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!209 = metadata !{i32 786490, metadata !5, metadata !201, i32 72} ; [ DW_TAG_imported_module ]
+!210 = metadata !{i32 786490, metadata !95, metadata !201, i32 37} ; [ DW_TAG_imported_module ]
+!211 = metadata !{i32 786490, metadata !20, metadata !201, i32 36} ; [ DW_TAG_imported_module ]
+!212 = metadata !{i32 786490, metadata !213, metadata !201, i32 36} ; [ DW_TAG_imported_module ]
+!213 = metadata !{i32 786489, metadata !214, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!214 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/atmosph.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!215 = metadata !{i32 786490, metadata !216, metadata !201, i32 36} ; [ DW_TAG_imported_module ]
+!216 = metadata !{i32 786489, metadata !217, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!217 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/camera.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!218 = metadata !{i32 786490, metadata !219, metadata !201, i32 37} ; [ DW_TAG_imported_module ]
+!219 = metadata !{i32 786489, metadata !220, null, metadata !"pov", i32 37} ; [ DW_TAG_namespace ] [pov] [line 37]
+!220 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/bbox.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!221 = metadata !{i32 786490, metadata !222, metadata !201, i32 39} ; [ DW_TAG_imported_module ]
+!222 = metadata !{i32 786489, metadata !223, null, metadata !"pov", i32 39} ; [ DW_TAG_namespace ] [pov] [line 39]
+!223 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/vlbuffer.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!224 = metadata !{i32 786490, metadata !225, metadata !201, i32 38} ; [ DW_TAG_imported_module ]
+!225 = metadata !{i32 786489, metadata !226, null, metadata !"pov", i32 38} ; [ DW_TAG_namespace ] [pov] [line 38]
+!226 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/point.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!227 = metadata !{i32 786490, metadata !228, metadata !201, i32 38} ; [ DW_TAG_imported_module ]
+!228 = metadata !{i32 786489, metadata !229, null, metadata !"pov", i32 38} ; [ DW_TAG_namespace ] [pov] [line 38]
+!229 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/media.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!230 = metadata !{i32 786490, metadata !231, metadata !201, i32 36} ; [ DW_TAG_imported_module ]
+!231 = metadata !{i32 786489, metadata !232, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!232 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/render.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!233 = metadata !{i32 786490, metadata !234, metadata !201, i32 36} ; [ DW_TAG_imported_module ]
+!234 = metadata !{i32 786489, metadata !235, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!235 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/userio.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!236 = metadata !{i32 786490, metadata !237, metadata !201, i32 36} ; [ DW_TAG_imported_module ]
+!237 = metadata !{i32 786489, metadata !238, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!238 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/csg.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!239 = metadata !{i32 786490, metadata !240, metadata !201, i32 37} ; [ DW_TAG_imported_module ]
+!240 = metadata !{i32 786489, metadata !241, null, metadata !"pov", i32 37} ; [ DW_TAG_namespace ] [pov] [line 37]
+!241 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/lightgrp.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!242 = metadata !{i32 786490, metadata !243, metadata !201, i32 48} ; [ DW_TAG_imported_module ]
+!243 = metadata !{i32 786489, metadata !244, null, metadata !"pov", i32 48} ; [ DW_TAG_namespace ] [pov] [line 48]
+!244 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/povray.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!245 = metadata !{i32 786490, metadata !243, metadata !204, i32 50} ; [ DW_TAG_imported_module ]
+!246 = metadata !{i32 786490, metadata !247, metadata !201, i32 479} ; [ DW_TAG_imported_module ]
+!247 = metadata !{i32 786489, metadata !244, null, metadata !"pov", i32 479} ; [ DW_TAG_namespace ] [pov] [line 479]
+!248 = metadata !{i32 786490, metadata !249, metadata !201, i32 5} ; [ DW_TAG_imported_module ]
+!249 = metadata !{i32 786489, metadata !250, null, metadata !"pov", i32 5} ; [ DW_TAG_namespace ] [pov] [line 5]
+!250 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/spec_qsort.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!251 = metadata !{i32 786490, metadata !252, metadata !254, i32 56} ; [ DW_TAG_imported_module ]
+!252 = metadata !{i32 786489, metadata !253, null, metadata !"__gnu_debug", i32 54} ; [ DW_TAG_namespace ] [__gnu_debug] [line 54]
+!253 = metadata !{metadata !"/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/debug/debug.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!254 = metadata !{i32 786489, metadata !253, metadata !255, metadata !"__debug", i32 48} ; [ DW_TAG_namespace ] [__debug] [line 48]
+!255 = metadata !{i32 786489, metadata !253, null, metadata !"std", i32 46} ; [ DW_TAG_namespace ] [std] [line 46]
+!256 = metadata !{i32 786490, metadata !14, metadata !201, i32 40} ; [ DW_TAG_imported_module ]
+!257 = metadata !{i32 575, i32 0, metadata !13, null}
+!258 = metadata !{metadata !"int", metadata !259}
+!259 = metadata !{metadata !"omnipotent char", metadata !260}
+!260 = metadata !{metadata !"Simple C/C++ TBAA"}
+!261 = metadata !{i32 584, i32 0, metadata !13, null}
+!262 = metadata !{i32 591, i32 0, metadata !13, null}
+!263 = metadata !{i32 596, i32 0, metadata !264, null}
+!264 = metadata !{i32 786443, metadata !1, metadata !13, i32 592, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!265 = metadata !{i32 598, i32 0, metadata !266, null}
+!266 = metadata !{i32 786443, metadata !1, metadata !264, i32 597, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!267 = metadata !{i32 599, i32 0, metadata !266, null}
+!268 = metadata !{i32 601, i32 0, metadata !266, null}
+!269 = metadata !{i32 604, i32 0, metadata !13, null}
+!270 = metadata !{i32 418, i32 0, metadata !52, null}
+!271 = metadata !{i32 425, i32 0, metadata !52, null}
+!272 = metadata !{metadata !"any pointer", metadata !259}
+!273 = metadata !{i32 786689, metadata !156, metadata !"Elements", metadata !41, i32 16777503, metadata !17, i32 0, metadata !271} ; [ DW_TAG_arg_variable ] [Elements] [line 287]
+!274 = metadata !{i32 287, i32 0, metadata !156, metadata !271}
+!275 = metadata !{i32 786689, metadata !156, metadata !"first", metadata !41, i32 33554719, metadata !37, i32 0, metadata !271} ; [ DW_TAG_arg_variable ] [first] [line 287]
+!276 = metadata !{i32 786689, metadata !156, metadata !"last", metadata !41, i32 50331935, metadata !37, i32 0, metadata !271} ; [ DW_TAG_arg_variable ] [last] [line 287]
+!277 = metadata !{i32 786688, metadata !156, metadata !"which", metadata !41, i32 289, metadata !37, i32 0, metadata !271} ; [ DW_TAG_auto_variable ] [which] [line 289]
+!278 = metadata !{i32 289, i32 0, metadata !156, metadata !271}
+!279 = metadata !{double -2.000000e+10}
+!280 = metadata !{i32 786688, metadata !156, metadata !"d", metadata !41, i32 291, metadata !29, i32 0, metadata !271} ; [ DW_TAG_auto_variable ] [d] [line 291]
+!281 = metadata !{i32 291, i32 0, metadata !156, metadata !271}
+!282 = metadata !{[3 x double]* undef}
+!283 = metadata !{i32 292, i32 0, metadata !156, metadata !271}
+!284 = metadata !{double* undef}
+!285 = metadata !{i32 786689, metadata !186, metadata !"v", metadata !131, i32 16778022, metadata !66, i32 0, metadata !286} ; [ DW_TAG_arg_variable ] [v] [line 806]
+!286 = metadata !{i32 294, i32 0, metadata !156, metadata !271}
+!287 = metadata !{i32 806, i32 0, metadata !186, metadata !286}
+!288 = metadata !{double 2.000000e+10}
+!289 = metadata !{i32 786689, metadata !186, metadata !"a", metadata !131, i32 33555238, metadata !29, i32 0, metadata !286} ; [ DW_TAG_arg_variable ] [a] [line 806]
+!290 = metadata !{i32 786689, metadata !186, metadata !"b", metadata !131, i32 50332454, metadata !29, i32 0, metadata !286} ; [ DW_TAG_arg_variable ] [b] [line 806]
+!291 = metadata !{i32 786689, metadata !186, metadata !"c", metadata !131, i32 67109670, metadata !29, i32 0, metadata !286} ; [ DW_TAG_arg_variable ] [c] [line 806]
+!292 = metadata !{i32 786689, metadata !186, metadata !"v", metadata !131, i32 16778022, metadata !66, i32 0, metadata !293} ; [ DW_TAG_arg_variable ] [v] [line 806]
+!293 = metadata !{i32 295, i32 0, metadata !156, metadata !271}
+!294 = metadata !{i32 806, i32 0, metadata !186, metadata !293}
+!295 = metadata !{i32 786689, metadata !186, metadata !"a", metadata !131, i32 33555238, metadata !29, i32 0, metadata !293} ; [ DW_TAG_arg_variable ] [a] [line 806]
+!296 = metadata !{i32 786689, metadata !186, metadata !"b", metadata !131, i32 50332454, metadata !29, i32 0, metadata !293} ; [ DW_TAG_arg_variable ] [b] [line 806]
+!297 = metadata !{i32 786689, metadata !186, metadata !"c", metadata !131, i32 67109670, metadata !29, i32 0, metadata !293} ; [ DW_TAG_arg_variable ] [c] [line 806]
+!298 = metadata !{i32 786688, metadata !156, metadata !"i", metadata !41, i32 290, metadata !37, i32 0, metadata !271} ; [ DW_TAG_auto_variable ] [i] [line 290]
+!299 = metadata !{i32 297, i32 0, metadata !300, metadata !271}
+!300 = metadata !{i32 786443, metadata !1, metadata !156, i32 297, i32 0, i32 31} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!301 = metadata !{i32 299, i32 0, metadata !302, metadata !271}
+!302 = metadata !{i32 786443, metadata !1, metadata !300, i32 298, i32 0, i32 32} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!303 = metadata !{i32 786689, metadata !126, metadata !"d", metadata !131, i32 16777928, metadata !66, i32 0, metadata !301} ; [ DW_TAG_arg_variable ] [d] [line 712]
+!304 = metadata !{i32 712, i32 0, metadata !126, metadata !301}
+!305 = metadata !{i32 786689, metadata !126, metadata !"s", metadata !131, i32 33555144, metadata !66, i32 0, metadata !301} ; [ DW_TAG_arg_variable ] [s] [line 712]
+!306 = metadata !{i32 714, i32 0, metadata !307, metadata !301}
+!307 = metadata !{i32 786443, metadata !4, metadata !126} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/frame.h]
+!308 = metadata !{metadata !"double", metadata !259}
+!309 = metadata !{i32 715, i32 0, metadata !307, metadata !301}
+!310 = metadata !{i32 716, i32 0, metadata !307, metadata !301}
+!311 = metadata !{i32 786689, metadata !182, metadata !"__a", metadata !180, i32 16777583, metadata !175, i32 0, metadata !312} ; [ DW_TAG_arg_variable ] [__a] [line 367]
+!312 = metadata !{i32 301, i32 0, metadata !302, metadata !271}
+!313 = metadata !{i32 367, i32 0, metadata !182, metadata !312}
+!314 = metadata !{i32 786689, metadata !182, metadata !"__b", metadata !180, i32 33554799, metadata !175, i32 0, metadata !312} ; [ DW_TAG_arg_variable ] [__b] [line 367]
+!315 = metadata !{i32 198, i32 0, metadata !182, metadata !312}
+!316 = metadata !{i32 786689, metadata !170, metadata !"__a", metadata !180, i32 16777572, metadata !175, i32 0, metadata !317} ; [ DW_TAG_arg_variable ] [__a] [line 356]
+!317 = metadata !{i32 302, i32 0, metadata !302, metadata !271}
+!318 = metadata !{i32 356, i32 0, metadata !170, metadata !317}
+!319 = metadata !{i32 786689, metadata !170, metadata !"__b", metadata !180, i32 33554788, metadata !175, i32 0, metadata !317} ; [ DW_TAG_arg_variable ] [__b] [line 356]
+!320 = metadata !{i32 221, i32 0, metadata !321, metadata !317}
+!321 = metadata !{i32 786443, metadata !322, metadata !170} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts//usr/lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/bits/stl_algobase.h]
+!322 = metadata !{metadata !"/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../../include/c++/4.8/bits/stl_algobase.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!323 = metadata !{i32 786689, metadata !182, metadata !"__a", metadata !180, i32 16777583, metadata !175, i32 0, metadata !324} ; [ DW_TAG_arg_variable ] [__a] [line 367]
+!324 = metadata !{i32 304, i32 0, metadata !302, metadata !271}
+!325 = metadata !{i32 367, i32 0, metadata !182, metadata !324}
+!326 = metadata !{i32 786689, metadata !182, metadata !"__b", metadata !180, i32 33554799, metadata !175, i32 0, metadata !324} ; [ DW_TAG_arg_variable ] [__b] [line 367]
+!327 = metadata !{i32 198, i32 0, metadata !182, metadata !324}
+!328 = metadata !{i32 786689, metadata !170, metadata !"__a", metadata !180, i32 16777572, metadata !175, i32 0, metadata !329} ; [ DW_TAG_arg_variable ] [__a] [line 356]
+!329 = metadata !{i32 305, i32 0, metadata !302, metadata !271}
+!330 = metadata !{i32 356, i32 0, metadata !170, metadata !329}
+!331 = metadata !{i32 786689, metadata !170, metadata !"__b", metadata !180, i32 33554788, metadata !175, i32 0, metadata !329} ; [ DW_TAG_arg_variable ] [__b] [line 356]
+!332 = metadata !{i32 221, i32 0, metadata !321, metadata !329}
+!333 = metadata !{i32 786689, metadata !182, metadata !"__a", metadata !180, i32 16777583, metadata !175, i32 0, metadata !334} ; [ DW_TAG_arg_variable ] [__a] [line 367]
+!334 = metadata !{i32 307, i32 0, metadata !302, metadata !271}
+!335 = metadata !{i32 367, i32 0, metadata !182, metadata !334}
+!336 = metadata !{i32 786689, metadata !182, metadata !"__b", metadata !180, i32 33554799, metadata !175, i32 0, metadata !334} ; [ DW_TAG_arg_variable ] [__b] [line 367]
+!337 = metadata !{i32 198, i32 0, metadata !182, metadata !334}
+!338 = metadata !{i32 786689, metadata !170, metadata !"__a", metadata !180, i32 16777572, metadata !175, i32 0, metadata !339} ; [ DW_TAG_arg_variable ] [__a] [line 356]
+!339 = metadata !{i32 308, i32 0, metadata !302, metadata !271}
+!340 = metadata !{i32 356, i32 0, metadata !170, metadata !339}
+!341 = metadata !{i32 786689, metadata !170, metadata !"__b", metadata !180, i32 33554788, metadata !175, i32 0, metadata !339} ; [ DW_TAG_arg_variable ] [__b] [line 356]
+!342 = metadata !{i32 221, i32 0, metadata !321, metadata !339}
+!343 = metadata !{i32 311, i32 0, metadata !156, metadata !271}
+!344 = metadata !{i32 786688, metadata !156, metadata !"e", metadata !41, i32 291, metadata !29, i32 0, metadata !271} ; [ DW_TAG_auto_variable ] [e] [line 291]
+!345 = metadata !{i32 313, i32 0, metadata !156, metadata !271}
+!346 = metadata !{i32 315, i32 0, metadata !347, metadata !271}
+!347 = metadata !{i32 786443, metadata !1, metadata !156, i32 314, i32 0, i32 33} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!348 = metadata !{i32 318, i32 0, metadata !156, metadata !271}
+!349 = metadata !{i32 320, i32 0, metadata !156, metadata !271}
+!350 = metadata !{i32 322, i32 0, metadata !351, metadata !271}
+!351 = metadata !{i32 786443, metadata !1, metadata !156, i32 321, i32 0, i32 34} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!352 = metadata !{i32 1}
+!353 = metadata !{i32 325, i32 0, metadata !156, metadata !271}
+!354 = metadata !{i32 327, i32 0, metadata !156, metadata !271}
+!355 = metadata !{i32 2}
+!356 = metadata !{i32 329, i32 0, metadata !357, metadata !271}
+!357 = metadata !{i32 786443, metadata !1, metadata !156, i32 328, i32 0, i32 35} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!358 = metadata !{i32 427, i32 0, metadata !52, null}
+!359 = metadata !{i32 429, i32 0, metadata !52, null}
+!360 = metadata !{i32 434, i32 0, metadata !52, null}
+!361 = metadata !{i32 445, i32 0, metadata !52, null}
+!362 = metadata !{i32 455, i32 0, metadata !52, null}
+!363 = metadata !{i32 456, i32 0, metadata !52, null}
+!364 = metadata !{i32 460, i32 0, metadata !52, null}
+!365 = metadata !{i32 461, i32 0, metadata !52, null}
+!366 = metadata !{i32 463, i32 0, metadata !52, null}
+!367 = metadata !{i32 -1}
+!368 = metadata !{i32 465, i32 0, metadata !52, null}
+!369 = metadata !{i32 474, i32 0, metadata !370, null}
+!370 = metadata !{i32 786443, metadata !1, metadata !52, i32 474, i32 0, i32 9} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!371 = metadata !{i32 476, i32 0, metadata !372, null}
+!372 = metadata !{i32 786443, metadata !1, metadata !370, i32 475, i32 0, i32 10} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!373 = metadata !{i32 478, i32 0, metadata !372, null}
+!374 = metadata !{i32 480, i32 0, metadata !375, null}
+!375 = metadata !{i32 786443, metadata !1, metadata !372, i32 479, i32 0, i32 11} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!376 = metadata !{i32 481, i32 0, metadata !375, null}
+!377 = metadata !{i32 485, i32 0, metadata !378, null}
+!378 = metadata !{i32 786443, metadata !1, metadata !52, i32 485, i32 0, i32 12} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!379 = metadata !{double* null}
+!380 = metadata !{i32 486, i32 0, metadata !381, null}
+!381 = metadata !{i32 786443, metadata !1, metadata !52, i32 486, i32 0, i32 13} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!382 = metadata !{i32 493, i32 0, metadata !52, null}
+!383 = metadata !{i32 495, i32 0, metadata !384, null}
+!384 = metadata !{i32 786443, metadata !1, metadata !52, i32 494, i32 0, i32 14} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!385 = metadata !{i32 497, i32 0, metadata !384, null}
+!386 = metadata !{metadata !"short", metadata !259}
+!387 = metadata !{i32 499, i32 0, metadata !384, null}
+!388 = metadata !{i32 501, i32 0, metadata !389, null}
+!389 = metadata !{i32 786443, metadata !1, metadata !384, i32 501, i32 0, i32 15} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!390 = metadata !{i32 503, i32 0, metadata !391, null}
+!391 = metadata !{i32 786443, metadata !1, metadata !389, i32 502, i32 0, i32 16} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!392 = metadata !{i32 189, i32 0, metadata !71, metadata !393}
+!393 = metadata !{i32 506, i32 0, metadata !384, null}
+!394 = metadata !{i32 183, i32 0, metadata !71, metadata !393}
+!395 = metadata !{i32 786689, metadata !71, metadata !"Node", metadata !41, i32 16777399, metadata !18, i32 0, metadata !393} ; [ DW_TAG_arg_variable ] [Node] [line 183]
+!396 = metadata !{i32 186, i32 0, metadata !71, metadata !393}
+!397 = metadata !{i32 187, i32 0, metadata !71, metadata !393}
+!398 = metadata !{i32 786689, metadata !126, metadata !"d", metadata !131, i32 16777928, metadata !66, i32 0, metadata !392} ; [ DW_TAG_arg_variable ] [d] [line 712]
+!399 = metadata !{i32 712, i32 0, metadata !126, metadata !392}
+!400 = metadata !{i32 786689, metadata !126, metadata !"s", metadata !131, i32 33555144, metadata !66, i32 0, metadata !392} ; [ DW_TAG_arg_variable ] [s] [line 712]
+!401 = metadata !{i32 714, i32 0, metadata !307, metadata !392}
+!402 = metadata !{i32 715, i32 0, metadata !307, metadata !392}
+!403 = metadata !{i32 716, i32 0, metadata !307, metadata !392}
+!404 = metadata !{i32 191, i32 0, metadata !71, metadata !393}
+!405 = metadata !{i32 786688, metadata !71, metadata !"r2", metadata !41, i32 186, metadata !29, i32 0, metadata !393} ; [ DW_TAG_auto_variable ] [r2] [line 186]
+!406 = metadata !{i16 1}
+!407 = metadata !{i32 786688, metadata !71, metadata !"i", metadata !41, i32 185, metadata !25, i32 0, metadata !393} ; [ DW_TAG_auto_variable ] [i] [line 185]
+!408 = metadata !{i32 193, i32 0, metadata !409, metadata !393}
+!409 = metadata !{i32 786443, metadata !1, metadata !71, i32 193, i32 0, i32 19} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!410 = metadata !{i32 195, i32 0, metadata !411, metadata !393}
+!411 = metadata !{i32 786443, metadata !1, metadata !409, i32 194, i32 0, i32 20} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!412 = metadata !{i16 2}
+!413 = metadata !{i32 714, i32 0, metadata !307, metadata !414}
+!414 = metadata !{i32 198, i32 0, metadata !71, metadata !393}
+!415 = metadata !{i32 715, i32 0, metadata !307, metadata !414}
+!416 = metadata !{i32 716, i32 0, metadata !307, metadata !414}
+!417 = metadata !{i32 200, i32 0, metadata !71, metadata !393}
+!418 = metadata !{i32 786689, metadata !126, metadata !"d", metadata !131, i32 16777928, metadata !66, i32 0, metadata !414} ; [ DW_TAG_arg_variable ] [d] [line 712]
+!419 = metadata !{i32 712, i32 0, metadata !126, metadata !414}
+!420 = metadata !{i32 786689, metadata !126, metadata !"s", metadata !131, i32 33555144, metadata !66, i32 0, metadata !414} ; [ DW_TAG_arg_variable ] [s] [line 712]
+!421 = metadata !{i32 201, i32 0, metadata !71, metadata !393}
+!422 = metadata !{i32 508, i32 0, metadata !384, null}
+!423 = metadata !{i32 510, i32 0, metadata !384, null}
+!424 = metadata !{i32 523, i32 0, metadata !384, null}
+!425 = metadata !{i32 514, i32 0, metadata !426, null}
+!426 = metadata !{i32 786443, metadata !1, metadata !384, i32 511, i32 0, i32 17} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!427 = metadata !{i32 518, i32 0, metadata !426, null}
+!428 = metadata !{i32 520, i32 0, metadata !426, null}
+!429 = metadata !{i32 521, i32 0, metadata !426, null}
+!430 = metadata !{i32 525, i32 0, metadata !384, null}
+!431 = metadata !{i32 527, i32 0, metadata !384, null}
+!432 = metadata !{i32 531, i32 0, metadata !433, null}
+!433 = metadata !{i32 786443, metadata !1, metadata !52, i32 530, i32 0, i32 18} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!434 = metadata !{i32 533, i32 0, metadata !433, null}
+!435 = metadata !{i32 535, i32 0, metadata !433, null}
+!436 = metadata !{i32 535, i32 0, metadata !52, null}
+!437 = metadata !{i32 640, i32 0, metadata !46, null}
+!438 = metadata !{i32 644, i32 0, metadata !46, null}
+!439 = metadata !{i32 646, i32 0, metadata !440, null}
+!440 = metadata !{i32 786443, metadata !1, metadata !46, i32 645, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!441 = metadata !{i32 652, i32 0, metadata !442, null}
+!442 = metadata !{i32 786443, metadata !1, metadata !443, i32 651, i32 0, i32 5} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!443 = metadata !{i32 786443, metadata !1, metadata !444, i32 650, i32 0, i32 4} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!444 = metadata !{i32 786443, metadata !1, metadata !440, i32 647, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!445 = metadata !{i32 650, i32 0, metadata !443, null}
+!446 = metadata !{i32 655, i32 0, metadata !447, null}
+!447 = metadata !{i32 786443, metadata !1, metadata !444, i32 655, i32 0, i32 6} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!448 = metadata !{i32 656, i32 0, metadata !444, null}
+!449 = metadata !{i32 658, i32 0, metadata !450, null}
+!450 = metadata !{i32 786443, metadata !1, metadata !440, i32 658, i32 0, i32 7} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!451 = metadata !{%"struct.pov::BSphere_Tree_Struct"* null}
+!452 = metadata !{i32 659, i32 0, metadata !440, null}
+!453 = metadata !{i32 660, i32 0, metadata !46, null}
+!454 = metadata !{i32 235, i32 0, metadata !147, null}
+!455 = metadata !{i32 239, i32 0, metadata !147, null}
+!456 = metadata !{i32 240, i32 0, metadata !147, null}
+!457 = metadata !{i32 242, i32 0, metadata !147, null}
+!458 = metadata !{i32 248, i32 0, metadata !459, null}
+!459 = metadata !{i32 786443, metadata !1, metadata !147, i32 247, i32 0, i32 28} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!460 = metadata !{i32 250, i32 0, metadata !461, null}
+!461 = metadata !{i32 786443, metadata !1, metadata !459, i32 249, i32 0, i32 29} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!462 = metadata !{i32 254, i32 0, metadata !147, null}
+!463 = metadata !{i32 363, i32 0, metadata !133, null}
+!464 = metadata !{i32 366, i32 0, metadata !142, null}
+!465 = metadata !{i32 367, i32 0, metadata !142, null}
+!466 = metadata !{i32 369, i32 0, metadata !142, null}
+!467 = metadata !{i32 372, i32 0, metadata !468, null}
+!468 = metadata !{i32 786443, metadata !1, metadata !142, i32 370, i32 0, i32 23} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!469 = metadata !{i32 378, i32 0, metadata !142, null}
+!470 = metadata !{i32 786689, metadata !126, metadata !"d", metadata !131, i32 16777928, metadata !66, i32 0, metadata !469} ; [ DW_TAG_arg_variable ] [d] [line 712]
+!471 = metadata !{i32 712, i32 0, metadata !126, metadata !469}
+!472 = metadata !{i32 786689, metadata !126, metadata !"s", metadata !131, i32 33555144, metadata !66, i32 0, metadata !469} ; [ DW_TAG_arg_variable ] [s] [line 712]
+!473 = metadata !{i32 714, i32 0, metadata !307, metadata !469}
+!474 = metadata !{i32 715, i32 0, metadata !307, metadata !469}
+!475 = metadata !{i32 716, i32 0, metadata !307, metadata !469}
+!476 = metadata !{i32 380, i32 0, metadata !142, null}
+!477 = metadata !{i32 382, i32 0, metadata !478, null}
+!478 = metadata !{i32 786443, metadata !1, metadata !142, i32 382, i32 0, i32 25} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!479 = metadata !{i32 384, i32 0, metadata !480, null}
+!480 = metadata !{i32 786443, metadata !1, metadata !478, i32 383, i32 0, i32 26} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!481 = metadata !{i32 386, i32 0, metadata !480, null}
+!482 = metadata !{i32 388, i32 0, metadata !142, null}
+!483 = metadata !{i32 105, i32 0, metadata !77, null}
+!484 = metadata !{i32 108, i32 0, metadata !77, null}
+!485 = metadata !{i32 786689, metadata !119, metadata !"a", metadata !100, i32 16777303, metadata !66, i32 0, metadata !486} ; [ DW_TAG_arg_variable ] [a] [line 87]
+!486 = metadata !{i32 110, i32 0, metadata !77, null}
+!487 = metadata !{i32 87, i32 0, metadata !119, metadata !486}
+!488 = metadata !{i32 786689, metadata !119, metadata !"b", metadata !100, i32 33554519, metadata !104, i32 0, metadata !486} ; [ DW_TAG_arg_variable ] [b] [line 87]
+!489 = metadata !{i32 786689, metadata !119, metadata !"c", metadata !100, i32 50331735, metadata !104, i32 0, metadata !486} ; [ DW_TAG_arg_variable ] [c] [line 87]
+!490 = metadata !{i32 89, i32 0, metadata !119, metadata !486}
+!491 = metadata !{i32 90, i32 0, metadata !119, metadata !486}
+!492 = metadata !{i32 91, i32 0, metadata !119, metadata !486}
+!493 = metadata !{i32 786689, metadata !112, metadata !"b", metadata !100, i32 33554745, metadata !104, i32 0, metadata !494} ; [ DW_TAG_arg_variable ] [b] [line 313]
+!494 = metadata !{i32 112, i32 0, metadata !77, null}
+!495 = metadata !{i32 313, i32 0, metadata !112, metadata !494}
+!496 = metadata !{i32 315, i32 0, metadata !112, metadata !494}
+!497 = metadata !{i32 786689, metadata !112, metadata !"a", metadata !100, i32 16777529, metadata !115, i32 0, metadata !494} ; [ DW_TAG_arg_variable ] [a] [line 313]
+!498 = metadata !{i32 119, i32 0, metadata !77, null}
+!499 = metadata !{i32 142, i32 8, metadata !77, null}
+!500 = metadata !{i32 116, i32 0, metadata !77, null}
+!501 = metadata !{i32 117, i32 0, metadata !77, null}
+!502 = metadata !{i32 786689, metadata !126, metadata !"d", metadata !131, i32 16777928, metadata !66, i32 0, metadata !503} ; [ DW_TAG_arg_variable ] [d] [line 712]
+!503 = metadata !{i32 121, i32 0, metadata !504, null}
+!504 = metadata !{i32 786443, metadata !1, metadata !77, i32 120, i32 0, i32 21} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!505 = metadata !{i32 712, i32 0, metadata !126, metadata !503}
+!506 = metadata !{i32 786689, metadata !126, metadata !"s", metadata !131, i32 33555144, metadata !66, i32 0, metadata !503} ; [ DW_TAG_arg_variable ] [s] [line 712]
+!507 = metadata !{i32 714, i32 0, metadata !307, metadata !503}
+!508 = metadata !{i32 715, i32 0, metadata !307, metadata !503}
+!509 = metadata !{i32 716, i32 0, metadata !307, metadata !503}
+!510 = metadata !{i32 123, i32 0, metadata !504, null}
+!511 = metadata !{i32 125, i32 0, metadata !504, null}
+!512 = metadata !{i32 128, i32 0, metadata !77, null}
+!513 = metadata !{i32 786689, metadata !126, metadata !"d", metadata !131, i32 16777928, metadata !66, i32 0, metadata !514} ; [ DW_TAG_arg_variable ] [d] [line 712]
+!514 = metadata !{i32 130, i32 0, metadata !515, null}
+!515 = metadata !{i32 786443, metadata !1, metadata !77, i32 129, i32 0, i32 22} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/bsphere.cpp]
+!516 = metadata !{i32 712, i32 0, metadata !126, metadata !514}
+!517 = metadata !{i32 786689, metadata !126, metadata !"s", metadata !131, i32 33555144, metadata !66, i32 0, metadata !514} ; [ DW_TAG_arg_variable ] [s] [line 712]
+!518 = metadata !{i32 714, i32 0, metadata !307, metadata !514}
+!519 = metadata !{i32 715, i32 0, metadata !307, metadata !514}
+!520 = metadata !{i32 716, i32 0, metadata !307, metadata !514}
+!521 = metadata !{i32 132, i32 0, metadata !515, null}
+!522 = metadata !{i32 134, i32 0, metadata !515, null}
+!523 = metadata !{i32 137, i32 0, metadata !77, null}
+!524 = metadata !{i32 138, i32 0, metadata !77, null}
+!525 = metadata !{i32 786689, metadata !101, metadata !"v", metadata !100, i32 16777585, metadata !66, i32 0, metadata !526} ; [ DW_TAG_arg_variable ] [v] [line 369]
+!526 = metadata !{i32 140, i32 0, metadata !77, null}
+!527 = metadata !{i32 369, i32 0, metadata !101, metadata !526}
+!528 = metadata !{i32 786689, metadata !101, metadata !"k1", metadata !100, i32 33554801, metadata !29, i32 0, metadata !526} ; [ DW_TAG_arg_variable ] [k1] [line 369]
+!529 = metadata !{i32 786689, metadata !101, metadata !"v1", metadata !100, i32 50332017, metadata !104, i32 0, metadata !526} ; [ DW_TAG_arg_variable ] [v1] [line 369]
+!530 = metadata !{i32 786689, metadata !101, metadata !"k2", metadata !100, i32 67109233, metadata !29, i32 0, metadata !526} ; [ DW_TAG_arg_variable ] [k2] [line 369]
+!531 = metadata !{i32 786689, metadata !101, metadata !"v2", metadata !100, i32 83886449, metadata !104, i32 0, metadata !526} ; [ DW_TAG_arg_variable ] [v2] [line 369]
+!532 = metadata !{i32 371, i32 0, metadata !101, metadata !526}
+!533 = metadata !{i32 372, i32 0, metadata !101, metadata !526}
+!534 = metadata !{i32 373, i32 0, metadata !101, metadata !526}
+!535 = metadata !{i32 786689, metadata !93, metadata !"a", metadata !100, i32 16777510, metadata !29, i32 0, metadata !499} ; [ DW_TAG_arg_variable ] [a] [line 294]
+!536 = metadata !{i32 294, i32 0, metadata !93, metadata !499}
+!537 = metadata !{i32 296, i32 0, metadata !538, metadata !499}
+!538 = metadata !{i32 786443, metadata !94, metadata !93} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/vector.h]
+!539 = metadata !{i32 142, i32 0, metadata !77, null}

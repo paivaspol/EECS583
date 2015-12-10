@@ -1,56 +1,57 @@
 define i32 @PUGH_DisableGArrayDataStorage(%struct.PGA* nocapture %GA) #1 {
-  %1 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 5
-  %2 = load i32* %1, align 4, !tbaa !10
-  %3 = icmp ne i32 %2, 1
-  %4 = zext i1 %3 to i32
-  %5 = icmp eq i32 %2, 1
-  br i1 %5, label %6, label %32
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.PGA* %GA}, i64 0, metadata !361), !dbg !793
+  %storage = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 5, !dbg !794
+  %0 = load i32* %storage, align 4, !dbg !794, !tbaa !551
+  %cmp = icmp ne i32 %0, 1, !dbg !794
+  %conv = zext i1 %cmp to i32, !dbg !794
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !362), !dbg !794
+  %cmp3 = icmp eq i32 %0, 1, !dbg !795
+  br i1 %cmp3, label %if.then, label %if.end19, !dbg !795
 
-; <label>:6                                       ; preds = %0
-  %7 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 14
-  %8 = load i32* %7, align 4, !tbaa !35
-  %9 = icmp sgt i32 %8, 1
-  br i1 %9, label %10, label %20
+if.then:                                          ; preds = %entry
+  %vector_size = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 14, !dbg !796
+  %1 = load i32* %vector_size, align 4, !dbg !796, !tbaa !551
+  %cmp5 = icmp sgt i32 %1, 1, !dbg !796
+  br i1 %cmp5, label %land.lhs.true, label %if.else, !dbg !796
 
-; <label>:10                                      ; preds = %6
-  %11 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 15
-  %12 = load i32* %11, align 4, !tbaa !36
-  %13 = icmp sgt i32 %12, 0
-  br i1 %13, label %14, label %20
+land.lhs.true:                                    ; preds = %if.then
+  %vector_entry = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 15, !dbg !796
+  %2 = load i32* %vector_entry, align 4, !dbg !796, !tbaa !551
+  %cmp7 = icmp sgt i32 %2, 0, !dbg !796
+  br i1 %cmp7, label %if.then9, label %if.else, !dbg !796
 
-; <label>:14                                      ; preds = %10
-  %15 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 3
-  %16 = bitcast i8** %15 to i64*
-  %17 = load i64* %16, align 8, !tbaa !37
-  %18 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 4
-  %19 = bitcast i8** %18 to i64*
-  store i64 %17, i64* %19, align 8, !tbaa !25
-  br label %31
+if.then9:                                         ; preds = %land.lhs.true
+  %padddata = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 3, !dbg !798
+  %3 = load i8** %padddata, align 8, !dbg !798, !tbaa !547
+  %data = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 4, !dbg !798
+  store i8* %3, i8** %data, align 8, !dbg !798, !tbaa !547
+  br label %if.end17, !dbg !800
 
-; <label>:20                                      ; preds = %10, %6
-  %21 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 3
-  %22 = load i8** %21, align 8, !tbaa !37
-  %23 = icmp eq i8* %22, null
-  br i1 %23, label %25, label %24
+if.else:                                          ; preds = %land.lhs.true, %if.then
+  %padddata10 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 3, !dbg !801
+  %4 = load i8** %padddata10, align 8, !dbg !801, !tbaa !547
+  %tobool = icmp eq i8* %4, null, !dbg !801
+  br i1 %tobool, label %if.end, label %if.then11, !dbg !801
 
-; <label>:24                                      ; preds = %20
-  tail call void @free(i8* %22) #8
-  br label %25
+if.then11:                                        ; preds = %if.else
+  tail call void @free(i8* %4) #7, !dbg !803
+  br label %if.end, !dbg !805
 
-; <label>:25                                      ; preds = %20, %24
-  %26 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 8
-  %27 = load i32* %26, align 4, !tbaa !31
-  %28 = sext i32 %27 to i64
-  %29 = tail call i8* @calloc(i64 1, i64 %28) #7
-  store i8* %29, i8** %21, align 8, !tbaa !37
-  %30 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 4
-  store i8* %29, i8** %30, align 8, !tbaa !25
-  br label %31
+if.end:                                           ; preds = %if.else, %if.then11
+  %varsize = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 8, !dbg !806
+  %5 = load i32* %varsize, align 4, !dbg !806, !tbaa !551
+  %conv13 = sext i32 %5 to i64, !dbg !806
+  %call = tail call noalias i8* @calloc(i64 1, i64 %conv13) #7, !dbg !806
+  store i8* %call, i8** %padddata10, align 8, !dbg !806, !tbaa !547
+  %data16 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 4, !dbg !807
+  store i8* %call, i8** %data16, align 8, !dbg !807, !tbaa !547
+  br label %if.end17
 
-; <label>:31                                      ; preds = %25, %14
-  store i32 0, i32* %1, align 4, !tbaa !10
-  br label %32
+if.end17:                                         ; preds = %if.end, %if.then9
+  store i32 0, i32* %storage, align 4, !dbg !808, !tbaa !551
+  br label %if.end19, !dbg !809
 
-; <label>:32                                      ; preds = %31, %0
-  ret i32 %4
+if.end19:                                         ; preds = %if.end17, %entry
+  ret i32 %conv, !dbg !810
 }

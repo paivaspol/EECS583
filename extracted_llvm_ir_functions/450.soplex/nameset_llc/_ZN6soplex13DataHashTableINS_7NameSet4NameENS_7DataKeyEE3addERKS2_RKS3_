@@ -1,0 +1,88 @@
+define linkonce_odr void @_ZN6soplex13DataHashTableINS_7NameSet4NameENS_7DataKeyEE3addERKS2_RKS3_(%"class.soplex::DataHashTable"* nocapture %this, %"class.soplex::NameSet::Name"* %h, %"class.soplex::DataKey"* nocapture %info) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataHashTable"* %this}, i64 0, metadata !3300), !dbg !3783
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::NameSet::Name"* %h}, i64 0, metadata !3301), !dbg !3783
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataKey"* %info}, i64 0, metadata !3302), !dbg !3783
+  %m_used = getelementptr inbounds %"class.soplex::DataHashTable"* %this, i64 0, i32 2, !dbg !3784
+  %0 = load i32* %m_used, align 4, !dbg !3784, !tbaa !3494
+  %thesize.i = getelementptr inbounds %"class.soplex::DataHashTable"* %this, i64 0, i32 0, i32 0, !dbg !3785
+  %1 = load i32* %thesize.i, align 4, !dbg !3785, !tbaa !3494
+  %cmp = icmp slt i32 %0, %1, !dbg !3784
+  br i1 %cmp, label %if.end, label %if.then, !dbg !3784
+
+if.then:                                          ; preds = %entry
+  %m_memfactor = getelementptr inbounds %"class.soplex::DataHashTable"* %this, i64 0, i32 4, !dbg !3786
+  %2 = load double* %m_memfactor, align 8, !dbg !3786, !tbaa !3502
+  %conv = sitofp i32 %0 to double, !dbg !3786
+  %mul = fmul double %conv, %2, !dbg !3786
+  %conv3 = fptosi double %mul to i32, !dbg !3786
+  %add = add nsw i32 %conv3, 1, !dbg !3786
+  tail call void @_ZN6soplex13DataHashTableINS_7NameSet4NameENS_7DataKeyEE5reMaxEii(%"class.soplex::DataHashTable"* %this, i32 %add, i32 0) #11, !dbg !3786
+  br label %if.end, !dbg !3786
+
+if.end:                                           ; preds = %entry, %if.then
+  %m_hashfun = getelementptr inbounds %"class.soplex::DataHashTable"* %this, i64 0, i32 3, !dbg !3787
+  %3 = load i32 (%"class.soplex::NameSet::Name"*)** %m_hashfun, align 8, !dbg !3787, !tbaa !3479
+  %call4 = tail call i32 %3(%"class.soplex::NameSet::Name"* %h) #11, !dbg !3787
+  %4 = load i32* %thesize.i, align 4, !dbg !3789, !tbaa !3494
+  %rem = srem i32 %call4, %4, !dbg !3787
+  tail call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !3303), !dbg !3787
+  tail call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !3790), !dbg !3792
+  %idxprom.i40 = sext i32 %rem to i64, !dbg !3793
+  %data.i = getelementptr inbounds %"class.soplex::DataHashTable"* %this, i64 0, i32 0, i32 2, !dbg !3793
+  %5 = load %"class.soplex::DataHashTable<soplex::NameSet::Name, soplex::DataKey>::Element"** %data.i, align 8, !dbg !3793, !tbaa !3479
+  %stat41 = getelementptr inbounds %"class.soplex::DataHashTable<soplex::NameSet::Name, soplex::DataKey>::Element"* %5, i64 %idxprom.i40, i32 2, !dbg !3791
+  %6 = load i32* %stat41, align 4, !dbg !3791, !tbaa !3586
+  %cmp942 = icmp eq i32 %6, 2, !dbg !3791
+  br i1 %cmp942, label %for.inc.lr.ph, label %for.end, !dbg !3791
+
+for.inc.lr.ph:                                    ; preds = %if.end
+  %m_hashsize = getelementptr inbounds %"class.soplex::DataHashTable"* %this, i64 0, i32 1, !dbg !3794
+  %7 = load i32* %m_hashsize, align 4, !dbg !3794, !tbaa !3494
+  br label %for.inc, !dbg !3791
+
+for.inc:                                          ; preds = %for.inc.lr.ph, %for.inc
+  %i.043 = phi i32 [ %rem, %for.inc.lr.ph ], [ %rem13, %for.inc ]
+  %add10 = add nsw i32 %7, %i.043, !dbg !3794
+  %rem13 = srem i32 %add10, %4, !dbg !3794
+  tail call void @llvm.dbg.value(metadata !{i32 %rem13}, i64 0, metadata !3303), !dbg !3794
+  tail call void @llvm.dbg.value(metadata !{i32 %i.043}, i64 0, metadata !3790), !dbg !3792
+  %idxprom.i = sext i32 %rem13 to i64, !dbg !3793
+  %stat = getelementptr inbounds %"class.soplex::DataHashTable<soplex::NameSet::Name, soplex::DataKey>::Element"* %5, i64 %idxprom.i, i32 2, !dbg !3791
+  %8 = load i32* %stat, align 4, !dbg !3791, !tbaa !3586
+  %cmp9 = icmp eq i32 %8, 2, !dbg !3791
+  br i1 %cmp9, label %for.inc, label %for.end, !dbg !3791
+
+for.end:                                          ; preds = %for.inc, %if.end
+  %stat.lcssa = phi i32* [ %stat41, %if.end ], [ %stat, %for.inc ]
+  %idxprom.i.lcssa = phi i64 [ %idxprom.i40, %if.end ], [ %idxprom.i, %for.inc ]
+  tail call void @llvm.dbg.value(metadata !{i32 %i.043}, i64 0, metadata !3795), !dbg !3797
+  store i32 2, i32* %stat.lcssa, align 4, !dbg !3796, !tbaa !3586
+  tail call void @llvm.dbg.value(metadata !{i32 %i.043}, i64 0, metadata !3798), !dbg !3800
+  %info19 = getelementptr inbounds %"class.soplex::DataHashTable<soplex::NameSet::Name, soplex::DataKey>::Element"* %5, i64 %idxprom.i.lcssa, i32 1, !dbg !3799
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataKey"* %info19}, i64 0, metadata !3801), !dbg !3802
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataKey"* %info}, i64 0, metadata !3803), !dbg !3802
+  %9 = bitcast %"class.soplex::DataKey"* %info to i32*, !dbg !3804
+  %bf.load.i = load i32* %9, align 4, !dbg !3804
+  %bf.ashr11.i = and i32 %bf.load.i, 255, !dbg !3804
+  %10 = bitcast %"class.soplex::DataKey"* %info19 to i32*, !dbg !3804
+  %bf.load2.i = load i32* %10, align 4, !dbg !3804
+  %bf.clear.i = and i32 %bf.load2.i, -256, !dbg !3804
+  %bf.set.i = or i32 %bf.clear.i, %bf.ashr11.i, !dbg !3804
+  store i32 %bf.set.i, i32* %10, align 4, !dbg !3804
+  %bf.load3.i = load i32* %9, align 4, !dbg !3805
+  %bf.ashr412.i = and i32 %bf.load3.i, -256, !dbg !3805
+  %bf.set9.i = or i32 %bf.ashr412.i, %bf.ashr11.i, !dbg !3805
+  store i32 %bf.set9.i, i32* %10, align 4, !dbg !3805
+  tail call void @llvm.dbg.value(metadata !{i32 %i.043}, i64 0, metadata !3806), !dbg !3808
+  %11 = load %"class.soplex::DataHashTable<soplex::NameSet::Name, soplex::DataKey>::Element"** %data.i, align 8, !dbg !3809, !tbaa !3479
+  %12 = bitcast %"class.soplex::NameSet::Name"* %h to i64*, !dbg !3807
+  %13 = load i64* %12, align 8, !dbg !3807
+  %14 = getelementptr inbounds %"class.soplex::DataHashTable<soplex::NameSet::Name, soplex::DataKey>::Element"* %11, i64 %idxprom.i.lcssa, i32 0, i32 0, !dbg !3807
+  %.c = inttoptr i64 %13 to i8*, !dbg !3807
+  store i8* %.c, i8** %14, align 8, !dbg !3807
+  %15 = load i32* %m_used, align 4, !dbg !3810, !tbaa !3494
+  %inc = add nsw i32 %15, 1, !dbg !3810
+  store i32 %inc, i32* %m_used, align 4, !dbg !3810, !tbaa !3494
+  ret void, !dbg !3811
+}

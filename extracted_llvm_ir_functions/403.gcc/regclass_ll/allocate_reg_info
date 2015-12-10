@@ -1,199 +1,214 @@
 define void @allocate_reg_info(i64 %num_regs, i32 %new_p, i32 %renumber_p) #0 {
 entry:
-  %tobool = icmp ne i32 %new_p, 0
-  %0 = load i32* @reg_n_max, align 4, !tbaa !3
-  %1 = zext i32 %0 to i64
-  %conv = select i1 %tobool, i64 0, i64 %1
-  %2 = load i64* @regno_allocated, align 8, !tbaa !0
-  %cmp = icmp ult i64 %2, %num_regs
-  br i1 %cmp, label %if.then, label %if.end23
+  tail call void @llvm.dbg.value(metadata !{i64 %num_regs}, i64 0, metadata !590), !dbg !1423
+  tail call void @llvm.dbg.value(metadata !{i32 %new_p}, i64 0, metadata !591), !dbg !1424
+  tail call void @llvm.dbg.value(metadata !{i32 %renumber_p}, i64 0, metadata !592), !dbg !1425
+  %tobool = icmp ne i32 %new_p, 0, !dbg !1426
+  %0 = load i32* @reg_n_max, align 4, !dbg !1426, !tbaa !959
+  %1 = zext i32 %0 to i64, !dbg !1426
+  %conv = select i1 %tobool, i64 0, i64 %1, !dbg !1426
+  tail call void @llvm.dbg.value(metadata !{i64 %conv}, i64 0, metadata !595), !dbg !1426
+  %2 = load i64* @regno_allocated, align 8, !dbg !1427, !tbaa !953
+  %cmp = icmp ult i64 %2, %num_regs, !dbg !1427
+  br i1 %cmp, label %if.then, label %if.end23, !dbg !1427
 
 if.then:                                          ; preds = %entry
-  %div = udiv i64 %num_regs, 20
-  %add = add i64 %div, %num_regs
-  store i64 %add, i64* @regno_allocated, align 8, !tbaa !0
-  %mul = shl i64 %add, 1
-  %3 = load %struct.varray_head_tag** @reg_n_info, align 8, !tbaa !7
-  %tobool2 = icmp eq %struct.varray_head_tag* %3, null
-  br i1 %tobool2, label %if.then3, label %if.else
+  tail call void @llvm.dbg.value(metadata !{i64 %2}, i64 0, metadata !621), !dbg !1428
+  %div = udiv i64 %num_regs, 20, !dbg !1429
+  %add = add i64 %div, %num_regs, !dbg !1429
+  store i64 %add, i64* @regno_allocated, align 8, !dbg !1429, !tbaa !953
+  %mul = shl i64 %add, 1, !dbg !1430
+  tail call void @llvm.dbg.value(metadata !{i64 %mul}, i64 0, metadata !594), !dbg !1430
+  %3 = load %struct.varray_head_tag** @reg_n_info, align 8, !dbg !1431, !tbaa !1154
+  %tobool2 = icmp eq %struct.varray_head_tag* %3, null, !dbg !1431
+  br i1 %tobool2, label %if.then3, label %if.else, !dbg !1431
 
 if.then3:                                         ; preds = %if.then
-  %call = tail call %struct.varray_head_tag* @varray_init(i64 %add, i64 8, i8* getelementptr inbounds ([11 x i8]* @.str40, i64 0, i64 0)) #5
-  store %struct.varray_head_tag* %call, %struct.varray_head_tag** @reg_n_info, align 8, !tbaa !7
-  %call4 = tail call noalias i8* @xmalloc(i64 %mul) #5
-  %4 = bitcast i8* %call4 to i16*
-  store i16* %4, i16** @renumber, align 8, !tbaa !7
-  %5 = load i64* @regno_allocated, align 8, !tbaa !0
-  %mul5 = shl i64 %5, 1
-  %call6 = tail call noalias i8* @xmalloc(i64 %mul5) #5
-  %6 = bitcast i8* %call6 to %struct.reg_pref*
-  store %struct.reg_pref* %6, %struct.reg_pref** @reg_pref_buffer, align 8, !tbaa !7
-  br label %if.end17
+  %call = tail call %struct.varray_head_tag* @varray_init(i64 %add, i64 8, i8* getelementptr inbounds ([11 x i8]* @.str40, i64 0, i64 0)) #6, !dbg !1432
+  store %struct.varray_head_tag* %call, %struct.varray_head_tag** @reg_n_info, align 8, !dbg !1432, !tbaa !1154
+  %call4 = tail call noalias i8* @xmalloc(i64 %mul) #6, !dbg !1434
+  %4 = bitcast i8* %call4 to i16*, !dbg !1434
+  store i16* %4, i16** @renumber, align 8, !dbg !1434, !tbaa !1154
+  %5 = load i64* @regno_allocated, align 8, !dbg !1435, !tbaa !953
+  %mul5 = shl i64 %5, 1, !dbg !1435
+  %call6 = tail call noalias i8* @xmalloc(i64 %mul5) #6, !dbg !1435
+  %6 = bitcast i8* %call6 to %struct.reg_pref*, !dbg !1435
+  store %struct.reg_pref* %6, %struct.reg_pref** @reg_pref_buffer, align 8, !dbg !1435, !tbaa !1154
+  br label %if.end17, !dbg !1436
 
 if.else:                                          ; preds = %if.then
-  %call7 = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %3, i64 %add) #5
-  store %struct.varray_head_tag* %call7, %struct.varray_head_tag** @reg_n_info, align 8, !tbaa !7
-  %7 = load i16** @renumber, align 8, !tbaa !7
-  %8 = bitcast i16* %7 to i8*
-  br i1 %tobool, label %if.then9, label %if.else13
+  %call7 = tail call %struct.varray_head_tag* @varray_grow(%struct.varray_head_tag* %3, i64 %add) #6, !dbg !1437
+  store %struct.varray_head_tag* %call7, %struct.varray_head_tag** @reg_n_info, align 8, !dbg !1437, !tbaa !1154
+  %7 = load i16** @renumber, align 8, !dbg !1439, !tbaa !1154
+  %8 = bitcast i16* %7 to i8*, !dbg !1439
+  br i1 %tobool, label %if.then9, label %if.else13, !dbg !1441
 
 if.then9:                                         ; preds = %if.else
-  tail call void @free(i8* %8) #5
-  %9 = load %struct.reg_pref** @reg_pref, align 8, !tbaa !7
-  %10 = getelementptr inbounds %struct.reg_pref* %9, i64 0, i32 0
-  tail call void @free(i8* %10) #5
-  %call10 = tail call noalias i8* @xmalloc(i64 %mul) #5
-  %11 = bitcast i8* %call10 to i16*
-  store i16* %11, i16** @renumber, align 8, !tbaa !7
-  %12 = load i64* @regno_allocated, align 8, !tbaa !0
-  %mul11 = shl i64 %12, 1
-  %call12 = tail call noalias i8* @xmalloc(i64 %mul11) #5
-  %13 = bitcast i8* %call12 to %struct.reg_pref*
-  store %struct.reg_pref* %13, %struct.reg_pref** @reg_pref_buffer, align 8, !tbaa !7
-  br label %if.end17
+  tail call void @free(i8* %8) #6, !dbg !1439
+  %9 = load %struct.reg_pref** @reg_pref, align 8, !dbg !1442, !tbaa !1154
+  %10 = getelementptr inbounds %struct.reg_pref* %9, i64 0, i32 0, !dbg !1442
+  tail call void @free(i8* %10) #6, !dbg !1442
+  %call10 = tail call noalias i8* @xmalloc(i64 %mul) #6, !dbg !1443
+  %11 = bitcast i8* %call10 to i16*, !dbg !1443
+  store i16* %11, i16** @renumber, align 8, !dbg !1443, !tbaa !1154
+  %12 = load i64* @regno_allocated, align 8, !dbg !1444, !tbaa !953
+  %mul11 = shl i64 %12, 1, !dbg !1444
+  %call12 = tail call noalias i8* @xmalloc(i64 %mul11) #6, !dbg !1444
+  %13 = bitcast i8* %call12 to %struct.reg_pref*, !dbg !1444
+  store %struct.reg_pref* %13, %struct.reg_pref** @reg_pref_buffer, align 8, !dbg !1444, !tbaa !1154
+  br label %if.end17, !dbg !1445
 
 if.else13:                                        ; preds = %if.else
-  %call14 = tail call i8* @xrealloc(i8* %8, i64 %mul) #5
-  %14 = bitcast i8* %call14 to i16*
-  store i16* %14, i16** @renumber, align 8, !tbaa !7
-  %15 = load %struct.reg_pref** @reg_pref_buffer, align 8, !tbaa !7
-  %16 = getelementptr inbounds %struct.reg_pref* %15, i64 0, i32 0
-  %17 = load i64* @regno_allocated, align 8, !tbaa !0
-  %mul15 = shl i64 %17, 1
-  %call16 = tail call i8* @xrealloc(i8* %16, i64 %mul15) #5
-  %18 = bitcast i8* %call16 to %struct.reg_pref*
-  store %struct.reg_pref* %18, %struct.reg_pref** @reg_pref_buffer, align 8, !tbaa !7
+  %call14 = tail call i8* @xrealloc(i8* %8, i64 %mul) #6, !dbg !1446
+  %14 = bitcast i8* %call14 to i16*, !dbg !1446
+  store i16* %14, i16** @renumber, align 8, !dbg !1446, !tbaa !1154
+  %15 = load %struct.reg_pref** @reg_pref_buffer, align 8, !dbg !1448, !tbaa !1154
+  %16 = getelementptr inbounds %struct.reg_pref* %15, i64 0, i32 0, !dbg !1448
+  %17 = load i64* @regno_allocated, align 8, !dbg !1448, !tbaa !953
+  %mul15 = shl i64 %17, 1, !dbg !1448
+  %call16 = tail call i8* @xrealloc(i8* %16, i64 %mul15) #6, !dbg !1448
+  %18 = bitcast i8* %call16 to %struct.reg_pref*, !dbg !1448
+  store %struct.reg_pref* %18, %struct.reg_pref** @reg_pref_buffer, align 8, !dbg !1448, !tbaa !1154
   br label %if.end17
 
 if.end17:                                         ; preds = %if.then9, %if.else13, %if.then3
-  %19 = load i64* @regno_allocated, align 8, !tbaa !0
-  %sub = sub i64 %19, %2
-  %mul18 = mul i64 %sub, 44
-  %sub20 = add i64 %mul18, 28
-  %call21 = tail call noalias i8* @xcalloc(i64 %sub20, i64 1) #5
-  %20 = bitcast i8* %call21 to %struct.reg_info_data*
-  %min_index = getelementptr inbounds i8* %call21, i64 8
-  %21 = bitcast i8* %min_index to i64*
-  store i64 %2, i64* %21, align 8, !tbaa !0
-  %22 = load i64* @regno_allocated, align 8, !tbaa !0
-  %sub22 = add i64 %22, -1
-  %max_index = getelementptr inbounds i8* %call21, i64 16
-  %23 = bitcast i8* %max_index to i64*
-  store i64 %sub22, i64* %23, align 8, !tbaa !0
-  %24 = load %struct.reg_info_data** @reg_info_head, align 8, !tbaa !7
-  %next = bitcast i8* %call21 to %struct.reg_info_data**
-  store %struct.reg_info_data* %24, %struct.reg_info_data** %next, align 8, !tbaa !7
-  store %struct.reg_info_data* %20, %struct.reg_info_data** @reg_info_head, align 8, !tbaa !7
-  br label %if.end23
+  %19 = load i64* @regno_allocated, align 8, !dbg !1449, !tbaa !953
+  %sub = sub i64 %19, %2, !dbg !1449
+  %mul18 = mul i64 %sub, 44, !dbg !1449
+  %sub20 = add i64 %mul18, 28, !dbg !1449
+  tail call void @llvm.dbg.value(metadata !{i64 %sub20}, i64 0, metadata !593), !dbg !1449
+  %call21 = tail call noalias i8* @xcalloc(i64 %sub20, i64 1) #6, !dbg !1450
+  %20 = bitcast i8* %call21 to %struct.reg_info_data*, !dbg !1450
+  tail call void @llvm.dbg.value(metadata !{%struct.reg_info_data* %20}, i64 0, metadata !596), !dbg !1450
+  %min_index = getelementptr inbounds i8* %call21, i64 8, !dbg !1451
+  %21 = bitcast i8* %min_index to i64*, !dbg !1451
+  store i64 %2, i64* %21, align 8, !dbg !1451, !tbaa !953
+  %22 = load i64* @regno_allocated, align 8, !dbg !1452, !tbaa !953
+  %sub22 = add i64 %22, -1, !dbg !1452
+  %max_index = getelementptr inbounds i8* %call21, i64 16, !dbg !1452
+  %23 = bitcast i8* %max_index to i64*, !dbg !1452
+  store i64 %sub22, i64* %23, align 8, !dbg !1452, !tbaa !953
+  %24 = load %struct.reg_info_data** @reg_info_head, align 8, !dbg !1453, !tbaa !1154
+  %next = bitcast i8* %call21 to %struct.reg_info_data**, !dbg !1453
+  store %struct.reg_info_data* %24, %struct.reg_info_data** %next, align 8, !dbg !1453, !tbaa !1154
+  store %struct.reg_info_data* %20, %struct.reg_info_data** @reg_info_head, align 8, !dbg !1454, !tbaa !1154
+  br label %if.end23, !dbg !1455
 
 if.end23:                                         ; preds = %if.end17, %entry
-  %conv24 = trunc i64 %num_regs to i32
-  store i32 %conv24, i32* @reg_n_max, align 4, !tbaa !3
-  %cmp25 = icmp ult i64 %conv, %num_regs
-  br i1 %cmp25, label %for.cond.preheader, label %if.end80
+  %conv24 = trunc i64 %num_regs to i32, !dbg !1456
+  store i32 %conv24, i32* @reg_n_max, align 4, !dbg !1456, !tbaa !959
+  %cmp25 = icmp ult i64 %conv, %num_regs, !dbg !1457
+  br i1 %cmp25, label %for.cond.preheader, label %if.end80, !dbg !1457
 
 for.cond.preheader:                               ; preds = %if.end23
-  %reg_data.0131 = load %struct.reg_info_data** @reg_info_head, align 8
-  %tobool28132 = icmp eq %struct.reg_info_data* %reg_data.0131, null
-  br i1 %tobool28132, label %if.end80, label %land.rhs
+  %reg_data.0131 = load %struct.reg_info_data** @reg_info_head, align 8, !dbg !1458
+  %tobool28132 = icmp eq %struct.reg_info_data* %reg_data.0131, null, !dbg !1458
+  br i1 %tobool28132, label %if.end80, label %land.rhs, !dbg !1458
 
 land.rhs:                                         ; preds = %for.cond.preheader, %for.inc77
   %reg_data.0133 = phi %struct.reg_info_data* [ %reg_data.0, %for.inc77 ], [ %reg_data.0131, %for.cond.preheader ]
-  %max_index29 = getelementptr inbounds %struct.reg_info_data* %reg_data.0133, i64 0, i32 2
-  %25 = load i64* %max_index29, align 8, !tbaa !0
-  %cmp30 = icmp ult i64 %25, %conv
+  %max_index29 = getelementptr inbounds %struct.reg_info_data* %reg_data.0133, i64 0, i32 2, !dbg !1458
+  %25 = load i64* %max_index29, align 8, !dbg !1458, !tbaa !953
+  %cmp30 = icmp ult i64 %25, %conv, !dbg !1458
   br i1 %cmp30, label %if.end80, label %for.body
 
 for.body:                                         ; preds = %land.rhs
-  %min_index33 = getelementptr inbounds %struct.reg_info_data* %reg_data.0133, i64 0, i32 1
-  %26 = load i64* %min_index33, align 8, !tbaa !0
-  %cmp36 = icmp ult i64 %25, %num_regs
-  %cond41 = select i1 %cmp36, i64 %25, i64 %num_regs
-  %cmp44 = icmp ugt i64 %26, %num_regs
-  br i1 %cmp44, label %for.inc77, label %if.end47
+  %min_index33 = getelementptr inbounds %struct.reg_info_data* %reg_data.0133, i64 0, i32 1, !dbg !1459
+  %26 = load i64* %min_index33, align 8, !dbg !1459, !tbaa !953
+  tail call void @llvm.dbg.value(metadata !{i64 %26}, i64 0, metadata !623), !dbg !1459
+  tail call void @llvm.dbg.value(metadata !{i64 %25}, i64 0, metadata !627), !dbg !1460
+  %cmp36 = icmp ult i64 %25, %num_regs, !dbg !1461
+  %cond41 = select i1 %cmp36, i64 %25, i64 %num_regs, !dbg !1461
+  tail call void @llvm.dbg.value(metadata !{i64 %cond41}, i64 0, metadata !628), !dbg !1461
+  tail call void @llvm.dbg.value(metadata !{i64 %sub42}, i64 0, metadata !629), !dbg !1462
+  %cmp44 = icmp ugt i64 %26, %num_regs, !dbg !1463
+  br i1 %cmp44, label %for.inc77, label %if.end47, !dbg !1463
 
 if.end47:                                         ; preds = %for.body
-  %sub42 = sub i64 %conv, %26
-  %cmp48 = icmp ult i64 %conv, %26
-  %.sub42 = select i1 %cmp48, i64 0, i64 %sub42
-  %used_p = getelementptr inbounds %struct.reg_info_data* %reg_data.0133, i64 0, i32 3
-  %27 = load i8* %used_p, align 1, !tbaa !1
-  %tobool52 = icmp eq i8 %27, 0
-  br i1 %tobool52, label %if.then53, label %if.else55
+  %sub42 = sub i64 %conv, %26, !dbg !1462
+  %cmp48 = icmp ult i64 %conv, %26, !dbg !1464
+  tail call void @llvm.dbg.value(metadata !1465, i64 0, metadata !629), !dbg !1466
+  %.sub42 = select i1 %cmp48, i64 0, i64 %sub42, !dbg !1464
+  %used_p = getelementptr inbounds %struct.reg_info_data* %reg_data.0133, i64 0, i32 3, !dbg !1467
+  %27 = load i8* %used_p, align 1, !dbg !1467, !tbaa !954
+  %tobool52 = icmp eq i8 %27, 0, !dbg !1467
+  br i1 %tobool52, label %if.then53, label %if.else55, !dbg !1467
 
 if.then53:                                        ; preds = %if.end47
-  store i8 1, i8* %used_p, align 1, !tbaa !1
-  br label %if.end60
+  store i8 1, i8* %used_p, align 1, !dbg !1468, !tbaa !954
+  br label %if.end60, !dbg !1468
 
 if.else55:                                        ; preds = %if.end47
-  %arrayidx = getelementptr inbounds %struct.reg_info_data* %reg_data.0133, i64 0, i32 4, i64 %.sub42
-  %28 = bitcast %struct.reg_info_def* %arrayidx to i8*
-  %sub56 = sub i64 %cond41, %26
-  %sub57 = sub i64 %sub56, %.sub42
-  %29 = mul i64 %sub57, 44
-  %mul59 = add i64 %29, 44
-  tail call void @llvm.memset.p0i8.i64(i8* %28, i8 0, i64 %mul59, i32 1, i1 false)
+  %arrayidx = getelementptr inbounds %struct.reg_info_data* %reg_data.0133, i64 0, i32 4, i64 %.sub42, !dbg !1469
+  %28 = bitcast %struct.reg_info_def* %arrayidx to i8*, !dbg !1469
+  %sub56 = sub i64 %cond41, %26, !dbg !1469
+  %sub57 = sub i64 %sub56, %.sub42, !dbg !1469
+  %29 = mul i64 %sub57, 44, !dbg !1469
+  %mul59 = add i64 %29, 44, !dbg !1469
+  tail call void @llvm.memset.p0i8.i64(i8* %28, i8 0, i64 %mul59, i32 1, i1 false), !dbg !1469
   br label %if.end60
 
 if.end60:                                         ; preds = %if.else55, %if.then53
-  %add61 = add i64 %.sub42, %26
-  %cmp63129 = icmp ugt i64 %add61, %cond41
-  br i1 %cmp63129, label %for.inc77, label %for.body65
+  %add61 = add i64 %.sub42, %26, !dbg !1470
+  tail call void @llvm.dbg.value(metadata !{i64 %add61}, i64 0, metadata !630), !dbg !1470
+  %cmp63129 = icmp ugt i64 %add61, %cond41, !dbg !1470
+  br i1 %cmp63129, label %for.inc77, label %for.body65, !dbg !1470
 
 for.body65:                                       ; preds = %if.end60, %for.body65
   %i.0130 = phi i64 [ %inc, %for.body65 ], [ %add61, %if.end60 ]
-  %sub66 = sub i64 %i.0130, %26
-  %arrayidx68 = getelementptr inbounds %struct.reg_info_data* %reg_data.0133, i64 0, i32 4, i64 %sub66
-  %30 = load %struct.varray_head_tag** @reg_n_info, align 8, !tbaa !7
-  %data69 = getelementptr inbounds %struct.varray_head_tag* %30, i64 0, i32 4
-  %reg = bitcast %union.varray_data_tag* %data69 to [1 x %struct.reg_info_def*]*
-  %arrayidx70 = getelementptr inbounds [1 x %struct.reg_info_def*]* %reg, i64 0, i64 %i.0130
-  store %struct.reg_info_def* %arrayidx68, %struct.reg_info_def** %arrayidx70, align 8, !tbaa !7
-  %31 = load %struct.varray_head_tag** @reg_n_info, align 8, !tbaa !7
-  %data71 = getelementptr inbounds %struct.varray_head_tag* %31, i64 0, i32 4
-  %reg72 = bitcast %union.varray_data_tag* %data71 to [1 x %struct.reg_info_def*]*
-  %arrayidx73 = getelementptr inbounds [1 x %struct.reg_info_def*]* %reg72, i64 0, i64 %i.0130
-  %32 = load %struct.reg_info_def** %arrayidx73, align 8, !tbaa !7
-  %basic_block = getelementptr inbounds %struct.reg_info_def* %32, i64 0, i32 9
-  store i32 -1, i32* %basic_block, align 4, !tbaa !3
-  %33 = load i16** @renumber, align 8, !tbaa !7
-  %arrayidx74 = getelementptr inbounds i16* %33, i64 %i.0130
-  store i16 -1, i16* %arrayidx74, align 2, !tbaa !10
-  %34 = load %struct.reg_pref** @reg_pref_buffer, align 8, !tbaa !7
-  %prefclass = getelementptr inbounds %struct.reg_pref* %34, i64 %i.0130, i32 0
-  store i8 0, i8* %prefclass, align 1, !tbaa !1
-  %35 = load %struct.reg_pref** @reg_pref_buffer, align 8, !tbaa !7
-  %altclass = getelementptr inbounds %struct.reg_pref* %35, i64 %i.0130, i32 1
-  store i8 0, i8* %altclass, align 1, !tbaa !1
-  %inc = add i64 %i.0130, 1
-  %cmp63 = icmp ugt i64 %inc, %cond41
-  br i1 %cmp63, label %for.inc77, label %for.body65
+  %sub66 = sub i64 %i.0130, %26, !dbg !1472
+  %arrayidx68 = getelementptr inbounds %struct.reg_info_data* %reg_data.0133, i64 0, i32 4, i64 %sub66, !dbg !1472
+  %30 = load %struct.varray_head_tag** @reg_n_info, align 8, !dbg !1472, !tbaa !1154
+  %data69 = getelementptr inbounds %struct.varray_head_tag* %30, i64 0, i32 4, !dbg !1472
+  %reg = bitcast %union.varray_data_tag* %data69 to [1 x %struct.reg_info_def*]*, !dbg !1472
+  %arrayidx70 = getelementptr inbounds [1 x %struct.reg_info_def*]* %reg, i64 0, i64 %i.0130, !dbg !1472
+  store %struct.reg_info_def* %arrayidx68, %struct.reg_info_def** %arrayidx70, align 8, !dbg !1472, !tbaa !1154
+  %31 = load %struct.varray_head_tag** @reg_n_info, align 8, !dbg !1474, !tbaa !1154
+  %data71 = getelementptr inbounds %struct.varray_head_tag* %31, i64 0, i32 4, !dbg !1474
+  %reg72 = bitcast %union.varray_data_tag* %data71 to [1 x %struct.reg_info_def*]*, !dbg !1474
+  %arrayidx73 = getelementptr inbounds [1 x %struct.reg_info_def*]* %reg72, i64 0, i64 %i.0130, !dbg !1474
+  %32 = load %struct.reg_info_def** %arrayidx73, align 8, !dbg !1474, !tbaa !1154
+  %basic_block = getelementptr inbounds %struct.reg_info_def* %32, i64 0, i32 9, !dbg !1474
+  store i32 -1, i32* %basic_block, align 4, !dbg !1474, !tbaa !959
+  %33 = load i16** @renumber, align 8, !dbg !1475, !tbaa !1154
+  %arrayidx74 = getelementptr inbounds i16* %33, i64 %i.0130, !dbg !1475
+  store i16 -1, i16* %arrayidx74, align 2, !dbg !1475, !tbaa !1476
+  %34 = load %struct.reg_pref** @reg_pref_buffer, align 8, !dbg !1477, !tbaa !1154
+  %prefclass = getelementptr inbounds %struct.reg_pref* %34, i64 %i.0130, i32 0, !dbg !1477
+  store i8 0, i8* %prefclass, align 1, !dbg !1477, !tbaa !954
+  %35 = load %struct.reg_pref** @reg_pref_buffer, align 8, !dbg !1478, !tbaa !1154
+  %altclass = getelementptr inbounds %struct.reg_pref* %35, i64 %i.0130, i32 1, !dbg !1478
+  store i8 0, i8* %altclass, align 1, !dbg !1478, !tbaa !954
+  %inc = add i64 %i.0130, 1, !dbg !1470
+  tail call void @llvm.dbg.value(metadata !{i64 %inc}, i64 0, metadata !630), !dbg !1470
+  %cmp63 = icmp ugt i64 %inc, %cond41, !dbg !1470
+  br i1 %cmp63, label %for.inc77, label %for.body65, !dbg !1470
 
 for.inc77:                                        ; preds = %if.end60, %for.body65, %for.body
-  %next78 = getelementptr inbounds %struct.reg_info_data* %reg_data.0133, i64 0, i32 0
-  %reg_data.0 = load %struct.reg_info_data** %next78, align 8
-  %tobool28 = icmp eq %struct.reg_info_data* %reg_data.0, null
-  br i1 %tobool28, label %if.end80, label %land.rhs
+  %next78 = getelementptr inbounds %struct.reg_info_data* %reg_data.0133, i64 0, i32 0, !dbg !1479
+  %reg_data.0 = load %struct.reg_info_data** %next78, align 8, !dbg !1458
+  %tobool28 = icmp eq %struct.reg_info_data* %reg_data.0, null, !dbg !1458
+  br i1 %tobool28, label %if.end80, label %land.rhs, !dbg !1458
 
 if.end80:                                         ; preds = %for.cond.preheader, %land.rhs, %for.inc77, %if.end23
-  %36 = load %struct.reg_pref** @reg_pref, align 8, !tbaa !7
-  %tobool81 = icmp eq %struct.reg_pref* %36, null
-  br i1 %tobool81, label %if.end83, label %if.then82
+  %36 = load %struct.reg_pref** @reg_pref, align 8, !dbg !1480, !tbaa !1154
+  %tobool81 = icmp eq %struct.reg_pref* %36, null, !dbg !1480
+  br i1 %tobool81, label %if.end83, label %if.then82, !dbg !1480
 
 if.then82:                                        ; preds = %if.end80
-  %37 = load %struct.reg_pref** @reg_pref_buffer, align 8, !tbaa !7
-  store %struct.reg_pref* %37, %struct.reg_pref** @reg_pref, align 8, !tbaa !7
-  br label %if.end83
+  %37 = load %struct.reg_pref** @reg_pref_buffer, align 8, !dbg !1481, !tbaa !1154
+  store %struct.reg_pref* %37, %struct.reg_pref** @reg_pref, align 8, !dbg !1481, !tbaa !1154
+  br label %if.end83, !dbg !1481
 
 if.end83:                                         ; preds = %if.end80, %if.then82
-  %tobool84 = icmp eq i32 %renumber_p, 0
-  br i1 %tobool84, label %if.end86, label %if.then85
+  %tobool84 = icmp eq i32 %renumber_p, 0, !dbg !1482
+  br i1 %tobool84, label %if.end86, label %if.then85, !dbg !1482
 
 if.then85:                                        ; preds = %if.end83
-  %38 = load i16** @renumber, align 8, !tbaa !7
-  store i16* %38, i16** @reg_renumber, align 8, !tbaa !7
-  br label %if.end86
+  %38 = load i16** @renumber, align 8, !dbg !1483, !tbaa !1154
+  store i16* %38, i16** @reg_renumber, align 8, !dbg !1483, !tbaa !1154
+  br label %if.end86, !dbg !1483
 
 if.end86:                                         ; preds = %if.end83, %if.then85
-  ret void
+  ret void, !dbg !1484
 }

@@ -1,59 +1,65 @@
 define void @P7Handmodelmaker(%struct.msa_struct* %msa, i8** nocapture %dsq, %struct.plan7_s** %ret_hmm, %struct.p7trace_s*** %ret_tr) #0 {
 entry:
-  %rf = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 13
-  %0 = load i8** %rf, align 8, !tbaa !0
-  %cmp = icmp eq i8* %0, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.msa_struct* %msa}, i64 0, metadata !176), !dbg !328
+  tail call void @llvm.dbg.value(metadata !{i8** %dsq}, i64 0, metadata !177), !dbg !328
+  tail call void @llvm.dbg.value(metadata !{%struct.plan7_s** %ret_hmm}, i64 0, metadata !178), !dbg !329
+  tail call void @llvm.dbg.value(metadata !{%struct.p7trace_s*** %ret_tr}, i64 0, metadata !179), !dbg !329
+  %rf = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 13, !dbg !330
+  %0 = load i8** %rf, align 8, !dbg !330, !tbaa !331
+  %cmp = icmp eq i8* %0, null, !dbg !330
+  br i1 %cmp, label %if.then, label %if.end, !dbg !330
 
 if.then:                                          ; preds = %entry
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0)) #5
-  br label %if.end
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([55 x i8]* @.str, i64 0, i64 0)) #6, !dbg !334
+  br label %if.end, !dbg !334
 
 if.end:                                           ; preds = %if.then, %entry
-  %alen = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 3
-  %1 = load i32* %alen, align 4, !tbaa !3
-  %add = add nsw i32 %1, 1
-  %conv = sext i32 %add to i64
-  %mul = shl nsw i64 %conv, 2
-  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([57 x i8]* @.str1, i64 0, i64 0), i32 111, i64 %mul) #5
-  %2 = bitcast i8* %call to i32*
-  store i32 0, i32* %2, align 4, !tbaa !3
-  %3 = load i32* %alen, align 4, !tbaa !3
-  %cmp270 = icmp sgt i32 %3, 0
-  br i1 %cmp270, label %for.body.lr.ph, label %for.end
+  %alen = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 3, !dbg !335
+  %1 = load i32* %alen, align 4, !dbg !335, !tbaa !336
+  %add = add nsw i32 %1, 1, !dbg !335
+  %conv = sext i32 %add to i64, !dbg !335
+  %mul = shl nsw i64 %conv, 2, !dbg !335
+  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([57 x i8]* @.str1, i64 0, i64 0), i32 111, i64 %mul) #6, !dbg !335
+  %2 = bitcast i8* %call to i32*, !dbg !335
+  tail call void @llvm.dbg.value(metadata !{i32* %2}, i64 0, metadata !180), !dbg !335
+  store i32 0, i32* %2, align 4, !dbg !337, !tbaa !336
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !181), !dbg !338
+  %3 = load i32* %alen, align 4, !dbg !338, !tbaa !336
+  %cmp270 = icmp sgt i32 %3, 0, !dbg !338
+  br i1 %cmp270, label %for.body.lr.ph, label %for.end, !dbg !338
 
 for.body.lr.ph:                                   ; preds = %if.end
-  %.pre = load i8** %rf, align 8, !tbaa !0
-  br label %for.body
+  %.pre = load i8** %rf, align 8, !dbg !340, !tbaa !331
+  br label %for.body, !dbg !338
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.inc
   %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %arrayidx5 = getelementptr inbounds i32* %2, i64 %indvars.iv.next
-  store i32 0, i32* %arrayidx5, align 4, !tbaa !3
-  %arrayidx8 = getelementptr inbounds i8* %.pre, i64 %indvars.iv
-  %4 = load i8* %arrayidx8, align 1, !tbaa !1
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !338
+  %arrayidx5 = getelementptr inbounds i32* %2, i64 %indvars.iv.next, !dbg !342
+  store i32 0, i32* %arrayidx5, align 4, !dbg !342, !tbaa !336
+  %arrayidx8 = getelementptr inbounds i8* %.pre, i64 %indvars.iv, !dbg !340
+  %4 = load i8* %arrayidx8, align 1, !dbg !340, !tbaa !332
   switch i8 %4, label %for.inc [
     i8 32, label %if.else
     i8 46, label %if.else
     i8 95, label %if.else
     i8 45, label %if.else
     i8 126, label %if.else
-  ]
+  ], !dbg !340
 
 if.else:                                          ; preds = %for.body, %for.body, %for.body, %for.body, %for.body
   br label %for.inc
 
 for.inc:                                          ; preds = %for.body, %if.else
   %storemerge = phi i32 [ 8, %if.else ], [ 1, %for.body ]
-  store i32 %storemerge, i32* %arrayidx5, align 4, !tbaa !3
-  %5 = load i32* %alen, align 4, !tbaa !3
-  %6 = trunc i64 %indvars.iv.next to i32
-  %cmp2 = icmp slt i32 %6, %5
-  br i1 %cmp2, label %for.body, label %for.end
+  store i32 %storemerge, i32* %arrayidx5, align 4, !dbg !343, !tbaa !336
+  %5 = load i32* %alen, align 4, !dbg !338, !tbaa !336
+  %6 = trunc i64 %indvars.iv.next to i32, !dbg !338
+  %cmp2 = icmp slt i32 %6, %5, !dbg !338
+  br i1 %cmp2, label %for.body, label %for.end, !dbg !338
 
 for.end:                                          ; preds = %for.inc, %if.end
-  tail call fastcc void @matassign2hmm(%struct.msa_struct* %msa, i8** %dsq, i32* %2, %struct.plan7_s** %ret_hmm, %struct.p7trace_s*** %ret_tr) #6
-  tail call void @free(i8* %call) #5
-  ret void
+  tail call fastcc void @matassign2hmm(%struct.msa_struct* %msa, i8** %dsq, i32* %2, %struct.plan7_s** %ret_hmm, %struct.p7trace_s*** %ret_tr) #7, !dbg !344
+  tail call void @free(i8* %call) #6, !dbg !345
+  ret void, !dbg !346
 }

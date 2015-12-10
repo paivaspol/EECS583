@@ -1,170 +1,195 @@
 define i32 @CCTKi_DoScheduleSortAllGroups() #1 {
-  %1 = load i32* @n_schedule_groups, align 4, !tbaa !19
-  %2 = icmp sgt i32 %1, 0
-  br i1 %2, label %.lr.ph, label %._crit_edge
+entry:
+  tail call void @llvm.dbg.value(metadata !16, i64 0, metadata !101), !dbg !347
+  tail call void @llvm.dbg.value(metadata !16, i64 0, metadata !98), !dbg !348
+  %0 = load i32* @n_schedule_groups, align 4, !dbg !348, !tbaa !254
+  %cmp16 = icmp sgt i32 %0, 0, !dbg !348
+  br i1 %cmp16, label %for.body, label %for.end, !dbg !348
 
-.lr.ph:                                           ; preds = %0, %79
-  %n_errors.04 = phi i32 [ %n_errors.1, %79 ], [ 0, %0 ]
-  %group.03 = phi i32 [ %80, %79 ], [ 0, %0 ]
-  %3 = load %struct.cHandledData** @schedule_groups, align 8, !tbaa !9
-  %4 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %3, i32 %group.03) #8
-  %5 = icmp eq i8* %4, null
-  br i1 %5, label %79, label %6
+for.body:                                         ; preds = %entry, %for.inc
+  %n_errors.018 = phi i32 [ %n_errors.1, %for.inc ], [ 0, %entry ]
+  %group.017 = phi i32 [ %inc, %for.inc ], [ 0, %entry ]
+  %1 = load %struct.cHandledData** @schedule_groups, align 8, !dbg !350, !tbaa !197
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %group.017) #8, !dbg !350
+  %tobool = icmp eq i8* %call, null, !dbg !350
+  br i1 %tobool, label %for.inc, label %if.then, !dbg !350
 
-; <label>:6                                       ; preds = %.lr.ph
-  %7 = getelementptr inbounds i8* %4, i64 16
-  %8 = bitcast i8* %7 to i32*
-  %9 = load i32* %8, align 4, !tbaa !17
-  %10 = tail call i8** @CCTKi_ScheduleCreateArray(i32 %9) #8
-  %11 = load i32* %8, align 4, !tbaa !17
-  %12 = tail call i32* @CCTKi_ScheduleCreateIVec(i32 %11) #8
-  %13 = load i32* %8, align 4, !tbaa !17
-  %14 = tail call i32* @CCTKi_ScheduleCreateIVec(i32 %13) #8
-  %15 = load i32* %8, align 4, !tbaa !17
-  %16 = icmp sgt i32 %15, 0
-  br i1 %16, label %.lr.ph12.i, label %._crit_edge13.i
+if.then:                                          ; preds = %for.body
+  %n_scheditems.i = getelementptr inbounds i8* %call, i64 16, !dbg !352
+  %2 = bitcast i8* %n_scheditems.i to i32*, !dbg !352
+  %3 = load i32* %2, align 4, !dbg !352, !tbaa !254
+  %call.i = tail call i8** @CCTKi_ScheduleCreateArray(i32 %3) #8, !dbg !352
+  tail call void @llvm.dbg.value(metadata !{i8** %call.i}, i64 0, metadata !355) #7, !dbg !352
+  %4 = load i32* %2, align 4, !dbg !356, !tbaa !254
+  %call2.i = tail call i32* @CCTKi_ScheduleCreateIVec(i32 %4) #8, !dbg !356
+  tail call void @llvm.dbg.value(metadata !{i32* %call2.i}, i64 0, metadata !357) #7, !dbg !356
+  %5 = load i32* %2, align 4, !dbg !358, !tbaa !254
+  %call4.i = tail call i32* @CCTKi_ScheduleCreateIVec(i32 %5) #8, !dbg !358
+  tail call void @llvm.dbg.value(metadata !{i32* %call4.i}, i64 0, metadata !359) #7, !dbg !358
+  tail call void @llvm.dbg.value(metadata !16, i64 0, metadata !360) #7, !dbg !361
+  %6 = load i32* %2, align 4, !dbg !361, !tbaa !254
+  %cmp80.i = icmp sgt i32 %6, 0, !dbg !361
+  br i1 %cmp80.i, label %for.body.lr.ph.i, label %for.end31.i, !dbg !361
 
-.lr.ph12.i:                                       ; preds = %6
-  %17 = getelementptr inbounds i8* %4, i64 24
-  %18 = bitcast i8* %17 to %struct.t_sched_item**
-  br label %19
+for.body.lr.ph.i:                                 ; preds = %if.then
+  %scheditems.i = getelementptr inbounds i8* %call, i64 24, !dbg !363
+  %7 = bitcast i8* %scheditems.i to %struct.t_sched_item**, !dbg !363
+  br label %for.body.i, !dbg !361
 
-; <label>:19                                      ; preds = %._crit_edge9.i, %.lr.ph12.i
-  %20 = phi i32 [ %15, %.lr.ph12.i ], [ %58, %._crit_edge9.i ]
-  %indvars.iv16.i = phi i64 [ 0, %.lr.ph12.i ], [ %indvars.iv.next17.i, %._crit_edge9.i ]
-  %21 = load %struct.t_sched_item** %18, align 8, !tbaa !18
-  %22 = getelementptr inbounds %struct.t_sched_item* %21, i64 %indvars.iv16.i, i32 7
-  %modifier.04.i = load %struct.T_SCHED_MODIFIER** %22, align 8
-  %23 = icmp eq %struct.T_SCHED_MODIFIER* %modifier.04.i, null
-  br i1 %23, label %48, label %.lr.ph.i
+for.body.i:                                       ; preds = %for.inc29.i, %for.body.lr.ph.i
+  %8 = phi i32 [ %6, %for.body.lr.ph.i ], [ %20, %for.inc29.i ]
+  %indvars.iv84.i = phi i64 [ 0, %for.body.lr.ph.i ], [ %indvars.iv.next85.i, %for.inc29.i ]
+  %9 = load %struct.t_sched_item** %7, align 8, !dbg !363, !tbaa !197
+  %modifiers.i = getelementptr inbounds %struct.t_sched_item* %9, i64 %indvars.iv84.i, i32 7, !dbg !363
+  %modifier.075.i = load %struct.T_SCHED_MODIFIER** %modifiers.i, align 8, !dbg !363
+  %tobool76.i = icmp eq %struct.T_SCHED_MODIFIER* %modifier.075.i, null, !dbg !363
+  br i1 %tobool76.i, label %for.end.i, label %for.body7.i, !dbg !363
 
-.lr.ph.i:                                         ; preds = %19, %ScheduleItemNumber.exit.thread.i
-  %modifier.05.i = phi %struct.T_SCHED_MODIFIER* [ %modifier.0.i, %ScheduleItemNumber.exit.thread.i ], [ %modifier.04.i, %19 ]
-  %24 = getelementptr inbounds %struct.T_SCHED_MODIFIER* %modifier.05.i, i64 0, i32 1
-  %25 = load i32* %24, align 4, !tbaa !7
-  %26 = icmp eq i32 %25, 3
-  br i1 %26, label %ScheduleItemNumber.exit.thread.i, label %27
+for.body7.i:                                      ; preds = %for.body.i, %for.inc.i
+  %modifier.077.i = phi %struct.T_SCHED_MODIFIER* [ %modifier.0.i, %for.inc.i ], [ %modifier.075.i, %for.body.i ]
+  %type.i = getelementptr inbounds %struct.T_SCHED_MODIFIER* %modifier.077.i, i64 0, i32 1, !dbg !366
+  %10 = load i32* %type.i, align 4, !dbg !366, !tbaa !198
+  %cmp8.i = icmp eq i32 %10, 3, !dbg !366
+  br i1 %cmp8.i, label %for.inc.i, label %if.end.i, !dbg !366
 
-; <label>:27                                      ; preds = %.lr.ph.i
-  %28 = getelementptr inbounds %struct.T_SCHED_MODIFIER* %modifier.05.i, i64 0, i32 2
-  %29 = load i8** %28, align 8, !tbaa !2
-  %30 = load i32* %8, align 4, !tbaa !17
-  %31 = icmp sgt i32 %30, 0
-  br i1 %31, label %.lr.ph.i.i, label %ScheduleItemNumber.exit.thread.i
+if.end.i:                                         ; preds = %for.body7.i
+  %argument.i = getelementptr inbounds %struct.T_SCHED_MODIFIER* %modifier.077.i, i64 0, i32 2, !dbg !368
+  %11 = load i8** %argument.i, align 8, !dbg !368, !tbaa !197
+  tail call void @llvm.dbg.value(metadata !{i8* %11}, i64 0, metadata !369) #7, !dbg !370
+  tail call void @llvm.dbg.value(metadata !320, i64 0, metadata !371) #7, !dbg !372
+  tail call void @llvm.dbg.value(metadata !16, i64 0, metadata !373) #7, !dbg !374
+  %12 = load i32* %2, align 4, !dbg !374, !tbaa !254
+  %cmp6.i.i = icmp sgt i32 %12, 0, !dbg !374
+  br i1 %cmp6.i.i, label %for.body.i.i, label %for.inc.i, !dbg !374
 
-.lr.ph.i.i:                                       ; preds = %27
-  %32 = sext i32 %30 to i64
-  br label %33
+for.cond.i.i:                                     ; preds = %for.body.i.i
+  %inc.i.i = add nsw i32 %i.07.i.i, 1, !dbg !374
+  %13 = trunc i64 %indvars.iv.next.i.i to i32, !dbg !374
+  %cmp.i.i = icmp slt i32 %13, %12, !dbg !374
+  br i1 %cmp.i.i, label %for.body.i.i, label %for.inc.i, !dbg !374
 
-; <label>:33                                      ; preds = %38, %.lr.ph.i.i
-  %indvars.iv.i.i = phi i64 [ 0, %.lr.ph.i.i ], [ %indvars.iv.next.i.i, %38 ]
-  %34 = getelementptr inbounds %struct.t_sched_item* %21, i64 %indvars.iv.i.i, i32 0
-  %35 = load i8** %34, align 8, !tbaa !20
-  %36 = tail call i32 @strcmp(i8* %35, i8* %29) #8
-  %37 = icmp eq i32 %36, 0
-  br i1 %37, label %ScheduleItemNumber.exit.i, label %38
+for.body.i.i:                                     ; preds = %if.end.i, %for.cond.i.i
+  %indvars.iv.i.i = phi i64 [ %indvars.iv.next.i.i, %for.cond.i.i ], [ 0, %if.end.i ]
+  %i.07.i.i = phi i32 [ %inc.i.i, %for.cond.i.i ], [ 0, %if.end.i ]
+  %name2.i.i = getelementptr inbounds %struct.t_sched_item* %9, i64 %indvars.iv.i.i, i32 0, !dbg !376
+  %14 = load i8** %name2.i.i, align 8, !dbg !376, !tbaa !197
+  %call.i.i = tail call i32 @strcmp(i8* %14, i8* %11) #9, !dbg !376
+  %tobool.i.i = icmp eq i32 %call.i.i, 0, !dbg !376
+  %indvars.iv.next.i.i = add i64 %indvars.iv.i.i, 1, !dbg !374
+  br i1 %tobool.i.i, label %ScheduleItemNumber.exit.i, label %for.cond.i.i, !dbg !376
 
-; <label>:38                                      ; preds = %33
-  %indvars.iv.next.i.i = add nuw nsw i64 %indvars.iv.i.i, 1
-  %39 = icmp slt i64 %indvars.iv.next.i.i, %32
-  br i1 %39, label %33, label %ScheduleItemNumber.exit.thread.i
+ScheduleItemNumber.exit.i:                        ; preds = %for.body.i.i
+  tail call void @llvm.dbg.value(metadata !{i32 %i.07.i.i}, i64 0, metadata !378) #7, !dbg !368
+  %cmp10.i = icmp sgt i32 %i.07.i.i, -1, !dbg !379
+  %cmp12.i = icmp slt i32 %i.07.i.i, %12, !dbg !379
+  %or.cond.i = and i1 %cmp10.i, %cmp12.i, !dbg !379
+  br i1 %or.cond.i, label %if.then13.i, label %for.inc.i, !dbg !379
 
-ScheduleItemNumber.exit.i:                        ; preds = %33
-  %40 = trunc i64 %indvars.iv.i.i to i32
-  %41 = icmp sgt i32 %40, -1
-  %42 = icmp slt i32 %40, %30
-  %or.cond.i = and i1 %41, %42
-  br i1 %or.cond.i, label %43, label %ScheduleItemNumber.exit.thread.i
+if.then13.i:                                      ; preds = %ScheduleItemNumber.exit.i
+  switch i32 %10, label %sw.default.i [
+    i32 1, label %sw.epilog.i
+    i32 2, label %sw.bb15.i
+  ], !dbg !380
 
-; <label>:43                                      ; preds = %ScheduleItemNumber.exit.i
-  %switch.selectcmp.i = icmp eq i32 %25, 2
-  %switch.select.i = zext i1 %switch.selectcmp.i to i32
-  %switch.selectcmp1.i = icmp eq i32 %25, 1
-  %switch.select2.i = select i1 %switch.selectcmp1.i, i32 -1, i32 %switch.select.i
-  %sext.i = shl i64 %indvars.iv.i.i, 32
-  %44 = ashr exact i64 %sext.i, 32
-  %45 = getelementptr inbounds i32* %14, i64 %44
-  store i32 %switch.select2.i, i32* %45, align 4, !tbaa !19
-  br label %ScheduleItemNumber.exit.thread.i
+sw.bb15.i:                                        ; preds = %if.then13.i
+  tail call void @llvm.dbg.value(metadata !382, i64 0, metadata !383) #7, !dbg !384
+  br label %sw.epilog.i, !dbg !384
 
-ScheduleItemNumber.exit.thread.i:                 ; preds = %38, %43, %ScheduleItemNumber.exit.i, %27, %.lr.ph.i
-  %46 = getelementptr inbounds %struct.T_SCHED_MODIFIER* %modifier.05.i, i64 0, i32 0
-  %modifier.0.i = load %struct.T_SCHED_MODIFIER** %46, align 8
-  %47 = icmp eq %struct.T_SCHED_MODIFIER* %modifier.0.i, null
-  br i1 %47, label %._crit_edge.i, label %.lr.ph.i
+sw.default.i:                                     ; preds = %if.then13.i
+  tail call void @llvm.dbg.value(metadata !16, i64 0, metadata !383) #7, !dbg !386
+  br label %sw.epilog.i, !dbg !387
 
-._crit_edge.i:                                    ; preds = %ScheduleItemNumber.exit.thread.i
-  %.pre.i = load i32* %8, align 4, !tbaa !17
-  br label %48
+sw.epilog.i:                                      ; preds = %sw.default.i, %sw.bb15.i, %if.then13.i
+  %mod.0.i = phi i32 [ 0, %sw.default.i ], [ 1, %sw.bb15.i ], [ -1, %if.then13.i ]
+  %idxprom16.i = sext i32 %i.07.i.i to i64, !dbg !388
+  %arrayidx17.i = getelementptr inbounds i32* %call4.i, i64 %idxprom16.i, !dbg !388
+  store i32 %mod.0.i, i32* %arrayidx17.i, align 4, !dbg !388, !tbaa !254
+  br label %for.inc.i, !dbg !389
 
-; <label>:48                                      ; preds = %._crit_edge.i, %19
-  %49 = phi i32 [ %.pre.i, %._crit_edge.i ], [ %20, %19 ]
-  %50 = trunc i64 %indvars.iv16.i to i32
-  %51 = tail call i32 @CCTKi_ScheduleAddRow(i32 %49, i8** %10, i32* %12, i32 %50, i32* %14) #8
-  %52 = load i32* %8, align 4, !tbaa !17
-  %53 = icmp sgt i32 %52, 0
-  br i1 %53, label %.lr.ph8.i, label %._crit_edge9.i
+for.inc.i:                                        ; preds = %for.cond.i.i, %sw.epilog.i, %ScheduleItemNumber.exit.i, %if.end.i, %for.body7.i
+  %next.i = getelementptr inbounds %struct.T_SCHED_MODIFIER* %modifier.077.i, i64 0, i32 0, !dbg !363
+  %modifier.0.i = load %struct.T_SCHED_MODIFIER** %next.i, align 8, !dbg !363
+  %tobool.i = icmp eq %struct.T_SCHED_MODIFIER* %modifier.0.i, null, !dbg !363
+  br i1 %tobool.i, label %for.cond6.for.end_crit_edge.i, label %for.body7.i, !dbg !363
 
-.lr.ph8.i:                                        ; preds = %48, %.lr.ph8.i
-  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %.lr.ph8.i ], [ 0, %48 ]
-  %54 = getelementptr inbounds i32* %14, i64 %indvars.iv.i
-  store i32 0, i32* %54, align 4, !tbaa !19
-  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1
-  %55 = load i32* %8, align 4, !tbaa !17
-  %56 = sext i32 %55 to i64
-  %57 = icmp slt i64 %indvars.iv.next.i, %56
-  br i1 %57, label %.lr.ph8.i, label %._crit_edge9.i
+for.cond6.for.end_crit_edge.i:                    ; preds = %for.inc.i
+  %.pre.i = load i32* %2, align 4, !dbg !390, !tbaa !254
+  br label %for.end.i, !dbg !363
 
-._crit_edge9.i:                                   ; preds = %.lr.ph8.i, %48
-  %58 = phi i32 [ %52, %48 ], [ %55, %.lr.ph8.i ]
-  %indvars.iv.next17.i = add nuw nsw i64 %indvars.iv16.i, 1
-  %59 = sext i32 %58 to i64
-  %60 = icmp slt i64 %indvars.iv.next17.i, %59
-  br i1 %60, label %19, label %._crit_edge13.i
+for.end.i:                                        ; preds = %for.cond6.for.end_crit_edge.i, %for.body.i
+  %15 = phi i32 [ %.pre.i, %for.cond6.for.end_crit_edge.i ], [ %8, %for.body.i ]
+  %16 = trunc i64 %indvars.iv84.i to i32, !dbg !390
+  %call20.i = tail call i32 @CCTKi_ScheduleAddRow(i32 %15, i8** %call.i, i32* %call2.i, i32 %16, i32* %call4.i) #8, !dbg !390
+  tail call void @llvm.dbg.value(metadata !16, i64 0, metadata !391) #7, !dbg !392
+  %17 = load i32* %2, align 4, !dbg !392, !tbaa !254
+  %cmp2378.i = icmp sgt i32 %17, 0, !dbg !392
+  br i1 %cmp2378.i, label %for.body24.i, label %for.inc29.i, !dbg !392
 
-._crit_edge13.i:                                  ; preds = %._crit_edge9.i, %6
-  %.lcssa.i = phi i32 [ %15, %6 ], [ %58, %._crit_edge9.i ]
-  %61 = tail call i32 @CCTKi_ScheduleSort(i32 %.lcssa.i, i8** %10, i32* %12) #8
-  %62 = icmp eq i32 %61, 0
-  br i1 %62, label %.critedge, label %ScheduleSortGroup.exit
+for.body24.i:                                     ; preds = %for.end.i, %for.body24.i
+  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %for.body24.i ], [ 0, %for.end.i ]
+  %arrayidx26.i = getelementptr inbounds i32* %call4.i, i64 %indvars.iv.i, !dbg !394
+  store i32 0, i32* %arrayidx26.i, align 4, !dbg !394, !tbaa !254
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1, !dbg !392
+  %18 = load i32* %2, align 4, !dbg !392, !tbaa !254
+  %19 = trunc i64 %indvars.iv.next.i to i32, !dbg !392
+  %cmp23.i = icmp slt i32 %19, %18, !dbg !392
+  br i1 %cmp23.i, label %for.body24.i, label %for.inc29.i, !dbg !392
 
-ScheduleSortGroup.exit:                           ; preds = %._crit_edge13.i
-  %63 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !9
-  %64 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %63, i8* getelementptr inbounds ([41 x i8]* @.str5, i64 0, i64 0), i32 %61) #8
-  %65 = load i32* %8, align 4, !tbaa !17
-  tail call void @CCTKi_ScheduleDestroyIVec(i32 %65, i32* %14) #8
-  %66 = load i32* %8, align 4, !tbaa !17
-  tail call void @CCTKi_ScheduleDestroyArray(i32 %66, i8** %10) #8
-  %67 = getelementptr inbounds i8* %4, i64 8
-  %68 = bitcast i8* %67 to i32**
-  store i32* %12, i32** %68, align 8, !tbaa !16
-  %69 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !9
-  %70 = bitcast i8* %4 to i8**
-  %71 = load i8** %70, align 8, !tbaa !14
-  %72 = sub nsw i32 0, %61
-  %73 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %69, i8* getelementptr inbounds ([66 x i8]* @.str, i64 0, i64 0), i8* %71, i32 %72) #8
-  %74 = sub i32 %n_errors.04, %61
-  br label %79
+for.inc29.i:                                      ; preds = %for.body24.i, %for.end.i
+  %20 = phi i32 [ %17, %for.end.i ], [ %18, %for.body24.i ]
+  %indvars.iv.next85.i = add i64 %indvars.iv84.i, 1, !dbg !361
+  %21 = trunc i64 %indvars.iv.next85.i to i32, !dbg !361
+  %cmp.i = icmp slt i32 %21, %20, !dbg !361
+  br i1 %cmp.i, label %for.body.i, label %for.end31.i, !dbg !361
 
-.critedge:                                        ; preds = %._crit_edge13.i
-  %75 = load i32* %8, align 4, !tbaa !17
-  tail call void @CCTKi_ScheduleDestroyIVec(i32 %75, i32* %14) #8
-  %76 = load i32* %8, align 4, !tbaa !17
-  tail call void @CCTKi_ScheduleDestroyArray(i32 %76, i8** %10) #8
-  %77 = getelementptr inbounds i8* %4, i64 8
-  %78 = bitcast i8* %77 to i32**
-  store i32* %12, i32** %78, align 8, !tbaa !16
-  br label %79
+for.end31.i:                                      ; preds = %for.inc29.i, %if.then
+  %.lcssa.i = phi i32 [ %6, %if.then ], [ %20, %for.inc29.i ]
+  %call33.i = tail call i32 @CCTKi_ScheduleSort(i32 %.lcssa.i, i8** %call.i, i32* %call2.i) #8, !dbg !396
+  tail call void @llvm.dbg.value(metadata !{i32 %call33.i}, i64 0, metadata !397) #7, !dbg !396
+  %tobool34.i = icmp eq i32 %call33.i, 0, !dbg !398
+  br i1 %tobool34.i, label %for.inc.critedge, label %if.then35.i, !dbg !398
 
-; <label>:79                                      ; preds = %.critedge, %.lr.ph, %ScheduleSortGroup.exit
-  %n_errors.1 = phi i32 [ %74, %ScheduleSortGroup.exit ], [ %n_errors.04, %.lr.ph ], [ %n_errors.04, %.critedge ]
-  %80 = add nuw nsw i32 %group.03, 1
-  %81 = load i32* @n_schedule_groups, align 4, !tbaa !19
-  %82 = icmp slt i32 %80, %81
-  br i1 %82, label %.lr.ph, label %._crit_edge
+if.then35.i:                                      ; preds = %for.end31.i
+  %22 = load %struct._IO_FILE** @stderr, align 8, !dbg !399, !tbaa !197
+  %call36.i = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %22, i8* getelementptr inbounds ([41 x i8]* @.str1, i64 0, i64 0), i32 %call33.i) #8, !dbg !399
+  %23 = load i32* %2, align 4, !dbg !401, !tbaa !254
+  tail call void @CCTKi_ScheduleDestroyIVec(i32 %23, i32* %call4.i) #8, !dbg !401
+  %24 = load i32* %2, align 4, !dbg !402, !tbaa !254
+  tail call void @CCTKi_ScheduleDestroyArray(i32 %24, i8** %call.i) #8, !dbg !402
+  %order40.i = getelementptr inbounds i8* %call, i64 8, !dbg !403
+  %25 = bitcast i8* %order40.i to i32**, !dbg !403
+  store i32* %call2.i, i32** %25, align 8, !dbg !403, !tbaa !197
+  tail call void @llvm.dbg.value(metadata !{i32 %call33.i}, i64 0, metadata !100), !dbg !353
+  %26 = load %struct._IO_FILE** @stderr, align 8, !dbg !404, !tbaa !197
+  %name = bitcast i8* %call to i8**, !dbg !404
+  %27 = load i8** %name, align 8, !dbg !404, !tbaa !197
+  %sub = sub nsw i32 0, %call33.i, !dbg !404
+  %call4 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %26, i8* getelementptr inbounds ([66 x i8]* @.str, i64 0, i64 0), i8* %27, i32 %sub) #8, !dbg !404
+  %add = sub i32 %n_errors.018, %call33.i, !dbg !406
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !101), !dbg !406
+  br label %for.inc, !dbg !407
 
-._crit_edge:                                      ; preds = %79, %0
-  %n_errors.0.lcssa = phi i32 [ 0, %0 ], [ %n_errors.1, %79 ]
-  %83 = sub nsw i32 0, %n_errors.0.lcssa
-  ret i32 %83
+for.inc.critedge:                                 ; preds = %for.end31.i
+  %28 = load i32* %2, align 4, !dbg !401, !tbaa !254
+  tail call void @CCTKi_ScheduleDestroyIVec(i32 %28, i32* %call4.i) #8, !dbg !401
+  %29 = load i32* %2, align 4, !dbg !402, !tbaa !254
+  tail call void @CCTKi_ScheduleDestroyArray(i32 %29, i8** %call.i) #8, !dbg !402
+  %order40.i.c = getelementptr inbounds i8* %call, i64 8, !dbg !403
+  %30 = bitcast i8* %order40.i.c to i32**, !dbg !403
+  store i32* %call2.i, i32** %30, align 8, !dbg !403, !tbaa !197
+  tail call void @llvm.dbg.value(metadata !{i32 %call33.i}, i64 0, metadata !100), !dbg !353
+  br label %for.inc
+
+for.inc:                                          ; preds = %for.inc.critedge, %for.body, %if.then35.i
+  %n_errors.1 = phi i32 [ %add, %if.then35.i ], [ %n_errors.018, %for.body ], [ %n_errors.018, %for.inc.critedge ]
+  %inc = add nsw i32 %group.017, 1, !dbg !348
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !98), !dbg !348
+  %31 = load i32* @n_schedule_groups, align 4, !dbg !348, !tbaa !254
+  %cmp = icmp slt i32 %inc, %31, !dbg !348
+  br i1 %cmp, label %for.body, label %for.end, !dbg !348
+
+for.end:                                          ; preds = %for.inc, %entry
+  %n_errors.0.lcssa = phi i32 [ 0, %entry ], [ %n_errors.1, %for.inc ]
+  %sub7 = sub nsw i32 0, %n_errors.0.lcssa, !dbg !408
+  ret i32 %sub7, !dbg !408
 }

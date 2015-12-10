@@ -1,8 +1,11 @@
 define noalias i8* @xstrdup(i8* nocapture %s) #0 {
 entry:
-  %call = tail call i64 @strlen(i8* %s) #4
-  %add = add i64 %call, 1
-  %call1 = tail call noalias i8* @xmalloc(i64 %add) #5
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call1, i8* %s, i64 %add, i32 1, i1 false)
-  ret i8* %call1
+  tail call void @llvm.dbg.value(metadata !{i8* %s}, i64 0, metadata !13), !dbg !18
+  %call = tail call i64 @strlen(i8* %s) #5, !dbg !19
+  %add = add i64 %call, 1, !dbg !19
+  tail call void @llvm.dbg.value(metadata !{i64 %add}, i64 0, metadata !14), !dbg !19
+  %call1 = tail call noalias i8* @xmalloc(i64 %add) #6, !dbg !20
+  tail call void @llvm.dbg.value(metadata !{i8* %call1}, i64 0, metadata !17), !dbg !20
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call1, i8* %s, i64 %add, i32 1, i1 false), !dbg !21
+  ret i8* %call1, !dbg !22
 }

@@ -1,25 +1,29 @@
 define void @dwarf2out_args_size(i8* %label, i64 %size) #1 {
 entry:
-  %0 = load i64* @old_args_size, align 8, !tbaa !6
-  %cmp = icmp eq i64 %0, %size
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i8* %label}, i64 0, metadata !1832), !dbg !3994
+  tail call void @llvm.dbg.value(metadata !{i64 %size}, i64 0, metadata !1833), !dbg !3995
+  %0 = load i64* @old_args_size, align 8, !dbg !3996, !tbaa !3782
+  %cmp = icmp eq i64 %0, %size, !dbg !3996
+  br i1 %cmp, label %return, label %if.end, !dbg !3996
 
 if.end:                                           ; preds = %entry
-  store i64 %size, i64* @old_args_size, align 8, !tbaa !6
-  %call.i = tail call noalias i8* @xmalloc(i64 32) #9
-  %1 = bitcast i8* %call.i to %struct.dw_cfi_struct*
-  %dw_cfi_next.i = bitcast i8* %call.i to %struct.dw_cfi_struct**
-  store %struct.dw_cfi_struct* null, %struct.dw_cfi_struct** %dw_cfi_next.i, align 8, !tbaa !4
-  %dw_cfi_oprnd1.i = getelementptr inbounds i8* %call.i, i64 16
-  tail call void @llvm.memset.p0i8.i64(i8* %dw_cfi_oprnd1.i, i8 0, i64 16, i32 8, i1 false) #5
-  %dw_cfi_opc = getelementptr inbounds i8* %call.i, i64 8
-  %2 = bitcast i8* %dw_cfi_opc to i32*
-  store i32 46, i32* %2, align 4, !tbaa !8
-  %3 = bitcast i8* %dw_cfi_oprnd1.i to i64*
-  store i64 %size, i64* %3, align 8, !tbaa !6
-  tail call fastcc void @add_fde_cfi(i8* %label, %struct.dw_cfi_struct* %1) #10
-  br label %return
+  store i64 %size, i64* @old_args_size, align 8, !dbg !3997, !tbaa !3782
+  %call.i = tail call noalias i8* @xmalloc(i64 32) #10, !dbg !3998
+  %1 = bitcast i8* %call.i to %struct.dw_cfi_struct*, !dbg !3998
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_cfi_struct* %1}, i64 0, metadata !4000) #6, !dbg !3998
+  %dw_cfi_next.i = bitcast i8* %call.i to %struct.dw_cfi_struct**, !dbg !4001
+  store %struct.dw_cfi_struct* null, %struct.dw_cfi_struct** %dw_cfi_next.i, align 8, !dbg !4001, !tbaa !3768
+  %dw_cfi_oprnd1.i = getelementptr inbounds i8* %call.i, i64 16, !dbg !4002
+  tail call void @llvm.memset.p0i8.i64(i8* %dw_cfi_oprnd1.i, i8 0, i64 16, i32 8, i1 false) #6, !dbg !4002
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_cfi_struct* %1}, i64 0, metadata !1834), !dbg !3999
+  %dw_cfi_opc = getelementptr inbounds i8* %call.i, i64 8, !dbg !4003
+  %2 = bitcast i8* %dw_cfi_opc to i32*, !dbg !4003
+  store i32 46, i32* %2, align 4, !dbg !4003, !tbaa !3815
+  %3 = bitcast i8* %dw_cfi_oprnd1.i to i64*, !dbg !4004
+  store i64 %size, i64* %3, align 8, !dbg !4004, !tbaa !3782
+  tail call fastcc void @add_fde_cfi(i8* %label, %struct.dw_cfi_struct* %1) #11, !dbg !4005
+  br label %return, !dbg !4005
 
 return:                                           ; preds = %entry, %if.end
-  ret void
+  ret void, !dbg !4005
 }

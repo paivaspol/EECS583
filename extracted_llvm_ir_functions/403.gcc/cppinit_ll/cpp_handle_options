@@ -1,23 +1,29 @@
 define i32 @cpp_handle_options(%struct.cpp_reader* %pfile, i32 %argc, i8** nocapture %argv) #0 {
 entry:
-  %cmp8 = icmp sgt i32 %argc, 0
-  br i1 %cmp8, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !683), !dbg !1833
+  tail call void @llvm.dbg.value(metadata !{i32 %argc}, i64 0, metadata !684), !dbg !1834
+  tail call void @llvm.dbg.value(metadata !{i8** %argv}, i64 0, metadata !685), !dbg !1835
+  tail call void @llvm.dbg.value(metadata !197, i64 0, metadata !686), !dbg !1836
+  %cmp8 = icmp sgt i32 %argc, 0, !dbg !1836
+  br i1 %cmp8, label %for.body, label %for.end, !dbg !1836
 
 for.cond:                                         ; preds = %for.body
-  %cmp = icmp slt i32 %add, %argc
-  br i1 %cmp, label %for.body, label %for.end
+  %cmp = icmp slt i32 %add, %argc, !dbg !1836
+  br i1 %cmp, label %for.body, label %for.end, !dbg !1836
 
 for.body:                                         ; preds = %entry, %for.cond
   %i.09 = phi i32 [ %add, %for.cond ], [ 0, %entry ]
-  %sub = sub nsw i32 %argc, %i.09
-  %idx.ext = sext i32 %i.09 to i64
-  %add.ptr = getelementptr inbounds i8** %argv, i64 %idx.ext
-  %call = tail call i32 @cpp_handle_option(%struct.cpp_reader* %pfile, i32 %sub, i8** %add.ptr, i32 1) #7
-  %cmp1 = icmp eq i32 %call, 0
-  %add = add nsw i32 %call, %i.09
-  br i1 %cmp1, label %for.end, label %for.cond
+  %sub = sub nsw i32 %argc, %i.09, !dbg !1838
+  %idx.ext = sext i32 %i.09 to i64, !dbg !1838
+  %add.ptr = getelementptr inbounds i8** %argv, i64 %idx.ext, !dbg !1838
+  %call = tail call i32 @cpp_handle_option(%struct.cpp_reader* %pfile, i32 %sub, i8** %add.ptr, i32 1) #8, !dbg !1838
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !687), !dbg !1838
+  %cmp1 = icmp eq i32 %call, 0, !dbg !1840
+  %add = add nsw i32 %call, %i.09, !dbg !1836
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !686), !dbg !1836
+  br i1 %cmp1, label %for.end, label %for.cond, !dbg !1840
 
 for.end:                                          ; preds = %for.cond, %for.body, %entry
   %i.0.lcssa = phi i32 [ 0, %entry ], [ %i.09, %for.body ], [ %add, %for.cond ]
-  ret i32 %i.0.lcssa
+  ret i32 %i.0.lcssa, !dbg !1841
 }

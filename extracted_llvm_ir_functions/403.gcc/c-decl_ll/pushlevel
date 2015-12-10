@@ -1,66 +1,70 @@
 define void @pushlevel(i32 %tag_transparent) #0 {
 entry:
-  %0 = load %struct.binding_level** @current_binding_level, align 8, !tbaa !0
-  %1 = load %struct.binding_level** @global_binding_level, align 8, !tbaa !0
-  %cmp = icmp eq %struct.binding_level* %0, %1
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i32 %tag_transparent}, i64 0, metadata !1329), !dbg !2549
+  tail call void @llvm.dbg.value(metadata !2550, i64 0, metadata !1330), !dbg !2551
+  %0 = load %struct.binding_level** @current_binding_level, align 8, !dbg !2552, !tbaa !2183
+  %1 = load %struct.binding_level** @global_binding_level, align 8, !dbg !2552, !tbaa !2183
+  %cmp = icmp eq %struct.binding_level* %0, %1, !dbg !2552
+  br i1 %cmp, label %if.then, label %if.end, !dbg !2552
 
 if.then:                                          ; preds = %entry
-  store %union.tree_node* null, %union.tree_node** @named_labels, align 8, !tbaa !0
-  br label %if.end
+  store %union.tree_node* null, %union.tree_node** @named_labels, align 8, !dbg !2553, !tbaa !2183
+  br label %if.end, !dbg !2555
 
 if.end:                                           ; preds = %if.then, %entry
-  %2 = load %struct.binding_level** @free_binding_level, align 8, !tbaa !0
-  %tobool = icmp eq %struct.binding_level* %2, null
-  br i1 %tobool, label %if.else, label %if.then1
+  %2 = load %struct.binding_level** @free_binding_level, align 8, !dbg !2556, !tbaa !2183
+  %tobool = icmp eq %struct.binding_level* %2, null, !dbg !2556
+  br i1 %tobool, label %if.else, label %if.then1, !dbg !2556
 
 if.then1:                                         ; preds = %if.end
-  %level_chain = getelementptr inbounds %struct.binding_level* %2, i64 0, i32 5
-  %3 = load %struct.binding_level** %level_chain, align 8, !tbaa !0
-  store %struct.binding_level* %3, %struct.binding_level** @free_binding_level, align 8, !tbaa !0
-  br label %if.end2
+  tail call void @llvm.dbg.value(metadata !{%struct.binding_level* %2}, i64 0, metadata !1330), !dbg !2557
+  %level_chain = getelementptr inbounds %struct.binding_level* %2, i64 0, i32 5, !dbg !2559
+  %3 = load %struct.binding_level** %level_chain, align 8, !dbg !2559, !tbaa !2183
+  store %struct.binding_level* %3, %struct.binding_level** @free_binding_level, align 8, !dbg !2559, !tbaa !2183
+  br label %if.end2, !dbg !2560
 
 if.else:                                          ; preds = %if.end
-  %call.i = tail call noalias i8* @xmalloc(i64 72) #8
-  %4 = bitcast i8* %call.i to %struct.binding_level*
+  %call.i = tail call noalias i8* @xmalloc(i64 72) #9, !dbg !2561
+  %4 = bitcast i8* %call.i to %struct.binding_level*, !dbg !2561
+  tail call void @llvm.dbg.value(metadata !{%struct.binding_level* %4}, i64 0, metadata !1330), !dbg !2562
   br label %if.end2
 
 if.end2:                                          ; preds = %if.else, %if.then1
   %newlevel.0 = phi %struct.binding_level* [ %2, %if.then1 ], [ %4, %if.else ]
-  %5 = bitcast %struct.binding_level* %newlevel.0 to i8*
-  call void @llvm.memset.p0i8.i64(i8* %5, i8 0, i64 72, i32 8, i1 false)
-  %tobool3 = icmp eq i32 %tag_transparent, 0
-  br i1 %tobool3, label %lor.rhs, label %lor.end
+  %5 = bitcast %struct.binding_level* %newlevel.0 to i8*, !dbg !2564
+  call void @llvm.memset.p0i8.i64(i8* %5, i8 0, i64 72, i32 8, i1 false), !dbg !2564
+  %tobool3 = icmp eq i32 %tag_transparent, 0, !dbg !2565
+  br i1 %tobool3, label %lor.rhs, label %lor.end, !dbg !2565
 
 lor.rhs:                                          ; preds = %if.end2
-  %6 = load %struct.binding_level** @current_binding_level, align 8, !tbaa !0
-  %tobool4 = icmp eq %struct.binding_level* %6, null
-  br i1 %tobool4, label %lor.end, label %cond.true
+  %6 = load %struct.binding_level** @current_binding_level, align 8, !dbg !2565, !tbaa !2183
+  %tobool4 = icmp eq %struct.binding_level* %6, null, !dbg !2565
+  br i1 %tobool4, label %lor.end, label %cond.true, !dbg !2565
 
 cond.true:                                        ; preds = %lor.rhs
-  %subblocks_tag_transparent = getelementptr inbounds %struct.binding_level* %6, i64 0, i32 8
-  %7 = load i8* %subblocks_tag_transparent, align 1, !tbaa !1
-  %phitmp = icmp ne i8 %7, 0
-  br label %lor.end
+  %subblocks_tag_transparent = getelementptr inbounds %struct.binding_level* %6, i64 0, i32 8, !dbg !2565
+  %7 = load i8* %subblocks_tag_transparent, align 1, !dbg !2565, !tbaa !2184
+  %phitmp = icmp ne i8 %7, 0, !dbg !2565
+  br label %lor.end, !dbg !2565
 
 lor.end:                                          ; preds = %cond.true, %lor.rhs, %if.end2
   %8 = phi i1 [ true, %if.end2 ], [ %phitmp, %cond.true ], [ false, %lor.rhs ]
-  %conv6 = zext i1 %8 to i8
-  %tag_transparent7 = getelementptr inbounds %struct.binding_level* %newlevel.0, i64 0, i32 7
-  store i8 %conv6, i8* %tag_transparent7, align 1, !tbaa !1
-  %9 = load %struct.binding_level** @current_binding_level, align 8, !tbaa !0
-  %level_chain8 = getelementptr inbounds %struct.binding_level* %newlevel.0, i64 0, i32 5
-  store %struct.binding_level* %9, %struct.binding_level** %level_chain8, align 8, !tbaa !0
-  store %struct.binding_level* %newlevel.0, %struct.binding_level** @current_binding_level, align 8, !tbaa !0
+  %conv6 = zext i1 %8 to i8, !dbg !2565
+  %tag_transparent7 = getelementptr inbounds %struct.binding_level* %newlevel.0, i64 0, i32 7, !dbg !2565
+  store i8 %conv6, i8* %tag_transparent7, align 1, !dbg !2565, !tbaa !2184
+  %9 = load %struct.binding_level** @current_binding_level, align 8, !dbg !2566, !tbaa !2183
+  %level_chain8 = getelementptr inbounds %struct.binding_level* %newlevel.0, i64 0, i32 5, !dbg !2566
+  store %struct.binding_level* %9, %struct.binding_level** %level_chain8, align 8, !dbg !2566, !tbaa !2183
+  store %struct.binding_level* %newlevel.0, %struct.binding_level** @current_binding_level, align 8, !dbg !2567, !tbaa !2183
   %.b = load i1* @keep_next_level_flag, align 1
-  %conv9 = zext i1 %.b to i8
-  %keep = getelementptr inbounds %struct.binding_level* %newlevel.0, i64 0, i32 9
-  store i8 %conv9, i8* %keep, align 1, !tbaa !1
+  %conv9 = zext i1 %.b to i8, !dbg !2568
+  %keep = getelementptr inbounds %struct.binding_level* %newlevel.0, i64 0, i32 9, !dbg !2568
+  store i8 %conv9, i8* %keep, align 1, !dbg !2568, !tbaa !2184
   store i1 false, i1* @keep_next_level_flag, align 1
   %.b16 = load i1* @keep_next_if_subblocks, align 1
-  %conv10 = zext i1 %.b16 to i8
-  %keep_if_subblocks = getelementptr inbounds %struct.binding_level* %newlevel.0, i64 0, i32 10
-  store i8 %conv10, i8* %keep_if_subblocks, align 1, !tbaa !1
+  %conv10 = zext i1 %.b16 to i8, !dbg !2569
+  %keep_if_subblocks = getelementptr inbounds %struct.binding_level* %newlevel.0, i64 0, i32 10, !dbg !2569
+  store i8 %conv10, i8* %keep_if_subblocks, align 1, !dbg !2569, !tbaa !2184
   store i1 false, i1* @keep_next_if_subblocks, align 1
-  ret void
+  ret void, !dbg !2570
 }

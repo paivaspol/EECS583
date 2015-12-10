@@ -1,70 +1,74 @@
 define %union.tree_node* @size_int_type_wide(i64 %number, %union.tree_node* %type) #0 {
 entry:
-  %0 = load %struct.htab** @size_int_type_wide.size_htab, align 8, !tbaa !3
-  %cmp = icmp eq %struct.htab* %0, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i64 %number}, i64 0, metadata !894), !dbg !2362
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %type}, i64 0, metadata !895), !dbg !2363
+  %0 = load %struct.htab** @size_int_type_wide.size_htab, align 8, !dbg !2364, !tbaa !1705
+  %cmp = icmp eq %struct.htab* %0, null, !dbg !2364
+  br i1 %cmp, label %if.then, label %if.end, !dbg !2364
 
 if.then:                                          ; preds = %entry
-  %call = tail call %struct.htab* @htab_create(i64 1024, i32 (i8*)* @size_htab_hash, i32 (i8*, i8*)* @size_htab_eq, void (i8*)* null) #9
-  store %struct.htab* %call, %struct.htab** @size_int_type_wide.size_htab, align 8, !tbaa !3
-  %1 = bitcast %struct.htab* %call to i8*
-  tail call void @ggc_add_deletable_htab(i8* %1, i32 (i8*)* null, void (i8*)* null) #9
-  %call1 = tail call %union.tree_node* @make_node(i32 25) #9
-  store %union.tree_node* %call1, %union.tree_node** @size_int_type_wide.new_const, align 8, !tbaa !3
-  tail call void @ggc_add_tree_root(%union.tree_node** @size_int_type_wide.new_const, i32 1) #9
-  br label %if.end
+  %call = tail call %struct.htab* @htab_create(i64 1024, i32 (i8*)* @size_htab_hash, i32 (i8*, i8*)* @size_htab_eq, void (i8*)* null) #9, !dbg !2365
+  store %struct.htab* %call, %struct.htab** @size_int_type_wide.size_htab, align 8, !dbg !2365, !tbaa !1705
+  %1 = bitcast %struct.htab* %call to i8*, !dbg !2367
+  tail call void @ggc_add_deletable_htab(i8* %1, i32 (i8*)* null, void (i8*)* null) #9, !dbg !2367
+  %call1 = tail call %union.tree_node* @make_node(i32 25) #9, !dbg !2368
+  store %union.tree_node* %call1, %union.tree_node** @size_int_type_wide.new_const, align 8, !dbg !2368, !tbaa !1705
+  tail call void @ggc_add_tree_root(%union.tree_node** @size_int_type_wide.new_const, i32 1) #9, !dbg !2369
+  br label %if.end, !dbg !2370
 
 if.end:                                           ; preds = %if.then, %entry
-  %2 = load %union.tree_node** @size_int_type_wide.new_const, align 8, !tbaa !3
-  %int_cst2 = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 2
-  %low = bitcast i32* %int_cst2 to i64*
-  store i64 %number, i64* %low, align 8, !tbaa !0
-  %number.lobit = ashr i64 %number, 63
-  %high = getelementptr inbounds i32* %int_cst2, i64 2
-  %3 = bitcast i32* %high to i64*
-  store i64 %number.lobit, i64* %3, align 8, !tbaa !0
-  %type6 = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 0, i32 1
-  store %union.tree_node* %type, %union.tree_node** %type6, align 8, !tbaa !3
-  %4 = load %union.tree_node** @size_int_type_wide.new_const, align 8, !tbaa !3
-  %call7 = tail call i32 @force_fit_type(%union.tree_node* %4, i32 0) #7
-  %5 = load %union.tree_node** @size_int_type_wide.new_const, align 8, !tbaa !3
-  %static_flag = getelementptr inbounds %union.tree_node* %5, i64 0, i32 0, i32 0, i32 2
-  %6 = bitcast [4 x i8]* %static_flag to i32*
-  %bf.load = load i32* %6, align 8
-  %bf.value = and i32 %call7, 1
-  %bf.shl = shl nuw nsw i32 %bf.value, 18
-  %bf.clear = and i32 %bf.load, -262145
-  %bf.set = or i32 %bf.clear, %bf.shl
-  store i32 %bf.set, i32* %6, align 8
-  %7 = load %union.tree_node** @size_int_type_wide.new_const, align 8, !tbaa !3
-  %public_flag = getelementptr inbounds %union.tree_node* %7, i64 0, i32 0, i32 0, i32 2
-  %8 = bitcast [4 x i8]* %public_flag to i32*
-  %bf.load10 = load i32* %8, align 8
-  %bf.shl12 = shl nuw nsw i32 %bf.value, 19
-  %bf.clear13 = and i32 %bf.load10, -524289
-  %bf.set14 = or i32 %bf.clear13, %bf.shl12
-  store i32 %bf.set14, i32* %8, align 8
-  %9 = load %struct.htab** @size_int_type_wide.size_htab, align 8, !tbaa !3
-  %10 = load %union.tree_node** @size_int_type_wide.new_const, align 8, !tbaa !3
-  %11 = bitcast %union.tree_node* %10 to i8*
-  %call15 = tail call i8** @htab_find_slot(%struct.htab* %9, i8* %11, i32 1) #9
-  %12 = load i8** %call15, align 8, !tbaa !3
-  %cmp16 = icmp eq i8* %12, null
-  br i1 %cmp16, label %if.then18, label %if.else
+  %2 = load %union.tree_node** @size_int_type_wide.new_const, align 8, !dbg !2371, !tbaa !1705
+  %int_cst2 = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 2, !dbg !2371
+  %low = bitcast i32* %int_cst2 to i64*, !dbg !2371
+  store i64 %number, i64* %low, align 8, !dbg !2371, !tbaa !1700
+  %number.lobit = ashr i64 %number, 63, !dbg !2372
+  %high = getelementptr inbounds i32* %int_cst2, i64 2, !dbg !2372
+  %3 = bitcast i32* %high to i64*, !dbg !2372
+  store i64 %number.lobit, i64* %3, align 8, !dbg !2372, !tbaa !1700
+  %type6 = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 0, i32 1, !dbg !2373
+  store %union.tree_node* %type, %union.tree_node** %type6, align 8, !dbg !2373, !tbaa !1705
+  %4 = load %union.tree_node** @size_int_type_wide.new_const, align 8, !dbg !2374, !tbaa !1705
+  %call7 = tail call i32 @force_fit_type(%union.tree_node* %4, i32 0) #7, !dbg !2374
+  %5 = load %union.tree_node** @size_int_type_wide.new_const, align 8, !dbg !2374, !tbaa !1705
+  %static_flag = getelementptr inbounds %union.tree_node* %5, i64 0, i32 0, i32 0, i32 2, !dbg !2374
+  %6 = bitcast [4 x i8]* %static_flag to i32*, !dbg !2374
+  %bf.load = load i32* %6, align 8, !dbg !2374
+  %bf.value = and i32 %call7, 1, !dbg !2374
+  %bf.shl = shl nuw nsw i32 %bf.value, 18, !dbg !2374
+  %bf.clear = and i32 %bf.load, -262145, !dbg !2374
+  %bf.set = or i32 %bf.clear, %bf.shl, !dbg !2374
+  store i32 %bf.set, i32* %6, align 8, !dbg !2374
+  %7 = load %union.tree_node** @size_int_type_wide.new_const, align 8, !dbg !2374, !tbaa !1705
+  %public_flag = getelementptr inbounds %union.tree_node* %7, i64 0, i32 0, i32 0, i32 2, !dbg !2374
+  %8 = bitcast [4 x i8]* %public_flag to i32*, !dbg !2374
+  %bf.load10 = load i32* %8, align 8, !dbg !2374
+  %bf.shl12 = shl nuw nsw i32 %bf.value, 19, !dbg !2374
+  %bf.clear13 = and i32 %bf.load10, -524289, !dbg !2374
+  %bf.set14 = or i32 %bf.clear13, %bf.shl12, !dbg !2374
+  store i32 %bf.set14, i32* %8, align 8, !dbg !2374
+  %9 = load %struct.htab** @size_int_type_wide.size_htab, align 8, !dbg !2375, !tbaa !1705
+  %10 = load %union.tree_node** @size_int_type_wide.new_const, align 8, !dbg !2375, !tbaa !1705
+  %11 = bitcast %union.tree_node* %10 to i8*, !dbg !2375
+  %call15 = tail call i8** @htab_find_slot(%struct.htab* %9, i8* %11, i32 1) #9, !dbg !2375
+  tail call void @llvm.dbg.value(metadata !{i8** %call15}, i64 0, metadata !896), !dbg !2375
+  %12 = load i8** %call15, align 8, !dbg !2376, !tbaa !1705
+  %cmp16 = icmp eq i8* %12, null, !dbg !2376
+  br i1 %cmp16, label %if.then18, label %if.else, !dbg !2376
 
 if.then18:                                        ; preds = %if.end
-  %13 = load %union.tree_node** @size_int_type_wide.new_const, align 8, !tbaa !3
-  %14 = bitcast %union.tree_node* %13 to i8*
-  store i8* %14, i8** %call15, align 8, !tbaa !3
-  %call19 = tail call %union.tree_node* @make_node(i32 25) #9
-  store %union.tree_node* %call19, %union.tree_node** @size_int_type_wide.new_const, align 8, !tbaa !3
-  br label %return
+  %13 = load %union.tree_node** @size_int_type_wide.new_const, align 8, !dbg !2377, !tbaa !1705
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %13}, i64 0, metadata !899), !dbg !2377
+  %14 = bitcast %union.tree_node* %13 to i8*, !dbg !2378
+  store i8* %14, i8** %call15, align 8, !dbg !2378, !tbaa !1705
+  %call19 = tail call %union.tree_node* @make_node(i32 25) #9, !dbg !2379
+  store %union.tree_node* %call19, %union.tree_node** @size_int_type_wide.new_const, align 8, !dbg !2379, !tbaa !1705
+  br label %return, !dbg !2380
 
 if.else:                                          ; preds = %if.end
-  %15 = bitcast i8* %12 to %union.tree_node*
-  br label %return
+  %15 = bitcast i8* %12 to %union.tree_node*, !dbg !2381
+  br label %return, !dbg !2381
 
 return:                                           ; preds = %if.else, %if.then18
   %retval.0 = phi %union.tree_node* [ %13, %if.then18 ], [ %15, %if.else ]
-  ret %union.tree_node* %retval.0
+  ret %union.tree_node* %retval.0, !dbg !2382
 }

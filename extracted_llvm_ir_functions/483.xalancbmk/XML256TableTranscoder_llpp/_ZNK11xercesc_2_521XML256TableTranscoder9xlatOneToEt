@@ -1,0 +1,58 @@
+define zeroext i8 @_ZNK11xercesc_2_521XML256TableTranscoder9xlatOneToEt(%"class.xercesc_2_5::XML256TableTranscoder"* nocapture %this, i16 zeroext %toXlat) #6 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XML256TableTranscoder"* %this}, i64 0, metadata !734), !dbg !1000
+  tail call void @llvm.dbg.value(metadata !{i16 %toXlat}, i64 0, metadata !735), !dbg !1000
+  tail call void @llvm.dbg.value(metadata !584, i64 0, metadata !736), !dbg !1001
+  %fToSize = getelementptr inbounds %"class.xercesc_2_5::XML256TableTranscoder"* %this, i64 0, i32 2, !dbg !1002
+  %0 = load i32* %fToSize, align 4, !dbg !1002, !tbaa !957
+  %sub = add i32 %0, -1, !dbg !1002
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !737), !dbg !1002
+  %fToTable = getelementptr inbounds %"class.xercesc_2_5::XML256TableTranscoder"* %this, i64 0, i32 3, !dbg !1003
+  %1 = load %"struct.xercesc_2_5::XMLTransService::TransRec"** %fToTable, align 8, !dbg !1003, !tbaa !950
+  br label %do.body, !dbg !1004
+
+do.body:                                          ; preds = %do.cond, %entry
+  %lowOfs.0 = phi i32 [ 0, %entry ], [ %lowOfs.1, %do.cond ]
+  %hiOfs.0 = phi i32 [ %sub, %entry ], [ %hiOfs.1, %do.cond ]
+  %sub2 = sub i32 %hiOfs.0, %lowOfs.0, !dbg !1005
+  %div = lshr i32 %sub2, 1, !dbg !1005
+  %add = add i32 %div, %lowOfs.0, !dbg !1005
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !738), !dbg !1005
+  %idxprom = zext i32 %add to i64, !dbg !1003
+  %intCh = getelementptr inbounds %"struct.xercesc_2_5::XMLTransService::TransRec"* %1, i64 %idxprom, i32 0, !dbg !1003
+  %2 = load i16* %intCh, align 2, !dbg !1003, !tbaa !951
+  %cmp = icmp ult i16 %2, %toXlat, !dbg !1003
+  br i1 %cmp, label %do.cond, label %if.else, !dbg !1003
+
+if.else:                                          ; preds = %do.body
+  %cmp10 = icmp ugt i16 %2, %toXlat, !dbg !1006
+  br i1 %cmp10, label %do.cond, label %if.else12, !dbg !1006
+
+if.else12:                                        ; preds = %if.else
+  %extCh = getelementptr inbounds %"struct.xercesc_2_5::XMLTransService::TransRec"* %1, i64 %idxprom, i32 1, !dbg !1007
+  %3 = load i8* %extCh, align 1, !dbg !1007, !tbaa !948
+  br label %return, !dbg !1007
+
+do.cond:                                          ; preds = %if.else, %do.body
+  %lowOfs.1 = phi i32 [ %add, %do.body ], [ %lowOfs.0, %if.else ]
+  %hiOfs.1 = phi i32 [ %hiOfs.0, %do.body ], [ %add, %if.else ]
+  %add17 = add i32 %lowOfs.1, 1, !dbg !1009
+  %cmp18 = icmp ult i32 %add17, %hiOfs.1, !dbg !1009
+  br i1 %cmp18, label %do.body, label %do.end, !dbg !1009
+
+do.end:                                           ; preds = %do.cond
+  %idxprom20 = zext i32 %hiOfs.1 to i64, !dbg !1010
+  %intCh23 = getelementptr inbounds %"struct.xercesc_2_5::XMLTransService::TransRec"* %1, i64 %idxprom20, i32 0, !dbg !1010
+  %4 = load i16* %intCh23, align 2, !dbg !1010, !tbaa !951
+  %cmp25 = icmp eq i16 %4, %toXlat, !dbg !1010
+  br i1 %cmp25, label %if.then26, label %return, !dbg !1010
+
+if.then26:                                        ; preds = %do.end
+  %extCh30 = getelementptr inbounds %"struct.xercesc_2_5::XMLTransService::TransRec"* %1, i64 %idxprom20, i32 1, !dbg !1011
+  %5 = load i8* %extCh30, align 1, !dbg !1011, !tbaa !948
+  br label %return, !dbg !1011
+
+return:                                           ; preds = %do.end, %if.then26, %if.else12
+  %retval.0 = phi i8 [ %5, %if.then26 ], [ %3, %if.else12 ], [ 0, %do.end ]
+  ret i8 %retval.0, !dbg !1013
+}

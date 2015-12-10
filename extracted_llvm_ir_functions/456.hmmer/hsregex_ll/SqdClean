@@ -1,25 +1,26 @@
 define void @SqdClean() #0 {
 entry:
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !57), !dbg !375
+  br label %for.body, !dbg !375
 
 for.body:                                         ; preds = %for.inc, %entry
   %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc ]
-  %arrayidx = getelementptr inbounds [10 x i8*]* @sqd_parse, i64 0, i64 %indvars.iv
-  %0 = load i8** %arrayidx, align 8, !tbaa !0
-  %cmp1 = icmp eq i8* %0, null
-  br i1 %cmp1, label %for.inc, label %if.then
+  %arrayidx = getelementptr inbounds [10 x i8*]* @sqd_parse, i64 0, i64 %indvars.iv, !dbg !377
+  %0 = load i8** %arrayidx, align 8, !dbg !377, !tbaa !270
+  %cmp1 = icmp eq i8* %0, null, !dbg !377
+  br i1 %cmp1, label %for.inc, label %if.then, !dbg !377
 
 if.then:                                          ; preds = %for.body
-  tail call void @free(i8* %0) #9
-  store i8* null, i8** %arrayidx, align 8, !tbaa !0
-  br label %for.inc
+  tail call void @free(i8* %0) #10, !dbg !378
+  store i8* null, i8** %arrayidx, align 8, !dbg !380, !tbaa !270
+  br label %for.inc, !dbg !381
 
 for.inc:                                          ; preds = %for.body, %if.then
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 10
-  br i1 %exitcond, label %for.end, label %for.body
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !375
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !375
+  %exitcond = icmp eq i32 %lftr.wideiv, 10, !dbg !375
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !375
 
 for.end:                                          ; preds = %for.inc
-  ret void
+  ret void, !dbg !382
 }

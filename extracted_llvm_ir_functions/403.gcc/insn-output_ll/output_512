@@ -1,23 +1,25 @@
 define internal i8* @output_512(%struct.rtx_def** nocapture %operands, %struct.rtx_def* nocapture %insn) #1 {
 entry:
-  %0 = load %struct.rtx_def** %operands, align 8, !tbaa !0
-  %call = tail call i32 @constant_call_address_operand(%struct.rtx_def* %0, i32 2) #6
-  %tobool = icmp eq i32 %call, 0
-  %1 = bitcast %struct.rtx_def* %insn to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.clear = and i32 %bf.load, 16777216
-  %tobool1 = icmp ne i32 %bf.clear, 0
-  br i1 %tobool, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %operands}, i64 0, metadata !591), !dbg !2457
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !592), !dbg !2458
+  %0 = load %struct.rtx_def** %operands, align 8, !dbg !2459, !tbaa !1226
+  %call = tail call i32 @constant_call_address_operand(%struct.rtx_def* %0, i32 2) #7, !dbg !2459
+  %tobool = icmp eq i32 %call, 0, !dbg !2459
+  %1 = bitcast %struct.rtx_def* %insn to i32*, !dbg !2461
+  %bf.load = load i32* %1, align 8, !dbg !2461
+  %bf.clear = and i32 %bf.load, 16777216, !dbg !2461
+  %tobool1 = icmp ne i32 %bf.clear, 0, !dbg !2461
+  br i1 %tobool, label %if.end, label %if.then, !dbg !2459
 
 if.then:                                          ; preds = %entry
-  %. = select i1 %tobool1, i8* getelementptr inbounds ([8 x i8]* @.str1673, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1674, i64 0, i64 0)
-  br label %return
+  %. = select i1 %tobool1, i8* getelementptr inbounds ([8 x i8]* @.str1673, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1674, i64 0, i64 0), !dbg !2463
+  br label %return, !dbg !2463
 
 if.end:                                           ; preds = %entry
-  %.9 = select i1 %tobool1, i8* getelementptr inbounds ([8 x i8]* @.str659, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1675, i64 0, i64 0)
-  br label %return
+  %.9 = select i1 %tobool1, i8* getelementptr inbounds ([8 x i8]* @.str659, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1675, i64 0, i64 0), !dbg !2464
+  br label %return, !dbg !2464
 
 return:                                           ; preds = %if.end, %if.then
   %retval.0 = phi i8* [ %., %if.then ], [ %.9, %if.end ]
-  ret i8* %retval.0
+  ret i8* %retval.0, !dbg !2465
 }

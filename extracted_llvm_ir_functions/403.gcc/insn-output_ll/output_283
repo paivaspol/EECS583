@@ -1,32 +1,34 @@
 define internal i8* @output_283(%struct.rtx_def** nocapture %operands, %struct.rtx_def* nocapture %insn) #1 {
 entry:
-  %0 = load i32* @which_alternative, align 4, !tbaa !3
-  %cmp = icmp eq i32 %0, 3
-  br i1 %cmp, label %if.then, label %return
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %operands}, i64 0, metadata !687), !dbg !2201
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !688), !dbg !2202
+  %0 = load i32* @which_alternative, align 4, !dbg !2203, !tbaa !1229
+  %cmp = icmp eq i32 %0, 3, !dbg !2203
+  br i1 %cmp, label %if.then, label %return, !dbg !2203
 
 if.then:                                          ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def** %operands, i64 1
-  %1 = load %struct.rtx_def** %arrayidx, align 8, !tbaa !0
-  %2 = bitcast %struct.rtx_def* %1 to i32*
-  %bf.load = load i32* %2, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp1 = icmp eq i32 %bf.clear, 54
-  br i1 %cmp1, label %land.lhs.true, label %return
+  %arrayidx = getelementptr inbounds %struct.rtx_def** %operands, i64 1, !dbg !2205
+  %1 = load %struct.rtx_def** %arrayidx, align 8, !dbg !2205, !tbaa !1226
+  %2 = bitcast %struct.rtx_def* %1 to i32*, !dbg !2205
+  %bf.load = load i32* %2, align 8, !dbg !2205
+  %bf.clear = and i32 %bf.load, 65535, !dbg !2205
+  %cmp1 = icmp eq i32 %bf.clear, 54, !dbg !2205
+  br i1 %cmp1, label %land.lhs.true, label %return, !dbg !2205
 
 land.lhs.true:                                    ; preds = %if.then
-  %rtwint = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0, i32 0
-  %3 = load i64* %rtwint, align 8, !tbaa !5
-  %and = and i64 %3, 4294967040
-  %tobool = icmp eq i64 %and, 0
-  br i1 %tobool, label %return, label %if.then4
+  %rtwint = getelementptr inbounds %struct.rtx_def* %1, i64 0, i32 1, i64 0, i32 0, !dbg !2205
+  %3 = load i64* %rtwint, align 8, !dbg !2205, !tbaa !1823
+  %and = and i64 %3, 4294967040, !dbg !2205
+  %tobool = icmp eq i64 %and, 0, !dbg !2205
+  br i1 %tobool, label %return, label %if.then4, !dbg !2205
 
 if.then4:                                         ; preds = %land.lhs.true
-  %and9 = and i64 %3, 255
-  %call = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %and9) #6
-  store %struct.rtx_def* %call, %struct.rtx_def** %arrayidx, align 8, !tbaa !0
-  br label %return
+  %and9 = and i64 %3, 255, !dbg !2207
+  %call = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %and9) #7, !dbg !2207
+  store %struct.rtx_def* %call, %struct.rtx_def** %arrayidx, align 8, !dbg !2207, !tbaa !1226
+  br label %return, !dbg !2207
 
 return:                                           ; preds = %entry, %if.then, %if.then4, %land.lhs.true
   %retval.0 = phi i8* [ getelementptr inbounds ([26 x i8]* @.str1748, i64 0, i64 0), %land.lhs.true ], [ getelementptr inbounds ([26 x i8]* @.str1748, i64 0, i64 0), %if.then4 ], [ getelementptr inbounds ([26 x i8]* @.str1748, i64 0, i64 0), %if.then ], [ getelementptr inbounds ([24 x i8]* @.str1749, i64 0, i64 0), %entry ]
-  ret i8* %retval.0
+  ret i8* %retval.0, !dbg !2208
 }

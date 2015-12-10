@@ -1,0 +1,41 @@
+define %"class.soplex::IdxSet"* @_ZN6soplex6IdxSetaSERKS0_(%"class.soplex::IdxSet"* %this, %"class.soplex::IdxSet"* %rhs) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::IdxSet"* %this}, i64 0, metadata !106), !dbg !172
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::IdxSet"* %rhs}, i64 0, metadata !107), !dbg !172
+  %cmp = icmp eq %"class.soplex::IdxSet"* %this, %rhs, !dbg !173
+  br i1 %cmp, label %if.end, label %if.then, !dbg !173
+
+if.then:                                          ; preds = %entry
+  %num = getelementptr inbounds %"class.soplex::IdxSet"* %this, i64 0, i32 0, !dbg !174
+  store i32 0, i32* %num, align 4, !dbg !174, !tbaa !132
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::IdxSet"* %rhs}, i64 0, metadata !177), !dbg !178
+  %num.i = getelementptr inbounds %"class.soplex::IdxSet"* %rhs, i64 0, i32 0, !dbg !179
+  %0 = load i32* %num.i, align 4, !dbg !179, !tbaa !132
+  %cmp312 = icmp sgt i32 %0, 0, !dbg !174
+  br i1 %cmp312, label %for.body.lr.ph, label %if.end, !dbg !174
+
+for.body.lr.ph:                                   ; preds = %if.then
+  %idx = getelementptr inbounds %"class.soplex::IdxSet"* %rhs, i64 0, i32 2, !dbg !180
+  %1 = load i32** %idx, align 8, !dbg !180, !tbaa !136
+  %idx7 = getelementptr inbounds %"class.soplex::IdxSet"* %this, i64 0, i32 2, !dbg !180
+  %2 = load i32** %idx7, align 8, !dbg !180, !tbaa !136
+  br label %for.body, !dbg !174
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %storemerge13 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.body ]
+  %idxprom = sext i32 %storemerge13 to i64, !dbg !180
+  %arrayidx = getelementptr inbounds i32* %1, i64 %idxprom, !dbg !180
+  %3 = load i32* %arrayidx, align 4, !dbg !180, !tbaa !132
+  %arrayidx8 = getelementptr inbounds i32* %2, i64 %idxprom, !dbg !180
+  store i32 %3, i32* %arrayidx8, align 4, !dbg !180, !tbaa !132
+  %4 = load i32* %num, align 4, !dbg !174, !tbaa !132
+  %inc = add nsw i32 %4, 1, !dbg !174
+  store i32 %inc, i32* %num, align 4, !dbg !174, !tbaa !132
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::IdxSet"* %rhs}, i64 0, metadata !177), !dbg !178
+  %5 = load i32* %num.i, align 4, !dbg !179, !tbaa !132
+  %cmp3 = icmp slt i32 %inc, %5, !dbg !174
+  br i1 %cmp3, label %for.body, label %if.end, !dbg !174
+
+if.end:                                           ; preds = %if.then, %for.body, %entry
+  ret %"class.soplex::IdxSet"* %this, !dbg !181
+}

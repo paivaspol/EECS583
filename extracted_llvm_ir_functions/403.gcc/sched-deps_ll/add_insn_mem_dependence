@@ -1,34 +1,42 @@
-define void @add_insn_mem_dependence(%struct.deps* nocapture %deps, %struct.rtx_def** nocapture %insn_list, %struct.rtx_def** nocapture %mem_list, %struct.rtx_def* %insn, %struct.rtx_def* %mem) #1 {
+define void @add_insn_mem_dependence(%struct.deps* nocapture %deps, %struct.rtx_def** nocapture %insn_list, %struct.rtx_def** nocapture %mem_list, %struct.rtx_def* %insn, %struct.rtx_def* %mem) #2 {
 entry:
-  %0 = load %struct.rtx_def** %insn_list, align 8, !tbaa !0
-  %call = tail call %struct.rtx_def* @alloc_INSN_LIST(%struct.rtx_def* %insn, %struct.rtx_def* %0) #7
-  store %struct.rtx_def* %call, %struct.rtx_def** %insn_list, align 8, !tbaa !0
-  %1 = load %struct.sched_info** @current_sched_info, align 8, !tbaa !0
-  %use_cselib = getelementptr inbounds %struct.sched_info* %1, i64 0, i32 12
-  %bf.load = load i8* %use_cselib, align 8
-  %bf.clear = and i8 %bf.load, 2
-  %tobool = icmp eq i8 %bf.clear, 0
-  br i1 %tobool, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.deps* %deps}, i64 0, metadata !535), !dbg !990
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %insn_list}, i64 0, metadata !536), !dbg !991
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %mem_list}, i64 0, metadata !537), !dbg !991
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !538), !dbg !991
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %mem}, i64 0, metadata !539), !dbg !991
+  %0 = load %struct.rtx_def** %insn_list, align 8, !dbg !992, !tbaa !907
+  %call = tail call %struct.rtx_def* @alloc_INSN_LIST(%struct.rtx_def* %insn, %struct.rtx_def* %0) #8, !dbg !992
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !540), !dbg !992
+  store %struct.rtx_def* %call, %struct.rtx_def** %insn_list, align 8, !dbg !993, !tbaa !907
+  %1 = load %struct.sched_info** @current_sched_info, align 8, !dbg !994, !tbaa !907
+  %use_cselib = getelementptr inbounds %struct.sched_info* %1, i64 0, i32 12, !dbg !994
+  %bf.load = load i8* %use_cselib, align 8, !dbg !994
+  %bf.clear = and i8 %bf.load, 2, !dbg !994
+  %tobool = icmp eq i8 %bf.clear, 0, !dbg !994
+  br i1 %tobool, label %if.end, label %if.then, !dbg !994
 
 if.then:                                          ; preds = %entry
-  %call1 = tail call %struct.rtx_def* @shallow_copy_rtx(%struct.rtx_def* %mem) #7
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %call1, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %call2 = tail call %struct.rtx_def* @cselib_subst_to_values(%struct.rtx_def* %2) #7
-  %3 = getelementptr inbounds %union.rtunion_def* %arrayidx, i64 0, i32 0
-  %call2.c = ptrtoint %struct.rtx_def* %call2 to i64
-  store i64 %call2.c, i64* %3, align 8, !tbaa !0
-  br label %if.end
+  %call1 = tail call %struct.rtx_def* @shallow_copy_rtx(%struct.rtx_def* %mem) #8, !dbg !995
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call1}, i64 0, metadata !539), !dbg !995
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %call1, i64 0, i32 1, i64 0, !dbg !997
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !997
+  %2 = load %struct.rtx_def** %rtx, align 8, !dbg !997, !tbaa !907
+  %call2 = tail call %struct.rtx_def* @cselib_subst_to_values(%struct.rtx_def* %2) #8, !dbg !997
+  %3 = getelementptr inbounds %union.rtunion_def* %arrayidx, i64 0, i32 0, !dbg !997
+  %call2.c = ptrtoint %struct.rtx_def* %call2 to i64, !dbg !997
+  store i64 %call2.c, i64* %3, align 8, !dbg !997, !tbaa !907
+  br label %if.end, !dbg !998
 
 if.end:                                           ; preds = %entry, %if.then
   %mem.addr.0 = phi %struct.rtx_def* [ %call1, %if.then ], [ %mem, %entry ]
-  %4 = load %struct.rtx_def** %mem_list, align 8, !tbaa !0
-  %call6 = tail call %struct.rtx_def* @alloc_EXPR_LIST(i32 0, %struct.rtx_def* %mem.addr.0, %struct.rtx_def* %4) #7
-  store %struct.rtx_def* %call6, %struct.rtx_def** %mem_list, align 8, !tbaa !0
-  %pending_lists_length = getelementptr inbounds %struct.deps* %deps, i64 0, i32 4
-  %5 = load i32* %pending_lists_length, align 4, !tbaa !3
-  %inc = add nsw i32 %5, 1
-  store i32 %inc, i32* %pending_lists_length, align 4, !tbaa !3
-  ret void
+  %4 = load %struct.rtx_def** %mem_list, align 8, !dbg !999, !tbaa !907
+  %call6 = tail call %struct.rtx_def* @alloc_EXPR_LIST(i32 0, %struct.rtx_def* %mem.addr.0, %struct.rtx_def* %4) #8, !dbg !999
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call6}, i64 0, metadata !540), !dbg !999
+  store %struct.rtx_def* %call6, %struct.rtx_def** %mem_list, align 8, !dbg !1000, !tbaa !907
+  %pending_lists_length = getelementptr inbounds %struct.deps* %deps, i64 0, i32 4, !dbg !1001
+  %5 = load i32* %pending_lists_length, align 4, !dbg !1001, !tbaa !941
+  %inc = add nsw i32 %5, 1, !dbg !1001
+  store i32 %inc, i32* %pending_lists_length, align 4, !dbg !1001, !tbaa !941
+  ret void, !dbg !1002
 }

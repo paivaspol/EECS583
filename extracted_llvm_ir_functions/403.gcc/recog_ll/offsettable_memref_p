@@ -1,23 +1,24 @@
 define i32 @offsettable_memref_p(%struct.rtx_def* nocapture %op) #0 {
 entry:
-  %0 = bitcast %struct.rtx_def* %op to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 66
-  br i1 %cmp, label %land.rhs, label %land.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op}, i64 0, metadata !747), !dbg !1938
+  %0 = bitcast %struct.rtx_def* %op to i32*, !dbg !1939
+  %bf.load = load i32* %0, align 8, !dbg !1939
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1939
+  %cmp = icmp eq i32 %bf.clear, 66, !dbg !1939
+  br i1 %cmp, label %land.rhs, label %land.end, !dbg !1939
 
 land.rhs:                                         ; preds = %entry
-  %bf.lshr = lshr i32 %bf.load, 16
-  %bf.clear2 = and i32 %bf.lshr, 255
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
-  %call = tail call i32 @offsettable_address_p(i32 1, i32 %bf.clear2, %struct.rtx_def* %1) #7
-  %tobool = icmp ne i32 %call, 0
+  %bf.lshr = lshr i32 %bf.load, 16, !dbg !1940
+  %bf.clear2 = and i32 %bf.lshr, 255, !dbg !1940
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0, !dbg !1940
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !1940
+  %1 = load %struct.rtx_def** %rtx, align 8, !dbg !1940, !tbaa !1177
+  %call = tail call i32 @offsettable_address_p(i32 1, i32 %bf.clear2, %struct.rtx_def* %1) #8, !dbg !1940
+  %tobool = icmp ne i32 %call, 0, !dbg !1940
   br label %land.end
 
 land.end:                                         ; preds = %land.rhs, %entry
   %2 = phi i1 [ false, %entry ], [ %tobool, %land.rhs ]
   %land.ext = zext i1 %2 to i32
-  ret i32 %land.ext
+  ret i32 %land.ext, !dbg !1941
 }

@@ -1,21 +1,23 @@
 define void @gg_get_rand_state(%struct.gg_rand_state* nocapture %state) #0 {
 entry:
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct.gg_rand_state* %state}, i64 0, metadata !36), !dbg !96
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !37), !dbg !97
+  br label %for.body, !dbg !97
 
 for.body:                                         ; preds = %for.body, %entry
   %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
-  %arrayidx = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %indvars.iv
-  %0 = load i32* %arrayidx, align 4, !tbaa !0
-  %arrayidx2 = getelementptr inbounds %struct.gg_rand_state* %state, i64 0, i32 0, i64 %indvars.iv
-  store i32 %0, i32* %arrayidx2, align 4, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 25
-  br i1 %exitcond, label %for.end, label %for.body
+  %arrayidx = getelementptr inbounds [25 x i32]* @x, i64 0, i64 %indvars.iv, !dbg !99
+  %0 = load i32* %arrayidx, align 4, !dbg !99, !tbaa !67
+  %arrayidx2 = getelementptr inbounds %struct.gg_rand_state* %state, i64 0, i32 0, i64 %indvars.iv, !dbg !99
+  store i32 %0, i32* %arrayidx2, align 4, !dbg !99, !tbaa !67
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !97
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !97
+  %exitcond = icmp eq i32 %lftr.wideiv, 25, !dbg !97
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !97
 
 for.end:                                          ; preds = %for.body
-  %1 = load i32* @k, align 4, !tbaa !0
-  %k = getelementptr inbounds %struct.gg_rand_state* %state, i64 0, i32 1
-  store i32 %1, i32* %k, align 4, !tbaa !0
-  ret void
+  %1 = load i32* @k, align 4, !dbg !100, !tbaa !67
+  %k = getelementptr inbounds %struct.gg_rand_state* %state, i64 0, i32 1, !dbg !100
+  store i32 %1, i32* %k, align 4, !dbg !100, !tbaa !67
+  ret void, !dbg !101
 }

@@ -1,0 +1,53 @@
+define internal i32 @_ZN3povL10Inside_TTFEPdPNS_13Object_StructE(double* %IPoint, %"struct.pov::Object_Struct"* nocapture %Object) #0 {
+entry:
+  %New_Point = alloca [3 x double], align 16
+  call void @llvm.dbg.value(metadata !{double* %IPoint}, i64 0, metadata !1427), !dbg !2602
+  call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !1428), !dbg !2602
+  call void @llvm.dbg.declare(metadata !{[3 x double]* %New_Point}, metadata !1429), !dbg !2603
+  %arraydecay = getelementptr inbounds [3 x double]* %New_Point, i64 0, i64 0, !dbg !2604
+  %0 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 10, !dbg !2604
+  %1 = load %"struct.pov::Transform_Struct"** %0, align 8, !dbg !2604, !tbaa !2052
+  call void @_ZN3pov14MInvTransPointEPdS0_PNS_16Transform_StructE(double* %arraydecay, double* %IPoint, %"struct.pov::Transform_Struct"* %1) #8, !dbg !2604
+  %glyph1 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, !dbg !2605
+  %2 = bitcast %"struct.pov::Object_Struct"* %glyph1 to i8**, !dbg !2605
+  %3 = load i8** %2, align 8, !dbg !2605, !tbaa !2052
+  %4 = bitcast i8* %3 to %"struct.pov::GlyphStruct"*, !dbg !2605
+  call void @llvm.dbg.value(metadata !{%"struct.pov::GlyphStruct"* %4}, i64 0, metadata !1432), !dbg !2605
+  %arrayidx = getelementptr inbounds [3 x double]* %New_Point, i64 0, i64 2, !dbg !2606
+  %5 = load double* %arrayidx, align 16, !dbg !2606, !tbaa !2056
+  %cmp = fcmp ult double %5, 0.000000e+00, !dbg !2606
+  br i1 %cmp, label %if.else, label %land.lhs.true, !dbg !2606
+
+land.lhs.true:                                    ; preds = %entry
+  %depth = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, i32 1, !dbg !2606
+  %6 = bitcast i32* %depth to double*, !dbg !2606
+  %7 = load double* %6, align 8, !dbg !2606, !tbaa !2056
+  %cmp3 = fcmp ugt double %5, %7, !dbg !2606
+  br i1 %cmp3, label %if.else, label %land.lhs.true4, !dbg !2606
+
+land.lhs.true4:                                   ; preds = %land.lhs.true
+  %8 = load double* %arraydecay, align 16, !dbg !2607, !tbaa !2056
+  %arrayidx6 = getelementptr inbounds [3 x double]* %New_Point, i64 0, i64 1, !dbg !2607
+  %9 = load double* %arrayidx6, align 8, !dbg !2607, !tbaa !2056
+  %call = call fastcc i32 @_ZN3povL12Inside_GlyphEddPNS_11GlyphStructE(double %8, double %9, %"struct.pov::GlyphStruct"* %4) #8, !dbg !2607
+  %tobool = icmp eq i32 %call, 0, !dbg !2607
+  br i1 %tobool, label %if.else, label %if.then, !dbg !2607
+
+if.then:                                          ; preds = %land.lhs.true4
+  %10 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 13, !dbg !2608
+  %11 = load i32* %10, align 4, !dbg !2608, !tbaa !2171
+  %and = lshr i32 %11, 2, !dbg !2608
+  %and.lobit = and i32 %and, 1, !dbg !2608
+  %12 = xor i32 %and.lobit, 1, !dbg !2608
+  br label %return, !dbg !2608
+
+if.else:                                          ; preds = %land.lhs.true4, %land.lhs.true, %entry
+  %13 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 13, !dbg !2609
+  %14 = load i32* %13, align 4, !dbg !2609, !tbaa !2171
+  %and11 = and i32 %14, 4, !dbg !2609
+  br label %return, !dbg !2609
+
+return:                                           ; preds = %if.else, %if.then
+  %retval.0 = phi i32 [ %12, %if.then ], [ %and11, %if.else ]
+  ret i32 %retval.0, !dbg !2610
+}

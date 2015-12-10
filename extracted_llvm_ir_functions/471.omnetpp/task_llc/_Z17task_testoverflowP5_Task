@@ -1,0 +1,30 @@
+define zeroext i1 @_Z17task_testoverflowP5_Task(%struct._Task* nocapture %t) #8 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Task* %t}, i64 0, metadata !117), !dbg !227
+  %used = getelementptr inbounds %struct._Task* %t, i64 0, i32 3, !dbg !228
+  %0 = load i32* %used, align 4, !dbg !228, !tbaa !148
+  %tobool = icmp eq i32 %0, 0, !dbg !228
+  br i1 %tobool, label %return, label %lor.lhs.false, !dbg !228
+
+lor.lhs.false:                                    ; preds = %entry
+  %next = getelementptr inbounds %struct._Task* %t, i64 0, i32 5, !dbg !228
+  %1 = load %struct._Task** %next, align 8, !dbg !228, !tbaa !138
+  %tobool1 = icmp eq %struct._Task* %1, null, !dbg !228
+  br i1 %tobool1, label %return, label %if.end, !dbg !228
+
+if.end:                                           ; preds = %lor.lhs.false
+  %guardbeef1 = getelementptr inbounds %struct._Task* %1, i64 0, i32 0, !dbg !229
+  %2 = load i64* %guardbeef1, align 8, !dbg !229, !tbaa !133
+  %cmp = icmp eq i64 %2, 3736059631, !dbg !229
+  br i1 %cmp, label %lor.rhs, label %return, !dbg !229
+
+lor.rhs:                                          ; preds = %if.end
+  %guardbeef2 = getelementptr inbounds %struct._Task* %1, i64 0, i32 10, !dbg !229
+  %3 = load i64* %guardbeef2, align 8, !dbg !229, !tbaa !133
+  %cmp4 = icmp ne i64 %3, 3736059631, !dbg !229
+  br label %return, !dbg !229
+
+return:                                           ; preds = %lor.rhs, %if.end, %entry, %lor.lhs.false
+  %retval.0 = phi i1 [ false, %lor.lhs.false ], [ false, %entry ], [ true, %if.end ], [ %cmp4, %lor.rhs ]
+  ret i1 %retval.0, !dbg !230
+}

@@ -1,697 +1,700 @@
 define void @rc_init_pict(i32 %fieldpic, i32 %topfield, i32 %targetcomputation) #0 {
 entry:
-  %0 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %MbInterlace = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 92
-  %1 = load i32* %MbInterlace, align 4, !tbaa !3
-  %tobool = icmp eq i32 %1, 0
-  %.pre = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  br i1 %tobool, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{i32 %fieldpic}, i64 0, metadata !54), !dbg !983
+  tail call void @llvm.dbg.value(metadata !{i32 %topfield}, i64 0, metadata !55), !dbg !983
+  tail call void @llvm.dbg.value(metadata !{i32 %targetcomputation}, i64 0, metadata !56), !dbg !983
+  %0 = load %struct.InputParameters** @input, align 8, !dbg !984, !tbaa !804
+  %MbInterlace = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 92, !dbg !984
+  %1 = load i32* %MbInterlace, align 4, !dbg !984, !tbaa !807
+  %tobool = icmp eq i32 %1, 0, !dbg !984
+  %.pre = load %struct.ImageParameters** @img, align 8, !dbg !985, !tbaa !804
+  br i1 %tobool, label %if.end, label %if.then, !dbg !984
 
 if.then:                                          ; preds = %entry
-  %Frame_Total_Number_MB = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 136
-  %2 = load i32* %Frame_Total_Number_MB, align 4, !tbaa !3
-  %BasicUnit = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 139
-  %3 = load i32* %BasicUnit, align 4, !tbaa !3
-  %div = sdiv i32 %2, %3
-  store i32 %div, i32* @TotalNumberofBasicUnit, align 4, !tbaa !3
-  br label %if.end
+  %Frame_Total_Number_MB = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 136, !dbg !986
+  %2 = load i32* %Frame_Total_Number_MB, align 4, !dbg !986, !tbaa !807
+  %BasicUnit = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 139, !dbg !986
+  %3 = load i32* %BasicUnit, align 4, !dbg !986, !tbaa !807
+  %div = sdiv i32 %2, %3, !dbg !986
+  store i32 %div, i32* @TotalNumberofBasicUnit, align 4, !dbg !986, !tbaa !807
+  br label %if.end, !dbg !986
 
 if.end:                                           ; preds = %entry, %if.then
-  %NumberofCodedMacroBlocks = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 138
-  store i32 0, i32* %NumberofCodedMacroBlocks, align 4, !tbaa !3
-  %channel_type = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 131
-  %4 = load i32* %channel_type, align 4, !tbaa !3
-  %cmp = icmp eq i32 %4, 1
-  br i1 %cmp, label %if.then1, label %if.end9
+  %NumberofCodedMacroBlocks = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 138, !dbg !985
+  store i32 0, i32* %NumberofCodedMacroBlocks, align 4, !dbg !985, !tbaa !807
+  %channel_type = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 131, !dbg !987
+  %4 = load i32* %channel_type, align 4, !dbg !987, !tbaa !807
+  %cmp = icmp eq i32 %4, 1, !dbg !987
+  br i1 %cmp, label %if.then1, label %if.end9, !dbg !987
 
 if.then1:                                         ; preds = %if.end
-  %NumberofCodedPFrame = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 127
-  %5 = load i32* %NumberofCodedPFrame, align 4, !tbaa !3
+  %NumberofCodedPFrame = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 127, !dbg !988
+  %5 = load i32* %NumberofCodedPFrame, align 4, !dbg !988, !tbaa !807
   switch i32 %5, label %if.end9 [
     i32 58, label %if.then3
     i32 59, label %if.then6
-  ]
+  ], !dbg !988
 
 if.then3:                                         ; preds = %if.then1
-  %6 = load double* @bit_rate, align 8, !tbaa !4
-  %mul = fmul double %6, 1.500000e+00
-  store double %mul, double* @bit_rate, align 8, !tbaa !4
-  br label %if.end9
+  %6 = load double* @bit_rate, align 8, !dbg !990, !tbaa !862
+  %mul = fmul double %6, 1.500000e+00, !dbg !990
+  store double %mul, double* @bit_rate, align 8, !dbg !990, !tbaa !862
+  br label %if.end9, !dbg !990
 
 if.then6:                                         ; preds = %if.then1
-  %7 = load double* @bit_rate, align 8, !tbaa !4
-  store double %7, double* @PreviousBit_Rate, align 8, !tbaa !4
-  br label %if.end9
+  %7 = load double* @bit_rate, align 8, !dbg !991, !tbaa !862
+  store double %7, double* @PreviousBit_Rate, align 8, !dbg !991, !tbaa !862
+  br label %if.end9, !dbg !991
 
 if.end9:                                          ; preds = %if.then1, %if.then3, %if.then6, %if.end
-  %tobool10 = icmp ne i32 %fieldpic, 0
-  %tobool10.not = xor i1 %tobool10, true
-  %tobool11 = icmp eq i32 %topfield, 0
-  %or.cond = and i1 %tobool11, %tobool10.not
-  %tobool12 = icmp eq i32 %targetcomputation, 0
-  %or.cond441 = or i1 %or.cond, %tobool12
-  br i1 %or.cond441, label %if.end383, label %if.then13
+  %tobool10 = icmp ne i32 %fieldpic, 0, !dbg !992
+  %tobool10.not = xor i1 %tobool10, true, !dbg !992
+  %tobool11 = icmp eq i32 %topfield, 0, !dbg !992
+  %or.cond = and i1 %tobool11, %tobool10.not, !dbg !992
+  %tobool12 = icmp eq i32 %targetcomputation, 0, !dbg !992
+  %or.cond441 = or i1 %or.cond, %tobool12, !dbg !992
+  br i1 %or.cond441, label %if.end383, label %if.then13, !dbg !992
 
 if.then13:                                        ; preds = %if.end9
-  %type = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 6
-  %8 = load i32* %type, align 4, !tbaa !3
+  %type = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 6, !dbg !993
+  %8 = load i32* %type, align 4, !dbg !993, !tbaa !807
   switch i32 %8, label %if.end383 [
     i32 0, label %sw.bb
     i32 1, label %sw.bb172
-  ]
+  ], !dbg !993
 
 sw.bb:                                            ; preds = %if.then13
-  %9 = load double* @PreviousBit_Rate, align 8, !tbaa !4
-  %10 = load double* @bit_rate, align 8, !tbaa !4
-  %cmp14 = fcmp une double %9, %10
-  br i1 %cmp14, label %if.then15, label %if.end21
+  %9 = load double* @PreviousBit_Rate, align 8, !dbg !995, !tbaa !862
+  %10 = load double* @bit_rate, align 8, !dbg !995, !tbaa !862
+  %cmp14 = fcmp une double %9, %10, !dbg !995
+  br i1 %cmp14, label %if.then15, label %if.end21, !dbg !995
 
 if.then15:                                        ; preds = %sw.bb
-  %sub = fsub double %10, %9
-  %11 = load i32* @Np, align 4, !tbaa !3
-  %12 = load i32* @Nb, align 4, !tbaa !3
-  %add = add nsw i32 %12, %11
-  %conv = sitofp i32 %add to double
-  %mul16 = fmul double %sub, %conv
-  %13 = load double* @frame_rate, align 8, !tbaa !4
-  %div17 = fdiv double %mul16, %13
-  %add18 = fadd double %div17, 5.000000e-01
-  %call = tail call double @floor(double %add18) #8
-  %conv19 = fptosi double %call to i32
-  %14 = load i32* @R, align 4, !tbaa !3
-  %add20 = add nsw i32 %14, %conv19
-  store i32 %add20, i32* @R, align 4, !tbaa !3
-  br label %if.end21
+  %sub = fsub double %10, %9, !dbg !997
+  %11 = load i32* @Np, align 4, !dbg !997, !tbaa !807
+  %12 = load i32* @Nb, align 4, !dbg !997, !tbaa !807
+  %add = add nsw i32 %12, %11, !dbg !997
+  %conv = sitofp i32 %add to double, !dbg !997
+  %mul16 = fmul double %sub, %conv, !dbg !997
+  %13 = load double* @frame_rate, align 8, !dbg !997, !tbaa !862
+  %div17 = fdiv double %mul16, %13, !dbg !997
+  %add18 = fadd double %div17, 5.000000e-01, !dbg !997
+  %call = tail call double @floor(double %add18) #9, !dbg !997
+  %conv19 = fptosi double %call to i32, !dbg !997
+  %14 = load i32* @R, align 4, !dbg !997, !tbaa !807
+  %add20 = add nsw i32 %14, %conv19, !dbg !997
+  store i32 %add20, i32* @R, align 4, !dbg !997, !tbaa !807
+  br label %if.end21, !dbg !997
 
 if.end21:                                         ; preds = %if.then15, %sw.bb
-  %BasicUnit22 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 139
-  %15 = load i32* %BasicUnit22, align 4, !tbaa !3
-  %Frame_Total_Number_MB23 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 136
-  %16 = load i32* %Frame_Total_Number_MB23, align 4, !tbaa !3
-  %cmp24 = icmp eq i32 %15, %16
-  br i1 %cmp24, label %if.then26, label %if.else43
+  %BasicUnit22 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 139, !dbg !998
+  %15 = load i32* %BasicUnit22, align 4, !dbg !998, !tbaa !807
+  %Frame_Total_Number_MB23 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 136, !dbg !998
+  %16 = load i32* %Frame_Total_Number_MB23, align 4, !dbg !998, !tbaa !807
+  %cmp24 = icmp eq i32 %15, %16, !dbg !998
+  br i1 %cmp24, label %if.then26, label %if.else43, !dbg !998
 
 if.then26:                                        ; preds = %if.end21
-  %NumberofPPicture = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 130
-  %17 = load i32* %NumberofPPicture, align 4, !tbaa !3
-  %cmp27 = icmp eq i32 %17, 1
-  br i1 %cmp27, label %if.then29, label %if.else35
+  %NumberofPPicture = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 130, !dbg !999
+  %17 = load i32* %NumberofPPicture, align 4, !dbg !999, !tbaa !807
+  %cmp27 = icmp eq i32 %17, 1, !dbg !999
+  br i1 %cmp27, label %if.then29, label %if.else35, !dbg !999
 
 if.then29:                                        ; preds = %if.then26
-  %18 = load double* @CurrentBufferFullness, align 8, !tbaa !4
-  %19 = load double* @GOPTargetBufferLevel, align 8, !tbaa !4
-  %sub30 = fsub double %18, %19
-  %20 = load i32* @TotalPFrame, align 4, !tbaa !3
-  %sub31 = add nsw i32 %20, -1
-  %conv32 = sitofp i32 %sub31 to double
-  %div33 = fdiv double %sub30, %conv32
-  store double %div33, double* @DeltaP, align 8, !tbaa !4
-  %sub34 = fsub double %18, %div33
-  store double %sub34, double* @TargetBufferLevel, align 8, !tbaa !4
-  br label %if.end118
+  %18 = load double* @CurrentBufferFullness, align 8, !dbg !1001, !tbaa !862
+  %19 = load double* @GOPTargetBufferLevel, align 8, !dbg !1003, !tbaa !862
+  %sub30 = fsub double %18, %19, !dbg !1003
+  %20 = load i32* @TotalPFrame, align 4, !dbg !1003, !tbaa !807
+  %sub31 = add nsw i32 %20, -1, !dbg !1003
+  %conv32 = sitofp i32 %sub31 to double, !dbg !1003
+  %div33 = fdiv double %sub30, %conv32, !dbg !1003
+  store double %div33, double* @DeltaP, align 8, !dbg !1003, !tbaa !862
+  %sub34 = fsub double %18, %div33, !dbg !1004
+  store double %sub34, double* @TargetBufferLevel, align 8, !dbg !1004, !tbaa !862
+  br label %if.end118, !dbg !1005
 
 if.else35:                                        ; preds = %if.then26
-  %cmp37 = icmp sgt i32 %17, 1
-  br i1 %cmp37, label %if.then39, label %if.end118
+  %cmp37 = icmp sgt i32 %17, 1, !dbg !1006
+  br i1 %cmp37, label %if.then39, label %if.end118, !dbg !1006
 
 if.then39:                                        ; preds = %if.else35
-  %21 = load double* @DeltaP, align 8, !tbaa !4
-  %22 = load double* @TargetBufferLevel, align 8, !tbaa !4
-  %sub40 = fsub double %22, %21
-  store double %sub40, double* @TargetBufferLevel, align 8, !tbaa !4
-  br label %if.end118
+  %21 = load double* @DeltaP, align 8, !dbg !1007, !tbaa !862
+  %22 = load double* @TargetBufferLevel, align 8, !dbg !1007, !tbaa !862
+  %sub40 = fsub double %22, %21, !dbg !1007
+  store double %sub40, double* @TargetBufferLevel, align 8, !dbg !1007, !tbaa !862
+  br label %if.end118, !dbg !1007
 
 if.else43:                                        ; preds = %if.end21
-  %NumberofCodedPFrame44 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 127
-  %23 = load i32* %NumberofCodedPFrame44, align 4, !tbaa !3
-  %cmp45 = icmp sgt i32 %23, 0
-  br i1 %cmp45, label %if.then47, label %if.end74
+  %NumberofCodedPFrame44 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 127, !dbg !1008
+  %23 = load i32* %NumberofCodedPFrame44, align 4, !dbg !1008, !tbaa !807
+  %cmp45 = icmp sgt i32 %23, 0, !dbg !1008
+  br i1 %cmp45, label %if.then47, label %if.end74, !dbg !1008
 
 if.then47:                                        ; preds = %if.else43
-  %PicInterlace = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 91
-  %24 = load i32* %PicInterlace, align 4, !tbaa !3
-  %cmp48 = icmp eq i32 %24, 2
-  br i1 %cmp48, label %land.lhs.true53, label %lor.lhs.false50
+  %PicInterlace = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 91, !dbg !1010
+  %24 = load i32* %PicInterlace, align 4, !dbg !1010, !tbaa !807
+  %cmp48 = icmp eq i32 %24, 2, !dbg !1010
+  br i1 %cmp48, label %land.lhs.true53, label %lor.lhs.false50, !dbg !1010
 
 lor.lhs.false50:                                  ; preds = %if.then47
-  %25 = load i32* %MbInterlace, align 4, !tbaa !3
-  %tobool52 = icmp eq i32 %25, 0
-  br i1 %tobool52, label %for.cond62.preheader, label %land.lhs.true53
+  %25 = load i32* %MbInterlace, align 4, !dbg !1010, !tbaa !807
+  %tobool52 = icmp eq i32 %25, 0, !dbg !1010
+  br i1 %tobool52, label %for.cond62.preheader, label %land.lhs.true53, !dbg !1010
 
 land.lhs.true53:                                  ; preds = %lor.lhs.false50, %if.then47
-  %FieldControl = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 134
-  %26 = load i32* %FieldControl, align 4, !tbaa !3
-  %cmp54 = icmp eq i32 %26, 1
-  br i1 %cmp54, label %for.cond.preheader, label %for.cond62.preheader
+  %FieldControl = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 134, !dbg !1010
+  %26 = load i32* %FieldControl, align 4, !dbg !1010, !tbaa !807
+  %cmp54 = icmp eq i32 %26, 1, !dbg !1010
+  br i1 %cmp54, label %for.cond.preheader, label %for.cond62.preheader, !dbg !1010
 
 for.cond62.preheader:                             ; preds = %lor.lhs.false50, %land.lhs.true53
-  %27 = load i32* @TotalNumberofBasicUnit, align 4, !tbaa !3
-  %cmp63448 = icmp sgt i32 %27, 0
-  br i1 %cmp63448, label %for.body65.lr.ph, label %if.end74
+  %27 = load i32* @TotalNumberofBasicUnit, align 4, !dbg !1012, !tbaa !807
+  %cmp63448 = icmp sgt i32 %27, 0, !dbg !1012
+  br i1 %cmp63448, label %for.body65.lr.ph, label %if.end74, !dbg !1012
 
 for.body65.lr.ph:                                 ; preds = %for.cond62.preheader
-  %28 = load double** @BUCFMAD, align 8, !tbaa !0
-  %29 = load double** @BUPFMAD, align 8, !tbaa !0
-  br label %for.body65
+  %28 = load double** @BUCFMAD, align 8, !dbg !1015, !tbaa !804
+  %29 = load double** @BUPFMAD, align 8, !dbg !1015, !tbaa !804
+  br label %for.body65, !dbg !1012
 
 for.cond.preheader:                               ; preds = %land.lhs.true53
-  %30 = load i32* @TotalNumberofBasicUnit, align 4, !tbaa !3
-  %cmp57445 = icmp sgt i32 %30, 0
-  br i1 %cmp57445, label %for.body.lr.ph, label %if.end74
+  %30 = load i32* @TotalNumberofBasicUnit, align 4, !dbg !1016, !tbaa !807
+  %cmp57445 = icmp sgt i32 %30, 0, !dbg !1016
+  br i1 %cmp57445, label %for.body.lr.ph, label %if.end74, !dbg !1016
 
 for.body.lr.ph:                                   ; preds = %for.cond.preheader
-  %31 = load double** @FCBUCFMAD, align 8, !tbaa !0
-  %32 = load double** @FCBUPFMAD, align 8, !tbaa !0
-  br label %for.body
+  %31 = load double** @FCBUCFMAD, align 8, !dbg !1019, !tbaa !804
+  %32 = load double** @FCBUPFMAD, align 8, !dbg !1019, !tbaa !804
+  br label %for.body, !dbg !1016
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.body
   %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
-  %arrayidx = getelementptr inbounds double* %31, i64 %indvars.iv
-  %33 = load double* %arrayidx, align 8, !tbaa !4
-  %arrayidx60 = getelementptr inbounds double* %32, i64 %indvars.iv
-  store double %33, double* %arrayidx60, align 8, !tbaa !4
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %34 = trunc i64 %indvars.iv.next to i32
-  %cmp57 = icmp slt i32 %34, %30
-  br i1 %cmp57, label %for.body, label %if.end74
+  %arrayidx = getelementptr inbounds double* %31, i64 %indvars.iv, !dbg !1019
+  %33 = load double* %arrayidx, align 8, !dbg !1019, !tbaa !862
+  %arrayidx60 = getelementptr inbounds double* %32, i64 %indvars.iv, !dbg !1019
+  store double %33, double* %arrayidx60, align 8, !dbg !1019, !tbaa !862
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1016
+  %34 = trunc i64 %indvars.iv.next to i32, !dbg !1016
+  %cmp57 = icmp slt i32 %34, %30, !dbg !1016
+  br i1 %cmp57, label %for.body, label %if.end74, !dbg !1016
 
 for.body65:                                       ; preds = %for.body65.lr.ph, %for.body65
   %indvars.iv450 = phi i64 [ 0, %for.body65.lr.ph ], [ %indvars.iv.next451, %for.body65 ]
-  %arrayidx67 = getelementptr inbounds double* %28, i64 %indvars.iv450
-  %35 = load double* %arrayidx67, align 8, !tbaa !4
-  %arrayidx69 = getelementptr inbounds double* %29, i64 %indvars.iv450
-  store double %35, double* %arrayidx69, align 8, !tbaa !4
-  %indvars.iv.next451 = add i64 %indvars.iv450, 1
-  %36 = trunc i64 %indvars.iv.next451 to i32
-  %cmp63 = icmp slt i32 %36, %27
-  br i1 %cmp63, label %for.body65, label %if.end74
+  %arrayidx67 = getelementptr inbounds double* %28, i64 %indvars.iv450, !dbg !1015
+  %35 = load double* %arrayidx67, align 8, !dbg !1015, !tbaa !862
+  %arrayidx69 = getelementptr inbounds double* %29, i64 %indvars.iv450, !dbg !1015
+  store double %35, double* %arrayidx69, align 8, !dbg !1015, !tbaa !862
+  %indvars.iv.next451 = add i64 %indvars.iv450, 1, !dbg !1012
+  %36 = trunc i64 %indvars.iv.next451 to i32, !dbg !1012
+  %cmp63 = icmp slt i32 %36, %27, !dbg !1012
+  br i1 %cmp63, label %for.body65, label %if.end74, !dbg !1012
 
 if.end74:                                         ; preds = %for.cond62.preheader, %for.body65, %for.cond.preheader, %for.body, %if.else43
-  %NumberofGOP = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 128
-  %37 = load i32* %NumberofGOP, align 4, !tbaa !3
-  %cmp75 = icmp eq i32 %37, 1
-  br i1 %cmp75, label %if.then77, label %if.else95
+  %NumberofGOP = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 128, !dbg !1020
+  %37 = load i32* %NumberofGOP, align 4, !dbg !1020, !tbaa !807
+  %cmp75 = icmp eq i32 %37, 1, !dbg !1020
+  br i1 %cmp75, label %if.then77, label %if.else95, !dbg !1020
 
 if.then77:                                        ; preds = %if.end74
-  %NumberofPPicture78 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 130
-  %38 = load i32* %NumberofPPicture78, align 4, !tbaa !3
-  %cmp79 = icmp eq i32 %38, 1
-  br i1 %cmp79, label %if.then81, label %if.else87
+  %NumberofPPicture78 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 130, !dbg !1021
+  %38 = load i32* %NumberofPPicture78, align 4, !dbg !1021, !tbaa !807
+  %cmp79 = icmp eq i32 %38, 1, !dbg !1021
+  br i1 %cmp79, label %if.then81, label %if.else87, !dbg !1021
 
 if.then81:                                        ; preds = %if.then77
-  %39 = load double* @CurrentBufferFullness, align 8, !tbaa !4
-  %40 = load double* @GOPTargetBufferLevel, align 8, !tbaa !4
-  %sub82 = fsub double %39, %40
-  %41 = load i32* @TotalPFrame, align 4, !tbaa !3
-  %sub83 = add nsw i32 %41, -1
-  %conv84 = sitofp i32 %sub83 to double
-  %div85 = fdiv double %sub82, %conv84
-  store double %div85, double* @DeltaP, align 8, !tbaa !4
-  %sub86 = fsub double %39, %div85
-  store double %sub86, double* @TargetBufferLevel, align 8, !tbaa !4
-  br label %if.end118
+  %39 = load double* @CurrentBufferFullness, align 8, !dbg !1023, !tbaa !862
+  %40 = load double* @GOPTargetBufferLevel, align 8, !dbg !1025, !tbaa !862
+  %sub82 = fsub double %39, %40, !dbg !1025
+  %41 = load i32* @TotalPFrame, align 4, !dbg !1025, !tbaa !807
+  %sub83 = add nsw i32 %41, -1, !dbg !1025
+  %conv84 = sitofp i32 %sub83 to double, !dbg !1025
+  %div85 = fdiv double %sub82, %conv84, !dbg !1025
+  store double %div85, double* @DeltaP, align 8, !dbg !1025, !tbaa !862
+  %sub86 = fsub double %39, %div85, !dbg !1026
+  store double %sub86, double* @TargetBufferLevel, align 8, !dbg !1026, !tbaa !862
+  br label %if.end118, !dbg !1027
 
 if.else87:                                        ; preds = %if.then77
-  %cmp89 = icmp sgt i32 %38, 1
-  br i1 %cmp89, label %if.then91, label %if.end118
+  %cmp89 = icmp sgt i32 %38, 1, !dbg !1028
+  br i1 %cmp89, label %if.then91, label %if.end118, !dbg !1028
 
 if.then91:                                        ; preds = %if.else87
-  %42 = load double* @DeltaP, align 8, !tbaa !4
-  %43 = load double* @TargetBufferLevel, align 8, !tbaa !4
-  %sub92 = fsub double %43, %42
-  store double %sub92, double* @TargetBufferLevel, align 8, !tbaa !4
-  br label %if.end118
+  %42 = load double* @DeltaP, align 8, !dbg !1029, !tbaa !862
+  %43 = load double* @TargetBufferLevel, align 8, !dbg !1029, !tbaa !862
+  %sub92 = fsub double %43, %42, !dbg !1029
+  store double %sub92, double* @TargetBufferLevel, align 8, !dbg !1029, !tbaa !862
+  br label %if.end118, !dbg !1029
 
 if.else95:                                        ; preds = %if.end74
-  %cmp97 = icmp sgt i32 %37, 1
-  br i1 %cmp97, label %if.then99, label %if.end118
+  %cmp97 = icmp sgt i32 %37, 1, !dbg !1030
+  br i1 %cmp97, label %if.then99, label %if.end118, !dbg !1030
 
 if.then99:                                        ; preds = %if.else95
-  %NumberofPPicture100 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 130
-  %44 = load i32* %NumberofPPicture100, align 4, !tbaa !3
-  %cmp101 = icmp eq i32 %44, 0
-  br i1 %cmp101, label %if.then103, label %if.else108
+  %NumberofPPicture100 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 130, !dbg !1031
+  %44 = load i32* %NumberofPPicture100, align 4, !dbg !1031, !tbaa !807
+  %cmp101 = icmp eq i32 %44, 0, !dbg !1031
+  br i1 %cmp101, label %if.then103, label %if.else108, !dbg !1031
 
 if.then103:                                       ; preds = %if.then99
-  %45 = load double* @CurrentBufferFullness, align 8, !tbaa !4
-  %46 = load double* @GOPTargetBufferLevel, align 8, !tbaa !4
-  %sub104 = fsub double %45, %46
-  %47 = load i32* @TotalPFrame, align 4, !tbaa !3
-  %conv105 = sitofp i32 %47 to double
-  %div106 = fdiv double %sub104, %conv105
-  store double %div106, double* @DeltaP, align 8, !tbaa !4
-  %sub107 = fsub double %45, %div106
-  store double %sub107, double* @TargetBufferLevel, align 8, !tbaa !4
-  br label %if.end118
+  %45 = load double* @CurrentBufferFullness, align 8, !dbg !1033, !tbaa !862
+  %46 = load double* @GOPTargetBufferLevel, align 8, !dbg !1035, !tbaa !862
+  %sub104 = fsub double %45, %46, !dbg !1035
+  %47 = load i32* @TotalPFrame, align 4, !dbg !1035, !tbaa !807
+  %conv105 = sitofp i32 %47 to double, !dbg !1035
+  %div106 = fdiv double %sub104, %conv105, !dbg !1035
+  store double %div106, double* @DeltaP, align 8, !dbg !1035, !tbaa !862
+  %sub107 = fsub double %45, %div106, !dbg !1036
+  store double %sub107, double* @TargetBufferLevel, align 8, !dbg !1036, !tbaa !862
+  br label %if.end118, !dbg !1037
 
 if.else108:                                       ; preds = %if.then99
-  %cmp110 = icmp sgt i32 %44, 0
-  br i1 %cmp110, label %if.then112, label %if.end118
+  %cmp110 = icmp sgt i32 %44, 0, !dbg !1038
+  br i1 %cmp110, label %if.then112, label %if.end118, !dbg !1038
 
 if.then112:                                       ; preds = %if.else108
-  %48 = load double* @DeltaP, align 8, !tbaa !4
-  %49 = load double* @TargetBufferLevel, align 8, !tbaa !4
-  %sub113 = fsub double %49, %48
-  store double %sub113, double* @TargetBufferLevel, align 8, !tbaa !4
-  br label %if.end118
+  %48 = load double* @DeltaP, align 8, !dbg !1039, !tbaa !862
+  %49 = load double* @TargetBufferLevel, align 8, !dbg !1039, !tbaa !862
+  %sub113 = fsub double %49, %48, !dbg !1039
+  store double %sub113, double* @TargetBufferLevel, align 8, !dbg !1039, !tbaa !862
+  br label %if.end118, !dbg !1039
 
 if.end118:                                        ; preds = %if.else108, %if.else95, %if.else87, %if.else35, %if.then91, %if.then81, %if.then103, %if.then112, %if.then29, %if.then39
-  %NumberofCodedPFrame119 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 127
-  %50 = load i32* %NumberofCodedPFrame119, align 4, !tbaa !3
-  %cmp120 = icmp eq i32 %50, 1
-  br i1 %cmp120, label %if.else143.thread, label %if.end123
+  %NumberofCodedPFrame119 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 127, !dbg !1040
+  %50 = load i32* %NumberofCodedPFrame119, align 4, !dbg !1040, !tbaa !807
+  %cmp120 = icmp eq i32 %50, 1, !dbg !1040
+  br i1 %cmp120, label %if.else143.thread, label %if.end123, !dbg !1040
 
 if.else143.thread:                                ; preds = %if.end118
-  %51 = load double* @Wp, align 8, !tbaa !4
-  store double %51, double* @AWp, align 8, !tbaa !4
-  br label %if.end153
+  %51 = load double* @Wp, align 8, !dbg !1041, !tbaa !862
+  store double %51, double* @AWp, align 8, !dbg !1041, !tbaa !862
+  br label %if.end153, !dbg !1042
 
 if.end123:                                        ; preds = %if.end118
-  %.off = add i32 %50, -2
-  %52 = icmp ult i32 %.off, 6
-  br i1 %52, label %if.then131, label %if.else143
+  %.off = add i32 %50, -2, !dbg !1043
+  %52 = icmp ult i32 %.off, 6, !dbg !1043
+  br i1 %52, label %if.then131, label %if.else143, !dbg !1043
 
 if.then131:                                       ; preds = %if.end123
-  %53 = load double* @Wp, align 8, !tbaa !4
-  %sub133 = add nsw i32 %50, -1
-  %conv134 = sitofp i32 %sub133 to double
-  %mul135 = fmul double %conv134, %53
-  %conv137 = sitofp i32 %50 to double
-  %div138 = fdiv double %mul135, %conv137
-  %54 = load double* @AWp, align 8, !tbaa !4
-  %div141 = fdiv double %54, %conv137
-  %add142 = fadd double %div138, %div141
-  store double %add142, double* @AWp, align 8, !tbaa !4
-  br label %if.end153
+  %53 = load double* @Wp, align 8, !dbg !1044, !tbaa !862
+  %sub133 = add nsw i32 %50, -1, !dbg !1044
+  %conv134 = sitofp i32 %sub133 to double, !dbg !1044
+  %mul135 = fmul double %conv134, %53, !dbg !1044
+  %conv137 = sitofp i32 %50 to double, !dbg !1044
+  %div138 = fdiv double %mul135, %conv137, !dbg !1044
+  %54 = load double* @AWp, align 8, !dbg !1044, !tbaa !862
+  %div141 = fdiv double %54, %conv137, !dbg !1044
+  %add142 = fadd double %div138, %div141, !dbg !1044
+  store double %add142, double* @AWp, align 8, !dbg !1044, !tbaa !862
+  br label %if.end153, !dbg !1044
 
 if.else143:                                       ; preds = %if.end123
-  %cmp129 = icmp sgt i32 %50, 1
-  br i1 %cmp129, label %if.then147, label %if.end153
+  %cmp129 = icmp sgt i32 %50, 1, !dbg !1043
+  br i1 %cmp129, label %if.then147, label %if.end153, !dbg !1042
 
 if.then147:                                       ; preds = %if.else143
-  %55 = load double* @Wp, align 8, !tbaa !4
-  %div148 = fmul double %55, 1.250000e-01
-  %56 = load double* @AWp, align 8, !tbaa !4
-  %mul149 = fmul double %56, 7.000000e+00
-  %div150 = fmul double %mul149, 1.250000e-01
-  %add151 = fadd double %div148, %div150
-  store double %add151, double* @AWp, align 8, !tbaa !4
-  br label %if.end153
+  %55 = load double* @Wp, align 8, !dbg !1045, !tbaa !862
+  %div148 = fmul double %55, 1.250000e-01, !dbg !1045
+  %56 = load double* @AWp, align 8, !dbg !1045, !tbaa !862
+  %mul149 = fmul double %56, 7.000000e+00, !dbg !1045
+  %div150 = fmul double %mul149, 1.250000e-01, !dbg !1045
+  %add151 = fadd double %div148, %div150, !dbg !1045
+  store double %add151, double* @AWp, align 8, !dbg !1045, !tbaa !862
+  br label %if.end153, !dbg !1045
 
 if.end153:                                        ; preds = %if.else143.thread, %if.else143, %if.then147, %if.then131
-  %successive_Bframe = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 34
-  %57 = load i32* %successive_Bframe, align 4, !tbaa !3
-  %cmp154 = icmp sgt i32 %57, 0
-  br i1 %cmp154, label %if.then156, label %sw.epilog
+  %successive_Bframe = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 34, !dbg !1046
+  %57 = load i32* %successive_Bframe, align 4, !dbg !1046, !tbaa !807
+  %cmp154 = icmp sgt i32 %57, 0, !dbg !1046
+  br i1 %cmp154, label %if.then156, label %sw.epilog, !dbg !1046
 
 if.then156:                                       ; preds = %if.end153
-  %58 = load double* @AWp, align 8, !tbaa !4
-  %add158 = add nsw i32 %57, 1
-  %conv159 = sitofp i32 %add158 to double
-  %mul160 = fmul double %conv159, %58
-  %59 = load double* @bit_rate, align 8, !tbaa !4
-  %mul161 = fmul double %mul160, %59
-  %60 = load double* @frame_rate, align 8, !tbaa !4
-  %61 = load double* @AWb, align 8, !tbaa !4
-  %conv163 = sitofp i32 %57 to double
-  %mul164 = fmul double %conv163, %61
-  %add165 = fadd double %58, %mul164
-  %mul166 = fmul double %60, %add165
-  %div167 = fdiv double %mul161, %mul166
-  %div168 = fdiv double %59, %60
-  %sub169 = fsub double %div167, %div168
-  %62 = load double* @TargetBufferLevel, align 8, !tbaa !4
-  %add170 = fadd double %62, %sub169
-  store double %add170, double* @TargetBufferLevel, align 8, !tbaa !4
-  br label %sw.epilog
+  %58 = load double* @AWp, align 8, !dbg !1047, !tbaa !862
+  %add158 = add nsw i32 %57, 1, !dbg !1047
+  %conv159 = sitofp i32 %add158 to double, !dbg !1047
+  %mul160 = fmul double %conv159, %58, !dbg !1047
+  %59 = load double* @bit_rate, align 8, !dbg !1047, !tbaa !862
+  %mul161 = fmul double %mul160, %59, !dbg !1047
+  %60 = load double* @frame_rate, align 8, !dbg !1047, !tbaa !862
+  %61 = load double* @AWb, align 8, !dbg !1047, !tbaa !862
+  %conv163 = sitofp i32 %57 to double, !dbg !1047
+  %mul164 = fmul double %conv163, %61, !dbg !1047
+  %add165 = fadd double %58, %mul164, !dbg !1047
+  %mul166 = fmul double %60, %add165, !dbg !1047
+  %div167 = fdiv double %mul161, %mul166, !dbg !1047
+  %div168 = fdiv double %59, %60, !dbg !1047
+  %sub169 = fsub double %div167, %div168, !dbg !1047
+  %62 = load double* @TargetBufferLevel, align 8, !dbg !1047, !tbaa !862
+  %add170 = fadd double %62, %sub169, !dbg !1047
+  store double %add170, double* @TargetBufferLevel, align 8, !dbg !1047, !tbaa !862
+  br label %sw.epilog, !dbg !1049
 
 sw.bb172:                                         ; preds = %if.then13
-  %63 = load double* @PreviousBit_Rate, align 8, !tbaa !4
-  %64 = load double* @bit_rate, align 8, !tbaa !4
-  %cmp173 = fcmp une double %63, %64
-  br i1 %cmp173, label %if.then175, label %if.end185
+  %63 = load double* @PreviousBit_Rate, align 8, !dbg !1050, !tbaa !862
+  %64 = load double* @bit_rate, align 8, !dbg !1050, !tbaa !862
+  %cmp173 = fcmp une double %63, %64, !dbg !1050
+  br i1 %cmp173, label %if.then175, label %if.end185, !dbg !1050
 
 if.then175:                                       ; preds = %sw.bb172
-  %sub176 = fsub double %64, %63
-  %65 = load i32* @Np, align 4, !tbaa !3
-  %66 = load i32* @Nb, align 4, !tbaa !3
-  %add177 = add nsw i32 %66, %65
-  %conv178 = sitofp i32 %add177 to double
-  %mul179 = fmul double %sub176, %conv178
-  %67 = load double* @frame_rate, align 8, !tbaa !4
-  %div180 = fdiv double %mul179, %67
-  %add181 = fadd double %div180, 5.000000e-01
-  %call182 = tail call double @floor(double %add181) #8
-  %conv183 = fptosi double %call182 to i32
-  %68 = load i32* @R, align 4, !tbaa !3
-  %add184 = add nsw i32 %68, %conv183
-  store i32 %add184, i32* @R, align 4, !tbaa !3
-  br label %if.end185
+  %sub176 = fsub double %64, %63, !dbg !1051
+  %65 = load i32* @Np, align 4, !dbg !1051, !tbaa !807
+  %66 = load i32* @Nb, align 4, !dbg !1051, !tbaa !807
+  %add177 = add nsw i32 %66, %65, !dbg !1051
+  %conv178 = sitofp i32 %add177 to double, !dbg !1051
+  %mul179 = fmul double %sub176, %conv178, !dbg !1051
+  %67 = load double* @frame_rate, align 8, !dbg !1051, !tbaa !862
+  %div180 = fdiv double %mul179, %67, !dbg !1051
+  %add181 = fadd double %div180, 5.000000e-01, !dbg !1051
+  %call182 = tail call double @floor(double %add181) #9, !dbg !1051
+  %conv183 = fptosi double %call182 to i32, !dbg !1051
+  %68 = load i32* @R, align 4, !dbg !1051, !tbaa !807
+  %add184 = add nsw i32 %68, %conv183, !dbg !1051
+  store i32 %add184, i32* @R, align 4, !dbg !1051, !tbaa !807
+  br label %if.end185, !dbg !1051
 
 if.end185:                                        ; preds = %sw.bb172, %if.then175
-  %NumberofCodedPFrame186 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 127
-  %69 = load i32* %NumberofCodedPFrame186, align 4, !tbaa !3
-  %cmp187 = icmp eq i32 %69, 1
-  %NumberofCodedBFrame = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 126
-  %70 = load i32* %NumberofCodedBFrame, align 4, !tbaa !3
-  %cmp190 = icmp eq i32 %70, 1
-  %or.cond457 = and i1 %cmp187, %cmp190
-  br i1 %or.cond457, label %if.then192, label %if.else193
+  %NumberofCodedPFrame186 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 127, !dbg !1052
+  %69 = load i32* %NumberofCodedPFrame186, align 4, !dbg !1052, !tbaa !807
+  %cmp187 = icmp eq i32 %69, 1, !dbg !1052
+  %NumberofCodedBFrame = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 126, !dbg !1052
+  %70 = load i32* %NumberofCodedBFrame, align 4, !dbg !1052, !tbaa !807
+  %cmp190 = icmp eq i32 %70, 1, !dbg !1052
+  %or.cond457 = and i1 %cmp187, %cmp190, !dbg !1052
+  br i1 %or.cond457, label %if.then192, label %if.else193, !dbg !1052
 
 if.then192:                                       ; preds = %if.end185
-  %71 = load double* @Wp, align 8, !tbaa !4
-  store double %71, double* @AWp, align 8, !tbaa !4
-  %72 = load double* @Wb, align 8, !tbaa !4
-  store double %72, double* @AWb, align 8, !tbaa !4
-  br label %sw.epilog
+  %71 = load double* @Wp, align 8, !dbg !1053, !tbaa !862
+  store double %71, double* @AWp, align 8, !dbg !1053, !tbaa !862
+  %72 = load double* @Wb, align 8, !dbg !1055, !tbaa !862
+  store double %72, double* @AWb, align 8, !dbg !1055, !tbaa !862
+  br label %sw.epilog, !dbg !1056
 
 if.else193:                                       ; preds = %if.end185
-  %cmp195 = icmp sgt i32 %70, 1
-  br i1 %cmp195, label %if.then197, label %sw.epilog
+  %cmp195 = icmp sgt i32 %70, 1, !dbg !1057
+  br i1 %cmp195, label %if.then197, label %sw.epilog, !dbg !1057
 
 if.then197:                                       ; preds = %if.else193
-  %cmp199 = icmp slt i32 %70, 8
-  %73 = load double* @Wb, align 8, !tbaa !4
-  br i1 %cmp199, label %if.then201, label %if.else213
+  %cmp199 = icmp slt i32 %70, 8, !dbg !1058
+  %73 = load double* @Wb, align 8, !dbg !1060, !tbaa !862
+  br i1 %cmp199, label %if.then201, label %if.else213, !dbg !1058
 
 if.then201:                                       ; preds = %if.then197
-  %sub203 = add nsw i32 %70, -1
-  %conv204 = sitofp i32 %sub203 to double
-  %mul205 = fmul double %conv204, %73
-  %conv207 = sitofp i32 %70 to double
-  %div208 = fdiv double %mul205, %conv207
-  %74 = load double* @AWb, align 8, !tbaa !4
-  %div211 = fdiv double %74, %conv207
-  %add212 = fadd double %div208, %div211
-  store double %add212, double* @AWb, align 8, !tbaa !4
-  br label %sw.epilog
+  %sub203 = add nsw i32 %70, -1, !dbg !1060
+  %conv204 = sitofp i32 %sub203 to double, !dbg !1060
+  %mul205 = fmul double %conv204, %73, !dbg !1060
+  %conv207 = sitofp i32 %70 to double, !dbg !1060
+  %div208 = fdiv double %mul205, %conv207, !dbg !1060
+  %74 = load double* @AWb, align 8, !dbg !1060, !tbaa !862
+  %div211 = fdiv double %74, %conv207, !dbg !1060
+  %add212 = fadd double %div208, %div211, !dbg !1060
+  store double %add212, double* @AWb, align 8, !dbg !1060, !tbaa !862
+  br label %sw.epilog, !dbg !1060
 
 if.else213:                                       ; preds = %if.then197
-  %div214 = fmul double %73, 1.250000e-01
-  %75 = load double* @AWb, align 8, !tbaa !4
-  %mul215 = fmul double %75, 7.000000e+00
-  %div216 = fmul double %mul215, 1.250000e-01
-  %add217 = fadd double %div214, %div216
-  store double %add217, double* @AWb, align 8, !tbaa !4
+  %div214 = fmul double %73, 1.250000e-01, !dbg !1061
+  %75 = load double* @AWb, align 8, !dbg !1061, !tbaa !862
+  %mul215 = fmul double %75, 7.000000e+00, !dbg !1061
+  %div216 = fmul double %mul215, 1.250000e-01, !dbg !1061
+  %add217 = fadd double %div214, %div216, !dbg !1061
+  store double %add217, double* @AWb, align 8, !dbg !1061, !tbaa !862
   br label %sw.epilog
 
 sw.epilog:                                        ; preds = %if.else193, %if.end153, %if.then192, %if.then201, %if.else213, %if.then156
-  %.pr = load i32* %type, align 4, !tbaa !3
-  %cmp222 = icmp eq i32 %.pr, 0
-  br i1 %cmp222, label %if.then224, label %if.end383
+  %.pr = load i32* %type, align 4, !dbg !1062, !tbaa !807
+  %cmp222 = icmp eq i32 %.pr, 0, !dbg !1062
+  br i1 %cmp222, label %if.then224, label %if.end383, !dbg !1062
 
 if.then224:                                       ; preds = %sw.epilog
-  %BasicUnit225 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 139
-  %76 = load i32* %BasicUnit225, align 4, !tbaa !3
-  %Frame_Total_Number_MB226 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 136
-  %77 = load i32* %Frame_Total_Number_MB226, align 4, !tbaa !3
-  %cmp227 = icmp eq i32 %76, %77
-  br i1 %cmp227, label %if.then229, label %if.else264
+  %BasicUnit225 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 139, !dbg !1063
+  %76 = load i32* %BasicUnit225, align 4, !dbg !1063, !tbaa !807
+  %Frame_Total_Number_MB226 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 136, !dbg !1063
+  %77 = load i32* %Frame_Total_Number_MB226, align 4, !dbg !1063, !tbaa !807
+  %cmp227 = icmp eq i32 %76, %77, !dbg !1063
+  br i1 %cmp227, label %if.then229, label %if.else264, !dbg !1063
 
 if.then229:                                       ; preds = %if.then224
-  %NumberofCodedPFrame230 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 127
-  %78 = load i32* %NumberofCodedPFrame230, align 4, !tbaa !3
-  %cmp231 = icmp sgt i32 %78, 0
-  br i1 %cmp231, label %if.then233, label %if.end349
+  %NumberofCodedPFrame230 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 127, !dbg !1065
+  %78 = load i32* %NumberofCodedPFrame230, align 4, !dbg !1065, !tbaa !807
+  %cmp231 = icmp sgt i32 %78, 0, !dbg !1065
+  br i1 %cmp231, label %if.then233, label %if.end349, !dbg !1065
 
 if.then233:                                       ; preds = %if.then229
-  %79 = load double* @Wp, align 8, !tbaa !4
-  %80 = load i32* @R, align 4, !tbaa !3
-  %conv234 = sitofp i32 %80 to double
-  %mul235 = fmul double %79, %conv234
-  %81 = load i32* @Np, align 4, !tbaa !3
-  %conv236 = sitofp i32 %81 to double
-  %mul237 = fmul double %79, %conv236
-  %82 = load i32* @Nb, align 4, !tbaa !3
-  %conv238 = sitofp i32 %82 to double
-  %83 = load double* @Wb, align 8, !tbaa !4
-  %mul239 = fmul double %conv238, %83
-  %add240 = fadd double %mul237, %mul239
-  %div241 = fdiv double %mul235, %add240
-  %add242 = fadd double %div241, 5.000000e-01
-  %call243 = tail call double @floor(double %add242) #8
-  %conv244 = fptosi double %call243 to i64
-  %84 = load double* @bit_rate, align 8, !tbaa !4
-  %85 = load double* @frame_rate, align 8, !tbaa !4
-  %div245 = fdiv double %84, %85
-  %86 = load double* @GAMMAP, align 8, !tbaa !4
-  %87 = load double* @CurrentBufferFullness, align 8, !tbaa !4
-  %88 = load double* @TargetBufferLevel, align 8, !tbaa !4
-  %sub246 = fsub double %87, %88
-  %mul247 = fmul double %86, %sub246
-  %sub248 = fsub double %div245, %mul247
-  %add249 = fadd double %sub248, 5.000000e-01
-  %call250 = tail call double @floor(double %add249) #8
-  %conv251 = fptosi double %call250 to i64
-  %cmp252 = icmp sgt i64 %conv251, 0
-  %cond = select i1 %cmp252, i64 %conv251, i64 0
-  store i64 %cond, i64* @T1, align 8, !tbaa !6
-  %89 = load double* @BETAP, align 8, !tbaa !4
-  %conv254 = sitofp i64 %conv244 to double
-  %mul255 = fmul double %89, %conv254
-  %sub256 = fsub double 1.000000e+00, %89
-  %conv257 = sitofp i64 %cond to double
-  %mul258 = fmul double %sub256, %conv257
-  %add259 = fadd double %mul255, %mul258
-  %add260 = fadd double %add259, 5.000000e-01
-  %call261 = tail call double @floor(double %add260) #8
-  %conv262 = fptosi double %call261 to i64
-  store i64 %conv262, i64* @T, align 8, !tbaa !6
-  br label %if.end349
+  %79 = load double* @Wp, align 8, !dbg !1067, !tbaa !862
+  %80 = load i32* @R, align 4, !dbg !1067, !tbaa !807
+  %conv234 = sitofp i32 %80 to double, !dbg !1067
+  %mul235 = fmul double %79, %conv234, !dbg !1067
+  %81 = load i32* @Np, align 4, !dbg !1067, !tbaa !807
+  %conv236 = sitofp i32 %81 to double, !dbg !1067
+  %mul237 = fmul double %79, %conv236, !dbg !1067
+  %82 = load i32* @Nb, align 4, !dbg !1067, !tbaa !807
+  %conv238 = sitofp i32 %82 to double, !dbg !1067
+  %83 = load double* @Wb, align 8, !dbg !1067, !tbaa !862
+  %mul239 = fmul double %conv238, %83, !dbg !1067
+  %add240 = fadd double %mul237, %mul239, !dbg !1067
+  %div241 = fdiv double %mul235, %add240, !dbg !1067
+  %add242 = fadd double %div241, 5.000000e-01, !dbg !1067
+  %call243 = tail call double @floor(double %add242) #9, !dbg !1067
+  %conv244 = fptosi double %call243 to i64, !dbg !1067
+  %84 = load double* @bit_rate, align 8, !dbg !1069, !tbaa !862
+  %85 = load double* @frame_rate, align 8, !dbg !1069, !tbaa !862
+  %div245 = fdiv double %84, %85, !dbg !1069
+  %86 = load double* @GAMMAP, align 8, !dbg !1069, !tbaa !862
+  %87 = load double* @CurrentBufferFullness, align 8, !dbg !1069, !tbaa !862
+  %88 = load double* @TargetBufferLevel, align 8, !dbg !1069, !tbaa !862
+  %sub246 = fsub double %87, %88, !dbg !1069
+  %mul247 = fmul double %86, %sub246, !dbg !1069
+  %sub248 = fsub double %div245, %mul247, !dbg !1069
+  %add249 = fadd double %sub248, 5.000000e-01, !dbg !1069
+  %call250 = tail call double @floor(double %add249) #9, !dbg !1069
+  %conv251 = fptosi double %call250 to i64, !dbg !1069
+  %cmp252 = icmp sgt i64 %conv251, 0, !dbg !1070
+  %cond = select i1 %cmp252, i64 %conv251, i64 0, !dbg !1070
+  store i64 %cond, i64* @T1, align 8, !dbg !1070, !tbaa !936
+  %89 = load double* @BETAP, align 8, !dbg !1071, !tbaa !862
+  %conv254 = sitofp i64 %conv244 to double, !dbg !1071
+  %mul255 = fmul double %89, %conv254, !dbg !1071
+  %sub256 = fsub double 1.000000e+00, %89, !dbg !1071
+  %conv257 = sitofp i64 %cond to double, !dbg !1071
+  %mul258 = fmul double %sub256, %conv257, !dbg !1071
+  %add259 = fadd double %mul255, %mul258, !dbg !1071
+  %add260 = fadd double %add259, 5.000000e-01, !dbg !1071
+  %call261 = tail call double @floor(double %add260) #9, !dbg !1071
+  %conv262 = fptosi double %call261 to i64, !dbg !1071
+  store i64 %conv262, i64* @T, align 8, !dbg !1071, !tbaa !936
+  br label %if.end349, !dbg !1072
 
 if.else264:                                       ; preds = %if.then224
-  %NumberofGOP265 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 128
-  %90 = load i32* %NumberofGOP265, align 4, !tbaa !3
-  %cmp266 = icmp eq i32 %90, 1
-  br i1 %cmp266, label %land.lhs.true268, label %if.else309
+  %NumberofGOP265 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 128, !dbg !1073
+  %90 = load i32* %NumberofGOP265, align 4, !dbg !1073, !tbaa !807
+  %cmp266 = icmp eq i32 %90, 1, !dbg !1073
+  br i1 %cmp266, label %land.lhs.true268, label %if.else309, !dbg !1073
 
 land.lhs.true268:                                 ; preds = %if.else264
-  %NumberofCodedPFrame269 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 127
-  %91 = load i32* %NumberofCodedPFrame269, align 4, !tbaa !3
-  %cmp270 = icmp sgt i32 %91, 0
-  br i1 %cmp270, label %if.then272, label %if.end349
+  %NumberofCodedPFrame269 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 127, !dbg !1073
+  %91 = load i32* %NumberofCodedPFrame269, align 4, !dbg !1073, !tbaa !807
+  %cmp270 = icmp sgt i32 %91, 0, !dbg !1073
+  br i1 %cmp270, label %if.then272, label %if.end349, !dbg !1073
 
 if.then272:                                       ; preds = %land.lhs.true268
-  %92 = load double* @Wp, align 8, !tbaa !4
-  %93 = load i32* @R, align 4, !tbaa !3
-  %conv273 = sitofp i32 %93 to double
-  %mul274 = fmul double %92, %conv273
-  %94 = load i32* @Np, align 4, !tbaa !3
-  %conv275 = sitofp i32 %94 to double
-  %mul276 = fmul double %92, %conv275
-  %95 = load i32* @Nb, align 4, !tbaa !3
-  %conv277 = sitofp i32 %95 to double
-  %96 = load double* @Wb, align 8, !tbaa !4
-  %mul278 = fmul double %conv277, %96
-  %add279 = fadd double %mul276, %mul278
-  %div280 = fdiv double %mul274, %add279
-  %add281 = fadd double %div280, 5.000000e-01
-  %call282 = tail call double @floor(double %add281) #8
-  %conv283 = fptosi double %call282 to i32
-  %97 = load double* @bit_rate, align 8, !tbaa !4
-  %98 = load double* @frame_rate, align 8, !tbaa !4
-  %div285 = fdiv double %97, %98
-  %99 = load double* @GAMMAP, align 8, !tbaa !4
-  %100 = load double* @CurrentBufferFullness, align 8, !tbaa !4
-  %101 = load double* @TargetBufferLevel, align 8, !tbaa !4
-  %sub286 = fsub double %100, %101
-  %mul287 = fmul double %99, %sub286
-  %sub288 = fsub double %div285, %mul287
-  %add289 = fadd double %sub288, 5.000000e-01
-  %call290 = tail call double @floor(double %add289) #8
-  %conv291 = fptosi double %call290 to i32
-  %conv292 = sext i32 %conv291 to i64
-  %cmp293 = icmp sgt i64 %conv292, 0
-  %cond298 = select i1 %cmp293, i64 %conv292, i64 0
-  store i64 %cond298, i64* @T1, align 8, !tbaa !6
-  %102 = load double* @BETAP, align 8, !tbaa !4
-  %conv299 = sitofp i32 %conv283 to double
-  %mul300 = fmul double %102, %conv299
-  %sub301 = fsub double 1.000000e+00, %102
-  %conv302 = sitofp i64 %cond298 to double
-  %mul303 = fmul double %sub301, %conv302
-  %add304 = fadd double %mul300, %mul303
-  %add305 = fadd double %add304, 5.000000e-01
-  %call306 = tail call double @floor(double %add305) #8
-  %conv307 = fptosi double %call306 to i32
-  %conv308 = sext i32 %conv307 to i64
-  store i64 %conv308, i64* @T, align 8, !tbaa !6
-  br label %if.end349
+  %92 = load double* @Wp, align 8, !dbg !1075, !tbaa !862
+  %93 = load i32* @R, align 4, !dbg !1075, !tbaa !807
+  %conv273 = sitofp i32 %93 to double, !dbg !1075
+  %mul274 = fmul double %92, %conv273, !dbg !1075
+  %94 = load i32* @Np, align 4, !dbg !1075, !tbaa !807
+  %conv275 = sitofp i32 %94 to double, !dbg !1075
+  %mul276 = fmul double %92, %conv275, !dbg !1075
+  %95 = load i32* @Nb, align 4, !dbg !1075, !tbaa !807
+  %conv277 = sitofp i32 %95 to double, !dbg !1075
+  %96 = load double* @Wb, align 8, !dbg !1075, !tbaa !862
+  %mul278 = fmul double %conv277, %96, !dbg !1075
+  %add279 = fadd double %mul276, %mul278, !dbg !1075
+  %div280 = fdiv double %mul274, %add279, !dbg !1075
+  %add281 = fadd double %div280, 5.000000e-01, !dbg !1075
+  %call282 = tail call double @floor(double %add281) #9, !dbg !1075
+  %conv283 = fptosi double %call282 to i32, !dbg !1075
+  %97 = load double* @bit_rate, align 8, !dbg !1077, !tbaa !862
+  %98 = load double* @frame_rate, align 8, !dbg !1077, !tbaa !862
+  %div285 = fdiv double %97, %98, !dbg !1077
+  %99 = load double* @GAMMAP, align 8, !dbg !1077, !tbaa !862
+  %100 = load double* @CurrentBufferFullness, align 8, !dbg !1077, !tbaa !862
+  %101 = load double* @TargetBufferLevel, align 8, !dbg !1077, !tbaa !862
+  %sub286 = fsub double %100, %101, !dbg !1077
+  %mul287 = fmul double %99, %sub286, !dbg !1077
+  %sub288 = fsub double %div285, %mul287, !dbg !1077
+  %add289 = fadd double %sub288, 5.000000e-01, !dbg !1077
+  %call290 = tail call double @floor(double %add289) #9, !dbg !1077
+  %conv291 = fptosi double %call290 to i32, !dbg !1077
+  %conv292 = sext i32 %conv291 to i64, !dbg !1077
+  %cmp293 = icmp sgt i64 %conv292, 0, !dbg !1078
+  %cond298 = select i1 %cmp293, i64 %conv292, i64 0, !dbg !1078
+  store i64 %cond298, i64* @T1, align 8, !dbg !1078, !tbaa !936
+  %102 = load double* @BETAP, align 8, !dbg !1079, !tbaa !862
+  %conv299 = sitofp i32 %conv283 to double, !dbg !1079
+  %mul300 = fmul double %102, %conv299, !dbg !1079
+  %sub301 = fsub double 1.000000e+00, %102, !dbg !1079
+  %conv302 = sitofp i64 %cond298 to double, !dbg !1079
+  %mul303 = fmul double %sub301, %conv302, !dbg !1079
+  %add304 = fadd double %mul300, %mul303, !dbg !1079
+  %add305 = fadd double %add304, 5.000000e-01, !dbg !1079
+  %call306 = tail call double @floor(double %add305) #9, !dbg !1079
+  %conv307 = fptosi double %call306 to i32, !dbg !1079
+  %conv308 = sext i32 %conv307 to i64, !dbg !1079
+  store i64 %conv308, i64* @T, align 8, !dbg !1079, !tbaa !936
+  br label %if.end349, !dbg !1080
 
 if.else309:                                       ; preds = %if.else264
-  %cmp311 = icmp sgt i32 %90, 1
-  br i1 %cmp311, label %if.then313, label %if.end349
+  %cmp311 = icmp sgt i32 %90, 1, !dbg !1081
+  br i1 %cmp311, label %if.then313, label %if.end349, !dbg !1081
 
 if.then313:                                       ; preds = %if.else309
-  %103 = load double* @Wp, align 8, !tbaa !4
-  %104 = load i32* @R, align 4, !tbaa !3
-  %conv314 = sitofp i32 %104 to double
-  %mul315 = fmul double %103, %conv314
-  %105 = load i32* @Np, align 4, !tbaa !3
-  %conv316 = sitofp i32 %105 to double
-  %mul317 = fmul double %103, %conv316
-  %106 = load i32* @Nb, align 4, !tbaa !3
-  %conv318 = sitofp i32 %106 to double
-  %107 = load double* @Wb, align 8, !tbaa !4
-  %mul319 = fmul double %conv318, %107
-  %add320 = fadd double %mul317, %mul319
-  %div321 = fdiv double %mul315, %add320
-  %add322 = fadd double %div321, 5.000000e-01
-  %call323 = tail call double @floor(double %add322) #8
-  %conv324 = fptosi double %call323 to i64
-  %108 = load double* @bit_rate, align 8, !tbaa !4
-  %109 = load double* @frame_rate, align 8, !tbaa !4
-  %div325 = fdiv double %108, %109
-  %110 = load double* @GAMMAP, align 8, !tbaa !4
-  %111 = load double* @CurrentBufferFullness, align 8, !tbaa !4
-  %112 = load double* @TargetBufferLevel, align 8, !tbaa !4
-  %sub326 = fsub double %111, %112
-  %mul327 = fmul double %110, %sub326
-  %sub328 = fsub double %div325, %mul327
-  %add329 = fadd double %sub328, 5.000000e-01
-  %call330 = tail call double @floor(double %add329) #8
-  %conv331 = fptosi double %call330 to i64
-  %cmp332 = icmp sgt i64 %conv331, 0
-  %cond337 = select i1 %cmp332, i64 %conv331, i64 0
-  store i64 %cond337, i64* @T1, align 8, !tbaa !6
-  %113 = load double* @BETAP, align 8, !tbaa !4
-  %conv338 = sitofp i64 %conv324 to double
-  %mul339 = fmul double %113, %conv338
-  %sub340 = fsub double 1.000000e+00, %113
-  %conv341 = sitofp i64 %cond337 to double
-  %mul342 = fmul double %sub340, %conv341
-  %add343 = fadd double %mul339, %mul342
-  %add344 = fadd double %add343, 5.000000e-01
-  %call345 = tail call double @floor(double %add344) #8
-  %conv346 = fptosi double %call345 to i64
-  store i64 %conv346, i64* @T, align 8, !tbaa !6
-  br label %if.end349
+  %103 = load double* @Wp, align 8, !dbg !1082, !tbaa !862
+  %104 = load i32* @R, align 4, !dbg !1082, !tbaa !807
+  %conv314 = sitofp i32 %104 to double, !dbg !1082
+  %mul315 = fmul double %103, %conv314, !dbg !1082
+  %105 = load i32* @Np, align 4, !dbg !1082, !tbaa !807
+  %conv316 = sitofp i32 %105 to double, !dbg !1082
+  %mul317 = fmul double %103, %conv316, !dbg !1082
+  %106 = load i32* @Nb, align 4, !dbg !1082, !tbaa !807
+  %conv318 = sitofp i32 %106 to double, !dbg !1082
+  %107 = load double* @Wb, align 8, !dbg !1082, !tbaa !862
+  %mul319 = fmul double %conv318, %107, !dbg !1082
+  %add320 = fadd double %mul317, %mul319, !dbg !1082
+  %div321 = fdiv double %mul315, %add320, !dbg !1082
+  %add322 = fadd double %div321, 5.000000e-01, !dbg !1082
+  %call323 = tail call double @floor(double %add322) #9, !dbg !1082
+  %conv324 = fptosi double %call323 to i64, !dbg !1082
+  %108 = load double* @bit_rate, align 8, !dbg !1084, !tbaa !862
+  %109 = load double* @frame_rate, align 8, !dbg !1084, !tbaa !862
+  %div325 = fdiv double %108, %109, !dbg !1084
+  %110 = load double* @GAMMAP, align 8, !dbg !1084, !tbaa !862
+  %111 = load double* @CurrentBufferFullness, align 8, !dbg !1084, !tbaa !862
+  %112 = load double* @TargetBufferLevel, align 8, !dbg !1084, !tbaa !862
+  %sub326 = fsub double %111, %112, !dbg !1084
+  %mul327 = fmul double %110, %sub326, !dbg !1084
+  %sub328 = fsub double %div325, %mul327, !dbg !1084
+  %add329 = fadd double %sub328, 5.000000e-01, !dbg !1084
+  %call330 = tail call double @floor(double %add329) #9, !dbg !1084
+  %conv331 = fptosi double %call330 to i64, !dbg !1084
+  %cmp332 = icmp sgt i64 %conv331, 0, !dbg !1085
+  %cond337 = select i1 %cmp332, i64 %conv331, i64 0, !dbg !1085
+  store i64 %cond337, i64* @T1, align 8, !dbg !1085, !tbaa !936
+  %113 = load double* @BETAP, align 8, !dbg !1086, !tbaa !862
+  %conv338 = sitofp i64 %conv324 to double, !dbg !1086
+  %mul339 = fmul double %113, %conv338, !dbg !1086
+  %sub340 = fsub double 1.000000e+00, %113, !dbg !1086
+  %conv341 = sitofp i64 %cond337 to double, !dbg !1086
+  %mul342 = fmul double %sub340, %conv341, !dbg !1086
+  %add343 = fadd double %mul339, %mul342, !dbg !1086
+  %add344 = fadd double %add343, 5.000000e-01, !dbg !1086
+  %call345 = tail call double @floor(double %add344) #9, !dbg !1086
+  %conv346 = fptosi double %call345 to i64, !dbg !1086
+  store i64 %conv346, i64* @T, align 8, !dbg !1086, !tbaa !936
+  br label %if.end349, !dbg !1087
 
 if.end349:                                        ; preds = %land.lhs.true268, %if.else309, %if.then229, %if.then272, %if.then313, %if.then233
-  %successive_Bframe350 = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 34
-  %114 = load i32* %successive_Bframe350, align 4, !tbaa !3
-  %conv351 = sitofp i32 %114 to double
-  %mul352 = fmul double %conv351, 0.000000e+00
-  %sub353 = fsub double 1.000000e+00, %mul352
-  %115 = load i64* @T, align 8, !tbaa !6
-  %conv354 = sitofp i64 %115 to double
-  %mul355 = fmul double %conv354, %sub353
-  %conv356 = fptosi double %mul355 to i64
-  %116 = load i64* @LowerBound, align 8, !tbaa !6
-  %cmp357 = icmp slt i64 %conv356, %116
-  %cond362 = select i1 %cmp357, i64 %116, i64 %conv356
-  %117 = load i64* @UpperBound2, align 8, !tbaa !6
-  %cmp363 = icmp slt i64 %cond362, %117
-  %cond368 = select i1 %cmp363, i64 %cond362, i64 %117
-  store i64 %cond368, i64* @T, align 8, !tbaa !6
-  br i1 %tobool11, label %lor.lhs.false370, label %if.then379
+  %successive_Bframe350 = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 34, !dbg !1088
+  %114 = load i32* %successive_Bframe350, align 4, !dbg !1088, !tbaa !807
+  %conv351 = sitofp i32 %114 to double, !dbg !1088
+  %mul352 = fmul double %conv351, 0.000000e+00, !dbg !1088
+  %sub353 = fsub double 1.000000e+00, %mul352, !dbg !1088
+  %115 = load i64* @T, align 8, !dbg !1088, !tbaa !936
+  %conv354 = sitofp i64 %115 to double, !dbg !1088
+  %mul355 = fmul double %conv354, %sub353, !dbg !1088
+  %conv356 = fptosi double %mul355 to i64, !dbg !1088
+  %116 = load i64* @LowerBound, align 8, !dbg !1089, !tbaa !936
+  %cmp357 = icmp slt i64 %conv356, %116, !dbg !1089
+  %cond362 = select i1 %cmp357, i64 %116, i64 %conv356, !dbg !1089
+  %117 = load i64* @UpperBound2, align 8, !dbg !1090, !tbaa !936
+  %cmp363 = icmp slt i64 %cond362, %117, !dbg !1090
+  %cond368 = select i1 %cmp363, i64 %cond362, i64 %117, !dbg !1090
+  store i64 %cond368, i64* @T, align 8, !dbg !1090, !tbaa !936
+  br i1 %tobool11, label %lor.lhs.false370, label %if.then379, !dbg !1091
 
 lor.lhs.false370:                                 ; preds = %if.end349
-  br i1 %tobool10, label %land.lhs.true372, label %if.end401
+  br i1 %tobool10, label %land.lhs.true372, label %if.end401, !dbg !1091
 
 land.lhs.true372:                                 ; preds = %lor.lhs.false370
-  %PicInterlace373 = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 91
-  %118 = load i32* %PicInterlace373, align 4, !tbaa !3
-  %cmp374 = icmp eq i32 %118, 2
-  br i1 %cmp374, label %if.then379, label %lor.lhs.false376
+  %PicInterlace373 = getelementptr inbounds %struct.InputParameters* %0, i64 0, i32 91, !dbg !1091
+  %118 = load i32* %PicInterlace373, align 4, !dbg !1091, !tbaa !807
+  %cmp374 = icmp eq i32 %118, 2, !dbg !1091
+  br i1 %cmp374, label %if.then379, label %lor.lhs.false376, !dbg !1091
 
 lor.lhs.false376:                                 ; preds = %land.lhs.true372
-  %119 = load i32* %MbInterlace, align 4, !tbaa !3
-  %tobool378 = icmp eq i32 %119, 0
-  br i1 %tobool378, label %if.end383, label %if.then379
+  %119 = load i32* %MbInterlace, align 4, !dbg !1091, !tbaa !807
+  %tobool378 = icmp eq i32 %119, 0, !dbg !1091
+  br i1 %tobool378, label %if.end383, label %if.then379, !dbg !1091
 
 if.then379:                                       ; preds = %lor.lhs.false376, %if.end349, %land.lhs.true372
-  %conv380 = trunc i64 %cond368 to i32
-  store i32 %conv380, i32* @T_field, align 4, !tbaa !3
-  br label %if.end383
+  %conv380 = trunc i64 %cond368 to i32, !dbg !1092
+  store i32 %conv380, i32* @T_field, align 4, !dbg !1092, !tbaa !807
+  br label %if.end383, !dbg !1092
 
 if.end383:                                        ; preds = %if.then13, %if.end9, %lor.lhs.false376, %sw.epilog, %if.then379
-  br i1 %or.cond, label %if.end401, label %if.then387
+  br i1 %or.cond, label %if.end401, label %if.then387, !dbg !1093
 
 if.then387:                                       ; preds = %if.end383
-  %NumberofHeaderBits = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 119
-  store i32 0, i32* %NumberofHeaderBits, align 4, !tbaa !3
-  %NumberofTextureBits = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 120
-  store i32 0, i32* %NumberofTextureBits, align 4, !tbaa !3
-  %BasicUnit388 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 139
-  %120 = load i32* %BasicUnit388, align 4, !tbaa !3
-  %Frame_Total_Number_MB389 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 136
-  %121 = load i32* %Frame_Total_Number_MB389, align 4, !tbaa !3
-  %cmp390 = icmp slt i32 %120, %121
-  br i1 %cmp390, label %if.then392, label %if.end401
+  %NumberofHeaderBits = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 119, !dbg !1094
+  store i32 0, i32* %NumberofHeaderBits, align 4, !dbg !1094, !tbaa !807
+  %NumberofTextureBits = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 120, !dbg !1096
+  store i32 0, i32* %NumberofTextureBits, align 4, !dbg !1096, !tbaa !807
+  %BasicUnit388 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 139, !dbg !1097
+  %120 = load i32* %BasicUnit388, align 4, !dbg !1097, !tbaa !807
+  %Frame_Total_Number_MB389 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 136, !dbg !1097
+  %121 = load i32* %Frame_Total_Number_MB389, align 4, !dbg !1097, !tbaa !807
+  %cmp390 = icmp slt i32 %120, %121, !dbg !1097
+  br i1 %cmp390, label %if.then392, label %if.end401, !dbg !1097
 
 if.then392:                                       ; preds = %if.then387
-  store i32 0, i32* @TotalFrameQP, align 4, !tbaa !3
-  %NumberofBasicUnitHeaderBits = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 121
-  store i32 0, i32* %NumberofBasicUnitHeaderBits, align 4, !tbaa !3
-  %NumberofBasicUnitTextureBits = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 122
-  store i32 0, i32* %NumberofBasicUnitTextureBits, align 4, !tbaa !3
-  %TotalMADBasicUnit = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 123
-  store double 0.000000e+00, double* %TotalMADBasicUnit, align 8, !tbaa !4
-  %FieldControl393 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 134
-  %122 = load i32* %FieldControl393, align 4, !tbaa !3
-  %cmp394 = icmp eq i32 %122, 0
-  %123 = load i32* @TotalNumberofBasicUnit, align 4, !tbaa !3
-  br i1 %cmp394, label %if.then396, label %if.else397
+  store i32 0, i32* @TotalFrameQP, align 4, !dbg !1098, !tbaa !807
+  %NumberofBasicUnitHeaderBits = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 121, !dbg !1100
+  store i32 0, i32* %NumberofBasicUnitHeaderBits, align 4, !dbg !1100, !tbaa !807
+  %NumberofBasicUnitTextureBits = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 122, !dbg !1101
+  store i32 0, i32* %NumberofBasicUnitTextureBits, align 4, !dbg !1101, !tbaa !807
+  %TotalMADBasicUnit = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 123, !dbg !1102
+  store double 0.000000e+00, double* %TotalMADBasicUnit, align 8, !dbg !1102, !tbaa !862
+  %FieldControl393 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 134, !dbg !1103
+  %122 = load i32* %FieldControl393, align 4, !dbg !1103, !tbaa !807
+  %cmp394 = icmp eq i32 %122, 0, !dbg !1103
+  %123 = load i32* @TotalNumberofBasicUnit, align 4, !dbg !1104, !tbaa !807
+  br i1 %cmp394, label %if.then396, label %if.else397, !dbg !1103
 
 if.then396:                                       ; preds = %if.then392
-  store i32 %123, i32* @NumberofBasicUnit, align 4, !tbaa !3
-  br label %if.end401
+  store i32 %123, i32* @NumberofBasicUnit, align 4, !dbg !1104, !tbaa !807
+  br label %if.end401, !dbg !1104
 
 if.else397:                                       ; preds = %if.then392
-  %div398 = sdiv i32 %123, 2
-  store i32 %div398, i32* @NumberofBasicUnit, align 4, !tbaa !3
+  %div398 = sdiv i32 %123, 2, !dbg !1105
+  store i32 %div398, i32* @NumberofBasicUnit, align 4, !dbg !1105, !tbaa !807
   br label %if.end401
 
 if.end401:                                        ; preds = %if.then387, %if.end383, %lor.lhs.false370, %if.else397, %if.then396
-  %type402 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 6
-  %124 = load i32* %type402, align 4, !tbaa !3
-  %cmp403 = icmp eq i32 %124, 0
-  br i1 %cmp403, label %land.lhs.true405, label %if.end428
+  %type402 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 6, !dbg !1106
+  %124 = load i32* %type402, align 4, !dbg !1106, !tbaa !807
+  %cmp403 = icmp eq i32 %124, 0, !dbg !1106
+  br i1 %cmp403, label %land.lhs.true405, label %if.end428, !dbg !1106
 
 land.lhs.true405:                                 ; preds = %if.end401
-  %BasicUnit406 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 139
-  %125 = load i32* %BasicUnit406, align 4, !tbaa !3
-  %Frame_Total_Number_MB407 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 136
-  %126 = load i32* %Frame_Total_Number_MB407, align 4, !tbaa !3
-  %cmp408 = icmp slt i32 %125, %126
-  br i1 %cmp408, label %land.lhs.true410, label %if.end428
+  %BasicUnit406 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 139, !dbg !1106
+  %125 = load i32* %BasicUnit406, align 4, !dbg !1106, !tbaa !807
+  %Frame_Total_Number_MB407 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 136, !dbg !1106
+  %126 = load i32* %Frame_Total_Number_MB407, align 4, !dbg !1106, !tbaa !807
+  %cmp408 = icmp slt i32 %125, %126, !dbg !1106
+  br i1 %cmp408, label %land.lhs.true410, label %if.end428, !dbg !1106
 
 land.lhs.true410:                                 ; preds = %land.lhs.true405
-  %FieldControl411 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 134
-  %127 = load i32* %FieldControl411, align 4, !tbaa !3
-  %cmp412 = icmp eq i32 %127, 1
-  br i1 %cmp412, label %if.then414, label %if.end428
+  %FieldControl411 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 134, !dbg !1106
+  %127 = load i32* %FieldControl411, align 4, !dbg !1106, !tbaa !807
+  %cmp412 = icmp eq i32 %127, 1, !dbg !1106
+  br i1 %cmp412, label %if.then414, label %if.end428, !dbg !1106
 
 if.then414:                                       ; preds = %land.lhs.true410
-  br i1 %tobool11, label %if.else420, label %if.then416
+  br i1 %tobool11, label %if.else420, label %if.then416, !dbg !1107
 
 if.then416:                                       ; preds = %if.then414
-  store i32 0, i32* @bits_topfield, align 4, !tbaa !3
-  %128 = load i32* @T_field, align 4, !tbaa !3
-  %conv417 = sitofp i32 %128 to double
-  %mul418 = fmul double %conv417, 6.000000e-01
-  %conv419 = fptosi double %mul418 to i64
-  store i64 %conv419, i64* @T, align 8, !tbaa !6
-  br label %if.end428
+  store i32 0, i32* @bits_topfield, align 4, !dbg !1109, !tbaa !807
+  %128 = load i32* @T_field, align 4, !dbg !1111, !tbaa !807
+  %conv417 = sitofp i32 %128 to double, !dbg !1111
+  %mul418 = fmul double %conv417, 6.000000e-01, !dbg !1111
+  %conv419 = fptosi double %mul418 to i64, !dbg !1111
+  store i64 %conv419, i64* @T, align 8, !dbg !1111, !tbaa !936
+  br label %if.end428, !dbg !1112
 
 if.else420:                                       ; preds = %if.then414
-  %129 = load i32* @T_field, align 4, !tbaa !3
-  %130 = load i32* @bits_topfield, align 4, !tbaa !3
-  %sub421 = sub nsw i32 %129, %130
-  %conv422 = sext i32 %sub421 to i64
-  store i64 %conv422, i64* @T, align 8, !tbaa !6
-  %NumberofBasicUnitHeaderBits423 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 121
-  store i32 0, i32* %NumberofBasicUnitHeaderBits423, align 4, !tbaa !3
-  %NumberofBasicUnitTextureBits424 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 122
-  store i32 0, i32* %NumberofBasicUnitTextureBits424, align 4, !tbaa !3
-  %TotalMADBasicUnit425 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 123
-  store double 0.000000e+00, double* %TotalMADBasicUnit425, align 8, !tbaa !4
-  %131 = load i32* @TotalNumberofBasicUnit, align 4, !tbaa !3
-  %div426 = sdiv i32 %131, 2
-  store i32 %div426, i32* @NumberofBasicUnit, align 4, !tbaa !3
+  %129 = load i32* @T_field, align 4, !dbg !1113, !tbaa !807
+  %130 = load i32* @bits_topfield, align 4, !dbg !1113, !tbaa !807
+  %sub421 = sub nsw i32 %129, %130, !dbg !1113
+  %conv422 = sext i32 %sub421 to i64, !dbg !1113
+  store i64 %conv422, i64* @T, align 8, !dbg !1113, !tbaa !936
+  %NumberofBasicUnitHeaderBits423 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 121, !dbg !1115
+  store i32 0, i32* %NumberofBasicUnitHeaderBits423, align 4, !dbg !1115, !tbaa !807
+  %NumberofBasicUnitTextureBits424 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 122, !dbg !1116
+  store i32 0, i32* %NumberofBasicUnitTextureBits424, align 4, !dbg !1116, !tbaa !807
+  %TotalMADBasicUnit425 = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 123, !dbg !1117
+  store double 0.000000e+00, double* %TotalMADBasicUnit425, align 8, !dbg !1117, !tbaa !862
+  %131 = load i32* @TotalNumberofBasicUnit, align 4, !dbg !1118, !tbaa !807
+  %div426 = sdiv i32 %131, 2, !dbg !1118
+  store i32 %div426, i32* @NumberofBasicUnit, align 4, !dbg !1118, !tbaa !807
   br label %if.end428
 
 if.end428:                                        ; preds = %if.then416, %if.else420, %land.lhs.true410, %land.lhs.true405, %if.end401
-  ret void
+  ret void, !dbg !1119
 }

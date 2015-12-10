@@ -1,26 +1,32 @@
-define i8* @GetKeyedData(%struct.PKeyedData* readonly %storage, i32 %key) #3 {
-  %1 = icmp eq %struct.PKeyedData* %storage, null
-  br i1 %1, label %.loopexit, label %.lr.ph
+define i8* @GetKeyedData(%struct.PKeyedData* %storage, i32 %key) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.PKeyedData* %storage}, i64 0, metadata !37), !dbg !68
+  tail call void @llvm.dbg.value(metadata !{i32 %key}, i64 0, metadata !38), !dbg !68
+  tail call void @llvm.dbg.value(metadata !69, i64 0, metadata !39), !dbg !70
+  %tobool = icmp eq %struct.PKeyedData* %storage, null, !dbg !71
+  br i1 %tobool, label %if.end4, label %for.body, !dbg !71
 
-.lr.ph:                                           ; preds = %0, %8
-  %current.02 = phi %struct.PKeyedData* [ %10, %8 ], [ %storage, %0 ]
-  %2 = getelementptr inbounds %struct.PKeyedData* %current.02, i64 0, i32 2
-  %3 = load i32* %2, align 4, !tbaa !2
-  %4 = icmp eq i32 %3, %key
-  br i1 %4, label %5, label %8
+for.body:                                         ; preds = %entry, %for.inc
+  %current.010 = phi %struct.PKeyedData* [ %2, %for.inc ], [ %storage, %entry ]
+  %key2 = getelementptr inbounds %struct.PKeyedData* %current.010, i64 0, i32 2, !dbg !72
+  %0 = load i32* %key2, align 4, !dbg !72, !tbaa !56
+  %cmp = icmp eq i32 %0, %key, !dbg !72
+  br i1 %cmp, label %if.then3, label %for.inc, !dbg !72
 
-; <label>:5                                       ; preds = %.lr.ph
-  %6 = getelementptr inbounds %struct.PKeyedData* %current.02, i64 0, i32 3
-  %7 = load i8** %6, align 8, !tbaa !8
-  br label %.loopexit
+if.then3:                                         ; preds = %for.body
+  %data = getelementptr inbounds %struct.PKeyedData* %current.010, i64 0, i32 3, !dbg !76
+  %1 = load i8** %data, align 8, !dbg !76, !tbaa !60
+  tail call void @llvm.dbg.value(metadata !{i8* %1}, i64 0, metadata !39), !dbg !76
+  br label %if.end4, !dbg !78
 
-; <label>:8                                       ; preds = %.lr.ph
-  %9 = getelementptr inbounds %struct.PKeyedData* %current.02, i64 0, i32 1
-  %10 = load %struct.PKeyedData** %9, align 8, !tbaa !10
-  %11 = icmp eq %struct.PKeyedData* %10, null
-  br i1 %11, label %.loopexit, label %.lr.ph
+for.inc:                                          ; preds = %for.body
+  %next = getelementptr inbounds %struct.PKeyedData* %current.010, i64 0, i32 1, !dbg !79
+  %2 = load %struct.PKeyedData** %next, align 8, !dbg !79, !tbaa !60
+  tail call void @llvm.dbg.value(metadata !{%struct.PKeyedData* %2}, i64 0, metadata !40), !dbg !79
+  %tobool1 = icmp eq %struct.PKeyedData* %2, null, !dbg !79
+  br i1 %tobool1, label %if.end4, label %for.body, !dbg !79
 
-.loopexit:                                        ; preds = %8, %0, %5
-  %return_val.0 = phi i8* [ %7, %5 ], [ null, %0 ], [ null, %8 ]
-  ret i8* %return_val.0
+if.end4:                                          ; preds = %for.inc, %entry, %if.then3
+  %return_val.0 = phi i8* [ %1, %if.then3 ], [ null, %entry ], [ null, %for.inc ]
+  ret i8* %return_val.0, !dbg !80
 }

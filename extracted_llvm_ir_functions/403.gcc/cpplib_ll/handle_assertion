@@ -1,29 +1,37 @@
 define internal fastcc void @handle_assertion(%struct.cpp_reader* %pfile, i8* %str, i32 %type) #0 {
 entry:
-  %call = call i64 @strlen(i8* %str) #11
-  %call1 = call i8* @strchr(i8* %str, i32 61) #11
-  %tobool = icmp eq i8* %call1, null
-  br i1 %tobool, label %if.end, label %if.then
+  call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !724), !dbg !1441
+  call void @llvm.dbg.value(metadata !{i8* %str}, i64 0, metadata !725), !dbg !1442
+  call void @llvm.dbg.value(metadata !{i32 %type}, i64 0, metadata !726), !dbg !1443
+  %call = call i64 @strlen(i8* %str) #12, !dbg !1444
+  call void @llvm.dbg.value(metadata !{i64 %call}, i64 0, metadata !727), !dbg !1444
+  %call1 = call i8* @strchr(i8* %str, i32 61) #12, !dbg !1445
+  call void @llvm.dbg.value(metadata !{i8* %call1}, i64 0, metadata !728), !dbg !1445
+  %tobool = icmp eq i8* %call1, null, !dbg !1446
+  br i1 %tobool, label %if.end, label %if.then, !dbg !1446
 
 if.then:                                          ; preds = %entry
-  %add = add i64 %call, 2
-  %0 = alloca i8, i64 %add, align 1
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %str, i64 %call, i32 1, i1 false)
-  %sub.ptr.lhs.cast = ptrtoint i8* %call1 to i64
-  %sub.ptr.rhs.cast = ptrtoint i8* %str to i64
-  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
-  %arrayidx = getelementptr inbounds i8* %0, i64 %sub.ptr.sub
-  store i8 40, i8* %arrayidx, align 1, !tbaa !0
-  %inc = add i64 %call, 1
-  %arrayidx2 = getelementptr inbounds i8* %0, i64 %call
-  store i8 41, i8* %arrayidx2, align 1, !tbaa !0
-  %arrayidx3 = getelementptr inbounds i8* %0, i64 %inc
-  store i8 0, i8* %arrayidx3, align 1, !tbaa !0
-  br label %if.end
+  %add = add i64 %call, 2, !dbg !1447
+  %0 = alloca i8, i64 %add, align 1, !dbg !1447
+  call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !729), !dbg !1447
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %str, i64 %call, i32 1, i1 false), !dbg !1448
+  %sub.ptr.lhs.cast = ptrtoint i8* %call1 to i64, !dbg !1449
+  %sub.ptr.rhs.cast = ptrtoint i8* %str to i64, !dbg !1449
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !1449
+  %arrayidx = getelementptr inbounds i8* %0, i64 %sub.ptr.sub, !dbg !1449
+  store i8 40, i8* %arrayidx, align 1, !dbg !1449, !tbaa !1061
+  %inc = add i64 %call, 1, !dbg !1450
+  call void @llvm.dbg.value(metadata !{i64 %inc}, i64 0, metadata !727), !dbg !1450
+  %arrayidx2 = getelementptr inbounds i8* %0, i64 %call, !dbg !1450
+  store i8 41, i8* %arrayidx2, align 1, !dbg !1450, !tbaa !1061
+  %arrayidx3 = getelementptr inbounds i8* %0, i64 %inc, !dbg !1451
+  store i8 0, i8* %arrayidx3, align 1, !dbg !1451, !tbaa !1061
+  call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !725), !dbg !1452
+  br label %if.end, !dbg !1453
 
 if.end:                                           ; preds = %entry, %if.then
   %count.0 = phi i64 [ %inc, %if.then ], [ %call, %entry ]
   %str.addr.0 = phi i8* [ %0, %if.then ], [ %str, %entry ]
-  call fastcc void @run_directive(%struct.cpp_reader* %pfile, i32 %type, i8* %str.addr.0, i64 %count.0) #9
-  ret void
+  call fastcc void @run_directive(%struct.cpp_reader* %pfile, i32 %type, i8* %str.addr.0, i64 %count.0) #10, !dbg !1454
+  ret void, !dbg !1455
 }

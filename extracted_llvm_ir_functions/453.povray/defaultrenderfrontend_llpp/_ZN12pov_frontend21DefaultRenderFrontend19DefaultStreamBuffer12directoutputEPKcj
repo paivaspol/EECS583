@@ -1,0 +1,37 @@
+define void @_ZN12pov_frontend21DefaultRenderFrontend19DefaultStreamBuffer12directoutputEPKcj(%"class.pov_frontend::DefaultRenderFrontend::DefaultStreamBuffer"* nocapture %this, i8* nocapture %str, i32 %chars) unnamed_addr #0 align 2 {
+entry:
+  %buffer = alloca [124 x i8], align 16
+  call void @llvm.dbg.value(metadata !{%"class.pov_frontend::DefaultRenderFrontend::DefaultStreamBuffer"* %this}, i64 0, metadata !724), !dbg !1048
+  call void @llvm.dbg.value(metadata !{i8* %str}, i64 0, metadata !725), !dbg !1048
+  call void @llvm.dbg.value(metadata !{i32 %chars}, i64 0, metadata !726), !dbg !1048
+  call void @llvm.dbg.value(metadata !{i32 %chars}, i64 0, metadata !1049), !dbg !1051
+  %0 = getelementptr inbounds [124 x i8]* %buffer, i64 0, i64 0, !dbg !1052
+  call void @llvm.lifetime.start(i64 124, i8* %0) #5, !dbg !1052
+  call void @llvm.dbg.declare(metadata !{[124 x i8]* %buffer}, metadata !727), !dbg !1052
+  store i8 0, i8* %0, align 16, !dbg !1053, !tbaa !970
+  call void @llvm.dbg.value(metadata !1042, i64 0, metadata !1054), !dbg !1051
+  %cmp.i = icmp ult i32 %chars, 120, !dbg !1055
+  %1 = zext i32 %chars to i64, !dbg !1050
+  %conv = select i1 %cmp.i, i64 %1, i64 120, !dbg !1050
+  %call2 = call i8* @strncat(i8* %0, i8* %str, i64 %conv) #10, !dbg !1050
+  %handle = getelementptr inbounds %"class.pov_frontend::DefaultRenderFrontend::DefaultStreamBuffer"* %this, i64 0, i32 1, !dbg !1056
+  %2 = load %"class.pov_base::OStream"** %handle, align 8, !dbg !1056, !tbaa !969
+  %cmp = icmp eq %"class.pov_base::OStream"* %2, null, !dbg !1056
+  br i1 %cmp, label %if.end, label %if.then, !dbg !1056
+
+if.then:                                          ; preds = %entry
+  call void @llvm.dbg.value(metadata !{%"class.pov_base::OStream"* %2}, i64 0, metadata !1057), !dbg !1060
+  call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !1061), !dbg !1060
+  %3 = getelementptr inbounds %"class.pov_base::OStream"* %2, i64 0, i32 0, !dbg !1060
+  %call.i8 = call i64 @strlen(i8* %0) #11, !dbg !1060
+  %call2.i = call %"class.pov_base::IOBase"* @_ZN8pov_base6IOBase5writeEPvm(%"class.pov_base::IOBase"* %3, i8* %0, i64 %call.i8) #8, !dbg !1060
+  %4 = load %"class.pov_base::OStream"** %handle, align 8, !dbg !1062, !tbaa !969
+  call void @llvm.dbg.value(metadata !{%"class.pov_base::OStream"* %4}, i64 0, metadata !1063), !dbg !1064
+  %5 = getelementptr inbounds %"class.pov_base::OStream"* %4, i64 0, i32 0, !dbg !1065
+  %call.i = call %"class.pov_base::IOBase"* @_ZN8pov_base6IOBase5flushEv(%"class.pov_base::IOBase"* %5) #8, !dbg !1065
+  br label %if.end, !dbg !1067
+
+if.end:                                           ; preds = %entry, %if.then
+  call void @llvm.lifetime.end(i64 124, i8* %0) #5, !dbg !1068
+  ret void, !dbg !1068
+}

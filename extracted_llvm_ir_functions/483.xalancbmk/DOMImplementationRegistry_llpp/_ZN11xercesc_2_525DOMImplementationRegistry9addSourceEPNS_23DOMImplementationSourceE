@@ -1,0 +1,46 @@
+define void @_ZN11xercesc_2_525DOMImplementationRegistry9addSourceEPNS_23DOMImplementationSourceE(%"class.xercesc_2_5::DOMImplementationSource"* %source) #1 align 2 {
+entry:
+  %lock = alloca %"class.xercesc_2_5::XMLMutexLock", align 8
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMImplementationSource"* %source}, i64 0, metadata !1045), !dbg !1483
+  call void @llvm.dbg.declare(metadata !{%"class.xercesc_2_5::XMLMutexLock"* %lock}, metadata !1046), !dbg !1484
+  %call = call %"class.xercesc_2_5::XMLMutex"* @_ZN11xercesc_2_524getDOMImplSrcVectorMutexEv() #6, !dbg !1484
+  call void @_ZN11xercesc_2_512XMLMutexLockC1EPNS_8XMLMutexE(%"class.xercesc_2_5::XMLMutexLock"* %lock, %"class.xercesc_2_5::XMLMutex"* %call) #6, !dbg !1484
+  %call1 = invoke %"class.xercesc_2_5::RefVectorOf"* @_ZN11xercesc_2_519getDOMImplSrcVectorEv() #6
+          to label %invoke.cont unwind label %lpad, !dbg !1485
+
+invoke.cont:                                      ; preds = %entry
+  %0 = getelementptr inbounds %"class.xercesc_2_5::RefVectorOf"* %call1, i64 0, i32 0, !dbg !1485
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf"* %0}, i64 0, metadata !1486), !dbg !1487
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMImplementationSource"* %source}, i64 0, metadata !1488), !dbg !1487
+  invoke void @_ZN11xercesc_2_515BaseRefVectorOfINS_23DOMImplementationSourceEE19ensureExtraCapacityEj(%"class.xercesc_2_5::BaseRefVectorOf"* %0, i32 1) #6
+          to label %invoke.cont2 unwind label %lpad
+
+invoke.cont2:                                     ; preds = %invoke.cont
+  %fCurCount.i = getelementptr inbounds %"class.xercesc_2_5::RefVectorOf"* %call1, i64 0, i32 0, i32 2, !dbg !1489
+  %1 = load i32* %fCurCount.i, align 4, !dbg !1489, !tbaa !1452
+  %idxprom.i = zext i32 %1 to i64, !dbg !1489
+  %fElemList.i = getelementptr inbounds %"class.xercesc_2_5::RefVectorOf"* %call1, i64 0, i32 0, i32 4, !dbg !1489
+  %2 = load %"class.xercesc_2_5::DOMImplementationSource"*** %fElemList.i, align 8, !dbg !1489, !tbaa !1381
+  %arrayidx.i = getelementptr inbounds %"class.xercesc_2_5::DOMImplementationSource"** %2, i64 %idxprom.i, !dbg !1489
+  store %"class.xercesc_2_5::DOMImplementationSource"* %source, %"class.xercesc_2_5::DOMImplementationSource"** %arrayidx.i, align 8, !dbg !1489, !tbaa !1381
+  %inc.i = add i32 %1, 1, !dbg !1490
+  store i32 %inc.i, i32* %fCurCount.i, align 4, !dbg !1490, !tbaa !1452
+  call void @_ZN11xercesc_2_512XMLMutexLockD1Ev(%"class.xercesc_2_5::XMLMutexLock"* %lock) #6, !dbg !1491
+  ret void, !dbg !1491
+
+lpad:                                             ; preds = %invoke.cont, %entry
+  %3 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !1485
+  invoke void @_ZN11xercesc_2_512XMLMutexLockD1Ev(%"class.xercesc_2_5::XMLMutexLock"* %lock) #6
+          to label %eh.resume unwind label %terminate.lpad, !dbg !1491
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %3, !dbg !1491
+
+terminate.lpad:                                   ; preds = %lpad
+  %4 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !1491
+  %5 = extractvalue { i8*, i32 } %4, 0, !dbg !1491
+  call void @__clang_call_terminate(i8* %5) #7, !dbg !1491
+  unreachable, !dbg !1491
+}

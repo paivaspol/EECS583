@@ -1,91 +1,79 @@
 define void @write_sei_message(i32 %id, i8* nocapture %payload, i32 %payload_size, i32 %payload_type) #0 {
 entry:
-  %idxprom = sext i32 %id to i64
-  %payloadSize = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %idxprom, i32 1
-  %0 = load i32* %payloadSize, align 4, !tbaa !3
-  %cmp61 = icmp sgt i32 %payload_type, 255
-  %data = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %idxprom, i32 3
-  br i1 %cmp61, label %while.body.lr.ph, label %while.end
+  tail call void @llvm.dbg.value(metadata !{i32 %id}, i64 0, metadata !83), !dbg !988
+  tail call void @llvm.dbg.value(metadata !{i8* %payload}, i64 0, metadata !84), !dbg !988
+  tail call void @llvm.dbg.value(metadata !{i32 %payload_size}, i64 0, metadata !85), !dbg !988
+  tail call void @llvm.dbg.value(metadata !{i32 %payload_type}, i64 0, metadata !86), !dbg !988
+  %payload_type.off = add i32 %payload_type, -1, !dbg !989
+  %0 = icmp ult i32 %payload_type.off, 15, !dbg !989
+  br i1 %0, label %cond.end.while.end_crit_edge, label %cond.false, !dbg !989
 
-while.body.lr.ph:                                 ; preds = %entry
-  %1 = sext i32 %0 to i64
-  %2 = add i32 %payload_type, -256
-  %3 = udiv i32 %2, 255
-  %4 = add i32 %0, %3
-  br label %while.body
+cond.false:                                       ; preds = %entry
+  tail call void @__assert_fail(i8* getelementptr inbounds ([59 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str2, i64 0, i64 0), i32 162, i8* getelementptr inbounds ([46 x i8]* @__PRETTY_FUNCTION__.write_sei_message, i64 0, i64 0)) #10, !dbg !989
+  unreachable, !dbg !989
 
-while.body:                                       ; preds = %while.body.lr.ph, %while.body
-  %indvars.iv68 = phi i64 [ %1, %while.body.lr.ph ], [ %indvars.iv.next69, %while.body ]
-  %type.063 = phi i32 [ %payload_type, %while.body.lr.ph ], [ %sub, %while.body ]
-  %indvars.iv.next69 = add i64 %indvars.iv68, 1
-  %5 = load i8** %data, align 8, !tbaa !0
-  %arrayidx4 = getelementptr inbounds i8* %5, i64 %indvars.iv68
-  store i8 -1, i8* %arrayidx4, align 1, !tbaa !1
-  %sub = add nsw i32 %type.063, -255
-  %cmp = icmp sgt i32 %sub, 255
-  br i1 %cmp, label %while.body, label %while.cond.while.end_crit_edge
+cond.end.while.end_crit_edge:                     ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{i32 %payload_type}, i64 0, metadata !88), !dbg !990
+  tail call void @llvm.dbg.value(metadata !{i32 %payload_size}, i64 0, metadata !89), !dbg !991
+  %idxprom = sext i32 %id to i64, !dbg !992
+  %payloadSize = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %idxprom, i32 1, !dbg !992
+  %1 = load i32* %payloadSize, align 4, !dbg !992, !tbaa !937
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !87), !dbg !992
+  %data11.pre = getelementptr inbounds [2 x %struct.sei_struct]* @sei_message, i64 0, i64 %idxprom, i32 3, !dbg !993
+  %conv = trunc i32 %payload_type to i8, !dbg !993
+  %idxprom8 = sext i32 %1 to i64, !dbg !993
+  %2 = load i8** %data11.pre, align 8, !dbg !993, !tbaa !926
+  %arrayidx12 = getelementptr inbounds i8* %2, i64 %idxprom8, !dbg !993
+  store i8 %conv, i8* %arrayidx12, align 1, !dbg !993, !tbaa !927
+  %offset.159 = add i32 %1, 1, !dbg !993
+  %cmp1460 = icmp sgt i32 %payload_size, 255, !dbg !994
+  br i1 %cmp1460, label %while.body16.lr.ph, label %while.end24, !dbg !994
 
-while.cond.while.end_crit_edge:                   ; preds = %while.body
-  %6 = add i32 %payload_type, -255
-  %7 = mul i32 %3, -255
-  %8 = add i32 %6, %7
-  %9 = add i32 %4, 1
-  br label %while.end
+while.body16.lr.ph:                               ; preds = %cond.end.while.end_crit_edge
+  %3 = sext i32 %offset.159 to i64
+  %4 = add i32 %payload_size, -256, !dbg !994
+  %5 = udiv i32 %4, 255, !dbg !994
+  %6 = add i32 %1, %5, !dbg !994
+  %7 = add i32 %payload_size, -255, !dbg !994
+  %8 = mul i32 %5, -255, !dbg !994
+  %9 = add i32 %7, %8, !dbg !994
+  br label %while.body16, !dbg !994
 
-while.end:                                        ; preds = %entry, %while.cond.while.end_crit_edge
-  %type.0.lcssa = phi i32 [ %8, %while.cond.while.end_crit_edge ], [ %payload_type, %entry ]
-  %offset.0.lcssa = phi i32 [ %9, %while.cond.while.end_crit_edge ], [ %0, %entry ]
-  %conv = trunc i32 %type.0.lcssa to i8
-  %idxprom6 = sext i32 %offset.0.lcssa to i64
-  %10 = load i8** %data, align 8, !tbaa !0
-  %arrayidx10 = getelementptr inbounds i8* %10, i64 %idxprom6
-  store i8 %conv, i8* %arrayidx10, align 1, !tbaa !1
-  %offset.155 = add i32 %offset.0.lcssa, 1
-  %cmp1256 = icmp sgt i32 %payload_size, 255
-  br i1 %cmp1256, label %while.body14.lr.ph, label %while.end22
+while.body16:                                     ; preds = %while.body16.lr.ph, %while.body16
+  %indvars.iv = phi i64 [ %3, %while.body16.lr.ph ], [ %indvars.iv.next, %while.body16 ]
+  %size.061 = phi i32 [ %payload_size, %while.body16.lr.ph ], [ %sub23, %while.body16 ]
+  %10 = load i8** %data11.pre, align 8, !dbg !995, !tbaa !926
+  %arrayidx22 = getelementptr inbounds i8* %10, i64 %indvars.iv, !dbg !995
+  store i8 -1, i8* %arrayidx22, align 1, !dbg !995, !tbaa !927
+  %sub23 = add nsw i32 %size.061, -255, !dbg !997
+  tail call void @llvm.dbg.value(metadata !{i32 %9}, i64 0, metadata !89), !dbg !997
+  %cmp14 = icmp sgt i32 %sub23, 255, !dbg !994
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !994
+  br i1 %cmp14, label %while.body16, label %while.cond13.while.end24_crit_edge, !dbg !994
 
-while.body14.lr.ph:                               ; preds = %while.end
-  %11 = sext i32 %offset.155 to i64
-  %12 = add i32 %payload_size, -256
-  %13 = udiv i32 %12, 255
-  %14 = add i32 %offset.0.lcssa, %13
-  %15 = add i32 %payload_size, -255
-  %16 = mul i32 %13, -255
-  %17 = add i32 %15, %16
-  br label %while.body14
+while.cond13.while.end24_crit_edge:               ; preds = %while.body16
+  %11 = add i32 %6, 2, !dbg !994
+  %12 = add i32 %6, 1, !dbg !994
+  br label %while.end24, !dbg !994
 
-while.body14:                                     ; preds = %while.body14.lr.ph, %while.body14
-  %indvars.iv = phi i64 [ %11, %while.body14.lr.ph ], [ %indvars.iv.next, %while.body14 ]
-  %size.057 = phi i32 [ %payload_size, %while.body14.lr.ph ], [ %sub21, %while.body14 ]
-  %18 = load i8** %data, align 8, !tbaa !0
-  %arrayidx20 = getelementptr inbounds i8* %18, i64 %indvars.iv
-  store i8 -1, i8* %arrayidx20, align 1, !tbaa !1
-  %sub21 = add nsw i32 %size.057, -255
-  %cmp12 = icmp sgt i32 %sub21, 255
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  br i1 %cmp12, label %while.body14, label %while.cond11.while.end22_crit_edge
-
-while.cond11.while.end22_crit_edge:               ; preds = %while.body14
-  %19 = add i32 %14, 2
-  %20 = add i32 %14, 1
-  br label %while.end22
-
-while.end22:                                      ; preds = %while.cond11.while.end22_crit_edge, %while.end
-  %offset.1.lcssa = phi i32 [ %19, %while.cond11.while.end22_crit_edge ], [ %offset.155, %while.end ]
-  %size.0.lcssa = phi i32 [ %17, %while.cond11.while.end22_crit_edge ], [ %payload_size, %while.end ]
-  %offset.1.in.lcssa = phi i32 [ %20, %while.cond11.while.end22_crit_edge ], [ %offset.0.lcssa, %while.end ]
-  %conv23 = trunc i32 %size.0.lcssa to i8
-  %inc24 = add nsw i32 %offset.1.in.lcssa, 2
-  %idxprom25 = sext i32 %offset.1.lcssa to i64
-  %21 = load i8** %data, align 8, !tbaa !0
-  %arrayidx29 = getelementptr inbounds i8* %21, i64 %idxprom25
-  store i8 %conv23, i8* %arrayidx29, align 1, !tbaa !1
-  %22 = load i8** %data, align 8, !tbaa !0
-  %idx.ext = sext i32 %inc24 to i64
-  %add.ptr = getelementptr inbounds i8* %22, i64 %idx.ext
-  %conv33 = sext i32 %payload_size to i64
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %add.ptr, i8* %payload, i64 %conv33, i32 1, i1 false)
-  %add = add nsw i32 %inc24, %payload_size
-  store i32 %add, i32* %payloadSize, align 4, !tbaa !3
-  ret void
+while.end24:                                      ; preds = %while.cond13.while.end24_crit_edge, %cond.end.while.end_crit_edge
+  %offset.1.lcssa = phi i32 [ %11, %while.cond13.while.end24_crit_edge ], [ %offset.159, %cond.end.while.end_crit_edge ]
+  %size.0.lcssa = phi i32 [ %9, %while.cond13.while.end24_crit_edge ], [ %payload_size, %cond.end.while.end_crit_edge ]
+  %offset.1.in.lcssa = phi i32 [ %12, %while.cond13.while.end24_crit_edge ], [ %1, %cond.end.while.end_crit_edge ]
+  %conv25 = trunc i32 %size.0.lcssa to i8, !dbg !998
+  %inc26 = add nsw i32 %offset.1.in.lcssa, 2, !dbg !998
+  tail call void @llvm.dbg.value(metadata !{i32 %inc26}, i64 0, metadata !87), !dbg !998
+  %idxprom27 = sext i32 %offset.1.lcssa to i64, !dbg !998
+  %13 = load i8** %data11.pre, align 8, !dbg !998, !tbaa !926
+  %arrayidx31 = getelementptr inbounds i8* %13, i64 %idxprom27, !dbg !998
+  store i8 %conv25, i8* %arrayidx31, align 1, !dbg !998, !tbaa !927
+  %14 = load i8** %data11.pre, align 8, !dbg !999, !tbaa !926
+  %idx.ext = sext i32 %inc26 to i64, !dbg !999
+  %add.ptr = getelementptr inbounds i8* %14, i64 %idx.ext, !dbg !999
+  %conv35 = sext i32 %payload_size to i64, !dbg !999
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %add.ptr, i8* %payload, i64 %conv35, i32 1, i1 false), !dbg !999
+  %add = add nsw i32 %inc26, %payload_size, !dbg !1000
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !87), !dbg !1000
+  store i32 %add, i32* %payloadSize, align 4, !dbg !1001, !tbaa !937
+  ret void, !dbg !1002
 }

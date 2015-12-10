@@ -1,0 +1,45 @@
+define i16* @_ZNK11xercesc_2_524AbstractNumericValidator26getCanonicalRepresentationEPKtPNS_13MemoryManagerEb(%"class.xercesc_2_5::AbstractNumericValidator"* %this, i16* %rawData, %"class.xercesc_2_5::MemoryManager"* %memMgr, i1 zeroext %toValidate) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::AbstractNumericValidator"* %this}, i64 0, metadata !1594), !dbg !1913
+  tail call void @llvm.dbg.value(metadata !{i16* %rawData}, i64 0, metadata !1596), !dbg !1913
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %memMgr}, i64 0, metadata !1597), !dbg !1914
+  tail call void @llvm.dbg.value(metadata !{i1 %toValidate}, i64 0, metadata !1598), !dbg !1915
+  %tobool = icmp eq %"class.xercesc_2_5::MemoryManager"* %memMgr, null, !dbg !1916
+  br i1 %tobool, label %cond.false, label %cond.end, !dbg !1916
+
+cond.false:                                       ; preds = %entry
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::AbstractNumericValidator"* %this, i64 0, i32 0, i32 0, i64 8, !dbg !1916
+  %0 = bitcast i8* %fMemoryManager to %"class.xercesc_2_5::MemoryManager"**, !dbg !1916
+  %1 = load %"class.xercesc_2_5::MemoryManager"** %0, align 8, !dbg !1916, !tbaa !1790
+  br label %cond.end, !dbg !1916
+
+cond.end:                                         ; preds = %entry, %cond.false
+  %cond = phi %"class.xercesc_2_5::MemoryManager"* [ %1, %cond.false ], [ %memMgr, %entry ], !dbg !1916
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %cond}, i64 0, metadata !1599), !dbg !1916
+  br i1 %toValidate, label %if.then, label %if.end, !dbg !1917
+
+if.then:                                          ; preds = %cond.end
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::AbstractNumericValidator"* %this}, i64 0, metadata !1600), !dbg !1918
+  %2 = bitcast %"class.xercesc_2_5::AbstractNumericValidator"* %this to void (%"class.xercesc_2_5::AbstractNumericValidator"*, i16*, %"class.xercesc_2_5::ValidationContext"*, i1, %"class.xercesc_2_5::MemoryManager"*)***, !dbg !1919
+  %vtable = load void (%"class.xercesc_2_5::AbstractNumericValidator"*, i16*, %"class.xercesc_2_5::ValidationContext"*, i1, %"class.xercesc_2_5::MemoryManager"*)*** %2, align 8, !dbg !1919, !tbaa !1766
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::AbstractNumericValidator"*, i16*, %"class.xercesc_2_5::ValidationContext"*, i1, %"class.xercesc_2_5::MemoryManager"*)** %vtable, i64 17, !dbg !1919
+  %3 = load void (%"class.xercesc_2_5::AbstractNumericValidator"*, i16*, %"class.xercesc_2_5::ValidationContext"*, i1, %"class.xercesc_2_5::MemoryManager"*)** %vfn, align 8, !dbg !1919
+  invoke void %3(%"class.xercesc_2_5::AbstractNumericValidator"* %this, i16* %rawData, %"class.xercesc_2_5::ValidationContext"* null, i1 zeroext false, %"class.xercesc_2_5::MemoryManager"* %cond) #8
+          to label %if.end unwind label %lpad, !dbg !1919
+
+lpad:                                             ; preds = %if.then
+  %4 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !1919
+  %5 = extractvalue { i8*, i32 } %4, 0, !dbg !1919
+  %6 = tail call i8* @__cxa_begin_catch(i8* %5) #10, !dbg !1921
+  tail call void @__cxa_end_catch(), !dbg !1922
+  br label %return
+
+if.end:                                           ; preds = %if.then, %cond.end
+  %call = tail call i16* @_ZN11xercesc_2_522XMLAbstractDoubleFloat26getCanonicalRepresentationEPKtPNS_13MemoryManagerE(i16* %rawData, %"class.xercesc_2_5::MemoryManager"* %cond) #8, !dbg !1924
+  br label %return, !dbg !1924
+
+return:                                           ; preds = %if.end, %lpad
+  %retval.0 = phi i16* [ %call, %if.end ], [ null, %lpad ]
+  ret i16* %retval.0, !dbg !1925
+}

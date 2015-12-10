@@ -1,22 +1,26 @@
 define %struct.ht* @ht_create(i32 %order) #0 {
 entry:
-  %shl = shl i32 1, %order
-  %call = tail call noalias i8* @xmalloc(i64 128) #6
-  %0 = bitcast i8* %call to %struct.ht*
-  tail call void @llvm.memset.p0i8.i64(i8* %call, i8 0, i64 128, i32 8, i1 false)
-  %stack = bitcast i8* %call to %struct.obstack*
-  %call.i = tail call i32 @_obstack_begin(%struct.obstack* %stack, i32 0, i32 0, i8* (i64)* @xmalloc, void (i8*)* @free) #6
-  %alignment_mask = getelementptr inbounds i8* %call, i64 48
-  %1 = bitcast i8* %alignment_mask to i32*
-  store i32 0, i32* %1, align 4, !tbaa !0
-  %conv = zext i32 %shl to i64
-  %call2 = tail call noalias i8* @xcalloc(i64 %conv, i64 8) #6
-  %2 = bitcast i8* %call2 to %struct.ht_identifier**
-  %entries = getelementptr inbounds i8* %call, i64 88
-  %3 = bitcast i8* %entries to %struct.ht_identifier***
-  store %struct.ht_identifier** %2, %struct.ht_identifier*** %3, align 8, !tbaa !3
-  %nslots3 = getelementptr inbounds i8* %call, i64 104
-  %4 = bitcast i8* %nslots3 to i32*
-  store i32 %shl, i32* %4, align 4, !tbaa !0
-  ret %struct.ht* %0
+  tail call void @llvm.dbg.value(metadata !{i32 %order}, i64 0, metadata !88), !dbg !191
+  %shl = shl i32 1, %order, !dbg !192
+  tail call void @llvm.dbg.value(metadata !{i32 %shl}, i64 0, metadata !89), !dbg !192
+  %call = tail call noalias i8* @xmalloc(i64 128) #7, !dbg !193
+  %0 = bitcast i8* %call to %struct.ht*, !dbg !193
+  tail call void @llvm.dbg.value(metadata !{%struct.ht* %0}, i64 0, metadata !90), !dbg !193
+  tail call void @llvm.memset.p0i8.i64(i8* %call, i8 0, i64 128, i32 8, i1 false), !dbg !194
+  %stack = bitcast i8* %call to %struct.obstack*, !dbg !195
+  tail call void @llvm.dbg.value(metadata !{%struct.obstack* %stack}, i64 0, metadata !196) #3, !dbg !197
+  %call.i = tail call i32 @_obstack_begin(%struct.obstack* %stack, i32 0, i32 0, i8* (i64)* @xmalloc, void (i8*)* @free) #7, !dbg !198
+  %alignment_mask = getelementptr inbounds i8* %call, i64 48, !dbg !199
+  %1 = bitcast i8* %alignment_mask to i32*, !dbg !199
+  store i32 0, i32* %1, align 4, !dbg !199, !tbaa !200
+  %conv = zext i32 %shl to i64, !dbg !203
+  %call2 = tail call noalias i8* @xcalloc(i64 %conv, i64 8) #7, !dbg !203
+  %2 = bitcast i8* %call2 to %struct.ht_identifier**, !dbg !203
+  %entries = getelementptr inbounds i8* %call, i64 88, !dbg !203
+  %3 = bitcast i8* %entries to %struct.ht_identifier***, !dbg !203
+  store %struct.ht_identifier** %2, %struct.ht_identifier*** %3, align 8, !dbg !203, !tbaa !204
+  %nslots3 = getelementptr inbounds i8* %call, i64 104, !dbg !205
+  %4 = bitcast i8* %nslots3 to i32*, !dbg !205
+  store i32 %shl, i32* %4, align 4, !dbg !205, !tbaa !200
+  ret %struct.ht* %0, !dbg !206
 }

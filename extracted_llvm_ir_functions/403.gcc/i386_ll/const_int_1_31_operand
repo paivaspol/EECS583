@@ -1,20 +1,22 @@
 define i32 @const_int_1_31_operand(%struct.rtx_def* nocapture %op, i32 %mode) #2 {
 entry:
-  %0 = bitcast %struct.rtx_def* %op to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 54
-  br i1 %cmp, label %land.lhs.true, label %land.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op}, i64 0, metadata !2314), !dbg !6140
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !2315), !dbg !6141
+  %0 = bitcast %struct.rtx_def* %op to i32*, !dbg !6142
+  %bf.load = load i32* %0, align 8, !dbg !6142
+  %bf.clear = and i32 %bf.load, 65535, !dbg !6142
+  %cmp = icmp eq i32 %bf.clear, 54, !dbg !6142
+  br i1 %cmp, label %land.lhs.true, label %land.end, !dbg !6142
 
 land.lhs.true:                                    ; preds = %entry
-  %rtwint = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0, i32 0
-  %1 = load i64* %rtwint, align 8, !tbaa !14
-  %.off = add i64 %1, -1
-  %2 = icmp ult i64 %.off, 31
-  br label %land.end
+  %rtwint = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0, i32 0, !dbg !6142
+  %1 = load i64* %rtwint, align 8, !dbg !6142, !tbaa !5557
+  %.off = add i64 %1, -1, !dbg !6142
+  %2 = icmp ult i64 %.off, 31, !dbg !6142
+  br label %land.end, !dbg !6142
 
 land.end:                                         ; preds = %land.lhs.true, %entry
   %3 = phi i1 [ false, %entry ], [ %2, %land.lhs.true ]
   %land.ext = zext i1 %3 to i32
-  ret i32 %land.ext
+  ret i32 %land.ext, !dbg !6143
 }

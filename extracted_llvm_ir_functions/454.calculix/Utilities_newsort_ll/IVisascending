@@ -1,31 +1,33 @@
 define i32 @IVisascending(i32 %n, i32* nocapture %ivec) #0 {
 entry:
-  %cmp = icmp slt i32 %n, 1
-  br i1 %cmp, label %return, label %if.else
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !11), !dbg !501
+  tail call void @llvm.dbg.value(metadata !{i32* %ivec}, i64 0, metadata !12), !dbg !502
+  %cmp = icmp slt i32 %n, 1, !dbg !503
+  br i1 %cmp, label %return, label %if.else, !dbg !503
 
 if.else:                                          ; preds = %entry
-  %cmp1 = icmp eq i32 %n, 1
-  br i1 %cmp1, label %return, label %for.body.lr.ph
+  %cmp1 = icmp eq i32 %n, 1, !dbg !504
+  br i1 %cmp1, label %return, label %for.body.lr.ph, !dbg !504
 
 for.body.lr.ph:                                   ; preds = %if.else
-  %.pre = load i32* %ivec, align 4, !tbaa !0
-  br label %for.body
+  %.pre = load i32* %ivec, align 4, !dbg !505, !tbaa !508
+  br label %for.body, !dbg !511
 
 for.cond:                                         ; preds = %for.body
-  %0 = trunc i64 %indvars.iv.next to i32
-  %cmp4 = icmp slt i32 %0, %n
-  br i1 %cmp4, label %for.body, label %return
+  %0 = trunc i64 %indvars.iv.next to i32, !dbg !511
+  %cmp4 = icmp slt i32 %0, %n, !dbg !511
+  br i1 %cmp4, label %for.body, label %return, !dbg !511
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.cond
-  %1 = phi i32 [ %.pre, %for.body.lr.ph ], [ %2, %for.cond ]
+  %1 = phi i32 [ %.pre, %for.body.lr.ph ], [ %2, %for.cond ], !dbg !505
   %indvars.iv = phi i64 [ 1, %for.body.lr.ph ], [ %indvars.iv.next, %for.cond ]
-  %arrayidx6 = getelementptr inbounds i32* %ivec, i64 %indvars.iv
-  %2 = load i32* %arrayidx6, align 4, !tbaa !0
-  %cmp7 = icmp sgt i32 %1, %2
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  br i1 %cmp7, label %return, label %for.cond
+  %arrayidx6 = getelementptr inbounds i32* %ivec, i64 %indvars.iv, !dbg !505
+  %2 = load i32* %arrayidx6, align 4, !dbg !505, !tbaa !508
+  %cmp7 = icmp sgt i32 %1, %2, !dbg !505
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !511
+  br i1 %cmp7, label %return, label %for.cond, !dbg !505
 
 return:                                           ; preds = %for.body, %for.cond, %if.else, %entry
   %retval.0 = phi i32 [ 0, %entry ], [ 1, %if.else ], [ 0, %for.body ], [ 1, %for.cond ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !512
 }

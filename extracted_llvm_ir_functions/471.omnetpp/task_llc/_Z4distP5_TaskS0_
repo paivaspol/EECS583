@@ -1,0 +1,24 @@
+define i32 @_Z4distP5_TaskS0_(%struct._Task* %from, %struct._Task* %to) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._Task* %from}, i64 0, metadata !70), !dbg !128
+  tail call void @llvm.dbg.value(metadata !{%struct._Task* %to}, i64 0, metadata !71), !dbg !128
+  %cmp = icmp ugt %struct._Task* %from, %to, !dbg !129
+  br i1 %cmp, label %cond.true, label %cond.false, !dbg !129
+
+cond.true:                                        ; preds = %entry
+  %sub.ptr.lhs.cast = ptrtoint %struct._Task* %from to i64, !dbg !129
+  %sub.ptr.rhs.cast = ptrtoint %struct._Task* %to to i64, !dbg !129
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !129
+  br label %cond.end, !dbg !129
+
+cond.false:                                       ; preds = %entry
+  %sub.ptr.lhs.cast1 = ptrtoint %struct._Task* %to to i64, !dbg !129
+  %sub.ptr.rhs.cast2 = ptrtoint %struct._Task* %from to i64, !dbg !129
+  %sub.ptr.sub3 = sub i64 %sub.ptr.lhs.cast1, %sub.ptr.rhs.cast2, !dbg !129
+  br label %cond.end, !dbg !129
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi i64 [ %sub.ptr.sub, %cond.true ], [ %sub.ptr.sub3, %cond.false ], !dbg !129
+  %conv = trunc i64 %cond to i32, !dbg !129
+  ret i32 %conv, !dbg !129
+}

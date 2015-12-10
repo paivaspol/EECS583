@@ -1,49 +1,56 @@
 define internal fastcc i32 @verify_addresses(%struct.induction* nocapture %v, %struct.rtx_def* nocapture %giv_inc, i32 %unroll_number) #0 {
 entry:
-  %location = getelementptr inbounds %struct.induction* %v, i64 0, i32 5
-  %0 = load %struct.rtx_def*** %location, align 8, !tbaa !0
-  %1 = load %struct.rtx_def** %0, align 8, !tbaa !0
-  %dest_reg = getelementptr inbounds %struct.induction* %v, i64 0, i32 4
-  %2 = load %struct.rtx_def** %dest_reg, align 8, !tbaa !0
-  %rtwint = getelementptr inbounds %struct.rtx_def* %giv_inc, i64 0, i32 1, i64 0, i32 0
-  %3 = load i64* %rtwint, align 8, !tbaa !4
-  %sub = add nsw i32 %unroll_number, -1
-  %conv = sext i32 %sub to i64
-  %mul = mul nsw i64 %3, %conv
-  %call = tail call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %2, i64 %mul) #6
-  %4 = load %struct.rtx_def*** %location, align 8, !tbaa !0
-  %5 = load %struct.rtx_def** %4, align 8, !tbaa !0
-  %6 = load %struct.rtx_def** %dest_reg, align 8, !tbaa !0
-  %insn = getelementptr inbounds %struct.induction* %v, i64 0, i32 0
-  %7 = load %struct.rtx_def** %insn, align 8, !tbaa !0
-  %call3 = tail call i32 @validate_replace_rtx(%struct.rtx_def* %5, %struct.rtx_def* %6, %struct.rtx_def* %7) #6
-  %tobool = icmp eq i32 %call3, 0
-  br i1 %tobool, label %if.then, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata !{%struct.induction* %v}, i64 0, metadata !1121), !dbg !2668
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %giv_inc}, i64 0, metadata !1122), !dbg !2669
+  tail call void @llvm.dbg.value(metadata !{i32 %unroll_number}, i64 0, metadata !1123), !dbg !2670
+  tail call void @llvm.dbg.value(metadata !1257, i64 0, metadata !1124), !dbg !2671
+  %location = getelementptr inbounds %struct.induction* %v, i64 0, i32 5, !dbg !2672
+  %0 = load %struct.rtx_def*** %location, align 8, !dbg !2672, !tbaa !1254
+  %1 = load %struct.rtx_def** %0, align 8, !dbg !2672, !tbaa !1254
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %1}, i64 0, metadata !1125), !dbg !2672
+  %dest_reg = getelementptr inbounds %struct.induction* %v, i64 0, i32 4, !dbg !2673
+  %2 = load %struct.rtx_def** %dest_reg, align 8, !dbg !2673, !tbaa !1254
+  %rtwint = getelementptr inbounds %struct.rtx_def* %giv_inc, i64 0, i32 1, i64 0, i32 0, !dbg !2673
+  %3 = load i64* %rtwint, align 8, !dbg !2673, !tbaa !1292
+  %sub = add nsw i32 %unroll_number, -1, !dbg !2673
+  %conv = sext i32 %sub to i64, !dbg !2673
+  %mul = mul nsw i64 %3, %conv, !dbg !2673
+  %call = tail call %struct.rtx_def* @plus_constant_wide(%struct.rtx_def* %2, i64 %mul) #7, !dbg !2673
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !1126), !dbg !2673
+  %4 = load %struct.rtx_def*** %location, align 8, !dbg !2674, !tbaa !1254
+  %5 = load %struct.rtx_def** %4, align 8, !dbg !2674, !tbaa !1254
+  %6 = load %struct.rtx_def** %dest_reg, align 8, !dbg !2674, !tbaa !1254
+  %insn = getelementptr inbounds %struct.induction* %v, i64 0, i32 0, !dbg !2674
+  %7 = load %struct.rtx_def** %insn, align 8, !dbg !2674, !tbaa !1254
+  %call3 = tail call i32 @validate_replace_rtx(%struct.rtx_def* %5, %struct.rtx_def* %6, %struct.rtx_def* %7) #7, !dbg !2674
+  %tobool = icmp eq i32 %call3, 0, !dbg !2674
+  br i1 %tobool, label %if.then, label %lor.lhs.false, !dbg !2674
 
 lor.lhs.false:                                    ; preds = %entry
-  %8 = load %struct.rtx_def*** %location, align 8, !tbaa !0
-  %9 = load %struct.rtx_def** %8, align 8, !tbaa !0
-  %10 = load %struct.rtx_def** %insn, align 8, !tbaa !0
-  %call6 = tail call i32 @validate_replace_rtx(%struct.rtx_def* %9, %struct.rtx_def* %call, %struct.rtx_def* %10) #6
-  %tobool7 = icmp eq i32 %call6, 0
-  br i1 %tobool7, label %if.then, label %if.end
+  %8 = load %struct.rtx_def*** %location, align 8, !dbg !2675, !tbaa !1254
+  %9 = load %struct.rtx_def** %8, align 8, !dbg !2675, !tbaa !1254
+  %10 = load %struct.rtx_def** %insn, align 8, !dbg !2675, !tbaa !1254
+  %call6 = tail call i32 @validate_replace_rtx(%struct.rtx_def* %9, %struct.rtx_def* %call, %struct.rtx_def* %10) #7, !dbg !2675
+  %tobool7 = icmp eq i32 %call6, 0, !dbg !2675
+  br i1 %tobool7, label %if.then, label %if.end, !dbg !2675
 
 if.then:                                          ; preds = %lor.lhs.false, %entry
-  br label %if.end
+  tail call void @llvm.dbg.value(metadata !357, i64 0, metadata !1124), !dbg !2676
+  br label %if.end, !dbg !2676
 
 if.end:                                           ; preds = %lor.lhs.false, %if.then
   %ret.0 = phi i32 [ 1, %lor.lhs.false ], [ 0, %if.then ]
-  %11 = load %struct.rtx_def*** %location, align 8, !tbaa !0
-  %12 = load %struct.rtx_def** %11, align 8, !tbaa !0
-  %13 = load %struct.rtx_def** %insn, align 8, !tbaa !0
-  %call10 = tail call i32 @validate_replace_rtx(%struct.rtx_def* %12, %struct.rtx_def* %1, %struct.rtx_def* %13) #6
-  %tobool11 = icmp eq i32 %call10, 0
-  br i1 %tobool11, label %if.then12, label %if.end13
+  %11 = load %struct.rtx_def*** %location, align 8, !dbg !2677, !tbaa !1254
+  %12 = load %struct.rtx_def** %11, align 8, !dbg !2677, !tbaa !1254
+  %13 = load %struct.rtx_def** %insn, align 8, !dbg !2677, !tbaa !1254
+  %call10 = tail call i32 @validate_replace_rtx(%struct.rtx_def* %12, %struct.rtx_def* %1, %struct.rtx_def* %13) #7, !dbg !2677
+  %tobool11 = icmp eq i32 %call10, 0, !dbg !2677
+  br i1 %tobool11, label %if.then12, label %if.end13, !dbg !2677
 
 if.then12:                                        ; preds = %if.end
-  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str13, i64 0, i64 0), i32 2687, i8* getelementptr inbounds ([17 x i8]* @__FUNCTION__.verify_addresses, i64 0, i64 0)) #7
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str13, i64 0, i64 0), i32 2687, i8* getelementptr inbounds ([17 x i8]* @__FUNCTION__.verify_addresses, i64 0, i64 0)) #8, !dbg !2678
+  unreachable, !dbg !2678
 
 if.end13:                                         ; preds = %if.end
-  ret i32 %ret.0
+  ret i32 %ret.0, !dbg !2679
 }

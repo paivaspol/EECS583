@@ -1,0 +1,36 @@
+define linkonce_odr void @_ZN11xercesc_2_515BaseRefVectorOfINS_9RangeImplEE17removeLastElementEv(%"class.xercesc_2_5::BaseRefVectorOf.3"* nocapture %this) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf.3"* %this}, i64 0, metadata !5541), !dbg !6703
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.3"* %this, i64 0, i32 2, !dbg !6704
+  %0 = load i32* %fCurCount, align 4, !dbg !6704, !tbaa !6040
+  %tobool = icmp eq i32 %0, 0, !dbg !6704
+  br i1 %tobool, label %if.end6, label %if.end, !dbg !6704
+
+if.end:                                           ; preds = %entry
+  %dec = add i32 %0, -1, !dbg !6705
+  store i32 %dec, i32* %fCurCount, align 4, !dbg !6705, !tbaa !6040
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.3"* %this, i64 0, i32 1, !dbg !6706
+  %1 = load i8* %fAdoptedElems, align 1, !dbg !6706, !tbaa !5818, !range !5893
+  %tobool3 = icmp eq i8 %1, 0, !dbg !6706
+  br i1 %tobool3, label %if.end6, label %if.then4, !dbg !6706
+
+if.then4:                                         ; preds = %if.end
+  %idxprom = zext i32 %dec to i64, !dbg !6707
+  %fElemList = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.3"* %this, i64 0, i32 4, !dbg !6707
+  %2 = load %"class.xercesc_2_5::RangeImpl"*** %fElemList, align 8, !dbg !6707, !tbaa !5820
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::RangeImpl"** %2, i64 %idxprom, !dbg !6707
+  %3 = load %"class.xercesc_2_5::RangeImpl"** %arrayidx, align 8, !dbg !6707, !tbaa !5820
+  %isnull = icmp eq %"class.xercesc_2_5::RangeImpl"* %3, null, !dbg !6707
+  br i1 %isnull, label %if.end6, label %delete.notnull, !dbg !6707
+
+delete.notnull:                                   ; preds = %if.then4
+  %4 = bitcast %"class.xercesc_2_5::RangeImpl"* %3 to void (%"class.xercesc_2_5::RangeImpl"*)***, !dbg !6707
+  %vtable = load void (%"class.xercesc_2_5::RangeImpl"*)*** %4, align 8, !dbg !6707, !tbaa !5816
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::RangeImpl"*)** %vtable, i64 1, !dbg !6707
+  %5 = load void (%"class.xercesc_2_5::RangeImpl"*)** %vfn, align 8, !dbg !6707
+  tail call void %5(%"class.xercesc_2_5::RangeImpl"* %3) #9, !dbg !6707
+  br label %if.end6, !dbg !6707
+
+if.end6:                                          ; preds = %if.end, %entry, %if.then4, %delete.notnull
+  ret void, !dbg !6707
+}

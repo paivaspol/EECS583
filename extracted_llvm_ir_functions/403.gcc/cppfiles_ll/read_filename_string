@@ -1,67 +1,77 @@
 define internal fastcc i8* @read_filename_string(i32 %ch, %struct._IO_FILE* nocapture %f) #0 {
 entry:
-  %call = tail call noalias i8* @xmalloc(i64 21) #6
-  %and = and i32 %ch, 255
-  %idxprom38 = zext i32 %and to i64
-  %arrayidx = getelementptr inbounds [256 x i16]* @_sch_istable, i64 0, i64 %idxprom38
-  %0 = load i16* %arrayidx, align 2, !tbaa !5
-  %and2 = and i16 %0, 3072
-  %tobool = icmp eq i16 %and2, 0
-  br i1 %tobool, label %if.then, label %if.end21
+  tail call void @llvm.dbg.value(metadata !{i32 %ch}, i64 0, metadata !783), !dbg !1344
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %f}, i64 0, metadata !784), !dbg !1345
+  tail call void @llvm.dbg.value(metadata !1346, i64 0, metadata !787), !dbg !1347
+  %call = tail call noalias i8* @xmalloc(i64 21) #7, !dbg !1348
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !785), !dbg !1348
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !786), !dbg !1348
+  %and = and i32 %ch, 255, !dbg !1349
+  %idxprom38 = zext i32 %and to i64, !dbg !1349
+  %arrayidx = getelementptr inbounds [256 x i16]* @_sch_istable, i64 0, i64 %idxprom38, !dbg !1349
+  %0 = load i16* %arrayidx, align 2, !dbg !1349, !tbaa !986
+  %and2 = and i16 %0, 3072, !dbg !1349
+  %tobool = icmp eq i16 %and2, 0, !dbg !1349
+  br i1 %tobool, label %if.then, label %if.end21, !dbg !1349
 
 if.then:                                          ; preds = %entry
-  %conv3 = trunc i32 %ch to i8
-  store i8 %conv3, i8* %call, align 1, !tbaa !1
-  %set.041 = getelementptr inbounds i8* %call, i64 1
-  %call442 = tail call i32 @_IO_getc(%struct._IO_FILE* %f) #6
-  %cmp43 = icmp eq i32 %call442, -1
-  br i1 %cmp43, label %if.end21, label %land.rhs
+  %conv3 = trunc i32 %ch to i8, !dbg !1350
+  store i8 %conv3, i8* %call, align 1, !dbg !1350, !tbaa !882
+  %set.041 = getelementptr inbounds i8* %call, i64 1, !dbg !1350
+  %call442 = tail call i32 @_IO_getc(%struct._IO_FILE* %f) #7, !dbg !1352
+  tail call void @llvm.dbg.value(metadata !{i32 %call442}, i64 0, metadata !783), !dbg !1352
+  %cmp43 = icmp eq i32 %call442, -1, !dbg !1352
+  br i1 %cmp43, label %if.end21, label %land.rhs, !dbg !1352
 
 land.rhs:                                         ; preds = %if.then, %if.end
   %call447 = phi i32 [ %call4, %if.end ], [ %call442, %if.then ]
   %set.046 = phi i8* [ %set.0, %if.end ], [ %set.041, %if.then ]
   %len.045 = phi i32 [ %len.1, %if.end ], [ 20, %if.then ]
   %alloc.044 = phi i8* [ %alloc.1, %if.end ], [ %call, %if.then ]
-  %and6 = and i32 %call447, 255
-  %idxprom739 = zext i32 %and6 to i64
-  %arrayidx8 = getelementptr inbounds [256 x i16]* @_sch_istable, i64 0, i64 %idxprom739
-  %1 = load i16* %arrayidx8, align 2, !tbaa !5
-  %and10 = and i16 %1, 3072
-  %lnot = icmp eq i16 %and10, 0
+  %and6 = and i32 %call447, 255, !dbg !1352
+  %idxprom739 = zext i32 %and6 to i64, !dbg !1352
+  %arrayidx8 = getelementptr inbounds [256 x i16]* @_sch_istable, i64 0, i64 %idxprom739, !dbg !1352
+  %1 = load i16* %arrayidx8, align 2, !dbg !1352, !tbaa !986
+  %and10 = and i16 %1, 3072, !dbg !1352
+  %lnot = icmp eq i16 %and10, 0, !dbg !1352
   br i1 %lnot, label %while.body, label %if.end21
 
 while.body:                                       ; preds = %land.rhs
-  %sub.ptr.lhs.cast = ptrtoint i8* %set.046 to i64
-  %sub.ptr.rhs.cast = ptrtoint i8* %alloc.044 to i64
-  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
-  %conv12 = sext i32 %len.045 to i64
-  %cmp13 = icmp eq i64 %sub.ptr.sub, %conv12
-  br i1 %cmp13, label %if.then15, label %if.end
+  %sub.ptr.lhs.cast = ptrtoint i8* %set.046 to i64, !dbg !1353
+  %sub.ptr.rhs.cast = ptrtoint i8* %alloc.044 to i64, !dbg !1353
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !1353
+  %conv12 = sext i32 %len.045 to i64, !dbg !1353
+  %cmp13 = icmp eq i64 %sub.ptr.sub, %conv12, !dbg !1353
+  br i1 %cmp13, label %if.then15, label %if.end, !dbg !1353
 
 if.then15:                                        ; preds = %while.body
-  %mul = shl nsw i32 %len.045, 1
-  %add1640 = or i32 %mul, 1
-  %conv17 = sext i32 %add1640 to i64
-  %call18 = tail call i8* @xrealloc(i8* %alloc.044, i64 %conv17) #6
-  %add.ptr = getelementptr inbounds i8* %call18, i64 %sub.ptr.sub
-  br label %if.end
+  %mul = shl nsw i32 %len.045, 1, !dbg !1355
+  tail call void @llvm.dbg.value(metadata !{i32 %mul}, i64 0, metadata !787), !dbg !1355
+  %add1640 = or i32 %mul, 1, !dbg !1357
+  %conv17 = sext i32 %add1640 to i64, !dbg !1357
+  %call18 = tail call i8* @xrealloc(i8* %alloc.044, i64 %conv17) #7, !dbg !1357
+  tail call void @llvm.dbg.value(metadata !{i8* %call18}, i64 0, metadata !785), !dbg !1357
+  %add.ptr = getelementptr inbounds i8* %call18, i64 %sub.ptr.sub, !dbg !1358
+  tail call void @llvm.dbg.value(metadata !{i8* %add.ptr}, i64 0, metadata !786), !dbg !1358
+  br label %if.end, !dbg !1359
 
 if.end:                                           ; preds = %if.then15, %while.body
   %alloc.1 = phi i8* [ %call18, %if.then15 ], [ %alloc.044, %while.body ]
   %set.1 = phi i8* [ %add.ptr, %if.then15 ], [ %set.046, %while.body ]
   %len.1 = phi i32 [ %mul, %if.then15 ], [ %len.045, %while.body ]
-  %conv19 = trunc i32 %call447 to i8
-  store i8 %conv19, i8* %set.1, align 1, !tbaa !1
-  %set.0 = getelementptr inbounds i8* %set.1, i64 1
-  %call4 = tail call i32 @_IO_getc(%struct._IO_FILE* %f) #6
-  %cmp = icmp eq i32 %call4, -1
-  br i1 %cmp, label %if.end21, label %land.rhs
+  %conv19 = trunc i32 %call447 to i8, !dbg !1360
+  store i8 %conv19, i8* %set.1, align 1, !dbg !1360, !tbaa !882
+  %set.0 = getelementptr inbounds i8* %set.1, i64 1, !dbg !1350
+  %call4 = tail call i32 @_IO_getc(%struct._IO_FILE* %f) #7, !dbg !1352
+  tail call void @llvm.dbg.value(metadata !{i32 %call447}, i64 0, metadata !783), !dbg !1352
+  %cmp = icmp eq i32 %call4, -1, !dbg !1352
+  br i1 %cmp, label %if.end21, label %land.rhs, !dbg !1352
 
 if.end21:                                         ; preds = %if.then, %land.rhs, %if.end, %entry
   %ch.addr.0 = phi i32 [ %ch, %entry ], [ -1, %if.then ], [ %call447, %land.rhs ], [ -1, %if.end ]
   %alloc.2 = phi i8* [ %call, %entry ], [ %call, %if.then ], [ %alloc.044, %land.rhs ], [ %alloc.1, %if.end ]
   %set.2 = phi i8* [ %call, %entry ], [ %set.041, %if.then ], [ %set.046, %land.rhs ], [ %set.0, %if.end ]
-  store i8 0, i8* %set.2, align 1, !tbaa !1
-  %call22 = tail call i32 @ungetc(i32 %ch.addr.0, %struct._IO_FILE* %f) #6
-  ret i8* %alloc.2
+  store i8 0, i8* %set.2, align 1, !dbg !1361, !tbaa !882
+  %call22 = tail call i32 @ungetc(i32 %ch.addr.0, %struct._IO_FILE* %f) #7, !dbg !1362
+  ret i8* %alloc.2, !dbg !1363
 }

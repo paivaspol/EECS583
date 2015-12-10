@@ -1,15 +1,18 @@
 define internal void @default_diagnostic_finalizer(%struct.output_buffer* nocapture %buffer, %struct.diagnostic_context* nocapture %dc) #2 {
 entry:
-  %prefix.i = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 0
-  %0 = load i8** %prefix.i, align 8, !tbaa !3
-  %cmp.i = icmp eq i8* %0, null
-  br i1 %cmp.i, label %output_destroy_prefix.exit, label %if.then.i
+  tail call void @llvm.dbg.value(metadata !{%struct.output_buffer* %buffer}, i64 0, metadata !1012), !dbg !1207
+  tail call void @llvm.dbg.value(metadata !{%struct.diagnostic_context* %dc}, i64 0, metadata !1013), !dbg !1208
+  tail call void @llvm.dbg.value(metadata !{%struct.output_buffer* %buffer}, i64 0, metadata !1209) #4, !dbg !1211
+  %prefix.i = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 0, !dbg !1212
+  %0 = load i8** %prefix.i, align 8, !dbg !1212, !tbaa !1178
+  %cmp.i = icmp eq i8* %0, null, !dbg !1212
+  br i1 %cmp.i, label %output_destroy_prefix.exit, label %if.then.i, !dbg !1212
 
 if.then.i:                                        ; preds = %entry
-  tail call void @free(i8* %0) #10
-  store i8* null, i8** %prefix.i, align 8, !tbaa !3
-  br label %output_destroy_prefix.exit
+  tail call void @free(i8* %0) #11, !dbg !1213
+  store i8* null, i8** %prefix.i, align 8, !dbg !1215, !tbaa !1178
+  br label %output_destroy_prefix.exit, !dbg !1216
 
 output_destroy_prefix.exit:                       ; preds = %entry, %if.then.i
-  ret void
+  ret void, !dbg !1217
 }

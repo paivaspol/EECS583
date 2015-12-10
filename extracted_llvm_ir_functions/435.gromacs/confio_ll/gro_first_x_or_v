@@ -1,42 +1,46 @@
-define i32 @gro_first_x_or_v(%struct.__sFILE* %status, %struct.t_trxframe* %fr) #3 {
+define i32 @gro_first_x_or_v(%struct._IO_FILE* %status, %struct.t_trxframe* %fr) #0 {
+entry:
   %title = alloca [4096 x i8], align 16
-  %1 = getelementptr inbounds [4096 x i8]* %title, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 4096, i8* %1) #6
-  tail call void @frewind(%struct.__sFILE* %status) #8
-  %2 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !14
-  %3 = tail call i64 @fwrite(i8* getelementptr inbounds ([29 x i8]* @.str31, i64 0, i64 0), i64 28, i64 1, %struct.__sFILE* %2)
-  %4 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 2
-  call fastcc void @get_coordnum_fp(%struct.__sFILE* %status, i8* %1, i32* %4) #10
-  call void @frewind(%struct.__sFILE* %status) #8
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !14
-  %6 = load i32* %4, align 4, !tbaa !26
-  %7 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([18 x i8]* @.str32, i64 0, i64 0), i8* %1, i32 %6) #8
-  %8 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 6
-  store i32 1, i32* %8, align 4, !tbaa !15
-  %9 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 7
-  store i8* %1, i8** %9, align 8, !tbaa !18
-  %10 = load i32* %4, align 4, !tbaa !26
-  %11 = icmp eq i32 %10, 0
-  br i1 %11, label %12, label %13
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %status}, i64 0, metadata !247), !dbg !1106
+  call void @llvm.dbg.value(metadata !{%struct.t_trxframe* %fr}, i64 0, metadata !248), !dbg !1106
+  %0 = getelementptr inbounds [4096 x i8]* %title, i64 0, i64 0, !dbg !1107
+  call void @llvm.lifetime.start(i64 4096, i8* %0) #5, !dbg !1107
+  call void @llvm.dbg.declare(metadata !{[4096 x i8]* %title}, metadata !249), !dbg !1107
+  call void @frewind(%struct._IO_FILE* %status) #6, !dbg !1108
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !1109, !tbaa !681
+  %2 = call i64 @fwrite(i8* getelementptr inbounds ([29 x i8]* @.str31, i64 0, i64 0), i64 28, i64 1, %struct._IO_FILE* %1), !dbg !1109
+  %natoms = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 2, !dbg !1110
+  call fastcc void @get_coordnum_fp(%struct._IO_FILE* %status, i8* %0, i32* %natoms) #9, !dbg !1110
+  call void @frewind(%struct._IO_FILE* %status) #6, !dbg !1111
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !1112, !tbaa !681
+  %4 = load i32* %natoms, align 4, !dbg !1112, !tbaa !692
+  %call3 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([18 x i8]* @.str32, i64 0, i64 0), i8* %0, i32 %4) #6, !dbg !1112
+  %bTitle = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 6, !dbg !1113
+  store i32 1, i32* %bTitle, align 4, !dbg !1113, !tbaa !692
+  %title5 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 7, !dbg !1114
+  store i8* %0, i8** %title5, align 8, !dbg !1114, !tbaa !681
+  %5 = load i32* %natoms, align 4, !dbg !1115, !tbaa !692
+  %cmp = icmp eq i32 %5, 0, !dbg !1115
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1115
 
-; <label>:12                                      ; preds = %0
-  call void (i32, i8*, ...)* @fatal_error(i32 1, i8* getelementptr inbounds ([28 x i8]* @.str33, i64 0, i64 0)) #8
-  %.pre = load i32* %4, align 4, !tbaa !26
-  br label %13
+if.then:                                          ; preds = %entry
+  call void (i32, i8*, ...)* @fatal_error(i32 1, i8* getelementptr inbounds ([28 x i8]* @.str33, i64 0, i64 0)) #6, !dbg !1116
+  %.pre = load i32* %natoms, align 4, !dbg !1117, !tbaa !692
+  br label %if.end, !dbg !1116
 
-; <label>:13                                      ; preds = %12, %0
-  %14 = phi i32 [ %.pre, %12 ], [ %10, %0 ]
-  %15 = call i8* @save_calloc(i8* getelementptr inbounds ([6 x i8]* @.str34, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 627, i32 %14, i32 12) #8
-  %16 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 19
-  %17 = bitcast [3 x float]** %16 to i8**
-  store i8* %15, i8** %17, align 8, !tbaa !38
-  %18 = load i32* %4, align 4, !tbaa !26
-  %19 = call i8* @save_calloc(i8* getelementptr inbounds ([6 x i8]* @.str35, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 628, i32 %18, i32 12) #8
-  %20 = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 21
-  %21 = bitcast [3 x float]** %20 to i8**
-  store i8* %19, i8** %21, align 8, !tbaa !40
-  %22 = call i32 @gro_next_x_or_v(%struct.__sFILE* %status, %struct.t_trxframe* %fr) #10
-  %23 = load i32* %4, align 4, !tbaa !26
-  call void @llvm.lifetime.end(i64 4096, i8* %1) #6
-  ret i32 %23
+if.end:                                           ; preds = %if.then, %entry
+  %6 = phi i32 [ %.pre, %if.then ], [ %5, %entry ]
+  %call8 = call i8* @save_calloc(i8* getelementptr inbounds ([6 x i8]* @.str34, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 627, i32 %6, i32 12) #6, !dbg !1117
+  %7 = bitcast i8* %call8 to [3 x float]*, !dbg !1117
+  %x = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 19, !dbg !1117
+  store [3 x float]* %7, [3 x float]** %x, align 8, !dbg !1117, !tbaa !681
+  %8 = load i32* %natoms, align 4, !dbg !1118, !tbaa !692
+  %call10 = call i8* @save_calloc(i8* getelementptr inbounds ([6 x i8]* @.str35, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 628, i32 %8, i32 12) #6, !dbg !1118
+  %9 = bitcast i8* %call10 to [3 x float]*, !dbg !1118
+  %v = getelementptr inbounds %struct.t_trxframe* %fr, i64 0, i32 21, !dbg !1118
+  store [3 x float]* %9, [3 x float]** %v, align 8, !dbg !1118, !tbaa !681
+  %call11 = call i32 @gro_next_x_or_v(%struct._IO_FILE* %status, %struct.t_trxframe* %fr) #9, !dbg !1119
+  %10 = load i32* %natoms, align 4, !dbg !1120, !tbaa !692
+  call void @llvm.lifetime.end(i64 4096, i8* %0) #5, !dbg !1121
+  ret i32 %10, !dbg !1121
 }

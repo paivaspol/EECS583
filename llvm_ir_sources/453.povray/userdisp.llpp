@@ -1,0 +1,404 @@
+; ModuleID = '../../SPEC/benchspec/CPU2006/453.povray/src/userdisp.cpp'
+target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
+target triple = "x86_64-unknown-linux-gnu"
+
+%"struct.pov::OPTIONS_STRUCT" = type { i32, i8, i8, i8, i32, i32, [1024 x i8], [1024 x i8], [1024 x i8], [1024 x i8], [1024 x i8], float, float, i32, i32, double, double, i32, [25 x i8*], i32, i32, i32, double, double, i32, i32, double, double, i32, i8, i64, i32, i32, i32, %"struct.pov::FRAMESEQ", double, i64, double, double, double, double, double, i64, i32, i64, i32, i32, i32, i32, i32, i32, double, double, double, i32, i32, i8*, i8*, i32, i8, double, double, i32, i32, i8, i32, i32, [1024 x i8], [6 x %"struct.pov::shelldata"], [1024 x i8], [1024 x i8], i32, i32, i64, i32, i32, i32, %struct.POVMSData }
+%"struct.pov::FRAMESEQ" = type { i32, double, i32, i32, double, i32, i32, double, i32, double, i32, double, i8, i8 }
+%"struct.pov::shelldata" = type { i32, i32, [250 x i8] }
+%struct.POVMSData = type { i32, i32, %union.anon }
+%union.anon = type { i8* }
+%struct._IO_FILE = type { i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, %struct._IO_marker*, %struct._IO_FILE*, i32, i32, i64, i16, i8, [1 x i8], i8*, i64, i8*, i8*, i8*, i8*, i64, i32, [20 x i8] }
+%struct._IO_marker = type { %struct._IO_marker*, %struct._IO_FILE*, i32 }
+
+@_ZN3povL19Display_Width_ScaleE = internal unnamed_addr global double 0.000000e+00, align 8
+@_ZN3povL20Display_Height_ScaleE = internal unnamed_addr global double 0.000000e+00, align 8
+@_ZN3povL6Prev_XE = internal unnamed_addr global i32 0, align 4
+@_ZN3povL6Prev_YE = internal unnamed_addr global i32 0, align 4
+@_ZN3pov4optsE = external global %"struct.pov::OPTIONS_STRUCT"
+@stdin = external global %struct._IO_FILE*
+
+; Function Attrs: nounwind optsize uwtable
+define i32 @_ZN3pov20POV_Std_Display_InitEii(i32 %w, i32 %h) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %w}, i64 0, metadata !10), !dbg !143
+  tail call void @llvm.dbg.value(metadata !{i32 %h}, i64 0, metadata !12), !dbg !143
+  %conv = sitofp i32 %w to double, !dbg !144
+  %div = fdiv double 7.800000e+01, %conv, !dbg !144
+  store double %div, double* @_ZN3povL19Display_Width_ScaleE, align 8, !dbg !144, !tbaa !145
+  %conv1 = sitofp i32 %h to double, !dbg !148
+  %div2 = fdiv double 2.400000e+01, %conv1, !dbg !148
+  store double %div2, double* @_ZN3povL20Display_Height_ScaleE, align 8, !dbg !148, !tbaa !145
+  store i32 0, i32* @_ZN3povL6Prev_XE, align 4, !dbg !149, !tbaa !150
+  store i32 0, i32* @_ZN3povL6Prev_YE, align 4, !dbg !151, !tbaa !150
+  ret i32 1, !dbg !152
+}
+
+; Function Attrs: nounwind readnone
+declare void @llvm.dbg.declare(metadata, metadata) #1
+
+; Function Attrs: nounwind optsize uwtable
+define void @_ZN3pov24POV_Std_Display_FinishedEv() #0 {
+entry:
+  %s = alloca [3 x i8], align 1
+  call void @llvm.dbg.declare(metadata !{[3 x i8]* %s}, metadata !17), !dbg !153
+  %0 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !154, !tbaa !150
+  %and = and i32 %0, 8, !dbg !154
+  %tobool = icmp eq i32 %and, 0, !dbg !154
+  br i1 %tobool, label %if.end, label %if.then, !dbg !154
+
+if.then:                                          ; preds = %entry
+  %arraydecay = getelementptr inbounds [3 x i8]* %s, i64 0, i64 0, !dbg !155
+  %1 = load %struct._IO_FILE** @stdin, align 8, !dbg !155, !tbaa !157
+  %call = call i8* @fgets(i8* %arraydecay, i32 2, %struct._IO_FILE* %1) #4, !dbg !155
+  br label %if.end, !dbg !158
+
+if.end:                                           ; preds = %entry, %if.then
+  ret void, !dbg !159
+}
+
+; Function Attrs: nounwind optsize
+declare i8* @fgets(i8*, i32, %struct._IO_FILE* nocapture) #2
+
+; Function Attrs: nounwind optsize readnone uwtable
+define void @_ZN3pov21POV_Std_Display_CloseEv() #3 {
+entry:
+  ret void, !dbg !160
+}
+
+; Function Attrs: nounwind optsize uwtable
+define void @_ZN3pov20POV_Std_Display_PlotEiijjjj(i32 %x, i32 %y, i32 %r, i32 %g, i32 %b, i32) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %x}, i64 0, metadata !28), !dbg !161
+  tail call void @llvm.dbg.value(metadata !{i32 %y}, i64 0, metadata !29), !dbg !161
+  tail call void @llvm.dbg.value(metadata !{i32 %r}, i64 0, metadata !30), !dbg !161
+  tail call void @llvm.dbg.value(metadata !{i32 %g}, i64 0, metadata !31), !dbg !161
+  tail call void @llvm.dbg.value(metadata !{i32 %b}, i64 0, metadata !32), !dbg !161
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !33), !dbg !161
+  %1 = load double* @_ZN3povL19Display_Width_ScaleE, align 8, !dbg !162, !tbaa !145
+  %conv = sitofp i32 %x to double, !dbg !162
+  %mul = fmul double %conv, %1, !dbg !162
+  %conv1 = fptosi double %mul to i32, !dbg !162
+  tail call void @llvm.dbg.value(metadata !{i32 %conv1}, i64 0, metadata !34), !dbg !162
+  %2 = load double* @_ZN3povL20Display_Height_ScaleE, align 8, !dbg !163, !tbaa !145
+  %conv2 = sitofp i32 %y to double, !dbg !163
+  %mul3 = fmul double %conv2, %2, !dbg !163
+  %conv4 = fptosi double %mul3 to i32, !dbg !163
+  tail call void @llvm.dbg.value(metadata !{i32 %conv4}, i64 0, metadata !35), !dbg !163
+  tail call void @llvm.dbg.declare(metadata !164, metadata !37), !dbg !165
+  %3 = load i32* @_ZN3povL6Prev_YE, align 4, !dbg !166, !tbaa !150
+  %cmp = icmp sgt i32 %conv4, %3, !dbg !166
+  br i1 %cmp, label %if.then, label %entry.if.end_crit_edge, !dbg !166
+
+entry.if.end_crit_edge:                           ; preds = %entry
+  %.pre = load i32* @_ZN3povL6Prev_XE, align 4, !dbg !167, !tbaa !150
+  br label %if.end, !dbg !166
+
+if.then:                                          ; preds = %entry
+  %inc = add nsw i32 %3, 1, !dbg !168
+  store i32 %inc, i32* @_ZN3povL6Prev_YE, align 4, !dbg !168, !tbaa !150
+  store i32 0, i32* @_ZN3povL6Prev_XE, align 4, !dbg !170, !tbaa !150
+  br label %if.end, !dbg !171
+
+if.end:                                           ; preds = %entry.if.end_crit_edge, %if.then
+  %4 = phi i32 [ %.pre, %entry.if.end_crit_edge ], [ 0, %if.then ]
+  %cmp5 = icmp sgt i32 %conv1, %4, !dbg !167
+  br i1 %cmp5, label %if.then6, label %if.end17, !dbg !167
+
+if.then6:                                         ; preds = %if.end
+  %inc16 = add nsw i32 %4, 1, !dbg !172
+  store i32 %inc16, i32* @_ZN3povL6Prev_XE, align 4, !dbg !172, !tbaa !150
+  br label %if.end17, !dbg !174
+
+if.end17:                                         ; preds = %if.then6, %if.end
+  ret void, !dbg !175
+}
+
+; Function Attrs: nounwind optsize uwtable
+define void @_ZN3pov25POV_Std_Display_Plot_RectEiiiijjjj(i32 %x1, i32 %y1, i32 %x2, i32 %y2, i32 %r, i32 %g, i32 %b, i32 %a) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %x1}, i64 0, metadata !46), !dbg !176
+  tail call void @llvm.dbg.value(metadata !{i32 %y1}, i64 0, metadata !47), !dbg !176
+  tail call void @llvm.dbg.value(metadata !{i32 %x2}, i64 0, metadata !48), !dbg !176
+  tail call void @llvm.dbg.value(metadata !{i32 %y2}, i64 0, metadata !49), !dbg !176
+  tail call void @llvm.dbg.value(metadata !{i32 %r}, i64 0, metadata !50), !dbg !176
+  tail call void @llvm.dbg.value(metadata !{i32 %g}, i64 0, metadata !51), !dbg !176
+  tail call void @llvm.dbg.value(metadata !{i32 %b}, i64 0, metadata !52), !dbg !176
+  tail call void @llvm.dbg.value(metadata !{i32 %a}, i64 0, metadata !53), !dbg !176
+  tail call void @llvm.dbg.value(metadata !{i32 %y1}, i64 0, metadata !55), !dbg !177
+  %cmp13 = icmp sgt i32 %y1, %y2, !dbg !177
+  br i1 %cmp13, label %for.end6, label %for.cond1.preheader.lr.ph, !dbg !177
+
+for.cond1.preheader.lr.ph:                        ; preds = %entry
+  %cmp211 = icmp sgt i32 %x1, %x2, !dbg !179
+  br label %for.cond1.preheader, !dbg !177
+
+for.cond1.preheader:                              ; preds = %for.inc4, %for.cond1.preheader.lr.ph
+  %y.014 = phi i32 [ %y1, %for.cond1.preheader.lr.ph ], [ %inc5, %for.inc4 ]
+  br i1 %cmp211, label %for.inc4, label %for.body3, !dbg !179
+
+for.body3:                                        ; preds = %for.cond1.preheader, %for.body3
+  %x.012 = phi i32 [ %inc, %for.body3 ], [ %x1, %for.cond1.preheader ]
+  tail call void @_ZN3pov20POV_Std_Display_PlotEiijjjj(i32 %x.012, i32 %y.014, i32 %r, i32 %g, i32 %b, i32 undef) #4, !dbg !182
+  %inc = add nsw i32 %x.012, 1, !dbg !179
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !54), !dbg !179
+  %cmp2 = icmp slt i32 %x.012, %x2, !dbg !179
+  br i1 %cmp2, label %for.body3, label %for.inc4, !dbg !179
+
+for.inc4:                                         ; preds = %for.body3, %for.cond1.preheader
+  %inc5 = add nsw i32 %y.014, 1, !dbg !177
+  tail call void @llvm.dbg.value(metadata !{i32 %inc5}, i64 0, metadata !55), !dbg !177
+  %cmp = icmp slt i32 %y.014, %y2, !dbg !177
+  br i1 %cmp, label %for.cond1.preheader, label %for.end6, !dbg !177
+
+for.end6:                                         ; preds = %for.inc4, %entry
+  ret void, !dbg !183
+}
+
+; Function Attrs: nounwind optsize uwtable
+define void @_ZN3pov24POV_Std_Display_Plot_BoxEiiiijjjj(i32 %x1, i32 %y1, i32 %x2, i32 %y2, i32 %r, i32 %g, i32 %b, i32 %a) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %x1}, i64 0, metadata !58), !dbg !184
+  tail call void @llvm.dbg.value(metadata !{i32 %y1}, i64 0, metadata !59), !dbg !184
+  tail call void @llvm.dbg.value(metadata !{i32 %x2}, i64 0, metadata !60), !dbg !184
+  tail call void @llvm.dbg.value(metadata !{i32 %y2}, i64 0, metadata !61), !dbg !184
+  tail call void @llvm.dbg.value(metadata !{i32 %r}, i64 0, metadata !62), !dbg !184
+  tail call void @llvm.dbg.value(metadata !{i32 %g}, i64 0, metadata !63), !dbg !184
+  tail call void @llvm.dbg.value(metadata !{i32 %b}, i64 0, metadata !64), !dbg !184
+  tail call void @llvm.dbg.value(metadata !{i32 %a}, i64 0, metadata !65), !dbg !184
+  tail call void @llvm.dbg.value(metadata !{i32 %x1}, i64 0, metadata !66), !dbg !185
+  %cmp31 = icmp sgt i32 %x1, %x2, !dbg !185
+  br i1 %cmp31, label %for.cond1.preheader, label %for.body, !dbg !185
+
+for.cond1.preheader:                              ; preds = %for.body, %entry
+  %cmp229 = icmp sgt i32 %y1, %y2, !dbg !187
+  br i1 %cmp229, label %for.end6, label %for.body3, !dbg !187
+
+for.body:                                         ; preds = %entry, %for.body
+  %x.032 = phi i32 [ %inc, %for.body ], [ %x1, %entry ]
+  tail call void @_ZN3pov20POV_Std_Display_PlotEiijjjj(i32 %x.032, i32 %y1, i32 %r, i32 %g, i32 %b, i32 undef) #4, !dbg !189
+  tail call void @_ZN3pov20POV_Std_Display_PlotEiijjjj(i32 %x.032, i32 %y2, i32 %r, i32 %g, i32 %b, i32 undef) #4, !dbg !191
+  %inc = add nsw i32 %x.032, 1, !dbg !185
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !66), !dbg !185
+  %cmp = icmp slt i32 %x.032, %x2, !dbg !185
+  br i1 %cmp, label %for.body, label %for.cond1.preheader, !dbg !185
+
+for.body3:                                        ; preds = %for.cond1.preheader, %for.body3
+  %y.030 = phi i32 [ %inc5, %for.body3 ], [ %y1, %for.cond1.preheader ]
+  tail call void @_ZN3pov20POV_Std_Display_PlotEiijjjj(i32 %x1, i32 %y.030, i32 %r, i32 %g, i32 %b, i32 undef) #4, !dbg !192
+  tail call void @_ZN3pov20POV_Std_Display_PlotEiijjjj(i32 %x2, i32 %y.030, i32 %r, i32 %g, i32 %b, i32 undef) #4, !dbg !194
+  %inc5 = add nsw i32 %y.030, 1, !dbg !187
+  tail call void @llvm.dbg.value(metadata !{i32 %inc5}, i64 0, metadata !67), !dbg !187
+  %cmp2 = icmp slt i32 %y.030, %y2, !dbg !187
+  br i1 %cmp2, label %for.body3, label %for.end6, !dbg !187
+
+for.end6:                                         ; preds = %for.body3, %for.cond1.preheader
+  ret void, !dbg !195
+}
+
+; Function Attrs: nounwind readnone
+declare void @llvm.dbg.value(metadata, i64, metadata) #1
+
+attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind readnone }
+attributes #2 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { nounwind optsize readnone uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #4 = { optsize }
+
+!llvm.dbg.cu = !{!0}
+
+!0 = metadata !{i32 786449, metadata !1, i32 4, metadata !"clang version 3.3 (tags/RELEASE_33/final)", i1 true, metadata !"", i32 0, metadata !2, metadata !2, metadata !3, metadata !68, metadata !74, metadata !""} ; [ DW_TAG_compile_unit ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/userdisp.cpp] [DW_LANG_C_plus_plus]
+!1 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/userdisp.cpp", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!2 = metadata !{i32 0}
+!3 = metadata !{metadata !4, metadata !13, metadata !22, metadata !23, metadata !42, metadata !56}
+!4 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"POV_Std_Display_Init", metadata !"POV_Std_Display_Init", metadata !"_ZN3pov20POV_Std_Display_InitEii", i32 53, metadata !6, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, i32 (i32, i32)* @_ZN3pov20POV_Std_Display_InitEii, null, null, metadata !9, i32 54} ; [ DW_TAG_subprogram ] [line 53] [def] [scope 54] [POV_Std_Display_Init]
+!5 = metadata !{i32 786489, metadata !1, null, metadata !"pov", i32 41} ; [ DW_TAG_namespace ] [pov] [line 41]
+!6 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !7, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!7 = metadata !{metadata !8, metadata !8, metadata !8}
+!8 = metadata !{i32 786468, null, null, metadata !"int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 5} ; [ DW_TAG_base_type ] [int] [line 0, size 32, align 32, offset 0, enc DW_ATE_signed]
+!9 = metadata !{metadata !10, metadata !12}
+!10 = metadata !{i32 786689, metadata !4, metadata !"w", metadata !11, i32 16777269, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [w] [line 53]
+!11 = metadata !{i32 786473, metadata !1}         ; [ DW_TAG_file_type ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/userdisp.cpp]
+!12 = metadata !{i32 786689, metadata !4, metadata !"h", metadata !11, i32 33554485, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [h] [line 53]
+!13 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"POV_Std_Display_Finished", metadata !"POV_Std_Display_Finished", metadata !"_ZN3pov24POV_Std_Display_FinishedEv", i32 67, metadata !14, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void ()* @_ZN3pov24POV_Std_Display_FinishedEv, null, null, metadata !16, i32 68} ; [ DW_TAG_subprogram ] [line 67] [def] [scope 68] [POV_Std_Display_Finished]
+!14 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !15, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!15 = metadata !{null}
+!16 = metadata !{metadata !17}
+!17 = metadata !{i32 786688, metadata !13, metadata !"s", metadata !11, i32 69, metadata !18, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [s] [line 69]
+!18 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 24, i64 8, i32 0, i32 0, metadata !19, metadata !20, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 24, align 8, offset 0] [from char]
+!19 = metadata !{i32 786468, null, null, metadata !"char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 6} ; [ DW_TAG_base_type ] [char] [line 0, size 8, align 8, offset 0, enc DW_ATE_signed_char]
+!20 = metadata !{metadata !21}
+!21 = metadata !{i32 786465, i64 0, i64 3}        ; [ DW_TAG_subrange_type ] [0, 2]
+!22 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"POV_Std_Display_Close", metadata !"POV_Std_Display_Close", metadata !"_ZN3pov21POV_Std_Display_CloseEv", i32 81, metadata !14, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void ()* @_ZN3pov21POV_Std_Display_CloseEv, null, null, metadata !2, i32 82} ; [ DW_TAG_subprogram ] [line 81] [def] [scope 82] [POV_Std_Display_Close]
+!23 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"POV_Std_Display_Plot", metadata !"POV_Std_Display_Plot", metadata !"_ZN3pov20POV_Std_Display_PlotEiijjjj", i32 89, metadata !24, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32, i32, i32, i32, i32, i32)* @_ZN3pov20POV_Std_Display_PlotEiijjjj, null, null, metadata !27, i32 90} ; [ DW_TAG_subprogram ] [line 89] [def] [scope 90] [POV_Std_Display_Plot]
+!24 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !25, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!25 = metadata !{null, metadata !8, metadata !8, metadata !26, metadata !26, metadata !26, metadata !26}
+!26 = metadata !{i32 786468, null, null, metadata !"unsigned int", i32 0, i64 32, i64 32, i64 0, i32 0, i32 7} ; [ DW_TAG_base_type ] [unsigned int] [line 0, size 32, align 32, offset 0, enc DW_ATE_unsigned]
+!27 = metadata !{metadata !28, metadata !29, metadata !30, metadata !31, metadata !32, metadata !33, metadata !34, metadata !35, metadata !36, metadata !37}
+!28 = metadata !{i32 786689, metadata !23, metadata !"x", metadata !11, i32 16777305, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [x] [line 89]
+!29 = metadata !{i32 786689, metadata !23, metadata !"y", metadata !11, i32 33554521, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [y] [line 89]
+!30 = metadata !{i32 786689, metadata !23, metadata !"r", metadata !11, i32 50331737, metadata !26, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [r] [line 89]
+!31 = metadata !{i32 786689, metadata !23, metadata !"g", metadata !11, i32 67108953, metadata !26, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [g] [line 89]
+!32 = metadata !{i32 786689, metadata !23, metadata !"b", metadata !11, i32 83886169, metadata !26, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [b] [line 89]
+!33 = metadata !{i32 786689, metadata !23, metadata !"", metadata !11, i32 100663385, metadata !26, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [line 89]
+!34 = metadata !{i32 786688, metadata !23, metadata !"sx", metadata !11, i32 91, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [sx] [line 91]
+!35 = metadata !{i32 786688, metadata !23, metadata !"sy", metadata !11, i32 92, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [sy] [line 92]
+!36 = metadata !{i32 786688, metadata !23, metadata !"I", metadata !11, i32 93, metadata !19, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [I] [line 93]
+!37 = metadata !{i32 786688, metadata !23, metadata !"G", metadata !11, i32 94, metadata !38, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [G] [line 94]
+!38 = metadata !{i32 786433, null, null, metadata !"", i32 0, i64 48, i64 8, i32 0, i32 0, metadata !39, metadata !40, i32 0, i32 0} ; [ DW_TAG_array_type ] [line 0, size 48, align 8, offset 0] [from unsigned char]
+!39 = metadata !{i32 786468, null, null, metadata !"unsigned char", i32 0, i64 8, i64 8, i64 0, i32 0, i32 8} ; [ DW_TAG_base_type ] [unsigned char] [line 0, size 8, align 8, offset 0, enc DW_ATE_unsigned_char]
+!40 = metadata !{metadata !41}
+!41 = metadata !{i32 786465, i64 0, i64 6}        ; [ DW_TAG_subrange_type ] [0, 5]
+!42 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"POV_Std_Display_Plot_Rect", metadata !"POV_Std_Display_Plot_Rect", metadata !"_ZN3pov25POV_Std_Display_Plot_RectEiiiijjjj", i32 120, metadata !43, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32, i32, i32, i32, i32, i32, i32, i32)* @_ZN3pov25POV_Std_Display_Plot_RectEiiiijjjj, null, null, metadata !45, i32 121} ; [ DW_TAG_subprogram ] [line 120] [def] [scope 121] [POV_Std_Display_Plot_Rect]
+!43 = metadata !{i32 786453, i32 0, i32 0, metadata !"", i32 0, i64 0, i64 0, i64 0, i32 0, null, metadata !44, i32 0, i32 0} ; [ DW_TAG_subroutine_type ] [line 0, size 0, align 0, offset 0] [from ]
+!44 = metadata !{null, metadata !8, metadata !8, metadata !8, metadata !8, metadata !26, metadata !26, metadata !26, metadata !26}
+!45 = metadata !{metadata !46, metadata !47, metadata !48, metadata !49, metadata !50, metadata !51, metadata !52, metadata !53, metadata !54, metadata !55}
+!46 = metadata !{i32 786689, metadata !42, metadata !"x1", metadata !11, i32 16777336, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [x1] [line 120]
+!47 = metadata !{i32 786689, metadata !42, metadata !"y1", metadata !11, i32 33554552, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [y1] [line 120]
+!48 = metadata !{i32 786689, metadata !42, metadata !"x2", metadata !11, i32 50331768, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [x2] [line 120]
+!49 = metadata !{i32 786689, metadata !42, metadata !"y2", metadata !11, i32 67108984, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [y2] [line 120]
+!50 = metadata !{i32 786689, metadata !42, metadata !"r", metadata !11, i32 83886200, metadata !26, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [r] [line 120]
+!51 = metadata !{i32 786689, metadata !42, metadata !"g", metadata !11, i32 100663416, metadata !26, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [g] [line 120]
+!52 = metadata !{i32 786689, metadata !42, metadata !"b", metadata !11, i32 117440632, metadata !26, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [b] [line 120]
+!53 = metadata !{i32 786689, metadata !42, metadata !"a", metadata !11, i32 134217848, metadata !26, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [a] [line 120]
+!54 = metadata !{i32 786688, metadata !42, metadata !"x", metadata !11, i32 122, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [x] [line 122]
+!55 = metadata !{i32 786688, metadata !42, metadata !"y", metadata !11, i32 122, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [y] [line 122]
+!56 = metadata !{i32 786478, metadata !1, metadata !5, metadata !"POV_Std_Display_Plot_Box", metadata !"POV_Std_Display_Plot_Box", metadata !"_ZN3pov24POV_Std_Display_Plot_BoxEiiiijjjj", i32 157, metadata !43, i1 false, i1 true, i32 0, i32 0, null, i32 256, i1 true, void (i32, i32, i32, i32, i32, i32, i32, i32)* @_ZN3pov24POV_Std_Display_Plot_BoxEiiiijjjj, null, null, metadata !57, i32 158} ; [ DW_TAG_subprogram ] [line 157] [def] [scope 158] [POV_Std_Display_Plot_Box]
+!57 = metadata !{metadata !58, metadata !59, metadata !60, metadata !61, metadata !62, metadata !63, metadata !64, metadata !65, metadata !66, metadata !67}
+!58 = metadata !{i32 786689, metadata !56, metadata !"x1", metadata !11, i32 16777373, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [x1] [line 157]
+!59 = metadata !{i32 786689, metadata !56, metadata !"y1", metadata !11, i32 33554589, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [y1] [line 157]
+!60 = metadata !{i32 786689, metadata !56, metadata !"x2", metadata !11, i32 50331805, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [x2] [line 157]
+!61 = metadata !{i32 786689, metadata !56, metadata !"y2", metadata !11, i32 67109021, metadata !8, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [y2] [line 157]
+!62 = metadata !{i32 786689, metadata !56, metadata !"r", metadata !11, i32 83886237, metadata !26, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [r] [line 157]
+!63 = metadata !{i32 786689, metadata !56, metadata !"g", metadata !11, i32 100663453, metadata !26, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [g] [line 157]
+!64 = metadata !{i32 786689, metadata !56, metadata !"b", metadata !11, i32 117440669, metadata !26, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [b] [line 157]
+!65 = metadata !{i32 786689, metadata !56, metadata !"a", metadata !11, i32 134217885, metadata !26, i32 0, i32 0} ; [ DW_TAG_arg_variable ] [a] [line 157]
+!66 = metadata !{i32 786688, metadata !56, metadata !"x", metadata !11, i32 159, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [x] [line 159]
+!67 = metadata !{i32 786688, metadata !56, metadata !"y", metadata !11, i32 159, metadata !8, i32 0, i32 0} ; [ DW_TAG_auto_variable ] [y] [line 159]
+!68 = metadata !{metadata !69, metadata !70, metadata !71, metadata !73}
+!69 = metadata !{i32 786484, i32 0, metadata !5, metadata !"Prev_Y", metadata !"Prev_Y", metadata !"_ZN3povL6Prev_YE", metadata !11, i32 50, metadata !8, i32 1, i32 1, i32* @_ZN3povL6Prev_YE, null} ; [ DW_TAG_variable ] [Prev_Y] [line 50] [local] [def]
+!70 = metadata !{i32 786484, i32 0, metadata !5, metadata !"Prev_X", metadata !"Prev_X", metadata !"_ZN3povL6Prev_XE", metadata !11, i32 50, metadata !8, i32 1, i32 1, i32* @_ZN3povL6Prev_XE, null} ; [ DW_TAG_variable ] [Prev_X] [line 50] [local] [def]
+!71 = metadata !{i32 786484, i32 0, metadata !5, metadata !"Display_Height_Scale", metadata !"Display_Height_Scale", metadata !"_ZN3povL20Display_Height_ScaleE", metadata !11, i32 49, metadata !72, i32 1, i32 1, double* @_ZN3povL20Display_Height_ScaleE, null} ; [ DW_TAG_variable ] [Display_Height_Scale] [line 49] [local] [def]
+!72 = metadata !{i32 786468, null, null, metadata !"double", i32 0, i64 64, i64 64, i64 0, i32 0, i32 4} ; [ DW_TAG_base_type ] [double] [line 0, size 64, align 64, offset 0, enc DW_ATE_float]
+!73 = metadata !{i32 786484, i32 0, metadata !5, metadata !"Display_Width_Scale", metadata !"Display_Width_Scale", metadata !"_ZN3povL19Display_Width_ScaleE", metadata !11, i32 49, metadata !72, i32 1, i32 1, double* @_ZN3povL19Display_Width_ScaleE, null} ; [ DW_TAG_variable ] [Display_Width_Scale] [line 49] [local] [def]
+!74 = metadata !{metadata !75, metadata !78, metadata !81, metadata !84, metadata !87, metadata !90, metadata !93, metadata !96, metadata !99, metadata !102, metadata !105, metadata !108, metadata !111, metadata !114, metadata !117, metadata !120, metadata !123, metadata !126, metadata !127, metadata !129, metadata !132, metadata !135, metadata !138, metadata !139, metadata !142}
+!75 = metadata !{i32 786490, metadata !0, metadata !76, i32 28} ; [ DW_TAG_imported_module ]
+!76 = metadata !{i32 786489, metadata !77, null, metadata !"std", i32 26} ; [ DW_TAG_namespace ] [std] [line 26]
+!77 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/config.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!78 = metadata !{i32 786490, metadata !79, metadata !76, i32 37} ; [ DW_TAG_imported_module ]
+!79 = metadata !{i32 786489, metadata !80, null, metadata !"pov_base", i32 37} ; [ DW_TAG_namespace ] [pov_base] [line 37]
+!80 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/fileinputoutput.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!81 = metadata !{i32 786490, metadata !82, metadata !76, i32 36} ; [ DW_TAG_imported_module ]
+!82 = metadata !{i32 786489, metadata !83, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!83 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/pov_mem.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!84 = metadata !{i32 786490, metadata !85, metadata !76, i32 72} ; [ DW_TAG_imported_module ]
+!85 = metadata !{i32 786489, metadata !86, null, metadata !"pov", i32 72} ; [ DW_TAG_namespace ] [pov] [line 72]
+!86 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/frame.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!87 = metadata !{i32 786490, metadata !88, metadata !76, i32 37} ; [ DW_TAG_imported_module ]
+!88 = metadata !{i32 786489, metadata !89, null, metadata !"pov", i32 37} ; [ DW_TAG_namespace ] [pov] [line 37]
+!89 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/vector.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!90 = metadata !{i32 786490, metadata !91, metadata !76, i32 36} ; [ DW_TAG_imported_module ]
+!91 = metadata !{i32 786489, metadata !92, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!92 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/camera.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!93 = metadata !{i32 786490, metadata !94, metadata !76, i32 39} ; [ DW_TAG_imported_module ]
+!94 = metadata !{i32 786489, metadata !95, null, metadata !"pov", i32 39} ; [ DW_TAG_namespace ] [pov] [line 39]
+!95 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/parse.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!96 = metadata !{i32 786490, metadata !97, metadata !76, i32 36} ; [ DW_TAG_imported_module ]
+!97 = metadata !{i32 786489, metadata !98, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!98 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/atmosph.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!99 = metadata !{i32 786490, metadata !100, metadata !76, i32 37} ; [ DW_TAG_imported_module ]
+!100 = metadata !{i32 786489, metadata !101, null, metadata !"pov", i32 37} ; [ DW_TAG_namespace ] [pov] [line 37]
+!101 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/bbox.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!102 = metadata !{i32 786490, metadata !103, metadata !76, i32 39} ; [ DW_TAG_imported_module ]
+!103 = metadata !{i32 786489, metadata !104, null, metadata !"pov", i32 39} ; [ DW_TAG_namespace ] [pov] [line 39]
+!104 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/vlbuffer.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!105 = metadata !{i32 786490, metadata !106, metadata !76, i32 38} ; [ DW_TAG_imported_module ]
+!106 = metadata !{i32 786489, metadata !107, null, metadata !"pov", i32 38} ; [ DW_TAG_namespace ] [pov] [line 38]
+!107 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/point.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!108 = metadata !{i32 786490, metadata !109, metadata !76, i32 38} ; [ DW_TAG_imported_module ]
+!109 = metadata !{i32 786489, metadata !110, null, metadata !"pov", i32 38} ; [ DW_TAG_namespace ] [pov] [line 38]
+!110 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/media.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!111 = metadata !{i32 786490, metadata !112, metadata !76, i32 36} ; [ DW_TAG_imported_module ]
+!112 = metadata !{i32 786489, metadata !113, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!113 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/render.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!114 = metadata !{i32 786490, metadata !115, metadata !76, i32 36} ; [ DW_TAG_imported_module ]
+!115 = metadata !{i32 786489, metadata !116, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!116 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/userio.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!117 = metadata !{i32 786490, metadata !118, metadata !76, i32 36} ; [ DW_TAG_imported_module ]
+!118 = metadata !{i32 786489, metadata !119, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!119 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/csg.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!120 = metadata !{i32 786490, metadata !121, metadata !76, i32 37} ; [ DW_TAG_imported_module ]
+!121 = metadata !{i32 786489, metadata !122, null, metadata !"pov", i32 37} ; [ DW_TAG_namespace ] [pov] [line 37]
+!122 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/lightgrp.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!123 = metadata !{i32 786490, metadata !124, metadata !76, i32 48} ; [ DW_TAG_imported_module ]
+!124 = metadata !{i32 786489, metadata !125, null, metadata !"pov", i32 48} ; [ DW_TAG_namespace ] [pov] [line 48]
+!125 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/povray.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!126 = metadata !{i32 786490, metadata !124, metadata !79, i32 50} ; [ DW_TAG_imported_module ]
+!127 = metadata !{i32 786490, metadata !128, metadata !76, i32 479} ; [ DW_TAG_imported_module ]
+!128 = metadata !{i32 786489, metadata !125, null, metadata !"pov", i32 479} ; [ DW_TAG_namespace ] [pov] [line 479]
+!129 = metadata !{i32 786490, metadata !130, metadata !76, i32 41} ; [ DW_TAG_imported_module ]
+!130 = metadata !{i32 786489, metadata !131, null, metadata !"pov_base", i32 41} ; [ DW_TAG_namespace ] [pov_base] [line 41]
+!131 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/pov_err.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!132 = metadata !{i32 786490, metadata !133, metadata !76, i32 50} ; [ DW_TAG_imported_module ]
+!133 = metadata !{i32 786489, metadata !134, null, metadata !"pov_base", i32 50} ; [ DW_TAG_namespace ] [pov_base] [line 50]
+!134 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/textstream.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!135 = metadata !{i32 786490, metadata !136, metadata !76, i32 40} ; [ DW_TAG_imported_module ]
+!136 = metadata !{i32 786489, metadata !137, null, metadata !"pov", i32 40} ; [ DW_TAG_namespace ] [pov] [line 40]
+!137 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/tokenize.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!138 = metadata !{i32 786490, metadata !136, metadata !79, i32 42} ; [ DW_TAG_imported_module ]
+!139 = metadata !{i32 786490, metadata !140, metadata !76, i32 36} ; [ DW_TAG_imported_module ]
+!140 = metadata !{i32 786489, metadata !141, null, metadata !"pov", i32 36} ; [ DW_TAG_namespace ] [pov] [line 36]
+!141 = metadata !{metadata !"../../SPEC/benchspec/CPU2006/453.povray/src/userdisp.h", metadata !"/home/arquinn/Project1/EECS583/source_extraction_scripts"}
+!142 = metadata !{i32 786490, metadata !5, metadata !76, i32 41} ; [ DW_TAG_imported_module ]
+!143 = metadata !{i32 53, i32 0, metadata !4, null}
+!144 = metadata !{i32 55, i32 0, metadata !4, null}
+!145 = metadata !{metadata !"double", metadata !146}
+!146 = metadata !{metadata !"omnipotent char", metadata !147}
+!147 = metadata !{metadata !"Simple C/C++ TBAA"}
+!148 = metadata !{i32 56, i32 0, metadata !4, null}
+!149 = metadata !{i32 57, i32 0, metadata !4, null}
+!150 = metadata !{metadata !"int", metadata !146}
+!151 = metadata !{i32 58, i32 0, metadata !4, null} ; [ DW_TAG_imported_module ]
+!152 = metadata !{i32 63, i32 0, metadata !4, null}
+!153 = metadata !{i32 69, i32 0, metadata !13, null}
+!154 = metadata !{i32 74, i32 0, metadata !13, null}
+!155 = metadata !{i32 76, i32 0, metadata !156, null}
+!156 = metadata !{i32 786443, metadata !1, metadata !13, i32 75, i32 0, i32 0} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/userdisp.cpp]
+!157 = metadata !{metadata !"any pointer", metadata !146}
+!158 = metadata !{i32 77, i32 0, metadata !156, null}
+!159 = metadata !{i32 78, i32 0, metadata !13, null}
+!160 = metadata !{i32 86, i32 0, metadata !22, null}
+!161 = metadata !{i32 89, i32 0, metadata !23, null}
+!162 = metadata !{i32 91, i32 0, metadata !23, null}
+!163 = metadata !{i32 92, i32 0, metadata !23, null}
+!164 = metadata !{null}
+!165 = metadata !{i32 94, i32 0, metadata !23, null}
+!166 = metadata !{i32 96, i32 0, metadata !23, null}
+!167 = metadata !{i32 107, i32 0, metadata !23, null}
+!168 = metadata !{i32 98, i32 0, metadata !169, null}
+!169 = metadata !{i32 786443, metadata !1, metadata !23, i32 97, i32 0, i32 1} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/userdisp.cpp]
+!170 = metadata !{i32 104, i32 0, metadata !169, null}
+!171 = metadata !{i32 105, i32 0, metadata !169, null}
+!172 = metadata !{i32 115, i32 0, metadata !173, null}
+!173 = metadata !{i32 786443, metadata !1, metadata !23, i32 108, i32 0, i32 2} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/userdisp.cpp]
+!174 = metadata !{i32 116, i32 0, metadata !173, null}
+!175 = metadata !{i32 117, i32 0, metadata !23, null}
+!176 = metadata !{i32 120, i32 0, metadata !42, null}
+!177 = metadata !{i32 124, i32 0, metadata !178, null}
+!178 = metadata !{i32 786443, metadata !1, metadata !42, i32 124, i32 0, i32 3} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/userdisp.cpp]
+!179 = metadata !{i32 126, i32 0, metadata !180, null}
+!180 = metadata !{i32 786443, metadata !1, metadata !181, i32 126, i32 0, i32 5} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/userdisp.cpp]
+!181 = metadata !{i32 786443, metadata !1, metadata !178, i32 125, i32 0, i32 4} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/userdisp.cpp]
+!182 = metadata !{i32 127, i32 0, metadata !180, null}
+!183 = metadata !{i32 129, i32 0, metadata !42, null}
+!184 = metadata !{i32 157, i32 0, metadata !56, null}
+!185 = metadata !{i32 161, i32 0, metadata !186, null}
+!186 = metadata !{i32 786443, metadata !1, metadata !56, i32 161, i32 0, i32 6} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/userdisp.cpp]
+!187 = metadata !{i32 167, i32 0, metadata !188, null}
+!188 = metadata !{i32 786443, metadata !1, metadata !56, i32 167, i32 0, i32 8} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/userdisp.cpp]
+!189 = metadata !{i32 163, i32 0, metadata !190, null}
+!190 = metadata !{i32 786443, metadata !1, metadata !186, i32 162, i32 0, i32 7} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/userdisp.cpp]
+!191 = metadata !{i32 164, i32 0, metadata !190, null}
+!192 = metadata !{i32 169, i32 0, metadata !193, null}
+!193 = metadata !{i32 786443, metadata !1, metadata !188, i32 168, i32 0, i32 9} ; [ DW_TAG_lexical_block ] [/home/arquinn/Project1/EECS583/source_extraction_scripts/../../SPEC/benchspec/CPU2006/453.povray/src/userdisp.cpp]
+!194 = metadata !{i32 170, i32 0, metadata !193, null}
+!195 = metadata !{i32 172, i32 0, metadata !56, null}

@@ -1,69 +1,81 @@
 define zeroext i1 @assemble_integer(%struct.rtx_def* %x, i32 %size, i32 %align, i32 %force) #0 {
 entry:
-  %mul = shl i32 %size, 3
-  %cmp = icmp ult i32 %mul, 128
-  %mul. = select i1 %cmp, i32 %mul, i32 128
-  %cmp2 = icmp ule i32 %mul., %align
-  %conv = zext i1 %cmp2 to i32
-  %0 = load i1 (%struct.rtx_def*, i32, i32)** getelementptr inbounds (%struct.gcc_target* @targetm, i64 0, i32 0, i32 5), align 8, !tbaa !3
-  %call = tail call zeroext i1 %0(%struct.rtx_def* %x, i32 %size, i32 %conv) #9
-  br i1 %call, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !1503), !dbg !2707
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !1504), !dbg !2708
+  tail call void @llvm.dbg.value(metadata !{i32 %align}, i64 0, metadata !1505), !dbg !2709
+  tail call void @llvm.dbg.value(metadata !{i32 %force}, i64 0, metadata !1506), !dbg !2710
+  %mul = shl i32 %size, 3, !dbg !2711
+  %cmp = icmp ult i32 %mul, 128, !dbg !2711
+  %mul. = select i1 %cmp, i32 %mul, i32 128, !dbg !2711
+  %cmp2 = icmp ule i32 %mul., %align, !dbg !2711
+  %conv = zext i1 %cmp2 to i32, !dbg !2711
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !1507), !dbg !2711
+  %0 = load i1 (%struct.rtx_def*, i32, i32)** getelementptr inbounds (%struct.gcc_target* @targetm, i64 0, i32 0, i32 5), align 8, !dbg !2712, !tbaa !2357
+  %call = tail call zeroext i1 %0(%struct.rtx_def* %x, i32 %size, i32 %conv) #10, !dbg !2712
+  br i1 %call, label %return, label %if.end, !dbg !2712
 
 if.end:                                           ; preds = %entry
-  %cmp3 = icmp ugt i32 %size, 1
-  br i1 %cmp3, label %for.body.lr.ph, label %if.end43
+  %cmp3 = icmp ugt i32 %size, 1, !dbg !2713
+  br i1 %cmp3, label %for.body.lr.ph, label %if.end43, !dbg !2713
 
 for.body.lr.ph:                                   ; preds = %if.end
-  %1 = load i32* @target_flags, align 4, !tbaa !4
-  %and = lshr i32 %1, 23
-  %2 = and i32 %and, 4
-  %3 = add i32 %2, 4
-  %cmp7 = icmp ult i32 %3, %size
-  %. = select i1 %cmp7, i32 %3, i32 1
-  %mul16 = shl nsw i32 %., 3
-  %cmp17 = icmp ugt i32 %mul16, %align
-  %cond23 = select i1 %cmp17, i32 %align, i32 %mul16
-  %call25 = tail call i32 @mode_for_size(i32 %mul16, i32 1, i32 0) #9
-  %call27 = tail call i32 @mode_for_size(i32 %mul, i32 1, i32 0) #9
-  br label %for.body
+  %1 = load i32* @target_flags, align 4, !dbg !2714, !tbaa !2382
+  %and = lshr i32 %1, 23, !dbg !2714
+  %2 = and i32 %and, 4, !dbg !2714
+  %3 = add i32 %2, 4, !dbg !2714
+  %cmp7 = icmp ult i32 %3, %size, !dbg !2714
+  %. = select i1 %cmp7, i32 %3, i32 1, !dbg !2714
+  tail call void @llvm.dbg.value(metadata !{i32 %.}, i64 0, metadata !1512), !dbg !2714
+  %mul16 = shl nsw i32 %., 3, !dbg !2715
+  %cmp17 = icmp ugt i32 %mul16, %align, !dbg !2715
+  %cond23 = select i1 %cmp17, i32 %align, i32 %mul16, !dbg !2715
+  tail call void @llvm.dbg.value(metadata !{i32 %cond23}, i64 0, metadata !1511), !dbg !2715
+  %call25 = tail call i32 @mode_for_size(i32 %mul16, i32 1, i32 0) #10, !dbg !2716
+  tail call void @llvm.dbg.value(metadata !{i32 %call25}, i64 0, metadata !1508), !dbg !2716
+  %call27 = tail call i32 @mode_for_size(i32 %mul, i32 1, i32 0) #10, !dbg !2717
+  tail call void @llvm.dbg.value(metadata !{i32 %call27}, i64 0, metadata !1510), !dbg !2717
+  tail call void @llvm.dbg.value(metadata !1148, i64 0, metadata !1513), !dbg !2718
+  br label %for.body, !dbg !2718
 
 for.cond:                                         ; preds = %lor.lhs.false
-  %cmp28 = icmp ult i32 %add, %size
-  br i1 %cmp28, label %for.body, label %for.end
+  %cmp28 = icmp ult i32 %add, %size, !dbg !2718
+  br i1 %cmp28, label %for.body, label %for.end, !dbg !2718
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.cond
   %i.067 = phi i32 [ 0, %for.body.lr.ph ], [ %add, %for.cond ]
-  %call30 = tail call %struct.rtx_def* @simplify_subreg(i32 %call25, %struct.rtx_def* %x, i32 %call27, i32 %i.067) #9
-  %tobool31 = icmp eq %struct.rtx_def* %call30, null
-  br i1 %tobool31, label %for.end, label %lor.lhs.false
+  %call30 = tail call %struct.rtx_def* @simplify_subreg(i32 %call25, %struct.rtx_def* %x, i32 %call27, i32 %i.067) #10, !dbg !2719
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call30}, i64 0, metadata !1514), !dbg !2719
+  %tobool31 = icmp eq %struct.rtx_def* %call30, null, !dbg !2720
+  br i1 %tobool31, label %for.end, label %lor.lhs.false, !dbg !2720
 
 lor.lhs.false:                                    ; preds = %for.body
-  %call32 = tail call zeroext i1 @assemble_integer(%struct.rtx_def* %call30, i32 %., i32 %cond23, i32 0) #10
-  %add = add i32 %i.067, %.
-  br i1 %call32, label %for.cond, label %for.end
+  %call32 = tail call zeroext i1 @assemble_integer(%struct.rtx_def* %call30, i32 %., i32 %cond23, i32 0) #11, !dbg !2720
+  %add = add i32 %i.067, %., !dbg !2718
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !1513), !dbg !2718
+  br i1 %call32, label %for.cond, label %for.end, !dbg !2720
 
 for.end:                                          ; preds = %for.cond, %for.body, %lor.lhs.false
   %i.0.lcssa = phi i32 [ %i.067, %lor.lhs.false ], [ %i.067, %for.body ], [ %add, %for.cond ]
-  %cmp35 = icmp eq i32 %i.0.lcssa, %size
-  br i1 %cmp35, label %return, label %if.end38
+  %cmp35 = icmp eq i32 %i.0.lcssa, %size, !dbg !2721
+  br i1 %cmp35, label %return, label %if.end38, !dbg !2721
 
 if.end38:                                         ; preds = %for.end
-  %cmp39 = icmp eq i32 %i.0.lcssa, 0
-  br i1 %cmp39, label %if.end43, label %if.then41
+  %cmp39 = icmp eq i32 %i.0.lcssa, 0, !dbg !2722
+  br i1 %cmp39, label %if.end43, label %if.then41, !dbg !2722
 
 if.then41:                                        ; preds = %if.end38
-  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str4, i64 0, i64 0), i32 2008, i8* getelementptr inbounds ([17 x i8]* @__FUNCTION__.assemble_integer, i64 0, i64 0)) #12
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str4, i64 0, i64 0), i32 2008, i8* getelementptr inbounds ([17 x i8]* @__FUNCTION__.assemble_integer, i64 0, i64 0)) #13, !dbg !2723
+  unreachable, !dbg !2723
 
 if.end43:                                         ; preds = %if.end38, %if.end
-  %tobool44 = icmp eq i32 %force, 0
-  br i1 %tobool44, label %return, label %if.then45
+  %tobool44 = icmp eq i32 %force, 0, !dbg !2724
+  br i1 %tobool44, label %return, label %if.then45, !dbg !2724
 
 if.then45:                                        ; preds = %if.end43
-  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str4, i64 0, i64 0), i32 2012, i8* getelementptr inbounds ([17 x i8]* @__FUNCTION__.assemble_integer, i64 0, i64 0)) #12
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str4, i64 0, i64 0), i32 2012, i8* getelementptr inbounds ([17 x i8]* @__FUNCTION__.assemble_integer, i64 0, i64 0)) #13, !dbg !2725
+  unreachable, !dbg !2725
 
 return:                                           ; preds = %if.end43, %for.end, %entry
   %retval.0 = phi i1 [ true, %entry ], [ true, %for.end ], [ false, %if.end43 ]
-  ret i1 %retval.0
+  ret i1 %retval.0, !dbg !2726
 }

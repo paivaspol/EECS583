@@ -1,162 +1,154 @@
-define void @init_sd_consts(i32 %ngtc, float* nocapture readonly %tau_t, float %dt) #1 {
-  %1 = tail call i8* @save_calloc(i8* getelementptr inbounds ([4 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i32 258, i32 %ngtc, i32 28) #6
-  store i8* %1, i8** bitcast (%struct.t_sdconst** @sdc to i8**), align 8, !tbaa !2
-  %2 = icmp sgt i32 %ngtc, 0
-  br i1 %2, label %.lr.ph, label %._crit_edge
+define void @init_sd_consts(i32 %ngtc, float* nocapture %tau_t, float %dt) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %ngtc}, i64 0, metadata !200), !dbg !1228
+  tail call void @llvm.dbg.value(metadata !{float* %tau_t}, i64 0, metadata !201), !dbg !1228
+  tail call void @llvm.dbg.value(metadata !{float %dt}, i64 0, metadata !202), !dbg !1228
+  %call = tail call i8* @save_calloc(i8* getelementptr inbounds ([4 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 258, i32 %ngtc, i32 28) #5, !dbg !1229
+  %0 = bitcast i8* %call to %struct.t_sdconst*, !dbg !1229
+  store %struct.t_sdconst* %0, %struct.t_sdconst** @sdc, align 8, !dbg !1229, !tbaa !1230
+  tail call void @llvm.dbg.value(metadata !189, i64 0, metadata !203), !dbg !1233
+  %cmp199 = icmp sgt i32 %ngtc, 0, !dbg !1233
+  br i1 %cmp199, label %for.body, label %for.end, !dbg !1233
 
-.lr.ph:                                           ; preds = %0
-  %3 = bitcast i8* %1 to %struct.t_sdconst*
-  %4 = add i32 %ngtc, -1
-  br label %5
+for.body:                                         ; preds = %entry, %for.inc.for.body_crit_edge
+  %1 = phi %struct.t_sdconst* [ %.pre, %for.inc.for.body_crit_edge ], [ %0, %entry ], !dbg !1235
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc.for.body_crit_edge ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds float* %tau_t, i64 %indvars.iv, !dbg !1235
+  %2 = load float* %arrayidx, align 4, !dbg !1235, !tbaa !1237
+  %div = fdiv float %dt, %2, !dbg !1235
+  %gdt = getelementptr inbounds %struct.t_sdconst* %1, i64 %indvars.iv, i32 0, !dbg !1235
+  store float %div, float* %gdt, align 4, !dbg !1235, !tbaa !1237
+  %div6 = fmul float %div, 5.000000e-01, !dbg !1238
+  %conv = fpext float %div6 to double, !dbg !1238
+  %call7 = tail call double @exp(double %conv) #5, !dbg !1238
+  %conv8 = fptrunc double %call7 to float, !dbg !1238
+  %3 = load %struct.t_sdconst** @sdc, align 8, !dbg !1238, !tbaa !1230
+  %eph = getelementptr inbounds %struct.t_sdconst* %3, i64 %indvars.iv, i32 1, !dbg !1238
+  store float %conv8, float* %eph, align 4, !dbg !1238, !tbaa !1237
+  %gdt13 = getelementptr inbounds %struct.t_sdconst* %3, i64 %indvars.iv, i32 0, !dbg !1239
+  %4 = load float* %gdt13, align 4, !dbg !1239, !tbaa !1237
+  %div14 = fmul float %4, -5.000000e-01, !dbg !1239
+  %conv15 = fpext float %div14 to double, !dbg !1239
+  %call16 = tail call double @exp(double %conv15) #5, !dbg !1239
+  %conv17 = fptrunc double %call16 to float, !dbg !1239
+  %5 = load %struct.t_sdconst** @sdc, align 8, !dbg !1239, !tbaa !1230
+  %emh = getelementptr inbounds %struct.t_sdconst* %5, i64 %indvars.iv, i32 2, !dbg !1239
+  store float %conv17, float* %emh, align 4, !dbg !1239, !tbaa !1237
+  %gdt22 = getelementptr inbounds %struct.t_sdconst* %5, i64 %indvars.iv, i32 0, !dbg !1240
+  %6 = load float* %gdt22, align 4, !dbg !1240, !tbaa !1237
+  %sub23 = fsub float -0.000000e+00, %6, !dbg !1240
+  %conv24 = fpext float %sub23 to double, !dbg !1240
+  %call25 = tail call double @exp(double %conv24) #5, !dbg !1240
+  %conv26 = fptrunc double %call25 to float, !dbg !1240
+  %7 = load %struct.t_sdconst** @sdc, align 8, !dbg !1240, !tbaa !1230
+  %em = getelementptr inbounds %struct.t_sdconst* %7, i64 %indvars.iv, i32 3, !dbg !1240
+  store float %conv26, float* %em, align 4, !dbg !1240, !tbaa !1237
+  %gdt31 = getelementptr inbounds %struct.t_sdconst* %7, i64 %indvars.iv, i32 0, !dbg !1241
+  %8 = load float* %gdt31, align 4, !dbg !1241, !tbaa !1237
+  %conv32 = fpext float %8 to double, !dbg !1241
+  %cmp33 = fcmp ult double %conv32, 1.000000e-01, !dbg !1241
+  br i1 %cmp33, label %if.else, label %if.then, !dbg !1241
 
-; <label>:5                                       ; preds = %._crit_edge2, %.lr.ph
-  %6 = phi %struct.t_sdconst* [ %3, %.lr.ph ], [ %.pre, %._crit_edge2 ]
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %._crit_edge2 ]
-  %7 = getelementptr inbounds float* %tau_t, i64 %indvars.iv
-  %8 = load float* %7, align 4, !tbaa !6
-  %9 = fdiv float %dt, %8
-  %10 = getelementptr inbounds %struct.t_sdconst* %6, i64 %indvars.iv, i32 0
-  store float %9, float* %10, align 4, !tbaa !8
-  %11 = fmul float %9, 5.000000e-01
-  %12 = fpext float %11 to double
-  %13 = tail call double @exp(double %12) #7
-  %14 = fptrunc double %13 to float
-  %15 = getelementptr inbounds %struct.t_sdconst* %6, i64 %indvars.iv, i32 1
-  store float %14, float* %15, align 4, !tbaa !10
-  %16 = getelementptr inbounds %struct.t_sdconst* %6, i64 %indvars.iv, i32 0
-  %17 = load float* %16, align 4, !tbaa !8
-  %18 = fmul float %17, -5.000000e-01
-  %19 = fpext float %18 to double
-  %20 = tail call double @exp(double %19) #7
-  %21 = fptrunc double %20 to float
-  %22 = getelementptr inbounds %struct.t_sdconst* %6, i64 %indvars.iv, i32 2
-  store float %21, float* %22, align 4, !tbaa !11
-  %23 = getelementptr inbounds %struct.t_sdconst* %6, i64 %indvars.iv, i32 0
-  %24 = load float* %23, align 4, !tbaa !8
-  %25 = fsub float -0.000000e+00, %24
-  %26 = fpext float %25 to double
-  %27 = tail call double @exp(double %26) #7
-  %28 = fptrunc double %27 to float
-  %29 = getelementptr inbounds %struct.t_sdconst* %6, i64 %indvars.iv, i32 3
-  store float %28, float* %29, align 4, !tbaa !12
-  %30 = getelementptr inbounds %struct.t_sdconst* %6, i64 %indvars.iv, i32 0
-  %31 = load float* %30, align 4, !tbaa !8
-  %32 = fpext float %31 to double
-  %33 = fcmp ult double %32, 1.000000e-01
-  br i1 %33, label %62, label %34
+if.then:                                          ; preds = %for.body
+  %eph40 = getelementptr inbounds %struct.t_sdconst* %7, i64 %indvars.iv, i32 1, !dbg !1242
+  %9 = load float* %eph40, align 4, !dbg !1242, !tbaa !1237
+  tail call void @llvm.dbg.value(metadata !{float %9}, i64 0, metadata !1244), !dbg !1245
+  %mul.i = fmul float %9, %9, !dbg !1246
+  %sub42 = fadd float %mul.i, -1.000000e+00, !dbg !1242
+  %mul = fmul float %8, %sub42, !dbg !1242
+  %sub46 = fadd float %9, -1.000000e+00, !dbg !1242
+  tail call void @llvm.dbg.value(metadata !{float %sub46}, i64 0, metadata !1244), !dbg !1245
+  %mul.i198 = fmul float %sub46, %sub46, !dbg !1246
+  %mul48 = fmul float %mul.i198, 4.000000e+00, !dbg !1242
+  %sub49 = fsub float %mul, %mul48, !dbg !1242
+  %b = getelementptr inbounds %struct.t_sdconst* %7, i64 %indvars.iv, i32 4, !dbg !1242
+  store float %sub49, float* %b, align 4, !dbg !1242, !tbaa !1237
+  %sub55 = fadd float %8, -3.000000e+00, !dbg !1247
+  %emh58 = getelementptr inbounds %struct.t_sdconst* %7, i64 %indvars.iv, i32 2, !dbg !1247
+  %10 = load float* %emh58, align 4, !dbg !1247, !tbaa !1237
+  %mul59 = fmul float %10, 4.000000e+00, !dbg !1247
+  %add = fadd float %sub55, %mul59, !dbg !1247
+  %sub63 = fsub float %add, %conv26, !dbg !1247
+  %c = getelementptr inbounds %struct.t_sdconst* %7, i64 %indvars.iv, i32 5, !dbg !1247
+  store float %sub63, float* %c, align 4, !dbg !1247, !tbaa !1237
+  %sub69 = fsub float 2.000000e+00, %9, !dbg !1248
+  %sub73 = fsub float %sub69, %10, !dbg !1248
+  %d = getelementptr inbounds %struct.t_sdconst* %7, i64 %indvars.iv, i32 6, !dbg !1248
+  store float %sub73, float* %d, align 4, !dbg !1248, !tbaa !1237
+  br label %if.end, !dbg !1249
 
-; <label>:34                                      ; preds = %5
-  %35 = getelementptr inbounds %struct.t_sdconst* %6, i64 %indvars.iv, i32 1
-  %36 = load float* %35, align 4, !tbaa !10
-  %37 = fmul float %36, %36
-  %38 = fadd float %37, -1.000000e+00
-  %39 = fmul float %31, %38
-  %40 = fadd float %36, -1.000000e+00
-  %41 = fmul float %40, %40
-  %42 = fmul float %41, 4.000000e+00
-  %43 = fsub float %39, %42
-  %44 = getelementptr inbounds %struct.t_sdconst* %6, i64 %indvars.iv, i32 0
-  %45 = load float* %44, align 4, !tbaa !8
-  %46 = fadd float %45, -3.000000e+00
-  %47 = getelementptr inbounds %struct.t_sdconst* %6, i64 %indvars.iv, i32 2
-  %48 = load float* %47, align 4, !tbaa !11
-  %49 = fmul float %48, 4.000000e+00
-  %50 = fadd float %46, %49
-  %51 = getelementptr inbounds %struct.t_sdconst* %6, i64 %indvars.iv, i32 3
-  %52 = load float* %51, align 4, !tbaa !12
-  %53 = fsub float %50, %52
-  %54 = getelementptr inbounds %struct.t_sdconst* %6, i64 %indvars.iv, i32 5
-  store float %53, float* %54, align 4, !tbaa !13
-  %55 = getelementptr inbounds %struct.t_sdconst* %6, i64 %indvars.iv, i32 1
-  %56 = load float* %55, align 4, !tbaa !10
-  %57 = fsub float 2.000000e+00, %56
-  %58 = getelementptr inbounds %struct.t_sdconst* %6, i64 %indvars.iv, i32 2
-  %59 = load float* %58, align 4, !tbaa !11
-  %60 = fsub float %57, %59
-  %61 = getelementptr inbounds %struct.t_sdconst* %6, i64 %indvars.iv, i32 6
-  store float %60, float* %61, align 4, !tbaa !14
-  br label %101
+if.else:                                          ; preds = %for.body
+  %div79 = fmul float %8, 5.000000e-01, !dbg !1250
+  tail call void @llvm.dbg.value(metadata !{float %div79}, i64 0, metadata !204), !dbg !1250
+  %mul80 = fmul float %div79, %div79, !dbg !1252
+  %mul81 = fmul float %div79, %mul80, !dbg !1252
+  %mul82 = fmul float %div79, %mul81, !dbg !1252
+  %conv83 = fpext float %mul82 to double, !dbg !1252
+  %conv84 = fpext float %div79 to double, !dbg !1252
+  %mul86 = fmul float %div79, 7.000000e+00, !dbg !1252
+  %conv87 = fpext float %mul86 to double, !dbg !1252
+  %div88 = fdiv double %conv87, 9.000000e+00, !dbg !1252
+  %add89 = fadd double %div88, 0x3FC82D82D82D82D8, !dbg !1252
+  %mul90 = fmul double %conv84, %add89, !dbg !1252
+  %add91 = fadd double %mul90, 0x3FD5555555555555, !dbg !1252
+  %mul92 = fmul double %conv84, %add91, !dbg !1252
+  %add93 = fadd double %mul92, 0x3FD5555555555555, !dbg !1252
+  %mul94 = fmul double %conv83, %add93, !dbg !1252
+  %conv95 = fptrunc double %mul94 to float, !dbg !1252
+  %b98 = getelementptr inbounds %struct.t_sdconst* %7, i64 %indvars.iv, i32 4, !dbg !1252
+  store float %conv95, float* %b98, align 4, !dbg !1252, !tbaa !1237
+  %conv101 = fpext float %mul81 to double, !dbg !1253
+  %mul105 = fmul float %div79, 3.100000e+01, !dbg !1253
+  %conv106 = fpext float %mul105 to double, !dbg !1253
+  %div107 = fdiv double %conv106, 1.260000e+03, !dbg !1253
+  %add108 = fadd double %div107, 0xBFB5555555555555, !dbg !1253
+  %mul109 = fmul double %conv84, %add108, !dbg !1253
+  %add110 = fadd double %mul109, 0x3FCDDDDDDDDDDDDE, !dbg !1253
+  %mul111 = fmul double %conv84, %add110, !dbg !1253
+  %add112 = fadd double %mul111, -5.000000e-01, !dbg !1253
+  %mul113 = fmul double %conv84, %add112, !dbg !1253
+  %add114 = fadd double %mul113, 0x3FE5555555555555, !dbg !1253
+  %mul115 = fmul double %conv101, %add114, !dbg !1253
+  %conv116 = fptrunc double %mul115 to float, !dbg !1253
+  %c119 = getelementptr inbounds %struct.t_sdconst* %7, i64 %indvars.iv, i32 5, !dbg !1253
+  store float %conv116, float* %c119, align 4, !dbg !1253, !tbaa !1237
+  %conv121 = fpext float %mul80 to double, !dbg !1254
+  %div126 = fdiv double %conv121, 3.600000e+02, !dbg !1254
+  %sub127 = fsub double 0xBFB5555555555555, %div126, !dbg !1254
+  %mul128 = fmul double %conv121, %sub127, !dbg !1254
+  %add129 = fadd double %mul128, -1.000000e+00, !dbg !1254
+  %mul130 = fmul double %conv121, %add129, !dbg !1254
+  %conv131 = fptrunc double %mul130 to float, !dbg !1254
+  %d134 = getelementptr inbounds %struct.t_sdconst* %7, i64 %indvars.iv, i32 6, !dbg !1254
+  store float %conv131, float* %d134, align 4, !dbg !1254, !tbaa !1237
+  br label %if.end
 
-; <label>:62                                      ; preds = %5
-  %63 = fmul float %31, 5.000000e-01
-  %64 = fmul float %63, %63
-  %65 = fmul float %63, %64
-  %66 = fmul float %63, %65
-  %67 = fpext float %66 to double
-  %68 = fpext float %63 to double
-  %69 = fmul float %63, 7.000000e+00
-  %70 = fpext float %69 to double
-  %71 = fdiv double %70, 9.000000e+00
-  %72 = fadd double %71, 0x3FC82D82D82D82D8
-  %73 = fmul double %68, %72
-  %74 = fadd double %73, 0x3FD5555555555555
-  %75 = fmul double %68, %74
-  %76 = fadd double %75, 0x3FD5555555555555
-  %77 = fmul double %67, %76
-  %78 = fptrunc double %77 to float
-  %79 = fpext float %65 to double
-  %80 = fmul float %63, 3.100000e+01
-  %81 = fpext float %80 to double
-  %82 = fdiv double %81, 1.260000e+03
-  %83 = fadd double %82, 0xBFB5555555555555
-  %84 = fmul double %68, %83
-  %85 = fadd double %84, 0x3FCDDDDDDDDDDDDE
-  %86 = fmul double %68, %85
-  %87 = fadd double %86, -5.000000e-01
-  %88 = fmul double %68, %87
-  %89 = fadd double %88, 0x3FE5555555555555
-  %90 = fmul double %79, %89
-  %91 = fptrunc double %90 to float
-  %92 = getelementptr inbounds %struct.t_sdconst* %6, i64 %indvars.iv, i32 5
-  store float %91, float* %92, align 4, !tbaa !13
-  %93 = fpext float %64 to double
-  %94 = fdiv double %93, 3.600000e+02
-  %95 = fsub double 0xBFB5555555555555, %94
-  %96 = fmul double %93, %95
-  %97 = fadd double %96, -1.000000e+00
-  %98 = fmul double %93, %97
-  %99 = fptrunc double %98 to float
-  %100 = getelementptr inbounds %struct.t_sdconst* %6, i64 %indvars.iv, i32 6
-  store float %99, float* %100, align 4, !tbaa !14
-  br label %101
+if.end:                                           ; preds = %if.else, %if.then
+  %11 = phi float [ %conv116, %if.else ], [ %sub63, %if.then ]
+  %12 = phi float [ %conv95, %if.else ], [ %sub49, %if.then ]
+  %13 = phi float [ %conv131, %if.else ], [ %sub73, %if.then ]
+  %14 = load %struct._IO_FILE** @debug, align 8, !dbg !1255, !tbaa !1230
+  %tobool = icmp eq %struct._IO_FILE* %14, null, !dbg !1255
+  br i1 %tobool, label %for.inc, label %if.then135, !dbg !1255
 
-; <label>:101                                     ; preds = %62, %34
-  %.sink = phi float [ %78, %62 ], [ %43, %34 ]
-  %102 = getelementptr inbounds %struct.t_sdconst* %6, i64 %indvars.iv, i32 4
-  store float %.sink, float* %102, align 4
-  %103 = load %struct.__sFILE** @debug, align 8, !tbaa !2
-  %104 = icmp eq %struct.__sFILE* %103, null
-  br i1 %104, label %._crit_edge3, label %105
+if.then135:                                       ; preds = %if.end
+  %conv139 = fpext float %12 to double, !dbg !1256
+  %conv143 = fpext float %11 to double, !dbg !1256
+  %conv147 = fpext float %13 to double, !dbg !1256
+  %15 = trunc i64 %indvars.iv to i32, !dbg !1256
+  %call148 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %14, i8* getelementptr inbounds ([38 x i8]* @.str2, i64 0, i64 0), i32 %15, double %conv139, double %conv143, double %conv147) #5, !dbg !1256
+  br label %for.inc, !dbg !1256
 
-._crit_edge3:                                     ; preds = %101
-  %.pre4 = trunc i64 %indvars.iv to i32
-  br label %118
+for.inc:                                          ; preds = %if.end, %if.then135
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1233
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1233
+  %exitcond = icmp eq i32 %lftr.wideiv, %ngtc, !dbg !1233
+  br i1 %exitcond, label %for.end, label %for.inc.for.body_crit_edge, !dbg !1233
 
-; <label>:105                                     ; preds = %101
-  %106 = load %struct.t_sdconst** @sdc, align 8, !tbaa !2
-  %107 = getelementptr inbounds %struct.t_sdconst* %106, i64 %indvars.iv, i32 4
-  %108 = load float* %107, align 4, !tbaa !15
-  %109 = fpext float %108 to double
-  %110 = getelementptr inbounds %struct.t_sdconst* %106, i64 %indvars.iv, i32 5
-  %111 = load float* %110, align 4, !tbaa !13
-  %112 = fpext float %111 to double
-  %113 = getelementptr inbounds %struct.t_sdconst* %106, i64 %indvars.iv, i32 6
-  %114 = load float* %113, align 4, !tbaa !14
-  %115 = fpext float %114 to double
-  %116 = trunc i64 %indvars.iv to i32
-  %117 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %103, i8* getelementptr inbounds ([38 x i8]* @.str2, i64 0, i64 0), i32 %116, double %109, double %112, double %115) #6
-  br label %118
+for.inc.for.body_crit_edge:                       ; preds = %for.inc
+  %.pre = load %struct.t_sdconst** @sdc, align 8, !dbg !1235, !tbaa !1230
+  br label %for.body, !dbg !1233
 
-; <label>:118                                     ; preds = %._crit_edge3, %105
-  %lftr.wideiv.pre-phi = phi i32 [ %.pre4, %._crit_edge3 ], [ %116, %105 ]
-  %exitcond = icmp eq i32 %lftr.wideiv.pre-phi, %4
-  br i1 %exitcond, label %._crit_edge, label %._crit_edge2
-
-._crit_edge2:                                     ; preds = %118
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %.pre = load %struct.t_sdconst** @sdc, align 8, !tbaa !2
-  br label %5
-
-._crit_edge:                                      ; preds = %118, %0
-  ret void
+for.end:                                          ; preds = %for.inc, %entry
+  ret void, !dbg !1257
 }

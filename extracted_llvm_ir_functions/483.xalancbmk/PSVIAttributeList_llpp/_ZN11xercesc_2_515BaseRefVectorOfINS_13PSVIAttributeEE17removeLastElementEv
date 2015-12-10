@@ -1,0 +1,36 @@
+define linkonce_odr void @_ZN11xercesc_2_515BaseRefVectorOfINS_13PSVIAttributeEE17removeLastElementEv(%"class.xercesc_2_5::BaseRefVectorOf.7"* nocapture %this) unnamed_addr #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf.7"* %this}, i64 0, metadata !1410), !dbg !2347
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.7"* %this, i64 0, i32 2, !dbg !2348
+  %0 = load i32* %fCurCount, align 4, !dbg !2348, !tbaa !1992
+  %tobool = icmp eq i32 %0, 0, !dbg !2348
+  br i1 %tobool, label %if.end6, label %if.end, !dbg !2348
+
+if.end:                                           ; preds = %entry
+  %dec = add i32 %0, -1, !dbg !2349
+  store i32 %dec, i32* %fCurCount, align 4, !dbg !2349, !tbaa !1992
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.7"* %this, i64 0, i32 1, !dbg !2350
+  %1 = load i8* %fAdoptedElems, align 1, !dbg !2350, !tbaa !2155, !range !2179
+  %tobool3 = icmp eq i8 %1, 0, !dbg !2350
+  br i1 %tobool3, label %if.end6, label %if.then4, !dbg !2350
+
+if.then4:                                         ; preds = %if.end
+  %idxprom = zext i32 %dec to i64, !dbg !2351
+  %fElemList = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.7"* %this, i64 0, i32 4, !dbg !2351
+  %2 = load %"class.xercesc_2_5::PSVIAttribute"*** %fElemList, align 8, !dbg !2351, !tbaa !1989
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::PSVIAttribute"** %2, i64 %idxprom, !dbg !2351
+  %3 = load %"class.xercesc_2_5::PSVIAttribute"** %arrayidx, align 8, !dbg !2351, !tbaa !1989
+  %isnull = icmp eq %"class.xercesc_2_5::PSVIAttribute"* %3, null, !dbg !2351
+  br i1 %isnull, label %if.end6, label %delete.notnull, !dbg !2351
+
+delete.notnull:                                   ; preds = %if.then4
+  %4 = bitcast %"class.xercesc_2_5::PSVIAttribute"* %3 to void (%"class.xercesc_2_5::PSVIAttribute"*)***, !dbg !2351
+  %vtable = load void (%"class.xercesc_2_5::PSVIAttribute"*)*** %4, align 8, !dbg !2351, !tbaa !2014
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::PSVIAttribute"*)** %vtable, i64 1, !dbg !2351
+  %5 = load void (%"class.xercesc_2_5::PSVIAttribute"*)** %vfn, align 8, !dbg !2351
+  tail call void %5(%"class.xercesc_2_5::PSVIAttribute"* %3) #10, !dbg !2351
+  br label %if.end6, !dbg !2351
+
+if.end6:                                          ; preds = %if.end, %entry, %if.then4, %delete.notnull
+  ret void, !dbg !2351
+}

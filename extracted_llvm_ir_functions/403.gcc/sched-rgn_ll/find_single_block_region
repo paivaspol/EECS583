@@ -1,37 +1,38 @@
 define internal fastcc void @find_single_block_region() #0 {
 entry:
-  %0 = load i32* @n_basic_blocks, align 4, !tbaa !3
-  %cmp18 = icmp sgt i32 %0, 0
-  br i1 %cmp18, label %for.body.lr.ph, label %for.end
+  tail call void @llvm.dbg.value(metadata !358, i64 0, metadata !1127), !dbg !2392
+  %0 = load i32* @n_basic_blocks, align 4, !dbg !2392, !tbaa !1213
+  %cmp18 = icmp sgt i32 %0, 0, !dbg !2392
+  br i1 %cmp18, label %for.body.lr.ph, label %for.end, !dbg !2392
 
 for.body.lr.ph:                                   ; preds = %entry
-  %1 = load i32** @rgn_bb_table, align 8, !tbaa !0
-  %2 = load %struct.region** @rgn_table, align 8, !tbaa !0
-  %3 = load i32** @containing_rgn, align 8, !tbaa !0
-  %4 = load i32** @block_to_bb, align 8, !tbaa !0
-  br label %for.body
+  %1 = load i32** @rgn_bb_table, align 8, !dbg !2394, !tbaa !1208
+  %2 = load %struct.region** @rgn_table, align 8, !dbg !2396, !tbaa !1208
+  %3 = load i32** @containing_rgn, align 8, !dbg !2397, !tbaa !1208
+  %4 = load i32** @block_to_bb, align 8, !dbg !2398, !tbaa !1208
+  br label %for.body, !dbg !2392
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.body
   %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
-  %arrayidx = getelementptr inbounds i32* %1, i64 %indvars.iv
-  %5 = trunc i64 %indvars.iv to i32
-  store i32 %5, i32* %arrayidx, align 4, !tbaa !3
-  %rgn_nr_blocks = getelementptr inbounds %struct.region* %2, i64 %indvars.iv, i32 0
-  store i32 1, i32* %rgn_nr_blocks, align 4, !tbaa !3
-  %rgn_blocks = getelementptr inbounds %struct.region* %2, i64 %indvars.iv, i32 1
-  store i32 %5, i32* %rgn_blocks, align 4, !tbaa !3
-  %arrayidx6 = getelementptr inbounds i32* %3, i64 %indvars.iv
-  store i32 %5, i32* %arrayidx6, align 4, !tbaa !3
-  %arrayidx8 = getelementptr inbounds i32* %4, i64 %indvars.iv
-  store i32 0, i32* %arrayidx8, align 4, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %6 = load i32* @n_basic_blocks, align 4, !tbaa !3
-  %7 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %7, %6
-  br i1 %cmp, label %for.body, label %for.end
+  %arrayidx = getelementptr inbounds i32* %1, i64 %indvars.iv, !dbg !2394
+  %5 = trunc i64 %indvars.iv to i32, !dbg !2394
+  store i32 %5, i32* %arrayidx, align 4, !dbg !2394, !tbaa !1213
+  %rgn_nr_blocks = getelementptr inbounds %struct.region* %2, i64 %indvars.iv, i32 0, !dbg !2396
+  store i32 1, i32* %rgn_nr_blocks, align 4, !dbg !2396, !tbaa !1213
+  %rgn_blocks = getelementptr inbounds %struct.region* %2, i64 %indvars.iv, i32 1, !dbg !2399
+  store i32 %5, i32* %rgn_blocks, align 4, !dbg !2399, !tbaa !1213
+  %arrayidx6 = getelementptr inbounds i32* %3, i64 %indvars.iv, !dbg !2397
+  store i32 %5, i32* %arrayidx6, align 4, !dbg !2397, !tbaa !1213
+  %arrayidx8 = getelementptr inbounds i32* %4, i64 %indvars.iv, !dbg !2398
+  store i32 0, i32* %arrayidx8, align 4, !dbg !2398, !tbaa !1213
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2392
+  %6 = load i32* @n_basic_blocks, align 4, !dbg !2392, !tbaa !1213
+  %7 = trunc i64 %indvars.iv.next to i32, !dbg !2392
+  %cmp = icmp slt i32 %7, %6, !dbg !2392
+  br i1 %cmp, label %for.body, label %for.end, !dbg !2392
 
 for.end:                                          ; preds = %for.body, %entry
   %.lcssa = phi i32 [ %0, %entry ], [ %6, %for.body ]
-  store i32 %.lcssa, i32* @nr_regions, align 4, !tbaa !3
-  ret void
+  store i32 %.lcssa, i32* @nr_regions, align 4, !dbg !2400, !tbaa !1213
+  ret void, !dbg !2401
 }

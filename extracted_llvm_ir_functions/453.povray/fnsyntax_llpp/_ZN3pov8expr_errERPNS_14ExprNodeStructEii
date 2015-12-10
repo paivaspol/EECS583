@@ -1,0 +1,35 @@
+define zeroext i1 @_ZN3pov8expr_errERPNS_14ExprNodeStructEii(%"struct.pov::ExprNodeStruct"** nocapture, i32 %stage, i32) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::ExprNodeStruct"** %0}, i64 0, metadata !688), !dbg !1268
+  tail call void @llvm.dbg.value(metadata !{i32 %stage}, i64 0, metadata !689), !dbg !1268
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !690), !dbg !1268
+  %cmp = icmp eq i32 %stage, 35, !dbg !1269
+  br i1 %cmp, label %if.then, label %land.rhs, !dbg !1269
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 (i8*, ...)* @_ZN3pov13PossibleErrorEPKcz(i8* getelementptr inbounds ([201 x i8]* @.str4, i64 0, i64 0)) #9, !dbg !1270
+  br label %land.rhs, !dbg !1270
+
+land.rhs:                                         ; preds = %entry, %if.then, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %if.then ], [ 0, %entry ]
+  %stage2 = getelementptr inbounds [7 x %"struct.pov::ExprParserErrorEntry"]* @_ZN3povL23expr_parser_error_tableE, i64 0, i64 %indvars.iv, i32 0, !dbg !1271
+  %2 = load i32* %stage2, align 16, !dbg !1271, !tbaa !903
+  %cmp10 = icmp eq i32 %2, %stage, !dbg !1273
+  br i1 %cmp10, label %if.then11, label %for.inc, !dbg !1273
+
+if.then11:                                        ; preds = %land.rhs
+  %expected = getelementptr inbounds [7 x %"struct.pov::ExprParserErrorEntry"]* @_ZN3povL23expr_parser_error_tableE, i64 0, i64 %indvars.iv, i32 1, !dbg !1271
+  %3 = load i8** %expected, align 8, !dbg !1271, !tbaa !889
+  tail call void @_ZN3pov17Expectation_ErrorEPKc(i8* %3) #9, !dbg !1275
+  br label %for.inc, !dbg !1275
+
+for.inc:                                          ; preds = %land.rhs, %if.then11
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1271
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1271
+  %exitcond = icmp eq i32 %lftr.wideiv, 6, !dbg !1271
+  br i1 %exitcond, label %for.end, label %land.rhs, !dbg !1271
+
+for.end:                                          ; preds = %for.inc
+  tail call void @_ZN3pov17Expectation_ErrorEPKc(i8* getelementptr inbounds ([26 x i8]* @.str5, i64 0, i64 0)) #9, !dbg !1276
+  ret i1 false, !dbg !1277
+}

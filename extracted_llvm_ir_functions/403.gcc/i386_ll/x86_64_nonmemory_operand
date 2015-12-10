@@ -1,24 +1,26 @@
 define i32 @x86_64_nonmemory_operand(%struct.rtx_def* %op, i32 %mode) #1 {
 entry:
-  %0 = load i32* @target_flags, align 4, !tbaa !0
-  %and = and i32 %0, 33554432
-  %tobool = icmp eq i32 %and, 0
-  br i1 %tobool, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op}, i64 0, metadata !2290), !dbg !6095
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !2291), !dbg !6096
+  %0 = load i32* @target_flags, align 4, !dbg !6097, !tbaa !4347
+  %and = and i32 %0, 33554432, !dbg !6097
+  %tobool = icmp eq i32 %and, 0, !dbg !6097
+  br i1 %tobool, label %if.then, label %if.end, !dbg !6097
 
 if.then:                                          ; preds = %entry
-  %call = tail call i32 @nonmemory_operand(%struct.rtx_def* %op, i32 %mode) #9
-  br label %return
+  %call = tail call i32 @nonmemory_operand(%struct.rtx_def* %op, i32 %mode) #10, !dbg !6098
+  br label %return, !dbg !6098
 
 if.end:                                           ; preds = %entry
-  %call1 = tail call i32 @register_operand(%struct.rtx_def* %op, i32 %mode) #9
-  %tobool2 = icmp eq i32 %call1, 0
-  br i1 %tobool2, label %if.end4, label %return
+  %call1 = tail call i32 @register_operand(%struct.rtx_def* %op, i32 %mode) #10, !dbg !6099
+  %tobool2 = icmp eq i32 %call1, 0, !dbg !6099
+  br i1 %tobool2, label %if.end4, label %return, !dbg !6099
 
 if.end4:                                          ; preds = %if.end
-  %call5 = tail call i32 @x86_64_sign_extended_value(%struct.rtx_def* %op) #10
-  br label %return
+  %call5 = tail call i32 @x86_64_sign_extended_value(%struct.rtx_def* %op) #11, !dbg !6100
+  br label %return, !dbg !6100
 
 return:                                           ; preds = %if.end, %if.end4, %if.then
   %retval.0 = phi i32 [ %call5, %if.end4 ], [ %call, %if.then ], [ 1, %if.end ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !6101
 }

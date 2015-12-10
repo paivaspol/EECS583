@@ -1,0 +1,22 @@
+define internal void @_ZN3povL20Transform_ParametricEPNS_13Object_StructEPNS_16Transform_StructE(%"struct.pov::Object_Struct"* %Object, %"struct.pov::Transform_Struct"* %Trans) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !1136), !dbg !1898
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Transform_Struct"* %Trans}, i64 0, metadata !1137), !dbg !1898
+  %0 = bitcast %"struct.pov::Object_Struct"* %Object to %"struct.pov::Parametric_Struct"*, !dbg !1899
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Parametric_Struct"* %0}, i64 0, metadata !1138), !dbg !1899
+  %1 = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 10, !dbg !1900
+  %2 = load %"struct.pov::Transform_Struct"** %1, align 8, !dbg !1900, !tbaa !1438
+  %cmp = icmp eq %"struct.pov::Transform_Struct"* %2, null, !dbg !1900
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1900
+
+if.then:                                          ; preds = %entry
+  %call = tail call %"struct.pov::Transform_Struct"* @_ZN3pov16Create_TransformEv() #9, !dbg !1901
+  store %"struct.pov::Transform_Struct"* %call, %"struct.pov::Transform_Struct"** %1, align 8, !dbg !1901, !tbaa !1438
+  br label %if.end, !dbg !1901
+
+if.end:                                           ; preds = %if.then, %entry
+  %3 = phi %"struct.pov::Transform_Struct"* [ %call, %if.then ], [ %2, %entry ]
+  tail call void @_ZN3pov18Compose_TransformsEPNS_16Transform_StructES1_(%"struct.pov::Transform_Struct"* %3, %"struct.pov::Transform_Struct"* %Trans) #9, !dbg !1902
+  tail call void @_ZN3pov23Compute_Parametric_BBoxEPNS_17Parametric_StructE(%"struct.pov::Parametric_Struct"* %0) #9, !dbg !1903
+  ret void, !dbg !1904
+}

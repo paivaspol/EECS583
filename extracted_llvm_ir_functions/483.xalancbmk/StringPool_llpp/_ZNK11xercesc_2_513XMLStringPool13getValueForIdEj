@@ -1,0 +1,46 @@
+define i16* @_ZNK11xercesc_2_513XMLStringPool13getValueForIdEj(%"class.xercesc_2_5::XMLStringPool"* nocapture %this, i32 %id) unnamed_addr #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLStringPool"* %this}, i64 0, metadata !1335), !dbg !2415
+  tail call void @llvm.dbg.value(metadata !{i32 %id}, i64 0, metadata !1336), !dbg !2415
+  %tobool = icmp eq i32 %id, 0, !dbg !2416
+  br i1 %tobool, label %if.then, label %lor.lhs.false, !dbg !2416
+
+lor.lhs.false:                                    ; preds = %entry
+  %fCurId = getelementptr inbounds %"class.xercesc_2_5::XMLStringPool"* %this, i64 0, i32 5, !dbg !2416
+  %0 = load i32* %fCurId, align 4, !dbg !2416, !tbaa !2255
+  %cmp = icmp ugt i32 %0, %id, !dbg !2416
+  br i1 %cmp, label %if.end, label %if.then, !dbg !2416
+
+if.then:                                          ; preds = %lor.lhs.false, %entry
+  %exception = tail call i8* @__cxa_allocate_exception(i64 48) #4, !dbg !2417
+  %1 = bitcast i8* %exception to %"class.xercesc_2_5::IllegalArgumentException"*, !dbg !2417
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::XMLStringPool"* %this, i64 0, i32 1, !dbg !2417
+  %2 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !2417, !tbaa !2258
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::IllegalArgumentException"* %1}, i64 0, metadata !2418), !dbg !2419
+  tail call void @llvm.dbg.value(metadata !2420, i64 0, metadata !2421), !dbg !2419
+  tail call void @llvm.dbg.value(metadata !2422, i64 0, metadata !2423), !dbg !2419
+  tail call void @llvm.dbg.value(metadata !2424, i64 0, metadata !2425), !dbg !2419
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %2}, i64 0, metadata !2426), !dbg !2419
+  invoke void @_ZN11xercesc_2_524IllegalArgumentExceptionC2EPKcjNS_10XMLExcepts5CodesEPNS_13MemoryManagerE(%"class.xercesc_2_5::IllegalArgumentException"* %1, i8* getelementptr inbounds ([62 x i8]* @.str, i64 0, i64 0), i32 229, i32 87, %"class.xercesc_2_5::MemoryManager"* %2) #7
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %if.then
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_524IllegalArgumentExceptionE to i8*), i8* bitcast (void (%"class.xercesc_2_5::IllegalArgumentException"*)* @_ZN11xercesc_2_524IllegalArgumentExceptionD1Ev to i8*)) #9, !dbg !2417
+  unreachable, !dbg !2417
+
+lpad:                                             ; preds = %if.then
+  %3 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !2417
+  tail call void @__cxa_free_exception(i8* %exception) #4, !dbg !2417
+  resume { i8*, i32 } %3, !dbg !2417
+
+if.end:                                           ; preds = %lor.lhs.false
+  %idxprom = zext i32 %id to i64, !dbg !2427
+  %fIdMap = getelementptr inbounds %"class.xercesc_2_5::XMLStringPool"* %this, i64 0, i32 2, !dbg !2427
+  %4 = load %"class.xercesc_2_5::XMLStringPool::PoolElem"*** %fIdMap, align 8, !dbg !2427, !tbaa !2258
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::XMLStringPool::PoolElem"** %4, i64 %idxprom, !dbg !2427
+  %5 = load %"class.xercesc_2_5::XMLStringPool::PoolElem"** %arrayidx, align 8, !dbg !2427, !tbaa !2258
+  %fString = getelementptr inbounds %"class.xercesc_2_5::XMLStringPool::PoolElem"* %5, i64 0, i32 1, !dbg !2427
+  %6 = load i16** %fString, align 8, !dbg !2427, !tbaa !2258
+  ret i16* %6, !dbg !2427
+}

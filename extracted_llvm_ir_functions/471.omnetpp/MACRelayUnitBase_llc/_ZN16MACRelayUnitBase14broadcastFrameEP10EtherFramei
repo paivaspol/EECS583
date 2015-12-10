@@ -1,0 +1,54 @@
+define void @_ZN16MACRelayUnitBase14broadcastFrameEP10EtherFramei(%class.MACRelayUnitBase* %this, %class.EtherFrame* %frame, i32 %inputport) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.MACRelayUnitBase* %this}, i64 0, metadata !5445), !dbg !6376
+  tail call void @llvm.dbg.value(metadata !{%class.EtherFrame* %frame}, i64 0, metadata !5446), !dbg !6376
+  tail call void @llvm.dbg.value(metadata !{i32 %inputport}, i64 0, metadata !5447), !dbg !6376
+  tail call void @llvm.dbg.value(metadata !1161, i64 0, metadata !5448), !dbg !6377
+  %numPorts = getelementptr inbounds %class.MACRelayUnitBase* %this, i64 0, i32 1, !dbg !6377
+  %0 = load i32* %numPorts, align 4, !dbg !6377, !tbaa !6100
+  %cmp10 = icmp sgt i32 %0, 0, !dbg !6377
+  br i1 %cmp10, label %for.body.lr.ph, label %for.end, !dbg !6377
+
+for.body.lr.ph:                                   ; preds = %entry
+  %1 = getelementptr inbounds %class.MACRelayUnitBase* %this, i64 0, i32 0, !dbg !6378
+  %2 = bitcast %class.EtherFrame* %frame to %class.cObject* (%class.EtherFrame*)***, !dbg !6378
+  br label %for.body, !dbg !6377
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %3 = phi i32 [ %0, %for.body.lr.ph ], [ %6, %for.inc ]
+  %i.011 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %for.inc ]
+  %cmp2 = icmp eq i32 %i.011, %inputport, !dbg !6379
+  br i1 %cmp2, label %for.inc, label %if.then, !dbg !6379
+
+if.then:                                          ; preds = %for.body
+  %vtable = load %class.cObject* (%class.EtherFrame*)*** %2, align 8, !dbg !6378, !tbaa !6155
+  %vfn = getelementptr inbounds %class.cObject* (%class.EtherFrame*)** %vtable, i64 2, !dbg !6378
+  %4 = load %class.cObject* (%class.EtherFrame*)** %vfn, align 8, !dbg !6378
+  %call = tail call %class.cObject* %4(%class.EtherFrame* %frame) #9, !dbg !6378
+  %5 = bitcast %class.cObject* %call to %class.cMessage*, !dbg !6378
+  %call3 = tail call i32 @_ZN13cSimpleModule4sendEP8cMessagePKci(%class.cSimpleModule* %1, %class.cMessage* %5, i8* getelementptr inbounds ([14 x i8]* @.str, i64 0, i64 0), i32 %i.011) #9, !dbg !6378
+  %.pre = load i32* %numPorts, align 4, !dbg !6377, !tbaa !6100
+  br label %for.inc, !dbg !6378
+
+for.inc:                                          ; preds = %for.body, %if.then
+  %6 = phi i32 [ %3, %for.body ], [ %.pre, %if.then ], !dbg !6377
+  %inc = add nsw i32 %i.011, 1, !dbg !6377
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !5448), !dbg !6377
+  %cmp = icmp slt i32 %inc, %6, !dbg !6377
+  br i1 %cmp, label %for.body, label %for.end, !dbg !6377
+
+for.end:                                          ; preds = %for.inc, %entry
+  %isnull = icmp eq %class.EtherFrame* %frame, null, !dbg !6380
+  br i1 %isnull, label %delete.end, label %delete.notnull, !dbg !6380
+
+delete.notnull:                                   ; preds = %for.end
+  %7 = bitcast %class.EtherFrame* %frame to void (%class.EtherFrame*)***, !dbg !6380
+  %vtable4 = load void (%class.EtherFrame*)*** %7, align 8, !dbg !6380, !tbaa !6155
+  %vfn5 = getelementptr inbounds void (%class.EtherFrame*)** %vtable4, i64 1, !dbg !6380
+  %8 = load void (%class.EtherFrame*)** %vfn5, align 8, !dbg !6380
+  tail call void %8(%class.EtherFrame* %frame) #9, !dbg !6380
+  br label %delete.end, !dbg !6380
+
+delete.end:                                       ; preds = %delete.notnull, %for.end
+  ret void, !dbg !6381
+}

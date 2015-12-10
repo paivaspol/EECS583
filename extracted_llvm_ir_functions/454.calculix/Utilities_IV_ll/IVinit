@@ -1,14 +1,18 @@
 define i32* @IVinit(i32 %size, i32 %ival) #0 {
 entry:
-  %cmp = icmp sgt i32 %size, 0
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !156), !dbg !491
+  tail call void @llvm.dbg.value(metadata !{i32 %ival}, i64 0, metadata !157), !dbg !492
+  tail call void @llvm.dbg.value(metadata !459, i64 0, metadata !158), !dbg !493
+  %cmp = icmp sgt i32 %size, 0, !dbg !494
+  br i1 %cmp, label %if.then, label %if.end, !dbg !494
 
 if.then:                                          ; preds = %entry
-  %call = tail call i32* @IVinit2(i32 %size) #8
-  tail call void @IVfill(i32 %size, i32* %call, i32 %ival) #8
-  br label %if.end
+  %call = tail call i32* @IVinit2(i32 %size) #9, !dbg !495
+  tail call void @llvm.dbg.value(metadata !{i32* %call}, i64 0, metadata !158), !dbg !495
+  tail call void @IVfill(i32 %size, i32* %call, i32 %ival) #9, !dbg !497
+  br label %if.end, !dbg !498
 
 if.end:                                           ; preds = %if.then, %entry
   %y.0 = phi i32* [ %call, %if.then ], [ null, %entry ]
-  ret i32* %y.0
+  ret i32* %y.0, !dbg !499
 }

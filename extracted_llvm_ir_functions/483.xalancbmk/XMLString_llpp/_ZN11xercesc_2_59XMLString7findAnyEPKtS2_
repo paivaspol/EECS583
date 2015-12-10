@@ -1,0 +1,37 @@
+define i16* @_ZN11xercesc_2_59XMLString7findAnyEPKtS2_(i16* %toSearch, i16* nocapture %searchList) #6 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %toSearch}, i64 0, metadata !1857), !dbg !3572
+  tail call void @llvm.dbg.value(metadata !{i16* %searchList}, i64 0, metadata !1858), !dbg !3573
+  tail call void @llvm.dbg.value(metadata !{i16* %toSearch}, i64 0, metadata !1859), !dbg !3574
+  %0 = load i16* %toSearch, align 2, !dbg !3575, !tbaa !2947
+  %tobool13 = icmp eq i16 %0, 0, !dbg !3575
+  br i1 %tobool13, label %return, label %while.cond1.preheader, !dbg !3575
+
+while.cond1.preheader:                            ; preds = %entry, %while.end
+  %1 = phi i16 [ %3, %while.end ], [ %0, %entry ]
+  %srcPtr.014 = phi i16* [ %incdec.ptr5, %while.end ], [ %toSearch, %entry ]
+  br label %while.cond1, !dbg !3576
+
+while.cond1:                                      ; preds = %while.cond1.preheader, %while.body3
+  %listPtr.0 = phi i16* [ %incdec.ptr, %while.body3 ], [ %searchList, %while.cond1.preheader ]
+  %2 = load i16* %listPtr.0, align 2, !dbg !3576, !tbaa !2947
+  %tobool2 = icmp eq i16 %2, 0, !dbg !3576
+  br i1 %tobool2, label %while.end, label %while.body3, !dbg !3576
+
+while.body3:                                      ; preds = %while.cond1
+  %incdec.ptr = getelementptr inbounds i16* %listPtr.0, i64 1, !dbg !3577
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !1860), !dbg !3577
+  %cmp = icmp eq i16 %1, %2, !dbg !3577
+  br i1 %cmp, label %return, label %while.cond1, !dbg !3577
+
+while.end:                                        ; preds = %while.cond1
+  %incdec.ptr5 = getelementptr inbounds i16* %srcPtr.014, i64 1, !dbg !3579
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr5}, i64 0, metadata !1859), !dbg !3579
+  %3 = load i16* %incdec.ptr5, align 2, !dbg !3575, !tbaa !2947
+  %tobool = icmp eq i16 %3, 0, !dbg !3575
+  br i1 %tobool, label %return, label %while.cond1.preheader, !dbg !3575
+
+return:                                           ; preds = %entry, %while.end, %while.body3
+  %retval.0 = phi i16* [ %srcPtr.014, %while.body3 ], [ null, %while.end ], [ null, %entry ]
+  ret i16* %retval.0, !dbg !3580
+}

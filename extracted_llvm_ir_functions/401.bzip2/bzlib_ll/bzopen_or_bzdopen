@@ -1,94 +1,165 @@
-define internal fastcc i8* @bzopen_or_bzdopen(i8* %path, i8* %mode, i32 %open_mode) #4 {
+define internal fastcc i8* @bzopen_or_bzdopen(i8* %path, i32 %fd, i8* %mode, i32 %open_mode) #5 {
 entry:
   %bzerr = alloca i32, align 4
+  %unused = alloca [5000 x i8], align 16
   %mode2 = alloca [10 x i8], align 1
-  %0 = getelementptr inbounds [10 x i8]* %mode2, i64 0, i64 0
-  call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 10, i32 1, i1 false)
-  %cmp = icmp eq i8* %mode, null
-  br i1 %cmp, label %cleanup, label %while.cond.preheader
+  call void @llvm.dbg.value(metadata !{i8* %path}, i64 0, metadata !497), !dbg !1601
+  call void @llvm.dbg.value(metadata !{i32 %fd}, i64 0, metadata !498), !dbg !1602
+  call void @llvm.dbg.value(metadata !{i8* %mode}, i64 0, metadata !499), !dbg !1603
+  call void @llvm.dbg.value(metadata !{i32 %open_mode}, i64 0, metadata !500), !dbg !1604
+  call void @llvm.dbg.declare(metadata !{i32* %bzerr}, metadata !501), !dbg !1605
+  %0 = getelementptr inbounds [5000 x i8]* %unused, i64 0, i64 0, !dbg !1606
+  call void @llvm.lifetime.start(i64 5000, i8* %0) #9, !dbg !1606
+  call void @llvm.dbg.declare(metadata !{[5000 x i8]* %unused}, metadata !502), !dbg !1606
+  call void @llvm.dbg.value(metadata !1607, i64 0, metadata !504), !dbg !1608
+  call void @llvm.dbg.value(metadata !18, i64 0, metadata !505), !dbg !1609
+  call void @llvm.dbg.declare(metadata !{[10 x i8]* %mode2}, metadata !506), !dbg !1610
+  %1 = getelementptr inbounds [10 x i8]* %mode2, i64 0, i64 0, !dbg !1610
+  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 10, i32 1, i1 false), !dbg !1610
+  call void @llvm.dbg.value(metadata !1611, i64 0, metadata !510), !dbg !1612
+  call void @llvm.dbg.value(metadata !1613, i64 0, metadata !511), !dbg !1614
+  call void @llvm.dbg.value(metadata !18, i64 0, metadata !512), !dbg !1615
+  call void @llvm.dbg.value(metadata !631, i64 0, metadata !513), !dbg !1616
+  call void @llvm.dbg.value(metadata !18, i64 0, metadata !514), !dbg !1617
+  call void @llvm.dbg.value(metadata !18, i64 0, metadata !515), !dbg !1618
+  %cmp = icmp eq i8* %mode, null, !dbg !1619
+  br i1 %cmp, label %cleanup, label %while.cond.preheader, !dbg !1619
 
 while.cond.preheader:                             ; preds = %entry
-  %1 = load i8* %mode, align 1, !tbaa !1
-  %tobool6 = icmp eq i8 %1, 0
-  br i1 %tobool6, label %while.end, label %while.body
+  %2 = load i8* %mode, align 1, !dbg !1620, !tbaa !616
+  %tobool82 = icmp eq i8 %2, 0, !dbg !1620
+  br i1 %tobool82, label %while.end, label %while.body, !dbg !1620
 
 while.body:                                       ; preds = %while.cond.preheader, %sw.epilog
-  %2 = phi i8 [ %5, %sw.epilog ], [ %1, %while.cond.preheader ]
-  %mode.addr.09 = phi i8* [ %incdec.ptr, %sw.epilog ], [ %mode, %while.cond.preheader ]
-  %blockSize100k.08 = phi i32 [ %blockSize100k.1, %sw.epilog ], [ 9, %while.cond.preheader ]
-  %writing.07 = phi i32 [ %writing.1, %sw.epilog ], [ 0, %while.cond.preheader ]
-  %conv = sext i8 %2 to i32
+  %3 = phi i8 [ %6, %sw.epilog ], [ %2, %while.cond.preheader ]
+  %smallMode.086 = phi i32 [ %smallMode.1, %sw.epilog ], [ 0, %while.cond.preheader ]
+  %mode.addr.085 = phi i8* [ %incdec.ptr, %sw.epilog ], [ %mode, %while.cond.preheader ]
+  %blockSize100k.084 = phi i32 [ %blockSize100k.1, %sw.epilog ], [ 9, %while.cond.preheader ]
+  %writing.083 = phi i32 [ %writing.1, %sw.epilog ], [ 0, %while.cond.preheader ]
+  %conv = sext i8 %3 to i32, !dbg !1621
   switch i32 %conv, label %sw.default [
     i32 114, label %sw.epilog
     i32 119, label %sw.bb1
     i32 115, label %sw.bb2
-  ]
+  ], !dbg !1621
 
 sw.bb1:                                           ; preds = %while.body
-  br label %sw.epilog
+  call void @llvm.dbg.value(metadata !1623, i64 0, metadata !505), !dbg !1624
+  br label %sw.epilog, !dbg !1624
 
 sw.bb2:                                           ; preds = %while.body
-  br label %sw.epilog
+  call void @llvm.dbg.value(metadata !1623, i64 0, metadata !514), !dbg !1626
+  br label %sw.epilog, !dbg !1626
 
 sw.default:                                       ; preds = %while.body
-  %idxprom = sext i8 %2 to i64
-  %call = call i16** @__ctype_b_loc() #14
-  %3 = load i16** %call, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds i16* %3, i64 %idxprom
-  %4 = load i16* %arrayidx, align 2, !tbaa !4
-  %and = and i16 %4, 2048
-  %tobool5 = icmp eq i16 %and, 0
-  %sub = add nsw i32 %conv, -48
-  %blockSize100k.0.sub = select i1 %tobool5, i32 %blockSize100k.08, i32 %sub
-  br label %sw.epilog
+  %idxprom = sext i8 %3 to i64, !dbg !1627
+  %call = call i16** @__ctype_b_loc() #15, !dbg !1627
+  %4 = load i16** %call, align 8, !dbg !1627, !tbaa !615
+  %arrayidx = getelementptr inbounds i16* %4, i64 %idxprom, !dbg !1627
+  %5 = load i16* %arrayidx, align 2, !dbg !1627, !tbaa !945
+  %and = and i16 %5, 2048, !dbg !1627
+  %tobool5 = icmp eq i16 %and, 0, !dbg !1627
+  %sub = add nsw i32 %conv, -48, !dbg !1628
+  call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !504), !dbg !1628
+  %blockSize100k.0.sub = select i1 %tobool5, i32 %blockSize100k.084, i32 %sub, !dbg !1627
+  br label %sw.epilog, !dbg !1627
 
 sw.epilog:                                        ; preds = %sw.default, %while.body, %sw.bb2, %sw.bb1
-  %writing.1 = phi i32 [ %writing.07, %sw.bb2 ], [ 1, %sw.bb1 ], [ 0, %while.body ], [ %writing.07, %sw.default ]
-  %blockSize100k.1 = phi i32 [ %blockSize100k.08, %sw.bb2 ], [ %blockSize100k.08, %sw.bb1 ], [ %blockSize100k.08, %while.body ], [ %blockSize100k.0.sub, %sw.default ]
-  %incdec.ptr = getelementptr inbounds i8* %mode.addr.09, i64 1
-  %5 = load i8* %incdec.ptr, align 1, !tbaa !1
-  %tobool = icmp eq i8 %5, 0
-  br i1 %tobool, label %while.end, label %while.body
+  %writing.1 = phi i32 [ %writing.083, %sw.bb2 ], [ 1, %sw.bb1 ], [ 0, %while.body ], [ %writing.083, %sw.default ]
+  %blockSize100k.1 = phi i32 [ %blockSize100k.084, %sw.bb2 ], [ %blockSize100k.084, %sw.bb1 ], [ %blockSize100k.084, %while.body ], [ %blockSize100k.0.sub, %sw.default ]
+  %smallMode.1 = phi i32 [ 1, %sw.bb2 ], [ %smallMode.086, %sw.bb1 ], [ %smallMode.086, %while.body ], [ %smallMode.086, %sw.default ]
+  %incdec.ptr = getelementptr inbounds i8* %mode.addr.085, i64 1, !dbg !1630
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !499), !dbg !1630
+  %6 = load i8* %incdec.ptr, align 1, !dbg !1620, !tbaa !616
+  %tobool = icmp eq i8 %6, 0, !dbg !1620
+  br i1 %tobool, label %while.end, label %while.body, !dbg !1620
 
 while.end:                                        ; preds = %sw.epilog, %while.cond.preheader
+  %smallMode.0.lcssa = phi i32 [ 0, %while.cond.preheader ], [ %smallMode.1, %sw.epilog ]
   %blockSize100k.0.lcssa = phi i32 [ 9, %while.cond.preheader ], [ %blockSize100k.1, %sw.epilog ]
   %writing.0.lcssa = phi i32 [ 0, %while.cond.preheader ], [ %writing.1, %sw.epilog ]
-  %tobool9 = icmp ne i32 %writing.0.lcssa, 0
-  %strlen = call i64 @strlen(i8* %0)
-  %endptr = getelementptr [10 x i8]* %mode2, i64 0, i64 %strlen
-  %6 = bitcast i8* %endptr to i16*
-  %7 = select i1 %tobool9, i16 119, i16 114
-  store i16 %7, i16* %6, align 1
-  %strlen1 = call i64 @strlen(i8* %0)
-  %endptr2 = getelementptr [10 x i8]* %mode2, i64 0, i64 %strlen1
-  %8 = bitcast i8* %endptr2 to i16*
-  store i16 98, i16* %8, align 1
-  %cmp13 = icmp eq i32 %open_mode, 0
-  br i1 %cmp13, label %if.then15, label %cleanup
+  %tobool9 = icmp ne i32 %writing.0.lcssa, 0, !dbg !1631
+  %strlen = call i64 @strlen(i8* %1), !dbg !1631
+  %endptr = getelementptr [10 x i8]* %mode2, i64 0, i64 %strlen, !dbg !1631
+  %7 = bitcast i8* %endptr to i16*, !dbg !1631
+  %8 = select i1 %tobool9, i16 119, i16 114, !dbg !1631
+  store i16 %8, i16* %7, align 1, !dbg !1631
+  %strlen79 = call i64 @strlen(i8* %1), !dbg !1632
+  %endptr80 = getelementptr [10 x i8]* %mode2, i64 0, i64 %strlen79, !dbg !1632
+  %9 = bitcast i8* %endptr80 to i16*, !dbg !1632
+  store i16 98, i16* %9, align 1, !dbg !1632
+  %cmp13 = icmp eq i32 %open_mode, 0, !dbg !1633
+  br i1 %cmp13, label %if.then15, label %if.else27, !dbg !1633
 
 if.then15:                                        ; preds = %while.end
-  %cmp16 = icmp eq i8* %path, null
-  br i1 %cmp16, label %if.end26, label %lor.lhs.false
+  %cmp16 = icmp eq i8* %path, null, !dbg !1634
+  br i1 %cmp16, label %if.then21, label %lor.lhs.false, !dbg !1634
 
 lor.lhs.false:                                    ; preds = %if.then15
-  %strcmpload = load i8* %path, align 1
-  %cmp19.not = icmp ne i8 %strcmpload, 0
-  %tobool9.not = xor i1 %tobool9, true
-  %brmerge = or i1 %cmp19.not, %tobool9.not
-  br i1 %brmerge, label %cleanup, label %if.then32
+  %strcmpload = load i8* %path, align 1, !dbg !1634
+  %cmp19 = icmp eq i8 %strcmpload, 0, !dbg !1634
+  br i1 %cmp19, label %if.then21, label %if.else, !dbg !1634
 
-if.end26:                                         ; preds = %if.then15
-  br i1 %tobool9, label %if.then32, label %cleanup
+if.then21:                                        ; preds = %lor.lhs.false, %if.then15
+  %10 = load %struct._IO_FILE** @stdout, align 8, !dbg !1636, !tbaa !615
+  %11 = load %struct._IO_FILE** @stdin, align 8, !dbg !1636, !tbaa !615
+  %cond23 = select i1 %tobool9, %struct._IO_FILE* %10, %struct._IO_FILE* %11, !dbg !1636
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %cond23}, i64 0, metadata !510), !dbg !1636
+  br label %if.end30, !dbg !1638
 
-if.then32:                                        ; preds = %lor.lhs.false, %if.end26
-  %cmp33 = icmp slt i32 %blockSize100k.0.lcssa, 1
-  %.blockSize100k.0 = select i1 %cmp33, i32 1, i32 %blockSize100k.0.lcssa
-  %cmp37 = icmp sgt i32 %.blockSize100k.0, 9
-  %blockSize100k.3 = select i1 %cmp37, i32 9, i32 %.blockSize100k.0
-  %call41 = call i8* @BZ2_bzWriteOpen(i32* %bzerr, i32 1, i32 %blockSize100k.3, i32 0, i32 30) #13
-  br label %cleanup
+if.else:                                          ; preds = %lor.lhs.false
+  %call25 = call %struct._IO_FILE* @fopen(i8* %path, i8* %1) #12, !dbg !1639
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %call25}, i64 0, metadata !510), !dbg !1639
+  br label %if.end30
 
-cleanup:                                          ; preds = %lor.lhs.false, %if.end26, %while.end, %if.then32, %entry
-  %retval.0 = phi i8* [ null, %entry ], [ null, %if.end26 ], [ %call41, %if.then32 ], [ null, %lor.lhs.false ], [ null, %while.end ]
-  ret i8* %retval.0
+if.else27:                                        ; preds = %while.end
+  %call29 = call %struct._IO_FILE* @fdopen(i32 %fd, i8* %1) #12, !dbg !1641
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %call29}, i64 0, metadata !510), !dbg !1641
+  br label %if.end30
+
+if.end30:                                         ; preds = %if.then21, %if.else, %if.else27
+  %fp.0 = phi %struct._IO_FILE* [ %cond23, %if.then21 ], [ %call25, %if.else ], [ %call29, %if.else27 ]
+  %cmp31 = icmp eq %struct._IO_FILE* %fp.0, null, !dbg !1643
+  br i1 %cmp31, label %cleanup, label %if.end34, !dbg !1643
+
+if.end34:                                         ; preds = %if.end30
+  br i1 %tobool9, label %if.then36, label %if.else46, !dbg !1644
+
+if.then36:                                        ; preds = %if.end34
+  %cmp37 = icmp slt i32 %blockSize100k.0.lcssa, 1, !dbg !1645
+  call void @llvm.dbg.value(metadata !1623, i64 0, metadata !504), !dbg !1645
+  %.blockSize100k.0 = select i1 %cmp37, i32 1, i32 %blockSize100k.0.lcssa, !dbg !1645
+  %cmp41 = icmp sgt i32 %.blockSize100k.0, 9, !dbg !1647
+  call void @llvm.dbg.value(metadata !1607, i64 0, metadata !504), !dbg !1647
+  %blockSize100k.3 = select i1 %cmp41, i32 9, i32 %.blockSize100k.0, !dbg !1647
+  %call45 = call i8* @BZ2_bzWriteOpen(i32* %bzerr, %struct._IO_FILE* %fp.0, i32 %blockSize100k.3, i32 0, i32 30) #14, !dbg !1648
+  call void @llvm.dbg.value(metadata !{i8* %call45}, i64 0, metadata !511), !dbg !1648
+  br label %if.end49, !dbg !1649
+
+if.else46:                                        ; preds = %if.end34
+  %call48 = call i8* @BZ2_bzReadOpen(i32* %bzerr, %struct._IO_FILE* %fp.0, i32 0, i32 %smallMode.0.lcssa, i8* %0, i32 0) #14, !dbg !1650
+  call void @llvm.dbg.value(metadata !{i8* %call48}, i64 0, metadata !511), !dbg !1650
+  br label %if.end49
+
+if.end49:                                         ; preds = %if.else46, %if.then36
+  %bzfp.0 = phi i8* [ %call45, %if.then36 ], [ %call48, %if.else46 ]
+  %cmp50 = icmp eq i8* %bzfp.0, null, !dbg !1652
+  br i1 %cmp50, label %if.then52, label %cleanup, !dbg !1652
+
+if.then52:                                        ; preds = %if.end49
+  %12 = load %struct._IO_FILE** @stdin, align 8, !dbg !1653, !tbaa !615
+  %cmp53 = icmp eq %struct._IO_FILE* %fp.0, %12, !dbg !1653
+  %13 = load %struct._IO_FILE** @stdout, align 8, !dbg !1653, !tbaa !615
+  %cmp55 = icmp eq %struct._IO_FILE* %fp.0, %13, !dbg !1653
+  %or.cond = or i1 %cmp53, %cmp55, !dbg !1653
+  br i1 %or.cond, label %cleanup, label %if.then57, !dbg !1653
+
+if.then57:                                        ; preds = %if.then52
+  %call58 = call i32 @fclose(%struct._IO_FILE* %fp.0) #12, !dbg !1653
+  br label %cleanup, !dbg !1653
+
+cleanup:                                          ; preds = %if.end49, %if.then57, %if.then52, %if.end30, %entry
+  %retval.0 = phi i8* [ null, %entry ], [ null, %if.end30 ], [ null, %if.then52 ], [ null, %if.then57 ], [ %bzfp.0, %if.end49 ]
+  call void @llvm.lifetime.end(i64 5000, i8* %0) #9, !dbg !1655
+  ret i8* %retval.0, !dbg !1655
 }

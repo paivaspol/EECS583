@@ -1,0 +1,93 @@
+define linkonce_odr i32* @_ZN6soplex7DataSetIiE6createERNS_7DataKeyE(%"class.soplex::DataSet"* nocapture %this, %"class.soplex::DataKey"* nocapture %newkey) #6 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataSet"* %this}, i64 0, metadata !3307), !dbg !3757
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataKey"* %newkey}, i64 0, metadata !3308), !dbg !3757
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataSet"* %this}, i64 0, metadata !3758), !dbg !3761
+  %thenum.i = getelementptr inbounds %"class.soplex::DataSet"* %this, i64 0, i32 4, !dbg !3762
+  %0 = load i32* %thenum.i, align 4, !dbg !3762, !tbaa !3494
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataSet"* %this}, i64 0, metadata !3763), !dbg !3764
+  %themax.i = getelementptr inbounds %"class.soplex::DataSet"* %this, i64 0, i32 2, !dbg !3765
+  %1 = load i32* %themax.i, align 4, !dbg !3765, !tbaa !3494
+  %cmp = icmp slt i32 %0, %1, !dbg !3759
+  br i1 %cmp, label %if.end, label %if.then, !dbg !3759
+
+if.then:                                          ; preds = %entry
+  tail call void @abort() #15, !dbg !3766
+  unreachable, !dbg !3766
+
+if.end:                                           ; preds = %entry
+  %firstfree = getelementptr inbounds %"class.soplex::DataSet"* %this, i64 0, i32 5, !dbg !3767
+  %2 = load i32* %firstfree, align 4, !dbg !3767, !tbaa !3494
+  %sub3 = xor i32 %1, -1, !dbg !3767
+  %cmp4 = icmp eq i32 %2, %sub3, !dbg !3767
+  br i1 %cmp4, label %if.else, label %if.then5, !dbg !3767
+
+if.then5:                                         ; preds = %if.end
+  %3 = bitcast %"class.soplex::DataKey"* %newkey to i32*, !dbg !3768
+  %bf.load = load i32* %3, align 4, !dbg !3768
+  %bf.value = shl i32 %2, 8, !dbg !3768
+  %4 = and i32 %bf.load, 255, !dbg !3768
+  %bf.clear = or i32 %4, %bf.value, !dbg !3768
+  %bf.set = xor i32 %bf.clear, -256, !dbg !3768
+  store i32 %bf.set, i32* %3, align 4, !dbg !3768
+  %bf.ashr = ashr i32 %bf.set, 8, !dbg !3770
+  %idxprom = sext i32 %bf.ashr to i64, !dbg !3770
+  %theitem = getelementptr inbounds %"class.soplex::DataSet"* %this, i64 0, i32 0, !dbg !3770
+  %5 = load %"struct.soplex::DataSet<int>::Item"** %theitem, align 8, !dbg !3770, !tbaa !3479
+  %info = getelementptr inbounds %"struct.soplex::DataSet<int>::Item"* %5, i64 %idxprom, i32 1, !dbg !3770
+  %6 = load i32* %info, align 4, !dbg !3770, !tbaa !3494
+  store i32 %6, i32* %firstfree, align 4, !dbg !3770, !tbaa !3494
+  %bf.load.i.pre = load i32* %3, align 4, !dbg !3771
+  br label %if.end16, !dbg !3774
+
+if.else:                                          ; preds = %if.end
+  %thesize = getelementptr inbounds %"class.soplex::DataSet"* %this, i64 0, i32 3, !dbg !3775
+  %7 = load i32* %thesize, align 4, !dbg !3775, !tbaa !3494
+  %inc = add nsw i32 %7, 1, !dbg !3775
+  store i32 %inc, i32* %thesize, align 4, !dbg !3775, !tbaa !3494
+  %8 = bitcast %"class.soplex::DataKey"* %newkey to i32*, !dbg !3775
+  %bf.load11 = load i32* %8, align 4, !dbg !3775
+  %bf.shl13 = shl i32 %7, 8, !dbg !3775
+  %bf.clear14 = and i32 %bf.load11, 255, !dbg !3775
+  %bf.set15 = or i32 %bf.clear14, %bf.shl13, !dbg !3775
+  store i32 %bf.set15, i32* %8, align 4, !dbg !3775
+  %theitem24.pre = getelementptr inbounds %"class.soplex::DataSet"* %this, i64 0, i32 0, !dbg !3776
+  br label %if.end16
+
+if.end16:                                         ; preds = %if.else, %if.then5
+  %theitem24.pre-phi = phi %"struct.soplex::DataSet<int>::Item"** [ %theitem24.pre, %if.else ], [ %theitem, %if.then5 ], !dbg !3776
+  %bf.load.i = phi i32 [ %bf.set15, %if.else ], [ %bf.load.i.pre, %if.then5 ]
+  %9 = load i32* %thenum.i, align 4, !dbg !3773, !tbaa !3494
+  %idxprom17 = sext i32 %9 to i64, !dbg !3773
+  %thekey = getelementptr inbounds %"class.soplex::DataSet"* %this, i64 0, i32 1, !dbg !3773
+  %10 = load %"class.soplex::DataKey"** %thekey, align 8, !dbg !3773, !tbaa !3479
+  %arrayidx18 = getelementptr inbounds %"class.soplex::DataKey"* %10, i64 %idxprom17, !dbg !3773
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataKey"* %arrayidx18}, i64 0, metadata !3777), !dbg !3778
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataKey"* %newkey}, i64 0, metadata !3779), !dbg !3778
+  %11 = bitcast %"class.soplex::DataKey"* %newkey to i32*, !dbg !3771
+  %bf.ashr11.i = and i32 %bf.load.i, 255, !dbg !3771
+  %12 = bitcast %"class.soplex::DataKey"* %arrayidx18 to i32*, !dbg !3771
+  %bf.load2.i = load i32* %12, align 4, !dbg !3771
+  %bf.clear.i = and i32 %bf.load2.i, -256, !dbg !3771
+  %bf.set.i = or i32 %bf.clear.i, %bf.ashr11.i, !dbg !3771
+  store i32 %bf.set.i, i32* %12, align 4, !dbg !3771
+  %bf.load3.i = load i32* %11, align 4, !dbg !3780
+  %bf.ashr412.i = and i32 %bf.load3.i, -256, !dbg !3780
+  %bf.set9.i = or i32 %bf.ashr412.i, %bf.ashr11.i, !dbg !3780
+  store i32 %bf.set9.i, i32* %12, align 4, !dbg !3780
+  %13 = load i32* %thenum.i, align 4, !dbg !3776, !tbaa !3494
+  %bf.load21 = load i32* %11, align 4, !dbg !3776
+  %bf.ashr22 = ashr i32 %bf.load21, 8, !dbg !3776
+  %idxprom23 = sext i32 %bf.ashr22 to i64, !dbg !3776
+  %14 = load %"struct.soplex::DataSet<int>::Item"** %theitem24.pre-phi, align 8, !dbg !3776, !tbaa !3479
+  %info26 = getelementptr inbounds %"struct.soplex::DataSet<int>::Item"* %14, i64 %idxprom23, i32 1, !dbg !3776
+  store i32 %13, i32* %info26, align 4, !dbg !3776, !tbaa !3494
+  %15 = load i32* %thenum.i, align 4, !dbg !3781, !tbaa !3494
+  %inc28 = add nsw i32 %15, 1, !dbg !3781
+  store i32 %inc28, i32* %thenum.i, align 4, !dbg !3781, !tbaa !3494
+  %bf.load29 = load i32* %11, align 4, !dbg !3782
+  %bf.ashr30 = ashr i32 %bf.load29, 8, !dbg !3782
+  %idxprom31 = sext i32 %bf.ashr30 to i64, !dbg !3782
+  %data = getelementptr inbounds %"struct.soplex::DataSet<int>::Item"* %14, i64 %idxprom31, i32 0, !dbg !3782
+  ret i32* %data, !dbg !3782
+}

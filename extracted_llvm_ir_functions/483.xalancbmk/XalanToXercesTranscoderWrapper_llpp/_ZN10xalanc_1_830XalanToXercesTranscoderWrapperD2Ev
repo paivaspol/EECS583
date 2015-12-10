@@ -1,0 +1,40 @@
+define void @_ZN10xalanc_1_830XalanToXercesTranscoderWrapperD2Ev(%"class.xalanc_1_8::XalanToXercesTranscoderWrapper"* %this) unnamed_addr #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XalanToXercesTranscoderWrapper"* %this}, i64 0, metadata !2154), !dbg !2282
+  %0 = getelementptr inbounds %"class.xalanc_1_8::XalanToXercesTranscoderWrapper"* %this, i64 0, i32 0, i32 0, !dbg !2283
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([7 x i8*]* @_ZTVN10xalanc_1_830XalanToXercesTranscoderWrapperE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %0, align 8, !dbg !2283, !tbaa !2274
+  %m_transcoder = getelementptr inbounds %"class.xalanc_1_8::XalanToXercesTranscoderWrapper"* %this, i64 0, i32 1, !dbg !2284
+  %1 = load %"class.xercesc_2_5::XMLTranscoder"** %m_transcoder, align 8, !dbg !2284, !tbaa !2276
+  %isnull = icmp eq %"class.xercesc_2_5::XMLTranscoder"* %1, null, !dbg !2284
+  br i1 %isnull, label %delete.end, label %delete.notnull, !dbg !2284
+
+delete.notnull:                                   ; preds = %entry
+  %2 = bitcast %"class.xercesc_2_5::XMLTranscoder"* %1 to void (%"class.xercesc_2_5::XMLTranscoder"*)***, !dbg !2284
+  %vtable = load void (%"class.xercesc_2_5::XMLTranscoder"*)*** %2, align 8, !dbg !2284, !tbaa !2274
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::XMLTranscoder"*)** %vtable, i64 1, !dbg !2284
+  %3 = load void (%"class.xercesc_2_5::XMLTranscoder"*)** %vfn, align 8, !dbg !2284
+  invoke void %3(%"class.xercesc_2_5::XMLTranscoder"* %1) #5
+          to label %delete.end unwind label %lpad, !dbg !2284
+
+delete.end:                                       ; preds = %delete.notnull, %entry
+  %4 = getelementptr inbounds %"class.xalanc_1_8::XalanToXercesTranscoderWrapper"* %this, i64 0, i32 0, !dbg !2286
+  tail call void @_ZN10xalanc_1_821XalanOutputTranscoderD2Ev(%"class.xalanc_1_8::XalanOutputTranscoder"* %4) #5, !dbg !2286
+  ret void, !dbg !2287
+
+lpad:                                             ; preds = %delete.notnull
+  %5 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !2284
+  %6 = getelementptr inbounds %"class.xalanc_1_8::XalanToXercesTranscoderWrapper"* %this, i64 0, i32 0, !dbg !2287
+  invoke void @_ZN10xalanc_1_821XalanOutputTranscoderD2Ev(%"class.xalanc_1_8::XalanOutputTranscoder"* %6) #5
+          to label %eh.resume unwind label %terminate.lpad, !dbg !2287
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %5, !dbg !2287
+
+terminate.lpad:                                   ; preds = %lpad
+  %7 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !2287
+  %8 = extractvalue { i8*, i32 } %7, 0, !dbg !2287
+  tail call void @__clang_call_terminate(i8* %8) #7, !dbg !2287
+  unreachable, !dbg !2287
+}

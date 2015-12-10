@@ -1,0 +1,49 @@
+define void @_ZN11xercesc_2_59XMLBuffer3setEPKtj(%"class.xercesc_2_5::XMLBuffer"* nocapture %this, i16* %chars, i32 %count) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLBuffer"* %this}, i64 0, metadata !259), !dbg !819
+  tail call void @llvm.dbg.value(metadata !{i16* %chars}, i64 0, metadata !260), !dbg !819
+  tail call void @llvm.dbg.value(metadata !{i32 %count}, i64 0, metadata !261), !dbg !819
+  tail call void @llvm.dbg.value(metadata !{i32 %count}, i64 0, metadata !262), !dbg !820
+  %tobool = icmp eq i32 %count, 0, !dbg !821
+  br i1 %tobool, label %if.then, label %if.end, !dbg !821
+
+if.then:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{i16* %chars}, i64 0, metadata !822), !dbg !824
+  %cmp.i = icmp eq i16* %chars, null, !dbg !825
+  br i1 %cmp.i, label %if.end, label %lor.lhs.false.i, !dbg !825
+
+lor.lhs.false.i:                                  ; preds = %if.then
+  %0 = load i16* %chars, align 2, !dbg !825, !tbaa !798
+  %cmp1.i = icmp eq i16 %0, 0, !dbg !825
+  br i1 %cmp1.i, label %if.end, label %while.cond.i, !dbg !825
+
+while.cond.i:                                     ; preds = %lor.lhs.false.i, %while.cond.i
+  %src.pn.i = phi i16* [ %pszTmp.0.i, %while.cond.i ], [ %chars, %lor.lhs.false.i ]
+  %pszTmp.0.i = getelementptr inbounds i16* %src.pn.i, i64 1, !dbg !826
+  %1 = load i16* %pszTmp.0.i, align 2, !dbg !827, !tbaa !798
+  %tobool.i = icmp eq i16 %1, 0, !dbg !827
+  br i1 %tobool.i, label %while.end.i, label %while.cond.i, !dbg !827
+
+while.end.i:                                      ; preds = %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %pszTmp.0.i to i64, !dbg !828
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %chars to i64, !dbg !828
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !828
+  %sub.ptr.div7.i = lshr exact i64 %sub.ptr.sub.i, 1, !dbg !828
+  %conv2.i = trunc i64 %sub.ptr.div7.i to i32, !dbg !828
+  br label %if.end, !dbg !828
+
+if.end:                                           ; preds = %while.end.i, %lor.lhs.false.i, %if.then, %entry
+  %actualCount.0 = phi i32 [ %count, %entry ], [ %conv2.i, %while.end.i ], [ 0, %lor.lhs.false.i ], [ 0, %if.then ]
+  %fIndex = getelementptr inbounds %"class.xercesc_2_5::XMLBuffer"* %this, i64 0, i32 1, !dbg !829
+  store i32 0, i32* %fIndex, align 4, !dbg !829, !tbaa !806
+  tail call void @_ZN11xercesc_2_59XMLBuffer14insureCapacityEj(%"class.xercesc_2_5::XMLBuffer"* %this, i32 %actualCount.0) #3, !dbg !830
+  %fBuffer = getelementptr inbounds %"class.xercesc_2_5::XMLBuffer"* %this, i64 0, i32 4, !dbg !831
+  %2 = load i16** %fBuffer, align 8, !dbg !831, !tbaa !807
+  %3 = bitcast i16* %2 to i8*, !dbg !831
+  %4 = bitcast i16* %chars to i8*, !dbg !831
+  %conv = zext i32 %actualCount.0 to i64, !dbg !831
+  %mul = shl nuw nsw i64 %conv, 1, !dbg !831
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %3, i8* %4, i64 %mul, i32 2, i1 false), !dbg !831
+  store i32 %actualCount.0, i32* %fIndex, align 4, !dbg !832, !tbaa !806
+  ret void, !dbg !833
+}

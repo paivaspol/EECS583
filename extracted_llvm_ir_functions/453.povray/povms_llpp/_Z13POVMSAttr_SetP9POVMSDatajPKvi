@@ -1,0 +1,51 @@
+define i32 @_Z13POVMSAttr_SetP9POVMSDatajPKvi(%struct.POVMSData* %attr, i32 %type, i8* %data, i32 %datasize) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.POVMSData* %attr}, i64 0, metadata !594), !dbg !1953
+  tail call void @llvm.dbg.value(metadata !{i32 %type}, i64 0, metadata !595), !dbg !1953
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !596), !dbg !1953
+  tail call void @llvm.dbg.value(metadata !{i32 %datasize}, i64 0, metadata !597), !dbg !1953
+  %cmp = icmp eq %struct.POVMSData* %attr, null, !dbg !1954
+  %cmp1 = icmp eq i8* %data, null, !dbg !1955
+  %or.cond = or i1 %cmp, %cmp1, !dbg !1954
+  %cmp4 = icmp slt i32 %datasize, 0, !dbg !1956
+  %or.cond36 = or i1 %or.cond, %cmp4, !dbg !1954
+  br i1 %or.cond36, label %return, label %if.end6, !dbg !1954
+
+if.end6:                                          ; preds = %entry
+  %ptr = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 2, i32 0, !dbg !1957
+  %0 = load i8** %ptr, align 8, !dbg !1957, !tbaa !917
+  %cmp7 = icmp eq i8* %0, null, !dbg !1957
+  br i1 %cmp7, label %if.end9, label %return, !dbg !1957
+
+if.end9:                                          ; preds = %if.end6
+  %size = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 1, !dbg !1958
+  %1 = load i32* %size, align 4, !dbg !1958, !tbaa !937
+  %cmp10 = icmp eq i32 %1, 0, !dbg !1958
+  br i1 %cmp10, label %if.end12, label %return, !dbg !1958
+
+if.end12:                                         ; preds = %if.end9
+  %conv = sext i32 %datasize to i64, !dbg !1959
+  %call = tail call noalias i8* @malloc(i64 %conv) #9, !dbg !1959
+  store i8* %call, i8** %ptr, align 8, !dbg !1959, !tbaa !917
+  %cmp15 = icmp eq i8* %call, null, !dbg !1960
+  tail call void @llvm.dbg.value(metadata !1961, i64 0, metadata !1962) #6, !dbg !1963
+  tail call void @llvm.dbg.value(metadata !925, i64 0, metadata !1964) #6, !dbg !1963
+  tail call void @llvm.dbg.value(metadata !1965, i64 0, metadata !1966) #6, !dbg !1963
+  br i1 %cmp15, label %_Z20POVMS_AssertFunctioniPKcS0_i.exit.thread, label %if.end20, !dbg !1967
+
+_Z20POVMS_AssertFunctioniPKcS0_i.exit.thread:     ; preds = %if.end12
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !1968, !tbaa !917
+  %call.i = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([39 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([54 x i8]* @.str1, i64 0, i64 0), i32 2849, i8* getelementptr inbounds ([36 x i8]* @.str9, i64 0, i64 0)) #9, !dbg !1968
+  br label %return, !dbg !1960
+
+if.end20:                                         ; preds = %if.end12
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call, i8* %data, i64 %conv, i32 1, i1 false), !dbg !1969
+  %type23 = getelementptr inbounds %struct.POVMSData* %attr, i64 0, i32 0, !dbg !1970
+  store i32 %type, i32* %type23, align 4, !dbg !1970, !tbaa !937
+  store i32 %datasize, i32* %size, align 4, !dbg !1971, !tbaa !937
+  br label %return, !dbg !1972
+
+return:                                           ; preds = %_Z20POVMS_AssertFunctioniPKcS0_i.exit.thread, %if.end9, %if.end6, %entry, %if.end20
+  %retval.0 = phi i32 [ 0, %if.end20 ], [ -1, %entry ], [ -1, %if.end6 ], [ -1, %if.end9 ], [ -2, %_Z20POVMS_AssertFunctioniPKcS0_i.exit.thread ]
+  ret i32 %retval.0, !dbg !1972
+}

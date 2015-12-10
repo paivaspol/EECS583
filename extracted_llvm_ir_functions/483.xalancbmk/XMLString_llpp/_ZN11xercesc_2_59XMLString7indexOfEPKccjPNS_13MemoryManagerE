@@ -1,0 +1,56 @@
+define i32 @_ZN11xercesc_2_59XMLString7indexOfEPKccjPNS_13MemoryManagerE(i8* nocapture %toSearch, i8 signext %ch, i32 %fromIndex, %"class.xercesc_2_5::MemoryManager"* %manager) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %toSearch}, i64 0, metadata !1544), !dbg !2976
+  tail call void @llvm.dbg.value(metadata !{i8 %ch}, i64 0, metadata !1545), !dbg !2977
+  tail call void @llvm.dbg.value(metadata !{i32 %fromIndex}, i64 0, metadata !1546), !dbg !2978
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %manager}, i64 0, metadata !1547), !dbg !2979
+  %call = tail call i64 @strlen(i8* %toSearch) #14, !dbg !2980
+  %conv = trunc i64 %call to i32, !dbg !2980
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !1548), !dbg !2980
+  %sub = add i32 %conv, -1, !dbg !2981
+  %cmp = icmp ult i32 %sub, %fromIndex, !dbg !2981
+  br i1 %cmp, label %if.then, label %for.cond.preheader, !dbg !2981
+
+for.cond.preheader:                               ; preds = %entry
+  %cmp113 = icmp ugt i32 %conv, %fromIndex, !dbg !2982
+  br i1 %cmp113, label %for.body, label %return, !dbg !2982
+
+if.then:                                          ; preds = %entry
+  %exception = tail call i8* @__cxa_allocate_exception(i64 48) #3, !dbg !2983
+  %0 = bitcast i8* %exception to %"class.xercesc_2_5::ArrayIndexOutOfBoundsException"*, !dbg !2983
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::ArrayIndexOutOfBoundsException"* %0}, i64 0, metadata !2984), !dbg !2985
+  tail call void @llvm.dbg.value(metadata !2808, i64 0, metadata !2986), !dbg !2985
+  tail call void @llvm.dbg.value(metadata !2987, i64 0, metadata !2988), !dbg !2985
+  tail call void @llvm.dbg.value(metadata !2989, i64 0, metadata !2990), !dbg !2985
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %manager}, i64 0, metadata !2991), !dbg !2985
+  invoke void @_ZN11xercesc_2_530ArrayIndexOutOfBoundsExceptionC2EPKcjNS_10XMLExcepts5CodesEPNS_13MemoryManagerE(%"class.xercesc_2_5::ArrayIndexOutOfBoundsException"* %0, i8* getelementptr inbounds ([61 x i8]* @.str, i64 0, i64 0), i32 377, i32 82, %"class.xercesc_2_5::MemoryManager"* %manager) #11
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %if.then
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_530ArrayIndexOutOfBoundsExceptionE to i8*), i8* bitcast (void (%"class.xercesc_2_5::ArrayIndexOutOfBoundsException"*)* @_ZN11xercesc_2_530ArrayIndexOutOfBoundsExceptionD1Ev to i8*)) #12, !dbg !2983
+  unreachable, !dbg !2983
+
+lpad:                                             ; preds = %if.then
+  %1 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !2983
+  tail call void @__cxa_free_exception(i8* %exception) #3, !dbg !2983
+  resume { i8*, i32 } %1, !dbg !2983
+
+for.cond:                                         ; preds = %for.body
+  %cmp1 = icmp ult i32 %inc, %conv, !dbg !2982
+  br i1 %cmp1, label %for.body, label %return, !dbg !2982
+
+for.body:                                         ; preds = %for.cond.preheader, %for.cond
+  %i.014 = phi i32 [ %inc, %for.cond ], [ %fromIndex, %for.cond.preheader ]
+  %idxprom = zext i32 %i.014 to i64, !dbg !2992
+  %arrayidx = getelementptr inbounds i8* %toSearch, i64 %idxprom, !dbg !2992
+  %2 = load i8* %arrayidx, align 1, !dbg !2992, !tbaa !2818
+  %cmp4 = icmp eq i8 %2, %ch, !dbg !2992
+  %inc = add i32 %i.014, 1, !dbg !2982
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1549), !dbg !2982
+  br i1 %cmp4, label %return, label %for.cond, !dbg !2992
+
+return:                                           ; preds = %for.cond, %for.body, %for.cond.preheader
+  %retval.0 = phi i32 [ -1, %for.cond.preheader ], [ %i.014, %for.body ], [ -1, %for.cond ]
+  ret i32 %retval.0, !dbg !2994
+}

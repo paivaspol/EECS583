@@ -1,225 +1,247 @@
-define void @write_out_picture(%struct.storable_picture* %p, i32 %p_out) #1 {
+define void @write_out_picture(%struct.storable_picture* %p, i32 %p_out) #2 {
 entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %pic_unit_size_on_disk = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 148
-  %1 = load i32* %pic_unit_size_on_disk, align 4, !tbaa !3
-  %div = sdiv i32 %1, 8
-  %2 = load %struct.InputParameters** @input, align 8, !tbaa !0
-  %rgb_input_flag = getelementptr inbounds %struct.InputParameters* %2, i64 0, i32 139
-  %3 = load i32* %rgb_input_flag, align 4, !tbaa !3
-  %tobool = icmp eq i32 %3, 0
-  br i1 %tobool, label %land.end, label %land.rhs
+  tail call void @llvm.dbg.value(metadata !{%struct.storable_picture* %p}, i64 0, metadata !139), !dbg !746
+  tail call void @llvm.dbg.value(metadata !{i32 %p_out}, i64 0, metadata !140), !dbg !746
+  tail call void @llvm.dbg.declare(metadata !747, metadata !141), !dbg !748
+  tail call void @llvm.dbg.declare(metadata !749, metadata !145), !dbg !750
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !751, !tbaa !739
+  %pic_unit_size_on_disk = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 148, !dbg !751
+  %1 = load i32* %pic_unit_size_on_disk, align 4, !dbg !751, !tbaa !752
+  %div = sdiv i32 %1, 8, !dbg !751
+  tail call void @llvm.dbg.value(metadata !{i32 %div}, i64 0, metadata !150), !dbg !751
+  %2 = load %struct.InputParameters** @input, align 8, !dbg !753, !tbaa !739
+  %rgb_input_flag = getelementptr inbounds %struct.InputParameters* %2, i64 0, i32 139, !dbg !753
+  %3 = load i32* %rgb_input_flag, align 4, !dbg !753, !tbaa !752
+  %tobool = icmp eq i32 %3, 0, !dbg !753
+  br i1 %tobool, label %land.end, label %land.rhs, !dbg !753
 
 land.rhs:                                         ; preds = %entry
-  %yuv_format = getelementptr inbounds %struct.InputParameters* %2, i64 0, i32 18
-  %4 = load i32* %yuv_format, align 4, !tbaa !3
-  %cmp = icmp eq i32 %4, 3
+  %yuv_format = getelementptr inbounds %struct.InputParameters* %2, i64 0, i32 18, !dbg !753
+  %4 = load i32* %yuv_format, align 4, !dbg !753, !tbaa !752
+  %cmp = icmp eq i32 %4, 3, !dbg !753
   br label %land.end
 
 land.end:                                         ; preds = %entry, %land.rhs
   %5 = phi i1 [ false, %entry ], [ %cmp, %land.rhs ]
-  %non_existing = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 17
-  %6 = load i32* %non_existing, align 4, !tbaa !3
-  %tobool1 = icmp eq i32 %6, 0
-  br i1 %tobool1, label %if.end, label %return
+  %non_existing = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 17, !dbg !754
+  %6 = load i32* %non_existing, align 4, !dbg !754, !tbaa !752
+  %tobool1 = icmp eq i32 %6, 0, !dbg !754
+  br i1 %tobool1, label %if.end, label %return, !dbg !754
 
 if.end:                                           ; preds = %land.end
-  %frame_cropping_flag = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 43
-  %7 = load i32* %frame_cropping_flag, align 4, !tbaa !3
-  %tobool2 = icmp eq i32 %7, 0
-  br i1 %tobool2, label %if.end20, label %if.then3
+  %frame_cropping_flag = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 43, !dbg !755
+  %7 = load i32* %frame_cropping_flag, align 4, !dbg !755, !tbaa !752
+  %tobool2 = icmp eq i32 %7, 0, !dbg !755
+  br i1 %tobool2, label %if.end20, label %if.then3, !dbg !755
 
 if.then3:                                         ; preds = %if.end
-  %chroma_format_idc = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 41
-  %8 = load i32* %chroma_format_idc, align 4, !tbaa !3
-  %idxprom = sext i32 %8 to i64
-  %arrayidx = getelementptr inbounds [4 x i32]* @write_out_picture.SubWidthC, i64 0, i64 %idxprom
-  %9 = load i32* %arrayidx, align 4, !tbaa !3
-  %frame_cropping_rect_left_offset = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 44
-  %10 = load i32* %frame_cropping_rect_left_offset, align 4, !tbaa !3
-  %mul = mul nsw i32 %10, %9
-  %frame_cropping_rect_right_offset = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 45
-  %11 = load i32* %frame_cropping_rect_right_offset, align 4, !tbaa !3
-  %mul7 = mul nsw i32 %11, %9
-  %arrayidx10 = getelementptr inbounds [4 x i32]* @write_out_picture.SubHeightC, i64 0, i64 %idxprom
-  %12 = load i32* %arrayidx10, align 4, !tbaa !3
-  %frame_mbs_only_flag = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 42
-  %13 = load i32* %frame_mbs_only_flag, align 4, !tbaa !3
-  %sub = sub nsw i32 2, %13
-  %mul11 = mul nsw i32 %sub, %12
-  %frame_cropping_rect_top_offset = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 46
-  %14 = load i32* %frame_cropping_rect_top_offset, align 4, !tbaa !3
-  %mul12 = mul nsw i32 %mul11, %14
-  %frame_cropping_rect_bottom_offset = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 47
-  %15 = load i32* %frame_cropping_rect_bottom_offset, align 4, !tbaa !3
-  %mul19 = mul nsw i32 %mul11, %15
-  br label %if.end20
+  %chroma_format_idc = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 41, !dbg !756
+  %8 = load i32* %chroma_format_idc, align 4, !dbg !756, !tbaa !752
+  %idxprom = sext i32 %8 to i64, !dbg !756
+  %arrayidx = getelementptr inbounds [4 x i32]* @write_out_picture.SubWidthC, i64 0, i64 %idxprom, !dbg !756
+  %9 = load i32* %arrayidx, align 4, !dbg !756, !tbaa !752
+  %frame_cropping_rect_left_offset = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 44, !dbg !756
+  %10 = load i32* %frame_cropping_rect_left_offset, align 4, !dbg !756, !tbaa !752
+  %mul = mul nsw i32 %10, %9, !dbg !756
+  tail call void @llvm.dbg.value(metadata !{i32 %mul}, i64 0, metadata !146), !dbg !756
+  %frame_cropping_rect_right_offset = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 45, !dbg !758
+  %11 = load i32* %frame_cropping_rect_right_offset, align 4, !dbg !758, !tbaa !752
+  %mul7 = mul nsw i32 %11, %9, !dbg !758
+  tail call void @llvm.dbg.value(metadata !{i32 %mul7}, i64 0, metadata !147), !dbg !758
+  %arrayidx10 = getelementptr inbounds [4 x i32]* @write_out_picture.SubHeightC, i64 0, i64 %idxprom, !dbg !759
+  %12 = load i32* %arrayidx10, align 4, !dbg !759, !tbaa !752
+  %frame_mbs_only_flag = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 42, !dbg !759
+  %13 = load i32* %frame_mbs_only_flag, align 4, !dbg !759, !tbaa !752
+  %sub = sub nsw i32 2, %13, !dbg !759
+  %mul11 = mul nsw i32 %sub, %12, !dbg !759
+  %frame_cropping_rect_top_offset = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 46, !dbg !759
+  %14 = load i32* %frame_cropping_rect_top_offset, align 4, !dbg !759, !tbaa !752
+  %mul12 = mul nsw i32 %mul11, %14, !dbg !759
+  tail call void @llvm.dbg.value(metadata !{i32 %mul12}, i64 0, metadata !148), !dbg !759
+  %frame_cropping_rect_bottom_offset = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 47, !dbg !760
+  %15 = load i32* %frame_cropping_rect_bottom_offset, align 4, !dbg !760, !tbaa !752
+  %mul19 = mul nsw i32 %mul11, %15, !dbg !760
+  tail call void @llvm.dbg.value(metadata !{i32 %mul19}, i64 0, metadata !149), !dbg !760
+  br label %if.end20, !dbg !761
 
 if.end20:                                         ; preds = %if.end, %if.then3
   %crop_bottom.0 = phi i32 [ %mul19, %if.then3 ], [ 0, %if.end ]
   %crop_top.0 = phi i32 [ %mul12, %if.then3 ], [ 0, %if.end ]
   %crop_right.0 = phi i32 [ %mul7, %if.then3 ], [ 0, %if.end ]
   %crop_left.0 = phi i32 [ %mul, %if.then3 ], [ 0, %if.end ]
-  %size_x = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 18
-  %16 = load i32* %size_x, align 4, !tbaa !3
-  %size_y = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 19
-  %17 = load i32* %size_y, align 4, !tbaa !3
-  %mul21 = mul i32 %16, %div
-  %mul22 = mul i32 %mul21, %17
-  %conv = sext i32 %mul22 to i64
-  %call = tail call noalias i8* @malloc(i64 %conv) #6
-  %cmp23 = icmp eq i8* %call, null
-  br i1 %cmp23, label %if.then25, label %if.end26
+  %size_x = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 18, !dbg !762
+  %16 = load i32* %size_x, align 4, !dbg !762, !tbaa !752
+  %size_y = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 19, !dbg !762
+  %17 = load i32* %size_y, align 4, !dbg !762, !tbaa !752
+  %mul21 = mul i32 %16, %div, !dbg !762
+  %mul22 = mul i32 %mul21, %17, !dbg !762
+  %conv = sext i32 %mul22 to i64, !dbg !762
+  %call = tail call noalias i8* @malloc(i64 %conv) #8, !dbg !762
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !153), !dbg !762
+  %cmp23 = icmp eq i8* %call, null, !dbg !762
+  br i1 %cmp23, label %if.then25, label %if.end26, !dbg !762
 
 if.then25:                                        ; preds = %if.end20
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([23 x i8]* @.str1, i64 0, i64 0)) #6
-  br label %if.end26
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([23 x i8]* @.str1, i64 0, i64 0)) #8, !dbg !762
+  br label %if.end26, !dbg !762
 
 if.end26:                                         ; preds = %if.then25, %if.end20
-  br i1 %5, label %if.then28, label %if.end81
+  br i1 %5, label %if.then28, label %if.end81, !dbg !763
 
 if.then28:                                        ; preds = %if.end26
-  %frame_cropping_rect_left_offset29 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 44
-  %18 = load i32* %frame_cropping_rect_left_offset29, align 4, !tbaa !3
-  %frame_cropping_rect_right_offset30 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 45
-  %19 = load i32* %frame_cropping_rect_right_offset30, align 4, !tbaa !3
-  %frame_mbs_only_flag31 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 42
-  %20 = load i32* %frame_mbs_only_flag31, align 4, !tbaa !3
-  %sub32 = sub nsw i32 2, %20
-  %frame_cropping_rect_top_offset33 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 46
-  %21 = load i32* %frame_cropping_rect_top_offset33, align 4, !tbaa !3
-  %mul34 = mul nsw i32 %sub32, %21
-  %frame_cropping_rect_bottom_offset37 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 47
-  %22 = load i32* %frame_cropping_rect_bottom_offset37, align 4, !tbaa !3
-  %mul38 = mul nsw i32 %22, %sub32
-  %imgUV = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 30
-  %23 = load i16**** %imgUV, align 8, !tbaa !0
-  %arrayidx39 = getelementptr inbounds i16*** %23, i64 1
-  %24 = load i16*** %arrayidx39, align 8, !tbaa !0
-  %size_x_cr = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 20
-  %25 = load i32* %size_x_cr, align 4, !tbaa !3
-  %size_y_cr = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 21
-  %26 = load i32* %size_y_cr, align 4, !tbaa !3
-  tail call void @img2buf(i16** %24, i8* %call, i32 %25, i32 %26, i32 %div, i32 %18, i32 %19, i32 %mul34, i32 %mul38) #5
-  %27 = load i32* %size_y_cr, align 4, !tbaa !3
-  %mul38255 = add i32 %22, %21
-  %sum254 = mul i32 %sub32, %mul38255
-  %sub42 = sub i32 %27, %sum254
-  %28 = load i32* %size_x_cr, align 4, !tbaa !3
-  %sum256 = add i32 %19, %18
-  %sub45 = sub i32 %28, %sum256
-  %mul46 = mul i32 %sub42, %div
-  %mul47 = mul i32 %mul46, %sub45
-  %conv48 = sext i32 %mul47 to i64
-  %call49 = tail call i64 @write(i32 %p_out, i8* %call, i64 %conv48) #6
-  %29 = load %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !tbaa !0
-  %frame_cropping_flag50 = getelementptr inbounds %struct.seq_parameter_set_rbsp_t* %29, i64 0, i32 28
-  %30 = load i32* %frame_cropping_flag50, align 4, !tbaa !1
-  %tobool51 = icmp eq i32 %30, 0
-  br i1 %tobool51, label %if.end81, label %if.then52
+  %frame_cropping_rect_left_offset29 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 44, !dbg !764
+  %18 = load i32* %frame_cropping_rect_left_offset29, align 4, !dbg !764, !tbaa !752
+  tail call void @llvm.dbg.value(metadata !{i32 %18}, i64 0, metadata !146), !dbg !764
+  %frame_cropping_rect_right_offset30 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 45, !dbg !766
+  %19 = load i32* %frame_cropping_rect_right_offset30, align 4, !dbg !766, !tbaa !752
+  tail call void @llvm.dbg.value(metadata !{i32 %19}, i64 0, metadata !147), !dbg !766
+  %frame_mbs_only_flag31 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 42, !dbg !767
+  %20 = load i32* %frame_mbs_only_flag31, align 4, !dbg !767, !tbaa !752
+  %sub32 = sub nsw i32 2, %20, !dbg !767
+  %frame_cropping_rect_top_offset33 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 46, !dbg !767
+  %21 = load i32* %frame_cropping_rect_top_offset33, align 4, !dbg !767, !tbaa !752
+  %mul34 = mul nsw i32 %sub32, %21, !dbg !767
+  tail call void @llvm.dbg.value(metadata !{i32 %mul34}, i64 0, metadata !148), !dbg !767
+  %frame_cropping_rect_bottom_offset37 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 47, !dbg !768
+  %22 = load i32* %frame_cropping_rect_bottom_offset37, align 4, !dbg !768, !tbaa !752
+  %mul38 = mul nsw i32 %22, %sub32, !dbg !768
+  tail call void @llvm.dbg.value(metadata !{i32 %mul38}, i64 0, metadata !149), !dbg !768
+  %imgUV = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 30, !dbg !769
+  %23 = load i16**** %imgUV, align 8, !dbg !769, !tbaa !739
+  %arrayidx39 = getelementptr inbounds i16*** %23, i64 1, !dbg !769
+  %24 = load i16*** %arrayidx39, align 8, !dbg !769, !tbaa !739
+  %size_x_cr = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 20, !dbg !769
+  %25 = load i32* %size_x_cr, align 4, !dbg !769, !tbaa !752
+  %size_y_cr = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 21, !dbg !769
+  %26 = load i32* %size_y_cr, align 4, !dbg !769, !tbaa !752
+  tail call void @img2buf(i16** %24, i8* %call, i32 %25, i32 %26, i32 %div, i32 %18, i32 %19, i32 %mul34, i32 %mul38) #7, !dbg !769
+  %27 = load i32* %size_y_cr, align 4, !dbg !770, !tbaa !752
+  %mul38255 = add i32 %22, %21, !dbg !770
+  %sum254 = mul i32 %sub32, %mul38255, !dbg !770
+  %sub42 = sub i32 %27, %sum254, !dbg !770
+  %28 = load i32* %size_x_cr, align 4, !dbg !770, !tbaa !752
+  %sum256 = add i32 %19, %18, !dbg !770
+  %sub45 = sub i32 %28, %sum256, !dbg !770
+  %mul46 = mul i32 %sub42, %div, !dbg !770
+  %mul47 = mul i32 %mul46, %sub45, !dbg !770
+  %conv48 = sext i32 %mul47 to i64, !dbg !770
+  %call49 = tail call i64 @write(i32 %p_out, i8* %call, i64 %conv48) #8, !dbg !770
+  %29 = load %struct.seq_parameter_set_rbsp_t** @active_sps, align 8, !dbg !771, !tbaa !739
+  %frame_cropping_flag50 = getelementptr inbounds %struct.seq_parameter_set_rbsp_t* %29, i64 0, i32 28, !dbg !771
+  %30 = load i32* %frame_cropping_flag50, align 4, !dbg !771, !tbaa !740
+  %tobool51 = icmp eq i32 %30, 0, !dbg !771
+  br i1 %tobool51, label %if.end81, label %if.then52, !dbg !771
 
 if.then52:                                        ; preds = %if.then28
-  %chroma_format_idc53 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 41
-  %31 = load i32* %chroma_format_idc53, align 4, !tbaa !3
-  %idxprom54 = sext i32 %31 to i64
-  %arrayidx55 = getelementptr inbounds [4 x i32]* @write_out_picture.SubWidthC, i64 0, i64 %idxprom54
-  %32 = load i32* %arrayidx55, align 4, !tbaa !3
-  %33 = load i32* %frame_cropping_rect_left_offset29, align 4, !tbaa !3
-  %mul57 = mul nsw i32 %33, %32
-  %34 = load i32* %frame_cropping_rect_right_offset30, align 4, !tbaa !3
-  %mul62 = mul nsw i32 %34, %32
-  %arrayidx65 = getelementptr inbounds [4 x i32]* @write_out_picture.SubHeightC, i64 0, i64 %idxprom54
-  %35 = load i32* %arrayidx65, align 4, !tbaa !3
-  %36 = load i32* %frame_mbs_only_flag31, align 4, !tbaa !3
-  %sub67 = sub nsw i32 2, %36
-  %mul68 = mul nsw i32 %sub67, %35
-  %37 = load i32* %frame_cropping_rect_top_offset33, align 4, !tbaa !3
-  %mul70 = mul nsw i32 %mul68, %37
-  %38 = load i32* %frame_cropping_rect_bottom_offset37, align 4, !tbaa !3
-  %mul78 = mul nsw i32 %mul68, %38
-  br label %if.end81
+  %chroma_format_idc53 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 41, !dbg !772
+  %31 = load i32* %chroma_format_idc53, align 4, !dbg !772, !tbaa !752
+  %idxprom54 = sext i32 %31 to i64, !dbg !772
+  %arrayidx55 = getelementptr inbounds [4 x i32]* @write_out_picture.SubWidthC, i64 0, i64 %idxprom54, !dbg !772
+  %32 = load i32* %arrayidx55, align 4, !dbg !772, !tbaa !752
+  %33 = load i32* %frame_cropping_rect_left_offset29, align 4, !dbg !772, !tbaa !752
+  %mul57 = mul nsw i32 %33, %32, !dbg !772
+  tail call void @llvm.dbg.value(metadata !{i32 %mul57}, i64 0, metadata !146), !dbg !772
+  %34 = load i32* %frame_cropping_rect_right_offset30, align 4, !dbg !774, !tbaa !752
+  %mul62 = mul nsw i32 %34, %32, !dbg !774
+  tail call void @llvm.dbg.value(metadata !{i32 %mul62}, i64 0, metadata !147), !dbg !774
+  %arrayidx65 = getelementptr inbounds [4 x i32]* @write_out_picture.SubHeightC, i64 0, i64 %idxprom54, !dbg !775
+  %35 = load i32* %arrayidx65, align 4, !dbg !775, !tbaa !752
+  %36 = load i32* %frame_mbs_only_flag31, align 4, !dbg !775, !tbaa !752
+  %sub67 = sub nsw i32 2, %36, !dbg !775
+  %mul68 = mul nsw i32 %sub67, %35, !dbg !775
+  %37 = load i32* %frame_cropping_rect_top_offset33, align 4, !dbg !775, !tbaa !752
+  %mul70 = mul nsw i32 %mul68, %37, !dbg !775
+  tail call void @llvm.dbg.value(metadata !{i32 %mul70}, i64 0, metadata !148), !dbg !775
+  %38 = load i32* %frame_cropping_rect_bottom_offset37, align 4, !dbg !776, !tbaa !752
+  %mul78 = mul nsw i32 %mul68, %38, !dbg !776
+  tail call void @llvm.dbg.value(metadata !{i32 %mul78}, i64 0, metadata !149), !dbg !776
+  br label %if.end81, !dbg !777
 
 if.end81:                                         ; preds = %if.then28, %if.end26, %if.then52
   %crop_bottom.1 = phi i32 [ %mul78, %if.then52 ], [ %crop_bottom.0, %if.end26 ], [ 0, %if.then28 ]
   %crop_top.1 = phi i32 [ %mul70, %if.then52 ], [ %crop_top.0, %if.end26 ], [ 0, %if.then28 ]
   %crop_right.1 = phi i32 [ %mul62, %if.then52 ], [ %crop_right.0, %if.end26 ], [ 0, %if.then28 ]
   %crop_left.1 = phi i32 [ %mul57, %if.then52 ], [ %crop_left.0, %if.end26 ], [ 0, %if.then28 ]
-  %imgY = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 25
-  %39 = load i16*** %imgY, align 8, !tbaa !0
-  %40 = load i32* %size_x, align 4, !tbaa !3
-  %41 = load i32* %size_y, align 4, !tbaa !3
-  tail call void @img2buf(i16** %39, i8* %call, i32 %40, i32 %41, i32 %div, i32 %crop_left.1, i32 %crop_right.1, i32 %crop_top.1, i32 %crop_bottom.1) #5
-  %42 = load i32* %size_y, align 4, !tbaa !3
-  %sum = add i32 %crop_top.1, %crop_bottom.1
-  %sub86 = sub i32 %42, %sum
-  %43 = load i32* %size_x, align 4, !tbaa !3
-  %sum247 = add i32 %crop_left.1, %crop_right.1
-  %sub89 = sub i32 %43, %sum247
-  %mul90 = mul i32 %sub86, %div
-  %mul91 = mul i32 %mul90, %sub89
-  %conv92 = sext i32 %mul91 to i64
-  %call93 = tail call i64 @write(i32 %p_out, i8* %call, i64 %conv92) #6
-  %chroma_format_idc94 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 41
-  %44 = load i32* %chroma_format_idc94, align 4, !tbaa !3
-  %cmp95 = icmp eq i32 %44, 0
-  br i1 %cmp95, label %if.end139, label %if.then97
+  %imgY = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 25, !dbg !778
+  %39 = load i16*** %imgY, align 8, !dbg !778, !tbaa !739
+  %40 = load i32* %size_x, align 4, !dbg !778, !tbaa !752
+  %41 = load i32* %size_y, align 4, !dbg !778, !tbaa !752
+  tail call void @img2buf(i16** %39, i8* %call, i32 %40, i32 %41, i32 %div, i32 %crop_left.1, i32 %crop_right.1, i32 %crop_top.1, i32 %crop_bottom.1) #7, !dbg !778
+  %42 = load i32* %size_y, align 4, !dbg !779, !tbaa !752
+  %sum = add i32 %crop_top.1, %crop_bottom.1, !dbg !779
+  %sub86 = sub i32 %42, %sum, !dbg !779
+  %43 = load i32* %size_x, align 4, !dbg !779, !tbaa !752
+  %sum247 = add i32 %crop_left.1, %crop_right.1, !dbg !779
+  %sub89 = sub i32 %43, %sum247, !dbg !779
+  %mul90 = mul i32 %sub86, %div, !dbg !779
+  %mul91 = mul i32 %mul90, %sub89, !dbg !779
+  %conv92 = sext i32 %mul91 to i64, !dbg !779
+  %call93 = tail call i64 @write(i32 %p_out, i8* %call, i64 %conv92) #8, !dbg !779
+  %chroma_format_idc94 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 41, !dbg !780
+  %44 = load i32* %chroma_format_idc94, align 4, !dbg !780, !tbaa !752
+  %cmp95 = icmp eq i32 %44, 0, !dbg !780
+  br i1 %cmp95, label %if.end139, label %if.then97, !dbg !780
 
 if.then97:                                        ; preds = %if.end81
-  %frame_cropping_rect_left_offset98 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 44
-  %45 = load i32* %frame_cropping_rect_left_offset98, align 4, !tbaa !3
-  %frame_cropping_rect_right_offset99 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 45
-  %46 = load i32* %frame_cropping_rect_right_offset99, align 4, !tbaa !3
-  %frame_mbs_only_flag100 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 42
-  %47 = load i32* %frame_mbs_only_flag100, align 4, !tbaa !3
-  %sub101 = sub nsw i32 2, %47
-  %frame_cropping_rect_top_offset102 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 46
-  %48 = load i32* %frame_cropping_rect_top_offset102, align 4, !tbaa !3
-  %mul103 = mul nsw i32 %sub101, %48
-  %frame_cropping_rect_bottom_offset106 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 47
-  %49 = load i32* %frame_cropping_rect_bottom_offset106, align 4, !tbaa !3
-  %mul107 = mul nsw i32 %49, %sub101
-  %imgUV108 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 30
-  %50 = load i16**** %imgUV108, align 8, !tbaa !0
-  %51 = load i16*** %50, align 8, !tbaa !0
-  %size_x_cr110 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 20
-  %52 = load i32* %size_x_cr110, align 4, !tbaa !3
-  %size_y_cr111 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 21
-  %53 = load i32* %size_y_cr111, align 4, !tbaa !3
-  tail call void @img2buf(i16** %51, i8* %call, i32 %52, i32 %53, i32 %div, i32 %45, i32 %46, i32 %mul103, i32 %mul107) #5
-  %54 = load i32* %size_y_cr111, align 4, !tbaa !3
-  %mul107249 = add i32 %49, %48
-  %sum248 = mul i32 %sub101, %mul107249
-  %sub114 = sub i32 %54, %sum248
-  %55 = load i32* %size_x_cr110, align 4, !tbaa !3
-  %sum250 = add i32 %46, %45
-  %sub117 = sub i32 %55, %sum250
-  %mul118 = mul i32 %sub114, %div
-  %mul119 = mul i32 %mul118, %sub117
-  %conv120 = sext i32 %mul119 to i64
-  %call121 = tail call i64 @write(i32 %p_out, i8* %call, i64 %conv120) #6
-  br i1 %5, label %if.end139, label %if.then123
+  %frame_cropping_rect_left_offset98 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 44, !dbg !781
+  %45 = load i32* %frame_cropping_rect_left_offset98, align 4, !dbg !781, !tbaa !752
+  tail call void @llvm.dbg.value(metadata !{i32 %45}, i64 0, metadata !146), !dbg !781
+  %frame_cropping_rect_right_offset99 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 45, !dbg !783
+  %46 = load i32* %frame_cropping_rect_right_offset99, align 4, !dbg !783, !tbaa !752
+  tail call void @llvm.dbg.value(metadata !{i32 %46}, i64 0, metadata !147), !dbg !783
+  %frame_mbs_only_flag100 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 42, !dbg !784
+  %47 = load i32* %frame_mbs_only_flag100, align 4, !dbg !784, !tbaa !752
+  %sub101 = sub nsw i32 2, %47, !dbg !784
+  %frame_cropping_rect_top_offset102 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 46, !dbg !784
+  %48 = load i32* %frame_cropping_rect_top_offset102, align 4, !dbg !784, !tbaa !752
+  %mul103 = mul nsw i32 %sub101, %48, !dbg !784
+  tail call void @llvm.dbg.value(metadata !{i32 %mul103}, i64 0, metadata !148), !dbg !784
+  %frame_cropping_rect_bottom_offset106 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 47, !dbg !785
+  %49 = load i32* %frame_cropping_rect_bottom_offset106, align 4, !dbg !785, !tbaa !752
+  %mul107 = mul nsw i32 %49, %sub101, !dbg !785
+  tail call void @llvm.dbg.value(metadata !{i32 %mul107}, i64 0, metadata !149), !dbg !785
+  %imgUV108 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 30, !dbg !786
+  %50 = load i16**** %imgUV108, align 8, !dbg !786, !tbaa !739
+  %51 = load i16*** %50, align 8, !dbg !786, !tbaa !739
+  %size_x_cr110 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 20, !dbg !786
+  %52 = load i32* %size_x_cr110, align 4, !dbg !786, !tbaa !752
+  %size_y_cr111 = getelementptr inbounds %struct.storable_picture* %p, i64 0, i32 21, !dbg !786
+  %53 = load i32* %size_y_cr111, align 4, !dbg !786, !tbaa !752
+  tail call void @img2buf(i16** %51, i8* %call, i32 %52, i32 %53, i32 %div, i32 %45, i32 %46, i32 %mul103, i32 %mul107) #7, !dbg !786
+  %54 = load i32* %size_y_cr111, align 4, !dbg !787, !tbaa !752
+  %mul107249 = add i32 %49, %48, !dbg !787
+  %sum248 = mul i32 %sub101, %mul107249, !dbg !787
+  %sub114 = sub i32 %54, %sum248, !dbg !787
+  %55 = load i32* %size_x_cr110, align 4, !dbg !787, !tbaa !752
+  %sum250 = add i32 %46, %45, !dbg !787
+  %sub117 = sub i32 %55, %sum250, !dbg !787
+  %mul118 = mul i32 %sub114, %div, !dbg !787
+  %mul119 = mul i32 %mul118, %sub117, !dbg !787
+  %conv120 = sext i32 %mul119 to i64, !dbg !787
+  %call121 = tail call i64 @write(i32 %p_out, i8* %call, i64 %conv120) #8, !dbg !787
+  br i1 %5, label %if.end139, label %if.then123, !dbg !788
 
 if.then123:                                       ; preds = %if.then97
-  %56 = load i16**** %imgUV108, align 8, !tbaa !0
-  %arrayidx125 = getelementptr inbounds i16*** %56, i64 1
-  %57 = load i16*** %arrayidx125, align 8, !tbaa !0
-  %58 = load i32* %size_x_cr110, align 4, !tbaa !3
-  %59 = load i32* %size_y_cr111, align 4, !tbaa !3
-  tail call void @img2buf(i16** %57, i8* %call, i32 %58, i32 %59, i32 %div, i32 %45, i32 %46, i32 %mul103, i32 %mul107) #5
-  %60 = load i32* %size_y_cr111, align 4, !tbaa !3
-  %sub130 = sub i32 %60, %sum248
-  %61 = load i32* %size_x_cr110, align 4, !tbaa !3
-  %sub133 = sub i32 %61, %sum250
-  %mul134 = mul i32 %sub130, %div
-  %mul135 = mul i32 %mul134, %sub133
-  %conv136 = sext i32 %mul135 to i64
-  %call137 = tail call i64 @write(i32 %p_out, i8* %call, i64 %conv136) #6
-  br label %if.end139
+  %56 = load i16**** %imgUV108, align 8, !dbg !789, !tbaa !739
+  %arrayidx125 = getelementptr inbounds i16*** %56, i64 1, !dbg !789
+  %57 = load i16*** %arrayidx125, align 8, !dbg !789, !tbaa !739
+  %58 = load i32* %size_x_cr110, align 4, !dbg !789, !tbaa !752
+  %59 = load i32* %size_y_cr111, align 4, !dbg !789, !tbaa !752
+  tail call void @img2buf(i16** %57, i8* %call, i32 %58, i32 %59, i32 %div, i32 %45, i32 %46, i32 %mul103, i32 %mul107) #7, !dbg !789
+  %60 = load i32* %size_y_cr111, align 4, !dbg !791, !tbaa !752
+  %sub130 = sub i32 %60, %sum248, !dbg !791
+  %61 = load i32* %size_x_cr110, align 4, !dbg !791, !tbaa !752
+  %sub133 = sub i32 %61, %sum250, !dbg !791
+  %mul134 = mul i32 %sub130, %div, !dbg !791
+  %mul135 = mul i32 %mul134, %sub133, !dbg !791
+  %conv136 = sext i32 %mul135 to i64, !dbg !791
+  %call137 = tail call i64 @write(i32 %p_out, i8* %call, i64 %conv136) #8, !dbg !791
+  br label %if.end139, !dbg !792
 
 if.end139:                                        ; preds = %if.end81, %if.then97, %if.then123
-  tail call void @free(i8* %call) #6
-  br label %return
+  tail call void @free(i8* %call) #8, !dbg !793
+  br label %return, !dbg !793
 
 return:                                           ; preds = %land.end, %if.end139
-  ret void
+  ret void, !dbg !793
 }

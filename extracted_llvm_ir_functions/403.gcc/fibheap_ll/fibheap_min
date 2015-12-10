@@ -1,16 +1,17 @@
-define i8* @fibheap_min(%struct.fibheap* nocapture %heap) #2 {
+define i8* @fibheap_min(%struct.fibheap* nocapture %heap) #3 {
 entry:
-  %min = getelementptr inbounds %struct.fibheap* %heap, i64 0, i32 1
-  %0 = load %struct.fibnode** %min, align 8, !tbaa !0
-  %cmp = icmp eq %struct.fibnode* %0, null
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.fibheap* %heap}, i64 0, metadata !46), !dbg !243
+  %min = getelementptr inbounds %struct.fibheap* %heap, i64 0, i32 1, !dbg !244
+  %0 = load %struct.fibnode** %min, align 8, !dbg !244, !tbaa !204
+  %cmp = icmp eq %struct.fibnode* %0, null, !dbg !244
+  br i1 %cmp, label %return, label %if.end, !dbg !244
 
 if.end:                                           ; preds = %entry
-  %data = getelementptr inbounds %struct.fibnode* %0, i64 0, i32 5
-  %1 = load i8** %data, align 8, !tbaa !0
-  br label %return
+  %data = getelementptr inbounds %struct.fibnode* %0, i64 0, i32 5, !dbg !245
+  %1 = load i8** %data, align 8, !dbg !245, !tbaa !204
+  br label %return, !dbg !245
 
 return:                                           ; preds = %entry, %if.end
   %retval.0 = phi i8* [ %1, %if.end ], [ null, %entry ]
-  ret i8* %retval.0
+  ret i8* %retval.0, !dbg !246
 }

@@ -1,0 +1,30 @@
+define i32 @_ZN11xercesc_2_59XMLString11lastIndexOfEPKcc(i8* nocapture %toSearch, i8 signext %ch) #6 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %toSearch}, i64 0, metadata !1553), !dbg !3002
+  tail call void @llvm.dbg.value(metadata !{i8 %ch}, i64 0, metadata !1554), !dbg !3002
+  %call = tail call i64 @strlen(i8* %toSearch) #14, !dbg !3003
+  %conv = trunc i64 %call to i32, !dbg !3003
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !1555), !dbg !3003
+  %sext = shl i64 %call, 32
+  %0 = ashr exact i64 %sext, 32
+  br label %for.cond, !dbg !3004
+
+for.cond:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ %0, %entry ]
+  %i.0.in = phi i32 [ %i.0, %for.body ], [ %conv, %entry ]
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !3005
+  %i.0 = add nsw i32 %i.0.in, -1, !dbg !3004
+  %1 = trunc i64 %indvars.iv to i32, !dbg !3004
+  %cmp = icmp sgt i32 %1, 0, !dbg !3004
+  br i1 %cmp, label %for.body, label %return, !dbg !3004
+
+for.body:                                         ; preds = %for.cond
+  %arrayidx = getelementptr inbounds i8* %toSearch, i64 %indvars.iv.next, !dbg !3005
+  %2 = load i8* %arrayidx, align 1, !dbg !3005, !tbaa !2818
+  %cmp3 = icmp eq i8 %2, %ch, !dbg !3005
+  br i1 %cmp3, label %return, label %for.cond, !dbg !3005
+
+return:                                           ; preds = %for.cond, %for.body
+  %retval.0 = phi i32 [ %i.0, %for.body ], [ -1, %for.cond ]
+  ret i32 %retval.0, !dbg !3007
+}

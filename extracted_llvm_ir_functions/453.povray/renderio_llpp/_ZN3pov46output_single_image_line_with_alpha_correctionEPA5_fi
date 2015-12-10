@@ -1,0 +1,118 @@
+define void @_ZN3pov46output_single_image_line_with_alpha_correctionEPA5_fi([5 x float]* %Line, i32 %y) #0 {
+entry:
+  %Red = alloca i8, align 1
+  %Green = alloca i8, align 1
+  %Blue = alloca i8, align 1
+  %Alpha = alloca i8, align 1
+  %grey = alloca double, align 8
+  call void @llvm.dbg.value(metadata !{[5 x float]* %Line}, i64 0, metadata !137), !dbg !570
+  call void @llvm.dbg.value(metadata !{i32 %y}, i64 0, metadata !138), !dbg !570
+  call void @llvm.dbg.declare(metadata !{i8* %Red}, metadata !139), !dbg !571
+  call void @llvm.dbg.declare(metadata !{i8* %Green}, metadata !140), !dbg !571
+  call void @llvm.dbg.declare(metadata !{i8* %Blue}, metadata !141), !dbg !571
+  call void @llvm.dbg.declare(metadata !{i8* %Alpha}, metadata !142), !dbg !571
+  call void @llvm.dbg.declare(metadata !{double* %grey}, metadata !143), !dbg !572
+  %0 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !573, !tbaa !358
+  %and = and i32 %0, 65536, !dbg !573
+  %tobool = icmp eq i32 %and, 0, !dbg !573
+  call void @llvm.dbg.value(metadata !21, i64 0, metadata !144), !dbg !574
+  %1 = load i32* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 2), align 4, !dbg !577, !tbaa !358
+  %cmp1658 = icmp slt i32 %1, 0, !dbg !577
+  br i1 %tobool, label %for.cond15.preheader, label %for.cond.preheader, !dbg !573
+
+for.cond.preheader:                               ; preds = %entry
+  br i1 %cmp1658, label %for.end, label %for.body, !dbg !574
+
+for.cond15.preheader:                             ; preds = %entry
+  br i1 %cmp1658, label %if.end, label %for.body17, !dbg !577
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv62 = phi i64 [ %indvars.iv.next63, %for.body ], [ 0, %for.cond.preheader ]
+  %2 = load [5 x float]** @_ZN3pov9Temp_LineE, align 8, !dbg !580, !tbaa !354
+  %arraydecay = getelementptr inbounds [5 x float]* %2, i64 %indvars.iv62, i64 0, !dbg !580
+  %arraydecay3 = getelementptr inbounds [5 x float]* %Line, i64 %indvars.iv62, i64 0, !dbg !580
+  call fastcc void @_ZN3povL23Compensate_For_Alpha_AAEPfS0_(float* %arraydecay, float* %arraydecay3) #7, !dbg !580
+  %3 = load [5 x float]** @_ZN3pov9Temp_LineE, align 8, !dbg !582, !tbaa !354
+  %arraydecay6 = getelementptr inbounds [5 x float]* %3, i64 %indvars.iv62, i64 0, !dbg !582
+  call void @_ZN3pov14extract_colorsEPfPhS1_S1_S1_Pd(float* %arraydecay6, i8* %Red, i8* %Green, i8* %Blue, i8* %Alpha, double* %grey) #7, !dbg !582
+  call void @llvm.dbg.value(metadata !{i8* %Red}, i64 0, metadata !139), !dbg !583
+  %4 = load i8* %Red, align 1, !dbg !583, !tbaa !350
+  %5 = load i8** @_ZN3pov11Red_Row_255E, align 8, !dbg !583, !tbaa !354
+  %arrayidx8 = getelementptr inbounds i8* %5, i64 %indvars.iv62, !dbg !583
+  store i8 %4, i8* %arrayidx8, align 1, !dbg !583, !tbaa !350
+  call void @llvm.dbg.value(metadata !{i8* %Green}, i64 0, metadata !140), !dbg !584
+  %6 = load i8* %Green, align 1, !dbg !584, !tbaa !350
+  %7 = load i8** @_ZN3pov13Green_Row_255E, align 8, !dbg !584, !tbaa !354
+  %arrayidx10 = getelementptr inbounds i8* %7, i64 %indvars.iv62, !dbg !584
+  store i8 %6, i8* %arrayidx10, align 1, !dbg !584, !tbaa !350
+  call void @llvm.dbg.value(metadata !{i8* %Blue}, i64 0, metadata !141), !dbg !585
+  %8 = load i8* %Blue, align 1, !dbg !585, !tbaa !350
+  %9 = load i8** @_ZN3pov12Blue_Row_255E, align 8, !dbg !585, !tbaa !354
+  %arrayidx12 = getelementptr inbounds i8* %9, i64 %indvars.iv62, !dbg !585
+  store i8 %8, i8* %arrayidx12, align 1, !dbg !585, !tbaa !350
+  call void @llvm.dbg.value(metadata !{i8* %Alpha}, i64 0, metadata !142), !dbg !586
+  %10 = load i8* %Alpha, align 1, !dbg !586, !tbaa !350
+  %11 = load i8** @_ZN3pov13Alpha_Row_255E, align 8, !dbg !586, !tbaa !354
+  %arrayidx14 = getelementptr inbounds i8* %11, i64 %indvars.iv62, !dbg !586
+  store i8 %10, i8* %arrayidx14, align 1, !dbg !586, !tbaa !350
+  %indvars.iv.next63 = add i64 %indvars.iv62, 1, !dbg !574
+  %12 = load i32* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 2), align 4, !dbg !574, !tbaa !358
+  %13 = trunc i64 %indvars.iv62 to i32, !dbg !574
+  %cmp = icmp slt i32 %13, %12, !dbg !574
+  br i1 %cmp, label %for.body, label %for.end, !dbg !574
+
+for.end:                                          ; preds = %for.body, %for.cond.preheader
+  %14 = load [5 x float]** @_ZN3pov9Temp_LineE, align 8, !dbg !587, !tbaa !354
+  call void @llvm.dbg.value(metadata !{[5 x float]* %14}, i64 0, metadata !137), !dbg !587
+  br label %if.end, !dbg !588
+
+for.body17:                                       ; preds = %for.cond15.preheader, %for.body17
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body17 ], [ 0, %for.cond15.preheader ]
+  %arraydecay20 = getelementptr inbounds [5 x float]* %Line, i64 %indvars.iv, i64 0, !dbg !589
+  call void @_ZN3pov14extract_colorsEPfPhS1_S1_S1_Pd(float* %arraydecay20, i8* %Red, i8* %Green, i8* %Blue, i8* %Alpha, double* %grey) #7, !dbg !589
+  call void @llvm.dbg.value(metadata !{i8* %Red}, i64 0, metadata !139), !dbg !591
+  %15 = load i8* %Red, align 1, !dbg !591, !tbaa !350
+  %16 = load i8** @_ZN3pov11Red_Row_255E, align 8, !dbg !591, !tbaa !354
+  %arrayidx22 = getelementptr inbounds i8* %16, i64 %indvars.iv, !dbg !591
+  store i8 %15, i8* %arrayidx22, align 1, !dbg !591, !tbaa !350
+  call void @llvm.dbg.value(metadata !{i8* %Green}, i64 0, metadata !140), !dbg !592
+  %17 = load i8* %Green, align 1, !dbg !592, !tbaa !350
+  %18 = load i8** @_ZN3pov13Green_Row_255E, align 8, !dbg !592, !tbaa !354
+  %arrayidx24 = getelementptr inbounds i8* %18, i64 %indvars.iv, !dbg !592
+  store i8 %17, i8* %arrayidx24, align 1, !dbg !592, !tbaa !350
+  call void @llvm.dbg.value(metadata !{i8* %Blue}, i64 0, metadata !141), !dbg !593
+  %19 = load i8* %Blue, align 1, !dbg !593, !tbaa !350
+  %20 = load i8** @_ZN3pov12Blue_Row_255E, align 8, !dbg !593, !tbaa !354
+  %arrayidx26 = getelementptr inbounds i8* %20, i64 %indvars.iv, !dbg !593
+  store i8 %19, i8* %arrayidx26, align 1, !dbg !593, !tbaa !350
+  call void @llvm.dbg.value(metadata !{i8* %Alpha}, i64 0, metadata !142), !dbg !594
+  %21 = load i8* %Alpha, align 1, !dbg !594, !tbaa !350
+  %22 = load i8** @_ZN3pov13Alpha_Row_255E, align 8, !dbg !594, !tbaa !354
+  %arrayidx28 = getelementptr inbounds i8* %22, i64 %indvars.iv, !dbg !594
+  store i8 %21, i8* %arrayidx28, align 1, !dbg !594, !tbaa !350
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !577
+  %23 = load i32* getelementptr inbounds (%"struct.pov::Frame_Struct"* @_ZN3pov5FrameE, i64 0, i32 2), align 4, !dbg !577, !tbaa !358
+  %24 = trunc i64 %indvars.iv to i32, !dbg !577
+  %cmp16 = icmp slt i32 %24, %23, !dbg !577
+  br i1 %cmp16, label %for.body17, label %if.end, !dbg !577
+
+if.end:                                           ; preds = %for.cond15.preheader, %for.body17, %for.end
+  %Line.addr.0 = phi [5 x float]* [ %14, %for.end ], [ %Line, %for.body17 ], [ %Line, %for.cond15.preheader ]
+  %25 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !595, !tbaa !358
+  %and33 = and i32 %25, 4, !dbg !595
+  %tobool34 = icmp eq i32 %and33, 0, !dbg !595
+  br i1 %tobool34, label %if.end36, label %if.then35, !dbg !595
+
+if.then35:                                        ; preds = %if.end
+  call void @_ZN3pov19prepare_output_lineEPA5_f([5 x float]* %Line.addr.0) #7, !dbg !596
+  %26 = load %"class.pov::Image_File_Class"** @_ZN3pov11Output_FileE, align 8, !dbg !598, !tbaa !354
+  %27 = bitcast %"class.pov::Image_File_Class"* %26 to void (%"class.pov::Image_File_Class"*, [5 x float]*)***, !dbg !598
+  %vtable = load void (%"class.pov::Image_File_Class"*, [5 x float]*)*** %27, align 8, !dbg !598, !tbaa !355
+  %vfn = getelementptr inbounds void (%"class.pov::Image_File_Class"*, [5 x float]*)** %vtable, i64 2, !dbg !598
+  %28 = load void (%"class.pov::Image_File_Class"*, [5 x float]*)** %vfn, align 8, !dbg !598
+  call void %28(%"class.pov::Image_File_Class"* %26, [5 x float]* %Line.addr.0) #7, !dbg !598
+  br label %if.end36, !dbg !599
+
+if.end36:                                         ; preds = %if.end, %if.then35
+  ret void, !dbg !600
+}

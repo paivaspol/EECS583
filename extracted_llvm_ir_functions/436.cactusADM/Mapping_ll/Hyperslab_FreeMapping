@@ -1,69 +1,67 @@
 define i32 @Hyperslab_FreeMapping(i32 %mapping_handle) #1 {
-  %mapping.02 = load %struct.hslab_mapping_t** @mapping_list, align 8
-  %1 = icmp eq %struct.hslab_mapping_t* %mapping.02, null
-  br i1 %1, label %.loopexit, label %.lr.ph
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %mapping_handle}, i64 0, metadata !231), !dbg !522
+  %mapping.029 = load %struct.hslab_mapping_t** @mapping_list, align 8, !dbg !523
+  %tobool30 = icmp eq %struct.hslab_mapping_t* %mapping.029, null, !dbg !524
+  br i1 %tobool30, label %return, label %while.body, !dbg !524
 
-.lr.ph:                                           ; preds = %0, %31
-  %mapping.03 = phi %struct.hslab_mapping_t* [ %mapping.0, %31 ], [ %mapping.02, %0 ]
-  %2 = getelementptr inbounds %struct.hslab_mapping_t* %mapping.03, i64 0, i32 0
-  %3 = load i32* %2, align 4, !tbaa !46
-  %4 = icmp eq i32 %3, %mapping_handle
-  br i1 %4, label %5, label %31
+while.cond:                                       ; preds = %while.body
+  %next17 = getelementptr inbounds %struct.hslab_mapping_t* %mapping.031, i64 0, i32 18, !dbg !525
+  %mapping.0 = load %struct.hslab_mapping_t** %next17, align 8, !dbg !523
+  %tobool = icmp eq %struct.hslab_mapping_t* %mapping.0, null, !dbg !524
+  br i1 %tobool, label %return, label %while.body, !dbg !524
 
-; <label>:5                                       ; preds = %.lr.ph
-  %6 = icmp eq %struct.hslab_mapping_t* %mapping.03, %mapping.02
-  br i1 %6, label %7, label %11
+while.body:                                       ; preds = %entry, %while.cond
+  %mapping.031 = phi %struct.hslab_mapping_t* [ %mapping.0, %while.cond ], [ %mapping.029, %entry ]
+  %handle = getelementptr inbounds %struct.hslab_mapping_t* %mapping.031, i64 0, i32 0, !dbg !527
+  %0 = load i32* %handle, align 4, !dbg !527, !tbaa !277
+  %cmp = icmp eq i32 %0, %mapping_handle, !dbg !527
+  br i1 %cmp, label %if.then, label %while.cond, !dbg !527
 
-; <label>:7                                       ; preds = %5
-  %8 = getelementptr inbounds %struct.hslab_mapping_t* %mapping.02, i64 0, i32 18
-  %9 = bitcast %struct.hslab_mapping_t** %8 to i64*
-  %10 = load i64* %9, align 8, !tbaa !45
-  store i64 %10, i64* bitcast (%struct.hslab_mapping_t** @mapping_list to i64*), align 8, !tbaa !8
-  br label %26
+if.then:                                          ; preds = %while.body
+  %cmp1 = icmp eq %struct.hslab_mapping_t* %mapping.031, %mapping.029, !dbg !528
+  br i1 %cmp1, label %if.then2, label %if.else, !dbg !528
 
-; <label>:11                                      ; preds = %5
-  %12 = getelementptr inbounds %struct.hslab_mapping_t* %mapping.03, i64 0, i32 18
-  %13 = load %struct.hslab_mapping_t** %12, align 8, !tbaa !45
-  %14 = icmp eq %struct.hslab_mapping_t* %13, null
-  %15 = ptrtoint %struct.hslab_mapping_t* %13 to i64
-  %.pre = getelementptr inbounds %struct.hslab_mapping_t* %mapping.03, i64 0, i32 17
-  br i1 %14, label %._crit_edge, label %16
+if.then2:                                         ; preds = %if.then
+  %next = getelementptr inbounds %struct.hslab_mapping_t* %mapping.029, i64 0, i32 18, !dbg !530
+  %1 = load %struct.hslab_mapping_t** %next, align 8, !dbg !530, !tbaa !283
+  store %struct.hslab_mapping_t* %1, %struct.hslab_mapping_t** @mapping_list, align 8, !dbg !530, !tbaa !283
+  br label %if.end15, !dbg !532
 
-; <label>:16                                      ; preds = %11
-  %17 = bitcast %struct.hslab_mapping_t** %.pre to i64*
-  %18 = load i64* %17, align 8, !tbaa !44
-  %19 = getelementptr inbounds %struct.hslab_mapping_t* %13, i64 0, i32 17
-  %20 = bitcast %struct.hslab_mapping_t** %19 to i64*
-  store i64 %18, i64* %20, align 8, !tbaa !44
-  br label %._crit_edge
+if.else:                                          ; preds = %if.then
+  %next3 = getelementptr inbounds %struct.hslab_mapping_t* %mapping.031, i64 0, i32 18, !dbg !533
+  %2 = load %struct.hslab_mapping_t** %next3, align 8, !dbg !533, !tbaa !283
+  %tobool4 = icmp eq %struct.hslab_mapping_t* %2, null, !dbg !533
+  %prev8.pre = getelementptr inbounds %struct.hslab_mapping_t* %mapping.031, i64 0, i32 17, !dbg !535
+  br i1 %tobool4, label %if.end, label %if.then5, !dbg !533
 
-._crit_edge:                                      ; preds = %11, %16
-  %21 = load %struct.hslab_mapping_t** %.pre, align 8, !tbaa !44
-  %22 = icmp eq %struct.hslab_mapping_t* %21, null
-  br i1 %22, label %26, label %23
+if.then5:                                         ; preds = %if.else
+  %3 = load %struct.hslab_mapping_t** %prev8.pre, align 8, !dbg !536, !tbaa !283
+  %prev7 = getelementptr inbounds %struct.hslab_mapping_t* %2, i64 0, i32 17, !dbg !536
+  store %struct.hslab_mapping_t* %3, %struct.hslab_mapping_t** %prev7, align 8, !dbg !536, !tbaa !283
+  br label %if.end, !dbg !538
 
-; <label>:23                                      ; preds = %._crit_edge
-  %24 = getelementptr inbounds %struct.hslab_mapping_t* %21, i64 0, i32 18
-  %25 = bitcast %struct.hslab_mapping_t** %24 to i64*
-  store i64 %15, i64* %25, align 8, !tbaa !45
-  br label %26
+if.end:                                           ; preds = %if.else, %if.then5
+  %4 = load %struct.hslab_mapping_t** %prev8.pre, align 8, !dbg !535, !tbaa !283
+  %tobool9 = icmp eq %struct.hslab_mapping_t* %4, null, !dbg !535
+  br i1 %tobool9, label %if.end15, label %if.then10, !dbg !535
 
-; <label>:26                                      ; preds = %._crit_edge, %23, %7
-  %27 = getelementptr inbounds %struct.hslab_mapping_t* %mapping.03, i64 0, i32 4
-  %28 = bitcast i32** %27 to i8**
-  %29 = load i8** %28, align 8, !tbaa !11
-  tail call void @free(i8* %29) #8
-  %30 = bitcast %struct.hslab_mapping_t* %mapping.03 to i8*
-  tail call void @free(i8* %30) #8
-  br label %.loopexit
+if.then10:                                        ; preds = %if.end
+  %5 = load %struct.hslab_mapping_t** %next3, align 8, !dbg !539, !tbaa !283
+  %next13 = getelementptr inbounds %struct.hslab_mapping_t* %4, i64 0, i32 18, !dbg !539
+  store %struct.hslab_mapping_t* %5, %struct.hslab_mapping_t** %next13, align 8, !dbg !539, !tbaa !283
+  br label %if.end15, !dbg !541
 
-; <label>:31                                      ; preds = %.lr.ph
-  %32 = getelementptr inbounds %struct.hslab_mapping_t* %mapping.03, i64 0, i32 18
-  %mapping.0 = load %struct.hslab_mapping_t** %32, align 8
-  %33 = icmp eq %struct.hslab_mapping_t* %mapping.0, null
-  br i1 %33, label %.loopexit, label %.lr.ph
+if.end15:                                         ; preds = %if.end, %if.then10, %if.then2
+  %vectors = getelementptr inbounds %struct.hslab_mapping_t* %mapping.031, i64 0, i32 4, !dbg !542
+  %6 = load i32** %vectors, align 8, !dbg !542, !tbaa !283
+  %7 = bitcast i32* %6 to i8*, !dbg !542
+  tail call void @free(i8* %7) #7, !dbg !542
+  %8 = bitcast %struct.hslab_mapping_t* %mapping.031 to i8*, !dbg !543
+  tail call void @free(i8* %8) #7, !dbg !543
+  br label %return, !dbg !544
 
-.loopexit:                                        ; preds = %31, %0, %26
-  %.0 = phi i32 [ 0, %26 ], [ -1, %0 ], [ -1, %31 ]
-  ret i32 %.0
+return:                                           ; preds = %entry, %while.cond, %if.end15
+  %retval.0 = phi i32 [ 0, %if.end15 ], [ -1, %while.cond ], [ -1, %entry ]
+  ret i32 %retval.0, !dbg !545
 }

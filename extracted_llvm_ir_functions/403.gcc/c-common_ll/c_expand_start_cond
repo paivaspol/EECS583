@@ -1,61 +1,64 @@
 define void @c_expand_start_cond(%union.tree_node* %cond, i32 %compstmt_count, %union.tree_node* %if_stmt) #0 {
 entry:
-  %0 = load i32* @if_stack_space, align 4, !tbaa !0
-  %cmp = icmp eq i32 %0, 0
-  br i1 %cmp, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %cond}, i64 0, metadata !1486), !dbg !2295
+  tail call void @llvm.dbg.value(metadata !{i32 %compstmt_count}, i64 0, metadata !1487), !dbg !2296
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %if_stmt}, i64 0, metadata !1488), !dbg !2297
+  %0 = load i32* @if_stack_space, align 4, !dbg !2298, !tbaa !2299
+  %cmp = icmp eq i32 %0, 0, !dbg !2298
+  br i1 %cmp, label %if.then, label %if.else, !dbg !2298
 
 if.then:                                          ; preds = %entry
-  store i32 10, i32* @if_stack_space, align 4, !tbaa !0
-  %call = tail call noalias i8* @xmalloc(i64 320) #8
-  %1 = bitcast i8* %call to %struct.if_elt*
-  store %struct.if_elt* %1, %struct.if_elt** @if_stack, align 8, !tbaa !3
-  br label %if.end4
+  store i32 10, i32* @if_stack_space, align 4, !dbg !2302, !tbaa !2299
+  %call = tail call noalias i8* @xmalloc(i64 320) #9, !dbg !2304
+  %1 = bitcast i8* %call to %struct.if_elt*, !dbg !2304
+  store %struct.if_elt* %1, %struct.if_elt** @if_stack, align 8, !dbg !2304, !tbaa !2305
+  br label %if.end4, !dbg !2306
 
 if.else:                                          ; preds = %entry
-  %2 = load i32* @if_stack_pointer, align 4, !tbaa !0
-  %cmp1 = icmp eq i32 %0, %2
-  br i1 %cmp1, label %if.then2, label %if.end4
+  %2 = load i32* @if_stack_pointer, align 4, !dbg !2307, !tbaa !2299
+  %cmp1 = icmp eq i32 %0, %2, !dbg !2307
+  br i1 %cmp1, label %if.then2, label %if.end4, !dbg !2307
 
 if.then2:                                         ; preds = %if.else
-  %add = add nsw i32 %0, 10
-  store i32 %add, i32* @if_stack_space, align 4, !tbaa !0
-  %3 = load %struct.if_elt** @if_stack, align 8, !tbaa !3
-  %4 = bitcast %struct.if_elt* %3 to i8*
-  %conv = sext i32 %add to i64
-  %mul = shl nsw i64 %conv, 5
-  %call3 = tail call i8* @xrealloc(i8* %4, i64 %mul) #8
-  %5 = bitcast i8* %call3 to %struct.if_elt*
-  store %struct.if_elt* %5, %struct.if_elt** @if_stack, align 8, !tbaa !3
-  br label %if.end4
+  %add = add nsw i32 %0, 10, !dbg !2308
+  store i32 %add, i32* @if_stack_space, align 4, !dbg !2308, !tbaa !2299
+  %3 = load %struct.if_elt** @if_stack, align 8, !dbg !2310, !tbaa !2305
+  %4 = bitcast %struct.if_elt* %3 to i8*, !dbg !2310
+  %conv = sext i32 %add to i64, !dbg !2310
+  %mul = shl nsw i64 %conv, 5, !dbg !2310
+  %call3 = tail call i8* @xrealloc(i8* %4, i64 %mul) #9, !dbg !2310
+  %5 = bitcast i8* %call3 to %struct.if_elt*, !dbg !2310
+  store %struct.if_elt* %5, %struct.if_elt** @if_stack, align 8, !dbg !2310, !tbaa !2305
+  br label %if.end4, !dbg !2311
 
 if.end4:                                          ; preds = %if.else, %if.then2, %if.then
-  %operands = getelementptr inbounds %union.tree_node* %if_stmt, i64 0, i32 0, i32 2
-  %arrayidx = bitcast i32* %operands to %union.tree_node**
-  store %union.tree_node* %cond, %union.tree_node** %arrayidx, align 8, !tbaa !3
-  %call5 = tail call %union.tree_node* @add_stmt(%union.tree_node* %if_stmt) #8
-  %6 = load i32* @if_stack_pointer, align 4, !tbaa !0
-  %idxprom = sext i32 %6 to i64
-  %7 = load %struct.if_elt** @if_stack, align 8, !tbaa !3
-  %compstmt_count7 = getelementptr inbounds %struct.if_elt* %7, i64 %idxprom, i32 0
-  store i32 %compstmt_count, i32* %compstmt_count7, align 4, !tbaa !0
-  %8 = load i8** @input_filename, align 8, !tbaa !3
-  %9 = load i32* @if_stack_pointer, align 4, !tbaa !0
-  %idxprom8 = sext i32 %9 to i64
-  %file = getelementptr inbounds %struct.if_elt* %7, i64 %idxprom8, i32 2
-  store i8* %8, i8** %file, align 8, !tbaa !3
-  %10 = load i32* @lineno, align 4, !tbaa !0
-  %11 = load %struct.if_elt** @if_stack, align 8, !tbaa !3
-  %line = getelementptr inbounds %struct.if_elt* %11, i64 %idxprom8, i32 1
-  store i32 %10, i32* %line, align 4, !tbaa !0
-  %12 = load i32* @if_stack_pointer, align 4, !tbaa !0
-  %idxprom12 = sext i32 %12 to i64
-  %needs_warning = getelementptr inbounds %struct.if_elt* %11, i64 %idxprom12, i32 3
-  store i32 0, i32* %needs_warning, align 4, !tbaa !0
-  %13 = load i32* @if_stack_pointer, align 4, !tbaa !0
-  %idxprom14 = sext i32 %13 to i64
-  %if_stmt16 = getelementptr inbounds %struct.if_elt* %11, i64 %idxprom14, i32 4
-  store %union.tree_node* %if_stmt, %union.tree_node** %if_stmt16, align 8, !tbaa !3
-  %inc = add nsw i32 %13, 1
-  store i32 %inc, i32* @if_stack_pointer, align 4, !tbaa !0
-  ret void
+  %operands = getelementptr inbounds %union.tree_node* %if_stmt, i64 0, i32 0, i32 2, !dbg !2312
+  %arrayidx = bitcast i32* %operands to %union.tree_node**, !dbg !2312
+  store %union.tree_node* %cond, %union.tree_node** %arrayidx, align 8, !dbg !2312, !tbaa !2305
+  %call5 = tail call %union.tree_node* @add_stmt(%union.tree_node* %if_stmt) #9, !dbg !2313
+  %6 = load i32* @if_stack_pointer, align 4, !dbg !2314, !tbaa !2299
+  %idxprom = sext i32 %6 to i64, !dbg !2314
+  %7 = load %struct.if_elt** @if_stack, align 8, !dbg !2314, !tbaa !2305
+  %compstmt_count7 = getelementptr inbounds %struct.if_elt* %7, i64 %idxprom, i32 0, !dbg !2314
+  store i32 %compstmt_count, i32* %compstmt_count7, align 4, !dbg !2314, !tbaa !2299
+  %8 = load i8** @input_filename, align 8, !dbg !2315, !tbaa !2305
+  %9 = load i32* @if_stack_pointer, align 4, !dbg !2315, !tbaa !2299
+  %idxprom8 = sext i32 %9 to i64, !dbg !2315
+  %file = getelementptr inbounds %struct.if_elt* %7, i64 %idxprom8, i32 2, !dbg !2315
+  store i8* %8, i8** %file, align 8, !dbg !2315, !tbaa !2305
+  %10 = load i32* @lineno, align 4, !dbg !2316, !tbaa !2299
+  %11 = load %struct.if_elt** @if_stack, align 8, !dbg !2316, !tbaa !2305
+  %line = getelementptr inbounds %struct.if_elt* %11, i64 %idxprom8, i32 1, !dbg !2316
+  store i32 %10, i32* %line, align 4, !dbg !2316, !tbaa !2299
+  %12 = load i32* @if_stack_pointer, align 4, !dbg !2317, !tbaa !2299
+  %idxprom12 = sext i32 %12 to i64, !dbg !2317
+  %needs_warning = getelementptr inbounds %struct.if_elt* %11, i64 %idxprom12, i32 3, !dbg !2317
+  store i32 0, i32* %needs_warning, align 4, !dbg !2317, !tbaa !2299
+  %13 = load i32* @if_stack_pointer, align 4, !dbg !2318, !tbaa !2299
+  %idxprom14 = sext i32 %13 to i64, !dbg !2318
+  %if_stmt16 = getelementptr inbounds %struct.if_elt* %11, i64 %idxprom14, i32 4, !dbg !2318
+  store %union.tree_node* %if_stmt, %union.tree_node** %if_stmt16, align 8, !dbg !2318, !tbaa !2305
+  %inc = add nsw i32 %13, 1, !dbg !2319
+  store i32 %inc, i32* @if_stack_pointer, align 4, !dbg !2319, !tbaa !2299
+  ret void, !dbg !2320
 }

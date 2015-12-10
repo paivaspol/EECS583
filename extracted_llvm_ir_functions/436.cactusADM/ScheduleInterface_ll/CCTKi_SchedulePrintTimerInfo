@@ -1,132 +1,139 @@
-define internal fastcc void @CCTKi_SchedulePrintTimerInfo(%struct.cTimerData* nocapture readonly %timer, %struct.cTimerData* readonly %total_time, i8* %where, i8* %description) #1 {
-  %1 = load i32* @indent_level, align 4, !tbaa !38
-  %2 = icmp sgt i32 %1, 0
-  br i1 %2, label %3, label %5
+define internal fastcc void @CCTKi_SchedulePrintTimerInfo(%struct.cTimerData* nocapture %timer, %struct.cTimerData* %total_time, i8* %where, i8* %description) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cTimerData* %timer}, i64 0, metadata !291), !dbg !1107
+  tail call void @llvm.dbg.value(metadata !{%struct.cTimerData* %total_time}, i64 0, metadata !292), !dbg !1108
+  tail call void @llvm.dbg.value(metadata !{i8* %where}, i64 0, metadata !293), !dbg !1109
+  tail call void @llvm.dbg.value(metadata !{i8* %description}, i64 0, metadata !294), !dbg !1110
+  %0 = load i32* @indent_level, align 4, !dbg !1111, !tbaa !592
+  %cmp = icmp sgt i32 %0, 0, !dbg !1111
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1111
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str71, i64 0, i64 0), i32 %1, i8* getelementptr inbounds ([2 x i8]* @.str77, i64 0, i64 0)) #8
-  br label %5
+if.then:                                          ; preds = %entry
+  %call = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([4 x i8]* @.str63, i64 0, i64 0), i32 %0, i8* getelementptr inbounds ([2 x i8]* @.str64, i64 0, i64 0)) #8, !dbg !1112
+  br label %if.end, !dbg !1114
 
-; <label>:5                                       ; preds = %3, %0
-  %6 = load i8* %where, align 1, !tbaa !10
-  %7 = icmp eq i8 %6, 0
-  br i1 %7, label %8, label %9
+if.end:                                           ; preds = %if.then, %entry
+  %1 = load i8* %where, align 1, !dbg !1115, !tbaa !489
+  %cmp1 = icmp eq i8 %1, 0, !dbg !1115
+  br i1 %cmp1, label %if.then3, label %if.end4, !dbg !1115
 
-; <label>:8                                       ; preds = %5
-  tail call fastcc void @PrintDelimiterLine(i8 signext 45, %struct.cTimerData* %timer) #9
-  br label %9
+if.then3:                                         ; preds = %if.end
+  tail call fastcc void @PrintDelimiterLine(i8 signext 45, %struct.cTimerData* %timer) #9, !dbg !1116
+  br label %if.end4, !dbg !1118
 
-; <label>:9                                       ; preds = %8, %5
-  %10 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([19 x i8]* @.str80, i64 0, i64 0), i8* %where, i8* %description) #8
-  %11 = getelementptr inbounds %struct.cTimerData* %timer, i64 0, i32 0
-  %12 = load i32* %11, align 4, !tbaa !48
-  %13 = icmp sgt i32 %12, 0
-  br i1 %13, label %.lr.ph, label %._crit_edge
+if.end4:                                          ; preds = %if.then3, %if.end
+  %call5 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([19 x i8]* @.str65, i64 0, i64 0), i8* %where, i8* %description) #8, !dbg !1119
+  tail call void @llvm.dbg.value(metadata !37, i64 0, metadata !295), !dbg !1120
+  %n_vals = getelementptr inbounds %struct.cTimerData* %timer, i64 0, i32 0, !dbg !1120
+  %2 = load i32* %n_vals, align 4, !dbg !1120, !tbaa !592
+  %cmp6116 = icmp sgt i32 %2, 0, !dbg !1120
+  br i1 %cmp6116, label %for.body.lr.ph, label %for.end, !dbg !1120
 
-.lr.ph:                                           ; preds = %9
-  %14 = getelementptr inbounds %struct.cTimerData* %timer, i64 0, i32 1
-  %15 = icmp eq %struct.cTimerData* %total_time, null
-  %16 = getelementptr inbounds %struct.cTimerData* %total_time, i64 0, i32 1
-  br label %17
+for.body.lr.ph:                                   ; preds = %if.end4
+  %vals = getelementptr inbounds %struct.cTimerData* %timer, i64 0, i32 1, !dbg !1122
+  %tobool = icmp eq %struct.cTimerData* %total_time, null, !dbg !1124
+  %vals30 = getelementptr inbounds %struct.cTimerData* %total_time, i64 0, i32 1, !dbg !1126
+  br label %for.body, !dbg !1120
 
-; <label>:17                                      ; preds = %.lr.ph, %74
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %74 ]
-  %18 = load %struct.cTimerVal** %14, align 8, !tbaa !46
-  %19 = getelementptr inbounds %struct.cTimerVal* %18, i64 %indvars.iv, i32 1
-  %20 = load i8** %19, align 8, !tbaa !51
-  %21 = tail call i64 @strlen(i8* %20) #8
-  %22 = getelementptr inbounds %struct.cTimerVal* %18, i64 %indvars.iv, i32 2
-  %23 = load i8** %22, align 8, !tbaa !52
-  %24 = tail call i64 @strlen(i8* %23) #8
-  %25 = add i64 %21, 3
-  %26 = add i64 %25, %24
-  %27 = trunc i64 %26 to i32
-  %28 = getelementptr inbounds %struct.cTimerVal* %18, i64 %indvars.iv, i32 0
-  %29 = load i32* %28, align 4, !tbaa !49
-  switch i32 %29, label %72 [
-    i32 1, label %30
-    i32 2, label %45
-    i32 3, label %57
-  ]
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %3 = load %struct.cTimerVal** %vals, align 8, !dbg !1122, !tbaa !504
+  %heading = getelementptr inbounds %struct.cTimerVal* %3, i64 %indvars.iv, i32 1, !dbg !1122
+  %4 = load i8** %heading, align 8, !dbg !1122, !tbaa !504
+  %call8 = tail call i64 @strlen(i8* %4) #11, !dbg !1122
+  %units = getelementptr inbounds %struct.cTimerVal* %3, i64 %indvars.iv, i32 2, !dbg !1122
+  %5 = load i8** %units, align 8, !dbg !1122, !tbaa !504
+  %call12 = tail call i64 @strlen(i8* %5) #11, !dbg !1122
+  %add = add i64 %call8, 3, !dbg !1122
+  %add13 = add i64 %add, %call12, !dbg !1122
+  %conv14 = trunc i64 %add13 to i32, !dbg !1122
+  tail call void @llvm.dbg.value(metadata !{i32 %conv14}, i64 0, metadata !296), !dbg !1122
+  %type = getelementptr inbounds %struct.cTimerVal* %3, i64 %indvars.iv, i32 0, !dbg !1128
+  %6 = load i32* %type, align 4, !dbg !1128, !tbaa !489
+  switch i32 %6, label %sw.default [
+    i32 1, label %sw.bb
+    i32 2, label %sw.bb36
+    i32 3, label %sw.bb56
+  ], !dbg !1128
 
-; <label>:30                                      ; preds = %17
-  %31 = getelementptr inbounds %struct.cTimerVal* %18, i64 %indvars.iv, i32 3
-  %32 = bitcast %union.anon* %31 to i32*
-  %33 = load i32* %32, align 4, !tbaa !38
-  %34 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([7 x i8]* @.str84, i64 0, i64 0), i32 %27, i32 %33) #8
-  br i1 %15, label %74, label %35
+sw.bb:                                            ; preds = %for.body
+  %val = getelementptr inbounds %struct.cTimerVal* %3, i64 %indvars.iv, i32 3, !dbg !1129
+  %i21 = bitcast %union.anon* %val to i32*, !dbg !1129
+  %7 = load i32* %i21, align 4, !dbg !1129, !tbaa !592
+  %call22 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([7 x i8]* @.str66, i64 0, i64 0), i32 %conv14, i32 %7) #8, !dbg !1129
+  br i1 %tobool, label %for.inc, label %if.then23, !dbg !1124
 
-; <label>:35                                      ; preds = %30
-  %36 = load %struct.cTimerVal** %14, align 8, !tbaa !46
-  %37 = getelementptr inbounds %struct.cTimerVal* %36, i64 %indvars.iv, i32 3
-  %38 = bitcast %union.anon* %37 to i32*
-  %39 = load i32* %38, align 4, !tbaa !38
-  %40 = load %struct.cTimerVal** %16, align 8, !tbaa !46
-  %41 = getelementptr inbounds %struct.cTimerVal* %40, i64 %indvars.iv, i32 3
-  %42 = bitcast %union.anon* %41 to i32*
-  %43 = load i32* %42, align 4, !tbaa !38
-  %44 = add nsw i32 %43, %39
-  store i32 %44, i32* %42, align 4, !tbaa !38
-  br label %74
+if.then23:                                        ; preds = %sw.bb
+  %8 = load %struct.cTimerVal** %vals, align 8, !dbg !1126, !tbaa !504
+  %val27 = getelementptr inbounds %struct.cTimerVal* %8, i64 %indvars.iv, i32 3, !dbg !1126
+  %i28 = bitcast %union.anon* %val27 to i32*, !dbg !1126
+  %9 = load i32* %i28, align 4, !dbg !1126, !tbaa !592
+  %10 = load %struct.cTimerVal** %vals30, align 8, !dbg !1126, !tbaa !504
+  %val32 = getelementptr inbounds %struct.cTimerVal* %10, i64 %indvars.iv, i32 3, !dbg !1126
+  %i33 = bitcast %union.anon* %val32 to i32*, !dbg !1126
+  %11 = load i32* %i33, align 4, !dbg !1126, !tbaa !592
+  %add34 = add nsw i32 %11, %9, !dbg !1126
+  store i32 %add34, i32* %i33, align 4, !dbg !1126, !tbaa !592
+  br label %for.inc, !dbg !1130
 
-; <label>:45                                      ; preds = %17
-  %46 = getelementptr inbounds %struct.cTimerVal* %18, i64 %indvars.iv, i32 3, i32 0
-  %47 = load i64* %46, align 8, !tbaa !53
-  %48 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([8 x i8]* @.str85, i64 0, i64 0), i32 %27, i64 %47) #8
-  br i1 %15, label %74, label %49
+sw.bb36:                                          ; preds = %for.body
+  %l = getelementptr inbounds %struct.cTimerVal* %3, i64 %indvars.iv, i32 3, i32 0, !dbg !1131
+  %12 = load i64* %l, align 8, !dbg !1131, !tbaa !1132
+  %call41 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([8 x i8]* @.str67, i64 0, i64 0), i32 %conv14, i64 %12) #8, !dbg !1131
+  br i1 %tobool, label %for.inc, label %if.then43, !dbg !1133
 
-; <label>:49                                      ; preds = %45
-  %50 = load %struct.cTimerVal** %14, align 8, !tbaa !46
-  %51 = getelementptr inbounds %struct.cTimerVal* %50, i64 %indvars.iv, i32 3, i32 0
-  %52 = load i64* %51, align 8, !tbaa !53
-  %53 = load %struct.cTimerVal** %16, align 8, !tbaa !46
-  %54 = getelementptr inbounds %struct.cTimerVal* %53, i64 %indvars.iv, i32 3, i32 0
-  %55 = load i64* %54, align 8, !tbaa !53
-  %56 = add nsw i64 %55, %52
-  store i64 %56, i64* %54, align 8, !tbaa !53
-  br label %74
+if.then43:                                        ; preds = %sw.bb36
+  %13 = load %struct.cTimerVal** %vals, align 8, !dbg !1134, !tbaa !504
+  %l48 = getelementptr inbounds %struct.cTimerVal* %13, i64 %indvars.iv, i32 3, i32 0, !dbg !1134
+  %14 = load i64* %l48, align 8, !dbg !1134, !tbaa !1132
+  %15 = load %struct.cTimerVal** %vals30, align 8, !dbg !1134, !tbaa !504
+  %l53 = getelementptr inbounds %struct.cTimerVal* %15, i64 %indvars.iv, i32 3, i32 0, !dbg !1134
+  %16 = load i64* %l53, align 8, !dbg !1134, !tbaa !1132
+  %add54 = add nsw i64 %16, %14, !dbg !1134
+  store i64 %add54, i64* %l53, align 8, !dbg !1134, !tbaa !1132
+  br label %for.inc, !dbg !1136
 
-; <label>:57                                      ; preds = %17
-  %58 = getelementptr inbounds %struct.cTimerVal* %18, i64 %indvars.iv, i32 3
-  %59 = bitcast %union.anon* %58 to double*
-  %60 = load double* %59, align 8, !tbaa !55
-  %61 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([9 x i8]* @.str86, i64 0, i64 0), i32 %27, double %60) #8
-  br i1 %15, label %74, label %62
+sw.bb56:                                          ; preds = %for.body
+  %val60 = getelementptr inbounds %struct.cTimerVal* %3, i64 %indvars.iv, i32 3, !dbg !1137
+  %d = bitcast %union.anon* %val60 to double*, !dbg !1137
+  %17 = load double* %d, align 8, !dbg !1137, !tbaa !1138
+  %call61 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([9 x i8]* @.str68, i64 0, i64 0), i32 %conv14, double %17) #8, !dbg !1137
+  br i1 %tobool, label %for.inc, label %if.then63, !dbg !1139
 
-; <label>:62                                      ; preds = %57
-  %63 = load %struct.cTimerVal** %14, align 8, !tbaa !46
-  %64 = getelementptr inbounds %struct.cTimerVal* %63, i64 %indvars.iv, i32 3
-  %65 = bitcast %union.anon* %64 to double*
-  %66 = load double* %65, align 8, !tbaa !55
-  %67 = load %struct.cTimerVal** %16, align 8, !tbaa !46
-  %68 = getelementptr inbounds %struct.cTimerVal* %67, i64 %indvars.iv, i32 3
-  %69 = bitcast %union.anon* %68 to double*
-  %70 = load double* %69, align 8, !tbaa !55
-  %71 = fadd double %66, %70
-  store double %71, double* %69, align 8, !tbaa !55
-  br label %74
+if.then63:                                        ; preds = %sw.bb56
+  %18 = load %struct.cTimerVal** %vals, align 8, !dbg !1140, !tbaa !504
+  %val67 = getelementptr inbounds %struct.cTimerVal* %18, i64 %indvars.iv, i32 3, !dbg !1140
+  %d68 = bitcast %union.anon* %val67 to double*, !dbg !1140
+  %19 = load double* %d68, align 8, !dbg !1140, !tbaa !1138
+  %20 = load %struct.cTimerVal** %vals30, align 8, !dbg !1140, !tbaa !504
+  %val72 = getelementptr inbounds %struct.cTimerVal* %20, i64 %indvars.iv, i32 3, !dbg !1140
+  %d73 = bitcast %union.anon* %val72 to double*, !dbg !1140
+  %21 = load double* %d73, align 8, !dbg !1140, !tbaa !1138
+  %add74 = fadd double %19, %21, !dbg !1140
+  store double %add74, double* %d73, align 8, !dbg !1140, !tbaa !1138
+  br label %for.inc, !dbg !1142
 
-; <label>:72                                      ; preds = %17
-  %73 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([37 x i8]* @.str87, i64 0, i64 0), i32 2353, i8* getelementptr inbounds ([86 x i8]* @.str, i64 0, i64 0)) #8
-  br label %74
+sw.default:                                       ; preds = %for.body
+  %call76 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([37 x i8]* @.str69, i64 0, i64 0), i32 2353, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0)) #8, !dbg !1143
+  br label %for.inc, !dbg !1144
 
-; <label>:74                                      ; preds = %30, %45, %57, %72, %35, %49, %62
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %75 = load i32* %11, align 4, !tbaa !48
-  %76 = sext i32 %75 to i64
-  %77 = icmp slt i64 %indvars.iv.next, %76
-  br i1 %77, label %17, label %._crit_edge
+for.inc:                                          ; preds = %sw.bb, %sw.bb36, %sw.bb56, %sw.default, %if.then23, %if.then43, %if.then63
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1120
+  %22 = load i32* %n_vals, align 4, !dbg !1120, !tbaa !592
+  %23 = trunc i64 %indvars.iv.next to i32, !dbg !1120
+  %cmp6 = icmp slt i32 %23, %22, !dbg !1120
+  br i1 %cmp6, label %for.body, label %for.end, !dbg !1120
 
-._crit_edge:                                      ; preds = %74, %9
-  %78 = tail call i32 @putchar(i32 10) #8
-  %79 = load i8* %where, align 1, !tbaa !10
-  %80 = icmp eq i8 %79, 0
-  br i1 %80, label %81, label %82
+for.end:                                          ; preds = %for.inc, %if.end4
+  %call77 = tail call i32 @putchar(i32 10) #8, !dbg !1145
+  %24 = load i8* %where, align 1, !dbg !1146, !tbaa !489
+  %cmp79 = icmp eq i8 %24, 0, !dbg !1146
+  br i1 %cmp79, label %if.then81, label %if.end82, !dbg !1146
 
-; <label>:81                                      ; preds = %._crit_edge
-  tail call fastcc void @PrintDelimiterLine(i8 signext 45, %struct.cTimerData* %timer) #9
-  br label %82
+if.then81:                                        ; preds = %for.end
+  tail call fastcc void @PrintDelimiterLine(i8 signext 45, %struct.cTimerData* %timer) #9, !dbg !1147
+  br label %if.end82, !dbg !1149
 
-; <label>:82                                      ; preds = %81, %._crit_edge
-  ret void
+if.end82:                                         ; preds = %if.then81, %for.end
+  ret void, !dbg !1150
 }

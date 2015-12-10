@@ -1,39 +1,41 @@
 define i32 @__sputc(i32 %_c, %struct.__sFILE* %_p) #0 {
-  %1 = getelementptr inbounds %struct.__sFILE* %_p, i64 0, i32 2
-  %2 = load i32* %1, align 4, !tbaa !2
-  %3 = add nsw i32 %2, -1
-  store i32 %3, i32* %1, align 4, !tbaa !2
-  %4 = icmp sgt i32 %2, 0
-  br i1 %4, label %._crit_edge, label %5
+  tail call void @llvm.dbg.value(metadata i32 %_c, i64 0, metadata !123, metadata !382), !dbg !383
+  tail call void @llvm.dbg.value(metadata %struct.__sFILE* %_p, i64 0, metadata !124, metadata !382), !dbg !384
+  %1 = getelementptr inbounds %struct.__sFILE* %_p, i64 0, i32 2, !dbg !385
+  %2 = load i32* %1, align 4, !dbg !387, !tbaa !388
+  %3 = add nsw i32 %2, -1, !dbg !387
+  store i32 %3, i32* %1, align 4, !dbg !387, !tbaa !388
+  %4 = icmp sgt i32 %2, 0, !dbg !397
+  br i1 %4, label %._crit_edge, label %5, !dbg !398
 
 ._crit_edge:                                      ; preds = %0
-  %.pre = and i32 %_c, 255
-  br label %10
+  %.pre = and i32 %_c, 255, !dbg !399
+  br label %10, !dbg !398
 
 ; <label>:5                                       ; preds = %0
-  %6 = getelementptr inbounds %struct.__sFILE* %_p, i64 0, i32 6
-  %7 = load i32* %6, align 4, !tbaa !11
-  %8 = icmp sle i32 %2, %7
+  %6 = getelementptr inbounds %struct.__sFILE* %_p, i64 0, i32 6, !dbg !400
+  %7 = load i32* %6, align 4, !dbg !400, !tbaa !401
+  %8 = icmp sle i32 %2, %7, !dbg !402
   %sext.mask = and i32 %_c, 255
-  %9 = icmp eq i32 %sext.mask, 10
-  %or.cond = or i1 %9, %8
-  br i1 %or.cond, label %15, label %10
+  %9 = icmp eq i32 %sext.mask, 10, !dbg !403
+  %or.cond = or i1 %9, %8, !dbg !404
+  br i1 %or.cond, label %15, label %10, !dbg !404
 
 ; <label>:10                                      ; preds = %._crit_edge, %5
-  %.pre-phi = phi i32 [ %.pre, %._crit_edge ], [ %sext.mask, %5 ]
-  %11 = trunc i32 %_c to i8
-  %12 = getelementptr inbounds %struct.__sFILE* %_p, i64 0, i32 0
-  %13 = load i8** %12, align 8, !tbaa !12
-  %14 = getelementptr inbounds i8* %13, i64 1
-  store i8* %14, i8** %12, align 8, !tbaa !12
-  store i8 %11, i8* %13, align 1, !tbaa !13
-  br label %17
+  %.pre-phi = phi i32 [ %.pre, %._crit_edge ], [ %sext.mask, %5 ], !dbg !399
+  %11 = trunc i32 %_c to i8, !dbg !405
+  %12 = getelementptr inbounds %struct.__sFILE* %_p, i64 0, i32 0, !dbg !406
+  %13 = load i8** %12, align 8, !dbg !407, !tbaa !408
+  %14 = getelementptr inbounds i8* %13, i64 1, !dbg !407
+  store i8* %14, i8** %12, align 8, !dbg !407, !tbaa !408
+  store i8 %11, i8* %13, align 1, !dbg !409, !tbaa !410
+  br label %17, !dbg !411
 
 ; <label>:15                                      ; preds = %5
-  %16 = tail call i32 @__swbuf(i32 %_c, %struct.__sFILE* %_p) #9
-  br label %17
+  %16 = tail call i32 @__swbuf(i32 %_c, %struct.__sFILE* %_p) #9, !dbg !412
+  br label %17, !dbg !413
 
 ; <label>:17                                      ; preds = %15, %10
   %.0 = phi i32 [ %.pre-phi, %10 ], [ %16, %15 ]
-  ret i32 %.0
+  ret i32 %.0, !dbg !414
 }

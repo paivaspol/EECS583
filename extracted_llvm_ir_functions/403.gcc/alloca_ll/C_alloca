@@ -1,78 +1,86 @@
 define i8* @C_alloca(i64 %size) #0 {
 entry:
   %probe = alloca i8, align 1
-  %0 = load i32* @stack_dir, align 4, !tbaa !0
-  %cmp = icmp eq i32 %0, 0
-  br i1 %cmp, label %if.then, label %if.end
+  call void @llvm.dbg.value(metadata !{i64 %size}, i64 0, metadata !12), !dbg !48
+  call void @llvm.dbg.declare(metadata !{i8* %probe}, metadata !13), !dbg !49
+  call void @llvm.dbg.value(metadata !{i8* %probe}, i64 0, metadata !15), !dbg !50
+  %0 = load i32* @stack_dir, align 4, !dbg !51, !tbaa !52
+  %cmp = icmp eq i32 %0, 0, !dbg !51
+  br i1 %cmp, label %if.then, label %if.end, !dbg !51
 
 if.then:                                          ; preds = %entry
-  call fastcc void @find_stack_direction() #4
-  br label %if.end
+  call fastcc void @find_stack_direction() #5, !dbg !55
+  br label %if.end, !dbg !55
 
 if.end:                                           ; preds = %if.then, %entry
-  %1 = load %union.hdr** @last_alloca_header, align 8, !tbaa !3
-  %cmp134 = icmp eq %union.hdr* %1, null
-  br i1 %cmp134, label %for.end, label %for.body
+  %1 = load %union.hdr** @last_alloca_header, align 8, !dbg !56, !tbaa !57
+  call void @llvm.dbg.value(metadata !{%union.hdr* %1}, i64 0, metadata !17), !dbg !56
+  %cmp134 = icmp eq %union.hdr* %1, null, !dbg !56
+  br i1 %cmp134, label %for.end, label %for.body, !dbg !56
 
 for.body:                                         ; preds = %if.then9, %if.end
   %hp.035 = phi %union.hdr* [ %1, %if.end ], [ %5, %if.then9 ]
-  %2 = load i32* @stack_dir, align 4, !tbaa !0
-  %cmp2 = icmp sgt i32 %2, 0
-  br i1 %cmp2, label %land.lhs.true, label %lor.lhs.false
+  %2 = load i32* @stack_dir, align 4, !dbg !58, !tbaa !52
+  %cmp2 = icmp sgt i32 %2, 0, !dbg !58
+  br i1 %cmp2, label %land.lhs.true, label %lor.lhs.false, !dbg !58
 
 land.lhs.true:                                    ; preds = %for.body
-  %deep = getelementptr inbounds %union.hdr* %hp.035, i64 0, i32 0, i32 1
-  %3 = load i8** %deep, align 8, !tbaa !3
-  %cmp3 = icmp ugt i8* %3, %probe
-  br i1 %cmp3, label %if.then9, label %lor.lhs.false
+  %deep = getelementptr inbounds %union.hdr* %hp.035, i64 0, i32 0, i32 1, !dbg !58
+  %3 = load i8** %deep, align 8, !dbg !58, !tbaa !57
+  %cmp3 = icmp ugt i8* %3, %probe, !dbg !58
+  br i1 %cmp3, label %if.then9, label %lor.lhs.false, !dbg !58
 
 lor.lhs.false:                                    ; preds = %land.lhs.true, %for.body
-  %cmp4 = icmp slt i32 %2, 0
-  br i1 %cmp4, label %land.lhs.true5, label %for.end
+  %cmp4 = icmp slt i32 %2, 0, !dbg !58
+  br i1 %cmp4, label %land.lhs.true5, label %for.end, !dbg !58
 
 land.lhs.true5:                                   ; preds = %lor.lhs.false
-  %deep7 = getelementptr inbounds %union.hdr* %hp.035, i64 0, i32 0, i32 1
-  %4 = load i8** %deep7, align 8, !tbaa !3
-  %cmp8 = icmp ult i8* %4, %probe
-  br i1 %cmp8, label %if.then9, label %for.end
+  %deep7 = getelementptr inbounds %union.hdr* %hp.035, i64 0, i32 0, i32 1, !dbg !58
+  %4 = load i8** %deep7, align 8, !dbg !58, !tbaa !57
+  %cmp8 = icmp ult i8* %4, %probe, !dbg !58
+  br i1 %cmp8, label %if.then9, label %for.end, !dbg !58
 
 if.then9:                                         ; preds = %land.lhs.true5, %land.lhs.true
-  %next = getelementptr inbounds %union.hdr* %hp.035, i64 0, i32 0, i32 0
-  %5 = load %union.hdr** %next, align 8, !tbaa !3
-  %6 = bitcast %union.hdr* %hp.035 to i8*
-  call void @free(i8* %6) #5
-  %cmp1 = icmp eq %union.hdr* %5, null
-  br i1 %cmp1, label %for.end, label %for.body
+  %next = getelementptr inbounds %union.hdr* %hp.035, i64 0, i32 0, i32 0, !dbg !59
+  %5 = load %union.hdr** %next, align 8, !dbg !59, !tbaa !57
+  call void @llvm.dbg.value(metadata !60, i64 0, metadata !33), !dbg !59
+  %6 = bitcast %union.hdr* %hp.035 to i8*, !dbg !61
+  call void @free(i8* %6) #6, !dbg !61
+  call void @llvm.dbg.value(metadata !60, i64 0, metadata !17), !dbg !62
+  %cmp1 = icmp eq %union.hdr* %5, null, !dbg !56
+  br i1 %cmp1, label %for.end, label %for.body, !dbg !56
 
 for.end:                                          ; preds = %if.then9, %lor.lhs.false, %land.lhs.true5, %if.end
   %hp.0.lcssa = phi %union.hdr* [ null, %if.end ], [ %hp.035, %land.lhs.true5 ], [ %hp.035, %lor.lhs.false ], [ null, %if.then9 ]
-  store %union.hdr* %hp.0.lcssa, %union.hdr** @last_alloca_header, align 8, !tbaa !3
-  %cmp12 = icmp eq i64 %size, 0
-  br i1 %cmp12, label %return, label %if.end14
+  store %union.hdr* %hp.0.lcssa, %union.hdr** @last_alloca_header, align 8, !dbg !63, !tbaa !57
+  %cmp12 = icmp eq i64 %size, 0, !dbg !64
+  br i1 %cmp12, label %return, label %if.end14, !dbg !64
 
 if.end14:                                         ; preds = %for.end
-  %add = add i64 %size, 16
-  %call = call noalias i8* @xmalloc(i64 %add) #5
-  %cmp15 = icmp eq i8* %call, null
-  br i1 %cmp15, label %if.then16, label %if.end17
+  %add = add i64 %size, 16, !dbg !65
+  %call = call noalias i8* @xmalloc(i64 %add) #6, !dbg !65
+  call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !36), !dbg !65
+  %cmp15 = icmp eq i8* %call, null, !dbg !66
+  br i1 %cmp15, label %if.then16, label %if.end17, !dbg !66
 
 if.then16:                                        ; preds = %if.end14
-  call void @abort() #6
-  unreachable
+  call void @abort() #7, !dbg !67
+  unreachable, !dbg !67
 
 if.end17:                                         ; preds = %if.end14
-  %7 = load %union.hdr** @last_alloca_header, align 8, !tbaa !3
-  %8 = bitcast i8* %call to %union.hdr*
-  %next19 = bitcast i8* %call to %union.hdr**
-  store %union.hdr* %7, %union.hdr** %next19, align 8, !tbaa !3
-  %deep21 = getelementptr inbounds i8* %call, i64 8
-  %9 = bitcast i8* %deep21 to i8**
-  store i8* %probe, i8** %9, align 8, !tbaa !3
-  store %union.hdr* %8, %union.hdr** @last_alloca_header, align 8, !tbaa !3
-  %add.ptr = getelementptr inbounds i8* %call, i64 16
-  br label %return
+  %7 = load %union.hdr** @last_alloca_header, align 8, !dbg !68, !tbaa !57
+  %8 = bitcast i8* %call to %union.hdr*, !dbg !68
+  %next19 = bitcast i8* %call to %union.hdr**, !dbg !68
+  store %union.hdr* %7, %union.hdr** %next19, align 8, !dbg !68, !tbaa !57
+  %deep21 = getelementptr inbounds i8* %call, i64 8, !dbg !69
+  %9 = bitcast i8* %deep21 to i8**, !dbg !69
+  call void @llvm.dbg.value(metadata !{i8* %probe}, i64 0, metadata !13), !dbg !69
+  store i8* %probe, i8** %9, align 8, !dbg !69, !tbaa !57
+  store %union.hdr* %8, %union.hdr** @last_alloca_header, align 8, !dbg !70, !tbaa !57
+  %add.ptr = getelementptr inbounds i8* %call, i64 16, !dbg !71
+  br label %return, !dbg !71
 
 return:                                           ; preds = %for.end, %if.end17
   %retval.0 = phi i8* [ %add.ptr, %if.end17 ], [ null, %for.end ]
-  ret i8* %retval.0
+  ret i8* %retval.0, !dbg !72
 }

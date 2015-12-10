@@ -1,54 +1,56 @@
 define internal fastcc void @CCTKi_TimerDestroy(i32 %this_timer, %struct.t_Timer* %timer) #1 {
-  %1 = icmp eq %struct.t_Timer* %timer, null
-  br i1 %1, label %27, label %2
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %this_timer}, i64 0, metadata !315), !dbg !462
+  tail call void @llvm.dbg.value(metadata !{%struct.t_Timer* %timer}, i64 0, metadata !316), !dbg !462
+  %tobool = icmp eq %struct.t_Timer* %timer, null, !dbg !463
+  br i1 %tobool, label %if.end, label %land.lhs.true, !dbg !463
 
-; <label>:2                                       ; preds = %0
-  %3 = getelementptr inbounds %struct.t_Timer* %timer, i64 0, i32 0
-  %4 = load i8*** %3, align 8, !tbaa !12
-  %5 = icmp eq i8** %4, null
-  br i1 %5, label %27, label %.preheader
+land.lhs.true:                                    ; preds = %entry
+  %data = getelementptr inbounds %struct.t_Timer* %timer, i64 0, i32 0, !dbg !463
+  %0 = load i8*** %data, align 8, !dbg !463, !tbaa !355
+  %tobool1 = icmp eq i8** %0, null, !dbg !463
+  br i1 %tobool1, label %if.end, label %for.cond.preheader, !dbg !463
 
-.preheader:                                       ; preds = %2
-  %6 = bitcast i8** %4 to i8*
-  %7 = load i32* @n_clocks, align 4, !tbaa !11
-  %8 = icmp sgt i32 %7, 0
-  br i1 %8, label %.lr.ph, label %.preheader._crit_edge
+for.cond.preheader:                               ; preds = %land.lhs.true
+  %1 = load i32* @n_clocks, align 4, !dbg !464, !tbaa !359
+  %cmp13 = icmp sgt i32 %1, 0, !dbg !464
+  br i1 %cmp13, label %for.body, label %for.end, !dbg !464
 
-.lr.ph:                                           ; preds = %.preheader, %.lr.ph
-  %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %.preheader ]
-  %9 = load %struct.cHandledData** @clocks, align 8, !tbaa !9
-  %10 = trunc i64 %indvars.iv to i32
-  %11 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %9, i32 %10) #7
-  %12 = getelementptr inbounds i8* %11, i64 24
-  %13 = bitcast i8* %12 to void (i32, i8*)**
-  %14 = load void (i32, i8*)** %13, align 8, !tbaa !15
-  %15 = load i8*** %3, align 8, !tbaa !12
-  %16 = getelementptr inbounds i8** %15, i64 %indvars.iv
-  %17 = load i8** %16, align 8, !tbaa !9
-  tail call void %14(i32 %this_timer, i8* %17) #7
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %18 = load i32* @n_clocks, align 4, !tbaa !11
-  %19 = sext i32 %18 to i64
-  %20 = icmp slt i64 %indvars.iv.next, %19
-  br i1 %20, label %.lr.ph, label %._crit_edge
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
+  %2 = load %struct.cHandledData** @clocks, align 8, !dbg !467, !tbaa !355
+  %3 = trunc i64 %indvars.iv to i32, !dbg !467
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %2, i32 %3) #8, !dbg !467
+  %destroy = getelementptr inbounds i8* %call, i64 24, !dbg !469
+  %4 = bitcast i8* %destroy to void (i32, i8*)**, !dbg !469
+  %5 = load void (i32, i8*)** %4, align 8, !dbg !469, !tbaa !355
+  %6 = load i8*** %data, align 8, !dbg !469, !tbaa !355
+  %arrayidx = getelementptr inbounds i8** %6, i64 %indvars.iv, !dbg !469
+  %7 = load i8** %arrayidx, align 8, !dbg !469, !tbaa !355
+  tail call void %5(i32 %this_timer, i8* %7) #8, !dbg !469
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !464
+  %8 = load i32* @n_clocks, align 4, !dbg !464, !tbaa !359
+  %9 = trunc i64 %indvars.iv.next to i32, !dbg !464
+  %cmp = icmp slt i32 %9, %8, !dbg !464
+  br i1 %cmp, label %for.body, label %for.cond.for.end_crit_edge, !dbg !464
 
-._crit_edge:                                      ; preds = %.lr.ph
-  %.phi.trans.insert = bitcast %struct.t_Timer* %timer to i8**
-  %.pre = load i8** %.phi.trans.insert, align 8, !tbaa !12
-  br label %.preheader._crit_edge
+for.cond.for.end_crit_edge:                       ; preds = %for.body
+  %.pre = load i8*** %data, align 8, !dbg !470, !tbaa !355
+  br label %for.end, !dbg !464
 
-.preheader._crit_edge:                            ; preds = %.preheader, %._crit_edge
-  %21 = phi i8* [ %.pre, %._crit_edge ], [ %6, %.preheader ]
-  tail call void @free(i8* %21) #8
-  %22 = bitcast %struct.t_Timer* %timer to i8*
-  tail call void @free(i8* %22) #8
-  %23 = load %struct.cHandledData** @timers, align 8, !tbaa !9
-  %24 = tail call i32 @Util_DeleteHandle(%struct.cHandledData* %23, i32 %this_timer) #7
-  %25 = load i32* @n_timers, align 4, !tbaa !11
-  %26 = add nsw i32 %25, -1
-  store i32 %26, i32* @n_timers, align 4, !tbaa !11
-  br label %27
+for.end:                                          ; preds = %for.cond.for.end_crit_edge, %for.cond.preheader
+  %10 = phi i8** [ %.pre, %for.cond.for.end_crit_edge ], [ %0, %for.cond.preheader ]
+  %11 = bitcast i8** %10 to i8*, !dbg !470
+  tail call void @free(i8* %11) #8, !dbg !470
+  %12 = bitcast %struct.t_Timer* %timer to i8*, !dbg !471
+  tail call void @free(i8* %12) #8, !dbg !471
+  %13 = load %struct.cHandledData** @timers, align 8, !dbg !472, !tbaa !355
+  %call4 = tail call i32 @Util_DeleteHandle(%struct.cHandledData* %13, i32 %this_timer) #8, !dbg !472
+  %14 = load i32* @n_timers, align 4, !dbg !473, !tbaa !359
+  %dec = add nsw i32 %14, -1, !dbg !473
+  store i32 %dec, i32* @n_timers, align 4, !dbg !473, !tbaa !359
+  br label %if.end, !dbg !474
 
-; <label>:27                                      ; preds = %2, %0, %.preheader._crit_edge
-  ret void
+if.end:                                           ; preds = %land.lhs.true, %entry, %for.end
+  ret void, !dbg !475
 }

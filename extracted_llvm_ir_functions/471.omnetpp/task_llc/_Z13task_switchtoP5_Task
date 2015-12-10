@@ -1,0 +1,18 @@
+define void @_Z13task_switchtoP5_Task(%struct._Task* %p) #6 {
+entry:
+  call void @llvm.dbg.value(metadata !{%struct._Task* %p}, i64 0, metadata !104), !dbg !191
+  %0 = load %struct._Task** @current_task, align 8, !dbg !192, !tbaa !138
+  %arraydecay = getelementptr inbounds %struct._Task* %0, i64 0, i32 1, i64 0, !dbg !192
+  %call = call i32 @_setjmp(%struct.__jmp_buf_tag* %arraydecay) #10, !dbg !192
+  %cmp = icmp eq i32 %call, 0, !dbg !192
+  br i1 %cmp, label %if.then, label %if.end, !dbg !192
+
+if.then:                                          ; preds = %entry
+  store %struct._Task* %p, %struct._Task** @current_task, align 8, !dbg !193, !tbaa !138
+  %arraydecay2 = getelementptr inbounds %struct._Task* %p, i64 0, i32 1, i64 0, !dbg !195
+  call void @longjmp(%struct.__jmp_buf_tag* %arraydecay2, i32 1) #11, !dbg !195
+  unreachable, !dbg !195
+
+if.end:                                           ; preds = %entry
+  ret void, !dbg !196
+}

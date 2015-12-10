@@ -1,0 +1,30 @@
+define internal i32 @_ZN3povL13comp_elementsEPvS0_(i8* nocapture %in_a, i8* nocapture %in_b) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %in_a}, i64 0, metadata !152), !dbg !454
+  tail call void @llvm.dbg.value(metadata !{i8* %in_b}, i64 0, metadata !153), !dbg !454
+  %0 = load i32* @_ZN3povL4AxisE, align 4, !dbg !455, !tbaa !258
+  %idxprom = sext i32 %0 to i64, !dbg !455
+  %1 = bitcast i8* %in_a to %"struct.pov::BSphere_Tree_Struct"**, !dbg !455
+  %2 = load %"struct.pov::BSphere_Tree_Struct"** %1, align 8, !dbg !455, !tbaa !272
+  %arrayidx = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %2, i64 0, i32 1, i64 %idxprom, !dbg !455
+  %3 = load double* %arrayidx, align 8, !dbg !455, !tbaa !308
+  tail call void @llvm.dbg.value(metadata !{double %3}, i64 0, metadata !154), !dbg !455
+  %4 = bitcast i8* %in_b to %"struct.pov::BSphere_Tree_Struct"**, !dbg !456
+  %5 = load %"struct.pov::BSphere_Tree_Struct"** %4, align 8, !dbg !456, !tbaa !272
+  %arrayidx3 = getelementptr inbounds %"struct.pov::BSphere_Tree_Struct"* %5, i64 0, i32 1, i64 %idxprom, !dbg !456
+  %6 = load double* %arrayidx3, align 8, !dbg !456, !tbaa !308
+  tail call void @llvm.dbg.value(metadata !{double %6}, i64 0, metadata !155), !dbg !456
+  %sub = fadd double %6, -1.000000e-07, !dbg !457
+  %cmp = fcmp olt double %3, %sub, !dbg !457
+  br i1 %cmp, label %return, label %if.else, !dbg !457
+
+if.else:                                          ; preds = %entry
+  %add = fadd double %6, 1.000000e-07, !dbg !458
+  %cmp4 = fcmp ogt double %3, %add, !dbg !458
+  %. = zext i1 %cmp4 to i32, !dbg !460
+  br label %return, !dbg !460
+
+return:                                           ; preds = %if.else, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ %., %if.else ]
+  ret i32 %retval.0, !dbg !462
+}

@@ -1,0 +1,32 @@
+define internal fastcc void @pad() #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !842, i64 0, metadata !203), !dbg !1441
+  %call = tail call i64 @strlen(i8* getelementptr inbounds ([1034 x i8]* @inName, i64 0, i64 0)) #12, !dbg !1442
+  %conv = trunc i64 %call to i32, !dbg !1442
+  %0 = load i32* @longestFileName, align 4, !dbg !1442, !tbaa !492
+  %cmp = icmp slt i32 %conv, %0, !dbg !1442
+  br i1 %cmp, label %for.cond.preheader, label %for.end, !dbg !1442
+
+for.cond.preheader:                               ; preds = %entry
+  %call21 = tail call i64 @strlen(i8* getelementptr inbounds ([1034 x i8]* @inName, i64 0, i64 0)) #12, !dbg !1443
+  %conv32 = trunc i64 %call21 to i32, !dbg !1443
+  %sub3 = sub nsw i32 %0, %conv32, !dbg !1443
+  %cmp44 = icmp slt i32 %sub3, 1, !dbg !1443
+  br i1 %cmp44, label %for.end, label %for.body, !dbg !1443
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %i.05 = phi i32 [ %inc, %for.body ], [ 1, %for.cond.preheader ]
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !1445, !tbaa !484
+  %fputc = tail call i32 @fputc(i32 32, %struct._IO_FILE* %1), !dbg !1445
+  %inc = add nsw i32 %i.05, 1, !dbg !1443
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !204), !dbg !1443
+  %2 = load i32* @longestFileName, align 4, !dbg !1443, !tbaa !492
+  %call2 = tail call i64 @strlen(i8* getelementptr inbounds ([1034 x i8]* @inName, i64 0, i64 0)) #12, !dbg !1443
+  %conv3 = trunc i64 %call2 to i32, !dbg !1443
+  %sub = sub nsw i32 %2, %conv3, !dbg !1443
+  %cmp4 = icmp slt i32 %i.05, %sub, !dbg !1443
+  br i1 %cmp4, label %for.body, label %for.end, !dbg !1443
+
+for.end:                                          ; preds = %for.cond.preheader, %for.body, %entry
+  ret void, !dbg !1446
+}

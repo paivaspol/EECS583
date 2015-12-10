@@ -1,0 +1,70 @@
+define linkonce_odr i32 @_ZN10xalanc_1_818doCollationCompareItjNS_17IdentityTransformIttEEEEiPKT_T0_S5_S6_T1_(i16* nocapture %theLHS, i32 %theLHSLength, i16* nocapture %theRHS, i32 %theRHSLength) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %theLHS}, i64 0, metadata !5953), !dbg !7864
+  tail call void @llvm.dbg.value(metadata !{i32 %theLHSLength}, i64 0, metadata !5954), !dbg !7865
+  tail call void @llvm.dbg.value(metadata !{i16* %theRHS}, i64 0, metadata !5955), !dbg !7866
+  tail call void @llvm.dbg.value(metadata !{i32 %theRHSLength}, i64 0, metadata !5956), !dbg !7867
+  tail call void @llvm.dbg.value(metadata !1282, i64 0, metadata !5958), !dbg !7868
+  %0 = or i32 %theRHSLength, %theLHSLength, !dbg !7869
+  %1 = icmp eq i32 %0, 0, !dbg !7869
+  br i1 %1, label %if.then16, label %for.cond.preheader, !dbg !7869
+
+for.cond.preheader:                               ; preds = %entry
+  %cmp242 = icmp ne i32 %theLHSLength, 0, !dbg !7870
+  %cmp343 = icmp ne i32 %theRHSLength, 0, !dbg !7870
+  %or.cond4044 = and i1 %cmp242, %cmp343, !dbg !7870
+  br i1 %or.cond4044, label %for.body, label %for.end, !dbg !7870
+
+for.cond:                                         ; preds = %for.body
+  %cmp2 = icmp ult i32 %inc, %theLHSLength, !dbg !7870
+  %cmp3 = icmp ult i32 %inc, %theRHSLength, !dbg !7870
+  %or.cond40 = and i1 %cmp2, %cmp3, !dbg !7870
+  br i1 %or.cond40, label %for.body, label %for.end, !dbg !7870
+
+for.body:                                         ; preds = %for.cond.preheader, %for.cond
+  %i.045 = phi i32 [ %inc, %for.cond ], [ 0, %for.cond.preheader ]
+  %idxprom = zext i32 %i.045 to i64, !dbg !7872
+  %arrayidx = getelementptr inbounds i16* %theLHS, i64 %idxprom, !dbg !7872
+  %2 = load i16* %arrayidx, align 2, !dbg !7872, !tbaa !6609
+  tail call void @llvm.dbg.value(metadata !7814, i64 0, metadata !7874), !dbg !7875
+  tail call void @llvm.dbg.value(metadata !{i16 %2}, i64 0, metadata !7876), !dbg !7875
+  tail call void @llvm.dbg.value(metadata !{i16 %2}, i64 0, metadata !5959), !dbg !7872
+  %arrayidx5 = getelementptr inbounds i16* %theRHS, i64 %idxprom, !dbg !7877
+  %3 = load i16* %arrayidx5, align 2, !dbg !7877, !tbaa !6609
+  tail call void @llvm.dbg.value(metadata !7814, i64 0, metadata !7878), !dbg !7879
+  tail call void @llvm.dbg.value(metadata !{i16 %2}, i64 0, metadata !7880), !dbg !7879
+  tail call void @llvm.dbg.value(metadata !{i16 %2}, i64 0, metadata !5961), !dbg !7877
+  %cmp8 = icmp eq i16 %2, %3, !dbg !7881
+  %inc = add i32 %i.045, 1, !dbg !7870
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !5962), !dbg !7870
+  br i1 %cmp8, label %for.cond, label %for.end, !dbg !7881
+
+for.end:                                          ; preds = %for.cond, %for.body, %for.cond.preheader
+  %i.0.lcssa = phi i32 [ 0, %for.cond.preheader ], [ %i.045, %for.body ], [ %inc, %for.cond ]
+  %theLHSChar.1 = phi i16 [ 0, %for.cond.preheader ], [ %2, %for.body ], [ %2, %for.cond ]
+  %theRHSChar.1 = phi i16 [ 0, %for.cond.preheader ], [ %3, %for.body ], [ %2, %for.cond ]
+  %cmp10 = icmp eq i32 %i.0.lcssa, %theLHSLength, !dbg !7882
+  %cmp12 = icmp eq i32 %i.0.lcssa, %theRHSLength, !dbg !7883
+  br i1 %cmp10, label %if.then11, label %if.else, !dbg !7882
+
+if.then11:                                        ; preds = %for.end
+  tail call void @llvm.dbg.value(metadata !7885, i64 0, metadata !5958), !dbg !7886
+  %not.cmp12 = xor i1 %cmp12, true, !dbg !7883
+  %. = sext i1 %not.cmp12 to i32, !dbg !7883
+  br label %if.then16, !dbg !7883
+
+if.else:                                          ; preds = %for.end
+  br i1 %cmp12, label %if.then16, label %if.else20, !dbg !7888
+
+if.then16:                                        ; preds = %if.else20, %entry, %if.then11, %if.else
+  %merge = phi i32 [ 1, %if.else ], [ %sub, %if.else20 ], [ 0, %entry ], [ %., %if.then11 ]
+  tail call void @llvm.dbg.value(metadata !6953, i64 0, metadata !5958), !dbg !7889
+  ret i32 %merge, !dbg !7892
+
+if.else20:                                        ; preds = %if.else
+  %conv21 = zext i16 %theLHSChar.1 to i32, !dbg !7893
+  %conv22 = zext i16 %theRHSChar.1 to i32, !dbg !7893
+  %sub = sub nsw i32 %conv21, %conv22, !dbg !7893
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !5958), !dbg !7893
+  br label %if.then16
+}

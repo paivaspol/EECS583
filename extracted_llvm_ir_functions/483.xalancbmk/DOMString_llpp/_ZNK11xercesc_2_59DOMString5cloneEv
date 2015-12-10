@@ -1,0 +1,60 @@
+define void @_ZNK11xercesc_2_59DOMString5cloneEv(%"class.xercesc_2_5::DOMString"* noalias nocapture sret %agg.result, %"class.xercesc_2_5::DOMString"* nocapture %this) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMString"* %this}, i64 0, metadata !1056), !dbg !2049
+  tail call void @llvm.dbg.declare(metadata !{%"class.xercesc_2_5::DOMString"* %agg.result}, metadata !1057), !dbg !2050
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMString"* %agg.result}, i64 0, metadata !2051), !dbg !2052
+  %fHandle.i = getelementptr inbounds %"class.xercesc_2_5::DOMString"* %agg.result, i64 0, i32 0, !dbg !2053
+  store %"class.xercesc_2_5::DOMStringHandle"* null, %"class.xercesc_2_5::DOMStringHandle"** %fHandle.i, align 8, !dbg !2053, !tbaa !1648
+  %fHandle = getelementptr inbounds %"class.xercesc_2_5::DOMString"* %this, i64 0, i32 0, !dbg !2054
+  %0 = load %"class.xercesc_2_5::DOMStringHandle"** %fHandle, align 8, !dbg !2054, !tbaa !1648
+  %cmp = icmp eq %"class.xercesc_2_5::DOMStringHandle"* %0, null, !dbg !2054
+  br i1 %cmp, label %nrvo.skipdtor, label %if.then, !dbg !2054
+
+if.then:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMStringHandle"* %0}, i64 0, metadata !2055), !dbg !2057
+  %call.i6 = invoke i8* @_ZN11xercesc_2_515DOMStringHandlenwEm(i64 undef) #9
+          to label %call.i.noexc unwind label %lpad
+
+call.i.noexc:                                     ; preds = %if.then
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMStringHandle"* %5}, i64 0, metadata !2058), !dbg !2059
+  %fLength.i = getelementptr inbounds %"class.xercesc_2_5::DOMStringHandle"* %0, i64 0, i32 0, !dbg !2060
+  %1 = load i32* %fLength.i, align 4, !dbg !2060, !tbaa !1682
+  %fLength3.i = bitcast i8* %call.i6 to i32*, !dbg !2060
+  store i32 %1, i32* %fLength3.i, align 4, !dbg !2060, !tbaa !1682
+  %fRefCount.i = getelementptr inbounds i8* %call.i6, i64 4, !dbg !2061
+  %2 = bitcast i8* %fRefCount.i to i32*, !dbg !2061
+  store i32 1, i32* %2, align 4, !dbg !2061, !tbaa !1682
+  %fDSData.i = getelementptr inbounds %"class.xercesc_2_5::DOMStringHandle"* %0, i64 0, i32 2, !dbg !2062
+  %3 = load %"class.xercesc_2_5::DOMStringData"** %fDSData.i, align 8, !dbg !2062, !tbaa !1648
+  %fDSData4.i = getelementptr inbounds i8* %call.i6, i64 8, !dbg !2062
+  %4 = bitcast i8* %fDSData4.i to %"class.xercesc_2_5::DOMStringData"**, !dbg !2062
+  store %"class.xercesc_2_5::DOMStringData"* %3, %"class.xercesc_2_5::DOMStringData"** %4, align 8, !dbg !2062, !tbaa !1648
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMStringData"* %3}, i64 0, metadata !2063), !dbg !2065
+  %fRefCount.i.i = getelementptr inbounds %"class.xercesc_2_5::DOMStringData"* %3, i64 0, i32 1, !dbg !2066
+  %call.i.i7 = invoke i32 @_ZN11xercesc_2_516XMLPlatformUtils15atomicIncrementERi(i32* %fRefCount.i.i) #9
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %call.i.noexc
+  %5 = bitcast i8* %call.i6 to %"class.xercesc_2_5::DOMStringHandle"*, !dbg !2059
+  store %"class.xercesc_2_5::DOMStringHandle"* %5, %"class.xercesc_2_5::DOMStringHandle"** %fHandle.i, align 8, !dbg !2056, !tbaa !1648
+  br label %nrvo.skipdtor, !dbg !2056
+
+lpad:                                             ; preds = %call.i.noexc, %if.then
+  %6 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !2056
+  invoke void @_ZN11xercesc_2_59DOMStringD2Ev(%"class.xercesc_2_5::DOMString"* %agg.result) #9
+          to label %eh.resume unwind label %terminate.lpad, !dbg !2067
+
+nrvo.skipdtor:                                    ; preds = %invoke.cont, %entry
+  ret void, !dbg !2067
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %6, !dbg !2067
+
+terminate.lpad:                                   ; preds = %lpad
+  %7 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !2067
+  %8 = extractvalue { i8*, i32 } %7, 0, !dbg !2067
+  tail call void @__clang_call_terminate(i8* %8) #10, !dbg !2067
+  unreachable, !dbg !2067
+}

@@ -1,0 +1,30 @@
+define linkonce_odr void @_ZN9flexarrayI11levelplacetE3addERKS0_(%class.flexarray* nocapture %this, %struct.levelplacet* nocapture %e) #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.flexarray* %this}, i64 0, metadata !415), !dbg !586
+  tail call void @llvm.dbg.value(metadata !{%struct.levelplacet* %e}, i64 0, metadata !416), !dbg !586
+  %elemqu = getelementptr inbounds %class.flexarray* %this, i64 0, i32 1, !dbg !587
+  %0 = load i32* %elemqu, align 4, !dbg !587, !tbaa !470
+  %maxelemqu = getelementptr inbounds %class.flexarray* %this, i64 0, i32 2, !dbg !587
+  %1 = load i32* %maxelemqu, align 4, !dbg !587, !tbaa !470
+  %cmp = icmp eq i32 %0, %1, !dbg !587
+  br i1 %cmp, label %if.then, label %if.end, !dbg !587
+
+if.then:                                          ; preds = %entry
+  tail call void @_ZN9flexarrayI11levelplacetE8doublingEb(%class.flexarray* %this, i1 zeroext true) #6, !dbg !587
+  %.pre = load i32* %elemqu, align 4, !dbg !588, !tbaa !470
+  br label %if.end, !dbg !587
+
+if.end:                                           ; preds = %if.then, %entry
+  %2 = phi i32 [ %.pre, %if.then ], [ %0, %entry ]
+  %idxprom = sext i32 %2 to i64, !dbg !588
+  %ep = getelementptr inbounds %class.flexarray* %this, i64 0, i32 0, !dbg !588
+  %3 = load %struct.levelplacet** %ep, align 8, !dbg !588, !tbaa !485
+  %arrayidx = getelementptr inbounds %struct.levelplacet* %3, i64 %idxprom, !dbg !588
+  %4 = bitcast %struct.levelplacet* %arrayidx to i8*, !dbg !588
+  %5 = bitcast %struct.levelplacet* %e to i8*, !dbg !588
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %4, i8* %5, i64 16, i32 4, i1 false), !dbg !588, !tbaa.struct !589
+  %6 = load i32* %elemqu, align 4, !dbg !590, !tbaa !470
+  %inc = add nsw i32 %6, 1, !dbg !590
+  store i32 %inc, i32* %elemqu, align 4, !dbg !590, !tbaa !470
+  ret void, !dbg !591
+}

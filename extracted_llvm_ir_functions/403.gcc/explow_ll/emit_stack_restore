@@ -1,33 +1,39 @@
-define void @emit_stack_restore(i32 %save_level, %struct.rtx_def* %sa, %struct.rtx_def* %after) #1 {
+define void @emit_stack_restore(i32 %save_level, %struct.rtx_def* %sa, %struct.rtx_def* %after) #2 {
 entry:
-  %cmp = icmp eq %struct.rtx_def* %sa, null
-  br i1 %cmp, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{i32 %save_level}, i64 0, metadata !1838), !dbg !2237
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %sa}, i64 0, metadata !1839), !dbg !2238
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %after}, i64 0, metadata !1840), !dbg !2239
+  tail call void @llvm.dbg.value(metadata !2211, i64 0, metadata !1841), !dbg !2240
+  %cmp = icmp eq %struct.rtx_def* %sa, null, !dbg !2241
+  br i1 %cmp, label %if.end, label %if.then, !dbg !2241
 
 if.then:                                          ; preds = %entry
-  %call = tail call %struct.rtx_def* @validize_mem(%struct.rtx_def* %sa) #5
-  br label %if.end
+  %call = tail call %struct.rtx_def* @validize_mem(%struct.rtx_def* %sa) #6, !dbg !2242
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !1839), !dbg !2242
+  br label %if.end, !dbg !2242
 
 if.end:                                           ; preds = %entry, %if.then
   %sa.addr.0 = phi %struct.rtx_def* [ %call, %if.then ], [ null, %entry ]
-  %tobool = icmp eq %struct.rtx_def* %after, null
-  br i1 %tobool, label %if.else, label %if.then1
+  %tobool = icmp eq %struct.rtx_def* %after, null, !dbg !2243
+  br i1 %tobool, label %if.else, label %if.then1, !dbg !2243
 
 if.then1:                                         ; preds = %if.end
-  tail call void @start_sequence() #4
-  %0 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 2), align 8, !tbaa !3
-  %call2 = tail call %struct.rtx_def* @gen_move_insn(%struct.rtx_def* %0, %struct.rtx_def* %sa.addr.0) #4
-  %call3 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call2) #4
-  %call4 = tail call %struct.rtx_def* @gen_sequence() #4
-  tail call void @end_sequence() #4
-  %call5 = tail call %struct.rtx_def* @emit_insn_after(%struct.rtx_def* %call4, %struct.rtx_def* %after) #4
-  br label %if.end8
+  tail call void @start_sequence() #5, !dbg !2244
+  %0 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 2), align 8, !dbg !2245, !tbaa !1942
+  %call2 = tail call %struct.rtx_def* @gen_move_insn(%struct.rtx_def* %0, %struct.rtx_def* %sa.addr.0) #5, !dbg !2245
+  %call3 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call2) #5, !dbg !2245
+  %call4 = tail call %struct.rtx_def* @gen_sequence() #5, !dbg !2246
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call4}, i64 0, metadata !1842), !dbg !2246
+  tail call void @end_sequence() #5, !dbg !2247
+  %call5 = tail call %struct.rtx_def* @emit_insn_after(%struct.rtx_def* %call4, %struct.rtx_def* %after) #5, !dbg !2248
+  br label %if.end8, !dbg !2249
 
 if.else:                                          ; preds = %if.end
-  %1 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 2), align 8, !tbaa !3
-  %call6 = tail call %struct.rtx_def* @gen_move_insn(%struct.rtx_def* %1, %struct.rtx_def* %sa.addr.0) #4
-  %call7 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call6) #4
+  %1 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 2), align 8, !dbg !2250, !tbaa !1942
+  %call6 = tail call %struct.rtx_def* @gen_move_insn(%struct.rtx_def* %1, %struct.rtx_def* %sa.addr.0) #5, !dbg !2250
+  %call7 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call6) #5, !dbg !2250
   br label %if.end8
 
 if.end8:                                          ; preds = %if.else, %if.then1
-  ret void
+  ret void, !dbg !2251
 }

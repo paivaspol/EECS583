@@ -1,12 +1,14 @@
-define internal void @default_bzfree(i8* nocapture %opaque, i8* %addr) #4 {
+define internal void @default_bzfree(i8* nocapture %opaque, i8* %addr) #5 {
 entry:
-  %cmp = icmp eq i8* %addr, null
-  br i1 %cmp, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{i8* %opaque}, i64 0, metadata !597), !dbg !685
+  tail call void @llvm.dbg.value(metadata !{i8* %addr}, i64 0, metadata !598), !dbg !685
+  %cmp = icmp eq i8* %addr, null, !dbg !686
+  br i1 %cmp, label %if.end, label %if.then, !dbg !686
 
 if.then:                                          ; preds = %entry
-  tail call void @free(i8* %addr) #11
-  br label %if.end
+  tail call void @free(i8* %addr) #12, !dbg !686
+  br label %if.end, !dbg !686
 
 if.end:                                           ; preds = %entry, %if.then
-  ret void
+  ret void, !dbg !687
 }

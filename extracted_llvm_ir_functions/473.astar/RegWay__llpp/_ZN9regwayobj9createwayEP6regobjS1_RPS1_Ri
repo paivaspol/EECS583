@@ -1,0 +1,45 @@
+define zeroext i1 @_ZN9regwayobj9createwayEP6regobjS1_RPS1_Ri(%class.regwayobj* %this, %class.regobj* %rstart, %class.regobj* %rfinish, %class.regobj*** nocapture %wayar, i32* nocapture %waylength) #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.regwayobj* %this}, i64 0, metadata !168), !dbg !361
+  tail call void @llvm.dbg.value(metadata !{%class.regobj* %rstart}, i64 0, metadata !169), !dbg !361
+  tail call void @llvm.dbg.value(metadata !{%class.regobj* %rfinish}, i64 0, metadata !170), !dbg !361
+  tail call void @llvm.dbg.value(metadata !{%class.regobj*** %wayar}, i64 0, metadata !171), !dbg !361
+  tail call void @llvm.dbg.value(metadata !{i32* %waylength}, i64 0, metadata !172), !dbg !361
+  %cmp = icmp eq %class.regobj* %rstart, %rfinish, !dbg !362
+  br i1 %cmp, label %if.then, label %if.end, !dbg !362
+
+if.then:                                          ; preds = %entry
+  %call = tail call noalias i8* @malloc(i64 8) #8, !dbg !363
+  %0 = bitcast i8* %call to %class.regobj**, !dbg !363
+  store %class.regobj** %0, %class.regobj*** %wayar, align 8, !dbg !363, !tbaa !240
+  store %class.regobj* %rstart, %class.regobj** %0, align 8, !dbg !365, !tbaa !240
+  store i32 1, i32* %waylength, align 4, !dbg !366, !tbaa !234
+  br label %return, !dbg !367
+
+if.end:                                           ; preds = %entry
+  %call2 = tail call zeroext i1 @_ZN9regwayobj4fillEP6regobjS1_(%class.regwayobj* %this, %class.regobj* %rstart, %class.regobj* %rfinish) #7, !dbg !368
+  br i1 %call2, label %if.end4, label %if.then3, !dbg !368
+
+if.then3:                                         ; preds = %if.end
+  store %class.regobj** null, %class.regobj*** %wayar, align 8, !dbg !369, !tbaa !240
+  store i32 0, i32* %waylength, align 4, !dbg !371, !tbaa !234
+  br label %return, !dbg !372
+
+if.end4:                                          ; preds = %if.end
+  %call5 = tail call i32 @_ZN9regwayobj6getwayEP6regobjRPS1_(%class.regwayobj* %this, %class.regobj* %rfinish, %class.regobj*** %wayar) #7, !dbg !373
+  store i32 %call5, i32* %waylength, align 4, !dbg !373, !tbaa !234
+  %cmp6 = icmp eq i32 %call5, -1, !dbg !374
+  br i1 %cmp6, label %if.then7, label %return, !dbg !374
+
+if.then7:                                         ; preds = %if.end4
+  %1 = load %class.regobj*** %wayar, align 8, !dbg !375, !tbaa !240
+  %2 = bitcast %class.regobj** %1 to i8*, !dbg !375
+  tail call void @free(i8* %2) #8, !dbg !375
+  store %class.regobj** null, %class.regobj*** %wayar, align 8, !dbg !377, !tbaa !240
+  store i32 0, i32* %waylength, align 4, !dbg !378, !tbaa !234
+  br label %return, !dbg !379
+
+return:                                           ; preds = %if.end4, %if.then7, %if.then3, %if.then
+  %retval.0 = phi i1 [ true, %if.then ], [ false, %if.then7 ], [ false, %if.then3 ], [ true, %if.end4 ]
+  ret i1 %retval.0, !dbg !380
+}

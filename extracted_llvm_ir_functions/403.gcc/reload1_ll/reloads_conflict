@@ -1,19 +1,25 @@
 define i32 @reloads_conflict(i32 %r1, i32 %r2) #0 {
 entry:
-  %idxprom = sext i32 %r1 to i64
-  %idxprom1 = sext i32 %r2 to i64
-  %when_needed3 = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom1, i32 17
-  %0 = load i32* %when_needed3, align 4, !tbaa !9
-  %opnum = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom, i32 12
-  %1 = load i32* %opnum, align 8, !tbaa !0
-  %opnum8 = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom1, i32 12
-  %2 = load i32* %opnum8, align 8, !tbaa !0
-  %cmp = icmp eq i32 %0, 9
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i32 %r1}, i64 0, metadata !1893), !dbg !5363
+  tail call void @llvm.dbg.value(metadata !{i32 %r2}, i64 0, metadata !1894), !dbg !5363
+  %idxprom = sext i32 %r1 to i64, !dbg !5364
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !1895), !dbg !5364
+  %idxprom1 = sext i32 %r2 to i64, !dbg !5365
+  %when_needed3 = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom1, i32 17, !dbg !5365
+  %0 = load i32* %when_needed3, align 4, !dbg !5365, !tbaa !4415
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !1896), !dbg !5365
+  %opnum = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom, i32 12, !dbg !5366
+  %1 = load i32* %opnum, align 8, !dbg !5366, !tbaa !3224
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !1897), !dbg !5366
+  %opnum8 = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom1, i32 12, !dbg !5367
+  %2 = load i32* %opnum8, align 8, !dbg !5367, !tbaa !3224
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !1898), !dbg !5367
+  %cmp = icmp eq i32 %0, 9, !dbg !5368
+  br i1 %cmp, label %return, label %if.end, !dbg !5368
 
 if.end:                                           ; preds = %entry
-  %when_needed = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom, i32 17
-  %3 = load i32* %when_needed, align 4, !tbaa !9
+  %when_needed = getelementptr inbounds [180 x %struct.reload]* @rld, i64 0, i64 %idxprom, i32 17, !dbg !5364
+  %3 = load i32* %when_needed, align 4, !dbg !5364, !tbaa !4415
   switch i32 %3, label %sw.default [
     i32 0, label %sw.bb
     i32 3, label %sw.bb19
@@ -26,7 +32,7 @@ if.end:                                           ; preds = %entry
     i32 2, label %sw.bb89
     i32 10, label %sw.bb99
     i32 9, label %return
-  ]
+  ], !dbg !5369
 
 sw.bb:                                            ; preds = %if.end
   switch i32 %0, label %lor.rhs [
@@ -34,14 +40,14 @@ sw.bb:                                            ; preds = %if.end
     i32 7, label %lor.end
     i32 2, label %lor.end
     i32 0, label %lor.end
-  ]
+  ], !dbg !5370
 
 lor.rhs:                                          ; preds = %sw.bb
-  %.off159 = add i32 %0, -3
-  %4 = icmp ult i32 %.off159, 2
-  %cmp18 = icmp sgt i32 %2, %1
-  %cmp18. = and i1 %4, %cmp18
-  br label %lor.end
+  %.off159 = add i32 %0, -3, !dbg !5370
+  %4 = icmp ult i32 %.off159, 2, !dbg !5370
+  %cmp18 = icmp sgt i32 %2, %1, !dbg !5370
+  %cmp18. = and i1 %4, %cmp18, !dbg !5370
+  br label %lor.end, !dbg !5370
 
 lor.end:                                          ; preds = %lor.rhs, %sw.bb, %sw.bb, %sw.bb, %sw.bb
   %5 = phi i1 [ true, %sw.bb ], [ true, %sw.bb ], [ true, %sw.bb ], [ true, %sw.bb ], [ %cmp18., %lor.rhs ]
@@ -49,16 +55,16 @@ lor.end:                                          ; preds = %lor.rhs, %sw.bb, %s
   br label %return
 
 sw.bb19:                                          ; preds = %if.end
-  %cmp20 = icmp eq i32 %0, 3
-  %cmp21 = icmp eq i32 %1, %2
-  %or.cond = and i1 %cmp20, %cmp21
-  br i1 %or.cond, label %lor.end27, label %lor.rhs22
+  %cmp20 = icmp eq i32 %0, 3, !dbg !5372
+  %cmp21 = icmp eq i32 %1, %2, !dbg !5372
+  %or.cond = and i1 %cmp20, %cmp21, !dbg !5372
+  br i1 %or.cond, label %lor.end27, label %lor.rhs22, !dbg !5372
 
 lor.rhs22:                                        ; preds = %sw.bb19
-  %cmp23 = icmp eq i32 %0, 0
-  %cmp25 = icmp slt i32 %2, %1
-  %cmp25. = and i1 %cmp23, %cmp25
-  br label %lor.end27
+  %cmp23 = icmp eq i32 %0, 0, !dbg !5372
+  %cmp25 = icmp slt i32 %2, %1, !dbg !5372
+  %cmp25. = and i1 %cmp23, %cmp25, !dbg !5372
+  br label %lor.end27, !dbg !5372
 
 lor.end27:                                        ; preds = %lor.rhs22, %sw.bb19
   %6 = phi i1 [ true, %sw.bb19 ], [ %cmp25., %lor.rhs22 ]
@@ -66,16 +72,16 @@ lor.end27:                                        ; preds = %lor.rhs22, %sw.bb19
   br label %return
 
 sw.bb29:                                          ; preds = %if.end
-  %cmp30 = icmp eq i32 %0, 4
-  %cmp32 = icmp eq i32 %1, %2
-  %or.cond160 = and i1 %cmp30, %cmp32
-  br i1 %or.cond160, label %lor.end38, label %lor.rhs33
+  %cmp30 = icmp eq i32 %0, 4, !dbg !5373
+  %cmp32 = icmp eq i32 %1, %2, !dbg !5373
+  %or.cond160 = and i1 %cmp30, %cmp32, !dbg !5373
+  br i1 %or.cond160, label %lor.end38, label %lor.rhs33, !dbg !5373
 
 lor.rhs33:                                        ; preds = %sw.bb29
-  %cmp34 = icmp eq i32 %0, 0
-  %cmp36 = icmp slt i32 %2, %1
-  %cmp36. = and i1 %cmp34, %cmp36
-  br label %lor.end38
+  %cmp34 = icmp eq i32 %0, 0, !dbg !5373
+  %cmp36 = icmp slt i32 %2, %1, !dbg !5373
+  %cmp36. = and i1 %cmp34, %cmp36, !dbg !5373
+  br label %lor.end38, !dbg !5373
 
 lor.end38:                                        ; preds = %lor.rhs33, %sw.bb29
   %7 = phi i1 [ true, %sw.bb29 ], [ %cmp36., %lor.rhs33 ]
@@ -83,16 +89,16 @@ lor.end38:                                        ; preds = %lor.rhs33, %sw.bb29
   br label %return
 
 sw.bb40:                                          ; preds = %if.end
-  %cmp41 = icmp eq i32 %0, 5
-  %cmp43 = icmp eq i32 %2, %1
-  %or.cond161 = and i1 %cmp41, %cmp43
-  br i1 %or.cond161, label %lor.end49, label %lor.rhs44
+  %cmp41 = icmp eq i32 %0, 5, !dbg !5374
+  %cmp43 = icmp eq i32 %2, %1, !dbg !5374
+  %or.cond161 = and i1 %cmp41, %cmp43, !dbg !5374
+  br i1 %or.cond161, label %lor.end49, label %lor.rhs44, !dbg !5374
 
 lor.rhs44:                                        ; preds = %sw.bb40
-  %cmp45 = icmp eq i32 %0, 1
-  %cmp47 = icmp sle i32 %2, %1
-  %cmp47. = and i1 %cmp45, %cmp47
-  br label %lor.end49
+  %cmp45 = icmp eq i32 %0, 1, !dbg !5374
+  %cmp47 = icmp sle i32 %2, %1, !dbg !5374
+  %cmp47. = and i1 %cmp45, %cmp47, !dbg !5374
+  br label %lor.end49, !dbg !5374
 
 lor.end49:                                        ; preds = %lor.rhs44, %sw.bb40
   %8 = phi i1 [ true, %sw.bb40 ], [ %cmp47., %lor.rhs44 ]
@@ -100,16 +106,16 @@ lor.end49:                                        ; preds = %lor.rhs44, %sw.bb40
   br label %return
 
 sw.bb51:                                          ; preds = %if.end
-  %cmp52 = icmp eq i32 %0, 6
-  %cmp54 = icmp eq i32 %2, %1
-  %or.cond162 = and i1 %cmp52, %cmp54
-  br i1 %or.cond162, label %lor.end60, label %lor.rhs55
+  %cmp52 = icmp eq i32 %0, 6, !dbg !5375
+  %cmp54 = icmp eq i32 %2, %1, !dbg !5375
+  %or.cond162 = and i1 %cmp52, %cmp54, !dbg !5375
+  br i1 %or.cond162, label %lor.end60, label %lor.rhs55, !dbg !5375
 
 lor.rhs55:                                        ; preds = %sw.bb51
-  %cmp56 = icmp eq i32 %0, 1
-  %cmp58 = icmp sle i32 %2, %1
-  %cmp58. = and i1 %cmp56, %cmp58
-  br label %lor.end60
+  %cmp56 = icmp eq i32 %0, 1, !dbg !5375
+  %cmp58 = icmp sle i32 %2, %1, !dbg !5375
+  %cmp58. = and i1 %cmp56, %cmp58, !dbg !5375
+  br label %lor.end60, !dbg !5375
 
 lor.end60:                                        ; preds = %lor.rhs55, %sw.bb51
   %9 = phi i1 [ true, %sw.bb51 ], [ %cmp58., %lor.rhs55 ]
@@ -117,30 +123,30 @@ lor.end60:                                        ; preds = %lor.rhs55, %sw.bb51
   br label %return
 
 sw.bb62:                                          ; preds = %if.end
-  %10 = and i32 %0, -3
-  %11 = icmp eq i32 %10, 0
-  %cmp67 = icmp eq i32 %0, 7
-  %.cmp67 = or i1 %11, %cmp67
-  %lor.ext69 = zext i1 %.cmp67 to i32
-  br label %return
+  %10 = and i32 %0, -3, !dbg !5376
+  %11 = icmp eq i32 %10, 0, !dbg !5376
+  %cmp67 = icmp eq i32 %0, 7, !dbg !5376
+  %.cmp67 = or i1 %11, %cmp67, !dbg !5376
+  %lor.ext69 = zext i1 %.cmp67 to i32, !dbg !5376
+  br label %return, !dbg !5376
 
 sw.bb70:                                          ; preds = %if.end
-  %12 = and i32 %0, -9
-  %13 = icmp eq i32 %12, 0
-  %lor.ext75 = zext i1 %13 to i32
-  br label %return
+  %12 = and i32 %0, -9, !dbg !5377
+  %13 = icmp eq i32 %12, 0, !dbg !5377
+  %lor.ext75 = zext i1 %13 to i32, !dbg !5377
+  br label %return, !dbg !5377
 
 sw.bb76:                                          ; preds = %if.end
-  %.off = add i32 %0, -1
-  %14 = icmp ult i32 %.off, 2
-  br i1 %14, label %lor.end87, label %lor.rhs80
+  %.off = add i32 %0, -1, !dbg !5378
+  %14 = icmp ult i32 %.off, 2, !dbg !5378
+  br i1 %14, label %lor.end87, label %lor.rhs80, !dbg !5378
 
 lor.rhs80:                                        ; preds = %sw.bb76
-  %.off158 = add i32 %0, -5
-  %15 = icmp ult i32 %.off158, 2
-  %cmp85 = icmp sge i32 %2, %1
-  %cmp85. = and i1 %15, %cmp85
-  br label %lor.end87
+  %.off158 = add i32 %0, -5, !dbg !5378
+  %15 = icmp ult i32 %.off158, 2, !dbg !5378
+  %cmp85 = icmp sge i32 %2, %1, !dbg !5378
+  %cmp85. = and i1 %15, %cmp85, !dbg !5378
+  br label %lor.end87, !dbg !5378
 
 lor.end87:                                        ; preds = %lor.rhs80, %sw.bb76
   %16 = phi i1 [ true, %sw.bb76 ], [ %cmp85., %lor.rhs80 ]
@@ -148,22 +154,22 @@ lor.end87:                                        ; preds = %lor.rhs80, %sw.bb76
   br label %return
 
 sw.bb89:                                          ; preds = %if.end
-  %17 = icmp ult i32 %0, 3
-  %cmp96 = icmp eq i32 %0, 7
-  %.cmp96 = or i1 %17, %cmp96
-  %lor.ext98 = zext i1 %.cmp96 to i32
-  br label %return
+  %17 = icmp ult i32 %0, 3, !dbg !5379
+  %cmp96 = icmp eq i32 %0, 7, !dbg !5379
+  %.cmp96 = or i1 %17, %cmp96, !dbg !5379
+  %lor.ext98 = zext i1 %.cmp96 to i32, !dbg !5379
+  br label %return, !dbg !5379
 
 sw.bb99:                                          ; preds = %if.end
-  %cmp100 = icmp eq i32 %0, 10
-  %conv = zext i1 %cmp100 to i32
-  br label %return
+  %cmp100 = icmp eq i32 %0, 10, !dbg !5380
+  %conv = zext i1 %cmp100 to i32, !dbg !5380
+  br label %return, !dbg !5380
 
 sw.default:                                       ; preds = %if.end
-  tail call void @fancy_abort(i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0), i32 4739, i8* getelementptr inbounds ([17 x i8]* @__FUNCTION__.reloads_conflict, i64 0, i64 0)) #8
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0), i32 4739, i8* getelementptr inbounds ([17 x i8]* @__FUNCTION__.reloads_conflict, i64 0, i64 0)) #9, !dbg !5381
+  unreachable, !dbg !5381
 
 return:                                           ; preds = %if.end, %entry, %sw.bb99, %sw.bb89, %lor.end87, %sw.bb70, %sw.bb62, %lor.end60, %lor.end49, %lor.end38, %lor.end27, %lor.end
   %retval.0 = phi i32 [ %conv, %sw.bb99 ], [ %lor.ext98, %sw.bb89 ], [ %lor.ext88, %lor.end87 ], [ %lor.ext75, %sw.bb70 ], [ %lor.ext69, %sw.bb62 ], [ %lor.ext61, %lor.end60 ], [ %lor.ext50, %lor.end49 ], [ %lor.ext39, %lor.end38 ], [ %lor.ext28, %lor.end27 ], [ %lor.ext, %lor.end ], [ 1, %entry ], [ 1, %if.end ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !5382
 }

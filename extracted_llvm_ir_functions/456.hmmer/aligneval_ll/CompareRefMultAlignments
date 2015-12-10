@@ -1,62 +1,72 @@
 define float @CompareRefMultAlignments(i32* nocapture %ref, i8** nocapture %kseqs, i8** nocapture %tseqs, i32 %N) #0 {
 entry:
-  %cmp42 = icmp sgt i32 %N, 0
-  br i1 %cmp42, label %for.body, label %for.end15
+  tail call void @llvm.dbg.value(metadata !{i32* %ref}, i64 0, metadata !73), !dbg !280
+  tail call void @llvm.dbg.value(metadata !{i8** %kseqs}, i64 0, metadata !74), !dbg !280
+  tail call void @llvm.dbg.value(metadata !{i8** %tseqs}, i64 0, metadata !75), !dbg !280
+  tail call void @llvm.dbg.value(metadata !{i32 %N}, i64 0, metadata !76), !dbg !280
+  tail call void @llvm.dbg.value(metadata !210, i64 0, metadata !80), !dbg !281
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !77), !dbg !282
+  %cmp42 = icmp sgt i32 %N, 0, !dbg !282
+  br i1 %cmp42, label %for.body, label %for.end15, !dbg !282
 
 for.cond.loopexit:                                ; preds = %if.end
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  br i1 %cmp238, label %for.body, label %for.end15
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !282
+  br i1 %cmp238, label %for.body, label %for.end15, !dbg !282
 
 for.body:                                         ; preds = %entry, %for.cond.loopexit
   %indvars.iv49 = phi i64 [ %indvars.iv.next50, %for.cond.loopexit ], [ 0, %entry ]
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond.loopexit ], [ 1, %entry ]
   %tot_score.044 = phi float [ %add12, %for.cond.loopexit ], [ 0.000000e+00, %entry ]
   %i.043 = phi i32 [ %add, %for.cond.loopexit ], [ 0, %entry ]
-  %indvars.iv.next50 = add i64 %indvars.iv49, 1
-  %add = add nsw i32 %i.043, 1
-  %0 = trunc i64 %indvars.iv.next50 to i32
-  %cmp238 = icmp slt i32 %0, %N
-  br i1 %cmp238, label %for.body3.lr.ph, label %for.end15
+  %indvars.iv.next50 = add i64 %indvars.iv49, 1, !dbg !282
+  %add = add nsw i32 %i.043, 1, !dbg !284
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !78), !dbg !284
+  %0 = trunc i64 %indvars.iv.next50 to i32, !dbg !284
+  %cmp238 = icmp slt i32 %0, %N, !dbg !284
+  br i1 %cmp238, label %for.body3.lr.ph, label %for.end15, !dbg !284
 
 for.body3.lr.ph:                                  ; preds = %for.body
-  %arrayidx = getelementptr inbounds i8** %kseqs, i64 %indvars.iv49
-  %arrayidx7 = getelementptr inbounds i8** %tseqs, i64 %indvars.iv49
-  br label %for.body3
+  %arrayidx = getelementptr inbounds i8** %kseqs, i64 %indvars.iv49, !dbg !286
+  %arrayidx7 = getelementptr inbounds i8** %tseqs, i64 %indvars.iv49, !dbg !286
+  br label %for.body3, !dbg !284
 
 for.body3:                                        ; preds = %for.body3.lr.ph, %if.end
-  %indvars.iv46 = phi i64 [ %indvars.iv, %for.body3.lr.ph ], [ %indvars.iv.next47, %if.end ]
+  %indvars.iv46 = phi i64 [ %indvars.iv, %for.body3.lr.ph ], [ %indvars.iv.next47, %if.end ], !dbg !282
   %tot_score.140 = phi float [ %tot_score.044, %for.body3.lr.ph ], [ %add12, %if.end ]
   %j.039 = phi i32 [ %add, %for.body3.lr.ph ], [ %inc, %if.end ]
-  %1 = load i8** %arrayidx, align 8, !tbaa !0
-  %arrayidx5 = getelementptr inbounds i8** %kseqs, i64 %indvars.iv46
-  %2 = load i8** %arrayidx5, align 8, !tbaa !0
-  %3 = load i8** %arrayidx7, align 8, !tbaa !0
-  %arrayidx9 = getelementptr inbounds i8** %tseqs, i64 %indvars.iv46
-  %4 = load i8** %arrayidx9, align 8, !tbaa !0
-  %call = tail call float @CompareRefPairAlignments(i32* %ref, i8* %1, i8* %2, i8* %3, i8* %4) #7
-  %cmp10 = fcmp olt float %call, 0.000000e+00
-  br i1 %cmp10, label %return, label %if.end
+  %1 = load i8** %arrayidx, align 8, !dbg !286, !tbaa !186
+  %arrayidx5 = getelementptr inbounds i8** %kseqs, i64 %indvars.iv46, !dbg !286
+  %2 = load i8** %arrayidx5, align 8, !dbg !286, !tbaa !186
+  %3 = load i8** %arrayidx7, align 8, !dbg !286, !tbaa !186
+  %arrayidx9 = getelementptr inbounds i8** %tseqs, i64 %indvars.iv46, !dbg !286
+  %4 = load i8** %arrayidx9, align 8, !dbg !286, !tbaa !186
+  %call = tail call float @CompareRefPairAlignments(i32* %ref, i8* %1, i8* %2, i8* %3, i8* %4) #8, !dbg !286
+  tail call void @llvm.dbg.value(metadata !{float %call}, i64 0, metadata !79), !dbg !286
+  %cmp10 = fcmp olt float %call, 0.000000e+00, !dbg !288
+  br i1 %cmp10, label %return, label %if.end, !dbg !288
 
 if.end:                                           ; preds = %for.body3
-  %add12 = fadd float %tot_score.140, %call
-  %inc = add nsw i32 %j.039, 1
-  %cmp2 = icmp slt i32 %inc, %N
-  %indvars.iv.next47 = add i64 %indvars.iv46, 1
-  br i1 %cmp2, label %for.body3, label %for.cond.loopexit
+  %add12 = fadd float %tot_score.140, %call, !dbg !289
+  tail call void @llvm.dbg.value(metadata !{float %add12}, i64 0, metadata !80), !dbg !289
+  %inc = add nsw i32 %j.039, 1, !dbg !284
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !78), !dbg !284
+  %cmp2 = icmp slt i32 %inc, %N, !dbg !284
+  %indvars.iv.next47 = add i64 %indvars.iv46, 1, !dbg !284
+  br i1 %cmp2, label %for.body3, label %for.cond.loopexit, !dbg !284
 
 for.end15:                                        ; preds = %for.cond.loopexit, %for.body, %entry
   %tot_score.0.lcssa = phi float [ 0.000000e+00, %entry ], [ %add12, %for.cond.loopexit ], [ %tot_score.044, %for.body ]
-  %conv16 = fpext float %tot_score.0.lcssa to double
-  %mul = fmul double %conv16, 2.000000e+00
-  %conv17 = sitofp i32 %N to float
-  %conv18 = fpext float %conv17 to double
-  %sub = fadd double %conv18, -1.000000e+00
-  %mul21 = fmul double %conv18, %sub
-  %div = fdiv double %mul, %mul21
-  %conv22 = fptrunc double %div to float
-  br label %return
+  %conv16 = fpext float %tot_score.0.lcssa to double, !dbg !290
+  %mul = fmul double %conv16, 2.000000e+00, !dbg !290
+  %conv17 = sitofp i32 %N to float, !dbg !290
+  %conv18 = fpext float %conv17 to double, !dbg !290
+  %sub = fadd double %conv18, -1.000000e+00, !dbg !290
+  %mul21 = fmul double %conv18, %sub, !dbg !290
+  %div = fdiv double %mul, %mul21, !dbg !290
+  %conv22 = fptrunc double %div to float, !dbg !290
+  br label %return, !dbg !290
 
 return:                                           ; preds = %for.body3, %for.end15
   %retval.0 = phi float [ %conv22, %for.end15 ], [ -1.000000e+00, %for.body3 ]
-  ret float %retval.0
+  ret float %retval.0, !dbg !291
 }

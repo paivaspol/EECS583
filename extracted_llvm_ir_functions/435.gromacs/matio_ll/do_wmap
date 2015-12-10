@@ -1,54 +1,66 @@
-define void @do_wmap(%struct.__sFILE* nocapture %out, i32 %i0, i32 %imax, i32 %nlevels, <2 x float> %rlo.coerce0, float %rlo.coerce1, <2 x float> %rhi.coerce0, float %rhi.coerce1, float %lo, float %hi) #3 {
-  %1 = icmp sgt i32 %imax, 0
-  br i1 %1, label %.lr.ph, label %._crit_edge
+define void @do_wmap(%struct._IO_FILE* nocapture %out, i32 %i0, i32 %imax, i32 %nlevels, <2 x float> %rlo.coerce0, float %rlo.coerce1, <2 x float> %rhi.coerce0, float %rhi.coerce1, float %lo, float %hi) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %out}, i64 0, metadata !193), !dbg !541
+  tail call void @llvm.dbg.value(metadata !{i32 %i0}, i64 0, metadata !194), !dbg !541
+  tail call void @llvm.dbg.value(metadata !{i32 %imax}, i64 0, metadata !195), !dbg !541
+  tail call void @llvm.dbg.value(metadata !{i32 %nlevels}, i64 0, metadata !196), !dbg !542
+  tail call void @llvm.dbg.declare(metadata !543, metadata !197), !dbg !542
+  tail call void @llvm.dbg.declare(metadata !543, metadata !198), !dbg !542
+  tail call void @llvm.dbg.value(metadata !{float %lo}, i64 0, metadata !199), !dbg !542
+  tail call void @llvm.dbg.value(metadata !{float %hi}, i64 0, metadata !200), !dbg !542
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !201), !dbg !544
+  %cmp56 = icmp sgt i32 %imax, 0, !dbg !544
+  br i1 %cmp56, label %for.body.lr.ph, label %for.end, !dbg !544
 
-.lr.ph:                                           ; preds = %0
-  %2 = extractelement <2 x float> %rlo.coerce0, i32 0
-  %3 = extractelement <2 x float> %rhi.coerce0, i32 0
-  %4 = sitofp i32 %nlevels to float
-  %5 = extractelement <2 x float> %rlo.coerce0, i32 1
-  %6 = extractelement <2 x float> %rhi.coerce0, i32 1
-  %7 = sext i32 %i0 to i64
-  %8 = zext i32 %nlevels to i64
-  %9 = add i32 %imax, -1
-  br label %10
+for.body.lr.ph:                                   ; preds = %entry
+  %rlo.sroa.0.0.vec.extract = extractelement <2 x float> %rlo.coerce0, i32 0, !dbg !546
+  %rhi.sroa.0.0.vec.extract = extractelement <2 x float> %rhi.coerce0, i32 0, !dbg !546
+  %conv6 = sitofp i32 %nlevels to float, !dbg !546
+  %rlo.sroa.0.4.vec.extract = extractelement <2 x float> %rlo.coerce0, i32 1, !dbg !548
+  %rhi.sroa.0.4.vec.extract = extractelement <2 x float> %rhi.coerce0, i32 1, !dbg !548
+  %0 = sext i32 %i0 to i64, !dbg !544
+  br label %for.body, !dbg !544
 
-; <label>:10                                      ; preds = %10, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %10 ]
-  %11 = sub i64 %8, %indvars.iv
-  %12 = trunc i64 %11 to i32
-  %13 = sitofp i32 %12 to float
-  %14 = fmul float %2, %13
-  %15 = trunc i64 %indvars.iv to i32
-  %16 = sitofp i32 %15 to float
-  %17 = fmul float %3, %16
-  %18 = fadd float %17, %14
-  %19 = fdiv float %18, %4
-  %20 = fmul float %5, %13
-  %21 = fmul float %6, %16
-  %22 = fadd float %21, %20
-  %23 = fdiv float %22, %4
-  %24 = fmul float %13, %rlo.coerce1
-  %25 = fmul float %16, %rhi.coerce1
-  %26 = fadd float %25, %24
-  %27 = fdiv float %26, %4
-  %28 = add nsw i64 %indvars.iv, %7
-  %29 = getelementptr inbounds [89 x i8]* @mapper, i64 0, i64 %28
-  %30 = load i8* %29, align 1, !tbaa !13
-  %31 = sext i8 %30 to i32
-  %32 = fmul float %13, %lo
-  %33 = fmul float %16, %hi
-  %34 = fadd float %33, %32
-  %35 = fdiv float %34, %4
-  %36 = fpext float %35 to double
-  %37 = fpext float %19 to double
-  %38 = fpext float %23 to double
-  %39 = fpext float %27 to double
-  %40 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %out, i8* getelementptr inbounds ([28 x i8]* @.str13, i64 0, i64 0), i32 %31, double %36, double %37, double %38, double %39) #10
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i32 %15, %9
-  br i1 %exitcond, label %._crit_edge, label %10
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
+  %1 = trunc i64 %indvars.iv to i32, !dbg !549
+  %sub = sub nsw i32 %nlevels, %1, !dbg !549
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !202), !dbg !549
+  %conv = sitofp i32 %sub to float, !dbg !546
+  %mul = fmul float %rlo.sroa.0.0.vec.extract, %conv, !dbg !546
+  %conv3 = sitofp i32 %1 to float, !dbg !546
+  %mul5 = fmul float %rhi.sroa.0.0.vec.extract, %conv3, !dbg !546
+  %add = fadd float %mul5, %mul, !dbg !546
+  %div = fdiv float %add, %conv6, !dbg !546
+  tail call void @llvm.dbg.value(metadata !{float %div}, i64 0, metadata !203), !dbg !546
+  %mul9 = fmul float %rlo.sroa.0.4.vec.extract, %conv, !dbg !548
+  %mul12 = fmul float %rhi.sroa.0.4.vec.extract, %conv3, !dbg !548
+  %add13 = fadd float %mul12, %mul9, !dbg !548
+  %div15 = fdiv float %add13, %conv6, !dbg !548
+  tail call void @llvm.dbg.value(metadata !{float %div15}, i64 0, metadata !204), !dbg !548
+  %mul18 = fmul float %conv, %rlo.coerce1, !dbg !550
+  %mul21 = fmul float %conv3, %rhi.coerce1, !dbg !550
+  %add22 = fadd float %mul21, %mul18, !dbg !550
+  %div24 = fdiv float %add22, %conv6, !dbg !550
+  tail call void @llvm.dbg.value(metadata !{float %div24}, i64 0, metadata !205), !dbg !550
+  %2 = add nsw i64 %indvars.iv, %0, !dbg !551
+  %arrayidx = getelementptr inbounds [89 x i8]* @mapper, i64 0, i64 %2, !dbg !551
+  %3 = load i8* %arrayidx, align 1, !dbg !551, !tbaa !464
+  %conv26 = sext i8 %3 to i32, !dbg !551
+  %mul28 = fmul float %conv, %lo, !dbg !551
+  %mul30 = fmul float %conv3, %hi, !dbg !551
+  %add31 = fadd float %mul30, %mul28, !dbg !551
+  %div33 = fdiv float %add31, %conv6, !dbg !551
+  %conv34 = fpext float %div33 to double, !dbg !551
+  %conv35 = fpext float %div to double, !dbg !551
+  %conv36 = fpext float %div15 to double, !dbg !551
+  %conv37 = fpext float %div24 to double, !dbg !551
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %out, i8* getelementptr inbounds ([28 x i8]* @.str13, i64 0, i64 0), i32 %conv26, double %conv34, double %conv35, double %conv36, double %conv37) #9, !dbg !551
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !544
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !544
+  %exitcond = icmp eq i32 %lftr.wideiv, %imax, !dbg !544
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !544
 
-._crit_edge:                                      ; preds = %10, %0
-  ret void
+for.end:                                          ; preds = %for.body, %entry
+  ret void, !dbg !552
 }

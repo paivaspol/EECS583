@@ -1,34 +1,39 @@
 define internal void @mark_reg(%struct.rtx_def* nocapture %reg, %struct.rtx_def* nocapture %setter, i8* %data) #0 {
 entry:
-  %0 = bitcast i8* %data to %struct.bitmap_head_def*
-  %1 = bitcast %struct.rtx_def* %reg to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 63
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %reg}, i64 0, metadata !688), !dbg !881
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %setter}, i64 0, metadata !689), !dbg !882
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !690), !dbg !883
+  %0 = bitcast i8* %data to %struct.bitmap_head_def*, !dbg !884
+  tail call void @llvm.dbg.value(metadata !{%struct.bitmap_head_def* %0}, i64 0, metadata !691), !dbg !884
+  %1 = bitcast %struct.rtx_def* %reg to i32*, !dbg !885
+  %bf.load = load i32* %1, align 8, !dbg !885
+  %bf.clear = and i32 %bf.load, 65535, !dbg !885
+  %cmp = icmp eq i32 %bf.clear, 63, !dbg !885
+  br i1 %cmp, label %if.then, label %if.end, !dbg !885
 
 if.then:                                          ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 0, !dbg !886
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !886
+  %2 = load %struct.rtx_def** %rtx, align 8, !dbg !886, !tbaa !722
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %2}, i64 0, metadata !688), !dbg !886
   %.phi.trans.insert = bitcast %struct.rtx_def* %2 to i32*
-  %bf.load1.pre = load i32* %.phi.trans.insert, align 8
-  br label %if.end
+  %bf.load1.pre = load i32* %.phi.trans.insert, align 8, !dbg !887
+  br label %if.end, !dbg !886
 
 if.end:                                           ; preds = %if.then, %entry
   %bf.load1 = phi i32 [ %bf.load1.pre, %if.then ], [ %bf.load, %entry ]
   %reg.addr.0 = phi %struct.rtx_def* [ %2, %if.then ], [ %reg, %entry ]
-  %bf.clear2 = and i32 %bf.load1, 65535
-  %cmp3 = icmp eq i32 %bf.clear2, 61
-  br i1 %cmp3, label %if.end5, label %return
+  %bf.clear2 = and i32 %bf.load1, 65535, !dbg !887
+  %cmp3 = icmp eq i32 %bf.clear2, 61, !dbg !887
+  br i1 %cmp3, label %if.end5, label %return, !dbg !887
 
 if.end5:                                          ; preds = %if.end
-  %arrayidx7 = getelementptr inbounds %struct.rtx_def* %reg.addr.0, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx7 to i32*
-  %3 = load i32* %rtuint, align 4, !tbaa !0
-  tail call void @bitmap_set_bit(%struct.bitmap_head_def* %0, i32 %3) #6
-  br label %return
+  %arrayidx7 = getelementptr inbounds %struct.rtx_def* %reg.addr.0, i64 0, i32 1, i64 0, !dbg !888
+  %rtuint = bitcast %union.rtunion_def* %arrayidx7 to i32*, !dbg !888
+  %3 = load i32* %rtuint, align 4, !dbg !888, !tbaa !718
+  tail call void @bitmap_set_bit(%struct.bitmap_head_def* %0, i32 %3) #7, !dbg !888
+  br label %return, !dbg !888
 
 return:                                           ; preds = %if.end, %if.end5
-  ret void
+  ret void, !dbg !888
 }

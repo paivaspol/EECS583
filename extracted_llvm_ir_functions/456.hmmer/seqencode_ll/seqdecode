@@ -1,62 +1,68 @@
 define i32 @seqdecode(i8* nocapture %str, i8* nocapture %codeseq) #1 {
 entry:
-  %0 = load i8* %codeseq, align 1, !tbaa !0
-  %cmp31 = icmp eq i8 %0, 0
-  br i1 %cmp31, label %while.end, label %for.cond.preheader
+  tail call void @llvm.dbg.value(metadata !{i8* %str}, i64 0, metadata !64), !dbg !133
+  tail call void @llvm.dbg.value(metadata !{i8* %codeseq}, i64 0, metadata !65), !dbg !133
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !67), !dbg !134
+  %0 = load i8* %codeseq, align 1, !dbg !135, !tbaa !78
+  %cmp31 = icmp eq i8 %0, 0, !dbg !135
+  br i1 %cmp31, label %while.end, label %for.cond.preheader, !dbg !135
 
 for.cond.preheader:                               ; preds = %entry, %if.else
   %1 = phi i8 [ %5, %if.else ], [ %0, %entry ]
   %indvars.iv35 = phi i64 [ %indvars.iv.next36, %if.else ], [ 0, %entry ]
   %pos.033 = phi i32 [ %inc16, %if.else ], [ 0, %entry ]
   %codeseq.addr.032 = phi i8* [ %incdec.ptr, %if.else ], [ %codeseq, %entry ]
-  br label %for.cond
+  br label %for.cond, !dbg !136
 
 for.cond:                                         ; preds = %for.cond, %for.cond.preheader
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %for.cond.preheader ]
   %idx.0 = phi i32 [ %inc, %for.cond ], [ 0, %for.cond.preheader ]
-  %code = getelementptr inbounds [0 x %struct.iupactype]* @iupac, i64 0, i64 %indvars.iv, i32 2
-  %2 = load i8* %code, align 1, !tbaa !0
-  %cmp4 = icmp ne i8 %1, %2
-  %3 = trunc i64 %indvars.iv to i32
-  %cmp6 = icmp slt i32 %3, 17
-  %or.cond = and i1 %cmp4, %cmp6
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %inc = add nsw i32 %idx.0, 1
-  br i1 %or.cond, label %for.cond, label %for.end
+  %code = getelementptr inbounds [0 x %struct.iupactype]* @iupac, i64 0, i64 %indvars.iv, i32 2, !dbg !136
+  %2 = load i8* %code, align 1, !dbg !136, !tbaa !78
+  %cmp4 = icmp ne i8 %1, %2, !dbg !136
+  %3 = trunc i64 %indvars.iv to i32, !dbg !136
+  %cmp6 = icmp slt i32 %3, 17, !dbg !136
+  %or.cond = and i1 %cmp4, %cmp6, !dbg !136
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !136
+  %inc = add nsw i32 %idx.0, 1, !dbg !136
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !66), !dbg !136
+  br i1 %or.cond, label %for.cond, label %for.end, !dbg !136
 
 for.end:                                          ; preds = %for.cond
-  %cmp8 = icmp sgt i32 %idx.0, 17
-  br i1 %cmp8, label %if.then, label %if.else
+  %cmp8 = icmp sgt i32 %idx.0, 17, !dbg !139
+  br i1 %cmp8, label %if.then, label %if.else, !dbg !139
 
 if.then:                                          ; preds = %for.end
-  %idxprom10 = sext i32 %pos.033 to i64
-  %arrayidx11 = getelementptr inbounds i8* %str, i64 %idxprom10
-  store i8 88, i8* %arrayidx11, align 1, !tbaa !0
-  br label %return
+  %idxprom10 = sext i32 %pos.033 to i64, !dbg !140
+  %arrayidx11 = getelementptr inbounds i8* %str, i64 %idxprom10, !dbg !140
+  store i8 88, i8* %arrayidx11, align 1, !dbg !140, !tbaa !78
+  br label %return, !dbg !142
 
 if.else:                                          ; preds = %for.end
-  %sym = getelementptr inbounds [0 x %struct.iupactype]* @iupac, i64 0, i64 %indvars.iv, i32 0
-  %4 = load i8* %sym, align 1, !tbaa !0
-  %arrayidx15 = getelementptr inbounds i8* %str, i64 %indvars.iv35
-  store i8 %4, i8* %arrayidx15, align 1, !tbaa !0
-  %incdec.ptr = getelementptr inbounds i8* %codeseq.addr.032, i64 1
-  %indvars.iv.next36 = add i64 %indvars.iv35, 1
-  %inc16 = add nsw i32 %pos.033, 1
-  %5 = load i8* %incdec.ptr, align 1, !tbaa !0
-  %cmp = icmp eq i8 %5, 0
-  br i1 %cmp, label %while.cond.while.end_crit_edge, label %for.cond.preheader
+  %sym = getelementptr inbounds [0 x %struct.iupactype]* @iupac, i64 0, i64 %indvars.iv, i32 0, !dbg !143
+  %4 = load i8* %sym, align 1, !dbg !143, !tbaa !78
+  %arrayidx15 = getelementptr inbounds i8* %str, i64 %indvars.iv35, !dbg !143
+  store i8 %4, i8* %arrayidx15, align 1, !dbg !143, !tbaa !78
+  %incdec.ptr = getelementptr inbounds i8* %codeseq.addr.032, i64 1, !dbg !144
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !65), !dbg !144
+  %indvars.iv.next36 = add i64 %indvars.iv35, 1, !dbg !135
+  %inc16 = add nsw i32 %pos.033, 1, !dbg !145
+  tail call void @llvm.dbg.value(metadata !{i32 %inc16}, i64 0, metadata !67), !dbg !145
+  %5 = load i8* %incdec.ptr, align 1, !dbg !135, !tbaa !78
+  %cmp = icmp eq i8 %5, 0, !dbg !135
+  br i1 %cmp, label %while.cond.while.end_crit_edge, label %for.cond.preheader, !dbg !135
 
 while.cond.while.end_crit_edge:                   ; preds = %if.else
-  %phitmp = sext i32 %inc16 to i64
-  br label %while.end
+  %phitmp = sext i32 %inc16 to i64, !dbg !135
+  br label %while.end, !dbg !135
 
 while.end:                                        ; preds = %while.cond.while.end_crit_edge, %entry
   %pos.0.lcssa = phi i64 [ %phitmp, %while.cond.while.end_crit_edge ], [ 0, %entry ]
-  %arrayidx18 = getelementptr inbounds i8* %str, i64 %pos.0.lcssa
-  store i8 0, i8* %arrayidx18, align 1, !tbaa !0
-  br label %return
+  %arrayidx18 = getelementptr inbounds i8* %str, i64 %pos.0.lcssa, !dbg !146
+  store i8 0, i8* %arrayidx18, align 1, !dbg !146, !tbaa !78
+  br label %return, !dbg !147
 
 return:                                           ; preds = %while.end, %if.then
   %retval.0 = phi i32 [ 0, %if.then ], [ 1, %while.end ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !147
 }

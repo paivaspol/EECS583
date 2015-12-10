@@ -1,21 +1,22 @@
 define i32* @ETree_bndwghts(%struct._ETree* %etree) #0 {
 entry:
-  %cmp = icmp eq %struct._ETree* %etree, null
-  br i1 %cmp, label %if.then, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata !{%struct._ETree* %etree}, i64 0, metadata !77), !dbg !176
+  %cmp = icmp eq %struct._ETree* %etree, null, !dbg !177
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !177
 
 lor.lhs.false:                                    ; preds = %entry
-  %bndwghtsIV = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 4
-  %0 = load %struct._IV** %bndwghtsIV, align 8, !tbaa !0
-  %cmp1 = icmp eq %struct._IV* %0, null
-  br i1 %cmp1, label %if.then, label %if.end
+  %bndwghtsIV = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 4, !dbg !177
+  %0 = load %struct._IV** %bndwghtsIV, align 8, !dbg !177, !tbaa !116
+  %cmp1 = icmp eq %struct._IV* %0, null, !dbg !177
+  br i1 %cmp1, label %if.then, label %if.end, !dbg !177
 
 if.then:                                          ; preds = %lor.lhs.false, %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([48 x i8]* @.str10, i64 0, i64 0), %struct._ETree* %etree) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !178, !tbaa !116
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([48 x i8]* @.str10, i64 0, i64 0), %struct._ETree* %etree) #5, !dbg !178
+  tail call void @exit(i32 -1) #6, !dbg !180
+  unreachable, !dbg !180
 
 if.end:                                           ; preds = %lor.lhs.false
-  %call3 = tail call i32* @IV_entries(%struct._IV* %0) #4
-  ret i32* %call3
+  %call3 = tail call i32* @IV_entries(%struct._IV* %0) #5, !dbg !181
+  ret i32* %call3, !dbg !181
 }

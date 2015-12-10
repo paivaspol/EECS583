@@ -1,0 +1,53 @@
+define void @_ZN10xalanc_1_818XPathFunctionTable15InstallFunctionEPKtRKNS_8FunctionE(%"class.xalanc_1_8::XPathFunctionTable"* nocapture %this, i16* %theFunctionName, %"class.xalanc_1_8::Function"* %theFunction) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XPathFunctionTable"* %this}, i64 0, metadata !3145), !dbg !4176
+  tail call void @llvm.dbg.value(metadata !{i16* %theFunctionName}, i64 0, metadata !3146), !dbg !4177
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::Function"* %theFunction}, i64 0, metadata !3147), !dbg !4178
+  tail call void @llvm.dbg.value(metadata !{i16* %theFunctionName}, i64 0, metadata !4179), !dbg !4181
+  %call.i = tail call i32 @_ZN10xalanc_1_814XalanDOMString6lengthEPKt(i16* %theFunctionName) #7, !dbg !4182
+  %call1.i = tail call i32 @_ZN10xalanc_1_818XPathFunctionTable16getFunctionIndexEPKtj(i16* %theFunctionName, i32 %call.i) #7, !dbg !4182
+  tail call void @llvm.dbg.value(metadata !{i32 %call1.i}, i64 0, metadata !3148), !dbg !4180
+  %cmp = icmp eq i32 %call1.i, -1, !dbg !4184
+  br i1 %cmp, label %if.then, label %if.else, !dbg !4184
+
+if.then:                                          ; preds = %entry
+  %exception = tail call i8* @__cxa_allocate_exception(i64 128) #2, !dbg !4185
+  %0 = bitcast i8* %exception to %"class.xalanc_1_8::XPathExceptionFunctionNotSupported"*, !dbg !4185
+  invoke void @_ZN10xalanc_1_834XPathExceptionFunctionNotSupportedC2EPKt(%"class.xalanc_1_8::XPathExceptionFunctionNotSupported"* %0, i16* %theFunctionName) #7
+          to label %invoke.cont unwind label %lpad, !dbg !4185
+
+invoke.cont:                                      ; preds = %if.then
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN10xalanc_1_834XPathExceptionFunctionNotSupportedE to i8*), i8* bitcast (void (%"class.xalanc_1_8::XPathExceptionFunctionNotSupported"*)* @_ZN10xalanc_1_834XPathExceptionFunctionNotSupportedD2Ev to i8*)) #8, !dbg !4185
+  unreachable, !dbg !4185
+
+lpad:                                             ; preds = %if.then
+  %1 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !4185
+  tail call void @__cxa_free_exception(i8* %exception) #2, !dbg !4185
+  resume { i8*, i32 } %1, !dbg !4185
+
+if.else:                                          ; preds = %entry
+  %idxprom = sext i32 %call1.i to i64, !dbg !4187
+  %arrayidx = getelementptr inbounds %"class.xalanc_1_8::XPathFunctionTable"* %this, i64 0, i32 0, i64 %idxprom, !dbg !4187
+  %2 = load %"class.xalanc_1_8::Function"** %arrayidx, align 8, !dbg !4187, !tbaa !3759
+  %cmp2 = icmp eq %"class.xalanc_1_8::Function"* %2, null, !dbg !4187
+  %3 = bitcast %"class.xalanc_1_8::Function"* %theFunction to %"class.xalanc_1_8::Function"* (%"class.xalanc_1_8::Function"*)***, !dbg !4188
+  %vtable = load %"class.xalanc_1_8::Function"* (%"class.xalanc_1_8::Function"*)*** %3, align 8, !dbg !4188, !tbaa !3782
+  %vfn = getelementptr inbounds %"class.xalanc_1_8::Function"* (%"class.xalanc_1_8::Function"*)** %vtable, i64 7, !dbg !4188
+  %4 = load %"class.xalanc_1_8::Function"* (%"class.xalanc_1_8::Function"*)** %vfn, align 8, !dbg !4188
+  %call4 = tail call %"class.xalanc_1_8::Function"* %4(%"class.xalanc_1_8::Function"* %theFunction) #7, !dbg !4188
+  store %"class.xalanc_1_8::Function"* %call4, %"class.xalanc_1_8::Function"** %arrayidx, align 8, !dbg !4188, !tbaa !3759
+  br i1 %cmp2, label %if.end20, label %delete.notnull, !dbg !4187
+
+delete.notnull:                                   ; preds = %if.else
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::Function"* %2}, i64 0, metadata !3150), !dbg !4190
+  %5 = bitcast %"class.xalanc_1_8::Function"* %2 to void (%"class.xalanc_1_8::Function"*)***, !dbg !4191
+  %vtable18 = load void (%"class.xalanc_1_8::Function"*)*** %5, align 8, !dbg !4191, !tbaa !3782
+  %vfn19 = getelementptr inbounds void (%"class.xalanc_1_8::Function"*)** %vtable18, i64 1, !dbg !4191
+  %6 = load void (%"class.xalanc_1_8::Function"*)** %vfn19, align 8, !dbg !4191
+  tail call void %6(%"class.xalanc_1_8::Function"* %2) #7, !dbg !4191
+  br label %if.end20, !dbg !4191
+
+if.end20:                                         ; preds = %if.else, %delete.notnull
+  ret void, !dbg !4192
+}

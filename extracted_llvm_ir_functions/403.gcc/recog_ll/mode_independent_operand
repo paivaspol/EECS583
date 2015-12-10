@@ -1,29 +1,32 @@
 define i32 @mode_independent_operand(%struct.rtx_def* %op, i32 %mode) #0 {
 entry:
-  %call = tail call i32 @general_operand(%struct.rtx_def* %op, i32 %mode) #7
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %op}, i64 0, metadata !772), !dbg !1973
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !773), !dbg !1974
+  %call = tail call i32 @general_operand(%struct.rtx_def* %op, i32 %mode) #8, !dbg !1975
+  %tobool = icmp eq i32 %call, 0, !dbg !1975
+  br i1 %tobool, label %return, label %if.end, !dbg !1975
 
 if.end:                                           ; preds = %entry
-  %0 = bitcast %struct.rtx_def* %op to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 66
-  br i1 %cmp, label %if.end2, label %return
+  %0 = bitcast %struct.rtx_def* %op to i32*, !dbg !1976
+  %bf.load = load i32* %0, align 8, !dbg !1976
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1976
+  %cmp = icmp eq i32 %bf.clear, 66, !dbg !1976
+  br i1 %cmp, label %if.end2, label %return, !dbg !1976
 
 if.end2:                                          ; preds = %if.end
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
-  %2 = bitcast %struct.rtx_def* %1 to i32*
-  %bf.load3 = load i32* %2, align 8
-  %bf.clear4 = and i32 %bf.load3, 65535
-  %bf.clear4.off = add i32 %bf.clear4, -98
-  %not.switch = icmp ugt i32 %bf.clear4.off, 1
-  %. = zext i1 %not.switch to i32
-  ret i32 %.
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %op, i64 0, i32 1, i64 0, !dbg !1977
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !1977
+  %1 = load %struct.rtx_def** %rtx, align 8, !dbg !1977, !tbaa !1177
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %1}, i64 0, metadata !774), !dbg !1977
+  %2 = bitcast %struct.rtx_def* %1 to i32*, !dbg !1978
+  %bf.load3 = load i32* %2, align 8, !dbg !1978
+  %bf.clear4 = and i32 %bf.load3, 65535, !dbg !1978
+  %bf.clear4.off = add i32 %bf.clear4, -98, !dbg !1978
+  %not.switch = icmp ugt i32 %bf.clear4.off, 1, !dbg !1978
+  %. = zext i1 %not.switch to i32, !dbg !1978
+  ret i32 %., !dbg !1978
 
 return:                                           ; preds = %if.end, %entry
   %retval.0 = phi i32 [ 0, %entry ], [ 1, %if.end ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1980
 }

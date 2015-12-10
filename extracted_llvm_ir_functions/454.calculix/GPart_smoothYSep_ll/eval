@@ -1,40 +1,47 @@
-define internal fastcc float @eval(float %alpha, float %wS, float %wB, float %wW) #4 {
+define internal fastcc float @eval(float %alpha, float %wS, float %wB, float %wW) #5 {
 entry:
-  %cmp = fcmp oeq float %wB, 0.000000e+00
-  %cmp1 = fcmp oeq float %wW, 0.000000e+00
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata !{float %alpha}, i64 0, metadata !241), !dbg !782
+  tail call void @llvm.dbg.value(metadata !{float %wS}, i64 0, metadata !242), !dbg !783
+  tail call void @llvm.dbg.value(metadata !{float %wB}, i64 0, metadata !243), !dbg !784
+  tail call void @llvm.dbg.value(metadata !{float %wW}, i64 0, metadata !244), !dbg !785
+  %cmp = fcmp oeq float %wB, 0.000000e+00, !dbg !786
+  %cmp1 = fcmp oeq float %wW, 0.000000e+00, !dbg !786
+  %or.cond = or i1 %cmp, %cmp1, !dbg !786
+  br i1 %or.cond, label %if.then, label %if.else, !dbg !786
 
 if.then:                                          ; preds = %entry
-  %add = fadd float %wS, %wB
-  %add2 = fadd float %add, %wW
-  %mul = fmul float %add2, %add2
-  br label %if.end20
+  %add = fadd float %wS, %wB, !dbg !787
+  %add2 = fadd float %add, %wW, !dbg !787
+  %mul = fmul float %add2, %add2, !dbg !787
+  tail call void @llvm.dbg.value(metadata !{float %mul}, i64 0, metadata !245), !dbg !787
+  br label %if.end20, !dbg !789
 
 if.else:                                          ; preds = %entry
-  %cmp5 = fcmp ult float %wB, %wW
-  %conv = fpext float %wS to double
-  br i1 %cmp5, label %if.else12, label %if.then6
+  %cmp5 = fcmp ult float %wB, %wW, !dbg !790
+  %conv = fpext float %wS to double, !dbg !791
+  br i1 %cmp5, label %if.else12, label %if.then6, !dbg !790
 
 if.then6:                                         ; preds = %if.else
-  %mul7 = fmul float %alpha, %wB
-  %div = fdiv float %mul7, %wW
-  %conv8 = fpext float %div to double
-  %add9 = fadd double %conv8, 1.000000e+00
-  %mul10 = fmul double %conv, %add9
-  %conv11 = fptrunc double %mul10 to float
-  br label %if.end20
+  %mul7 = fmul float %alpha, %wB, !dbg !791
+  %div = fdiv float %mul7, %wW, !dbg !791
+  %conv8 = fpext float %div to double, !dbg !791
+  %add9 = fadd double %conv8, 1.000000e+00, !dbg !791
+  %mul10 = fmul double %conv, %add9, !dbg !791
+  %conv11 = fptrunc double %mul10 to float, !dbg !791
+  tail call void @llvm.dbg.value(metadata !{float %conv11}, i64 0, metadata !245), !dbg !791
+  br label %if.end20, !dbg !793
 
 if.else12:                                        ; preds = %if.else
-  %mul14 = fmul float %alpha, %wW
-  %div15 = fdiv float %mul14, %wB
-  %conv16 = fpext float %div15 to double
-  %add17 = fadd double %conv16, 1.000000e+00
-  %mul18 = fmul double %conv, %add17
-  %conv19 = fptrunc double %mul18 to float
+  %mul14 = fmul float %alpha, %wW, !dbg !794
+  %div15 = fdiv float %mul14, %wB, !dbg !794
+  %conv16 = fpext float %div15 to double, !dbg !794
+  %add17 = fadd double %conv16, 1.000000e+00, !dbg !794
+  %mul18 = fmul double %conv, %add17, !dbg !794
+  %conv19 = fptrunc double %mul18 to float, !dbg !794
+  tail call void @llvm.dbg.value(metadata !{float %conv19}, i64 0, metadata !245), !dbg !794
   br label %if.end20
 
 if.end20:                                         ; preds = %if.then6, %if.else12, %if.then
   %cost.0 = phi float [ %mul, %if.then ], [ %conv11, %if.then6 ], [ %conv19, %if.else12 ]
-  ret float %cost.0
+  ret float %cost.0, !dbg !796
 }

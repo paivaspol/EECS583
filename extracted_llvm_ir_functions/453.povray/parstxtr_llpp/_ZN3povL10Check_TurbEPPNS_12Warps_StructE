@@ -1,0 +1,41 @@
+define internal fastcc %"struct.pov::Turb_Struct"* @_ZN3povL10Check_TurbEPPNS_12Warps_StructE(%"struct.pov::Warps_Struct"** nocapture %Warps_Ptr) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Warps_Struct"** %Warps_Ptr}, i64 0, metadata !1755), !dbg !4874
+  %0 = load %"struct.pov::Warps_Struct"** %Warps_Ptr, align 8, !dbg !4875, !tbaa !2214
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Warps_Struct"* %0}, i64 0, metadata !1756), !dbg !4875
+  %cmp = icmp eq %"struct.pov::Warps_Struct"* %0, null, !dbg !4876
+  br i1 %cmp, label %if.then, label %while.cond, !dbg !4876
+
+if.then:                                          ; preds = %entry
+  %call = tail call %"struct.pov::Warps_Struct"* @_ZN3pov11Create_WarpEi(i32 1) #6, !dbg !4877
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Warps_Struct"* %call}, i64 0, metadata !1756), !dbg !4877
+  store %"struct.pov::Warps_Struct"* %call, %"struct.pov::Warps_Struct"** %Warps_Ptr, align 8, !dbg !4877, !tbaa !2214
+  br label %if.end9, !dbg !4879
+
+while.cond:                                       ; preds = %entry, %while.cond
+  %Temp.0 = phi %"struct.pov::Warps_Struct"* [ %1, %while.cond ], [ %0, %entry ]
+  %Next_Warp = getelementptr inbounds %"struct.pov::Warps_Struct"* %Temp.0, i64 0, i32 2, !dbg !4880
+  %1 = load %"struct.pov::Warps_Struct"** %Next_Warp, align 8, !dbg !4880, !tbaa !2214
+  %cmp1 = icmp eq %"struct.pov::Warps_Struct"* %1, null, !dbg !4880
+  br i1 %cmp1, label %while.end, label %while.cond, !dbg !4880
+
+while.end:                                        ; preds = %while.cond
+  %Warp_Type = getelementptr inbounds %"struct.pov::Warps_Struct"* %Temp.0, i64 0, i32 0, !dbg !4882
+  %2 = load i16* %Warp_Type, align 2, !dbg !4882, !tbaa !2213
+  %cmp3 = icmp eq i16 %2, 1, !dbg !4882
+  br i1 %cmp3, label %if.end9, label %if.then4, !dbg !4882
+
+if.then4:                                         ; preds = %while.end
+  %call5 = tail call %"struct.pov::Warps_Struct"* @_ZN3pov11Create_WarpEi(i32 1) #6, !dbg !4883
+  store %"struct.pov::Warps_Struct"* %call5, %"struct.pov::Warps_Struct"** %Next_Warp, align 8, !dbg !4883, !tbaa !2214
+  %Prev_Warp = getelementptr inbounds %"struct.pov::Warps_Struct"* %call5, i64 0, i32 1, !dbg !4885
+  store %"struct.pov::Warps_Struct"* %Temp.0, %"struct.pov::Warps_Struct"** %Prev_Warp, align 8, !dbg !4885, !tbaa !2214
+  %3 = load %"struct.pov::Warps_Struct"** %Next_Warp, align 8, !dbg !4886, !tbaa !2214
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Warps_Struct"* %3}, i64 0, metadata !1756), !dbg !4886
+  br label %if.end9, !dbg !4887
+
+if.end9:                                          ; preds = %while.end, %if.then4, %if.then
+  %Temp.1 = phi %"struct.pov::Warps_Struct"* [ %call, %if.then ], [ %3, %if.then4 ], [ %Temp.0, %while.end ]
+  %4 = bitcast %"struct.pov::Warps_Struct"* %Temp.1 to %"struct.pov::Turb_Struct"*, !dbg !4888
+  ret %"struct.pov::Turb_Struct"* %4, !dbg !4888
+}

@@ -1,0 +1,28 @@
+define %"class.xalanc_1_8::XStringAdapter"* @_ZNK10xalanc_1_814XStringAdapter5cloneEPv(%"class.xalanc_1_8::XStringAdapter"* %this, i8* %theAddress) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XStringAdapter"* %this}, i64 0, metadata !2884), !dbg !2963
+  tail call void @llvm.dbg.value(metadata !{i8* %theAddress}, i64 0, metadata !2886), !dbg !2963
+  %cmp = icmp eq i8* %theAddress, null, !dbg !2964
+  br i1 %cmp, label %if.then, label %new.notnull, !dbg !2964
+
+if.then:                                          ; preds = %entry
+  %call = tail call noalias i8* @_Znwm(i64 64) #7, !dbg !2965
+  %0 = bitcast i8* %call to %"class.xalanc_1_8::XStringAdapter"*, !dbg !2965
+  invoke void @_ZN10xalanc_1_814XStringAdapterC2ERKS0_(%"class.xalanc_1_8::XStringAdapter"* %0, %"class.xalanc_1_8::XStringAdapter"* %this) #7
+          to label %return unwind label %lpad, !dbg !2965
+
+lpad:                                             ; preds = %if.then
+  %1 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !2965
+  tail call void @_ZdlPv(i8* %call) #10, !dbg !2965
+  resume { i8*, i32 } %1, !dbg !2965
+
+new.notnull:                                      ; preds = %entry
+  %2 = bitcast i8* %theAddress to %"class.xalanc_1_8::XStringAdapter"*, !dbg !2967
+  tail call void @_ZN10xalanc_1_814XStringAdapterC2ERKS0_(%"class.xalanc_1_8::XStringAdapter"* %2, %"class.xalanc_1_8::XStringAdapter"* %this) #7, !dbg !2967
+  br label %return, !dbg !2967
+
+return:                                           ; preds = %if.then, %new.notnull
+  %retval.0 = phi %"class.xalanc_1_8::XStringAdapter"* [ %2, %new.notnull ], [ %0, %if.then ]
+  ret %"class.xalanc_1_8::XStringAdapter"* %retval.0, !dbg !2969
+}

@@ -1,18 +1,22 @@
 define internal fastcc void @maybe_wrap_text(%struct.output_buffer* %buffer, i8* %start, i8* %end) #2 {
 entry:
-  %ideal_maximum_length.i = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 2
-  %0 = load i32* %ideal_maximum_length.i, align 4, !tbaa !0
-  %cmp.i = icmp sgt i32 %0, 0
-  br i1 %cmp.i, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata !{%struct.output_buffer* %buffer}, i64 0, metadata !1129), !dbg !1390
+  tail call void @llvm.dbg.value(metadata !{i8* %start}, i64 0, metadata !1130), !dbg !1391
+  tail call void @llvm.dbg.value(metadata !{i8* %end}, i64 0, metadata !1131), !dbg !1392
+  tail call void @llvm.dbg.value(metadata !{%struct.output_buffer* %buffer}, i64 0, metadata !1393), !dbg !1395
+  %ideal_maximum_length.i = getelementptr inbounds %struct.output_buffer* %buffer, i64 0, i32 0, i32 2, !dbg !1396
+  %0 = load i32* %ideal_maximum_length.i, align 4, !dbg !1396, !tbaa !1172
+  %cmp.i = icmp sgt i32 %0, 0, !dbg !1396
+  br i1 %cmp.i, label %if.then, label %if.else, !dbg !1394
 
 if.then:                                          ; preds = %entry
-  tail call fastcc void @wrap_text(%struct.output_buffer* %buffer, i8* %start, i8* %end) #11
-  br label %if.end
+  tail call fastcc void @wrap_text(%struct.output_buffer* %buffer, i8* %start, i8* %end) #12, !dbg !1397
+  br label %if.end, !dbg !1397
 
 if.else:                                          ; preds = %entry
-  tail call void @output_append(%struct.output_buffer* %buffer, i8* %start, i8* %end) #11
+  tail call void @output_append(%struct.output_buffer* %buffer, i8* %start, i8* %end) #12, !dbg !1398
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
-  ret void
+  ret void, !dbg !1399
 }

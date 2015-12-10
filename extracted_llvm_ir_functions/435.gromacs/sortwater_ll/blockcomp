@@ -1,37 +1,44 @@
-define internal i32 @blockcomp(i8* nocapture readonly %a, i8* nocapture readonly %b) #5 {
-  %1 = load i32* @nwat, align 4, !tbaa !18
-  %2 = bitcast i8* %a to i32*
-  %3 = load i32* %2, align 4, !tbaa !18
-  %4 = mul nsw i32 %3, %1
-  %5 = bitcast i8* %b to i32*
-  %6 = load i32* %5, align 4, !tbaa !18
-  %7 = mul nsw i32 %6, %1
-  %8 = sext i32 %4 to i64
-  %9 = load [3 x float]** @xptr, align 8, !tbaa !19
-  %10 = getelementptr inbounds [3 x float]* %9, i64 %8, i64 0
-  %11 = tail call fastcc i32 @block_index(float* %10) #10
-  %12 = sext i32 %7 to i64
-  %13 = getelementptr inbounds [3 x float]* %9, i64 %12, i64 0
-  %14 = tail call fastcc i32 @block_index(float* %13) #10
-  %15 = icmp eq i32 %11, %14
-  br i1 %15, label %16, label %22
+define internal i32 @blockcomp(i8* nocapture %a, i8* nocapture %b) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %a}, i64 0, metadata !181), !dbg !594
+  tail call void @llvm.dbg.value(metadata !{i8* %b}, i64 0, metadata !182), !dbg !594
+  %0 = load i32* @nwat, align 4, !dbg !595, !tbaa !228
+  %1 = bitcast i8* %a to i32*, !dbg !595
+  %2 = load i32* %1, align 4, !dbg !595, !tbaa !228
+  %mul = mul nsw i32 %2, %0, !dbg !595
+  tail call void @llvm.dbg.value(metadata !{i32 %mul}, i64 0, metadata !183), !dbg !595
+  %3 = bitcast i8* %b to i32*, !dbg !596
+  %4 = load i32* %3, align 4, !dbg !596, !tbaa !228
+  %mul1 = mul nsw i32 %4, %0, !dbg !596
+  tail call void @llvm.dbg.value(metadata !{i32 %mul1}, i64 0, metadata !184), !dbg !596
+  %idxprom = sext i32 %mul to i64, !dbg !597
+  %5 = load [3 x float]** @xptr, align 8, !dbg !597, !tbaa !296
+  %arraydecay = getelementptr inbounds [3 x float]* %5, i64 %idxprom, i64 0, !dbg !597
+  %call = tail call fastcc i32 @block_index(float* %arraydecay) #7, !dbg !597
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !185), !dbg !597
+  %idxprom2 = sext i32 %mul1 to i64, !dbg !598
+  %arraydecay4 = getelementptr inbounds [3 x float]* %5, i64 %idxprom2, i64 0, !dbg !598
+  %call5 = tail call fastcc i32 @block_index(float* %arraydecay4) #7, !dbg !598
+  tail call void @llvm.dbg.value(metadata !{i32 %call5}, i64 0, metadata !186), !dbg !598
+  %cmp = icmp eq i32 %call, %call5, !dbg !599
+  br i1 %cmp, label %if.then, label %if.else23, !dbg !599
 
-; <label>:16                                      ; preds = %0
-  %17 = load float* %10, align 4, !tbaa !14
-  %18 = load float* %13, align 4, !tbaa !14
-  %19 = fcmp olt float %17, %18
-  br i1 %19, label %24, label %20
+if.then:                                          ; preds = %entry
+  %6 = load float* %arraydecay, align 4, !dbg !600, !tbaa !244
+  %7 = load float* %arraydecay4, align 4, !dbg !600, !tbaa !244
+  %cmp12 = fcmp olt float %6, %7, !dbg !600
+  br i1 %cmp12, label %return, label %if.else, !dbg !600
 
-; <label>:20                                      ; preds = %16
-  %21 = fcmp ogt float %17, %18
-  %. = zext i1 %21 to i32
-  br label %24
+if.else:                                          ; preds = %if.then
+  %cmp20 = fcmp ogt float %6, %7, !dbg !602
+  %. = zext i1 %cmp20 to i32, !dbg !603
+  br label %return, !dbg !603
 
-; <label>:22                                      ; preds = %0
-  %23 = sub nsw i32 %11, %14
-  br label %24
+if.else23:                                        ; preds = %entry
+  %sub = sub nsw i32 %call, %call5, !dbg !604
+  br label %return, !dbg !604
 
-; <label>:24                                      ; preds = %20, %16, %22
-  %.0 = phi i32 [ %23, %22 ], [ -1, %16 ], [ %., %20 ]
-  ret i32 %.0
+return:                                           ; preds = %if.else, %if.then, %if.else23
+  %retval.0 = phi i32 [ %sub, %if.else23 ], [ -1, %if.then ], [ %., %if.else ]
+  ret i32 %retval.0, !dbg !605
 }

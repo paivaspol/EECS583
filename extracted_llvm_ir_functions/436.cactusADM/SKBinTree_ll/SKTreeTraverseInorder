@@ -1,31 +1,42 @@
-define i32 @SKTreeTraverseInorder(%struct.T_SKTREE* readonly %root, i32 (i8*, i8*, i8*)* %process, i8* %info) #1 {
-  %1 = icmp eq %struct.T_SKTREE* %root, null
-  br i1 %1, label %.thread, label %.lr.ph
+define i32 @SKTreeTraverseInorder(%struct.T_SKTREE* %root, i32 (i8*, i8*, i8*)* %process, i8* %info) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %root}, i64 0, metadata !43), !dbg !157
+  tail call void @llvm.dbg.value(metadata !{i32 (i8*, i8*, i8*)* %process}, i64 0, metadata !44), !dbg !157
+  tail call void @llvm.dbg.value(metadata !{i8* %info}, i64 0, metadata !45), !dbg !157
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !46), !dbg !158
+  %tobool20 = icmp eq %struct.T_SKTREE* %root, null, !dbg !159
+  br i1 %tobool20, label %if.end8, label %if.then, !dbg !159
 
-.lr.ph:                                           ; preds = %0, %tailrecurse
-  %root.tr1 = phi %struct.T_SKTREE* [ %14, %tailrecurse ], [ %root, %0 ]
-  %2 = getelementptr inbounds %struct.T_SKTREE* %root.tr1, i64 0, i32 0
-  %3 = load %struct.T_SKTREE** %2, align 8, !tbaa !8
-  %4 = tail call i32 @SKTreeTraverseInorder(%struct.T_SKTREE* %3, i32 (i8*, i8*, i8*)* %process, i8* %info) #9
-  %5 = icmp eq i32 %4, 0
-  br i1 %5, label %6, label %.thread
+if.then:                                          ; preds = %entry, %if.then5
+  %root.tr21 = phi %struct.T_SKTREE* [ %3, %if.then5 ], [ %root, %entry ]
+  %left = getelementptr inbounds %struct.T_SKTREE* %root.tr21, i64 0, i32 0, !dbg !160
+  %0 = load %struct.T_SKTREE** %left, align 8, !dbg !160, !tbaa !117
+  %call = tail call i32 @SKTreeTraverseInorder(%struct.T_SKTREE* %0, i32 (i8*, i8*, i8*)* %process, i8* %info) #10, !dbg !160
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !46), !dbg !160
+  %tobool1 = icmp eq i32 %call, 0, !dbg !162
+  br i1 %tobool1, label %if.end, label %if.end8, !dbg !162
 
-; <label>:6                                       ; preds = %.lr.ph
-  %7 = getelementptr inbounds %struct.T_SKTREE* %root.tr1, i64 0, i32 4
-  %8 = load i8** %7, align 8, !tbaa !7
-  %9 = getelementptr inbounds %struct.T_SKTREE* %root.tr1, i64 0, i32 5
-  %10 = load i8** %9, align 8, !tbaa !2
-  %11 = tail call i32 %process(i8* %8, i8* %10, i8* %info) #8
-  %12 = icmp eq i32 %11, 0
-  br i1 %12, label %tailrecurse, label %.thread
+if.end:                                           ; preds = %if.then
+  %key = getelementptr inbounds %struct.T_SKTREE* %root.tr21, i64 0, i32 4, !dbg !162
+  %1 = load i8** %key, align 8, !dbg !162, !tbaa !117
+  %data = getelementptr inbounds %struct.T_SKTREE* %root.tr21, i64 0, i32 5, !dbg !162
+  %2 = load i8** %data, align 8, !dbg !162, !tbaa !117
+  %call3 = tail call i32 %process(i8* %1, i8* %2, i8* %info) #8, !dbg !162
+  tail call void @llvm.dbg.value(metadata !{i32 %call3}, i64 0, metadata !46), !dbg !162
+  %tobool4 = icmp eq i32 %call3, 0, !dbg !163
+  br i1 %tobool4, label %if.then5, label %if.end8, !dbg !163
 
-tailrecurse:                                      ; preds = %6
-  %13 = getelementptr inbounds %struct.T_SKTREE* %root.tr1, i64 0, i32 1
-  %14 = load %struct.T_SKTREE** %13, align 8, !tbaa !11
-  %15 = icmp eq %struct.T_SKTREE* %14, null
-  br i1 %15, label %.thread, label %.lr.ph
+if.then5:                                         ; preds = %if.end
+  %right = getelementptr inbounds %struct.T_SKTREE* %root.tr21, i64 0, i32 1, !dbg !163
+  %3 = load %struct.T_SKTREE** %right, align 8, !dbg !163, !tbaa !117
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %root.tr21}, i64 0, metadata !43), !dbg !157
+  tail call void @llvm.dbg.value(metadata !{i32 (i8*, i8*, i8*)* %process}, i64 0, metadata !44), !dbg !157
+  tail call void @llvm.dbg.value(metadata !{i8* %info}, i64 0, metadata !45), !dbg !157
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !46), !dbg !158
+  %tobool = icmp eq %struct.T_SKTREE* %3, null, !dbg !159
+  br i1 %tobool, label %if.end8, label %if.then, !dbg !159
 
-.thread:                                          ; preds = %tailrecurse, %6, %.lr.ph, %0
-  %terminate.1 = phi i32 [ 0, %0 ], [ 0, %tailrecurse ], [ %11, %6 ], [ %4, %.lr.ph ]
-  ret i32 %terminate.1
+if.end8:                                          ; preds = %if.then5, %if.then, %if.end, %entry
+  %terminate.1 = phi i32 [ 0, %entry ], [ %call, %if.then ], [ %call3, %if.end ], [ 0, %if.then5 ]
+  ret i32 %terminate.1, !dbg !164
 }

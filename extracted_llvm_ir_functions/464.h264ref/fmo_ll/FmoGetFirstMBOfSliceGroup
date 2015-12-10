@@ -1,34 +1,32 @@
-define i32 @FmoGetFirstMBOfSliceGroup(i32 %SliceGroupID) #2 {
+define i32 @FmoGetFirstMBOfSliceGroup(i32 %SliceGroupID) #0 {
 entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !3
-  %PicSizeInMbs7 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 110
-  %1 = load i32* %PicSizeInMbs7, align 4, !tbaa !0
-  %cmp8 = icmp sgt i32 %1, 0
-  br i1 %cmp8, label %land.rhs.lr.ph, label %while.end
-
-land.rhs.lr.ph:                                   ; preds = %entry
-  %2 = load i8** @MBAmap, align 8, !tbaa !3
-  br label %land.rhs
+  tail call void @llvm.dbg.value(metadata !{i32 %SliceGroupID}, i64 0, metadata !648), !dbg !1160
+  tail call void @llvm.dbg.value(metadata !8, i64 0, metadata !649), !dbg !1161
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !1162, !tbaa !948
+  %PicSizeInMbs7 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 110, !dbg !1162
+  %1 = load i32* %PicSizeInMbs7, align 4, !dbg !1162, !tbaa !938
+  %cmp8 = icmp sgt i32 %1, 0, !dbg !1162
+  br i1 %cmp8, label %land.rhs, label %while.end, !dbg !1162
 
 while.cond:                                       ; preds = %land.rhs
-  %3 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %3, %1
-  br i1 %cmp, label %land.rhs, label %while.end
+  %cmp = icmp slt i32 %inc, %.pre12, !dbg !1162
+  br i1 %cmp, label %land.rhs, label %while.end, !dbg !1162
 
-land.rhs:                                         ; preds = %land.rhs.lr.ph, %while.cond
-  %indvars.iv = phi i64 [ 0, %land.rhs.lr.ph ], [ %indvars.iv.next, %while.cond ]
-  %i.09 = phi i32 [ 0, %land.rhs.lr.ph ], [ %inc, %while.cond ]
-  %arrayidx.i = getelementptr inbounds i8* %2, i64 %indvars.iv
-  %4 = load i8* %arrayidx.i, align 1, !tbaa !1
-  %conv.i = zext i8 %4 to i32
-  %cmp1 = icmp eq i32 %conv.i, %SliceGroupID
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %inc = add nsw i32 %i.09, 1
+land.rhs:                                         ; preds = %entry, %while.cond
+  %i.09 = phi i32 [ %inc, %while.cond ], [ 0, %entry ]
+  %call = tail call i32 @FmoMB2SliceGroup(i32 %i.09) #10, !dbg !1162
+  %cmp1 = icmp eq i32 %call, %SliceGroupID, !dbg !1162
+  %inc = add nsw i32 %i.09, 1, !dbg !1163
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !649), !dbg !1163
+  %.pre = load %struct.ImageParameters** @img, align 8, !dbg !1164, !tbaa !948
+  %PicSizeInMbs2.phi.trans.insert = getelementptr inbounds %struct.ImageParameters* %.pre, i64 0, i32 110
+  %.pre12 = load i32* %PicSizeInMbs2.phi.trans.insert, align 4, !dbg !1164, !tbaa !938
   br i1 %cmp1, label %while.end, label %while.cond
 
-while.end:                                        ; preds = %while.cond, %land.rhs, %entry
-  %i.0.lcssa = phi i32 [ 0, %entry ], [ %i.09, %land.rhs ], [ %inc, %while.cond ]
-  %cmp3 = icmp slt i32 %i.0.lcssa, %1
-  %i.0. = select i1 %cmp3, i32 %i.0.lcssa, i32 -1
-  ret i32 %i.0.
+while.end:                                        ; preds = %land.rhs, %while.cond, %entry
+  %2 = phi i32 [ %1, %entry ], [ %.pre12, %while.cond ], [ %.pre12, %land.rhs ]
+  %i.0.lcssa = phi i32 [ 0, %entry ], [ %inc, %while.cond ], [ %i.09, %land.rhs ]
+  %cmp3 = icmp slt i32 %i.0.lcssa, %2, !dbg !1164
+  %i.0. = select i1 %cmp3, i32 %i.0.lcssa, i32 -1, !dbg !1165
+  ret i32 %i.0., !dbg !1166
 }

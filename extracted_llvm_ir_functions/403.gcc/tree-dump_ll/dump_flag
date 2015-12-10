@@ -1,19 +1,22 @@
-define i32 @dump_flag(%struct.dump_info* nocapture %di, i32 %flag, %union.tree_node* %node) #4 {
+define i32 @dump_flag(%struct.dump_info* nocapture %di, i32 %flag, %union.tree_node* %node) #5 {
 entry:
-  %flags = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 2
-  %0 = load i32* %flags, align 4, !tbaa !4
-  %and = and i32 %0, %flag
-  %tobool = icmp eq i32 %and, 0
-  br i1 %tobool, label %land.end, label %land.rhs
+  tail call void @llvm.dbg.value(metadata !{%struct.dump_info* %di}, i64 0, metadata !701), !dbg !939
+  tail call void @llvm.dbg.value(metadata !{i32 %flag}, i64 0, metadata !702), !dbg !940
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %node}, i64 0, metadata !703), !dbg !941
+  %flags = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 2, !dbg !942
+  %0 = load i32* %flags, align 4, !dbg !942, !tbaa !850
+  %and = and i32 %0, %flag, !dbg !942
+  %tobool = icmp eq i32 %and, 0, !dbg !942
+  br i1 %tobool, label %land.end, label %land.rhs, !dbg !942
 
 land.rhs:                                         ; preds = %entry
-  %node1 = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 1
-  %1 = load %union.tree_node** %node1, align 8, !tbaa !0
-  %cmp = icmp ne %union.tree_node* %1, %node
+  %node1 = getelementptr inbounds %struct.dump_info* %di, i64 0, i32 1, !dbg !942
+  %1 = load %union.tree_node** %node1, align 8, !dbg !942, !tbaa !844
+  %cmp = icmp ne %union.tree_node* %1, %node, !dbg !942
   br label %land.end
 
 land.end:                                         ; preds = %entry, %land.rhs
   %2 = phi i1 [ false, %entry ], [ %cmp, %land.rhs ]
   %land.ext = zext i1 %2 to i32
-  ret i32 %land.ext
+  ret i32 %land.ext, !dbg !943
 }

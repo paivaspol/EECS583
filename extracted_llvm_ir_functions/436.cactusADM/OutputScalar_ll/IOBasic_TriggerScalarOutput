@@ -1,34 +1,40 @@
 define i32 @IOBasic_TriggerScalarOutput(%struct.cGH* %GH, i32 %vindex) #1 {
-  %1 = tail call i8* @CCTK_GHExtension(%struct.cGH* %GH, i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0)) #5
-  %2 = tail call i8* @CCTK_VarName(i32 %vindex) #5
-  %3 = tail call i32 @CCTK_GroupTypeFromVarI(i32 %vindex) #5
-  %4 = icmp eq i32 %3, 1
-  br i1 %4, label %5, label %7
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !122), !dbg !267
+  tail call void @llvm.dbg.value(metadata !{i32 %vindex}, i64 0, metadata !123), !dbg !267
+  %call = tail call i8* @CCTK_GHExtension(%struct.cGH* %GH, i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0)) #6, !dbg !268
+  %call2 = tail call i8* @CCTK_VarName(i32 %vindex) #6, !dbg !269
+  tail call void @llvm.dbg.value(metadata !{i8* %call2}, i64 0, metadata !125), !dbg !269
+  %call3 = tail call i32 @CCTK_GroupTypeFromVarI(i32 %vindex) #6, !dbg !270
+  %cmp = icmp eq i32 %call3, 1, !dbg !270
+  br i1 %cmp, label %if.then, label %if.else, !dbg !270
 
-; <label>:5                                       ; preds = %0
-  %6 = tail call i32 @IOBasic_WriteScalarGS(%struct.cGH* %GH, i32 %vindex, i8* %2) #5
-  br label %9
+if.then:                                          ; preds = %entry
+  %call4 = tail call i32 @IOBasic_WriteScalarGS(%struct.cGH* %GH, i32 %vindex, i8* %call2) #6, !dbg !271
+  tail call void @llvm.dbg.value(metadata !{i32 %call4}, i64 0, metadata !124), !dbg !271
+  br label %if.end, !dbg !273
 
-; <label>:7                                       ; preds = %0
-  %8 = tail call i32 @IOBasic_WriteScalarGA(%struct.cGH* %GH, i32 %vindex, i8* %2) #5
-  br label %9
+if.else:                                          ; preds = %entry
+  %call5 = tail call i32 @IOBasic_WriteScalarGA(%struct.cGH* %GH, i32 %vindex, i8* %call2) #6, !dbg !274
+  tail call void @llvm.dbg.value(metadata !{i32 %call5}, i64 0, metadata !124), !dbg !274
+  br label %if.end
 
-; <label>:9                                       ; preds = %7, %5
-  %retval.0 = phi i32 [ %6, %5 ], [ %8, %7 ]
-  %10 = icmp eq i32 %retval.0, 0
-  br i1 %10, label %11, label %19
+if.end:                                           ; preds = %if.else, %if.then
+  %retval1.0 = phi i32 [ %call4, %if.then ], [ %call5, %if.else ]
+  %cmp6 = icmp eq i32 %retval1.0, 0, !dbg !276
+  br i1 %cmp6, label %if.then7, label %if.end8, !dbg !276
 
-; <label>:11                                      ; preds = %9
-  %12 = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 1
-  %13 = load i32* %12, align 4, !tbaa !8
-  %14 = sext i32 %vindex to i64
-  %15 = getelementptr inbounds i8* %1, i64 40
-  %16 = bitcast i8* %15 to i32**
-  %17 = load i32** %16, align 8, !tbaa !11
-  %18 = getelementptr inbounds i32* %17, i64 %14
-  store i32 %13, i32* %18, align 4, !tbaa !12
-  br label %19
+if.then7:                                         ; preds = %if.end
+  %cctk_iteration = getelementptr inbounds %struct.cGH* %GH, i64 0, i32 1, !dbg !277
+  %0 = load i32* %cctk_iteration, align 4, !dbg !277, !tbaa !173
+  %idxprom = sext i32 %vindex to i64, !dbg !277
+  %outScalar_last = getelementptr inbounds i8* %call, i64 40, !dbg !277
+  %1 = bitcast i8* %outScalar_last to i32**, !dbg !277
+  %2 = load i32** %1, align 8, !dbg !277, !tbaa !190
+  %arrayidx = getelementptr inbounds i32* %2, i64 %idxprom, !dbg !277
+  store i32 %0, i32* %arrayidx, align 4, !dbg !277, !tbaa !173
+  br label %if.end8, !dbg !279
 
-; <label>:19                                      ; preds = %11, %9
-  ret i32 %retval.0
+if.end8:                                          ; preds = %if.then7, %if.end
+  ret i32 %retval1.0, !dbg !280
 }

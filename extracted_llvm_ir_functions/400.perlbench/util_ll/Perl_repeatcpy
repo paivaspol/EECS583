@@ -1,0 +1,57 @@
+define void @Perl_repeatcpy(i8* nocapture %to, i8* nocapture %from, i32 %len, i32 %count) #0 {
+entry:
+  %cmp = icmp eq i32 %len, 1
+  %cmp117 = icmp sgt i32 %count, 0
+  br i1 %cmp, label %if.then, label %while.cond2.preheader
+
+while.cond2.preheader:                            ; preds = %entry
+  br i1 %cmp117, label %for.cond.preheader.lr.ph, label %while.end10
+
+for.cond.preheader.lr.ph:                         ; preds = %while.cond2.preheader
+  %cmp620 = icmp sgt i32 %len, 0
+  %0 = add i32 %len, -1
+  %1 = zext i32 %0 to i64
+  %2 = add i64 %1, 1
+  br label %for.cond.preheader
+
+if.then:                                          ; preds = %entry
+  br i1 %cmp117, label %while.body.lr.ph, label %while.end10
+
+while.body.lr.ph:                                 ; preds = %if.then
+  %3 = load i8* %from, align 1, !tbaa !0
+  %4 = add i32 %count, -1
+  %5 = zext i32 %4 to i64
+  %6 = add i64 %5, 1
+  call void @llvm.memset.p0i8.i64(i8* %to, i8 %3, i64 %6, i32 1, i1 false)
+  br label %while.end10
+
+for.cond.while.cond2.loopexit_crit_edge:          ; preds = %for.body
+  %scevgep = getelementptr i8* %to.addr.127, i64 %2
+  br label %while.cond2.loopexit
+
+while.cond2.loopexit:                             ; preds = %for.cond.while.cond2.loopexit_crit_edge, %for.cond.preheader
+  %to.addr.2.lcssa = phi i8* [ %scevgep, %for.cond.while.cond2.loopexit_crit_edge ], [ %to.addr.127, %for.cond.preheader ]
+  %cmp4 = icmp sgt i32 %dec328, 0
+  br i1 %cmp4, label %for.cond.preheader, label %while.end10
+
+for.cond.preheader:                               ; preds = %for.cond.preheader.lr.ph, %while.cond2.loopexit
+  %dec328.in = phi i32 [ %count, %for.cond.preheader.lr.ph ], [ %dec328, %while.cond2.loopexit ]
+  %to.addr.127 = phi i8* [ %to, %for.cond.preheader.lr.ph ], [ %to.addr.2.lcssa, %while.cond2.loopexit ]
+  %dec328 = add nsw i32 %dec328.in, -1
+  br i1 %cmp620, label %for.body, label %while.cond2.loopexit
+
+for.body:                                         ; preds = %for.cond.preheader, %for.body
+  %to.addr.223 = phi i8* [ %incdec.ptr8, %for.body ], [ %to.addr.127, %for.cond.preheader ]
+  %from.addr.122 = phi i8* [ %incdec.ptr7, %for.body ], [ %from, %for.cond.preheader ]
+  %todo.021 = phi i32 [ %dec9, %for.body ], [ %len, %for.cond.preheader ]
+  %incdec.ptr7 = getelementptr inbounds i8* %from.addr.122, i64 1
+  %7 = load i8* %from.addr.122, align 1, !tbaa !0
+  %incdec.ptr8 = getelementptr inbounds i8* %to.addr.223, i64 1
+  store i8 %7, i8* %to.addr.223, align 1, !tbaa !0
+  %dec9 = add nsw i32 %todo.021, -1
+  %cmp6 = icmp sgt i32 %dec9, 0
+  br i1 %cmp6, label %for.body, label %for.cond.while.cond2.loopexit_crit_edge
+
+while.end10:                                      ; preds = %while.cond2.preheader, %while.cond2.loopexit, %if.then, %while.body.lr.ph
+  ret void
+}

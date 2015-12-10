@@ -1,483 +1,492 @@
-define void @pr_inputrec(%struct.__sFILE* %fp, i32 %indent, i8* %title, %struct.t_inputrec* %ir) #4 {
-  %1 = icmp eq %struct.t_inputrec* %ir, null
-  br i1 %1, label %available.exit, label %.critedge
+define void @pr_inputrec(%struct._IO_FILE* %fp, i32 %indent, i8* %title, %struct.t_inputrec* %ir) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !468), !dbg !1189
+  tail call void @llvm.dbg.value(metadata !{i32 %indent}, i64 0, metadata !469), !dbg !1189
+  tail call void @llvm.dbg.value(metadata !{i8* %title}, i64 0, metadata !470), !dbg !1189
+  tail call void @llvm.dbg.value(metadata !{%struct.t_inputrec* %ir}, i64 0, metadata !471), !dbg !1189
+  tail call void @llvm.dbg.value(metadata !1190, i64 0, metadata !472), !dbg !1191
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !1192) #4, !dbg !1194
+  tail call void @llvm.dbg.value(metadata !{i8* %title}, i64 0, metadata !1195) #4, !dbg !1194
+  %tobool.i = icmp eq %struct.t_inputrec* %ir, null, !dbg !1196
+  br i1 %tobool.i, label %if.then.i, label %if.then, !dbg !1196
 
-available.exit:                                   ; preds = %0
-  %2 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([19 x i8]* @.str, i64 0, i64 0), i8* %title) #8
-  br label %305
+if.then.i:                                        ; preds = %entry
+  %call.i = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([19 x i8]* @.str, i64 0, i64 0), i8* %title) #5, !dbg !1196
+  br label %if.end243, !dbg !1193
 
-.critedge:                                        ; preds = %0
-  %3 = tail call i32 @pr_title(%struct.__sFILE* %fp, i32 %indent, i8* %title) #9
-  %4 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 0
-  %5 = load i32* %4, align 4, !tbaa !27
-  %6 = icmp ugt i32 %5, 5
-  br i1 %6, label %11, label %7
+if.then:                                          ; preds = %entry
+  %call1 = tail call i32 @pr_title(%struct._IO_FILE* %fp, i32 %indent, i8* %title) #6, !dbg !1197
+  tail call void @llvm.dbg.value(metadata !{i32 %call1}, i64 0, metadata !469), !dbg !1197
+  %eI = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 0, !dbg !1199
+  %0 = load i32* %eI, align 4, !dbg !1199, !tbaa !930
+  %1 = icmp ugt i32 %0, 5, !dbg !1199
+  br i1 %1, label %cond.end, label %cond.false, !dbg !1199
 
-; <label>:7                                       ; preds = %.critedge
-  %8 = sext i32 %5 to i64
-  %9 = getelementptr inbounds [7 x i8*]* @ei_names, i64 0, i64 %8
-  %10 = load i8** %9, align 8, !tbaa !29
-  br label %11
+cond.false:                                       ; preds = %if.then
+  %idxprom = sext i32 %0 to i64, !dbg !1199
+  %arrayidx = getelementptr inbounds [7 x i8*]* @ei_names, i64 0, i64 %idxprom, !dbg !1199
+  %2 = load i8** %arrayidx, align 8, !dbg !1199, !tbaa !1123
+  br label %cond.end, !dbg !1199
 
-; <label>:11                                      ; preds = %.critedge, %7
-  %12 = phi i8* [ %10, %7 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %.critedge ]
-  tail call fastcc void @pr_str(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([11 x i8]* @.str29, i64 0, i64 0), i8* %12) #9
-  %13 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 1
-  %14 = load i32* %13, align 4, !tbaa !30
-  tail call fastcc void @pr_int(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([7 x i8]* @.str31, i64 0, i64 0), i32 %14) #9
-  %15 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 2
-  %16 = load i32* %15, align 4, !tbaa !31
-  %17 = icmp ugt i32 %16, 1
-  br i1 %17, label %22, label %18
+cond.end:                                         ; preds = %if.then, %cond.false
+  %cond = phi i8* [ %2, %cond.false ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %if.then ], !dbg !1199
+  tail call fastcc void @pr_str(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([11 x i8]* @.str29, i64 0, i64 0), i8* %cond) #6, !dbg !1199
+  %nsteps = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 1, !dbg !1200
+  %3 = load i32* %nsteps, align 4, !dbg !1200, !tbaa !930
+  tail call fastcc void @pr_int(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([7 x i8]* @.str31, i64 0, i64 0), i32 %3) #6, !dbg !1200
+  %ns_type = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 2, !dbg !1201
+  %4 = load i32* %ns_type, align 4, !dbg !1201, !tbaa !930
+  %5 = icmp ugt i32 %4, 1, !dbg !1201
+  br i1 %5, label %cond.end14, label %cond.false10, !dbg !1201
 
-; <label>:18                                      ; preds = %11
-  %19 = sext i32 %16 to i64
-  %20 = getelementptr inbounds [3 x i8*]* @ens_names, i64 0, i64 %19
-  %21 = load i8** %20, align 8, !tbaa !29
-  br label %22
+cond.false10:                                     ; preds = %cond.end
+  %idxprom12 = sext i32 %4 to i64, !dbg !1201
+  %arrayidx13 = getelementptr inbounds [3 x i8*]* @ens_names, i64 0, i64 %idxprom12, !dbg !1201
+  %6 = load i8** %arrayidx13, align 8, !dbg !1201, !tbaa !1123
+  br label %cond.end14, !dbg !1201
 
-; <label>:22                                      ; preds = %11, %18
-  %23 = phi i8* [ %21, %18 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %11 ]
-  tail call fastcc void @pr_str(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([8 x i8]* @.str32, i64 0, i64 0), i8* %23) #9
-  %24 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 3
-  %25 = load i32* %24, align 4, !tbaa !32
-  tail call fastcc void @pr_int(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([8 x i8]* @.str33, i64 0, i64 0), i32 %25) #9
-  %26 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 4
-  %27 = load i32* %26, align 4, !tbaa !33
-  tail call fastcc void @pr_int(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([7 x i8]* @.str34, i64 0, i64 0), i32 %27) #9
-  %28 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 5
-  %29 = load i32* %28, align 4, !tbaa !34
-  %30 = icmp ugt i32 %29, 1
-  br i1 %30, label %35, label %31
+cond.end14:                                       ; preds = %cond.end, %cond.false10
+  %cond15 = phi i8* [ %6, %cond.false10 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %cond.end ], !dbg !1201
+  tail call fastcc void @pr_str(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([8 x i8]* @.str32, i64 0, i64 0), i8* %cond15) #6, !dbg !1201
+  %nstlist = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 3, !dbg !1202
+  %7 = load i32* %nstlist, align 4, !dbg !1202, !tbaa !930
+  tail call fastcc void @pr_int(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([8 x i8]* @.str33, i64 0, i64 0), i32 %7) #6, !dbg !1202
+  %ndelta = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 4, !dbg !1203
+  %8 = load i32* %ndelta, align 4, !dbg !1203, !tbaa !930
+  tail call fastcc void @pr_int(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([7 x i8]* @.str34, i64 0, i64 0), i32 %8) #6, !dbg !1203
+  %bDomDecomp = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 5, !dbg !1204
+  %9 = load i32* %bDomDecomp, align 4, !dbg !1204, !tbaa !930
+  %10 = icmp ugt i32 %9, 1, !dbg !1204
+  br i1 %10, label %cond.end25, label %cond.false21, !dbg !1204
 
-; <label>:31                                      ; preds = %22
-  %32 = sext i32 %29 to i64
-  %33 = getelementptr inbounds [3 x i8*]* @bool_names, i64 0, i64 %32
-  %34 = load i8** %33, align 8, !tbaa !29
-  br label %35
+cond.false21:                                     ; preds = %cond.end14
+  %idxprom23 = sext i32 %9 to i64, !dbg !1204
+  %arrayidx24 = getelementptr inbounds [3 x i8*]* @bool_names, i64 0, i64 %idxprom23, !dbg !1204
+  %11 = load i8** %arrayidx24, align 8, !dbg !1204, !tbaa !1123
+  br label %cond.end25, !dbg !1204
 
-; <label>:35                                      ; preds = %22, %31
-  %36 = phi i8* [ %34, %31 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %22 ]
-  tail call fastcc void @pr_str(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([11 x i8]* @.str35, i64 0, i64 0), i8* %36) #9
-  %37 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 6
-  %38 = load i32* %37, align 4, !tbaa !35
-  tail call fastcc void @pr_int(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([11 x i8]* @.str36, i64 0, i64 0), i32 %38) #9
-  %39 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 7
-  %40 = load i32* %39, align 4, !tbaa !36
-  tail call fastcc void @pr_int(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([8 x i8]* @.str37, i64 0, i64 0), i32 %40) #9
-  %41 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 8
-  %42 = load i32* %41, align 4, !tbaa !37
-  tail call fastcc void @pr_int(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([7 x i8]* @.str38, i64 0, i64 0), i32 %42) #9
-  %43 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 9
-  %44 = load i32* %43, align 4, !tbaa !38
-  tail call fastcc void @pr_int(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([8 x i8]* @.str39, i64 0, i64 0), i32 %44) #9
-  %45 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 10
-  %46 = load i32* %45, align 4, !tbaa !39
-  tail call fastcc void @pr_int(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([8 x i8]* @.str40, i64 0, i64 0), i32 %46) #9
-  %47 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 11
-  %48 = load i32* %47, align 4, !tbaa !40
-  tail call fastcc void @pr_int(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([8 x i8]* @.str41, i64 0, i64 0), i32 %48) #9
-  %49 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 12
-  %50 = load i32* %49, align 4, !tbaa !41
-  tail call fastcc void @pr_int(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([10 x i8]* @.str42, i64 0, i64 0), i32 %50) #9
-  %51 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 13
-  %52 = load i32* %51, align 4, !tbaa !42
-  tail call fastcc void @pr_int(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([10 x i8]* @.str43, i64 0, i64 0), i32 %52) #9
-  %53 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 14
-  %54 = load float* %53, align 4, !tbaa !43
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([7 x i8]* @.str44, i64 0, i64 0), float %54) #9
-  %55 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 15
-  %56 = load float* %55, align 4, !tbaa !44
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([8 x i8]* @.str45, i64 0, i64 0), float %56) #9
-  %57 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 16
-  %58 = load float* %57, align 4, !tbaa !45
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([8 x i8]* @.str46, i64 0, i64 0), float %58) #9
-  %59 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 17
-  %60 = load i32* %59, align 4, !tbaa !46
-  tail call fastcc void @pr_int(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([4 x i8]* @.str47, i64 0, i64 0), i32 %60) #9
-  %61 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 18
-  %62 = load i32* %61, align 4, !tbaa !47
-  tail call fastcc void @pr_int(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([4 x i8]* @.str48, i64 0, i64 0), i32 %62) #9
-  %63 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 19
-  %64 = load i32* %63, align 4, !tbaa !48
-  tail call fastcc void @pr_int(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([4 x i8]* @.str49, i64 0, i64 0), i32 %64) #9
-  %65 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 20
-  %66 = load i32* %65, align 4, !tbaa !49
-  tail call fastcc void @pr_int(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([10 x i8]* @.str50, i64 0, i64 0), i32 %66) #9
-  %67 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 21
-  %68 = load float* %67, align 4, !tbaa !50
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([11 x i8]* @.str51, i64 0, i64 0), float %68) #9
-  %69 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 22
-  %70 = load i32* %69, align 4, !tbaa !51
-  %71 = sitofp i32 %70 to float
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([15 x i8]* @.str52, i64 0, i64 0), float %71) #9
-  %72 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 23
-  %73 = load i32* %72, align 4, !tbaa !52
-  %74 = sitofp i32 %73 to float
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([16 x i8]* @.str53, i64 0, i64 0), float %74) #9
-  %75 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 24
-  %76 = load i32* %75, align 4, !tbaa !53
-  %77 = icmp ugt i32 %76, 1
-  br i1 %77, label %82, label %78
+cond.end25:                                       ; preds = %cond.end14, %cond.false21
+  %cond26 = phi i8* [ %11, %cond.false21 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %cond.end14 ], !dbg !1204
+  tail call fastcc void @pr_str(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([11 x i8]* @.str35, i64 0, i64 0), i8* %cond26) #6, !dbg !1204
+  %decomp_dir = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 6, !dbg !1205
+  %12 = load i32* %decomp_dir, align 4, !dbg !1205, !tbaa !930
+  tail call fastcc void @pr_int(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([11 x i8]* @.str36, i64 0, i64 0), i32 %12) #6, !dbg !1205
+  %nstcomm = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 7, !dbg !1206
+  %13 = load i32* %nstcomm, align 4, !dbg !1206, !tbaa !930
+  tail call fastcc void @pr_int(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([8 x i8]* @.str37, i64 0, i64 0), i32 %13) #6, !dbg !1206
+  %nstlog = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 8, !dbg !1207
+  %14 = load i32* %nstlog, align 4, !dbg !1207, !tbaa !930
+  tail call fastcc void @pr_int(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([7 x i8]* @.str38, i64 0, i64 0), i32 %14) #6, !dbg !1207
+  %nstxout = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 9, !dbg !1208
+  %15 = load i32* %nstxout, align 4, !dbg !1208, !tbaa !930
+  tail call fastcc void @pr_int(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([8 x i8]* @.str39, i64 0, i64 0), i32 %15) #6, !dbg !1208
+  %nstvout = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 10, !dbg !1209
+  %16 = load i32* %nstvout, align 4, !dbg !1209, !tbaa !930
+  tail call fastcc void @pr_int(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([8 x i8]* @.str40, i64 0, i64 0), i32 %16) #6, !dbg !1209
+  %nstfout = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 11, !dbg !1210
+  %17 = load i32* %nstfout, align 4, !dbg !1210, !tbaa !930
+  tail call fastcc void @pr_int(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([8 x i8]* @.str41, i64 0, i64 0), i32 %17) #6, !dbg !1210
+  %nstenergy = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 12, !dbg !1211
+  %18 = load i32* %nstenergy, align 4, !dbg !1211, !tbaa !930
+  tail call fastcc void @pr_int(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([10 x i8]* @.str42, i64 0, i64 0), i32 %18) #6, !dbg !1211
+  %nstxtcout = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 13, !dbg !1212
+  %19 = load i32* %nstxtcout, align 4, !dbg !1212, !tbaa !930
+  tail call fastcc void @pr_int(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([10 x i8]* @.str43, i64 0, i64 0), i32 %19) #6, !dbg !1212
+  %init_t = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 14, !dbg !1213
+  %20 = load float* %init_t, align 4, !dbg !1213, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([7 x i8]* @.str44, i64 0, i64 0), float %20) #6, !dbg !1213
+  %delta_t = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 15, !dbg !1214
+  %21 = load float* %delta_t, align 4, !dbg !1214, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([8 x i8]* @.str45, i64 0, i64 0), float %21) #6, !dbg !1214
+  %xtcprec = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 16, !dbg !1215
+  %22 = load float* %xtcprec, align 4, !dbg !1215, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([8 x i8]* @.str46, i64 0, i64 0), float %22) #6, !dbg !1215
+  %nkx = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 17, !dbg !1216
+  %23 = load i32* %nkx, align 4, !dbg !1216, !tbaa !930
+  tail call fastcc void @pr_int(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([4 x i8]* @.str47, i64 0, i64 0), i32 %23) #6, !dbg !1216
+  %nky = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 18, !dbg !1217
+  %24 = load i32* %nky, align 4, !dbg !1217, !tbaa !930
+  tail call fastcc void @pr_int(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([4 x i8]* @.str48, i64 0, i64 0), i32 %24) #6, !dbg !1217
+  %nkz = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 19, !dbg !1218
+  %25 = load i32* %nkz, align 4, !dbg !1218, !tbaa !930
+  tail call fastcc void @pr_int(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([4 x i8]* @.str49, i64 0, i64 0), i32 %25) #6, !dbg !1218
+  %pme_order = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 20, !dbg !1219
+  %26 = load i32* %pme_order, align 4, !dbg !1219, !tbaa !930
+  tail call fastcc void @pr_int(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([10 x i8]* @.str50, i64 0, i64 0), i32 %26) #6, !dbg !1219
+  %ewald_rtol = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 21, !dbg !1220
+  %27 = load float* %ewald_rtol, align 4, !dbg !1220, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([11 x i8]* @.str51, i64 0, i64 0), float %27) #6, !dbg !1220
+  %ewald_geometry = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 22, !dbg !1221
+  %28 = load i32* %ewald_geometry, align 4, !dbg !1221, !tbaa !930
+  %conv = sitofp i32 %28 to float, !dbg !1221
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([15 x i8]* @.str52, i64 0, i64 0), float %conv) #6, !dbg !1221
+  %epsilon_surface = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 23, !dbg !1222
+  %29 = load i32* %epsilon_surface, align 4, !dbg !1222, !tbaa !930
+  %conv27 = sitofp i32 %29 to float, !dbg !1222
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([16 x i8]* @.str53, i64 0, i64 0), float %conv27) #6, !dbg !1222
+  %bOptFFT = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 24, !dbg !1223
+  %30 = load i32* %bOptFFT, align 4, !dbg !1223, !tbaa !930
+  %31 = icmp ugt i32 %30, 1, !dbg !1223
+  br i1 %31, label %cond.end39, label %cond.false35, !dbg !1223
 
-; <label>:78                                      ; preds = %35
-  %79 = sext i32 %76 to i64
-  %80 = getelementptr inbounds [3 x i8*]* @bool_names, i64 0, i64 %79
-  %81 = load i8** %80, align 8, !tbaa !29
-  br label %82
+cond.false35:                                     ; preds = %cond.end25
+  %idxprom37 = sext i32 %30 to i64, !dbg !1223
+  %arrayidx38 = getelementptr inbounds [3 x i8*]* @bool_names, i64 0, i64 %idxprom37, !dbg !1223
+  %32 = load i8** %arrayidx38, align 8, !dbg !1223, !tbaa !1123
+  br label %cond.end39, !dbg !1223
 
-; <label>:82                                      ; preds = %35, %78
-  %83 = phi i8* [ %81, %78 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %35 ]
-  tail call fastcc void @pr_str(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([13 x i8]* @.str54, i64 0, i64 0), i8* %83) #9
-  %84 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 25
-  %85 = load i32* %84, align 4, !tbaa !54
-  %86 = icmp ugt i32 %85, 1
-  br i1 %86, label %91, label %87
+cond.end39:                                       ; preds = %cond.end25, %cond.false35
+  %cond40 = phi i8* [ %32, %cond.false35 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %cond.end25 ], !dbg !1223
+  tail call fastcc void @pr_str(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([13 x i8]* @.str54, i64 0, i64 0), i8* %cond40) #6, !dbg !1223
+  %ePBC = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 25, !dbg !1224
+  %33 = load i32* %ePBC, align 4, !dbg !1224, !tbaa !930
+  %34 = icmp ugt i32 %33, 1, !dbg !1224
+  br i1 %34, label %cond.end52, label %cond.false48, !dbg !1224
 
-; <label>:87                                      ; preds = %82
-  %88 = sext i32 %85 to i64
-  %89 = getelementptr inbounds [3 x i8*]* @epbc_names, i64 0, i64 %88
-  %90 = load i8** %89, align 8, !tbaa !29
-  br label %91
+cond.false48:                                     ; preds = %cond.end39
+  %idxprom50 = sext i32 %33 to i64, !dbg !1224
+  %arrayidx51 = getelementptr inbounds [3 x i8*]* @epbc_names, i64 0, i64 %idxprom50, !dbg !1224
+  %35 = load i8** %arrayidx51, align 8, !dbg !1224, !tbaa !1123
+  br label %cond.end52, !dbg !1224
 
-; <label>:91                                      ; preds = %82, %87
-  %92 = phi i8* [ %90, %87 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %82 ]
-  tail call fastcc void @pr_str(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([5 x i8]* @.str55, i64 0, i64 0), i8* %92) #9
-  %93 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 26
-  %94 = load i32* %93, align 4, !tbaa !55
-  %95 = icmp ugt i32 %94, 1
-  br i1 %95, label %100, label %96
+cond.end52:                                       ; preds = %cond.end39, %cond.false48
+  %cond53 = phi i8* [ %35, %cond.false48 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %cond.end39 ], !dbg !1224
+  tail call fastcc void @pr_str(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([5 x i8]* @.str55, i64 0, i64 0), i8* %cond53) #6, !dbg !1224
+  %bUncStart = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 26, !dbg !1225
+  %36 = load i32* %bUncStart, align 4, !dbg !1225, !tbaa !930
+  %37 = icmp ugt i32 %36, 1, !dbg !1225
+  br i1 %37, label %cond.end65, label %cond.false61, !dbg !1225
 
-; <label>:96                                      ; preds = %91
-  %97 = sext i32 %94 to i64
-  %98 = getelementptr inbounds [3 x i8*]* @bool_names, i64 0, i64 %97
-  %99 = load i8** %98, align 8, !tbaa !29
-  br label %100
+cond.false61:                                     ; preds = %cond.end52
+  %idxprom63 = sext i32 %36 to i64, !dbg !1225
+  %arrayidx64 = getelementptr inbounds [3 x i8*]* @bool_names, i64 0, i64 %idxprom63, !dbg !1225
+  %38 = load i8** %arrayidx64, align 8, !dbg !1225, !tbaa !1123
+  br label %cond.end65, !dbg !1225
 
-; <label>:100                                     ; preds = %91, %96
-  %101 = phi i8* [ %99, %96 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %91 ]
-  tail call fastcc void @pr_str(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([10 x i8]* @.str56, i64 0, i64 0), i8* %101) #9
-  %102 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 67
-  %103 = load i32* %102, align 4, !tbaa !56
-  %104 = icmp ugt i32 %103, 1
-  br i1 %104, label %109, label %105
+cond.end65:                                       ; preds = %cond.end52, %cond.false61
+  %cond66 = phi i8* [ %38, %cond.false61 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %cond.end52 ], !dbg !1225
+  tail call fastcc void @pr_str(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([10 x i8]* @.str56, i64 0, i64 0), i8* %cond66) #6, !dbg !1225
+  %bShakeSOR = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 67, !dbg !1226
+  %39 = load i32* %bShakeSOR, align 4, !dbg !1226, !tbaa !930
+  %40 = icmp ugt i32 %39, 1, !dbg !1226
+  br i1 %40, label %cond.end78, label %cond.false74, !dbg !1226
 
-; <label>:105                                     ; preds = %100
-  %106 = sext i32 %103 to i64
-  %107 = getelementptr inbounds [3 x i8*]* @bool_names, i64 0, i64 %106
-  %108 = load i8** %107, align 8, !tbaa !29
-  br label %109
+cond.false74:                                     ; preds = %cond.end65
+  %idxprom76 = sext i32 %39 to i64, !dbg !1226
+  %arrayidx77 = getelementptr inbounds [3 x i8*]* @bool_names, i64 0, i64 %idxprom76, !dbg !1226
+  %41 = load i8** %arrayidx77, align 8, !dbg !1226, !tbaa !1123
+  br label %cond.end78, !dbg !1226
 
-; <label>:109                                     ; preds = %100, %105
-  %110 = phi i8* [ %108, %105 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %100 ]
-  tail call fastcc void @pr_str(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([10 x i8]* @.str57, i64 0, i64 0), i8* %110) #9
-  %111 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 27
-  %112 = load i32* %111, align 4, !tbaa !57
-  %113 = icmp ugt i32 %112, 3
-  br i1 %113, label %118, label %114
+cond.end78:                                       ; preds = %cond.end65, %cond.false74
+  %cond79 = phi i8* [ %41, %cond.false74 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %cond.end65 ], !dbg !1226
+  tail call fastcc void @pr_str(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([10 x i8]* @.str57, i64 0, i64 0), i8* %cond79) #6, !dbg !1226
+  %etc = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 27, !dbg !1227
+  %42 = load i32* %etc, align 4, !dbg !1227, !tbaa !930
+  %43 = icmp ugt i32 %42, 3, !dbg !1227
+  br i1 %43, label %cond.end91, label %cond.false87, !dbg !1227
 
-; <label>:114                                     ; preds = %109
-  %115 = sext i32 %112 to i64
-  %116 = getelementptr inbounds [5 x i8*]* @etcoupl_names, i64 0, i64 %115
-  %117 = load i8** %116, align 8, !tbaa !29
-  br label %118
+cond.false87:                                     ; preds = %cond.end78
+  %idxprom89 = sext i32 %42 to i64, !dbg !1227
+  %arrayidx90 = getelementptr inbounds [5 x i8*]* @etcoupl_names, i64 0, i64 %idxprom89, !dbg !1227
+  %44 = load i8** %arrayidx90, align 8, !dbg !1227, !tbaa !1123
+  br label %cond.end91, !dbg !1227
 
-; <label>:118                                     ; preds = %109, %114
-  %119 = phi i8* [ %117, %114 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %109 ]
-  tail call fastcc void @pr_str(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([4 x i8]* @.str58, i64 0, i64 0), i8* %119) #9
-  %120 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 28
-  %121 = load i32* %120, align 4, !tbaa !58
-  %122 = icmp ugt i32 %121, 3
-  br i1 %122, label %127, label %123
+cond.end91:                                       ; preds = %cond.end78, %cond.false87
+  %cond92 = phi i8* [ %44, %cond.false87 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %cond.end78 ], !dbg !1227
+  tail call fastcc void @pr_str(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([4 x i8]* @.str58, i64 0, i64 0), i8* %cond92) #6, !dbg !1227
+  %epc = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 28, !dbg !1228
+  %45 = load i32* %epc, align 4, !dbg !1228, !tbaa !930
+  %46 = icmp ugt i32 %45, 3, !dbg !1228
+  br i1 %46, label %cond.end104, label %cond.false100, !dbg !1228
 
-; <label>:123                                     ; preds = %118
-  %124 = sext i32 %121 to i64
-  %125 = getelementptr inbounds [5 x i8*]* @epcoupl_names, i64 0, i64 %124
-  %126 = load i8** %125, align 8, !tbaa !29
-  br label %127
+cond.false100:                                    ; preds = %cond.end91
+  %idxprom102 = sext i32 %45 to i64, !dbg !1228
+  %arrayidx103 = getelementptr inbounds [5 x i8*]* @epcoupl_names, i64 0, i64 %idxprom102, !dbg !1228
+  %47 = load i8** %arrayidx103, align 8, !dbg !1228, !tbaa !1123
+  br label %cond.end104, !dbg !1228
 
-; <label>:127                                     ; preds = %118, %123
-  %128 = phi i8* [ %126, %123 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %118 ]
-  tail call fastcc void @pr_str(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([4 x i8]* @.str59, i64 0, i64 0), i8* %128) #9
-  %129 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 29
-  %130 = load i32* %129, align 4, !tbaa !59
-  %131 = icmp ugt i32 %130, 3
-  br i1 %131, label %136, label %132
+cond.end104:                                      ; preds = %cond.end91, %cond.false100
+  %cond105 = phi i8* [ %47, %cond.false100 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %cond.end91 ], !dbg !1228
+  tail call fastcc void @pr_str(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([4 x i8]* @.str59, i64 0, i64 0), i8* %cond105) #6, !dbg !1228
+  %epct = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 29, !dbg !1229
+  %48 = load i32* %epct, align 4, !dbg !1229, !tbaa !930
+  %49 = icmp ugt i32 %48, 3, !dbg !1229
+  br i1 %49, label %cond.end117, label %cond.false113, !dbg !1229
 
-; <label>:132                                     ; preds = %127
-  %133 = sext i32 %130 to i64
-  %134 = getelementptr inbounds [5 x i8*]* @epcoupltype_names, i64 0, i64 %133
-  %135 = load i8** %134, align 8, !tbaa !29
-  br label %136
+cond.false113:                                    ; preds = %cond.end104
+  %idxprom115 = sext i32 %48 to i64, !dbg !1229
+  %arrayidx116 = getelementptr inbounds [5 x i8*]* @epcoupltype_names, i64 0, i64 %idxprom115, !dbg !1229
+  %50 = load i8** %arrayidx116, align 8, !dbg !1229, !tbaa !1123
+  br label %cond.end117, !dbg !1229
 
-; <label>:136                                     ; preds = %127, %132
-  %137 = phi i8* [ %135, %132 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %127 ]
-  tail call fastcc void @pr_str(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([8 x i8]* @.str60, i64 0, i64 0), i8* %137) #9
-  %138 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 30
-  %139 = load float* %138, align 4, !tbaa !60
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([6 x i8]* @.str61, i64 0, i64 0), float %139) #9
-  %140 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 31, i64 0
-  tail call void @pr_rvecs(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([6 x i8]* @.str62, i64 0, i64 0), [3 x float]* %140, i32 3) #9
-  %141 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 32, i64 0
-  tail call void @pr_rvecs(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([9 x i8]* @.str63, i64 0, i64 0), [3 x float]* %141, i32 3) #9
-  %142 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 33
-  %143 = load i32* %142, align 4, !tbaa !61
-  %144 = icmp ugt i32 %143, 1
-  br i1 %144, label %149, label %145
+cond.end117:                                      ; preds = %cond.end104, %cond.false113
+  %cond118 = phi i8* [ %50, %cond.false113 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %cond.end104 ], !dbg !1229
+  tail call fastcc void @pr_str(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([8 x i8]* @.str60, i64 0, i64 0), i8* %cond118) #6, !dbg !1229
+  %tau_p = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 30, !dbg !1230
+  %51 = load float* %tau_p, align 4, !dbg !1230, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([6 x i8]* @.str61, i64 0, i64 0), float %51) #6, !dbg !1230
+  %arraydecay = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 31, i64 0, !dbg !1231
+  tail call void @pr_rvecs(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([6 x i8]* @.str62, i64 0, i64 0), [3 x float]* %arraydecay, i32 3) #6, !dbg !1231
+  %arraydecay119 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 32, i64 0, !dbg !1232
+  tail call void @pr_rvecs(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([9 x i8]* @.str63, i64 0, i64 0), [3 x float]* %arraydecay119, i32 3) #6, !dbg !1232
+  %bSimAnn = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 33, !dbg !1233
+  %52 = load i32* %bSimAnn, align 4, !dbg !1233, !tbaa !930
+  %53 = icmp ugt i32 %52, 1, !dbg !1233
+  br i1 %53, label %cond.end131, label %cond.false127, !dbg !1233
 
-; <label>:145                                     ; preds = %136
-  %146 = sext i32 %143 to i64
-  %147 = getelementptr inbounds [3 x i8*]* @bool_names, i64 0, i64 %146
-  %148 = load i8** %147, align 8, !tbaa !29
-  br label %149
+cond.false127:                                    ; preds = %cond.end117
+  %idxprom129 = sext i32 %52 to i64, !dbg !1233
+  %arrayidx130 = getelementptr inbounds [3 x i8*]* @bool_names, i64 0, i64 %idxprom129, !dbg !1233
+  %54 = load i8** %arrayidx130, align 8, !dbg !1233, !tbaa !1123
+  br label %cond.end131, !dbg !1233
 
-; <label>:149                                     ; preds = %136, %145
-  %150 = phi i8* [ %148, %145 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %136 ]
-  tail call fastcc void @pr_str(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([8 x i8]* @.str64, i64 0, i64 0), i8* %150) #9
-  %151 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 34
-  %152 = load float* %151, align 4, !tbaa !62
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([15 x i8]* @.str65, i64 0, i64 0), float %152) #9
-  %153 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 35
-  %154 = load float* %153, align 4, !tbaa !63
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([6 x i8]* @.str66, i64 0, i64 0), float %154) #9
-  %155 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 36
-  %156 = load i32* %155, align 4, !tbaa !64
-  %157 = icmp ugt i32 %156, 9
-  br i1 %157, label %162, label %158
+cond.end131:                                      ; preds = %cond.end117, %cond.false127
+  %cond132 = phi i8* [ %54, %cond.false127 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %cond.end117 ], !dbg !1233
+  tail call fastcc void @pr_str(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([8 x i8]* @.str64, i64 0, i64 0), i8* %cond132) #6, !dbg !1233
+  %zero_temp_time = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 34, !dbg !1234
+  %55 = load float* %zero_temp_time, align 4, !dbg !1234, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([15 x i8]* @.str65, i64 0, i64 0), float %55) #6, !dbg !1234
+  %rlist = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 35, !dbg !1235
+  %56 = load float* %rlist, align 4, !dbg !1235, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([6 x i8]* @.str66, i64 0, i64 0), float %56) #6, !dbg !1235
+  %coulombtype = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 36, !dbg !1236
+  %57 = load i32* %coulombtype, align 4, !dbg !1236, !tbaa !930
+  %58 = icmp ugt i32 %57, 9, !dbg !1236
+  br i1 %58, label %cond.end144, label %cond.false140, !dbg !1236
 
-; <label>:158                                     ; preds = %149
-  %159 = sext i32 %156 to i64
-  %160 = getelementptr inbounds [11 x i8*]* @eel_names, i64 0, i64 %159
-  %161 = load i8** %160, align 8, !tbaa !29
-  br label %162
+cond.false140:                                    ; preds = %cond.end131
+  %idxprom142 = sext i32 %57 to i64, !dbg !1236
+  %arrayidx143 = getelementptr inbounds [11 x i8*]* @eel_names, i64 0, i64 %idxprom142, !dbg !1236
+  %59 = load i8** %arrayidx143, align 8, !dbg !1236, !tbaa !1123
+  br label %cond.end144, !dbg !1236
 
-; <label>:162                                     ; preds = %149, %158
-  %163 = phi i8* [ %161, %158 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %149 ]
-  tail call fastcc void @pr_str(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([12 x i8]* @.str67, i64 0, i64 0), i8* %163) #9
-  %164 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 37
-  %165 = load float* %164, align 4, !tbaa !65
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([16 x i8]* @.str68, i64 0, i64 0), float %165) #9
-  %166 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 38
-  %167 = load float* %166, align 4, !tbaa !66
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([9 x i8]* @.str69, i64 0, i64 0), float %167) #9
-  %168 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 39
-  %169 = load i32* %168, align 4, !tbaa !67
-  %170 = icmp ugt i32 %169, 3
-  br i1 %170, label %175, label %171
+cond.end144:                                      ; preds = %cond.end131, %cond.false140
+  %cond145 = phi i8* [ %59, %cond.false140 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %cond.end131 ], !dbg !1236
+  tail call fastcc void @pr_str(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([12 x i8]* @.str67, i64 0, i64 0), i8* %cond145) #6, !dbg !1236
+  %rcoulomb_switch = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 37, !dbg !1237
+  %60 = load float* %rcoulomb_switch, align 4, !dbg !1237, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([16 x i8]* @.str68, i64 0, i64 0), float %60) #6, !dbg !1237
+  %rcoulomb = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 38, !dbg !1238
+  %61 = load float* %rcoulomb, align 4, !dbg !1238, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([9 x i8]* @.str69, i64 0, i64 0), float %61) #6, !dbg !1238
+  %vdwtype = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 39, !dbg !1239
+  %62 = load i32* %vdwtype, align 4, !dbg !1239, !tbaa !930
+  %63 = icmp ugt i32 %62, 3, !dbg !1239
+  br i1 %63, label %cond.end157, label %cond.false153, !dbg !1239
 
-; <label>:171                                     ; preds = %162
-  %172 = sext i32 %169 to i64
-  %173 = getelementptr inbounds [5 x i8*]* @evdw_names, i64 0, i64 %172
-  %174 = load i8** %173, align 8, !tbaa !29
-  br label %175
+cond.false153:                                    ; preds = %cond.end144
+  %idxprom155 = sext i32 %62 to i64, !dbg !1239
+  %arrayidx156 = getelementptr inbounds [5 x i8*]* @evdw_names, i64 0, i64 %idxprom155, !dbg !1239
+  %64 = load i8** %arrayidx156, align 8, !dbg !1239, !tbaa !1123
+  br label %cond.end157, !dbg !1239
 
-; <label>:175                                     ; preds = %162, %171
-  %176 = phi i8* [ %174, %171 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %162 ]
-  tail call fastcc void @pr_str(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([8 x i8]* @.str70, i64 0, i64 0), i8* %176) #9
-  %177 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 40
-  %178 = load float* %177, align 4, !tbaa !68
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([12 x i8]* @.str71, i64 0, i64 0), float %178) #9
-  %179 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 41
-  %180 = load float* %179, align 4, !tbaa !69
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([5 x i8]* @.str72, i64 0, i64 0), float %180) #9
-  %181 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 42
-  %182 = load float* %181, align 4, !tbaa !70
-  %fabsf = tail call float @fabsf(float %182) #10
-  %183 = fpext float %fabsf to double
-  %184 = fcmp ogt double %183, 1.200000e-38
-  br i1 %184, label %185, label %186
+cond.end157:                                      ; preds = %cond.end144, %cond.false153
+  %cond158 = phi i8* [ %64, %cond.false153 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %cond.end144 ], !dbg !1239
+  tail call fastcc void @pr_str(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([8 x i8]* @.str70, i64 0, i64 0), i8* %cond158) #6, !dbg !1239
+  %rvdw_switch = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 40, !dbg !1240
+  %65 = load float* %rvdw_switch, align 4, !dbg !1240, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([12 x i8]* @.str71, i64 0, i64 0), float %65) #6, !dbg !1240
+  %rvdw = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 41, !dbg !1241
+  %66 = load float* %rvdw, align 4, !dbg !1241, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([5 x i8]* @.str72, i64 0, i64 0), float %66) #6, !dbg !1241
+  %epsilon_r = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 42, !dbg !1242
+  %67 = load float* %epsilon_r, align 4, !dbg !1242, !tbaa !1030
+  %fabsf = tail call float @fabsf(float %67) #7, !dbg !1242
+  %68 = fpext float %fabsf to double, !dbg !1242
+  %cmp161 = fcmp ogt double %68, 1.200000e-38, !dbg !1242
+  br i1 %cmp161, label %if.then163, label %if.else, !dbg !1242
 
-; <label>:185                                     ; preds = %175
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([10 x i8]* @.str73, i64 0, i64 0), float %182) #9
-  br label %187
+if.then163:                                       ; preds = %cond.end157
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([10 x i8]* @.str73, i64 0, i64 0), float %67) #6, !dbg !1243
+  br label %if.end, !dbg !1243
 
-; <label>:186                                     ; preds = %175
-  tail call fastcc void @pr_str(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([10 x i8]* @.str73, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str28, i64 0, i64 0)) #9
-  br label %187
+if.else:                                          ; preds = %cond.end157
+  tail call fastcc void @pr_str(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([10 x i8]* @.str73, i64 0, i64 0), i8* getelementptr inbounds ([4 x i8]* @.str28, i64 0, i64 0)) #6, !dbg !1244
+  br label %if.end
 
-; <label>:187                                     ; preds = %186, %185
-  %188 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 43
-  %189 = load i32* %188, align 4, !tbaa !71
-  %190 = icmp ugt i32 %189, 2
-  br i1 %190, label %195, label %191
+if.end:                                           ; preds = %if.else, %if.then163
+  %eDispCorr = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 43, !dbg !1245
+  %69 = load i32* %eDispCorr, align 4, !dbg !1245, !tbaa !930
+  %70 = icmp ugt i32 %69, 2, !dbg !1245
+  br i1 %70, label %cond.end176, label %cond.false172, !dbg !1245
 
-; <label>:191                                     ; preds = %187
-  %192 = sext i32 %189 to i64
-  %193 = getelementptr inbounds [4 x i8*]* @edispc_names, i64 0, i64 %192
-  %194 = load i8** %193, align 8, !tbaa !29
-  br label %195
+cond.false172:                                    ; preds = %if.end
+  %idxprom174 = sext i32 %69 to i64, !dbg !1245
+  %arrayidx175 = getelementptr inbounds [4 x i8*]* @edispc_names, i64 0, i64 %idxprom174, !dbg !1245
+  %71 = load i8** %arrayidx175, align 8, !dbg !1245, !tbaa !1123
+  br label %cond.end176, !dbg !1245
 
-; <label>:195                                     ; preds = %187, %191
-  %196 = phi i8* [ %194, %191 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %187 ]
-  tail call fastcc void @pr_str(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([9 x i8]* @.str74, i64 0, i64 0), i8* %196) #9
-  %197 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 45
-  %198 = load float* %197, align 4, !tbaa !72
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([8 x i8]* @.str75, i64 0, i64 0), float %198) #9
-  %199 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 46
-  %200 = load i32* %199, align 4, !tbaa !73
-  %201 = icmp ugt i32 %200, 1
-  br i1 %201, label %206, label %202
+cond.end176:                                      ; preds = %if.end, %cond.false172
+  %cond177 = phi i8* [ %71, %cond.false172 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %if.end ], !dbg !1245
+  tail call fastcc void @pr_str(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([9 x i8]* @.str74, i64 0, i64 0), i8* %cond177) #6, !dbg !1245
+  %fudgeQQ = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 45, !dbg !1246
+  %72 = load float* %fudgeQQ, align 4, !dbg !1246, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([8 x i8]* @.str75, i64 0, i64 0), float %72) #6, !dbg !1246
+  %efep = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 46, !dbg !1247
+  %73 = load i32* %efep, align 4, !dbg !1247, !tbaa !930
+  %74 = icmp ugt i32 %73, 1, !dbg !1247
+  br i1 %74, label %cond.end189, label %cond.false185, !dbg !1247
 
-; <label>:202                                     ; preds = %195
-  %203 = sext i32 %200 to i64
-  %204 = getelementptr inbounds [3 x i8*]* @efep_names, i64 0, i64 %203
-  %205 = load i8** %204, align 8, !tbaa !29
-  br label %206
+cond.false185:                                    ; preds = %cond.end176
+  %idxprom187 = sext i32 %73 to i64, !dbg !1247
+  %arrayidx188 = getelementptr inbounds [3 x i8*]* @efep_names, i64 0, i64 %idxprom187, !dbg !1247
+  %75 = load i8** %arrayidx188, align 8, !dbg !1247, !tbaa !1123
+  br label %cond.end189, !dbg !1247
 
-; <label>:206                                     ; preds = %195, %202
-  %207 = phi i8* [ %205, %202 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %195 ]
-  tail call fastcc void @pr_str(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([12 x i8]* @.str76, i64 0, i64 0), i8* %207) #9
-  %208 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 47
-  %209 = load float* %208, align 4, !tbaa !74
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([12 x i8]* @.str77, i64 0, i64 0), float %209) #9
-  %210 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 49
-  %211 = load float* %210, align 4, !tbaa !75
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([9 x i8]* @.str78, i64 0, i64 0), float %211) #9
-  %212 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 50
-  %213 = load float* %212, align 4, !tbaa !76
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([9 x i8]* @.str79, i64 0, i64 0), float %213) #9
-  %214 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 48
-  %215 = load float* %214, align 4, !tbaa !77
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([13 x i8]* @.str80, i64 0, i64 0), float %215) #9
-  %216 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 52
-  %217 = load i32* %216, align 4, !tbaa !78
-  %218 = icmp ugt i32 %217, 1
-  br i1 %218, label %223, label %219
+cond.end189:                                      ; preds = %cond.end176, %cond.false185
+  %cond190 = phi i8* [ %75, %cond.false185 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %cond.end176 ], !dbg !1247
+  tail call fastcc void @pr_str(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([12 x i8]* @.str76, i64 0, i64 0), i8* %cond190) #6, !dbg !1247
+  %init_lambda = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 47, !dbg !1248
+  %76 = load float* %init_lambda, align 4, !dbg !1248, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([12 x i8]* @.str77, i64 0, i64 0), float %76) #6, !dbg !1248
+  %sc_alpha = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 49, !dbg !1249
+  %77 = load float* %sc_alpha, align 4, !dbg !1249, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([9 x i8]* @.str78, i64 0, i64 0), float %77) #6, !dbg !1249
+  %sc_sigma = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 50, !dbg !1250
+  %78 = load float* %sc_sigma, align 4, !dbg !1250, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([9 x i8]* @.str79, i64 0, i64 0), float %78) #6, !dbg !1250
+  %delta_lambda = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 48, !dbg !1251
+  %79 = load float* %delta_lambda, align 4, !dbg !1251, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([13 x i8]* @.str80, i64 0, i64 0), float %79) #6, !dbg !1251
+  %eDisreWeighting = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 52, !dbg !1252
+  %80 = load i32* %eDisreWeighting, align 4, !dbg !1252, !tbaa !930
+  %81 = icmp ugt i32 %80, 1, !dbg !1252
+  br i1 %81, label %cond.end202, label %cond.false198, !dbg !1252
 
-; <label>:219                                     ; preds = %206
-  %220 = sext i32 %217 to i64
-  %221 = getelementptr inbounds [3 x i8*]* @edisreweighting_names, i64 0, i64 %220
-  %222 = load i8** %221, align 8, !tbaa !29
-  br label %223
+cond.false198:                                    ; preds = %cond.end189
+  %idxprom200 = sext i32 %80 to i64, !dbg !1252
+  %arrayidx201 = getelementptr inbounds [3 x i8*]* @edisreweighting_names, i64 0, i64 %idxprom200, !dbg !1252
+  %82 = load i8** %arrayidx201, align 8, !dbg !1252, !tbaa !1123
+  br label %cond.end202, !dbg !1252
 
-; <label>:223                                     ; preds = %206, %219
-  %224 = phi i8* [ %222, %219 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %206 ]
-  tail call fastcc void @pr_str(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([16 x i8]* @.str81, i64 0, i64 0), i8* %224) #9
-  %225 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 53
-  %226 = load i32* %225, align 4, !tbaa !79
-  %227 = icmp ugt i32 %226, 1
-  br i1 %227, label %232, label %228
+cond.end202:                                      ; preds = %cond.end189, %cond.false198
+  %cond203 = phi i8* [ %82, %cond.false198 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %cond.end189 ], !dbg !1252
+  tail call fastcc void @pr_str(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([16 x i8]* @.str81, i64 0, i64 0), i8* %cond203) #6, !dbg !1252
+  %bDisreMixed = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 53, !dbg !1253
+  %83 = load i32* %bDisreMixed, align 4, !dbg !1253, !tbaa !930
+  %84 = icmp ugt i32 %83, 1, !dbg !1253
+  br i1 %84, label %cond.end215, label %cond.false211, !dbg !1253
 
-; <label>:228                                     ; preds = %223
-  %229 = sext i32 %226 to i64
-  %230 = getelementptr inbounds [3 x i8*]* @bool_names, i64 0, i64 %229
-  %231 = load i8** %230, align 8, !tbaa !29
-  br label %232
+cond.false211:                                    ; preds = %cond.end202
+  %idxprom213 = sext i32 %83 to i64, !dbg !1253
+  %arrayidx214 = getelementptr inbounds [3 x i8*]* @bool_names, i64 0, i64 %idxprom213, !dbg !1253
+  %85 = load i8** %arrayidx214, align 8, !dbg !1253, !tbaa !1123
+  br label %cond.end215, !dbg !1253
 
-; <label>:232                                     ; preds = %223, %228
-  %233 = phi i8* [ %231, %228 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %223 ]
-  tail call fastcc void @pr_str(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([12 x i8]* @.str82, i64 0, i64 0), i8* %233) #9
-  %234 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 51
-  %235 = load float* %234, align 4, !tbaa !80
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([6 x i8]* @.str83, i64 0, i64 0), float %235) #9
-  %236 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 55
-  %237 = load float* %236, align 4, !tbaa !81
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([7 x i8]* @.str84, i64 0, i64 0), float %237) #9
-  %238 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 54
-  %239 = load i32* %238, align 4, !tbaa !82
-  %240 = sitofp i32 %239 to float
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([12 x i8]* @.str85, i64 0, i64 0), float %240) #9
-  %241 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 56
-  %242 = load float* %241, align 4, !tbaa !83
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([10 x i8]* @.str86, i64 0, i64 0), float %242) #9
-  %243 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 57
-  %244 = load float* %243, align 4, !tbaa !84
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([11 x i8]* @.str87, i64 0, i64 0), float %244) #9
-  %245 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 58
-  %246 = load i32* %245, align 4, !tbaa !85
-  %247 = sitofp i32 %246 to float
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([12 x i8]* @.str88, i64 0, i64 0), float %247) #9
-  %248 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 59
-  %249 = load float* %248, align 4, !tbaa !86
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([12 x i8]* @.str89, i64 0, i64 0), float %249) #9
-  %250 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 60
-  %251 = load float* %250, align 4, !tbaa !87
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([7 x i8]* @.str90, i64 0, i64 0), float %251) #9
-  %252 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 61
-  %253 = load i32* %252, align 4, !tbaa !88
-  tail call fastcc void @pr_int(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([6 x i8]* @.str91, i64 0, i64 0), i32 %253) #9
-  %254 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 62
-  %255 = load i32* %254, align 4, !tbaa !89
-  %256 = sitofp i32 %255 to float
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([12 x i8]* @.str92, i64 0, i64 0), float %256) #9
-  %257 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 63
-  %258 = load i32* %257, align 4, !tbaa !90
-  tail call fastcc void @pr_int(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([11 x i8]* @.str93, i64 0, i64 0), i32 %258) #9
-  %259 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 64
-  %260 = load i32* %259, align 4, !tbaa !91
-  %261 = icmp ugt i32 %260, 1
-  br i1 %261, label %266, label %262
+cond.end215:                                      ; preds = %cond.end202, %cond.false211
+  %cond216 = phi i8* [ %85, %cond.false211 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %cond.end202 ], !dbg !1253
+  tail call fastcc void @pr_str(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([12 x i8]* @.str82, i64 0, i64 0), i8* %cond216) #6, !dbg !1253
+  %dr_fc = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 51, !dbg !1254
+  %86 = load float* %dr_fc, align 4, !dbg !1254, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([6 x i8]* @.str83, i64 0, i64 0), float %86) #6, !dbg !1254
+  %dr_tau = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 55, !dbg !1255
+  %87 = load float* %dr_tau, align 4, !dbg !1255, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([7 x i8]* @.str84, i64 0, i64 0), float %87) #6, !dbg !1255
+  %nstdisreout = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 54, !dbg !1256
+  %88 = load i32* %nstdisreout, align 4, !dbg !1256, !tbaa !930
+  %conv217 = sitofp i32 %88 to float, !dbg !1256
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([12 x i8]* @.str85, i64 0, i64 0), float %conv217) #6, !dbg !1256
+  %orires_fc = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 56, !dbg !1257
+  %89 = load float* %orires_fc, align 4, !dbg !1257, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([10 x i8]* @.str86, i64 0, i64 0), float %89) #6, !dbg !1257
+  %orires_tau = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 57, !dbg !1258
+  %90 = load float* %orires_tau, align 4, !dbg !1258, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([11 x i8]* @.str87, i64 0, i64 0), float %90) #6, !dbg !1258
+  %nstorireout = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 58, !dbg !1259
+  %91 = load i32* %nstorireout, align 4, !dbg !1259, !tbaa !930
+  %conv218 = sitofp i32 %91 to float, !dbg !1259
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([12 x i8]* @.str88, i64 0, i64 0), float %conv218) #6, !dbg !1259
+  %em_stepsize = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 59, !dbg !1260
+  %92 = load float* %em_stepsize, align 4, !dbg !1260, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([12 x i8]* @.str89, i64 0, i64 0), float %92) #6, !dbg !1260
+  %em_tol = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 60, !dbg !1261
+  %93 = load float* %em_tol, align 4, !dbg !1261, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([7 x i8]* @.str90, i64 0, i64 0), float %93) #6, !dbg !1261
+  %niter = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 61, !dbg !1262
+  %94 = load i32* %niter, align 4, !dbg !1262, !tbaa !930
+  tail call fastcc void @pr_int(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([6 x i8]* @.str91, i64 0, i64 0), i32 %94) #6, !dbg !1262
+  %fc_stepsize = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 62, !dbg !1263
+  %95 = load i32* %fc_stepsize, align 4, !dbg !1263, !tbaa !930
+  %conv219 = sitofp i32 %95 to float, !dbg !1263
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([12 x i8]* @.str92, i64 0, i64 0), float %conv219) #6, !dbg !1263
+  %nstcgsteep = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 63, !dbg !1264
+  %96 = load i32* %nstcgsteep, align 4, !dbg !1264, !tbaa !930
+  tail call fastcc void @pr_int(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([11 x i8]* @.str93, i64 0, i64 0), i32 %96) #6, !dbg !1264
+  %eConstrAlg = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 64, !dbg !1265
+  %97 = load i32* %eConstrAlg, align 4, !dbg !1265, !tbaa !930
+  %98 = icmp ugt i32 %97, 1, !dbg !1265
+  br i1 %98, label %cond.end231, label %cond.false227, !dbg !1265
 
-; <label>:262                                     ; preds = %232
-  %263 = sext i32 %260 to i64
-  %264 = getelementptr inbounds [3 x i8*]* @eshake_names, i64 0, i64 %263
-  %265 = load i8** %264, align 8, !tbaa !29
-  br label %266
+cond.false227:                                    ; preds = %cond.end215
+  %idxprom229 = sext i32 %97 to i64, !dbg !1265
+  %arrayidx230 = getelementptr inbounds [3 x i8*]* @eshake_names, i64 0, i64 %idxprom229, !dbg !1265
+  %99 = load i8** %arrayidx230, align 8, !dbg !1265, !tbaa !1123
+  br label %cond.end231, !dbg !1265
 
-; <label>:266                                     ; preds = %232, %262
-  %267 = phi i8* [ %265, %262 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %232 ]
-  tail call fastcc void @pr_str(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([9 x i8]* @.str94, i64 0, i64 0), i8* %267) #9
-  %268 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 44
-  %269 = load float* %268, align 4, !tbaa !92
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([10 x i8]* @.str95, i64 0, i64 0), float %269) #9
-  %270 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 65
-  %271 = load i32* %270, align 4, !tbaa !93
-  tail call fastcc void @pr_int(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([12 x i8]* @.str96, i64 0, i64 0), i32 %271) #9
-  %272 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 66
-  %273 = load float* %272, align 4, !tbaa !94
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([16 x i8]* @.str97, i64 0, i64 0), float %273) #9
-  %274 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 68
-  %275 = load float* %274, align 4, !tbaa !95
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([8 x i8]* @.str98, i64 0, i64 0), float %275) #9
-  %276 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 69
-  %277 = load float* %276, align 4, !tbaa !96
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([8 x i8]* @.str99, i64 0, i64 0), float %277) #9
-  %278 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 70
-  %279 = load i32* %278, align 4, !tbaa !97
-  tail call fastcc void @pr_int(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([8 x i8]* @.str100, i64 0, i64 0), i32 %279) #9
-  %280 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 71
-  %281 = load float* %280, align 4, !tbaa !98
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([10 x i8]* @.str101, i64 0, i64 0), float %281) #9
-  %282 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 72
-  %283 = load i32* %282, align 4, !tbaa !99
-  tail call fastcc void @pr_int(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([9 x i8]* @.str102, i64 0, i64 0), i32 %283) #9
-  %284 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 73
-  %285 = load i32* %284, align 4, !tbaa !100
-  tail call fastcc void @pr_int(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([9 x i8]* @.str103, i64 0, i64 0), i32 %285) #9
-  %286 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 74
-  %287 = load i32* %286, align 4, !tbaa !101
-  tail call fastcc void @pr_int(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([9 x i8]* @.str104, i64 0, i64 0), i32 %287) #9
-  %288 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 75
-  %289 = load i32* %288, align 4, !tbaa !102
-  tail call fastcc void @pr_int(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([9 x i8]* @.str105, i64 0, i64 0), i32 %289) #9
-  %290 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 76
-  %291 = load float* %290, align 4, !tbaa !103
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([10 x i8]* @.str106, i64 0, i64 0), float %291) #9
-  %292 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 77
-  %293 = load float* %292, align 4, !tbaa !104
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([10 x i8]* @.str107, i64 0, i64 0), float %293) #9
-  %294 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 78
-  %295 = load float* %294, align 4, !tbaa !105
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([10 x i8]* @.str108, i64 0, i64 0), float %295) #9
-  %296 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 79
-  %297 = load float* %296, align 4, !tbaa !106
-  tail call fastcc void @pr_real(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([10 x i8]* @.str109, i64 0, i64 0), float %297) #9
-  %298 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 80
-  tail call void @pr_grp_opts(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([8 x i8]* @.str110, i64 0, i64 0), %struct.t_grpopts* %298) #9
-  %299 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 81, i64 0
-  tail call fastcc void @pr_cosine(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([9 x i8]* @.str111, i64 0, i64 0), %struct.t_cosines* %299) #9
-  %300 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 82, i64 0
-  tail call fastcc void @pr_cosine(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([10 x i8]* @.str112, i64 0, i64 0), %struct.t_cosines* %300) #9
-  %301 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 81, i64 1
-  tail call fastcc void @pr_cosine(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([9 x i8]* @.str113, i64 0, i64 0), %struct.t_cosines* %301) #9
-  %302 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 82, i64 1
-  tail call fastcc void @pr_cosine(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([10 x i8]* @.str114, i64 0, i64 0), %struct.t_cosines* %302) #9
-  %303 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 81, i64 2
-  tail call fastcc void @pr_cosine(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([9 x i8]* @.str115, i64 0, i64 0), %struct.t_cosines* %303) #9
-  %304 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 82, i64 2
-  tail call fastcc void @pr_cosine(%struct.__sFILE* %fp, i32 %3, i8* getelementptr inbounds ([10 x i8]* @.str116, i64 0, i64 0), %struct.t_cosines* %304) #9
-  br label %305
+cond.end231:                                      ; preds = %cond.end215, %cond.false227
+  %cond232 = phi i8* [ %99, %cond.false227 ], [ getelementptr inbounds ([10 x i8]* @.str30, i64 0, i64 0), %cond.end215 ], !dbg !1265
+  tail call fastcc void @pr_str(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([9 x i8]* @.str94, i64 0, i64 0), i8* %cond232) #6, !dbg !1265
+  %shake_tol = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 44, !dbg !1266
+  %100 = load float* %shake_tol, align 4, !dbg !1266, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([10 x i8]* @.str95, i64 0, i64 0), float %100) #6, !dbg !1266
+  %nProjOrder = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 65, !dbg !1267
+  %101 = load i32* %nProjOrder, align 4, !dbg !1267, !tbaa !930
+  tail call fastcc void @pr_int(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([12 x i8]* @.str96, i64 0, i64 0), i32 %101) #6, !dbg !1267
+  %LincsWarnAngle = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 66, !dbg !1268
+  %102 = load float* %LincsWarnAngle, align 4, !dbg !1268, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([16 x i8]* @.str97, i64 0, i64 0), float %102) #6, !dbg !1268
+  %bd_temp = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 68, !dbg !1269
+  %103 = load float* %bd_temp, align 4, !dbg !1269, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([8 x i8]* @.str98, i64 0, i64 0), float %103) #6, !dbg !1269
+  %bd_fric = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 69, !dbg !1270
+  %104 = load float* %bd_fric, align 4, !dbg !1270, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([8 x i8]* @.str99, i64 0, i64 0), float %104) #6, !dbg !1270
+  %ld_seed = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 70, !dbg !1271
+  %105 = load i32* %ld_seed, align 4, !dbg !1271, !tbaa !930
+  tail call fastcc void @pr_int(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([8 x i8]* @.str100, i64 0, i64 0), i32 %105) #6, !dbg !1271
+  %cos_accel = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 71, !dbg !1272
+  %106 = load float* %cos_accel, align 4, !dbg !1272, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([10 x i8]* @.str101, i64 0, i64 0), float %106) #6, !dbg !1272
+  %userint1 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 72, !dbg !1273
+  %107 = load i32* %userint1, align 4, !dbg !1273, !tbaa !930
+  tail call fastcc void @pr_int(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([9 x i8]* @.str102, i64 0, i64 0), i32 %107) #6, !dbg !1273
+  %userint2 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 73, !dbg !1274
+  %108 = load i32* %userint2, align 4, !dbg !1274, !tbaa !930
+  tail call fastcc void @pr_int(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([9 x i8]* @.str103, i64 0, i64 0), i32 %108) #6, !dbg !1274
+  %userint3 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 74, !dbg !1275
+  %109 = load i32* %userint3, align 4, !dbg !1275, !tbaa !930
+  tail call fastcc void @pr_int(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([9 x i8]* @.str104, i64 0, i64 0), i32 %109) #6, !dbg !1275
+  %userint4 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 75, !dbg !1276
+  %110 = load i32* %userint4, align 4, !dbg !1276, !tbaa !930
+  tail call fastcc void @pr_int(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([9 x i8]* @.str105, i64 0, i64 0), i32 %110) #6, !dbg !1276
+  %userreal1 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 76, !dbg !1277
+  %111 = load float* %userreal1, align 4, !dbg !1277, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([10 x i8]* @.str106, i64 0, i64 0), float %111) #6, !dbg !1277
+  %userreal2 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 77, !dbg !1278
+  %112 = load float* %userreal2, align 4, !dbg !1278, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([10 x i8]* @.str107, i64 0, i64 0), float %112) #6, !dbg !1278
+  %userreal3 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 78, !dbg !1279
+  %113 = load float* %userreal3, align 4, !dbg !1279, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([10 x i8]* @.str108, i64 0, i64 0), float %113) #6, !dbg !1279
+  %userreal4 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 79, !dbg !1280
+  %114 = load float* %userreal4, align 4, !dbg !1280, !tbaa !1030
+  tail call fastcc void @pr_real(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([10 x i8]* @.str109, i64 0, i64 0), float %114) #6, !dbg !1280
+  %opts = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 80, !dbg !1281
+  tail call void @pr_grp_opts(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([8 x i8]* @.str110, i64 0, i64 0), %struct.t_grpopts* %opts) #6, !dbg !1281
+  %arrayidx233 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 81, i64 0, !dbg !1282
+  tail call fastcc void @pr_cosine(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([9 x i8]* @.str111, i64 0, i64 0), %struct.t_cosines* %arrayidx233) #6, !dbg !1282
+  %arrayidx234 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 82, i64 0, !dbg !1283
+  tail call fastcc void @pr_cosine(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([10 x i8]* @.str112, i64 0, i64 0), %struct.t_cosines* %arrayidx234) #6, !dbg !1283
+  %arrayidx236 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 81, i64 1, !dbg !1284
+  tail call fastcc void @pr_cosine(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([9 x i8]* @.str113, i64 0, i64 0), %struct.t_cosines* %arrayidx236) #6, !dbg !1284
+  %arrayidx238 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 82, i64 1, !dbg !1285
+  tail call fastcc void @pr_cosine(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([10 x i8]* @.str114, i64 0, i64 0), %struct.t_cosines* %arrayidx238) #6, !dbg !1285
+  %arrayidx240 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 81, i64 2, !dbg !1286
+  tail call fastcc void @pr_cosine(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([9 x i8]* @.str115, i64 0, i64 0), %struct.t_cosines* %arrayidx240) #6, !dbg !1286
+  %arrayidx242 = getelementptr inbounds %struct.t_inputrec* %ir, i64 0, i32 82, i64 2, !dbg !1287
+  tail call fastcc void @pr_cosine(%struct._IO_FILE* %fp, i32 %call1, i8* getelementptr inbounds ([10 x i8]* @.str116, i64 0, i64 0), %struct.t_cosines* %arrayidx242) #6, !dbg !1287
+  br label %if.end243, !dbg !1288
 
-; <label>:305                                     ; preds = %available.exit, %266
-  ret void
+if.end243:                                        ; preds = %if.then.i, %cond.end231
+  ret void, !dbg !1289
 }

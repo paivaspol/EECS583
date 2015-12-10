@@ -1,0 +1,28 @@
+define i32 @_ZN8pov_base13Has_ExtensionEPKc(i8* %name) #7 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !546), !dbg !939
+  %cmp = icmp eq i8* %name, null, !dbg !940
+  br i1 %cmp, label %if.end7, label %if.then, !dbg !940
+
+if.then:                                          ; preds = %entry
+  %call = tail call i8* @strrchr(i8* %name, i32 46) #11, !dbg !941
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !547), !dbg !941
+  %cmp1 = icmp eq i8* %call, null, !dbg !942
+  br i1 %cmp1, label %if.end7, label %if.then2, !dbg !942
+
+if.then2:                                         ; preds = %if.then
+  %call3 = tail call i64 @strlen(i8* %name) #11, !dbg !943
+  %sub.ptr.lhs.cast = ptrtoint i8* %call to i64, !dbg !943
+  %sub.ptr.rhs.cast = ptrtoint i8* %name to i64, !dbg !943
+  %sub.ptr.sub12 = sub i64 %sub.ptr.rhs.cast, %sub.ptr.lhs.cast, !dbg !943
+  %sub = add i64 %sub.ptr.sub12, %call3, !dbg !943
+  %cmp4 = icmp ult i64 %sub, 5, !dbg !943
+  br i1 %cmp4, label %return, label %if.end7, !dbg !943
+
+if.end7:                                          ; preds = %if.then, %entry, %if.then2
+  br label %return, !dbg !945
+
+return:                                           ; preds = %if.then2, %if.end7
+  %retval.0 = phi i32 [ 0, %if.end7 ], [ 1, %if.then2 ]
+  ret i32 %retval.0, !dbg !945
+}

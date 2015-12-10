@@ -1,0 +1,86 @@
+define internal %class.cPar* @_ZL12cable__delayv() #2 {
+entry:
+  %value = alloca %class.cPar, align 8
+  %machines = alloca %class.cArray, align 8
+  %0 = bitcast %class.cPar* %value to i8*, !dbg !12373
+  call void @llvm.lifetime.start(i64 120, i8* %0) #1, !dbg !12373
+  call void @llvm.dbg.declare(metadata !{%class.cPar* %value}, metadata !5221), !dbg !12373
+  call void @_ZN4cParC1EPKc(%class.cPar* %value, i8* null) #9, !dbg !12373
+  %1 = bitcast %class.cArray* %machines to i8*, !dbg !12374
+  call void @llvm.lifetime.start(i64 80, i8* %1) #1, !dbg !12374
+  call void @llvm.dbg.declare(metadata !{%class.cArray* %machines}, metadata !5229), !dbg !12374
+  invoke void @_ZN6cArrayC1EPKcii(%class.cArray* %machines, i8* null, i32 0, i32 10) #9
+          to label %invoke.cont unwind label %lpad, !dbg !12374
+
+invoke.cont:                                      ; preds = %entry
+  %call = invoke i8* @_ZN7cObjectnwEm(i64 120) #9
+          to label %invoke.cont2 unwind label %lpad1, !dbg !12375
+
+invoke.cont2:                                     ; preds = %invoke.cont
+  %2 = bitcast i8* %call to %class.cPar*, !dbg !12375
+  invoke void @_ZN4cParC1EPKc(%class.cPar* %2, i8* getelementptr inbounds ([12 x i8]* @.str97, i64 0, i64 0)) #9
+          to label %invoke.cont4 unwind label %lpad3, !dbg !12375
+
+invoke.cont4:                                     ; preds = %invoke.cont2
+  call void @llvm.dbg.value(metadata !{%class.cPar* %2}, i64 0, metadata !5233), !dbg !12375
+  call void @llvm.dbg.value(metadata !{%class.cPar* %2}, i64 0, metadata !12376), !dbg !12378
+  call void @llvm.dbg.value(metadata !12379, i64 0, metadata !12380), !dbg !12378
+  %call.i15 = invoke %class.cPar* @_ZN4cPar14setDoubleValueEd(%class.cPar* %2, double 1.000000e-07) #9
+          to label %invoke.cont5 unwind label %lpad1
+
+invoke.cont5:                                     ; preds = %invoke.cont4
+  invoke void @_ZN6cArrayD1Ev(%class.cArray* %machines) #9
+          to label %invoke.cont7 unwind label %lpad, !dbg !12381
+
+lpad:                                             ; preds = %invoke.cont5, %entry
+  %3 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !12374
+  %4 = extractvalue { i8*, i32 } %3, 0, !dbg !12374
+  %5 = extractvalue { i8*, i32 } %3, 1, !dbg !12374
+  br label %ehcleanup9, !dbg !12374
+
+lpad1:                                            ; preds = %invoke.cont4, %invoke.cont
+  %6 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !12375
+  %7 = extractvalue { i8*, i32 } %6, 0, !dbg !12375
+  %8 = extractvalue { i8*, i32 } %6, 1, !dbg !12375
+  br label %ehcleanup, !dbg !12375
+
+lpad3:                                            ; preds = %invoke.cont2
+  %9 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !12375
+  %10 = extractvalue { i8*, i32 } %9, 0, !dbg !12375
+  %11 = extractvalue { i8*, i32 } %9, 1, !dbg !12375
+  call void @_ZdlPv(i8* %call) #10, !dbg !12375
+  br label %ehcleanup, !dbg !12375
+
+invoke.cont7:                                     ; preds = %invoke.cont5
+  call void @llvm.lifetime.end(i64 80, i8* %1) #1, !dbg !12381
+  call void @_ZN4cParD1Ev(%class.cPar* %value) #9, !dbg !12381
+  call void @llvm.lifetime.end(i64 120, i8* %0) #1, !dbg !12381
+  ret %class.cPar* %2, !dbg !12381
+
+ehcleanup:                                        ; preds = %lpad3, %lpad1
+  %ehselector.slot.0 = phi i32 [ %8, %lpad1 ], [ %11, %lpad3 ]
+  %exn.slot.0 = phi i8* [ %7, %lpad1 ], [ %10, %lpad3 ]
+  invoke void @_ZN6cArrayD1Ev(%class.cArray* %machines) #9
+          to label %ehcleanup9 unwind label %terminate.lpad, !dbg !12381
+
+ehcleanup9:                                       ; preds = %ehcleanup, %lpad
+  %ehselector.slot.1 = phi i32 [ %5, %lpad ], [ %ehselector.slot.0, %ehcleanup ]
+  %exn.slot.1 = phi i8* [ %4, %lpad ], [ %exn.slot.0, %ehcleanup ]
+  invoke void @_ZN4cParD1Ev(%class.cPar* %value) #9
+          to label %eh.resume unwind label %terminate.lpad, !dbg !12381
+
+eh.resume:                                        ; preds = %ehcleanup9
+  %lpad.val = insertvalue { i8*, i32 } undef, i8* %exn.slot.1, 0, !dbg !12381
+  %lpad.val11 = insertvalue { i8*, i32 } %lpad.val, i32 %ehselector.slot.1, 1, !dbg !12381
+  resume { i8*, i32 } %lpad.val11, !dbg !12381
+
+terminate.lpad:                                   ; preds = %ehcleanup9, %ehcleanup
+  %12 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !12381
+  %13 = extractvalue { i8*, i32 } %12, 0, !dbg !12381
+  call void @__clang_call_terminate(i8* %13) #12, !dbg !12381
+  unreachable, !dbg !12381
+}

@@ -1,58 +1,79 @@
-define i32 @CCTKi_ScheduleFunction(i8* %function, i8* %name, i8* %thorn, i8* %implementation, i8* %description, i8* %where, i8* %language, i32 %n_mem_groups, i32 %n_comm_groups, i32 %n_trigger_groups, i32 %n_sync_groups, i32 %n_options, i32 %n_before, i32 %n_after, i32 %n_while, ...) #1 {
+define i32 @CCTKi_ScheduleFunction(i8* %function, i8* %name, i8* %thorn, i8* nocapture %implementation, i8* %description, i8* %where, i8* %language, i32 %n_mem_groups, i32 %n_comm_groups, i32 %n_trigger_groups, i32 %n_sync_groups, i32 %n_options, i32 %n_before, i32 %n_after, i32 %n_while, ...) #1 {
+entry:
   %ap = alloca [1 x %struct.__va_list_tag], align 16
-  %1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
-  call void @llvm.va_start(i8* %1)
-  %2 = call fastcc %struct.t_attribute* @CreateAttribute(i8* %where, i8* %name, i8* %description, i8* %language, i8* %thorn, i8* %implementation, i32 %n_mem_groups, i32 %n_comm_groups, i32 %n_trigger_groups, i32 %n_sync_groups, i32 %n_options, [1 x %struct.__va_list_tag]* %ap) #9
-  %3 = call fastcc %struct.T_SCHED_MODIFIER* @CreateModifiers(i32 %n_before, i32 %n_after, i32 %n_while, [1 x %struct.__va_list_tag]* %ap) #9
-  call void @llvm.va_end(i8* %1)
-  %4 = call i32 @ValidateModifiers(%struct.T_SCHED_MODIFIER* %3) #9
-  %5 = icmp eq %struct.t_attribute* %2, null
-  br i1 %5, label %24, label %6
+  call void @llvm.dbg.value(metadata !{i8* %function}, i64 0, metadata !128), !dbg !511
+  call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !129), !dbg !512
+  call void @llvm.dbg.value(metadata !{i8* %thorn}, i64 0, metadata !130), !dbg !513
+  call void @llvm.dbg.value(metadata !{i8* %implementation}, i64 0, metadata !131), !dbg !514
+  call void @llvm.dbg.value(metadata !{i8* %description}, i64 0, metadata !132), !dbg !515
+  call void @llvm.dbg.value(metadata !{i8* %where}, i64 0, metadata !133), !dbg !516
+  call void @llvm.dbg.value(metadata !{i8* %language}, i64 0, metadata !134), !dbg !517
+  call void @llvm.dbg.value(metadata !{i32 %n_mem_groups}, i64 0, metadata !135), !dbg !518
+  call void @llvm.dbg.value(metadata !{i32 %n_comm_groups}, i64 0, metadata !136), !dbg !519
+  call void @llvm.dbg.value(metadata !{i32 %n_trigger_groups}, i64 0, metadata !137), !dbg !520
+  call void @llvm.dbg.value(metadata !{i32 %n_sync_groups}, i64 0, metadata !138), !dbg !521
+  call void @llvm.dbg.value(metadata !{i32 %n_options}, i64 0, metadata !139), !dbg !522
+  call void @llvm.dbg.value(metadata !{i32 %n_before}, i64 0, metadata !140), !dbg !523
+  call void @llvm.dbg.value(metadata !{i32 %n_after}, i64 0, metadata !141), !dbg !524
+  call void @llvm.dbg.value(metadata !{i32 %n_while}, i64 0, metadata !142), !dbg !525
+  call void @llvm.dbg.declare(metadata !{[1 x %struct.__va_list_tag]* %ap}, metadata !172), !dbg !526
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*, !dbg !527
+  call void @llvm.va_start(i8* %arraydecay1), !dbg !527
+  %call = call fastcc %struct.t_attribute* @CreateAttribute(i8* %where, i8* %name, i8* %description, i8* %language, i8* %thorn, i8* %implementation, i32 %n_mem_groups, i32 %n_comm_groups, i32 %n_trigger_groups, i32 %n_sync_groups, i32 %n_options, [1 x %struct.__va_list_tag]* %ap) #9, !dbg !528
+  call void @llvm.dbg.value(metadata !{%struct.t_attribute* %call}, i64 0, metadata !144), !dbg !528
+  %call2 = call fastcc %struct.T_SCHED_MODIFIER* @CreateModifiers(i32 %n_before, i32 %n_after, i32 %n_while, [1 x %struct.__va_list_tag]* %ap) #9, !dbg !529
+  call void @llvm.dbg.value(metadata !{%struct.T_SCHED_MODIFIER* %call2}, i64 0, metadata !162), !dbg !529
+  call void @llvm.va_end(i8* %arraydecay1), !dbg !530
+  %call5 = call i32 @ValidateModifiers(%struct.T_SCHED_MODIFIER* %call2) #9, !dbg !531
+  %tobool = icmp eq %struct.t_attribute* %call, null, !dbg !532
+  br i1 %tobool, label %if.else, label %land.lhs.true, !dbg !532
 
-; <label>:6                                       ; preds = %0
-  %7 = icmp eq %struct.T_SCHED_MODIFIER* %3, null
-  br i1 %7, label %8, label %.preheader
+land.lhs.true:                                    ; preds = %entry
+  %tobool6 = icmp eq %struct.T_SCHED_MODIFIER* %call2, null, !dbg !532
+  br i1 %tobool6, label %lor.lhs.false, label %for.cond.i, !dbg !532
 
-; <label>:8                                       ; preds = %6
-  %9 = or i32 %n_after, %n_before
-  %10 = or i32 %9, %n_while
-  %11 = icmp eq i32 %10, 0
-  br i1 %11, label %.preheader, label %24
+lor.lhs.false:                                    ; preds = %land.lhs.true
+  %0 = or i32 %n_after, %n_before, !dbg !532
+  %1 = or i32 %0, %n_while, !dbg !532
+  %2 = icmp eq i32 %1, 0, !dbg !532
+  br i1 %2, label %for.cond.i, label %if.else, !dbg !532
 
-.preheader:                                       ; preds = %8, %6, %13
-  %current.0.i = phi i8* [ %14, %13 ], [ %where, %6 ], [ %where, %8 ]
-  %12 = load i8* %current.0.i, align 1, !tbaa !10
-  switch i8 %12, label %13 [
-    i8 0, label %15
+for.cond.i:                                       ; preds = %land.lhs.true, %lor.lhs.false, %for.inc.i
+  %current.0.i = phi i8* [ %incdec.ptr.i, %for.inc.i ], [ %where, %lor.lhs.false ], [ %where, %land.lhs.true ]
+  %3 = load i8* %current.0.i, align 1, !dbg !533, !tbaa !489
+  switch i8 %3, label %for.inc.i [
+    i8 0, label %if.else.i
     i8 36, label %TranslateFunctionType.exit
-  ]
+  ], !dbg !533
 
-; <label>:13                                      ; preds = %.preheader
-  %14 = getelementptr inbounds i8* %current.0.i, i64 1
-  br label %.preheader
+for.inc.i:                                        ; preds = %for.cond.i
+  %incdec.ptr.i = getelementptr inbounds i8* %current.0.i, i64 1, !dbg !533
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr.i}, i64 0, metadata !537) #4, !dbg !533
+  br label %for.cond.i, !dbg !533
 
-; <label>:15                                      ; preds = %.preheader
-  %16 = call i32 @CCTK_Equals(i8* %where, i8* getelementptr inbounds ([13 x i8]* @.str14, i64 0, i64 0)) #8
-  %17 = icmp eq i32 %16, 0
-  br i1 %17, label %18, label %TranslateFunctionType.exit
+if.else.i:                                        ; preds = %for.cond.i
+  %call.i = call i32 @CCTK_Equals(i8* %where, i8* getelementptr inbounds ([13 x i8]* @.str14, i64 0, i64 0)) #8, !dbg !538
+  %tobool4.i = icmp eq i32 %call.i, 0, !dbg !538
+  br i1 %tobool4.i, label %if.else6.i, label %TranslateFunctionType.exit, !dbg !538
 
-; <label>:18                                      ; preds = %15
-  %19 = call i32 @CCTK_Equals(i8* %where, i8* getelementptr inbounds ([14 x i8]* @.str56, i64 0, i64 0)) #8
-  %20 = icmp eq i32 %19, 0
-  %..i = select i1 %20, i32 2, i32 0
+if.else6.i:                                       ; preds = %if.else.i
+  %call7.i = call i32 @CCTK_Equals(i8* %where, i8* getelementptr inbounds ([14 x i8]* @.str56, i64 0, i64 0)) #8, !dbg !539
+  %tobool8.i = icmp eq i32 %call7.i, 0, !dbg !539
+  %..i = select i1 %tobool8.i, i32 2, i32 0
   br label %TranslateFunctionType.exit
 
-TranslateFunctionType.exit:                       ; preds = %.preheader, %15, %18
-  %retcode.0.i = phi i32 [ 0, %15 ], [ %..i, %18 ], [ 1, %.preheader ]
-  %21 = getelementptr inbounds %struct.t_attribute* %2, i64 0, i32 3, i32 2
-  store i32 %retcode.0.i, i32* %21, align 4, !tbaa !11
-  %22 = bitcast %struct.t_attribute* %2 to i8*
-  %23 = call i32 @CCTKi_DoScheduleFunction(i8* %where, i8* %name, i8* %function, %struct.T_SCHED_MODIFIER* %3, i8* %22) #8
-  ret i32 %23
+TranslateFunctionType.exit:                       ; preds = %for.cond.i, %if.else.i, %if.else6.i
+  %retcode.0.i = phi i32 [ 0, %if.else.i ], [ %..i, %if.else6.i ], [ 1, %for.cond.i ]
+  %type = getelementptr inbounds %struct.t_attribute* %call, i64 0, i32 3, i32 2, !dbg !535
+  store i32 %retcode.0.i, i32* %type, align 4, !dbg !535, !tbaa !489
+  %4 = bitcast %struct.t_attribute* %call to i8*, !dbg !540
+  %call12 = call i32 @CCTKi_DoScheduleFunction(i8* %where, i8* %name, i8* %function, %struct.T_SCHED_MODIFIER* %call2, i8* %4) #8, !dbg !540
+  call void @llvm.dbg.value(metadata !{i32 %call12}, i64 0, metadata !143), !dbg !540
+  ret i32 %call12, !dbg !541
 
-; <label>:24                                      ; preds = %0, %8
-  %25 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !13
-  %26 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %25, i8* getelementptr inbounds ([48 x i8]* @.str4, i64 0, i64 0), i8* %name, i8* %where) #8
-  call void @exit(i32 2) #10
-  unreachable
+if.else:                                          ; preds = %entry, %lor.lhs.false
+  %5 = load %struct._IO_FILE** @stderr, align 8, !dbg !542, !tbaa !504
+  %call13 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([48 x i8]* @.str4, i64 0, i64 0), i8* %name, i8* %where) #8, !dbg !542
+  call void @exit(i32 2) #10, !dbg !544
+  unreachable, !dbg !544
 }

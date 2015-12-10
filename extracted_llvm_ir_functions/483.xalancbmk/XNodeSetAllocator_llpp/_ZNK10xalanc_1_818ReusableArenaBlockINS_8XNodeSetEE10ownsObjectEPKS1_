@@ -1,0 +1,47 @@
+define linkonce_odr zeroext i1 @_ZNK10xalanc_1_818ReusableArenaBlockINS_8XNodeSetEE10ownsObjectEPKS1_(%"class.xalanc_1_8::ReusableArenaBlock"* %this, %"class.xalanc_1_8::XNodeSet"* %theObject) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::ReusableArenaBlock"* %this}, i64 0, metadata !4333), !dbg !5526
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XNodeSet"* %theObject}, i64 0, metadata !4334), !dbg !5526
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XNodeSet"* %theObject}, i64 0, metadata !5527), !dbg !5529
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XNodeSet"* %theObject}, i64 0, metadata !5530), !dbg !5532
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XNodeSet"* %theObject}, i64 0, metadata !5533), !dbg !5535
+  %m_objectBlock.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 0, i32 4, !dbg !5534
+  %0 = load %"class.xalanc_1_8::XNodeSet"** %m_objectBlock.i, align 8, !dbg !5534, !tbaa !4724
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XNodeSet"* %0}, i64 0, metadata !5536), !dbg !5535
+  tail call void @llvm.dbg.value(metadata !5537, i64 0, metadata !5538), !dbg !5535
+  %cmp.i.i = icmp ugt %"class.xalanc_1_8::XNodeSet"* %0, %theObject, !dbg !5539
+  br i1 %cmp.i.i, label %land.end, label %land.lhs.true.i, !dbg !5534
+
+land.lhs.true.i:                                  ; preds = %entry
+  %m_objectCount.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 0, i32 2, !dbg !5531
+  %1 = load i64* %m_objectCount.i, align 8, !dbg !5531, !tbaa !4710
+  %add.ptr.i = getelementptr inbounds %"class.xalanc_1_8::XNodeSet"* %0, i64 %1, !dbg !5531
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XNodeSet"* %add.ptr.i}, i64 0, metadata !5541), !dbg !5532
+  tail call void @llvm.dbg.value(metadata !5537, i64 0, metadata !5542), !dbg !5532
+  %cmp.i7.i = icmp ugt %"class.xalanc_1_8::XNodeSet"* %add.ptr.i, %theObject, !dbg !5543
+  br i1 %cmp.i7.i, label %land.rhs, label %land.end, !dbg !5531
+
+land.rhs:                                         ; preds = %land.lhs.true.i
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::ReusableArenaBlock"* %this}, i64 0, metadata !5544), !dbg !5545
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XNodeSet"* %theObject}, i64 0, metadata !5546), !dbg !5545
+  %m_freeBlockCount.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 2, !dbg !5547
+  %2 = load i64* %m_freeBlockCount.i, align 8, !dbg !5547, !tbaa !4710
+  %cmp.i = icmp eq i64 %2, 0, !dbg !5547
+  br i1 %cmp.i, label %land.end, label %if.else.i4, !dbg !5547
+
+if.else.i4:                                       ; preds = %land.rhs
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::XNodeSet"* %theObject}, i64 0, metadata !5548), !dbg !5550
+  %sub.ptr.lhs.cast.i.i = ptrtoint %"class.xalanc_1_8::XNodeSet"* %theObject to i64, !dbg !5551
+  %sub.ptr.rhs.cast.i.i = ptrtoint %"class.xalanc_1_8::XNodeSet"* %0 to i64, !dbg !5551
+  %sub.ptr.sub.i.i = sub i64 %sub.ptr.lhs.cast.i.i, %sub.ptr.rhs.cast.i.i, !dbg !5551
+  %sub.ptr.div.i.i = sdiv exact i64 %sub.ptr.sub.i.i, 96, !dbg !5551
+  tail call void @llvm.dbg.value(metadata !{i64 %sub.ptr.div.i.i}, i64 0, metadata !5552), !dbg !5549
+  %m_freeList.i = getelementptr inbounds %"class.xalanc_1_8::ReusableArenaBlock"* %this, i64 0, i32 1, !dbg !5553
+  %call2.i = tail call zeroext i1 @_ZNK10xalanc_1_811XalanBitmap5isSetEm(%"class.xalanc_1_8::XalanBitmap"* %m_freeList.i, i64 %sub.ptr.div.i.i) #10, !dbg !5553
+  %phitmp = xor i1 %call2.i, true, !dbg !5553
+  br label %land.end, !dbg !5553
+
+land.end:                                         ; preds = %if.else.i4, %land.rhs, %land.lhs.true.i, %entry
+  %3 = phi i1 [ false, %entry ], [ false, %land.lhs.true.i ], [ %phitmp, %if.else.i4 ], [ true, %land.rhs ]
+  ret i1 %3, !dbg !5554
+}

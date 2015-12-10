@@ -1,9 +1,13 @@
 define i32 @cctk_messageformat_(i8* %cctk_str1, i32 %cctk_strlen1) #1 {
-  %1 = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #8
-  %2 = load i32* @n_formats, align 4, !tbaa !6
-  %3 = tail call i32 @StoreKeyedData(%struct.PKeyedData** @formatlist, i32 %2, i8* %1) #8
-  %4 = load i32* @n_formats, align 4, !tbaa !6
-  %5 = add nsw i32 %4, 1
-  store i32 %5, i32* @n_formats, align 4, !tbaa !6
-  ret i32 %4
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %cctk_str1}, i64 0, metadata !107), !dbg !318
+  tail call void @llvm.dbg.value(metadata !{i32 %cctk_strlen1}, i64 0, metadata !108), !dbg !318
+  %call = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #9, !dbg !319
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !109), !dbg !319
+  %0 = load i32* @n_formats, align 4, !dbg !320, !tbaa !250
+  %call1 = tail call i32 @StoreKeyedData(%struct.PKeyedData** @formatlist, i32 %0, i8* %call) #9, !dbg !320
+  %1 = load i32* @n_formats, align 4, !dbg !321, !tbaa !250
+  %inc = add nsw i32 %1, 1, !dbg !321
+  store i32 %inc, i32* @n_formats, align 4, !dbg !321, !tbaa !250
+  ret i32 %1, !dbg !321
 }

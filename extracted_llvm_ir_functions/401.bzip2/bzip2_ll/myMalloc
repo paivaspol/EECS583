@@ -1,0 +1,16 @@
+define internal fastcc noalias i8* @myMalloc(i32 %n) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !415), !dbg !1564
+  %conv = sext i32 %n to i64, !dbg !1565
+  %call = tail call noalias i8* @malloc(i64 %conv) #10, !dbg !1565
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !416), !dbg !1565
+  %cmp = icmp eq i8* %call, null, !dbg !1566
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1566
+
+if.then:                                          ; preds = %entry
+  tail call fastcc void @outOfMemory() #14, !dbg !1566
+  unreachable, !dbg !1566
+
+if.end:                                           ; preds = %entry
+  ret i8* %call, !dbg !1567
+}

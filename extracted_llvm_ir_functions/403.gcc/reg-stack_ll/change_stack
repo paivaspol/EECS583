@@ -1,239 +1,250 @@
 define internal fastcc void @change_stack(%struct.rtx_def* %insn, %struct.stack_def* %old, %struct.stack_def* nocapture %new, i32 %where) #0 {
 entry:
-  %cmp = icmp eq i32 %where, 0
-  br i1 %cmp, label %if.then, label %if.end3
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !1355), !dbg !2686
+  tail call void @llvm.dbg.value(metadata !{%struct.stack_def* %old}, i64 0, metadata !1356), !dbg !2687
+  tail call void @llvm.dbg.value(metadata !{%struct.stack_def* %new}, i64 0, metadata !1357), !dbg !2688
+  tail call void @llvm.dbg.value(metadata !{i32 %where}, i64 0, metadata !1358), !dbg !2689
+  tail call void @llvm.dbg.value(metadata !438, i64 0, metadata !1360), !dbg !2690
+  %cmp = icmp eq i32 %where, 0, !dbg !2691
+  br i1 %cmp, label %if.then, label %if.end3, !dbg !2691
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct.basic_block_def** @current_block, align 8, !tbaa !2
-  %tobool = icmp eq %struct.basic_block_def* %0, null
-  br i1 %tobool, label %if.end, label %land.lhs.true
+  %0 = load %struct.basic_block_def** @current_block, align 8, !dbg !2692, !tbaa !1563
+  %tobool = icmp eq %struct.basic_block_def* %0, null, !dbg !2692
+  br i1 %tobool, label %if.end, label %land.lhs.true, !dbg !2692
 
 land.lhs.true:                                    ; preds = %if.then
-  %end = getelementptr inbounds %struct.basic_block_def* %0, i64 0, i32 1
-  %1 = load %struct.rtx_def** %end, align 8, !tbaa !2
-  %cmp1 = icmp eq %struct.rtx_def* %1, %insn
-  %. = zext i1 %cmp1 to i32
-  br label %if.end
+  %end = getelementptr inbounds %struct.basic_block_def* %0, i64 0, i32 1, !dbg !2692
+  %1 = load %struct.rtx_def** %end, align 8, !dbg !2692, !tbaa !1563
+  %cmp1 = icmp eq %struct.rtx_def* %1, %insn, !dbg !2692
+  tail call void @llvm.dbg.value(metadata !1671, i64 0, metadata !1360), !dbg !2694
+  %. = zext i1 %cmp1 to i32, !dbg !2692
+  br label %if.end, !dbg !2692
 
 if.end:                                           ; preds = %land.lhs.true, %if.then
   %update_end.0 = phi i32 [ 0, %if.then ], [ %., %land.lhs.true ]
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 2
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !2
-  br label %if.end3
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 2, !dbg !2695
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !2695
+  %2 = load %struct.rtx_def** %rtx, align 8, !dbg !2695, !tbaa !1563
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %2}, i64 0, metadata !1355), !dbg !2695
+  br label %if.end3, !dbg !2696
 
 if.end3:                                          ; preds = %if.end, %entry
   %insn.addr.0 = phi %struct.rtx_def* [ %2, %if.end ], [ %insn, %entry ]
   %update_end.1 = phi i32 [ %update_end.0, %if.end ], [ 0, %entry ]
-  %top = getelementptr inbounds %struct.stack_def* %old, i64 0, i32 0
-  %3 = load i32* %top, align 4, !tbaa !3
-  %cmp4205 = icmp sgt i32 %3, -1
-  br i1 %cmp4205, label %for.body.lr.ph, label %for.end
+  %top = getelementptr inbounds %struct.stack_def* %old, i64 0, i32 0, !dbg !2697
+  %3 = load i32* %top, align 4, !dbg !2697, !tbaa !1565
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !1359), !dbg !2697
+  %cmp4205 = icmp sgt i32 %3, -1, !dbg !2697
+  br i1 %cmp4205, label %for.body.lr.ph, label %for.end, !dbg !2697
 
 for.body.lr.ph:                                   ; preds = %if.end3
-  %reg_set = getelementptr inbounds %struct.stack_def* %new, i64 0, i32 1
+  %reg_set = getelementptr inbounds %struct.stack_def* %new, i64 0, i32 1, !dbg !2699
   %4 = sext i32 %3 to i64
-  br label %for.body
+  br label %for.body, !dbg !2697
 
 for.body:                                         ; preds = %for.inc.for.body_crit_edge, %for.body.lr.ph
   %indvars.iv215 = phi i64 [ %4, %for.body.lr.ph ], [ %indvars.iv.next216, %for.inc.for.body_crit_edge ]
-  %5 = load i64* %reg_set, align 8, !tbaa !4
-  %arrayidx6 = getelementptr inbounds %struct.stack_def* %old, i64 0, i32 2, i64 %indvars.iv215
-  %6 = load i8* %arrayidx6, align 1, !tbaa !0
-  %sh_prom = zext i8 %6 to i64
-  %shl = shl i64 1, %sh_prom
-  %and = and i64 %shl, %5
-  %tobool7 = icmp eq i64 %and, 0
-  br i1 %tobool7, label %if.then8, label %for.inc
+  %5 = load i64* %reg_set, align 8, !dbg !2699, !tbaa !1567
+  %arrayidx6 = getelementptr inbounds %struct.stack_def* %old, i64 0, i32 2, i64 %indvars.iv215, !dbg !2699
+  %6 = load i8* %arrayidx6, align 1, !dbg !2699, !tbaa !1561
+  %sh_prom = zext i8 %6 to i64, !dbg !2699
+  %shl = shl i64 1, %sh_prom, !dbg !2699
+  %and = and i64 %shl, %5, !dbg !2699
+  %tobool7 = icmp eq i64 %and, 0, !dbg !2699
+  br i1 %tobool7, label %if.then8, label %for.inc, !dbg !2699
 
 if.then8:                                         ; preds = %for.body
-  %sub = add i64 %sh_prom, -8
-  %arrayidx15 = getelementptr inbounds [8 x [59 x %struct.rtx_def*]]* @FP_mode_reg, i64 0, i64 %sub, i64 16
-  %7 = load %struct.rtx_def** %arrayidx15, align 8, !tbaa !2
-  %call = tail call fastcc %struct.rtx_def* @emit_pop_insn(%struct.rtx_def* %insn.addr.0, %struct.stack_def* %old, %struct.rtx_def* %7, i32 1) #7
-  br label %for.inc
+  %sub = add i64 %sh_prom, -8, !dbg !2700
+  %arrayidx15 = getelementptr inbounds [8 x [59 x %struct.rtx_def*]]* @FP_mode_reg, i64 0, i64 %sub, i64 16, !dbg !2700
+  %7 = load %struct.rtx_def** %arrayidx15, align 8, !dbg !2700, !tbaa !1563
+  %call = tail call fastcc %struct.rtx_def* @emit_pop_insn(%struct.rtx_def* %insn.addr.0, %struct.stack_def* %old, %struct.rtx_def* %7, i32 1) #8, !dbg !2700
+  br label %for.inc, !dbg !2700
 
 for.inc:                                          ; preds = %for.body, %if.then8
-  %8 = trunc i64 %indvars.iv215 to i32
-  %cmp4 = icmp sgt i32 %8, 0
-  br i1 %cmp4, label %for.inc.for.body_crit_edge, label %for.end
+  %8 = trunc i64 %indvars.iv215 to i32, !dbg !2697
+  %cmp4 = icmp sgt i32 %8, 0, !dbg !2697
+  br i1 %cmp4, label %for.inc.for.body_crit_edge, label %for.end, !dbg !2697
 
 for.inc.for.body_crit_edge:                       ; preds = %for.inc
-  %indvars.iv.next216 = add i64 %indvars.iv215, -1
-  br label %for.body
+  %indvars.iv.next216 = add i64 %indvars.iv215, -1, !dbg !2697
+  br label %for.body, !dbg !2697
 
 for.end:                                          ; preds = %for.inc, %if.end3
-  %top17 = getelementptr inbounds %struct.stack_def* %new, i64 0, i32 0
-  %9 = load i32* %top17, align 4, !tbaa !3
-  %cmp18 = icmp eq i32 %9, -2
-  br i1 %cmp18, label %if.then20, label %if.else
+  %top17 = getelementptr inbounds %struct.stack_def* %new, i64 0, i32 0, !dbg !2701
+  %9 = load i32* %top17, align 4, !dbg !2701, !tbaa !1565
+  %cmp18 = icmp eq i32 %9, -2, !dbg !2701
+  br i1 %cmp18, label %if.then20, label %if.else, !dbg !2701
 
 if.then20:                                        ; preds = %for.end
-  %10 = load i32* %top, align 4, !tbaa !3
-  store i32 %10, i32* %top17, align 4, !tbaa !3
-  %11 = getelementptr inbounds %struct.stack_def* %new, i64 0, i32 2, i64 0
-  %12 = getelementptr inbounds %struct.stack_def* %old, i64 0, i32 2, i64 0
-  %13 = bitcast i8* %12 to i64*
-  %14 = bitcast i8* %11 to i64*
-  %15 = load i64* %13, align 1
-  store i64 %15, i64* %14, align 1
-  br label %if.end137
+  %10 = load i32* %top, align 4, !dbg !2702, !tbaa !1565
+  store i32 %10, i32* %top17, align 4, !dbg !2702, !tbaa !1565
+  %11 = getelementptr inbounds %struct.stack_def* %new, i64 0, i32 2, i64 0, !dbg !2704
+  %12 = getelementptr inbounds %struct.stack_def* %old, i64 0, i32 2, i64 0, !dbg !2704
+  %13 = bitcast i8* %12 to i64*, !dbg !2704
+  %14 = bitcast i8* %11 to i64*, !dbg !2704
+  %15 = load i64* %13, align 1, !dbg !2704
+  store i64 %15, i64* %14, align 1, !dbg !2704
+  br label %if.end137, !dbg !2705
 
 if.else:                                          ; preds = %for.end
-  %reg_set25 = getelementptr inbounds %struct.stack_def* %old, i64 0, i32 1
-  %16 = load i64* %reg_set25, align 8, !tbaa !4
-  %reg_set26 = getelementptr inbounds %struct.stack_def* %new, i64 0, i32 1
-  %17 = load i64* %reg_set26, align 8, !tbaa !4
-  %cmp27 = icmp eq i64 %16, %17
-  br i1 %cmp27, label %win, label %if.end30
+  %reg_set25 = getelementptr inbounds %struct.stack_def* %old, i64 0, i32 1, !dbg !2706
+  %16 = load i64* %reg_set25, align 8, !dbg !2706, !tbaa !1567
+  %reg_set26 = getelementptr inbounds %struct.stack_def* %new, i64 0, i32 1, !dbg !2706
+  %17 = load i64* %reg_set26, align 8, !dbg !2706, !tbaa !1567
+  %cmp27 = icmp eq i64 %16, %17, !dbg !2706
+  br i1 %cmp27, label %win, label %if.end30, !dbg !2706
 
 if.end30:                                         ; preds = %if.else
-  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), i32 2293, i8* getelementptr inbounds ([13 x i8]* @__FUNCTION__.change_stack, i64 0, i64 0)) #8
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), i32 2293, i8* getelementptr inbounds ([13 x i8]* @__FUNCTION__.change_stack, i64 0, i64 0)) #9, !dbg !2708
+  unreachable, !dbg !2708
 
 win:                                              ; preds = %if.else
-  %18 = load i32* %top, align 4, !tbaa !3
-  %cmp33 = icmp eq i32 %18, %9
-  br i1 %cmp33, label %if.end36, label %if.then35
+  %18 = load i32* %top, align 4, !dbg !2709, !tbaa !1565
+  %cmp33 = icmp eq i32 %18, %9, !dbg !2709
+  br i1 %cmp33, label %if.end36, label %if.then35, !dbg !2709
 
 if.then35:                                        ; preds = %win
-  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), i32 2296, i8* getelementptr inbounds ([13 x i8]* @__FUNCTION__.change_stack, i64 0, i64 0)) #8
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), i32 2296, i8* getelementptr inbounds ([13 x i8]* @__FUNCTION__.change_stack, i64 0, i64 0)) #9, !dbg !2710
+  unreachable, !dbg !2710
 
 if.end36:                                         ; preds = %win
-  %cmp38 = icmp eq i32 %9, -1
-  br i1 %cmp38, label %if.end137, label %while.cond
+  %cmp38 = icmp eq i32 %9, -1, !dbg !2711
+  br i1 %cmp38, label %if.end137, label %while.cond, !dbg !2711
 
 while.cond:                                       ; preds = %if.end36, %while.cond.backedge
   %19 = phi i32 [ %.pre218, %while.cond.backedge ], [ %9, %if.end36 ]
   %20 = phi i32 [ %.pre217, %while.cond.backedge ], [ %9, %if.end36 ]
-  %idxprom42 = sext i32 %20 to i64
-  %arrayidx44 = getelementptr inbounds %struct.stack_def* %old, i64 0, i32 2, i64 %idxprom42
-  %21 = load i8* %arrayidx44, align 1, !tbaa !0
-  %idxprom47 = sext i32 %19 to i64
-  %arrayidx49 = getelementptr inbounds %struct.stack_def* %new, i64 0, i32 2, i64 %idxprom47
-  %22 = load i8* %arrayidx49, align 1, !tbaa !0
-  %cmp51 = icmp eq i8 %21, %22
-  %cmp88201 = icmp sgt i32 %19, -1
-  br i1 %cmp51, label %for.cond87.preheader, label %for.cond54.preheader
+  %idxprom42 = sext i32 %20 to i64, !dbg !2712
+  %arrayidx44 = getelementptr inbounds %struct.stack_def* %old, i64 0, i32 2, i64 %idxprom42, !dbg !2712
+  %21 = load i8* %arrayidx44, align 1, !dbg !2712, !tbaa !1561
+  %idxprom47 = sext i32 %19 to i64, !dbg !2712
+  %arrayidx49 = getelementptr inbounds %struct.stack_def* %new, i64 0, i32 2, i64 %idxprom47, !dbg !2712
+  %22 = load i8* %arrayidx49, align 1, !dbg !2712, !tbaa !1561
+  %cmp51 = icmp eq i8 %21, %22, !dbg !2712
+  tail call void @llvm.dbg.value(metadata !{i32 %19}, i64 0, metadata !1359), !dbg !2714
+  %cmp88201 = icmp sgt i32 %19, -1, !dbg !2717
+  br i1 %cmp51, label %for.cond87.preheader, label %for.cond54.preheader, !dbg !2712
 
 for.cond87.preheader:                             ; preds = %while.cond
-  br i1 %cmp88201, label %for.body90, label %if.end116
+  br i1 %cmp88201, label %for.body90, label %if.end116, !dbg !2717
 
 for.cond54.preheader:                             ; preds = %while.cond
-  br i1 %cmp88201, label %for.body57, label %for.end73
+  br i1 %cmp88201, label %for.body57, label %for.end73, !dbg !2714
 
 for.cond54:                                       ; preds = %for.body57
-  %23 = trunc i64 %indvars.iv209 to i32
-  %cmp55 = icmp sgt i32 %23, 0
-  br i1 %cmp55, label %for.cond54.for.body57_crit_edge, label %for.end73
+  %23 = trunc i64 %indvars.iv209 to i32, !dbg !2714
+  %cmp55 = icmp sgt i32 %23, 0, !dbg !2714
+  br i1 %cmp55, label %for.cond54.for.body57_crit_edge, label %for.end73, !dbg !2714
 
 for.cond54.for.body57_crit_edge:                  ; preds = %for.cond54
   %arrayidx60.phi.trans.insert = getelementptr inbounds %struct.stack_def* %new, i64 0, i32 2, i64 %indvars.iv.next210
-  %.pre219 = load i8* %arrayidx60.phi.trans.insert, align 1, !tbaa !0
-  br label %for.body57
+  %.pre219 = load i8* %arrayidx60.phi.trans.insert, align 1, !dbg !2719, !tbaa !1561
+  br label %for.body57, !dbg !2714
 
 for.body57:                                       ; preds = %for.cond54.preheader, %for.cond54.for.body57_crit_edge
   %24 = phi i8 [ %.pre219, %for.cond54.for.body57_crit_edge ], [ %22, %for.cond54.preheader ]
   %indvars.iv209 = phi i64 [ %indvars.iv.next210, %for.cond54.for.body57_crit_edge ], [ %idxprom47, %for.cond54.preheader ]
   %reg.1199 = phi i32 [ %dec72, %for.cond54.for.body57_crit_edge ], [ %19, %for.cond54.preheader ]
-  %cmp67 = icmp eq i8 %24, %21
-  %indvars.iv.next210 = add i64 %indvars.iv209, -1
-  %dec72 = add nsw i32 %reg.1199, -1
-  br i1 %cmp67, label %for.end73, label %for.cond54
+  %cmp67 = icmp eq i8 %24, %21, !dbg !2719
+  %indvars.iv.next210 = add i64 %indvars.iv209, -1, !dbg !2714
+  %dec72 = add nsw i32 %reg.1199, -1, !dbg !2714
+  tail call void @llvm.dbg.value(metadata !{i32 %dec72}, i64 0, metadata !1359), !dbg !2714
+  br i1 %cmp67, label %for.end73, label %for.cond54, !dbg !2719
 
 for.end73:                                        ; preds = %for.cond54, %for.body57, %for.cond54.preheader
   %reg.1.lcssa = phi i32 [ %19, %for.cond54.preheader ], [ %reg.1199, %for.body57 ], [ %dec72, %for.cond54 ]
-  %cmp74 = icmp eq i32 %reg.1.lcssa, -1
-  br i1 %cmp74, label %if.then76, label %if.end77
+  %cmp74 = icmp eq i32 %reg.1.lcssa, -1, !dbg !2720
+  br i1 %cmp74, label %if.then76, label %if.end77, !dbg !2720
 
 if.then76:                                        ; preds = %for.end73
-  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), i32 2320, i8* getelementptr inbounds ([13 x i8]* @__FUNCTION__.change_stack, i64 0, i64 0)) #8
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), i32 2320, i8* getelementptr inbounds ([13 x i8]* @__FUNCTION__.change_stack, i64 0, i64 0)) #9, !dbg !2721
+  unreachable, !dbg !2721
 
 if.end77:                                         ; preds = %for.end73
-  %idxprom78 = sext i32 %reg.1.lcssa to i64
-  %arrayidx80 = getelementptr inbounds %struct.stack_def* %old, i64 0, i32 2, i64 %idxprom78
-  %25 = load i8* %arrayidx80, align 1, !tbaa !0
-  %conv81 = zext i8 %25 to i64
-  %sub82 = add i64 %conv81, -8
-  %arrayidx85 = getelementptr inbounds [8 x [59 x %struct.rtx_def*]]* @FP_mode_reg, i64 0, i64 %sub82, i64 16
-  %26 = load %struct.rtx_def** %arrayidx85, align 8, !tbaa !2
-  tail call fastcc void @emit_swap_insn(%struct.rtx_def* %insn.addr.0, %struct.stack_def* %old, %struct.rtx_def* %26) #7
-  br label %while.cond.backedge
+  %idxprom78 = sext i32 %reg.1.lcssa to i64, !dbg !2722
+  %arrayidx80 = getelementptr inbounds %struct.stack_def* %old, i64 0, i32 2, i64 %idxprom78, !dbg !2722
+  %25 = load i8* %arrayidx80, align 1, !dbg !2722, !tbaa !1561
+  %conv81 = zext i8 %25 to i64, !dbg !2722
+  %sub82 = add i64 %conv81, -8, !dbg !2722
+  %arrayidx85 = getelementptr inbounds [8 x [59 x %struct.rtx_def*]]* @FP_mode_reg, i64 0, i64 %sub82, i64 16, !dbg !2722
+  %26 = load %struct.rtx_def** %arrayidx85, align 8, !dbg !2722, !tbaa !1563
+  tail call fastcc void @emit_swap_insn(%struct.rtx_def* %insn.addr.0, %struct.stack_def* %old, %struct.rtx_def* %26) #8, !dbg !2722
+  br label %while.cond.backedge, !dbg !2723
 
 while.cond.backedge:                              ; preds = %if.then101, %if.end77
-  %.pre217 = load i32* %top, align 4, !tbaa !3
-  %.pre218 = load i32* %top17, align 4, !tbaa !3
+  %.pre217 = load i32* %top, align 4, !dbg !2712, !tbaa !1565
+  %.pre218 = load i32* %top17, align 4, !dbg !2712, !tbaa !1565
   br label %while.cond
 
 for.cond87:                                       ; preds = %for.body90
-  %indvars.iv.next214 = add i64 %indvars.iv213, -1
-  %27 = trunc i64 %indvars.iv213 to i32
-  %cmp88 = icmp sgt i32 %27, 0
-  br i1 %cmp88, label %for.cond87.for.body90_crit_edge, label %if.end116
+  %indvars.iv.next214 = add i64 %indvars.iv213, -1, !dbg !2717
+  %27 = trunc i64 %indvars.iv213 to i32, !dbg !2717
+  %cmp88 = icmp sgt i32 %27, 0, !dbg !2717
+  br i1 %cmp88, label %for.cond87.for.body90_crit_edge, label %if.end116, !dbg !2717
 
 for.cond87.for.body90_crit_edge:                  ; preds = %for.cond87
   %arrayidx93.phi.trans.insert = getelementptr inbounds %struct.stack_def* %new, i64 0, i32 2, i64 %indvars.iv.next214
-  %.pre220 = load i8* %arrayidx93.phi.trans.insert, align 1, !tbaa !0
-  br label %for.body90
+  %.pre220 = load i8* %arrayidx93.phi.trans.insert, align 1, !dbg !2724, !tbaa !1561
+  br label %for.body90, !dbg !2717
 
 for.body90:                                       ; preds = %for.cond87.preheader, %for.cond87.for.body90_crit_edge
   %28 = phi i8 [ %.pre220, %for.cond87.for.body90_crit_edge ], [ %21, %for.cond87.preheader ]
   %indvars.iv213 = phi i64 [ %indvars.iv.next214, %for.cond87.for.body90_crit_edge ], [ %idxprom47, %for.cond87.preheader ]
-  %arrayidx97 = getelementptr inbounds %struct.stack_def* %old, i64 0, i32 2, i64 %indvars.iv213
-  %29 = load i8* %arrayidx97, align 1, !tbaa !0
-  %cmp99 = icmp eq i8 %28, %29
-  br i1 %cmp99, label %for.cond87, label %if.then101
+  %arrayidx97 = getelementptr inbounds %struct.stack_def* %old, i64 0, i32 2, i64 %indvars.iv213, !dbg !2724
+  %29 = load i8* %arrayidx97, align 1, !dbg !2724, !tbaa !1561
+  %cmp99 = icmp eq i8 %28, %29, !dbg !2724
+  br i1 %cmp99, label %for.cond87, label %if.then101, !dbg !2724
 
 if.then101:                                       ; preds = %for.body90
-  %conv98 = zext i8 %29 to i64
-  %sub106 = add i64 %conv98, -8
-  %arrayidx109 = getelementptr inbounds [8 x [59 x %struct.rtx_def*]]* @FP_mode_reg, i64 0, i64 %sub106, i64 16
-  %30 = load %struct.rtx_def** %arrayidx109, align 8, !tbaa !2
-  tail call fastcc void @emit_swap_insn(%struct.rtx_def* %insn.addr.0, %struct.stack_def* %old, %struct.rtx_def* %30) #7
-  br label %while.cond.backedge
+  %conv98 = zext i8 %29 to i64, !dbg !2724
+  %sub106 = add i64 %conv98, -8, !dbg !2725
+  %arrayidx109 = getelementptr inbounds [8 x [59 x %struct.rtx_def*]]* @FP_mode_reg, i64 0, i64 %sub106, i64 16, !dbg !2725
+  %30 = load %struct.rtx_def** %arrayidx109, align 8, !dbg !2725, !tbaa !1563
+  tail call fastcc void @emit_swap_insn(%struct.rtx_def* %insn.addr.0, %struct.stack_def* %old, %struct.rtx_def* %30) #8, !dbg !2725
+  br label %while.cond.backedge, !dbg !2727
 
 if.end116:                                        ; preds = %for.cond87, %for.cond87.preheader
-  %cmp119196 = icmp sgt i32 %20, -1
-  br i1 %cmp119196, label %for.body121.lr.ph, label %if.end137
+  tail call void @llvm.dbg.value(metadata !{i32 %20}, i64 0, metadata !1359), !dbg !2728
+  %cmp119196 = icmp sgt i32 %20, -1, !dbg !2728
+  br i1 %cmp119196, label %for.body121.lr.ph, label %if.end137, !dbg !2728
 
 for.body121.lr.ph:                                ; preds = %if.end116
   %31 = sext i32 %20 to i64
-  br label %for.body121
+  br label %for.body121, !dbg !2728
 
 for.cond118:                                      ; preds = %for.body121
-  %indvars.iv.next = add i64 %indvars.iv, -1
-  %32 = trunc i64 %indvars.iv to i32
-  %cmp119 = icmp sgt i32 %32, 0
-  br i1 %cmp119, label %for.body121, label %if.end137
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !2728
+  %32 = trunc i64 %indvars.iv to i32, !dbg !2728
+  %cmp119 = icmp sgt i32 %32, 0, !dbg !2728
+  br i1 %cmp119, label %for.body121, label %if.end137, !dbg !2728
 
 for.body121:                                      ; preds = %for.body121.lr.ph, %for.cond118
   %indvars.iv = phi i64 [ %31, %for.body121.lr.ph ], [ %indvars.iv.next, %for.cond118 ]
-  %arrayidx124 = getelementptr inbounds %struct.stack_def* %old, i64 0, i32 2, i64 %indvars.iv
-  %33 = load i8* %arrayidx124, align 1, !tbaa !0
-  %arrayidx128 = getelementptr inbounds %struct.stack_def* %new, i64 0, i32 2, i64 %indvars.iv
-  %34 = load i8* %arrayidx128, align 1, !tbaa !0
-  %cmp130 = icmp eq i8 %33, %34
-  br i1 %cmp130, label %for.cond118, label %if.then132
+  %arrayidx124 = getelementptr inbounds %struct.stack_def* %old, i64 0, i32 2, i64 %indvars.iv, !dbg !2730
+  %33 = load i8* %arrayidx124, align 1, !dbg !2730, !tbaa !1561
+  %arrayidx128 = getelementptr inbounds %struct.stack_def* %new, i64 0, i32 2, i64 %indvars.iv, !dbg !2730
+  %34 = load i8* %arrayidx128, align 1, !dbg !2730, !tbaa !1561
+  %cmp130 = icmp eq i8 %33, %34, !dbg !2730
+  br i1 %cmp130, label %for.cond118, label %if.then132, !dbg !2730
 
 if.then132:                                       ; preds = %for.body121
-  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), i32 2343, i8* getelementptr inbounds ([13 x i8]* @__FUNCTION__.change_stack, i64 0, i64 0)) #8
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str2, i64 0, i64 0), i32 2343, i8* getelementptr inbounds ([13 x i8]* @__FUNCTION__.change_stack, i64 0, i64 0)) #9, !dbg !2731
+  unreachable, !dbg !2731
 
 if.end137:                                        ; preds = %if.end36, %if.end116, %for.cond118, %if.then20
-  %tobool138 = icmp eq i32 %update_end.1, 0
-  br i1 %tobool138, label %if.end144, label %if.then139
+  %tobool138 = icmp eq i32 %update_end.1, 0, !dbg !2732
+  br i1 %tobool138, label %if.end144, label %if.then139, !dbg !2732
 
 if.then139:                                       ; preds = %if.end137
-  %arrayidx141 = getelementptr inbounds %struct.rtx_def* %insn.addr.0, i64 0, i32 1, i64 1
-  %rtx142 = bitcast %union.rtunion_def* %arrayidx141 to %struct.rtx_def**
-  %35 = load %struct.rtx_def** %rtx142, align 8, !tbaa !2
-  %36 = load %struct.basic_block_def** @current_block, align 8, !tbaa !2
-  %end143 = getelementptr inbounds %struct.basic_block_def* %36, i64 0, i32 1
-  store %struct.rtx_def* %35, %struct.rtx_def** %end143, align 8, !tbaa !2
-  br label %if.end144
+  %arrayidx141 = getelementptr inbounds %struct.rtx_def* %insn.addr.0, i64 0, i32 1, i64 1, !dbg !2733
+  %rtx142 = bitcast %union.rtunion_def* %arrayidx141 to %struct.rtx_def**, !dbg !2733
+  %35 = load %struct.rtx_def** %rtx142, align 8, !dbg !2733, !tbaa !1563
+  %36 = load %struct.basic_block_def** @current_block, align 8, !dbg !2733, !tbaa !1563
+  %end143 = getelementptr inbounds %struct.basic_block_def* %36, i64 0, i32 1, !dbg !2733
+  store %struct.rtx_def* %35, %struct.rtx_def** %end143, align 8, !dbg !2733, !tbaa !1563
+  br label %if.end144, !dbg !2733
 
 if.end144:                                        ; preds = %if.end137, %if.then139
-  ret void
+  ret void, !dbg !2734
 }

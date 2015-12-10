@@ -1,37 +1,40 @@
 define void @move_replacements(%struct.rtx_def** %x, %struct.rtx_def** %y) #0 {
 entry:
-  %0 = load i32* @n_replacements, align 4, !tbaa !3
-  %cmp24 = icmp sgt i32 %0, 0
-  br i1 %cmp24, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %x}, i64 0, metadata !1348), !dbg !3958
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %y}, i64 0, metadata !1349), !dbg !3959
+  tail call void @llvm.dbg.value(metadata !1191, i64 0, metadata !1350), !dbg !3960
+  %0 = load i32* @n_replacements, align 4, !dbg !3960, !tbaa !1966
+  %cmp24 = icmp sgt i32 %0, 0, !dbg !3960
+  br i1 %cmp24, label %for.body, label %for.end, !dbg !3960
 
 for.body:                                         ; preds = %entry, %for.inc
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %entry ]
-  %subreg_loc = getelementptr inbounds [150 x %struct.replacement]* @replacements, i64 0, i64 %indvars.iv, i32 1
-  %1 = load %struct.rtx_def*** %subreg_loc, align 8, !tbaa !5
-  %cmp1 = icmp eq %struct.rtx_def** %1, %x
-  br i1 %cmp1, label %if.then, label %if.else
+  %subreg_loc = getelementptr inbounds [150 x %struct.replacement]* @replacements, i64 0, i64 %indvars.iv, i32 1, !dbg !3962
+  %1 = load %struct.rtx_def*** %subreg_loc, align 8, !dbg !3962, !tbaa !1970
+  %cmp1 = icmp eq %struct.rtx_def** %1, %x, !dbg !3962
+  br i1 %cmp1, label %if.then, label %if.else, !dbg !3962
 
 if.then:                                          ; preds = %for.body
-  store %struct.rtx_def** %y, %struct.rtx_def*** %subreg_loc, align 8, !tbaa !5
-  br label %for.inc
+  store %struct.rtx_def** %y, %struct.rtx_def*** %subreg_loc, align 8, !dbg !3963, !tbaa !1970
+  br label %for.inc, !dbg !3963
 
 if.else:                                          ; preds = %for.body
-  %where = getelementptr inbounds [150 x %struct.replacement]* @replacements, i64 0, i64 %indvars.iv, i32 0
-  %2 = load %struct.rtx_def*** %where, align 8, !tbaa !5
-  %cmp7 = icmp eq %struct.rtx_def** %2, %x
-  br i1 %cmp7, label %if.then8, label %for.inc
+  %where = getelementptr inbounds [150 x %struct.replacement]* @replacements, i64 0, i64 %indvars.iv, i32 0, !dbg !3964
+  %2 = load %struct.rtx_def*** %where, align 8, !dbg !3964, !tbaa !1970
+  %cmp7 = icmp eq %struct.rtx_def** %2, %x, !dbg !3964
+  br i1 %cmp7, label %if.then8, label %for.inc, !dbg !3964
 
 if.then8:                                         ; preds = %if.else
-  store %struct.rtx_def** %y, %struct.rtx_def*** %where, align 8, !tbaa !5
-  store %struct.rtx_def** null, %struct.rtx_def*** %subreg_loc, align 8, !tbaa !5
-  br label %for.inc
+  store %struct.rtx_def** %y, %struct.rtx_def*** %where, align 8, !dbg !3965, !tbaa !1970
+  store %struct.rtx_def** null, %struct.rtx_def*** %subreg_loc, align 8, !dbg !3967, !tbaa !1970
+  br label %for.inc, !dbg !3968
 
 for.inc:                                          ; preds = %if.then, %if.then8, %if.else
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %3 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %3, %0
-  br i1 %cmp, label %for.body, label %for.end
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !3960
+  %3 = trunc i64 %indvars.iv.next to i32, !dbg !3960
+  %cmp = icmp slt i32 %3, %0, !dbg !3960
+  br i1 %cmp, label %for.body, label %for.end, !dbg !3960
 
 for.end:                                          ; preds = %for.inc, %entry
-  ret void
+  ret void, !dbg !3969
 }

@@ -1,0 +1,67 @@
+define zeroext i1 @_ZN3pov11ot_traverseEPNS_14ot_node_structEPFbPNS_15ot_block_structEPvES4_(%"struct.pov::ot_node_struct"* %subtree, i1 (%"struct.pov::ot_block_struct"*, i8*)* nocapture %function, i8* %handle) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::ot_node_struct"* %subtree}, i64 0, metadata !151), !dbg !803
+  tail call void @llvm.dbg.value(metadata !{i1 (%"struct.pov::ot_block_struct"*, i8*)* %function}, i64 0, metadata !152), !dbg !803
+  tail call void @llvm.dbg.value(metadata !{i8* %handle}, i64 0, metadata !153), !dbg !803
+  tail call void @llvm.dbg.value(metadata !765, i64 0, metadata !155), !dbg !804
+  %cmp = icmp eq %"struct.pov::ot_node_struct"* %subtree, null, !dbg !805
+  br i1 %cmp, label %if.end10, label %land.rhs, !dbg !805
+
+land.rhs:                                         ; preds = %entry, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %entry ]
+  %oksofar.028 = phi i8 [ %oksofar.1, %for.inc ], [ 1, %entry ]
+  %0 = and i8 %oksofar.028, 1, !dbg !806
+  %tobool = icmp eq i8 %0, 0, !dbg !806
+  br i1 %tobool, label %for.end, label %for.body
+
+for.body:                                         ; preds = %land.rhs
+  %arrayidx = getelementptr inbounds %"struct.pov::ot_node_struct"* %subtree, i64 0, i32 2, i64 %indvars.iv, !dbg !809
+  %1 = load %"struct.pov::ot_node_struct"** %arrayidx, align 8, !dbg !809, !tbaa !699
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::ot_node_struct"* %1}, i64 0, metadata !156), !dbg !809
+  %cmp2 = icmp eq %"struct.pov::ot_node_struct"* %1, null, !dbg !811
+  br i1 %cmp2, label %for.inc, label %if.then3, !dbg !811
+
+if.then3:                                         ; preds = %for.body
+  %call = tail call zeroext i1 @_ZN3pov11ot_traverseEPNS_14ot_node_structEPFbPNS_15ot_block_structEPvES4_(%"struct.pov::ot_node_struct"* %1, i1 (%"struct.pov::ot_block_struct"*, i8*)* %function, i8* %handle) #8, !dbg !812
+  %frombool = zext i1 %call to i8, !dbg !812
+  tail call void @llvm.dbg.value(metadata !{i8 %frombool}, i64 0, metadata !155), !dbg !812
+  br label %for.inc, !dbg !814
+
+for.inc:                                          ; preds = %for.body, %if.then3
+  %oksofar.1 = phi i8 [ %frombool, %if.then3 ], [ %oksofar.028, %for.body ]
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !806
+  %2 = trunc i64 %indvars.iv.next to i32, !dbg !806
+  %cmp1 = icmp slt i32 %2, 8, !dbg !806
+  br i1 %cmp1, label %land.rhs, label %for.end, !dbg !806
+
+for.end:                                          ; preds = %land.rhs, %for.inc
+  %oksofar.0.lcssa = phi i8 [ %oksofar.028, %land.rhs ], [ %oksofar.1, %for.inc ]
+  %Values = getelementptr inbounds %"struct.pov::ot_node_struct"* %subtree, i64 0, i32 1, !dbg !815
+  %this_block.023 = load %"struct.pov::ot_block_struct"** %Values, align 8, !dbg !815
+  %3 = and i8 %oksofar.0.lcssa, 1, !dbg !816
+  %tobool424 = icmp eq i8 %3, 0, !dbg !816
+  %cmp625 = icmp eq %"struct.pov::ot_block_struct"* %this_block.023, null, !dbg !816
+  %or.cond26 = or i1 %tobool424, %cmp625, !dbg !816
+  br i1 %or.cond26, label %if.end10, label %while.body, !dbg !816
+
+while.body:                                       ; preds = %for.end, %while.body
+  %this_block.027 = phi %"struct.pov::ot_block_struct"* [ %this_block.0, %while.body ], [ %this_block.023, %for.end ]
+  %call8 = tail call zeroext i1 %function(%"struct.pov::ot_block_struct"* %this_block.027, i8* %handle) #8, !dbg !817
+  tail call void @llvm.dbg.value(metadata !{i8 %frombool9}, i64 0, metadata !155), !dbg !817
+  %next = getelementptr inbounds %"struct.pov::ot_block_struct"* %this_block.027, i64 0, i32 0, !dbg !819
+  %this_block.0 = load %"struct.pov::ot_block_struct"** %next, align 8, !dbg !815
+  %tobool4 = xor i1 %call8, true, !dbg !816
+  %cmp6 = icmp eq %"struct.pov::ot_block_struct"* %this_block.0, null, !dbg !816
+  %or.cond = or i1 %cmp6, %tobool4, !dbg !816
+  br i1 %or.cond, label %while.cond.if.end10.loopexit_crit_edge, label %while.body, !dbg !816
+
+while.cond.if.end10.loopexit_crit_edge:           ; preds = %while.body
+  %frombool9 = zext i1 %call8 to i8, !dbg !817
+  br label %if.end10, !dbg !816
+
+if.end10:                                         ; preds = %for.end, %while.cond.if.end10.loopexit_crit_edge, %entry
+  %oksofar.3 = phi i8 [ 1, %entry ], [ %frombool9, %while.cond.if.end10.loopexit_crit_edge ], [ %oksofar.0.lcssa, %for.end ]
+  %4 = and i8 %oksofar.3, 1, !dbg !820
+  %tobool11 = icmp ne i8 %4, 0, !dbg !820
+  ret i1 %tobool11, !dbg !820
+}

@@ -1,0 +1,37 @@
+define void @_ZN11xercesc_2_59XMLString10copyStringEPtPKt(i16* nocapture %target, i16* %src) #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %target}, i64 0, metadata !1833), !dbg !3535
+  tail call void @llvm.dbg.value(metadata !{i16* %src}, i64 0, metadata !1834), !dbg !3535
+  %tobool = icmp eq i16* %src, null, !dbg !3536
+  br i1 %tobool, label %if.then, label %while.cond.preheader, !dbg !3536
+
+while.cond.preheader:                             ; preds = %entry
+  %0 = load i16* %src, align 2, !dbg !3537, !tbaa !2947
+  %tobool16 = icmp eq i16 %0, 0, !dbg !3537
+  br i1 %tobool16, label %while.end, label %while.body, !dbg !3537
+
+if.then:                                          ; preds = %entry
+  store i16 0, i16* %target, align 2, !dbg !3538, !tbaa !2947
+  br label %return, !dbg !3540
+
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %1 = phi i16 [ %2, %while.body ], [ %0, %while.cond.preheader ]
+  %pszIn.08 = phi i16* [ %incdec.ptr, %while.body ], [ %src, %while.cond.preheader ]
+  %pszOut.07 = phi i16* [ %incdec.ptr2, %while.body ], [ %target, %while.cond.preheader ]
+  %incdec.ptr = getelementptr inbounds i16* %pszIn.08, i64 1, !dbg !3541
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !1836), !dbg !3541
+  %incdec.ptr2 = getelementptr inbounds i16* %pszOut.07, i64 1, !dbg !3541
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr2}, i64 0, metadata !1835), !dbg !3541
+  store i16 %1, i16* %pszOut.07, align 2, !dbg !3541, !tbaa !2947
+  %2 = load i16* %incdec.ptr, align 2, !dbg !3537, !tbaa !2947
+  %tobool1 = icmp eq i16 %2, 0, !dbg !3537
+  br i1 %tobool1, label %while.end, label %while.body, !dbg !3537
+
+while.end:                                        ; preds = %while.body, %while.cond.preheader
+  %pszOut.0.lcssa = phi i16* [ %target, %while.cond.preheader ], [ %incdec.ptr2, %while.body ]
+  store i16 0, i16* %pszOut.0.lcssa, align 2, !dbg !3542, !tbaa !2947
+  br label %return, !dbg !3542
+
+return:                                           ; preds = %while.end, %if.then
+  ret void, !dbg !3542
+}

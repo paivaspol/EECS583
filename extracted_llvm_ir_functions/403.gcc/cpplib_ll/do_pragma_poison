@@ -1,52 +1,55 @@
 define internal void @do_pragma_poison(%struct.cpp_reader* %pfile) #0 {
 entry:
-  %poisoned_ok = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 1, i32 6
-  store i8 1, i8* %poisoned_ok, align 1, !tbaa !0
-  br label %for.cond
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !842), !dbg !1222
+  %poisoned_ok = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 1, i32 6, !dbg !1223
+  store i8 1, i8* %poisoned_ok, align 1, !dbg !1223, !tbaa !1061
+  br label %for.cond, !dbg !1224
 
 for.cond:                                         ; preds = %if.end6, %if.end15, %entry
-  %call = tail call %struct.cpp_token* @_cpp_lex_token(%struct.cpp_reader* %pfile) #8
-  %type = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 2
-  %bf.load = load i8* %type, align 2
+  %call = tail call %struct.cpp_token* @_cpp_lex_token(%struct.cpp_reader* %pfile) #9, !dbg !1226
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_token* %call}, i64 0, metadata !843), !dbg !1226
+  %type = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 2, !dbg !1228
+  %bf.load = load i8* %type, align 2, !dbg !1228
   switch i8 %bf.load, label %if.then5 [
     i8 67, label %for.end
     i8 56, label %if.end6
-  ]
+  ], !dbg !1228
 
 if.then5:                                         ; preds = %for.cond
-  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_error(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([37 x i8]* @.str26, i64 0, i64 0)) #8
-  br label %for.end
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_error(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([37 x i8]* @.str26, i64 0, i64 0)) #9, !dbg !1229
+  br label %for.end, !dbg !1231
 
 if.end6:                                          ; preds = %for.cond
-  %val = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 4
-  %node = bitcast %union.anon.0* %val to %struct.cpp_hashnode**
-  %0 = load %struct.cpp_hashnode** %node, align 8, !tbaa !3
-  %flags = getelementptr inbounds %struct.cpp_hashnode* %0, i64 0, i32 5
-  %1 = load i8* %flags, align 1, !tbaa !0
-  %and = and i8 %1, 2
-  %tobool = icmp eq i8 %and, 0
-  br i1 %tobool, label %if.end8, label %for.cond
+  %val = getelementptr inbounds %struct.cpp_token* %call, i64 0, i32 4, !dbg !1232
+  %node = bitcast %union.anon.0* %val to %struct.cpp_hashnode**, !dbg !1232
+  %0 = load %struct.cpp_hashnode** %node, align 8, !dbg !1232, !tbaa !1070
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_hashnode* %0}, i64 0, metadata !844), !dbg !1232
+  %flags = getelementptr inbounds %struct.cpp_hashnode* %0, i64 0, i32 5, !dbg !1233
+  %1 = load i8* %flags, align 1, !dbg !1233, !tbaa !1061
+  %and = and i8 %1, 2, !dbg !1233
+  %tobool = icmp eq i8 %and, 0, !dbg !1233
+  br i1 %tobool, label %if.end8, label %for.cond, !dbg !1233
 
 if.end8:                                          ; preds = %if.end6
-  %type9 = getelementptr inbounds %struct.cpp_hashnode* %0, i64 0, i32 4
-  %bf.load10 = load i8* %type9, align 4
-  %cmp12 = icmp eq i8 %bf.load10, 1
-  br i1 %cmp12, label %if.then14, label %if.end15
+  %type9 = getelementptr inbounds %struct.cpp_hashnode* %0, i64 0, i32 4, !dbg !1234
+  %bf.load10 = load i8* %type9, align 4, !dbg !1234
+  %cmp12 = icmp eq i8 %bf.load10, 1, !dbg !1234
+  br i1 %cmp12, label %if.then14, label %if.end15, !dbg !1234
 
 if.then14:                                        ; preds = %if.end8
-  %str = getelementptr inbounds %struct.cpp_hashnode* %0, i64 0, i32 0, i32 1
-  %2 = load i8** %str, align 8, !tbaa !3
-  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_warning(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([30 x i8]* @.str27, i64 0, i64 0), i8* %2) #8
-  br label %if.end15
+  %str = getelementptr inbounds %struct.cpp_hashnode* %0, i64 0, i32 0, i32 1, !dbg !1235
+  %2 = load i8** %str, align 8, !dbg !1235, !tbaa !1070
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_warning(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([30 x i8]* @.str27, i64 0, i64 0), i8* %2) #9, !dbg !1235
+  br label %if.end15, !dbg !1235
 
 if.end15:                                         ; preds = %if.then14, %if.end8
-  tail call void @_cpp_free_definition(%struct.cpp_hashnode* %0) #8
-  %3 = load i8* %flags, align 1, !tbaa !0
-  %or = or i8 %3, 10
-  store i8 %or, i8* %flags, align 1, !tbaa !0
-  br label %for.cond
+  tail call void @_cpp_free_definition(%struct.cpp_hashnode* %0) #9, !dbg !1236
+  %3 = load i8* %flags, align 1, !dbg !1237, !tbaa !1061
+  %or = or i8 %3, 10, !dbg !1237
+  store i8 %or, i8* %flags, align 1, !dbg !1237, !tbaa !1061
+  br label %for.cond, !dbg !1238
 
 for.end:                                          ; preds = %for.cond, %if.then5
-  store i8 0, i8* %poisoned_ok, align 1, !tbaa !0
-  ret void
+  store i8 0, i8* %poisoned_ok, align 1, !dbg !1239, !tbaa !1061
+  ret void, !dbg !1240
 }

@@ -1,0 +1,22 @@
+define zeroext i1 @_ZN3pov6IsTrueEPKc(i8* nocapture %value) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %value}, i64 0, metadata !272), !dbg !507
+  %call = tail call zeroext i1 @_ZN3pov7MatchesEPKcS1_(i8* getelementptr inbounds ([3 x i8]* @.str6, i64 0, i64 0), i8* %value) #8, !dbg !508
+  br i1 %call, label %lor.end, label %lor.lhs.false, !dbg !508
+
+lor.lhs.false:                                    ; preds = %entry
+  %call1 = tail call zeroext i1 @_ZN3pov7MatchesEPKcS1_(i8* getelementptr inbounds ([5 x i8]* @.str7, i64 0, i64 0), i8* %value) #8, !dbg !508
+  br i1 %call1, label %lor.end, label %lor.lhs.false2, !dbg !508
+
+lor.lhs.false2:                                   ; preds = %lor.lhs.false
+  %call3 = tail call zeroext i1 @_ZN3pov7MatchesEPKcS1_(i8* getelementptr inbounds ([4 x i8]* @.str8, i64 0, i64 0), i8* %value) #8, !dbg !509
+  br i1 %call3, label %lor.end, label %lor.rhs, !dbg !509
+
+lor.rhs:                                          ; preds = %lor.lhs.false2
+  %call4 = tail call zeroext i1 @_ZN3pov7MatchesEPKcS1_(i8* getelementptr inbounds ([2 x i8]* @.str9, i64 0, i64 0), i8* %value) #8, !dbg !509
+  br label %lor.end, !dbg !509
+
+lor.end:                                          ; preds = %lor.rhs, %lor.lhs.false2, %lor.lhs.false, %entry
+  %0 = phi i1 [ true, %lor.lhs.false2 ], [ true, %lor.lhs.false ], [ true, %entry ], [ %call4, %lor.rhs ]
+  ret i1 %0, !dbg !509
+}

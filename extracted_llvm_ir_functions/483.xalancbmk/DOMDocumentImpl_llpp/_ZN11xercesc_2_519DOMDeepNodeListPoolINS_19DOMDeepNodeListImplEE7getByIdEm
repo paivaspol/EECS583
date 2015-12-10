@@ -1,0 +1,43 @@
+define linkonce_odr %"class.xercesc_2_5::DOMDeepNodeListImpl"* @_ZN11xercesc_2_519DOMDeepNodeListPoolINS_19DOMDeepNodeListImplEE7getByIdEm(%"class.xercesc_2_5::DOMDeepNodeListPool"* nocapture %this, i64 %elemId) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMDeepNodeListPool"* %this}, i64 0, metadata !8052), !dbg !10077
+  tail call void @llvm.dbg.value(metadata !{i64 %elemId}, i64 0, metadata !8054), !dbg !10077
+  %tobool = icmp eq i64 %elemId, 0, !dbg !10078
+  br i1 %tobool, label %if.then, label %lor.lhs.false, !dbg !10078
+
+lor.lhs.false:                                    ; preds = %entry
+  %fIdCounter = getelementptr inbounds %"class.xercesc_2_5::DOMDeepNodeListPool"* %this, i64 0, i32 6, !dbg !10078
+  %0 = load i64* %fIdCounter, align 8, !dbg !10078, !tbaa !9977
+  %cmp = icmp ult i64 %0, %elemId, !dbg !10078
+  br i1 %cmp, label %if.then, label %if.end, !dbg !10078
+
+if.then:                                          ; preds = %entry, %lor.lhs.false
+  %exception = tail call i8* @__cxa_allocate_exception(i64 48) #9, !dbg !10080
+  %1 = bitcast i8* %exception to %"class.xercesc_2_5::IllegalArgumentException"*, !dbg !10080
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::DOMDeepNodeListPool"* %this, i64 0, i32 7, !dbg !10080
+  %2 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !10080, !tbaa !9057
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::IllegalArgumentException"* %1}, i64 0, metadata !10081), !dbg !10082
+  tail call void @llvm.dbg.value(metadata !10083, i64 0, metadata !10084), !dbg !10082
+  tail call void @llvm.dbg.value(metadata !10085, i64 0, metadata !10086), !dbg !10082
+  tail call void @llvm.dbg.value(metadata !10087, i64 0, metadata !10088), !dbg !10082
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %2}, i64 0, metadata !10089), !dbg !10082
+  invoke void @_ZN11xercesc_2_524IllegalArgumentExceptionC2EPKcjNS_10XMLExcepts5CodesEPNS_13MemoryManagerE(%"class.xercesc_2_5::IllegalArgumentException"* %1, i8* getelementptr inbounds ([86 x i8]* @.str4, i64 0, i64 0), i32 298, i32 66, %"class.xercesc_2_5::MemoryManager"* %2) #10
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %if.then
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_524IllegalArgumentExceptionE to i8*), i8* bitcast (void (%"class.xercesc_2_5::IllegalArgumentException"*)* @_ZN11xercesc_2_524IllegalArgumentExceptionD1Ev to i8*)) #12, !dbg !10080
+  unreachable, !dbg !10080
+
+lpad:                                             ; preds = %if.then
+  %3 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !10080
+  tail call void @__cxa_free_exception(i8* %exception) #9, !dbg !10080
+  resume { i8*, i32 } %3, !dbg !10080
+
+if.end:                                           ; preds = %lor.lhs.false
+  %fIdPtrs = getelementptr inbounds %"class.xercesc_2_5::DOMDeepNodeListPool"* %this, i64 0, i32 4, !dbg !10090
+  %4 = load %"class.xercesc_2_5::DOMDeepNodeListImpl"*** %fIdPtrs, align 8, !dbg !10090, !tbaa !9057
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::DOMDeepNodeListImpl"** %4, i64 %elemId, !dbg !10090
+  %5 = load %"class.xercesc_2_5::DOMDeepNodeListImpl"** %arrayidx, align 8, !dbg !10090, !tbaa !9057
+  ret %"class.xercesc_2_5::DOMDeepNodeListImpl"* %5, !dbg !10090
+}

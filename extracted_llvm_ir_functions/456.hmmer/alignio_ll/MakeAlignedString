@@ -1,74 +1,82 @@
 define i32 @MakeAlignedString(i8* nocapture %aseq, i32 %alen, i8* nocapture %ss, i8** nocapture %ret_s) #0 {
 entry:
-  %add = add nsw i32 %alen, 1
-  %conv = sext i32 %add to i64
-  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 242, i64 %conv) #7
-  %cmp63 = icmp sgt i32 %alen, 0
-  br i1 %cmp63, label %for.body.lr.ph, label %for.end
+  tail call void @llvm.dbg.value(metadata !{i8* %aseq}, i64 0, metadata !132), !dbg !375
+  tail call void @llvm.dbg.value(metadata !{i32 %alen}, i64 0, metadata !133), !dbg !375
+  tail call void @llvm.dbg.value(metadata !{i8* %ss}, i64 0, metadata !134), !dbg !375
+  tail call void @llvm.dbg.value(metadata !{i8** %ret_s}, i64 0, metadata !135), !dbg !375
+  %add = add nsw i32 %alen, 1, !dbg !376
+  %conv = sext i32 %add to i64, !dbg !376
+  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 242, i64 %conv) #8, !dbg !376
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !136), !dbg !376
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !138), !dbg !377
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !137), !dbg !377
+  %cmp63 = icmp sgt i32 %alen, 0, !dbg !377
+  br i1 %cmp63, label %for.body.lr.ph, label %for.end, !dbg !377
 
 for.body.lr.ph:                                   ; preds = %entry
-  %0 = add i32 %alen, -1
-  %1 = zext i32 %0 to i64
-  br label %for.body
+  %0 = add i32 %alen, -1, !dbg !377
+  %1 = zext i32 %0 to i64, !dbg !377
+  br label %for.body, !dbg !377
 
 for.body:                                         ; preds = %for.inc, %for.body.lr.ph
   %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
   %rpos.065 = phi i32 [ 0, %for.body.lr.ph ], [ %rpos.1, %for.inc ]
-  %arrayidx = getelementptr inbounds i8* %aseq, i64 %indvars.iv
-  %2 = load i8* %arrayidx, align 1, !tbaa !1
+  %arrayidx = getelementptr inbounds i8* %aseq, i64 %indvars.iv, !dbg !379
+  %2 = load i8* %arrayidx, align 1, !dbg !379, !tbaa !297
   switch i8 %2, label %if.then [
     i8 32, label %if.else
     i8 46, label %if.else
     i8 95, label %if.else
     i8 45, label %if.else
     i8 126, label %if.else
-  ]
+  ], !dbg !379
 
 if.then:                                          ; preds = %for.body
-  %idxprom28 = sext i32 %rpos.065 to i64
-  %arrayidx29 = getelementptr inbounds i8* %ss, i64 %idxprom28
-  %3 = load i8* %arrayidx29, align 1, !tbaa !1
-  %arrayidx31 = getelementptr inbounds i8* %call, i64 %indvars.iv
-  store i8 %3, i8* %arrayidx31, align 1, !tbaa !1
-  %inc = add nsw i32 %rpos.065, 1
-  br label %for.inc
+  %idxprom28 = sext i32 %rpos.065 to i64, !dbg !380
+  %arrayidx29 = getelementptr inbounds i8* %ss, i64 %idxprom28, !dbg !380
+  %3 = load i8* %arrayidx29, align 1, !dbg !380, !tbaa !297
+  %arrayidx31 = getelementptr inbounds i8* %call, i64 %indvars.iv, !dbg !380
+  store i8 %3, i8* %arrayidx31, align 1, !dbg !380, !tbaa !297
+  %inc = add nsw i32 %rpos.065, 1, !dbg !382
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !138), !dbg !382
+  br label %for.inc, !dbg !383
 
 if.else:                                          ; preds = %for.body, %for.body, %for.body, %for.body, %for.body
-  %arrayidx33 = getelementptr inbounds i8* %call, i64 %indvars.iv
-  store i8 46, i8* %arrayidx33, align 1, !tbaa !1
+  %arrayidx33 = getelementptr inbounds i8* %call, i64 %indvars.iv, !dbg !384
+  store i8 46, i8* %arrayidx33, align 1, !dbg !384, !tbaa !297
   br label %for.inc
 
 for.inc:                                          ; preds = %if.then, %if.else
   %rpos.1 = phi i32 [ %rpos.065, %if.else ], [ %inc, %if.then ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %alen
-  br i1 %exitcond, label %for.cond.for.end_crit_edge, label %for.body
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !377
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !377
+  %exitcond = icmp eq i32 %lftr.wideiv, %alen, !dbg !377
+  br i1 %exitcond, label %for.cond.for.end_crit_edge, label %for.body, !dbg !377
 
 for.cond.for.end_crit_edge:                       ; preds = %for.inc
-  %4 = add i64 %1, 1
-  br label %for.end
+  %4 = add i64 %1, 1, !dbg !377
+  br label %for.end, !dbg !377
 
 for.end:                                          ; preds = %for.cond.for.end_crit_edge, %entry
   %idxprom.lcssa = phi i64 [ %4, %for.cond.for.end_crit_edge ], [ 0, %entry ]
   %rpos.0.lcssa = phi i32 [ %rpos.1, %for.cond.for.end_crit_edge ], [ 0, %entry ]
-  %arrayidx36 = getelementptr inbounds i8* %call, i64 %idxprom.lcssa
-  store i8 0, i8* %arrayidx36, align 1, !tbaa !1
-  %conv37 = sext i32 %rpos.0.lcssa to i64
-  %call38 = tail call i64 @strlen(i8* %ss) #9
-  %cmp39 = icmp eq i64 %conv37, %call38
-  br i1 %cmp39, label %if.end42, label %if.then41
+  %arrayidx36 = getelementptr inbounds i8* %call, i64 %idxprom.lcssa, !dbg !385
+  store i8 0, i8* %arrayidx36, align 1, !dbg !385, !tbaa !297
+  %conv37 = sext i32 %rpos.0.lcssa to i64, !dbg !386
+  %call38 = tail call i64 @strlen(i8* %ss) #10, !dbg !386
+  %cmp39 = icmp eq i64 %conv37, %call38, !dbg !386
+  br i1 %cmp39, label %if.end42, label %if.then41, !dbg !386
 
 if.then41:                                        ; preds = %for.end
-  store i32 6, i32* @squid_errno, align 4, !tbaa !0
-  tail call void @free(i8* %call) #7
-  br label %return
+  store i32 6, i32* @squid_errno, align 4, !dbg !387, !tbaa !296
+  tail call void @free(i8* %call) #8, !dbg !387
+  br label %return, !dbg !387
 
 if.end42:                                         ; preds = %for.end
-  store i8* %call, i8** %ret_s, align 8, !tbaa !3
-  br label %return
+  store i8* %call, i8** %ret_s, align 8, !dbg !389, !tbaa !305
+  br label %return, !dbg !390
 
 return:                                           ; preds = %if.end42, %if.then41
   %retval.0 = phi i32 [ 0, %if.then41 ], [ 1, %if.end42 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !390
 }

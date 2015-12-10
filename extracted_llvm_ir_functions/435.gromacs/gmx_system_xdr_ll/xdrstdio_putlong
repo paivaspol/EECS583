@@ -1,39 +1,59 @@
-define internal i32 @xdrstdio_putlong(%struct.XDR* nocapture readonly %xdrs, i64* nocapture readonly %lp) #0 {
-  %1 = alloca i32, align 4
+define internal i32 @xdrstdio_putlong(%struct.XDR* nocapture %xdrs, i64* nocapture %lp) #0 {
+entry:
+  %x.addr.i.i = alloca i32, align 4
   %y.i.i = alloca i32, align 4
   %mycopy = alloca i64, align 8
-  %2 = load i64* %lp, align 8, !tbaa !9
-  %3 = trunc i64 %2 to i32
-  %4 = bitcast i32* %1 to i8*
-  call void @llvm.lifetime.start(i64 4, i8* %4) #1
-  %5 = bitcast i32* %y.i.i to i8*
-  call void @llvm.lifetime.start(i64 4, i8* %5) #1
-  store i32 %3, i32* %1, align 4, !tbaa !8
-  br label %6
+  call void @llvm.dbg.value(metadata !{%struct.XDR* %xdrs}, i64 0, metadata !326), !dbg !561
+  call void @llvm.dbg.value(metadata !{i64* %lp}, i64 0, metadata !327), !dbg !561
+  call void @llvm.dbg.declare(metadata !{i64* %mycopy}, metadata !328), !dbg !562
+  %0 = load i64* %lp, align 8, !dbg !562, !tbaa !358
+  %conv = trunc i64 %0 to i32, !dbg !562
+  call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !563) #2, !dbg !564
+  call void @llvm.dbg.declare(metadata !543, metadata !283) #2, !dbg !565
+  %1 = bitcast i32* %x.addr.i.i to i8*, !dbg !566
+  call void @llvm.lifetime.start(i64 4, i8* %1) #2, !dbg !566
+  %2 = bitcast i32* %y.i.i to i8*, !dbg !566
+  call void @llvm.lifetime.start(i64 4, i8* %2) #2, !dbg !566
+  call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !569) #2, !dbg !566
+  call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !569) #2, !dbg !566
+  call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !286), !dbg !566
+  store i32 %conv, i32* %x.addr.i.i, align 4, !tbaa !357
+  call void @llvm.dbg.declare(metadata !{i32* %x.addr.i.i}, metadata !286) #2, !dbg !566
+  call void @llvm.dbg.declare(metadata !{i32* %y.i.i}, metadata !287) #2, !dbg !570
+  call void @llvm.dbg.value(metadata !{i8* %1}, i64 0, metadata !571) #2, !dbg !572
+  call void @llvm.dbg.value(metadata !{i8* %2}, i64 0, metadata !573) #2, !dbg !574
+  call void @llvm.dbg.value(metadata !9, i64 0, metadata !575) #2, !dbg !576
+  br label %for.body.i.i, !dbg !576
 
-; <label>:6                                       ; preds = %6, %0
-  %indvars.iv.i.i = phi i64 [ 0, %0 ], [ %indvars.iv.next.i.i, %6 ]
-  %7 = sub nsw i64 3, %indvars.iv.i.i
-  %8 = getelementptr inbounds i8* %4, i64 %7
-  %9 = load i8* %8, align 1, !tbaa !17
-  %10 = getelementptr inbounds i8* %5, i64 %indvars.iv.i.i
-  store i8 %9, i8* %10, align 1, !tbaa !17
-  %indvars.iv.next.i.i = add nuw nsw i64 %indvars.iv.i.i, 1
-  %exitcond.i.i = icmp eq i64 %indvars.iv.next.i.i, 4
-  br i1 %exitcond.i.i, label %xdr_htonl.exit, label %6
+for.body.i.i:                                     ; preds = %for.body.i.i, %entry
+  %indvars.iv.i.i = phi i64 [ 0, %entry ], [ %indvars.iv.next.i.i, %for.body.i.i ]
+  %3 = sub nsw i64 3, %indvars.iv.i.i, !dbg !577
+  %arrayidx.i.i = getelementptr inbounds i8* %1, i64 %3, !dbg !577
+  %4 = load i8* %arrayidx.i.i, align 1, !dbg !577, !tbaa !347
+  %arrayidx2.i.i = getelementptr inbounds i8* %2, i64 %indvars.iv.i.i, !dbg !577
+  store i8 %4, i8* %arrayidx2.i.i, align 1, !dbg !577, !tbaa !347
+  %indvars.iv.next.i.i = add i64 %indvars.iv.i.i, 1, !dbg !576
+  %lftr.wideiv = trunc i64 %indvars.iv.next.i.i to i32, !dbg !576
+  %exitcond = icmp eq i32 %lftr.wideiv, 4, !dbg !576
+  br i1 %exitcond, label %xdr_htonl.exit, label %for.body.i.i, !dbg !576
 
-xdr_htonl.exit:                                   ; preds = %6
-  %11 = load i32* %y.i.i, align 4, !tbaa !8
-  call void @llvm.lifetime.end(i64 4, i8* %4) #1
-  call void @llvm.lifetime.end(i64 4, i8* %5) #1
-  %12 = zext i32 %11 to i64
-  store i64 %12, i64* %mycopy, align 8, !tbaa !9
-  %13 = bitcast i64* %mycopy to i8*
-  %14 = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 3
-  %15 = bitcast i8** %14 to %struct.__sFILE**
-  %16 = load %struct.__sFILE** %15, align 8, !tbaa !21
-  %17 = call i64 @"\01_fwrite"(i8* %13, i64 4, i64 1, %struct.__sFILE* %16) #6
-  %18 = icmp eq i64 %17, 1
-  %. = zext i1 %18 to i32
-  ret i32 %.
+xdr_htonl.exit:                                   ; preds = %for.body.i.i
+  call void @llvm.dbg.value(metadata !{i32* %y.i.i}, i64 0, metadata !578) #2, !dbg !579
+  call void @llvm.dbg.value(metadata !{i32* %y.i.i}, i64 0, metadata !578) #2, !dbg !579
+  call void @llvm.dbg.value(metadata !{i32* %y.i.i}, i64 0, metadata !287), !dbg !579
+  %5 = load i32* %y.i.i, align 4, !dbg !579, !tbaa !357
+  call void @llvm.lifetime.end(i64 4, i8* %1) #2, !dbg !579
+  call void @llvm.lifetime.end(i64 4, i8* %2) #2, !dbg !579
+  %conv1 = zext i32 %5 to i64, !dbg !562
+  call void @llvm.dbg.value(metadata !{i64 %conv1}, i64 0, metadata !328), !dbg !562
+  store i64 %conv1, i64* %mycopy, align 8, !dbg !562, !tbaa !358
+  call void @llvm.dbg.value(metadata !{i64* %mycopy}, i64 0, metadata !327), !dbg !580
+  %6 = bitcast i64* %mycopy to i8*, !dbg !581
+  %x_private = getelementptr inbounds %struct.XDR* %xdrs, i64 0, i32 3, !dbg !581
+  %7 = load i8** %x_private, align 8, !dbg !581, !tbaa !360
+  %8 = bitcast i8* %7 to %struct._IO_FILE*, !dbg !581
+  %call2 = call i64 @fwrite(i8* %6, i64 4, i64 1, %struct._IO_FILE* %8) #6, !dbg !581
+  %cmp = icmp eq i64 %call2, 1, !dbg !581
+  %. = zext i1 %cmp to i32, !dbg !582
+  ret i32 %., !dbg !582
 }

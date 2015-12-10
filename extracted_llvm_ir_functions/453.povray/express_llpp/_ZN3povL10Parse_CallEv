@@ -1,0 +1,33 @@
+define internal fastcc zeroext i1 @_ZN3povL10Parse_CallEv() #0 {
+entry:
+  %0 = load i8* @_ZN3pov24Allow_Identifier_In_CallE, align 1, !dbg !3684, !tbaa !2103, !range !2104
+  %tobool = icmp eq i8 %0, 0, !dbg !3684
+  tail call void @_ZN3pov9Get_TokenEv() #8, !dbg !3685
+  %1 = load i32* getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 0), align 8, !dbg !3685, !tbaa !2099
+  %cmp = icmp eq i32 %1, 173, !dbg !3685
+  br i1 %tobool, label %if.else, label %if.then, !dbg !3684
+
+if.then:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !592, i64 0, metadata !1744), !dbg !3687
+  br i1 %cmp, label %sw.bb, label %sw.epilog, !dbg !3688
+
+sw.bb:                                            ; preds = %if.then
+  store i8 0, i8* @_ZN3pov18Identifier_In_CallE, align 1, !dbg !3690, !tbaa !2103
+  br label %return, !dbg !3692
+
+sw.epilog:                                        ; preds = %if.then
+  tail call void @_ZN3pov11Unget_TokenEv() #8, !dbg !3693
+  store i8 1, i8* @_ZN3pov18Identifier_In_CallE, align 1, !dbg !3694, !tbaa !2103
+  br label %return, !dbg !3695
+
+if.else:                                          ; preds = %entry
+  br i1 %cmp, label %return, label %if.then1, !dbg !3685
+
+if.then1:                                         ; preds = %if.else
+  tail call void @_ZN3pov11Parse_ErrorEi(i32 173) #8, !dbg !3685
+  br label %return, !dbg !3685
+
+return:                                           ; preds = %if.then1, %if.else, %sw.epilog, %sw.bb
+  %retval.0 = phi i1 [ true, %sw.bb ], [ false, %sw.epilog ], [ true, %if.else ], [ true, %if.then1 ]
+  ret i1 %retval.0, !dbg !3696
+}

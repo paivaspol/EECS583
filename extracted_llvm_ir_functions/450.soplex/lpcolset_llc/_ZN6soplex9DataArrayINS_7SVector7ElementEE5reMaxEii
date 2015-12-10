@@ -1,0 +1,59 @@
+define linkonce_odr i64 @_ZN6soplex9DataArrayINS_7SVector7ElementEE5reMaxEii(%"class.soplex::DataArray"* nocapture %this, i32 %newMax, i32 %newSize) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataArray"* %this}, i64 0, metadata !2753), !dbg !4422
+  tail call void @llvm.dbg.value(metadata !{i32 %newMax}, i64 0, metadata !2756), !dbg !4422
+  tail call void @llvm.dbg.value(metadata !{i32 %newSize}, i64 0, metadata !2757), !dbg !4422
+  %cmp = icmp sgt i32 %newSize, -1, !dbg !4423
+  br i1 %cmp, label %if.then, label %if.end, !dbg !4423
+
+if.then:                                          ; preds = %entry
+  %thesize = getelementptr inbounds %"class.soplex::DataArray"* %this, i64 0, i32 0, !dbg !4424
+  store i32 %newSize, i32* %thesize, align 4, !dbg !4424, !tbaa !3999
+  br label %if.end, !dbg !4424
+
+if.end:                                           ; preds = %if.then, %entry
+  %cmp2 = icmp slt i32 %newMax, %newSize, !dbg !4425
+  tail call void @llvm.dbg.value(metadata !{i32 %newSize}, i64 0, metadata !2756), !dbg !4426
+  %newSize.newMax = select i1 %cmp2, i32 %newSize, i32 %newMax, !dbg !4425
+  %cmp5 = icmp slt i32 %newSize.newMax, 1, !dbg !4427
+  tail call void @llvm.dbg.value(metadata !4428, i64 0, metadata !2756), !dbg !4429
+  %newMax.addr.1 = select i1 %cmp5, i32 1, i32 %newSize.newMax, !dbg !4427
+  %themax = getelementptr inbounds %"class.soplex::DataArray"* %this, i64 0, i32 1, !dbg !4430
+  %0 = load i32* %themax, align 4, !dbg !4430, !tbaa !3999
+  %cmp8 = icmp eq i32 %newMax.addr.1, %0, !dbg !4430
+  br i1 %cmp8, label %return, label %if.end10, !dbg !4430
+
+if.end10:                                         ; preds = %if.end
+  store i32 %newMax.addr.1, i32* %themax, align 4, !dbg !4431, !tbaa !3999
+  %data = getelementptr inbounds %"class.soplex::DataArray"* %this, i64 0, i32 2, !dbg !4432
+  %1 = load %"struct.soplex::SVector::Element"** %data, align 8, !dbg !4432, !tbaa !4030
+  tail call void @llvm.dbg.value(metadata !{%"struct.soplex::SVector::Element"* %1}, i64 0, metadata !2758), !dbg !4432
+  %thesize12 = getelementptr inbounds %"class.soplex::DataArray"* %this, i64 0, i32 0, !dbg !4433
+  %2 = load i32* %thesize12, align 4, !dbg !4433, !tbaa !3999
+  %cmp13 = icmp slt i32 %2, 1, !dbg !4433
+  br i1 %cmp13, label %if.then14, label %if.else, !dbg !4433
+
+if.then14:                                        ; preds = %if.end10
+  tail call void @llvm.dbg.value(metadata !{%"struct.soplex::SVector::Element"** %data}, i64 0, metadata !4434) #1, !dbg !4437
+  %3 = bitcast %"struct.soplex::SVector::Element"* %1 to i8*, !dbg !4438
+  tail call void @free(i8* %3) #9, !dbg !4438
+  store %"struct.soplex::SVector::Element"* null, %"struct.soplex::SVector::Element"** %data, align 8, !dbg !4439, !tbaa !4030
+  %4 = load i32* %themax, align 4, !dbg !4440, !tbaa !3999
+  tail call void @_ZN6soplex9spx_allocIPNS_7SVector7ElementEEEvRT_i(%"struct.soplex::SVector::Element"** %data, i32 %4) #8, !dbg !4440
+  br label %if.end20, !dbg !4441
+
+if.else:                                          ; preds = %if.end10
+  tail call void @_ZN6soplex11spx_reallocIPNS_7SVector7ElementEEEvRT_i(%"struct.soplex::SVector::Element"** %data, i32 %newMax.addr.1) #8, !dbg !4442
+  br label %if.end20
+
+if.end20:                                         ; preds = %if.else, %if.then14
+  %5 = load %"struct.soplex::SVector::Element"** %data, align 8, !dbg !4443, !tbaa !4030
+  %sub.ptr.lhs.cast = ptrtoint %"struct.soplex::SVector::Element"* %5 to i64, !dbg !4443
+  %sub.ptr.rhs.cast = ptrtoint %"struct.soplex::SVector::Element"* %1 to i64, !dbg !4443
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !4443
+  br label %return, !dbg !4443
+
+return:                                           ; preds = %if.end, %if.end20
+  %retval.0 = phi i64 [ %sub.ptr.sub, %if.end20 ], [ 0, %if.end ]
+  ret i64 %retval.0, !dbg !4444
+}

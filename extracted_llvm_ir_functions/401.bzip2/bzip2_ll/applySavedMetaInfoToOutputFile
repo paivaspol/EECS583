@@ -1,0 +1,38 @@
+define internal fastcc void @applySavedMetaInfoToOutputFile() #0 {
+entry:
+  %uTimBuf = alloca %struct.utimbuf, align 8
+  call void @llvm.dbg.value(metadata !1057, i64 0, metadata !240), !dbg !1509
+  call void @llvm.dbg.declare(metadata !{%struct.utimbuf* %uTimBuf}, metadata !242), !dbg !1510
+  %0 = load i64* getelementptr inbounds (%struct.stat* @fileMetaInfo, i64 0, i32 11, i32 0), align 8, !dbg !1511, !tbaa !851
+  %actime = getelementptr inbounds %struct.utimbuf* %uTimBuf, i64 0, i32 0, !dbg !1511
+  store i64 %0, i64* %actime, align 8, !dbg !1511, !tbaa !851
+  %1 = load i64* getelementptr inbounds (%struct.stat* @fileMetaInfo, i64 0, i32 12, i32 0), align 8, !dbg !1512, !tbaa !851
+  %modtime = getelementptr inbounds %struct.utimbuf* %uTimBuf, i64 0, i32 1, !dbg !1512
+  store i64 %1, i64* %modtime, align 8, !dbg !1512, !tbaa !851
+  %2 = load i32* getelementptr inbounds (%struct.stat* @fileMetaInfo, i64 0, i32 3), align 8, !dbg !1513, !tbaa !492
+  %call = call i32 @chmod(i8* getelementptr inbounds ([1034 x i8]* @outName, i64 0, i64 0), i32 %2) #10, !dbg !1513
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !241), !dbg !1513
+  %cmp = icmp eq i32 %call, 0, !dbg !1514
+  br i1 %cmp, label %if.end, label %if.then, !dbg !1514
+
+if.then:                                          ; preds = %entry
+  call fastcc void @ioError() #14, !dbg !1514
+  unreachable, !dbg !1514
+
+if.end:                                           ; preds = %entry
+  %call1 = call i32 @utime(i8* getelementptr inbounds ([1034 x i8]* @outName, i64 0, i64 0), %struct.utimbuf* %uTimBuf) #10, !dbg !1516
+  call void @llvm.dbg.value(metadata !{i32 %call1}, i64 0, metadata !241), !dbg !1516
+  %cmp2 = icmp eq i32 %call1, 0, !dbg !1517
+  br i1 %cmp2, label %if.end4, label %if.then3, !dbg !1517
+
+if.then3:                                         ; preds = %if.end
+  call fastcc void @ioError() #14, !dbg !1517
+  unreachable, !dbg !1517
+
+if.end4:                                          ; preds = %if.end
+  %3 = load i32* getelementptr inbounds (%struct.stat* @fileMetaInfo, i64 0, i32 4), align 4, !dbg !1519, !tbaa !492
+  %4 = load i32* getelementptr inbounds (%struct.stat* @fileMetaInfo, i64 0, i32 5), align 8, !dbg !1519, !tbaa !492
+  %call5 = call i32 @chown(i8* getelementptr inbounds ([1034 x i8]* @outName, i64 0, i64 0), i32 %3, i32 %4) #10, !dbg !1519
+  call void @llvm.dbg.value(metadata !{i32 %call5}, i64 0, metadata !241), !dbg !1519
+  ret void, !dbg !1520
+}

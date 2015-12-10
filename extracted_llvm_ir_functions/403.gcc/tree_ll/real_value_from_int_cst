@@ -1,39 +1,42 @@
 define void @real_value_from_int_cst(%struct.realvaluetype* noalias nocapture sret %agg.result, %union.tree_node* nocapture %type, %union.tree_node* nocapture %i) #0 {
 entry:
   %d = alloca %struct.realvaluetype, align 8
-  %0 = bitcast %struct.realvaluetype* %d to i8*
-  call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 24, i32 8, i1 false)
-  %type1 = getelementptr inbounds %union.tree_node* %i, i64 0, i32 0, i32 0, i32 1
-  %1 = load %union.tree_node** %type1, align 8, !tbaa !0
-  %unsigned_flag = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 0, i32 2
-  %2 = bitcast [4 x i8]* %unsigned_flag to i32*
-  %bf.load = load i32* %2, align 8
-  %bf.clear = and i32 %bf.load, 8192
-  %tobool = icmp eq i32 %bf.clear, 0
-  %int_cst11 = getelementptr inbounds %union.tree_node* %i, i64 0, i32 0, i32 2
-  %low12 = bitcast i32* %int_cst11 to i64*
-  %3 = load i64* %low12, align 8, !tbaa !3
-  %high15 = getelementptr inbounds i32* %int_cst11, i64 2
-  %4 = bitcast i32* %high15 to i64*
-  %5 = load i64* %4, align 8, !tbaa !3
-  %type16 = bitcast %union.tree_node* %type to %struct.tree_type*
-  %mode17 = getelementptr inbounds %struct.tree_type* %type16, i64 0, i32 6
-  %6 = bitcast [4 x i8]* %mode17 to i32*
-  %bf.load18 = load i32* %6, align 4
-  %bf.lshr19 = lshr i32 %bf.load18, 9
-  %bf.clear20 = and i32 %bf.lshr19, 127
-  br i1 %tobool, label %if.then, label %if.else
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %type}, i64 0, metadata !984), !dbg !2065
+  call void @llvm.dbg.value(metadata !{%union.tree_node* %i}, i64 0, metadata !985), !dbg !2065
+  call void @llvm.dbg.declare(metadata !{%struct.realvaluetype* %d}, metadata !986), !dbg !2066
+  %0 = bitcast %struct.realvaluetype* %d to i8*, !dbg !2067
+  call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 24, i32 8, i1 false), !dbg !2067
+  %type1 = getelementptr inbounds %union.tree_node* %i, i64 0, i32 0, i32 0, i32 1, !dbg !2068
+  %1 = load %union.tree_node** %type1, align 8, !dbg !2068, !tbaa !1913
+  %unsigned_flag = getelementptr inbounds %union.tree_node* %1, i64 0, i32 0, i32 0, i32 2, !dbg !2068
+  %2 = bitcast [4 x i8]* %unsigned_flag to i32*, !dbg !2068
+  %bf.load = load i32* %2, align 8, !dbg !2068
+  %bf.clear = and i32 %bf.load, 8192, !dbg !2068
+  %tobool = icmp eq i32 %bf.clear, 0, !dbg !2068
+  %int_cst11 = getelementptr inbounds %union.tree_node* %i, i64 0, i32 0, i32 2, !dbg !2069
+  %low12 = bitcast i32* %int_cst11 to i64*, !dbg !2069
+  %3 = load i64* %low12, align 8, !dbg !2069, !tbaa !1927
+  %high15 = getelementptr inbounds i32* %int_cst11, i64 2, !dbg !2069
+  %4 = bitcast i32* %high15 to i64*, !dbg !2069
+  %5 = load i64* %4, align 8, !dbg !2069, !tbaa !1927
+  %type16 = bitcast %union.tree_node* %type to %struct.tree_type*, !dbg !2069
+  %mode17 = getelementptr inbounds %struct.tree_type* %type16, i64 0, i32 6, !dbg !2069
+  %6 = bitcast [4 x i8]* %mode17 to i32*, !dbg !2069
+  %bf.load18 = load i32* %6, align 4, !dbg !2069
+  %bf.lshr19 = lshr i32 %bf.load18, 9, !dbg !2069
+  %bf.clear20 = and i32 %bf.lshr19, 127, !dbg !2069
+  br i1 %tobool, label %if.then, label %if.else, !dbg !2068
 
 if.then:                                          ; preds = %entry
-  call void @ereal_from_int(%struct.realvaluetype* %d, i64 %3, i64 %5, i32 %bf.clear20) #9
-  br label %if.end
+  call void @ereal_from_int(%struct.realvaluetype* %d, i64 %3, i64 %5, i32 %bf.clear20) #10, !dbg !2070
+  br label %if.end, !dbg !2070
 
 if.else:                                          ; preds = %entry
-  call void @ereal_from_uint(%struct.realvaluetype* %d, i64 %3, i64 %5, i32 %bf.clear20) #9
+  call void @ereal_from_uint(%struct.realvaluetype* %d, i64 %3, i64 %5, i32 %bf.clear20) #10, !dbg !2069
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
-  %7 = bitcast %struct.realvaluetype* %agg.result to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %7, i8* %0, i64 24, i32 8, i1 false), !tbaa.struct !5
-  ret void
+  %7 = bitcast %struct.realvaluetype* %agg.result to i8*, !dbg !2071
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %7, i8* %0, i64 24, i32 8, i1 false), !dbg !2071, !tbaa.struct !2062
+  ret void, !dbg !2071
 }

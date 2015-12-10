@@ -1,18 +1,21 @@
-define void @_cpp_release_buff(%struct.cpp_reader* nocapture %pfile, %struct._cpp_buff* %buff) #1 {
+define void @_cpp_release_buff(%struct.cpp_reader* nocapture %pfile, %struct._cpp_buff* %buff) #2 {
 entry:
-  br label %while.cond
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !728), !dbg !2263
+  tail call void @llvm.dbg.value(metadata !{%struct._cpp_buff* %buff}, i64 0, metadata !729), !dbg !2264
+  tail call void @llvm.dbg.value(metadata !{%struct._cpp_buff* %buff}, i64 0, metadata !730), !dbg !2265
+  br label %while.cond, !dbg !2266
 
 while.cond:                                       ; preds = %while.cond, %entry
   %end.0 = phi %struct._cpp_buff* [ %buff, %entry ], [ %0, %while.cond ]
-  %next = getelementptr inbounds %struct._cpp_buff* %end.0, i64 0, i32 0
-  %0 = load %struct._cpp_buff** %next, align 8, !tbaa !0
-  %tobool = icmp eq %struct._cpp_buff* %0, null
-  br i1 %tobool, label %while.end, label %while.cond
+  %next = getelementptr inbounds %struct._cpp_buff* %end.0, i64 0, i32 0, !dbg !2266
+  %0 = load %struct._cpp_buff** %next, align 8, !dbg !2266, !tbaa !995
+  %tobool = icmp eq %struct._cpp_buff* %0, null, !dbg !2266
+  br i1 %tobool, label %while.end, label %while.cond, !dbg !2266
 
 while.end:                                        ; preds = %while.cond
-  %free_buffs = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 8
-  %1 = load %struct._cpp_buff** %free_buffs, align 8, !tbaa !0
-  store %struct._cpp_buff* %1, %struct._cpp_buff** %next, align 8, !tbaa !0
-  store %struct._cpp_buff* %buff, %struct._cpp_buff** %free_buffs, align 8, !tbaa !0
-  ret void
+  %free_buffs = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 8, !dbg !2267
+  %1 = load %struct._cpp_buff** %free_buffs, align 8, !dbg !2267, !tbaa !995
+  store %struct._cpp_buff* %1, %struct._cpp_buff** %next, align 8, !dbg !2267, !tbaa !995
+  store %struct._cpp_buff* %buff, %struct._cpp_buff** %free_buffs, align 8, !dbg !2268, !tbaa !995
+  ret void, !dbg !2269
 }

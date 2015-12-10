@@ -1,0 +1,34 @@
+define zeroext i1 @_ZN11xercesc_2_59XMLString12isWSReplacedEPKt(i16* %toCheck) #6 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %toCheck}, i64 0, metadata !2100), !dbg !4083
+  %tobool = icmp eq i16* %toCheck, null, !dbg !4084
+  br i1 %tobool, label %return, label %lor.lhs.false, !dbg !4084
+
+lor.lhs.false:                                    ; preds = %entry
+  %0 = load i16* %toCheck, align 2, !dbg !4084, !tbaa !2947
+  %tobool1 = icmp eq i16 %0, 0, !dbg !4084
+  br i1 %tobool1, label %return, label %while.cond, !dbg !4084
+
+while.cond:                                       ; preds = %lor.lhs.false, %if.end10
+  %1 = phi i16 [ %.pre, %if.end10 ], [ %0, %lor.lhs.false ]
+  %startPtr.0 = phi i16* [ %incdec.ptr, %if.end10 ], [ %toCheck, %lor.lhs.false ]
+  switch i16 %1, label %if.end10 [
+    i16 0, label %return
+    i16 13, label %return.loopexit
+    i16 10, label %return.loopexit
+    i16 9, label %return.loopexit
+  ], !dbg !4085
+
+if.end10:                                         ; preds = %while.cond
+  %incdec.ptr = getelementptr inbounds i16* %startPtr.0, i64 1, !dbg !4086
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !2101), !dbg !4086
+  %.pre = load i16* %incdec.ptr, align 2, !dbg !4085, !tbaa !2947
+  br label %while.cond, !dbg !4088
+
+return.loopexit:                                  ; preds = %while.cond, %while.cond, %while.cond
+  br label %return
+
+return:                                           ; preds = %while.cond, %return.loopexit, %entry, %lor.lhs.false
+  %retval.0 = phi i1 [ true, %lor.lhs.false ], [ true, %entry ], [ false, %return.loopexit ], [ true, %while.cond ]
+  ret i1 %retval.0, !dbg !4089
+}

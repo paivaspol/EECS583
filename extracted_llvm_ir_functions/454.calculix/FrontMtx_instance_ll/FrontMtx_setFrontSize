@@ -1,31 +1,34 @@
 define void @FrontMtx_setFrontSize(%struct._FrontMtx* %frontmtx, i32 %J, i32 %size) #0 {
 entry:
-  %cmp = icmp eq %struct._FrontMtx* %frontmtx, null
-  br i1 %cmp, label %if.then, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata !{%struct._FrontMtx* %frontmtx}, i64 0, metadata !217), !dbg !339
+  tail call void @llvm.dbg.value(metadata !{i32 %J}, i64 0, metadata !218), !dbg !340
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !219), !dbg !341
+  %cmp = icmp eq %struct._FrontMtx* %frontmtx, null, !dbg !342
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !342
 
 lor.lhs.false:                                    ; preds = %entry
-  %frontsizesIV = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 12
-  %0 = load %struct._IV** %frontsizesIV, align 8, !tbaa !0
-  %cmp1 = icmp eq %struct._IV* %0, null
-  %cmp3 = icmp slt i32 %J, 0
-  %or.cond = or i1 %cmp1, %cmp3
-  br i1 %or.cond, label %if.then, label %lor.lhs.false4
+  %frontsizesIV = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 12, !dbg !342
+  %0 = load %struct._IV** %frontsizesIV, align 8, !dbg !342, !tbaa !288
+  %cmp1 = icmp eq %struct._IV* %0, null, !dbg !342
+  %cmp3 = icmp slt i32 %J, 0, !dbg !342
+  %or.cond = or i1 %cmp1, %cmp3, !dbg !342
+  br i1 %or.cond, label %if.then, label %lor.lhs.false4, !dbg !342
 
 lor.lhs.false4:                                   ; preds = %lor.lhs.false
-  %nfront = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 0
-  %1 = load i32* %nfront, align 4, !tbaa !3
-  %cmp5 = icmp sle i32 %1, %J
-  %cmp7 = icmp slt i32 %size, 0
-  %or.cond18 = or i1 %cmp5, %cmp7
-  br i1 %or.cond18, label %if.then, label %if.end
+  %nfront = getelementptr inbounds %struct._FrontMtx* %frontmtx, i64 0, i32 0, !dbg !342
+  %1 = load i32* %nfront, align 4, !dbg !342, !tbaa !293
+  %cmp5 = icmp sle i32 %1, %J, !dbg !342
+  %cmp7 = icmp slt i32 %size, 0, !dbg !342
+  %or.cond18 = or i1 %cmp5, %cmp7, !dbg !342
+  br i1 %or.cond18, label %if.then, label %if.end, !dbg !342
 
 if.then:                                          ; preds = %lor.lhs.false4, %lor.lhs.false, %entry
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([61 x i8]* @.str7, i64 0, i64 0), %struct._FrontMtx* %frontmtx, i32 %J, i32 %size) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !343, !tbaa !288
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([61 x i8]* @.str7, i64 0, i64 0), %struct._FrontMtx* %frontmtx, i32 %J, i32 %size) #6, !dbg !343
+  tail call void @exit(i32 -1) #7, !dbg !345
+  unreachable, !dbg !345
 
 if.end:                                           ; preds = %lor.lhs.false4
-  tail call void @IV_setEntry(%struct._IV* %0, i32 %J, i32 %size) #5
-  ret void
+  tail call void @IV_setEntry(%struct._IV* %0, i32 %J, i32 %size) #6, !dbg !346
+  ret void, !dbg !347
 }

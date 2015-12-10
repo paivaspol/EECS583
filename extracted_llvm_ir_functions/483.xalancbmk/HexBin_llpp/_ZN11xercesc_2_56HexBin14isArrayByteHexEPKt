@@ -1,0 +1,70 @@
+define zeroext i1 @_ZN11xercesc_2_56HexBin14isArrayByteHexEPKt(i16* %hexData) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %hexData}, i64 0, metadata !144), !dbg !708
+  %0 = load i8* @_ZN11xercesc_2_56HexBin13isInitializedE, align 1, !dbg !709, !tbaa !710, !range !711
+  %tobool = icmp eq i8 %0, 0, !dbg !709
+  br i1 %tobool, label %if.then, label %if.end, !dbg !709
+
+if.then:                                          ; preds = %entry
+  tail call void @_ZN11xercesc_2_56HexBin4initEv() #4, !dbg !712
+  br label %if.end, !dbg !712
+
+if.end:                                           ; preds = %entry, %if.then
+  %cmp = icmp eq i16* %hexData, null, !dbg !713
+  br i1 %cmp, label %return, label %lor.lhs.false, !dbg !713
+
+lor.lhs.false:                                    ; preds = %if.end
+  %1 = load i16* %hexData, align 2, !dbg !713, !tbaa !701
+  %cmp1 = icmp eq i16 %1, 0, !dbg !713
+  br i1 %cmp1, label %return, label %while.cond.i, !dbg !713
+
+while.cond.i:                                     ; preds = %lor.lhs.false, %while.cond.i
+  %src.pn.i = phi i16* [ %pszTmp.0.i, %while.cond.i ], [ %hexData, %lor.lhs.false ]
+  %pszTmp.0.i = getelementptr inbounds i16* %src.pn.i, i64 1, !dbg !714
+  %2 = load i16* %pszTmp.0.i, align 2, !dbg !716, !tbaa !701
+  %tobool.i = icmp eq i16 %2, 0, !dbg !716
+  br i1 %tobool.i, label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, label %while.cond.i, !dbg !716
+
+_ZN11xercesc_2_59XMLString9stringLenEPKt.exit:    ; preds = %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %pszTmp.0.i to i64, !dbg !717
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %hexData to i64, !dbg !717
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !717
+  %sub.ptr.div7.i = lshr exact i64 %sub.ptr.sub.i, 1, !dbg !717
+  %conv2.i = trunc i64 %sub.ptr.div7.i to i32, !dbg !717
+  tail call void @llvm.dbg.value(metadata !{i32 %conv2.i}, i64 0, metadata !145), !dbg !715
+  %rem17 = and i32 %conv2.i, 1, !dbg !718
+  %cmp4 = icmp eq i32 %rem17, 0, !dbg !718
+  br i1 %cmp4, label %for.cond.preheader, label %return, !dbg !718
+
+for.cond.preheader:                               ; preds = %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit
+  %cmp721 = icmp sgt i32 %conv2.i, 0, !dbg !719
+  br i1 %cmp721, label %for.body, label %return, !dbg !719
+
+for.cond:                                         ; preds = %_ZN11xercesc_2_56HexBin5isHexERKt.exit
+  %3 = trunc i64 %indvars.iv to i32, !dbg !719
+  %cmp7 = icmp slt i32 %3, %conv2.i, !dbg !719
+  br i1 %cmp7, label %for.cond.for.body_crit_edge, label %return, !dbg !719
+
+for.cond.for.body_crit_edge:                      ; preds = %for.cond
+  %arrayidx.phi.trans.insert = getelementptr inbounds i16* %hexData, i64 %indvars.iv
+  %.pre = load i16* %arrayidx.phi.trans.insert, align 2, !dbg !720, !tbaa !701
+  %phitmp = add i64 %indvars.iv, 1, !dbg !719
+  br label %for.body, !dbg !719
+
+for.body:                                         ; preds = %for.cond.preheader, %for.cond.for.body_crit_edge
+  %4 = phi i16 [ %.pre, %for.cond.for.body_crit_edge ], [ %1, %for.cond.preheader ]
+  %indvars.iv = phi i64 [ %phitmp, %for.cond.for.body_crit_edge ], [ 1, %for.cond.preheader ]
+  %cmp.i18 = icmp ugt i16 %4, 254, !dbg !720
+  br i1 %cmp.i18, label %return, label %_ZN11xercesc_2_56HexBin5isHexERKt.exit, !dbg !720
+
+_ZN11xercesc_2_56HexBin5isHexERKt.exit:           ; preds = %for.body
+  %idxprom.i = zext i16 %4 to i64, !dbg !722
+  %arrayidx.i = getelementptr inbounds [255 x i8]* @_ZN11xercesc_2_56HexBin14hexNumberTableE, i64 0, i64 %idxprom.i, !dbg !722
+  %5 = load i8* %arrayidx.i, align 1, !dbg !722, !tbaa !710, !range !711
+  %tobool.i19 = icmp eq i8 %5, 0, !dbg !722
+  br i1 %tobool.i19, label %return, label %for.cond, !dbg !721
+
+return:                                           ; preds = %for.cond.preheader, %_ZN11xercesc_2_56HexBin5isHexERKt.exit, %for.body, %for.cond, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, %if.end, %lor.lhs.false
+  %retval.0 = phi i1 [ false, %lor.lhs.false ], [ false, %if.end ], [ false, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit ], [ true, %for.cond.preheader ], [ false, %_ZN11xercesc_2_56HexBin5isHexERKt.exit ], [ false, %for.body ], [ true, %for.cond ]
+  ret i1 %retval.0, !dbg !723
+}

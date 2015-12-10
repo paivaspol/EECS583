@@ -1,0 +1,156 @@
+define void @_ZN11xercesc_2_519XTemplateSerializer11storeObjectEPNS_14RefHashTableOfINS_12KVStringPairEEERNS_16XSerializeEngineE(%"class.xercesc_2_5::RefHashTableOf.1"* %objToStore, %"class.xercesc_2_5::XSerializeEngine"* %serEng) #5 align 2 {
+entry:
+  %hashVal.i = alloca i32, align 4
+  %e = alloca %"class.xercesc_2_5::RefHashTableOfEnumerator", align 8
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefHashTableOf.1"* %objToStore}, i64 0, metadata !10191), !dbg !15834
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XSerializeEngine"* %serEng}, i64 0, metadata !10192), !dbg !15835
+  %0 = bitcast %"class.xercesc_2_5::RefHashTableOf.1"* %objToStore to i8*, !dbg !15836
+  %call = call zeroext i1 @_ZN11xercesc_2_516XSerializeEngine17needToStoreObjectEPv(%"class.xercesc_2_5::XSerializeEngine"* %serEng, i8* %0) #12, !dbg !15836
+  br i1 %call, label %if.then, label %if.end, !dbg !15836
+
+if.then:                                          ; preds = %entry
+  %1 = bitcast %"class.xercesc_2_5::RefHashTableOfEnumerator"* %e to i8*, !dbg !15837
+  call void @llvm.lifetime.start(i64 48, i8* %1) #6, !dbg !15837
+  call void @llvm.dbg.declare(metadata !{%"class.xercesc_2_5::RefHashTableOfEnumerator"* %e}, metadata !10193), !dbg !15837
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefHashTableOf.1"* %objToStore}, i64 0, metadata !15838), !dbg !15839
+  %fMemoryManager.i = getelementptr inbounds %"class.xercesc_2_5::RefHashTableOf.1"* %objToStore, i64 0, i32 0, !dbg !15840
+  %2 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager.i, align 8, !dbg !15840, !tbaa !14906
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefHashTableOfEnumerator"* %e}, i64 0, metadata !15842), !dbg !15843
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefHashTableOf.1"* %objToStore}, i64 0, metadata !15844), !dbg !15843
+  call void @llvm.dbg.value(metadata !15845, i64 0, metadata !15846), !dbg !15847
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %2}, i64 0, metadata !15848), !dbg !15849
+  call void @_ZN11xercesc_2_524RefHashTableOfEnumeratorINS_12KVStringPairEEC2EPNS_14RefHashTableOfIS1_EEbPNS_13MemoryManagerE(%"class.xercesc_2_5::RefHashTableOfEnumerator"* %e, %"class.xercesc_2_5::RefHashTableOf.1"* %objToStore, i1 zeroext false, %"class.xercesc_2_5::MemoryManager"* %2) #12, !dbg !15850
+  call void @llvm.dbg.value(metadata !1577, i64 0, metadata !10195), !dbg !15851
+  %fCurElem.i = getelementptr inbounds %"class.xercesc_2_5::RefHashTableOfEnumerator"* %e, i64 0, i32 2, !dbg !15852
+  %fCurHash.i = getelementptr inbounds %"class.xercesc_2_5::RefHashTableOfEnumerator"* %e, i64 0, i32 3, !dbg !15852
+  %fToEnum.i = getelementptr inbounds %"class.xercesc_2_5::RefHashTableOfEnumerator"* %e, i64 0, i32 4, !dbg !15852
+  br label %while.cond, !dbg !15853
+
+while.cond:                                       ; preds = %invoke.cont3, %if.then
+  %itemNumber.0 = phi i32 [ 0, %if.then ], [ %inc, %invoke.cont3 ]
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefHashTableOfEnumerator"* %e}, i64 0, metadata !15854), !dbg !15855
+  %3 = load %"struct.xercesc_2_5::RefHashTableBucketElem"** %fCurElem.i, align 8, !dbg !15852, !tbaa !14906
+  %tobool.i = icmp eq %"struct.xercesc_2_5::RefHashTableBucketElem"* %3, null, !dbg !15852
+  br i1 %tobool.i, label %land.lhs.true.i, label %while.body, !dbg !15852
+
+land.lhs.true.i:                                  ; preds = %while.cond
+  %4 = load i32* %fCurHash.i, align 8, !dbg !15852, !tbaa !14899
+  %5 = load %"class.xercesc_2_5::RefHashTableOf.1"** %fToEnum.i, align 8, !dbg !15852, !tbaa !14906
+  %fHashModulus.i = getelementptr inbounds %"class.xercesc_2_5::RefHashTableOf.1"* %5, i64 0, i32 3, !dbg !15852
+  %6 = load i32* %fHashModulus.i, align 4, !dbg !15852, !tbaa !14899
+  %cmp.i = icmp eq i32 %4, %6, !dbg !15852
+  br i1 %cmp.i, label %while.end, label %while.body, !dbg !15852
+
+while.body:                                       ; preds = %while.cond, %land.lhs.true.i
+  %call4 = invoke %"class.xercesc_2_5::KVStringPair"* @_ZN11xercesc_2_524RefHashTableOfEnumeratorINS_12KVStringPairEE11nextElementEv(%"class.xercesc_2_5::RefHashTableOfEnumerator"* %e) #12
+          to label %invoke.cont3 unwind label %lpad.nonloopexit.loopexit, !dbg !15856
+
+invoke.cont3:                                     ; preds = %while.body
+  %inc = add nsw i32 %itemNumber.0, 1, !dbg !15858
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !10195), !dbg !15858
+  br label %while.cond, !dbg !15859
+
+lpad.loopexit:                                    ; preds = %while.body11, %invoke.cont12, %invoke.cont15, %invoke.cont14
+  %lpad.loopexit46 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !15853
+  br label %lpad
+
+lpad.nonloopexit.loopexit:                        ; preds = %while.body
+  %lpad.loopexit48 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !15853
+  br label %lpad
+
+lpad.nonloopexit.nonloopexit:                     ; preds = %while.end
+  %lpad.nonloopexit49 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !15853
+  br label %lpad
+
+lpad:                                             ; preds = %lpad.nonloopexit.loopexit, %lpad.nonloopexit.nonloopexit, %lpad.loopexit
+  %lpad.phi = phi { i8*, i32 } [ %lpad.loopexit46, %lpad.loopexit ], [ %lpad.loopexit48, %lpad.nonloopexit.loopexit ], [ %lpad.nonloopexit49, %lpad.nonloopexit.nonloopexit ]
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefHashTableOfEnumerator"* %e}, i64 0, metadata !15860), !dbg !15862
+  invoke void @_ZN11xercesc_2_524RefHashTableOfEnumeratorINS_12KVStringPairEED2Ev(%"class.xercesc_2_5::RefHashTableOfEnumerator"* %e) #12
+          to label %eh.resume unwind label %terminate.lpad
+
+while.end:                                        ; preds = %land.lhs.true.i
+  %call6 = invoke %"class.xercesc_2_5::XSerializeEngine"* @_ZN11xercesc_2_516XSerializeEnginelsEi(%"class.xercesc_2_5::XSerializeEngine"* %serEng, i32 %itemNumber.0) #12
+          to label %invoke.cont5 unwind label %lpad.nonloopexit.nonloopexit, !dbg !15863
+
+invoke.cont5:                                     ; preds = %while.end
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefHashTableOfEnumerator"* %e}, i64 0, metadata !15864) #6, !dbg !15866
+  store i32 -1, i32* %fCurHash.i, align 8, !dbg !15867, !tbaa !14899
+  store %"struct.xercesc_2_5::RefHashTableBucketElem"* null, %"struct.xercesc_2_5::RefHashTableBucketElem"** %fCurElem.i, align 8, !dbg !15868, !tbaa !14906
+  call void @_ZN11xercesc_2_524RefHashTableOfEnumeratorINS_12KVStringPairEE8findNextEv(%"class.xercesc_2_5::RefHashTableOfEnumerator"* %e) #14, !dbg !15869
+  %7 = bitcast i32* %hashVal.i to i8*, !dbg !15870
+  br label %while.cond8, !dbg !15872
+
+while.cond8:                                      ; preds = %invoke.cont15, %invoke.cont5
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefHashTableOfEnumerator"* %e}, i64 0, metadata !15873), !dbg !15874
+  %8 = load %"struct.xercesc_2_5::RefHashTableBucketElem"** %fCurElem.i, align 8, !dbg !15875, !tbaa !14906
+  %tobool.i33 = icmp eq %"struct.xercesc_2_5::RefHashTableBucketElem"* %8, null, !dbg !15875
+  br i1 %tobool.i33, label %land.lhs.true.i38, label %while.body11, !dbg !15875
+
+land.lhs.true.i38:                                ; preds = %while.cond8
+  %9 = load i32* %fCurHash.i, align 8, !dbg !15875, !tbaa !14899
+  %10 = load %"class.xercesc_2_5::RefHashTableOf.1"** %fToEnum.i, align 8, !dbg !15875, !tbaa !14906
+  %fHashModulus.i36 = getelementptr inbounds %"class.xercesc_2_5::RefHashTableOf.1"* %10, i64 0, i32 3, !dbg !15875
+  %11 = load i32* %fHashModulus.i36, align 4, !dbg !15875, !tbaa !14899
+  %cmp.i37 = icmp eq i32 %9, %11, !dbg !15875
+  br i1 %cmp.i37, label %while.end19, label %while.body11, !dbg !15875
+
+while.body11:                                     ; preds = %while.cond8, %land.lhs.true.i38
+  %call13 = invoke i8* @_ZN11xercesc_2_524RefHashTableOfEnumeratorINS_12KVStringPairEE14nextElementKeyEv(%"class.xercesc_2_5::RefHashTableOfEnumerator"* %e) #12
+          to label %invoke.cont12 unwind label %lpad.loopexit, !dbg !15876
+
+invoke.cont12:                                    ; preds = %while.body11
+  %12 = bitcast i8* %call13 to i16*, !dbg !15876
+  call void @llvm.dbg.value(metadata !{i16* %12}, i64 0, metadata !10196), !dbg !15876
+  invoke void @_ZN11xercesc_2_516XSerializeEngine11writeStringEPKtib(%"class.xercesc_2_5::XSerializeEngine"* %serEng, i16* %12, i32 0, i1 zeroext false) #12
+          to label %invoke.cont14 unwind label %lpad.loopexit, !dbg !15877
+
+invoke.cont14:                                    ; preds = %invoke.cont12
+  call void @llvm.lifetime.start(i64 4, i8* %7), !dbg !15870
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefHashTableOf.1"* %objToStore}, i64 0, metadata !15878), !dbg !15870
+  call void @llvm.dbg.value(metadata !{i8* %call13}, i64 0, metadata !15879), !dbg !15870
+  call void @llvm.dbg.declare(metadata !{i32* %hashVal.i}, metadata !13388), !dbg !15880
+  %call.i45 = invoke %"struct.xercesc_2_5::RefHashTableBucketElem"* @_ZN11xercesc_2_514RefHashTableOfINS_12KVStringPairEE14findBucketElemEPKvRj(%"class.xercesc_2_5::RefHashTableOf.1"* %objToStore, i8* %call13, i32* %hashVal.i) #12
+          to label %call.i.noexc unwind label %lpad.loopexit
+
+call.i.noexc:                                     ; preds = %invoke.cont14
+  call void @llvm.dbg.value(metadata !{%"struct.xercesc_2_5::RefHashTableBucketElem"* %call.i45}, i64 0, metadata !15881), !dbg !15882
+  %tobool.i42 = icmp eq %"struct.xercesc_2_5::RefHashTableBucketElem"* %call.i45, null, !dbg !15883
+  br i1 %tobool.i42, label %invoke.cont15, label %if.end.i43, !dbg !15883
+
+if.end.i43:                                       ; preds = %call.i.noexc
+  %fData.i = getelementptr inbounds %"struct.xercesc_2_5::RefHashTableBucketElem"* %call.i45, i64 0, i32 0, !dbg !15884
+  %13 = load %"class.xercesc_2_5::KVStringPair"** %fData.i, align 8, !dbg !15884, !tbaa !14906
+  br label %invoke.cont15, !dbg !15884
+
+invoke.cont15:                                    ; preds = %if.end.i43, %call.i.noexc
+  %retval.0.i44 = phi %"class.xercesc_2_5::KVStringPair"* [ %13, %if.end.i43 ], [ null, %call.i.noexc ]
+  call void @llvm.lifetime.end(i64 4, i8* %7), !dbg !15885
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::KVStringPair"* %retval.0.i44}, i64 0, metadata !10198), !dbg !15871
+  %14 = getelementptr inbounds %"class.xercesc_2_5::KVStringPair"* %retval.0.i44, i64 0, i32 0, !dbg !15886
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XSerializeEngine"* %serEng}, i64 0, metadata !15887), !dbg !15888
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XSerializable"* %14}, i64 0, metadata !15889), !dbg !15890
+  invoke void @_ZN11xercesc_2_516XSerializeEngine5writeEPNS_13XSerializableE(%"class.xercesc_2_5::XSerializeEngine"* %serEng, %"class.xercesc_2_5::XSerializable"* %14) #12
+          to label %while.cond8 unwind label %lpad.loopexit
+
+while.end19:                                      ; preds = %land.lhs.true.i38
+  call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefHashTableOfEnumerator"* %e}, i64 0, metadata !15891), !dbg !15893
+  call void @_ZN11xercesc_2_524RefHashTableOfEnumeratorINS_12KVStringPairEED2Ev(%"class.xercesc_2_5::RefHashTableOfEnumerator"* %e) #12, !dbg !15894
+  call void @llvm.lifetime.end(i64 48, i8* %1) #6, !dbg !15861
+  br label %if.end, !dbg !15861
+
+if.end:                                           ; preds = %while.end19, %entry
+  ret void, !dbg !15895
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %lpad.phi, !dbg !15861
+
+terminate.lpad:                                   ; preds = %lpad
+  %15 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !15861
+  %16 = extractvalue { i8*, i32 } %15, 0, !dbg !15861
+  call void @__clang_call_terminate(i8* %16) #11, !dbg !15861
+  unreachable, !dbg !15861
+}

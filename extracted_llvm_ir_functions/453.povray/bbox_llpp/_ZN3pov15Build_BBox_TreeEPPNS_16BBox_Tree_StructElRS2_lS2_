@@ -1,0 +1,134 @@
+define void @_ZN3pov15Build_BBox_TreeEPPNS_16BBox_Tree_StructElRS2_lS2_(%"struct.pov::BBox_Tree_Struct"** %Root, i64 %numOfFiniteObjects, %"struct.pov::BBox_Tree_Struct"*** %Finite, i64 %numOfInfiniteObjects, %"struct.pov::BBox_Tree_Struct"** nocapture %Infinite) #0 {
+entry:
+  %numOfFiniteObjects.addr = alloca i64, align 8
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BBox_Tree_Struct"** %Root}, i64 0, metadata !269), !dbg !1500
+  call void @llvm.dbg.value(metadata !{i64 %numOfFiniteObjects}, i64 0, metadata !270), !dbg !1500
+  store i64 %numOfFiniteObjects, i64* %numOfFiniteObjects.addr, align 8, !tbaa !1501
+  call void @llvm.dbg.declare(metadata !{i64* %numOfFiniteObjects.addr}, metadata !270), !dbg !1500
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BBox_Tree_Struct"*** %Finite}, i64 0, metadata !271), !dbg !1500
+  call void @llvm.dbg.value(metadata !{i64 %numOfInfiniteObjects}, i64 0, metadata !272), !dbg !1500
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BBox_Tree_Struct"** %Infinite}, i64 0, metadata !273), !dbg !1500
+  %mul = shl nsw i64 %numOfFiniteObjects, 1, !dbg !1502
+  store i64 %mul, i64* @_ZN3povL14maxfinitecountE, align 8, !dbg !1502, !tbaa !1501
+  call void @llvm.dbg.value(metadata !{i64* %numOfFiniteObjects.addr}, i64 0, metadata !270), !dbg !1503
+  %cmp = icmp sgt i64 %numOfFiniteObjects, 0, !dbg !1503
+  br i1 %cmp, label %while.cond.preheader, label %if.else, !dbg !1503
+
+while.cond.preheader:                             ; preds = %entry
+  %call96 = call fastcc i32 @_ZN3povL14sort_and_splitEPPNS_16BBox_Tree_StructERS2_Plll(%"struct.pov::BBox_Tree_Struct"** %Root, %"struct.pov::BBox_Tree_Struct"*** %Finite, i64* %numOfFiniteObjects.addr, i64 0, i64 %numOfFiniteObjects) #6, !dbg !1504
+  %cmp197 = icmp eq i32 %call96, 0, !dbg !1504
+  br i1 %cmp197, label %while.body, label %while.end, !dbg !1504
+
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %high.098 = phi i64 [ %0, %while.body ], [ %numOfFiniteObjects, %while.cond.preheader ]
+  call void @llvm.dbg.value(metadata !{i64 %high.098}, i64 0, metadata !275), !dbg !1506
+  call void @llvm.dbg.value(metadata !{i64* %numOfFiniteObjects.addr}, i64 0, metadata !270), !dbg !1508
+  %0 = load i64* %numOfFiniteObjects.addr, align 8, !dbg !1508, !tbaa !1501
+  call void @llvm.dbg.value(metadata !{i64 %0}, i64 0, metadata !276), !dbg !1508
+  call void @_ZN3pov12Do_CooperateEi(i32 0) #6, !dbg !1509
+  %call = call fastcc i32 @_ZN3povL14sort_and_splitEPPNS_16BBox_Tree_StructERS2_Plll(%"struct.pov::BBox_Tree_Struct"** %Root, %"struct.pov::BBox_Tree_Struct"*** %Finite, i64* %numOfFiniteObjects.addr, i64 %high.098, i64 %0) #6, !dbg !1504
+  %cmp1 = icmp eq i32 %call, 0, !dbg !1504
+  br i1 %cmp1, label %while.body, label %while.end, !dbg !1504
+
+while.end:                                        ; preds = %while.body, %while.cond.preheader
+  %cmp2 = icmp sgt i64 %numOfInfiniteObjects, 0, !dbg !1510
+  br i1 %cmp2, label %for.body.lr.ph, label %if.end54, !dbg !1510
+
+for.body.lr.ph:                                   ; preds = %while.end
+  %1 = load %"struct.pov::BBox_Tree_Struct"** %Root, align 8, !dbg !1511, !tbaa !1312
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BBox_Tree_Struct"* %1}, i64 0, metadata !278), !dbg !1511
+  %Node = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %1, i64 0, i32 3, !dbg !1513
+  %2 = load %"struct.pov::BBox_Tree_Struct"*** %Node, align 8, !dbg !1513, !tbaa !1312
+  %3 = bitcast %"struct.pov::BBox_Tree_Struct"** %2 to i8*, !dbg !1513
+  %Entries = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %1, i64 0, i32 1, !dbg !1513
+  %4 = load i16* %Entries, align 2, !dbg !1513, !tbaa !1345
+  %conv = sext i16 %4 to i64, !dbg !1513
+  %add = shl nsw i64 %conv, 3, !dbg !1513
+  %mul5 = add i64 %add, 8, !dbg !1513
+  %call6 = call i8* @_ZN3pov11pov_reallocEPvmPKciS2_(i8* %3, i64 %mul5, i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 556, i8* getelementptr inbounds ([10 x i8]* @.str2, i64 0, i64 0)) #6, !dbg !1513
+  %5 = bitcast i8* %call6 to %"struct.pov::BBox_Tree_Struct"**, !dbg !1513
+  store %"struct.pov::BBox_Tree_Struct"** %5, %"struct.pov::BBox_Tree_Struct"*** %Node, align 8, !dbg !1513, !tbaa !1312
+  %arrayidx = getelementptr inbounds i8* %call6, i64 8, !dbg !1514
+  %6 = load i16* %Entries, align 2, !dbg !1514, !tbaa !1345
+  %conv12 = sext i16 %6 to i64, !dbg !1514
+  %mul13 = shl nsw i64 %conv12, 3, !dbg !1514
+  %call14 = call i8* @_ZN3pov11pov_memmoveEPvS0_m(i8* %arrayidx, i8* %call6, i64 %mul13) #6, !dbg !1514
+  %7 = load i16* %Entries, align 2, !dbg !1515, !tbaa !1345
+  %inc = add i16 %7, 1, !dbg !1515
+  store i16 %inc, i16* %Entries, align 2, !dbg !1515, !tbaa !1345
+  %conv16 = trunc i64 %numOfInfiniteObjects to i32, !dbg !1516
+  %call17 = call fastcc %"struct.pov::BBox_Tree_Struct"* @_ZN3povL16create_bbox_nodeEi(i32 %conv16) #6, !dbg !1516
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BBox_Tree_Struct"* %call17}, i64 0, metadata !277), !dbg !1516
+  call void @llvm.dbg.value(metadata !1517, i64 0, metadata !274), !dbg !1518
+  %Node22 = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %call17, i64 0, i32 3, !dbg !1520
+  br label %for.body, !dbg !1518
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %conv1895 = phi i64 [ 0, %for.body.lr.ph ], [ %conv18, %for.body ]
+  %i.094 = phi i16 [ 0, %for.body.lr.ph ], [ %inc24, %for.body ]
+  %arrayidx20 = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"** %Infinite, i64 %conv1895, !dbg !1520
+  %8 = load %"struct.pov::BBox_Tree_Struct"** %arrayidx20, align 8, !dbg !1520, !tbaa !1312
+  %9 = load %"struct.pov::BBox_Tree_Struct"*** %Node22, align 8, !dbg !1520, !tbaa !1312
+  %arrayidx23 = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"** %9, i64 %conv1895, !dbg !1520
+  store %"struct.pov::BBox_Tree_Struct"* %8, %"struct.pov::BBox_Tree_Struct"** %arrayidx23, align 8, !dbg !1520, !tbaa !1312
+  %inc24 = add i16 %i.094, 1, !dbg !1518
+  call void @llvm.dbg.value(metadata !{i16 %inc24}, i64 0, metadata !274), !dbg !1518
+  %conv18 = sext i16 %inc24 to i64, !dbg !1518
+  %cmp19 = icmp slt i64 %conv18, %numOfInfiniteObjects, !dbg !1518
+  br i1 %cmp19, label %for.body, label %for.end, !dbg !1518
+
+for.end:                                          ; preds = %for.body
+  %BBox = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %call17, i64 0, i32 2, !dbg !1522
+  call fastcc void @_ZN3povL9calc_bboxEPNS_19Bounding_Box_StructEPPNS_16BBox_Tree_StructEll(%"struct.pov::Bounding_Box_Struct"* %BBox, %"struct.pov::BBox_Tree_Struct"** %Infinite, i64 0, i64 %numOfInfiniteObjects) #6, !dbg !1522
+  %10 = load %"struct.pov::BBox_Tree_Struct"*** %Node, align 8, !dbg !1523, !tbaa !1312
+  store %"struct.pov::BBox_Tree_Struct"* %call17, %"struct.pov::BBox_Tree_Struct"** %10, align 8, !dbg !1523, !tbaa !1312
+  %BBox27 = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %1, i64 0, i32 2, !dbg !1524
+  %11 = load %"struct.pov::BBox_Tree_Struct"*** %Node, align 8, !dbg !1524, !tbaa !1312
+  %12 = load i16* %Entries, align 2, !dbg !1524, !tbaa !1345
+  %conv30 = sext i16 %12 to i64, !dbg !1524
+  call fastcc void @_ZN3povL9calc_bboxEPNS_19Bounding_Box_StructEPPNS_16BBox_Tree_StructEll(%"struct.pov::Bounding_Box_Struct"* %BBox27, %"struct.pov::BBox_Tree_Struct"** %11, i64 0, i64 %conv30) #6, !dbg !1524
+  %Infinite31 = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %1, i64 0, i32 0, !dbg !1525
+  store i16 1, i16* %Infinite31, align 2, !dbg !1525, !tbaa !1345
+  %13 = load %"struct.pov::BBox_Tree_Struct"*** %Node, align 8, !dbg !1526, !tbaa !1312
+  %14 = load %"struct.pov::BBox_Tree_Struct"** %13, align 8, !dbg !1526, !tbaa !1312
+  %Infinite34 = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %14, i64 0, i32 0, !dbg !1526
+  store i16 1, i16* %Infinite34, align 2, !dbg !1526, !tbaa !1345
+  br label %if.end54, !dbg !1527
+
+if.else:                                          ; preds = %entry
+  %cmp35 = icmp sgt i64 %numOfInfiniteObjects, 0, !dbg !1528
+  br i1 %cmp35, label %for.body42.lr.ph, label %if.end54, !dbg !1528
+
+for.body42.lr.ph:                                 ; preds = %if.else
+  %conv37 = trunc i64 %numOfInfiniteObjects to i32, !dbg !1530
+  %call38 = call fastcc %"struct.pov::BBox_Tree_Struct"* @_ZN3povL16create_bbox_nodeEi(i32 %conv37) #6, !dbg !1530
+  call void @llvm.dbg.value(metadata !{%"struct.pov::BBox_Tree_Struct"* %call38}, i64 0, metadata !277), !dbg !1530
+  call void @llvm.dbg.value(metadata !1517, i64 0, metadata !274), !dbg !1532
+  %Node46 = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %call38, i64 0, i32 3, !dbg !1534
+  br label %for.body42, !dbg !1532
+
+for.body42:                                       ; preds = %for.body42.lr.ph, %for.body42
+  %conv40101 = phi i64 [ 0, %for.body42.lr.ph ], [ %conv40, %for.body42 ]
+  %i.1100 = phi i16 [ 0, %for.body42.lr.ph ], [ %inc49, %for.body42 ]
+  %arrayidx44 = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"** %Infinite, i64 %conv40101, !dbg !1534
+  %15 = load %"struct.pov::BBox_Tree_Struct"** %arrayidx44, align 8, !dbg !1534, !tbaa !1312
+  %16 = load %"struct.pov::BBox_Tree_Struct"*** %Node46, align 8, !dbg !1534, !tbaa !1312
+  %arrayidx47 = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"** %16, i64 %conv40101, !dbg !1534
+  store %"struct.pov::BBox_Tree_Struct"* %15, %"struct.pov::BBox_Tree_Struct"** %arrayidx47, align 8, !dbg !1534, !tbaa !1312
+  %inc49 = add i16 %i.1100, 1, !dbg !1532
+  call void @llvm.dbg.value(metadata !{i16 %inc49}, i64 0, metadata !274), !dbg !1532
+  %conv40 = sext i16 %inc49 to i64, !dbg !1532
+  %cmp41 = icmp slt i64 %conv40, %numOfInfiniteObjects, !dbg !1532
+  br i1 %cmp41, label %for.body42, label %for.end50, !dbg !1532
+
+for.end50:                                        ; preds = %for.body42
+  %BBox51 = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %call38, i64 0, i32 2, !dbg !1536
+  call fastcc void @_ZN3povL9calc_bboxEPNS_19Bounding_Box_StructEPPNS_16BBox_Tree_StructEll(%"struct.pov::Bounding_Box_Struct"* %BBox51, %"struct.pov::BBox_Tree_Struct"** %Infinite, i64 0, i64 %numOfInfiniteObjects) #6, !dbg !1536
+  store %"struct.pov::BBox_Tree_Struct"* %call38, %"struct.pov::BBox_Tree_Struct"** %Root, align 8, !dbg !1537, !tbaa !1312
+  %Infinite52 = getelementptr inbounds %"struct.pov::BBox_Tree_Struct"* %call38, i64 0, i32 0, !dbg !1538
+  store i16 1, i16* %Infinite52, align 2, !dbg !1538, !tbaa !1345
+  br label %if.end54, !dbg !1539
+
+if.end54:                                         ; preds = %if.else, %for.end50, %while.end, %for.end
+  ret void, !dbg !1540
+}

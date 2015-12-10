@@ -1,26 +1,29 @@
-define i32 @PUGH_DecomposeIJK(i32 %dim, i32 %ijk, i32* nocapture readonly %nprocs, i32* nocapture %pos) #1 {
-  %1 = icmp sgt i32 %dim, 0
-  br i1 %1, label %.lr.ph, label %._crit_edge
+define i32 @PUGH_DecomposeIJK(i32 %dim, i32 %ijk, i32* nocapture %nprocs, i32* nocapture %pos) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %dim}, i64 0, metadata !122), !dbg !921
+  tail call void @llvm.dbg.value(metadata !{i32 %ijk}, i64 0, metadata !123), !dbg !921
+  tail call void @llvm.dbg.value(metadata !{i32* %nprocs}, i64 0, metadata !124), !dbg !921
+  tail call void @llvm.dbg.value(metadata !{i32* %pos}, i64 0, metadata !125), !dbg !921
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !126), !dbg !922
+  %cmp11 = icmp sgt i32 %dim, 0, !dbg !922
+  br i1 %cmp11, label %for.body, label %for.end, !dbg !922
 
-.lr.ph:                                           ; preds = %0
-  %2 = add i32 %dim, -1
-  br label %3
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %ijk.addr.012 = phi i32 [ %div, %for.body ], [ %ijk, %entry ]
+  %arrayidx = getelementptr inbounds i32* %nprocs, i64 %indvars.iv, !dbg !923
+  %0 = load i32* %arrayidx, align 4, !dbg !923, !tbaa !381
+  %rem = srem i32 %ijk.addr.012, %0, !dbg !923
+  %arrayidx2 = getelementptr inbounds i32* %pos, i64 %indvars.iv, !dbg !923
+  store i32 %rem, i32* %arrayidx2, align 4, !dbg !923, !tbaa !381
+  %1 = load i32* %arrayidx, align 4, !dbg !924, !tbaa !381
+  %div = sdiv i32 %ijk.addr.012, %1, !dbg !924
+  tail call void @llvm.dbg.value(metadata !{i32 %div}, i64 0, metadata !123), !dbg !924
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !922
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !922
+  %exitcond = icmp eq i32 %lftr.wideiv, %dim, !dbg !922
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !922
 
-; <label>:3                                       ; preds = %3, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
-  %.01 = phi i32 [ %ijk, %.lr.ph ], [ %9, %3 ]
-  %4 = getelementptr inbounds i32* %nprocs, i64 %indvars.iv
-  %5 = load i32* %4, align 4, !tbaa !20
-  %6 = srem i32 %.01, %5
-  %7 = getelementptr inbounds i32* %pos, i64 %indvars.iv
-  store i32 %6, i32* %7, align 4, !tbaa !20
-  %8 = load i32* %4, align 4, !tbaa !20
-  %9 = sdiv i32 %.01, %8
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %2
-  br i1 %exitcond, label %._crit_edge, label %3
-
-._crit_edge:                                      ; preds = %3, %0
-  ret i32 0
+for.end:                                          ; preds = %for.body, %entry
+  ret i32 0, !dbg !925
 }

@@ -1,0 +1,35 @@
+define void @_ZN10xalanc_1_814DOMSupportInitD2Ev(%"class.xalanc_1_8::DOMSupportInit"* %this) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xalanc_1_8::DOMSupportInit"* %this}, i64 0, metadata !97), !dbg !121
+  %0 = load i64* @_ZN10xalanc_1_814DOMSupportInit13s_initCounterE, align 8, !dbg !122, !tbaa !112
+  %dec = add i64 %0, -1, !dbg !122
+  store i64 %dec, i64* @_ZN10xalanc_1_814DOMSupportInit13s_initCounterE, align 8, !dbg !122, !tbaa !112
+  %cmp = icmp eq i64 %dec, 0, !dbg !124
+  br i1 %cmp, label %if.then, label %if.end, !dbg !124
+
+if.then:                                          ; preds = %entry
+  invoke void @_ZN10xalanc_1_811DOMServices9terminateEv() #4
+          to label %if.end unwind label %lpad
+
+lpad:                                             ; preds = %if.then
+  %1 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !125
+  %m_platformSupportInit2 = getelementptr inbounds %"class.xalanc_1_8::DOMSupportInit"* %this, i64 0, i32 0, !dbg !127
+  invoke void @_ZN10xalanc_1_819PlatformSupportInitD1Ev(%"class.xalanc_1_8::PlatformSupportInit"* %m_platformSupportInit2) #4
+          to label %eh.resume unwind label %terminate.lpad, !dbg !127
+
+if.end:                                           ; preds = %if.then, %entry
+  %m_platformSupportInit = getelementptr inbounds %"class.xalanc_1_8::DOMSupportInit"* %this, i64 0, i32 0, !dbg !128
+  tail call void @_ZN10xalanc_1_819PlatformSupportInitD1Ev(%"class.xalanc_1_8::PlatformSupportInit"* %m_platformSupportInit) #4, !dbg !128
+  ret void, !dbg !127
+
+eh.resume:                                        ; preds = %lpad
+  resume { i8*, i32 } %1, !dbg !127
+
+terminate.lpad:                                   ; preds = %lpad
+  %2 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !127
+  %3 = extractvalue { i8*, i32 } %2, 0, !dbg !127
+  tail call void @__clang_call_terminate(i8* %3) #5, !dbg !127
+  unreachable, !dbg !127
+}

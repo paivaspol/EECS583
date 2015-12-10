@@ -1,12 +1,16 @@
-define i32 @available(%struct.__sFILE* nocapture %fp, i8* readnone %p, i8* %title) #4 {
-  %1 = icmp ne i8* %p, null
-  br i1 %1, label %4, label %2
+define i32 @available(%struct._IO_FILE* nocapture %fp, i8* %p, i8* %title) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !222), !dbg !934
+  tail call void @llvm.dbg.value(metadata !{i8* %p}, i64 0, metadata !223), !dbg !934
+  tail call void @llvm.dbg.value(metadata !{i8* %title}, i64 0, metadata !224), !dbg !934
+  %tobool = icmp ne i8* %p, null, !dbg !935
+  br i1 %tobool, label %if.end, label %if.then, !dbg !935
 
-; <label>:2                                       ; preds = %0
-  %3 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([19 x i8]* @.str, i64 0, i64 0), i8* %title) #8
-  br label %4
+if.then:                                          ; preds = %entry
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([19 x i8]* @.str, i64 0, i64 0), i8* %title) #5, !dbg !935
+  br label %if.end, !dbg !935
 
-; <label>:4                                       ; preds = %2, %0
-  %5 = zext i1 %1 to i32
-  ret i32 %5
+if.end:                                           ; preds = %if.then, %entry
+  %conv = zext i1 %tobool to i32, !dbg !936
+  ret i32 %conv, !dbg !936
 }

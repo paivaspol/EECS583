@@ -1,0 +1,36 @@
+define zeroext i1 @_ZN12POVMS_Object10ReadObjectEPhi(%class.POVMS_Object* %this, i8* %stream, i32 %objectsize) #5 align 2 {
+entry:
+  %objectsize.addr = alloca i32, align 4
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Object* %this}, i64 0, metadata !948), !dbg !1636
+  call void @llvm.dbg.value(metadata !{i8* %stream}, i64 0, metadata !949), !dbg !1636
+  call void @llvm.dbg.value(metadata !{i32 %objectsize}, i64 0, metadata !950), !dbg !1636
+  store i32 %objectsize, i32* %objectsize.addr, align 4, !tbaa !1112
+  call void @llvm.dbg.declare(metadata !{i32* %objectsize.addr}, metadata !950), !dbg !1636
+  %cmp = icmp eq i8* %stream, null, !dbg !1637
+  %cmp2 = icmp eq i32 %objectsize, 0, !dbg !1638
+  %or.cond = or i1 %cmp, %cmp2, !dbg !1637
+  br i1 %or.cond, label %return, label %if.end4, !dbg !1637
+
+if.end4:                                          ; preds = %entry
+  %data = getelementptr inbounds %class.POVMS_Object* %this, i64 0, i32 0, i32 1, !dbg !1639
+  %call = call i32 @_Z18POVMSObject_DeleteP9POVMSData(%struct.POVMSData* %data) #12, !dbg !1639
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !951), !dbg !1639
+  %cmp5 = icmp eq i32 %call, 0, !dbg !1640
+  br i1 %cmp5, label %if.end7, label %return, !dbg !1640
+
+if.end7:                                          ; preds = %if.end4
+  %call9 = call i32 @_Z16POVMSStream_ReadP9POVMSDataPhPi(%struct.POVMSData* %data, i8* %stream, i32* %objectsize.addr) #12, !dbg !1641
+  call void @llvm.dbg.value(metadata !{i32 %call9}, i64 0, metadata !951), !dbg !1641
+  %cmp10 = icmp eq i32 %call9, 0, !dbg !1642
+  br i1 %cmp10, label %if.end12, label %return, !dbg !1642
+
+if.end12:                                         ; preds = %if.end7
+  call void @llvm.dbg.value(metadata !{i32* %objectsize.addr}, i64 0, metadata !950), !dbg !1643
+  %0 = load i32* %objectsize.addr, align 4, !dbg !1643, !tbaa !1112
+  %cmp13 = icmp eq i32 %0, 0, !dbg !1643
+  br label %return, !dbg !1644
+
+return:                                           ; preds = %if.end12, %if.end7, %if.end4, %entry
+  %retval.0 = phi i1 [ false, %entry ], [ false, %if.end4 ], [ false, %if.end7 ], [ %cmp13, %if.end12 ]
+  ret i1 %retval.0, !dbg !1644
+}

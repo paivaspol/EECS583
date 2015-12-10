@@ -1,23 +1,29 @@
-define internal fastcc void @add_dependence_list_and_free(%struct.rtx_def* %insn, %struct.rtx_def** nocapture %listp, i32 %dep_type) #1 {
+define internal fastcc void @add_dependence_list_and_free(%struct.rtx_def* %insn, %struct.rtx_def** nocapture %listp, i32 %dep_type) #2 {
 entry:
-  %0 = load %struct.rtx_def** %listp, align 8, !tbaa !0
-  store %struct.rtx_def* null, %struct.rtx_def** %listp, align 8, !tbaa !0
-  %tobool8 = icmp eq %struct.rtx_def* %0, null
-  br i1 %tobool8, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !619), !dbg !1369
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %listp}, i64 0, metadata !620), !dbg !1370
+  tail call void @llvm.dbg.value(metadata !{i32 %dep_type}, i64 0, metadata !621), !dbg !1371
+  %0 = load %struct.rtx_def** %listp, align 8, !dbg !1372, !tbaa !907
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %0}, i64 0, metadata !622), !dbg !1372
+  store %struct.rtx_def* null, %struct.rtx_def** %listp, align 8, !dbg !1372, !tbaa !907
+  %tobool8 = icmp eq %struct.rtx_def* %0, null, !dbg !1372
+  br i1 %tobool8, label %for.end, label %for.body, !dbg !1372
 
 for.body:                                         ; preds = %entry, %for.body
   %list.09 = phi %struct.rtx_def* [ %1, %for.body ], [ %0, %entry ]
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %list.09, i64 0, i32 1, i64 1
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %list.09, i64 0, i32 1, i64 0
-  %rtx3 = bitcast %union.rtunion_def* %arrayidx2 to %struct.rtx_def**
-  %2 = load %struct.rtx_def** %rtx3, align 8, !tbaa !0
-  tail call void @add_dependence(%struct.rtx_def* %insn, %struct.rtx_def* %2, i32 %dep_type) #6
-  tail call void @free_INSN_LIST_node(%struct.rtx_def* %list.09) #7
-  %tobool = icmp eq %struct.rtx_def* %1, null
-  br i1 %tobool, label %for.end, label %for.body
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %list.09, i64 0, i32 1, i64 1, !dbg !1374
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !1374
+  %1 = load %struct.rtx_def** %rtx, align 8, !dbg !1374, !tbaa !907
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %1}, i64 0, metadata !623), !dbg !1374
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def* %list.09, i64 0, i32 1, i64 0, !dbg !1376
+  %rtx3 = bitcast %union.rtunion_def* %arrayidx2 to %struct.rtx_def**, !dbg !1376
+  %2 = load %struct.rtx_def** %rtx3, align 8, !dbg !1376, !tbaa !907
+  tail call void @add_dependence(%struct.rtx_def* %insn, %struct.rtx_def* %2, i32 %dep_type) #7, !dbg !1376
+  tail call void @free_INSN_LIST_node(%struct.rtx_def* %list.09) #8, !dbg !1377
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %1}, i64 0, metadata !622), !dbg !1372
+  %tobool = icmp eq %struct.rtx_def* %1, null, !dbg !1372
+  br i1 %tobool, label %for.end, label %for.body, !dbg !1372
 
 for.end:                                          ; preds = %for.body, %entry
-  ret void
+  ret void, !dbg !1378
 }

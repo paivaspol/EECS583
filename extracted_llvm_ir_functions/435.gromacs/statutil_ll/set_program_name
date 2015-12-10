@@ -1,29 +1,31 @@
-define void @set_program_name(i8* nocapture readonly %argvzero) #1 {
-  %1 = load i8** @program, align 8, !tbaa !19
-  %2 = icmp eq i8* %1, null
-  br i1 %2, label %3, label %14
+define void @set_program_name(i8* nocapture %argvzero) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %argvzero}, i64 0, metadata !99), !dbg !646
+  %0 = load i8** @program, align 8, !dbg !647, !tbaa !636
+  %cmp = icmp eq i8* %0, null, !dbg !647
+  br i1 %cmp, label %if.then, label %if.end6, !dbg !647
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i64 @strlen(i8* %argvzero) #12
-  %5 = icmp ugt i64 %4, 3
-  br i1 %5, label %6, label %12
+if.then:                                          ; preds = %entry
+  %call = tail call i64 @strlen(i8* %argvzero) #10, !dbg !648
+  %cmp1 = icmp ugt i64 %call, 3, !dbg !648
+  br i1 %cmp1, label %land.lhs.true, label %if.else, !dbg !648
 
-; <label>:6                                       ; preds = %3
-  %7 = tail call i32 @strncmp(i8* %argvzero, i8* getelementptr inbounds ([4 x i8]* @.str1, i64 0, i64 0), i64 3) #12
-  %8 = icmp eq i32 %7, 0
-  br i1 %8, label %9, label %12
+land.lhs.true:                                    ; preds = %if.then
+  %call2 = tail call i32 @strncmp(i8* %argvzero, i8* getelementptr inbounds ([4 x i8]* @.str1, i64 0, i64 0), i64 3) #10, !dbg !648
+  %tobool = icmp eq i32 %call2, 0, !dbg !648
+  br i1 %tobool, label %if.then3, label %if.else, !dbg !648
 
-; <label>:9                                       ; preds = %6
-  %10 = getelementptr inbounds i8* %argvzero, i64 3
-  %11 = tail call i8* @strdup(i8* %10) #12
-  store i8* %11, i8** @program, align 8, !tbaa !19
-  br label %14
+if.then3:                                         ; preds = %land.lhs.true
+  %add.ptr = getelementptr inbounds i8* %argvzero, i64 3, !dbg !650
+  %call4 = tail call noalias i8* @strdup(i8* %add.ptr) #11, !dbg !650
+  store i8* %call4, i8** @program, align 8, !dbg !650, !tbaa !636
+  br label %if.end6, !dbg !650
 
-; <label>:12                                      ; preds = %6, %3
-  %13 = tail call i8* @strdup(i8* %argvzero) #12
-  store i8* %13, i8** @program, align 8, !tbaa !19
-  br label %14
+if.else:                                          ; preds = %land.lhs.true, %if.then
+  %call5 = tail call noalias i8* @strdup(i8* %argvzero) #11, !dbg !651
+  store i8* %call5, i8** @program, align 8, !dbg !651, !tbaa !636
+  br label %if.end6
 
-; <label>:14                                      ; preds = %9, %12, %0
-  ret void
+if.end6:                                          ; preds = %if.then3, %if.else, %entry
+  ret void, !dbg !652
 }

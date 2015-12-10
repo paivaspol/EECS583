@@ -1,73 +1,81 @@
 define i32 @I2Ohash_locate(%struct._I2Ohash* %hashtable, i32 %key1, i32 %key2, i8** %pvalue) #0 {
 entry:
-  %cmp = icmp eq %struct._I2Ohash* %hashtable, null
-  %cmp1 = icmp eq i8** %pvalue, null
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._I2Ohash* %hashtable}, i64 0, metadata !49), !dbg !128
+  tail call void @llvm.dbg.value(metadata !{i32 %key1}, i64 0, metadata !50), !dbg !129
+  tail call void @llvm.dbg.value(metadata !{i32 %key2}, i64 0, metadata !51), !dbg !130
+  tail call void @llvm.dbg.value(metadata !{i8** %pvalue}, i64 0, metadata !52), !dbg !131
+  %cmp = icmp eq %struct._I2Ohash* %hashtable, null, !dbg !132
+  %cmp1 = icmp eq i8** %pvalue, null, !dbg !132
+  %or.cond = or i1 %cmp, %cmp1, !dbg !132
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !132
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([69 x i8]* @.str2, i64 0, i64 0), %struct._I2Ohash* %hashtable, i32 %key1, i32 %key2, i8** %pvalue) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !133, !tbaa !87
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([69 x i8]* @.str2, i64 0, i64 0), %struct._I2Ohash* %hashtable, i32 %key1, i32 %key2, i8** %pvalue) #5, !dbg !133
+  tail call void @exit(i32 -1) #6, !dbg !135
+  unreachable, !dbg !135
 
 if.end:                                           ; preds = %entry
-  %add = add nsw i32 %key1, 1
-  %nlist = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 0
-  %1 = load i32* %nlist, align 4, !tbaa !3
-  %rem = srem i32 %add, %1
-  %add2 = add nsw i32 %key2, 1
-  %rem4 = srem i32 %add2, %1
-  %mul = mul nsw i32 %rem4, %rem
-  %rem6 = srem i32 %mul, %1
-  %idxprom = sext i32 %rem6 to i64
-  %heads = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 5
-  %2 = load %struct._I2OP*** %heads, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds %struct._I2OP** %2, i64 %idxprom
-  %i2op.053 = load %struct._I2OP** %arrayidx, align 8
-  %cmp754 = icmp eq %struct._I2OP* %i2op.053, null
-  br i1 %cmp754, label %if.end23, label %for.body
+  %add = add nsw i32 %key1, 1, !dbg !136
+  %nlist = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 0, !dbg !136
+  %1 = load i32* %nlist, align 4, !dbg !136, !tbaa !92
+  %rem = srem i32 %add, %1, !dbg !136
+  tail call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !54), !dbg !136
+  %add2 = add nsw i32 %key2, 1, !dbg !137
+  %rem4 = srem i32 %add2, %1, !dbg !137
+  tail call void @llvm.dbg.value(metadata !{i32 %rem4}, i64 0, metadata !55), !dbg !137
+  %mul = mul nsw i32 %rem4, %rem, !dbg !138
+  %rem6 = srem i32 %mul, %1, !dbg !138
+  tail call void @llvm.dbg.value(metadata !{i32 %rem6}, i64 0, metadata !53), !dbg !138
+  %idxprom = sext i32 %rem6 to i64, !dbg !139
+  %heads = getelementptr inbounds %struct._I2Ohash* %hashtable, i64 0, i32 5, !dbg !139
+  %2 = load %struct._I2OP*** %heads, align 8, !dbg !139, !tbaa !87
+  %arrayidx = getelementptr inbounds %struct._I2OP** %2, i64 %idxprom, !dbg !139
+  %i2op.053 = load %struct._I2OP** %arrayidx, align 8, !dbg !139
+  %cmp754 = icmp eq %struct._I2OP* %i2op.053, null, !dbg !139
+  br i1 %cmp754, label %if.end23, label %for.body, !dbg !139
 
 for.body:                                         ; preds = %if.end, %for.inc
   %i2op.055 = phi %struct._I2OP* [ %i2op.0, %for.inc ], [ %i2op.053, %if.end ]
-  %value0 = getelementptr inbounds %struct._I2OP* %i2op.055, i64 0, i32 0
-  %3 = load i32* %value0, align 4, !tbaa !3
-  %cmp8 = icmp sgt i32 %3, %key1
-  br i1 %cmp8, label %land.lhs.true16, label %lor.lhs.false9
+  %value0 = getelementptr inbounds %struct._I2OP* %i2op.055, i64 0, i32 0, !dbg !141
+  %3 = load i32* %value0, align 4, !dbg !141, !tbaa !92
+  %cmp8 = icmp sgt i32 %3, %key1, !dbg !141
+  br i1 %cmp8, label %land.lhs.true16, label %lor.lhs.false9, !dbg !141
 
 lor.lhs.false9:                                   ; preds = %for.body
-  %cmp11 = icmp eq i32 %3, %key1
-  br i1 %cmp11, label %land.lhs.true, label %for.inc
+  %cmp11 = icmp eq i32 %3, %key1, !dbg !141
+  br i1 %cmp11, label %land.lhs.true, label %for.inc, !dbg !141
 
 land.lhs.true:                                    ; preds = %lor.lhs.false9
-  %value1 = getelementptr inbounds %struct._I2OP* %i2op.055, i64 0, i32 1
-  %4 = load i32* %value1, align 4, !tbaa !3
-  %cmp12 = icmp slt i32 %4, %key2
-  br i1 %cmp12, label %for.inc, label %land.lhs.true16
+  %value1 = getelementptr inbounds %struct._I2OP* %i2op.055, i64 0, i32 1, !dbg !141
+  %4 = load i32* %value1, align 4, !dbg !141, !tbaa !92
+  %cmp12 = icmp slt i32 %4, %key2, !dbg !141
+  br i1 %cmp12, label %for.inc, label %land.lhs.true16, !dbg !141
 
 for.inc:                                          ; preds = %land.lhs.true, %lor.lhs.false9
-  %next = getelementptr inbounds %struct._I2OP* %i2op.055, i64 0, i32 3
-  %i2op.0 = load %struct._I2OP** %next, align 8
-  %cmp7 = icmp eq %struct._I2OP* %i2op.0, null
-  br i1 %cmp7, label %if.end23, label %for.body
+  %next = getelementptr inbounds %struct._I2OP* %i2op.055, i64 0, i32 3, !dbg !143
+  %i2op.0 = load %struct._I2OP** %next, align 8, !dbg !139
+  %cmp7 = icmp eq %struct._I2OP* %i2op.0, null, !dbg !139
+  br i1 %cmp7, label %if.end23, label %for.body, !dbg !139
 
 land.lhs.true16:                                  ; preds = %for.body, %land.lhs.true
-  %cmp18 = icmp eq i32 %3, %key1
-  br i1 %cmp18, label %land.lhs.true19, label %if.end23
+  %cmp18 = icmp eq i32 %3, %key1, !dbg !144
+  br i1 %cmp18, label %land.lhs.true19, label %if.end23, !dbg !144
 
 land.lhs.true19:                                  ; preds = %land.lhs.true16
-  %value120 = getelementptr inbounds %struct._I2OP* %i2op.055, i64 0, i32 1
-  %5 = load i32* %value120, align 4, !tbaa !3
-  %cmp21 = icmp eq i32 %5, %key2
-  br i1 %cmp21, label %if.then22, label %if.end23
+  %value120 = getelementptr inbounds %struct._I2OP* %i2op.055, i64 0, i32 1, !dbg !144
+  %5 = load i32* %value120, align 4, !dbg !144, !tbaa !92
+  %cmp21 = icmp eq i32 %5, %key2, !dbg !144
+  br i1 %cmp21, label %if.then22, label %if.end23, !dbg !144
 
 if.then22:                                        ; preds = %land.lhs.true19
-  %value2 = getelementptr inbounds %struct._I2OP* %i2op.055, i64 0, i32 2
-  %6 = load i8** %value2, align 8, !tbaa !0
-  store i8* %6, i8** %pvalue, align 8, !tbaa !0
-  br label %if.end23
+  %value2 = getelementptr inbounds %struct._I2OP* %i2op.055, i64 0, i32 2, !dbg !145
+  %6 = load i8** %value2, align 8, !dbg !145, !tbaa !87
+  store i8* %6, i8** %pvalue, align 8, !dbg !145, !tbaa !87
+  tail call void @llvm.dbg.value(metadata !147, i64 0, metadata !56), !dbg !148
+  br label %if.end23, !dbg !149
 
 if.end23:                                         ; preds = %if.end, %for.inc, %if.then22, %land.lhs.true19, %land.lhs.true16
   %rc.0 = phi i32 [ 1, %if.then22 ], [ 0, %land.lhs.true19 ], [ 0, %land.lhs.true16 ], [ 0, %for.inc ], [ 0, %if.end ]
-  ret i32 %rc.0
+  ret i32 %rc.0, !dbg !150
 }

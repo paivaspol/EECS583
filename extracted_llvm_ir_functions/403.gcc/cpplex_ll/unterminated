@@ -1,28 +1,30 @@
-define internal fastcc void @unterminated(%struct.cpp_reader* %pfile, i32 %term) #1 {
+define internal fastcc void @unterminated(%struct.cpp_reader* %pfile, i32 %term) #2 {
 entry:
-  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_error(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([33 x i8]* @.str104, i64 0, i64 0), i32 %term) #9
-  %cmp = icmp eq i32 %term, 34
-  br i1 %cmp, label %land.lhs.true, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !903), !dbg !2333
+  tail call void @llvm.dbg.value(metadata !{i32 %term}, i64 0, metadata !904), !dbg !2334
+  tail call void (%struct.cpp_reader*, i8*, ...)* @cpp_error(%struct.cpp_reader* %pfile, i8* getelementptr inbounds ([33 x i8]* @.str104, i64 0, i64 0), i32 %term) #10, !dbg !2335
+  %cmp = icmp eq i32 %term, 34, !dbg !2336
+  br i1 %cmp, label %land.lhs.true, label %if.end, !dbg !2336
 
 land.lhs.true:                                    ; preds = %entry
-  %mls_line = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 21
-  %0 = load i32* %mls_line, align 4, !tbaa !3
-  %tobool = icmp eq i32 %0, 0
-  br i1 %tobool, label %if.end, label %land.lhs.true1
+  %mls_line = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 21, !dbg !2336
+  %0 = load i32* %mls_line, align 4, !dbg !2336, !tbaa !1019
+  %tobool = icmp eq i32 %0, 0, !dbg !2336
+  br i1 %tobool, label %if.end, label %land.lhs.true1, !dbg !2336
 
 land.lhs.true1:                                   ; preds = %land.lhs.true
-  %line = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 4
-  %1 = load i32* %line, align 4, !tbaa !3
-  %cmp3 = icmp eq i32 %0, %1
-  br i1 %cmp3, label %if.end, label %if.then
+  %line = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 4, !dbg !2336
+  %1 = load i32* %line, align 4, !dbg !2336, !tbaa !1019
+  %cmp3 = icmp eq i32 %0, %1, !dbg !2336
+  br i1 %cmp3, label %if.end, label %if.then, !dbg !2336
 
 if.then:                                          ; preds = %land.lhs.true1
-  %mls_col = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 22
-  %2 = load i32* %mls_col, align 4, !tbaa !3
-  tail call void (%struct.cpp_reader*, i32, i32, i8*, ...)* @cpp_error_with_line(%struct.cpp_reader* %pfile, i32 %0, i32 %2, i8* getelementptr inbounds ([46 x i8]* @.str105, i64 0, i64 0)) #9
-  store i32 0, i32* %mls_line, align 4, !tbaa !3
-  br label %if.end
+  %mls_col = getelementptr inbounds %struct.cpp_reader* %pfile, i64 0, i32 22, !dbg !2337
+  %2 = load i32* %mls_col, align 4, !dbg !2337, !tbaa !1019
+  tail call void (%struct.cpp_reader*, i32, i32, i8*, ...)* @cpp_error_with_line(%struct.cpp_reader* %pfile, i32 %0, i32 %2, i8* getelementptr inbounds ([46 x i8]* @.str105, i64 0, i64 0)) #10, !dbg !2337
+  store i32 0, i32* %mls_line, align 4, !dbg !2339, !tbaa !1019
+  br label %if.end, !dbg !2340
 
 if.end:                                           ; preds = %land.lhs.true1, %land.lhs.true, %if.then, %entry
-  ret void
+  ret void, !dbg !2341
 }

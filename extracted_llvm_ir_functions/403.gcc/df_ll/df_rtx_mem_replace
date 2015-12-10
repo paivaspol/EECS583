@@ -1,44 +1,47 @@
 define internal i32 @df_rtx_mem_replace(%struct.rtx_def** %px, i8* nocapture %data) #0 {
 entry:
-  %0 = load %struct.rtx_def** %px, align 8, !tbaa !3
-  %cmp = icmp eq %struct.rtx_def* %0, null
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %px}, i64 0, metadata !1126), !dbg !2921
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !1127), !dbg !2922
+  %0 = load %struct.rtx_def** %px, align 8, !dbg !2923, !tbaa !1898
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %0}, i64 0, metadata !1129), !dbg !2923
+  %cmp = icmp eq %struct.rtx_def* %0, null, !dbg !2924
+  br i1 %cmp, label %return, label %if.end, !dbg !2924
 
 if.end:                                           ; preds = %entry
-  %1 = bitcast %struct.rtx_def* %0 to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.clear = and i32 %bf.load, 65535
+  %1 = bitcast %struct.rtx_def* %0 to i32*, !dbg !2925
+  %bf.load = load i32* %1, align 8, !dbg !2925
+  %bf.clear = and i32 %bf.load, 65535, !dbg !2925
   switch i32 %bf.clear, label %sw.default [
     i32 66, label %sw.epilog
     i32 55, label %return
-  ]
+  ], !dbg !2925
 
 sw.default:                                       ; preds = %if.end
-  br label %return
+  br label %return, !dbg !2926
 
 sw.epilog:                                        ; preds = %if.end
-  %match = bitcast i8* %data to %struct.rtx_def**
-  %2 = load %struct.rtx_def** %match, align 8, !tbaa !3
-  %call = tail call i32 @rtx_equal_p(%struct.rtx_def* %2, %struct.rtx_def* %0) #8
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %return, label %if.end2
+  %match = bitcast i8* %data to %struct.rtx_def**, !dbg !2928
+  %2 = load %struct.rtx_def** %match, align 8, !dbg !2928, !tbaa !1898
+  %call = tail call i32 @rtx_equal_p(%struct.rtx_def* %2, %struct.rtx_def* %0) #9, !dbg !2928
+  %tobool = icmp eq i32 %call, 0, !dbg !2928
+  br i1 %tobool, label %return, label %if.end2, !dbg !2928
 
 if.end2:                                          ; preds = %sw.epilog
-  %insn = getelementptr inbounds i8* %data, i64 16
-  %3 = bitcast i8* %insn to %struct.rtx_def**
-  %4 = load %struct.rtx_def** %3, align 8, !tbaa !3
-  %replacement = getelementptr inbounds i8* %data, i64 8
-  %5 = bitcast i8* %replacement to %struct.rtx_def**
-  %6 = load %struct.rtx_def** %5, align 8, !tbaa !3
-  %call3 = tail call i32 @validate_change(%struct.rtx_def* %4, %struct.rtx_def** %px, %struct.rtx_def* %6, i32 1) #8
-  %modified = getelementptr inbounds i8* %data, i64 24
-  %7 = bitcast i8* %modified to i32*
-  %8 = load i32* %7, align 4, !tbaa !4
-  %inc = add nsw i32 %8, 1
-  store i32 %inc, i32* %7, align 4, !tbaa !4
-  br label %return
+  %insn = getelementptr inbounds i8* %data, i64 16, !dbg !2929
+  %3 = bitcast i8* %insn to %struct.rtx_def**, !dbg !2929
+  %4 = load %struct.rtx_def** %3, align 8, !dbg !2929, !tbaa !1898
+  %replacement = getelementptr inbounds i8* %data, i64 8, !dbg !2929
+  %5 = bitcast i8* %replacement to %struct.rtx_def**, !dbg !2929
+  %6 = load %struct.rtx_def** %5, align 8, !dbg !2929, !tbaa !1898
+  %call3 = tail call i32 @validate_change(%struct.rtx_def* %4, %struct.rtx_def** %px, %struct.rtx_def* %6, i32 1) #9, !dbg !2929
+  %modified = getelementptr inbounds i8* %data, i64 24, !dbg !2930
+  %7 = bitcast i8* %modified to i32*, !dbg !2930
+  %8 = load i32* %7, align 4, !dbg !2930, !tbaa !1899
+  %inc = add nsw i32 %8, 1, !dbg !2930
+  store i32 %inc, i32* %7, align 4, !dbg !2930, !tbaa !1899
+  br label %return, !dbg !2931
 
 return:                                           ; preds = %sw.epilog, %if.end, %entry, %if.end2, %sw.default
   %retval.0 = phi i32 [ 0, %sw.default ], [ 0, %if.end2 ], [ 0, %entry ], [ -1, %if.end ], [ 0, %sw.epilog ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !2931
 }

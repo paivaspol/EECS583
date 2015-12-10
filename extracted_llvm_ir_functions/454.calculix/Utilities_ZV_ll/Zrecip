@@ -1,42 +1,52 @@
 define i32 @Zrecip(double %areal, double %aimag, double* nocapture %pbreal, double* nocapture %pbimag) #0 {
 entry:
-  %cmp = fcmp oeq double %areal, 0.000000e+00
-  %cmp1 = fcmp oeq double %aimag, 0.000000e+00
-  %or.cond = and i1 %cmp, %cmp1
-  br i1 %or.cond, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{double %areal}, i64 0, metadata !20), !dbg !845
+  tail call void @llvm.dbg.value(metadata !{double %aimag}, i64 0, metadata !21), !dbg !846
+  tail call void @llvm.dbg.value(metadata !{double* %pbreal}, i64 0, metadata !22), !dbg !847
+  tail call void @llvm.dbg.value(metadata !{double* %pbimag}, i64 0, metadata !23), !dbg !848
+  %cmp = fcmp oeq double %areal, 0.000000e+00, !dbg !849
+  %cmp1 = fcmp oeq double %aimag, 0.000000e+00, !dbg !849
+  %or.cond = and i1 %cmp, %cmp1, !dbg !849
+  br i1 %or.cond, label %return, label %if.end, !dbg !849
 
 if.end:                                           ; preds = %entry
-  %call = tail call double @fabs(double %areal) #4
-  %call2 = tail call double @fabs(double %aimag) #4
-  %cmp3 = fcmp ult double %call, %call2
-  br i1 %cmp3, label %if.else, label %if.then4
+  %call = tail call double @fabs(double %areal) #5, !dbg !850
+  %call2 = tail call double @fabs(double %aimag) #5, !dbg !850
+  %cmp3 = fcmp ult double %call, %call2, !dbg !850
+  br i1 %cmp3, label %if.else, label %if.then4, !dbg !850
 
 if.then4:                                         ; preds = %if.end
-  %div = fdiv double %aimag, %areal
-  %mul = fmul double %div, %aimag
-  %add = fadd double %mul, %areal
-  %div5 = fdiv double 1.000000e+00, %add
-  %0 = fmul double %div, %div5
-  %mul6 = fsub double -0.000000e+00, %0
-  br label %if.end13
+  %div = fdiv double %aimag, %areal, !dbg !851
+  tail call void @llvm.dbg.value(metadata !{double %div}, i64 0, metadata !26), !dbg !851
+  %mul = fmul double %div, %aimag, !dbg !853
+  %add = fadd double %mul, %areal, !dbg !853
+  %div5 = fdiv double 1.000000e+00, %add, !dbg !853
+  tail call void @llvm.dbg.value(metadata !{double %div5}, i64 0, metadata !25), !dbg !853
+  %0 = fmul double %div, %div5, !dbg !854
+  %mul6 = fsub double -0.000000e+00, %0, !dbg !854
+  tail call void @llvm.dbg.value(metadata !{double %mul6}, i64 0, metadata !24), !dbg !854
+  br label %if.end13, !dbg !855
 
 if.else:                                          ; preds = %if.end
-  %div7 = fdiv double %areal, %aimag
-  %mul8 = fmul double %div7, %areal
-  %add9 = fadd double %mul8, %aimag
-  %div10 = fdiv double -1.000000e+00, %add9
-  %1 = fmul double %div7, %div10
-  %mul12 = fsub double -0.000000e+00, %1
+  %div7 = fdiv double %areal, %aimag, !dbg !856
+  tail call void @llvm.dbg.value(metadata !{double %div7}, i64 0, metadata !26), !dbg !856
+  %mul8 = fmul double %div7, %areal, !dbg !858
+  %add9 = fadd double %mul8, %aimag, !dbg !858
+  %div10 = fdiv double -1.000000e+00, %add9, !dbg !858
+  tail call void @llvm.dbg.value(metadata !{double %div10}, i64 0, metadata !24), !dbg !858
+  %1 = fmul double %div7, %div10, !dbg !859
+  %mul12 = fsub double -0.000000e+00, %1, !dbg !859
+  tail call void @llvm.dbg.value(metadata !{double %mul12}, i64 0, metadata !25), !dbg !859
   br label %if.end13
 
 if.end13:                                         ; preds = %if.else, %if.then4
   %bimag.0 = phi double [ %mul6, %if.then4 ], [ %div10, %if.else ]
   %breal.0 = phi double [ %div5, %if.then4 ], [ %mul12, %if.else ]
-  store double %breal.0, double* %pbreal, align 8, !tbaa !0
-  store double %bimag.0, double* %pbimag, align 8, !tbaa !0
-  br label %return
+  store double %breal.0, double* %pbreal, align 8, !dbg !860, !tbaa !861
+  store double %bimag.0, double* %pbimag, align 8, !dbg !864, !tbaa !861
+  br label %return, !dbg !865
 
 return:                                           ; preds = %entry, %if.end13
   %retval.0 = phi i32 [ 1, %if.end13 ], [ 0, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !865
 }

@@ -1,0 +1,128 @@
+define zeroext i1 @_ZN11xercesc_2_510RangeToken5matchEi(%"class.xercesc_2_5::RangeToken"* nocapture %this, i32 %ch) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RangeToken"* %this}, i64 0, metadata !1079), !dbg !1735
+  tail call void @llvm.dbg.value(metadata !{i32 %ch}, i64 0, metadata !1080), !dbg !1735
+  %fMap = getelementptr inbounds %"class.xercesc_2_5::RangeToken"* %this, i64 0, i32 6, !dbg !1736
+  %0 = load i32** %fMap, align 8, !dbg !1736, !tbaa !1417
+  %cmp = icmp eq i32* %0, null, !dbg !1736
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1736
+
+if.then:                                          ; preds = %entry
+  tail call void @_ZN11xercesc_2_510RangeToken9createMapEv(%"class.xercesc_2_5::RangeToken"* %this) #9, !dbg !1737
+  br label %if.end, !dbg !1737
+
+if.end:                                           ; preds = %if.then, %entry
+  %fTokenType.i = getelementptr inbounds %"class.xercesc_2_5::RangeToken"* %this, i64 0, i32 0, i32 1, !dbg !1738
+  %1 = load i16* %fTokenType.i, align 2, !dbg !1738, !tbaa !1434
+  %cmp2 = icmp eq i16 %1, 4, !dbg !1739
+  %cmp4 = icmp slt i32 %ch, 256, !dbg !1740
+  br i1 %cmp2, label %if.then3, label %if.else, !dbg !1739
+
+if.then3:                                         ; preds = %if.end
+  br i1 %cmp4, label %if.then5, label %if.end9, !dbg !1740
+
+if.then5:                                         ; preds = %if.then3
+  %div = sdiv i32 %ch, 32, !dbg !1741
+  %idxprom = sext i32 %div to i64, !dbg !1741
+  %2 = load i32** %fMap, align 8, !dbg !1741, !tbaa !1417
+  %arrayidx = getelementptr inbounds i32* %2, i64 %idxprom, !dbg !1741
+  %3 = load i32* %arrayidx, align 4, !dbg !1741, !tbaa !1416
+  %and = and i32 %ch, 31, !dbg !1741
+  %shl = shl i32 1, %and, !dbg !1741
+  %and7 = and i32 %3, %shl, !dbg !1741
+  %cmp8 = icmp ne i32 %and7, 0, !dbg !1741
+  br label %return, !dbg !1741
+
+if.end9:                                          ; preds = %if.then3
+  tail call void @llvm.dbg.value(metadata !1742, i64 0, metadata !1081), !dbg !1743
+  %fNonMapIndex = getelementptr inbounds %"class.xercesc_2_5::RangeToken"* %this, i64 0, i32 3, !dbg !1744
+  %4 = load i32* %fNonMapIndex, align 4, !dbg !1744, !tbaa !1416
+  tail call void @llvm.dbg.value(metadata !{i32 %4}, i64 0, metadata !1082), !dbg !1744
+  %fElemCount = getelementptr inbounds %"class.xercesc_2_5::RangeToken"* %this, i64 0, i32 4, !dbg !1744
+  %5 = load i32* %fElemCount, align 4, !dbg !1744, !tbaa !1416
+  %cmp1068 = icmp ult i32 %4, %5, !dbg !1744
+  br i1 %cmp1068, label %for.body.lr.ph, label %return, !dbg !1744
+
+for.body.lr.ph:                                   ; preds = %if.end9
+  %fRanges = getelementptr inbounds %"class.xercesc_2_5::RangeToken"* %this, i64 0, i32 7, !dbg !1745
+  %6 = load i32** %fRanges, align 8, !dbg !1745, !tbaa !1417
+  br label %for.body, !dbg !1744
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %i.069 = phi i32 [ %4, %for.body.lr.ph ], [ %add20, %for.inc ]
+  %idxprom11 = zext i32 %i.069 to i64, !dbg !1745
+  %arrayidx12 = getelementptr inbounds i32* %6, i64 %idxprom11, !dbg !1745
+  %7 = load i32* %arrayidx12, align 4, !dbg !1745, !tbaa !1416
+  %cmp13 = icmp sgt i32 %7, %ch, !dbg !1745
+  br i1 %cmp13, label %for.inc, label %land.lhs.true, !dbg !1745
+
+land.lhs.true:                                    ; preds = %for.body
+  %add = add i32 %i.069, 1, !dbg !1745
+  %idxprom14 = zext i32 %add to i64, !dbg !1745
+  %arrayidx16 = getelementptr inbounds i32* %6, i64 %idxprom14, !dbg !1745
+  %8 = load i32* %arrayidx16, align 4, !dbg !1745, !tbaa !1416
+  %cmp17 = icmp slt i32 %8, %ch, !dbg !1745
+  br i1 %cmp17, label %for.inc, label %return, !dbg !1745
+
+for.inc:                                          ; preds = %land.lhs.true, %for.body
+  %add20 = add i32 %i.069, 2, !dbg !1744
+  tail call void @llvm.dbg.value(metadata !{i32 %add20}, i64 0, metadata !1082), !dbg !1744
+  %cmp10 = icmp ult i32 %add20, %5, !dbg !1744
+  br i1 %cmp10, label %for.body, label %return, !dbg !1744
+
+if.else:                                          ; preds = %if.end
+  br i1 %cmp4, label %if.then22, label %if.end31, !dbg !1747
+
+if.then22:                                        ; preds = %if.else
+  %div23 = sdiv i32 %ch, 32, !dbg !1748
+  %idxprom24 = sext i32 %div23 to i64, !dbg !1748
+  %9 = load i32** %fMap, align 8, !dbg !1748, !tbaa !1417
+  %arrayidx26 = getelementptr inbounds i32* %9, i64 %idxprom24, !dbg !1748
+  %10 = load i32* %arrayidx26, align 4, !dbg !1748, !tbaa !1416
+  %and27 = and i32 %ch, 31, !dbg !1748
+  %shl28 = shl i32 1, %and27, !dbg !1748
+  %and29 = and i32 %10, %shl28, !dbg !1748
+  %cmp30 = icmp eq i32 %and29, 0, !dbg !1748
+  br label %return, !dbg !1748
+
+if.end31:                                         ; preds = %if.else
+  tail call void @llvm.dbg.value(metadata !1749, i64 0, metadata !1081), !dbg !1750
+  %fNonMapIndex33 = getelementptr inbounds %"class.xercesc_2_5::RangeToken"* %this, i64 0, i32 3, !dbg !1751
+  %11 = load i32* %fNonMapIndex33, align 4, !dbg !1751, !tbaa !1416
+  tail call void @llvm.dbg.value(metadata !{i32 %11}, i64 0, metadata !1085), !dbg !1751
+  %fElemCount35 = getelementptr inbounds %"class.xercesc_2_5::RangeToken"* %this, i64 0, i32 4, !dbg !1751
+  %12 = load i32* %fElemCount35, align 4, !dbg !1751, !tbaa !1416
+  %cmp3672 = icmp ult i32 %11, %12, !dbg !1751
+  br i1 %cmp3672, label %for.body37.lr.ph, label %return, !dbg !1751
+
+for.body37.lr.ph:                                 ; preds = %if.end31
+  %fRanges39 = getelementptr inbounds %"class.xercesc_2_5::RangeToken"* %this, i64 0, i32 7, !dbg !1752
+  %13 = load i32** %fRanges39, align 8, !dbg !1752, !tbaa !1417
+  br label %for.body37, !dbg !1751
+
+for.body37:                                       ; preds = %for.body37.lr.ph, %for.inc50
+  %i32.073 = phi i32 [ %11, %for.body37.lr.ph ], [ %add51, %for.inc50 ]
+  %idxprom38 = zext i32 %i32.073 to i64, !dbg !1752
+  %arrayidx40 = getelementptr inbounds i32* %13, i64 %idxprom38, !dbg !1752
+  %14 = load i32* %arrayidx40, align 4, !dbg !1752, !tbaa !1416
+  %cmp41 = icmp sgt i32 %14, %ch, !dbg !1752
+  br i1 %cmp41, label %for.inc50, label %land.lhs.true42, !dbg !1752
+
+land.lhs.true42:                                  ; preds = %for.body37
+  %add43 = add i32 %i32.073, 1, !dbg !1752
+  %idxprom44 = zext i32 %add43 to i64, !dbg !1752
+  %arrayidx46 = getelementptr inbounds i32* %13, i64 %idxprom44, !dbg !1752
+  %15 = load i32* %arrayidx46, align 4, !dbg !1752, !tbaa !1416
+  %cmp47 = icmp slt i32 %15, %ch, !dbg !1752
+  br i1 %cmp47, label %for.inc50, label %return, !dbg !1752
+
+for.inc50:                                        ; preds = %land.lhs.true42, %for.body37
+  %add51 = add i32 %i32.073, 2, !dbg !1751
+  tail call void @llvm.dbg.value(metadata !{i32 %add51}, i64 0, metadata !1085), !dbg !1751
+  %cmp36 = icmp ult i32 %add51, %12, !dbg !1751
+  br i1 %cmp36, label %for.body37, label %return, !dbg !1751
+
+return:                                           ; preds = %if.end31, %land.lhs.true42, %for.inc50, %if.end9, %land.lhs.true, %for.inc, %if.then22, %if.then5
+  %retval.0 = phi i1 [ %cmp8, %if.then5 ], [ %cmp30, %if.then22 ], [ false, %if.end9 ], [ true, %land.lhs.true ], [ false, %for.inc ], [ true, %if.end31 ], [ false, %land.lhs.true42 ], [ true, %for.inc50 ]
+  ret i1 %retval.0, !dbg !1754
+}

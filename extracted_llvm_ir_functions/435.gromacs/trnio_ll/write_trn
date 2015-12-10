@@ -1,14 +1,32 @@
-define void @write_trn(i8* %fn, i32 %step, float %t, float %lambda, [3 x float]* %box, i32 %natoms, [3 x float]* %x, [3 x float]* %v, [3 x float]* %f) #3 {
-  %1 = alloca i32, align 4
-  %2 = alloca float, align 4
-  %3 = alloca float, align 4
-  %4 = alloca i32, align 4
-  store i32 %step, i32* %1, align 4, !tbaa !24
-  store float %t, float* %2, align 4, !tbaa !26
-  store float %lambda, float* %3, align 4, !tbaa !26
-  store i32 %natoms, i32* %4, align 4, !tbaa !24
-  %5 = tail call i32 @gmx_fio_open(i8* %fn, i8* getelementptr inbounds ([2 x i8]* @.str10, i64 0, i64 0)) #6
-  %6 = call fastcc i32 @do_trn(i32 %5, i32 0, i32* %1, float* %2, float* %3, [3 x float]* %box, i32* %4, [3 x float]* %x, [3 x float]* %v, [3 x float]* %f) #7
-  tail call void @gmx_fio_close(i32 %5) #6
-  ret void
+define void @write_trn(i8* %fn, i32 %step, float %t, float %lambda, [3 x float]* %box, i32 %natoms, [3 x float]* %x, [3 x float]* %v, [3 x float]* %f) #0 {
+entry:
+  %step.addr = alloca i32, align 4
+  %t.addr = alloca float, align 4
+  %lambda.addr = alloca float, align 4
+  %natoms.addr = alloca i32, align 4
+  call void @llvm.dbg.value(metadata !{i8* %fn}, i64 0, metadata !131), !dbg !352
+  call void @llvm.dbg.value(metadata !{i32 %step}, i64 0, metadata !132), !dbg !352
+  store i32 %step, i32* %step.addr, align 4, !tbaa !263
+  call void @llvm.dbg.declare(metadata !{i32* %step.addr}, metadata !132), !dbg !352
+  call void @llvm.dbg.value(metadata !{float %t}, i64 0, metadata !133), !dbg !352
+  store float %t, float* %t.addr, align 4, !tbaa !278
+  call void @llvm.dbg.declare(metadata !{float* %t.addr}, metadata !133), !dbg !352
+  call void @llvm.dbg.value(metadata !{float %lambda}, i64 0, metadata !134), !dbg !352
+  store float %lambda, float* %lambda.addr, align 4, !tbaa !278
+  call void @llvm.dbg.declare(metadata !{float* %lambda.addr}, metadata !134), !dbg !352
+  call void @llvm.dbg.value(metadata !{[3 x float]* %box}, i64 0, metadata !135), !dbg !353
+  call void @llvm.dbg.value(metadata !{i32 %natoms}, i64 0, metadata !136), !dbg !353
+  store i32 %natoms, i32* %natoms.addr, align 4, !tbaa !263
+  call void @llvm.dbg.declare(metadata !{i32* %natoms.addr}, metadata !136), !dbg !353
+  call void @llvm.dbg.value(metadata !{[3 x float]* %x}, i64 0, metadata !137), !dbg !353
+  call void @llvm.dbg.value(metadata !{[3 x float]* %v}, i64 0, metadata !138), !dbg !353
+  call void @llvm.dbg.value(metadata !{[3 x float]* %f}, i64 0, metadata !139), !dbg !353
+  call void @llvm.dbg.value(metadata !{i8* %fn}, i64 0, metadata !354) #4, !dbg !356
+  call void @llvm.dbg.value(metadata !357, i64 0, metadata !358) #4, !dbg !356
+  %call.i = call i32 @gmx_fio_open(i8* %fn, i8* getelementptr inbounds ([2 x i8]* @.str10, i64 0, i64 0)) #5, !dbg !359
+  call void @llvm.dbg.value(metadata !{i32 %call.i}, i64 0, metadata !140), !dbg !355
+  %call1 = call fastcc i32 @do_trn(i32 %call.i, i32 0, i32* %step.addr, float* %t.addr, float* %lambda.addr, [3 x float]* %box, i32* %natoms.addr, [3 x float]* %x, [3 x float]* %v, [3 x float]* %f) #6, !dbg !360
+  call void @llvm.dbg.value(metadata !{i32 %call.i}, i64 0, metadata !361) #4, !dbg !363
+  call void @gmx_fio_close(i32 %call.i) #5, !dbg !364
+  ret void, !dbg !365
 }

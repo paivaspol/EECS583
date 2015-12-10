@@ -1,42 +1,46 @@
 define internal fastcc void @df_insn_table_realloc(%struct.df* nocapture %df, i32 %size) #0 {
 entry:
-  %tobool = icmp eq i32 %size, 0
-  %insn_size = getelementptr inbounds %struct.df* %df, i64 0, i32 8
-  %0 = load i32* %insn_size, align 4, !tbaa !4
-  %div = lshr i32 %0, 2
-  %size.addr.0 = select i1 %tobool, i32 %div, i32 %size
-  %insn_size1 = getelementptr inbounds %struct.df* %df, i64 0, i32 8
-  %add = add i32 %0, %size.addr.0
-  %insns = getelementptr inbounds %struct.df* %df, i64 0, i32 7
-  %1 = load %struct.insn_info** %insns, align 8, !tbaa !3
-  %2 = bitcast %struct.insn_info* %1 to i8*
-  %conv = sext i32 %add to i64
-  %mul = mul i64 %conv, 24
-  %call = tail call i8* @xrealloc(i8* %2, i64 %mul) #8
-  %3 = bitcast i8* %call to %struct.insn_info*
-  store %struct.insn_info* %3, %struct.insn_info** %insns, align 8, !tbaa !3
-  %4 = load i32* %insn_size1, align 4, !tbaa !4
-  %idx.ext = zext i32 %4 to i64
-  %add.ptr = getelementptr inbounds %struct.insn_info* %3, i64 %idx.ext
-  %5 = bitcast %struct.insn_info* %add.ptr to i8*
-  %sub = sub i32 %add, %4
-  %conv6 = zext i32 %sub to i64
-  %mul7 = mul i64 %conv6, 24
-  tail call void @llvm.memset.p0i8.i64(i8* %5, i8 0, i64 %mul7, i32 8, i1 false)
-  store i32 %add, i32* %insn_size1, align 4, !tbaa !4
-  %insns_modified = getelementptr inbounds %struct.df* %df, i64 0, i32 19
-  %6 = load %struct.bitmap_head_def** %insns_modified, align 8, !tbaa !3
-  %tobool9 = icmp eq %struct.bitmap_head_def* %6, null
-  br i1 %tobool9, label %if.then10, label %if.end15
+  tail call void @llvm.dbg.value(metadata !{%struct.df* %df}, i64 0, metadata !1134), !dbg !2893
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !1135), !dbg !2894
+  %tobool = icmp eq i32 %size, 0, !dbg !2895
+  %insn_size = getelementptr inbounds %struct.df* %df, i64 0, i32 8, !dbg !2896
+  %0 = load i32* %insn_size, align 4, !dbg !2896, !tbaa !1899
+  %div = lshr i32 %0, 2, !dbg !2896
+  tail call void @llvm.dbg.value(metadata !{i32 %div}, i64 0, metadata !1135), !dbg !2896
+  %size.addr.0 = select i1 %tobool, i32 %div, i32 %size, !dbg !2895
+  %insn_size1 = getelementptr inbounds %struct.df* %df, i64 0, i32 8, !dbg !2897
+  %add = add i32 %0, %size.addr.0, !dbg !2897
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !1135), !dbg !2897
+  %insns = getelementptr inbounds %struct.df* %df, i64 0, i32 7, !dbg !2898
+  %1 = load %struct.insn_info** %insns, align 8, !dbg !2898, !tbaa !1898
+  %2 = bitcast %struct.insn_info* %1 to i8*, !dbg !2898
+  %conv = sext i32 %add to i64, !dbg !2898
+  %mul = mul i64 %conv, 24, !dbg !2898
+  %call = tail call i8* @xrealloc(i8* %2, i64 %mul) #9, !dbg !2898
+  %3 = bitcast i8* %call to %struct.insn_info*, !dbg !2898
+  store %struct.insn_info* %3, %struct.insn_info** %insns, align 8, !dbg !2898, !tbaa !1898
+  %4 = load i32* %insn_size1, align 4, !dbg !2899, !tbaa !1899
+  %idx.ext = zext i32 %4 to i64, !dbg !2899
+  %add.ptr = getelementptr inbounds %struct.insn_info* %3, i64 %idx.ext, !dbg !2899
+  %5 = bitcast %struct.insn_info* %add.ptr to i8*, !dbg !2899
+  %sub = sub i32 %add, %4, !dbg !2899
+  %conv6 = zext i32 %sub to i64, !dbg !2899
+  %mul7 = mul i64 %conv6, 24, !dbg !2899
+  tail call void @llvm.memset.p0i8.i64(i8* %5, i8 0, i64 %mul7, i32 8, i1 false), !dbg !2899
+  store i32 %add, i32* %insn_size1, align 4, !dbg !2900, !tbaa !1899
+  %insns_modified = getelementptr inbounds %struct.df* %df, i64 0, i32 19, !dbg !2901
+  %6 = load %struct.bitmap_head_def** %insns_modified, align 8, !dbg !2901, !tbaa !1898
+  %tobool9 = icmp eq %struct.bitmap_head_def* %6, null, !dbg !2901
+  br i1 %tobool9, label %if.then10, label %if.end15, !dbg !2901
 
 if.then10:                                        ; preds = %entry
-  %call11 = tail call noalias i8* @xmalloc(i64 24) #8
-  %7 = bitcast i8* %call11 to %struct.bitmap_head_def*
-  %call12 = tail call %struct.bitmap_head_def* @bitmap_initialize(%struct.bitmap_head_def* %7) #8
-  store %struct.bitmap_head_def* %call12, %struct.bitmap_head_def** %insns_modified, align 8, !tbaa !3
-  tail call void @bitmap_clear(%struct.bitmap_head_def* %call12) #8
-  br label %if.end15
+  %call11 = tail call noalias i8* @xmalloc(i64 24) #9, !dbg !2902
+  %7 = bitcast i8* %call11 to %struct.bitmap_head_def*, !dbg !2902
+  %call12 = tail call %struct.bitmap_head_def* @bitmap_initialize(%struct.bitmap_head_def* %7) #9, !dbg !2902
+  store %struct.bitmap_head_def* %call12, %struct.bitmap_head_def** %insns_modified, align 8, !dbg !2902, !tbaa !1898
+  tail call void @bitmap_clear(%struct.bitmap_head_def* %call12) #9, !dbg !2904
+  br label %if.end15, !dbg !2905
 
 if.end15:                                         ; preds = %entry, %if.then10
-  ret void
+  ret void, !dbg !2906
 }

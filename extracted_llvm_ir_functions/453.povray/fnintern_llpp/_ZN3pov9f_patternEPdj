@@ -1,0 +1,39 @@
+define double @_ZN3pov9f_patternEPdj(double* nocapture %ptr, i32 %fn) #2 {
+entry:
+  %TPoint = alloca [3 x double], align 16
+  %Vec = alloca [3 x double], align 16
+  call void @llvm.dbg.value(metadata !{double* %ptr}, i64 0, metadata !1444), !dbg !2581
+  call void @llvm.dbg.value(metadata !{i32 %fn}, i64 0, metadata !1445), !dbg !2581
+  call void @llvm.dbg.declare(metadata !{[3 x double]* %TPoint}, metadata !1446), !dbg !2582
+  call void @llvm.dbg.declare(metadata !{[3 x double]* %Vec}, metadata !1447), !dbg !2583
+  %arrayinit.begin = getelementptr inbounds [3 x double]* %Vec, i64 0, i64 0, !dbg !2583
+  %0 = load double* %ptr, align 8, !dbg !2583, !tbaa !1656
+  store double %0, double* %arrayinit.begin, align 16, !dbg !2583, !tbaa !1656
+  %arrayinit.element = getelementptr inbounds [3 x double]* %Vec, i64 0, i64 1, !dbg !2583
+  %arrayidx1 = getelementptr inbounds double* %ptr, i64 1, !dbg !2583
+  %1 = load double* %arrayidx1, align 8, !dbg !2583, !tbaa !1656
+  store double %1, double* %arrayinit.element, align 8, !dbg !2583, !tbaa !1656
+  %arrayinit.element2 = getelementptr inbounds [3 x double]* %Vec, i64 0, i64 2, !dbg !2583
+  %arrayidx3 = getelementptr inbounds double* %ptr, i64 2, !dbg !2583
+  %2 = load double* %arrayidx3, align 8, !dbg !2583, !tbaa !1656
+  store double %2, double* %arrayinit.element2, align 16, !dbg !2583, !tbaa !1656
+  %call = call %"struct.pov::FunctionCode"* @_ZN3pov18POVFPU_GetFunctionEj(i32 %fn) #10, !dbg !2584
+  call void @llvm.dbg.value(metadata !{%"struct.pov::FunctionCode"* %call}, i64 0, metadata !1448), !dbg !2584
+  %private_data = getelementptr inbounds %"struct.pov::FunctionCode"* %call, i64 0, i32 14, !dbg !2585
+  %3 = load i8** %private_data, align 8, !dbg !2585, !tbaa !2392
+  %cmp = icmp eq i8* %3, null, !dbg !2585
+  br i1 %cmp, label %return, label %if.end, !dbg !2585
+
+if.end:                                           ; preds = %entry
+  %arraydecay = getelementptr inbounds [3 x double]* %TPoint, i64 0, i64 0, !dbg !2586
+  %4 = bitcast i8* %3 to %"struct.pov::Pattern_Struct"*, !dbg !2586
+  call void @_ZN3pov11Warp_EPointEPdS0_PNS_14Pattern_StructE(double* %arraydecay, double* %arrayinit.begin, %"struct.pov::Pattern_Struct"* %4) #10, !dbg !2586
+  %5 = load i8** %private_data, align 8, !dbg !2587, !tbaa !2392
+  %6 = bitcast i8* %5 to %"struct.pov::Pattern_Struct"*, !dbg !2587
+  %call8 = call double @_ZN3pov13Evaluate_TPatEPNS_14Pattern_StructEPdPNS_10istk_entryE(%"struct.pov::Pattern_Struct"* %6, double* %arraydecay, %"struct.pov::istk_entry"* null) #10, !dbg !2587
+  br label %return, !dbg !2587
+
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi double [ %call8, %if.end ], [ 0.000000e+00, %entry ]
+  ret double %retval.0, !dbg !2588
+}

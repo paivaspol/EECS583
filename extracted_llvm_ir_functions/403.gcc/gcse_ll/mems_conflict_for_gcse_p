@@ -1,54 +1,58 @@
 define internal void @mems_conflict_for_gcse_p(%struct.rtx_def* %dest, %struct.rtx_def* nocapture %setter, i8* nocapture %data) #0 {
 entry:
-  br label %while.cond
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %dest}, i64 0, metadata !973), !dbg !3764
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %setter}, i64 0, metadata !974), !dbg !3764
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !975), !dbg !3765
+  br label %while.cond, !dbg !3766
 
 while.cond:                                       ; preds = %while.body, %entry
   %dest.addr.0 = phi %struct.rtx_def* [ %dest, %entry ], [ %1, %while.body ]
-  %0 = bitcast %struct.rtx_def* %dest.addr.0 to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
+  %0 = bitcast %struct.rtx_def* %dest.addr.0 to i32*, !dbg !3766
+  %bf.load = load i32* %0, align 8, !dbg !3766
+  %bf.clear = and i32 %bf.load, 65535, !dbg !3766
   switch i32 %bf.clear, label %if.end25 [
     i32 63, label %while.body
     i32 133, label %while.body
     i32 132, label %while.body
     i32 64, label %while.body
     i32 66, label %if.end
-  ]
+  ], !dbg !3766
 
 while.body:                                       ; preds = %while.cond, %while.cond, %while.cond, %while.cond
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %dest.addr.0, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  br label %while.cond
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %dest.addr.0, i64 0, i32 1, i64 0, !dbg !3767
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !3767
+  %1 = load %struct.rtx_def** %rtx, align 8, !dbg !3767, !tbaa !1729
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %1}, i64 0, metadata !973), !dbg !3767
+  br label %while.cond, !dbg !3767
 
 if.end:                                           ; preds = %while.cond
-  %2 = load %struct.rtx_def** @gcse_mem_operand, align 8, !tbaa !0
-  %cmp14 = icmp eq %struct.rtx_def* %dest.addr.0, %2
-  %3 = load %struct.ls_expr** @pre_ldst_mems, align 8, !tbaa !0
-  %cmp15 = icmp ne %struct.ls_expr* %3, null
-  %or.cond = and i1 %cmp14, %cmp15
-  br i1 %or.cond, label %if.then16, label %if.end19
+  %2 = load %struct.rtx_def** @gcse_mem_operand, align 8, !dbg !3768, !tbaa !1729
+  %cmp14 = icmp eq %struct.rtx_def* %dest.addr.0, %2, !dbg !3768
+  %3 = load %struct.ls_expr** @pre_ldst_mems, align 8, !dbg !3768, !tbaa !1729
+  %cmp15 = icmp ne %struct.ls_expr* %3, null, !dbg !3768
+  %or.cond = and i1 %cmp14, %cmp15, !dbg !3768
+  br i1 %or.cond, label %if.then16, label %if.end19, !dbg !3768
 
 if.then16:                                        ; preds = %if.end
-  %call = tail call fastcc %struct.ls_expr* @find_rtx_in_ldst(%struct.rtx_def* %dest.addr.0) #7
-  %tobool = icmp eq %struct.ls_expr* %call, null
-  br i1 %tobool, label %if.then17, label %if.end25
+  %call = tail call fastcc %struct.ls_expr* @find_rtx_in_ldst(%struct.rtx_def* %dest.addr.0) #8, !dbg !3769
+  %tobool = icmp eq %struct.ls_expr* %call, null, !dbg !3769
+  br i1 %tobool, label %if.then17, label %if.end25, !dbg !3769
 
 if.then17:                                        ; preds = %if.then16
   store i1 true, i1* @gcse_mems_conflict_p, align 1
-  br label %if.end25
+  br label %if.end25, !dbg !3771
 
 if.end19:                                         ; preds = %if.end
-  %bf.lshr = lshr i32 %bf.load, 16
-  %bf.clear21 = and i32 %bf.lshr, 255
-  %call22 = tail call i32 @true_dependence(%struct.rtx_def* %dest.addr.0, i32 %bf.clear21, %struct.rtx_def* %2, i32 (%struct.rtx_def*, i32)* @rtx_addr_varies_p) #6
-  %tobool23 = icmp eq i32 %call22, 0
-  br i1 %tobool23, label %if.end25, label %if.then24
+  %bf.lshr = lshr i32 %bf.load, 16, !dbg !3772
+  %bf.clear21 = and i32 %bf.lshr, 255, !dbg !3772
+  %call22 = tail call i32 @true_dependence(%struct.rtx_def* %dest.addr.0, i32 %bf.clear21, %struct.rtx_def* %2, i32 (%struct.rtx_def*, i32)* @rtx_addr_varies_p) #7, !dbg !3772
+  %tobool23 = icmp eq i32 %call22, 0, !dbg !3772
+  br i1 %tobool23, label %if.end25, label %if.then24, !dbg !3772
 
 if.then24:                                        ; preds = %if.end19
   store i1 true, i1* @gcse_mems_conflict_p, align 1
-  br label %if.end25
+  br label %if.end25, !dbg !3773
 
 if.end25:                                         ; preds = %while.cond, %if.then16, %if.end19, %if.then17, %if.then24
-  ret void
+  ret void, !dbg !3773
 }

@@ -1,0 +1,27 @@
+define i32 @_ZN12POVMS_Object9GetStringEjPci(%class.POVMS_Object* %this, i32 %key, i8* %str, i32 %maxlen) #5 align 2 {
+entry:
+  %maxlen.addr = alloca i32, align 4
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Object* %this}, i64 0, metadata !898), !dbg !1583
+  call void @llvm.dbg.value(metadata !{i32 %key}, i64 0, metadata !899), !dbg !1583
+  call void @llvm.dbg.value(metadata !{i8* %str}, i64 0, metadata !900), !dbg !1583
+  call void @llvm.dbg.value(metadata !{i32 %maxlen}, i64 0, metadata !901), !dbg !1583
+  store i32 %maxlen, i32* %maxlen.addr, align 4, !tbaa !1112
+  call void @llvm.dbg.declare(metadata !{i32* %maxlen.addr}, metadata !901), !dbg !1583
+  %data = getelementptr inbounds %class.POVMS_Object* %this, i64 0, i32 0, i32 1, !dbg !1584
+  %call = call i32 @_Z19POVMSUtil_GetStringP9POVMSDatajPcPi(%struct.POVMSData* %data, i32 %key, i8* %str, i32* %maxlen.addr) #12, !dbg !1584
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !902), !dbg !1584
+  %cmp = icmp eq i32 %call, 0, !dbg !1585
+  br i1 %cmp, label %if.end, label %if.then, !dbg !1585
+
+if.then:                                          ; preds = %entry
+  %exception = call i8* @__cxa_allocate_exception(i64 4) #9, !dbg !1586
+  %0 = bitcast i8* %exception to i32*, !dbg !1586
+  store i32 %call, i32* %0, align 4, !dbg !1586, !tbaa !1112
+  call void @__cxa_throw(i8* %exception, i8* bitcast (i8** @_ZTIi to i8*), i8* null) #13, !dbg !1586
+  unreachable, !dbg !1586
+
+if.end:                                           ; preds = %entry
+  call void @llvm.dbg.value(metadata !{i32* %maxlen.addr}, i64 0, metadata !901), !dbg !1587
+  %1 = load i32* %maxlen.addr, align 4, !dbg !1587, !tbaa !1112
+  ret i32 %1, !dbg !1587
+}

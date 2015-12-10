@@ -1,0 +1,55 @@
+define linkonce_odr void @_ZN6soplex10SPxDevexPRC2Ev(%"class.soplex::SPxDevexPR"* %this) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SPxDevexPR"* %this}, i64 0, metadata !10284), !dbg !13189
+  tail call void @llvm.dbg.value(metadata !13190, i64 0, metadata !13191) #1, !dbg !13193
+  %0 = getelementptr inbounds %"class.soplex::SPxDevexPR"* %this, i64 0, i32 0, i32 0, !dbg !13194
+  %m_name.i = getelementptr inbounds %"class.soplex::SPxDevexPR"* %this, i64 0, i32 0, i32 1, !dbg !13194
+  store i8* getelementptr inbounds ([6 x i8]* @.str64, i64 0, i64 0), i8** %m_name.i, align 8, !dbg !13194, !tbaa !10577
+  %thesolver.i = getelementptr inbounds %"class.soplex::SPxDevexPR"* %this, i64 0, i32 0, i32 2, !dbg !13194
+  %1 = bitcast %"class.soplex::SoPlex"** %thesolver.i to i8*, !dbg !13194
+  tail call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 16, i32 8, i1 false) #1, !dbg !13194
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([23 x i8*]* @_ZTVN6soplex10SPxDevexPRE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %0, align 8, !dbg !13192, !tbaa !10586
+  %penalty = getelementptr inbounds %"class.soplex::SPxDevexPR"* %this, i64 0, i32 2, !dbg !13192
+  invoke void @_ZN6soplex7DVectorC1Ei(%"class.soplex::DVector"* %penalty, i32 0) #16
+          to label %invoke.cont unwind label %lpad, !dbg !13192
+
+invoke.cont:                                      ; preds = %entry
+  %coPenalty = getelementptr inbounds %"class.soplex::SPxDevexPR"* %this, i64 0, i32 3, !dbg !13192
+  invoke void @_ZN6soplex7DVectorC1Ei(%"class.soplex::DVector"* %coPenalty, i32 0) #16
+          to label %invoke.cont3 unwind label %lpad2, !dbg !13192
+
+invoke.cont3:                                     ; preds = %invoke.cont
+  ret void, !dbg !13192
+
+lpad:                                             ; preds = %entry
+  %2 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !13192
+  %3 = extractvalue { i8*, i32 } %2, 0, !dbg !13192
+  %4 = extractvalue { i8*, i32 } %2, 1, !dbg !13192
+  br label %ehcleanup, !dbg !13192
+
+lpad2:                                            ; preds = %invoke.cont
+  %5 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !13192
+  %6 = extractvalue { i8*, i32 } %5, 0, !dbg !13192
+  %7 = extractvalue { i8*, i32 } %5, 1, !dbg !13192
+  invoke void @_ZN6soplex7DVectorD1Ev(%"class.soplex::DVector"* %penalty) #16
+          to label %ehcleanup unwind label %terminate.lpad, !dbg !13192
+
+ehcleanup:                                        ; preds = %lpad2, %lpad
+  %exn.slot.0 = phi i8* [ %6, %lpad2 ], [ %3, %lpad ]
+  %ehselector.slot.0 = phi i32 [ %7, %lpad2 ], [ %4, %lpad ]
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([23 x i8*]* @_ZTVN6soplex9SPxPricerE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %0, align 8, !dbg !13195, !tbaa !10586
+  %8 = bitcast i8** %m_name.i to i8*, !dbg !13196
+  tail call void @llvm.memset.p0i8.i64(i8* %8, i8 0, i64 16, i32 8, i1 false) #1, !dbg !13197
+  %lpad.val = insertvalue { i8*, i32 } undef, i8* %exn.slot.0, 0, !dbg !13192
+  %lpad.val6 = insertvalue { i8*, i32 } %lpad.val, i32 %ehselector.slot.0, 1, !dbg !13192
+  resume { i8*, i32 } %lpad.val6, !dbg !13192
+
+terminate.lpad:                                   ; preds = %lpad2
+  %9 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !13192
+  %10 = extractvalue { i8*, i32 } %9, 0, !dbg !13192
+  tail call void @__clang_call_terminate(i8* %10) #17, !dbg !13192
+  unreachable, !dbg !13192
+}

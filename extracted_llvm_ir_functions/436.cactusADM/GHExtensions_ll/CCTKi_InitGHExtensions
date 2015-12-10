@@ -1,28 +1,32 @@
 define i32 @CCTKi_InitGHExtensions(%struct.cGH* %GH) #1 {
-  %1 = load i32* @num_extensions, align 4, !tbaa !6
-  %2 = icmp sgt i32 %1, 0
-  br i1 %2, label %.lr.ph, label %._crit_edge
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !124), !dbg !294
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !125), !dbg !295
+  %0 = load i32* @num_extensions, align 4, !dbg !295, !tbaa !206
+  %cmp5 = icmp sgt i32 %0, 0, !dbg !295
+  br i1 %cmp5, label %for.body, label %for.end, !dbg !295
 
-.lr.ph:                                           ; preds = %0, %11
-  %handle.01 = phi i32 [ %12, %11 ], [ 0, %0 ]
-  %3 = load %struct.cHandledData** @GHExtensions, align 8, !tbaa !2
-  %4 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %3, i32 %handle.01) #5
-  %5 = icmp eq i8* %4, null
-  br i1 %5, label %11, label %6
+for.body:                                         ; preds = %entry, %for.inc
+  %handle.06 = phi i32 [ %inc, %for.inc ], [ 0, %entry ]
+  %1 = load %struct.cHandledData** @GHExtensions, align 8, !dbg !297, !tbaa !195
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %handle.06) #6, !dbg !297
+  %tobool = icmp eq i8* %call, null, !dbg !299
+  br i1 %tobool, label %for.inc, label %if.then, !dbg !299
 
-; <label>:6                                       ; preds = %.lr.ph
-  %7 = getelementptr inbounds i8* %4, i64 8
-  %8 = bitcast i8* %7 to i32 (%struct.cGH*)**
-  %9 = load i32 (%struct.cGH*)** %8, align 8, !tbaa !10
-  %10 = tail call i32 %9(%struct.cGH* %GH) #5
-  br label %11
+if.then:                                          ; preds = %for.body
+  %InitGH = getelementptr inbounds i8* %call, i64 8, !dbg !300
+  %2 = bitcast i8* %InitGH to i32 (%struct.cGH*)**, !dbg !300
+  %3 = load i32 (%struct.cGH*)** %2, align 8, !dbg !300, !tbaa !195
+  %call1 = tail call i32 %3(%struct.cGH* %GH) #6, !dbg !300
+  br label %for.inc, !dbg !302
 
-; <label>:11                                      ; preds = %.lr.ph, %6
-  %12 = add nuw nsw i32 %handle.01, 1
-  %13 = load i32* @num_extensions, align 4, !tbaa !6
-  %14 = icmp slt i32 %12, %13
-  br i1 %14, label %.lr.ph, label %._crit_edge
+for.inc:                                          ; preds = %for.body, %if.then
+  %inc = add nsw i32 %handle.06, 1, !dbg !295
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !125), !dbg !295
+  %4 = load i32* @num_extensions, align 4, !dbg !295, !tbaa !206
+  %cmp = icmp slt i32 %inc, %4, !dbg !295
+  br i1 %cmp, label %for.body, label %for.end, !dbg !295
 
-._crit_edge:                                      ; preds = %11, %0
-  ret i32 0
+for.end:                                          ; preds = %for.inc, %entry
+  ret i32 0, !dbg !303
 }

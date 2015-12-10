@@ -1,0 +1,23 @@
+define zeroext i1 @_ZNK6soplex8DSVector12isConsistentEv(%"class.soplex::DSVector"* nocapture %this) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DSVector"* %this}, i64 0, metadata !1842), !dbg !3277
+  %theelem = getelementptr inbounds %"class.soplex::DSVector"* %this, i64 0, i32 1, !dbg !3278
+  %0 = load %"struct.soplex::SVector::Element"** %theelem, align 8, !dbg !3278, !tbaa !3024
+  %cmp = icmp eq %"struct.soplex::SVector::Element"* %0, null, !dbg !3278
+  br i1 %cmp, label %return, label %land.lhs.true, !dbg !3278
+
+land.lhs.true:                                    ; preds = %entry
+  %m_elem.i = getelementptr inbounds %"class.soplex::DSVector"* %this, i64 0, i32 0, i32 0, !dbg !3279
+  %1 = load %"struct.soplex::SVector::Element"** %m_elem.i, align 8, !dbg !3279, !tbaa !3024
+  %add.ptr.i = getelementptr inbounds %"struct.soplex::SVector::Element"* %1, i64 -1, !dbg !3279
+  %cmp3 = icmp eq %"struct.soplex::SVector::Element"* %add.ptr.i, %0, !dbg !3278
+  br i1 %cmp3, label %return, label %if.then, !dbg !3278
+
+if.then:                                          ; preds = %land.lhs.true
+  %call4 = tail call zeroext i1 @_ZN6soplex15msginconsistentEPKcS1_i(i8* getelementptr inbounds ([9 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([56 x i8]* @.str1, i64 0, i64 0), i32 97) #9, !dbg !3281
+  br label %return, !dbg !3281
+
+return:                                           ; preds = %entry, %land.lhs.true, %if.then
+  %retval.0 = phi i1 [ %call4, %if.then ], [ true, %land.lhs.true ], [ true, %entry ]
+  ret i1 %retval.0, !dbg !3282
+}

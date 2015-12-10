@@ -1,0 +1,36 @@
+define void @_ZN3pov16Check_User_AbortEi(i32 %Forced) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %Forced}, i64 0, metadata !196), !dbg !1959
+  %tobool = icmp eq i32 %Forced, 0, !dbg !1960
+  br i1 %tobool, label %if.else, label %if.then, !dbg !1960
+
+if.then:                                          ; preds = %entry
+  store volatile i32 1, i32* @_ZN3pov9Stop_FlagE, align 4, !dbg !1961, !tbaa !1664
+  br label %if.end2, !dbg !1961
+
+if.else:                                          ; preds = %entry
+  %0 = load i8** @POVMS_Render_Context, align 8, !dbg !1962, !tbaa !1667
+  %call = tail call i32 @_Z21POVMS_ProcessMessagesPvi(i8* %0, i32 0) #8, !dbg !1962
+  %1 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 17), align 8, !dbg !1964, !tbaa !1664
+  %dec = add nsw i32 %1, -1, !dbg !1964
+  store i32 %dec, i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 17), align 8, !dbg !1964, !tbaa !1664
+  %cmp = icmp slt i32 %1, 2, !dbg !1964
+  br i1 %cmp, label %if.then1, label %if.end2, !dbg !1964
+
+if.then1:                                         ; preds = %if.else
+  %2 = load i32* @_ZN3pov16Abort_Test_EveryE, align 4, !dbg !1965, !tbaa !1664
+  store i32 %2, i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 17), align 8, !dbg !1965, !tbaa !1664
+  br label %if.end2, !dbg !1967
+
+if.end2:                                          ; preds = %if.else, %if.then1, %if.then
+  %3 = load volatile i32* @_ZN3pov9Stop_FlagE, align 4, !dbg !1968, !tbaa !1664
+  %cmp3 = icmp eq i32 %3, 1, !dbg !1968
+  br i1 %cmp3, label %if.then4, label %if.end5, !dbg !1968
+
+if.then4:                                         ; preds = %if.end2
+  tail call void @_Z11povray_exiti(i32 2) #8, !dbg !1969
+  br label %if.end5, !dbg !1969
+
+if.end5:                                          ; preds = %if.then4, %if.end2
+  ret void, !dbg !1970
+}

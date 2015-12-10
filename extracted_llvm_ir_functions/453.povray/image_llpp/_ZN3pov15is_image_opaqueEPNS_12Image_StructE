@@ -1,0 +1,159 @@
+define zeroext i1 @_ZN3pov15is_image_opaqueEPNS_12Image_StructE(%"struct.pov::Image_Struct"* nocapture %Image) #5 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Image_Struct"* %Image}, i64 0, metadata !857), !dbg !1895
+  %Colour_Map = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 16, !dbg !1896
+  %0 = load %"struct.pov::Image_Colour_Struct"** %Colour_Map, align 8, !dbg !1896, !tbaa !1218
+  %cmp = icmp eq %"struct.pov::Image_Colour_Struct"* %0, null, !dbg !1896
+  br i1 %cmp, label %if.else, label %for.cond.preheader, !dbg !1896
+
+for.cond.preheader:                               ; preds = %entry
+  %Colour_Map_Size = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 7, !dbg !1897
+  %1 = load i16* %Colour_Map_Size, align 2, !dbg !1897, !tbaa !1883
+  %cmp1127 = icmp sgt i16 %1, 0, !dbg !1897
+  br i1 %cmp1127, label %for.body, label %return, !dbg !1897
+
+for.cond:                                         ; preds = %if.end
+  %conv = sext i16 %1 to i32, !dbg !1897
+  %2 = trunc i64 %indvars.iv.next136 to i32, !dbg !1897
+  %cmp1 = icmp slt i32 %2, %conv, !dbg !1897
+  br i1 %cmp1, label %for.body, label %return, !dbg !1897
+
+for.body:                                         ; preds = %for.cond.preheader, %for.cond
+  %indvars.iv135 = phi i64 [ %indvars.iv.next136, %for.cond ], [ 0, %for.cond.preheader ]
+  %Filter = getelementptr inbounds %"struct.pov::Image_Colour_Struct"* %0, i64 %indvars.iv135, i32 3, !dbg !1900
+  %3 = load i16* %Filter, align 2, !dbg !1900, !tbaa !1883
+  %cmp4 = icmp eq i16 %3, 0, !dbg !1900
+  br i1 %cmp4, label %if.end, label %return, !dbg !1900
+
+if.end:                                           ; preds = %for.body
+  %Transmit = getelementptr inbounds %"struct.pov::Image_Colour_Struct"* %0, i64 %indvars.iv135, i32 4, !dbg !1902
+  %4 = load i16* %Transmit, align 2, !dbg !1902, !tbaa !1883
+  %cmp10 = icmp eq i16 %4, 0, !dbg !1902
+  %indvars.iv.next136 = add i64 %indvars.iv135, 1, !dbg !1897
+  br i1 %cmp10, label %for.cond, label %return, !dbg !1902
+
+if.else:                                          ; preds = %entry
+  %AllFilter = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 14, !dbg !1903
+  %5 = load double* %AllFilter, align 8, !dbg !1903, !tbaa !1193
+  %cmp13 = fcmp une double %5, 0.000000e+00, !dbg !1903
+  br i1 %cmp13, label %return, label %lor.lhs.false, !dbg !1903
+
+lor.lhs.false:                                    ; preds = %if.else
+  %AllTransmit = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 15, !dbg !1903
+  %6 = load double* %AllTransmit, align 8, !dbg !1903, !tbaa !1193
+  %cmp14 = fcmp une double %6, 0.000000e+00, !dbg !1903
+  br i1 %cmp14, label %return, label %if.end16, !dbg !1903
+
+if.end16:                                         ; preds = %lor.lhs.false
+  %Image_Type = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 3, !dbg !1905
+  %7 = load i32* %Image_Type, align 4, !dbg !1905, !tbaa !1223
+  %and = and i32 %7, 131072, !dbg !1905
+  %cmp17 = icmp eq i32 %and, 0, !dbg !1905
+  br i1 %cmp17, label %if.else52, label %if.then18, !dbg !1905
+
+if.then18:                                        ; preds = %if.end16
+  %and20 = and i32 %7, 262144, !dbg !1906
+  %cmp21 = icmp eq i32 %and20, 0, !dbg !1906
+  br i1 %cmp21, label %if.else23, label %return, !dbg !1906
+
+if.else23:                                        ; preds = %if.then18
+  %data = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 18, !dbg !1908
+  %rgb16_lines = bitcast %union.anon.2* %data to %"struct.pov::Image16_Line_Struct"**, !dbg !1908
+  %8 = load %"struct.pov::Image16_Line_Struct"** %rgb16_lines, align 8, !dbg !1908, !tbaa !1218
+  %transm = getelementptr inbounds %"struct.pov::Image16_Line_Struct"* %8, i64 0, i32 3, !dbg !1908
+  %9 = load i16** %transm, align 8, !dbg !1908, !tbaa !1218
+  %cmp25 = icmp eq i16* %9, null, !dbg !1908
+  br i1 %cmp25, label %return, label %for.cond27.preheader, !dbg !1908
+
+for.cond27.preheader:                             ; preds = %if.else23
+  %iheight = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 6, !dbg !1910
+  %10 = load i32* %iheight, align 4, !dbg !1910, !tbaa !1223
+  %cmp28123 = icmp sgt i32 %10, 0, !dbg !1910
+  br i1 %cmp28123, label %for.cond30.preheader.lr.ph, label %return, !dbg !1910
+
+for.cond30.preheader.lr.ph:                       ; preds = %for.cond27.preheader
+  %iwidth = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 5, !dbg !1913
+  %11 = load i32* %iwidth, align 4, !dbg !1913, !tbaa !1223
+  %cmp31120 = icmp sgt i32 %11, 0, !dbg !1913
+  br label %for.cond30.preheader, !dbg !1910
+
+for.cond30.preheader:                             ; preds = %for.cond30.preheader.lr.ph, %for.inc47
+  %indvars.iv133 = phi i64 [ 0, %for.cond30.preheader.lr.ph ], [ %indvars.iv.next134, %for.inc47 ]
+  br i1 %cmp31120, label %for.body32.lr.ph, label %for.inc47, !dbg !1913
+
+for.body32.lr.ph:                                 ; preds = %for.cond30.preheader
+  %transm38 = getelementptr inbounds %"struct.pov::Image16_Line_Struct"* %8, i64 %indvars.iv133, i32 3, !dbg !1916
+  %12 = load i16** %transm38, align 8, !dbg !1916, !tbaa !1218
+  br label %for.body32, !dbg !1913
+
+for.cond30:                                       ; preds = %for.body32
+  %13 = trunc i64 %indvars.iv.next132 to i32, !dbg !1913
+  %cmp31 = icmp slt i32 %13, %11, !dbg !1913
+  br i1 %cmp31, label %for.body32, label %for.inc47, !dbg !1913
+
+for.body32:                                       ; preds = %for.body32.lr.ph, %for.cond30
+  %indvars.iv131 = phi i64 [ 0, %for.body32.lr.ph ], [ %indvars.iv.next132, %for.cond30 ]
+  %arrayidx39 = getelementptr inbounds i16* %12, i64 %indvars.iv131, !dbg !1916
+  %14 = load i16* %arrayidx39, align 2, !dbg !1916, !tbaa !1883
+  %cmp41 = icmp eq i16 %14, 0, !dbg !1916
+  %indvars.iv.next132 = add i64 %indvars.iv131, 1, !dbg !1913
+  br i1 %cmp41, label %for.cond30, label %return, !dbg !1916
+
+for.inc47:                                        ; preds = %for.cond30, %for.cond30.preheader
+  %indvars.iv.next134 = add i64 %indvars.iv133, 1, !dbg !1910
+  %15 = trunc i64 %indvars.iv.next134 to i32, !dbg !1910
+  %cmp28 = icmp slt i32 %15, %10, !dbg !1910
+  br i1 %cmp28, label %for.cond30.preheader, label %return, !dbg !1910
+
+if.else52:                                        ; preds = %if.end16
+  %rgb8_lines = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 18, i32 0, !dbg !1918
+  %16 = load %"struct.pov::Image8_Line_Struct"** %rgb8_lines, align 8, !dbg !1918, !tbaa !1218
+  %transm55 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %16, i64 0, i32 3, !dbg !1918
+  %17 = load i8** %transm55, align 8, !dbg !1918, !tbaa !1218
+  %cmp56 = icmp eq i8* %17, null, !dbg !1918
+  br i1 %cmp56, label %return, label %for.cond58.preheader, !dbg !1918
+
+for.cond58.preheader:                             ; preds = %if.else52
+  %iheight59 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 6, !dbg !1920
+  %18 = load i32* %iheight59, align 4, !dbg !1920, !tbaa !1223
+  %cmp60117 = icmp sgt i32 %18, 0, !dbg !1920
+  br i1 %cmp60117, label %for.cond62.preheader.lr.ph, label %return, !dbg !1920
+
+for.cond62.preheader.lr.ph:                       ; preds = %for.cond58.preheader
+  %iwidth63 = getelementptr inbounds %"struct.pov::Image_Struct"* %Image, i64 0, i32 5, !dbg !1923
+  %19 = load i32* %iwidth63, align 4, !dbg !1923, !tbaa !1223
+  %cmp64114 = icmp sgt i32 %19, 0, !dbg !1923
+  br label %for.cond62.preheader, !dbg !1920
+
+for.cond62.preheader:                             ; preds = %for.cond62.preheader.lr.ph, %for.inc80
+  %indvars.iv129 = phi i64 [ 0, %for.cond62.preheader.lr.ph ], [ %indvars.iv.next130, %for.inc80 ]
+  br i1 %cmp64114, label %for.body65.lr.ph, label %for.inc80, !dbg !1923
+
+for.body65.lr.ph:                                 ; preds = %for.cond62.preheader
+  %transm71 = getelementptr inbounds %"struct.pov::Image8_Line_Struct"* %16, i64 %indvars.iv129, i32 3, !dbg !1926
+  %20 = load i8** %transm71, align 8, !dbg !1926, !tbaa !1218
+  br label %for.body65, !dbg !1923
+
+for.cond62:                                       ; preds = %for.body65
+  %21 = trunc i64 %indvars.iv.next to i32, !dbg !1923
+  %cmp64 = icmp slt i32 %21, %19, !dbg !1923
+  br i1 %cmp64, label %for.body65, label %for.inc80, !dbg !1923
+
+for.body65:                                       ; preds = %for.body65.lr.ph, %for.cond62
+  %indvars.iv = phi i64 [ 0, %for.body65.lr.ph ], [ %indvars.iv.next, %for.cond62 ]
+  %arrayidx72 = getelementptr inbounds i8* %20, i64 %indvars.iv, !dbg !1926
+  %22 = load i8* %arrayidx72, align 1, !dbg !1926, !tbaa !1194
+  %cmp74 = icmp eq i8 %22, 0, !dbg !1926
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1923
+  br i1 %cmp74, label %for.cond62, label %return, !dbg !1926
+
+for.inc80:                                        ; preds = %for.cond62, %for.cond62.preheader
+  %indvars.iv.next130 = add i64 %indvars.iv129, 1, !dbg !1920
+  %23 = trunc i64 %indvars.iv.next130 to i32, !dbg !1920
+  %cmp60 = icmp slt i32 %23, %18, !dbg !1920
+  br i1 %cmp60, label %for.cond62.preheader, label %return, !dbg !1920
+
+return:                                           ; preds = %for.cond.preheader, %if.end, %for.body, %for.cond, %for.cond27.preheader, %for.inc47, %for.body32, %for.cond58.preheader, %for.inc80, %for.body65, %if.else52, %if.else23, %if.then18, %if.else, %lor.lhs.false
+  %retval.0 = phi i1 [ false, %lor.lhs.false ], [ false, %if.else ], [ true, %if.then18 ], [ true, %if.else23 ], [ true, %if.else52 ], [ false, %for.body65 ], [ true, %for.inc80 ], [ true, %for.cond58.preheader ], [ false, %for.body32 ], [ true, %for.inc47 ], [ true, %for.cond27.preheader ], [ true, %for.cond.preheader ], [ false, %if.end ], [ false, %for.body ], [ true, %for.cond ]
+  ret i1 %retval.0, !dbg !1928
+}

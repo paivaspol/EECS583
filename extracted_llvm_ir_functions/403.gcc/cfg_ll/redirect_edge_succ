@@ -1,25 +1,28 @@
 define void @redirect_edge_succ(%struct.edge_def* %e, %struct.basic_block_def* %new_succ) #0 {
 entry:
-  %dest = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 3
-  %0 = load %struct.basic_block_def** %dest, align 8, !tbaa !0
-  %pred = getelementptr inbounds %struct.basic_block_def* %0, i64 0, i32 4
-  br label %for.cond
+  tail call void @llvm.dbg.value(metadata !{%struct.edge_def* %e}, i64 0, metadata !880), !dbg !1322
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %new_succ}, i64 0, metadata !881), !dbg !1323
+  %dest = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 3, !dbg !1324
+  %0 = load %struct.basic_block_def** %dest, align 8, !dbg !1324, !tbaa !1158
+  %pred = getelementptr inbounds %struct.basic_block_def* %0, i64 0, i32 4, !dbg !1324
+  tail call void @llvm.dbg.value(metadata !{%struct.edge_def** %pred}, i64 0, metadata !882), !dbg !1324
+  br label %for.cond, !dbg !1324
 
 for.cond:                                         ; preds = %for.cond, %entry
   %pe.0 = phi %struct.edge_def** [ %pred, %entry ], [ %pred_next, %for.cond ]
-  %1 = load %struct.edge_def** %pe.0, align 8, !tbaa !0
-  %cmp = icmp eq %struct.edge_def* %1, %e
-  %pred_next = getelementptr inbounds %struct.edge_def* %1, i64 0, i32 0
-  br i1 %cmp, label %for.end, label %for.cond
+  %1 = load %struct.edge_def** %pe.0, align 8, !dbg !1324, !tbaa !1158
+  %cmp = icmp eq %struct.edge_def* %1, %e, !dbg !1324
+  %pred_next = getelementptr inbounds %struct.edge_def* %1, i64 0, i32 0, !dbg !1324
+  br i1 %cmp, label %for.end, label %for.cond, !dbg !1324
 
 for.end:                                          ; preds = %for.cond
-  %2 = load %struct.edge_def** %pred_next, align 8, !tbaa !0
-  store %struct.edge_def* %2, %struct.edge_def** %pe.0, align 8, !tbaa !0
-  %pred2 = getelementptr inbounds %struct.basic_block_def* %new_succ, i64 0, i32 4
-  %3 = load %struct.edge_def** %pred2, align 8, !tbaa !0
-  %pred_next3 = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 0
-  store %struct.edge_def* %3, %struct.edge_def** %pred_next3, align 8, !tbaa !0
-  store %struct.edge_def* %e, %struct.edge_def** %pred2, align 8, !tbaa !0
-  store %struct.basic_block_def* %new_succ, %struct.basic_block_def** %dest, align 8, !tbaa !0
-  ret void
+  %2 = load %struct.edge_def** %pred_next, align 8, !dbg !1326, !tbaa !1158
+  store %struct.edge_def* %2, %struct.edge_def** %pe.0, align 8, !dbg !1326, !tbaa !1158
+  %pred2 = getelementptr inbounds %struct.basic_block_def* %new_succ, i64 0, i32 4, !dbg !1327
+  %3 = load %struct.edge_def** %pred2, align 8, !dbg !1327, !tbaa !1158
+  %pred_next3 = getelementptr inbounds %struct.edge_def* %e, i64 0, i32 0, !dbg !1327
+  store %struct.edge_def* %3, %struct.edge_def** %pred_next3, align 8, !dbg !1327, !tbaa !1158
+  store %struct.edge_def* %e, %struct.edge_def** %pred2, align 8, !dbg !1328, !tbaa !1158
+  store %struct.basic_block_def* %new_succ, %struct.basic_block_def** %dest, align 8, !dbg !1329, !tbaa !1158
+  ret void, !dbg !1330
 }

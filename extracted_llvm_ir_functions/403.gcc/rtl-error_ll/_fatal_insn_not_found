@@ -1,16 +1,20 @@
-define void @_fatal_insn_not_found(%struct.rtx_def* %insn, i8* %file, i32 %line, i8* %function) #2 {
+define void @_fatal_insn_not_found(%struct.rtx_def* %insn, i8* %file, i32 %line, i8* %function) #3 {
 entry:
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 4
-  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*
-  %0 = load i32* %rtint, align 4, !tbaa !3
-  %cmp = icmp slt i32 %0, 0
-  br i1 %cmp, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !359), !dbg !573
+  tail call void @llvm.dbg.value(metadata !{i8* %file}, i64 0, metadata !360), !dbg !574
+  tail call void @llvm.dbg.value(metadata !{i32 %line}, i64 0, metadata !361), !dbg !575
+  tail call void @llvm.dbg.value(metadata !{i8* %function}, i64 0, metadata !362), !dbg !576
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 4, !dbg !577
+  %rtint = bitcast %union.rtunion_def* %arrayidx to i32*, !dbg !577
+  %0 = load i32* %rtint, align 4, !dbg !577, !tbaa !555
+  %cmp = icmp slt i32 %0, 0, !dbg !577
+  br i1 %cmp, label %if.then, label %if.else, !dbg !577
 
 if.then:                                          ; preds = %entry
-  tail call void @_fatal_insn(i8* getelementptr inbounds ([21 x i8]* @.str1, i64 0, i64 0), %struct.rtx_def* %insn, i8* %file, i32 %line, i8* %function) #8
-  unreachable
+  tail call void @_fatal_insn(i8* getelementptr inbounds ([21 x i8]* @.str1, i64 0, i64 0), %struct.rtx_def* %insn, i8* %file, i32 %line, i8* %function) #9, !dbg !578
+  unreachable, !dbg !578
 
 if.else:                                          ; preds = %entry
-  tail call void @_fatal_insn(i8* getelementptr inbounds ([39 x i8]* @.str2, i64 0, i64 0), %struct.rtx_def* %insn, i8* %file, i32 %line, i8* %function) #8
-  unreachable
+  tail call void @_fatal_insn(i8* getelementptr inbounds ([39 x i8]* @.str2, i64 0, i64 0), %struct.rtx_def* %insn, i8* %file, i32 %line, i8* %function) #9, !dbg !579
+  unreachable, !dbg !579
 }

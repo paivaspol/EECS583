@@ -1,109 +1,111 @@
-define internal fastcc i32 @ParameterExtend(%struct.PARAM* nocapture readonly %param, i8* %range_origin, i8* nocapture readonly %range, i8* nocapture readonly %range_description) #1 {
-  %1 = tail call i8* @malloc(i64 48) #8
-  %2 = icmp eq i8* %1, null
-  br i1 %2, label %.thread, label %3
+define internal fastcc i32 @ParameterExtend(%struct.PARAM* nocapture %param, i8* %range_origin, i8* nocapture %range, i8* nocapture %range_description) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.PARAM* %param}, i64 0, metadata !269), !dbg !504
+  tail call void @llvm.dbg.value(metadata !{i8* %range_origin}, i64 0, metadata !270), !dbg !505
+  tail call void @llvm.dbg.value(metadata !{i8* %range}, i64 0, metadata !271), !dbg !506
+  tail call void @llvm.dbg.value(metadata !{i8* %range_description}, i64 0, metadata !272), !dbg !507
+  %call = tail call noalias i8* @malloc(i64 48) #8, !dbg !508
+  %0 = bitcast i8* %call to %struct.RANGE*, !dbg !508
+  tail call void @llvm.dbg.value(metadata !{%struct.RANGE* %0}, i64 0, metadata !275), !dbg !508
+  %tobool = icmp eq i8* %call, null, !dbg !509
+  br i1 %tobool, label %if.end46, label %if.then, !dbg !509
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i8* @strdup(i8* %range) #8
-  %5 = getelementptr inbounds i8* %1, i64 16
-  %6 = bitcast i8* %5 to i8**
-  store i8* %4, i8** %6, align 8, !tbaa !28
-  %7 = tail call i8* @strdup(i8* %range_origin) #8
-  %8 = getelementptr inbounds i8* %1, i64 24
-  %9 = bitcast i8* %8 to i8**
-  store i8* %7, i8** %9, align 8, !tbaa !30
-  %10 = tail call i8* @strdup(i8* %range_description) #8
-  %11 = getelementptr inbounds i8* %1, i64 40
-  %12 = bitcast i8* %11 to i8**
-  store i8* %10, i8** %12, align 8, !tbaa !31
-  %13 = getelementptr inbounds i8* %1, i64 8
-  %14 = bitcast i8* %13 to %struct.RANGE**
-  %15 = bitcast i8* %1 to %struct.RANGE**
-  %16 = getelementptr inbounds i8* %1, i64 32
-  %17 = bitcast i8* %16 to i32*
-  store i32 0, i32* %17, align 4, !tbaa !32
-  %18 = getelementptr inbounds %struct.PARAM* %param, i64 0, i32 0
-  call void @llvm.memset.p0i8.i64(i8* %1, i8 0, i64 16, i32 8, i1 false)
-  %19 = load %struct.PARAM_PROPS** %18, align 8, !tbaa !2
-  %20 = getelementptr inbounds %struct.PARAM_PROPS* %19, i64 0, i32 6
-  %rangenode.03 = load %struct.RANGE** %20, align 8
-  %21 = icmp eq %struct.RANGE* %rangenode.03, null
-  br i1 %21, label %.thread12, label %.lr.ph
+if.then:                                          ; preds = %entry
+  %call1 = tail call noalias i8* @strdup(i8* %range) #8, !dbg !510
+  %range2 = getelementptr inbounds i8* %call, i64 16, !dbg !510
+  %1 = bitcast i8* %range2 to i8**, !dbg !510
+  store i8* %call1, i8** %1, align 8, !dbg !510, !tbaa !386
+  %call3 = tail call noalias i8* @strdup(i8* %range_origin) #8, !dbg !512
+  %origin = getelementptr inbounds i8* %call, i64 24, !dbg !512
+  %2 = bitcast i8* %origin to i8**, !dbg !512
+  store i8* %call3, i8** %2, align 8, !dbg !512, !tbaa !386
+  %call4 = tail call noalias i8* @strdup(i8* %range_description) #8, !dbg !513
+  %description = getelementptr inbounds i8* %call, i64 40, !dbg !513
+  %3 = bitcast i8* %description to i8**, !dbg !513
+  store i8* %call4, i8** %3, align 8, !dbg !513, !tbaa !386
+  %next = getelementptr inbounds i8* %call, i64 8, !dbg !514
+  %4 = bitcast i8* %next to %struct.RANGE**, !dbg !514
+  %last = bitcast i8* %call to %struct.RANGE**, !dbg !514
+  %active = getelementptr inbounds i8* %call, i64 32, !dbg !515
+  %5 = bitcast i8* %active to i32*, !dbg !515
+  store i32 0, i32* %5, align 4, !dbg !515, !tbaa !396
+  tail call void @llvm.dbg.value(metadata !516, i64 0, metadata !277), !dbg !517
+  %props = getelementptr inbounds %struct.PARAM* %param, i64 0, i32 0, !dbg !518
+  call void @llvm.memset.p0i8.i64(i8* %call, i8 0, i64 16, i32 8, i1 false), !dbg !514
+  %6 = load %struct.PARAM_PROPS** %props, align 8, !dbg !518, !tbaa !386
+  %range5 = getelementptr inbounds %struct.PARAM_PROPS* %6, i64 0, i32 6, !dbg !518
+  %rangenode.082 = load %struct.RANGE** %range5, align 8, !dbg !518
+  %tobool683 = icmp eq %struct.RANGE* %rangenode.082, null, !dbg !518
+  br i1 %tobool683, label %if.then29, label %for.body, !dbg !518
 
-.thread12:                                        ; preds = %3
-  %22 = bitcast i8* %1 to <2 x %struct.RANGE*>*
-  store <2 x %struct.RANGE*> zeroinitializer, <2 x %struct.RANGE*>* %22, align 8, !tbaa !19
-  %23 = getelementptr inbounds %struct.PARAM_PROPS* %19, i64 0, i32 6
-  %24 = bitcast %struct.RANGE** %23 to i8**
-  store i8* %1, i8** %24, align 8, !tbaa !16
-  br label %.thread
+for.cond:                                         ; preds = %for.body
+  %next27 = getelementptr inbounds %struct.RANGE* %rangenode.084, i64 0, i32 1, !dbg !518
+  %rangenode.0 = load %struct.RANGE** %next27, align 8, !dbg !518
+  %tobool6 = icmp eq %struct.RANGE* %rangenode.0, null, !dbg !518
+  br i1 %tobool6, label %if.then29, label %for.body, !dbg !518
 
-.lr.ph:                                           ; preds = %3, %46
-  %rangenode.04 = phi %struct.RANGE* [ %rangenode.0, %46 ], [ %rangenode.03, %3 ]
-  %25 = getelementptr inbounds %struct.RANGE* %rangenode.04, i64 0, i32 3
-  %26 = load i8** %25, align 8, !tbaa !30
-  %27 = tail call i32 @STR_cmpi(i8* %range_origin, i8* %26) #8
-  %28 = icmp slt i32 %27, 1
-  br i1 %28, label %29, label %46
+for.body:                                         ; preds = %if.then, %for.cond
+  %rangenode.084 = phi %struct.RANGE* [ %rangenode.0, %for.cond ], [ %rangenode.082, %if.then ]
+  tail call void @llvm.dbg.value(metadata !{%struct.RANGE* %rangenode.084}, i64 0, metadata !277), !dbg !520
+  %origin7 = getelementptr inbounds %struct.RANGE* %rangenode.084, i64 0, i32 3, !dbg !522
+  %7 = load i8** %origin7, align 8, !dbg !522, !tbaa !386
+  %call8 = tail call i32 @STR_cmpi(i8* %range_origin, i8* %7) #8, !dbg !522
+  tail call void @llvm.dbg.value(metadata !{i32 %call8}, i64 0, metadata !273), !dbg !522
+  %cmp = icmp slt i32 %call8, 1, !dbg !523
+  br i1 %cmp, label %if.then9, label %for.cond, !dbg !523
 
-; <label>:29                                      ; preds = %.lr.ph
-  store %struct.RANGE* %rangenode.04, %struct.RANGE** %14, align 8, !tbaa !33
-  %30 = bitcast %struct.RANGE* %rangenode.04 to i64*
-  %31 = load i64* %30, align 8, !tbaa !34
-  %32 = bitcast i8* %1 to i64*
-  store i64 %31, i64* %32, align 8, !tbaa !34
-  %33 = bitcast %struct.RANGE* %rangenode.04 to i8**
-  store i8* %1, i8** %33, align 8, !tbaa !34
-  %34 = load %struct.PARAM_PROPS** %18, align 8, !tbaa !2
-  %35 = getelementptr inbounds %struct.PARAM_PROPS* %34, i64 0, i32 6
-  %36 = load %struct.RANGE** %35, align 8, !tbaa !16
-  %37 = icmp eq %struct.RANGE* %36, %rangenode.04
-  br i1 %37, label %38, label %40
+if.then9:                                         ; preds = %for.body
+  store %struct.RANGE* %rangenode.084, %struct.RANGE** %4, align 8, !dbg !524, !tbaa !386
+  %last11 = getelementptr inbounds %struct.RANGE* %rangenode.084, i64 0, i32 0, !dbg !526
+  %8 = load %struct.RANGE** %last11, align 8, !dbg !526, !tbaa !386
+  store %struct.RANGE* %8, %struct.RANGE** %last, align 8, !dbg !526, !tbaa !386
+  store %struct.RANGE* %0, %struct.RANGE** %last11, align 8, !dbg !527, !tbaa !386
+  %9 = load %struct.PARAM_PROPS** %props, align 8, !dbg !528, !tbaa !386
+  %range15 = getelementptr inbounds %struct.PARAM_PROPS* %9, i64 0, i32 6, !dbg !528
+  %10 = load %struct.RANGE** %range15, align 8, !dbg !528, !tbaa !386
+  %cmp16 = icmp eq %struct.RANGE* %10, %rangenode.084, !dbg !528
+  br i1 %cmp16, label %if.then17, label %if.end, !dbg !528
 
-; <label>:38                                      ; preds = %29
-  %39 = bitcast %struct.RANGE** %35 to i8**
-  store i8* %1, i8** %39, align 8, !tbaa !16
-  br label %40
+if.then17:                                        ; preds = %if.then9
+  store %struct.RANGE* %0, %struct.RANGE** %range15, align 8, !dbg !529, !tbaa !386
+  br label %if.end, !dbg !531
 
-; <label>:40                                      ; preds = %38, %29
-  %41 = load %struct.RANGE** %15, align 8, !tbaa !34
-  %42 = icmp eq %struct.RANGE* %41, null
-  br i1 %42, label %.thread, label %43
+if.end:                                           ; preds = %if.then17, %if.then9
+  %11 = load %struct.RANGE** %last, align 8, !dbg !532, !tbaa !386
+  %tobool21 = icmp eq %struct.RANGE* %11, null, !dbg !532
+  br i1 %tobool21, label %if.end46, label %if.then22, !dbg !532
 
-; <label>:43                                      ; preds = %40
-  %44 = getelementptr inbounds %struct.RANGE* %41, i64 0, i32 1
-  %45 = bitcast %struct.RANGE** %44 to i8**
-  store i8* %1, i8** %45, align 8, !tbaa !33
-  br label %.thread
+if.then22:                                        ; preds = %if.end
+  %next24 = getelementptr inbounds %struct.RANGE* %11, i64 0, i32 1, !dbg !533
+  store %struct.RANGE* %0, %struct.RANGE** %next24, align 8, !dbg !533, !tbaa !386
+  br label %if.end46, !dbg !535
 
-; <label>:46                                      ; preds = %.lr.ph
-  %47 = getelementptr inbounds %struct.RANGE* %rangenode.04, i64 0, i32 1
-  %rangenode.0 = load %struct.RANGE** %47, align 8
-  %48 = icmp eq %struct.RANGE* %rangenode.0, null
-  br i1 %48, label %49, label %.lr.ph
+if.then29:                                        ; preds = %if.then, %for.cond
+  %lastnode.0.lcssa = phi %struct.RANGE* [ null, %if.then ], [ %rangenode.084, %for.cond ]
+  store %struct.RANGE* null, %struct.RANGE** %4, align 8, !dbg !536, !tbaa !386
+  store %struct.RANGE* %lastnode.0.lcssa, %struct.RANGE** %last, align 8, !dbg !538, !tbaa !386
+  %12 = load %struct.PARAM_PROPS** %props, align 8, !dbg !539, !tbaa !386
+  %range33 = getelementptr inbounds %struct.PARAM_PROPS* %12, i64 0, i32 6, !dbg !539
+  %13 = load %struct.RANGE** %range33, align 8, !dbg !539, !tbaa !386
+  %cmp34 = icmp eq %struct.RANGE* %13, null, !dbg !539
+  br i1 %cmp34, label %if.then35, label %if.end38, !dbg !539
 
-; <label>:49                                      ; preds = %46
-  %.pre = load %struct.PARAM_PROPS** %18, align 8, !tbaa !2
-  %.phi.trans.insert = getelementptr inbounds %struct.PARAM_PROPS* %.pre, i64 0, i32 6
-  %.pre6 = load %struct.RANGE** %.phi.trans.insert, align 8, !tbaa !16
-  %phitmp = icmp eq %struct.RANGE* %.pre6, null
-  store %struct.RANGE* null, %struct.RANGE** %14, align 8, !tbaa !33
-  store %struct.RANGE* %rangenode.04, %struct.RANGE** %15, align 8, !tbaa !34
-  br i1 %phitmp, label %.thread13, label %.thread10
+if.then35:                                        ; preds = %if.then29
+  store %struct.RANGE* %0, %struct.RANGE** %range33, align 8, !dbg !540, !tbaa !386
+  %.pr = load %struct.RANGE** %last, align 8, !dbg !542, !tbaa !386
+  br label %if.end38, !dbg !543
 
-.thread13:                                        ; preds = %49
-  %50 = getelementptr inbounds %struct.PARAM_PROPS* %.pre, i64 0, i32 6
-  %51 = bitcast %struct.RANGE** %50 to i8**
-  store i8* %1, i8** %51, align 8, !tbaa !16
-  br label %.thread10
+if.end38:                                         ; preds = %if.then35, %if.then29
+  %14 = phi %struct.RANGE* [ %.pr, %if.then35 ], [ %lastnode.0.lcssa, %if.then29 ], !dbg !542
+  %tobool40 = icmp eq %struct.RANGE* %14, null, !dbg !542
+  br i1 %tobool40, label %if.end46, label %if.then41, !dbg !542
 
-.thread10:                                        ; preds = %49, %.thread13
-  %52 = getelementptr inbounds %struct.RANGE* %rangenode.04, i64 0, i32 1
-  %53 = bitcast %struct.RANGE** %52 to i8**
-  store i8* %1, i8** %53, align 8, !tbaa !33
-  br label %.thread
+if.then41:                                        ; preds = %if.end38
+  %next43 = getelementptr inbounds %struct.RANGE* %14, i64 0, i32 1, !dbg !544
+  store %struct.RANGE* %0, %struct.RANGE** %next43, align 8, !dbg !544, !tbaa !386
+  br label %if.end46, !dbg !546
 
-.thread:                                          ; preds = %.thread12, %43, %40, %0, %.thread10
-  %retcode.0 = phi i32 [ 0, %.thread10 ], [ -1, %0 ], [ 0, %40 ], [ 0, %43 ], [ 0, %.thread12 ]
-  ret i32 %retcode.0
+if.end46:                                         ; preds = %if.then22, %if.end, %entry, %if.then41, %if.end38
+  %retcode.0 = phi i32 [ 0, %if.end38 ], [ 0, %if.then41 ], [ -1, %entry ], [ 0, %if.end ], [ 0, %if.then22 ]
+  ret i32 %retcode.0, !dbg !547
 }

@@ -1,0 +1,29 @@
+define zeroext i1 @_ZN11xercesc_2_510XMLChar1_111isAllSpacesEPKtj(i16* %toCheck, i32 %count) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %toCheck}, i64 0, metadata !193), !dbg !321
+  tail call void @llvm.dbg.value(metadata !{i32 %count}, i64 0, metadata !194), !dbg !322
+  tail call void @llvm.dbg.value(metadata !{i16* %toCheck}, i64 0, metadata !195), !dbg !323
+  %idx.ext = zext i32 %count to i64, !dbg !324
+  %add.ptr = getelementptr inbounds i16* %toCheck, i64 %idx.ext, !dbg !324
+  tail call void @llvm.dbg.value(metadata !{i16* %add.ptr}, i64 0, metadata !196), !dbg !324
+  br label %while.cond, !dbg !325
+
+while.cond:                                       ; preds = %while.body, %entry
+  %curCh.0 = phi i16* [ %toCheck, %entry ], [ %incdec.ptr, %while.body ]
+  %cmp = icmp ult i16* %curCh.0, %add.ptr, !dbg !325
+  br i1 %cmp, label %while.body, label %return, !dbg !325
+
+while.body:                                       ; preds = %while.cond
+  %incdec.ptr = getelementptr inbounds i16* %curCh.0, i64 1, !dbg !326
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !195), !dbg !326
+  %0 = load i16* %curCh.0, align 2, !dbg !326, !tbaa !260
+  %idxprom = zext i16 %0 to i64, !dbg !326
+  %arrayidx = getelementptr inbounds [65536 x i8]* @_ZN11xercesc_2_510XMLChar1_119fgCharCharsTable1_1E, i64 0, i64 %idxprom, !dbg !326
+  %1 = load i8* %arrayidx, align 1, !dbg !326, !tbaa !261
+  %tobool = icmp slt i8 %1, 0, !dbg !326
+  br i1 %tobool, label %while.cond, label %return, !dbg !326
+
+return:                                           ; preds = %while.cond, %while.body
+  %retval.0 = phi i1 [ false, %while.body ], [ true, %while.cond ]
+  ret i1 %retval.0, !dbg !328
+}

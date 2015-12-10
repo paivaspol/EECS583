@@ -1,40 +1,45 @@
 define void @MakeIdentityMx(i8** nocapture %aseqs, i32 %num, float*** nocapture %ret_imx) #0 {
 entry:
-  %call = tail call float** @FMX2Alloc(i32 %num, i32 %num) #4
-  %cmp34 = icmp sgt i32 %num, 0
-  br i1 %cmp34, label %for.body3.lr.ph, label %for.end17
+  tail call void @llvm.dbg.value(metadata !{i8** %aseqs}, i64 0, metadata !81), !dbg !342
+  tail call void @llvm.dbg.value(metadata !{i32 %num}, i64 0, metadata !82), !dbg !342
+  tail call void @llvm.dbg.value(metadata !{float*** %ret_imx}, i64 0, metadata !83), !dbg !342
+  %call = tail call float** @FMX2Alloc(i32 %num, i32 %num) #5, !dbg !343
+  tail call void @llvm.dbg.value(metadata !{float** %call}, i64 0, metadata !84), !dbg !343
+  tail call void @llvm.dbg.value(metadata !9, i64 0, metadata !85), !dbg !344
+  %cmp34 = icmp sgt i32 %num, 0, !dbg !344
+  br i1 %cmp34, label %for.body3.lr.ph, label %for.end17, !dbg !344
 
 for.body3.lr.ph:                                  ; preds = %for.inc15, %entry
   %indvars.iv38 = phi i64 [ %indvars.iv.next39, %for.inc15 ], [ 0, %entry ]
-  %arrayidx = getelementptr inbounds i8** %aseqs, i64 %indvars.iv38
-  %arrayidx13 = getelementptr inbounds float** %call, i64 %indvars.iv38
-  br label %for.body3
+  %arrayidx = getelementptr inbounds i8** %aseqs, i64 %indvars.iv38, !dbg !346
+  %arrayidx13 = getelementptr inbounds float** %call, i64 %indvars.iv38, !dbg !346
+  br label %for.body3, !dbg !348
 
 for.body3:                                        ; preds = %for.body3, %for.body3.lr.ph
-  %indvars.iv36 = phi i64 [ %indvars.iv38, %for.body3.lr.ph ], [ %indvars.iv.next37, %for.body3 ]
-  %0 = load i8** %arrayidx, align 8, !tbaa !0
-  %arrayidx5 = getelementptr inbounds i8** %aseqs, i64 %indvars.iv36
-  %1 = load i8** %arrayidx5, align 8, !tbaa !0
-  %call6 = tail call float @PairwiseIdentity(i8* %0, i8* %1) #4
-  %arrayidx9 = getelementptr inbounds float** %call, i64 %indvars.iv36
-  %2 = load float** %arrayidx9, align 8, !tbaa !0
-  %arrayidx10 = getelementptr inbounds float* %2, i64 %indvars.iv38
-  store float %call6, float* %arrayidx10, align 4, !tbaa !3
-  %3 = load float** %arrayidx13, align 8, !tbaa !0
-  %arrayidx14 = getelementptr inbounds float* %3, i64 %indvars.iv36
-  store float %call6, float* %arrayidx14, align 4, !tbaa !3
-  %indvars.iv.next37 = add i64 %indvars.iv36, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next37 to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %num
-  br i1 %exitcond, label %for.inc15, label %for.body3
+  %indvars.iv36 = phi i64 [ %indvars.iv38, %for.body3.lr.ph ], [ %indvars.iv.next37, %for.body3 ], !dbg !344
+  %0 = load i8** %arrayidx, align 8, !dbg !346, !tbaa !215
+  %arrayidx5 = getelementptr inbounds i8** %aseqs, i64 %indvars.iv36, !dbg !346
+  %1 = load i8** %arrayidx5, align 8, !dbg !346, !tbaa !215
+  %call6 = tail call float @PairwiseIdentity(i8* %0, i8* %1) #5, !dbg !346
+  %arrayidx9 = getelementptr inbounds float** %call, i64 %indvars.iv36, !dbg !346
+  %2 = load float** %arrayidx9, align 8, !dbg !346, !tbaa !215
+  %arrayidx10 = getelementptr inbounds float* %2, i64 %indvars.iv38, !dbg !346
+  store float %call6, float* %arrayidx10, align 4, !dbg !346, !tbaa !221
+  %3 = load float** %arrayidx13, align 8, !dbg !346, !tbaa !215
+  %arrayidx14 = getelementptr inbounds float* %3, i64 %indvars.iv36, !dbg !346
+  store float %call6, float* %arrayidx14, align 4, !dbg !346, !tbaa !221
+  %indvars.iv.next37 = add i64 %indvars.iv36, 1, !dbg !348
+  %lftr.wideiv = trunc i64 %indvars.iv.next37 to i32, !dbg !348
+  %exitcond = icmp eq i32 %lftr.wideiv, %num, !dbg !348
+  br i1 %exitcond, label %for.inc15, label %for.body3, !dbg !348
 
 for.inc15:                                        ; preds = %for.body3
-  %indvars.iv.next39 = add i64 %indvars.iv38, 1
-  %lftr.wideiv40 = trunc i64 %indvars.iv.next39 to i32
-  %exitcond41 = icmp eq i32 %lftr.wideiv40, %num
-  br i1 %exitcond41, label %for.end17, label %for.body3.lr.ph
+  %indvars.iv.next39 = add i64 %indvars.iv38, 1, !dbg !344
+  %lftr.wideiv40 = trunc i64 %indvars.iv.next39 to i32, !dbg !344
+  %exitcond41 = icmp eq i32 %lftr.wideiv40, %num, !dbg !344
+  br i1 %exitcond41, label %for.end17, label %for.body3.lr.ph, !dbg !344
 
 for.end17:                                        ; preds = %for.inc15, %entry
-  store float** %call, float*** %ret_imx, align 8, !tbaa !0
-  ret void
+  store float** %call, float*** %ret_imx, align 8, !dbg !349, !tbaa !215
+  ret void, !dbg !350
 }

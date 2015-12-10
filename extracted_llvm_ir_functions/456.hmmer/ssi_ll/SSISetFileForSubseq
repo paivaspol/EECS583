@@ -1,34 +1,38 @@
 define i32 @SSISetFileForSubseq(%struct.ssiindex_s* nocapture %g, i32 %fh, i32 %bpl, i32 %rpl) #0 {
 entry:
-  %cmp = icmp slt i32 %fh, 0
-  br i1 %cmp, label %return, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata !{%struct.ssiindex_s* %g}, i64 0, metadata !280), !dbg !831
+  tail call void @llvm.dbg.value(metadata !{i32 %fh}, i64 0, metadata !281), !dbg !831
+  tail call void @llvm.dbg.value(metadata !{i32 %bpl}, i64 0, metadata !282), !dbg !831
+  tail call void @llvm.dbg.value(metadata !{i32 %rpl}, i64 0, metadata !283), !dbg !831
+  %cmp = icmp slt i32 %fh, 0, !dbg !832
+  br i1 %cmp, label %return, label %lor.lhs.false, !dbg !832
 
 lor.lhs.false:                                    ; preds = %entry
-  %nfiles = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 9
-  %0 = load i16* %nfiles, align 2, !tbaa !3
-  %conv = zext i16 %0 to i32
-  %cmp1 = icmp sgt i32 %conv, %fh
-  br i1 %cmp1, label %if.end, label %return
+  %nfiles = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 9, !dbg !832
+  %0 = load i16* %nfiles, align 2, !dbg !832, !tbaa !517
+  %conv = zext i16 %0 to i32, !dbg !832
+  %cmp1 = icmp sgt i32 %conv, %fh, !dbg !832
+  br i1 %cmp1, label %if.end, label %return, !dbg !832
 
 if.end:                                           ; preds = %lor.lhs.false
-  %cmp3 = icmp slt i32 %bpl, 1
-  %cmp6 = icmp slt i32 %rpl, 1
-  %or.cond = or i1 %cmp3, %cmp6
-  br i1 %or.cond, label %return, label %if.end9
+  %cmp3 = icmp slt i32 %bpl, 1, !dbg !833
+  %cmp6 = icmp slt i32 %rpl, 1, !dbg !833
+  %or.cond = or i1 %cmp3, %cmp6, !dbg !833
+  br i1 %or.cond, label %return, label %if.end9, !dbg !833
 
 if.end9:                                          ; preds = %if.end
-  %idxprom = sext i32 %fh to i64
-  %bpl10 = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 6
-  %1 = load i32** %bpl10, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds i32* %1, i64 %idxprom
-  store i32 %bpl, i32* %arrayidx, align 4, !tbaa !4
-  %rpl12 = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 7
-  %2 = load i32** %rpl12, align 8, !tbaa !0
-  %arrayidx13 = getelementptr inbounds i32* %2, i64 %idxprom
-  store i32 %rpl, i32* %arrayidx13, align 4, !tbaa !4
-  br label %return
+  %idxprom = sext i32 %fh to i64, !dbg !834
+  %bpl10 = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 6, !dbg !834
+  %1 = load i32** %bpl10, align 8, !dbg !834, !tbaa !498
+  %arrayidx = getelementptr inbounds i32* %1, i64 %idxprom, !dbg !834
+  store i32 %bpl, i32* %arrayidx, align 4, !dbg !834, !tbaa !521
+  %rpl12 = getelementptr inbounds %struct.ssiindex_s* %g, i64 0, i32 7, !dbg !835
+  %2 = load i32** %rpl12, align 8, !dbg !835, !tbaa !498
+  %arrayidx13 = getelementptr inbounds i32* %2, i64 %idxprom, !dbg !835
+  store i32 %rpl, i32* %arrayidx13, align 4, !dbg !835, !tbaa !521
+  br label %return, !dbg !836
 
 return:                                           ; preds = %if.end, %entry, %lor.lhs.false, %if.end9
   %retval.0 = phi i32 [ 0, %if.end9 ], [ 12, %lor.lhs.false ], [ 12, %entry ], [ 12, %if.end ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !836
 }

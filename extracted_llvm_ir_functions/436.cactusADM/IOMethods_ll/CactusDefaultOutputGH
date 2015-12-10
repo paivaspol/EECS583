@@ -1,32 +1,36 @@
 define i32 @CactusDefaultOutputGH(%struct.cGH* %GH) #1 {
-  %1 = load i32* @num_methods, align 4, !tbaa !13
-  %2 = icmp sgt i32 %1, 0
-  br i1 %2, label %.lr.ph, label %.loopexit
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !153), !dbg !337
+  %0 = load i32* @num_methods, align 4, !dbg !338, !tbaa !251
+  %cmp = icmp sgt i32 %0, 0, !dbg !338
+  br i1 %cmp, label %for.body, label %if.end5, !dbg !338
 
-.lr.ph:                                           ; preds = %0, %12
-  %handle.02 = phi i32 [ %13, %12 ], [ 0, %0 ]
-  %retval.01 = phi i32 [ %retval.1, %12 ], [ 0, %0 ]
-  %3 = load %struct.cHandledData** @IOMethods, align 8, !tbaa !2
-  %4 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %3, i32 %handle.02) #5
-  %5 = icmp eq i8* %4, null
-  br i1 %5, label %12, label %6
+for.body:                                         ; preds = %entry, %for.inc
+  %handle.012 = phi i32 [ %inc, %for.inc ], [ 0, %entry ]
+  %retval1.011 = phi i32 [ %retval1.1, %for.inc ], [ 0, %entry ]
+  %1 = load %struct.cHandledData** @IOMethods, align 8, !dbg !339, !tbaa !235
+  %call = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %handle.012) #6, !dbg !339
+  %tobool = icmp eq i8* %call, null, !dbg !343
+  br i1 %tobool, label %for.inc, label %if.then3, !dbg !343
 
-; <label>:6                                       ; preds = %.lr.ph
-  %7 = getelementptr inbounds i8* %4, i64 16
-  %8 = bitcast i8* %7 to i32 (%struct.cGH*)**
-  %9 = load i32 (%struct.cGH*)** %8, align 8, !tbaa !9
-  %10 = tail call i32 %9(%struct.cGH* %GH) #5
-  %11 = add nsw i32 %10, %retval.01
-  br label %12
+if.then3:                                         ; preds = %for.body
+  %OutputGH = getelementptr inbounds i8* %call, i64 16, !dbg !344
+  %2 = bitcast i8* %OutputGH to i32 (%struct.cGH*)**, !dbg !344
+  %3 = load i32 (%struct.cGH*)** %2, align 8, !dbg !344, !tbaa !235
+  %call4 = tail call i32 %3(%struct.cGH* %GH) #6, !dbg !344
+  %add = add nsw i32 %call4, %retval1.011, !dbg !344
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !155), !dbg !344
+  br label %for.inc, !dbg !346
 
-; <label>:12                                      ; preds = %.lr.ph, %6
-  %retval.1 = phi i32 [ %11, %6 ], [ %retval.01, %.lr.ph ]
-  %13 = add nuw nsw i32 %handle.02, 1
-  %14 = load i32* @num_methods, align 4, !tbaa !13
-  %15 = icmp slt i32 %13, %14
-  br i1 %15, label %.lr.ph, label %.loopexit
+for.inc:                                          ; preds = %for.body, %if.then3
+  %retval1.1 = phi i32 [ %add, %if.then3 ], [ %retval1.011, %for.body ]
+  %inc = add nsw i32 %handle.012, 1, !dbg !347
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !154), !dbg !347
+  %4 = load i32* @num_methods, align 4, !dbg !347, !tbaa !251
+  %cmp2 = icmp slt i32 %inc, %4, !dbg !347
+  br i1 %cmp2, label %for.body, label %if.end5, !dbg !347
 
-.loopexit:                                        ; preds = %12, %0
-  %retval.2 = phi i32 [ -1, %0 ], [ %retval.1, %12 ]
-  ret i32 %retval.2
+if.end5:                                          ; preds = %for.inc, %entry
+  %retval1.2 = phi i32 [ -1, %entry ], [ %retval1.1, %for.inc ]
+  ret i32 %retval1.2, !dbg !348
 }

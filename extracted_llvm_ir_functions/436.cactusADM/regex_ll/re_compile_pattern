@@ -1,22 +1,27 @@
-define i8* @re_compile_pattern(i8* %pattern, i64 %length, %struct.re_pattern_buffer* %bufp) #0 {
-  %1 = getelementptr inbounds %struct.re_pattern_buffer* %bufp, i64 0, i32 7
-  %2 = load i8* %1, align 8
-  %3 = and i8 %2, 105
-  %4 = or i8 %3, -128
-  store i8 %4, i8* %1, align 8
-  %5 = load i64* @re_syntax_options, align 8, !tbaa !2
-  %6 = tail call fastcc i32 @regex_compile(i8* %pattern, i64 %length, i64 %5, %struct.re_pattern_buffer* %bufp) #8
-  %7 = icmp eq i32 %6, 0
-  br i1 %7, label %13, label %8
+define i8* @re_compile_pattern(i8* %pattern, i64 %length, %struct.re_pattern_buffer* nocapture %bufp) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %pattern}, i64 0, metadata !220), !dbg !1407
+  tail call void @llvm.dbg.value(metadata !{i64 %length}, i64 0, metadata !221), !dbg !1408
+  tail call void @llvm.dbg.value(metadata !{%struct.re_pattern_buffer* %bufp}, i64 0, metadata !222), !dbg !1409
+  %regs_allocated = getelementptr inbounds %struct.re_pattern_buffer* %bufp, i64 0, i32 7, !dbg !1410
+  %bf.load = load i8* %regs_allocated, align 8, !dbg !1410
+  %bf.clear4 = and i8 %bf.load, 105, !dbg !1411
+  %bf.set = or i8 %bf.clear4, -128, !dbg !1411
+  store i8 %bf.set, i8* %regs_allocated, align 8, !dbg !1411
+  %0 = load i64* @re_syntax_options, align 8, !dbg !1412, !tbaa !713
+  %call = tail call fastcc i32 @regex_compile(i8* %pattern, i64 %length, i64 %0, %struct.re_pattern_buffer* %bufp) #9, !dbg !1412
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !223), !dbg !1412
+  %tobool = icmp eq i32 %call, 0, !dbg !1413
+  br i1 %tobool, label %return, label %if.end, !dbg !1413
 
-; <label>:8                                       ; preds = %0
-  %9 = sext i32 %6 to i64
-  %10 = getelementptr inbounds [17 x i64]* @re_error_msgid_idx, i64 0, i64 %9
-  %11 = load i64* %10, align 8, !tbaa !2
-  %12 = getelementptr inbounds [369 x i8]* @re_error_msgid, i64 0, i64 %11
-  br label %13
+if.end:                                           ; preds = %entry
+  %idxprom = sext i32 %call to i64, !dbg !1414
+  %arrayidx = getelementptr inbounds [17 x i64]* @re_error_msgid_idx, i64 0, i64 %idxprom, !dbg !1414
+  %1 = load i64* %arrayidx, align 8, !dbg !1414, !tbaa !713
+  %add.ptr = getelementptr inbounds [369 x i8]* @re_error_msgid, i64 0, i64 %1, !dbg !1414
+  br label %return, !dbg !1414
 
-; <label>:13                                      ; preds = %0, %8
-  %.0 = phi i8* [ %12, %8 ], [ null, %0 ]
-  ret i8* %.0
+return:                                           ; preds = %entry, %if.end
+  %retval.0 = phi i8* [ %add.ptr, %if.end ], [ null, %entry ]
+  ret i8* %retval.0, !dbg !1415
 }

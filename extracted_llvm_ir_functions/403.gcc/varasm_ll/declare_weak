@@ -1,40 +1,41 @@
 define void @declare_weak(%union.tree_node* %decl) #0 {
 entry:
-  %public_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 2
-  %0 = bitcast [4 x i8]* %public_flag to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 524288
-  %tobool = icmp eq i32 %bf.clear, 0
-  br i1 %tobool, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %decl}, i64 0, metadata !1773), !dbg !3954
+  %public_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 0, i32 2, !dbg !3955
+  %0 = bitcast [4 x i8]* %public_flag to i32*, !dbg !3955
+  %bf.load = load i32* %0, align 8, !dbg !3955
+  %bf.clear = and i32 %bf.load, 524288, !dbg !3955
+  %tobool = icmp eq i32 %bf.clear, 0, !dbg !3955
+  br i1 %tobool, label %if.then, label %if.else, !dbg !3955
 
 if.then:                                          ; preds = %entry
-  tail call void (%union.tree_node*, i8*, ...)* @error_with_decl(%union.tree_node* %decl, i8* getelementptr inbounds ([40 x i8]* @.str106, i64 0, i64 0)) #9
-  br label %if.end18
+  tail call void (%union.tree_node*, i8*, ...)* @error_with_decl(%union.tree_node* %decl, i8* getelementptr inbounds ([40 x i8]* @.str106, i64 0, i64 0)) #10, !dbg !3956
+  br label %if.end18, !dbg !3956
 
 if.else:                                          ; preds = %entry
-  %1 = and i32 %bf.load, 16639
-  %2 = icmp eq i32 %1, 16414
-  br i1 %2, label %if.then9, label %if.else10
+  %1 = and i32 %bf.load, 16639, !dbg !3957
+  %2 = icmp eq i32 %1, 16414, !dbg !3957
+  br i1 %2, label %if.then9, label %if.else10, !dbg !3957
 
 if.then9:                                         ; preds = %if.else
-  tail call void (%union.tree_node*, i8*, ...)* @error_with_decl(%union.tree_node* %decl, i8* getelementptr inbounds ([49 x i8]* @.str104, i64 0, i64 0)) #9
-  br label %if.end18
+  tail call void (%union.tree_node*, i8*, ...)* @error_with_decl(%union.tree_node* %decl, i8* getelementptr inbounds ([49 x i8]* @.str104, i64 0, i64 0)) #10, !dbg !3958
+  br label %if.end18, !dbg !3958
 
 if.else10:                                        ; preds = %if.else
-  %weak_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 5
-  %3 = bitcast [8 x i8]* %weak_flag to i64*
-  %bf.load12 = load i64* %3, align 8
-  %bf.cast = and i64 %bf.load12, 8388608
-  %tobool15 = icmp eq i64 %bf.cast, 0
-  br i1 %tobool15, label %if.then16, label %if.end18
+  %weak_flag = getelementptr inbounds %union.tree_node* %decl, i64 0, i32 0, i32 5, !dbg !3959
+  %3 = bitcast [8 x i8]* %weak_flag to i64*, !dbg !3959
+  %bf.load12 = load i64* %3, align 8, !dbg !3959
+  %bf.cast = and i64 %bf.load12, 8388608, !dbg !3959
+  %tobool15 = icmp eq i64 %bf.cast, 0, !dbg !3959
+  br i1 %tobool15, label %if.then16, label %if.end18, !dbg !3959
 
 if.then16:                                        ; preds = %if.else10
-  %4 = load %union.tree_node** @weak_decls, align 8, !tbaa !3
-  %call = tail call %union.tree_node* @tree_cons(%union.tree_node* null, %union.tree_node* %decl, %union.tree_node* %4) #9
-  store %union.tree_node* %call, %union.tree_node** @weak_decls, align 8, !tbaa !3
-  br label %if.end18
+  %4 = load %union.tree_node** @weak_decls, align 8, !dbg !3961, !tbaa !2357
+  %call = tail call %union.tree_node* @tree_cons(%union.tree_node* null, %union.tree_node* %decl, %union.tree_node* %4) #10, !dbg !3961
+  store %union.tree_node* %call, %union.tree_node** @weak_decls, align 8, !dbg !3961, !tbaa !2357
+  br label %if.end18, !dbg !3961
 
 if.end18:                                         ; preds = %if.else10, %if.then9, %if.then16, %if.then
-  tail call fastcc void @mark_weak(%union.tree_node* %decl) #10
-  ret void
+  tail call fastcc void @mark_weak(%union.tree_node* %decl) #11, !dbg !3962
+  ret void, !dbg !3963
 }

@@ -1,191 +1,215 @@
 define internal fastcc void @splice_child_die(%struct.die_struct* %parent, %struct.die_struct* %child) #1 {
 entry:
-  %die_parent = getelementptr inbounds %struct.die_struct* %child, i64 0, i32 3
-  %0 = load %struct.die_struct** %die_parent, align 8, !tbaa !4
-  %cmp = icmp eq %struct.die_struct* %0, %parent
-  br i1 %cmp, label %if.end9, label %tailrecurse.i.i
+  tail call void @llvm.dbg.value(metadata !{%struct.die_struct* %parent}, i64 0, metadata !2525), !dbg !9101
+  tail call void @llvm.dbg.value(metadata !{%struct.die_struct* %child}, i64 0, metadata !2526), !dbg !9101
+  %die_parent = getelementptr inbounds %struct.die_struct* %child, i64 0, i32 3, !dbg !9102
+  %0 = load %struct.die_struct** %die_parent, align 8, !dbg !9102, !tbaa !3768
+  %cmp = icmp eq %struct.die_struct* %0, %parent, !dbg !9102
+  br i1 %cmp, label %if.end9, label %tailrecurse.i.i, !dbg !9102
 
 tailrecurse.i.i:                                  ; preds = %entry, %for.end.i.i
   %die.tr.i.i = phi %struct.die_struct* [ %spec.1.i.i, %for.end.i.i ], [ %child, %entry ]
-  %cmp.i.i = icmp eq %struct.die_struct* %die.tr.i.i, null
-  br i1 %cmp.i.i, label %if.end2, label %if.then.i.i
+  tail call void @llvm.dbg.value(metadata !{%struct.die_struct* %die.tr.i.i}, i64 0, metadata !9103) #6, !dbg !9106
+  tail call void @llvm.dbg.value(metadata !7588, i64 0, metadata !9107) #6, !dbg !9108
+  tail call void @llvm.dbg.value(metadata !4683, i64 0, metadata !9109) #6, !dbg !9110
+  %cmp.i.i = icmp eq %struct.die_struct* %die.tr.i.i, null, !dbg !9111
+  br i1 %cmp.i.i, label %if.end2, label %if.then.i.i, !dbg !9111
 
 if.then.i.i:                                      ; preds = %tailrecurse.i.i
-  %die_attr.i.i = getelementptr inbounds %struct.die_struct* %die.tr.i.i, i64 0, i32 2
-  %a.026.i.i = load %struct.dw_attr_struct** %die_attr.i.i, align 8
-  %cmp127.i.i = icmp eq %struct.dw_attr_struct* %a.026.i.i, null
-  br i1 %cmp127.i.i, label %if.end2, label %for.body.i.i
+  %die_attr.i.i = getelementptr inbounds %struct.die_struct* %die.tr.i.i, i64 0, i32 2, !dbg !9112
+  %a.026.i.i = load %struct.dw_attr_struct** %die_attr.i.i, align 8, !dbg !9112
+  %cmp127.i.i = icmp eq %struct.dw_attr_struct* %a.026.i.i, null, !dbg !9112
+  br i1 %cmp127.i.i, label %if.end2, label %for.body.i.i, !dbg !9112
 
 for.body.i.i:                                     ; preds = %if.then.i.i, %for.inc.i.i
   %a.029.i.i = phi %struct.dw_attr_struct* [ %a.0.i.i, %for.inc.i.i ], [ %a.026.i.i, %if.then.i.i ]
   %spec.028.i.i = phi %struct.die_struct* [ %spec.1.i.i, %for.inc.i.i ], [ null, %if.then.i.i ]
-  %dw_attr.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i, i64 0, i32 0
-  %1 = load i32* %dw_attr.i.i, align 4, !tbaa !11
+  %dw_attr.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i, i64 0, i32 0, !dbg !9113
+  %1 = load i32* %dw_attr.i.i, align 4, !dbg !9113, !tbaa !4703
   switch i32 %1, label %for.inc.i.i [
     i32 71, label %land.lhs.true.i.i
     i32 49, label %land.lhs.true.i.i.i
-  ]
+  ], !dbg !9113
 
 land.lhs.true.i.i.i:                              ; preds = %for.body.i.i
-  %val_class.i.i.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i, i64 0, i32 2, i32 0
-  %2 = load i32* %val_class.i.i.i.i, align 4, !tbaa !1
-  %cmp.i.i.i = icmp eq i32 %2, 10
-  br i1 %cmp.i.i.i, label %AT_ref.exit.i.i, label %if.end.i.i.i
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.029.i.i}, i64 0, metadata !9114) #6, !dbg !9116
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.029.i.i}, i64 0, metadata !9117) #6, !dbg !9119
+  %val_class.i.i.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i, i64 0, i32 2, i32 0, !dbg !9120
+  %2 = load i32* %val_class.i.i.i.i, align 4, !dbg !9120, !tbaa !3759
+  %cmp.i.i.i = icmp eq i32 %2, 10, !dbg !9118
+  br i1 %cmp.i.i.i, label %AT_ref.exit.i.i, label %if.end.i.i.i, !dbg !9118
 
 if.end.i.i.i:                                     ; preds = %land.lhs.true.i.i.i
-  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 4588, i8* getelementptr inbounds ([7 x i8]* @__FUNCTION__.AT_ref, i64 0, i64 0)) #12
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 4588, i8* getelementptr inbounds ([7 x i8]* @__FUNCTION__.AT_ref, i64 0, i64 0)) #13, !dbg !9121
+  unreachable, !dbg !9121
 
 AT_ref.exit.i.i:                                  ; preds = %land.lhs.true.i.i.i
-  %v.i.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i, i64 0, i32 2, i32 1
-  %die.i.i.i = bitcast %union.anon.3* %v.i.i.i to %struct.die_struct**
-  %3 = load %struct.die_struct** %die.i.i.i, align 8, !tbaa !4
-  br label %for.inc.i.i
+  %v.i.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i, i64 0, i32 2, i32 1, !dbg !9122
+  %die.i.i.i = bitcast %union.anon.3* %v.i.i.i to %struct.die_struct**, !dbg !9122
+  %3 = load %struct.die_struct** %die.i.i.i, align 8, !dbg !9122, !tbaa !3768
+  tail call void @llvm.dbg.value(metadata !{%struct.die_struct* %3}, i64 0, metadata !9109) #6, !dbg !9115
+  br label %for.inc.i.i, !dbg !9115
 
 for.inc.i.i:                                      ; preds = %for.body.i.i, %AT_ref.exit.i.i
   %spec.1.i.i = phi %struct.die_struct* [ %3, %AT_ref.exit.i.i ], [ %spec.028.i.i, %for.body.i.i ]
-  %dw_attr_next.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i, i64 0, i32 1
-  %a.0.i.i = load %struct.dw_attr_struct** %dw_attr_next.i.i, align 8
-  %cmp1.i.i = icmp eq %struct.dw_attr_struct* %a.0.i.i, null
-  br i1 %cmp1.i.i, label %for.end.i.i, label %for.body.i.i
+  %dw_attr_next.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i, i64 0, i32 1, !dbg !9112
+  %a.0.i.i = load %struct.dw_attr_struct** %dw_attr_next.i.i, align 8, !dbg !9112
+  %cmp1.i.i = icmp eq %struct.dw_attr_struct* %a.0.i.i, null, !dbg !9112
+  br i1 %cmp1.i.i, label %for.end.i.i, label %for.body.i.i, !dbg !9112
 
 for.end.i.i:                                      ; preds = %for.inc.i.i
-  %tobool.i.i = icmp eq %struct.die_struct* %spec.1.i.i, null
-  br i1 %tobool.i.i, label %if.end2, label %tailrecurse.i.i
+  %tobool.i.i = icmp eq %struct.die_struct* %spec.1.i.i, null, !dbg !9123
+  br i1 %tobool.i.i, label %if.end2, label %tailrecurse.i.i, !dbg !9123
 
 land.lhs.true.i.i:                                ; preds = %for.body.i.i
-  %val_class.i.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i, i64 0, i32 2, i32 0
-  %4 = load i32* %val_class.i.i.i, align 4, !tbaa !1
-  %cmp.i4.i = icmp eq i32 %4, 10
-  br i1 %cmp.i4.i, label %AT_ref.exit.i, label %if.end.i.i
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.029.i.i}, i64 0, metadata !9124) #6, !dbg !9104
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.029.i.i}, i64 0, metadata !9125) #6, !dbg !9127
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.029.i.i}, i64 0, metadata !9128) #6, !dbg !9130
+  %val_class.i.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i, i64 0, i32 2, i32 0, !dbg !9131
+  %4 = load i32* %val_class.i.i.i, align 4, !dbg !9131, !tbaa !3759
+  %cmp.i4.i = icmp eq i32 %4, 10, !dbg !9129
+  br i1 %cmp.i4.i, label %AT_ref.exit.i, label %if.end.i.i, !dbg !9129
 
 if.end.i.i:                                       ; preds = %land.lhs.true.i.i
-  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 4588, i8* getelementptr inbounds ([7 x i8]* @__FUNCTION__.AT_ref, i64 0, i64 0)) #12
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 4588, i8* getelementptr inbounds ([7 x i8]* @__FUNCTION__.AT_ref, i64 0, i64 0)) #13, !dbg !9132
+  unreachable, !dbg !9132
 
 AT_ref.exit.i:                                    ; preds = %land.lhs.true.i.i
-  %v.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i, i64 0, i32 2, i32 1
-  %die.i.i = bitcast %union.anon.3* %v.i.i to %struct.die_struct**
-  %5 = load %struct.die_struct** %die.i.i, align 8, !tbaa !4
-  br label %if.end2
+  %v.i.i = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i, i64 0, i32 2, i32 1, !dbg !9133
+  %die.i.i = bitcast %union.anon.3* %v.i.i to %struct.die_struct**, !dbg !9133
+  %5 = load %struct.die_struct** %die.i.i, align 8, !dbg !9133, !tbaa !3768
+  br label %if.end2, !dbg !9126
 
 if.end2:                                          ; preds = %AT_ref.exit.i, %for.end.i.i, %if.then.i.i, %tailrecurse.i.i
-  %cond.i = phi %struct.die_struct* [ %5, %AT_ref.exit.i ], [ null, %for.end.i.i ], [ null, %if.then.i.i ], [ null, %tailrecurse.i.i ]
-  %tobool = icmp eq %struct.die_struct* %cond.i, null
-  %child.call = select i1 %tobool, %struct.die_struct* %child, %struct.die_struct* %cond.i
+  %cond.i = phi %struct.die_struct* [ %5, %AT_ref.exit.i ], [ null, %for.end.i.i ], [ null, %if.then.i.i ], [ null, %tailrecurse.i.i ], !dbg !9126
+  tail call void @llvm.dbg.value(metadata !{%struct.die_struct* %cond.i}, i64 0, metadata !2528), !dbg !9105
+  %tobool = icmp eq %struct.die_struct* %cond.i, null, !dbg !9134
+  tail call void @llvm.dbg.value(metadata !{%struct.die_struct* %cond.i}, i64 0, metadata !2526), !dbg !9135
+  %child.call = select i1 %tobool, %struct.die_struct* %child, %struct.die_struct* %cond.i, !dbg !9134
   %die_parent3.phi.trans.insert = getelementptr inbounds %struct.die_struct* %child.call, i64 0, i32 3
-  %.pre = load %struct.die_struct** %die_parent3.phi.trans.insert, align 8, !tbaa !4
-  %cmp4 = icmp eq %struct.die_struct* %.pre, %parent
-  br i1 %cmp4, label %if.end9, label %tailrecurse.i.i37
+  %.pre = load %struct.die_struct** %die_parent3.phi.trans.insert, align 8, !dbg !9136, !tbaa !3768
+  %cmp4 = icmp eq %struct.die_struct* %.pre, %parent, !dbg !9136
+  br i1 %cmp4, label %if.end9, label %tailrecurse.i.i37, !dbg !9136
 
 tailrecurse.i.i37:                                ; preds = %if.end2, %for.end.i.i61
   %die.tr.i.i35 = phi %struct.die_struct* [ %spec.1.i.i55, %for.end.i.i61 ], [ %parent, %if.end2 ]
-  %cmp.i.i36 = icmp eq %struct.die_struct* %die.tr.i.i35, null
-  br i1 %cmp.i.i36, label %get_AT_ref.exit70, label %if.then.i.i41
+  tail call void @llvm.dbg.value(metadata !{%struct.die_struct* %die.tr.i.i35}, i64 0, metadata !9137) #6, !dbg !9140
+  tail call void @llvm.dbg.value(metadata !7588, i64 0, metadata !9141) #6, !dbg !9142
+  tail call void @llvm.dbg.value(metadata !4683, i64 0, metadata !9143) #6, !dbg !9144
+  %cmp.i.i36 = icmp eq %struct.die_struct* %die.tr.i.i35, null, !dbg !9145
+  br i1 %cmp.i.i36, label %get_AT_ref.exit70, label %if.then.i.i41, !dbg !9145
 
 if.then.i.i41:                                    ; preds = %tailrecurse.i.i37
-  %die_attr.i.i38 = getelementptr inbounds %struct.die_struct* %die.tr.i.i35, i64 0, i32 2
-  %a.026.i.i39 = load %struct.dw_attr_struct** %die_attr.i.i38, align 8
-  %cmp127.i.i40 = icmp eq %struct.dw_attr_struct* %a.026.i.i39, null
-  br i1 %cmp127.i.i40, label %get_AT_ref.exit70, label %for.body.i.i46
+  %die_attr.i.i38 = getelementptr inbounds %struct.die_struct* %die.tr.i.i35, i64 0, i32 2, !dbg !9146
+  %a.026.i.i39 = load %struct.dw_attr_struct** %die_attr.i.i38, align 8, !dbg !9146
+  %cmp127.i.i40 = icmp eq %struct.dw_attr_struct* %a.026.i.i39, null, !dbg !9146
+  br i1 %cmp127.i.i40, label %get_AT_ref.exit70, label %for.body.i.i46, !dbg !9146
 
 for.body.i.i46:                                   ; preds = %if.then.i.i41, %for.inc.i.i59
   %a.029.i.i42 = phi %struct.dw_attr_struct* [ %a.0.i.i57, %for.inc.i.i59 ], [ %a.026.i.i39, %if.then.i.i41 ]
   %spec.028.i.i43 = phi %struct.die_struct* [ %spec.1.i.i55, %for.inc.i.i59 ], [ null, %if.then.i.i41 ]
-  %dw_attr.i.i44 = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i42, i64 0, i32 0
-  %6 = load i32* %dw_attr.i.i44, align 4, !tbaa !11
+  %dw_attr.i.i44 = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i42, i64 0, i32 0, !dbg !9147
+  %6 = load i32* %dw_attr.i.i44, align 4, !dbg !9147, !tbaa !4703
   switch i32 %6, label %for.inc.i.i59 [
     i32 71, label %land.lhs.true.i.i64
     i32 49, label %land.lhs.true.i.i.i50
-  ]
+  ], !dbg !9147
 
 land.lhs.true.i.i.i50:                            ; preds = %for.body.i.i46
-  %val_class.i.i.i.i48 = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i42, i64 0, i32 2, i32 0
-  %7 = load i32* %val_class.i.i.i.i48, align 4, !tbaa !1
-  %cmp.i.i.i49 = icmp eq i32 %7, 10
-  br i1 %cmp.i.i.i49, label %AT_ref.exit.i.i54, label %if.end.i.i.i51
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.029.i.i42}, i64 0, metadata !9148) #6, !dbg !9150
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.029.i.i42}, i64 0, metadata !9151) #6, !dbg !9153
+  %val_class.i.i.i.i48 = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i42, i64 0, i32 2, i32 0, !dbg !9154
+  %7 = load i32* %val_class.i.i.i.i48, align 4, !dbg !9154, !tbaa !3759
+  %cmp.i.i.i49 = icmp eq i32 %7, 10, !dbg !9152
+  br i1 %cmp.i.i.i49, label %AT_ref.exit.i.i54, label %if.end.i.i.i51, !dbg !9152
 
 if.end.i.i.i51:                                   ; preds = %land.lhs.true.i.i.i50
-  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 4588, i8* getelementptr inbounds ([7 x i8]* @__FUNCTION__.AT_ref, i64 0, i64 0)) #12
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 4588, i8* getelementptr inbounds ([7 x i8]* @__FUNCTION__.AT_ref, i64 0, i64 0)) #13, !dbg !9155
+  unreachable, !dbg !9155
 
 AT_ref.exit.i.i54:                                ; preds = %land.lhs.true.i.i.i50
-  %v.i.i.i52 = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i42, i64 0, i32 2, i32 1
-  %die.i.i.i53 = bitcast %union.anon.3* %v.i.i.i52 to %struct.die_struct**
-  %8 = load %struct.die_struct** %die.i.i.i53, align 8, !tbaa !4
-  br label %for.inc.i.i59
+  %v.i.i.i52 = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i42, i64 0, i32 2, i32 1, !dbg !9156
+  %die.i.i.i53 = bitcast %union.anon.3* %v.i.i.i52 to %struct.die_struct**, !dbg !9156
+  %8 = load %struct.die_struct** %die.i.i.i53, align 8, !dbg !9156, !tbaa !3768
+  tail call void @llvm.dbg.value(metadata !{%struct.die_struct* %8}, i64 0, metadata !9143) #6, !dbg !9149
+  br label %for.inc.i.i59, !dbg !9149
 
 for.inc.i.i59:                                    ; preds = %for.body.i.i46, %AT_ref.exit.i.i54
   %spec.1.i.i55 = phi %struct.die_struct* [ %8, %AT_ref.exit.i.i54 ], [ %spec.028.i.i43, %for.body.i.i46 ]
-  %dw_attr_next.i.i56 = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i42, i64 0, i32 1
-  %a.0.i.i57 = load %struct.dw_attr_struct** %dw_attr_next.i.i56, align 8
-  %cmp1.i.i58 = icmp eq %struct.dw_attr_struct* %a.0.i.i57, null
-  br i1 %cmp1.i.i58, label %for.end.i.i61, label %for.body.i.i46
+  %dw_attr_next.i.i56 = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i42, i64 0, i32 1, !dbg !9146
+  %a.0.i.i57 = load %struct.dw_attr_struct** %dw_attr_next.i.i56, align 8, !dbg !9146
+  %cmp1.i.i58 = icmp eq %struct.dw_attr_struct* %a.0.i.i57, null, !dbg !9146
+  br i1 %cmp1.i.i58, label %for.end.i.i61, label %for.body.i.i46, !dbg !9146
 
 for.end.i.i61:                                    ; preds = %for.inc.i.i59
-  %tobool.i.i60 = icmp eq %struct.die_struct* %spec.1.i.i55, null
-  br i1 %tobool.i.i60, label %get_AT_ref.exit70, label %tailrecurse.i.i37
+  %tobool.i.i60 = icmp eq %struct.die_struct* %spec.1.i.i55, null, !dbg !9157
+  br i1 %tobool.i.i60, label %get_AT_ref.exit70, label %tailrecurse.i.i37, !dbg !9157
 
 land.lhs.true.i.i64:                              ; preds = %for.body.i.i46
-  %val_class.i.i.i62 = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i42, i64 0, i32 2, i32 0
-  %9 = load i32* %val_class.i.i.i62, align 4, !tbaa !1
-  %cmp.i4.i63 = icmp eq i32 %9, 10
-  br i1 %cmp.i4.i63, label %AT_ref.exit.i68, label %if.end.i.i65
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.029.i.i42}, i64 0, metadata !9158) #6, !dbg !9138
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.029.i.i42}, i64 0, metadata !9159) #6, !dbg !9161
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_attr_struct* %a.029.i.i42}, i64 0, metadata !9162) #6, !dbg !9164
+  %val_class.i.i.i62 = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i42, i64 0, i32 2, i32 0, !dbg !9165
+  %9 = load i32* %val_class.i.i.i62, align 4, !dbg !9165, !tbaa !3759
+  %cmp.i4.i63 = icmp eq i32 %9, 10, !dbg !9163
+  br i1 %cmp.i4.i63, label %AT_ref.exit.i68, label %if.end.i.i65, !dbg !9163
 
 if.end.i.i65:                                     ; preds = %land.lhs.true.i.i64
-  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 4588, i8* getelementptr inbounds ([7 x i8]* @__FUNCTION__.AT_ref, i64 0, i64 0)) #12
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 4588, i8* getelementptr inbounds ([7 x i8]* @__FUNCTION__.AT_ref, i64 0, i64 0)) #13, !dbg !9166
+  unreachable, !dbg !9166
 
 AT_ref.exit.i68:                                  ; preds = %land.lhs.true.i.i64
-  %v.i.i66 = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i42, i64 0, i32 2, i32 1
-  %die.i.i67 = bitcast %union.anon.3* %v.i.i66 to %struct.die_struct**
-  %10 = load %struct.die_struct** %die.i.i67, align 8, !tbaa !4
-  br label %get_AT_ref.exit70
+  %v.i.i66 = getelementptr inbounds %struct.dw_attr_struct* %a.029.i.i42, i64 0, i32 2, i32 1, !dbg !9167
+  %die.i.i67 = bitcast %union.anon.3* %v.i.i66 to %struct.die_struct**, !dbg !9167
+  %10 = load %struct.die_struct** %die.i.i67, align 8, !dbg !9167, !tbaa !3768
+  br label %get_AT_ref.exit70, !dbg !9160
 
 get_AT_ref.exit70:                                ; preds = %tailrecurse.i.i37, %if.then.i.i41, %for.end.i.i61, %AT_ref.exit.i68
-  %cond.i69 = phi %struct.die_struct* [ %10, %AT_ref.exit.i68 ], [ null, %for.end.i.i61 ], [ null, %if.then.i.i41 ], [ null, %tailrecurse.i.i37 ]
-  %cmp7 = icmp eq %struct.die_struct* %.pre, %cond.i69
-  br i1 %cmp7, label %if.end9, label %if.then8
+  %cond.i69 = phi %struct.die_struct* [ %10, %AT_ref.exit.i68 ], [ null, %for.end.i.i61 ], [ null, %if.then.i.i41 ], [ null, %tailrecurse.i.i37 ], !dbg !9160
+  %cmp7 = icmp eq %struct.die_struct* %.pre, %cond.i69, !dbg !9139
+  br i1 %cmp7, label %if.end9, label %if.then8, !dbg !9139
 
 if.then8:                                         ; preds = %get_AT_ref.exit70
-  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 5055, i8* getelementptr inbounds ([17 x i8]* @__FUNCTION__.splice_child_die, i64 0, i64 0)) #12
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 5055, i8* getelementptr inbounds ([17 x i8]* @__FUNCTION__.splice_child_die, i64 0, i64 0)) #13, !dbg !9168
+  unreachable, !dbg !9168
 
 if.end9:                                          ; preds = %entry, %get_AT_ref.exit70, %if.end2
   %child.addr.085 = phi %struct.die_struct* [ %child.call, %get_AT_ref.exit70 ], [ %child.call, %if.end2 ], [ %child, %entry ]
   %11 = phi %struct.die_struct* [ %.pre, %get_AT_ref.exit70 ], [ %.pre, %if.end2 ], [ %parent, %entry ]
-  %die_child = getelementptr inbounds %struct.die_struct* %11, i64 0, i32 4
-  %12 = load %struct.die_struct** %die_child, align 8, !tbaa !4
-  %tobool1173 = icmp eq %struct.die_struct* %12, null
-  br i1 %tobool1173, label %for.end.loopexit, label %for.body
+  %die_child = getelementptr inbounds %struct.die_struct* %11, i64 0, i32 4, !dbg !9169
+  tail call void @llvm.dbg.value(metadata !{%struct.die_struct** %die_child}, i64 0, metadata !2527), !dbg !9169
+  %12 = load %struct.die_struct** %die_child, align 8, !dbg !9169, !tbaa !3768
+  %tobool1173 = icmp eq %struct.die_struct* %12, null, !dbg !9169
+  br i1 %tobool1173, label %for.end.loopexit, label %for.body, !dbg !9169
 
 for.cond:                                         ; preds = %for.body
-  %13 = load %struct.die_struct** %die_sib15, align 8, !tbaa !4
-  %tobool11 = icmp eq %struct.die_struct* %13, null
-  br i1 %tobool11, label %for.end.loopexit, label %for.body
+  %13 = load %struct.die_struct** %die_sib15, align 8, !dbg !9169, !tbaa !3768
+  %tobool11 = icmp eq %struct.die_struct* %13, null, !dbg !9169
+  br i1 %tobool11, label %for.end.loopexit, label %for.body, !dbg !9169
 
 for.body:                                         ; preds = %if.end9, %for.cond
   %14 = phi %struct.die_struct* [ %13, %for.cond ], [ %12, %if.end9 ]
   %p.074 = phi %struct.die_struct** [ %die_sib15, %for.cond ], [ %die_child, %if.end9 ]
-  %cmp12 = icmp eq %struct.die_struct* %14, %child.addr.085
-  %die_sib15 = getelementptr inbounds %struct.die_struct* %14, i64 0, i32 5
-  br i1 %cmp12, label %if.then13, label %for.cond
+  %cmp12 = icmp eq %struct.die_struct* %14, %child.addr.085, !dbg !9171
+  %die_sib15 = getelementptr inbounds %struct.die_struct* %14, i64 0, i32 5, !dbg !9169
+  tail call void @llvm.dbg.value(metadata !{%struct.die_struct** %die_sib15}, i64 0, metadata !2527), !dbg !9169
+  br i1 %cmp12, label %if.then13, label %for.cond, !dbg !9171
 
 if.then13:                                        ; preds = %for.body
-  %die_sib = getelementptr inbounds %struct.die_struct* %child.addr.085, i64 0, i32 5
-  %15 = load %struct.die_struct** %die_sib, align 8, !tbaa !4
-  store %struct.die_struct* %15, %struct.die_struct** %p.074, align 8, !tbaa !4
-  br label %for.end
+  %die_sib = getelementptr inbounds %struct.die_struct* %child.addr.085, i64 0, i32 5, !dbg !9172
+  %15 = load %struct.die_struct** %die_sib, align 8, !dbg !9172, !tbaa !3768
+  store %struct.die_struct* %15, %struct.die_struct** %p.074, align 8, !dbg !9172, !tbaa !3768
+  br label %for.end, !dbg !9174
 
 for.end.loopexit:                                 ; preds = %for.cond, %if.end9
-  %die_sib17.pre = getelementptr inbounds %struct.die_struct* %child.addr.085, i64 0, i32 5
+  %die_sib17.pre = getelementptr inbounds %struct.die_struct* %child.addr.085, i64 0, i32 5, !dbg !9175
   br label %for.end
 
 for.end:                                          ; preds = %for.end.loopexit, %if.then13
-  %die_sib17.pre-phi = phi %struct.die_struct** [ %die_sib17.pre, %for.end.loopexit ], [ %die_sib, %if.then13 ]
-  %die_child16 = getelementptr inbounds %struct.die_struct* %parent, i64 0, i32 4
-  %16 = load %struct.die_struct** %die_child16, align 8, !tbaa !4
-  store %struct.die_struct* %16, %struct.die_struct** %die_sib17.pre-phi, align 8, !tbaa !4
-  store %struct.die_struct* %child.addr.085, %struct.die_struct** %die_child16, align 8, !tbaa !4
-  ret void
+  %die_sib17.pre-phi = phi %struct.die_struct** [ %die_sib17.pre, %for.end.loopexit ], [ %die_sib, %if.then13 ], !dbg !9175
+  %die_child16 = getelementptr inbounds %struct.die_struct* %parent, i64 0, i32 4, !dbg !9175
+  %16 = load %struct.die_struct** %die_child16, align 8, !dbg !9175, !tbaa !3768
+  store %struct.die_struct* %16, %struct.die_struct** %die_sib17.pre-phi, align 8, !dbg !9175, !tbaa !3768
+  store %struct.die_struct* %child.addr.085, %struct.die_struct** %die_child16, align 8, !dbg !9176, !tbaa !3768
+  ret void, !dbg !9177
 }

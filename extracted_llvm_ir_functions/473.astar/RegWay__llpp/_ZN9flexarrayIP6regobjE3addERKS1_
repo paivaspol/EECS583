@@ -1,0 +1,28 @@
+define linkonce_odr void @_ZN9flexarrayIP6regobjE3addERKS1_(%class.flexarray* nocapture %this, %class.regobj** nocapture %e) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.flexarray* %this}, i64 0, metadata !210), !dbg !248
+  tail call void @llvm.dbg.value(metadata !{%class.regobj** %e}, i64 0, metadata !211), !dbg !248
+  %elemqu = getelementptr inbounds %class.flexarray* %this, i64 0, i32 1, !dbg !249
+  %0 = load i32* %elemqu, align 4, !dbg !249, !tbaa !234
+  %maxelemqu = getelementptr inbounds %class.flexarray* %this, i64 0, i32 2, !dbg !249
+  %1 = load i32* %maxelemqu, align 4, !dbg !249, !tbaa !234
+  %cmp = icmp eq i32 %0, %1, !dbg !249
+  br i1 %cmp, label %if.then, label %if.end, !dbg !249
+
+if.then:                                          ; preds = %entry
+  tail call void @_ZN9flexarrayIP6regobjE8doublingEb(%class.flexarray* %this, i1 zeroext true) #7, !dbg !249
+  %.pre = load i32* %elemqu, align 4, !dbg !250, !tbaa !234
+  br label %if.end, !dbg !249
+
+if.end:                                           ; preds = %if.then, %entry
+  %2 = phi i32 [ %.pre, %if.then ], [ %0, %entry ]
+  %3 = load %class.regobj** %e, align 8, !dbg !250, !tbaa !240
+  %idxprom = sext i32 %2 to i64, !dbg !250
+  %ep = getelementptr inbounds %class.flexarray* %this, i64 0, i32 0, !dbg !250
+  %4 = load %class.regobj*** %ep, align 8, !dbg !250, !tbaa !240
+  %arrayidx = getelementptr inbounds %class.regobj** %4, i64 %idxprom, !dbg !250
+  store %class.regobj* %3, %class.regobj** %arrayidx, align 8, !dbg !250, !tbaa !240
+  %inc = add nsw i32 %2, 1, !dbg !251
+  store i32 %inc, i32* %elemqu, align 4, !dbg !251, !tbaa !234
+  ret void, !dbg !252
+}

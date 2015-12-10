@@ -1,0 +1,24 @@
+define internal void @_ZN3povL13Translate_CSGEPNS_13Object_StructEPdPNS_16Transform_StructE(%"struct.pov::Object_Struct"* %Object, double* %Vector, %"struct.pov::Transform_Struct"* %Trans) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Object_Struct"* %Object}, i64 0, metadata !1129), !dbg !1388
+  tail call void @llvm.dbg.value(metadata !{double* %Vector}, i64 0, metadata !1130), !dbg !1388
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Transform_Struct"* %Trans}, i64 0, metadata !1131), !dbg !1388
+  %Children = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 1, !dbg !1389
+  %0 = bitcast %"struct.pov::Object_Struct"* %Children to %"struct.pov::Object_Struct"**, !dbg !1389
+  %Sib.05 = load %"struct.pov::Object_Struct"** %0, align 8, !dbg !1389
+  %cmp6 = icmp eq %"struct.pov::Object_Struct"* %Sib.05, null, !dbg !1389
+  br i1 %cmp6, label %for.end, label %for.body, !dbg !1389
+
+for.body:                                         ; preds = %entry, %for.body
+  %Sib.07 = phi %"struct.pov::Object_Struct"* [ %Sib.0, %for.body ], [ %Sib.05, %entry ]
+  tail call void @_ZN3pov16Translate_ObjectEPNS_13Object_StructEPdPNS_16Transform_StructE(%"struct.pov::Object_Struct"* %Sib.07, double* %Vector, %"struct.pov::Transform_Struct"* %Trans) #4, !dbg !1391
+  %Sibling = getelementptr inbounds %"struct.pov::Object_Struct"* %Sib.07, i64 0, i32 2, !dbg !1389
+  %Sib.0 = load %"struct.pov::Object_Struct"** %Sibling, align 8, !dbg !1389
+  %cmp = icmp eq %"struct.pov::Object_Struct"* %Sib.0, null, !dbg !1389
+  br i1 %cmp, label %for.end, label %for.body, !dbg !1389
+
+for.end:                                          ; preds = %for.body, %entry
+  %BBox = getelementptr inbounds %"struct.pov::Object_Struct"* %Object, i64 0, i32 9, !dbg !1393
+  tail call void @_ZN3pov14Recompute_BBoxEPNS_19Bounding_Box_StructEPNS_16Transform_StructE(%"struct.pov::Bounding_Box_Struct"* %BBox, %"struct.pov::Transform_Struct"* %Trans) #4, !dbg !1393
+  ret void, !dbg !1394
+}

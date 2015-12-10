@@ -1,0 +1,72 @@
+define internal fastcc void @_ZN3povL25determine_element_textureEPNS_11Blob_StructEPNS_19Blob_Element_StructEPNS_14Texture_StructEPdPiPS5_S6_(%"struct.pov::Blob_Struct"* nocapture %Blob, %"struct.pov::Blob_Element_Struct"* %Element, %"struct.pov::Texture_Struct"* %Texture, double* %P, i32* nocapture %Count, %"struct.pov::Texture_Struct"** nocapture %Textures, double* nocapture %Weights) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Blob_Struct"* %Blob}, i64 0, metadata !1127), !dbg !2583
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Blob_Element_Struct"* %Element}, i64 0, metadata !1128), !dbg !2583
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Texture_Struct"* %Texture}, i64 0, metadata !1129), !dbg !2583
+  tail call void @llvm.dbg.value(metadata !{double* %P}, i64 0, metadata !1130), !dbg !2583
+  tail call void @llvm.dbg.value(metadata !{i32* %Count}, i64 0, metadata !1131), !dbg !2583
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Texture_Struct"** %Textures}, i64 0, metadata !1132), !dbg !2583
+  tail call void @llvm.dbg.value(metadata !{double* %Weights}, i64 0, metadata !1133), !dbg !2583
+  %call = tail call fastcc double @_ZN3povL23calculate_element_fieldEPNS_19Blob_Element_StructEPd(%"struct.pov::Blob_Element_Struct"* %Element, double* %P) #7, !dbg !2584
+  %call1 = tail call double @fabs(double %call) #9, !dbg !2584
+  tail call void @llvm.dbg.value(metadata !{double %call1}, i64 0, metadata !1136), !dbg !2584
+  %cmp = fcmp ueq double %call, 0.000000e+00, !dbg !2585
+  br i1 %cmp, label %if.end20, label %if.then, !dbg !2585
+
+if.then:                                          ; preds = %entry
+  %cmp2 = icmp eq %"struct.pov::Texture_Struct"* %Texture, null, !dbg !2586
+  br i1 %cmp2, label %if.then3, label %if.else, !dbg !2586
+
+if.then3:                                         ; preds = %if.then
+  %Texture4 = getelementptr inbounds %"struct.pov::Blob_Struct"* %Blob, i64 0, i32 3, !dbg !2588
+  %0 = load %"struct.pov::Texture_Struct"** %Texture4, align 8, !dbg !2588, !tbaa !1639
+  %1 = load i32* %Count, align 4, !dbg !2588, !tbaa !1693
+  %idxprom = sext i32 %1 to i64, !dbg !2588
+  %arrayidx = getelementptr inbounds %"struct.pov::Texture_Struct"** %Textures, i64 %idxprom, !dbg !2588
+  store %"struct.pov::Texture_Struct"* %0, %"struct.pov::Texture_Struct"** %arrayidx, align 8, !dbg !2588, !tbaa !1639
+  br label %for.cond.preheader, !dbg !2590
+
+if.else:                                          ; preds = %if.then
+  %2 = load i32* %Count, align 4, !dbg !2591, !tbaa !1693
+  %idxprom5 = sext i32 %2 to i64, !dbg !2591
+  %arrayidx6 = getelementptr inbounds %"struct.pov::Texture_Struct"** %Textures, i64 %idxprom5, !dbg !2591
+  store %"struct.pov::Texture_Struct"* %Texture, %"struct.pov::Texture_Struct"** %arrayidx6, align 8, !dbg !2591, !tbaa !1639
+  br label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %if.else, %if.then3
+  %3 = phi %"struct.pov::Texture_Struct"* [ %Texture, %if.else ], [ %0, %if.then3 ]
+  %4 = phi i32 [ %2, %if.else ], [ %1, %if.then3 ]
+  %cmp736 = icmp sgt i32 %4, 0, !dbg !2593
+  br i1 %cmp736, label %for.body, label %for.end, !dbg !2593
+
+for.cond:                                         ; preds = %for.body
+  %5 = trunc i64 %indvars.iv.next to i32, !dbg !2593
+  %cmp7 = icmp slt i32 %5, %4, !dbg !2593
+  br i1 %cmp7, label %for.body, label %for.end, !dbg !2593
+
+for.body:                                         ; preds = %for.cond.preheader, %for.cond
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %for.cond.preheader ]
+  %arrayidx9 = getelementptr inbounds %"struct.pov::Texture_Struct"** %Textures, i64 %indvars.iv, !dbg !2595
+  %6 = load %"struct.pov::Texture_Struct"** %arrayidx9, align 8, !dbg !2595, !tbaa !1639
+  %cmp12 = icmp eq %"struct.pov::Texture_Struct"* %6, %3, !dbg !2595
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2593
+  br i1 %cmp12, label %if.then13, label %for.cond, !dbg !2595
+
+if.then13:                                        ; preds = %for.body
+  %arrayidx15 = getelementptr inbounds double* %Weights, i64 %indvars.iv, !dbg !2597
+  %7 = load double* %arrayidx15, align 8, !dbg !2597, !tbaa !1647
+  %add = fadd double %call1, %7, !dbg !2597
+  store double %add, double* %arrayidx15, align 8, !dbg !2597, !tbaa !1647
+  br label %if.end20, !dbg !2599
+
+for.end:                                          ; preds = %for.cond, %for.cond.preheader
+  %idxprom18.pre-phi = sext i32 %4 to i64, !dbg !2600
+  %inc17 = add nsw i32 %4, 1, !dbg !2600
+  store i32 %inc17, i32* %Count, align 4, !dbg !2600, !tbaa !1693
+  %arrayidx19 = getelementptr inbounds double* %Weights, i64 %idxprom18.pre-phi, !dbg !2600
+  store double %call1, double* %arrayidx19, align 8, !dbg !2600, !tbaa !1647
+  br label %if.end20, !dbg !2601
+
+if.end20:                                         ; preds = %entry, %if.then13, %for.end
+  ret void, !dbg !2602
+}

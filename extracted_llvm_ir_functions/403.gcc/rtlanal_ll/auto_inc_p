@@ -1,24 +1,25 @@
 define i32 @auto_inc_p(%struct.rtx_def* nocapture %x) #0 {
 entry:
-  %0 = bitcast %struct.rtx_def* %x to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %bf.clear.off = add i32 %bf.clear, -96
-  %switch = icmp ult i32 %bf.clear.off, 6
-  br i1 %switch, label %sw.bb, label %sw.epilog
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !882), !dbg !1886
+  %0 = bitcast %struct.rtx_def* %x to i32*, !dbg !1887
+  %bf.load = load i32* %0, align 8, !dbg !1887
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1887
+  %bf.clear.off = add i32 %bf.clear, -96, !dbg !1887
+  %switch = icmp ult i32 %bf.clear.off, 6, !dbg !1887
+  br i1 %switch, label %sw.bb, label %sw.epilog, !dbg !1887
 
 sw.bb:                                            ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %2 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 2), align 8, !tbaa !0
-  %cmp = icmp eq %struct.rtx_def* %1, %2
-  br i1 %cmp, label %sw.epilog, label %return
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0, !dbg !1888
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !1888
+  %1 = load %struct.rtx_def** %rtx, align 8, !dbg !1888, !tbaa !979
+  %2 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 2), align 8, !dbg !1888, !tbaa !979
+  %cmp = icmp eq %struct.rtx_def* %1, %2, !dbg !1888
+  br i1 %cmp, label %sw.epilog, label %return, !dbg !1888
 
 sw.epilog:                                        ; preds = %sw.bb, %entry
-  br label %return
+  br label %return, !dbg !1890
 
 return:                                           ; preds = %sw.bb, %sw.epilog
   %retval.0 = phi i32 [ 0, %sw.epilog ], [ 1, %sw.bb ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1890
 }

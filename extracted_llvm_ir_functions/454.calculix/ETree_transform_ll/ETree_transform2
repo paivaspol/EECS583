@@ -1,38 +1,52 @@
 define %struct._ETree* @ETree_transform2(%struct._ETree* %etree, i32* %vwghts, i32 %maxzeros, i32 %maxfrontsize, i32 %seed) #0 {
 entry:
-  %cmp = icmp eq %struct._ETree* %etree, null
-  br i1 %cmp, label %if.then, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata !{%struct._ETree* %etree}, i64 0, metadata !52), !dbg !643
+  tail call void @llvm.dbg.value(metadata !{i32* %vwghts}, i64 0, metadata !53), !dbg !644
+  tail call void @llvm.dbg.value(metadata !{i32 %maxzeros}, i64 0, metadata !54), !dbg !645
+  tail call void @llvm.dbg.value(metadata !{i32 %maxfrontsize}, i64 0, metadata !55), !dbg !646
+  tail call void @llvm.dbg.value(metadata !{i32 %seed}, i64 0, metadata !56), !dbg !647
+  %cmp = icmp eq %struct._ETree* %etree, null, !dbg !648
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !648
 
 lor.lhs.false:                                    ; preds = %entry
-  %nfront1 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 0
-  %0 = load i32* %nfront1, align 4, !tbaa !0
-  %cmp2 = icmp slt i32 %0, 1
-  br i1 %cmp2, label %if.then, label %lor.lhs.false3
+  %nfront1 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 0, !dbg !648
+  %0 = load i32* %nfront1, align 4, !dbg !648, !tbaa !201
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !58), !dbg !648
+  %cmp2 = icmp slt i32 %0, 1, !dbg !648
+  br i1 %cmp2, label %if.then, label %lor.lhs.false3, !dbg !648
 
 lor.lhs.false3:                                   ; preds = %lor.lhs.false
-  %nvtx4 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 1
-  %1 = load i32* %nvtx4, align 4, !tbaa !0
-  %cmp5 = icmp slt i32 %1, 1
-  %cmp7 = icmp slt i32 %maxfrontsize, 1
-  %or.cond = or i1 %cmp5, %cmp7
-  br i1 %or.cond, label %if.then, label %if.end
+  %nvtx4 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 1, !dbg !648
+  %1 = load i32* %nvtx4, align 4, !dbg !648, !tbaa !201
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !59), !dbg !648
+  %cmp5 = icmp slt i32 %1, 1, !dbg !648
+  %cmp7 = icmp slt i32 %maxfrontsize, 1, !dbg !648
+  %or.cond = or i1 %cmp5, %cmp7, !dbg !648
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !648
 
 if.then:                                          ; preds = %lor.lhs.false3, %lor.lhs.false, %entry
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([62 x i8]* @.str1, i64 0, i64 0), %struct._ETree* %etree, i32* %vwghts, i32 %maxzeros, i32 %maxfrontsize, i32 %seed) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !649, !tbaa !206
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([62 x i8]* @.str1, i64 0, i64 0), %struct._ETree* %etree, i32* %vwghts, i32 %maxzeros, i32 %maxfrontsize, i32 %seed) #5, !dbg !649
+  tail call void @exit(i32 -1) #6, !dbg !651
+  unreachable, !dbg !651
 
 if.end:                                           ; preds = %lor.lhs.false3
-  %call8 = tail call %struct._IV* @IV_new() #4
-  tail call void @IV_init(%struct._IV* %call8, i32 %0, i32* null) #4
-  tail call void @IV_fill(%struct._IV* %call8, i32 0) #4
-  %call9 = tail call %struct._ETree* @ETree_mergeFrontsOne(%struct._ETree* %etree, i32 %maxzeros, %struct._IV* %call8) #6
-  tail call void @ETree_free(%struct._ETree* %etree) #4
-  %call10 = tail call %struct._ETree* @ETree_mergeFrontsAll(%struct._ETree* %call9, i32 %maxzeros, %struct._IV* %call8) #6
-  tail call void @ETree_free(%struct._ETree* %call9) #4
-  %call11 = tail call %struct._ETree* @ETree_splitFronts(%struct._ETree* %call10, i32* %vwghts, i32 %maxfrontsize, i32 %seed) #6
-  tail call void @ETree_free(%struct._ETree* %call10) #4
-  tail call void @IV_free(%struct._IV* %call8) #4
-  ret %struct._ETree* %call11
+  %call8 = tail call %struct._IV* @IV_new() #5, !dbg !652
+  tail call void @llvm.dbg.value(metadata !{%struct._IV* %call8}, i64 0, metadata !60), !dbg !652
+  tail call void @IV_init(%struct._IV* %call8, i32 %0, i32* null) #5, !dbg !653
+  tail call void @IV_fill(%struct._IV* %call8, i32 0) #5, !dbg !654
+  %call9 = tail call %struct._ETree* @ETree_mergeFrontsOne(%struct._ETree* %etree, i32 %maxzeros, %struct._IV* %call8) #7, !dbg !655
+  tail call void @llvm.dbg.value(metadata !{%struct._ETree* %call9}, i64 0, metadata !57), !dbg !655
+  tail call void @ETree_free(%struct._ETree* %etree) #5, !dbg !656
+  tail call void @llvm.dbg.value(metadata !{%struct._ETree* %call9}, i64 0, metadata !52), !dbg !657
+  %call10 = tail call %struct._ETree* @ETree_mergeFrontsAll(%struct._ETree* %call9, i32 %maxzeros, %struct._IV* %call8) #7, !dbg !658
+  tail call void @llvm.dbg.value(metadata !{%struct._ETree* %call10}, i64 0, metadata !57), !dbg !658
+  tail call void @ETree_free(%struct._ETree* %call9) #5, !dbg !659
+  tail call void @llvm.dbg.value(metadata !{%struct._ETree* %call10}, i64 0, metadata !52), !dbg !660
+  %call11 = tail call %struct._ETree* @ETree_splitFronts(%struct._ETree* %call10, i32* %vwghts, i32 %maxfrontsize, i32 %seed) #7, !dbg !661
+  tail call void @llvm.dbg.value(metadata !{%struct._ETree* %call11}, i64 0, metadata !57), !dbg !661
+  tail call void @ETree_free(%struct._ETree* %call10) #5, !dbg !662
+  tail call void @llvm.dbg.value(metadata !{%struct._ETree* %call11}, i64 0, metadata !52), !dbg !663
+  tail call void @IV_free(%struct._IV* %call8) #5, !dbg !664
+  ret %struct._ETree* %call11, !dbg !665
 }

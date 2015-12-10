@@ -1,17 +1,26 @@
 define i32 @BndScalarDirVN(%struct.cGH* %GH, i32 %stencil_size, i32 %dir, double %scalar, i8* %vname) #1 {
-  %1 = tail call i32 @CCTK_VarIndex(i8* %vname) #5
-  %2 = icmp sgt i32 %1, -1
-  br i1 %2, label %3, label %5
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !172), !dbg !1428
+  tail call void @llvm.dbg.value(metadata !{i32 %stencil_size}, i64 0, metadata !173), !dbg !1429
+  tail call void @llvm.dbg.value(metadata !{i32 %dir}, i64 0, metadata !174), !dbg !1430
+  tail call void @llvm.dbg.value(metadata !{double %scalar}, i64 0, metadata !175), !dbg !1431
+  tail call void @llvm.dbg.value(metadata !{i8* %vname}, i64 0, metadata !176), !dbg !1432
+  %call = tail call i32 @CCTK_VarIndex(i8* %vname) #6, !dbg !1433
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !177), !dbg !1433
+  %cmp = icmp sgt i32 %call, -1, !dbg !1434
+  br i1 %cmp, label %if.then, label %if.else, !dbg !1434
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i32 @BndScalarDirVI(%struct.cGH* %GH, i32 %stencil_size, i32 %dir, double %scalar, i32 %1) #6
-  br label %7
+if.then:                                          ; preds = %entry
+  %call2 = tail call i32 @BndScalarDirVI(%struct.cGH* %GH, i32 %stencil_size, i32 %dir, double %scalar, i32 %call) #7, !dbg !1435
+  tail call void @llvm.dbg.value(metadata !{i32 %call2}, i64 0, metadata !178), !dbg !1435
+  br label %if.end, !dbg !1437
 
-; <label>:5                                       ; preds = %0
-  %6 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 612, i8* getelementptr inbounds ([85 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([45 x i8]* @.str8, i64 0, i64 0), i8* %vname) #5
-  br label %7
+if.else:                                          ; preds = %entry
+  %call3 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 612, i8* getelementptr inbounds ([73 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([45 x i8]* @.str8, i64 0, i64 0), i8* %vname) #6, !dbg !1438
+  tail call void @llvm.dbg.value(metadata !898, i64 0, metadata !178), !dbg !1440
+  br label %if.end
 
-; <label>:7                                       ; preds = %5, %3
-  %retval.0 = phi i32 [ %4, %3 ], [ -1, %5 ]
-  ret i32 %retval.0
+if.end:                                           ; preds = %if.else, %if.then
+  %retval1.0 = phi i32 [ %call2, %if.then ], [ -1, %if.else ]
+  ret i32 %retval1.0, !dbg !1441
 }

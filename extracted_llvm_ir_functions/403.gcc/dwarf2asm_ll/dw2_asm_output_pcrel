@@ -1,33 +1,37 @@
 define void @dw2_asm_output_pcrel(i32 %size, i8* %label, i8* %comment, ...) #0 {
 entry:
   %ap = alloca [1 x %struct.__va_list_tag], align 16
-  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
-  call void @llvm.va_start(i8* %arraydecay1)
-  %0 = load i32* @target_flags, align 4, !tbaa !4
-  %and = lshr i32 %0, 25
-  %1 = and i32 %and, 1
-  %2 = or i32 %1, 4
-  %call = call %struct.rtx_def* @gen_rtx_fmt_s(i32 68, i32 %2, i8* %label) #7
-  %3 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 0), align 8, !tbaa !0
-  %call5 = call %struct.rtx_def* @gen_rtx_fmt_ee(i32 76, i32 %2, %struct.rtx_def* %call, %struct.rtx_def* %3) #7
-  call void @dw2_assemble_integer(i32 %size, %struct.rtx_def* %call5) #8
-  %4 = load i32* @flag_debug_asm, align 4, !tbaa !4
-  %tobool6 = icmp eq i32 %4, 0
-  %tobool7 = icmp eq i8* %comment, null
-  %or.cond = or i1 %tobool6, %tobool7
-  br i1 %or.cond, label %if.end, label %if.then
+  call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !940), !dbg !1197
+  call void @llvm.dbg.value(metadata !{i8* %label}, i64 0, metadata !941), !dbg !1197
+  call void @llvm.dbg.value(metadata !{i8* %comment}, i64 0, metadata !942), !dbg !1197
+  call void @llvm.dbg.declare(metadata !{[1 x %struct.__va_list_tag]* %ap}, metadata !943), !dbg !1198
+  %arraydecay1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*, !dbg !1198
+  call void @llvm.va_start(i8* %arraydecay1), !dbg !1198
+  %0 = load i32* @target_flags, align 4, !dbg !1199, !tbaa !1165
+  %and = lshr i32 %0, 25, !dbg !1199
+  %1 = and i32 %and, 1, !dbg !1199
+  %2 = or i32 %1, 4, !dbg !1199
+  %call = call %struct.rtx_def* @gen_rtx_fmt_s(i32 68, i32 %2, i8* %label) #8, !dbg !1199
+  %3 = load %struct.rtx_def** getelementptr inbounds ([11 x %struct.rtx_def*]* @global_rtl, i64 0, i64 0), align 8, !dbg !1199, !tbaa !1149
+  %call5 = call %struct.rtx_def* @gen_rtx_fmt_ee(i32 76, i32 %2, %struct.rtx_def* %call, %struct.rtx_def* %3) #8, !dbg !1199
+  call void @dw2_assemble_integer(i32 %size, %struct.rtx_def* %call5) #9, !dbg !1199
+  %4 = load i32* @flag_debug_asm, align 4, !dbg !1201, !tbaa !1165
+  %tobool6 = icmp eq i32 %4, 0, !dbg !1201
+  %tobool7 = icmp eq i8* %comment, null, !dbg !1201
+  %or.cond = or i1 %tobool6, %tobool7, !dbg !1201
+  br i1 %or.cond, label %if.end, label %if.then, !dbg !1201
 
 if.then:                                          ; preds = %entry
-  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0
-  %5 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !0
-  %call8 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str2, i64 0, i64 0)) #7
-  %6 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !0
-  %call10 = call i32 @vfprintf(%struct._IO_FILE* %6, i8* %comment, %struct.__va_list_tag* %arraydecay) #7
-  br label %if.end
+  %arraydecay = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, !dbg !1198
+  %5 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !1202, !tbaa !1149
+  %call8 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str2, i64 0, i64 0)) #8, !dbg !1202
+  %6 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !1204, !tbaa !1149
+  %call10 = call i32 @vfprintf(%struct._IO_FILE* %6, i8* %comment, %struct.__va_list_tag* %arraydecay) #8, !dbg !1204
+  br label %if.end, !dbg !1205
 
 if.end:                                           ; preds = %entry, %if.then
-  %7 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !0
-  %call11 = call i32 @fputc(i32 10, %struct._IO_FILE* %7) #7
-  call void @llvm.va_end(i8* %arraydecay1)
-  ret void
+  %7 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !1206, !tbaa !1149
+  %call11 = call i32 @fputc(i32 10, %struct._IO_FILE* %7) #8, !dbg !1206
+  call void @llvm.va_end(i8* %arraydecay1), !dbg !1207
+  ret void, !dbg !1208
 }

@@ -1,46 +1,51 @@
 define void @split_ti(%struct.rtx_def** nocapture %operands, i32 %num, %struct.rtx_def** nocapture %lo_half, %struct.rtx_def** nocapture %hi_half) #1 {
 entry:
-  %tobool23 = icmp eq i32 %num, 0
-  br i1 %tobool23, label %while.end, label %while.body.lr.ph
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %operands}, i64 0, metadata !2752), !dbg !7529
+  tail call void @llvm.dbg.value(metadata !{i32 %num}, i64 0, metadata !2753), !dbg !7530
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %lo_half}, i64 0, metadata !2754), !dbg !7531
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %hi_half}, i64 0, metadata !2755), !dbg !7531
+  %tobool23 = icmp eq i32 %num, 0, !dbg !7532
+  br i1 %tobool23, label %while.end, label %while.body.lr.ph, !dbg !7532
 
 while.body.lr.ph:                                 ; preds = %entry
   %0 = sext i32 %num to i64
-  br label %while.body
+  br label %while.body, !dbg !7532
 
 while.body:                                       ; preds = %while.body.lr.ph, %while.cond.backedge
   %indvars.iv = phi i64 [ %0, %while.body.lr.ph ], [ %indvars.iv.next, %while.cond.backedge ]
-  %indvars.iv.next = add i64 %indvars.iv, -1
-  %arrayidx = getelementptr inbounds %struct.rtx_def** %operands, i64 %indvars.iv.next
-  %1 = load %struct.rtx_def** %arrayidx, align 8, !tbaa !4
-  %2 = bitcast %struct.rtx_def* %1 to i32*
-  %bf.load = load i32* %2, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 66
-  br i1 %cmp, label %if.then, label %if.else
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !7532
+  %arrayidx = getelementptr inbounds %struct.rtx_def** %operands, i64 %indvars.iv.next, !dbg !7533
+  %1 = load %struct.rtx_def** %arrayidx, align 8, !dbg !7533, !tbaa !4365
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %1}, i64 0, metadata !2756), !dbg !7533
+  %2 = bitcast %struct.rtx_def* %1 to i32*, !dbg !7534
+  %bf.load = load i32* %2, align 8, !dbg !7534
+  %bf.clear = and i32 %bf.load, 65535, !dbg !7534
+  %cmp = icmp eq i32 %bf.clear, 66, !dbg !7534
+  br i1 %cmp, label %if.then, label %if.else, !dbg !7534
 
 if.then:                                          ; preds = %while.body
-  %call = tail call %struct.rtx_def* @adjust_address_1(%struct.rtx_def* %1, i32 5, i64 0, i32 1, i32 1) #9
-  %arrayidx2 = getelementptr inbounds %struct.rtx_def** %lo_half, i64 %indvars.iv.next
-  store %struct.rtx_def* %call, %struct.rtx_def** %arrayidx2, align 8, !tbaa !4
-  %call3 = tail call %struct.rtx_def* @adjust_address_1(%struct.rtx_def* %1, i32 5, i64 8, i32 1, i32 1) #9
-  %arrayidx5 = getelementptr inbounds %struct.rtx_def** %hi_half, i64 %indvars.iv.next
-  store %struct.rtx_def* %call3, %struct.rtx_def** %arrayidx5, align 8, !tbaa !4
-  br label %while.cond.backedge
+  %call = tail call %struct.rtx_def* @adjust_address_1(%struct.rtx_def* %1, i32 5, i64 0, i32 1, i32 1) #10, !dbg !7535
+  %arrayidx2 = getelementptr inbounds %struct.rtx_def** %lo_half, i64 %indvars.iv.next, !dbg !7535
+  store %struct.rtx_def* %call, %struct.rtx_def** %arrayidx2, align 8, !dbg !7535, !tbaa !4365
+  %call3 = tail call %struct.rtx_def* @adjust_address_1(%struct.rtx_def* %1, i32 5, i64 8, i32 1, i32 1) #10, !dbg !7537
+  %arrayidx5 = getelementptr inbounds %struct.rtx_def** %hi_half, i64 %indvars.iv.next, !dbg !7537
+  store %struct.rtx_def* %call3, %struct.rtx_def** %arrayidx5, align 8, !dbg !7537, !tbaa !4365
+  br label %while.cond.backedge, !dbg !7538
 
 if.else:                                          ; preds = %while.body
-  %call6 = tail call %struct.rtx_def* @simplify_gen_subreg(i32 5, %struct.rtx_def* %1, i32 6, i32 0) #9
-  %arrayidx8 = getelementptr inbounds %struct.rtx_def** %lo_half, i64 %indvars.iv.next
-  store %struct.rtx_def* %call6, %struct.rtx_def** %arrayidx8, align 8, !tbaa !4
-  %call9 = tail call %struct.rtx_def* @simplify_gen_subreg(i32 5, %struct.rtx_def* %1, i32 6, i32 8) #9
-  %arrayidx11 = getelementptr inbounds %struct.rtx_def** %hi_half, i64 %indvars.iv.next
-  store %struct.rtx_def* %call9, %struct.rtx_def** %arrayidx11, align 8, !tbaa !4
+  %call6 = tail call %struct.rtx_def* @simplify_gen_subreg(i32 5, %struct.rtx_def* %1, i32 6, i32 0) #10, !dbg !7539
+  %arrayidx8 = getelementptr inbounds %struct.rtx_def** %lo_half, i64 %indvars.iv.next, !dbg !7539
+  store %struct.rtx_def* %call6, %struct.rtx_def** %arrayidx8, align 8, !dbg !7539, !tbaa !4365
+  %call9 = tail call %struct.rtx_def* @simplify_gen_subreg(i32 5, %struct.rtx_def* %1, i32 6, i32 8) #10, !dbg !7541
+  %arrayidx11 = getelementptr inbounds %struct.rtx_def** %hi_half, i64 %indvars.iv.next, !dbg !7541
+  store %struct.rtx_def* %call9, %struct.rtx_def** %arrayidx11, align 8, !dbg !7541, !tbaa !4365
   br label %while.cond.backedge
 
 while.cond.backedge:                              ; preds = %if.else, %if.then
-  %3 = trunc i64 %indvars.iv.next to i32
-  %tobool = icmp eq i32 %3, 0
-  br i1 %tobool, label %while.end, label %while.body
+  %3 = trunc i64 %indvars.iv.next to i32, !dbg !7532
+  %tobool = icmp eq i32 %3, 0, !dbg !7532
+  br i1 %tobool, label %while.end, label %while.body, !dbg !7532
 
 while.end:                                        ; preds = %while.cond.backedge, %entry
-  ret void
+  ret void, !dbg !7542
 }

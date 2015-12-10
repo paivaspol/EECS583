@@ -1,0 +1,78 @@
+define internal fastcc void @_ZN6soplexL15changeLhsStatusERNS_8SPxBasis4Desc6StatusEddRKS0_i(i32* nocapture %stat, double %newLhs, double %rhs, %"class.soplex::SPxBasis"* %basis, i32 %i) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %stat}, i64 0, metadata !7114), !dbg !7916
+  tail call void @llvm.dbg.value(metadata !{double %newLhs}, i64 0, metadata !7115), !dbg !7917
+  tail call void @llvm.dbg.value(metadata !{double %rhs}, i64 0, metadata !7116), !dbg !7918
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SPxBasis"* %basis}, i64 0, metadata !7117), !dbg !7919
+  tail call void @llvm.dbg.value(metadata !{i32 %i}, i64 0, metadata !7118), !dbg !7920
+  %0 = load i32* %stat, align 4, !dbg !7921, !tbaa !7670
+  switch i32 %0, label %sw.default [
+    i32 -4, label %sw.bb
+    i32 -2, label %sw.bb5
+    i32 -1, label %sw.bb9
+    i32 -6, label %sw.bb14
+    i32 1, label %sw.bb18
+    i32 2, label %sw.bb18
+    i32 4, label %sw.bb18
+    i32 6, label %sw.bb18
+    i32 8, label %sw.bb18
+  ], !dbg !7921
+
+sw.bb:                                            ; preds = %entry
+  %1 = load double* @_ZN6soplex8infinityE, align 8, !dbg !7923, !tbaa !7331
+  %sub = fsub double -0.000000e+00, %1, !dbg !7923
+  %cmp = fcmp ugt double %newLhs, %sub, !dbg !7923
+  br i1 %cmp, label %if.else, label %if.then, !dbg !7923
+
+if.then:                                          ; preds = %sw.bb
+  %cmp1 = fcmp ole double %1, %rhs, !dbg !7925
+  %cond = select i1 %cmp1, i32 -1, i32 -2, !dbg !7925
+  store i32 %cond, i32* %stat, align 4, !dbg !7925, !tbaa !7670
+  br label %sw.epilog, !dbg !7925
+
+if.else:                                          ; preds = %sw.bb
+  %cmp2 = fcmp oeq double %newLhs, %rhs, !dbg !7926
+  br i1 %cmp2, label %if.then3, label %sw.epilog, !dbg !7926
+
+if.then3:                                         ; preds = %if.else
+  store i32 -6, i32* %stat, align 4, !dbg !7927, !tbaa !7670
+  br label %sw.epilog, !dbg !7927
+
+sw.bb5:                                           ; preds = %entry
+  %cmp6 = fcmp oeq double %newLhs, %rhs, !dbg !7928
+  br i1 %cmp6, label %if.then7, label %sw.epilog, !dbg !7928
+
+if.then7:                                         ; preds = %sw.bb5
+  store i32 -6, i32* %stat, align 4, !dbg !7929, !tbaa !7670
+  br label %sw.epilog, !dbg !7929
+
+sw.bb9:                                           ; preds = %entry
+  %2 = load double* @_ZN6soplex8infinityE, align 8, !dbg !7930, !tbaa !7331
+  %sub10 = fsub double -0.000000e+00, %2, !dbg !7930
+  %cmp11 = fcmp ogt double %newLhs, %sub10, !dbg !7930
+  br i1 %cmp11, label %if.then12, label %sw.epilog, !dbg !7930
+
+if.then12:                                        ; preds = %sw.bb9
+  store i32 -4, i32* %stat, align 4, !dbg !7931, !tbaa !7670
+  br label %sw.epilog, !dbg !7931
+
+sw.bb14:                                          ; preds = %entry
+  %cmp15 = fcmp une double %newLhs, %rhs, !dbg !7932
+  br i1 %cmp15, label %if.then16, label %sw.epilog, !dbg !7932
+
+if.then16:                                        ; preds = %sw.bb14
+  store i32 -2, i32* %stat, align 4, !dbg !7933, !tbaa !7670
+  br label %sw.epilog, !dbg !7933
+
+sw.bb18:                                          ; preds = %entry, %entry, %entry, %entry, %entry
+  %call = tail call i32 @_ZNK6soplex8SPxBasis13dualRowStatusEi(%"class.soplex::SPxBasis"* %basis, i32 %i) #6, !dbg !7934
+  store i32 %call, i32* %stat, align 4, !dbg !7934, !tbaa !7670
+  br label %sw.epilog, !dbg !7935
+
+sw.default:                                       ; preds = %entry
+  tail call void @abort() #7, !dbg !7936
+  unreachable, !dbg !7936
+
+sw.epilog:                                        ; preds = %sw.bb14, %if.then16, %sw.bb9, %if.then12, %sw.bb5, %if.then7, %if.then, %if.then3, %if.else, %sw.bb18
+  ret void, !dbg !7937
+}

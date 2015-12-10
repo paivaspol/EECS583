@@ -1,0 +1,215 @@
+define i32 @PUGH_Startup() #1 {
+entry:
+  %0 = load i64* bitcast (i32* getelementptr inbounds (%struct.anon.0* @pughpriv_, i64 0, i32 17) to i64*), align 8, !dbg !87
+  %1 = trunc i64 %0 to i32, !dbg !87
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !47), !dbg !87
+  %2 = load i64* bitcast (i32* getelementptr inbounds (%struct.anon.0* @pughpriv_, i64 0, i32 19) to i64*), align 8, !dbg !87
+  %3 = trunc i64 %2 to i32, !dbg !87
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !49), !dbg !87
+  %4 = load i64* bitcast (i32* getelementptr inbounds (%struct.anon.0* @pughpriv_, i64 0, i32 21) to i64*), align 8, !dbg !87
+  %5 = trunc i64 %4 to i32, !dbg !87
+  tail call void @llvm.dbg.value(metadata !{i32 %5}, i64 0, metadata !51), !dbg !87
+  %6 = load i64* bitcast (i32* getelementptr inbounds (%struct.anon.0* @pughpriv_, i64 0, i32 23) to i64*), align 8, !dbg !87
+  %7 = trunc i64 %6 to i32, !dbg !87
+  tail call void @llvm.dbg.value(metadata !{i32 %7}, i64 0, metadata !53), !dbg !87
+  %8 = load i64* bitcast (i32* getelementptr inbounds (%struct.anon.0* @pughpriv_, i64 0, i32 25) to i64*), align 8, !dbg !87
+  %9 = trunc i64 %8 to i32, !dbg !87
+  tail call void @llvm.dbg.value(metadata !{i32 %9}, i64 0, metadata !55), !dbg !87
+  %10 = load i64* bitcast (i32* getelementptr inbounds (%struct.anon.0* @pughpriv_, i64 0, i32 27) to i64*), align 8, !dbg !87
+  %11 = trunc i64 %10 to i32, !dbg !87
+  tail call void @llvm.dbg.value(metadata !{i32 %11}, i64 0, metadata !57), !dbg !87
+  %12 = load i64* bitcast (i32* getelementptr inbounds (%struct.anon.0* @pughpriv_, i64 0, i32 29) to i64*), align 8, !dbg !87
+  %13 = trunc i64 %12 to i32, !dbg !87
+  tail call void @llvm.dbg.value(metadata !{i32 %13}, i64 0, metadata !59), !dbg !87
+  %14 = load i32* getelementptr inbounds (%struct.anon.0* @pughpriv_, i64 0, i32 31), align 8, !dbg !87, !tbaa !88
+  tail call void @llvm.dbg.value(metadata !{i32 %14}, i64 0, metadata !61), !dbg !87
+  %call = tail call i32 @CCTK_RegisterGHExtension(i8* getelementptr inbounds ([5 x i8]* @.str, i64 0, i64 0)) #4, !dbg !91
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !16), !dbg !91
+  %call1 = tail call i32 @CCTK_RegisterGHExtensionSetupGH(i32 %call, i8* (%struct.tFleshConfig*, i32, %struct.cGH*)* @PUGH_SetupGH) #4, !dbg !92
+  %call2 = tail call i32 @CCTK_RegisterGHExtensionInitGH(i32 %call, i32 (%struct.cGH*)* @PUGH_InitGH) #4, !dbg !93
+  %call3 = tail call i32 @CCTK_RegisterGHExtensionScheduleTraverseGH(i32 %call, i32 (%struct.cGH*, i8*)* @PUGH_ScheduleTraverseGH) #4, !dbg !94
+  %tobool = icmp ult i64 %6, 4294967296, !dbg !95
+  br i1 %tobool, label %if.end, label %if.then, !dbg !95
+
+if.then:                                          ; preds = %entry
+  %call4 = tail call i32 @CCTK_OverloadEvolve(i32 (%struct.tFleshConfig*)* @PUGH_Evolve) #4, !dbg !96
+  br label %if.end, !dbg !98
+
+if.end:                                           ; preds = %entry, %if.then
+  %tobool5 = icmp eq i32 %14, 0, !dbg !99
+  br i1 %tobool5, label %if.end8, label %if.then6, !dbg !99
+
+if.then6:                                         ; preds = %if.end
+  %call7 = tail call i32 @CCTK_OverloadSyncGroup(i32 (%struct.cGH*, i8*)* @PUGH_SyncGroup) #4, !dbg !100
+  br label %if.end8, !dbg !102
+
+if.end8:                                          ; preds = %if.end, %if.then6
+  %tobool9 = icmp eq i32 %7, 0, !dbg !103
+  br i1 %tobool9, label %if.end12, label %if.then10, !dbg !103
+
+if.then10:                                        ; preds = %if.end8
+  %call11 = tail call i32 @CCTK_OverloadEnableGroupStorage(i32 (%struct.cGH*, i8*)* @PUGH_EnableGroupStorage) #4, !dbg !104
+  br label %if.end12, !dbg !106
+
+if.end12:                                         ; preds = %if.end8, %if.then10
+  %tobool13 = icmp eq i32 %5, 0, !dbg !107
+  br i1 %tobool13, label %if.end16, label %if.then14, !dbg !107
+
+if.then14:                                        ; preds = %if.end12
+  %call15 = tail call i32 @CCTK_OverloadDisableGroupStorage(i32 (%struct.cGH*, i8*)* @PUGH_DisableGroupStorage) #4, !dbg !108
+  br label %if.end16, !dbg !110
+
+if.end16:                                         ; preds = %if.end12, %if.then14
+  %tobool17 = icmp ult i64 %4, 4294967296, !dbg !111
+  br i1 %tobool17, label %if.end20, label %if.then18, !dbg !111
+
+if.then18:                                        ; preds = %if.end16
+  %call19 = tail call i32 @CCTK_OverloadEnableGroupComm(i32 (%struct.cGH*, i8*)* @PUGH_EnableGroupComm) #4, !dbg !112
+  br label %if.end20, !dbg !114
+
+if.end20:                                         ; preds = %if.end16, %if.then18
+  %tobool21 = icmp ult i64 %2, 4294967296, !dbg !115
+  br i1 %tobool21, label %if.end24, label %if.then22, !dbg !115
+
+if.then22:                                        ; preds = %if.end20
+  %call23 = tail call i32 @CCTK_OverloadDisableGroupComm(i32 (%struct.cGH*, i8*)* @PUGH_DisableGroupComm) #4, !dbg !116
+  br label %if.end24, !dbg !118
+
+if.end24:                                         ; preds = %if.end20, %if.then22
+  %tobool25 = icmp eq i32 %3, 0, !dbg !119
+  br i1 %tobool25, label %if.end28, label %if.then26, !dbg !119
+
+if.then26:                                        ; preds = %if.end24
+  %call27 = tail call i32 @CCTK_OverloadBarrier(i32 (%struct.cGH*)* @PUGH_Barrier) #4, !dbg !120
+  br label %if.end28, !dbg !122
+
+if.end28:                                         ; preds = %if.end24, %if.then26
+  %tobool29 = icmp eq i32 %13, 0, !dbg !123
+  br i1 %tobool29, label %if.end32, label %if.then30, !dbg !123
+
+if.then30:                                        ; preds = %if.end28
+  %call31 = tail call i32 @CCTK_OverloadParallelInit(i32 (%struct.cGH*)* @PUGH_ParallelInit) #4, !dbg !124
+  br label %if.end32, !dbg !126
+
+if.end32:                                         ; preds = %if.end28, %if.then30
+  %tobool33 = icmp eq i32 %9, 0, !dbg !127
+  br i1 %tobool33, label %if.end36, label %if.then34, !dbg !127
+
+if.then34:                                        ; preds = %if.end32
+  %call35 = tail call i32 @CCTK_OverloadExit(i32 (%struct.cGH*, i32)* @PUGH_Exit) #4, !dbg !128
+  br label %if.end36, !dbg !130
+
+if.end36:                                         ; preds = %if.end32, %if.then34
+  %tobool37 = icmp eq i32 %1, 0, !dbg !131
+  br i1 %tobool37, label %if.end40, label %if.then38, !dbg !131
+
+if.then38:                                        ; preds = %if.end36
+  %call39 = tail call i32 @CCTK_OverloadAbort(i32 (%struct.cGH*, i32)* @PUGH_Abort) #4, !dbg !132
+  br label %if.end40, !dbg !134
+
+if.end40:                                         ; preds = %if.end36, %if.then38
+  %tobool41 = icmp eq i32 %11, 0, !dbg !135
+  br i1 %tobool41, label %if.end44, label %if.then42, !dbg !135
+
+if.then42:                                        ; preds = %if.end40
+  %call43 = tail call i32 @CCTK_OverloadMyProc(i32 (%struct.cGH*)* @PUGH_MyProc) #4, !dbg !136
+  br label %if.end44, !dbg !138
+
+if.end44:                                         ; preds = %if.end40, %if.then42
+  %tobool45 = icmp ult i64 %10, 4294967296, !dbg !139
+  br i1 %tobool45, label %if.end48, label %if.then46, !dbg !139
+
+if.then46:                                        ; preds = %if.end44
+  %call47 = tail call i32 @CCTK_OverloadnProcs(i32 (%struct.cGH*)* @PUGH_nProcs) #4, !dbg !140
+  br label %if.end48, !dbg !142
+
+if.end48:                                         ; preds = %if.end44, %if.then46
+  %tobool49 = icmp ult i64 %0, 4294967296, !dbg !143
+  br i1 %tobool49, label %if.end52, label %if.then50, !dbg !143
+
+if.then50:                                        ; preds = %if.end48
+  %call51 = tail call i32 @CCTK_OverloadArrayGroupSizeB(i32* (%struct.cGH*, i32, i32, i8*)* @PUGH_ArrayGroupSize) #4, !dbg !144
+  br label %if.end52, !dbg !146
+
+if.end52:                                         ; preds = %if.end48, %if.then50
+  %tobool53 = icmp ult i64 %12, 4294967296, !dbg !147
+  br i1 %tobool53, label %if.end56, label %if.then54, !dbg !147
+
+if.then54:                                        ; preds = %if.end52
+  %call55 = tail call i32 @CCTK_OverloadQueryGroupStorageB(i32 (%struct.cGH*, i32, i8*)* @PUGH_QueryGroupStorage) #4, !dbg !148
+  br label %if.end56, !dbg !150
+
+if.end56:                                         ; preds = %if.end52, %if.then54
+  %tobool57 = icmp ult i64 %8, 4294967296, !dbg !151
+  br i1 %tobool57, label %if.end60, label %if.then58, !dbg !151
+
+if.then58:                                        ; preds = %if.end56
+  %call59 = tail call i32 @CCTK_OverloadGroupDynamicData(i32 (%struct.cGH*, i32, %struct.GROUPDYNAMICDATA*)* @PUGH_GroupDynamicData) #4, !dbg !152
+  br label %if.end60, !dbg !154
+
+if.end60:                                         ; preds = %if.end56, %if.then58
+  %call61 = tail call i32 @CCTK_RegisterBanner(i8* getelementptr inbounds ([24 x i8]* @.str1, i64 0, i64 0)) #4, !dbg !155
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  tail call void @llvm.dbg.value(metadata !156, i64 0, metadata !81), !dbg !157
+  ret i32 0, !dbg !157
+}

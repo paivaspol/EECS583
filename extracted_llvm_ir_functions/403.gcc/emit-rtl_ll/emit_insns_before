@@ -1,18 +1,24 @@
 define %struct.rtx_def* @emit_insns_before(%struct.rtx_def* %insn, %struct.rtx_def* %before) #0 {
 entry:
-  %tobool4 = icmp eq %struct.rtx_def* %insn, null
-  br i1 %tobool4, label %while.end, label %while.body
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !1913), !dbg !3762
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %before}, i64 0, metadata !1914), !dbg !3763
+  tail call void @llvm.dbg.value(metadata !2589, i64 0, metadata !1915), !dbg !3764
+  %tobool4 = icmp eq %struct.rtx_def* %insn, null, !dbg !3765
+  br i1 %tobool4, label %while.end, label %while.body, !dbg !3765
 
 while.body:                                       ; preds = %entry, %while.body
   %insn.addr.05 = phi %struct.rtx_def* [ %0, %while.body ], [ %insn, %entry ]
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn.addr.05, i64 0, i32 1, i64 2
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
-  tail call void @add_insn_before(%struct.rtx_def* %insn.addr.05, %struct.rtx_def* %before) #9
-  %tobool = icmp eq %struct.rtx_def* %0, null
-  br i1 %tobool, label %while.end, label %while.body
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn.addr.05, i64 0, i32 1, i64 2, !dbg !3766
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !3766
+  %0 = load %struct.rtx_def** %rtx, align 8, !dbg !3766, !tbaa !2272
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %0}, i64 0, metadata !1916), !dbg !3766
+  tail call void @add_insn_before(%struct.rtx_def* %insn.addr.05, %struct.rtx_def* %before) #10, !dbg !3767
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn.addr.05}, i64 0, metadata !1915), !dbg !3768
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %0}, i64 0, metadata !1913), !dbg !3769
+  %tobool = icmp eq %struct.rtx_def* %0, null, !dbg !3765
+  br i1 %tobool, label %while.end, label %while.body, !dbg !3765
 
 while.end:                                        ; preds = %while.body, %entry
   %last.0.lcssa = phi %struct.rtx_def* [ null, %entry ], [ %insn.addr.05, %while.body ]
-  ret %struct.rtx_def* %last.0.lcssa
+  ret %struct.rtx_def* %last.0.lcssa, !dbg !3770
 }

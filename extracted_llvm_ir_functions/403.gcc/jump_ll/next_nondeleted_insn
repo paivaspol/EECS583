@@ -1,23 +1,25 @@
 define %struct.rtx_def* @next_nondeleted_insn(%struct.rtx_def* %insn) #2 {
 entry:
-  %0 = bitcast %struct.rtx_def* %insn to i32*
-  %bf.load2 = load i32* %0, align 8
-  %bf.clear3 = and i32 %bf.load2, 134217728
-  %tobool4 = icmp eq i32 %bf.clear3, 0
-  br i1 %tobool4, label %while.end, label %while.body
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !613), !dbg !1397
+  %0 = bitcast %struct.rtx_def* %insn to i32*, !dbg !1398
+  %bf.load2 = load i32* %0, align 8, !dbg !1398
+  %bf.clear3 = and i32 %bf.load2, 134217728, !dbg !1398
+  %tobool4 = icmp eq i32 %bf.clear3, 0, !dbg !1398
+  br i1 %tobool4, label %while.end, label %while.body, !dbg !1398
 
 while.body:                                       ; preds = %entry, %while.body
   %insn.addr.05 = phi %struct.rtx_def* [ %1, %while.body ], [ %insn, %entry ]
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn.addr.05, i64 0, i32 1, i64 2
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !3
-  %2 = bitcast %struct.rtx_def* %1 to i32*
-  %bf.load = load i32* %2, align 8
-  %bf.clear = and i32 %bf.load, 134217728
-  %tobool = icmp eq i32 %bf.clear, 0
-  br i1 %tobool, label %while.end, label %while.body
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn.addr.05, i64 0, i32 1, i64 2, !dbg !1399
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !1399
+  %1 = load %struct.rtx_def** %rtx, align 8, !dbg !1399, !tbaa !810
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %1}, i64 0, metadata !613), !dbg !1399
+  %2 = bitcast %struct.rtx_def* %1 to i32*, !dbg !1398
+  %bf.load = load i32* %2, align 8, !dbg !1398
+  %bf.clear = and i32 %bf.load, 134217728, !dbg !1398
+  %tobool = icmp eq i32 %bf.clear, 0, !dbg !1398
+  br i1 %tobool, label %while.end, label %while.body, !dbg !1398
 
 while.end:                                        ; preds = %while.body, %entry
   %insn.addr.0.lcssa = phi %struct.rtx_def* [ %insn, %entry ], [ %1, %while.body ]
-  ret %struct.rtx_def* %insn.addr.0.lcssa
+  ret %struct.rtx_def* %insn.addr.0.lcssa, !dbg !1400
 }

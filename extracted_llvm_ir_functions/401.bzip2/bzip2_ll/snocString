@@ -1,0 +1,34 @@
+define internal fastcc %struct.zzzz* @snocString(%struct.zzzz* %root, i8* nocapture %name) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.zzzz* %root}, i64 0, metadata !405), !dbg !760
+  tail call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !406), !dbg !760
+  %cmp = icmp eq %struct.zzzz* %root, null, !dbg !761
+  br i1 %cmp, label %if.then, label %while.cond, !dbg !761
+
+if.then:                                          ; preds = %entry
+  %call.i = tail call fastcc i8* @myMalloc(i32 16) #10, !dbg !762
+  %0 = bitcast i8* %call.i to %struct.zzzz*, !dbg !762
+  tail call void @llvm.dbg.value(metadata !{%struct.zzzz* %0}, i64 0, metadata !764) #7, !dbg !762
+  tail call void @llvm.memset.p0i8.i64(i8* %call.i, i8 0, i64 16, i32 8, i1 false) #7, !dbg !765
+  tail call void @llvm.dbg.value(metadata !{%struct.zzzz* %0}, i64 0, metadata !407), !dbg !763
+  %call1 = tail call i64 @strlen(i8* %name) #12, !dbg !766
+  %add = add i64 %call1, 5, !dbg !766
+  %conv = trunc i64 %add to i32, !dbg !766
+  %call2 = tail call fastcc i8* @myMalloc(i32 %conv) #11, !dbg !766
+  %name3 = bitcast i8* %call.i to i8**, !dbg !766
+  store i8* %call2, i8** %name3, align 8, !dbg !766, !tbaa !484
+  %call5 = tail call i8* @strcpy(i8* %call2, i8* %name) #10, !dbg !767
+  ret %struct.zzzz* %0, !dbg !768
+
+while.cond:                                       ; preds = %entry, %while.cond
+  %tmp7.0 = phi %struct.zzzz* [ %1, %while.cond ], [ %root, %entry ]
+  %link = getelementptr inbounds %struct.zzzz* %tmp7.0, i64 0, i32 1, !dbg !769
+  %1 = load %struct.zzzz** %link, align 8, !dbg !769, !tbaa !484
+  %cmp8 = icmp eq %struct.zzzz* %1, null, !dbg !769
+  br i1 %cmp8, label %while.end, label %while.cond, !dbg !769
+
+while.end:                                        ; preds = %while.cond
+  %call12 = tail call fastcc %struct.zzzz* @snocString(%struct.zzzz* null, i8* %name) #11, !dbg !770
+  store %struct.zzzz* %call12, %struct.zzzz** %link, align 8, !dbg !770, !tbaa !484
+  ret %struct.zzzz* %root, !dbg !768
+}

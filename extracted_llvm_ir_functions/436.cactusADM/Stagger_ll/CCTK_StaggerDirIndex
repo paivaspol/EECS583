@@ -1,35 +1,45 @@
 define i32 @CCTK_StaggerDirIndex(i32 %dir, i32 %si) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %dir}, i64 0, metadata !77), !dbg !234
+  tail call void @llvm.dbg.value(metadata !{i32 %si}, i64 0, metadata !78), !dbg !234
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !81), !dbg !235
   %.b = load i1* @CCTK_StaggerDirIndex.hashed, align 1
-  br i1 %.b, label %.preheader, label %1
+  br i1 %.b, label %for.body, label %if.then, !dbg !236
 
-; <label>:1                                       ; preds = %0
-  store i32 1, i32* getelementptr inbounds ([4 x i32]* @CCTK_StaggerDirIndex.hash, i64 0, i64 0), align 16, !tbaa !7
-  store i32 3, i32* getelementptr inbounds ([4 x i32]* @CCTK_StaggerDirIndex.hash, i64 0, i64 1), align 4, !tbaa !7
-  store i32 9, i32* getelementptr inbounds ([4 x i32]* @CCTK_StaggerDirIndex.hash, i64 0, i64 2), align 8, !tbaa !7
-  store i32 27, i32* getelementptr inbounds ([4 x i32]* @CCTK_StaggerDirIndex.hash, i64 0, i64 3), align 4, !tbaa !7
+if.then:                                          ; preds = %entry
+  store i32 1, i32* getelementptr inbounds ([4 x i32]* @CCTK_StaggerDirIndex.hash, i64 0, i64 0), align 16, !dbg !237, !tbaa !175
+  store i32 3, i32* getelementptr inbounds ([4 x i32]* @CCTK_StaggerDirIndex.hash, i64 0, i64 1), align 4, !dbg !239, !tbaa !175
+  store i32 9, i32* getelementptr inbounds ([4 x i32]* @CCTK_StaggerDirIndex.hash, i64 0, i64 2), align 8, !dbg !240, !tbaa !175
+  store i32 27, i32* getelementptr inbounds ([4 x i32]* @CCTK_StaggerDirIndex.hash, i64 0, i64 3), align 4, !dbg !241, !tbaa !175
   store i1 true, i1* @CCTK_StaggerDirIndex.hashed, align 1
-  br label %.preheader
+  br label %for.body, !dbg !242
 
-.preheader:                                       ; preds = %1, %0, %8
-  %indvars.iv = phi i64 [ %indvars.iv.next, %8 ], [ 3, %0 ], [ 3, %1 ]
-  %.02 = phi i32 [ %9, %8 ], [ %si, %0 ], [ %si, %1 ]
-  %2 = getelementptr inbounds [4 x i32]* @CCTK_StaggerDirIndex.hash, i64 0, i64 %indvars.iv
-  %3 = load i32* %2, align 4, !tbaa !7
-  %4 = trunc i64 %indvars.iv to i32
-  %5 = icmp eq i32 %4, %dir
-  br i1 %5, label %6, label %8
+for.body:                                         ; preds = %if.then, %entry, %for.inc.for.body_crit_edge
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc.for.body_crit_edge ], [ 3, %entry ], [ 3, %if.then ]
+  %si.addr.013 = phi i32 [ %rem, %for.inc.for.body_crit_edge ], [ %si, %entry ], [ %si, %if.then ]
+  %arrayidx = getelementptr inbounds [4 x i32]* @CCTK_StaggerDirIndex.hash, i64 0, i64 %indvars.iv, !dbg !243
+  %0 = load i32* %arrayidx, align 4, !dbg !243, !tbaa !175
+  tail call void @llvm.dbg.value(metadata !{i32 %div}, i64 0, metadata !79), !dbg !243
+  tail call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !78), !dbg !246
+  %1 = trunc i64 %indvars.iv to i32, !dbg !247
+  %cmp4 = icmp eq i32 %1, %dir, !dbg !247
+  br i1 %cmp4, label %if.then5, label %for.inc, !dbg !247
 
-; <label>:6                                       ; preds = %.preheader
-  %7 = sdiv i32 %.02, %3
-  br label %.loopexit
+if.then5:                                         ; preds = %for.body
+  %div = sdiv i32 %si.addr.013, %0, !dbg !243
+  tail call void @llvm.dbg.value(metadata !{i32 %div}, i64 0, metadata !81), !dbg !248
+  br label %for.end, !dbg !250
 
-; <label>:8                                       ; preds = %.preheader
-  %9 = srem i32 %.02, %3
-  %indvars.iv.next = add nsw i64 %indvars.iv, -1
-  %10 = icmp sgt i64 %indvars.iv, 0
-  br i1 %10, label %.preheader, label %.loopexit
+for.inc:                                          ; preds = %for.body
+  %cmp1 = icmp sgt i32 %1, 0, !dbg !251
+  br i1 %cmp1, label %for.inc.for.body_crit_edge, label %for.end, !dbg !251
 
-.loopexit:                                        ; preds = %8, %6
-  %dsi.0 = phi i32 [ %7, %6 ], [ 0, %8 ]
-  ret i32 %dsi.0
+for.inc.for.body_crit_edge:                       ; preds = %for.inc
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !251
+  %rem = srem i32 %si.addr.013, %0, !dbg !246
+  br label %for.body, !dbg !251
+
+for.end:                                          ; preds = %for.inc, %if.then5
+  %dsi.0 = phi i32 [ %div, %if.then5 ], [ 0, %for.inc ]
+  ret i32 %dsi.0, !dbg !252
 }

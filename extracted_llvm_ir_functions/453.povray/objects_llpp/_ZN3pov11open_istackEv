@@ -1,0 +1,64 @@
+define %"struct.pov::istack_struct"* @_ZN3pov11open_istackEv() #0 {
+entry:
+  %0 = load %"struct.pov::istack_struct"** @_ZN3pov11free_istackE, align 8, !dbg !1171, !tbaa !1116
+  %cmp = icmp eq %"struct.pov::istack_struct"* %0, null, !dbg !1171
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1171
+
+if.then:                                          ; preds = %entry
+  %call.i = tail call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 24, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 830, i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !1172
+  %1 = bitcast i8* %call.i to %"struct.pov::istack_struct"*, !dbg !1172
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istack_struct"* %1}, i64 0, metadata !1175), !dbg !1172
+  %2 = load %"struct.pov::istack_struct"** @_ZN3pov11free_istackE, align 8, !dbg !1176, !tbaa !1116
+  %next.i = bitcast i8* %call.i to %"struct.pov::istack_struct"**, !dbg !1176
+  store %"struct.pov::istack_struct"* %2, %"struct.pov::istack_struct"** %next.i, align 8, !dbg !1176, !tbaa !1116
+  store %"struct.pov::istack_struct"* %1, %"struct.pov::istack_struct"** @_ZN3pov11free_istackE, align 8, !dbg !1177, !tbaa !1116
+  %3 = load i32* @_ZN3pov17Max_IntersectionsE, align 4, !dbg !1178, !tbaa !1128
+  %conv.i = zext i32 %3 to i64, !dbg !1178
+  %mul.i = mul i64 %conv.i, 200, !dbg !1178
+  %call1.i = tail call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %mul.i, i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 836, i8* getelementptr inbounds ([15 x i8]* @.str2, i64 0, i64 0)) #5, !dbg !1178
+  %4 = bitcast i8* %call1.i to %"struct.pov::istk_entry"*, !dbg !1178
+  %istack.i = getelementptr inbounds i8* %call.i, i64 8, !dbg !1178
+  %5 = bitcast i8* %istack.i to %"struct.pov::istk_entry"**, !dbg !1178
+  store %"struct.pov::istk_entry"* %4, %"struct.pov::istk_entry"** %5, align 8, !dbg !1178, !tbaa !1116
+  %6 = load i32* @_ZN3pov17Max_IntersectionsE, align 4, !dbg !1179, !tbaa !1128
+  %max_entries.i = getelementptr inbounds i8* %call.i, i64 16, !dbg !1179
+  %7 = bitcast i8* %max_entries.i to i32*, !dbg !1179
+  store i32 %6, i32* %7, align 4, !dbg !1179, !tbaa !1128
+  tail call void @llvm.dbg.value(metadata !146, i64 0, metadata !1180), !dbg !1181
+  %cmp12.i = icmp eq i32 %6, 0, !dbg !1181
+  br i1 %cmp12.i, label %_ZN3povL13create_istackEv.exit, label %for.body.i.preheader, !dbg !1181
+
+for.body.i.preheader:                             ; preds = %if.then
+  %Object.i3 = getelementptr inbounds i8* %call1.i, i64 96, !dbg !1183
+  %8 = bitcast i8* %Object.i3 to %"struct.pov::Object_Struct"**, !dbg !1183
+  store %"struct.pov::Object_Struct"* null, %"struct.pov::Object_Struct"** %8, align 8, !dbg !1183, !tbaa !1116
+  %cmp.i4 = icmp ugt i32 %6, 1, !dbg !1181
+  br i1 %cmp.i4, label %for.body.for.body_crit_edge.i, label %_ZN3povL13create_istackEv.exit, !dbg !1181
+
+for.body.for.body_crit_edge.i:                    ; preds = %for.body.i.preheader, %for.body.for.body_crit_edge.i
+  %indvars.iv.next.i5 = phi i64 [ %indvars.iv.next.i, %for.body.for.body_crit_edge.i ], [ 1, %for.body.i.preheader ]
+  %.pre.i = load %"struct.pov::istk_entry"** %5, align 8, !dbg !1183, !tbaa !1116
+  %Object.i = getelementptr inbounds %"struct.pov::istk_entry"* %.pre.i, i64 %indvars.iv.next.i5, i32 5, !dbg !1183
+  store %"struct.pov::Object_Struct"* null, %"struct.pov::Object_Struct"** %Object.i, align 8, !dbg !1183, !tbaa !1116
+  %indvars.iv.next.i = add i64 %indvars.iv.next.i5, 1, !dbg !1181
+  %lftr.wideiv = trunc i64 %indvars.iv.next.i to i32, !dbg !1181
+  %exitcond = icmp eq i32 %lftr.wideiv, %6, !dbg !1181
+  br i1 %exitcond, label %_ZN3povL13create_istackEv.exit, label %for.body.for.body_crit_edge.i, !dbg !1181
+
+_ZN3povL13create_istackEv.exit:                   ; preds = %for.body.i.preheader, %for.body.for.body_crit_edge.i, %if.then
+  %9 = load i32* @_ZN3pov17Number_of_istacksE, align 4, !dbg !1184, !tbaa !1128
+  %inc4.i = add i32 %9, 1, !dbg !1184
+  store i32 %inc4.i, i32* @_ZN3pov17Number_of_istacksE, align 4, !dbg !1184, !tbaa !1128
+  %.pre = load %"struct.pov::istack_struct"** @_ZN3pov11free_istackE, align 8, !dbg !1185, !tbaa !1116
+  br label %if.end, !dbg !1186
+
+if.end:                                           ; preds = %_ZN3povL13create_istackEv.exit, %entry
+  %10 = phi %"struct.pov::istack_struct"* [ %.pre, %_ZN3povL13create_istackEv.exit ], [ %0, %entry ]
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::istack_struct"* %10}, i64 0, metadata !998), !dbg !1185
+  %next = getelementptr inbounds %"struct.pov::istack_struct"* %10, i64 0, i32 0, !dbg !1187
+  %11 = load %"struct.pov::istack_struct"** %next, align 8, !dbg !1187, !tbaa !1116
+  store %"struct.pov::istack_struct"* %11, %"struct.pov::istack_struct"** @_ZN3pov11free_istackE, align 8, !dbg !1187, !tbaa !1116
+  %top_entry = getelementptr inbounds %"struct.pov::istack_struct"* %10, i64 0, i32 3, !dbg !1188
+  store i32 0, i32* %top_entry, align 4, !dbg !1188, !tbaa !1128
+  ret %"struct.pov::istack_struct"* %10, !dbg !1189
+}

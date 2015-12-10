@@ -1,53 +1,62 @@
 define internal fastcc void @path_include(%struct.cpp_reader* %pfile, i8* %list, i32 %path) #0 {
 entry:
-  br label %do.body
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_reader* %pfile}, i64 0, metadata !932), !dbg !1928
+  tail call void @llvm.dbg.value(metadata !{i8* %list}, i64 0, metadata !933), !dbg !1929
+  tail call void @llvm.dbg.value(metadata !{i32 %path}, i64 0, metadata !934), !dbg !1930
+  tail call void @llvm.dbg.value(metadata !{i8* %list}, i64 0, metadata !935), !dbg !1931
+  br label %do.body, !dbg !1932
 
 do.body:                                          ; preds = %if.end, %entry
   %p.0 = phi i8* [ %list, %entry ], [ %add.ptr, %if.end ]
-  br label %while.cond
+  tail call void @llvm.dbg.value(metadata !{i8* %p.0}, i64 0, metadata !936), !dbg !1933
+  br label %while.cond, !dbg !1935
 
 while.cond:                                       ; preds = %while.body, %do.body
   %q.0 = phi i8* [ %p.0, %do.body ], [ %incdec.ptr, %while.body ]
-  %0 = load i8* %q.0, align 1, !tbaa !0
+  %0 = load i8* %q.0, align 1, !dbg !1935, !tbaa !995
   switch i8 %0, label %while.body [
     i8 58, label %while.end
     i8 0, label %while.end
   ]
 
 while.body:                                       ; preds = %while.cond
-  %incdec.ptr = getelementptr inbounds i8* %q.0, i64 1
-  br label %while.cond
+  %incdec.ptr = getelementptr inbounds i8* %q.0, i64 1, !dbg !1935
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !936), !dbg !1935
+  br label %while.cond, !dbg !1935
 
 while.end:                                        ; preds = %while.cond, %while.cond
-  %cmp5 = icmp eq i8* %q.0, %p.0
-  br i1 %cmp5, label %if.then, label %if.else
+  %cmp5 = icmp eq i8* %q.0, %p.0, !dbg !1936
+  br i1 %cmp5, label %if.then, label %if.else, !dbg !1936
 
 if.then:                                          ; preds = %while.end
-  %call = tail call noalias i8* @xmalloc(i64 2) #6
-  store i8 46, i8* %call, align 1, !tbaa !0
-  %arrayidx7 = getelementptr inbounds i8* %call, i64 1
-  store i8 0, i8* %arrayidx7, align 1, !tbaa !0
-  br label %if.end
+  %call = tail call noalias i8* @xmalloc(i64 2) #7, !dbg !1937
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !937), !dbg !1937
+  store i8 46, i8* %call, align 1, !dbg !1939, !tbaa !995
+  %arrayidx7 = getelementptr inbounds i8* %call, i64 1, !dbg !1940
+  store i8 0, i8* %arrayidx7, align 1, !dbg !1940, !tbaa !995
+  br label %if.end, !dbg !1941
 
 if.else:                                          ; preds = %while.end
-  %sub.ptr.lhs.cast = ptrtoint i8* %q.0 to i64
-  %sub.ptr.rhs.cast = ptrtoint i8* %p.0 to i64
-  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
-  %add = add nsw i64 %sub.ptr.sub, 1
-  %call8 = tail call noalias i8* @xmalloc(i64 %add) #6
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call8, i8* %p.0, i64 %sub.ptr.sub, i32 1, i1 false)
-  %arrayidx15 = getelementptr inbounds i8* %call8, i64 %sub.ptr.sub
-  store i8 0, i8* %arrayidx15, align 1, !tbaa !0
+  %sub.ptr.lhs.cast = ptrtoint i8* %q.0 to i64, !dbg !1942
+  %sub.ptr.rhs.cast = ptrtoint i8* %p.0 to i64, !dbg !1942
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !1942
+  %add = add nsw i64 %sub.ptr.sub, 1, !dbg !1942
+  %call8 = tail call noalias i8* @xmalloc(i64 %add) #7, !dbg !1942
+  tail call void @llvm.dbg.value(metadata !{i8* %call8}, i64 0, metadata !937), !dbg !1942
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call8, i8* %p.0, i64 %sub.ptr.sub, i32 1, i1 false), !dbg !1944
+  %arrayidx15 = getelementptr inbounds i8* %call8, i64 %sub.ptr.sub, !dbg !1945
+  store i8 0, i8* %arrayidx15, align 1, !dbg !1945, !tbaa !995
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
   %name.0 = phi i8* [ %call, %if.then ], [ %call8, %if.else ]
-  tail call fastcc void @append_include_chain(%struct.cpp_reader* %pfile, i8* %name.0, i32 %path, i32 0) #7
-  %1 = load i8* %q.0, align 1, !tbaa !0
-  %cmp17 = icmp eq i8 %1, 0
-  %add.ptr = getelementptr inbounds i8* %q.0, i64 1
-  br i1 %cmp17, label %do.end, label %do.body
+  tail call fastcc void @append_include_chain(%struct.cpp_reader* %pfile, i8* %name.0, i32 %path, i32 0) #8, !dbg !1946
+  %1 = load i8* %q.0, align 1, !dbg !1947, !tbaa !995
+  %cmp17 = icmp eq i8 %1, 0, !dbg !1947
+  %add.ptr = getelementptr inbounds i8* %q.0, i64 1, !dbg !1948
+  tail call void @llvm.dbg.value(metadata !{i8* %add.ptr}, i64 0, metadata !935), !dbg !1948
+  br i1 %cmp17, label %do.end, label %do.body, !dbg !1947
 
 do.end:                                           ; preds = %if.end
-  ret void
+  ret void, !dbg !1949
 }

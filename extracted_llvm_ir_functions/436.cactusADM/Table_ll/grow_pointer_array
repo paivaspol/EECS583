@@ -1,36 +1,44 @@
 define internal fastcc i32 @grow_pointer_array(i32* nocapture %pN, i8*** nocapture %pvp_array) #1 {
-  %1 = load i32* %pN, align 4, !tbaa !2
-  %2 = bitcast i8*** %pvp_array to i8**
-  %3 = load i8** %2, align 8, !tbaa !6
-  %4 = shl nsw i32 %1, 1
-  %5 = add nsw i32 %4, 10
-  %6 = sext i32 %5 to i64
-  %7 = shl nsw i64 %6, 3
-  %8 = tail call i8* @realloc(i8* %3, i64 %7) #10
-  %9 = icmp eq i8* %8, null
-  br i1 %9, label %18, label %.preheader
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %pN}, i64 0, metadata !495), !dbg !613
+  tail call void @llvm.dbg.value(metadata !{i8*** %pvp_array}, i64 0, metadata !496), !dbg !613
+  %0 = load i32* %pN, align 4, !dbg !614, !tbaa !595
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !497), !dbg !614
+  %1 = load i8*** %pvp_array, align 8, !dbg !615, !tbaa !602
+  tail call void @llvm.dbg.value(metadata !{i8** %1}, i64 0, metadata !498), !dbg !615
+  %mul = shl nsw i32 %0, 1, !dbg !616
+  %add = add nsw i32 %mul, 10, !dbg !616
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !499), !dbg !616
+  %2 = bitcast i8** %1 to i8*, !dbg !617
+  %conv = sext i32 %add to i64, !dbg !617
+  %mul1 = shl nsw i64 %conv, 3, !dbg !617
+  %call = tail call i8* @realloc(i8* %2, i64 %mul1) #10, !dbg !617
+  %3 = bitcast i8* %call to i8**, !dbg !617
+  tail call void @llvm.dbg.value(metadata !{i8** %3}, i64 0, metadata !500), !dbg !617
+  %cmp = icmp eq i8* %call, null, !dbg !618
+  br i1 %cmp, label %return, label %for.cond.preheader, !dbg !618
 
-.preheader:                                       ; preds = %0
-  %10 = icmp slt i32 %1, %5
-  br i1 %10, label %.lr.ph, label %17
+for.cond.preheader:                               ; preds = %entry
+  %cmp314 = icmp slt i32 %0, %add, !dbg !619
+  br i1 %cmp314, label %for.body.lr.ph, label %for.end, !dbg !619
 
-.lr.ph:                                           ; preds = %.preheader
-  %11 = sext i32 %1 to i64
-  %12 = shl nsw i64 %11, 3
-  %scevgep = getelementptr i8* %8, i64 %12
-  %13 = add i32 %1, 9
-  %14 = zext i32 %13 to i64
-  %15 = shl nuw nsw i64 %14, 3
-  %16 = add nuw nsw i64 %15, 8
-  call void @llvm.memset.p0i8.i64(i8* %scevgep, i8 0, i64 %16, i32 8, i1 false)
-  br label %17
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %4 = sext i32 %0 to i64
+  %5 = shl nsw i64 %4, 3, !dbg !619
+  %scevgep = getelementptr i8* %call, i64 %5
+  %6 = add i32 %0, 9, !dbg !619
+  %7 = zext i32 %6 to i64
+  %8 = shl nuw nsw i64 %7, 3, !dbg !619
+  %9 = add i64 %8, 8, !dbg !619
+  call void @llvm.memset.p0i8.i64(i8* %scevgep, i8 0, i64 %9, i32 8, i1 false), !dbg !621
+  br label %for.end, !dbg !619
 
-; <label>:17                                      ; preds = %.lr.ph, %.preheader
-  store i8* %8, i8** %2, align 8, !tbaa !6
-  store i32 %5, i32* %pN, align 4, !tbaa !2
-  br label %18
+for.end:                                          ; preds = %for.body.lr.ph, %for.cond.preheader
+  store i8** %3, i8*** %pvp_array, align 8, !dbg !623, !tbaa !602
+  store i32 %add, i32* %pN, align 4, !dbg !624, !tbaa !595
+  br label %return, !dbg !625
 
-; <label>:18                                      ; preds = %0, %17
-  %.0 = phi i32 [ 0, %17 ], [ -1, %0 ]
-  ret i32 %.0
+return:                                           ; preds = %entry, %for.end
+  %retval.0 = phi i32 [ 0, %for.end ], [ -1, %entry ]
+  ret i32 %retval.0, !dbg !625
 }

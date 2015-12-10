@@ -1,0 +1,92 @@
+define i32 @_ZN3pov15Send_RenderDoneEb(i1 zeroext %withtime) #0 {
+entry:
+  %msg = alloca %struct.POVMSData, align 8
+  call void @llvm.dbg.value(metadata !{i1 %withtime}, i64 0, metadata !616), !dbg !1484
+  call void @llvm.dbg.declare(metadata !{%struct.POVMSData* %msg}, metadata !617), !dbg !1485
+  call void @llvm.dbg.value(metadata !426, i64 0, metadata !618), !dbg !1486
+  %0 = load double* @_ZN3pov7trenderE, align 8, !dbg !1487, !tbaa !783
+  %cmp = fcmp oeq double %0, 0.000000e+00, !dbg !1487
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1487
+
+if.then:                                          ; preds = %entry
+  %call = call i64 @time(i64* @_ZN3pov5tstopE) #8, !dbg !1488
+  %1 = load i64* @_ZN3pov5tstopE, align 8, !dbg !1490, !tbaa !929
+  %2 = load i64* @_ZN3pov6tstartE, align 8, !dbg !1490, !tbaa !929
+  %call1 = call double @difftime(i64 %1, i64 %2) #9, !dbg !1490
+  store double %call1, double* @_ZN3pov7trenderE, align 8, !dbg !1490, !tbaa !783
+  br label %if.end, !dbg !1491
+
+if.end:                                           ; preds = %if.then, %entry
+  %3 = phi double [ %call1, %if.then ], [ %0, %entry ]
+  %4 = load double* @_ZN3pov12tparse_totalE, align 8, !dbg !1492, !tbaa !783
+  %conv = fptosi double %4 to i32, !dbg !1492
+  call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !619), !dbg !1492
+  %cmp2 = icmp slt i32 %conv, 1, !dbg !1493
+  br i1 %cmp2, label %if.then3, label %if.end5, !dbg !1493
+
+if.then3:                                         ; preds = %if.end
+  %5 = load double* @_ZN3pov6tparseE, align 8, !dbg !1494, !tbaa !783
+  %conv4 = fptosi double %5 to i32, !dbg !1494
+  call void @llvm.dbg.value(metadata !{i32 %conv4}, i64 0, metadata !619), !dbg !1494
+  br label %if.end5, !dbg !1494
+
+if.end5:                                          ; preds = %if.then3, %if.end
+  %tp.0 = phi i32 [ %conv4, %if.then3 ], [ %conv, %if.end ]
+  %6 = load double* @_ZN3pov13tphoton_totalE, align 8, !dbg !1495, !tbaa !783
+  %conv6 = fptosi double %6 to i32, !dbg !1495
+  call void @llvm.dbg.value(metadata !{i32 %conv6}, i64 0, metadata !620), !dbg !1495
+  %cmp7 = icmp slt i32 %conv6, 1, !dbg !1496
+  br i1 %cmp7, label %if.then8, label %if.end10, !dbg !1496
+
+if.then8:                                         ; preds = %if.end5
+  %7 = load double* @_ZN3pov7tphotonE, align 8, !dbg !1497, !tbaa !783
+  %conv9 = fptosi double %7 to i32, !dbg !1497
+  call void @llvm.dbg.value(metadata !{i32 %conv9}, i64 0, metadata !620), !dbg !1497
+  br label %if.end10, !dbg !1497
+
+if.end10:                                         ; preds = %if.then8, %if.end5
+  %th.0 = phi i32 [ %conv9, %if.then8 ], [ %conv6, %if.end5 ]
+  %8 = load double* @_ZN3pov13trender_totalE, align 8, !dbg !1498, !tbaa !783
+  %conv11 = fptosi double %8 to i32, !dbg !1498
+  call void @llvm.dbg.value(metadata !{i32 %conv11}, i64 0, metadata !621), !dbg !1498
+  %cmp12 = icmp slt i32 %conv11, 1, !dbg !1499
+  br i1 %cmp12, label %if.then13, label %if.end15, !dbg !1499
+
+if.then13:                                        ; preds = %if.end10
+  %conv14 = fptosi double %3 to i32, !dbg !1500
+  call void @llvm.dbg.value(metadata !{i32 %conv14}, i64 0, metadata !621), !dbg !1500
+  br label %if.end15, !dbg !1500
+
+if.end15:                                         ; preds = %if.then13, %if.end10
+  %tr.0 = phi i32 [ %conv14, %if.then13 ], [ %conv11, %if.end10 ]
+  %call16 = call i32 @_Z15POVMSObject_NewP9POVMSDataj(%struct.POVMSData* %msg, i32 707406378) #6, !dbg !1501
+  call void @llvm.dbg.value(metadata !{i32 %call16}, i64 0, metadata !618), !dbg !1501
+  %cmp17 = icmp eq i32 %call16, 0, !dbg !1502
+  br i1 %cmp17, label %if.end25, label %if.end34, !dbg !1502
+
+if.end25:                                         ; preds = %if.end15
+  %add = add nsw i32 %th.0, %tp.0, !dbg !1503
+  %add19 = add nsw i32 %add, %tr.0, !dbg !1503
+  %call20 = call i32 @_ZN3pov15BuildRenderTimeEP9POVMSDatajiiii(%struct.POVMSData* %msg, i32 1096051053, i32 %tp.0, i32 %th.0, i32 %tr.0, i32 %add19) #6, !dbg !1503
+  %call24 = call i32 @_Z21POVMSMsg_SetupMessageP9POVMSDatajj(%struct.POVMSData* %msg, i32 1333097584, i32 1380281956) #6, !dbg !1504
+  call void @llvm.dbg.value(metadata !{i32 %call24}, i64 0, metadata !618), !dbg !1504
+  %cmp26 = icmp eq i32 %call24, 0, !dbg !1505
+  br i1 %cmp26, label %if.end30, label %if.end34, !dbg !1505
+
+if.end30:                                         ; preds = %if.end25
+  %call28 = call i8* @_Z23povray_getoutputcontextv() #6, !dbg !1506
+  %call29 = call i32 @_Z30POVMSMsg_SetDestinationAddressP9POVMSDataPv(%struct.POVMSData* %msg, i8* %call28) #6, !dbg !1506
+  call void @llvm.dbg.value(metadata !{i32 %call29}, i64 0, metadata !618), !dbg !1506
+  %cmp31 = icmp eq i32 %call29, 0, !dbg !1507
+  br i1 %cmp31, label %if.then32, label %if.end34, !dbg !1507
+
+if.then32:                                        ; preds = %if.end30
+  %9 = load i8** @POVMS_Render_Context, align 8, !dbg !1508, !tbaa !914
+  %call33 = call i32 @_Z10POVMS_SendPvP9POVMSDataS1_i(i8* %9, %struct.POVMSData* %msg, %struct.POVMSData* null, i32 1) #6, !dbg !1508
+  call void @llvm.dbg.value(metadata !{i32 %call33}, i64 0, metadata !618), !dbg !1508
+  br label %if.end34, !dbg !1508
+
+if.end34:                                         ; preds = %if.end15, %if.end25, %if.then32, %if.end30
+  %err.2 = phi i32 [ %call33, %if.then32 ], [ %call29, %if.end30 ], [ %call24, %if.end25 ], [ %call16, %if.end15 ]
+  ret i32 %err.2, !dbg !1509
+}

@@ -1,68 +1,79 @@
-define i32 @BZ2_bzBuffToBuffCompress(i8* %dest, i32* %destLen, i8* %source, i32 %sourceLen, i32 %blockSize100k, i32 %verbosity, i32 %workFactor) #4 {
+define i32 @BZ2_bzBuffToBuffCompress(i8* %dest, i32* %destLen, i8* %source, i32 %sourceLen, i32 %blockSize100k, i32 %verbosity, i32 %workFactor) #5 {
 entry:
   %strm = alloca %struct.bz_stream, align 8
-  %0 = bitcast %struct.bz_stream* %strm to i8*
-  call void @llvm.lifetime.start(i64 80, i8* %0) #7
-  %cmp = icmp eq i8* %dest, null
-  %cmp1 = icmp eq i32* %destLen, null
-  %or.cond = or i1 %cmp, %cmp1
-  %cmp3 = icmp eq i8* %source, null
-  %or.cond50 = or i1 %or.cond, %cmp3
-  br i1 %or.cond50, label %cleanup, label %lor.lhs.false4
+  call void @llvm.dbg.value(metadata !{i8* %dest}, i64 0, metadata !421), !dbg !1541
+  call void @llvm.dbg.value(metadata !{i32* %destLen}, i64 0, metadata !422), !dbg !1542
+  call void @llvm.dbg.value(metadata !{i8* %source}, i64 0, metadata !423), !dbg !1543
+  call void @llvm.dbg.value(metadata !{i32 %sourceLen}, i64 0, metadata !424), !dbg !1544
+  call void @llvm.dbg.value(metadata !{i32 %blockSize100k}, i64 0, metadata !425), !dbg !1545
+  call void @llvm.dbg.value(metadata !{i32 %verbosity}, i64 0, metadata !426), !dbg !1546
+  call void @llvm.dbg.value(metadata !{i32 %workFactor}, i64 0, metadata !427), !dbg !1547
+  %0 = bitcast %struct.bz_stream* %strm to i8*, !dbg !1548
+  call void @llvm.lifetime.start(i64 80, i8* %0) #9, !dbg !1548
+  call void @llvm.dbg.declare(metadata !{%struct.bz_stream* %strm}, metadata !428), !dbg !1548
+  %cmp = icmp eq i8* %dest, null, !dbg !1549
+  %cmp1 = icmp eq i32* %destLen, null, !dbg !1549
+  %or.cond = or i1 %cmp, %cmp1, !dbg !1549
+  %cmp3 = icmp eq i8* %source, null, !dbg !1549
+  %or.cond50 = or i1 %or.cond, %cmp3, !dbg !1549
+  br i1 %or.cond50, label %cleanup, label %lor.lhs.false4, !dbg !1549
 
 lor.lhs.false4:                                   ; preds = %entry
-  %blockSize100k.off = add i32 %blockSize100k, -1
-  %1 = icmp ugt i32 %blockSize100k.off, 8
-  %2 = icmp ugt i32 %verbosity, 4
-  %or.cond51 = or i1 %1, %2
-  %3 = icmp ugt i32 %workFactor, 250
-  %or.cond52 = or i1 %or.cond51, %3
-  br i1 %or.cond52, label %cleanup, label %if.end
+  %blockSize100k.off = add i32 %blockSize100k, -1, !dbg !1549
+  %1 = icmp ugt i32 %blockSize100k.off, 8, !dbg !1549
+  %2 = icmp ugt i32 %verbosity, 4, !dbg !1549
+  %or.cond51 = or i1 %1, %2, !dbg !1549
+  %3 = icmp ugt i32 %workFactor, 250, !dbg !1549
+  %or.cond52 = or i1 %or.cond51, %3, !dbg !1549
+  br i1 %or.cond52, label %cleanup, label %if.end, !dbg !1549
 
 if.end:                                           ; preds = %lor.lhs.false4
-  %cmp16 = icmp eq i32 %workFactor, 0
-  %.workFactor = select i1 %cmp16, i32 30, i32 %workFactor
-  %bzalloc = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 9
-  %4 = bitcast i8* (i8*, i32, i32)** %bzalloc to i8*
-  call void @llvm.memset.p0i8.i64(i8* %4, i8 0, i64 24, i32 8, i1 false)
-  %call = call i32 @BZ2_bzCompressInit(%struct.bz_stream* %strm, i32 %blockSize100k, i32 %verbosity, i32 %.workFactor) #13
-  %cmp19 = icmp eq i32 %call, 0
-  br i1 %cmp19, label %if.end21, label %cleanup
+  %cmp16 = icmp eq i32 %workFactor, 0, !dbg !1550
+  call void @llvm.dbg.value(metadata !631, i64 0, metadata !427), !dbg !1550
+  %.workFactor = select i1 %cmp16, i32 30, i32 %workFactor, !dbg !1550
+  %bzalloc = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 9, !dbg !1551
+  %4 = bitcast i8* (i8*, i32, i32)** %bzalloc to i8*, !dbg !1552
+  call void @llvm.memset.p0i8.i64(i8* %4, i8 0, i64 24, i32 8, i1 false), !dbg !1553
+  %call = call i32 @BZ2_bzCompressInit(%struct.bz_stream* %strm, i32 %blockSize100k, i32 %verbosity, i32 %.workFactor) #14, !dbg !1552
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !429), !dbg !1552
+  %cmp19 = icmp eq i32 %call, 0, !dbg !1554
+  br i1 %cmp19, label %if.end21, label %cleanup, !dbg !1554
 
 if.end21:                                         ; preds = %if.end
-  %next_in = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 0
-  store i8* %source, i8** %next_in, align 8, !tbaa !0
-  %next_out = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 4
-  store i8* %dest, i8** %next_out, align 8, !tbaa !0
-  %avail_in = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 1
-  store i32 %sourceLen, i32* %avail_in, align 8, !tbaa !3
-  %5 = load i32* %destLen, align 4, !tbaa !3
-  %avail_out = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 5
-  store i32 %5, i32* %avail_out, align 8, !tbaa !3
-  %call22 = call i32 @BZ2_bzCompress(%struct.bz_stream* %strm, i32 2) #13
+  %next_in = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 0, !dbg !1555
+  store i8* %source, i8** %next_in, align 8, !dbg !1555, !tbaa !615
+  %next_out = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 4, !dbg !1556
+  store i8* %dest, i8** %next_out, align 8, !dbg !1556, !tbaa !615
+  %avail_in = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 1, !dbg !1557
+  store i32 %sourceLen, i32* %avail_in, align 8, !dbg !1557, !tbaa !651
+  %5 = load i32* %destLen, align 4, !dbg !1558, !tbaa !651
+  %avail_out = getelementptr inbounds %struct.bz_stream* %strm, i64 0, i32 5, !dbg !1558
+  store i32 %5, i32* %avail_out, align 8, !dbg !1558, !tbaa !651
+  %call22 = call i32 @BZ2_bzCompress(%struct.bz_stream* %strm, i32 2) #14, !dbg !1559
+  call void @llvm.dbg.value(metadata !{i32 %call22}, i64 0, metadata !429), !dbg !1559
   switch i32 %call22, label %errhandler [
     i32 3, label %output_overflow
     i32 4, label %if.end28
-  ]
+  ], !dbg !1560
 
 if.end28:                                         ; preds = %if.end21
-  %6 = load i32* %avail_out, align 8, !tbaa !3
-  %7 = load i32* %destLen, align 4, !tbaa !3
-  %sub = sub i32 %7, %6
-  store i32 %sub, i32* %destLen, align 4, !tbaa !3
-  %call30 = call i32 @BZ2_bzCompressEnd(%struct.bz_stream* %strm) #13
-  br label %cleanup
+  %6 = load i32* %avail_out, align 8, !dbg !1561, !tbaa !651
+  %7 = load i32* %destLen, align 4, !dbg !1561, !tbaa !651
+  %sub = sub i32 %7, %6, !dbg !1561
+  store i32 %sub, i32* %destLen, align 4, !dbg !1561, !tbaa !651
+  %call30 = call i32 @BZ2_bzCompressEnd(%struct.bz_stream* %strm) #14, !dbg !1562
+  br label %cleanup, !dbg !1563
 
 output_overflow:                                  ; preds = %if.end21
-  %call31 = call i32 @BZ2_bzCompressEnd(%struct.bz_stream* %strm) #13
-  br label %cleanup
+  %call31 = call i32 @BZ2_bzCompressEnd(%struct.bz_stream* %strm) #14, !dbg !1564
+  br label %cleanup, !dbg !1565
 
 errhandler:                                       ; preds = %if.end21
-  %call32 = call i32 @BZ2_bzCompressEnd(%struct.bz_stream* %strm) #13
-  br label %cleanup
+  %call32 = call i32 @BZ2_bzCompressEnd(%struct.bz_stream* %strm) #14, !dbg !1566
+  br label %cleanup, !dbg !1567
 
 cleanup:                                          ; preds = %if.end, %entry, %lor.lhs.false4, %errhandler, %output_overflow, %if.end28
   %retval.0 = phi i32 [ -8, %output_overflow ], [ %call22, %errhandler ], [ 0, %if.end28 ], [ -2, %lor.lhs.false4 ], [ -2, %entry ], [ %call, %if.end ]
-  call void @llvm.lifetime.end(i64 80, i8* %0) #7
-  ret i32 %retval.0
+  call void @llvm.lifetime.end(i64 80, i8* %0) #9, !dbg !1568
+  ret i32 %retval.0, !dbg !1568
 }

@@ -1,33 +1,36 @@
 define void @ZVzero(i32 %size, double* %y) #0 {
 entry:
-  %cmp = icmp slt i32 %size, 0
-  %cmp1 = icmp eq double* %y, null
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %for.cond.preheader
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !822), !dbg !1643
+  tail call void @llvm.dbg.value(metadata !{double* %y}, i64 0, metadata !823), !dbg !1644
+  %cmp = icmp slt i32 %size, 0, !dbg !1645
+  %cmp1 = icmp eq double* %y, null, !dbg !1645
+  %or.cond = or i1 %cmp, %cmp1, !dbg !1645
+  br i1 %or.cond, label %if.then, label %for.cond.preheader, !dbg !1645
 
 for.cond.preheader:                               ; preds = %entry
-  %cmp215 = icmp sgt i32 %size, 0
-  br i1 %cmp215, label %for.body, label %for.end
+  %cmp215 = icmp sgt i32 %size, 0, !dbg !1646
+  br i1 %cmp215, label %for.body, label %for.end, !dbg !1646
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([43 x i8]* @.str18, i64 0, i64 0), i32 %size, double* %y) #5
-  tail call void @exit(i32 -1) #7
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !1648, !tbaa !925
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([43 x i8]* @.str18, i64 0, i64 0), i32 %size, double* %y) #6, !dbg !1648
+  tail call void @exit(i32 -1) #8, !dbg !1650
+  unreachable, !dbg !1650
 
 for.body:                                         ; preds = %for.cond.preheader, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
   %ii.016 = phi i32 [ %inc, %for.body ], [ 0, %for.cond.preheader ]
-  %1 = or i64 %indvars.iv, 1
-  %arrayidx = getelementptr inbounds double* %y, i64 %1
-  store double 0.000000e+00, double* %arrayidx, align 8, !tbaa !0
-  %arrayidx4 = getelementptr inbounds double* %y, i64 %indvars.iv
-  store double 0.000000e+00, double* %arrayidx4, align 8, !tbaa !0
-  %inc = add nsw i32 %ii.016, 1
-  %indvars.iv.next = add i64 %indvars.iv, 2
-  %exitcond = icmp eq i32 %inc, %size
-  br i1 %exitcond, label %for.end, label %for.body
+  %1 = or i64 %indvars.iv, 1, !dbg !1651
+  %arrayidx = getelementptr inbounds double* %y, i64 %1, !dbg !1651
+  store double 0.000000e+00, double* %arrayidx, align 8, !dbg !1651, !tbaa !861
+  %arrayidx4 = getelementptr inbounds double* %y, i64 %indvars.iv, !dbg !1651
+  store double 0.000000e+00, double* %arrayidx4, align 8, !dbg !1651, !tbaa !861
+  %inc = add nsw i32 %ii.016, 1, !dbg !1646
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !824), !dbg !1646
+  %indvars.iv.next = add i64 %indvars.iv, 2, !dbg !1646
+  %exitcond = icmp eq i32 %inc, %size, !dbg !1646
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !1646
 
 for.end:                                          ; preds = %for.body, %for.cond.preheader
-  ret void
+  ret void, !dbg !1653
 }

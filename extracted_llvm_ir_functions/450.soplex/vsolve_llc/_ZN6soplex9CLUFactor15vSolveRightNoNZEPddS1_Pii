@@ -1,0 +1,97 @@
+define void @_ZN6soplex9CLUFactor15vSolveRightNoNZEPddS1_Pii(%"class.soplex::CLUFactor"* nocapture %this, double* nocapture %vec2, double %eps2, double* nocapture %rhs2, i32* nocapture %ridx2, i32 %rn2) #2 align 2 {
+entry:
+  %j = alloca i32, align 4
+  call void @llvm.dbg.value(metadata !{%"class.soplex::CLUFactor"* %this}, i64 0, metadata !2561), !dbg !3510
+  call void @llvm.dbg.value(metadata !{double* %vec2}, i64 0, metadata !2562), !dbg !3511
+  call void @llvm.dbg.value(metadata !{double %eps2}, i64 0, metadata !2563), !dbg !3511
+  call void @llvm.dbg.value(metadata !{double* %rhs2}, i64 0, metadata !2564), !dbg !3512
+  call void @llvm.dbg.value(metadata !{i32* %ridx2}, i64 0, metadata !2565), !dbg !3512
+  call void @llvm.dbg.value(metadata !{i32 %rn2}, i64 0, metadata !2566), !dbg !3512
+  %call = call i32 @_ZN6soplex9CLUFactor12vSolveLrightEPdPiid(%"class.soplex::CLUFactor"* %this, double* %rhs2, i32* %ridx2, i32 %rn2, double %eps2) #6, !dbg !3513
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !2566), !dbg !3513
+  %conv = sitofp i32 %call to double, !dbg !3514
+  %thedim = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 1, !dbg !3514
+  %0 = load i32* %thedim, align 4, !dbg !3514, !tbaa !2843
+  %conv2 = sitofp i32 %0 to double, !dbg !3514
+  %mul = fmul double %conv2, 2.000000e-01, !dbg !3514
+  %cmp = fcmp ogt double %conv, %mul, !dbg !3514
+  br i1 %cmp, label %if.then, label %if.else, !dbg !3514
+
+if.then:                                          ; preds = %entry
+  %sub = add nsw i32 %0, -1, !dbg !3515
+  store i32 %sub, i32* %ridx2, align 4, !dbg !3515, !tbaa !2843
+  br label %if.end21, !dbg !3517
+
+if.else:                                          ; preds = %entry
+  call void @llvm.dbg.declare(metadata !{i32* %j}, metadata !2570), !dbg !3518
+  %perm = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 8, i32 1, !dbg !3519
+  %1 = load i32** %perm, align 8, !dbg !3519, !tbaa !2836
+  call void @llvm.dbg.value(metadata !{i32* %1}, i64 0, metadata !2572), !dbg !3519
+  call void @llvm.dbg.value(metadata !1902, i64 0, metadata !2570), !dbg !3520
+  store i32 0, i32* %j, align 4, !dbg !3520, !tbaa !2843
+  call void @llvm.dbg.value(metadata !1902, i64 0, metadata !2569), !dbg !3520
+  %cmp447 = icmp sgt i32 %call, 0, !dbg !3520
+  br i1 %cmp447, label %for.body.lr.ph, label %if.end21, !dbg !3520
+
+for.body.lr.ph:                                   ; preds = %if.else
+  %sub7 = fsub double -0.000000e+00, %eps2, !dbg !3522
+  br label %for.body, !dbg !3520
+
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  %arrayidx = getelementptr inbounds i32* %ridx2, i64 %indvars.iv, !dbg !3524
+  %2 = load i32* %arrayidx, align 4, !dbg !3524, !tbaa !2843
+  call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !2571), !dbg !3524
+  %idxprom5 = sext i32 %2 to i64, !dbg !3525
+  %arrayidx6 = getelementptr inbounds double* %rhs2, i64 %idxprom5, !dbg !3525
+  %3 = load double* %arrayidx6, align 8, !dbg !3525, !tbaa !2848
+  call void @llvm.dbg.value(metadata !{double %3}, i64 0, metadata !2567), !dbg !3525
+  %cmp8 = fcmp olt double %3, %sub7, !dbg !3522
+  br i1 %cmp8, label %if.then9, label %if.else12, !dbg !3522
+
+if.then9:                                         ; preds = %for.body
+  %arrayidx11 = getelementptr inbounds i32* %1, i64 %idxprom5, !dbg !3526
+  %4 = load i32* %arrayidx11, align 4, !dbg !3526, !tbaa !2843
+  call fastcc void @_ZN6soplexL10enQueueMaxEPiS0_i(i32* %ridx2, i32* %j, i32 %4) #6, !dbg !3526
+  br label %for.inc, !dbg !3528
+
+if.else12:                                        ; preds = %for.body
+  %cmp13 = fcmp ogt double %3, %eps2, !dbg !3529
+  br i1 %cmp13, label %if.then14, label %if.else17, !dbg !3529
+
+if.then14:                                        ; preds = %if.else12
+  %arrayidx16 = getelementptr inbounds i32* %1, i64 %idxprom5, !dbg !3530
+  %5 = load i32* %arrayidx16, align 4, !dbg !3530, !tbaa !2843
+  call fastcc void @_ZN6soplexL10enQueueMaxEPiS0_i(i32* %ridx2, i32* %j, i32 %5) #6, !dbg !3530
+  br label %for.inc, !dbg !3532
+
+if.else17:                                        ; preds = %if.else12
+  store double 0.000000e+00, double* %arrayidx6, align 8, !dbg !3533, !tbaa !2848
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then9, %if.else17, %if.then14
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !3520
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !3520
+  %exitcond = icmp eq i32 %lftr.wideiv, %call, !dbg !3520
+  br i1 %exitcond, label %for.cond.for.end_crit_edge, label %for.body, !dbg !3520
+
+for.cond.for.end_crit_edge:                       ; preds = %for.inc
+  call void @llvm.dbg.value(metadata !{i32* %j}, i64 0, metadata !2570), !dbg !3534
+  %.pre = load i32* %j, align 4, !dbg !3534, !tbaa !2843
+  br label %if.end21, !dbg !3520
+
+if.end21:                                         ; preds = %if.else, %for.cond.for.end_crit_edge, %if.then
+  %rn2.addr.0 = phi i32 [ %call, %if.then ], [ %.pre, %for.cond.for.end_crit_edge ], [ 0, %if.else ]
+  call void @_ZN6soplex9CLUFactor16vSolveUrightNoNZEPdS1_Piid(%"class.soplex::CLUFactor"* %this, double* %vec2, double* %rhs2, i32* %ridx2, i32 %rn2.addr.0, double %eps2) #6, !dbg !3535
+  %updateType = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 10, i32 8, !dbg !3536
+  %6 = load i32* %updateType, align 4, !dbg !3536, !tbaa !2843
+  %tobool = icmp eq i32 %6, 0, !dbg !3536
+  br i1 %tobool, label %if.then22, label %if.end23, !dbg !3536
+
+if.then22:                                        ; preds = %if.end21
+  call void @_ZN6soplex9CLUFactor21vSolveUpdateRightNoNZEPdd(%"class.soplex::CLUFactor"* %this, double* %vec2, double undef) #6, !dbg !3537
+  br label %if.end23, !dbg !3537
+
+if.end23:                                         ; preds = %if.end21, %if.then22
+  ret void, !dbg !3538
+}

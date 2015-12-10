@@ -1,39 +1,42 @@
 define internal fastcc %struct.fixup_replacement* @find_fixup_replacement(%struct.fixup_replacement** nocapture %replacements, %struct.rtx_def* %x) #0 {
 entry:
-  %p.017 = load %struct.fixup_replacement** %replacements, align 8
-  %cond18 = icmp eq %struct.fixup_replacement* %p.017, null
-  br i1 %cond18, label %if.then, label %land.rhs
+  tail call void @llvm.dbg.value(metadata !{%struct.fixup_replacement** %replacements}, i64 0, metadata !2629), !dbg !5643
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !2630), !dbg !5644
+  %p.017 = load %struct.fixup_replacement** %replacements, align 8, !dbg !5645
+  %cond18 = icmp eq %struct.fixup_replacement* %p.017, null, !dbg !5645
+  br i1 %cond18, label %if.then, label %land.rhs, !dbg !5645
 
 for.cond:                                         ; preds = %land.rhs
-  %next = getelementptr inbounds %struct.fixup_replacement* %p.019, i64 0, i32 2
-  %p.0 = load %struct.fixup_replacement** %next, align 8
-  %cond = icmp eq %struct.fixup_replacement* %p.0, null
-  br i1 %cond, label %if.then, label %land.rhs
+  %next = getelementptr inbounds %struct.fixup_replacement* %p.019, i64 0, i32 2, !dbg !5645
+  %p.0 = load %struct.fixup_replacement** %next, align 8, !dbg !5645
+  %cond = icmp eq %struct.fixup_replacement* %p.0, null, !dbg !5645
+  br i1 %cond, label %if.then, label %land.rhs, !dbg !5645
 
 land.rhs:                                         ; preds = %entry, %for.cond
   %p.019 = phi %struct.fixup_replacement* [ %p.0, %for.cond ], [ %p.017, %entry ]
-  %old = getelementptr inbounds %struct.fixup_replacement* %p.019, i64 0, i32 0
-  %0 = load %struct.rtx_def** %old, align 8, !tbaa !0
-  %call = tail call i32 @rtx_equal_p(%struct.rtx_def* %0, %struct.rtx_def* %x) #10
-  %lnot = icmp eq i32 %call, 0
+  %old = getelementptr inbounds %struct.fixup_replacement* %p.019, i64 0, i32 0, !dbg !5645
+  %0 = load %struct.rtx_def** %old, align 8, !dbg !5645, !tbaa !2729
+  %call = tail call i32 @rtx_equal_p(%struct.rtx_def* %0, %struct.rtx_def* %x) #11, !dbg !5645
+  %lnot = icmp eq i32 %call, 0, !dbg !5645
   br i1 %lnot, label %for.cond, label %if.end
 
 if.then:                                          ; preds = %entry, %for.cond
-  %call2 = tail call noalias i8* @xmalloc(i64 24) #10
-  %1 = bitcast i8* %call2 to %struct.fixup_replacement*
-  %old3 = bitcast i8* %call2 to %struct.rtx_def**
-  store %struct.rtx_def* %x, %struct.rtx_def** %old3, align 8, !tbaa !0
-  %new = getelementptr inbounds i8* %call2, i64 8
-  %2 = bitcast i8* %new to %struct.rtx_def**
-  store %struct.rtx_def* null, %struct.rtx_def** %2, align 8, !tbaa !0
-  %3 = load %struct.fixup_replacement** %replacements, align 8, !tbaa !0
-  %next4 = getelementptr inbounds i8* %call2, i64 16
-  %4 = bitcast i8* %next4 to %struct.fixup_replacement**
-  store %struct.fixup_replacement* %3, %struct.fixup_replacement** %4, align 8, !tbaa !0
-  store %struct.fixup_replacement* %1, %struct.fixup_replacement** %replacements, align 8, !tbaa !0
-  br label %if.end
+  %call2 = tail call noalias i8* @xmalloc(i64 24) #11, !dbg !5647
+  %1 = bitcast i8* %call2 to %struct.fixup_replacement*, !dbg !5647
+  tail call void @llvm.dbg.value(metadata !{%struct.fixup_replacement* %1}, i64 0, metadata !2631), !dbg !5647
+  %old3 = bitcast i8* %call2 to %struct.rtx_def**, !dbg !5649
+  store %struct.rtx_def* %x, %struct.rtx_def** %old3, align 8, !dbg !5649, !tbaa !2729
+  %new = getelementptr inbounds i8* %call2, i64 8, !dbg !5650
+  %2 = bitcast i8* %new to %struct.rtx_def**, !dbg !5650
+  store %struct.rtx_def* null, %struct.rtx_def** %2, align 8, !dbg !5650, !tbaa !2729
+  %3 = load %struct.fixup_replacement** %replacements, align 8, !dbg !5651, !tbaa !2729
+  %next4 = getelementptr inbounds i8* %call2, i64 16, !dbg !5651
+  %4 = bitcast i8* %next4 to %struct.fixup_replacement**, !dbg !5651
+  store %struct.fixup_replacement* %3, %struct.fixup_replacement** %4, align 8, !dbg !5651, !tbaa !2729
+  store %struct.fixup_replacement* %1, %struct.fixup_replacement** %replacements, align 8, !dbg !5652, !tbaa !2729
+  br label %if.end, !dbg !5653
 
 if.end:                                           ; preds = %land.rhs, %if.then
   %p.1 = phi %struct.fixup_replacement* [ %1, %if.then ], [ %p.019, %land.rhs ]
-  ret %struct.fixup_replacement* %p.1
+  ret %struct.fixup_replacement* %p.1, !dbg !5654
 }

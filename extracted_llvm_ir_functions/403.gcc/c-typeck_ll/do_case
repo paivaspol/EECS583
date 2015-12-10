@@ -1,36 +1,41 @@
 define %union.tree_node* @do_case(%union.tree_node* %low_value, %union.tree_node* %high_value) #0 {
 entry:
-  %0 = load %struct.c_switch** @switch_stack, align 8, !tbaa !0
-  %tobool = icmp eq %struct.c_switch* %0, null
-  br i1 %tobool, label %if.else, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %low_value}, i64 0, metadata !1630), !dbg !4748
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %high_value}, i64 0, metadata !1631), !dbg !4749
+  tail call void @llvm.dbg.value(metadata !2084, i64 0, metadata !1632), !dbg !4750
+  %0 = load %struct.c_switch** @switch_stack, align 8, !dbg !4751, !tbaa !1977
+  %tobool = icmp eq %struct.c_switch* %0, null, !dbg !4751
+  br i1 %tobool, label %if.else, label %if.then, !dbg !4751
 
 if.then:                                          ; preds = %entry
-  %cases = getelementptr inbounds %struct.c_switch* %0, i64 0, i32 1
-  %1 = load %struct.splay_tree_s** %cases, align 8, !tbaa !0
-  %switch_stmt = getelementptr inbounds %struct.c_switch* %0, i64 0, i32 0
-  %2 = load %union.tree_node** %switch_stmt, align 8, !tbaa !0
-  %operands = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 2
-  %arrayidx = bitcast i32* %operands to %union.tree_node**
-  %3 = load %union.tree_node** %arrayidx, align 8, !tbaa !0
-  %call = tail call %union.tree_node* @c_add_case_label(%struct.splay_tree_s* %1, %union.tree_node* %3, %union.tree_node* %low_value, %union.tree_node* %high_value) #8
-  %4 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 0), align 8, !tbaa !0
-  %cmp = icmp eq %union.tree_node* %call, %4
-  %.call = select i1 %cmp, %union.tree_node* null, %union.tree_node* %call
-  br label %if.end6
+  %cases = getelementptr inbounds %struct.c_switch* %0, i64 0, i32 1, !dbg !4752
+  %1 = load %struct.splay_tree_s** %cases, align 8, !dbg !4752, !tbaa !1977
+  %switch_stmt = getelementptr inbounds %struct.c_switch* %0, i64 0, i32 0, !dbg !4752
+  %2 = load %union.tree_node** %switch_stmt, align 8, !dbg !4752, !tbaa !1977
+  %operands = getelementptr inbounds %union.tree_node* %2, i64 0, i32 0, i32 2, !dbg !4752
+  %arrayidx = bitcast i32* %operands to %union.tree_node**, !dbg !4752
+  %3 = load %union.tree_node** %arrayidx, align 8, !dbg !4752, !tbaa !1977
+  %call = tail call %union.tree_node* @c_add_case_label(%struct.splay_tree_s* %1, %union.tree_node* %3, %union.tree_node* %low_value, %union.tree_node* %high_value) #9, !dbg !4752
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %call}, i64 0, metadata !1632), !dbg !4752
+  %4 = load %union.tree_node** getelementptr inbounds ([51 x %union.tree_node*]* @global_trees, i64 0, i64 0), align 8, !dbg !4754, !tbaa !1977
+  %cmp = icmp eq %union.tree_node* %call, %4, !dbg !4754
+  %.call = select i1 %cmp, %union.tree_node* null, %union.tree_node* %call, !dbg !4754
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %.call}, i64 0, metadata !1632), !dbg !4755
+  br label %if.end6, !dbg !4756
 
 if.else:                                          ; preds = %entry
-  %tobool2 = icmp eq %union.tree_node* %low_value, null
-  br i1 %tobool2, label %if.else4, label %if.then3
+  %tobool2 = icmp eq %union.tree_node* %low_value, null, !dbg !4757
+  br i1 %tobool2, label %if.else4, label %if.then3, !dbg !4757
 
 if.then3:                                         ; preds = %if.else
-  tail call void (i8*, ...)* @error(i8* getelementptr inbounds ([41 x i8]* @.str148, i64 0, i64 0)) #8
-  br label %if.end6
+  tail call void (i8*, ...)* @error(i8* getelementptr inbounds ([41 x i8]* @.str148, i64 0, i64 0)) #9, !dbg !4758
+  br label %if.end6, !dbg !4758
 
 if.else4:                                         ; preds = %if.else
-  tail call void (i8*, ...)* @error(i8* getelementptr inbounds ([46 x i8]* @.str149, i64 0, i64 0)) #8
+  tail call void (i8*, ...)* @error(i8* getelementptr inbounds ([46 x i8]* @.str149, i64 0, i64 0)) #9, !dbg !4759
   br label %if.end6
 
 if.end6:                                          ; preds = %if.then3, %if.else4, %if.then
   %label.0 = phi %union.tree_node* [ %.call, %if.then ], [ null, %if.then3 ], [ null, %if.else4 ]
-  ret %union.tree_node* %label.0
+  ret %union.tree_node* %label.0, !dbg !4760
 }

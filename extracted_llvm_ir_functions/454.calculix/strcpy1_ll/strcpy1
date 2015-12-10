@@ -1,40 +1,49 @@
 define i32 @strcpy1(i8* nocapture %s1, i8* nocapture %s2, i32 %length) #0 {
 entry:
-  %cmp20 = icmp sgt i32 %length, 0
-  br i1 %cmp20, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{i8* %s1}, i64 0, metadata !14), !dbg !20
+  tail call void @llvm.dbg.value(metadata !{i8* %s2}, i64 0, metadata !15), !dbg !20
+  tail call void @llvm.dbg.value(metadata !{i32 %length}, i64 0, metadata !16), !dbg !20
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !19), !dbg !21
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !18), !dbg !22
+  %cmp20 = icmp sgt i32 %length, 0, !dbg !22
+  br i1 %cmp20, label %for.body, label %for.end, !dbg !22
 
 for.body:                                         ; preds = %entry, %if.end9
   %blank.025 = phi i32 [ %blank.118, %if.end9 ], [ 0, %entry ]
   %i.024 = phi i32 [ %inc, %if.end9 ], [ 0, %entry ]
   %s1.addr.022 = phi i8* [ %incdec.ptr10, %if.end9 ], [ %s1, %entry ]
   %s2.addr.021 = phi i8* [ %s2.addr.1, %if.end9 ], [ %s2, %entry ]
-  %cmp1 = icmp eq i32 %blank.025, 0
-  br i1 %cmp1, label %if.end5, label %if.else
+  %cmp1 = icmp eq i32 %blank.025, 0, !dbg !24
+  br i1 %cmp1, label %if.end5, label %if.else, !dbg !24
 
 if.end5:                                          ; preds = %for.body
-  %0 = load i8* %s2.addr.021, align 1, !tbaa !0
-  %cmp2 = icmp eq i8 %0, 0
-  %.blank.0 = zext i1 %cmp2 to i32
-  br i1 %cmp2, label %if.else, label %if.then8
+  %0 = load i8* %s2.addr.021, align 1, !dbg !26, !tbaa !28
+  %cmp2 = icmp eq i8 %0, 0, !dbg !30
+  tail call void @llvm.dbg.value(metadata !31, i64 0, metadata !19), !dbg !30
+  %.blank.0 = zext i1 %cmp2 to i32, !dbg !30
+  br i1 %cmp2, label %if.else, label %if.then8, !dbg !32
 
 if.then8:                                         ; preds = %if.end5
-  store i8 %0, i8* %s1.addr.022, align 1, !tbaa !0
-  %incdec.ptr = getelementptr inbounds i8* %s2.addr.021, i64 1
-  br label %if.end9
+  store i8 %0, i8* %s1.addr.022, align 1, !dbg !33, !tbaa !28
+  %incdec.ptr = getelementptr inbounds i8* %s2.addr.021, i64 1, !dbg !33
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr}, i64 0, metadata !15), !dbg !33
+  br label %if.end9, !dbg !33
 
 if.else:                                          ; preds = %if.end5, %for.body
   %blank.119 = phi i32 [ %.blank.0, %if.end5 ], [ %blank.025, %for.body ]
-  store i8 32, i8* %s1.addr.022, align 1, !tbaa !0
+  store i8 32, i8* %s1.addr.022, align 1, !dbg !35, !tbaa !28
   br label %if.end9
 
 if.end9:                                          ; preds = %if.else, %if.then8
   %blank.118 = phi i32 [ 0, %if.then8 ], [ %blank.119, %if.else ]
   %s2.addr.1 = phi i8* [ %incdec.ptr, %if.then8 ], [ %s2.addr.021, %if.else ]
-  %incdec.ptr10 = getelementptr inbounds i8* %s1.addr.022, i64 1
-  %inc = add nsw i32 %i.024, 1
-  %exitcond = icmp eq i32 %inc, %length
-  br i1 %exitcond, label %for.end, label %for.body
+  %incdec.ptr10 = getelementptr inbounds i8* %s1.addr.022, i64 1, !dbg !36
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr10}, i64 0, metadata !14), !dbg !36
+  %inc = add nsw i32 %i.024, 1, !dbg !22
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !18), !dbg !22
+  %exitcond = icmp eq i32 %inc, %length, !dbg !22
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !22
 
 for.end:                                          ; preds = %if.end9, %entry
-  ret i32 0
+  ret i32 0, !dbg !37
 }

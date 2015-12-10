@@ -1,64 +1,75 @@
-define i32 @CCTK_GrouplbndGI(%struct.cGH* %cctkGH, i32 %dim, i32* %lbnd, i32 %groupindex) #1 {
+define i32 @CCTK_GrouplbndGI(%struct.cGH* %cctkGH, i32 %dim, i32* nocapture %lbnd, i32 %groupindex) #1 {
+entry:
   %data = alloca %struct.GROUPDYNAMICDATA, align 8
-  %1 = bitcast %struct.GROUPDYNAMICDATA* %data to i8*
-  call void @llvm.lifetime.start(i64 56, i8* %1) #4
-  %2 = tail call i32 @CCTK_GroupTypeI(i32 %groupindex) #6
-  %3 = icmp eq i32 %2, 1
-  br i1 %3, label %4, label %7
+  call void @llvm.dbg.value(metadata !{%struct.cGH* %cctkGH}, i64 0, metadata !134), !dbg !614
+  call void @llvm.dbg.value(metadata !{i32 %dim}, i64 0, metadata !135), !dbg !615
+  call void @llvm.dbg.value(metadata !{i32* %lbnd}, i64 0, metadata !136), !dbg !616
+  call void @llvm.dbg.value(metadata !{i32 %groupindex}, i64 0, metadata !137), !dbg !617
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !138), !dbg !618
+  call void @llvm.dbg.value(metadata !{i32 %dim}, i64 0, metadata !140), !dbg !619
+  %0 = bitcast %struct.GROUPDYNAMICDATA* %data to i8*, !dbg !620
+  call void @llvm.lifetime.start(i64 56, i8* %0) #5, !dbg !620
+  call void @llvm.dbg.declare(metadata !{%struct.GROUPDYNAMICDATA* %data}, metadata !141), !dbg !620
+  %call = call i32 @CCTK_GroupTypeI(i32 %groupindex) #6, !dbg !621
+  %cmp = icmp eq i32 %call, 1, !dbg !621
+  br i1 %cmp, label %if.then, label %if.else, !dbg !621
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i8* @CCTK_GroupName(i32 %groupindex) #6
-  %6 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 544, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([62 x i8]* @.str4, i64 0, i64 0), i8* %5) #6
-  br label %33
+if.then:                                          ; preds = %entry
+  call void @llvm.dbg.value(metadata !622, i64 0, metadata !138), !dbg !623
+  %call2 = call i8* @CCTK_GroupName(i32 %groupindex) #6, !dbg !625
+  %call3 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 544, i8* getelementptr inbounds ([67 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([62 x i8]* @.str4, i64 0, i64 0), i8* %call2) #6, !dbg !625
+  br label %if.end23, !dbg !626
 
-; <label>:7                                       ; preds = %0
-  %8 = load i32 (%struct.cGH*, i32, %struct.GROUPDYNAMICDATA*)** @CCTK_GroupDynamicData, align 8, !tbaa !9
-  %9 = call i32 %8(%struct.cGH* %cctkGH, i32 %groupindex, %struct.GROUPDYNAMICDATA* %data) #6
-  %10 = icmp eq i32 %9, 0
-  br i1 %10, label %11, label %31
+if.else:                                          ; preds = %entry
+  %1 = load i32 (%struct.cGH*, i32, %struct.GROUPDYNAMICDATA*)** @CCTK_GroupDynamicData, align 8, !dbg !627, !tbaa !554
+  %call4 = call i32 %1(%struct.cGH* %cctkGH, i32 %groupindex, %struct.GROUPDYNAMICDATA* %data) #6, !dbg !627
+  call void @llvm.dbg.value(metadata !{i32 %call4}, i64 0, metadata !139), !dbg !627
+  %cmp5 = icmp eq i32 %call4, 0, !dbg !629
+  br i1 %cmp5, label %land.lhs.true, label %if.else20, !dbg !629
 
-; <label>:11                                      ; preds = %7
-  %12 = getelementptr inbounds %struct.GROUPDYNAMICDATA* %data, i64 0, i32 0
-  %13 = load i32* %12, align 8, !tbaa !10
-  %14 = icmp eq i32 %13, 0
-  br i1 %14, label %31, label %15
+land.lhs.true:                                    ; preds = %if.else
+  %dim6 = getelementptr inbounds %struct.GROUPDYNAMICDATA* %data, i64 0, i32 0, !dbg !629
+  %2 = load i32* %dim6, align 8, !dbg !629, !tbaa !630
+  %tobool = icmp eq i32 %2, 0, !dbg !629
+  br i1 %tobool, label %if.else20, label %land.lhs.true7, !dbg !629
 
-; <label>:15                                      ; preds = %11
-  %16 = getelementptr inbounds %struct.GROUPDYNAMICDATA* %data, i64 0, i32 3
-  %17 = load i32** %16, align 8, !tbaa !12
-  %18 = icmp eq i32* %17, null
-  br i1 %18, label %31, label %19
+land.lhs.true7:                                   ; preds = %land.lhs.true
+  %lbnd8 = getelementptr inbounds %struct.GROUPDYNAMICDATA* %data, i64 0, i32 3, !dbg !629
+  %3 = load i32** %lbnd8, align 8, !dbg !629, !tbaa !554
+  %tobool9 = icmp eq i32* %3, null, !dbg !629
+  br i1 %tobool9, label %if.else20, label %if.then10, !dbg !629
 
-; <label>:19                                      ; preds = %15
-  %20 = bitcast i32* %17 to i8*
-  %21 = icmp eq i32 %13, %dim
-  br i1 %21, label %._crit_edge, label %22
+if.then10:                                        ; preds = %land.lhs.true7
+  %cmp12 = icmp eq i32 %2, %dim, !dbg !631
+  br i1 %cmp12, label %if.end, label %if.then13, !dbg !631
 
-; <label>:22                                      ; preds = %19
-  %23 = icmp slt i32 %13, %dim
-  %.dim = select i1 %23, i32 %13, i32 %dim
-  %24 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 558, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([98 x i8]* @.str5, i64 0, i64 0), i32 %dim, i32 %13, i32 %.dim) #6
-  %.phi.trans.insert = bitcast i32** %16 to i8**
-  %.pre = load i8** %.phi.trans.insert, align 8, !tbaa !12
-  br label %._crit_edge
+if.then13:                                        ; preds = %if.then10
+  call void @llvm.dbg.value(metadata !633, i64 0, metadata !138), !dbg !634
+  %cmp15 = icmp slt i32 %2, %dim, !dbg !636
+  %.dim = select i1 %cmp15, i32 %2, i32 %dim, !dbg !636
+  call void @llvm.dbg.value(metadata !{i32 %.dim}, i64 0, metadata !140), !dbg !636
+  %call18 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 558, i8* getelementptr inbounds ([67 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([98 x i8]* @.str5, i64 0, i64 0), i32 %dim, i32 %2, i32 %.dim) #6, !dbg !637
+  %.pre = load i32** %lbnd8, align 8, !dbg !638, !tbaa !554
+  br label %if.end, !dbg !639
 
-._crit_edge:                                      ; preds = %19, %22
-  %25 = phi i8* [ %.pre, %22 ], [ %20, %19 ]
-  %usedim.0 = phi i32 [ %.dim, %22 ], [ %dim, %19 ]
-  %retval.0 = phi i32 [ -1, %22 ], [ 0, %19 ]
-  %26 = bitcast i32* %lbnd to i8*
-  %27 = sext i32 %usedim.0 to i64
-  %28 = shl nsw i64 %27, 2
-  %29 = call i64 @llvm.objectsize.i64.p0i8(i8* %26, i1 false)
-  %30 = call i8* @__memcpy_chk(i8* %26, i8* %25, i64 %28, i64 %29) #6
-  br label %33
+if.end:                                           ; preds = %if.then10, %if.then13
+  %4 = phi i32* [ %.pre, %if.then13 ], [ %3, %if.then10 ]
+  %usedim.0 = phi i32 [ %.dim, %if.then13 ], [ %dim, %if.then10 ]
+  %retval1.0 = phi i32 [ -1, %if.then13 ], [ 0, %if.then10 ]
+  %5 = bitcast i32* %lbnd to i8*, !dbg !638
+  %6 = bitcast i32* %4 to i8*, !dbg !638
+  %conv = sext i32 %usedim.0 to i64, !dbg !638
+  %mul = shl nsw i64 %conv, 2, !dbg !638
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %5, i8* %6, i64 %mul, i32 4, i1 false), !dbg !638
+  br label %if.end23, !dbg !640
 
-; <label>:31                                      ; preds = %15, %11, %7
-  %32 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 567, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str6, i64 0, i64 0)) #6
-  br label %33
+if.else20:                                        ; preds = %land.lhs.true7, %land.lhs.true, %if.else
+  call void @llvm.dbg.value(metadata !641, i64 0, metadata !138), !dbg !642
+  %call21 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 567, i8* getelementptr inbounds ([67 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str6, i64 0, i64 0)) #6, !dbg !644
+  br label %if.end23
 
-; <label>:33                                      ; preds = %._crit_edge, %31, %4
-  %retval.1 = phi i32 [ -3, %4 ], [ %retval.0, %._crit_edge ], [ -2, %31 ]
-  call void @llvm.lifetime.end(i64 56, i8* %1) #4
-  ret i32 %retval.1
+if.end23:                                         ; preds = %if.end, %if.else20, %if.then
+  %retval1.1 = phi i32 [ -3, %if.then ], [ %retval1.0, %if.end ], [ -2, %if.else20 ]
+  call void @llvm.lifetime.end(i64 56, i8* %0) #5, !dbg !645
+  ret i32 %retval1.1, !dbg !645
 }

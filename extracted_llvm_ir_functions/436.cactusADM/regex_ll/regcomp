@@ -1,119 +1,129 @@
-define i32 @regcomp(%struct.re_pattern_buffer* %preg, i8* %pattern, i32 %cflags) #0 {
-  %1 = and i32 %cflags, 1
-  %2 = icmp ne i32 %1, 0
-  %3 = select i1 %2, i64 242396, i64 66246
-  %4 = bitcast %struct.re_pattern_buffer* %preg to i8*
-  call void @llvm.memset.p0i8.i64(i8* %4, i8 0, i64 24, i32 8, i1 false)
-  %5 = tail call i8* @malloc(i64 256) #7
-  %6 = getelementptr inbounds %struct.re_pattern_buffer* %preg, i64 0, i32 4
-  store i8* %5, i8** %6, align 8, !tbaa !6
-  %7 = and i32 %cflags, 2
-  %8 = icmp eq i32 %7, 0
-  br i1 %8, label %28, label %9
+define i32 @regcomp(%struct.re_pattern_buffer* nocapture %preg, i8* %pattern, i32 %cflags) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.re_pattern_buffer* %preg}, i64 0, metadata !231), !dbg !2148
+  tail call void @llvm.dbg.value(metadata !{i8* %pattern}, i64 0, metadata !232), !dbg !2149
+  tail call void @llvm.dbg.value(metadata !{i32 %cflags}, i64 0, metadata !233), !dbg !2150
+  %and = and i32 %cflags, 1, !dbg !2151
+  %tobool = icmp ne i32 %and, 0, !dbg !2151
+  %cond = select i1 %tobool, i64 242396, i64 66246, !dbg !2151
+  tail call void @llvm.dbg.value(metadata !{i64 %cond}, i64 0, metadata !235), !dbg !2151
+  %0 = bitcast %struct.re_pattern_buffer* %preg to i8*, !dbg !2152
+  call void @llvm.memset.p0i8.i64(i8* %0, i8 0, i64 24, i32 8, i1 false), !dbg !2153
+  %call = tail call noalias i8* @malloc(i64 256) #7, !dbg !2152
+  %fastmap = getelementptr inbounds %struct.re_pattern_buffer* %preg, i64 0, i32 4, !dbg !2152
+  store i8* %call, i8** %fastmap, align 8, !dbg !2152, !tbaa !722
+  %and1 = and i32 %cflags, 2, !dbg !2154
+  %tobool2 = icmp eq i32 %and1, 0, !dbg !2154
+  br i1 %tobool2, label %if.else, label %if.then, !dbg !2154
 
-; <label>:9                                       ; preds = %0
-  %10 = tail call i8* @malloc(i64 256) #7
-  %11 = getelementptr inbounds %struct.re_pattern_buffer* %preg, i64 0, i32 5
-  store i8* %10, i8** %11, align 8, !tbaa !16
-  %12 = icmp eq i8* %10, null
-  br i1 %12, label %61, label %.preheader
+if.then:                                          ; preds = %entry
+  %call3 = tail call noalias i8* @malloc(i64 256) #7, !dbg !2155
+  %translate = getelementptr inbounds %struct.re_pattern_buffer* %preg, i64 0, i32 5, !dbg !2155
+  store i8* %call3, i8** %translate, align 8, !dbg !2155, !tbaa !722
+  %cmp = icmp eq i8* %call3, null, !dbg !2156
+  br i1 %cmp, label %return, label %for.cond.preheader, !dbg !2156
 
-.preheader:                                       ; preds = %9, %22
-  %indvars.iv = phi i64 [ %indvars.iv.next, %22 ], [ 0, %9 ]
-  %13 = trunc i64 %indvars.iv to i32
-  %isascii.i.i = icmp ult i32 %13, 128
-  br i1 %isascii.i.i, label %14, label %18
+for.cond.preheader:                               ; preds = %if.then
+  %call7 = tail call i16** @__ctype_b_loc() #11, !dbg !2157
+  br label %for.body, !dbg !2159
 
-; <label>:14                                      ; preds = %.preheader
-  %15 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %indvars.iv
-  %16 = load i32* %15, align 4, !tbaa !15
-  %17 = and i32 %16, 32768
-  br label %isupper.exit
+for.body:                                         ; preds = %cond.end, %for.cond.preheader
+  %indvars.iv = phi i64 [ 0, %for.cond.preheader ], [ %indvars.iv.next, %cond.end ]
+  %sext = shl i64 %indvars.iv, 32, !dbg !2157
+  %idxprom = ashr exact i64 %sext, 32, !dbg !2157
+  %1 = load i16** %call7, align 8, !dbg !2157, !tbaa !722
+  %arrayidx = getelementptr inbounds i16* %1, i64 %idxprom, !dbg !2157
+  %2 = load i16* %arrayidx, align 2, !dbg !2157, !tbaa !1715
+  %and8 = and i16 %2, 256, !dbg !2157
+  %tobool9 = icmp eq i16 %and8, 0, !dbg !2157
+  br i1 %tobool9, label %for.body.cond.end_crit_edge, label %cond.true, !dbg !2157
 
-; <label>:18                                      ; preds = %.preheader
-  %19 = tail call i32 @__maskrune(i32 %13, i64 32768) #7
-  br label %isupper.exit
+for.body.cond.end_crit_edge:                      ; preds = %for.body
+  %3 = trunc i64 %indvars.iv to i32, !dbg !2157
+  br label %cond.end, !dbg !2157
 
-isupper.exit:                                     ; preds = %14, %18
-  %.sink.i.in.i = phi i32 [ %17, %14 ], [ %19, %18 ]
-  %.sink.i.i = icmp eq i32 %.sink.i.in.i, 0
-  br i1 %.sink.i.i, label %22, label %20
+cond.true:                                        ; preds = %for.body
+  %call11 = tail call i32** @__ctype_tolower_loc() #11, !dbg !2157
+  %4 = load i32** %call11, align 8, !dbg !2157, !tbaa !722
+  %arrayidx12 = getelementptr inbounds i32* %4, i64 %idxprom, !dbg !2157
+  %5 = load i32* %arrayidx12, align 4, !dbg !2157, !tbaa !795
+  br label %cond.end, !dbg !2157
 
-; <label>:20                                      ; preds = %isupper.exit
-  %21 = tail call i32 @__tolower(i32 %13) #7
-  br label %22
+cond.end:                                         ; preds = %for.body.cond.end_crit_edge, %cond.true
+  %cond13 = phi i32 [ %5, %cond.true ], [ %3, %for.body.cond.end_crit_edge ], !dbg !2157
+  %conv14 = trunc i32 %cond13 to i8, !dbg !2157
+  %6 = load i8** %translate, align 8, !dbg !2157, !tbaa !722
+  %arrayidx17 = getelementptr inbounds i8* %6, i64 %indvars.iv, !dbg !2157
+  store i8 %conv14, i8* %arrayidx17, align 1, !dbg !2157, !tbaa !714
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2159
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !2159
+  %exitcond = icmp eq i32 %lftr.wideiv, 256, !dbg !2159
+  br i1 %exitcond, label %if.end19, label %for.body, !dbg !2159
 
-; <label>:22                                      ; preds = %isupper.exit, %20
-  %23 = phi i32 [ %21, %20 ], [ %13, %isupper.exit ]
-  %24 = trunc i32 %23 to i8
-  %25 = and i64 %indvars.iv, 4294967295
-  %26 = load i8** %11, align 8, !tbaa !16
-  %27 = getelementptr inbounds i8* %26, i64 %25
-  store i8 %24, i8* %27, align 1, !tbaa !12
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i64 %indvars.iv.next, 256
-  br i1 %exitcond, label %.loopexit, label %.preheader
+if.else:                                          ; preds = %entry
+  %translate18 = getelementptr inbounds %struct.re_pattern_buffer* %preg, i64 0, i32 5, !dbg !2160
+  store i8* null, i8** %translate18, align 8, !dbg !2160, !tbaa !722
+  br label %if.end19
 
-; <label>:28                                      ; preds = %0
-  %29 = getelementptr inbounds %struct.re_pattern_buffer* %preg, i64 0, i32 5
-  store i8* null, i8** %29, align 8, !tbaa !16
-  br label %.loopexit
+if.end19:                                         ; preds = %cond.end, %if.else
+  %and20 = and i32 %cflags, 4, !dbg !2161
+  %tobool21 = icmp eq i32 %and20, 0, !dbg !2161
+  br i1 %tobool21, label %if.else24, label %if.then22, !dbg !2161
 
-.loopexit:                                        ; preds = %22, %28
-  %30 = and i32 %cflags, 4
-  %31 = icmp eq i32 %30, 0
-  br i1 %31, label %38, label %32
+if.then22:                                        ; preds = %if.end19
+  %and23 = and i64 %cond, 242334, !dbg !2162
+  tail call void @llvm.dbg.value(metadata !{i64 %and23}, i64 0, metadata !235), !dbg !2162
+  %or = or i64 %and23, 256, !dbg !2164
+  tail call void @llvm.dbg.value(metadata !{i64 %or}, i64 0, metadata !235), !dbg !2164
+  %newline_anchor = getelementptr inbounds %struct.re_pattern_buffer* %preg, i64 0, i32 7, !dbg !2165
+  %bf.load = load i8* %newline_anchor, align 8, !dbg !2165
+  %bf.set = or i8 %bf.load, -128, !dbg !2165
+  store i8 %bf.set, i8* %newline_anchor, align 8, !dbg !2165
+  br label %if.end28, !dbg !2166
 
-; <label>:32                                      ; preds = %.loopexit
-  %33 = and i64 %3, 242334
-  %34 = or i64 %33, 256
-  %35 = getelementptr inbounds %struct.re_pattern_buffer* %preg, i64 0, i32 7
-  %36 = load i8* %35, align 8
-  %37 = or i8 %36, -128
-  store i8 %37, i8* %35, align 8
-  br label %42
+if.else24:                                        ; preds = %if.end19
+  %newline_anchor25 = getelementptr inbounds %struct.re_pattern_buffer* %preg, i64 0, i32 7, !dbg !2167
+  %bf.load26 = load i8* %newline_anchor25, align 8, !dbg !2167
+  %bf.clear27 = and i8 %bf.load26, 127, !dbg !2167
+  store i8 %bf.clear27, i8* %newline_anchor25, align 8, !dbg !2167
+  br label %if.end28
 
-; <label>:38                                      ; preds = %.loopexit
-  %39 = getelementptr inbounds %struct.re_pattern_buffer* %preg, i64 0, i32 7
-  %40 = load i8* %39, align 8
-  %41 = and i8 %40, 127
-  store i8 %41, i8* %39, align 8
-  br label %42
+if.end28:                                         ; preds = %if.else24, %if.then22
+  %bf.load32 = phi i8 [ %bf.set, %if.then22 ], [ %bf.clear27, %if.else24 ]
+  %syntax.0 = phi i64 [ %or, %if.then22 ], [ %cond, %if.else24 ]
+  %no_sub = getelementptr inbounds %struct.re_pattern_buffer* %preg, i64 0, i32 7, !dbg !2168
+  %7 = shl i32 %cflags, 1, !dbg !2168
+  %bf.value = trunc i32 %7 to i8, !dbg !2168
+  %bf.shl = and i8 %bf.value, 16, !dbg !2168
+  %bf.clear33 = and i8 %bf.load32, -17, !dbg !2168
+  %bf.set34 = or i8 %bf.clear33, %bf.shl, !dbg !2168
+  store i8 %bf.set34, i8* %no_sub, align 8, !dbg !2168
+  %call35 = tail call i64 @strlen(i8* %pattern) #10, !dbg !2169
+  %call36 = tail call fastcc i32 @regex_compile(i8* %pattern, i64 %call35, i64 %syntax.0, %struct.re_pattern_buffer* %preg) #9, !dbg !2169
+  tail call void @llvm.dbg.value(metadata !{i32 %call36}, i64 0, metadata !234), !dbg !2169
+  %cmp37 = icmp eq i32 %call36, 16, !dbg !2170
+  %.call36 = select i1 %cmp37, i32 8, i32 %call36, !dbg !2170
+  tail call void @llvm.dbg.value(metadata !{i32 %.call36}, i64 0, metadata !234), !dbg !2170
+  %cmp41 = icmp eq i32 %.call36, 0, !dbg !2171
+  br i1 %cmp41, label %land.lhs.true, label %return, !dbg !2171
 
-; <label>:42                                      ; preds = %38, %32
-  %.pre-phi = phi i8* [ %39, %38 ], [ %35, %32 ]
-  %43 = phi i8 [ %41, %38 ], [ %37, %32 ]
-  %syntax.0 = phi i64 [ %3, %38 ], [ %34, %32 ]
-  %44 = shl i32 %cflags, 1
-  %45 = trunc i32 %44 to i8
-  %46 = and i8 %45, 16
-  %47 = and i8 %43, -17
-  %48 = or i8 %47, %46
-  store i8 %48, i8* %.pre-phi, align 8
-  %49 = tail call i64 @strlen(i8* %pattern) #7
-  %50 = tail call fastcc i32 @regex_compile(i8* %pattern, i64 %49, i64 %syntax.0, %struct.re_pattern_buffer* %preg) #8
-  %51 = icmp eq i32 %50, 16
-  %. = select i1 %51, i32 8, i32 %50
-  %52 = icmp eq i32 %., 0
-  br i1 %52, label %53, label %61
+land.lhs.true:                                    ; preds = %if.end28
+  %8 = load i8** %fastmap, align 8, !dbg !2171, !tbaa !722
+  %tobool44 = icmp eq i8* %8, null, !dbg !2171
+  br i1 %tobool44, label %return, label %if.then45, !dbg !2171
 
-; <label>:53                                      ; preds = %42
-  %54 = load i8** %6, align 8, !tbaa !6
-  %55 = icmp eq i8* %54, null
-  br i1 %55, label %61, label %56
+if.then45:                                        ; preds = %land.lhs.true
+  %call46 = tail call i32 @re_compile_fastmap(%struct.re_pattern_buffer* %preg) #9, !dbg !2172
+  %cmp47 = icmp eq i32 %call46, -2, !dbg !2172
+  br i1 %cmp47, label %if.then49, label %return, !dbg !2172
 
-; <label>:56                                      ; preds = %53
-  %57 = tail call i32 @re_compile_fastmap(%struct.re_pattern_buffer* %preg) #8
-  %58 = icmp eq i32 %57, -2
-  br i1 %58, label %59, label %61
+if.then49:                                        ; preds = %if.then45
+  %9 = load i8** %fastmap, align 8, !dbg !2174, !tbaa !722
+  tail call void @free(i8* %9) #7, !dbg !2174
+  store i8* null, i8** %fastmap, align 8, !dbg !2176, !tbaa !722
+  br label %return, !dbg !2177
 
-; <label>:59                                      ; preds = %56
-  %60 = load i8** %6, align 8, !tbaa !6
-  tail call void @free(i8* %60) #8
-  store i8* null, i8** %6, align 8, !tbaa !6
-  br label %61
-
-; <label>:61                                      ; preds = %42, %59, %56, %53, %9
-  %.0 = phi i32 [ 12, %9 ], [ 0, %53 ], [ 0, %56 ], [ 0, %59 ], [ %., %42 ]
-  ret i32 %.0
+return:                                           ; preds = %if.end28, %if.then49, %if.then45, %land.lhs.true, %if.then
+  %retval.0 = phi i32 [ 12, %if.then ], [ 0, %land.lhs.true ], [ 0, %if.then45 ], [ 0, %if.then49 ], [ %.call36, %if.end28 ]
+  ret i32 %retval.0, !dbg !2178
 }

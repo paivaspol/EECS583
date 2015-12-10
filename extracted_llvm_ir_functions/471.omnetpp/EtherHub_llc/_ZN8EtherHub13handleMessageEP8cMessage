@@ -1,0 +1,107 @@
+define void @_ZN8EtherHub13handleMessageEP8cMessage(%class.EtherHub* %this, %class.cMessage* %msg) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.EtherHub* %this}, i64 0, metadata !4098), !dbg !4403
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage* %msg}, i64 0, metadata !4099), !dbg !4403
+  %call = tail call %class.cGate* @_ZNK8cMessage11arrivalGateEv(%class.cMessage* %msg) #8, !dbg !4404
+  tail call void @llvm.dbg.value(metadata !{%class.cGate* %call}, i64 0, metadata !4405), !dbg !4406
+  %serno.i = getelementptr inbounds %class.cGate* %call, i64 0, i32 2, !dbg !4407
+  %0 = load i32* %serno.i, align 4, !dbg !4407, !tbaa !4384
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !4100), !dbg !4404
+  %1 = load i32* getelementptr inbounds (%class.cEnvir* @ev, i64 0, i32 1), align 8, !dbg !4409, !tbaa !4384
+  %tobool = icmp eq i32 %1, 0, !dbg !4409
+  br i1 %tobool, label %cond.false, label %cond.end, !dbg !4409
+
+cond.false:                                       ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !4391, i64 0, metadata !4410), !dbg !4411
+  tail call void @llvm.dbg.value(metadata !4412, i64 0, metadata !4413), !dbg !4411
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([7 x i8]* @.str7, i64 0, i64 0)) #8, !dbg !4414
+  tail call void @llvm.dbg.value(metadata !4391, i64 0, metadata !4415), !dbg !4416
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage* %msg}, i64 0, metadata !4417), !dbg !4416
+  %2 = getelementptr inbounds %class.cMessage* %msg, i64 0, i32 0, !dbg !4418
+  %3 = bitcast %class.cMessage* %msg to i8* (%class.cObject*)***, !dbg !4418
+  %vtable.i = load i8* (%class.cObject*)*** %3, align 8, !dbg !4418, !tbaa !4375
+  %vfn.i = getelementptr inbounds i8* (%class.cObject*)** %vtable.i, i64 7, !dbg !4418
+  %4 = load i8* (%class.cObject*)** %vfn.i, align 8, !dbg !4418
+  %call.i = tail call i8* %4(%class.cObject* %2) #8, !dbg !4418
+  %vtable1.i = load i8* (%class.cObject*)*** %3, align 8, !dbg !4418, !tbaa !4375
+  %vfn2.i = getelementptr inbounds i8* (%class.cObject*)** %vtable1.i, i64 3, !dbg !4418
+  %5 = load i8* (%class.cObject*)** %vfn2.i, align 8, !dbg !4418
+  %call3.i = tail call i8* %5(%class.cObject* %2) #8, !dbg !4418
+  tail call void (%class.cEnvir*, i8*, ...)* @_ZN6cEnvir6printfEPKcz(%class.cEnvir* @ev, i8* getelementptr inbounds ([7 x i8]* @.str14, i64 0, i64 0), i8* %call.i, i8* %call3.i) #8, !dbg !4418
+  tail call void @llvm.dbg.value(metadata !4391, i64 0, metadata !4410), !dbg !4411
+  tail call void @llvm.dbg.value(metadata !4419, i64 0, metadata !4413), !dbg !4411
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([18 x i8]* @.str8, i64 0, i64 0)) #8, !dbg !4414
+  tail call void @llvm.dbg.value(metadata !4391, i64 0, metadata !4420), !dbg !4421
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !4422), !dbg !4421
+  tail call void (%class.cEnvir*, i8*, ...)* @_ZN6cEnvir6printfEPKcz(%class.cEnvir* @ev, i8* getelementptr inbounds ([3 x i8]* @.str15, i64 0, i64 0), i32 %0) #8, !dbg !4423
+  tail call void @llvm.dbg.value(metadata !4391, i64 0, metadata !4410), !dbg !4411
+  tail call void @llvm.dbg.value(metadata !4425, i64 0, metadata !4413), !dbg !4411
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([35 x i8]* @.str9, i64 0, i64 0)) #8, !dbg !4414
+  br label %cond.end, !dbg !4409
+
+cond.end:                                         ; preds = %entry, %cond.false
+  %numMessages = getelementptr inbounds %class.EtherHub* %this, i64 0, i32 2, !dbg !4426
+  %6 = load i64* %numMessages, align 8, !dbg !4426, !tbaa !4362
+  %inc = add nsw i64 %6, 1, !dbg !4426
+  store i64 %inc, i64* %numMessages, align 8, !dbg !4426, !tbaa !4362
+  %ports = getelementptr inbounds %class.EtherHub* %this, i64 0, i32 1, !dbg !4427
+  %7 = load i32* %ports, align 4, !dbg !4427, !tbaa !4384
+  %cmp = icmp slt i32 %7, 2, !dbg !4427
+  br i1 %cmp, label %if.then, label %for.body.lr.ph, !dbg !4427
+
+for.body.lr.ph:                                   ; preds = %cond.end
+  %8 = getelementptr inbounds %class.EtherHub* %this, i64 0, i32 0, !dbg !4428
+  %9 = bitcast %class.cMessage* %msg to %class.cObject* (%class.cMessage*)***, !dbg !4429
+  br label %for.body, !dbg !4430
+
+if.then:                                          ; preds = %cond.end
+  %isnull = icmp eq %class.cMessage* %msg, null, !dbg !4431
+  br i1 %isnull, label %for.end, label %delete.notnull, !dbg !4431
+
+delete.notnull:                                   ; preds = %if.then
+  %10 = bitcast %class.cMessage* %msg to void (%class.cMessage*)***, !dbg !4431
+  %vtable = load void (%class.cMessage*)*** %10, align 8, !dbg !4431, !tbaa !4375
+  %vfn = getelementptr inbounds void (%class.cMessage*)** %vtable, i64 1, !dbg !4431
+  %11 = load void (%class.cMessage*)** %vfn, align 8, !dbg !4431
+  tail call void %11(%class.cMessage* %msg) #8, !dbg !4431
+  br label %for.end, !dbg !4431
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %12 = phi i32 [ %7, %for.body.lr.ph ], [ %15, %for.inc ]
+  %i.044 = phi i32 [ 0, %for.body.lr.ph ], [ %inc33, %for.inc ]
+  %cmp10 = icmp eq i32 %i.044, %0, !dbg !4433
+  br i1 %cmp10, label %for.inc, label %if.then11, !dbg !4433
+
+if.then11:                                        ; preds = %for.body
+  %sub = add nsw i32 %12, -1, !dbg !4434
+  %cmp13 = icmp eq i32 %0, %sub, !dbg !4434
+  %sub16 = add nsw i32 %12, -2, !dbg !4434
+  %sub16.sink = select i1 %cmp13, i32 %sub16, i32 %sub, !dbg !4434
+  %cmp17 = icmp eq i32 %i.044, %sub16.sink, !dbg !4434
+  br i1 %cmp17, label %cond.end29, label %cond.false25, !dbg !4429
+
+cond.false25:                                     ; preds = %if.then11
+  %vtable26 = load %class.cObject* (%class.cMessage*)*** %9, align 8, !dbg !4429, !tbaa !4375
+  %vfn27 = getelementptr inbounds %class.cObject* (%class.cMessage*)** %vtable26, i64 2, !dbg !4429
+  %13 = load %class.cObject* (%class.cMessage*)** %vfn27, align 8, !dbg !4429
+  %call28 = tail call %class.cObject* %13(%class.cMessage* %msg) #8, !dbg !4429
+  %14 = bitcast %class.cObject* %call28 to %class.cMessage*, !dbg !4429
+  br label %cond.end29, !dbg !4429
+
+cond.end29:                                       ; preds = %if.then11, %cond.false25
+  %cond30 = phi %class.cMessage* [ %14, %cond.false25 ], [ %msg, %if.then11 ], !dbg !4429
+  tail call void @llvm.dbg.value(metadata !{%class.cMessage* %cond30}, i64 0, metadata !4106), !dbg !4429
+  %call31 = tail call i32 @_ZN13cSimpleModule4sendEP8cMessagePKci(%class.cSimpleModule* %8, %class.cMessage* %cond30, i8* getelementptr inbounds ([4 x i8]* @.str3, i64 0, i64 0), i32 %i.044) #8, !dbg !4428
+  %.pre = load i32* %ports, align 4, !dbg !4430, !tbaa !4384
+  br label %for.inc, !dbg !4435
+
+for.inc:                                          ; preds = %for.body, %cond.end29
+  %15 = phi i32 [ %12, %for.body ], [ %.pre, %cond.end29 ], !dbg !4430
+  %inc33 = add nsw i32 %i.044, 1, !dbg !4430
+  tail call void @llvm.dbg.value(metadata !{i32 %inc33}, i64 0, metadata !4101), !dbg !4430
+  %cmp9 = icmp slt i32 %inc33, %15, !dbg !4430
+  br i1 %cmp9, label %for.body, label %for.end, !dbg !4430
+
+for.end:                                          ; preds = %for.inc, %if.then, %delete.notnull
+  ret void, !dbg !4436
+}

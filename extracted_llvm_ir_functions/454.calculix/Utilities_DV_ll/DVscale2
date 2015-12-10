@@ -1,41 +1,50 @@
 define void @DVscale2(i32 %size, double* %x, double* %y, double %a, double %b, double %c, double %d) #0 {
 entry:
-  %cmp = icmp slt i32 %size, 0
-  %cmp1 = icmp eq double* %x, null
-  %or.cond = or i1 %cmp, %cmp1
-  %cmp3 = icmp eq double* %y, null
-  %or.cond30 = or i1 %or.cond, %cmp3
-  br i1 %or.cond30, label %if.then, label %for.cond.preheader
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !416), !dbg !1169
+  tail call void @llvm.dbg.value(metadata !{double* %x}, i64 0, metadata !417), !dbg !1170
+  tail call void @llvm.dbg.value(metadata !{double* %y}, i64 0, metadata !418), !dbg !1171
+  tail call void @llvm.dbg.value(metadata !{double %a}, i64 0, metadata !419), !dbg !1172
+  tail call void @llvm.dbg.value(metadata !{double %b}, i64 0, metadata !420), !dbg !1173
+  tail call void @llvm.dbg.value(metadata !{double %c}, i64 0, metadata !421), !dbg !1174
+  tail call void @llvm.dbg.value(metadata !{double %d}, i64 0, metadata !422), !dbg !1175
+  %cmp = icmp slt i32 %size, 0, !dbg !1176
+  %cmp1 = icmp eq double* %x, null, !dbg !1176
+  %or.cond = or i1 %cmp, %cmp1, !dbg !1176
+  %cmp3 = icmp eq double* %y, null, !dbg !1176
+  %or.cond30 = or i1 %or.cond, %cmp3, !dbg !1176
+  br i1 %or.cond30, label %if.then, label %for.cond.preheader, !dbg !1176
 
 for.cond.preheader:                               ; preds = %entry
-  %cmp431 = icmp sgt i32 %size, 0
-  br i1 %cmp431, label %for.body, label %for.end
+  %cmp431 = icmp sgt i32 %size, 0, !dbg !1177
+  br i1 %cmp431, label %for.body, label %for.end, !dbg !1177
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([52 x i8]* @.str37, i64 0, i64 0), i32 %size, double* %x, double* %y) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !1179, !tbaa !629
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([52 x i8]* @.str37, i64 0, i64 0), i32 %size, double* %x, double* %y) #6, !dbg !1179
+  tail call void @exit(i32 -1) #7, !dbg !1181
+  unreachable, !dbg !1181
 
 for.body:                                         ; preds = %for.cond.preheader, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
-  %arrayidx = getelementptr inbounds double* %x, i64 %indvars.iv
-  %1 = load double* %arrayidx, align 8, !tbaa !3
-  %arrayidx6 = getelementptr inbounds double* %y, i64 %indvars.iv
-  %2 = load double* %arrayidx6, align 8, !tbaa !3
-  %mul = fmul double %1, %a
-  %mul7 = fmul double %2, %b
-  %add = fadd double %mul, %mul7
-  store double %add, double* %arrayidx, align 8, !tbaa !3
-  %mul10 = fmul double %1, %c
-  %mul11 = fmul double %2, %d
-  %add12 = fadd double %mul10, %mul11
-  store double %add12, double* %arrayidx6, align 8, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %size
-  br i1 %exitcond, label %for.end, label %for.body
+  %arrayidx = getelementptr inbounds double* %x, i64 %indvars.iv, !dbg !1182
+  %1 = load double* %arrayidx, align 8, !dbg !1182, !tbaa !635
+  tail call void @llvm.dbg.value(metadata !{double %1}, i64 0, metadata !423), !dbg !1182
+  %arrayidx6 = getelementptr inbounds double* %y, i64 %indvars.iv, !dbg !1184
+  %2 = load double* %arrayidx6, align 8, !dbg !1184, !tbaa !635
+  tail call void @llvm.dbg.value(metadata !{double %2}, i64 0, metadata !424), !dbg !1184
+  %mul = fmul double %1, %a, !dbg !1185
+  %mul7 = fmul double %2, %b, !dbg !1185
+  %add = fadd double %mul, %mul7, !dbg !1185
+  store double %add, double* %arrayidx, align 8, !dbg !1185, !tbaa !635
+  %mul10 = fmul double %1, %c, !dbg !1186
+  %mul11 = fmul double %2, %d, !dbg !1186
+  %add12 = fadd double %mul10, %mul11, !dbg !1186
+  store double %add12, double* %arrayidx6, align 8, !dbg !1186, !tbaa !635
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1177
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1177
+  %exitcond = icmp eq i32 %lftr.wideiv, %size, !dbg !1177
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !1177
 
 for.end:                                          ; preds = %for.body, %for.cond.preheader
-  ret void
+  ret void, !dbg !1187
 }

@@ -1,47 +1,49 @@
 define internal fastcc i32 @add_ranges(%union.tree_node* %block) #1 {
 entry:
-  %0 = load i32* @ranges_table_in_use, align 4, !tbaa !0
-  %1 = load i32* @ranges_table_allocated, align 4, !tbaa !0
-  %cmp = icmp eq i32 %0, %1
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %block}, i64 0, metadata !3194), !dbg !12679
+  %0 = load i32* @ranges_table_in_use, align 4, !dbg !12680, !tbaa !3758
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !3195), !dbg !12680
+  %1 = load i32* @ranges_table_allocated, align 4, !dbg !12681, !tbaa !3758
+  %cmp = icmp eq i32 %0, %1, !dbg !12681
+  br i1 %cmp, label %if.then, label %if.end, !dbg !12681
 
 if.then:                                          ; preds = %entry
-  %add = add i32 %0, 64
-  store i32 %add, i32* @ranges_table_allocated, align 4, !tbaa !0
-  %2 = load %struct.dw_ranges_struct** @ranges_table, align 8, !tbaa !4
-  %3 = bitcast %struct.dw_ranges_struct* %2 to i8*
-  %conv = zext i32 %add to i64
-  %mul = shl nuw nsw i64 %conv, 2
-  %call = tail call i8* @xrealloc(i8* %3, i64 %mul) #9
-  %4 = bitcast i8* %call to %struct.dw_ranges_struct*
-  store %struct.dw_ranges_struct* %4, %struct.dw_ranges_struct** @ranges_table, align 8, !tbaa !4
-  br label %if.end
+  %add = add i32 %0, 64, !dbg !12682
+  store i32 %add, i32* @ranges_table_allocated, align 4, !dbg !12682, !tbaa !3758
+  %2 = load %struct.dw_ranges_struct** @ranges_table, align 8, !dbg !12684, !tbaa !3768
+  %3 = bitcast %struct.dw_ranges_struct* %2 to i8*, !dbg !12684
+  %conv = zext i32 %add to i64, !dbg !12684
+  %mul = shl nuw nsw i64 %conv, 2, !dbg !12684
+  %call = tail call i8* @xrealloc(i8* %3, i64 %mul) #10, !dbg !12684
+  %4 = bitcast i8* %call to %struct.dw_ranges_struct*, !dbg !12684
+  store %struct.dw_ranges_struct* %4, %struct.dw_ranges_struct** @ranges_table, align 8, !dbg !12684, !tbaa !3768
+  br label %if.end, !dbg !12685
 
 if.end:                                           ; preds = %if.then, %entry
-  %tobool = icmp eq %union.tree_node* %block, null
-  br i1 %tobool, label %cond.end, label %cond.true
+  %tobool = icmp eq %union.tree_node* %block, null, !dbg !12686
+  br i1 %tobool, label %cond.end, label %cond.true, !dbg !12686
 
 cond.true:                                        ; preds = %if.end
-  %block_num = getelementptr inbounds %union.tree_node* %block, i64 0, i32 0, i32 1
-  %5 = bitcast i8** %block_num to i32*
-  %bf.load = load i32* %5, align 8
-  %bf.lshr = lshr i32 %bf.load, 2
-  br label %cond.end
+  %block_num = getelementptr inbounds %union.tree_node* %block, i64 0, i32 0, i32 1, !dbg !12686
+  %5 = bitcast i8** %block_num to i32*, !dbg !12686
+  %bf.load = load i32* %5, align 8, !dbg !12686
+  %bf.lshr = lshr i32 %bf.load, 2, !dbg !12686
+  br label %cond.end, !dbg !12686
 
 cond.end:                                         ; preds = %if.end, %cond.true
-  %cond = phi i32 [ %bf.lshr, %cond.true ], [ 0, %if.end ]
-  %idxprom = zext i32 %0 to i64
-  %6 = load %struct.dw_ranges_struct** @ranges_table, align 8, !tbaa !4
-  %block_num2 = getelementptr inbounds %struct.dw_ranges_struct* %6, i64 %idxprom, i32 0
-  store i32 %cond, i32* %block_num2, align 4, !tbaa !0
-  %add3 = add i32 %0, 1
-  store i32 %add3, i32* @ranges_table_in_use, align 4, !tbaa !0
-  %mul4 = shl i32 %0, 1
-  %7 = load i32* @target_flags, align 4, !tbaa !0
-  %and = lshr i32 %7, 20
-  %8 = and i32 %and, 32
-  %9 = add i32 %8, 32
-  %div = sdiv i32 %9, 8
-  %mul7 = mul i32 %mul4, %div
-  ret i32 %mul7
+  %cond = phi i32 [ %bf.lshr, %cond.true ], [ 0, %if.end ], !dbg !12686
+  %idxprom = zext i32 %0 to i64, !dbg !12686
+  %6 = load %struct.dw_ranges_struct** @ranges_table, align 8, !dbg !12686, !tbaa !3768
+  %block_num2 = getelementptr inbounds %struct.dw_ranges_struct* %6, i64 %idxprom, i32 0, !dbg !12686
+  store i32 %cond, i32* %block_num2, align 4, !dbg !12686, !tbaa !3758
+  %add3 = add i32 %0, 1, !dbg !12687
+  store i32 %add3, i32* @ranges_table_in_use, align 4, !dbg !12687, !tbaa !3758
+  %mul4 = shl i32 %0, 1, !dbg !12688
+  %7 = load i32* @target_flags, align 4, !dbg !12688, !tbaa !3758
+  %and = lshr i32 %7, 20, !dbg !12688
+  %8 = and i32 %and, 32, !dbg !12688
+  %9 = add i32 %8, 32, !dbg !12688
+  %div = sdiv i32 %9, 8, !dbg !12688
+  %mul7 = mul i32 %mul4, %div, !dbg !12688
+  ret i32 %mul7, !dbg !12688
 }

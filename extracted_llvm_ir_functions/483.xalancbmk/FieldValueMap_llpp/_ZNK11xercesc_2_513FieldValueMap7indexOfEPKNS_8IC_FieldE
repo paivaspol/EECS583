@@ -1,0 +1,40 @@
+define i32 @_ZNK11xercesc_2_513FieldValueMap7indexOfEPKNS_8IC_FieldE(%"class.xercesc_2_5::FieldValueMap"* nocapture %this, %"class.xercesc_2_5::IC_Field"* %key) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::FieldValueMap"* %this}, i64 0, metadata !1047), !dbg !2043
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::IC_Field"* %key}, i64 0, metadata !1049), !dbg !2043
+  %fFields = getelementptr inbounds %"class.xercesc_2_5::FieldValueMap"* %this, i64 0, i32 0, !dbg !2044
+  %0 = load %"class.xercesc_2_5::ValueVectorOf"** %fFields, align 8, !dbg !2044, !tbaa !1919
+  %tobool = icmp eq %"class.xercesc_2_5::ValueVectorOf"* %0, null, !dbg !2044
+  br i1 %tobool, label %return, label %if.then, !dbg !2044
+
+if.then:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::ValueVectorOf"* %0}, i64 0, metadata !2045), !dbg !2047
+  %fCurCount.i = getelementptr inbounds %"class.xercesc_2_5::ValueVectorOf"* %0, i64 0, i32 1, !dbg !2048
+  %1 = load i32* %fCurCount.i, align 4, !dbg !2048, !tbaa !1929
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !1050), !dbg !2046
+  tail call void @llvm.dbg.value(metadata !510, i64 0, metadata !1052), !dbg !2050
+  %cmp10 = icmp eq i32 %1, 0, !dbg !2050
+  br i1 %cmp10, label %return, label %for.body, !dbg !2050
+
+for.cond:                                         ; preds = %for.body
+  %cmp = icmp ult i32 %inc, %1, !dbg !2050
+  br i1 %cmp, label %for.cond.for.body_crit_edge, label %return, !dbg !2050
+
+for.cond.for.body_crit_edge:                      ; preds = %for.cond
+  %.pre = load %"class.xercesc_2_5::ValueVectorOf"** %fFields, align 8, !dbg !2051, !tbaa !1919
+  br label %for.body, !dbg !2050
+
+for.body:                                         ; preds = %if.then, %for.cond.for.body_crit_edge
+  %2 = phi %"class.xercesc_2_5::ValueVectorOf"* [ %.pre, %for.cond.for.body_crit_edge ], [ %0, %if.then ]
+  %i.011 = phi i32 [ %inc, %for.cond.for.body_crit_edge ], [ 0, %if.then ]
+  %call4 = tail call %"class.xercesc_2_5::IC_Field"** @_ZN11xercesc_2_513ValueVectorOfIPNS_8IC_FieldEE9elementAtEj(%"class.xercesc_2_5::ValueVectorOf"* %2, i32 %i.011) #8, !dbg !2051
+  %3 = load %"class.xercesc_2_5::IC_Field"** %call4, align 8, !dbg !2051, !tbaa !1919
+  %cmp5 = icmp eq %"class.xercesc_2_5::IC_Field"* %3, %key, !dbg !2051
+  %inc = add i32 %i.011, 1, !dbg !2050
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1052), !dbg !2050
+  br i1 %cmp5, label %return, label %for.cond, !dbg !2051
+
+return:                                           ; preds = %if.then, %for.body, %for.cond, %entry
+  %retval.0 = phi i32 [ -1, %entry ], [ -1, %if.then ], [ %i.011, %for.body ], [ -1, %for.cond ]
+  ret i32 %retval.0, !dbg !2053
+}

@@ -1,51 +1,62 @@
-define internal i32 @w_comp(i8* nocapture readonly %a, i8* nocapture readonly %b) #5 {
-  %1 = bitcast i8* %a to i32*
-  %2 = bitcast i8* %b to i32*
-  %3 = tail call fastcc float @box_weight(i32* %1, [3 x float]* getelementptr inbounds ([3 x [3 x float]]* @BOX, i64 0, i64 0)) #10
-  %4 = tail call fastcc float @box_weight(i32* %2, [3 x float]* getelementptr inbounds ([3 x [3 x float]]* @BOX, i64 0, i64 0)) #10
-  %5 = fsub float %3, %4
-  %fabsf = tail call float @fabsf(float %5) #11
-  %6 = fpext float %fabsf to double
-  %7 = fcmp olt double %6, 1.000000e-04
-  br i1 %7, label %8, label %37
+define internal i32 @w_comp(i8* nocapture %a, i8* nocapture %b) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %a}, i64 0, metadata !87), !dbg !573
+  tail call void @llvm.dbg.value(metadata !{i8* %b}, i64 0, metadata !88), !dbg !573
+  %0 = bitcast i8* %a to i32*, !dbg !574
+  tail call void @llvm.dbg.value(metadata !{i32* %0}, i64 0, metadata !89), !dbg !574
+  %1 = bitcast i8* %b to i32*, !dbg !575
+  tail call void @llvm.dbg.value(metadata !{i32* %1}, i64 0, metadata !90), !dbg !575
+  %call = tail call fastcc float @box_weight(i32* %0, [3 x float]* getelementptr inbounds ([3 x [3 x float]]* @BOX, i64 0, i64 0)) #7, !dbg !576
+  tail call void @llvm.dbg.value(metadata !{float %call}, i64 0, metadata !91), !dbg !576
+  %call1 = tail call fastcc float @box_weight(i32* %1, [3 x float]* getelementptr inbounds ([3 x [3 x float]]* @BOX, i64 0, i64 0)) #7, !dbg !577
+  tail call void @llvm.dbg.value(metadata !{float %call1}, i64 0, metadata !92), !dbg !577
+  %sub = fsub float %call, %call1, !dbg !578
+  %fabsf = tail call float @fabsf(float %sub) #8, !dbg !578
+  %2 = fpext float %fabsf to double, !dbg !578
+  %cmp = fcmp olt double %2, 1.000000e-04, !dbg !578
+  br i1 %cmp, label %if.then, label %if.else, !dbg !578
 
-; <label>:8                                       ; preds = %0
-  %9 = load i32* %1, align 4, !tbaa !18
-  %10 = mul nsw i32 %9, %9
-  %11 = getelementptr inbounds i8* %a, i64 4
-  %12 = bitcast i8* %11 to i32*
-  %13 = load i32* %12, align 4, !tbaa !18
-  %14 = mul nsw i32 %13, %13
-  %15 = add nuw nsw i32 %14, %10
-  %16 = getelementptr inbounds i8* %a, i64 8
-  %17 = bitcast i8* %16 to i32*
-  %18 = load i32* %17, align 4, !tbaa !18
-  %19 = mul nsw i32 %18, %18
-  %20 = add nuw nsw i32 %15, %19
-  %21 = sitofp i32 %20 to float
-  %22 = load i32* %2, align 4, !tbaa !18
-  %23 = mul nsw i32 %22, %22
-  %24 = getelementptr inbounds i8* %b, i64 4
-  %25 = bitcast i8* %24 to i32*
-  %26 = load i32* %25, align 4, !tbaa !18
-  %27 = mul nsw i32 %26, %26
-  %28 = add nuw nsw i32 %27, %23
-  %29 = getelementptr inbounds i8* %b, i64 8
-  %30 = bitcast i8* %29 to i32*
-  %31 = load i32* %30, align 4, !tbaa !18
-  %32 = mul nsw i32 %31, %31
-  %33 = add nuw nsw i32 %28, %32
-  %34 = sitofp i32 %33 to float
-  %35 = fsub float %21, %34
-  %36 = fptosi float %35 to i32
-  br label %39
+if.then:                                          ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{i32* %0}, i64 0, metadata !579), !dbg !581
+  tail call void @llvm.dbg.value(metadata !{i32* %0}, i64 0, metadata !582), !dbg !581
+  %3 = load i32* %0, align 4, !dbg !583, !tbaa !228
+  %mul.i = mul nsw i32 %3, %3, !dbg !583
+  %arrayidx2.i = getelementptr inbounds i8* %a, i64 4, !dbg !583
+  %4 = bitcast i8* %arrayidx2.i to i32*, !dbg !583
+  %5 = load i32* %4, align 4, !dbg !583, !tbaa !228
+  %mul4.i = mul nsw i32 %5, %5, !dbg !583
+  %add.i = add nsw i32 %mul4.i, %mul.i, !dbg !583
+  %arrayidx5.i = getelementptr inbounds i8* %a, i64 8, !dbg !583
+  %6 = bitcast i8* %arrayidx5.i to i32*, !dbg !583
+  %7 = load i32* %6, align 4, !dbg !583, !tbaa !228
+  %mul7.i = mul nsw i32 %7, %7, !dbg !583
+  %add8.i = add nsw i32 %add.i, %mul7.i, !dbg !583
+  %conv.i = sitofp i32 %add8.i to float, !dbg !583
+  tail call void @llvm.dbg.value(metadata !{i32* %1}, i64 0, metadata !579), !dbg !581
+  tail call void @llvm.dbg.value(metadata !{i32* %1}, i64 0, metadata !582), !dbg !581
+  %8 = load i32* %1, align 4, !dbg !583, !tbaa !228
+  %mul.i18 = mul nsw i32 %8, %8, !dbg !583
+  %arrayidx2.i19 = getelementptr inbounds i8* %b, i64 4, !dbg !583
+  %9 = bitcast i8* %arrayidx2.i19 to i32*, !dbg !583
+  %10 = load i32* %9, align 4, !dbg !583, !tbaa !228
+  %mul4.i21 = mul nsw i32 %10, %10, !dbg !583
+  %add.i22 = add nsw i32 %mul4.i21, %mul.i18, !dbg !583
+  %arrayidx5.i23 = getelementptr inbounds i8* %b, i64 8, !dbg !583
+  %11 = bitcast i8* %arrayidx5.i23 to i32*, !dbg !583
+  %12 = load i32* %11, align 4, !dbg !583, !tbaa !228
+  %mul7.i25 = mul nsw i32 %12, %12, !dbg !583
+  %add8.i26 = add nsw i32 %add.i22, %mul7.i25, !dbg !583
+  %conv.i27 = sitofp i32 %add8.i26 to float, !dbg !583
+  %sub6 = fsub float %conv.i, %conv.i27, !dbg !580
+  %conv7 = fptosi float %sub6 to i32, !dbg !580
+  br label %return, !dbg !580
 
-; <label>:37                                      ; preds = %0
-  %38 = fcmp olt float %3, %4
-  %. = select i1 %38, i32 -1, i32 1
-  br label %39
+if.else:                                          ; preds = %entry
+  %cmp8 = fcmp olt float %call, %call1, !dbg !585
+  %. = select i1 %cmp8, i32 -1, i32 1, !dbg !586
+  br label %return, !dbg !586
 
-; <label>:39                                      ; preds = %37, %8
-  %.0 = phi i32 [ %36, %8 ], [ %., %37 ]
-  ret i32 %.0
+return:                                           ; preds = %if.else, %if.then
+  %retval.0 = phi i32 [ %conv7, %if.then ], [ %., %if.else ]
+  ret i32 %retval.0, !dbg !587
 }

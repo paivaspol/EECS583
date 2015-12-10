@@ -1,94 +1,106 @@
-define internal fastcc i32 @internal_set(i32 %handle, i32 %type_code, i32 %N_elements, i8* %value, i8* %key) #1 {
-  %1 = icmp sgt i32 %handle, -1
-  %2 = load i32* @N_thp_array, align 4
-  %3 = icmp sgt i32 %2, %handle
-  %or.cond.i = and i1 %1, %3
-  br i1 %or.cond.i, label %get_table_header_ptr.exit, label %get_table_header_ptr.exit.thread
+define internal fastcc i32 @internal_set(i32 %handle, i32 %type_code, i32 %N_elements, i8* nocapture %value, i8* %key) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %handle}, i64 0, metadata !569), !dbg !854
+  tail call void @llvm.dbg.value(metadata !{i32 %type_code}, i64 0, metadata !570), !dbg !855
+  tail call void @llvm.dbg.value(metadata !{i32 %N_elements}, i64 0, metadata !571), !dbg !855
+  tail call void @llvm.dbg.value(metadata !{i8* %value}, i64 0, metadata !572), !dbg !855
+  tail call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !573), !dbg !856
+  tail call void @llvm.dbg.value(metadata !{i32 %handle}, i64 0, metadata !857), !dbg !859
+  %cmp.i = icmp sgt i32 %handle, -1, !dbg !860
+  %0 = load i32* @N_thp_array, align 4, !dbg !860, !tbaa !595
+  %cmp1.i = icmp sgt i32 %0, %handle, !dbg !860
+  %or.cond.i = and i1 %cmp.i, %cmp1.i, !dbg !860
+  br i1 %or.cond.i, label %get_table_header_ptr.exit, label %return, !dbg !860
 
-get_table_header_ptr.exit:                        ; preds = %0
-  %4 = sext i32 %handle to i64
-  %5 = load i8*** @thp_array, align 8, !tbaa !6
-  %6 = getelementptr inbounds i8** %5, i64 %4
-  %7 = bitcast i8** %6 to %struct.table_header**
-  %8 = load %struct.table_header** %7, align 8, !tbaa !6
-  %9 = icmp eq %struct.table_header* %8, null
-  br i1 %9, label %get_table_header_ptr.exit.thread, label %10
+get_table_header_ptr.exit:                        ; preds = %entry
+  %idxprom.i = sext i32 %handle to i64, !dbg !860
+  %1 = load i8*** @thp_array, align 8, !dbg !860, !tbaa !602
+  %arrayidx.i = getelementptr inbounds i8** %1, i64 %idxprom.i, !dbg !860
+  %2 = load i8** %arrayidx.i, align 8, !dbg !860, !tbaa !602
+  %3 = bitcast i8* %2 to %struct.table_header*, !dbg !860
+  tail call void @llvm.dbg.value(metadata !{%struct.table_header* %3}, i64 0, metadata !574), !dbg !858
+  %cmp = icmp eq i8* %2, null, !dbg !861
+  br i1 %cmp, label %return, label %if.end, !dbg !861
 
-; <label>:10                                      ; preds = %get_table_header_ptr.exit
-  %11 = tail call i8* @strchr(i8* %key, i32 47) #10
-  %not..i = icmp eq i8* %11, null
-  br i1 %not..i, label %12, label %get_table_header_ptr.exit.thread
+if.end:                                           ; preds = %get_table_header_ptr.exit
+  tail call void @llvm.dbg.value(metadata !{i8* %key}, i64 0, metadata !862) #8, !dbg !864
+  %call.i = tail call i8* @strchr(i8* %key, i32 47) #12, !dbg !865
+  %not.cmp.i = icmp eq i8* %call.i, null, !dbg !866
+  br i1 %not.cmp.i, label %if.end3, label %return, !dbg !863
 
-; <label>:12                                      ; preds = %10
-  %13 = icmp slt i32 %N_elements, 0
-  br i1 %13, label %get_table_header_ptr.exit.thread, label %14
+if.end3:                                          ; preds = %if.end
+  %cmp4 = icmp slt i32 %N_elements, 0, !dbg !867
+  br i1 %cmp4, label %return, label %if.end6, !dbg !867
 
-; <label>:14                                      ; preds = %12
-  %15 = tail call fastcc i32 @delete_key(%struct.table_header* %8, i8* %key) #9
-  switch i32 %15, label %17 [
-    i32 0, label %18
-    i32 -103, label %16
-  ]
+if.end6:                                          ; preds = %if.end3
+  %call7 = tail call fastcc i32 @delete_key(%struct.table_header* %3, i8* %key) #9, !dbg !868
+  switch i32 %call7, label %sw.default [
+    i32 0, label %sw.epilog
+    i32 -103, label %sw.bb8
+  ], !dbg !868
 
-; <label>:16                                      ; preds = %14
-  br label %18
+sw.bb8:                                           ; preds = %if.end6
+  tail call void @llvm.dbg.value(metadata !7, i64 0, metadata !575), !dbg !869
+  br label %sw.epilog, !dbg !871
 
-; <label>:17                                      ; preds = %14
-  tail call void @abort() #11
-  unreachable
+sw.default:                                       ; preds = %if.end6
+  tail call void @abort() #11, !dbg !872
+  unreachable, !dbg !872
 
-; <label>:18                                      ; preds = %14, %16
-  %return_value.0 = phi i32 [ 0, %16 ], [ 1, %14 ]
-  %19 = tail call i8* @malloc(i64 32) #10
-  %20 = icmp eq i8* %19, null
-  br i1 %20, label %get_table_header_ptr.exit.thread, label %21
+sw.epilog:                                        ; preds = %if.end6, %sw.bb8
+  %return_value.0 = phi i32 [ 0, %sw.bb8 ], [ 1, %if.end6 ]
+  %call9 = tail call noalias i8* @malloc(i64 32) #10, !dbg !873
+  %4 = bitcast i8* %call9 to %struct.table_entry*, !dbg !873
+  tail call void @llvm.dbg.value(metadata !{%struct.table_entry* %4}, i64 0, metadata !577), !dbg !873
+  %cmp10 = icmp eq i8* %call9, null, !dbg !874
+  br i1 %cmp10, label %return, label %if.end12, !dbg !874
 
-; <label>:21                                      ; preds = %18
-  %22 = tail call i8* @Util_Strdup(i8* %key) #10
-  %23 = getelementptr inbounds i8* %19, i64 8
-  %24 = bitcast i8* %23 to i8**
-  store i8* %22, i8** %24, align 8, !tbaa !14
-  %25 = icmp eq i8* %22, null
-  br i1 %25, label %26, label %27
+if.end12:                                         ; preds = %sw.epilog
+  %call13 = tail call i8* @Util_Strdup(i8* %key) #10, !dbg !875
+  %key14 = getelementptr inbounds i8* %call9, i64 8, !dbg !875
+  %5 = bitcast i8* %key14 to i8**, !dbg !875
+  store i8* %call13, i8** %5, align 8, !dbg !875, !tbaa !602
+  %cmp16 = icmp eq i8* %call13, null, !dbg !876
+  br i1 %cmp16, label %if.then17, label %if.end18, !dbg !876
 
-; <label>:26                                      ; preds = %21
-  tail call void @free(i8* %19) #9
-  br label %get_table_header_ptr.exit.thread
+if.then17:                                        ; preds = %if.end12
+  tail call void @free(i8* %call9) #10, !dbg !877
+  br label %return, !dbg !879
 
-; <label>:27                                      ; preds = %21
-  %28 = getelementptr inbounds i8* %19, i64 16
-  %29 = bitcast i8* %28 to i32*
-  store i32 %type_code, i32* %29, align 4, !tbaa !16
-  %30 = getelementptr inbounds i8* %19, i64 20
-  %31 = bitcast i8* %30 to i32*
-  store i32 %N_elements, i32* %31, align 4, !tbaa !17
-  %32 = tail call i32 @CCTK_VarTypeSize(i32 %type_code) #10
-  %33 = mul nsw i32 %32, %N_elements
-  %34 = sext i32 %33 to i64
-  %35 = tail call i8* @malloc(i64 %34) #10
-  %36 = icmp eq i8* %35, null
-  br i1 %36, label %37, label %38
+if.end18:                                         ; preds = %if.end12
+  %type_code19 = getelementptr inbounds i8* %call9, i64 16, !dbg !880
+  %6 = bitcast i8* %type_code19 to i32*, !dbg !880
+  store i32 %type_code, i32* %6, align 4, !dbg !880, !tbaa !595
+  %N_elements20 = getelementptr inbounds i8* %call9, i64 20, !dbg !881
+  %7 = bitcast i8* %N_elements20 to i32*, !dbg !881
+  store i32 %N_elements, i32* %7, align 4, !dbg !881, !tbaa !595
+  %call21 = tail call i32 @CCTK_VarTypeSize(i32 %type_code) #10, !dbg !882
+  %mul = mul nsw i32 %call21, %N_elements, !dbg !882
+  %conv = sext i32 %mul to i64, !dbg !882
+  tail call void @llvm.dbg.value(metadata !{i64 %conv}, i64 0, metadata !579), !dbg !882
+  %call22 = tail call noalias i8* @malloc(i64 %conv) #10, !dbg !883
+  tail call void @llvm.dbg.value(metadata !{i8* %call22}, i64 0, metadata !581), !dbg !883
+  %cmp23 = icmp eq i8* %call22, null, !dbg !884
+  br i1 %cmp23, label %if.then25, label %if.end27, !dbg !884
 
-; <label>:37                                      ; preds = %27
-  tail call void @free(i8* %22) #9
-  tail call void @free(i8* %19) #9
-  br label %get_table_header_ptr.exit.thread
+if.then25:                                        ; preds = %if.end18
+  tail call void @free(i8* %call13) #10, !dbg !885
+  tail call void @free(i8* %call9) #10, !dbg !887
+  br label %return, !dbg !888
 
-; <label>:38                                      ; preds = %27
-  %39 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %35, i1 false)
-  %40 = tail call i8* @__memcpy_chk(i8* %35, i8* %value, i64 %34, i64 %39) #10
-  %41 = getelementptr inbounds i8* %19, i64 24
-  %42 = bitcast i8* %41 to i8**
-  store i8* %35, i8** %42, align 8, !tbaa !15
-  %43 = bitcast %struct.table_header* %8 to i64*
-  %44 = load i64* %43, align 8, !tbaa !8
-  %45 = bitcast i8* %19 to i64*
-  store i64 %44, i64* %45, align 8, !tbaa !12
-  %46 = bitcast %struct.table_header* %8 to i8**
-  store i8* %19, i8** %46, align 8, !tbaa !8
-  br label %get_table_header_ptr.exit.thread
+if.end27:                                         ; preds = %if.end18
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call22, i8* %value, i64 %conv, i32 1, i1 false), !dbg !889
+  %value28 = getelementptr inbounds i8* %call9, i64 24, !dbg !890
+  %8 = bitcast i8* %value28 to i8**, !dbg !890
+  store i8* %call22, i8** %8, align 8, !dbg !890, !tbaa !602
+  %head = bitcast i8* %2 to %struct.table_entry**, !dbg !891
+  %9 = load %struct.table_entry** %head, align 8, !dbg !891, !tbaa !602
+  %next = bitcast i8* %call9 to %struct.table_entry**, !dbg !891
+  store %struct.table_entry* %9, %struct.table_entry** %next, align 8, !dbg !891, !tbaa !602
+  store %struct.table_entry* %4, %struct.table_entry** %head, align 8, !dbg !892, !tbaa !602
+  br label %return, !dbg !893
 
-get_table_header_ptr.exit.thread:                 ; preds = %10, %0, %18, %12, %get_table_header_ptr.exit, %38, %37, %26
-  %.0 = phi i32 [ -1, %26 ], [ -1, %37 ], [ %return_value.0, %38 ], [ -2, %get_table_header_ptr.exit ], [ -101, %10 ], [ -3, %12 ], [ -1, %18 ], [ -2, %0 ]
-  ret i32 %.0
+return:                                           ; preds = %if.end, %entry, %sw.epilog, %if.end3, %get_table_header_ptr.exit, %if.end27, %if.then25, %if.then17
+  %retval.0 = phi i32 [ -1, %if.then17 ], [ -1, %if.then25 ], [ %return_value.0, %if.end27 ], [ -2, %get_table_header_ptr.exit ], [ -101, %if.end ], [ -3, %if.end3 ], [ -1, %sw.epilog ], [ -2, %entry ]
+  ret i32 %retval.0, !dbg !894
 }

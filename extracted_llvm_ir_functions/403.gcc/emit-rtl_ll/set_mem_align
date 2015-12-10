@@ -1,51 +1,53 @@
 define void @set_mem_align(%struct.rtx_def* nocapture %mem, i32 %align) #0 {
 entry:
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %mem, i64 0, i32 1, i64 1
-  %rtmem = bitcast %union.rtunion_def* %arrayidx to %struct.mem_attrs**
-  %0 = load %struct.mem_attrs** %rtmem, align 8, !tbaa !4
-  %cmp = icmp eq %struct.mem_attrs* %0, null
-  br i1 %cmp, label %cond.false34, label %cond.true30
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %mem}, i64 0, metadata !1457), !dbg !2852
+  tail call void @llvm.dbg.value(metadata !{i32 %align}, i64 0, metadata !1458), !dbg !2853
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %mem, i64 0, i32 1, i64 1, !dbg !2854
+  %rtmem = bitcast %union.rtunion_def* %arrayidx to %struct.mem_attrs**, !dbg !2854
+  %0 = load %struct.mem_attrs** %rtmem, align 8, !dbg !2854, !tbaa !2272
+  %cmp = icmp eq %struct.mem_attrs* %0, null, !dbg !2854
+  br i1 %cmp, label %cond.false34, label %cond.true30, !dbg !2854
 
 cond.true30:                                      ; preds = %entry
-  %alias = getelementptr inbounds %struct.mem_attrs* %0, i64 0, i32 0
-  %1 = load i64* %alias, align 8, !tbaa !3
-  %expr = getelementptr inbounds %struct.mem_attrs* %0, i64 0, i32 1
-  %2 = load %union.tree_node** %expr, align 8, !tbaa !4
-  %offset = getelementptr inbounds %struct.mem_attrs* %0, i64 0, i32 2
-  %3 = load %struct.rtx_def** %offset, align 8, !tbaa !4
-  %size = getelementptr inbounds %struct.mem_attrs* %0, i64 0, i32 3
-  %4 = load %struct.rtx_def** %size, align 8, !tbaa !4
-  %.pre = bitcast %struct.rtx_def* %mem to i32*
-  br label %cond.end44
+  %alias = getelementptr inbounds %struct.mem_attrs* %0, i64 0, i32 0, !dbg !2854
+  %1 = load i64* %alias, align 8, !dbg !2854, !tbaa !2269
+  %expr = getelementptr inbounds %struct.mem_attrs* %0, i64 0, i32 1, !dbg !2854
+  %2 = load %union.tree_node** %expr, align 8, !dbg !2854, !tbaa !2272
+  %offset = getelementptr inbounds %struct.mem_attrs* %0, i64 0, i32 2, !dbg !2854
+  %3 = load %struct.rtx_def** %offset, align 8, !dbg !2854, !tbaa !2272
+  %size = getelementptr inbounds %struct.mem_attrs* %0, i64 0, i32 3, !dbg !2854
+  %4 = load %struct.rtx_def** %size, align 8, !dbg !2854, !tbaa !2272
+  %.pre = bitcast %struct.rtx_def* %mem to i32*, !dbg !2855
+  br label %cond.end44, !dbg !2854
 
 cond.false34:                                     ; preds = %entry
-  %5 = bitcast %struct.rtx_def* %mem to i32*
-  %bf.load = load i32* %5, align 8
-  %bf.lshr = lshr i32 %bf.load, 16
-  %bf.clear = and i32 %bf.lshr, 255
-  %cmp35 = icmp eq i32 %bf.clear, 51
-  br i1 %cmp35, label %cond.end44, label %cond.true36
+  %5 = bitcast %struct.rtx_def* %mem to i32*, !dbg !2854
+  %bf.load = load i32* %5, align 8, !dbg !2854
+  %bf.lshr = lshr i32 %bf.load, 16, !dbg !2854
+  %bf.clear = and i32 %bf.lshr, 255, !dbg !2854
+  %cmp35 = icmp eq i32 %bf.clear, 51, !dbg !2854
+  br i1 %cmp35, label %cond.end44, label %cond.true36, !dbg !2854
 
 cond.true36:                                      ; preds = %cond.false34
-  %idxprom63 = zext i32 %bf.clear to i64
-  %arrayidx40 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom63
-  %6 = load i8* %arrayidx40, align 1, !tbaa !1
-  %conv = zext i8 %6 to i64
-  %call = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 undef, i64 %conv) #9
-  br label %cond.end44
+  %idxprom63 = zext i32 %bf.clear to i64, !dbg !2855
+  %arrayidx40 = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom63, !dbg !2855
+  %6 = load i8* %arrayidx40, align 1, !dbg !2855, !tbaa !2264
+  %conv = zext i8 %6 to i64, !dbg !2855
+  %call = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 undef, i64 %conv) #10, !dbg !2855
+  br label %cond.end44, !dbg !2855
 
 cond.end44:                                       ; preds = %cond.false34, %cond.true36, %cond.true30
-  %.pre-phi = phi i32* [ %5, %cond.false34 ], [ %5, %cond.true36 ], [ %.pre, %cond.true30 ]
+  %.pre-phi = phi i32* [ %5, %cond.false34 ], [ %5, %cond.true36 ], [ %.pre, %cond.true30 ], !dbg !2855
   %cond2576 = phi %struct.rtx_def* [ null, %cond.false34 ], [ null, %cond.true36 ], [ %3, %cond.true30 ]
   %cond656874 = phi i64 [ 0, %cond.false34 ], [ 0, %cond.true36 ], [ %1, %cond.true30 ]
   %cond146972 = phi %union.tree_node* [ null, %cond.false34 ], [ null, %cond.true36 ], [ %2, %cond.true30 ]
-  %cond45 = phi %struct.rtx_def* [ null, %cond.false34 ], [ %call, %cond.true36 ], [ %4, %cond.true30 ]
-  %bf.load46 = load i32* %.pre-phi, align 8
-  %bf.lshr47 = lshr i32 %bf.load46, 16
-  %bf.clear48 = and i32 %bf.lshr47, 255
-  %call49 = tail call fastcc %struct.mem_attrs* @get_mem_attrs(i64 %cond656874, %union.tree_node* %cond146972, %struct.rtx_def* %cond2576, %struct.rtx_def* %cond45, i32 %align, i32 %bf.clear48) #9
-  %7 = getelementptr inbounds %union.rtunion_def* %arrayidx, i64 0, i32 0
-  %call49.c = ptrtoint %struct.mem_attrs* %call49 to i64
-  store i64 %call49.c, i64* %7, align 8, !tbaa !4
-  ret void
+  %cond45 = phi %struct.rtx_def* [ null, %cond.false34 ], [ %call, %cond.true36 ], [ %4, %cond.true30 ], !dbg !2855
+  %bf.load46 = load i32* %.pre-phi, align 8, !dbg !2855
+  %bf.lshr47 = lshr i32 %bf.load46, 16, !dbg !2855
+  %bf.clear48 = and i32 %bf.lshr47, 255, !dbg !2855
+  %call49 = tail call fastcc %struct.mem_attrs* @get_mem_attrs(i64 %cond656874, %union.tree_node* %cond146972, %struct.rtx_def* %cond2576, %struct.rtx_def* %cond45, i32 %align, i32 %bf.clear48) #10, !dbg !2855
+  %7 = getelementptr inbounds %union.rtunion_def* %arrayidx, i64 0, i32 0, !dbg !2855
+  %call49.c = ptrtoint %struct.mem_attrs* %call49 to i64, !dbg !2855
+  store i64 %call49.c, i64* %7, align 8, !dbg !2855, !tbaa !2272
+  ret void, !dbg !2856
 }

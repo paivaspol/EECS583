@@ -1,23 +1,25 @@
-define i32 @__istype(i32 %_c, i64 %_f) #1 {
-  %isascii = icmp ult i32 %_c, 128
-  br i1 %isascii, label %1, label %8
+define i32 @__istype(i32 %_c, i64 %_f) #2 {
+  tail call void @llvm.dbg.value(metadata i32 %_c, i64 0, metadata !164, metadata !602), !dbg !606
+  tail call void @llvm.dbg.value(metadata i64 %_f, i64 0, metadata !165, metadata !602), !dbg !607
+  %isascii = icmp ult i32 %_c, 128, !dbg !608
+  br i1 %isascii, label %1, label %8, !dbg !608
 
 ; <label>:1                                       ; preds = %0
-  %2 = sext i32 %_c to i64
-  %3 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %2
-  %4 = load i32* %3, align 4, !tbaa !2
-  %5 = zext i32 %4 to i64
-  %6 = and i64 %5, %_f
-  %7 = icmp ne i64 %6, 0
-  br label %11
+  %2 = sext i32 %_c to i64, !dbg !609
+  %3 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %2, !dbg !609
+  %4 = load i32* %3, align 4, !dbg !609, !tbaa !610
+  %5 = zext i32 %4 to i64, !dbg !609
+  %6 = and i64 %5, %_f, !dbg !614
+  %7 = icmp ne i64 %6, 0, !dbg !615
+  br label %11, !dbg !608
 
 ; <label>:8                                       ; preds = %0
-  %9 = tail call i32 @__maskrune(i32 %_c, i64 %_f) #9
-  %10 = icmp ne i32 %9, 0
-  br label %11
+  %9 = tail call i32 @__maskrune(i32 %_c, i64 %_f) #10, !dbg !616
+  %10 = icmp ne i32 %9, 0, !dbg !617
+  br label %11, !dbg !608
 
 ; <label>:11                                      ; preds = %8, %1
   %.sink = phi i1 [ %7, %1 ], [ %10, %8 ]
-  %12 = zext i1 %.sink to i32
-  ret i32 %12
+  %12 = zext i1 %.sink to i32, !dbg !618
+  ret i32 %12, !dbg !619
 }

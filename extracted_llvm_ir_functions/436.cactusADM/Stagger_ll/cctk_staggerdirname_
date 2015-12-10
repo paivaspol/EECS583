@@ -1,9 +1,15 @@
-define void @cctk_staggerdirname_(i32* nocapture %dsc, i32* nocapture readonly %dir, i8* %cctk_str1, i32 %cctk_strlen1) #1 {
-  %1 = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #6
-  %2 = load i32* %dir, align 4, !tbaa !7
-  %3 = add nsw i32 %2, -1
-  %4 = tail call i32 @CCTK_StaggerDirName(i32 %3, i8* %1) #7
-  store i32 %4, i32* %dsc, align 4, !tbaa !7
-  tail call void @free(i8* %1) #7
-  ret void
+define void @cctk_staggerdirname_(i32* nocapture %dsc, i32* nocapture %dir, i8* %cctk_str1, i32 %cctk_strlen1) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %dsc}, i64 0, metadata !136), !dbg !321
+  tail call void @llvm.dbg.value(metadata !{i32* %dir}, i64 0, metadata !137), !dbg !321
+  tail call void @llvm.dbg.value(metadata !{i8* %cctk_str1}, i64 0, metadata !138), !dbg !321
+  tail call void @llvm.dbg.value(metadata !{i32 %cctk_strlen1}, i64 0, metadata !139), !dbg !321
+  %call = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #8, !dbg !322
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !140), !dbg !322
+  %0 = load i32* %dir, align 4, !dbg !323, !tbaa !175
+  %sub = add nsw i32 %0, -1, !dbg !323
+  %call1 = tail call i32 @CCTK_StaggerDirName(i32 %sub, i8* %call) #11, !dbg !323
+  store i32 %call1, i32* %dsc, align 4, !dbg !323, !tbaa !175
+  tail call void @free(i8* %call) #8, !dbg !324
+  ret void, !dbg !325
 }

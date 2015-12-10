@@ -1,0 +1,25 @@
+define internal fastcc zeroext i8 @notAStandardFile() #0 {
+entry:
+  %statBuf = alloca %struct.stat, align 8
+  call void @llvm.dbg.value(metadata !842, i64 0, metadata !282), !dbg !1497
+  %0 = bitcast %struct.stat* %statBuf to i8*, !dbg !1498
+  call void @llvm.lifetime.start(i64 144, i8* %0) #7, !dbg !1498
+  call void @llvm.dbg.declare(metadata !{%struct.stat* %statBuf}, metadata !284), !dbg !1498
+  %call = call i32 @lstat(i8* getelementptr inbounds ([1034 x i8]* @inName, i64 0, i64 0), %struct.stat* %statBuf) #10, !dbg !1499
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !283), !dbg !1499
+  %cmp = icmp eq i32 %call, 0, !dbg !1500
+  br i1 %cmp, label %if.end, label %cleanup, !dbg !1500
+
+if.end:                                           ; preds = %entry
+  %st_mode = getelementptr inbounds %struct.stat* %statBuf, i64 0, i32 3, !dbg !1501
+  %1 = load i32* %st_mode, align 8, !dbg !1501, !tbaa !492
+  %and = and i32 %1, 61440, !dbg !1501
+  %not.cmp1 = icmp ne i32 %and, 32768, !dbg !1501
+  %. = zext i1 %not.cmp1 to i8, !dbg !1501
+  br label %cleanup, !dbg !1501
+
+cleanup:                                          ; preds = %if.end, %entry
+  %retval.0 = phi i8 [ 1, %entry ], [ %., %if.end ]
+  call void @llvm.lifetime.end(i64 144, i8* %0) #7, !dbg !1502
+  ret i8 %retval.0, !dbg !1503
+}

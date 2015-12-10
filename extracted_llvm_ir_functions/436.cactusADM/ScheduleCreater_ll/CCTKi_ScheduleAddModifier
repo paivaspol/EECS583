@@ -1,51 +1,59 @@
-define noalias %struct.T_SCHED_MODIFIER* @CCTKi_ScheduleAddModifier(%struct.T_SCHED_MODIFIER* %orig, i8* nocapture readonly %modifier, i8* %argument) #1 {
-  %1 = tail call i8* @malloc(i64 24) #8
-  %2 = bitcast i8* %1 to %struct.T_SCHED_MODIFIER*
-  %3 = icmp eq i8* %1, null
-  br i1 %3, label %27, label %4
+define noalias %struct.T_SCHED_MODIFIER* @CCTKi_ScheduleAddModifier(%struct.T_SCHED_MODIFIER* %orig, i8* nocapture %modifier, i8* nocapture %argument) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SCHED_MODIFIER* %orig}, i64 0, metadata !39), !dbg !190
+  tail call void @llvm.dbg.value(metadata !{i8* %modifier}, i64 0, metadata !40), !dbg !191
+  tail call void @llvm.dbg.value(metadata !{i8* %argument}, i64 0, metadata !41), !dbg !192
+  %call = tail call noalias i8* @malloc(i64 24) #8, !dbg !193
+  %0 = bitcast i8* %call to %struct.T_SCHED_MODIFIER*, !dbg !193
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SCHED_MODIFIER* %0}, i64 0, metadata !42), !dbg !193
+  %tobool = icmp eq i8* %call, null, !dbg !194
+  br i1 %tobool, label %if.end10, label %if.then, !dbg !194
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i64 @strlen(i8* %argument) #8
-  %6 = add i64 %5, 1
-  %7 = tail call i8* @malloc(i64 %6) #8
-  %8 = getelementptr inbounds i8* %1, i64 16
-  %9 = bitcast i8* %8 to i8**
-  store i8* %7, i8** %9, align 8, !tbaa !2
-  %10 = icmp eq i8* %7, null
-  br i1 %10, label %26, label %11
+if.then:                                          ; preds = %entry
+  %call1 = tail call i64 @strlen(i8* %argument) #9, !dbg !195
+  %add = add i64 %call1, 1, !dbg !195
+  %call2 = tail call noalias i8* @malloc(i64 %add) #8, !dbg !195
+  %argument3 = getelementptr inbounds i8* %call, i64 16, !dbg !195
+  %1 = bitcast i8* %argument3 to i8**, !dbg !195
+  store i8* %call2, i8** %1, align 8, !dbg !195, !tbaa !197
+  %tobool5 = icmp eq i8* %call2, null, !dbg !200
+  br i1 %tobool5, label %if.else, label %if.then6, !dbg !200
 
-; <label>:11                                      ; preds = %4
-  %12 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %7, i1 false)
-  %13 = tail call i8* @__strcpy_chk(i8* %7, i8* %argument, i64 %12) #8
-  %14 = tail call i32 @strcmp(i8* %modifier, i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0)) #8
-  %15 = icmp eq i32 %14, 0
-  br i1 %15, label %ScheduleTranslateModifierType.exit, label %16
+if.then6:                                         ; preds = %if.then
+  %call8 = tail call i8* @strcpy(i8* %call2, i8* %argument) #8, !dbg !201
+  tail call void @llvm.dbg.value(metadata !{i8* %modifier}, i64 0, metadata !203) #7, !dbg !205
+  tail call void @llvm.dbg.value(metadata !16, i64 0, metadata !206) #7, !dbg !207
+  %call.i = tail call i32 @strcmp(i8* %modifier, i8* getelementptr inbounds ([7 x i8]* @.str2, i64 0, i64 0)) #9, !dbg !208
+  %tobool.i = icmp eq i32 %call.i, 0, !dbg !208
+  br i1 %tobool.i, label %ScheduleTranslateModifierType.exit, label %if.else.i, !dbg !208
 
-; <label>:16                                      ; preds = %11
-  %17 = tail call i32 @strcmp(i8* %modifier, i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0)) #8
-  %18 = icmp eq i32 %17, 0
-  br i1 %18, label %ScheduleTranslateModifierType.exit, label %19
+if.else.i:                                        ; preds = %if.then6
+  %call2.i = tail call i32 @strcmp(i8* %modifier, i8* getelementptr inbounds ([6 x i8]* @.str3, i64 0, i64 0)) #9, !dbg !209
+  %tobool3.i = icmp eq i32 %call2.i, 0, !dbg !209
+  br i1 %tobool3.i, label %ScheduleTranslateModifierType.exit, label %if.else5.i, !dbg !209
 
-; <label>:19                                      ; preds = %16
-  %20 = tail call i32 @strcmp(i8* %modifier, i8* getelementptr inbounds ([6 x i8]* @.str4, i64 0, i64 0)) #8
-  %21 = icmp eq i32 %20, 0
-  %..i = select i1 %21, i32 3, i32 0
-  br label %ScheduleTranslateModifierType.exit
+if.else5.i:                                       ; preds = %if.else.i
+  %call6.i = tail call i32 @strcmp(i8* %modifier, i8* getelementptr inbounds ([6 x i8]* @.str4, i64 0, i64 0)) #9, !dbg !210
+  %tobool7.i = icmp eq i32 %call6.i, 0, !dbg !210
+  tail call void @llvm.dbg.value(metadata !211, i64 0, metadata !206) #7, !dbg !212
+  %..i = select i1 %tobool7.i, i32 3, i32 0, !dbg !210
+  br label %ScheduleTranslateModifierType.exit, !dbg !210
 
-ScheduleTranslateModifierType.exit:               ; preds = %11, %16, %19
-  %22 = phi i32 [ %..i, %19 ], [ 1, %11 ], [ 2, %16 ]
-  %23 = getelementptr inbounds i8* %1, i64 8
-  %24 = bitcast i8* %23 to i32*
-  store i32 %22, i32* %24, align 4, !tbaa !7
-  %25 = bitcast i8* %1 to %struct.T_SCHED_MODIFIER**
-  store %struct.T_SCHED_MODIFIER* %orig, %struct.T_SCHED_MODIFIER** %25, align 8, !tbaa !8
-  br label %27
+ScheduleTranslateModifierType.exit:               ; preds = %if.then6, %if.else.i, %if.else5.i
+  %call918 = phi i32 [ %..i, %if.else5.i ], [ 1, %if.then6 ], [ 2, %if.else.i ]
+  %type = getelementptr inbounds i8* %call, i64 8, !dbg !204
+  %2 = bitcast i8* %type to i32*, !dbg !204
+  store i32 %call918, i32* %2, align 4, !dbg !204, !tbaa !198
+  %next = bitcast i8* %call to %struct.T_SCHED_MODIFIER**, !dbg !214
+  store %struct.T_SCHED_MODIFIER* %orig, %struct.T_SCHED_MODIFIER** %next, align 8, !dbg !214, !tbaa !197
+  br label %if.end10, !dbg !215
 
-; <label>:26                                      ; preds = %4
-  tail call void @free(i8* %1) #9
-  br label %27
+if.else:                                          ; preds = %if.then
+  tail call void @free(i8* %call) #8, !dbg !216
+  tail call void @llvm.dbg.value(metadata !218, i64 0, metadata !42), !dbg !219
+  br label %if.end10
 
-; <label>:27                                      ; preds = %0, %ScheduleTranslateModifierType.exit, %26
-  %this.0 = phi %struct.T_SCHED_MODIFIER* [ %2, %ScheduleTranslateModifierType.exit ], [ null, %26 ], [ %2, %0 ]
-  ret %struct.T_SCHED_MODIFIER* %this.0
+if.end10:                                         ; preds = %entry, %ScheduleTranslateModifierType.exit, %if.else
+  %this.0 = phi %struct.T_SCHED_MODIFIER* [ %0, %ScheduleTranslateModifierType.exit ], [ null, %if.else ], [ %0, %entry ]
+  ret %struct.T_SCHED_MODIFIER* %this.0, !dbg !220
 }

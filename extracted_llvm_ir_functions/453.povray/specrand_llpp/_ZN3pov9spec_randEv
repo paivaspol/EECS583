@@ -1,0 +1,30 @@
+define double @_ZN3pov9spec_randEv() #0 {
+entry:
+  %0 = load i32* @_ZN3povL5seediE, align 4, !dbg !42, !tbaa !38
+  %conv = sext i32 %0 to i64, !dbg !42
+  %div = sdiv i64 %conv, 127773, !dbg !42
+  %rem = srem i64 %conv, 127773, !dbg !43
+  %sext = shl i64 %rem, 32, !dbg !44
+  %conv4 = ashr exact i64 %sext, 32, !dbg !44
+  %mul = mul nsw i64 %conv4, 16807, !dbg !44
+  %sext13 = shl i64 %div, 32, !dbg !44
+  %conv5 = ashr exact i64 %sext13, 32, !dbg !44
+  %1 = mul i64 %conv5, -2836, !dbg !44
+  %sub = add i64 %mul, %1, !dbg !44
+  %conv7 = trunc i64 %sub to i32, !dbg !44
+  tail call void @llvm.dbg.value(metadata !{i32 %conv7}, i64 0, metadata !19), !dbg !44
+  %cmp = icmp sgt i32 %conv7, 0, !dbg !45
+  br i1 %cmp, label %if.end, label %if.else, !dbg !45
+
+if.else:                                          ; preds = %entry
+  %add = add nsw i64 %sub, 2147483647, !dbg !46
+  %conv9 = trunc i64 %add to i32, !dbg !46
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.else
+  %storemerge = phi i32 [ %conv9, %if.else ], [ %conv7, %entry ]
+  store i32 %storemerge, i32* @_ZN3povL5seediE, align 4, !dbg !48, !tbaa !38
+  %conv10 = sitofp i32 %storemerge to double, !dbg !50
+  %div11 = fdiv double %conv10, 0x41DFFFFFFFC00000, !dbg !50
+  ret double %div11, !dbg !50
+}

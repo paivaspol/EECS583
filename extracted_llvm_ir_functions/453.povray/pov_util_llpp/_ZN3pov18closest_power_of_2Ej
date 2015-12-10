@@ -1,0 +1,24 @@
+define i32 @_ZN3pov18closest_power_of_2Ej(i32 %theNumber) #2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %theNumber}, i64 0, metadata !51), !dbg !220
+  %cmp = icmp eq i32 %theNumber, 0, !dbg !221
+  br i1 %cmp, label %return, label %while.cond.preheader, !dbg !221
+
+while.cond.preheader:                             ; preds = %entry
+  %cmp14 = icmp ugt i32 %theNumber, 1, !dbg !222
+  br i1 %cmp14, label %while.body, label %return, !dbg !222
+
+while.body:                                       ; preds = %while.cond.preheader, %while.body
+  %PowerOf2Counter.06 = phi i32 [ %shl, %while.body ], [ 1, %while.cond.preheader ]
+  %theNumber.addr.05 = phi i32 [ %shr, %while.body ], [ %theNumber, %while.cond.preheader ]
+  %shl = shl i32 %PowerOf2Counter.06, 1, !dbg !223
+  tail call void @llvm.dbg.value(metadata !{i32 %shl}, i64 0, metadata !52), !dbg !223
+  %shr = lshr i32 %theNumber.addr.05, 1, !dbg !225
+  tail call void @llvm.dbg.value(metadata !{i32 %shr}, i64 0, metadata !51), !dbg !225
+  %cmp1 = icmp ugt i32 %theNumber.addr.05, 3, !dbg !222
+  br i1 %cmp1, label %while.body, label %return, !dbg !222
+
+return:                                           ; preds = %while.cond.preheader, %while.body, %entry
+  %retval.0 = phi i32 [ 0, %entry ], [ 1, %while.cond.preheader ], [ %shl, %while.body ]
+  ret i32 %retval.0, !dbg !226
+}

@@ -1,14 +1,16 @@
-define i8* @ftp2desc(i32 %ftp) #5 {
-  %1 = icmp ult i32 %ftp, 46
-  br i1 %1, label %2, label %6
+define i8* @ftp2desc(i32 %ftp) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %ftp}, i64 0, metadata !72), !dbg !374
+  %0 = icmp ult i32 %ftp, 46, !dbg !375
+  br i1 %0, label %if.then, label %return, !dbg !375
 
-; <label>:2                                       ; preds = %0
-  %3 = sext i32 %ftp to i64
-  %4 = getelementptr inbounds [46 x %struct.t_deffile]* @deffile, i64 0, i64 %3, i32 4
-  %5 = load i8** %4, align 8, !tbaa !18
-  br label %6
+if.then:                                          ; preds = %entry
+  %idxprom = sext i32 %ftp to i64, !dbg !376
+  %descr = getelementptr inbounds [46 x %struct.t_deffile]* @deffile, i64 0, i64 %idxprom, i32 4, !dbg !376
+  %1 = load i8** %descr, align 8, !dbg !376, !tbaa !363
+  br label %return, !dbg !376
 
-; <label>:6                                       ; preds = %0, %2
-  %.0 = phi i8* [ %5, %2 ], [ getelementptr inbounds ([17 x i8]* @.str3, i64 0, i64 0), %0 ]
-  ret i8* %.0
+return:                                           ; preds = %entry, %if.then
+  %retval.0 = phi i8* [ %1, %if.then ], [ getelementptr inbounds ([17 x i8]* @.str3, i64 0, i64 0), %entry ]
+  ret i8* %retval.0, !dbg !377
 }

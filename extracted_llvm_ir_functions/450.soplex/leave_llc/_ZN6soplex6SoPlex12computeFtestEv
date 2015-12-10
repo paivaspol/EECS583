@@ -1,0 +1,57 @@
+define void @_ZN6soplex6SoPlex12computeFtestEv(%"class.soplex::SoPlex"* nocapture %this) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SoPlex"* %this}, i64 0, metadata !6818), !dbg !7254
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SoPlex"* %this}, i64 0, metadata !7255), !dbg !7257
+  %thecovectors.i = getelementptr inbounds %"class.soplex::SoPlex"* %this, i64 0, i32 23, !dbg !7258
+  %0 = load %"class.soplex::SVSet"** %thecovectors.i, align 8, !dbg !7258, !tbaa !7260
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SVSet"* %0}, i64 0, metadata !7263), !dbg !7264
+  %thenum.i.i.i = getelementptr inbounds %"class.soplex::SVSet"* %0, i64 0, i32 1, i32 4, !dbg !7265
+  %1 = load i32* %thenum.i.i.i, align 4, !dbg !7265, !tbaa !7269
+  %cmp42 = icmp sgt i32 %1, 0, !dbg !7256
+  br i1 %cmp42, label %for.body.lr.ph, label %for.end, !dbg !7256
+
+for.body.lr.ph:                                   ; preds = %entry
+  %theFvec = getelementptr inbounds %"class.soplex::SoPlex"* %this, i64 0, i32 38, !dbg !7270
+  %2 = load %"class.soplex::UpdateVector"** %theFvec, align 8, !dbg !7270, !tbaa !7260
+  %val.i39 = getelementptr inbounds %"class.soplex::UpdateVector"* %2, i64 0, i32 0, i32 0, i32 1, !dbg !7272
+  %3 = load double** %val.i39, align 8, !dbg !7272, !tbaa !7260
+  %val.i36 = getelementptr inbounds %"class.soplex::SoPlex"* %this, i64 0, i32 35, i32 0, i32 1, !dbg !7272
+  %4 = load double** %val.i36, align 8, !dbg !7272, !tbaa !7260
+  %val.i = getelementptr inbounds %"class.soplex::SoPlex"* %this, i64 0, i32 48, i32 0, i32 1, !dbg !7272
+  %5 = load double** %val.i, align 8, !dbg !7272, !tbaa !7260
+  %val.i24 = getelementptr inbounds %"class.soplex::SoPlex"* %this, i64 0, i32 36, i32 0, i32 1, !dbg !7274
+  %6 = sext i32 %1 to i64
+  br label %for.body, !dbg !7256
+
+for.body:                                         ; preds = %for.body.lr.ph, %cond.end
+  %indvars.iv = phi i64 [ %6, %for.body.lr.ph ], [ %indvars.iv.next, %cond.end ]
+  %indvars.iv.next = add i64 %indvars.iv, -1, !dbg !7256
+  %arrayidx.i40 = getelementptr inbounds double* %3, i64 %indvars.iv.next, !dbg !7272
+  %7 = load double* %arrayidx.i40, align 8, !dbg !7270, !tbaa !7276
+  %arrayidx.i37 = getelementptr inbounds double* %4, i64 %indvars.iv.next, !dbg !7272
+  %8 = load double* %arrayidx.i37, align 8, !dbg !7270, !tbaa !7276
+  %cmp4 = fcmp ogt double %7, %8, !dbg !7270
+  br i1 %cmp4, label %cond.true, label %cond.false, !dbg !7270
+
+cond.true:                                        ; preds = %for.body
+  %sub9 = fsub double %8, %7, !dbg !7277
+  br label %cond.end, !dbg !7277
+
+cond.false:                                       ; preds = %for.body
+  %9 = load double** %val.i24, align 8, !dbg !7274, !tbaa !7260
+  %arrayidx.i25 = getelementptr inbounds double* %9, i64 %indvars.iv.next, !dbg !7274
+  %10 = load double* %arrayidx.i25, align 8, !dbg !7275, !tbaa !7276
+  %sub13 = fsub double %7, %10, !dbg !7275
+  br label %cond.end, !dbg !7275
+
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %cond = phi double [ %sub9, %cond.true ], [ %sub13, %cond.false ], !dbg !7275
+  %arrayidx.i = getelementptr inbounds double* %5, i64 %indvars.iv.next, !dbg !7272
+  store double %cond, double* %arrayidx.i, align 8, !dbg !7270, !tbaa !7276
+  %11 = trunc i64 %indvars.iv.next to i32, !dbg !7256
+  %cmp = icmp sgt i32 %11, 0, !dbg !7256
+  br i1 %cmp, label %for.body, label %for.end, !dbg !7256
+
+for.end:                                          ; preds = %cond.end, %entry
+  ret void, !dbg !7278
+}

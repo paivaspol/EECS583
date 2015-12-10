@@ -1,520 +1,564 @@
 define void @getAffNeighbour(i32 %curr_mb_nr, i32 %xN, i32 %yN, i32 %luma, %struct.pix_pos* nocapture %pix) #1 {
 entry:
-  %idxprom = zext i32 %curr_mb_nr to i64
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51
-  %1 = load %struct.macroblock** %mb_data, align 8, !tbaa !0
-  %tobool = icmp ne i32 %luma, 0
-  br i1 %tobool, label %if.end, label %if.else
+  tail call void @llvm.dbg.value(metadata !{i32 %curr_mb_nr}, i64 0, metadata !131), !dbg !795
+  tail call void @llvm.dbg.value(metadata !{i32 %xN}, i64 0, metadata !132), !dbg !795
+  tail call void @llvm.dbg.value(metadata !{i32 %yN}, i64 0, metadata !133), !dbg !795
+  tail call void @llvm.dbg.value(metadata !{i32 %luma}, i64 0, metadata !134), !dbg !795
+  tail call void @llvm.dbg.value(metadata !{%struct.pix_pos* %pix}, i64 0, metadata !135), !dbg !795
+  %idxprom = zext i32 %curr_mb_nr to i64, !dbg !796
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !796, !tbaa !691
+  %mb_data = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 51, !dbg !796
+  %1 = load %struct.macroblock** %mb_data, align 8, !dbg !796, !tbaa !691
+  tail call void @llvm.dbg.value(metadata !797, i64 0, metadata !139), !dbg !798
+  %tobool = icmp ne i32 %luma, 0, !dbg !799
+  br i1 %tobool, label %if.end, label %if.else, !dbg !799
 
 if.else:                                          ; preds = %entry
-  %mb_cr_size_x = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 161
-  %2 = load i32* %mb_cr_size_x, align 4, !tbaa !3
-  %mb_cr_size_y = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 162
-  %3 = load i32* %mb_cr_size_y, align 4, !tbaa !3
+  %yuv_format = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 159, !dbg !800
+  %2 = load i32* %yuv_format, align 4, !dbg !800, !tbaa !694
+  %cmp = icmp eq i32 %2, 0, !dbg !800
+  br i1 %cmp, label %cond.false, label %cond.end, !dbg !800
+
+cond.false:                                       ; preds = %if.else
+  tail call void @__assert_fail(i8* getelementptr inbounds ([21 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([57 x i8]* @.str1, i64 0, i64 0), i32 233, i8* getelementptr inbounds ([62 x i8]* @__PRETTY_FUNCTION__.getAffNeighbour, i64 0, i64 0)) #7, !dbg !800
+  unreachable, !dbg !800
+
+cond.end:                                         ; preds = %if.else
+  %mb_cr_size_x = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 161, !dbg !802
+  %3 = load i32* %mb_cr_size_x, align 4, !dbg !802, !tbaa !694
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !137), !dbg !802
+  %mb_cr_size_y = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 162, !dbg !803
+  %4 = load i32* %mb_cr_size_y, align 4, !dbg !803, !tbaa !694
+  tail call void @llvm.dbg.value(metadata !{i32 %4}, i64 0, metadata !138), !dbg !803
   br label %if.end
 
-if.end:                                           ; preds = %entry, %if.else
-  %maxW.0 = phi i32 [ %2, %if.else ], [ 16, %entry ]
-  %maxH.0 = phi i32 [ %3, %if.else ], [ 16, %entry ]
-  %available = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 0
-  store i32 0, i32* %available, align 4, !tbaa !3
-  %cmp = icmp sgt i32 %maxH.0, %yN
-  br i1 %cmp, label %if.end2, label %if.end376
-
-if.end2:                                          ; preds = %if.end
-  %cmp4 = icmp sle i32 %maxW.0, %xN
-  %cmp5 = icmp sgt i32 %yN, -1
-  %or.cond = and i1 %cmp4, %cmp5
-  br i1 %or.cond, label %if.end376, label %if.end9
-
-if.end9:                                          ; preds = %if.end2
-  %cmp10 = icmp slt i32 %xN, 0
-  br i1 %cmp10, label %if.then11, label %if.else203
-
-if.then11:                                        ; preds = %if.end9
-  %cmp12 = icmp slt i32 %yN, 0
-  %mb_field = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 22
-  %4 = load i32* %mb_field, align 4, !tbaa !3
-  %tobool14 = icmp eq i32 %4, 0
-  %rem39 = and i32 %curr_mb_nr, 1
-  %cmp40 = icmp eq i32 %rem39, 0
-  br i1 %cmp12, label %if.then13, label %if.then73
-
-if.then13:                                        ; preds = %if.then11
-  br i1 %tobool14, label %if.then15, label %if.else38
-
-if.then15:                                        ; preds = %if.then13
-  br i1 %cmp40, label %if.then17, label %if.else19
-
-if.then17:                                        ; preds = %if.then15
-  %mbAddrD = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 26
-  %5 = load i32* %mbAddrD, align 4, !tbaa !3
-  %add = add nsw i32 %5, 1
-  %mb_addr = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
-  store i32 %add, i32* %mb_addr, align 4, !tbaa !3
-  %mbAvailD = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 30
-  %6 = load i32* %mbAvailD, align 4, !tbaa !3
-  store i32 %6, i32* %available, align 4, !tbaa !3
-  br label %if.end341
-
-if.else19:                                        ; preds = %if.then15
-  %mbAddrA = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 23
-  %7 = load i32* %mbAddrA, align 4, !tbaa !3
-  %mb_addr20 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
-  store i32 %7, i32* %mb_addr20, align 4, !tbaa !3
-  %mbAvailA = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 27
-  %8 = load i32* %mbAvailA, align 4, !tbaa !3
-  store i32 %8, i32* %available, align 4, !tbaa !3
-  %9 = load i32* %mbAvailA, align 4, !tbaa !3
-  %tobool23 = icmp eq i32 %9, 0
-  br i1 %tobool23, label %if.end341, label %if.then24
-
-if.then24:                                        ; preds = %if.else19
-  %10 = load i32* %mbAddrA, align 4, !tbaa !3
-  %idxprom26 = sext i32 %10 to i64
-  %mb_field29 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom26, i32 22
-  %11 = load i32* %mb_field29, align 4, !tbaa !3
-  %tobool30 = icmp eq i32 %11, 0
-  br i1 %tobool30, label %if.end341, label %if.else32
-
-if.else32:                                        ; preds = %if.then24
-  %inc = add nsw i32 %7, 1
-  store i32 %inc, i32* %mb_addr20, align 4, !tbaa !3
-  %add34 = add nsw i32 %maxH.0, %yN
-  %shr = ashr i32 %add34, 1
-  br label %if.end341
-
-if.else38:                                        ; preds = %if.then13
-  %mbAddrD42 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 26
-  %12 = load i32* %mbAddrD42, align 4, !tbaa !3
-  br i1 %cmp40, label %if.then41, label %if.else61
-
-if.then41:                                        ; preds = %if.else38
-  %mb_addr43 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
-  store i32 %12, i32* %mb_addr43, align 4, !tbaa !3
-  %mbAvailD44 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 30
-  %13 = load i32* %mbAvailD44, align 4, !tbaa !3
-  store i32 %13, i32* %available, align 4, !tbaa !3
-  %14 = load i32* %mbAvailD44, align 4, !tbaa !3
-  %tobool47 = icmp eq i32 %14, 0
-  br i1 %tobool47, label %if.end341, label %if.then48
-
-if.then48:                                        ; preds = %if.then41
-  %15 = load i32* %mbAddrD42, align 4, !tbaa !3
-  %idxprom50 = sext i32 %15 to i64
-  %mb_field53 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom50, i32 22
-  %16 = load i32* %mb_field53, align 4, !tbaa !3
-  %tobool54 = icmp eq i32 %16, 0
-  br i1 %tobool54, label %if.then55, label %if.end341
-
-if.then55:                                        ; preds = %if.then48
-  %inc57 = add nsw i32 %12, 1
-  store i32 %inc57, i32* %mb_addr43, align 4, !tbaa !3
-  %mul = shl nsw i32 %yN, 1
-  br label %if.end341
-
-if.else61:                                        ; preds = %if.else38
-  %add63 = add nsw i32 %12, 1
-  %mb_addr64 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
-  store i32 %add63, i32* %mb_addr64, align 4, !tbaa !3
-  %mbAvailD65 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 30
-  %17 = load i32* %mbAvailD65, align 4, !tbaa !3
-  store i32 %17, i32* %available, align 4, !tbaa !3
-  br label %if.end341
-
-if.then73:                                        ; preds = %if.then11
-  %mbAddrA142 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 23
-  %18 = load i32* %mbAddrA142, align 4, !tbaa !3
-  %mb_addr143 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
-  store i32 %18, i32* %mb_addr143, align 4, !tbaa !3
-  %mbAvailA144 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 27
-  %19 = load i32* %mbAvailA144, align 4, !tbaa !3
-  store i32 %19, i32* %available, align 4, !tbaa !3
-  %20 = load i32* %mbAvailA144, align 4, !tbaa !3
-  %tobool147 = icmp ne i32 %20, 0
-  br i1 %tobool14, label %if.then76, label %if.else138
-
-if.then76:                                        ; preds = %if.then73
-  br i1 %cmp40, label %if.then79, label %if.else106
-
-if.then79:                                        ; preds = %if.then76
-  br i1 %tobool147, label %if.then86, label %if.end341
-
-if.then86:                                        ; preds = %if.then79
-  %21 = load i32* %mbAddrA142, align 4, !tbaa !3
-  %idxprom88 = sext i32 %21 to i64
-  %mb_field91 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom88, i32 22
-  %22 = load i32* %mb_field91, align 4, !tbaa !3
-  %tobool92 = icmp eq i32 %22, 0
-  br i1 %tobool92, label %if.end341, label %if.else94
-
-if.else94:                                        ; preds = %if.then86
-  %rem95536 = and i32 %yN, 1
-  %cmp96 = icmp eq i32 %rem95536, 0
-  br i1 %cmp96, label %if.then97, label %if.else99
-
-if.then97:                                        ; preds = %if.else94
-  %shr98 = ashr i32 %yN, 1
-  br label %if.end341
-
-if.else99:                                        ; preds = %if.else94
-  %inc101 = add nsw i32 %18, 1
-  store i32 %inc101, i32* %mb_addr143, align 4, !tbaa !3
-  %shr102 = ashr i32 %yN, 1
-  br label %if.end341
-
-if.else106:                                       ; preds = %if.then76
-  br i1 %tobool147, label %if.then113, label %if.end341
-
-if.then113:                                       ; preds = %if.else106
-  %23 = load i32* %mbAddrA142, align 4, !tbaa !3
-  %idxprom115 = sext i32 %23 to i64
-  %mb_field118 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom115, i32 22
-  %24 = load i32* %mb_field118, align 4, !tbaa !3
-  %tobool119 = icmp eq i32 %24, 0
-  br i1 %tobool119, label %if.then120, label %if.else123
-
-if.then120:                                       ; preds = %if.then113
-  %inc122 = add nsw i32 %18, 1
-  store i32 %inc122, i32* %mb_addr143, align 4, !tbaa !3
-  br label %if.end341
-
-if.else123:                                       ; preds = %if.then113
-  %rem124535 = and i32 %yN, 1
-  %cmp125 = icmp eq i32 %rem124535, 0
-  br i1 %cmp125, label %if.then126, label %if.else129
-
-if.then126:                                       ; preds = %if.else123
-  %add127 = add nsw i32 %maxH.0, %yN
-  %shr128 = ashr i32 %add127, 1
-  br label %if.end341
-
-if.else129:                                       ; preds = %if.else123
-  %inc131 = add nsw i32 %18, 1
-  store i32 %inc131, i32* %mb_addr143, align 4, !tbaa !3
-  %add132 = add nsw i32 %maxH.0, %yN
-  %shr133 = ashr i32 %add132, 1
-  br label %if.end341
-
-if.else138:                                       ; preds = %if.then73
-  br i1 %cmp40, label %if.then141, label %if.else167
-
-if.then141:                                       ; preds = %if.else138
-  br i1 %tobool147, label %if.then148, label %if.end341
-
-if.then148:                                       ; preds = %if.then141
-  %25 = load i32* %mbAddrA142, align 4, !tbaa !3
-  %idxprom150 = sext i32 %25 to i64
-  %mb_field153 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom150, i32 22
-  %26 = load i32* %mb_field153, align 4, !tbaa !3
-  %tobool154 = icmp eq i32 %26, 0
-  br i1 %tobool154, label %if.then155, label %if.end341
-
-if.then155:                                       ; preds = %if.then148
-  %div = sdiv i32 %maxH.0, 2
-  %cmp156 = icmp sgt i32 %div, %yN
-  br i1 %cmp156, label %if.then157, label %if.else158
-
-if.then157:                                       ; preds = %if.then155
-  %shl = shl i32 %yN, 1
-  br label %if.end341
-
-if.else158:                                       ; preds = %if.then155
-  %inc160 = add nsw i32 %18, 1
-  store i32 %inc160, i32* %mb_addr143, align 4, !tbaa !3
-  %shl161 = shl i32 %yN, 1
-  %sub162 = sub nsw i32 %shl161, %maxH.0
-  br label %if.end341
-
-if.else167:                                       ; preds = %if.else138
-  br i1 %tobool147, label %if.then174, label %if.end341
-
-if.then174:                                       ; preds = %if.else167
-  %27 = load i32* %mbAddrA142, align 4, !tbaa !3
-  %idxprom176 = sext i32 %27 to i64
-  %mb_field179 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom176, i32 22
-  %28 = load i32* %mb_field179, align 4, !tbaa !3
-  %tobool180 = icmp eq i32 %28, 0
-  br i1 %tobool180, label %if.then181, label %if.else194
-
-if.then181:                                       ; preds = %if.then174
-  %div182 = sdiv i32 %maxH.0, 2
-  %cmp183 = icmp sgt i32 %div182, %yN
-  br i1 %cmp183, label %if.then184, label %if.else187
-
-if.then184:                                       ; preds = %if.then181
-  %shl185 = shl i32 %yN, 1
-  %add186538 = or i32 %shl185, 1
-  br label %if.end341
-
-if.else187:                                       ; preds = %if.then181
-  %inc189 = add nsw i32 %18, 1
-  store i32 %inc189, i32* %mb_addr143, align 4, !tbaa !3
-  %shl190 = shl i32 %yN, 1
-  %add191537 = or i32 %shl190, 1
-  %sub192 = sub nsw i32 %add191537, %maxH.0
-  br label %if.end341
-
-if.else194:                                       ; preds = %if.then174
-  %inc196 = add nsw i32 %18, 1
-  store i32 %inc196, i32* %mb_addr143, align 4, !tbaa !3
-  br label %if.end341
-
-if.else203:                                       ; preds = %if.end9
-  %cmp206 = icmp sgt i32 %maxW.0, %xN
-  %cmp208 = icmp slt i32 %yN, 0
-  br i1 %cmp206, label %if.then207, label %if.else292
-
-if.then207:                                       ; preds = %if.else203
-  br i1 %cmp208, label %if.then209, label %if.else271
-
-if.then209:                                       ; preds = %if.then207
-  %mb_field210 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 22
-  %29 = load i32* %mb_field210, align 4, !tbaa !3
-  %tobool211 = icmp eq i32 %29, 0
-  %rem240 = and i32 %curr_mb_nr, 1
-  %cmp241 = icmp eq i32 %rem240, 0
-  br i1 %tobool211, label %if.then212, label %if.else239
-
-if.then212:                                       ; preds = %if.then209
-  br i1 %cmp241, label %if.then215, label %if.else234
-
-if.then215:                                       ; preds = %if.then212
-  %mbAddrB = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 24
-  %30 = load i32* %mbAddrB, align 4, !tbaa !3
-  %mb_addr216 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
-  store i32 %30, i32* %mb_addr216, align 4, !tbaa !3
-  %mbAvailB = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 28
-  %31 = load i32* %mbAvailB, align 4, !tbaa !3
-  %tobool217 = icmp eq i32 %31, 0
-  br i1 %tobool217, label %if.end231, label %if.then218
-
-if.then218:                                       ; preds = %if.then215
-  %DeblockCall = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 143
-  %32 = load i32* %DeblockCall, align 4, !tbaa !3
-  %cmp219 = icmp eq i32 %32, 1
-  br i1 %cmp219, label %land.lhs.true220, label %if.then227
-
-land.lhs.true220:                                 ; preds = %if.then218
-  %33 = load i32* %mbAddrB, align 4, !tbaa !3
-  %idxprom222 = sext i32 %33 to i64
-  %mb_field225 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom222, i32 22
-  %34 = load i32* %mb_field225, align 4, !tbaa !3
-  %tobool226 = icmp eq i32 %34, 0
-  br i1 %tobool226, label %if.then227, label %if.end231
-
-if.then227:                                       ; preds = %land.lhs.true220, %if.then218
-  %add229 = add nsw i32 %30, 1
-  store i32 %add229, i32* %mb_addr216, align 4, !tbaa !3
-  %.pre = load i32* %mbAvailB, align 4, !tbaa !3
-  br label %if.end231
-
-if.end231:                                        ; preds = %land.lhs.true220, %if.then215, %if.then227
-  %35 = phi i32 [ %31, %land.lhs.true220 ], [ 0, %if.then215 ], [ %.pre, %if.then227 ]
-  store i32 %35, i32* %available, align 4, !tbaa !3
-  br label %if.end341
-
-if.else234:                                       ; preds = %if.then212
-  %sub235 = add i32 %curr_mb_nr, -1
-  %mb_addr236 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
-  store i32 %sub235, i32* %mb_addr236, align 4, !tbaa !3
-  store i32 1, i32* %available, align 4, !tbaa !3
-  br label %if.then346
-
-if.else239:                                       ; preds = %if.then209
-  %mbAddrB243 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 24
-  %36 = load i32* %mbAddrB243, align 4, !tbaa !3
-  br i1 %cmp241, label %if.then242, label %if.else263
-
-if.then242:                                       ; preds = %if.else239
-  %mb_addr244 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
-  store i32 %36, i32* %mb_addr244, align 4, !tbaa !3
-  %mbAvailB245 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 28
-  %37 = load i32* %mbAvailB245, align 4, !tbaa !3
-  store i32 %37, i32* %available, align 4, !tbaa !3
-  %38 = load i32* %mbAvailB245, align 4, !tbaa !3
-  %tobool248 = icmp eq i32 %38, 0
-  br i1 %tobool248, label %if.end341, label %if.then249
-
-if.then249:                                       ; preds = %if.then242
-  %39 = load i32* %mbAddrB243, align 4, !tbaa !3
-  %idxprom251 = sext i32 %39 to i64
-  %mb_field254 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom251, i32 22
-  %40 = load i32* %mb_field254, align 4, !tbaa !3
-  %tobool255 = icmp eq i32 %40, 0
-  br i1 %tobool255, label %if.then256, label %if.end341
-
-if.then256:                                       ; preds = %if.then249
-  %inc258 = add nsw i32 %36, 1
-  store i32 %inc258, i32* %mb_addr244, align 4, !tbaa !3
-  %mul259 = shl nsw i32 %yN, 1
-  br label %if.end341
-
-if.else263:                                       ; preds = %if.else239
-  %add265 = add nsw i32 %36, 1
-  %mb_addr266 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
-  store i32 %add265, i32* %mb_addr266, align 4, !tbaa !3
-  %mbAvailB267 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 28
-  %41 = load i32* %mbAvailB267, align 4, !tbaa !3
-  store i32 %41, i32* %available, align 4, !tbaa !3
-  br label %if.end341
-
-if.else271:                                       ; preds = %if.then207
-  %cmp272 = icmp eq i32 %yN, 0
-  br i1 %cmp272, label %land.lhs.true273, label %if.then286
-
-land.lhs.true273:                                 ; preds = %if.else271
-  %DeblockCall274 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 143
-  %42 = load i32* %DeblockCall274, align 4, !tbaa !3
-  %cmp275 = icmp eq i32 %42, 2
-  br i1 %cmp275, label %if.then276, label %if.then286
-
-if.then276:                                       ; preds = %land.lhs.true273
-  %mbAddrB277 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 24
-  %43 = load i32* %mbAddrB277, align 4, !tbaa !3
-  %add278 = add nsw i32 %43, 1
-  %mb_addr279 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
-  store i32 %add278, i32* %mb_addr279, align 4, !tbaa !3
-  store i32 1, i32* %available, align 4, !tbaa !3
-  br label %if.then346
-
-if.then286:                                       ; preds = %if.else271, %land.lhs.true273
-  %mb_addr287 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
-  store i32 %curr_mb_nr, i32* %mb_addr287, align 4, !tbaa !3
-  store i32 1, i32* %available, align 4, !tbaa !3
-  br label %if.then346
-
-if.else292:                                       ; preds = %if.else203
-  br i1 %cmp208, label %if.then294, label %lor.lhs.false
-
-if.then294:                                       ; preds = %if.else292
-  %mb_field295 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 22
-  %44 = load i32* %mb_field295, align 4, !tbaa !3
-  %tobool296 = icmp eq i32 %44, 0
-  %rem308 = and i32 %curr_mb_nr, 1
-  %cmp309 = icmp eq i32 %rem308, 0
-  br i1 %tobool296, label %if.then297, label %if.else307
-
-if.then297:                                       ; preds = %if.then294
-  br i1 %cmp309, label %if.then300, label %if.end341.thread546
-
-if.then300:                                       ; preds = %if.then297
-  %mbAddrC = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 25
-  %45 = load i32* %mbAddrC, align 4, !tbaa !3
-  %add301 = add nsw i32 %45, 1
-  %mb_addr302 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
-  store i32 %add301, i32* %mb_addr302, align 4, !tbaa !3
-  %mbAvailC = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 29
-  %46 = load i32* %mbAvailC, align 4, !tbaa !3
-  store i32 %46, i32* %available, align 4, !tbaa !3
-  br label %if.end341
-
-if.end341.thread546:                              ; preds = %if.then297
-  store i32 0, i32* %available, align 4, !tbaa !3
-  br label %lor.lhs.false
-
-if.else307:                                       ; preds = %if.then294
-  %mbAddrC311 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 25
-  %47 = load i32* %mbAddrC311, align 4, !tbaa !3
-  br i1 %cmp309, label %if.then310, label %if.else331
-
-if.then310:                                       ; preds = %if.else307
-  %mb_addr312 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
-  store i32 %47, i32* %mb_addr312, align 4, !tbaa !3
-  %mbAvailC313 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 29
-  %48 = load i32* %mbAvailC313, align 4, !tbaa !3
-  store i32 %48, i32* %available, align 4, !tbaa !3
-  %49 = load i32* %mbAvailC313, align 4, !tbaa !3
-  %tobool316 = icmp eq i32 %49, 0
-  br i1 %tobool316, label %if.end341, label %if.then317
-
-if.then317:                                       ; preds = %if.then310
-  %50 = load i32* %mbAddrC311, align 4, !tbaa !3
-  %idxprom319 = sext i32 %50 to i64
-  %mb_field322 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom319, i32 22
-  %51 = load i32* %mb_field322, align 4, !tbaa !3
-  %tobool323 = icmp eq i32 %51, 0
-  br i1 %tobool323, label %if.then324, label %if.end341
-
-if.then324:                                       ; preds = %if.then317
-  %inc326 = add nsw i32 %47, 1
-  store i32 %inc326, i32* %mb_addr312, align 4, !tbaa !3
-  %mul327 = shl nsw i32 %yN, 1
-  br label %if.end341
-
-if.else331:                                       ; preds = %if.else307
-  %add333 = add nsw i32 %47, 1
-  %mb_addr334 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
-  store i32 %add333, i32* %mb_addr334, align 4, !tbaa !3
-  %mbAvailC335 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 29
-  %52 = load i32* %mbAvailC335, align 4, !tbaa !3
-  store i32 %52, i32* %available, align 4, !tbaa !3
-  br label %if.end341
-
-if.end341:                                        ; preds = %if.then317, %if.then249, %if.then148, %if.then86, %if.then48, %if.then24, %if.then256, %if.then324, %if.then55, %if.else32, %if.else106, %if.then126, %if.else129, %if.then120, %if.then79, %if.then97, %if.else99, %if.else167, %if.then184, %if.else187, %if.else194, %if.then141, %if.then157, %if.else158, %if.then41, %if.else19, %if.then242, %if.then310, %if.end231, %if.else263, %if.then300, %if.else331, %if.else61, %if.then17
-  %53 = phi i32 [ %13, %if.then41 ], [ %8, %if.else19 ], [ %37, %if.then242 ], [ %48, %if.then310 ], [ %35, %if.end231 ], [ %41, %if.else263 ], [ %46, %if.then300 ], [ %52, %if.else331 ], [ %17, %if.else61 ], [ %6, %if.then17 ], [ %48, %if.then317 ], [ %37, %if.then249 ], [ %19, %if.then148 ], [ %19, %if.then86 ], [ %13, %if.then48 ], [ %8, %if.then24 ], [ %37, %if.then256 ], [ %48, %if.then324 ], [ %13, %if.then55 ], [ %8, %if.else32 ], [ %19, %if.else106 ], [ %19, %if.then126 ], [ %19, %if.else129 ], [ %19, %if.then120 ], [ %19, %if.then79 ], [ %19, %if.then97 ], [ %19, %if.else99 ], [ %19, %if.else167 ], [ %19, %if.then184 ], [ %19, %if.else187 ], [ %19, %if.else194 ], [ %19, %if.then141 ], [ %19, %if.then157 ], [ %19, %if.else158 ]
-  %yM.0 = phi i32 [ -1, %if.then41 ], [ -1, %if.else19 ], [ -1, %if.then242 ], [ -1, %if.then310 ], [ %yN, %if.end231 ], [ %yN, %if.else263 ], [ %yN, %if.then300 ], [ %yN, %if.else331 ], [ %yN, %if.else61 ], [ %yN, %if.then17 ], [ %yN, %if.then317 ], [ %yN, %if.then249 ], [ %yN, %if.then148 ], [ %yN, %if.then86 ], [ %yN, %if.then48 ], [ %yN, %if.then24 ], [ %mul259, %if.then256 ], [ %mul327, %if.then324 ], [ %mul, %if.then55 ], [ %shr, %if.else32 ], [ -1, %if.else106 ], [ %shr128, %if.then126 ], [ %shr133, %if.else129 ], [ %yN, %if.then120 ], [ -1, %if.then79 ], [ %shr98, %if.then97 ], [ %shr102, %if.else99 ], [ -1, %if.else167 ], [ %add186538, %if.then184 ], [ %sub192, %if.else187 ], [ %yN, %if.else194 ], [ -1, %if.then141 ], [ %shl, %if.then157 ], [ %sub162, %if.else158 ]
-  %tobool343 = icmp eq i32 %53, 0
-  br i1 %tobool343, label %lor.lhs.false, label %if.then346
-
-lor.lhs.false:                                    ; preds = %if.else292, %if.end341, %if.end341.thread546
-  %yM.0548 = phi i32 [ -1, %if.end341.thread546 ], [ %yM.0, %if.end341 ], [ -1, %if.else292 ]
-  %DeblockCall344 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 143
-  %54 = load i32* %DeblockCall344, align 4, !tbaa !3
-  %tobool345 = icmp eq i32 %54, 0
-  br i1 %tobool345, label %if.end376, label %if.then346
-
-if.then346:                                       ; preds = %lor.lhs.false, %if.end341, %if.else234, %if.then286, %if.then276
-  %yM.0545 = phi i32 [ -1, %if.then276 ], [ %yN, %if.then286 ], [ %yN, %if.else234 ], [ %yM.0, %if.end341 ], [ %yM.0548, %lor.lhs.false ]
-  %add347 = add nsw i32 %maxW.0, %xN
-  %rem348 = srem i32 %add347, %maxW.0
-  %x = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 2
-  store i32 %rem348, i32* %x, align 4, !tbaa !3
-  %add349 = add nsw i32 %yM.0545, %maxH.0
-  %rem350 = srem i32 %add349, %maxH.0
-  %y = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 3
-  store i32 %rem350, i32* %y, align 4, !tbaa !3
-  %mb_addr351 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1
-  %55 = load i32* %mb_addr351, align 4, !tbaa !3
-  %pos_x = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 4
-  %pos_y = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 5
-  tail call void @get_mb_block_pos(i32 %55, i32* %pos_x, i32* %pos_y) #5
-  %56 = load i32* %pos_x, align 4, !tbaa !3
-  %mul.i = shl nsw i32 %56, 4
-  store i32 %mul.i, i32* %pos_x, align 4, !tbaa !3
-  %57 = load i32* %pos_y, align 4, !tbaa !3
-  %mul1.i = shl nsw i32 %57, 4
-  store i32 %mul1.i, i32* %pos_y, align 4, !tbaa !3
-  br i1 %tobool, label %if.then353, label %if.else360
-
-if.then353:                                       ; preds = %if.then346
-  %58 = load i32* %x, align 4, !tbaa !3
-  %add356 = add nsw i32 %mul.i, %58
-  store i32 %add356, i32* %pos_x, align 4, !tbaa !3
-  %59 = load i32* %y, align 4, !tbaa !3
-  %add359 = add nsw i32 %mul1.i, %59
-  store i32 %add359, i32* %pos_y, align 4, !tbaa !3
-  br label %if.end376
-
-if.else360:                                       ; preds = %if.then346
-  %60 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %mb_cr_size_x362 = getelementptr inbounds %struct.ImageParameters* %60, i64 0, i32 161
-  %61 = load i32* %mb_cr_size_x362, align 4, !tbaa !3
-  %div363 = sdiv i32 16, %61
-  %div364 = sdiv i32 %mul.i, %div363
-  %62 = load i32* %x, align 4, !tbaa !3
-  %add366 = add nsw i32 %62, %div364
-  store i32 %add366, i32* %pos_x, align 4, !tbaa !3
-  %mb_cr_size_y369 = getelementptr inbounds %struct.ImageParameters* %60, i64 0, i32 162
-  %63 = load i32* %mb_cr_size_y369, align 4, !tbaa !3
-  %div370 = sdiv i32 16, %63
-  %div371 = sdiv i32 %mul1.i, %div370
-  %64 = load i32* %y, align 4, !tbaa !3
-  %add373 = add nsw i32 %64, %div371
-  store i32 %add373, i32* %pos_y, align 4, !tbaa !3
-  br label %if.end376
-
-if.end376:                                        ; preds = %if.end2, %lor.lhs.false, %if.end, %if.then353, %if.else360
-  ret void
+if.end:                                           ; preds = %entry, %cond.end
+  %maxW.0 = phi i32 [ %3, %cond.end ], [ 16, %entry ]
+  %maxH.0 = phi i32 [ %4, %cond.end ], [ 16, %entry ]
+  %available = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 0, !dbg !804
+  store i32 0, i32* %available, align 4, !dbg !804, !tbaa !694
+  %cmp1 = icmp sgt i32 %maxH.0, %yN, !dbg !805
+  br i1 %cmp1, label %if.end3, label %if.end377, !dbg !805
+
+if.end3:                                          ; preds = %if.end
+  %cmp5 = icmp sle i32 %maxW.0, %xN, !dbg !806
+  %cmp6 = icmp sgt i32 %yN, -1, !dbg !806
+  %or.cond = and i1 %cmp5, %cmp6, !dbg !806
+  br i1 %or.cond, label %if.end377, label %if.end10, !dbg !806
+
+if.end10:                                         ; preds = %if.end3
+  %cmp11 = icmp slt i32 %xN, 0, !dbg !807
+  br i1 %cmp11, label %if.then12, label %if.else204, !dbg !807
+
+if.then12:                                        ; preds = %if.end10
+  %cmp13 = icmp slt i32 %yN, 0, !dbg !808
+  %mb_field = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 22, !dbg !810
+  %5 = load i32* %mb_field, align 4, !dbg !810, !tbaa !694
+  %tobool15 = icmp eq i32 %5, 0, !dbg !810
+  %rem40 = and i32 %curr_mb_nr, 1, !dbg !812
+  %cmp41 = icmp eq i32 %rem40, 0, !dbg !812
+  br i1 %cmp13, label %if.then14, label %if.then74, !dbg !808
+
+if.then14:                                        ; preds = %if.then12
+  br i1 %tobool15, label %if.then16, label %if.else39, !dbg !810
+
+if.then16:                                        ; preds = %if.then14
+  br i1 %cmp41, label %if.then18, label %if.else20, !dbg !814
+
+if.then18:                                        ; preds = %if.then16
+  %mbAddrD = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 26, !dbg !816
+  %6 = load i32* %mbAddrD, align 4, !dbg !816, !tbaa !694
+  %add = add nsw i32 %6, 1, !dbg !816
+  %mb_addr = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1, !dbg !816
+  store i32 %add, i32* %mb_addr, align 4, !dbg !816, !tbaa !694
+  %mbAvailD = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 30, !dbg !818
+  %7 = load i32* %mbAvailD, align 4, !dbg !818, !tbaa !694
+  store i32 %7, i32* %available, align 4, !dbg !818, !tbaa !694
+  tail call void @llvm.dbg.value(metadata !{i32 %yN}, i64 0, metadata !139), !dbg !819
+  br label %if.end342, !dbg !820
+
+if.else20:                                        ; preds = %if.then16
+  %mbAddrA = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 23, !dbg !821
+  %8 = load i32* %mbAddrA, align 4, !dbg !821, !tbaa !694
+  %mb_addr21 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1, !dbg !821
+  store i32 %8, i32* %mb_addr21, align 4, !dbg !821, !tbaa !694
+  %mbAvailA = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 27, !dbg !823
+  %9 = load i32* %mbAvailA, align 4, !dbg !823, !tbaa !694
+  store i32 %9, i32* %available, align 4, !dbg !823, !tbaa !694
+  %10 = load i32* %mbAvailA, align 4, !dbg !824, !tbaa !694
+  %tobool24 = icmp eq i32 %10, 0, !dbg !824
+  br i1 %tobool24, label %if.end342, label %if.then25, !dbg !824
+
+if.then25:                                        ; preds = %if.else20
+  %11 = load i32* %mbAddrA, align 4, !dbg !825, !tbaa !694
+  %idxprom27 = sext i32 %11 to i64, !dbg !825
+  %mb_field30 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom27, i32 22, !dbg !825
+  %12 = load i32* %mb_field30, align 4, !dbg !825, !tbaa !694
+  %tobool31 = icmp eq i32 %12, 0, !dbg !825
+  br i1 %tobool31, label %if.end342, label %if.else33, !dbg !825
+
+if.else33:                                        ; preds = %if.then25
+  %inc = add nsw i32 %8, 1, !dbg !827
+  store i32 %inc, i32* %mb_addr21, align 4, !dbg !827, !tbaa !694
+  %add35 = add nsw i32 %maxH.0, %yN, !dbg !829
+  %shr = ashr i32 %add35, 1, !dbg !829
+  tail call void @llvm.dbg.value(metadata !{i32 %shr}, i64 0, metadata !139), !dbg !829
+  br label %if.end342
+
+if.else39:                                        ; preds = %if.then14
+  %mbAddrD43 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 26, !dbg !830
+  %13 = load i32* %mbAddrD43, align 4, !dbg !830, !tbaa !694
+  br i1 %cmp41, label %if.then42, label %if.else62, !dbg !812
+
+if.then42:                                        ; preds = %if.else39
+  %mb_addr44 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1, !dbg !830
+  store i32 %13, i32* %mb_addr44, align 4, !dbg !830, !tbaa !694
+  %mbAvailD45 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 30, !dbg !832
+  %14 = load i32* %mbAvailD45, align 4, !dbg !832, !tbaa !694
+  store i32 %14, i32* %available, align 4, !dbg !832, !tbaa !694
+  %15 = load i32* %mbAvailD45, align 4, !dbg !833, !tbaa !694
+  %tobool48 = icmp eq i32 %15, 0, !dbg !833
+  br i1 %tobool48, label %if.end342, label %if.then49, !dbg !833
+
+if.then49:                                        ; preds = %if.then42
+  %16 = load i32* %mbAddrD43, align 4, !dbg !834, !tbaa !694
+  %idxprom51 = sext i32 %16 to i64, !dbg !834
+  %mb_field54 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom51, i32 22, !dbg !834
+  %17 = load i32* %mb_field54, align 4, !dbg !834, !tbaa !694
+  %tobool55 = icmp eq i32 %17, 0, !dbg !834
+  br i1 %tobool55, label %if.then56, label %if.end342, !dbg !834
+
+if.then56:                                        ; preds = %if.then49
+  %inc58 = add nsw i32 %13, 1, !dbg !836
+  store i32 %inc58, i32* %mb_addr44, align 4, !dbg !836, !tbaa !694
+  %mul = shl nsw i32 %yN, 1, !dbg !838
+  tail call void @llvm.dbg.value(metadata !{i32 %mul}, i64 0, metadata !139), !dbg !838
+  br label %if.end342, !dbg !839
+
+if.else62:                                        ; preds = %if.else39
+  %add64 = add nsw i32 %13, 1, !dbg !840
+  %mb_addr65 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1, !dbg !840
+  store i32 %add64, i32* %mb_addr65, align 4, !dbg !840, !tbaa !694
+  %mbAvailD66 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 30, !dbg !842
+  %18 = load i32* %mbAvailD66, align 4, !dbg !842, !tbaa !694
+  store i32 %18, i32* %available, align 4, !dbg !842, !tbaa !694
+  tail call void @llvm.dbg.value(metadata !{i32 %yN}, i64 0, metadata !139), !dbg !843
+  br label %if.end342
+
+if.then74:                                        ; preds = %if.then12
+  %mbAddrA143 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 23, !dbg !844
+  %19 = load i32* %mbAddrA143, align 4, !dbg !844, !tbaa !694
+  %mb_addr144 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1, !dbg !844
+  store i32 %19, i32* %mb_addr144, align 4, !dbg !844, !tbaa !694
+  %mbAvailA145 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 27, !dbg !849
+  %20 = load i32* %mbAvailA145, align 4, !dbg !849, !tbaa !694
+  store i32 %20, i32* %available, align 4, !dbg !849, !tbaa !694
+  %21 = load i32* %mbAvailA145, align 4, !dbg !850, !tbaa !694
+  %tobool148 = icmp ne i32 %21, 0, !dbg !850
+  br i1 %tobool15, label %if.then77, label %if.else139, !dbg !851
+
+if.then77:                                        ; preds = %if.then74
+  br i1 %cmp41, label %if.then80, label %if.else107, !dbg !852
+
+if.then80:                                        ; preds = %if.then77
+  br i1 %tobool148, label %if.then87, label %if.end342, !dbg !854
+
+if.then87:                                        ; preds = %if.then80
+  %22 = load i32* %mbAddrA143, align 4, !dbg !856, !tbaa !694
+  %idxprom89 = sext i32 %22 to i64, !dbg !856
+  %mb_field92 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom89, i32 22, !dbg !856
+  %23 = load i32* %mb_field92, align 4, !dbg !856, !tbaa !694
+  %tobool93 = icmp eq i32 %23, 0, !dbg !856
+  br i1 %tobool93, label %if.end342, label %if.else95, !dbg !856
+
+if.else95:                                        ; preds = %if.then87
+  %rem96537 = and i32 %yN, 1, !dbg !858
+  %cmp97 = icmp eq i32 %rem96537, 0, !dbg !858
+  br i1 %cmp97, label %if.then98, label %if.else100, !dbg !858
+
+if.then98:                                        ; preds = %if.else95
+  %shr99 = ashr i32 %yN, 1, !dbg !860
+  tail call void @llvm.dbg.value(metadata !{i32 %shr99}, i64 0, metadata !139), !dbg !860
+  br label %if.end342, !dbg !862
+
+if.else100:                                       ; preds = %if.else95
+  %inc102 = add nsw i32 %19, 1, !dbg !863
+  store i32 %inc102, i32* %mb_addr144, align 4, !dbg !863, !tbaa !694
+  %shr103 = ashr i32 %yN, 1, !dbg !865
+  tail call void @llvm.dbg.value(metadata !{i32 %shr103}, i64 0, metadata !139), !dbg !865
+  br label %if.end342
+
+if.else107:                                       ; preds = %if.then77
+  br i1 %tobool148, label %if.then114, label %if.end342, !dbg !866
+
+if.then114:                                       ; preds = %if.else107
+  %24 = load i32* %mbAddrA143, align 4, !dbg !868, !tbaa !694
+  %idxprom116 = sext i32 %24 to i64, !dbg !868
+  %mb_field119 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom116, i32 22, !dbg !868
+  %25 = load i32* %mb_field119, align 4, !dbg !868, !tbaa !694
+  %tobool120 = icmp eq i32 %25, 0, !dbg !868
+  br i1 %tobool120, label %if.then121, label %if.else124, !dbg !868
+
+if.then121:                                       ; preds = %if.then114
+  %inc123 = add nsw i32 %19, 1, !dbg !870
+  store i32 %inc123, i32* %mb_addr144, align 4, !dbg !870, !tbaa !694
+  tail call void @llvm.dbg.value(metadata !{i32 %yN}, i64 0, metadata !139), !dbg !872
+  br label %if.end342, !dbg !873
+
+if.else124:                                       ; preds = %if.then114
+  %rem125536 = and i32 %yN, 1, !dbg !874
+  %cmp126 = icmp eq i32 %rem125536, 0, !dbg !874
+  br i1 %cmp126, label %if.then127, label %if.else130, !dbg !874
+
+if.then127:                                       ; preds = %if.else124
+  %add128 = add nsw i32 %maxH.0, %yN, !dbg !876
+  %shr129 = ashr i32 %add128, 1, !dbg !876
+  tail call void @llvm.dbg.value(metadata !{i32 %shr129}, i64 0, metadata !139), !dbg !876
+  br label %if.end342, !dbg !878
+
+if.else130:                                       ; preds = %if.else124
+  %inc132 = add nsw i32 %19, 1, !dbg !879
+  store i32 %inc132, i32* %mb_addr144, align 4, !dbg !879, !tbaa !694
+  %add133 = add nsw i32 %maxH.0, %yN, !dbg !881
+  %shr134 = ashr i32 %add133, 1, !dbg !881
+  tail call void @llvm.dbg.value(metadata !{i32 %shr134}, i64 0, metadata !139), !dbg !881
+  br label %if.end342
+
+if.else139:                                       ; preds = %if.then74
+  br i1 %cmp41, label %if.then142, label %if.else168, !dbg !882
+
+if.then142:                                       ; preds = %if.else139
+  br i1 %tobool148, label %if.then149, label %if.end342, !dbg !850
+
+if.then149:                                       ; preds = %if.then142
+  %26 = load i32* %mbAddrA143, align 4, !dbg !883, !tbaa !694
+  %idxprom151 = sext i32 %26 to i64, !dbg !883
+  %mb_field154 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom151, i32 22, !dbg !883
+  %27 = load i32* %mb_field154, align 4, !dbg !883, !tbaa !694
+  %tobool155 = icmp eq i32 %27, 0, !dbg !883
+  br i1 %tobool155, label %if.then156, label %if.end342, !dbg !883
+
+if.then156:                                       ; preds = %if.then149
+  %div = sdiv i32 %maxH.0, 2, !dbg !885
+  %cmp157 = icmp sgt i32 %div, %yN, !dbg !885
+  br i1 %cmp157, label %if.then158, label %if.else159, !dbg !885
+
+if.then158:                                       ; preds = %if.then156
+  %shl = shl i32 %yN, 1, !dbg !887
+  tail call void @llvm.dbg.value(metadata !{i32 %shl}, i64 0, metadata !139), !dbg !887
+  br label %if.end342, !dbg !889
+
+if.else159:                                       ; preds = %if.then156
+  %inc161 = add nsw i32 %19, 1, !dbg !890
+  store i32 %inc161, i32* %mb_addr144, align 4, !dbg !890, !tbaa !694
+  %shl162 = shl i32 %yN, 1, !dbg !892
+  %sub163 = sub nsw i32 %shl162, %maxH.0, !dbg !892
+  tail call void @llvm.dbg.value(metadata !{i32 %sub163}, i64 0, metadata !139), !dbg !892
+  br label %if.end342
+
+if.else168:                                       ; preds = %if.else139
+  br i1 %tobool148, label %if.then175, label %if.end342, !dbg !893
+
+if.then175:                                       ; preds = %if.else168
+  %28 = load i32* %mbAddrA143, align 4, !dbg !895, !tbaa !694
+  %idxprom177 = sext i32 %28 to i64, !dbg !895
+  %mb_field180 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom177, i32 22, !dbg !895
+  %29 = load i32* %mb_field180, align 4, !dbg !895, !tbaa !694
+  %tobool181 = icmp eq i32 %29, 0, !dbg !895
+  br i1 %tobool181, label %if.then182, label %if.else195, !dbg !895
+
+if.then182:                                       ; preds = %if.then175
+  %div183 = sdiv i32 %maxH.0, 2, !dbg !897
+  %cmp184 = icmp sgt i32 %div183, %yN, !dbg !897
+  br i1 %cmp184, label %if.then185, label %if.else188, !dbg !897
+
+if.then185:                                       ; preds = %if.then182
+  %shl186 = shl i32 %yN, 1, !dbg !899
+  %add187539 = or i32 %shl186, 1, !dbg !899
+  tail call void @llvm.dbg.value(metadata !{i32 %add187539}, i64 0, metadata !139), !dbg !899
+  br label %if.end342, !dbg !901
+
+if.else188:                                       ; preds = %if.then182
+  %inc190 = add nsw i32 %19, 1, !dbg !902
+  store i32 %inc190, i32* %mb_addr144, align 4, !dbg !902, !tbaa !694
+  %shl191 = shl i32 %yN, 1, !dbg !904
+  %add192538 = or i32 %shl191, 1, !dbg !904
+  %sub193 = sub nsw i32 %add192538, %maxH.0, !dbg !904
+  tail call void @llvm.dbg.value(metadata !{i32 %sub193}, i64 0, metadata !139), !dbg !904
+  br label %if.end342
+
+if.else195:                                       ; preds = %if.then175
+  %inc197 = add nsw i32 %19, 1, !dbg !905
+  store i32 %inc197, i32* %mb_addr144, align 4, !dbg !905, !tbaa !694
+  tail call void @llvm.dbg.value(metadata !{i32 %yN}, i64 0, metadata !139), !dbg !907
+  br label %if.end342
+
+if.else204:                                       ; preds = %if.end10
+  %cmp207 = icmp sgt i32 %maxW.0, %xN, !dbg !908
+  %cmp209 = icmp slt i32 %yN, 0, !dbg !910
+  br i1 %cmp207, label %if.then208, label %if.else293, !dbg !908
+
+if.then208:                                       ; preds = %if.else204
+  br i1 %cmp209, label %if.then210, label %if.else272, !dbg !910
+
+if.then210:                                       ; preds = %if.then208
+  %mb_field211 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 22, !dbg !912
+  %30 = load i32* %mb_field211, align 4, !dbg !912, !tbaa !694
+  %tobool212 = icmp eq i32 %30, 0, !dbg !912
+  %rem241 = and i32 %curr_mb_nr, 1, !dbg !914
+  %cmp242 = icmp eq i32 %rem241, 0, !dbg !914
+  br i1 %tobool212, label %if.then213, label %if.else240, !dbg !912
+
+if.then213:                                       ; preds = %if.then210
+  br i1 %cmp242, label %if.then216, label %if.else235, !dbg !916
+
+if.then216:                                       ; preds = %if.then213
+  %mbAddrB = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 24, !dbg !918
+  %31 = load i32* %mbAddrB, align 4, !dbg !918, !tbaa !694
+  %mb_addr217 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1, !dbg !918
+  store i32 %31, i32* %mb_addr217, align 4, !dbg !918, !tbaa !694
+  %mbAvailB = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 28, !dbg !920
+  %32 = load i32* %mbAvailB, align 4, !dbg !920, !tbaa !694
+  %tobool218 = icmp eq i32 %32, 0, !dbg !920
+  br i1 %tobool218, label %if.end232, label %if.then219, !dbg !920
+
+if.then219:                                       ; preds = %if.then216
+  %DeblockCall = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 143, !dbg !921
+  %33 = load i32* %DeblockCall, align 4, !dbg !921, !tbaa !694
+  %cmp220 = icmp eq i32 %33, 1, !dbg !921
+  br i1 %cmp220, label %land.lhs.true221, label %if.then228, !dbg !921
+
+land.lhs.true221:                                 ; preds = %if.then219
+  %34 = load i32* %mbAddrB, align 4, !dbg !921, !tbaa !694
+  %idxprom223 = sext i32 %34 to i64, !dbg !921
+  %mb_field226 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom223, i32 22, !dbg !921
+  %35 = load i32* %mb_field226, align 4, !dbg !921, !tbaa !694
+  %tobool227 = icmp eq i32 %35, 0, !dbg !921
+  br i1 %tobool227, label %if.then228, label %if.end232, !dbg !921
+
+if.then228:                                       ; preds = %land.lhs.true221, %if.then219
+  %add230 = add nsw i32 %31, 1, !dbg !923
+  store i32 %add230, i32* %mb_addr217, align 4, !dbg !923, !tbaa !694
+  %.pre = load i32* %mbAvailB, align 4, !dbg !924, !tbaa !694
+  br label %if.end232, !dbg !923
+
+if.end232:                                        ; preds = %land.lhs.true221, %if.then216, %if.then228
+  %36 = phi i32 [ %32, %land.lhs.true221 ], [ 0, %if.then216 ], [ %.pre, %if.then228 ]
+  store i32 %36, i32* %available, align 4, !dbg !924, !tbaa !694
+  tail call void @llvm.dbg.value(metadata !{i32 %yN}, i64 0, metadata !139), !dbg !925
+  br label %if.end342, !dbg !926
+
+if.else235:                                       ; preds = %if.then213
+  %sub236 = add i32 %curr_mb_nr, -1, !dbg !927
+  %mb_addr237 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1, !dbg !927
+  store i32 %sub236, i32* %mb_addr237, align 4, !dbg !927, !tbaa !694
+  store i32 1, i32* %available, align 4, !dbg !929, !tbaa !694
+  tail call void @llvm.dbg.value(metadata !{i32 %yN}, i64 0, metadata !139), !dbg !930
+  br label %if.then347
+
+if.else240:                                       ; preds = %if.then210
+  %mbAddrB244 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 24, !dbg !931
+  %37 = load i32* %mbAddrB244, align 4, !dbg !931, !tbaa !694
+  br i1 %cmp242, label %if.then243, label %if.else264, !dbg !914
+
+if.then243:                                       ; preds = %if.else240
+  %mb_addr245 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1, !dbg !931
+  store i32 %37, i32* %mb_addr245, align 4, !dbg !931, !tbaa !694
+  %mbAvailB246 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 28, !dbg !933
+  %38 = load i32* %mbAvailB246, align 4, !dbg !933, !tbaa !694
+  store i32 %38, i32* %available, align 4, !dbg !933, !tbaa !694
+  %39 = load i32* %mbAvailB246, align 4, !dbg !934, !tbaa !694
+  %tobool249 = icmp eq i32 %39, 0, !dbg !934
+  br i1 %tobool249, label %if.end342, label %if.then250, !dbg !934
+
+if.then250:                                       ; preds = %if.then243
+  %40 = load i32* %mbAddrB244, align 4, !dbg !935, !tbaa !694
+  %idxprom252 = sext i32 %40 to i64, !dbg !935
+  %mb_field255 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom252, i32 22, !dbg !935
+  %41 = load i32* %mb_field255, align 4, !dbg !935, !tbaa !694
+  %tobool256 = icmp eq i32 %41, 0, !dbg !935
+  br i1 %tobool256, label %if.then257, label %if.end342, !dbg !935
+
+if.then257:                                       ; preds = %if.then250
+  %inc259 = add nsw i32 %37, 1, !dbg !937
+  store i32 %inc259, i32* %mb_addr245, align 4, !dbg !937, !tbaa !694
+  %mul260 = shl nsw i32 %yN, 1, !dbg !939
+  tail call void @llvm.dbg.value(metadata !{i32 %mul260}, i64 0, metadata !139), !dbg !939
+  br label %if.end342, !dbg !940
+
+if.else264:                                       ; preds = %if.else240
+  %add266 = add nsw i32 %37, 1, !dbg !941
+  %mb_addr267 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1, !dbg !941
+  store i32 %add266, i32* %mb_addr267, align 4, !dbg !941, !tbaa !694
+  %mbAvailB268 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 28, !dbg !943
+  %42 = load i32* %mbAvailB268, align 4, !dbg !943, !tbaa !694
+  store i32 %42, i32* %available, align 4, !dbg !943, !tbaa !694
+  tail call void @llvm.dbg.value(metadata !{i32 %yN}, i64 0, metadata !139), !dbg !944
+  br label %if.end342
+
+if.else272:                                       ; preds = %if.then208
+  %cmp273 = icmp eq i32 %yN, 0, !dbg !945
+  br i1 %cmp273, label %land.lhs.true274, label %if.then287, !dbg !945
+
+land.lhs.true274:                                 ; preds = %if.else272
+  %DeblockCall275 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 143, !dbg !945
+  %43 = load i32* %DeblockCall275, align 4, !dbg !945, !tbaa !694
+  %cmp276 = icmp eq i32 %43, 2, !dbg !945
+  br i1 %cmp276, label %if.then277, label %if.then287, !dbg !945
+
+if.then277:                                       ; preds = %land.lhs.true274
+  %mbAddrB278 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 24, !dbg !947
+  %44 = load i32* %mbAddrB278, align 4, !dbg !947, !tbaa !694
+  %add279 = add nsw i32 %44, 1, !dbg !947
+  %mb_addr280 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1, !dbg !947
+  store i32 %add279, i32* %mb_addr280, align 4, !dbg !947, !tbaa !694
+  store i32 1, i32* %available, align 4, !dbg !949, !tbaa !694
+  tail call void @llvm.dbg.value(metadata !797, i64 0, metadata !139), !dbg !950
+  br label %if.then347, !dbg !951
+
+if.then287:                                       ; preds = %if.else272, %land.lhs.true274
+  %mb_addr288 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1, !dbg !952
+  store i32 %curr_mb_nr, i32* %mb_addr288, align 4, !dbg !952, !tbaa !694
+  store i32 1, i32* %available, align 4, !dbg !954, !tbaa !694
+  tail call void @llvm.dbg.value(metadata !{i32 %yN}, i64 0, metadata !139), !dbg !955
+  br label %if.then347, !dbg !956
+
+if.else293:                                       ; preds = %if.else204
+  br i1 %cmp209, label %if.then295, label %lor.lhs.false, !dbg !957
+
+if.then295:                                       ; preds = %if.else293
+  %mb_field296 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 22, !dbg !959
+  %45 = load i32* %mb_field296, align 4, !dbg !959, !tbaa !694
+  %tobool297 = icmp eq i32 %45, 0, !dbg !959
+  %rem309 = and i32 %curr_mb_nr, 1, !dbg !961
+  %cmp310 = icmp eq i32 %rem309, 0, !dbg !961
+  br i1 %tobool297, label %if.then298, label %if.else308, !dbg !959
+
+if.then298:                                       ; preds = %if.then295
+  br i1 %cmp310, label %if.then301, label %if.end342.thread547, !dbg !963
+
+if.then301:                                       ; preds = %if.then298
+  %mbAddrC = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 25, !dbg !965
+  %46 = load i32* %mbAddrC, align 4, !dbg !965, !tbaa !694
+  %add302 = add nsw i32 %46, 1, !dbg !965
+  %mb_addr303 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1, !dbg !965
+  store i32 %add302, i32* %mb_addr303, align 4, !dbg !965, !tbaa !694
+  %mbAvailC = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 29, !dbg !967
+  %47 = load i32* %mbAvailC, align 4, !dbg !967, !tbaa !694
+  store i32 %47, i32* %available, align 4, !dbg !967, !tbaa !694
+  tail call void @llvm.dbg.value(metadata !{i32 %yN}, i64 0, metadata !139), !dbg !968
+  br label %if.end342, !dbg !969
+
+if.end342.thread547:                              ; preds = %if.then298
+  store i32 0, i32* %available, align 4, !dbg !970, !tbaa !694
+  br label %lor.lhs.false, !dbg !972
+
+if.else308:                                       ; preds = %if.then295
+  %mbAddrC312 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 25, !dbg !973
+  %48 = load i32* %mbAddrC312, align 4, !dbg !973, !tbaa !694
+  br i1 %cmp310, label %if.then311, label %if.else332, !dbg !961
+
+if.then311:                                       ; preds = %if.else308
+  %mb_addr313 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1, !dbg !973
+  store i32 %48, i32* %mb_addr313, align 4, !dbg !973, !tbaa !694
+  %mbAvailC314 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 29, !dbg !975
+  %49 = load i32* %mbAvailC314, align 4, !dbg !975, !tbaa !694
+  store i32 %49, i32* %available, align 4, !dbg !975, !tbaa !694
+  %50 = load i32* %mbAvailC314, align 4, !dbg !976, !tbaa !694
+  %tobool317 = icmp eq i32 %50, 0, !dbg !976
+  br i1 %tobool317, label %if.end342, label %if.then318, !dbg !976
+
+if.then318:                                       ; preds = %if.then311
+  %51 = load i32* %mbAddrC312, align 4, !dbg !977, !tbaa !694
+  %idxprom320 = sext i32 %51 to i64, !dbg !977
+  %mb_field323 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom320, i32 22, !dbg !977
+  %52 = load i32* %mb_field323, align 4, !dbg !977, !tbaa !694
+  %tobool324 = icmp eq i32 %52, 0, !dbg !977
+  br i1 %tobool324, label %if.then325, label %if.end342, !dbg !977
+
+if.then325:                                       ; preds = %if.then318
+  %inc327 = add nsw i32 %48, 1, !dbg !979
+  store i32 %inc327, i32* %mb_addr313, align 4, !dbg !979, !tbaa !694
+  %mul328 = shl nsw i32 %yN, 1, !dbg !981
+  tail call void @llvm.dbg.value(metadata !{i32 %mul328}, i64 0, metadata !139), !dbg !981
+  br label %if.end342, !dbg !982
+
+if.else332:                                       ; preds = %if.else308
+  %add334 = add nsw i32 %48, 1, !dbg !983
+  %mb_addr335 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1, !dbg !983
+  store i32 %add334, i32* %mb_addr335, align 4, !dbg !983, !tbaa !694
+  %mbAvailC336 = getelementptr inbounds %struct.macroblock* %1, i64 %idxprom, i32 29, !dbg !985
+  %53 = load i32* %mbAvailC336, align 4, !dbg !985, !tbaa !694
+  store i32 %53, i32* %available, align 4, !dbg !985, !tbaa !694
+  tail call void @llvm.dbg.value(metadata !{i32 %yN}, i64 0, metadata !139), !dbg !986
+  br label %if.end342
+
+if.end342:                                        ; preds = %if.then318, %if.then250, %if.then149, %if.then87, %if.then49, %if.then25, %if.then257, %if.then325, %if.then56, %if.else33, %if.else107, %if.then127, %if.else130, %if.then121, %if.then80, %if.then98, %if.else100, %if.else168, %if.then185, %if.else188, %if.else195, %if.then142, %if.then158, %if.else159, %if.then42, %if.else20, %if.then243, %if.then311, %if.end232, %if.else264, %if.then301, %if.else332, %if.else62, %if.then18
+  %54 = phi i32 [ %14, %if.then42 ], [ %9, %if.else20 ], [ %38, %if.then243 ], [ %49, %if.then311 ], [ %36, %if.end232 ], [ %42, %if.else264 ], [ %47, %if.then301 ], [ %53, %if.else332 ], [ %18, %if.else62 ], [ %7, %if.then18 ], [ %49, %if.then318 ], [ %38, %if.then250 ], [ %20, %if.then149 ], [ %20, %if.then87 ], [ %14, %if.then49 ], [ %9, %if.then25 ], [ %38, %if.then257 ], [ %49, %if.then325 ], [ %14, %if.then56 ], [ %9, %if.else33 ], [ %20, %if.else107 ], [ %20, %if.then127 ], [ %20, %if.else130 ], [ %20, %if.then121 ], [ %20, %if.then80 ], [ %20, %if.then98 ], [ %20, %if.else100 ], [ %20, %if.else168 ], [ %20, %if.then185 ], [ %20, %if.else188 ], [ %20, %if.else195 ], [ %20, %if.then142 ], [ %20, %if.then158 ], [ %20, %if.else159 ], !dbg !972
+  %yM.0 = phi i32 [ -1, %if.then42 ], [ -1, %if.else20 ], [ -1, %if.then243 ], [ -1, %if.then311 ], [ %yN, %if.end232 ], [ %yN, %if.else264 ], [ %yN, %if.then301 ], [ %yN, %if.else332 ], [ %yN, %if.else62 ], [ %yN, %if.then18 ], [ %yN, %if.then318 ], [ %yN, %if.then250 ], [ %yN, %if.then149 ], [ %yN, %if.then87 ], [ %yN, %if.then49 ], [ %yN, %if.then25 ], [ %mul260, %if.then257 ], [ %mul328, %if.then325 ], [ %mul, %if.then56 ], [ %shr, %if.else33 ], [ -1, %if.else107 ], [ %shr129, %if.then127 ], [ %shr134, %if.else130 ], [ %yN, %if.then121 ], [ -1, %if.then80 ], [ %shr99, %if.then98 ], [ %shr103, %if.else100 ], [ -1, %if.else168 ], [ %add187539, %if.then185 ], [ %sub193, %if.else188 ], [ %yN, %if.else195 ], [ -1, %if.then142 ], [ %shl, %if.then158 ], [ %sub163, %if.else159 ]
+  %tobool344 = icmp eq i32 %54, 0, !dbg !972
+  br i1 %tobool344, label %lor.lhs.false, label %if.then347, !dbg !972
+
+lor.lhs.false:                                    ; preds = %if.else293, %if.end342, %if.end342.thread547
+  %yM.0549 = phi i32 [ -1, %if.end342.thread547 ], [ %yM.0, %if.end342 ], [ -1, %if.else293 ]
+  %DeblockCall345 = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 143, !dbg !972
+  %55 = load i32* %DeblockCall345, align 4, !dbg !972, !tbaa !694
+  %tobool346 = icmp eq i32 %55, 0, !dbg !972
+  br i1 %tobool346, label %if.end377, label %if.then347, !dbg !972
+
+if.then347:                                       ; preds = %lor.lhs.false, %if.end342, %if.else235, %if.then287, %if.then277
+  %yM.0546 = phi i32 [ -1, %if.then277 ], [ %yN, %if.then287 ], [ %yN, %if.else235 ], [ %yM.0, %if.end342 ], [ %yM.0549, %lor.lhs.false ]
+  %add348 = add nsw i32 %maxW.0, %xN, !dbg !987
+  %rem349 = srem i32 %add348, %maxW.0, !dbg !987
+  %x = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 2, !dbg !987
+  store i32 %rem349, i32* %x, align 4, !dbg !987, !tbaa !694
+  %add350 = add nsw i32 %yM.0546, %maxH.0, !dbg !989
+  %rem351 = srem i32 %add350, %maxH.0, !dbg !989
+  %y = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 3, !dbg !989
+  store i32 %rem351, i32* %y, align 4, !dbg !989, !tbaa !694
+  %mb_addr352 = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 1, !dbg !990
+  %56 = load i32* %mb_addr352, align 4, !dbg !990, !tbaa !694
+  %pos_x = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 4, !dbg !990
+  %pos_y = getelementptr inbounds %struct.pix_pos* %pix, i64 0, i32 5, !dbg !990
+  tail call void @llvm.dbg.value(metadata !{i32 %56}, i64 0, metadata !991) #5, !dbg !992
+  tail call void @llvm.dbg.value(metadata !{i32* %pos_x}, i64 0, metadata !993) #5, !dbg !992
+  tail call void @llvm.dbg.value(metadata !{i32* %pos_y}, i64 0, metadata !994) #5, !dbg !992
+  tail call void @get_mb_block_pos(i32 %56, i32* %pos_x, i32* %pos_y) #8, !dbg !995
+  %57 = load i32* %pos_x, align 4, !dbg !996, !tbaa !694
+  %mul.i = shl nsw i32 %57, 4, !dbg !996
+  store i32 %mul.i, i32* %pos_x, align 4, !dbg !996, !tbaa !694
+  %58 = load i32* %pos_y, align 4, !dbg !997, !tbaa !694
+  %mul1.i = shl nsw i32 %58, 4, !dbg !997
+  store i32 %mul1.i, i32* %pos_y, align 4, !dbg !997, !tbaa !694
+  br i1 %tobool, label %if.then354, label %if.else361, !dbg !998
+
+if.then354:                                       ; preds = %if.then347
+  %59 = load i32* %x, align 4, !dbg !999, !tbaa !694
+  %add357 = add nsw i32 %mul.i, %59, !dbg !999
+  store i32 %add357, i32* %pos_x, align 4, !dbg !999, !tbaa !694
+  %60 = load i32* %y, align 4, !dbg !1001, !tbaa !694
+  %add360 = add nsw i32 %mul1.i, %60, !dbg !1001
+  store i32 %add360, i32* %pos_y, align 4, !dbg !1001, !tbaa !694
+  br label %if.end377, !dbg !1002
+
+if.else361:                                       ; preds = %if.then347
+  %61 = load %struct.ImageParameters** @img, align 8, !dbg !1003, !tbaa !691
+  %mb_cr_size_x363 = getelementptr inbounds %struct.ImageParameters* %61, i64 0, i32 161, !dbg !1003
+  %62 = load i32* %mb_cr_size_x363, align 4, !dbg !1003, !tbaa !694
+  %div364 = sdiv i32 16, %62, !dbg !1003
+  %div365 = sdiv i32 %mul.i, %div364, !dbg !1003
+  %63 = load i32* %x, align 4, !dbg !1003, !tbaa !694
+  %add367 = add nsw i32 %63, %div365, !dbg !1003
+  store i32 %add367, i32* %pos_x, align 4, !dbg !1003, !tbaa !694
+  %mb_cr_size_y370 = getelementptr inbounds %struct.ImageParameters* %61, i64 0, i32 162, !dbg !1005
+  %64 = load i32* %mb_cr_size_y370, align 4, !dbg !1005, !tbaa !694
+  %div371 = sdiv i32 16, %64, !dbg !1005
+  %div372 = sdiv i32 %mul1.i, %div371, !dbg !1005
+  %65 = load i32* %y, align 4, !dbg !1005, !tbaa !694
+  %add374 = add nsw i32 %65, %div372, !dbg !1005
+  store i32 %add374, i32* %pos_y, align 4, !dbg !1005, !tbaa !694
+  br label %if.end377
+
+if.end377:                                        ; preds = %if.end3, %lor.lhs.false, %if.end, %if.then354, %if.else361
+  ret void, !dbg !1006
 }

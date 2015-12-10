@@ -1,49 +1,55 @@
 define internal fastcc void @ix86_emit_save_regs_using_mov(%struct.rtx_def* %pointer, i64 %offset) #1 {
 entry:
-  br label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %pointer}, i64 0, metadata !3875), !dbg !6674
+  tail call void @llvm.dbg.value(metadata !{i64 %offset}, i64 0, metadata !3876), !dbg !6675
+  tail call void @llvm.dbg.value(metadata !1550, i64 0, metadata !3877), !dbg !6676
+  br label %for.body, !dbg !6676
 
 for.body:                                         ; preds = %for.inc, %entry
   %offset.addr.021 = phi i64 [ %offset, %entry ], [ %offset.addr.1, %for.inc ]
   %regno.020 = phi i32 [ 0, %entry ], [ %inc, %for.inc ]
-  %call = tail call fastcc i32 @ix86_save_reg(i32 %regno.020, i32 1) #10
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %for.inc, label %if.then
+  %call = tail call fastcc i32 @ix86_save_reg(i32 %regno.020, i32 1) #11, !dbg !6678
+  %tobool = icmp eq i32 %call, 0, !dbg !6678
+  br i1 %tobool, label %for.inc, label %if.then, !dbg !6678
 
 if.then:                                          ; preds = %for.body
-  %0 = load i32* @target_flags, align 4, !tbaa !0
-  %and = lshr i32 %0, 25
-  %1 = and i32 %and, 1
-  %2 = or i32 %1, 4
-  %call2 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 %2, %struct.rtx_def* %pointer) #9
-  %3 = load i32* @target_flags, align 4, !tbaa !0
-  %and3 = lshr i32 %3, 25
-  %4 = and i32 %and3, 1
-  %5 = or i32 %4, 4
-  %call6 = tail call %struct.rtx_def* @adjust_address_1(%struct.rtx_def* %call2, i32 %5, i64 %offset.addr.021, i32 1, i32 1) #9
-  %6 = load i32* @target_flags, align 4, !tbaa !0
-  %and7 = lshr i32 %6, 25
-  %7 = and i32 %and7, 1
-  %8 = or i32 %7, 4
-  %call10 = tail call %struct.rtx_def* @gen_rtx_REG(i32 %8, i32 %regno.020) #9
-  %call11 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call6, %struct.rtx_def* %call10) #9
-  %9 = bitcast %struct.rtx_def* %call11 to i32*
-  %bf.load = load i32* %9, align 8
-  %bf.set = or i32 %bf.load, -2147483648
-  store i32 %bf.set, i32* %9, align 8
-  %10 = load i32* @target_flags, align 4, !tbaa !0
-  %and12 = lshr i32 %10, 23
-  %11 = and i32 %and12, 4
-  %12 = add i32 %11, 4
-  %conv19 = zext i32 %12 to i64
-  %add = add nsw i64 %conv19, %offset.addr.021
-  br label %for.inc
+  %0 = load i32* @target_flags, align 4, !dbg !6679, !tbaa !4347
+  %and = lshr i32 %0, 25, !dbg !6679
+  %1 = and i32 %and, 1, !dbg !6679
+  %2 = or i32 %1, 4, !dbg !6679
+  %call2 = tail call %struct.rtx_def* @gen_rtx_MEM(i32 %2, %struct.rtx_def* %pointer) #10, !dbg !6679
+  %3 = load i32* @target_flags, align 4, !dbg !6679, !tbaa !4347
+  %and3 = lshr i32 %3, 25, !dbg !6679
+  %4 = and i32 %and3, 1, !dbg !6679
+  %5 = or i32 %4, 4, !dbg !6679
+  %call6 = tail call %struct.rtx_def* @adjust_address_1(%struct.rtx_def* %call2, i32 %5, i64 %offset.addr.021, i32 1, i32 1) #10, !dbg !6679
+  %6 = load i32* @target_flags, align 4, !dbg !6681, !tbaa !4347
+  %and7 = lshr i32 %6, 25, !dbg !6681
+  %7 = and i32 %and7, 1, !dbg !6681
+  %8 = or i32 %7, 4, !dbg !6681
+  %call10 = tail call %struct.rtx_def* @gen_rtx_REG(i32 %8, i32 %regno.020) #10, !dbg !6681
+  %call11 = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %call6, %struct.rtx_def* %call10) #10, !dbg !6681
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call11}, i64 0, metadata !3878), !dbg !6681
+  %9 = bitcast %struct.rtx_def* %call11 to i32*, !dbg !6682
+  %bf.load = load i32* %9, align 8, !dbg !6682
+  %bf.set = or i32 %bf.load, -2147483648, !dbg !6682
+  store i32 %bf.set, i32* %9, align 8, !dbg !6682
+  %10 = load i32* @target_flags, align 4, !dbg !6683, !tbaa !4347
+  %and12 = lshr i32 %10, 23, !dbg !6683
+  %11 = and i32 %and12, 4, !dbg !6683
+  %12 = add i32 %11, 4, !dbg !6683
+  %conv19 = zext i32 %12 to i64, !dbg !6683
+  %add = add nsw i64 %conv19, %offset.addr.021, !dbg !6683
+  tail call void @llvm.dbg.value(metadata !{i64 %add}, i64 0, metadata !3876), !dbg !6683
+  br label %for.inc, !dbg !6684
 
 for.inc:                                          ; preds = %for.body, %if.then
   %offset.addr.1 = phi i64 [ %add, %if.then ], [ %offset.addr.021, %for.body ]
-  %inc = add nsw i32 %regno.020, 1
-  %exitcond = icmp eq i32 %inc, 53
-  br i1 %exitcond, label %for.end, label %for.body
+  %inc = add nsw i32 %regno.020, 1, !dbg !6676
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !3877), !dbg !6676
+  %exitcond = icmp eq i32 %inc, 53, !dbg !6676
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !6676
 
 for.end:                                          ; preds = %for.inc
-  ret void
+  ret void, !dbg !6685
 }

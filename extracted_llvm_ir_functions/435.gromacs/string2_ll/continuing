@@ -1,24 +1,27 @@
-define i32 @continuing(i8* %s) #3 {
-  tail call void @rtrim(i8* %s) #11
-  %1 = tail call i64 @strlen(i8* %s) #10
-  %2 = trunc i64 %1 to i32
-  %3 = icmp sgt i32 %2, 0
-  br i1 %3, label %4, label %11
+define i32 @continuing(i8* %s) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %s}, i64 0, metadata !12), !dbg !185
+  tail call void @rtrim(i8* %s) #8, !dbg !186
+  %call = tail call i64 @strlen(i8* %s) #9, !dbg !187
+  %conv = trunc i64 %call to i32, !dbg !187
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !13), !dbg !187
+  %cmp = icmp sgt i32 %conv, 0, !dbg !188
+  br i1 %cmp, label %land.lhs.true, label %return, !dbg !188
 
-; <label>:4                                       ; preds = %0
-  %5 = shl i64 %1, 32
-  %sext = add i64 %5, -4294967296
-  %6 = ashr exact i64 %sext, 32
-  %7 = getelementptr inbounds i8* %s, i64 %6
-  %8 = load i8* %7, align 1, !tbaa !13
-  %9 = icmp eq i8 %8, 92
-  br i1 %9, label %10, label %11
+land.lhs.true:                                    ; preds = %entry
+  %sub = shl i64 %call, 32, !dbg !188
+  %sext = add i64 %sub, -4294967296, !dbg !188
+  %idxprom = ashr exact i64 %sext, 32, !dbg !188
+  %arrayidx = getelementptr inbounds i8* %s, i64 %idxprom, !dbg !188
+  %0 = load i8* %arrayidx, align 1, !dbg !188, !tbaa !189
+  %cmp3 = icmp eq i8 %0, 92, !dbg !188
+  br i1 %cmp3, label %if.then, label %return, !dbg !188
 
-; <label>:10                                      ; preds = %4
-  store i8 0, i8* %7, align 1, !tbaa !13
-  br label %11
+if.then:                                          ; preds = %land.lhs.true
+  store i8 0, i8* %arrayidx, align 1, !dbg !191, !tbaa !189
+  br label %return, !dbg !193
 
-; <label>:11                                      ; preds = %0, %4, %10
-  %.0 = phi i32 [ 1, %10 ], [ 0, %4 ], [ 0, %0 ]
-  ret i32 %.0
+return:                                           ; preds = %entry, %land.lhs.true, %if.then
+  %retval.0 = phi i32 [ 1, %if.then ], [ 0, %land.lhs.true ], [ 0, %entry ]
+  ret i32 %retval.0, !dbg !194
 }

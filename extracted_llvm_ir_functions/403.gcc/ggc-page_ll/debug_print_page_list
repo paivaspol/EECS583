@@ -1,32 +1,33 @@
 define void @debug_print_page_list(i32 %order) #0 {
 entry:
-  %idxprom = sext i32 %order to i64
-  %arrayidx = getelementptr inbounds %struct.globals* @G, i64 0, i32 0, i64 %idxprom
-  %0 = load %struct.page_entry** %arrayidx, align 8, !tbaa !0
-  %arrayidx2 = getelementptr inbounds %struct.globals* @G, i64 0, i32 1, i64 %idxprom
-  %1 = load %struct.page_entry** %arrayidx2, align 8, !tbaa !0
-  %call = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([19 x i8]* @.str, i64 0, i64 0), %struct.page_entry* %0, %struct.page_entry* %1) #8
-  %p.015 = load %struct.page_entry** %arrayidx, align 8
-  %cmp16 = icmp eq %struct.page_entry* %p.015, null
-  br i1 %cmp16, label %while.end, label %while.body
+  tail call void @llvm.dbg.value(metadata !{i32 %order}, i64 0, metadata !60), !dbg !374
+  %idxprom = sext i32 %order to i64, !dbg !375
+  %arrayidx = getelementptr inbounds %struct.globals* @G, i64 0, i32 0, i64 %idxprom, !dbg !375
+  %0 = load %struct.page_entry** %arrayidx, align 8, !dbg !375, !tbaa !376
+  %arrayidx2 = getelementptr inbounds %struct.globals* @G, i64 0, i32 1, i64 %idxprom, !dbg !375
+  %1 = load %struct.page_entry** %arrayidx2, align 8, !dbg !375, !tbaa !376
+  %call = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([19 x i8]* @.str, i64 0, i64 0), %struct.page_entry* %0, %struct.page_entry* %1) #9, !dbg !375
+  %p.015 = load %struct.page_entry** %arrayidx, align 8, !dbg !379
+  %cmp16 = icmp eq %struct.page_entry* %p.015, null, !dbg !380
+  br i1 %cmp16, label %while.end, label %while.body, !dbg !380
 
 while.body:                                       ; preds = %entry, %while.body
   %p.017 = phi %struct.page_entry* [ %p.0, %while.body ], [ %p.015, %entry ]
-  %context_depth = getelementptr inbounds %struct.page_entry* %p.017, i64 0, i32 5
-  %2 = load i16* %context_depth, align 2, !tbaa !3
-  %conv = zext i16 %2 to i32
-  %num_free_objects = getelementptr inbounds %struct.page_entry* %p.017, i64 0, i32 6
-  %3 = load i16* %num_free_objects, align 2, !tbaa !3
-  %conv5 = zext i16 %3 to i32
-  %call6 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([16 x i8]* @.str1, i64 0, i64 0), %struct.page_entry* %p.017, i32 %conv, i32 %conv5) #8
-  %next = getelementptr inbounds %struct.page_entry* %p.017, i64 0, i32 0
-  %p.0 = load %struct.page_entry** %next, align 8
-  %cmp = icmp eq %struct.page_entry* %p.0, null
-  br i1 %cmp, label %while.end, label %while.body
+  %context_depth = getelementptr inbounds %struct.page_entry* %p.017, i64 0, i32 5, !dbg !381
+  %2 = load i16* %context_depth, align 2, !dbg !381, !tbaa !383
+  %conv = zext i16 %2 to i32, !dbg !381
+  %num_free_objects = getelementptr inbounds %struct.page_entry* %p.017, i64 0, i32 6, !dbg !381
+  %3 = load i16* %num_free_objects, align 2, !dbg !381, !tbaa !383
+  %conv5 = zext i16 %3 to i32, !dbg !381
+  %call6 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([16 x i8]* @.str1, i64 0, i64 0), %struct.page_entry* %p.017, i32 %conv, i32 %conv5) #9, !dbg !381
+  %next = getelementptr inbounds %struct.page_entry* %p.017, i64 0, i32 0, !dbg !384
+  %p.0 = load %struct.page_entry** %next, align 8, !dbg !379
+  %cmp = icmp eq %struct.page_entry* %p.0, null, !dbg !380
+  br i1 %cmp, label %while.end, label %while.body, !dbg !380
 
 while.end:                                        ; preds = %while.body, %entry
-  %puts = tail call i32 @puts(i8* getelementptr inbounds ([5 x i8]* @str, i64 0, i64 0))
-  %4 = load %struct._IO_FILE** @stdout, align 8, !tbaa !0
-  %call8 = tail call i32 @fflush(%struct._IO_FILE* %4) #8
-  ret void
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([5 x i8]* @str, i64 0, i64 0)), !dbg !385
+  %4 = load %struct._IO_FILE** @stdout, align 8, !dbg !386, !tbaa !376
+  %call8 = tail call i32 @fflush(%struct._IO_FILE* %4) #9, !dbg !386
+  ret void, !dbg !387
 }

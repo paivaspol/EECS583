@@ -1,15 +1,16 @@
 define void @modify_redundant_pic_cnt(i8* nocapture %buffer) #0 {
 entry:
-  %0 = load i32* @rpc_bits_to_go, align 4, !tbaa !3
-  %sub = add nsw i32 %0, -1
-  %shl = shl i32 1, %sub
-  %1 = load i32* @rpc_bytes_to_go, align 4, !tbaa !3
-  %idxprom = sext i32 %1 to i64
-  %arrayidx = getelementptr inbounds i8* %buffer, i64 %idxprom
-  %2 = load i8* %arrayidx, align 1, !tbaa !1
-  %conv2 = zext i8 %2 to i32
-  %or = or i32 %conv2, %shl
-  %conv3 = trunc i32 %or to i8
-  store i8 %conv3, i8* %arrayidx, align 1, !tbaa !1
-  ret void
+  tail call void @llvm.dbg.value(metadata !{i8* %buffer}, i64 0, metadata !280), !dbg !1151
+  %0 = load i32* @rpc_bits_to_go, align 4, !dbg !1152, !tbaa !769
+  %sub = add nsw i32 %0, -1, !dbg !1152
+  %shl = shl i32 1, %sub, !dbg !1152
+  %1 = load i32* @rpc_bytes_to_go, align 4, !dbg !1153, !tbaa !769
+  %idxprom = sext i32 %1 to i64, !dbg !1153
+  %arrayidx = getelementptr inbounds i8* %buffer, i64 %idxprom, !dbg !1153
+  %2 = load i8* %arrayidx, align 1, !dbg !1153, !tbaa !766
+  %conv2 = zext i8 %2 to i32, !dbg !1153
+  %or = or i32 %conv2, %shl, !dbg !1153
+  %conv3 = trunc i32 %or to i8, !dbg !1153
+  store i8 %conv3, i8* %arrayidx, align 1, !dbg !1153, !tbaa !766
+  ret void, !dbg !1154
 }

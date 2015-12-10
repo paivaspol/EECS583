@@ -1,56 +1,61 @@
 define i32 @get_mem2Dint64(i64*** nocapture %array2D, i32 %rows, i32 %columns) #0 {
 entry:
-  %conv = sext i32 %rows to i64
-  %call = tail call noalias i8* @calloc(i64 %conv, i64 8) #3
-  %0 = bitcast i8* %call to i64**
-  store i64** %0, i64*** %array2D, align 8, !tbaa !0
-  %cmp = icmp eq i8* %call, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i64*** %array2D}, i64 0, metadata !96), !dbg !879
+  tail call void @llvm.dbg.value(metadata !{i32 %rows}, i64 0, metadata !97), !dbg !879
+  tail call void @llvm.dbg.value(metadata !{i32 %columns}, i64 0, metadata !98), !dbg !879
+  %conv = sext i32 %rows to i64, !dbg !880
+  %call = tail call noalias i8* @calloc(i64 %conv, i64 8) #4, !dbg !880
+  %0 = bitcast i8* %call to i64**, !dbg !880
+  store i64** %0, i64*** %array2D, align 8, !dbg !880, !tbaa !760
+  %cmp = icmp eq i8* %call, null, !dbg !880
+  br i1 %cmp, label %if.then, label %if.end, !dbg !880
 
 if.then:                                          ; preds = %entry
-  %call.i = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([30 x i8]* @.str20, i64 0, i64 0), i8* getelementptr inbounds ([24 x i8]* @.str8, i64 0, i64 0)) #3
-  tail call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 100) #3
-  %.pre = load i64*** %array2D, align 8, !tbaa !0
-  br label %if.end
+  tail call void @llvm.dbg.value(metadata !881, i64 0, metadata !882) #5, !dbg !884
+  %call.i = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([30 x i8]* @.str20, i64 0, i64 0), i8* getelementptr inbounds ([24 x i8]* @.str8, i64 0, i64 0)) #4, !dbg !885
+  tail call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 100) #4, !dbg !886
+  %.pre = load i64*** %array2D, align 8, !dbg !887, !tbaa !760
+  br label %if.end, !dbg !883
 
 if.end:                                           ; preds = %if.then, %entry
   %1 = phi i64** [ %.pre, %if.then ], [ %0, %entry ]
-  %mul = mul nsw i32 %columns, %rows
-  %conv2 = sext i32 %mul to i64
-  %call3 = tail call noalias i8* @calloc(i64 %conv2, i64 8) #3
-  %2 = bitcast i8* %call3 to i64*
-  store i64* %2, i64** %1, align 8, !tbaa !0
-  %cmp4 = icmp eq i8* %call3, null
-  br i1 %cmp4, label %if.then6, label %for.cond.preheader
+  %mul = mul nsw i32 %columns, %rows, !dbg !887
+  %conv2 = sext i32 %mul to i64, !dbg !887
+  %call3 = tail call noalias i8* @calloc(i64 %conv2, i64 8) #4, !dbg !887
+  %2 = bitcast i8* %call3 to i64*, !dbg !887
+  store i64* %2, i64** %1, align 8, !dbg !887, !tbaa !760
+  %cmp4 = icmp eq i8* %call3, null, !dbg !887
+  br i1 %cmp4, label %if.then6, label %for.cond.preheader, !dbg !887
 
 if.then6:                                         ; preds = %if.end
-  %call.i28 = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([30 x i8]* @.str20, i64 0, i64 0), i8* getelementptr inbounds ([24 x i8]* @.str8, i64 0, i64 0)) #3
-  tail call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 100) #3
-  br label %for.cond.preheader
+  tail call void @llvm.dbg.value(metadata !881, i64 0, metadata !888) #5, !dbg !890
+  %call.i28 = tail call i32 (i8*, i64, i8*, ...)* @snprintf(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i64 300, i8* getelementptr inbounds ([30 x i8]* @.str20, i64 0, i64 0), i8* getelementptr inbounds ([24 x i8]* @.str8, i64 0, i64 0)) #4, !dbg !891
+  tail call void @error(i8* getelementptr inbounds ([300 x i8]* @errortext, i64 0, i64 0), i32 100) #4, !dbg !892
+  br label %for.cond.preheader, !dbg !889
 
 for.cond.preheader:                               ; preds = %if.then6, %if.end
-  %cmp829 = icmp sgt i32 %rows, 1
-  br i1 %cmp829, label %for.body.lr.ph, label %for.end
+  %cmp829 = icmp sgt i32 %rows, 1, !dbg !893
+  br i1 %cmp829, label %for.body.lr.ph, label %for.end, !dbg !893
 
 for.body.lr.ph:                                   ; preds = %for.cond.preheader
-  %idx.ext = sext i32 %columns to i64
-  br label %for.body
+  %idx.ext = sext i32 %columns to i64, !dbg !895
+  br label %for.body, !dbg !893
 
 for.body:                                         ; preds = %for.body, %for.body.lr.ph
   %indvars.iv = phi i64 [ 1, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
-  %3 = add nsw i64 %indvars.iv, -1
-  %4 = load i64*** %array2D, align 8, !tbaa !0
-  %arrayidx10 = getelementptr inbounds i64** %4, i64 %3
-  %5 = load i64** %arrayidx10, align 8, !tbaa !0
-  %add.ptr = getelementptr inbounds i64* %5, i64 %idx.ext
-  %arrayidx12 = getelementptr inbounds i64** %4, i64 %indvars.iv
-  store i64* %add.ptr, i64** %arrayidx12, align 8, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %rows
-  br i1 %exitcond, label %for.end, label %for.body
+  %3 = add nsw i64 %indvars.iv, -1, !dbg !895
+  %4 = load i64*** %array2D, align 8, !dbg !895, !tbaa !760
+  %arrayidx10 = getelementptr inbounds i64** %4, i64 %3, !dbg !895
+  %5 = load i64** %arrayidx10, align 8, !dbg !895, !tbaa !760
+  %add.ptr = getelementptr inbounds i64* %5, i64 %idx.ext, !dbg !895
+  %arrayidx12 = getelementptr inbounds i64** %4, i64 %indvars.iv, !dbg !895
+  store i64* %add.ptr, i64** %arrayidx12, align 8, !dbg !895, !tbaa !760
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !893
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !893
+  %exitcond = icmp eq i32 %lftr.wideiv, %rows, !dbg !893
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !893
 
 for.end:                                          ; preds = %for.body, %for.cond.preheader
-  %mul15 = shl i32 %mul, 3
-  ret i32 %mul15
+  %mul15 = shl i32 %mul, 3, !dbg !896
+  ret i32 %mul15, !dbg !896
 }

@@ -1,35 +1,39 @@
 define double** @DMX2Alloc(i32 %rows, i32 %cols) #0 {
 entry:
-  %conv = sext i32 %rows to i64
-  %mul = shl nsw i64 %conv, 3
-  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([54 x i8]* @.str, i64 0, i64 0), i32 190, i64 %mul) #4
-  %0 = bitcast i8* %call to double**
-  %conv3 = sext i32 %cols to i64
-  %mul4 = mul i64 %mul, %conv3
-  %call5 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([54 x i8]* @.str, i64 0, i64 0), i32 191, i64 %mul4) #4
-  %1 = bitcast i8* %call5 to double*
-  store double* %1, double** %0, align 8, !tbaa !4
-  %cmp18 = icmp sgt i32 %rows, 1
-  br i1 %cmp18, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{i32 %rows}, i64 0, metadata !74), !dbg !189
+  tail call void @llvm.dbg.value(metadata !{i32 %cols}, i64 0, metadata !75), !dbg !189
+  %conv = sext i32 %rows to i64, !dbg !190
+  %mul = shl nsw i64 %conv, 3, !dbg !190
+  %call = tail call i8* @sre_malloc(i8* getelementptr inbounds ([54 x i8]* @.str, i64 0, i64 0), i32 190, i64 %mul) #5, !dbg !190
+  %0 = bitcast i8* %call to double**, !dbg !190
+  tail call void @llvm.dbg.value(metadata !{double** %0}, i64 0, metadata !76), !dbg !190
+  %conv3 = sext i32 %cols to i64, !dbg !191
+  %mul4 = mul i64 %mul, %conv3, !dbg !191
+  %call5 = tail call i8* @sre_malloc(i8* getelementptr inbounds ([54 x i8]* @.str, i64 0, i64 0), i32 191, i64 %mul4) #5, !dbg !191
+  %1 = bitcast i8* %call5 to double*, !dbg !191
+  store double* %1, double** %0, align 8, !dbg !191, !tbaa !179
+  tail call void @llvm.dbg.value(metadata !180, i64 0, metadata !77), !dbg !192
+  %cmp18 = icmp sgt i32 %rows, 1, !dbg !192
+  br i1 %cmp18, label %for.body, label %for.end, !dbg !192
 
 for.body:                                         ; preds = %entry, %for.body.for.body_crit_edge
   %2 = phi double* [ %.pre, %for.body.for.body_crit_edge ], [ %1, %entry ]
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body.for.body_crit_edge ], [ 1, %entry ]
-  %3 = trunc i64 %indvars.iv to i32
-  %mul8 = mul nsw i32 %3, %cols
-  %idx.ext = sext i32 %mul8 to i64
-  %add.ptr = getelementptr inbounds double* %2, i64 %idx.ext
-  %arrayidx9 = getelementptr inbounds double** %0, i64 %indvars.iv
-  store double* %add.ptr, double** %arrayidx9, align 8, !tbaa !4
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %rows
-  br i1 %exitcond, label %for.end, label %for.body.for.body_crit_edge
+  %3 = trunc i64 %indvars.iv to i32, !dbg !194
+  %mul8 = mul nsw i32 %3, %cols, !dbg !194
+  %idx.ext = sext i32 %mul8 to i64, !dbg !194
+  %add.ptr = getelementptr inbounds double* %2, i64 %idx.ext, !dbg !194
+  %arrayidx9 = getelementptr inbounds double** %0, i64 %indvars.iv, !dbg !194
+  store double* %add.ptr, double** %arrayidx9, align 8, !dbg !194, !tbaa !179
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !192
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !192
+  %exitcond = icmp eq i32 %lftr.wideiv, %rows, !dbg !192
+  br i1 %exitcond, label %for.end, label %for.body.for.body_crit_edge, !dbg !192
 
 for.body.for.body_crit_edge:                      ; preds = %for.body
-  %.pre = load double** %0, align 8, !tbaa !4
-  br label %for.body
+  %.pre = load double** %0, align 8, !dbg !194, !tbaa !179
+  br label %for.body, !dbg !192
 
 for.end:                                          ; preds = %for.body, %entry
-  ret double** %0
+  ret double** %0, !dbg !195
 }

@@ -1,7 +1,12 @@
 define void @cctk_timerreset_(i32* nocapture %ierr, i8* %cctk_str1, i32 %cctk_strlen1) #1 {
-  %1 = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #7
-  %2 = tail call i32 @CCTK_TimerReset(i8* %1) #8
-  store i32 %2, i32* %ierr, align 4, !tbaa !11
-  tail call void @free(i8* %1) #8
-  ret void
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %ierr}, i64 0, metadata !199), !dbg !584
+  tail call void @llvm.dbg.value(metadata !{i8* %cctk_str1}, i64 0, metadata !200), !dbg !584
+  tail call void @llvm.dbg.value(metadata !{i32 %cctk_strlen1}, i64 0, metadata !201), !dbg !584
+  %call = tail call i8* @Util_NullTerminateString(i8* %cctk_str1, i32 %cctk_strlen1) #8, !dbg !585
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !202), !dbg !585
+  %call1 = tail call i32 @CCTK_TimerReset(i8* %call) #10, !dbg !586
+  store i32 %call1, i32* %ierr, align 4, !dbg !586, !tbaa !359
+  tail call void @free(i8* %call) #8, !dbg !587
+  ret void, !dbg !588
 }

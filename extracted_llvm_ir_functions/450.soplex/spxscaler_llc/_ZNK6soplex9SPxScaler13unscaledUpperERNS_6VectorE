@@ -1,0 +1,54 @@
+define void @_ZNK6soplex9SPxScaler13unscaledUpperERNS_6VectorE(%"class.soplex::SPxScaler"* nocapture %this, %"class.soplex::Vector"* %uupper) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SPxScaler"* %this}, i64 0, metadata !5259), !dbg !6224
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::Vector"* %uupper}, i64 0, metadata !5260), !dbg !6224
+  %m_lp = getelementptr inbounds %"class.soplex::SPxScaler"* %this, i64 0, i32 2, !dbg !6225
+  %0 = load %"class.soplex::SPxLP"** %m_lp, align 8, !dbg !6225, !tbaa !5661
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SPxLP"* %0}, i64 0, metadata !6226), !dbg !6227
+  %1 = getelementptr inbounds %"class.soplex::SPxLP"* %0, i64 0, i32 2, i32 2, i32 0, !dbg !6228
+  %call2 = tail call %"class.soplex::Vector"* @_ZN6soplex6VectoraSERKS0_(%"class.soplex::Vector"* %uupper, %"class.soplex::Vector"* %1) #10, !dbg !6225
+  tail call void @llvm.dbg.value(metadata !5182, i64 0, metadata !5261), !dbg !6232
+  %2 = load %"class.soplex::SPxLP"** %m_lp, align 8, !dbg !6232, !tbaa !5661
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SPxLP"* %2}, i64 0, metadata !6233), !dbg !6234
+  %thenum.i.i.i.i20 = getelementptr inbounds %"class.soplex::SPxLP"* %2, i64 0, i32 2, i32 0, i32 1, i32 4, !dbg !6235
+  %3 = load i32* %thenum.i.i.i.i20, align 4, !dbg !6235, !tbaa !5732
+  %cmp21 = icmp sgt i32 %3, 0, !dbg !6232
+  br i1 %cmp21, label %for.body.lr.ph, label %for.end, !dbg !6232
+
+for.body.lr.ph:                                   ; preds = %entry
+  %val.i18 = getelementptr inbounds %"class.soplex::Vector"* %uupper, i64 0, i32 1, !dbg !6239
+  %4 = load double** %val.i18, align 8, !dbg !6239, !tbaa !5661
+  %5 = load double* @_ZN6soplex8infinityE, align 8, !dbg !6240, !tbaa !5739
+  %data.i = getelementptr inbounds %"class.soplex::SPxScaler"* %this, i64 0, i32 3, i32 2, !dbg !6241
+  br label %for.body, !dbg !6232
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.inc
+  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.inc ]
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::Vector"* %uupper}, i64 0, metadata !6243), !dbg !6244
+  tail call void @llvm.dbg.value(metadata !5736, i64 0, metadata !6245), !dbg !6244
+  %arrayidx.i19 = getelementptr inbounds double* %4, i64 %indvars.iv, !dbg !6239
+  %6 = load double* %arrayidx.i19, align 8, !dbg !6240, !tbaa !5739
+  %cmp6 = fcmp olt double %6, %5, !dbg !6240
+  br i1 %cmp6, label %if.then, label %for.inc, !dbg !6240
+
+if.then:                                          ; preds = %for.body
+  tail call void @llvm.dbg.value(metadata !5736, i64 0, metadata !6246), !dbg !6247
+  %7 = load double** %data.i, align 8, !dbg !6241, !tbaa !5661
+  %arrayidx.i16 = getelementptr inbounds double* %7, i64 %indvars.iv, !dbg !6241
+  %8 = load double* %arrayidx.i16, align 8, !dbg !6242, !tbaa !5739
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::Vector"* %uupper}, i64 0, metadata !6248), !dbg !6249
+  tail call void @llvm.dbg.value(metadata !5736, i64 0, metadata !6250), !dbg !6249
+  %mul = fmul double %6, %8, !dbg !6242
+  store double %mul, double* %arrayidx.i19, align 8, !dbg !6242, !tbaa !5739
+  br label %for.inc, !dbg !6242
+
+for.inc:                                          ; preds = %for.body, %if.then
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !6232
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SPxLP"* %2}, i64 0, metadata !6233), !dbg !6234
+  %9 = trunc i64 %indvars.iv.next to i32, !dbg !6232
+  %cmp = icmp slt i32 %9, %3, !dbg !6232
+  br i1 %cmp, label %for.body, label %for.end, !dbg !6232
+
+for.end:                                          ; preds = %for.inc, %entry
+  ret void, !dbg !6251
+}

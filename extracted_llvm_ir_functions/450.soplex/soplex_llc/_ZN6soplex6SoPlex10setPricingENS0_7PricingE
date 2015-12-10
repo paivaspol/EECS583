@@ -1,0 +1,27 @@
+define void @_ZN6soplex6SoPlex10setPricingENS0_7PricingE(%"class.soplex::SoPlex"* %this, i32 %pr) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SoPlex"* %this}, i64 0, metadata !7207), !dbg !9101
+  tail call void @llvm.dbg.value(metadata !{i32 %pr}, i64 0, metadata !7208), !dbg !9101
+  %thePricing = getelementptr inbounds %"class.soplex::SoPlex"* %this, i64 0, i32 3, !dbg !9102
+  store i32 %pr, i32* %thePricing, align 4, !dbg !9102, !tbaa !9103
+  %initialized = getelementptr inbounds %"class.soplex::SoPlex"* %this, i64 0, i32 15, !dbg !9104
+  %0 = load i8* %initialized, align 1, !dbg !9104, !tbaa !9093, !range !9094
+  %tobool = icmp eq i8 %0, 0, !dbg !9104
+  br i1 %tobool, label %if.end, label %land.lhs.true, !dbg !9104
+
+land.lhs.true:                                    ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SoPlex"* %this}, i64 0, metadata !9105), !dbg !9106
+  %theType.i = getelementptr inbounds %"class.soplex::SoPlex"* %this, i64 0, i32 2, !dbg !9107
+  %1 = load i32* %theType.i, align 4, !dbg !9107, !tbaa !9108
+  %cmp = icmp eq i32 %1, -1, !dbg !9104
+  br i1 %cmp, label %if.then, label %if.end, !dbg !9104
+
+if.then:                                          ; preds = %land.lhs.true
+  tail call void @_ZN6soplex6SoPlex11computePvecEv(%"class.soplex::SoPlex"* %this) #12, !dbg !9109
+  tail call void @_ZN6soplex6SoPlex13computeCoTestEv(%"class.soplex::SoPlex"* %this) #12, !dbg !9111
+  tail call void @_ZN6soplex6SoPlex11computeTestEv(%"class.soplex::SoPlex"* %this) #12, !dbg !9112
+  br label %if.end, !dbg !9113
+
+if.end:                                           ; preds = %entry, %if.then, %land.lhs.true
+  ret void, !dbg !9114
+}

@@ -1,22 +1,23 @@
 define i32 @standard_sse_constant_p(%struct.rtx_def* %x) #2 {
 entry:
-  %0 = bitcast %struct.rtx_def* %x to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 55
-  br i1 %cmp, label %if.end, label %return
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !2462), !dbg !6504
+  %0 = bitcast %struct.rtx_def* %x to i32*, !dbg !6505
+  %bf.load = load i32* %0, align 8, !dbg !6505
+  %bf.clear = and i32 %bf.load, 65535, !dbg !6505
+  %cmp = icmp eq i32 %bf.clear, 55, !dbg !6505
+  br i1 %cmp, label %if.end, label %return, !dbg !6505
 
 if.end:                                           ; preds = %entry
-  %bf.lshr = lshr i32 %bf.load, 16
-  %bf.clear2 = and i32 %bf.lshr, 255
-  %idxprom6 = zext i32 %bf.clear2 to i64
-  %arrayidx = getelementptr inbounds [3 x [59 x %struct.rtx_def*]]* @const_tiny_rtx, i64 0, i64 0, i64 %idxprom6
-  %1 = load %struct.rtx_def** %arrayidx, align 8, !tbaa !4
-  %cmp3 = icmp eq %struct.rtx_def* %1, %x
-  %conv = zext i1 %cmp3 to i32
-  br label %return
+  %bf.lshr = lshr i32 %bf.load, 16, !dbg !6506
+  %bf.clear2 = and i32 %bf.lshr, 255, !dbg !6506
+  %idxprom6 = zext i32 %bf.clear2 to i64, !dbg !6506
+  %arrayidx = getelementptr inbounds [3 x [59 x %struct.rtx_def*]]* @const_tiny_rtx, i64 0, i64 0, i64 %idxprom6, !dbg !6506
+  %1 = load %struct.rtx_def** %arrayidx, align 8, !dbg !6506, !tbaa !4365
+  %cmp3 = icmp eq %struct.rtx_def* %1, %x, !dbg !6506
+  %conv = zext i1 %cmp3 to i32, !dbg !6506
+  br label %return, !dbg !6506
 
 return:                                           ; preds = %entry, %if.end
   %retval.0 = phi i32 [ %conv, %if.end ], [ -1, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !6507
 }

@@ -1,34 +1,41 @@
 define i64 @trunc_int_for_mode(i64 %c, i32 %mode) #0 {
 entry:
-  %idxprom = sext i32 %mode to i64
-  %arrayidx = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom
-  %0 = load i16* %arrayidx, align 2, !tbaa !0
-  %conv = zext i16 %0 to i64
-  %cmp = icmp eq i32 %mode, 1
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i64 %c}, i64 0, metadata !1197), !dbg !1917
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !1198), !dbg !1918
+  %idxprom = sext i32 %mode to i64, !dbg !1919
+  %arrayidx = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom, !dbg !1919
+  %0 = load i16* %arrayidx, align 2, !dbg !1919, !tbaa !1920
+  %conv = zext i16 %0 to i64, !dbg !1919
+  %cmp = icmp eq i32 %mode, 1, !dbg !1923
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1923
 
 if.then:                                          ; preds = %entry
-  %cond = and i64 %c, 1
-  br label %return
+  %cond = and i64 %c, 1, !dbg !1924
+  br label %return, !dbg !1924
 
 if.end:                                           ; preds = %entry
-  %cmp3 = icmp ne i16 %0, 0
-  %cmp5 = icmp ult i16 %0, 64
-  %or.cond = and i1 %cmp3, %cmp5
-  br i1 %or.cond, label %if.then7, label %return
+  %cmp3 = icmp ne i16 %0, 0, !dbg !1925
+  %cmp5 = icmp ult i16 %0, 64, !dbg !1925
+  %or.cond = and i1 %cmp3, %cmp5, !dbg !1925
+  br i1 %or.cond, label %if.then7, label %return, !dbg !1925
 
 if.then7:                                         ; preds = %if.end
-  %sub = add i64 %conv, 4294967295
-  %sh_prom = and i64 %sub, 4294967295
-  %shl = shl i64 1, %sh_prom
-  %shl8 = shl i64 %shl, 1
-  %sub9 = add nsw i64 %shl8, -1
-  %and10 = and i64 %sub9, %c
-  %xor = xor i64 %and10, %shl
-  %sub11 = sub nsw i64 %xor, %shl
-  br label %return
+  tail call void @llvm.dbg.value(metadata !1926, i64 0, metadata !1201), !dbg !1927
+  %sub = add i64 %conv, 4294967295, !dbg !1928
+  %sh_prom = and i64 %sub, 4294967295, !dbg !1928
+  %shl = shl i64 1, %sh_prom, !dbg !1928
+  tail call void @llvm.dbg.value(metadata !{i64 %shl}, i64 0, metadata !1201), !dbg !1928
+  %shl8 = shl i64 %shl, 1, !dbg !1929
+  %sub9 = add nsw i64 %shl8, -1, !dbg !1929
+  %and10 = and i64 %sub9, %c, !dbg !1929
+  tail call void @llvm.dbg.value(metadata !{i64 %and10}, i64 0, metadata !1197), !dbg !1929
+  %xor = xor i64 %and10, %shl, !dbg !1930
+  tail call void @llvm.dbg.value(metadata !{i64 %xor}, i64 0, metadata !1197), !dbg !1930
+  %sub11 = sub nsw i64 %xor, %shl, !dbg !1931
+  tail call void @llvm.dbg.value(metadata !{i64 %sub11}, i64 0, metadata !1197), !dbg !1931
+  br label %return, !dbg !1932
 
 return:                                           ; preds = %if.end, %if.then7, %if.then
   %retval.0 = phi i64 [ %cond, %if.then ], [ %sub11, %if.then7 ], [ %c, %if.end ]
-  ret i64 %retval.0
+  ret i64 %retval.0, !dbg !1933
 }

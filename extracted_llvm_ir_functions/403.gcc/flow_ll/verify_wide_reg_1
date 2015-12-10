@@ -1,37 +1,41 @@
-define internal i32 @verify_wide_reg_1(%struct.rtx_def** nocapture %px, i8* nocapture %pregno) #5 {
+define internal i32 @verify_wide_reg_1(%struct.rtx_def** nocapture %px, i8* nocapture %pregno) #6 {
 entry:
-  %0 = load %struct.rtx_def** %px, align 8, !tbaa !3
-  %1 = bitcast %struct.rtx_def* %0 to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 61
-  br i1 %cmp, label %land.lhs.true, label %return
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %px}, i64 0, metadata !2027), !dbg !3404
+  tail call void @llvm.dbg.value(metadata !{i8* %pregno}, i64 0, metadata !2028), !dbg !3405
+  %0 = load %struct.rtx_def** %px, align 8, !dbg !3406, !tbaa !2131
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %0}, i64 0, metadata !2029), !dbg !3406
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !2030), !dbg !3407
+  %1 = bitcast %struct.rtx_def* %0 to i32*, !dbg !3408
+  %bf.load = load i32* %1, align 8, !dbg !3408
+  %bf.clear = and i32 %bf.load, 65535, !dbg !3408
+  %cmp = icmp eq i32 %bf.clear, 61, !dbg !3408
+  br i1 %cmp, label %land.lhs.true, label %return, !dbg !3408
 
 land.lhs.true:                                    ; preds = %entry
-  %2 = bitcast i8* %pregno to i32*
-  %3 = load i32* %2, align 4, !tbaa !0
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*
-  %4 = load i32* %rtuint, align 4, !tbaa !0
-  %cmp1 = icmp eq i32 %4, %3
-  br i1 %cmp1, label %if.then, label %return
+  %2 = bitcast i8* %pregno to i32*, !dbg !3407
+  %3 = load i32* %2, align 4, !dbg !3407, !tbaa !2128
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %0, i64 0, i32 1, i64 0, !dbg !3408
+  %rtuint = bitcast %union.rtunion_def* %arrayidx to i32*, !dbg !3408
+  %4 = load i32* %rtuint, align 4, !dbg !3408, !tbaa !2128
+  %cmp1 = icmp eq i32 %4, %3, !dbg !3408
+  br i1 %cmp1, label %if.then, label %return, !dbg !3408
 
 if.then:                                          ; preds = %land.lhs.true
-  %bf.lshr = lshr i32 %bf.load, 16
-  %bf.clear3 = and i32 %bf.lshr, 255
-  %idxprom11 = zext i32 %bf.clear3 to i64
-  %arrayidx4 = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom11
-  %5 = load i16* %arrayidx4, align 2, !tbaa !7
-  %conv = zext i16 %5 to i32
-  %6 = load i32* @target_flags, align 4, !tbaa !0
-  %and = lshr i32 %6, 20
-  %7 = and i32 %and, 32
-  %8 = add i32 %7, 32
-  %cmp5 = icmp ugt i32 %conv, %8
-  %. = select i1 %cmp5, i32 1, i32 2
-  br label %return
+  %bf.lshr = lshr i32 %bf.load, 16, !dbg !3409
+  %bf.clear3 = and i32 %bf.lshr, 255, !dbg !3409
+  %idxprom11 = zext i32 %bf.clear3 to i64, !dbg !3409
+  %arrayidx4 = getelementptr inbounds [59 x i16]* @mode_bitsize, i64 0, i64 %idxprom11, !dbg !3409
+  %5 = load i16* %arrayidx4, align 2, !dbg !3409, !tbaa !3411
+  %conv = zext i16 %5 to i32, !dbg !3409
+  %6 = load i32* @target_flags, align 4, !dbg !3409, !tbaa !2128
+  %and = lshr i32 %6, 20, !dbg !3409
+  %7 = and i32 %and, 32, !dbg !3409
+  %8 = add i32 %7, 32, !dbg !3409
+  %cmp5 = icmp ugt i32 %conv, %8, !dbg !3409
+  %. = select i1 %cmp5, i32 1, i32 2, !dbg !3412
+  br label %return, !dbg !3412
 
 return:                                           ; preds = %entry, %land.lhs.true, %if.then
   %retval.0 = phi i32 [ %., %if.then ], [ 0, %land.lhs.true ], [ 0, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !3413
 }

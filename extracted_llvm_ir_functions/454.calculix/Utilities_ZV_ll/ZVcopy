@@ -1,39 +1,43 @@
 define void @ZVcopy(i32 %size, double* %y, double* %x) #0 {
 entry:
-  %cmp = icmp slt i32 %size, 0
-  %cmp1 = icmp eq double* %y, null
-  %or.cond = or i1 %cmp, %cmp1
-  %cmp3 = icmp eq double* %x, null
-  %or.cond27 = or i1 %or.cond, %cmp3
-  br i1 %or.cond27, label %if.then, label %for.cond.preheader
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !247), !dbg !1120
+  tail call void @llvm.dbg.value(metadata !{double* %y}, i64 0, metadata !248), !dbg !1121
+  tail call void @llvm.dbg.value(metadata !{double* %x}, i64 0, metadata !249), !dbg !1122
+  %cmp = icmp slt i32 %size, 0, !dbg !1123
+  %cmp1 = icmp eq double* %y, null, !dbg !1123
+  %or.cond = or i1 %cmp, %cmp1, !dbg !1123
+  %cmp3 = icmp eq double* %x, null, !dbg !1123
+  %or.cond27 = or i1 %or.cond, %cmp3, !dbg !1123
+  br i1 %or.cond27, label %if.then, label %for.cond.preheader, !dbg !1123
 
 for.cond.preheader:                               ; preds = %entry
-  %cmp428 = icmp sgt i32 %size, 0
-  br i1 %cmp428, label %for.body, label %for.end
+  %cmp428 = icmp sgt i32 %size, 0, !dbg !1124
+  br i1 %cmp428, label %for.body, label %for.end, !dbg !1124
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([46 x i8]* @.str13, i64 0, i64 0), i32 %size, double* %y, double* %x) #5
-  tail call void @exit(i32 -1) #7
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !1126, !tbaa !925
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([46 x i8]* @.str13, i64 0, i64 0), i32 %size, double* %y, double* %x) #6, !dbg !1126
+  tail call void @exit(i32 -1) #8, !dbg !1128
+  unreachable, !dbg !1128
 
 for.body:                                         ; preds = %for.cond.preheader, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
   %ii.029 = phi i32 [ %inc, %for.body ], [ 0, %for.cond.preheader ]
-  %arrayidx = getelementptr inbounds double* %x, i64 %indvars.iv
-  %1 = load double* %arrayidx, align 8, !tbaa !0
-  %arrayidx6 = getelementptr inbounds double* %y, i64 %indvars.iv
-  store double %1, double* %arrayidx6, align 8, !tbaa !0
-  %2 = or i64 %indvars.iv, 1
-  %arrayidx8 = getelementptr inbounds double* %x, i64 %2
-  %3 = load double* %arrayidx8, align 8, !tbaa !0
-  %arrayidx11 = getelementptr inbounds double* %y, i64 %2
-  store double %3, double* %arrayidx11, align 8, !tbaa !0
-  %inc = add nsw i32 %ii.029, 1
-  %indvars.iv.next = add i64 %indvars.iv, 2
-  %exitcond = icmp eq i32 %inc, %size
-  br i1 %exitcond, label %for.end, label %for.body
+  %arrayidx = getelementptr inbounds double* %x, i64 %indvars.iv, !dbg !1129
+  %1 = load double* %arrayidx, align 8, !dbg !1129, !tbaa !861
+  %arrayidx6 = getelementptr inbounds double* %y, i64 %indvars.iv, !dbg !1129
+  store double %1, double* %arrayidx6, align 8, !dbg !1129, !tbaa !861
+  %2 = or i64 %indvars.iv, 1, !dbg !1131
+  %arrayidx8 = getelementptr inbounds double* %x, i64 %2, !dbg !1131
+  %3 = load double* %arrayidx8, align 8, !dbg !1131, !tbaa !861
+  %arrayidx11 = getelementptr inbounds double* %y, i64 %2, !dbg !1131
+  store double %3, double* %arrayidx11, align 8, !dbg !1131, !tbaa !861
+  %inc = add nsw i32 %ii.029, 1, !dbg !1124
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !250), !dbg !1124
+  %indvars.iv.next = add i64 %indvars.iv, 2, !dbg !1124
+  %exitcond = icmp eq i32 %inc, %size, !dbg !1124
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !1124
 
 for.end:                                          ; preds = %for.body, %for.cond.preheader
-  ret void
+  ret void, !dbg !1132
 }

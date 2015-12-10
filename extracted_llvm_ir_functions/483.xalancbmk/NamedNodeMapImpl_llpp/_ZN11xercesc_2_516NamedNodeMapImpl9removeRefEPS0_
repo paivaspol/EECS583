@@ -1,0 +1,25 @@
+define void @_ZN11xercesc_2_516NamedNodeMapImpl9removeRefEPS0_(%"class.xercesc_2_5::NamedNodeMapImpl"* %This) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::NamedNodeMapImpl"* %This}, i64 0, metadata !1338), !dbg !1567
+  %tobool = icmp eq %"class.xercesc_2_5::NamedNodeMapImpl"* %This, null, !dbg !1568
+  br i1 %tobool, label %if.end, label %land.lhs.true, !dbg !1568
+
+land.lhs.true:                                    ; preds = %entry
+  %refCount = getelementptr inbounds %"class.xercesc_2_5::NamedNodeMapImpl"* %This, i64 0, i32 4, !dbg !1568
+  %0 = load i32* %refCount, align 4, !dbg !1568, !tbaa !1451
+  %dec = add nsw i32 %0, -1, !dbg !1568
+  store i32 %dec, i32* %refCount, align 4, !dbg !1568, !tbaa !1451
+  %cmp = icmp eq i32 %dec, 0, !dbg !1568
+  br i1 %cmp, label %delete.notnull, label %if.end, !dbg !1568
+
+delete.notnull:                                   ; preds = %land.lhs.true
+  %1 = bitcast %"class.xercesc_2_5::NamedNodeMapImpl"* %This to void (%"class.xercesc_2_5::NamedNodeMapImpl"*)***, !dbg !1569
+  %vtable = load void (%"class.xercesc_2_5::NamedNodeMapImpl"*)*** %1, align 8, !dbg !1569, !tbaa !1441
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::NamedNodeMapImpl"*)** %vtable, i64 2, !dbg !1569
+  %2 = load void (%"class.xercesc_2_5::NamedNodeMapImpl"*)** %vfn, align 8, !dbg !1569
+  tail call void %2(%"class.xercesc_2_5::NamedNodeMapImpl"* %This) #5, !dbg !1569
+  br label %if.end, !dbg !1569
+
+if.end:                                           ; preds = %land.lhs.true, %entry, %delete.notnull
+  ret void, !dbg !1570
+}

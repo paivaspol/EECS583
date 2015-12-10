@@ -1,0 +1,81 @@
+define void @_ZN6soplex5SVSet8memRemaxEi(%"class.soplex::SVSet"* nocapture %this, i32 %newmax) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SVSet"* %this}, i64 0, metadata !2175), !dbg !3773
+  tail call void @llvm.dbg.value(metadata !{i32 %newmax}, i64 0, metadata !2176), !dbg !3773
+  %0 = getelementptr inbounds %"class.soplex::SVSet"* %this, i64 0, i32 0, !dbg !3774
+  %call = tail call i64 @_ZN6soplex9DataArrayINS_7SVector7ElementEE5reMaxEii(%"class.soplex::DataArray"* %0, i32 %newmax, i32 -1) #9, !dbg !3774
+  tail call void @llvm.dbg.value(metadata !{i64 %call}, i64 0, metadata !2177), !dbg !3774
+  %cmp = icmp eq i64 %call, 0, !dbg !3775
+  br i1 %cmp, label %if.end, label %if.then, !dbg !3775
+
+if.then:                                          ; preds = %entry
+  %the_first.i = getelementptr inbounds %"class.soplex::SVSet"* %this, i64 0, i32 2, i32 0, i32 0, !dbg !3776
+  %1 = load %"class.soplex::SVSet::DLPSV"** %the_first.i, align 8, !dbg !3776, !tbaa !3778
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SVSet::DLPSV"* %1}, i64 0, metadata !2178), !dbg !3777
+  %tobool21 = icmp eq %"class.soplex::SVSet::DLPSV"* %1, null, !dbg !3777
+  br i1 %tobool21, label %if.end, label %for.body.lr.ph, !dbg !3777
+
+for.body.lr.ph:                                   ; preds = %if.then
+  %add.ptr.sum = add i64 %call, 8, !dbg !3779
+  %add.ptr.sum19 = add i64 %call, 16, !dbg !3780
+  %the_last.i.i = getelementptr inbounds %"class.soplex::SVSet"* %this, i64 0, i32 2, i32 0, i32 1, !dbg !3783
+  br label %for.body, !dbg !3777
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.cond.backedge
+  %ps.022 = phi %"class.soplex::SVSet::DLPSV"* [ %1, %for.body.lr.ph ], [ %10, %for.cond.backedge ]
+  %m_elem.i18 = getelementptr inbounds %"class.soplex::SVSet::DLPSV"* %ps.022, i64 0, i32 0, i32 0, !dbg !3787
+  %2 = load %"struct.soplex::SVector::Element"** %m_elem.i18, align 8, !dbg !3787, !tbaa !3778
+  %add.ptr.i = getelementptr inbounds %"struct.soplex::SVector::Element"* %2, i64 -1, !dbg !3787
+  %3 = bitcast %"struct.soplex::SVector::Element"* %add.ptr.i to i8*, !dbg !3788
+  %add.ptr = getelementptr inbounds i8* %3, i64 %call, !dbg !3788
+  %idx = getelementptr inbounds i8* %3, i64 %add.ptr.sum, !dbg !3779
+  %4 = bitcast i8* %idx to i32*, !dbg !3779
+  %5 = load i32* %4, align 4, !dbg !3779, !tbaa !3751
+  tail call void @llvm.dbg.value(metadata !{i32 %5}, i64 0, metadata !2183), !dbg !3779
+  %val = bitcast i8* %add.ptr to double*, !dbg !3789
+  %6 = load double* %val, align 8, !dbg !3789, !tbaa !3761
+  %conv = fptosi double %6 to i32, !dbg !3789
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !2184), !dbg !3789
+  %cmp.i16 = icmp sgt i32 %conv, -1, !dbg !3790
+  br i1 %cmp.i16, label %if.then.i, label %if.else.i, !dbg !3790
+
+if.then.i:                                        ; preds = %for.body
+  %arrayidx.i = getelementptr inbounds i8* %3, i64 %add.ptr.sum19, !dbg !3780
+  %7 = bitcast i8* %arrayidx.i to %"struct.soplex::SVector::Element"*, !dbg !3780
+  store %"struct.soplex::SVector::Element"* %7, %"struct.soplex::SVector::Element"** %m_elem.i18, align 8, !dbg !3780, !tbaa !3778
+  tail call void @llvm.dbg.value(metadata !1145, i64 0, metadata !3791), !dbg !3793
+  store i32 0, i32* %4, align 4, !dbg !3794, !tbaa !3751
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !3795), !dbg !3797
+  %conv.i.i = sitofp i32 %conv to double, !dbg !3798
+  store double %conv.i.i, double* %val, align 8, !dbg !3798, !tbaa !3761
+  br label %_ZN6soplex7SVector6setMemEiPNS0_7ElementE.exit, !dbg !3799
+
+if.else.i:                                        ; preds = %for.body
+  store %"struct.soplex::SVector::Element"* null, %"struct.soplex::SVector::Element"** %m_elem.i18, align 8, !dbg !3800, !tbaa !3778
+  %conv.i.pre = sitofp i32 %conv to double, !dbg !3801
+  br label %_ZN6soplex7SVector6setMemEiPNS0_7ElementE.exit
+
+_ZN6soplex7SVector6setMemEiPNS0_7ElementE.exit:   ; preds = %if.then.i, %if.else.i
+  %conv.i.pre-phi = phi double [ %conv.i.i, %if.then.i ], [ %conv.i.pre, %if.else.i ], !dbg !3801
+  %8 = phi %"struct.soplex::SVector::Element"* [ %7, %if.then.i ], [ null, %if.else.i ]
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !3803), !dbg !3804
+  %val.i = getelementptr inbounds %"struct.soplex::SVector::Element"* %8, i64 -1, i32 0, !dbg !3801
+  store double %conv.i.pre-phi, double* %val.i, align 8, !dbg !3801, !tbaa !3761
+  tail call void @llvm.dbg.value(metadata !{i32 %5}, i64 0, metadata !3805), !dbg !3807
+  %idx.i = getelementptr inbounds %"struct.soplex::SVector::Element"* %8, i64 -1, i32 1, !dbg !3808
+  store i32 %5, i32* %idx.i, align 4, !dbg !3808, !tbaa !3751
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SVSet::DLPSV"* %ps.022}, i64 0, metadata !3809), !dbg !3810
+  %9 = load %"class.soplex::SVSet::DLPSV"** %the_last.i.i, align 8, !dbg !3783, !tbaa !3778
+  %cmp.i = icmp eq %"class.soplex::SVSet::DLPSV"* %9, %ps.022, !dbg !3785
+  br i1 %cmp.i, label %if.end, label %for.cond.backedge, !dbg !3785
+
+for.cond.backedge:                                ; preds = %_ZN6soplex7SVector6setMemEiPNS0_7ElementE.exit
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SVSet::DLPSV"* %ps.022}, i64 0, metadata !3811), !dbg !3812
+  %thenext.i.i = getelementptr inbounds %"class.soplex::SVSet::DLPSV"* %ps.022, i64 0, i32 1, !dbg !3813
+  %10 = load %"class.soplex::SVSet::DLPSV"** %thenext.i.i, align 8, !dbg !3785, !tbaa !3778
+  %tobool = icmp eq %"class.soplex::SVSet::DLPSV"* %10, null, !dbg !3777
+  br i1 %tobool, label %if.end, label %for.body, !dbg !3777
+
+if.end:                                           ; preds = %_ZN6soplex7SVector6setMemEiPNS0_7ElementE.exit, %if.then, %for.cond.backedge, %entry
+  ret void, !dbg !3815
+}

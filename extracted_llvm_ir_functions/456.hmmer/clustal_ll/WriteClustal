@@ -1,79 +1,89 @@
 define void @WriteClustal(%struct._IO_FILE* nocapture %fp, %struct.msa_struct* nocapture %msa) #0 {
 entry:
   %buf = alloca [64 x i8], align 16
-  %0 = getelementptr inbounds [64 x i8]* %buf, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 64, i8* %0) #4
-  %nseq = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 4
-  %1 = load i32* %nseq, align 4, !tbaa !3
-  %cmp52 = icmp sgt i32 %1, 0
-  br i1 %cmp52, label %for.body.lr.ph, label %for.end
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !209), !dbg !249
+  call void @llvm.dbg.value(metadata !{%struct.msa_struct* %msa}, i64 0, metadata !210), !dbg !249
+  %0 = getelementptr inbounds [64 x i8]* %buf, i64 0, i64 0, !dbg !250
+  call void @llvm.lifetime.start(i64 64, i8* %0) #5, !dbg !250
+  call void @llvm.dbg.declare(metadata !{[64 x i8]* %buf}, metadata !215), !dbg !250
+  call void @llvm.dbg.value(metadata !251, i64 0, metadata !219), !dbg !252
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !213), !dbg !253
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !211), !dbg !254
+  %nseq = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 4, !dbg !254
+  %1 = load i32* %nseq, align 4, !dbg !254, !tbaa !243
+  %cmp52 = icmp sgt i32 %1, 0, !dbg !254
+  br i1 %cmp52, label %for.body.lr.ph, label %for.end, !dbg !254
 
 for.body.lr.ph:                                   ; preds = %entry
-  %sqname = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 1
-  %2 = load i8*** %sqname, align 8, !tbaa !0
-  br label %for.body
+  %sqname = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 1, !dbg !256
+  %2 = load i8*** %sqname, align 8, !dbg !256, !tbaa !224
+  br label %for.body, !dbg !254
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.body
   %indvars.iv58 = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next59, %for.body ]
   %namelen.053 = phi i32 [ 0, %for.body.lr.ph ], [ %conv.namelen.0, %for.body ]
-  %arrayidx = getelementptr inbounds i8** %2, i64 %indvars.iv58
-  %3 = load i8** %arrayidx, align 8, !tbaa !0
-  %call = call i64 @strlen(i8* %3) #6
-  %conv = trunc i64 %call to i32
-  %cmp1 = icmp sgt i32 %conv, %namelen.053
-  %conv.namelen.0 = select i1 %cmp1, i32 %conv, i32 %namelen.053
-  %indvars.iv.next59 = add i64 %indvars.iv58, 1
-  %4 = trunc i64 %indvars.iv.next59 to i32
-  %cmp = icmp slt i32 %4, %1
-  br i1 %cmp, label %for.body, label %for.end
+  %arrayidx = getelementptr inbounds i8** %2, i64 %indvars.iv58, !dbg !256
+  %3 = load i8** %arrayidx, align 8, !dbg !256, !tbaa !224
+  %call = call i64 @strlen(i8* %3) #7, !dbg !256
+  %conv = trunc i64 %call to i32, !dbg !256
+  call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !212), !dbg !256
+  %cmp1 = icmp sgt i32 %conv, %namelen.053, !dbg !256
+  call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !213), !dbg !257
+  %conv.namelen.0 = select i1 %cmp1, i32 %conv, i32 %namelen.053, !dbg !256
+  %indvars.iv.next59 = add i64 %indvars.iv58, 1, !dbg !254
+  %4 = trunc i64 %indvars.iv.next59 to i32, !dbg !254
+  %cmp = icmp slt i32 %4, %1, !dbg !254
+  br i1 %cmp, label %for.body, label %for.end, !dbg !254
 
 for.end:                                          ; preds = %for.body, %entry
   %namelen.0.lcssa = phi i32 [ 0, %entry ], [ %conv.namelen.0, %for.body ]
-  %5 = call i64 @fwrite(i8* getelementptr inbounds ([44 x i8]* @.str6, i64 0, i64 0), i64 43, i64 1, %struct._IO_FILE* %fp)
-  %alen = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 3
-  %6 = load i32* %alen, align 4, !tbaa !3
-  %cmp550 = icmp sgt i32 %6, 0
-  br i1 %cmp550, label %for.body7.lr.ph, label %for.end29
+  %5 = call i64 @fwrite(i8* getelementptr inbounds ([44 x i8]* @.str6, i64 0, i64 0), i64 43, i64 1, %struct._IO_FILE* %fp), !dbg !258
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !214), !dbg !259
+  %alen = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 3, !dbg !259
+  %6 = load i32* %alen, align 4, !dbg !259, !tbaa !243
+  %cmp550 = icmp sgt i32 %6, 0, !dbg !259
+  br i1 %cmp550, label %for.body7.lr.ph, label %for.end29, !dbg !259
 
 for.body7.lr.ph:                                  ; preds = %for.end
-  %aseq = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 0
-  %arrayidx19 = getelementptr inbounds [64 x i8]* %buf, i64 0, i64 50
-  %sqname21 = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 1
-  br label %for.body7
+  %aseq = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 0, !dbg !261
+  %arrayidx19 = getelementptr inbounds [64 x i8]* %buf, i64 0, i64 50, !dbg !265
+  %sqname21 = getelementptr inbounds %struct.msa_struct* %msa, i64 0, i32 1, !dbg !266
+  br label %for.body7, !dbg !259
 
 for.body7:                                        ; preds = %for.body7.lr.ph, %for.inc28
   %indvars.iv56 = phi i64 [ 0, %for.body7.lr.ph ], [ %indvars.iv.next57, %for.inc28 ]
-  %fputc = call i32 @fputc(i32 10, %struct._IO_FILE* %fp)
-  %7 = load i32* %nseq, align 4, !tbaa !3
-  %cmp1148 = icmp sgt i32 %7, 0
-  br i1 %cmp1148, label %for.body13, label %for.inc28
+  %fputc = call i32 @fputc(i32 10, %struct._IO_FILE* %fp), !dbg !267
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !211), !dbg !268
+  %7 = load i32* %nseq, align 4, !dbg !268, !tbaa !243
+  %cmp1148 = icmp sgt i32 %7, 0, !dbg !268
+  br i1 %cmp1148, label %for.body13, label %for.inc28, !dbg !268
 
 for.body13:                                       ; preds = %for.body7, %for.body13
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body13 ], [ 0, %for.body7 ]
-  %8 = load i8*** %aseq, align 8, !tbaa !0
-  %arrayidx15 = getelementptr inbounds i8** %8, i64 %indvars.iv
-  %9 = load i8** %arrayidx15, align 8, !tbaa !0
-  %add.ptr = getelementptr inbounds i8* %9, i64 %indvars.iv56
-  %call17 = call i8* @strncpy(i8* %0, i8* %add.ptr, i64 50) #5
-  store i8 0, i8* %arrayidx19, align 2, !tbaa !1
-  %10 = load i8*** %sqname21, align 8, !tbaa !0
-  %arrayidx22 = getelementptr inbounds i8** %10, i64 %indvars.iv
-  %11 = load i8** %arrayidx22, align 8, !tbaa !0
-  %call24 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([8 x i8]* @.str7, i64 0, i64 0), i32 %namelen.0.lcssa, i8* %11, i8* %0) #5
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %12 = load i32* %nseq, align 4, !tbaa !3
-  %13 = trunc i64 %indvars.iv.next to i32
-  %cmp11 = icmp slt i32 %13, %12
-  br i1 %cmp11, label %for.body13, label %for.inc28
+  %8 = load i8*** %aseq, align 8, !dbg !261, !tbaa !224
+  %arrayidx15 = getelementptr inbounds i8** %8, i64 %indvars.iv, !dbg !261
+  %9 = load i8** %arrayidx15, align 8, !dbg !261, !tbaa !224
+  %add.ptr = getelementptr inbounds i8* %9, i64 %indvars.iv56, !dbg !261
+  %call17 = call i8* @strncpy(i8* %0, i8* %add.ptr, i64 50) #6, !dbg !261
+  store i8 0, i8* %arrayidx19, align 2, !dbg !265, !tbaa !225
+  %10 = load i8*** %sqname21, align 8, !dbg !266, !tbaa !224
+  %arrayidx22 = getelementptr inbounds i8** %10, i64 %indvars.iv, !dbg !266
+  %11 = load i8** %arrayidx22, align 8, !dbg !266, !tbaa !224
+  %call24 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([8 x i8]* @.str7, i64 0, i64 0), i32 %namelen.0.lcssa, i8* %11, i8* %0) #6, !dbg !266
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !268
+  %12 = load i32* %nseq, align 4, !dbg !268, !tbaa !243
+  %13 = trunc i64 %indvars.iv.next to i32, !dbg !268
+  %cmp11 = icmp slt i32 %13, %12, !dbg !268
+  br i1 %cmp11, label %for.body13, label %for.inc28, !dbg !268
 
 for.inc28:                                        ; preds = %for.body13, %for.body7
-  %indvars.iv.next57 = add i64 %indvars.iv56, 50
-  %14 = load i32* %alen, align 4, !tbaa !3
-  %15 = trunc i64 %indvars.iv.next57 to i32
-  %cmp5 = icmp slt i32 %15, %14
-  br i1 %cmp5, label %for.body7, label %for.end29
+  %indvars.iv.next57 = add i64 %indvars.iv56, 50, !dbg !259
+  %14 = load i32* %alen, align 4, !dbg !259, !tbaa !243
+  %15 = trunc i64 %indvars.iv.next57 to i32, !dbg !259
+  %cmp5 = icmp slt i32 %15, %14, !dbg !259
+  br i1 %cmp5, label %for.body7, label %for.end29, !dbg !259
 
 for.end29:                                        ; preds = %for.inc28, %for.end
-  call void @llvm.lifetime.end(i64 64, i8* %0) #4
-  ret void
+  call void @llvm.lifetime.end(i64 64, i8* %0) #5, !dbg !269
+  ret void, !dbg !270
 }

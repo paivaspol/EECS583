@@ -1,0 +1,75 @@
+define internal fastcc void @_ZN3povL17Find_CSG_TexturesEPNS_10CSG_StructEPdPiPPNS_14Texture_StructE(%"struct.pov::CSG_Struct"* nocapture %Csg, double* %IPoint, i32* nocapture %Number, %"struct.pov::Texture_Struct"** %Textures) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::CSG_Struct"* %Csg}, i64 0, metadata !1029), !dbg !1855
+  tail call void @llvm.dbg.value(metadata !{double* %IPoint}, i64 0, metadata !1030), !dbg !1855
+  tail call void @llvm.dbg.value(metadata !{i32* %Number}, i64 0, metadata !1031), !dbg !1855
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Texture_Struct"** %Textures}, i64 0, metadata !1032), !dbg !1855
+  %Children = getelementptr inbounds %"struct.pov::CSG_Struct"* %Csg, i64 0, i32 14, !dbg !1856
+  %Sib.029 = load %"struct.pov::Object_Struct"** %Children, align 8, !dbg !1856
+  %cmp30 = icmp eq %"struct.pov::Object_Struct"* %Sib.029, null, !dbg !1856
+  br i1 %cmp30, label %for.end, label %for.body.lr.ph, !dbg !1856
+
+for.body.lr.ph:                                   ; preds = %entry
+  %Type = getelementptr inbounds %"struct.pov::CSG_Struct"* %Csg, i64 0, i32 1, !dbg !1858
+  %tobool9 = icmp eq %"struct.pov::Texture_Struct"** %Textures, null, !dbg !1860
+  br label %for.body, !dbg !1856
+
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %Sib.031 = phi %"struct.pov::Object_Struct"* [ %Sib.029, %for.body.lr.ph ], [ %Sib.0, %for.inc ]
+  %0 = load i32* %Type, align 4, !dbg !1858, !tbaa !1298
+  %and = and i32 %0, 8192, !dbg !1858
+  %tobool = icmp eq i32 %and, 0, !dbg !1858
+  br i1 %tobool, label %if.then, label %lor.lhs.false, !dbg !1858
+
+lor.lhs.false:                                    ; preds = %for.body
+  %Sibling = getelementptr inbounds %"struct.pov::Object_Struct"* %Sib.031, i64 0, i32 2, !dbg !1858
+  %1 = load %"struct.pov::Object_Struct"** %Sibling, align 8, !dbg !1858, !tbaa !1292
+  %cmp1 = icmp eq %"struct.pov::Object_Struct"* %1, null, !dbg !1858
+  br i1 %cmp1, label %if.then, label %for.inc, !dbg !1858
+
+if.then:                                          ; preds = %for.body, %lor.lhs.false
+  %call = tail call zeroext i1 @_ZN3pov13Inside_ObjectEPdPNS_13Object_StructE(double* %IPoint, %"struct.pov::Object_Struct"* %Sib.031) #4, !dbg !1864
+  br i1 %call, label %if.then2, label %for.inc, !dbg !1864
+
+if.then2:                                         ; preds = %if.then
+  %Type3 = getelementptr inbounds %"struct.pov::Object_Struct"* %Sib.031, i64 0, i32 1, !dbg !1865
+  %2 = load i32* %Type3, align 4, !dbg !1865, !tbaa !1298
+  %and4 = and i32 %2, 4, !dbg !1865
+  %tobool5 = icmp eq i32 %and4, 0, !dbg !1865
+  br i1 %tobool5, label %if.else, label %if.then6, !dbg !1865
+
+if.then6:                                         ; preds = %if.then2
+  %3 = bitcast %"struct.pov::Object_Struct"* %Sib.031 to %"struct.pov::CSG_Struct"*, !dbg !1866
+  tail call fastcc void @_ZN3povL17Find_CSG_TexturesEPNS_10CSG_StructEPdPiPPNS_14Texture_StructE(%"struct.pov::CSG_Struct"* %3, double* %IPoint, i32* %Number, %"struct.pov::Texture_Struct"** %Textures) #4, !dbg !1866
+  br label %for.inc, !dbg !1868
+
+if.else:                                          ; preds = %if.then2
+  %Texture = getelementptr inbounds %"struct.pov::Object_Struct"* %Sib.031, i64 0, i32 3, !dbg !1869
+  %4 = load %"struct.pov::Texture_Struct"** %Texture, align 8, !dbg !1869, !tbaa !1292
+  %tobool7 = icmp eq %"struct.pov::Texture_Struct"* %4, null, !dbg !1869
+  br i1 %tobool7, label %for.inc, label %if.then8, !dbg !1869
+
+if.then8:                                         ; preds = %if.else
+  %.pre = load i32* %Number, align 4, !dbg !1870, !tbaa !1298
+  br i1 %tobool9, label %if.end, label %if.then10, !dbg !1860
+
+if.then10:                                        ; preds = %if.then8
+  %idxprom = sext i32 %.pre to i64, !dbg !1860
+  %arrayidx = getelementptr inbounds %"struct.pov::Texture_Struct"** %Textures, i64 %idxprom, !dbg !1860
+  store %"struct.pov::Texture_Struct"* %4, %"struct.pov::Texture_Struct"** %arrayidx, align 8, !dbg !1860, !tbaa !1292
+  br label %if.end, !dbg !1860
+
+if.end:                                           ; preds = %if.then8, %if.then10
+  %inc = add nsw i32 %.pre, 1, !dbg !1870
+  store i32 %inc, i32* %Number, align 4, !dbg !1870, !tbaa !1298
+  br label %for.inc, !dbg !1871
+
+for.inc:                                          ; preds = %if.else, %if.then, %lor.lhs.false, %if.then6, %if.end
+  %Sibling16 = getelementptr inbounds %"struct.pov::Object_Struct"* %Sib.031, i64 0, i32 2, !dbg !1856
+  %Sib.0 = load %"struct.pov::Object_Struct"** %Sibling16, align 8, !dbg !1856
+  %cmp = icmp eq %"struct.pov::Object_Struct"* %Sib.0, null, !dbg !1856
+  br i1 %cmp, label %for.end, label %for.body, !dbg !1856
+
+for.end:                                          ; preds = %for.inc, %entry
+  ret void, !dbg !1872
+}

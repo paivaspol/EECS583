@@ -1,37 +1,43 @@
 define i64 @ggc_get_size(i8* %p) #2 {
 entry:
-  %0 = ptrtoint i8* %p to i64
-  %and.i = and i64 %0, -4294967296
-  br label %while.cond.i
+  tail call void @llvm.dbg.value(metadata !{i8* %p}, i64 0, metadata !133), !dbg !575
+  tail call void @llvm.dbg.value(metadata !{i8* %p}, i64 0, metadata !576), !dbg !578
+  %0 = ptrtoint i8* %p to i64, !dbg !579
+  %and.i = and i64 %0, -4294967296, !dbg !579
+  tail call void @llvm.dbg.value(metadata !{i64 %and.i}, i64 0, metadata !580), !dbg !579
+  br label %while.cond.i, !dbg !581
 
 while.cond.i:                                     ; preds = %while.cond.i, %entry
   %table.0.in.i = phi %struct.page_table_chain** [ getelementptr inbounds (%struct.globals* @G, i64 0, i32 2), %entry ], [ %next.i, %while.cond.i ]
-  %table.0.i = load %struct.page_table_chain** %table.0.in.i, align 8
-  %high_bits1.i = getelementptr inbounds %struct.page_table_chain* %table.0.i, i64 0, i32 1
-  %1 = load i64* %high_bits1.i, align 8, !tbaa !4
-  %cmp.i = icmp eq i64 %1, %and.i
-  %next.i = getelementptr inbounds %struct.page_table_chain* %table.0.i, i64 0, i32 0
-  br i1 %cmp.i, label %lookup_page_table_entry.exit, label %while.cond.i
+  %table.0.i = load %struct.page_table_chain** %table.0.in.i, align 8, !dbg !582
+  %high_bits1.i = getelementptr inbounds %struct.page_table_chain* %table.0.i, i64 0, i32 1, !dbg !581
+  %1 = load i64* %high_bits1.i, align 8, !dbg !581, !tbaa !393
+  %cmp.i = icmp eq i64 %1, %and.i, !dbg !581
+  %next.i = getelementptr inbounds %struct.page_table_chain* %table.0.i, i64 0, i32 0, !dbg !583
+  br i1 %cmp.i, label %lookup_page_table_entry.exit, label %while.cond.i, !dbg !581
 
 lookup_page_table_entry.exit:                     ; preds = %while.cond.i
-  %shr.i = lshr i64 %0, 24
-  %and3.i = and i64 %shr.i, 255
-  %2 = load i64* getelementptr inbounds (%struct.globals* @G, i64 0, i32 4), align 8, !tbaa !4
-  %shr4.i = lshr i64 %0, %2
-  %sub.i = sub i64 24, %2
-  %sh_prom.i = trunc i64 %sub.i to i32
-  %shl.i = shl i32 1, %sh_prom.i
-  %sub5.i = add nsw i32 %shl.i, -1
-  %conv.i = sext i32 %sub5.i to i64
-  %and6.i = and i64 %conv.i, %shr4.i
-  %arrayidx7.i = getelementptr inbounds %struct.page_table_chain* %table.0.i, i64 0, i32 2, i64 %and3.i
-  %3 = load %struct.page_entry*** %arrayidx7.i, align 8, !tbaa !0
-  %arrayidx8.i = getelementptr inbounds %struct.page_entry** %3, i64 %and6.i
-  %4 = load %struct.page_entry** %arrayidx8.i, align 8, !tbaa !0
-  %order = getelementptr inbounds %struct.page_entry* %4, i64 0, i32 8
-  %5 = load i8* %order, align 1, !tbaa !1
-  %idxprom = zext i8 %5 to i64
-  %arrayidx = getelementptr inbounds [66 x i64]* @object_size_table, i64 0, i64 %idxprom
-  %6 = load i64* %arrayidx, align 8, !tbaa !4
-  ret i64 %6
+  %shr.i = lshr i64 %0, 24, !dbg !584
+  %and3.i = and i64 %shr.i, 255, !dbg !584
+  tail call void @llvm.dbg.value(metadata !{i64 %and3.i}, i64 0, metadata !585), !dbg !584
+  %2 = load i64* getelementptr inbounds (%struct.globals* @G, i64 0, i32 4), align 8, !dbg !586, !tbaa !393
+  %shr4.i = lshr i64 %0, %2, !dbg !586
+  %sub.i = sub i64 24, %2, !dbg !586
+  %sh_prom.i = trunc i64 %sub.i to i32, !dbg !586
+  %shl.i = shl i32 1, %sh_prom.i, !dbg !586
+  %sub5.i = add nsw i32 %shl.i, -1, !dbg !586
+  %conv.i = sext i32 %sub5.i to i64, !dbg !586
+  %and6.i = and i64 %conv.i, %shr4.i, !dbg !586
+  tail call void @llvm.dbg.value(metadata !{i64 %and6.i}, i64 0, metadata !587), !dbg !586
+  %arrayidx7.i = getelementptr inbounds %struct.page_table_chain* %table.0.i, i64 0, i32 2, i64 %and3.i, !dbg !588
+  %3 = load %struct.page_entry*** %arrayidx7.i, align 8, !dbg !588, !tbaa !376
+  %arrayidx8.i = getelementptr inbounds %struct.page_entry** %3, i64 %and6.i, !dbg !588
+  %4 = load %struct.page_entry** %arrayidx8.i, align 8, !dbg !588, !tbaa !376
+  tail call void @llvm.dbg.value(metadata !{%struct.page_entry* %4}, i64 0, metadata !134), !dbg !577
+  %order = getelementptr inbounds %struct.page_entry* %4, i64 0, i32 8, !dbg !589
+  %5 = load i8* %order, align 1, !dbg !589, !tbaa !377
+  %idxprom = zext i8 %5 to i64, !dbg !589
+  %arrayidx = getelementptr inbounds [66 x i64]* @object_size_table, i64 0, i64 %idxprom, !dbg !589
+  %6 = load i64* %arrayidx, align 8, !dbg !589, !tbaa !393
+  ret i64 %6, !dbg !589
 }

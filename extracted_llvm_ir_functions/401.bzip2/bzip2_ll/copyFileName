@@ -1,0 +1,31 @@
+define internal fastcc void @copyFileName(i8* %to, i8* %from) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %to}, i64 0, metadata !438), !dbg !730
+  tail call void @llvm.dbg.value(metadata !{i8* %from}, i64 0, metadata !439), !dbg !730
+  %call = tail call i64 @strlen(i8* %from) #12, !dbg !731
+  %cmp = icmp ugt i64 %call, 1024, !dbg !731
+  br i1 %cmp, label %if.then, label %if.end, !dbg !731
+
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !732, !tbaa !484
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([120 x i8]* @.str102, i64 0, i64 0), i8* %from, i32 1024) #10, !dbg !732
+  tail call void @llvm.dbg.value(metadata !516, i64 0, metadata !734), !dbg !736
+  %1 = load i32* @exitValue, align 4, !dbg !737, !tbaa !492
+  %cmp.i = icmp slt i32 %1, 1, !dbg !737
+  br i1 %cmp.i, label %if.then.i, label %setExit.exit, !dbg !737
+
+if.then.i:                                        ; preds = %if.then
+  store i32 1, i32* @exitValue, align 4, !dbg !737, !tbaa !492
+  br label %setExit.exit, !dbg !737
+
+setExit.exit:                                     ; preds = %if.then, %if.then.i
+  %2 = phi i32 [ %1, %if.then ], [ 1, %if.then.i ]
+  tail call void @exit(i32 %2) #13, !dbg !738
+  unreachable, !dbg !738
+
+if.end:                                           ; preds = %entry
+  %call2 = tail call i8* @strncpy(i8* %to, i8* %from, i64 1024) #10, !dbg !739
+  %arrayidx = getelementptr inbounds i8* %to, i64 1024, !dbg !740
+  store i8 0, i8* %arrayidx, align 1, !dbg !740, !tbaa !485
+  ret void, !dbg !741
+}

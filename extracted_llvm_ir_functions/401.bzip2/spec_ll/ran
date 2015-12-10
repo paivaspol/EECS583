@@ -1,17 +1,20 @@
 define double @ran() #0 {
 entry:
-  %0 = load i64* @seedi, align 8, !tbaa !0
-  %div = sdiv i64 %0, 127773
-  %rem = srem i64 %0, 127773
-  %mul = mul nsw i64 %rem, 16807
-  %1 = mul i64 %div, -2836
-  %sub = add i64 %mul, %1
-  %cmp = icmp sgt i64 %sub, 0
-  %add = add nsw i64 %sub, 2147483647
-  %storemerge = select i1 %cmp, i64 %sub, i64 %add
-  store i64 %storemerge, i64* @seedi, align 8, !tbaa !0
-  %conv = sitofp i64 %storemerge to float
-  %div2 = fmul float %conv, 0x3E00000000000000
-  %conv3 = fpext float %div2 to double
-  ret double %conv3
+  %0 = load i64* @seedi, align 8, !dbg !114, !tbaa !115
+  %div = sdiv i64 %0, 127773, !dbg !114
+  tail call void @llvm.dbg.value(metadata !{i64 %div}, i64 0, metadata !12), !dbg !114
+  %rem = srem i64 %0, 127773, !dbg !118
+  tail call void @llvm.dbg.value(metadata !{i64 %rem}, i64 0, metadata !10), !dbg !118
+  %mul = mul nsw i64 %rem, 16807, !dbg !119
+  %1 = mul i64 %div, -2836, !dbg !119
+  %sub = add i64 %mul, %1, !dbg !119
+  tail call void @llvm.dbg.value(metadata !{i64 %sub}, i64 0, metadata !13), !dbg !119
+  %cmp = icmp sgt i64 %sub, 0, !dbg !120
+  %add = add nsw i64 %sub, 2147483647, !dbg !121
+  %storemerge = select i1 %cmp, i64 %sub, i64 %add, !dbg !120
+  store i64 %storemerge, i64* @seedi, align 8, !dbg !123, !tbaa !115
+  %conv = sitofp i64 %storemerge to float, !dbg !125
+  %div2 = fmul float %conv, 0x3E00000000000000, !dbg !125
+  %conv3 = fpext float %div2 to double, !dbg !125
+  ret double %conv3, !dbg !125
 }

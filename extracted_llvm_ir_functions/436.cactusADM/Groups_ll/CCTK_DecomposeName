@@ -1,24 +1,32 @@
 define i32 @CCTK_DecomposeName(i8* %fullname, i8** %implementation, i8** %name) #2 {
-  %1 = tail call i32 @Util_SplitString(i8** %implementation, i8** %name, i8* %fullname, i8* getelementptr inbounds ([3 x i8]* @.str40, i64 0, i64 0)) #10
-  switch i32 %1, label %6 [
-    i32 0, label %8
-    i32 1, label %2
-    i32 2, label %4
-  ]
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %fullname}, i64 0, metadata !205), !dbg !505
+  tail call void @llvm.dbg.value(metadata !{i8** %implementation}, i64 0, metadata !206), !dbg !506
+  tail call void @llvm.dbg.value(metadata !{i8** %name}, i64 0, metadata !207), !dbg !507
+  %call = tail call i32 @Util_SplitString(i8** %implementation, i8** %name, i8* %fullname, i8* getelementptr inbounds ([3 x i8]* @.str40, i64 0, i64 0)) #11, !dbg !508
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !208), !dbg !508
+  switch i32 %call, label %if.else7 [
+    i32 0, label %if.end10
+    i32 1, label %if.then2
+    i32 2, label %if.then5
+  ], !dbg !509
 
-; <label>:2                                       ; preds = %0
-  %3 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 1026, i8* getelementptr inbounds ([75 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str41, i64 0, i64 0), i8* %fullname) #10
-  br label %8
+if.then2:                                         ; preds = %entry
+  %call3 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 1026, i8* getelementptr inbounds ([63 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str41, i64 0, i64 0), i8* %fullname) #11, !dbg !510
+  tail call void @llvm.dbg.value(metadata !513, i64 0, metadata !208), !dbg !514
+  br label %if.end10, !dbg !515
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i32 @CCTK_Warn(i32 2, i32 1033, i8* getelementptr inbounds ([75 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([45 x i8]* @.str42, i64 0, i64 0)) #10
-  br label %8
+if.then5:                                         ; preds = %entry
+  %call6 = tail call i32 @CCTK_Warn(i32 2, i32 1033, i8* getelementptr inbounds ([63 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([45 x i8]* @.str42, i64 0, i64 0)) #11, !dbg !516
+  tail call void @llvm.dbg.value(metadata !518, i64 0, metadata !208), !dbg !519
+  br label %if.end10, !dbg !520
 
-; <label>:6                                       ; preds = %0
-  %7 = tail call i32 @CCTK_Warn(i32 1, i32 1039, i8* getelementptr inbounds ([75 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([46 x i8]* @.str43, i64 0, i64 0)) #10
-  br label %8
+if.else7:                                         ; preds = %entry
+  %call8 = tail call i32 @CCTK_Warn(i32 1, i32 1039, i8* getelementptr inbounds ([63 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([46 x i8]* @.str43, i64 0, i64 0)) #11, !dbg !521
+  tail call void @llvm.dbg.value(metadata !523, i64 0, metadata !208), !dbg !524
+  br label %if.end10
 
-; <label>:8                                       ; preds = %0, %2, %6, %4
-  %retval.0 = phi i32 [ -3, %2 ], [ -4, %4 ], [ -2, %6 ], [ 0, %0 ]
-  ret i32 %retval.0
+if.end10:                                         ; preds = %entry, %if.then2, %if.else7, %if.then5
+  %retval1.0 = phi i32 [ -3, %if.then2 ], [ -4, %if.then5 ], [ -2, %if.else7 ], [ 0, %entry ]
+  ret i32 %retval1.0, !dbg !525
 }

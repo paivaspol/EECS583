@@ -1,0 +1,112 @@
+define internal fastcc i32 @_ZN3povL9bezier_01EiPdS0_bd(i32 %degree, double* %Coef, double* %Roots) #3 {
+entry:
+  %d = alloca [11 x double], align 16
+  call void @llvm.dbg.value(metadata !2189, i64 0, metadata !1115), !dbg !2190
+  call void @llvm.dbg.value(metadata !2191, i64 0, metadata !1116), !dbg !2190
+  %0 = bitcast [11 x double]* %d to i8*, !dbg !2192
+  call void @llvm.lifetime.start(i64 88, i8* %0) #4, !dbg !2192
+  call void @llvm.dbg.declare(metadata !{[11 x double]* %d}, metadata !1117), !dbg !2192
+  call void @llvm.dbg.value(metadata !2193, i64 0, metadata !1119), !dbg !2194
+  call void @llvm.dbg.value(metadata !2193, i64 0, metadata !1120), !dbg !2194
+  %cmp = icmp eq i32 %degree, 6, !dbg !2195
+  %idxprom = select i1 %cmp, i64 0, i64 7, !dbg !2195
+  call void @llvm.dbg.value(metadata !142, i64 0, metadata !1121), !dbg !2196
+  %cmp17 = icmp slt i32 %degree, 0, !dbg !2196
+  br i1 %cmp17, label %cleanup, label %for.body.lr.ph, !dbg !2196
+
+for.body.lr.ph:                                   ; preds = %entry
+  %1 = add i32 %degree, 1, !dbg !2196
+  br label %for.body, !dbg !2196
+
+for.cond8.preheader:                              ; preds = %for.body
+  br i1 %cmp17, label %cleanup, label %for.body10, !dbg !2198
+
+for.body:                                         ; preds = %for.body, %for.body.lr.ph
+  %indvars.iv13 = phi i64 [ %indvars.iv.next14, %for.body ], [ 0, %for.body.lr.ph ]
+  %arrayidx3 = getelementptr inbounds double* %Coef, i64 %indvars.iv13, !dbg !2200
+  %2 = load double* %arrayidx3, align 8, !dbg !2200, !tbaa !1410
+  %arrayidx.sum = add i64 %indvars.iv13, %idxprom, !dbg !2200
+  %arrayidx5 = getelementptr inbounds [18 x i32]* @_ZN3povL13lcm_bezier_01E, i64 0, i64 %arrayidx.sum, !dbg !2200
+  %3 = load i32* %arrayidx5, align 4, !dbg !2200, !tbaa !1704
+  %conv = sitofp i32 %3 to double, !dbg !2200
+  %mul = fmul double %2, %conv, !dbg !2200
+  %arrayidx7 = getelementptr inbounds [11 x double]* %d, i64 0, i64 %indvars.iv13, !dbg !2200
+  store double %mul, double* %arrayidx7, align 8, !dbg !2200, !tbaa !1410
+  %indvars.iv.next14 = add i64 %indvars.iv13, 1, !dbg !2196
+  %lftr.wideiv15 = trunc i64 %indvars.iv.next14 to i32, !dbg !2196
+  %exitcond16 = icmp eq i32 %lftr.wideiv15, %1, !dbg !2196
+  br i1 %exitcond16, label %for.cond8.preheader, label %for.body, !dbg !2196
+
+for.body10:                                       ; preds = %for.cond8.preheader, %for.inc39
+  %indvars.iv11 = phi i64 [ %indvars.iv.next12, %for.inc39 ], [ 0, %for.cond8.preheader ]
+  %indvars.iv9 = phi i32 [ %indvars.iv.next10, %for.inc39 ], [ %degree, %for.cond8.preheader ], !dbg !2201
+  %non_positive.05 = phi i1 [ %9, %for.inc39 ], [ true, %for.cond8.preheader ]
+  %non_negative.04 = phi i1 [ %6, %for.inc39 ], [ true, %for.cond8.preheader ]
+  br i1 %non_negative.04, label %land.rhs, label %land.end, !dbg !2204
+
+land.rhs:                                         ; preds = %for.body10
+  %4 = trunc i64 %indvars.iv11 to i32, !dbg !2204
+  %sub = sub nsw i32 %degree, %4, !dbg !2204
+  %idxprom11 = sext i32 %sub to i64, !dbg !2204
+  %arrayidx12 = getelementptr inbounds [11 x double]* %d, i64 0, i64 %idxprom11, !dbg !2204
+  %5 = load double* %arrayidx12, align 8, !dbg !2204, !tbaa !1410
+  %cmp13 = fcmp oge double %5, 0.000000e+00, !dbg !2204
+  br label %land.end
+
+land.end:                                         ; preds = %land.rhs, %for.body10
+  %6 = phi i1 [ false, %for.body10 ], [ %cmp13, %land.rhs ]
+  br i1 %non_positive.05, label %land.rhs16, label %land.end21, !dbg !2205
+
+land.rhs16:                                       ; preds = %land.end
+  %7 = trunc i64 %indvars.iv11 to i32, !dbg !2205
+  %sub17 = sub nsw i32 %degree, %7, !dbg !2205
+  %idxprom18 = sext i32 %sub17 to i64, !dbg !2205
+  %arrayidx19 = getelementptr inbounds [11 x double]* %d, i64 0, i64 %idxprom18, !dbg !2205
+  %8 = load double* %arrayidx19, align 8, !dbg !2205, !tbaa !1410
+  %cmp20 = fcmp ole double %8, 0.000000e+00, !dbg !2205
+  br label %land.end21
+
+land.end21:                                       ; preds = %land.rhs16, %land.end
+  %9 = phi i1 [ false, %land.end ], [ %cmp20, %land.rhs16 ]
+  %brmerge = or i1 %6, %9, !dbg !2206
+  br i1 %brmerge, label %for.cond27.preheader, label %if.then, !dbg !2206
+
+for.cond27.preheader:                             ; preds = %land.end21
+  %10 = trunc i64 %indvars.iv11 to i32, !dbg !2201
+  %sub28 = sub nsw i32 %degree, %10, !dbg !2201
+  %cmp291 = icmp sgt i32 %sub28, 0, !dbg !2201
+  br i1 %cmp291, label %for.body30.lr.ph, label %for.inc39, !dbg !2201
+
+for.body30.lr.ph:                                 ; preds = %for.cond27.preheader
+  %arrayidx34.phi.trans.insert = getelementptr inbounds [11 x double]* %d, i64 0, i64 0
+  %.pre = load double* %arrayidx34.phi.trans.insert, align 16, !dbg !2207, !tbaa !1410
+  br label %for.body30, !dbg !2201
+
+if.then:                                          ; preds = %land.end21
+  %call = call i32 @_ZN3pov16Solve_PolynomialEiPdS0_id(i32 %degree, double* %Coef, double* %Roots, i32 1, double 1.000000e-10) #10, !dbg !2208
+  br label %cleanup, !dbg !2208
+
+for.body30:                                       ; preds = %for.body30, %for.body30.lr.ph
+  %11 = phi double [ %.pre, %for.body30.lr.ph ], [ %12, %for.body30 ], !dbg !2201
+  %indvars.iv = phi i64 [ 0, %for.body30.lr.ph ], [ %indvars.iv.next, %for.body30 ]
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2201
+  %arrayidx32 = getelementptr inbounds [11 x double]* %d, i64 0, i64 %indvars.iv.next, !dbg !2207
+  %12 = load double* %arrayidx32, align 8, !dbg !2207, !tbaa !1410
+  %arrayidx34 = getelementptr inbounds [11 x double]* %d, i64 0, i64 %indvars.iv, !dbg !2207
+  %add35 = fadd double %12, %11, !dbg !2207
+  store double %add35, double* %arrayidx34, align 8, !dbg !2207, !tbaa !1410
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !2201
+  %exitcond = icmp eq i32 %lftr.wideiv, %indvars.iv9, !dbg !2201
+  br i1 %exitcond, label %for.inc39, label %for.body30, !dbg !2201
+
+for.inc39:                                        ; preds = %for.body30, %for.cond27.preheader
+  %indvars.iv.next12 = add i64 %indvars.iv11, 1, !dbg !2198
+  %cmp9 = icmp slt i32 %10, %degree, !dbg !2198
+  %indvars.iv.next10 = add i32 %indvars.iv9, -1, !dbg !2198
+  br i1 %cmp9, label %for.body10, label %cleanup, !dbg !2198
+
+cleanup:                                          ; preds = %entry, %for.cond8.preheader, %for.inc39, %if.then
+  %retval.0 = phi i32 [ %call, %if.then ], [ 0, %for.inc39 ], [ 0, %for.cond8.preheader ], [ 0, %entry ]
+  call void @llvm.lifetime.end(i64 88, i8* %0) #4, !dbg !2209
+  ret i32 %retval.0, !dbg !2209
+}

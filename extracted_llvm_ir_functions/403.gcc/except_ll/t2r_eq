@@ -1,10 +1,13 @@
-define internal i32 @t2r_eq(i8* nocapture %pentry, i8* %pdata) #2 {
+define internal i32 @t2r_eq(i8* nocapture %pentry, i8* %pdata) #3 {
 entry:
-  %0 = bitcast i8* %pdata to %union.tree_node*
-  %purpose = getelementptr inbounds i8* %pentry, i64 24
-  %1 = bitcast i8* %purpose to %union.tree_node**
-  %2 = load %union.tree_node** %1, align 8, !tbaa !3
-  %cmp = icmp eq %union.tree_node* %2, %0
-  %conv = zext i1 %cmp to i32
-  ret i32 %conv
+  tail call void @llvm.dbg.value(metadata !{i8* %pentry}, i64 0, metadata !2072), !dbg !2242
+  tail call void @llvm.dbg.value(metadata !{i8* %pdata}, i64 0, metadata !2073), !dbg !2243
+  %0 = bitcast i8* %pdata to %union.tree_node*, !dbg !2244
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %0}, i64 0, metadata !2075), !dbg !2244
+  %purpose = getelementptr inbounds i8* %pentry, i64 24, !dbg !2245
+  %1 = bitcast i8* %purpose to %union.tree_node**, !dbg !2245
+  %2 = load %union.tree_node** %1, align 8, !dbg !2245, !tbaa !2232
+  %cmp = icmp eq %union.tree_node* %2, %0, !dbg !2245
+  %conv = zext i1 %cmp to i32, !dbg !2245
+  ret i32 %conv, !dbg !2245
 }

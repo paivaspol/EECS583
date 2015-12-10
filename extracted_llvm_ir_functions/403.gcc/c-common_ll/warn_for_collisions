@@ -1,27 +1,30 @@
 define internal fastcc void @warn_for_collisions(%struct.tlist* %list) #0 {
 entry:
-  %tobool8 = icmp eq %struct.tlist* %list, null
-  br i1 %tobool8, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct.tlist* %list}, i64 0, metadata !2114), !dbg !4193
+  tail call void @llvm.dbg.value(metadata !{%struct.tlist* %list}, i64 0, metadata !2115), !dbg !4194
+  %tobool8 = icmp eq %struct.tlist* %list, null, !dbg !4194
+  br i1 %tobool8, label %for.end, label %for.body, !dbg !4194
 
 for.body:                                         ; preds = %entry, %for.inc
   %tmp.09 = phi %struct.tlist* [ %2, %for.inc ], [ %list, %entry ]
-  %writer = getelementptr inbounds %struct.tlist* %tmp.09, i64 0, i32 2
-  %0 = load %union.tree_node** %writer, align 8, !tbaa !3
-  %tobool1 = icmp eq %union.tree_node* %0, null
-  br i1 %tobool1, label %for.inc, label %if.then
+  %writer = getelementptr inbounds %struct.tlist* %tmp.09, i64 0, i32 2, !dbg !4196
+  %0 = load %union.tree_node** %writer, align 8, !dbg !4196, !tbaa !2305
+  %tobool1 = icmp eq %union.tree_node* %0, null, !dbg !4196
+  br i1 %tobool1, label %for.inc, label %if.then, !dbg !4196
 
 if.then:                                          ; preds = %for.body
-  %expr = getelementptr inbounds %struct.tlist* %tmp.09, i64 0, i32 1
-  %1 = load %union.tree_node** %expr, align 8, !tbaa !3
-  tail call fastcc void @warn_for_collisions_1(%union.tree_node* %1, %union.tree_node* %0, %struct.tlist* %list, i32 0) #9
-  br label %for.inc
+  %expr = getelementptr inbounds %struct.tlist* %tmp.09, i64 0, i32 1, !dbg !4198
+  %1 = load %union.tree_node** %expr, align 8, !dbg !4198, !tbaa !2305
+  tail call fastcc void @warn_for_collisions_1(%union.tree_node* %1, %union.tree_node* %0, %struct.tlist* %list, i32 0) #10, !dbg !4198
+  br label %for.inc, !dbg !4198
 
 for.inc:                                          ; preds = %for.body, %if.then
-  %next = getelementptr inbounds %struct.tlist* %tmp.09, i64 0, i32 0
-  %2 = load %struct.tlist** %next, align 8, !tbaa !3
-  %tobool = icmp eq %struct.tlist* %2, null
-  br i1 %tobool, label %for.end, label %for.body
+  %next = getelementptr inbounds %struct.tlist* %tmp.09, i64 0, i32 0, !dbg !4194
+  %2 = load %struct.tlist** %next, align 8, !dbg !4194, !tbaa !2305
+  tail call void @llvm.dbg.value(metadata !{%struct.tlist* %2}, i64 0, metadata !2115), !dbg !4194
+  %tobool = icmp eq %struct.tlist* %2, null, !dbg !4194
+  br i1 %tobool, label %for.end, label %for.body, !dbg !4194
 
 for.end:                                          ; preds = %for.inc, %entry
-  ret void
+  ret void, !dbg !4199
 }

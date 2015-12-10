@@ -1,17 +1,19 @@
 define void @DSTree_free(%struct._DSTree* %dstree) #0 {
 entry:
-  %cmp = icmp eq %struct._DSTree* %dstree, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._DSTree* %dstree}, i64 0, metadata !48), !dbg !81
+  %cmp = icmp eq %struct._DSTree* %dstree, null, !dbg !82
+  br i1 %cmp, label %if.then, label %if.end, !dbg !82
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([50 x i8]* @.str4, i64 0, i64 0), %struct._DSTree* null) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !83, !tbaa !53
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([50 x i8]* @.str4, i64 0, i64 0), %struct._DSTree* null) #6, !dbg !83
+  tail call void @exit(i32 -1) #7, !dbg !85
+  unreachable, !dbg !85
 
 if.end:                                           ; preds = %entry
-  tail call void @DSTree_clearData(%struct._DSTree* %dstree) #7
-  %1 = bitcast %struct._DSTree* %dstree to i8*
-  tail call void @free(i8* %1) #5
-  ret void
+  tail call void @DSTree_clearData(%struct._DSTree* %dstree) #8, !dbg !86
+  %1 = bitcast %struct._DSTree* %dstree to i8*, !dbg !87
+  tail call void @free(i8* %1) #6, !dbg !87
+  tail call void @llvm.dbg.value(metadata !89, i64 0, metadata !48), !dbg !87
+  ret void, !dbg !90
 }

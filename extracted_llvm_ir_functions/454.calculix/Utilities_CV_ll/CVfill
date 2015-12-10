@@ -1,29 +1,32 @@
 define void @CVfill(i32 %size, i8* %y, i8 signext %c) #0 {
 entry:
-  %cmp = icmp slt i32 %size, 1
-  br i1 %cmp, label %return, label %if.else
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !34), !dbg !148
+  tail call void @llvm.dbg.value(metadata !{i8* %y}, i64 0, metadata !35), !dbg !149
+  tail call void @llvm.dbg.value(metadata !{i8 %c}, i64 0, metadata !36), !dbg !150
+  %cmp = icmp slt i32 %size, 1, !dbg !151
+  br i1 %cmp, label %return, label %if.else, !dbg !151
 
 if.else:                                          ; preds = %entry
-  %cmp1 = icmp eq i8* %y, null
-  br i1 %cmp1, label %if.then2, label %for.cond.preheader
+  %cmp1 = icmp eq i8* %y, null, !dbg !152
+  br i1 %cmp1, label %if.then2, label %for.cond.preheader, !dbg !152
 
 for.cond.preheader:                               ; preds = %if.else
-  %cmp412 = icmp sgt i32 %size, 0
-  br i1 %cmp412, label %for.body.lr.ph, label %return
+  %cmp412 = icmp sgt i32 %size, 0, !dbg !153
+  br i1 %cmp412, label %for.body.lr.ph, label %return, !dbg !153
 
 for.body.lr.ph:                                   ; preds = %for.cond.preheader
-  %0 = add i32 %size, -1
+  %0 = add i32 %size, -1, !dbg !153
   %1 = zext i32 %0 to i64
-  %2 = add i64 %1, 1
-  call void @llvm.memset.p0i8.i64(i8* %y, i8 %c, i64 %2, i32 1, i1 false)
-  br label %return
+  %2 = add i64 %1, 1, !dbg !153
+  call void @llvm.memset.p0i8.i64(i8* %y, i8 %c, i64 %2, i32 1, i1 false), !dbg !155
+  br label %return, !dbg !153
 
 if.then2:                                         ; preds = %if.else
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([44 x i8]* @.str4, i64 0, i64 0), i32 %size, i8* null) #6
-  tail call void @exit(i32 0) #7
-  unreachable
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !157, !tbaa !144
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([44 x i8]* @.str4, i64 0, i64 0), i32 %size, i8* null) #7, !dbg !157
+  tail call void @exit(i32 0) #8, !dbg !159
+  unreachable, !dbg !159
 
 return:                                           ; preds = %for.cond.preheader, %for.body.lr.ph, %entry
-  ret void
+  ret void, !dbg !160
 }

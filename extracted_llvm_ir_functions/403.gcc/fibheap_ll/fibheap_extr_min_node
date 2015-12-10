@@ -1,293 +1,326 @@
 define internal fastcc %struct.fibnode* @fibheap_extr_min_node(%struct.fibheap* nocapture %heap) #0 {
 entry:
   %a.i = alloca [65 x %struct.fibnode*], align 16
-  %min = getelementptr inbounds %struct.fibheap* %heap, i64 0, i32 1
-  %0 = load %struct.fibnode** %min, align 8, !tbaa !0
-  %child = getelementptr inbounds %struct.fibnode* %0, i64 0, i32 1
-  %1 = load %struct.fibnode** %child, align 8, !tbaa !0
-  %2 = icmp eq %struct.fibnode* %1, null
-  br i1 %2, label %for.end, label %for.body.lr.ph
+  call void @llvm.dbg.value(metadata !{%struct.fibheap* %heap}, i64 0, metadata !144), !dbg !286
+  %min = getelementptr inbounds %struct.fibheap* %heap, i64 0, i32 1, !dbg !287
+  %0 = load %struct.fibnode** %min, align 8, !dbg !287, !tbaa !204
+  call void @llvm.dbg.value(metadata !{%struct.fibnode* %0}, i64 0, metadata !145), !dbg !287
+  %child = getelementptr inbounds %struct.fibnode* %0, i64 0, i32 1, !dbg !288
+  %1 = load %struct.fibnode** %child, align 8, !dbg !288, !tbaa !204
+  call void @llvm.dbg.value(metadata !{%struct.fibnode* %1}, i64 0, metadata !146), !dbg !288
+  call void @llvm.dbg.value(metadata !290, i64 0, metadata !148), !dbg !288
+  %2 = icmp eq %struct.fibnode* %1, null, !dbg !288
+  br i1 %2, label %for.end, label %for.body.lr.ph, !dbg !288
 
 for.body.lr.ph:                                   ; preds = %entry
-  %root.i = getelementptr inbounds %struct.fibheap* %heap, i64 0, i32 2
-  br label %for.body
+  %root.i = getelementptr inbounds %struct.fibheap* %heap, i64 0, i32 2, !dbg !291
+  br label %for.body, !dbg !288
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.cond.backedge
   %orig.043 = phi %struct.fibnode* [ null, %for.body.lr.ph ], [ %x.0.orig.0, %for.cond.backedge ]
   %x.042 = phi %struct.fibnode* [ %1, %for.body.lr.ph ], [ %3, %for.cond.backedge ]
-  %cmp2 = icmp eq %struct.fibnode* %orig.043, null
-  %x.0.orig.0 = select i1 %cmp2, %struct.fibnode* %x.042, %struct.fibnode* %orig.043
-  %right = getelementptr inbounds %struct.fibnode* %x.042, i64 0, i32 3
-  %3 = load %struct.fibnode** %right, align 8, !tbaa !0
-  %parent = getelementptr inbounds %struct.fibnode* %x.042, i64 0, i32 0
-  store %struct.fibnode* null, %struct.fibnode** %parent, align 8, !tbaa !0
-  %4 = load %struct.fibnode** %root.i, align 8, !tbaa !0
-  %cmp.i = icmp eq %struct.fibnode* %4, null
-  br i1 %cmp.i, label %if.then.i, label %if.end.i
+  %cmp2 = icmp eq %struct.fibnode* %orig.043, null, !dbg !294
+  call void @llvm.dbg.value(metadata !{%struct.fibnode* %x.042}, i64 0, metadata !148), !dbg !295
+  %x.0.orig.0 = select i1 %cmp2, %struct.fibnode* %x.042, %struct.fibnode* %orig.043, !dbg !294
+  %right = getelementptr inbounds %struct.fibnode* %x.042, i64 0, i32 3, !dbg !296
+  %3 = load %struct.fibnode** %right, align 8, !dbg !296, !tbaa !204
+  call void @llvm.dbg.value(metadata !{%struct.fibnode* %3}, i64 0, metadata !147), !dbg !296
+  %parent = getelementptr inbounds %struct.fibnode* %x.042, i64 0, i32 0, !dbg !297
+  store %struct.fibnode* null, %struct.fibnode** %parent, align 8, !dbg !297, !tbaa !204
+  call void @llvm.dbg.value(metadata !{%struct.fibheap* %heap}, i64 0, metadata !298) #5, !dbg !299
+  call void @llvm.dbg.value(metadata !{%struct.fibnode* %x.042}, i64 0, metadata !300) #5, !dbg !301
+  %4 = load %struct.fibnode** %root.i, align 8, !dbg !291, !tbaa !204
+  %cmp.i = icmp eq %struct.fibnode* %4, null, !dbg !291
+  br i1 %cmp.i, label %if.then.i, label %if.end.i, !dbg !291
 
 if.then.i:                                        ; preds = %for.body
-  store %struct.fibnode* %x.042, %struct.fibnode** %root.i, align 8, !tbaa !0
-  %left.i = getelementptr inbounds %struct.fibnode* %x.042, i64 0, i32 2
-  store %struct.fibnode* %x.042, %struct.fibnode** %left.i, align 8, !tbaa !0
-  store %struct.fibnode* %x.042, %struct.fibnode** %right, align 8, !tbaa !0
-  br label %for.cond.backedge
+  store %struct.fibnode* %x.042, %struct.fibnode** %root.i, align 8, !dbg !302, !tbaa !204
+  %left.i = getelementptr inbounds %struct.fibnode* %x.042, i64 0, i32 2, !dbg !303
+  store %struct.fibnode* %x.042, %struct.fibnode** %left.i, align 8, !dbg !303, !tbaa !204
+  store %struct.fibnode* %x.042, %struct.fibnode** %right, align 8, !dbg !304, !tbaa !204
+  br label %for.cond.backedge, !dbg !305
 
 if.end.i:                                         ; preds = %for.body
-  %right.i26 = getelementptr inbounds %struct.fibnode* %4, i64 0, i32 3
-  %5 = load %struct.fibnode** %right.i26, align 8, !tbaa !0
-  %cmp.i27 = icmp eq %struct.fibnode* %5, %4
-  br i1 %cmp.i27, label %if.then.i29, label %if.else.i
+  tail call void @llvm.dbg.value(metadata !{%struct.fibnode* %4}, i64 0, metadata !306), !dbg !308
+  tail call void @llvm.dbg.value(metadata !{%struct.fibnode* %x.042}, i64 0, metadata !309), !dbg !310
+  %right.i26 = getelementptr inbounds %struct.fibnode* %4, i64 0, i32 3, !dbg !311
+  %5 = load %struct.fibnode** %right.i26, align 8, !dbg !311, !tbaa !204
+  %cmp.i27 = icmp eq %struct.fibnode* %5, %4, !dbg !311
+  br i1 %cmp.i27, label %if.then.i29, label %if.else.i, !dbg !311
 
 if.then.i29:                                      ; preds = %if.end.i
-  store %struct.fibnode* %x.042, %struct.fibnode** %right.i26, align 8, !tbaa !0
-  %left.i28 = getelementptr inbounds %struct.fibnode* %4, i64 0, i32 2
-  store %struct.fibnode* %x.042, %struct.fibnode** %left.i28, align 8, !tbaa !0
-  store %struct.fibnode* %4, %struct.fibnode** %right, align 8, !tbaa !0
-  %left3.i = getelementptr inbounds %struct.fibnode* %x.042, i64 0, i32 2
-  store %struct.fibnode* %4, %struct.fibnode** %left3.i, align 8, !tbaa !0
-  br label %for.cond.backedge
+  store %struct.fibnode* %x.042, %struct.fibnode** %right.i26, align 8, !dbg !312, !tbaa !204
+  %left.i28 = getelementptr inbounds %struct.fibnode* %4, i64 0, i32 2, !dbg !313
+  store %struct.fibnode* %x.042, %struct.fibnode** %left.i28, align 8, !dbg !313, !tbaa !204
+  store %struct.fibnode* %4, %struct.fibnode** %right, align 8, !dbg !314, !tbaa !204
+  %left3.i = getelementptr inbounds %struct.fibnode* %x.042, i64 0, i32 2, !dbg !315
+  store %struct.fibnode* %4, %struct.fibnode** %left3.i, align 8, !dbg !315, !tbaa !204
+  br label %for.cond.backedge, !dbg !316
 
 if.else.i:                                        ; preds = %if.end.i
-  store %struct.fibnode* %5, %struct.fibnode** %right, align 8, !tbaa !0
-  %6 = load %struct.fibnode** %right.i26, align 8, !tbaa !0
-  %left7.i = getelementptr inbounds %struct.fibnode* %6, i64 0, i32 2
-  store %struct.fibnode* %x.042, %struct.fibnode** %left7.i, align 8, !tbaa !0
-  store %struct.fibnode* %x.042, %struct.fibnode** %right.i26, align 8, !tbaa !0
-  %left9.i = getelementptr inbounds %struct.fibnode* %x.042, i64 0, i32 2
-  store %struct.fibnode* %4, %struct.fibnode** %left9.i, align 8, !tbaa !0
+  store %struct.fibnode* %5, %struct.fibnode** %right, align 8, !dbg !317, !tbaa !204
+  %6 = load %struct.fibnode** %right.i26, align 8, !dbg !318, !tbaa !204
+  %left7.i = getelementptr inbounds %struct.fibnode* %6, i64 0, i32 2, !dbg !318
+  store %struct.fibnode* %x.042, %struct.fibnode** %left7.i, align 8, !dbg !318, !tbaa !204
+  store %struct.fibnode* %x.042, %struct.fibnode** %right.i26, align 8, !dbg !319, !tbaa !204
+  %left9.i = getelementptr inbounds %struct.fibnode* %x.042, i64 0, i32 2, !dbg !320
+  store %struct.fibnode* %4, %struct.fibnode** %left9.i, align 8, !dbg !320, !tbaa !204
   br label %for.cond.backedge
 
 for.cond.backedge:                                ; preds = %if.else.i, %if.then.i29, %if.then.i
-  %cmp = icmp ne %struct.fibnode* %3, %x.0.orig.0
-  %cmp1 = icmp ne %struct.fibnode* %3, null
-  %or.cond = and i1 %cmp, %cmp1
-  br i1 %or.cond, label %for.body, label %for.end
+  %cmp = icmp ne %struct.fibnode* %3, %x.0.orig.0, !dbg !288
+  %cmp1 = icmp ne %struct.fibnode* %3, null, !dbg !288
+  %or.cond = and i1 %cmp, %cmp1, !dbg !288
+  br i1 %or.cond, label %for.body, label %for.end, !dbg !288
 
 for.end:                                          ; preds = %for.cond.backedge, %entry
-  %left.i33 = getelementptr inbounds %struct.fibnode* %0, i64 0, i32 2
-  %7 = load %struct.fibnode** %left.i33, align 8, !tbaa !0
-  %cmp.i34 = icmp eq %struct.fibnode* %7, %0
-  br i1 %cmp.i34, label %if.then.i36, label %if.else.i37
+  call void @llvm.dbg.value(metadata !{%struct.fibheap* %heap}, i64 0, metadata !321) #5, !dbg !323
+  call void @llvm.dbg.value(metadata !{%struct.fibnode* %0}, i64 0, metadata !324) #5, !dbg !325
+  %left.i33 = getelementptr inbounds %struct.fibnode* %0, i64 0, i32 2, !dbg !326
+  %7 = load %struct.fibnode** %left.i33, align 8, !dbg !326, !tbaa !204
+  %cmp.i34 = icmp eq %struct.fibnode* %7, %0, !dbg !326
+  br i1 %cmp.i34, label %if.then.i36, label %if.else.i37, !dbg !326
 
 if.then.i36:                                      ; preds = %for.end
-  %root.i35 = getelementptr inbounds %struct.fibheap* %heap, i64 0, i32 2
-  store %struct.fibnode* null, %struct.fibnode** %root.i35, align 8, !tbaa !0
-  br label %fibheap_rem_root.exit
+  %root.i35 = getelementptr inbounds %struct.fibheap* %heap, i64 0, i32 2, !dbg !327
+  store %struct.fibnode* null, %struct.fibnode** %root.i35, align 8, !dbg !327, !tbaa !204
+  br label %fibheap_rem_root.exit, !dbg !327
 
 if.else.i37:                                      ; preds = %for.end
-  %call.i = call fastcc %struct.fibnode* @fibnode_remove(%struct.fibnode* %0) #5
-  %root1.i = getelementptr inbounds %struct.fibheap* %heap, i64 0, i32 2
-  store %struct.fibnode* %call.i, %struct.fibnode** %root1.i, align 8, !tbaa !0
+  %call.i = call fastcc %struct.fibnode* @fibnode_remove(%struct.fibnode* %0) #6, !dbg !328
+  %root1.i = getelementptr inbounds %struct.fibheap* %heap, i64 0, i32 2, !dbg !328
+  store %struct.fibnode* %call.i, %struct.fibnode** %root1.i, align 8, !dbg !328, !tbaa !204
   br label %fibheap_rem_root.exit
 
 fibheap_rem_root.exit:                            ; preds = %if.then.i36, %if.else.i37
   %8 = phi %struct.fibnode* [ null, %if.then.i36 ], [ %call.i, %if.else.i37 ]
-  %nodes = getelementptr inbounds %struct.fibheap* %heap, i64 0, i32 0
-  %9 = load i64* %nodes, align 8, !tbaa !3
-  %dec = add i64 %9, -1
-  store i64 %dec, i64* %nodes, align 8, !tbaa !3
-  %cmp4 = icmp eq i64 %dec, 0
-  br i1 %cmp4, label %if.then5, label %if.else
+  %nodes = getelementptr inbounds %struct.fibheap* %heap, i64 0, i32 0, !dbg !329
+  %9 = load i64* %nodes, align 8, !dbg !329, !tbaa !210
+  %dec = add i64 %9, -1, !dbg !329
+  store i64 %dec, i64* %nodes, align 8, !dbg !329, !tbaa !210
+  %cmp4 = icmp eq i64 %dec, 0, !dbg !330
+  br i1 %cmp4, label %if.then5, label %if.else, !dbg !330
 
 if.then5:                                         ; preds = %fibheap_rem_root.exit
-  store %struct.fibnode* null, %struct.fibnode** %min, align 8, !tbaa !0
-  br label %if.end9
+  store %struct.fibnode* null, %struct.fibnode** %min, align 8, !dbg !331, !tbaa !204
+  br label %if.end9, !dbg !331
 
 if.else:                                          ; preds = %fibheap_rem_root.exit
-  %right7 = getelementptr inbounds %struct.fibnode* %0, i64 0, i32 3
-  %10 = load %struct.fibnode** %right7, align 8, !tbaa !0
-  store %struct.fibnode* %10, %struct.fibnode** %min, align 8, !tbaa !0
-  %11 = bitcast [65 x %struct.fibnode*]* %a.i to i8*
-  call void @llvm.lifetime.start(i64 520, i8* %11) #4
-  call void @llvm.memset.p0i8.i64(i8* %11, i8 0, i64 520, i32 16, i1 false) #4
-  %root.i31 = getelementptr inbounds %struct.fibheap* %heap, i64 0, i32 2
-  %cmp100.i = icmp eq %struct.fibnode* %8, null
-  br i1 %cmp100.i, label %while.end14.i, label %while.body.i
+  %right7 = getelementptr inbounds %struct.fibnode* %0, i64 0, i32 3, !dbg !332
+  %10 = load %struct.fibnode** %right7, align 8, !dbg !332, !tbaa !204
+  store %struct.fibnode* %10, %struct.fibnode** %min, align 8, !dbg !332, !tbaa !204
+  call void @llvm.dbg.value(metadata !{%struct.fibheap* %heap}, i64 0, metadata !334) #5, !dbg !336
+  %11 = bitcast [65 x %struct.fibnode*]* %a.i to i8*, !dbg !337
+  call void @llvm.lifetime.start(i64 520, i8* %11) #5, !dbg !337
+  call void @llvm.dbg.declare(metadata !{[65 x %struct.fibnode*]* %a.i}, metadata !152) #5, !dbg !337
+  call void @llvm.dbg.value(metadata !338, i64 0, metadata !339) #5, !dbg !340
+  call void @llvm.memset.p0i8.i64(i8* %11, i8 0, i64 520, i32 16, i1 false) #5, !dbg !341
+  %root.i31 = getelementptr inbounds %struct.fibheap* %heap, i64 0, i32 2, !dbg !342
+  call void @llvm.dbg.value(metadata !{%struct.fibnode* %8}, i64 0, metadata !343) #5, !dbg !342
+  %cmp100.i = icmp eq %struct.fibnode* %8, null, !dbg !342
+  br i1 %cmp100.i, label %while.end14.i, label %while.body.i, !dbg !342
 
 while.body.i:                                     ; preds = %if.else, %while.end.i
   %12 = phi %struct.fibnode* [ %29, %while.end.i ], [ %8, %if.else ]
-  %left.i.i = getelementptr inbounds %struct.fibnode* %12, i64 0, i32 2
-  %13 = load %struct.fibnode** %left.i.i, align 8, !tbaa !0
-  %cmp.i.i = icmp eq %struct.fibnode* %13, %12
-  br i1 %cmp.i.i, label %fibheap_rem_root.exit.i, label %if.else.i.i
+  call void @llvm.dbg.value(metadata !{%struct.fibnode* %12}, i64 0, metadata !344) #5, !dbg !345
+  call void @llvm.dbg.value(metadata !{%struct.fibheap* %heap}, i64 0, metadata !346) #5, !dbg !348
+  call void @llvm.dbg.value(metadata !{%struct.fibnode* %12}, i64 0, metadata !349) #5, !dbg !350
+  %left.i.i = getelementptr inbounds %struct.fibnode* %12, i64 0, i32 2, !dbg !351
+  %13 = load %struct.fibnode** %left.i.i, align 8, !dbg !351, !tbaa !204
+  %cmp.i.i = icmp eq %struct.fibnode* %13, %12, !dbg !351
+  br i1 %cmp.i.i, label %fibheap_rem_root.exit.i, label %if.else.i.i, !dbg !351
 
 if.else.i.i:                                      ; preds = %while.body.i
-  %call.i.i = call fastcc %struct.fibnode* @fibnode_remove(%struct.fibnode* %12) #5
+  %call.i.i = call fastcc %struct.fibnode* @fibnode_remove(%struct.fibnode* %12) #6, !dbg !352
   br label %fibheap_rem_root.exit.i
 
 fibheap_rem_root.exit.i:                          ; preds = %if.else.i.i, %while.body.i
   %storemerge.i = phi %struct.fibnode* [ %call.i.i, %if.else.i.i ], [ null, %while.body.i ]
-  store %struct.fibnode* %storemerge.i, %struct.fibnode** %root.i31, align 8, !tbaa !0
-  %degree.i = getelementptr inbounds %struct.fibnode* %12, i64 0, i32 6
-  %14 = bitcast [4 x i8]* %degree.i to i32*
-  %bf.load.i = load i32* %14, align 8
-  %bf.clear.i = and i32 %bf.load.i, 2147483647
-  %idxprom93102.i = zext i32 %bf.clear.i to i64
-  %arrayidx94.i = getelementptr inbounds [65 x %struct.fibnode*]* %a.i, i64 0, i64 %idxprom93102.i
-  %15 = load %struct.fibnode** %arrayidx94.i, align 8, !tbaa !0
-  %cmp395.i = icmp eq %struct.fibnode* %15, null
-  br i1 %cmp395.i, label %while.end.i, label %while.body5.lr.ph.i
+  store %struct.fibnode* %storemerge.i, %struct.fibnode** %root.i31, align 8, !dbg !353, !tbaa !204
+  %degree.i = getelementptr inbounds %struct.fibnode* %12, i64 0, i32 6, !dbg !354
+  %14 = bitcast [4 x i8]* %degree.i to i32*, !dbg !354
+  %bf.load.i = load i32* %14, align 8, !dbg !354
+  %bf.clear.i = and i32 %bf.load.i, 2147483647, !dbg !354
+  call void @llvm.dbg.value(metadata !{i32 %bf.clear.i}, i64 0, metadata !355) #5, !dbg !354
+  %idxprom93102.i = zext i32 %bf.clear.i to i64, !dbg !356
+  %arrayidx94.i = getelementptr inbounds [65 x %struct.fibnode*]* %a.i, i64 0, i64 %idxprom93102.i, !dbg !356
+  %15 = load %struct.fibnode** %arrayidx94.i, align 8, !dbg !356, !tbaa !204
+  %cmp395.i = icmp eq %struct.fibnode* %15, null, !dbg !356
+  br i1 %cmp395.i, label %while.end.i, label %while.body5.lr.ph.i, !dbg !356
 
 while.body5.lr.ph.i:                              ; preds = %fibheap_rem_root.exit.i
   %16 = zext i32 %bf.load.i to i64
   %17 = and i64 %16, 2147483647
-  br label %while.body5.i
+  br label %while.body5.i, !dbg !356
 
 while.body5.i:                                    ; preds = %fibheap_link.exit.i, %while.body5.lr.ph.i
   %indvars.iv104.i = phi i64 [ %17, %while.body5.lr.ph.i ], [ %indvars.iv.next105.i, %fibheap_link.exit.i ]
   %18 = phi %struct.fibnode* [ %15, %while.body5.lr.ph.i ], [ %28, %fibheap_link.exit.i ]
   %arrayidx98.i = phi %struct.fibnode** [ %arrayidx94.i, %while.body5.lr.ph.i ], [ %arrayidx.i, %fibheap_link.exit.i ]
   %x.097.i = phi %struct.fibnode* [ %12, %while.body5.lr.ph.i ], [ %.x.0.i, %fibheap_link.exit.i ]
-  %key.i.i = getelementptr inbounds %struct.fibnode* %x.097.i, i64 0, i32 4
-  %19 = load i64* %key.i.i, align 8, !tbaa !3
-  %key1.i.i = getelementptr inbounds %struct.fibnode* %18, i64 0, i32 4
-  %20 = load i64* %key1.i.i, align 8, !tbaa !3
-  %21 = icmp sgt i64 %19, %20
-  %.x.0.i = select i1 %21, %struct.fibnode* %18, %struct.fibnode* %x.097.i
-  %x.0..i = select i1 %21, %struct.fibnode* %x.097.i, %struct.fibnode* %18
-  %child.i.i = getelementptr inbounds %struct.fibnode* %.x.0.i, i64 0, i32 1
-  %22 = load %struct.fibnode** %child.i.i, align 8, !tbaa !0
-  %cmp.i86.i = icmp eq %struct.fibnode* %22, null
-  br i1 %cmp.i86.i, label %if.then.i87.i, label %if.else.i89.i
+  call void @llvm.dbg.value(metadata !{%struct.fibnode* %18}, i64 0, metadata !357) #5, !dbg !358
+  call void @llvm.dbg.value(metadata !268, i64 0, metadata !359) #5, !dbg !361
+  %key.i.i = getelementptr inbounds %struct.fibnode* %x.097.i, i64 0, i32 4, !dbg !362
+  %19 = load i64* %key.i.i, align 8, !dbg !362, !tbaa !210
+  %key1.i.i = getelementptr inbounds %struct.fibnode* %18, i64 0, i32 4, !dbg !362
+  %20 = load i64* %key1.i.i, align 8, !dbg !362, !tbaa !210
+  %21 = icmp sgt i64 %19, %20, !dbg !362
+  call void @llvm.dbg.value(metadata !{%struct.fibnode* %18}, i64 0, metadata !344) #5, !dbg !363
+  %.x.0.i = select i1 %21, %struct.fibnode* %18, %struct.fibnode* %x.097.i, !dbg !360
+  %x.0..i = select i1 %21, %struct.fibnode* %x.097.i, %struct.fibnode* %18, !dbg !360
+  call void @llvm.dbg.value(metadata !268, i64 0, metadata !364) #5, !dbg !366
+  %child.i.i = getelementptr inbounds %struct.fibnode* %.x.0.i, i64 0, i32 1, !dbg !367
+  %22 = load %struct.fibnode** %child.i.i, align 8, !dbg !367, !tbaa !204
+  %cmp.i86.i = icmp eq %struct.fibnode* %22, null, !dbg !367
+  br i1 %cmp.i86.i, label %if.then.i87.i, label %if.else.i89.i, !dbg !367
 
 if.then.i87.i:                                    ; preds = %while.body5.i
-  store %struct.fibnode* %x.0..i, %struct.fibnode** %child.i.i, align 8, !tbaa !0
-  br label %fibheap_link.exit.i
+  store %struct.fibnode* %x.0..i, %struct.fibnode** %child.i.i, align 8, !dbg !368, !tbaa !204
+  br label %fibheap_link.exit.i, !dbg !368
 
 if.else.i89.i:                                    ; preds = %while.body5.i
-  %left.i88.i = getelementptr inbounds %struct.fibnode* %22, i64 0, i32 2
-  %23 = load %struct.fibnode** %left.i88.i, align 8, !tbaa !0
-  %right.i.i.i = getelementptr inbounds %struct.fibnode* %23, i64 0, i32 3
-  %24 = load %struct.fibnode** %right.i.i.i, align 8, !tbaa !0
-  %cmp.i.i.i = icmp eq %struct.fibnode* %24, %23
-  br i1 %cmp.i.i.i, label %if.then.i.i.i, label %if.else.i.i.i
+  %left.i88.i = getelementptr inbounds %struct.fibnode* %22, i64 0, i32 2, !dbg !369
+  %23 = load %struct.fibnode** %left.i88.i, align 8, !dbg !369, !tbaa !204
+  call void @llvm.dbg.value(metadata !{%struct.fibnode* %23}, i64 0, metadata !370) #5, !dbg !371
+  call void @llvm.dbg.value(metadata !{%struct.fibnode* %x.0..i}, i64 0, metadata !372) #5, !dbg !373
+  %right.i.i.i = getelementptr inbounds %struct.fibnode* %23, i64 0, i32 3, !dbg !374
+  %24 = load %struct.fibnode** %right.i.i.i, align 8, !dbg !374, !tbaa !204
+  %cmp.i.i.i = icmp eq %struct.fibnode* %24, %23, !dbg !374
+  br i1 %cmp.i.i.i, label %if.then.i.i.i, label %if.else.i.i.i, !dbg !374
 
 if.then.i.i.i:                                    ; preds = %if.else.i89.i
-  store %struct.fibnode* %x.0..i, %struct.fibnode** %right.i.i.i, align 8, !tbaa !0
-  %left.i.i.i = getelementptr inbounds %struct.fibnode* %23, i64 0, i32 2
-  store %struct.fibnode* %x.0..i, %struct.fibnode** %left.i.i.i, align 8, !tbaa !0
-  %right2.i.i.i = getelementptr inbounds %struct.fibnode* %x.0..i, i64 0, i32 3
-  store %struct.fibnode* %23, %struct.fibnode** %right2.i.i.i, align 8, !tbaa !0
-  %left3.i.i.i = getelementptr inbounds %struct.fibnode* %x.0..i, i64 0, i32 2
-  store %struct.fibnode* %23, %struct.fibnode** %left3.i.i.i, align 8, !tbaa !0
-  br label %fibheap_link.exit.i
+  store %struct.fibnode* %x.0..i, %struct.fibnode** %right.i.i.i, align 8, !dbg !375, !tbaa !204
+  %left.i.i.i = getelementptr inbounds %struct.fibnode* %23, i64 0, i32 2, !dbg !376
+  store %struct.fibnode* %x.0..i, %struct.fibnode** %left.i.i.i, align 8, !dbg !376, !tbaa !204
+  %right2.i.i.i = getelementptr inbounds %struct.fibnode* %x.0..i, i64 0, i32 3, !dbg !377
+  store %struct.fibnode* %23, %struct.fibnode** %right2.i.i.i, align 8, !dbg !377, !tbaa !204
+  %left3.i.i.i = getelementptr inbounds %struct.fibnode* %x.0..i, i64 0, i32 2, !dbg !378
+  store %struct.fibnode* %23, %struct.fibnode** %left3.i.i.i, align 8, !dbg !378, !tbaa !204
+  br label %fibheap_link.exit.i, !dbg !379
 
 if.else.i.i.i:                                    ; preds = %if.else.i89.i
-  %right5.i.i.i = getelementptr inbounds %struct.fibnode* %x.0..i, i64 0, i32 3
-  store %struct.fibnode* %24, %struct.fibnode** %right5.i.i.i, align 8, !tbaa !0
-  %25 = load %struct.fibnode** %right.i.i.i, align 8, !tbaa !0
-  %left7.i.i.i = getelementptr inbounds %struct.fibnode* %25, i64 0, i32 2
-  store %struct.fibnode* %x.0..i, %struct.fibnode** %left7.i.i.i, align 8, !tbaa !0
-  store %struct.fibnode* %x.0..i, %struct.fibnode** %right.i.i.i, align 8, !tbaa !0
-  %left9.i.i.i = getelementptr inbounds %struct.fibnode* %x.0..i, i64 0, i32 2
-  store %struct.fibnode* %23, %struct.fibnode** %left9.i.i.i, align 8, !tbaa !0
+  %right5.i.i.i = getelementptr inbounds %struct.fibnode* %x.0..i, i64 0, i32 3, !dbg !380
+  store %struct.fibnode* %24, %struct.fibnode** %right5.i.i.i, align 8, !dbg !380, !tbaa !204
+  %25 = load %struct.fibnode** %right.i.i.i, align 8, !dbg !381, !tbaa !204
+  %left7.i.i.i = getelementptr inbounds %struct.fibnode* %25, i64 0, i32 2, !dbg !381
+  store %struct.fibnode* %x.0..i, %struct.fibnode** %left7.i.i.i, align 8, !dbg !381, !tbaa !204
+  store %struct.fibnode* %x.0..i, %struct.fibnode** %right.i.i.i, align 8, !dbg !382, !tbaa !204
+  %left9.i.i.i = getelementptr inbounds %struct.fibnode* %x.0..i, i64 0, i32 2, !dbg !383
+  store %struct.fibnode* %23, %struct.fibnode** %left9.i.i.i, align 8, !dbg !383, !tbaa !204
   br label %fibheap_link.exit.i
 
 fibheap_link.exit.i:                              ; preds = %if.else.i.i.i, %if.then.i.i.i, %if.then.i87.i
-  %parent3.i.i = getelementptr inbounds %struct.fibnode* %x.0..i, i64 0, i32 0
-  store %struct.fibnode* %.x.0.i, %struct.fibnode** %parent3.i.i, align 8, !tbaa !0
-  %degree.i.i = getelementptr inbounds %struct.fibnode* %.x.0.i, i64 0, i32 6
-  %26 = bitcast [4 x i8]* %degree.i.i to i32*
-  %bf.load.i.i = load i32* %26, align 8
-  %inc.i.i = add i32 %bf.load.i.i, 1
-  %bf.value.i.i = and i32 %inc.i.i, 2147483647
-  %bf.clear5.i.i = and i32 %bf.load.i.i, -2147483648
-  %bf.set.i.i = or i32 %bf.value.i.i, %bf.clear5.i.i
-  store i32 %bf.set.i.i, i32* %26, align 8
-  %mark.i.i = getelementptr inbounds %struct.fibnode* %x.0..i, i64 0, i32 6
-  %27 = bitcast [4 x i8]* %mark.i.i to i32*
-  %bf.load6.i.i = load i32* %27, align 8
-  %bf.clear7.i.i = and i32 %bf.load6.i.i, 2147483647
-  store i32 %bf.clear7.i.i, i32* %27, align 8
-  store %struct.fibnode* null, %struct.fibnode** %arrayidx98.i, align 8, !tbaa !0
-  %indvars.iv.next105.i = add i64 %indvars.iv104.i, 1
-  %arrayidx.i = getelementptr inbounds [65 x %struct.fibnode*]* %a.i, i64 0, i64 %indvars.iv.next105.i
-  %28 = load %struct.fibnode** %arrayidx.i, align 8, !tbaa !0
-  %cmp3.i = icmp eq %struct.fibnode* %28, null
-  br i1 %cmp3.i, label %while.end.i, label %while.body5.i
+  %parent3.i.i = getelementptr inbounds %struct.fibnode* %x.0..i, i64 0, i32 0, !dbg !384
+  store %struct.fibnode* %.x.0.i, %struct.fibnode** %parent3.i.i, align 8, !dbg !384, !tbaa !204
+  %degree.i.i = getelementptr inbounds %struct.fibnode* %.x.0.i, i64 0, i32 6, !dbg !385
+  %26 = bitcast [4 x i8]* %degree.i.i to i32*, !dbg !385
+  %bf.load.i.i = load i32* %26, align 8, !dbg !385
+  %inc.i.i = add i32 %bf.load.i.i, 1, !dbg !385
+  %bf.value.i.i = and i32 %inc.i.i, 2147483647, !dbg !385
+  %bf.clear5.i.i = and i32 %bf.load.i.i, -2147483648, !dbg !385
+  %bf.set.i.i = or i32 %bf.value.i.i, %bf.clear5.i.i, !dbg !385
+  store i32 %bf.set.i.i, i32* %26, align 8, !dbg !385
+  %mark.i.i = getelementptr inbounds %struct.fibnode* %x.0..i, i64 0, i32 6, !dbg !386
+  %27 = bitcast [4 x i8]* %mark.i.i to i32*, !dbg !386
+  %bf.load6.i.i = load i32* %27, align 8, !dbg !386
+  %bf.clear7.i.i = and i32 %bf.load6.i.i, 2147483647, !dbg !386
+  store i32 %bf.clear7.i.i, i32* %27, align 8, !dbg !386
+  store %struct.fibnode* null, %struct.fibnode** %arrayidx98.i, align 8, !dbg !387, !tbaa !204
+  %indvars.iv.next105.i = add i64 %indvars.iv104.i, 1, !dbg !356
+  %arrayidx.i = getelementptr inbounds [65 x %struct.fibnode*]* %a.i, i64 0, i64 %indvars.iv.next105.i, !dbg !356
+  %28 = load %struct.fibnode** %arrayidx.i, align 8, !dbg !356, !tbaa !204
+  %cmp3.i = icmp eq %struct.fibnode* %28, null, !dbg !356
+  br i1 %cmp3.i, label %while.end.i, label %while.body5.i, !dbg !356
 
 while.end.i:                                      ; preds = %fibheap_link.exit.i, %fibheap_rem_root.exit.i
   %arrayidx.lcssa.i = phi %struct.fibnode** [ %arrayidx94.i, %fibheap_rem_root.exit.i ], [ %arrayidx.i, %fibheap_link.exit.i ]
   %x.0.lcssa.i = phi %struct.fibnode* [ %12, %fibheap_rem_root.exit.i ], [ %.x.0.i, %fibheap_link.exit.i ]
-  store %struct.fibnode* %x.0.lcssa.i, %struct.fibnode** %arrayidx.lcssa.i, align 8, !tbaa !0
-  %29 = load %struct.fibnode** %root.i31, align 8, !tbaa !0
-  %cmp.i32 = icmp eq %struct.fibnode* %29, null
-  br i1 %cmp.i32, label %while.end14.i, label %while.body.i
+  store %struct.fibnode* %x.0.lcssa.i, %struct.fibnode** %arrayidx.lcssa.i, align 8, !dbg !388, !tbaa !204
+  %29 = load %struct.fibnode** %root.i31, align 8, !dbg !342, !tbaa !204
+  call void @llvm.dbg.value(metadata !{%struct.fibnode* %12}, i64 0, metadata !343) #5, !dbg !342
+  %cmp.i32 = icmp eq %struct.fibnode* %29, null, !dbg !342
+  br i1 %cmp.i32, label %while.end14.i, label %while.body.i, !dbg !342
 
 while.end14.i:                                    ; preds = %while.end.i, %if.else
-  store %struct.fibnode* null, %struct.fibnode** %min, align 8, !tbaa !0
-  br label %for.body.i
+  store %struct.fibnode* null, %struct.fibnode** %min, align 8, !dbg !389, !tbaa !204
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !390) #5, !dbg !391
+  br label %for.body.i, !dbg !391
 
 for.body.i:                                       ; preds = %for.inc.i, %while.end14.i
   %indvars.iv.i = phi i64 [ 0, %while.end14.i ], [ %indvars.iv.next.i, %for.inc.i ]
-  %arrayidx18.i = getelementptr inbounds [65 x %struct.fibnode*]* %a.i, i64 0, i64 %indvars.iv.i
-  %30 = load %struct.fibnode** %arrayidx18.i, align 8, !tbaa !0
-  %cmp19.i = icmp eq %struct.fibnode* %30, null
-  br i1 %cmp19.i, label %for.inc.i, label %if.then21.i
+  %arrayidx18.i = getelementptr inbounds [65 x %struct.fibnode*]* %a.i, i64 0, i64 %indvars.iv.i, !dbg !393
+  %30 = load %struct.fibnode** %arrayidx18.i, align 8, !dbg !393, !tbaa !204
+  %cmp19.i = icmp eq %struct.fibnode* %30, null, !dbg !393
+  br i1 %cmp19.i, label %for.inc.i, label %if.then21.i, !dbg !393
 
 if.then21.i:                                      ; preds = %for.body.i
-  %31 = load %struct.fibnode** %root.i31, align 8, !tbaa !0
-  %cmp.i76.i = icmp eq %struct.fibnode* %31, null
-  br i1 %cmp.i76.i, label %if.then.i78.i, label %if.end.i79.i
+  call void @llvm.dbg.value(metadata !{%struct.fibheap* %heap}, i64 0, metadata !394) #5, !dbg !397
+  call void @llvm.dbg.value(metadata !{%struct.fibnode* %30}, i64 0, metadata !398) #5, !dbg !399
+  %31 = load %struct.fibnode** %root.i31, align 8, !dbg !400, !tbaa !204
+  %cmp.i76.i = icmp eq %struct.fibnode* %31, null, !dbg !400
+  br i1 %cmp.i76.i, label %if.then.i78.i, label %if.end.i79.i, !dbg !400
 
 if.then.i78.i:                                    ; preds = %if.then21.i
-  store %struct.fibnode* %30, %struct.fibnode** %root.i31, align 8, !tbaa !0
-  %left.i77.i = getelementptr inbounds %struct.fibnode* %30, i64 0, i32 2
-  store %struct.fibnode* %30, %struct.fibnode** %left.i77.i, align 8, !tbaa !0
-  %right.i.i = getelementptr inbounds %struct.fibnode* %30, i64 0, i32 3
-  store %struct.fibnode* %30, %struct.fibnode** %right.i.i, align 8, !tbaa !0
-  br label %fibheap_ins_root.exit.i
+  store %struct.fibnode* %30, %struct.fibnode** %root.i31, align 8, !dbg !401, !tbaa !204
+  %left.i77.i = getelementptr inbounds %struct.fibnode* %30, i64 0, i32 2, !dbg !402
+  store %struct.fibnode* %30, %struct.fibnode** %left.i77.i, align 8, !dbg !402, !tbaa !204
+  %right.i.i = getelementptr inbounds %struct.fibnode* %30, i64 0, i32 3, !dbg !403
+  store %struct.fibnode* %30, %struct.fibnode** %right.i.i, align 8, !dbg !403, !tbaa !204
+  br label %fibheap_ins_root.exit.i, !dbg !404
 
 if.end.i79.i:                                     ; preds = %if.then21.i
-  %right.i80.i = getelementptr inbounds %struct.fibnode* %31, i64 0, i32 3
-  %32 = load %struct.fibnode** %right.i80.i, align 8, !tbaa !0
-  %cmp.i81.i = icmp eq %struct.fibnode* %32, %31
-  br i1 %cmp.i81.i, label %if.then.i83.i, label %if.else.i84.i
+  call void @llvm.dbg.value(metadata !{%struct.fibnode* %31}, i64 0, metadata !405) #5, !dbg !407
+  call void @llvm.dbg.value(metadata !{%struct.fibnode* %30}, i64 0, metadata !408) #5, !dbg !409
+  %right.i80.i = getelementptr inbounds %struct.fibnode* %31, i64 0, i32 3, !dbg !410
+  %32 = load %struct.fibnode** %right.i80.i, align 8, !dbg !410, !tbaa !204
+  %cmp.i81.i = icmp eq %struct.fibnode* %32, %31, !dbg !410
+  br i1 %cmp.i81.i, label %if.then.i83.i, label %if.else.i84.i, !dbg !410
 
 if.then.i83.i:                                    ; preds = %if.end.i79.i
-  store %struct.fibnode* %30, %struct.fibnode** %right.i80.i, align 8, !tbaa !0
-  %left.i82.i = getelementptr inbounds %struct.fibnode* %31, i64 0, i32 2
-  store %struct.fibnode* %30, %struct.fibnode** %left.i82.i, align 8, !tbaa !0
-  %right2.i.i = getelementptr inbounds %struct.fibnode* %30, i64 0, i32 3
-  store %struct.fibnode* %31, %struct.fibnode** %right2.i.i, align 8, !tbaa !0
-  %left3.i.i = getelementptr inbounds %struct.fibnode* %30, i64 0, i32 2
-  store %struct.fibnode* %31, %struct.fibnode** %left3.i.i, align 8, !tbaa !0
-  br label %fibheap_ins_root.exit.i
+  store %struct.fibnode* %30, %struct.fibnode** %right.i80.i, align 8, !dbg !411, !tbaa !204
+  %left.i82.i = getelementptr inbounds %struct.fibnode* %31, i64 0, i32 2, !dbg !412
+  store %struct.fibnode* %30, %struct.fibnode** %left.i82.i, align 8, !dbg !412, !tbaa !204
+  %right2.i.i = getelementptr inbounds %struct.fibnode* %30, i64 0, i32 3, !dbg !413
+  store %struct.fibnode* %31, %struct.fibnode** %right2.i.i, align 8, !dbg !413, !tbaa !204
+  %left3.i.i = getelementptr inbounds %struct.fibnode* %30, i64 0, i32 2, !dbg !414
+  store %struct.fibnode* %31, %struct.fibnode** %left3.i.i, align 8, !dbg !414, !tbaa !204
+  br label %fibheap_ins_root.exit.i, !dbg !415
 
 if.else.i84.i:                                    ; preds = %if.end.i79.i
-  %right5.i.i = getelementptr inbounds %struct.fibnode* %30, i64 0, i32 3
-  store %struct.fibnode* %32, %struct.fibnode** %right5.i.i, align 8, !tbaa !0
-  %33 = load %struct.fibnode** %right.i80.i, align 8, !tbaa !0
-  %left7.i.i = getelementptr inbounds %struct.fibnode* %33, i64 0, i32 2
-  store %struct.fibnode* %30, %struct.fibnode** %left7.i.i, align 8, !tbaa !0
-  store %struct.fibnode* %30, %struct.fibnode** %right.i80.i, align 8, !tbaa !0
-  %left9.i.i = getelementptr inbounds %struct.fibnode* %30, i64 0, i32 2
-  store %struct.fibnode* %31, %struct.fibnode** %left9.i.i, align 8, !tbaa !0
+  %right5.i.i = getelementptr inbounds %struct.fibnode* %30, i64 0, i32 3, !dbg !416
+  store %struct.fibnode* %32, %struct.fibnode** %right5.i.i, align 8, !dbg !416, !tbaa !204
+  %33 = load %struct.fibnode** %right.i80.i, align 8, !dbg !417, !tbaa !204
+  %left7.i.i = getelementptr inbounds %struct.fibnode* %33, i64 0, i32 2, !dbg !417
+  store %struct.fibnode* %30, %struct.fibnode** %left7.i.i, align 8, !dbg !417, !tbaa !204
+  store %struct.fibnode* %30, %struct.fibnode** %right.i80.i, align 8, !dbg !418, !tbaa !204
+  %left9.i.i = getelementptr inbounds %struct.fibnode* %30, i64 0, i32 2, !dbg !419
+  store %struct.fibnode* %31, %struct.fibnode** %left9.i.i, align 8, !dbg !419, !tbaa !204
   br label %fibheap_ins_root.exit.i
 
 fibheap_ins_root.exit.i:                          ; preds = %if.else.i84.i, %if.then.i83.i, %if.then.i78.i
-  %34 = load %struct.fibnode** %min, align 8, !tbaa !0
-  %cmp25.i = icmp eq %struct.fibnode* %34, null
-  br i1 %cmp25.i, label %if.then33.i, label %lor.lhs.false.i
+  %34 = load %struct.fibnode** %min, align 8, !dbg !420, !tbaa !204
+  %cmp25.i = icmp eq %struct.fibnode* %34, null, !dbg !420
+  br i1 %cmp25.i, label %if.then33.i, label %lor.lhs.false.i, !dbg !420
 
 lor.lhs.false.i:                                  ; preds = %fibheap_ins_root.exit.i
-  %key.i67.i = getelementptr inbounds %struct.fibnode* %30, i64 0, i32 4
-  %35 = load i64* %key.i67.i, align 8, !tbaa !3
-  %key1.i68.i = getelementptr inbounds %struct.fibnode* %34, i64 0, i32 4
-  %36 = load i64* %key1.i68.i, align 8, !tbaa !3
-  %cmp.i69.i = icmp slt i64 %35, %36
-  br i1 %cmp.i69.i, label %if.then33.i, label %for.inc.i
+  call void @llvm.dbg.value(metadata !268, i64 0, metadata !421) #5, !dbg !423
+  %key.i67.i = getelementptr inbounds %struct.fibnode* %30, i64 0, i32 4, !dbg !424
+  %35 = load i64* %key.i67.i, align 8, !dbg !424, !tbaa !210
+  %key1.i68.i = getelementptr inbounds %struct.fibnode* %34, i64 0, i32 4, !dbg !424
+  %36 = load i64* %key1.i68.i, align 8, !dbg !424, !tbaa !210
+  %cmp.i69.i = icmp slt i64 %35, %36, !dbg !424
+  br i1 %cmp.i69.i, label %if.then33.i, label %for.inc.i, !dbg !424
 
 if.then33.i:                                      ; preds = %lor.lhs.false.i, %fibheap_ins_root.exit.i
-  store %struct.fibnode* %30, %struct.fibnode** %min, align 8, !tbaa !0
-  br label %for.inc.i
+  store %struct.fibnode* %30, %struct.fibnode** %min, align 8, !dbg !425, !tbaa !204
+  br label %for.inc.i, !dbg !425
 
 for.inc.i:                                        ; preds = %if.then33.i, %lor.lhs.false.i, %for.body.i
-  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next.i to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 65
-  br i1 %exitcond, label %if.end9, label %for.body.i
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1, !dbg !391
+  %lftr.wideiv = trunc i64 %indvars.iv.next.i to i32, !dbg !391
+  %exitcond = icmp eq i32 %lftr.wideiv, 65, !dbg !391
+  br i1 %exitcond, label %if.end9, label %for.body.i, !dbg !391
 
 if.end9:                                          ; preds = %for.inc.i, %if.then5
-  ret %struct.fibnode* %0
+  ret %struct.fibnode* %0, !dbg !426
 }

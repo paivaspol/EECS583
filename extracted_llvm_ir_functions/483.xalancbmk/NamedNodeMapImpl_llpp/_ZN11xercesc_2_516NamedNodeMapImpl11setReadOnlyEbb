@@ -1,0 +1,40 @@
+define void @_ZN11xercesc_2_516NamedNodeMapImpl11setReadOnlyEbb(%"class.xercesc_2_5::NamedNodeMapImpl"* nocapture %this, i1 zeroext %readOnl, i1 zeroext %deep) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::NamedNodeMapImpl"* %this}, i64 0, metadata !1350), !dbg !1614
+  tail call void @llvm.dbg.value(metadata !{i1 %readOnl}, i64 0, metadata !1351), !dbg !1614
+  tail call void @llvm.dbg.value(metadata !{i1 %deep}, i64 0, metadata !1352), !dbg !1614
+  %readOnly = getelementptr inbounds %"class.xercesc_2_5::NamedNodeMapImpl"* %this, i64 0, i32 3, !dbg !1615
+  %frombool3 = zext i1 %readOnl to i8, !dbg !1615
+  store i8 %frombool3, i8* %readOnly, align 1, !dbg !1615, !tbaa !1449
+  br i1 %deep, label %land.lhs.true, label %if.end, !dbg !1616
+
+land.lhs.true:                                    ; preds = %entry
+  %nodes = getelementptr inbounds %"class.xercesc_2_5::NamedNodeMapImpl"* %this, i64 0, i32 1, !dbg !1616
+  %0 = load %"class.xercesc_2_5::NodeVector"** %nodes, align 8, !dbg !1616, !tbaa !1445
+  %cmp = icmp eq %"class.xercesc_2_5::NodeVector"* %0, null, !dbg !1616
+  br i1 %cmp, label %if.end, label %if.then, !dbg !1616
+
+if.then:                                          ; preds = %land.lhs.true
+  %call = tail call i32 @_ZN11xercesc_2_510NodeVector4sizeEv(%"class.xercesc_2_5::NodeVector"* %0) #5, !dbg !1617
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !1353), !dbg !1617
+  tail call void @llvm.dbg.value(metadata !1239, i64 0, metadata !1355), !dbg !1618
+  %cmp615 = icmp sgt i32 %call, 0, !dbg !1618
+  br i1 %cmp615, label %for.body, label %if.end, !dbg !1618
+
+for.body:                                         ; preds = %if.then, %for.body
+  %i.016 = phi i32 [ %inc, %for.body ], [ 0, %if.then ]
+  %1 = load %"class.xercesc_2_5::NodeVector"** %nodes, align 8, !dbg !1619, !tbaa !1445
+  %call8 = tail call %"class.xercesc_2_5::NodeImpl"* @_ZN11xercesc_2_510NodeVector9elementAtEj(%"class.xercesc_2_5::NodeVector"* %1, i32 %i.016) #5, !dbg !1619
+  %2 = bitcast %"class.xercesc_2_5::NodeImpl"* %call8 to void (%"class.xercesc_2_5::NodeImpl"*, i1, i1)***, !dbg !1619
+  %vtable = load void (%"class.xercesc_2_5::NodeImpl"*, i1, i1)*** %2, align 8, !dbg !1619, !tbaa !1441
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::NodeImpl"*, i1, i1)** %vtable, i64 35, !dbg !1619
+  %3 = load void (%"class.xercesc_2_5::NodeImpl"*, i1, i1)** %vfn, align 8, !dbg !1619
+  tail call void %3(%"class.xercesc_2_5::NodeImpl"* %call8, i1 zeroext %readOnl, i1 zeroext true) #5, !dbg !1619
+  %inc = add nsw i32 %i.016, 1, !dbg !1618
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !1355), !dbg !1618
+  %exitcond = icmp eq i32 %inc, %call, !dbg !1618
+  br i1 %exitcond, label %if.end, label %for.body, !dbg !1618
+
+if.end:                                           ; preds = %if.then, %for.body, %land.lhs.true, %entry
+  ret void, !dbg !1621
+}

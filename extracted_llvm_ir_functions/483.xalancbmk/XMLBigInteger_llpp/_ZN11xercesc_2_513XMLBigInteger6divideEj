@@ -1,0 +1,74 @@
+define void @_ZN11xercesc_2_513XMLBigInteger6divideEj(%"class.xercesc_2_5::XMLBigInteger"* nocapture %this, i32 %byteToShift) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLBigInteger"* %this}, i64 0, metadata !1168), !dbg !2061
+  tail call void @llvm.dbg.value(metadata !{i32 %byteToShift}, i64 0, metadata !1169), !dbg !2061
+  %cmp = icmp eq i32 %byteToShift, 0, !dbg !2062
+  br i1 %cmp, label %return, label %if.end, !dbg !2062
+
+if.end:                                           ; preds = %entry
+  %fMagnitude = getelementptr inbounds %"class.xercesc_2_5::XMLBigInteger"* %this, i64 0, i32 1, !dbg !2063
+  %0 = load i16** %fMagnitude, align 8, !dbg !2063, !tbaa !1740
+  tail call void @llvm.dbg.value(metadata !{i16* %0}, i64 0, metadata !2064), !dbg !2065
+  %cmp.i = icmp eq i16* %0, null, !dbg !2066
+  br i1 %cmp.i, label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, label %lor.lhs.false.i, !dbg !2066
+
+lor.lhs.false.i:                                  ; preds = %if.end
+  %1 = load i16* %0, align 2, !dbg !2066, !tbaa !1732
+  %cmp1.i = icmp eq i16 %1, 0, !dbg !2066
+  br i1 %cmp1.i, label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, label %while.cond.i, !dbg !2066
+
+while.cond.i:                                     ; preds = %lor.lhs.false.i, %while.cond.i
+  %src.pn.i = phi i16* [ %pszTmp.0.i, %while.cond.i ], [ %0, %lor.lhs.false.i ]
+  %pszTmp.0.i = getelementptr inbounds i16* %src.pn.i, i64 1, !dbg !2067
+  %2 = load i16* %pszTmp.0.i, align 2, !dbg !2068, !tbaa !1732
+  %tobool.i = icmp eq i16 %2, 0, !dbg !2068
+  br i1 %tobool.i, label %while.end.i, label %while.cond.i, !dbg !2068
+
+while.end.i:                                      ; preds = %while.cond.i
+  %sub.ptr.lhs.cast.i = ptrtoint i16* %pszTmp.0.i to i64, !dbg !2069
+  %sub.ptr.rhs.cast.i = ptrtoint i16* %0 to i64, !dbg !2069
+  %sub.ptr.sub.i = sub i64 %sub.ptr.lhs.cast.i, %sub.ptr.rhs.cast.i, !dbg !2069
+  %sub.ptr.div7.i = lshr exact i64 %sub.ptr.sub.i, 1, !dbg !2069
+  %conv2.i = trunc i64 %sub.ptr.div7.i to i32, !dbg !2069
+  br label %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit, !dbg !2069
+
+_ZN11xercesc_2_59XMLString9stringLenEPKt.exit:    ; preds = %if.end, %lor.lhs.false.i, %while.end.i
+  %retval.0.i = phi i32 [ %conv2.i, %while.end.i ], [ 0, %lor.lhs.false.i ], [ 0, %if.end ]
+  tail call void @llvm.dbg.value(metadata !{i32 %retval.0.i}, i64 0, metadata !1170), !dbg !2063
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::XMLBigInteger"* %this, i64 0, i32 3, !dbg !2070
+  %3 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !2070, !tbaa !1740
+  %4 = bitcast %"class.xercesc_2_5::MemoryManager"* %3 to i8* (%"class.xercesc_2_5::MemoryManager"*, i64)***, !dbg !2070
+  %vtable = load i8* (%"class.xercesc_2_5::MemoryManager"*, i64)*** %4, align 8, !dbg !2070, !tbaa !1726
+  %vfn = getelementptr inbounds i8* (%"class.xercesc_2_5::MemoryManager"*, i64)** %vtable, i64 2, !dbg !2070
+  %5 = load i8* (%"class.xercesc_2_5::MemoryManager"*, i64)** %vfn, align 8, !dbg !2070
+  %sub = sub i32 %retval.0.i, %byteToShift, !dbg !2070
+  %add = add i32 %sub, 1, !dbg !2070
+  %conv = zext i32 %add to i64, !dbg !2070
+  %mul = shl nuw nsw i64 %conv, 1, !dbg !2070
+  %call2 = tail call i8* %5(%"class.xercesc_2_5::MemoryManager"* %3, i64 %mul) #7, !dbg !2070
+  %6 = bitcast i8* %call2 to i16*, !dbg !2070
+  tail call void @llvm.dbg.value(metadata !{i16* %6}, i64 0, metadata !1171), !dbg !2070
+  %7 = load i16** %fMagnitude, align 8, !dbg !2071, !tbaa !1740
+  tail call void @llvm.dbg.value(metadata !{i16* %6}, i64 0, metadata !2072) #5, !dbg !2073
+  tail call void @llvm.dbg.value(metadata !{i16* %7}, i64 0, metadata !2074) #5, !dbg !2075
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !2076) #5, !dbg !2077
+  %8 = bitcast i16* %7 to i8*, !dbg !2078
+  %conv.i = zext i32 %sub to i64, !dbg !2078
+  %mul.i = shl nuw nsw i64 %conv.i, 1, !dbg !2078
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %call2, i8* %8, i64 %mul.i, i32 2, i1 false) #5, !dbg !2078
+  %arrayidx = getelementptr inbounds i16* %6, i64 %conv.i, !dbg !2079
+  store i16 0, i16* %arrayidx, align 2, !dbg !2079, !tbaa !1732
+  %9 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !2080, !tbaa !1740
+  %10 = bitcast %"class.xercesc_2_5::MemoryManager"* %9 to void (%"class.xercesc_2_5::MemoryManager"*, i8*)***, !dbg !2080
+  %vtable7 = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)*** %10, align 8, !dbg !2080, !tbaa !1726
+  %vfn8 = getelementptr inbounds void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vtable7, i64 3, !dbg !2080
+  %11 = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vfn8, align 8, !dbg !2080
+  %12 = load i16** %fMagnitude, align 8, !dbg !2080, !tbaa !1740
+  %13 = bitcast i16* %12 to i8*, !dbg !2080
+  tail call void %11(%"class.xercesc_2_5::MemoryManager"* %9, i8* %13) #7, !dbg !2080
+  store i16* %6, i16** %fMagnitude, align 8, !dbg !2081, !tbaa !1740
+  br label %return, !dbg !2081
+
+return:                                           ; preds = %entry, %_ZN11xercesc_2_59XMLString9stringLenEPKt.exit
+  ret void, !dbg !2081
+}

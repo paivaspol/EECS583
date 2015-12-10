@@ -1,0 +1,44 @@
+define zeroext i1 @_ZNK6soplex8LPRowSet12isConsistentEv(%"class.soplex::LPRowSet"* %this) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::LPRowSet"* %this}, i64 0, metadata !2755), !dbg !4447
+  %left = getelementptr inbounds %"class.soplex::LPRowSet"* %this, i64 0, i32 1, !dbg !4448
+  %dimen.i = getelementptr inbounds %"class.soplex::DVector"* %left, i64 0, i32 0, i32 0, !dbg !4449
+  %0 = load i32* %dimen.i, align 4, !dbg !4449, !tbaa !4023
+  %right = getelementptr inbounds %"class.soplex::LPRowSet"* %this, i64 0, i32 2, !dbg !4448
+  %dimen.i17 = getelementptr inbounds %"class.soplex::DVector"* %right, i64 0, i32 0, i32 0, !dbg !4449
+  %1 = load i32* %dimen.i17, align 4, !dbg !4449, !tbaa !4023
+  %cmp = icmp eq i32 %0, %1, !dbg !4448
+  br i1 %cmp, label %if.end, label %if.then, !dbg !4448
+
+if.then:                                          ; preds = %entry
+  %call3 = tail call zeroext i1 @_ZN6soplex15msginconsistentEPKcS1_i(i8* getelementptr inbounds ([9 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 169) #8, !dbg !4450
+  br label %return, !dbg !4450
+
+if.end:                                           ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::LPRowSet"* %this}, i64 0, metadata !4451), !dbg !4453
+  %thenum.i.i.i = getelementptr inbounds %"class.soplex::LPRowSet"* %this, i64 0, i32 0, i32 1, i32 4, !dbg !4454
+  %2 = load i32* %thenum.i.i.i, align 4, !dbg !4454, !tbaa !4023
+  %cmp7 = icmp eq i32 %0, %2, !dbg !4452
+  br i1 %cmp7, label %if.end10, label %if.then8, !dbg !4452
+
+if.then8:                                         ; preds = %if.end
+  %call9 = tail call zeroext i1 @_ZN6soplex15msginconsistentEPKcS1_i(i8* getelementptr inbounds ([9 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([56 x i8]* @.str, i64 0, i64 0), i32 171) #8, !dbg !4457
+  br label %return, !dbg !4457
+
+if.end10:                                         ; preds = %if.end
+  %call12 = tail call zeroext i1 @_ZNK6soplex7DVector12isConsistentEv(%"class.soplex::DVector"* %left) #8, !dbg !4458
+  br i1 %call12, label %land.lhs.true, label %return, !dbg !4458
+
+land.lhs.true:                                    ; preds = %if.end10
+  %call14 = tail call zeroext i1 @_ZNK6soplex7DVector12isConsistentEv(%"class.soplex::DVector"* %right) #8, !dbg !4458
+  br i1 %call14, label %land.rhs, label %return, !dbg !4458
+
+land.rhs:                                         ; preds = %land.lhs.true
+  %3 = getelementptr inbounds %"class.soplex::LPRowSet"* %this, i64 0, i32 0, !dbg !4458
+  %call15 = tail call zeroext i1 @_ZNK6soplex5SVSet12isConsistentEv(%"class.soplex::SVSet"* %3) #8, !dbg !4458
+  br label %return
+
+return:                                           ; preds = %if.end10, %land.lhs.true, %land.rhs, %if.then8, %if.then
+  %retval.0 = phi i1 [ %call3, %if.then ], [ %call9, %if.then8 ], [ false, %land.lhs.true ], [ false, %if.end10 ], [ %call15, %land.rhs ]
+  ret i1 %retval.0, !dbg !4459
+}

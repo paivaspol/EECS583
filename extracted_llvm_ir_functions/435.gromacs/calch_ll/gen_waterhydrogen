@@ -1,30 +1,35 @@
-define void @gen_waterhydrogen([3 x float]* nocapture readonly %xa, [3 x float]* nocapture %xh) #4 {
-  %1 = load i32* @gen_waterhydrogen.l, align 4, !tbaa !18
-  %2 = sext i32 %1 to i64
-  br label %3
+define void @gen_waterhydrogen([3 x float]* nocapture %xa, [3 x float]* nocapture %xh) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{[3 x float]* %xa}, i64 0, metadata !16), !dbg !98
+  tail call void @llvm.dbg.value(metadata !{[3 x float]* %xh}, i64 0, metadata !17), !dbg !98
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !18), !dbg !99
+  %0 = load i32* @gen_waterhydrogen.l, align 4, !dbg !101, !tbaa !103
+  %idxprom3 = sext i32 %0 to i64, !dbg !101
+  br label %for.body, !dbg !99
 
-; <label>:3                                       ; preds = %3, %0
-  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %3 ]
-  %4 = getelementptr inbounds [3 x float]* %xa, i64 0, i64 %indvars.iv
-  %5 = load float* %4, align 4, !tbaa !14
-  %6 = getelementptr inbounds [6 x [3 x float]]* @gen_waterhydrogen.matrix1, i64 0, i64 %2, i64 %indvars.iv
-  %7 = load float* %6, align 4, !tbaa !14
-  %8 = fadd float %5, %7
-  %9 = getelementptr inbounds [3 x float]* %xh, i64 0, i64 %indvars.iv
-  store float %8, float* %9, align 4, !tbaa !14
-  %10 = load float* %4, align 4, !tbaa !14
-  %11 = getelementptr inbounds [6 x [3 x float]]* @gen_waterhydrogen.matrix2, i64 0, i64 %2, i64 %indvars.iv
-  %12 = load float* %11, align 4, !tbaa !14
-  %13 = fadd float %10, %12
-  %14 = getelementptr inbounds [3 x float]* %xh, i64 1, i64 %indvars.iv
-  store float %13, float* %14, align 4, !tbaa !14
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i64 %indvars.iv.next, 3
-  br i1 %exitcond, label %15, label %3
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %arrayidx1 = getelementptr inbounds [3 x float]* %xa, i64 0, i64 %indvars.iv, !dbg !101
+  %1 = load float* %arrayidx1, align 4, !dbg !101, !tbaa !106
+  %arrayidx5 = getelementptr inbounds [6 x [3 x float]]* @gen_waterhydrogen.matrix1, i64 0, i64 %idxprom3, i64 %indvars.iv, !dbg !101
+  %2 = load float* %arrayidx5, align 4, !dbg !101, !tbaa !106
+  %add = fadd float %1, %2, !dbg !101
+  %arrayidx8 = getelementptr inbounds [3 x float]* %xh, i64 0, i64 %indvars.iv, !dbg !101
+  store float %add, float* %arrayidx8, align 4, !dbg !101, !tbaa !106
+  %3 = load float* %arrayidx1, align 4, !dbg !107, !tbaa !106
+  %arrayidx15 = getelementptr inbounds [6 x [3 x float]]* @gen_waterhydrogen.matrix2, i64 0, i64 %idxprom3, i64 %indvars.iv, !dbg !107
+  %4 = load float* %arrayidx15, align 4, !dbg !107, !tbaa !106
+  %add16 = fadd float %3, %4, !dbg !107
+  %arrayidx19 = getelementptr inbounds [3 x float]* %xh, i64 1, i64 %indvars.iv, !dbg !107
+  store float %add16, float* %arrayidx19, align 4, !dbg !107, !tbaa !106
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !99
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !99
+  %exitcond = icmp eq i32 %lftr.wideiv, 3, !dbg !99
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !99
 
-; <label>:15                                      ; preds = %3
-  %16 = add nsw i32 %1, 1
-  %17 = srem i32 %16, 6
-  store i32 %17, i32* @gen_waterhydrogen.l, align 4, !tbaa !18
-  ret void
+for.end:                                          ; preds = %for.body
+  %add20 = add nsw i32 %0, 1, !dbg !108
+  %rem = srem i32 %add20, 6, !dbg !108
+  store i32 %rem, i32* @gen_waterhydrogen.l, align 4, !dbg !108, !tbaa !103
+  ret void, !dbg !109
 }

@@ -1,0 +1,23 @@
+define internal fastcc zeroext i1 @_ZN3povL11Skip_SpacesEv() #0 {
+entry:
+  br label %while.body, !dbg !2547
+
+while.body:                                       ; preds = %if.end, %entry
+  %call = tail call fastcc i32 @_ZN3povL9Echo_getcEv() #9, !dbg !2548
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !1385), !dbg !2548
+  %cmp = icmp eq i32 %call, -1, !dbg !2550
+  br i1 %cmp, label %return, label %if.end, !dbg !2550
+
+if.end:                                           ; preds = %while.body
+  %call1 = tail call i32 @isspace(i32 %call) #10, !dbg !2551
+  %tobool = icmp eq i32 %call1, 0, !dbg !2551
+  br i1 %tobool, label %while.end, label %while.body, !dbg !2551
+
+while.end:                                        ; preds = %if.end
+  tail call fastcc void @_ZN3povL11Echo_ungetcEi(i32 %call) #9, !dbg !2552
+  br label %return, !dbg !2553
+
+return:                                           ; preds = %while.body, %while.end
+  %retval.0 = phi i1 [ true, %while.end ], [ false, %while.body ]
+  ret i1 %retval.0, !dbg !2553
+}

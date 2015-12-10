@@ -1,30 +1,33 @@
 define void @IV_ramp(%struct._IV* %iv, i32 %base, i32 %incr) #0 {
 entry:
-  %cmp = icmp eq %struct._IV* %iv, null
-  br i1 %cmp, label %if.then, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata !{%struct._IV* %iv}, i64 0, metadata !52), !dbg !234
+  tail call void @llvm.dbg.value(metadata !{i32 %base}, i64 0, metadata !53), !dbg !235
+  tail call void @llvm.dbg.value(metadata !{i32 %incr}, i64 0, metadata !54), !dbg !236
+  %cmp = icmp eq %struct._IV* %iv, null, !dbg !237
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !237
 
 lor.lhs.false:                                    ; preds = %entry
-  %size = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0
-  %0 = load i32* %size, align 4, !tbaa !3
-  %cmp1 = icmp slt i32 %0, 1
-  br i1 %cmp1, label %if.then, label %lor.lhs.false2
+  %size = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0, !dbg !237
+  %0 = load i32* %size, align 4, !dbg !237, !tbaa !181
+  %cmp1 = icmp slt i32 %0, 1, !dbg !237
+  br i1 %cmp1, label %if.then, label %lor.lhs.false2, !dbg !237
 
 lor.lhs.false2:                                   ; preds = %lor.lhs.false
-  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3
-  %1 = load i32** %vec, align 8, !tbaa !0
-  %cmp3 = icmp eq i32* %1, null
-  br i1 %cmp3, label %if.then, label %if.end
+  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3, !dbg !237
+  %1 = load i32** %vec, align 8, !dbg !237, !tbaa !175
+  %cmp3 = icmp eq i32* %1, null, !dbg !237
+  br i1 %cmp3, label %if.then, label %if.end, !dbg !237
 
 if.then:                                          ; preds = %lor.lhs.false, %entry, %lor.lhs.false2
   %2 = phi i32 [ %0, %lor.lhs.false2 ], [ 0, %entry ], [ %0, %lor.lhs.false ]
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %vec5 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3
-  %4 = load i32** %vec5, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([56 x i8]* @.str7, i64 0, i64 0), %struct._IV* %iv, i32 %base, i32 %incr, i32 %2, i32* %4) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !238, !tbaa !175
+  %vec5 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3, !dbg !238
+  %4 = load i32** %vec5, align 8, !dbg !238, !tbaa !175
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([56 x i8]* @.str7, i64 0, i64 0), %struct._IV* %iv, i32 %base, i32 %incr, i32 %2, i32* %4) #6, !dbg !238
+  tail call void @exit(i32 -1) #7, !dbg !240
+  unreachable, !dbg !240
 
 if.end:                                           ; preds = %lor.lhs.false2
-  tail call void @IVramp(i32 %0, i32* %1, i32 %base, i32 %incr) #5
-  ret void
+  tail call void @IVramp(i32 %0, i32* %1, i32 %base, i32 %incr) #6, !dbg !241
+  ret void, !dbg !242
 }

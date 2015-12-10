@@ -1,0 +1,28 @@
+define i8* @_ZN3pov16Get_Token_StringEi(i32 %Token_Id) #3 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %Token_Id}, i64 0, metadata !2087), !dbg !4641
+  tail call void @llvm.dbg.value(metadata !818, i64 0, metadata !2088), !dbg !4642
+  br label %for.body, !dbg !4642
+
+for.cond:                                         ; preds = %for.body
+  %0 = trunc i64 %indvars.iv.next to i32, !dbg !4642
+  %cmp = icmp slt i32 %0, 535, !dbg !4642
+  br i1 %cmp, label %for.body, label %return, !dbg !4642
+
+for.body:                                         ; preds = %entry, %for.cond
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.cond ]
+  %Token_Number = getelementptr inbounds [535 x %"struct.pov::Reserved_Word_Struct"]* @_ZN3pov14Reserved_WordsE, i64 0, i64 %indvars.iv, i32 0, !dbg !4643
+  %1 = load i32* %Token_Number, align 8, !dbg !4643, !tbaa !4092
+  %cmp1 = icmp eq i32 %1, %Token_Id, !dbg !4643
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !4642
+  br i1 %cmp1, label %if.then, label %for.cond, !dbg !4643
+
+if.then:                                          ; preds = %for.body
+  %Token_Name = getelementptr inbounds [535 x %"struct.pov::Reserved_Word_Struct"]* @_ZN3pov14Reserved_WordsE, i64 0, i64 %indvars.iv, i32 1, !dbg !4644
+  %2 = load i8** %Token_Name, align 8, !dbg !4644, !tbaa !4088
+  br label %return, !dbg !4644
+
+return:                                           ; preds = %for.cond, %if.then
+  %retval.0 = phi i8* [ %2, %if.then ], [ getelementptr inbounds ([1 x i8]* @.str40, i64 0, i64 0), %for.cond ]
+  ret i8* %retval.0, !dbg !4645
+}

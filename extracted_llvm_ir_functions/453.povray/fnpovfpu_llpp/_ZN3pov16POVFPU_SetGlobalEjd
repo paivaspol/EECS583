@@ -1,0 +1,41 @@
+define void @_ZN3pov16POVFPU_SetGlobalEjd(i32 %k, double %v) #4 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %k}, i64 0, metadata !174), !dbg !604
+  tail call void @llvm.dbg.value(metadata !{double %v}, i64 0, metadata !175), !dbg !604
+  %0 = load double** @_ZN3pov14POVFPU_GlobalsE, align 8, !dbg !605, !tbaa !493
+  %cmp = icmp eq double* %0, null, !dbg !605
+  br i1 %cmp, label %if.then, label %if.else, !dbg !605
+
+if.then:                                          ; preds = %entry
+  %add = add i32 %k, 1, !dbg !606
+  store i32 %add, i32* @_ZN3pov16POVFPU_GlobalCntE, align 4, !dbg !606, !tbaa !498
+  %conv = zext i32 %add to i64, !dbg !608
+  %mul = shl nuw nsw i64 %conv, 3, !dbg !608
+  %call = tail call i8* @_ZN3pov10pov_mallocEmPKciS1_(i64 %mul, i8* getelementptr inbounds ([57 x i8]* @.str51, i64 0, i64 0), i32 862, i8* getelementptr inbounds ([12 x i8]* @.str53, i64 0, i64 0)) #9, !dbg !608
+  %1 = bitcast i8* %call to double*, !dbg !608
+  store double* %1, double** @_ZN3pov14POVFPU_GlobalsE, align 8, !dbg !608, !tbaa !493
+  br label %if.end8, !dbg !609
+
+if.else:                                          ; preds = %entry
+  %2 = load i32* @_ZN3pov16POVFPU_GlobalCntE, align 4, !dbg !610, !tbaa !498
+  %add1 = add i32 %k, 1, !dbg !610
+  %cmp2 = icmp ult i32 %2, %add1, !dbg !610
+  br i1 %cmp2, label %if.then3, label %if.end8, !dbg !610
+
+if.then3:                                         ; preds = %if.else
+  store i32 %add1, i32* @_ZN3pov16POVFPU_GlobalCntE, align 4, !dbg !611, !tbaa !498
+  %3 = bitcast double* %0 to i8*, !dbg !613
+  %conv5 = zext i32 %add1 to i64, !dbg !613
+  %mul6 = shl nuw nsw i64 %conv5, 3, !dbg !613
+  %call7 = tail call i8* @_ZN3pov11pov_reallocEPvmPKciS2_(i8* %3, i64 %mul6, i8* getelementptr inbounds ([57 x i8]* @.str51, i64 0, i64 0), i32 867, i8* getelementptr inbounds ([12 x i8]* @.str53, i64 0, i64 0)) #9, !dbg !613
+  %4 = bitcast i8* %call7 to double*, !dbg !613
+  store double* %4, double** @_ZN3pov14POVFPU_GlobalsE, align 8, !dbg !613, !tbaa !493
+  br label %if.end8, !dbg !614
+
+if.end8:                                          ; preds = %if.else, %if.then3, %if.then
+  %5 = phi double* [ %0, %if.else ], [ %4, %if.then3 ], [ %1, %if.then ]
+  %idxprom = zext i32 %k to i64, !dbg !615
+  %arrayidx = getelementptr inbounds double* %5, i64 %idxprom, !dbg !615
+  store double %v, double* %arrayidx, align 8, !dbg !615, !tbaa !521
+  ret void, !dbg !616
+}

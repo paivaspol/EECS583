@@ -1,0 +1,28 @@
+define i32 @_ZN6soplex9CLUFactor12solveLeftEpsEPdS1_Pid(%"class.soplex::CLUFactor"* nocapture %this, double* nocapture %vec, double* nocapture %rhs, i32* nocapture %nonz, double %eps) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::CLUFactor"* %this}, i64 0, metadata !2703), !dbg !3374
+  tail call void @llvm.dbg.value(metadata !{double* %vec}, i64 0, metadata !2704), !dbg !3374
+  tail call void @llvm.dbg.value(metadata !{double* %rhs}, i64 0, metadata !2705), !dbg !3374
+  tail call void @llvm.dbg.value(metadata !{i32* %nonz}, i64 0, metadata !2706), !dbg !3374
+  tail call void @llvm.dbg.value(metadata !{double %eps}, i64 0, metadata !2707), !dbg !3374
+  %updateType = getelementptr inbounds %"class.soplex::CLUFactor"* %this, i64 0, i32 10, i32 8, !dbg !3375
+  %0 = load i32* %updateType, align 4, !dbg !3375, !tbaa !2749
+  %tobool = icmp eq i32 %0, 0, !dbg !3375
+  br i1 %tobool, label %if.then, label %if.else, !dbg !3375
+
+if.then:                                          ; preds = %entry
+  tail call void @_ZN6soplex9CLUFactor15solveUpdateLeftEPd(%"class.soplex::CLUFactor"* %this, double* %rhs) #6, !dbg !3376
+  tail call void @_ZN6soplex9CLUFactor10solveUleftEPdS1_(%"class.soplex::CLUFactor"* %this, double* %vec, double* %rhs) #6, !dbg !3378
+  %call = tail call i32 @_ZN6soplex9CLUFactor13solveLleftEpsEPdPid(%"class.soplex::CLUFactor"* %this, double* %vec, i32* %nonz, double %eps) #6, !dbg !3379
+  br label %return, !dbg !3379
+
+if.else:                                          ; preds = %entry
+  tail call void @_ZN6soplex9CLUFactor10solveUleftEPdS1_(%"class.soplex::CLUFactor"* %this, double* %vec, double* %rhs) #6, !dbg !3380
+  %call2 = tail call i32 @_ZN6soplex9CLUFactor16solveLleftForestEPdPid(%"class.soplex::CLUFactor"* %this, double* %vec, i32* undef, double undef) #6, !dbg !3382
+  %call3 = tail call i32 @_ZN6soplex9CLUFactor13solveLleftEpsEPdPid(%"class.soplex::CLUFactor"* %this, double* %vec, i32* %nonz, double %eps) #6, !dbg !3383
+  br label %return, !dbg !3383
+
+return:                                           ; preds = %if.else, %if.then
+  %retval.0 = phi i32 [ %call3, %if.else ], [ %call, %if.then ]
+  ret i32 %retval.0, !dbg !3384
+}

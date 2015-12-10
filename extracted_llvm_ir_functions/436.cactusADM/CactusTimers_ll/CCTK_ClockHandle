@@ -1,29 +1,31 @@
-define i32 @CCTK_ClockHandle(i8* nocapture readonly %clockname) #1 {
-  %1 = load i32* @n_clocks, align 4, !tbaa !11
-  %handle.01 = add nsw i32 %1, -1
-  %2 = icmp sgt i32 %1, 0
-  br i1 %2, label %.lr.ph, label %._crit_edge
+define i32 @CCTK_ClockHandle(i8* nocapture %clockname) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %clockname}, i64 0, metadata !87), !dbg !385
+  %0 = load i32* @n_clocks, align 4, !dbg !386, !tbaa !359
+  %handle.08 = add nsw i32 %0, -1, !dbg !387
+  %cmp9 = icmp sgt i32 %0, 0, !dbg !387
+  br i1 %cmp9, label %for.body, label %for.end, !dbg !387
 
-.lr.ph:                                           ; preds = %0, %.backedge
-  %handle.02 = phi i32 [ %handle.0, %.backedge ], [ %handle.01, %0 ]
-  %3 = load %struct.cHandledData** @clocks, align 8, !tbaa !9
-  %4 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %3, i32 %handle.02) #7
-  %5 = icmp eq i8* %4, null
-  br i1 %5, label %.backedge, label %7
+for.body:                                         ; preds = %entry, %for.cond.backedge
+  %handle.010 = phi i32 [ %handle.0, %for.cond.backedge ], [ %handle.08, %entry ]
+  %1 = load %struct.cHandledData** @clocks, align 8, !dbg !389, !tbaa !355
+  %call1 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %handle.010) #8, !dbg !389
+  %tobool = icmp eq i8* %call1, null, !dbg !391
+  br i1 %tobool, label %for.cond.backedge, label %land.lhs.true, !dbg !391
 
-.backedge:                                        ; preds = %.lr.ph, %7
-  %handle.0 = add nsw i32 %handle.02, -1
-  %6 = icmp sgt i32 %handle.02, 0
-  br i1 %6, label %.lr.ph, label %._crit_edge
+for.cond.backedge:                                ; preds = %for.body, %land.lhs.true
+  %handle.0 = add nsw i32 %handle.010, -1, !dbg !387
+  %cmp = icmp sgt i32 %handle.010, 0, !dbg !387
+  br i1 %cmp, label %for.body, label %for.end, !dbg !387
 
-; <label>:7                                       ; preds = %.lr.ph
-  %8 = bitcast i8* %4 to i8**
-  %9 = load i8** %8, align 8, !tbaa !2
-  %10 = tail call i32 @strcmp(i8* %9, i8* %clockname) #7
-  %11 = icmp eq i32 %10, 0
-  br i1 %11, label %._crit_edge, label %.backedge
+land.lhs.true:                                    ; preds = %for.body
+  %name = bitcast i8* %call1 to i8**, !dbg !391
+  %2 = load i8** %name, align 8, !dbg !391, !tbaa !355
+  %call2 = tail call i32 @strcmp(i8* %2, i8* %clockname) #9, !dbg !391
+  %cmp3 = icmp eq i32 %call2, 0, !dbg !391
+  br i1 %cmp3, label %for.end, label %for.cond.backedge, !dbg !391
 
-._crit_edge:                                      ; preds = %.backedge, %7, %0
-  %handle.0.lcssa = phi i32 [ %handle.01, %0 ], [ %handle.0, %.backedge ], [ %handle.02, %7 ]
-  ret i32 %handle.0.lcssa
+for.end:                                          ; preds = %for.cond.backedge, %land.lhs.true, %entry
+  %handle.0.lcssa = phi i32 [ %handle.08, %entry ], [ %handle.010, %land.lhs.true ], [ %handle.0, %for.cond.backedge ]
+  ret i32 %handle.0.lcssa, !dbg !392
 }

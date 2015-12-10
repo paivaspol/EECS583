@@ -1,39 +1,43 @@
 define double @DVsumabs(i32 %size, double* %y) #0 {
 entry:
-  %cmp = icmp sgt i32 %size, 0
-  br i1 %cmp, label %if.then, label %if.end9
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !362), !dbg !1110
+  tail call void @llvm.dbg.value(metadata !{double* %y}, i64 0, metadata !363), !dbg !1111
+  tail call void @llvm.dbg.value(metadata !705, i64 0, metadata !364), !dbg !1112
+  %cmp = icmp sgt i32 %size, 0, !dbg !1113
+  br i1 %cmp, label %if.then, label %if.end9, !dbg !1113
 
 if.then:                                          ; preds = %entry
-  %cmp1 = icmp eq double* %y, null
-  br i1 %cmp1, label %if.then2, label %for.body
+  %cmp1 = icmp eq double* %y, null, !dbg !1114
+  br i1 %cmp1, label %if.then2, label %for.body, !dbg !1114
 
 if.then2:                                         ; preds = %if.then
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([60 x i8]* @.str33, i64 0, i64 0), i32 %size, double* null) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !1115, !tbaa !629
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([60 x i8]* @.str33, i64 0, i64 0), i32 %size, double* null) #6, !dbg !1115
+  tail call void @exit(i32 -1) #7, !dbg !1117
+  unreachable, !dbg !1117
 
 for.body:                                         ; preds = %if.then, %cond.end
   %indvars.iv = phi i64 [ %indvars.iv.next, %cond.end ], [ 0, %if.then ]
   %sum.020 = phi double [ %add, %cond.end ], [ 0.000000e+00, %if.then ]
-  %arrayidx = getelementptr inbounds double* %y, i64 %indvars.iv
-  %1 = load double* %arrayidx, align 8, !tbaa !3
-  %cmp4 = fcmp ult double %1, 0.000000e+00
-  br i1 %cmp4, label %cond.false, label %cond.end
+  %arrayidx = getelementptr inbounds double* %y, i64 %indvars.iv, !dbg !1118
+  %1 = load double* %arrayidx, align 8, !dbg !1118, !tbaa !635
+  %cmp4 = fcmp ult double %1, 0.000000e+00, !dbg !1118
+  br i1 %cmp4, label %cond.false, label %cond.end, !dbg !1118
 
 cond.false:                                       ; preds = %for.body
-  %sub = fsub double -0.000000e+00, %1
-  br label %cond.end
+  %sub = fsub double -0.000000e+00, %1, !dbg !1118
+  br label %cond.end, !dbg !1118
 
 cond.end:                                         ; preds = %for.body, %cond.false
-  %cond = phi double [ %sub, %cond.false ], [ %1, %for.body ]
-  %add = fadd double %sum.020, %cond
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %size
-  br i1 %exitcond, label %if.end9, label %for.body
+  %cond = phi double [ %sub, %cond.false ], [ %1, %for.body ], !dbg !1118
+  %add = fadd double %sum.020, %cond, !dbg !1118
+  tail call void @llvm.dbg.value(metadata !{double %add}, i64 0, metadata !364), !dbg !1118
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1121
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1121
+  %exitcond = icmp eq i32 %lftr.wideiv, %size, !dbg !1121
+  br i1 %exitcond, label %if.end9, label %for.body, !dbg !1121
 
 if.end9:                                          ; preds = %cond.end, %entry
   %sum.1 = phi double [ 0.000000e+00, %entry ], [ %add, %cond.end ]
-  ret double %sum.1
+  ret double %sum.1, !dbg !1122
 }

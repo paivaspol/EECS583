@@ -1,45 +1,47 @@
 define void @clear_aux_for_edges() #0 {
 entry:
-  %0 = load i32* @n_basic_blocks, align 4, !tbaa !3
-  %cmp15 = icmp sgt i32 %0, -1
-  br i1 %cmp15, label %for.body, label %for.end6
+  tail call void @llvm.dbg.value(metadata !1532, i64 0, metadata !1029), !dbg !1533
+  %0 = load i32* @n_basic_blocks, align 4, !dbg !1533, !tbaa !1163
+  %cmp15 = icmp sgt i32 %0, -1, !dbg !1533
+  br i1 %cmp15, label %for.body, label %for.end6, !dbg !1533
 
 for.body:                                         ; preds = %entry, %for.inc5
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc5 ], [ -1, %entry ]
-  %1 = trunc i64 %indvars.iv to i32
-  %cmp1 = icmp sgt i32 %1, -1
-  br i1 %cmp1, label %if.then, label %if.end
+  %1 = trunc i64 %indvars.iv to i32, !dbg !1534
+  %cmp1 = icmp sgt i32 %1, -1, !dbg !1534
+  br i1 %cmp1, label %if.then, label %if.end, !dbg !1534
 
 if.then:                                          ; preds = %for.body
-  %2 = load %struct.varray_head_tag** @basic_block_info, align 8, !tbaa !0
-  %data = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 4
-  %bb2 = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*
-  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb2, i64 0, i64 %indvars.iv
-  %3 = load %struct.basic_block_def** %arrayidx, align 8, !tbaa !0
-  br label %if.end
+  %2 = load %struct.varray_head_tag** @basic_block_info, align 8, !dbg !1535, !tbaa !1158
+  %data = getelementptr inbounds %struct.varray_head_tag* %2, i64 0, i32 4, !dbg !1535
+  %bb2 = bitcast %union.varray_data_tag* %data to [1 x %struct.basic_block_def*]*, !dbg !1535
+  %arrayidx = getelementptr inbounds [1 x %struct.basic_block_def*]* %bb2, i64 0, i64 %indvars.iv, !dbg !1535
+  %3 = load %struct.basic_block_def** %arrayidx, align 8, !dbg !1535, !tbaa !1158
+  tail call void @llvm.dbg.value(metadata !{%struct.basic_block_def* %3}, i64 0, metadata !1030), !dbg !1535
+  br label %if.end, !dbg !1535
 
 if.end:                                           ; preds = %for.body, %if.then
   %bb.0 = phi %struct.basic_block_def* [ %3, %if.then ], [ getelementptr inbounds ([2 x %struct.basic_block_def]* @entry_exit_blocks, i64 0, i64 0), %for.body ]
-  %succ = getelementptr inbounds %struct.basic_block_def* %bb.0, i64 0, i32 5
-  %e.012 = load %struct.edge_def** %succ, align 8
-  %tobool13 = icmp eq %struct.edge_def* %e.012, null
-  br i1 %tobool13, label %for.inc5, label %for.body4
+  %succ = getelementptr inbounds %struct.basic_block_def* %bb.0, i64 0, i32 5, !dbg !1536
+  %e.012 = load %struct.edge_def** %succ, align 8, !dbg !1536
+  %tobool13 = icmp eq %struct.edge_def* %e.012, null, !dbg !1536
+  br i1 %tobool13, label %for.inc5, label %for.body4, !dbg !1536
 
 for.body4:                                        ; preds = %if.end, %for.body4
   %e.014 = phi %struct.edge_def* [ %e.0, %for.body4 ], [ %e.012, %if.end ]
-  %aux = getelementptr inbounds %struct.edge_def* %e.014, i64 0, i32 5
-  store i8* null, i8** %aux, align 8, !tbaa !0
-  %succ_next = getelementptr inbounds %struct.edge_def* %e.014, i64 0, i32 1
-  %e.0 = load %struct.edge_def** %succ_next, align 8
-  %tobool = icmp eq %struct.edge_def* %e.0, null
-  br i1 %tobool, label %for.inc5, label %for.body4
+  %aux = getelementptr inbounds %struct.edge_def* %e.014, i64 0, i32 5, !dbg !1538
+  store i8* null, i8** %aux, align 8, !dbg !1538, !tbaa !1158
+  %succ_next = getelementptr inbounds %struct.edge_def* %e.014, i64 0, i32 1, !dbg !1536
+  %e.0 = load %struct.edge_def** %succ_next, align 8, !dbg !1536
+  %tobool = icmp eq %struct.edge_def* %e.0, null, !dbg !1536
+  br i1 %tobool, label %for.inc5, label %for.body4, !dbg !1536
 
 for.inc5:                                         ; preds = %for.body4, %if.end
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %4 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %4, %0
-  br i1 %cmp, label %for.body, label %for.end6
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1533
+  %4 = trunc i64 %indvars.iv.next to i32, !dbg !1533
+  %cmp = icmp slt i32 %4, %0, !dbg !1533
+  br i1 %cmp, label %for.body, label %for.end6, !dbg !1533
 
 for.end6:                                         ; preds = %for.inc5, %entry
-  ret void
+  ret void, !dbg !1539
 }

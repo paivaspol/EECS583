@@ -1,27 +1,30 @@
 define double @approx_sqrt(double %x) #0 {
 entry:
-  %cmp = fcmp olt double %x, 0.000000e+00
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{double %x}, i64 0, metadata !165), !dbg !334
+  %cmp = fcmp olt double %x, 0.000000e+00, !dbg !335
+  br i1 %cmp, label %if.then, label %if.end, !dbg !335
 
 if.then:                                          ; preds = %entry
-  tail call void @abort() #9
-  unreachable
+  tail call void @abort() #10, !dbg !336
+  unreachable, !dbg !336
 
 if.end:                                           ; preds = %entry
-  %cmp1 = fcmp oeq double %x, 0.000000e+00
-  br i1 %cmp1, label %return, label %do.body
+  %cmp1 = fcmp oeq double %x, 0.000000e+00, !dbg !337
+  br i1 %cmp1, label %return, label %do.body, !dbg !337
 
 do.body:                                          ; preds = %if.end, %do.body
   %s.0 = phi double [ %sub5, %do.body ], [ %x, %if.end ]
-  %mul = fmul double %s.0, %s.0
-  %sub = fsub double %mul, %x
-  %mul4 = fmul double %s.0, 2.000000e+00
-  %div = fdiv double %sub, %mul4
-  %sub5 = fsub double %s.0, %div
-  %cmp6 = fcmp ogt double %div, 1.000000e-04
-  br i1 %cmp6, label %do.body, label %return
+  %mul = fmul double %s.0, %s.0, !dbg !338
+  %sub = fsub double %mul, %x, !dbg !338
+  %mul4 = fmul double %s.0, 2.000000e+00, !dbg !338
+  %div = fdiv double %sub, %mul4, !dbg !338
+  tail call void @llvm.dbg.value(metadata !{double %div}, i64 0, metadata !167), !dbg !338
+  %sub5 = fsub double %s.0, %div, !dbg !340
+  tail call void @llvm.dbg.value(metadata !{double %sub5}, i64 0, metadata !166), !dbg !340
+  %cmp6 = fcmp ogt double %div, 1.000000e-04, !dbg !341
+  br i1 %cmp6, label %do.body, label %return, !dbg !341
 
 return:                                           ; preds = %do.body, %if.end
   %retval.0 = phi double [ 0.000000e+00, %if.end ], [ %sub5, %do.body ]
-  ret double %retval.0
+  ret double %retval.0, !dbg !342
 }

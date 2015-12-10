@@ -1,63 +1,78 @@
 define internal fastcc void @m16m(i32 %a, i16* nocapture %b, i16* nocapture %c) #0 {
 entry:
   %p = alloca [9 x i16], align 16
-  %arrayidx = getelementptr inbounds [9 x i16]* %p, i64 0, i64 7
-  %incdec.ptr = getelementptr inbounds [9 x i16]* %p, i64 0, i64 8
-  store i16 0, i16* %arrayidx, align 2, !tbaa !0
-  store i16 0, i16* %incdec.ptr, align 16, !tbaa !0
-  %arrayidx1 = getelementptr inbounds i16* %b, i64 8
-  br label %for.body
+  call void @llvm.dbg.value(metadata !{i32 %a}, i64 0, metadata !717), !dbg !4272
+  call void @llvm.dbg.value(metadata !{i16* %b}, i64 0, metadata !718), !dbg !4273
+  call void @llvm.dbg.value(metadata !{i16* %c}, i64 0, metadata !719), !dbg !4274
+  call void @llvm.dbg.declare(metadata !{[9 x i16]* %p}, metadata !723), !dbg !4275
+  call void @llvm.dbg.value(metadata !{i32 %a}, i64 0, metadata !724), !dbg !4276
+  %arrayidx = getelementptr inbounds [9 x i16]* %p, i64 0, i64 7, !dbg !4277
+  call void @llvm.dbg.value(metadata !{i16* %arrayidx}, i64 0, metadata !720), !dbg !4277
+  %incdec.ptr = getelementptr inbounds [9 x i16]* %p, i64 0, i64 8, !dbg !4278
+  call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !720), !dbg !4278
+  store i16 0, i16* %arrayidx, align 2, !dbg !4278, !tbaa !1057
+  store i16 0, i16* %incdec.ptr, align 16, !dbg !4279, !tbaa !1057
+  %arrayidx1 = getelementptr inbounds i16* %b, i64 8, !dbg !4280
+  call void @llvm.dbg.value(metadata !{i16* %arrayidx1}, i64 0, metadata !722), !dbg !4280
+  call void @llvm.dbg.value(metadata !2804, i64 0, metadata !726), !dbg !4281
+  br label %for.body, !dbg !4281
 
 for.cond19.preheader:                             ; preds = %for.inc
   %scevgep = getelementptr i16* %c, i64 2
   %scevgep52 = bitcast i16* %scevgep to i8*
   %scevgep53 = getelementptr [9 x i16]* %p, i64 0, i64 2
   %scevgep5354 = bitcast i16* %scevgep53 to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %scevgep52, i8* %scevgep5354, i64 14, i32 2, i1 false)
-  ret void
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %scevgep52, i8* %scevgep5354, i64 14, i32 2, i1 false), !dbg !4283
+  ret void, !dbg !4285
 
 for.body:                                         ; preds = %for.inc, %entry
   %i.051 = phi i32 [ 3, %entry ], [ %inc, %for.inc ]
   %pp.050 = phi i16* [ %incdec.ptr, %entry ], [ %pp.1, %for.inc ]
   %ps.049 = phi i16* [ %arrayidx1, %entry ], [ %ps.1, %for.inc ]
-  %0 = load i16* %ps.049, align 2, !tbaa !0
-  %cmp2 = icmp eq i16 %0, 0
-  br i1 %cmp2, label %if.then, label %if.else
+  %0 = load i16* %ps.049, align 2, !dbg !4286, !tbaa !1057
+  %cmp2 = icmp eq i16 %0, 0, !dbg !4286
+  br i1 %cmp2, label %if.then, label %if.else, !dbg !4286
 
 if.then:                                          ; preds = %for.body
-  %incdec.ptr5 = getelementptr inbounds i16* %pp.050, i64 -1
-  %add.ptr = getelementptr inbounds i16* %pp.050, i64 -2
-  store i16 0, i16* %add.ptr, align 2, !tbaa !0
-  br label %for.inc
+  %incdec.ptr5 = getelementptr inbounds i16* %pp.050, i64 -1, !dbg !4288
+  call void @llvm.dbg.value(metadata !{i16* %incdec.ptr5}, i64 0, metadata !720), !dbg !4288
+  %add.ptr = getelementptr inbounds i16* %pp.050, i64 -2, !dbg !4290
+  store i16 0, i16* %add.ptr, align 2, !dbg !4290, !tbaa !1057
+  br label %for.inc, !dbg !4291
 
 if.else:                                          ; preds = %for.body
-  %conv = zext i16 %0 to i32
-  %mul = mul i32 %conv, %a
-  %and = and i32 %mul, 65535
-  %1 = load i16* %pp.050, align 2, !tbaa !0
-  %conv8 = zext i16 %1 to i32
-  %add = add i32 %conv8, %and
-  %conv9 = trunc i32 %add to i16
-  %incdec.ptr10 = getelementptr inbounds i16* %pp.050, i64 -1
-  store i16 %conv9, i16* %pp.050, align 2, !tbaa !0
-  %shr = lshr i32 %add, 16
-  %shr11 = lshr i32 %mul, 16
-  %2 = load i16* %incdec.ptr10, align 2, !tbaa !0
-  %conv13 = zext i16 %2 to i32
-  %add12 = add i32 %conv13, %shr11
-  %add14 = add i32 %add12, %shr
-  %conv15 = trunc i32 %add14 to i16
-  store i16 %conv15, i16* %incdec.ptr10, align 2, !tbaa !0
-  %shr16 = lshr i32 %add14, 16
-  %conv17 = trunc i32 %shr16 to i16
-  %add.ptr18 = getelementptr inbounds i16* %pp.050, i64 -2
-  store i16 %conv17, i16* %add.ptr18, align 2, !tbaa !0
+  %conv = zext i16 %0 to i32, !dbg !4286
+  %mul = mul i32 %conv, %a, !dbg !4292
+  call void @llvm.dbg.value(metadata !{i32 %mul}, i64 0, metadata !725), !dbg !4292
+  %and = and i32 %mul, 65535, !dbg !4294
+  %1 = load i16* %pp.050, align 2, !dbg !4294, !tbaa !1057
+  %conv8 = zext i16 %1 to i32, !dbg !4294
+  %add = add i32 %conv8, %and, !dbg !4294
+  call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !721), !dbg !4294
+  %conv9 = trunc i32 %add to i16, !dbg !4295
+  %incdec.ptr10 = getelementptr inbounds i16* %pp.050, i64 -1, !dbg !4295
+  call void @llvm.dbg.value(metadata !{i16* %incdec.ptr10}, i64 0, metadata !720), !dbg !4295
+  store i16 %conv9, i16* %pp.050, align 2, !dbg !4295, !tbaa !1057
+  %shr = lshr i32 %add, 16, !dbg !4296
+  %shr11 = lshr i32 %mul, 16, !dbg !4296
+  %2 = load i16* %incdec.ptr10, align 2, !dbg !4296, !tbaa !1057
+  %conv13 = zext i16 %2 to i32, !dbg !4296
+  %add12 = add i32 %conv13, %shr11, !dbg !4296
+  %add14 = add i32 %add12, %shr, !dbg !4296
+  call void @llvm.dbg.value(metadata !{i32 %add14}, i64 0, metadata !721), !dbg !4296
+  %conv15 = trunc i32 %add14 to i16, !dbg !4297
+  store i16 %conv15, i16* %incdec.ptr10, align 2, !dbg !4297, !tbaa !1057
+  %shr16 = lshr i32 %add14, 16, !dbg !4298
+  %conv17 = trunc i32 %shr16 to i16, !dbg !4298
+  %add.ptr18 = getelementptr inbounds i16* %pp.050, i64 -2, !dbg !4298
+  store i16 %conv17, i16* %add.ptr18, align 2, !dbg !4298, !tbaa !1057
   br label %for.inc
 
 for.inc:                                          ; preds = %if.then, %if.else
   %pp.1 = phi i16* [ %incdec.ptr5, %if.then ], [ %incdec.ptr10, %if.else ]
-  %ps.1 = getelementptr inbounds i16* %ps.049, i64 -1
-  %inc = add nsw i32 %i.051, 1
-  %exitcond = icmp eq i32 %inc, 9
-  br i1 %exitcond, label %for.cond19.preheader, label %for.body
+  %ps.1 = getelementptr inbounds i16* %ps.049, i64 -1, !dbg !4299
+  %inc = add nsw i32 %i.051, 1, !dbg !4281
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !726), !dbg !4281
+  %exitcond = icmp eq i32 %inc, 9, !dbg !4281
+  br i1 %exitcond, label %for.cond19.preheader, label %for.body, !dbg !4281
 }

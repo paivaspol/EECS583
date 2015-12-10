@@ -1,23 +1,24 @@
 define internal void @fold_convert_1(i8* nocapture %data) #0 {
 entry:
   %agg.tmp = alloca %struct.realvaluetype, align 8
-  %type = getelementptr inbounds i8* %data, i64 8
-  %0 = bitcast i8* %type to %union.tree_node**
-  %1 = load %union.tree_node** %0, align 8, !tbaa !3
-  %type2 = bitcast %union.tree_node* %1 to %struct.tree_type*
-  %mode = getelementptr inbounds %struct.tree_type* %type2, i64 0, i32 6
-  %2 = bitcast [4 x i8]* %mode to i32*
-  %bf.load = load i32* %2, align 4
-  %bf.lshr = lshr i32 %bf.load, 9
-  %bf.clear = and i32 %bf.lshr, 127
-  %arg1 = bitcast i8* %data to %union.tree_node**
-  %3 = load %union.tree_node** %arg1, align 8, !tbaa !3
-  %real_cst3 = getelementptr inbounds %union.tree_node* %3, i64 0, i32 0, i32 2
-  %4 = bitcast i32* %real_cst3 to %struct.realvaluetype*
-  call void @real_value_truncate(%struct.realvaluetype* sret %agg.tmp, i32 %bf.clear, %struct.realvaluetype* byval align 8 %4) #9
-  %call = call %union.tree_node* @build_real(%union.tree_node* %1, %struct.realvaluetype* byval align 8 %agg.tmp) #9
-  %t = getelementptr inbounds i8* %data, i64 16
-  %5 = bitcast i8* %t to %union.tree_node**
-  store %union.tree_node* %call, %union.tree_node** %5, align 8, !tbaa !3
-  ret void
+  call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !1574), !dbg !4998
+  %type = getelementptr inbounds i8* %data, i64 8, !dbg !4999
+  %0 = bitcast i8* %type to %union.tree_node**, !dbg !4999
+  %1 = load %union.tree_node** %0, align 8, !dbg !4999, !tbaa !1705
+  %type2 = bitcast %union.tree_node* %1 to %struct.tree_type*, !dbg !5000
+  %mode = getelementptr inbounds %struct.tree_type* %type2, i64 0, i32 6, !dbg !5000
+  %2 = bitcast [4 x i8]* %mode to i32*, !dbg !5000
+  %bf.load = load i32* %2, align 4, !dbg !5000
+  %bf.lshr = lshr i32 %bf.load, 9, !dbg !5000
+  %bf.clear = and i32 %bf.lshr, 127, !dbg !5000
+  %arg1 = bitcast i8* %data to %union.tree_node**, !dbg !5000
+  %3 = load %union.tree_node** %arg1, align 8, !dbg !5000, !tbaa !1705
+  %real_cst3 = getelementptr inbounds %union.tree_node* %3, i64 0, i32 0, i32 2, !dbg !5000
+  %4 = bitcast i32* %real_cst3 to %struct.realvaluetype*, !dbg !5000
+  call void @real_value_truncate(%struct.realvaluetype* sret %agg.tmp, i32 %bf.clear, %struct.realvaluetype* byval align 8 %4) #9, !dbg !5000
+  %call = call %union.tree_node* @build_real(%union.tree_node* %1, %struct.realvaluetype* byval align 8 %agg.tmp) #9, !dbg !5000
+  %t = getelementptr inbounds i8* %data, i64 16, !dbg !5000
+  %5 = bitcast i8* %t to %union.tree_node**, !dbg !5000
+  store %union.tree_node* %call, %union.tree_node** %5, align 8, !dbg !5000, !tbaa !1705
+  ret void, !dbg !5001
 }

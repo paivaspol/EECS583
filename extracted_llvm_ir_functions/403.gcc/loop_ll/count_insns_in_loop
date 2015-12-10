@@ -1,41 +1,44 @@
-define internal fastcc i32 @count_insns_in_loop(%struct.loop* nocapture %loop) #5 {
+define internal fastcc i32 @count_insns_in_loop(%struct.loop* nocapture %loop) #6 {
 entry:
-  %top = getelementptr inbounds %struct.loop* %loop, i64 0, i32 28
-  %0 = load %struct.rtx_def** %top, align 8, !tbaa !4
-  %tobool = icmp eq %struct.rtx_def* %0, null
-  br i1 %tobool, label %cond.false, label %for.cond.preheader
+  tail call void @llvm.dbg.value(metadata !{%struct.loop* %loop}, i64 0, metadata !2865), !dbg !5093
+  tail call void @llvm.dbg.value(metadata !907, i64 0, metadata !2866), !dbg !5094
+  %top = getelementptr inbounds %struct.loop* %loop, i64 0, i32 28, !dbg !5095
+  %0 = load %struct.rtx_def** %top, align 8, !dbg !5095, !tbaa !2982
+  %tobool = icmp eq %struct.rtx_def* %0, null, !dbg !5095
+  br i1 %tobool, label %cond.false, label %for.cond.preheader, !dbg !5095
 
 cond.false:                                       ; preds = %entry
-  %start = getelementptr inbounds %struct.loop* %loop, i64 0, i32 26
-  %1 = load %struct.rtx_def** %start, align 8, !tbaa !4
-  br label %for.cond.preheader
+  %start = getelementptr inbounds %struct.loop* %loop, i64 0, i32 26, !dbg !5095
+  %1 = load %struct.rtx_def** %start, align 8, !dbg !5095, !tbaa !2982
+  br label %for.cond.preheader, !dbg !5095
 
 for.cond.preheader:                               ; preds = %entry, %cond.false
   %insn.0.ph = phi %struct.rtx_def* [ %1, %cond.false ], [ %0, %entry ]
-  %end = getelementptr inbounds %struct.loop* %loop, i64 0, i32 27
-  %2 = load %struct.rtx_def** %end, align 8, !tbaa !4
-  %cmp11 = icmp eq %struct.rtx_def* %insn.0.ph, %2
-  br i1 %cmp11, label %for.end, label %for.body
+  %end = getelementptr inbounds %struct.loop* %loop, i64 0, i32 27, !dbg !5095
+  %2 = load %struct.rtx_def** %end, align 8, !dbg !5095, !tbaa !2982
+  %cmp11 = icmp eq %struct.rtx_def* %insn.0.ph, %2, !dbg !5095
+  br i1 %cmp11, label %for.end, label %for.body, !dbg !5095
 
 for.body:                                         ; preds = %for.cond.preheader, %for.body
   %insn.013 = phi %struct.rtx_def* [ %5, %for.body ], [ %insn.0.ph, %for.cond.preheader ]
   %count.012 = phi i32 [ %inc.count.0, %for.body ], [ 0, %for.cond.preheader ]
-  %3 = bitcast %struct.rtx_def* %insn.013 to i32*
-  %bf.load = load i32* %3, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %idxprom10 = zext i32 %bf.clear to i64
-  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom10
-  %4 = load i8* %arrayidx, align 1, !tbaa !1
-  %cmp2 = icmp eq i8 %4, 105
-  %inc = zext i1 %cmp2 to i32
-  %inc.count.0 = add nsw i32 %inc, %count.012
-  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %insn.013, i64 0, i32 1, i64 2
-  %rtx = bitcast %union.rtunion_def* %arrayidx4 to %struct.rtx_def**
-  %5 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
-  %cmp = icmp eq %struct.rtx_def* %5, %2
-  br i1 %cmp, label %for.end, label %for.body
+  %3 = bitcast %struct.rtx_def* %insn.013 to i32*, !dbg !5097
+  %bf.load = load i32* %3, align 8, !dbg !5097
+  %bf.clear = and i32 %bf.load, 65535, !dbg !5097
+  %idxprom10 = zext i32 %bf.clear to i64, !dbg !5097
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom10, !dbg !5097
+  %4 = load i8* %arrayidx, align 1, !dbg !5097, !tbaa !2970
+  %cmp2 = icmp eq i8 %4, 105, !dbg !5097
+  %inc = zext i1 %cmp2 to i32, !dbg !5097
+  %inc.count.0 = add nsw i32 %inc, %count.012, !dbg !5097
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %insn.013, i64 0, i32 1, i64 2, !dbg !5098
+  %rtx = bitcast %union.rtunion_def* %arrayidx4 to %struct.rtx_def**, !dbg !5098
+  %5 = load %struct.rtx_def** %rtx, align 8, !dbg !5098, !tbaa !2982
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %5}, i64 0, metadata !2867), !dbg !5098
+  %cmp = icmp eq %struct.rtx_def* %5, %2, !dbg !5095
+  br i1 %cmp, label %for.end, label %for.body, !dbg !5095
 
 for.end:                                          ; preds = %for.body, %for.cond.preheader
   %count.0.lcssa = phi i32 [ 0, %for.cond.preheader ], [ %inc.count.0, %for.body ]
-  ret i32 %count.0.lcssa
+  ret i32 %count.0.lcssa, !dbg !5099
 }

@@ -1,312 +1,348 @@
 define %struct.uExpressionInternals* @Util_ExpressionParse(i8* %expression) #1 {
+entry:
   %temp = alloca %struct.PToken*, align 8
-  %1 = tail call i8* @malloc(i64 32) #10
-  %2 = bitcast i8* %1 to %struct.uExpressionInternals*
-  %3 = icmp eq i8* %1, null
-  br i1 %3, label %FreeTokens.exit, label %4
+  call void @llvm.dbg.value(metadata !{i8* %expression}, i64 0, metadata !91), !dbg !262
+  call void @llvm.dbg.declare(metadata !{%struct.PToken** %temp}, metadata !101), !dbg !263
+  %call = call noalias i8* @malloc(i64 32) #10, !dbg !264
+  %0 = bitcast i8* %call to %struct.uExpressionInternals*, !dbg !264
+  call void @llvm.dbg.value(metadata !{%struct.uExpressionInternals* %0}, i64 0, metadata !102), !dbg !264
+  %tobool = icmp eq i8* %call, null, !dbg !265
+  br i1 %tobool, label %if.end9, label %if.then, !dbg !265
 
-; <label>:4                                       ; preds = %0
-  %5 = bitcast i8* %1 to i32*
-  store i32 0, i32* %5, align 4, !tbaa !2
-  %6 = getelementptr inbounds i8* %1, i64 8
-  %7 = bitcast i8* %6 to %struct.uExpressionToken**
-  store %struct.uExpressionToken* null, %struct.uExpressionToken** %7, align 8, !tbaa !8
-  %8 = getelementptr inbounds i8* %1, i64 16
-  %9 = bitcast i8* %8 to i32*
-  store i32 0, i32* %9, align 4, !tbaa !9
-  %10 = getelementptr inbounds i8* %1, i64 24
-  %11 = bitcast i8* %10 to i8***
-  store i8** null, i8*** %11, align 8, !tbaa !10
-  %12 = load i8* %expression, align 1, !tbaa !11
-  %13 = icmp eq i8 %12, 0
-  br i1 %13, label %Tokenise.exit, label %.preheader.i
+if.then:                                          ; preds = %entry
+  %ntokens = bitcast i8* %call to i32*, !dbg !266
+  store i32 0, i32* %ntokens, align 4, !dbg !266, !tbaa !268
+  %tokens = getelementptr inbounds i8* %call, i64 8, !dbg !271
+  %1 = bitcast i8* %tokens to %struct.uExpressionToken**, !dbg !271
+  store %struct.uExpressionToken* null, %struct.uExpressionToken** %1, align 8, !dbg !271, !tbaa !272
+  %nvars = getelementptr inbounds i8* %call, i64 16, !dbg !273
+  %2 = bitcast i8* %nvars to i32*, !dbg !273
+  store i32 0, i32* %2, align 4, !dbg !273, !tbaa !268
+  %vars = getelementptr inbounds i8* %call, i64 24, !dbg !274
+  %3 = bitcast i8* %vars to i8***, !dbg !274
+  store i8** null, i8*** %3, align 8, !dbg !274, !tbaa !272
+  call void @llvm.dbg.value(metadata !{i8* %expression}, i64 0, metadata !275) #4, !dbg !277
+  call void @llvm.dbg.value(metadata !278, i64 0, metadata !279) #4, !dbg !280
+  call void @llvm.dbg.value(metadata !278, i64 0, metadata !281) #4, !dbg !282
+  call void @llvm.dbg.value(metadata !{i8* %expression}, i64 0, metadata !283) #4, !dbg !284
+  %4 = load i8* %expression, align 1, !dbg !285, !tbaa !269
+  %tobool108.i = icmp eq i8 %4, 0, !dbg !285
+  br i1 %tobool108.i, label %Tokenise.exit, label %for.cond.preheader.i, !dbg !285
 
-; <label>:14                                      ; preds = %insertafter.exit.i
-  %15 = load i8* %80, align 1, !tbaa !11
-  %16 = icmp eq i8 %15, 0
-  br i1 %16, label %Tokenise.exit, label %.preheader.i
+while.cond.i:                                     ; preds = %if.end60.i
+  %5 = load i8* %add.ptr66.i, align 1, !dbg !285, !tbaa !269
+  %tobool.i = icmp eq i8 %5, 0, !dbg !285
+  br i1 %tobool.i, label %Tokenise.exit, label %for.cond.preheader.i, !dbg !285
 
-.preheader.i:                                     ; preds = %4, %14
-  %17 = phi i8 [ %15, %14 ], [ %12, %4 ]
-  %tokenstart.082.i = phi i8* [ %80, %14 ], [ %expression, %4 ]
-  %start.081.i = phi %struct.PToken* [ %.start.0.i, %14 ], [ null, %4 ]
-  %current.080.i = phi %struct.PToken* [ %41, %14 ], [ null, %4 ]
-  br label %18
+for.cond.preheader.i:                             ; preds = %if.then, %while.cond.i
+  %6 = phi i8 [ %5, %while.cond.i ], [ %4, %if.then ]
+  %tokenstart.0111.i = phi i8* [ %add.ptr66.i, %while.cond.i ], [ %expression, %if.then ]
+  %start.0110.i = phi %struct.PToken* [ %call.start.0.i, %while.cond.i ], [ null, %if.then ]
+  %current.0109.i = phi %struct.PToken* [ %9, %while.cond.i ], [ null, %if.then ]
+  br label %for.cond.i, !dbg !286
 
-; <label>:18                                      ; preds = %.critedge.i, %.preheader.i
-  %19 = phi i8 [ %.pre.i, %.critedge.i ], [ %17, %.preheader.i ]
-  %tokenstart.1.i = phi i8* [ %23, %.critedge.i ], [ %tokenstart.082.i, %.preheader.i ]
-  switch i8 %19, label %.lr.ph.i.preheader [
-    i8 32, label %.critedge.i
-    i8 9, label %.critedge.i
-    i8 0, label %.critedge1.i
-  ]
+for.cond.i:                                       ; preds = %for.inc.i, %for.cond.preheader.i
+  %7 = phi i8 [ %.pre.i, %for.inc.i ], [ %6, %for.cond.preheader.i ]
+  %tokenstart.1.i = phi i8* [ %incdec.ptr.i, %for.inc.i ], [ %tokenstart.0111.i, %for.cond.preheader.i ]
+  switch i8 %7, label %land.rhs.i [
+    i8 32, label %for.inc.i
+    i8 9, label %for.inc.i
+    i8 0, label %for.end52.i
+  ], !dbg !286
 
-.lr.ph.i.preheader:                               ; preds = %18
-  %20 = getelementptr inbounds i8* %tokenstart.1.i, i64 1
-  %21 = load i8* %20, align 1, !tbaa !11
-  %22 = icmp eq i8 %21, 0
-  br i1 %22, label %.critedge1.i, label %.lr.ph
+for.inc.i:                                        ; preds = %for.cond.i, %for.cond.i
+  %incdec.ptr.i = getelementptr inbounds i8* %tokenstart.1.i, i64 1, !dbg !286
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr.i}, i64 0, metadata !283) #4, !dbg !286
+  %.pre.i = load i8* %incdec.ptr.i, align 1, !dbg !286, !tbaa !269
+  br label %for.cond.i, !dbg !286
 
-.critedge.i:                                      ; preds = %18, %18
-  %23 = getelementptr inbounds i8* %tokenstart.1.i, i64 1
-  %.pre.i = load i8* %23, align 1, !tbaa !11
-  br label %18
+land.rhs.i:                                       ; preds = %for.cond.i, %sw.bb34.i, %for.cond5.i.backedge
+  %conv6.i29.in = phi i8 [ %8, %for.cond5.i.backedge ], [ 61, %sw.bb34.i ], [ %7, %for.cond.i ]
+  %position.0.i28 = phi i8* [ %add.ptr.i, %for.cond5.i.backedge ], [ %add.ptr.i, %sw.bb34.i ], [ %tokenstart.1.i, %for.cond.i ]
+  %conv6.i29 = sext i8 %conv6.i29.in to i32, !dbg !289
+  %add.ptr.i = getelementptr inbounds i8* %position.0.i28, i64 1, !dbg !289
+  %8 = load i8* %add.ptr.i, align 1, !dbg !289, !tbaa !269
+  %tobool9.i = icmp eq i8 %8, 0, !dbg !289
+  br i1 %tobool9.i, label %for.end52.i, label %for.body10.i
 
-.lr.ph:                                           ; preds = %.lr.ph.i.preheader, %.lr.ph.i.backedge
-  %24 = phi i8 [ %30, %.lr.ph.i.backedge ], [ %21, %.lr.ph.i.preheader ]
-  %25 = phi i8* [ %26, %.lr.ph.i.backedge ], [ %tokenstart.1.i, %.lr.ph.i.preheader ]
-  %26 = phi i8* [ %29, %.lr.ph.i.backedge ], [ %20, %.lr.ph.i.preheader ]
-  %.in = phi i8 [ %.in.i.be, %.lr.ph.i.backedge ], [ %19, %.lr.ph.i.preheader ]
-  %27 = sext i8 %24 to i32
-  switch i32 %27, label %36 [
-    i32 43, label %.critedge1.i
-    i32 45, label %.critedge1.i
-    i32 47, label %.critedge1.i
-    i32 42, label %.critedge1.i
-    i32 94, label %.critedge1.i
-    i32 40, label %.critedge1.i
-    i32 41, label %.critedge1.i
-    i32 60, label %.critedge1.i
-    i32 62, label %.critedge1.i
-    i32 61, label %28
-    i32 38, label %32
-    i32 124, label %34
-  ]
+for.body10.i:                                     ; preds = %land.rhs.i
+  %conv8.i = sext i8 %8 to i32, !dbg !289
+  switch i32 %conv8.i, label %sw.default.i [
+    i32 43, label %sw.epilog46.i
+    i32 45, label %sw.epilog46.i
+    i32 47, label %sw.epilog46.i
+    i32 42, label %sw.epilog46.i
+    i32 94, label %sw.epilog46.i
+    i32 40, label %sw.epilog46.i
+    i32 41, label %sw.epilog46.i
+    i32 60, label %sw.epilog46.i
+    i32 62, label %sw.epilog46.i
+    i32 61, label %sw.bb13.i
+    i32 38, label %sw.bb20.i
+    i32 124, label %sw.bb26.i
+  ], !dbg !291
 
-; <label>:28                                      ; preds = %.lr.ph
-  switch i8 %.in, label %.critedge1.i [
-    i8 60, label %.lr.ph.i.backedge
-    i8 62, label %.lr.ph.i.backedge
-  ]
+sw.bb13.i:                                        ; preds = %for.body10.i
+  switch i8 %conv6.i29.in, label %sw.epilog46.i [
+    i8 60, label %for.cond5.i.backedge
+    i8 62, label %for.cond5.i.backedge
+  ], !dbg !293
 
-.lr.ph.i.backedge:                                ; preds = %28, %28, %32, %34, %36, %38
-  %.in.i.be = phi i8 [ %24, %36 ], [ 61, %38 ], [ %24, %28 ], [ %24, %28 ], [ %24, %32 ], [ %24, %34 ]
-  %29 = getelementptr inbounds i8* %25, i64 2
-  %30 = load i8* %29, align 1, !tbaa !11
-  %31 = icmp eq i8 %30, 0
-  br i1 %31, label %.critedge1.i, label %.lr.ph
+for.cond5.i.backedge:                             ; preds = %sw.bb13.i, %sw.bb13.i, %sw.default.i, %sw.epilog46.i
+  %tobool7.i = icmp eq i8 %8, 0, !dbg !289
+  br i1 %tobool7.i, label %for.end52.i, label %land.rhs.i, !dbg !289
 
-; <label>:32                                      ; preds = %.lr.ph
-  %33 = icmp eq i8 %.in, 38
-  br i1 %33, label %.lr.ph.i.backedge, label %.critedge1.i
+sw.bb20.i:                                        ; preds = %for.body10.i
+  %cmp22.i = icmp eq i8 %conv6.i29.in, 38, !dbg !295
+  call void @llvm.dbg.value(metadata !{i8* %position.0.i.lcssa}, i64 0, metadata !296) #4, !dbg !297
+  %tokenend.0.position.0.i = select i1 %cmp22.i, i8* null, i8* %position.0.i28, !dbg !295
+  br label %sw.epilog46.i, !dbg !295
 
-; <label>:34                                      ; preds = %.lr.ph
-  %35 = icmp eq i8 %.in, 124
-  br i1 %35, label %.lr.ph.i.backedge, label %.critedge1.i
+sw.bb26.i:                                        ; preds = %for.body10.i
+  %cmp28.i = icmp eq i8 %conv6.i29.in, 124, !dbg !299
+  call void @llvm.dbg.value(metadata !{i8* %position.0.i.lcssa}, i64 0, metadata !296) #4, !dbg !300
+  %tokenend.0.position.0103.i = select i1 %cmp28.i, i8* null, i8* %position.0.i28, !dbg !299
+  br label %sw.epilog46.i, !dbg !299
 
-; <label>:36                                      ; preds = %.lr.ph
-  %37 = sext i8 %.in to i32
-  switch i32 %37, label %.lr.ph.i.backedge [
-    i32 43, label %.critedge1.i
-    i32 45, label %.critedge1.i
-    i32 47, label %.critedge1.i
-    i32 42, label %.critedge1.i
-    i32 94, label %.critedge1.i
-    i32 40, label %.critedge1.i
-    i32 41, label %.critedge1.i
-    i32 61, label %.critedge1.i
-    i32 38, label %.critedge1.i
-    i32 124, label %.critedge1.i
-    i32 60, label %38
-    i32 62, label %38
-  ]
+sw.default.i:                                     ; preds = %for.body10.i
+  switch i32 %conv6.i29, label %for.cond5.i.backedge [
+    i32 43, label %sw.epilog46.i
+    i32 45, label %sw.epilog46.i
+    i32 47, label %sw.epilog46.i
+    i32 42, label %sw.epilog46.i
+    i32 94, label %sw.epilog46.i
+    i32 40, label %sw.epilog46.i
+    i32 41, label %sw.epilog46.i
+    i32 61, label %sw.epilog46.i
+    i32 38, label %sw.epilog46.i
+    i32 124, label %sw.epilog46.i
+    i32 60, label %sw.bb34.i
+    i32 62, label %sw.bb34.i
+  ], !dbg !302
 
-; <label>:38                                      ; preds = %36, %36
-  %cond.i = icmp eq i8 %24, 61
-  br i1 %cond.i, label %.lr.ph.i.backedge, label %.critedge1.i
+sw.bb34.i:                                        ; preds = %sw.default.i, %sw.default.i
+  %cond114.i = icmp eq i8 %8, 61, !dbg !303
+  br i1 %cond114.i, label %land.rhs.i, label %sw.epilog46.i, !dbg !303
 
-.critedge1.i:                                     ; preds = %18, %.lr.ph.i.backedge, %.lr.ph, %.lr.ph, %.lr.ph, %.lr.ph, %.lr.ph, %.lr.ph, %.lr.ph, %.lr.ph, %.lr.ph, %28, %32, %34, %36, %36, %36, %36, %36, %36, %36, %36, %36, %36, %38, %.lr.ph.i.preheader
-  %position.0.lcssa.i = phi i8* [ %tokenstart.1.i, %.lr.ph.i.preheader ], [ %25, %38 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %34 ], [ %25, %32 ], [ %25, %28 ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %26, %.lr.ph.i.backedge ], [ %tokenstart.1.i, %18 ]
-  %tokenend.2.i = phi i8* [ null, %.lr.ph.i.preheader ], [ %25, %38 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %36 ], [ %25, %34 ], [ %25, %32 ], [ %25, %28 ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ %25, %.lr.ph ], [ null, %.lr.ph.i.backedge ], [ null, %18 ]
-  %39 = icmp eq i8* %tokenend.2.i, null
-  %position.0.tokenend.2.i = select i1 %39, i8* %position.0.lcssa.i, i8* %tokenend.2.i
-  %40 = tail call i8* @malloc(i64 24) #10
-  %41 = bitcast i8* %40 to %struct.PToken*
-  %42 = icmp eq i8* %40, null
-  br i1 %42, label %newtoken.exit.i, label %43
+sw.epilog46.i:                                    ; preds = %sw.bb34.i, %sw.default.i, %sw.default.i, %sw.default.i, %sw.default.i, %sw.default.i, %sw.default.i, %sw.default.i, %sw.default.i, %sw.default.i, %sw.default.i, %sw.bb26.i, %sw.bb20.i, %sw.bb13.i, %for.body10.i, %for.body10.i, %for.body10.i, %for.body10.i, %for.body10.i, %for.body10.i, %for.body10.i, %for.body10.i, %for.body10.i
+  %tokenend.1.i = phi i8* [ %position.0.i28, %for.body10.i ], [ %position.0.i28, %for.body10.i ], [ %position.0.i28, %for.body10.i ], [ %position.0.i28, %for.body10.i ], [ %position.0.i28, %for.body10.i ], [ %position.0.i28, %for.body10.i ], [ %position.0.i28, %for.body10.i ], [ %position.0.i28, %for.body10.i ], [ %position.0.i28, %for.body10.i ], [ %tokenend.0.position.0.i, %sw.bb20.i ], [ %tokenend.0.position.0103.i, %sw.bb26.i ], [ %position.0.i28, %sw.bb13.i ], [ %position.0.i28, %sw.default.i ], [ %position.0.i28, %sw.default.i ], [ %position.0.i28, %sw.default.i ], [ %position.0.i28, %sw.default.i ], [ %position.0.i28, %sw.default.i ], [ %position.0.i28, %sw.default.i ], [ %position.0.i28, %sw.default.i ], [ %position.0.i28, %sw.default.i ], [ %position.0.i28, %sw.default.i ], [ %position.0.i28, %sw.default.i ], [ %position.0.i28, %sw.bb34.i ]
+  %tobool47.i = icmp eq i8* %tokenend.1.i, null, !dbg !305
+  br i1 %tobool47.i, label %for.cond5.i.backedge, label %for.end52.i, !dbg !305
 
-; <label>:43                                      ; preds = %.critedge1.i
-  %44 = ptrtoint i8* %position.0.tokenend.2.i to i64
-  %45 = ptrtoint i8* %tokenstart.1.i to i64
-  %46 = sub i64 2, %45
-  %47 = add i64 %46, %44
-  tail call void @llvm.memset.p0i8.i64(i8* %40, i8 0, i64 16, i32 8, i1 false) #3
-  %48 = tail call i8* @malloc(i64 %47) #10
-  %49 = getelementptr inbounds i8* %40, i64 16
-  %50 = bitcast i8* %49 to i8**
-  store i8* %48, i8** %50, align 8, !tbaa !12
-  %51 = icmp eq i8* %48, null
-  br i1 %51, label %newtoken.exit.thread.i, label %.preheader.i.i
+for.end52.i:                                      ; preds = %for.cond.i, %for.cond5.i.backedge, %sw.epilog46.i, %land.rhs.i
+  %position.0.i.lcssa = phi i8* [ %position.0.i28, %land.rhs.i ], [ %position.0.i28, %sw.epilog46.i ], [ %add.ptr.i, %for.cond5.i.backedge ], [ %tokenstart.1.i, %for.cond.i ]
+  %tokenend.2.i = phi i8* [ null, %land.rhs.i ], [ %tokenend.1.i, %sw.epilog46.i ], [ null, %for.cond5.i.backedge ], [ null, %for.cond.i ]
+  %tobool53.i = icmp eq i8* %tokenend.2.i, null, !dbg !306
+  call void @llvm.dbg.value(metadata !{i8* %position.0.i.lcssa}, i64 0, metadata !296) #4, !dbg !307
+  %position.0.tokenend.2.i = select i1 %tobool53.i, i8* %position.0.i.lcssa, i8* %tokenend.2.i, !dbg !306
+  call void @llvm.dbg.value(metadata !{i8* %tokenstart.1.i}, i64 0, metadata !309) #4, !dbg !311
+  call void @llvm.dbg.value(metadata !{i8* %position.0.tokenend.2.i}, i64 0, metadata !312) #4, !dbg !311
+  %call.i.i = call noalias i8* @malloc(i64 24) #10, !dbg !313
+  %9 = bitcast i8* %call.i.i to %struct.PToken*, !dbg !313
+  call void @llvm.dbg.value(metadata !{%struct.PToken* %9}, i64 0, metadata !314) #4, !dbg !313
+  %cond.i = icmp eq i8* %call.i.i, null, !dbg !315
+  br i1 %cond.i, label %if.else68.i, label %if.then.i.i, !dbg !315
 
-.preheader.i.i:                                   ; preds = %43
-  %52 = icmp ugt i8* %tokenstart.1.i, %position.0.tokenend.2.i
-  br i1 %52, label %._crit_edge.i.i, label %.lr.ph7.i.i
+if.then.i.i:                                      ; preds = %for.end52.i
+  %sub.ptr.lhs.cast.i.i = ptrtoint i8* %position.0.tokenend.2.i to i64, !dbg !316
+  %sub.ptr.rhs.cast.i.i = ptrtoint i8* %tokenstart.1.i to i64, !dbg !316
+  %sub.ptr.sub.i.i = sub i64 2, %sub.ptr.rhs.cast.i.i, !dbg !316
+  %add.i.i = add i64 %sub.ptr.sub.i.i, %sub.ptr.lhs.cast.i.i, !dbg !316
+  call void @llvm.memset.p0i8.i64(i8* %call.i.i, i8 0, i64 16, i32 8, i1 false) #4, !dbg !318
+  %call1.i.i = call noalias i8* @malloc(i64 %add.i.i) #10, !dbg !316
+  %token.i.i = getelementptr inbounds i8* %call.i.i, i64 16, !dbg !316
+  %10 = bitcast i8* %token.i.i to i8**, !dbg !316
+  store i8* %call1.i.i, i8** %10, align 8, !dbg !316, !tbaa !272
+  %tobool3.i.i = icmp eq i8* %call1.i.i, null, !dbg !319
+  br i1 %tobool3.i.i, label %if.then57.i, label %for.cond.preheader.i.i, !dbg !319
 
-.lr.ph7.i.i:                                      ; preds = %.preheader.i.i, %.lr.ph7.i.i
-  %newpos.06.i.i = phi i8* [ %55, %.lr.ph7.i.i ], [ %48, %.preheader.i.i ]
-  %position.05.i.i = phi i8* [ %54, %.lr.ph7.i.i ], [ %tokenstart.1.i, %.preheader.i.i ]
-  %53 = load i8* %position.05.i.i, align 1, !tbaa !11
-  store i8 %53, i8* %newpos.06.i.i, align 1, !tbaa !11
-  %54 = getelementptr inbounds i8* %position.05.i.i, i64 1
-  %55 = getelementptr inbounds i8* %newpos.06.i.i, i64 1
-  %56 = icmp ugt i8* %54, %position.0.tokenend.2.i
-  br i1 %56, label %._crit_edge.i.i, label %.lr.ph7.i.i
+for.cond.preheader.i.i:                           ; preds = %if.then.i.i
+  %cmp45.i.i = icmp ugt i8* %tokenstart.1.i, %position.0.tokenend.2.i, !dbg !320
+  br i1 %cmp45.i.i, label %for.end.i.i, label %for.body.i.i, !dbg !320
 
-._crit_edge.i.i:                                  ; preds = %.lr.ph7.i.i, %.preheader.i.i
-  %newpos.0.lcssa.i.i = phi i8* [ %48, %.preheader.i.i ], [ %55, %.lr.ph7.i.i ]
-  store i8 0, i8* %newpos.0.lcssa.i.i, align 1, !tbaa !11
-  %57 = load i8** %50, align 8, !tbaa !12
-  %58 = icmp ult i8* %newpos.0.lcssa.i.i, %57
-  br i1 %58, label %newtoken.exit.thread.i, label %.lr.ph.i.i
+for.body.i.i:                                     ; preds = %for.cond.preheader.i.i, %for.body.i.i
+  %newpos.047.i.i = phi i8* [ %incdec.ptr6.i.i, %for.body.i.i ], [ %call1.i.i, %for.cond.preheader.i.i ]
+  %position.046.i.i = phi i8* [ %incdec.ptr.i.i, %for.body.i.i ], [ %tokenstart.1.i, %for.cond.preheader.i.i ]
+  %11 = load i8* %position.046.i.i, align 1, !dbg !323, !tbaa !269
+  store i8 %11, i8* %newpos.047.i.i, align 1, !dbg !323, !tbaa !269
+  %incdec.ptr.i.i = getelementptr inbounds i8* %position.046.i.i, i64 1, !dbg !325
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr.i.i}, i64 0, metadata !326) #4, !dbg !325
+  %incdec.ptr6.i.i = getelementptr inbounds i8* %newpos.047.i.i, i64 1, !dbg !325
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr6.i.i}, i64 0, metadata !327) #4, !dbg !325
+  %cmp.i.i = icmp ugt i8* %incdec.ptr.i.i, %position.0.tokenend.2.i, !dbg !320
+  br i1 %cmp.i.i, label %for.end.i.i, label %for.body.i.i, !dbg !320
 
-.lr.ph.i.i:                                       ; preds = %._crit_edge.i.i, %.critedge1._crit_edge.i.i
-  %59 = phi i8 [ %.pre.i.i, %.critedge1._crit_edge.i.i ], [ 0, %._crit_edge.i.i ]
-  %newpos.13.i.i = phi i8* [ %60, %.critedge1._crit_edge.i.i ], [ %newpos.0.lcssa.i.i, %._crit_edge.i.i ]
-  switch i8 %59, label %newtoken.exit.thread.i [
-    i8 0, label %.critedge1.i.i
-    i8 32, label %.critedge1.i.i
-    i8 9, label %.critedge1.i.i
-  ]
+for.end.i.i:                                      ; preds = %for.body.i.i, %for.cond.preheader.i.i
+  %newpos.0.lcssa.i.i = phi i8* [ %call1.i.i, %for.cond.preheader.i.i ], [ %incdec.ptr6.i.i, %for.body.i.i ]
+  store i8 0, i8* %newpos.0.lcssa.i.i, align 1, !dbg !328, !tbaa !269
+  %12 = load i8** %10, align 8, !dbg !329, !tbaa !272
+  %cmp943.i.i = icmp ult i8* %newpos.0.lcssa.i.i, %12, !dbg !329
+  br i1 %cmp943.i.i, label %if.then57.i, label %land.rhs.i.i, !dbg !329
 
-.critedge1.i.i:                                   ; preds = %.lr.ph.i.i, %.lr.ph.i.i, %.lr.ph.i.i
-  store i8 0, i8* %newpos.13.i.i, align 1, !tbaa !11
-  %60 = getelementptr inbounds i8* %newpos.13.i.i, i64 -1
-  %61 = load i8** %50, align 8, !tbaa !12
-  %62 = icmp ult i8* %60, %61
-  br i1 %62, label %newtoken.exit.thread.i, label %.critedge1._crit_edge.i.i
+land.rhs.i.i:                                     ; preds = %for.end.i.i, %for.body18.land.rhs_crit_edge.i.i
+  %13 = phi i8 [ %.pre.i.i, %for.body18.land.rhs_crit_edge.i.i ], [ 0, %for.end.i.i ]
+  %newpos.144.i.i = phi i8* [ %incdec.ptr20.i.i, %for.body18.land.rhs_crit_edge.i.i ], [ %newpos.0.lcssa.i.i, %for.end.i.i ]
+  switch i8 %13, label %if.then57.i [
+    i8 0, label %for.body18.i.i
+    i8 32, label %for.body18.i.i
+    i8 9, label %for.body18.i.i
+  ], !dbg !329
 
-.critedge1._crit_edge.i.i:                        ; preds = %.critedge1.i.i
-  %.pre.i.i = load i8* %60, align 1, !tbaa !11
-  br label %.lr.ph.i.i
+for.body18.i.i:                                   ; preds = %land.rhs.i.i, %land.rhs.i.i, %land.rhs.i.i
+  store i8 0, i8* %newpos.144.i.i, align 1, !dbg !331, !tbaa !269
+  %incdec.ptr20.i.i = getelementptr inbounds i8* %newpos.144.i.i, i64 -1, !dbg !333
+  call void @llvm.dbg.value(metadata !{i8* %incdec.ptr20.i.i}, i64 0, metadata !327) #4, !dbg !333
+  %14 = load i8** %10, align 8, !dbg !329, !tbaa !272
+  %cmp9.i.i = icmp ult i8* %incdec.ptr20.i.i, %14, !dbg !329
+  br i1 %cmp9.i.i, label %if.then57.i, label %for.body18.land.rhs_crit_edge.i.i, !dbg !329
 
-newtoken.exit.thread.i:                           ; preds = %.critedge1.i.i, %.lr.ph.i.i, %._crit_edge.i.i, %43
-  %63 = icmp eq %struct.PToken* %current.080.i, null
-  br i1 %63, label %insertafter.exit.i, label %64
+for.body18.land.rhs_crit_edge.i.i:                ; preds = %for.body18.i.i
+  %.pre.i.i = load i8* %incdec.ptr20.i.i, align 1, !dbg !329, !tbaa !269
+  br label %land.rhs.i.i, !dbg !329
 
-; <label>:64                                      ; preds = %newtoken.exit.thread.i
-  %65 = bitcast i8* %40 to %struct.PToken**
-  store %struct.PToken* %current.080.i, %struct.PToken** %65, align 8, !tbaa !14
-  %66 = getelementptr inbounds %struct.PToken* %current.080.i, i64 0, i32 1
-  %67 = bitcast %struct.PToken** %66 to i64*
-  %68 = load i64* %67, align 8, !tbaa !15
-  %69 = getelementptr inbounds i8* %40, i64 8
-  %70 = bitcast i8* %69 to %struct.PToken**
-  %71 = bitcast i8* %69 to i64*
-  store i64 %68, i64* %71, align 8, !tbaa !15
-  %72 = bitcast %struct.PToken** %66 to i8**
-  store i8* %40, i8** %72, align 8, !tbaa !15
-  %73 = load %struct.PToken** %70, align 8, !tbaa !15
-  %74 = icmp eq %struct.PToken* %73, null
-  br i1 %74, label %insertafter.exit.i, label %75
+if.then57.i:                                      ; preds = %for.body18.i.i, %land.rhs.i.i, %for.end.i.i, %if.then.i.i
+  %tobool58.i = icmp eq %struct.PToken* %current.0109.i, null, !dbg !334
+  call void @llvm.dbg.value(metadata !{%struct.PToken* %current.0109.i}, i64 0, metadata !336) #4, !dbg !339
+  call void @llvm.dbg.value(metadata !{%struct.PToken* %9}, i64 0, metadata !340) #4, !dbg !339
+  br i1 %tobool58.i, label %if.end60.i, label %if.then.i105.i, !dbg !334
 
-; <label>:75                                      ; preds = %64
-  %76 = bitcast %struct.PToken* %73 to i8**
-  store i8* %40, i8** %76, align 8, !tbaa !14
-  br label %insertafter.exit.i
+if.then.i105.i:                                   ; preds = %if.then57.i
+  %last.i.i = bitcast i8* %call.i.i to %struct.PToken**, !dbg !341
+  store %struct.PToken* %current.0109.i, %struct.PToken** %last.i.i, align 8, !dbg !341, !tbaa !272
+  %next.i.i = getelementptr inbounds %struct.PToken* %current.0109.i, i64 0, i32 1, !dbg !343
+  %15 = load %struct.PToken** %next.i.i, align 8, !dbg !343, !tbaa !272
+  %next2.i.i = getelementptr inbounds i8* %call.i.i, i64 8, !dbg !343
+  %16 = bitcast i8* %next2.i.i to %struct.PToken**, !dbg !343
+  store %struct.PToken* %15, %struct.PToken** %16, align 8, !dbg !343, !tbaa !272
+  store %struct.PToken* %9, %struct.PToken** %next.i.i, align 8, !dbg !344, !tbaa !272
+  %17 = load %struct.PToken** %16, align 8, !dbg !345, !tbaa !272
+  %tobool5.i.i = icmp eq %struct.PToken* %17, null, !dbg !345
+  br i1 %tobool5.i.i, label %if.end60.i, label %if.then6.i.i, !dbg !345
 
-insertafter.exit.i:                               ; preds = %75, %64, %newtoken.exit.thread.i
-  %77 = icmp eq %struct.PToken* %start.081.i, null
-  %.start.0.i = select i1 %77, %struct.PToken* %41, %struct.PToken* %start.081.i
-  %78 = load i8* %position.0.tokenend.2.i, align 1, !tbaa !11
-  %79 = icmp eq i8 %78, 0
-  %80 = getelementptr inbounds i8* %position.0.tokenend.2.i, i64 1
-  br i1 %79, label %Tokenise.exit, label %14
+if.then6.i.i:                                     ; preds = %if.then.i105.i
+  %last8.i.i = getelementptr inbounds %struct.PToken* %17, i64 0, i32 0, !dbg !346
+  store %struct.PToken* %9, %struct.PToken** %last8.i.i, align 8, !dbg !346, !tbaa !272
+  br label %if.end60.i, !dbg !348
 
-newtoken.exit.i:                                  ; preds = %.critedge1.i
-  %81 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !16
-  %82 = tail call i64 @fwrite(i8* getelementptr inbounds ([43 x i8]* @.str1, i64 0, i64 0), i64 42, i64 1, %struct.__sFILE* %81) #3
-  tail call void @abort() #11
-  unreachable
+if.end60.i:                                       ; preds = %if.then6.i.i, %if.then.i105.i, %if.then57.i
+  call void @llvm.dbg.value(metadata !{%struct.PToken* %9}, i64 0, metadata !281) #4, !dbg !349
+  %tobool61.i = icmp eq %struct.PToken* %start.0110.i, null, !dbg !350
+  call void @llvm.dbg.value(metadata !{%struct.PToken* %9}, i64 0, metadata !279) #4, !dbg !351
+  %call.start.0.i = select i1 %tobool61.i, %struct.PToken* %9, %struct.PToken* %start.0110.i, !dbg !350
+  %18 = load i8* %position.0.tokenend.2.i, align 1, !dbg !353, !tbaa !269
+  %tobool64.i = icmp eq i8 %18, 0, !dbg !353
+  %add.ptr66.i = getelementptr inbounds i8* %position.0.tokenend.2.i, i64 1, !dbg !354
+  call void @llvm.dbg.value(metadata !{i8* %add.ptr66.i}, i64 0, metadata !283) #4, !dbg !354
+  br i1 %tobool64.i, label %Tokenise.exit, label %while.cond.i, !dbg !353
 
-Tokenise.exit:                                    ; preds = %14, %insertafter.exit.i, %4
-  %start.2.i = phi %struct.PToken* [ null, %4 ], [ %.start.0.i, %insertafter.exit.i ], [ %.start.0.i, %14 ]
-  store %struct.PToken* %start.2.i, %struct.PToken** %temp, align 8, !tbaa !16
-  %83 = call fastcc i32 @RPParse(%struct.PToken** %temp, %struct.uExpressionInternals* %2) #12
-  %84 = icmp eq i32 %83, 0
-  br i1 %84, label %85, label %106
+if.else68.i:                                      ; preds = %for.end52.i
+  %19 = load %struct._IO_FILE** @stderr, align 8, !dbg !356, !tbaa !272
+  %20 = call i64 @fwrite(i8* getelementptr inbounds ([43 x i8]* @.str31, i64 0, i64 0), i64 42, i64 1, %struct._IO_FILE* %19) #4, !dbg !356
+  call void @abort() #11, !dbg !358
+  unreachable, !dbg !358
 
-; <label>:85                                      ; preds = %Tokenise.exit
-  %86 = load i32* %5, align 4, !tbaa !2
-  %87 = icmp sgt i32 %86, 0
-  br i1 %87, label %.lr.ph.i1, label %VerifyParsedExpression.exit.thread
+Tokenise.exit:                                    ; preds = %while.cond.i, %if.end60.i, %if.then
+  %start.2.i = phi %struct.PToken* [ null, %if.then ], [ %call.start.0.i, %if.end60.i ], [ %call.start.0.i, %while.cond.i ]
+  call void @llvm.dbg.value(metadata !{%struct.PToken* %start.2.i}, i64 0, metadata !92), !dbg !276
+  call void @llvm.dbg.value(metadata !{%struct.PToken* %start.2.i}, i64 0, metadata !101), !dbg !359
+  store %struct.PToken* %start.2.i, %struct.PToken** %temp, align 8, !dbg !359, !tbaa !272
+  %call2 = call fastcc i32 @RPParse(%struct.PToken** %temp, %struct.uExpressionInternals* %0) #12, !dbg !360
+  %tobool3 = icmp eq i32 %call2, 0, !dbg !360
+  br i1 %tobool3, label %if.then4, label %if.else, !dbg !360
 
-.lr.ph.i1:                                        ; preds = %85
-  %88 = load %struct.uExpressionToken** %7, align 8, !tbaa !8
-  %89 = sext i32 %86 to i64
-  br label %92
+if.then4:                                         ; preds = %Tokenise.exit
+  tail call void @llvm.dbg.value(metadata !{%struct.uExpressionInternals* %0}, i64 0, metadata !361), !dbg !364
+  tail call void @llvm.dbg.value(metadata !55, i64 0, metadata !365), !dbg !366
+  tail call void @llvm.dbg.value(metadata !55, i64 0, metadata !367), !dbg !368
+  tail call void @llvm.dbg.value(metadata !55, i64 0, metadata !369), !dbg !370
+  %21 = load i32* %ntokens, align 4, !dbg !370, !tbaa !268
+  %cmp44.i = icmp sgt i32 %21, 0, !dbg !370
+  br i1 %cmp44.i, label %for.body.lr.ph.i, label %if.then7, !dbg !370
 
-; <label>:90                                      ; preds = %102
-  %91 = icmp slt i64 %indvars.iv.next.i, %89
-  br i1 %91, label %92, label %VerifyParsedExpression.exit
+for.body.lr.ph.i:                                 ; preds = %if.then4
+  %22 = load %struct.uExpressionToken** %1, align 8, !dbg !372, !tbaa !272
+  br label %for.body.i, !dbg !370
 
-; <label>:92                                      ; preds = %90, %.lr.ph.i1
-  %indvars.iv.i = phi i64 [ 0, %.lr.ph.i1 ], [ %indvars.iv.next.i, %90 ]
-  %stackpointer.07.i = phi i32 [ 0, %.lr.ph.i1 ], [ %stackpointer.1.i, %90 ]
-  %93 = getelementptr inbounds %struct.uExpressionToken* %88, i64 %indvars.iv.i, i32 0
-  %94 = load i32* %93, align 4, !tbaa !17
-  switch i32 %94, label %102 [
-    i32 0, label %95
-    i32 2, label %97
-    i32 1, label %100
-  ]
+for.cond.i19:                                     ; preds = %if.end13.i
+  %23 = trunc i64 %indvars.iv.next.i to i32, !dbg !370
+  %cmp.i = icmp slt i32 %23, %21, !dbg !370
+  br i1 %cmp.i, label %for.body.i, label %VerifyParsedExpression.exit, !dbg !370
 
-; <label>:95                                      ; preds = %92
-  %96 = add nsw i32 %stackpointer.07.i, 1
-  br label %102
+for.body.i:                                       ; preds = %for.cond.i19, %for.body.lr.ph.i
+  %indvars.iv.i = phi i64 [ 0, %for.body.lr.ph.i ], [ %indvars.iv.next.i, %for.cond.i19 ]
+  %stackpointer.046.i = phi i32 [ 0, %for.body.lr.ph.i ], [ %stackpointer.1.i, %for.cond.i19 ]
+  %type.i = getelementptr inbounds %struct.uExpressionToken* %22, i64 %indvars.iv.i, i32 0, !dbg !372
+  %24 = load i32* %type.i, align 4, !dbg !372, !tbaa !269
+  switch i32 %24, label %if.end13.i [
+    i32 0, label %if.then.i
+    i32 2, label %sw.bb.i
+    i32 1, label %sw.bb9.i
+  ], !dbg !372
 
-; <label>:97                                      ; preds = %92
-  %98 = icmp sgt i32 %stackpointer.07.i, 1
-  %not..i = xor i1 %98, true
-  %retcode.0..i = sext i1 %not..i to i32
-  %99 = sext i1 %98 to i32
-  %.stackpointer.0.i = add nsw i32 %99, %stackpointer.07.i
-  br label %102
+if.then.i:                                        ; preds = %for.body.i
+  %inc.i = add nsw i32 %stackpointer.046.i, 1, !dbg !374
+  tail call void @llvm.dbg.value(metadata !{i32 %inc.i}, i64 0, metadata !365), !dbg !374
+  br label %if.end13.i, !dbg !376
 
-; <label>:100                                     ; preds = %92
-  %101 = icmp eq i32 %stackpointer.07.i, 0
-  %.retcode.0.i = sext i1 %101 to i32
-  br label %102
+sw.bb.i:                                          ; preds = %for.body.i
+  %cmp6.i = icmp sgt i32 %stackpointer.046.i, 1, !dbg !377
+  %not.cmp6.i = xor i1 %cmp6.i, true, !dbg !377
+  %retcode.0..i = sext i1 %not.cmp6.i to i32, !dbg !377
+  %dec.i = sext i1 %cmp6.i to i32, !dbg !377
+  %dec.stackpointer.0.i = add nsw i32 %dec.i, %stackpointer.046.i, !dbg !377
+  br label %if.end13.i, !dbg !377
 
-; <label>:102                                     ; preds = %100, %97, %95, %92
-  %retcode.1.i = phi i32 [ 0, %95 ], [ 0, %92 ], [ %.retcode.0.i, %100 ], [ %retcode.0..i, %97 ]
-  %stackpointer.1.i = phi i32 [ %96, %95 ], [ %stackpointer.07.i, %92 ], [ %stackpointer.07.i, %100 ], [ %.stackpointer.0.i, %97 ]
-  %103 = icmp ugt i32 %stackpointer.1.i, 256
-  %104 = icmp ne i32 %retcode.1.i, 0
-  %or.cond3.i = or i1 %104, %103
-  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1
-  br i1 %or.cond3.i, label %VerifyParsedExpression.exit.thread, label %90
+sw.bb9.i:                                         ; preds = %for.body.i
+  %cmp10.i = icmp eq i32 %stackpointer.046.i, 0, !dbg !380
+  tail call void @llvm.dbg.value(metadata !381, i64 0, metadata !367), !dbg !382
+  %.retcode.0.i = sext i1 %cmp10.i to i32, !dbg !380
+  br label %if.end13.i, !dbg !380
 
-VerifyParsedExpression.exit:                      ; preds = %90
-  %105 = icmp eq i32 %stackpointer.1.i, 1
-  br i1 %105, label %107, label %VerifyParsedExpression.exit.thread
+if.end13.i:                                       ; preds = %sw.bb9.i, %sw.bb.i, %if.then.i, %for.body.i
+  %retcode.1.i = phi i32 [ 0, %if.then.i ], [ 0, %for.body.i ], [ %.retcode.0.i, %sw.bb9.i ], [ %retcode.0..i, %sw.bb.i ]
+  %stackpointer.1.i = phi i32 [ %inc.i, %if.then.i ], [ %stackpointer.046.i, %for.body.i ], [ %stackpointer.046.i, %sw.bb9.i ], [ %dec.stackpointer.0.i, %sw.bb.i ]
+  %25 = icmp ult i32 %stackpointer.1.i, 257, !dbg !384
+  %tobool.i20 = icmp eq i32 %retcode.1.i, 0, !dbg !384
+  %or.cond.i = and i1 %25, %tobool.i20, !dbg !384
+  %indvars.iv.next.i = add i64 %indvars.iv.i, 1, !dbg !370
+  br i1 %or.cond.i, label %for.cond.i19, label %if.then7, !dbg !384
 
-VerifyParsedExpression.exit.thread:               ; preds = %102, %85, %VerifyParsedExpression.exit
-  tail call void @Util_ExpressionFree(%struct.uExpressionInternals* %2) #12
-  br label %107
+VerifyParsedExpression.exit:                      ; preds = %for.cond.i19
+  %cmp22.i21 = icmp eq i32 %stackpointer.1.i, 1, !dbg !385
+  br i1 %cmp22.i21, label %if.end8, label %if.then7, !dbg !362
 
-; <label>:106                                     ; preds = %Tokenise.exit
-  tail call void @Util_ExpressionFree(%struct.uExpressionInternals* %2) #12
-  br label %107
+if.then7:                                         ; preds = %if.then4, %if.end13.i, %VerifyParsedExpression.exit
+  call void @Util_ExpressionFree(%struct.uExpressionInternals* %0) #12, !dbg !387
+  call void @llvm.dbg.value(metadata !389, i64 0, metadata !102), !dbg !390
+  br label %if.end8, !dbg !391
 
-; <label>:107                                     ; preds = %VerifyParsedExpression.exit, %VerifyParsedExpression.exit.thread, %106
-  %buffer.0 = phi %struct.uExpressionInternals* [ null, %106 ], [ %2, %VerifyParsedExpression.exit ], [ null, %VerifyParsedExpression.exit.thread ]
-  %108 = icmp eq %struct.PToken* %start.2.i, null
-  br i1 %108, label %FreeTokens.exit, label %.lr.ph.i2
+if.else:                                          ; preds = %Tokenise.exit
+  call void @Util_ExpressionFree(%struct.uExpressionInternals* %0) #12, !dbg !392
+  call void @llvm.dbg.value(metadata !389, i64 0, metadata !102), !dbg !394
+  br label %if.end8
 
-.lr.ph.i2:                                        ; preds = %107, %.lr.ph.i2
-  %token.01.i = phi %struct.PToken* [ %110, %.lr.ph.i2 ], [ %start.2.i, %107 ]
-  %109 = getelementptr inbounds %struct.PToken* %token.01.i, i64 0, i32 1
-  %110 = load %struct.PToken** %109, align 8, !tbaa !15
-  %111 = getelementptr inbounds %struct.PToken* %token.01.i, i64 0, i32 2
-  %112 = load i8** %111, align 8, !tbaa !12
-  tail call void @free(i8* %112) #10
-  %113 = bitcast %struct.PToken* %token.01.i to i8*
-  tail call void @free(i8* %113) #10
-  %114 = icmp eq %struct.PToken* %110, null
-  br i1 %114, label %FreeTokens.exit, label %.lr.ph.i2
+if.end8:                                          ; preds = %VerifyParsedExpression.exit, %if.then7, %if.else
+  %buffer.0 = phi %struct.uExpressionInternals* [ null, %if.else ], [ %0, %VerifyParsedExpression.exit ], [ null, %if.then7 ]
+  call void @llvm.dbg.value(metadata !{%struct.PToken* %start.2.i}, i64 0, metadata !395) #4, !dbg !397
+  call void @llvm.dbg.value(metadata !{%struct.PToken* %start.2.i}, i64 0, metadata !398) #4, !dbg !399
+  %tobool6.i = icmp eq %struct.PToken* %start.2.i, null, !dbg !399
+  br i1 %tobool6.i, label %if.end9, label %for.body.i23, !dbg !399
 
-FreeTokens.exit:                                  ; preds = %.lr.ph.i2, %107, %0
-  %buffer.1 = phi %struct.uExpressionInternals* [ %2, %0 ], [ %buffer.0, %107 ], [ %buffer.0, %.lr.ph.i2 ]
-  ret %struct.uExpressionInternals* %buffer.1
+for.body.i23:                                     ; preds = %if.end8, %for.body.i23
+  %token.07.i = phi %struct.PToken* [ %26, %for.body.i23 ], [ %start.2.i, %if.end8 ]
+  %next1.i = getelementptr inbounds %struct.PToken* %token.07.i, i64 0, i32 1, !dbg !401
+  %26 = load %struct.PToken** %next1.i, align 8, !dbg !401, !tbaa !272
+  call void @llvm.dbg.value(metadata !{%struct.PToken* %26}, i64 0, metadata !403) #4, !dbg !401
+  %token2.i = getelementptr inbounds %struct.PToken* %token.07.i, i64 0, i32 2, !dbg !404
+  %27 = load i8** %token2.i, align 8, !dbg !404, !tbaa !272
+  call void @free(i8* %27) #10, !dbg !404
+  %28 = bitcast %struct.PToken* %token.07.i to i8*, !dbg !405
+  call void @free(i8* %28) #10, !dbg !405
+  call void @llvm.dbg.value(metadata !{%struct.PToken* %26}, i64 0, metadata !398) #4, !dbg !399
+  %tobool.i22 = icmp eq %struct.PToken* %26, null, !dbg !399
+  br i1 %tobool.i22, label %if.end9, label %for.body.i23, !dbg !399
+
+if.end9:                                          ; preds = %for.body.i23, %if.end8, %entry
+  %buffer.1 = phi %struct.uExpressionInternals* [ %0, %entry ], [ %buffer.0, %if.end8 ], [ %buffer.0, %for.body.i23 ]
+  ret %struct.uExpressionInternals* %buffer.1, !dbg !406
 }

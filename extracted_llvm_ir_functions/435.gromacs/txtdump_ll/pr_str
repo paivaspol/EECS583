@@ -1,19 +1,24 @@
-define internal fastcc void @pr_str(%struct.__sFILE* nocapture %fp, i32 %indent, i8* %title, i8* %s) #4 {
-  %1 = icmp sgt i32 %indent, 0
-  br i1 %1, label %.lr.ph.i, label %pr_indent.exit
+define internal fastcc void @pr_str(%struct._IO_FILE* nocapture %fp, i32 %indent, i8* %title, i8* %s) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !915), !dbg !1290
+  tail call void @llvm.dbg.value(metadata !{i32 %indent}, i64 0, metadata !916), !dbg !1290
+  tail call void @llvm.dbg.value(metadata !{i8* %title}, i64 0, metadata !917), !dbg !1290
+  tail call void @llvm.dbg.value(metadata !{i8* %s}, i64 0, metadata !918), !dbg !1290
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !1291) #4, !dbg !1293
+  tail call void @llvm.dbg.value(metadata !{i32 %indent}, i64 0, metadata !1294) #4, !dbg !1293
+  tail call void @llvm.dbg.value(metadata !152, i64 0, metadata !1295) #4, !dbg !1296
+  %cmp3.i = icmp sgt i32 %indent, 0, !dbg !1296
+  br i1 %cmp3.i, label %for.body.i, label %pr_indent.exit, !dbg !1296
 
-.lr.ph.i:                                         ; preds = %0
-  %2 = add i32 %indent, -1
-  br label %3
+for.body.i:                                       ; preds = %entry, %for.body.i
+  %i.04.i = phi i32 [ %inc.i, %for.body.i ], [ 0, %entry ]
+  %fputc.i = tail call i32 @fputc(i32 32, %struct._IO_FILE* %fp) #4, !dbg !1296
+  %inc.i = add nsw i32 %i.04.i, 1, !dbg !1296
+  tail call void @llvm.dbg.value(metadata !{i32 %inc.i}, i64 0, metadata !1295) #4, !dbg !1296
+  %exitcond.i = icmp eq i32 %inc.i, %indent, !dbg !1296
+  br i1 %exitcond.i, label %pr_indent.exit, label %for.body.i, !dbg !1296
 
-; <label>:3                                       ; preds = %3, %.lr.ph.i
-  %i.01.i = phi i32 [ 0, %.lr.ph.i ], [ %4, %3 ]
-  %fputc.i = tail call i32 @fputc(i32 32, %struct.__sFILE* %fp) #6
-  %4 = add nuw nsw i32 %i.01.i, 1
-  %exitcond.i = icmp eq i32 %i.01.i, %2
-  br i1 %exitcond.i, label %pr_indent.exit, label %3
-
-pr_indent.exit:                                   ; preds = %3, %0
-  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([12 x i8]* @.str165, i64 0, i64 0), i8* %title, i8* %s) #8
-  ret void
+pr_indent.exit:                                   ; preds = %for.body.i, %entry
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([12 x i8]* @.str196, i64 0, i64 0), i8* %title, i8* %s) #5, !dbg !1297
+  ret void, !dbg !1298
 }

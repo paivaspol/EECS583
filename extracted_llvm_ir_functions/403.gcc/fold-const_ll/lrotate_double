@@ -4,21 +4,36 @@ entry:
   %s2l = alloca i64, align 8
   %s1h = alloca i64, align 8
   %s2h = alloca i64, align 8
-  %conv = zext i32 %prec to i64
-  %rem = srem i64 %count, %conv
-  %cmp = icmp slt i64 %rem, 0
-  %add = select i1 %cmp, i64 %conv, i64 0
-  %add.rem = add nsw i64 %add, %rem
-  call void @lshift_double(i64 %l1, i64 %h1, i64 %add.rem, i32 %prec, i64* %s1l, i64* %s1h, i32 0) #7
-  %sub = sub nsw i64 %conv, %add.rem
-  call void @rshift_double(i64 %l1, i64 %h1, i64 %sub, i32 %prec, i64* %s2l, i64* %s2h, i32 0) #7
-  %0 = load i64* %s1l, align 8, !tbaa !0
-  %1 = load i64* %s2l, align 8, !tbaa !0
-  %or = or i64 %1, %0
-  store i64 %or, i64* %lv, align 8, !tbaa !0
-  %2 = load i64* %s1h, align 8, !tbaa !0
-  %3 = load i64* %s2h, align 8, !tbaa !0
-  %or4 = or i64 %3, %2
-  store i64 %or4, i64* %hv, align 8, !tbaa !0
-  ret void
+  call void @llvm.dbg.value(metadata !{i64 %l1}, i64 0, metadata !816), !dbg !1955
+  call void @llvm.dbg.value(metadata !{i64 %h1}, i64 0, metadata !817), !dbg !1956
+  call void @llvm.dbg.value(metadata !{i64 %count}, i64 0, metadata !818), !dbg !1956
+  call void @llvm.dbg.value(metadata !{i32 %prec}, i64 0, metadata !819), !dbg !1957
+  call void @llvm.dbg.value(metadata !{i64* %lv}, i64 0, metadata !820), !dbg !1958
+  call void @llvm.dbg.value(metadata !{i64* %hv}, i64 0, metadata !821), !dbg !1959
+  call void @llvm.dbg.declare(metadata !{i64* %s1l}, metadata !822), !dbg !1960
+  call void @llvm.dbg.declare(metadata !{i64* %s2l}, metadata !823), !dbg !1960
+  call void @llvm.dbg.declare(metadata !{i64* %s1h}, metadata !824), !dbg !1961
+  call void @llvm.dbg.declare(metadata !{i64* %s2h}, metadata !825), !dbg !1961
+  %conv = zext i32 %prec to i64, !dbg !1962
+  %rem = srem i64 %count, %conv, !dbg !1962
+  call void @llvm.dbg.value(metadata !{i64 %rem}, i64 0, metadata !818), !dbg !1962
+  %cmp = icmp slt i64 %rem, 0, !dbg !1963
+  %add = select i1 %cmp, i64 %conv, i64 0, !dbg !1963
+  %add.rem = add nsw i64 %add, %rem, !dbg !1963
+  call void @lshift_double(i64 %l1, i64 %h1, i64 %add.rem, i32 %prec, i64* %s1l, i64* %s1h, i32 0) #7, !dbg !1964
+  %sub = sub nsw i64 %conv, %add.rem, !dbg !1965
+  call void @rshift_double(i64 %l1, i64 %h1, i64 %sub, i32 %prec, i64* %s2l, i64* %s2h, i32 0) #7, !dbg !1965
+  call void @llvm.dbg.value(metadata !{i64* %s1l}, i64 0, metadata !822), !dbg !1966
+  %0 = load i64* %s1l, align 8, !dbg !1966, !tbaa !1700
+  call void @llvm.dbg.value(metadata !{i64* %s2l}, i64 0, metadata !823), !dbg !1966
+  %1 = load i64* %s2l, align 8, !dbg !1966, !tbaa !1700
+  %or = or i64 %1, %0, !dbg !1966
+  store i64 %or, i64* %lv, align 8, !dbg !1966, !tbaa !1700
+  call void @llvm.dbg.value(metadata !{i64* %s1h}, i64 0, metadata !824), !dbg !1967
+  %2 = load i64* %s1h, align 8, !dbg !1967, !tbaa !1700
+  call void @llvm.dbg.value(metadata !{i64* %s2h}, i64 0, metadata !825), !dbg !1967
+  %3 = load i64* %s2h, align 8, !dbg !1967, !tbaa !1700
+  %or4 = or i64 %3, %2, !dbg !1967
+  store i64 %or4, i64* %hv, align 8, !dbg !1967, !tbaa !1700
+  ret void, !dbg !1968
 }

@@ -1,27 +1,30 @@
 define void @DVfill(i32 %size, double* %y, double %dval) #0 {
 entry:
-  %cmp = icmp sgt i32 %size, 0
-  br i1 %cmp, label %if.then, label %if.end4
+  tail call void @llvm.dbg.value(metadata !{i32 %size}, i64 0, metadata !89), !dbg !783
+  tail call void @llvm.dbg.value(metadata !{double* %y}, i64 0, metadata !90), !dbg !784
+  tail call void @llvm.dbg.value(metadata !{double %dval}, i64 0, metadata !91), !dbg !785
+  %cmp = icmp sgt i32 %size, 0, !dbg !786
+  br i1 %cmp, label %if.then, label %if.end4, !dbg !786
 
 if.then:                                          ; preds = %entry
-  %cmp1 = icmp eq double* %y, null
-  br i1 %cmp1, label %if.then2, label %for.body
+  %cmp1 = icmp eq double* %y, null, !dbg !787
+  br i1 %cmp1, label %if.then2, label %for.body, !dbg !787
 
 if.then2:                                         ; preds = %if.then
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([69 x i8]* @.str7, i64 0, i64 0), i32 %size, double* null, double %dval) #5
-  tail call void @exit(i32 -1) #6
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !788, !tbaa !629
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([69 x i8]* @.str7, i64 0, i64 0), i32 %size, double* null, double %dval) #6, !dbg !788
+  tail call void @exit(i32 -1) #7, !dbg !790
+  unreachable, !dbg !790
 
 for.body:                                         ; preds = %if.then, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.then ]
-  %arrayidx = getelementptr inbounds double* %y, i64 %indvars.iv
-  store double %dval, double* %arrayidx, align 8, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %size
-  br i1 %exitcond, label %if.end4, label %for.body
+  %arrayidx = getelementptr inbounds double* %y, i64 %indvars.iv, !dbg !791
+  store double %dval, double* %arrayidx, align 8, !dbg !791, !tbaa !635
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !794
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !794
+  %exitcond = icmp eq i32 %lftr.wideiv, %size, !dbg !794
+  br i1 %exitcond, label %if.end4, label %for.body, !dbg !794
 
 if.end4:                                          ; preds = %for.body, %entry
-  ret void
+  ret void, !dbg !795
 }

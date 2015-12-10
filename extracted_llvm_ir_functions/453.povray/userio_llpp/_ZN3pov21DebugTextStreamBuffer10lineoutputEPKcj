@@ -1,0 +1,28 @@
+define void @_ZN3pov21DebugTextStreamBuffer10lineoutputEPKcj(%"class.pov::DebugTextStreamBuffer"* nocapture %this, i8* nocapture %str, i32 %chars) unnamed_addr #1 align 2 {
+entry:
+  %msg = alloca %struct.POVMSData, align 8
+  %buffer = alloca [256 x i8], align 16
+  call void @llvm.dbg.value(metadata !{%"class.pov::DebugTextStreamBuffer"* %this}, i64 0, metadata !426), !dbg !686
+  call void @llvm.dbg.value(metadata !{i8* %str}, i64 0, metadata !427), !dbg !686
+  call void @llvm.dbg.value(metadata !{i32 %chars}, i64 0, metadata !428), !dbg !686
+  call void @llvm.dbg.value(metadata !{i32 %chars}, i64 0, metadata !687), !dbg !689
+  call void @llvm.dbg.declare(metadata !{%struct.POVMSData* %msg}, metadata !429), !dbg !690
+  %0 = getelementptr inbounds [256 x i8]* %buffer, i64 0, i64 0, !dbg !691
+  call void @llvm.lifetime.start(i64 256, i8* %0) #0, !dbg !691
+  call void @llvm.dbg.declare(metadata !{[256 x i8]* %buffer}, metadata !454), !dbg !691
+  store i8 0, i8* %0, align 16, !dbg !692, !tbaa !693
+  call void @llvm.dbg.value(metadata !694, i64 0, metadata !695), !dbg !689
+  %cmp.i = icmp ult i32 %chars, 252, !dbg !696
+  %1 = zext i32 %chars to i64, !dbg !688
+  %conv = select i1 %cmp.i, i64 %1, i64 252, !dbg !688
+  %call2 = call i8* @strncat(i8* %0, i8* %str, i64 %conv) #9, !dbg !688
+  %call3 = call i32 @_Z15POVMSObject_NewP9POVMSDataj(%struct.POVMSData* %msg, i32 1179676531) #8, !dbg !699
+  %call5 = call i32 @_Z19POVMSUtil_SetStringP9POVMSDatajPKc(%struct.POVMSData* %msg, i32 1163163764, i8* %0) #8, !dbg !700
+  %call6 = call i32 @_Z21POVMSMsg_SetupMessageP9POVMSDatajj(%struct.POVMSData* %msg, i32 1333097584, i32 1147303271) #8, !dbg !701
+  %call7 = call i8* @_Z23povray_getoutputcontextv() #8, !dbg !702
+  %call8 = call i32 @_Z30POVMSMsg_SetDestinationAddressP9POVMSDataPv(%struct.POVMSData* %msg, i8* %call7) #8, !dbg !702
+  %2 = load i8** @POVMS_Render_Context, align 8, !dbg !703, !tbaa !704
+  %call9 = call i32 @_Z10POVMS_SendPvP9POVMSDataS1_i(i8* %2, %struct.POVMSData* %msg, %struct.POVMSData* null, i32 1) #8, !dbg !703
+  call void @llvm.lifetime.end(i64 256, i8* %0) #0, !dbg !705
+  ret void, !dbg !705
+}

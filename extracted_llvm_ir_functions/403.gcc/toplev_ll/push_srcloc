@@ -1,39 +1,42 @@
 define void @push_srcloc(i8* %file, i32 %line) #0 {
 entry:
-  %0 = load %struct.file_stack** @input_file_stack, align 8, !tbaa !4
-  %tobool = icmp eq %struct.file_stack* %0, null
-  br i1 %tobool, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{i8* %file}, i64 0, metadata !1386), !dbg !2266
+  tail call void @llvm.dbg.value(metadata !{i32 %line}, i64 0, metadata !1387), !dbg !2267
+  %0 = load %struct.file_stack** @input_file_stack, align 8, !dbg !2268, !tbaa !2171
+  %tobool = icmp eq %struct.file_stack* %0, null, !dbg !2268
+  br i1 %tobool, label %if.end, label %if.then, !dbg !2268
 
 if.then:                                          ; preds = %entry
-  %1 = load i8** @input_filename, align 8, !tbaa !4
-  %name = getelementptr inbounds %struct.file_stack* %0, i64 0, i32 0
-  store i8* %1, i8** %name, align 8, !tbaa !4
-  %2 = load i32* @lineno, align 4, !tbaa !0
-  %3 = load %struct.file_stack** @input_file_stack, align 8, !tbaa !4
-  %line1 = getelementptr inbounds %struct.file_stack* %3, i64 0, i32 2
-  store i32 %2, i32* %line1, align 4, !tbaa !0
-  br label %if.end
+  %1 = load i8** @input_filename, align 8, !dbg !2269, !tbaa !2171
+  %name = getelementptr inbounds %struct.file_stack* %0, i64 0, i32 0, !dbg !2269
+  store i8* %1, i8** %name, align 8, !dbg !2269, !tbaa !2171
+  %2 = load i32* @lineno, align 4, !dbg !2271, !tbaa !2059
+  %3 = load %struct.file_stack** @input_file_stack, align 8, !dbg !2271, !tbaa !2171
+  %line1 = getelementptr inbounds %struct.file_stack* %3, i64 0, i32 2, !dbg !2271
+  store i32 %2, i32* %line1, align 4, !dbg !2271, !tbaa !2059
+  br label %if.end, !dbg !2272
 
 if.end:                                           ; preds = %entry, %if.then
-  %call = tail call noalias i8* @xmalloc(i64 24) #11
-  %4 = bitcast i8* %call to %struct.file_stack*
-  store i8* %file, i8** @input_filename, align 8, !tbaa !4
-  %name2 = bitcast i8* %call to i8**
-  store i8* %file, i8** %name2, align 8, !tbaa !4
-  store i32 %line, i32* @lineno, align 4, !tbaa !0
-  %line3 = getelementptr inbounds i8* %call, i64 16
-  %5 = bitcast i8* %line3 to i32*
-  store i32 %line, i32* %5, align 4, !tbaa !0
-  %indent_level = getelementptr inbounds i8* %call, i64 20
-  %6 = bitcast i8* %indent_level to i32*
-  store i32 0, i32* %6, align 4, !tbaa !0
-  %7 = load %struct.file_stack** @input_file_stack, align 8, !tbaa !4
-  %next = getelementptr inbounds i8* %call, i64 8
-  %8 = bitcast i8* %next to %struct.file_stack**
-  store %struct.file_stack* %7, %struct.file_stack** %8, align 8, !tbaa !4
-  store %struct.file_stack* %4, %struct.file_stack** @input_file_stack, align 8, !tbaa !4
-  %9 = load i32* @input_file_stack_tick, align 4, !tbaa !0
-  %inc = add nsw i32 %9, 1
-  store i32 %inc, i32* @input_file_stack_tick, align 4, !tbaa !0
-  ret void
+  %call = tail call noalias i8* @xmalloc(i64 24) #12, !dbg !2273
+  %4 = bitcast i8* %call to %struct.file_stack*, !dbg !2273
+  tail call void @llvm.dbg.value(metadata !{%struct.file_stack* %4}, i64 0, metadata !1388), !dbg !2273
+  store i8* %file, i8** @input_filename, align 8, !dbg !2274, !tbaa !2171
+  %name2 = bitcast i8* %call to i8**, !dbg !2274
+  store i8* %file, i8** %name2, align 8, !dbg !2274, !tbaa !2171
+  store i32 %line, i32* @lineno, align 4, !dbg !2275, !tbaa !2059
+  %line3 = getelementptr inbounds i8* %call, i64 16, !dbg !2275
+  %5 = bitcast i8* %line3 to i32*, !dbg !2275
+  store i32 %line, i32* %5, align 4, !dbg !2275, !tbaa !2059
+  %indent_level = getelementptr inbounds i8* %call, i64 20, !dbg !2276
+  %6 = bitcast i8* %indent_level to i32*, !dbg !2276
+  store i32 0, i32* %6, align 4, !dbg !2276, !tbaa !2059
+  %7 = load %struct.file_stack** @input_file_stack, align 8, !dbg !2277, !tbaa !2171
+  %next = getelementptr inbounds i8* %call, i64 8, !dbg !2277
+  %8 = bitcast i8* %next to %struct.file_stack**, !dbg !2277
+  store %struct.file_stack* %7, %struct.file_stack** %8, align 8, !dbg !2277, !tbaa !2171
+  store %struct.file_stack* %4, %struct.file_stack** @input_file_stack, align 8, !dbg !2278, !tbaa !2171
+  %9 = load i32* @input_file_stack_tick, align 4, !dbg !2279, !tbaa !2059
+  %inc = add nsw i32 %9, 1, !dbg !2279
+  store i32 %inc, i32* @input_file_stack_tick, align 4, !dbg !2279, !tbaa !2059
+  ret void, !dbg !2280
 }

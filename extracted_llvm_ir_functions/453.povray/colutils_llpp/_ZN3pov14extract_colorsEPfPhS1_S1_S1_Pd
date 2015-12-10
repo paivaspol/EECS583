@@ -1,0 +1,72 @@
+define void @_ZN3pov14extract_colorsEPfPhS1_S1_S1_Pd(float* %Colour, i8* nocapture %Red, i8* nocapture %Green, i8* nocapture %Blue, i8* nocapture %Alpha, double* nocapture %grey) #3 {
+entry:
+  %ColourG = alloca [5 x float], align 16
+  call void @llvm.dbg.value(metadata !{float* %Colour}, i64 0, metadata !31), !dbg !212
+  call void @llvm.dbg.value(metadata !{i8* %Red}, i64 0, metadata !32), !dbg !212
+  call void @llvm.dbg.value(metadata !{i8* %Green}, i64 0, metadata !33), !dbg !212
+  call void @llvm.dbg.value(metadata !{i8* %Blue}, i64 0, metadata !34), !dbg !212
+  call void @llvm.dbg.value(metadata !{i8* %Alpha}, i64 0, metadata !35), !dbg !212
+  call void @llvm.dbg.value(metadata !{double* %grey}, i64 0, metadata !36), !dbg !212
+  call void @llvm.dbg.declare(metadata !{[5 x float]* %ColourG}, metadata !37), !dbg !213
+  %arraydecay = getelementptr inbounds [5 x float]* %ColourG, i64 0, i64 0, !dbg !214
+  call void @_ZN3pov11Clip_ColourEPfS0_(float* %arraydecay, float* %Colour) #6, !dbg !214
+  call void @_ZN3pov13gamma_correctEPf(float* %arraydecay) #6, !dbg !215
+  %0 = load i8* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 2), align 1, !dbg !216, !tbaa !202
+  %cmp = icmp eq i8 %0, 71, !dbg !216
+  %1 = load float* %arraydecay, align 16, !dbg !217, !tbaa !206
+  %conv2 = fpext float %1 to double, !dbg !217
+  br i1 %cmp, label %if.then, label %if.else, !dbg !216
+
+if.then:                                          ; preds = %entry
+  %mul = fmul double %conv2, 2.970000e-01, !dbg !217
+  %arrayidx5 = getelementptr inbounds [5 x float]* %ColourG, i64 0, i64 1, !dbg !217
+  %2 = load float* %arrayidx5, align 4, !dbg !217, !tbaa !206
+  %conv6 = fpext float %2 to double, !dbg !217
+  %mul7 = fmul double %conv6, 5.890000e-01, !dbg !217
+  %add = fadd double %mul, %mul7, !dbg !217
+  %arrayidx8 = getelementptr inbounds [5 x float]* %ColourG, i64 0, i64 2, !dbg !217
+  %3 = load float* %arrayidx8, align 8, !dbg !217, !tbaa !206
+  %conv9 = fpext float %3 to double, !dbg !217
+  %mul10 = fmul double %conv9, 1.140000e-01, !dbg !217
+  %add11 = fadd double %add, %mul10, !dbg !217
+  %mul12 = fmul double %conv2, %add11, !dbg !217
+  store double %mul12, double* %grey, align 8, !dbg !217, !tbaa !219
+  %4 = load double* @_ZN3pov6maxclrE, align 8, !dbg !220, !tbaa !219
+  %mul13 = fmul double %4, %mul12, !dbg !220
+  %conv14 = fptoui double %mul13 to i8, !dbg !220
+  store i8 %conv14, i8* %Blue, align 1, !dbg !220, !tbaa !202
+  store i8 %conv14, i8* %Green, align 1, !dbg !220, !tbaa !202
+  store i8 %conv14, i8* %Red, align 1, !dbg !220, !tbaa !202
+  br label %if.end, !dbg !221
+
+if.else:                                          ; preds = %entry
+  %5 = load double* @_ZN3pov6maxclrE, align 8, !dbg !222, !tbaa !219
+  %mul17 = fmul double %conv2, %5, !dbg !222
+  %conv18 = fptoui double %mul17 to i8, !dbg !222
+  store i8 %conv18, i8* %Red, align 1, !dbg !222, !tbaa !202
+  %arrayidx19 = getelementptr inbounds [5 x float]* %ColourG, i64 0, i64 1, !dbg !224
+  %6 = load float* %arrayidx19, align 4, !dbg !224, !tbaa !206
+  %conv20 = fpext float %6 to double, !dbg !224
+  %7 = load double* @_ZN3pov6maxclrE, align 8, !dbg !224, !tbaa !219
+  %mul21 = fmul double %conv20, %7, !dbg !224
+  %conv22 = fptoui double %mul21 to i8, !dbg !224
+  store i8 %conv22, i8* %Green, align 1, !dbg !224, !tbaa !202
+  %arrayidx23 = getelementptr inbounds [5 x float]* %ColourG, i64 0, i64 2, !dbg !225
+  %8 = load float* %arrayidx23, align 8, !dbg !225, !tbaa !206
+  %conv24 = fpext float %8 to double, !dbg !225
+  %9 = load double* @_ZN3pov6maxclrE, align 8, !dbg !225, !tbaa !219
+  %mul25 = fmul double %conv24, %9, !dbg !225
+  %conv26 = fptoui double %mul25 to i8, !dbg !225
+  store i8 %conv26, i8* %Blue, align 1, !dbg !225, !tbaa !202
+  %arrayidx27 = getelementptr inbounds [5 x float]* %ColourG, i64 0, i64 4, !dbg !226
+  %10 = load float* %arrayidx27, align 16, !dbg !226, !tbaa !206
+  %conv28 = fpext float %10 to double, !dbg !226
+  %11 = load double* @_ZN3pov6maxclrE, align 8, !dbg !226, !tbaa !219
+  %mul29 = fmul double %conv28, %11, !dbg !226
+  %conv30 = fptoui double %mul29 to i8, !dbg !226
+  store i8 %conv30, i8* %Alpha, align 1, !dbg !226, !tbaa !202
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  ret void, !dbg !227
+}

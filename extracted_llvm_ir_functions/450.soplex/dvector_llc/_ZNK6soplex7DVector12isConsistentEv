@@ -1,0 +1,33 @@
+define zeroext i1 @_ZNK6soplex7DVector12isConsistentEv(%"class.soplex::DVector"* %this) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DVector"* %this}, i64 0, metadata !2606), !dbg !3164
+  %0 = getelementptr inbounds %"class.soplex::DVector"* %this, i64 0, i32 0, !dbg !3165
+  %val = getelementptr inbounds %"class.soplex::DVector"* %this, i64 0, i32 0, i32 1, !dbg !3165
+  %1 = load double** %val, align 8, !dbg !3165, !tbaa !2777
+  %mem = getelementptr inbounds %"class.soplex::DVector"* %this, i64 0, i32 2, !dbg !3165
+  %2 = load double** %mem, align 8, !dbg !3165, !tbaa !2777
+  %cmp = icmp eq double* %1, %2, !dbg !3165
+  br i1 %cmp, label %lor.lhs.false, label %if.then, !dbg !3165
+
+lor.lhs.false:                                    ; preds = %entry
+  %dimen = getelementptr inbounds %"class.soplex::DVector"* %this, i64 0, i32 0, i32 0, !dbg !3165
+  %3 = load i32* %dimen, align 4, !dbg !3165, !tbaa !2764
+  %memsize = getelementptr inbounds %"class.soplex::DVector"* %this, i64 0, i32 1, !dbg !3165
+  %4 = load i32* %memsize, align 4, !dbg !3165, !tbaa !2764
+  %cmp2 = icmp sgt i32 %3, %4, !dbg !3165
+  %cmp5 = icmp slt i32 %3, 0, !dbg !3165
+  %or.cond = or i1 %cmp2, %cmp5, !dbg !3165
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !3165
+
+if.then:                                          ; preds = %entry, %lor.lhs.false
+  %call = tail call zeroext i1 @_ZN6soplex15msginconsistentEPKcS1_i(i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([55 x i8]* @.str1, i64 0, i64 0), i32 197) #9, !dbg !3166
+  br label %return, !dbg !3166
+
+if.end:                                           ; preds = %lor.lhs.false
+  %call6 = tail call zeroext i1 @_ZNK6soplex6Vector12isConsistentEv(%"class.soplex::Vector"* %0) #9, !dbg !3167
+  br label %return, !dbg !3167
+
+return:                                           ; preds = %if.end, %if.then
+  %retval.0 = phi i1 [ %call, %if.then ], [ %call6, %if.end ]
+  ret i1 %retval.0, !dbg !3168
+}

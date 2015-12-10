@@ -1,26 +1,27 @@
-define void @vecinvsqrt(float* nocapture readonly %in, float* nocapture %out, i32 %n) #4 {
-  %1 = icmp sgt i32 %n, 0
-  br i1 %1, label %.lr.ph, label %._crit_edge
+define void @vecinvsqrt(float* nocapture %in, float* nocapture %out, i32 %n) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float* %in}, i64 0, metadata !13), !dbg !23
+  tail call void @llvm.dbg.value(metadata !{float* %out}, i64 0, metadata !14), !dbg !23
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !15), !dbg !23
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !16), !dbg !24
+  %cmp7 = icmp sgt i32 %n, 0, !dbg !24
+  br i1 %cmp7, label %for.body, label %for.end, !dbg !24
 
-.lr.ph:                                           ; preds = %0
-  %2 = add i32 %n, -1
-  br label %3
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds float* %in, i64 %indvars.iv, !dbg !26
+  %0 = load float* %arrayidx, align 4, !dbg !26, !tbaa !27
+  %conv = fpext float %0 to double, !dbg !26
+  %call = tail call double @sqrt(double %conv) #3, !dbg !26
+  %div = fdiv double 1.000000e+00, %call, !dbg !26
+  %conv1 = fptrunc double %div to float, !dbg !26
+  %arrayidx3 = getelementptr inbounds float* %out, i64 %indvars.iv, !dbg !26
+  store float %conv1, float* %arrayidx3, align 4, !dbg !26, !tbaa !27
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !24
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !24
+  %exitcond = icmp eq i32 %lftr.wideiv, %n, !dbg !24
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !24
 
-; <label>:3                                       ; preds = %3, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
-  %4 = getelementptr inbounds float* %in, i64 %indvars.iv
-  %5 = load float* %4, align 4, !tbaa !14
-  %6 = fpext float %5 to double
-  %7 = tail call double @sqrt(double %6) #8
-  %8 = fdiv double 1.000000e+00, %7
-  %9 = fptrunc double %8 to float
-  %10 = getelementptr inbounds float* %out, i64 %indvars.iv
-  store float %9, float* %10, align 4, !tbaa !14
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %2
-  br i1 %exitcond, label %._crit_edge, label %3
-
-._crit_edge:                                      ; preds = %3, %0
-  ret void
+for.end:                                          ; preds = %for.body, %entry
+  ret void, !dbg !30
 }

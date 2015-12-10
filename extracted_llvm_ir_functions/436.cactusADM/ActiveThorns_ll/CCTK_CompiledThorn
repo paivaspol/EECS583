@@ -1,28 +1,36 @@
 define i8* @CCTK_CompiledThorn(i32 %tindex) #1 {
-  %1 = load %struct.T_SKTREE** @thornlist, align 8, !tbaa !7
-  %2 = tail call %struct.T_SKTREE* @SKTreeFindFirst(%struct.T_SKTREE* %1) #7
-  %3 = icmp eq %struct.T_SKTREE* %2, null
-  br i1 %3, label %.loopexit, label %.lr.ph
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %tindex}, i64 0, metadata !247), !dbg !642
+  tail call void @llvm.dbg.value(metadata !351, i64 0, metadata !250), !dbg !643
+  %0 = load %struct.T_SKTREE** @thornlist, align 8, !dbg !644, !tbaa !357
+  %call = tail call %struct.T_SKTREE* @SKTreeFindFirst(%struct.T_SKTREE* %0) #9, !dbg !644
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %call}, i64 0, metadata !249), !dbg !644
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !248), !dbg !644
+  %tobool4 = icmp eq %struct.T_SKTREE* %call, null, !dbg !644
+  br i1 %tobool4, label %for.end, label %for.body, !dbg !644
 
-.lr.ph:                                           ; preds = %0, %8
-  %node.03 = phi %struct.T_SKTREE* [ %10, %8 ], [ %2, %0 ]
-  %i.02 = phi i32 [ %11, %8 ], [ 0, %0 ]
-  %4 = icmp eq i32 %i.02, %tindex
-  br i1 %4, label %5, label %8
+for.body:                                         ; preds = %entry, %for.inc
+  %node.06 = phi %struct.T_SKTREE* [ %2, %for.inc ], [ %call, %entry ]
+  %i.05 = phi i32 [ %inc, %for.inc ], [ 0, %entry ]
+  %cmp = icmp eq i32 %i.05, %tindex, !dbg !646
+  br i1 %cmp, label %if.then, label %for.inc, !dbg !646
 
-; <label>:5                                       ; preds = %.lr.ph
-  %6 = getelementptr inbounds %struct.T_SKTREE* %node.03, i64 0, i32 4
-  %7 = load i8** %6, align 8, !tbaa !23
-  br label %.loopexit
+if.then:                                          ; preds = %for.body
+  %key = getelementptr inbounds %struct.T_SKTREE* %node.06, i64 0, i32 4, !dbg !648
+  %1 = load i8** %key, align 8, !dbg !648, !tbaa !357
+  tail call void @llvm.dbg.value(metadata !{i8* %1}, i64 0, metadata !250), !dbg !648
+  br label %for.end, !dbg !650
 
-; <label>:8                                       ; preds = %.lr.ph
-  %9 = getelementptr inbounds %struct.T_SKTREE* %node.03, i64 0, i32 2
-  %10 = load %struct.T_SKTREE** %9, align 8, !tbaa !24
-  %11 = add nuw nsw i32 %i.02, 1
-  %12 = icmp eq %struct.T_SKTREE* %10, null
-  br i1 %12, label %.loopexit, label %.lr.ph
+for.inc:                                          ; preds = %for.body
+  %next = getelementptr inbounds %struct.T_SKTREE* %node.06, i64 0, i32 2, !dbg !651
+  %2 = load %struct.T_SKTREE** %next, align 8, !dbg !651, !tbaa !357
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %2}, i64 0, metadata !249), !dbg !651
+  %inc = add nsw i32 %i.05, 1, !dbg !651
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !248), !dbg !651
+  %tobool = icmp eq %struct.T_SKTREE* %2, null, !dbg !644
+  br i1 %tobool, label %for.end, label %for.body, !dbg !644
 
-.loopexit:                                        ; preds = %8, %0, %5
-  %ret_val.0 = phi i8* [ %7, %5 ], [ null, %0 ], [ null, %8 ]
-  ret i8* %ret_val.0
+for.end:                                          ; preds = %entry, %for.inc, %if.then
+  %ret_val.0 = phi i8* [ %1, %if.then ], [ null, %for.inc ], [ null, %entry ]
+  ret i8* %ret_val.0, !dbg !652
 }

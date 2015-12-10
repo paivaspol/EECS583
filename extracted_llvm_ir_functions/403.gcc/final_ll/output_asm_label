@@ -1,52 +1,55 @@
 define void @output_asm_label(%struct.rtx_def* nocapture %x) #0 {
 entry:
   %buf = alloca [256 x i8], align 16
-  %0 = getelementptr inbounds [256 x i8]* %buf, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 256, i8* %0) #7
-  %1 = bitcast %struct.rtx_def* %x to i32*
-  %bf.load = load i32* %1, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp = icmp eq i32 %bf.clear, 67
-  br i1 %cmp, label %if.then, label %if.end
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !1296), !dbg !2438
+  %0 = getelementptr inbounds [256 x i8]* %buf, i64 0, i64 0, !dbg !2439
+  call void @llvm.lifetime.start(i64 256, i8* %0) #8, !dbg !2439
+  call void @llvm.dbg.declare(metadata !{[256 x i8]* %buf}, metadata !1297), !dbg !2439
+  %1 = bitcast %struct.rtx_def* %x to i32*, !dbg !2440
+  %bf.load = load i32* %1, align 8, !dbg !2440
+  %bf.clear = and i32 %bf.load, 65535, !dbg !2440
+  %cmp = icmp eq i32 %bf.clear, 67, !dbg !2440
+  br i1 %cmp, label %if.then, label %if.end, !dbg !2440
 
 if.then:                                          ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %2 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %x, i64 0, i32 1, i64 0, !dbg !2441
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !2441
+  %2 = load %struct.rtx_def** %rtx, align 8, !dbg !2441, !tbaa !1555
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %2}, i64 0, metadata !1296), !dbg !2441
   %.phi.trans.insert = bitcast %struct.rtx_def* %2 to i32*
-  %bf.load1.pre = load i32* %.phi.trans.insert, align 8
-  br label %if.end
+  %bf.load1.pre = load i32* %.phi.trans.insert, align 8, !dbg !2442
+  br label %if.end, !dbg !2441
 
 if.end:                                           ; preds = %if.then, %entry
   %bf.load1 = phi i32 [ %bf.load1.pre, %if.then ], [ %bf.load, %entry ]
   %x.addr.0 = phi %struct.rtx_def* [ %2, %if.then ], [ %x, %entry ]
-  %bf.clear2 = and i32 %bf.load1, 65535
+  %bf.clear2 = and i32 %bf.load1, 65535, !dbg !2442
   switch i32 %bf.clear2, label %if.else [
     i32 36, label %do.body
     i32 37, label %land.lhs.true
-  ]
+  ], !dbg !2442
 
 land.lhs.true:                                    ; preds = %if.end
-  %arrayidx8 = getelementptr inbounds %struct.rtx_def* %x.addr.0, i64 0, i32 1, i64 4
-  %rtint = bitcast %union.rtunion_def* %arrayidx8 to i32*
-  %3 = load i32* %rtint, align 4, !tbaa !4
-  %cmp9 = icmp eq i32 %3, -88
-  br i1 %cmp9, label %do.body, label %if.else
+  %arrayidx8 = getelementptr inbounds %struct.rtx_def* %x.addr.0, i64 0, i32 1, i64 4, !dbg !2442
+  %rtint = bitcast %union.rtunion_def* %arrayidx8 to i32*, !dbg !2442
+  %3 = load i32* %rtint, align 4, !dbg !2442, !tbaa !1560
+  %cmp9 = icmp eq i32 %3, -88, !dbg !2442
+  br i1 %cmp9, label %do.body, label %if.else, !dbg !2442
 
 do.body:                                          ; preds = %if.end, %land.lhs.true
-  %arrayidx12 = getelementptr inbounds %struct.rtx_def* %x.addr.0, i64 0, i32 1, i64 5
-  %rtint13 = bitcast %union.rtunion_def* %arrayidx12 to i32*
-  %4 = load i32* %rtint13, align 4, !tbaa !4
-  %call = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str19, i64 0, i64 0), i32 %4) #8
-  br label %if.end14
+  %arrayidx12 = getelementptr inbounds %struct.rtx_def* %x.addr.0, i64 0, i32 1, i64 5, !dbg !2443
+  %rtint13 = bitcast %union.rtunion_def* %arrayidx12 to i32*, !dbg !2443
+  %4 = load i32* %rtint13, align 4, !dbg !2443, !tbaa !1560
+  %call = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str19, i64 0, i64 0), i32 %4) #9, !dbg !2443
+  br label %if.end14, !dbg !2443
 
 if.else:                                          ; preds = %if.end, %land.lhs.true
-  call void (i8*, ...)* @output_operand_lossage(i8* getelementptr inbounds ([28 x i8]* @.str36, i64 0, i64 0)) #10
+  call void (i8*, ...)* @output_operand_lossage(i8* getelementptr inbounds ([28 x i8]* @.str36, i64 0, i64 0)) #11, !dbg !2445
   br label %if.end14
 
 if.end14:                                         ; preds = %if.else, %do.body
-  %5 = load %struct._IO_FILE** @asm_out_file, align 8, !tbaa !0
-  call void @assemble_name(%struct._IO_FILE* %5, i8* %0) #8
-  call void @llvm.lifetime.end(i64 256, i8* %0) #7
-  ret void
+  %5 = load %struct._IO_FILE** @asm_out_file, align 8, !dbg !2446, !tbaa !1555
+  call void @assemble_name(%struct._IO_FILE* %5, i8* %0) #9, !dbg !2446
+  call void @llvm.lifetime.end(i64 256, i8* %0) #8, !dbg !2447
+  ret void, !dbg !2447
 }

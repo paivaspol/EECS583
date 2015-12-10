@@ -1,16 +1,21 @@
 define i32 @CCTK_ParamWarn(i8* %thorn, i8* %message) #1 {
+entry:
   %param_type = alloca i32, align 4
-  %1 = call i8* @CCTK_ParameterGet(i8* getelementptr inbounds ([24 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i32* %param_type) #8
-  %2 = bitcast i8* %1 to i32*
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !2
-  %4 = load i32* %2, align 4, !tbaa !6
-  %5 = icmp ne i32 %4, 0
-  %6 = select i1 %5, i8* getelementptr inbounds ([6 x i8]* @.str9, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str10, i64 0, i64 0)
-  %7 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([19 x i8]* @.str8, i64 0, i64 0), i8* %6, i8* %thorn, i8* %message) #8
-  %8 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !2
-  %9 = call i32 @fflush(%struct.__sFILE* %8) #8
-  %10 = load i32* @param_errors, align 4, !tbaa !6
-  %11 = add nsw i32 %10, 1
-  store i32 %11, i32* @param_errors, align 4, !tbaa !6
-  ret i32 0
+  call void @llvm.dbg.value(metadata !{i8* %thorn}, i64 0, metadata !91), !dbg !305
+  call void @llvm.dbg.value(metadata !{i8* %message}, i64 0, metadata !92), !dbg !305
+  call void @llvm.dbg.declare(metadata !{i32* %param_type}, metadata !94), !dbg !306
+  %call = call i8* @CCTK_ParameterGet(i8* getelementptr inbounds ([24 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i32* %param_type) #9, !dbg !307
+  %0 = bitcast i8* %call to i32*, !dbg !307
+  call void @llvm.dbg.value(metadata !{i32* %0}, i64 0, metadata !93), !dbg !307
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !308, !tbaa !218
+  %2 = load i32* %0, align 4, !dbg !308, !tbaa !250
+  %tobool = icmp ne i32 %2, 0, !dbg !308
+  %cond = select i1 %tobool, i8* getelementptr inbounds ([6 x i8]* @.str9, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str10, i64 0, i64 0), !dbg !308
+  %call1 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([19 x i8]* @.str8, i64 0, i64 0), i8* %cond, i8* %thorn, i8* %message) #9, !dbg !308
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !309, !tbaa !218
+  %call2 = call i32 @fflush(%struct._IO_FILE* %3) #9, !dbg !309
+  %4 = load i32* @param_errors, align 4, !dbg !310, !tbaa !250
+  %inc = add nsw i32 %4, 1, !dbg !310
+  store i32 %inc, i32* @param_errors, align 4, !dbg !310, !tbaa !250
+  ret i32 0, !dbg !311
 }

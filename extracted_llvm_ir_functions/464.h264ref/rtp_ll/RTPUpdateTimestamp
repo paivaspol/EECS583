@@ -1,23 +1,26 @@
 define void @RTPUpdateTimestamp(i32 %tr) #0 {
 entry:
-  %0 = load i32* @RTPUpdateTimestamp.oldtr, align 4, !tbaa !0
-  %cmp = icmp eq i32 %0, -1
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i32 %tr}, i64 0, metadata !125), !dbg !682
+  %0 = load i32* @RTPUpdateTimestamp.oldtr, align 4, !dbg !683, !tbaa !620
+  %cmp = icmp eq i32 %0, -1, !dbg !683
+  br i1 %cmp, label %return, label %if.end, !dbg !683
 
 if.end:                                           ; preds = %entry
-  %sub = sub nsw i32 %tr, %0
-  %cmp1 = icmp slt i32 %sub, -10
-  %add = add nsw i32 %sub, 256
-  %add.sub = select i1 %cmp1, i32 %add, i32 %sub
-  %mul = mul nsw i32 %add.sub, 1000
-  %1 = load i32* @CurrentRTPTimestamp, align 4, !tbaa !0
-  %add4 = add nsw i32 %1, %mul
-  br label %return
+  %sub = sub nsw i32 %tr, %0, !dbg !684
+  tail call void @llvm.dbg.value(metadata !{i32 %sub}, i64 0, metadata !126), !dbg !684
+  %cmp1 = icmp slt i32 %sub, -10, !dbg !685
+  %add = add nsw i32 %sub, 256, !dbg !686
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !126), !dbg !686
+  %add.sub = select i1 %cmp1, i32 %add, i32 %sub, !dbg !685
+  %mul = mul nsw i32 %add.sub, 1000, !dbg !687
+  %1 = load i32* @CurrentRTPTimestamp, align 4, !dbg !687, !tbaa !620
+  %add4 = add nsw i32 %1, %mul, !dbg !687
+  br label %return, !dbg !688
 
 return:                                           ; preds = %entry, %if.end
   %storemerge8 = phi i32 [ %add4, %if.end ], [ 0, %entry ]
   %storemerge = phi i32 [ %tr, %if.end ], [ 0, %entry ]
-  store i32 %storemerge8, i32* @CurrentRTPTimestamp, align 4, !tbaa !0
-  store i32 %storemerge, i32* @RTPUpdateTimestamp.oldtr, align 4, !tbaa !0
-  ret void
+  store i32 %storemerge8, i32* @CurrentRTPTimestamp, align 4, !dbg !687, !tbaa !620
+  store i32 %storemerge, i32* @RTPUpdateTimestamp.oldtr, align 4, !dbg !689, !tbaa !620
+  ret void, !dbg !688
 }

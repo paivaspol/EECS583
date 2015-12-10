@@ -1,36 +1,45 @@
 define i32 @is_pass_node(%struct.SGFNode_t* nocapture %node, i32 %boardsize) #0 {
 entry:
-  %props = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 0
-  %0 = load %struct.SGFProperty_t** %props, align 8, !tbaa !0
-  %tobool = icmp eq %struct.SGFProperty_t* %0, null
-  br i1 %tobool, label %return, label %while.body
+  tail call void @llvm.dbg.value(metadata !{%struct.SGFNode_t* %node}, i64 0, metadata !75), !dbg !155
+  tail call void @llvm.dbg.value(metadata !{i32 %boardsize}, i64 0, metadata !76), !dbg !155
+  %props = getelementptr inbounds %struct.SGFNode_t* %node, i64 0, i32 0, !dbg !156
+  %0 = load %struct.SGFProperty_t** %props, align 8, !dbg !156, !tbaa !86
+  %tobool = icmp eq %struct.SGFProperty_t* %0, null, !dbg !156
+  br i1 %tobool, label %return, label %while.body, !dbg !156
 
 while.body:                                       ; preds = %entry, %sw.epilog
   %sgf_prop.010 = phi %struct.SGFProperty_t* [ %2, %sw.epilog ], [ %0, %entry ]
-  %name = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.010, i64 0, i32 1
-  %1 = load i16* %name, align 2, !tbaa !4
-  %conv = sext i16 %1 to i32
+  %name = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.010, i64 0, i32 1, !dbg !157
+  %1 = load i16* %name, align 2, !dbg !157, !tbaa !119
+  %conv = sext i16 %1 to i32, !dbg !157
   switch i32 %conv, label %sw.epilog [
     i32 8258, label %sw.bb
     i32 8279, label %sw.bb
-  ]
+  ], !dbg !157
 
 sw.bb:                                            ; preds = %while.body, %while.body
-  %call.i = tail call i32 @get_moveX(%struct.SGFProperty_t* %sgf_prop.010, i32 %boardsize) #6
-  %call1.i = tail call i32 @get_moveY(%struct.SGFProperty_t* %sgf_prop.010, i32 %boardsize) #6
-  %cmp.i = icmp eq i32 %call.i, -1
-  %cmp2.i = icmp eq i32 %call1.i, -1
-  %or.cond.i = and i1 %cmp.i, %cmp2.i
-  %lnot.ext = zext i1 %or.cond.i to i32
-  br label %return
+  tail call void @llvm.dbg.value(metadata !{%struct.SGFProperty_t* %sgf_prop.010}, i64 0, metadata !159) #5, !dbg !162
+  tail call void @llvm.dbg.value(metadata !{i32 %boardsize}, i64 0, metadata !163) #5, !dbg !162
+  %call.i = tail call i32 @get_moveX(%struct.SGFProperty_t* %sgf_prop.010, i32 %boardsize) #7, !dbg !164
+  tail call void @llvm.dbg.value(metadata !{i32 %call.i}, i64 0, metadata !78), !dbg !164
+  tail call void @llvm.dbg.value(metadata !{i32 %call.i}, i64 0, metadata !165), !dbg !162
+  %call1.i = tail call i32 @get_moveY(%struct.SGFProperty_t* %sgf_prop.010, i32 %boardsize) #7, !dbg !166
+  tail call void @llvm.dbg.value(metadata !{i32 %call1.i}, i64 0, metadata !79), !dbg !166
+  tail call void @llvm.dbg.value(metadata !{i32 %call1.i}, i64 0, metadata !167), !dbg !162
+  %cmp.i = icmp eq i32 %call.i, -1, !dbg !168
+  %cmp2.i = icmp eq i32 %call1.i, -1, !dbg !168
+  %or.cond.i = and i1 %cmp.i, %cmp2.i, !dbg !168
+  %lnot.ext = zext i1 %or.cond.i to i32, !dbg !160
+  br label %return, !dbg !160
 
 sw.epilog:                                        ; preds = %while.body
-  %next = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.010, i64 0, i32 0
-  %2 = load %struct.SGFProperty_t** %next, align 8, !tbaa !0
-  %tobool2 = icmp eq %struct.SGFProperty_t* %2, null
-  br i1 %tobool2, label %return, label %while.body
+  %next = getelementptr inbounds %struct.SGFProperty_t* %sgf_prop.010, i64 0, i32 0, !dbg !169
+  %2 = load %struct.SGFProperty_t** %next, align 8, !dbg !169, !tbaa !86
+  tail call void @llvm.dbg.value(metadata !{%struct.SGFProperty_t* %2}, i64 0, metadata !77), !dbg !169
+  %tobool2 = icmp eq %struct.SGFProperty_t* %2, null, !dbg !170
+  br i1 %tobool2, label %return, label %while.body, !dbg !170
 
 return:                                           ; preds = %sw.epilog, %entry, %sw.bb
   %retval.0 = phi i32 [ %lnot.ext, %sw.bb ], [ 0, %entry ], [ 0, %sw.epilog ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !171
 }

@@ -1,7 +1,9 @@
-define void @cctk_printvar_(i32* nocapture readonly %var) #2 {
-  %1 = load %struct.__sFILE** @__stdoutp, align 8, !tbaa !2
-  %2 = load i32* %var, align 4, !tbaa !6
-  %3 = tail call i8* @CCTK_VarName(i32 %2) #9
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %1, i8* getelementptr inbounds ([19 x i8]* @.str45, i64 0, i64 0), i32 %2, i8* %3) #10
-  ret void
+define void @cctk_printvar_(i32* nocapture %var) #2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32* %var}, i64 0, metadata !271), !dbg !793
+  %0 = load %struct._IO_FILE** @stdout, align 8, !dbg !794, !tbaa !480
+  %1 = load i32* %var, align 4, !dbg !794, !tbaa !488
+  %call = tail call i8* @CCTK_VarName(i32 %1) #10, !dbg !794
+  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([19 x i8]* @.str45, i64 0, i64 0), i32 %1, i8* %call) #11, !dbg !794
+  ret void, !dbg !795
 }

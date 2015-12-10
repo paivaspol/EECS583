@@ -1,239 +1,278 @@
-define i32 @CCTKi_ParameterCreate(i8* %name, i8* %thorn, i8* %type, i8* %scope, i32 %steerable, i8* nocapture readonly %description, i8* %defval, i8* %data, i32 %n_ranges, ...) #1 {
+define i32 @CCTKi_ParameterCreate(i8* %name, i8* %thorn, i8* %type, i8* %scope, i32 %steerable, i8* nocapture %description, i8* %defval, i8* %data, i32 %n_ranges, ...) #1 {
+entry:
   %ranges = alloca [1 x %struct.__va_list_tag], align 16
-  %1 = tail call fastcc i32 @ParameterGetScope(i8* %scope) #7
-  %2 = tail call fastcc %struct.PARAM* @ParameterFind(i8* %name, i8* %thorn, i32 %1) #7
-  %3 = icmp eq %struct.PARAM* %2, null
-  br i1 %3, label %4, label %134
+  call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !17), !dbg !351
+  call void @llvm.dbg.value(metadata !{i8* %thorn}, i64 0, metadata !18), !dbg !352
+  call void @llvm.dbg.value(metadata !{i8* %type}, i64 0, metadata !19), !dbg !353
+  call void @llvm.dbg.value(metadata !{i8* %scope}, i64 0, metadata !20), !dbg !354
+  call void @llvm.dbg.value(metadata !{i32 %steerable}, i64 0, metadata !21), !dbg !355
+  call void @llvm.dbg.value(metadata !{i8* %description}, i64 0, metadata !22), !dbg !356
+  call void @llvm.dbg.value(metadata !{i8* %defval}, i64 0, metadata !23), !dbg !357
+  call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !24), !dbg !358
+  call void @llvm.dbg.value(metadata !{i32 %n_ranges}, i64 0, metadata !25), !dbg !359
+  call void @llvm.dbg.declare(metadata !{[1 x %struct.__va_list_tag]* %ranges}, metadata !61), !dbg !360
+  %call = call fastcc i32 @ParameterGetScope(i8* %scope) #7, !dbg !361
+  %call2 = call fastcc %struct.PARAM* @ParameterFind(i8* %name, i8* %thorn, i32 %call) #7, !dbg !361
+  call void @llvm.dbg.value(metadata !{%struct.PARAM* %call2}, i64 0, metadata !28), !dbg !361
+  %tobool = icmp eq %struct.PARAM* %call2, null, !dbg !362
+  br i1 %tobool, label %if.then, label %if.end24, !dbg !362
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i8* @malloc(i64 16) #8
-  %6 = bitcast i8* %5 to %struct.PARAM*
-  %7 = icmp eq i8* %5, null
-  br i1 %7, label %ParameterNew.exit, label %8
+if.then:                                          ; preds = %entry
+  call void @llvm.dbg.value(metadata !{i8* %thorn}, i64 0, metadata !363) #3, !dbg !366
+  call void @llvm.dbg.value(metadata !{i8* %name}, i64 0, metadata !367) #3, !dbg !368
+  call void @llvm.dbg.value(metadata !{i8* %type}, i64 0, metadata !369) #3, !dbg !370
+  call void @llvm.dbg.value(metadata !{i8* %scope}, i64 0, metadata !371) #3, !dbg !372
+  call void @llvm.dbg.value(metadata !{i32 %steerable}, i64 0, metadata !373) #3, !dbg !374
+  call void @llvm.dbg.value(metadata !{i8* %description}, i64 0, metadata !375) #3, !dbg !376
+  call void @llvm.dbg.value(metadata !{i8* %defval}, i64 0, metadata !377) #3, !dbg !378
+  call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !379) #3, !dbg !380
+  %call.i = call noalias i8* @malloc(i64 16) #8, !dbg !381
+  %0 = bitcast i8* %call.i to %struct.PARAM*, !dbg !381
+  call void @llvm.dbg.value(metadata !{%struct.PARAM* %0}, i64 0, metadata !382) #3, !dbg !381
+  %tobool.i = icmp eq i8* %call.i, null, !dbg !383
+  br i1 %tobool.i, label %ParameterNew.exit, label %if.then.i, !dbg !383
 
-; <label>:8                                       ; preds = %4
-  %9 = tail call i8* @malloc(i64 64) #8
-  %10 = bitcast i8* %5 to %struct.PARAM_PROPS**
-  %11 = bitcast i8* %5 to i8**
-  store i8* %9, i8** %11, align 8, !tbaa !2
-  %12 = icmp eq i8* %9, null
-  br i1 %12, label %ParameterNew.exit, label %13
+if.then.i:                                        ; preds = %if.then
+  %call1.i = call noalias i8* @malloc(i64 64) #8, !dbg !384
+  %1 = bitcast i8* %call1.i to %struct.PARAM_PROPS*, !dbg !384
+  %props.i = bitcast i8* %call.i to %struct.PARAM_PROPS**, !dbg !384
+  store %struct.PARAM_PROPS* %1, %struct.PARAM_PROPS** %props.i, align 8, !dbg !384, !tbaa !386
+  %tobool3.i = icmp eq i8* %call1.i, null, !dbg !389
+  br i1 %tobool3.i, label %ParameterNew.exit, label %if.then4.i, !dbg !389
 
-; <label>:13                                      ; preds = %8
-  %14 = tail call i8* @strdup(i8* %thorn) #8
-  %15 = getelementptr inbounds i8* %9, i64 8
-  %16 = bitcast i8* %15 to i8**
-  store i8* %14, i8** %16, align 8, !tbaa !7
-  %17 = tail call i8* @strdup(i8* %name) #8
-  %18 = bitcast i8* %9 to i8**
-  store i8* %17, i8** %18, align 8, !tbaa !10
-  %19 = tail call i8* @strdup(i8* %description) #8
-  %20 = getelementptr inbounds i8* %9, i64 24
-  %21 = bitcast i8* %20 to i8**
-  store i8* %19, i8** %21, align 8, !tbaa !11
-  %22 = tail call i8* @strdup(i8* %defval) #8
-  %23 = getelementptr inbounds i8* %9, i64 32
-  %24 = bitcast i8* %23 to i8**
-  store i8* %22, i8** %24, align 8, !tbaa !12
-  %25 = tail call fastcc i32 @ParameterGetScope(i8* %scope) #8
-  %26 = getelementptr inbounds i8* %9, i64 16
-  %27 = bitcast i8* %26 to i32*
-  store i32 %25, i32* %27, align 4, !tbaa !13
-  %28 = tail call i32 @STR_cmpi(i8* %type, i8* getelementptr inbounds ([8 x i8]* @.str13, i64 0, i64 0)) #8
-  %29 = icmp eq i32 %28, 0
-  br i1 %29, label %ParameterGetType.exit.i, label %30
+if.then4.i:                                       ; preds = %if.then.i
+  %call5.i = call noalias i8* @strdup(i8* %thorn) #8, !dbg !390
+  %2 = load %struct.PARAM_PROPS** %props.i, align 8, !dbg !390, !tbaa !386
+  %thorn7.i = getelementptr inbounds %struct.PARAM_PROPS* %2, i64 0, i32 1, !dbg !390
+  store i8* %call5.i, i8** %thorn7.i, align 8, !dbg !390, !tbaa !386
+  %call8.i = call noalias i8* @strdup(i8* %name) #8, !dbg !392
+  %3 = load %struct.PARAM_PROPS** %props.i, align 8, !dbg !392, !tbaa !386
+  %name10.i = getelementptr inbounds %struct.PARAM_PROPS* %3, i64 0, i32 0, !dbg !392
+  store i8* %call8.i, i8** %name10.i, align 8, !dbg !392, !tbaa !386
+  %call11.i = call noalias i8* @strdup(i8* %description) #8, !dbg !393
+  %4 = load %struct.PARAM_PROPS** %props.i, align 8, !dbg !393, !tbaa !386
+  %description13.i = getelementptr inbounds %struct.PARAM_PROPS* %4, i64 0, i32 3, !dbg !393
+  store i8* %call11.i, i8** %description13.i, align 8, !dbg !393, !tbaa !386
+  %call14.i = call noalias i8* @strdup(i8* %defval) #8, !dbg !394
+  %5 = load %struct.PARAM_PROPS** %props.i, align 8, !dbg !394, !tbaa !386
+  %defval16.i = getelementptr inbounds %struct.PARAM_PROPS* %5, i64 0, i32 4, !dbg !394
+  store i8* %call14.i, i8** %defval16.i, align 8, !dbg !394, !tbaa !386
+  %call17.i = call fastcc i32 @ParameterGetScope(i8* %scope) #8, !dbg !395
+  %6 = load %struct.PARAM_PROPS** %props.i, align 8, !dbg !395, !tbaa !386
+  %scope19.i = getelementptr inbounds %struct.PARAM_PROPS* %6, i64 0, i32 2, !dbg !395
+  store i32 %call17.i, i32* %scope19.i, align 4, !dbg !395, !tbaa !396
+  call void @llvm.dbg.value(metadata !{i8* %type}, i64 0, metadata !397) #3, !dbg !399
+  %call.i.i = call i32 @STR_cmpi(i8* %type, i8* getelementptr inbounds ([8 x i8]* @.str23, i64 0, i64 0)) #8, !dbg !400
+  %tobool.i.i = icmp eq i32 %call.i.i, 0, !dbg !400
+  br i1 %tobool.i.i, label %ParameterGetType.exit.i, label %if.else.i.i, !dbg !400
 
-; <label>:30                                      ; preds = %13
-  %31 = tail call i32 @STR_cmpi(i8* %type, i8* getelementptr inbounds ([7 x i8]* @.str14, i64 0, i64 0)) #8
-  %32 = icmp eq i32 %31, 0
-  br i1 %32, label %ParameterGetType.exit.i, label %33
+if.else.i.i:                                      ; preds = %if.then4.i
+  %call2.i.i = call i32 @STR_cmpi(i8* %type, i8* getelementptr inbounds ([7 x i8]* @.str24, i64 0, i64 0)) #8, !dbg !401
+  %tobool3.i.i = icmp eq i32 %call2.i.i, 0, !dbg !401
+  br i1 %tobool3.i.i, label %ParameterGetType.exit.i, label %if.else5.i.i, !dbg !401
 
-; <label>:33                                      ; preds = %30
-  %34 = tail call i32 @STR_cmpi(i8* %type, i8* getelementptr inbounds ([9 x i8]* @.str15, i64 0, i64 0)) #8
-  %35 = icmp eq i32 %34, 0
-  br i1 %35, label %ParameterGetType.exit.i, label %36
+if.else5.i.i:                                     ; preds = %if.else.i.i
+  %call6.i.i = call i32 @STR_cmpi(i8* %type, i8* getelementptr inbounds ([9 x i8]* @.str25, i64 0, i64 0)) #8, !dbg !402
+  %tobool7.i.i = icmp eq i32 %call6.i.i, 0, !dbg !402
+  br i1 %tobool7.i.i, label %ParameterGetType.exit.i, label %if.else9.i.i, !dbg !402
 
-; <label>:36                                      ; preds = %33
-  %37 = tail call i32 @STR_cmpi(i8* %type, i8* getelementptr inbounds ([4 x i8]* @.str16, i64 0, i64 0)) #8
-  %38 = icmp eq i32 %37, 0
-  br i1 %38, label %ParameterGetType.exit.i, label %39
+if.else9.i.i:                                     ; preds = %if.else5.i.i
+  %call10.i.i = call i32 @STR_cmpi(i8* %type, i8* getelementptr inbounds ([4 x i8]* @.str26, i64 0, i64 0)) #8, !dbg !403
+  %tobool11.i.i = icmp eq i32 %call10.i.i, 0, !dbg !403
+  br i1 %tobool11.i.i, label %ParameterGetType.exit.i, label %if.else13.i.i, !dbg !403
 
-; <label>:39                                      ; preds = %36
-  %40 = tail call i32 @STR_cmpi(i8* %type, i8* getelementptr inbounds ([5 x i8]* @.str17, i64 0, i64 0)) #8
-  %41 = icmp eq i32 %40, 0
-  br i1 %41, label %ParameterGetType.exit.i, label %42
+if.else13.i.i:                                    ; preds = %if.else9.i.i
+  %call14.i.i = call i32 @STR_cmpi(i8* %type, i8* getelementptr inbounds ([5 x i8]* @.str27, i64 0, i64 0)) #8, !dbg !404
+  %tobool15.i.i = icmp eq i32 %call14.i.i, 0, !dbg !404
+  br i1 %tobool15.i.i, label %ParameterGetType.exit.i, label %if.else17.i.i, !dbg !404
 
-; <label>:42                                      ; preds = %39
-  %43 = tail call i32 @STR_cmpi(i8* %type, i8* getelementptr inbounds ([8 x i8]* @.str18, i64 0, i64 0)) #8
-  %44 = icmp eq i32 %43, 0
-  %..i.i = select i1 %44, i32 6, i32 -1
-  br label %ParameterGetType.exit.i
+if.else17.i.i:                                    ; preds = %if.else13.i.i
+  %call18.i.i = call i32 @STR_cmpi(i8* %type, i8* getelementptr inbounds ([8 x i8]* @.str28, i64 0, i64 0)) #8, !dbg !405
+  %tobool19.i.i = icmp eq i32 %call18.i.i, 0, !dbg !405
+  %..i.i = select i1 %tobool19.i.i, i32 6, i32 -1, !dbg !406
+  br label %ParameterGetType.exit.i, !dbg !406
 
-ParameterGetType.exit.i:                          ; preds = %42, %39, %36, %33, %30, %13
-  %retval.0.i.i = phi i32 [ 1, %13 ], [ 2, %30 ], [ 3, %33 ], [ 4, %36 ], [ 5, %39 ], [ %..i.i, %42 ]
-  %45 = load %struct.PARAM_PROPS** %10, align 8, !tbaa !2
-  %46 = getelementptr inbounds %struct.PARAM_PROPS* %45, i64 0, i32 5
-  store i32 %retval.0.i.i, i32* %46, align 4, !tbaa !14
-  %47 = getelementptr inbounds %struct.PARAM_PROPS* %45, i64 0, i32 8
-  store i32 %steerable, i32* %47, align 4, !tbaa !15
-  %48 = getelementptr inbounds %struct.PARAM_PROPS* %45, i64 0, i32 6
-  store %struct.RANGE* null, %struct.RANGE** %48, align 8, !tbaa !16
-  %49 = getelementptr inbounds %struct.PARAM_PROPS* %45, i64 0, i32 7
-  store i32 0, i32* %49, align 4, !tbaa !17
-  %50 = getelementptr inbounds i8* %5, i64 8
-  %51 = bitcast i8* %50 to i8**
-  store i8* %data, i8** %51, align 8, !tbaa !18
-  %.off.i = add i32 %retval.0.i.i, -1
-  %switch.i = icmp ult i32 %.off.i, 3
-  br i1 %switch.i, label %52, label %54
+ParameterGetType.exit.i:                          ; preds = %if.else17.i.i, %if.else13.i.i, %if.else9.i.i, %if.else5.i.i, %if.else.i.i, %if.then4.i
+  %retval1.0.i.i = phi i32 [ 1, %if.then4.i ], [ 2, %if.else.i.i ], [ 3, %if.else5.i.i ], [ 4, %if.else9.i.i ], [ 5, %if.else13.i.i ], [ %..i.i, %if.else17.i.i ]
+  %7 = load %struct.PARAM_PROPS** %props.i, align 8, !dbg !398, !tbaa !386
+  %type22.i = getelementptr inbounds %struct.PARAM_PROPS* %7, i64 0, i32 5, !dbg !398
+  store i32 %retval1.0.i.i, i32* %type22.i, align 4, !dbg !398, !tbaa !396
+  %steerable24.i = getelementptr inbounds %struct.PARAM_PROPS* %7, i64 0, i32 8, !dbg !408
+  store i32 %steerable, i32* %steerable24.i, align 4, !dbg !408, !tbaa !396
+  %range.i = getelementptr inbounds %struct.PARAM_PROPS* %7, i64 0, i32 6, !dbg !409
+  store %struct.RANGE* null, %struct.RANGE** %range.i, align 8, !dbg !409, !tbaa !386
+  %8 = load %struct.PARAM_PROPS** %props.i, align 8, !dbg !410, !tbaa !386
+  %n_set.i = getelementptr inbounds %struct.PARAM_PROPS* %8, i64 0, i32 7, !dbg !410
+  store i32 0, i32* %n_set.i, align 4, !dbg !410, !tbaa !396
+  %data27.i = getelementptr inbounds i8* %call.i, i64 8, !dbg !411
+  %9 = bitcast i8* %data27.i to i8**, !dbg !411
+  store i8* %data, i8** %9, align 8, !dbg !411, !tbaa !386
+  %type29.i = getelementptr inbounds %struct.PARAM_PROPS* %8, i64 0, i32 5, !dbg !412
+  %10 = load i32* %type29.i, align 4, !dbg !412, !tbaa !396
+  %.off.i = add i32 %10, -1, !dbg !412
+  %switch.i = icmp ult i32 %.off.i, 3, !dbg !412
+  br i1 %switch.i, label %if.then37.i, label %if.end.i, !dbg !412
 
-; <label>:52                                      ; preds = %ParameterGetType.exit.i
-  %53 = bitcast i8* %data to i8**
-  store i8* null, i8** %53, align 8, !tbaa !19
-  br label %54
+if.then37.i:                                      ; preds = %ParameterGetType.exit.i
+  %11 = bitcast i8* %data to i8**, !dbg !413
+  store i8* null, i8** %11, align 8, !dbg !413, !tbaa !386
+  br label %if.end.i, !dbg !415
 
-; <label>:54                                      ; preds = %52, %ParameterGetType.exit.i
-  %55 = load %struct.T_SKTREE** @paramtree, align 8, !tbaa !19
-  %56 = getelementptr inbounds %struct.PARAM_PROPS* %45, i64 0, i32 0
-  %57 = load i8** %56, align 8, !tbaa !10
-  %58 = tail call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %55, i8* %57) #8
-  %59 = icmp eq %struct.T_SKTREE* %58, null
-  br i1 %59, label %78, label %60
+if.end.i:                                         ; preds = %if.then37.i, %ParameterGetType.exit.i
+  call void @llvm.dbg.value(metadata !416, i64 0, metadata !417) #3, !dbg !419
+  %12 = load %struct.T_SKTREE** @paramtree, align 8, !dbg !420, !tbaa !386
+  %name.i.i = getelementptr inbounds %struct.PARAM_PROPS* %8, i64 0, i32 0, !dbg !420
+  %13 = load i8** %name.i.i, align 8, !dbg !420, !tbaa !386
+  %call.i59.i = call %struct.T_SKTREE* @SKTreeFindNode(%struct.T_SKTREE* %12, i8* %13) #8, !dbg !420
+  call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %call.i59.i}, i64 0, metadata !421) #3, !dbg !420
+  %tobool.i60.i = icmp eq %struct.T_SKTREE* %call.i59.i, null, !dbg !422
+  br i1 %tobool.i60.i, label %if.else.i61.i, label %if.then.i.i, !dbg !422
 
-; <label>:60                                      ; preds = %54
-  %61 = getelementptr inbounds %struct.T_SKTREE* %58, i64 0, i32 5
-  %62 = bitcast i8** %61 to %struct.PARAMTREENODE**
-  %63 = load %struct.PARAMTREENODE** %62, align 8, !tbaa !20
-  %64 = tail call i8* @malloc(i64 24) #8
-  %65 = icmp eq i8* %64, null
-  br i1 %65, label %ParameterNew.exit, label %66
+if.then.i.i:                                      ; preds = %if.end.i
+  %data.i.i = getelementptr inbounds %struct.T_SKTREE* %call.i59.i, i64 0, i32 5, !dbg !423
+  %14 = load i8** %data.i.i, align 8, !dbg !423, !tbaa !386
+  %paramlist.i.i = bitcast i8* %14 to %struct.PARAMLIST**, !dbg !423
+  call void @llvm.dbg.value(metadata !{%struct.PARAMLIST** %paramlist.i.i}, i64 0, metadata !425) #3, !dbg !426
+  call void @llvm.dbg.value(metadata !{%struct.PARAM* %0}, i64 0, metadata !427) #3, !dbg !426
+  %call.i.i.i = call noalias i8* @malloc(i64 24) #8, !dbg !428
+  %15 = bitcast i8* %call.i.i.i to %struct.PARAMLIST*, !dbg !428
+  call void @llvm.dbg.value(metadata !{%struct.PARAMLIST* %15}, i64 0, metadata !429) #3, !dbg !428
+  %tobool.i.i.i = icmp eq i8* %call.i.i.i, null, !dbg !430
+  br i1 %tobool.i.i.i, label %ParameterNew.exit, label %if.then.i.i.i, !dbg !430
 
-; <label>:66                                      ; preds = %60
-  %67 = bitcast i8* %64 to i8**
-  store i8* %5, i8** %67, align 8, !tbaa !22
-  %68 = bitcast %struct.PARAMTREENODE* %63 to i64*
-  %69 = load i64* %68, align 8, !tbaa !19
-  %70 = getelementptr inbounds i8* %64, i64 16
-  %71 = bitcast i8* %70 to i64*
-  store i64 %69, i64* %71, align 8, !tbaa !24
-  %72 = getelementptr inbounds i8* %64, i64 8
-  %73 = bitcast i8* %72 to %struct.PARAMLIST**
-  store %struct.PARAMLIST* null, %struct.PARAMLIST** %73, align 8, !tbaa !25
-  %74 = inttoptr i64 %69 to %struct.PARAMLIST*
-  %75 = getelementptr inbounds %struct.PARAMLIST* %74, i64 0, i32 1
-  %76 = bitcast %struct.PARAMLIST** %75 to i8**
-  store i8* %64, i8** %76, align 8, !tbaa !25
-  %77 = bitcast %struct.PARAMTREENODE* %63 to i8**
-  store i8* %64, i8** %77, align 8, !tbaa !19
+if.then.i.i.i:                                    ; preds = %if.then.i.i
+  %param.i.i.i = bitcast i8* %call.i.i.i to %struct.PARAM**, !dbg !431
+  store %struct.PARAM* %0, %struct.PARAM** %param.i.i.i, align 8, !dbg !431, !tbaa !386
+  %16 = load %struct.PARAMLIST** %paramlist.i.i, align 8, !dbg !433, !tbaa !386
+  %next.i.i.i = getelementptr inbounds i8* %call.i.i.i, i64 16, !dbg !433
+  %17 = bitcast i8* %next.i.i.i to %struct.PARAMLIST**, !dbg !433
+  store %struct.PARAMLIST* %16, %struct.PARAMLIST** %17, align 8, !dbg !433, !tbaa !386
+  %last.i.i.i = getelementptr inbounds i8* %call.i.i.i, i64 8, !dbg !434
+  %18 = bitcast i8* %last.i.i.i to %struct.PARAMLIST**, !dbg !434
+  store %struct.PARAMLIST* null, %struct.PARAMLIST** %18, align 8, !dbg !434, !tbaa !386
+  %last1.i.i.i = getelementptr inbounds %struct.PARAMLIST* %16, i64 0, i32 1, !dbg !435
+  store %struct.PARAMLIST* %15, %struct.PARAMLIST** %last1.i.i.i, align 8, !dbg !435, !tbaa !386
+  store %struct.PARAMLIST* %15, %struct.PARAMLIST** %paramlist.i.i, align 8, !dbg !436, !tbaa !386
+  br label %ParameterNew.exit, !dbg !437
+
+if.else.i61.i:                                    ; preds = %if.end.i
+  %call3.i.i = call noalias i8* @malloc(i64 8) #8, !dbg !438
+  %call4.i.i = call noalias i8* @malloc(i64 24) #8, !dbg !440
+  %tobool5.i.i = icmp eq i8* %call3.i.i, null, !dbg !441
+  %tobool6.i.i = icmp eq i8* %call4.i.i, null, !dbg !441
+  %or.cond.i.i = or i1 %tobool5.i.i, %tobool6.i.i, !dbg !441
+  br i1 %or.cond.i.i, label %if.else14.i.i, label %if.then7.i.i, !dbg !441
+
+if.then7.i.i:                                     ; preds = %if.else.i61.i
+  %19 = bitcast i8* %call4.i.i to %struct.PARAMLIST*, !dbg !440
+  %paramlist8.i.i = bitcast i8* %call3.i.i to %struct.PARAMLIST**, !dbg !442
+  store %struct.PARAMLIST* %19, %struct.PARAMLIST** %paramlist8.i.i, align 8, !dbg !442, !tbaa !386
+  %param.i.i = bitcast i8* %call4.i.i to %struct.PARAM**, !dbg !444
+  store %struct.PARAM* %0, %struct.PARAM** %param.i.i, align 8, !dbg !444, !tbaa !386
+  %last.i.i = getelementptr inbounds i8* %call4.i.i, i64 8, !dbg !445
+  call void @llvm.memset.p0i8.i64(i8* %last.i.i, i8 0, i64 16, i32 8, i1 false) #3, !dbg !445
+  %20 = load %struct.T_SKTREE** @paramtree, align 8, !dbg !446, !tbaa !386
+  %21 = load %struct.PARAM_PROPS** %props.i, align 8, !dbg !446, !tbaa !386
+  %name10.i.i = getelementptr inbounds %struct.PARAM_PROPS* %21, i64 0, i32 0, !dbg !446
+  %22 = load i8** %name10.i.i, align 8, !dbg !446, !tbaa !386
+  %call11.i.i = call %struct.T_SKTREE* @SKTreeStoreData(%struct.T_SKTREE* %20, %struct.T_SKTREE* %20, i8* %22, i8* %call3.i.i) #8, !dbg !446
+  call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %call11.i.i}, i64 0, metadata !421) #3, !dbg !446
+  %23 = load %struct.T_SKTREE** @paramtree, align 8, !dbg !447, !tbaa !386
+  %tobool12.i.i = icmp eq %struct.T_SKTREE* %23, null, !dbg !447
+  br i1 %tobool12.i.i, label %if.then13.i.i, label %ParameterNew.exit, !dbg !447
+
+if.then13.i.i:                                    ; preds = %if.then7.i.i
+  store %struct.T_SKTREE* %call11.i.i, %struct.T_SKTREE** @paramtree, align 8, !dbg !448, !tbaa !386
+  br label %ParameterNew.exit, !dbg !450
+
+if.else14.i.i:                                    ; preds = %if.else.i61.i
+  call void @llvm.dbg.value(metadata !451, i64 0, metadata !452) #3, !dbg !453
+  call void @free(i8* %call4.i.i) #8, !dbg !455
+  call void @free(i8* %call3.i.i) #8, !dbg !456
   br label %ParameterNew.exit
 
-; <label>:78                                      ; preds = %54
-  %79 = tail call i8* @malloc(i64 8) #8
-  %80 = tail call i8* @malloc(i64 24) #8
-  %81 = icmp ne i8* %79, null
-  %82 = icmp ne i8* %80, null
-  %or.cond.i.i = and i1 %81, %82
-  br i1 %or.cond.i.i, label %83, label %93
+ParameterNew.exit:                                ; preds = %if.then, %if.then.i, %if.then.i.i, %if.then.i.i.i, %if.then7.i.i, %if.then13.i.i, %if.else14.i.i
+  call void @llvm.dbg.value(metadata !{%struct.PARAM* %0}, i64 0, metadata !28), !dbg !364
+  %tobool4 = icmp eq i32 %n_ranges, 0, !dbg !457
+  br i1 %tobool4, label %if.end, label %if.then5, !dbg !457
 
-; <label>:83                                      ; preds = %78
-  %84 = bitcast i8* %79 to i8**
-  store i8* %80, i8** %84, align 8, !tbaa !26
-  %85 = bitcast i8* %80 to i8**
-  store i8* %5, i8** %85, align 8, !tbaa !22
-  %86 = getelementptr inbounds i8* %80, i64 8
-  tail call void @llvm.memset.p0i8.i64(i8* %86, i8 0, i64 16, i32 8, i1 false) #2
-  %87 = load %struct.T_SKTREE** @paramtree, align 8, !tbaa !19
-  %88 = load i8** %56, align 8, !tbaa !10
-  %89 = tail call %struct.T_SKTREE* @SKTreeStoreData(%struct.T_SKTREE* %87, %struct.T_SKTREE* %87, i8* %88, i8* %79) #8
-  %90 = load %struct.T_SKTREE** @paramtree, align 8, !tbaa !19
-  %91 = icmp eq %struct.T_SKTREE* %90, null
-  br i1 %91, label %92, label %ParameterNew.exit
+if.then5:                                         ; preds = %ParameterNew.exit
+  %arraydecay6 = bitcast [1 x %struct.__va_list_tag]* %ranges to i8*, !dbg !458
+  call void @llvm.va_start(i8* %arraydecay6), !dbg !458
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !26), !dbg !460
+  %cmp34 = icmp sgt i32 %n_ranges, 0, !dbg !460
+  br i1 %cmp34, label %for.body.lr.ph, label %for.end, !dbg !460
 
-; <label>:92                                      ; preds = %83
-  store %struct.T_SKTREE* %89, %struct.T_SKTREE** @paramtree, align 8, !tbaa !19
-  br label %ParameterNew.exit
+for.body.lr.ph:                                   ; preds = %if.then5
+  %gp_offset_p = getelementptr inbounds [1 x %struct.__va_list_tag]* %ranges, i64 0, i64 0, i32 0, !dbg !462
+  %24 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ranges, i64 0, i64 0, i32 3, !dbg !462
+  %overflow_arg_area_p15 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ranges, i64 0, i64 0, i32 2, !dbg !464
+  br label %for.body, !dbg !460
 
-; <label>:93                                      ; preds = %78
-  tail call void @free(i8* %80) #8
-  tail call void @free(i8* %79) #8
-  br label %ParameterNew.exit
+for.body:                                         ; preds = %vaarg.end18, %for.body.lr.ph
+  %i.035 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %vaarg.end18 ]
+  %gp_offset = load i32* %gp_offset_p, align 16, !dbg !462
+  %fits_in_gp = icmp ult i32 %gp_offset, 41, !dbg !462
+  br i1 %fits_in_gp, label %vaarg.in_reg, label %vaarg.in_mem, !dbg !462
 
-ParameterNew.exit:                                ; preds = %4, %8, %60, %66, %83, %92, %93
-  %94 = icmp eq i32 %n_ranges, 0
-  br i1 %94, label %132, label %95
+vaarg.in_reg:                                     ; preds = %for.body
+  %reg_save_area = load i8** %24, align 16, !dbg !462
+  %25 = sext i32 %gp_offset to i64, !dbg !462
+  %26 = getelementptr i8* %reg_save_area, i64 %25, !dbg !462
+  %27 = add i32 %gp_offset, 8, !dbg !462
+  store i32 %27, i32* %gp_offset_p, align 16, !dbg !462
+  br label %vaarg.end, !dbg !462
 
-; <label>:95                                      ; preds = %ParameterNew.exit
-  %96 = bitcast [1 x %struct.__va_list_tag]* %ranges to i8*
-  call void @llvm.va_start(i8* %96)
-  %97 = icmp sgt i32 %n_ranges, 0
-  br i1 %97, label %.lr.ph, label %._crit_edge
+vaarg.in_mem:                                     ; preds = %for.body
+  %overflow_arg_area = load i8** %overflow_arg_area_p15, align 8, !dbg !462
+  %overflow_arg_area.next = getelementptr i8* %overflow_arg_area, i64 8, !dbg !462
+  store i8* %overflow_arg_area.next, i8** %overflow_arg_area_p15, align 8, !dbg !462
+  br label %vaarg.end, !dbg !462
 
-.lr.ph:                                           ; preds = %95
-  %98 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ranges, i64 0, i64 0, i32 0
-  %99 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ranges, i64 0, i64 0, i32 3
-  %100 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ranges, i64 0, i64 0, i32 2
-  %101 = add i32 %n_ranges, -1
-  br label %102
+vaarg.end:                                        ; preds = %vaarg.in_mem, %vaarg.in_reg
+  %gp_offset10 = phi i32 [ %gp_offset, %vaarg.in_mem ], [ %27, %vaarg.in_reg ], !dbg !464
+  %vaarg.addr.in = phi i8* [ %overflow_arg_area, %vaarg.in_mem ], [ %26, %vaarg.in_reg ]
+  %vaarg.addr = bitcast i8* %vaarg.addr.in to i8**, !dbg !462
+  %28 = load i8** %vaarg.addr, align 8, !dbg !462
+  call void @llvm.dbg.value(metadata !{i8* %28}, i64 0, metadata !76), !dbg !462
+  %fits_in_gp11 = icmp ult i32 %gp_offset10, 41, !dbg !464
+  br i1 %fits_in_gp11, label %vaarg.in_reg12, label %vaarg.in_mem14, !dbg !464
 
-; <label>:102                                     ; preds = %126, %.lr.ph
-  %i.02 = phi i32 [ 0, %.lr.ph ], [ %131, %126 ]
-  %103 = load i32* %98, align 16
-  %104 = icmp ult i32 %103, 41
-  br i1 %104, label %109, label %.thread
+vaarg.in_reg12:                                   ; preds = %vaarg.end
+  %reg_save_area13 = load i8** %24, align 16, !dbg !464
+  %29 = sext i32 %gp_offset10 to i64, !dbg !464
+  %30 = getelementptr i8* %reg_save_area13, i64 %29, !dbg !464
+  %31 = add i32 %gp_offset10, 8, !dbg !464
+  store i32 %31, i32* %gp_offset_p, align 16, !dbg !464
+  br label %vaarg.end18, !dbg !464
 
-.thread:                                          ; preds = %102
-  %105 = load i8** %100, align 8
-  %106 = getelementptr i8* %105, i64 8
-  store i8* %106, i8** %100, align 8
-  %107 = bitcast i8* %105 to i8**
-  %108 = load i8** %107, align 8
-  br label %122
+vaarg.in_mem14:                                   ; preds = %vaarg.end
+  %overflow_arg_area16 = load i8** %overflow_arg_area_p15, align 8, !dbg !464
+  %overflow_arg_area.next17 = getelementptr i8* %overflow_arg_area16, i64 8, !dbg !464
+  store i8* %overflow_arg_area.next17, i8** %overflow_arg_area_p15, align 8, !dbg !464
+  br label %vaarg.end18, !dbg !464
 
-; <label>:109                                     ; preds = %102
-  %110 = load i8** %99, align 16
-  %111 = sext i32 %103 to i64
-  %112 = getelementptr i8* %110, i64 %111
-  %113 = add i32 %103, 8
-  store i32 %113, i32* %98, align 16
-  %114 = bitcast i8* %112 to i8**
-  %115 = load i8** %114, align 8
-  %116 = icmp ult i32 %113, 41
-  br i1 %116, label %117, label %122
+vaarg.end18:                                      ; preds = %vaarg.in_mem14, %vaarg.in_reg12
+  %vaarg.addr19.in = phi i8* [ %30, %vaarg.in_reg12 ], [ %overflow_arg_area16, %vaarg.in_mem14 ]
+  %vaarg.addr19 = bitcast i8* %vaarg.addr19.in to i8**, !dbg !464
+  %32 = load i8** %vaarg.addr19, align 8, !dbg !464
+  call void @llvm.dbg.value(metadata !{i8* %32}, i64 0, metadata !77), !dbg !464
+  %call20 = call fastcc i32 @ParameterExtend(%struct.PARAM* %0, i8* %thorn, i8* %28, i8* %32) #7, !dbg !465
+  %inc = add nsw i32 %i.035, 1, !dbg !460
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !26), !dbg !460
+  %exitcond = icmp eq i32 %inc, %n_ranges, !dbg !460
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !460
 
-; <label>:117                                     ; preds = %109
-  %118 = load i8** %99, align 16
-  %119 = sext i32 %113 to i64
-  %120 = getelementptr i8* %118, i64 %119
-  %121 = add i32 %103, 16
-  store i32 %121, i32* %98, align 16
-  br label %126
+for.end:                                          ; preds = %vaarg.end18, %if.then5
+  call void @llvm.va_end(i8* %arraydecay6), !dbg !466
+  br label %if.end, !dbg !467
 
-; <label>:122                                     ; preds = %.thread, %109
-  %123 = phi i8* [ %108, %.thread ], [ %115, %109 ]
-  %124 = load i8** %100, align 8
-  %125 = getelementptr i8* %124, i64 8
-  store i8* %125, i8** %100, align 8
-  br label %126
+if.end:                                           ; preds = %ParameterNew.exit, %for.end
+  %call23 = call fastcc i32 @ParameterSetSimple(%struct.PARAM* %0, i8* %defval) #7, !dbg !468
+  call void @llvm.dbg.value(metadata !{i32 %call23}, i64 0, metadata !27), !dbg !468
+  br label %if.end24, !dbg !469
 
-; <label>:126                                     ; preds = %122, %117
-  %127 = phi i8* [ %115, %117 ], [ %123, %122 ]
-  %.in1 = phi i8* [ %120, %117 ], [ %124, %122 ]
-  %128 = bitcast i8* %.in1 to i8**
-  %129 = load i8** %128, align 8
-  %130 = call fastcc i32 @ParameterExtend(%struct.PARAM* %6, i8* %thorn, i8* %127, i8* %129) #7
-  %131 = add nuw nsw i32 %i.02, 1
-  %exitcond = icmp eq i32 %i.02, %101
-  br i1 %exitcond, label %._crit_edge, label %102
-
-._crit_edge:                                      ; preds = %126, %95
-  call void @llvm.va_end(i8* %96)
-  br label %132
-
-; <label>:132                                     ; preds = %ParameterNew.exit, %._crit_edge
-  %133 = call fastcc i32 @ParameterSetSimple(%struct.PARAM* %6, i8* %defval) #7
-  br label %134
-
-; <label>:134                                     ; preds = %0, %132
-  %retval.0 = phi i32 [ %133, %132 ], [ -2, %0 ]
-  ret i32 %retval.0
+if.end24:                                         ; preds = %entry, %if.end
+  %retval1.0 = phi i32 [ %call23, %if.end ], [ -2, %entry ]
+  ret i32 %retval1.0, !dbg !470
 }

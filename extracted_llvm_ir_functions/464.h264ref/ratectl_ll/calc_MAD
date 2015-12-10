@@ -1,34 +1,38 @@
-define double @calc_MAD() #4 {
+define double @calc_MAD() #5 {
 entry:
-  br label %for.cond1.preheader
+  tail call void @llvm.dbg.value(metadata !21, i64 0, metadata !64), !dbg !1120
+  tail call void @llvm.dbg.value(metadata !21, i64 0, metadata !62), !dbg !1121
+  br label %for.cond1.preheader, !dbg !1121
 
 for.cond1.preheader:                              ; preds = %for.inc6, %entry
   %indvars.iv18 = phi i64 [ 0, %entry ], [ %indvars.iv.next19, %for.inc6 ]
   %s.016 = phi i32 [ 0, %entry ], [ %add, %for.inc6 ]
-  br label %for.body3
+  br label %for.body3, !dbg !1123
 
 for.body3:                                        ; preds = %for.body3, %for.cond1.preheader
   %indvars.iv = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next, %for.body3 ]
   %s.115 = phi i32 [ %s.016, %for.cond1.preheader ], [ %add, %for.body3 ]
-  %arrayidx5 = getelementptr inbounds [16 x [16 x i32]]* @diffy, i64 0, i64 %indvars.iv18, i64 %indvars.iv
-  %0 = load i32* %arrayidx5, align 4, !tbaa !3
-  %ispos = icmp sgt i32 %0, -1
-  %neg = sub i32 0, %0
-  %1 = select i1 %ispos, i32 %0, i32 %neg
-  %add = add nsw i32 %1, %s.115
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 16
-  br i1 %exitcond, label %for.inc6, label %for.body3
+  %arrayidx5 = getelementptr inbounds [16 x [16 x i32]]* @diffy, i64 0, i64 %indvars.iv18, i64 %indvars.iv, !dbg !1125
+  %0 = load i32* %arrayidx5, align 4, !dbg !1125, !tbaa !807
+  %ispos = icmp sgt i32 %0, -1, !dbg !1125
+  %neg = sub i32 0, %0, !dbg !1125
+  %1 = select i1 %ispos, i32 %0, i32 %neg, !dbg !1125
+  %add = add nsw i32 %1, %s.115, !dbg !1125
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !64), !dbg !1125
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1123
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1123
+  %exitcond = icmp eq i32 %lftr.wideiv, 16, !dbg !1123
+  br i1 %exitcond, label %for.inc6, label %for.body3, !dbg !1123
 
 for.inc6:                                         ; preds = %for.body3
-  %indvars.iv.next19 = add i64 %indvars.iv18, 1
-  %lftr.wideiv20 = trunc i64 %indvars.iv.next19 to i32
-  %exitcond21 = icmp eq i32 %lftr.wideiv20, 16
-  br i1 %exitcond21, label %for.end8, label %for.cond1.preheader
+  %indvars.iv.next19 = add i64 %indvars.iv18, 1, !dbg !1121
+  %lftr.wideiv20 = trunc i64 %indvars.iv.next19 to i32, !dbg !1121
+  %exitcond21 = icmp eq i32 %lftr.wideiv20, 16, !dbg !1121
+  br i1 %exitcond21, label %for.end8, label %for.cond1.preheader, !dbg !1121
 
 for.end8:                                         ; preds = %for.inc6
-  %conv = sitofp i32 %add to double
-  %div = fmul double %conv, 3.906250e-03
-  ret double %div
+  %conv = sitofp i32 %add to double, !dbg !1126
+  %div = fmul double %conv, 3.906250e-03, !dbg !1126
+  tail call void @llvm.dbg.value(metadata !{double %div}, i64 0, metadata !65), !dbg !1126
+  ret double %div, !dbg !1127
 }

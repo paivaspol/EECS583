@@ -1,0 +1,33 @@
+define zeroext i1 @_ZN3pov7MatchesEPKcS1_(i8* nocapture %v1, i8* nocapture %v2) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %v1}, i64 0, metadata !262), !dbg !497
+  tail call void @llvm.dbg.value(metadata !{i8* %v2}, i64 0, metadata !264), !dbg !497
+  tail call void @llvm.dbg.value(metadata !251, i64 0, metadata !265), !dbg !498
+  tail call void @llvm.dbg.value(metadata !499, i64 0, metadata !267), !dbg !500
+  br label %land.lhs.true, !dbg !501
+
+land.lhs.true:                                    ; preds = %entry, %land.end15
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %land.end15 ]
+  %arrayidx = getelementptr inbounds i8* %v1, i64 %indvars.iv, !dbg !501
+  %0 = load i8* %arrayidx, align 1, !dbg !501, !tbaa !502
+  %cmp = icmp eq i8 %0, 0, !dbg !501
+  br i1 %cmp, label %while.end, label %land.rhs, !dbg !501
+
+land.rhs:                                         ; preds = %land.lhs.true
+  %arrayidx2 = getelementptr inbounds i8* %v2, i64 %indvars.iv, !dbg !501
+  %1 = load i8* %arrayidx2, align 1, !dbg !501, !tbaa !502
+  %cmp4 = icmp eq i8 %1, 0, !dbg !501
+  br i1 %cmp4, label %while.end, label %land.end15
+
+land.end15:                                       ; preds = %land.rhs
+  %conv9 = sext i8 %0 to i32, !dbg !504
+  %conv12 = sext i8 %1 to i32, !dbg !504
+  %call = tail call i32 @tolower(i32 %conv12) #7, !dbg !504
+  %cmp13 = icmp eq i32 %conv9, %call, !dbg !504
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !501
+  br i1 %cmp13, label %land.lhs.true, label %while.end, !dbg !501
+
+while.end:                                        ; preds = %land.rhs, %land.end15, %land.lhs.true
+  %ans.0.lcssa = phi i1 [ true, %land.rhs ], [ false, %land.end15 ], [ true, %land.lhs.true ]
+  ret i1 %ans.0.lcssa, !dbg !506
+}

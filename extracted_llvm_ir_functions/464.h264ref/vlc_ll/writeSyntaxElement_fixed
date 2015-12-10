@@ -1,21 +1,23 @@
 define i32 @writeSyntaxElement_fixed(%struct.syntaxelement* nocapture %se, %struct.datapartition* nocapture %this_dataPart) #0 {
 entry:
-  %bitstream = getelementptr inbounds %struct.datapartition* %this_dataPart, i64 0, i32 0
-  %0 = load %struct.Bitstream** %bitstream, align 8, !tbaa !3
-  tail call void @writeUVLC2buffer(%struct.syntaxelement* %se, %struct.Bitstream* %0) #4
-  %type = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 0
-  %1 = load i32* %type, align 4, !tbaa !0
-  %cmp = icmp eq i32 %1, 0
-  br i1 %cmp, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.syntaxelement* %se}, i64 0, metadata !226), !dbg !873
+  tail call void @llvm.dbg.value(metadata !{%struct.datapartition* %this_dataPart}, i64 0, metadata !227), !dbg !873
+  %bitstream = getelementptr inbounds %struct.datapartition* %this_dataPart, i64 0, i32 0, !dbg !874
+  %0 = load %struct.Bitstream** %bitstream, align 8, !dbg !874, !tbaa !810
+  tail call void @writeUVLC2buffer(%struct.syntaxelement* %se, %struct.Bitstream* %0) #6, !dbg !874
+  %type = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 0, !dbg !875
+  %1 = load i32* %type, align 4, !dbg !875, !tbaa !806
+  %cmp = icmp eq i32 %1, 0, !dbg !875
+  br i1 %cmp, label %if.end, label %if.then, !dbg !875
 
 if.then:                                          ; preds = %entry
-  %2 = load %struct.Bitstream** %bitstream, align 8, !tbaa !3
-  %write_flag = getelementptr inbounds %struct.Bitstream* %2, i64 0, i32 10
-  store i32 1, i32* %write_flag, align 4, !tbaa !0
-  br label %if.end
+  %2 = load %struct.Bitstream** %bitstream, align 8, !dbg !876, !tbaa !810
+  %write_flag = getelementptr inbounds %struct.Bitstream* %2, i64 0, i32 10, !dbg !876
+  store i32 1, i32* %write_flag, align 4, !dbg !876, !tbaa !806
+  br label %if.end, !dbg !876
 
 if.end:                                           ; preds = %entry, %if.then
-  %len = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 3
-  %3 = load i32* %len, align 4, !tbaa !0
-  ret i32 %3
+  %len = getelementptr inbounds %struct.syntaxelement* %se, i64 0, i32 3, !dbg !877
+  %3 = load i32* %len, align 4, !dbg !877, !tbaa !806
+  ret i32 %3, !dbg !877
 }

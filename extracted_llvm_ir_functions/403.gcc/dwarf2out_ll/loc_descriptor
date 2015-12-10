@@ -1,150 +1,186 @@
 define internal fastcc %struct.dw_loc_descr_struct* @loc_descriptor(%struct.rtx_def* nocapture %rtl) #1 {
 entry:
   %cc_loc_result.i = alloca %struct.dw_loc_descr_struct*, align 8
-  %0 = bitcast %struct.rtx_def* %rtl to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %rtl}, i64 0, metadata !2826), !dbg !10500
+  call void @llvm.dbg.value(metadata !9213, i64 0, metadata !2827), !dbg !10501
+  %0 = bitcast %struct.rtx_def* %rtl to i32*, !dbg !10502
+  %bf.load = load i32* %0, align 8, !dbg !10502
+  %bf.clear = and i32 %bf.load, 65535, !dbg !10502
   switch i32 %bf.clear, label %sw.default [
     i32 63, label %sw.bb
     i32 61, label %sw.bb1
     i32 66, label %sw.bb2
     i32 65, label %sw.bb9
-  ]
+  ], !dbg !10502
 
 sw.bb:                                            ; preds = %entry
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %rtl, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %rtx, align 8, !tbaa !4
-  br label %sw.bb1
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %rtl, i64 0, i32 1, i64 0, !dbg !10503
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !10503
+  %1 = load %struct.rtx_def** %rtx, align 8, !dbg !10503, !tbaa !3768
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %1}, i64 0, metadata !2826), !dbg !10503
+  br label %sw.bb1, !dbg !10503
 
 sw.bb1:                                           ; preds = %entry, %sw.bb
   %rtl.addr.0 = phi %struct.rtx_def* [ %rtl, %entry ], [ %1, %sw.bb ]
-  %call = call fastcc %struct.dw_loc_descr_struct* @reg_loc_descriptor(%struct.rtx_def* %rtl.addr.0) #10
-  br label %sw.epilog
+  %call = call fastcc %struct.dw_loc_descr_struct* @reg_loc_descriptor(%struct.rtx_def* %rtl.addr.0) #11, !dbg !10505
+  call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct* %call}, i64 0, metadata !2827), !dbg !10505
+  br label %sw.epilog, !dbg !10506
 
 sw.bb2:                                           ; preds = %entry
-  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %rtl, i64 0, i32 1, i64 0
-  %rtx5 = bitcast %union.rtunion_def* %arrayidx4 to %struct.rtx_def**
-  %2 = load %struct.rtx_def** %rtx5, align 8, !tbaa !4
-  %bf.lshr = lshr i32 %bf.load, 16
-  %bf.clear7 = and i32 %bf.lshr, 255
-  %call8 = call fastcc %struct.dw_loc_descr_struct* @mem_loc_descriptor(%struct.rtx_def* %2, i32 %bf.clear7) #10
-  br label %sw.epilog
+  %arrayidx4 = getelementptr inbounds %struct.rtx_def* %rtl, i64 0, i32 1, i64 0, !dbg !10507
+  %rtx5 = bitcast %union.rtunion_def* %arrayidx4 to %struct.rtx_def**, !dbg !10507
+  %2 = load %struct.rtx_def** %rtx5, align 8, !dbg !10507, !tbaa !3768
+  %bf.lshr = lshr i32 %bf.load, 16, !dbg !10507
+  %bf.clear7 = and i32 %bf.lshr, 255, !dbg !10507
+  %call8 = call fastcc %struct.dw_loc_descr_struct* @mem_loc_descriptor(%struct.rtx_def* %2, i32 %bf.clear7) #11, !dbg !10507
+  call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct* %call8}, i64 0, metadata !2827), !dbg !10507
+  br label %sw.epilog, !dbg !10508
 
 sw.bb9:                                           ; preds = %entry
-  %fld10 = getelementptr inbounds %struct.rtx_def* %rtl, i64 0, i32 1
-  %rtx12 = bitcast [1 x %union.rtunion_def]* %fld10 to %struct.rtx_def**
-  %3 = load %struct.rtx_def** %rtx12, align 8, !tbaa !4
-  %arrayidx14 = getelementptr inbounds %struct.rtx_def* %rtl, i64 0, i32 1, i64 1
-  %rtx15 = bitcast %union.rtunion_def* %arrayidx14 to %struct.rtx_def**
-  %4 = load %struct.rtx_def** %rtx15, align 8, !tbaa !4
-  %cc_loc_result.i.0.cast = bitcast %struct.dw_loc_descr_struct** %cc_loc_result.i to i8*
-  call void @llvm.lifetime.start(i64 8, i8* %cc_loc_result.i.0.cast)
-  store %struct.dw_loc_descr_struct* null, %struct.dw_loc_descr_struct** %cc_loc_result.i, align 8
-  %call.i = call fastcc %struct.dw_loc_descr_struct* @loc_descriptor(%struct.rtx_def* %3) #9
-  %call1.i = call fastcc %struct.dw_loc_descr_struct* @loc_descriptor(%struct.rtx_def* %4) #9
-  %cmp.i = icmp eq %struct.dw_loc_descr_struct* %call.i, null
-  %cmp2.i = icmp eq %struct.dw_loc_descr_struct* %call1.i, null
-  %or.cond.i = or i1 %cmp.i, %cmp2.i
-  br i1 %or.cond.i, label %sw.epilog, label %if.end.i
+  %fld10 = getelementptr inbounds %struct.rtx_def* %rtl, i64 0, i32 1, !dbg !10509
+  %rtx12 = bitcast [1 x %union.rtunion_def]* %fld10 to %struct.rtx_def**, !dbg !10509
+  %3 = load %struct.rtx_def** %rtx12, align 8, !dbg !10509, !tbaa !3768
+  %arrayidx14 = getelementptr inbounds %struct.rtx_def* %rtl, i64 0, i32 1, i64 1, !dbg !10509
+  %rtx15 = bitcast %union.rtunion_def* %arrayidx14 to %struct.rtx_def**, !dbg !10509
+  %4 = load %struct.rtx_def** %rtx15, align 8, !dbg !10509, !tbaa !3768
+  %cc_loc_result.i.0.cast = bitcast %struct.dw_loc_descr_struct** %cc_loc_result.i to i8*, !dbg !10510
+  call void @llvm.lifetime.start(i64 8, i8* %cc_loc_result.i.0.cast), !dbg !10510
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %3}, i64 0, metadata !10511) #6, !dbg !10510
+  call void @llvm.dbg.value(metadata !{%struct.rtx_def* %4}, i64 0, metadata !10512) #6, !dbg !10510
+  call void @llvm.dbg.declare(metadata !{%struct.dw_loc_descr_struct** %cc_loc_result.i}, metadata !2834) #6, !dbg !10513
+  call void @llvm.dbg.value(metadata !9213, i64 0, metadata !10514) #6, !dbg !10513
+  call void @llvm.dbg.value(metadata !9213, i64 0, metadata !2834), !dbg !10513
+  store %struct.dw_loc_descr_struct* null, %struct.dw_loc_descr_struct** %cc_loc_result.i, align 8, !dbg !10513
+  %call.i = call fastcc %struct.dw_loc_descr_struct* @loc_descriptor(%struct.rtx_def* %3) #10, !dbg !10515
+  call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct* %call.i}, i64 0, metadata !10516) #6, !dbg !10515
+  %call1.i = call fastcc %struct.dw_loc_descr_struct* @loc_descriptor(%struct.rtx_def* %4) #10, !dbg !10517
+  call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct* %call1.i}, i64 0, metadata !10518) #6, !dbg !10517
+  %cmp.i = icmp eq %struct.dw_loc_descr_struct* %call.i, null, !dbg !10519
+  %cmp2.i = icmp eq %struct.dw_loc_descr_struct* %call1.i, null, !dbg !10519
+  %or.cond.i = or i1 %cmp.i, %cmp2.i, !dbg !10519
+  br i1 %or.cond.i, label %sw.epilog, label %if.end.i, !dbg !10519
 
 if.end.i:                                         ; preds = %sw.bb9
-  store %struct.dw_loc_descr_struct* %call.i, %struct.dw_loc_descr_struct** %cc_loc_result.i, align 8
-  %5 = bitcast %struct.rtx_def* %3 to i32*
-  %bf.load.i = load i32* %5, align 8
-  %bf.lshr.i = lshr i32 %bf.load.i, 16
-  %bf.clear.i = and i32 %bf.lshr.i, 255
-  %idxprom15.i = zext i32 %bf.clear.i to i64
-  %arrayidx.i = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom15.i
-  %6 = load i8* %arrayidx.i, align 1, !tbaa !1
-  %conv.i = zext i8 %6 to i64
-  %call.i.i = call noalias i8* @xcalloc(i64 1, i64 72) #9
-  %dw_loc_opc.i.i = getelementptr inbounds i8* %call.i.i, i64 8
-  %7 = bitcast i8* %dw_loc_opc.i.i to i32*
-  store i32 147, i32* %7, align 4, !tbaa !9
-  %dw_loc_oprnd1.i.i = getelementptr inbounds i8* %call.i.i, i64 16
-  %val_class.i.i = bitcast i8* %dw_loc_oprnd1.i.i to i32*
-  store i32 6, i32* %val_class.i.i, align 4, !tbaa !1
-  %v.i.i = getelementptr inbounds i8* %call.i.i, i64 24
-  %val_unsigned.i.i = bitcast i8* %v.i.i to i64*
-  store i64 %conv.i, i64* %val_unsigned.i.i, align 8, !tbaa !6
-  %dw_loc_oprnd2.i.i = getelementptr inbounds i8* %call.i.i, i64 40
-  %val_class2.i.i = bitcast i8* %dw_loc_oprnd2.i.i to i32*
-  store i32 6, i32* %val_class2.i.i, align 4, !tbaa !1
-  %v4.i.i = getelementptr inbounds i8* %call.i.i, i64 48
-  %val_unsigned5.i.i = bitcast i8* %v4.i.i to i64*
-  store i64 0, i64* %val_unsigned5.i.i, align 8, !tbaa !6
-  br label %for.cond.i.i
+  call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct* %call.i}, i64 0, metadata !10514) #6, !dbg !10520
+  call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct* %call.i}, i64 0, metadata !2834), !dbg !10520
+  store %struct.dw_loc_descr_struct* %call.i, %struct.dw_loc_descr_struct** %cc_loc_result.i, align 8, !dbg !10520
+  %5 = bitcast %struct.rtx_def* %3 to i32*, !dbg !10521
+  %bf.load.i = load i32* %5, align 8, !dbg !10521
+  %bf.lshr.i = lshr i32 %bf.load.i, 16, !dbg !10521
+  %bf.clear.i = and i32 %bf.lshr.i, 255, !dbg !10521
+  %idxprom15.i = zext i32 %bf.clear.i to i64, !dbg !10521
+  %arrayidx.i = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom15.i, !dbg !10521
+  %6 = load i8* %arrayidx.i, align 1, !dbg !10521, !tbaa !3759
+  %conv.i = zext i8 %6 to i64, !dbg !10521
+  call void @llvm.dbg.value(metadata !10522, i64 0, metadata !10523) #6, !dbg !10524
+  call void @llvm.dbg.value(metadata !{i64 %conv.i}, i64 0, metadata !10525) #6, !dbg !10526
+  call void @llvm.dbg.value(metadata !3843, i64 0, metadata !10527) #6, !dbg !10528
+  %call.i.i = call noalias i8* @xcalloc(i64 1, i64 72) #10, !dbg !10529
+  call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct* %9}, i64 0, metadata !10530) #6, !dbg !10529
+  %dw_loc_opc.i.i = getelementptr inbounds i8* %call.i.i, i64 8, !dbg !10531
+  %7 = bitcast i8* %dw_loc_opc.i.i to i32*, !dbg !10531
+  store i32 147, i32* %7, align 4, !dbg !10531, !tbaa !3849
+  %dw_loc_oprnd1.i.i = getelementptr inbounds i8* %call.i.i, i64 16, !dbg !10532
+  %val_class.i.i = bitcast i8* %dw_loc_oprnd1.i.i to i32*, !dbg !10532
+  store i32 6, i32* %val_class.i.i, align 4, !dbg !10532, !tbaa !3759
+  %v.i.i = getelementptr inbounds i8* %call.i.i, i64 24, !dbg !10533
+  %val_unsigned.i.i = bitcast i8* %v.i.i to i64*, !dbg !10533
+  store i64 %conv.i, i64* %val_unsigned.i.i, align 8, !dbg !10533, !tbaa !3782
+  %dw_loc_oprnd2.i.i = getelementptr inbounds i8* %call.i.i, i64 40, !dbg !10534
+  %val_class2.i.i = bitcast i8* %dw_loc_oprnd2.i.i to i32*, !dbg !10534
+  store i32 6, i32* %val_class2.i.i, align 4, !dbg !10534, !tbaa !3759
+  %v4.i.i = getelementptr inbounds i8* %call.i.i, i64 48, !dbg !10535
+  %val_unsigned5.i.i = bitcast i8* %v4.i.i to i64*, !dbg !10535
+  store i64 0, i64* %val_unsigned5.i.i, align 8, !dbg !10535, !tbaa !3782
+  call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct** %cc_loc_result.i}, i64 0, metadata !10536) #6, !dbg !10537
+  call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct* %9}, i64 0, metadata !10538) #6, !dbg !10539
+  call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct** %cc_loc_result.i}, i64 0, metadata !10540) #6, !dbg !10541
+  br label %for.cond.i.i, !dbg !10541
 
 for.cond.i.i:                                     ; preds = %for.cond.i.i.for.cond.i.i_crit_edge, %if.end.i
   %8 = phi %struct.dw_loc_descr_struct* [ %call.i, %if.end.i ], [ %.pre, %for.cond.i.i.for.cond.i.i_crit_edge ]
   %d.0.i.i = phi %struct.dw_loc_descr_struct** [ %cc_loc_result.i, %if.end.i ], [ %dw_loc_next.i.i, %for.cond.i.i.for.cond.i.i_crit_edge ]
-  %cmp.i.i = icmp eq %struct.dw_loc_descr_struct* %8, null
-  %dw_loc_next.i.i = getelementptr inbounds %struct.dw_loc_descr_struct* %8, i64 0, i32 0
-  br i1 %cmp.i.i, label %add_loc_descr.exit.i, label %for.cond.i.i.for.cond.i.i_crit_edge
+  %cmp.i.i = icmp eq %struct.dw_loc_descr_struct* %8, null, !dbg !10541
+  %dw_loc_next.i.i = getelementptr inbounds %struct.dw_loc_descr_struct* %8, i64 0, i32 0, !dbg !10541
+  call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct** %dw_loc_next.i.i}, i64 0, metadata !10540) #6, !dbg !10541
+  br i1 %cmp.i.i, label %add_loc_descr.exit.i, label %for.cond.i.i.for.cond.i.i_crit_edge, !dbg !10541
 
 for.cond.i.i.for.cond.i.i_crit_edge:              ; preds = %for.cond.i.i
-  %.pre = load %struct.dw_loc_descr_struct** %dw_loc_next.i.i, align 8, !tbaa !4
-  br label %for.cond.i.i
+  %.pre = load %struct.dw_loc_descr_struct** %dw_loc_next.i.i, align 8, !dbg !10541, !tbaa !3768
+  br label %for.cond.i.i, !dbg !10541
 
 add_loc_descr.exit.i:                             ; preds = %for.cond.i.i
-  %9 = bitcast i8* %call.i.i to %struct.dw_loc_descr_struct*
-  store %struct.dw_loc_descr_struct* %9, %struct.dw_loc_descr_struct** %d.0.i.i, align 8, !tbaa !4
-  br label %for.cond.i20.i
+  %9 = bitcast i8* %call.i.i to %struct.dw_loc_descr_struct*, !dbg !10529
+  store %struct.dw_loc_descr_struct* %9, %struct.dw_loc_descr_struct** %d.0.i.i, align 8, !dbg !10542, !tbaa !3768
+  call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct** %cc_loc_result.i}, i64 0, metadata !10543) #6, !dbg !10545
+  call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct* %call1.i}, i64 0, metadata !10546) #6, !dbg !10547
+  call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct** %cc_loc_result.i}, i64 0, metadata !10548) #6, !dbg !10549
+  br label %for.cond.i20.i, !dbg !10549
 
 for.cond.i20.i:                                   ; preds = %for.cond.i20.i, %add_loc_descr.exit.i
   %d.0.i17.i = phi %struct.dw_loc_descr_struct** [ %cc_loc_result.i, %add_loc_descr.exit.i ], [ %dw_loc_next.i19.i, %for.cond.i20.i ]
-  %10 = load %struct.dw_loc_descr_struct** %d.0.i17.i, align 8, !tbaa !4
-  %cmp.i18.i = icmp eq %struct.dw_loc_descr_struct* %10, null
-  %dw_loc_next.i19.i = getelementptr inbounds %struct.dw_loc_descr_struct* %10, i64 0, i32 0
-  br i1 %cmp.i18.i, label %add_loc_descr.exit21.i, label %for.cond.i20.i
+  %10 = load %struct.dw_loc_descr_struct** %d.0.i17.i, align 8, !dbg !10549, !tbaa !3768
+  %cmp.i18.i = icmp eq %struct.dw_loc_descr_struct* %10, null, !dbg !10549
+  %dw_loc_next.i19.i = getelementptr inbounds %struct.dw_loc_descr_struct* %10, i64 0, i32 0, !dbg !10549
+  call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct** %dw_loc_next.i19.i}, i64 0, metadata !10548) #6, !dbg !10549
+  br i1 %cmp.i18.i, label %add_loc_descr.exit21.i, label %for.cond.i20.i, !dbg !10549
 
 add_loc_descr.exit21.i:                           ; preds = %for.cond.i20.i
-  store %struct.dw_loc_descr_struct* %call1.i, %struct.dw_loc_descr_struct** %d.0.i17.i, align 8, !tbaa !4
-  %11 = bitcast %struct.rtx_def* %4 to i32*
-  %bf.load4.i = load i32* %11, align 8
-  %bf.lshr5.i = lshr i32 %bf.load4.i, 16
-  %bf.clear6.i = and i32 %bf.lshr5.i, 255
-  %idxprom716.i = zext i32 %bf.clear6.i to i64
-  %arrayidx8.i = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom716.i
-  %12 = load i8* %arrayidx8.i, align 1, !tbaa !1
-  %conv9.i = zext i8 %12 to i64
-  %call.i22.i = call noalias i8* @xcalloc(i64 1, i64 72) #9
-  %dw_loc_opc.i23.i = getelementptr inbounds i8* %call.i22.i, i64 8
-  %13 = bitcast i8* %dw_loc_opc.i23.i to i32*
-  store i32 147, i32* %13, align 4, !tbaa !9
-  %dw_loc_oprnd1.i24.i = getelementptr inbounds i8* %call.i22.i, i64 16
-  %val_class.i25.i = bitcast i8* %dw_loc_oprnd1.i24.i to i32*
-  store i32 6, i32* %val_class.i25.i, align 4, !tbaa !1
-  %v.i26.i = getelementptr inbounds i8* %call.i22.i, i64 24
-  %val_unsigned.i27.i = bitcast i8* %v.i26.i to i64*
-  store i64 %conv9.i, i64* %val_unsigned.i27.i, align 8, !tbaa !6
-  %dw_loc_oprnd2.i28.i = getelementptr inbounds i8* %call.i22.i, i64 40
-  %val_class2.i29.i = bitcast i8* %dw_loc_oprnd2.i28.i to i32*
-  store i32 6, i32* %val_class2.i29.i, align 4, !tbaa !1
-  %v4.i30.i = getelementptr inbounds i8* %call.i22.i, i64 48
-  %val_unsigned5.i31.i = bitcast i8* %v4.i30.i to i64*
-  store i64 0, i64* %val_unsigned5.i31.i, align 8, !tbaa !6
-  br label %for.cond.i35.i
+  store %struct.dw_loc_descr_struct* %call1.i, %struct.dw_loc_descr_struct** %d.0.i17.i, align 8, !dbg !10550, !tbaa !3768
+  %11 = bitcast %struct.rtx_def* %4 to i32*, !dbg !10551
+  %bf.load4.i = load i32* %11, align 8, !dbg !10551
+  %bf.lshr5.i = lshr i32 %bf.load4.i, 16, !dbg !10551
+  %bf.clear6.i = and i32 %bf.lshr5.i, 255, !dbg !10551
+  %idxprom716.i = zext i32 %bf.clear6.i to i64, !dbg !10551
+  %arrayidx8.i = getelementptr inbounds [59 x i8]* @mode_size, i64 0, i64 %idxprom716.i, !dbg !10551
+  %12 = load i8* %arrayidx8.i, align 1, !dbg !10551, !tbaa !3759
+  %conv9.i = zext i8 %12 to i64, !dbg !10551
+  call void @llvm.dbg.value(metadata !10522, i64 0, metadata !10552) #6, !dbg !10553
+  call void @llvm.dbg.value(metadata !{i64 %conv9.i}, i64 0, metadata !10554) #6, !dbg !10555
+  call void @llvm.dbg.value(metadata !3843, i64 0, metadata !10556) #6, !dbg !10557
+  %call.i22.i = call noalias i8* @xcalloc(i64 1, i64 72) #10, !dbg !10558
+  call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct* %15}, i64 0, metadata !10559) #6, !dbg !10558
+  %dw_loc_opc.i23.i = getelementptr inbounds i8* %call.i22.i, i64 8, !dbg !10560
+  %13 = bitcast i8* %dw_loc_opc.i23.i to i32*, !dbg !10560
+  store i32 147, i32* %13, align 4, !dbg !10560, !tbaa !3849
+  %dw_loc_oprnd1.i24.i = getelementptr inbounds i8* %call.i22.i, i64 16, !dbg !10561
+  %val_class.i25.i = bitcast i8* %dw_loc_oprnd1.i24.i to i32*, !dbg !10561
+  store i32 6, i32* %val_class.i25.i, align 4, !dbg !10561, !tbaa !3759
+  %v.i26.i = getelementptr inbounds i8* %call.i22.i, i64 24, !dbg !10562
+  %val_unsigned.i27.i = bitcast i8* %v.i26.i to i64*, !dbg !10562
+  store i64 %conv9.i, i64* %val_unsigned.i27.i, align 8, !dbg !10562, !tbaa !3782
+  %dw_loc_oprnd2.i28.i = getelementptr inbounds i8* %call.i22.i, i64 40, !dbg !10563
+  %val_class2.i29.i = bitcast i8* %dw_loc_oprnd2.i28.i to i32*, !dbg !10563
+  store i32 6, i32* %val_class2.i29.i, align 4, !dbg !10563, !tbaa !3759
+  %v4.i30.i = getelementptr inbounds i8* %call.i22.i, i64 48, !dbg !10564
+  %val_unsigned5.i31.i = bitcast i8* %v4.i30.i to i64*, !dbg !10564
+  store i64 0, i64* %val_unsigned5.i31.i, align 8, !dbg !10564, !tbaa !3782
+  call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct** %cc_loc_result.i}, i64 0, metadata !10565) #6, !dbg !10566
+  call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct* %15}, i64 0, metadata !10567) #6, !dbg !10568
+  call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct** %cc_loc_result.i}, i64 0, metadata !10569) #6, !dbg !10570
+  br label %for.cond.i35.i, !dbg !10570
 
 for.cond.i35.i:                                   ; preds = %for.cond.i35.i, %add_loc_descr.exit21.i
   %d.0.i32.i = phi %struct.dw_loc_descr_struct** [ %cc_loc_result.i, %add_loc_descr.exit21.i ], [ %dw_loc_next.i34.i, %for.cond.i35.i ]
-  %14 = load %struct.dw_loc_descr_struct** %d.0.i32.i, align 8, !tbaa !4
-  %cmp.i33.i = icmp eq %struct.dw_loc_descr_struct* %14, null
-  %dw_loc_next.i34.i = getelementptr inbounds %struct.dw_loc_descr_struct* %14, i64 0, i32 0
-  br i1 %cmp.i33.i, label %add_loc_descr.exit36.i, label %for.cond.i35.i
+  %14 = load %struct.dw_loc_descr_struct** %d.0.i32.i, align 8, !dbg !10570, !tbaa !3768
+  %cmp.i33.i = icmp eq %struct.dw_loc_descr_struct* %14, null, !dbg !10570
+  %dw_loc_next.i34.i = getelementptr inbounds %struct.dw_loc_descr_struct* %14, i64 0, i32 0, !dbg !10570
+  call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct** %dw_loc_next.i34.i}, i64 0, metadata !10569) #6, !dbg !10570
+  br i1 %cmp.i33.i, label %add_loc_descr.exit36.i, label %for.cond.i35.i, !dbg !10570
 
 add_loc_descr.exit36.i:                           ; preds = %for.cond.i35.i
-  %15 = bitcast i8* %call.i22.i to %struct.dw_loc_descr_struct*
-  store %struct.dw_loc_descr_struct* %15, %struct.dw_loc_descr_struct** %d.0.i32.i, align 8, !tbaa !4
-  %cc_loc_result.i.0.load = load %struct.dw_loc_descr_struct** %cc_loc_result.i, align 8
-  br label %sw.epilog
+  %15 = bitcast i8* %call.i22.i to %struct.dw_loc_descr_struct*, !dbg !10558
+  store %struct.dw_loc_descr_struct* %15, %struct.dw_loc_descr_struct** %d.0.i32.i, align 8, !dbg !10571, !tbaa !3768
+  call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct** %cc_loc_result.i}, i64 0, metadata !10514) #6, !dbg !10572
+  call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct** %cc_loc_result.i}, i64 0, metadata !2834), !dbg !10572
+  %cc_loc_result.i.0.load = load %struct.dw_loc_descr_struct** %cc_loc_result.i, align 8, !dbg !10572
+  br label %sw.epilog, !dbg !10572
 
 sw.default:                                       ; preds = %entry
-  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 7976, i8* getelementptr inbounds ([15 x i8]* @__FUNCTION__.loc_descriptor, i64 0, i64 0)) #12
-  unreachable
+  call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 7976, i8* getelementptr inbounds ([15 x i8]* @__FUNCTION__.loc_descriptor, i64 0, i64 0)) #13, !dbg !10573
+  unreachable, !dbg !10573
 
 sw.epilog:                                        ; preds = %add_loc_descr.exit36.i, %sw.bb9, %sw.bb2, %sw.bb1
   %loc_result.0 = phi %struct.dw_loc_descr_struct* [ %call8, %sw.bb2 ], [ %call, %sw.bb1 ], [ %cc_loc_result.i.0.load, %add_loc_descr.exit36.i ], [ null, %sw.bb9 ]
-  ret %struct.dw_loc_descr_struct* %loc_result.0
+  ret %struct.dw_loc_descr_struct* %loc_result.0, !dbg !10574
 }

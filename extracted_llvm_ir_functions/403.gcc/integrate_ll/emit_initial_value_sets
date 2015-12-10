@@ -1,43 +1,46 @@
 define void @emit_initial_value_sets() #0 {
 entry:
-  %0 = load %struct.function** @cfun, align 8, !tbaa !0
-  %hard_reg_initial_vals = getelementptr inbounds %struct.function* %0, i64 0, i32 17
-  %1 = load %struct.initial_value_struct** %hard_reg_initial_vals, align 8, !tbaa !0
-  %cmp = icmp eq %struct.initial_value_struct* %1, null
-  br i1 %cmp, label %return, label %if.end
+  %0 = load %struct.function** @cfun, align 8, !dbg !3004, !tbaa !1854
+  %hard_reg_initial_vals = getelementptr inbounds %struct.function* %0, i64 0, i32 17, !dbg !3004
+  %1 = load %struct.initial_value_struct** %hard_reg_initial_vals, align 8, !dbg !3004, !tbaa !1854
+  tail call void @llvm.dbg.value(metadata !{%struct.initial_value_struct* %1}, i64 0, metadata !1620), !dbg !3004
+  %cmp = icmp eq %struct.initial_value_struct* %1, null, !dbg !3005
+  br i1 %cmp, label %return, label %if.end, !dbg !3005
 
 if.end:                                           ; preds = %entry
-  tail call void @start_sequence() #7
-  %num_entries = getelementptr inbounds %struct.initial_value_struct* %1, i64 0, i32 0
-  %2 = load i32* %num_entries, align 4, !tbaa !3
-  %cmp114 = icmp sgt i32 %2, 0
-  br i1 %cmp114, label %for.body.lr.ph, label %for.end
+  tail call void @start_sequence() #8, !dbg !3006
+  tail call void @llvm.dbg.value(metadata !643, i64 0, metadata !1621), !dbg !3007
+  %num_entries = getelementptr inbounds %struct.initial_value_struct* %1, i64 0, i32 0, !dbg !3007
+  %2 = load i32* %num_entries, align 4, !dbg !3007, !tbaa !1874
+  %cmp114 = icmp sgt i32 %2, 0, !dbg !3007
+  br i1 %cmp114, label %for.body.lr.ph, label %for.end, !dbg !3007
 
 for.body.lr.ph:                                   ; preds = %if.end
-  %entries = getelementptr inbounds %struct.initial_value_struct* %1, i64 0, i32 2
-  br label %for.body
+  %entries = getelementptr inbounds %struct.initial_value_struct* %1, i64 0, i32 2, !dbg !3009
+  br label %for.body, !dbg !3007
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.body
   %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
-  %3 = load %struct.initial_value_pair** %entries, align 8, !tbaa !0
-  %pseudo = getelementptr inbounds %struct.initial_value_pair* %3, i64 %indvars.iv, i32 1
-  %4 = load %struct.rtx_def** %pseudo, align 8, !tbaa !0
-  %hard_reg = getelementptr inbounds %struct.initial_value_pair* %3, i64 %indvars.iv, i32 0
-  %5 = load %struct.rtx_def** %hard_reg, align 8, !tbaa !0
-  %call = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %4, %struct.rtx_def* %5) #7
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %6 = load i32* %num_entries, align 4, !tbaa !3
-  %7 = trunc i64 %indvars.iv.next to i32
-  %cmp1 = icmp slt i32 %7, %6
-  br i1 %cmp1, label %for.body, label %for.end
+  %3 = load %struct.initial_value_pair** %entries, align 8, !dbg !3009, !tbaa !1854
+  %pseudo = getelementptr inbounds %struct.initial_value_pair* %3, i64 %indvars.iv, i32 1, !dbg !3009
+  %4 = load %struct.rtx_def** %pseudo, align 8, !dbg !3009, !tbaa !1854
+  %hard_reg = getelementptr inbounds %struct.initial_value_pair* %3, i64 %indvars.iv, i32 0, !dbg !3009
+  %5 = load %struct.rtx_def** %hard_reg, align 8, !dbg !3009, !tbaa !1854
+  %call = tail call %struct.rtx_def* @emit_move_insn(%struct.rtx_def* %4, %struct.rtx_def* %5) #8, !dbg !3009
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !3007
+  %6 = load i32* %num_entries, align 4, !dbg !3007, !tbaa !1874
+  %7 = trunc i64 %indvars.iv.next to i32, !dbg !3007
+  %cmp1 = icmp slt i32 %7, %6, !dbg !3007
+  br i1 %cmp1, label %for.body, label %for.end, !dbg !3007
 
 for.end:                                          ; preds = %for.body, %if.end
-  %call5 = tail call %struct.rtx_def* @get_insns() #7
-  tail call void @end_sequence() #7
-  %call6 = tail call %struct.rtx_def* @get_insns() #7
-  %call7 = tail call %struct.rtx_def* @emit_insns_after(%struct.rtx_def* %call5, %struct.rtx_def* %call6) #7
-  br label %return
+  %call5 = tail call %struct.rtx_def* @get_insns() #8, !dbg !3010
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call5}, i64 0, metadata !1622), !dbg !3010
+  tail call void @end_sequence() #8, !dbg !3011
+  %call6 = tail call %struct.rtx_def* @get_insns() #8, !dbg !3012
+  %call7 = tail call %struct.rtx_def* @emit_insns_after(%struct.rtx_def* %call5, %struct.rtx_def* %call6) #8, !dbg !3012
+  br label %return, !dbg !3012
 
 return:                                           ; preds = %entry, %for.end
-  ret void
+  ret void, !dbg !3012
 }

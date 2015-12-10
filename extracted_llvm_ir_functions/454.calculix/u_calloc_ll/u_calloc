@@ -1,20 +1,23 @@
 define noalias i8* @u_calloc(i64 %num, i64 %size) #0 {
 entry:
-  %cmp = icmp eq i64 %num, 0
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i64 %num}, i64 0, metadata !12), !dbg !15
+  tail call void @llvm.dbg.value(metadata !{i64 %size}, i64 0, metadata !13), !dbg !15
+  %cmp = icmp eq i64 %num, 0, !dbg !16
+  br i1 %cmp, label %return, label %if.end, !dbg !16
 
 if.end:                                           ; preds = %entry
-  %call = tail call noalias i8* @calloc(i64 %num, i64 %size) #4
-  %cmp1 = icmp eq i8* %call, null
-  br i1 %cmp1, label %if.then2, label %return
+  %call = tail call noalias i8* @calloc(i64 %num, i64 %size) #5, !dbg !17
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !14), !dbg !17
+  %cmp1 = icmp eq i8* %call, null, !dbg !18
+  br i1 %cmp1, label %if.then2, label %return, !dbg !18
 
 if.then2:                                         ; preds = %if.end
-  %puts = tail call i32 @puts(i8* getelementptr inbounds ([44 x i8]* @str, i64 0, i64 0))
-  %call4 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([18 x i8]* @.str1, i64 0, i64 0), i64 %num, i64 %size) #4
-  tail call void @exit(i32 16) #5
-  unreachable
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([44 x i8]* @str, i64 0, i64 0)), !dbg !19
+  %call4 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([18 x i8]* @.str1, i64 0, i64 0), i64 %num, i64 %size) #5, !dbg !21
+  tail call void @exit(i32 16) #6, !dbg !22
+  unreachable, !dbg !22
 
 return:                                           ; preds = %if.end, %entry
   %retval.0 = phi i8* [ null, %entry ], [ %call, %if.end ]
-  ret i8* %retval.0
+  ret i8* %retval.0, !dbg !23
 }

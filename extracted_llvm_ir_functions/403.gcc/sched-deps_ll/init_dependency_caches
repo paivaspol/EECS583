@@ -1,22 +1,23 @@
-define void @init_dependency_caches(i32 %luid) #1 {
+define void @init_dependency_caches(i32 %luid) #2 {
 entry:
-  %0 = load i32* @n_basic_blocks, align 4, !tbaa !3
-  %div = sdiv i32 %luid, %0
-  %cmp = icmp sgt i32 %div, 500
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i32 %luid}, i64 0, metadata !603), !dbg !1426
+  %0 = load i32* @n_basic_blocks, align 4, !dbg !1427, !tbaa !941
+  %div = sdiv i32 %luid, %0, !dbg !1427
+  %cmp = icmp sgt i32 %div, 500, !dbg !1427
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1427
 
 if.then:                                          ; preds = %entry
-  %call = tail call %struct.simple_bitmap_def** @sbitmap_vector_alloc(i32 %luid, i32 %luid) #7
-  store %struct.simple_bitmap_def** %call, %struct.simple_bitmap_def*** @true_dependency_cache, align 8, !tbaa !0
-  tail call void @sbitmap_vector_zero(%struct.simple_bitmap_def** %call, i32 %luid) #7
-  %call1 = tail call %struct.simple_bitmap_def** @sbitmap_vector_alloc(i32 %luid, i32 %luid) #7
-  store %struct.simple_bitmap_def** %call1, %struct.simple_bitmap_def*** @anti_dependency_cache, align 8, !tbaa !0
-  tail call void @sbitmap_vector_zero(%struct.simple_bitmap_def** %call1, i32 %luid) #7
-  %call2 = tail call %struct.simple_bitmap_def** @sbitmap_vector_alloc(i32 %luid, i32 %luid) #7
-  store %struct.simple_bitmap_def** %call2, %struct.simple_bitmap_def*** @output_dependency_cache, align 8, !tbaa !0
-  tail call void @sbitmap_vector_zero(%struct.simple_bitmap_def** %call2, i32 %luid) #7
-  br label %if.end
+  %call = tail call %struct.simple_bitmap_def** @sbitmap_vector_alloc(i32 %luid, i32 %luid) #8, !dbg !1428
+  store %struct.simple_bitmap_def** %call, %struct.simple_bitmap_def*** @true_dependency_cache, align 8, !dbg !1428, !tbaa !907
+  tail call void @sbitmap_vector_zero(%struct.simple_bitmap_def** %call, i32 %luid) #8, !dbg !1430
+  %call1 = tail call %struct.simple_bitmap_def** @sbitmap_vector_alloc(i32 %luid, i32 %luid) #8, !dbg !1431
+  store %struct.simple_bitmap_def** %call1, %struct.simple_bitmap_def*** @anti_dependency_cache, align 8, !dbg !1431, !tbaa !907
+  tail call void @sbitmap_vector_zero(%struct.simple_bitmap_def** %call1, i32 %luid) #8, !dbg !1432
+  %call2 = tail call %struct.simple_bitmap_def** @sbitmap_vector_alloc(i32 %luid, i32 %luid) #8, !dbg !1433
+  store %struct.simple_bitmap_def** %call2, %struct.simple_bitmap_def*** @output_dependency_cache, align 8, !dbg !1433, !tbaa !907
+  tail call void @sbitmap_vector_zero(%struct.simple_bitmap_def** %call2, i32 %luid) #8, !dbg !1434
+  br label %if.end, !dbg !1435
 
 if.end:                                           ; preds = %if.then, %entry
-  ret void
+  ret void, !dbg !1436
 }

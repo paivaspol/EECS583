@@ -1,23 +1,32 @@
-define void @rand_vector(float* nocapture %v, i32* %seed) #4 {
-  %1 = tail call float @rando(i32* %seed) #12
-  %2 = fmul float %1, 1.800000e+02
-  %3 = tail call float @rando(i32* %seed) #12
-  %4 = fmul float %3, 3.600000e+02
-  %5 = fpext float %4 to double
-  %6 = tail call double @cos(double %5) #14
-  %7 = fpext float %2 to double
-  %8 = tail call double @sin(double %7) #14
-  %9 = fmul double %6, %8
-  %10 = fptrunc double %9 to float
-  store float %10, float* %v, align 4, !tbaa !14
-  %11 = tail call double @sin(double %5) #14
-  %12 = fmul double %8, %11
-  %13 = fptrunc double %12 to float
-  %14 = getelementptr inbounds float* %v, i64 1
-  store float %13, float* %14, align 4, !tbaa !14
-  %15 = tail call double @cos(double %7) #14
-  %16 = fptrunc double %15 to float
-  %17 = getelementptr inbounds float* %v, i64 2
-  store float %16, float* %17, align 4, !tbaa !14
-  ret void
+define void @rand_vector(float* nocapture %v, i32* %seed) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{float* %v}, i64 0, metadata !205), !dbg !721
+  tail call void @llvm.dbg.value(metadata !{i32* %seed}, i64 0, metadata !206), !dbg !721
+  %call = tail call float @rando(i32* %seed) #8, !dbg !722
+  %conv1 = fmul float %call, 1.800000e+02, !dbg !722
+  tail call void @llvm.dbg.value(metadata !{float %conv1}, i64 0, metadata !207), !dbg !722
+  %call2 = tail call float @rando(i32* %seed) #8, !dbg !723
+  %conv5 = fmul float %call2, 3.600000e+02, !dbg !723
+  tail call void @llvm.dbg.value(metadata !{float %conv5}, i64 0, metadata !208), !dbg !723
+  tail call void @llvm.dbg.value(metadata !{float %conv5}, i64 0, metadata !724) #3, !dbg !726
+  tail call void @llvm.dbg.value(metadata !{float %conv1}, i64 0, metadata !727) #3, !dbg !726
+  tail call void @llvm.dbg.value(metadata !{float* %v}, i64 0, metadata !728) #3, !dbg !726
+  %conv.i = fpext float %conv5 to double, !dbg !729
+  %call.i = tail call double @cos(double %conv.i) #8, !dbg !729
+  %conv1.i = fpext float %conv1 to double, !dbg !729
+  %call2.i = tail call double @sin(double %conv1.i) #8, !dbg !729
+  %mul.i = fmul double %call.i, %call2.i, !dbg !729
+  %conv3.i = fptrunc double %mul.i to float, !dbg !729
+  store float %conv3.i, float* %v, align 4, !dbg !729, !tbaa !570
+  %call5.i = tail call double @sin(double %conv.i) #8, !dbg !731
+  %call7.i = tail call double @sin(double %conv1.i) #8, !dbg !731
+  %mul8.i = fmul double %call5.i, %call7.i, !dbg !731
+  %conv9.i = fptrunc double %mul8.i to float, !dbg !731
+  %arrayidx10.i = getelementptr inbounds float* %v, i64 1, !dbg !731
+  store float %conv9.i, float* %arrayidx10.i, align 4, !dbg !731, !tbaa !570
+  %call12.i = tail call double @cos(double %conv1.i) #8, !dbg !732
+  %conv13.i = fptrunc double %call12.i to float, !dbg !732
+  %arrayidx14.i = getelementptr inbounds float* %v, i64 2, !dbg !732
+  store float %conv13.i, float* %arrayidx14.i, align 4, !dbg !732, !tbaa !570
+  ret void, !dbg !733
 }

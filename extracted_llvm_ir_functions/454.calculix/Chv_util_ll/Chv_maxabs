@@ -1,42 +1,47 @@
 define double @Chv_maxabs(%struct._Chv* %chv) #0 {
 entry:
   %loc = alloca i32, align 4
-  %cmp = icmp eq %struct._Chv* %chv, null
-  br i1 %cmp, label %if.then, label %if.end
+  call void @llvm.dbg.value(metadata !{%struct._Chv* %chv}, i64 0, metadata !47), !dbg !276
+  %cmp = icmp eq %struct._Chv* %chv, null, !dbg !277
+  br i1 %cmp, label %if.then, label %if.end, !dbg !277
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([44 x i8]* @.str3, i64 0, i64 0), %struct._Chv* null) #4
-  call void @exit(i32 -1) #5
-  unreachable
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !278, !tbaa !194
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([44 x i8]* @.str3, i64 0, i64 0), %struct._Chv* null) #5, !dbg !278
+  call void @exit(i32 -1) #6, !dbg !280
+  unreachable, !dbg !280
 
 if.end:                                           ; preds = %entry
-  %type = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4
-  %1 = load i32* %type, align 4, !tbaa !3
+  call void @llvm.dbg.value(metadata !281, i64 0, metadata !48), !dbg !282
+  %type = getelementptr inbounds %struct._Chv* %chv, i64 0, i32 4, !dbg !283
+  %1 = load i32* %type, align 4, !dbg !283, !tbaa !200
   switch i32 %1, label %if.else12 [
     i32 1, label %if.then2
     i32 2, label %if.then8
-  ]
+  ], !dbg !283
 
 if.then2:                                         ; preds = %if.end
-  %call3 = call i32 @Chv_nent(%struct._Chv* %chv) #4
-  %call4 = call double* @Chv_entries(%struct._Chv* %chv) #4
-  %call5 = call double @DVmaxabs(i32 %call3, double* %call4, i32* %loc) #4
-  br label %if.end16
+  call void @llvm.dbg.declare(metadata !{i32* %loc}, metadata !49), !dbg !284
+  %call3 = call i32 @Chv_nent(%struct._Chv* %chv) #5, !dbg !285
+  %call4 = call double* @Chv_entries(%struct._Chv* %chv) #5, !dbg !285
+  %call5 = call double @DVmaxabs(i32 %call3, double* %call4, i32* %loc) #5, !dbg !285
+  call void @llvm.dbg.value(metadata !{double %call5}, i64 0, metadata !48), !dbg !285
+  br label %if.end16, !dbg !286
 
 if.then8:                                         ; preds = %if.end
-  %call9 = call i32 @Chv_nent(%struct._Chv* %chv) #4
-  %call10 = call double* @Chv_entries(%struct._Chv* %chv) #4
-  %call11 = call double @ZVmaxabs(i32 %call9, double* %call10) #4
+  %call9 = call i32 @Chv_nent(%struct._Chv* %chv) #5, !dbg !287
+  %call10 = call double* @Chv_entries(%struct._Chv* %chv) #5, !dbg !287
+  %call11 = call double @ZVmaxabs(i32 %call9, double* %call10) #5, !dbg !287
+  call void @llvm.dbg.value(metadata !{double %call11}, i64 0, metadata !48), !dbg !287
   br label %if.end16
 
 if.else12:                                        ; preds = %if.end
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call14 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([86 x i8]* @.str4, i64 0, i64 0), %struct._Chv* %chv, i32 %1) #4
-  call void @exit(i32 -1) #5
-  unreachable
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !289, !tbaa !194
+  %call14 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([86 x i8]* @.str4, i64 0, i64 0), %struct._Chv* %chv, i32 %1) #5, !dbg !289
+  call void @exit(i32 -1) #6, !dbg !291
+  unreachable, !dbg !291
 
 if.end16:                                         ; preds = %if.then8, %if.then2
   %maxabs.0 = phi double [ %call5, %if.then2 ], [ %call11, %if.then8 ]
-  ret double %maxabs.0
+  ret double %maxabs.0, !dbg !292
 }

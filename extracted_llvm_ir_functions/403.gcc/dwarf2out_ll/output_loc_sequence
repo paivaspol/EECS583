@@ -1,27 +1,30 @@
 define internal fastcc void @output_loc_sequence(%struct.dw_loc_descr_struct* %loc) #1 {
 entry:
-  %cmp7 = icmp eq %struct.dw_loc_descr_struct* %loc, null
-  br i1 %cmp7, label %for.end, label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct* %loc}, i64 0, metadata !2152), !dbg !7505
+  %cmp7 = icmp eq %struct.dw_loc_descr_struct* %loc, null, !dbg !7506
+  br i1 %cmp7, label %for.end, label %for.body, !dbg !7506
 
 for.body:                                         ; preds = %entry, %output_loc_operands.exit
   %loc.addr.08 = phi %struct.dw_loc_descr_struct* [ %27, %output_loc_operands.exit ], [ %loc, %entry ]
-  %dw_loc_opc = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 1
-  %0 = load i32* %dw_loc_opc, align 4, !tbaa !9
-  %conv = zext i32 %0 to i64
-  %switch.tableidx.i = add i32 %0, -3
-  %1 = icmp ult i32 %switch.tableidx.i, 148
-  br i1 %1, label %switch.lookup.i, label %dwarf_stack_op_name.exit
+  %dw_loc_opc = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 1, !dbg !7508
+  %0 = load i32* %dw_loc_opc, align 4, !dbg !7508, !tbaa !3849
+  %conv = zext i32 %0 to i64, !dbg !7508
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !7510), !dbg !7512
+  %switch.tableidx.i = add i32 %0, -3, !dbg !7513
+  %1 = icmp ult i32 %switch.tableidx.i, 148, !dbg !7513
+  br i1 %1, label %switch.lookup.i, label %dwarf_stack_op_name.exit, !dbg !7513
 
 switch.lookup.i:                                  ; preds = %for.body
-  %2 = sext i32 %switch.tableidx.i to i64
-  %switch.gep.i = getelementptr inbounds [148 x i8*]* @switch.table498, i64 0, i64 %2
-  %switch.load.i = load i8** %switch.gep.i, align 8
-  br label %dwarf_stack_op_name.exit
+  %2 = sext i32 %switch.tableidx.i to i64, !dbg !7513
+  %switch.gep.i = getelementptr inbounds [148 x i8*]* @switch.table498, i64 0, i64 %2, !dbg !7513
+  %switch.load.i = load i8** %switch.gep.i, align 8, !dbg !7513
+  br label %dwarf_stack_op_name.exit, !dbg !7513
 
 dwarf_stack_op_name.exit:                         ; preds = %for.body, %switch.lookup.i
   %call6 = phi i8* [ %switch.load.i, %switch.lookup.i ], [ getelementptr inbounds ([13 x i8]* @.str365, i64 0, i64 0), %for.body ]
-  tail call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 1, i64 %conv, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call6) #9
-  %3 = load i32* %dw_loc_opc, align 4, !tbaa !9
+  tail call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 1, i64 %conv, i8* getelementptr inbounds ([3 x i8]* @.str213, i64 0, i64 0), i8* %call6) #10, !dbg !7511
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct* %loc.addr.08}, i64 0, metadata !7514) #6, !dbg !7516
+  %3 = load i32* %dw_loc_opc, align 4, !dbg !7517, !tbaa !3849
   switch i32 %3, label %output_loc_operands.exit [
     i32 3, label %sw.bb.i
     i32 10, label %sw.bb1.i
@@ -76,137 +79,139 @@ dwarf_stack_op_name.exit:                         ; preds = %for.body, %switch.l
     i32 147, label %sw.bb40.i
     i32 148, label %sw.bb43.i
     i32 149, label %sw.bb43.i
-  ]
+  ], !dbg !7517
 
 sw.bb.i:                                          ; preds = %dwarf_stack_op_name.exit
-  %4 = load i32* @target_flags, align 4, !tbaa !0
-  %and.i = lshr i32 %4, 20
-  %5 = and i32 %and.i, 32
-  %6 = add i32 %5, 32
-  %div.i = sdiv i32 %6, 8
-  %v.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1
-  %val_addr.i = bitcast %union.anon.3* %v.i to %struct.rtx_def**
-  %7 = load %struct.rtx_def** %val_addr.i, align 8, !tbaa !4
-  tail call void (i32, %struct.rtx_def*, i8*, ...)* @dw2_asm_output_addr_rtx(i32 %div.i, %struct.rtx_def* %7, i8* null) #9
-  br label %output_loc_operands.exit
+  %4 = load i32* @target_flags, align 4, !dbg !7518, !tbaa !3758
+  %and.i = lshr i32 %4, 20, !dbg !7518
+  %5 = and i32 %and.i, 32, !dbg !7518
+  %6 = add i32 %5, 32, !dbg !7518
+  %div.i = sdiv i32 %6, 8, !dbg !7518
+  %v.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, !dbg !7518
+  %val_addr.i = bitcast %union.anon.3* %v.i to %struct.rtx_def**, !dbg !7518
+  %7 = load %struct.rtx_def** %val_addr.i, align 8, !dbg !7518, !tbaa !3768
+  tail call void (i32, %struct.rtx_def*, i8*, ...)* @dw2_asm_output_addr_rtx(i32 %div.i, %struct.rtx_def* %7, i8* null) #10, !dbg !7518
+  br label %output_loc_operands.exit, !dbg !7519
 
 sw.bb1.i:                                         ; preds = %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit
-  %val_int.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0
-  %8 = load i64* %val_int.i, align 8, !tbaa !6
-  tail call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 2, i64 %8, i8* null) #9
-  br label %output_loc_operands.exit
+  %val_int.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0, !dbg !7520
+  %8 = load i64* %val_int.i, align 8, !dbg !7520, !tbaa !3782
+  tail call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 2, i64 %8, i8* null) #10, !dbg !7520
+  br label %output_loc_operands.exit, !dbg !7521
 
 sw.bb3.i:                                         ; preds = %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit
-  %val_int5.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0
-  %9 = load i64* %val_int5.i, align 8, !tbaa !6
-  tail call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 4, i64 %9, i8* null) #9
-  br label %output_loc_operands.exit
+  %val_int5.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0, !dbg !7522
+  %9 = load i64* %val_int5.i, align 8, !dbg !7522, !tbaa !3782
+  tail call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 4, i64 %9, i8* null) #10, !dbg !7522
+  br label %output_loc_operands.exit, !dbg !7523
 
 sw.bb6.i:                                         ; preds = %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit
-  %val_int8.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0
-  %10 = load i64* %val_int8.i, align 8, !tbaa !6
-  tail call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 8, i64 %10, i8* null) #9
-  br label %output_loc_operands.exit
+  %val_int8.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0, !dbg !7524
+  %10 = load i64* %val_int8.i, align 8, !dbg !7524, !tbaa !3782
+  tail call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 8, i64 %10, i8* null) #10, !dbg !7524
+  br label %output_loc_operands.exit, !dbg !7525
 
 sw.bb9.i:                                         ; preds = %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit
-  %val_class.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 0
-  %11 = load i32* %val_class.i, align 4, !tbaa !1
-  %cmp.i = icmp eq i32 %11, 2
-  br i1 %cmp.i, label %if.then.i, label %if.else.i
+  %val_class.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 0, !dbg !7526
+  %11 = load i32* %val_class.i, align 4, !dbg !7526, !tbaa !3759
+  %cmp.i = icmp eq i32 %11, 2, !dbg !7526
+  br i1 %cmp.i, label %if.then.i, label %if.else.i, !dbg !7526
 
 if.then.i:                                        ; preds = %sw.bb9.i
-  %v10.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1
-  %val_loc.i = bitcast %union.anon.3* %v10.i to %struct.dw_loc_descr_struct**
-  %12 = load %struct.dw_loc_descr_struct** %val_loc.i, align 8, !tbaa !4
-  %dw_loc_addr.i = getelementptr inbounds %struct.dw_loc_descr_struct* %12, i64 0, i32 4
-  %13 = load i32* %dw_loc_addr.i, align 4, !tbaa !0
-  %dw_loc_addr11.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 4
-  %14 = load i32* %dw_loc_addr11.i, align 4, !tbaa !0
-  %add.neg.i = add i32 %13, -3
-  %sub.i = sub i32 %add.neg.i, %14
-  %conv.i = sext i32 %sub.i to i64
-  tail call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 2, i64 %conv.i, i8* null) #9
-  br label %output_loc_operands.exit
+  %v10.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, !dbg !7527
+  %val_loc.i = bitcast %union.anon.3* %v10.i to %struct.dw_loc_descr_struct**, !dbg !7527
+  %12 = load %struct.dw_loc_descr_struct** %val_loc.i, align 8, !dbg !7527, !tbaa !3768
+  %dw_loc_addr.i = getelementptr inbounds %struct.dw_loc_descr_struct* %12, i64 0, i32 4, !dbg !7527
+  %13 = load i32* %dw_loc_addr.i, align 4, !dbg !7527, !tbaa !3758
+  %dw_loc_addr11.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 4, !dbg !7527
+  %14 = load i32* %dw_loc_addr11.i, align 4, !dbg !7527, !tbaa !3758
+  %add.neg.i = add i32 %13, -3, !dbg !7527
+  %sub.i = sub i32 %add.neg.i, %14, !dbg !7527
+  tail call void @llvm.dbg.value(metadata !{i32 %sub.i}, i64 0, metadata !7528) #6, !dbg !7527
+  %conv.i = sext i32 %sub.i to i64, !dbg !7529
+  tail call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 2, i64 %conv.i, i8* null) #10, !dbg !7529
+  br label %output_loc_operands.exit, !dbg !7530
 
 if.else.i:                                        ; preds = %sw.bb9.i
-  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 2789, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.output_loc_operands, i64 0, i64 0)) #12
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([53 x i8]* @.str4, i64 0, i64 0), i32 2789, i8* getelementptr inbounds ([20 x i8]* @__FUNCTION__.output_loc_operands, i64 0, i64 0)) #13, !dbg !7531
+  unreachable, !dbg !7531
 
 sw.bb12.i:                                        ; preds = %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit
-  %val_int14.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0
-  %15 = load i64* %val_int14.i, align 8, !tbaa !6
-  tail call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 1, i64 %15, i8* null) #9
-  br label %output_loc_operands.exit
+  %val_int14.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0, !dbg !7532
+  %15 = load i64* %val_int14.i, align 8, !dbg !7532, !tbaa !3782
+  tail call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 1, i64 %15, i8* null) #10, !dbg !7532
+  br label %output_loc_operands.exit, !dbg !7533
 
 sw.bb15.i:                                        ; preds = %dwarf_stack_op_name.exit
-  %val_unsigned.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0
-  %16 = load i64* %val_unsigned.i, align 8, !tbaa !6
-  tail call void (i64, i8*, ...)* @dw2_asm_output_data_uleb128(i64 %16, i8* null) #9
-  br label %output_loc_operands.exit
+  %val_unsigned.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0, !dbg !7534
+  %16 = load i64* %val_unsigned.i, align 8, !dbg !7534, !tbaa !3782
+  tail call void (i64, i8*, ...)* @dw2_asm_output_data_uleb128(i64 %16, i8* null) #10, !dbg !7534
+  br label %output_loc_operands.exit, !dbg !7535
 
 sw.bb17.i:                                        ; preds = %dwarf_stack_op_name.exit
-  %val_int19.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0
-  %17 = load i64* %val_int19.i, align 8, !tbaa !6
-  tail call void (i64, i8*, ...)* @dw2_asm_output_data_sleb128(i64 %17, i8* null) #9
-  br label %output_loc_operands.exit
+  %val_int19.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0, !dbg !7536
+  %17 = load i64* %val_int19.i, align 8, !dbg !7536, !tbaa !3782
+  tail call void (i64, i8*, ...)* @dw2_asm_output_data_sleb128(i64 %17, i8* null) #10, !dbg !7536
+  br label %output_loc_operands.exit, !dbg !7537
 
 sw.bb20.i:                                        ; preds = %dwarf_stack_op_name.exit
-  %val_int22.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0
-  %18 = load i64* %val_int22.i, align 8, !tbaa !6
-  tail call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 1, i64 %18, i8* null) #9
-  br label %output_loc_operands.exit
+  %val_int22.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0, !dbg !7538
+  %18 = load i64* %val_int22.i, align 8, !dbg !7538, !tbaa !3782
+  tail call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 1, i64 %18, i8* null) #10, !dbg !7538
+  br label %output_loc_operands.exit, !dbg !7539
 
 sw.bb23.i:                                        ; preds = %dwarf_stack_op_name.exit
-  %val_unsigned25.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0
-  %19 = load i64* %val_unsigned25.i, align 8, !tbaa !6
-  tail call void (i64, i8*, ...)* @dw2_asm_output_data_uleb128(i64 %19, i8* null) #9
-  br label %output_loc_operands.exit
+  %val_unsigned25.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0, !dbg !7540
+  %19 = load i64* %val_unsigned25.i, align 8, !dbg !7540, !tbaa !3782
+  tail call void (i64, i8*, ...)* @dw2_asm_output_data_uleb128(i64 %19, i8* null) #10, !dbg !7540
+  br label %output_loc_operands.exit, !dbg !7541
 
 sw.bb26.i:                                        ; preds = %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit
-  %val_int28.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0
-  %20 = load i64* %val_int28.i, align 8, !tbaa !6
-  tail call void (i64, i8*, ...)* @dw2_asm_output_data_sleb128(i64 %20, i8* null) #9
-  br label %output_loc_operands.exit
+  %val_int28.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0, !dbg !7542
+  %20 = load i64* %val_int28.i, align 8, !dbg !7542, !tbaa !3782
+  tail call void (i64, i8*, ...)* @dw2_asm_output_data_sleb128(i64 %20, i8* null) #10, !dbg !7542
+  br label %output_loc_operands.exit, !dbg !7543
 
 sw.bb29.i:                                        ; preds = %dwarf_stack_op_name.exit
-  %val_unsigned31.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0
-  %21 = load i64* %val_unsigned31.i, align 8, !tbaa !6
-  tail call void (i64, i8*, ...)* @dw2_asm_output_data_uleb128(i64 %21, i8* null) #9
-  br label %output_loc_operands.exit
+  %val_unsigned31.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0, !dbg !7544
+  %21 = load i64* %val_unsigned31.i, align 8, !dbg !7544, !tbaa !3782
+  tail call void (i64, i8*, ...)* @dw2_asm_output_data_uleb128(i64 %21, i8* null) #10, !dbg !7544
+  br label %output_loc_operands.exit, !dbg !7545
 
 sw.bb32.i:                                        ; preds = %dwarf_stack_op_name.exit
-  %val_int34.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0
-  %22 = load i64* %val_int34.i, align 8, !tbaa !6
-  tail call void (i64, i8*, ...)* @dw2_asm_output_data_sleb128(i64 %22, i8* null) #9
-  br label %output_loc_operands.exit
+  %val_int34.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0, !dbg !7546
+  %22 = load i64* %val_int34.i, align 8, !dbg !7546, !tbaa !3782
+  tail call void (i64, i8*, ...)* @dw2_asm_output_data_sleb128(i64 %22, i8* null) #10, !dbg !7546
+  br label %output_loc_operands.exit, !dbg !7547
 
 sw.bb35.i:                                        ; preds = %dwarf_stack_op_name.exit
-  %val_unsigned37.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0
-  %23 = load i64* %val_unsigned37.i, align 8, !tbaa !6
-  tail call void (i64, i8*, ...)* @dw2_asm_output_data_uleb128(i64 %23, i8* null) #9
-  %val_int39.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 3, i32 1, i32 0, i32 0
-  %24 = load i64* %val_int39.i, align 8, !tbaa !6
-  tail call void (i64, i8*, ...)* @dw2_asm_output_data_sleb128(i64 %24, i8* null) #9
-  br label %output_loc_operands.exit
+  %val_unsigned37.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0, !dbg !7548
+  %23 = load i64* %val_unsigned37.i, align 8, !dbg !7548, !tbaa !3782
+  tail call void (i64, i8*, ...)* @dw2_asm_output_data_uleb128(i64 %23, i8* null) #10, !dbg !7548
+  %val_int39.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 3, i32 1, i32 0, i32 0, !dbg !7549
+  %24 = load i64* %val_int39.i, align 8, !dbg !7549, !tbaa !3782
+  tail call void (i64, i8*, ...)* @dw2_asm_output_data_sleb128(i64 %24, i8* null) #10, !dbg !7549
+  br label %output_loc_operands.exit, !dbg !7550
 
 sw.bb40.i:                                        ; preds = %dwarf_stack_op_name.exit
-  %val_unsigned42.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0
-  %25 = load i64* %val_unsigned42.i, align 8, !tbaa !6
-  tail call void (i64, i8*, ...)* @dw2_asm_output_data_uleb128(i64 %25, i8* null) #9
-  br label %output_loc_operands.exit
+  %val_unsigned42.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0, !dbg !7551
+  %25 = load i64* %val_unsigned42.i, align 8, !dbg !7551, !tbaa !3782
+  tail call void (i64, i8*, ...)* @dw2_asm_output_data_uleb128(i64 %25, i8* null) #10, !dbg !7551
+  br label %output_loc_operands.exit, !dbg !7552
 
 sw.bb43.i:                                        ; preds = %dwarf_stack_op_name.exit, %dwarf_stack_op_name.exit
-  %val_int45.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0
-  %26 = load i64* %val_int45.i, align 8, !tbaa !6
-  tail call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 1, i64 %26, i8* null) #9
-  br label %output_loc_operands.exit
+  %val_int45.i = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 2, i32 1, i32 0, i32 0, !dbg !7553
+  %26 = load i64* %val_int45.i, align 8, !dbg !7553, !tbaa !3782
+  tail call void (i32, i64, i8*, ...)* @dw2_asm_output_data(i32 1, i64 %26, i8* null) #10, !dbg !7553
+  br label %output_loc_operands.exit, !dbg !7554
 
 output_loc_operands.exit:                         ; preds = %dwarf_stack_op_name.exit, %sw.bb.i, %sw.bb1.i, %sw.bb3.i, %sw.bb6.i, %if.then.i, %sw.bb12.i, %sw.bb15.i, %sw.bb17.i, %sw.bb20.i, %sw.bb23.i, %sw.bb26.i, %sw.bb29.i, %sw.bb32.i, %sw.bb35.i, %sw.bb40.i, %sw.bb43.i
-  %dw_loc_next = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 0
-  %27 = load %struct.dw_loc_descr_struct** %dw_loc_next, align 8, !tbaa !4
-  %cmp = icmp eq %struct.dw_loc_descr_struct* %27, null
-  br i1 %cmp, label %for.end, label %for.body
+  %dw_loc_next = getelementptr inbounds %struct.dw_loc_descr_struct* %loc.addr.08, i64 0, i32 0, !dbg !7506
+  %27 = load %struct.dw_loc_descr_struct** %dw_loc_next, align 8, !dbg !7506, !tbaa !3768
+  tail call void @llvm.dbg.value(metadata !{%struct.dw_loc_descr_struct* %27}, i64 0, metadata !2152), !dbg !7506
+  %cmp = icmp eq %struct.dw_loc_descr_struct* %27, null, !dbg !7506
+  br i1 %cmp, label %for.end, label %for.body, !dbg !7506
 
 for.end:                                          ; preds = %output_loc_operands.exit, %entry
-  ret void
+  ret void, !dbg !7555
 }

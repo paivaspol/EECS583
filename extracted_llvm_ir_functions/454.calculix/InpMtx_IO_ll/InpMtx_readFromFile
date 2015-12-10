@@ -1,76 +1,88 @@
 define i32 @InpMtx_readFromFile(%struct._InpMtx* %inpmtx, i8* %fn) #0 {
 entry:
-  %cmp = icmp eq %struct._InpMtx* %inpmtx, null
-  %cmp1 = icmp eq i8* %fn, null
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._InpMtx* %inpmtx}, i64 0, metadata !50), !dbg !217
+  tail call void @llvm.dbg.value(metadata !{i8* %fn}, i64 0, metadata !51), !dbg !218
+  %cmp = icmp eq %struct._InpMtx* %inpmtx, null, !dbg !219
+  %cmp1 = icmp eq i8* %fn, null, !dbg !219
+  %or.cond = or i1 %cmp, %cmp1, !dbg !219
+  br i1 %or.cond, label %if.then, label %if.end, !dbg !219
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), %struct._InpMtx* %inpmtx, i8* %fn) #6
-  br label %return
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !220, !tbaa !222
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([50 x i8]* @.str, i64 0, i64 0), %struct._InpMtx* %inpmtx, i8* %fn) #7, !dbg !220
+  br label %return, !dbg !225
 
 if.end:                                           ; preds = %entry
-  %call2 = tail call i64 @strlen(i8* %fn) #7
-  %conv = trunc i64 %call2 to i32
-  %cmp5 = icmp sgt i32 %conv, 8
-  br i1 %cmp5, label %if.then7, label %if.else41
+  %call2 = tail call i64 @strlen(i8* %fn) #8, !dbg !226
+  %conv = trunc i64 %call2 to i32, !dbg !226
+  tail call void @llvm.dbg.value(metadata !{i32 %conv}, i64 0, metadata !108), !dbg !226
+  tail call void @llvm.dbg.value(metadata !227, i64 0, metadata !110), !dbg !228
+  %cmp5 = icmp sgt i32 %conv, 8, !dbg !229
+  br i1 %cmp5, label %if.then7, label %if.else41, !dbg !229
 
 if.then7:                                         ; preds = %if.end
-  %sub = shl i64 %call2, 32
-  %sext = add i64 %sub, -34359738368
-  %idxprom = ashr exact i64 %sext, 32
-  %arrayidx = getelementptr inbounds i8* %fn, i64 %idxprom
-  %call8 = tail call i32 @strcmp(i8* %arrayidx, i8* getelementptr inbounds ([9 x i8]* @.str67, i64 0, i64 0)) #7
-  %cmp9 = icmp eq i32 %call8, 0
-  br i1 %cmp9, label %if.then11, label %if.else20
+  %sub = shl i64 %call2, 32, !dbg !230
+  %sext = add i64 %sub, -34359738368, !dbg !230
+  %idxprom = ashr exact i64 %sext, 32, !dbg !230
+  %arrayidx = getelementptr inbounds i8* %fn, i64 %idxprom, !dbg !230
+  %call8 = tail call i32 @strcmp(i8* %arrayidx, i8* getelementptr inbounds ([9 x i8]* @.str67, i64 0, i64 0)) #8, !dbg !230
+  %cmp9 = icmp eq i32 %call8, 0, !dbg !230
+  br i1 %cmp9, label %if.then11, label %if.else20, !dbg !230
 
 if.then11:                                        ; preds = %if.then7
-  %call12 = tail call %struct._IO_FILE* @fopen(i8* %fn, i8* getelementptr inbounds ([3 x i8]* @.str1, i64 0, i64 0)) #6
-  %cmp13 = icmp eq %struct._IO_FILE* %call12, null
-  br i1 %cmp13, label %if.then15, label %if.else
+  %call12 = tail call %struct._IO_FILE* @fopen(i8* %fn, i8* getelementptr inbounds ([3 x i8]* @.str1, i64 0, i64 0)) #7, !dbg !232
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %call12}, i64 0, metadata !52), !dbg !232
+  %cmp13 = icmp eq %struct._IO_FILE* %call12, null, !dbg !232
+  br i1 %cmp13, label %if.then15, label %if.else, !dbg !232
 
 if.then15:                                        ; preds = %if.then11
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call16 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([62 x i8]* @.str2, i64 0, i64 0), %struct._InpMtx* %inpmtx, i8* %fn, i8* %fn) #6
-  br label %return
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !234, !tbaa !222
+  %call16 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([62 x i8]* @.str2, i64 0, i64 0), %struct._InpMtx* %inpmtx, i8* %fn, i8* %fn) #7, !dbg !234
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !109), !dbg !236
+  br label %return, !dbg !237
 
 if.else:                                          ; preds = %if.then11
-  %call17 = tail call i32 @InpMtx_readFromBinaryFile(%struct._InpMtx* %inpmtx, %struct._IO_FILE* %call12) #8
-  %call18 = tail call i32 @fclose(%struct._IO_FILE* %call12) #6
+  %call17 = tail call i32 @InpMtx_readFromBinaryFile(%struct._InpMtx* %inpmtx, %struct._IO_FILE* %call12) #9, !dbg !238
+  tail call void @llvm.dbg.value(metadata !{i32 %call17}, i64 0, metadata !109), !dbg !238
+  %call18 = tail call i32 @fclose(%struct._IO_FILE* %call12) #7, !dbg !240
   br label %return
 
 if.else20:                                        ; preds = %if.then7
-  %call24 = tail call i32 @strcmp(i8* %arrayidx, i8* getelementptr inbounds ([9 x i8]* @.str66, i64 0, i64 0)) #7
-  %cmp25 = icmp eq i32 %call24, 0
-  br i1 %cmp25, label %if.then27, label %if.else37
+  %call24 = tail call i32 @strcmp(i8* %arrayidx, i8* getelementptr inbounds ([9 x i8]* @.str66, i64 0, i64 0)) #8, !dbg !241
+  %cmp25 = icmp eq i32 %call24, 0, !dbg !241
+  br i1 %cmp25, label %if.then27, label %if.else37, !dbg !241
 
 if.then27:                                        ; preds = %if.else20
-  %call28 = tail call %struct._IO_FILE* @fopen(i8* %fn, i8* getelementptr inbounds ([2 x i8]* @.str3, i64 0, i64 0)) #6
-  %cmp29 = icmp eq %struct._IO_FILE* %call28, null
-  br i1 %cmp29, label %if.then31, label %if.else33
+  %call28 = tail call %struct._IO_FILE* @fopen(i8* %fn, i8* getelementptr inbounds ([2 x i8]* @.str3, i64 0, i64 0)) #7, !dbg !242
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %call28}, i64 0, metadata !52), !dbg !242
+  %cmp29 = icmp eq %struct._IO_FILE* %call28, null, !dbg !242
+  br i1 %cmp29, label %if.then31, label %if.else33, !dbg !242
 
 if.then31:                                        ; preds = %if.then27
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call32 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([62 x i8]* @.str2, i64 0, i64 0), %struct._InpMtx* %inpmtx, i8* %fn, i8* %fn) #6
-  br label %return
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !244, !tbaa !222
+  %call32 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([62 x i8]* @.str2, i64 0, i64 0), %struct._InpMtx* %inpmtx, i8* %fn, i8* %fn) #7, !dbg !244
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !109), !dbg !246
+  br label %return, !dbg !247
 
 if.else33:                                        ; preds = %if.then27
-  %call34 = tail call i32 @InpMtx_readFromFormattedFile(%struct._InpMtx* %inpmtx, %struct._IO_FILE* %call28) #8
-  %call35 = tail call i32 @fclose(%struct._IO_FILE* %call28) #6
+  %call34 = tail call i32 @InpMtx_readFromFormattedFile(%struct._InpMtx* %inpmtx, %struct._IO_FILE* %call28) #9, !dbg !248
+  tail call void @llvm.dbg.value(metadata !{i32 %call34}, i64 0, metadata !109), !dbg !248
+  %call35 = tail call i32 @fclose(%struct._IO_FILE* %call28) #7, !dbg !250
   br label %return
 
 if.else37:                                        ; preds = %if.else20
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call38 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([108 x i8]* @.str4, i64 0, i64 0), %struct._InpMtx* %inpmtx, i8* %fn, i8* %fn, i8* getelementptr inbounds ([9 x i8]* @.str67, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str66, i64 0, i64 0)) #6
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !251, !tbaa !222
+  %call38 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([108 x i8]* @.str4, i64 0, i64 0), %struct._InpMtx* %inpmtx, i8* %fn, i8* %fn, i8* getelementptr inbounds ([9 x i8]* @.str67, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str66, i64 0, i64 0)) #7, !dbg !251
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !109), !dbg !253
   br label %return
 
 if.else41:                                        ; preds = %if.end
-  %4 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call42 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([108 x i8]* @.str4, i64 0, i64 0), %struct._InpMtx* %inpmtx, i8* %fn, i8* %fn, i8* getelementptr inbounds ([9 x i8]* @.str67, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str66, i64 0, i64 0)) #6
+  %4 = load %struct._IO_FILE** @stderr, align 8, !dbg !254, !tbaa !222
+  %call42 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %4, i8* getelementptr inbounds ([108 x i8]* @.str4, i64 0, i64 0), %struct._InpMtx* %inpmtx, i8* %fn, i8* %fn, i8* getelementptr inbounds ([9 x i8]* @.str67, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str66, i64 0, i64 0)) #7, !dbg !254
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !109), !dbg !256
   br label %return
 
 return:                                           ; preds = %if.else41, %if.else37, %if.else33, %if.then31, %if.then15, %if.else, %if.then
   %retval.0 = phi i32 [ 0, %if.then ], [ 0, %if.then15 ], [ %call17, %if.else ], [ 0, %if.then31 ], [ %call34, %if.else33 ], [ 0, %if.else37 ], [ 0, %if.else41 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !257
 }

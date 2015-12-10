@@ -1,610 +1,614 @@
 define void @init_contexts() #0 {
 entry:
-  %0 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %currentSlice = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 50
-  %1 = load %struct.Slice** %currentSlice, align 8, !tbaa !0
-  %mot_ctx = getelementptr inbounds %struct.Slice* %1, i64 0, i32 7
-  %2 = load %struct.MotionInfoContexts** %mot_ctx, align 8, !tbaa !0
-  %tex_ctx = getelementptr inbounds %struct.Slice* %1, i64 0, i32 8
-  %3 = load %struct.TextureInfoContexts** %tex_ctx, align 8, !tbaa !0
-  br label %for.cond2.preheader
+  %0 = load %struct.ImageParameters** @img, align 8, !dbg !797, !tbaa !708
+  %currentSlice = getelementptr inbounds %struct.ImageParameters* %0, i64 0, i32 50, !dbg !797
+  %1 = load %struct.Slice** %currentSlice, align 8, !dbg !797, !tbaa !708
+  %mot_ctx = getelementptr inbounds %struct.Slice* %1, i64 0, i32 7, !dbg !797
+  %2 = load %struct.MotionInfoContexts** %mot_ctx, align 8, !dbg !797, !tbaa !708
+  tail call void @llvm.dbg.value(metadata !{%struct.MotionInfoContexts* %2}, i64 0, metadata !39), !dbg !797
+  %tex_ctx = getelementptr inbounds %struct.Slice* %1, i64 0, i32 8, !dbg !798
+  %3 = load %struct.TextureInfoContexts** %tex_ctx, align 8, !dbg !798, !tbaa !708
+  tail call void @llvm.dbg.value(metadata !{%struct.TextureInfoContexts* %3}, i64 0, metadata !79), !dbg !798
+  tail call void @llvm.dbg.value(metadata !16, i64 0, metadata !106), !dbg !799
+  br label %for.cond2.preheader, !dbg !799
 
 for.cond2.preheader:                              ; preds = %for.inc28, %entry
   %indvars.iv909 = phi i64 [ 0, %entry ], [ %indvars.iv.next910, %for.inc28 ]
-  br label %for.body4
+  br label %for.body4, !dbg !802
 
 for.body4:                                        ; preds = %for.inc, %for.cond2.preheader
   %indvars.iv905 = phi i64 [ 0, %for.cond2.preheader ], [ %indvars.iv.next906, %for.inc ]
-  %4 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 6
-  %5 = load i32* %type, align 4, !tbaa !3
-  %cmp5 = icmp eq i32 %5, 2
-  %arrayidx7 = getelementptr inbounds %struct.MotionInfoContexts* %2, i64 0, i32 0, i64 %indvars.iv909, i64 %indvars.iv905
-  %model_number = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 118
-  %6 = load i32* %model_number, align 4, !tbaa !3
-  %idxprom10 = sext i32 %6 to i64
-  br i1 %cmp5, label %if.then, label %if.else
+  %4 = load %struct.ImageParameters** @img, align 8, !dbg !804, !tbaa !708
+  %type = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 6, !dbg !804
+  %5 = load i32* %type, align 4, !dbg !804, !tbaa !711
+  %cmp5 = icmp eq i32 %5, 2, !dbg !804
+  %arrayidx7 = getelementptr inbounds %struct.MotionInfoContexts* %2, i64 0, i32 0, i64 %indvars.iv909, i64 %indvars.iv905, !dbg !804
+  %model_number = getelementptr inbounds %struct.ImageParameters* %4, i64 0, i32 118, !dbg !804
+  %6 = load i32* %model_number, align 4, !dbg !804, !tbaa !711
+  %idxprom10 = sext i32 %6 to i64, !dbg !804
+  br i1 %cmp5, label %if.then, label %if.else, !dbg !804
 
 if.then:                                          ; preds = %for.body4
-  %arrayidx14 = getelementptr inbounds [1 x [3 x [11 x [2 x i32]]]]* @INIT_MB_TYPE_I, i64 0, i64 %idxprom10, i64 %indvars.iv909, i64 %indvars.iv905, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx7, i32* %arrayidx14) #4
-  br label %for.inc
+  %arrayidx14 = getelementptr inbounds [1 x [3 x [11 x [2 x i32]]]]* @INIT_MB_TYPE_I, i64 0, i64 %idxprom10, i64 %indvars.iv909, i64 %indvars.iv905, i64 0, !dbg !804
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx7, i32* %arrayidx14) #5, !dbg !804
+  br label %for.inc, !dbg !804
 
 if.else:                                          ; preds = %for.body4
-  %arrayidx27 = getelementptr inbounds [3 x [3 x [11 x [2 x i32]]]]* @INIT_MB_TYPE_P, i64 0, i64 %idxprom10, i64 %indvars.iv909, i64 %indvars.iv905, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx7, i32* %arrayidx27) #4
+  %arrayidx27 = getelementptr inbounds [3 x [3 x [11 x [2 x i32]]]]* @INIT_MB_TYPE_P, i64 0, i64 %idxprom10, i64 %indvars.iv909, i64 %indvars.iv905, i64 0, !dbg !804
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx7, i32* %arrayidx27) #5, !dbg !804
   br label %for.inc
 
 for.inc:                                          ; preds = %if.then, %if.else
-  %indvars.iv.next906 = add i64 %indvars.iv905, 1
-  %lftr.wideiv907 = trunc i64 %indvars.iv.next906 to i32
-  %exitcond908 = icmp eq i32 %lftr.wideiv907, 11
-  br i1 %exitcond908, label %for.inc28, label %for.body4
+  %indvars.iv.next906 = add i64 %indvars.iv905, 1, !dbg !802
+  %lftr.wideiv907 = trunc i64 %indvars.iv.next906 to i32, !dbg !802
+  %exitcond908 = icmp eq i32 %lftr.wideiv907, 11, !dbg !802
+  br i1 %exitcond908, label %for.inc28, label %for.body4, !dbg !802
 
 for.inc28:                                        ; preds = %for.inc
-  %indvars.iv.next910 = add i64 %indvars.iv909, 1
-  %lftr.wideiv911 = trunc i64 %indvars.iv.next910 to i32
-  %exitcond912 = icmp eq i32 %lftr.wideiv911, 3
-  br i1 %exitcond912, label %for.cond34.preheader, label %for.cond2.preheader
+  %indvars.iv.next910 = add i64 %indvars.iv909, 1, !dbg !799
+  %lftr.wideiv911 = trunc i64 %indvars.iv.next910 to i32, !dbg !799
+  %exitcond912 = icmp eq i32 %lftr.wideiv911, 3, !dbg !799
+  br i1 %exitcond912, label %for.cond34.preheader, label %for.cond2.preheader, !dbg !799
 
 for.cond34.preheader:                             ; preds = %for.inc28, %for.inc70
   %indvars.iv901 = phi i64 [ %indvars.iv.next902, %for.inc70 ], [ 0, %for.inc28 ]
-  br label %for.body36
+  br label %for.body36, !dbg !806
 
 for.body36:                                       ; preds = %for.inc67, %for.cond34.preheader
   %indvars.iv897 = phi i64 [ 0, %for.cond34.preheader ], [ %indvars.iv.next898, %for.inc67 ]
-  %7 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type37 = getelementptr inbounds %struct.ImageParameters* %7, i64 0, i32 6
-  %8 = load i32* %type37, align 4, !tbaa !3
-  %cmp38 = icmp eq i32 %8, 2
-  %arrayidx43 = getelementptr inbounds %struct.MotionInfoContexts* %2, i64 0, i32 1, i64 %indvars.iv901, i64 %indvars.iv897
-  %model_number46 = getelementptr inbounds %struct.ImageParameters* %7, i64 0, i32 118
-  %9 = load i32* %model_number46, align 4, !tbaa !3
-  %idxprom47 = sext i32 %9 to i64
-  br i1 %cmp38, label %if.then39, label %if.else52
+  %7 = load %struct.ImageParameters** @img, align 8, !dbg !810, !tbaa !708
+  %type37 = getelementptr inbounds %struct.ImageParameters* %7, i64 0, i32 6, !dbg !810
+  %8 = load i32* %type37, align 4, !dbg !810, !tbaa !711
+  %cmp38 = icmp eq i32 %8, 2, !dbg !810
+  %arrayidx43 = getelementptr inbounds %struct.MotionInfoContexts* %2, i64 0, i32 1, i64 %indvars.iv901, i64 %indvars.iv897, !dbg !810
+  %model_number46 = getelementptr inbounds %struct.ImageParameters* %7, i64 0, i32 118, !dbg !810
+  %9 = load i32* %model_number46, align 4, !dbg !810, !tbaa !711
+  %idxprom47 = sext i32 %9 to i64, !dbg !810
+  br i1 %cmp38, label %if.then39, label %if.else52, !dbg !810
 
 if.then39:                                        ; preds = %for.body36
-  %arrayidx51 = getelementptr inbounds [1 x [2 x [9 x [2 x i32]]]]* @INIT_B8_TYPE_I, i64 0, i64 %idxprom47, i64 %indvars.iv901, i64 %indvars.iv897, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx43, i32* %arrayidx51) #4
-  br label %for.inc67
+  %arrayidx51 = getelementptr inbounds [1 x [2 x [9 x [2 x i32]]]]* @INIT_B8_TYPE_I, i64 0, i64 %idxprom47, i64 %indvars.iv901, i64 %indvars.iv897, i64 0, !dbg !810
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx43, i32* %arrayidx51) #5, !dbg !810
+  br label %for.inc67, !dbg !810
 
 if.else52:                                        ; preds = %for.body36
-  %arrayidx65 = getelementptr inbounds [3 x [2 x [9 x [2 x i32]]]]* @INIT_B8_TYPE_P, i64 0, i64 %idxprom47, i64 %indvars.iv901, i64 %indvars.iv897, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx43, i32* %arrayidx65) #4
+  %arrayidx65 = getelementptr inbounds [3 x [2 x [9 x [2 x i32]]]]* @INIT_B8_TYPE_P, i64 0, i64 %idxprom47, i64 %indvars.iv901, i64 %indvars.iv897, i64 0, !dbg !810
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx43, i32* %arrayidx65) #5, !dbg !810
   br label %for.inc67
 
 for.inc67:                                        ; preds = %if.then39, %if.else52
-  %indvars.iv.next898 = add i64 %indvars.iv897, 1
-  %lftr.wideiv899 = trunc i64 %indvars.iv.next898 to i32
-  %exitcond900 = icmp eq i32 %lftr.wideiv899, 9
-  br i1 %exitcond900, label %for.inc70, label %for.body36
+  %indvars.iv.next898 = add i64 %indvars.iv897, 1, !dbg !806
+  %lftr.wideiv899 = trunc i64 %indvars.iv.next898 to i32, !dbg !806
+  %exitcond900 = icmp eq i32 %lftr.wideiv899, 9, !dbg !806
+  br i1 %exitcond900, label %for.inc70, label %for.body36, !dbg !806
 
 for.inc70:                                        ; preds = %for.inc67
-  %indvars.iv.next902 = add i64 %indvars.iv901, 1
-  %lftr.wideiv903 = trunc i64 %indvars.iv.next902 to i32
-  %exitcond904 = icmp eq i32 %lftr.wideiv903, 2
-  br i1 %exitcond904, label %for.cond76.preheader, label %for.cond34.preheader
+  %indvars.iv.next902 = add i64 %indvars.iv901, 1, !dbg !812
+  %lftr.wideiv903 = trunc i64 %indvars.iv.next902 to i32, !dbg !812
+  %exitcond904 = icmp eq i32 %lftr.wideiv903, 2, !dbg !812
+  br i1 %exitcond904, label %for.cond76.preheader, label %for.cond34.preheader, !dbg !812
 
 for.cond76.preheader:                             ; preds = %for.inc70, %for.inc112
   %indvars.iv893 = phi i64 [ %indvars.iv.next894, %for.inc112 ], [ 0, %for.inc70 ]
-  br label %for.body78
+  br label %for.body78, !dbg !813
 
 for.body78:                                       ; preds = %for.inc109, %for.cond76.preheader
   %indvars.iv889 = phi i64 [ 0, %for.cond76.preheader ], [ %indvars.iv.next890, %for.inc109 ]
-  %10 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type79 = getelementptr inbounds %struct.ImageParameters* %10, i64 0, i32 6
-  %11 = load i32* %type79, align 4, !tbaa !3
-  %cmp80 = icmp eq i32 %11, 2
-  %arrayidx85 = getelementptr inbounds %struct.MotionInfoContexts* %2, i64 0, i32 2, i64 %indvars.iv893, i64 %indvars.iv889
-  %model_number88 = getelementptr inbounds %struct.ImageParameters* %10, i64 0, i32 118
-  %12 = load i32* %model_number88, align 4, !tbaa !3
-  %idxprom89 = sext i32 %12 to i64
-  br i1 %cmp80, label %if.then81, label %if.else94
+  %10 = load %struct.ImageParameters** @img, align 8, !dbg !817, !tbaa !708
+  %type79 = getelementptr inbounds %struct.ImageParameters* %10, i64 0, i32 6, !dbg !817
+  %11 = load i32* %type79, align 4, !dbg !817, !tbaa !711
+  %cmp80 = icmp eq i32 %11, 2, !dbg !817
+  %arrayidx85 = getelementptr inbounds %struct.MotionInfoContexts* %2, i64 0, i32 2, i64 %indvars.iv893, i64 %indvars.iv889, !dbg !817
+  %model_number88 = getelementptr inbounds %struct.ImageParameters* %10, i64 0, i32 118, !dbg !817
+  %12 = load i32* %model_number88, align 4, !dbg !817, !tbaa !711
+  %idxprom89 = sext i32 %12 to i64, !dbg !817
+  br i1 %cmp80, label %if.then81, label %if.else94, !dbg !817
 
 if.then81:                                        ; preds = %for.body78
-  %arrayidx93 = getelementptr inbounds [1 x [2 x [10 x [2 x i32]]]]* @INIT_MV_RES_I, i64 0, i64 %idxprom89, i64 %indvars.iv893, i64 %indvars.iv889, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx85, i32* %arrayidx93) #4
-  br label %for.inc109
+  %arrayidx93 = getelementptr inbounds [1 x [2 x [10 x [2 x i32]]]]* @INIT_MV_RES_I, i64 0, i64 %idxprom89, i64 %indvars.iv893, i64 %indvars.iv889, i64 0, !dbg !817
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx85, i32* %arrayidx93) #5, !dbg !817
+  br label %for.inc109, !dbg !817
 
 if.else94:                                        ; preds = %for.body78
-  %arrayidx107 = getelementptr inbounds [3 x [2 x [10 x [2 x i32]]]]* @INIT_MV_RES_P, i64 0, i64 %idxprom89, i64 %indvars.iv893, i64 %indvars.iv889, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx85, i32* %arrayidx107) #4
+  %arrayidx107 = getelementptr inbounds [3 x [2 x [10 x [2 x i32]]]]* @INIT_MV_RES_P, i64 0, i64 %idxprom89, i64 %indvars.iv893, i64 %indvars.iv889, i64 0, !dbg !817
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx85, i32* %arrayidx107) #5, !dbg !817
   br label %for.inc109
 
 for.inc109:                                       ; preds = %if.then81, %if.else94
-  %indvars.iv.next890 = add i64 %indvars.iv889, 1
-  %lftr.wideiv891 = trunc i64 %indvars.iv.next890 to i32
-  %exitcond892 = icmp eq i32 %lftr.wideiv891, 10
-  br i1 %exitcond892, label %for.inc112, label %for.body78
+  %indvars.iv.next890 = add i64 %indvars.iv889, 1, !dbg !813
+  %lftr.wideiv891 = trunc i64 %indvars.iv.next890 to i32, !dbg !813
+  %exitcond892 = icmp eq i32 %lftr.wideiv891, 10, !dbg !813
+  br i1 %exitcond892, label %for.inc112, label %for.body78, !dbg !813
 
 for.inc112:                                       ; preds = %for.inc109
-  %indvars.iv.next894 = add i64 %indvars.iv893, 1
-  %lftr.wideiv895 = trunc i64 %indvars.iv.next894 to i32
-  %exitcond896 = icmp eq i32 %lftr.wideiv895, 2
-  br i1 %exitcond896, label %for.cond118.preheader, label %for.cond76.preheader
+  %indvars.iv.next894 = add i64 %indvars.iv893, 1, !dbg !819
+  %lftr.wideiv895 = trunc i64 %indvars.iv.next894 to i32, !dbg !819
+  %exitcond896 = icmp eq i32 %lftr.wideiv895, 2, !dbg !819
+  br i1 %exitcond896, label %for.cond118.preheader, label %for.cond76.preheader, !dbg !819
 
 for.cond118.preheader:                            ; preds = %for.inc112, %for.inc154
   %indvars.iv885 = phi i64 [ %indvars.iv.next886, %for.inc154 ], [ 0, %for.inc112 ]
-  br label %for.body120
+  br label %for.body120, !dbg !820
 
 for.body120:                                      ; preds = %for.inc151, %for.cond118.preheader
   %indvars.iv881 = phi i64 [ 0, %for.cond118.preheader ], [ %indvars.iv.next882, %for.inc151 ]
-  %13 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type121 = getelementptr inbounds %struct.ImageParameters* %13, i64 0, i32 6
-  %14 = load i32* %type121, align 4, !tbaa !3
-  %cmp122 = icmp eq i32 %14, 2
-  %arrayidx127 = getelementptr inbounds %struct.MotionInfoContexts* %2, i64 0, i32 3, i64 %indvars.iv885, i64 %indvars.iv881
-  %model_number130 = getelementptr inbounds %struct.ImageParameters* %13, i64 0, i32 118
-  %15 = load i32* %model_number130, align 4, !tbaa !3
-  %idxprom131 = sext i32 %15 to i64
-  br i1 %cmp122, label %if.then123, label %if.else136
+  %13 = load %struct.ImageParameters** @img, align 8, !dbg !824, !tbaa !708
+  %type121 = getelementptr inbounds %struct.ImageParameters* %13, i64 0, i32 6, !dbg !824
+  %14 = load i32* %type121, align 4, !dbg !824, !tbaa !711
+  %cmp122 = icmp eq i32 %14, 2, !dbg !824
+  %arrayidx127 = getelementptr inbounds %struct.MotionInfoContexts* %2, i64 0, i32 3, i64 %indvars.iv885, i64 %indvars.iv881, !dbg !824
+  %model_number130 = getelementptr inbounds %struct.ImageParameters* %13, i64 0, i32 118, !dbg !824
+  %15 = load i32* %model_number130, align 4, !dbg !824, !tbaa !711
+  %idxprom131 = sext i32 %15 to i64, !dbg !824
+  br i1 %cmp122, label %if.then123, label %if.else136, !dbg !824
 
 if.then123:                                       ; preds = %for.body120
-  %arrayidx135 = getelementptr inbounds [1 x [2 x [6 x [2 x i32]]]]* @INIT_REF_NO_I, i64 0, i64 %idxprom131, i64 %indvars.iv885, i64 %indvars.iv881, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx127, i32* %arrayidx135) #4
-  br label %for.inc151
+  %arrayidx135 = getelementptr inbounds [1 x [2 x [6 x [2 x i32]]]]* @INIT_REF_NO_I, i64 0, i64 %idxprom131, i64 %indvars.iv885, i64 %indvars.iv881, i64 0, !dbg !824
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx127, i32* %arrayidx135) #5, !dbg !824
+  br label %for.inc151, !dbg !824
 
 if.else136:                                       ; preds = %for.body120
-  %arrayidx149 = getelementptr inbounds [3 x [2 x [6 x [2 x i32]]]]* @INIT_REF_NO_P, i64 0, i64 %idxprom131, i64 %indvars.iv885, i64 %indvars.iv881, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx127, i32* %arrayidx149) #4
+  %arrayidx149 = getelementptr inbounds [3 x [2 x [6 x [2 x i32]]]]* @INIT_REF_NO_P, i64 0, i64 %idxprom131, i64 %indvars.iv885, i64 %indvars.iv881, i64 0, !dbg !824
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx127, i32* %arrayidx149) #5, !dbg !824
   br label %for.inc151
 
 for.inc151:                                       ; preds = %if.then123, %if.else136
-  %indvars.iv.next882 = add i64 %indvars.iv881, 1
-  %lftr.wideiv883 = trunc i64 %indvars.iv.next882 to i32
-  %exitcond884 = icmp eq i32 %lftr.wideiv883, 6
-  br i1 %exitcond884, label %for.inc154, label %for.body120
+  %indvars.iv.next882 = add i64 %indvars.iv881, 1, !dbg !820
+  %lftr.wideiv883 = trunc i64 %indvars.iv.next882 to i32, !dbg !820
+  %exitcond884 = icmp eq i32 %lftr.wideiv883, 6, !dbg !820
+  br i1 %exitcond884, label %for.inc154, label %for.body120, !dbg !820
 
 for.inc154:                                       ; preds = %for.inc151
-  %indvars.iv.next886 = add i64 %indvars.iv885, 1
-  %lftr.wideiv887 = trunc i64 %indvars.iv.next886 to i32
-  %exitcond888 = icmp eq i32 %lftr.wideiv887, 2
-  br i1 %exitcond888, label %for.body159, label %for.cond118.preheader
+  %indvars.iv.next886 = add i64 %indvars.iv885, 1, !dbg !826
+  tail call void @llvm.dbg.value(metadata !16, i64 0, metadata !107), !dbg !820
+  %lftr.wideiv887 = trunc i64 %indvars.iv.next886 to i32, !dbg !826
+  %exitcond888 = icmp eq i32 %lftr.wideiv887, 2, !dbg !826
+  br i1 %exitcond888, label %for.body159, label %for.cond118.preheader, !dbg !826
 
 for.body159:                                      ; preds = %for.inc154, %for.inc184
   %indvars.iv877 = phi i64 [ %indvars.iv.next878, %for.inc184 ], [ 0, %for.inc154 ]
-  %16 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type160 = getelementptr inbounds %struct.ImageParameters* %16, i64 0, i32 6
-  %17 = load i32* %type160, align 4, !tbaa !3
-  %cmp161 = icmp eq i32 %17, 2
-  %arrayidx164 = getelementptr inbounds %struct.MotionInfoContexts* %2, i64 0, i32 4, i64 %indvars.iv877
-  %model_number166 = getelementptr inbounds %struct.ImageParameters* %16, i64 0, i32 118
-  %18 = load i32* %model_number166, align 4, !tbaa !3
-  %idxprom167 = sext i32 %18 to i64
-  br i1 %cmp161, label %if.then162, label %if.else172
+  %16 = load %struct.ImageParameters** @img, align 8, !dbg !827, !tbaa !708
+  %type160 = getelementptr inbounds %struct.ImageParameters* %16, i64 0, i32 6, !dbg !827
+  %17 = load i32* %type160, align 4, !dbg !827, !tbaa !711
+  %cmp161 = icmp eq i32 %17, 2, !dbg !827
+  %arrayidx164 = getelementptr inbounds %struct.MotionInfoContexts* %2, i64 0, i32 4, i64 %indvars.iv877, !dbg !827
+  %model_number166 = getelementptr inbounds %struct.ImageParameters* %16, i64 0, i32 118, !dbg !827
+  %18 = load i32* %model_number166, align 4, !dbg !827, !tbaa !711
+  %idxprom167 = sext i32 %18 to i64, !dbg !827
+  br i1 %cmp161, label %if.then162, label %if.else172, !dbg !827
 
 if.then162:                                       ; preds = %for.body159
-  %arrayidx171 = getelementptr inbounds [1 x [1 x [4 x [2 x i32]]]]* @INIT_DELTA_QP_I, i64 0, i64 %idxprom167, i64 0, i64 %indvars.iv877, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx164, i32* %arrayidx171) #4
-  br label %for.inc184
+  %arrayidx171 = getelementptr inbounds [1 x [1 x [4 x [2 x i32]]]]* @INIT_DELTA_QP_I, i64 0, i64 %idxprom167, i64 0, i64 %indvars.iv877, i64 0, !dbg !827
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx164, i32* %arrayidx171) #5, !dbg !827
+  br label %for.inc184, !dbg !827
 
 if.else172:                                       ; preds = %for.body159
-  %arrayidx182 = getelementptr inbounds [3 x [1 x [4 x [2 x i32]]]]* @INIT_DELTA_QP_P, i64 0, i64 %idxprom167, i64 0, i64 %indvars.iv877, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx164, i32* %arrayidx182) #4
+  %arrayidx182 = getelementptr inbounds [3 x [1 x [4 x [2 x i32]]]]* @INIT_DELTA_QP_P, i64 0, i64 %idxprom167, i64 0, i64 %indvars.iv877, i64 0, !dbg !827
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx164, i32* %arrayidx182) #5, !dbg !827
   br label %for.inc184
 
 for.inc184:                                       ; preds = %if.then162, %if.else172
-  %indvars.iv.next878 = add i64 %indvars.iv877, 1
-  %lftr.wideiv879 = trunc i64 %indvars.iv.next878 to i32
-  %exitcond880 = icmp eq i32 %lftr.wideiv879, 4
-  br i1 %exitcond880, label %for.body189, label %for.body159
+  %indvars.iv.next878 = add i64 %indvars.iv877, 1, !dbg !831
+  %lftr.wideiv879 = trunc i64 %indvars.iv.next878 to i32, !dbg !831
+  %exitcond880 = icmp eq i32 %lftr.wideiv879, 4, !dbg !831
+  br i1 %exitcond880, label %for.body189, label %for.body159, !dbg !831
 
 for.body189:                                      ; preds = %for.inc184, %for.inc214
   %indvars.iv873 = phi i64 [ %indvars.iv.next874, %for.inc214 ], [ 0, %for.inc184 ]
-  %19 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type190 = getelementptr inbounds %struct.ImageParameters* %19, i64 0, i32 6
-  %20 = load i32* %type190, align 4, !tbaa !3
-  %cmp191 = icmp eq i32 %20, 2
-  %arrayidx194 = getelementptr inbounds %struct.MotionInfoContexts* %2, i64 0, i32 5, i64 %indvars.iv873
-  %model_number196 = getelementptr inbounds %struct.ImageParameters* %19, i64 0, i32 118
-  %21 = load i32* %model_number196, align 4, !tbaa !3
-  %idxprom197 = sext i32 %21 to i64
-  br i1 %cmp191, label %if.then192, label %if.else202
+  %19 = load %struct.ImageParameters** @img, align 8, !dbg !832, !tbaa !708
+  %type190 = getelementptr inbounds %struct.ImageParameters* %19, i64 0, i32 6, !dbg !832
+  %20 = load i32* %type190, align 4, !dbg !832, !tbaa !711
+  %cmp191 = icmp eq i32 %20, 2, !dbg !832
+  %arrayidx194 = getelementptr inbounds %struct.MotionInfoContexts* %2, i64 0, i32 5, i64 %indvars.iv873, !dbg !832
+  %model_number196 = getelementptr inbounds %struct.ImageParameters* %19, i64 0, i32 118, !dbg !832
+  %21 = load i32* %model_number196, align 4, !dbg !832, !tbaa !711
+  %idxprom197 = sext i32 %21 to i64, !dbg !832
+  br i1 %cmp191, label %if.then192, label %if.else202, !dbg !832
 
 if.then192:                                       ; preds = %for.body189
-  %arrayidx201 = getelementptr inbounds [1 x [1 x [4 x [2 x i32]]]]* @INIT_MB_AFF_I, i64 0, i64 %idxprom197, i64 0, i64 %indvars.iv873, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx194, i32* %arrayidx201) #4
-  br label %for.inc214
+  %arrayidx201 = getelementptr inbounds [1 x [1 x [4 x [2 x i32]]]]* @INIT_MB_AFF_I, i64 0, i64 %idxprom197, i64 0, i64 %indvars.iv873, i64 0, !dbg !832
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx194, i32* %arrayidx201) #5, !dbg !832
+  br label %for.inc214, !dbg !832
 
 if.else202:                                       ; preds = %for.body189
-  %arrayidx212 = getelementptr inbounds [3 x [1 x [4 x [2 x i32]]]]* @INIT_MB_AFF_P, i64 0, i64 %idxprom197, i64 0, i64 %indvars.iv873, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx194, i32* %arrayidx212) #4
+  %arrayidx212 = getelementptr inbounds [3 x [1 x [4 x [2 x i32]]]]* @INIT_MB_AFF_P, i64 0, i64 %idxprom197, i64 0, i64 %indvars.iv873, i64 0, !dbg !832
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx194, i32* %arrayidx212) #5, !dbg !832
   br label %for.inc214
 
 for.inc214:                                       ; preds = %if.then192, %if.else202
-  %indvars.iv.next874 = add i64 %indvars.iv873, 1
-  %lftr.wideiv875 = trunc i64 %indvars.iv.next874 to i32
-  %exitcond876 = icmp eq i32 %lftr.wideiv875, 4
-  br i1 %exitcond876, label %for.body219, label %for.body189
+  %indvars.iv.next874 = add i64 %indvars.iv873, 1, !dbg !836
+  %lftr.wideiv875 = trunc i64 %indvars.iv.next874 to i32, !dbg !836
+  %exitcond876 = icmp eq i32 %lftr.wideiv875, 4, !dbg !836
+  br i1 %exitcond876, label %for.body219, label %for.body189, !dbg !836
 
 for.body219:                                      ; preds = %for.inc214, %for.inc244
   %indvars.iv869 = phi i64 [ %indvars.iv.next870, %for.inc244 ], [ 0, %for.inc214 ]
-  %22 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type220 = getelementptr inbounds %struct.ImageParameters* %22, i64 0, i32 6
-  %23 = load i32* %type220, align 4, !tbaa !3
-  %cmp221 = icmp eq i32 %23, 2
-  %arrayidx224 = getelementptr inbounds %struct.MotionInfoContexts* %2, i64 0, i32 6, i64 %indvars.iv869
-  %model_number226 = getelementptr inbounds %struct.ImageParameters* %22, i64 0, i32 118
-  %24 = load i32* %model_number226, align 4, !tbaa !3
-  %idxprom227 = sext i32 %24 to i64
-  br i1 %cmp221, label %if.then222, label %if.else232
+  %22 = load %struct.ImageParameters** @img, align 8, !dbg !837, !tbaa !708
+  %type220 = getelementptr inbounds %struct.ImageParameters* %22, i64 0, i32 6, !dbg !837
+  %23 = load i32* %type220, align 4, !dbg !837, !tbaa !711
+  %cmp221 = icmp eq i32 %23, 2, !dbg !837
+  %arrayidx224 = getelementptr inbounds %struct.MotionInfoContexts* %2, i64 0, i32 6, i64 %indvars.iv869, !dbg !837
+  %model_number226 = getelementptr inbounds %struct.ImageParameters* %22, i64 0, i32 118, !dbg !837
+  %24 = load i32* %model_number226, align 4, !dbg !837, !tbaa !711
+  %idxprom227 = sext i32 %24 to i64, !dbg !837
+  br i1 %cmp221, label %if.then222, label %if.else232, !dbg !837
 
 if.then222:                                       ; preds = %for.body219
-  %arrayidx231 = getelementptr inbounds [1 x [1 x [3 x [2 x i32]]]]* @INIT_TRANSFORM_SIZE_I, i64 0, i64 %idxprom227, i64 0, i64 %indvars.iv869, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx224, i32* %arrayidx231) #4
-  br label %for.inc244
+  %arrayidx231 = getelementptr inbounds [1 x [1 x [3 x [2 x i32]]]]* @INIT_TRANSFORM_SIZE_I, i64 0, i64 %idxprom227, i64 0, i64 %indvars.iv869, i64 0, !dbg !837
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx224, i32* %arrayidx231) #5, !dbg !837
+  br label %for.inc244, !dbg !837
 
 if.else232:                                       ; preds = %for.body219
-  %arrayidx242 = getelementptr inbounds [3 x [1 x [3 x [2 x i32]]]]* @INIT_TRANSFORM_SIZE_P, i64 0, i64 %idxprom227, i64 0, i64 %indvars.iv869, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx224, i32* %arrayidx242) #4
+  %arrayidx242 = getelementptr inbounds [3 x [1 x [3 x [2 x i32]]]]* @INIT_TRANSFORM_SIZE_P, i64 0, i64 %idxprom227, i64 0, i64 %indvars.iv869, i64 0, !dbg !837
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx224, i32* %arrayidx242) #5, !dbg !837
   br label %for.inc244
 
 for.inc244:                                       ; preds = %if.then222, %if.else232
-  %indvars.iv.next870 = add i64 %indvars.iv869, 1
-  %lftr.wideiv871 = trunc i64 %indvars.iv.next870 to i32
-  %exitcond872 = icmp eq i32 %lftr.wideiv871, 3
-  br i1 %exitcond872, label %for.body249, label %for.body219
+  %indvars.iv.next870 = add i64 %indvars.iv869, 1, !dbg !841
+  %lftr.wideiv871 = trunc i64 %indvars.iv.next870 to i32, !dbg !841
+  %exitcond872 = icmp eq i32 %lftr.wideiv871, 3, !dbg !841
+  br i1 %exitcond872, label %for.body249, label %for.body219, !dbg !841
 
 for.body249:                                      ; preds = %for.inc244, %for.inc274
   %indvars.iv865 = phi i64 [ %indvars.iv.next866, %for.inc274 ], [ 0, %for.inc244 ]
-  %25 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type250 = getelementptr inbounds %struct.ImageParameters* %25, i64 0, i32 6
-  %26 = load i32* %type250, align 4, !tbaa !3
-  %cmp251 = icmp eq i32 %26, 2
-  %arrayidx254 = getelementptr inbounds %struct.TextureInfoContexts* %3, i64 0, i32 0, i64 %indvars.iv865
-  %model_number256 = getelementptr inbounds %struct.ImageParameters* %25, i64 0, i32 118
-  %27 = load i32* %model_number256, align 4, !tbaa !3
-  %idxprom257 = sext i32 %27 to i64
-  br i1 %cmp251, label %if.then252, label %if.else262
+  %25 = load %struct.ImageParameters** @img, align 8, !dbg !842, !tbaa !708
+  %type250 = getelementptr inbounds %struct.ImageParameters* %25, i64 0, i32 6, !dbg !842
+  %26 = load i32* %type250, align 4, !dbg !842, !tbaa !711
+  %cmp251 = icmp eq i32 %26, 2, !dbg !842
+  %arrayidx254 = getelementptr inbounds %struct.TextureInfoContexts* %3, i64 0, i32 0, i64 %indvars.iv865, !dbg !842
+  %model_number256 = getelementptr inbounds %struct.ImageParameters* %25, i64 0, i32 118, !dbg !842
+  %27 = load i32* %model_number256, align 4, !dbg !842, !tbaa !711
+  %idxprom257 = sext i32 %27 to i64, !dbg !842
+  br i1 %cmp251, label %if.then252, label %if.else262, !dbg !842
 
 if.then252:                                       ; preds = %for.body249
-  %arrayidx261 = getelementptr inbounds [1 x [1 x [2 x [2 x i32]]]]* @INIT_IPR_I, i64 0, i64 %idxprom257, i64 0, i64 %indvars.iv865, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx254, i32* %arrayidx261) #4
-  br label %for.inc274
+  %arrayidx261 = getelementptr inbounds [1 x [1 x [2 x [2 x i32]]]]* @INIT_IPR_I, i64 0, i64 %idxprom257, i64 0, i64 %indvars.iv865, i64 0, !dbg !842
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx254, i32* %arrayidx261) #5, !dbg !842
+  br label %for.inc274, !dbg !842
 
 if.else262:                                       ; preds = %for.body249
-  %arrayidx272 = getelementptr inbounds [3 x [1 x [2 x [2 x i32]]]]* @INIT_IPR_P, i64 0, i64 %idxprom257, i64 0, i64 %indvars.iv865, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx254, i32* %arrayidx272) #4
+  %arrayidx272 = getelementptr inbounds [3 x [1 x [2 x [2 x i32]]]]* @INIT_IPR_P, i64 0, i64 %idxprom257, i64 0, i64 %indvars.iv865, i64 0, !dbg !842
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx254, i32* %arrayidx272) #5, !dbg !842
   br label %for.inc274
 
 for.inc274:                                       ; preds = %if.then252, %if.else262
-  %indvars.iv.next866 = add i64 %indvars.iv865, 1
-  %lftr.wideiv867 = trunc i64 %indvars.iv.next866 to i32
-  %exitcond868 = icmp eq i32 %lftr.wideiv867, 2
-  br i1 %exitcond868, label %for.body279, label %for.body249
+  %indvars.iv.next866 = add i64 %indvars.iv865, 1, !dbg !846
+  %lftr.wideiv867 = trunc i64 %indvars.iv.next866 to i32, !dbg !846
+  %exitcond868 = icmp eq i32 %lftr.wideiv867, 2, !dbg !846
+  br i1 %exitcond868, label %for.body279, label %for.body249, !dbg !846
 
 for.body279:                                      ; preds = %for.inc274, %for.inc304
   %indvars.iv861 = phi i64 [ %indvars.iv.next862, %for.inc304 ], [ 0, %for.inc274 ]
-  %28 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type280 = getelementptr inbounds %struct.ImageParameters* %28, i64 0, i32 6
-  %29 = load i32* %type280, align 4, !tbaa !3
-  %cmp281 = icmp eq i32 %29, 2
-  %arrayidx284 = getelementptr inbounds %struct.TextureInfoContexts* %3, i64 0, i32 1, i64 %indvars.iv861
-  %model_number286 = getelementptr inbounds %struct.ImageParameters* %28, i64 0, i32 118
-  %30 = load i32* %model_number286, align 4, !tbaa !3
-  %idxprom287 = sext i32 %30 to i64
-  br i1 %cmp281, label %if.then282, label %if.else292
+  %28 = load %struct.ImageParameters** @img, align 8, !dbg !847, !tbaa !708
+  %type280 = getelementptr inbounds %struct.ImageParameters* %28, i64 0, i32 6, !dbg !847
+  %29 = load i32* %type280, align 4, !dbg !847, !tbaa !711
+  %cmp281 = icmp eq i32 %29, 2, !dbg !847
+  %arrayidx284 = getelementptr inbounds %struct.TextureInfoContexts* %3, i64 0, i32 1, i64 %indvars.iv861, !dbg !847
+  %model_number286 = getelementptr inbounds %struct.ImageParameters* %28, i64 0, i32 118, !dbg !847
+  %30 = load i32* %model_number286, align 4, !dbg !847, !tbaa !711
+  %idxprom287 = sext i32 %30 to i64, !dbg !847
+  br i1 %cmp281, label %if.then282, label %if.else292, !dbg !847
 
 if.then282:                                       ; preds = %for.body279
-  %arrayidx291 = getelementptr inbounds [1 x [1 x [4 x [2 x i32]]]]* @INIT_CIPR_I, i64 0, i64 %idxprom287, i64 0, i64 %indvars.iv861, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx284, i32* %arrayidx291) #4
-  br label %for.inc304
+  %arrayidx291 = getelementptr inbounds [1 x [1 x [4 x [2 x i32]]]]* @INIT_CIPR_I, i64 0, i64 %idxprom287, i64 0, i64 %indvars.iv861, i64 0, !dbg !847
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx284, i32* %arrayidx291) #5, !dbg !847
+  br label %for.inc304, !dbg !847
 
 if.else292:                                       ; preds = %for.body279
-  %arrayidx302 = getelementptr inbounds [3 x [1 x [4 x [2 x i32]]]]* @INIT_CIPR_P, i64 0, i64 %idxprom287, i64 0, i64 %indvars.iv861, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx284, i32* %arrayidx302) #4
+  %arrayidx302 = getelementptr inbounds [3 x [1 x [4 x [2 x i32]]]]* @INIT_CIPR_P, i64 0, i64 %idxprom287, i64 0, i64 %indvars.iv861, i64 0, !dbg !847
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx284, i32* %arrayidx302) #5, !dbg !847
   br label %for.inc304
 
 for.inc304:                                       ; preds = %if.then282, %if.else292
-  %indvars.iv.next862 = add i64 %indvars.iv861, 1
-  %lftr.wideiv863 = trunc i64 %indvars.iv.next862 to i32
-  %exitcond864 = icmp eq i32 %lftr.wideiv863, 4
-  br i1 %exitcond864, label %for.cond310.preheader, label %for.body279
+  %indvars.iv.next862 = add i64 %indvars.iv861, 1, !dbg !851
+  %lftr.wideiv863 = trunc i64 %indvars.iv.next862 to i32, !dbg !851
+  %exitcond864 = icmp eq i32 %lftr.wideiv863, 4, !dbg !851
+  br i1 %exitcond864, label %for.cond310.preheader, label %for.body279, !dbg !851
 
 for.cond310.preheader:                            ; preds = %for.inc304, %for.inc346
   %indvars.iv857 = phi i64 [ %indvars.iv.next858, %for.inc346 ], [ 0, %for.inc304 ]
-  br label %for.body312
+  br label %for.body312, !dbg !852
 
 for.body312:                                      ; preds = %for.inc343, %for.cond310.preheader
   %indvars.iv853 = phi i64 [ 0, %for.cond310.preheader ], [ %indvars.iv.next854, %for.inc343 ]
-  %31 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type313 = getelementptr inbounds %struct.ImageParameters* %31, i64 0, i32 6
-  %32 = load i32* %type313, align 4, !tbaa !3
-  %cmp314 = icmp eq i32 %32, 2
-  %arrayidx319 = getelementptr inbounds %struct.TextureInfoContexts* %3, i64 0, i32 2, i64 %indvars.iv857, i64 %indvars.iv853
-  %model_number322 = getelementptr inbounds %struct.ImageParameters* %31, i64 0, i32 118
-  %33 = load i32* %model_number322, align 4, !tbaa !3
-  %idxprom323 = sext i32 %33 to i64
-  br i1 %cmp314, label %if.then315, label %if.else328
+  %31 = load %struct.ImageParameters** @img, align 8, !dbg !856, !tbaa !708
+  %type313 = getelementptr inbounds %struct.ImageParameters* %31, i64 0, i32 6, !dbg !856
+  %32 = load i32* %type313, align 4, !dbg !856, !tbaa !711
+  %cmp314 = icmp eq i32 %32, 2, !dbg !856
+  %arrayidx319 = getelementptr inbounds %struct.TextureInfoContexts* %3, i64 0, i32 2, i64 %indvars.iv857, i64 %indvars.iv853, !dbg !856
+  %model_number322 = getelementptr inbounds %struct.ImageParameters* %31, i64 0, i32 118, !dbg !856
+  %33 = load i32* %model_number322, align 4, !dbg !856, !tbaa !711
+  %idxprom323 = sext i32 %33 to i64, !dbg !856
+  br i1 %cmp314, label %if.then315, label %if.else328, !dbg !856
 
 if.then315:                                       ; preds = %for.body312
-  %arrayidx327 = getelementptr inbounds [1 x [3 x [4 x [2 x i32]]]]* @INIT_CBP_I, i64 0, i64 %idxprom323, i64 %indvars.iv857, i64 %indvars.iv853, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx319, i32* %arrayidx327) #4
-  br label %for.inc343
+  %arrayidx327 = getelementptr inbounds [1 x [3 x [4 x [2 x i32]]]]* @INIT_CBP_I, i64 0, i64 %idxprom323, i64 %indvars.iv857, i64 %indvars.iv853, i64 0, !dbg !856
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx319, i32* %arrayidx327) #5, !dbg !856
+  br label %for.inc343, !dbg !856
 
 if.else328:                                       ; preds = %for.body312
-  %arrayidx341 = getelementptr inbounds [3 x [3 x [4 x [2 x i32]]]]* @INIT_CBP_P, i64 0, i64 %idxprom323, i64 %indvars.iv857, i64 %indvars.iv853, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx319, i32* %arrayidx341) #4
+  %arrayidx341 = getelementptr inbounds [3 x [3 x [4 x [2 x i32]]]]* @INIT_CBP_P, i64 0, i64 %idxprom323, i64 %indvars.iv857, i64 %indvars.iv853, i64 0, !dbg !856
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx319, i32* %arrayidx341) #5, !dbg !856
   br label %for.inc343
 
 for.inc343:                                       ; preds = %if.then315, %if.else328
-  %indvars.iv.next854 = add i64 %indvars.iv853, 1
-  %lftr.wideiv855 = trunc i64 %indvars.iv.next854 to i32
-  %exitcond856 = icmp eq i32 %lftr.wideiv855, 4
-  br i1 %exitcond856, label %for.inc346, label %for.body312
+  %indvars.iv.next854 = add i64 %indvars.iv853, 1, !dbg !852
+  %lftr.wideiv855 = trunc i64 %indvars.iv.next854 to i32, !dbg !852
+  %exitcond856 = icmp eq i32 %lftr.wideiv855, 4, !dbg !852
+  br i1 %exitcond856, label %for.inc346, label %for.body312, !dbg !852
 
 for.inc346:                                       ; preds = %for.inc343
-  %indvars.iv.next858 = add i64 %indvars.iv857, 1
-  %lftr.wideiv859 = trunc i64 %indvars.iv.next858 to i32
-  %exitcond860 = icmp eq i32 %lftr.wideiv859, 3
-  br i1 %exitcond860, label %for.cond352.preheader, label %for.cond310.preheader
+  %indvars.iv.next858 = add i64 %indvars.iv857, 1, !dbg !858
+  %lftr.wideiv859 = trunc i64 %indvars.iv.next858 to i32, !dbg !858
+  %exitcond860 = icmp eq i32 %lftr.wideiv859, 3, !dbg !858
+  br i1 %exitcond860, label %for.cond352.preheader, label %for.cond310.preheader, !dbg !858
 
 for.cond352.preheader:                            ; preds = %for.inc346, %for.inc388
   %indvars.iv849 = phi i64 [ %indvars.iv.next850, %for.inc388 ], [ 0, %for.inc346 ]
-  br label %for.body354
+  br label %for.body354, !dbg !859
 
 for.body354:                                      ; preds = %for.inc385, %for.cond352.preheader
   %indvars.iv845 = phi i64 [ 0, %for.cond352.preheader ], [ %indvars.iv.next846, %for.inc385 ]
-  %34 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type355 = getelementptr inbounds %struct.ImageParameters* %34, i64 0, i32 6
-  %35 = load i32* %type355, align 4, !tbaa !3
-  %cmp356 = icmp eq i32 %35, 2
-  %arrayidx361 = getelementptr inbounds %struct.TextureInfoContexts* %3, i64 0, i32 3, i64 %indvars.iv849, i64 %indvars.iv845
-  %model_number364 = getelementptr inbounds %struct.ImageParameters* %34, i64 0, i32 118
-  %36 = load i32* %model_number364, align 4, !tbaa !3
-  %idxprom365 = sext i32 %36 to i64
-  br i1 %cmp356, label %if.then357, label %if.else370
+  %34 = load %struct.ImageParameters** @img, align 8, !dbg !863, !tbaa !708
+  %type355 = getelementptr inbounds %struct.ImageParameters* %34, i64 0, i32 6, !dbg !863
+  %35 = load i32* %type355, align 4, !dbg !863, !tbaa !711
+  %cmp356 = icmp eq i32 %35, 2, !dbg !863
+  %arrayidx361 = getelementptr inbounds %struct.TextureInfoContexts* %3, i64 0, i32 3, i64 %indvars.iv849, i64 %indvars.iv845, !dbg !863
+  %model_number364 = getelementptr inbounds %struct.ImageParameters* %34, i64 0, i32 118, !dbg !863
+  %36 = load i32* %model_number364, align 4, !dbg !863, !tbaa !711
+  %idxprom365 = sext i32 %36 to i64, !dbg !863
+  br i1 %cmp356, label %if.then357, label %if.else370, !dbg !863
 
 if.then357:                                       ; preds = %for.body354
-  %arrayidx369 = getelementptr inbounds [1 x [8 x [4 x [2 x i32]]]]* @INIT_BCBP_I, i64 0, i64 %idxprom365, i64 %indvars.iv849, i64 %indvars.iv845, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx361, i32* %arrayidx369) #4
-  br label %for.inc385
+  %arrayidx369 = getelementptr inbounds [1 x [8 x [4 x [2 x i32]]]]* @INIT_BCBP_I, i64 0, i64 %idxprom365, i64 %indvars.iv849, i64 %indvars.iv845, i64 0, !dbg !863
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx361, i32* %arrayidx369) #5, !dbg !863
+  br label %for.inc385, !dbg !863
 
 if.else370:                                       ; preds = %for.body354
-  %arrayidx383 = getelementptr inbounds [3 x [8 x [4 x [2 x i32]]]]* @INIT_BCBP_P, i64 0, i64 %idxprom365, i64 %indvars.iv849, i64 %indvars.iv845, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx361, i32* %arrayidx383) #4
+  %arrayidx383 = getelementptr inbounds [3 x [8 x [4 x [2 x i32]]]]* @INIT_BCBP_P, i64 0, i64 %idxprom365, i64 %indvars.iv849, i64 %indvars.iv845, i64 0, !dbg !863
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx361, i32* %arrayidx383) #5, !dbg !863
   br label %for.inc385
 
 for.inc385:                                       ; preds = %if.then357, %if.else370
-  %indvars.iv.next846 = add i64 %indvars.iv845, 1
-  %lftr.wideiv847 = trunc i64 %indvars.iv.next846 to i32
-  %exitcond848 = icmp eq i32 %lftr.wideiv847, 4
-  br i1 %exitcond848, label %for.inc388, label %for.body354
+  %indvars.iv.next846 = add i64 %indvars.iv845, 1, !dbg !859
+  %lftr.wideiv847 = trunc i64 %indvars.iv.next846 to i32, !dbg !859
+  %exitcond848 = icmp eq i32 %lftr.wideiv847, 4, !dbg !859
+  br i1 %exitcond848, label %for.inc388, label %for.body354, !dbg !859
 
 for.inc388:                                       ; preds = %for.inc385
-  %indvars.iv.next850 = add i64 %indvars.iv849, 1
-  %lftr.wideiv851 = trunc i64 %indvars.iv.next850 to i32
-  %exitcond852 = icmp eq i32 %lftr.wideiv851, 10
-  br i1 %exitcond852, label %for.cond394.preheader, label %for.cond352.preheader
+  %indvars.iv.next850 = add i64 %indvars.iv849, 1, !dbg !865
+  %lftr.wideiv851 = trunc i64 %indvars.iv.next850 to i32, !dbg !865
+  %exitcond852 = icmp eq i32 %lftr.wideiv851, 10, !dbg !865
+  br i1 %exitcond852, label %for.cond394.preheader, label %for.cond352.preheader, !dbg !865
 
 for.cond394.preheader:                            ; preds = %for.inc388, %for.inc430
   %indvars.iv841 = phi i64 [ %indvars.iv.next842, %for.inc430 ], [ 0, %for.inc388 ]
-  br label %for.body396
+  br label %for.body396, !dbg !866
 
 for.body396:                                      ; preds = %for.inc427, %for.cond394.preheader
   %indvars.iv837 = phi i64 [ 0, %for.cond394.preheader ], [ %indvars.iv.next838, %for.inc427 ]
-  %37 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type397 = getelementptr inbounds %struct.ImageParameters* %37, i64 0, i32 6
-  %38 = load i32* %type397, align 4, !tbaa !3
-  %cmp398 = icmp eq i32 %38, 2
-  %arrayidx403 = getelementptr inbounds %struct.TextureInfoContexts* %3, i64 0, i32 4, i64 %indvars.iv841, i64 %indvars.iv837
-  %model_number406 = getelementptr inbounds %struct.ImageParameters* %37, i64 0, i32 118
-  %39 = load i32* %model_number406, align 4, !tbaa !3
-  %idxprom407 = sext i32 %39 to i64
-  br i1 %cmp398, label %if.then399, label %if.else412
+  %37 = load %struct.ImageParameters** @img, align 8, !dbg !870, !tbaa !708
+  %type397 = getelementptr inbounds %struct.ImageParameters* %37, i64 0, i32 6, !dbg !870
+  %38 = load i32* %type397, align 4, !dbg !870, !tbaa !711
+  %cmp398 = icmp eq i32 %38, 2, !dbg !870
+  %arrayidx403 = getelementptr inbounds %struct.TextureInfoContexts* %3, i64 0, i32 4, i64 %indvars.iv841, i64 %indvars.iv837, !dbg !870
+  %model_number406 = getelementptr inbounds %struct.ImageParameters* %37, i64 0, i32 118, !dbg !870
+  %39 = load i32* %model_number406, align 4, !dbg !870, !tbaa !711
+  %idxprom407 = sext i32 %39 to i64, !dbg !870
+  br i1 %cmp398, label %if.then399, label %if.else412, !dbg !870
 
 if.then399:                                       ; preds = %for.body396
-  %arrayidx411 = getelementptr inbounds [1 x [8 x [15 x [2 x i32]]]]* @INIT_MAP_I, i64 0, i64 %idxprom407, i64 %indvars.iv841, i64 %indvars.iv837, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx403, i32* %arrayidx411) #4
-  br label %for.inc427
+  %arrayidx411 = getelementptr inbounds [1 x [8 x [15 x [2 x i32]]]]* @INIT_MAP_I, i64 0, i64 %idxprom407, i64 %indvars.iv841, i64 %indvars.iv837, i64 0, !dbg !870
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx403, i32* %arrayidx411) #5, !dbg !870
+  br label %for.inc427, !dbg !870
 
 if.else412:                                       ; preds = %for.body396
-  %arrayidx425 = getelementptr inbounds [3 x [8 x [15 x [2 x i32]]]]* @INIT_MAP_P, i64 0, i64 %idxprom407, i64 %indvars.iv841, i64 %indvars.iv837, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx403, i32* %arrayidx425) #4
+  %arrayidx425 = getelementptr inbounds [3 x [8 x [15 x [2 x i32]]]]* @INIT_MAP_P, i64 0, i64 %idxprom407, i64 %indvars.iv841, i64 %indvars.iv837, i64 0, !dbg !870
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx403, i32* %arrayidx425) #5, !dbg !870
   br label %for.inc427
 
 for.inc427:                                       ; preds = %if.then399, %if.else412
-  %indvars.iv.next838 = add i64 %indvars.iv837, 1
-  %lftr.wideiv839 = trunc i64 %indvars.iv.next838 to i32
-  %exitcond840 = icmp eq i32 %lftr.wideiv839, 15
-  br i1 %exitcond840, label %for.inc430, label %for.body396
+  %indvars.iv.next838 = add i64 %indvars.iv837, 1, !dbg !866
+  %lftr.wideiv839 = trunc i64 %indvars.iv.next838 to i32, !dbg !866
+  %exitcond840 = icmp eq i32 %lftr.wideiv839, 15, !dbg !866
+  br i1 %exitcond840, label %for.inc430, label %for.body396, !dbg !866
 
 for.inc430:                                       ; preds = %for.inc427
-  %indvars.iv.next842 = add i64 %indvars.iv841, 1
-  %lftr.wideiv843 = trunc i64 %indvars.iv.next842 to i32
-  %exitcond844 = icmp eq i32 %lftr.wideiv843, 10
-  br i1 %exitcond844, label %for.cond436.preheader, label %for.cond394.preheader
+  %indvars.iv.next842 = add i64 %indvars.iv841, 1, !dbg !872
+  %lftr.wideiv843 = trunc i64 %indvars.iv.next842 to i32, !dbg !872
+  %exitcond844 = icmp eq i32 %lftr.wideiv843, 10, !dbg !872
+  br i1 %exitcond844, label %for.cond436.preheader, label %for.cond394.preheader, !dbg !872
 
 for.cond436.preheader:                            ; preds = %for.inc430, %for.inc472
   %indvars.iv833 = phi i64 [ %indvars.iv.next834, %for.inc472 ], [ 0, %for.inc430 ]
-  br label %for.body438
+  br label %for.body438, !dbg !873
 
 for.body438:                                      ; preds = %for.inc469, %for.cond436.preheader
   %indvars.iv829 = phi i64 [ 0, %for.cond436.preheader ], [ %indvars.iv.next830, %for.inc469 ]
-  %40 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type439 = getelementptr inbounds %struct.ImageParameters* %40, i64 0, i32 6
-  %41 = load i32* %type439, align 4, !tbaa !3
-  %cmp440 = icmp eq i32 %41, 2
-  %arrayidx445 = getelementptr inbounds %struct.TextureInfoContexts* %3, i64 0, i32 5, i64 %indvars.iv833, i64 %indvars.iv829
-  %model_number448 = getelementptr inbounds %struct.ImageParameters* %40, i64 0, i32 118
-  %42 = load i32* %model_number448, align 4, !tbaa !3
-  %idxprom449 = sext i32 %42 to i64
-  br i1 %cmp440, label %if.then441, label %if.else454
+  %40 = load %struct.ImageParameters** @img, align 8, !dbg !877, !tbaa !708
+  %type439 = getelementptr inbounds %struct.ImageParameters* %40, i64 0, i32 6, !dbg !877
+  %41 = load i32* %type439, align 4, !dbg !877, !tbaa !711
+  %cmp440 = icmp eq i32 %41, 2, !dbg !877
+  %arrayidx445 = getelementptr inbounds %struct.TextureInfoContexts* %3, i64 0, i32 5, i64 %indvars.iv833, i64 %indvars.iv829, !dbg !877
+  %model_number448 = getelementptr inbounds %struct.ImageParameters* %40, i64 0, i32 118, !dbg !877
+  %42 = load i32* %model_number448, align 4, !dbg !877, !tbaa !711
+  %idxprom449 = sext i32 %42 to i64, !dbg !877
+  br i1 %cmp440, label %if.then441, label %if.else454, !dbg !877
 
 if.then441:                                       ; preds = %for.body438
-  %arrayidx453 = getelementptr inbounds [1 x [8 x [15 x [2 x i32]]]]* @INIT_LAST_I, i64 0, i64 %idxprom449, i64 %indvars.iv833, i64 %indvars.iv829, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx445, i32* %arrayidx453) #4
-  br label %for.inc469
+  %arrayidx453 = getelementptr inbounds [1 x [8 x [15 x [2 x i32]]]]* @INIT_LAST_I, i64 0, i64 %idxprom449, i64 %indvars.iv833, i64 %indvars.iv829, i64 0, !dbg !877
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx445, i32* %arrayidx453) #5, !dbg !877
+  br label %for.inc469, !dbg !877
 
 if.else454:                                       ; preds = %for.body438
-  %arrayidx467 = getelementptr inbounds [3 x [8 x [15 x [2 x i32]]]]* @INIT_LAST_P, i64 0, i64 %idxprom449, i64 %indvars.iv833, i64 %indvars.iv829, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx445, i32* %arrayidx467) #4
+  %arrayidx467 = getelementptr inbounds [3 x [8 x [15 x [2 x i32]]]]* @INIT_LAST_P, i64 0, i64 %idxprom449, i64 %indvars.iv833, i64 %indvars.iv829, i64 0, !dbg !877
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx445, i32* %arrayidx467) #5, !dbg !877
   br label %for.inc469
 
 for.inc469:                                       ; preds = %if.then441, %if.else454
-  %indvars.iv.next830 = add i64 %indvars.iv829, 1
-  %lftr.wideiv831 = trunc i64 %indvars.iv.next830 to i32
-  %exitcond832 = icmp eq i32 %lftr.wideiv831, 15
-  br i1 %exitcond832, label %for.inc472, label %for.body438
+  %indvars.iv.next830 = add i64 %indvars.iv829, 1, !dbg !873
+  %lftr.wideiv831 = trunc i64 %indvars.iv.next830 to i32, !dbg !873
+  %exitcond832 = icmp eq i32 %lftr.wideiv831, 15, !dbg !873
+  br i1 %exitcond832, label %for.inc472, label %for.body438, !dbg !873
 
 for.inc472:                                       ; preds = %for.inc469
-  %indvars.iv.next834 = add i64 %indvars.iv833, 1
-  %lftr.wideiv835 = trunc i64 %indvars.iv.next834 to i32
-  %exitcond836 = icmp eq i32 %lftr.wideiv835, 10
-  br i1 %exitcond836, label %for.cond478.preheader, label %for.cond436.preheader
+  %indvars.iv.next834 = add i64 %indvars.iv833, 1, !dbg !879
+  %lftr.wideiv835 = trunc i64 %indvars.iv.next834 to i32, !dbg !879
+  %exitcond836 = icmp eq i32 %lftr.wideiv835, 10, !dbg !879
+  br i1 %exitcond836, label %for.cond478.preheader, label %for.cond436.preheader, !dbg !879
 
 for.cond478.preheader:                            ; preds = %for.inc472, %for.inc514
   %indvars.iv825 = phi i64 [ %indvars.iv.next826, %for.inc514 ], [ 0, %for.inc472 ]
-  br label %for.body480
+  br label %for.body480, !dbg !880
 
 for.body480:                                      ; preds = %for.inc511, %for.cond478.preheader
   %indvars.iv821 = phi i64 [ 0, %for.cond478.preheader ], [ %indvars.iv.next822, %for.inc511 ]
-  %43 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type481 = getelementptr inbounds %struct.ImageParameters* %43, i64 0, i32 6
-  %44 = load i32* %type481, align 4, !tbaa !3
-  %cmp482 = icmp eq i32 %44, 2
-  %arrayidx487 = getelementptr inbounds %struct.TextureInfoContexts* %3, i64 0, i32 6, i64 %indvars.iv825, i64 %indvars.iv821
-  %model_number490 = getelementptr inbounds %struct.ImageParameters* %43, i64 0, i32 118
-  %45 = load i32* %model_number490, align 4, !tbaa !3
-  %idxprom491 = sext i32 %45 to i64
-  br i1 %cmp482, label %if.then483, label %if.else496
+  %43 = load %struct.ImageParameters** @img, align 8, !dbg !884, !tbaa !708
+  %type481 = getelementptr inbounds %struct.ImageParameters* %43, i64 0, i32 6, !dbg !884
+  %44 = load i32* %type481, align 4, !dbg !884, !tbaa !711
+  %cmp482 = icmp eq i32 %44, 2, !dbg !884
+  %arrayidx487 = getelementptr inbounds %struct.TextureInfoContexts* %3, i64 0, i32 6, i64 %indvars.iv825, i64 %indvars.iv821, !dbg !884
+  %model_number490 = getelementptr inbounds %struct.ImageParameters* %43, i64 0, i32 118, !dbg !884
+  %45 = load i32* %model_number490, align 4, !dbg !884, !tbaa !711
+  %idxprom491 = sext i32 %45 to i64, !dbg !884
+  br i1 %cmp482, label %if.then483, label %if.else496, !dbg !884
 
 if.then483:                                       ; preds = %for.body480
-  %arrayidx495 = getelementptr inbounds [1 x [8 x [5 x [2 x i32]]]]* @INIT_ONE_I, i64 0, i64 %idxprom491, i64 %indvars.iv825, i64 %indvars.iv821, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx487, i32* %arrayidx495) #4
-  br label %for.inc511
+  %arrayidx495 = getelementptr inbounds [1 x [8 x [5 x [2 x i32]]]]* @INIT_ONE_I, i64 0, i64 %idxprom491, i64 %indvars.iv825, i64 %indvars.iv821, i64 0, !dbg !884
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx487, i32* %arrayidx495) #5, !dbg !884
+  br label %for.inc511, !dbg !884
 
 if.else496:                                       ; preds = %for.body480
-  %arrayidx509 = getelementptr inbounds [3 x [8 x [5 x [2 x i32]]]]* @INIT_ONE_P, i64 0, i64 %idxprom491, i64 %indvars.iv825, i64 %indvars.iv821, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx487, i32* %arrayidx509) #4
+  %arrayidx509 = getelementptr inbounds [3 x [8 x [5 x [2 x i32]]]]* @INIT_ONE_P, i64 0, i64 %idxprom491, i64 %indvars.iv825, i64 %indvars.iv821, i64 0, !dbg !884
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx487, i32* %arrayidx509) #5, !dbg !884
   br label %for.inc511
 
 for.inc511:                                       ; preds = %if.then483, %if.else496
-  %indvars.iv.next822 = add i64 %indvars.iv821, 1
-  %lftr.wideiv823 = trunc i64 %indvars.iv.next822 to i32
-  %exitcond824 = icmp eq i32 %lftr.wideiv823, 5
-  br i1 %exitcond824, label %for.inc514, label %for.body480
+  %indvars.iv.next822 = add i64 %indvars.iv821, 1, !dbg !880
+  %lftr.wideiv823 = trunc i64 %indvars.iv.next822 to i32, !dbg !880
+  %exitcond824 = icmp eq i32 %lftr.wideiv823, 5, !dbg !880
+  br i1 %exitcond824, label %for.inc514, label %for.body480, !dbg !880
 
 for.inc514:                                       ; preds = %for.inc511
-  %indvars.iv.next826 = add i64 %indvars.iv825, 1
-  %lftr.wideiv827 = trunc i64 %indvars.iv.next826 to i32
-  %exitcond828 = icmp eq i32 %lftr.wideiv827, 10
-  br i1 %exitcond828, label %for.cond520.preheader, label %for.cond478.preheader
+  %indvars.iv.next826 = add i64 %indvars.iv825, 1, !dbg !886
+  %lftr.wideiv827 = trunc i64 %indvars.iv.next826 to i32, !dbg !886
+  %exitcond828 = icmp eq i32 %lftr.wideiv827, 10, !dbg !886
+  br i1 %exitcond828, label %for.cond520.preheader, label %for.cond478.preheader, !dbg !886
 
 for.cond520.preheader:                            ; preds = %for.inc514, %for.inc556
   %indvars.iv817 = phi i64 [ %indvars.iv.next818, %for.inc556 ], [ 0, %for.inc514 ]
-  br label %for.body522
+  br label %for.body522, !dbg !887
 
 for.body522:                                      ; preds = %for.inc553, %for.cond520.preheader
   %indvars.iv813 = phi i64 [ 0, %for.cond520.preheader ], [ %indvars.iv.next814, %for.inc553 ]
-  %46 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type523 = getelementptr inbounds %struct.ImageParameters* %46, i64 0, i32 6
-  %47 = load i32* %type523, align 4, !tbaa !3
-  %cmp524 = icmp eq i32 %47, 2
-  %arrayidx529 = getelementptr inbounds %struct.TextureInfoContexts* %3, i64 0, i32 7, i64 %indvars.iv817, i64 %indvars.iv813
-  %model_number532 = getelementptr inbounds %struct.ImageParameters* %46, i64 0, i32 118
-  %48 = load i32* %model_number532, align 4, !tbaa !3
-  %idxprom533 = sext i32 %48 to i64
-  br i1 %cmp524, label %if.then525, label %if.else538
+  %46 = load %struct.ImageParameters** @img, align 8, !dbg !891, !tbaa !708
+  %type523 = getelementptr inbounds %struct.ImageParameters* %46, i64 0, i32 6, !dbg !891
+  %47 = load i32* %type523, align 4, !dbg !891, !tbaa !711
+  %cmp524 = icmp eq i32 %47, 2, !dbg !891
+  %arrayidx529 = getelementptr inbounds %struct.TextureInfoContexts* %3, i64 0, i32 7, i64 %indvars.iv817, i64 %indvars.iv813, !dbg !891
+  %model_number532 = getelementptr inbounds %struct.ImageParameters* %46, i64 0, i32 118, !dbg !891
+  %48 = load i32* %model_number532, align 4, !dbg !891, !tbaa !711
+  %idxprom533 = sext i32 %48 to i64, !dbg !891
+  br i1 %cmp524, label %if.then525, label %if.else538, !dbg !891
 
 if.then525:                                       ; preds = %for.body522
-  %arrayidx537 = getelementptr inbounds [1 x [8 x [5 x [2 x i32]]]]* @INIT_ABS_I, i64 0, i64 %idxprom533, i64 %indvars.iv817, i64 %indvars.iv813, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx529, i32* %arrayidx537) #4
-  br label %for.inc553
+  %arrayidx537 = getelementptr inbounds [1 x [8 x [5 x [2 x i32]]]]* @INIT_ABS_I, i64 0, i64 %idxprom533, i64 %indvars.iv817, i64 %indvars.iv813, i64 0, !dbg !891
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx529, i32* %arrayidx537) #5, !dbg !891
+  br label %for.inc553, !dbg !891
 
 if.else538:                                       ; preds = %for.body522
-  %arrayidx551 = getelementptr inbounds [3 x [8 x [5 x [2 x i32]]]]* @INIT_ABS_P, i64 0, i64 %idxprom533, i64 %indvars.iv817, i64 %indvars.iv813, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx529, i32* %arrayidx551) #4
+  %arrayidx551 = getelementptr inbounds [3 x [8 x [5 x [2 x i32]]]]* @INIT_ABS_P, i64 0, i64 %idxprom533, i64 %indvars.iv817, i64 %indvars.iv813, i64 0, !dbg !891
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx529, i32* %arrayidx551) #5, !dbg !891
   br label %for.inc553
 
 for.inc553:                                       ; preds = %if.then525, %if.else538
-  %indvars.iv.next814 = add i64 %indvars.iv813, 1
-  %lftr.wideiv815 = trunc i64 %indvars.iv.next814 to i32
-  %exitcond816 = icmp eq i32 %lftr.wideiv815, 5
-  br i1 %exitcond816, label %for.inc556, label %for.body522
+  %indvars.iv.next814 = add i64 %indvars.iv813, 1, !dbg !887
+  %lftr.wideiv815 = trunc i64 %indvars.iv.next814 to i32, !dbg !887
+  %exitcond816 = icmp eq i32 %lftr.wideiv815, 5, !dbg !887
+  br i1 %exitcond816, label %for.inc556, label %for.body522, !dbg !887
 
 for.inc556:                                       ; preds = %for.inc553
-  %indvars.iv.next818 = add i64 %indvars.iv817, 1
-  %lftr.wideiv819 = trunc i64 %indvars.iv.next818 to i32
-  %exitcond820 = icmp eq i32 %lftr.wideiv819, 10
-  br i1 %exitcond820, label %for.cond562.preheader, label %for.cond520.preheader
+  %indvars.iv.next818 = add i64 %indvars.iv817, 1, !dbg !893
+  %lftr.wideiv819 = trunc i64 %indvars.iv.next818 to i32, !dbg !893
+  %exitcond820 = icmp eq i32 %lftr.wideiv819, 10, !dbg !893
+  br i1 %exitcond820, label %for.cond562.preheader, label %for.cond520.preheader, !dbg !893
 
 for.cond562.preheader:                            ; preds = %for.inc556, %for.inc598
   %indvars.iv809 = phi i64 [ %indvars.iv.next810, %for.inc598 ], [ 0, %for.inc556 ]
-  br label %for.body564
+  br label %for.body564, !dbg !894
 
 for.body564:                                      ; preds = %for.inc595, %for.cond562.preheader
   %indvars.iv805 = phi i64 [ 0, %for.cond562.preheader ], [ %indvars.iv.next806, %for.inc595 ]
-  %49 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type565 = getelementptr inbounds %struct.ImageParameters* %49, i64 0, i32 6
-  %50 = load i32* %type565, align 4, !tbaa !3
-  %cmp566 = icmp eq i32 %50, 2
-  %arrayidx571 = getelementptr inbounds %struct.TextureInfoContexts* %3, i64 0, i32 8, i64 %indvars.iv809, i64 %indvars.iv805
-  %model_number574 = getelementptr inbounds %struct.ImageParameters* %49, i64 0, i32 118
-  %51 = load i32* %model_number574, align 4, !tbaa !3
-  %idxprom575 = sext i32 %51 to i64
-  br i1 %cmp566, label %if.then567, label %if.else580
+  %49 = load %struct.ImageParameters** @img, align 8, !dbg !898, !tbaa !708
+  %type565 = getelementptr inbounds %struct.ImageParameters* %49, i64 0, i32 6, !dbg !898
+  %50 = load i32* %type565, align 4, !dbg !898, !tbaa !711
+  %cmp566 = icmp eq i32 %50, 2, !dbg !898
+  %arrayidx571 = getelementptr inbounds %struct.TextureInfoContexts* %3, i64 0, i32 8, i64 %indvars.iv809, i64 %indvars.iv805, !dbg !898
+  %model_number574 = getelementptr inbounds %struct.ImageParameters* %49, i64 0, i32 118, !dbg !898
+  %51 = load i32* %model_number574, align 4, !dbg !898, !tbaa !711
+  %idxprom575 = sext i32 %51 to i64, !dbg !898
+  br i1 %cmp566, label %if.then567, label %if.else580, !dbg !898
 
 if.then567:                                       ; preds = %for.body564
-  %arrayidx579 = getelementptr inbounds [1 x [8 x [15 x [2 x i32]]]]* @INIT_FLD_MAP_I, i64 0, i64 %idxprom575, i64 %indvars.iv809, i64 %indvars.iv805, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx571, i32* %arrayidx579) #4
-  br label %for.inc595
+  %arrayidx579 = getelementptr inbounds [1 x [8 x [15 x [2 x i32]]]]* @INIT_FLD_MAP_I, i64 0, i64 %idxprom575, i64 %indvars.iv809, i64 %indvars.iv805, i64 0, !dbg !898
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx571, i32* %arrayidx579) #5, !dbg !898
+  br label %for.inc595, !dbg !898
 
 if.else580:                                       ; preds = %for.body564
-  %arrayidx593 = getelementptr inbounds [3 x [8 x [15 x [2 x i32]]]]* @INIT_FLD_MAP_P, i64 0, i64 %idxprom575, i64 %indvars.iv809, i64 %indvars.iv805, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx571, i32* %arrayidx593) #4
+  %arrayidx593 = getelementptr inbounds [3 x [8 x [15 x [2 x i32]]]]* @INIT_FLD_MAP_P, i64 0, i64 %idxprom575, i64 %indvars.iv809, i64 %indvars.iv805, i64 0, !dbg !898
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx571, i32* %arrayidx593) #5, !dbg !898
   br label %for.inc595
 
 for.inc595:                                       ; preds = %if.then567, %if.else580
-  %indvars.iv.next806 = add i64 %indvars.iv805, 1
-  %lftr.wideiv807 = trunc i64 %indvars.iv.next806 to i32
-  %exitcond808 = icmp eq i32 %lftr.wideiv807, 15
-  br i1 %exitcond808, label %for.inc598, label %for.body564
+  %indvars.iv.next806 = add i64 %indvars.iv805, 1, !dbg !894
+  %lftr.wideiv807 = trunc i64 %indvars.iv.next806 to i32, !dbg !894
+  %exitcond808 = icmp eq i32 %lftr.wideiv807, 15, !dbg !894
+  br i1 %exitcond808, label %for.inc598, label %for.body564, !dbg !894
 
 for.inc598:                                       ; preds = %for.inc595
-  %indvars.iv.next810 = add i64 %indvars.iv809, 1
-  %lftr.wideiv811 = trunc i64 %indvars.iv.next810 to i32
-  %exitcond812 = icmp eq i32 %lftr.wideiv811, 10
-  br i1 %exitcond812, label %for.cond604.preheader, label %for.cond562.preheader
+  %indvars.iv.next810 = add i64 %indvars.iv809, 1, !dbg !900
+  %lftr.wideiv811 = trunc i64 %indvars.iv.next810 to i32, !dbg !900
+  %exitcond812 = icmp eq i32 %lftr.wideiv811, 10, !dbg !900
+  br i1 %exitcond812, label %for.cond604.preheader, label %for.cond562.preheader, !dbg !900
 
 for.cond604.preheader:                            ; preds = %for.inc598, %for.inc640
   %indvars.iv801 = phi i64 [ %indvars.iv.next802, %for.inc640 ], [ 0, %for.inc598 ]
-  br label %for.body606
+  br label %for.body606, !dbg !901
 
 for.body606:                                      ; preds = %for.inc637, %for.cond604.preheader
   %indvars.iv = phi i64 [ 0, %for.cond604.preheader ], [ %indvars.iv.next, %for.inc637 ]
-  %52 = load %struct.ImageParameters** @img, align 8, !tbaa !0
-  %type607 = getelementptr inbounds %struct.ImageParameters* %52, i64 0, i32 6
-  %53 = load i32* %type607, align 4, !tbaa !3
-  %cmp608 = icmp eq i32 %53, 2
-  %arrayidx613 = getelementptr inbounds %struct.TextureInfoContexts* %3, i64 0, i32 9, i64 %indvars.iv801, i64 %indvars.iv
-  %model_number616 = getelementptr inbounds %struct.ImageParameters* %52, i64 0, i32 118
-  %54 = load i32* %model_number616, align 4, !tbaa !3
-  %idxprom617 = sext i32 %54 to i64
-  br i1 %cmp608, label %if.then609, label %if.else622
+  %52 = load %struct.ImageParameters** @img, align 8, !dbg !905, !tbaa !708
+  %type607 = getelementptr inbounds %struct.ImageParameters* %52, i64 0, i32 6, !dbg !905
+  %53 = load i32* %type607, align 4, !dbg !905, !tbaa !711
+  %cmp608 = icmp eq i32 %53, 2, !dbg !905
+  %arrayidx613 = getelementptr inbounds %struct.TextureInfoContexts* %3, i64 0, i32 9, i64 %indvars.iv801, i64 %indvars.iv, !dbg !905
+  %model_number616 = getelementptr inbounds %struct.ImageParameters* %52, i64 0, i32 118, !dbg !905
+  %54 = load i32* %model_number616, align 4, !dbg !905, !tbaa !711
+  %idxprom617 = sext i32 %54 to i64, !dbg !905
+  br i1 %cmp608, label %if.then609, label %if.else622, !dbg !905
 
 if.then609:                                       ; preds = %for.body606
-  %arrayidx621 = getelementptr inbounds [1 x [8 x [15 x [2 x i32]]]]* @INIT_FLD_LAST_I, i64 0, i64 %idxprom617, i64 %indvars.iv801, i64 %indvars.iv, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx613, i32* %arrayidx621) #4
-  br label %for.inc637
+  %arrayidx621 = getelementptr inbounds [1 x [8 x [15 x [2 x i32]]]]* @INIT_FLD_LAST_I, i64 0, i64 %idxprom617, i64 %indvars.iv801, i64 %indvars.iv, i64 0, !dbg !905
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx613, i32* %arrayidx621) #5, !dbg !905
+  br label %for.inc637, !dbg !905
 
 if.else622:                                       ; preds = %for.body606
-  %arrayidx635 = getelementptr inbounds [3 x [8 x [15 x [2 x i32]]]]* @INIT_FLD_LAST_P, i64 0, i64 %idxprom617, i64 %indvars.iv801, i64 %indvars.iv, i64 0
-  tail call void @biari_init_context(%struct.BiContextType* %arrayidx613, i32* %arrayidx635) #4
+  %arrayidx635 = getelementptr inbounds [3 x [8 x [15 x [2 x i32]]]]* @INIT_FLD_LAST_P, i64 0, i64 %idxprom617, i64 %indvars.iv801, i64 %indvars.iv, i64 0, !dbg !905
+  tail call void @biari_init_context(%struct.BiContextType* %arrayidx613, i32* %arrayidx635) #5, !dbg !905
   br label %for.inc637
 
 for.inc637:                                       ; preds = %if.then609, %if.else622
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 15
-  br i1 %exitcond, label %for.inc640, label %for.body606
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !901
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !901
+  %exitcond = icmp eq i32 %lftr.wideiv, 15, !dbg !901
+  br i1 %exitcond, label %for.inc640, label %for.body606, !dbg !901
 
 for.inc640:                                       ; preds = %for.inc637
-  %indvars.iv.next802 = add i64 %indvars.iv801, 1
-  %lftr.wideiv803 = trunc i64 %indvars.iv.next802 to i32
-  %exitcond804 = icmp eq i32 %lftr.wideiv803, 10
-  br i1 %exitcond804, label %for.end642, label %for.cond604.preheader
+  %indvars.iv.next802 = add i64 %indvars.iv801, 1, !dbg !907
+  %lftr.wideiv803 = trunc i64 %indvars.iv.next802 to i32, !dbg !907
+  %exitcond804 = icmp eq i32 %lftr.wideiv803, 10, !dbg !907
+  br i1 %exitcond804, label %for.end642, label %for.cond604.preheader, !dbg !907
 
 for.end642:                                       ; preds = %for.inc640
-  ret void
+  ret void, !dbg !908
 }

@@ -1,86 +1,93 @@
 define void @LogNorm(float* nocapture %vec, i32 %n) #0 {
 entry:
-  %cmp80 = icmp sgt i32 %n, 0
-  br i1 %cmp80, label %for.body, label %for.end49
+  tail call void @llvm.dbg.value(metadata !{float* %vec}, i64 0, metadata !116), !dbg !220
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !117), !dbg !220
+  tail call void @llvm.dbg.value(metadata !221, i64 0, metadata !119), !dbg !222
+  tail call void @llvm.dbg.value(metadata !223, i64 0, metadata !120), !dbg !224
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !118), !dbg !225
+  %cmp80 = icmp sgt i32 %n, 0, !dbg !225
+  br i1 %cmp80, label %for.body, label %for.end49, !dbg !225
 
 for.cond4.preheader:                              ; preds = %for.body
-  br i1 %cmp80, label %for.body6.lr.ph, label %for.end49
+  br i1 %cmp80, label %for.body6.lr.ph, label %for.end49, !dbg !227
 
 for.body6.lr.ph:                                  ; preds = %for.cond4.preheader
-  %conv9 = fpext float %max.1 to double
-  %sub = fadd double %conv9, -5.000000e+01
-  br label %for.body6
+  %conv9 = fpext float %max.1 to double, !dbg !229
+  %sub = fadd double %conv9, -5.000000e+01, !dbg !229
+  br label %for.body6, !dbg !227
 
 for.body:                                         ; preds = %entry, %for.body
   %indvars.iv88 = phi i64 [ %indvars.iv.next89, %for.body ], [ 0, %entry ]
   %max.082 = phi float [ %max.1, %for.body ], [ 0xC6293E5940000000, %entry ]
-  %arrayidx = getelementptr inbounds float* %vec, i64 %indvars.iv88
-  %0 = load float* %arrayidx, align 4, !tbaa !3
-  %cmp1 = fcmp ogt float %0, %max.082
-  %max.1 = select i1 %cmp1, float %0, float %max.082
-  %indvars.iv.next89 = add i64 %indvars.iv88, 1
-  %lftr.wideiv90 = trunc i64 %indvars.iv.next89 to i32
-  %exitcond91 = icmp eq i32 %lftr.wideiv90, %n
-  br i1 %exitcond91, label %for.cond4.preheader, label %for.body
+  %arrayidx = getelementptr inbounds float* %vec, i64 %indvars.iv88, !dbg !230
+  %0 = load float* %arrayidx, align 4, !dbg !230, !tbaa !199
+  %cmp1 = fcmp ogt float %0, %max.082, !dbg !230
+  tail call void @llvm.dbg.value(metadata !{float %0}, i64 0, metadata !119), !dbg !230
+  %max.1 = select i1 %cmp1, float %0, float %max.082, !dbg !230
+  %indvars.iv.next89 = add i64 %indvars.iv88, 1, !dbg !225
+  %lftr.wideiv90 = trunc i64 %indvars.iv.next89 to i32, !dbg !225
+  %exitcond91 = icmp eq i32 %lftr.wideiv90, %n, !dbg !225
+  br i1 %exitcond91, label %for.cond4.preheader, label %for.body, !dbg !225
 
 for.cond23.preheader:                             ; preds = %for.inc20
-  br i1 %cmp80, label %for.body26.lr.ph, label %for.end49
+  br i1 %cmp80, label %for.body26.lr.ph, label %for.end49, !dbg !231
 
 for.body26.lr.ph:                                 ; preds = %for.cond23.preheader
-  %conv30 = fpext float %max.1 to double
-  %sub31 = fadd double %conv30, -5.000000e+01
-  %conv40 = fpext float %denom.1 to double
-  br label %for.body26
+  %conv30 = fpext float %max.1 to double, !dbg !233
+  %sub31 = fadd double %conv30, -5.000000e+01, !dbg !233
+  %conv40 = fpext float %denom.1 to double, !dbg !234
+  br label %for.body26, !dbg !231
 
 for.body6:                                        ; preds = %for.inc20, %for.body6.lr.ph
   %indvars.iv84 = phi i64 [ 0, %for.body6.lr.ph ], [ %indvars.iv.next85, %for.inc20 ]
   %denom.079 = phi float [ 0.000000e+00, %for.body6.lr.ph ], [ %denom.1, %for.inc20 ]
-  %arrayidx8 = getelementptr inbounds float* %vec, i64 %indvars.iv84
-  %1 = load float* %arrayidx8, align 4, !tbaa !3
-  %conv = fpext float %1 to double
-  %cmp10 = fcmp ogt double %conv, %sub
-  br i1 %cmp10, label %if.then12, label %for.inc20
+  %arrayidx8 = getelementptr inbounds float* %vec, i64 %indvars.iv84, !dbg !229
+  %1 = load float* %arrayidx8, align 4, !dbg !229, !tbaa !199
+  %conv = fpext float %1 to double, !dbg !229
+  %cmp10 = fcmp ogt double %conv, %sub, !dbg !229
+  br i1 %cmp10, label %if.then12, label %for.inc20, !dbg !229
 
 if.then12:                                        ; preds = %for.body6
-  %sub15 = fsub float %1, %max.1
-  %conv16 = fpext float %sub15 to double
-  %call = tail call double @exp(double %conv16) #5
-  %conv17 = fpext float %denom.079 to double
-  %add = fadd double %conv17, %call
-  %conv18 = fptrunc double %add to float
-  br label %for.inc20
+  %sub15 = fsub float %1, %max.1, !dbg !235
+  %conv16 = fpext float %sub15 to double, !dbg !235
+  %call = tail call double @exp(double %conv16) #6, !dbg !235
+  %conv17 = fpext float %denom.079 to double, !dbg !235
+  %add = fadd double %conv17, %call, !dbg !235
+  %conv18 = fptrunc double %add to float, !dbg !235
+  tail call void @llvm.dbg.value(metadata !{float %conv18}, i64 0, metadata !120), !dbg !235
+  br label %for.inc20, !dbg !235
 
 for.inc20:                                        ; preds = %for.body6, %if.then12
   %denom.1 = phi float [ %conv18, %if.then12 ], [ %denom.079, %for.body6 ]
-  %indvars.iv.next85 = add i64 %indvars.iv84, 1
-  %lftr.wideiv86 = trunc i64 %indvars.iv.next85 to i32
-  %exitcond87 = icmp eq i32 %lftr.wideiv86, %n
-  br i1 %exitcond87, label %for.cond23.preheader, label %for.body6
+  %indvars.iv.next85 = add i64 %indvars.iv84, 1, !dbg !227
+  %lftr.wideiv86 = trunc i64 %indvars.iv.next85 to i32, !dbg !227
+  %exitcond87 = icmp eq i32 %lftr.wideiv86, %n, !dbg !227
+  br i1 %exitcond87, label %for.cond23.preheader, label %for.body6, !dbg !227
 
 for.body26:                                       ; preds = %for.inc47, %for.body26.lr.ph
   %indvars.iv = phi i64 [ 0, %for.body26.lr.ph ], [ %indvars.iv.next, %for.inc47 ]
-  %arrayidx28 = getelementptr inbounds float* %vec, i64 %indvars.iv
-  %2 = load float* %arrayidx28, align 4, !tbaa !3
-  %conv29 = fpext float %2 to double
-  %cmp32 = fcmp ogt double %conv29, %sub31
-  br i1 %cmp32, label %if.then34, label %for.inc47
+  %arrayidx28 = getelementptr inbounds float* %vec, i64 %indvars.iv, !dbg !233
+  %2 = load float* %arrayidx28, align 4, !dbg !233, !tbaa !199
+  %conv29 = fpext float %2 to double, !dbg !233
+  %cmp32 = fcmp ogt double %conv29, %sub31, !dbg !233
+  br i1 %cmp32, label %if.then34, label %for.inc47, !dbg !233
 
 if.then34:                                        ; preds = %for.body26
-  %sub37 = fsub float %2, %max.1
-  %conv38 = fpext float %sub37 to double
-  %call39 = tail call double @exp(double %conv38) #5
-  %div = fdiv double %call39, %conv40
-  %conv41 = fptrunc double %div to float
-  br label %for.inc47
+  %sub37 = fsub float %2, %max.1, !dbg !234
+  %conv38 = fpext float %sub37 to double, !dbg !234
+  %call39 = tail call double @exp(double %conv38) #6, !dbg !234
+  %div = fdiv double %call39, %conv40, !dbg !234
+  %conv41 = fptrunc double %div to float, !dbg !234
+  br label %for.inc47, !dbg !234
 
 for.inc47:                                        ; preds = %for.body26, %if.then34
   %storemerge = phi float [ %conv41, %if.then34 ], [ 0.000000e+00, %for.body26 ]
-  store float %storemerge, float* %arrayidx28, align 4, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n
-  br i1 %exitcond, label %for.end49, label %for.body26
+  store float %storemerge, float* %arrayidx28, align 4, !dbg !234, !tbaa !199
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !231
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !231
+  %exitcond = icmp eq i32 %lftr.wideiv, %n, !dbg !231
+  br i1 %exitcond, label %for.end49, label %for.body26, !dbg !231
 
 for.end49:                                        ; preds = %entry, %for.cond4.preheader, %for.inc47, %for.cond23.preheader
-  ret void
+  ret void, !dbg !236
 }

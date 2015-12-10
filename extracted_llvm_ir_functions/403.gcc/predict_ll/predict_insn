@@ -1,25 +1,28 @@
 define void @predict_insn(%struct.rtx_def* %insn, i32 %predictor, i32 %probability) #0 {
 entry:
-  %call = tail call i32 @any_condjump_p(%struct.rtx_def* %insn) #5
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !958), !dbg !1226
+  tail call void @llvm.dbg.value(metadata !{i32 %predictor}, i64 0, metadata !959), !dbg !1227
+  tail call void @llvm.dbg.value(metadata !{i32 %probability}, i64 0, metadata !960), !dbg !1228
+  %call = tail call i32 @any_condjump_p(%struct.rtx_def* %insn) #6, !dbg !1229
+  %tobool = icmp eq i32 %call, 0, !dbg !1229
+  br i1 %tobool, label %if.then, label %if.end, !dbg !1229
 
 if.then:                                          ; preds = %entry
-  tail call void @fancy_abort(i8* getelementptr inbounds ([51 x i8]* @.str, i64 0, i64 0), i32 101, i8* getelementptr inbounds ([13 x i8]* @__FUNCTION__.predict_insn, i64 0, i64 0)) #6
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([51 x i8]* @.str, i64 0, i64 0), i32 101, i8* getelementptr inbounds ([13 x i8]* @__FUNCTION__.predict_insn, i64 0, i64 0)) #7, !dbg !1230
+  unreachable, !dbg !1230
 
 if.end:                                           ; preds = %entry
-  %conv = sext i32 %predictor to i64
-  %call1 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %conv) #5
-  %conv2 = sext i32 %probability to i64
-  %call3 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %conv2) #5
-  %call4 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 65, i32 0, %struct.rtx_def* %call1, %struct.rtx_def* %call3) #5
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 6
-  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**
-  %0 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %call5 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 3, i32 20, %struct.rtx_def* %call4, %struct.rtx_def* %0) #5
-  %1 = getelementptr inbounds %union.rtunion_def* %arrayidx, i64 0, i32 0
-  %call5.c = ptrtoint %struct.rtx_def* %call5 to i64
-  store i64 %call5.c, i64* %1, align 8, !tbaa !0
-  ret void
+  %conv = sext i32 %predictor to i64, !dbg !1231
+  %call1 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %conv) #6, !dbg !1231
+  %conv2 = sext i32 %probability to i64, !dbg !1231
+  %call3 = tail call %struct.rtx_def* @gen_rtx_CONST_INT(i32 0, i64 %conv2) #6, !dbg !1231
+  %call4 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 65, i32 0, %struct.rtx_def* %call1, %struct.rtx_def* %call3) #6, !dbg !1231
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %insn, i64 0, i32 1, i64 6, !dbg !1231
+  %rtx = bitcast %union.rtunion_def* %arrayidx to %struct.rtx_def**, !dbg !1231
+  %0 = load %struct.rtx_def** %rtx, align 8, !dbg !1231, !tbaa !1232
+  %call5 = tail call %struct.rtx_def* @gen_rtx_fmt_ee(i32 3, i32 20, %struct.rtx_def* %call4, %struct.rtx_def* %0) #6, !dbg !1231
+  %1 = getelementptr inbounds %union.rtunion_def* %arrayidx, i64 0, i32 0, !dbg !1231
+  %call5.c = ptrtoint %struct.rtx_def* %call5 to i64, !dbg !1231
+  store i64 %call5.c, i64* %1, align 8, !dbg !1231, !tbaa !1232
+  ret void, !dbg !1235
 }

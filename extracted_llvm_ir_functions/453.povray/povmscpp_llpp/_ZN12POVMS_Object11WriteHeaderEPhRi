@@ -1,0 +1,46 @@
+define zeroext i1 @_ZN12POVMS_Object11WriteHeaderEPhRi(%class.POVMS_Object* %this, i8* %stream, i32* nocapture %objectsize) #5 align 2 {
+entry:
+  %maxsize = alloca i32, align 4
+  call void @llvm.dbg.value(metadata !{%class.POVMS_Object* %this}, i64 0, metadata !954), !dbg !1645
+  call void @llvm.dbg.value(metadata !{i8* %stream}, i64 0, metadata !955), !dbg !1645
+  call void @llvm.dbg.value(metadata !{i32* %objectsize}, i64 0, metadata !956), !dbg !1645
+  call void @llvm.dbg.value(metadata !59, i64 0, metadata !957), !dbg !1646
+  call void @llvm.dbg.declare(metadata !{i32* %maxsize}, metadata !958), !dbg !1647
+  call void @llvm.dbg.value(metadata !1624, i64 0, metadata !958), !dbg !1647
+  store i32 16, i32* %maxsize, align 4, !dbg !1647, !tbaa !1112
+  store i32 0, i32* %objectsize, align 4, !dbg !1648, !tbaa !1112
+  %cmp = icmp eq i8* %stream, null, !dbg !1649
+  br i1 %cmp, label %return, label %if.end, !dbg !1649
+
+if.end:                                           ; preds = %entry
+  %data = getelementptr inbounds %class.POVMS_Object* %this, i64 0, i32 0, i32 1, !dbg !1650
+  %call = call i32 @_Z16POVMSStream_SizeP9POVMSData(%struct.POVMSData* %data) #12, !dbg !1650
+  store i32 %call, i32* %objectsize, align 4, !dbg !1650, !tbaa !1112
+  %cmp2 = icmp eq i32 %call, 0, !dbg !1651
+  br i1 %cmp2, label %return, label %if.end4, !dbg !1651
+
+if.end4:                                          ; preds = %if.end
+  %call5 = call i32 @_Z23POVMSStream_WriteStringPKcPhPi(i8* getelementptr inbounds ([9 x i8]* @.str, i64 0, i64 0), i8* %stream, i32* %maxsize) #12, !dbg !1652
+  call void @llvm.dbg.value(metadata !{i32 %call5}, i64 0, metadata !957), !dbg !1652
+  %idx.ext = sext i32 %call5 to i64, !dbg !1653
+  %add.ptr = getelementptr inbounds i8* %stream, i64 %idx.ext, !dbg !1653
+  %call6 = call i32 @_Z20POVMSStream_WriteIntiPhPi(i32 849, i8* %add.ptr, i32* %maxsize) #12, !dbg !1653
+  %add7 = add nsw i32 %call6, %call5, !dbg !1653
+  call void @llvm.dbg.value(metadata !{i32 %add7}, i64 0, metadata !957), !dbg !1653
+  %0 = load i32* %objectsize, align 4, !dbg !1654, !tbaa !1112
+  %idx.ext8 = sext i32 %add7 to i64, !dbg !1654
+  %add.ptr9 = getelementptr inbounds i8* %stream, i64 %idx.ext8, !dbg !1654
+  %call10 = call i32 @_Z20POVMSStream_WriteIntiPhPi(i32 %0, i8* %add.ptr9, i32* %maxsize) #12, !dbg !1654
+  %add11 = add nsw i32 %call10, %add7, !dbg !1654
+  call void @llvm.dbg.value(metadata !{i32 %add11}, i64 0, metadata !957), !dbg !1654
+  %cmp12 = icmp eq i32 %add11, 16, !dbg !1655
+  call void @llvm.dbg.value(metadata !{i32* %maxsize}, i64 0, metadata !958), !dbg !1655
+  %1 = load i32* %maxsize, align 4, !dbg !1655, !tbaa !1112
+  %cmp13 = icmp eq i32 %1, 0, !dbg !1655
+  %or.cond = and i1 %cmp12, %cmp13, !dbg !1655
+  call void @llvm.dbg.value(metadata !{i32* %maxsize}, i64 0, metadata !958), !dbg !1655
+  ret i1 %or.cond, !dbg !1655
+
+return:                                           ; preds = %if.end, %entry
+  ret i1 false, !dbg !1656
+}

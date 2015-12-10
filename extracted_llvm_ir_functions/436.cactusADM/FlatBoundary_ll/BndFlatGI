@@ -1,18 +1,25 @@
 define i32 @BndFlatGI(%struct.cGH* %GH, i32* %stencil, i32 %gi) #1 {
-  %1 = tail call i32 @CCTK_FirstVarIndexI(i32 %gi) #6
-  %2 = icmp sgt i32 %1, -1
-  br i1 %2, label %3, label %6
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !75), !dbg !408
+  tail call void @llvm.dbg.value(metadata !{i32* %stencil}, i64 0, metadata !76), !dbg !409
+  tail call void @llvm.dbg.value(metadata !{i32 %gi}, i64 0, metadata !77), !dbg !410
+  %call = tail call i32 @CCTK_FirstVarIndexI(i32 %gi) #6, !dbg !411
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !78), !dbg !411
+  %cmp = icmp sgt i32 %call, -1, !dbg !412
+  br i1 %cmp, label %if.then, label %if.else, !dbg !412
 
-; <label>:3                                       ; preds = %0
-  %4 = tail call i32 @CCTK_NumVarsInGroupI(i32 %gi) #6
-  %5 = tail call fastcc i32 @ApplyBndFlat(%struct.cGH* %GH, i32 -1, i32* %stencil, i32 0, i32 %1, i32 %4) #7
-  br label %8
+if.then:                                          ; preds = %entry
+  %call2 = tail call i32 @CCTK_NumVarsInGroupI(i32 %gi) #6, !dbg !413
+  %call3 = tail call fastcc i32 @ApplyBndFlat(%struct.cGH* %GH, i32 -1, i32* %stencil, i32 0, i32 %call, i32 %call2) #7, !dbg !413
+  tail call void @llvm.dbg.value(metadata !{i32 %call3}, i64 0, metadata !79), !dbg !413
+  br label %if.end, !dbg !415
 
-; <label>:6                                       ; preds = %0
-  %7 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 215, i8* getelementptr inbounds ([83 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([36 x i8]* @.str3, i64 0, i64 0), i32 %gi) #6
-  br label %8
+if.else:                                          ; preds = %entry
+  %call4 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 215, i8* getelementptr inbounds ([71 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([36 x i8]* @.str3, i64 0, i64 0), i32 %gi) #6, !dbg !416
+  tail call void @llvm.dbg.value(metadata !304, i64 0, metadata !79), !dbg !418
+  br label %if.end
 
-; <label>:8                                       ; preds = %6, %3
-  %retval.0 = phi i32 [ %5, %3 ], [ -1, %6 ]
-  ret i32 %retval.0
+if.end:                                           ; preds = %if.else, %if.then
+  %retval1.0 = phi i32 [ %call3, %if.then ], [ -1, %if.else ]
+  ret i32 %retval1.0, !dbg !419
 }

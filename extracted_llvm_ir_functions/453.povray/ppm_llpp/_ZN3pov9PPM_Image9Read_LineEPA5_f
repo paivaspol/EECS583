@@ -1,0 +1,340 @@
+define i32 @_ZN3pov9PPM_Image9Read_LineEPA5_f(%"class.pov::PPM_Image"* nocapture %this, [5 x float]* nocapture %line_data) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.pov::PPM_Image"* %this}, i64 0, metadata !482), !dbg !833
+  tail call void @llvm.dbg.value(metadata !{[5 x float]* %line_data}, i64 0, metadata !483), !dbg !833
+  %valid = getelementptr inbounds %"class.pov::PPM_Image"* %this, i64 0, i32 0, i32 1, !dbg !834
+  %0 = load i8* %valid, align 1, !dbg !834, !tbaa !686, !range !711
+  %cmp = icmp eq i8 %0, 0, !dbg !834
+  br i1 %cmp, label %if.then, label %if.end, !dbg !834
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 (i8*, ...)* @_ZN3pov5ErrorEPKcz(i8* getelementptr inbounds ([33 x i8]* @.str7, i64 0, i64 0)) #8, !dbg !835
+  br label %if.end, !dbg !835
+
+if.end:                                           ; preds = %if.then, %entry
+  %in_file = getelementptr inbounds %"class.pov::PPM_Image"* %this, i64 0, i32 6, !dbg !836
+  %1 = load %"class.pov_base::IStream"** %in_file, align 8, !dbg !836, !tbaa !696
+  %fail.i = getelementptr inbounds %"class.pov_base::IStream"* %1, i64 0, i32 0, i32 1, !dbg !837
+  %2 = load i8* %fail.i, align 1, !dbg !837, !tbaa !686, !range !711
+  %tobool.i = icmp eq i8 %2, 0, !dbg !837
+  br i1 %tobool.i, label %_ZN8pov_base6IOBase3eofEv.exit, label %return, !dbg !837
+
+_ZN8pov_base6IOBase3eofEv.exit:                   ; preds = %if.end
+  %f.i = getelementptr inbounds %"class.pov_base::IStream"* %1, i64 0, i32 0, i32 2, !dbg !837
+  %3 = load %struct._IO_FILE** %f.i, align 8, !dbg !837, !tbaa !696
+  %call.i = tail call i32 @feof(%struct._IO_FILE* %3) #10, !dbg !837
+  %cmp.i = icmp eq i32 %call.i, 0, !dbg !837
+  br i1 %cmp.i, label %if.end4, label %return, !dbg !836
+
+if.end4:                                          ; preds = %_ZN8pov_base6IOBase3eofEv.exit
+  %4 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 0), align 8, !dbg !838, !tbaa !694
+  %and = and i32 %4, 131072, !dbg !838
+  %tobool6 = icmp eq i32 %and, 0, !dbg !838
+  br i1 %tobool6, label %if.else37, label %for.cond.preheader, !dbg !838
+
+for.cond.preheader:                               ; preds = %if.end4
+  %width = getelementptr inbounds %"class.pov::PPM_Image"* %this, i64 0, i32 3, !dbg !839
+  %5 = load i32* %width, align 4, !dbg !839, !tbaa !694
+  %cmp8291 = icmp sgt i32 %5, 0, !dbg !839
+  br i1 %cmp8291, label %for.body, label %if.end147, !dbg !839
+
+for.body:                                         ; preds = %for.cond.preheader, %if.end20
+  %indvars.iv301 = phi i64 [ %indvars.iv.next302, %if.end20 ], [ 0, %for.cond.preheader ]
+  %x.0292 = phi i32 [ %inc, %if.end20 ], [ 0, %for.cond.preheader ]
+  %6 = load %"class.pov_base::IStream"** %in_file, align 8, !dbg !842, !tbaa !696
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::IStream"* %6}, i64 0, metadata !844) #2, !dbg !845
+  %fail.i190 = getelementptr inbounds %"class.pov_base::IStream"* %6, i64 0, i32 0, i32 1, !dbg !846
+  %7 = load i8* %fail.i190, align 1, !dbg !846, !tbaa !686, !range !711
+  %tobool.i191 = icmp eq i8 %7, 0, !dbg !846
+  br i1 %tobool.i191, label %_ZN8pov_base7IStream9Read_ByteEv.exit, label %if.then12, !dbg !846
+
+_ZN8pov_base7IStream9Read_ByteEv.exit:            ; preds = %for.body
+  %f.i192 = getelementptr inbounds %"class.pov_base::IStream"* %6, i64 0, i32 0, i32 2, !dbg !846
+  %8 = load %struct._IO_FILE** %f.i192, align 8, !dbg !846, !tbaa !696
+  %call.i193 = tail call i32 @fgetc(%struct._IO_FILE* %8) #10, !dbg !846
+  tail call void @llvm.dbg.value(metadata !{i32 %call.i193}, i64 0, metadata !486), !dbg !842
+  %cmp11 = icmp eq i32 %call.i193, -1, !dbg !842
+  br i1 %cmp11, label %if.then12, label %if.end15, !dbg !842
+
+if.then12:                                        ; preds = %for.body, %_ZN8pov_base7IStream9Read_ByteEv.exit
+  %not.cmp13 = icmp ne i32 %x.0292, 0, !dbg !848
+  %. = sext i1 %not.cmp13 to i32, !dbg !848
+  br label %return, !dbg !848
+
+if.end15:                                         ; preds = %_ZN8pov_base7IStream9Read_ByteEv.exit
+  %9 = load %"class.pov_base::IStream"** %in_file, align 8, !dbg !851, !tbaa !696
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::IStream"* %9}, i64 0, metadata !852) #2, !dbg !853
+  %fail.i196 = getelementptr inbounds %"class.pov_base::IStream"* %9, i64 0, i32 0, i32 1, !dbg !854
+  %10 = load i8* %fail.i196, align 1, !dbg !854, !tbaa !686, !range !711
+  %tobool.i197 = icmp eq i8 %10, 0, !dbg !854
+  br i1 %tobool.i197, label %_ZN8pov_base7IStream9Read_ByteEv.exit202, label %return, !dbg !854
+
+_ZN8pov_base7IStream9Read_ByteEv.exit202:         ; preds = %if.end15
+  %f.i198 = getelementptr inbounds %"class.pov_base::IStream"* %9, i64 0, i32 0, i32 2, !dbg !854
+  %11 = load %struct._IO_FILE** %f.i198, align 8, !dbg !854, !tbaa !696
+  %call.i199 = tail call i32 @fgetc(%struct._IO_FILE* %11) #10, !dbg !854
+  tail call void @llvm.dbg.value(metadata !{i32 %call.i199}, i64 0, metadata !487), !dbg !851
+  %cmp18 = icmp eq i32 %call.i199, -1, !dbg !851
+  br i1 %cmp18, label %return, label %if.end20, !dbg !851
+
+if.end20:                                         ; preds = %_ZN8pov_base7IStream9Read_ByteEv.exit202
+  %mul = shl i32 %call.i193, 8, !dbg !855
+  %add = add nsw i32 %call.i199, %mul, !dbg !855
+  %conv21 = sitofp i32 %add to float, !dbg !855
+  %conv23 = fdiv float %conv21, 6.553500e+04, !dbg !855
+  %arrayidx24 = getelementptr inbounds [5 x float]* %line_data, i64 %indvars.iv301, i64 0, !dbg !855
+  store float %conv23, float* %arrayidx24, align 4, !dbg !855, !tbaa !783
+  %arrayidx30 = getelementptr inbounds [5 x float]* %line_data, i64 %indvars.iv301, i64 1, !dbg !856
+  store float %conv23, float* %arrayidx30, align 4, !dbg !856, !tbaa !783
+  %arrayidx36 = getelementptr inbounds [5 x float]* %line_data, i64 %indvars.iv301, i64 2, !dbg !857
+  store float %conv23, float* %arrayidx36, align 4, !dbg !857, !tbaa !783
+  %indvars.iv.next302 = add i64 %indvars.iv301, 1, !dbg !839
+  %inc = add nsw i32 %x.0292, 1, !dbg !839
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !485), !dbg !839
+  %12 = load i32* %width, align 4, !dbg !839, !tbaa !694
+  %13 = trunc i64 %indvars.iv.next302 to i32, !dbg !839
+  %cmp8 = icmp slt i32 %13, %12, !dbg !839
+  br i1 %cmp8, label %for.body, label %if.end147, !dbg !839
+
+if.else37:                                        ; preds = %if.end4
+  %14 = load i32* getelementptr inbounds (%"struct.pov::OPTIONS_STRUCT"* @_ZN3pov4optsE, i64 0, i32 4), align 8, !dbg !858, !tbaa !694
+  %cmp38 = icmp sgt i32 %14, 8, !dbg !858
+  br i1 %cmp38, label %if.then39, label %for.cond103.preheader, !dbg !858
+
+for.cond103.preheader:                            ; preds = %if.else37
+  %width104 = getelementptr inbounds %"class.pov::PPM_Image"* %this, i64 0, i32 3, !dbg !859
+  %15 = load i32* %width104, align 4, !dbg !859, !tbaa !694
+  %cmp105285 = icmp sgt i32 %15, 0, !dbg !859
+  br i1 %cmp105285, label %for.body106, label %if.end147, !dbg !859
+
+if.then39:                                        ; preds = %if.else37
+  %shl = shl i32 1, %14, !dbg !862
+  %sub = add nsw i32 %shl, -1, !dbg !862
+  %conv40 = sitofp i32 %sub to float, !dbg !862
+  tail call void @llvm.dbg.value(metadata !{float %conv40}, i64 0, metadata !488), !dbg !862
+  tail call void @llvm.dbg.value(metadata !61, i64 0, metadata !485), !dbg !863
+  %width42 = getelementptr inbounds %"class.pov::PPM_Image"* %this, i64 0, i32 3, !dbg !863
+  %16 = load i32* %width42, align 4, !dbg !863, !tbaa !694
+  %cmp43279 = icmp sgt i32 %16, 0, !dbg !863
+  br i1 %cmp43279, label %for.body44, label %if.end147, !dbg !863
+
+for.body44:                                       ; preds = %if.then39, %if.end91
+  %indvars.iv = phi i64 [ %indvars.iv.next, %if.end91 ], [ 0, %if.then39 ]
+  %x.1280 = phi i32 [ %inc100, %if.end91 ], [ 0, %if.then39 ]
+  %17 = load %"class.pov_base::IStream"** %in_file, align 8, !dbg !865, !tbaa !696
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::IStream"* %17}, i64 0, metadata !867) #2, !dbg !868
+  %fail.i203 = getelementptr inbounds %"class.pov_base::IStream"* %17, i64 0, i32 0, i32 1, !dbg !869
+  %18 = load i8* %fail.i203, align 1, !dbg !869, !tbaa !686, !range !711
+  %tobool.i204 = icmp eq i8 %18, 0, !dbg !869
+  br i1 %tobool.i204, label %_ZN8pov_base7IStream9Read_ByteEv.exit209, label %if.then48, !dbg !869
+
+_ZN8pov_base7IStream9Read_ByteEv.exit209:         ; preds = %for.body44
+  %f.i205 = getelementptr inbounds %"class.pov_base::IStream"* %17, i64 0, i32 0, i32 2, !dbg !869
+  %19 = load %struct._IO_FILE** %f.i205, align 8, !dbg !869, !tbaa !696
+  %call.i206 = tail call i32 @fgetc(%struct._IO_FILE* %19) #10, !dbg !869
+  tail call void @llvm.dbg.value(metadata !{i32 %call.i206}, i64 0, metadata !486), !dbg !865
+  %cmp47 = icmp eq i32 %call.i206, -1, !dbg !865
+  br i1 %cmp47, label %if.then48, label %if.end52, !dbg !865
+
+if.then48:                                        ; preds = %for.body44, %_ZN8pov_base7IStream9Read_ByteEv.exit209
+  %not.cmp49 = icmp ne i32 %x.1280, 0, !dbg !870
+  %.188 = sext i1 %not.cmp49 to i32, !dbg !870
+  br label %return, !dbg !870
+
+if.end52:                                         ; preds = %_ZN8pov_base7IStream9Read_ByteEv.exit209
+  %20 = load %"class.pov_base::IStream"** %in_file, align 8, !dbg !873, !tbaa !696
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::IStream"* %20}, i64 0, metadata !874) #2, !dbg !875
+  %fail.i210 = getelementptr inbounds %"class.pov_base::IStream"* %20, i64 0, i32 0, i32 1, !dbg !876
+  %21 = load i8* %fail.i210, align 1, !dbg !876, !tbaa !686, !range !711
+  %tobool.i211 = icmp eq i8 %21, 0, !dbg !876
+  br i1 %tobool.i211, label %_ZN8pov_base7IStream9Read_ByteEv.exit216, label %return, !dbg !876
+
+_ZN8pov_base7IStream9Read_ByteEv.exit216:         ; preds = %if.end52
+  %f.i212 = getelementptr inbounds %"class.pov_base::IStream"* %20, i64 0, i32 0, i32 2, !dbg !876
+  %22 = load %struct._IO_FILE** %f.i212, align 8, !dbg !876, !tbaa !696
+  %call.i213 = tail call i32 @fgetc(%struct._IO_FILE* %22) #10, !dbg !876
+  tail call void @llvm.dbg.value(metadata !{i32 %call.i213}, i64 0, metadata !487), !dbg !873
+  %cmp55 = icmp eq i32 %call.i213, -1, !dbg !873
+  br i1 %cmp55, label %return, label %if.end57, !dbg !873
+
+if.end57:                                         ; preds = %_ZN8pov_base7IStream9Read_ByteEv.exit216
+  %mul58 = shl i32 %call.i206, 8, !dbg !877
+  %add59 = add nsw i32 %call.i213, %mul58, !dbg !877
+  %conv60 = sitofp i32 %add59 to float, !dbg !877
+  %div61 = fdiv float %conv60, %conv40, !dbg !877
+  %arrayidx64 = getelementptr inbounds [5 x float]* %line_data, i64 %indvars.iv, i64 0, !dbg !877
+  store float %div61, float* %arrayidx64, align 4, !dbg !877, !tbaa !783
+  %23 = load %"class.pov_base::IStream"** %in_file, align 8, !dbg !878, !tbaa !696
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::IStream"* %23}, i64 0, metadata !879) #2, !dbg !880
+  %fail.i217 = getelementptr inbounds %"class.pov_base::IStream"* %23, i64 0, i32 0, i32 1, !dbg !881
+  %24 = load i8* %fail.i217, align 1, !dbg !881, !tbaa !686, !range !711
+  %tobool.i218 = icmp eq i8 %24, 0, !dbg !881
+  br i1 %tobool.i218, label %_ZN8pov_base7IStream9Read_ByteEv.exit223, label %return, !dbg !881
+
+_ZN8pov_base7IStream9Read_ByteEv.exit223:         ; preds = %if.end57
+  %f.i219 = getelementptr inbounds %"class.pov_base::IStream"* %23, i64 0, i32 0, i32 2, !dbg !881
+  %25 = load %struct._IO_FILE** %f.i219, align 8, !dbg !881, !tbaa !696
+  %call.i220 = tail call i32 @fgetc(%struct._IO_FILE* %25) #10, !dbg !881
+  tail call void @llvm.dbg.value(metadata !{i32 %call.i220}, i64 0, metadata !486), !dbg !878
+  %cmp67 = icmp eq i32 %call.i220, -1, !dbg !878
+  br i1 %cmp67, label %return, label %if.end69, !dbg !878
+
+if.end69:                                         ; preds = %_ZN8pov_base7IStream9Read_ByteEv.exit223
+  %26 = load %"class.pov_base::IStream"** %in_file, align 8, !dbg !882, !tbaa !696
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::IStream"* %26}, i64 0, metadata !883) #2, !dbg !884
+  %fail.i224 = getelementptr inbounds %"class.pov_base::IStream"* %26, i64 0, i32 0, i32 1, !dbg !885
+  %27 = load i8* %fail.i224, align 1, !dbg !885, !tbaa !686, !range !711
+  %tobool.i225 = icmp eq i8 %27, 0, !dbg !885
+  br i1 %tobool.i225, label %_ZN8pov_base7IStream9Read_ByteEv.exit230, label %return, !dbg !885
+
+_ZN8pov_base7IStream9Read_ByteEv.exit230:         ; preds = %if.end69
+  %f.i226 = getelementptr inbounds %"class.pov_base::IStream"* %26, i64 0, i32 0, i32 2, !dbg !885
+  %28 = load %struct._IO_FILE** %f.i226, align 8, !dbg !885, !tbaa !696
+  %call.i227 = tail call i32 @fgetc(%struct._IO_FILE* %28) #10, !dbg !885
+  tail call void @llvm.dbg.value(metadata !{i32 %call.i227}, i64 0, metadata !487), !dbg !882
+  %cmp72 = icmp eq i32 %call.i227, -1, !dbg !882
+  br i1 %cmp72, label %return, label %if.end74, !dbg !882
+
+if.end74:                                         ; preds = %_ZN8pov_base7IStream9Read_ByteEv.exit230
+  %mul75 = shl i32 %call.i220, 8, !dbg !886
+  %add76 = add nsw i32 %call.i227, %mul75, !dbg !886
+  %conv77 = sitofp i32 %add76 to float, !dbg !886
+  %div78 = fdiv float %conv77, %conv40, !dbg !886
+  %arrayidx81 = getelementptr inbounds [5 x float]* %line_data, i64 %indvars.iv, i64 1, !dbg !886
+  store float %div78, float* %arrayidx81, align 4, !dbg !886, !tbaa !783
+  %29 = load %"class.pov_base::IStream"** %in_file, align 8, !dbg !887, !tbaa !696
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::IStream"* %29}, i64 0, metadata !888) #2, !dbg !889
+  %fail.i231 = getelementptr inbounds %"class.pov_base::IStream"* %29, i64 0, i32 0, i32 1, !dbg !890
+  %30 = load i8* %fail.i231, align 1, !dbg !890, !tbaa !686, !range !711
+  %tobool.i232 = icmp eq i8 %30, 0, !dbg !890
+  br i1 %tobool.i232, label %_ZN8pov_base7IStream9Read_ByteEv.exit237, label %return, !dbg !890
+
+_ZN8pov_base7IStream9Read_ByteEv.exit237:         ; preds = %if.end74
+  %f.i233 = getelementptr inbounds %"class.pov_base::IStream"* %29, i64 0, i32 0, i32 2, !dbg !890
+  %31 = load %struct._IO_FILE** %f.i233, align 8, !dbg !890, !tbaa !696
+  %call.i234 = tail call i32 @fgetc(%struct._IO_FILE* %31) #10, !dbg !890
+  tail call void @llvm.dbg.value(metadata !{i32 %call.i234}, i64 0, metadata !486), !dbg !887
+  %cmp84 = icmp eq i32 %call.i234, -1, !dbg !887
+  br i1 %cmp84, label %return, label %if.end86, !dbg !887
+
+if.end86:                                         ; preds = %_ZN8pov_base7IStream9Read_ByteEv.exit237
+  %32 = load %"class.pov_base::IStream"** %in_file, align 8, !dbg !891, !tbaa !696
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::IStream"* %32}, i64 0, metadata !892) #2, !dbg !893
+  %fail.i238 = getelementptr inbounds %"class.pov_base::IStream"* %32, i64 0, i32 0, i32 1, !dbg !894
+  %33 = load i8* %fail.i238, align 1, !dbg !894, !tbaa !686, !range !711
+  %tobool.i239 = icmp eq i8 %33, 0, !dbg !894
+  br i1 %tobool.i239, label %_ZN8pov_base7IStream9Read_ByteEv.exit244, label %return, !dbg !894
+
+_ZN8pov_base7IStream9Read_ByteEv.exit244:         ; preds = %if.end86
+  %f.i240 = getelementptr inbounds %"class.pov_base::IStream"* %32, i64 0, i32 0, i32 2, !dbg !894
+  %34 = load %struct._IO_FILE** %f.i240, align 8, !dbg !894, !tbaa !696
+  %call.i241 = tail call i32 @fgetc(%struct._IO_FILE* %34) #10, !dbg !894
+  tail call void @llvm.dbg.value(metadata !{i32 %call.i241}, i64 0, metadata !487), !dbg !891
+  %cmp89 = icmp eq i32 %call.i241, -1, !dbg !891
+  br i1 %cmp89, label %return, label %if.end91, !dbg !891
+
+if.end91:                                         ; preds = %_ZN8pov_base7IStream9Read_ByteEv.exit244
+  %mul92 = shl i32 %call.i234, 8, !dbg !895
+  %add93 = add nsw i32 %call.i241, %mul92, !dbg !895
+  %conv94 = sitofp i32 %add93 to float, !dbg !895
+  %div95 = fdiv float %conv94, %conv40, !dbg !895
+  %arrayidx98 = getelementptr inbounds [5 x float]* %line_data, i64 %indvars.iv, i64 2, !dbg !895
+  store float %div95, float* %arrayidx98, align 4, !dbg !895, !tbaa !783
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !863
+  %inc100 = add nsw i32 %x.1280, 1, !dbg !863
+  tail call void @llvm.dbg.value(metadata !{i32 %inc100}, i64 0, metadata !485), !dbg !863
+  %35 = load i32* %width42, align 4, !dbg !863, !tbaa !694
+  %36 = trunc i64 %indvars.iv.next to i32, !dbg !863
+  %cmp43 = icmp slt i32 %36, %35, !dbg !863
+  br i1 %cmp43, label %for.body44, label %if.end147, !dbg !863
+
+for.body106:                                      ; preds = %for.cond103.preheader, %if.end136
+  %indvars.iv297 = phi i64 [ %indvars.iv.next298, %if.end136 ], [ 0, %for.cond103.preheader ]
+  %x.2286 = phi i32 [ %inc144, %if.end136 ], [ 0, %for.cond103.preheader ]
+  %37 = load %"class.pov_base::IStream"** %in_file, align 8, !dbg !896, !tbaa !696
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::IStream"* %37}, i64 0, metadata !898) #2, !dbg !899
+  %fail.i245 = getelementptr inbounds %"class.pov_base::IStream"* %37, i64 0, i32 0, i32 1, !dbg !900
+  %38 = load i8* %fail.i245, align 1, !dbg !900, !tbaa !686, !range !711
+  %tobool.i246 = icmp eq i8 %38, 0, !dbg !900
+  br i1 %tobool.i246, label %_ZN8pov_base7IStream9Read_ByteEv.exit251, label %if.then110, !dbg !900
+
+_ZN8pov_base7IStream9Read_ByteEv.exit251:         ; preds = %for.body106
+  %f.i247 = getelementptr inbounds %"class.pov_base::IStream"* %37, i64 0, i32 0, i32 2, !dbg !900
+  %39 = load %struct._IO_FILE** %f.i247, align 8, !dbg !900, !tbaa !696
+  %call.i248 = tail call i32 @fgetc(%struct._IO_FILE* %39) #10, !dbg !900
+  tail call void @llvm.dbg.value(metadata !{i32 %call.i248}, i64 0, metadata !484), !dbg !896
+  %cmp109 = icmp eq i32 %call.i248, -1, !dbg !896
+  br i1 %cmp109, label %if.then110, label %if.end114, !dbg !896
+
+if.then110:                                       ; preds = %for.body106, %_ZN8pov_base7IStream9Read_ByteEv.exit251
+  %not.cmp111 = icmp ne i32 %x.2286, 0, !dbg !901
+  %.189 = sext i1 %not.cmp111 to i32, !dbg !901
+  br label %return, !dbg !901
+
+if.end114:                                        ; preds = %_ZN8pov_base7IStream9Read_ByteEv.exit251
+  %conv115 = sitofp i32 %call.i248 to double, !dbg !904
+  %div116 = fdiv double %conv115, 2.550000e+02, !dbg !904
+  %conv117 = fptrunc double %div116 to float, !dbg !904
+  %arrayidx120 = getelementptr inbounds [5 x float]* %line_data, i64 %indvars.iv297, i64 0, !dbg !904
+  store float %conv117, float* %arrayidx120, align 4, !dbg !904, !tbaa !783
+  %40 = load %"class.pov_base::IStream"** %in_file, align 8, !dbg !905, !tbaa !696
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::IStream"* %40}, i64 0, metadata !906) #2, !dbg !907
+  %fail.i252 = getelementptr inbounds %"class.pov_base::IStream"* %40, i64 0, i32 0, i32 1, !dbg !908
+  %41 = load i8* %fail.i252, align 1, !dbg !908, !tbaa !686, !range !711
+  %tobool.i253 = icmp eq i8 %41, 0, !dbg !908
+  br i1 %tobool.i253, label %_ZN8pov_base7IStream9Read_ByteEv.exit258, label %return, !dbg !908
+
+_ZN8pov_base7IStream9Read_ByteEv.exit258:         ; preds = %if.end114
+  %f.i254 = getelementptr inbounds %"class.pov_base::IStream"* %40, i64 0, i32 0, i32 2, !dbg !908
+  %42 = load %struct._IO_FILE** %f.i254, align 8, !dbg !908, !tbaa !696
+  %call.i255 = tail call i32 @fgetc(%struct._IO_FILE* %42) #10, !dbg !908
+  tail call void @llvm.dbg.value(metadata !{i32 %call.i255}, i64 0, metadata !484), !dbg !905
+  %cmp123 = icmp eq i32 %call.i255, -1, !dbg !905
+  br i1 %cmp123, label %return, label %if.end125, !dbg !905
+
+if.end125:                                        ; preds = %_ZN8pov_base7IStream9Read_ByteEv.exit258
+  %conv126 = sitofp i32 %call.i255 to double, !dbg !909
+  %div127 = fdiv double %conv126, 2.550000e+02, !dbg !909
+  %conv128 = fptrunc double %div127 to float, !dbg !909
+  %arrayidx131 = getelementptr inbounds [5 x float]* %line_data, i64 %indvars.iv297, i64 1, !dbg !909
+  store float %conv128, float* %arrayidx131, align 4, !dbg !909, !tbaa !783
+  %43 = load %"class.pov_base::IStream"** %in_file, align 8, !dbg !910, !tbaa !696
+  tail call void @llvm.dbg.value(metadata !{%"class.pov_base::IStream"* %43}, i64 0, metadata !911) #2, !dbg !912
+  %fail.i259 = getelementptr inbounds %"class.pov_base::IStream"* %43, i64 0, i32 0, i32 1, !dbg !913
+  %44 = load i8* %fail.i259, align 1, !dbg !913, !tbaa !686, !range !711
+  %tobool.i260 = icmp eq i8 %44, 0, !dbg !913
+  br i1 %tobool.i260, label %_ZN8pov_base7IStream9Read_ByteEv.exit265, label %return, !dbg !913
+
+_ZN8pov_base7IStream9Read_ByteEv.exit265:         ; preds = %if.end125
+  %f.i261 = getelementptr inbounds %"class.pov_base::IStream"* %43, i64 0, i32 0, i32 2, !dbg !913
+  %45 = load %struct._IO_FILE** %f.i261, align 8, !dbg !913, !tbaa !696
+  %call.i262 = tail call i32 @fgetc(%struct._IO_FILE* %45) #10, !dbg !913
+  tail call void @llvm.dbg.value(metadata !{i32 %call.i262}, i64 0, metadata !484), !dbg !910
+  %cmp134 = icmp eq i32 %call.i262, -1, !dbg !910
+  br i1 %cmp134, label %return, label %if.end136, !dbg !910
+
+if.end136:                                        ; preds = %_ZN8pov_base7IStream9Read_ByteEv.exit265
+  %conv137 = sitofp i32 %call.i262 to double, !dbg !914
+  %div138 = fdiv double %conv137, 2.550000e+02, !dbg !914
+  %conv139 = fptrunc double %div138 to float, !dbg !914
+  %arrayidx142 = getelementptr inbounds [5 x float]* %line_data, i64 %indvars.iv297, i64 2, !dbg !914
+  store float %conv139, float* %arrayidx142, align 4, !dbg !914, !tbaa !783
+  %indvars.iv.next298 = add i64 %indvars.iv297, 1, !dbg !859
+  %inc144 = add nsw i32 %x.2286, 1, !dbg !859
+  tail call void @llvm.dbg.value(metadata !{i32 %inc144}, i64 0, metadata !485), !dbg !859
+  %46 = load i32* %width104, align 4, !dbg !859, !tbaa !694
+  %47 = trunc i64 %indvars.iv.next298 to i32, !dbg !859
+  %cmp105 = icmp slt i32 %47, %46, !dbg !859
+  br i1 %cmp105, label %for.body106, label %if.end147, !dbg !859
+
+if.end147:                                        ; preds = %for.cond.preheader, %if.end20, %for.cond103.preheader, %if.end136, %if.then39, %if.end91
+  %line_number = getelementptr inbounds %"class.pov::PPM_Image"* %this, i64 0, i32 5, !dbg !915
+  %48 = load i32* %line_number, align 4, !dbg !915, !tbaa !694
+  %inc148 = add nsw i32 %48, 1, !dbg !915
+  store i32 %inc148, i32* %line_number, align 4, !dbg !915, !tbaa !694
+  br label %return, !dbg !916
+
+return:                                           ; preds = %if.end15, %_ZN8pov_base7IStream9Read_ByteEv.exit202, %if.end125, %if.end114, %_ZN8pov_base7IStream9Read_ByteEv.exit265, %_ZN8pov_base7IStream9Read_ByteEv.exit258, %if.end86, %if.end74, %if.end69, %if.end57, %if.end52, %_ZN8pov_base7IStream9Read_ByteEv.exit244, %_ZN8pov_base7IStream9Read_ByteEv.exit237, %_ZN8pov_base7IStream9Read_ByteEv.exit230, %_ZN8pov_base7IStream9Read_ByteEv.exit223, %_ZN8pov_base7IStream9Read_ByteEv.exit216, %_ZN8pov_base6IOBase3eofEv.exit, %if.end, %if.then110, %if.then48, %if.then12, %if.end147
+  %retval.0 = phi i32 [ 1, %if.end147 ], [ 0, %_ZN8pov_base6IOBase3eofEv.exit ], [ %., %if.then12 ], [ %.188, %if.then48 ], [ %.189, %if.then110 ], [ 0, %if.end ], [ -1, %_ZN8pov_base7IStream9Read_ByteEv.exit216 ], [ -1, %_ZN8pov_base7IStream9Read_ByteEv.exit223 ], [ -1, %_ZN8pov_base7IStream9Read_ByteEv.exit230 ], [ -1, %_ZN8pov_base7IStream9Read_ByteEv.exit237 ], [ -1, %_ZN8pov_base7IStream9Read_ByteEv.exit244 ], [ -1, %if.end52 ], [ -1, %if.end57 ], [ -1, %if.end69 ], [ -1, %if.end74 ], [ -1, %if.end86 ], [ -1, %_ZN8pov_base7IStream9Read_ByteEv.exit258 ], [ -1, %_ZN8pov_base7IStream9Read_ByteEv.exit265 ], [ -1, %if.end114 ], [ -1, %if.end125 ], [ -1, %_ZN8pov_base7IStream9Read_ByteEv.exit202 ], [ -1, %if.end15 ]
+  ret i32 %retval.0, !dbg !916
+}

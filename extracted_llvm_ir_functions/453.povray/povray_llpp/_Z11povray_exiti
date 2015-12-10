@@ -1,0 +1,50 @@
+define void @_Z11povray_exiti(i32 %i) #7 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %i}, i64 0, metadata !1184), !dbg !1608
+  %0 = load volatile i32* @_ZN3pov9Stop_FlagE, align 4, !dbg !1609, !tbaa !1500
+  %tobool = icmp eq i32 %0, 0, !dbg !1609
+  br i1 %tobool, label %if.end5, label %if.then, !dbg !1609
+
+if.then:                                          ; preds = %entry
+  %call = tail call i32 @_ZN3pov13Send_ProgressEPKci(i8* getelementptr inbounds ([17 x i8]* @.str12, i64 0, i64 0), i32 18) #9, !dbg !1610
+  %call1 = tail call i32 @_ZN3pov12pov_shelloutENS_9shelltypeE(i32 4) #9, !dbg !1612
+  %cmp = icmp eq i32 %call1, 3, !dbg !1612
+  br i1 %cmp, label %if.else, label %if.then2, !dbg !1612
+
+if.then2:                                         ; preds = %if.then
+  %call3 = tail call i32 @_ZN3pov13Send_ProgressEPKci(i8* getelementptr inbounds ([11 x i8]* @.str13, i64 0, i64 0), i32 19) #9, !dbg !1613
+  br label %if.end5, !dbg !1613
+
+if.else:                                          ; preds = %if.then
+  %call4 = tail call i32 (i8*, ...)* @_ZN3pov13PossibleErrorEPKcz(i8* getelementptr inbounds ([35 x i8]* @.str14, i64 0, i64 0)) #9, !dbg !1614
+  br label %if.end5
+
+if.end5:                                          ; preds = %entry, %if.then2, %if.else
+  %1 = load i32* @_ZN3pov5StageE, align 4, !dbg !1615, !tbaa !1500
+  %cmp6 = icmp eq i32 %1, 5, !dbg !1615
+  br i1 %cmp6, label %if.then7, label %if.end8, !dbg !1615
+
+if.then7:                                         ; preds = %if.end5
+  tail call void @_ZN3pov19Terminate_TokenizerEv() #9, !dbg !1616
+  %2 = load %"struct.pov::Texture_Struct"** @_ZN3pov15Default_TextureE, align 8, !dbg !1618, !tbaa !1456
+  tail call void @_ZN3pov16Destroy_TexturesEPNS_14Texture_StructE(%"struct.pov::Texture_Struct"* %2) #9, !dbg !1618
+  %3 = load %"struct.pov::Camera_Struct"** @_ZN3pov14Default_CameraE, align 8, !dbg !1619, !tbaa !1456
+  tail call void @_ZN3pov14Destroy_CameraEPNS_13Camera_StructE(%"struct.pov::Camera_Struct"* %3) #9, !dbg !1619
+  br label %if.end8, !dbg !1620
+
+if.end8:                                          ; preds = %if.then7, %if.end5
+  tail call void @_ZN3pov12Do_CooperateEi(i32 0) #9, !dbg !1621
+  store i32 1, i32* @_ZN3pov13pre_init_flagE, align 4, !dbg !1622, !tbaa !1500
+  store i32 3, i32* @_ZN3pov21Cooperate_Render_FlagE, align 4, !dbg !1623, !tbaa !1500
+  %cmp9 = icmp sgt i32 %i, 0, !dbg !1624
+  br i1 %cmp9, label %if.then10, label %if.else11, !dbg !1624
+
+if.then10:                                        ; preds = %if.end8
+  %sub = sub nsw i32 0, %i, !dbg !1624
+  tail call void @exit(i32 %sub) #13, !dbg !1624
+  unreachable, !dbg !1624
+
+if.else11:                                        ; preds = %if.end8
+  tail call void @exit(i32 %i) #13, !dbg !1624
+  unreachable, !dbg !1624
+}

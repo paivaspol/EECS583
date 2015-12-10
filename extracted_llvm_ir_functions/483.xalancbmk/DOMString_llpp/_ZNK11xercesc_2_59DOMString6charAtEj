@@ -1,0 +1,29 @@
+define zeroext i16 @_ZNK11xercesc_2_59DOMString6charAtEj(%"class.xercesc_2_5::DOMString"* nocapture %this, i32 %index) #6 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMString"* %this}, i64 0, metadata !1051), !dbg !2043
+  tail call void @llvm.dbg.value(metadata !{i32 %index}, i64 0, metadata !1052), !dbg !2043
+  tail call void @llvm.dbg.value(metadata !2044, i64 0, metadata !1053), !dbg !2045
+  %fHandle = getelementptr inbounds %"class.xercesc_2_5::DOMString"* %this, i64 0, i32 0, !dbg !2046
+  %0 = load %"class.xercesc_2_5::DOMStringHandle"** %fHandle, align 8, !dbg !2046, !tbaa !1648
+  %cmp = icmp eq %"class.xercesc_2_5::DOMStringHandle"* %0, null, !dbg !2046
+  br i1 %cmp, label %if.end, label %land.lhs.true, !dbg !2046
+
+land.lhs.true:                                    ; preds = %entry
+  %fLength = getelementptr inbounds %"class.xercesc_2_5::DOMStringHandle"* %0, i64 0, i32 0, !dbg !2046
+  %1 = load i32* %fLength, align 4, !dbg !2046, !tbaa !1682
+  %cmp3 = icmp ugt i32 %1, %index, !dbg !2046
+  br i1 %cmp3, label %if.then, label %if.end, !dbg !2046
+
+if.then:                                          ; preds = %land.lhs.true
+  %idxprom = zext i32 %index to i64, !dbg !2047
+  %fDSData = getelementptr inbounds %"class.xercesc_2_5::DOMStringHandle"* %0, i64 0, i32 2, !dbg !2047
+  %2 = load %"class.xercesc_2_5::DOMStringData"** %fDSData, align 8, !dbg !2047, !tbaa !1648
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::DOMStringData"* %2, i64 0, i32 2, i64 %idxprom, !dbg !2047
+  %3 = load i16* %arrayidx, align 2, !dbg !2047, !tbaa !1685
+  tail call void @llvm.dbg.value(metadata !{i16 %3}, i64 0, metadata !1053), !dbg !2047
+  br label %if.end, !dbg !2047
+
+if.end:                                           ; preds = %entry, %if.then, %land.lhs.true
+  %retCh.0 = phi i16 [ %3, %if.then ], [ 0, %land.lhs.true ], [ 0, %entry ]
+  ret i16 %retCh.0, !dbg !2048
+}

@@ -1,47 +1,50 @@
 define void @fixup_unsigned_type(%union.tree_node* %type) #0 {
 entry:
-  %type1 = bitcast %union.tree_node* %type to %struct.tree_type*
-  %precision2 = getelementptr inbounds %struct.tree_type* %type1, i64 0, i32 6
-  %0 = bitcast [4 x i8]* %precision2 to i32*
-  %bf.load = load i32* %0, align 4
-  %bf.clear = and i32 %bf.load, 511
-  %cmp = icmp ugt i32 %bf.clear, 128
-  %.bf.clear = select i1 %cmp, i32 128, i32 %bf.clear
-  %call = tail call %union.tree_node* @build_int_2_wide(i64 0, i64 0) #7
-  %1 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 12
-  store %union.tree_node* %call, %union.tree_node** %1, align 8, !tbaa !0
-  %sub = add nsw i32 %.bf.clear, -64
-  %cmp4 = icmp sgt i32 %sub, -1
-  br i1 %cmp4, label %cond.end, label %cond.end.thread
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %type}, i64 0, metadata !1127), !dbg !1875
+  %type1 = bitcast %union.tree_node* %type to %struct.tree_type*, !dbg !1876
+  %precision2 = getelementptr inbounds %struct.tree_type* %type1, i64 0, i32 6, !dbg !1876
+  %0 = bitcast [4 x i8]* %precision2 to i32*, !dbg !1876
+  %bf.load = load i32* %0, align 4, !dbg !1876
+  %bf.clear = and i32 %bf.load, 511, !dbg !1876
+  tail call void @llvm.dbg.value(metadata !{i32 %bf.clear}, i64 0, metadata !1128), !dbg !1876
+  %cmp = icmp ugt i32 %bf.clear, 128, !dbg !1877
+  %.bf.clear = select i1 %cmp, i32 128, i32 %bf.clear, !dbg !1877
+  tail call void @llvm.dbg.value(metadata !{i32 %.bf.clear}, i64 0, metadata !1128), !dbg !1878
+  %call = tail call %union.tree_node* @build_int_2_wide(i64 0, i64 0) #8, !dbg !1879
+  %1 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 12, !dbg !1879
+  store %union.tree_node* %call, %union.tree_node** %1, align 8, !dbg !1879, !tbaa !1183
+  %sub = add nsw i32 %.bf.clear, -64, !dbg !1880
+  %cmp4 = icmp sgt i32 %sub, -1, !dbg !1880
+  br i1 %cmp4, label %cond.end, label %cond.end.thread, !dbg !1880
 
 cond.end.thread:                                  ; preds = %entry
-  %sh_prom = zext i32 %.bf.clear to i64
-  %shl = shl i64 1, %sh_prom
-  %sub5 = add nsw i64 %shl, -1
-  br label %cond.end13
+  %sh_prom = zext i32 %.bf.clear to i64, !dbg !1880
+  %shl = shl i64 1, %sh_prom, !dbg !1880
+  %sub5 = add nsw i64 %shl, -1, !dbg !1880
+  br label %cond.end13, !dbg !1880
 
 cond.end:                                         ; preds = %entry
-  %cmp7 = icmp sgt i32 %sub, 0
-  br i1 %cmp7, label %cond.true8, label %cond.end13
+  %cmp7 = icmp sgt i32 %sub, 0, !dbg !1880
+  br i1 %cmp7, label %cond.true8, label %cond.end13, !dbg !1880
 
 cond.true8:                                       ; preds = %cond.end
-  %sub10 = sub i32 128, %.bf.clear
-  %sh_prom11 = zext i32 %sub10 to i64
-  %shr = lshr i64 -1, %sh_prom11
-  br label %cond.end13
+  %sub10 = sub i32 128, %.bf.clear, !dbg !1880
+  %sh_prom11 = zext i32 %sub10 to i64, !dbg !1880
+  %shr = lshr i64 -1, %sh_prom11, !dbg !1880
+  br label %cond.end13, !dbg !1880
 
 cond.end13:                                       ; preds = %cond.end.thread, %cond.end, %cond.true8
   %cond36 = phi i64 [ -1, %cond.true8 ], [ -1, %cond.end ], [ %sub5, %cond.end.thread ]
-  %cond14 = phi i64 [ %shr, %cond.true8 ], [ 0, %cond.end ], [ 0, %cond.end.thread ]
-  %call15 = tail call %union.tree_node* @build_int_2_wide(i64 %cond36, i64 %cond14) #7
-  %2 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 13
-  store %union.tree_node* %call15, %union.tree_node** %2, align 8, !tbaa !0
-  %3 = load %union.tree_node** %1, align 8, !tbaa !0
-  %type19 = getelementptr inbounds %union.tree_node* %3, i64 0, i32 0, i32 0, i32 1
-  store %union.tree_node* %type, %union.tree_node** %type19, align 8, !tbaa !0
-  %4 = load %union.tree_node** %2, align 8, !tbaa !0
-  %type23 = getelementptr inbounds %union.tree_node* %4, i64 0, i32 0, i32 0, i32 1
-  store %union.tree_node* %type, %union.tree_node** %type23, align 8, !tbaa !0
-  tail call void @layout_type(%union.tree_node* %type) #9
-  ret void
+  %cond14 = phi i64 [ %shr, %cond.true8 ], [ 0, %cond.end ], [ 0, %cond.end.thread ], !dbg !1880
+  %call15 = tail call %union.tree_node* @build_int_2_wide(i64 %cond36, i64 %cond14) #8, !dbg !1880
+  %2 = getelementptr inbounds %union.tree_node* %type, i64 0, i32 0, i32 13, !dbg !1880
+  store %union.tree_node* %call15, %union.tree_node** %2, align 8, !dbg !1880, !tbaa !1183
+  %3 = load %union.tree_node** %1, align 8, !dbg !1881, !tbaa !1183
+  %type19 = getelementptr inbounds %union.tree_node* %3, i64 0, i32 0, i32 0, i32 1, !dbg !1881
+  store %union.tree_node* %type, %union.tree_node** %type19, align 8, !dbg !1881, !tbaa !1183
+  %4 = load %union.tree_node** %2, align 8, !dbg !1882, !tbaa !1183
+  %type23 = getelementptr inbounds %union.tree_node* %4, i64 0, i32 0, i32 0, i32 1, !dbg !1882
+  store %union.tree_node* %type, %union.tree_node** %type23, align 8, !dbg !1882, !tbaa !1183
+  tail call void @layout_type(%union.tree_node* %type) #10, !dbg !1883
+  ret void, !dbg !1884
 }

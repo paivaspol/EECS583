@@ -1,0 +1,71 @@
+define void @_ZN13ICUResHandler10charactersEPKtj(%class.ICUResHandler* %this, i16* nocapture %chars, i32 %length) unnamed_addr #2 align 2 {
+entry:
+  %buffer = alloca [512 x i16], align 16
+  call void @llvm.dbg.value(metadata !{%class.ICUResHandler* %this}, i64 0, metadata !906), !dbg !1914
+  call void @llvm.dbg.value(metadata !{i16* %chars}, i64 0, metadata !907), !dbg !1914
+  call void @llvm.dbg.value(metadata !{i32 %length}, i64 0, metadata !908), !dbg !1915
+  %m_startCollectingCharacters = getelementptr inbounds %class.ICUResHandler* %this, i64 0, i32 0, i32 3, !dbg !1916
+  %0 = load i8* %m_startCollectingCharacters, align 1, !dbg !1916, !tbaa !1917, !range !1919
+  %tobool = icmp eq i8 %0, 0, !dbg !1916
+  br i1 %tobool, label %if.end29, label %if.then, !dbg !1916
+
+if.then:                                          ; preds = %entry
+  %1 = bitcast [512 x i16]* %buffer to i8*, !dbg !1920
+  call void @llvm.lifetime.start(i64 1024, i8* %1) #5, !dbg !1920
+  call void @llvm.dbg.declare(metadata !{[512 x i16]* %buffer}, metadata !909), !dbg !1920
+  call void @llvm.dbg.value(metadata !54, i64 0, metadata !914), !dbg !1921
+  call void @llvm.dbg.value(metadata !54, i64 0, metadata !915), !dbg !1922
+  %cmp246 = icmp eq i32 %length, 0, !dbg !1922
+  br i1 %cmp246, label %for.end, label %for.body, !dbg !1922
+
+for.body:                                         ; preds = %if.then, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %if.then ]
+  %j.047 = phi i32 [ %inc26, %for.inc ], [ 0, %if.then ]
+  %arrayidx = getelementptr inbounds i16* %chars, i64 %indvars.iv, !dbg !1923
+  %2 = load i16* %arrayidx, align 2, !dbg !1923, !tbaa !1925
+  switch i16 %2, label %if.else [
+    i16 34, label %if.then14
+    i16 123, label %if.then14
+    i16 125, label %if.then14
+  ], !dbg !1923
+
+if.then14:                                        ; preds = %for.body, %for.body, %for.body
+  %idxprom15 = sext i32 %j.047 to i64, !dbg !1926
+  %arrayidx16 = getelementptr inbounds [512 x i16]* %buffer, i64 0, i64 %idxprom15, !dbg !1926
+  store i16 92, i16* %arrayidx16, align 2, !dbg !1926, !tbaa !1925
+  %inc = add nsw i32 %j.047, 1, !dbg !1928
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !914), !dbg !1928
+  %idxprom19 = sext i32 %inc to i64, !dbg !1929
+  %arrayidx20 = getelementptr inbounds [512 x i16]* %buffer, i64 0, i64 %idxprom19, !dbg !1929
+  store i16 %2, i16* %arrayidx20, align 2, !dbg !1929, !tbaa !1925
+  br label %for.inc, !dbg !1930
+
+if.else:                                          ; preds = %for.body
+  %idxprom23 = sext i32 %j.047 to i64, !dbg !1931
+  %arrayidx24 = getelementptr inbounds [512 x i16]* %buffer, i64 0, i64 %idxprom23, !dbg !1931
+  store i16 %2, i16* %arrayidx24, align 2, !dbg !1931, !tbaa !1925
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then14, %if.else
+  %j.1 = phi i32 [ %inc, %if.then14 ], [ %j.047, %if.else ]
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1922
+  %inc26 = add nsw i32 %j.1, 1, !dbg !1922
+  call void @llvm.dbg.value(metadata !{i32 %inc26}, i64 0, metadata !914), !dbg !1922
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1922
+  %exitcond = icmp eq i32 %lftr.wideiv, %length, !dbg !1922
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !1922
+
+for.end:                                          ; preds = %for.inc, %if.then
+  %j.0.lcssa = phi i32 [ 0, %if.then ], [ %inc26, %for.inc ]
+  %idxprom27 = sext i32 %j.0.lcssa to i64, !dbg !1933
+  %arrayidx28 = getelementptr inbounds [512 x i16]* %buffer, i64 0, i64 %idxprom27, !dbg !1933
+  store i16 0, i16* %arrayidx28, align 2, !dbg !1933, !tbaa !1925
+  %m_fStream = getelementptr inbounds %class.ICUResHandler* %this, i64 0, i32 1, !dbg !1934
+  %arraydecay = getelementptr inbounds [512 x i16]* %buffer, i64 0, i64 0, !dbg !1934
+  call void @_ZN21XalanFileOutputStream5writeEPKtj(%class.XalanFileOutputStream* %m_fStream, i16* %arraydecay, i32 %j.0.lcssa) #9, !dbg !1934
+  call void @llvm.lifetime.end(i64 1024, i8* %1) #5, !dbg !1935
+  br label %if.end29, !dbg !1935
+
+if.end29:                                         ; preds = %entry, %for.end
+  ret void, !dbg !1936
+}

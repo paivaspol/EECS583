@@ -1,0 +1,26 @@
+define void @_ZN3pov11UCS2_strcpyEPtS0_(i16* nocapture %s1, i16* nocapture %s2) #6 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %s1}, i64 0, metadata !726), !dbg !1233
+  tail call void @llvm.dbg.value(metadata !{i16* %s2}, i64 0, metadata !727), !dbg !1233
+  %0 = load i16* %s2, align 2, !dbg !1234, !tbaa !868
+  %cmp6 = icmp eq i16 %0, 0, !dbg !1234
+  br i1 %cmp6, label %for.end, label %for.body, !dbg !1234
+
+for.body:                                         ; preds = %entry, %for.body
+  %1 = phi i16 [ %2, %for.body ], [ %0, %entry ]
+  %s2.addr.08 = phi i16* [ %incdec.ptr1, %for.body ], [ %s2, %entry ]
+  %s1.addr.07 = phi i16* [ %incdec.ptr, %for.body ], [ %s1, %entry ]
+  store i16 %1, i16* %s1.addr.07, align 2, !dbg !1235, !tbaa !868
+  %incdec.ptr = getelementptr inbounds i16* %s1.addr.07, i64 1, !dbg !1234
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr}, i64 0, metadata !726), !dbg !1234
+  %incdec.ptr1 = getelementptr inbounds i16* %s2.addr.08, i64 1, !dbg !1234
+  tail call void @llvm.dbg.value(metadata !{i16* %incdec.ptr1}, i64 0, metadata !727), !dbg !1234
+  %2 = load i16* %incdec.ptr1, align 2, !dbg !1234, !tbaa !868
+  %cmp = icmp eq i16 %2, 0, !dbg !1234
+  br i1 %cmp, label %for.end, label %for.body, !dbg !1234
+
+for.end:                                          ; preds = %for.body, %entry
+  %s1.addr.0.lcssa = phi i16* [ %s1, %entry ], [ %incdec.ptr, %for.body ]
+  store i16 0, i16* %s1.addr.0.lcssa, align 2, !dbg !1236, !tbaa !868
+  ret void, !dbg !1237
+}

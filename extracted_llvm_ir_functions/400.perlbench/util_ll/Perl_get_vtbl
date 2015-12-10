@@ -1,0 +1,14 @@
+define %struct.mgvtbl* @Perl_get_vtbl(i32 %vtbl_id) #7 {
+entry:
+  %0 = icmp ult i32 %vtbl_id, 30
+  br i1 %0, label %switch.lookup, label %sw.epilog
+
+switch.lookup:                                    ; preds = %entry
+  %1 = sext i32 %vtbl_id to i64
+  %switch.gep = getelementptr inbounds [30 x %struct.mgvtbl*]* @switch.table, i64 0, i64 %1
+  %switch.load = load %struct.mgvtbl** %switch.gep, align 8
+  ret %struct.mgvtbl* %switch.load
+
+sw.epilog:                                        ; preds = %entry
+  ret %struct.mgvtbl* null
+}

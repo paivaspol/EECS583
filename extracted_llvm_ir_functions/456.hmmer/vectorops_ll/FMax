@@ -1,22 +1,27 @@
 define float @FMax(float* nocapture %vec, i32 %n) #1 {
 entry:
-  %0 = load float* %vec, align 4, !tbaa !3
-  %cmp11 = icmp sgt i32 %n, 1
-  br i1 %cmp11, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{float* %vec}, i64 0, metadata !108), !dbg !267
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !109), !dbg !267
+  %0 = load float* %vec, align 4, !dbg !268, !tbaa !212
+  tail call void @llvm.dbg.value(metadata !{float %0}, i64 0, metadata !111), !dbg !268
+  tail call void @llvm.dbg.value(metadata !262, i64 0, metadata !110), !dbg !269
+  %cmp11 = icmp sgt i32 %n, 1, !dbg !269
+  br i1 %cmp11, label %for.body, label %for.end, !dbg !269
 
 for.body:                                         ; preds = %entry, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 1, %entry ]
   %best.013 = phi float [ %best.1, %for.body ], [ %0, %entry ]
-  %arrayidx1 = getelementptr inbounds float* %vec, i64 %indvars.iv
-  %1 = load float* %arrayidx1, align 4, !tbaa !3
-  %cmp2 = fcmp ogt float %1, %best.013
-  %best.1 = select i1 %cmp2, float %1, float %best.013
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n
-  br i1 %exitcond, label %for.end, label %for.body
+  %arrayidx1 = getelementptr inbounds float* %vec, i64 %indvars.iv, !dbg !271
+  %1 = load float* %arrayidx1, align 4, !dbg !271, !tbaa !212
+  %cmp2 = fcmp ogt float %1, %best.013, !dbg !271
+  tail call void @llvm.dbg.value(metadata !{float %1}, i64 0, metadata !111), !dbg !271
+  %best.1 = select i1 %cmp2, float %1, float %best.013, !dbg !271
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !269
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !269
+  %exitcond = icmp eq i32 %lftr.wideiv, %n, !dbg !269
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !269
 
 for.end:                                          ; preds = %for.body, %entry
   %best.0.lcssa = phi float [ %0, %entry ], [ %best.1, %for.body ]
-  ret float %best.0.lcssa
+  ret float %best.0.lcssa, !dbg !272
 }

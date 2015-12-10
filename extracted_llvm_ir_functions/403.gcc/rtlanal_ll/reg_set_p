@@ -1,44 +1,47 @@
-define i32 @reg_set_p(%struct.rtx_def* %reg, %struct.rtx_def* %insn) #1 {
+define i32 @reg_set_p(%struct.rtx_def* %reg, %struct.rtx_def* %insn) #2 {
 entry:
-  %0 = bitcast %struct.rtx_def* %insn to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %idxprom35 = zext i32 %bf.clear to i64
-  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom35
-  %1 = load i8* %arrayidx, align 1, !tbaa !1
-  %cmp = icmp eq i8 %1, 105
-  %cmp4 = icmp eq i32 %bf.clear, 34
-  %or.cond = and i1 %cmp, %cmp4
-  br i1 %or.cond, label %land.lhs.true, label %if.end22
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %reg}, i64 0, metadata !487), !dbg !1312
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !488), !dbg !1312
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !489), !dbg !1313
+  %0 = bitcast %struct.rtx_def* %insn to i32*, !dbg !1314
+  %bf.load = load i32* %0, align 8, !dbg !1314
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1314
+  %idxprom35 = zext i32 %bf.clear to i64, !dbg !1314
+  %arrayidx = getelementptr inbounds [153 x i8]* @rtx_class, i64 0, i64 %idxprom35, !dbg !1314
+  %1 = load i8* %arrayidx, align 1, !dbg !1314, !tbaa !980
+  %cmp = icmp eq i8 %1, 105, !dbg !1314
+  %cmp4 = icmp eq i32 %bf.clear, 34, !dbg !1315
+  %or.cond = and i1 %cmp, %cmp4, !dbg !1314
+  br i1 %or.cond, label %land.lhs.true, label %if.end22, !dbg !1314
 
 land.lhs.true:                                    ; preds = %entry
-  %2 = bitcast %struct.rtx_def* %reg to i32*
-  %bf.load6 = load i32* %2, align 8
-  %bf.clear7 = and i32 %bf.load6, 65535
+  %2 = bitcast %struct.rtx_def* %reg to i32*, !dbg !1315
+  %bf.load6 = load i32* %2, align 8, !dbg !1315
+  %bf.clear7 = and i32 %bf.load6, 65535, !dbg !1315
   switch i32 %bf.clear7, label %lor.lhs.false18 [
     i32 61, label %land.lhs.true10
     i32 66, label %return
-  ]
+  ], !dbg !1315
 
 land.lhs.true10:                                  ; preds = %land.lhs.true
-  %arrayidx11 = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 0
-  %rtuint = bitcast %union.rtunion_def* %arrayidx11 to i32*
-  %3 = load i32* %rtuint, align 4, !tbaa !3
-  %cmp12 = icmp ult i32 %3, 53
-  br i1 %cmp12, label %return, label %lor.lhs.false18
+  %arrayidx11 = getelementptr inbounds %struct.rtx_def* %reg, i64 0, i32 1, i64 0, !dbg !1315
+  %rtuint = bitcast %union.rtunion_def* %arrayidx11 to i32*, !dbg !1315
+  %3 = load i32* %rtuint, align 4, !dbg !1315, !tbaa !992
+  %cmp12 = icmp ult i32 %3, 53, !dbg !1315
+  br i1 %cmp12, label %return, label %lor.lhs.false18, !dbg !1315
 
 lor.lhs.false18:                                  ; preds = %land.lhs.true, %land.lhs.true10
-  %call = tail call i32 @find_reg_fusage(%struct.rtx_def* %insn, i32 49, %struct.rtx_def* %reg) #4
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %if.end22, label %return
+  %call = tail call i32 @find_reg_fusage(%struct.rtx_def* %insn, i32 49, %struct.rtx_def* %reg) #5, !dbg !1317
+  %tobool = icmp eq i32 %call, 0, !dbg !1317
+  br i1 %tobool, label %if.end22, label %return, !dbg !1317
 
 if.end22:                                         ; preds = %lor.lhs.false18, %entry
-  %call23 = tail call %struct.rtx_def* @set_of(%struct.rtx_def* %reg, %struct.rtx_def* %insn) #4
-  %cmp24 = icmp ne %struct.rtx_def* %call23, null
-  %conv25 = zext i1 %cmp24 to i32
-  br label %return
+  %call23 = tail call %struct.rtx_def* @set_of(%struct.rtx_def* %reg, %struct.rtx_def* %insn) #5, !dbg !1318
+  %cmp24 = icmp ne %struct.rtx_def* %call23, null, !dbg !1318
+  %conv25 = zext i1 %cmp24 to i32, !dbg !1318
+  br label %return, !dbg !1318
 
 return:                                           ; preds = %land.lhs.true, %land.lhs.true10, %lor.lhs.false18, %if.end22
   %retval.0 = phi i32 [ %conv25, %if.end22 ], [ 1, %lor.lhs.false18 ], [ 1, %land.lhs.true10 ], [ 1, %land.lhs.true ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1319
 }

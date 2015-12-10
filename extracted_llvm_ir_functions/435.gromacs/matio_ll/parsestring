@@ -1,22 +1,27 @@
-define void @parsestring(i8* %line, i8* nocapture readonly %label, i8* %string) #3 {
-  %1 = alloca i8*, align 8
-  store i8* %line, i8** %1, align 8, !tbaa !14
-  %2 = tail call i8* @strstr(i8* %line, i8* %label) #10
-  %3 = icmp eq i8* %2, null
-  br i1 %3, label %12, label %4
+define void @parsestring(i8* %line, i8* nocapture %label, i8* %string) #0 {
+entry:
+  %line.addr = alloca i8*, align 8
+  call void @llvm.dbg.value(metadata !{i8* %line}, i64 0, metadata !230), !dbg !582
+  store i8* %line, i8** %line.addr, align 8, !tbaa !463
+  call void @llvm.dbg.declare(metadata !{i8** %line.addr}, metadata !230), !dbg !582
+  call void @llvm.dbg.value(metadata !{i8* %label}, i64 0, metadata !231), !dbg !582
+  call void @llvm.dbg.value(metadata !{i8* %string}, i64 0, metadata !232), !dbg !582
+  %call = call i8* @strstr(i8* %line, i8* %label) #11, !dbg !583
+  %tobool = icmp eq i8* %call, null, !dbg !583
+  br i1 %tobool, label %if.end6, label %if.then, !dbg !583
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i8* @strchr(i8* %line, i32 34) #10
-  %6 = icmp ult i8* %2, %5
-  br i1 %6, label %7, label %12
+if.then:                                          ; preds = %entry
+  %call2 = call i8* @strchr(i8* %line, i32 34) #11, !dbg !584
+  %cmp = icmp ult i8* %call, %call2, !dbg !584
+  br i1 %cmp, label %if.then3, label %if.end6, !dbg !584
 
-; <label>:7                                       ; preds = %4
-  %8 = call i8* @line2string(i8** %1) #11
-  %9 = load i8** %1, align 8, !tbaa !14
-  %10 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %string, i1 false)
-  %11 = tail call i8* @__strcpy_chk(i8* %string, i8* %9, i64 %10) #10
-  br label %12
+if.then3:                                         ; preds = %if.then
+  %call4 = call i8* @line2string(i8** %line.addr) #10, !dbg !586
+  call void @llvm.dbg.value(metadata !{i8** %line.addr}, i64 0, metadata !230), !dbg !588
+  %0 = load i8** %line.addr, align 8, !dbg !588, !tbaa !463
+  %call5 = call i8* @strcpy(i8* %string, i8* %0) #9, !dbg !588
+  br label %if.end6, !dbg !589
 
-; <label>:12                                      ; preds = %0, %4, %7
-  ret void
+if.end6:                                          ; preds = %entry, %if.then, %if.then3
+  ret void, !dbg !590
 }

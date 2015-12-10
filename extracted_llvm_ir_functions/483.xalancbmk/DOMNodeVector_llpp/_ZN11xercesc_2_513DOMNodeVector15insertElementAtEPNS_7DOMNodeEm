@@ -1,0 +1,33 @@
+define void @_ZN11xercesc_2_513DOMNodeVector15insertElementAtEPNS_7DOMNodeEm(%"class.xercesc_2_5::DOMNodeVector"* nocapture %this, %"class.xercesc_2_5::DOMNode"* %elem, i64 %index) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMNodeVector"* %this}, i64 0, metadata !1587), !dbg !1660
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DOMNode"* %elem}, i64 0, metadata !1588), !dbg !1660
+  tail call void @llvm.dbg.value(metadata !{i64 %index}, i64 0, metadata !1589), !dbg !1660
+  tail call void @_ZN11xercesc_2_513DOMNodeVector10checkSpaceEv(%"class.xercesc_2_5::DOMNodeVector"* %this) #6, !dbg !1661
+  %nextFreeSlot = getelementptr inbounds %"class.xercesc_2_5::DOMNodeVector"* %this, i64 0, i32 2, !dbg !1662
+  %0 = load i64* %nextFreeSlot, align 8, !dbg !1662, !tbaa !1623
+  tail call void @llvm.dbg.value(metadata !{i64 %0}, i64 0, metadata !1590), !dbg !1662
+  %cmp11 = icmp ugt i64 %0, %index, !dbg !1662
+  %data = getelementptr inbounds %"class.xercesc_2_5::DOMNodeVector"* %this, i64 0, i32 0, !dbg !1664
+  br i1 %cmp11, label %for.body, label %for.end, !dbg !1662
+
+for.body:                                         ; preds = %entry, %for.body
+  %i.012 = phi i64 [ %sub, %for.body ], [ %0, %entry ]
+  %sub = add i64 %i.012, -1, !dbg !1664
+  %1 = load %"class.xercesc_2_5::DOMNode"*** %data, align 8, !dbg !1664, !tbaa !1615
+  %arrayidx = getelementptr inbounds %"class.xercesc_2_5::DOMNode"** %1, i64 %sub, !dbg !1664
+  %2 = load %"class.xercesc_2_5::DOMNode"** %arrayidx, align 8, !dbg !1664, !tbaa !1615
+  %arrayidx3 = getelementptr inbounds %"class.xercesc_2_5::DOMNode"** %1, i64 %i.012, !dbg !1664
+  store %"class.xercesc_2_5::DOMNode"* %2, %"class.xercesc_2_5::DOMNode"** %arrayidx3, align 8, !dbg !1664, !tbaa !1615
+  tail call void @llvm.dbg.value(metadata !{i64 %sub}, i64 0, metadata !1590), !dbg !1662
+  %cmp = icmp ugt i64 %sub, %index, !dbg !1662
+  br i1 %cmp, label %for.body, label %for.end, !dbg !1662
+
+for.end:                                          ; preds = %entry, %for.body
+  %3 = load %"class.xercesc_2_5::DOMNode"*** %data, align 8, !dbg !1666, !tbaa !1615
+  %arrayidx5 = getelementptr inbounds %"class.xercesc_2_5::DOMNode"** %3, i64 %index, !dbg !1666
+  store %"class.xercesc_2_5::DOMNode"* %elem, %"class.xercesc_2_5::DOMNode"** %arrayidx5, align 8, !dbg !1666, !tbaa !1615
+  %inc = add i64 %0, 1, !dbg !1667
+  store i64 %inc, i64* %nextFreeSlot, align 8, !dbg !1667, !tbaa !1623
+  ret void, !dbg !1668
+}

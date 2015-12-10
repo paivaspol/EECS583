@@ -1,39 +1,44 @@
-define internal fastcc i32 @block_index(float* nocapture readonly %x) #5 {
+define internal fastcc i32 @block_index(float* nocapture %x) #3 {
+entry:
   %ixyz = alloca [3 x i32], align 4
-  br label %1
+  call void @llvm.dbg.value(metadata !613, i64 0, metadata !193), !dbg !614
+  call void @llvm.dbg.declare(metadata !{[3 x i32]* %ixyz}, metadata !194), !dbg !615
+  call void @llvm.dbg.value(metadata !2, i64 0, metadata !195), !dbg !616
+  br label %for.body, !dbg !616
 
-; <label>:1                                       ; preds = %1, %0
-  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %1 ]
-  %2 = getelementptr inbounds float* %x, i64 %indvars.iv
-  %3 = load float* %2, align 4, !tbaa !14
-  %4 = getelementptr inbounds [3 x float]* @box_1, i64 0, i64 %indvars.iv
-  %5 = load float* %4, align 4, !tbaa !14
-  %6 = fmul float %3, %5
-  %7 = fadd float %6, 1.000000e+00
-  %8 = getelementptr inbounds [3 x i32]* @NBOX, i64 0, i64 %indvars.iv
-  %9 = load i32* %8, align 4, !tbaa !18
-  %10 = sitofp i32 %9 to float
-  %11 = fmul float %7, %10
-  %12 = fptosi float %11 to i32
-  %13 = srem i32 %12, %9
-  %14 = getelementptr inbounds [3 x i32]* %ixyz, i64 0, i64 %indvars.iv
-  store i32 %13, i32* %14, align 4, !tbaa !18
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond = icmp eq i64 %indvars.iv.next, 3
-  br i1 %exitcond, label %15, label %1
+for.body:                                         ; preds = %for.body, %entry
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
+  %arrayidx = getelementptr inbounds float* %x, i64 %indvars.iv, !dbg !618
+  %0 = load float* %arrayidx, align 4, !dbg !618, !tbaa !244
+  %arrayidx2 = getelementptr inbounds [3 x float]* @box_1, i64 0, i64 %indvars.iv, !dbg !618
+  %1 = load float* %arrayidx2, align 4, !dbg !618, !tbaa !244
+  %mul = fmul float %0, %1, !dbg !618
+  %add = fadd float %mul, 1.000000e+00, !dbg !618
+  %arrayidx4 = getelementptr inbounds [3 x i32]* @NBOX, i64 0, i64 %indvars.iv, !dbg !618
+  %2 = load i32* %arrayidx4, align 4, !dbg !618, !tbaa !228
+  %conv = sitofp i32 %2 to float, !dbg !618
+  %mul5 = fmul float %add, %conv, !dbg !618
+  %conv6 = fptosi float %mul5 to i32, !dbg !618
+  %rem = srem i32 %conv6, %2, !dbg !618
+  %arrayidx10 = getelementptr inbounds [3 x i32]* %ixyz, i64 0, i64 %indvars.iv, !dbg !618
+  store i32 %rem, i32* %arrayidx10, align 4, !dbg !618, !tbaa !228
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !616
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !616
+  %exitcond = icmp eq i32 %lftr.wideiv, 3, !dbg !616
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !616
 
-; <label>:15                                      ; preds = %1
-  %16 = getelementptr inbounds [3 x i32]* %ixyz, i64 0, i64 0
-  %17 = load i32* %16, align 4, !tbaa !18
-  %18 = load i32* getelementptr inbounds ([3 x i32]* @NBOX, i64 0, i64 1), align 4, !tbaa !18
-  %19 = mul nsw i32 %18, %17
-  %20 = load i32* getelementptr inbounds ([3 x i32]* @NBOX, i64 0, i64 2), align 4, !tbaa !18
-  %21 = getelementptr inbounds [3 x i32]* %ixyz, i64 0, i64 1
-  %22 = load i32* %21, align 4, !tbaa !18
-  %23 = add i32 %22, %19
-  %24 = mul nsw i32 %23, %20
-  %25 = getelementptr inbounds [3 x i32]* %ixyz, i64 0, i64 2
-  %26 = load i32* %25, align 4, !tbaa !18
-  %27 = add nsw i32 %24, %26
-  ret i32 %27
+for.end:                                          ; preds = %for.body
+  %arrayidx11 = getelementptr inbounds [3 x i32]* %ixyz, i64 0, i64 0, !dbg !619
+  %3 = load i32* %arrayidx11, align 4, !dbg !619, !tbaa !228
+  %4 = load i32* getelementptr inbounds ([3 x i32]* @NBOX, i64 0, i64 1), align 4, !dbg !619, !tbaa !228
+  %mul13 = mul nsw i32 %4, %3, !dbg !619
+  %5 = load i32* getelementptr inbounds ([3 x i32]* @NBOX, i64 0, i64 2), align 4, !dbg !619, !tbaa !228
+  %arrayidx16 = getelementptr inbounds [3 x i32]* %ixyz, i64 0, i64 1, !dbg !619
+  %6 = load i32* %arrayidx16, align 4, !dbg !619, !tbaa !228
+  %mul151 = add i32 %6, %mul13, !dbg !619
+  %add19 = mul i32 %mul151, %5, !dbg !619
+  %arrayidx20 = getelementptr inbounds [3 x i32]* %ixyz, i64 0, i64 2, !dbg !619
+  %7 = load i32* %arrayidx20, align 4, !dbg !619, !tbaa !228
+  %add21 = add nsw i32 %add19, %7, !dbg !619
+  ret i32 %add21, !dbg !619
 }

@@ -1,13 +1,18 @@
 define noalias i8* @sre_realloc(i8* %file, i32 %line, i8* nocapture %p, i64 %size) #0 {
 entry:
-  %call = tail call i8* @realloc(i8* %p, i64 %size) #8
-  %cmp = icmp eq i8* %call, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i8* %file}, i64 0, metadata !73), !dbg !257
+  tail call void @llvm.dbg.value(metadata !{i32 %line}, i64 0, metadata !74), !dbg !257
+  tail call void @llvm.dbg.value(metadata !{i8* %p}, i64 0, metadata !75), !dbg !257
+  tail call void @llvm.dbg.value(metadata !{i64 %size}, i64 0, metadata !76), !dbg !257
+  %call = tail call i8* @realloc(i8* %p, i64 %size) #9, !dbg !258
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !77), !dbg !258
+  %cmp = icmp eq i8* %call, null, !dbg !258
+  br i1 %cmp, label %if.then, label %if.end, !dbg !258
 
 if.then:                                          ; preds = %entry
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([45 x i8]* @.str1, i64 0, i64 0), i64 %size, i8* %file, i32 %line) #8
-  br label %if.end
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([45 x i8]* @.str1, i64 0, i64 0), i64 %size, i8* %file, i32 %line) #9, !dbg !259
+  br label %if.end, !dbg !259
 
 if.end:                                           ; preds = %if.then, %entry
-  ret i8* %call
+  ret i8* %call, !dbg !260
 }

@@ -1,90 +1,97 @@
 define void @PrintXMGRHistogram(%struct._IO_FILE* nocapture %fp, %struct.histogram_s* nocapture %h) #0 {
 entry:
-  %lowscore = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 4
-  %0 = load i32* %lowscore, align 4, !tbaa !0
-  %highscore = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 3
-  %1 = load i32* %highscore, align 4, !tbaa !0
-  %cmp66 = icmp sgt i32 %0, %1
-  br i1 %cmp66, label %for.end, label %for.body.lr.ph
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !137), !dbg !521
+  tail call void @llvm.dbg.value(metadata !{%struct.histogram_s* %h}, i64 0, metadata !138), !dbg !521
+  %lowscore = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 4, !dbg !522
+  %0 = load i32* %lowscore, align 4, !dbg !522, !tbaa !362
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !139), !dbg !522
+  %highscore = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 3, !dbg !522
+  %1 = load i32* %highscore, align 4, !dbg !522, !tbaa !362
+  %cmp66 = icmp sgt i32 %0, %1, !dbg !522
+  br i1 %cmp66, label %for.end, label %for.body.lr.ph, !dbg !522
 
 for.body.lr.ph:                                   ; preds = %entry
-  %min = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 1
-  %histogram = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 0
-  %total = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 6
-  br label %for.body
+  %min = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 1, !dbg !524
+  %histogram = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 0, !dbg !524
+  %total = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 6, !dbg !525
+  br label %for.body, !dbg !522
 
 for.body:                                         ; preds = %for.inc.for.body_crit_edge, %for.body.lr.ph
   %2 = phi i32 [ %1, %for.body.lr.ph ], [ %7, %for.inc.for.body_crit_edge ]
   %sc.067 = phi i32 [ %0, %for.body.lr.ph ], [ %inc, %for.inc.for.body_crit_edge ]
-  %3 = load i32* %min, align 4, !tbaa !0
-  %sub = sub nsw i32 %sc.067, %3
-  %idxprom = sext i32 %sub to i64
-  %4 = load i32** %histogram, align 8, !tbaa !3
-  %arrayidx = getelementptr inbounds i32* %4, i64 %idxprom
-  %5 = load i32* %arrayidx, align 4, !tbaa !0
-  %cmp1 = icmp sgt i32 %5, 0
-  br i1 %cmp1, label %if.then, label %for.inc
+  %3 = load i32* %min, align 4, !dbg !524, !tbaa !362
+  %sub = sub nsw i32 %sc.067, %3, !dbg !524
+  %idxprom = sext i32 %sub to i64, !dbg !524
+  %4 = load i32** %histogram, align 8, !dbg !524, !tbaa !371
+  %arrayidx = getelementptr inbounds i32* %4, i64 %idxprom, !dbg !524
+  %5 = load i32* %arrayidx, align 4, !dbg !524, !tbaa !362
+  %cmp1 = icmp sgt i32 %5, 0, !dbg !524
+  br i1 %cmp1, label %if.then, label %for.inc, !dbg !524
 
 if.then:                                          ; preds = %for.body
-  %conv = sitofp i32 %5 to float
-  %6 = load i32* %total, align 4, !tbaa !0
-  %conv7 = sitofp i32 %6 to float
-  %div = fdiv float %conv, %conv7
-  %conv8 = fpext float %div to double
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([9 x i8]* @.str24, i64 0, i64 0), i32 %sc.067, double %conv8) #4
-  %.pre = load i32* %highscore, align 4, !tbaa !0
-  br label %for.inc
+  %conv = sitofp i32 %5 to float, !dbg !525
+  %6 = load i32* %total, align 4, !dbg !525, !tbaa !362
+  %conv7 = sitofp i32 %6 to float, !dbg !525
+  %div = fdiv float %conv, %conv7, !dbg !525
+  %conv8 = fpext float %div to double, !dbg !525
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([9 x i8]* @.str24, i64 0, i64 0), i32 %sc.067, double %conv8) #5, !dbg !525
+  %.pre = load i32* %highscore, align 4, !dbg !522, !tbaa !362
+  br label %for.inc, !dbg !525
 
 for.inc:                                          ; preds = %for.body, %if.then
-  %7 = phi i32 [ %2, %for.body ], [ %.pre, %if.then ]
-  %cmp = icmp slt i32 %sc.067, %7
-  br i1 %cmp, label %for.inc.for.body_crit_edge, label %for.end
+  %7 = phi i32 [ %2, %for.body ], [ %.pre, %if.then ], !dbg !522
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !139), !dbg !522
+  %cmp = icmp slt i32 %sc.067, %7, !dbg !522
+  br i1 %cmp, label %for.inc.for.body_crit_edge, label %for.end, !dbg !522
 
 for.inc.for.body_crit_edge:                       ; preds = %for.inc
-  %inc = add nsw i32 %sc.067, 1
-  br label %for.body
+  %inc = add nsw i32 %sc.067, 1, !dbg !522
+  br label %for.body, !dbg !522
 
 for.end:                                          ; preds = %for.inc, %entry
-  %8 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str25, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %fp)
-  %fit_type = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 8
-  %9 = load i32* %fit_type, align 4, !tbaa !0
-  %cmp10 = icmp eq i32 %9, 0
-  br i1 %cmp10, label %if.end38, label %if.then12
+  %8 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str25, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %fp), !dbg !526
+  %fit_type = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 8, !dbg !527
+  %9 = load i32* %fit_type, align 4, !dbg !527, !tbaa !362
+  %cmp10 = icmp eq i32 %9, 0, !dbg !527
+  br i1 %cmp10, label %if.end38, label %if.then12, !dbg !527
 
 if.then12:                                        ; preds = %for.end
-  %10 = load i32* %lowscore, align 4, !tbaa !0
-  %11 = load i32* %highscore, align 4, !tbaa !0
-  %cmp1664 = icmp sgt i32 %10, %11
-  br i1 %cmp1664, label %for.end36, label %for.body18.lr.ph
+  %10 = load i32* %lowscore, align 4, !dbg !528, !tbaa !362
+  tail call void @llvm.dbg.value(metadata !{i32 %10}, i64 0, metadata !139), !dbg !528
+  %11 = load i32* %highscore, align 4, !dbg !528, !tbaa !362
+  %cmp1664 = icmp sgt i32 %10, %11, !dbg !528
+  br i1 %cmp1664, label %for.end36, label %for.body18.lr.ph, !dbg !528
 
 for.body18.lr.ph:                                 ; preds = %if.then12
-  %arrayidx20 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 9, i64 0
-  %arrayidx22 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 9, i64 1
-  br label %for.body18
+  %arrayidx20 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 9, i64 0, !dbg !531
+  %arrayidx22 = getelementptr inbounds %struct.histogram_s* %h, i64 0, i32 9, i64 1, !dbg !531
+  br label %for.body18, !dbg !528
 
 for.body18:                                       ; preds = %for.body18, %for.body18.lr.ph
   %sc.165 = phi i32 [ %10, %for.body18.lr.ph ], [ %inc35, %for.body18 ]
-  %conv19 = sitofp i32 %sc.165 to float
-  %add = fadd float %conv19, 1.000000e+00
-  %12 = load float* %arrayidx20, align 4, !tbaa !4
-  %13 = load float* %arrayidx22, align 4, !tbaa !4
-  %call23 = tail call double @ExtremeValueP(float %add, float %12, float %13) #6
-  %sub24 = fsub double 1.000000e+00, %call23
-  %14 = load float* %arrayidx20, align 4, !tbaa !4
-  %15 = load float* %arrayidx22, align 4, !tbaa !4
-  %call30 = tail call double @ExtremeValueP(float %conv19, float %14, float %15) #6
-  %sub31 = fsub double 1.000000e+00, %call30
-  %sub32 = fsub double %sub24, %sub31
-  %call33 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([9 x i8]* @.str24, i64 0, i64 0), i32 %sc.165, double %sub32) #4
-  %inc35 = add nsw i32 %sc.165, 1
-  %16 = load i32* %highscore, align 4, !tbaa !0
-  %cmp16 = icmp slt i32 %sc.165, %16
-  br i1 %cmp16, label %for.body18, label %for.end36
+  %conv19 = sitofp i32 %sc.165 to float, !dbg !531
+  %add = fadd float %conv19, 1.000000e+00, !dbg !531
+  %12 = load float* %arrayidx20, align 4, !dbg !531, !tbaa !490
+  %13 = load float* %arrayidx22, align 4, !dbg !531, !tbaa !490
+  %call23 = tail call double @ExtremeValueP(float %add, float %12, float %13) #7, !dbg !531
+  %sub24 = fsub double 1.000000e+00, %call23, !dbg !531
+  %14 = load float* %arrayidx20, align 4, !dbg !533, !tbaa !490
+  %15 = load float* %arrayidx22, align 4, !dbg !533, !tbaa !490
+  %call30 = tail call double @ExtremeValueP(float %conv19, float %14, float %15) #7, !dbg !533
+  %sub31 = fsub double 1.000000e+00, %call30, !dbg !533
+  %sub32 = fsub double %sub24, %sub31, !dbg !533
+  tail call void @llvm.dbg.value(metadata !{double %sub32}, i64 0, metadata !140), !dbg !533
+  %call33 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([9 x i8]* @.str24, i64 0, i64 0), i32 %sc.165, double %sub32) #5, !dbg !534
+  %inc35 = add nsw i32 %sc.165, 1, !dbg !528
+  tail call void @llvm.dbg.value(metadata !{i32 %inc35}, i64 0, metadata !139), !dbg !528
+  %16 = load i32* %highscore, align 4, !dbg !528, !tbaa !362
+  %cmp16 = icmp slt i32 %sc.165, %16, !dbg !528
+  br i1 %cmp16, label %for.body18, label %for.end36, !dbg !528
 
 for.end36:                                        ; preds = %for.body18, %if.then12
-  %17 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str25, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %fp)
-  br label %if.end38
+  %17 = tail call i64 @fwrite(i8* getelementptr inbounds ([3 x i8]* @.str25, i64 0, i64 0), i64 2, i64 1, %struct._IO_FILE* %fp), !dbg !535
+  br label %if.end38, !dbg !536
 
 if.end38:                                         ; preds = %for.end, %for.end36
-  ret void
+  ret void, !dbg !537
 }

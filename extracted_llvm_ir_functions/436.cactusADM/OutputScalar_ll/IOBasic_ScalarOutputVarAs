@@ -1,18 +1,25 @@
 define i32 @IOBasic_ScalarOutputVarAs(%struct.cGH* %GH, i8* %fullname, i8* %alias) #1 {
-  %1 = tail call i32 @CCTK_VarIndex(i8* %fullname) #5
-  %2 = tail call i32 @CCTK_GroupTypeFromVarI(i32 %1) #5
-  %3 = icmp eq i32 %2, 1
-  br i1 %3, label %4, label %6
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !106), !dbg !258
+  tail call void @llvm.dbg.value(metadata !{i8* %fullname}, i64 0, metadata !107), !dbg !258
+  tail call void @llvm.dbg.value(metadata !{i8* %alias}, i64 0, metadata !108), !dbg !258
+  %call = tail call i32 @CCTK_VarIndex(i8* %fullname) #6, !dbg !259
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !109), !dbg !259
+  %call2 = tail call i32 @CCTK_GroupTypeFromVarI(i32 %call) #6, !dbg !260
+  %cmp = icmp eq i32 %call2, 1, !dbg !260
+  br i1 %cmp, label %if.then, label %if.else, !dbg !260
 
-; <label>:4                                       ; preds = %0
-  %5 = tail call i32 @IOBasic_WriteScalarGS(%struct.cGH* %GH, i32 %1, i8* %alias) #5
-  br label %8
+if.then:                                          ; preds = %entry
+  %call3 = tail call i32 @IOBasic_WriteScalarGS(%struct.cGH* %GH, i32 %call, i8* %alias) #6, !dbg !261
+  tail call void @llvm.dbg.value(metadata !{i32 %call3}, i64 0, metadata !110), !dbg !261
+  br label %if.end, !dbg !263
 
-; <label>:6                                       ; preds = %0
-  %7 = tail call i32 @IOBasic_WriteScalarGA(%struct.cGH* %GH, i32 %1, i8* %alias) #5
-  br label %8
+if.else:                                          ; preds = %entry
+  %call4 = tail call i32 @IOBasic_WriteScalarGA(%struct.cGH* %GH, i32 %call, i8* %alias) #6, !dbg !264
+  tail call void @llvm.dbg.value(metadata !{i32 %call4}, i64 0, metadata !110), !dbg !264
+  br label %if.end
 
-; <label>:8                                       ; preds = %6, %4
-  %retval.0 = phi i32 [ %5, %4 ], [ %7, %6 ]
-  ret i32 %retval.0
+if.end:                                           ; preds = %if.else, %if.then
+  %retval1.0 = phi i32 [ %call3, %if.then ], [ %call4, %if.else ]
+  ret i32 %retval1.0, !dbg !266
 }

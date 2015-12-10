@@ -1,0 +1,59 @@
+define linkonce_odr void @_ZN11xercesc_2_515BaseRefVectorOfItE12setElementAtEPtj(%"class.xercesc_2_5::BaseRefVectorOf.2"* nocapture %this, i16* %toSet, i32 %setAt) unnamed_addr #3 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BaseRefVectorOf.2"* %this}, i64 0, metadata !3678), !dbg !7235
+  tail call void @llvm.dbg.value(metadata !{i16* %toSet}, i64 0, metadata !3679), !dbg !7235
+  tail call void @llvm.dbg.value(metadata !{i32 %setAt}, i64 0, metadata !3680), !dbg !7235
+  %fCurCount = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.2"* %this, i64 0, i32 2, !dbg !7236
+  %0 = load i32* %fCurCount, align 4, !dbg !7236, !tbaa !4692
+  %cmp = icmp ugt i32 %0, %setAt, !dbg !7236
+  br i1 %cmp, label %if.end, label %if.then, !dbg !7236
+
+if.then:                                          ; preds = %entry
+  %exception = tail call i8* @__cxa_allocate_exception(i64 48) #4, !dbg !7237
+  %1 = bitcast i8* %exception to %"class.xercesc_2_5::ArrayIndexOutOfBoundsException"*, !dbg !7237
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.2"* %this, i64 0, i32 5, !dbg !7237
+  %2 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !7237, !tbaa !4674
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::ArrayIndexOutOfBoundsException"* %1}, i64 0, metadata !7238), !dbg !7239
+  tail call void @llvm.dbg.value(metadata !6150, i64 0, metadata !7240), !dbg !7239
+  tail call void @llvm.dbg.value(metadata !7061, i64 0, metadata !7241), !dbg !7239
+  tail call void @llvm.dbg.value(metadata !6153, i64 0, metadata !7242), !dbg !7239
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %2}, i64 0, metadata !7243), !dbg !7239
+  invoke void @_ZN11xercesc_2_530ArrayIndexOutOfBoundsExceptionC2EPKcjNS_10XMLExcepts5CodesEPNS_13MemoryManagerE(%"class.xercesc_2_5::ArrayIndexOutOfBoundsException"* %1, i8* getelementptr inbounds ([78 x i8]* @.str1, i64 0, i64 0), i32 107, i32 109, %"class.xercesc_2_5::MemoryManager"* %2) #9
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %if.then
+  tail call void @__cxa_throw(i8* %exception, i8* bitcast ({ i8*, i8*, i8* }* @_ZTIN11xercesc_2_530ArrayIndexOutOfBoundsExceptionE to i8*), i8* bitcast (void (%"class.xercesc_2_5::ArrayIndexOutOfBoundsException"*)* @_ZN11xercesc_2_530ArrayIndexOutOfBoundsExceptionD1Ev to i8*)) #10, !dbg !7237
+  unreachable, !dbg !7237
+
+lpad:                                             ; preds = %if.then
+  %3 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !7237
+  tail call void @__cxa_free_exception(i8* %exception) #4, !dbg !7237
+  resume { i8*, i32 } %3, !dbg !7237
+
+if.end:                                           ; preds = %entry
+  %fAdoptedElems = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.2"* %this, i64 0, i32 1, !dbg !7244
+  %4 = load i8* %fAdoptedElems, align 1, !dbg !7244, !tbaa !4671, !range !4683
+  %tobool = icmp eq i8 %4, 0, !dbg !7244
+  %idxprom4.pre = zext i32 %setAt to i64, !dbg !7245
+  %fElemList5.pre = getelementptr inbounds %"class.xercesc_2_5::BaseRefVectorOf.2"* %this, i64 0, i32 4, !dbg !7245
+  br i1 %tobool, label %if.end3, label %if.then2, !dbg !7244
+
+if.then2:                                         ; preds = %if.end
+  %5 = load i16*** %fElemList5.pre, align 8, !dbg !7246, !tbaa !4674
+  %arrayidx = getelementptr inbounds i16** %5, i64 %idxprom4.pre, !dbg !7246
+  %6 = load i16** %arrayidx, align 8, !dbg !7246, !tbaa !4674
+  %isnull = icmp eq i16* %6, null, !dbg !7246
+  br i1 %isnull, label %if.end3, label %delete.notnull, !dbg !7246
+
+delete.notnull:                                   ; preds = %if.then2
+  %7 = bitcast i16* %6 to i8*, !dbg !7246
+  tail call void @_ZdlPv(i8* %7) #12, !dbg !7246
+  br label %if.end3, !dbg !7246
+
+if.end3:                                          ; preds = %if.end, %if.then2, %delete.notnull
+  %8 = load i16*** %fElemList5.pre, align 8, !dbg !7245, !tbaa !4674
+  %arrayidx6 = getelementptr inbounds i16** %8, i64 %idxprom4.pre, !dbg !7245
+  store i16* %toSet, i16** %arrayidx6, align 8, !dbg !7245, !tbaa !4674
+  ret void, !dbg !7247
+}

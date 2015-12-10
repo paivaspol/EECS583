@@ -1,26 +1,27 @@
-define %union.tree_node* @get_containing_scope(%union.tree_node* nocapture %t) #3 {
+define %union.tree_node* @get_containing_scope(%union.tree_node* nocapture %t) #4 {
 entry:
-  %code = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 0, i32 2
-  %0 = bitcast [4 x i8]* %code to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 255
-  %idxprom4 = zext i32 %bf.clear to i64
-  %arrayidx = getelementptr inbounds [256 x i8]* @tree_code_type, i64 0, i64 %idxprom4
-  %1 = load i8* %arrayidx, align 1, !tbaa !1
-  %cmp = icmp eq i8 %1, 116
-  br i1 %cmp, label %cond.true, label %cond.false
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %t}, i64 0, metadata !1646), !dbg !3416
+  %code = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 0, i32 2, !dbg !3417
+  %0 = bitcast [4 x i8]* %code to i32*, !dbg !3417
+  %bf.load = load i32* %0, align 8, !dbg !3417
+  %bf.clear = and i32 %bf.load, 255, !dbg !3417
+  %idxprom4 = zext i32 %bf.clear to i64, !dbg !3417
+  %arrayidx = getelementptr inbounds [256 x i8]* @tree_code_type, i64 0, i64 %idxprom4, !dbg !3417
+  %1 = load i8* %arrayidx, align 1, !dbg !3417, !tbaa !1914
+  %cmp = icmp eq i8 %1, 116, !dbg !3417
+  br i1 %cmp, label %cond.true, label %cond.false, !dbg !3417
 
 cond.true:                                        ; preds = %entry
-  %context = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 17
-  %2 = bitcast %struct.rtx_def** %context to %union.tree_node**
-  br label %cond.end
+  %context = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 17, !dbg !3417
+  %2 = bitcast %struct.rtx_def** %context to %union.tree_node**, !dbg !3417
+  br label %cond.end, !dbg !3417
 
 cond.false:                                       ; preds = %entry
-  %context2 = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 9
-  br label %cond.end
+  %context2 = getelementptr inbounds %union.tree_node* %t, i64 0, i32 0, i32 9, !dbg !3417
+  br label %cond.end, !dbg !3417
 
 cond.end:                                         ; preds = %cond.false, %cond.true
   %cond.in = phi %union.tree_node** [ %2, %cond.true ], [ %context2, %cond.false ]
-  %cond = load %union.tree_node** %cond.in, align 8
-  ret %union.tree_node* %cond
+  %cond = load %union.tree_node** %cond.in, align 8, !dbg !3417
+  ret %union.tree_node* %cond, !dbg !3417
 }

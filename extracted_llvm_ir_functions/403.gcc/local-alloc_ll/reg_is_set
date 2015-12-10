@@ -1,25 +1,28 @@
 define internal void @reg_is_set(%struct.rtx_def* %reg, %struct.rtx_def* nocapture %setter, i8* nocapture %data) #0 {
 entry:
-  %0 = bitcast %struct.rtx_def* %reg to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 65535
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %reg}, i64 0, metadata !648), !dbg !1511
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %setter}, i64 0, metadata !649), !dbg !1512
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !650), !dbg !1513
+  %0 = bitcast %struct.rtx_def* %reg to i32*, !dbg !1514
+  %bf.load = load i32* %0, align 8, !dbg !1514
+  %bf.clear = and i32 %bf.load, 65535, !dbg !1514
   switch i32 %bf.clear, label %return [
     i32 63, label %if.end
     i32 61, label %if.end
-  ]
+  ], !dbg !1514
 
 if.end:                                           ; preds = %entry, %entry
-  %1 = load i32* @this_insn_number, align 4, !tbaa !0
-  %mul = shl nsw i32 %1, 1
-  %2 = bitcast %struct.rtx_def* %setter to i32*
-  %bf.load4 = load i32* %2, align 8
-  %bf.clear5 = and i32 %bf.load4, 65535
-  %cmp6 = icmp eq i32 %bf.clear5, 49
-  %conv = zext i1 %cmp6 to i32
-  %sub = sub nsw i32 %mul, %conv
-  tail call fastcc void @reg_is_born(%struct.rtx_def* %reg, i32 %sub) #8
-  br label %return
+  %1 = load i32* @this_insn_number, align 4, !dbg !1515, !tbaa !933
+  %mul = shl nsw i32 %1, 1, !dbg !1515
+  %2 = bitcast %struct.rtx_def* %setter to i32*, !dbg !1515
+  %bf.load4 = load i32* %2, align 8, !dbg !1515
+  %bf.clear5 = and i32 %bf.load4, 65535, !dbg !1515
+  %cmp6 = icmp eq i32 %bf.clear5, 49, !dbg !1515
+  %conv = zext i1 %cmp6 to i32, !dbg !1515
+  %sub = sub nsw i32 %mul, %conv, !dbg !1515
+  tail call fastcc void @reg_is_born(%struct.rtx_def* %reg, i32 %sub) #9, !dbg !1515
+  br label %return, !dbg !1515
 
 return:                                           ; preds = %entry, %if.end
-  ret void
+  ret void, !dbg !1515
 }

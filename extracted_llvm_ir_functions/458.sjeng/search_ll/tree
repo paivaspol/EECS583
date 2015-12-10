@@ -1,64 +1,75 @@
 define void @tree(i32 %depth, i32 %indent, %struct._IO_FILE* %output, i8* nocapture %disp_b) #0 {
 entry:
   %moves = alloca [512 x %struct.move_s], align 16
-  %0 = bitcast [512 x %struct.move_s]* %moves to i8*
-  call void @llvm.lifetime.start(i64 12288, i8* %0) #2
-  %tobool = icmp eq i32 %depth, 0
-  br i1 %tobool, label %cleanup, label %if.end
+  call void @llvm.dbg.value(metadata !{i32 %depth}, i64 0, metadata !236), !dbg !1401
+  call void @llvm.dbg.value(metadata !{i32 %indent}, i64 0, metadata !237), !dbg !1401
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %output}, i64 0, metadata !238), !dbg !1401
+  call void @llvm.dbg.value(metadata !{i8* %disp_b}, i64 0, metadata !239), !dbg !1401
+  %0 = bitcast [512 x %struct.move_s]* %moves to i8*, !dbg !1402
+  call void @llvm.lifetime.start(i64 12288, i8* %0) #3, !dbg !1402
+  call void @llvm.dbg.declare(metadata !{[512 x %struct.move_s]* %moves}, metadata !240), !dbg !1402
+  call void @llvm.dbg.value(metadata !8, i64 0, metadata !241), !dbg !1403
+  %tobool = icmp eq i32 %depth, 0, !dbg !1404
+  br i1 %tobool, label %cleanup, label %if.end, !dbg !1404
 
 if.end:                                           ; preds = %entry
-  %arrayidx = getelementptr inbounds [512 x %struct.move_s]* %moves, i64 0, i64 0
-  call void @gen(%struct.move_s* %arrayidx) #5
-  %1 = load i32* @numb_moves, align 4, !tbaa !2
-  %call = call i32 @in_check() #5
-  %cmp37 = icmp sgt i32 %1, 0
-  br i1 %cmp37, label %for.body.lr.ph, label %cleanup
+  %arrayidx = getelementptr inbounds [512 x %struct.move_s]* %moves, i64 0, i64 0, !dbg !1405
+  call void @gen(%struct.move_s* %arrayidx) #6, !dbg !1405
+  %1 = load i32* @numb_moves, align 4, !dbg !1406, !tbaa !300
+  call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !241), !dbg !1406
+  %call = call i32 @in_check() #6, !dbg !1407
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !244), !dbg !1407
+  call void @llvm.dbg.value(metadata !8, i64 0, metadata !242), !dbg !1408
+  %cmp37 = icmp sgt i32 %1, 0, !dbg !1408
+  br i1 %cmp37, label %for.body.lr.ph, label %cleanup, !dbg !1408
 
 for.body.lr.ph:                                   ; preds = %if.end
-  %cmp735 = icmp sgt i32 %indent, 0
-  %sub = add nsw i32 %depth, -1
-  %add = add nsw i32 %indent, 2
-  br label %for.body
+  %cmp735 = icmp sgt i32 %indent, 0, !dbg !1410
+  %sub = add nsw i32 %depth, -1, !dbg !1414
+  %add = add nsw i32 %indent, 2, !dbg !1414
+  br label %for.body, !dbg !1408
 
 for.body:                                         ; preds = %if.end17, %for.body.lr.ph
   %i.038 = phi i32 [ 0, %for.body.lr.ph ], [ %inc20, %if.end17 ]
-  call void @make(%struct.move_s* %arrayidx, i32 %i.038) #5
-  %call3 = call i32 @check_legal(%struct.move_s* %arrayidx, i32 %i.038, i32 %call) #5
-  %tobool4 = icmp eq i32 %call3, 0
-  br i1 %tobool4, label %if.end17, label %for.cond6.preheader
+  call void @make(%struct.move_s* %arrayidx, i32 %i.038) #6, !dbg !1415
+  %call3 = call i32 @check_legal(%struct.move_s* %arrayidx, i32 %i.038, i32 %call) #6, !dbg !1416
+  %tobool4 = icmp eq i32 %call3, 0, !dbg !1416
+  br i1 %tobool4, label %if.end17, label %for.cond6.preheader, !dbg !1416
 
 for.cond6.preheader:                              ; preds = %for.body
-  br i1 %cmp735, label %for.body8, label %for.end
+  br i1 %cmp735, label %for.body8, label %for.end, !dbg !1410
 
 for.body8:                                        ; preds = %for.cond6.preheader, %for.body8
   %j.036 = phi i32 [ %inc, %for.body8 ], [ 0, %for.cond6.preheader ]
-  %call9 = call i32 @fputc(i32 32, %struct._IO_FILE* %output) #5
-  %inc = add nsw i32 %j.036, 1
-  %exitcond = icmp eq i32 %inc, %indent
-  br i1 %exitcond, label %for.end, label %for.body8
+  %call9 = call i32 @fputc(i32 32, %struct._IO_FILE* %output) #6, !dbg !1417
+  %inc = add nsw i32 %j.036, 1, !dbg !1410
+  call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !243), !dbg !1410
+  %exitcond = icmp eq i32 %inc, %indent, !dbg !1410
+  br i1 %exitcond, label %for.end, label %for.body8, !dbg !1410
 
 for.end:                                          ; preds = %for.body8, %for.cond6.preheader
-  call void @print_move(%struct.move_s* %arrayidx, i32 %i.038, %struct._IO_FILE* %output) #5
-  %fputc = call i32 @fputc(i32 10, %struct._IO_FILE* %output) #2
-  %2 = load i8* %disp_b, align 1, !tbaa !0
-  %cmp13 = icmp eq i8 %2, 121
-  br i1 %cmp13, label %if.then15, label %if.end16
+  call void @print_move(%struct.move_s* %arrayidx, i32 %i.038, %struct._IO_FILE* %output) #6, !dbg !1419
+  %fputc = call i32 @fputc(i32 10, %struct._IO_FILE* %output) #3, !dbg !1420
+  %2 = load i8* %disp_b, align 1, !dbg !1421, !tbaa !284
+  %cmp13 = icmp eq i8 %2, 121, !dbg !1421
+  br i1 %cmp13, label %if.then15, label %if.end16, !dbg !1421
 
 if.then15:                                        ; preds = %for.end
-  call void @display_board(%struct._IO_FILE* %output, i32 1) #5
-  br label %if.end16
+  call void @display_board(%struct._IO_FILE* %output, i32 1) #6, !dbg !1422
+  br label %if.end16, !dbg !1422
 
 if.end16:                                         ; preds = %if.then15, %for.end
-  call void @tree(i32 %sub, i32 %add, %struct._IO_FILE* %output, i8* %disp_b) #6
-  br label %if.end17
+  call void @tree(i32 %sub, i32 %add, %struct._IO_FILE* %output, i8* %disp_b) #7, !dbg !1414
+  br label %if.end17, !dbg !1423
 
 if.end17:                                         ; preds = %for.body, %if.end16
-  call void @unmake(%struct.move_s* %arrayidx, i32 %i.038) #5
-  %inc20 = add nsw i32 %i.038, 1
-  %exitcond39 = icmp eq i32 %inc20, %1
-  br i1 %exitcond39, label %cleanup, label %for.body
+  call void @unmake(%struct.move_s* %arrayidx, i32 %i.038) #6, !dbg !1424
+  %inc20 = add nsw i32 %i.038, 1, !dbg !1408
+  call void @llvm.dbg.value(metadata !{i32 %inc20}, i64 0, metadata !242), !dbg !1408
+  %exitcond39 = icmp eq i32 %inc20, %1, !dbg !1408
+  br i1 %exitcond39, label %cleanup, label %for.body, !dbg !1408
 
 cleanup:                                          ; preds = %if.end, %if.end17, %entry
-  call void @llvm.lifetime.end(i64 12288, i8* %0) #2
-  ret void
+  call void @llvm.lifetime.end(i64 12288, i8* %0) #3, !dbg !1425
+  ret void, !dbg !1426
 }

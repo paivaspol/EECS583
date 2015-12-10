@@ -1,0 +1,109 @@
+define void @_ZN3pov10do_diffuseEPNS_13Finish_StructEPNS_10Ray_StructEPdPfS5_S5_d(%"struct.pov::Finish_Struct"* nocapture %Finish, %"struct.pov::Ray_Struct"* nocapture %Light_Source_Ray, double* nocapture %Layer_Normal, float* nocapture %Colour, float* nocapture %Light_Colour, float* nocapture %Layer_Pigment_Colour, double %Attenuation) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Finish_Struct"* %Finish}, i64 0, metadata !1037), !dbg !3438
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Ray_Struct"* %Light_Source_Ray}, i64 0, metadata !1038), !dbg !3438
+  tail call void @llvm.dbg.value(metadata !{double* %Layer_Normal}, i64 0, metadata !1039), !dbg !3438
+  tail call void @llvm.dbg.value(metadata !{float* %Colour}, i64 0, metadata !1040), !dbg !3438
+  tail call void @llvm.dbg.value(metadata !{float* %Light_Colour}, i64 0, metadata !1041), !dbg !3438
+  tail call void @llvm.dbg.value(metadata !{float* %Layer_Pigment_Colour}, i64 0, metadata !1042), !dbg !3438
+  tail call void @llvm.dbg.value(metadata !{double %Attenuation}, i64 0, metadata !1043), !dbg !3438
+  %arraydecay = getelementptr inbounds %"struct.pov::Ray_Struct"* %Light_Source_Ray, i64 0, i32 1, i64 0, !dbg !3439
+  tail call void @llvm.dbg.value(metadata !{double* %Layer_Normal}, i64 0, metadata !3440), !dbg !3441
+  tail call void @llvm.dbg.value(metadata !{double* %arraydecay}, i64 0, metadata !3442), !dbg !3441
+  %0 = load double* %Layer_Normal, align 8, !dbg !3443, !tbaa !2552
+  %1 = load double* %arraydecay, align 8, !dbg !3443, !tbaa !2552
+  %mul.i = fmul double %0, %1, !dbg !3443
+  %arrayidx2.i = getelementptr inbounds double* %Layer_Normal, i64 1, !dbg !3443
+  %2 = load double* %arrayidx2.i, align 8, !dbg !3443, !tbaa !2552
+  %arrayidx3.i = getelementptr inbounds %"struct.pov::Ray_Struct"* %Light_Source_Ray, i64 0, i32 1, i64 1, !dbg !3443
+  %3 = load double* %arrayidx3.i, align 8, !dbg !3443, !tbaa !2552
+  %mul4.i = fmul double %2, %3, !dbg !3443
+  %add.i = fadd double %mul.i, %mul4.i, !dbg !3443
+  %arrayidx5.i = getelementptr inbounds double* %Layer_Normal, i64 2, !dbg !3443
+  %4 = load double* %arrayidx5.i, align 8, !dbg !3443, !tbaa !2552
+  %arrayidx6.i = getelementptr inbounds %"struct.pov::Ray_Struct"* %Light_Source_Ray, i64 0, i32 1, i64 2, !dbg !3443
+  %5 = load double* %arrayidx6.i, align 8, !dbg !3443, !tbaa !2552
+  %mul7.i = fmul double %4, %5, !dbg !3443
+  %add8.i = fadd double %add.i, %mul7.i, !dbg !3443
+  tail call void @llvm.dbg.value(metadata !{double %add8.i}, i64 0, metadata !1044), !dbg !3443
+  tail call void @llvm.dbg.value(metadata !{double %add8.i}, i64 0, metadata !3444), !dbg !3441
+  tail call void @llvm.dbg.value(metadata !{double %add8.i}, i64 0, metadata !1044), !dbg !3445
+  %Brilliance = getelementptr inbounds %"struct.pov::Finish_Struct"* %Finish, i64 0, i32 1, !dbg !3447
+  %6 = load float* %Brilliance, align 4, !dbg !3447, !tbaa !2644
+  %cmp = fcmp une float %6, 1.000000e+00, !dbg !3447
+  %call = tail call double @fabs(double %add8.i) #9, !dbg !3445
+  br i1 %cmp, label %if.then, label %if.end, !dbg !3447
+
+if.then:                                          ; preds = %entry
+  %conv = fpext float %6 to double, !dbg !3447
+  %call3 = tail call double @pow(double %call, double %conv) #8, !dbg !3445
+  tail call void @llvm.dbg.value(metadata !{double %call3}, i64 0, metadata !1045), !dbg !3445
+  br label %if.end, !dbg !3448
+
+if.end:                                           ; preds = %entry, %if.then
+  %Intensity.0 = phi double [ %call3, %if.then ], [ %call, %entry ]
+  %Diffuse = getelementptr inbounds %"struct.pov::Finish_Struct"* %Finish, i64 0, i32 0, !dbg !3449
+  %7 = load float* %Diffuse, align 4, !dbg !3449, !tbaa !2644
+  %conv5 = fpext float %7 to double, !dbg !3449
+  %mul = fmul double %conv5, %Attenuation, !dbg !3449
+  %mul6 = fmul double %Intensity.0, %mul, !dbg !3449
+  tail call void @llvm.dbg.value(metadata !{double %mul6}, i64 0, metadata !1045), !dbg !3449
+  %Crand = getelementptr inbounds %"struct.pov::Finish_Struct"* %Finish, i64 0, i32 14, !dbg !3450
+  %8 = load float* %Crand, align 4, !dbg !3450, !tbaa !2644
+  %cmp8 = fcmp ogt float %8, 0.000000e+00, !dbg !3450
+  br i1 %cmp8, label %if.then9, label %if.end16, !dbg !3450
+
+if.then9:                                         ; preds = %if.end
+  %call10 = tail call i32 @_ZN3pov8POV_RANDEv() #7, !dbg !3451
+  %conv11 = sitofp i32 %call10 to double, !dbg !3451
+  %mul12 = fmul double %conv11, 0x3F0000200040021E, !dbg !3451
+  %9 = load float* %Crand, align 4, !dbg !3451, !tbaa !2644
+  %conv14 = fpext float %9 to double, !dbg !3451
+  %mul15 = fmul double %mul12, %conv14, !dbg !3451
+  %sub = fsub double %mul6, %mul15, !dbg !3451
+  tail call void @llvm.dbg.value(metadata !{double %sub}, i64 0, metadata !1045), !dbg !3451
+  br label %if.end16, !dbg !3453
+
+if.end16:                                         ; preds = %if.then9, %if.end
+  %Intensity.1 = phi double [ %sub, %if.then9 ], [ %mul6, %if.end ]
+  %10 = load float* %Layer_Pigment_Colour, align 4, !dbg !3454, !tbaa !2644
+  %conv17 = fpext float %10 to double, !dbg !3454
+  %mul18 = fmul double %Intensity.1, %conv17, !dbg !3454
+  %11 = load float* %Light_Colour, align 4, !dbg !3454, !tbaa !2644
+  %conv20 = fpext float %11 to double, !dbg !3454
+  %mul21 = fmul double %mul18, %conv20, !dbg !3454
+  %12 = load float* %Colour, align 4, !dbg !3454, !tbaa !2644
+  %conv23 = fpext float %12 to double, !dbg !3454
+  %add = fadd double %conv23, %mul21, !dbg !3454
+  %conv24 = fptrunc double %add to float, !dbg !3454
+  store float %conv24, float* %Colour, align 4, !dbg !3454, !tbaa !2644
+  %arrayidx25 = getelementptr inbounds float* %Layer_Pigment_Colour, i64 1, !dbg !3455
+  %13 = load float* %arrayidx25, align 4, !dbg !3455, !tbaa !2644
+  %conv26 = fpext float %13 to double, !dbg !3455
+  %mul27 = fmul double %Intensity.1, %conv26, !dbg !3455
+  %arrayidx28 = getelementptr inbounds float* %Light_Colour, i64 1, !dbg !3455
+  %14 = load float* %arrayidx28, align 4, !dbg !3455, !tbaa !2644
+  %conv29 = fpext float %14 to double, !dbg !3455
+  %mul30 = fmul double %mul27, %conv29, !dbg !3455
+  %arrayidx31 = getelementptr inbounds float* %Colour, i64 1, !dbg !3455
+  %15 = load float* %arrayidx31, align 4, !dbg !3455, !tbaa !2644
+  %conv32 = fpext float %15 to double, !dbg !3455
+  %add33 = fadd double %conv32, %mul30, !dbg !3455
+  %conv34 = fptrunc double %add33 to float, !dbg !3455
+  store float %conv34, float* %arrayidx31, align 4, !dbg !3455, !tbaa !2644
+  %arrayidx35 = getelementptr inbounds float* %Layer_Pigment_Colour, i64 2, !dbg !3456
+  %16 = load float* %arrayidx35, align 4, !dbg !3456, !tbaa !2644
+  %conv36 = fpext float %16 to double, !dbg !3456
+  %mul37 = fmul double %Intensity.1, %conv36, !dbg !3456
+  %arrayidx38 = getelementptr inbounds float* %Light_Colour, i64 2, !dbg !3456
+  %17 = load float* %arrayidx38, align 4, !dbg !3456, !tbaa !2644
+  %conv39 = fpext float %17 to double, !dbg !3456
+  %mul40 = fmul double %mul37, %conv39, !dbg !3456
+  %arrayidx41 = getelementptr inbounds float* %Colour, i64 2, !dbg !3456
+  %18 = load float* %arrayidx41, align 4, !dbg !3456, !tbaa !2644
+  %conv42 = fpext float %18 to double, !dbg !3456
+  %add43 = fadd double %conv42, %mul40, !dbg !3456
+  %conv44 = fptrunc double %add43 to float, !dbg !3456
+  store float %conv44, float* %arrayidx41, align 4, !dbg !3456, !tbaa !2644
+  ret void, !dbg !3457
+}

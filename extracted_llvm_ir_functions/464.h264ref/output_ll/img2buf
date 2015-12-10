@@ -1,70 +1,85 @@
-define void @img2buf(i16** nocapture %imgX, i8* nocapture %buf, i32 %size_x, i32 %size_y, i32 %symbol_size_in_bytes, i32 %crop_left, i32 %crop_right, i32 %crop_top, i32 %crop_bottom) #1 {
+define void @img2buf(i16** nocapture %imgX, i8* nocapture %buf, i32 %size_x, i32 %size_y, i32 %symbol_size_in_bytes, i32 %crop_left, i32 %crop_right, i32 %crop_top, i32 %crop_bottom) #2 {
 entry:
-  %sub = sub nsw i32 %size_x, %crop_left
-  %sub1 = sub i32 %sub, %crop_right
-  %cmp88 = icmp ugt i32 %symbol_size_in_bytes, 2
-  br i1 %cmp88, label %if.then90, label %if.else94
+  tail call void @llvm.dbg.value(metadata !{i16** %imgX}, i64 0, metadata !36), !dbg !719
+  tail call void @llvm.dbg.value(metadata !{i8* %buf}, i64 0, metadata !37), !dbg !719
+  tail call void @llvm.dbg.value(metadata !{i32 %size_x}, i64 0, metadata !38), !dbg !719
+  tail call void @llvm.dbg.value(metadata !{i32 %size_y}, i64 0, metadata !39), !dbg !719
+  tail call void @llvm.dbg.value(metadata !{i32 %symbol_size_in_bytes}, i64 0, metadata !40), !dbg !719
+  tail call void @llvm.dbg.value(metadata !{i32 %crop_left}, i64 0, metadata !41), !dbg !719
+  tail call void @llvm.dbg.value(metadata !{i32 %crop_right}, i64 0, metadata !42), !dbg !719
+  tail call void @llvm.dbg.value(metadata !{i32 %crop_top}, i64 0, metadata !43), !dbg !719
+  tail call void @llvm.dbg.value(metadata !{i32 %crop_bottom}, i64 0, metadata !44), !dbg !719
+  %sub = sub nsw i32 %size_x, %crop_left, !dbg !720
+  %sub1 = sub i32 %sub, %crop_right, !dbg !720
+  tail call void @llvm.dbg.value(metadata !{i32 %sub1}, i64 0, metadata !47), !dbg !720
+  tail call void @llvm.dbg.value(metadata !{i32 %sub3}, i64 0, metadata !48), !dbg !721
+  tail call void @llvm.dbg.value(metadata !14, i64 0, metadata !49), !dbg !722
+  %cmp88 = icmp ugt i32 %symbol_size_in_bytes, 2, !dbg !723
+  br i1 %cmp88, label %if.then90, label %if.else94, !dbg !723
 
 if.then90:                                        ; preds = %entry
-  %sub2 = sub i32 %size_y, %crop_top
-  %sub3 = sub i32 %sub2, %crop_bottom
-  %mul91 = mul i32 %sub1, %symbol_size_in_bytes
-  %mul92 = mul i32 %mul91, %sub3
-  %conv93 = sext i32 %mul92 to i64
-  tail call void @llvm.memset.p0i8.i64(i8* %buf, i8 0, i64 %conv93, i32 1, i1 false)
-  br label %if.end
+  %sub2 = sub i32 %size_y, %crop_top, !dbg !721
+  %sub3 = sub i32 %sub2, %crop_bottom, !dbg !721
+  tail call void @llvm.dbg.value(metadata !726, i64 0, metadata !49), !dbg !727
+  %mul91 = mul i32 %sub1, %symbol_size_in_bytes, !dbg !729
+  %mul92 = mul i32 %mul91, %sub3, !dbg !729
+  %conv93 = sext i32 %mul92 to i64, !dbg !729
+  tail call void @llvm.memset.p0i8.i64(i8* %buf, i8 0, i64 %conv93, i32 1, i1 false), !dbg !729
+  br label %if.end, !dbg !730
 
 if.else94:                                        ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{i32 %symbol_size_in_bytes}, i64 0, metadata !49), !dbg !731
   %phitmp = sext i32 %symbol_size_in_bytes to i64
   br label %if.end
 
 if.end:                                           ; preds = %if.else94, %if.then90
   %size.0 = phi i64 [ 2, %if.then90 ], [ %phitmp, %if.else94 ]
-  %sub96 = sub nsw i32 %size_y, %crop_bottom
-  %cmp97206 = icmp sgt i32 %sub96, %crop_top
-  br i1 %cmp97206, label %for.cond100.preheader.lr.ph, label %if.end123
+  tail call void @llvm.dbg.value(metadata !{i32 %crop_top}, i64 0, metadata !45), !dbg !733
+  %sub96 = sub nsw i32 %size_y, %crop_bottom, !dbg !733
+  %cmp97206 = icmp sgt i32 %sub96, %crop_top, !dbg !733
+  br i1 %cmp97206, label %for.cond100.preheader.lr.ph, label %if.end123, !dbg !733
 
 for.cond100.preheader.lr.ph:                      ; preds = %if.end
-  %sub101 = sub nsw i32 %size_x, %crop_right
-  %cmp102204 = icmp sgt i32 %sub101, %crop_left
+  %sub101 = sub nsw i32 %size_x, %crop_right, !dbg !735
+  %cmp102204 = icmp sgt i32 %sub101, %crop_left, !dbg !735
   %0 = sext i32 %crop_left to i64
   %1 = sext i32 %crop_top to i64
-  br label %for.cond100.preheader
+  br label %for.cond100.preheader, !dbg !733
 
 for.cond100.preheader:                            ; preds = %for.cond100.preheader.lr.ph, %for.inc120
   %indvars.iv208 = phi i64 [ %1, %for.cond100.preheader.lr.ph ], [ %indvars.iv.next209, %for.inc120 ]
-  br i1 %cmp102204, label %for.body104.lr.ph, label %for.inc120
+  br i1 %cmp102204, label %for.body104.lr.ph, label %for.inc120, !dbg !735
 
 for.body104.lr.ph:                                ; preds = %for.cond100.preheader
-  %2 = trunc i64 %indvars.iv208 to i32
-  %sub106 = sub nsw i32 %2, %crop_top
-  %mul107 = mul nsw i32 %sub106, %sub1
-  %sub105 = sub i32 %mul107, %crop_left
-  %arrayidx114 = getelementptr inbounds i16** %imgX, i64 %indvars.iv208
-  br label %for.body104
+  %2 = trunc i64 %indvars.iv208 to i32, !dbg !737
+  %sub106 = sub nsw i32 %2, %crop_top, !dbg !737
+  %mul107 = mul nsw i32 %sub106, %sub1, !dbg !737
+  %sub105 = sub i32 %mul107, %crop_left, !dbg !737
+  %arrayidx114 = getelementptr inbounds i16** %imgX, i64 %indvars.iv208, !dbg !737
+  br label %for.body104, !dbg !735
 
 for.body104:                                      ; preds = %for.body104.lr.ph, %for.body104
   %indvars.iv = phi i64 [ %0, %for.body104.lr.ph ], [ %indvars.iv.next, %for.body104 ]
-  %3 = trunc i64 %indvars.iv to i32
-  %add108 = add i32 %sub105, %3
-  %mul109 = mul nsw i32 %add108, %symbol_size_in_bytes
-  %idx.ext110 = sext i32 %mul109 to i64
-  %add.ptr111 = getelementptr inbounds i8* %buf, i64 %idx.ext110
-  %4 = load i16** %arrayidx114, align 8, !tbaa !0
-  %arrayidx115 = getelementptr inbounds i16* %4, i64 %indvars.iv
-  %5 = bitcast i16* %arrayidx115 to i8*
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %add.ptr111, i8* %5, i64 %size.0, i32 1, i1 false)
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %6 = trunc i64 %indvars.iv.next to i32
-  %cmp102 = icmp slt i32 %6, %sub101
-  br i1 %cmp102, label %for.body104, label %for.inc120
+  %3 = trunc i64 %indvars.iv to i32, !dbg !737
+  %add108 = add i32 %sub105, %3, !dbg !737
+  %mul109 = mul nsw i32 %add108, %symbol_size_in_bytes, !dbg !737
+  %idx.ext110 = sext i32 %mul109 to i64, !dbg !737
+  %add.ptr111 = getelementptr inbounds i8* %buf, i64 %idx.ext110, !dbg !737
+  %4 = load i16** %arrayidx114, align 8, !dbg !737, !tbaa !739
+  %arrayidx115 = getelementptr inbounds i16* %4, i64 %indvars.iv, !dbg !737
+  %5 = bitcast i16* %arrayidx115 to i8*, !dbg !737
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %add.ptr111, i8* %5, i64 %size.0, i32 1, i1 false), !dbg !737
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !735
+  %6 = trunc i64 %indvars.iv.next to i32, !dbg !735
+  %cmp102 = icmp slt i32 %6, %sub101, !dbg !735
+  br i1 %cmp102, label %for.body104, label %for.inc120, !dbg !735
 
 for.inc120:                                       ; preds = %for.body104, %for.cond100.preheader
-  %indvars.iv.next209 = add i64 %indvars.iv208, 1
-  %7 = trunc i64 %indvars.iv.next209 to i32
-  %cmp97 = icmp slt i32 %7, %sub96
-  br i1 %cmp97, label %for.cond100.preheader, label %if.end123
+  %indvars.iv.next209 = add i64 %indvars.iv208, 1, !dbg !733
+  %7 = trunc i64 %indvars.iv.next209 to i32, !dbg !733
+  %cmp97 = icmp slt i32 %7, %sub96, !dbg !733
+  br i1 %cmp97, label %for.cond100.preheader, label %if.end123, !dbg !733
 
 if.end123:                                        ; preds = %for.inc120, %if.end
-  ret void
+  ret void, !dbg !742
 }

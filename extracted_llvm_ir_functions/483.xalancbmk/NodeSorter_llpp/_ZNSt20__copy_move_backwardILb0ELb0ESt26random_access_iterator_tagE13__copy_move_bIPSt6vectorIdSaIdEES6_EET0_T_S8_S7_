@@ -1,0 +1,43 @@
+define linkonce_odr %"class.std::vector.0"* @_ZNSt20__copy_move_backwardILb0ELb0ESt26random_access_iterator_tagE13__copy_move_bIPSt6vectorIdSaIdEES6_EET0_T_S8_S7_(%"class.std::vector.0"* %__first, %"class.std::vector.0"* %__last, %"class.std::vector.0"* %__result) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.std::vector.0"* %__first}, i64 0, metadata !11566), !dbg !18027
+  tail call void @llvm.dbg.value(metadata !{%"class.std::vector.0"* %__last}, i64 0, metadata !11567), !dbg !18027
+  tail call void @llvm.dbg.value(metadata !{%"class.std::vector.0"* %__result}, i64 0, metadata !11568), !dbg !18027
+  %sub.ptr.lhs.cast = ptrtoint %"class.std::vector.0"* %__last to i64, !dbg !18028
+  %sub.ptr.rhs.cast = ptrtoint %"class.std::vector.0"* %__first to i64, !dbg !18028
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !18028
+  tail call void @llvm.dbg.value(metadata !{i64 %sub.ptr.div}, i64 0, metadata !11569), !dbg !18028
+  %cmp4 = icmp sgt i64 %sub.ptr.sub, 0, !dbg !18028
+  br i1 %cmp4, label %for.body.lr.ph, label %for.end, !dbg !18028
+
+for.body.lr.ph:                                   ; preds = %entry
+  %sub.ptr.div = sdiv exact i64 %sub.ptr.sub, 24, !dbg !18028
+  %0 = sub i64 0, %sub.ptr.div, !dbg !18028
+  %1 = icmp sgt i64 %0, -1
+  %smax = select i1 %1, i64 %0, i64 -1
+  %2 = add i64 %sub.ptr.div, %smax, !dbg !18028
+  %3 = xor i64 %2, -1, !dbg !18028
+  br label %for.body, !dbg !18028
+
+for.body:                                         ; preds = %for.body.lr.ph, %for.body
+  %__n.07 = phi i64 [ %sub.ptr.div, %for.body.lr.ph ], [ %dec, %for.body ]
+  %__result.addr.06 = phi %"class.std::vector.0"* [ %__result, %for.body.lr.ph ], [ %incdec.ptr, %for.body ]
+  %__last.addr.05 = phi %"class.std::vector.0"* [ %__last, %for.body.lr.ph ], [ %incdec.ptr1, %for.body ]
+  %incdec.ptr = getelementptr inbounds %"class.std::vector.0"* %__result.addr.06, i64 -1, !dbg !18030
+  tail call void @llvm.dbg.value(metadata !{%"class.std::vector.0"* %scevgep}, i64 0, metadata !11568), !dbg !18030
+  %incdec.ptr1 = getelementptr inbounds %"class.std::vector.0"* %__last.addr.05, i64 -1, !dbg !18030
+  tail call void @llvm.dbg.value(metadata !{%"class.std::vector.0"* %incdec.ptr1}, i64 0, metadata !11567), !dbg !18030
+  %call = tail call %"class.std::vector.0"* @_ZNSt6vectorIdSaIdEEaSERKS1_(%"class.std::vector.0"* %incdec.ptr, %"class.std::vector.0"* %incdec.ptr1) #10, !dbg !18030
+  %dec = add nsw i64 %__n.07, -1, !dbg !18028
+  tail call void @llvm.dbg.value(metadata !{i64 %dec}, i64 0, metadata !11569), !dbg !18028
+  %cmp = icmp sgt i64 %dec, 0, !dbg !18028
+  br i1 %cmp, label %for.body, label %for.cond.for.end_crit_edge, !dbg !18028
+
+for.cond.for.end_crit_edge:                       ; preds = %for.body
+  %scevgep = getelementptr %"class.std::vector.0"* %__result, i64 %3
+  br label %for.end, !dbg !18028
+
+for.end:                                          ; preds = %for.cond.for.end_crit_edge, %entry
+  %__result.addr.0.lcssa = phi %"class.std::vector.0"* [ %scevgep, %for.cond.for.end_crit_edge ], [ %__result, %entry ]
+  ret %"class.std::vector.0"* %__result.addr.0.lcssa, !dbg !18031
+}

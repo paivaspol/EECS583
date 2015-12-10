@@ -1,0 +1,34 @@
+define linkonce_odr void @_ZN6soplex9DataArrayIdEC2Eiid(%"class.soplex::DataArray.3"* nocapture %this, i32 %p_size, i32 %p_max, double %p_fac) unnamed_addr #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataArray.3"* %this}, i64 0, metadata !8761), !dbg !9773
+  tail call void @llvm.dbg.value(metadata !{i32 %p_size}, i64 0, metadata !8762), !dbg !9773
+  tail call void @llvm.dbg.value(metadata !{i32 %p_max}, i64 0, metadata !8763), !dbg !9773
+  tail call void @llvm.dbg.value(metadata !{double %p_fac}, i64 0, metadata !8764), !dbg !9773
+  %data = getelementptr inbounds %"class.soplex::DataArray.3"* %this, i64 0, i32 2, !dbg !9774
+  store double* null, double** %data, align 8, !dbg !9774, !tbaa !8887
+  %memFactor = getelementptr inbounds %"class.soplex::DataArray.3"* %this, i64 0, i32 3, !dbg !9774
+  store double %p_fac, double* %memFactor, align 8, !dbg !9774, !tbaa !9264
+  %cmp = icmp slt i32 %p_size, 0, !dbg !9775
+  %cond = select i1 %cmp, i32 0, i32 %p_size, !dbg !9775
+  %thesize = getelementptr inbounds %"class.soplex::DataArray.3"* %this, i64 0, i32 0, !dbg !9775
+  store i32 %cond, i32* %thesize, align 4, !dbg !9775, !tbaa !8999
+  %cmp3 = icmp slt i32 %cond, %p_max, !dbg !9777
+  br i1 %cmp3, label %if.then, label %if.else, !dbg !9777
+
+if.then:                                          ; preds = %entry
+  %themax = getelementptr inbounds %"class.soplex::DataArray.3"* %this, i64 0, i32 1, !dbg !9778
+  store i32 %p_max, i32* %themax, align 4, !dbg !9778, !tbaa !8999
+  br label %if.end, !dbg !9778
+
+if.else:                                          ; preds = %entry
+  %cmp5 = icmp eq i32 %cond, 0, !dbg !9779
+  %.cond = select i1 %cmp5, i32 1, i32 %cond, !dbg !9779
+  %themax11 = getelementptr inbounds %"class.soplex::DataArray.3"* %this, i64 0, i32 1, !dbg !9779
+  store i32 %.cond, i32* %themax11, align 4, !dbg !9779, !tbaa !8999
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then
+  %0 = phi i32 [ %.cond, %if.else ], [ %p_max, %if.then ]
+  tail call void @_ZN6soplex9spx_allocIPdEEvRT_i(double** %data, i32 %0) #13, !dbg !9780
+  ret void, !dbg !9781
+}

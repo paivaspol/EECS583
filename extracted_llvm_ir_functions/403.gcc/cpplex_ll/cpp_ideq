@@ -1,22 +1,26 @@
 define i32 @cpp_ideq(%struct.cpp_token* nocapture %token, i8* nocapture %string) #0 {
 entry:
-  %type = getelementptr inbounds %struct.cpp_token* %token, i64 0, i32 2
-  %bf.load = load i8* %type, align 2
-  %cmp = icmp eq i8 %bf.load, 56
-  br i1 %cmp, label %if.end, label %return
+  tail call void @llvm.dbg.value(metadata !{%struct.cpp_token* %token}, i64 0, metadata !198), !dbg !991
+  tail call void @llvm.dbg.value(metadata !{i8* %string}, i64 0, metadata !199), !dbg !992
+  %type = getelementptr inbounds %struct.cpp_token* %token, i64 0, i32 2, !dbg !993
+  %bf.load = load i8* %type, align 2, !dbg !993
+  %cmp = icmp eq i8 %bf.load, 56, !dbg !993
+  br i1 %cmp, label %if.end, label %return, !dbg !993
 
 if.end:                                           ; preds = %entry
-  %val = getelementptr inbounds %struct.cpp_token* %token, i64 0, i32 4
-  %node = bitcast %union.anon* %val to %struct.cpp_hashnode**
-  %0 = load %struct.cpp_hashnode** %node, align 8, !tbaa !0
-  %str = getelementptr inbounds %struct.cpp_hashnode* %0, i64 0, i32 0, i32 1
-  %1 = load i8** %str, align 8, !tbaa !0
-  %call.i = tail call i32 @strcmp(i8* %1, i8* %string) #8
-  %lnot = icmp eq i32 %call.i, 0
-  %lnot.ext = zext i1 %lnot to i32
-  br label %return
+  %val = getelementptr inbounds %struct.cpp_token* %token, i64 0, i32 4, !dbg !994
+  %node = bitcast %union.anon* %val to %struct.cpp_hashnode**, !dbg !994
+  %0 = load %struct.cpp_hashnode** %node, align 8, !dbg !994, !tbaa !995
+  %str = getelementptr inbounds %struct.cpp_hashnode* %0, i64 0, i32 0, i32 1, !dbg !994
+  %1 = load i8** %str, align 8, !dbg !994, !tbaa !995
+  tail call void @llvm.dbg.value(metadata !{i8* %1}, i64 0, metadata !998) #4, !dbg !999
+  tail call void @llvm.dbg.value(metadata !{i8* %string}, i64 0, metadata !1000) #4, !dbg !999
+  %call.i = tail call i32 @strcmp(i8* %1, i8* %string) #9, !dbg !1001
+  %lnot = icmp eq i32 %call.i, 0, !dbg !994
+  %lnot.ext = zext i1 %lnot to i32, !dbg !994
+  br label %return, !dbg !994
 
 return:                                           ; preds = %entry, %if.end
   %retval.0 = phi i32 [ %lnot.ext, %if.end ], [ 0, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1003
 }

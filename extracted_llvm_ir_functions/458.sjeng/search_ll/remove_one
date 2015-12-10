@@ -1,43 +1,49 @@
 define i32 @remove_one(i32* nocapture %marker, i32* nocapture %move_ordering, i32 %num_moves) #0 {
 entry:
-  store i32 -1000000, i32* %marker, align 4, !tbaa !2
-  %cmp17 = icmp sgt i32 %num_moves, 0
-  br i1 %cmp17, label %for.body, label %return
+  tail call void @llvm.dbg.value(metadata !{i32* %marker}, i64 0, metadata !81), !dbg !535
+  tail call void @llvm.dbg.value(metadata !{i32* %move_ordering}, i64 0, metadata !82), !dbg !535
+  tail call void @llvm.dbg.value(metadata !{i32 %num_moves}, i64 0, metadata !83), !dbg !535
+  tail call void @llvm.dbg.value(metadata !444, i64 0, metadata !85), !dbg !536
+  store i32 -1000000, i32* %marker, align 4, !dbg !537, !tbaa !300
+  tail call void @llvm.dbg.value(metadata !8, i64 0, metadata !84), !dbg !538
+  %cmp17 = icmp sgt i32 %num_moves, 0, !dbg !538
+  br i1 %cmp17, label %for.body, label %return, !dbg !538
 
 for.body:                                         ; preds = %entry, %for.inc
   %0 = phi i32 [ %4, %for.inc ], [ -1000000, %entry ]
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %entry ]
   %best.019 = phi i32 [ %best.1, %for.inc ], [ -1000000, %entry ]
-  %arrayidx = getelementptr inbounds i32* %move_ordering, i64 %indvars.iv
-  %1 = load i32* %arrayidx, align 4, !tbaa !2
-  %cmp1 = icmp sgt i32 %1, %best.019
-  br i1 %cmp1, label %if.then, label %for.inc
+  %arrayidx = getelementptr inbounds i32* %move_ordering, i64 %indvars.iv, !dbg !540
+  %1 = load i32* %arrayidx, align 4, !dbg !540, !tbaa !300
+  %cmp1 = icmp sgt i32 %1, %best.019, !dbg !540
+  br i1 %cmp1, label %if.then, label %for.inc, !dbg !540
 
 if.then:                                          ; preds = %for.body
-  %2 = trunc i64 %indvars.iv to i32
-  store i32 %2, i32* %marker, align 4, !tbaa !2
-  %3 = load i32* %arrayidx, align 4, !tbaa !2
-  br label %for.inc
+  %2 = trunc i64 %indvars.iv to i32, !dbg !542
+  store i32 %2, i32* %marker, align 4, !dbg !542, !tbaa !300
+  %3 = load i32* %arrayidx, align 4, !dbg !544, !tbaa !300
+  tail call void @llvm.dbg.value(metadata !{i32 %3}, i64 0, metadata !85), !dbg !544
+  br label %for.inc, !dbg !545
 
 for.inc:                                          ; preds = %for.body, %if.then
   %4 = phi i32 [ %2, %if.then ], [ %0, %for.body ]
   %best.1 = phi i32 [ %3, %if.then ], [ %best.019, %for.body ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %num_moves
-  br i1 %exitcond, label %for.end, label %for.body
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !538
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !538
+  %exitcond = icmp eq i32 %lftr.wideiv, %num_moves, !dbg !538
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !538
 
 for.end:                                          ; preds = %for.inc
-  %cmp4 = icmp sgt i32 %4, -1000000
-  br i1 %cmp4, label %if.then5, label %return
+  %cmp4 = icmp sgt i32 %4, -1000000, !dbg !546
+  br i1 %cmp4, label %if.then5, label %return, !dbg !546
 
 if.then5:                                         ; preds = %for.end
-  %idxprom6 = sext i32 %4 to i64
-  %arrayidx7 = getelementptr inbounds i32* %move_ordering, i64 %idxprom6
-  store i32 -1000000, i32* %arrayidx7, align 4, !tbaa !2
-  br label %return
+  %idxprom6 = sext i32 %4 to i64, !dbg !547
+  %arrayidx7 = getelementptr inbounds i32* %move_ordering, i64 %idxprom6, !dbg !547
+  store i32 -1000000, i32* %arrayidx7, align 4, !dbg !547, !tbaa !300
+  br label %return, !dbg !549
 
 return:                                           ; preds = %entry, %for.end, %if.then5
   %retval.0 = phi i32 [ 1, %if.then5 ], [ 0, %for.end ], [ 0, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !550
 }

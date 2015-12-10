@@ -1,0 +1,30 @@
+define zeroext i1 @_ZNK11xercesc_2_56BitSet3getEj(%"class.xercesc_2_5::BitSet"* nocapture %this, i32 %index) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::BitSet"* %this}, i64 0, metadata !215), !dbg !345
+  tail call void @llvm.dbg.value(metadata !{i32 %index}, i64 0, metadata !216), !dbg !345
+  %div = lshr i32 %index, 5, !dbg !346
+  tail call void @llvm.dbg.value(metadata !{i32 %div}, i64 0, metadata !217), !dbg !346
+  tail call void @llvm.dbg.value(metadata !{i32 %rem}, i64 0, metadata !218), !dbg !347
+  tail call void @llvm.dbg.value(metadata !348, i64 0, metadata !219), !dbg !349
+  %fUnitLen = getelementptr inbounds %"class.xercesc_2_5::BitSet"* %this, i64 0, i32 2, !dbg !350
+  %0 = load i32* %fUnitLen, align 4, !dbg !350, !tbaa !304
+  %cmp = icmp ugt i32 %div, %0, !dbg !350
+  br i1 %cmp, label %if.end3, label %if.then, !dbg !350
+
+if.then:                                          ; preds = %entry
+  %rem = and i32 %index, 31, !dbg !347
+  %idxprom = zext i32 %div to i64, !dbg !351
+  %fBits = getelementptr inbounds %"class.xercesc_2_5::BitSet"* %this, i64 0, i32 1, !dbg !351
+  %1 = load i64** %fBits, align 8, !dbg !351, !tbaa !301
+  %arrayidx = getelementptr inbounds i64* %1, i64 %idxprom, !dbg !351
+  %2 = load i64* %arrayidx, align 8, !dbg !351, !tbaa !322
+  %shl = shl i32 1, %rem, !dbg !351
+  %conv = sext i32 %shl to i64, !dbg !351
+  %and = and i64 %2, %conv, !dbg !351
+  tail call void @llvm.dbg.value(metadata !353, i64 0, metadata !219), !dbg !354
+  %not.tobool = icmp ne i64 %and, 0, !dbg !351
+  ret i1 %not.tobool, !dbg !351
+
+if.end3:                                          ; preds = %entry
+  ret i1 false, !dbg !355
+}

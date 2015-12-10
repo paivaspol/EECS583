@@ -1,30 +1,50 @@
-define i32 @WriteRTPPacket(%struct.RTPpacket_t* nocapture %p, %struct._IO_FILE* nocapture %f) #0 {
+define i32 @WriteRTPPacket(%struct.RTPpacket_t* %p, %struct._IO_FILE* %f) #0 {
 entry:
   %intime = alloca i32, align 4
-  store i32 -1, i32* %intime, align 4, !tbaa !0
-  %packlen = getelementptr inbounds %struct.RTPpacket_t* %p, i64 0, i32 12
-  %0 = bitcast i32* %packlen to i8*
-  %call = call i64 @fwrite(i8* %0, i64 4, i64 1, %struct._IO_FILE* %f) #5
-  %cmp = icmp eq i64 %call, 1
-  br i1 %cmp, label %if.end, label %return
+  call void @llvm.dbg.value(metadata !{%struct.RTPpacket_t* %p}, i64 0, metadata !100), !dbg !642
+  call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %f}, i64 0, metadata !101), !dbg !642
+  call void @llvm.dbg.declare(metadata !{i32* %intime}, metadata !102), !dbg !643
+  call void @llvm.dbg.value(metadata !644, i64 0, metadata !102), !dbg !643
+  store i32 -1, i32* %intime, align 4, !dbg !643, !tbaa !620
+  %cmp = icmp eq %struct._IO_FILE* %f, null, !dbg !645
+  br i1 %cmp, label %cond.false, label %cond.end, !dbg !645
 
-if.end:                                           ; preds = %entry
-  %1 = bitcast i32* %intime to i8*
-  %call1 = call i64 @fwrite(i8* %1, i64 4, i64 1, %struct._IO_FILE* %f) #5
-  %cmp2 = icmp eq i64 %call1, 1
-  br i1 %cmp2, label %if.end4, label %return
+cond.false:                                       ; preds = %entry
+  call void @__assert_fail(i8* getelementptr inbounds ([16 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0), i32 135, i8* getelementptr inbounds ([42 x i8]* @__PRETTY_FUNCTION__.WriteRTPPacket, i64 0, i64 0)) #6, !dbg !645
+  unreachable, !dbg !645
 
-if.end4:                                          ; preds = %if.end
-  %packet = getelementptr inbounds %struct.RTPpacket_t* %p, i64 0, i32 11
-  %2 = load i8** %packet, align 8, !tbaa !3
-  %3 = load i32* %packlen, align 4, !tbaa !0
-  %conv = zext i32 %3 to i64
-  %call6 = call i64 @fwrite(i8* %2, i64 %conv, i64 1, %struct._IO_FILE* %f) #5
-  %not.cmp7 = icmp ne i64 %call6, 1
-  %. = sext i1 %not.cmp7 to i32
-  br label %return
+cond.end:                                         ; preds = %entry
+  %cmp1 = icmp eq %struct.RTPpacket_t* %p, null, !dbg !646
+  br i1 %cmp1, label %cond.false3, label %cond.end4, !dbg !646
 
-return:                                           ; preds = %if.end4, %if.end, %entry
-  %retval.0 = phi i32 [ -1, %entry ], [ -1, %if.end ], [ %., %if.end4 ]
-  ret i32 %retval.0
+cond.false3:                                      ; preds = %cond.end
+  call void @__assert_fail(i8* getelementptr inbounds ([16 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str1, i64 0, i64 0), i32 136, i8* getelementptr inbounds ([42 x i8]* @__PRETTY_FUNCTION__.WriteRTPPacket, i64 0, i64 0)) #6, !dbg !646
+  unreachable, !dbg !646
+
+cond.end4:                                        ; preds = %cond.end
+  %packlen = getelementptr inbounds %struct.RTPpacket_t* %p, i64 0, i32 12, !dbg !647
+  %0 = bitcast i32* %packlen to i8*, !dbg !647
+  %call = call i64 @fwrite(i8* %0, i64 4, i64 1, %struct._IO_FILE* %f) #7, !dbg !647
+  %cmp5 = icmp eq i64 %call, 1, !dbg !647
+  br i1 %cmp5, label %if.end, label %return, !dbg !647
+
+if.end:                                           ; preds = %cond.end4
+  %1 = bitcast i32* %intime to i8*, !dbg !648
+  %call6 = call i64 @fwrite(i8* %1, i64 4, i64 1, %struct._IO_FILE* %f) #7, !dbg !648
+  %cmp7 = icmp eq i64 %call6, 1, !dbg !648
+  br i1 %cmp7, label %if.end9, label %return, !dbg !648
+
+if.end9:                                          ; preds = %if.end
+  %packet = getelementptr inbounds %struct.RTPpacket_t* %p, i64 0, i32 11, !dbg !649
+  %2 = load i8** %packet, align 8, !dbg !649, !tbaa !630
+  %3 = load i32* %packlen, align 4, !dbg !649, !tbaa !620
+  %conv = zext i32 %3 to i64, !dbg !649
+  %call11 = call i64 @fwrite(i8* %2, i64 %conv, i64 1, %struct._IO_FILE* %f) #7, !dbg !649
+  %not.cmp12 = icmp ne i64 %call11, 1, !dbg !650
+  %. = sext i1 %not.cmp12 to i32, !dbg !650
+  br label %return, !dbg !650
+
+return:                                           ; preds = %if.end9, %if.end, %cond.end4
+  %retval.0 = phi i32 [ -1, %cond.end4 ], [ -1, %if.end ], [ %., %if.end9 ]
+  ret i32 %retval.0, !dbg !650
 }

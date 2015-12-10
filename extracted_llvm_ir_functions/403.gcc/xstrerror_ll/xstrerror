@@ -1,14 +1,17 @@
 define i8* @xstrerror(i32 %errnum) #0 {
 entry:
-  %call = tail call i8* @strerror(i32 %errnum) #3
-  %tobool = icmp eq i8* %call, null
-  br i1 %tobool, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i32 %errnum}, i64 0, metadata !12), !dbg !19
+  %call = tail call i8* @strerror(i32 %errnum) #4, !dbg !20
+  tail call void @llvm.dbg.value(metadata !{i8* %call}, i64 0, metadata !13), !dbg !20
+  %tobool = icmp eq i8* %call, null, !dbg !21
+  br i1 %tobool, label %if.then, label %if.end, !dbg !21
 
 if.then:                                          ; preds = %entry
-  %call1 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* getelementptr inbounds ([43 x i8]* @xstrerror_buf, i64 0, i64 0), i8* getelementptr inbounds ([23 x i8]* @.str, i64 0, i64 0), i32 %errnum) #3
-  br label %if.end
+  %call1 = tail call i32 (i8*, i8*, ...)* @sprintf(i8* getelementptr inbounds ([43 x i8]* @xstrerror_buf, i64 0, i64 0), i8* getelementptr inbounds ([23 x i8]* @.str, i64 0, i64 0), i32 %errnum) #4, !dbg !22
+  tail call void @llvm.dbg.value(metadata !24, i64 0, metadata !13), !dbg !25
+  br label %if.end, !dbg !26
 
 if.end:                                           ; preds = %entry, %if.then
   %errstr.0 = phi i8* [ %call, %entry ], [ getelementptr inbounds ([43 x i8]* @xstrerror_buf, i64 0, i64 0), %if.then ]
-  ret i8* %errstr.0
+  ret i8* %errstr.0, !dbg !27
 }

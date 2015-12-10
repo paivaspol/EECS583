@@ -1,0 +1,82 @@
+define internal fastcc void @_ZN6soplexL11patch_fieldEPcii(i8* nocapture %buf, i32 %beg, i32 %end) #5 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %buf}, i64 0, metadata !5182), !dbg !5341
+  tail call void @llvm.dbg.value(metadata !{i32 %beg}, i64 0, metadata !5183), !dbg !5341
+  tail call void @llvm.dbg.value(metadata !{i32 %end}, i64 0, metadata !5184), !dbg !5341
+  %cmp37 = icmp slt i32 %end, %beg, !dbg !5342
+  br i1 %cmp37, label %while.cond2.preheader, label %land.rhs.lr.ph, !dbg !5342
+
+land.rhs.lr.ph:                                   ; preds = %entry
+  %0 = sext i32 %end to i64
+  br label %land.rhs, !dbg !5342
+
+while.cond:                                       ; preds = %land.rhs
+  %indvars.iv.next47 = add i64 %indvars.iv46, -1, !dbg !5342
+  %1 = trunc i64 %indvars.iv46 to i32, !dbg !5342
+  %cmp = icmp sgt i32 %1, %beg, !dbg !5342
+  br i1 %cmp, label %land.rhs, label %while.cond2.preheader, !dbg !5342
+
+while.cond2.preheader:                            ; preds = %while.cond, %land.rhs, %entry
+  %end.addr.0.lcssa = phi i32 [ %end, %entry ], [ %end.addr.038, %land.rhs ], [ %dec, %while.cond ]
+  %cmp335 = icmp slt i32 %end.addr.0.lcssa, %beg, !dbg !5343
+  br i1 %cmp335, label %for.cond.preheader, label %land.rhs4.lr.ph, !dbg !5343
+
+land.rhs4.lr.ph:                                  ; preds = %while.cond2.preheader
+  %2 = sext i32 %beg to i64
+  br label %land.rhs4, !dbg !5343
+
+land.rhs:                                         ; preds = %while.cond, %land.rhs.lr.ph
+  %indvars.iv46 = phi i64 [ %indvars.iv.next47, %while.cond ], [ %0, %land.rhs.lr.ph ]
+  %end.addr.038 = phi i32 [ %dec, %while.cond ], [ %end, %land.rhs.lr.ph ]
+  %arrayidx = getelementptr inbounds i8* %buf, i64 %indvars.iv46, !dbg !5342
+  %3 = load i8* %arrayidx, align 1, !dbg !5342, !tbaa !5238
+  %cmp1 = icmp eq i8 %3, 32, !dbg !5342
+  %dec = add nsw i32 %end.addr.038, -1, !dbg !5344
+  tail call void @llvm.dbg.value(metadata !{i32 %dec}, i64 0, metadata !5184), !dbg !5344
+  br i1 %cmp1, label %while.cond, label %while.cond2.preheader
+
+while.cond2:                                      ; preds = %land.rhs4
+  %indvars.iv.next43 = add i64 %indvars.iv42, 1, !dbg !5343
+  %4 = trunc i64 %indvars.iv42 to i32, !dbg !5343
+  %cmp3 = icmp slt i32 %4, %end.addr.0.lcssa, !dbg !5343
+  br i1 %cmp3, label %land.rhs4, label %for.cond.preheader, !dbg !5343
+
+land.rhs4:                                        ; preds = %while.cond2, %land.rhs4.lr.ph
+  %indvars.iv42 = phi i64 [ %indvars.iv.next43, %while.cond2 ], [ %2, %land.rhs4.lr.ph ]
+  %beg.addr.036 = phi i32 [ %inc, %while.cond2 ], [ %beg, %land.rhs4.lr.ph ]
+  %arrayidx6 = getelementptr inbounds i8* %buf, i64 %indvars.iv42, !dbg !5343
+  %5 = load i8* %arrayidx6, align 1, !dbg !5343, !tbaa !5238
+  %cmp8 = icmp eq i8 %5, 32, !dbg !5343
+  %inc = add nsw i32 %beg.addr.036, 1, !dbg !5345
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !5183), !dbg !5345
+  br i1 %cmp8, label %while.cond2, label %for.cond.preheader
+
+for.cond.preheader:                               ; preds = %while.cond2, %land.rhs4, %while.cond2.preheader
+  %beg.addr.0.lcssa = phi i32 [ %beg, %while.cond2.preheader ], [ %beg.addr.036, %land.rhs4 ], [ %inc, %while.cond2 ]
+  %cmp1233 = icmp sgt i32 %beg.addr.0.lcssa, %end.addr.0.lcssa, !dbg !5346
+  br i1 %cmp1233, label %for.end, label %for.body.lr.ph, !dbg !5346
+
+for.body.lr.ph:                                   ; preds = %for.cond.preheader
+  %6 = sext i32 %beg.addr.0.lcssa to i64
+  br label %for.body, !dbg !5346
+
+for.body:                                         ; preds = %for.inc, %for.body.lr.ph
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ %6, %for.body.lr.ph ]
+  %arrayidx14 = getelementptr inbounds i8* %buf, i64 %indvars.iv, !dbg !5347
+  %7 = load i8* %arrayidx14, align 1, !dbg !5347, !tbaa !5238
+  %cmp16 = icmp eq i8 %7, 32, !dbg !5347
+  br i1 %cmp16, label %if.then, label %for.inc, !dbg !5347
+
+if.then:                                          ; preds = %for.body
+  store i8 95, i8* %arrayidx14, align 1, !dbg !5348, !tbaa !5238
+  br label %for.inc, !dbg !5348
+
+for.inc:                                          ; preds = %for.body, %if.then
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !5346
+  %8 = trunc i64 %indvars.iv to i32, !dbg !5346
+  %cmp12 = icmp slt i32 %8, %end.addr.0.lcssa, !dbg !5346
+  br i1 %cmp12, label %for.body, label %for.end, !dbg !5346
+
+for.end:                                          ; preds = %for.inc, %for.cond.preheader
+  ret void, !dbg !5349
+}

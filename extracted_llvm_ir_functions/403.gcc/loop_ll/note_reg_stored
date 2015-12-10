@@ -1,16 +1,19 @@
 define internal void @note_reg_stored(%struct.rtx_def* %x, %struct.rtx_def* nocapture %setter, i8* nocapture %arg) #0 {
 entry:
-  %reg = getelementptr inbounds i8* %arg, i64 8
-  %0 = bitcast i8* %reg to %struct.rtx_def**
-  %1 = load %struct.rtx_def** %0, align 8, !tbaa !4
-  %cmp = icmp eq %struct.rtx_def* %1, %x
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !2644), !dbg !7163
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %setter}, i64 0, metadata !2645), !dbg !7163
+  tail call void @llvm.dbg.value(metadata !{i8* %arg}, i64 0, metadata !2646), !dbg !7164
+  %reg = getelementptr inbounds i8* %arg, i64 8, !dbg !7165
+  %0 = bitcast i8* %reg to %struct.rtx_def**, !dbg !7165
+  %1 = load %struct.rtx_def** %0, align 8, !dbg !7165, !tbaa !2982
+  %cmp = icmp eq %struct.rtx_def* %1, %x, !dbg !7165
+  br i1 %cmp, label %if.then, label %if.end, !dbg !7165
 
 if.then:                                          ; preds = %entry
-  %set_seen = bitcast i8* %arg to i32*
-  store i32 1, i32* %set_seen, align 4, !tbaa !3
-  br label %if.end
+  %set_seen = bitcast i8* %arg to i32*, !dbg !7166
+  store i32 1, i32* %set_seen, align 4, !dbg !7166, !tbaa !2973
+  br label %if.end, !dbg !7166
 
 if.end:                                           ; preds = %if.then, %entry
-  ret void
+  ret void, !dbg !7167
 }

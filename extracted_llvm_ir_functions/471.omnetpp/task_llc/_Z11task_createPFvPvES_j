@@ -1,0 +1,48 @@
+define %struct._Task* @_Z11task_createPFvPvES_j(void (i8*)* %fnp, i8* %arg, i32 %stack_size) #6 {
+entry:
+  call void @llvm.dbg.value(metadata !{void (i8*)* %fnp}, i64 0, metadata !96), !dbg !209
+  call void @llvm.dbg.value(metadata !{i8* %arg}, i64 0, metadata !97), !dbg !209
+  call void @llvm.dbg.value(metadata !{i32 %stack_size}, i64 0, metadata !98), !dbg !209
+  %p.017 = load %struct._Task** getelementptr inbounds (%struct._Task* @main_task, i64 0, i32 5), align 8, !dbg !210
+  %cmp18 = icmp eq %struct._Task* %p.017, null, !dbg !210
+  br i1 %cmp18, label %return, label %for.body, !dbg !210
+
+for.body:                                         ; preds = %entry, %for.inc
+  %p.019 = phi %struct._Task* [ %p.0, %for.inc ], [ %p.017, %entry ]
+  %used = getelementptr inbounds %struct._Task* %p.019, i64 0, i32 3, !dbg !212
+  %0 = load i32* %used, align 4, !dbg !212, !tbaa !148
+  %tobool = icmp eq i32 %0, 0, !dbg !212
+  br i1 %tobool, label %land.lhs.true, label %for.inc, !dbg !212
+
+land.lhs.true:                                    ; preds = %for.body
+  %size = getelementptr inbounds %struct._Task* %p.019, i64 0, i32 4, !dbg !212
+  %1 = load i32* %size, align 4, !dbg !212, !tbaa !148
+  %cmp1 = icmp ult i32 %1, %stack_size, !dbg !212
+  br i1 %cmp1, label %for.inc, label %if.then, !dbg !212
+
+if.then:                                          ; preds = %land.lhs.true
+  %fnp2 = getelementptr inbounds %struct._Task* %p.019, i64 0, i32 6, !dbg !214
+  store void (i8*)* %fnp, void (i8*)** %fnp2, align 8, !dbg !214, !tbaa !138
+  %arg3 = getelementptr inbounds %struct._Task* %p.019, i64 0, i32 7, !dbg !216
+  store i8* %arg, i8** %arg3, align 8, !dbg !216, !tbaa !138
+  %stack_size4 = getelementptr inbounds %struct._Task* %p.019, i64 0, i32 8, !dbg !217
+  store i32 %stack_size, i32* %stack_size4, align 4, !dbg !217, !tbaa !148
+  %call = call i32 @_setjmp(%struct.__jmp_buf_tag* getelementptr inbounds ([1 x %struct.__jmp_buf_tag]* @tmp_jmpb, i64 0, i64 0)) #10, !dbg !218
+  %cmp5 = icmp eq i32 %call, 0, !dbg !218
+  br i1 %cmp5, label %if.then6, label %return, !dbg !218
+
+if.then6:                                         ; preds = %if.then
+  %arraydecay = getelementptr inbounds %struct._Task* %p.019, i64 0, i32 2, i64 0, !dbg !219
+  call void @longjmp(%struct.__jmp_buf_tag* %arraydecay, i32 1) #11, !dbg !219
+  unreachable, !dbg !219
+
+for.inc:                                          ; preds = %land.lhs.true, %for.body
+  %next = getelementptr inbounds %struct._Task* %p.019, i64 0, i32 5, !dbg !210
+  %p.0 = load %struct._Task** %next, align 8, !dbg !210
+  %cmp = icmp eq %struct._Task* %p.0, null, !dbg !210
+  br i1 %cmp, label %return, label %for.body, !dbg !210
+
+return:                                           ; preds = %entry, %for.inc, %if.then
+  %retval.0 = phi %struct._Task* [ %p.019, %if.then ], [ null, %for.inc ], [ null, %entry ]
+  ret %struct._Task* %retval.0, !dbg !221
+}

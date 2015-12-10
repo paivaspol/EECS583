@@ -1,45 +1,49 @@
 define void @use_group_regs(%struct.rtx_def** nocapture %call_fusage, %struct.rtx_def* nocapture %regs) #0 {
 entry:
-  %arrayidx = getelementptr inbounds %struct.rtx_def* %regs, i64 0, i32 1, i64 0
-  %rtvec = bitcast %union.rtunion_def* %arrayidx to %struct.rtvec_def**
-  %0 = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
-  %num_elem14 = getelementptr inbounds %struct.rtvec_def* %0, i64 0, i32 0
-  %1 = load i32* %num_elem14, align 4, !tbaa !3
-  %cmp15 = icmp sgt i32 %1, 0
-  br i1 %cmp15, label %for.body, label %for.end
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %call_fusage}, i64 0, metadata !2103), !dbg !5107
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %regs}, i64 0, metadata !2104), !dbg !5108
+  tail call void @llvm.dbg.value(metadata !1351, i64 0, metadata !2105), !dbg !5109
+  %arrayidx = getelementptr inbounds %struct.rtx_def* %regs, i64 0, i32 1, i64 0, !dbg !5109
+  %rtvec = bitcast %union.rtunion_def* %arrayidx to %struct.rtvec_def**, !dbg !5109
+  %0 = load %struct.rtvec_def** %rtvec, align 8, !dbg !5109, !tbaa !3154
+  %num_elem14 = getelementptr inbounds %struct.rtvec_def* %0, i64 0, i32 0, !dbg !5109
+  %1 = load i32* %num_elem14, align 4, !dbg !5109, !tbaa !3192
+  %cmp15 = icmp sgt i32 %1, 0, !dbg !5109
+  br i1 %cmp15, label %for.body, label %for.end, !dbg !5109
 
 for.body:                                         ; preds = %entry, %for.inc
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %entry ]
   %2 = phi %struct.rtvec_def* [ %6, %for.inc ], [ %0, %entry ]
-  %arrayidx4 = getelementptr inbounds %struct.rtvec_def* %2, i64 0, i32 1, i64 %indvars.iv
-  %3 = load %struct.rtx_def** %arrayidx4, align 8, !tbaa !0
-  %arrayidx6 = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 1, i64 0
-  %rtx = bitcast %union.rtunion_def* %arrayidx6 to %struct.rtx_def**
-  %4 = load %struct.rtx_def** %rtx, align 8, !tbaa !0
-  %cmp7 = icmp eq %struct.rtx_def* %4, null
-  br i1 %cmp7, label %for.inc, label %land.lhs.true
+  %arrayidx4 = getelementptr inbounds %struct.rtvec_def* %2, i64 0, i32 1, i64 %indvars.iv, !dbg !5110
+  %3 = load %struct.rtx_def** %arrayidx4, align 8, !dbg !5110, !tbaa !3154
+  %arrayidx6 = getelementptr inbounds %struct.rtx_def* %3, i64 0, i32 1, i64 0, !dbg !5110
+  %rtx = bitcast %union.rtunion_def* %arrayidx6 to %struct.rtx_def**, !dbg !5110
+  %4 = load %struct.rtx_def** %rtx, align 8, !dbg !5110, !tbaa !3154
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %4}, i64 0, metadata !2106), !dbg !5110
+  %cmp7 = icmp eq %struct.rtx_def* %4, null, !dbg !5111
+  br i1 %cmp7, label %for.inc, label %land.lhs.true, !dbg !5111
 
 land.lhs.true:                                    ; preds = %for.body
-  %5 = bitcast %struct.rtx_def* %4 to i32*
-  %bf.load = load i32* %5, align 8
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp8 = icmp eq i32 %bf.clear, 61
-  br i1 %cmp8, label %if.then, label %for.inc
+  %5 = bitcast %struct.rtx_def* %4 to i32*, !dbg !5111
+  %bf.load = load i32* %5, align 8, !dbg !5111
+  %bf.clear = and i32 %bf.load, 65535, !dbg !5111
+  %cmp8 = icmp eq i32 %bf.clear, 61, !dbg !5111
+  br i1 %cmp8, label %if.then, label %for.inc, !dbg !5111
 
 if.then:                                          ; preds = %land.lhs.true
-  tail call void @use_reg(%struct.rtx_def** %call_fusage, %struct.rtx_def* %4) #10
-  %.pre = load %struct.rtvec_def** %rtvec, align 8, !tbaa !0
-  br label %for.inc
+  tail call void @use_reg(%struct.rtx_def** %call_fusage, %struct.rtx_def* %4) #11, !dbg !5112
+  %.pre = load %struct.rtvec_def** %rtvec, align 8, !dbg !5109, !tbaa !3154
+  br label %for.inc, !dbg !5112
 
 for.inc:                                          ; preds = %for.body, %land.lhs.true, %if.then
-  %6 = phi %struct.rtvec_def* [ %2, %for.body ], [ %2, %land.lhs.true ], [ %.pre, %if.then ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %num_elem = getelementptr inbounds %struct.rtvec_def* %6, i64 0, i32 0
-  %7 = load i32* %num_elem, align 4, !tbaa !3
-  %8 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %8, %7
-  br i1 %cmp, label %for.body, label %for.end
+  %6 = phi %struct.rtvec_def* [ %2, %for.body ], [ %2, %land.lhs.true ], [ %.pre, %if.then ], !dbg !5109
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !5109
+  %num_elem = getelementptr inbounds %struct.rtvec_def* %6, i64 0, i32 0, !dbg !5109
+  %7 = load i32* %num_elem, align 4, !dbg !5109, !tbaa !3192
+  %8 = trunc i64 %indvars.iv.next to i32, !dbg !5109
+  %cmp = icmp slt i32 %8, %7, !dbg !5109
+  br i1 %cmp, label %for.body, label %for.end, !dbg !5109
 
 for.end:                                          ; preds = %for.inc, %entry
-  ret void
+  ret void, !dbg !5113
 }

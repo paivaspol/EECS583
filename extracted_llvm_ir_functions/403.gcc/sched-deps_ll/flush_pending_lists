@@ -1,29 +1,33 @@
-define internal fastcc void @flush_pending_lists(%struct.deps* %deps, %struct.rtx_def* %insn, i32 %for_read, i32 %for_write) #1 {
+define internal fastcc void @flush_pending_lists(%struct.deps* %deps, %struct.rtx_def* %insn, i32 %for_read, i32 %for_write) #2 {
 entry:
-  %tobool = icmp eq i32 %for_write, 0
-  br i1 %tobool, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.deps* %deps}, i64 0, metadata !865), !dbg !1071
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %insn}, i64 0, metadata !866), !dbg !1072
+  tail call void @llvm.dbg.value(metadata !{i32 %for_read}, i64 0, metadata !867), !dbg !1073
+  tail call void @llvm.dbg.value(metadata !{i32 %for_write}, i64 0, metadata !868), !dbg !1073
+  %tobool = icmp eq i32 %for_write, 0, !dbg !1074
+  br i1 %tobool, label %if.end, label %if.then, !dbg !1074
 
 if.then:                                          ; preds = %entry
-  %pending_read_insns = getelementptr inbounds %struct.deps* %deps, i64 0, i32 0
-  tail call fastcc void @add_dependence_list_and_free(%struct.rtx_def* %insn, %struct.rtx_def** %pending_read_insns, i32 14) #6
-  %pending_read_mems = getelementptr inbounds %struct.deps* %deps, i64 0, i32 1
-  tail call void @free_EXPR_LIST_list(%struct.rtx_def** %pending_read_mems) #7
-  br label %if.end
+  %pending_read_insns = getelementptr inbounds %struct.deps* %deps, i64 0, i32 0, !dbg !1075
+  tail call fastcc void @add_dependence_list_and_free(%struct.rtx_def* %insn, %struct.rtx_def** %pending_read_insns, i32 14) #7, !dbg !1075
+  %pending_read_mems = getelementptr inbounds %struct.deps* %deps, i64 0, i32 1, !dbg !1077
+  tail call void @free_EXPR_LIST_list(%struct.rtx_def** %pending_read_mems) #8, !dbg !1077
+  br label %if.end, !dbg !1078
 
 if.end:                                           ; preds = %entry, %if.then
-  %pending_write_insns = getelementptr inbounds %struct.deps* %deps, i64 0, i32 2
-  %tobool1 = icmp ne i32 %for_read, 0
-  %cond = select i1 %tobool1, i32 14, i32 15
-  tail call fastcc void @add_dependence_list_and_free(%struct.rtx_def* %insn, %struct.rtx_def** %pending_write_insns, i32 %cond) #6
-  %pending_write_mems = getelementptr inbounds %struct.deps* %deps, i64 0, i32 3
-  tail call void @free_EXPR_LIST_list(%struct.rtx_def** %pending_write_mems) #7
-  %pending_lists_length = getelementptr inbounds %struct.deps* %deps, i64 0, i32 4
-  store i32 0, i32* %pending_lists_length, align 4, !tbaa !3
-  %last_pending_memory_flush = getelementptr inbounds %struct.deps* %deps, i64 0, i32 6
-  tail call fastcc void @add_dependence_list_and_free(%struct.rtx_def* %insn, %struct.rtx_def** %last_pending_memory_flush, i32 %cond) #6
-  %call = tail call %struct.rtx_def* @alloc_INSN_LIST(%struct.rtx_def* %insn, %struct.rtx_def* null) #7
-  store %struct.rtx_def* %call, %struct.rtx_def** %last_pending_memory_flush, align 8, !tbaa !0
-  %pending_flush_length = getelementptr inbounds %struct.deps* %deps, i64 0, i32 5
-  store i32 1, i32* %pending_flush_length, align 4, !tbaa !3
-  ret void
+  %pending_write_insns = getelementptr inbounds %struct.deps* %deps, i64 0, i32 2, !dbg !1079
+  %tobool1 = icmp ne i32 %for_read, 0, !dbg !1079
+  %cond = select i1 %tobool1, i32 14, i32 15, !dbg !1079
+  tail call fastcc void @add_dependence_list_and_free(%struct.rtx_def* %insn, %struct.rtx_def** %pending_write_insns, i32 %cond) #7, !dbg !1079
+  %pending_write_mems = getelementptr inbounds %struct.deps* %deps, i64 0, i32 3, !dbg !1080
+  tail call void @free_EXPR_LIST_list(%struct.rtx_def** %pending_write_mems) #8, !dbg !1080
+  %pending_lists_length = getelementptr inbounds %struct.deps* %deps, i64 0, i32 4, !dbg !1081
+  store i32 0, i32* %pending_lists_length, align 4, !dbg !1081, !tbaa !941
+  %last_pending_memory_flush = getelementptr inbounds %struct.deps* %deps, i64 0, i32 6, !dbg !1082
+  tail call fastcc void @add_dependence_list_and_free(%struct.rtx_def* %insn, %struct.rtx_def** %last_pending_memory_flush, i32 %cond) #7, !dbg !1082
+  %call = tail call %struct.rtx_def* @alloc_INSN_LIST(%struct.rtx_def* %insn, %struct.rtx_def* null) #8, !dbg !1083
+  store %struct.rtx_def* %call, %struct.rtx_def** %last_pending_memory_flush, align 8, !dbg !1083, !tbaa !907
+  %pending_flush_length = getelementptr inbounds %struct.deps* %deps, i64 0, i32 5, !dbg !1084
+  store i32 1, i32* %pending_flush_length, align 4, !dbg !1084, !tbaa !941
+  ret void, !dbg !1085
 }

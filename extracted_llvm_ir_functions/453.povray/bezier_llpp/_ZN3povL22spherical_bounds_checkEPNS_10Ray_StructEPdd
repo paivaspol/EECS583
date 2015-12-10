@@ -1,0 +1,62 @@
+define internal fastcc i32 @_ZN3povL22spherical_bounds_checkEPNS_10Ray_StructEPdd(%"struct.pov::Ray_Struct"* nocapture %Ray, double* nocapture %center, double %radius) #6 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Ray_Struct"* %Ray}, i64 0, metadata !1282), !dbg !2248
+  tail call void @llvm.dbg.value(metadata !{double* %center}, i64 0, metadata !1283), !dbg !2248
+  tail call void @llvm.dbg.value(metadata !{double %radius}, i64 0, metadata !1284), !dbg !2248
+  %0 = load double* %center, align 8, !dbg !2249, !tbaa !1603
+  %arrayidx1 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 0, i64 0, !dbg !2249
+  %1 = load double* %arrayidx1, align 8, !dbg !2249, !tbaa !1603
+  %sub = fsub double %0, %1, !dbg !2249
+  tail call void @llvm.dbg.value(metadata !{double %sub}, i64 0, metadata !1285), !dbg !2249
+  %arrayidx2 = getelementptr inbounds double* %center, i64 1, !dbg !2250
+  %2 = load double* %arrayidx2, align 8, !dbg !2250, !tbaa !1603
+  %arrayidx4 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 0, i64 1, !dbg !2250
+  %3 = load double* %arrayidx4, align 8, !dbg !2250, !tbaa !1603
+  %sub5 = fsub double %2, %3, !dbg !2250
+  tail call void @llvm.dbg.value(metadata !{double %sub5}, i64 0, metadata !1287), !dbg !2250
+  %arrayidx6 = getelementptr inbounds double* %center, i64 2, !dbg !2251
+  %4 = load double* %arrayidx6, align 8, !dbg !2251, !tbaa !1603
+  %arrayidx8 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 0, i64 2, !dbg !2251
+  %5 = load double* %arrayidx8, align 8, !dbg !2251, !tbaa !1603
+  %sub9 = fsub double %4, %5, !dbg !2251
+  tail call void @llvm.dbg.value(metadata !{double %sub9}, i64 0, metadata !1288), !dbg !2251
+  %mul = fmul double %sub, %sub, !dbg !2252
+  %mul10 = fmul double %sub5, %sub5, !dbg !2252
+  %add = fadd double %mul, %mul10, !dbg !2252
+  %mul11 = fmul double %sub9, %sub9, !dbg !2252
+  %add12 = fadd double %add, %mul11, !dbg !2252
+  tail call void @llvm.dbg.value(metadata !{double %add12}, i64 0, metadata !1289), !dbg !2252
+  %cmp = fcmp olt double %add12, %radius, !dbg !2253
+  br i1 %cmp, label %return, label %if.else, !dbg !2253
+
+if.else:                                          ; preds = %entry
+  %arrayidx13 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 0, !dbg !2254
+  %6 = load double* %arrayidx13, align 8, !dbg !2254, !tbaa !1603
+  %mul14 = fmul double %sub, %6, !dbg !2254
+  %arrayidx16 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 1, !dbg !2254
+  %7 = load double* %arrayidx16, align 8, !dbg !2254, !tbaa !1603
+  %mul17 = fmul double %sub5, %7, !dbg !2254
+  %add18 = fadd double %mul14, %mul17, !dbg !2254
+  %arrayidx20 = getelementptr inbounds %"struct.pov::Ray_Struct"* %Ray, i64 0, i32 1, i64 2, !dbg !2254
+  %8 = load double* %arrayidx20, align 8, !dbg !2254, !tbaa !1603
+  %mul21 = fmul double %sub9, %8, !dbg !2254
+  %add22 = fadd double %add18, %mul21, !dbg !2254
+  tail call void @llvm.dbg.value(metadata !{double %add22}, i64 0, metadata !1290), !dbg !2254
+  %mul23 = fmul double %add22, %add22, !dbg !2256
+  tail call void @llvm.dbg.value(metadata !{double %mul23}, i64 0, metadata !1290), !dbg !2256
+  %cmp24 = fcmp ogt double %mul23, 0.000000e+00, !dbg !2257
+  br i1 %cmp24, label %land.lhs.true, label %if.end29, !dbg !2257
+
+land.lhs.true:                                    ; preds = %if.else
+  %sub25 = fsub double %add12, %mul23, !dbg !2257
+  %add26 = fadd double %radius, 1.000000e-10, !dbg !2257
+  %cmp27 = fcmp ugt double %sub25, %add26, !dbg !2257
+  br i1 %cmp27, label %if.end29, label %return, !dbg !2257
+
+if.end29:                                         ; preds = %land.lhs.true, %if.else
+  br label %return, !dbg !2258
+
+return:                                           ; preds = %land.lhs.true, %entry, %if.end29
+  %retval.0 = phi i32 [ 0, %if.end29 ], [ 1, %entry ], [ 1, %land.lhs.true ]
+  ret i32 %retval.0, !dbg !2258
+}

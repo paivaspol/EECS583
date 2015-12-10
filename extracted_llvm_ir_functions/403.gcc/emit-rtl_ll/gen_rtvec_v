@@ -1,26 +1,31 @@
 define %struct.rtvec_def* @gen_rtvec_v(i32 %n, %struct.rtx_def** nocapture %argp) #0 {
 entry:
-  %cmp = icmp eq i32 %n, 0
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !1249), !dbg !2395
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %argp}, i64 0, metadata !1250), !dbg !2396
+  %cmp = icmp eq i32 %n, 0, !dbg !2397
+  br i1 %cmp, label %return, label %if.end, !dbg !2397
 
 if.end:                                           ; preds = %entry
-  %call = tail call %struct.rtvec_def* @rtvec_alloc(i32 %n) #8
-  %cmp17 = icmp sgt i32 %n, 0
-  br i1 %cmp17, label %for.body, label %return
+  %call = tail call %struct.rtvec_def* @rtvec_alloc(i32 %n) #9, !dbg !2398
+  tail call void @llvm.dbg.value(metadata !{%struct.rtvec_def* %call}, i64 0, metadata !1252), !dbg !2398
+  tail call void @llvm.dbg.value(metadata !623, i64 0, metadata !1251), !dbg !2399
+  %cmp17 = icmp sgt i32 %n, 0, !dbg !2399
+  br i1 %cmp17, label %for.body, label %return, !dbg !2399
 
 for.body:                                         ; preds = %if.end, %for.body
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.end ]
   %argp.addr.08 = phi %struct.rtx_def** [ %incdec.ptr, %for.body ], [ %argp, %if.end ]
-  %incdec.ptr = getelementptr inbounds %struct.rtx_def** %argp.addr.08, i64 1
-  %0 = load %struct.rtx_def** %argp.addr.08, align 8, !tbaa !4
-  %arrayidx = getelementptr inbounds %struct.rtvec_def* %call, i64 0, i32 1, i64 %indvars.iv
-  store %struct.rtx_def* %0, %struct.rtx_def** %arrayidx, align 8, !tbaa !4
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %n
-  br i1 %exitcond, label %return, label %for.body
+  %incdec.ptr = getelementptr inbounds %struct.rtx_def** %argp.addr.08, i64 1, !dbg !2401
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def** %incdec.ptr}, i64 0, metadata !1250), !dbg !2401
+  %0 = load %struct.rtx_def** %argp.addr.08, align 8, !dbg !2401, !tbaa !2272
+  %arrayidx = getelementptr inbounds %struct.rtvec_def* %call, i64 0, i32 1, i64 %indvars.iv, !dbg !2401
+  store %struct.rtx_def* %0, %struct.rtx_def** %arrayidx, align 8, !dbg !2401, !tbaa !2272
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2399
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !2399
+  %exitcond = icmp eq i32 %lftr.wideiv, %n, !dbg !2399
+  br i1 %exitcond, label %return, label %for.body, !dbg !2399
 
 return:                                           ; preds = %if.end, %for.body, %entry
   %retval.0 = phi %struct.rtvec_def* [ null, %entry ], [ %call, %for.body ], [ %call, %if.end ]
-  ret %struct.rtvec_def* %retval.0
+  ret %struct.rtvec_def* %retval.0, !dbg !2402
 }

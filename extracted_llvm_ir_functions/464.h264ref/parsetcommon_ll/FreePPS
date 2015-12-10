@@ -1,16 +1,25 @@
-define void @FreePPS(%struct.pic_parameter_set_rbsp_t* nocapture %pps) #0 {
+define void @FreePPS(%struct.pic_parameter_set_rbsp_t* %pps) #0 {
 entry:
-  %slice_group_id = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 16
-  %0 = load i8** %slice_group_id, align 8, !tbaa !0
-  %cmp = icmp eq i8* %0, null
-  br i1 %cmp, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{%struct.pic_parameter_set_rbsp_t* %pps}, i64 0, metadata !163), !dbg !579
+  %cmp = icmp eq %struct.pic_parameter_set_rbsp_t* %pps, null, !dbg !580
+  br i1 %cmp, label %cond.false, label %cond.end, !dbg !580
 
-if.then:                                          ; preds = %entry
-  tail call void @free(i8* %0) #3
-  br label %if.end
+cond.false:                                       ; preds = %entry
+  tail call void @__assert_fail(i8* getelementptr inbounds ([18 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([60 x i8]* @.str4, i64 0, i64 0), i32 77, i8* getelementptr inbounds ([41 x i8]* @__PRETTY_FUNCTION__.FreePPS, i64 0, i64 0)) #6, !dbg !580
+  unreachable, !dbg !580
 
-if.end:                                           ; preds = %entry, %if.then
-  %1 = bitcast %struct.pic_parameter_set_rbsp_t* %pps to i8*
-  tail call void @free(i8* %1) #3
-  ret void
+cond.end:                                         ; preds = %entry
+  %slice_group_id = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 16, !dbg !581
+  %0 = load i8** %slice_group_id, align 8, !dbg !581, !tbaa !571
+  %cmp1 = icmp eq i8* %0, null, !dbg !581
+  br i1 %cmp1, label %if.end, label %if.then, !dbg !581
+
+if.then:                                          ; preds = %cond.end
+  tail call void @free(i8* %0) #5, !dbg !581
+  br label %if.end, !dbg !581
+
+if.end:                                           ; preds = %cond.end, %if.then
+  %1 = bitcast %struct.pic_parameter_set_rbsp_t* %pps to i8*, !dbg !582
+  tail call void @free(i8* %1) #5, !dbg !582
+  ret void, !dbg !583
 }

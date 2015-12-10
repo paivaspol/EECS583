@@ -1,22 +1,27 @@
 define internal void @SetOutputFlag(i32 %vindex, i8* %optstring, i8* nocapture %arg) #1 {
-  %1 = tail call fastcc i32 @CheckOutputVar(i32 %vindex) #6
-  %2 = icmp eq i32 %1, 0
-  br i1 %2, label %3, label %6
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %vindex}, i64 0, metadata !219), !dbg !342
+  tail call void @llvm.dbg.value(metadata !{i8* %optstring}, i64 0, metadata !220), !dbg !342
+  tail call void @llvm.dbg.value(metadata !{i8* %arg}, i64 0, metadata !221), !dbg !342
+  tail call void @llvm.dbg.value(metadata !{i8* %arg}, i64 0, metadata !222), !dbg !343
+  %call = tail call fastcc i32 @CheckOutputVar(i32 %vindex) #7, !dbg !344
+  %cmp = icmp eq i32 %call, 0, !dbg !344
+  br i1 %cmp, label %if.then, label %if.end, !dbg !344
 
-; <label>:3                                       ; preds = %0
-  %4 = sext i32 %vindex to i64
-  %5 = getelementptr inbounds i8* %arg, i64 %4
-  store i8 1, i8* %5, align 1, !tbaa !21
-  br label %6
+if.then:                                          ; preds = %entry
+  %idxprom = sext i32 %vindex to i64, !dbg !345
+  %arrayidx = getelementptr inbounds i8* %arg, i64 %idxprom, !dbg !345
+  store i8 1, i8* %arrayidx, align 1, !dbg !345, !tbaa !232
+  br label %if.end, !dbg !347
 
-; <label>:6                                       ; preds = %3, %0
-  %7 = icmp eq i8* %optstring, null
-  br i1 %7, label %10, label %8
+if.end:                                           ; preds = %if.then, %entry
+  %tobool = icmp eq i8* %optstring, null, !dbg !348
+  br i1 %tobool, label %if.end3, label %if.then1, !dbg !348
 
-; <label>:8                                       ; preds = %6
-  %9 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 5, i32 421, i8* getelementptr inbounds ([78 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([46 x i8]* @.str10, i64 0, i64 0), i8* %optstring) #5
-  br label %10
+if.then1:                                         ; preds = %if.end
+  %call2 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 5, i32 421, i8* getelementptr inbounds ([66 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([46 x i8]* @.str11, i64 0, i64 0), i8* %optstring) #6, !dbg !349
+  br label %if.end3, !dbg !351
 
-; <label>:10                                      ; preds = %6, %8
-  ret void
+if.end3:                                          ; preds = %if.end, %if.then1
+  ret void, !dbg !352
 }

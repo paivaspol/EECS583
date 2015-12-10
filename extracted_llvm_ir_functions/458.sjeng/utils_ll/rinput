@@ -1,36 +1,42 @@
 define void @rinput(i8* nocapture %str, i32 %n, %struct._IO_FILE* nocapture %stream) #0 {
 entry:
-  %sub = add nsw i32 %n, -1
-  br label %while.cond.outer
+  tail call void @llvm.dbg.value(metadata !{i8* %str}, i64 0, metadata !280), !dbg !674
+  tail call void @llvm.dbg.value(metadata !{i32 %n}, i64 0, metadata !281), !dbg !674
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %stream}, i64 0, metadata !282), !dbg !674
+  tail call void @llvm.dbg.value(metadata !23, i64 0, metadata !284), !dbg !675
+  %sub = add nsw i32 %n, -1, !dbg !676
+  br label %while.cond.outer, !dbg !678
 
 while.cond.outer:                                 ; preds = %if.then, %entry
   %indvars.iv = phi i64 [ %indvars.iv.next, %if.then ], [ 0, %entry ]
   %i.0.ph = phi i32 [ %inc, %if.then ], [ 0, %entry ]
-  %0 = trunc i64 %indvars.iv to i32
-  %cmp2 = icmp slt i32 %0, %sub
+  %0 = trunc i64 %indvars.iv to i32, !dbg !676
+  %cmp2 = icmp slt i32 %0, %sub, !dbg !676
   br label %while.cond
 
 while.cond:                                       ; preds = %while.cond.outer, %while.body
-  %call = tail call i32 @_IO_getc(%struct._IO_FILE* %stream) #12
+  %call = tail call i32 @_IO_getc(%struct._IO_FILE* %stream) #13, !dbg !678
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !283), !dbg !678
   switch i32 %call, label %while.body [
     i32 -1, label %while.end
     i32 10, label %while.end
   ]
 
 while.body:                                       ; preds = %while.cond
-  br i1 %cmp2, label %if.then, label %while.cond
+  br i1 %cmp2, label %if.then, label %while.cond, !dbg !676
 
 if.then:                                          ; preds = %while.body
-  %conv = trunc i32 %call to i8
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %inc = add nsw i32 %i.0.ph, 1
-  %arrayidx = getelementptr inbounds i8* %str, i64 %indvars.iv
-  store i8 %conv, i8* %arrayidx, align 1, !tbaa !1
-  br label %while.cond.outer
+  %conv = trunc i32 %call to i8, !dbg !679
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !681
+  %inc = add nsw i32 %i.0.ph, 1, !dbg !679
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !284), !dbg !679
+  %arrayidx = getelementptr inbounds i8* %str, i64 %indvars.iv, !dbg !679
+  store i8 %conv, i8* %arrayidx, align 1, !dbg !679, !tbaa !372
+  br label %while.cond.outer, !dbg !681
 
 while.end:                                        ; preds = %while.cond, %while.cond
-  %idxprom3 = sext i32 %i.0.ph to i64
-  %arrayidx4 = getelementptr inbounds i8* %str, i64 %idxprom3
-  store i8 0, i8* %arrayidx4, align 1, !tbaa !1
-  ret void
+  %idxprom3 = sext i32 %i.0.ph to i64, !dbg !682
+  %arrayidx4 = getelementptr inbounds i8* %str, i64 %idxprom3, !dbg !682
+  store i8 0, i8* %arrayidx4, align 1, !dbg !682, !tbaa !372
+  ret void, !dbg !683
 }

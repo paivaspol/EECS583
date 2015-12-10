@@ -1,20 +1,29 @@
 define i32 @BndCopyGI(%struct.cGH* %GH, i32* %stencil, i32 %gi_to, i32 %gi_from) #1 {
-  %1 = tail call i32 @CCTK_FirstVarIndexI(i32 %gi_to) #6
-  %2 = tail call i32 @CCTK_FirstVarIndexI(i32 %gi_from) #6
-  %3 = or i32 %2, %1
-  %4 = icmp sgt i32 %3, -1
-  br i1 %4, label %5, label %8
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.cGH* %GH}, i64 0, metadata !112), !dbg !488
+  tail call void @llvm.dbg.value(metadata !{i32* %stencil}, i64 0, metadata !113), !dbg !489
+  tail call void @llvm.dbg.value(metadata !{i32 %gi_to}, i64 0, metadata !114), !dbg !490
+  tail call void @llvm.dbg.value(metadata !{i32 %gi_from}, i64 0, metadata !115), !dbg !491
+  %call = tail call i32 @CCTK_FirstVarIndexI(i32 %gi_to) #6, !dbg !492
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !116), !dbg !492
+  %call2 = tail call i32 @CCTK_FirstVarIndexI(i32 %gi_from) #6, !dbg !493
+  tail call void @llvm.dbg.value(metadata !{i32 %call2}, i64 0, metadata !117), !dbg !493
+  %0 = or i32 %call2, %call, !dbg !494
+  %1 = icmp sgt i32 %0, -1, !dbg !494
+  br i1 %1, label %if.then, label %if.else, !dbg !494
 
-; <label>:5                                       ; preds = %0
-  %6 = tail call i32 @CCTK_NumVarsInGroupI(i32 %gi_to) #6
-  %7 = tail call fastcc i32 @ApplyBndCopy(%struct.cGH* %GH, i32 -1, i32* %stencil, i32 0, i32 %1, i32 %2, i32 %6) #7
-  br label %10
+if.then:                                          ; preds = %entry
+  %call4 = tail call i32 @CCTK_NumVarsInGroupI(i32 %gi_to) #6, !dbg !495
+  %call5 = tail call fastcc i32 @ApplyBndCopy(%struct.cGH* %GH, i32 -1, i32* %stencil, i32 0, i32 %call, i32 %call2, i32 %call4) #7, !dbg !495
+  tail call void @llvm.dbg.value(metadata !{i32 %call5}, i64 0, metadata !118), !dbg !495
+  br label %if.end, !dbg !497
 
-; <label>:8                                       ; preds = %0
-  %9 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 384, i8* getelementptr inbounds ([83 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([48 x i8]* @.str5, i64 0, i64 0), i32 %gi_to, i32 %gi_from) #6
-  br label %10
+if.else:                                          ; preds = %entry
+  %call6 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 2, i32 384, i8* getelementptr inbounds ([71 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([48 x i8]* @.str5, i64 0, i64 0), i32 %gi_to, i32 %gi_from) #6, !dbg !498
+  tail call void @llvm.dbg.value(metadata !338, i64 0, metadata !118), !dbg !500
+  br label %if.end
 
-; <label>:10                                      ; preds = %8, %5
-  %retval.0 = phi i32 [ %7, %5 ], [ -1, %8 ]
-  ret i32 %retval.0
+if.end:                                           ; preds = %if.else, %if.then
+  %retval1.0 = phi i32 [ %call5, %if.then ], [ -1, %if.else ]
+  ret i32 %retval1.0, !dbg !501
 }

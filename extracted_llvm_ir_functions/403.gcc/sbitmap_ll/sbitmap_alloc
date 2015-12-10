@@ -1,19 +1,24 @@
 define noalias %struct.simple_bitmap_def* @sbitmap_alloc(i32 %n_elms) #0 {
 entry:
-  %sub = add i32 %n_elms, 63
-  %div = lshr i32 %sub, 6
-  %mul = shl nuw nsw i32 %div, 3
-  %sub4 = add i32 %mul, 16
-  %conv6 = zext i32 %sub4 to i64
-  %call = tail call noalias i8* @xmalloc(i64 %conv6) #6
-  %0 = bitcast i8* %call to %struct.simple_bitmap_def*
-  %n_bits = bitcast i8* %call to i32*
-  store i32 %n_elms, i32* %n_bits, align 4, !tbaa !0
-  %size7 = getelementptr inbounds i8* %call, i64 4
-  %1 = bitcast i8* %size7 to i32*
-  store i32 %div, i32* %1, align 4, !tbaa !0
-  %bytes8 = getelementptr inbounds i8* %call, i64 8
-  %2 = bitcast i8* %bytes8 to i32*
-  store i32 %mul, i32* %2, align 4, !tbaa !0
-  ret %struct.simple_bitmap_def* %0
+  tail call void @llvm.dbg.value(metadata !{i32 %n_elms}, i64 0, metadata !87), !dbg !553
+  %sub = add i32 %n_elms, 63, !dbg !554
+  %div = lshr i32 %sub, 6, !dbg !554
+  tail call void @llvm.dbg.value(metadata !{i32 %div}, i64 0, metadata !89), !dbg !554
+  %mul = shl nuw nsw i32 %div, 3, !dbg !555
+  tail call void @llvm.dbg.value(metadata !{i32 %mul}, i64 0, metadata !88), !dbg !555
+  %sub4 = add i32 %mul, 16, !dbg !556
+  tail call void @llvm.dbg.value(metadata !{i32 %sub4}, i64 0, metadata !90), !dbg !556
+  %conv6 = zext i32 %sub4 to i64, !dbg !557
+  %call = tail call noalias i8* @xmalloc(i64 %conv6) #7, !dbg !557
+  %0 = bitcast i8* %call to %struct.simple_bitmap_def*, !dbg !557
+  tail call void @llvm.dbg.value(metadata !{%struct.simple_bitmap_def* %0}, i64 0, metadata !91), !dbg !557
+  %n_bits = bitcast i8* %call to i32*, !dbg !558
+  store i32 %n_elms, i32* %n_bits, align 4, !dbg !558, !tbaa !559
+  %size7 = getelementptr inbounds i8* %call, i64 4, !dbg !562
+  %1 = bitcast i8* %size7 to i32*, !dbg !562
+  store i32 %div, i32* %1, align 4, !dbg !562, !tbaa !559
+  %bytes8 = getelementptr inbounds i8* %call, i64 8, !dbg !563
+  %2 = bitcast i8* %bytes8 to i32*, !dbg !563
+  store i32 %mul, i32* %2, align 4, !dbg !563, !tbaa !559
+  ret %struct.simple_bitmap_def* %0, !dbg !564
 }

@@ -1,31 +1,33 @@
 define i32 @IV_min(%struct._IV* %iv) #0 {
 entry:
   %i = alloca i32, align 4
-  %cmp = icmp eq %struct._IV* %iv, null
-  br i1 %cmp, label %if.then, label %lor.lhs.false
+  call void @llvm.dbg.value(metadata !{%struct._IV* %iv}, i64 0, metadata !30), !dbg !200
+  call void @llvm.dbg.declare(metadata !{i32* %i}, metadata !31), !dbg !201
+  %cmp = icmp eq %struct._IV* %iv, null, !dbg !202
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !202
 
 lor.lhs.false:                                    ; preds = %entry
-  %size = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0
-  %0 = load i32* %size, align 4, !tbaa !3
-  %cmp1 = icmp slt i32 %0, 1
-  br i1 %cmp1, label %if.then, label %lor.lhs.false2
+  %size = getelementptr inbounds %struct._IV* %iv, i64 0, i32 0, !dbg !202
+  %0 = load i32* %size, align 4, !dbg !202, !tbaa !181
+  %cmp1 = icmp slt i32 %0, 1, !dbg !202
+  br i1 %cmp1, label %if.then, label %lor.lhs.false2, !dbg !202
 
 lor.lhs.false2:                                   ; preds = %lor.lhs.false
-  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3
-  %1 = load i32** %vec, align 8, !tbaa !0
-  %cmp3 = icmp eq i32* %1, null
-  br i1 %cmp3, label %if.then, label %if.end
+  %vec = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3, !dbg !202
+  %1 = load i32** %vec, align 8, !dbg !202, !tbaa !175
+  %cmp3 = icmp eq i32* %1, null, !dbg !202
+  br i1 %cmp3, label %if.then, label %if.end, !dbg !202
 
 if.then:                                          ; preds = %lor.lhs.false, %entry, %lor.lhs.false2
   %2 = phi i32 [ %0, %lor.lhs.false2 ], [ 0, %entry ], [ %0, %lor.lhs.false ]
-  %3 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %vec5 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3
-  %4 = load i32** %vec5, align 8, !tbaa !0
-  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([49 x i8]* @.str2, i64 0, i64 0), %struct._IV* %iv, i32 %2, i32* %4) #5
-  call void @exit(i32 -1) #6
-  unreachable
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !203, !tbaa !175
+  %vec5 = getelementptr inbounds %struct._IV* %iv, i64 0, i32 3, !dbg !203
+  %4 = load i32** %vec5, align 8, !dbg !203, !tbaa !175
+  %call = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %3, i8* getelementptr inbounds ([49 x i8]* @.str2, i64 0, i64 0), %struct._IV* %iv, i32 %2, i32* %4) #6, !dbg !203
+  call void @exit(i32 -1) #7, !dbg !205
+  unreachable, !dbg !205
 
 if.end:                                           ; preds = %lor.lhs.false2
-  %call8 = call i32 @IVmin(i32 %0, i32* %1, i32* %i) #5
-  ret i32 %call8
+  %call8 = call i32 @IVmin(i32 %0, i32* %1, i32* %i) #6, !dbg !206
+  ret i32 %call8, !dbg !206
 }

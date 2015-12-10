@@ -1,66 +1,75 @@
 define i32 @duplicate_eh_regions(%struct.function* nocapture %ifun, %struct.inline_remap* %map) #0 {
 entry:
-  %eh = getelementptr inbounds %struct.function* %ifun, i64 0, i32 0
-  %0 = load %struct.eh_status** %eh, align 8, !tbaa !3
-  %last_region_number = getelementptr inbounds %struct.eh_status* %0, i64 0, i32 8
-  %1 = load i32* %last_region_number, align 4, !tbaa !0
-  %cmp = icmp eq i32 %1, 0
-  br i1 %cmp, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.function* %ifun}, i64 0, metadata !1586), !dbg !2815
+  tail call void @llvm.dbg.value(metadata !{%struct.inline_remap* %map}, i64 0, metadata !1587), !dbg !2816
+  %eh = getelementptr inbounds %struct.function* %ifun, i64 0, i32 0, !dbg !2817
+  %0 = load %struct.eh_status** %eh, align 8, !dbg !2817, !tbaa !2232
+  %last_region_number = getelementptr inbounds %struct.eh_status* %0, i64 0, i32 8, !dbg !2817
+  %1 = load i32* %last_region_number, align 4, !dbg !2817, !tbaa !2220
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !1588), !dbg !2817
+  %cmp = icmp eq i32 %1, 0, !dbg !2818
+  br i1 %cmp, label %return, label %if.end, !dbg !2818
 
 if.end:                                           ; preds = %entry
-  %add = add i32 %1, 1
-  %conv = sext i32 %add to i64
-  %call = tail call noalias i8* @xcalloc(i64 %conv, i64 8) #6
-  %2 = bitcast i8* %call to %struct.eh_region**
-  %cmp1150 = icmp slt i32 %1, 1
-  br i1 %cmp1150, label %for.end28, label %for.body.lr.ph
+  %add = add i32 %1, 1, !dbg !2819
+  %conv = sext i32 %add to i64, !dbg !2819
+  %call = tail call noalias i8* @xcalloc(i64 %conv, i64 8) #7, !dbg !2819
+  %2 = bitcast i8* %call to %struct.eh_region**, !dbg !2819
+  tail call void @llvm.dbg.value(metadata !{%struct.eh_region** %2}, i64 0, metadata !1589), !dbg !2819
+  tail call void @llvm.dbg.value(metadata !2467, i64 0, metadata !1592), !dbg !2820
+  %cmp1150 = icmp slt i32 %1, 1, !dbg !2820
+  br i1 %cmp1150, label %for.end28, label %for.body.lr.ph, !dbg !2820
 
 for.body.lr.ph:                                   ; preds = %if.end
-  %insn_map.i = getelementptr inbounds %struct.inline_remap* %map, i64 0, i32 6
-  br label %for.body
+  %insn_map.i = getelementptr inbounds %struct.inline_remap* %map, i64 0, i32 6, !dbg !2822
+  br label %for.body, !dbg !2820
 
 for.cond11.preheader:                             ; preds = %for.inc
-  br i1 %cmp1150, label %for.end28, label %for.body14
+  br i1 %cmp1150, label %for.end28, label %for.body14, !dbg !2826
 
 for.body:                                         ; preds = %for.inc.for.body_crit_edge, %for.body.lr.ph
   %indvars.iv161 = phi i64 [ %indvars.iv.next162, %for.inc.for.body_crit_edge ], [ 1, %for.body.lr.ph ]
-  %3 = load %struct.eh_status** %eh, align 8, !tbaa !3
-  %region_array = getelementptr inbounds %struct.eh_status* %3, i64 0, i32 1
-  %4 = load %struct.eh_region*** %region_array, align 8, !tbaa !3
-  %arrayidx = getelementptr inbounds %struct.eh_region** %4, i64 %indvars.iv161
-  %5 = load %struct.eh_region** %arrayidx, align 8, !tbaa !3
-  %tobool = icmp eq %struct.eh_region* %5, null
-  br i1 %tobool, label %for.body.for.inc_crit_edge, label %lor.lhs.false
+  %3 = load %struct.eh_status** %eh, align 8, !dbg !2828, !tbaa !2232
+  %region_array = getelementptr inbounds %struct.eh_status* %3, i64 0, i32 1, !dbg !2828
+  %4 = load %struct.eh_region*** %region_array, align 8, !dbg !2828, !tbaa !2232
+  %arrayidx = getelementptr inbounds %struct.eh_region** %4, i64 %indvars.iv161, !dbg !2828
+  %5 = load %struct.eh_region** %arrayidx, align 8, !dbg !2828, !tbaa !2232
+  tail call void @llvm.dbg.value(metadata !{%struct.eh_region* %5}, i64 0, metadata !1591), !dbg !2828
+  %tobool = icmp eq %struct.eh_region* %5, null, !dbg !2829
+  br i1 %tobool, label %for.body.for.inc_crit_edge, label %lor.lhs.false, !dbg !2829
 
 for.body.for.inc_crit_edge:                       ; preds = %for.body
-  %.pre = trunc i64 %indvars.iv161 to i32
-  br label %for.inc
+  %.pre = trunc i64 %indvars.iv161 to i32, !dbg !2820
+  br label %for.inc, !dbg !2829
 
 lor.lhs.false:                                    ; preds = %for.body
-  %region_number = getelementptr inbounds %struct.eh_region* %5, i64 0, i32 3
-  %6 = load i32* %region_number, align 4, !tbaa !0
-  %7 = trunc i64 %indvars.iv161 to i32
-  %cmp4 = icmp eq i32 %6, %7
-  br i1 %cmp4, label %if.end7, label %for.inc
+  %region_number = getelementptr inbounds %struct.eh_region* %5, i64 0, i32 3, !dbg !2829
+  %6 = load i32* %region_number, align 4, !dbg !2829, !tbaa !2220
+  %7 = trunc i64 %indvars.iv161 to i32, !dbg !2829
+  %cmp4 = icmp eq i32 %6, %7, !dbg !2829
+  br i1 %cmp4, label %if.end7, label %for.inc, !dbg !2829
 
 if.end7:                                          ; preds = %lor.lhs.false
-  %call.i = tail call noalias i8* @xcalloc(i64 1, i64 112) #6
-  %8 = bitcast i8* %call.i to %struct.eh_region*
-  %9 = load i32* %region_number, align 4, !tbaa !0
-  %10 = load %struct.function** @cfun, align 8, !tbaa !3
-  %eh.i = getelementptr inbounds %struct.function* %10, i64 0, i32 0
-  %11 = load %struct.eh_status** %eh.i, align 8, !tbaa !3
-  %last_region_number.i = getelementptr inbounds %struct.eh_status* %11, i64 0, i32 8
-  %12 = load i32* %last_region_number.i, align 4, !tbaa !0
-  %add.i = add nsw i32 %12, %9
-  %region_number1.i = getelementptr inbounds i8* %call.i, i64 24
-  %13 = bitcast i8* %region_number1.i to i32*
-  store i32 %add.i, i32* %13, align 4, !tbaa !0
-  %type.i = getelementptr inbounds %struct.eh_region* %5, i64 0, i32 5
-  %14 = load i32* %type.i, align 4, !tbaa !5
-  %type2.i = getelementptr inbounds i8* %call.i, i64 40
-  %15 = bitcast i8* %type2.i to i32*
-  store i32 %14, i32* %15, align 4, !tbaa !5
+  tail call void @llvm.dbg.value(metadata !{%struct.eh_region* %5}, i64 0, metadata !2830) #5, !dbg !2831
+  tail call void @llvm.dbg.value(metadata !{%struct.inline_remap* %map}, i64 0, metadata !2832) #5, !dbg !2833
+  %call.i = tail call noalias i8* @xcalloc(i64 1, i64 112) #7, !dbg !2834
+  %8 = bitcast i8* %call.i to %struct.eh_region*, !dbg !2834
+  tail call void @llvm.dbg.value(metadata !{%struct.eh_region* %8}, i64 0, metadata !2835) #5, !dbg !2834
+  %9 = load i32* %region_number, align 4, !dbg !2836, !tbaa !2220
+  %10 = load %struct.function** @cfun, align 8, !dbg !2836, !tbaa !2232
+  %eh.i = getelementptr inbounds %struct.function* %10, i64 0, i32 0, !dbg !2836
+  %11 = load %struct.eh_status** %eh.i, align 8, !dbg !2836, !tbaa !2232
+  %last_region_number.i = getelementptr inbounds %struct.eh_status* %11, i64 0, i32 8, !dbg !2836
+  %12 = load i32* %last_region_number.i, align 4, !dbg !2836, !tbaa !2220
+  %add.i = add nsw i32 %12, %9, !dbg !2836
+  %region_number1.i = getelementptr inbounds i8* %call.i, i64 24, !dbg !2836
+  %13 = bitcast i8* %region_number1.i to i32*, !dbg !2836
+  store i32 %add.i, i32* %13, align 4, !dbg !2836, !tbaa !2220
+  %type.i = getelementptr inbounds %struct.eh_region* %5, i64 0, i32 5, !dbg !2837
+  %14 = load i32* %type.i, align 4, !dbg !2837, !tbaa !2287
+  %type2.i = getelementptr inbounds i8* %call.i, i64 40, !dbg !2837
+  %15 = bitcast i8* %type2.i to i32*, !dbg !2837
+  store i32 %14, i32* %15, align 4, !dbg !2837, !tbaa !2287
   switch i32 %14, label %sw.default.i [
     i32 1, label %sw.epilog.i
     i32 5, label %sw.epilog.i
@@ -68,341 +77,350 @@ if.end7:                                          ; preds = %lor.lhs.false
     i32 3, label %sw.bb12.i
     i32 4, label %sw.bb17.i
     i32 6, label %sw.bb23.i
-  ]
+  ], !dbg !2838
 
 sw.bb4.i:                                         ; preds = %if.end7
-  %continue_label.i = getelementptr inbounds %struct.eh_region* %5, i64 0, i32 6, i32 0, i32 3
-  %16 = load %struct.rtx_def** %continue_label.i, align 8, !tbaa !3
-  %tobool.i = icmp eq %struct.rtx_def* %16, null
-  br i1 %tobool.i, label %sw.epilog.i, label %if.then.i
+  %continue_label.i = getelementptr inbounds %struct.eh_region* %5, i64 0, i32 6, i32 0, i32 3, !dbg !2839
+  %16 = load %struct.rtx_def** %continue_label.i, align 8, !dbg !2839, !tbaa !2232
+  %tobool.i = icmp eq %struct.rtx_def* %16, null, !dbg !2839
+  br i1 %tobool.i, label %sw.epilog.i, label %if.then.i, !dbg !2839
 
 if.then.i:                                        ; preds = %sw.bb4.i
-  %arrayidx.i = getelementptr inbounds %struct.rtx_def* %16, i64 0, i32 1, i64 5
-  %rtint.i = bitcast %union.rtunion_def* %arrayidx.i to i32*
-  %17 = load i32* %rtint.i, align 4, !tbaa !0
-  %call8.i = tail call %struct.rtx_def* @get_label_from_map(%struct.inline_remap* %map, i32 %17) #6
-  %continue_label11.i = getelementptr inbounds i8* %call.i, i64 72
-  %18 = bitcast i8* %continue_label11.i to %struct.rtx_def**
-  store %struct.rtx_def* %call8.i, %struct.rtx_def** %18, align 8, !tbaa !3
-  br label %sw.epilog.i
+  %arrayidx.i = getelementptr inbounds %struct.rtx_def* %16, i64 0, i32 1, i64 5, !dbg !2841
+  %rtint.i = bitcast %union.rtunion_def* %arrayidx.i to i32*, !dbg !2841
+  %17 = load i32* %rtint.i, align 4, !dbg !2841, !tbaa !2220
+  %call8.i = tail call %struct.rtx_def* @get_label_from_map(%struct.inline_remap* %map, i32 %17) #7, !dbg !2841
+  %continue_label11.i = getelementptr inbounds i8* %call.i, i64 72, !dbg !2841
+  %18 = bitcast i8* %continue_label11.i to %struct.rtx_def**, !dbg !2841
+  store %struct.rtx_def* %call8.i, %struct.rtx_def** %18, align 8, !dbg !2841, !tbaa !2232
+  br label %sw.epilog.i, !dbg !2841
 
 sw.bb12.i:                                        ; preds = %if.end7
-  %type_list.i = getelementptr inbounds %struct.eh_region* %5, i64 0, i32 6, i32 0, i32 2
-  %19 = load %struct.eh_region** %type_list.i, align 8
-  %20 = bitcast %struct.eh_region* %19 to %union.tree_node*
-  %type_list16.i = getelementptr inbounds i8* %call.i, i64 64
-  %21 = bitcast i8* %type_list16.i to %union.tree_node**
-  store %union.tree_node* %20, %union.tree_node** %21, align 8, !tbaa !3
-  br label %sw.epilog.i
+  %type_list.i = getelementptr inbounds %struct.eh_region* %5, i64 0, i32 6, i32 0, i32 2, !dbg !2842
+  %19 = load %struct.eh_region** %type_list.i, align 8, !dbg !2842
+  %20 = bitcast %struct.eh_region* %19 to %union.tree_node*, !dbg !2842
+  %type_list16.i = getelementptr inbounds i8* %call.i, i64 64, !dbg !2842
+  %21 = bitcast i8* %type_list16.i to %union.tree_node**, !dbg !2842
+  store %union.tree_node* %20, %union.tree_node** %21, align 8, !dbg !2842, !tbaa !2232
+  br label %sw.epilog.i, !dbg !2843
 
 sw.bb17.i:                                        ; preds = %if.end7
-  %u18.i = getelementptr inbounds %struct.eh_region* %5, i64 0, i32 6
-  %type_list19.i = bitcast %union.anon* %u18.i to %union.tree_node**
-  %22 = load %union.tree_node** %type_list19.i, align 8, !tbaa !3
-  %u20.i = getelementptr inbounds i8* %call.i, i64 48
-  %type_list22.i = bitcast i8* %u20.i to %union.tree_node**
-  store %union.tree_node* %22, %union.tree_node** %type_list22.i, align 8, !tbaa !3
-  br label %sw.epilog.i
+  %u18.i = getelementptr inbounds %struct.eh_region* %5, i64 0, i32 6, !dbg !2844
+  %type_list19.i = bitcast %union.anon* %u18.i to %union.tree_node**, !dbg !2844
+  %22 = load %union.tree_node** %type_list19.i, align 8, !dbg !2844, !tbaa !2232
+  %u20.i = getelementptr inbounds i8* %call.i, i64 48, !dbg !2844
+  %type_list22.i = bitcast i8* %u20.i to %union.tree_node**, !dbg !2844
+  store %union.tree_node* %22, %union.tree_node** %type_list22.i, align 8, !dbg !2844, !tbaa !2232
+  br label %sw.epilog.i, !dbg !2845
 
 sw.bb23.i:                                        ; preds = %if.end7
-  %u24.i = getelementptr inbounds %struct.eh_region* %5, i64 0, i32 6
-  %type25.i = bitcast %union.anon* %u24.i to %union.tree_node**
-  %23 = load %union.tree_node** %type25.i, align 8, !tbaa !3
-  %u26.i = getelementptr inbounds i8* %call.i, i64 48
-  %type28.i = bitcast i8* %u26.i to %union.tree_node**
-  store %union.tree_node* %23, %union.tree_node** %type28.i, align 8, !tbaa !3
-  br label %sw.default.i
+  %u24.i = getelementptr inbounds %struct.eh_region* %5, i64 0, i32 6, !dbg !2846
+  %type25.i = bitcast %union.anon* %u24.i to %union.tree_node**, !dbg !2846
+  %23 = load %union.tree_node** %type25.i, align 8, !dbg !2846, !tbaa !2232
+  %u26.i = getelementptr inbounds i8* %call.i, i64 48, !dbg !2846
+  %type28.i = bitcast i8* %u26.i to %union.tree_node**, !dbg !2846
+  store %union.tree_node* %23, %union.tree_node** %type28.i, align 8, !dbg !2846, !tbaa !2232
+  br label %sw.default.i, !dbg !2846
 
 sw.default.i:                                     ; preds = %if.end7, %sw.bb23.i
-  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str26, i64 0, i64 0), i32 1555, i8* getelementptr inbounds ([22 x i8]* @__FUNCTION__.duplicate_eh_region_1, i64 0, i64 0)) #8
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str26, i64 0, i64 0), i32 1555, i8* getelementptr inbounds ([22 x i8]* @__FUNCTION__.duplicate_eh_region_1, i64 0, i64 0)) #9, !dbg !2847
+  unreachable, !dbg !2847
 
 sw.epilog.i:                                      ; preds = %sw.bb17.i, %sw.bb12.i, %if.then.i, %sw.bb4.i, %if.end7, %if.end7
-  %label.i = getelementptr inbounds %struct.eh_region* %5, i64 0, i32 7
-  %24 = load %struct.rtx_def** %label.i, align 8, !tbaa !3
-  %tobool29.i = icmp eq %struct.rtx_def* %24, null
-  br i1 %tobool29.i, label %if.end37.i, label %if.then30.i
+  %label.i = getelementptr inbounds %struct.eh_region* %5, i64 0, i32 7, !dbg !2848
+  %24 = load %struct.rtx_def** %label.i, align 8, !dbg !2848, !tbaa !2232
+  %tobool29.i = icmp eq %struct.rtx_def* %24, null, !dbg !2848
+  br i1 %tobool29.i, label %if.end37.i, label %if.then30.i, !dbg !2848
 
 if.then30.i:                                      ; preds = %sw.epilog.i
-  %arrayidx33.i = getelementptr inbounds %struct.rtx_def* %24, i64 0, i32 1, i64 5
-  %rtint34.i = bitcast %union.rtunion_def* %arrayidx33.i to i32*
-  %25 = load i32* %rtint34.i, align 4, !tbaa !0
-  %call35.i = tail call %struct.rtx_def* @get_label_from_map(%struct.inline_remap* %map, i32 %25) #6
-  %label36.i = getelementptr inbounds i8* %call.i, i64 80
-  %26 = bitcast i8* %label36.i to %struct.rtx_def**
-  store %struct.rtx_def* %call35.i, %struct.rtx_def** %26, align 8, !tbaa !3
-  br label %if.end37.i
+  %arrayidx33.i = getelementptr inbounds %struct.rtx_def* %24, i64 0, i32 1, i64 5, !dbg !2849
+  %rtint34.i = bitcast %union.rtunion_def* %arrayidx33.i to i32*, !dbg !2849
+  %25 = load i32* %rtint34.i, align 4, !dbg !2849, !tbaa !2220
+  %call35.i = tail call %struct.rtx_def* @get_label_from_map(%struct.inline_remap* %map, i32 %25) #7, !dbg !2849
+  %label36.i = getelementptr inbounds i8* %call.i, i64 80, !dbg !2849
+  %26 = bitcast i8* %label36.i to %struct.rtx_def**, !dbg !2849
+  store %struct.rtx_def* %call35.i, %struct.rtx_def** %26, align 8, !dbg !2849, !tbaa !2232
+  br label %if.end37.i, !dbg !2849
 
 if.end37.i:                                       ; preds = %if.then30.i, %sw.epilog.i
-  %resume.i = getelementptr inbounds %struct.eh_region* %5, i64 0, i32 10
-  %27 = load %struct.rtx_def** %resume.i, align 8, !tbaa !3
-  %tobool38.i = icmp eq %struct.rtx_def* %27, null
-  br i1 %tobool38.i, label %duplicate_eh_region_1.exit, label %if.then39.i
+  %resume.i = getelementptr inbounds %struct.eh_region* %5, i64 0, i32 10, !dbg !2850
+  %27 = load %struct.rtx_def** %resume.i, align 8, !dbg !2850, !tbaa !2232
+  %tobool38.i = icmp eq %struct.rtx_def* %27, null, !dbg !2850
+  br i1 %tobool38.i, label %duplicate_eh_region_1.exit, label %if.then39.i, !dbg !2850
 
 if.then39.i:                                      ; preds = %if.end37.i
-  %arrayidx42.i = getelementptr inbounds %struct.rtx_def* %27, i64 0, i32 1, i64 0
-  %rtint43.i = bitcast %union.rtunion_def* %arrayidx42.i to i32*
-  %28 = load i32* %rtint43.i, align 4, !tbaa !0
-  %idxprom.i = sext i32 %28 to i64
-  %29 = load %struct.rtx_def*** %insn_map.i, align 8, !tbaa !3
-  %arrayidx44.i = getelementptr inbounds %struct.rtx_def** %29, i64 %idxprom.i
-  %30 = load %struct.rtx_def** %arrayidx44.i, align 8, !tbaa !3
-  %resume45.i = getelementptr inbounds i8* %call.i, i64 104
-  %31 = bitcast i8* %resume45.i to %struct.rtx_def**
-  store %struct.rtx_def* %30, %struct.rtx_def** %31, align 8, !tbaa !3
-  %cmp.i = icmp eq %struct.rtx_def* %30, null
-  br i1 %cmp.i, label %if.then47.i, label %duplicate_eh_region_1.exit
+  %arrayidx42.i = getelementptr inbounds %struct.rtx_def* %27, i64 0, i32 1, i64 0, !dbg !2822
+  %rtint43.i = bitcast %union.rtunion_def* %arrayidx42.i to i32*, !dbg !2822
+  %28 = load i32* %rtint43.i, align 4, !dbg !2822, !tbaa !2220
+  %idxprom.i = sext i32 %28 to i64, !dbg !2822
+  %29 = load %struct.rtx_def*** %insn_map.i, align 8, !dbg !2822, !tbaa !2232
+  %arrayidx44.i = getelementptr inbounds %struct.rtx_def** %29, i64 %idxprom.i, !dbg !2822
+  %30 = load %struct.rtx_def** %arrayidx44.i, align 8, !dbg !2822, !tbaa !2232
+  %resume45.i = getelementptr inbounds i8* %call.i, i64 104, !dbg !2822
+  %31 = bitcast i8* %resume45.i to %struct.rtx_def**, !dbg !2822
+  store %struct.rtx_def* %30, %struct.rtx_def** %31, align 8, !dbg !2822, !tbaa !2232
+  %cmp.i = icmp eq %struct.rtx_def* %30, null, !dbg !2851
+  br i1 %cmp.i, label %if.then47.i, label %duplicate_eh_region_1.exit, !dbg !2851
 
 if.then47.i:                                      ; preds = %if.then39.i
-  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str26, i64 0, i64 0), i32 1564, i8* getelementptr inbounds ([22 x i8]* @__FUNCTION__.duplicate_eh_region_1, i64 0, i64 0)) #8
-  unreachable
+  tail call void @fancy_abort(i8* getelementptr inbounds ([50 x i8]* @.str26, i64 0, i64 0), i32 1564, i8* getelementptr inbounds ([22 x i8]* @__FUNCTION__.duplicate_eh_region_1, i64 0, i64 0)) #9, !dbg !2852
+  unreachable, !dbg !2852
 
 duplicate_eh_region_1.exit:                       ; preds = %if.end37.i, %if.then39.i
-  %arrayidx10 = getelementptr inbounds %struct.eh_region** %2, i64 %indvars.iv161
-  store %struct.eh_region* %8, %struct.eh_region** %arrayidx10, align 8, !tbaa !3
-  br label %for.inc
+  %arrayidx10 = getelementptr inbounds %struct.eh_region** %2, i64 %indvars.iv161, !dbg !2824
+  store %struct.eh_region* %8, %struct.eh_region** %arrayidx10, align 8, !dbg !2824, !tbaa !2232
+  br label %for.inc, !dbg !2853
 
 for.inc:                                          ; preds = %for.body.for.inc_crit_edge, %lor.lhs.false, %duplicate_eh_region_1.exit
-  %.pre-phi = phi i32 [ %.pre, %for.body.for.inc_crit_edge ], [ %7, %lor.lhs.false ], [ %7, %duplicate_eh_region_1.exit ]
-  %cmp1 = icmp slt i32 %.pre-phi, %1
-  br i1 %cmp1, label %for.inc.for.body_crit_edge, label %for.cond11.preheader
+  %.pre-phi = phi i32 [ %.pre, %for.body.for.inc_crit_edge ], [ %7, %lor.lhs.false ], [ %7, %duplicate_eh_region_1.exit ], !dbg !2820
+  %cmp1 = icmp slt i32 %.pre-phi, %1, !dbg !2820
+  br i1 %cmp1, label %for.inc.for.body_crit_edge, label %for.cond11.preheader, !dbg !2820
 
 for.inc.for.body_crit_edge:                       ; preds = %for.inc
-  %indvars.iv.next162 = add i64 %indvars.iv161, 1
-  br label %for.body
+  %indvars.iv.next162 = add i64 %indvars.iv161, 1, !dbg !2820
+  br label %for.body, !dbg !2820
 
 for.body14:                                       ; preds = %for.inc26, %for.cond11.preheader
   %indvars.iv152 = phi i64 [ 1, %for.cond11.preheader ], [ %indvars.iv.next153, %for.inc26 ]
-  %32 = load %struct.eh_status** %eh, align 8, !tbaa !3
-  %region_array17 = getelementptr inbounds %struct.eh_status* %32, i64 0, i32 1
-  %33 = load %struct.eh_region*** %region_array17, align 8, !tbaa !3
-  %arrayidx18 = getelementptr inbounds %struct.eh_region** %33, i64 %indvars.iv152
-  %34 = load %struct.eh_region** %arrayidx18, align 8, !tbaa !3
-  %tobool19 = icmp eq %struct.eh_region* %34, null
-  br i1 %tobool19, label %for.inc26, label %lor.lhs.false20
+  %32 = load %struct.eh_status** %eh, align 8, !dbg !2854, !tbaa !2232
+  %region_array17 = getelementptr inbounds %struct.eh_status* %32, i64 0, i32 1, !dbg !2854
+  %33 = load %struct.eh_region*** %region_array17, align 8, !dbg !2854, !tbaa !2232
+  %arrayidx18 = getelementptr inbounds %struct.eh_region** %33, i64 %indvars.iv152, !dbg !2854
+  %34 = load %struct.eh_region** %arrayidx18, align 8, !dbg !2854, !tbaa !2232
+  tail call void @llvm.dbg.value(metadata !{%struct.eh_region* %34}, i64 0, metadata !1591), !dbg !2854
+  %tobool19 = icmp eq %struct.eh_region* %34, null, !dbg !2856
+  br i1 %tobool19, label %for.inc26, label %lor.lhs.false20, !dbg !2856
 
 lor.lhs.false20:                                  ; preds = %for.body14
-  %region_number21 = getelementptr inbounds %struct.eh_region* %34, i64 0, i32 3
-  %35 = load i32* %region_number21, align 4, !tbaa !0
-  %36 = trunc i64 %indvars.iv152 to i32
-  %cmp22 = icmp eq i32 %35, %36
-  br i1 %cmp22, label %if.end25, label %for.inc26
+  %region_number21 = getelementptr inbounds %struct.eh_region* %34, i64 0, i32 3, !dbg !2856
+  %35 = load i32* %region_number21, align 4, !dbg !2856, !tbaa !2220
+  %36 = trunc i64 %indvars.iv152 to i32, !dbg !2856
+  %cmp22 = icmp eq i32 %35, %36, !dbg !2856
+  br i1 %cmp22, label %if.end25, label %for.inc26, !dbg !2856
 
 if.end25:                                         ; preds = %lor.lhs.false20
-  %idxprom.i133 = sext i32 %35 to i64
-  %arrayidx.i134 = getelementptr inbounds %struct.eh_region** %2, i64 %idxprom.i133
-  %37 = load %struct.eh_region** %arrayidx.i134, align 8, !tbaa !3
-  %type.i135 = getelementptr inbounds %struct.eh_region* %37, i64 0, i32 5
-  %38 = load i32* %type.i135, align 4, !tbaa !5
+  tail call void @llvm.dbg.value(metadata !{%struct.eh_region* %34}, i64 0, metadata !2857), !dbg !2859
+  tail call void @llvm.dbg.value(metadata !{%struct.eh_region** %2}, i64 0, metadata !2860), !dbg !2861
+  %idxprom.i133 = sext i32 %35 to i64, !dbg !2862
+  %arrayidx.i134 = getelementptr inbounds %struct.eh_region** %2, i64 %idxprom.i133, !dbg !2862
+  %37 = load %struct.eh_region** %arrayidx.i134, align 8, !dbg !2862, !tbaa !2232
+  tail call void @llvm.dbg.value(metadata !{%struct.eh_region* %37}, i64 0, metadata !2863), !dbg !2862
+  %type.i135 = getelementptr inbounds %struct.eh_region* %37, i64 0, i32 5, !dbg !2864
+  %38 = load i32* %type.i135, align 4, !dbg !2864, !tbaa !2287
   switch i32 %38, label %sw.epilog.i141 [
     i32 2, label %sw.bb.i
     i32 3, label %sw.bb15.i
-  ]
+  ], !dbg !2864
 
 sw.bb.i:                                          ; preds = %if.end25
-  %catch.i = getelementptr inbounds %struct.eh_region* %34, i64 0, i32 6, i32 0, i32 0
-  %39 = load %struct.eh_region** %catch.i, align 8, !tbaa !3
-  %region_number1.i136 = getelementptr inbounds %struct.eh_region* %39, i64 0, i32 3
-  %40 = load i32* %region_number1.i136, align 4, !tbaa !0
-  %idxprom2.i = sext i32 %40 to i64
-  %arrayidx3.i = getelementptr inbounds %struct.eh_region** %2, i64 %idxprom2.i
-  %41 = load %struct.eh_region** %arrayidx3.i, align 8, !tbaa !3
-  %catch6.i = getelementptr inbounds %struct.eh_region* %37, i64 0, i32 6, i32 0, i32 0
-  store %struct.eh_region* %41, %struct.eh_region** %catch6.i, align 8, !tbaa !3
-  %last_catch.i = getelementptr inbounds %struct.eh_region* %34, i64 0, i32 6, i32 0, i32 1
-  %42 = load %struct.eh_region** %last_catch.i, align 8, !tbaa !3
-  %region_number9.i = getelementptr inbounds %struct.eh_region* %42, i64 0, i32 3
-  %43 = load i32* %region_number9.i, align 4, !tbaa !0
-  %idxprom10.i = sext i32 %43 to i64
-  %arrayidx11.i = getelementptr inbounds %struct.eh_region** %2, i64 %idxprom10.i
-  %44 = load %struct.eh_region** %arrayidx11.i, align 8, !tbaa !3
-  %last_catch14.i = getelementptr inbounds %struct.eh_region* %37, i64 0, i32 6, i32 0, i32 1
-  store %struct.eh_region* %44, %struct.eh_region** %last_catch14.i, align 8, !tbaa !3
-  br label %sw.epilog.i141
+  %catch.i = getelementptr inbounds %struct.eh_region* %34, i64 0, i32 6, i32 0, i32 0, !dbg !2865
+  %39 = load %struct.eh_region** %catch.i, align 8, !dbg !2865, !tbaa !2232
+  %region_number1.i136 = getelementptr inbounds %struct.eh_region* %39, i64 0, i32 3, !dbg !2865
+  %40 = load i32* %region_number1.i136, align 4, !dbg !2865, !tbaa !2220
+  %idxprom2.i = sext i32 %40 to i64, !dbg !2865
+  %arrayidx3.i = getelementptr inbounds %struct.eh_region** %2, i64 %idxprom2.i, !dbg !2865
+  %41 = load %struct.eh_region** %arrayidx3.i, align 8, !dbg !2865, !tbaa !2232
+  %catch6.i = getelementptr inbounds %struct.eh_region* %37, i64 0, i32 6, i32 0, i32 0, !dbg !2865
+  store %struct.eh_region* %41, %struct.eh_region** %catch6.i, align 8, !dbg !2865, !tbaa !2232
+  %last_catch.i = getelementptr inbounds %struct.eh_region* %34, i64 0, i32 6, i32 0, i32 1, !dbg !2867
+  %42 = load %struct.eh_region** %last_catch.i, align 8, !dbg !2867, !tbaa !2232
+  %region_number9.i = getelementptr inbounds %struct.eh_region* %42, i64 0, i32 3, !dbg !2867
+  %43 = load i32* %region_number9.i, align 4, !dbg !2867, !tbaa !2220
+  %idxprom10.i = sext i32 %43 to i64, !dbg !2867
+  %arrayidx11.i = getelementptr inbounds %struct.eh_region** %2, i64 %idxprom10.i, !dbg !2867
+  %44 = load %struct.eh_region** %arrayidx11.i, align 8, !dbg !2867, !tbaa !2232
+  %last_catch14.i = getelementptr inbounds %struct.eh_region* %37, i64 0, i32 6, i32 0, i32 1, !dbg !2867
+  store %struct.eh_region* %44, %struct.eh_region** %last_catch14.i, align 8, !dbg !2867, !tbaa !2232
+  br label %sw.epilog.i141, !dbg !2868
 
 sw.bb15.i:                                        ; preds = %if.end25
-  %next_catch.i = getelementptr inbounds %struct.eh_region* %34, i64 0, i32 6, i32 0, i32 0
-  %45 = load %struct.eh_region** %next_catch.i, align 8, !tbaa !3
-  %tobool.i137 = icmp eq %struct.eh_region* %45, null
-  br i1 %tobool.i137, label %if.end.i, label %if.then.i138
+  %next_catch.i = getelementptr inbounds %struct.eh_region* %34, i64 0, i32 6, i32 0, i32 0, !dbg !2869
+  %45 = load %struct.eh_region** %next_catch.i, align 8, !dbg !2869, !tbaa !2232
+  %tobool.i137 = icmp eq %struct.eh_region* %45, null, !dbg !2869
+  br i1 %tobool.i137, label %if.end.i, label %if.then.i138, !dbg !2869
 
 if.then.i138:                                     ; preds = %sw.bb15.i
-  %region_number21.i = getelementptr inbounds %struct.eh_region* %45, i64 0, i32 3
-  %46 = load i32* %region_number21.i, align 4, !tbaa !0
-  %idxprom22.i = sext i32 %46 to i64
-  %arrayidx23.i = getelementptr inbounds %struct.eh_region** %2, i64 %idxprom22.i
-  %47 = load %struct.eh_region** %arrayidx23.i, align 8, !tbaa !3
-  %next_catch26.i = getelementptr inbounds %struct.eh_region* %37, i64 0, i32 6, i32 0, i32 0
-  store %struct.eh_region* %47, %struct.eh_region** %next_catch26.i, align 8, !tbaa !3
-  br label %if.end.i
+  %region_number21.i = getelementptr inbounds %struct.eh_region* %45, i64 0, i32 3, !dbg !2870
+  %46 = load i32* %region_number21.i, align 4, !dbg !2870, !tbaa !2220
+  %idxprom22.i = sext i32 %46 to i64, !dbg !2870
+  %arrayidx23.i = getelementptr inbounds %struct.eh_region** %2, i64 %idxprom22.i, !dbg !2870
+  %47 = load %struct.eh_region** %arrayidx23.i, align 8, !dbg !2870, !tbaa !2232
+  %next_catch26.i = getelementptr inbounds %struct.eh_region* %37, i64 0, i32 6, i32 0, i32 0, !dbg !2870
+  store %struct.eh_region* %47, %struct.eh_region** %next_catch26.i, align 8, !dbg !2870, !tbaa !2232
+  br label %if.end.i, !dbg !2870
 
 if.end.i:                                         ; preds = %if.then.i138, %sw.bb15.i
-  %48 = getelementptr inbounds %struct.eh_region* %34, i64 0, i32 6, i32 0, i32 1
-  %49 = load %struct.eh_region** %48, align 8, !tbaa !3
-  %tobool29.i139 = icmp eq %struct.eh_region* %49, null
-  br i1 %tobool29.i139, label %sw.epilog.i141, label %if.then30.i140
+  %48 = getelementptr inbounds %struct.eh_region* %34, i64 0, i32 6, i32 0, i32 1, !dbg !2871
+  %49 = load %struct.eh_region** %48, align 8, !dbg !2871, !tbaa !2232
+  %tobool29.i139 = icmp eq %struct.eh_region* %49, null, !dbg !2871
+  br i1 %tobool29.i139, label %sw.epilog.i141, label %if.then30.i140, !dbg !2871
 
 if.then30.i140:                                   ; preds = %if.end.i
-  %region_number34.i = getelementptr inbounds %struct.eh_region* %49, i64 0, i32 3
-  %50 = load i32* %region_number34.i, align 4, !tbaa !0
-  %idxprom35.i = sext i32 %50 to i64
-  %arrayidx36.i = getelementptr inbounds %struct.eh_region** %2, i64 %idxprom35.i
-  %51 = load %struct.eh_region** %arrayidx36.i, align 8, !tbaa !3
-  %52 = getelementptr inbounds %struct.eh_region* %37, i64 0, i32 6, i32 0, i32 1
-  store %struct.eh_region* %51, %struct.eh_region** %52, align 8, !tbaa !3
-  br label %sw.epilog.i141
+  %region_number34.i = getelementptr inbounds %struct.eh_region* %49, i64 0, i32 3, !dbg !2872
+  %50 = load i32* %region_number34.i, align 4, !dbg !2872, !tbaa !2220
+  %idxprom35.i = sext i32 %50 to i64, !dbg !2872
+  %arrayidx36.i = getelementptr inbounds %struct.eh_region** %2, i64 %idxprom35.i, !dbg !2872
+  %51 = load %struct.eh_region** %arrayidx36.i, align 8, !dbg !2872, !tbaa !2232
+  %52 = getelementptr inbounds %struct.eh_region* %37, i64 0, i32 6, i32 0, i32 1, !dbg !2872
+  store %struct.eh_region* %51, %struct.eh_region** %52, align 8, !dbg !2872, !tbaa !2232
+  br label %sw.epilog.i141, !dbg !2872
 
 sw.epilog.i141:                                   ; preds = %if.then30.i140, %if.end.i, %sw.bb.i, %if.end25
-  %outer.i = getelementptr inbounds %struct.eh_region* %34, i64 0, i32 0
-  %53 = load %struct.eh_region** %outer.i, align 8, !tbaa !3
-  %tobool41.i = icmp eq %struct.eh_region* %53, null
-  br i1 %tobool41.i, label %if.end48.i, label %if.then42.i
+  %outer.i = getelementptr inbounds %struct.eh_region* %34, i64 0, i32 0, !dbg !2873
+  %53 = load %struct.eh_region** %outer.i, align 8, !dbg !2873, !tbaa !2232
+  %tobool41.i = icmp eq %struct.eh_region* %53, null, !dbg !2873
+  br i1 %tobool41.i, label %if.end48.i, label %if.then42.i, !dbg !2873
 
 if.then42.i:                                      ; preds = %sw.epilog.i141
-  %region_number44.i = getelementptr inbounds %struct.eh_region* %53, i64 0, i32 3
-  %54 = load i32* %region_number44.i, align 4, !tbaa !0
-  %idxprom45.i = sext i32 %54 to i64
-  %arrayidx46.i = getelementptr inbounds %struct.eh_region** %2, i64 %idxprom45.i
-  %55 = load %struct.eh_region** %arrayidx46.i, align 8, !tbaa !3
-  %outer47.i = getelementptr inbounds %struct.eh_region* %37, i64 0, i32 0
-  store %struct.eh_region* %55, %struct.eh_region** %outer47.i, align 8, !tbaa !3
-  br label %if.end48.i
+  %region_number44.i = getelementptr inbounds %struct.eh_region* %53, i64 0, i32 3, !dbg !2874
+  %54 = load i32* %region_number44.i, align 4, !dbg !2874, !tbaa !2220
+  %idxprom45.i = sext i32 %54 to i64, !dbg !2874
+  %arrayidx46.i = getelementptr inbounds %struct.eh_region** %2, i64 %idxprom45.i, !dbg !2874
+  %55 = load %struct.eh_region** %arrayidx46.i, align 8, !dbg !2874, !tbaa !2232
+  %outer47.i = getelementptr inbounds %struct.eh_region* %37, i64 0, i32 0, !dbg !2874
+  store %struct.eh_region* %55, %struct.eh_region** %outer47.i, align 8, !dbg !2874, !tbaa !2232
+  br label %if.end48.i, !dbg !2874
 
 if.end48.i:                                       ; preds = %if.then42.i, %sw.epilog.i141
-  %inner.i = getelementptr inbounds %struct.eh_region* %34, i64 0, i32 1
-  %56 = load %struct.eh_region** %inner.i, align 8, !tbaa !3
-  %tobool49.i = icmp eq %struct.eh_region* %56, null
-  br i1 %tobool49.i, label %if.end56.i, label %if.then50.i
+  %inner.i = getelementptr inbounds %struct.eh_region* %34, i64 0, i32 1, !dbg !2875
+  %56 = load %struct.eh_region** %inner.i, align 8, !dbg !2875, !tbaa !2232
+  %tobool49.i = icmp eq %struct.eh_region* %56, null, !dbg !2875
+  br i1 %tobool49.i, label %if.end56.i, label %if.then50.i, !dbg !2875
 
 if.then50.i:                                      ; preds = %if.end48.i
-  %region_number52.i = getelementptr inbounds %struct.eh_region* %56, i64 0, i32 3
-  %57 = load i32* %region_number52.i, align 4, !tbaa !0
-  %idxprom53.i = sext i32 %57 to i64
-  %arrayidx54.i = getelementptr inbounds %struct.eh_region** %2, i64 %idxprom53.i
-  %58 = load %struct.eh_region** %arrayidx54.i, align 8, !tbaa !3
-  %inner55.i = getelementptr inbounds %struct.eh_region* %37, i64 0, i32 1
-  store %struct.eh_region* %58, %struct.eh_region** %inner55.i, align 8, !tbaa !3
-  br label %if.end56.i
+  %region_number52.i = getelementptr inbounds %struct.eh_region* %56, i64 0, i32 3, !dbg !2876
+  %57 = load i32* %region_number52.i, align 4, !dbg !2876, !tbaa !2220
+  %idxprom53.i = sext i32 %57 to i64, !dbg !2876
+  %arrayidx54.i = getelementptr inbounds %struct.eh_region** %2, i64 %idxprom53.i, !dbg !2876
+  %58 = load %struct.eh_region** %arrayidx54.i, align 8, !dbg !2876, !tbaa !2232
+  %inner55.i = getelementptr inbounds %struct.eh_region* %37, i64 0, i32 1, !dbg !2876
+  store %struct.eh_region* %58, %struct.eh_region** %inner55.i, align 8, !dbg !2876, !tbaa !2232
+  br label %if.end56.i, !dbg !2876
 
 if.end56.i:                                       ; preds = %if.then50.i, %if.end48.i
-  %next_peer.i = getelementptr inbounds %struct.eh_region* %34, i64 0, i32 2
-  %59 = load %struct.eh_region** %next_peer.i, align 8, !tbaa !3
-  %tobool57.i = icmp eq %struct.eh_region* %59, null
-  br i1 %tobool57.i, label %for.inc26, label %if.then58.i
+  %next_peer.i = getelementptr inbounds %struct.eh_region* %34, i64 0, i32 2, !dbg !2877
+  %59 = load %struct.eh_region** %next_peer.i, align 8, !dbg !2877, !tbaa !2232
+  %tobool57.i = icmp eq %struct.eh_region* %59, null, !dbg !2877
+  br i1 %tobool57.i, label %for.inc26, label %if.then58.i, !dbg !2877
 
 if.then58.i:                                      ; preds = %if.end56.i
-  %region_number60.i = getelementptr inbounds %struct.eh_region* %59, i64 0, i32 3
-  %60 = load i32* %region_number60.i, align 4, !tbaa !0
-  %idxprom61.i = sext i32 %60 to i64
-  %arrayidx62.i = getelementptr inbounds %struct.eh_region** %2, i64 %idxprom61.i
-  %61 = load %struct.eh_region** %arrayidx62.i, align 8, !tbaa !3
-  %next_peer63.i = getelementptr inbounds %struct.eh_region* %37, i64 0, i32 2
-  store %struct.eh_region* %61, %struct.eh_region** %next_peer63.i, align 8, !tbaa !3
-  br label %for.inc26
+  %region_number60.i = getelementptr inbounds %struct.eh_region* %59, i64 0, i32 3, !dbg !2878
+  %60 = load i32* %region_number60.i, align 4, !dbg !2878, !tbaa !2220
+  %idxprom61.i = sext i32 %60 to i64, !dbg !2878
+  %arrayidx62.i = getelementptr inbounds %struct.eh_region** %2, i64 %idxprom61.i, !dbg !2878
+  %61 = load %struct.eh_region** %arrayidx62.i, align 8, !dbg !2878, !tbaa !2232
+  %next_peer63.i = getelementptr inbounds %struct.eh_region* %37, i64 0, i32 2, !dbg !2878
+  store %struct.eh_region* %61, %struct.eh_region** %next_peer63.i, align 8, !dbg !2878, !tbaa !2232
+  br label %for.inc26, !dbg !2878
 
 for.inc26:                                        ; preds = %if.then58.i, %if.end56.i, %lor.lhs.false20, %for.body14
-  %indvars.iv.next153 = add i64 %indvars.iv152, 1
-  %lftr.wideiv154 = trunc i64 %indvars.iv.next153 to i32
-  %exitcond155 = icmp eq i32 %lftr.wideiv154, %add
-  br i1 %exitcond155, label %for.end28, label %for.body14
+  %indvars.iv.next153 = add i64 %indvars.iv152, 1, !dbg !2826
+  %lftr.wideiv154 = trunc i64 %indvars.iv.next153 to i32, !dbg !2826
+  %exitcond155 = icmp eq i32 %lftr.wideiv154, %add, !dbg !2826
+  br i1 %exitcond155, label %for.end28, label %for.body14, !dbg !2826
 
 for.end28:                                        ; preds = %if.end, %for.inc26, %for.cond11.preheader
-  %62 = load %struct.eh_status** %eh, align 8, !tbaa !3
-  %region_tree = getelementptr inbounds %struct.eh_status* %62, i64 0, i32 0
-  %63 = load %struct.eh_region** %region_tree, align 8, !tbaa !3
-  %region_number30 = getelementptr inbounds %struct.eh_region* %63, i64 0, i32 3
-  %64 = load i32* %region_number30, align 4, !tbaa !0
-  %idxprom31 = sext i32 %64 to i64
-  %arrayidx32 = getelementptr inbounds %struct.eh_region** %2, i64 %idxprom31
-  %65 = load %struct.eh_region** %arrayidx32, align 8, !tbaa !3
-  %66 = load %struct.function** @cfun, align 8, !tbaa !3
-  %eh33 = getelementptr inbounds %struct.function* %66, i64 0, i32 0
-  %67 = load %struct.eh_status** %eh33, align 8, !tbaa !3
-  %cur_region = getelementptr inbounds %struct.eh_status* %67, i64 0, i32 2
-  %68 = load %struct.eh_region** %cur_region, align 8, !tbaa !3
-  %tobool34 = icmp eq %struct.eh_region* %68, null
-  br i1 %tobool34, label %if.else62, label %if.then35
+  %62 = load %struct.eh_status** %eh, align 8, !dbg !2879, !tbaa !2232
+  %region_tree = getelementptr inbounds %struct.eh_status* %62, i64 0, i32 0, !dbg !2879
+  %63 = load %struct.eh_region** %region_tree, align 8, !dbg !2879, !tbaa !2232
+  %region_number30 = getelementptr inbounds %struct.eh_region* %63, i64 0, i32 3, !dbg !2879
+  %64 = load i32* %region_number30, align 4, !dbg !2879, !tbaa !2220
+  %idxprom31 = sext i32 %64 to i64, !dbg !2879
+  %arrayidx32 = getelementptr inbounds %struct.eh_region** %2, i64 %idxprom31, !dbg !2879
+  %65 = load %struct.eh_region** %arrayidx32, align 8, !dbg !2879, !tbaa !2232
+  tail call void @llvm.dbg.value(metadata !{%struct.eh_region* %65}, i64 0, metadata !1590), !dbg !2879
+  %66 = load %struct.function** @cfun, align 8, !dbg !2880, !tbaa !2232
+  %eh33 = getelementptr inbounds %struct.function* %66, i64 0, i32 0, !dbg !2880
+  %67 = load %struct.eh_status** %eh33, align 8, !dbg !2880, !tbaa !2232
+  %cur_region = getelementptr inbounds %struct.eh_status* %67, i64 0, i32 2, !dbg !2880
+  %68 = load %struct.eh_region** %cur_region, align 8, !dbg !2880, !tbaa !2232
+  tail call void @llvm.dbg.value(metadata !{%struct.eh_region* %68}, i64 0, metadata !1591), !dbg !2880
+  %tobool34 = icmp eq %struct.eh_region* %68, null, !dbg !2881
+  br i1 %tobool34, label %if.else62, label %if.then35, !dbg !2881
 
 if.then35:                                        ; preds = %for.end28
-  %inner = getelementptr inbounds %struct.eh_region* %68, i64 0, i32 1
-  %69 = load %struct.eh_region** %inner, align 8, !tbaa !3
-  %tobool36 = icmp eq %struct.eh_region* %69, null
-  br i1 %tobool36, label %if.else, label %while.cond
+  %inner = getelementptr inbounds %struct.eh_region* %68, i64 0, i32 1, !dbg !2882
+  %69 = load %struct.eh_region** %inner, align 8, !dbg !2882, !tbaa !2232
+  tail call void @llvm.dbg.value(metadata !{%struct.eh_region* %69}, i64 0, metadata !1593), !dbg !2882
+  %tobool36 = icmp eq %struct.eh_region* %69, null, !dbg !2883
+  br i1 %tobool36, label %if.else, label %while.cond, !dbg !2883
 
 while.cond:                                       ; preds = %if.then35, %while.cond
   %p.0 = phi %struct.eh_region* [ %70, %while.cond ], [ %69, %if.then35 ]
-  %next_peer = getelementptr inbounds %struct.eh_region* %p.0, i64 0, i32 2
-  %70 = load %struct.eh_region** %next_peer, align 8, !tbaa !3
-  %tobool38 = icmp eq %struct.eh_region* %70, null
-  br i1 %tobool38, label %while.end, label %while.cond
+  %next_peer = getelementptr inbounds %struct.eh_region* %p.0, i64 0, i32 2, !dbg !2884
+  %70 = load %struct.eh_region** %next_peer, align 8, !dbg !2884, !tbaa !2232
+  %tobool38 = icmp eq %struct.eh_region* %70, null, !dbg !2884
+  br i1 %tobool38, label %while.end, label %while.cond, !dbg !2884
 
 while.end:                                        ; preds = %while.cond
-  store %struct.eh_region* %65, %struct.eh_region** %next_peer, align 8, !tbaa !3
-  br label %for.cond43.preheader
+  store %struct.eh_region* %65, %struct.eh_region** %next_peer, align 8, !dbg !2886, !tbaa !2232
+  br label %for.cond43.preheader, !dbg !2887
 
 if.else:                                          ; preds = %if.then35
-  store %struct.eh_region* %65, %struct.eh_region** %inner, align 8, !tbaa !3
+  store %struct.eh_region* %65, %struct.eh_region** %inner, align 8, !dbg !2888, !tbaa !2232
   br label %for.cond43.preheader
 
 for.cond43.preheader:                             ; preds = %if.else, %while.end
-  br i1 %cmp1150, label %if.end79, label %for.body46
+  br i1 %cmp1150, label %if.end79, label %for.body46, !dbg !2889
 
 for.body46:                                       ; preds = %for.cond43.preheader, %for.inc59
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc59 ], [ 1, %for.cond43.preheader ]
-  %arrayidx48 = getelementptr inbounds %struct.eh_region** %2, i64 %indvars.iv
-  %71 = load %struct.eh_region** %arrayidx48, align 8, !tbaa !3
-  %tobool49 = icmp eq %struct.eh_region* %71, null
-  br i1 %tobool49, label %for.inc59, label %land.lhs.true
+  %arrayidx48 = getelementptr inbounds %struct.eh_region** %2, i64 %indvars.iv, !dbg !2891
+  %71 = load %struct.eh_region** %arrayidx48, align 8, !dbg !2891, !tbaa !2232
+  %tobool49 = icmp eq %struct.eh_region* %71, null, !dbg !2891
+  br i1 %tobool49, label %for.inc59, label %land.lhs.true, !dbg !2891
 
 land.lhs.true:                                    ; preds = %for.body46
-  %outer = getelementptr inbounds %struct.eh_region* %71, i64 0, i32 0
-  %72 = load %struct.eh_region** %outer, align 8, !tbaa !3
-  %cmp52 = icmp eq %struct.eh_region* %72, null
-  br i1 %cmp52, label %if.then54, label %for.inc59
+  %outer = getelementptr inbounds %struct.eh_region* %71, i64 0, i32 0, !dbg !2891
+  %72 = load %struct.eh_region** %outer, align 8, !dbg !2891, !tbaa !2232
+  %cmp52 = icmp eq %struct.eh_region* %72, null, !dbg !2891
+  br i1 %cmp52, label %if.then54, label %for.inc59, !dbg !2891
 
 if.then54:                                        ; preds = %land.lhs.true
-  store %struct.eh_region* %68, %struct.eh_region** %outer, align 8, !tbaa !3
-  br label %for.inc59
+  store %struct.eh_region* %68, %struct.eh_region** %outer, align 8, !dbg !2892, !tbaa !2232
+  br label %for.inc59, !dbg !2892
 
 for.inc59:                                        ; preds = %for.body46, %land.lhs.true, %if.then54
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %add
-  br i1 %exitcond, label %if.end79, label %for.body46
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2889
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !2889
+  %exitcond = icmp eq i32 %lftr.wideiv, %add, !dbg !2889
+  br i1 %exitcond, label %if.end79, label %for.body46, !dbg !2889
 
 if.else62:                                        ; preds = %for.end28
-  %region_tree65 = getelementptr inbounds %struct.eh_status* %67, i64 0, i32 0
-  %73 = load %struct.eh_region** %region_tree65, align 8, !tbaa !3
-  %tobool66 = icmp eq %struct.eh_region* %73, null
-  br i1 %tobool66, label %if.else75, label %while.cond68
+  %region_tree65 = getelementptr inbounds %struct.eh_status* %67, i64 0, i32 0, !dbg !2893
+  %73 = load %struct.eh_region** %region_tree65, align 8, !dbg !2893, !tbaa !2232
+  tail call void @llvm.dbg.value(metadata !{%struct.eh_region* %73}, i64 0, metadata !1595), !dbg !2893
+  %tobool66 = icmp eq %struct.eh_region* %73, null, !dbg !2894
+  br i1 %tobool66, label %if.else75, label %while.cond68, !dbg !2894
 
 while.cond68:                                     ; preds = %if.else62, %while.cond68
   %p63.0 = phi %struct.eh_region* [ %74, %while.cond68 ], [ %73, %if.else62 ]
-  %next_peer69 = getelementptr inbounds %struct.eh_region* %p63.0, i64 0, i32 2
-  %74 = load %struct.eh_region** %next_peer69, align 8, !tbaa !3
-  %tobool70 = icmp eq %struct.eh_region* %74, null
-  br i1 %tobool70, label %while.end73, label %while.cond68
+  %next_peer69 = getelementptr inbounds %struct.eh_region* %p63.0, i64 0, i32 2, !dbg !2895
+  %74 = load %struct.eh_region** %next_peer69, align 8, !dbg !2895, !tbaa !2232
+  %tobool70 = icmp eq %struct.eh_region* %74, null, !dbg !2895
+  br i1 %tobool70, label %while.end73, label %while.cond68, !dbg !2895
 
 while.end73:                                      ; preds = %while.cond68
-  store %struct.eh_region* %65, %struct.eh_region** %next_peer69, align 8, !tbaa !3
-  br label %if.end79
+  store %struct.eh_region* %65, %struct.eh_region** %next_peer69, align 8, !dbg !2897, !tbaa !2232
+  br label %if.end79, !dbg !2898
 
 if.else75:                                        ; preds = %if.else62
-  store %struct.eh_region* %65, %struct.eh_region** %region_tree65, align 8, !tbaa !3
+  store %struct.eh_region* %65, %struct.eh_region** %region_tree65, align 8, !dbg !2899, !tbaa !2232
   br label %if.end79
 
 if.end79:                                         ; preds = %for.cond43.preheader, %for.inc59, %while.end73, %if.else75
-  tail call void @free(i8* %call) #6
-  %75 = load %struct.function** @cfun, align 8, !tbaa !3
-  %eh80 = getelementptr inbounds %struct.function* %75, i64 0, i32 0
-  %76 = load %struct.eh_status** %eh80, align 8, !tbaa !3
-  %last_region_number81 = getelementptr inbounds %struct.eh_status* %76, i64 0, i32 8
-  %77 = load i32* %last_region_number81, align 4, !tbaa !0
-  %add82 = add nsw i32 %77, %1
-  store i32 %add82, i32* %last_region_number81, align 4, !tbaa !0
-  br label %return
+  tail call void @free(i8* %call) #7, !dbg !2900
+  %75 = load %struct.function** @cfun, align 8, !dbg !2901, !tbaa !2232
+  %eh80 = getelementptr inbounds %struct.function* %75, i64 0, i32 0, !dbg !2901
+  %76 = load %struct.eh_status** %eh80, align 8, !dbg !2901, !tbaa !2232
+  %last_region_number81 = getelementptr inbounds %struct.eh_status* %76, i64 0, i32 8, !dbg !2901
+  %77 = load i32* %last_region_number81, align 4, !dbg !2901, !tbaa !2220
+  tail call void @llvm.dbg.value(metadata !{i32 %77}, i64 0, metadata !1592), !dbg !2901
+  %add82 = add nsw i32 %77, %1, !dbg !2902
+  store i32 %add82, i32* %last_region_number81, align 4, !dbg !2902, !tbaa !2220
+  br label %return, !dbg !2903
 
 return:                                           ; preds = %entry, %if.end79
   %retval.0 = phi i32 [ %77, %if.end79 ], [ 0, %entry ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !2904
 }

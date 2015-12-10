@@ -1,38 +1,41 @@
 define void @CCTKi_CommandLineFinished() #1 {
+entry:
   %fname = alloca [256 x i8], align 16
-  %1 = getelementptr inbounds [256 x i8]* %fname, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 256, i8* %1) #4
+  %0 = getelementptr inbounds [256 x i8]* %fname, i64 0, i64 0, !dbg !291
+  call void @llvm.lifetime.start(i64 256, i8* %0) #5, !dbg !291
+  call void @llvm.dbg.declare(metadata !{[256 x i8]* %fname}, metadata !100), !dbg !291
   %.b = load i1* @paramchecking, align 1
-  br i1 %.b, label %3, label %2
+  br i1 %.b, label %if.end, label %if.then, !dbg !292
 
-; <label>:2                                       ; preds = %0
-  store i32 0, i32* @cctki_paramchecking, align 4, !tbaa !19
-  br label %3
+if.then:                                          ; preds = %entry
+  store i32 0, i32* @cctki_paramchecking, align 4, !dbg !293, !tbaa !172
+  br label %if.end, !dbg !295
 
-; <label>:3                                       ; preds = %2, %0
-  %4 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !tbaa !2
-  %5 = tail call i32 %4(%struct.cGH* null) #5
-  %6 = icmp eq i32 %5, 0
-  br i1 %6, label %15, label %7
+if.end:                                           ; preds = %if.then, %entry
+  %1 = load i32 (%struct.cGH*)** @CCTK_MyProc, align 8, !dbg !296, !tbaa !129
+  %call = call i32 %1(%struct.cGH* null) #6, !dbg !296
+  call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !99), !dbg !296
+  %tobool1 = icmp eq i32 %call, 0, !dbg !297
+  br i1 %tobool1, label %if.end11, label %if.then2, !dbg !297
 
-; <label>:7                                       ; preds = %3
-  %.b1 = load i1* @redirectsubs, align 1
-  br i1 %.b1, label %8, label %10
+if.then2:                                         ; preds = %if.end
+  %.b13 = load i1* @redirectsubs, align 1
+  br i1 %.b13, label %if.then4, label %if.else, !dbg !298
 
-; <label>:8                                       ; preds = %7
-  %9 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %1, i32 0, i64 256, i8* getelementptr inbounds ([16 x i8]* @.str22, i64 0, i64 0), i32 %5) #5
-  br label %12
+if.then4:                                         ; preds = %if.then2
+  %call5 = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([16 x i8]* @.str22, i64 0, i64 0), i32 %call) #6, !dbg !300
+  br label %if.end8, !dbg !302
 
-; <label>:10                                      ; preds = %7
-  %11 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %1, i32 0, i64 256, i8* getelementptr inbounds ([10 x i8]* @.str23, i64 0, i64 0)) #5
-  br label %12
+if.else:                                          ; preds = %if.then2
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* getelementptr inbounds ([10 x i8]* @.str23, i64 0, i64 0), i64 10, i32 1, i1 false), !dbg !303
+  br label %if.end8
 
-; <label>:12                                      ; preds = %10, %8
-  %13 = load %struct.__sFILE** @__stdoutp, align 8, !tbaa !2
-  %14 = call %struct.__sFILE* @"\01_freopen"(i8* %1, i8* getelementptr inbounds ([2 x i8]* @.str24, i64 0, i64 0), %struct.__sFILE* %13) #5
-  br label %15
+if.end8:                                          ; preds = %if.else, %if.then4
+  %2 = load %struct._IO_FILE** @stdout, align 8, !dbg !305, !tbaa !129
+  %call10 = call %struct._IO_FILE* @freopen(i8* %0, i8* getelementptr inbounds ([2 x i8]* @.str24, i64 0, i64 0), %struct._IO_FILE* %2) #6, !dbg !305
+  br label %if.end11, !dbg !306
 
-; <label>:15                                      ; preds = %3, %12
-  call void @llvm.lifetime.end(i64 256, i8* %1) #4
-  ret void
+if.end11:                                         ; preds = %if.end, %if.end8
+  call void @llvm.lifetime.end(i64 256, i8* %0) #5, !dbg !307
+  ret void, !dbg !307
 }

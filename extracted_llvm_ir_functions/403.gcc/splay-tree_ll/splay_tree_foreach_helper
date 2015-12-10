@@ -1,28 +1,32 @@
 define internal fastcc i32 @splay_tree_foreach_helper(%struct.splay_tree_node_s* %node, i32 (%struct.splay_tree_node_s*, i8*)* %fn, i8* %data) #0 {
 entry:
-  %tobool2 = icmp eq %struct.splay_tree_node_s* %node, null
-  br i1 %tobool2, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !376, i64 0, metadata !143), !dbg !377
+  %tobool2 = icmp eq %struct.splay_tree_node_s* %node, null, !dbg !378
+  br i1 %tobool2, label %return, label %if.end, !dbg !378
 
 if.end:                                           ; preds = %entry, %if.end7
   %node.tr3 = phi %struct.splay_tree_node_s* [ %1, %if.end7 ], [ %node, %entry ]
-  %left = getelementptr inbounds %struct.splay_tree_node_s* %node.tr3, i64 0, i32 2
-  %0 = load %struct.splay_tree_node_s** %left, align 8, !tbaa !0
-  %call = tail call fastcc i32 @splay_tree_foreach_helper(%struct.splay_tree_node_s* %0, i32 (%struct.splay_tree_node_s*, i8*)* %fn, i8* %data) #7
-  %tobool1 = icmp eq i32 %call, 0
-  br i1 %tobool1, label %if.end3, label %return
+  %left = getelementptr inbounds %struct.splay_tree_node_s* %node.tr3, i64 0, i32 2, !dbg !379
+  %0 = load %struct.splay_tree_node_s** %left, align 8, !dbg !379, !tbaa !211
+  %call = tail call fastcc i32 @splay_tree_foreach_helper(%struct.splay_tree_node_s* %0, i32 (%struct.splay_tree_node_s*, i8*)* %fn, i8* %data) #8, !dbg !379
+  tail call void @llvm.dbg.value(metadata !{i32 %call}, i64 0, metadata !147), !dbg !379
+  %tobool1 = icmp eq i32 %call, 0, !dbg !380
+  br i1 %tobool1, label %if.end3, label %return, !dbg !380
 
 if.end3:                                          ; preds = %if.end
-  %call4 = tail call i32 %fn(%struct.splay_tree_node_s* %node.tr3, i8* %data) #6
-  %tobool5 = icmp eq i32 %call4, 0
-  br i1 %tobool5, label %if.end7, label %return
+  %call4 = tail call i32 %fn(%struct.splay_tree_node_s* %node.tr3, i8* %data) #7, !dbg !381
+  tail call void @llvm.dbg.value(metadata !{i32 %call4}, i64 0, metadata !147), !dbg !381
+  %tobool5 = icmp eq i32 %call4, 0, !dbg !382
+  br i1 %tobool5, label %if.end7, label %return, !dbg !382
 
 if.end7:                                          ; preds = %if.end3
-  %right = getelementptr inbounds %struct.splay_tree_node_s* %node.tr3, i64 0, i32 3
-  %1 = load %struct.splay_tree_node_s** %right, align 8, !tbaa !0
-  %tobool = icmp eq %struct.splay_tree_node_s* %1, null
-  br i1 %tobool, label %return, label %if.end
+  %right = getelementptr inbounds %struct.splay_tree_node_s* %node.tr3, i64 0, i32 3, !dbg !383
+  %1 = load %struct.splay_tree_node_s** %right, align 8, !dbg !383, !tbaa !211
+  tail call void @llvm.dbg.value(metadata !376, i64 0, metadata !143), !dbg !377
+  %tobool = icmp eq %struct.splay_tree_node_s* %1, null, !dbg !378
+  br i1 %tobool, label %return, label %if.end, !dbg !378
 
 return:                                           ; preds = %if.end7, %if.end3, %if.end, %entry
   %retval.0 = phi i32 [ 0, %entry ], [ %call4, %if.end3 ], [ %call, %if.end ], [ 0, %if.end7 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !384
 }

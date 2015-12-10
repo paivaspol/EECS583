@@ -1,0 +1,23 @@
+define void @_Z29POVMSStream_ReadDataUnorderedPhS_i(i8* nocapture %stream, i8* nocapture %data, i32 %datasize) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i8* %stream}, i64 0, metadata !291), !dbg !1741
+  tail call void @llvm.dbg.value(metadata !{i8* %data}, i64 0, metadata !292), !dbg !1741
+  tail call void @llvm.dbg.value(metadata !{i32 %datasize}, i64 0, metadata !293), !dbg !1741
+  tail call void @llvm.dbg.value(metadata !71, i64 0, metadata !294), !dbg !1742
+  %cmp6 = icmp sgt i32 %datasize, 0, !dbg !1742
+  br i1 %cmp6, label %for.body, label %for.end, !dbg !1742
+
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds i8* %stream, i64 %indvars.iv, !dbg !1743
+  %0 = load i8* %arrayidx, align 1, !dbg !1743, !tbaa !918
+  %arrayidx2 = getelementptr inbounds i8* %data, i64 %indvars.iv, !dbg !1743
+  store i8 %0, i8* %arrayidx2, align 1, !dbg !1743, !tbaa !918
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !1742
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !1742
+  %exitcond = icmp eq i32 %lftr.wideiv, %datasize, !dbg !1742
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !1742
+
+for.end:                                          ; preds = %for.body, %entry
+  ret void, !dbg !1744
+}

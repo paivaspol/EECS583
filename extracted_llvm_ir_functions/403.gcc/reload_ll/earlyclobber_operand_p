@@ -1,23 +1,25 @@
-define i32 @earlyclobber_operand_p(%struct.rtx_def* %x) #4 {
+define i32 @earlyclobber_operand_p(%struct.rtx_def* %x) #5 {
 entry:
-  %0 = load i32* @n_earlyclobbers, align 4, !tbaa !3
-  %cmp4 = icmp sgt i32 %0, 0
-  br i1 %cmp4, label %for.body, label %return
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !1287), !dbg !2722
+  tail call void @llvm.dbg.value(metadata !1191, i64 0, metadata !1288), !dbg !2723
+  %0 = load i32* @n_earlyclobbers, align 4, !dbg !2723, !tbaa !1966
+  %cmp4 = icmp sgt i32 %0, 0, !dbg !2723
+  br i1 %cmp4, label %for.body, label %return, !dbg !2723
 
 for.cond:                                         ; preds = %for.body
-  %1 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %1, %0
-  br i1 %cmp, label %for.body, label %return
+  %1 = trunc i64 %indvars.iv.next to i32, !dbg !2723
+  %cmp = icmp slt i32 %1, %0, !dbg !2723
+  br i1 %cmp, label %for.body, label %return, !dbg !2723
 
 for.body:                                         ; preds = %entry, %for.cond
   %indvars.iv = phi i64 [ %indvars.iv.next, %for.cond ], [ 0, %entry ]
-  %arrayidx = getelementptr inbounds [30 x %struct.rtx_def*]* @reload_earlyclobbers, i64 0, i64 %indvars.iv
-  %2 = load %struct.rtx_def** %arrayidx, align 8, !tbaa !5
-  %cmp1 = icmp eq %struct.rtx_def* %2, %x
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  br i1 %cmp1, label %return, label %for.cond
+  %arrayidx = getelementptr inbounds [30 x %struct.rtx_def*]* @reload_earlyclobbers, i64 0, i64 %indvars.iv, !dbg !2724
+  %2 = load %struct.rtx_def** %arrayidx, align 8, !dbg !2724, !tbaa !1970
+  %cmp1 = icmp eq %struct.rtx_def* %2, %x, !dbg !2724
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2723
+  br i1 %cmp1, label %return, label %for.cond, !dbg !2724
 
 return:                                           ; preds = %for.cond, %for.body, %entry
   %retval.0 = phi i32 [ 0, %entry ], [ 1, %for.body ], [ 0, %for.cond ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !2725
 }

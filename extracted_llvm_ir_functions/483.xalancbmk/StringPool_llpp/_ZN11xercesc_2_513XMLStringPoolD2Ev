@@ -1,0 +1,66 @@
+define void @_ZN11xercesc_2_513XMLStringPoolD2Ev(%"class.xercesc_2_5::XMLStringPool"* nocapture %this) unnamed_addr #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::XMLStringPool"* %this}, i64 0, metadata !1310), !dbg !2325
+  %0 = getelementptr inbounds %"class.xercesc_2_5::XMLStringPool"* %this, i64 0, i32 0, i32 0, !dbg !2326
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([14 x i8*]* @_ZTVN11xercesc_2_513XMLStringPoolE, i64 0, i64 2) to i32 (...)**), i32 (...)*** %0, align 8, !dbg !2326, !tbaa !2278
+  %fHashTable = getelementptr inbounds %"class.xercesc_2_5::XMLStringPool"* %this, i64 0, i32 3, !dbg !2327
+  %1 = load %"class.xercesc_2_5::RefHashTableOf"** %fHashTable, align 8, !dbg !2327, !tbaa !2258
+  %isnull = icmp eq %"class.xercesc_2_5::RefHashTableOf"* %1, null, !dbg !2327
+  br i1 %isnull, label %delete.end, label %delete.notnull, !dbg !2327
+
+delete.notnull:                                   ; preds = %entry
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::RefHashTableOf"* %1}, i64 0, metadata !2329), !dbg !2330
+  invoke void @_ZN11xercesc_2_514RefHashTableOfINS_13XMLStringPool8PoolElemEED2Ev(%"class.xercesc_2_5::RefHashTableOf"* %1) #7
+          to label %invoke.cont unwind label %lpad
+
+invoke.cont:                                      ; preds = %delete.notnull
+  %2 = bitcast %"class.xercesc_2_5::RefHashTableOf"* %1 to i8*, !dbg !2327
+  invoke void @_ZN11xercesc_2_57XMemorydlEPv(i8* %2) #7
+          to label %delete.end unwind label %lpad2, !dbg !2327
+
+delete.end:                                       ; preds = %invoke.cont, %entry
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::XMLStringPool"* %this, i64 0, i32 1, !dbg !2331
+  %3 = load %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !2331, !tbaa !2258
+  %4 = bitcast %"class.xercesc_2_5::MemoryManager"* %3 to void (%"class.xercesc_2_5::MemoryManager"*, i8*)***, !dbg !2331
+  %vtable = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)*** %4, align 8, !dbg !2331, !tbaa !2278
+  %vfn = getelementptr inbounds void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vtable, i64 3, !dbg !2331
+  %5 = load void (%"class.xercesc_2_5::MemoryManager"*, i8*)** %vfn, align 8, !dbg !2331
+  %fIdMap = getelementptr inbounds %"class.xercesc_2_5::XMLStringPool"* %this, i64 0, i32 2, !dbg !2331
+  %6 = load %"class.xercesc_2_5::XMLStringPool::PoolElem"*** %fIdMap, align 8, !dbg !2331, !tbaa !2258
+  %7 = bitcast %"class.xercesc_2_5::XMLStringPool::PoolElem"** %6 to i8*, !dbg !2331
+  invoke void %5(%"class.xercesc_2_5::MemoryManager"* %3, i8* %7) #7
+          to label %invoke.cont5 unwind label %lpad2, !dbg !2331
+
+invoke.cont5:                                     ; preds = %delete.end
+  ret void, !dbg !2332
+
+lpad:                                             ; preds = %delete.notnull
+  %8 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !2327
+  %9 = extractvalue { i8*, i32 } %8, 0, !dbg !2327
+  %10 = extractvalue { i8*, i32 } %8, 1, !dbg !2327
+  %11 = bitcast %"class.xercesc_2_5::RefHashTableOf"* %1 to i8*, !dbg !2327
+  invoke void @_ZN11xercesc_2_57XMemorydlEPv(i8* %11) #7
+          to label %ehcleanup unwind label %terminate.lpad, !dbg !2327
+
+lpad2:                                            ; preds = %delete.end, %invoke.cont
+  %12 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup, !dbg !2327
+  %13 = extractvalue { i8*, i32 } %12, 0, !dbg !2327
+  %14 = extractvalue { i8*, i32 } %12, 1, !dbg !2327
+  br label %ehcleanup, !dbg !2327
+
+ehcleanup:                                        ; preds = %lpad, %lpad2
+  %exn.slot.0 = phi i8* [ %13, %lpad2 ], [ %9, %lpad ]
+  %ehselector.slot.0 = phi i32 [ %14, %lpad2 ], [ %10, %lpad ]
+  %lpad.val = insertvalue { i8*, i32 } undef, i8* %exn.slot.0, 0, !dbg !2332
+  %lpad.val7 = insertvalue { i8*, i32 } %lpad.val, i32 %ehselector.slot.0, 1, !dbg !2332
+  resume { i8*, i32 } %lpad.val7, !dbg !2332
+
+terminate.lpad:                                   ; preds = %lpad
+  %15 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null, !dbg !2327
+  %16 = extractvalue { i8*, i32 } %15, 0, !dbg !2327
+  tail call void @__clang_call_terminate(i8* %16) #8, !dbg !2327
+  unreachable, !dbg !2327
+}

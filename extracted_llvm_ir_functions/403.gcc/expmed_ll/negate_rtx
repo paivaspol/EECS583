@@ -1,15 +1,19 @@
 define %struct.rtx_def* @negate_rtx(i32 %mode, %struct.rtx_def* %x) #0 {
 entry:
-  %call = tail call %struct.rtx_def* @simplify_unary_operation(i32 77, i32 %mode, %struct.rtx_def* %x, i32 %mode) #4
-  %cmp = icmp eq %struct.rtx_def* %call, null
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !1551), !dbg !2299
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !1552), !dbg !2300
+  %call = tail call %struct.rtx_def* @simplify_unary_operation(i32 77, i32 %mode, %struct.rtx_def* %x, i32 %mode) #5, !dbg !2301
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call}, i64 0, metadata !1553), !dbg !2301
+  %cmp = icmp eq %struct.rtx_def* %call, null, !dbg !2302
+  br i1 %cmp, label %if.then, label %if.end, !dbg !2302
 
 if.then:                                          ; preds = %entry
-  %0 = load %struct.optab** getelementptr inbounds ([49 x %struct.optab*]* @optab_table, i64 0, i64 32), align 8, !tbaa !3
-  %call1 = tail call %struct.rtx_def* @expand_unop(i32 %mode, %struct.optab* %0, %struct.rtx_def* %x, %struct.rtx_def* null, i32 0) #4
-  br label %if.end
+  %0 = load %struct.optab** getelementptr inbounds ([49 x %struct.optab*]* @optab_table, i64 0, i64 32), align 8, !dbg !2303, !tbaa !2258
+  %call1 = tail call %struct.rtx_def* @expand_unop(i32 %mode, %struct.optab* %0, %struct.rtx_def* %x, %struct.rtx_def* null, i32 0) #5, !dbg !2303
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %call1}, i64 0, metadata !1553), !dbg !2303
+  br label %if.end, !dbg !2303
 
 if.end:                                           ; preds = %if.then, %entry
   %result.0 = phi %struct.rtx_def* [ %call1, %if.then ], [ %call, %entry ]
-  ret %struct.rtx_def* %result.0
+  ret %struct.rtx_def* %result.0, !dbg !2304
 }

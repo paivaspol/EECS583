@@ -1,0 +1,78 @@
+define void @_ZN3pov20Promote_Local_LightsEPNS_10CSG_StructE(%"struct.pov::CSG_Struct"* %Object) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::CSG_Struct"* %Object}, i64 0, metadata !786), !dbg !896
+  tail call void @llvm.dbg.value(metadata !897, i64 0, metadata !788), !dbg !898
+  tail call void @llvm.dbg.value(metadata !899, i64 0, metadata !789), !dbg !900
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !790), !dbg !901
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !791), !dbg !902
+  %cmp = icmp eq %"struct.pov::CSG_Struct"* %Object, null, !dbg !903
+  br i1 %cmp, label %return, label %if.end, !dbg !903
+
+if.end:                                           ; preds = %entry
+  %Children = getelementptr inbounds %"struct.pov::CSG_Struct"* %Object, i64 0, i32 14, !dbg !904
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !790), !dbg !904
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !791), !dbg !904
+  %curObject.031 = load %"struct.pov::Object_Struct"** %Children, align 8, !dbg !904
+  %cmp132 = icmp eq %"struct.pov::Object_Struct"* %curObject.031, null, !dbg !904
+  br i1 %cmp132, label %if.then12, label %for.body, !dbg !904
+
+for.body:                                         ; preds = %if.end, %for.inc
+  %curObject.036 = phi %"struct.pov::Object_Struct"* [ %curObject.0, %for.inc ], [ %curObject.031, %if.end ]
+  %lights.035 = phi %"struct.pov::Light_Source_Struct"* [ %lights.2, %for.inc ], [ null, %if.end ]
+  %object_counter.034 = phi i32 [ %object_counter.1, %for.inc ], [ 0, %if.end ]
+  %light_counter.033 = phi i32 [ %light_counter.1, %for.inc ], [ 0, %if.end ]
+  %Type = getelementptr inbounds %"struct.pov::Object_Struct"* %curObject.036, i64 0, i32 1, !dbg !905
+  %0 = load i32* %Type, align 4, !dbg !905, !tbaa !906
+  %and = and i32 %0, 4096, !dbg !905
+  %cmp2 = icmp eq i32 %and, 0, !dbg !905
+  br i1 %cmp2, label %if.else8, label %if.then3, !dbg !905
+
+if.then3:                                         ; preds = %for.body
+  %1 = bitcast %"struct.pov::Object_Struct"* %curObject.036 to %"struct.pov::Light_Source_Struct"*, !dbg !909
+  %Next_Light_Source = getelementptr inbounds %"struct.pov::Object_Struct"* %curObject.036, i64 2, i32 9, !dbg !911
+  %2 = bitcast %"struct.pov::Bounding_Box_Struct"* %Next_Light_Source to %"struct.pov::Light_Source_Struct"**, !dbg !911
+  store %"struct.pov::Light_Source_Struct"* %lights.035, %"struct.pov::Light_Source_Struct"** %2, align 8, !dbg !911, !tbaa !912
+  %inc = add nsw i32 %light_counter.033, 1, !dbg !913
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !790), !dbg !913
+  br label %for.inc, !dbg !914
+
+if.else8:                                         ; preds = %for.body
+  %inc9 = add nsw i32 %object_counter.034, 1, !dbg !915
+  tail call void @llvm.dbg.value(metadata !{i32 %inc9}, i64 0, metadata !791), !dbg !915
+  br label %for.inc
+
+for.inc:                                          ; preds = %if.then3, %if.else8
+  %light_counter.1 = phi i32 [ %inc, %if.then3 ], [ %light_counter.033, %if.else8 ]
+  %object_counter.1 = phi i32 [ %object_counter.034, %if.then3 ], [ %inc9, %if.else8 ]
+  %lights.2 = phi %"struct.pov::Light_Source_Struct"* [ %1, %if.then3 ], [ %lights.035, %if.else8 ]
+  %Sibling = getelementptr inbounds %"struct.pov::Object_Struct"* %curObject.036, i64 0, i32 2, !dbg !916
+  %curObject.0 = load %"struct.pov::Object_Struct"** %Sibling, align 8, !dbg !904
+  %cmp1 = icmp eq %"struct.pov::Object_Struct"* %curObject.0, null, !dbg !904
+  br i1 %cmp1, label %for.end, label %for.body, !dbg !904
+
+for.end:                                          ; preds = %for.inc
+  %cmp11 = icmp slt i32 %light_counter.1, 1, !dbg !917
+  br i1 %cmp11, label %if.then12, label %if.end13, !dbg !917
+
+if.then12:                                        ; preds = %if.end, %for.end
+  %call = tail call i32 (i32, i8*, ...)* @_ZN3pov7WarningEjPKcz(i32 0, i8* getelementptr inbounds ([41 x i8]* @.str, i64 0, i64 0)) #5, !dbg !918
+  br label %return, !dbg !920
+
+if.end13:                                         ; preds = %for.end
+  %cmp14 = icmp slt i32 %object_counter.1, 1, !dbg !921
+  br i1 %cmp14, label %if.then15, label %if.end17, !dbg !921
+
+if.then15:                                        ; preds = %if.end13
+  %call16 = tail call i32 (i32, i8*, ...)* @_ZN3pov7WarningEjPKcz(i32 0, i8* getelementptr inbounds ([35 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !922
+  br label %return, !dbg !924
+
+if.end17:                                         ; preds = %if.end13
+  %LLights = getelementptr inbounds %"struct.pov::CSG_Struct"* %Object, i64 0, i32 8, !dbg !925
+  store %"struct.pov::Light_Source_Struct"* %lights.2, %"struct.pov::Light_Source_Struct"** %LLights, align 8, !dbg !925, !tbaa !912
+  %3 = bitcast %"struct.pov::CSG_Struct"* %Object to %"struct.pov::Compound_Object_Struct"*, !dbg !926
+  tail call void @_ZN3pov30Promote_Local_Lights_RecursiveEPNS_22Compound_Object_StructEPNS_19Light_Source_StructE(%"struct.pov::Compound_Object_Struct"* %3, %"struct.pov::Light_Source_Struct"* %lights.2) #5, !dbg !926
+  br label %return, !dbg !926
+
+return:                                           ; preds = %entry, %if.end17, %if.then15, %if.then12
+  ret void, !dbg !926
+}

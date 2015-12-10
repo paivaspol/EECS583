@@ -1,0 +1,59 @@
+define linkonce_odr i64 @_ZN6soplex9DataArrayINS_13DataHashTableINS_7NameSet4NameENS_7DataKeyEE7ElementIS3_S4_EEE5reMaxEii(%"class.soplex::DataArray"* nocapture %this, i32 %newMax, i32 %newSize) #2 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataArray"* %this}, i64 0, metadata !3211), !dbg !4816
+  tail call void @llvm.dbg.value(metadata !{i32 %newMax}, i64 0, metadata !3212), !dbg !4816
+  tail call void @llvm.dbg.value(metadata !{i32 %newSize}, i64 0, metadata !3213), !dbg !4816
+  %cmp = icmp sgt i32 %newSize, -1, !dbg !4817
+  br i1 %cmp, label %if.then, label %if.end, !dbg !4817
+
+if.then:                                          ; preds = %entry
+  %thesize = getelementptr inbounds %"class.soplex::DataArray"* %this, i64 0, i32 0, !dbg !4818
+  store i32 %newSize, i32* %thesize, align 4, !dbg !4818, !tbaa !3494
+  br label %if.end, !dbg !4818
+
+if.end:                                           ; preds = %if.then, %entry
+  %cmp2 = icmp slt i32 %newMax, %newSize, !dbg !4819
+  tail call void @llvm.dbg.value(metadata !{i32 %newSize}, i64 0, metadata !3212), !dbg !4820
+  %newSize.newMax = select i1 %cmp2, i32 %newSize, i32 %newMax, !dbg !4819
+  %cmp5 = icmp slt i32 %newSize.newMax, 1, !dbg !4821
+  tail call void @llvm.dbg.value(metadata !4461, i64 0, metadata !3212), !dbg !4822
+  %newMax.addr.1 = select i1 %cmp5, i32 1, i32 %newSize.newMax, !dbg !4821
+  %themax = getelementptr inbounds %"class.soplex::DataArray"* %this, i64 0, i32 1, !dbg !4823
+  %0 = load i32* %themax, align 4, !dbg !4823, !tbaa !3494
+  %cmp8 = icmp eq i32 %newMax.addr.1, %0, !dbg !4823
+  br i1 %cmp8, label %return, label %if.end10, !dbg !4823
+
+if.end10:                                         ; preds = %if.end
+  store i32 %newMax.addr.1, i32* %themax, align 4, !dbg !4824, !tbaa !3494
+  %data = getelementptr inbounds %"class.soplex::DataArray"* %this, i64 0, i32 2, !dbg !4825
+  %1 = load %"class.soplex::DataHashTable<soplex::NameSet::Name, soplex::DataKey>::Element"** %data, align 8, !dbg !4825, !tbaa !3479
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataHashTable<soplex::NameSet::Name, soplex::DataKey>::Element"* %1}, i64 0, metadata !3214), !dbg !4825
+  %thesize12 = getelementptr inbounds %"class.soplex::DataArray"* %this, i64 0, i32 0, !dbg !4826
+  %2 = load i32* %thesize12, align 4, !dbg !4826, !tbaa !3494
+  %cmp13 = icmp slt i32 %2, 1, !dbg !4826
+  br i1 %cmp13, label %if.then14, label %if.else, !dbg !4826
+
+if.then14:                                        ; preds = %if.end10
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::DataHashTable<soplex::NameSet::Name, soplex::DataKey>::Element"** %data}, i64 0, metadata !4827) #1, !dbg !4830
+  %3 = bitcast %"class.soplex::DataHashTable<soplex::NameSet::Name, soplex::DataKey>::Element"* %1 to i8*, !dbg !4831
+  tail call void @free(i8* %3) #13, !dbg !4831
+  store %"class.soplex::DataHashTable<soplex::NameSet::Name, soplex::DataKey>::Element"* null, %"class.soplex::DataHashTable<soplex::NameSet::Name, soplex::DataKey>::Element"** %data, align 8, !dbg !4832, !tbaa !3479
+  %4 = load i32* %themax, align 4, !dbg !4833, !tbaa !3494
+  tail call void @_ZN6soplex9spx_allocIPNS_13DataHashTableINS_7NameSet4NameENS_7DataKeyEE7ElementIS3_S4_EEEEvRT_i(%"class.soplex::DataHashTable<soplex::NameSet::Name, soplex::DataKey>::Element"** %data, i32 %4) #11, !dbg !4833
+  br label %if.end20, !dbg !4834
+
+if.else:                                          ; preds = %if.end10
+  tail call void @_ZN6soplex11spx_reallocIPNS_13DataHashTableINS_7NameSet4NameENS_7DataKeyEE7ElementIS3_S4_EEEEvRT_i(%"class.soplex::DataHashTable<soplex::NameSet::Name, soplex::DataKey>::Element"** %data, i32 %newMax.addr.1) #11, !dbg !4835
+  br label %if.end20
+
+if.end20:                                         ; preds = %if.else, %if.then14
+  %5 = load %"class.soplex::DataHashTable<soplex::NameSet::Name, soplex::DataKey>::Element"** %data, align 8, !dbg !4836, !tbaa !3479
+  %sub.ptr.lhs.cast = ptrtoint %"class.soplex::DataHashTable<soplex::NameSet::Name, soplex::DataKey>::Element"* %5 to i64, !dbg !4836
+  %sub.ptr.rhs.cast = ptrtoint %"class.soplex::DataHashTable<soplex::NameSet::Name, soplex::DataKey>::Element"* %1 to i64, !dbg !4836
+  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast, !dbg !4836
+  br label %return, !dbg !4836
+
+return:                                           ; preds = %if.end, %if.end20
+  %retval.0 = phi i64 [ %sub.ptr.sub, %if.end20 ], [ 0, %if.end ]
+  ret i64 %retval.0, !dbg !4837
+}

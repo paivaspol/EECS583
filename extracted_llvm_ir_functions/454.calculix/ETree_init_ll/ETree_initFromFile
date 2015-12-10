@@ -1,92 +1,151 @@
 define %struct._IV* @ETree_initFromFile(%struct._ETree* %frontETree, i8* %inETreeFileName, i32 %msglvl, %struct._IO_FILE* %msgFile) #0 {
 entry:
-  %call = tail call i32 @strcmp(i8* %inETreeFileName, i8* getelementptr inbounds ([5 x i8]* @.str9, i64 0, i64 0)) #9
-  %cmp = icmp eq i32 %call, 0
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct._ETree* %frontETree}, i64 0, metadata !213), !dbg !453
+  tail call void @llvm.dbg.value(metadata !{i8* %inETreeFileName}, i64 0, metadata !214), !dbg !454
+  tail call void @llvm.dbg.value(metadata !{i32 %msglvl}, i64 0, metadata !215), !dbg !455
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %msgFile}, i64 0, metadata !216), !dbg !456
+  %call = tail call i32 @strcmp(i8* %inETreeFileName, i8* getelementptr inbounds ([5 x i8]* @.str9, i64 0, i64 0)) #10, !dbg !457
+  %cmp = icmp eq i32 %call, 0, !dbg !457
+  br i1 %cmp, label %if.then, label %if.end, !dbg !457
 
 if.then:                                          ; preds = %entry
-  %0 = tail call i64 @fwrite(i8* getelementptr inbounds ([23 x i8]* @.str10, i64 0, i64 0), i64 22, i64 1, %struct._IO_FILE* %msgFile)
-  tail call void @exit(i32 0) #7
-  unreachable
+  %0 = tail call i64 @fwrite(i8* getelementptr inbounds ([23 x i8]* @.str10, i64 0, i64 0), i64 22, i64 1, %struct._IO_FILE* %msgFile), !dbg !458
+  tail call void @exit(i32 0) #8, !dbg !460
+  unreachable, !dbg !460
 
 if.end:                                           ; preds = %entry
-  tail call void @ETree_setDefaultFields(%struct._ETree* %frontETree) #6
-  %call2 = tail call i32 @ETree_readFromFile(%struct._ETree* %frontETree, i8* %inETreeFileName) #6
-  %call3 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([46 x i8]* @.str11, i64 0, i64 0), double 0.000000e+00, i8* %inETreeFileName) #6
-  %cmp4 = icmp eq i32 %call2, 1
-  br i1 %cmp4, label %if.end7, label %if.then5
+  %call2 = tail call i32 @gettimeofday(%struct.timeval* @TV, %struct.timezone* @TZ) #7, !dbg !461
+  %1 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !461, !tbaa !462
+  %conv = sitofp i64 %1 to double, !dbg !461
+  %2 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !461, !tbaa !462
+  %conv3 = sitofp i64 %2 to double, !dbg !461
+  %mul = fmul double %conv3, 1.000000e-06, !dbg !461
+  %add = fadd double %conv, %mul, !dbg !461
+  tail call void @llvm.dbg.value(metadata !{double %add}, i64 0, metadata !217), !dbg !461
+  tail call void @ETree_setDefaultFields(%struct._ETree* %frontETree) #7, !dbg !463
+  %call4 = tail call i32 @ETree_readFromFile(%struct._ETree* %frontETree, i8* %inETreeFileName) #7, !dbg !464
+  tail call void @llvm.dbg.value(metadata !{i32 %call4}, i64 0, metadata !220), !dbg !464
+  %call5 = tail call i32 @gettimeofday(%struct.timeval* @TV, %struct.timezone* @TZ) #7, !dbg !465
+  %3 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !465, !tbaa !462
+  %conv6 = sitofp i64 %3 to double, !dbg !465
+  %4 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !465, !tbaa !462
+  %conv7 = sitofp i64 %4 to double, !dbg !465
+  %mul8 = fmul double %conv7, 1.000000e-06, !dbg !465
+  %add9 = fadd double %conv6, %mul8, !dbg !465
+  tail call void @llvm.dbg.value(metadata !{double %add9}, i64 0, metadata !218), !dbg !465
+  %sub = fsub double %add9, %add, !dbg !466
+  %call10 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([46 x i8]* @.str11, i64 0, i64 0), double %sub, i8* %inETreeFileName) #7, !dbg !466
+  %cmp11 = icmp eq i32 %call4, 1, !dbg !467
+  br i1 %cmp11, label %if.end15, label %if.then13, !dbg !467
 
-if.then5:                                         ; preds = %if.end
-  %call6 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([49 x i8]* @.str12, i64 0, i64 0), i32 %call2, %struct._ETree* %frontETree, i8* %inETreeFileName) #6
-  tail call void @exit(i32 -1) #7
-  unreachable
+if.then13:                                        ; preds = %if.end
+  %call14 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([49 x i8]* @.str12, i64 0, i64 0), i32 %call4, %struct._ETree* %frontETree, i8* %inETreeFileName) #7, !dbg !468
+  tail call void @exit(i32 -1) #8, !dbg !470
+  unreachable, !dbg !470
 
-if.end7:                                          ; preds = %if.end
-  %cmp8 = icmp sgt i32 %msglvl, 1
-  br i1 %cmp8, label %if.then9, label %if.end16
+if.end15:                                         ; preds = %if.end
+  %cmp16 = icmp sgt i32 %msglvl, 1, !dbg !471
+  br i1 %cmp16, label %if.then18, label %if.end26, !dbg !471
 
-if.then9:                                         ; preds = %if.end7
-  %call10 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([43 x i8]* @.str13, i64 0, i64 0), i8* %inETreeFileName) #6
-  %cmp11 = icmp eq i32 %msglvl, 2
-  br i1 %cmp11, label %if.then12, label %if.else
+if.then18:                                        ; preds = %if.end15
+  %call19 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([43 x i8]* @.str13, i64 0, i64 0), i8* %inETreeFileName) #7, !dbg !472
+  %cmp20 = icmp eq i32 %msglvl, 2, !dbg !474
+  br i1 %cmp20, label %if.then22, label %if.else, !dbg !474
 
-if.then12:                                        ; preds = %if.then9
-  %call13 = tail call i32 @ETree_writeStats(%struct._ETree* %frontETree, %struct._IO_FILE* %msgFile) #6
-  br label %if.end16
+if.then22:                                        ; preds = %if.then18
+  %call23 = tail call i32 @ETree_writeStats(%struct._ETree* %frontETree, %struct._IO_FILE* %msgFile) #7, !dbg !475
+  br label %if.end26, !dbg !477
 
-if.else:                                          ; preds = %if.then9
-  %call14 = tail call i32 @ETree_writeForHumanEye(%struct._ETree* %frontETree, %struct._IO_FILE* %msgFile) #6
-  br label %if.end16
+if.else:                                          ; preds = %if.then18
+  %call24 = tail call i32 @ETree_writeForHumanEye(%struct._ETree* %frontETree, %struct._IO_FILE* %msgFile) #7, !dbg !478
+  br label %if.end26
 
-if.end16:                                         ; preds = %if.then12, %if.else, %if.end7
-  %call17 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #6
-  %call18 = tail call %struct._IV* @ETree_oldToNewVtxPerm(%struct._ETree* %frontETree) #6
-  %call20 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([30 x i8]* @.str14, i64 0, i64 0), double 0.000000e+00) #6
-  br i1 %cmp8, label %if.then22, label %if.end55.critedge
+if.end26:                                         ; preds = %if.then22, %if.else, %if.end15
+  %call27 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #7, !dbg !480
+  %call28 = tail call i32 @gettimeofday(%struct.timeval* @TV, %struct.timezone* @TZ) #7, !dbg !481
+  %5 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !481, !tbaa !462
+  %conv29 = sitofp i64 %5 to double, !dbg !481
+  %6 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !481, !tbaa !462
+  %conv30 = sitofp i64 %6 to double, !dbg !481
+  %mul31 = fmul double %conv30, 1.000000e-06, !dbg !481
+  %add32 = fadd double %conv29, %mul31, !dbg !481
+  tail call void @llvm.dbg.value(metadata !{double %add32}, i64 0, metadata !217), !dbg !481
+  %call33 = tail call %struct._IV* @ETree_oldToNewVtxPerm(%struct._ETree* %frontETree) #7, !dbg !482
+  tail call void @llvm.dbg.value(metadata !{%struct._IV* %call33}, i64 0, metadata !221), !dbg !482
+  %call34 = tail call i32 @gettimeofday(%struct.timeval* @TV, %struct.timezone* @TZ) #7, !dbg !483
+  %7 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !483, !tbaa !462
+  %conv35 = sitofp i64 %7 to double, !dbg !483
+  %8 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !483, !tbaa !462
+  %conv36 = sitofp i64 %8 to double, !dbg !483
+  %mul37 = fmul double %conv36, 1.000000e-06, !dbg !483
+  %add38 = fadd double %conv35, %mul37, !dbg !483
+  tail call void @llvm.dbg.value(metadata !{double %add38}, i64 0, metadata !218), !dbg !483
+  %sub39 = fsub double %add38, %add32, !dbg !484
+  %call40 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([30 x i8]* @.str14, i64 0, i64 0), double %sub39) #7, !dbg !484
+  br i1 %cmp16, label %if.then43, label %if.end66, !dbg !485
 
-if.then22:                                        ; preds = %if.end16
-  %1 = tail call i64 @fwrite(i8* getelementptr inbounds ([31 x i8]* @.str15, i64 0, i64 0), i64 30, i64 1, %struct._IO_FILE* %msgFile)
-  %cmp24 = icmp eq i32 %msglvl, 2
-  br i1 %cmp24, label %if.then36, label %if.else38
+if.then43:                                        ; preds = %if.end26
+  %9 = tail call i64 @fwrite(i8* getelementptr inbounds ([31 x i8]* @.str15, i64 0, i64 0), i64 30, i64 1, %struct._IO_FILE* %msgFile), !dbg !486
+  %cmp45 = icmp eq i32 %msglvl, 2, !dbg !488
+  br i1 %cmp45, label %if.then60, label %if.else62, !dbg !488
 
-if.then36:                                        ; preds = %if.then22
-  %call26 = tail call i32 @IV_writeStats(%struct._IV* %call18, %struct._IO_FILE* %msgFile) #6
-  %call30100 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #6
-  %2 = tail call i64 @fwrite(i8* getelementptr inbounds ([35 x i8]* @.str16, i64 0, i64 0), i64 34, i64 1, %struct._IO_FILE* %msgFile)
-  %call37 = tail call i32 @ETree_writeStats(%struct._ETree* %frontETree, %struct._IO_FILE* %msgFile) #6
-  br label %if.then46
+if.then60:                                        ; preds = %if.then43
+  %call48 = tail call i32 @IV_writeStats(%struct._IV* %call33, %struct._IO_FILE* %msgFile) #7, !dbg !489
+  %call52134 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #7, !dbg !491
+  %10 = tail call i64 @fwrite(i8* getelementptr inbounds ([35 x i8]* @.str16, i64 0, i64 0), i64 34, i64 1, %struct._IO_FILE* %msgFile), !dbg !492
+  %call61 = tail call i32 @ETree_writeStats(%struct._ETree* %frontETree, %struct._IO_FILE* %msgFile) #7, !dbg !494
+  br label %if.end64, !dbg !496
 
-if.else38:                                        ; preds = %if.then22
-  %call28 = tail call i32 @IV_writeForHumanEye(%struct._IV* %call18, %struct._IO_FILE* %msgFile) #6
-  %call30 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #6
-  %3 = tail call i64 @fwrite(i8* getelementptr inbounds ([35 x i8]* @.str16, i64 0, i64 0), i64 34, i64 1, %struct._IO_FILE* %msgFile)
-  %call39 = tail call i32 @ETree_writeForHumanEye(%struct._ETree* %frontETree, %struct._IO_FILE* %msgFile) #6
-  br label %if.then46
+if.else62:                                        ; preds = %if.then43
+  %call50 = tail call i32 @IV_writeForHumanEye(%struct._IV* %call33, %struct._IO_FILE* %msgFile) #7, !dbg !497
+  %call52 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #7, !dbg !491
+  %11 = tail call i64 @fwrite(i8* getelementptr inbounds ([35 x i8]* @.str16, i64 0, i64 0), i64 34, i64 1, %struct._IO_FILE* %msgFile), !dbg !492
+  %call63 = tail call i32 @ETree_writeForHumanEye(%struct._ETree* %frontETree, %struct._IO_FILE* %msgFile) #7, !dbg !499
+  br label %if.end64
 
-if.then46:                                        ; preds = %if.then36, %if.else38
-  %call41 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #6
-  tail call void @ETree_permuteVertices(%struct._ETree* %frontETree, %struct._IV* %call18) #6
-  %call44 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([28 x i8]* @.str17, i64 0, i64 0), double 0.000000e+00) #6
-  %4 = tail call i64 @fwrite(i8* getelementptr inbounds ([34 x i8]* @.str18, i64 0, i64 0), i64 33, i64 1, %struct._IO_FILE* %msgFile)
-  br i1 %cmp24, label %if.then49, label %if.else51
+if.end64:                                         ; preds = %if.else62, %if.then60
+  %call65 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #7, !dbg !501
+  br label %if.end66, !dbg !502
 
-if.then49:                                        ; preds = %if.then46
-  %call50 = tail call i32 @ETree_writeStats(%struct._ETree* %frontETree, %struct._IO_FILE* %msgFile) #6
-  br label %if.end53
+if.end66:                                         ; preds = %if.end26, %if.end64
+  %call67 = tail call i32 @gettimeofday(%struct.timeval* @TV, %struct.timezone* @TZ) #7, !dbg !503
+  %12 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !503, !tbaa !462
+  %conv68 = sitofp i64 %12 to double, !dbg !503
+  %13 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !503, !tbaa !462
+  %conv69 = sitofp i64 %13 to double, !dbg !503
+  %mul70 = fmul double %conv69, 1.000000e-06, !dbg !503
+  %add71 = fadd double %conv68, %mul70, !dbg !503
+  tail call void @llvm.dbg.value(metadata !{double %add71}, i64 0, metadata !217), !dbg !503
+  tail call void @ETree_permuteVertices(%struct._ETree* %frontETree, %struct._IV* %call33) #7, !dbg !504
+  %call72 = tail call i32 @gettimeofday(%struct.timeval* @TV, %struct.timezone* @TZ) #7, !dbg !505
+  %14 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 0), align 8, !dbg !505, !tbaa !462
+  %conv73 = sitofp i64 %14 to double, !dbg !505
+  %15 = load i64* getelementptr inbounds (%struct.timeval* @TV, i64 0, i32 1), align 8, !dbg !505, !tbaa !462
+  %conv74 = sitofp i64 %15 to double, !dbg !505
+  %mul75 = fmul double %conv74, 1.000000e-06, !dbg !505
+  %add76 = fadd double %conv73, %mul75, !dbg !505
+  tail call void @llvm.dbg.value(metadata !{double %add76}, i64 0, metadata !218), !dbg !505
+  %sub77 = fsub double %add76, %add71, !dbg !506
+  %call78 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([28 x i8]* @.str17, i64 0, i64 0), double %sub77) #7, !dbg !506
+  br i1 %cmp16, label %if.then81, label %if.end91, !dbg !507
 
-if.else51:                                        ; preds = %if.then46
-  %call52 = tail call i32 @ETree_writeForHumanEye(%struct._ETree* %frontETree, %struct._IO_FILE* %msgFile) #6
-  br label %if.end53
+if.then81:                                        ; preds = %if.end66
+  %16 = tail call i64 @fwrite(i8* getelementptr inbounds ([34 x i8]* @.str18, i64 0, i64 0), i64 33, i64 1, %struct._IO_FILE* %msgFile), !dbg !508
+  %cmp83 = icmp eq i32 %msglvl, 2, !dbg !510
+  br i1 %cmp83, label %if.then85, label %if.else87, !dbg !510
 
-if.end53:                                         ; preds = %if.else51, %if.then49
-  %call54 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #6
-  br label %if.end55
+if.then85:                                        ; preds = %if.then81
+  %call86 = tail call i32 @ETree_writeStats(%struct._ETree* %frontETree, %struct._IO_FILE* %msgFile) #7, !dbg !511
+  br label %if.end89, !dbg !513
 
-if.end55.critedge:                                ; preds = %if.end16
-  tail call void @ETree_permuteVertices(%struct._ETree* %frontETree, %struct._IV* %call18) #6
-  %call44.c = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %msgFile, i8* getelementptr inbounds ([28 x i8]* @.str17, i64 0, i64 0), double 0.000000e+00) #6
-  br label %if.end55
+if.else87:                                        ; preds = %if.then81
+  %call88 = tail call i32 @ETree_writeForHumanEye(%struct._ETree* %frontETree, %struct._IO_FILE* %msgFile) #7, !dbg !514
+  br label %if.end89
 
-if.end55:                                         ; preds = %if.end55.critedge, %if.end53
-  ret %struct._IV* %call18
+if.end89:                                         ; preds = %if.else87, %if.then85
+  %call90 = tail call i32 @fflush(%struct._IO_FILE* %msgFile) #7, !dbg !516
+  br label %if.end91, !dbg !517
+
+if.end91:                                         ; preds = %if.end89, %if.end66
+  ret %struct._IV* %call33, !dbg !518
 }

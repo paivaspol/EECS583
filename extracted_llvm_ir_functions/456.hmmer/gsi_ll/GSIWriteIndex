@@ -1,63 +1,68 @@
 define void @GSIWriteIndex(%struct._IO_FILE* nocapture %fp, %struct.gsiindex_s* nocapture %g) #0 {
 entry:
-  %nfiles = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 2
-  %nkeys = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 4
-  %0 = load i16* %nfiles, align 2, !tbaa !4
-  %conv7 = zext i16 %0 to i32
-  %1 = load i32* %nkeys, align 4, !tbaa !3
-  %conv9 = sext i32 %1 to i64
-  tail call void @GSIWriteHeader(%struct._IO_FILE* %fp, i32 %conv7, i64 %conv9) #8
-  %2 = load i16* %nfiles, align 2, !tbaa !4
-  %cmp1259 = icmp eq i16 %2, 0
-  br i1 %cmp1259, label %for.cond16.preheader, label %for.body.lr.ph
+  tail call void @llvm.dbg.value(metadata !{%struct._IO_FILE* %fp}, i64 0, metadata !170), !dbg !331
+  tail call void @llvm.dbg.value(metadata !{%struct.gsiindex_s* %g}, i64 0, metadata !171), !dbg !331
+  %nfiles = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 2, !dbg !332
+  %nkeys = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 4, !dbg !333
+  %0 = load i16* %nfiles, align 2, !dbg !334, !tbaa !236
+  %conv7 = zext i16 %0 to i32, !dbg !334
+  %1 = load i32* %nkeys, align 4, !dbg !334, !tbaa !222
+  %conv9 = sext i32 %1 to i64, !dbg !334
+  tail call void @GSIWriteHeader(%struct._IO_FILE* %fp, i32 %conv7, i64 %conv9) #9, !dbg !334
+  tail call void @llvm.dbg.value(metadata !2, i64 0, metadata !172), !dbg !335
+  %2 = load i16* %nfiles, align 2, !dbg !335, !tbaa !236
+  %cmp1259 = icmp eq i16 %2, 0, !dbg !335
+  br i1 %cmp1259, label %for.cond16.preheader, label %for.body.lr.ph, !dbg !335
 
 for.body.lr.ph:                                   ; preds = %entry
-  %filenames = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 0
-  %fmt = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 1
-  br label %for.body
+  %filenames = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 0, !dbg !337
+  %fmt = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 1, !dbg !337
+  br label %for.body, !dbg !335
 
 for.cond16.preheader:                             ; preds = %for.body, %entry
-  %3 = load i32* %nkeys, align 4, !tbaa !3
-  %cmp1856 = icmp eq i32 %3, 0
-  br i1 %cmp1856, label %for.end34, label %for.body20.lr.ph
+  %3 = load i32* %nkeys, align 4, !dbg !338, !tbaa !222
+  %cmp1856 = icmp eq i32 %3, 0, !dbg !338
+  br i1 %cmp1856, label %for.end34, label %for.body20.lr.ph, !dbg !338
 
 for.body20.lr.ph:                                 ; preds = %for.cond16.preheader
-  %elems = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 3
-  br label %for.body20
+  %elems = getelementptr inbounds %struct.gsiindex_s* %g, i64 0, i32 3, !dbg !340
+  br label %for.body20, !dbg !338
 
 for.body:                                         ; preds = %for.body.lr.ph, %for.body
   %i.060 = phi i32 [ 0, %for.body.lr.ph ], [ %add, %for.body ]
-  %idxprom = zext i32 %i.060 to i64
-  %4 = load i8*** %filenames, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds i8** %4, i64 %idxprom
-  %5 = load i8** %arrayidx, align 8, !tbaa !0
-  %add = add i32 %i.060, 1
-  %6 = load i32** %fmt, align 8, !tbaa !0
-  %arrayidx15 = getelementptr inbounds i32* %6, i64 %idxprom
-  %7 = load i32* %arrayidx15, align 4, !tbaa !3
-  %call = tail call i32 @GSIWriteFileRecord(%struct._IO_FILE* %fp, i8* %5, i32 %add, i32 %7) #8
-  %8 = load i16* %nfiles, align 2, !tbaa !4
-  %conv11 = zext i16 %8 to i32
-  %cmp12 = icmp ult i32 %add, %conv11
-  br i1 %cmp12, label %for.body, label %for.cond16.preheader
+  %idxprom = zext i32 %i.060 to i64, !dbg !337
+  %4 = load i8*** %filenames, align 8, !dbg !337, !tbaa !217
+  %arrayidx = getelementptr inbounds i8** %4, i64 %idxprom, !dbg !337
+  %5 = load i8** %arrayidx, align 8, !dbg !337, !tbaa !217
+  %add = add i32 %i.060, 1, !dbg !337
+  %6 = load i32** %fmt, align 8, !dbg !337, !tbaa !217
+  %arrayidx15 = getelementptr inbounds i32* %6, i64 %idxprom, !dbg !337
+  %7 = load i32* %arrayidx15, align 4, !dbg !337, !tbaa !222
+  %call = tail call i32 @GSIWriteFileRecord(%struct._IO_FILE* %fp, i8* %5, i32 %add, i32 %7) #9, !dbg !337
+  tail call void @llvm.dbg.value(metadata !{i32 %add}, i64 0, metadata !172), !dbg !335
+  %8 = load i16* %nfiles, align 2, !dbg !335, !tbaa !236
+  %conv11 = zext i16 %8 to i32, !dbg !335
+  %cmp12 = icmp ult i32 %add, %conv11, !dbg !335
+  br i1 %cmp12, label %for.body, label %for.cond16.preheader, !dbg !335
 
 for.body20:                                       ; preds = %for.body20.lr.ph, %for.body20
   %i.157 = phi i32 [ 0, %for.body20.lr.ph ], [ %inc33, %for.body20 ]
-  %idxprom21 = zext i32 %i.157 to i64
-  %9 = load %struct.gsikey_s** %elems, align 8, !tbaa !0
-  %arraydecay = getelementptr inbounds %struct.gsikey_s* %9, i64 %idxprom21, i32 0, i64 0
-  %filenum = getelementptr inbounds %struct.gsikey_s* %9, i64 %idxprom21, i32 1
-  %10 = load i16* %filenum, align 2, !tbaa !4
-  %conv26 = zext i16 %10 to i32
-  %offset = getelementptr inbounds %struct.gsikey_s* %9, i64 %idxprom21, i32 2
-  %11 = load i32* %offset, align 4, !tbaa !3
-  %conv30 = zext i32 %11 to i64
-  %call31 = tail call i32 @GSIWriteKeyRecord(%struct._IO_FILE* %fp, i8* %arraydecay, i32 %conv26, i64 %conv30) #8
-  %inc33 = add i32 %i.157, 1
-  %12 = load i32* %nkeys, align 4, !tbaa !3
-  %cmp18 = icmp ult i32 %inc33, %12
-  br i1 %cmp18, label %for.body20, label %for.end34
+  %idxprom21 = zext i32 %i.157 to i64, !dbg !340
+  %9 = load %struct.gsikey_s** %elems, align 8, !dbg !340, !tbaa !217
+  %arraydecay = getelementptr inbounds %struct.gsikey_s* %9, i64 %idxprom21, i32 0, i64 0, !dbg !340
+  %filenum = getelementptr inbounds %struct.gsikey_s* %9, i64 %idxprom21, i32 1, !dbg !340
+  %10 = load i16* %filenum, align 2, !dbg !340, !tbaa !236
+  %conv26 = zext i16 %10 to i32, !dbg !340
+  %offset = getelementptr inbounds %struct.gsikey_s* %9, i64 %idxprom21, i32 2, !dbg !340
+  %11 = load i32* %offset, align 4, !dbg !340, !tbaa !222
+  %conv30 = zext i32 %11 to i64, !dbg !340
+  %call31 = tail call i32 @GSIWriteKeyRecord(%struct._IO_FILE* %fp, i8* %arraydecay, i32 %conv26, i64 %conv30) #9, !dbg !340
+  %inc33 = add i32 %i.157, 1, !dbg !338
+  tail call void @llvm.dbg.value(metadata !{i32 %inc33}, i64 0, metadata !172), !dbg !338
+  %12 = load i32* %nkeys, align 4, !dbg !338, !tbaa !222
+  %cmp18 = icmp ult i32 %inc33, %12, !dbg !338
+  br i1 %cmp18, label %for.body20, label %for.end34, !dbg !338
 
 for.end34:                                        ; preds = %for.body20, %for.cond16.preheader
-  ret void
+  ret void, !dbg !341
 }

@@ -1,53 +1,54 @@
 define void @freenodes(%struct.node* %node) #0 {
 entry:
-  %tobool = icmp eq %struct.node* %node, null
-  br i1 %tobool, label %return, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%struct.node* %node}, i64 0, metadata !51), !dbg !213
+  %tobool = icmp eq %struct.node* %node, null, !dbg !214
+  br i1 %tobool, label %return, label %if.end, !dbg !214
 
 if.end:                                           ; preds = %entry
-  %children = getelementptr inbounds %struct.node* %node, i64 0, i32 6
-  %0 = load %struct.node*** %children, align 8, !tbaa !3
-  %tobool1 = icmp eq %struct.node** %0, null
-  br i1 %tobool1, label %if.end19, label %if.then2
+  %children = getelementptr inbounds %struct.node* %node, i64 0, i32 6, !dbg !215
+  %0 = load %struct.node*** %children, align 8, !dbg !215, !tbaa !210
+  %tobool1 = icmp eq %struct.node** %0, null, !dbg !215
+  br i1 %tobool1, label %if.end19, label %if.then2, !dbg !215
 
 if.then2:                                         ; preds = %if.end
-  %num_children = getelementptr inbounds %struct.node* %node, i64 0, i32 1
-  %1 = load i8* %num_children, align 1, !tbaa !1
-  %cmp = icmp eq i8 %1, 0
-  br i1 %cmp, label %if.end19, label %for.body
+  %num_children = getelementptr inbounds %struct.node* %node, i64 0, i32 1, !dbg !216
+  %1 = load i8* %num_children, align 1, !dbg !216, !tbaa !206
+  %cmp = icmp eq i8 %1, 0, !dbg !216
+  br i1 %cmp, label %if.end19, label %for.body, !dbg !216
 
 for.body:                                         ; preds = %for.inc, %if.then2
-  %2 = phi %struct.node** [ %0, %if.then2 ], [ %.pre34, %for.inc ]
+  %2 = phi %struct.node** [ %0, %if.then2 ], [ %.pre34, %for.inc ], !dbg !218
   %3 = phi i8 [ %1, %if.then2 ], [ %5, %for.inc ]
   %indvars.iv = phi i64 [ 0, %if.then2 ], [ %indvars.iv.next, %for.inc ]
-  %arrayidx = getelementptr inbounds %struct.node** %2, i64 %indvars.iv
-  %4 = load %struct.node** %arrayidx, align 8, !tbaa !3
-  %cmp10 = icmp eq %struct.node* %4, null
-  br i1 %cmp10, label %for.inc, label %if.then12
+  %arrayidx = getelementptr inbounds %struct.node** %2, i64 %indvars.iv, !dbg !218
+  %4 = load %struct.node** %arrayidx, align 8, !dbg !218, !tbaa !210
+  %cmp10 = icmp eq %struct.node* %4, null, !dbg !218
+  br i1 %cmp10, label %for.inc, label %if.then12, !dbg !218
 
 if.then12:                                        ; preds = %for.body
-  tail call void @freenodes(%struct.node* %4) #5
-  %.pre33 = load i8* %num_children, align 1, !tbaa !1
-  br label %for.inc
+  tail call void @freenodes(%struct.node* %4) #6, !dbg !222
+  %.pre33 = load i8* %num_children, align 1, !dbg !224, !tbaa !206
+  br label %for.inc, !dbg !225
 
 for.inc:                                          ; preds = %for.body, %if.then12
-  %5 = phi i8 [ %3, %for.body ], [ %.pre33, %if.then12 ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %conv6 = zext i8 %5 to i32
-  %6 = trunc i64 %indvars.iv.next to i32
-  %cmp7 = icmp slt i32 %6, %conv6
-  %.pre34 = load %struct.node*** %children, align 8, !tbaa !3
-  br i1 %cmp7, label %for.body, label %for.end
+  %5 = phi i8 [ %3, %for.body ], [ %.pre33, %if.then12 ], !dbg !224
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !224
+  %conv6 = zext i8 %5 to i32, !dbg !224
+  %6 = trunc i64 %indvars.iv.next to i32, !dbg !224
+  %cmp7 = icmp slt i32 %6, %conv6, !dbg !224
+  %.pre34 = load %struct.node*** %children, align 8, !dbg !218, !tbaa !210
+  br i1 %cmp7, label %for.body, label %for.end, !dbg !224
 
 for.end:                                          ; preds = %for.inc
-  %7 = bitcast %struct.node** %.pre34 to i8*
-  tail call void @free(i8* %7) #6
-  br label %if.end19
+  %7 = bitcast %struct.node** %.pre34 to i8*, !dbg !226
+  tail call void @free(i8* %7) #7, !dbg !226
+  br label %if.end19, !dbg !227
 
 if.end19:                                         ; preds = %if.then2, %if.end, %for.end
-  %8 = getelementptr inbounds %struct.node* %node, i64 0, i32 0
-  tail call void @free(i8* %8) #6
-  br label %return
+  %8 = getelementptr inbounds %struct.node* %node, i64 0, i32 0, !dbg !228
+  tail call void @free(i8* %8) #7, !dbg !228
+  br label %return, !dbg !228
 
 return:                                           ; preds = %entry, %if.end19
-  ret void
+  ret void, !dbg !228
 }

@@ -1,27 +1,27 @@
-define void @done_matrix(i32 %nx, float*** nocapture %m) #3 {
-  %1 = icmp sgt i32 %nx, 0
-  br i1 %1, label %.lr.ph, label %._crit_edge
+define void @done_matrix(i32 %nx, float*** nocapture %m) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %nx}, i64 0, metadata !40), !dbg !472
+  tail call void @llvm.dbg.value(metadata !{float*** %m}, i64 0, metadata !41), !dbg !472
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !42), !dbg !473
+  %cmp5 = icmp sgt i32 %nx, 0, !dbg !473
+  br i1 %cmp5, label %for.body, label %for.end, !dbg !473
 
-.lr.ph:                                           ; preds = %0
-  %2 = add i32 %nx, -1
-  br label %3
+for.body:                                         ; preds = %entry, %for.body
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
+  %0 = load float*** %m, align 8, !dbg !475, !tbaa !463
+  %arrayidx = getelementptr inbounds float** %0, i64 %indvars.iv, !dbg !475
+  %1 = load float** %arrayidx, align 8, !dbg !475, !tbaa !463
+  %2 = bitcast float* %1 to i8*, !dbg !475
+  tail call void @save_free(i8* getelementptr inbounds ([8 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 73, i8* %2) #9, !dbg !475
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !473
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !473
+  %exitcond = icmp eq i32 %lftr.wideiv, %nx, !dbg !473
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !473
 
-; <label>:3                                       ; preds = %3, %.lr.ph
-  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
-  %4 = load float*** %m, align 8, !tbaa !14
-  %5 = getelementptr inbounds float** %4, i64 %indvars.iv
-  %6 = bitcast float** %5 to i8**
-  %7 = load i8** %6, align 8, !tbaa !14
-  tail call void @save_free(i8* getelementptr inbounds ([8 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 73, i8* %7) #10
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %2
-  br i1 %exitcond, label %._crit_edge, label %3
-
-._crit_edge:                                      ; preds = %3, %0
-  %8 = bitcast float*** %m to i8**
-  %9 = load i8** %8, align 8, !tbaa !14
-  tail call void @save_free(i8* getelementptr inbounds ([3 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 74, i8* %9) #10
-  store float** null, float*** %m, align 8, !tbaa !14
-  ret void
+for.end:                                          ; preds = %for.body, %entry
+  %3 = load float*** %m, align 8, !dbg !476, !tbaa !463
+  %4 = bitcast float** %3 to i8*, !dbg !476
+  tail call void @save_free(i8* getelementptr inbounds ([3 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 74, i8* %4) #9, !dbg !476
+  store float** null, float*** %m, align 8, !dbg !477, !tbaa !463
+  ret void, !dbg !478
 }

@@ -1,0 +1,27 @@
+define zeroext i1 @_ZN20MACAddressDescriptor16setFieldAsStringEiiPKc(%class.MACAddressDescriptor* nocapture %this, i32 %field, i32 %i, i8* %value) unnamed_addr #5 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.MACAddressDescriptor* %this}, i64 0, metadata !2783), !dbg !2965
+  tail call void @llvm.dbg.value(metadata !{i32 %field}, i64 0, metadata !2784), !dbg !2965
+  tail call void @llvm.dbg.value(metadata !{i32 %i}, i64 0, metadata !2785), !dbg !2965
+  tail call void @llvm.dbg.value(metadata !{i8* %value}, i64 0, metadata !2786), !dbg !2965
+  %p = getelementptr inbounds %class.MACAddressDescriptor* %this, i64 0, i32 0, i32 1, !dbg !2966
+  %0 = load i8** %p, align 8, !dbg !2966, !tbaa !2913
+  tail call void @llvm.dbg.value(metadata !{%class.MACAddress_Base* %1}, i64 0, metadata !2787), !dbg !2966
+  %cond = icmp eq i32 %field, 0, !dbg !2967
+  br i1 %cond, label %sw.bb, label %return, !dbg !2967
+
+sw.bb:                                            ; preds = %entry
+  %1 = bitcast i8* %0 to %class.MACAddress_Base*, !dbg !2966
+  %2 = bitcast i8* %0 to void (%class.MACAddress_Base*, i32, i8)***, !dbg !2968
+  %vtable = load void (%class.MACAddress_Base*, i32, i8)*** %2, align 8, !dbg !2968, !tbaa !2889
+  %vfn = getelementptr inbounds void (%class.MACAddress_Base*, i32, i8)** %vtable, i64 4, !dbg !2968
+  %3 = load void (%class.MACAddress_Base*, i32, i8)** %vfn, align 8, !dbg !2968
+  %call = tail call i64 @_ZN17cStructDescriptor11string2longEPKc(i8* %value) #10, !dbg !2968
+  %conv = trunc i64 %call to i8, !dbg !2968
+  tail call void %3(%class.MACAddress_Base* %1, i32 %i, i8 zeroext %conv) #10, !dbg !2968
+  br label %return, !dbg !2968
+
+return:                                           ; preds = %entry, %sw.bb
+  %retval.0 = phi i1 [ true, %sw.bb ], [ false, %entry ]
+  ret i1 %retval.0, !dbg !2970
+}

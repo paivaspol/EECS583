@@ -1,219 +1,223 @@
 define i32 @ReadSeq(%struct.ReadSeqVars* %V, i32 %format, i8** nocapture %ret_seq, %struct.seqinfo_s* %sqinfo) #0 {
 entry:
-  store i32 0, i32* @squid_errno, align 4, !tbaa !0
-  %format1 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 20
-  %0 = load i32* %format1, align 4, !tbaa !0
-  %cmp = icmp sgt i32 %0, 100
-  br i1 %cmp, label %if.then, label %if.else
+  tail call void @llvm.dbg.value(metadata !{%struct.ReadSeqVars* %V}, i64 0, metadata !337), !dbg !815
+  tail call void @llvm.dbg.value(metadata !{i32 %format}, i64 0, metadata !338), !dbg !815
+  tail call void @llvm.dbg.value(metadata !{i8** %ret_seq}, i64 0, metadata !339), !dbg !815
+  tail call void @llvm.dbg.value(metadata !{%struct.seqinfo_s* %sqinfo}, i64 0, metadata !340), !dbg !815
+  store i32 0, i32* @squid_errno, align 4, !dbg !816, !tbaa !600
+  %format1 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 20, !dbg !817
+  %0 = load i32* %format1, align 4, !dbg !817, !tbaa !600
+  %cmp = icmp sgt i32 %0, 100, !dbg !817
+  br i1 %cmp, label %if.then, label %if.else, !dbg !817
 
 if.then:                                          ; preds = %entry
-  %msa = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 23
-  %1 = load %struct.msa_struct** %msa, align 8, !tbaa !3
-  %lastidx = getelementptr inbounds %struct.msa_struct* %1, i64 0, i32 45
-  %2 = load i32* %lastidx, align 4, !tbaa !0
-  %nseq = getelementptr inbounds %struct.msa_struct* %1, i64 0, i32 4
-  %3 = load i32* %nseq, align 4, !tbaa !0
-  %cmp3 = icmp slt i32 %2, %3
-  br i1 %cmp3, label %if.end11, label %if.then4
+  %msa = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 23, !dbg !818
+  %1 = load %struct.msa_struct** %msa, align 8, !dbg !818, !tbaa !612
+  %lastidx = getelementptr inbounds %struct.msa_struct* %1, i64 0, i32 45, !dbg !818
+  %2 = load i32* %lastidx, align 4, !dbg !818, !tbaa !600
+  %nseq = getelementptr inbounds %struct.msa_struct* %1, i64 0, i32 4, !dbg !818
+  %3 = load i32* %nseq, align 4, !dbg !818, !tbaa !600
+  %cmp3 = icmp slt i32 %2, %3, !dbg !818
+  br i1 %cmp3, label %if.end11, label %if.then4, !dbg !818
 
 if.then4:                                         ; preds = %if.then
-  tail call void @MSAFree(%struct.msa_struct* %1) #8
-  %afp = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 24
-  %4 = load %struct.msafile_struct** %afp, align 8, !tbaa !3
-  %call = tail call %struct.msa_struct* @MSAFileRead(%struct.msafile_struct* %4) #8
-  store %struct.msa_struct* %call, %struct.msa_struct** %msa, align 8, !tbaa !3
-  %cmp7 = icmp eq %struct.msa_struct* %call, null
-  br i1 %cmp7, label %return, label %if.end
+  tail call void @MSAFree(%struct.msa_struct* %1) #9, !dbg !820
+  %afp = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 24, !dbg !822
+  %4 = load %struct.msafile_struct** %afp, align 8, !dbg !822, !tbaa !612
+  %call = tail call %struct.msa_struct* @MSAFileRead(%struct.msafile_struct* %4) #9, !dbg !822
+  store %struct.msa_struct* %call, %struct.msa_struct** %msa, align 8, !dbg !822, !tbaa !612
+  %cmp7 = icmp eq %struct.msa_struct* %call, null, !dbg !822
+  br i1 %cmp7, label %return, label %if.end, !dbg !822
 
 if.end:                                           ; preds = %if.then4
-  %lastidx10 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 45
-  store i32 0, i32* %lastidx10, align 4, !tbaa !0
-  br label %if.end11
+  %lastidx10 = getelementptr inbounds %struct.msa_struct* %call, i64 0, i32 45, !dbg !823
+  store i32 0, i32* %lastidx10, align 4, !dbg !823, !tbaa !600
+  br label %if.end11, !dbg !824
 
 if.end11:                                         ; preds = %if.then, %if.end
   %5 = phi i32 [ %2, %if.then ], [ 0, %if.end ]
   %6 = phi %struct.msa_struct* [ %1, %if.then ], [ %call, %if.end ]
-  %idxprom = sext i32 %5 to i64
-  %aseq = getelementptr inbounds %struct.msa_struct* %6, i64 0, i32 0
-  %7 = load i8*** %aseq, align 8, !tbaa !3
-  %arrayidx = getelementptr inbounds i8** %7, i64 %idxprom
-  %8 = load i8** %arrayidx, align 8, !tbaa !3
-  %alen = getelementptr inbounds %struct.msa_struct* %6, i64 0, i32 3
-  %9 = load i32* %alen, align 4, !tbaa !0
-  %seq = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 15
-  %call22 = tail call i32 @MakeDealignedString(i8* %8, i32 %9, i8* %8, i8** %seq) #8
-  %10 = load i8** %seq, align 8, !tbaa !3
-  %call24 = tail call i64 @strlen(i8* %10) #9
-  %conv = trunc i64 %call24 to i32
-  %seqlen = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 18
-  store i32 %conv, i32* %seqlen, align 4, !tbaa !0
-  %flags = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 0
-  store i32 0, i32* %flags, align 4, !tbaa !0
-  %11 = load %struct.msa_struct** %msa, align 8, !tbaa !3
-  %lastidx26 = getelementptr inbounds %struct.msa_struct* %11, i64 0, i32 45
-  %12 = load i32* %lastidx26, align 4, !tbaa !0
-  %idxprom27 = sext i32 %12 to i64
-  %sqname = getelementptr inbounds %struct.msa_struct* %11, i64 0, i32 1
-  %13 = load i8*** %sqname, align 8, !tbaa !3
-  %arrayidx29 = getelementptr inbounds i8** %13, i64 %idxprom27
-  %14 = load i8** %arrayidx29, align 8, !tbaa !3
-  %cmp30 = icmp eq i8* %14, null
-  br i1 %cmp30, label %if.end40, label %if.then32
+  %idxprom = sext i32 %5 to i64, !dbg !825
+  %aseq = getelementptr inbounds %struct.msa_struct* %6, i64 0, i32 0, !dbg !825
+  %7 = load i8*** %aseq, align 8, !dbg !825, !tbaa !612
+  %arrayidx = getelementptr inbounds i8** %7, i64 %idxprom, !dbg !825
+  %8 = load i8** %arrayidx, align 8, !dbg !825, !tbaa !612
+  %alen = getelementptr inbounds %struct.msa_struct* %6, i64 0, i32 3, !dbg !825
+  %9 = load i32* %alen, align 4, !dbg !825, !tbaa !600
+  %seq = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 15, !dbg !825
+  %call22 = tail call i32 @MakeDealignedString(i8* %8, i32 %9, i8* %8, i8** %seq) #9, !dbg !825
+  %10 = load i8** %seq, align 8, !dbg !826, !tbaa !612
+  %call24 = tail call i64 @strlen(i8* %10) #10, !dbg !826
+  %conv = trunc i64 %call24 to i32, !dbg !826
+  %seqlen = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 18, !dbg !826
+  store i32 %conv, i32* %seqlen, align 4, !dbg !826, !tbaa !600
+  %flags = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 0, !dbg !827
+  store i32 0, i32* %flags, align 4, !dbg !827, !tbaa !600
+  %11 = load %struct.msa_struct** %msa, align 8, !dbg !828, !tbaa !612
+  %lastidx26 = getelementptr inbounds %struct.msa_struct* %11, i64 0, i32 45, !dbg !828
+  %12 = load i32* %lastidx26, align 4, !dbg !828, !tbaa !600
+  %idxprom27 = sext i32 %12 to i64, !dbg !828
+  %sqname = getelementptr inbounds %struct.msa_struct* %11, i64 0, i32 1, !dbg !828
+  %13 = load i8*** %sqname, align 8, !dbg !828, !tbaa !612
+  %arrayidx29 = getelementptr inbounds i8** %13, i64 %idxprom27, !dbg !828
+  %14 = load i8** %arrayidx29, align 8, !dbg !828, !tbaa !612
+  %cmp30 = icmp eq i8* %14, null, !dbg !828
+  br i1 %cmp30, label %if.end40, label %if.then32, !dbg !828
 
 if.then32:                                        ; preds = %if.end11
-  %call39 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %sqinfo, i8* %14, i32 1) #7
-  %.pre = load %struct.msa_struct** %msa, align 8, !tbaa !3
-  br label %if.end40
+  %call39 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %sqinfo, i8* %14, i32 1) #8, !dbg !829
+  %.pre = load %struct.msa_struct** %msa, align 8, !dbg !830, !tbaa !612
+  br label %if.end40, !dbg !829
 
 if.end40:                                         ; preds = %if.end11, %if.then32
   %15 = phi %struct.msa_struct* [ %11, %if.end11 ], [ %.pre, %if.then32 ]
-  %sqacc = getelementptr inbounds %struct.msa_struct* %15, i64 0, i32 14
-  %16 = load i8*** %sqacc, align 8, !tbaa !3
-  %cmp42 = icmp eq i8** %16, null
-  br i1 %cmp42, label %if.end60, label %land.lhs.true
+  %sqacc = getelementptr inbounds %struct.msa_struct* %15, i64 0, i32 14, !dbg !830
+  %16 = load i8*** %sqacc, align 8, !dbg !830, !tbaa !612
+  %cmp42 = icmp eq i8** %16, null, !dbg !830
+  br i1 %cmp42, label %if.end60, label %land.lhs.true, !dbg !830
 
 land.lhs.true:                                    ; preds = %if.end40
-  %lastidx45 = getelementptr inbounds %struct.msa_struct* %15, i64 0, i32 45
-  %17 = load i32* %lastidx45, align 4, !tbaa !0
-  %idxprom46 = sext i32 %17 to i64
-  %arrayidx49 = getelementptr inbounds i8** %16, i64 %idxprom46
-  %18 = load i8** %arrayidx49, align 8, !tbaa !3
-  %cmp50 = icmp eq i8* %18, null
-  br i1 %cmp50, label %if.end60, label %if.then52
+  %lastidx45 = getelementptr inbounds %struct.msa_struct* %15, i64 0, i32 45, !dbg !830
+  %17 = load i32* %lastidx45, align 4, !dbg !830, !tbaa !600
+  %idxprom46 = sext i32 %17 to i64, !dbg !830
+  %arrayidx49 = getelementptr inbounds i8** %16, i64 %idxprom46, !dbg !830
+  %18 = load i8** %arrayidx49, align 8, !dbg !830, !tbaa !612
+  %cmp50 = icmp eq i8* %18, null, !dbg !830
+  br i1 %cmp50, label %if.end60, label %if.then52, !dbg !830
 
 if.then52:                                        ; preds = %land.lhs.true
-  %call59 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %sqinfo, i8* %18, i32 4) #7
-  %.pre472 = load %struct.msa_struct** %msa, align 8, !tbaa !3
-  br label %if.end60
+  %call59 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %sqinfo, i8* %18, i32 4) #8, !dbg !831
+  %.pre472 = load %struct.msa_struct** %msa, align 8, !dbg !832, !tbaa !612
+  br label %if.end60, !dbg !831
 
 if.end60:                                         ; preds = %land.lhs.true, %if.end40, %if.then52
   %19 = phi %struct.msa_struct* [ %15, %land.lhs.true ], [ %15, %if.end40 ], [ %.pre472, %if.then52 ]
-  %sqdesc = getelementptr inbounds %struct.msa_struct* %19, i64 0, i32 15
-  %20 = load i8*** %sqdesc, align 8, !tbaa !3
-  %cmp62 = icmp eq i8** %20, null
-  br i1 %cmp62, label %if.end81, label %land.lhs.true64
+  %sqdesc = getelementptr inbounds %struct.msa_struct* %19, i64 0, i32 15, !dbg !832
+  %20 = load i8*** %sqdesc, align 8, !dbg !832, !tbaa !612
+  %cmp62 = icmp eq i8** %20, null, !dbg !832
+  br i1 %cmp62, label %if.end81, label %land.lhs.true64, !dbg !832
 
 land.lhs.true64:                                  ; preds = %if.end60
-  %lastidx66 = getelementptr inbounds %struct.msa_struct* %19, i64 0, i32 45
-  %21 = load i32* %lastidx66, align 4, !tbaa !0
-  %idxprom67 = sext i32 %21 to i64
-  %arrayidx70 = getelementptr inbounds i8** %20, i64 %idxprom67
-  %22 = load i8** %arrayidx70, align 8, !tbaa !3
-  %cmp71 = icmp eq i8* %22, null
-  br i1 %cmp71, label %if.end81, label %if.then73
+  %lastidx66 = getelementptr inbounds %struct.msa_struct* %19, i64 0, i32 45, !dbg !832
+  %21 = load i32* %lastidx66, align 4, !dbg !832, !tbaa !600
+  %idxprom67 = sext i32 %21 to i64, !dbg !832
+  %arrayidx70 = getelementptr inbounds i8** %20, i64 %idxprom67, !dbg !832
+  %22 = load i8** %arrayidx70, align 8, !dbg !832, !tbaa !612
+  %cmp71 = icmp eq i8* %22, null, !dbg !832
+  br i1 %cmp71, label %if.end81, label %if.then73, !dbg !832
 
 if.then73:                                        ; preds = %land.lhs.true64
-  %call80 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %sqinfo, i8* %22, i32 8) #7
-  %.pre473 = load %struct.msa_struct** %msa, align 8, !tbaa !3
-  br label %if.end81
+  %call80 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %sqinfo, i8* %22, i32 8) #8, !dbg !833
+  %.pre473 = load %struct.msa_struct** %msa, align 8, !dbg !834, !tbaa !612
+  br label %if.end81, !dbg !833
 
 if.end81:                                         ; preds = %land.lhs.true64, %if.end60, %if.then73
   %23 = phi %struct.msa_struct* [ %19, %land.lhs.true64 ], [ %19, %if.end60 ], [ %.pre473, %if.then73 ]
-  %ss = getelementptr inbounds %struct.msa_struct* %23, i64 0, i32 16
-  %24 = load i8*** %ss, align 8, !tbaa !3
-  %cmp83 = icmp eq i8** %24, null
-  br i1 %cmp83, label %if.end112, label %land.lhs.true85
+  %ss = getelementptr inbounds %struct.msa_struct* %23, i64 0, i32 16, !dbg !834
+  %24 = load i8*** %ss, align 8, !dbg !834, !tbaa !612
+  %cmp83 = icmp eq i8** %24, null, !dbg !834
+  br i1 %cmp83, label %if.end112, label %land.lhs.true85, !dbg !834
 
 land.lhs.true85:                                  ; preds = %if.end81
-  %lastidx87 = getelementptr inbounds %struct.msa_struct* %23, i64 0, i32 45
-  %25 = load i32* %lastidx87, align 4, !tbaa !0
-  %idxprom88 = sext i32 %25 to i64
-  %arrayidx91 = getelementptr inbounds i8** %24, i64 %idxprom88
-  %26 = load i8** %arrayidx91, align 8, !tbaa !3
-  %cmp92 = icmp eq i8* %26, null
-  br i1 %cmp92, label %if.end112, label %if.then94
+  %lastidx87 = getelementptr inbounds %struct.msa_struct* %23, i64 0, i32 45, !dbg !834
+  %25 = load i32* %lastidx87, align 4, !dbg !834, !tbaa !600
+  %idxprom88 = sext i32 %25 to i64, !dbg !834
+  %arrayidx91 = getelementptr inbounds i8** %24, i64 %idxprom88, !dbg !834
+  %26 = load i8** %arrayidx91, align 8, !dbg !834, !tbaa !612
+  %cmp92 = icmp eq i8* %26, null, !dbg !834
+  br i1 %cmp92, label %if.end112, label %if.then94, !dbg !834
 
 if.then94:                                        ; preds = %land.lhs.true85
-  %aseq99 = getelementptr inbounds %struct.msa_struct* %23, i64 0, i32 0
-  %27 = load i8*** %aseq99, align 8, !tbaa !3
-  %arrayidx100 = getelementptr inbounds i8** %27, i64 %idxprom88
-  %28 = load i8** %arrayidx100, align 8, !tbaa !3
-  %alen102 = getelementptr inbounds %struct.msa_struct* %23, i64 0, i32 3
-  %29 = load i32* %alen102, align 4, !tbaa !0
-  %ss109 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 10
-  %call110 = tail call i32 @MakeDealignedString(i8* %28, i32 %29, i8* %26, i8** %ss109) #8
-  %30 = load i32* %flags, align 4, !tbaa !0
-  %or = or i32 %30, 512
-  store i32 %or, i32* %flags, align 4, !tbaa !0
-  %.pre474 = load %struct.msa_struct** %msa, align 8, !tbaa !3
-  br label %if.end112
+  %aseq99 = getelementptr inbounds %struct.msa_struct* %23, i64 0, i32 0, !dbg !835
+  %27 = load i8*** %aseq99, align 8, !dbg !835, !tbaa !612
+  %arrayidx100 = getelementptr inbounds i8** %27, i64 %idxprom88, !dbg !835
+  %28 = load i8** %arrayidx100, align 8, !dbg !835, !tbaa !612
+  %alen102 = getelementptr inbounds %struct.msa_struct* %23, i64 0, i32 3, !dbg !835
+  %29 = load i32* %alen102, align 4, !dbg !835, !tbaa !600
+  %ss109 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 10, !dbg !835
+  %call110 = tail call i32 @MakeDealignedString(i8* %28, i32 %29, i8* %26, i8** %ss109) #9, !dbg !835
+  %30 = load i32* %flags, align 4, !dbg !837, !tbaa !600
+  %or = or i32 %30, 512, !dbg !837
+  store i32 %or, i32* %flags, align 4, !dbg !837, !tbaa !600
+  %.pre474 = load %struct.msa_struct** %msa, align 8, !dbg !838, !tbaa !612
+  br label %if.end112, !dbg !839
 
 if.end112:                                        ; preds = %land.lhs.true85, %if.end81, %if.then94
   %31 = phi %struct.msa_struct* [ %23, %land.lhs.true85 ], [ %23, %if.end81 ], [ %.pre474, %if.then94 ]
-  %sa = getelementptr inbounds %struct.msa_struct* %31, i64 0, i32 17
-  %32 = load i8*** %sa, align 8, !tbaa !3
-  %cmp114 = icmp eq i8** %32, null
-  br i1 %cmp114, label %if.end144, label %land.lhs.true116
+  %sa = getelementptr inbounds %struct.msa_struct* %31, i64 0, i32 17, !dbg !838
+  %32 = load i8*** %sa, align 8, !dbg !838, !tbaa !612
+  %cmp114 = icmp eq i8** %32, null, !dbg !838
+  br i1 %cmp114, label %if.end144, label %land.lhs.true116, !dbg !838
 
 land.lhs.true116:                                 ; preds = %if.end112
-  %lastidx118 = getelementptr inbounds %struct.msa_struct* %31, i64 0, i32 45
-  %33 = load i32* %lastidx118, align 4, !tbaa !0
-  %idxprom119 = sext i32 %33 to i64
-  %arrayidx122 = getelementptr inbounds i8** %32, i64 %idxprom119
-  %34 = load i8** %arrayidx122, align 8, !tbaa !3
-  %cmp123 = icmp eq i8* %34, null
-  br i1 %cmp123, label %if.end144, label %if.then125
+  %lastidx118 = getelementptr inbounds %struct.msa_struct* %31, i64 0, i32 45, !dbg !838
+  %33 = load i32* %lastidx118, align 4, !dbg !838, !tbaa !600
+  %idxprom119 = sext i32 %33 to i64, !dbg !838
+  %arrayidx122 = getelementptr inbounds i8** %32, i64 %idxprom119, !dbg !838
+  %34 = load i8** %arrayidx122, align 8, !dbg !838, !tbaa !612
+  %cmp123 = icmp eq i8* %34, null, !dbg !838
+  br i1 %cmp123, label %if.end144, label %if.then125, !dbg !838
 
 if.then125:                                       ; preds = %land.lhs.true116
-  %aseq130 = getelementptr inbounds %struct.msa_struct* %31, i64 0, i32 0
-  %35 = load i8*** %aseq130, align 8, !tbaa !3
-  %arrayidx131 = getelementptr inbounds i8** %35, i64 %idxprom119
-  %36 = load i8** %arrayidx131, align 8, !tbaa !3
-  %alen133 = getelementptr inbounds %struct.msa_struct* %31, i64 0, i32 3
-  %37 = load i32* %alen133, align 4, !tbaa !0
-  %sa140 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 11
-  %call141 = tail call i32 @MakeDealignedString(i8* %36, i32 %37, i8* %34, i8** %sa140) #8
-  %38 = load i32* %flags, align 4, !tbaa !0
-  %or143 = or i32 %38, 1024
-  store i32 %or143, i32* %flags, align 4, !tbaa !0
-  %.pre475 = load %struct.msa_struct** %msa, align 8, !tbaa !3
-  br label %if.end144
+  %aseq130 = getelementptr inbounds %struct.msa_struct* %31, i64 0, i32 0, !dbg !840
+  %35 = load i8*** %aseq130, align 8, !dbg !840, !tbaa !612
+  %arrayidx131 = getelementptr inbounds i8** %35, i64 %idxprom119, !dbg !840
+  %36 = load i8** %arrayidx131, align 8, !dbg !840, !tbaa !612
+  %alen133 = getelementptr inbounds %struct.msa_struct* %31, i64 0, i32 3, !dbg !840
+  %37 = load i32* %alen133, align 4, !dbg !840, !tbaa !600
+  %sa140 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 11, !dbg !840
+  %call141 = tail call i32 @MakeDealignedString(i8* %36, i32 %37, i8* %34, i8** %sa140) #9, !dbg !840
+  %38 = load i32* %flags, align 4, !dbg !842, !tbaa !600
+  %or143 = or i32 %38, 1024, !dbg !842
+  store i32 %or143, i32* %flags, align 4, !dbg !842, !tbaa !600
+  %.pre475 = load %struct.msa_struct** %msa, align 8, !dbg !843, !tbaa !612
+  br label %if.end144, !dbg !844
 
 if.end144:                                        ; preds = %if.end112, %land.lhs.true116, %if.then125
   %39 = phi %struct.msa_struct* [ %31, %land.lhs.true116 ], [ %.pre475, %if.then125 ], [ %31, %if.end112 ]
-  %lastidx146 = getelementptr inbounds %struct.msa_struct* %39, i64 0, i32 45
-  %40 = load i32* %lastidx146, align 4, !tbaa !0
-  %inc = add nsw i32 %40, 1
-  store i32 %inc, i32* %lastidx146, align 4, !tbaa !0
-  br label %if.end192
+  %lastidx146 = getelementptr inbounds %struct.msa_struct* %39, i64 0, i32 45, !dbg !843
+  %40 = load i32* %lastidx146, align 4, !dbg !843, !tbaa !600
+  %inc = add nsw i32 %40, 1, !dbg !843
+  store i32 %inc, i32* %lastidx146, align 4, !dbg !843, !tbaa !600
+  br label %if.end192, !dbg !845
 
 if.else:                                          ; preds = %entry
-  %f = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 0
-  %41 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call147 = tail call i32 @feof(%struct._IO_FILE* %41) #8
-  %tobool = icmp eq i32 %call147, 0
-  br i1 %tobool, label %if.end149, label %return
+  %f = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 0, !dbg !846
+  %41 = load %struct._IO_FILE** %f, align 8, !dbg !846, !tbaa !612
+  %call147 = tail call i32 @feof(%struct._IO_FILE* %41) #9, !dbg !846
+  %tobool = icmp eq i32 %call147, 0, !dbg !846
+  br i1 %tobool, label %if.end149, label %return, !dbg !846
 
 if.end149:                                        ; preds = %if.else
-  %ssimode = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 5
-  %42 = load i32* %ssimode, align 4, !tbaa !0
-  %cmp150 = icmp eq i32 %42, -1
-  br i1 %cmp150, label %if.then152, label %if.else155
+  %ssimode = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 5, !dbg !848
+  %42 = load i32* %ssimode, align 4, !dbg !848, !tbaa !600
+  %cmp150 = icmp eq i32 %42, -1, !dbg !848
+  br i1 %cmp150, label %if.then152, label %if.else155, !dbg !848
 
 if.then152:                                       ; preds = %if.end149
-  %call153 = tail call noalias i8* @calloc(i64 501, i64 1) #8
-  %seq154 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 15
-  store i8* %call153, i8** %seq154, align 8, !tbaa !3
-  %maxseq = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 19
-  store i32 500, i32* %maxseq, align 4, !tbaa !0
-  br label %if.end158
+  %call153 = tail call noalias i8* @calloc(i64 501, i64 1) #9, !dbg !849
+  %seq154 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 15, !dbg !849
+  store i8* %call153, i8** %seq154, align 8, !dbg !849, !tbaa !612
+  %maxseq = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 19, !dbg !851
+  store i32 500, i32* %maxseq, align 4, !dbg !851, !tbaa !600
+  br label %if.end158, !dbg !852
 
 if.else155:                                       ; preds = %if.end149
-  %seq156 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 15
-  store i8* null, i8** %seq156, align 8, !tbaa !3
-  %maxseq157 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 19
-  store i32 0, i32* %maxseq157, align 4, !tbaa !0
+  %seq156 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 15, !dbg !853
+  store i8* null, i8** %seq156, align 8, !dbg !853, !tbaa !612
+  %maxseq157 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 19, !dbg !855
+  store i32 0, i32* %maxseq157, align 4, !dbg !855, !tbaa !600
   br label %if.end158
 
 if.end158:                                        ; preds = %if.else155, %if.then152
   %43 = phi i8* [ null, %if.else155 ], [ %call153, %if.then152 ]
-  %seqlen159 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 18
-  store i32 0, i32* %seqlen159, align 4, !tbaa !0
-  %sqinfo160 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 16
-  store %struct.seqinfo_s* %sqinfo, %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %flags162 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 0
-  store i32 0, i32* %flags162, align 4, !tbaa !0
-  %44 = load i32* %format1, align 4, !tbaa !0
+  %seqlen159 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 18, !dbg !856
+  store i32 0, i32* %seqlen159, align 4, !dbg !856, !tbaa !600
+  %sqinfo160 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 16, !dbg !857
+  store %struct.seqinfo_s* %sqinfo, %struct.seqinfo_s** %sqinfo160, align 8, !dbg !857, !tbaa !612
+  %flags162 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 0, !dbg !858
+  store i32 0, i32* %flags162, align 4, !dbg !858, !tbaa !600
+  %44 = load i32* %format1, align 4, !dbg !859, !tbaa !600
   switch i32 %44, label %sw.default [
     i32 1, label %sw.bb
     i32 6, label %sw.bb164
@@ -224,956 +228,991 @@ if.end158:                                        ; preds = %if.else155, %if.the
     i32 12, label %sw.bb169
     i32 16, label %sw.bb170
     i32 5, label %do.body.preheader
-  ]
+  ], !dbg !859
 
 do.body.preheader:                                ; preds = %if.end158
-  %buf = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 3
-  br label %do.body
+  %buf = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 3, !dbg !860
+  br label %do.body, !dbg !860
 
 sw.bb:                                            ; preds = %if.end158
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #8
-  %45 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call46.i = tail call i32 @feof(%struct._IO_FILE* %45) #8
-  %tobool47.i = icmp eq i32 %call46.i, 0
-  %buf.i = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 3
-  br i1 %tobool47.i, label %lor.rhs.i, label %do.end.i
+  tail call void @llvm.dbg.value(metadata !{%struct.ReadSeqVars* %V}, i64 0, metadata !863) #6, !dbg !865
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #9, !dbg !866
+  %45 = load %struct._IO_FILE** %f, align 8, !dbg !868, !tbaa !612
+  %call46.i = tail call i32 @feof(%struct._IO_FILE* %45) #9, !dbg !868
+  %tobool47.i = icmp eq i32 %call46.i, 0, !dbg !868
+  %buf.i = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 3, !dbg !868
+  br i1 %tobool47.i, label %lor.rhs.i, label %do.end.i, !dbg !868
 
 lor.rhs.i:                                        ; preds = %sw.bb, %do.body.backedge.i
-  %46 = load i8** %buf.i, align 8, !tbaa !3
-  %47 = load i8* %46, align 1, !tbaa !1
+  %46 = load i8** %buf.i, align 8, !dbg !868, !tbaa !612
+  %47 = load i8* %46, align 1, !dbg !868, !tbaa !601
   switch i8 %47, label %do.end.i [
     i8 59, label %do.body.backedge.i
     i8 0, label %do.body.backedge.i
   ]
 
 do.body.backedge.i:                               ; preds = %lor.rhs.i, %lor.rhs.i
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #8
-  %48 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call.i = tail call i32 @feof(%struct._IO_FILE* %48) #8
-  %tobool.i = icmp eq i32 %call.i, 0
-  br i1 %tobool.i, label %lor.rhs.i, label %do.end.i
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #9, !dbg !866
+  %48 = load %struct._IO_FILE** %f, align 8, !dbg !868, !tbaa !612
+  %call.i = tail call i32 @feof(%struct._IO_FILE* %48) #9, !dbg !868
+  %tobool.i = icmp eq i32 %call.i, 0, !dbg !868
+  br i1 %tobool.i, label %lor.rhs.i, label %do.end.i, !dbg !868
 
 do.end.i:                                         ; preds = %sw.bb, %do.body.backedge.i, %lor.rhs.i
-  %49 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call7.i = tail call i32 @feof(%struct._IO_FILE* %49) #8
-  %tobool8.i = icmp eq i32 %call7.i, 0
-  br i1 %tobool8.i, label %if.then.i, label %while.cond.preheader.i
+  %49 = load %struct._IO_FILE** %f, align 8, !dbg !869, !tbaa !612
+  %call7.i = tail call i32 @feof(%struct._IO_FILE* %49) #9, !dbg !869
+  %tobool8.i = icmp eq i32 %call7.i, 0, !dbg !869
+  br i1 %tobool8.i, label %if.then.i, label %while.cond.preheader.i, !dbg !869
 
 if.then.i:                                        ; preds = %do.end.i
-  %50 = load i8** %buf.i, align 8, !tbaa !3
-  %call10.i = tail call i8* @strtok(i8* %50, i8* getelementptr inbounds ([4 x i8]* @.str114, i64 0, i64 0)) #8
-  %cmp11.i = icmp eq i8* %call10.i, null
-  br i1 %cmp11.i, label %if.end.i, label %if.then13.i
+  %50 = load i8** %buf.i, align 8, !dbg !870, !tbaa !612
+  %call10.i = tail call i8* @strtok(i8* %50, i8* getelementptr inbounds ([4 x i8]* @.str114, i64 0, i64 0)) #9, !dbg !870
+  tail call void @llvm.dbg.value(metadata !{i8* %call10.i}, i64 0, metadata !872) #6, !dbg !870
+  %cmp11.i = icmp eq i8* %call10.i, null, !dbg !870
+  br i1 %cmp11.i, label %if.end.i, label %if.then13.i, !dbg !870
 
 if.then13.i:                                      ; preds = %if.then.i
-  %51 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %call14.i = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %51, i8* %call10.i, i32 1) #8
-  br label %if.end.i
+  %51 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !873, !tbaa !612
+  %call14.i = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %51, i8* %call10.i, i32 1) #9, !dbg !873
+  br label %if.end.i, !dbg !873
 
 if.end.i:                                         ; preds = %if.then13.i, %if.then.i
-  tail call fastcc void @readLoop(i32 0, i32 (i8*, i32*)* @endIG, %struct.ReadSeqVars* %V) #8
-  br label %while.cond.preheader.i
+  tail call fastcc void @readLoop(i32 0, i32 (i8*, i32*)* @endIG, %struct.ReadSeqVars* %V) #9, !dbg !874
+  br label %while.cond.preheader.i, !dbg !875
 
 while.cond.preheader.i:                           ; preds = %if.end.i, %do.end.i
-  %52 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call1744.i = tail call i32 @feof(%struct._IO_FILE* %52) #8
-  %tobool1845.i = icmp eq i32 %call1744.i, 0
-  br i1 %tobool1845.i, label %lor.rhs19.i, label %sw.epilog
+  %52 = load %struct._IO_FILE** %f, align 8, !dbg !876, !tbaa !612
+  %call1744.i = tail call i32 @feof(%struct._IO_FILE* %52) #9, !dbg !876
+  %tobool1845.i = icmp eq i32 %call1744.i, 0, !dbg !876
+  br i1 %tobool1845.i, label %lor.rhs19.i, label %sw.epilog, !dbg !876
 
 lor.rhs19.i:                                      ; preds = %while.cond.preheader.i, %while.body.i
-  %53 = load i8** %buf.i, align 8, !tbaa !3
-  %54 = load i8* %53, align 1, !tbaa !1
+  %53 = load i8** %buf.i, align 8, !dbg !876, !tbaa !612
+  %54 = load i8* %53, align 1, !dbg !876, !tbaa !601
   %phitmp43.i = icmp eq i8 %54, 59
   br i1 %phitmp43.i, label %sw.epilog, label %while.body.i
 
 while.body.i:                                     ; preds = %lor.rhs19.i
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #8
-  %55 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call17.i = tail call i32 @feof(%struct._IO_FILE* %55) #8
-  %tobool18.i = icmp eq i32 %call17.i, 0
-  br i1 %tobool18.i, label %lor.rhs19.i, label %sw.epilog
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #9, !dbg !877
+  %55 = load %struct._IO_FILE** %f, align 8, !dbg !876, !tbaa !612
+  %call17.i = tail call i32 @feof(%struct._IO_FILE* %55) #9, !dbg !876
+  %tobool18.i = icmp eq i32 %call17.i, 0, !dbg !876
+  br i1 %tobool18.i, label %lor.rhs19.i, label %sw.epilog, !dbg !876
 
 sw.bb164:                                         ; preds = %if.end158
-  %buf.i283 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 3
-  %56 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call41.i = tail call i32 @feof(%struct._IO_FILE* %56) #8
-  %tobool42.i = icmp eq i32 %call41.i, 0
-  br i1 %tobool42.i, label %land.rhs.i, label %while.end.i
+  tail call void @llvm.dbg.value(metadata !{%struct.ReadSeqVars* %V}, i64 0, metadata !878) #6, !dbg !880
+  %buf.i283 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 3, !dbg !881
+  %56 = load %struct._IO_FILE** %f, align 8, !dbg !881, !tbaa !612
+  %call41.i = tail call i32 @feof(%struct._IO_FILE* %56) #9, !dbg !881
+  %tobool42.i = icmp eq i32 %call41.i, 0, !dbg !881
+  br i1 %tobool42.i, label %land.rhs.i, label %while.end.i, !dbg !881
 
 land.rhs.i:                                       ; preds = %sw.bb164, %if.end12.i
-  %57 = load i8** %buf.i283, align 8, !tbaa !3
-  %58 = load i8* %57, align 1, !tbaa !1
-  %cmp.i = icmp eq i8 %58, 59
+  %57 = load i8** %buf.i283, align 8, !dbg !881, !tbaa !612
+  %58 = load i8* %57, align 1, !dbg !881, !tbaa !601
+  %cmp.i = icmp eq i8 %58, 59, !dbg !881
   br i1 %cmp.i, label %while.body.i286, label %while.end.i
 
 while.body.i286:                                  ; preds = %land.rhs.i
-  %call3.i = tail call i32 @strncmp(i8* %57, i8* getelementptr inbounds ([15 x i8]* @.str138, i64 0, i64 0), i64 14) #9
-  %cmp4.i = icmp eq i32 %call3.i, 0
-  br i1 %cmp4.i, label %if.then.i288, label %if.end12.i
+  %call3.i = tail call i32 @strncmp(i8* %57, i8* getelementptr inbounds ([15 x i8]* @.str138, i64 0, i64 0), i64 14) #10, !dbg !882
+  %cmp4.i = icmp eq i32 %call3.i, 0, !dbg !882
+  br i1 %cmp4.i, label %if.then.i288, label %if.end12.i, !dbg !882
 
 if.then.i288:                                     ; preds = %while.body.i286
-  %add.ptr.i = getelementptr inbounds i8* %57, i64 16
-  %call7.i287 = tail call i8* @strtok(i8* %add.ptr.i, i8* getelementptr inbounds ([5 x i8]* @.str139, i64 0, i64 0)) #8
-  %cmp8.i = icmp eq i8* %call7.i287, null
-  br i1 %cmp8.i, label %if.end12.i, label %if.then10.i
+  %add.ptr.i = getelementptr inbounds i8* %57, i64 16, !dbg !884
+  %call7.i287 = tail call i8* @strtok(i8* %add.ptr.i, i8* getelementptr inbounds ([5 x i8]* @.str139, i64 0, i64 0)) #9, !dbg !884
+  tail call void @llvm.dbg.value(metadata !{i8* %call7.i287}, i64 0, metadata !886) #6, !dbg !884
+  %cmp8.i = icmp eq i8* %call7.i287, null, !dbg !884
+  br i1 %cmp8.i, label %if.end12.i, label %if.then10.i, !dbg !884
 
 if.then10.i:                                      ; preds = %if.then.i288
-  %59 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %call11.i = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %59, i8* %call7.i287, i32 1) #8
-  br label %if.end12.i
+  %59 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !887, !tbaa !612
+  %call11.i = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %59, i8* %call7.i287, i32 1) #9, !dbg !887
+  br label %if.end12.i, !dbg !887
 
 if.end12.i:                                       ; preds = %if.then10.i, %if.then.i288, %while.body.i286
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #8
-  %60 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call.i289 = tail call i32 @feof(%struct._IO_FILE* %60) #8
-  %tobool.i290 = icmp eq i32 %call.i289, 0
-  br i1 %tobool.i290, label %land.rhs.i, label %while.end.i
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #9, !dbg !888
+  %60 = load %struct._IO_FILE** %f, align 8, !dbg !881, !tbaa !612
+  %call.i289 = tail call i32 @feof(%struct._IO_FILE* %60) #9, !dbg !881
+  %tobool.i290 = icmp eq i32 %call.i289, 0, !dbg !881
+  br i1 %tobool.i290, label %land.rhs.i, label %while.end.i, !dbg !881
 
 while.end.i:                                      ; preds = %if.end12.i, %land.rhs.i, %sw.bb164
-  %61 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call14.i291 = tail call i32 @feof(%struct._IO_FILE* %61) #8
-  %tobool15.i = icmp eq i32 %call14.i291, 0
-  br i1 %tobool15.i, label %if.then16.i, label %while.cond18.preheader.i
+  %61 = load %struct._IO_FILE** %f, align 8, !dbg !889, !tbaa !612
+  %call14.i291 = tail call i32 @feof(%struct._IO_FILE* %61) #9, !dbg !889
+  %tobool15.i = icmp eq i32 %call14.i291, 0, !dbg !889
+  br i1 %tobool15.i, label %if.then16.i, label %while.cond18.preheader.i, !dbg !889
 
 if.then16.i:                                      ; preds = %while.end.i
-  tail call fastcc void @readLoop(i32 1, i32 (i8*, i32*)* @endStrider, %struct.ReadSeqVars* %V) #8
-  br label %while.cond18.preheader.i
+  tail call fastcc void @readLoop(i32 1, i32 (i8*, i32*)* @endStrider, %struct.ReadSeqVars* %V) #9, !dbg !890
+  br label %while.cond18.preheader.i, !dbg !890
 
 while.cond18.preheader.i:                         ; preds = %if.then16.i, %while.end.i
-  %62 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call2039.i = tail call i32 @feof(%struct._IO_FILE* %62) #8
-  %tobool2140.i = icmp eq i32 %call2039.i, 0
-  br i1 %tobool2140.i, label %land.rhs22.i, label %sw.epilog
+  %62 = load %struct._IO_FILE** %f, align 8, !dbg !891, !tbaa !612
+  %call2039.i = tail call i32 @feof(%struct._IO_FILE* %62) #9, !dbg !891
+  %tobool2140.i = icmp eq i32 %call2039.i, 0, !dbg !891
+  br i1 %tobool2140.i, label %land.rhs22.i, label %sw.epilog, !dbg !891
 
 land.rhs22.i:                                     ; preds = %while.cond18.preheader.i, %while.body28.i
-  %63 = load i8** %buf.i283, align 8, !tbaa !3
-  %64 = load i8* %63, align 1, !tbaa !1
-  %cmp25.i = icmp eq i8 %64, 59
+  %63 = load i8** %buf.i283, align 8, !dbg !891, !tbaa !612
+  %64 = load i8* %63, align 1, !dbg !891, !tbaa !601
+  %cmp25.i = icmp eq i8 %64, 59, !dbg !891
   br i1 %cmp25.i, label %sw.epilog, label %while.body28.i
 
 while.body28.i:                                   ; preds = %land.rhs22.i
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #8
-  %65 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call20.i = tail call i32 @feof(%struct._IO_FILE* %65) #8
-  %tobool21.i = icmp eq i32 %call20.i, 0
-  br i1 %tobool21.i, label %land.rhs22.i, label %sw.epilog
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #9, !dbg !892
+  %65 = load %struct._IO_FILE** %f, align 8, !dbg !891, !tbaa !612
+  %call20.i = tail call i32 @feof(%struct._IO_FILE* %65) #9, !dbg !891
+  %tobool21.i = icmp eq i32 %call20.i, 0, !dbg !891
+  br i1 %tobool21.i, label %land.rhs22.i, label %sw.epilog, !dbg !891
 
 sw.bb165:                                         ; preds = %if.end158
-  %buf.i292 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 3
-  %66 = load i8** %buf.i292, align 8, !tbaa !3
-  %call178.i = tail call i32 @strncmp(i8* %66, i8* getelementptr inbounds ([6 x i8]* @.str132, i64 0, i64 0), i64 5) #9
-  %cmp179.i = icmp eq i32 %call178.i, 0
-  br i1 %cmp179.i, label %while.end.i296, label %while.body.i295
+  tail call void @llvm.dbg.value(metadata !{%struct.ReadSeqVars* %V}, i64 0, metadata !893) #6, !dbg !895
+  %buf.i292 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 3, !dbg !896
+  %66 = load i8** %buf.i292, align 8, !dbg !896, !tbaa !612
+  %call178.i = tail call i32 @strncmp(i8* %66, i8* getelementptr inbounds ([6 x i8]* @.str132, i64 0, i64 0), i64 5) #10, !dbg !896
+  %cmp179.i = icmp eq i32 %call178.i, 0, !dbg !896
+  br i1 %cmp179.i, label %while.end.i296, label %while.body.i295, !dbg !896
 
 while.body.i295:                                  ; preds = %sw.bb165, %while.body.i295
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #8
-  %67 = load i8** %buf.i292, align 8, !tbaa !3
-  %call.i293 = tail call i32 @strncmp(i8* %67, i8* getelementptr inbounds ([6 x i8]* @.str132, i64 0, i64 0), i64 5) #9
-  %cmp.i294 = icmp eq i32 %call.i293, 0
-  br i1 %cmp.i294, label %while.end.i296, label %while.body.i295
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #9, !dbg !897
+  %67 = load i8** %buf.i292, align 8, !dbg !896, !tbaa !612
+  %call.i293 = tail call i32 @strncmp(i8* %67, i8* getelementptr inbounds ([6 x i8]* @.str132, i64 0, i64 0), i64 5) #10, !dbg !896
+  %cmp.i294 = icmp eq i32 %call.i293, 0, !dbg !896
+  br i1 %cmp.i294, label %while.end.i296, label %while.body.i295, !dbg !896
 
 while.end.i296:                                   ; preds = %while.body.i295, %sw.bb165
   %68 = phi i8* [ %66, %sw.bb165 ], [ %67, %while.body.i295 ]
-  %69 = load i32* %ssimode, align 4, !tbaa !0
-  %cmp1.i = icmp sgt i32 %69, -1
-  br i1 %cmp1.i, label %if.then.i297, label %if.end.i301
+  %69 = load i32* %ssimode, align 4, !dbg !899, !tbaa !600
+  %cmp1.i = icmp sgt i32 %69, -1, !dbg !899
+  br i1 %cmp1.i, label %if.then.i297, label %if.end.i301, !dbg !899
 
 if.then.i297:                                     ; preds = %while.end.i296
-  %70 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 7, i32 0
-  %71 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 6, i32 0
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %70, i8* %71, i64 16, i32 8, i1 false) #5, !tbaa.struct !5
-  br label %if.end.i301
+  %70 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 7, i32 0, !dbg !899
+  %71 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 6, i32 0, !dbg !899
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %70, i8* %71, i64 16, i32 8, i1 false) #6, !dbg !899, !tbaa.struct !900
+  br label %if.end.i301, !dbg !899
 
 if.end.i301:                                      ; preds = %if.then.i297, %while.end.i296
-  %add.ptr.i298 = getelementptr inbounds i8* %68, i64 12
-  %call3.i299 = tail call i8* @strtok(i8* %add.ptr.i298, i8* getelementptr inbounds ([4 x i8]* @.str114, i64 0, i64 0)) #8
-  %cmp4.i300 = icmp eq i8* %call3.i299, null
-  br i1 %cmp4.i300, label %while.cond8.preheader.i, label %if.then5.i
+  %add.ptr.i298 = getelementptr inbounds i8* %68, i64 12, !dbg !902
+  %call3.i299 = tail call i8* @strtok(i8* %add.ptr.i298, i8* getelementptr inbounds ([4 x i8]* @.str114, i64 0, i64 0)) #9, !dbg !902
+  tail call void @llvm.dbg.value(metadata !{i8* %call3.i299}, i64 0, metadata !903) #6, !dbg !902
+  %cmp4.i300 = icmp eq i8* %call3.i299, null, !dbg !902
+  br i1 %cmp4.i300, label %while.cond8.preheader.i, label %if.then5.i, !dbg !902
 
 if.then5.i:                                       ; preds = %if.end.i301
-  %72 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %call6.i = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %72, i8* %call3.i299, i32 1) #8
-  br label %while.cond8.preheader.i
+  %72 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !904, !tbaa !612
+  %call6.i = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %72, i8* %call3.i299, i32 1) #9, !dbg !904
+  br label %while.cond8.preheader.i, !dbg !904
 
 while.cond8.preheader.i:                          ; preds = %if.then5.i, %if.end.i301
-  %73 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call9174.i = tail call i32 @feof(%struct._IO_FILE* %73) #8
-  %lnot175.i = icmp eq i32 %call9174.i, 0
-  br i1 %lnot175.i, label %while.body10.i, label %while.end78.i
+  %73 = load %struct._IO_FILE** %f, align 8, !dbg !905, !tbaa !612
+  %call9174.i = tail call i32 @feof(%struct._IO_FILE* %73) #9, !dbg !905
+  %lnot175.i = icmp eq i32 %call9174.i, 0, !dbg !905
+  br i1 %lnot175.i, label %while.body10.i, label %while.end78.i, !dbg !905
 
 while.body10.i:                                   ; preds = %while.cond8.preheader.i, %while.cond8.backedge.i
   %in_definition.0176.i = phi i32 [ %in_definition.0.be.i, %while.cond8.backedge.i ], [ 0, %while.cond8.preheader.i ]
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #8
-  %74 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call12.i = tail call i32 @feof(%struct._IO_FILE* %74) #8
-  %tobool13.i = icmp eq i32 %call12.i, 0
-  br i1 %tobool13.i, label %land.lhs.true.i, label %if.else.i
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #9, !dbg !906
+  %74 = load %struct._IO_FILE** %f, align 8, !dbg !908, !tbaa !612
+  %call12.i = tail call i32 @feof(%struct._IO_FILE* %74) #9, !dbg !908
+  %tobool13.i = icmp eq i32 %call12.i, 0, !dbg !908
+  br i1 %tobool13.i, label %land.lhs.true.i, label %if.else.i, !dbg !908
 
 land.lhs.true.i:                                  ; preds = %while.body10.i
-  %75 = load i8** %buf.i292, align 8, !tbaa !3
-  %strncmp162.i = tail call i32 @strncmp(i8* %75, i8* getelementptr inbounds ([11 x i8]* @.str133, i64 0, i64 0), i64 10) #5
-  %cmp163.i = icmp eq i32 %strncmp162.i, 0
-  br i1 %cmp163.i, label %if.then18.i, label %if.else.i
+  %75 = load i8** %buf.i292, align 8, !dbg !908, !tbaa !612
+  %strncmp162.i = tail call i32 @strncmp(i8* %75, i8* getelementptr inbounds ([11 x i8]* @.str133, i64 0, i64 0), i64 10) #6, !dbg !908
+  %cmp163.i = icmp eq i32 %strncmp162.i, 0, !dbg !908
+  br i1 %cmp163.i, label %if.then18.i, label %if.else.i, !dbg !908
 
 if.then18.i:                                      ; preds = %land.lhs.true.i
-  %add.ptr20.i = getelementptr inbounds i8* %75, i64 12
-  %call21.i = tail call i8* @strtok(i8* %add.ptr20.i, i8* getelementptr inbounds ([2 x i8]* @.str43, i64 0, i64 0)) #8
-  %cmp22.i = icmp eq i8* %call21.i, null
-  br i1 %cmp22.i, label %while.cond8.backedge.i, label %if.then23.i
+  %add.ptr20.i = getelementptr inbounds i8* %75, i64 12, !dbg !909
+  %call21.i = tail call i8* @strtok(i8* %add.ptr20.i, i8* getelementptr inbounds ([2 x i8]* @.str43, i64 0, i64 0)) #9, !dbg !909
+  tail call void @llvm.dbg.value(metadata !{i8* %call21.i}, i64 0, metadata !903) #6, !dbg !909
+  %cmp22.i = icmp eq i8* %call21.i, null, !dbg !909
+  br i1 %cmp22.i, label %while.cond8.backedge.i, label %if.then23.i, !dbg !909
 
 if.then23.i:                                      ; preds = %if.then18.i
-  %76 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %call25.i = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %76, i8* %call21.i, i32 8) #8
-  br label %while.cond8.backedge.i
+  %76 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !911, !tbaa !612
+  %call25.i = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %76, i8* %call21.i, i32 8) #9, !dbg !911
+  br label %while.cond8.backedge.i, !dbg !911
 
 if.else.i:                                        ; preds = %land.lhs.true.i, %while.body10.i
-  %77 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call28.i = tail call i32 @feof(%struct._IO_FILE* %77) #8
-  %tobool29.i = icmp eq i32 %call28.i, 0
-  br i1 %tobool29.i, label %land.lhs.true30.i, label %if.else44.i
+  %77 = load %struct._IO_FILE** %f, align 8, !dbg !912, !tbaa !612
+  %call28.i = tail call i32 @feof(%struct._IO_FILE* %77) #9, !dbg !912
+  %tobool29.i = icmp eq i32 %call28.i, 0, !dbg !912
+  br i1 %tobool29.i, label %land.lhs.true30.i, label %if.else44.i, !dbg !912
 
 land.lhs.true30.i:                                ; preds = %if.else.i
-  %78 = load i8** %buf.i292, align 8, !tbaa !3
-  %strncmp165.i = tail call i32 @strncmp(i8* %78, i8* getelementptr inbounds ([10 x i8]* @.str123, i64 0, i64 0), i64 9) #5
-  %cmp166.i = icmp eq i32 %strncmp165.i, 0
-  br i1 %cmp166.i, label %if.then35.i, label %if.else44.i
+  %78 = load i8** %buf.i292, align 8, !dbg !912, !tbaa !612
+  %strncmp165.i = tail call i32 @strncmp(i8* %78, i8* getelementptr inbounds ([10 x i8]* @.str123, i64 0, i64 0), i64 9) #6, !dbg !912
+  %cmp166.i = icmp eq i32 %strncmp165.i, 0, !dbg !912
+  br i1 %cmp166.i, label %if.then35.i, label %if.else44.i, !dbg !912
 
 if.then35.i:                                      ; preds = %land.lhs.true30.i
-  %add.ptr37.i = getelementptr inbounds i8* %78, i64 12
-  %call38.i = tail call i8* @strtok(i8* %add.ptr37.i, i8* getelementptr inbounds ([4 x i8]* @.str114, i64 0, i64 0)) #8
-  %cmp39.i = icmp eq i8* %call38.i, null
-  br i1 %cmp39.i, label %while.cond8.backedge.i, label %if.then40.i
+  %add.ptr37.i = getelementptr inbounds i8* %78, i64 12, !dbg !913
+  %call38.i = tail call i8* @strtok(i8* %add.ptr37.i, i8* getelementptr inbounds ([4 x i8]* @.str114, i64 0, i64 0)) #9, !dbg !913
+  tail call void @llvm.dbg.value(metadata !{i8* %call38.i}, i64 0, metadata !903) #6, !dbg !913
+  %cmp39.i = icmp eq i8* %call38.i, null, !dbg !913
+  br i1 %cmp39.i, label %while.cond8.backedge.i, label %if.then40.i, !dbg !913
 
 if.then40.i:                                      ; preds = %if.then35.i
-  %79 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %call42.i = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %79, i8* %call38.i, i32 4) #8
-  br label %while.cond8.backedge.i
+  %79 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !915, !tbaa !612
+  %call42.i = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %79, i8* %call38.i, i32 4) #9, !dbg !915
+  br label %while.cond8.backedge.i, !dbg !915
 
 if.else44.i:                                      ; preds = %land.lhs.true30.i, %if.else.i
-  %80 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call46.i304 = tail call i32 @feof(%struct._IO_FILE* %80) #8
-  %tobool47.i305 = icmp eq i32 %call46.i304, 0
-  %81 = load i8** %buf.i292, align 8, !tbaa !3
-  br i1 %tobool47.i305, label %land.lhs.true48.i, label %if.else62.i
+  %80 = load %struct._IO_FILE** %f, align 8, !dbg !916, !tbaa !612
+  %call46.i304 = tail call i32 @feof(%struct._IO_FILE* %80) #9, !dbg !916
+  %tobool47.i305 = icmp eq i32 %call46.i304, 0, !dbg !916
+  %81 = load i8** %buf.i292, align 8, !dbg !916, !tbaa !612
+  br i1 %tobool47.i305, label %land.lhs.true48.i, label %if.else62.i, !dbg !916
 
 land.lhs.true48.i:                                ; preds = %if.else44.i
-  %strncmp168.i = tail call i32 @strncmp(i8* %81, i8* getelementptr inbounds ([8 x i8]* @.str134, i64 0, i64 0), i64 7) #5
-  %cmp169.i = icmp eq i32 %strncmp168.i, 0
-  br i1 %cmp169.i, label %if.then53.i, label %if.else62.i
+  %strncmp168.i = tail call i32 @strncmp(i8* %81, i8* getelementptr inbounds ([8 x i8]* @.str134, i64 0, i64 0), i64 7) #6, !dbg !916
+  %cmp169.i = icmp eq i32 %strncmp168.i, 0, !dbg !916
+  br i1 %cmp169.i, label %if.then53.i, label %if.else62.i, !dbg !916
 
 if.then53.i:                                      ; preds = %land.lhs.true48.i
-  %add.ptr55.i = getelementptr inbounds i8* %81, i64 12
-  %call56.i = tail call i8* @strtok(i8* %add.ptr55.i, i8* getelementptr inbounds ([4 x i8]* @.str114, i64 0, i64 0)) #8
-  %cmp57.i = icmp eq i8* %call56.i, null
-  br i1 %cmp57.i, label %while.cond8.backedge.i, label %if.then58.i
+  %add.ptr55.i = getelementptr inbounds i8* %81, i64 12, !dbg !917
+  %call56.i = tail call i8* @strtok(i8* %add.ptr55.i, i8* getelementptr inbounds ([4 x i8]* @.str114, i64 0, i64 0)) #9, !dbg !917
+  tail call void @llvm.dbg.value(metadata !{i8* %call56.i}, i64 0, metadata !903) #6, !dbg !917
+  %cmp57.i = icmp eq i8* %call56.i, null, !dbg !917
+  br i1 %cmp57.i, label %while.cond8.backedge.i, label %if.then58.i, !dbg !917
 
 if.then58.i:                                      ; preds = %if.then53.i
-  %82 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %call60.i = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %82, i8* %call56.i, i32 2) #8
-  br label %while.cond8.backedge.i
+  %82 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !919, !tbaa !612
+  %call60.i = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %82, i8* %call56.i, i32 2) #9, !dbg !919
+  br label %while.cond8.backedge.i, !dbg !919
 
 if.else62.i:                                      ; preds = %land.lhs.true48.i, %if.else44.i
-  %call64.i = tail call i32 @strncmp(i8* %81, i8* getelementptr inbounds ([7 x i8]* @.str135, i64 0, i64 0), i64 6) #9
-  %cmp65.i = icmp eq i32 %call64.i, 0
-  br i1 %cmp65.i, label %while.end78.i, label %if.then66.i
+  %call64.i = tail call i32 @strncmp(i8* %81, i8* getelementptr inbounds ([7 x i8]* @.str135, i64 0, i64 0), i64 6) #10, !dbg !920
+  %cmp65.i = icmp eq i32 %call64.i, 0, !dbg !920
+  br i1 %cmp65.i, label %while.end78.i, label %if.then66.i, !dbg !920
 
 if.then66.i:                                      ; preds = %if.else62.i
-  %tobool67.i = icmp eq i32 %in_definition.0176.i, 0
-  br i1 %tobool67.i, label %while.cond8.backedge.i, label %if.then68.i
+  %tobool67.i = icmp eq i32 %in_definition.0176.i, 0, !dbg !921
+  br i1 %tobool67.i, label %while.cond8.backedge.i, label %if.then68.i, !dbg !921
 
 if.then68.i:                                      ; preds = %if.then66.i
-  %83 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %call71.i = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %83, i8* %81, i32 8) #8
-  br label %while.cond8.backedge.i
+  %83 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !923, !tbaa !612
+  %call71.i = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %83, i8* %81, i32 8) #9, !dbg !923
+  br label %while.cond8.backedge.i, !dbg !923
 
 while.cond8.backedge.i:                           ; preds = %if.then68.i, %if.then66.i, %if.then58.i, %if.then53.i, %if.then40.i, %if.then35.i, %if.then23.i, %if.then18.i
   %in_definition.0.be.i = phi i32 [ %in_definition.0176.i, %if.then68.i ], [ 0, %if.then66.i ], [ 1, %if.then18.i ], [ 1, %if.then23.i ], [ 0, %if.then35.i ], [ 0, %if.then40.i ], [ 0, %if.then53.i ], [ 0, %if.then58.i ]
-  %84 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call9.i = tail call i32 @feof(%struct._IO_FILE* %84) #8
-  %lnot.i = icmp eq i32 %call9.i, 0
-  br i1 %lnot.i, label %while.body10.i, label %while.end78.i
+  %84 = load %struct._IO_FILE** %f, align 8, !dbg !905, !tbaa !612
+  %call9.i = tail call i32 @feof(%struct._IO_FILE* %84) #9, !dbg !905
+  %lnot.i = icmp eq i32 %call9.i, 0, !dbg !905
+  br i1 %lnot.i, label %while.body10.i, label %while.end78.i, !dbg !905
 
 while.end78.i:                                    ; preds = %while.cond8.backedge.i, %if.else62.i, %while.cond8.preheader.i
-  tail call fastcc void @readLoop(i32 0, i32 (i8*, i32*)* @endGB, %struct.ReadSeqVars* %V) #8
-  %85 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %start.i = getelementptr inbounds %struct.seqinfo_s* %85, i64 0, i32 6
-  store i32 1, i32* %start.i, align 4, !tbaa !0
-  %86 = load i32* %seqlen159, align 4, !tbaa !0
-  %stop.i = getelementptr inbounds %struct.seqinfo_s* %85, i64 0, i32 7
-  store i32 %86, i32* %stop.i, align 4, !tbaa !0
-  %87 = load i32* %seqlen159, align 4, !tbaa !0
-  %olen.i = getelementptr inbounds %struct.seqinfo_s* %85, i64 0, i32 8
-  store i32 %87, i32* %olen.i, align 4, !tbaa !0
-  %flags.i = getelementptr inbounds %struct.seqinfo_s* %85, i64 0, i32 0
-  %88 = load i32* %flags.i, align 4, !tbaa !0
-  %or.i = or i32 %88, 304
-  store i32 %or.i, i32* %flags.i, align 4, !tbaa !0
-  %89 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call86172.i = tail call i32 @feof(%struct._IO_FILE* %89) #8
-  %tobool87173.i = icmp eq i32 %call86172.i, 0
-  br i1 %tobool87173.i, label %lor.rhs.i306, label %while.cond99.preheader.i
+  tail call fastcc void @readLoop(i32 0, i32 (i8*, i32*)* @endGB, %struct.ReadSeqVars* %V) #9, !dbg !924
+  %85 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !925, !tbaa !612
+  %start.i = getelementptr inbounds %struct.seqinfo_s* %85, i64 0, i32 6, !dbg !925
+  store i32 1, i32* %start.i, align 4, !dbg !925, !tbaa !600
+  %86 = load i32* %seqlen159, align 4, !dbg !926, !tbaa !600
+  %stop.i = getelementptr inbounds %struct.seqinfo_s* %85, i64 0, i32 7, !dbg !926
+  store i32 %86, i32* %stop.i, align 4, !dbg !926, !tbaa !600
+  %87 = load i32* %seqlen159, align 4, !dbg !927, !tbaa !600
+  %olen.i = getelementptr inbounds %struct.seqinfo_s* %85, i64 0, i32 8, !dbg !927
+  store i32 %87, i32* %olen.i, align 4, !dbg !927, !tbaa !600
+  %flags.i = getelementptr inbounds %struct.seqinfo_s* %85, i64 0, i32 0, !dbg !928
+  %88 = load i32* %flags.i, align 4, !dbg !928, !tbaa !600
+  %or.i = or i32 %88, 304, !dbg !928
+  store i32 %or.i, i32* %flags.i, align 4, !dbg !928, !tbaa !600
+  %89 = load %struct._IO_FILE** %f, align 8, !dbg !929, !tbaa !612
+  %call86172.i = tail call i32 @feof(%struct._IO_FILE* %89) #9, !dbg !929
+  %tobool87173.i = icmp eq i32 %call86172.i, 0, !dbg !929
+  br i1 %tobool87173.i, label %lor.rhs.i306, label %while.cond99.preheader.i, !dbg !929
 
 lor.rhs.i306:                                     ; preds = %while.end78.i, %while.body97.i
-  %90 = load i8** %buf.i292, align 8, !tbaa !3
-  %91 = load i8* %90, align 1, !tbaa !1
-  %cmp89.i = icmp eq i8 %91, 0
-  br i1 %cmp89.i, label %while.body97.i, label %land.rhs.i307
+  %90 = load i8** %buf.i292, align 8, !dbg !929, !tbaa !612
+  %91 = load i8* %90, align 1, !dbg !929, !tbaa !601
+  %cmp89.i = icmp eq i8 %91, 0, !dbg !929
+  br i1 %cmp89.i, label %while.body97.i, label %land.rhs.i307, !dbg !929
 
 land.rhs.i307:                                    ; preds = %lor.rhs.i306
-  %strncmp158.i = tail call i32 @strncmp(i8* %90, i8* getelementptr inbounds ([6 x i8]* @.str132, i64 0, i64 0), i64 5) #5
-  %cmp159.i = icmp eq i32 %strncmp158.i, 0
+  %strncmp158.i = tail call i32 @strncmp(i8* %90, i8* getelementptr inbounds ([6 x i8]* @.str132, i64 0, i64 0), i64 5) #6, !dbg !929
+  %cmp159.i = icmp eq i32 %strncmp158.i, 0, !dbg !929
   br i1 %cmp159.i, label %while.cond99.preheader.i, label %while.body97.i
 
 while.cond99.preheader.i:                         ; preds = %while.body97.i, %land.rhs.i307, %while.end78.i
-  %92 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call101170.i = tail call i32 @feof(%struct._IO_FILE* %92) #8
-  %tobool102171.i = icmp eq i32 %call101170.i, 0
-  br i1 %tobool102171.i, label %land.rhs103.i, label %sw.epilog
+  %92 = load %struct._IO_FILE** %f, align 8, !dbg !930, !tbaa !612
+  %call101170.i = tail call i32 @feof(%struct._IO_FILE* %92) #9, !dbg !930
+  %tobool102171.i = icmp eq i32 %call101170.i, 0, !dbg !930
+  br i1 %tobool102171.i, label %land.rhs103.i, label %sw.epilog, !dbg !930
 
 while.body97.i:                                   ; preds = %land.rhs.i307, %lor.rhs.i306
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #8
-  %93 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call86.i = tail call i32 @feof(%struct._IO_FILE* %93) #8
-  %tobool87.i = icmp eq i32 %call86.i, 0
-  br i1 %tobool87.i, label %lor.rhs.i306, label %while.cond99.preheader.i
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #9, !dbg !931
+  %93 = load %struct._IO_FILE** %f, align 8, !dbg !929, !tbaa !612
+  %call86.i = tail call i32 @feof(%struct._IO_FILE* %93) #9, !dbg !929
+  %tobool87.i = icmp eq i32 %call86.i, 0, !dbg !929
+  br i1 %tobool87.i, label %lor.rhs.i306, label %while.cond99.preheader.i, !dbg !929
 
 land.rhs103.i:                                    ; preds = %while.cond99.preheader.i, %while.body110.i
-  %94 = load i8** %buf.i292, align 8, !tbaa !3
-  %strncmp.i = tail call i32 @strncmp(i8* %94, i8* getelementptr inbounds ([8 x i8]* @.str136, i64 0, i64 0), i64 7) #5
-  %cmp156.i = icmp eq i32 %strncmp.i, 0
+  %94 = load i8** %buf.i292, align 8, !dbg !930, !tbaa !612
+  %strncmp.i = tail call i32 @strncmp(i8* %94, i8* getelementptr inbounds ([8 x i8]* @.str136, i64 0, i64 0), i64 7) #6, !dbg !930
+  %cmp156.i = icmp eq i32 %strncmp.i, 0, !dbg !930
   br i1 %cmp156.i, label %sw.epilog, label %while.body110.i
 
 while.body110.i:                                  ; preds = %land.rhs103.i
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #8
-  %95 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call101.i = tail call i32 @feof(%struct._IO_FILE* %95) #8
-  %tobool102.i = icmp eq i32 %call101.i, 0
-  br i1 %tobool102.i, label %land.rhs103.i, label %sw.epilog
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #9, !dbg !932
+  %95 = load %struct._IO_FILE** %f, align 8, !dbg !930, !tbaa !612
+  %call101.i = tail call i32 @feof(%struct._IO_FILE* %95) #9, !dbg !930
+  %tobool102.i = icmp eq i32 %call101.i, 0, !dbg !930
+  br i1 %tobool102.i, label %land.rhs103.i, label %sw.epilog, !dbg !930
 
 sw.bb166:                                         ; preds = %if.end158
-  %96 = load i32* %ssimode, align 4, !tbaa !0
-  %cmp.i309 = icmp sgt i32 %96, -1
-  br i1 %cmp.i309, label %if.then.i310, label %if.end.i313
+  tail call void @llvm.dbg.value(metadata !{%struct.ReadSeqVars* %V}, i64 0, metadata !933) #6, !dbg !935
+  %96 = load i32* %ssimode, align 4, !dbg !936, !tbaa !600
+  %cmp.i309 = icmp sgt i32 %96, -1, !dbg !936
+  br i1 %cmp.i309, label %if.then.i310, label %if.end.i313, !dbg !936
 
 if.then.i310:                                     ; preds = %sw.bb166
-  %97 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 7, i32 0
-  %98 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 6, i32 0
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %97, i8* %98, i64 16, i32 8, i1 false) #5, !tbaa.struct !5
-  br label %if.end.i313
+  %97 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 7, i32 0, !dbg !936
+  %98 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 6, i32 0, !dbg !936
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %97, i8* %98, i64 16, i32 8, i1 false) #6, !dbg !936, !tbaa.struct !900
+  br label %if.end.i313, !dbg !936
 
 if.end.i313:                                      ; preds = %if.then.i310, %sw.bb166
-  %buf.i311 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 3
-  %99 = load i8** %buf.i311, align 8, !tbaa !3
-  %100 = load i8* %99, align 1, !tbaa !1
-  %cmp1.i312 = icmp eq i8 %100, 62
-  br i1 %cmp1.i312, label %if.end4.i, label %if.then3.i
+  %buf.i311 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 3, !dbg !937
+  %99 = load i8** %buf.i311, align 8, !dbg !937, !tbaa !612
+  %100 = load i8* %99, align 1, !dbg !937, !tbaa !601
+  %cmp1.i312 = icmp eq i8 %100, 62, !dbg !937
+  br i1 %cmp1.i312, label %if.end4.i, label %if.then3.i, !dbg !937
 
 if.then3.i:                                       ; preds = %if.end.i313
-  %fname.i = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 1
-  %101 = load i8** %fname.i, align 8, !tbaa !3
-  %linenumber.i = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 2
-  %102 = load i32* %linenumber.i, align 4, !tbaa !0
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([174 x i8]* @.str131, i64 0, i64 0), i8* %101, i32 %102) #8
-  %.pre.i = load i8** %buf.i311, align 8, !tbaa !3
-  br label %if.end4.i
+  %fname.i = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 1, !dbg !938
+  %101 = load i8** %fname.i, align 8, !dbg !938, !tbaa !612
+  %linenumber.i = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 2, !dbg !938
+  %102 = load i32* %linenumber.i, align 4, !dbg !938, !tbaa !600
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([174 x i8]* @.str131, i64 0, i64 0), i8* %101, i32 %102) #9, !dbg !938
+  %.pre.i = load i8** %buf.i311, align 8, !dbg !939, !tbaa !612
+  br label %if.end4.i, !dbg !938
 
 if.end4.i:                                        ; preds = %if.then3.i, %if.end.i313
   %103 = phi i8* [ %99, %if.end.i313 ], [ %.pre.i, %if.then3.i ]
-  %add.ptr.i314 = getelementptr inbounds i8* %103, i64 1
-  %call.i315 = tail call i8* @strtok(i8* %add.ptr.i314, i8* getelementptr inbounds ([4 x i8]* @.str114, i64 0, i64 0)) #8
-  %cmp6.i = icmp eq i8* %call.i315, null
-  br i1 %cmp6.i, label %if.end10.i, label %if.then8.i
+  %add.ptr.i314 = getelementptr inbounds i8* %103, i64 1, !dbg !939
+  %call.i315 = tail call i8* @strtok(i8* %add.ptr.i314, i8* getelementptr inbounds ([4 x i8]* @.str114, i64 0, i64 0)) #9, !dbg !939
+  tail call void @llvm.dbg.value(metadata !{i8* %call.i315}, i64 0, metadata !940) #6, !dbg !939
+  %cmp6.i = icmp eq i8* %call.i315, null, !dbg !939
+  br i1 %cmp6.i, label %if.end10.i, label %if.then8.i, !dbg !939
 
 if.then8.i:                                       ; preds = %if.end4.i
-  %104 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %call9.i317 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %104, i8* %call.i315, i32 1) #8
-  br label %if.end10.i
+  %104 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !941, !tbaa !612
+  %call9.i317 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %104, i8* %call.i315, i32 1) #9, !dbg !941
+  br label %if.end10.i, !dbg !941
 
 if.end10.i:                                       ; preds = %if.then8.i, %if.end4.i
-  %call11.i318 = tail call i8* @strtok(i8* null, i8* getelementptr inbounds ([2 x i8]* @.str43, i64 0, i64 0)) #8
-  %cmp12.i = icmp eq i8* %call11.i318, null
-  br i1 %cmp12.i, label %if.end17.i, label %if.then14.i
+  %call11.i318 = tail call i8* @strtok(i8* null, i8* getelementptr inbounds ([2 x i8]* @.str43, i64 0, i64 0)) #9, !dbg !942
+  tail call void @llvm.dbg.value(metadata !{i8* %call11.i318}, i64 0, metadata !940) #6, !dbg !942
+  %cmp12.i = icmp eq i8* %call11.i318, null, !dbg !942
+  br i1 %cmp12.i, label %if.end17.i, label %if.then14.i, !dbg !942
 
 if.then14.i:                                      ; preds = %if.end10.i
-  %105 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %call16.i = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %105, i8* %call11.i318, i32 8) #8
-  br label %if.end17.i
+  %105 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !943, !tbaa !612
+  %call16.i = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %105, i8* %call11.i318, i32 8) #9, !dbg !943
+  br label %if.end17.i, !dbg !943
 
 if.end17.i:                                       ; preds = %if.then14.i, %if.end10.i
-  tail call fastcc void @readLoop(i32 0, i32 (i8*, i32*)* @endPearson, %struct.ReadSeqVars* %V) #8
-  %106 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call1841.i = tail call i32 @feof(%struct._IO_FILE* %106) #8
-  %tobool42.i320 = icmp eq i32 %call1841.i, 0
-  br i1 %tobool42.i320, label %lor.rhs.i321, label %sw.epilog
+  tail call fastcc void @readLoop(i32 0, i32 (i8*, i32*)* @endPearson, %struct.ReadSeqVars* %V) #9, !dbg !944
+  %106 = load %struct._IO_FILE** %f, align 8, !dbg !945, !tbaa !612
+  %call1841.i = tail call i32 @feof(%struct._IO_FILE* %106) #9, !dbg !945
+  %tobool42.i320 = icmp eq i32 %call1841.i, 0, !dbg !945
+  br i1 %tobool42.i320, label %lor.rhs.i321, label %sw.epilog, !dbg !945
 
 lor.rhs.i321:                                     ; preds = %if.end17.i, %while.body.i323
-  %107 = load i8** %buf.i311, align 8, !tbaa !3
-  %108 = load i8* %107, align 1, !tbaa !1
+  %107 = load i8** %buf.i311, align 8, !dbg !945, !tbaa !612
+  %108 = load i8* %107, align 1, !dbg !945, !tbaa !601
   %phitmp.i = icmp eq i8 %108, 62
   br i1 %phitmp.i, label %sw.epilog, label %while.body.i323
 
 while.body.i323:                                  ; preds = %lor.rhs.i321
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #8
-  %109 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call18.i = tail call i32 @feof(%struct._IO_FILE* %109) #8
-  %tobool.i322 = icmp eq i32 %call18.i, 0
-  br i1 %tobool.i322, label %lor.rhs.i321, label %sw.epilog
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #9, !dbg !946
+  %109 = load %struct._IO_FILE** %f, align 8, !dbg !945, !tbaa !612
+  %call18.i = tail call i32 @feof(%struct._IO_FILE* %109) #9, !dbg !945
+  %tobool.i322 = icmp eq i32 %call18.i, 0, !dbg !945
+  br i1 %tobool.i322, label %lor.rhs.i321, label %sw.epilog, !dbg !945
 
 sw.bb167:                                         ; preds = %if.end158
-  %buf.i325 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 3
-  %110 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call127.i = tail call i32 @feof(%struct._IO_FILE* %110) #8
-  %tobool128.i = icmp eq i32 %call127.i, 0
-  br i1 %tobool128.i, label %land.rhs.i328, label %while.end.i333
+  tail call void @llvm.dbg.value(metadata !{%struct.ReadSeqVars* %V}, i64 0, metadata !948) #6, !dbg !950
+  %buf.i325 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 3, !dbg !951
+  %110 = load %struct._IO_FILE** %f, align 8, !dbg !951, !tbaa !612
+  %call127.i = tail call i32 @feof(%struct._IO_FILE* %110) #9, !dbg !951
+  %tobool128.i = icmp eq i32 %call127.i, 0, !dbg !951
+  br i1 %tobool128.i, label %land.rhs.i328, label %while.end.i333, !dbg !951
 
 land.rhs.i328:                                    ; preds = %sw.bb167, %while.body.i331
-  %111 = load i8** %buf.i325, align 8, !tbaa !3
-  %call1.i = tail call i32 @strncmp(i8* %111, i8* getelementptr inbounds ([5 x i8]* @.str125, i64 0, i64 0), i64 4) #9
-  %cmp.i327 = icmp eq i32 %call1.i, 0
+  %111 = load i8** %buf.i325, align 8, !dbg !951, !tbaa !612
+  %call1.i = tail call i32 @strncmp(i8* %111, i8* getelementptr inbounds ([5 x i8]* @.str125, i64 0, i64 0), i64 4) #10, !dbg !951
+  %cmp.i327 = icmp eq i32 %call1.i, 0, !dbg !951
   br i1 %cmp.i327, label %while.end.i333, label %while.body.i331
 
 while.body.i331:                                  ; preds = %land.rhs.i328
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #8
-  %112 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call.i329 = tail call i32 @feof(%struct._IO_FILE* %112) #8
-  %tobool.i330 = icmp eq i32 %call.i329, 0
-  br i1 %tobool.i330, label %land.rhs.i328, label %while.end.i333
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #9, !dbg !952
+  %112 = load %struct._IO_FILE** %f, align 8, !dbg !951, !tbaa !612
+  %call.i329 = tail call i32 @feof(%struct._IO_FILE* %112) #9, !dbg !951
+  %tobool.i330 = icmp eq i32 %call.i329, 0, !dbg !951
+  br i1 %tobool.i330, label %land.rhs.i328, label %while.end.i333, !dbg !951
 
 while.end.i333:                                   ; preds = %while.body.i331, %land.rhs.i328, %sw.bb167
-  %113 = load i32* %ssimode, align 4, !tbaa !0
-  %cmp2.i = icmp sgt i32 %113, -1
-  br i1 %cmp2.i, label %if.then.i334, label %if.end.i336
+  %113 = load i32* %ssimode, align 4, !dbg !954, !tbaa !600
+  %cmp2.i = icmp sgt i32 %113, -1, !dbg !954
+  br i1 %cmp2.i, label %if.then.i334, label %if.end.i336, !dbg !954
 
 if.then.i334:                                     ; preds = %while.end.i333
-  %114 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 7, i32 0
-  %115 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 6, i32 0
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %114, i8* %115, i64 16, i32 8, i1 false) #5, !tbaa.struct !5
-  br label %if.end.i336
+  %114 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 7, i32 0, !dbg !954
+  %115 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 6, i32 0, !dbg !954
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %114, i8* %115, i64 16, i32 8, i1 false) #6, !dbg !954, !tbaa.struct !900
+  br label %if.end.i336, !dbg !954
 
 if.end.i336:                                      ; preds = %while.end.i333, %if.then.i334
-  %116 = load i8** %buf.i325, align 8, !tbaa !3
-  %add.ptr.i335 = getelementptr inbounds i8* %116, i64 5
-  %call4.i = tail call i8* @strtok(i8* %add.ptr.i335, i8* getelementptr inbounds ([4 x i8]* @.str114, i64 0, i64 0)) #8
-  %cmp5.i = icmp eq i8* %call4.i, null
-  br i1 %cmp5.i, label %do.body.i, label %if.then6.i
+  %116 = load i8** %buf.i325, align 8, !dbg !955, !tbaa !612
+  %add.ptr.i335 = getelementptr inbounds i8* %116, i64 5, !dbg !955
+  %call4.i = tail call i8* @strtok(i8* %add.ptr.i335, i8* getelementptr inbounds ([4 x i8]* @.str114, i64 0, i64 0)) #9, !dbg !955
+  tail call void @llvm.dbg.value(metadata !{i8* %call4.i}, i64 0, metadata !956) #6, !dbg !955
+  %cmp5.i = icmp eq i8* %call4.i, null, !dbg !955
+  br i1 %cmp5.i, label %do.body.i, label %if.then6.i, !dbg !955
 
 if.then6.i:                                       ; preds = %if.end.i336
-  %117 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %call7.i337 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %117, i8* %call4.i, i32 1) #8
-  %118 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %call9.i338 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %118, i8* %call4.i, i32 2) #8
-  br label %do.body.i
+  %117 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !957, !tbaa !612
+  %call7.i337 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %117, i8* %call4.i, i32 1) #9, !dbg !957
+  %118 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !959, !tbaa !612
+  %call9.i338 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %118, i8* %call4.i, i32 2) #9, !dbg !959
+  br label %do.body.i, !dbg !960
 
 do.body.i:                                        ; preds = %if.then6.i, %if.end.i336, %land.rhs49.i
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #8
-  %119 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call12.i339 = tail call i32 @feof(%struct._IO_FILE* %119) #8
-  %tobool13.i340 = icmp eq i32 %call12.i339, 0
-  br i1 %tobool13.i340, label %land.lhs.true.i342, label %if.else.i351
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #9, !dbg !961
+  %119 = load %struct._IO_FILE** %f, align 8, !dbg !963, !tbaa !612
+  %call12.i339 = tail call i32 @feof(%struct._IO_FILE* %119) #9, !dbg !963
+  %tobool13.i340 = icmp eq i32 %call12.i339, 0, !dbg !963
+  br i1 %tobool13.i340, label %land.lhs.true.i342, label %if.else.i351, !dbg !963
 
 land.lhs.true.i342:                               ; preds = %do.body.i
-  %120 = load i8** %buf.i325, align 8, !tbaa !3
-  %strncmp.i341 = tail call i32 @strncmp(i8* %120, i8* getelementptr inbounds ([5 x i8]* @.str126, i64 0, i64 0), i64 4) #5
-  %cmp121.i = icmp eq i32 %strncmp.i341, 0
-  br i1 %cmp121.i, label %if.then18.i346, label %if.else.i351
+  %120 = load i8** %buf.i325, align 8, !dbg !963, !tbaa !612
+  %strncmp.i341 = tail call i32 @strncmp(i8* %120, i8* getelementptr inbounds ([5 x i8]* @.str126, i64 0, i64 0), i64 4) #6, !dbg !963
+  %cmp121.i = icmp eq i32 %strncmp.i341, 0, !dbg !963
+  br i1 %cmp121.i, label %if.then18.i346, label %if.else.i351, !dbg !963
 
 if.then18.i346:                                   ; preds = %land.lhs.true.i342
-  %add.ptr20.i343 = getelementptr inbounds i8* %120, i64 5
-  %call21.i344 = tail call i8* @strtok(i8* %add.ptr20.i343, i8* getelementptr inbounds ([6 x i8]* @.str127, i64 0, i64 0)) #8
-  %cmp22.i345 = icmp eq i8* %call21.i344, null
-  br i1 %cmp22.i345, label %do.cond.i, label %if.then23.i348
+  %add.ptr20.i343 = getelementptr inbounds i8* %120, i64 5, !dbg !964
+  %call21.i344 = tail call i8* @strtok(i8* %add.ptr20.i343, i8* getelementptr inbounds ([6 x i8]* @.str127, i64 0, i64 0)) #9, !dbg !964
+  tail call void @llvm.dbg.value(metadata !{i8* %call21.i344}, i64 0, metadata !956) #6, !dbg !964
+  %cmp22.i345 = icmp eq i8* %call21.i344, null, !dbg !964
+  br i1 %cmp22.i345, label %do.cond.i, label %if.then23.i348, !dbg !964
 
 if.then23.i348:                                   ; preds = %if.then18.i346
-  %121 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %call25.i347 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %121, i8* %call21.i344, i32 4) #8
-  br label %do.cond.i
+  %121 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !966, !tbaa !612
+  %call25.i347 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %121, i8* %call21.i344, i32 4) #9, !dbg !966
+  br label %do.cond.i, !dbg !966
 
 if.else.i351:                                     ; preds = %land.lhs.true.i342, %do.body.i
-  %122 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call28.i349 = tail call i32 @feof(%struct._IO_FILE* %122) #8
-  %tobool29.i350 = icmp eq i32 %call28.i349, 0
-  br i1 %tobool29.i350, label %land.lhs.true30.i352, label %do.cond.i
+  %122 = load %struct._IO_FILE** %f, align 8, !dbg !967, !tbaa !612
+  %call28.i349 = tail call i32 @feof(%struct._IO_FILE* %122) #9, !dbg !967
+  %tobool29.i350 = icmp eq i32 %call28.i349, 0, !dbg !967
+  br i1 %tobool29.i350, label %land.lhs.true30.i352, label %do.cond.i, !dbg !967
 
 land.lhs.true30.i352:                             ; preds = %if.else.i351
-  %123 = load i8** %buf.i325, align 8, !tbaa !3
-  %strncmp123.i = tail call i32 @strncmp(i8* %123, i8* getelementptr inbounds ([5 x i8]* @.str128, i64 0, i64 0), i64 4) #5
-  %cmp124.i = icmp eq i32 %strncmp123.i, 0
-  br i1 %cmp124.i, label %if.then35.i356, label %do.cond.i
+  %123 = load i8** %buf.i325, align 8, !dbg !967, !tbaa !612
+  %strncmp123.i = tail call i32 @strncmp(i8* %123, i8* getelementptr inbounds ([5 x i8]* @.str128, i64 0, i64 0), i64 4) #6, !dbg !967
+  %cmp124.i = icmp eq i32 %strncmp123.i, 0, !dbg !967
+  br i1 %cmp124.i, label %if.then35.i356, label %do.cond.i, !dbg !967
 
 if.then35.i356:                                   ; preds = %land.lhs.true30.i352
-  %add.ptr37.i353 = getelementptr inbounds i8* %123, i64 5
-  %call38.i354 = tail call i8* @strtok(i8* %add.ptr37.i353, i8* getelementptr inbounds ([2 x i8]* @.str43, i64 0, i64 0)) #8
-  %cmp39.i355 = icmp eq i8* %call38.i354, null
-  br i1 %cmp39.i355, label %do.cond.i, label %if.then40.i358
+  %add.ptr37.i353 = getelementptr inbounds i8* %123, i64 5, !dbg !968
+  %call38.i354 = tail call i8* @strtok(i8* %add.ptr37.i353, i8* getelementptr inbounds ([2 x i8]* @.str43, i64 0, i64 0)) #9, !dbg !968
+  tail call void @llvm.dbg.value(metadata !{i8* %call38.i354}, i64 0, metadata !956) #6, !dbg !968
+  %cmp39.i355 = icmp eq i8* %call38.i354, null, !dbg !968
+  br i1 %cmp39.i355, label %do.cond.i, label %if.then40.i358, !dbg !968
 
 if.then40.i358:                                   ; preds = %if.then35.i356
-  %124 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %call42.i357 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %124, i8* %call38.i354, i32 8) #8
-  br label %do.cond.i
+  %124 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !970, !tbaa !612
+  %call42.i357 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %124, i8* %call38.i354, i32 8) #9, !dbg !970
+  br label %do.cond.i, !dbg !970
 
 do.cond.i:                                        ; preds = %if.then40.i358, %if.then35.i356, %land.lhs.true30.i352, %if.else.i351, %if.then23.i348, %if.then18.i346
-  %125 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call47.i = tail call i32 @feof(%struct._IO_FILE* %125) #8
-  %tobool48.i = icmp eq i32 %call47.i, 0
-  br i1 %tobool48.i, label %land.rhs49.i, label %do.end.i359
+  %125 = load %struct._IO_FILE** %f, align 8, !dbg !971, !tbaa !612
+  %call47.i = tail call i32 @feof(%struct._IO_FILE* %125) #9, !dbg !971
+  %tobool48.i = icmp eq i32 %call47.i, 0, !dbg !971
+  br i1 %tobool48.i, label %land.rhs49.i, label %do.end.i359, !dbg !971
 
 land.rhs49.i:                                     ; preds = %do.cond.i
-  %126 = load i8** %buf.i325, align 8, !tbaa !3
-  %call51.i = tail call i32 @strncmp(i8* %126, i8* getelementptr inbounds ([3 x i8]* @.str129, i64 0, i64 0), i64 2) #9
-  %cmp52.i = icmp eq i32 %call51.i, 0
+  %126 = load i8** %buf.i325, align 8, !dbg !971, !tbaa !612
+  %call51.i = tail call i32 @strncmp(i8* %126, i8* getelementptr inbounds ([3 x i8]* @.str129, i64 0, i64 0), i64 2) #10, !dbg !971
+  %cmp52.i = icmp eq i32 %call51.i, 0, !dbg !971
   br i1 %cmp52.i, label %do.end.i359, label %do.body.i
 
 do.end.i359:                                      ; preds = %land.rhs49.i, %do.cond.i
-  tail call fastcc void @readLoop(i32 0, i32 (i8*, i32*)* @endEMBL, %struct.ReadSeqVars* %V) #8
-  %127 = load i32* %ssimode, align 4, !tbaa !0
-  %cmp55.i = icmp eq i32 %127, -1
-  br i1 %cmp55.i, label %if.then56.i, label %if.end64.i
+  tail call fastcc void @readLoop(i32 0, i32 (i8*, i32*)* @endEMBL, %struct.ReadSeqVars* %V) #9, !dbg !972
+  %127 = load i32* %ssimode, align 4, !dbg !973, !tbaa !600
+  %cmp55.i = icmp eq i32 %127, -1, !dbg !973
+  br i1 %cmp55.i, label %if.then56.i, label %if.end64.i, !dbg !973
 
 if.then56.i:                                      ; preds = %do.end.i359
-  %seq.i = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 15
-  %128 = load i8** %seq.i, align 8, !tbaa !3
-  br label %for.cond.i
+  %seq.i = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 15, !dbg !974
+  %128 = load i8** %seq.i, align 8, !dbg !974, !tbaa !612
+  tail call void @llvm.dbg.value(metadata !{i8* %128}, i64 0, metadata !956) #6, !dbg !974
+  br label %for.cond.i, !dbg !974
 
 for.cond.i:                                       ; preds = %for.inc.i, %if.then56.i
   %sptr.0.i = phi i8* [ %128, %if.then56.i ], [ %incdec.ptr.i, %for.inc.i ]
-  %129 = load i8* %sptr.0.i, align 1, !tbaa !1
+  %129 = load i8* %sptr.0.i, align 1, !dbg !974, !tbaa !601
   switch i8 %129, label %for.inc.i [
     i8 0, label %if.end64.i
     i8 45, label %if.then62.i
-  ]
+  ], !dbg !974
 
 if.then62.i:                                      ; preds = %for.cond.i
-  store i8 78, i8* %sptr.0.i, align 1, !tbaa !1
-  br label %for.inc.i
+  store i8 78, i8* %sptr.0.i, align 1, !dbg !976, !tbaa !601
+  br label %for.inc.i, !dbg !976
 
 for.inc.i:                                        ; preds = %if.then62.i, %for.cond.i
-  %incdec.ptr.i = getelementptr inbounds i8* %sptr.0.i, i64 1
-  br label %for.cond.i
+  %incdec.ptr.i = getelementptr inbounds i8* %sptr.0.i, i64 1, !dbg !974
+  tail call void @llvm.dbg.value(metadata !{i8* %incdec.ptr.i}, i64 0, metadata !956) #6, !dbg !974
+  br label %for.cond.i, !dbg !974
 
 if.end64.i:                                       ; preds = %for.cond.i, %do.end.i359
-  %130 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %start.i360 = getelementptr inbounds %struct.seqinfo_s* %130, i64 0, i32 6
-  store i32 1, i32* %start.i360, align 4, !tbaa !0
-  %131 = load i32* %seqlen159, align 4, !tbaa !0
-  %stop.i362 = getelementptr inbounds %struct.seqinfo_s* %130, i64 0, i32 7
-  store i32 %131, i32* %stop.i362, align 4, !tbaa !0
-  %132 = load i32* %seqlen159, align 4, !tbaa !0
-  %olen.i363 = getelementptr inbounds %struct.seqinfo_s* %130, i64 0, i32 8
-  store i32 %132, i32* %olen.i363, align 4, !tbaa !0
-  %flags.i364 = getelementptr inbounds %struct.seqinfo_s* %130, i64 0, i32 0
-  %133 = load i32* %flags.i364, align 4, !tbaa !0
-  %or.i365 = or i32 %133, 304
-  store i32 %or.i365, i32* %flags.i364, align 4, !tbaa !0
-  %134 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call72125.i = tail call i32 @feof(%struct._IO_FILE* %134) #8
-  %tobool73126.i = icmp eq i32 %call72125.i, 0
-  br i1 %tobool73126.i, label %land.rhs74.i, label %sw.epilog
+  %130 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !977, !tbaa !612
+  %start.i360 = getelementptr inbounds %struct.seqinfo_s* %130, i64 0, i32 6, !dbg !977
+  store i32 1, i32* %start.i360, align 4, !dbg !977, !tbaa !600
+  %131 = load i32* %seqlen159, align 4, !dbg !978, !tbaa !600
+  %stop.i362 = getelementptr inbounds %struct.seqinfo_s* %130, i64 0, i32 7, !dbg !978
+  store i32 %131, i32* %stop.i362, align 4, !dbg !978, !tbaa !600
+  %132 = load i32* %seqlen159, align 4, !dbg !979, !tbaa !600
+  %olen.i363 = getelementptr inbounds %struct.seqinfo_s* %130, i64 0, i32 8, !dbg !979
+  store i32 %132, i32* %olen.i363, align 4, !dbg !979, !tbaa !600
+  %flags.i364 = getelementptr inbounds %struct.seqinfo_s* %130, i64 0, i32 0, !dbg !980
+  %133 = load i32* %flags.i364, align 4, !dbg !980, !tbaa !600
+  %or.i365 = or i32 %133, 304, !dbg !980
+  store i32 %or.i365, i32* %flags.i364, align 4, !dbg !980, !tbaa !600
+  %134 = load %struct._IO_FILE** %f, align 8, !dbg !981, !tbaa !612
+  %call72125.i = tail call i32 @feof(%struct._IO_FILE* %134) #9, !dbg !981
+  %tobool73126.i = icmp eq i32 %call72125.i, 0, !dbg !981
+  br i1 %tobool73126.i, label %land.rhs74.i, label %sw.epilog, !dbg !981
 
 land.rhs74.i:                                     ; preds = %if.end64.i, %while.body80.i
-  %135 = load i8** %buf.i325, align 8, !tbaa !3
-  %call76.i = tail call i32 @strncmp(i8* %135, i8* getelementptr inbounds ([5 x i8]* @.str125, i64 0, i64 0), i64 4) #9
-  %cmp77.i = icmp eq i32 %call76.i, 0
+  %135 = load i8** %buf.i325, align 8, !dbg !981, !tbaa !612
+  %call76.i = tail call i32 @strncmp(i8* %135, i8* getelementptr inbounds ([5 x i8]* @.str125, i64 0, i64 0), i64 4) #10, !dbg !981
+  %cmp77.i = icmp eq i32 %call76.i, 0, !dbg !981
   br i1 %cmp77.i, label %sw.epilog, label %while.body80.i
 
 while.body80.i:                                   ; preds = %land.rhs74.i
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #8
-  %136 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call72.i = tail call i32 @feof(%struct._IO_FILE* %136) #8
-  %tobool73.i = icmp eq i32 %call72.i, 0
-  br i1 %tobool73.i, label %land.rhs74.i, label %sw.epilog
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #9, !dbg !982
+  %136 = load %struct._IO_FILE** %f, align 8, !dbg !981, !tbaa !612
+  %call72.i = tail call i32 @feof(%struct._IO_FILE* %136) #9, !dbg !981
+  %tobool73.i = icmp eq i32 %call72.i, 0, !dbg !981
+  br i1 %tobool73.i, label %land.rhs74.i, label %sw.epilog, !dbg !981
 
 sw.bb168:                                         ; preds = %if.end158
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #8
-  %buf.i366 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 3
-  %137 = load i8** %buf.i366, align 8, !tbaa !3
-  %add.ptr.i367 = getelementptr inbounds i8* %137, i64 6
-  %call.i368 = tail call i8* @strtok(i8* %add.ptr.i367, i8* getelementptr inbounds ([4 x i8]* @.str16, i64 0, i64 0)) #8
-  %cmp.i369 = icmp eq i8* %call.i368, null
-  br i1 %cmp.i369, label %if.end.i373, label %if.then.i372
+  tail call void @llvm.dbg.value(metadata !{%struct.ReadSeqVars* %V}, i64 0, metadata !984) #6, !dbg !986
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #9, !dbg !987
+  %buf.i366 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 3, !dbg !988
+  %137 = load i8** %buf.i366, align 8, !dbg !988, !tbaa !612
+  %add.ptr.i367 = getelementptr inbounds i8* %137, i64 6, !dbg !988
+  %call.i368 = tail call i8* @strtok(i8* %add.ptr.i367, i8* getelementptr inbounds ([4 x i8]* @.str16, i64 0, i64 0)) #9, !dbg !988
+  tail call void @llvm.dbg.value(metadata !{i8* %call.i368}, i64 0, metadata !989) #6, !dbg !988
+  %cmp.i369 = icmp eq i8* %call.i368, null, !dbg !988
+  br i1 %cmp.i369, label %if.end.i373, label %if.then.i372, !dbg !988
 
 if.then.i372:                                     ; preds = %sw.bb168
-  %138 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %call1.i371 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %138, i8* %call.i368, i32 1) #8
-  br label %if.end.i373
+  %138 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !990, !tbaa !612
+  %call1.i371 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %138, i8* %call.i368, i32 1) #9, !dbg !990
+  br label %if.end.i373, !dbg !990
 
 if.end.i373:                                      ; preds = %if.then.i372, %sw.bb168
-  %call2.i = tail call i8* @strtok(i8* null, i8* getelementptr inbounds ([2 x i8]* @.str43, i64 0, i64 0)) #8
-  %cmp3.i = icmp eq i8* %call2.i, null
-  br i1 %cmp3.i, label %if.end7.i, label %if.then4.i
+  %call2.i = tail call i8* @strtok(i8* null, i8* getelementptr inbounds ([2 x i8]* @.str43, i64 0, i64 0)) #9, !dbg !991
+  tail call void @llvm.dbg.value(metadata !{i8* %call2.i}, i64 0, metadata !989) #6, !dbg !991
+  %cmp3.i = icmp eq i8* %call2.i, null, !dbg !991
+  br i1 %cmp3.i, label %if.end7.i, label %if.then4.i, !dbg !991
 
 if.then4.i:                                       ; preds = %if.end.i373
-  %139 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %call6.i374 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %139, i8* %call2.i, i32 8) #8
-  br label %if.end7.i
+  %139 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !992, !tbaa !612
+  %call6.i374 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %139, i8* %call2.i, i32 8) #9, !dbg !992
+  br label %if.end7.i, !dbg !992
 
 if.end7.i:                                        ; preds = %if.then4.i, %if.end.i373
-  tail call fastcc void @readLoop(i32 0, i32 (i8*, i32*)* @endZuker, %struct.ReadSeqVars* %V) #8
-  %140 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call826.i = tail call i32 @feof(%struct._IO_FILE* %140) #8
-  %141 = load i8** %buf.i366, align 8, !tbaa !3
-  %142 = load i8* %141, align 1, !tbaa !1
-  %cmp1427.i = icmp eq i8 %142, 40
-  %and28.i = zext i1 %cmp1427.i to i32
-  %or29.i = or i32 %and28.i, %call826.i
-  %lnot30.i = icmp eq i32 %or29.i, 0
-  br i1 %lnot30.i, label %while.body.i378, label %sw.epilog
+  tail call fastcc void @readLoop(i32 0, i32 (i8*, i32*)* @endZuker, %struct.ReadSeqVars* %V) #9, !dbg !993
+  %140 = load %struct._IO_FILE** %f, align 8, !dbg !994, !tbaa !612
+  %call826.i = tail call i32 @feof(%struct._IO_FILE* %140) #9, !dbg !994
+  %141 = load i8** %buf.i366, align 8, !dbg !994, !tbaa !612
+  %142 = load i8* %141, align 1, !dbg !994, !tbaa !601
+  %cmp1427.i = icmp eq i8 %142, 40, !dbg !994
+  %and28.i = zext i1 %cmp1427.i to i32, !dbg !994
+  %or29.i = or i32 %and28.i, %call826.i, !dbg !994
+  %lnot30.i = icmp eq i32 %or29.i, 0, !dbg !994
+  br i1 %lnot30.i, label %while.body.i378, label %sw.epilog, !dbg !994
 
 while.body.i378:                                  ; preds = %if.end7.i, %while.body.i378
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #8
-  %143 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call8.i = tail call i32 @feof(%struct._IO_FILE* %143) #8
-  %144 = load i8** %buf.i366, align 8, !tbaa !3
-  %145 = load i8* %144, align 1, !tbaa !1
-  %cmp14.i = icmp eq i8 %145, 40
-  %and.i = zext i1 %cmp14.i to i32
-  %or.i376 = or i32 %and.i, %call8.i
-  %lnot.i377 = icmp eq i32 %or.i376, 0
-  br i1 %lnot.i377, label %while.body.i378, label %sw.epilog
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #9, !dbg !995
+  %143 = load %struct._IO_FILE** %f, align 8, !dbg !994, !tbaa !612
+  %call8.i = tail call i32 @feof(%struct._IO_FILE* %143) #9, !dbg !994
+  %144 = load i8** %buf.i366, align 8, !dbg !994, !tbaa !612
+  %145 = load i8* %144, align 1, !dbg !994, !tbaa !601
+  %cmp14.i = icmp eq i8 %145, 40, !dbg !994
+  %and.i = zext i1 %cmp14.i to i32, !dbg !994
+  %or.i376 = or i32 %and.i, %call8.i, !dbg !994
+  %lnot.i377 = icmp eq i32 %or.i376, 0, !dbg !994
+  br i1 %lnot.i377, label %while.body.i378, label %sw.epilog, !dbg !994
 
 sw.bb169:                                         ; preds = %if.end158
-  %buf.i380 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 3
-  %146 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call103.i = tail call i32 @feof(%struct._IO_FILE* %146) #8
-  %tobool104.i = icmp eq i32 %call103.i, 0
-  br i1 %tobool104.i, label %land.rhs.i384, label %while.end.i389
+  tail call void @llvm.dbg.value(metadata !{%struct.ReadSeqVars* %V}, i64 0, metadata !996) #6, !dbg !998
+  %buf.i380 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 3, !dbg !999
+  %146 = load %struct._IO_FILE** %f, align 8, !dbg !999, !tbaa !612
+  %call103.i = tail call i32 @feof(%struct._IO_FILE* %146) #9, !dbg !999
+  %tobool104.i = icmp eq i32 %call103.i, 0, !dbg !999
+  br i1 %tobool104.i, label %land.rhs.i384, label %while.end.i389, !dbg !999
 
 land.rhs.i384:                                    ; preds = %sw.bb169, %while.body.i387
-  %147 = load i8** %buf.i380, align 8, !tbaa !3
-  %call1.i382 = tail call i32 @strncmp(i8* %147, i8* getelementptr inbounds ([6 x i8]* @.str121, i64 0, i64 0), i64 5) #9
-  %cmp.i383 = icmp eq i32 %call1.i382, 0
+  %147 = load i8** %buf.i380, align 8, !dbg !999, !tbaa !612
+  %call1.i382 = tail call i32 @strncmp(i8* %147, i8* getelementptr inbounds ([6 x i8]* @.str121, i64 0, i64 0), i64 5) #10, !dbg !999
+  %cmp.i383 = icmp eq i32 %call1.i382, 0, !dbg !999
   br i1 %cmp.i383, label %while.end.i389, label %while.body.i387
 
 while.body.i387:                                  ; preds = %land.rhs.i384
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #8
-  %148 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call.i385 = tail call i32 @feof(%struct._IO_FILE* %148) #8
-  %tobool.i386 = icmp eq i32 %call.i385, 0
-  br i1 %tobool.i386, label %land.rhs.i384, label %while.end.i389
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #9, !dbg !1000
+  %148 = load %struct._IO_FILE** %f, align 8, !dbg !999, !tbaa !612
+  %call.i385 = tail call i32 @feof(%struct._IO_FILE* %148) #9, !dbg !999
+  %tobool.i386 = icmp eq i32 %call.i385, 0, !dbg !999
+  br i1 %tobool.i386, label %land.rhs.i384, label %while.end.i389, !dbg !999
 
 while.end.i389:                                   ; preds = %while.body.i387, %land.rhs.i384, %sw.bb169
-  %149 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call3.i388 = tail call i32 @feof(%struct._IO_FILE* %149) #8
-  %tobool4.i = icmp eq i32 %call3.i388, 0
-  br i1 %tobool4.i, label %if.end.i392, label %sw.epilog
+  %149 = load %struct._IO_FILE** %f, align 8, !dbg !1002, !tbaa !612
+  %call3.i388 = tail call i32 @feof(%struct._IO_FILE* %149) #9, !dbg !1002
+  %tobool4.i = icmp eq i32 %call3.i388, 0, !dbg !1002
+  br i1 %tobool4.i, label %if.end.i392, label %sw.epilog, !dbg !1002
 
 if.end.i392:                                      ; preds = %while.end.i389
-  %150 = load i32* %ssimode, align 4, !tbaa !0
-  %cmp5.i391 = icmp sgt i32 %150, -1
-  br i1 %cmp5.i391, label %if.then6.i393, label %if.end7.i396
+  %150 = load i32* %ssimode, align 4, !dbg !1003, !tbaa !600
+  %cmp5.i391 = icmp sgt i32 %150, -1, !dbg !1003
+  br i1 %cmp5.i391, label %if.then6.i393, label %if.end7.i396, !dbg !1003
 
 if.then6.i393:                                    ; preds = %if.end.i392
-  %151 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 7, i32 0
-  %152 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 6, i32 0
-  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %151, i8* %152, i64 16, i32 8, i1 false) #5, !tbaa.struct !5
-  br label %if.end7.i396
+  %151 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 7, i32 0, !dbg !1003
+  %152 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 6, i32 0, !dbg !1003
+  tail call void @llvm.memcpy.p0i8.p0i8.i64(i8* %151, i8* %152, i64 16, i32 8, i1 false) #6, !dbg !1003, !tbaa.struct !900
+  br label %if.end7.i396, !dbg !1003
 
 if.end7.i396:                                     ; preds = %if.then6.i393, %if.end.i392
-  %153 = load i8** %buf.i380, align 8, !tbaa !3
-  %add.ptr.i394 = getelementptr inbounds i8* %153, i64 15
-  %call9.i395 = tail call i8* @strtok(i8* %add.ptr.i394, i8* getelementptr inbounds ([4 x i8]* @.str114, i64 0, i64 0)) #8
-  %cmp10.i = icmp eq i8* %call9.i395, null
-  br i1 %cmp10.i, label %do.body.i401, label %if.then11.i
+  %153 = load i8** %buf.i380, align 8, !dbg !1004, !tbaa !612
+  %add.ptr.i394 = getelementptr inbounds i8* %153, i64 15, !dbg !1004
+  %call9.i395 = tail call i8* @strtok(i8* %add.ptr.i394, i8* getelementptr inbounds ([4 x i8]* @.str114, i64 0, i64 0)) #9, !dbg !1004
+  tail call void @llvm.dbg.value(metadata !{i8* %call9.i395}, i64 0, metadata !1005) #6, !dbg !1004
+  %cmp10.i = icmp eq i8* %call9.i395, null, !dbg !1004
+  br i1 %cmp10.i, label %do.body.i401, label %if.then11.i, !dbg !1004
 
 if.then11.i:                                      ; preds = %if.end7.i396
-  %154 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %call12.i397 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %154, i8* %call9.i395, i32 1) #8
-  %155 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %call14.i398 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %155, i8* %call9.i395, i32 2) #8
-  br label %do.body.i401
+  %154 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !1006, !tbaa !612
+  %call12.i397 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %154, i8* %call9.i395, i32 1) #9, !dbg !1006
+  %155 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !1008, !tbaa !612
+  %call14.i398 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %155, i8* %call9.i395, i32 2) #9, !dbg !1008
+  br label %do.body.i401, !dbg !1009
 
 do.body.i401:                                     ; preds = %if.then11.i, %if.end7.i396, %land.rhs48.i
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #8
-  %156 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call17.i399 = tail call i32 @feof(%struct._IO_FILE* %156) #8
-  %tobool18.i400 = icmp eq i32 %call17.i399, 0
-  br i1 %tobool18.i400, label %land.lhs.true.i403, label %if.else.i406
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #9, !dbg !1010
+  %156 = load %struct._IO_FILE** %f, align 8, !dbg !1012, !tbaa !612
+  %call17.i399 = tail call i32 @feof(%struct._IO_FILE* %156) #9, !dbg !1012
+  %tobool18.i400 = icmp eq i32 %call17.i399, 0, !dbg !1012
+  br i1 %tobool18.i400, label %land.lhs.true.i403, label %if.else.i406, !dbg !1012
 
 land.lhs.true.i403:                               ; preds = %do.body.i401
-  %157 = load i8** %buf.i380, align 8, !tbaa !3
-  %call20.i402 = tail call i32 @strncmp(i8* %157, i8* getelementptr inbounds ([6 x i8]* @.str122, i64 0, i64 0), i64 5) #9
-  %cmp21.i = icmp eq i32 %call20.i402, 0
-  br i1 %cmp21.i, label %if.then22.i, label %if.else.i406
+  %157 = load i8** %buf.i380, align 8, !dbg !1012, !tbaa !612
+  %call20.i402 = tail call i32 @strncmp(i8* %157, i8* getelementptr inbounds ([6 x i8]* @.str122, i64 0, i64 0), i64 5) #10, !dbg !1012
+  %cmp21.i = icmp eq i32 %call20.i402, 0, !dbg !1012
+  br i1 %cmp21.i, label %if.then22.i, label %if.else.i406, !dbg !1012
 
 if.then22.i:                                      ; preds = %land.lhs.true.i403
-  %158 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %add.ptr25.i = getelementptr inbounds i8* %157, i64 15
-  %call26.i = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %158, i8* %add.ptr25.i, i32 8) #8
-  br label %do.cond.i411
+  %158 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !1013, !tbaa !612
+  %add.ptr25.i = getelementptr inbounds i8* %157, i64 15, !dbg !1013
+  %call26.i = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %158, i8* %add.ptr25.i, i32 8) #9, !dbg !1013
+  br label %do.cond.i411, !dbg !1013
 
 if.else.i406:                                     ; preds = %land.lhs.true.i403, %do.body.i401
-  %159 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call28.i404 = tail call i32 @feof(%struct._IO_FILE* %159) #8
-  %tobool29.i405 = icmp eq i32 %call28.i404, 0
-  br i1 %tobool29.i405, label %land.lhs.true30.i407, label %do.cond.i411
+  %159 = load %struct._IO_FILE** %f, align 8, !dbg !1014, !tbaa !612
+  %call28.i404 = tail call i32 @feof(%struct._IO_FILE* %159) #9, !dbg !1014
+  %tobool29.i405 = icmp eq i32 %call28.i404, 0, !dbg !1014
+  br i1 %tobool29.i405, label %land.lhs.true30.i407, label %do.cond.i411, !dbg !1014
 
 land.lhs.true30.i407:                             ; preds = %if.else.i406
-  %160 = load i8** %buf.i380, align 8, !tbaa !3
-  %call32.i = tail call i32 @strncmp(i8* %160, i8* getelementptr inbounds ([10 x i8]* @.str123, i64 0, i64 0), i64 9) #9
-  %cmp33.i = icmp eq i32 %call32.i, 0
-  br i1 %cmp33.i, label %if.then34.i, label %do.cond.i411
+  %160 = load i8** %buf.i380, align 8, !dbg !1014, !tbaa !612
+  %call32.i = tail call i32 @strncmp(i8* %160, i8* getelementptr inbounds ([10 x i8]* @.str123, i64 0, i64 0), i64 9) #10, !dbg !1014
+  %cmp33.i = icmp eq i32 %call32.i, 0, !dbg !1014
+  br i1 %cmp33.i, label %if.then34.i, label %do.cond.i411, !dbg !1014
 
 if.then34.i:                                      ; preds = %land.lhs.true30.i407
-  %add.ptr36.i = getelementptr inbounds i8* %160, i64 15
-  %call37.i = tail call i8* @strtok(i8* %add.ptr36.i, i8* getelementptr inbounds ([4 x i8]* @.str16, i64 0, i64 0)) #8
-  %cmp38.i = icmp eq i8* %call37.i, null
-  br i1 %cmp38.i, label %do.cond.i411, label %if.then39.i
+  %add.ptr36.i = getelementptr inbounds i8* %160, i64 15, !dbg !1015
+  %call37.i = tail call i8* @strtok(i8* %add.ptr36.i, i8* getelementptr inbounds ([4 x i8]* @.str16, i64 0, i64 0)) #9, !dbg !1015
+  tail call void @llvm.dbg.value(metadata !{i8* %call37.i}, i64 0, metadata !1005) #6, !dbg !1015
+  %cmp38.i = icmp eq i8* %call37.i, null, !dbg !1015
+  br i1 %cmp38.i, label %do.cond.i411, label %if.then39.i, !dbg !1015
 
 if.then39.i:                                      ; preds = %if.then34.i
-  %161 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %call41.i408 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %161, i8* %call37.i, i32 4) #8
-  br label %do.cond.i411
+  %161 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !1017, !tbaa !612
+  %call41.i408 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %161, i8* %call37.i, i32 4) #9, !dbg !1017
+  br label %do.cond.i411, !dbg !1017
 
 do.cond.i411:                                     ; preds = %if.then39.i, %if.then34.i, %land.lhs.true30.i407, %if.else.i406, %if.then22.i
-  %162 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call46.i409 = tail call i32 @feof(%struct._IO_FILE* %162) #8
-  %tobool47.i410 = icmp eq i32 %call46.i409, 0
-  br i1 %tobool47.i410, label %land.rhs48.i, label %do.end.i418
+  %162 = load %struct._IO_FILE** %f, align 8, !dbg !1018, !tbaa !612
+  %call46.i409 = tail call i32 @feof(%struct._IO_FILE* %162) #9, !dbg !1018
+  %tobool47.i410 = icmp eq i32 %call46.i409, 0, !dbg !1018
+  br i1 %tobool47.i410, label %land.rhs48.i, label %do.end.i418, !dbg !1018
 
 land.rhs48.i:                                     ; preds = %do.cond.i411
-  %163 = load i8** %buf.i380, align 8, !tbaa !3
-  %call50.i = tail call i32 @strncmp(i8* %163, i8* getelementptr inbounds ([9 x i8]* @.str124, i64 0, i64 0), i64 8) #9
-  %cmp51.i = icmp eq i32 %call50.i, 0
+  %163 = load i8** %buf.i380, align 8, !dbg !1018, !tbaa !612
+  %call50.i = tail call i32 @strncmp(i8* %163, i8* getelementptr inbounds ([9 x i8]* @.str124, i64 0, i64 0), i64 8) #10, !dbg !1018
+  %cmp51.i = icmp eq i32 %call50.i, 0, !dbg !1018
   br i1 %cmp51.i, label %do.end.i418, label %do.body.i401
 
 do.end.i418:                                      ; preds = %land.rhs48.i, %do.cond.i411
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #8
-  tail call fastcc void @readLoop(i32 0, i32 (i8*, i32*)* @endPIR, %struct.ReadSeqVars* %V) #8
-  %164 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %start.i412 = getelementptr inbounds %struct.seqinfo_s* %164, i64 0, i32 6
-  store i32 1, i32* %start.i412, align 4, !tbaa !0
-  %165 = load i32* %seqlen159, align 4, !tbaa !0
-  %stop.i414 = getelementptr inbounds %struct.seqinfo_s* %164, i64 0, i32 7
-  store i32 %165, i32* %stop.i414, align 4, !tbaa !0
-  %166 = load i32* %seqlen159, align 4, !tbaa !0
-  %olen.i415 = getelementptr inbounds %struct.seqinfo_s* %164, i64 0, i32 8
-  store i32 %166, i32* %olen.i415, align 4, !tbaa !0
-  %flags.i416 = getelementptr inbounds %struct.seqinfo_s* %164, i64 0, i32 0
-  %167 = load i32* %flags.i416, align 4, !tbaa !0
-  %or.i417 = or i32 %167, 304
-  store i32 %or.i417, i32* %flags.i416, align 4, !tbaa !0
-  %168 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call60101.i = tail call i32 @feof(%struct._IO_FILE* %168) #8
-  %tobool61102.i = icmp eq i32 %call60101.i, 0
-  br i1 %tobool61102.i, label %land.rhs62.i, label %sw.epilog
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #9, !dbg !1019
+  tail call fastcc void @readLoop(i32 0, i32 (i8*, i32*)* @endPIR, %struct.ReadSeqVars* %V) #9, !dbg !1020
+  %164 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !1021, !tbaa !612
+  %start.i412 = getelementptr inbounds %struct.seqinfo_s* %164, i64 0, i32 6, !dbg !1021
+  store i32 1, i32* %start.i412, align 4, !dbg !1021, !tbaa !600
+  %165 = load i32* %seqlen159, align 4, !dbg !1022, !tbaa !600
+  %stop.i414 = getelementptr inbounds %struct.seqinfo_s* %164, i64 0, i32 7, !dbg !1022
+  store i32 %165, i32* %stop.i414, align 4, !dbg !1022, !tbaa !600
+  %166 = load i32* %seqlen159, align 4, !dbg !1023, !tbaa !600
+  %olen.i415 = getelementptr inbounds %struct.seqinfo_s* %164, i64 0, i32 8, !dbg !1023
+  store i32 %166, i32* %olen.i415, align 4, !dbg !1023, !tbaa !600
+  %flags.i416 = getelementptr inbounds %struct.seqinfo_s* %164, i64 0, i32 0, !dbg !1024
+  %167 = load i32* %flags.i416, align 4, !dbg !1024, !tbaa !600
+  %or.i417 = or i32 %167, 304, !dbg !1024
+  store i32 %or.i417, i32* %flags.i416, align 4, !dbg !1024, !tbaa !600
+  %168 = load %struct._IO_FILE** %f, align 8, !dbg !1025, !tbaa !612
+  %call60101.i = tail call i32 @feof(%struct._IO_FILE* %168) #9, !dbg !1025
+  %tobool61102.i = icmp eq i32 %call60101.i, 0, !dbg !1025
+  br i1 %tobool61102.i, label %land.rhs62.i, label %sw.epilog, !dbg !1025
 
 land.rhs62.i:                                     ; preds = %do.end.i418, %while.body67.i
-  %169 = load i8** %buf.i380, align 8, !tbaa !3
-  %call64.i419 = tail call i32 @strncmp(i8* %169, i8* getelementptr inbounds ([6 x i8]* @.str121, i64 0, i64 0), i64 5) #9
-  %cmp65.i420 = icmp eq i32 %call64.i419, 0
+  %169 = load i8** %buf.i380, align 8, !dbg !1025, !tbaa !612
+  %call64.i419 = tail call i32 @strncmp(i8* %169, i8* getelementptr inbounds ([6 x i8]* @.str121, i64 0, i64 0), i64 5) #10, !dbg !1025
+  %cmp65.i420 = icmp eq i32 %call64.i419, 0, !dbg !1025
   br i1 %cmp65.i420, label %sw.epilog, label %while.body67.i
 
 while.body67.i:                                   ; preds = %land.rhs62.i
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #8
-  %170 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call60.i421 = tail call i32 @feof(%struct._IO_FILE* %170) #8
-  %tobool61.i = icmp eq i32 %call60.i421, 0
-  br i1 %tobool61.i, label %land.rhs62.i, label %sw.epilog
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #9, !dbg !1026
+  %170 = load %struct._IO_FILE** %f, align 8, !dbg !1025, !tbaa !612
+  %call60.i421 = tail call i32 @feof(%struct._IO_FILE* %170) #9, !dbg !1025
+  %tobool61.i = icmp eq i32 %call60.i421, 0, !dbg !1025
+  br i1 %tobool61.i, label %land.rhs62.i, label %sw.epilog, !dbg !1025
 
 sw.bb170:                                         ; preds = %if.end158
-  %buf.i422 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 3
-  %171 = load i8** %buf.i422, align 8, !tbaa !3
-  %call.i423 = tail call i32 @Strparse(i8* getelementptr inbounds ([34 x i8]* @.str115, i64 0, i64 0), i8* %171, i32 2) #8
-  %tobool.i424 = icmp eq i32 %call.i423, 0
-  br i1 %tobool.i424, label %if.else.i430, label %if.then.i428
+  tail call void @llvm.dbg.value(metadata !{%struct.ReadSeqVars* %V}, i64 0, metadata !1028) #6, !dbg !1030
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !1031) #6, !dbg !1032
+  tail call void @llvm.dbg.value(metadata !18, i64 0, metadata !1033) #6, !dbg !1034
+  %buf.i422 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 3, !dbg !1035
+  %171 = load i8** %buf.i422, align 8, !dbg !1035, !tbaa !612
+  %call.i423 = tail call i32 @Strparse(i8* getelementptr inbounds ([34 x i8]* @.str115, i64 0, i64 0), i8* %171, i32 2) #9, !dbg !1035
+  %tobool.i424 = icmp eq i32 %call.i423, 0, !dbg !1035
+  br i1 %tobool.i424, label %if.else.i430, label %if.then.i428, !dbg !1035
 
 if.then.i428:                                     ; preds = %sw.bb170
-  %172 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %173 = load i8** getelementptr inbounds ([10 x i8*]* @sqd_parse, i64 0, i64 1), align 8, !tbaa !3
-  %call1.i426 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %172, i8* %173, i32 1) #8
-  %174 = load i8** getelementptr inbounds ([10 x i8*]* @sqd_parse, i64 0, i64 2), align 8, !tbaa !3
-  %call2.i427 = tail call i32 @atoi(i8* %174) #9
-  br label %if.end11.i
+  tail call void @llvm.dbg.value(metadata !1036, i64 0, metadata !1031) #6, !dbg !1037
+  %172 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !1039, !tbaa !612
+  %173 = load i8** getelementptr inbounds ([10 x i8*]* @sqd_parse, i64 0, i64 1), align 8, !dbg !1039, !tbaa !612
+  %call1.i426 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %172, i8* %173, i32 1) #9, !dbg !1039
+  %174 = load i8** getelementptr inbounds ([10 x i8*]* @sqd_parse, i64 0, i64 2), align 8, !dbg !1040, !tbaa !612
+  %call2.i427 = tail call i32 @atoi(i8* %174) #10, !dbg !1040
+  tail call void @llvm.dbg.value(metadata !{i32 %call2.i427}, i64 0, metadata !1033) #6, !dbg !1040
+  br label %if.end11.i, !dbg !1041
 
 if.else.i430:                                     ; preds = %sw.bb170
-  %175 = load i8** %buf.i422, align 8, !tbaa !3
-  %call4.i429 = tail call i32 @Strparse(i8* getelementptr inbounds ([33 x i8]* @.str116, i64 0, i64 0), i8* %175, i32 1) #8
-  %tobool5.i = icmp eq i32 %call4.i429, 0
-  br i1 %tobool5.i, label %if.else9.i, label %if.then6.i432
+  %175 = load i8** %buf.i422, align 8, !dbg !1042, !tbaa !612
+  %call4.i429 = tail call i32 @Strparse(i8* getelementptr inbounds ([33 x i8]* @.str116, i64 0, i64 0), i8* %175, i32 1) #9, !dbg !1042
+  %tobool5.i = icmp eq i32 %call4.i429, 0, !dbg !1042
+  br i1 %tobool5.i, label %if.else9.i, label %if.then6.i432, !dbg !1042
 
 if.then6.i432:                                    ; preds = %if.else.i430
-  %176 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %177 = load i8** getelementptr inbounds ([10 x i8*]* @sqd_parse, i64 0, i64 1), align 8, !tbaa !3
-  %call8.i431 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %176, i8* %177, i32 1) #8
-  br label %if.end11.i
+  %176 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !1043, !tbaa !612
+  %177 = load i8** getelementptr inbounds ([10 x i8*]* @sqd_parse, i64 0, i64 1), align 8, !dbg !1043, !tbaa !612
+  %call8.i431 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %176, i8* %177, i32 1) #9, !dbg !1043
+  br label %if.end11.i, !dbg !1043
 
 if.else9.i:                                       ; preds = %if.else.i430
-  %178 = load i8** %buf.i422, align 8, !tbaa !3
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([25 x i8]* @.str117, i64 0, i64 0), i8* %178) #8
+  %178 = load i8** %buf.i422, align 8, !dbg !1044, !tbaa !612
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([25 x i8]* @.str117, i64 0, i64 0), i8* %178) #9, !dbg !1044
   br label %if.end11.i
 
 if.end11.i:                                       ; preds = %if.else9.i, %if.then6.i432, %if.then.i428
   %binary.0.i = phi i1 [ false, %if.then6.i432 ], [ false, %if.else9.i ], [ true, %if.then.i428 ]
   %blen.0.i = phi i32 [ 0, %if.then6.i432 ], [ 0, %if.else9.i ], [ %call2.i427, %if.then.i428 ]
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #8
-  %179 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %180 = load i8** %buf.i422, align 8, !tbaa !3
-  %call14.i433 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %179, i8* %180, i32 8) #8
-  br i1 %binary.0.i, label %if.then16.i435, label %if.else40.i
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #9, !dbg !1045
+  %179 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !1046, !tbaa !612
+  %180 = load i8** %buf.i422, align 8, !dbg !1046, !tbaa !612
+  %call14.i433 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %179, i8* %180, i32 8) #9, !dbg !1046
+  br i1 %binary.0.i, label %if.then16.i435, label %if.else40.i, !dbg !1047
 
 if.then16.i435:                                   ; preds = %if.end11.i
-  %maxseq.i = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 19
-  %181 = load i32* %maxseq.i, align 4, !tbaa !0
-  %cmp.i434 = icmp slt i32 %blen.0.i, %181
-  br i1 %cmp.i434, label %if.then16.if.end26_crit_edge.i, label %if.then17.i
+  %maxseq.i = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 19, !dbg !1048
+  %181 = load i32* %maxseq.i, align 4, !dbg !1048, !tbaa !600
+  %cmp.i434 = icmp slt i32 %blen.0.i, %181, !dbg !1048
+  br i1 %cmp.i434, label %if.then16.if.end26_crit_edge.i, label %if.then17.i, !dbg !1048
 
 if.then16.if.end26_crit_edge.i:                   ; preds = %if.then16.i435
-  %seq27.pre.i = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 15
-  br label %if.end26.i
+  %seq27.pre.i = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 15, !dbg !1050
+  br label %if.end26.i, !dbg !1048
 
 if.then17.i:                                      ; preds = %if.then16.i435
-  store i32 %blen.0.i, i32* %maxseq.i, align 4, !tbaa !0
-  %seq.i436 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 15
-  %182 = load i8** %seq.i436, align 8, !tbaa !3
-  %add.i = add nsw i32 %blen.0.i, 4
-  %conv.i = sext i32 %add.i to i64
-  %call20.i437 = tail call i8* @realloc(i8* %182, i64 %conv.i) #8
-  store i8* %call20.i437, i8** %seq.i436, align 8, !tbaa !3
-  %cmp22.i438 = icmp eq i8* %call20.i437, null
-  br i1 %cmp22.i438, label %if.then24.i, label %if.end26.i
+  store i32 %blen.0.i, i32* %maxseq.i, align 4, !dbg !1051, !tbaa !600
+  %seq.i436 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 15, !dbg !1053
+  %182 = load i8** %seq.i436, align 8, !dbg !1053, !tbaa !612
+  %add.i = add nsw i32 %blen.0.i, 4, !dbg !1053
+  %conv.i = sext i32 %add.i to i64, !dbg !1053
+  %call20.i437 = tail call i8* @realloc(i8* %182, i64 %conv.i) #9, !dbg !1053
+  store i8* %call20.i437, i8** %seq.i436, align 8, !dbg !1053, !tbaa !612
+  %cmp22.i438 = icmp eq i8* %call20.i437, null, !dbg !1053
+  br i1 %cmp22.i438, label %if.then24.i, label %if.end26.i, !dbg !1053
 
 if.then24.i:                                      ; preds = %if.then17.i
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([14 x i8]* @.str118, i64 0, i64 0)) #8
-  br label %if.end26.i
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([14 x i8]* @.str118, i64 0, i64 0)) #9, !dbg !1054
+  br label %if.end26.i, !dbg !1054
 
 if.end26.i:                                       ; preds = %if.then24.i, %if.then17.i, %if.then16.if.end26_crit_edge.i
-  %seq27.pre-phi.i = phi i8** [ %seq27.pre.i, %if.then16.if.end26_crit_edge.i ], [ %seq.i436, %if.then17.i ], [ %seq.i436, %if.then24.i ]
-  %183 = load i8** %seq27.pre-phi.i, align 8, !tbaa !3
-  %add28.i = add nsw i32 %blen.0.i, 3
-  %div.i = sdiv i32 %add28.i, 4
-  %conv29.i = sext i32 %div.i to i64
-  %184 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call30.i = tail call i64 @fread(i8* %183, i64 1, i64 %conv29.i, %struct._IO_FILE* %184) #8
-  %cmp34.i = icmp ult i64 %call30.i, %conv29.i
-  br i1 %cmp34.i, label %if.then36.i, label %if.end37.i
+  %seq27.pre-phi.i = phi i8** [ %seq27.pre.i, %if.then16.if.end26_crit_edge.i ], [ %seq.i436, %if.then17.i ], [ %seq.i436, %if.then24.i ], !dbg !1050
+  %183 = load i8** %seq27.pre-phi.i, align 8, !dbg !1050, !tbaa !612
+  %add28.i = add nsw i32 %blen.0.i, 3, !dbg !1050
+  %div.i = sdiv i32 %add28.i, 4, !dbg !1050
+  %conv29.i = sext i32 %div.i to i64, !dbg !1050
+  %184 = load %struct._IO_FILE** %f, align 8, !dbg !1050, !tbaa !612
+  %call30.i = tail call i64 @fread(i8* %183, i64 1, i64 %conv29.i, %struct._IO_FILE* %184) #9, !dbg !1050
+  %cmp34.i = icmp ult i64 %call30.i, %conv29.i, !dbg !1050
+  br i1 %cmp34.i, label %if.then36.i, label %if.end37.i, !dbg !1050
 
 if.then36.i:                                      ; preds = %if.end26.i
-  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([13 x i8]* @.str119, i64 0, i64 0)) #8
-  br label %if.end37.i
+  tail call void (i8*, ...)* @Die(i8* getelementptr inbounds ([13 x i8]* @.str119, i64 0, i64 0)) #9, !dbg !1055
+  br label %if.end37.i, !dbg !1055
 
 if.end37.i:                                       ; preds = %if.then36.i, %if.end26.i
-  store i32 %blen.0.i, i32* %seqlen159, align 4, !tbaa !0
-  %185 = load i8** %seq27.pre-phi.i, align 8, !tbaa !3
-  %call39.i = tail call i32 @GCGBinaryToSequence(i8* %185, i32 %blen.0.i) #8
-  br label %while.cond.preheader.i441
+  store i32 %blen.0.i, i32* %seqlen159, align 4, !dbg !1056, !tbaa !600
+  %185 = load i8** %seq27.pre-phi.i, align 8, !dbg !1057, !tbaa !612
+  %call39.i = tail call i32 @GCGBinaryToSequence(i8* %185, i32 %blen.0.i) #9, !dbg !1057
+  br label %while.cond.preheader.i441, !dbg !1058
 
 if.else40.i:                                      ; preds = %if.end11.i
-  tail call fastcc void @readLoop(i32 0, i32 (i8*, i32*)* @endGCGdata, %struct.ReadSeqVars* %V) #8
+  tail call fastcc void @readLoop(i32 0, i32 (i8*, i32*)* @endGCGdata, %struct.ReadSeqVars* %V) #9, !dbg !1059
   br label %while.cond.preheader.i441
 
 while.cond.preheader.i441:                        ; preds = %if.else40.i, %if.end37.i
-  %186 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call4378.i = tail call i32 @feof(%struct._IO_FILE* %186) #8
-  %tobool4479.i = icmp eq i32 %call4378.i, 0
-  br i1 %tobool4479.i, label %lor.rhs.i443, label %sw.epilog
+  %186 = load %struct._IO_FILE** %f, align 8, !dbg !1060, !tbaa !612
+  %call4378.i = tail call i32 @feof(%struct._IO_FILE* %186) #9, !dbg !1060
+  %tobool4479.i = icmp eq i32 %call4378.i, 0, !dbg !1060
+  br i1 %tobool4479.i, label %lor.rhs.i443, label %sw.epilog, !dbg !1060
 
 lor.rhs.i443:                                     ; preds = %while.cond.preheader.i441, %while.body.i444
-  %187 = load i8** %buf.i422, align 8, !tbaa !3
-  %188 = load i8* %187, align 1, !tbaa !1
+  %187 = load i8** %buf.i422, align 8, !dbg !1060, !tbaa !612
+  %188 = load i8* %187, align 1, !dbg !1060, !tbaa !601
   %phitmp.i442 = icmp eq i8 %188, 62
   br i1 %phitmp.i442, label %sw.epilog, label %while.body.i444
 
 while.body.i444:                                  ; preds = %lor.rhs.i443
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #8
-  %189 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call43.i = tail call i32 @feof(%struct._IO_FILE* %189) #8
-  %tobool44.i = icmp eq i32 %call43.i, 0
-  br i1 %tobool44.i, label %lor.rhs.i443, label %sw.epilog
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #9, !dbg !1061
+  %189 = load %struct._IO_FILE** %f, align 8, !dbg !1060, !tbaa !612
+  %call43.i = tail call i32 @feof(%struct._IO_FILE* %189) #9, !dbg !1060
+  %tobool44.i = icmp eq i32 %call43.i, 0, !dbg !1060
+  br i1 %tobool44.i, label %lor.rhs.i443, label %sw.epilog, !dbg !1060
 
 do.body:                                          ; preds = %do.body.preheader, %if.end177
-  %190 = load i8** %buf, align 8, !tbaa !3
-  %call172 = tail call i8* @strstr(i8* %190, i8* getelementptr inbounds ([3 x i8]* @.str6, i64 0, i64 0)) #9
-  %cmp173 = icmp eq i8* %call172, null
-  br i1 %cmp173, label %if.end177, label %if.then176
+  %190 = load i8** %buf, align 8, !dbg !860, !tbaa !612
+  %call172 = tail call i8* @strstr(i8* %190, i8* getelementptr inbounds ([3 x i8]* @.str6, i64 0, i64 0)) #10, !dbg !860
+  %cmp173 = icmp eq i8* %call172, null, !dbg !860
+  br i1 %cmp173, label %if.end177, label %if.then176, !dbg !1062
 
 if.then176:                                       ; preds = %do.body
-  store i32 0, i32* %seqlen159, align 4, !tbaa !0
-  %call.i448 = tail call i8* @strstr(i8* %190, i8* getelementptr inbounds ([11 x i8]* @.str113, i64 0, i64 0)) #9
-  %cmp.i449 = icmp eq i8* %call.i448, null
-  br i1 %cmp.i449, label %if.else.i453, label %if.then.i450
+  tail call void @llvm.dbg.value(metadata !{%struct.ReadSeqVars* %V}, i64 0, metadata !1063) #6, !dbg !1064
+  store i32 0, i32* %seqlen159, align 4, !dbg !1065, !tbaa !600
+  %call.i448 = tail call i8* @strstr(i8* %190, i8* getelementptr inbounds ([11 x i8]* @.str113, i64 0, i64 0)) #10, !dbg !1066
+  tail call void @llvm.dbg.value(metadata !{i8* %call.i448}, i64 0, metadata !1067) #6, !dbg !1066
+  %cmp.i449 = icmp eq i8* %call.i448, null, !dbg !1066
+  br i1 %cmp.i449, label %if.else.i453, label %if.then.i450, !dbg !1066
 
 if.then.i450:                                     ; preds = %if.then176
-  store i8 0, i8* %call.i448, align 1, !tbaa !1
-  br label %if.end5.i
+  store i8 0, i8* %call.i448, align 1, !dbg !1066, !tbaa !601
+  br label %if.end5.i, !dbg !1066
 
 if.else.i453:                                     ; preds = %if.then176
-  %call2.i451 = tail call i8* @strstr(i8* %190, i8* getelementptr inbounds ([3 x i8]* @.str6, i64 0, i64 0)) #9
-  %cmp3.i452 = icmp eq i8* %call2.i451, null
-  br i1 %cmp3.i452, label %if.end5.i, label %if.then4.i454
+  %call2.i451 = tail call i8* @strstr(i8* %190, i8* getelementptr inbounds ([3 x i8]* @.str6, i64 0, i64 0)) #10, !dbg !1068
+  tail call void @llvm.dbg.value(metadata !{i8* %call2.i451}, i64 0, metadata !1067) #6, !dbg !1068
+  %cmp3.i452 = icmp eq i8* %call2.i451, null, !dbg !1068
+  br i1 %cmp3.i452, label %if.end5.i, label %if.then4.i454, !dbg !1068
 
 if.then4.i454:                                    ; preds = %if.else.i453
-  store i8 0, i8* %call2.i451, align 1, !tbaa !1
-  br label %if.end5.i
+  store i8 0, i8* %call2.i451, align 1, !dbg !1068, !tbaa !601
+  br label %if.end5.i, !dbg !1068
 
 if.end5.i:                                        ; preds = %if.then4.i454, %if.else.i453, %if.then.i450
-  %191 = load i8** %buf, align 8, !tbaa !3
-  %call7.i455 = tail call i8* @strtok(i8* %191, i8* getelementptr inbounds ([4 x i8]* @.str114, i64 0, i64 0)) #8
-  %cmp8.i456 = icmp eq i8* %call7.i455, null
-  br i1 %cmp8.i456, label %do.body.preheader.i, label %if.then9.i
+  %191 = load i8** %buf, align 8, !dbg !1069, !tbaa !612
+  %call7.i455 = tail call i8* @strtok(i8* %191, i8* getelementptr inbounds ([4 x i8]* @.str114, i64 0, i64 0)) #9, !dbg !1069
+  tail call void @llvm.dbg.value(metadata !{i8* %call7.i455}, i64 0, metadata !1070) #6, !dbg !1069
+  %cmp8.i456 = icmp eq i8* %call7.i455, null, !dbg !1069
+  br i1 %cmp8.i456, label %do.body.preheader.i, label %if.then9.i, !dbg !1069
 
 if.then9.i:                                       ; preds = %if.end5.i
-  %192 = load %struct.seqinfo_s** %sqinfo160, align 8, !tbaa !3
-  %call10.i458 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %192, i8* %call7.i455, i32 1) #8
-  br label %do.body.preheader.i
+  %192 = load %struct.seqinfo_s** %sqinfo160, align 8, !dbg !1071, !tbaa !612
+  %call10.i458 = tail call i32 @SetSeqinfoString(%struct.seqinfo_s* %192, i8* %call7.i455, i32 1) #9, !dbg !1071
+  br label %do.body.preheader.i, !dbg !1071
 
 do.body.preheader.i:                              ; preds = %if.then9.i, %if.end5.i
-  %193 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call1227.i = tail call i32 @feof(%struct._IO_FILE* %193) #8
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #8
-  %tobool28.i = icmp eq i32 %call1227.i, 0
-  br i1 %tobool28.i, label %if.then13.i462, label %if.end177
+  %193 = load %struct._IO_FILE** %f, align 8, !dbg !1072, !tbaa !612
+  %call1227.i = tail call i32 @feof(%struct._IO_FILE* %193) #9, !dbg !1072
+  tail call void @llvm.dbg.value(metadata !{i32 %call1227.i}, i64 0, metadata !1074) #6, !dbg !1072
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #9, !dbg !1075
+  %tobool28.i = icmp eq i32 %call1227.i, 0, !dbg !1076
+  br i1 %tobool28.i, label %if.then13.i462, label %if.end177, !dbg !1076
 
 if.then13.i462:                                   ; preds = %do.body.preheader.i, %if.then13.i462
-  %194 = load i8** %buf, align 8, !tbaa !3
-  tail call fastcc void @addseq(i8* %194, %struct.ReadSeqVars* %V) #8
-  %195 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call12.i460 = tail call i32 @feof(%struct._IO_FILE* %195) #8
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #8
-  %tobool.i461 = icmp eq i32 %call12.i460, 0
-  br i1 %tobool.i461, label %if.then13.i462, label %if.end177
+  %194 = load i8** %buf, align 8, !dbg !1076, !tbaa !612
+  tail call fastcc void @addseq(i8* %194, %struct.ReadSeqVars* %V) #9, !dbg !1076
+  %195 = load %struct._IO_FILE** %f, align 8, !dbg !1072, !tbaa !612
+  %call12.i460 = tail call i32 @feof(%struct._IO_FILE* %195) #9, !dbg !1072
+  tail call void @llvm.dbg.value(metadata !{i32 %call12.i460}, i64 0, metadata !1074) #6, !dbg !1072
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #9, !dbg !1075
+  %tobool.i461 = icmp eq i32 %call12.i460, 0, !dbg !1076
+  br i1 %tobool.i461, label %if.then13.i462, label %if.end177, !dbg !1076
 
 if.end177:                                        ; preds = %if.then13.i462, %do.body.preheader.i, %do.body
-  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #7
-  %196 = load %struct._IO_FILE** %f, align 8, !tbaa !3
-  %call179 = tail call i32 @feof(%struct._IO_FILE* %196) #8
-  %lnot = icmp eq i32 %call179, 0
-  br i1 %lnot, label %do.body, label %sw.epilog
+  tail call fastcc void @SeqfileGetLine(%struct.ReadSeqVars* %V) #8, !dbg !1077
+  %196 = load %struct._IO_FILE** %f, align 8, !dbg !1078, !tbaa !612
+  %call179 = tail call i32 @feof(%struct._IO_FILE* %196) #9, !dbg !1078
+  %lnot = icmp eq i32 %call179, 0, !dbg !1078
+  br i1 %lnot, label %do.body, label %sw.epilog, !dbg !1078
 
 sw.default:                                       ; preds = %if.end158
-  store i32 5, i32* @squid_errno, align 4, !tbaa !0
-  tail call void @free(i8* %43) #8
-  br label %return
+  store i32 5, i32* @squid_errno, align 4, !dbg !1079, !tbaa !600
+  tail call void @free(i8* %43) #9, !dbg !1080
+  br label %return, !dbg !1081
 
 sw.epilog:                                        ; preds = %if.end177, %while.body.i444, %lor.rhs.i443, %while.body67.i, %land.rhs62.i, %while.body.i378, %while.body80.i, %land.rhs74.i, %while.body.i323, %lor.rhs.i321, %while.body110.i, %land.rhs103.i, %while.body28.i, %land.rhs22.i, %while.body.i, %lor.rhs19.i, %while.cond.preheader.i441, %do.end.i418, %while.end.i389, %if.end7.i, %if.end64.i, %if.end17.i, %while.cond99.preheader.i, %while.cond18.preheader.i, %while.cond.preheader.i
-  %seq183 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 15
-  %197 = load i8** %seq183, align 8, !tbaa !3
-  %cmp184 = icmp eq i8* %197, null
-  br i1 %cmp184, label %if.end192, label %if.then186
+  %seq183 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 15, !dbg !1082
+  %197 = load i8** %seq183, align 8, !dbg !1082, !tbaa !612
+  %cmp184 = icmp eq i8* %197, null, !dbg !1082
+  br i1 %cmp184, label %if.end192, label %if.then186, !dbg !1082
 
 if.then186:                                       ; preds = %sw.epilog
-  %198 = load i32* %seqlen159, align 4, !tbaa !0
-  %idxprom188 = sext i32 %198 to i64
-  %arrayidx190 = getelementptr inbounds i8* %197, i64 %idxprom188
-  store i8 0, i8* %arrayidx190, align 1, !tbaa !1
-  br label %if.end192
+  %198 = load i32* %seqlen159, align 4, !dbg !1083, !tbaa !600
+  %idxprom188 = sext i32 %198 to i64, !dbg !1083
+  %arrayidx190 = getelementptr inbounds i8* %197, i64 %idxprom188, !dbg !1083
+  store i8 0, i8* %arrayidx190, align 1, !dbg !1083, !tbaa !601
+  br label %if.end192, !dbg !1083
 
 if.end192:                                        ; preds = %sw.epilog, %if.then186, %if.end144
-  %seqlen193 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 18
-  %199 = load i32* %seqlen193, align 4, !tbaa !0
-  %len = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 5
-  store i32 %199, i32* %len, align 4, !tbaa !0
-  %flags194 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 0
-  %200 = load i32* %flags194, align 4, !tbaa !0
-  %or195 = or i32 %200, 64
-  store i32 %or195, i32* %flags194, align 4, !tbaa !0
-  %seq196 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 15
-  %201 = load i8** %seq196, align 8, !tbaa !3
-  store i8* %201, i8** %ret_seq, align 8, !tbaa !3
-  %202 = load i32* @squid_errno, align 4, !tbaa !0
-  %cmp197 = icmp eq i32 %202, 0
-  %. = zext i1 %cmp197 to i32
-  br label %return
+  %seqlen193 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 18, !dbg !1084
+  %199 = load i32* %seqlen193, align 4, !dbg !1084, !tbaa !600
+  %len = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 5, !dbg !1084
+  store i32 %199, i32* %len, align 4, !dbg !1084, !tbaa !600
+  %flags194 = getelementptr inbounds %struct.seqinfo_s* %sqinfo, i64 0, i32 0, !dbg !1085
+  %200 = load i32* %flags194, align 4, !dbg !1085, !tbaa !600
+  %or195 = or i32 %200, 64, !dbg !1085
+  store i32 %or195, i32* %flags194, align 4, !dbg !1085, !tbaa !600
+  %seq196 = getelementptr inbounds %struct.ReadSeqVars* %V, i64 0, i32 15, !dbg !1086
+  %201 = load i8** %seq196, align 8, !dbg !1086, !tbaa !612
+  store i8* %201, i8** %ret_seq, align 8, !dbg !1086, !tbaa !612
+  %202 = load i32* @squid_errno, align 4, !dbg !1087, !tbaa !600
+  %cmp197 = icmp eq i32 %202, 0, !dbg !1087
+  %. = zext i1 %cmp197 to i32, !dbg !1087
+  br label %return, !dbg !1087
 
 return:                                           ; preds = %if.end192, %if.else, %if.then4, %sw.default
   %retval.0 = phi i32 [ 0, %sw.default ], [ 0, %if.then4 ], [ 0, %if.else ], [ %., %if.end192 ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !1087
 }

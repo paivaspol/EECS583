@@ -1,46 +1,49 @@
 define internal fastcc %struct.table_elt* @lookup(%struct.rtx_def* %x, i32 %hash, i32 %mode) #0 {
 entry:
-  %idxprom = zext i32 %hash to i64
-  %arrayidx = getelementptr inbounds [32 x %struct.table_elt*]* @table, i64 0, i64 %idxprom
-  %0 = bitcast %struct.rtx_def* %x to i32*
-  %p.018 = load %struct.table_elt** %arrayidx, align 8
-  %tobool19 = icmp eq %struct.table_elt* %p.018, null
-  br i1 %tobool19, label %return, label %for.body
+  tail call void @llvm.dbg.value(metadata !{%struct.rtx_def* %x}, i64 0, metadata !833), !dbg !3109
+  tail call void @llvm.dbg.value(metadata !{i32 %hash}, i64 0, metadata !834), !dbg !3110
+  tail call void @llvm.dbg.value(metadata !{i32 %mode}, i64 0, metadata !835), !dbg !3111
+  %idxprom = zext i32 %hash to i64, !dbg !3112
+  %arrayidx = getelementptr inbounds [32 x %struct.table_elt*]* @table, i64 0, i64 %idxprom, !dbg !3112
+  %0 = bitcast %struct.rtx_def* %x to i32*, !dbg !3114
+  %p.018 = load %struct.table_elt** %arrayidx, align 8, !dbg !3112
+  %tobool19 = icmp eq %struct.table_elt* %p.018, null, !dbg !3112
+  br i1 %tobool19, label %return, label %for.body, !dbg !3112
 
 for.body:                                         ; preds = %entry, %for.inc
   %p.020 = phi %struct.table_elt* [ %p.0, %for.inc ], [ %p.018, %entry ]
-  %mode1 = getelementptr inbounds %struct.table_elt* %p.020, i64 0, i32 10
-  %1 = load i32* %mode1, align 4, !tbaa !9
-  %cmp = icmp eq i32 %1, %mode
-  br i1 %cmp, label %land.lhs.true, label %for.inc
+  %mode1 = getelementptr inbounds %struct.table_elt* %p.020, i64 0, i32 10, !dbg !3114
+  %1 = load i32* %mode1, align 4, !dbg !3114, !tbaa !2198
+  %cmp = icmp eq i32 %1, %mode, !dbg !3114
+  br i1 %cmp, label %land.lhs.true, label %for.inc, !dbg !3114
 
 land.lhs.true:                                    ; preds = %for.body
-  %exp = getelementptr inbounds %struct.table_elt* %p.020, i64 0, i32 0
-  %2 = load %struct.rtx_def** %exp, align 8, !tbaa !0
-  %cmp2 = icmp eq %struct.rtx_def* %2, %x
-  %bf.load = load i32* %0, align 8
-  br i1 %cmp2, label %land.lhs.true3, label %lor.lhs.false
+  %exp = getelementptr inbounds %struct.table_elt* %p.020, i64 0, i32 0, !dbg !3114
+  %2 = load %struct.rtx_def** %exp, align 8, !dbg !3114, !tbaa !1677
+  %cmp2 = icmp eq %struct.rtx_def* %2, %x, !dbg !3114
+  %bf.load = load i32* %0, align 8, !dbg !3114
+  br i1 %cmp2, label %land.lhs.true3, label %lor.lhs.false, !dbg !3114
 
 land.lhs.true3:                                   ; preds = %land.lhs.true
-  %bf.clear = and i32 %bf.load, 65535
-  %cmp4 = icmp eq i32 %bf.clear, 61
-  br i1 %cmp4, label %return, label %lor.lhs.false
+  %bf.clear = and i32 %bf.load, 65535, !dbg !3114
+  %cmp4 = icmp eq i32 %bf.clear, 61, !dbg !3114
+  br i1 %cmp4, label %return, label %lor.lhs.false, !dbg !3114
 
 lor.lhs.false:                                    ; preds = %land.lhs.true, %land.lhs.true3
-  %bf.clear7 = and i32 %bf.load, 65535
-  %cmp8 = icmp ne i32 %bf.clear7, 61
-  %conv = zext i1 %cmp8 to i32
-  %call = tail call fastcc i32 @exp_equiv_p(%struct.rtx_def* %x, %struct.rtx_def* %2, i32 %conv) #7
-  %tobool9 = icmp eq i32 %call, 0
-  br i1 %tobool9, label %for.inc, label %return
+  %bf.clear7 = and i32 %bf.load, 65535, !dbg !3115
+  %cmp8 = icmp ne i32 %bf.clear7, 61, !dbg !3115
+  %conv = zext i1 %cmp8 to i32, !dbg !3115
+  %call = tail call fastcc i32 @exp_equiv_p(%struct.rtx_def* %x, %struct.rtx_def* %2, i32 %conv) #8, !dbg !3115
+  %tobool9 = icmp eq i32 %call, 0, !dbg !3115
+  br i1 %tobool9, label %for.inc, label %return, !dbg !3115
 
 for.inc:                                          ; preds = %lor.lhs.false, %for.body
-  %next_same_hash = getelementptr inbounds %struct.table_elt* %p.020, i64 0, i32 2
-  %p.0 = load %struct.table_elt** %next_same_hash, align 8
-  %tobool = icmp eq %struct.table_elt* %p.0, null
-  br i1 %tobool, label %return, label %for.body
+  %next_same_hash = getelementptr inbounds %struct.table_elt* %p.020, i64 0, i32 2, !dbg !3112
+  %p.0 = load %struct.table_elt** %next_same_hash, align 8, !dbg !3112
+  %tobool = icmp eq %struct.table_elt* %p.0, null, !dbg !3112
+  br i1 %tobool, label %return, label %for.body, !dbg !3112
 
 return:                                           ; preds = %for.inc, %land.lhs.true3, %lor.lhs.false, %entry
   %retval.0 = phi %struct.table_elt* [ null, %entry ], [ %p.020, %lor.lhs.false ], [ %p.020, %land.lhs.true3 ], [ null, %for.inc ]
-  ret %struct.table_elt* %retval.0
+  ret %struct.table_elt* %retval.0, !dbg !3116
 }

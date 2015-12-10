@@ -1,68 +1,73 @@
-define void @SKTreeDebugNodes(%struct.T_SKTREE* readonly %root, i32 %depth) #1 {
-  %1 = icmp eq %struct.T_SKTREE* %root, null
-  br i1 %1, label %tailrecurse._crit_edge, label %.lr.ph
+define void @SKTreeDebugNodes(%struct.T_SKTREE* %root, i32 %depth) #1 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %root}, i64 0, metadata !73), !dbg !188
+  tail call void @llvm.dbg.value(metadata !{i32 %depth}, i64 0, metadata !74), !dbg !188
+  %tobool39 = icmp eq %struct.T_SKTREE* %root, null, !dbg !189
+  br i1 %tobool39, label %if.end, label %if.then, !dbg !189
 
-.lr.ph:                                           ; preds = %0, %tailrecurse
-  %depth.tr4 = phi i32 [ %4, %tailrecurse ], [ %depth, %0 ]
-  %root.tr3 = phi %struct.T_SKTREE* [ %33, %tailrecurse ], [ %root, %0 ]
-  %2 = getelementptr inbounds %struct.T_SKTREE* %root.tr3, i64 0, i32 0
-  %3 = load %struct.T_SKTREE** %2, align 8, !tbaa !8
-  %4 = add nsw i32 %depth.tr4, 1
-  tail call void @SKTreeDebugNodes(%struct.T_SKTREE* %3, i32 %4) #9
-  %5 = getelementptr inbounds %struct.T_SKTREE* %root.tr3, i64 0, i32 4
-  %6 = load i8** %5, align 8, !tbaa !7
-  %7 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([11 x i8]* @.str, i64 0, i64 0), i8* %6) #8
-  %8 = load %struct.T_SKTREE** %2, align 8, !tbaa !8
-  %9 = icmp eq %struct.T_SKTREE* %8, null
-  br i1 %9, label %14, label %10
+if.then:                                          ; preds = %entry, %cond.end23
+  %depth.tr41 = phi i32 [ %add, %cond.end23 ], [ %depth, %entry ]
+  %root.tr40 = phi %struct.T_SKTREE* [ %8, %cond.end23 ], [ %root, %entry ]
+  %left = getelementptr inbounds %struct.T_SKTREE* %root.tr40, i64 0, i32 0, !dbg !190
+  %0 = load %struct.T_SKTREE** %left, align 8, !dbg !190, !tbaa !117
+  %add = add nsw i32 %depth.tr41, 1, !dbg !190
+  tail call void @SKTreeDebugNodes(%struct.T_SKTREE* %0, i32 %add) #10, !dbg !190
+  %key = getelementptr inbounds %struct.T_SKTREE* %root.tr40, i64 0, i32 4, !dbg !192
+  %1 = load i8** %key, align 8, !dbg !192, !tbaa !117
+  %call = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([11 x i8]* @.str, i64 0, i64 0), i8* %1) #8, !dbg !192
+  %2 = load %struct.T_SKTREE** %left, align 8, !dbg !193, !tbaa !117
+  %tobool2 = icmp eq %struct.T_SKTREE* %2, null, !dbg !193
+  br i1 %tobool2, label %cond.false, label %cond.true, !dbg !193
 
-; <label>:10                                      ; preds = %.lr.ph
-  %11 = getelementptr inbounds %struct.T_SKTREE* %8, i64 0, i32 4
-  %12 = load i8** %11, align 8, !tbaa !7
-  %13 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([11 x i8]* @.str1, i64 0, i64 0), i8* %12) #8
-  br label %15
+cond.true:                                        ; preds = %if.then
+  %key4 = getelementptr inbounds %struct.T_SKTREE* %2, i64 0, i32 4, !dbg !193
+  %3 = load i8** %key4, align 8, !dbg !193, !tbaa !117
+  %call5 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([11 x i8]* @.str1, i64 0, i64 0), i8* %3) #8, !dbg !193
+  br label %cond.end, !dbg !193
 
-; <label>:14                                      ; preds = %.lr.ph
-  %puts = tail call i32 @puts(i8* getelementptr inbounds ([14 x i8]* @str, i64 0, i64 0))
-  br label %15
+cond.false:                                       ; preds = %if.then
+  %puts = tail call i32 @puts(i8* getelementptr inbounds ([14 x i8]* @str, i64 0, i64 0)), !dbg !193
+  br label %cond.end, !dbg !193
 
-; <label>:15                                      ; preds = %14, %10
-  %16 = getelementptr inbounds %struct.T_SKTREE* %root.tr3, i64 0, i32 1
-  %17 = load %struct.T_SKTREE** %16, align 8, !tbaa !11
-  %18 = icmp eq %struct.T_SKTREE* %17, null
-  br i1 %18, label %23, label %19
+cond.end:                                         ; preds = %cond.false, %cond.true
+  %right = getelementptr inbounds %struct.T_SKTREE* %root.tr40, i64 0, i32 1, !dbg !194
+  %4 = load %struct.T_SKTREE** %right, align 8, !dbg !194, !tbaa !117
+  %tobool7 = icmp eq %struct.T_SKTREE* %4, null, !dbg !194
+  br i1 %tobool7, label %cond.false12, label %cond.true8, !dbg !194
 
-; <label>:19                                      ; preds = %15
-  %20 = getelementptr inbounds %struct.T_SKTREE* %17, i64 0, i32 4
-  %21 = load i8** %20, align 8, !tbaa !7
-  %22 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([11 x i8]* @.str3, i64 0, i64 0), i8* %21) #8
-  br label %24
+cond.true8:                                       ; preds = %cond.end
+  %key10 = getelementptr inbounds %struct.T_SKTREE* %4, i64 0, i32 4, !dbg !194
+  %5 = load i8** %key10, align 8, !dbg !194, !tbaa !117
+  %call11 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([11 x i8]* @.str3, i64 0, i64 0), i8* %5) #8, !dbg !194
+  br label %cond.end14, !dbg !194
 
-; <label>:23                                      ; preds = %15
-  %puts1 = tail call i32 @puts(i8* getelementptr inbounds ([14 x i8]* @str8, i64 0, i64 0))
-  br label %24
+cond.false12:                                     ; preds = %cond.end
+  %puts37 = tail call i32 @puts(i8* getelementptr inbounds ([14 x i8]* @str8, i64 0, i64 0)), !dbg !194
+  br label %cond.end14, !dbg !194
 
-; <label>:24                                      ; preds = %23, %19
-  %25 = getelementptr inbounds %struct.T_SKTREE* %root.tr3, i64 0, i32 2
-  %26 = load %struct.T_SKTREE** %25, align 8, !tbaa !9
-  %27 = icmp eq %struct.T_SKTREE* %26, null
-  br i1 %27, label %32, label %28
+cond.end14:                                       ; preds = %cond.false12, %cond.true8
+  %next = getelementptr inbounds %struct.T_SKTREE* %root.tr40, i64 0, i32 2, !dbg !195
+  %6 = load %struct.T_SKTREE** %next, align 8, !dbg !195, !tbaa !117
+  %tobool16 = icmp eq %struct.T_SKTREE* %6, null, !dbg !195
+  br i1 %tobool16, label %cond.false21, label %cond.true17, !dbg !195
 
-; <label>:28                                      ; preds = %24
-  %29 = getelementptr inbounds %struct.T_SKTREE* %26, i64 0, i32 4
-  %30 = load i8** %29, align 8, !tbaa !7
-  %31 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([11 x i8]* @.str5, i64 0, i64 0), i8* %30) #8
-  br label %tailrecurse
+cond.true17:                                      ; preds = %cond.end14
+  %key19 = getelementptr inbounds %struct.T_SKTREE* %6, i64 0, i32 4, !dbg !195
+  %7 = load i8** %key19, align 8, !dbg !195, !tbaa !117
+  %call20 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([11 x i8]* @.str5, i64 0, i64 0), i8* %7) #8, !dbg !195
+  br label %cond.end23, !dbg !195
 
-; <label>:32                                      ; preds = %24
-  %puts2 = tail call i32 @puts(i8* getelementptr inbounds ([13 x i8]* @str9, i64 0, i64 0))
-  br label %tailrecurse
+cond.false21:                                     ; preds = %cond.end14
+  %puts38 = tail call i32 @puts(i8* getelementptr inbounds ([13 x i8]* @str9, i64 0, i64 0)), !dbg !195
+  br label %cond.end23, !dbg !195
 
-tailrecurse:                                      ; preds = %32, %28
-  %33 = load %struct.T_SKTREE** %16, align 8, !tbaa !11
-  %34 = icmp eq %struct.T_SKTREE* %33, null
-  br i1 %34, label %tailrecurse._crit_edge, label %.lr.ph
+cond.end23:                                       ; preds = %cond.false21, %cond.true17
+  %8 = load %struct.T_SKTREE** %right, align 8, !dbg !196, !tbaa !117
+  tail call void @llvm.dbg.value(metadata !{%struct.T_SKTREE* %root.tr40}, i64 0, metadata !73), !dbg !188
+  tail call void @llvm.dbg.value(metadata !{i32 %depth.tr41}, i64 0, metadata !74), !dbg !188
+  %tobool = icmp eq %struct.T_SKTREE* %8, null, !dbg !189
+  br i1 %tobool, label %if.end, label %if.then, !dbg !189
 
-tailrecurse._crit_edge:                           ; preds = %tailrecurse, %0
-  ret void
+if.end:                                           ; preds = %cond.end23, %entry
+  ret void, !dbg !197
 }

@@ -1,29 +1,31 @@
 define i32 @ETree_frontSize(%struct._ETree* %etree, i32 %J) #0 {
 entry:
-  %cmp = icmp eq %struct._ETree* %etree, null
-  %cmp1 = icmp slt i32 %J, 0
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %lor.lhs.false2
+  tail call void @llvm.dbg.value(metadata !{%struct._ETree* %etree}, i64 0, metadata !88), !dbg !194
+  tail call void @llvm.dbg.value(metadata !{i32 %J}, i64 0, metadata !89), !dbg !195
+  %cmp = icmp eq %struct._ETree* %etree, null, !dbg !196
+  %cmp1 = icmp slt i32 %J, 0, !dbg !196
+  %or.cond = or i1 %cmp, %cmp1, !dbg !196
+  br i1 %or.cond, label %if.then, label %lor.lhs.false2, !dbg !196
 
 lor.lhs.false2:                                   ; preds = %entry
-  %nfront = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 0
-  %0 = load i32* %nfront, align 4, !tbaa !3
-  %cmp3 = icmp sgt i32 %0, %J
-  br i1 %cmp3, label %if.end, label %if.then
+  %nfront = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 0, !dbg !196
+  %0 = load i32* %nfront, align 4, !dbg !196, !tbaa !121
+  %cmp3 = icmp sgt i32 %0, %J, !dbg !196
+  br i1 %cmp3, label %if.end, label %if.then, !dbg !196
 
 if.then:                                          ; preds = %lor.lhs.false2, %entry
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([52 x i8]* @.str13, i64 0, i64 0), %struct._ETree* %etree, i32 %J) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !197, !tbaa !116
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([52 x i8]* @.str13, i64 0, i64 0), %struct._ETree* %etree, i32 %J) #5, !dbg !197
+  tail call void @exit(i32 -1) #6, !dbg !199
+  unreachable, !dbg !199
 
 if.end:                                           ; preds = %lor.lhs.false2
-  %idxprom = sext i32 %J to i64
-  %nodwghtsIV = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 3
-  %2 = load %struct._IV** %nodwghtsIV, align 8, !tbaa !0
-  %vec = getelementptr inbounds %struct._IV* %2, i64 0, i32 3
-  %3 = load i32** %vec, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds i32* %3, i64 %idxprom
-  %4 = load i32* %arrayidx, align 4, !tbaa !3
-  ret i32 %4
+  %idxprom = sext i32 %J to i64, !dbg !200
+  %nodwghtsIV = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 3, !dbg !200
+  %2 = load %struct._IV** %nodwghtsIV, align 8, !dbg !200, !tbaa !116
+  %vec = getelementptr inbounds %struct._IV* %2, i64 0, i32 3, !dbg !200
+  %3 = load i32** %vec, align 8, !dbg !200, !tbaa !116
+  %arrayidx = getelementptr inbounds i32* %3, i64 %idxprom, !dbg !200
+  %4 = load i32* %arrayidx, align 4, !dbg !200, !tbaa !121
+  ret i32 %4, !dbg !200
 }

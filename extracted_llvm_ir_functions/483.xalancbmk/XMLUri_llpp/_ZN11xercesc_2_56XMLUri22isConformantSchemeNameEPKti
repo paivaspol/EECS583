@@ -1,0 +1,35 @@
+define zeroext i1 @_ZN11xercesc_2_56XMLUri22isConformantSchemeNameEPKti(i16* nocapture %scheme, i32 %schemeLen) #1 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{i16* %scheme}, i64 0, metadata !1638), !dbg !5072
+  tail call void @llvm.dbg.value(metadata !{i32 %schemeLen}, i64 0, metadata !1639), !dbg !5073
+  %0 = load i16* %scheme, align 2, !dbg !5074, !tbaa !2644
+  %call = tail call zeroext i1 @_ZN11xercesc_2_59XMLString7isAlphaEt(i16 zeroext %0) #9, !dbg !5074
+  br i1 %call, label %for.cond.preheader, label %return, !dbg !5074
+
+for.cond.preheader:                               ; preds = %entry
+  %cmp13 = icmp sgt i32 %schemeLen, 1, !dbg !5075
+  br i1 %cmp13, label %for.body, label %return, !dbg !5075
+
+for.body:                                         ; preds = %for.cond.preheader, %for.inc
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 1, %for.cond.preheader ]
+  %arrayidx = getelementptr inbounds i16* %scheme, i64 %indvars.iv, !dbg !5076
+  %1 = load i16* %arrayidx, align 2, !dbg !5076, !tbaa !2644
+  %call1 = tail call zeroext i1 @_ZN11xercesc_2_59XMLString10isAlphaNumEt(i16 zeroext %1) #9, !dbg !5076
+  br i1 %call1, label %for.inc, label %land.lhs.true, !dbg !5076
+
+land.lhs.true:                                    ; preds = %for.body
+  %2 = load i16* %arrayidx, align 2, !dbg !5078, !tbaa !2644
+  %call4 = tail call i32 @_ZN11xercesc_2_59XMLString7indexOfEPKtt(i16* getelementptr inbounds ([4 x i16]* @_ZN11xercesc_2_56XMLUri17SCHEME_CHARACTERSE, i64 0, i64 0), i16 zeroext %2) #9, !dbg !5078
+  %cmp5 = icmp eq i32 %call4, -1, !dbg !5078
+  br i1 %cmp5, label %return, label %for.inc, !dbg !5078
+
+for.inc:                                          ; preds = %for.body, %land.lhs.true
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !5075
+  %3 = trunc i64 %indvars.iv.next to i32, !dbg !5075
+  %cmp = icmp slt i32 %3, %schemeLen, !dbg !5075
+  br i1 %cmp, label %for.body, label %return, !dbg !5075
+
+return:                                           ; preds = %for.cond.preheader, %land.lhs.true, %for.inc, %entry
+  %retval.0 = phi i1 [ false, %entry ], [ true, %for.cond.preheader ], [ false, %land.lhs.true ], [ true, %for.inc ]
+  ret i1 %retval.0, !dbg !5079
+}

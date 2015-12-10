@@ -1,0 +1,65 @@
+define internal fastcc double @_ZN3povL9norm_distEPddd(double* nocapture %corners, double %x, double %y) #5 {
+entry:
+  %wts = alloca [4 x double], align 16
+  call void @llvm.dbg.value(metadata !{double* %corners}, i64 0, metadata !984), !dbg !2135
+  call void @llvm.dbg.value(metadata !{double %x}, i64 0, metadata !985), !dbg !2135
+  call void @llvm.dbg.value(metadata !{double %y}, i64 0, metadata !986), !dbg !2135
+  call void @llvm.dbg.declare(metadata !{[4 x double]* %wts}, metadata !990), !dbg !2136
+  call void @llvm.dbg.value(metadata !1192, i64 0, metadata !991), !dbg !2137
+  call void @llvm.dbg.value(metadata !1192, i64 0, metadata !992), !dbg !2138
+  %conv = fptosi double %x to i32, !dbg !2139
+  %conv1 = sitofp i32 %conv to double, !dbg !2139
+  %sub = fsub double %x, %conv1, !dbg !2139
+  call void @llvm.dbg.value(metadata !{double %sub}, i64 0, metadata !988), !dbg !2139
+  %conv2 = fptosi double %y to i32, !dbg !2140
+  %conv3 = sitofp i32 %conv2 to double, !dbg !2140
+  %sub4 = fsub double %y, %conv3, !dbg !2140
+  call void @llvm.dbg.value(metadata !{double %sub4}, i64 0, metadata !989), !dbg !2140
+  %mul = fmul double %sub, %sub, !dbg !2141
+  %mul5 = fmul double %sub4, %sub4, !dbg !2141
+  %add = fadd double %mul, %mul5, !dbg !2141
+  %arrayidx = getelementptr inbounds [4 x double]* %wts, i64 0, i64 0, !dbg !2141
+  store double %add, double* %arrayidx, align 16, !dbg !2141, !tbaa !1193
+  %sub6 = fsub double 1.000000e+00, %sub, !dbg !2142
+  %mul8 = fmul double %sub6, %sub6, !dbg !2142
+  %add10 = fadd double %mul8, %mul5, !dbg !2142
+  %arrayidx11 = getelementptr inbounds [4 x double]* %wts, i64 0, i64 1, !dbg !2142
+  store double %add10, double* %arrayidx11, align 8, !dbg !2142, !tbaa !1193
+  %sub13 = fsub double 1.000000e+00, %sub4, !dbg !2143
+  %mul15 = fmul double %sub13, %sub13, !dbg !2143
+  %add16 = fadd double %mul, %mul15, !dbg !2143
+  %arrayidx17 = getelementptr inbounds [4 x double]* %wts, i64 0, i64 2, !dbg !2143
+  store double %add16, double* %arrayidx17, align 16, !dbg !2143, !tbaa !1193
+  %add24 = fadd double %mul8, %mul15, !dbg !2144
+  %arrayidx25 = getelementptr inbounds [4 x double]* %wts, i64 0, i64 3, !dbg !2144
+  store double %add24, double* %arrayidx25, align 8, !dbg !2144, !tbaa !1193
+  call void @llvm.dbg.value(metadata !22, i64 0, metadata !987), !dbg !2145
+  br label %for.body, !dbg !2145
+
+for.body:                                         ; preds = %for.body.for.body_crit_edge, %entry
+  %0 = phi double [ %add, %entry ], [ %.pre, %for.body.for.body_crit_edge ]
+  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body.for.body_crit_edge ]
+  %sum_I.057 = phi double [ 0.000000e+00, %entry ], [ %add31, %for.body.for.body_crit_edge ]
+  %sum_inv_wts.056 = phi double [ 0.000000e+00, %entry ], [ %add27, %for.body.for.body_crit_edge ]
+  %div = fdiv double 1.000000e+00, %0, !dbg !2147
+  %add27 = fadd double %sum_inv_wts.056, %div, !dbg !2147
+  call void @llvm.dbg.value(metadata !{double %add27}, i64 0, metadata !991), !dbg !2147
+  %add.ptr = getelementptr inbounds double* %corners, i64 %indvars.iv, !dbg !2149
+  %1 = load double* %add.ptr, align 8, !dbg !2149, !tbaa !1193
+  %div30 = fdiv double %1, %0, !dbg !2149
+  %add31 = fadd double %sum_I.057, %div30, !dbg !2149
+  call void @llvm.dbg.value(metadata !{double %add31}, i64 0, metadata !992), !dbg !2149
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !2145
+  %lftr.wideiv = trunc i64 %indvars.iv.next to i32, !dbg !2145
+  %exitcond = icmp eq i32 %lftr.wideiv, 4, !dbg !2145
+  br i1 %exitcond, label %for.end, label %for.body.for.body_crit_edge, !dbg !2145
+
+for.body.for.body_crit_edge:                      ; preds = %for.body
+  %arrayidx26.phi.trans.insert = getelementptr inbounds [4 x double]* %wts, i64 0, i64 %indvars.iv.next
+  %.pre = load double* %arrayidx26.phi.trans.insert, align 8, !dbg !2147, !tbaa !1193
+  br label %for.body, !dbg !2145
+
+for.end:                                          ; preds = %for.body
+  %div32 = fdiv double %add31, %add27, !dbg !2150
+  ret double %div32, !dbg !2150
+}

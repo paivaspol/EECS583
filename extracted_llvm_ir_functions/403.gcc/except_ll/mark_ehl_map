@@ -1,14 +1,16 @@
 define internal void @mark_ehl_map(i8* nocapture %pp) #0 {
 entry:
-  %0 = bitcast i8* %pp to %struct.htab**
-  %1 = load %struct.htab** %0, align 8, !tbaa !3
-  %tobool = icmp eq %struct.htab* %1, null
-  br i1 %tobool, label %if.end, label %if.then
+  tail call void @llvm.dbg.value(metadata !{i8* %pp}, i64 0, metadata !2194), !dbg !2235
+  %0 = bitcast i8* %pp to %struct.htab**, !dbg !2236
+  %1 = load %struct.htab** %0, align 8, !dbg !2236, !tbaa !2232
+  tail call void @llvm.dbg.value(metadata !{%struct.htab* %1}, i64 0, metadata !2195), !dbg !2236
+  %tobool = icmp eq %struct.htab* %1, null, !dbg !2237
+  br i1 %tobool, label %if.end, label %if.then, !dbg !2237
 
 if.then:                                          ; preds = %entry
-  tail call void @htab_traverse(%struct.htab* %1, i32 (i8**, i8*)* @mark_ehl_map_entry, i8* null) #6
-  br label %if.end
+  tail call void @htab_traverse(%struct.htab* %1, i32 (i8**, i8*)* @mark_ehl_map_entry, i8* null) #7, !dbg !2238
+  br label %if.end, !dbg !2238
 
 if.end:                                           ; preds = %entry, %if.then
-  ret void
+  ret void, !dbg !2239
 }

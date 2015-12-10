@@ -1,0 +1,26 @@
+define linkonce_odr %class.regboundobj* @_ZN9flexarrayI11regboundobjE3addEv(%class.flexarray.1* nocapture %this) #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%class.flexarray.1* %this}, i64 0, metadata !646), !dbg !1084
+  %elemqu = getelementptr inbounds %class.flexarray.1* %this, i64 0, i32 1, !dbg !1085
+  %0 = load i32* %elemqu, align 4, !dbg !1085, !tbaa !781
+  %maxelemqu = getelementptr inbounds %class.flexarray.1* %this, i64 0, i32 2, !dbg !1085
+  %1 = load i32* %maxelemqu, align 4, !dbg !1085, !tbaa !781
+  %cmp = icmp eq i32 %0, %1, !dbg !1085
+  br i1 %cmp, label %if.then, label %if.end, !dbg !1085
+
+if.then:                                          ; preds = %entry
+  tail call void @_ZN9flexarrayI11regboundobjE8doublingEb(%class.flexarray.1* %this, i1 zeroext true) #7, !dbg !1085
+  %.pre = load i32* %elemqu, align 4, !dbg !1086, !tbaa !781
+  br label %if.end, !dbg !1085
+
+if.end:                                           ; preds = %if.then, %entry
+  %2 = phi i32 [ %.pre, %if.then ], [ %0, %entry ]
+  %inc = add nsw i32 %2, 1, !dbg !1086
+  store i32 %inc, i32* %elemqu, align 4, !dbg !1086, !tbaa !781
+  %ep = getelementptr inbounds %class.flexarray.1* %this, i64 0, i32 0, !dbg !1087
+  %3 = load %class.regboundobj** %ep, align 8, !dbg !1087, !tbaa !777
+  %idx.ext = sext i32 %inc to i64, !dbg !1087
+  %add.ptr.sum = add i64 %idx.ext, -1, !dbg !1087
+  %add.ptr4 = getelementptr inbounds %class.regboundobj* %3, i64 %add.ptr.sum, !dbg !1087
+  ret %class.regboundobj* %add.ptr4, !dbg !1087
+}

@@ -1,0 +1,41 @@
+define void @_ZN11xercesc_2_511DStringPoolC2EiPNS_13MemoryManagerE(%"class.xercesc_2_5::DStringPool"* nocapture %this, i32 %hashTableSize, %"class.xercesc_2_5::MemoryManager"* %manager) unnamed_addr #0 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::DStringPool"* %this}, i64 0, metadata !420), !dbg !484
+  tail call void @llvm.dbg.value(metadata !{i32 %hashTableSize}, i64 0, metadata !423), !dbg !484
+  tail call void @llvm.dbg.value(metadata !{%"class.xercesc_2_5::MemoryManager"* %manager}, i64 0, metadata !424), !dbg !485
+  %fHashTableSize = getelementptr inbounds %"class.xercesc_2_5::DStringPool"* %this, i64 0, i32 1, !dbg !486
+  store i32 %hashTableSize, i32* %fHashTableSize, align 4, !dbg !486, !tbaa !487
+  %0 = bitcast %"class.xercesc_2_5::MemoryManager"* %manager to i8* (%"class.xercesc_2_5::MemoryManager"*, i64)***, !dbg !490
+  %vtable = load i8* (%"class.xercesc_2_5::MemoryManager"*, i64)*** %0, align 8, !dbg !490, !tbaa !491
+  %vfn = getelementptr inbounds i8* (%"class.xercesc_2_5::MemoryManager"*, i64)** %vtable, i64 2, !dbg !490
+  %1 = load i8* (%"class.xercesc_2_5::MemoryManager"*, i64)** %vfn, align 8, !dbg !490
+  %conv = sext i32 %hashTableSize to i64, !dbg !490
+  %mul = shl nsw i64 %conv, 3, !dbg !490
+  %call = tail call i8* %1(%"class.xercesc_2_5::MemoryManager"* %manager, i64 %mul) #4, !dbg !490
+  %2 = bitcast i8* %call to %"struct.xercesc_2_5::DStringPoolEntry"**, !dbg !490
+  %fHashTable = getelementptr inbounds %"class.xercesc_2_5::DStringPool"* %this, i64 0, i32 0, !dbg !490
+  store %"struct.xercesc_2_5::DStringPoolEntry"** %2, %"struct.xercesc_2_5::DStringPoolEntry"*** %fHashTable, align 8, !dbg !490, !tbaa !492
+  %fMemoryManager = getelementptr inbounds %"class.xercesc_2_5::DStringPool"* %this, i64 0, i32 2, !dbg !493
+  store %"class.xercesc_2_5::MemoryManager"* %manager, %"class.xercesc_2_5::MemoryManager"** %fMemoryManager, align 8, !dbg !493, !tbaa !492
+  tail call void @llvm.dbg.value(metadata !54, i64 0, metadata !425), !dbg !494
+  %3 = load i32* %fHashTableSize, align 4, !dbg !494, !tbaa !487
+  %cmp8 = icmp sgt i32 %3, 0, !dbg !494
+  br i1 %cmp8, label %for.body, label %for.end, !dbg !494
+
+for.body:                                         ; preds = %entry, %for.body.for.body_crit_edge
+  %4 = phi %"struct.xercesc_2_5::DStringPoolEntry"** [ %.pre, %for.body.for.body_crit_edge ], [ %2, %entry ]
+  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body.for.body_crit_edge ], [ 0, %entry ]
+  %arrayidx = getelementptr inbounds %"struct.xercesc_2_5::DStringPoolEntry"** %4, i64 %indvars.iv, !dbg !495
+  store %"struct.xercesc_2_5::DStringPoolEntry"* null, %"struct.xercesc_2_5::DStringPoolEntry"** %arrayidx, align 8, !dbg !495, !tbaa !492
+  %indvars.iv.next = add i64 %indvars.iv, 1, !dbg !494
+  %5 = trunc i64 %indvars.iv.next to i32, !dbg !494
+  %cmp = icmp slt i32 %5, %3, !dbg !494
+  br i1 %cmp, label %for.body.for.body_crit_edge, label %for.end, !dbg !494
+
+for.body.for.body_crit_edge:                      ; preds = %for.body
+  %.pre = load %"struct.xercesc_2_5::DStringPoolEntry"*** %fHashTable, align 8, !dbg !495, !tbaa !492
+  br label %for.body, !dbg !494
+
+for.end:                                          ; preds = %for.body, %entry
+  ret void, !dbg !496
+}

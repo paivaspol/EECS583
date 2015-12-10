@@ -1,0 +1,48 @@
+define double @_ZNK6soplex7SVector6minAbsEv(%"class.soplex::SVector"* nocapture %this) #4 align 2 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SVector"* %this}, i64 0, metadata !1787), !dbg !3103
+  %0 = load double* @_ZN6soplex8infinityE, align 8, !dbg !3104, !tbaa !2995
+  tail call void @llvm.dbg.value(metadata !{double %0}, i64 0, metadata !1788), !dbg !3104
+  tail call void @llvm.dbg.value(metadata !{%"class.soplex::SVector"* %this}, i64 0, metadata !3105), !dbg !3107
+  %m_elem.i = getelementptr inbounds %"class.soplex::SVector"* %this, i64 0, i32 0, !dbg !3108
+  %1 = load %"struct.soplex::SVector::Element"** %m_elem.i, align 8, !dbg !3108, !tbaa !2976
+  %cmp.i = icmp eq %"struct.soplex::SVector::Element"* %1, null, !dbg !3108
+  br i1 %cmp.i, label %while.end, label %_ZNK6soplex7SVector4sizeEv.exit, !dbg !3108
+
+_ZNK6soplex7SVector4sizeEv.exit:                  ; preds = %entry
+  %idx.i = getelementptr inbounds %"struct.soplex::SVector::Element"* %1, i64 -1, i32 1, !dbg !3109
+  %2 = load i32* %idx.i, align 4, !dbg !3109, !tbaa !2982
+  tail call void @llvm.dbg.value(metadata !{i32 %2}, i64 0, metadata !1789), !dbg !3106
+  tail call void @llvm.dbg.value(metadata !{%"struct.soplex::SVector::Element"* %1}, i64 0, metadata !1790), !dbg !3110
+  %tobool18 = icmp eq i32 %2, 0, !dbg !3111
+  br i1 %tobool18, label %while.end, label %while.body, !dbg !3111
+
+while.body:                                       ; preds = %_ZNK6soplex7SVector4sizeEv.exit, %cond.end9
+  %dec21.in = phi i32 [ %dec21, %cond.end9 ], [ %2, %_ZNK6soplex7SVector4sizeEv.exit ]
+  %e.020 = phi %"struct.soplex::SVector::Element"* [ %incdec.ptr, %cond.end9 ], [ %1, %_ZNK6soplex7SVector4sizeEv.exit ]
+  %x.019 = phi double [ %cond10, %cond.end9 ], [ %0, %_ZNK6soplex7SVector4sizeEv.exit ]
+  %dec21 = add nsw i32 %dec21.in, -1, !dbg !3111
+  %val = getelementptr inbounds %"struct.soplex::SVector::Element"* %e.020, i64 0, i32 0, !dbg !3112
+  %3 = load double* %val, align 8, !dbg !3112, !tbaa !2995
+  %cmp = fcmp olt double %3, %x.019, !dbg !3112
+  br i1 %cmp, label %cond.end9, label %cond.false, !dbg !3112
+
+cond.false:                                       ; preds = %while.body
+  %sub = fsub double -0.000000e+00, %3, !dbg !3112
+  %cmp4 = fcmp ogt double %x.019, %sub, !dbg !3112
+  %sub.x.0 = select i1 %cmp4, double %sub, double %x.019, !dbg !3112
+  br label %cond.end9, !dbg !3112
+
+cond.end9:                                        ; preds = %cond.false, %while.body
+  %cond10 = phi double [ %3, %while.body ], [ %sub.x.0, %cond.false ], !dbg !3112
+  tail call void @llvm.dbg.value(metadata !{double %cond10}, i64 0, metadata !1788), !dbg !3112
+  %incdec.ptr = getelementptr inbounds %"struct.soplex::SVector::Element"* %e.020, i64 1, !dbg !3114
+  tail call void @llvm.dbg.value(metadata !{%"struct.soplex::SVector::Element"* %incdec.ptr}, i64 0, metadata !1790), !dbg !3114
+  tail call void @llvm.dbg.value(metadata !{i32 %dec21}, i64 0, metadata !1789), !dbg !3111
+  %tobool = icmp eq i32 %dec21, 0, !dbg !3111
+  br i1 %tobool, label %while.end, label %while.body, !dbg !3111
+
+while.end:                                        ; preds = %entry, %cond.end9, %_ZNK6soplex7SVector4sizeEv.exit
+  %x.0.lcssa = phi double [ %0, %_ZNK6soplex7SVector4sizeEv.exit ], [ %cond10, %cond.end9 ], [ %0, %entry ]
+  ret double %x.0.lcssa, !dbg !3115
+}

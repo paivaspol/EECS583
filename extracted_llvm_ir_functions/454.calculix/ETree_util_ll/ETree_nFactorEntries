@@ -1,37 +1,43 @@
 define i32 @ETree_nFactorEntries(%struct._ETree* %etree, i32 %symflag) #0 {
 entry:
-  %cmp = icmp eq %struct._ETree* %etree, null
-  br i1 %cmp, label %if.then, label %lor.lhs.false
+  tail call void @llvm.dbg.value(metadata !{%struct._ETree* %etree}, i64 0, metadata !58), !dbg !295
+  tail call void @llvm.dbg.value(metadata !{i32 %symflag}, i64 0, metadata !59), !dbg !296
+  %cmp = icmp eq %struct._ETree* %etree, null, !dbg !297
+  br i1 %cmp, label %if.then, label %lor.lhs.false, !dbg !297
 
 lor.lhs.false:                                    ; preds = %entry
-  %nfront1 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 0
-  %0 = load i32* %nfront1, align 4, !tbaa !3
-  %cmp2 = icmp slt i32 %0, 1
-  br i1 %cmp2, label %if.then, label %lor.lhs.false3
+  %nfront1 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 0, !dbg !297
+  %0 = load i32* %nfront1, align 4, !dbg !297, !tbaa !281
+  tail call void @llvm.dbg.value(metadata !{i32 %0}, i64 0, metadata !61), !dbg !297
+  %cmp2 = icmp slt i32 %0, 1, !dbg !297
+  br i1 %cmp2, label %if.then, label %lor.lhs.false3, !dbg !297
 
 lor.lhs.false3:                                   ; preds = %lor.lhs.false
-  %nvtx4 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 1
-  %1 = load i32* %nvtx4, align 4, !tbaa !3
-  %cmp5 = icmp slt i32 %1, 1
-  br i1 %cmp5, label %if.then, label %for.body
+  %nvtx4 = getelementptr inbounds %struct._ETree* %etree, i64 0, i32 1, !dbg !297
+  %1 = load i32* %nvtx4, align 4, !dbg !297, !tbaa !281
+  tail call void @llvm.dbg.value(metadata !{i32 %1}, i64 0, metadata !62), !dbg !297
+  %cmp5 = icmp slt i32 %1, 1, !dbg !297
+  br i1 %cmp5, label %if.then, label %for.body, !dbg !297
 
 if.then:                                          ; preds = %lor.lhs.false3, %lor.lhs.false, %entry
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !0
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([57 x i8]* @.str2, i64 0, i64 0), %struct._ETree* %etree, i32 %symflag) #4
-  tail call void @exit(i32 -1) #5
-  unreachable
+  %2 = load %struct._IO_FILE** @stderr, align 8, !dbg !298, !tbaa !257
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([57 x i8]* @.str2, i64 0, i64 0), %struct._ETree* %etree, i32 %symflag) #5, !dbg !298
+  tail call void @exit(i32 -1) #6, !dbg !300
+  unreachable, !dbg !300
 
 for.body:                                         ; preds = %lor.lhs.false3, %for.body
   %nzf.019 = phi i32 [ %conv8, %for.body ], [ 0, %lor.lhs.false3 ]
   %J.018 = phi i32 [ %inc, %for.body ], [ 0, %lor.lhs.false3 ]
-  %call7 = tail call double @ETree_nFactorEntriesInFront(%struct._ETree* %etree, i32 %symflag, i32 %J.018) #6
-  %conv = sitofp i32 %nzf.019 to double
-  %add = fadd double %conv, %call7
-  %conv8 = fptosi double %add to i32
-  %inc = add nsw i32 %J.018, 1
-  %exitcond = icmp eq i32 %inc, %0
-  br i1 %exitcond, label %for.end, label %for.body
+  %call7 = tail call double @ETree_nFactorEntriesInFront(%struct._ETree* %etree, i32 %symflag, i32 %J.018) #7, !dbg !301
+  %conv = sitofp i32 %nzf.019 to double, !dbg !301
+  %add = fadd double %conv, %call7, !dbg !301
+  %conv8 = fptosi double %add to i32, !dbg !301
+  tail call void @llvm.dbg.value(metadata !{i32 %conv8}, i64 0, metadata !63), !dbg !301
+  %inc = add nsw i32 %J.018, 1, !dbg !304
+  tail call void @llvm.dbg.value(metadata !{i32 %inc}, i64 0, metadata !60), !dbg !304
+  %exitcond = icmp eq i32 %inc, %0, !dbg !304
+  br i1 %exitcond, label %for.end, label %for.body, !dbg !304
 
 for.end:                                          ; preds = %for.body
-  ret i32 %conv8
+  ret i32 %conv8, !dbg !305
 }

@@ -1,22 +1,24 @@
 define %struct.hslab_mapping_t* @PUGHSlabi_GetMapping(i32 %mapping_handle) #6 {
-  %mapping.01 = load %struct.hslab_mapping_t** @mapping_list, align 8
-  %1 = icmp eq %struct.hslab_mapping_t* %mapping.01, null
-  br i1 %1, label %.critedge, label %.lr.ph
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %mapping_handle}, i64 0, metadata !237), !dbg !546
+  %mapping.03 = load %struct.hslab_mapping_t** @mapping_list, align 8, !dbg !547
+  %tobool4 = icmp eq %struct.hslab_mapping_t* %mapping.03, null, !dbg !548
+  br i1 %tobool4, label %while.end, label %land.rhs, !dbg !548
 
-.lr.ph:                                           ; preds = %0, %5
-  %mapping.02 = phi %struct.hslab_mapping_t* [ %mapping.0, %5 ], [ %mapping.01, %0 ]
-  %2 = getelementptr inbounds %struct.hslab_mapping_t* %mapping.02, i64 0, i32 0
-  %3 = load i32* %2, align 4, !tbaa !46
-  %4 = icmp eq i32 %3, %mapping_handle
-  br i1 %4, label %.critedge, label %5
+while.cond:                                       ; preds = %land.rhs
+  %next = getelementptr inbounds %struct.hslab_mapping_t* %mapping.05, i64 0, i32 18, !dbg !549
+  %mapping.0 = load %struct.hslab_mapping_t** %next, align 8, !dbg !547
+  %tobool = icmp eq %struct.hslab_mapping_t* %mapping.0, null, !dbg !548
+  br i1 %tobool, label %while.end, label %land.rhs, !dbg !548
 
-; <label>:5                                       ; preds = %.lr.ph
-  %6 = getelementptr inbounds %struct.hslab_mapping_t* %mapping.02, i64 0, i32 18
-  %mapping.0 = load %struct.hslab_mapping_t** %6, align 8
-  %7 = icmp eq %struct.hslab_mapping_t* %mapping.0, null
-  br i1 %7, label %.critedge, label %.lr.ph
+land.rhs:                                         ; preds = %entry, %while.cond
+  %mapping.05 = phi %struct.hslab_mapping_t* [ %mapping.0, %while.cond ], [ %mapping.03, %entry ]
+  %handle = getelementptr inbounds %struct.hslab_mapping_t* %mapping.05, i64 0, i32 0, !dbg !548
+  %0 = load i32* %handle, align 4, !dbg !548, !tbaa !277
+  %cmp = icmp eq i32 %0, %mapping_handle, !dbg !548
+  br i1 %cmp, label %while.end, label %while.cond
 
-.critedge:                                        ; preds = %5, %.lr.ph, %0
-  %mapping.0.lcssa = phi %struct.hslab_mapping_t* [ null, %0 ], [ null, %5 ], [ %mapping.02, %.lr.ph ]
-  ret %struct.hslab_mapping_t* %mapping.0.lcssa
+while.end:                                        ; preds = %while.cond, %land.rhs, %entry
+  %mapping.0.lcssa = phi %struct.hslab_mapping_t* [ null, %entry ], [ %mapping.05, %land.rhs ], [ null, %while.cond ]
+  ret %struct.hslab_mapping_t* %mapping.0.lcssa, !dbg !551
 }

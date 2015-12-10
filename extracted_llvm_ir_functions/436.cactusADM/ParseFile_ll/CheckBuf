@@ -1,19 +1,22 @@
 define internal fastcc void @CheckBuf(i32 %p, i32 %l) #1 {
-  %1 = icmp sgt i32 %p, 8191
-  br i1 %1, label %2, label %11
+entry:
+  tail call void @llvm.dbg.value(metadata !{i32 %p}, i64 0, metadata !167), !dbg !372
+  tail call void @llvm.dbg.value(metadata !{i32 %l}, i64 0, metadata !168), !dbg !372
+  %cmp = icmp sgt i32 %p, 8191, !dbg !373
+  br i1 %cmp, label %if.then, label %if.end, !dbg !373
 
-; <label>:2                                       ; preds = %0
-  %3 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !6
-  %4 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %3, i8* getelementptr inbounds ([44 x i8]* @.str11, i64 0, i64 0), i32 %l) #8
-  %5 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !6
-  %6 = tail call i64 @fwrite(i8* getelementptr inbounds ([49 x i8]* @.str12, i64 0, i64 0), i64 48, i64 1, %struct.__sFILE* %5)
-  %7 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !6
-  %8 = tail call i64 @fwrite(i8* getelementptr inbounds ([115 x i8]* @.str13, i64 0, i64 0), i64 114, i64 1, %struct.__sFILE* %7)
-  %9 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !6
-  %10 = tail call i64 @fwrite(i8* getelementptr inbounds ([14 x i8]* @.str14, i64 0, i64 0), i64 13, i64 1, %struct.__sFILE* %9)
-  tail call void @exit(i32 1) #10
-  unreachable
+if.then:                                          ; preds = %entry
+  %0 = load %struct._IO_FILE** @stderr, align 8, !dbg !374, !tbaa !200
+  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([44 x i8]* @.str10, i64 0, i64 0), i32 %l) #8, !dbg !374
+  %1 = load %struct._IO_FILE** @stderr, align 8, !dbg !376, !tbaa !200
+  %2 = tail call i64 @fwrite(i8* getelementptr inbounds ([49 x i8]* @.str11, i64 0, i64 0), i64 48, i64 1, %struct._IO_FILE* %1), !dbg !376
+  %3 = load %struct._IO_FILE** @stderr, align 8, !dbg !377, !tbaa !200
+  %4 = tail call i64 @fwrite(i8* getelementptr inbounds ([103 x i8]* @.str12, i64 0, i64 0), i64 102, i64 1, %struct._IO_FILE* %3), !dbg !377
+  %5 = load %struct._IO_FILE** @stderr, align 8, !dbg !378, !tbaa !200
+  %6 = tail call i64 @fwrite(i8* getelementptr inbounds ([14 x i8]* @.str13, i64 0, i64 0), i64 13, i64 1, %struct._IO_FILE* %5), !dbg !378
+  tail call void @exit(i32 1) #11, !dbg !379
+  unreachable, !dbg !379
 
-; <label>:11                                      ; preds = %0
-  ret void
+if.end:                                           ; preds = %entry
+  ret void, !dbg !380
 }

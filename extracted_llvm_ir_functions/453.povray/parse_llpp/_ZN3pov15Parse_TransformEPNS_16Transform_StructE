@@ -1,0 +1,41 @@
+define %"struct.pov::Transform_Struct"* @_ZN3pov15Parse_TransformEPNS_16Transform_StructE(%"struct.pov::Transform_Struct"* %Trans) #0 {
+entry:
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Transform_Struct"* %Trans}, i64 0, metadata !1798), !dbg !8891
+  tail call void @_ZN3pov9Get_TokenEv() #9, !dbg !8892
+  %0 = load i32* getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 0), align 8, !dbg !8893, !tbaa !4092
+  %cmp = icmp eq i32 %0, 252, !dbg !8893
+  br i1 %cmp, label %if.then, label %if.else4, !dbg !8893
+
+if.then:                                          ; preds = %entry
+  %cmp1 = icmp eq %"struct.pov::Transform_Struct"* %Trans, null, !dbg !8894
+  br i1 %cmp1, label %if.then2, label %if.else, !dbg !8894
+
+if.then2:                                         ; preds = %if.then
+  %call = tail call %"struct.pov::Transform_Struct"* @_ZN3pov16Create_TransformEv() #9, !dbg !8896
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Transform_Struct"* %call}, i64 0, metadata !1798), !dbg !8896
+  br label %if.end, !dbg !8896
+
+if.else:                                          ; preds = %if.then
+  %arraydecay = getelementptr inbounds %"struct.pov::Transform_Struct"* %Trans, i64 0, i32 0, i64 0, !dbg !8897
+  tail call void @_ZN3pov9MIdentityEPA4_d([4 x double]* %arraydecay) #9, !dbg !8897
+  %arraydecay3 = getelementptr inbounds %"struct.pov::Transform_Struct"* %Trans, i64 0, i32 1, i64 0, !dbg !8899
+  tail call void @_ZN3pov9MIdentityEPA4_d([4 x double]* %arraydecay3) #9, !dbg !8899
+  br label %if.end
+
+if.end:                                           ; preds = %if.else, %if.then2
+  %Trans.addr.0 = phi %"struct.pov::Transform_Struct"* [ %call, %if.then2 ], [ %Trans, %if.else ]
+  %1 = load i8** getelementptr inbounds (%"struct.pov::Token_Struct"* @_ZN3pov5TokenE, i64 0, i32 10), align 8, !dbg !8900, !tbaa !4088
+  %2 = bitcast i8* %1 to %"struct.pov::Transform_Struct"*, !dbg !8900
+  tail call void @_ZN3pov18Compose_TransformsEPNS_16Transform_StructES1_(%"struct.pov::Transform_Struct"* %Trans.addr.0, %"struct.pov::Transform_Struct"* %2) #9, !dbg !8900
+  br label %if.end6, !dbg !8901
+
+if.else4:                                         ; preds = %entry
+  tail call void @_ZN3pov11Unget_TokenEv() #9, !dbg !8902
+  %call5 = tail call %"struct.pov::Transform_Struct"* @_ZN3pov21Parse_Transform_BlockEPNS_16Transform_StructE(%"struct.pov::Transform_Struct"* %Trans) #9, !dbg !8904
+  tail call void @llvm.dbg.value(metadata !{%"struct.pov::Transform_Struct"* %call5}, i64 0, metadata !1798), !dbg !8904
+  br label %if.end6
+
+if.end6:                                          ; preds = %if.else4, %if.end
+  %Trans.addr.1 = phi %"struct.pov::Transform_Struct"* [ %Trans.addr.0, %if.end ], [ %call5, %if.else4 ]
+  ret %"struct.pov::Transform_Struct"* %Trans.addr.1, !dbg !8905
+}

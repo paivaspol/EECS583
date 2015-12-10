@@ -1,29 +1,31 @@
 define void @expand_asm(%union.tree_node* nocapture %body) #0 {
 entry:
-  %code = getelementptr inbounds %union.tree_node* %body, i64 0, i32 0, i32 0, i32 2
-  %0 = bitcast [4 x i8]* %code to i32*
-  %bf.load = load i32* %0, align 8
-  %bf.clear = and i32 %bf.load, 255
-  %cmp = icmp eq i32 %bf.clear, 121
-  br i1 %cmp, label %if.then, label %if.end
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %body}, i64 0, metadata !1372), !dbg !2812
+  %code = getelementptr inbounds %union.tree_node* %body, i64 0, i32 0, i32 0, i32 2, !dbg !2813
+  %0 = bitcast [4 x i8]* %code to i32*, !dbg !2813
+  %bf.load = load i32* %0, align 8, !dbg !2813
+  %bf.clear = and i32 %bf.load, 255, !dbg !2813
+  %cmp = icmp eq i32 %bf.clear, 121, !dbg !2813
+  br i1 %cmp, label %if.then, label %if.end, !dbg !2813
 
 if.then:                                          ; preds = %entry
-  %operands = getelementptr inbounds %union.tree_node* %body, i64 0, i32 0, i32 2
-  %arrayidx = bitcast i32* %operands to %union.tree_node**
-  %1 = load %union.tree_node** %arrayidx, align 8, !tbaa !0
-  br label %if.end
+  %operands = getelementptr inbounds %union.tree_node* %body, i64 0, i32 0, i32 2, !dbg !2814
+  %arrayidx = bitcast i32* %operands to %union.tree_node**, !dbg !2814
+  %1 = load %union.tree_node** %arrayidx, align 8, !dbg !2814, !tbaa !2438
+  tail call void @llvm.dbg.value(metadata !{%union.tree_node* %1}, i64 0, metadata !1372), !dbg !2814
+  br label %if.end, !dbg !2814
 
 if.end:                                           ; preds = %if.then, %entry
   %body.addr.0 = phi %union.tree_node* [ %1, %if.then ], [ %body, %entry ]
-  %pointer = getelementptr inbounds %union.tree_node* %body.addr.0, i64 0, i32 0, i32 4
-  %2 = load %union.tree_node** %pointer, align 8
-  %3 = bitcast %union.tree_node* %2 to i8*
-  %call = tail call %struct.rtx_def* @gen_rtx_fmt_s(i32 40, i32 0, i8* %3) #7
-  %call1 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call) #7
-  %4 = load %struct.function** @cfun, align 8, !tbaa !0
-  %stmt = getelementptr inbounds %struct.function* %4, i64 0, i32 1
-  %5 = load %struct.stmt_status** %stmt, align 8, !tbaa !0
-  %x_last_expr_type = getelementptr inbounds %struct.stmt_status* %5, i64 0, i32 8
-  store %union.tree_node* null, %union.tree_node** %x_last_expr_type, align 8, !tbaa !0
-  ret void
+  %pointer = getelementptr inbounds %union.tree_node* %body.addr.0, i64 0, i32 0, i32 4, !dbg !2815
+  %2 = load %union.tree_node** %pointer, align 8, !dbg !2815
+  %3 = bitcast %union.tree_node* %2 to i8*, !dbg !2815
+  %call = tail call %struct.rtx_def* @gen_rtx_fmt_s(i32 40, i32 0, i8* %3) #8, !dbg !2815
+  %call1 = tail call %struct.rtx_def* @emit_insn(%struct.rtx_def* %call) #8, !dbg !2815
+  %4 = load %struct.function** @cfun, align 8, !dbg !2816, !tbaa !2438
+  %stmt = getelementptr inbounds %struct.function* %4, i64 0, i32 1, !dbg !2816
+  %5 = load %struct.stmt_status** %stmt, align 8, !dbg !2816, !tbaa !2438
+  %x_last_expr_type = getelementptr inbounds %struct.stmt_status* %5, i64 0, i32 8, !dbg !2816
+  store %union.tree_node* null, %union.tree_node** %x_last_expr_type, align 8, !dbg !2816, !tbaa !2438
+  ret void, !dbg !2817
 }

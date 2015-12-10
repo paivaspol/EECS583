@@ -1,16 +1,18 @@
 define i32 @splay_tree_compare_pointers(i64 %k1, i64 %k2) #2 {
 entry:
-  %0 = inttoptr i64 %k1 to i8*
-  %1 = inttoptr i64 %k2 to i8*
-  %cmp = icmp ult i8* %0, %1
-  br i1 %cmp, label %return, label %if.else
+  tail call void @llvm.dbg.value(metadata !{i64 %k1}, i64 0, metadata !137), !dbg !391
+  tail call void @llvm.dbg.value(metadata !{i64 %k2}, i64 0, metadata !138), !dbg !392
+  %0 = inttoptr i64 %k1 to i8*, !dbg !393
+  %1 = inttoptr i64 %k2 to i8*, !dbg !393
+  %cmp = icmp ult i8* %0, %1, !dbg !393
+  br i1 %cmp, label %return, label %if.else, !dbg !393
 
 if.else:                                          ; preds = %entry
-  %cmp1 = icmp ugt i8* %0, %1
-  %. = zext i1 %cmp1 to i32
-  br label %return
+  %cmp1 = icmp ugt i8* %0, %1, !dbg !394
+  %. = zext i1 %cmp1 to i32, !dbg !395
+  br label %return, !dbg !395
 
 return:                                           ; preds = %if.else, %entry
   %retval.0 = phi i32 [ -1, %entry ], [ %., %if.else ]
-  ret i32 %retval.0
+  ret i32 %retval.0, !dbg !396
 }

@@ -1,52 +1,59 @@
 define internal fastcc noalias i8* @affix_data_type(i8* %param) #0 {
 entry:
-  store i8* %param, i8** @libiberty_optr, align 8, !tbaa !3
-  %call = call i64 @strlen(i8* %param) #9
-  %add = add i64 %call, 1
-  store i64 %add, i64* @libiberty_len, align 8, !tbaa !4
-  %0 = alloca i8, i64 %add, align 1
-  store i8* %0, i8** @libiberty_nptr, align 8, !tbaa !3
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %param, i64 %add, i32 1, i1 false)
-  br label %for.cond
+  call void @llvm.dbg.value(metadata !{i8* %param}, i64 0, metadata !627), !dbg !851
+  store i8* %param, i8** @libiberty_optr, align 8, !dbg !852, !tbaa !675
+  %call = call i64 @strlen(i8* %param) #10, !dbg !852
+  %add = add i64 %call, 1, !dbg !852
+  store i64 %add, i64* @libiberty_len, align 8, !dbg !852, !tbaa !853
+  %0 = alloca i8, i64 %add, align 1, !dbg !852
+  store i8* %0, i8** @libiberty_nptr, align 8, !dbg !852, !tbaa !675
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %0, i8* %param, i64 %add, i32 1, i1 false), !dbg !852
+  call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !628), !dbg !852
+  call void @llvm.dbg.value(metadata !{i8* %0}, i64 0, metadata !630), !dbg !854
+  br label %for.cond, !dbg !855
 
 for.cond:                                         ; preds = %if.then4, %if.then, %entry
   %p.0 = phi i8* [ %0, %entry ], [ %add.ptr5, %if.then4 ], [ %add.ptr, %if.then ]
-  %call1 = call i32 @strncmp(i8* %p.0, i8* getelementptr inbounds ([10 x i8]* @.str11, i64 0, i64 0), i64 9) #9
-  %tobool = icmp eq i32 %call1, 0
-  br i1 %tobool, label %if.then, label %if.end
+  %call1 = call i32 @strncmp(i8* %p.0, i8* getelementptr inbounds ([10 x i8]* @.str11, i64 0, i64 0), i64 9) #10, !dbg !857
+  %tobool = icmp eq i32 %call1, 0, !dbg !857
+  br i1 %tobool, label %if.then, label %if.end, !dbg !857
 
 if.then:                                          ; preds = %for.cond
-  %add.ptr = getelementptr inbounds i8* %p.0, i64 9
-  br label %for.cond
+  %add.ptr = getelementptr inbounds i8* %p.0, i64 9, !dbg !859
+  call void @llvm.dbg.value(metadata !{i8* %add.ptr}, i64 0, metadata !630), !dbg !859
+  br label %for.cond, !dbg !861
 
 if.end:                                           ; preds = %for.cond
-  %call2 = call i32 @strncmp(i8* %p.0, i8* getelementptr inbounds ([7 x i8]* @.str12, i64 0, i64 0), i64 6) #9
-  %tobool3 = icmp eq i32 %call2, 0
-  br i1 %tobool3, label %if.then4, label %for.end
+  %call2 = call i32 @strncmp(i8* %p.0, i8* getelementptr inbounds ([7 x i8]* @.str12, i64 0, i64 0), i64 6) #10, !dbg !862
+  %tobool3 = icmp eq i32 %call2, 0, !dbg !862
+  br i1 %tobool3, label %if.then4, label %for.end, !dbg !862
 
 if.then4:                                         ; preds = %if.end
-  %add.ptr5 = getelementptr inbounds i8* %p.0, i64 6
-  br label %for.cond
+  %add.ptr5 = getelementptr inbounds i8* %p.0, i64 6, !dbg !863
+  call void @llvm.dbg.value(metadata !{i8* %add.ptr5}, i64 0, metadata !630), !dbg !863
+  br label %for.cond, !dbg !865
 
 for.end:                                          ; preds = %if.end
-  %cmp = icmp eq i8* %p.0, %0
-  br i1 %cmp, label %if.then7, label %if.end9
+  %cmp = icmp eq i8* %p.0, %0, !dbg !866
+  br i1 %cmp, label %if.then7, label %if.end9, !dbg !866
 
 if.then7:                                         ; preds = %for.end
-  %1 = load i8** @data_type, align 8, !tbaa !3
-  %call8 = call noalias i8* (i8*, ...)* @concat(i8* %1, i8* getelementptr inbounds ([2 x i8]* @.str16, i64 0, i64 0), i8* %0, i8* null) #7
-  br label %return
+  %1 = load i8** @data_type, align 8, !dbg !867, !tbaa !675
+  %call8 = call noalias i8* (i8*, ...)* @concat(i8* %1, i8* getelementptr inbounds ([2 x i8]* @.str16, i64 0, i64 0), i8* %0, i8* null) #8, !dbg !867
+  br label %return, !dbg !867
 
 if.end9:                                          ; preds = %for.end
-  %2 = load i8* %p.0, align 1, !tbaa !1
-  store i8 0, i8* %p.0, align 1, !tbaa !1
-  %3 = load i8** @data_type, align 8, !tbaa !3
-  %call10 = call noalias i8* (i8*, ...)* @concat(i8* %0, i8* %3, i8* null) #7
-  store i8 %2, i8* %p.0, align 1, !tbaa !1
-  %call11 = call noalias i8* (i8*, i8*, ...)* @reconcat(i8* %call10, i8* %call10, i8* getelementptr inbounds ([2 x i8]* @.str16, i64 0, i64 0), i8* %p.0, i8* null) #7
-  br label %return
+  %2 = load i8* %p.0, align 1, !dbg !868, !tbaa !669
+  call void @llvm.dbg.value(metadata !{i8 %2}, i64 0, metadata !632), !dbg !868
+  store i8 0, i8* %p.0, align 1, !dbg !869, !tbaa !669
+  %3 = load i8** @data_type, align 8, !dbg !870, !tbaa !675
+  %call10 = call noalias i8* (i8*, ...)* @concat(i8* %0, i8* %3, i8* null) #8, !dbg !870
+  call void @llvm.dbg.value(metadata !{i8* %call10}, i64 0, metadata !631), !dbg !870
+  store i8 %2, i8* %p.0, align 1, !dbg !871, !tbaa !669
+  %call11 = call noalias i8* (i8*, i8*, ...)* @reconcat(i8* %call10, i8* %call10, i8* getelementptr inbounds ([2 x i8]* @.str16, i64 0, i64 0), i8* %p.0, i8* null) #8, !dbg !872
+  br label %return, !dbg !872
 
 return:                                           ; preds = %if.end9, %if.then7
   %retval.0 = phi i8* [ %call8, %if.then7 ], [ %call11, %if.end9 ]
-  ret i8* %retval.0
+  ret i8* %retval.0, !dbg !873
 }
