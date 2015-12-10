@@ -1,0 +1,90 @@
+define void @_ZN8EtherHub13handleMessageEP8cMessage(%class.EtherHub* %this, %class.cMessage* %msg) unnamed_addr #0 align 2 {
+  %1 = tail call %class.cGate* @_ZNK8cMessage11arrivalGateEv(%class.cMessage* %msg) #6
+  %2 = getelementptr inbounds %class.cGate* %1, i64 0, i32 2
+  %3 = load i32* %2, align 4, !tbaa !20
+  %4 = load i32* getelementptr inbounds (%class.cEnvir* @ev, i64 0, i32 1), align 4, !tbaa !18
+  %5 = icmp eq i32 %4, 0
+  br i1 %5, label %6, label %17
+
+; <label>:6                                       ; preds = %0
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([7 x i8]* @.str6, i64 0, i64 0)) #6
+  %7 = getelementptr inbounds %class.cMessage* %msg, i64 0, i32 0
+  %8 = bitcast %class.cMessage* %msg to i8* (%class.cObject*)***
+  %9 = load i8* (%class.cObject*)*** %8, align 8, !tbaa !8
+  %10 = getelementptr inbounds i8* (%class.cObject*)** %9, i64 7
+  %11 = load i8* (%class.cObject*)** %10, align 8
+  %12 = tail call i8* %11(%class.cObject* %7) #6
+  %13 = load i8* (%class.cObject*)*** %8, align 8, !tbaa !8
+  %14 = getelementptr inbounds i8* (%class.cObject*)** %13, i64 3
+  %15 = load i8* (%class.cObject*)** %14, align 8
+  %16 = tail call i8* %15(%class.cObject* %7) #6
+  tail call void (%class.cEnvir*, i8*, ...)* @_ZN6cEnvir6printfEPKcz(%class.cEnvir* @ev, i8* getelementptr inbounds ([7 x i8]* @.str15, i64 0, i64 0), i8* %12, i8* %16) #6
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([18 x i8]* @.str7, i64 0, i64 0)) #6
+  tail call void (%class.cEnvir*, i8*, ...)* @_ZN6cEnvir6printfEPKcz(%class.cEnvir* @ev, i8* getelementptr inbounds ([3 x i8]* @.str14, i64 0, i64 0), i32 %3) #6
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([35 x i8]* @.str8, i64 0, i64 0)) #6
+  br label %17
+
+; <label>:17                                      ; preds = %0, %6
+  %18 = getelementptr inbounds %class.EtherHub* %this, i64 0, i32 2
+  %19 = load i64* %18, align 8, !tbaa !2
+  %20 = add nsw i64 %19, 1
+  store i64 %20, i64* %18, align 8, !tbaa !2
+  %21 = getelementptr inbounds %class.EtherHub* %this, i64 0, i32 1
+  %22 = load i32* %21, align 4, !tbaa !17
+  %23 = icmp slt i32 %22, 2
+  br i1 %23, label %26, label %.lr.ph
+
+.lr.ph:                                           ; preds = %17
+  %24 = getelementptr inbounds %class.EtherHub* %this, i64 0, i32 0
+  %25 = bitcast %class.cMessage* %msg to %class.cObject* (%class.cMessage*)***
+  br label %33
+
+; <label>:26                                      ; preds = %17
+  %27 = icmp eq %class.cMessage* %msg, null
+  br i1 %27, label %.loopexit, label %28
+
+; <label>:28                                      ; preds = %26
+  %29 = bitcast %class.cMessage* %msg to void (%class.cMessage*)***
+  %30 = load void (%class.cMessage*)*** %29, align 8, !tbaa !8
+  %31 = getelementptr inbounds void (%class.cMessage*)** %30, i64 1
+  %32 = load void (%class.cMessage*)** %31, align 8
+  tail call void %32(%class.cMessage* %msg) #6
+  br label %.loopexit
+
+; <label>:33                                      ; preds = %.lr.ph, %50
+  %34 = phi i32 [ %22, %.lr.ph ], [ %51, %50 ]
+  %i.01 = phi i32 [ 0, %.lr.ph ], [ %52, %50 ]
+  %35 = icmp eq i32 %i.01, %3
+  br i1 %35, label %50, label %36
+
+; <label>:36                                      ; preds = %33
+  %37 = add nsw i32 %34, -1
+  %38 = icmp eq i32 %3, %37
+  %39 = add nsw i32 %34, -2
+  %.sink = select i1 %38, i32 %39, i32 %37
+  %40 = icmp eq i32 %i.01, %.sink
+  br i1 %40, label %47, label %41
+
+; <label>:41                                      ; preds = %36
+  %42 = load %class.cObject* (%class.cMessage*)*** %25, align 8, !tbaa !8
+  %43 = getelementptr inbounds %class.cObject* (%class.cMessage*)** %42, i64 2
+  %44 = load %class.cObject* (%class.cMessage*)** %43, align 8
+  %45 = tail call %class.cObject* %44(%class.cMessage* %msg) #6
+  %46 = bitcast %class.cObject* %45 to %class.cMessage*
+  br label %47
+
+; <label>:47                                      ; preds = %36, %41
+  %48 = phi %class.cMessage* [ %46, %41 ], [ %msg, %36 ]
+  %49 = tail call i32 @_ZN13cSimpleModule4sendEP8cMessagePKci(%class.cSimpleModule* %24, %class.cMessage* %48, i8* getelementptr inbounds ([4 x i8]* @.str2, i64 0, i64 0), i32 %i.01) #6
+  %.pre = load i32* %21, align 4, !tbaa !17
+  br label %50
+
+; <label>:50                                      ; preds = %33, %47
+  %51 = phi i32 [ %34, %33 ], [ %.pre, %47 ]
+  %52 = add nuw nsw i32 %i.01, 1
+  %53 = icmp slt i32 %52, %51
+  br i1 %53, label %33, label %.loopexit
+
+.loopexit:                                        ; preds = %50, %26, %28
+  ret void
+}

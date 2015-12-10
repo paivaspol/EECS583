@@ -32,7 +32,14 @@ def parse_file(input_filename, out_filename, sources_path, buckets):
         with open(input_filename, 'rb') as input_file:
             for line in input_file:
                 words = line.split()
-                this_path =  words[0].replace(".c","_ll")
+                if words[0].endswith('.c'):
+                    this_path =  words[0].replace(".c","_ll")
+                elif words[0].endswith('.cc'):
+                    this_path = words[0].replace(".cc", "_llc")
+                elif words[0].endswith('.cpp'):
+                    this_path = words[0].replace(".cpp", "_llc")
+                else:
+                    this_path = words[0].replace('.c', '_ll')
                 found = False
                 if os.path.isdir(sources_path + this_path):
                     for f in os.listdir(sources_path + this_path):

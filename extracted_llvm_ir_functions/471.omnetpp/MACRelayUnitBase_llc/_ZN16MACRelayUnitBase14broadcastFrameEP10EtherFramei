@@ -1,0 +1,48 @@
+define void @_ZN16MACRelayUnitBase14broadcastFrameEP10EtherFramei(%class.MACRelayUnitBase* %this, %class.EtherFrame* %frame, i32 %inputport) #0 align 2 {
+  %1 = getelementptr inbounds %class.MACRelayUnitBase* %this, i64 0, i32 1
+  %2 = load i32* %1, align 4, !tbaa !9
+  %3 = icmp sgt i32 %2, 0
+  br i1 %3, label %.lr.ph, label %._crit_edge
+
+.lr.ph:                                           ; preds = %0
+  %4 = getelementptr inbounds %class.MACRelayUnitBase* %this, i64 0, i32 0
+  %5 = bitcast %class.EtherFrame* %frame to %class.cObject* (%class.EtherFrame*)***
+  br label %6
+
+; <label>:6                                       ; preds = %.lr.ph, %16
+  %7 = phi i32 [ %2, %.lr.ph ], [ %17, %16 ]
+  %i.01 = phi i32 [ 0, %.lr.ph ], [ %18, %16 ]
+  %8 = icmp eq i32 %i.01, %inputport
+  br i1 %8, label %16, label %9
+
+; <label>:9                                       ; preds = %6
+  %10 = load %class.cObject* (%class.EtherFrame*)*** %5, align 8, !tbaa !20
+  %11 = getelementptr inbounds %class.cObject* (%class.EtherFrame*)** %10, i64 2
+  %12 = load %class.cObject* (%class.EtherFrame*)** %11, align 8
+  %13 = tail call %class.cObject* %12(%class.EtherFrame* %frame) #11
+  %14 = bitcast %class.cObject* %13 to %class.cMessage*
+  %15 = tail call i32 @_ZN13cSimpleModule4sendEP8cMessagePKci(%class.cSimpleModule* %4, %class.cMessage* %14, i8* getelementptr inbounds ([14 x i8]* @.str, i64 0, i64 0), i32 %i.01) #11
+  %.pre = load i32* %1, align 4, !tbaa !9
+  br label %16
+
+; <label>:16                                      ; preds = %6, %9
+  %17 = phi i32 [ %7, %6 ], [ %.pre, %9 ]
+  %18 = add nuw nsw i32 %i.01, 1
+  %19 = icmp slt i32 %18, %17
+  br i1 %19, label %6, label %._crit_edge
+
+._crit_edge:                                      ; preds = %16, %0
+  %20 = icmp eq %class.EtherFrame* %frame, null
+  br i1 %20, label %26, label %21
+
+; <label>:21                                      ; preds = %._crit_edge
+  %22 = bitcast %class.EtherFrame* %frame to void (%class.EtherFrame*)***
+  %23 = load void (%class.EtherFrame*)*** %22, align 8, !tbaa !20
+  %24 = getelementptr inbounds void (%class.EtherFrame*)** %23, i64 1
+  %25 = load void (%class.EtherFrame*)** %24, align 8
+  tail call void %25(%class.EtherFrame* %frame) #11
+  br label %26
+
+; <label>:26                                      ; preds = %21, %._crit_edge
+  ret void
+}

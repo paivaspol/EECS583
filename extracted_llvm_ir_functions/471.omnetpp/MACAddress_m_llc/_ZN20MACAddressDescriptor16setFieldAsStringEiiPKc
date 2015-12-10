@@ -1,0 +1,21 @@
+define zeroext i1 @_ZN20MACAddressDescriptor16setFieldAsStringEiiPKc(%class.MACAddressDescriptor* nocapture readonly %this, i32 %field, i32 %i, i8* %value) unnamed_addr #3 align 2 {
+  %1 = getelementptr inbounds %class.MACAddressDescriptor* %this, i64 0, i32 0, i32 1
+  %2 = bitcast i8** %1 to %class.MACAddress_Base**
+  %3 = load %class.MACAddress_Base** %2, align 8, !tbaa !5
+  %cond = icmp eq i32 %field, 0
+  br i1 %cond, label %4, label %11
+
+; <label>:4                                       ; preds = %0
+  %5 = bitcast %class.MACAddress_Base* %3 to void (%class.MACAddress_Base*, i32, i8)***
+  %6 = load void (%class.MACAddress_Base*, i32, i8)*** %5, align 8, !tbaa !2
+  %7 = getelementptr inbounds void (%class.MACAddress_Base*, i32, i8)** %6, i64 4
+  %8 = load void (%class.MACAddress_Base*, i32, i8)** %7, align 8
+  %9 = tail call i64 @_ZN17cStructDescriptor11string2longEPKc(i8* %value) #9
+  %10 = trunc i64 %9 to i8
+  tail call void %8(%class.MACAddress_Base* %3, i32 %i, i8 zeroext %10) #9
+  br label %11
+
+; <label>:11                                      ; preds = %0, %4
+  %.0 = phi i1 [ true, %4 ], [ false, %0 ]
+  ret i1 %.0
+}

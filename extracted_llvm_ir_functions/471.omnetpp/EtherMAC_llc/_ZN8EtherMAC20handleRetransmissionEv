@@ -1,0 +1,82 @@
+define void @_ZN8EtherMAC20handleRetransmissionEv(%class.EtherMAC* %this) #0 align 2 {
+  %1 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 22
+  %2 = load i32* %1, align 4, !tbaa !56
+  %3 = add nsw i32 %2, 1
+  store i32 %3, i32* %1, align 4, !tbaa !56
+  %4 = icmp sgt i32 %2, 15
+  %5 = load i32* getelementptr inbounds (%class.cEnvir* @ev, i64 0, i32 1), align 4, !tbaa !40
+  %6 = icmp ne i32 %5, 0
+  br i1 %4, label %7, label %20
+
+; <label>:7                                       ; preds = %0
+  br i1 %6, label %9, label %8
+
+; <label>:8                                       ; preds = %7
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([90 x i8]* @.str131, i64 0, i64 0)) #10
+  br label %9
+
+; <label>:9                                       ; preds = %7, %8
+  %10 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 25
+  %11 = tail call %class.cObject* @_ZN6cQueue3popEv(%class.cQueue* %10) #10
+  %12 = icmp eq %class.cObject* %11, null
+  br i1 %12, label %18, label %13
+
+; <label>:13                                      ; preds = %9
+  %14 = bitcast %class.cObject* %11 to void (%class.cObject*)***
+  %15 = load void (%class.cObject*)*** %14, align 8, !tbaa !25
+  %16 = getelementptr inbounds void (%class.cObject*)** %15, i64 1
+  %17 = load void (%class.cObject*)** %16, align 8
+  tail call void %17(%class.cObject* %11) #10
+  br label %18
+
+; <label>:18                                      ; preds = %13, %9
+  %19 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 18
+  store i32 1, i32* %19, align 4, !tbaa !34
+  store i32 0, i32* %1, align 4, !tbaa !56
+  br label %47
+
+; <label>:20                                      ; preds = %0
+  br i1 %6, label %22, label %21
+
+; <label>:21                                      ; preds = %20
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([29 x i8]* @.str132, i64 0, i64 0)) #10
+  %.pre = load i32* %1, align 4, !tbaa !56
+  br label %22
+
+; <label>:22                                      ; preds = %20, %21
+  %23 = phi i32 [ %3, %20 ], [ %.pre, %21 ]
+  %24 = icmp sgt i32 %23, 9
+  br i1 %24, label %27, label %25
+
+; <label>:25                                      ; preds = %22
+  %26 = shl i32 1, %23
+  %phitmp = add i32 %26, -1
+  br label %27
+
+; <label>:27                                      ; preds = %22, %25
+  %28 = phi i32 [ %phitmp, %25 ], [ 1023, %22 ]
+  %29 = tail call i32 @_Z10intuniformiii(i32 0, i32 %28, i32 0) #10
+  %30 = sitofp i32 %29 to double
+  %31 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 11
+  %32 = load double* %31, align 8, !tbaa !45
+  %33 = fmul double %30, %32
+  %34 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 0
+  %35 = tail call double @_ZNK13cSimpleModule7simTimeEv(%class.cSimpleModule* %34) #10
+  %36 = fadd double %35, %33
+  %37 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 30
+  %38 = load %class.cMessage** %37, align 8, !tbaa !18
+  %39 = tail call i32 @_ZN13cSimpleModule10scheduleAtEdP8cMessage(%class.cSimpleModule* %34, double %36, %class.cMessage* %38) #10
+  %40 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 18
+  store i32 5, i32* %40, align 4, !tbaa !34
+  %41 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 48
+  %42 = load i64* %41, align 8, !tbaa !71
+  %43 = add i64 %42, 1
+  store i64 %43, i64* %41, align 8, !tbaa !71
+  %44 = getelementptr inbounds %class.EtherMAC* %this, i64 0, i32 60
+  %45 = uitofp i64 %43 to double
+  %46 = tail call zeroext i1 @_ZN10cOutVector6recordEd(%class.cOutVector* %44, double %45) #10
+  br label %47
+
+; <label>:47                                      ; preds = %27, %18
+  ret void
+}

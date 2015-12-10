@@ -1,0 +1,39 @@
+define void @_ZN13MessageTracer7createdEP9MessageId(%class.MessageTracer* nocapture %this, %class.MessageId* %m) #0 align 2 {
+  %1 = getelementptr inbounds %class.MessageTracer* %this, i64 0, i32 0
+  %2 = load %struct.__sFILE** %1, align 8, !tbaa !5
+  %3 = icmp eq %struct.__sFILE* %2, null
+  br i1 %3, label %4, label %6
+
+; <label>:4                                       ; preds = %0
+  %5 = tail call %struct.__sFILE* @"\01_fopen"(i8* getelementptr inbounds ([13 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str1, i64 0, i64 0)) #9
+  store %struct.__sFILE* %5, %struct.__sFILE** %1, align 8, !tbaa !5
+  br label %6
+
+; <label>:6                                       ; preds = %0, %4
+  %7 = phi %struct.__sFILE* [ %2, %0 ], [ %5, %4 ]
+  %8 = getelementptr inbounds %class.MessageTracer* %this, i64 0, i32 1
+  %9 = load %class.MessageId** %8, align 8, !tbaa !8
+  %10 = icmp eq %class.MessageId* %9, null
+  br i1 %10, label %26, label %11
+
+; <label>:11                                      ; preds = %6
+  %12 = getelementptr inbounds %class.MessageId* %9, i64 0, i32 0
+  %13 = load i32* %12, align 4, !tbaa !9
+  %14 = getelementptr inbounds %class.MessageId* %9, i64 0, i32 1
+  %15 = load i32* %14, align 4, !tbaa !12
+  %16 = getelementptr inbounds %class.MessageId* %9, i64 0, i32 2
+  %17 = load i32* %16, align 4, !tbaa !13
+  %18 = load i64* getelementptr inbounds (%class.cSimulation* @simulation, i64 0, i32 12), align 8, !tbaa !14
+  %19 = load %class.cModule** getelementptr inbounds (%class.cSimulation* @simulation, i64 0, i32 7), align 8, !tbaa !21
+  %20 = bitcast %class.cModule* %19 to i8* (%class.cModule*)***
+  %21 = load i8* (%class.cModule*)*** %20, align 8, !tbaa !22
+  %22 = getelementptr inbounds i8* (%class.cModule*)** %21, i64 4
+  %23 = load i8* (%class.cModule*)** %22, align 8
+  %24 = tail call i8* %23(%class.cModule* %19) #9
+  %25 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([27 x i8]* @.str2, i64 0, i64 0), i32 %13, i32 %15, i32 %17, i64 %18, i8* %24) #9
+  br label %26
+
+; <label>:26                                      ; preds = %6, %11
+  store %class.MessageId* %m, %class.MessageId** %8, align 8, !tbaa !8
+  ret void
+}

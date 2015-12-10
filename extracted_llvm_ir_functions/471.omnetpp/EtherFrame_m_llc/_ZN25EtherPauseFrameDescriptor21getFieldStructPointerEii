@@ -1,0 +1,35 @@
+define i8* @_ZN25EtherPauseFrameDescriptor21getFieldStructPointerEii(%class.EtherPauseFrameDescriptor* nocapture readonly %this, i32 %field, i32 %i) unnamed_addr #0 align 2 {
+  %1 = icmp slt i32 %field, 2
+  br i1 %1, label %2, label %_ZN20EtherFrameDescriptor21getFieldStructPointerEii.exit
+
+; <label>:2                                       ; preds = %0
+  %3 = getelementptr inbounds %class.EtherPauseFrameDescriptor* %this, i64 0, i32 0, i32 0, i32 1
+  %4 = bitcast i8** %3 to %class.EtherFrame**
+  %5 = load %class.EtherFrame** %4, align 8, !tbaa !10
+  switch i32 %field, label %_ZN20EtherFrameDescriptor21getFieldStructPointerEii.exit [
+    i32 0, label %6
+    i32 1, label %13
+  ]
+
+; <label>:6                                       ; preds = %2
+  %7 = bitcast %class.EtherFrame* %5 to %class.MACAddress* (%class.EtherFrame*)***
+  %8 = load %class.MACAddress* (%class.EtherFrame*)*** %7, align 8, !tbaa !2
+  %9 = getelementptr inbounds %class.MACAddress* (%class.EtherFrame*)** %8, i64 19
+  %10 = load %class.MACAddress* (%class.EtherFrame*)** %9, align 8
+  %11 = tail call dereferenceable(16) %class.MACAddress* %10(%class.EtherFrame* %5) #8
+  %12 = bitcast %class.MACAddress* %11 to i8*
+  br label %_ZN20EtherFrameDescriptor21getFieldStructPointerEii.exit
+
+; <label>:13                                      ; preds = %2
+  %14 = bitcast %class.EtherFrame* %5 to %class.MACAddress* (%class.EtherFrame*)***
+  %15 = load %class.MACAddress* (%class.EtherFrame*)*** %14, align 8, !tbaa !2
+  %16 = getelementptr inbounds %class.MACAddress* (%class.EtherFrame*)** %15, i64 21
+  %17 = load %class.MACAddress* (%class.EtherFrame*)** %16, align 8
+  %18 = tail call dereferenceable(16) %class.MACAddress* %17(%class.EtherFrame* %5) #8
+  %19 = bitcast %class.MACAddress* %18 to i8*
+  br label %_ZN20EtherFrameDescriptor21getFieldStructPointerEii.exit
+
+_ZN20EtherFrameDescriptor21getFieldStructPointerEii.exit: ; preds = %0, %13, %6, %2
+  %.0 = phi i8* [ %19, %13 ], [ %12, %6 ], [ null, %2 ], [ null, %0 ]
+  ret i8* %.0
+}

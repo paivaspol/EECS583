@@ -1,0 +1,17 @@
+define void @_ZdlPv(i8* %p) #7 {
+  %1 = icmp eq i8* %p, null
+  br i1 %1, label %6, label %2
+
+; <label>:2                                       ; preds = %0
+  tail call void @free(i8* %p) #9
+  %3 = load i8* getelementptr inbounds (%class.MemManager* @_ZL10memManager, i64 0, i32 2), align 4, !tbaa !10, !range !11
+  %4 = icmp eq i8 %3, 0
+  br i1 %4, label %6, label %5
+
+; <label>:5                                       ; preds = %2
+  tail call void @_ZN10MemManager11restorePoolEv(%class.MemManager* @_ZL10memManager) #9
+  br label %6
+
+; <label>:6                                       ; preds = %2, %5, %0
+  ret void
+}

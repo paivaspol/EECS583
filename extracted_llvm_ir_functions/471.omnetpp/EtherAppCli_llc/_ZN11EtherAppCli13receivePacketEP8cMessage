@@ -1,0 +1,43 @@
+define void @_ZN11EtherAppCli13receivePacketEP8cMessage(%class.EtherAppCli* %this, %class.cMessage* %msg) #0 align 2 {
+  %1 = load i32* getelementptr inbounds (%class.cEnvir* @ev, i64 0, i32 1), align 4, !tbaa !29
+  %2 = icmp eq i32 %1, 0
+  br i1 %2, label %3, label %7
+
+; <label>:3                                       ; preds = %0
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([18 x i8]* @.str19, i64 0, i64 0)) #10
+  %4 = getelementptr inbounds %class.cMessage* %msg, i64 0, i32 0, i32 1
+  %5 = load i8** %4, align 8, !tbaa !24
+  %6 = icmp eq i8* %5, null
+  %..i = select i1 %6, i8* getelementptr inbounds ([1 x i8]* @.str10, i64 0, i64 0), i8* %5
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* %..i) #10
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([3 x i8]* @.str20, i64 0, i64 0)) #10
+  br label %7
+
+; <label>:7                                       ; preds = %0, %3
+  %8 = getelementptr inbounds %class.EtherAppCli* %this, i64 0, i32 9
+  %9 = load i64* %8, align 8, !tbaa !36
+  %10 = add nsw i64 %9, 1
+  store i64 %10, i64* %8, align 8, !tbaa !36
+  %11 = getelementptr inbounds %class.EtherAppCli* %this, i64 0, i32 0
+  %12 = tail call double @_ZNK13cSimpleModule7simTimeEv(%class.cSimpleModule* %11) #10
+  %13 = getelementptr inbounds %class.cMessage* %msg, i64 0, i32 13
+  %14 = load double* %13, align 8, !tbaa !37
+  %15 = fsub double %12, %14
+  %16 = getelementptr inbounds %class.EtherAppCli* %this, i64 0, i32 10
+  %17 = tail call zeroext i1 @_ZN10cOutVector6recordEd(%class.cOutVector* %16, double %15) #10
+  %18 = getelementptr inbounds %class.EtherAppCli* %this, i64 0, i32 11
+  tail call void @_ZN7cStdDev7collectEd(%class.cStdDev* %18, double %15) #10
+  %19 = icmp eq %class.cMessage* %msg, null
+  br i1 %19, label %25, label %20
+
+; <label>:20                                      ; preds = %7
+  %21 = bitcast %class.cMessage* %msg to void (%class.cMessage*)***
+  %22 = load void (%class.cMessage*)*** %21, align 8, !tbaa !19
+  %23 = getelementptr inbounds void (%class.cMessage*)** %22, i64 1
+  %24 = load void (%class.cMessage*)** %23, align 8
+  tail call void %24(%class.cMessage* %msg) #10
+  br label %25
+
+; <label>:25                                      ; preds = %20, %7
+  ret void
+}

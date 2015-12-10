@@ -1,0 +1,62 @@
+define void @_Z9task_freeP5_Task(%struct._Task* %t) #5 {
+  %1 = getelementptr inbounds %struct._Task* %t, i64 0, i32 3
+  store i32 0, i32* %1, align 4, !tbaa !12
+  %2 = getelementptr inbounds %struct._Task* %t, i64 0, i32 5
+  %3 = load %struct._Task** %2, align 8, !tbaa !13
+  %4 = icmp eq %struct._Task* %3, null
+  %5 = ptrtoint %struct._Task* %3 to i64
+  br i1 %4, label %20, label %6
+
+; <label>:6                                       ; preds = %0
+  %7 = getelementptr inbounds %struct._Task* %3, i64 0, i32 3
+  %8 = load i32* %7, align 4, !tbaa !12
+  %9 = icmp eq i32 %8, 0
+  br i1 %9, label %10, label %20
+
+; <label>:10                                      ; preds = %6
+  %11 = getelementptr inbounds %struct._Task* %3, i64 0, i32 4
+  %12 = load i32* %11, align 4, !tbaa !11
+  %13 = getelementptr inbounds %struct._Task* %t, i64 0, i32 4
+  %14 = load i32* %13, align 4, !tbaa !11
+  %15 = add i32 %14, %12
+  store i32 %15, i32* %13, align 4, !tbaa !11
+  %16 = getelementptr inbounds %struct._Task* %3, i64 0, i32 5
+  %17 = bitcast %struct._Task** %16 to i64*
+  %18 = load i64* %17, align 8, !tbaa !13
+  %19 = bitcast %struct._Task** %2 to i64*
+  store i64 %18, i64* %19, align 8, !tbaa !13
+  br label %20
+
+; <label>:20                                      ; preds = %6, %0, %10
+  %21 = phi i64 [ %5, %6 ], [ %5, %0 ], [ %18, %10 ]
+  %22 = load %struct._Task** getelementptr inbounds (%struct._Task* @main_task, i64 0, i32 5), align 8, !tbaa !13
+  %23 = icmp eq %struct._Task* %22, %t
+  br i1 %23, label %38, label %.preheader
+
+.preheader:                                       ; preds = %20, %.preheader
+  %p.0 = phi %struct._Task* [ %25, %.preheader ], [ %22, %20 ]
+  %24 = getelementptr inbounds %struct._Task* %p.0, i64 0, i32 5
+  %25 = load %struct._Task** %24, align 8, !tbaa !13
+  %26 = icmp eq %struct._Task* %25, %t
+  br i1 %26, label %27, label %.preheader
+
+; <label>:27                                      ; preds = %.preheader
+  %28 = getelementptr inbounds %struct._Task* %p.0, i64 0, i32 3
+  %29 = load i32* %28, align 4, !tbaa !12
+  %30 = icmp eq i32 %29, 0
+  br i1 %30, label %31, label %38
+
+; <label>:31                                      ; preds = %27
+  %32 = getelementptr inbounds %struct._Task* %t, i64 0, i32 4
+  %33 = load i32* %32, align 4, !tbaa !11
+  %34 = getelementptr inbounds %struct._Task* %p.0, i64 0, i32 4
+  %35 = load i32* %34, align 4, !tbaa !11
+  %36 = add i32 %35, %33
+  store i32 %36, i32* %34, align 4, !tbaa !11
+  %37 = bitcast %struct._Task** %24 to i64*
+  store i64 %21, i64* %37, align 8, !tbaa !13
+  br label %38
+
+; <label>:38                                      ; preds = %27, %20, %31
+  ret void
+}

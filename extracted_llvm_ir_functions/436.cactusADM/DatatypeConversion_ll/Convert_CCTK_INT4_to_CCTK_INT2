@@ -1,0 +1,27 @@
+define internal void @Convert_CCTK_INT4_to_CCTK_INT2(i8* nocapture readonly %src, i8* nocapture %dst, i32 %nelems, i32 %src_stride, i32 %dst_stride) #1 {
+  %1 = icmp eq i32 %nelems, 0
+  br i1 %1, label %._crit_edge, label %.lr.ph
+
+.lr.ph:                                           ; preds = %0
+  %2 = bitcast i8* %src to i32*
+  %3 = bitcast i8* %dst to i16*
+  %4 = sext i32 %src_stride to i64
+  %5 = sext i32 %dst_stride to i64
+  br label %6
+
+; <label>:6                                       ; preds = %.lr.ph, %6
+  %_src.03 = phi i32* [ %2, %.lr.ph ], [ %10, %6 ]
+  %_dst.02 = phi i16* [ %3, %.lr.ph ], [ %11, %6 ]
+  %.01 = phi i32 [ %nelems, %.lr.ph ], [ %7, %6 ]
+  %7 = add nsw i32 %.01, -1
+  %8 = load i32* %_src.03, align 4, !tbaa !2
+  %9 = trunc i32 %8 to i16
+  store i16 %9, i16* %_dst.02, align 2, !tbaa !6
+  %10 = getelementptr inbounds i32* %_src.03, i64 %4
+  %11 = getelementptr inbounds i16* %_dst.02, i64 %5
+  %12 = icmp eq i32 %7, 0
+  br i1 %12, label %._crit_edge, label %6
+
+._crit_edge:                                      ; preds = %6, %0
+  ret void
+}

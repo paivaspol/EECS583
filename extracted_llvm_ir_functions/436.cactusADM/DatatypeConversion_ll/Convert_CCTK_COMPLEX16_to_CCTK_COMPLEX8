@@ -1,0 +1,34 @@
+define internal void @Convert_CCTK_COMPLEX16_to_CCTK_COMPLEX8(i8* nocapture readonly %src, i8* nocapture %dst, i32 %nelems, i32 %src_stride, i32 %dst_stride) #1 {
+  %1 = icmp eq i32 %nelems, 0
+  br i1 %1, label %._crit_edge, label %.lr.ph
+
+.lr.ph:                                           ; preds = %0
+  %2 = bitcast i8* %src to %struct.CCTK_COMPLEX16*
+  %3 = bitcast i8* %dst to %struct.CCTK_COMPLEX8*
+  %4 = sext i32 %src_stride to i64
+  %5 = sext i32 %dst_stride to i64
+  br label %6
+
+; <label>:6                                       ; preds = %.lr.ph, %6
+  %_src.03 = phi %struct.CCTK_COMPLEX16* [ %2, %.lr.ph ], [ %16, %6 ]
+  %_dst.02 = phi %struct.CCTK_COMPLEX8* [ %3, %.lr.ph ], [ %17, %6 ]
+  %.01 = phi i32 [ %nelems, %.lr.ph ], [ %7, %6 ]
+  %7 = add nsw i32 %.01, -1
+  %8 = getelementptr inbounds %struct.CCTK_COMPLEX16* %_src.03, i64 0, i32 0
+  %9 = load double* %8, align 8, !tbaa !16
+  %10 = fptrunc double %9 to float
+  %11 = getelementptr inbounds %struct.CCTK_COMPLEX8* %_dst.02, i64 0, i32 0
+  store float %10, float* %11, align 4, !tbaa !18
+  %12 = getelementptr inbounds %struct.CCTK_COMPLEX16* %_src.03, i64 0, i32 1
+  %13 = load double* %12, align 8, !tbaa !20
+  %14 = fptrunc double %13 to float
+  %15 = getelementptr inbounds %struct.CCTK_COMPLEX8* %_dst.02, i64 0, i32 1
+  store float %14, float* %15, align 4, !tbaa !21
+  %16 = getelementptr inbounds %struct.CCTK_COMPLEX16* %_src.03, i64 %4
+  %17 = getelementptr inbounds %struct.CCTK_COMPLEX8* %_dst.02, i64 %5
+  %18 = icmp eq i32 %7, 0
+  br i1 %18, label %._crit_edge, label %6
+
+._crit_edge:                                      ; preds = %6, %0
+  ret void
+}

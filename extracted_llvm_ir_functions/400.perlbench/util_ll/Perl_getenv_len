@@ -1,0 +1,14 @@
+define i8* @Perl_getenv_len(i8* nocapture %env_elem, i64* nocapture %len) #0 {
+entry:
+  %call = tail call i8* @getenv(i8* %env_elem) #8
+  %tobool = icmp eq i8* %call, null
+  br i1 %tobool, label %if.end, label %if.then
+
+if.then:                                          ; preds = %entry
+  %call1 = tail call i64 @strlen(i8* %call) #8
+  store i64 %call1, i64* %len, align 8, !tbaa !4
+  br label %if.end
+
+if.end:                                           ; preds = %entry, %if.then
+  ret i8* %call
+}

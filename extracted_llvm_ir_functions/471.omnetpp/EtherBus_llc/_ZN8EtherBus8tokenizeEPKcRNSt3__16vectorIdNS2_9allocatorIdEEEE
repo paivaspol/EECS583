@@ -1,0 +1,47 @@
+define void @_ZN8EtherBus8tokenizeEPKcRNSt3__16vectorIdNS2_9allocatorIdEEEE(%class.EtherBus* nocapture readnone %this, i8* %str, %"class.std::__1::vector"* dereferenceable(24) %array) #0 align 2 {
+  %1 = alloca double, align 8
+  %2 = tail call i8* @_Z10opp_strdupPKc(i8* %str) #11
+  %3 = tail call i8* @strtok(i8* %2, i8* getelementptr inbounds ([2 x i8]* @.str32, i64 0, i64 0)) #11
+  %4 = icmp eq i8* %3, null
+  br i1 %4, label %._crit_edge, label %.lr.ph
+
+.lr.ph:                                           ; preds = %0
+  %5 = getelementptr inbounds %"class.std::__1::vector"* %array, i64 0, i32 0, i32 1
+  %6 = getelementptr inbounds %"class.std::__1::vector"* %array, i64 0, i32 0, i32 2, i32 0, i32 0
+  br label %7
+
+; <label>:7                                       ; preds = %.lr.ph, %_ZNSt3__16vectorIdNS_9allocatorIdEEE9push_backERKd.exit
+  %s.01 = phi i8* [ %3, %.lr.ph ], [ %15, %_ZNSt3__16vectorIdNS_9allocatorIdEEE9push_backERKd.exit ]
+  %8 = tail call double @atof(i8* %s.01) #11
+  store double %8, double* %1, align 8, !tbaa !25
+  %9 = load double** %5, align 8, !tbaa !20
+  %10 = load double** %6, align 8, !tbaa !31
+  %11 = icmp eq double* %9, %10
+  br i1 %11, label %14, label %12
+
+; <label>:12                                      ; preds = %7
+  store double %8, double* %9, align 8, !tbaa !25
+  %13 = getelementptr inbounds double* %9, i64 1
+  store double* %13, double** %5, align 8, !tbaa !20
+  br label %_ZNSt3__16vectorIdNS_9allocatorIdEEE9push_backERKd.exit
+
+; <label>:14                                      ; preds = %7
+  call void @_ZNSt3__16vectorIdNS_9allocatorIdEEE21__push_back_slow_pathIKdEEvRT_(%"class.std::__1::vector"* %array, double* dereferenceable(8) %1) #11
+  br label %_ZNSt3__16vectorIdNS_9allocatorIdEEE9push_backERKd.exit
+
+_ZNSt3__16vectorIdNS_9allocatorIdEEE9push_backERKd.exit: ; preds = %12, %14
+  %15 = tail call i8* @strtok(i8* null, i8* getelementptr inbounds ([2 x i8]* @.str32, i64 0, i64 0)) #11
+  %16 = icmp eq i8* %15, null
+  br i1 %16, label %._crit_edge, label %7
+
+._crit_edge:                                      ; preds = %_ZNSt3__16vectorIdNS_9allocatorIdEEE9push_backERKd.exit, %0
+  %17 = icmp eq i8* %2, null
+  br i1 %17, label %19, label %18
+
+; <label>:18                                      ; preds = %._crit_edge
+  tail call void @_ZdaPv(i8* %2) #12
+  br label %19
+
+; <label>:19                                      ; preds = %18, %._crit_edge
+  ret void
+}

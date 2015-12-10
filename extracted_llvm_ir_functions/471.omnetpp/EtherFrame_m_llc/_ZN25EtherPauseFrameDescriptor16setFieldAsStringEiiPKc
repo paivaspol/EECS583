@@ -1,0 +1,25 @@
+define zeroext i1 @_ZN25EtherPauseFrameDescriptor16setFieldAsStringEiiPKc(%class.EtherPauseFrameDescriptor* nocapture readonly %this, i32 %field, i32 %i, i8* %value) unnamed_addr #0 align 2 {
+  %1 = icmp slt i32 %field, 2
+  br i1 %1, label %13, label %2
+
+; <label>:2                                       ; preds = %0
+  %3 = getelementptr inbounds %class.EtherPauseFrameDescriptor* %this, i64 0, i32 0, i32 0, i32 1
+  %4 = bitcast i8** %3 to %class.EtherPauseFrame**
+  %5 = load %class.EtherPauseFrame** %4, align 8, !tbaa !10
+  %cond = icmp eq i32 %field, 2
+  br i1 %cond, label %6, label %13
+
+; <label>:6                                       ; preds = %2
+  %7 = bitcast %class.EtherPauseFrame* %5 to void (%class.EtherPauseFrame*, i32)***
+  %8 = load void (%class.EtherPauseFrame*, i32)*** %7, align 8, !tbaa !2
+  %9 = getelementptr inbounds void (%class.EtherPauseFrame*, i32)** %8, i64 24
+  %10 = load void (%class.EtherPauseFrame*, i32)** %9, align 8
+  %11 = tail call i64 @_ZN17cStructDescriptor11string2longEPKc(i8* %value) #8
+  %12 = trunc i64 %11 to i32
+  tail call void %10(%class.EtherPauseFrame* %5, i32 %12) #8
+  br label %13
+
+; <label>:13                                      ; preds = %0, %2, %6
+  %.0 = phi i1 [ true, %6 ], [ false, %2 ], [ false, %0 ]
+  ret i1 %.0
+}

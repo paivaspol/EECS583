@@ -1,0 +1,24 @@
+define void @_ZN11EtherAppCli13handleMessageEP8cMessage(%class.EtherAppCli* %this, %class.cMessage* %msg) unnamed_addr #0 align 2 {
+  %1 = getelementptr inbounds %class.cMessage* %msg, i64 0, i32 12
+  %2 = load i32* %1, align 4, !tbaa !33
+  %3 = icmp eq i32 %2, -1
+  br i1 %3, label %4, label %12
+
+; <label>:4                                       ; preds = %0
+  tail call void @_ZN11EtherAppCli10sendPacketEv(%class.EtherAppCli* %this) #10
+  %5 = getelementptr inbounds %class.EtherAppCli* %this, i64 0, i32 4
+  %6 = load %class.cPar** %5, align 8, !tbaa !15
+  %7 = tail call double @_ZN4cPar11doubleValueEv(%class.cPar* %6) #10
+  %8 = getelementptr inbounds %class.EtherAppCli* %this, i64 0, i32 0
+  %9 = tail call double @_ZNK13cSimpleModule7simTimeEv(%class.cSimpleModule* %8) #10
+  %10 = fadd double %7, %9
+  %11 = tail call i32 @_ZN13cSimpleModule10scheduleAtEdP8cMessage(%class.cSimpleModule* %8, double %10, %class.cMessage* %msg) #10
+  br label %13
+
+; <label>:12                                      ; preds = %0
+  tail call void @_ZN11EtherAppCli13receivePacketEP8cMessage(%class.EtherAppCli* %this, %class.cMessage* %msg) #10
+  br label %13
+
+; <label>:13                                      ; preds = %12, %4
+  ret void
+}

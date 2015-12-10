@@ -1,0 +1,16 @@
+define void @_Z13task_switchtoP5_Task(%struct._Task* %p) #6 {
+  %1 = load %struct._Task** @current_task, align 8, !tbaa !17
+  %2 = getelementptr inbounds %struct._Task* %1, i64 0, i32 1, i64 0
+  %3 = call i32 @setjmp(i32* %2) #9
+  %4 = icmp eq i32 %3, 0
+  br i1 %4, label %5, label %7
+
+; <label>:5                                       ; preds = %0
+  store %struct._Task* %p, %struct._Task** @current_task, align 8, !tbaa !17
+  %6 = getelementptr inbounds %struct._Task* %p, i64 0, i32 1, i64 0
+  call void @longjmp(i32* %6, i32 1) #10
+  unreachable
+
+; <label>:7                                       ; preds = %0
+  ret void
+}

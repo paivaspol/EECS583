@@ -1,0 +1,21 @@
+define i32 @_Z4distP5_TaskS0_(%struct._Task* %from, %struct._Task* %to) #0 {
+  %1 = icmp ugt %struct._Task* %from, %to
+  br i1 %1, label %2, label %6
+
+; <label>:2                                       ; preds = %0
+  %3 = ptrtoint %struct._Task* %from to i64
+  %4 = ptrtoint %struct._Task* %to to i64
+  %5 = sub i64 %3, %4
+  br label %10
+
+; <label>:6                                       ; preds = %0
+  %7 = ptrtoint %struct._Task* %to to i64
+  %8 = ptrtoint %struct._Task* %from to i64
+  %9 = sub i64 %7, %8
+  br label %10
+
+; <label>:10                                      ; preds = %6, %2
+  %11 = phi i64 [ %5, %2 ], [ %9, %6 ]
+  %12 = trunc i64 %11 to i32
+  ret i32 %12
+}

@@ -1,0 +1,38 @@
+define i8* @_Z8fgetlineP7__sFILE(%struct.__sFILE* nocapture %fp) #0 {
+  %1 = tail call noalias i8* @_Znam(i64 100) #8
+  %2 = tail call i8* @fgets(i8* %1, i32 100, %struct.__sFILE* %fp) #9
+  %3 = icmp eq i8* %2, null
+  br i1 %3, label %.critedge, label %4
+
+; <label>:4                                       ; preds = %0
+  %5 = getelementptr inbounds i8* %1, i64 99
+  store i8 0, i8* %5, align 1, !tbaa !2
+  %6 = tail call i64 @strlen(i8* %1) #9
+  %7 = trunc i64 %6 to i32
+  %8 = icmp sgt i32 %7, 0
+  br i1 %8, label %.lr.ph, label %.critedge
+
+.lr.ph:                                           ; preds = %4
+  %sext = shl i64 %6, 32
+  %9 = ashr exact i64 %sext, 32
+  br label %10
+
+; <label>:10                                      ; preds = %.lr.ph, %.critedge1
+  %indvars.iv = phi i64 [ %9, %.lr.ph ], [ %indvars.iv.next, %.critedge1 ]
+  %indvars.iv.next = add nsw i64 %indvars.iv, -1
+  %11 = getelementptr inbounds i8* %1, i64 %indvars.iv.next
+  %12 = load i8* %11, align 1, !tbaa !2
+  switch i8 %12, label %.critedge [
+    i8 10, label %.critedge1
+    i8 13, label %.critedge1
+  ]
+
+.critedge1:                                       ; preds = %10, %10
+  store i8 0, i8* %11, align 1, !tbaa !2
+  %13 = icmp sgt i64 %indvars.iv, 1
+  br i1 %13, label %10, label %.critedge
+
+.critedge:                                        ; preds = %10, %.critedge1, %4, %0
+  %.0 = phi i8* [ null, %0 ], [ %1, %4 ], [ %1, %.critedge1 ], [ %1, %10 ]
+  ret i8* %.0
+}

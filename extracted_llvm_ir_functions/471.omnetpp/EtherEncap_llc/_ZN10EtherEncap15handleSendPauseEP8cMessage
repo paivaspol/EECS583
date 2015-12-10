@@ -1,0 +1,94 @@
+define void @_ZN10EtherEncap15handleSendPauseEP8cMessage(%class.EtherEncap* %this, %class.cMessage* %msg) unnamed_addr #0 align 2 {
+  %framename = alloca [30 x i8], align 16
+  %1 = getelementptr inbounds %class.cMessage* %msg, i64 0, i32 0
+  %2 = tail call %class.cMessage30* @_Z14check_and_castIP10cMessage30ET_P7cObject(%class.cObject* %1) #9
+  %3 = getelementptr inbounds %class.cMessage30* %2, i64 0, i32 1
+  %4 = load %class.cPolymorphic** %3, align 8, !tbaa !33
+  store %class.cPolymorphic* null, %class.cPolymorphic** %3, align 8, !tbaa !33
+  %5 = tail call %class.EtherCtrl* @_Z14check_and_castIP9EtherCtrlET_P12cPolymorphic(%class.cPolymorphic* %4) #9
+  %6 = bitcast %class.EtherCtrl* %5 to i32 (%class.EtherCtrl*)***
+  %7 = load i32 (%class.EtherCtrl*)*** %6, align 8, !tbaa !8
+  %8 = getelementptr inbounds i32 (%class.EtherCtrl*)** %7, i64 15
+  %9 = load i32 (%class.EtherCtrl*)** %8, align 8
+  %10 = tail call i32 %9(%class.EtherCtrl* %5) #9
+  %11 = icmp eq %class.EtherCtrl* %5, null
+  br i1 %11, label %17, label %12
+
+; <label>:12                                      ; preds = %0
+  %13 = bitcast %class.EtherCtrl* %5 to void (%class.EtherCtrl*)***
+  %14 = load void (%class.EtherCtrl*)*** %13, align 8, !tbaa !8
+  %15 = getelementptr inbounds void (%class.EtherCtrl*)** %14, i64 1
+  %16 = load void (%class.EtherCtrl*)** %15, align 8
+  tail call void %16(%class.EtherCtrl* %5) #9
+  br label %17
+
+; <label>:17                                      ; preds = %12, %0
+  %18 = load i32* getelementptr inbounds (%class.cEnvir* @ev, i64 0, i32 1), align 4, !tbaa !23
+  %19 = icmp eq i32 %18, 0
+  br i1 %19, label %20, label %21
+
+; <label>:20                                      ; preds = %17
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([49 x i8]* @.str18, i64 0, i64 0)) #9
+  tail call void (%class.cEnvir*, i8*, ...)* @_ZN6cEnvir6printfEPKcz(%class.cEnvir* @ev, i8* getelementptr inbounds ([3 x i8]* @.str27, i64 0, i64 0), i32 %10) #9
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([8 x i8]* @.str19, i64 0, i64 0)) #9
+  br label %21
+
+; <label>:21                                      ; preds = %17, %20
+  %22 = getelementptr inbounds [30 x i8]* %framename, i64 0, i64 0
+  %23 = getelementptr inbounds %class.EtherEncap* %this, i64 0, i32 0, i32 0, i32 3
+  %24 = load i32* %23, align 4, !tbaa !36
+  %25 = getelementptr inbounds %class.EtherEncap* %this, i64 0, i32 1
+  %26 = load i32* %25, align 4, !tbaa !2
+  %27 = add nsw i32 %26, 1
+  store i32 %27, i32* %25, align 4, !tbaa !2
+  %28 = call i32 (i8*, i8*, ...)* @sprintf(i8* %22, i8* getelementptr inbounds ([12 x i8]* @.str20, i64 0, i64 0), i32 %24, i32 %26) #9
+  %29 = tail call i8* @_ZN7cObjectnwEm(i64 208) #9
+  %30 = bitcast i8* %29 to %class.EtherPauseFrame*
+  invoke void @_ZN15EtherPauseFrameC1EPKci(%class.EtherPauseFrame* %30, i8* %22, i32 2002) #9
+          to label %31 unwind label %42
+
+; <label>:31                                      ; preds = %21
+  %32 = bitcast i8* %29 to void (%class.EtherPauseFrame*, i32)***
+  %33 = load void (%class.EtherPauseFrame*, i32)*** %32, align 8, !tbaa !8
+  %34 = getelementptr inbounds void (%class.EtherPauseFrame*, i32)** %33, i64 24
+  %35 = load void (%class.EtherPauseFrame*, i32)** %34, align 8
+  call void %35(%class.EtherPauseFrame* %30, i32 %10) #9
+  %36 = bitcast i8* %29 to %class.cMessage*
+  call void @_ZN8cMessage9setLengthEl(%class.cMessage* %36, i64 192) #9
+  %37 = getelementptr inbounds i8* %29, i64 64
+  %38 = bitcast i8* %37 to i64*
+  %39 = load i64* %38, align 8, !tbaa !21
+  %40 = icmp slt i64 %39, 512
+  br i1 %40, label %41, label %44
+
+; <label>:41                                      ; preds = %31
+  call void @_ZN8cMessage9setLengthEl(%class.cMessage* %36, i64 512) #9
+  br label %44
+
+; <label>:42                                      ; preds = %21
+  %43 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup
+  call void @_ZdlPv(i8* %29) #10
+  resume { i8*, i32 } %43
+
+; <label>:44                                      ; preds = %41, %31
+  %45 = getelementptr inbounds %class.EtherEncap* %this, i64 0, i32 0
+  %46 = call i32 @_ZN13cSimpleModule4sendEP8cMessagePKci(%class.cSimpleModule* %45, %class.cMessage* %36, i8* getelementptr inbounds ([14 x i8]* @.str13, i64 0, i64 0), i32 -1) #9
+  %47 = icmp eq %class.cMessage* %msg, null
+  br i1 %47, label %53, label %48
+
+; <label>:48                                      ; preds = %44
+  %49 = bitcast %class.cMessage* %msg to void (%class.cMessage*)***
+  %50 = load void (%class.cMessage*)*** %49, align 8, !tbaa !8
+  %51 = getelementptr inbounds void (%class.cMessage*)** %50, i64 1
+  %52 = load void (%class.cMessage*)** %51, align 8
+  call void %52(%class.cMessage* %msg) #9
+  br label %53
+
+; <label>:53                                      ; preds = %48, %44
+  %54 = getelementptr inbounds %class.EtherEncap* %this, i64 0, i32 4
+  %55 = load i64* %54, align 8, !tbaa !40
+  %56 = add nsw i64 %55, 1
+  store i64 %56, i64* %54, align 8, !tbaa !40
+  ret void
+}

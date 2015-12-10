@@ -1,0 +1,31 @@
+define linkonce_odr void @_ZNSt3__113__vector_baseIdNS_9allocatorIdEEED2Ev(%"class.std::__1::__vector_base"* nocapture %this) unnamed_addr #10 align 2 {
+  %1 = getelementptr inbounds %"class.std::__1::__vector_base"* %this, i64 0, i32 0
+  %2 = load double** %1, align 8, !tbaa !23
+  %3 = icmp eq double* %2, null
+  %4 = ptrtoint double* %2 to i64
+  %5 = bitcast double* %2 to i8*
+  br i1 %3, label %14, label %6
+
+; <label>:6                                       ; preds = %0
+  %7 = getelementptr inbounds %"class.std::__1::__vector_base"* %this, i64 0, i32 1
+  %8 = load double** %7, align 8, !tbaa !20
+  %9 = icmp eq double* %8, %2
+  br i1 %9, label %_ZNSt3__113__vector_baseIdNS_9allocatorIdEEE5clearEv.exit, label %.lr.ph.i.i
+
+.lr.ph.i.i:                                       ; preds = %6
+  %scevgep.i.i = getelementptr double* %8, i64 -1
+  %10 = ptrtoint double* %scevgep.i.i to i64
+  %11 = sub i64 %10, %4
+  %12 = lshr i64 %11, 3
+  %13 = xor i64 %12, -1
+  %scevgep4.i.i = getelementptr double* %8, i64 %13
+  store double* %scevgep4.i.i, double** %7, align 8, !tbaa !20
+  br label %_ZNSt3__113__vector_baseIdNS_9allocatorIdEEE5clearEv.exit
+
+_ZNSt3__113__vector_baseIdNS_9allocatorIdEEE5clearEv.exit: ; preds = %6, %.lr.ph.i.i
+  tail call void @_ZdlPv(i8* %5) #12
+  br label %14
+
+; <label>:14                                      ; preds = %0, %_ZNSt3__113__vector_baseIdNS_9allocatorIdEEE5clearEv.exit
+  ret void
+}

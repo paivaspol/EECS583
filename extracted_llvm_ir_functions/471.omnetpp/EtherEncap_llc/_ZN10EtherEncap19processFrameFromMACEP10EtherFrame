@@ -1,0 +1,72 @@
+define void @_ZN10EtherEncap19processFrameFromMACEP10EtherFrame(%class.EtherEncap* %this, %class.EtherFrame* %frame) unnamed_addr #0 align 2 {
+  %1 = getelementptr inbounds %class.EtherEncap* %this, i64 0, i32 3
+  %2 = load i64* %1, align 8, !tbaa !35
+  %3 = add nsw i64 %2, 1
+  store i64 %3, i64* %1, align 8, !tbaa !35
+  %4 = getelementptr inbounds %class.EtherFrame* %frame, i64 0, i32 0
+  %5 = tail call %class.cMessage* @_ZN8cMessage11decapsulateEv(%class.cMessage* %4) #9
+  %6 = tail call noalias i8* @_Znwm(i64 56) #11
+  %7 = bitcast i8* %6 to %class.EtherCtrl*
+  invoke void @_ZN9EtherCtrlC1Ev(%class.EtherCtrl* %7) #9
+          to label %8 unwind label %45
+
+; <label>:8                                       ; preds = %0
+  %9 = bitcast i8* %6 to void (%class.EtherCtrl*, %class.MACAddress*)***
+  %10 = load void (%class.EtherCtrl*, %class.MACAddress*)*** %9, align 8, !tbaa !8
+  %11 = getelementptr inbounds void (%class.EtherCtrl*, %class.MACAddress*)** %10, i64 6
+  %12 = load void (%class.EtherCtrl*, %class.MACAddress*)** %11, align 8
+  %13 = bitcast %class.EtherFrame* %frame to %class.MACAddress* (%class.EtherFrame*)***
+  %14 = load %class.MACAddress* (%class.EtherFrame*)*** %13, align 8, !tbaa !8
+  %15 = getelementptr inbounds %class.MACAddress* (%class.EtherFrame*)** %14, i64 21
+  %16 = load %class.MACAddress* (%class.EtherFrame*)** %15, align 8
+  %17 = tail call dereferenceable(16) %class.MACAddress* %16(%class.EtherFrame* %frame) #9
+  tail call void %12(%class.EtherCtrl* %7, %class.MACAddress* dereferenceable(16) %17) #9
+  %18 = load void (%class.EtherCtrl*, %class.MACAddress*)*** %9, align 8, !tbaa !8
+  %19 = getelementptr inbounds void (%class.EtherCtrl*, %class.MACAddress*)** %18, i64 8
+  %20 = load void (%class.EtherCtrl*, %class.MACAddress*)** %19, align 8
+  %21 = load %class.MACAddress* (%class.EtherFrame*)*** %13, align 8, !tbaa !8
+  %22 = getelementptr inbounds %class.MACAddress* (%class.EtherFrame*)** %21, i64 19
+  %23 = load %class.MACAddress* (%class.EtherFrame*)** %22, align 8
+  %24 = tail call dereferenceable(16) %class.MACAddress* %23(%class.EtherFrame* %frame) #9
+  tail call void %20(%class.EtherCtrl* %7, %class.MACAddress* dereferenceable(16) %24) #9
+  %25 = getelementptr inbounds %class.cMessage* %5, i64 0, i32 0
+  %26 = tail call %class.cMessage30* @_Z14check_and_castIP10cMessage30ET_P7cObject(%class.cObject* %25) #9
+  %27 = getelementptr inbounds %class.cMessage30* %26, i64 0, i32 1
+  %28 = bitcast %class.cPolymorphic** %27 to i8**
+  store i8* %6, i8** %28, align 8, !tbaa !33
+  %29 = load i32* getelementptr inbounds (%class.cEnvir* @ev, i64 0, i32 1), align 4, !tbaa !23
+  %30 = icmp eq i32 %29, 0
+  br i1 %30, label %31, label %38
+
+; <label>:31                                      ; preds = %8
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([22 x i8]* @.str14, i64 0, i64 0)) #9
+  %32 = getelementptr inbounds %class.EtherFrame* %frame, i64 0, i32 0, i32 0, i32 1
+  %33 = load i8** %32, align 8, !tbaa !18
+  %34 = icmp eq i8* %33, null
+  %..i = select i1 %34, i8* getelementptr inbounds ([1 x i8]* @.str25, i64 0, i64 0), i8* %33
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* %..i) #9
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([33 x i8]* @.str15, i64 0, i64 0)) #9
+  %35 = getelementptr inbounds %class.cMessage* %5, i64 0, i32 0, i32 1
+  %36 = load i8** %35, align 8, !tbaa !18
+  %37 = icmp eq i8* %36, null
+  %..i1 = select i1 %37, i8* getelementptr inbounds ([1 x i8]* @.str25, i64 0, i64 0), i8* %36
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* %..i1) #9
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([19 x i8]* @.str16, i64 0, i64 0)) #9
+  br label %38
+
+; <label>:38                                      ; preds = %8, %31
+  %39 = getelementptr inbounds %class.EtherEncap* %this, i64 0, i32 0
+  %40 = tail call i32 @_ZN13cSimpleModule4sendEP8cMessagePKci(%class.cSimpleModule* %39, %class.cMessage* %5, i8* getelementptr inbounds ([14 x i8]* @.str17, i64 0, i64 0), i32 -1) #9
+  %41 = bitcast %class.EtherFrame* %frame to void (%class.EtherFrame*)***
+  %42 = load void (%class.EtherFrame*)*** %41, align 8, !tbaa !8
+  %43 = getelementptr inbounds void (%class.EtherFrame*)** %42, i64 1
+  %44 = load void (%class.EtherFrame*)** %43, align 8
+  tail call void %44(%class.EtherFrame* %frame) #9
+  ret void
+
+; <label>:45                                      ; preds = %0
+  %46 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup
+  tail call void @_ZdlPv(i8* %6) #10
+  resume { i8*, i32 } %46
+}

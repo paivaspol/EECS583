@@ -1,0 +1,43 @@
+define internal fastcc i32 @_ZL10get_numberRPKcRi(i8** nocapture dereferenceable(8) %str, i32* nocapture dereferenceable(4) %number) #0 {
+  %.pre = load i8** %str, align 8, !tbaa !12
+  br label %1
+
+; <label>:1                                       ; preds = %4, %0
+  %2 = phi i8* [ %5, %4 ], [ %.pre, %0 ]
+  %3 = load i8* %2, align 1, !tbaa !11
+  switch i8 %3, label %6 [
+    i8 32, label %4
+    i8 9, label %4
+  ]
+
+; <label>:4                                       ; preds = %1, %1
+  %5 = getelementptr inbounds i8* %2, i64 1
+  store i8* %5, i8** %str, align 8, !tbaa !12
+  br label %1
+
+; <label>:6                                       ; preds = %1
+  %.off = add i8 %3, -48
+  %7 = icmp ugt i8 %.off, 9
+  br i1 %7, label %.critedge, label %8
+
+; <label>:8                                       ; preds = %6
+  %9 = tail call i32 @atoi(i8* %2) #2
+  store i32 %9, i32* %number, align 4, !tbaa !13
+  %10 = load i8* %2, align 1, !tbaa !11
+  %.off24 = add i8 %10, -48
+  %11 = icmp ult i8 %.off24, 10
+  br i1 %11, label %.lr.ph, label %.critedge
+
+.lr.ph:                                           ; preds = %8, %.lr.ph
+  %12 = phi i8* [ %13, %.lr.ph ], [ %2, %8 ]
+  %13 = getelementptr inbounds i8* %12, i64 1
+  store i8* %13, i8** %str, align 8, !tbaa !12
+  %14 = load i8* %13, align 1, !tbaa !11
+  %.off2 = add i8 %14, -48
+  %15 = icmp ult i8 %.off2, 10
+  br i1 %15, label %.lr.ph, label %.critedge
+
+.critedge:                                        ; preds = %.lr.ph, %8, %6
+  %.0 = phi i32 [ 0, %6 ], [ 1, %8 ], [ 1, %.lr.ph ]
+  ret i32 %.0
+}

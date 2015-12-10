@@ -1,0 +1,210 @@
+define void @Perl_mini_mktime(%struct.tm* nocapture %ptm) #0 {
+entry:
+  %tm_year = getelementptr inbounds %struct.tm* %ptm, i64 0, i32 5
+  %0 = load i32* %tm_year, align 4, !tbaa !3
+  %tm_mon = getelementptr inbounds %struct.tm* %ptm, i64 0, i32 4
+  %1 = load i32* %tm_mon, align 4, !tbaa !3
+  %tm_mday = getelementptr inbounds %struct.tm* %ptm, i64 0, i32 3
+  %2 = load i32* %tm_mday, align 4, !tbaa !3
+  %tm_yday = getelementptr inbounds %struct.tm* %ptm, i64 0, i32 7
+  %3 = load i32* %tm_yday, align 4, !tbaa !3
+  %cmp = icmp sgt i32 %3, -1
+  %cmp1 = icmp slt i32 %2, 1
+  %or.cond = and i1 %cmp, %cmp1
+  %cmp3 = icmp slt i32 %1, 1
+  %or.cond212 = and i1 %or.cond, %cmp3
+  %add5 = add nsw i32 %3, 1
+  %month.0 = select i1 %or.cond212, i32 0, i32 %1
+  %mday.0 = select i1 %or.cond212, i32 0, i32 %2
+  %jday.0 = select i1 %or.cond212, i32 %add5, i32 0
+  %cmp6 = icmp sgt i32 %month.0, 1
+  br i1 %cmp6, label %if.then7, label %if.else9
+
+if.then7:                                         ; preds = %entry
+  %add = add nsw i32 %0, 1900
+  %add8 = add nsw i32 %month.0, 2
+  br label %if.end11
+
+if.else9:                                         ; preds = %entry
+  %add10 = add nsw i32 %month.0, 14
+  %dec = add nsw i32 %0, 1899
+  br label %if.end11
+
+if.end11:                                         ; preds = %if.else9, %if.then7
+  %month.1 = phi i32 [ %add8, %if.then7 ], [ %add10, %if.else9 ]
+  %year.0 = phi i32 [ %add, %if.then7 ], [ %dec, %if.else9 ]
+  %mul = mul nsw i32 %year.0, 365
+  %div = sdiv i32 %year.0, 4
+  %div13.neg = sdiv i32 %year.0, -100
+  %div14 = sdiv i32 %year.0, 400
+  %mul16 = mul nsw i32 %month.1, 153
+  %div17 = sdiv i32 %mul16, 5
+  %add18 = add i32 %jday.0, %mday.0
+  %add19 = add i32 %add18, %div
+  %add12 = add i32 %add19, %mul
+  %sub = add i32 %add12, %div13.neg
+  %add15 = add i32 %sub, %div14
+  %add20 = add i32 %add15, %div17
+  %tm_sec = getelementptr inbounds %struct.tm* %ptm, i64 0, i32 0
+  %4 = load i32* %tm_sec, align 4, !tbaa !3
+  %cmp21 = icmp ult i32 %4, 61
+  br i1 %cmp21, label %if.end26, label %if.else23
+
+if.else23:                                        ; preds = %if.end11
+  store i32 0, i32* %tm_sec, align 4, !tbaa !3
+  br label %if.end26
+
+if.end26:                                         ; preds = %if.end11, %if.else23
+  %5 = phi i32 [ 0, %if.else23 ], [ %4, %if.end11 ]
+  %secs.0 = phi i32 [ %4, %if.else23 ], [ 0, %if.end11 ]
+  %tm_min = getelementptr inbounds %struct.tm* %ptm, i64 0, i32 1
+  %6 = load i32* %tm_min, align 4, !tbaa !3
+  %mul27 = mul nsw i32 %6, 60
+  %add28 = add nsw i32 %mul27, %secs.0
+  %tm_hour = getelementptr inbounds %struct.tm* %ptm, i64 0, i32 2
+  %7 = load i32* %tm_hour, align 4, !tbaa !3
+  %mul29 = mul nsw i32 %7, 3600
+  %add30 = add nsw i32 %add28, %mul29
+  %cmp31 = icmp slt i32 %add30, 0
+  br i1 %cmp31, label %if.then32, label %if.else52
+
+if.then32:                                        ; preds = %if.end26
+  %div33 = sdiv i32 %add30, 86400
+  %8 = mul i32 %div33, -86400
+  %sub35 = add i32 %8, %add30
+  %cmp36 = icmp slt i32 %sub35, 0
+  br i1 %cmp36, label %if.then37, label %if.else45
+
+if.then37:                                        ; preds = %if.then32
+  %sub39 = add nsw i32 %div33, -1
+  %add40 = add nsw i32 %sub39, %add20
+  %9 = mul i32 %sub39, -86400
+  %sub44 = add i32 %9, %add30
+  br label %if.end58
+
+if.else45:                                        ; preds = %if.then32
+  %add47 = add nsw i32 %div33, %add20
+  br label %if.end58
+
+if.else52:                                        ; preds = %if.end26
+  %cmp53 = icmp sgt i32 %add30, 86399
+  br i1 %cmp53, label %if.then54, label %if.end58
+
+if.then54:                                        ; preds = %if.else52
+  %div55 = sdiv i32 %add30, 86400
+  %add56 = add nsw i32 %div55, %add20
+  %rem = srem i32 %add30, 86400
+  br label %if.end58
+
+if.end58:                                         ; preds = %if.else52, %if.then54, %if.then37, %if.else45
+  %secs.1 = phi i32 [ %sub44, %if.then37 ], [ %sub35, %if.else45 ], [ %rem, %if.then54 ], [ %add30, %if.else52 ]
+  %yearday.0 = phi i32 [ %add40, %if.then37 ], [ %add47, %if.else45 ], [ %add56, %if.then54 ], [ %add20, %if.else52 ]
+  %div59 = sdiv i32 %secs.1, 3600
+  store i32 %div59, i32* %tm_hour, align 4, !tbaa !3
+  %rem61 = srem i32 %secs.1, 3600
+  %div62 = sdiv i32 %rem61, 60
+  store i32 %div62, i32* %tm_min, align 4, !tbaa !3
+  %rem64 = srem i32 %rem61, 60
+  %add66 = add nsw i32 %5, %rem64
+  store i32 %add66, i32* %tm_sec, align 4, !tbaa !3
+  %sub67 = add nsw i32 %yearday.0, -123
+  %div68 = sdiv i32 %sub67, 146097
+  %mul69 = mul nsw i32 %div68, 400
+  %rem70 = srem i32 %sub67, 146097
+  %div71 = sdiv i32 %rem70, 36524
+  %mul72 = mul nsw i32 %div71, 100
+  %add73 = add nsw i32 %mul72, %mul69
+  %rem74 = srem i32 %rem70, 36524
+  %div75 = sdiv i32 %rem74, 1461
+  %mul76 = shl i32 %div75, 2
+  %add77 = add nsw i32 %add73, %mul76
+  %rem78 = srem i32 %rem74, 1461
+  %div79 = sdiv i32 %rem78, 365
+  %add80 = add nsw i32 %add77, %div79
+  %rem81 = srem i32 %rem78, 365
+  %tobool = icmp eq i32 %rem81, 0
+  br i1 %tobool, label %land.lhs.true82, label %if.else86
+
+land.lhs.true82:                                  ; preds = %if.end58
+  %rem70.off = add i32 %rem70, -146096
+  %10 = icmp ult i32 %rem70.off, 36524
+  br i1 %10, label %if.end99.thread, label %lor.lhs.false
+
+lor.lhs.false:                                    ; preds = %land.lhs.true82
+  %rem78.off = add i32 %rem78, -1460
+  %11 = icmp ult i32 %rem78.off, 365
+  br i1 %11, label %if.end99.thread, label %if.else86
+
+if.else86:                                        ; preds = %if.end58, %lor.lhs.false
+  %add87 = add nsw i32 %rem81, 123
+  %mul88 = mul nsw i32 %add87, 5
+  %div89 = sdiv i32 %mul88, 153
+  %mul90 = mul nsw i32 %div89, 153
+  %div91 = sdiv i32 %mul90, 5
+  %sub92 = sub nsw i32 %add87, %div91
+  %cmp93 = icmp sgt i32 %mul88, 2141
+  br i1 %cmp93, label %if.then94, label %if.else96
+
+if.then94:                                        ; preds = %if.else86
+  %sub95 = add nsw i32 %div89, -14
+  %inc = add nsw i32 %add80, 1
+  br label %if.end99
+
+if.else96:                                        ; preds = %if.else86
+  %sub97 = add nsw i32 %div89, -2
+  br label %if.end99
+
+if.end99.thread:                                  ; preds = %lor.lhs.false, %land.lhs.true82
+  %sub100213 = add nsw i32 %add80, -1900
+  store i32 %sub100213, i32* %tm_year, align 4, !tbaa !3
+  br label %if.then103
+
+if.end99:                                         ; preds = %if.then94, %if.else96
+  %month.2 = phi i32 [ %sub95, %if.then94 ], [ %sub97, %if.else96 ]
+  %year.1 = phi i32 [ %inc, %if.then94 ], [ %add80, %if.else96 ]
+  %sub100 = add nsw i32 %year.1, -1900
+  store i32 %sub100, i32* %tm_year, align 4, !tbaa !3
+  %tobool102 = icmp eq i32 %add87, %div91
+  br i1 %tobool102, label %if.else106, label %if.then103
+
+if.then103:                                       ; preds = %if.end99.thread, %if.end99
+  %yearday.1218 = phi i32 [ 29, %if.end99.thread ], [ %sub92, %if.end99 ]
+  %year.1217 = phi i32 [ %add80, %if.end99.thread ], [ %year.1, %if.end99 ]
+  %month.2215 = phi i32 [ 1, %if.end99.thread ], [ %month.2, %if.end99 ]
+  store i32 %yearday.1218, i32* %tm_mday, align 4, !tbaa !3
+  br label %if.end110
+
+if.else106:                                       ; preds = %if.end99
+  store i32 31, i32* %tm_mday, align 4, !tbaa !3
+  %sub108 = add nsw i32 %month.2, -1
+  br label %if.end110
+
+if.end110:                                        ; preds = %if.else106, %if.then103
+  %year.1216 = phi i32 [ %year.1, %if.else106 ], [ %year.1217, %if.then103 ]
+  %storemerge = phi i32 [ %sub108, %if.else106 ], [ %month.2215, %if.then103 ]
+  store i32 %storemerge, i32* %tm_mon, align 4, !tbaa !3
+  %dec111 = add nsw i32 %year.1216, -1
+  %12 = mul i32 %dec111, -365
+  %div113.neg = sdiv i32 %dec111, -4
+  %div115.neg.neg = sdiv i32 %dec111, 100
+  %div117.neg = sdiv i32 %dec111, -400
+  %add114.neg = add i32 %yearday.0, -429
+  %sub116.neg = add i32 %add114.neg, %div113.neg
+  %add118.neg = add i32 %sub116.neg, %12
+  %add119.neg = add i32 %add118.neg, %div115.neg.neg
+  %sub120 = add i32 %add119.neg, %div117.neg
+  store i32 %sub120, i32* %tm_yday, align 4, !tbaa !3
+  %tm_wday = getelementptr inbounds %struct.tm* %ptm, i64 0, i32 6
+  %13 = load i32* %tm_wday, align 4, !tbaa !3
+  %cmp122 = icmp ugt i32 %13, 6
+  br i1 %cmp122, label %if.then123, label %if.end127
+
+if.then123:                                       ; preds = %if.end110
+  %add124 = add nsw i32 %yearday.0, 6
+  %rem125 = srem i32 %add124, 7
+  store i32 %rem125, i32* %tm_wday, align 4, !tbaa !3
+  br label %if.end127
+
+if.end127:                                        ; preds = %if.then123, %if.end110
+  ret void
+}

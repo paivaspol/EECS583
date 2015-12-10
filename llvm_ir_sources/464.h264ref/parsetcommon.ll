@@ -1,42 +1,139 @@
-; ModuleID = '../../SPEC/benchspec/CPU2006/464.h264ref/src/parsetcommon.c'
-target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
-target triple = "x86_64-unknown-linux-gnu"
+; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/464.h264ref/src/parsetcommon.c'
+target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
+target triple = "x86_64-apple-macosx10.10.0"
 
+%struct.Picture = type { i32, i32, [100 x %struct.Slice*], i32, float, float, float }
+%struct.Slice = type { i32, i32, i32, i32, i32, i32, %struct.datapartition*, %struct.MotionInfoContexts*, %struct.TextureInfoContexts*, %struct.RMPNIbuffer_s*, i32, i32*, i32*, i32*, i32, i32*, i32*, i32*, i32 (i32)*, [3 x [2 x i32]] }
+%struct.datapartition = type { %struct.Bitstream*, %struct.EncodingEnvironment, i32 (%struct.syntaxelement*, %struct.datapartition*)* }
+%struct.Bitstream = type { i32, i32, i8, i32, i32, i8, i8, i32, i32, i8*, i32 }
+%struct.EncodingEnvironment = type { i32, i32, i32, i32, i32, i8*, i32*, i32, i32, i32, i32, i32, i8*, i32*, i32, i32, i32, i32, i32, i32 }
+%struct.syntaxelement = type { i32, i32, i32, i32, i32, i32, i32, i32, void (i32, i32, i32*, i32*)*, void (%struct.syntaxelement*, %struct.EncodingEnvironment*)* }
+%struct.MotionInfoContexts = type { [3 x [11 x %struct.BiContextType]], [2 x [9 x %struct.BiContextType]], [2 x [10 x %struct.BiContextType]], [2 x [6 x %struct.BiContextType]], [4 x %struct.BiContextType], [4 x %struct.BiContextType], [3 x %struct.BiContextType] }
+%struct.BiContextType = type { i16, i8, i64 }
+%struct.TextureInfoContexts = type { [2 x %struct.BiContextType], [4 x %struct.BiContextType], [3 x [4 x %struct.BiContextType]], [10 x [4 x %struct.BiContextType]], [10 x [15 x %struct.BiContextType]], [10 x [15 x %struct.BiContextType]], [10 x [5 x %struct.BiContextType]], [10 x [5 x %struct.BiContextType]], [10 x [15 x %struct.BiContextType]], [10 x [15 x %struct.BiContextType]] }
+%struct.RMPNIbuffer_s = type { i32, i32, %struct.RMPNIbuffer_s* }
 %struct.pic_parameter_set_rbsp_t = type { i32, i32, i32, i32, i32, i32, [8 x i32], i32, i32, i32, [8 x i32], [8 x i32], [8 x i32], i32, i32, i32, i8*, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32 }
 %struct.seq_parameter_set_rbsp_t = type { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, [8 x i32], i32, i32, i32, i32, i32, i32, i32, i32, i32, [256 x i32], i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, %struct.vui_seq_parameters_t }
 %struct.vui_seq_parameters_t = type { i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, %struct.hrd_parameters_t, i32, %struct.hrd_parameters_t, i32, i32, i32, i32, i32, i32, i32, i32, i32 }
 %struct.hrd_parameters_t = type { i32, i32, i32, [32 x i32], [32 x i32], [32 x i32], i32, i32, i32, i32 }
+%struct.GOP_DATA = type { i32, i32, i32, i32, i32, i32 }
+%struct.RD_DATA = type { double, [16 x [16 x i32]], [16 x [16 x i32]], [16 x [16 x i32]], i32****, i32***, i32, i32, [4 x i32], [4 x i32], i32**, [16 x i32], i32, i64, i32, i16******, i16******, i16******, i16******, [2 x [4 x [4 x i16]]], i32, i32, i32, i32, i32, i32, i32 }
+%struct.__sFILE = type { i8*, i32, i32, i16, i16, %struct.__sbuf, i32, i8*, i32 (i8*)*, i32 (i8*, i8*, i32)*, i64 (i8*, i64, i32)*, i32 (i8*, i8*, i32)*, %struct.__sbuf, %struct.__sFILEX*, i32, [3 x i8], [1 x i8], %struct.__sbuf, i32, i64 }
+%struct.__sFILEX = type opaque
+%struct.__sbuf = type { i8*, i32 }
 
 @.str = private unnamed_addr constant [14 x i8] c"AllocPPS: PPS\00", align 1
 @.str1 = private unnamed_addr constant [25 x i8] c"AllocPPS: slice_group_id\00", align 1
 @.str2 = private unnamed_addr constant [14 x i8] c"AllocSPS: SPS\00", align 1
+@__func__.FreePPS = private unnamed_addr constant [8 x i8] c"FreePPS\00", align 1
+@.str3 = private unnamed_addr constant [72 x i8] c"../../SPEC_CPU2006v1.1/benchspec/CPU2006/464.h264ref/src/parsetcommon.c\00", align 1
+@.str4 = private unnamed_addr constant [12 x i8] c"pps != NULL\00", align 1
+@__func__.FreeSPS = private unnamed_addr constant [8 x i8] c"FreeSPS\00", align 1
+@.str5 = private unnamed_addr constant [12 x i8] c"sps != NULL\00", align 1
+@top_pic = common global %struct.Picture* null, align 8
+@bottom_pic = common global %struct.Picture* null, align 8
+@frame_pic = common global %struct.Picture* null, align 8
+@frame_pic2 = common global %struct.Picture* null, align 8
+@frame_pic3 = common global %struct.Picture* null, align 8
+@imgY_org = common global i16** null, align 8
+@imgUV_org = common global i16*** null, align 8
+@img4Y_tmp = common global i32** null, align 8
+@log2_max_frame_num_minus4 = common global i32 0, align 4
+@log2_max_pic_order_cnt_lsb_minus4 = common global i32 0, align 4
+@me_tot_time = common global i32 0, align 4
+@me_time = common global i32 0, align 4
+@active_pps = common global %struct.pic_parameter_set_rbsp_t* null, align 8
+@active_sps = common global %struct.seq_parameter_set_rbsp_t* null, align 8
+@mb_adaptive = common global i32 0, align 4
+@MBPairIsField = common global i32 0, align 4
+@wp_weight = common global i32*** null, align 8
+@wp_offset = common global i32*** null, align 8
+@wbp_weight = common global i32**** null, align 8
+@luma_log_weight_denom = common global i32 0, align 4
+@chroma_log_weight_denom = common global i32 0, align 4
+@wp_luma_round = common global i32 0, align 4
+@wp_chroma_round = common global i32 0, align 4
+@imgY_org_top = common global i16** null, align 8
+@imgY_org_bot = common global i16** null, align 8
+@imgUV_org_top = common global i16*** null, align 8
+@imgUV_org_bot = common global i16*** null, align 8
+@imgY_org_frm = common global i16** null, align 8
+@imgUV_org_frm = common global i16*** null, align 8
+@imgY_com = common global i16** null, align 8
+@imgUV_com = common global i16*** null, align 8
+@direct_ref_idx = common global i16*** null, align 8
+@direct_pdir = common global i16** null, align 8
+@pixel_map = common global i8** null, align 8
+@refresh_map = common global i8** null, align 8
+@intras = common global i32 0, align 4
+@Iframe_ctr = common global i32 0, align 4
+@Pframe_ctr = common global i32 0, align 4
+@Bframe_ctr = common global i32 0, align 4
+@frame_no = common global i32 0, align 4
+@nextP_tr_fld = common global i32 0, align 4
+@nextP_tr_frm = common global i32 0, align 4
+@tot_time = common global i32 0, align 4
+@errortext = common global [300 x i8] zeroinitializer, align 16
+@resTrans_R = common global [16 x [16 x i32]] zeroinitializer, align 16
+@resTrans_G = common global [16 x [16 x i32]] zeroinitializer, align 16
+@resTrans_B = common global [16 x [16 x i32]] zeroinitializer, align 16
+@rec_resR = common global [16 x [16 x i32]] zeroinitializer, align 16
+@rec_resG = common global [16 x [16 x i32]] zeroinitializer, align 16
+@rec_resB = common global [16 x [16 x i32]] zeroinitializer, align 16
+@mprRGB = common global [3 x [16 x [16 x i32]]] zeroinitializer, align 16
+@dc_level = common global [2 x [4 x [4 x i32]]] zeroinitializer, align 16
+@dc_level_temp = common global [2 x [4 x [4 x i32]]] zeroinitializer, align 16
+@cbp_chroma_block = common global [2 x [4 x [4 x i32]]] zeroinitializer, align 16
+@cbp_chroma_block_temp = common global [2 x [4 x [4 x i32]]] zeroinitializer, align 16
+@b8_ipredmode8x8 = common global [4 x [4 x i32]] zeroinitializer, align 16
+@b8_intra_pred_modes8x8 = common global [16 x i32] zeroinitializer, align 16
+@gop_structure = common global %struct.GOP_DATA* null, align 8
+@rdopt = common global %struct.RD_DATA* null, align 8
+@rddata_top_frame_mb = common global %struct.RD_DATA zeroinitializer, align 8
+@rddata_bot_frame_mb = common global %struct.RD_DATA zeroinitializer, align 8
+@rddata_top_field_mb = common global %struct.RD_DATA zeroinitializer, align 8
+@rddata_bot_field_mb = common global %struct.RD_DATA zeroinitializer, align 8
+@p_stat = common global %struct.__sFILE* null, align 8
+@p_log = common global %struct.__sFILE* null, align 8
+@p_trace = common global %struct.__sFILE* null, align 8
+@p_in = common global i32 0, align 4
+@p_dec = common global i32 0, align 4
+@glob_remapping_of_pic_nums_idc_l0 = common global [20 x i32] zeroinitializer, align 16
+@glob_abs_diff_pic_num_minus1_l0 = common global [20 x i32] zeroinitializer, align 16
+@glob_long_term_pic_idx_l0 = common global [20 x i32] zeroinitializer, align 16
+@glob_remapping_of_pic_nums_idc_l1 = common global [20 x i32] zeroinitializer, align 16
+@glob_abs_diff_pic_num_minus1_l1 = common global [20 x i32] zeroinitializer, align 16
+@glob_long_term_pic_idx_l1 = common global [20 x i32] zeroinitializer, align 16
+@Bytes_After_Header = common global i32 0, align 4
+@rpc_bytes_to_go = common global i32 0, align 4
+@rpc_bits_to_go = common global i32 0, align 4
 
-; Function Attrs: nounwind optsize uwtable
+; Function Attrs: nounwind optsize ssp uwtable
 define noalias %struct.pic_parameter_set_rbsp_t* @AllocPPS() #0 {
-entry:
-  %call = tail call noalias i8* @calloc(i64 240, i64 1) #3
-  %0 = bitcast i8* %call to %struct.pic_parameter_set_rbsp_t*
-  %cmp = icmp eq i8* %call, null
-  br i1 %cmp, label %if.then, label %if.end
+  %1 = tail call i8* @calloc(i64 240, i64 1) #5, !dbg !579
+  %2 = bitcast i8* %1 to %struct.pic_parameter_set_rbsp_t*, !dbg !579
+  tail call void @llvm.dbg.value(metadata %struct.pic_parameter_set_rbsp_t* %2, i64 0, metadata !60, metadata !581), !dbg !582
+  %3 = icmp eq i8* %1, null, !dbg !583
+  br i1 %3, label %4, label %5, !dbg !584
 
-if.then:                                          ; preds = %entry
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([14 x i8]* @.str, i64 0, i64 0)) #3
-  br label %if.end
+; <label>:4                                       ; preds = %0
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([14 x i8]* @.str, i64 0, i64 0)) #5, !dbg !585
+  br label %5, !dbg !585
 
-if.end:                                           ; preds = %if.then, %entry
-  %call1 = tail call noalias i8* @calloc(i64 60000, i64 1) #3
-  %slice_group_id = getelementptr inbounds i8* %call, i64 176
-  %1 = bitcast i8* %slice_group_id to i8**
-  store i8* %call1, i8** %1, align 8, !tbaa !0
-  %cmp2 = icmp eq i8* %call1, null
-  br i1 %cmp2, label %if.then3, label %if.end4
+; <label>:5                                       ; preds = %4, %0
+  %6 = tail call i8* @calloc(i64 60000, i64 1) #5, !dbg !586
+  %7 = getelementptr inbounds i8* %1, i64 176, !dbg !588
+  %8 = bitcast i8* %7 to i8**, !dbg !588
+  store i8* %6, i8** %8, align 8, !dbg !589, !tbaa !590
+  %9 = icmp eq i8* %6, null, !dbg !596
+  br i1 %9, label %10, label %11, !dbg !597
 
-if.then3:                                         ; preds = %if.end
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([25 x i8]* @.str1, i64 0, i64 0)) #3
-  br label %if.end4
+; <label>:10                                      ; preds = %5
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([25 x i8]* @.str1, i64 0, i64 0)) #5, !dbg !598
+  br label %11, !dbg !598
 
-if.end4:                                          ; preds = %if.then3, %if.end
-  ret %struct.pic_parameter_set_rbsp_t* %0
+; <label>:11                                      ; preds = %10, %5
+  ret %struct.pic_parameter_set_rbsp_t* %2, !dbg !599
 }
 
 ; Function Attrs: nounwind optsize
@@ -45,56 +142,706 @@ declare noalias i8* @calloc(i64, i64) #1
 ; Function Attrs: optsize
 declare void @no_mem_exit(i8*) #2
 
-; Function Attrs: nounwind optsize uwtable
+; Function Attrs: nounwind optsize ssp uwtable
 define noalias %struct.seq_parameter_set_rbsp_t* @AllocSPS() #0 {
-entry:
-  %call = tail call noalias i8* @calloc(i64 2132, i64 1) #3
-  %0 = bitcast i8* %call to %struct.seq_parameter_set_rbsp_t*
-  %cmp = icmp eq i8* %call, null
-  br i1 %cmp, label %if.then, label %if.end
+  %1 = tail call i8* @calloc(i64 2132, i64 1) #5, !dbg !600
+  %2 = bitcast i8* %1 to %struct.seq_parameter_set_rbsp_t*, !dbg !600
+  tail call void @llvm.dbg.value(metadata %struct.seq_parameter_set_rbsp_t* %2, i64 0, metadata !159, metadata !581), !dbg !602
+  %3 = icmp eq i8* %1, null, !dbg !603
+  br i1 %3, label %4, label %5, !dbg !604
 
-if.then:                                          ; preds = %entry
-  tail call void @no_mem_exit(i8* getelementptr inbounds ([14 x i8]* @.str2, i64 0, i64 0)) #3
-  br label %if.end
+; <label>:4                                       ; preds = %0
+  tail call void @no_mem_exit(i8* getelementptr inbounds ([14 x i8]* @.str2, i64 0, i64 0)) #5, !dbg !605
+  br label %5, !dbg !605
 
-if.end:                                           ; preds = %if.then, %entry
-  ret %struct.seq_parameter_set_rbsp_t* %0
+; <label>:5                                       ; preds = %4, %0
+  ret %struct.seq_parameter_set_rbsp_t* %2, !dbg !606
 }
 
-; Function Attrs: nounwind optsize uwtable
-define void @FreePPS(%struct.pic_parameter_set_rbsp_t* nocapture %pps) #0 {
-entry:
-  %slice_group_id = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 16
-  %0 = load i8** %slice_group_id, align 8, !tbaa !0
-  %cmp = icmp eq i8* %0, null
-  br i1 %cmp, label %if.end, label %if.then
+; Function Attrs: nounwind optsize ssp uwtable
+define void @FreePPS(%struct.pic_parameter_set_rbsp_t* %pps) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.pic_parameter_set_rbsp_t* %pps, i64 0, metadata !164, metadata !581), !dbg !607
+  %1 = icmp eq %struct.pic_parameter_set_rbsp_t* %pps, null, !dbg !608
+  br i1 %1, label %2, label %3, !dbg !608, !prof !609
 
-if.then:                                          ; preds = %entry
-  tail call void @free(i8* %0) #3
-  br label %if.end
+; <label>:2                                       ; preds = %0
+  tail call void @__assert_rtn(i8* getelementptr inbounds ([8 x i8]* @__func__.FreePPS, i64 0, i64 0), i8* getelementptr inbounds ([72 x i8]* @.str3, i64 0, i64 0), i32 77, i8* getelementptr inbounds ([12 x i8]* @.str4, i64 0, i64 0)) #6, !dbg !608
+  unreachable, !dbg !608
 
-if.end:                                           ; preds = %entry, %if.then
-  %1 = bitcast %struct.pic_parameter_set_rbsp_t* %pps to i8*
-  tail call void @free(i8* %1) #3
-  ret void
+; <label>:3                                       ; preds = %0
+  %4 = getelementptr inbounds %struct.pic_parameter_set_rbsp_t* %pps, i64 0, i32 16, !dbg !610
+  %5 = load i8** %4, align 8, !dbg !610, !tbaa !590
+  %6 = icmp eq i8* %5, null, !dbg !612
+  br i1 %6, label %8, label %7, !dbg !613
+
+; <label>:7                                       ; preds = %3
+  tail call void @free(i8* %5) #7, !dbg !614
+  br label %8, !dbg !614
+
+; <label>:8                                       ; preds = %3, %7
+  %9 = bitcast %struct.pic_parameter_set_rbsp_t* %pps to i8*, !dbg !615
+  tail call void @free(i8* %9) #7, !dbg !616
+  ret void, !dbg !617
 }
+
+; Function Attrs: noreturn optsize
+declare void @__assert_rtn(i8*, i8*, i32, i8*) #3
 
 ; Function Attrs: nounwind optsize
 declare void @free(i8* nocapture) #1
 
-; Function Attrs: nounwind optsize uwtable
-define void @FreeSPS(%struct.seq_parameter_set_rbsp_t* nocapture %sps) #0 {
-entry:
-  %0 = bitcast %struct.seq_parameter_set_rbsp_t* %sps to i8*
-  tail call void @free(i8* %0) #3
-  ret void
+; Function Attrs: nounwind optsize ssp uwtable
+define void @FreeSPS(%struct.seq_parameter_set_rbsp_t* %sps) #0 {
+  tail call void @llvm.dbg.value(metadata %struct.seq_parameter_set_rbsp_t* %sps, i64 0, metadata !169, metadata !581), !dbg !618
+  %1 = icmp eq %struct.seq_parameter_set_rbsp_t* %sps, null, !dbg !619
+  br i1 %1, label %2, label %3, !dbg !619, !prof !609
+
+; <label>:2                                       ; preds = %0
+  tail call void @__assert_rtn(i8* getelementptr inbounds ([8 x i8]* @__func__.FreeSPS, i64 0, i64 0), i8* getelementptr inbounds ([72 x i8]* @.str3, i64 0, i64 0), i32 98, i8* getelementptr inbounds ([12 x i8]* @.str5, i64 0, i64 0)) #6, !dbg !619
+  unreachable, !dbg !619
+
+; <label>:3                                       ; preds = %0
+  %4 = bitcast %struct.seq_parameter_set_rbsp_t* %sps to i8*, !dbg !620
+  tail call void @free(i8* %4) #7, !dbg !621
+  ret void, !dbg !622
 }
 
-attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #3 = { nounwind optsize }
+; Function Attrs: nounwind readnone
+declare void @llvm.dbg.value(metadata, i64, metadata, metadata) #4
 
-!0 = metadata !{metadata !"any pointer", metadata !1}
-!1 = metadata !{metadata !"omnipotent char", metadata !2}
-!2 = metadata !{metadata !"Simple C/C++ TBAA"}
+attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { noreturn optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #4 = { nounwind readnone }
+attributes #5 = { nounwind optsize }
+attributes #6 = { noreturn nounwind optsize }
+attributes #7 = { optsize }
+
+!llvm.dbg.cu = !{!0}
+!llvm.module.flags = !{!575, !576, !577}
+!llvm.ident = !{!578}
+
+!0 = distinct !DICompileUnit(language: DW_LANG_C99, file: !1, producer: "Apple LLVM version 7.0.0 (clang-700.1.76)", isOptimized: true, runtimeVersion: 0, emissionKind: 1, enums: !2, retainedTypes: !8, subprograms: !10, globals: !170, imports: !574)
+!1 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/464.h264ref/src/parsetcommon.c", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
+!2 = !{!3}
+!3 = !DICompositeType(tag: DW_TAG_enumeration_type, file: !4, line: 42, size: 32, align: 32, elements: !5)
+!4 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/464.h264ref/src/parsetcommon.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
+!5 = !{!6, !7}
+!6 = !DIEnumerator(name: "FALSE", value: 0)
+!7 = !DIEnumerator(name: "TRUE", value: 1)
+!8 = !{!9}
+!9 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: null, size: 64, align: 64)
+!10 = !{!11, !61, !160, !165}
+!11 = !DISubprogram(name: "AllocPPS", scope: !1, file: !1, line: 31, type: !12, isLocal: false, isDefinition: true, scopeLine: 32, isOptimized: true, function: %struct.pic_parameter_set_rbsp_t* ()* @AllocPPS, variables: !59)
+!12 = !DISubroutineType(types: !13)
+!13 = !{!14}
+!14 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !15, size: 64, align: 64)
+!15 = !DIDerivedType(tag: DW_TAG_typedef, name: "pic_parameter_set_rbsp_t", file: !4, line: 145, baseType: !16)
+!16 = !DICompositeType(tag: DW_TAG_structure_type, file: !4, line: 103, size: 1920, align: 64, elements: !17)
+!17 = !{!18, !20, !22, !23, !24, !25, !26, !31, !32, !33, !34, !36, !37, !38, !39, !40, !41, !46, !47, !48, !49, !50, !51, !52, !53, !54, !55, !56, !57, !58}
+!18 = !DIDerivedType(tag: DW_TAG_member, name: "Valid", scope: !16, file: !4, line: 105, baseType: !19, size: 32, align: 32)
+!19 = !DIDerivedType(tag: DW_TAG_typedef, name: "Boolean", file: !4, line: 45, baseType: !3)
+!20 = !DIDerivedType(tag: DW_TAG_member, name: "pic_parameter_set_id", scope: !16, file: !4, line: 106, baseType: !21, size: 32, align: 32, offset: 32)
+!21 = !DIBasicType(name: "unsigned int", size: 32, align: 32, encoding: DW_ATE_unsigned)
+!22 = !DIDerivedType(tag: DW_TAG_member, name: "seq_parameter_set_id", scope: !16, file: !4, line: 107, baseType: !21, size: 32, align: 32, offset: 64)
+!23 = !DIDerivedType(tag: DW_TAG_member, name: "entropy_coding_mode_flag", scope: !16, file: !4, line: 108, baseType: !19, size: 32, align: 32, offset: 96)
+!24 = !DIDerivedType(tag: DW_TAG_member, name: "transform_8x8_mode_flag", scope: !16, file: !4, line: 110, baseType: !19, size: 32, align: 32, offset: 128)
+!25 = !DIDerivedType(tag: DW_TAG_member, name: "pic_scaling_matrix_present_flag", scope: !16, file: !4, line: 111, baseType: !19, size: 32, align: 32, offset: 160)
+!26 = !DIDerivedType(tag: DW_TAG_member, name: "pic_scaling_list_present_flag", scope: !16, file: !4, line: 112, baseType: !27, size: 256, align: 32, offset: 192)
+!27 = !DICompositeType(tag: DW_TAG_array_type, baseType: !28, size: 256, align: 32, elements: !29)
+!28 = !DIBasicType(name: "int", size: 32, align: 32, encoding: DW_ATE_signed)
+!29 = !{!30}
+!30 = !DISubrange(count: 8)
+!31 = !DIDerivedType(tag: DW_TAG_member, name: "pic_order_present_flag", scope: !16, file: !4, line: 115, baseType: !19, size: 32, align: 32, offset: 448)
+!32 = !DIDerivedType(tag: DW_TAG_member, name: "num_slice_groups_minus1", scope: !16, file: !4, line: 116, baseType: !21, size: 32, align: 32, offset: 480)
+!33 = !DIDerivedType(tag: DW_TAG_member, name: "slice_group_map_type", scope: !16, file: !4, line: 117, baseType: !21, size: 32, align: 32, offset: 512)
+!34 = !DIDerivedType(tag: DW_TAG_member, name: "run_length_minus1", scope: !16, file: !4, line: 119, baseType: !35, size: 256, align: 32, offset: 544)
+!35 = !DICompositeType(tag: DW_TAG_array_type, baseType: !21, size: 256, align: 32, elements: !29)
+!36 = !DIDerivedType(tag: DW_TAG_member, name: "top_left", scope: !16, file: !4, line: 121, baseType: !35, size: 256, align: 32, offset: 800)
+!37 = !DIDerivedType(tag: DW_TAG_member, name: "bottom_right", scope: !16, file: !4, line: 122, baseType: !35, size: 256, align: 32, offset: 1056)
+!38 = !DIDerivedType(tag: DW_TAG_member, name: "slice_group_change_direction_flag", scope: !16, file: !4, line: 124, baseType: !19, size: 32, align: 32, offset: 1312)
+!39 = !DIDerivedType(tag: DW_TAG_member, name: "slice_group_change_rate_minus1", scope: !16, file: !4, line: 125, baseType: !21, size: 32, align: 32, offset: 1344)
+!40 = !DIDerivedType(tag: DW_TAG_member, name: "pic_size_in_map_units_minus1", scope: !16, file: !4, line: 127, baseType: !21, size: 32, align: 32, offset: 1376)
+!41 = !DIDerivedType(tag: DW_TAG_member, name: "slice_group_id", scope: !16, file: !4, line: 128, baseType: !42, size: 64, align: 64, offset: 1408)
+!42 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !43, size: 64, align: 64)
+!43 = !DIDerivedType(tag: DW_TAG_typedef, name: "byte", file: !44, line: 30, baseType: !45)
+!44 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/464.h264ref/src/defines.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
+!45 = !DIBasicType(name: "unsigned char", size: 8, align: 8, encoding: DW_ATE_unsigned_char)
+!46 = !DIDerivedType(tag: DW_TAG_member, name: "num_ref_idx_l0_active_minus1", scope: !16, file: !4, line: 130, baseType: !28, size: 32, align: 32, offset: 1472)
+!47 = !DIDerivedType(tag: DW_TAG_member, name: "num_ref_idx_l1_active_minus1", scope: !16, file: !4, line: 131, baseType: !28, size: 32, align: 32, offset: 1504)
+!48 = !DIDerivedType(tag: DW_TAG_member, name: "weighted_pred_flag", scope: !16, file: !4, line: 132, baseType: !19, size: 32, align: 32, offset: 1536)
+!49 = !DIDerivedType(tag: DW_TAG_member, name: "weighted_bipred_idc", scope: !16, file: !4, line: 133, baseType: !21, size: 32, align: 32, offset: 1568)
+!50 = !DIDerivedType(tag: DW_TAG_member, name: "pic_init_qp_minus26", scope: !16, file: !4, line: 134, baseType: !28, size: 32, align: 32, offset: 1600)
+!51 = !DIDerivedType(tag: DW_TAG_member, name: "pic_init_qs_minus26", scope: !16, file: !4, line: 135, baseType: !28, size: 32, align: 32, offset: 1632)
+!52 = !DIDerivedType(tag: DW_TAG_member, name: "chroma_qp_index_offset", scope: !16, file: !4, line: 136, baseType: !28, size: 32, align: 32, offset: 1664)
+!53 = !DIDerivedType(tag: DW_TAG_member, name: "cb_qp_index_offset", scope: !16, file: !4, line: 138, baseType: !28, size: 32, align: 32, offset: 1696)
+!54 = !DIDerivedType(tag: DW_TAG_member, name: "cr_qp_index_offset", scope: !16, file: !4, line: 139, baseType: !28, size: 32, align: 32, offset: 1728)
+!55 = !DIDerivedType(tag: DW_TAG_member, name: "deblocking_filter_control_present_flag", scope: !16, file: !4, line: 141, baseType: !19, size: 32, align: 32, offset: 1760)
+!56 = !DIDerivedType(tag: DW_TAG_member, name: "constrained_intra_pred_flag", scope: !16, file: !4, line: 142, baseType: !19, size: 32, align: 32, offset: 1792)
+!57 = !DIDerivedType(tag: DW_TAG_member, name: "redundant_pic_cnt_present_flag", scope: !16, file: !4, line: 143, baseType: !19, size: 32, align: 32, offset: 1824)
+!58 = !DIDerivedType(tag: DW_TAG_member, name: "vui_pic_parameters_flag", scope: !16, file: !4, line: 144, baseType: !19, size: 32, align: 32, offset: 1856)
+!59 = !{!60}
+!60 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "p", scope: !11, file: !1, line: 33, type: !14)
+!61 = !DISubprogram(name: "AllocSPS", scope: !1, file: !1, line: 52, type: !62, isLocal: false, isDefinition: true, scopeLine: 53, isOptimized: true, function: %struct.seq_parameter_set_rbsp_t* ()* @AllocSPS, variables: !158)
+!62 = !DISubroutineType(types: !63)
+!63 = !{!64}
+!64 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !65, size: 64, align: 64)
+!65 = !DIDerivedType(tag: DW_TAG_typedef, name: "seq_parameter_set_rbsp_t", file: !4, line: 193, baseType: !66)
+!66 = !DICompositeType(tag: DW_TAG_structure_type, file: !4, line: 149, size: 17056, align: 32, elements: !67)
+!67 = !{!68, !69, !70, !71, !72, !73, !74, !75, !76, !77, !78, !79, !80, !81, !82, !83, !84, !85, !86, !87, !88, !92, !93, !94, !95, !96, !97, !98, !99, !100, !101, !102, !103, !104, !105}
+!68 = !DIDerivedType(tag: DW_TAG_member, name: "Valid", scope: !66, file: !4, line: 151, baseType: !19, size: 32, align: 32)
+!69 = !DIDerivedType(tag: DW_TAG_member, name: "profile_idc", scope: !66, file: !4, line: 153, baseType: !21, size: 32, align: 32, offset: 32)
+!70 = !DIDerivedType(tag: DW_TAG_member, name: "constrained_set0_flag", scope: !66, file: !4, line: 154, baseType: !19, size: 32, align: 32, offset: 64)
+!71 = !DIDerivedType(tag: DW_TAG_member, name: "constrained_set1_flag", scope: !66, file: !4, line: 155, baseType: !19, size: 32, align: 32, offset: 96)
+!72 = !DIDerivedType(tag: DW_TAG_member, name: "constrained_set2_flag", scope: !66, file: !4, line: 156, baseType: !19, size: 32, align: 32, offset: 128)
+!73 = !DIDerivedType(tag: DW_TAG_member, name: "constrained_set3_flag", scope: !66, file: !4, line: 157, baseType: !19, size: 32, align: 32, offset: 160)
+!74 = !DIDerivedType(tag: DW_TAG_member, name: "level_idc", scope: !66, file: !4, line: 158, baseType: !21, size: 32, align: 32, offset: 192)
+!75 = !DIDerivedType(tag: DW_TAG_member, name: "seq_parameter_set_id", scope: !66, file: !4, line: 159, baseType: !21, size: 32, align: 32, offset: 224)
+!76 = !DIDerivedType(tag: DW_TAG_member, name: "chroma_format_idc", scope: !66, file: !4, line: 160, baseType: !21, size: 32, align: 32, offset: 256)
+!77 = !DIDerivedType(tag: DW_TAG_member, name: "seq_scaling_matrix_present_flag", scope: !66, file: !4, line: 162, baseType: !19, size: 32, align: 32, offset: 288)
+!78 = !DIDerivedType(tag: DW_TAG_member, name: "seq_scaling_list_present_flag", scope: !66, file: !4, line: 163, baseType: !27, size: 256, align: 32, offset: 320)
+!79 = !DIDerivedType(tag: DW_TAG_member, name: "bit_depth_luma_minus8", scope: !66, file: !4, line: 165, baseType: !21, size: 32, align: 32, offset: 576)
+!80 = !DIDerivedType(tag: DW_TAG_member, name: "bit_depth_chroma_minus8", scope: !66, file: !4, line: 166, baseType: !21, size: 32, align: 32, offset: 608)
+!81 = !DIDerivedType(tag: DW_TAG_member, name: "log2_max_frame_num_minus4", scope: !66, file: !4, line: 167, baseType: !21, size: 32, align: 32, offset: 640)
+!82 = !DIDerivedType(tag: DW_TAG_member, name: "pic_order_cnt_type", scope: !66, file: !4, line: 168, baseType: !21, size: 32, align: 32, offset: 672)
+!83 = !DIDerivedType(tag: DW_TAG_member, name: "log2_max_pic_order_cnt_lsb_minus4", scope: !66, file: !4, line: 170, baseType: !21, size: 32, align: 32, offset: 704)
+!84 = !DIDerivedType(tag: DW_TAG_member, name: "delta_pic_order_always_zero_flag", scope: !66, file: !4, line: 172, baseType: !19, size: 32, align: 32, offset: 736)
+!85 = !DIDerivedType(tag: DW_TAG_member, name: "offset_for_non_ref_pic", scope: !66, file: !4, line: 173, baseType: !28, size: 32, align: 32, offset: 768)
+!86 = !DIDerivedType(tag: DW_TAG_member, name: "offset_for_top_to_bottom_field", scope: !66, file: !4, line: 174, baseType: !28, size: 32, align: 32, offset: 800)
+!87 = !DIDerivedType(tag: DW_TAG_member, name: "num_ref_frames_in_pic_order_cnt_cycle", scope: !66, file: !4, line: 175, baseType: !21, size: 32, align: 32, offset: 832)
+!88 = !DIDerivedType(tag: DW_TAG_member, name: "offset_for_ref_frame", scope: !66, file: !4, line: 177, baseType: !89, size: 8192, align: 32, offset: 864)
+!89 = !DICompositeType(tag: DW_TAG_array_type, baseType: !28, size: 8192, align: 32, elements: !90)
+!90 = !{!91}
+!91 = !DISubrange(count: 256)
+!92 = !DIDerivedType(tag: DW_TAG_member, name: "num_ref_frames", scope: !66, file: !4, line: 178, baseType: !21, size: 32, align: 32, offset: 9056)
+!93 = !DIDerivedType(tag: DW_TAG_member, name: "gaps_in_frame_num_value_allowed_flag", scope: !66, file: !4, line: 179, baseType: !19, size: 32, align: 32, offset: 9088)
+!94 = !DIDerivedType(tag: DW_TAG_member, name: "pic_width_in_mbs_minus1", scope: !66, file: !4, line: 180, baseType: !21, size: 32, align: 32, offset: 9120)
+!95 = !DIDerivedType(tag: DW_TAG_member, name: "pic_height_in_map_units_minus1", scope: !66, file: !4, line: 181, baseType: !21, size: 32, align: 32, offset: 9152)
+!96 = !DIDerivedType(tag: DW_TAG_member, name: "frame_mbs_only_flag", scope: !66, file: !4, line: 182, baseType: !19, size: 32, align: 32, offset: 9184)
+!97 = !DIDerivedType(tag: DW_TAG_member, name: "mb_adaptive_frame_field_flag", scope: !66, file: !4, line: 184, baseType: !19, size: 32, align: 32, offset: 9216)
+!98 = !DIDerivedType(tag: DW_TAG_member, name: "direct_8x8_inference_flag", scope: !66, file: !4, line: 185, baseType: !19, size: 32, align: 32, offset: 9248)
+!99 = !DIDerivedType(tag: DW_TAG_member, name: "frame_cropping_flag", scope: !66, file: !4, line: 186, baseType: !19, size: 32, align: 32, offset: 9280)
+!100 = !DIDerivedType(tag: DW_TAG_member, name: "frame_cropping_rect_left_offset", scope: !66, file: !4, line: 187, baseType: !21, size: 32, align: 32, offset: 9312)
+!101 = !DIDerivedType(tag: DW_TAG_member, name: "frame_cropping_rect_right_offset", scope: !66, file: !4, line: 188, baseType: !21, size: 32, align: 32, offset: 9344)
+!102 = !DIDerivedType(tag: DW_TAG_member, name: "frame_cropping_rect_top_offset", scope: !66, file: !4, line: 189, baseType: !21, size: 32, align: 32, offset: 9376)
+!103 = !DIDerivedType(tag: DW_TAG_member, name: "frame_cropping_rect_bottom_offset", scope: !66, file: !4, line: 190, baseType: !21, size: 32, align: 32, offset: 9408)
+!104 = !DIDerivedType(tag: DW_TAG_member, name: "vui_parameters_present_flag", scope: !66, file: !4, line: 191, baseType: !19, size: 32, align: 32, offset: 9440)
+!105 = !DIDerivedType(tag: DW_TAG_member, name: "vui_seq_parameters", scope: !66, file: !4, line: 192, baseType: !106, size: 7584, align: 32, offset: 9472)
+!106 = !DIDerivedType(tag: DW_TAG_typedef, name: "vui_seq_parameters_t", file: !4, line: 99, baseType: !107)
+!107 = !DICompositeType(tag: DW_TAG_structure_type, file: !4, line: 63, size: 7584, align: 32, elements: !108)
+!108 = !{!109, !110, !111, !112, !113, !114, !115, !116, !117, !118, !119, !120, !121, !122, !123, !124, !125, !126, !127, !128, !129, !130, !147, !148, !149, !150, !151, !152, !153, !154, !155, !156, !157}
+!109 = !DIDerivedType(tag: DW_TAG_member, name: "aspect_ratio_info_present_flag", scope: !107, file: !4, line: 65, baseType: !19, size: 32, align: 32)
+!110 = !DIDerivedType(tag: DW_TAG_member, name: "aspect_ratio_idc", scope: !107, file: !4, line: 66, baseType: !21, size: 32, align: 32, offset: 32)
+!111 = !DIDerivedType(tag: DW_TAG_member, name: "sar_width", scope: !107, file: !4, line: 67, baseType: !21, size: 32, align: 32, offset: 64)
+!112 = !DIDerivedType(tag: DW_TAG_member, name: "sar_height", scope: !107, file: !4, line: 68, baseType: !21, size: 32, align: 32, offset: 96)
+!113 = !DIDerivedType(tag: DW_TAG_member, name: "overscan_info_present_flag", scope: !107, file: !4, line: 69, baseType: !19, size: 32, align: 32, offset: 128)
+!114 = !DIDerivedType(tag: DW_TAG_member, name: "overscan_appropriate_flag", scope: !107, file: !4, line: 70, baseType: !19, size: 32, align: 32, offset: 160)
+!115 = !DIDerivedType(tag: DW_TAG_member, name: "video_signal_type_present_flag", scope: !107, file: !4, line: 71, baseType: !19, size: 32, align: 32, offset: 192)
+!116 = !DIDerivedType(tag: DW_TAG_member, name: "video_format", scope: !107, file: !4, line: 72, baseType: !21, size: 32, align: 32, offset: 224)
+!117 = !DIDerivedType(tag: DW_TAG_member, name: "video_full_range_flag", scope: !107, file: !4, line: 73, baseType: !19, size: 32, align: 32, offset: 256)
+!118 = !DIDerivedType(tag: DW_TAG_member, name: "colour_description_present_flag", scope: !107, file: !4, line: 74, baseType: !19, size: 32, align: 32, offset: 288)
+!119 = !DIDerivedType(tag: DW_TAG_member, name: "colour_primaries", scope: !107, file: !4, line: 75, baseType: !21, size: 32, align: 32, offset: 320)
+!120 = !DIDerivedType(tag: DW_TAG_member, name: "transfer_characteristics", scope: !107, file: !4, line: 76, baseType: !21, size: 32, align: 32, offset: 352)
+!121 = !DIDerivedType(tag: DW_TAG_member, name: "matrix_coefficients", scope: !107, file: !4, line: 77, baseType: !21, size: 32, align: 32, offset: 384)
+!122 = !DIDerivedType(tag: DW_TAG_member, name: "chroma_location_info_present_flag", scope: !107, file: !4, line: 78, baseType: !19, size: 32, align: 32, offset: 416)
+!123 = !DIDerivedType(tag: DW_TAG_member, name: "chroma_location_frame", scope: !107, file: !4, line: 79, baseType: !21, size: 32, align: 32, offset: 448)
+!124 = !DIDerivedType(tag: DW_TAG_member, name: "chroma_location_field", scope: !107, file: !4, line: 80, baseType: !21, size: 32, align: 32, offset: 480)
+!125 = !DIDerivedType(tag: DW_TAG_member, name: "timing_info_present_flag", scope: !107, file: !4, line: 81, baseType: !19, size: 32, align: 32, offset: 512)
+!126 = !DIDerivedType(tag: DW_TAG_member, name: "num_units_in_tick", scope: !107, file: !4, line: 82, baseType: !21, size: 32, align: 32, offset: 544)
+!127 = !DIDerivedType(tag: DW_TAG_member, name: "time_scale", scope: !107, file: !4, line: 83, baseType: !21, size: 32, align: 32, offset: 576)
+!128 = !DIDerivedType(tag: DW_TAG_member, name: "fixed_frame_rate_flag", scope: !107, file: !4, line: 84, baseType: !19, size: 32, align: 32, offset: 608)
+!129 = !DIDerivedType(tag: DW_TAG_member, name: "nal_hrd_parameters_present_flag", scope: !107, file: !4, line: 85, baseType: !19, size: 32, align: 32, offset: 640)
+!130 = !DIDerivedType(tag: DW_TAG_member, name: "nal_hrd_parameters", scope: !107, file: !4, line: 86, baseType: !131, size: 3296, align: 32, offset: 672)
+!131 = !DIDerivedType(tag: DW_TAG_typedef, name: "hrd_parameters_t", file: !4, line: 60, baseType: !132)
+!132 = !DICompositeType(tag: DW_TAG_structure_type, file: !4, line: 48, size: 3296, align: 32, elements: !133)
+!133 = !{!134, !135, !136, !137, !141, !142, !143, !144, !145, !146}
+!134 = !DIDerivedType(tag: DW_TAG_member, name: "cpb_cnt", scope: !132, file: !4, line: 50, baseType: !21, size: 32, align: 32)
+!135 = !DIDerivedType(tag: DW_TAG_member, name: "bit_rate_scale", scope: !132, file: !4, line: 51, baseType: !21, size: 32, align: 32, offset: 32)
+!136 = !DIDerivedType(tag: DW_TAG_member, name: "cpb_size_scale", scope: !132, file: !4, line: 52, baseType: !21, size: 32, align: 32, offset: 64)
+!137 = !DIDerivedType(tag: DW_TAG_member, name: "bit_rate_value", scope: !132, file: !4, line: 53, baseType: !138, size: 1024, align: 32, offset: 96)
+!138 = !DICompositeType(tag: DW_TAG_array_type, baseType: !21, size: 1024, align: 32, elements: !139)
+!139 = !{!140}
+!140 = !DISubrange(count: 32)
+!141 = !DIDerivedType(tag: DW_TAG_member, name: "cpb_size_value", scope: !132, file: !4, line: 54, baseType: !138, size: 1024, align: 32, offset: 1120)
+!142 = !DIDerivedType(tag: DW_TAG_member, name: "vbr_cbr_flag", scope: !132, file: !4, line: 55, baseType: !138, size: 1024, align: 32, offset: 2144)
+!143 = !DIDerivedType(tag: DW_TAG_member, name: "initial_cpb_removal_delay_length_minus1", scope: !132, file: !4, line: 56, baseType: !21, size: 32, align: 32, offset: 3168)
+!144 = !DIDerivedType(tag: DW_TAG_member, name: "cpb_removal_delay_length_minus1", scope: !132, file: !4, line: 57, baseType: !21, size: 32, align: 32, offset: 3200)
+!145 = !DIDerivedType(tag: DW_TAG_member, name: "dpb_output_delay_length_minus1", scope: !132, file: !4, line: 58, baseType: !21, size: 32, align: 32, offset: 3232)
+!146 = !DIDerivedType(tag: DW_TAG_member, name: "time_offset_length", scope: !132, file: !4, line: 59, baseType: !21, size: 32, align: 32, offset: 3264)
+!147 = !DIDerivedType(tag: DW_TAG_member, name: "vcl_hrd_parameters_present_flag", scope: !107, file: !4, line: 87, baseType: !19, size: 32, align: 32, offset: 3968)
+!148 = !DIDerivedType(tag: DW_TAG_member, name: "vcl_hrd_parameters", scope: !107, file: !4, line: 88, baseType: !131, size: 3296, align: 32, offset: 4000)
+!149 = !DIDerivedType(tag: DW_TAG_member, name: "low_delay_hrd_flag", scope: !107, file: !4, line: 90, baseType: !19, size: 32, align: 32, offset: 7296)
+!150 = !DIDerivedType(tag: DW_TAG_member, name: "bitstream_restriction_flag", scope: !107, file: !4, line: 91, baseType: !19, size: 32, align: 32, offset: 7328)
+!151 = !DIDerivedType(tag: DW_TAG_member, name: "motion_vectors_over_pic_boundaries_flag", scope: !107, file: !4, line: 92, baseType: !19, size: 32, align: 32, offset: 7360)
+!152 = !DIDerivedType(tag: DW_TAG_member, name: "max_bytes_per_pic_denom", scope: !107, file: !4, line: 93, baseType: !21, size: 32, align: 32, offset: 7392)
+!153 = !DIDerivedType(tag: DW_TAG_member, name: "max_bits_per_mb_denom", scope: !107, file: !4, line: 94, baseType: !21, size: 32, align: 32, offset: 7424)
+!154 = !DIDerivedType(tag: DW_TAG_member, name: "log2_max_mv_length_vertical", scope: !107, file: !4, line: 95, baseType: !21, size: 32, align: 32, offset: 7456)
+!155 = !DIDerivedType(tag: DW_TAG_member, name: "log2_max_mv_length_horizontal", scope: !107, file: !4, line: 96, baseType: !21, size: 32, align: 32, offset: 7488)
+!156 = !DIDerivedType(tag: DW_TAG_member, name: "max_dec_frame_reordering", scope: !107, file: !4, line: 97, baseType: !21, size: 32, align: 32, offset: 7520)
+!157 = !DIDerivedType(tag: DW_TAG_member, name: "max_dec_frame_buffering", scope: !107, file: !4, line: 98, baseType: !21, size: 32, align: 32, offset: 7552)
+!158 = !{!159}
+!159 = !DILocalVariable(tag: DW_TAG_auto_variable, name: "p", scope: !61, file: !1, line: 54, type: !64)
+!160 = !DISubprogram(name: "FreePPS", scope: !1, file: !1, line: 75, type: !161, isLocal: false, isDefinition: true, scopeLine: 76, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct.pic_parameter_set_rbsp_t*)* @FreePPS, variables: !163)
+!161 = !DISubroutineType(types: !162)
+!162 = !{null, !14}
+!163 = !{!164}
+!164 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "pps", arg: 1, scope: !160, file: !1, line: 75, type: !14)
+!165 = !DISubprogram(name: "FreeSPS", scope: !1, file: !1, line: 96, type: !166, isLocal: false, isDefinition: true, scopeLine: 97, flags: DIFlagPrototyped, isOptimized: true, function: void (%struct.seq_parameter_set_rbsp_t*)* @FreeSPS, variables: !168)
+!166 = !DISubroutineType(types: !167)
+!167 = !{null, !64}
+!168 = !{!169}
+!169 = !DILocalVariable(tag: DW_TAG_arg_variable, name: "sps", arg: 1, scope: !165, file: !1, line: 96, type: !64)
+!170 = !{!171, !362, !363, !364, !365, !366, !369, !371, !373, !374, !375, !376, !377, !378, !379, !380, !381, !383, !384, !386, !387, !388, !389, !390, !391, !392, !393, !394, !395, !396, !397, !398, !403, !404, !406, !407, !408, !409, !410, !411, !412, !413, !414, !415, !420, !424, !425, !426, !427, !428, !429, !432, !435, !436, !437, !438, !441, !444, !455, !497, !498, !499, !500, !501, !558, !559, !560, !561, !562, !566, !567, !568, !569, !570, !571, !572, !573}
+!171 = !DIGlobalVariable(name: "top_pic", scope: !0, file: !172, line: 558, type: !173, isLocal: false, isDefinition: true, variable: %struct.Picture** @top_pic)
+!172 = !DIFile(filename: "../../SPEC_CPU2006v1.1/benchspec/CPU2006/464.h264ref/src/global.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
+!173 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !174, size: 64, align: 64)
+!174 = !DIDerivedType(tag: DW_TAG_typedef, name: "Picture", file: !172, line: 484, baseType: !175)
+!175 = !DICompositeType(tag: DW_TAG_structure_type, file: !172, line: 475, size: 6592, align: 64, elements: !176)
+!176 = !{!177, !178, !179, !357, !358, !360, !361}
+!177 = !DIDerivedType(tag: DW_TAG_member, name: "no_slices", scope: !175, file: !172, line: 477, baseType: !28, size: 32, align: 32)
+!178 = !DIDerivedType(tag: DW_TAG_member, name: "idr_flag", scope: !175, file: !172, line: 478, baseType: !28, size: 32, align: 32, offset: 32)
+!179 = !DIDerivedType(tag: DW_TAG_member, name: "slices", scope: !175, file: !172, line: 479, baseType: !180, size: 6400, align: 64, offset: 64)
+!180 = !DICompositeType(tag: DW_TAG_array_type, baseType: !181, size: 6400, align: 64, elements: !355)
+!181 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !182, size: 64, align: 64)
+!182 = !DIDerivedType(tag: DW_TAG_typedef, name: "Slice", file: !172, line: 471, baseType: !183)
+!183 = !DICompositeType(tag: DW_TAG_structure_type, file: !172, line: 443, size: 1216, align: 64, elements: !184)
+!184 = !{!185, !186, !187, !188, !189, !190, !191, !265, !304, !331, !340, !341, !342, !343, !344, !345, !346, !347, !348, !352}
+!185 = !DIDerivedType(tag: DW_TAG_member, name: "picture_id", scope: !183, file: !172, line: 445, baseType: !28, size: 32, align: 32)
+!186 = !DIDerivedType(tag: DW_TAG_member, name: "qp", scope: !183, file: !172, line: 446, baseType: !28, size: 32, align: 32, offset: 32)
+!187 = !DIDerivedType(tag: DW_TAG_member, name: "picture_type", scope: !183, file: !172, line: 447, baseType: !28, size: 32, align: 32, offset: 64)
+!188 = !DIDerivedType(tag: DW_TAG_member, name: "start_mb_nr", scope: !183, file: !172, line: 448, baseType: !28, size: 32, align: 32, offset: 96)
+!189 = !DIDerivedType(tag: DW_TAG_member, name: "max_part_nr", scope: !183, file: !172, line: 449, baseType: !28, size: 32, align: 32, offset: 128)
+!190 = !DIDerivedType(tag: DW_TAG_member, name: "num_mb", scope: !183, file: !172, line: 450, baseType: !28, size: 32, align: 32, offset: 160)
+!191 = !DIDerivedType(tag: DW_TAG_member, name: "partArr", scope: !183, file: !172, line: 451, baseType: !192, size: 64, align: 64, offset: 192)
+!192 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !193, size: 64, align: 64)
+!193 = !DIDerivedType(tag: DW_TAG_typedef, name: "DataPartition", file: !172, line: 440, baseType: !194)
+!194 = !DICompositeType(tag: DW_TAG_structure_type, name: "datapartition", file: !172, line: 430, size: 960, align: 64, elements: !195)
+!195 = !{!196, !212, !237}
+!196 = !DIDerivedType(tag: DW_TAG_member, name: "bitstream", scope: !194, file: !172, line: 433, baseType: !197, size: 64, align: 64)
+!197 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !198, size: 64, align: 64)
+!198 = !DIDerivedType(tag: DW_TAG_typedef, name: "Bitstream", file: !172, line: 427, baseType: !199)
+!199 = !DICompositeType(tag: DW_TAG_structure_type, file: !172, line: 411, size: 384, align: 64, elements: !200)
+!200 = !{!201, !202, !203, !204, !205, !206, !207, !208, !209, !210, !211}
+!201 = !DIDerivedType(tag: DW_TAG_member, name: "byte_pos", scope: !199, file: !172, line: 413, baseType: !28, size: 32, align: 32)
+!202 = !DIDerivedType(tag: DW_TAG_member, name: "bits_to_go", scope: !199, file: !172, line: 414, baseType: !28, size: 32, align: 32, offset: 32)
+!203 = !DIDerivedType(tag: DW_TAG_member, name: "byte_buf", scope: !199, file: !172, line: 415, baseType: !43, size: 8, align: 8, offset: 64)
+!204 = !DIDerivedType(tag: DW_TAG_member, name: "stored_byte_pos", scope: !199, file: !172, line: 416, baseType: !28, size: 32, align: 32, offset: 96)
+!205 = !DIDerivedType(tag: DW_TAG_member, name: "stored_bits_to_go", scope: !199, file: !172, line: 417, baseType: !28, size: 32, align: 32, offset: 128)
+!206 = !DIDerivedType(tag: DW_TAG_member, name: "stored_byte_buf", scope: !199, file: !172, line: 418, baseType: !43, size: 8, align: 8, offset: 160)
+!207 = !DIDerivedType(tag: DW_TAG_member, name: "byte_buf_skip", scope: !199, file: !172, line: 420, baseType: !43, size: 8, align: 8, offset: 168)
+!208 = !DIDerivedType(tag: DW_TAG_member, name: "byte_pos_skip", scope: !199, file: !172, line: 421, baseType: !28, size: 32, align: 32, offset: 192)
+!209 = !DIDerivedType(tag: DW_TAG_member, name: "bits_to_go_skip", scope: !199, file: !172, line: 422, baseType: !28, size: 32, align: 32, offset: 224)
+!210 = !DIDerivedType(tag: DW_TAG_member, name: "streamBuffer", scope: !199, file: !172, line: 424, baseType: !42, size: 64, align: 64, offset: 256)
+!211 = !DIDerivedType(tag: DW_TAG_member, name: "write_flag", scope: !199, file: !172, line: 425, baseType: !28, size: 32, align: 32, offset: 320)
+!212 = !DIDerivedType(tag: DW_TAG_member, name: "ee_cabac", scope: !194, file: !172, line: 434, baseType: !213, size: 832, align: 64, offset: 64)
+!213 = !DIDerivedType(tag: DW_TAG_typedef, name: "EncodingEnvironment", file: !172, line: 226, baseType: !214)
+!214 = !DICompositeType(tag: DW_TAG_structure_type, file: !172, line: 207, size: 832, align: 64, elements: !215)
+!215 = !{!216, !217, !218, !219, !220, !221, !222, !224, !225, !226, !227, !228, !229, !230, !231, !232, !233, !234, !235, !236}
+!216 = !DIDerivedType(tag: DW_TAG_member, name: "Elow", scope: !214, file: !172, line: 209, baseType: !21, size: 32, align: 32)
+!217 = !DIDerivedType(tag: DW_TAG_member, name: "Erange", scope: !214, file: !172, line: 209, baseType: !21, size: 32, align: 32, offset: 32)
+!218 = !DIDerivedType(tag: DW_TAG_member, name: "Ebuffer", scope: !214, file: !172, line: 210, baseType: !21, size: 32, align: 32, offset: 64)
+!219 = !DIDerivedType(tag: DW_TAG_member, name: "Ebits_to_go", scope: !214, file: !172, line: 211, baseType: !21, size: 32, align: 32, offset: 96)
+!220 = !DIDerivedType(tag: DW_TAG_member, name: "Ebits_to_follow", scope: !214, file: !172, line: 212, baseType: !21, size: 32, align: 32, offset: 128)
+!221 = !DIDerivedType(tag: DW_TAG_member, name: "Ecodestrm", scope: !214, file: !172, line: 213, baseType: !42, size: 64, align: 64, offset: 192)
+!222 = !DIDerivedType(tag: DW_TAG_member, name: "Ecodestrm_len", scope: !214, file: !172, line: 214, baseType: !223, size: 64, align: 64, offset: 256)
+!223 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !28, size: 64, align: 64)
+!224 = !DIDerivedType(tag: DW_TAG_member, name: "ElowS", scope: !214, file: !172, line: 217, baseType: !21, size: 32, align: 32, offset: 320)
+!225 = !DIDerivedType(tag: DW_TAG_member, name: "ErangeS", scope: !214, file: !172, line: 217, baseType: !21, size: 32, align: 32, offset: 352)
+!226 = !DIDerivedType(tag: DW_TAG_member, name: "EbufferS", scope: !214, file: !172, line: 218, baseType: !21, size: 32, align: 32, offset: 384)
+!227 = !DIDerivedType(tag: DW_TAG_member, name: "Ebits_to_goS", scope: !214, file: !172, line: 219, baseType: !21, size: 32, align: 32, offset: 416)
+!228 = !DIDerivedType(tag: DW_TAG_member, name: "Ebits_to_followS", scope: !214, file: !172, line: 220, baseType: !21, size: 32, align: 32, offset: 448)
+!229 = !DIDerivedType(tag: DW_TAG_member, name: "EcodestrmS", scope: !214, file: !172, line: 221, baseType: !42, size: 64, align: 64, offset: 512)
+!230 = !DIDerivedType(tag: DW_TAG_member, name: "Ecodestrm_lenS", scope: !214, file: !172, line: 222, baseType: !223, size: 64, align: 64, offset: 576)
+!231 = !DIDerivedType(tag: DW_TAG_member, name: "C", scope: !214, file: !172, line: 223, baseType: !28, size: 32, align: 32, offset: 640)
+!232 = !DIDerivedType(tag: DW_TAG_member, name: "CS", scope: !214, file: !172, line: 223, baseType: !28, size: 32, align: 32, offset: 672)
+!233 = !DIDerivedType(tag: DW_TAG_member, name: "E", scope: !214, file: !172, line: 224, baseType: !28, size: 32, align: 32, offset: 704)
+!234 = !DIDerivedType(tag: DW_TAG_member, name: "ES", scope: !214, file: !172, line: 224, baseType: !28, size: 32, align: 32, offset: 736)
+!235 = !DIDerivedType(tag: DW_TAG_member, name: "B", scope: !214, file: !172, line: 225, baseType: !28, size: 32, align: 32, offset: 768)
+!236 = !DIDerivedType(tag: DW_TAG_member, name: "BS", scope: !214, file: !172, line: 225, baseType: !28, size: 32, align: 32, offset: 800)
+!237 = !DIDerivedType(tag: DW_TAG_member, name: "writeSyntaxElement", scope: !194, file: !172, line: 436, baseType: !238, size: 64, align: 64, offset: 896)
+!238 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !239, size: 64, align: 64)
+!239 = !DISubroutineType(types: !240)
+!240 = !{!28, !241, !264}
+!241 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !242, size: 64, align: 64)
+!242 = !DIDerivedType(tag: DW_TAG_typedef, name: "SyntaxElement", file: !172, line: 348, baseType: !243)
+!243 = !DICompositeType(tag: DW_TAG_structure_type, name: "syntaxelement", file: !172, line: 327, size: 384, align: 64, elements: !244)
+!244 = !{!245, !246, !247, !248, !249, !250, !251, !252, !253, !257}
+!245 = !DIDerivedType(tag: DW_TAG_member, name: "type", scope: !243, file: !172, line: 329, baseType: !28, size: 32, align: 32)
+!246 = !DIDerivedType(tag: DW_TAG_member, name: "value1", scope: !243, file: !172, line: 330, baseType: !28, size: 32, align: 32, offset: 32)
+!247 = !DIDerivedType(tag: DW_TAG_member, name: "value2", scope: !243, file: !172, line: 331, baseType: !28, size: 32, align: 32, offset: 64)
+!248 = !DIDerivedType(tag: DW_TAG_member, name: "len", scope: !243, file: !172, line: 332, baseType: !28, size: 32, align: 32, offset: 96)
+!249 = !DIDerivedType(tag: DW_TAG_member, name: "inf", scope: !243, file: !172, line: 333, baseType: !28, size: 32, align: 32, offset: 128)
+!250 = !DIDerivedType(tag: DW_TAG_member, name: "bitpattern", scope: !243, file: !172, line: 334, baseType: !21, size: 32, align: 32, offset: 160)
+!251 = !DIDerivedType(tag: DW_TAG_member, name: "context", scope: !243, file: !172, line: 335, baseType: !28, size: 32, align: 32, offset: 192)
+!252 = !DIDerivedType(tag: DW_TAG_member, name: "k", scope: !243, file: !172, line: 336, baseType: !28, size: 32, align: 32, offset: 224)
+!253 = !DIDerivedType(tag: DW_TAG_member, name: "mapping", scope: !243, file: !172, line: 344, baseType: !254, size: 64, align: 64, offset: 256)
+!254 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !255, size: 64, align: 64)
+!255 = !DISubroutineType(types: !256)
+!256 = !{null, !28, !28, !223, !223}
+!257 = !DIDerivedType(tag: DW_TAG_member, name: "writing", scope: !243, file: !172, line: 346, baseType: !258, size: 64, align: 64, offset: 320)
+!258 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !259, size: 64, align: 64)
+!259 = !DISubroutineType(types: !260)
+!260 = !{null, !261, !262}
+!261 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !243, size: 64, align: 64)
+!262 = !DIDerivedType(tag: DW_TAG_typedef, name: "EncodingEnvironmentPtr", file: !172, line: 228, baseType: !263)
+!263 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !213, size: 64, align: 64)
+!264 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !194, size: 64, align: 64)
+!265 = !DIDerivedType(tag: DW_TAG_member, name: "mot_ctx", scope: !183, file: !172, line: 452, baseType: !266, size: 64, align: 64, offset: 256)
+!266 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !267, size: 64, align: 64)
+!267 = !DIDerivedType(tag: DW_TAG_typedef, name: "MotionInfoContexts", file: !172, line: 268, baseType: !268)
+!268 = !DICompositeType(tag: DW_TAG_structure_type, file: !172, line: 258, size: 12032, align: 64, elements: !269)
+!269 = !{!270, !283, !288, !292, !296, !300, !301}
+!270 = !DIDerivedType(tag: DW_TAG_member, name: "mb_type_contexts", scope: !268, file: !172, line: 260, baseType: !271, size: 4224, align: 64)
+!271 = !DICompositeType(tag: DW_TAG_array_type, baseType: !272, size: 4224, align: 64, elements: !280)
+!272 = !DIDerivedType(tag: DW_TAG_typedef, name: "BiContextType", file: !172, line: 238, baseType: !273)
+!273 = !DICompositeType(tag: DW_TAG_structure_type, file: !172, line: 231, size: 128, align: 64, elements: !274)
+!274 = !{!275, !277, !278}
+!275 = !DIDerivedType(tag: DW_TAG_member, name: "state", scope: !273, file: !172, line: 233, baseType: !276, size: 16, align: 16)
+!276 = !DIBasicType(name: "unsigned short", size: 16, align: 16, encoding: DW_ATE_unsigned)
+!277 = !DIDerivedType(tag: DW_TAG_member, name: "MPS", scope: !273, file: !172, line: 234, baseType: !45, size: 8, align: 8, offset: 16)
+!278 = !DIDerivedType(tag: DW_TAG_member, name: "count", scope: !273, file: !172, line: 236, baseType: !279, size: 64, align: 64, offset: 64)
+!279 = !DIBasicType(name: "long unsigned int", size: 64, align: 64, encoding: DW_ATE_unsigned)
+!280 = !{!281, !282}
+!281 = !DISubrange(count: 3)
+!282 = !DISubrange(count: 11)
+!283 = !DIDerivedType(tag: DW_TAG_member, name: "b8_type_contexts", scope: !268, file: !172, line: 261, baseType: !284, size: 2304, align: 64, offset: 4224)
+!284 = !DICompositeType(tag: DW_TAG_array_type, baseType: !272, size: 2304, align: 64, elements: !285)
+!285 = !{!286, !287}
+!286 = !DISubrange(count: 2)
+!287 = !DISubrange(count: 9)
+!288 = !DIDerivedType(tag: DW_TAG_member, name: "mv_res_contexts", scope: !268, file: !172, line: 262, baseType: !289, size: 2560, align: 64, offset: 6528)
+!289 = !DICompositeType(tag: DW_TAG_array_type, baseType: !272, size: 2560, align: 64, elements: !290)
+!290 = !{!286, !291}
+!291 = !DISubrange(count: 10)
+!292 = !DIDerivedType(tag: DW_TAG_member, name: "ref_no_contexts", scope: !268, file: !172, line: 263, baseType: !293, size: 1536, align: 64, offset: 9088)
+!293 = !DICompositeType(tag: DW_TAG_array_type, baseType: !272, size: 1536, align: 64, elements: !294)
+!294 = !{!286, !295}
+!295 = !DISubrange(count: 6)
+!296 = !DIDerivedType(tag: DW_TAG_member, name: "delta_qp_contexts", scope: !268, file: !172, line: 264, baseType: !297, size: 512, align: 64, offset: 10624)
+!297 = !DICompositeType(tag: DW_TAG_array_type, baseType: !272, size: 512, align: 64, elements: !298)
+!298 = !{!299}
+!299 = !DISubrange(count: 4)
+!300 = !DIDerivedType(tag: DW_TAG_member, name: "mb_aff_contexts", scope: !268, file: !172, line: 265, baseType: !297, size: 512, align: 64, offset: 11136)
+!301 = !DIDerivedType(tag: DW_TAG_member, name: "transform_size_contexts", scope: !268, file: !172, line: 266, baseType: !302, size: 384, align: 64, offset: 11648)
+!302 = !DICompositeType(tag: DW_TAG_array_type, baseType: !272, size: 384, align: 64, elements: !303)
+!303 = !{!281}
+!304 = !DIDerivedType(tag: DW_TAG_member, name: "tex_ctx", scope: !183, file: !172, line: 453, baseType: !305, size: 64, align: 64, offset: 320)
+!305 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !306, size: 64, align: 64)
+!306 = !DIDerivedType(tag: DW_TAG_typedef, name: "TextureInfoContexts", file: !172, line: 293, baseType: !307)
+!307 = !DICompositeType(tag: DW_TAG_structure_type, file: !172, line: 281, size: 97024, align: 64, elements: !308)
+!308 = !{!309, !312, !313, !316, !319, !323, !324, !328, !329, !330}
+!309 = !DIDerivedType(tag: DW_TAG_member, name: "ipr_contexts", scope: !307, file: !172, line: 283, baseType: !310, size: 256, align: 64)
+!310 = !DICompositeType(tag: DW_TAG_array_type, baseType: !272, size: 256, align: 64, elements: !311)
+!311 = !{!286}
+!312 = !DIDerivedType(tag: DW_TAG_member, name: "cipr_contexts", scope: !307, file: !172, line: 284, baseType: !297, size: 512, align: 64, offset: 256)
+!313 = !DIDerivedType(tag: DW_TAG_member, name: "cbp_contexts", scope: !307, file: !172, line: 285, baseType: !314, size: 1536, align: 64, offset: 768)
+!314 = !DICompositeType(tag: DW_TAG_array_type, baseType: !272, size: 1536, align: 64, elements: !315)
+!315 = !{!281, !299}
+!316 = !DIDerivedType(tag: DW_TAG_member, name: "bcbp_contexts", scope: !307, file: !172, line: 286, baseType: !317, size: 5120, align: 64, offset: 2304)
+!317 = !DICompositeType(tag: DW_TAG_array_type, baseType: !272, size: 5120, align: 64, elements: !318)
+!318 = !{!291, !299}
+!319 = !DIDerivedType(tag: DW_TAG_member, name: "map_contexts", scope: !307, file: !172, line: 287, baseType: !320, size: 19200, align: 64, offset: 7424)
+!320 = !DICompositeType(tag: DW_TAG_array_type, baseType: !272, size: 19200, align: 64, elements: !321)
+!321 = !{!291, !322}
+!322 = !DISubrange(count: 15)
+!323 = !DIDerivedType(tag: DW_TAG_member, name: "last_contexts", scope: !307, file: !172, line: 288, baseType: !320, size: 19200, align: 64, offset: 26624)
+!324 = !DIDerivedType(tag: DW_TAG_member, name: "one_contexts", scope: !307, file: !172, line: 289, baseType: !325, size: 6400, align: 64, offset: 45824)
+!325 = !DICompositeType(tag: DW_TAG_array_type, baseType: !272, size: 6400, align: 64, elements: !326)
+!326 = !{!291, !327}
+!327 = !DISubrange(count: 5)
+!328 = !DIDerivedType(tag: DW_TAG_member, name: "abs_contexts", scope: !307, file: !172, line: 290, baseType: !325, size: 6400, align: 64, offset: 52224)
+!329 = !DIDerivedType(tag: DW_TAG_member, name: "fld_map_contexts", scope: !307, file: !172, line: 291, baseType: !320, size: 19200, align: 64, offset: 58624)
+!330 = !DIDerivedType(tag: DW_TAG_member, name: "fld_last_contexts", scope: !307, file: !172, line: 292, baseType: !320, size: 19200, align: 64, offset: 77824)
+!331 = !DIDerivedType(tag: DW_TAG_member, name: "rmpni_buffer", scope: !183, file: !172, line: 456, baseType: !332, size: 64, align: 64, offset: 384)
+!332 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !333, size: 64, align: 64)
+!333 = !DIDerivedType(tag: DW_TAG_typedef, name: "RMPNIbuffer_t", file: !172, line: 313, baseType: !334)
+!334 = !DICompositeType(tag: DW_TAG_structure_type, name: "RMPNIbuffer_s", file: !172, line: 308, size: 128, align: 64, elements: !335)
+!335 = !{!336, !337, !338}
+!336 = !DIDerivedType(tag: DW_TAG_member, name: "RMPNI", scope: !334, file: !172, line: 310, baseType: !28, size: 32, align: 32)
+!337 = !DIDerivedType(tag: DW_TAG_member, name: "Data", scope: !334, file: !172, line: 311, baseType: !28, size: 32, align: 32, offset: 32)
+!338 = !DIDerivedType(tag: DW_TAG_member, name: "Next", scope: !334, file: !172, line: 312, baseType: !339, size: 64, align: 64, offset: 64)
+!339 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !334, size: 64, align: 64)
+!340 = !DIDerivedType(tag: DW_TAG_member, name: "ref_pic_list_reordering_flag_l0", scope: !183, file: !172, line: 458, baseType: !28, size: 32, align: 32, offset: 448)
+!341 = !DIDerivedType(tag: DW_TAG_member, name: "remapping_of_pic_nums_idc_l0", scope: !183, file: !172, line: 459, baseType: !223, size: 64, align: 64, offset: 512)
+!342 = !DIDerivedType(tag: DW_TAG_member, name: "abs_diff_pic_num_minus1_l0", scope: !183, file: !172, line: 460, baseType: !223, size: 64, align: 64, offset: 576)
+!343 = !DIDerivedType(tag: DW_TAG_member, name: "long_term_pic_idx_l0", scope: !183, file: !172, line: 461, baseType: !223, size: 64, align: 64, offset: 640)
+!344 = !DIDerivedType(tag: DW_TAG_member, name: "ref_pic_list_reordering_flag_l1", scope: !183, file: !172, line: 462, baseType: !28, size: 32, align: 32, offset: 704)
+!345 = !DIDerivedType(tag: DW_TAG_member, name: "remapping_of_pic_nums_idc_l1", scope: !183, file: !172, line: 463, baseType: !223, size: 64, align: 64, offset: 768)
+!346 = !DIDerivedType(tag: DW_TAG_member, name: "abs_diff_pic_num_minus1_l1", scope: !183, file: !172, line: 464, baseType: !223, size: 64, align: 64, offset: 832)
+!347 = !DIDerivedType(tag: DW_TAG_member, name: "long_term_pic_idx_l1", scope: !183, file: !172, line: 465, baseType: !223, size: 64, align: 64, offset: 896)
+!348 = !DIDerivedType(tag: DW_TAG_member, name: "slice_too_big", scope: !183, file: !172, line: 467, baseType: !349, size: 64, align: 64, offset: 960)
+!349 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !350, size: 64, align: 64)
+!350 = !DISubroutineType(types: !351)
+!351 = !{!19, !28}
+!352 = !DIDerivedType(tag: DW_TAG_member, name: "field_ctx", scope: !183, file: !172, line: 469, baseType: !353, size: 192, align: 32, offset: 1024)
+!353 = !DICompositeType(tag: DW_TAG_array_type, baseType: !28, size: 192, align: 32, elements: !354)
+!354 = !{!281, !286}
+!355 = !{!356}
+!356 = !DISubrange(count: 100)
+!357 = !DIDerivedType(tag: DW_TAG_member, name: "bits_per_picture", scope: !175, file: !172, line: 480, baseType: !28, size: 32, align: 32, offset: 6464)
+!358 = !DIDerivedType(tag: DW_TAG_member, name: "distortion_y", scope: !175, file: !172, line: 481, baseType: !359, size: 32, align: 32, offset: 6496)
+!359 = !DIBasicType(name: "float", size: 32, align: 32, encoding: DW_ATE_float)
+!360 = !DIDerivedType(tag: DW_TAG_member, name: "distortion_u", scope: !175, file: !172, line: 482, baseType: !359, size: 32, align: 32, offset: 6528)
+!361 = !DIDerivedType(tag: DW_TAG_member, name: "distortion_v", scope: !175, file: !172, line: 483, baseType: !359, size: 32, align: 32, offset: 6560)
+!362 = !DIGlobalVariable(name: "bottom_pic", scope: !0, file: !172, line: 559, type: !173, isLocal: false, isDefinition: true, variable: %struct.Picture** @bottom_pic)
+!363 = !DIGlobalVariable(name: "frame_pic", scope: !0, file: !172, line: 560, type: !173, isLocal: false, isDefinition: true, variable: %struct.Picture** @frame_pic)
+!364 = !DIGlobalVariable(name: "frame_pic2", scope: !0, file: !172, line: 561, type: !173, isLocal: false, isDefinition: true, variable: %struct.Picture** @frame_pic2)
+!365 = !DIGlobalVariable(name: "frame_pic3", scope: !0, file: !172, line: 562, type: !173, isLocal: false, isDefinition: true, variable: %struct.Picture** @frame_pic3)
+!366 = !DIGlobalVariable(name: "imgY_org", scope: !0, file: !172, line: 565, type: !367, isLocal: false, isDefinition: true, variable: i16*** @imgY_org)
+!367 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !368, size: 64, align: 64)
+!368 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !276, size: 64, align: 64)
+!369 = !DIGlobalVariable(name: "imgUV_org", scope: !0, file: !172, line: 566, type: !370, isLocal: false, isDefinition: true, variable: i16**** @imgUV_org)
+!370 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !367, size: 64, align: 64)
+!371 = !DIGlobalVariable(name: "img4Y_tmp", scope: !0, file: !172, line: 567, type: !372, isLocal: false, isDefinition: true, variable: i32*** @img4Y_tmp)
+!372 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !223, size: 64, align: 64)
+!373 = !DIGlobalVariable(name: "log2_max_frame_num_minus4", scope: !0, file: !172, line: 569, type: !21, isLocal: false, isDefinition: true, variable: i32* @log2_max_frame_num_minus4)
+!374 = !DIGlobalVariable(name: "log2_max_pic_order_cnt_lsb_minus4", scope: !0, file: !172, line: 570, type: !21, isLocal: false, isDefinition: true, variable: i32* @log2_max_pic_order_cnt_lsb_minus4)
+!375 = !DIGlobalVariable(name: "me_tot_time", scope: !0, file: !172, line: 572, type: !28, isLocal: false, isDefinition: true, variable: i32* @me_tot_time)
+!376 = !DIGlobalVariable(name: "me_time", scope: !0, file: !172, line: 572, type: !28, isLocal: false, isDefinition: true, variable: i32* @me_time)
+!377 = !DIGlobalVariable(name: "active_pps", scope: !0, file: !172, line: 573, type: !14, isLocal: false, isDefinition: true, variable: %struct.pic_parameter_set_rbsp_t** @active_pps)
+!378 = !DIGlobalVariable(name: "active_sps", scope: !0, file: !172, line: 574, type: !64, isLocal: false, isDefinition: true, variable: %struct.seq_parameter_set_rbsp_t** @active_sps)
+!379 = !DIGlobalVariable(name: "mb_adaptive", scope: !0, file: !172, line: 578, type: !28, isLocal: false, isDefinition: true, variable: i32* @mb_adaptive)
+!380 = !DIGlobalVariable(name: "MBPairIsField", scope: !0, file: !172, line: 579, type: !28, isLocal: false, isDefinition: true, variable: i32* @MBPairIsField)
+!381 = !DIGlobalVariable(name: "wp_weight", scope: !0, file: !172, line: 583, type: !382, isLocal: false, isDefinition: true, variable: i32**** @wp_weight)
+!382 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !372, size: 64, align: 64)
+!383 = !DIGlobalVariable(name: "wp_offset", scope: !0, file: !172, line: 584, type: !382, isLocal: false, isDefinition: true, variable: i32**** @wp_offset)
+!384 = !DIGlobalVariable(name: "wbp_weight", scope: !0, file: !172, line: 585, type: !385, isLocal: false, isDefinition: true, variable: i32***** @wbp_weight)
+!385 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !382, size: 64, align: 64)
+!386 = !DIGlobalVariable(name: "luma_log_weight_denom", scope: !0, file: !172, line: 586, type: !28, isLocal: false, isDefinition: true, variable: i32* @luma_log_weight_denom)
+!387 = !DIGlobalVariable(name: "chroma_log_weight_denom", scope: !0, file: !172, line: 587, type: !28, isLocal: false, isDefinition: true, variable: i32* @chroma_log_weight_denom)
+!388 = !DIGlobalVariable(name: "wp_luma_round", scope: !0, file: !172, line: 588, type: !28, isLocal: false, isDefinition: true, variable: i32* @wp_luma_round)
+!389 = !DIGlobalVariable(name: "wp_chroma_round", scope: !0, file: !172, line: 589, type: !28, isLocal: false, isDefinition: true, variable: i32* @wp_chroma_round)
+!390 = !DIGlobalVariable(name: "imgY_org_top", scope: !0, file: !172, line: 592, type: !367, isLocal: false, isDefinition: true, variable: i16*** @imgY_org_top)
+!391 = !DIGlobalVariable(name: "imgY_org_bot", scope: !0, file: !172, line: 593, type: !367, isLocal: false, isDefinition: true, variable: i16*** @imgY_org_bot)
+!392 = !DIGlobalVariable(name: "imgUV_org_top", scope: !0, file: !172, line: 595, type: !370, isLocal: false, isDefinition: true, variable: i16**** @imgUV_org_top)
+!393 = !DIGlobalVariable(name: "imgUV_org_bot", scope: !0, file: !172, line: 596, type: !370, isLocal: false, isDefinition: true, variable: i16**** @imgUV_org_bot)
+!394 = !DIGlobalVariable(name: "imgY_org_frm", scope: !0, file: !172, line: 598, type: !367, isLocal: false, isDefinition: true, variable: i16*** @imgY_org_frm)
+!395 = !DIGlobalVariable(name: "imgUV_org_frm", scope: !0, file: !172, line: 599, type: !370, isLocal: false, isDefinition: true, variable: i16**** @imgUV_org_frm)
+!396 = !DIGlobalVariable(name: "imgY_com", scope: !0, file: !172, line: 601, type: !367, isLocal: false, isDefinition: true, variable: i16*** @imgY_com)
+!397 = !DIGlobalVariable(name: "imgUV_com", scope: !0, file: !172, line: 602, type: !370, isLocal: false, isDefinition: true, variable: i16**** @imgUV_com)
+!398 = !DIGlobalVariable(name: "direct_ref_idx", scope: !0, file: !172, line: 604, type: !399, isLocal: false, isDefinition: true, variable: i16**** @direct_ref_idx)
+!399 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !400, size: 64, align: 64)
+!400 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !401, size: 64, align: 64)
+!401 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !402, size: 64, align: 64)
+!402 = !DIBasicType(name: "short", size: 16, align: 16, encoding: DW_ATE_signed)
+!403 = !DIGlobalVariable(name: "direct_pdir", scope: !0, file: !172, line: 605, type: !400, isLocal: false, isDefinition: true, variable: i16*** @direct_pdir)
+!404 = !DIGlobalVariable(name: "pixel_map", scope: !0, file: !172, line: 608, type: !405, isLocal: false, isDefinition: true, variable: i8*** @pixel_map)
+!405 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !42, size: 64, align: 64)
+!406 = !DIGlobalVariable(name: "refresh_map", scope: !0, file: !172, line: 609, type: !405, isLocal: false, isDefinition: true, variable: i8*** @refresh_map)
+!407 = !DIGlobalVariable(name: "intras", scope: !0, file: !172, line: 610, type: !28, isLocal: false, isDefinition: true, variable: i32* @intras)
+!408 = !DIGlobalVariable(name: "Iframe_ctr", scope: !0, file: !172, line: 612, type: !28, isLocal: false, isDefinition: true, variable: i32* @Iframe_ctr)
+!409 = !DIGlobalVariable(name: "Pframe_ctr", scope: !0, file: !172, line: 612, type: !28, isLocal: false, isDefinition: true, variable: i32* @Pframe_ctr)
+!410 = !DIGlobalVariable(name: "Bframe_ctr", scope: !0, file: !172, line: 612, type: !28, isLocal: false, isDefinition: true, variable: i32* @Bframe_ctr)
+!411 = !DIGlobalVariable(name: "frame_no", scope: !0, file: !172, line: 613, type: !28, isLocal: false, isDefinition: true, variable: i32* @frame_no)
+!412 = !DIGlobalVariable(name: "nextP_tr_fld", scope: !0, file: !172, line: 613, type: !28, isLocal: false, isDefinition: true, variable: i32* @nextP_tr_fld)
+!413 = !DIGlobalVariable(name: "nextP_tr_frm", scope: !0, file: !172, line: 613, type: !28, isLocal: false, isDefinition: true, variable: i32* @nextP_tr_frm)
+!414 = !DIGlobalVariable(name: "tot_time", scope: !0, file: !172, line: 614, type: !28, isLocal: false, isDefinition: true, variable: i32* @tot_time)
+!415 = !DIGlobalVariable(name: "errortext", scope: !0, file: !172, line: 617, type: !416, isLocal: false, isDefinition: true, variable: [300 x i8]* @errortext)
+!416 = !DICompositeType(tag: DW_TAG_array_type, baseType: !417, size: 2400, align: 8, elements: !418)
+!417 = !DIBasicType(name: "char", size: 8, align: 8, encoding: DW_ATE_signed_char)
+!418 = !{!419}
+!419 = !DISubrange(count: 300)
+!420 = !DIGlobalVariable(name: "resTrans_R", scope: !0, file: !172, line: 620, type: !421, isLocal: false, isDefinition: true, variable: [16 x [16 x i32]]* @resTrans_R)
+!421 = !DICompositeType(tag: DW_TAG_array_type, baseType: !28, size: 8192, align: 32, elements: !422)
+!422 = !{!423, !423}
+!423 = !DISubrange(count: 16)
+!424 = !DIGlobalVariable(name: "resTrans_G", scope: !0, file: !172, line: 620, type: !421, isLocal: false, isDefinition: true, variable: [16 x [16 x i32]]* @resTrans_G)
+!425 = !DIGlobalVariable(name: "resTrans_B", scope: !0, file: !172, line: 620, type: !421, isLocal: false, isDefinition: true, variable: [16 x [16 x i32]]* @resTrans_B)
+!426 = !DIGlobalVariable(name: "rec_resR", scope: !0, file: !172, line: 621, type: !421, isLocal: false, isDefinition: true, variable: [16 x [16 x i32]]* @rec_resR)
+!427 = !DIGlobalVariable(name: "rec_resG", scope: !0, file: !172, line: 621, type: !421, isLocal: false, isDefinition: true, variable: [16 x [16 x i32]]* @rec_resG)
+!428 = !DIGlobalVariable(name: "rec_resB", scope: !0, file: !172, line: 621, type: !421, isLocal: false, isDefinition: true, variable: [16 x [16 x i32]]* @rec_resB)
+!429 = !DIGlobalVariable(name: "mprRGB", scope: !0, file: !172, line: 622, type: !430, isLocal: false, isDefinition: true, variable: [3 x [16 x [16 x i32]]]* @mprRGB)
+!430 = !DICompositeType(tag: DW_TAG_array_type, baseType: !28, size: 24576, align: 32, elements: !431)
+!431 = !{!281, !423, !423}
+!432 = !DIGlobalVariable(name: "dc_level", scope: !0, file: !172, line: 623, type: !433, isLocal: false, isDefinition: true, variable: [2 x [4 x [4 x i32]]]* @dc_level)
+!433 = !DICompositeType(tag: DW_TAG_array_type, baseType: !28, size: 1024, align: 32, elements: !434)
+!434 = !{!286, !299, !299}
+!435 = !DIGlobalVariable(name: "dc_level_temp", scope: !0, file: !172, line: 623, type: !433, isLocal: false, isDefinition: true, variable: [2 x [4 x [4 x i32]]]* @dc_level_temp)
+!436 = !DIGlobalVariable(name: "cbp_chroma_block", scope: !0, file: !172, line: 624, type: !433, isLocal: false, isDefinition: true, variable: [2 x [4 x [4 x i32]]]* @cbp_chroma_block)
+!437 = !DIGlobalVariable(name: "cbp_chroma_block_temp", scope: !0, file: !172, line: 624, type: !433, isLocal: false, isDefinition: true, variable: [2 x [4 x [4 x i32]]]* @cbp_chroma_block_temp)
+!438 = !DIGlobalVariable(name: "b8_ipredmode8x8", scope: !0, file: !172, line: 625, type: !439, isLocal: false, isDefinition: true, variable: [4 x [4 x i32]]* @b8_ipredmode8x8)
+!439 = !DICompositeType(tag: DW_TAG_array_type, baseType: !28, size: 512, align: 32, elements: !440)
+!440 = !{!299, !299}
+!441 = !DIGlobalVariable(name: "b8_intra_pred_modes8x8", scope: !0, file: !172, line: 625, type: !442, isLocal: false, isDefinition: true, variable: [16 x i32]* @b8_intra_pred_modes8x8)
+!442 = !DICompositeType(tag: DW_TAG_array_type, baseType: !28, size: 512, align: 32, elements: !443)
+!443 = !{!423}
+!444 = !DIGlobalVariable(name: "gop_structure", scope: !0, file: !172, line: 1201, type: !445, isLocal: false, isDefinition: true, variable: %struct.GOP_DATA** @gop_structure)
+!445 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !446, size: 64, align: 64)
+!446 = !DIDerivedType(tag: DW_TAG_typedef, name: "GOP_DATA", file: !172, line: 1190, baseType: !447)
+!447 = !DICompositeType(tag: DW_TAG_structure_type, file: !172, line: 1182, size: 192, align: 32, elements: !448)
+!448 = !{!449, !450, !451, !452, !453, !454}
+!449 = !DIDerivedType(tag: DW_TAG_member, name: "slice_type", scope: !447, file: !172, line: 1184, baseType: !28, size: 32, align: 32)
+!450 = !DIDerivedType(tag: DW_TAG_member, name: "display_no", scope: !447, file: !172, line: 1185, baseType: !28, size: 32, align: 32, offset: 32)
+!451 = !DIDerivedType(tag: DW_TAG_member, name: "reference_idc", scope: !447, file: !172, line: 1186, baseType: !28, size: 32, align: 32, offset: 64)
+!452 = !DIDerivedType(tag: DW_TAG_member, name: "slice_qp", scope: !447, file: !172, line: 1187, baseType: !28, size: 32, align: 32, offset: 96)
+!453 = !DIDerivedType(tag: DW_TAG_member, name: "pyramid_layer", scope: !447, file: !172, line: 1188, baseType: !28, size: 32, align: 32, offset: 128)
+!454 = !DIDerivedType(tag: DW_TAG_member, name: "pyramidPocDelta", scope: !447, file: !172, line: 1189, baseType: !28, size: 32, align: 32, offset: 160)
+!455 = !DIGlobalVariable(name: "rdopt", scope: !0, file: !172, line: 1202, type: !456, isLocal: false, isDefinition: true, variable: %struct.RD_DATA** @rdopt)
+!456 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !457, size: 64, align: 64)
+!457 = !DIDerivedType(tag: DW_TAG_typedef, name: "RD_DATA", file: !172, line: 1177, baseType: !458)
+!458 = !DICompositeType(tag: DW_TAG_structure_type, file: !172, line: 1145, size: 26880, align: 64, elements: !459)
+!459 = !{!460, !462, !463, !464, !465, !466, !467, !468, !469, !471, !472, !473, !474, !475, !480, !481, !485, !486, !487, !488, !490, !491, !492, !493, !494, !495, !496}
+!460 = !DIDerivedType(tag: DW_TAG_member, name: "min_rdcost", scope: !458, file: !172, line: 1147, baseType: !461, size: 64, align: 64)
+!461 = !DIBasicType(name: "double", size: 64, align: 64, encoding: DW_ATE_float)
+!462 = !DIDerivedType(tag: DW_TAG_member, name: "rec_mbY", scope: !458, file: !172, line: 1149, baseType: !421, size: 8192, align: 32, offset: 64)
+!463 = !DIDerivedType(tag: DW_TAG_member, name: "rec_mbU", scope: !458, file: !172, line: 1150, baseType: !421, size: 8192, align: 32, offset: 8256)
+!464 = !DIDerivedType(tag: DW_TAG_member, name: "rec_mbV", scope: !458, file: !172, line: 1150, baseType: !421, size: 8192, align: 32, offset: 16448)
+!465 = !DIDerivedType(tag: DW_TAG_member, name: "cofAC", scope: !458, file: !172, line: 1151, baseType: !385, size: 64, align: 64, offset: 24640)
+!466 = !DIDerivedType(tag: DW_TAG_member, name: "cofDC", scope: !458, file: !172, line: 1152, baseType: !382, size: 64, align: 64, offset: 24704)
+!467 = !DIDerivedType(tag: DW_TAG_member, name: "mb_type", scope: !458, file: !172, line: 1153, baseType: !28, size: 32, align: 32, offset: 24768)
+!468 = !DIDerivedType(tag: DW_TAG_member, name: "bi_pred_me", scope: !458, file: !172, line: 1155, baseType: !28, size: 32, align: 32, offset: 24800)
+!469 = !DIDerivedType(tag: DW_TAG_member, name: "b8mode", scope: !458, file: !172, line: 1157, baseType: !470, size: 128, align: 32, offset: 24832)
+!470 = !DICompositeType(tag: DW_TAG_array_type, baseType: !28, size: 128, align: 32, elements: !298)
+!471 = !DIDerivedType(tag: DW_TAG_member, name: "b8pdir", scope: !458, file: !172, line: 1157, baseType: !470, size: 128, align: 32, offset: 24960)
+!472 = !DIDerivedType(tag: DW_TAG_member, name: "ipredmode", scope: !458, file: !172, line: 1158, baseType: !372, size: 64, align: 64, offset: 25088)
+!473 = !DIDerivedType(tag: DW_TAG_member, name: "intra_pred_modes", scope: !458, file: !172, line: 1159, baseType: !442, size: 512, align: 32, offset: 25152)
+!474 = !DIDerivedType(tag: DW_TAG_member, name: "cbp", scope: !458, file: !172, line: 1160, baseType: !28, size: 32, align: 32, offset: 25664)
+!475 = !DIDerivedType(tag: DW_TAG_member, name: "cbp_blk", scope: !458, file: !172, line: 1161, baseType: !476, size: 64, align: 64, offset: 25728)
+!476 = !DIDerivedType(tag: DW_TAG_typedef, name: "int64", file: !172, line: 62, baseType: !477)
+!477 = !DIDerivedType(tag: DW_TAG_typedef, name: "int64_t", file: !478, line: 30, baseType: !479)
+!478 = !DIFile(filename: "/usr/include/sys/_types/_int64_t.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
+!479 = !DIBasicType(name: "long long int", size: 64, align: 64, encoding: DW_ATE_signed)
+!480 = !DIDerivedType(tag: DW_TAG_member, name: "mode", scope: !458, file: !172, line: 1162, baseType: !28, size: 32, align: 32, offset: 25792)
+!481 = !DIDerivedType(tag: DW_TAG_member, name: "pred_mv", scope: !458, file: !172, line: 1163, baseType: !482, size: 64, align: 64, offset: 25856)
+!482 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !483, size: 64, align: 64)
+!483 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !484, size: 64, align: 64)
+!484 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !399, size: 64, align: 64)
+!485 = !DIDerivedType(tag: DW_TAG_member, name: "all_mv", scope: !458, file: !172, line: 1164, baseType: !482, size: 64, align: 64, offset: 25920)
+!486 = !DIDerivedType(tag: DW_TAG_member, name: "bipred_mv1", scope: !458, file: !172, line: 1165, baseType: !482, size: 64, align: 64, offset: 25984)
+!487 = !DIDerivedType(tag: DW_TAG_member, name: "bipred_mv2", scope: !458, file: !172, line: 1166, baseType: !482, size: 64, align: 64, offset: 26048)
+!488 = !DIDerivedType(tag: DW_TAG_member, name: "refar", scope: !458, file: !172, line: 1167, baseType: !489, size: 512, align: 16, offset: 26112)
+!489 = !DICompositeType(tag: DW_TAG_array_type, baseType: !402, size: 512, align: 16, elements: !434)
+!490 = !DIDerivedType(tag: DW_TAG_member, name: "i16offset", scope: !458, file: !172, line: 1168, baseType: !28, size: 32, align: 32, offset: 26624)
+!491 = !DIDerivedType(tag: DW_TAG_member, name: "c_ipred_mode", scope: !458, file: !172, line: 1169, baseType: !28, size: 32, align: 32, offset: 26656)
+!492 = !DIDerivedType(tag: DW_TAG_member, name: "luma_transform_size_8x8_flag", scope: !458, file: !172, line: 1171, baseType: !28, size: 32, align: 32, offset: 26688)
+!493 = !DIDerivedType(tag: DW_TAG_member, name: "NoMbPartLessThan8x8Flag", scope: !458, file: !172, line: 1172, baseType: !28, size: 32, align: 32, offset: 26720)
+!494 = !DIDerivedType(tag: DW_TAG_member, name: "qp", scope: !458, file: !172, line: 1174, baseType: !28, size: 32, align: 32, offset: 26752)
+!495 = !DIDerivedType(tag: DW_TAG_member, name: "prev_qp", scope: !458, file: !172, line: 1175, baseType: !28, size: 32, align: 32, offset: 26784)
+!496 = !DIDerivedType(tag: DW_TAG_member, name: "prev_delta_qp", scope: !458, file: !172, line: 1176, baseType: !28, size: 32, align: 32, offset: 26816)
+!497 = !DIGlobalVariable(name: "rddata_top_frame_mb", scope: !0, file: !172, line: 1203, type: !457, isLocal: false, isDefinition: true, variable: %struct.RD_DATA* @rddata_top_frame_mb)
+!498 = !DIGlobalVariable(name: "rddata_bot_frame_mb", scope: !0, file: !172, line: 1203, type: !457, isLocal: false, isDefinition: true, variable: %struct.RD_DATA* @rddata_bot_frame_mb)
+!499 = !DIGlobalVariable(name: "rddata_top_field_mb", scope: !0, file: !172, line: 1204, type: !457, isLocal: false, isDefinition: true, variable: %struct.RD_DATA* @rddata_top_field_mb)
+!500 = !DIGlobalVariable(name: "rddata_bot_field_mb", scope: !0, file: !172, line: 1204, type: !457, isLocal: false, isDefinition: true, variable: %struct.RD_DATA* @rddata_bot_field_mb)
+!501 = !DIGlobalVariable(name: "p_stat", scope: !0, file: !172, line: 1230, type: !502, isLocal: false, isDefinition: true, variable: %struct.__sFILE** @p_stat)
+!502 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !503, size: 64, align: 64)
+!503 = !DIDerivedType(tag: DW_TAG_typedef, name: "FILE", file: !504, line: 153, baseType: !505)
+!504 = !DIFile(filename: "/usr/include/stdio.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
+!505 = !DICompositeType(tag: DW_TAG_structure_type, name: "__sFILE", file: !504, line: 122, size: 1216, align: 64, elements: !506)
+!506 = !{!507, !509, !510, !511, !512, !513, !518, !519, !520, !524, !529, !538, !544, !545, !548, !549, !551, !555, !556, !557}
+!507 = !DIDerivedType(tag: DW_TAG_member, name: "_p", scope: !505, file: !504, line: 123, baseType: !508, size: 64, align: 64)
+!508 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !45, size: 64, align: 64)
+!509 = !DIDerivedType(tag: DW_TAG_member, name: "_r", scope: !505, file: !504, line: 124, baseType: !28, size: 32, align: 32, offset: 64)
+!510 = !DIDerivedType(tag: DW_TAG_member, name: "_w", scope: !505, file: !504, line: 125, baseType: !28, size: 32, align: 32, offset: 96)
+!511 = !DIDerivedType(tag: DW_TAG_member, name: "_flags", scope: !505, file: !504, line: 126, baseType: !402, size: 16, align: 16, offset: 128)
+!512 = !DIDerivedType(tag: DW_TAG_member, name: "_file", scope: !505, file: !504, line: 127, baseType: !402, size: 16, align: 16, offset: 144)
+!513 = !DIDerivedType(tag: DW_TAG_member, name: "_bf", scope: !505, file: !504, line: 128, baseType: !514, size: 128, align: 64, offset: 192)
+!514 = !DICompositeType(tag: DW_TAG_structure_type, name: "__sbuf", file: !504, line: 88, size: 128, align: 64, elements: !515)
+!515 = !{!516, !517}
+!516 = !DIDerivedType(tag: DW_TAG_member, name: "_base", scope: !514, file: !504, line: 89, baseType: !508, size: 64, align: 64)
+!517 = !DIDerivedType(tag: DW_TAG_member, name: "_size", scope: !514, file: !504, line: 90, baseType: !28, size: 32, align: 32, offset: 64)
+!518 = !DIDerivedType(tag: DW_TAG_member, name: "_lbfsize", scope: !505, file: !504, line: 129, baseType: !28, size: 32, align: 32, offset: 320)
+!519 = !DIDerivedType(tag: DW_TAG_member, name: "_cookie", scope: !505, file: !504, line: 132, baseType: !9, size: 64, align: 64, offset: 384)
+!520 = !DIDerivedType(tag: DW_TAG_member, name: "_close", scope: !505, file: !504, line: 133, baseType: !521, size: 64, align: 64, offset: 448)
+!521 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !522, size: 64, align: 64)
+!522 = !DISubroutineType(types: !523)
+!523 = !{!28, !9}
+!524 = !DIDerivedType(tag: DW_TAG_member, name: "_read", scope: !505, file: !504, line: 134, baseType: !525, size: 64, align: 64, offset: 512)
+!525 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !526, size: 64, align: 64)
+!526 = !DISubroutineType(types: !527)
+!527 = !{!28, !9, !528, !28}
+!528 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !417, size: 64, align: 64)
+!529 = !DIDerivedType(tag: DW_TAG_member, name: "_seek", scope: !505, file: !504, line: 135, baseType: !530, size: 64, align: 64, offset: 576)
+!530 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !531, size: 64, align: 64)
+!531 = !DISubroutineType(types: !532)
+!532 = !{!533, !9, !533, !28}
+!533 = !DIDerivedType(tag: DW_TAG_typedef, name: "fpos_t", file: !504, line: 77, baseType: !534)
+!534 = !DIDerivedType(tag: DW_TAG_typedef, name: "__darwin_off_t", file: !535, line: 71, baseType: !536)
+!535 = !DIFile(filename: "/usr/include/sys/_types.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
+!536 = !DIDerivedType(tag: DW_TAG_typedef, name: "__int64_t", file: !537, line: 46, baseType: !479)
+!537 = !DIFile(filename: "/usr/include/i386/_types.h", directory: "/Users/vaspol/Documents/classes/EECS583/ClassProject/source_extraction_scripts")
+!538 = !DIDerivedType(tag: DW_TAG_member, name: "_write", scope: !505, file: !504, line: 136, baseType: !539, size: 64, align: 64, offset: 640)
+!539 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !540, size: 64, align: 64)
+!540 = !DISubroutineType(types: !541)
+!541 = !{!28, !9, !542, !28}
+!542 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !543, size: 64, align: 64)
+!543 = !DIDerivedType(tag: DW_TAG_const_type, baseType: !417)
+!544 = !DIDerivedType(tag: DW_TAG_member, name: "_ub", scope: !505, file: !504, line: 139, baseType: !514, size: 128, align: 64, offset: 704)
+!545 = !DIDerivedType(tag: DW_TAG_member, name: "_extra", scope: !505, file: !504, line: 140, baseType: !546, size: 64, align: 64, offset: 832)
+!546 = !DIDerivedType(tag: DW_TAG_pointer_type, baseType: !547, size: 64, align: 64)
+!547 = !DICompositeType(tag: DW_TAG_structure_type, name: "__sFILEX", file: !504, line: 94, flags: DIFlagFwdDecl)
+!548 = !DIDerivedType(tag: DW_TAG_member, name: "_ur", scope: !505, file: !504, line: 141, baseType: !28, size: 32, align: 32, offset: 896)
+!549 = !DIDerivedType(tag: DW_TAG_member, name: "_ubuf", scope: !505, file: !504, line: 144, baseType: !550, size: 24, align: 8, offset: 928)
+!550 = !DICompositeType(tag: DW_TAG_array_type, baseType: !45, size: 24, align: 8, elements: !303)
+!551 = !DIDerivedType(tag: DW_TAG_member, name: "_nbuf", scope: !505, file: !504, line: 145, baseType: !552, size: 8, align: 8, offset: 952)
+!552 = !DICompositeType(tag: DW_TAG_array_type, baseType: !45, size: 8, align: 8, elements: !553)
+!553 = !{!554}
+!554 = !DISubrange(count: 1)
+!555 = !DIDerivedType(tag: DW_TAG_member, name: "_lb", scope: !505, file: !504, line: 148, baseType: !514, size: 128, align: 64, offset: 960)
+!556 = !DIDerivedType(tag: DW_TAG_member, name: "_blksize", scope: !505, file: !504, line: 151, baseType: !28, size: 32, align: 32, offset: 1088)
+!557 = !DIDerivedType(tag: DW_TAG_member, name: "_offset", scope: !505, file: !504, line: 152, baseType: !533, size: 64, align: 64, offset: 1152)
+!558 = !DIGlobalVariable(name: "p_log", scope: !0, file: !172, line: 1231, type: !502, isLocal: false, isDefinition: true, variable: %struct.__sFILE** @p_log)
+!559 = !DIGlobalVariable(name: "p_trace", scope: !0, file: !172, line: 1232, type: !502, isLocal: false, isDefinition: true, variable: %struct.__sFILE** @p_trace)
+!560 = !DIGlobalVariable(name: "p_in", scope: !0, file: !172, line: 1233, type: !28, isLocal: false, isDefinition: true, variable: i32* @p_in)
+!561 = !DIGlobalVariable(name: "p_dec", scope: !0, file: !172, line: 1234, type: !28, isLocal: false, isDefinition: true, variable: i32* @p_dec)
+!562 = !DIGlobalVariable(name: "glob_remapping_of_pic_nums_idc_l0", scope: !0, file: !172, line: 1237, type: !563, isLocal: false, isDefinition: true, variable: [20 x i32]* @glob_remapping_of_pic_nums_idc_l0)
+!563 = !DICompositeType(tag: DW_TAG_array_type, baseType: !28, size: 640, align: 32, elements: !564)
+!564 = !{!565}
+!565 = !DISubrange(count: 20)
+!566 = !DIGlobalVariable(name: "glob_abs_diff_pic_num_minus1_l0", scope: !0, file: !172, line: 1238, type: !563, isLocal: false, isDefinition: true, variable: [20 x i32]* @glob_abs_diff_pic_num_minus1_l0)
+!567 = !DIGlobalVariable(name: "glob_long_term_pic_idx_l0", scope: !0, file: !172, line: 1239, type: !563, isLocal: false, isDefinition: true, variable: [20 x i32]* @glob_long_term_pic_idx_l0)
+!568 = !DIGlobalVariable(name: "glob_remapping_of_pic_nums_idc_l1", scope: !0, file: !172, line: 1240, type: !563, isLocal: false, isDefinition: true, variable: [20 x i32]* @glob_remapping_of_pic_nums_idc_l1)
+!569 = !DIGlobalVariable(name: "glob_abs_diff_pic_num_minus1_l1", scope: !0, file: !172, line: 1241, type: !563, isLocal: false, isDefinition: true, variable: [20 x i32]* @glob_abs_diff_pic_num_minus1_l1)
+!570 = !DIGlobalVariable(name: "glob_long_term_pic_idx_l1", scope: !0, file: !172, line: 1242, type: !563, isLocal: false, isDefinition: true, variable: [20 x i32]* @glob_long_term_pic_idx_l1)
+!571 = !DIGlobalVariable(name: "Bytes_After_Header", scope: !0, file: !172, line: 1456, type: !28, isLocal: false, isDefinition: true, variable: i32* @Bytes_After_Header)
+!572 = !DIGlobalVariable(name: "rpc_bytes_to_go", scope: !0, file: !172, line: 1465, type: !28, isLocal: false, isDefinition: true, variable: i32* @rpc_bytes_to_go)
+!573 = !DIGlobalVariable(name: "rpc_bits_to_go", scope: !0, file: !172, line: 1466, type: !28, isLocal: false, isDefinition: true, variable: i32* @rpc_bits_to_go)
+!574 = !{}
+!575 = !{i32 2, !"Dwarf Version", i32 2}
+!576 = !{i32 2, !"Debug Info Version", i32 700000003}
+!577 = !{i32 1, !"PIC Level", i32 2}
+!578 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
+!579 = !DILocation(line: 35, column: 11, scope: !580)
+!580 = distinct !DILexicalBlock(scope: !11, file: !1, line: 35, column: 8)
+!581 = !DIExpression()
+!582 = !DILocation(line: 33, column: 30, scope: !11)
+!583 = !DILocation(line: 35, column: 58, scope: !580)
+!584 = !DILocation(line: 35, column: 8, scope: !11)
+!585 = !DILocation(line: 36, column: 6, scope: !580)
+!586 = !DILocation(line: 37, column: 29, scope: !587)
+!587 = distinct !DILexicalBlock(scope: !11, file: !1, line: 37, column: 8)
+!588 = !DILocation(line: 37, column: 12, scope: !587)
+!589 = !DILocation(line: 37, column: 27, scope: !587)
+!590 = !{!591, !595, i64 176}
+!591 = !{!"", !592, i64 0, !594, i64 4, !594, i64 8, !592, i64 12, !592, i64 16, !592, i64 20, !592, i64 24, !592, i64 56, !594, i64 60, !594, i64 64, !592, i64 68, !592, i64 100, !592, i64 132, !592, i64 164, !594, i64 168, !594, i64 172, !595, i64 176, !594, i64 184, !594, i64 188, !592, i64 192, !594, i64 196, !594, i64 200, !594, i64 204, !594, i64 208, !594, i64 212, !594, i64 216, !592, i64 220, !592, i64 224, !592, i64 228, !592, i64 232}
+!592 = !{!"omnipotent char", !593, i64 0}
+!593 = !{!"Simple C/C++ TBAA"}
+!594 = !{!"int", !592, i64 0}
+!595 = !{!"any pointer", !592, i64 0}
+!596 = !DILocation(line: 37, column: 61, scope: !587)
+!597 = !DILocation(line: 37, column: 8, scope: !11)
+!598 = !DILocation(line: 38, column: 6, scope: !587)
+!599 = !DILocation(line: 39, column: 4, scope: !11)
+!600 = !DILocation(line: 56, column: 11, scope: !601)
+!601 = distinct !DILexicalBlock(scope: !61, file: !1, line: 56, column: 8)
+!602 = !DILocation(line: 54, column: 30, scope: !61)
+!603 = !DILocation(line: 56, column: 58, scope: !601)
+!604 = !DILocation(line: 56, column: 8, scope: !61)
+!605 = !DILocation(line: 57, column: 6, scope: !601)
+!606 = !DILocation(line: 58, column: 4, scope: !61)
+!607 = !DILocation(line: 75, column: 42, scope: !160)
+!608 = !DILocation(line: 77, column: 4, scope: !160)
+!609 = !{!"branch_weights", i32 4, i32 64}
+!610 = !DILocation(line: 78, column: 13, scope: !611)
+!611 = distinct !DILexicalBlock(scope: !160, file: !1, line: 78, column: 8)
+!612 = !DILocation(line: 78, column: 28, scope: !611)
+!613 = !DILocation(line: 78, column: 8, scope: !160)
+!614 = !DILocation(line: 78, column: 37, scope: !611)
+!615 = !DILocation(line: 79, column: 10, scope: !160)
+!616 = !DILocation(line: 79, column: 4, scope: !160)
+!617 = !DILocation(line: 80, column: 2, scope: !160)
+!618 = !DILocation(line: 96, column: 42, scope: !165)
+!619 = !DILocation(line: 98, column: 4, scope: !165)
+!620 = !DILocation(line: 99, column: 10, scope: !165)
+!621 = !DILocation(line: 99, column: 4, scope: !165)
+!622 = !DILocation(line: 100, column: 2, scope: !165)

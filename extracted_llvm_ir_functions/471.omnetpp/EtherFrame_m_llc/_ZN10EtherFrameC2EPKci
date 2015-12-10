@@ -1,0 +1,51 @@
+define void @_ZN10EtherFrameC2EPKci(%class.EtherFrame* %this, i8* %name, i32 %kind) unnamed_addr #0 align 2 {
+  %1 = getelementptr inbounds %class.EtherFrame* %this, i64 0, i32 0
+  tail call void @_ZN8cMessageC2EPKcilib(%class.cMessage* %1, i8* %name, i32 %kind, i64 1, i32 0, i1 zeroext false) #8
+  %2 = getelementptr inbounds %class.EtherFrame* %this, i64 0, i32 0, i32 0, i32 0
+  store i32 (...)** bitcast (i8** getelementptr inbounds ([25 x i8*]* @_ZTV10EtherFrame, i64 0, i64 2) to i32 (...)**), i32 (...)*** %2, align 8, !tbaa !2
+  %3 = getelementptr inbounds %class.EtherFrame* %this, i64 0, i32 1
+  invoke void @_ZN10MACAddressC1Ev(%class.MACAddress* %3) #8
+          to label %4 unwind label %7
+
+; <label>:4                                       ; preds = %0
+  %5 = getelementptr inbounds %class.EtherFrame* %this, i64 0, i32 2
+  invoke void @_ZN10MACAddressC1Ev(%class.MACAddress* %5) #8
+          to label %6 unwind label %11
+
+; <label>:6                                       ; preds = %4
+  ret void
+
+; <label>:7                                       ; preds = %0
+  %8 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup
+  %9 = extractvalue { i8*, i32 } %8, 0
+  %10 = extractvalue { i8*, i32 } %8, 1
+  br label %_ZN10MACAddressD1Ev.exit
+
+; <label>:11                                      ; preds = %4
+  %12 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup
+  %13 = extractvalue { i8*, i32 } %12, 0
+  %14 = extractvalue { i8*, i32 } %12, 1
+  %15 = getelementptr inbounds %class.MACAddress* %3, i64 0, i32 0
+  invoke void @_ZN15MACAddress_BaseD2Ev(%class.MACAddress_Base* %15) #8
+          to label %_ZN10MACAddressD1Ev.exit unwind label %19
+
+_ZN10MACAddressD1Ev.exit:                         ; preds = %11, %7
+  %.01 = phi i8* [ %9, %7 ], [ %13, %11 ]
+  %.0 = phi i32 [ %10, %7 ], [ %14, %11 ]
+  invoke void @_ZN8cMessageD2Ev(%class.cMessage* %1) #8
+          to label %16 unwind label %19
+
+; <label>:16                                      ; preds = %_ZN10MACAddressD1Ev.exit
+  %17 = insertvalue { i8*, i32 } undef, i8* %.01, 0
+  %18 = insertvalue { i8*, i32 } %17, i32 %.0, 1
+  resume { i8*, i32 } %18
+
+; <label>:19                                      ; preds = %11, %_ZN10MACAddressD1Ev.exit
+  %20 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          catch i8* null
+  %21 = extractvalue { i8*, i32 } %20, 0
+  tail call void @__clang_call_terminate(i8* %21) #10
+  unreachable
+}

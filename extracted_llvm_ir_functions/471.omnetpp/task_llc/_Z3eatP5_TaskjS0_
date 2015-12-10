@@ -1,0 +1,112 @@
+define void @_Z3eatP5_TaskjS0_(%struct._Task* %p, i32 %size, %struct._Task* %prevbeef) #1 {
+  %t = alloca %struct._Task, align 8
+  %1 = bitcast %struct._Task* %t to i8*
+  call void @llvm.lifetime.start(i64 360, i8* %1) #2
+  %2 = getelementptr inbounds %struct._Task* %t, i64 0, i32 0
+  store i64 3736059631, i64* %2, align 8, !tbaa !2
+  %3 = getelementptr inbounds %struct._Task* %t, i64 0, i32 10
+  store i64 3736059631, i64* %3, align 8, !tbaa !9
+  %4 = getelementptr inbounds %struct._Task* %t, i64 0, i32 9
+  store %struct._Task* %prevbeef, %struct._Task** %4, align 8, !tbaa !10
+  %5 = icmp ult %struct._Task* %t, %p
+  br i1 %5, label %6, label %10
+
+; <label>:6                                       ; preds = %0
+  %7 = ptrtoint %struct._Task* %p to i64
+  %8 = ptrtoint %struct._Task* %t to i64
+  %9 = sub i64 %7, %8
+  br label %_Z4distP5_TaskS0_.exit
+
+; <label>:10                                      ; preds = %0
+  %11 = ptrtoint %struct._Task* %t to i64
+  %12 = ptrtoint %struct._Task* %p to i64
+  %13 = sub i64 %11, %12
+  br label %_Z4distP5_TaskS0_.exit
+
+_Z4distP5_TaskS0_.exit:                           ; preds = %6, %10
+  %14 = phi i64 [ %9, %6 ], [ %13, %10 ]
+  %15 = trunc i64 %14 to i32
+  %16 = icmp ult i32 %15, %size
+  br i1 %16, label %17, label %18
+
+; <label>:17                                      ; preds = %_Z4distP5_TaskS0_.exit
+  call void @_Z3eatP5_TaskjS0_(%struct._Task* %p, i32 %size, %struct._Task* %t) #8
+  unreachable
+
+; <label>:18                                      ; preds = %_Z4distP5_TaskS0_.exit
+  %19 = getelementptr inbounds %struct._Task* %p, i64 0, i32 4
+  %20 = load i32* %19, align 4, !tbaa !11
+  %21 = sub i32 %20, %15
+  %22 = getelementptr inbounds %struct._Task* %t, i64 0, i32 4
+  store i32 %21, i32* %22, align 4, !tbaa !11
+  store i32 %15, i32* %19, align 4, !tbaa !11
+  %23 = getelementptr inbounds %struct._Task* %t, i64 0, i32 3
+  store i32 0, i32* %23, align 8, !tbaa !12
+  %24 = getelementptr inbounds %struct._Task* %p, i64 0, i32 5
+  %25 = bitcast %struct._Task** %24 to i64*
+  %26 = load i64* %25, align 8, !tbaa !13
+  %27 = getelementptr inbounds %struct._Task* %t, i64 0, i32 5
+  %28 = bitcast %struct._Task** %27 to i64*
+  store i64 %26, i64* %28, align 8, !tbaa !13
+  store %struct._Task* %t, %struct._Task** %24, align 8, !tbaa !13
+  %29 = getelementptr inbounds %struct._Task* %t, i64 0, i32 1
+  %30 = getelementptr inbounds [37 x i32]* %29, i64 0, i64 0
+  %31 = call i32 @setjmp(i32* %30) #9
+  %32 = icmp eq i32 %31, 0
+  br i1 %32, label %36, label %.preheader
+
+.preheader:                                       ; preds = %18
+  %33 = getelementptr inbounds %struct._Task* %t, i64 0, i32 8
+  %34 = getelementptr inbounds %struct._Task* %t, i64 0, i32 6
+  %35 = getelementptr inbounds %struct._Task* %t, i64 0, i32 7
+  br label %.backedge
+
+; <label>:36                                      ; preds = %18
+  %37 = getelementptr inbounds %struct._Task* %t, i64 0, i32 2
+  %38 = bitcast [37 x i32]* %37 to i8*
+  %39 = bitcast [37 x i32]* %29 to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %38, i8* %39, i64 148, i32 4, i1 false)
+  %40 = getelementptr inbounds %struct._Task* %p, i64 0, i32 1, i64 0
+  call void @longjmp(i32* %40, i32 1) #10
+  unreachable
+
+.backedge:                                        ; preds = %54, %59, %.preheader
+  %41 = load i32* %33, align 8, !tbaa !14
+  %42 = add i32 %41, 1024
+  %43 = load i32* %22, align 4, !tbaa !11
+  %44 = icmp ugt i32 %42, %43
+  br i1 %44, label %50, label %45
+
+; <label>:45                                      ; preds = %.backedge
+  %46 = call i32 @setjmp(i32* %30) #9
+  %47 = icmp eq i32 %46, 0
+  br i1 %47, label %48, label %50
+
+; <label>:48                                      ; preds = %45
+  %49 = load i32* %33, align 8, !tbaa !14
+  call void @_Z3eatP5_TaskjS0_(%struct._Task* %t, i32 %49, %struct._Task* null) #8
+  unreachable
+
+; <label>:50                                      ; preds = %.backedge, %45
+  store i32 1, i32* %23, align 8, !tbaa !12
+  %51 = call i32 @setjmp(i32* %30) #9
+  %52 = icmp eq i32 %51, 0
+  br i1 %52, label %53, label %54
+
+; <label>:53                                      ; preds = %50
+  call void @longjmp(i32* getelementptr inbounds ([37 x i32]* @tmp_jmpb, i64 0, i64 0), i32 1) #10
+  unreachable
+
+; <label>:54                                      ; preds = %50
+  %55 = load void (i8*)** %34, align 8, !tbaa !15
+  %56 = load i8** %35, align 8, !tbaa !16
+  call void %55(i8* %56) #8
+  call void @_Z9task_freeP5_Task(%struct._Task* %t) #8
+  %57 = call i32 @setjmp(i32* %30) #9
+  %58 = icmp eq i32 %57, 0
+  br i1 %58, label %59, label %.backedge
+
+; <label>:59                                      ; preds = %54
+  call void @_Z13task_switchtoP5_Task(%struct._Task* @main_task) #8
+  br label %.backedge
+}

@@ -1,0 +1,204 @@
+define void @_ZN14MACRelayUnitPP19handleIncomingFrameEP10EtherFrame(%class.MACRelayUnitPP* %this, %class.EtherFrame* %frame) #0 align 2 {
+  %1 = getelementptr inbounds %class.EtherFrame* %frame, i64 0, i32 0, i32 3
+  %2 = load i64* %1, align 8, !tbaa !43
+  %3 = sdiv i64 %2, 8
+  %4 = getelementptr inbounds %class.MACRelayUnitPP* %this, i64 0, i32 6
+  %5 = load i32* %4, align 4, !tbaa !22
+  %6 = sext i32 %5 to i64
+  %7 = add nsw i64 %6, %3
+  %8 = getelementptr inbounds %class.MACRelayUnitPP* %this, i64 0, i32 2
+  %9 = load i32* %8, align 4, !tbaa !17
+  %10 = sext i32 %9 to i64
+  %11 = icmp slt i64 %7, %10
+  br i1 %11, label %12, label %104
+
+; <label>:12                                      ; preds = %0
+  %13 = getelementptr inbounds %class.EtherFrame* %frame, i64 0, i32 0
+  %14 = tail call %class.cGate* @_ZNK8cMessage11arrivalGateEv(%class.cMessage* %13) #11
+  %15 = getelementptr inbounds %class.cGate* %14, i64 0, i32 2
+  %16 = load i32* %15, align 4, !tbaa !44
+  %17 = sext i32 %16 to i64
+  %18 = getelementptr inbounds %class.MACRelayUnitPP* %this, i64 0, i32 7
+  %19 = load %"struct.MACRelayUnitPP::PortBuffer"** %18, align 8, !tbaa !29
+  %20 = getelementptr inbounds %"struct.MACRelayUnitPP::PortBuffer"* %19, i64 %17, i32 3
+  %21 = getelementptr inbounds %class.EtherFrame* %frame, i64 0, i32 0, i32 0
+  tail call void @_ZN6cQueue6insertEP7cObject(%class.cQueue* %20, %class.cObject* %21) #11
+  %22 = load %"struct.MACRelayUnitPP::PortBuffer"** %18, align 8, !tbaa !29
+  %23 = getelementptr inbounds %"struct.MACRelayUnitPP::PortBuffer"* %22, i64 %17, i32 0
+  store i32 %16, i32* %23, align 4, !tbaa !30
+  %24 = load i32* %4, align 4, !tbaa !22
+  %25 = zext i32 %24 to i64
+  %26 = add nsw i64 %25, %3
+  %27 = trunc i64 %26 to i32
+  store i32 %27, i32* %4, align 4, !tbaa !22
+  %28 = getelementptr inbounds %class.MACRelayUnitPP* %this, i64 0, i32 4
+  %29 = load i32* %28, align 4, !tbaa !19
+  %30 = icmp sgt i32 %29, 0
+  br i1 %30, label %31, label %57
+
+; <label>:31                                      ; preds = %12
+  %32 = getelementptr inbounds %class.MACRelayUnitPP* %this, i64 0, i32 3
+  %33 = load i64* %32, align 8, !tbaa !18
+  %34 = icmp sgt i64 %33, 0
+  br i1 %34, label %35, label %57
+
+; <label>:35                                      ; preds = %31
+  %sext = shl i64 %26, 32
+  %36 = ashr exact i64 %sext, 32
+  %37 = icmp slt i64 %36, %33
+  br i1 %37, label %57, label %38
+
+; <label>:38                                      ; preds = %35
+  %39 = getelementptr inbounds %class.MACRelayUnitPP* %this, i64 0, i32 8
+  %40 = load double* %39, align 8, !tbaa !21
+  %41 = getelementptr inbounds %class.MACRelayUnitPP* %this, i64 0, i32 0, i32 0
+  %42 = tail call double @_ZNK13cSimpleModule7simTimeEv(%class.cSimpleModule* %41) #11
+  %43 = fsub double %40, %42
+  %44 = getelementptr inbounds %class.MACRelayUnitPP* %this, i64 0, i32 5
+  %45 = load double* %44, align 8, !tbaa !20
+  %46 = fcmp ogt double %43, %45
+  br i1 %46, label %.preheader, label %57
+
+.preheader:                                       ; preds = %38
+  %47 = getelementptr inbounds %class.MACRelayUnitPP* %this, i64 0, i32 0, i32 1
+  %48 = load i32* %47, align 4, !tbaa !23
+  %49 = icmp sgt i32 %48, 0
+  br i1 %49, label %.lr.ph, label %._crit_edge
+
+.lr.ph:                                           ; preds = %.preheader
+  %50 = bitcast %class.MACRelayUnitPP* %this to %class.MACRelayUnitBase*
+  br label %51
+
+; <label>:51                                      ; preds = %.lr.ph, %51
+  %i.01 = phi i32 [ 0, %.lr.ph ], [ %53, %51 ]
+  %52 = load i32* %28, align 4, !tbaa !19
+  tail call void @_ZN16MACRelayUnitBase14sendPauseFrameEii(%class.MACRelayUnitBase* %50, i32 %i.01, i32 %52) #11
+  %53 = add nuw nsw i32 %i.01, 1
+  %54 = load i32* %47, align 4, !tbaa !23
+  %55 = icmp slt i32 %53, %54
+  br i1 %55, label %51, label %._crit_edge
+
+._crit_edge:                                      ; preds = %51, %.preheader
+  %56 = tail call double @_ZNK13cSimpleModule7simTimeEv(%class.cSimpleModule* %41) #11
+  store double %56, double* %39, align 8, !tbaa !21
+  br label %57
+
+; <label>:57                                      ; preds = %35, %._crit_edge, %38, %31, %12
+  %58 = load %"struct.MACRelayUnitPP::PortBuffer"** %18, align 8, !tbaa !29
+  %59 = getelementptr inbounds %"struct.MACRelayUnitPP::PortBuffer"* %58, i64 %17, i32 1
+  %60 = load i8* %59, align 1, !tbaa !33, !range !47
+  %61 = icmp eq i8 %60, 0
+  %62 = load i32* getelementptr inbounds (%class.cEnvir* @ev, i64 0, i32 1), align 4, !tbaa !34
+  %63 = icmp ne i32 %62, 0
+  br i1 %61, label %75, label %64
+
+; <label>:64                                      ; preds = %57
+  br i1 %63, label %126, label %65
+
+; <label>:65                                      ; preds = %64
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([10 x i8]* @.str21, i64 0, i64 0)) #11
+  tail call void (%class.cEnvir*, i8*, ...)* @_ZN6cEnvir6printfEPKcz(%class.cEnvir* @ev, i8* getelementptr inbounds ([3 x i8]* @.str35, i64 0, i64 0), i32 %16) #11
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([23 x i8]* @.str22, i64 0, i64 0)) #11
+  %66 = bitcast %class.EtherFrame* %frame to i8* (%class.cObject*)***
+  %67 = load i8* (%class.cObject*)*** %66, align 8, !tbaa !2
+  %68 = getelementptr inbounds i8* (%class.cObject*)** %67, i64 7
+  %69 = load i8* (%class.cObject*)** %68, align 8
+  %70 = tail call i8* %69(%class.cObject* %21) #11
+  %71 = load i8* (%class.cObject*)*** %66, align 8, !tbaa !2
+  %72 = getelementptr inbounds i8* (%class.cObject*)** %71, i64 3
+  %73 = load i8* (%class.cObject*)** %72, align 8
+  %74 = tail call i8* %73(%class.cObject* %21) #11
+  tail call void (%class.cEnvir*, i8*, ...)* @_ZN6cEnvir6printfEPKcz(%class.cEnvir* @ev, i8* getelementptr inbounds ([7 x i8]* @.str37, i64 0, i64 0), i8* %70, i8* %74) #11
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([32 x i8]* @.str23, i64 0, i64 0)) #11
+  br label %126
+
+; <label>:75                                      ; preds = %57
+  br i1 %63, label %86, label %76
+
+; <label>:76                                      ; preds = %75
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([10 x i8]* @.str21, i64 0, i64 0)) #11
+  tail call void (%class.cEnvir*, i8*, ...)* @_ZN6cEnvir6printfEPKcz(%class.cEnvir* @ev, i8* getelementptr inbounds ([3 x i8]* @.str35, i64 0, i64 0), i32 %16) #11
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([43 x i8]* @.str24, i64 0, i64 0)) #11
+  %77 = bitcast %class.EtherFrame* %frame to i8* (%class.cObject*)***
+  %78 = load i8* (%class.cObject*)*** %77, align 8, !tbaa !2
+  %79 = getelementptr inbounds i8* (%class.cObject*)** %78, i64 7
+  %80 = load i8* (%class.cObject*)** %79, align 8
+  %81 = tail call i8* %80(%class.cObject* %21) #11
+  %82 = load i8* (%class.cObject*)*** %77, align 8, !tbaa !2
+  %83 = getelementptr inbounds i8* (%class.cObject*)** %82, i64 3
+  %84 = load i8* (%class.cObject*)** %83, align 8
+  %85 = tail call i8* %84(%class.cObject* %21) #11
+  tail call void (%class.cEnvir*, i8*, ...)* @_ZN6cEnvir6printfEPKcz(%class.cEnvir* @ev, i8* getelementptr inbounds ([7 x i8]* @.str37, i64 0, i64 0), i8* %81, i8* %85) #11
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([2 x i8]* @.str12, i64 0, i64 0)) #11
+  %.pre = load %"struct.MACRelayUnitPP::PortBuffer"** %18, align 8, !tbaa !29
+  br label %86
+
+; <label>:86                                      ; preds = %75, %76
+  %87 = phi %"struct.MACRelayUnitPP::PortBuffer"* [ %58, %75 ], [ %.pre, %76 ]
+  %88 = getelementptr inbounds %"struct.MACRelayUnitPP::PortBuffer"* %87, i64 %17, i32 1
+  store i8 1, i8* %88, align 1, !tbaa !33
+  %89 = tail call i8* @_ZN7cObjectnwEm(i64 168) #11
+  %90 = bitcast i8* %89 to %class.cMessage*
+  invoke void @_ZN8cMessageC1EPKcilib(%class.cMessage* %90, i8* getelementptr inbounds ([14 x i8]* @.str25, i64 0, i64 0), i32 0, i64 1, i32 0, i1 zeroext false) #11
+          to label %91 unwind label %102
+
+; <label>:91                                      ; preds = %86
+  %92 = load %"struct.MACRelayUnitPP::PortBuffer"** %18, align 8, !tbaa !29
+  %93 = getelementptr inbounds %"struct.MACRelayUnitPP::PortBuffer"* %92, i64 %17
+  %94 = getelementptr inbounds i8* %89, i64 104
+  %95 = bitcast i8* %94 to %"struct.MACRelayUnitPP::PortBuffer"**
+  store %"struct.MACRelayUnitPP::PortBuffer"* %93, %"struct.MACRelayUnitPP::PortBuffer"** %95, align 8, !tbaa !48
+  %96 = getelementptr inbounds %class.MACRelayUnitPP* %this, i64 0, i32 0, i32 0
+  %97 = tail call double @_ZNK13cSimpleModule7simTimeEv(%class.cSimpleModule* %96) #11
+  %98 = getelementptr inbounds %class.MACRelayUnitPP* %this, i64 0, i32 1
+  %99 = load double* %98, align 8, !tbaa !10
+  %100 = fadd double %97, %99
+  %101 = tail call i32 @_ZN13cSimpleModule10scheduleAtEdP8cMessage(%class.cSimpleModule* %96, double %100, %class.cMessage* %90) #11
+  br label %126
+
+; <label>:102                                     ; preds = %86
+  %103 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup
+  tail call void @_ZdlPv(i8* %89) #12
+  resume { i8*, i32 } %103
+
+; <label>:104                                     ; preds = %0
+  %105 = load i32* getelementptr inbounds (%class.cEnvir* @ev, i64 0, i32 1), align 4, !tbaa !34
+  %106 = icmp eq i32 %105, 0
+  br i1 %106, label %107, label %118
+
+; <label>:107                                     ; preds = %104
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([29 x i8]* @.str26, i64 0, i64 0)) #11
+  %108 = getelementptr inbounds %class.EtherFrame* %frame, i64 0, i32 0, i32 0
+  %109 = bitcast %class.EtherFrame* %frame to i8* (%class.cObject*)***
+  %110 = load i8* (%class.cObject*)*** %109, align 8, !tbaa !2
+  %111 = getelementptr inbounds i8* (%class.cObject*)** %110, i64 7
+  %112 = load i8* (%class.cObject*)** %111, align 8
+  %113 = tail call i8* %112(%class.cObject* %108) #11
+  %114 = load i8* (%class.cObject*)*** %109, align 8, !tbaa !2
+  %115 = getelementptr inbounds i8* (%class.cObject*)** %114, i64 3
+  %116 = load i8* (%class.cObject*)** %115, align 8
+  %117 = tail call i8* %116(%class.cObject* %108) #11
+  tail call void (%class.cEnvir*, i8*, ...)* @_ZN6cEnvir6printfEPKcz(%class.cEnvir* @ev, i8* getelementptr inbounds ([7 x i8]* @.str37, i64 0, i64 0), i8* %113, i8* %117) #11
+  tail call void @_ZN6cEnvir4putsEPKc(%class.cEnvir* @ev, i8* getelementptr inbounds ([2 x i8]* @.str12, i64 0, i64 0)) #11
+  br label %118
+
+; <label>:118                                     ; preds = %104, %107
+  %119 = bitcast %class.EtherFrame* %frame to void (%class.EtherFrame*)***
+  %120 = load void (%class.EtherFrame*)*** %119, align 8, !tbaa !2
+  %121 = getelementptr inbounds void (%class.EtherFrame*)** %120, i64 1
+  %122 = load void (%class.EtherFrame*)** %121, align 8
+  tail call void %122(%class.EtherFrame* %frame) #11
+  %123 = getelementptr inbounds %class.MACRelayUnitPP* %this, i64 0, i32 10
+  %124 = load i64* %123, align 8, !tbaa !49
+  %125 = add nsw i64 %124, 1
+  store i64 %125, i64* %123, align 8, !tbaa !49
+  br label %126
+
+; <label>:126                                     ; preds = %91, %64, %65, %118
+  %127 = getelementptr inbounds %class.MACRelayUnitPP* %this, i64 0, i32 11
+  %128 = load i32* %4, align 4, !tbaa !22
+  %129 = sitofp i32 %128 to double
+  %130 = tail call zeroext i1 @_ZN10cOutVector6recordEd(%class.cOutVector* %127, double %129) #11
+  ret void
+}

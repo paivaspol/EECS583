@@ -1,0 +1,27 @@
+define internal void @Convert_CCTK_REAL16_to_CCTK_REAL8(i8* nocapture readonly %src, i8* nocapture %dst, i32 %nelems, i32 %src_stride, i32 %dst_stride) #1 {
+  %1 = icmp eq i32 %nelems, 0
+  br i1 %1, label %._crit_edge, label %.lr.ph
+
+.lr.ph:                                           ; preds = %0
+  %2 = bitcast i8* %src to x86_fp80*
+  %3 = bitcast i8* %dst to double*
+  %4 = sext i32 %src_stride to i64
+  %5 = sext i32 %dst_stride to i64
+  br label %6
+
+; <label>:6                                       ; preds = %.lr.ph, %6
+  %_src.03 = phi x86_fp80* [ %2, %.lr.ph ], [ %10, %6 ]
+  %_dst.02 = phi double* [ %3, %.lr.ph ], [ %11, %6 ]
+  %.01 = phi i32 [ %nelems, %.lr.ph ], [ %7, %6 ]
+  %7 = add nsw i32 %.01, -1
+  %8 = load x86_fp80* %_src.03, align 16, !tbaa !14
+  %9 = fptrunc x86_fp80 %8 to double
+  store double %9, double* %_dst.02, align 8, !tbaa !10
+  %10 = getelementptr inbounds x86_fp80* %_src.03, i64 %4
+  %11 = getelementptr inbounds double* %_dst.02, i64 %5
+  %12 = icmp eq i32 %7, 0
+  br i1 %12, label %._crit_edge, label %6
+
+._crit_edge:                                      ; preds = %6, %0
+  ret void
+}

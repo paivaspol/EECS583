@@ -1,0 +1,36 @@
+define zeroext i1 @_ZN28EtherFrameWithSNAPDescriptor16setFieldAsStringEiiPKc(%class.EtherFrameWithSNAPDescriptor* nocapture readonly %this, i32 %field, i32 %i, i8* %value) unnamed_addr #0 align 2 {
+  %1 = icmp slt i32 %field, 2
+  br i1 %1, label %19, label %2
+
+; <label>:2                                       ; preds = %0
+  %3 = getelementptr inbounds %class.EtherFrameWithSNAPDescriptor* %this, i64 0, i32 0, i32 0, i32 1
+  %4 = bitcast i8** %3 to %class.EtherFrameWithSNAP**
+  %5 = load %class.EtherFrameWithSNAP** %4, align 8, !tbaa !10
+  switch i32 %field, label %19 [
+    i32 2, label %6
+    i32 3, label %12
+  ]
+
+; <label>:6                                       ; preds = %2
+  %7 = bitcast %class.EtherFrameWithSNAP* %5 to void (%class.EtherFrameWithSNAP*, i64)***
+  %8 = load void (%class.EtherFrameWithSNAP*, i64)*** %7, align 8, !tbaa !2
+  %9 = getelementptr inbounds void (%class.EtherFrameWithSNAP*, i64)** %8, i64 24
+  %10 = load void (%class.EtherFrameWithSNAP*, i64)** %9, align 8
+  %11 = tail call i64 @_ZN17cStructDescriptor11string2longEPKc(i8* %value) #8
+  tail call void %10(%class.EtherFrameWithSNAP* %5, i64 %11) #8
+  br label %19
+
+; <label>:12                                      ; preds = %2
+  %13 = bitcast %class.EtherFrameWithSNAP* %5 to void (%class.EtherFrameWithSNAP*, i32)***
+  %14 = load void (%class.EtherFrameWithSNAP*, i32)*** %13, align 8, !tbaa !2
+  %15 = getelementptr inbounds void (%class.EtherFrameWithSNAP*, i32)** %14, i64 26
+  %16 = load void (%class.EtherFrameWithSNAP*, i32)** %15, align 8
+  %17 = tail call i64 @_ZN17cStructDescriptor11string2longEPKc(i8* %value) #8
+  %18 = trunc i64 %17 to i32
+  tail call void %16(%class.EtherFrameWithSNAP* %5, i32 %18) #8
+  br label %19
+
+; <label>:19                                      ; preds = %0, %2, %12, %6
+  %.0 = phi i1 [ true, %12 ], [ true, %6 ], [ false, %2 ], [ false, %0 ]
+  ret i1 %.0
+}

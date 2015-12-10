@@ -1,0 +1,39 @@
+define void @_ZN13MessageTracer8assignedEP9MessageId(%class.MessageTracer* nocapture %this, %class.MessageId* readonly %m) #0 align 2 {
+  %1 = getelementptr inbounds %class.MessageTracer* %this, i64 0, i32 0
+  %2 = load %struct.__sFILE** %1, align 8, !tbaa !5
+  %3 = icmp eq %struct.__sFILE* %2, null
+  br i1 %3, label %4, label %6
+
+; <label>:4                                       ; preds = %0
+  %5 = tail call %struct.__sFILE* @"\01_fopen"(i8* getelementptr inbounds ([13 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([2 x i8]* @.str1, i64 0, i64 0)) #9
+  store %struct.__sFILE* %5, %struct.__sFILE** %1, align 8, !tbaa !5
+  br label %6
+
+; <label>:6                                       ; preds = %0, %4
+  %7 = phi %struct.__sFILE* [ %2, %0 ], [ %5, %4 ]
+  %8 = getelementptr inbounds %class.MessageId* %m, i64 0, i32 0
+  %9 = load i32* %8, align 4, !tbaa !9
+  %10 = getelementptr inbounds %class.MessageId* %m, i64 0, i32 1
+  %11 = load i32* %10, align 4, !tbaa !12
+  %12 = getelementptr inbounds %class.MessageId* %m, i64 0, i32 2
+  %13 = load i32* %12, align 4, !tbaa !13
+  %14 = load i64* getelementptr inbounds (%class.cSimulation* @simulation, i64 0, i32 12), align 8, !tbaa !14
+  %15 = load %class.cModule** getelementptr inbounds (%class.cSimulation* @simulation, i64 0, i32 7), align 8, !tbaa !21
+  %16 = bitcast %class.cModule* %15 to i8* (%class.cModule*)***
+  %17 = load i8* (%class.cModule*)*** %16, align 8, !tbaa !22
+  %18 = getelementptr inbounds i8* (%class.cModule*)** %17, i64 4
+  %19 = load i8* (%class.cModule*)** %18, align 8
+  %20 = tail call i8* %19(%class.cModule* %15) #9
+  %21 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([27 x i8]* @.str4, i64 0, i64 0), i32 %9, i32 %11, i32 %13, i64 %14, i8* %20) #9
+  %22 = getelementptr inbounds %class.MessageTracer* %this, i64 0, i32 1
+  %23 = load %class.MessageId** %22, align 8, !tbaa !8
+  %24 = icmp eq %class.MessageId* %23, %m
+  br i1 %24, label %25, label %26
+
+; <label>:25                                      ; preds = %6
+  store %class.MessageId* null, %class.MessageId** %22, align 8, !tbaa !8
+  br label %26
+
+; <label>:26                                      ; preds = %25, %6
+  ret void
+}

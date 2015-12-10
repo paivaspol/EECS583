@@ -1,0 +1,40 @@
+define void @_ZN11EtherAppSrv10sendPacketEP8cMessageRK10MACAddress(%class.EtherAppSrv* %this, %class.cMessage* %datapacket, %class.MACAddress* dereferenceable(16) %destAddr) #0 align 2 {
+  %1 = tail call noalias i8* @_Znwm(i64 56) #13
+  %2 = bitcast i8* %1 to %class.EtherCtrl*
+  invoke void @_ZN9EtherCtrlC1Ev(%class.EtherCtrl* %2) #11
+          to label %3 unwind label %25
+
+; <label>:3                                       ; preds = %0
+  %4 = bitcast i8* %1 to void (%class.EtherCtrl*, i32)***
+  %5 = load void (%class.EtherCtrl*, i32)*** %4, align 8, !tbaa !14
+  %6 = getelementptr inbounds void (%class.EtherCtrl*, i32)** %5, i64 12
+  %7 = load void (%class.EtherCtrl*, i32)** %6, align 8
+  %8 = getelementptr inbounds %class.EtherAppSrv* %this, i64 0, i32 1
+  %9 = load i32* %8, align 4, !tbaa !2
+  tail call void %7(%class.EtherCtrl* %2, i32 %9) #11
+  %10 = load void (%class.EtherCtrl*, i32)*** %4, align 8, !tbaa !14
+  %11 = getelementptr inbounds void (%class.EtherCtrl*, i32)** %10, i64 14
+  %12 = load void (%class.EtherCtrl*, i32)** %11, align 8
+  %13 = getelementptr inbounds %class.EtherAppSrv* %this, i64 0, i32 2
+  %14 = load i32* %13, align 4, !tbaa !13
+  tail call void %12(%class.EtherCtrl* %2, i32 %14) #11
+  %15 = bitcast i8* %1 to void (%class.EtherCtrl*, %class.MACAddress*)***
+  %16 = load void (%class.EtherCtrl*, %class.MACAddress*)*** %15, align 8, !tbaa !14
+  %17 = getelementptr inbounds void (%class.EtherCtrl*, %class.MACAddress*)** %16, i64 8
+  %18 = load void (%class.EtherCtrl*, %class.MACAddress*)** %17, align 8
+  tail call void %18(%class.EtherCtrl* %2, %class.MACAddress* dereferenceable(16) %destAddr) #11
+  %19 = getelementptr inbounds %class.cMessage* %datapacket, i64 0, i32 0
+  %20 = tail call %class.cMessage30* @_Z14check_and_castIP10cMessage30ET_P7cObject(%class.cObject* %19) #11
+  %21 = getelementptr inbounds %class.cMessage30* %20, i64 0, i32 1
+  %22 = bitcast %class.cPolymorphic** %21 to i8**
+  store i8* %1, i8** %22, align 8, !tbaa !23
+  %23 = getelementptr inbounds %class.EtherAppSrv* %this, i64 0, i32 0
+  %24 = tail call i32 @_ZN13cSimpleModule4sendEP8cMessagePKci(%class.cSimpleModule* %23, %class.cMessage* %datapacket, i8* getelementptr inbounds ([4 x i8]* @.str5, i64 0, i64 0), i32 -1) #11
+  ret void
+
+; <label>:25                                      ; preds = %0
+  %26 = landingpad { i8*, i32 } personality i8* bitcast (i32 (...)* @__gxx_personality_v0 to i8*)
+          cleanup
+  tail call void @_ZdlPv(i8* %1) #12
+  resume { i8*, i32 } %26
+}
