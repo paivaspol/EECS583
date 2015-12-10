@@ -8,12 +8,10 @@ out_path = "../tokenized_sources"
 token_dict = {}
 counts = {}
 next_token = 1
-preds = {}
 
 sep = ","
 
-def update_paths(label, br_labels):
-    global preds
+def update_paths(label, br_labels, preds):
 
 
     if label not in preds:
@@ -81,6 +79,7 @@ def tokenize_funct(function):
     switch = False
     switch_text = []
     labels = {}
+    preds = {}
     curr_label = ""
     with open(function, "r") as funct_file:        
         for line in funct_file:
@@ -103,7 +102,7 @@ def tokenize_funct(function):
                         remove_percent = remove_trailing_brace.split("%")[1]
                         sw_labels.append(remove_percent)
 
-                backedge = update_paths(curr_label, sw_labels)
+                backedge = update_paths(curr_label, sw_labels, preds)
                 if backedge:
 #                    print "next back_sw",curr_label, switch_text
                     token_function.append(get_token("back_sw"))
@@ -133,7 +132,7 @@ def tokenize_funct(function):
                     remove_percent = label.split("%")[1]
                     br_labels.append(remove_percent)
 
-                backedge = update_paths(curr_label, br_labels)
+                backedge = update_paths(curr_label, br_labels, preds)
 
                 if backedge:
 #                    print "next back_br",curr_label, line
