@@ -149,16 +149,27 @@ def run_epoch(session, m, data, eval_op, verbose=False):
   """Runs the model on the given data."""
   num_iterations = int(math.ceil(data[0].shape[0] / m.batch_size))
 
+  total_accuracy = 0
+  total_dist = 0
+  total_xent = 0
+
   for step, (x, y) in enumerate(data_iterator(data, m.batch_size)):
     acc, dist, xent, _ = session.run([m.accuracy, m.distance, m.cross_entropy, eval_op],
                                  {m.input_data: x,
                                   m.targets: y})
+    total_accuracy += acc * m.batch_size
+    total_dist += dist * m.batch_size
+    total_xent += xent
 
     if verbose and (step % 100 == 0):
       print("\tstep: %d, accuracy: %g, distance: %g, xent: %g" %
             (step, acc, dist, xent))
 
-  return total_accuracy, total_distance, total_cross_entropy
+  avg_accuracy = total_accuracy / data[0].shape[0]
+  avg_dist = total_dist / data[0].shape[0]
+  avg_xent = total_xent / data[0].shape[0]
+
+  return avg_accuracy, avg_dist, avg_xent
 
 def get_config():
   return TrainConfig()
