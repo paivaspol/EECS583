@@ -207,7 +207,7 @@ def main(unused_args):
   eval_config.batch_size = 1
 
   # TODO: replace artificially generated training data with real data
-  train_size = 10000
+  train_size = 100000
   train_data = create_random_data(train_size, config.vocab_size, config.num_steps, config.num_buckets)
   valid_size = 3000
   valid_data = create_random_data(valid_size, config.vocab_size, config.num_steps, config.num_buckets)
