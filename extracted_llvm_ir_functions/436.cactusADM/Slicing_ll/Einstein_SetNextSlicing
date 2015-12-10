@@ -1,0 +1,168 @@
+define void @Einstein_SetNextSlicing(%struct.cGH* %GH) #1 {
+  %1 = load i8** getelementptr inbounds (%struct.anon* @einsteinrest_, i64 0, i32 12), align 8, !tbaa !15
+  %2 = load i8** getelementptr inbounds (%struct.anon* @einsteinrest_, i64 0, i32 13), align 8, !tbaa !16
+  %3 = load i32* @num_slicings, align 4, !tbaa !11
+  %4 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([32 x i8]* @.str5, i64 0, i64 0)) #7
+  %5 = icmp slt i32 %4, 0
+  br i1 %5, label %6, label %8
+
+; <label>:6                                       ; preds = %0
+  %7 = tail call i32 @CCTK_Warn(i32 0, i32 481, i8* getelementptr inbounds ([78 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([47 x i8]* @.str6, i64 0, i64 0)) #7
+  br label %8
+
+; <label>:8                                       ; preds = %6, %0
+  %9 = tail call i8* @CCTK_VarDataPtrI(%struct.cGH* %GH, i32 0, i32 %4) #7
+  %10 = bitcast i8* %9 to i32*
+  %11 = tail call i32 @CCTK_Equals(i8* %1, i8* getelementptr inbounds ([6 x i8]* @.str7, i64 0, i64 0)) #7
+  %12 = icmp eq i32 %11, 0
+  br i1 %12, label %15, label %.preheader
+
+.preheader:                                       ; preds = %8
+  %13 = load i32* @num_slicings, align 4, !tbaa !11
+  %14 = icmp sgt i32 %13, 0
+  br i1 %14, label %.lr.ph, label %.loopexit
+
+; <label>:15                                      ; preds = %8
+  %16 = load %struct.cHandledData** @Eslicings, align 8, !tbaa !2
+  %17 = tail call i32 @Util_GetHandle(%struct.cHandledData* %16, i8* %1, i8** null) #7
+  %18 = icmp slt i32 %17, 0
+  br i1 %18, label %19, label %21
+
+; <label>:19                                      ; preds = %15
+  %20 = tail call i32 @CCTK_Warn(i32 0, i32 490, i8* getelementptr inbounds ([78 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([62 x i8]* @.str25, i64 0, i64 0)) #7
+  br label %21
+
+; <label>:21                                      ; preds = %19, %15
+  %22 = load %struct.cHandledData** @Eslicings, align 8, !tbaa !2
+  %23 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %22, i32 %17) #7
+  %24 = icmp eq i8* %23, null
+  br i1 %24, label %25, label %.loopexit
+
+; <label>:25                                      ; preds = %21
+  %26 = tail call i32 @CCTK_Warn(i32 0, i32 496, i8* getelementptr inbounds ([78 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([48 x i8]* @.str26, i64 0, i64 0)) #7
+  br label %.loopexit
+
+.lr.ph:                                           ; preds = %.preheader, %.thread8
+  %h_egal.013 = phi i32 [ %h_egal.2, %.thread8 ], [ %3, %.preheader ]
+  %h_no.012 = phi i32 [ %h_no.1, %.thread8 ], [ %3, %.preheader ]
+  %h_yes.011 = phi i32 [ %h_yes.2, %.thread8 ], [ %3, %.preheader ]
+  %h.09 = phi i32 [ %51, %.thread8 ], [ 0, %.preheader ]
+  %27 = load %struct.cHandledData** @Eslicings, align 8, !tbaa !2
+  %28 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %27, i32 %h.09) #7
+  %29 = icmp eq i8* %28, null
+  br i1 %29, label %30, label %32
+
+; <label>:30                                      ; preds = %.lr.ph
+  %31 = tail call i32 @CCTK_Warn(i32 0, i32 517, i8* getelementptr inbounds ([78 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([48 x i8]* @.str26, i64 0, i64 0)) #7
+  br label %.thread8
+
+; <label>:32                                      ; preds = %.lr.ph
+  %33 = getelementptr inbounds i8* %28, i64 8
+  %34 = bitcast i8* %33 to i32*
+  %35 = load i32* %34, align 4, !tbaa !10
+  %36 = icmp sgt i32 %35, 0
+  br i1 %36, label %37, label %.thread8
+
+; <label>:37                                      ; preds = %32
+  %38 = getelementptr inbounds i8* %28, i64 16
+  %39 = bitcast i8* %38 to i32 (%struct.cGH*)**
+  %40 = load i32 (%struct.cGH*)** %39, align 8, !tbaa !9
+  %41 = icmp eq i32 (%struct.cGH*)* %40, null
+  br i1 %41, label %.thread2, label %42
+
+; <label>:42                                      ; preds = %37
+  %43 = tail call i32 %40(%struct.cGH* %GH) #7
+  switch i32 %43, label %.thread8 [
+    i32 1, label %.thread7
+    i32 0, label %..thread2_crit_edge
+    i32 -1, label %48
+  ]
+
+..thread2_crit_edge:                              ; preds = %42
+  %.pre = load i32* %34, align 4, !tbaa !10
+  br label %.thread2
+
+.thread7:                                         ; preds = %42
+  %44 = load i32* %34, align 4, !tbaa !10
+  %45 = icmp slt i32 %44, %h_yes.011
+  %h.0.h_yes.0 = select i1 %45, i32 %h.09, i32 %h_yes.011
+  br label %.thread8
+
+.thread2:                                         ; preds = %..thread2_crit_edge, %37
+  %46 = phi i32 [ %.pre, %..thread2_crit_edge ], [ %35, %37 ]
+  %47 = icmp slt i32 %46, %h_egal.013
+  %h.0.h_egal.0 = select i1 %47, i32 %h.09, i32 %h_egal.013
+  br label %.thread8
+
+; <label>:48                                      ; preds = %42
+  %49 = load i32* %34, align 4, !tbaa !10
+  %50 = icmp slt i32 %49, %h_no.012
+  %h.0.h_no.0 = select i1 %50, i32 %h.09, i32 %h_no.012
+  br label %.thread8
+
+.thread8:                                         ; preds = %42, %.thread7, %.thread2, %48, %30, %32
+  %h_yes.2 = phi i32 [ %h_yes.011, %32 ], [ %h_yes.011, %30 ], [ %h_yes.011, %48 ], [ %h.0.h_yes.0, %.thread7 ], [ %h_yes.011, %.thread2 ], [ %h_yes.011, %42 ]
+  %h_no.1 = phi i32 [ %h_no.012, %32 ], [ %h_no.012, %30 ], [ %h.0.h_no.0, %48 ], [ %h_no.012, %.thread7 ], [ %h_no.012, %.thread2 ], [ %h_no.012, %42 ]
+  %h_egal.2 = phi i32 [ %h_egal.013, %32 ], [ %h_egal.013, %30 ], [ %h_egal.013, %48 ], [ %h_egal.013, %.thread7 ], [ %h.0.h_egal.0, %.thread2 ], [ %h_egal.013, %42 ]
+  %51 = add nuw nsw i32 %h.09, 1
+  %52 = load i32* @num_slicings, align 4, !tbaa !11
+  %53 = icmp slt i32 %51, %52
+  br i1 %53, label %.lr.ph, label %.loopexit
+
+.loopexit:                                        ; preds = %.thread8, %.preheader, %25, %21
+  %h_yes.3 = phi i32 [ %17, %21 ], [ %17, %25 ], [ %3, %.preheader ], [ %h_yes.2, %.thread8 ]
+  %h_no.2 = phi i32 [ %3, %21 ], [ %3, %25 ], [ %3, %.preheader ], [ %h_no.1, %.thread8 ]
+  %h_egal.3 = phi i32 [ %3, %21 ], [ %3, %25 ], [ %3, %.preheader ], [ %h_egal.2, %.thread8 ]
+  %54 = load i32* @num_slicings, align 4, !tbaa !11
+  %55 = icmp eq i32 %h_yes.3, %54
+  br i1 %55, label %57, label %56
+
+; <label>:56                                      ; preds = %.loopexit
+  store i32 %h_yes.3, i32* %10, align 4, !tbaa !11
+  br label %62
+
+; <label>:57                                      ; preds = %.loopexit
+  %58 = icmp eq i32 %h_egal.3, %h_yes.3
+  br i1 %58, label %60, label %59
+
+; <label>:59                                      ; preds = %57
+  store i32 %h_egal.3, i32* %10, align 4, !tbaa !11
+  br label %62
+
+; <label>:60                                      ; preds = %57
+  %61 = tail call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([59 x i8]* @.str27, i64 0, i64 0), i32 %h_yes.3, i32 %h_yes.3, i32 %h_no.2) #7
+  br label %62
+
+; <label>:62                                      ; preds = %59, %60, %56
+  %63 = tail call i32 @CCTK_Equals(i8* %2, i8* getelementptr inbounds ([4 x i8]* @.str28, i64 0, i64 0)) #7
+  %64 = icmp eq i32 %63, 0
+  br i1 %64, label %81, label %65
+
+; <label>:65                                      ; preds = %62
+  %66 = tail call i8* @malloc(i64 256) #7
+  %67 = load %struct.cHandledData** @Eslicings, align 8, !tbaa !2
+  %68 = load i32* %10, align 4, !tbaa !11
+  %69 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %67, i32 %68) #7
+  %70 = icmp eq i8* %69, null
+  br i1 %70, label %71, label %73
+
+; <label>:71                                      ; preds = %65
+  %72 = tail call i32 @CCTK_Warn(i32 0, i32 586, i8* getelementptr inbounds ([78 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([27 x i8]* @.str29, i64 0, i64 0)) #7
+  br label %73
+
+; <label>:73                                      ; preds = %65, %71
+  %74 = bitcast i8* %69 to i8**
+  %75 = load i8** %74, align 8, !tbaa !6
+  %76 = load i32* %10, align 4, !tbaa !11
+  %77 = tail call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %66, i32 0, i64 256, i8* getelementptr inbounds ([22 x i8]* @.str30, i64 0, i64 0), i8* %75, i32 %76) #7
+  %78 = tail call i32 @CCTK_Info(i8* getelementptr inbounds ([9 x i8]* @.str1, i64 0, i64 0), i8* %66) #7
+  %79 = icmp eq i8* %66, null
+  br i1 %79, label %81, label %80
+
+; <label>:80                                      ; preds = %73
+  tail call void @free(i8* %66) #8
+  br label %81
+
+; <label>:81                                      ; preds = %73, %62, %80
+  ret void
+}

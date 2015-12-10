@@ -1,116 +1,119 @@
-define void @lincs_warning([3 x float]* nocapture %x, [3 x float]* nocapture %xprime, i32 %ncons, i32* nocapture %bla1, i32* nocapture %bla2, float* nocapture %bllen, float %wangle) #0 {
-entry:
+define void @lincs_warning([3 x float]* nocapture readonly %x, [3 x float]* nocapture readonly %xprime, i32 %ncons, i32* nocapture readonly %bla1, i32* nocapture readonly %bla2, float* nocapture readonly %bllen, float %wangle) #4 {
   %buf = alloca [4096 x i8], align 16
-  %0 = getelementptr inbounds [4096 x i8]* %buf, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 4096, i8* %0) #2
-  %conv = fpext float %wangle to double
-  %mul = fmul double %conv, 0x3F91DF46A2529D39
-  %call = call double @cos(double %mul) #6
-  %conv1 = fptrunc double %call to float
-  %call3 = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([102 x i8]* @.str, i64 0, i64 0), double %conv) #6
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call5 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* %0) #6
-  %2 = load %struct._IO_FILE** @stdlog, align 8, !tbaa !3
-  %tobool = icmp eq %struct._IO_FILE* %2, null
-  br i1 %tobool, label %for.cond.preheader, label %if.then
+  %1 = getelementptr inbounds [4096 x i8]* %buf, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 4096, i8* %1) #5
+  %2 = fpext float %wangle to double
+  %3 = fmul double %2, 0x3F91DF46A2529D39
+  %4 = tail call double @cos(double %3) #12
+  %5 = fptrunc double %4 to float
+  %6 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %1, i32 0, i64 4096, i8* getelementptr inbounds ([102 x i8]* @.str, i64 0, i64 0), double %2) #9
+  %7 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !25
+  %8 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* %1) #9
+  %9 = load %struct.__sFILE** @stdlog, align 8, !tbaa !25
+  %10 = icmp eq %struct.__sFILE* %9, null
+  br i1 %10, label %.preheader, label %11
 
-if.then:                                          ; preds = %entry
-  %call7 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* %0) #6
-  br label %for.cond.preheader
+; <label>:11                                      ; preds = %0
+  %12 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %9, i8* %1) #9
+  br label %.preheader
 
-for.cond.preheader:                               ; preds = %entry, %if.then
-  %cmp103 = icmp sgt i32 %ncons, 0
-  br i1 %cmp103, label %for.body, label %for.end
+.preheader:                                       ; preds = %0, %11
+  %13 = icmp sgt i32 %ncons, 0
+  br i1 %13, label %.lr.ph, label %._crit_edge
 
-for.body:                                         ; preds = %for.cond.preheader, %for.inc
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %for.cond.preheader ]
-  %arrayidx = getelementptr inbounds i32* %bla1, i64 %indvars.iv
-  %3 = load i32* %arrayidx, align 4, !tbaa !0
-  %arrayidx10 = getelementptr inbounds i32* %bla2, i64 %indvars.iv
-  %4 = load i32* %arrayidx10, align 4, !tbaa !0
-  %idxprom11 = sext i32 %3 to i64
-  %arraydecay13 = getelementptr inbounds [3 x float]* %x, i64 %idxprom11, i64 0
-  %idxprom14 = sext i32 %4 to i64
-  %arraydecay16 = getelementptr inbounds [3 x float]* %x, i64 %idxprom14, i64 0
-  %5 = load float* %arraydecay13, align 4, !tbaa !4
-  %6 = load float* %arraydecay16, align 4, !tbaa !4
-  %sub.i = fsub float %5, %6
-  %arrayidx2.i = getelementptr inbounds [3 x float]* %x, i64 %idxprom11, i64 1
-  %7 = load float* %arrayidx2.i, align 4, !tbaa !4
-  %arrayidx3.i = getelementptr inbounds [3 x float]* %x, i64 %idxprom14, i64 1
-  %8 = load float* %arrayidx3.i, align 4, !tbaa !4
-  %sub4.i = fsub float %7, %8
-  %arrayidx5.i = getelementptr inbounds [3 x float]* %x, i64 %idxprom11, i64 2
-  %9 = load float* %arrayidx5.i, align 4, !tbaa !4
-  %arrayidx6.i = getelementptr inbounds [3 x float]* %x, i64 %idxprom14, i64 2
-  %10 = load float* %arrayidx6.i, align 4, !tbaa !4
-  %sub7.i = fsub float %9, %10
-  %arraydecay20 = getelementptr inbounds [3 x float]* %xprime, i64 %idxprom11, i64 0
-  %arraydecay23 = getelementptr inbounds [3 x float]* %xprime, i64 %idxprom14, i64 0
-  %11 = load float* %arraydecay20, align 4, !tbaa !4
-  %12 = load float* %arraydecay23, align 4, !tbaa !4
-  %sub.i80 = fsub float %11, %12
-  %arrayidx2.i81 = getelementptr inbounds [3 x float]* %xprime, i64 %idxprom11, i64 1
-  %13 = load float* %arrayidx2.i81, align 4, !tbaa !4
-  %arrayidx3.i82 = getelementptr inbounds [3 x float]* %xprime, i64 %idxprom14, i64 1
-  %14 = load float* %arrayidx3.i82, align 4, !tbaa !4
-  %sub4.i83 = fsub float %13, %14
-  %arrayidx5.i84 = getelementptr inbounds [3 x float]* %xprime, i64 %idxprom11, i64 2
-  %15 = load float* %arrayidx5.i84, align 4, !tbaa !4
-  %arrayidx6.i85 = getelementptr inbounds [3 x float]* %xprime, i64 %idxprom14, i64 2
-  %16 = load float* %arrayidx6.i85, align 4, !tbaa !4
-  %sub7.i86 = fsub float %15, %16
-  %mul.i89 = fmul float %sub.i, %sub.i
-  %mul4.i91 = fmul float %sub4.i, %sub4.i
-  %add.i92 = fadd float %mul.i89, %mul4.i91
-  %mul7.i94 = fmul float %sub7.i, %sub7.i
-  %add8.i95 = fadd float %add.i92, %mul7.i94
-  %conv9.i96 = call float @sqrtf(float %add8.i95) #3
-  %mul.i73 = fmul float %sub.i80, %sub.i80
-  %mul4.i75 = fmul float %sub4.i83, %sub4.i83
-  %add.i76 = fadd float %mul.i73, %mul4.i75
-  %mul7.i78 = fmul float %sub7.i86, %sub7.i86
-  %add8.i79 = fadd float %add.i76, %mul7.i78
-  %conv9.i = call float @sqrtf(float %add8.i79) #3
-  %mul.i = fmul float %sub.i, %sub.i80
-  %mul4.i = fmul float %sub4.i, %sub4.i83
-  %add.i = fadd float %mul.i, %mul4.i
-  %mul7.i = fmul float %sub7.i, %sub7.i86
-  %add8.i = fadd float %add.i, %mul7.i
-  %mul32 = fmul float %conv9.i96, %conv9.i
-  %div = fdiv float %add8.i, %mul32
-  %cmp33 = fcmp olt float %div, %conv1
-  br i1 %cmp33, label %if.then35, label %for.inc
+.lr.ph:                                           ; preds = %.preheader
+  %14 = add i32 %ncons, -1
+  br label %15
 
-if.then35:                                        ; preds = %for.body
-  %add = add nsw i32 %3, 1
-  %add37 = add nsw i32 %4, 1
-  %conv38 = fpext float %div to double
-  %call39 = call double @acos(double %conv38) #6
-  %mul40 = fmul double %call39, 0x404CA5DC1A63C1F8
-  %conv41 = fpext float %conv9.i96 to double
-  %conv42 = fpext float %conv9.i to double
-  %arrayidx44 = getelementptr inbounds float* %bllen, i64 %indvars.iv
-  %17 = load float* %arrayidx44, align 4, !tbaa !4
-  %conv45 = fpext float %17 to double
-  %call46 = call i32 (i8*, i8*, ...)* @sprintf(i8* %0, i8* getelementptr inbounds ([39 x i8]* @.str1, i64 0, i64 0), i32 %add, i32 %add37, double %mul40, double %conv41, double %conv42, double %conv45) #6
-  %18 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call48 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %18, i8* %0) #6
-  %19 = load %struct._IO_FILE** @stdlog, align 8, !tbaa !3
-  %tobool49 = icmp eq %struct._IO_FILE* %19, null
-  br i1 %tobool49, label %for.inc, label %if.then50
+; <label>:15                                      ; preds = %88, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %88 ]
+  %16 = getelementptr inbounds i32* %bla1, i64 %indvars.iv
+  %17 = load i32* %16, align 4, !tbaa !24
+  %18 = getelementptr inbounds i32* %bla2, i64 %indvars.iv
+  %19 = load i32* %18, align 4, !tbaa !24
+  %20 = sext i32 %17 to i64
+  %21 = getelementptr inbounds [3 x float]* %x, i64 %20, i64 0
+  %22 = sext i32 %19 to i64
+  %23 = getelementptr inbounds [3 x float]* %x, i64 %22, i64 0
+  %24 = load float* %21, align 4, !tbaa !14
+  %25 = load float* %23, align 4, !tbaa !14
+  %26 = fsub float %24, %25
+  %27 = getelementptr inbounds [3 x float]* %x, i64 %20, i64 1
+  %28 = load float* %27, align 4, !tbaa !14
+  %29 = getelementptr inbounds [3 x float]* %x, i64 %22, i64 1
+  %30 = load float* %29, align 4, !tbaa !14
+  %31 = fsub float %28, %30
+  %32 = getelementptr inbounds [3 x float]* %x, i64 %20, i64 2
+  %33 = load float* %32, align 4, !tbaa !14
+  %34 = getelementptr inbounds [3 x float]* %x, i64 %22, i64 2
+  %35 = load float* %34, align 4, !tbaa !14
+  %36 = fsub float %33, %35
+  %37 = getelementptr inbounds [3 x float]* %xprime, i64 %20, i64 0
+  %38 = getelementptr inbounds [3 x float]* %xprime, i64 %22, i64 0
+  %39 = load float* %37, align 4, !tbaa !14
+  %40 = load float* %38, align 4, !tbaa !14
+  %41 = fsub float %39, %40
+  %42 = getelementptr inbounds [3 x float]* %xprime, i64 %20, i64 1
+  %43 = load float* %42, align 4, !tbaa !14
+  %44 = getelementptr inbounds [3 x float]* %xprime, i64 %22, i64 1
+  %45 = load float* %44, align 4, !tbaa !14
+  %46 = fsub float %43, %45
+  %47 = getelementptr inbounds [3 x float]* %xprime, i64 %20, i64 2
+  %48 = load float* %47, align 4, !tbaa !14
+  %49 = getelementptr inbounds [3 x float]* %xprime, i64 %22, i64 2
+  %50 = load float* %49, align 4, !tbaa !14
+  %51 = fsub float %48, %50
+  %52 = fmul float %26, %26
+  %53 = fmul float %31, %31
+  %54 = fadd float %52, %53
+  %55 = fmul float %36, %36
+  %56 = fadd float %54, %55
+  %sqrtf.i1 = call float @sqrtf(float %56) #6
+  %57 = fmul float %41, %41
+  %58 = fmul float %46, %46
+  %59 = fadd float %57, %58
+  %60 = fmul float %51, %51
+  %61 = fadd float %59, %60
+  %sqrtf.i = call float @sqrtf(float %61) #6
+  %62 = fmul float %26, %41
+  %63 = fmul float %31, %46
+  %64 = fadd float %62, %63
+  %65 = fmul float %36, %51
+  %66 = fadd float %64, %65
+  %67 = fmul float %sqrtf.i1, %sqrtf.i
+  %68 = fdiv float %66, %67
+  %69 = fcmp olt float %68, %5
+  br i1 %69, label %70, label %88
 
-if.then50:                                        ; preds = %if.then35
-  %call52 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %19, i8* %0) #6
-  br label %for.inc
+; <label>:70                                      ; preds = %15
+  %71 = add nsw i32 %17, 1
+  %72 = add nsw i32 %19, 1
+  %73 = fpext float %68 to double
+  %74 = call double @acos(double %73) #12
+  %75 = fmul double %74, 0x404CA5DC1A63C1F8
+  %76 = fpext float %sqrtf.i1 to double
+  %77 = fpext float %sqrtf.i to double
+  %78 = getelementptr inbounds float* %bllen, i64 %indvars.iv
+  %79 = load float* %78, align 4, !tbaa !14
+  %80 = fpext float %79 to double
+  %81 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* %1, i32 0, i64 4096, i8* getelementptr inbounds ([39 x i8]* @.str1, i64 0, i64 0), i32 %71, i32 %72, double %75, double %76, double %77, double %80) #9
+  %82 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !25
+  %83 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %82, i8* %1) #9
+  %84 = load %struct.__sFILE** @stdlog, align 8, !tbaa !25
+  %85 = icmp eq %struct.__sFILE* %84, null
+  br i1 %85, label %88, label %86
 
-for.inc:                                          ; preds = %if.then35, %for.body, %if.then50
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %ncons
-  br i1 %exitcond, label %for.end, label %for.body
+; <label>:86                                      ; preds = %70
+  %87 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %84, i8* %1) #9
+  br label %88
 
-for.end:                                          ; preds = %for.inc, %for.cond.preheader
-  call void @llvm.lifetime.end(i64 4096, i8* %0) #2
+; <label>:88                                      ; preds = %70, %15, %86
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %14
+  br i1 %exitcond, label %._crit_edge, label %15
+
+._crit_edge:                                      ; preds = %88, %.preheader
+  call void @llvm.lifetime.end(i64 4096, i8* %1) #5
   ret void
 }

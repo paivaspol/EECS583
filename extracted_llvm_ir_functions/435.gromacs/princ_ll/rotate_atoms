@@ -1,72 +1,71 @@
-define void @rotate_atoms(i32 %gnx, i32* %index, [3 x float]* nocapture %x, [3 x float]* nocapture %trans) #0 {
-entry:
-  %cmp77 = icmp sgt i32 %gnx, 0
-  br i1 %cmp77, label %for.body.lr.ph, label %for.end
+define void @rotate_atoms(i32 %gnx, i32* readonly %index, [3 x float]* nocapture %x, [3 x float]* nocapture readonly %trans) #4 {
+  %1 = icmp sgt i32 %gnx, 0
+  br i1 %1, label %.lr.ph, label %._crit_edge
 
-for.body.lr.ph:                                   ; preds = %entry
-  %tobool = icmp eq i32* %index, null
-  %arrayidx11 = getelementptr inbounds [3 x float]* %trans, i64 0, i64 0
-  %arrayidx13 = getelementptr inbounds [3 x float]* %trans, i64 0, i64 1
-  %arrayidx16 = getelementptr inbounds [3 x float]* %trans, i64 0, i64 2
-  %arrayidx23 = getelementptr inbounds [3 x float]* %trans, i64 1, i64 0
-  %arrayidx26 = getelementptr inbounds [3 x float]* %trans, i64 1, i64 1
-  %arrayidx30 = getelementptr inbounds [3 x float]* %trans, i64 1, i64 2
-  %arrayidx37 = getelementptr inbounds [3 x float]* %trans, i64 2, i64 0
-  %arrayidx40 = getelementptr inbounds [3 x float]* %trans, i64 2, i64 1
-  %arrayidx44 = getelementptr inbounds [3 x float]* %trans, i64 2, i64 2
-  br label %for.body
+.lr.ph:                                           ; preds = %0
+  %2 = icmp eq i32* %index, null
+  %3 = getelementptr inbounds [3 x float]* %trans, i64 0, i64 0
+  %4 = getelementptr inbounds [3 x float]* %trans, i64 0, i64 1
+  %5 = getelementptr inbounds [3 x float]* %trans, i64 0, i64 2
+  %6 = getelementptr inbounds [3 x float]* %trans, i64 1, i64 0
+  %7 = getelementptr inbounds [3 x float]* %trans, i64 1, i64 1
+  %8 = getelementptr inbounds [3 x float]* %trans, i64 1, i64 2
+  %9 = getelementptr inbounds [3 x float]* %trans, i64 2, i64 0
+  %10 = getelementptr inbounds [3 x float]* %trans, i64 2, i64 1
+  %11 = getelementptr inbounds [3 x float]* %trans, i64 2, i64 2
+  %12 = add i32 %gnx, -1
+  br label %13
 
-for.body:                                         ; preds = %cond.end, %for.body.lr.ph
-  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %cond.end ]
-  %0 = trunc i64 %indvars.iv to i32
-  br i1 %tobool, label %cond.end, label %cond.true
+; <label>:13                                      ; preds = %18, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %18 ]
+  %14 = trunc i64 %indvars.iv to i32
+  br i1 %2, label %18, label %15
 
-cond.true:                                        ; preds = %for.body
-  %arrayidx = getelementptr inbounds i32* %index, i64 %indvars.iv
-  %1 = load i32* %arrayidx, align 4, !tbaa !4
-  br label %cond.end
+; <label>:15                                      ; preds = %13
+  %16 = getelementptr inbounds i32* %index, i64 %indvars.iv
+  %17 = load i32* %16, align 4, !tbaa !19
+  br label %18
 
-cond.end:                                         ; preds = %for.body, %cond.true
-  %cond = phi i32 [ %1, %cond.true ], [ %0, %for.body ]
-  %idxprom1 = sext i32 %cond to i64
-  %arrayidx3 = getelementptr inbounds [3 x float]* %x, i64 %idxprom1, i64 0
-  %2 = load float* %arrayidx3, align 4, !tbaa !5
-  %arrayidx6 = getelementptr inbounds [3 x float]* %x, i64 %idxprom1, i64 1
-  %3 = load float* %arrayidx6, align 4, !tbaa !5
-  %arrayidx9 = getelementptr inbounds [3 x float]* %x, i64 %idxprom1, i64 2
-  %4 = load float* %arrayidx9, align 4, !tbaa !5
-  %5 = load float* %arrayidx11, align 4, !tbaa !5
-  %mul = fmul float %2, %5
-  %6 = load float* %arrayidx13, align 4, !tbaa !5
-  %mul14 = fmul float %3, %6
-  %add = fadd float %mul, %mul14
-  %7 = load float* %arrayidx16, align 4, !tbaa !5
-  %mul17 = fmul float %4, %7
-  %add18 = fadd float %add, %mul17
-  store float %add18, float* %arrayidx3, align 4, !tbaa !5
-  %8 = load float* %arrayidx23, align 4, !tbaa !5
-  %mul24 = fmul float %2, %8
-  %9 = load float* %arrayidx26, align 4, !tbaa !5
-  %mul27 = fmul float %3, %9
-  %add28 = fadd float %mul24, %mul27
-  %10 = load float* %arrayidx30, align 4, !tbaa !5
-  %mul31 = fmul float %4, %10
-  %add32 = fadd float %add28, %mul31
-  store float %add32, float* %arrayidx6, align 4, !tbaa !5
-  %11 = load float* %arrayidx37, align 4, !tbaa !5
-  %mul38 = fmul float %2, %11
-  %12 = load float* %arrayidx40, align 4, !tbaa !5
-  %mul41 = fmul float %3, %12
-  %add42 = fadd float %mul38, %mul41
-  %13 = load float* %arrayidx44, align 4, !tbaa !5
-  %mul45 = fmul float %4, %13
-  %add46 = fadd float %add42, %mul45
-  store float %add46, float* %arrayidx9, align 4, !tbaa !5
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %gnx
-  br i1 %exitcond, label %for.end, label %for.body
+; <label>:18                                      ; preds = %13, %15
+  %19 = phi i32 [ %17, %15 ], [ %14, %13 ]
+  %20 = sext i32 %19 to i64
+  %21 = getelementptr inbounds [3 x float]* %x, i64 %20, i64 0
+  %22 = load float* %21, align 4, !tbaa !14
+  %23 = getelementptr inbounds [3 x float]* %x, i64 %20, i64 1
+  %24 = load float* %23, align 4, !tbaa !14
+  %25 = getelementptr inbounds [3 x float]* %x, i64 %20, i64 2
+  %26 = load float* %25, align 4, !tbaa !14
+  %27 = load float* %3, align 4, !tbaa !14
+  %28 = fmul float %22, %27
+  %29 = load float* %4, align 4, !tbaa !14
+  %30 = fmul float %24, %29
+  %31 = fadd float %28, %30
+  %32 = load float* %5, align 4, !tbaa !14
+  %33 = fmul float %26, %32
+  %34 = fadd float %31, %33
+  store float %34, float* %21, align 4, !tbaa !14
+  %35 = load float* %6, align 4, !tbaa !14
+  %36 = fmul float %22, %35
+  %37 = load float* %7, align 4, !tbaa !14
+  %38 = fmul float %24, %37
+  %39 = fadd float %36, %38
+  %40 = load float* %8, align 4, !tbaa !14
+  %41 = fmul float %26, %40
+  %42 = fadd float %39, %41
+  store float %42, float* %23, align 4, !tbaa !14
+  %43 = load float* %9, align 4, !tbaa !14
+  %44 = fmul float %22, %43
+  %45 = load float* %10, align 4, !tbaa !14
+  %46 = fmul float %24, %45
+  %47 = fadd float %44, %46
+  %48 = load float* %11, align 4, !tbaa !14
+  %49 = fmul float %26, %48
+  %50 = fadd float %47, %49
+  store float %50, float* %25, align 4, !tbaa !14
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i32 %14, %12
+  br i1 %exitcond, label %._crit_edge, label %13
 
-for.end:                                          ; preds = %cond.end, %entry
+._crit_edge:                                      ; preds = %18, %0
   ret void
 }

@@ -1,0 +1,63 @@
+define internal fastcc i32 @compile_range(i8** nocapture %p_ptr, i8* readnone %pend, i8* readonly %translate, i64 %syntax, i8* nocapture %b) #0 {
+  %1 = load i8** %p_ptr, align 8, !tbaa !13
+  %2 = icmp eq i8* %1, %pend
+  br i1 %2, label %.loopexit, label %3
+
+; <label>:3                                       ; preds = %0
+  %4 = getelementptr inbounds i8* %1, i64 -2
+  %5 = load i8* %4, align 1, !tbaa !12
+  %6 = load i8* %1, align 1, !tbaa !12
+  %7 = getelementptr inbounds i8* %1, i64 1
+  store i8* %7, i8** %p_ptr, align 8, !tbaa !13
+  %8 = icmp ugt i8 %5, %6
+  br i1 %8, label %9, label %.lr.ph
+
+; <label>:9                                       ; preds = %3
+  %10 = and i64 %syntax, 65536
+  %11 = icmp ne i64 %10, 0
+  %12 = select i1 %11, i32 11, i32 0
+  br label %.loopexit
+
+.lr.ph:                                           ; preds = %3
+  %13 = zext i8 %5 to i32
+  %14 = icmp eq i8* %translate, null
+  %15 = zext i8 %5 to i64
+  %16 = zext i8 %6 to i32
+  br label %17
+
+; <label>:17                                      ; preds = %.lr.ph, %25
+  %indvars.iv = phi i64 [ %15, %.lr.ph ], [ %indvars.iv.next, %25 ]
+  %this_char.01 = phi i32 [ %13, %.lr.ph ], [ %35, %25 ]
+  %18 = trunc i64 %indvars.iv to i32
+  br i1 %14, label %25, label %19
+
+; <label>:19                                      ; preds = %17
+  %20 = and i64 %indvars.iv, 255
+  %21 = getelementptr inbounds i8* %translate, i64 %20
+  %22 = load i8* %21, align 1, !tbaa !12
+  %23 = zext i8 %22 to i32
+  %24 = sext i8 %22 to i64
+  br label %25
+
+; <label>:25                                      ; preds = %17, %19
+  %.pn.in = phi i32 [ %23, %19 ], [ %18, %17 ]
+  %26 = phi i64 [ %24, %19 ], [ %indvars.iv, %17 ]
+  %.pn = and i32 %.pn.in, 7
+  %27 = shl i32 1, %.pn
+  %28 = lshr i64 %26, 3
+  %29 = and i64 %28, 31
+  %30 = getelementptr inbounds i8* %b, i64 %29
+  %31 = load i8* %30, align 1, !tbaa !12
+  %32 = zext i8 %31 to i32
+  %33 = or i32 %32, %27
+  %34 = trunc i32 %33 to i8
+  store i8 %34, i8* %30, align 1, !tbaa !12
+  %35 = add nuw nsw i32 %this_char.01, 1
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i32 %this_char.01, %16
+  br i1 %exitcond, label %.loopexit, label %17
+
+.loopexit:                                        ; preds = %25, %0, %9
+  %.0 = phi i32 [ %12, %9 ], [ 11, %0 ], [ 0, %25 ]
+  ret i32 %.0
+}

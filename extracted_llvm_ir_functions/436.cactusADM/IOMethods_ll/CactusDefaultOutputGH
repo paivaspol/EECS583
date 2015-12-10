@@ -1,0 +1,32 @@
+define i32 @CactusDefaultOutputGH(%struct.cGH* %GH) #1 {
+  %1 = load i32* @num_methods, align 4, !tbaa !13
+  %2 = icmp sgt i32 %1, 0
+  br i1 %2, label %.lr.ph, label %.loopexit
+
+.lr.ph:                                           ; preds = %0, %12
+  %handle.02 = phi i32 [ %13, %12 ], [ 0, %0 ]
+  %retval.01 = phi i32 [ %retval.1, %12 ], [ 0, %0 ]
+  %3 = load %struct.cHandledData** @IOMethods, align 8, !tbaa !2
+  %4 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %3, i32 %handle.02) #5
+  %5 = icmp eq i8* %4, null
+  br i1 %5, label %12, label %6
+
+; <label>:6                                       ; preds = %.lr.ph
+  %7 = getelementptr inbounds i8* %4, i64 16
+  %8 = bitcast i8* %7 to i32 (%struct.cGH*)**
+  %9 = load i32 (%struct.cGH*)** %8, align 8, !tbaa !9
+  %10 = tail call i32 %9(%struct.cGH* %GH) #5
+  %11 = add nsw i32 %10, %retval.01
+  br label %12
+
+; <label>:12                                      ; preds = %.lr.ph, %6
+  %retval.1 = phi i32 [ %11, %6 ], [ %retval.01, %.lr.ph ]
+  %13 = add nuw nsw i32 %handle.02, 1
+  %14 = load i32* @num_methods, align 4, !tbaa !13
+  %15 = icmp slt i32 %13, %14
+  br i1 %15, label %.lr.ph, label %.loopexit
+
+.loopexit:                                        ; preds = %12, %0
+  %retval.2 = phi i32 [ -1, %0 ], [ %retval.1, %12 ]
+  ret i32 %retval.2
+}

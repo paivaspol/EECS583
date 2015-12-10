@@ -1,0 +1,65 @@
+define { double, double } @CCTK_Cmplx16Sqrt(double %complex_number.coerce0, double %complex_number.coerce1) #0 {
+  %1 = fcmp oeq double %complex_number.coerce0, 0.000000e+00
+  %2 = fcmp oeq double %complex_number.coerce1, 0.000000e+00
+  %or.cond = and i1 %1, %2
+  br i1 %or.cond, label %38, label %3
+
+; <label>:3                                       ; preds = %0
+  %4 = tail call double @fabs(double %complex_number.coerce0) #5
+  %5 = tail call double @fabs(double %complex_number.coerce1) #5
+  %6 = fcmp ult double %4, %5
+  br i1 %6, label %16, label %7
+
+; <label>:7                                       ; preds = %3
+  %8 = fdiv double %5, %4
+  %9 = tail call double @sqrt(double %4) #5
+  %10 = fmul double %8, %8
+  %11 = tail call double @sqrt(double %10) #5
+  %12 = fadd double %11, 1.000000e+00
+  %13 = fmul double %12, 5.000000e-01
+  %14 = tail call double @sqrt(double %13) #5
+  %15 = fmul double %9, %14
+  br label %25
+
+; <label>:16                                      ; preds = %3
+  %17 = fdiv double %4, %5
+  %18 = tail call double @sqrt(double %5) #5
+  %19 = fmul double %17, %17
+  %20 = tail call double @sqrt(double %19) #5
+  %21 = fadd double %17, %20
+  %22 = fmul double %21, 5.000000e-01
+  %23 = tail call double @sqrt(double %22) #5
+  %24 = fmul double %18, %23
+  br label %25
+
+; <label>:25                                      ; preds = %16, %7
+  %w.0 = phi double [ %15, %7 ], [ %24, %16 ]
+  %26 = fcmp ult double %complex_number.coerce0, 0.000000e+00
+  br i1 %26, label %30, label %27
+
+; <label>:27                                      ; preds = %25
+  %28 = fmul double %w.0, 2.000000e+00
+  %29 = fdiv double %complex_number.coerce1, %28
+  br label %38
+
+; <label>:30                                      ; preds = %25
+  %31 = fcmp ult double %complex_number.coerce1, 0.000000e+00
+  br i1 %31, label %32, label %34
+
+; <label>:32                                      ; preds = %30
+  %33 = fsub double -0.000000e+00, %w.0
+  br label %34
+
+; <label>:34                                      ; preds = %30, %32
+  %35 = phi double [ %33, %32 ], [ %w.0, %30 ]
+  %36 = fmul double %35, 2.000000e+00
+  %37 = fdiv double %complex_number.coerce1, %36
+  br label %38
+
+; <label>:38                                      ; preds = %0, %27, %34
+  %result.sroa.4.0 = phi double [ %29, %27 ], [ %35, %34 ], [ 0.000000e+00, %0 ]
+  %result.sroa.0.0 = phi double [ %w.0, %27 ], [ %37, %34 ], [ 0.000000e+00, %0 ]
+  %39 = insertvalue { double, double } undef, double %result.sroa.0.0, 0
+  %40 = insertvalue { double, double } %39, double %result.sroa.4.0, 1
+  ret { double, double } %40
+}

@@ -1,0 +1,66 @@
+define i32* @PUGH_ArrayGroupSize(%struct.cGH* %GH, i32 %dir, i32 %group, i8* %groupname) #1 {
+  %1 = icmp ne i8* %groupname, null
+  br i1 %1, label %2, label %4
+
+; <label>:2                                       ; preds = %0
+  %3 = tail call i32 @CCTK_GroupIndex(i8* %groupname) #7
+  br label %4
+
+; <label>:4                                       ; preds = %2, %0
+  %.0 = phi i32 [ %3, %2 ], [ %group, %0 ]
+  %5 = tail call i32 @CCTK_FirstVarIndexI(i32 %.0) #7
+  %6 = icmp sgt i32 %5, -1
+  br i1 %6, label %7, label %34
+
+; <label>:7                                       ; preds = %4
+  %8 = sext i32 %5 to i64
+  %9 = tail call %struct.PGH* @PUGH_pGH(%struct.cGH* %GH) #7
+  %10 = getelementptr inbounds %struct.PGH* %9, i64 0, i32 7
+  %11 = load i8**** %10, align 8, !tbaa !2
+  %12 = getelementptr inbounds i8*** %11, i64 %8
+  %13 = bitcast i8*** %12 to %struct.PGA***
+  %14 = load %struct.PGA*** %13, align 8, !tbaa !9
+  %15 = load %struct.PGA** %14, align 8, !tbaa !9
+  %16 = getelementptr inbounds %struct.PGA* %15, i64 0, i32 5
+  %17 = load i32* %16, align 4, !tbaa !10
+  %18 = icmp eq i32 %17, 1
+  br i1 %18, label %19, label %39
+
+; <label>:19                                      ; preds = %7
+  %20 = icmp sgt i32 %dir, -1
+  br i1 %20, label %21, label %32
+
+; <label>:21                                      ; preds = %19
+  %22 = getelementptr inbounds %struct.PGA* %15, i64 0, i32 10
+  %23 = load %struct.PGExtras** %22, align 8, !tbaa !12
+  %24 = getelementptr inbounds %struct.PGExtras* %23, i64 0, i32 0
+  %25 = load i32* %24, align 4, !tbaa !13
+  %26 = icmp sgt i32 %25, %dir
+  br i1 %26, label %27, label %32
+
+; <label>:27                                      ; preds = %21
+  %28 = sext i32 %dir to i64
+  %29 = getelementptr inbounds %struct.PGExtras* %23, i64 0, i32 6
+  %30 = load i32** %29, align 8, !tbaa !15
+  %31 = getelementptr inbounds i32* %30, i64 %28
+  br label %39
+
+; <label>:32                                      ; preds = %21, %19
+  %33 = tail call i32 @CCTK_Warn(i32 1, i32 131, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([20 x i8]* @.str2, i64 0, i64 0)) #7
+  br label %39
+
+; <label>:34                                      ; preds = %4
+  br i1 %1, label %35, label %37
+
+; <label>:35                                      ; preds = %34
+  %36 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 144, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([45 x i8]* @.str3, i64 0, i64 0), i8* %groupname) #7
+  br label %39
+
+; <label>:37                                      ; preds = %34
+  %38 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 150, i8* getelementptr inbounds ([74 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([41 x i8]* @.str4, i64 0, i64 0), i32 %.0) #7
+  br label %39
+
+; <label>:39                                      ; preds = %35, %37, %7, %32, %27
+  %retval.0 = phi i32* [ %31, %27 ], [ null, %32 ], [ @_cctk_one, %7 ], [ null, %37 ], [ null, %35 ]
+  ret i32* %retval.0
+}

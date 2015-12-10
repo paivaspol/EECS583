@@ -1,29 +1,28 @@
-define float @old_f(float %r, float %rc, float %r1) #3 {
-entry:
-  %cmp = fcmp ugt float %r, %r1
-  br i1 %cmp, label %if.else, label %return
+define float @old_f(float %r, float %rc, float %r1) #4 {
+  %1 = fcmp ugt float %r, %r1
+  br i1 %1, label %2, label %18
 
-if.else:                                          ; preds = %entry
-  %cmp1 = fcmp ult float %r, %rc
-  br i1 %cmp1, label %if.end3, label %return
+; <label>:2                                       ; preds = %0
+  %3 = fcmp ult float %r, %rc
+  br i1 %3, label %4, label %18
 
-if.end3:                                          ; preds = %if.else
-  %sub = fsub float %r, %r1
-  %mul = fmul float %r, %r
-  %0 = load float* @A, align 4, !tbaa !0
-  %mul4 = fmul float %mul, %0
-  %mul5 = fmul float %sub, %mul4
-  %mul6 = fmul float %sub, %mul5
-  %add = fadd float %mul6, 1.000000e+00
-  %1 = load float* @B, align 4, !tbaa !0
-  %mul7 = fmul float %mul, %1
-  %mul8 = fmul float %sub, %mul7
-  %mul9 = fmul float %sub, %mul8
-  %mul10 = fmul float %sub, %mul9
-  %add11 = fadd float %add, %mul10
-  br label %return
+; <label>:4                                       ; preds = %2
+  %5 = fsub float %r, %r1
+  %6 = fmul float %r, %r
+  %7 = load float* @A, align 4, !tbaa !2
+  %8 = fmul float %6, %7
+  %9 = fmul float %5, %8
+  %10 = fmul float %5, %9
+  %11 = fadd float %10, 1.000000e+00
+  %12 = load float* @B, align 4, !tbaa !2
+  %13 = fmul float %6, %12
+  %14 = fmul float %5, %13
+  %15 = fmul float %5, %14
+  %16 = fmul float %5, %15
+  %17 = fadd float %11, %16
+  br label %18
 
-return:                                           ; preds = %if.else, %entry, %if.end3
-  %retval.0 = phi float [ %add11, %if.end3 ], [ 1.000000e+00, %entry ], [ 0.000000e+00, %if.else ]
-  ret float %retval.0
+; <label>:18                                      ; preds = %2, %0, %4
+  %.0 = phi float [ %17, %4 ], [ 1.000000e+00, %0 ], [ 0.000000e+00, %2 ]
+  ret float %.0
 }

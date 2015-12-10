@@ -1,0 +1,233 @@
+define i32 @PUGH_GenerateNeighbours(i32 %dim, i32 %total_procs, i32* nocapture readonly %nprocs, i32** nocapture readonly %neighbours, i32* nocapture readonly %perme) #1 {
+  %1 = sext i32 %dim to i64
+  %2 = shl nsw i64 %1, 2
+  %3 = tail call i8* @malloc(i64 %2) #7
+  %4 = bitcast i8* %3 to i32*
+  %5 = icmp eq i8* %3, null
+  br i1 %5, label %.loopexit, label %.preheader
+
+.preheader:                                       ; preds = %0
+  %6 = icmp sgt i32 %total_procs, 0
+  br i1 %6, label %.lr.ph29, label %.loopexit
+
+.lr.ph29:                                         ; preds = %.preheader
+  %7 = icmp sgt i32 %dim, 0
+  %8 = add i32 %dim, -1
+  %9 = sext i32 %8 to i64
+  %10 = getelementptr inbounds i32* %4, i64 %9
+  %11 = add i32 %dim, -2
+  %12 = icmp sgt i32 %11, -1
+  %13 = sext i32 %11 to i64
+  %14 = add i32 %total_procs, -1
+  br label %15
+
+; <label>:15                                      ; preds = %PUGH_DecomposeIJK.exit._crit_edge, %.lr.ph29
+  %indvars.iv35 = phi i64 [ 0, %.lr.ph29 ], [ %indvars.iv.next36, %PUGH_DecomposeIJK.exit._crit_edge ]
+  br i1 %7, label %.lr.ph.i, label %PUGH_DecomposeIJK.exit._crit_edge
+
+.lr.ph.i:                                         ; preds = %15
+  %16 = trunc i64 %indvars.iv35 to i32
+  br label %17
+
+; <label>:17                                      ; preds = %17, %.lr.ph.i
+  %indvars.iv.i = phi i64 [ 0, %.lr.ph.i ], [ %indvars.iv.next.i, %17 ]
+  %.01.i = phi i32 [ %16, %.lr.ph.i ], [ %22, %17 ]
+  %18 = getelementptr inbounds i32* %nprocs, i64 %indvars.iv.i
+  %19 = load i32* %18, align 4, !tbaa !20
+  %20 = srem i32 %.01.i, %19
+  %21 = getelementptr inbounds i32* %4, i64 %indvars.iv.i
+  store i32 %20, i32* %21, align 4, !tbaa !20
+  %22 = sdiv i32 %.01.i, %19
+  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1
+  %lftr.wideiv = trunc i64 %indvars.iv.i to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %8
+  br i1 %exitcond, label %PUGH_DecomposeIJK.exit.preheader, label %17
+
+PUGH_DecomposeIJK.exit.preheader:                 ; preds = %17
+  br i1 %7, label %.lr.ph, label %PUGH_DecomposeIJK.exit._crit_edge
+
+.lr.ph:                                           ; preds = %PUGH_DecomposeIJK.exit.preheader
+  %23 = getelementptr inbounds i32** %neighbours, i64 %indvars.iv35
+  br label %24
+
+; <label>:24                                      ; preds = %PUGH_DecomposeIJK.exit, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %PUGH_DecomposeIJK.exit ]
+  %25 = getelementptr inbounds i32* %4, i64 %indvars.iv
+  %26 = load i32* %25, align 4, !tbaa !20
+  %27 = add nsw i32 %26, -1
+  store i32 %27, i32* %25, align 4, !tbaa !20
+  %28 = icmp sgt i32 %26, 0
+  br i1 %28, label %29, label %43
+
+; <label>:29                                      ; preds = %24
+  %30 = load i32* %10, align 4, !tbaa !20
+  br i1 %12, label %.lr.ph.i16, label %PUGH_ComposeIJK.exit21
+
+.lr.ph.i16:                                       ; preds = %29, %.lr.ph.i16
+  %indvars.iv.i17 = phi i64 [ %indvars.iv.next.i19, %.lr.ph.i16 ], [ %13, %29 ]
+  %ijk.01.i18 = phi i32 [ %36, %.lr.ph.i16 ], [ %30, %29 ]
+  %31 = getelementptr inbounds i32* %4, i64 %indvars.iv.i17
+  %32 = load i32* %31, align 4, !tbaa !20
+  %33 = getelementptr inbounds i32* %nprocs, i64 %indvars.iv.i17
+  %34 = load i32* %33, align 4, !tbaa !20
+  %35 = mul nsw i32 %34, %ijk.01.i18
+  %36 = add nsw i32 %35, %32
+  %37 = icmp sgt i64 %indvars.iv.i17, 0
+  %indvars.iv.next.i19 = add nsw i64 %indvars.iv.i17, -1
+  br i1 %37, label %.lr.ph.i16, label %PUGH_ComposeIJK.exit21
+
+PUGH_ComposeIJK.exit21:                           ; preds = %.lr.ph.i16, %29
+  %ijk.0.lcssa.i20 = phi i32 [ %30, %29 ], [ %36, %.lr.ph.i16 ]
+  %38 = trunc i64 %indvars.iv to i32
+  %39 = shl nsw i32 %38, 1
+  %40 = sext i32 %39 to i64
+  %41 = load i32** %23, align 8, !tbaa !19
+  %42 = getelementptr inbounds i32* %41, i64 %40
+  store i32 %ijk.0.lcssa.i20, i32* %42, align 4, !tbaa !20
+  br label %70
+
+; <label>:43                                      ; preds = %24
+  %44 = getelementptr inbounds i32* %perme, i64 %indvars.iv
+  %45 = load i32* %44, align 4, !tbaa !20
+  %46 = icmp eq i32 %45, 0
+  br i1 %46, label %64, label %47
+
+; <label>:47                                      ; preds = %43
+  %48 = getelementptr inbounds i32* %nprocs, i64 %indvars.iv
+  %49 = load i32* %48, align 4, !tbaa !20
+  %50 = add nsw i32 %49, -1
+  store i32 %50, i32* %25, align 4, !tbaa !20
+  %51 = load i32* %10, align 4, !tbaa !20
+  br i1 %12, label %.lr.ph.i10, label %PUGH_ComposeIJK.exit15
+
+.lr.ph.i10:                                       ; preds = %47, %.lr.ph.i10
+  %indvars.iv.i11 = phi i64 [ %indvars.iv.next.i13, %.lr.ph.i10 ], [ %13, %47 ]
+  %ijk.01.i12 = phi i32 [ %57, %.lr.ph.i10 ], [ %51, %47 ]
+  %52 = getelementptr inbounds i32* %4, i64 %indvars.iv.i11
+  %53 = load i32* %52, align 4, !tbaa !20
+  %54 = getelementptr inbounds i32* %nprocs, i64 %indvars.iv.i11
+  %55 = load i32* %54, align 4, !tbaa !20
+  %56 = mul nsw i32 %55, %ijk.01.i12
+  %57 = add nsw i32 %56, %53
+  %58 = icmp sgt i64 %indvars.iv.i11, 0
+  %indvars.iv.next.i13 = add nsw i64 %indvars.iv.i11, -1
+  br i1 %58, label %.lr.ph.i10, label %PUGH_ComposeIJK.exit15
+
+PUGH_ComposeIJK.exit15:                           ; preds = %.lr.ph.i10, %47
+  %ijk.0.lcssa.i14 = phi i32 [ %51, %47 ], [ %57, %.lr.ph.i10 ]
+  %59 = trunc i64 %indvars.iv to i32
+  %60 = shl nsw i32 %59, 1
+  %61 = sext i32 %60 to i64
+  %62 = load i32** %23, align 8, !tbaa !19
+  %63 = getelementptr inbounds i32* %62, i64 %61
+  store i32 %ijk.0.lcssa.i14, i32* %63, align 4, !tbaa !20
+  store i32 %27, i32* %25, align 4, !tbaa !20
+  br label %70
+
+; <label>:64                                      ; preds = %43
+  %65 = trunc i64 %indvars.iv to i32
+  %66 = shl nsw i32 %65, 1
+  %67 = sext i32 %66 to i64
+  %68 = load i32** %23, align 8, !tbaa !19
+  %69 = getelementptr inbounds i32* %68, i64 %67
+  store i32 -1, i32* %69, align 4, !tbaa !20
+  br label %70
+
+; <label>:70                                      ; preds = %PUGH_ComposeIJK.exit15, %64, %PUGH_ComposeIJK.exit21
+  %71 = phi i32* [ %62, %PUGH_ComposeIJK.exit15 ], [ %68, %64 ], [ %41, %PUGH_ComposeIJK.exit21 ]
+  %72 = add nsw i32 %26, 1
+  store i32 %72, i32* %25, align 4, !tbaa !20
+  %73 = getelementptr inbounds i32* %nprocs, i64 %indvars.iv
+  %74 = load i32* %73, align 4, !tbaa !20
+  %75 = icmp slt i32 %72, %74
+  br i1 %75, label %76, label %90
+
+; <label>:76                                      ; preds = %70
+  %77 = load i32* %10, align 4, !tbaa !20
+  br i1 %12, label %.lr.ph.i4, label %PUGH_ComposeIJK.exit9
+
+.lr.ph.i4:                                        ; preds = %76, %.lr.ph.i4
+  %indvars.iv.i5 = phi i64 [ %indvars.iv.next.i7, %.lr.ph.i4 ], [ %13, %76 ]
+  %ijk.01.i6 = phi i32 [ %83, %.lr.ph.i4 ], [ %77, %76 ]
+  %78 = getelementptr inbounds i32* %4, i64 %indvars.iv.i5
+  %79 = load i32* %78, align 4, !tbaa !20
+  %80 = getelementptr inbounds i32* %nprocs, i64 %indvars.iv.i5
+  %81 = load i32* %80, align 4, !tbaa !20
+  %82 = mul nsw i32 %81, %ijk.01.i6
+  %83 = add nsw i32 %82, %79
+  %84 = icmp sgt i64 %indvars.iv.i5, 0
+  %indvars.iv.next.i7 = add nsw i64 %indvars.iv.i5, -1
+  br i1 %84, label %.lr.ph.i4, label %PUGH_ComposeIJK.exit9
+
+PUGH_ComposeIJK.exit9:                            ; preds = %.lr.ph.i4, %76
+  %ijk.0.lcssa.i8 = phi i32 [ %77, %76 ], [ %83, %.lr.ph.i4 ]
+  %85 = trunc i64 %indvars.iv to i32
+  %86 = shl nsw i32 %85, 1
+  %87 = or i32 %86, 1
+  %88 = sext i32 %87 to i64
+  %89 = getelementptr inbounds i32* %71, i64 %88
+  store i32 %ijk.0.lcssa.i8, i32* %89, align 4, !tbaa !20
+  br label %PUGH_DecomposeIJK.exit
+
+; <label>:90                                      ; preds = %70
+  %91 = getelementptr inbounds i32* %perme, i64 %indvars.iv
+  %92 = load i32* %91, align 4, !tbaa !20
+  %93 = icmp eq i32 %92, 0
+  br i1 %93, label %108, label %94
+
+; <label>:94                                      ; preds = %90
+  store i32 0, i32* %25, align 4, !tbaa !20
+  %95 = load i32* %10, align 4, !tbaa !20
+  br i1 %12, label %.lr.ph.i1, label %PUGH_ComposeIJK.exit
+
+.lr.ph.i1:                                        ; preds = %94, %.lr.ph.i1
+  %indvars.iv.i2 = phi i64 [ %indvars.iv.next.i3, %.lr.ph.i1 ], [ %13, %94 ]
+  %ijk.01.i = phi i32 [ %101, %.lr.ph.i1 ], [ %95, %94 ]
+  %96 = getelementptr inbounds i32* %4, i64 %indvars.iv.i2
+  %97 = load i32* %96, align 4, !tbaa !20
+  %98 = getelementptr inbounds i32* %nprocs, i64 %indvars.iv.i2
+  %99 = load i32* %98, align 4, !tbaa !20
+  %100 = mul nsw i32 %99, %ijk.01.i
+  %101 = add nsw i32 %100, %97
+  %102 = icmp sgt i64 %indvars.iv.i2, 0
+  %indvars.iv.next.i3 = add nsw i64 %indvars.iv.i2, -1
+  br i1 %102, label %.lr.ph.i1, label %PUGH_ComposeIJK.exit
+
+PUGH_ComposeIJK.exit:                             ; preds = %.lr.ph.i1, %94
+  %ijk.0.lcssa.i = phi i32 [ %95, %94 ], [ %101, %.lr.ph.i1 ]
+  %103 = trunc i64 %indvars.iv to i32
+  %104 = shl nsw i32 %103, 1
+  %105 = or i32 %104, 1
+  %106 = sext i32 %105 to i64
+  %107 = getelementptr inbounds i32* %71, i64 %106
+  store i32 %ijk.0.lcssa.i, i32* %107, align 4, !tbaa !20
+  store i32 %72, i32* %25, align 4, !tbaa !20
+  br label %PUGH_DecomposeIJK.exit
+
+; <label>:108                                     ; preds = %90
+  %109 = trunc i64 %indvars.iv to i32
+  %110 = shl nsw i32 %109, 1
+  %111 = or i32 %110, 1
+  %112 = sext i32 %111 to i64
+  %113 = getelementptr inbounds i32* %71, i64 %112
+  store i32 -1, i32* %113, align 4, !tbaa !20
+  br label %PUGH_DecomposeIJK.exit
+
+PUGH_DecomposeIJK.exit:                           ; preds = %PUGH_ComposeIJK.exit, %108, %PUGH_ComposeIJK.exit9
+  %lftr.wideiv33.pre-phi = phi i32 [ %103, %PUGH_ComposeIJK.exit ], [ %109, %108 ], [ %85, %PUGH_ComposeIJK.exit9 ]
+  store i32 %26, i32* %25, align 4, !tbaa !20
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond34 = icmp eq i32 %lftr.wideiv33.pre-phi, %8
+  br i1 %exitcond34, label %PUGH_DecomposeIJK.exit._crit_edge, label %24
+
+PUGH_DecomposeIJK.exit._crit_edge:                ; preds = %PUGH_DecomposeIJK.exit, %15, %PUGH_DecomposeIJK.exit.preheader
+  %indvars.iv.next36 = add nuw nsw i64 %indvars.iv35, 1
+  %lftr.wideiv37 = trunc i64 %indvars.iv35 to i32
+  %exitcond38 = icmp eq i32 %lftr.wideiv37, %14
+  br i1 %exitcond38, label %.loopexit, label %15
+
+.loopexit:                                        ; preds = %PUGH_DecomposeIJK.exit._crit_edge, %.preheader, %0
+  %retval.0 = phi i32 [ 1, %0 ], [ 0, %.preheader ], [ 0, %PUGH_DecomposeIJK.exit._crit_edge ]
+  tail call void @free(i8* %3) #8
+  ret i32 %retval.0
+}

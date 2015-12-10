@@ -1,0 +1,38 @@
+define i8* @Util_StringListNext(%struct.uStringList* nocapture %this, i32 %flag) #1 {
+  %1 = icmp eq i32 %flag, 0
+  br i1 %1, label %._crit_edge, label %2
+
+._crit_edge:                                      ; preds = %0
+  %.phi.trans.insert = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 3
+  %.pre = load %struct.iInternalStringList** %.phi.trans.insert, align 8, !tbaa !8
+  br label %9
+
+; <label>:2                                       ; preds = %0
+  %3 = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 2
+  %4 = bitcast %struct.iInternalStringList** %3 to i64*
+  %5 = load i64* %4, align 8, !tbaa !10
+  %6 = getelementptr inbounds %struct.uStringList* %this, i64 0, i32 3
+  %7 = bitcast %struct.iInternalStringList** %6 to i64*
+  store i64 %5, i64* %7, align 8, !tbaa !8
+  %8 = inttoptr i64 %5 to %struct.iInternalStringList*
+  br label %9
+
+; <label>:9                                       ; preds = %._crit_edge, %2
+  %.pre-phi = phi %struct.iInternalStringList** [ %.phi.trans.insert, %._crit_edge ], [ %6, %2 ]
+  %10 = phi %struct.iInternalStringList* [ %.pre, %._crit_edge ], [ %8, %2 ]
+  %11 = icmp eq %struct.iInternalStringList* %10, null
+  br i1 %11, label %18, label %12
+
+; <label>:12                                      ; preds = %9
+  %13 = getelementptr inbounds %struct.iInternalStringList* %10, i64 0, i32 1
+  %14 = load i8** %13, align 8, !tbaa !11
+  %15 = bitcast %struct.iInternalStringList* %10 to i64*
+  %16 = load i64* %15, align 8, !tbaa !13
+  %17 = bitcast %struct.iInternalStringList** %.pre-phi to i64*
+  store i64 %16, i64* %17, align 8, !tbaa !8
+  br label %18
+
+; <label>:18                                      ; preds = %9, %12
+  %retval.0 = phi i8* [ %14, %12 ], [ null, %9 ]
+  ret i8* %retval.0
+}

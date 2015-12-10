@@ -1,180 +1,244 @@
-; ModuleID = '../../SPEC/benchspec/CPU2006/435.gromacs/src/buffer.c'
-target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
-target triple = "x86_64-unknown-linux-gnu"
+; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/435.gromacs/src/buffer.c'
+target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
+target triple = "x86_64-apple-macosx10.10.0"
 
-%struct._IO_FILE = type { i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, %struct._IO_marker*, %struct._IO_FILE*, i32, i32, i64, i16, i8, [1 x i8], i8*, i64, i8*, i8*, i8*, i8*, i64, i32, [20 x i8] }
-%struct._IO_marker = type { %struct._IO_marker*, %struct._IO_FILE*, i32 }
+%struct.__sFILE = type { i8*, i32, i32, i16, i16, %struct.__sbuf, i32, i8*, i32 (i8*)*, i32 (i8*, i8*, i32)*, i64 (i8*, i64, i32)*, i32 (i8*, i8*, i32)*, %struct.__sbuf, %struct.__sFILEX*, i32, [3 x i8], [1 x i8], %struct.__sbuf, i32, i64 }
+%struct.__sFILEX = type opaque
+%struct.__sbuf = type { i8*, i32 }
 
 @.str = private unnamed_addr constant [44 x i8] c"error: (%s) data: 0x%.8x, expected: 0x%.8x\0A\00", align 1
 
-; Function Attrs: nounwind optsize readnone uwtable
-define i32 @mask(i32 %i) #0 {
-entry:
-  %and = and i32 %i, 255
-  %add = shl i32 %i, 8
-  %and1 = add i32 %add, 256
-  %shl = and i32 %and1, 65280
-  %add2 = shl i32 %i, 16
-  %and3 = add i32 %add2, 131072
-  %shl4 = and i32 %and3, 16711680
-  %add6 = shl i32 %i, 24
-  %shl8 = add i32 %add6, 50331648
-  %or = or i32 %shl8, %and
-  %or5 = or i32 %or, %shl
-  %or9 = or i32 %or5, %shl4
-  ret i32 %or9
+; Function Attrs: alwaysinline nounwind optsize ssp uwtable
+define i32 @__sputc(i32 %_c, %struct.__sFILE* %_p) #0 {
+  %1 = getelementptr inbounds %struct.__sFILE* %_p, i64 0, i32 2
+  %2 = load i32* %1, align 4, !tbaa !2
+  %3 = add nsw i32 %2, -1
+  store i32 %3, i32* %1, align 4, !tbaa !2
+  %4 = icmp sgt i32 %2, 0
+  br i1 %4, label %._crit_edge, label %5
+
+._crit_edge:                                      ; preds = %0
+  %.pre = and i32 %_c, 255
+  br label %10
+
+; <label>:5                                       ; preds = %0
+  %6 = getelementptr inbounds %struct.__sFILE* %_p, i64 0, i32 6
+  %7 = load i32* %6, align 4, !tbaa !11
+  %8 = icmp sle i32 %2, %7
+  %sext.mask = and i32 %_c, 255
+  %9 = icmp eq i32 %sext.mask, 10
+  %or.cond = or i1 %9, %8
+  br i1 %or.cond, label %15, label %10
+
+; <label>:10                                      ; preds = %._crit_edge, %5
+  %.pre-phi = phi i32 [ %.pre, %._crit_edge ], [ %sext.mask, %5 ]
+  %11 = trunc i32 %_c to i8
+  %12 = getelementptr inbounds %struct.__sFILE* %_p, i64 0, i32 0
+  %13 = load i8** %12, align 8, !tbaa !12
+  %14 = getelementptr inbounds i8* %13, i64 1
+  store i8* %14, i8** %12, align 8, !tbaa !12
+  store i8 %11, i8* %13, align 1, !tbaa !13
+  br label %17
+
+; <label>:15                                      ; preds = %5
+  %16 = tail call i32 @__swbuf(i32 %_c, %struct.__sFILE* %_p) #6
+  br label %17
+
+; <label>:17                                      ; preds = %15, %10
+  %.0 = phi i32 [ %.pre-phi, %10 ], [ %16, %15 ]
+  ret i32 %.0
 }
 
-; Function Attrs: nounwind optsize uwtable
-define void @clear_buff(i32* nocapture %data, i32 %items) #1 {
-entry:
-  %cmp3 = icmp sgt i32 %items, 0
-  br i1 %cmp3, label %for.body.lr.ph, label %for.end
+; Function Attrs: optsize
+declare i32 @__swbuf(i32, %struct.__sFILE*) #1
 
-for.body.lr.ph:                                   ; preds = %entry
-  %data5 = bitcast i32* %data to i8*
-  %0 = add i32 %items, -1
-  %1 = zext i32 %0 to i64
-  %2 = shl nuw nsw i64 %1, 2
-  %3 = add i64 %2, 4
-  call void @llvm.memset.p0i8.i64(i8* %data5, i8 0, i64 %3, i32 4, i1 false)
-  br label %for.end
+; Function Attrs: nounwind optsize readnone ssp uwtable
+define i32 @mask(i32 %i) #2 {
+  %1 = and i32 %i, 255
+  %2 = shl i32 %i, 8
+  %3 = add i32 %2, 256
+  %4 = and i32 %3, 65280
+  %5 = shl i32 %i, 16
+  %6 = add i32 %5, 131072
+  %7 = and i32 %6, 16711680
+  %8 = shl i32 %i, 24
+  %9 = add i32 %8, 50331648
+  %10 = or i32 %9, %1
+  %11 = or i32 %10, %4
+  %12 = or i32 %11, %7
+  ret i32 %12
+}
 
-for.end:                                          ; preds = %for.body.lr.ph, %entry
+; Function Attrs: nounwind optsize ssp uwtable
+define void @clear_buff(i32* nocapture %data, i32 %items) #3 {
+  %1 = icmp sgt i32 %items, 0
+  br i1 %1, label %.lr.ph, label %6
+
+.lr.ph:                                           ; preds = %0
+  %data2 = bitcast i32* %data to i8*
+  %2 = add i32 %items, -1
+  %3 = zext i32 %2 to i64
+  %4 = shl nuw nsw i64 %3, 2
+  %5 = add nuw nsw i64 %4, 4
+  call void @llvm.memset.p0i8.i64(i8* %data2, i8 0, i64 %5, i32 4, i1 false)
+  br label %6
+
+; <label>:6                                       ; preds = %.lr.ph, %0
   ret void
 }
 
-; Function Attrs: nounwind optsize uwtable
-define void @fill_buff(i32* nocapture %data, i32 %items) #1 {
-entry:
-  %cmp4 = icmp sgt i32 %items, 0
-  br i1 %cmp4, label %for.body, label %for.end
+; Function Attrs: nounwind optsize ssp uwtable
+define void @fill_buff(i32* nocapture %data, i32 %items) #3 {
+  %1 = icmp sgt i32 %items, 0
+  br i1 %1, label %.lr.ph, label %._crit_edge
 
-for.body:                                         ; preds = %entry, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
-  %0 = trunc i64 %indvars.iv to i32
-  %and.i = and i32 %0, 255
-  %add.i = shl i32 %0, 8
-  %and1.i = add i32 %add.i, 256
-  %shl.i = and i32 %and1.i, 65280
-  %add2.i = shl i32 %0, 16
-  %and3.i = add i32 %add2.i, 131072
-  %shl4.i = and i32 %and3.i, 16711680
-  %add6.i = shl i32 %0, 24
-  %shl8.i = add i32 %add6.i, 50331648
-  %or.i = or i32 %shl8.i, %and.i
-  %or5.i = or i32 %or.i, %shl.i
-  %or9.i = or i32 %or5.i, %shl4.i
-  %arrayidx = getelementptr inbounds i32* %data, i64 %indvars.iv
-  store i32 %or9.i, i32* %arrayidx, align 4, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %items
-  br i1 %exitcond, label %for.end, label %for.body
+.lr.ph:                                           ; preds = %0
+  %2 = add i32 %items, -1
+  br label %3
 
-for.end:                                          ; preds = %for.body, %entry
+; <label>:3                                       ; preds = %3, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %3 ]
+  %4 = trunc i64 %indvars.iv to i32
+  %5 = and i32 %4, 255
+  %6 = shl i32 %4, 8
+  %7 = add i32 %6, 256
+  %8 = and i32 %7, 65280
+  %9 = shl i32 %4, 16
+  %10 = add i32 %9, 131072
+  %11 = and i32 %10, 16711680
+  %12 = shl i32 %4, 24
+  %13 = add i32 %12, 50331648
+  %14 = or i32 %13, %5
+  %15 = or i32 %14, %8
+  %16 = or i32 %15, %11
+  %17 = getelementptr inbounds i32* %data, i64 %indvars.iv
+  store i32 %16, i32* %17, align 4, !tbaa !14
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i32 %4, %2
+  br i1 %exitcond, label %._crit_edge, label %3
+
+._crit_edge:                                      ; preds = %3, %0
   ret void
 }
 
-; Function Attrs: nounwind optsize uwtable
-define i32 @check_buff(%struct._IO_FILE* %fp, i8* %title, i32* nocapture %data, i32 %items, i32 %verbose) #1 {
-entry:
-  %tobool = icmp eq i32 %verbose, 0
-  %cmp48 = icmp sgt i32 %items, 0
-  br i1 %tobool, label %for.cond.preheader, label %for.cond4.preheader
+; Function Attrs: nounwind optsize ssp uwtable
+define i32 @check_buff(%struct.__sFILE* %fp, i8* %title, i32* nocapture readonly %data, i32 %items, i32 %verbose) #3 {
+  %1 = icmp eq i32 %verbose, 0
+  %2 = icmp sgt i32 %items, 0
+  br i1 %1, label %.preheader, label %.preheader1
 
-for.cond4.preheader:                              ; preds = %entry
-  br i1 %cmp48, label %for.body6.lr.ph, label %if.end21
+.preheader1:                                      ; preds = %0
+  br i1 %2, label %.lr.ph7, label %.loopexit
 
-for.body6.lr.ph:                                  ; preds = %for.cond4.preheader
-  %tobool12 = icmp eq %struct._IO_FILE* %fp, null
-  br label %for.body6
+.lr.ph7:                                          ; preds = %.preheader1
+  %3 = icmp eq %struct.__sFILE* %fp, null
+  %4 = add i32 %items, -1
+  br label %23
 
-for.cond.preheader:                               ; preds = %entry
-  br i1 %cmp48, label %for.body, label %if.end21
+.preheader:                                       ; preds = %0
+  br i1 %2, label %.lr.ph, label %.loopexit
 
-for.body:                                         ; preds = %for.cond.preheader, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
-  %errs.049 = phi i32 [ %errs.0.inc, %for.body ], [ 0, %for.cond.preheader ]
-  %arrayidx = getelementptr inbounds i32* %data, i64 %indvars.iv
-  %0 = load i32* %arrayidx, align 4, !tbaa !0
-  %1 = trunc i64 %indvars.iv to i32
-  %and.i = and i32 %1, 255
-  %add.i = shl i32 %1, 8
-  %and1.i = add i32 %add.i, 256
-  %shl.i = and i32 %and1.i, 65280
-  %add2.i = shl i32 %1, 16
-  %and3.i = add i32 %add2.i, 131072
-  %shl4.i = and i32 %and3.i, 16711680
-  %add6.i = shl i32 %1, 24
-  %shl8.i = add i32 %add6.i, 50331648
-  %or.i = or i32 %shl8.i, %and.i
-  %or5.i = or i32 %or.i, %shl.i
-  %or9.i = or i32 %or5.i, %shl4.i
-  %not.cmp1 = icmp ne i32 %0, %or9.i
-  %inc = zext i1 %not.cmp1 to i32
-  %errs.0.inc = add nsw i32 %inc, %errs.049
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %items
-  br i1 %exitcond, label %if.end21, label %for.body
+.lr.ph:                                           ; preds = %.preheader
+  %5 = add i32 %items, -1
+  br label %6
 
-for.body6:                                        ; preds = %for.inc18, %for.body6.lr.ph
-  %indvars.iv56 = phi i64 [ 0, %for.body6.lr.ph ], [ %indvars.iv.next57, %for.inc18 ]
-  %errs.253 = phi i32 [ 0, %for.body6.lr.ph ], [ %errs.3, %for.inc18 ]
-  %arrayidx8 = getelementptr inbounds i32* %data, i64 %indvars.iv56
-  %2 = load i32* %arrayidx8, align 4, !tbaa !0
-  %3 = trunc i64 %indvars.iv56 to i32
-  %and.i36 = and i32 %3, 255
-  %add.i37 = shl i32 %3, 8
-  %and1.i38 = add i32 %add.i37, 256
-  %shl.i39 = and i32 %and1.i38, 65280
-  %add2.i40 = shl i32 %3, 16
-  %and3.i41 = add i32 %add2.i40, 131072
-  %shl4.i42 = and i32 %and3.i41, 16711680
-  %add6.i43 = shl i32 %3, 24
-  %shl8.i44 = add i32 %add6.i43, 50331648
-  %or.i45 = or i32 %shl8.i44, %and.i36
-  %or5.i46 = or i32 %or.i45, %shl.i39
-  %or9.i47 = or i32 %or5.i46, %shl4.i42
-  %cmp10 = icmp eq i32 %2, %or9.i47
-  br i1 %cmp10, label %for.inc18, label %if.then11
+; <label>:6                                       ; preds = %6, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %6 ]
+  %errs.03 = phi i32 [ 0, %.lr.ph ], [ %errs.0., %6 ]
+  %7 = getelementptr inbounds i32* %data, i64 %indvars.iv
+  %8 = load i32* %7, align 4, !tbaa !14
+  %9 = trunc i64 %indvars.iv to i32
+  %10 = and i32 %9, 255
+  %11 = shl i32 %9, 8
+  %12 = add i32 %11, 256
+  %13 = and i32 %12, 65280
+  %14 = shl i32 %9, 16
+  %15 = add i32 %14, 131072
+  %16 = and i32 %15, 16711680
+  %17 = shl i32 %9, 24
+  %18 = add i32 %17, 50331648
+  %19 = or i32 %18, %10
+  %20 = or i32 %19, %13
+  %21 = or i32 %20, %16
+  %not. = icmp ne i32 %8, %21
+  %22 = zext i1 %not. to i32
+  %errs.0. = add nsw i32 %22, %errs.03
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i32 %9, %5
+  br i1 %exitcond, label %.loopexit, label %6
 
-if.then11:                                        ; preds = %for.body6
-  br i1 %tobool12, label %if.end15, label %if.then13
+; <label>:23                                      ; preds = %45, %.lr.ph7
+  %indvars.iv9 = phi i64 [ 0, %.lr.ph7 ], [ %indvars.iv.next10, %45 ]
+  %errs.25 = phi i32 [ 0, %.lr.ph7 ], [ %errs.3, %45 ]
+  %24 = getelementptr inbounds i32* %data, i64 %indvars.iv9
+  %25 = load i32* %24, align 4, !tbaa !14
+  %26 = trunc i64 %indvars.iv9 to i32
+  %27 = and i32 %26, 255
+  %28 = shl i32 %26, 8
+  %29 = add i32 %28, 256
+  %30 = and i32 %29, 65280
+  %31 = shl i32 %26, 16
+  %32 = add i32 %31, 131072
+  %33 = and i32 %32, 16711680
+  %34 = shl i32 %26, 24
+  %35 = add i32 %34, 50331648
+  %36 = or i32 %35, %27
+  %37 = or i32 %36, %30
+  %38 = or i32 %37, %33
+  %39 = icmp eq i32 %25, %38
+  br i1 %39, label %45, label %40
 
-if.then13:                                        ; preds = %if.then11
-  %call14 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([44 x i8]* @.str, i64 0, i64 0), i8* %title, i32 %2, i32 %or9.i47) #4
-  br label %if.end15
+; <label>:40                                      ; preds = %23
+  br i1 %3, label %43, label %41
 
-if.end15:                                         ; preds = %if.then11, %if.then13
-  %inc16 = add nsw i32 %errs.253, 1
-  br label %for.inc18
+; <label>:41                                      ; preds = %40
+  %42 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([44 x i8]* @.str, i64 0, i64 0), i8* %title, i32 %25, i32 %38) #6
+  br label %43
 
-for.inc18:                                        ; preds = %for.body6, %if.end15
-  %errs.3 = phi i32 [ %inc16, %if.end15 ], [ %errs.253, %for.body6 ]
-  %indvars.iv.next57 = add i64 %indvars.iv56, 1
-  %lftr.wideiv58 = trunc i64 %indvars.iv.next57 to i32
-  %exitcond59 = icmp eq i32 %lftr.wideiv58, %items
-  br i1 %exitcond59, label %if.end21, label %for.body6
+; <label>:43                                      ; preds = %40, %41
+  %44 = add nsw i32 %errs.25, 1
+  br label %45
 
-if.end21:                                         ; preds = %for.cond4.preheader, %for.inc18, %for.cond.preheader, %for.body
-  %errs.4 = phi i32 [ 0, %for.cond.preheader ], [ %errs.0.inc, %for.body ], [ 0, %for.cond4.preheader ], [ %errs.3, %for.inc18 ]
+; <label>:45                                      ; preds = %23, %43
+  %errs.3 = phi i32 [ %44, %43 ], [ %errs.25, %23 ]
+  %indvars.iv.next10 = add nuw nsw i64 %indvars.iv9, 1
+  %exitcond12 = icmp eq i32 %26, %4
+  br i1 %exitcond12, label %.loopexit, label %23
+
+.loopexit:                                        ; preds = %45, %6, %.preheader1, %.preheader
+  %errs.4 = phi i32 [ 0, %.preheader ], [ 0, %.preheader1 ], [ %errs.0., %6 ], [ %errs.3, %45 ]
   ret i32 %errs.4
 }
 
 ; Function Attrs: nounwind optsize
-declare i32 @fprintf(%struct._IO_FILE* nocapture, i8* nocapture, ...) #2
+declare i32 @fprintf(%struct.__sFILE* nocapture, i8* nocapture readonly, ...) #4
 
 ; Function Attrs: nounwind
-declare void @llvm.memset.p0i8.i64(i8* nocapture, i8, i64, i32, i1) #3
+declare void @llvm.memset.p0i8.i64(i8* nocapture, i8, i64, i32, i1) #5
 
-attributes #0 = { nounwind optsize readnone uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #3 = { nounwind }
-attributes #4 = { nounwind optsize }
+attributes #0 = { alwaysinline nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { nounwind optsize readnone ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #4 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #5 = { nounwind }
+attributes #6 = { nounwind optsize }
 
-!0 = metadata !{metadata !"int", metadata !1}
-!1 = metadata !{metadata !"omnipotent char", metadata !2}
-!2 = metadata !{metadata !"Simple C/C++ TBAA"}
+!llvm.module.flags = !{!0}
+!llvm.ident = !{!1}
+
+!0 = !{i32 1, !"PIC Level", i32 2}
+!1 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
+!2 = !{!3, !7, i64 12}
+!3 = !{!"__sFILE", !4, i64 0, !7, i64 8, !7, i64 12, !8, i64 16, !8, i64 18, !9, i64 24, !7, i64 40, !4, i64 48, !4, i64 56, !4, i64 64, !4, i64 72, !4, i64 80, !9, i64 88, !4, i64 104, !7, i64 112, !5, i64 116, !5, i64 119, !9, i64 120, !7, i64 136, !10, i64 144}
+!4 = !{!"any pointer", !5, i64 0}
+!5 = !{!"omnipotent char", !6, i64 0}
+!6 = !{!"Simple C/C++ TBAA"}
+!7 = !{!"int", !5, i64 0}
+!8 = !{!"short", !5, i64 0}
+!9 = !{!"__sbuf", !4, i64 0, !7, i64 8}
+!10 = !{!"long long", !5, i64 0}
+!11 = !{!3, !7, i64 40}
+!12 = !{!3, !4, i64 0}
+!13 = !{!5, !5, i64 0}
+!14 = !{!7, !7, i64 0}

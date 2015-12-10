@@ -1,34 +1,39 @@
-define internal fastcc i32 @dbcmp_len(i8* nocapture %search, i8* nocapture %database) #5 {
-entry:
-  %0 = load i8* %search, align 1, !tbaa !1
-  %tobool23 = icmp eq i8 %0, 0
-  br i1 %tobool23, label %while.end, label %land.lhs.true
+define internal fastcc i32 @dbcmp_len(i8* nocapture readonly %search, i8* nocapture readonly %database) #7 {
+  %1 = load i8* %search, align 1, !tbaa !13
+  %2 = icmp eq i8 %1, 0
+  br i1 %2, label %.critedge, label %.lr.ph
 
-while.cond:                                       ; preds = %land.lhs.true
-  %arrayidx = getelementptr inbounds i8* %search, i64 %indvars.iv.next
-  %1 = load i8* %arrayidx, align 1, !tbaa !1
-  %tobool = icmp eq i8 %1, 0
-  br i1 %tobool, label %while.end, label %land.lhs.true
+.lr.ph:                                           ; preds = %0, %7
+  %indvars.iv = phi i64 [ %indvars.iv.next, %7 ], [ 0, %0 ]
+  %3 = phi i8 [ %9, %7 ], [ %1, %0 ]
+  %4 = getelementptr inbounds i8* %database, i64 %indvars.iv
+  %5 = load i8* %4, align 1, !tbaa !13
+  %6 = icmp eq i8 %3, %5
+  %not. = icmp ne i8 %5, 0
+  %. = and i1 %6, %not.
+  br i1 %., label %7, label %..critedge_crit_edge3
 
-land.lhs.true:                                    ; preds = %entry, %while.cond
-  %indvars.iv = phi i64 [ %indvars.iv.next, %while.cond ], [ 0, %entry ]
-  %2 = phi i8 [ %1, %while.cond ], [ %0, %entry ]
-  %i.024 = phi i32 [ %inc, %while.cond ], [ 0, %entry ]
-  %arrayidx2 = getelementptr inbounds i8* %database, i64 %indvars.iv
-  %3 = load i8* %arrayidx2, align 1, !tbaa !1
-  %cmp = icmp eq i8 %2, %3
-  %not.tobool4 = icmp ne i8 %3, 0
-  %.cmp = and i1 %cmp, %not.tobool4
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %inc = add nsw i32 %i.024, 1
-  br i1 %.cmp, label %while.cond, label %while.end
+; <label>:7                                       ; preds = %.lr.ph
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %8 = getelementptr inbounds i8* %search, i64 %indvars.iv.next
+  %9 = load i8* %8, align 1, !tbaa !13
+  %10 = icmp eq i8 %9, 0
+  br i1 %10, label %..critedge_crit_edge, label %.lr.ph
 
-while.end:                                        ; preds = %while.cond, %land.lhs.true, %entry
-  %idxprom.lcssa = phi i64 [ 0, %entry ], [ %indvars.iv, %land.lhs.true ], [ %indvars.iv.next, %while.cond ]
-  %i.0.lcssa = phi i32 [ 0, %entry ], [ %i.024, %land.lhs.true ], [ %inc, %while.cond ]
-  %arrayidx13 = getelementptr inbounds i8* %database, i64 %idxprom.lcssa
-  %4 = load i8* %arrayidx13, align 1, !tbaa !1
-  %tobool14 = icmp eq i8 %4, 0
-  %i.0. = select i1 %tobool14, i32 %i.0.lcssa, i32 -3
+..critedge_crit_edge:                             ; preds = %7
+  %11 = trunc i64 %indvars.iv.next to i32
+  br label %.critedge
+
+..critedge_crit_edge3:                            ; preds = %.lr.ph
+  %12 = trunc i64 %indvars.iv to i32
+  br label %.critedge
+
+.critedge:                                        ; preds = %..critedge_crit_edge3, %..critedge_crit_edge, %0
+  %.lcssa = phi i64 [ %indvars.iv.next, %..critedge_crit_edge ], [ %indvars.iv, %..critedge_crit_edge3 ], [ 0, %0 ]
+  %i.0.lcssa = phi i32 [ %11, %..critedge_crit_edge ], [ %12, %..critedge_crit_edge3 ], [ 0, %0 ]
+  %13 = getelementptr inbounds i8* %database, i64 %.lcssa
+  %14 = load i8* %13, align 1, !tbaa !13
+  %15 = icmp eq i8 %14, 0
+  %i.0. = select i1 %15, i32 %i.0.lcssa, i32 -3
   ret i32 %i.0.
 }

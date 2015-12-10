@@ -1,48 +1,46 @@
-define i32 @read_xpm_matrix(i8* %fnm, %struct.t_matrix** nocapture %matrix) #0 {
-entry:
+define i32 @read_xpm_matrix(i8* %fnm, %struct.t_matrix** nocapture %matrix) #3 {
   %line = alloca i8*, align 8
-  %call = call %struct._IO_FILE* @ffopen(i8* %fnm, i8* getelementptr inbounds ([2 x i8]* @.str45, i64 0, i64 0)) #8
-  br label %while.cond.outer
+  %1 = tail call %struct.__sFILE* @ffopen(i8* %fnm, i8* getelementptr inbounds ([2 x i8]* @.str45, i64 0, i64 0)) #10
+  %2 = bitcast %struct.t_matrix** %matrix to i8**
+  br label %.outer
 
-while.cond.outer:                                 ; preds = %if.then, %entry
-  %indvars.iv = phi i64 [ %indvars.iv.next, %if.then ], [ 0, %entry ]
-  %nmat.0.ph = phi i32 [ %add, %if.then ], [ 0, %entry ]
-  br label %while.cond
+.outer:                                           ; preds = %10, %0
+  %indvars.iv = phi i64 [ %indvars.iv.next, %10 ], [ 0, %0 ]
+  br label %3
 
-while.cond:                                       ; preds = %while.cond.outer, %while.body
-  %call1 = call i8* @fgetline(i8** %line, i32 4096, %struct._IO_FILE* %call) #9
-  %tobool = icmp eq i8* %call1, null
-  br i1 %tobool, label %while.end, label %while.body
+; <label>:3                                       ; preds = %.outer, %6
+  %4 = call i8* @fgetline(i8** %line, i32 4096, %struct.__sFILE* %1) #11
+  %5 = icmp eq i8* %4, null
+  br i1 %5, label %17, label %6
 
-while.body:                                       ; preds = %while.cond
-  %0 = load i8** %line, align 8, !tbaa !0
-  %call2 = call i8* @strstr(i8* %0, i8* getelementptr inbounds ([10 x i8]* @.str46, i64 0, i64 0)) #10
-  %tobool3 = icmp eq i8* %call2, null
-  br i1 %tobool3, label %while.cond, label %if.then
+; <label>:6                                       ; preds = %3
+  %7 = load i8** %line, align 8, !tbaa !14
+  %8 = tail call i8* @strstr(i8* %7, i8* getelementptr inbounds ([10 x i8]* @.str46, i64 0, i64 0)) #10
+  %9 = icmp eq i8* %8, null
+  br i1 %9, label %3, label %10
 
-if.then:                                          ; preds = %while.body
-  %1 = load %struct.t_matrix** %matrix, align 8, !tbaa !0
-  %2 = bitcast %struct.t_matrix* %1 to i8*
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %add = add nsw i32 %nmat.0.ph, 1
-  %3 = trunc i64 %indvars.iv.next to i32
-  %mul = mul i32 %3, 1080
-  %call5 = call i8* @save_realloc(i8* getelementptr inbounds ([8 x i8]* @.str47, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 424, i8* %2, i32 %mul) #8
-  %4 = bitcast i8* %call5 to %struct.t_matrix*
-  store %struct.t_matrix* %4, %struct.t_matrix** %matrix, align 8, !tbaa !0
-  %arrayidx = getelementptr inbounds %struct.t_matrix* %4, i64 %indvars.iv
-  call void @read_xpm_entry(%struct._IO_FILE* %call, %struct.t_matrix* %arrayidx) #9
-  br label %while.cond.outer
+; <label>:10                                      ; preds = %6
+  %11 = load i8** %2, align 8, !tbaa !14
+  %indvars.iv.next = add nuw i64 %indvars.iv, 1
+  %12 = trunc i64 %indvars.iv.next to i32
+  %13 = mul i32 %12, 1080
+  %14 = tail call i8* @save_realloc(i8* getelementptr inbounds ([8 x i8]* @.str47, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 424, i8* %11, i32 %13) #10
+  %15 = bitcast i8* %14 to %struct.t_matrix*
+  store i8* %14, i8** %2, align 8, !tbaa !14
+  %16 = getelementptr inbounds %struct.t_matrix* %15, i64 %indvars.iv
+  tail call void @read_xpm_entry(%struct.__sFILE* %1, %struct.t_matrix* %16) #11
+  br label %.outer
 
-while.end:                                        ; preds = %while.cond
-  call void @ffclose(%struct._IO_FILE* %call) #8
-  %cmp = icmp eq i32 %nmat.0.ph, 0
-  br i1 %cmp, label %if.then7, label %if.end8
+; <label>:17                                      ; preds = %3
+  %18 = trunc i64 %indvars.iv to i32
+  tail call void @ffclose(%struct.__sFILE* %1) #10
+  %19 = icmp eq i32 %18, 0
+  br i1 %19, label %20, label %21
 
-if.then7:                                         ; preds = %while.end
-  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([17 x i8]* @.str23, i64 0, i64 0)) #8
-  br label %if.end8
+; <label>:20                                      ; preds = %17
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([17 x i8]* @.str23, i64 0, i64 0)) #10
+  br label %21
 
-if.end8:                                          ; preds = %if.then7, %while.end
-  ret i32 %nmat.0.ph
+; <label>:21                                      ; preds = %20, %17
+  ret i32 %18
 }

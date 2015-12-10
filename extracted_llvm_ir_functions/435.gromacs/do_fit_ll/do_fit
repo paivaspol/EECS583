@@ -1,56 +1,57 @@
-define void @do_fit(i32 %natoms, float* nocapture %w_rls, [3 x float]* nocapture %xp, [3 x float]* nocapture %x) #0 {
-entry:
+define void @do_fit(i32 %natoms, float* nocapture readonly %w_rls, [3 x float]* nocapture readonly %xp, [3 x float]* nocapture %x) #6 {
   %R = alloca [3 x [3 x float]], align 16
   %x_old = alloca [3 x float], align 4
-  %x_old60 = bitcast [3 x float]* %x_old to i8*
-  %0 = bitcast [3 x [3 x float]]* %R to i8*
-  call void @llvm.lifetime.start(i64 36, i8* %0) #2
-  %arraydecay = getelementptr inbounds [3 x [3 x float]]* %R, i64 0, i64 0
-  call void @calc_fit_R(i32 %natoms, float* %w_rls, [3 x float]* %xp, [3 x float]* %x, [3 x float]* %arraydecay) #5
-  %cmp58 = icmp sgt i32 %natoms, 0
-  br i1 %cmp58, label %for.cond1.preheader, label %for.end36
+  %x_old6 = bitcast [3 x float]* %x_old to i8*
+  %1 = bitcast [3 x [3 x float]]* %R to i8*
+  call void @llvm.lifetime.start(i64 36, i8* %1) #7
+  %2 = getelementptr inbounds [3 x [3 x float]]* %R, i64 0, i64 0
+  call void @calc_fit_R(i32 %natoms, float* %w_rls, [3 x float]* %xp, [3 x float]* %x, [3 x float]* %2) #11
+  %3 = icmp sgt i32 %natoms, 0
+  br i1 %3, label %.preheader1.lr.ph, label %._crit_edge
 
-for.cond1.preheader:                              ; preds = %entry, %for.inc34
-  %indvars.iv68 = phi i64 [ %indvars.iv.next69, %for.inc34 ], [ 0, %entry ]
-  %scevgep = getelementptr [3 x float]* %x, i64 %indvars.iv68, i64 0
-  %scevgep61 = bitcast float* %scevgep to i8*
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %x_old60, i8* %scevgep61, i64 12, i32 4, i1 false)
-  br label %for.body10
+.preheader1.lr.ph:                                ; preds = %0
+  %4 = add i32 %natoms, -1
+  br label %.preheader1
 
-for.body10:                                       ; preds = %for.inc31, %for.cond1.preheader
-  %indvars.iv62 = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next63, %for.inc31 ]
-  %arrayidx14 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv68, i64 %indvars.iv62
-  store float 0.000000e+00, float* %arrayidx14, align 4, !tbaa !3
-  br label %for.body17
+.preheader1:                                      ; preds = %16, %.preheader1.lr.ph
+  %indvars.iv13 = phi i64 [ 0, %.preheader1.lr.ph ], [ %indvars.iv.next14, %16 ]
+  %scevgep = getelementptr [3 x float]* %x, i64 %indvars.iv13, i64 0
+  %scevgep7 = bitcast float* %scevgep to i8*
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %x_old6, i8* %scevgep7, i64 12, i32 4, i1 false)
+  br label %5
 
-for.body17:                                       ; preds = %for.body17, %for.body10
-  %indvars.iv = phi i64 [ 0, %for.body10 ], [ %indvars.iv.next, %for.body17 ]
-  %1 = phi float [ 0.000000e+00, %for.body10 ], [ %add, %for.body17 ]
-  %arrayidx21 = getelementptr inbounds [3 x [3 x float]]* %R, i64 0, i64 %indvars.iv62, i64 %indvars.iv
-  %2 = load float* %arrayidx21, align 4, !tbaa !3
-  %arrayidx23 = getelementptr inbounds [3 x float]* %x_old, i64 0, i64 %indvars.iv
-  %3 = load float* %arrayidx23, align 4, !tbaa !3
-  %mul = fmul float %2, %3
-  %add = fadd float %1, %mul
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 3
-  br i1 %exitcond, label %for.inc31, label %for.body17
+; <label>:5                                       ; preds = %15, %.preheader1
+  %indvars.iv8 = phi i64 [ 0, %.preheader1 ], [ %indvars.iv.next9, %15 ]
+  %6 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv13, i64 %indvars.iv8
+  store float 0.000000e+00, float* %6, align 4, !tbaa !2
+  br label %7
 
-for.inc31:                                        ; preds = %for.body17
-  store float %add, float* %arrayidx14, align 4, !tbaa !3
-  %indvars.iv.next63 = add i64 %indvars.iv62, 1
-  %lftr.wideiv64 = trunc i64 %indvars.iv.next63 to i32
-  %exitcond65 = icmp eq i32 %lftr.wideiv64, 3
-  br i1 %exitcond65, label %for.inc34, label %for.body10
+; <label>:7                                       ; preds = %7, %5
+  %indvars.iv = phi i64 [ 0, %5 ], [ %indvars.iv.next, %7 ]
+  %8 = phi float [ 0.000000e+00, %5 ], [ %14, %7 ]
+  %9 = getelementptr inbounds [3 x [3 x float]]* %R, i64 0, i64 %indvars.iv8, i64 %indvars.iv
+  %10 = load float* %9, align 4, !tbaa !2
+  %11 = getelementptr inbounds [3 x float]* %x_old, i64 0, i64 %indvars.iv
+  %12 = load float* %11, align 4, !tbaa !2
+  %13 = fmul float %10, %12
+  %14 = fadd float %8, %13
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i64 %indvars.iv.next, 3
+  br i1 %exitcond, label %15, label %7
 
-for.inc34:                                        ; preds = %for.inc31
-  %indvars.iv.next69 = add i64 %indvars.iv68, 1
-  %lftr.wideiv70 = trunc i64 %indvars.iv.next69 to i32
-  %exitcond71 = icmp eq i32 %lftr.wideiv70, %natoms
-  br i1 %exitcond71, label %for.end36, label %for.cond1.preheader
+; <label>:15                                      ; preds = %7
+  store float %14, float* %6, align 4, !tbaa !2
+  %indvars.iv.next9 = add nuw nsw i64 %indvars.iv8, 1
+  %exitcond10 = icmp eq i64 %indvars.iv.next9, 3
+  br i1 %exitcond10, label %16, label %5
 
-for.end36:                                        ; preds = %for.inc34, %entry
-  call void @llvm.lifetime.end(i64 36, i8* %0) #2
+; <label>:16                                      ; preds = %15
+  %indvars.iv.next14 = add nuw nsw i64 %indvars.iv13, 1
+  %lftr.wideiv = trunc i64 %indvars.iv13 to i32
+  %exitcond15 = icmp eq i32 %lftr.wideiv, %4
+  br i1 %exitcond15, label %._crit_edge, label %.preheader1
+
+._crit_edge:                                      ; preds = %16, %0
+  call void @llvm.lifetime.end(i64 36, i8* %1) #7
   ret void
 }

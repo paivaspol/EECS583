@@ -1,221 +1,243 @@
 define internal fastcc i32 @fmtint(i8* nocapture %buffer, i64* nocapture %currlen, i64 %maxlen, i64 %value, i32 %base, i32 %min, i32 %max, i32 %flags) #0 {
-entry:
   %convert = alloca [20 x i8], align 16
-  %cmp = icmp slt i32 %max, 0
-  %.max = select i1 %cmp, i32 0, i32 %max
-  %and = and i32 %flags, 64
-  %tobool = icmp eq i32 %and, 0
-  br i1 %tobool, label %if.then1, label %if.end14
+  %1 = icmp slt i32 %max, 0
+  %.max = select i1 %1, i32 0, i32 %max
+  %2 = and i32 %flags, 64
+  %3 = icmp eq i32 %2, 0
+  br i1 %3, label %4, label %14
 
-if.then1:                                         ; preds = %entry
-  %cmp2 = icmp slt i64 %value, 0
-  br i1 %cmp2, label %if.then3, label %if.else
+; <label>:4                                       ; preds = %0
+  %5 = icmp slt i64 %value, 0
+  br i1 %5, label %6, label %8
 
-if.then3:                                         ; preds = %if.then1
-  %sub = sub nsw i64 0, %value
-  br label %if.end14
+; <label>:6                                       ; preds = %4
+  %7 = sub nsw i64 0, %value
+  br label %14
 
-if.else:                                          ; preds = %if.then1
-  %and4 = and i32 %flags, 2
-  %tobool5 = icmp eq i32 %and4, 0
-  br i1 %tobool5, label %if.else7, label %if.end14
+; <label>:8                                       ; preds = %4
+  %9 = and i32 %flags, 2
+  %10 = icmp eq i32 %9, 0
+  br i1 %10, label %11, label %14
 
-if.else7:                                         ; preds = %if.else
-  %and8 = shl i32 %flags, 3
-  %0 = and i32 %and8, 32
-  br label %if.end14
+; <label>:11                                      ; preds = %8
+  %12 = shl i32 %flags, 3
+  %13 = and i32 %12, 32
+  br label %14
 
-if.end14:                                         ; preds = %if.else7, %if.else, %entry, %if.then3
-  %signvalue.0 = phi i32 [ 0, %entry ], [ 45, %if.then3 ], [ 43, %if.else ], [ %0, %if.else7 ]
-  %uvalue.0 = phi i64 [ %value, %entry ], [ %sub, %if.then3 ], [ %value, %if.else ], [ %value, %if.else7 ]
-  %and15 = and i32 %flags, 32
-  %conv = zext i32 %base to i64
-  %tobool19 = icmp ne i32 %and15, 0
-  %cond = select i1 %tobool19, i8* getelementptr inbounds ([17 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([17 x i8]* @.str2, i64 0, i64 0)
-  br label %do.body
+; <label>:14                                      ; preds = %11, %8, %0, %6
+  %signvalue.0 = phi i32 [ 0, %0 ], [ 45, %6 ], [ 43, %8 ], [ %13, %11 ]
+  %uvalue.0 = phi i64 [ %value, %0 ], [ %7, %6 ], [ %value, %8 ], [ %value, %11 ]
+  %15 = and i32 %flags, 32
+  %16 = zext i32 %base to i64
+  %17 = icmp ne i32 %15, 0
+  %18 = select i1 %17, i8* getelementptr inbounds ([17 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([17 x i8]* @.str1, i64 0, i64 0)
+  br label %19
 
-do.body:                                          ; preds = %if.end14, %do.body
-  %indvars.iv190 = phi i64 [ 0, %if.end14 ], [ %indvars.iv.next191, %do.body ]
-  %uvalue.1 = phi i64 [ %uvalue.0, %if.end14 ], [ %div, %do.body ]
-  %place.0 = phi i32 [ 0, %if.end14 ], [ %inc, %do.body ]
-  %rem = urem i64 %uvalue.1, %conv
-  %arrayidx = getelementptr inbounds i8* %cond, i64 %rem
-  %1 = load i8* %arrayidx, align 1, !tbaa !0
-  %indvars.iv.next191 = add i64 %indvars.iv190, 1
-  %inc = add nsw i32 %place.0, 1
-  %arrayidx20 = getelementptr inbounds [20 x i8]* %convert, i64 0, i64 %indvars.iv190
-  store i8 %1, i8* %arrayidx20, align 1, !tbaa !0
-  %div = udiv i64 %uvalue.1, %conv
-  %tobool22 = icmp ne i64 %div, 0
-  %2 = trunc i64 %indvars.iv.next191 to i32
-  %cmp23 = icmp slt i32 %2, 20
-  %or.cond = and i1 %tobool22, %cmp23
-  br i1 %or.cond, label %do.body, label %do.end
+; <label>:19                                      ; preds = %14, %19
+  %indvars.iv35 = phi i64 [ 0, %14 ], [ %indvars.iv.next36, %19 ]
+  %uvalue.1 = phi i64 [ %uvalue.0, %14 ], [ %24, %19 ]
+  %20 = urem i64 %uvalue.1, %16
+  %21 = getelementptr inbounds i8* %18, i64 %20
+  %22 = load i8* %21, align 1, !tbaa !2
+  %indvars.iv.next36 = add nuw nsw i64 %indvars.iv35, 1
+  %23 = getelementptr inbounds [20 x i8]* %convert, i64 0, i64 %indvars.iv35
+  store i8 %22, i8* %23, align 1, !tbaa !2
+  %24 = udiv i64 %uvalue.1, %16
+  %25 = icmp ne i64 %24, 0
+  %26 = icmp slt i64 %indvars.iv.next36, 20
+  %or.cond4 = and i1 %26, %25
+  br i1 %or.cond4, label %19, label %.critedge
 
-do.end:                                           ; preds = %do.body
-  %cmp25 = icmp eq i32 %inc, 20
-  %place.0.inc = select i1 %cmp25, i32 %place.0, i32 %inc
-  %idxprom29 = sext i32 %place.0.inc to i64
-  %arrayidx30 = getelementptr inbounds [20 x i8]* %convert, i64 0, i64 %idxprom29
-  store i8 0, i8* %arrayidx30, align 1, !tbaa !0
-  %sub31 = sub nsw i32 %.max, %place.0.inc
-  %cmp32 = icmp sge i32 %.max, %place.0.inc
-  %cond34 = select i1 %cmp32, i32 %.max, i32 %place.0.inc
-  %sub35 = sub nsw i32 %min, %cond34
-  %tobool36 = icmp ne i32 %signvalue.0, 0
-  %cond37.neg = sext i1 %tobool36 to i32
-  %sub38 = add i32 %sub35, %cond37.neg
-  %cmp39 = icmp slt i32 %sub31, 0
-  %zpadlen.0 = select i1 %cmp39, i32 0, i32 %sub31
-  %cmp43 = icmp slt i32 %sub38, 0
-  %.sub38 = select i1 %cmp43, i32 0, i32 %sub38
-  %and47 = and i32 %flags, 16
-  %tobool48 = icmp eq i32 %and47, 0
-  br i1 %tobool48, label %if.end56, label %if.then49
+.critedge:                                        ; preds = %19
+  %27 = trunc i64 %indvars.iv35 to i32
+  %28 = trunc i64 %indvars.iv.next36 to i32
+  %29 = icmp eq i32 %28, 20
+  %place.0. = select i1 %29, i32 %27, i32 %28
+  %30 = sext i32 %place.0. to i64
+  %31 = getelementptr inbounds [20 x i8]* %convert, i64 0, i64 %30
+  store i8 0, i8* %31, align 1, !tbaa !2
+  %32 = sub nsw i32 %.max, %place.0.
+  %33 = icmp sge i32 %.max, %place.0.
+  %34 = select i1 %33, i32 %.max, i32 %place.0.
+  %35 = sub nsw i32 %min, %34
+  %36 = icmp ne i32 %signvalue.0, 0
+  %.neg = sext i1 %36 to i32
+  %37 = add i32 %35, %.neg
+  %38 = icmp slt i32 %32, 0
+  %zpadlen.0 = select i1 %38, i32 0, i32 %32
+  %39 = icmp slt i32 %37, 0
+  %.6 = select i1 %39, i32 0, i32 %37
+  %40 = and i32 %flags, 16
+  %41 = icmp eq i32 %40, 0
+  br i1 %41, label %45, label %42
 
-if.then49:                                        ; preds = %do.end
-  %cmp50 = icmp sge i32 %zpadlen.0, %.sub38
-  %cond55 = select i1 %cmp50, i32 %zpadlen.0, i32 %.sub38
-  br label %if.end56
+; <label>:42                                      ; preds = %.critedge
+  %43 = icmp sge i32 %zpadlen.0, %.6
+  %44 = select i1 %43, i32 %zpadlen.0, i32 %.6
+  br label %45
 
-if.end56:                                         ; preds = %do.end, %if.then49
-  %spadlen.1 = phi i32 [ 0, %if.then49 ], [ %.sub38, %do.end ]
-  %zpadlen.1 = phi i32 [ %cond55, %if.then49 ], [ %zpadlen.0, %do.end ]
-  %and57 = and i32 %flags, 1
-  %tobool58 = icmp eq i32 %and57, 0
-  %sub60 = sub nsw i32 0, %spadlen.1
-  %spadlen.1.sub60 = select i1 %tobool58, i32 %spadlen.1, i32 %sub60
-  %cmp62183 = icmp sgt i32 %spadlen.1.sub60, 0
-  br i1 %cmp62183, label %while.body, label %while.end
+; <label>:45                                      ; preds = %.critedge, %42
+  %spadlen.1 = phi i32 [ 0, %42 ], [ %.6, %.critedge ]
+  %zpadlen.1 = phi i32 [ %44, %42 ], [ %zpadlen.0, %.critedge ]
+  %46 = and i32 %flags, 1
+  %47 = icmp eq i32 %46, 0
+  %48 = sub nsw i32 0, %spadlen.1
+  %spadlen.1. = select i1 %47, i32 %spadlen.1, i32 %48
+  %49 = icmp sgt i32 %spadlen.1., 0
+  br i1 %49, label %.lr.ph23, label %63
 
-while.body:                                       ; preds = %if.end56, %dopr_outch.exit.while.body_crit_edge
-  %total.0185 = phi i32 [ %phitmp, %dopr_outch.exit.while.body_crit_edge ], [ 1, %if.end56 ]
-  %3 = load i64* %currlen, align 8, !tbaa !2
-  %add.i = add i64 %3, 1
-  %cmp.i = icmp ult i64 %add.i, %maxlen
-  br i1 %cmp.i, label %if.then.i, label %dopr_outch.exit
+.lr.ph23:                                         ; preds = %45
+  %50 = xor i32 %spadlen.1., -1
+  %51 = icmp sgt i32 %50, -2
+  %smax34 = select i1 %51, i32 %50, i32 -2
+  %52 = add i32 %spadlen.1., %smax34
+  br label %53
 
-if.then.i:                                        ; preds = %while.body
-  store i64 %add.i, i64* %currlen, align 8, !tbaa !2
-  %arrayidx.i = getelementptr inbounds i8* %buffer, i64 %3
-  store i8 32, i8* %arrayidx.i, align 1, !tbaa !0
+; <label>:53                                      ; preds = %.lr.ph23, %dopr_outch.exit
+  %spadlen.220 = phi i32 [ %spadlen.1., %.lr.ph23 ], [ %59, %dopr_outch.exit ]
+  %54 = load i64* %currlen, align 8, !tbaa !5
+  %55 = add i64 %54, 1
+  %56 = icmp ult i64 %55, %maxlen
+  br i1 %56, label %57, label %dopr_outch.exit
+
+; <label>:57                                      ; preds = %53
+  store i64 %55, i64* %currlen, align 8, !tbaa !5
+  %58 = getelementptr inbounds i8* %buffer, i64 %54
+  store i8 32, i8* %58, align 1, !tbaa !2
   br label %dopr_outch.exit
 
-dopr_outch.exit:                                  ; preds = %while.body, %if.then.i
-  %exitcond189 = icmp eq i32 %total.0185, %spadlen.1.sub60
-  br i1 %exitcond189, label %while.end, label %dopr_outch.exit.while.body_crit_edge
+dopr_outch.exit:                                  ; preds = %53, %57
+  %59 = add nsw i32 %spadlen.220, -1
+  %60 = icmp sgt i32 %spadlen.220, 1
+  br i1 %60, label %53, label %._crit_edge24
 
-dopr_outch.exit.while.body_crit_edge:             ; preds = %dopr_outch.exit
-  %phitmp = add i32 %total.0185, 1
-  br label %while.body
+._crit_edge24:                                    ; preds = %dopr_outch.exit
+  %61 = sub i32 -2, %smax34
+  %62 = add i32 %52, 2
+  br label %63
 
-while.end:                                        ; preds = %dopr_outch.exit, %if.end56
-  %total.0.lcssa = phi i32 [ 0, %if.end56 ], [ %spadlen.1.sub60, %dopr_outch.exit ]
-  %spadlen.2.lcssa = phi i32 [ %spadlen.1.sub60, %if.end56 ], [ 0, %dopr_outch.exit ]
-  br i1 %tobool36, label %if.then66, label %if.end70
+; <label>:63                                      ; preds = %._crit_edge24, %45
+  %total.0.lcssa = phi i32 [ %62, %._crit_edge24 ], [ 0, %45 ]
+  %spadlen.2.lcssa = phi i32 [ %61, %._crit_edge24 ], [ %spadlen.1., %45 ]
+  br i1 %36, label %64, label %72
 
-if.then66:                                        ; preds = %while.end
-  %4 = load i64* %currlen, align 8, !tbaa !2
-  %add.i171 = add i64 %4, 1
-  %cmp.i172 = icmp ult i64 %add.i171, %maxlen
-  br i1 %cmp.i172, label %if.then.i174, label %dopr_outch.exit175
+; <label>:64                                      ; preds = %63
+  %65 = load i64* %currlen, align 8, !tbaa !5
+  %66 = add i64 %65, 1
+  %67 = icmp ult i64 %66, %maxlen
+  br i1 %67, label %68, label %dopr_outch.exit10
 
-if.then.i174:                                     ; preds = %if.then66
-  %conv67 = trunc i32 %signvalue.0 to i8
-  store i64 %add.i171, i64* %currlen, align 8, !tbaa !2
-  %arrayidx.i173 = getelementptr inbounds i8* %buffer, i64 %4
-  store i8 %conv67, i8* %arrayidx.i173, align 1, !tbaa !0
-  br label %dopr_outch.exit175
+; <label>:68                                      ; preds = %64
+  %69 = trunc i32 %signvalue.0 to i8
+  store i64 %66, i64* %currlen, align 8, !tbaa !5
+  %70 = getelementptr inbounds i8* %buffer, i64 %65
+  store i8 %69, i8* %70, align 1, !tbaa !2
+  br label %dopr_outch.exit10
 
-dopr_outch.exit175:                               ; preds = %if.then66, %if.then.i174
-  %add69 = add nsw i32 %total.0.lcssa, 1
-  br label %if.end70
+dopr_outch.exit10:                                ; preds = %64, %68
+  %71 = add nsw i32 %total.0.lcssa, 1
+  br label %72
 
-if.end70:                                         ; preds = %dopr_outch.exit175, %while.end
-  %total.1 = phi i32 [ %add69, %dopr_outch.exit175 ], [ %total.0.lcssa, %while.end ]
-  %cmp71 = icmp sgt i32 %zpadlen.1, 0
-  br i1 %cmp71, label %while.body77.preheader, label %while.cond83.preheader
+; <label>:72                                      ; preds = %dopr_outch.exit10, %63
+  %total.1 = phi i32 [ %71, %dopr_outch.exit10 ], [ %total.0.lcssa, %63 ]
+  %73 = icmp sgt i32 %zpadlen.1, 0
+  br i1 %73, label %.preheader12, label %.preheader11
 
-while.body77.preheader:                           ; preds = %if.end70
-  %5 = add i32 %zpadlen.1, %total.1
-  br label %while.body77
+.preheader12:                                     ; preds = %72
+  %74 = add i32 %zpadlen.1, %total.1
+  %75 = xor i32 %zpadlen.1, -1
+  %76 = icmp sgt i32 %75, -2
+  %smax33 = select i1 %76, i32 %75, i32 -2
+  %77 = add i32 %74, %smax33
+  br label %78
 
-while.body77:                                     ; preds = %dopr_outch.exit170, %while.body77.preheader
-  %total.2 = phi i32 [ %total.1, %while.body77.preheader ], [ %add79, %dopr_outch.exit170 ]
-  %6 = load i64* %currlen, align 8, !tbaa !2
-  %add.i166 = add i64 %6, 1
-  %cmp.i167 = icmp ult i64 %add.i166, %maxlen
-  br i1 %cmp.i167, label %if.then.i169, label %dopr_outch.exit170
+; <label>:78                                      ; preds = %.preheader12, %dopr_outch.exit9
+  %zpadlen.2 = phi i32 [ %84, %dopr_outch.exit9 ], [ %zpadlen.1, %.preheader12 ]
+  %79 = load i64* %currlen, align 8, !tbaa !5
+  %80 = add i64 %79, 1
+  %81 = icmp ult i64 %80, %maxlen
+  br i1 %81, label %82, label %dopr_outch.exit9
 
-if.then.i169:                                     ; preds = %while.body77
-  store i64 %add.i166, i64* %currlen, align 8, !tbaa !2
-  %arrayidx.i168 = getelementptr inbounds i8* %buffer, i64 %6
-  store i8 48, i8* %arrayidx.i168, align 1, !tbaa !0
-  br label %dopr_outch.exit170
+; <label>:82                                      ; preds = %78
+  store i64 %80, i64* %currlen, align 8, !tbaa !5
+  %83 = getelementptr inbounds i8* %buffer, i64 %79
+  store i8 48, i8* %83, align 1, !tbaa !2
+  br label %dopr_outch.exit9
 
-dopr_outch.exit170:                               ; preds = %while.body77, %if.then.i169
-  %add79 = add nsw i32 %total.2, 1
-  %exitcond188 = icmp eq i32 %add79, %5
-  br i1 %exitcond188, label %while.cond83.preheader, label %while.body77
+dopr_outch.exit9:                                 ; preds = %78, %82
+  %84 = add nsw i32 %zpadlen.2, -1
+  %.old1 = icmp sgt i32 %zpadlen.2, 1
+  br i1 %.old1, label %78, label %.preheader11.loopexit
 
-while.cond83.preheader:                           ; preds = %dopr_outch.exit170, %if.end70
-  %total.3.ph = phi i32 [ %total.1, %if.end70 ], [ %5, %dopr_outch.exit170 ]
-  %cmp84179 = icmp sgt i32 %place.0.inc, 0
-  br i1 %cmp84179, label %while.body86, label %while.cond93.preheader
+.preheader11.loopexit:                            ; preds = %dopr_outch.exit9
+  %85 = add i32 %77, 2
+  br label %.preheader11
 
-while.cond83.while.cond93.preheader_crit_edge:    ; preds = %dopr_outch.exit165
-  %7 = add i32 %place.0.inc, %total.3.ph
-  br label %while.cond93.preheader
+.preheader11:                                     ; preds = %.preheader11.loopexit, %72
+  %total.3.ph = phi i32 [ %total.1, %72 ], [ %85, %.preheader11.loopexit ]
+  %86 = icmp sgt i32 %place.0., 0
+  br i1 %86, label %.lr.ph18, label %.preheader
 
-while.cond93.preheader:                           ; preds = %while.cond83.while.cond93.preheader_crit_edge, %while.cond83.preheader
-  %total.3.lcssa = phi i32 [ %7, %while.cond83.while.cond93.preheader_crit_edge ], [ %total.3.ph, %while.cond83.preheader ]
-  %cmp94176 = icmp slt i32 %spadlen.2.lcssa, 0
-  br i1 %cmp94176, label %while.body96, label %while.end100
+.lr.ph18:                                         ; preds = %.preheader11
+  %87 = add i32 %place.0., %total.3.ph
+  %88 = xor i32 %place.0., -1
+  %89 = icmp sgt i32 %88, -2
+  %smax32 = select i1 %89, i32 %88, i32 -2
+  %90 = add i32 %87, %smax32
+  br label %93
 
-while.body86:                                     ; preds = %dopr_outch.exit165, %while.cond83.preheader
-  %indvars.iv = phi i64 [ %idxprom29, %while.cond83.preheader ], [ %indvars.iv.next, %dopr_outch.exit165 ]
-  %indvars.iv.next = add i64 %indvars.iv, -1
-  %8 = load i64* %currlen, align 8, !tbaa !2
-  %add.i161 = add i64 %8, 1
-  %cmp.i162 = icmp ult i64 %add.i161, %maxlen
-  br i1 %cmp.i162, label %if.then.i164, label %dopr_outch.exit165
+..preheader_crit_edge:                            ; preds = %dopr_outch.exit8
+  %91 = add i32 %90, 2
+  br label %.preheader
 
-if.then.i164:                                     ; preds = %while.body86
-  %arrayidx89 = getelementptr inbounds [20 x i8]* %convert, i64 0, i64 %indvars.iv.next
-  %9 = load i8* %arrayidx89, align 1, !tbaa !0
-  store i64 %add.i161, i64* %currlen, align 8, !tbaa !2
-  %arrayidx.i163 = getelementptr inbounds i8* %buffer, i64 %8
-  store i8 %9, i8* %arrayidx.i163, align 1, !tbaa !0
-  br label %dopr_outch.exit165
+.preheader:                                       ; preds = %..preheader_crit_edge, %.preheader11
+  %total.3.lcssa = phi i32 [ %91, %..preheader_crit_edge ], [ %total.3.ph, %.preheader11 ]
+  %92 = icmp slt i32 %spadlen.2.lcssa, 0
+  br i1 %92, label %.lr.ph, label %110
 
-dopr_outch.exit165:                               ; preds = %while.body86, %if.then.i164
-  %10 = trunc i64 %indvars.iv.next to i32
-  %cmp84 = icmp sgt i32 %10, 0
-  br i1 %cmp84, label %while.body86, label %while.cond83.while.cond93.preheader_crit_edge
+; <label>:93                                      ; preds = %.lr.ph18, %dopr_outch.exit8
+  %indvars.iv = phi i64 [ %30, %.lr.ph18 ], [ %indvars.iv.next, %dopr_outch.exit8 ]
+  %indvars.iv.next = add nsw i64 %indvars.iv, -1
+  %94 = load i64* %currlen, align 8, !tbaa !5
+  %95 = add i64 %94, 1
+  %96 = icmp ult i64 %95, %maxlen
+  br i1 %96, label %97, label %dopr_outch.exit8
 
-while.body96:                                     ; preds = %dopr_outch.exit160, %while.cond93.preheader
-  %spadlen.3177 = phi i32 [ %spadlen.2.lcssa, %while.cond93.preheader ], [ %inc99, %dopr_outch.exit160 ]
-  %11 = load i64* %currlen, align 8, !tbaa !2
-  %add.i156 = add i64 %11, 1
-  %cmp.i157 = icmp ult i64 %add.i156, %maxlen
-  br i1 %cmp.i157, label %if.then.i159, label %dopr_outch.exit160
+; <label>:97                                      ; preds = %93
+  %98 = getelementptr inbounds [20 x i8]* %convert, i64 0, i64 %indvars.iv.next
+  %99 = load i8* %98, align 1, !tbaa !2
+  store i64 %95, i64* %currlen, align 8, !tbaa !5
+  %100 = getelementptr inbounds i8* %buffer, i64 %94
+  store i8 %99, i8* %100, align 1, !tbaa !2
+  br label %dopr_outch.exit8
 
-if.then.i159:                                     ; preds = %while.body96
-  store i64 %add.i156, i64* %currlen, align 8, !tbaa !2
-  %arrayidx.i158 = getelementptr inbounds i8* %buffer, i64 %11
-  store i8 32, i8* %arrayidx.i158, align 1, !tbaa !0
-  br label %dopr_outch.exit160
+dopr_outch.exit8:                                 ; preds = %93, %97
+  %101 = icmp sgt i64 %indvars.iv, 1
+  br i1 %101, label %93, label %..preheader_crit_edge
 
-dopr_outch.exit160:                               ; preds = %while.body96, %if.then.i159
-  %inc99 = add nsw i32 %spadlen.3177, 1
-  %exitcond = icmp eq i32 %inc99, 0
-  br i1 %exitcond, label %while.cond93.while.end100_crit_edge, label %while.body96
+.lr.ph:                                           ; preds = %.preheader, %dopr_outch.exit7
+  %spadlen.314 = phi i32 [ %107, %dopr_outch.exit7 ], [ %spadlen.2.lcssa, %.preheader ]
+  %102 = load i64* %currlen, align 8, !tbaa !5
+  %103 = add i64 %102, 1
+  %104 = icmp ult i64 %103, %maxlen
+  br i1 %104, label %105, label %dopr_outch.exit7
 
-while.cond93.while.end100_crit_edge:              ; preds = %dopr_outch.exit160
-  %12 = sub i32 %total.3.lcssa, %spadlen.2.lcssa
-  br label %while.end100
+; <label>:105                                     ; preds = %.lr.ph
+  store i64 %103, i64* %currlen, align 8, !tbaa !5
+  %106 = getelementptr inbounds i8* %buffer, i64 %102
+  store i8 32, i8* %106, align 1, !tbaa !2
+  br label %dopr_outch.exit7
 
-while.end100:                                     ; preds = %while.cond93.while.end100_crit_edge, %while.cond93.preheader
-  %total.4.lcssa = phi i32 [ %12, %while.cond93.while.end100_crit_edge ], [ %total.3.lcssa, %while.cond93.preheader ]
+dopr_outch.exit7:                                 ; preds = %.lr.ph, %105
+  %107 = add nsw i32 %spadlen.314, 1
+  %108 = icmp slt i32 %spadlen.314, -1
+  br i1 %108, label %.lr.ph, label %._crit_edge
+
+._crit_edge:                                      ; preds = %dopr_outch.exit7
+  %109 = sub i32 %total.3.lcssa, %spadlen.2.lcssa
+  br label %110
+
+; <label>:110                                     ; preds = %._crit_edge, %.preheader
+  %total.4.lcssa = phi i32 [ %109, %._crit_edge ], [ %total.3.lcssa, %.preheader ]
   ret i32 %total.4.lcssa
 }

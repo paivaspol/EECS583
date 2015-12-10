@@ -1,0 +1,17 @@
+define i32 @CCTKi_DoScheduleTraverse(i8* %group_name, i32 (i8*, i8*)* %item_entry, i32 (i8*, i8*)* %item_exit, i32 (i32, i8**, i8*, i8*, i32)* %while_check, i32 (i8*, i8*, i8*)* nocapture %function_process, i8* %data) #1 {
+  %group = alloca %struct.t_sched_group*, align 8
+  %1 = tail call %struct.cHandledData* @CCTKi_DoScheduleGetGroups() #4
+  %2 = bitcast %struct.t_sched_group** %group to i8**
+  %3 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %group_name, i8** %2) #4
+  %4 = icmp sgt i32 %3, -1
+  br i1 %4, label %5, label %7
+
+; <label>:5                                       ; preds = %0
+  %6 = load %struct.t_sched_group** %group, align 8, !tbaa !2
+  call fastcc void @ScheduleTraverseGroup(%struct.cHandledData* %1, %struct.t_sched_group* %6, i8* null, i32 0, i8** null, i32 (i8*, i8*)* %item_entry, i32 (i8*, i8*)* %item_exit, i32 (i32, i8**, i8*, i8*, i32)* %while_check, i32 (i8*, i8*, i8*)* %function_process, i8* %data) #5
+  br label %7
+
+; <label>:7                                       ; preds = %0, %5
+  %retcode.0 = phi i32 [ 0, %5 ], [ %3, %0 ]
+  ret i32 %retcode.0
+}

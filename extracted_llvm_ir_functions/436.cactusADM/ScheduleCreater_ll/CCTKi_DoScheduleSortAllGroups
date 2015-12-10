@@ -1,0 +1,170 @@
+define i32 @CCTKi_DoScheduleSortAllGroups() #1 {
+  %1 = load i32* @n_schedule_groups, align 4, !tbaa !19
+  %2 = icmp sgt i32 %1, 0
+  br i1 %2, label %.lr.ph, label %._crit_edge
+
+.lr.ph:                                           ; preds = %0, %79
+  %n_errors.04 = phi i32 [ %n_errors.1, %79 ], [ 0, %0 ]
+  %group.03 = phi i32 [ %80, %79 ], [ 0, %0 ]
+  %3 = load %struct.cHandledData** @schedule_groups, align 8, !tbaa !9
+  %4 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %3, i32 %group.03) #8
+  %5 = icmp eq i8* %4, null
+  br i1 %5, label %79, label %6
+
+; <label>:6                                       ; preds = %.lr.ph
+  %7 = getelementptr inbounds i8* %4, i64 16
+  %8 = bitcast i8* %7 to i32*
+  %9 = load i32* %8, align 4, !tbaa !17
+  %10 = tail call i8** @CCTKi_ScheduleCreateArray(i32 %9) #8
+  %11 = load i32* %8, align 4, !tbaa !17
+  %12 = tail call i32* @CCTKi_ScheduleCreateIVec(i32 %11) #8
+  %13 = load i32* %8, align 4, !tbaa !17
+  %14 = tail call i32* @CCTKi_ScheduleCreateIVec(i32 %13) #8
+  %15 = load i32* %8, align 4, !tbaa !17
+  %16 = icmp sgt i32 %15, 0
+  br i1 %16, label %.lr.ph12.i, label %._crit_edge13.i
+
+.lr.ph12.i:                                       ; preds = %6
+  %17 = getelementptr inbounds i8* %4, i64 24
+  %18 = bitcast i8* %17 to %struct.t_sched_item**
+  br label %19
+
+; <label>:19                                      ; preds = %._crit_edge9.i, %.lr.ph12.i
+  %20 = phi i32 [ %15, %.lr.ph12.i ], [ %58, %._crit_edge9.i ]
+  %indvars.iv16.i = phi i64 [ 0, %.lr.ph12.i ], [ %indvars.iv.next17.i, %._crit_edge9.i ]
+  %21 = load %struct.t_sched_item** %18, align 8, !tbaa !18
+  %22 = getelementptr inbounds %struct.t_sched_item* %21, i64 %indvars.iv16.i, i32 7
+  %modifier.04.i = load %struct.T_SCHED_MODIFIER** %22, align 8
+  %23 = icmp eq %struct.T_SCHED_MODIFIER* %modifier.04.i, null
+  br i1 %23, label %48, label %.lr.ph.i
+
+.lr.ph.i:                                         ; preds = %19, %ScheduleItemNumber.exit.thread.i
+  %modifier.05.i = phi %struct.T_SCHED_MODIFIER* [ %modifier.0.i, %ScheduleItemNumber.exit.thread.i ], [ %modifier.04.i, %19 ]
+  %24 = getelementptr inbounds %struct.T_SCHED_MODIFIER* %modifier.05.i, i64 0, i32 1
+  %25 = load i32* %24, align 4, !tbaa !7
+  %26 = icmp eq i32 %25, 3
+  br i1 %26, label %ScheduleItemNumber.exit.thread.i, label %27
+
+; <label>:27                                      ; preds = %.lr.ph.i
+  %28 = getelementptr inbounds %struct.T_SCHED_MODIFIER* %modifier.05.i, i64 0, i32 2
+  %29 = load i8** %28, align 8, !tbaa !2
+  %30 = load i32* %8, align 4, !tbaa !17
+  %31 = icmp sgt i32 %30, 0
+  br i1 %31, label %.lr.ph.i.i, label %ScheduleItemNumber.exit.thread.i
+
+.lr.ph.i.i:                                       ; preds = %27
+  %32 = sext i32 %30 to i64
+  br label %33
+
+; <label>:33                                      ; preds = %38, %.lr.ph.i.i
+  %indvars.iv.i.i = phi i64 [ 0, %.lr.ph.i.i ], [ %indvars.iv.next.i.i, %38 ]
+  %34 = getelementptr inbounds %struct.t_sched_item* %21, i64 %indvars.iv.i.i, i32 0
+  %35 = load i8** %34, align 8, !tbaa !20
+  %36 = tail call i32 @strcmp(i8* %35, i8* %29) #8
+  %37 = icmp eq i32 %36, 0
+  br i1 %37, label %ScheduleItemNumber.exit.i, label %38
+
+; <label>:38                                      ; preds = %33
+  %indvars.iv.next.i.i = add nuw nsw i64 %indvars.iv.i.i, 1
+  %39 = icmp slt i64 %indvars.iv.next.i.i, %32
+  br i1 %39, label %33, label %ScheduleItemNumber.exit.thread.i
+
+ScheduleItemNumber.exit.i:                        ; preds = %33
+  %40 = trunc i64 %indvars.iv.i.i to i32
+  %41 = icmp sgt i32 %40, -1
+  %42 = icmp slt i32 %40, %30
+  %or.cond.i = and i1 %41, %42
+  br i1 %or.cond.i, label %43, label %ScheduleItemNumber.exit.thread.i
+
+; <label>:43                                      ; preds = %ScheduleItemNumber.exit.i
+  %switch.selectcmp.i = icmp eq i32 %25, 2
+  %switch.select.i = zext i1 %switch.selectcmp.i to i32
+  %switch.selectcmp1.i = icmp eq i32 %25, 1
+  %switch.select2.i = select i1 %switch.selectcmp1.i, i32 -1, i32 %switch.select.i
+  %sext.i = shl i64 %indvars.iv.i.i, 32
+  %44 = ashr exact i64 %sext.i, 32
+  %45 = getelementptr inbounds i32* %14, i64 %44
+  store i32 %switch.select2.i, i32* %45, align 4, !tbaa !19
+  br label %ScheduleItemNumber.exit.thread.i
+
+ScheduleItemNumber.exit.thread.i:                 ; preds = %38, %43, %ScheduleItemNumber.exit.i, %27, %.lr.ph.i
+  %46 = getelementptr inbounds %struct.T_SCHED_MODIFIER* %modifier.05.i, i64 0, i32 0
+  %modifier.0.i = load %struct.T_SCHED_MODIFIER** %46, align 8
+  %47 = icmp eq %struct.T_SCHED_MODIFIER* %modifier.0.i, null
+  br i1 %47, label %._crit_edge.i, label %.lr.ph.i
+
+._crit_edge.i:                                    ; preds = %ScheduleItemNumber.exit.thread.i
+  %.pre.i = load i32* %8, align 4, !tbaa !17
+  br label %48
+
+; <label>:48                                      ; preds = %._crit_edge.i, %19
+  %49 = phi i32 [ %.pre.i, %._crit_edge.i ], [ %20, %19 ]
+  %50 = trunc i64 %indvars.iv16.i to i32
+  %51 = tail call i32 @CCTKi_ScheduleAddRow(i32 %49, i8** %10, i32* %12, i32 %50, i32* %14) #8
+  %52 = load i32* %8, align 4, !tbaa !17
+  %53 = icmp sgt i32 %52, 0
+  br i1 %53, label %.lr.ph8.i, label %._crit_edge9.i
+
+.lr.ph8.i:                                        ; preds = %48, %.lr.ph8.i
+  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %.lr.ph8.i ], [ 0, %48 ]
+  %54 = getelementptr inbounds i32* %14, i64 %indvars.iv.i
+  store i32 0, i32* %54, align 4, !tbaa !19
+  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1
+  %55 = load i32* %8, align 4, !tbaa !17
+  %56 = sext i32 %55 to i64
+  %57 = icmp slt i64 %indvars.iv.next.i, %56
+  br i1 %57, label %.lr.ph8.i, label %._crit_edge9.i
+
+._crit_edge9.i:                                   ; preds = %.lr.ph8.i, %48
+  %58 = phi i32 [ %52, %48 ], [ %55, %.lr.ph8.i ]
+  %indvars.iv.next17.i = add nuw nsw i64 %indvars.iv16.i, 1
+  %59 = sext i32 %58 to i64
+  %60 = icmp slt i64 %indvars.iv.next17.i, %59
+  br i1 %60, label %19, label %._crit_edge13.i
+
+._crit_edge13.i:                                  ; preds = %._crit_edge9.i, %6
+  %.lcssa.i = phi i32 [ %15, %6 ], [ %58, %._crit_edge9.i ]
+  %61 = tail call i32 @CCTKi_ScheduleSort(i32 %.lcssa.i, i8** %10, i32* %12) #8
+  %62 = icmp eq i32 %61, 0
+  br i1 %62, label %.critedge, label %ScheduleSortGroup.exit
+
+ScheduleSortGroup.exit:                           ; preds = %._crit_edge13.i
+  %63 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !9
+  %64 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %63, i8* getelementptr inbounds ([41 x i8]* @.str5, i64 0, i64 0), i32 %61) #8
+  %65 = load i32* %8, align 4, !tbaa !17
+  tail call void @CCTKi_ScheduleDestroyIVec(i32 %65, i32* %14) #8
+  %66 = load i32* %8, align 4, !tbaa !17
+  tail call void @CCTKi_ScheduleDestroyArray(i32 %66, i8** %10) #8
+  %67 = getelementptr inbounds i8* %4, i64 8
+  %68 = bitcast i8* %67 to i32**
+  store i32* %12, i32** %68, align 8, !tbaa !16
+  %69 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !9
+  %70 = bitcast i8* %4 to i8**
+  %71 = load i8** %70, align 8, !tbaa !14
+  %72 = sub nsw i32 0, %61
+  %73 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %69, i8* getelementptr inbounds ([66 x i8]* @.str, i64 0, i64 0), i8* %71, i32 %72) #8
+  %74 = sub i32 %n_errors.04, %61
+  br label %79
+
+.critedge:                                        ; preds = %._crit_edge13.i
+  %75 = load i32* %8, align 4, !tbaa !17
+  tail call void @CCTKi_ScheduleDestroyIVec(i32 %75, i32* %14) #8
+  %76 = load i32* %8, align 4, !tbaa !17
+  tail call void @CCTKi_ScheduleDestroyArray(i32 %76, i8** %10) #8
+  %77 = getelementptr inbounds i8* %4, i64 8
+  %78 = bitcast i8* %77 to i32**
+  store i32* %12, i32** %78, align 8, !tbaa !16
+  br label %79
+
+; <label>:79                                      ; preds = %.critedge, %.lr.ph, %ScheduleSortGroup.exit
+  %n_errors.1 = phi i32 [ %74, %ScheduleSortGroup.exit ], [ %n_errors.04, %.lr.ph ], [ %n_errors.04, %.critedge ]
+  %80 = add nuw nsw i32 %group.03, 1
+  %81 = load i32* @n_schedule_groups, align 4, !tbaa !19
+  %82 = icmp slt i32 %80, %81
+  br i1 %82, label %.lr.ph, label %._crit_edge
+
+._crit_edge:                                      ; preds = %79, %0
+  %n_errors.0.lcssa = phi i32 [ 0, %0 ], [ %n_errors.1, %79 ]
+  %83 = sub nsw i32 0, %n_errors.0.lcssa
+  ret i32 %83
+}

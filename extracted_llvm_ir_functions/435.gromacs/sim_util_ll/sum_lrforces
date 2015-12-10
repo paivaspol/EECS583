@@ -1,61 +1,61 @@
-define void @sum_lrforces([3 x float]* %f, %struct.t_forcerec* nocapture %fr, i32 %start, i32 %homenr) #0 {
-entry:
-  %eeltype = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 33
-  %0 = load i32* %eeltype, align 4, !tbaa !0
-  %.off = add i32 %0, -3
+define void @sum_lrforces([3 x float]* %f, %struct.t_forcerec* nocapture readonly %fr, i32 %start, i32 %homenr) #4 {
+  %1 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 33
+  %2 = load i32* %1, align 4, !tbaa !44
+  %.off = add i32 %2, -3
   %switch = icmp ult i32 %.off, 4
-  br i1 %switch, label %if.then, label %if.end
+  br i1 %switch, label %3, label %sum_forces.exit
 
-if.then:                                          ; preds = %entry
-  %add = add nsw i32 %homenr, %start
-  %f_pme = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 55
-  %1 = load [3 x float]** %f_pme, align 8, !tbaa !5
-  %2 = load %struct._IO_FILE** @debug, align 8, !tbaa !5
-  %tobool.i = icmp eq %struct._IO_FILE* %2, null
-  br i1 %tobool.i, label %for.cond.preheader.i, label %if.then.i
+; <label>:3                                       ; preds = %0
+  %4 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 55
+  %5 = load [3 x float]** %4, align 8, !tbaa !45
+  %6 = load %struct.__sFILE** @debug, align 8, !tbaa !32
+  %7 = icmp eq %struct.__sFILE* %6, null
+  br i1 %7, label %.preheader.i, label %8
 
-if.then.i:                                        ; preds = %if.then
-  %idx.ext.i = sext i32 %start to i64
-  %add.ptr.i = getelementptr inbounds [3 x float]* %f, i64 %idx.ext.i
-  tail call void @pr_rvecs(%struct._IO_FILE* %2, i32 0, i8* getelementptr inbounds ([4 x i8]* @.str20, i64 0, i64 0), [3 x float]* %add.ptr.i, i32 %homenr) #6
-  %3 = load %struct._IO_FILE** @debug, align 8, !tbaa !5
-  %add.ptr2.i = getelementptr inbounds [3 x float]* %1, i64 %idx.ext.i
-  tail call void @pr_rvecs(%struct._IO_FILE* %3, i32 0, i8* getelementptr inbounds ([4 x i8]* @.str21, i64 0, i64 0), [3 x float]* %add.ptr2.i, i32 %homenr) #6
-  br label %for.cond.preheader.i
+; <label>:8                                       ; preds = %3
+  %9 = sext i32 %start to i64
+  %10 = getelementptr inbounds [3 x float]* %f, i64 %9
+  tail call void @pr_rvecs(%struct.__sFILE* %6, i32 0, i8* getelementptr inbounds ([4 x i8]* @.str20, i64 0, i64 0), [3 x float]* %10, i32 %homenr) #10
+  %11 = load %struct.__sFILE** @debug, align 8, !tbaa !32
+  %12 = getelementptr inbounds [3 x float]* %5, i64 %9
+  tail call void @pr_rvecs(%struct.__sFILE* %11, i32 0, i8* getelementptr inbounds ([4 x i8]* @.str21, i64 0, i64 0), [3 x float]* %12, i32 %homenr) #10
+  br label %.preheader.i
 
-for.cond.preheader.i:                             ; preds = %if.then.i, %if.then
-  %cmp18.i = icmp sgt i32 %homenr, 0
-  br i1 %cmp18.i, label %for.body.lr.ph.i, label %if.end
+.preheader.i:                                     ; preds = %8, %3
+  %13 = icmp sgt i32 %homenr, 0
+  br i1 %13, label %.lr.ph.i, label %sum_forces.exit
 
-for.body.lr.ph.i:                                 ; preds = %for.cond.preheader.i
-  %4 = sext i32 %start to i64
-  br label %for.body.i
+.lr.ph.i:                                         ; preds = %.preheader.i
+  %14 = sext i32 %start to i64
+  %15 = add i32 %start, -1
+  %16 = add i32 %15, %homenr
+  br label %17
 
-for.body.i:                                       ; preds = %for.body.i, %for.body.lr.ph.i
-  %indvars.iv.i = phi i64 [ %4, %for.body.lr.ph.i ], [ %indvars.iv.next.i, %for.body.i ]
-  %arraydecay.i = getelementptr inbounds [3 x float]* %f, i64 %indvars.iv.i, i64 0
-  %arraydecay6.i = getelementptr inbounds [3 x float]* %1, i64 %indvars.iv.i, i64 0
-  %5 = load float* %arraydecay.i, align 4, !tbaa !3
-  %6 = load float* %arraydecay6.i, align 4, !tbaa !3
-  %add.i.i = fadd float %5, %6
-  %arrayidx2.i.i = getelementptr inbounds [3 x float]* %f, i64 %indvars.iv.i, i64 1
-  %7 = load float* %arrayidx2.i.i, align 4, !tbaa !3
-  %arrayidx3.i.i = getelementptr inbounds [3 x float]* %1, i64 %indvars.iv.i, i64 1
-  %8 = load float* %arrayidx3.i.i, align 4, !tbaa !3
-  %add4.i.i = fadd float %7, %8
-  %arrayidx5.i.i = getelementptr inbounds [3 x float]* %f, i64 %indvars.iv.i, i64 2
-  %9 = load float* %arrayidx5.i.i, align 4, !tbaa !3
-  %arrayidx6.i.i = getelementptr inbounds [3 x float]* %1, i64 %indvars.iv.i, i64 2
-  %10 = load float* %arrayidx6.i.i, align 4, !tbaa !3
-  %add7.i.i = fadd float %9, %10
-  store float %add.i.i, float* %arraydecay.i, align 4, !tbaa !3
-  store float %add4.i.i, float* %arrayidx2.i.i, align 4, !tbaa !3
-  store float %add7.i.i, float* %arrayidx5.i.i, align 4, !tbaa !3
-  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
-  %11 = trunc i64 %indvars.iv.next.i to i32
-  %cmp.i = icmp slt i32 %11, %add
-  br i1 %cmp.i, label %for.body.i, label %if.end
+; <label>:17                                      ; preds = %17, %.lr.ph.i
+  %indvars.iv.i = phi i64 [ %14, %.lr.ph.i ], [ %indvars.iv.next.i, %17 ]
+  %18 = getelementptr inbounds [3 x float]* %f, i64 %indvars.iv.i, i64 0
+  %19 = getelementptr inbounds [3 x float]* %5, i64 %indvars.iv.i, i64 0
+  %20 = load float* %18, align 4, !tbaa !2
+  %21 = load float* %19, align 4, !tbaa !2
+  %22 = fadd float %20, %21
+  %23 = getelementptr inbounds [3 x float]* %f, i64 %indvars.iv.i, i64 1
+  %24 = load float* %23, align 4, !tbaa !2
+  %25 = getelementptr inbounds [3 x float]* %5, i64 %indvars.iv.i, i64 1
+  %26 = load float* %25, align 4, !tbaa !2
+  %27 = fadd float %24, %26
+  %28 = getelementptr inbounds [3 x float]* %f, i64 %indvars.iv.i, i64 2
+  %29 = load float* %28, align 4, !tbaa !2
+  %30 = getelementptr inbounds [3 x float]* %5, i64 %indvars.iv.i, i64 2
+  %31 = load float* %30, align 4, !tbaa !2
+  %32 = fadd float %29, %31
+  store float %22, float* %18, align 4, !tbaa !2
+  store float %27, float* %23, align 4, !tbaa !2
+  store float %32, float* %28, align 4, !tbaa !2
+  %indvars.iv.next.i = add nsw i64 %indvars.iv.i, 1
+  %lftr.wideiv.i = trunc i64 %indvars.iv.i to i32
+  %exitcond.i = icmp eq i32 %lftr.wideiv.i, %16
+  br i1 %exitcond.i, label %sum_forces.exit, label %17
 
-if.end:                                           ; preds = %for.body.i, %for.cond.preheader.i, %entry
+sum_forces.exit:                                  ; preds = %17, %.preheader.i, %0
   ret void
 }

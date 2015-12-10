@@ -1,47 +1,54 @@
-define float @symmetrize_phi(%struct._IO_FILE* %log, i32 %natoms, float* nocapture %phi, i32 %bVerbose) #0 {
-entry:
-  %cmp4.i = icmp sgt i32 %natoms, 0
-  br i1 %cmp4.i, label %for.body.i, label %phi_aver.exit
+define float @symmetrize_phi(%struct.__sFILE* %log, i32 %natoms, float* nocapture %phi, i32 %bVerbose) #1 {
+  %1 = icmp sgt i32 %natoms, 0
+  br i1 %1, label %.lr.ph.i, label %phi_aver.exit
 
-for.body.i:                                       ; preds = %entry, %for.body.i
-  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %for.body.i ], [ 0, %entry ]
-  %phitot.05.i = phi float [ %add.i, %for.body.i ], [ 0.000000e+00, %entry ]
-  %arrayidx.i = getelementptr inbounds float* %phi, i64 %indvars.iv.i
-  %0 = load float* %arrayidx.i, align 4, !tbaa !0
-  %add.i = fadd float %phitot.05.i, %0
-  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
-  %lftr.wideiv12 = trunc i64 %indvars.iv.next.i to i32
-  %exitcond13 = icmp eq i32 %lftr.wideiv12, %natoms
-  br i1 %exitcond13, label %phi_aver.exit, label %for.body.i
+.lr.ph.i:                                         ; preds = %0
+  %2 = add i32 %natoms, -1
+  br label %3
 
-phi_aver.exit:                                    ; preds = %for.body.i, %entry
-  %phitot.0.lcssa.i = phi float [ 0.000000e+00, %entry ], [ %add.i, %for.body.i ]
-  %conv.i = sitofp i32 %natoms to float
-  %div.i = fdiv float %phitot.0.lcssa.i, %conv.i
-  %tobool = icmp eq i32 %bVerbose, 0
-  %tobool1 = icmp eq %struct._IO_FILE* %log, null
-  %or.cond = or i1 %tobool, %tobool1
-  br i1 %or.cond, label %for.cond.preheader, label %if.then
+; <label>:3                                       ; preds = %3, %.lr.ph.i
+  %indvars.iv.i = phi i64 [ 0, %.lr.ph.i ], [ %indvars.iv.next.i, %3 ]
+  %phitot.01.i = phi float [ 0.000000e+00, %.lr.ph.i ], [ %6, %3 ]
+  %4 = getelementptr inbounds float* %phi, i64 %indvars.iv.i
+  %5 = load float* %4, align 4, !tbaa !2
+  %6 = fadd float %phitot.01.i, %5
+  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1
+  %lftr.wideiv3 = trunc i64 %indvars.iv.i to i32
+  %exitcond4 = icmp eq i32 %lftr.wideiv3, %2
+  br i1 %exitcond4, label %phi_aver.exit, label %3
 
-if.then:                                          ; preds = %phi_aver.exit
-  %conv = fpext float %div.i to double
-  %call2 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %log, i8* getelementptr inbounds ([19 x i8]* @.str19, i64 0, i64 0), double %conv) #6
-  br label %for.cond.preheader
+phi_aver.exit:                                    ; preds = %3, %0
+  %phitot.0.lcssa.i = phi float [ 0.000000e+00, %0 ], [ %6, %3 ]
+  %7 = sitofp i32 %natoms to float
+  %8 = fdiv float %phitot.0.lcssa.i, %7
+  %9 = icmp ne i32 %bVerbose, 0
+  %10 = icmp ne %struct.__sFILE* %log, null
+  %or.cond = and i1 %10, %9
+  br i1 %or.cond, label %11, label %.preheader
 
-for.cond.preheader:                               ; preds = %phi_aver.exit, %if.then
-  br i1 %cmp4.i, label %for.body, label %for.end
+; <label>:11                                      ; preds = %phi_aver.exit
+  %12 = fpext float %8 to double
+  %13 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %log, i8* getelementptr inbounds ([19 x i8]* @.str19, i64 0, i64 0), double %12) #8
+  br label %.preheader
 
-for.body:                                         ; preds = %for.cond.preheader, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
-  %arrayidx = getelementptr inbounds float* %phi, i64 %indvars.iv
-  %1 = load float* %arrayidx, align 4, !tbaa !0
-  %sub = fsub float %1, %div.i
-  store float %sub, float* %arrayidx, align 4, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %natoms
-  br i1 %exitcond, label %for.end, label %for.body
+.preheader:                                       ; preds = %11, %phi_aver.exit
+  br i1 %1, label %.lr.ph, label %._crit_edge
 
-for.end:                                          ; preds = %for.body, %for.cond.preheader
-  ret float %div.i
+.lr.ph:                                           ; preds = %.preheader
+  %14 = add i32 %natoms, -1
+  br label %15
+
+; <label>:15                                      ; preds = %15, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %15 ]
+  %16 = getelementptr inbounds float* %phi, i64 %indvars.iv
+  %17 = load float* %16, align 4, !tbaa !2
+  %18 = fsub float %17, %8
+  store float %18, float* %16, align 4, !tbaa !2
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %14
+  br i1 %exitcond, label %._crit_edge, label %15
+
+._crit_edge:                                      ; preds = %15, %.preheader
+  ret float %8
 }

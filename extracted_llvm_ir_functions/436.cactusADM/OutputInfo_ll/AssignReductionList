@@ -1,0 +1,246 @@
+define internal void @AssignReductionList(i32 %vindex, i8* %optstring, i8* nocapture readonly %arg) #1 {
+  %1 = load i8** getelementptr inbounds (%struct.anon* @iobasicpriv_, i64 0, i32 0), align 8, !tbaa !31
+  %2 = sext i32 %vindex to i64
+  %3 = getelementptr inbounds i8* %arg, i64 48
+  %4 = bitcast i8* %3 to %struct.IOBASIC_REDUCTIONLIST**
+  %5 = load %struct.IOBASIC_REDUCTIONLIST** %4, align 8, !tbaa !15
+  %6 = getelementptr inbounds %struct.IOBASIC_REDUCTIONLIST* %5, i64 %2
+  %7 = tail call i32 @CCTK_GroupTypeFromVarI(i32 %vindex) #8
+  %8 = icmp eq i32 %7, 1
+  br i1 %8, label %9, label %42
+
+; <label>:9                                       ; preds = %0
+  %10 = icmp eq i8* %optstring, null
+  br i1 %10, label %14, label %11
+
+; <label>:11                                      ; preds = %9
+  %12 = tail call i8* @CCTK_VarName(i32 %vindex) #8
+  %13 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 5, i32 431, i8* getelementptr inbounds ([80 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([43 x i8]* @.str15, i64 0, i64 0), i8* %optstring, i8* %12) #8
+  br label %14
+
+; <label>:14                                      ; preds = %9, %11
+  %15 = tail call i8* @malloc(i64 40) #8
+  %16 = getelementptr inbounds %struct.IOBASIC_REDUCTIONLIST* %5, i64 %2, i32 1
+  %17 = bitcast %struct.IOBASIC_REDUCTION** %16 to i8**
+  store i8* %15, i8** %17, align 8, !tbaa !29
+  %18 = tail call i32 @CCTK_VarTypeI(i32 %vindex) #8
+  %19 = tail call i8* @CCTK_VarTypeName(i32 %18) #8
+  %20 = tail call i32 @strncmp(i8* %19, i8* getelementptr inbounds ([22 x i8]* @.str16, i64 0, i64 0), i64 21) #8
+  %21 = icmp eq i32 %20, 0
+  %22 = getelementptr inbounds %struct.IOBASIC_REDUCTIONLIST* %6, i64 0, i32 0
+  br i1 %21, label %28, label %23
+
+; <label>:23                                      ; preds = %14
+  store i32 1, i32* %22, align 4, !tbaa !16
+  %24 = tail call i8* @strdup(i8* getelementptr inbounds ([13 x i8]* @.str17, i64 0, i64 0)) #8
+  %25 = load %struct.IOBASIC_REDUCTION** %16, align 8, !tbaa !29
+  %26 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %25, i64 0, i32 1
+  store i8* %24, i8** %26, align 8, !tbaa !18
+  %27 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %25, i64 0, i32 4
+  store %struct.IOBASIC_REDUCTION* null, %struct.IOBASIC_REDUCTION** %27, align 8, !tbaa !30
+  br label %131
+
+; <label>:28                                      ; preds = %14
+  store i32 2, i32* %22, align 4, !tbaa !16
+  %29 = tail call i8* @strdup(i8* getelementptr inbounds ([10 x i8]* @.str18, i64 0, i64 0)) #8
+  %30 = load %struct.IOBASIC_REDUCTION** %16, align 8, !tbaa !29
+  %31 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %30, i64 0, i32 1
+  store i8* %29, i8** %31, align 8, !tbaa !18
+  %32 = tail call i8* @malloc(i64 40) #8
+  %33 = load %struct.IOBASIC_REDUCTION** %16, align 8, !tbaa !29
+  %34 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %33, i64 0, i32 4
+  %35 = bitcast %struct.IOBASIC_REDUCTION** %34 to i8**
+  store i8* %32, i8** %35, align 8, !tbaa !30
+  %36 = tail call i8* @strdup(i8* getelementptr inbounds ([10 x i8]* @.str19, i64 0, i64 0)) #8
+  %37 = load %struct.IOBASIC_REDUCTION** %16, align 8, !tbaa !29
+  %38 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %37, i64 0, i32 4
+  %39 = load %struct.IOBASIC_REDUCTION** %38, align 8, !tbaa !30
+  %40 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %39, i64 0, i32 1
+  store i8* %36, i8** %40, align 8, !tbaa !18
+  %41 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %39, i64 0, i32 4
+  store %struct.IOBASIC_REDUCTION* null, %struct.IOBASIC_REDUCTION** %41, align 8, !tbaa !30
+  br label %131
+
+; <label>:42                                      ; preds = %0
+  %43 = getelementptr inbounds %struct.IOBASIC_REDUCTIONLIST* %6, i64 0, i32 0
+  store i32 0, i32* %43, align 4, !tbaa !16
+  %44 = getelementptr inbounds %struct.IOBASIC_REDUCTIONLIST* %5, i64 %2, i32 1
+  store %struct.IOBASIC_REDUCTION* null, %struct.IOBASIC_REDUCTION** %44, align 8, !tbaa !29
+  %45 = icmp eq i8* %optstring, null
+  br i1 %45, label %63, label %46
+
+; <label>:46                                      ; preds = %42
+  %47 = tail call i32 @strncmp(i8* %optstring, i8* getelementptr inbounds ([13 x i8]* @.str20, i64 0, i64 0), i64 12) #8
+  %48 = icmp eq i32 %47, 0
+  br i1 %48, label %49, label %61
+
+; <label>:49                                      ; preds = %46
+  %50 = tail call i64 @strlen(i8* %optstring) #8
+  %51 = add i64 %50, -1
+  %52 = getelementptr inbounds i8* %optstring, i64 %51
+  %53 = load i8* %52, align 1, !tbaa !32
+  %54 = icmp eq i8 %53, 62
+  br i1 %54, label %55, label %61
+
+; <label>:55                                      ; preds = %49
+  %56 = getelementptr inbounds i8* %optstring, i64 12
+  %57 = tail call i8* @strdup(i8* %56) #8
+  %58 = tail call i64 @strlen(i8* %57) #8
+  %59 = add i64 %58, -1
+  %60 = getelementptr inbounds i8* %57, i64 %59
+  store i8 0, i8* %60, align 1, !tbaa !32
+  br label %65
+
+; <label>:61                                      ; preds = %49, %46
+  %62 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 5, i32 476, i8* getelementptr inbounds ([80 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([57 x i8]* @.str21, i64 0, i64 0), i8* %optstring) #8
+  br label %131
+
+; <label>:63                                      ; preds = %42
+  %64 = tail call i8* @strdup(i8* %1) #8
+  br label %65
+
+; <label>:65                                      ; preds = %63, %55
+  %reduction_op_list.0 = phi i8* [ %57, %55 ], [ %64, %63 ]
+  %66 = tail call i64 @strlen(i8* %reduction_op_list.0) #8
+  %67 = add i64 %66, 1
+  %68 = tail call i8* @malloc(i64 %67) #8
+  %69 = icmp eq i8* %reduction_op_list.0, null
+  br i1 %69, label %.critedge, label %.lr.ph15
+
+.lr.ph15:                                         ; preds = %65
+  %70 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %68, i1 false)
+  %71 = load i8* %reduction_op_list.0, align 1, !tbaa !32
+  %72 = icmp eq i8 %71, 0
+  br i1 %72, label %.critedge, label %.preheader11
+
+.preheader11:                                     ; preds = %.backedge.backedge, %.lr.ph15, %isspace.exit._crit_edge
+  %73 = phi i8 [ %.pre, %isspace.exit._crit_edge ], [ %108, %.backedge.backedge ], [ %71, %.lr.ph15 ]
+  %string_start.1 = phi i8* [ %82, %isspace.exit._crit_edge ], [ %string_end.0, %.backedge.backedge ], [ %reduction_op_list.0, %.lr.ph15 ]
+  %isascii.i.i8 = icmp sgt i8 %73, -1
+  br i1 %isascii.i.i8, label %74, label %79
+
+; <label>:74                                      ; preds = %.preheader11
+  %75 = sext i8 %73 to i64
+  %76 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %75
+  %77 = load i32* %76, align 4, !tbaa !22
+  %78 = and i32 %77, 16384
+  br label %isspace.exit
+
+; <label>:79                                      ; preds = %.preheader11
+  %80 = sext i8 %73 to i32
+  %81 = tail call i32 @__maskrune(i32 %80, i64 16384) #8
+  br label %isspace.exit
+
+isspace.exit:                                     ; preds = %74, %79
+  %.sink.i.in.i = phi i32 [ %78, %74 ], [ %81, %79 ]
+  %.sink.i.i = icmp eq i32 %.sink.i.in.i, 0
+  %82 = getelementptr inbounds i8* %string_start.1, i64 1
+  br i1 %.sink.i.i, label %83, label %isspace.exit._crit_edge
+
+isspace.exit._crit_edge:                          ; preds = %isspace.exit
+  %.pre = load i8* %82, align 1, !tbaa !32
+  br label %.preheader11
+
+; <label>:83                                      ; preds = %isspace.exit
+  %84 = load i8* %string_start.1, align 1, !tbaa !32
+  %85 = icmp eq i8 %84, 0
+  br i1 %85, label %.critedge, label %.preheader10
+
+.preheader10:                                     ; preds = %83, %isspace.exit5
+  %string_start.1.pn = phi i8* [ %string_end.0, %isspace.exit5 ], [ %string_start.1, %83 ]
+  %string_end.0 = getelementptr inbounds i8* %string_start.1.pn, i64 1
+  %86 = load i8* %string_end.0, align 1, !tbaa !32
+  %87 = icmp eq i8 %86, 0
+  br i1 %87, label %.critedge1, label %88
+
+; <label>:88                                      ; preds = %.preheader10
+  %isascii.i.i29 = icmp sgt i8 %86, -1
+  br i1 %isascii.i.i29, label %89, label %94
+
+; <label>:89                                      ; preds = %88
+  %90 = sext i8 %86 to i64
+  %91 = getelementptr inbounds %struct._RuneLocale* @_DefaultRuneLocale, i64 0, i32 5, i64 %90
+  %92 = load i32* %91, align 4, !tbaa !22
+  %93 = and i32 %92, 16384
+  br label %isspace.exit5
+
+; <label>:94                                      ; preds = %88
+  %95 = sext i8 %86 to i32
+  %96 = tail call i32 @__maskrune(i32 %95, i64 16384) #8
+  br label %isspace.exit5
+
+isspace.exit5:                                    ; preds = %89, %94
+  %.sink.i.in.i3 = phi i32 [ %93, %89 ], [ %96, %94 ]
+  %.sink.i.i4 = icmp eq i32 %.sink.i.in.i3, 0
+  br i1 %.sink.i.i4, label %.preheader10, label %.critedge1
+
+.critedge1:                                       ; preds = %isspace.exit5, %.preheader10
+  %97 = ptrtoint i8* %string_end.0 to i64
+  %98 = ptrtoint i8* %string_start.1 to i64
+  %99 = sub i64 %97, %98
+  %100 = tail call i8* @__strncpy_chk(i8* %68, i8* %string_start.1, i64 %99, i64 %70) #8
+  %101 = getelementptr inbounds i8* %68, i64 %99
+  store i8 0, i8* %101, align 1, !tbaa !32
+  %102 = tail call i32 @CCTK_ReductionHandle(i8* %68) #8
+  %103 = icmp slt i32 %102, 0
+  br i1 %103, label %106, label %.preheader
+
+.preheader:                                       ; preds = %.critedge1
+  %104 = load %struct.IOBASIC_REDUCTION** %44, align 8, !tbaa !14
+  %105 = icmp eq %struct.IOBASIC_REDUCTION* %104, null
+  br i1 %105, label %._crit_edge, label %.lr.ph
+
+; <label>:106                                     ; preds = %.critedge1
+  %107 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 5, i32 518, i8* getelementptr inbounds ([80 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str22, i64 0, i64 0), i8* %68) #8
+  br label %.backedge.backedge
+
+.backedge.backedge:                               ; preds = %106, %119, %._crit_edge
+  %108 = load i8* %string_end.0, align 1, !tbaa !32
+  %109 = icmp eq i8 %108, 0
+  br i1 %109, label %.critedge, label %.preheader11
+
+; <label>:110                                     ; preds = %.lr.ph
+  %111 = load %struct.IOBASIC_REDUCTION** %118, align 8, !tbaa !14
+  %112 = icmp eq %struct.IOBASIC_REDUCTION* %111, null
+  br i1 %112, label %._crit_edge, label %.lr.ph
+
+.lr.ph:                                           ; preds = %.preheader, %110
+  %113 = phi %struct.IOBASIC_REDUCTION* [ %111, %110 ], [ %104, %.preheader ]
+  %114 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %113, i64 0, i32 1
+  %115 = load i8** %114, align 8, !tbaa !18
+  %116 = tail call i32 @strcmp(i8* %115, i8* %68) #8
+  %117 = icmp eq i32 %116, 0
+  %118 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %113, i64 0, i32 4
+  br i1 %117, label %119, label %110
+
+; <label>:119                                     ; preds = %.lr.ph
+  %120 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 3, i32 537, i8* getelementptr inbounds ([80 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([8 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([71 x i8]* @.str23, i64 0, i64 0), i8* %68) #8
+  br label %.backedge.backedge
+
+._crit_edge:                                      ; preds = %110, %.preheader
+  %new_reduction.0.lcssa = phi %struct.IOBASIC_REDUCTION** [ %44, %.preheader ], [ %118, %110 ]
+  %121 = tail call i8* @malloc(i64 40) #8
+  %122 = bitcast %struct.IOBASIC_REDUCTION** %new_reduction.0.lcssa to i8**
+  store i8* %121, i8** %122, align 8, !tbaa !14
+  %123 = bitcast i8* %121 to i32*
+  store i32 %102, i32* %123, align 4, !tbaa !33
+  %124 = tail call i8* @strdup(i8* %68) #8
+  %125 = load %struct.IOBASIC_REDUCTION** %new_reduction.0.lcssa, align 8, !tbaa !14
+  %126 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %125, i64 0, i32 1
+  store i8* %124, i8** %126, align 8, !tbaa !18
+  %127 = load %struct.IOBASIC_REDUCTION** %new_reduction.0.lcssa, align 8, !tbaa !14
+  %128 = getelementptr inbounds %struct.IOBASIC_REDUCTION* %127, i64 0, i32 4
+  store %struct.IOBASIC_REDUCTION* null, %struct.IOBASIC_REDUCTION** %128, align 8, !tbaa !30
+  %129 = load i32* %43, align 4, !tbaa !16
+  %130 = add i32 %129, 1
+  store i32 %130, i32* %43, align 4, !tbaa !16
+  br label %.backedge.backedge
+
+.critedge:                                        ; preds = %.lr.ph15, %83, %.backedge.backedge, %65
+  tail call void @free(i8* %reduction_op_list.0) #9
+  tail call void @free(i8* %68) #9
+  br label %131
+
+; <label>:131                                     ; preds = %23, %28, %.critedge, %61
+  ret void
+}

@@ -1,49 +1,49 @@
-define i32 @get_strings(i8* %db, i8*** nocapture %strings) #0 {
-entry:
+define i32 @get_strings(i8* %db, i8*** nocapture %strings) #1 {
   %buf = alloca [256 x i8], align 16
   %nstr = alloca i32, align 4
-  %0 = getelementptr inbounds [256 x i8]* %buf, i64 0, i64 0
-  call void @llvm.lifetime.start(i64 256, i8* %0) #4
-  %call = call %struct._IO_FILE* @libopen(i8* %db) #5
-  call void @set_warning_line(i8* %db, i32 1) #5
-  %call1 = call i32 (%struct._IO_FILE*, i8*, ...)* @__isoc99_fscanf(%struct._IO_FILE* %call, i8* getelementptr inbounds ([3 x i8]* @.str6, i64 0, i64 0), i32* %nstr) #5
-  %cmp = icmp eq i32 %call1, 1
-  br i1 %cmp, label %if.end, label %if.then
+  %1 = getelementptr inbounds [256 x i8]* %buf, i64 0, i64 0
+  call void @llvm.lifetime.start(i64 256, i8* %1) #6
+  %2 = tail call %struct.__sFILE* @libopen(i8* %db) #8
+  tail call void @set_warning_line(i8* %db, i32 1) #8
+  %3 = call i32 (%struct.__sFILE*, i8*, ...)* @fscanf(%struct.__sFILE* %2, i8* getelementptr inbounds ([3 x i8]* @.str6, i64 0, i64 0), i32* %nstr) #8
+  %4 = icmp eq i32 %3, 1
+  br i1 %4, label %7, label %5
 
-if.then:                                          ; preds = %entry
-  %call2 = call i32 (i8*, i8*, ...)* @sprintf(i8* getelementptr inbounds ([1024 x i8]* @warn_buf, i64 0, i64 0), i8* getelementptr inbounds ([17 x i8]* @.str7, i64 0, i64 0), i8* %db) #5
-  call void @warning(i8* null) #5
-  call void @ffclose(%struct._IO_FILE* %call) #5
-  br label %cleanup
+; <label>:5                                       ; preds = %0
+  %6 = call i32 (i8*, i32, i64, i8*, ...)* @__sprintf_chk(i8* getelementptr inbounds ([1024 x i8]* @warn_buf, i64 0, i64 0), i32 0, i64 1024, i8* getelementptr inbounds ([17 x i8]* @.str7, i64 0, i64 0), i8* %db) #8
+  call void @warning(i8* null) #8
+  call void @ffclose(%struct.__sFILE* %2) #8
+  br label %21
 
-if.end:                                           ; preds = %entry
-  %1 = load i32* %nstr, align 4, !tbaa !0
-  %call3 = call i8* @save_calloc(i8* getelementptr inbounds ([4 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 112, i32 %1, i32 8) #5
-  %2 = bitcast i8* %call3 to i8**
-  %3 = load i32* %nstr, align 4, !tbaa !0
-  %cmp415 = icmp sgt i32 %3, 0
-  br i1 %cmp415, label %for.body, label %for.end
+; <label>:7                                       ; preds = %0
+  %8 = load i32* %nstr, align 4, !tbaa !2
+  %9 = call i8* @save_calloc(i8* getelementptr inbounds ([4 x i8]* @.str8, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 112, i32 %8, i32 8) #8
+  %10 = bitcast i8* %9 to i8**
+  %11 = load i32* %nstr, align 4, !tbaa !2
+  %12 = icmp sgt i32 %11, 0
+  br i1 %12, label %.lr.ph, label %._crit_edge
 
-for.body:                                         ; preds = %if.end, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %if.end ]
-  %call5 = call i32 (%struct._IO_FILE*, i8*, ...)* @__isoc99_fscanf(%struct._IO_FILE* %call, i8* getelementptr inbounds ([3 x i8]* @.str9, i64 0, i64 0), i8* %0) #5
-  %call7 = call i8* @gmx_strdup(i8* %0) #5
-  %arrayidx = getelementptr inbounds i8** %2, i64 %indvars.iv
-  store i8* %call7, i8** %arrayidx, align 8, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %4 = load i32* %nstr, align 4, !tbaa !0
-  %5 = trunc i64 %indvars.iv.next to i32
-  %cmp4 = icmp slt i32 %5, %4
-  br i1 %cmp4, label %for.body, label %for.end
+.lr.ph:                                           ; preds = %7, %.lr.ph
+  %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %7 ]
+  %13 = call i32 (%struct.__sFILE*, i8*, ...)* @fscanf(%struct.__sFILE* %2, i8* getelementptr inbounds ([3 x i8]* @.str9, i64 0, i64 0), i8* %1) #8
+  %14 = call i8* @strdup(i8* %1) #8
+  %15 = getelementptr inbounds i8** %10, i64 %indvars.iv
+  store i8* %14, i8** %15, align 8, !tbaa !6
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %16 = load i32* %nstr, align 4, !tbaa !2
+  %17 = sext i32 %16 to i64
+  %18 = icmp slt i64 %indvars.iv.next, %17
+  br i1 %18, label %.lr.ph, label %._crit_edge
 
-for.end:                                          ; preds = %for.body, %if.end
-  call void @ffclose(%struct._IO_FILE* %call) #5
-  store i8** %2, i8*** %strings, align 8, !tbaa !3
-  %6 = load i32* %nstr, align 4, !tbaa !0
-  br label %cleanup
+._crit_edge:                                      ; preds = %.lr.ph, %7
+  call void @ffclose(%struct.__sFILE* %2) #8
+  %19 = bitcast i8*** %strings to i8**
+  store i8* %9, i8** %19, align 8, !tbaa !6
+  %20 = load i32* %nstr, align 4, !tbaa !2
+  br label %21
 
-cleanup:                                          ; preds = %for.end, %if.then
-  %retval.0 = phi i32 [ 0, %if.then ], [ %6, %for.end ]
-  call void @llvm.lifetime.end(i64 256, i8* %0) #4
-  ret i32 %retval.0
+; <label>:21                                      ; preds = %._crit_edge, %5
+  %.0 = phi i32 [ 0, %5 ], [ %20, %._crit_edge ]
+  call void @llvm.lifetime.end(i64 256, i8* %1) #6
+  ret i32 %.0
 }

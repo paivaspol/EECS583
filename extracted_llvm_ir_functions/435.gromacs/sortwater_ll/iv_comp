@@ -1,41 +1,40 @@
-define internal i32 @iv_comp(i8* nocapture %a, i8* nocapture %b) #2 {
-entry:
-  %0 = bitcast i8* %a to i32*
-  %1 = bitcast i8* %b to i32*
-  %2 = load i32* %0, align 4, !tbaa !0
-  %3 = load i32* %1, align 4, !tbaa !0
-  %cmp = icmp eq i32 %2, %3
-  br i1 %cmp, label %if.else, label %if.then
+define internal i32 @iv_comp(i8* nocapture readonly %a, i8* nocapture readonly %b) #5 {
+  %1 = bitcast i8* %a to i32*
+  %2 = bitcast i8* %b to i32*
+  %3 = load i32* %1, align 4, !tbaa !18
+  %4 = load i32* %2, align 4, !tbaa !18
+  %5 = icmp eq i32 %3, %4
+  br i1 %5, label %8, label %6
 
-if.then:                                          ; preds = %entry
-  %sub = sub nsw i32 %2, %3
-  br label %return
+; <label>:6                                       ; preds = %0
+  %7 = sub nsw i32 %3, %4
+  br label %26
 
-if.else:                                          ; preds = %entry
-  %arrayidx4 = getelementptr inbounds i8* %a, i64 4
-  %4 = bitcast i8* %arrayidx4 to i32*
-  %5 = load i32* %4, align 4, !tbaa !0
-  %arrayidx5 = getelementptr inbounds i8* %b, i64 4
-  %6 = bitcast i8* %arrayidx5 to i32*
-  %7 = load i32* %6, align 4, !tbaa !0
-  %cmp6 = icmp eq i32 %5, %7
-  br i1 %cmp6, label %if.else11, label %if.then7
+; <label>:8                                       ; preds = %0
+  %9 = getelementptr inbounds i8* %a, i64 4
+  %10 = bitcast i8* %9 to i32*
+  %11 = load i32* %10, align 4, !tbaa !18
+  %12 = getelementptr inbounds i8* %b, i64 4
+  %13 = bitcast i8* %12 to i32*
+  %14 = load i32* %13, align 4, !tbaa !18
+  %15 = icmp eq i32 %11, %14
+  br i1 %15, label %18, label %16
 
-if.then7:                                         ; preds = %if.else
-  %sub10 = sub nsw i32 %5, %7
-  br label %return
+; <label>:16                                      ; preds = %8
+  %17 = sub nsw i32 %11, %14
+  br label %26
 
-if.else11:                                        ; preds = %if.else
-  %arrayidx12 = getelementptr inbounds i8* %a, i64 8
-  %8 = bitcast i8* %arrayidx12 to i32*
-  %9 = load i32* %8, align 4, !tbaa !0
-  %arrayidx13 = getelementptr inbounds i8* %b, i64 8
-  %10 = bitcast i8* %arrayidx13 to i32*
-  %11 = load i32* %10, align 4, !tbaa !0
-  %sub14 = sub nsw i32 %9, %11
-  br label %return
+; <label>:18                                      ; preds = %8
+  %19 = getelementptr inbounds i8* %a, i64 8
+  %20 = bitcast i8* %19 to i32*
+  %21 = load i32* %20, align 4, !tbaa !18
+  %22 = getelementptr inbounds i8* %b, i64 8
+  %23 = bitcast i8* %22 to i32*
+  %24 = load i32* %23, align 4, !tbaa !18
+  %25 = sub nsw i32 %21, %24
+  br label %26
 
-return:                                           ; preds = %if.else11, %if.then7, %if.then
-  %retval.0 = phi i32 [ %sub, %if.then ], [ %sub10, %if.then7 ], [ %sub14, %if.else11 ]
-  ret i32 %retval.0
+; <label>:26                                      ; preds = %18, %16, %6
+  %.0 = phi i32 [ %7, %6 ], [ %17, %16 ], [ %25, %18 ]
+  ret i32 %.0
 }

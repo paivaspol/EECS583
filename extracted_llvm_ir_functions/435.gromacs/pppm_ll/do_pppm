@@ -1,53 +1,52 @@
-define float @do_pppm(%struct._IO_FILE* nocapture %log, i32 %bVerbose, [3 x float]* nocapture %x, [3 x float]* nocapture %f, float* nocapture %charge, float* nocapture %box, float* nocapture %phi, %struct.t_commrec* %cr, %struct.t_nsborder* %nsb, %struct.t_nrnb* nocapture %nrnb) #0 {
-entry:
-  %nodeid = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 0
-  %0 = load i32* %nodeid, align 4, !tbaa !3
-  %idxprom = sext i32 %0 to i64
-  %arrayidx = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 8, i64 %idxprom
-  %1 = load i32* %arrayidx, align 4, !tbaa !3
-  %arrayidx3 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 7, i64 %idxprom
-  %2 = load i32* %arrayidx3, align 4, !tbaa !3
-  %3 = load %struct.t_fftgrid** @grid, align 8, !tbaa !4
-  tail call void @clear_fftgrid(%struct.t_fftgrid* %3) #4
-  %4 = load %struct.t_fftgrid** @grid, align 8, !tbaa !4
-  tail call void @spread_q(%struct._IO_FILE* %log, i32 undef, i32 %1, i32 %2, [3 x float]* %x, float* %charge, float* %box, %struct.t_fftgrid* %4, %struct.t_nrnb* %nrnb) #5
-  %nnodes = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1
-  %5 = load i32* %nnodes, align 4, !tbaa !3
-  %cmp = icmp sgt i32 %5, 1
-  br i1 %cmp, label %if.then, label %lor.lhs.false
+define float @do_pppm(%struct.__sFILE* nocapture %log, i32 %bVerbose, [3 x float]* nocapture readonly %x, [3 x float]* nocapture %f, float* nocapture readonly %charge, float* nocapture readonly %box, float* nocapture %phi, %struct.t_commrec* %cr, %struct.t_nsborder* %nsb, %struct.t_nrnb* nocapture %nrnb) #1 {
+  %1 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 0
+  %2 = load i32* %1, align 4, !tbaa !30
+  %3 = sext i32 %2 to i64
+  %4 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 8, i64 %3
+  %5 = load i32* %4, align 4, !tbaa !6
+  %6 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 7, i64 %3
+  %7 = load i32* %6, align 4, !tbaa !6
+  %8 = load %struct.t_fftgrid** @grid, align 8, !tbaa !8
+  tail call void @clear_fftgrid(%struct.t_fftgrid* %8) #6
+  %9 = load %struct.t_fftgrid** @grid, align 8, !tbaa !8
+  tail call void @spread_q(%struct.__sFILE* %log, i32 undef, i32 %5, i32 %7, [3 x float]* %x, float* %charge, float* %box, %struct.t_fftgrid* %9, %struct.t_nrnb* %nrnb) #7
+  %10 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1
+  %11 = load i32* %10, align 4, !tbaa !15
+  %12 = icmp sgt i32 %11, 1
+  br i1 %12, label %17, label %13
 
-lor.lhs.false:                                    ; preds = %entry
-  %nthreads = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 5
-  %6 = load i32* %nthreads, align 4, !tbaa !3
-  %cmp4 = icmp sgt i32 %6, 1
-  br i1 %cmp4, label %if.then, label %if.end
+; <label>:13                                      ; preds = %0
+  %14 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 5
+  %15 = load i32* %14, align 4, !tbaa !17
+  %16 = icmp sgt i32 %15, 1
+  br i1 %16, label %17, label %19
 
-if.then:                                          ; preds = %lor.lhs.false, %entry
-  %7 = load %struct.t_fftgrid** @grid, align 8, !tbaa !4
-  tail call void @sum_qgrid(%struct.t_commrec* %cr, %struct.t_nsborder* %nsb, %struct.t_fftgrid* %7, i32 1) #4
-  br label %if.end
+; <label>:17                                      ; preds = %13, %0
+  %18 = load %struct.t_fftgrid** @grid, align 8, !tbaa !8
+  tail call void @sum_qgrid(%struct.t_commrec* %cr, %struct.t_nsborder* %nsb, %struct.t_fftgrid* %18, i32 1) #6
+  br label %19
 
-if.end:                                           ; preds = %if.then, %lor.lhs.false
-  %8 = load %struct.t_fftgrid** @grid, align 8, !tbaa !4
-  %9 = load float**** @ghat, align 8, !tbaa !4
-  tail call void @solve_pppm(%struct._IO_FILE* undef, %struct.t_commrec* %cr, %struct.t_fftgrid* %8, float*** %9, float* undef, i32 %bVerbose, %struct.t_nrnb* %nrnb) #5
-  %10 = load i32* %nnodes, align 4, !tbaa !3
-  %cmp6 = icmp sgt i32 %10, 1
-  br i1 %cmp6, label %if.then10, label %lor.lhs.false7
+; <label>:19                                      ; preds = %17, %13
+  %20 = load %struct.t_fftgrid** @grid, align 8, !tbaa !8
+  %21 = load float**** @ghat, align 8, !tbaa !8
+  tail call void @solve_pppm(%struct.__sFILE* undef, %struct.t_commrec* %cr, %struct.t_fftgrid* %20, float*** %21, float* undef, i32 %bVerbose, %struct.t_nrnb* %nrnb) #7
+  %22 = load i32* %10, align 4, !tbaa !15
+  %23 = icmp sgt i32 %22, 1
+  br i1 %23, label %28, label %24
 
-lor.lhs.false7:                                   ; preds = %if.end
-  %nthreads8 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 5
-  %11 = load i32* %nthreads8, align 4, !tbaa !3
-  %cmp9 = icmp sgt i32 %11, 1
-  br i1 %cmp9, label %if.then10, label %if.end11
+; <label>:24                                      ; preds = %19
+  %25 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 5
+  %26 = load i32* %25, align 4, !tbaa !17
+  %27 = icmp sgt i32 %26, 1
+  br i1 %27, label %28, label %30
 
-if.then10:                                        ; preds = %lor.lhs.false7, %if.end
-  %12 = load %struct.t_fftgrid** @grid, align 8, !tbaa !4
-  tail call void @sum_qgrid(%struct.t_commrec* %cr, %struct.t_nsborder* %nsb, %struct.t_fftgrid* %12, i32 0) #4
-  br label %if.end11
+; <label>:28                                      ; preds = %24, %19
+  %29 = load %struct.t_fftgrid** @grid, align 8, !tbaa !8
+  tail call void @sum_qgrid(%struct.t_commrec* %cr, %struct.t_nsborder* %nsb, %struct.t_fftgrid* %29, i32 0) #6
+  br label %30
 
-if.end11:                                         ; preds = %if.then10, %lor.lhs.false7
-  %13 = load %struct.t_fftgrid** @grid, align 8, !tbaa !4
-  %call = tail call fastcc float @gather_f(%struct._IO_FILE* %log, i32 %1, i32 %2, [3 x float]* %x, [3 x float]* %f, float* %charge, float* %box, float* %phi, %struct.t_fftgrid* %13, float* getelementptr inbounds ([3 x float]* @beta, i64 0, i64 0), %struct.t_nrnb* %nrnb) #5
-  ret float %call
+; <label>:30                                      ; preds = %28, %24
+  %31 = load %struct.t_fftgrid** @grid, align 8, !tbaa !8
+  %32 = tail call fastcc float @gather_f(%struct.__sFILE* %log, i32 %5, i32 %7, [3 x float]* %x, [3 x float]* %f, float* %charge, float* %box, float* %phi, %struct.t_fftgrid* %31, float* getelementptr inbounds ([3 x float]* @beta, i64 0, i64 0), %struct.t_nrnb* %nrnb) #7
+  ret float %32
 }

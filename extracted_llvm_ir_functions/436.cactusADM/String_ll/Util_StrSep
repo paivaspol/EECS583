@@ -1,0 +1,58 @@
+define i8* @Util_StrSep(i8** nocapture %stringp, i8* nocapture readonly %delim) #1 {
+  %1 = load i8** %stringp, align 8, !tbaa !2
+  %2 = tail call i8* @strstr(i8* %1, i8* %delim) #7
+  %3 = icmp eq i8* %2, null
+  br i1 %3, label %25, label %4
+
+; <label>:4                                       ; preds = %0
+  %5 = ptrtoint i8* %2 to i64
+  %6 = ptrtoint i8* %1 to i64
+  %7 = sub i64 %5, %6
+  %8 = icmp sgt i64 %7, -1
+  br i1 %8, label %9, label %15
+
+; <label>:9                                       ; preds = %4
+  %10 = add nsw i64 %7, 1
+  %11 = load i8** @Util_StrSep.retval, align 8, !tbaa !2
+  %12 = tail call i8* @realloc(i8* %11, i64 %10) #7
+  %13 = icmp eq i8* %12, null
+  br i1 %13, label %.thread, label %.thread1
+
+.thread1:                                         ; preds = %9
+  store i8* %12, i8** @Util_StrSep.retval, align 8, !tbaa !2
+  br label %17
+
+.thread:                                          ; preds = %9
+  %14 = load i8** @Util_StrSep.retval, align 8, !tbaa !2
+  tail call void @free(i8* %14) #8
+  store i8* null, i8** @Util_StrSep.retval, align 8, !tbaa !2
+  br label %27
+
+; <label>:15                                      ; preds = %4
+  %.pr = load i8** @Util_StrSep.retval, align 8, !tbaa !2
+  %16 = icmp eq i8* %.pr, null
+  br i1 %16, label %27, label %17
+
+; <label>:17                                      ; preds = %.thread1, %15
+  %18 = phi i8* [ %12, %.thread1 ], [ %.pr, %15 ]
+  %19 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %18, i1 false)
+  %20 = tail call i8* @__strncpy_chk(i8* %18, i8* %1, i64 %7, i64 %19) #7
+  %21 = load i8** @Util_StrSep.retval, align 8, !tbaa !2
+  %22 = getelementptr inbounds i8* %21, i64 %7
+  store i8 0, i8* %22, align 1, !tbaa !6
+  %23 = tail call i64 @strlen(i8* %delim) #7
+  %24 = getelementptr inbounds i8* %2, i64 %23
+  store i8* %24, i8** %stringp, align 8, !tbaa !2
+  %.pre = load i8** @Util_StrSep.retval, align 8, !tbaa !2
+  br label %27
+
+; <label>:25                                      ; preds = %0
+  %26 = load i8** @Util_StrSep.retval, align 8, !tbaa !2
+  tail call void @free(i8* %26) #8
+  store i8* null, i8** @Util_StrSep.retval, align 8, !tbaa !2
+  br label %27
+
+; <label>:27                                      ; preds = %.thread, %15, %17, %25
+  %28 = phi i8* [ null, %.thread ], [ null, %15 ], [ %.pre, %17 ], [ null, %25 ]
+  ret i8* %28
+}

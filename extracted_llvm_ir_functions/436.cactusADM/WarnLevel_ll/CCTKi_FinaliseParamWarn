@@ -1,0 +1,44 @@
+define void @CCTKi_FinaliseParamWarn() #1 {
+  %param_type = alloca i32, align 4
+  %1 = load i32* @param_errors, align 4, !tbaa !6
+  %2 = icmp eq i32 %1, 0
+  br i1 %2, label %25, label %3
+
+; <label>:3                                       ; preds = %0
+  %4 = call i8* @CCTK_ParameterGet(i8* getelementptr inbounds ([24 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str4, i64 0, i64 0), i32* %param_type) #8
+  %5 = bitcast i8* %4 to i32*
+  %6 = load i32* %5, align 4, !tbaa !6
+  %7 = icmp eq i32 %6, 0
+  br i1 %7, label %14, label %8
+
+; <label>:8                                       ; preds = %3
+  %9 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !2
+  %10 = load i32* @param_errors, align 4, !tbaa !6
+  %11 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %9, i8* getelementptr inbounds ([38 x i8]* @.str21, i64 0, i64 0), i32 %10) #8
+  %12 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !2
+  %13 = call i32 @fflush(%struct.__sFILE* %12) #8
+  call void @exit(i32 99) #9
+  unreachable
+
+; <label>:14                                      ; preds = %3
+  %15 = load i32* @param_errors, align 4, !tbaa !6
+  %16 = icmp eq i32 %15, 1
+  %17 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !2
+  br i1 %16, label %18, label %20
+
+; <label>:18                                      ; preds = %14
+  %19 = call i64 @fwrite(i8* getelementptr inbounds ([33 x i8]* @.str22, i64 0, i64 0), i64 32, i64 1, %struct.__sFILE* %17)
+  br label %22
+
+; <label>:20                                      ; preds = %14
+  %21 = call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %17, i8* getelementptr inbounds ([36 x i8]* @.str23, i64 0, i64 0), i32 %15) #8
+  br label %22
+
+; <label>:22                                      ; preds = %20, %18
+  %23 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !2
+  %24 = call i32 @fflush(%struct.__sFILE* %23) #8
+  br label %25
+
+; <label>:25                                      ; preds = %0, %22
+  ret void
+}

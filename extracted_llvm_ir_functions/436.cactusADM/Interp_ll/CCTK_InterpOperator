@@ -1,0 +1,28 @@
+define i8* @CCTK_InterpOperator(i32 %handle) #1 {
+  %1 = icmp slt i32 %handle, 0
+  br i1 %1, label %2, label %4
+
+; <label>:2                                       ; preds = %0
+  %3 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 6, i32 373, i8* getelementptr inbounds ([75 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([37 x i8]* @.str9, i64 0, i64 0), i32 %handle) #6
+  br label %14
+
+; <label>:4                                       ; preds = %0
+  %5 = load %struct.cHandledData** @interp_operators, align 8, !tbaa !2
+  %6 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %5, i32 %handle) #6
+  %7 = icmp eq i8* %6, null
+  br i1 %7, label %12, label %8
+
+; <label>:8                                       ; preds = %4
+  %9 = getelementptr inbounds i8* %6, i64 8
+  %10 = bitcast i8* %9 to i8**
+  %11 = load i8** %10, align 8, !tbaa !8
+  br label %14
+
+; <label>:12                                      ; preds = %4
+  %13 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 6, i32 386, i8* getelementptr inbounds ([75 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([37 x i8]* @.str9, i64 0, i64 0), i32 %handle) #6
+  br label %14
+
+; <label>:14                                      ; preds = %8, %12, %2
+  %name.0 = phi i8* [ null, %2 ], [ %11, %8 ], [ null, %12 ]
+  ret i8* %name.0
+}

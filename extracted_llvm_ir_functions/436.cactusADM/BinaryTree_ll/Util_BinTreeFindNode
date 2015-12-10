@@ -1,0 +1,31 @@
+define %struct.T_TREE* @Util_BinTreeFindNode(%struct.T_TREE* readonly %root, i8* %data, i32 (i8*, i8*)* %compare) #1 {
+  br label %tailrecurse
+
+tailrecurse:                                      ; preds = %tailrecurse.backedge, %0
+  %root.tr = phi %struct.T_TREE* [ %root, %0 ], [ %root.tr.be, %tailrecurse.backedge ]
+  %1 = getelementptr inbounds %struct.T_TREE* %root.tr, i64 0, i32 3
+  %2 = load i8** %1, align 8, !tbaa !2
+  %3 = tail call i32 %compare(i8* %data, i8* %2) #4
+  %4 = icmp slt i32 %3, 0
+  br i1 %4, label %5, label %7
+
+; <label>:5                                       ; preds = %tailrecurse
+  %6 = getelementptr inbounds %struct.T_TREE* %root.tr, i64 0, i32 0
+  br label %tailrecurse.backedge
+
+tailrecurse.backedge:                             ; preds = %5, %9
+  %root.tr.be.in = phi %struct.T_TREE** [ %6, %5 ], [ %10, %9 ]
+  %root.tr.be = load %struct.T_TREE** %root.tr.be.in, align 8
+  br label %tailrecurse
+
+; <label>:7                                       ; preds = %tailrecurse
+  %8 = icmp sgt i32 %3, 0
+  br i1 %8, label %9, label %11
+
+; <label>:9                                       ; preds = %7
+  %10 = getelementptr inbounds %struct.T_TREE* %root.tr, i64 0, i32 1
+  br label %tailrecurse.backedge
+
+; <label>:11                                      ; preds = %7
+  ret %struct.T_TREE* %root.tr
+}

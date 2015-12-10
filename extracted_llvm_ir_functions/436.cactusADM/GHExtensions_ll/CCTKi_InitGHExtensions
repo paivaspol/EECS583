@@ -1,0 +1,28 @@
+define i32 @CCTKi_InitGHExtensions(%struct.cGH* %GH) #1 {
+  %1 = load i32* @num_extensions, align 4, !tbaa !6
+  %2 = icmp sgt i32 %1, 0
+  br i1 %2, label %.lr.ph, label %._crit_edge
+
+.lr.ph:                                           ; preds = %0, %11
+  %handle.01 = phi i32 [ %12, %11 ], [ 0, %0 ]
+  %3 = load %struct.cHandledData** @GHExtensions, align 8, !tbaa !2
+  %4 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %3, i32 %handle.01) #5
+  %5 = icmp eq i8* %4, null
+  br i1 %5, label %11, label %6
+
+; <label>:6                                       ; preds = %.lr.ph
+  %7 = getelementptr inbounds i8* %4, i64 8
+  %8 = bitcast i8* %7 to i32 (%struct.cGH*)**
+  %9 = load i32 (%struct.cGH*)** %8, align 8, !tbaa !10
+  %10 = tail call i32 %9(%struct.cGH* %GH) #5
+  br label %11
+
+; <label>:11                                      ; preds = %.lr.ph, %6
+  %12 = add nuw nsw i32 %handle.01, 1
+  %13 = load i32* @num_extensions, align 4, !tbaa !6
+  %14 = icmp slt i32 %12, %13
+  br i1 %14, label %.lr.ph, label %._crit_edge
+
+._crit_edge:                                      ; preds = %11, %0
+  ret i32 0
+}

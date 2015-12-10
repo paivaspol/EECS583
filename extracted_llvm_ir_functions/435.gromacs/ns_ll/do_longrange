@@ -1,104 +1,70 @@
-define internal fastcc void @do_longrange(%struct._IO_FILE* %log, %struct.t_commrec* %cr, %struct.t_topology* nocapture %top, %struct.t_forcerec* %fr, i32 %ngid, %struct.t_mdatoms* %md, i32 %icg, i32 %jgid, i32 %nlr, i32* nocapture %lr, i64* nocapture %bexcl, i32 %shift, [3 x float]* %x, float* %box_size, %struct.t_nrnb* %nrnb, float %lambda, float* %dvdlambda, %struct.t_groups* nocapture %grps, i32 %bVDWOnly, i32 %bCoulOnly, i32 %bDoForces, i32* nocapture %bHaveLJ) #0 {
-entry:
-  %tobool = icmp eq i32 %bDoForces, 0
-  %f_twin = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 53
-  %arrayidx5 = getelementptr inbounds %struct.t_groups* %grps, i64 0, i32 0, i32 1, i64 4
-  %arrayidx8 = getelementptr inbounds %struct.t_groups* %grps, i64 0, i32 0, i32 1, i64 3
-  br label %for.body
+define internal fastcc void @do_longrange(%struct.__sFILE* %log, %struct.t_commrec* %cr, %struct.t_topology* nocapture readonly %top, %struct.t_forcerec* %fr, i32 %ngid, %struct.t_mdatoms* %md, i32 %icg, i32 %jgid, i32 %nlr, i32* nocapture readonly %lr, i64* nocapture readonly %bexcl, i32 %shift, [3 x float]* %x, float* %box_size, %struct.t_nrnb* %nrnb, float %lambda, float* %dvdlambda, %struct.t_groups* nocapture readonly %grps, i32 %bVDWOnly, i32 %bCoulOnly, i32 %bDoForces, i32* nocapture readonly %bHaveLJ) #3 {
+  %1 = icmp ne i32 %bDoForces, 0
+  %2 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 53
+  %3 = getelementptr inbounds %struct.t_groups* %grps, i64 0, i32 0, i32 1, i64 4
+  %4 = getelementptr inbounds %struct.t_groups* %grps, i64 0, i32 0, i32 1, i64 3
+  br label %5
 
-for.body:                                         ; preds = %for.inc, %entry
-  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.inc ]
-  %nri = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 1
-  %0 = load i32* %nri, align 4, !tbaa !0
-  %maxnri = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 2
-  %1 = load i32* %maxnri, align 4, !tbaa !0
-  %sub = add nsw i32 %1, -32
-  %cmp4 = icmp sle i32 %0, %sub
-  %or.cond = and i1 %cmp4, %tobool
-  br i1 %or.cond, label %for.inc, label %if.then
+; <label>:5                                       ; preds = %reset_nblist.exit, %0
+  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %reset_nblist.exit ]
+  %6 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 1
+  %7 = load i32* %6, align 4, !tbaa !18
+  %8 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 2
+  %9 = load i32* %8, align 4, !tbaa !35
+  %10 = add nsw i32 %9, -32
+  %11 = icmp sgt i32 %7, %10
+  %or.cond = or i1 %1, %11
+  br i1 %or.cond, label %12, label %reset_nblist.exit
 
-if.then:                                          ; preds = %for.body
-  %cmp.i.i = icmp sgt i32 %1, 0
-  br i1 %cmp.i.i, label %if.then.i.i, label %close_neighbor_list.exit
+; <label>:12                                      ; preds = %5
+  %13 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv
+  tail call fastcc void @close_nblist(%struct.t_nblist* %13) #8
+  %14 = load [3 x float]** %2, align 8, !tbaa !95
+  %15 = load float** %3, align 8, !tbaa !23
+  %16 = load float** %4, align 8, !tbaa !23
+  %17 = trunc i64 %indvars.iv to i32
+  tail call void @do_fnbf(%struct.__sFILE* %log, %struct.t_commrec* %cr, %struct.t_forcerec* %fr, [3 x float]* %x, [3 x float]* %14, %struct.t_mdatoms* %md, float* %15, float* %16, float* %box_size, %struct.t_nrnb* %nrnb, float %lambda, float* %dvdlambda, i32 1, i32 %17) #8
+  store i32 0, i32* %6, align 4, !tbaa !18
+  %18 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 3
+  store i32 0, i32* %18, align 4, !tbaa !38
+  %19 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 5
+  store i32 0, i32* %19, align 4, !tbaa !37
+  %20 = load i32* %8, align 4, !tbaa !35
+  %21 = icmp sgt i32 %20, 0
+  br i1 %21, label %22, label %reset_nblist.exit
 
-if.then.i.i:                                      ; preds = %if.then
-  %add.i.i = add nsw i32 %0, 1
-  %idxprom.i.i = sext i32 %add.i.i to i64
-  %jindex.i.i = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 10
-  %2 = load i32** %jindex.i.i, align 8, !tbaa !3
-  %arrayidx.i.i = getelementptr inbounds i32* %2, i64 %idxprom.i.i
-  %3 = load i32* %arrayidx.i.i, align 4, !tbaa !0
-  %idxprom2.i.i = sext i32 %0 to i64
-  %arrayidx4.i.i = getelementptr inbounds i32* %2, i64 %idxprom2.i.i
-  %4 = load i32* %arrayidx4.i.i, align 4, !tbaa !0
-  %cmp5.i.i = icmp sgt i32 %3, %4
-  br i1 %cmp5.i.i, label %land.lhs.true.i.i, label %close_neighbor_list.exit
+; <label>:22                                      ; preds = %12
+  %23 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 8
+  %24 = load i32** %23, align 8, !tbaa !42
+  store i32 -1, i32* %24, align 4, !tbaa !17
+  %25 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 4
+  %26 = load i32* %25, align 4, !tbaa !36
+  %27 = icmp sgt i32 %26, 1
+  br i1 %27, label %28, label %reset_nblist.exit
 
-land.lhs.true.i.i:                                ; preds = %if.then.i.i
-  %gid.i.i = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 8
-  %5 = load i32** %gid.i.i, align 8, !tbaa !3
-  %arrayidx7.i.i = getelementptr inbounds i32* %5, i64 %idxprom2.i.i
-  %6 = load i32* %arrayidx7.i.i, align 4, !tbaa !0
-  %cmp8.i.i = icmp eq i32 %6, -1
-  br i1 %cmp8.i.i, label %close_neighbor_list.exit, label %if.then9.i.i
+; <label>:28                                      ; preds = %22
+  %29 = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 10
+  %30 = load i32** %29, align 8, !tbaa !41
+  store i32 0, i32* %30, align 4, !tbaa !17
+  %31 = getelementptr inbounds i32* %30, i64 1
+  store i32 0, i32* %31, align 4, !tbaa !17
+  br label %reset_nblist.exit
 
-if.then9.i.i:                                     ; preds = %land.lhs.true.i.i
-  store i32 %add.i.i, i32* %nri, align 4, !tbaa !0
-  %nrj.i.i = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 3
-  %7 = load i32* %nrj.i.i, align 4, !tbaa !0
-  %add11.i.i = add nsw i32 %0, 2
-  %idxprom12.i.i = sext i32 %add11.i.i to i64
-  %arrayidx14.i.i = getelementptr inbounds i32* %2, i64 %idxprom12.i.i
-  store i32 %7, i32* %arrayidx14.i.i, align 4, !tbaa !0
-  br label %close_neighbor_list.exit
+reset_nblist.exit:                                ; preds = %28, %22, %12, %5
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i64 %indvars.iv.next, 13
+  br i1 %exitcond, label %32, label %5
 
-close_neighbor_list.exit:                         ; preds = %if.then, %if.then.i.i, %land.lhs.true.i.i, %if.then9.i.i
-  %8 = load [3 x float]** %f_twin, align 8, !tbaa !3
-  %9 = load float** %arrayidx5, align 8, !tbaa !3
-  %10 = load float** %arrayidx8, align 8, !tbaa !3
-  %11 = trunc i64 %indvars.iv to i32
-  tail call void @do_fnbf(%struct._IO_FILE* %log, %struct.t_commrec* %cr, %struct.t_forcerec* %fr, [3 x float]* %x, [3 x float]* %8, %struct.t_mdatoms* %md, float* %9, float* %10, float* %box_size, %struct.t_nrnb* %nrnb, float %lambda, float* %dvdlambda, i32 1, i32 %11) #8
-  store i32 0, i32* %nri, align 4, !tbaa !0
-  %nrj.i = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 3
-  store i32 0, i32* %nrj.i, align 4, !tbaa !0
-  %maxlen.i = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 5
-  store i32 0, i32* %maxlen.i, align 4, !tbaa !0
-  %12 = load i32* %maxnri, align 4, !tbaa !0
-  %cmp.i = icmp sgt i32 %12, 0
-  br i1 %cmp.i, label %if.then.i, label %for.inc
+; <label>:32                                      ; preds = %reset_nblist.exit
+  %33 = icmp eq i32 %bDoForces, 0
+  br i1 %33, label %34, label %37
 
-if.then.i:                                        ; preds = %close_neighbor_list.exit
-  %gid.i = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 8
-  %13 = load i32** %gid.i, align 8, !tbaa !3
-  store i32 -1, i32* %13, align 4, !tbaa !0
-  %maxnrj.i = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 4
-  %14 = load i32* %maxnrj.i, align 4, !tbaa !0
-  %cmp1.i = icmp sgt i32 %14, 1
-  br i1 %cmp1.i, label %if.then2.i, label %for.inc
+; <label>:34                                      ; preds = %32
+  %35 = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 3, i64 0, i32 2
+  %36 = load i32** %35, align 8, !tbaa !50
+  tail call fastcc void @put_in_list(i32* %bHaveLJ, i32 %ngid, %struct.t_mdatoms* %md, i32 %icg, i32 %jgid, i32 %nlr, i32* %lr, i32* %36, i64* %bexcl, i32 %shift, %struct.t_forcerec* %fr, i32 1, i32 %bVDWOnly, i32 %bCoulOnly) #9
+  br label %37
 
-if.then2.i:                                       ; preds = %if.then.i
-  %jindex.i = getelementptr inbounds %struct.t_forcerec* %fr, i64 0, i32 50, i64 %indvars.iv, i32 10
-  %15 = load i32** %jindex.i, align 8, !tbaa !3
-  store i32 0, i32* %15, align 4, !tbaa !0
-  %arrayidx5.i = getelementptr inbounds i32* %15, i64 1
-  store i32 0, i32* %arrayidx5.i, align 4, !tbaa !0
-  br label %for.inc
-
-for.inc:                                          ; preds = %if.then2.i, %if.then.i, %close_neighbor_list.exit, %for.body
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 13
-  br i1 %exitcond, label %for.end, label %for.body
-
-for.end:                                          ; preds = %for.inc
-  br i1 %tobool, label %if.then10, label %if.end12
-
-if.then10:                                        ; preds = %for.end
-  %index = getelementptr inbounds %struct.t_topology* %top, i64 0, i32 3, i64 0, i32 2
-  %16 = load i32** %index, align 8, !tbaa !3
-  tail call fastcc void @put_in_list(i32* %bHaveLJ, i32 %ngid, %struct.t_mdatoms* %md, i32 %icg, i32 %jgid, i32 %nlr, i32* %lr, i32* %16, i64* %bexcl, i32 %shift, %struct.t_forcerec* %fr, i32 1, i32 %bVDWOnly, i32 %bCoulOnly) #7
-  br label %if.end12
-
-if.end12:                                         ; preds = %for.end, %if.then10
+; <label>:37                                      ; preds = %32, %34
   ret void
 }

@@ -1,0 +1,23 @@
+define noalias %struct.uStringList* @Util_StringListCreate(i32 %size) #1 {
+  %1 = tail call i8* @malloc(i64 32) #4
+  %2 = bitcast i8* %1 to %struct.uStringList*
+  %3 = icmp eq i8* %1, null
+  br i1 %3, label %13, label %4
+
+; <label>:4                                       ; preds = %0
+  %5 = add nsw i32 %size, 1
+  %6 = sext i32 %5 to i64
+  %7 = tail call i8* @calloc(i64 %6, i64 16) #4
+  %8 = getelementptr inbounds i8* %1, i64 8
+  %9 = bitcast i8* %8 to i8**
+  store i8* %7, i8** %9, align 8, !tbaa !2
+  %10 = getelementptr inbounds i8* %1, i64 24
+  %11 = bitcast i8* %10 to %struct.iInternalStringList**
+  store %struct.iInternalStringList* null, %struct.iInternalStringList** %11, align 8, !tbaa !8
+  %12 = bitcast i8* %1 to i32*
+  store i32 0, i32* %12, align 4, !tbaa !9
+  br label %13
+
+; <label>:13                                      ; preds = %0, %4
+  ret %struct.uStringList* %2
+}

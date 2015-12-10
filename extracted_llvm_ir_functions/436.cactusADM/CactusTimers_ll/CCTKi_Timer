@@ -1,0 +1,49 @@
+define internal fastcc void @CCTKi_Timer(i32 %this_timer, %struct.t_Timer* readonly %timer, %struct.cTimerData* nocapture %info) #1 {
+  %1 = icmp eq %struct.t_Timer* %timer, null
+  br i1 %1, label %.loopexit, label %2
+
+; <label>:2                                       ; preds = %0
+  %3 = getelementptr inbounds %struct.t_Timer* %timer, i64 0, i32 0
+  %4 = load i8*** %3, align 8, !tbaa !12
+  %5 = icmp ne i8** %4, null
+  %6 = load i32* @n_clocks, align 4
+  %7 = icmp sgt i32 %6, 0
+  %or.cond = and i1 %5, %7
+  br i1 %or.cond, label %.lr.ph, label %.loopexit
+
+.lr.ph:                                           ; preds = %2
+  %8 = getelementptr inbounds %struct.cTimerData* %info, i64 0, i32 1
+  br label %9
+
+; <label>:9                                       ; preds = %.lr.ph, %9
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %9 ]
+  %total_vars.02 = phi i32 [ 0, %.lr.ph ], [ %25, %9 ]
+  %10 = load %struct.cHandledData** @clocks, align 8, !tbaa !9
+  %11 = trunc i64 %indvars.iv to i32
+  %12 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %10, i32 %11) #7
+  %13 = getelementptr inbounds i8* %12, i64 56
+  %14 = bitcast i8* %13 to void (i32, i8*, %struct.cTimerVal*)**
+  %15 = load void (i32, i8*, %struct.cTimerVal*)** %14, align 8, !tbaa !19
+  %16 = load i8*** %3, align 8, !tbaa !12
+  %17 = getelementptr inbounds i8** %16, i64 %indvars.iv
+  %18 = load i8** %17, align 8, !tbaa !9
+  %19 = sext i32 %total_vars.02 to i64
+  %20 = load %struct.cTimerVal** %8, align 8, !tbaa !20
+  %21 = getelementptr inbounds %struct.cTimerVal* %20, i64 %19
+  tail call void %15(i32 %this_timer, i8* %18, %struct.cTimerVal* %21) #7
+  %22 = getelementptr inbounds i8* %12, i64 8
+  %23 = bitcast i8* %22 to i32*
+  %24 = load i32* %23, align 4, !tbaa !8
+  %25 = add nsw i32 %24, %total_vars.02
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %26 = load i32* @n_clocks, align 4, !tbaa !11
+  %27 = sext i32 %26 to i64
+  %28 = icmp slt i64 %indvars.iv.next, %27
+  br i1 %28, label %9, label %.loopexit
+
+.loopexit:                                        ; preds = %9, %2, %0
+  %total_vars.1 = phi i32 [ 0, %2 ], [ 0, %0 ], [ %25, %9 ]
+  %29 = getelementptr inbounds %struct.cTimerData* %info, i64 0, i32 0
+  store i32 %total_vars.1, i32* %29, align 4, !tbaa !22
+  ret void
+}

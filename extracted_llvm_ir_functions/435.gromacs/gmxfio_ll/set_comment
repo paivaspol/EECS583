@@ -1,13 +1,12 @@
-define void @set_comment(i8* %comment) #1 {
-entry:
-  %tobool = icmp eq i8* %comment, null
-  br i1 %tobool, label %if.end, label %if.then
+define void @set_comment(i8* readonly %comment) #1 {
+  %1 = icmp eq i8* %comment, null
+  br i1 %1, label %4, label %2
 
-if.then:                                          ; preds = %entry
-  %call = tail call i8* @gmx_strdup(i8* %comment) #7
-  store i8* %call, i8** @add_comment, align 8, !tbaa !3
-  br label %if.end
+; <label>:2                                       ; preds = %0
+  %3 = tail call i8* @strdup(i8* %comment) #9
+  store i8* %3, i8** @add_comment, align 8, !tbaa !15
+  br label %4
 
-if.end:                                           ; preds = %entry, %if.then
+; <label>:4                                       ; preds = %0, %2
   ret void
 }

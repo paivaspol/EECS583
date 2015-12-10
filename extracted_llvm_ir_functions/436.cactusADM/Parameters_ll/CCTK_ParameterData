@@ -1,0 +1,14 @@
+define %struct.PARAM_PROPS* @CCTK_ParameterData(i8* %name, i8* %thorn) #1 {
+  %1 = tail call fastcc %struct.PARAM* @ParameterFind(i8* %name, i8* %thorn, i32 5) #7
+  %2 = icmp eq %struct.PARAM* %1, null
+  br i1 %2, label %6, label %3
+
+; <label>:3                                       ; preds = %0
+  %4 = getelementptr inbounds %struct.PARAM* %1, i64 0, i32 0
+  %5 = load %struct.PARAM_PROPS** %4, align 8, !tbaa !2
+  br label %6
+
+; <label>:6                                       ; preds = %0, %3
+  %7 = phi %struct.PARAM_PROPS* [ %5, %3 ], [ null, %0 ]
+  ret %struct.PARAM_PROPS* %7
+}

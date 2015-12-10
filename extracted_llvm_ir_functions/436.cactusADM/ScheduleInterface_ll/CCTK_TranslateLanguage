@@ -1,0 +1,19 @@
+define i32 @CCTK_TranslateLanguage(i8* %sval) #1 {
+  %1 = tail call i32 @CCTK_Equals(i8* %sval, i8* getelementptr inbounds ([2 x i8]* @.str59, i64 0, i64 0)) #8
+  %2 = icmp eq i32 %1, 0
+  br i1 %2, label %3, label %9
+
+; <label>:3                                       ; preds = %0
+  %4 = tail call i32 @CCTK_Equals(i8* %sval, i8* getelementptr inbounds ([8 x i8]* @.str60, i64 0, i64 0)) #8
+  %5 = icmp eq i32 %4, 0
+  br i1 %5, label %6, label %9
+
+; <label>:6                                       ; preds = %3
+  %7 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !13
+  %8 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %7, i8* getelementptr inbounds ([21 x i8]* @.str61, i64 0, i64 0), i8* %sval) #8
+  br label %9
+
+; <label>:9                                       ; preds = %3, %0, %6
+  %retcode.0 = phi i32 [ 0, %6 ], [ 1, %0 ], [ 2, %3 ]
+  ret i32 %retcode.0
+}

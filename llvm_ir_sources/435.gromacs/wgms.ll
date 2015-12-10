@@ -1,169 +1,197 @@
-; ModuleID = '../../SPEC/benchspec/CPU2006/435.gromacs/src/wgms.c'
-target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
-target triple = "x86_64-unknown-linux-gnu"
+; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/435.gromacs/src/wgms.c'
+target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
+target triple = "x86_64-apple-macosx10.10.0"
 
-%struct._IO_FILE = type { i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, %struct._IO_marker*, %struct._IO_FILE*, i32, i32, i64, i16, i8, [1 x i8], i8*, i64, i8*, i8*, i8*, i8*, i64, i32, [20 x i8] }
-%struct._IO_marker = type { %struct._IO_marker*, %struct._IO_FILE*, i32 }
+%struct.__sFILE = type { i8*, i32, i32, i16, i16, %struct.__sbuf, i32, i8*, i32 (i8*)*, i32 (i8*, i8*, i32)*, i64 (i8*, i64, i32)*, i32 (i8*, i8*, i32)*, %struct.__sbuf, %struct.__sFILEX*, i32, [3 x i8], [1 x i8], %struct.__sbuf, i32, i64 }
+%struct.__sFILEX = type opaque
+%struct.__sbuf = type { i8*, i32 }
 
 @n = internal unnamed_addr global i32 0, align 4
 @.str = private unnamed_addr constant [6 x i8] c"%8.3f\00", align 1
 @.str2 = private unnamed_addr constant [17 x i8] c"%8.3f%8.3f%8.3f\0A\00", align 1
 
-; Function Attrs: nounwind optsize uwtable
-define void @write_gms(%struct._IO_FILE* nocapture %fp, i32 %natoms, [3 x float]* nocapture %x, [3 x float]* %box) #0 {
-entry:
-  store i32 0, i32* @n, align 4, !tbaa !0
-  %cmp46 = icmp sgt i32 %natoms, 0
-  br i1 %cmp46, label %for.cond1.preheader, label %if.end17
+; Function Attrs: alwaysinline nounwind optsize readnone ssp uwtable
+define i32 @__sigbits(i32 %__signo) #0 {
+  %1 = icmp sgt i32 %__signo, 32
+  br i1 %1, label %5, label %2
 
-for.cond1.preheader:                              ; preds = %entry, %for.inc10
-  %indvars.iv48 = phi i64 [ %indvars.iv.next49, %for.inc10 ], [ 0, %entry ]
-  br label %for.body3
+; <label>:2                                       ; preds = %0
+  %3 = add nsw i32 %__signo, -1
+  %4 = shl i32 1, %3
+  br label %5
 
-for.body3:                                        ; preds = %for.inc, %for.cond1.preheader
-  %indvars.iv = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next, %for.inc ]
-  %arrayidx5 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv48, i64 %indvars.iv
-  %0 = load float* %arrayidx5, align 4, !tbaa !3
-  %conv = fpext float %0 to double
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([6 x i8]* @.str, i64 0, i64 0), double %conv) #3
-  %1 = load i32* @n, align 4, !tbaa !0
-  %inc = add nsw i32 %1, 1
-  store i32 %inc, i32* @n, align 4, !tbaa !0
-  %cmp6 = icmp eq i32 %inc, 10
-  br i1 %cmp6, label %if.then, label %for.inc
+; <label>:5                                       ; preds = %0, %2
+  %6 = phi i32 [ %4, %2 ], [ 0, %0 ]
+  ret i32 %6
+}
 
-if.then:                                          ; preds = %for.body3
-  %fputc44 = tail call i32 @fputc(i32 10, %struct._IO_FILE* %fp)
-  store i32 0, i32* @n, align 4, !tbaa !0
-  br label %for.inc
+; Function Attrs: nounwind optsize ssp uwtable
+define void @write_gms(%struct.__sFILE* nocapture %fp, i32 %natoms, [3 x float]* nocapture readonly %x, [3 x float]* readonly %box) #1 {
+  store i32 0, i32* @n, align 4, !tbaa !2
+  %1 = icmp sgt i32 %natoms, 0
+  br i1 %1, label %.preheader.lr.ph, label %._crit_edge.thread
 
-for.inc:                                          ; preds = %for.body3, %if.then
-  %2 = phi i32 [ %inc, %for.body3 ], [ 0, %if.then ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 3
-  br i1 %exitcond, label %for.inc10, label %for.body3
+.preheader.lr.ph:                                 ; preds = %0
+  %2 = add i32 %natoms, -1
+  br label %.preheader
 
-for.inc10:                                        ; preds = %for.inc
-  %indvars.iv.next49 = add i64 %indvars.iv48, 1
-  %lftr.wideiv50 = trunc i64 %indvars.iv.next49 to i32
-  %exitcond51 = icmp eq i32 %lftr.wideiv50, %natoms
-  br i1 %exitcond51, label %for.end12, label %for.cond1.preheader
+.preheader:                                       ; preds = %14, %.preheader.lr.ph
+  %indvars.iv6 = phi i64 [ 0, %.preheader.lr.ph ], [ %indvars.iv.next7, %14 ]
+  br label %3
 
-for.end12:                                        ; preds = %for.inc10
-  %cmp13 = icmp eq i32 %2, 0
-  br i1 %cmp13, label %if.end17, label %if.then15
+; <label>:3                                       ; preds = %12, %.preheader
+  %indvars.iv = phi i64 [ 0, %.preheader ], [ %indvars.iv.next, %12 ]
+  %4 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv6, i64 %indvars.iv
+  %5 = load float* %4, align 4, !tbaa !6
+  %6 = fpext float %5 to double
+  %7 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([6 x i8]* @.str, i64 0, i64 0), double %6) #4
+  %8 = load i32* @n, align 4, !tbaa !2
+  %9 = add nsw i32 %8, 1
+  store i32 %9, i32* @n, align 4, !tbaa !2
+  %10 = icmp eq i32 %9, 10
+  br i1 %10, label %11, label %12
 
-if.then15:                                        ; preds = %for.end12
-  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %fp)
-  br label %if.end17
+; <label>:11                                      ; preds = %3
+  %fputc3 = tail call i32 @fputc(i32 10, %struct.__sFILE* %fp)
+  store i32 0, i32* @n, align 4, !tbaa !2
+  br label %12
 
-if.end17:                                         ; preds = %entry, %for.end12, %if.then15
-  %cmp18 = icmp eq [3 x float]* %box, null
-  br i1 %cmp18, label %if.end31, label %if.then20
+; <label>:12                                      ; preds = %3, %11
+  %13 = phi i32 [ %9, %3 ], [ 0, %11 ]
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i64 %indvars.iv.next, 3
+  br i1 %exitcond, label %14, label %3
 
-if.then20:                                        ; preds = %if.end17
-  %arrayidx22 = getelementptr inbounds [3 x float]* %box, i64 0, i64 0
-  %3 = load float* %arrayidx22, align 4, !tbaa !3
-  %conv23 = fpext float %3 to double
-  %arrayidx25 = getelementptr inbounds [3 x float]* %box, i64 1, i64 1
-  %4 = load float* %arrayidx25, align 4, !tbaa !3
-  %conv26 = fpext float %4 to double
-  %arrayidx28 = getelementptr inbounds [3 x float]* %box, i64 2, i64 2
-  %5 = load float* %arrayidx28, align 4, !tbaa !3
-  %conv29 = fpext float %5 to double
-  %call30 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([17 x i8]* @.str2, i64 0, i64 0), double %conv23, double %conv26, double %conv29) #3
-  br label %if.end31
+; <label>:14                                      ; preds = %12
+  %indvars.iv.next7 = add nuw nsw i64 %indvars.iv6, 1
+  %lftr.wideiv = trunc i64 %indvars.iv6 to i32
+  %exitcond8 = icmp eq i32 %lftr.wideiv, %2
+  br i1 %exitcond8, label %._crit_edge, label %.preheader
 
-if.end31:                                         ; preds = %if.end17, %if.then20
+._crit_edge:                                      ; preds = %14
+  %15 = icmp eq i32 %13, 0
+  br i1 %15, label %._crit_edge.thread, label %16
+
+; <label>:16                                      ; preds = %._crit_edge
+  %fputc = tail call i32 @fputc(i32 10, %struct.__sFILE* %fp)
+  br label %._crit_edge.thread
+
+._crit_edge.thread:                               ; preds = %0, %._crit_edge, %16
+  %17 = icmp eq [3 x float]* %box, null
+  br i1 %17, label %29, label %18
+
+; <label>:18                                      ; preds = %._crit_edge.thread
+  %19 = getelementptr inbounds [3 x float]* %box, i64 0, i64 0
+  %20 = load float* %19, align 4, !tbaa !6
+  %21 = fpext float %20 to double
+  %22 = getelementptr inbounds [3 x float]* %box, i64 1, i64 1
+  %23 = load float* %22, align 4, !tbaa !6
+  %24 = fpext float %23 to double
+  %25 = getelementptr inbounds [3 x float]* %box, i64 2, i64 2
+  %26 = load float* %25, align 4, !tbaa !6
+  %27 = fpext float %26 to double
+  %28 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([17 x i8]* @.str2, i64 0, i64 0), double %21, double %24, double %27) #4
+  br label %29
+
+; <label>:29                                      ; preds = %._crit_edge.thread, %18
   ret void
 }
 
 ; Function Attrs: nounwind optsize
-declare i32 @fprintf(%struct._IO_FILE* nocapture, i8* nocapture, ...) #1
+declare i32 @fprintf(%struct.__sFILE* nocapture, i8* nocapture readonly, ...) #2
 
-; Function Attrs: nounwind optsize uwtable
-define void @write_gms_ndx(%struct._IO_FILE* nocapture %fp, i32 %isize, i32* nocapture %index, [3 x float]* nocapture %x, [3 x float]* %box) #0 {
-entry:
-  store i32 0, i32* @n, align 4, !tbaa !0
-  %cmp48 = icmp sgt i32 %isize, 0
-  br i1 %cmp48, label %for.cond1.preheader, label %if.end19
+; Function Attrs: nounwind optsize ssp uwtable
+define void @write_gms_ndx(%struct.__sFILE* nocapture %fp, i32 %isize, i32* nocapture readonly %index, [3 x float]* nocapture readonly %x, [3 x float]* readonly %box) #1 {
+  store i32 0, i32* @n, align 4, !tbaa !2
+  %1 = icmp sgt i32 %isize, 0
+  br i1 %1, label %.preheader.lr.ph, label %._crit_edge.thread
 
-for.cond1.preheader:                              ; preds = %entry, %for.inc12
-  %indvars.iv50 = phi i64 [ %indvars.iv.next51, %for.inc12 ], [ 0, %entry ]
-  %arrayidx = getelementptr inbounds i32* %index, i64 %indvars.iv50
-  br label %for.body3
+.preheader.lr.ph:                                 ; preds = %0
+  %2 = add i32 %isize, -1
+  br label %.preheader
 
-for.body3:                                        ; preds = %for.inc, %for.cond1.preheader
-  %indvars.iv = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next, %for.inc ]
-  %0 = load i32* %arrayidx, align 4, !tbaa !0
-  %idxprom5 = sext i32 %0 to i64
-  %arrayidx7 = getelementptr inbounds [3 x float]* %x, i64 %idxprom5, i64 %indvars.iv
-  %1 = load float* %arrayidx7, align 4, !tbaa !3
-  %conv = fpext float %1 to double
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([6 x i8]* @.str, i64 0, i64 0), double %conv) #3
-  %2 = load i32* @n, align 4, !tbaa !0
-  %inc = add nsw i32 %2, 1
-  store i32 %inc, i32* @n, align 4, !tbaa !0
-  %cmp8 = icmp eq i32 %inc, 10
-  br i1 %cmp8, label %if.then, label %for.inc
+.preheader:                                       ; preds = %17, %.preheader.lr.ph
+  %indvars.iv6 = phi i64 [ 0, %.preheader.lr.ph ], [ %indvars.iv.next7, %17 ]
+  %3 = getelementptr inbounds i32* %index, i64 %indvars.iv6
+  br label %4
 
-if.then:                                          ; preds = %for.body3
-  %fputc46 = tail call i32 @fputc(i32 10, %struct._IO_FILE* %fp)
-  store i32 0, i32* @n, align 4, !tbaa !0
-  br label %for.inc
+; <label>:4                                       ; preds = %15, %.preheader
+  %indvars.iv = phi i64 [ 0, %.preheader ], [ %indvars.iv.next, %15 ]
+  %5 = load i32* %3, align 4, !tbaa !2
+  %6 = sext i32 %5 to i64
+  %7 = getelementptr inbounds [3 x float]* %x, i64 %6, i64 %indvars.iv
+  %8 = load float* %7, align 4, !tbaa !6
+  %9 = fpext float %8 to double
+  %10 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([6 x i8]* @.str, i64 0, i64 0), double %9) #4
+  %11 = load i32* @n, align 4, !tbaa !2
+  %12 = add nsw i32 %11, 1
+  store i32 %12, i32* @n, align 4, !tbaa !2
+  %13 = icmp eq i32 %12, 10
+  br i1 %13, label %14, label %15
 
-for.inc:                                          ; preds = %for.body3, %if.then
-  %3 = phi i32 [ %inc, %for.body3 ], [ 0, %if.then ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 3
-  br i1 %exitcond, label %for.inc12, label %for.body3
+; <label>:14                                      ; preds = %4
+  %fputc3 = tail call i32 @fputc(i32 10, %struct.__sFILE* %fp)
+  store i32 0, i32* @n, align 4, !tbaa !2
+  br label %15
 
-for.inc12:                                        ; preds = %for.inc
-  %indvars.iv.next51 = add i64 %indvars.iv50, 1
-  %lftr.wideiv52 = trunc i64 %indvars.iv.next51 to i32
-  %exitcond53 = icmp eq i32 %lftr.wideiv52, %isize
-  br i1 %exitcond53, label %for.end14, label %for.cond1.preheader
+; <label>:15                                      ; preds = %4, %14
+  %16 = phi i32 [ %12, %4 ], [ 0, %14 ]
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i64 %indvars.iv.next, 3
+  br i1 %exitcond, label %17, label %4
 
-for.end14:                                        ; preds = %for.inc12
-  %cmp15 = icmp eq i32 %3, 0
-  br i1 %cmp15, label %if.end19, label %if.then17
+; <label>:17                                      ; preds = %15
+  %indvars.iv.next7 = add nuw nsw i64 %indvars.iv6, 1
+  %lftr.wideiv = trunc i64 %indvars.iv6 to i32
+  %exitcond8 = icmp eq i32 %lftr.wideiv, %2
+  br i1 %exitcond8, label %._crit_edge, label %.preheader
 
-if.then17:                                        ; preds = %for.end14
-  %fputc = tail call i32 @fputc(i32 10, %struct._IO_FILE* %fp)
-  br label %if.end19
+._crit_edge:                                      ; preds = %17
+  %18 = icmp eq i32 %16, 0
+  br i1 %18, label %._crit_edge.thread, label %19
 
-if.end19:                                         ; preds = %entry, %for.end14, %if.then17
-  %cmp20 = icmp eq [3 x float]* %box, null
-  br i1 %cmp20, label %if.end33, label %if.then22
+; <label>:19                                      ; preds = %._crit_edge
+  %fputc = tail call i32 @fputc(i32 10, %struct.__sFILE* %fp)
+  br label %._crit_edge.thread
 
-if.then22:                                        ; preds = %if.end19
-  %arrayidx24 = getelementptr inbounds [3 x float]* %box, i64 0, i64 0
-  %4 = load float* %arrayidx24, align 4, !tbaa !3
-  %conv25 = fpext float %4 to double
-  %arrayidx27 = getelementptr inbounds [3 x float]* %box, i64 1, i64 1
-  %5 = load float* %arrayidx27, align 4, !tbaa !3
-  %conv28 = fpext float %5 to double
-  %arrayidx30 = getelementptr inbounds [3 x float]* %box, i64 2, i64 2
-  %6 = load float* %arrayidx30, align 4, !tbaa !3
-  %conv31 = fpext float %6 to double
-  %call32 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([17 x i8]* @.str2, i64 0, i64 0), double %conv25, double %conv28, double %conv31) #3
-  br label %if.end33
+._crit_edge.thread:                               ; preds = %0, %._crit_edge, %19
+  %20 = icmp eq [3 x float]* %box, null
+  br i1 %20, label %32, label %21
 
-if.end33:                                         ; preds = %if.end19, %if.then22
+; <label>:21                                      ; preds = %._crit_edge.thread
+  %22 = getelementptr inbounds [3 x float]* %box, i64 0, i64 0
+  %23 = load float* %22, align 4, !tbaa !6
+  %24 = fpext float %23 to double
+  %25 = getelementptr inbounds [3 x float]* %box, i64 1, i64 1
+  %26 = load float* %25, align 4, !tbaa !6
+  %27 = fpext float %26 to double
+  %28 = getelementptr inbounds [3 x float]* %box, i64 2, i64 2
+  %29 = load float* %28, align 4, !tbaa !6
+  %30 = fpext float %29 to double
+  %31 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([17 x i8]* @.str2, i64 0, i64 0), double %24, double %27, double %30) #4
+  br label %32
+
+; <label>:32                                      ; preds = %._crit_edge.thread, %21
   ret void
 }
 
 ; Function Attrs: nounwind
-declare i32 @fputc(i32, %struct._IO_FILE* nocapture) #2
+declare i32 @fputc(i32, %struct.__sFILE* nocapture) #3
 
-attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { nounwind }
-attributes #3 = { nounwind optsize }
+attributes #0 = { alwaysinline nounwind optsize readnone ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { nounwind }
+attributes #4 = { nounwind optsize }
 
-!0 = metadata !{metadata !"int", metadata !1}
-!1 = metadata !{metadata !"omnipotent char", metadata !2}
-!2 = metadata !{metadata !"Simple C/C++ TBAA"}
-!3 = metadata !{metadata !"float", metadata !1}
+!llvm.module.flags = !{!0}
+!llvm.ident = !{!1}
+
+!0 = !{i32 1, !"PIC Level", i32 2}
+!1 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
+!2 = !{!3, !3, i64 0}
+!3 = !{!"int", !4, i64 0}
+!4 = !{!"omnipotent char", !5, i64 0}
+!5 = !{!"Simple C/C++ TBAA"}
+!6 = !{!7, !7, i64 0}
+!7 = !{!"float", !4, i64 0}

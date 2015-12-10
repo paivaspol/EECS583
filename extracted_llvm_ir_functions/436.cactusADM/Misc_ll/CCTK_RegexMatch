@@ -1,0 +1,21 @@
+define i32 @CCTK_RegexMatch(i8* %string, i8* %pattern, i32 %nmatch, %struct.regmatch_t* %pmatch) #1 {
+  %re = alloca %struct.re_pattern_buffer, align 8
+  %1 = bitcast %struct.re_pattern_buffer* %re to i8*
+  call void @llvm.lifetime.start(i64 64, i8* %1) #4
+  %2 = call i32 @regcomp(%struct.re_pattern_buffer* %re, i8* %pattern, i32 1) #7
+  %3 = icmp eq i32 %2, 0
+  br i1 %3, label %4, label %8
+
+; <label>:4                                       ; preds = %0
+  %5 = sext i32 %nmatch to i64
+  %6 = call i32 @regexec(%struct.re_pattern_buffer* %re, i8* %string, i64 %5, %struct.regmatch_t* %pmatch, i32 0) #7
+  call void @regfree(%struct.re_pattern_buffer* %re) #7
+  %7 = icmp eq i32 %6, 0
+  %. = zext i1 %7 to i32
+  br label %8
+
+; <label>:8                                       ; preds = %0, %4
+  %retval.0 = phi i32 [ %., %4 ], [ 0, %0 ]
+  call void @llvm.lifetime.end(i64 64, i8* %1) #4
+  ret i32 %retval.0
+}

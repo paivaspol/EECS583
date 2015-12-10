@@ -1,0 +1,16 @@
+define i32 @CCTK_TimerI(i32 %this_timer, %struct.cTimerData* nocapture %info) #1 {
+  %1 = load %struct.cHandledData** @timers, align 8, !tbaa !9
+  %2 = tail call i8* @Util_GetHandledData(%struct.cHandledData* %1, i32 %this_timer) #7
+  %3 = icmp ne i8* %2, null
+  br i1 %3, label %4, label %6
+
+; <label>:4                                       ; preds = %0
+  %5 = bitcast i8* %2 to %struct.t_Timer*
+  tail call fastcc void @CCTKi_Timer(i32 %this_timer, %struct.t_Timer* %5, %struct.cTimerData* %info) #8
+  br label %6
+
+; <label>:6                                       ; preds = %4, %0
+  %not. = xor i1 %3, true
+  %7 = sext i1 %not. to i32
+  ret i32 %7
+}

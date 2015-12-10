@@ -1,169 +1,125 @@
-define float @dih_angle([3 x float]* nocapture %box, float* nocapture %xi, float* nocapture %xj, float* nocapture %xk, float* nocapture %xl, float* nocapture %r_ij, float* nocapture %r_kj, float* nocapture %r_kl, float* nocapture %m, float* nocapture %n, float* nocapture %cos_phi, float* nocapture %sign) #0 {
-entry:
-  %0 = load float* %xi, align 4, !tbaa !0
-  %1 = load float* %xj, align 4, !tbaa !0
-  %sub.i.i = fsub float %0, %1
-  %arrayidx2.i.i = getelementptr inbounds float* %xi, i64 1
-  %2 = load float* %arrayidx2.i.i, align 4, !tbaa !0
-  %arrayidx3.i.i = getelementptr inbounds float* %xj, i64 1
-  %3 = load float* %arrayidx3.i.i, align 4, !tbaa !0
-  %sub4.i.i = fsub float %2, %3
-  %arrayidx5.i.i = getelementptr inbounds float* %xi, i64 2
-  %4 = load float* %arrayidx5.i.i, align 4, !tbaa !0
-  %arrayidx6.i.i = getelementptr inbounds float* %xj, i64 2
-  %5 = load float* %arrayidx6.i.i, align 4, !tbaa !0
-  %sub7.i.i = fsub float %4, %5
-  store float %sub.i.i, float* %r_ij, align 4, !tbaa !0
-  %arrayidx9.i.i = getelementptr inbounds float* %r_ij, i64 1
-  store float %sub4.i.i, float* %arrayidx9.i.i, align 4, !tbaa !0
-  %arrayidx10.i.i = getelementptr inbounds float* %r_ij, i64 2
-  store float %sub7.i.i, float* %arrayidx10.i.i, align 4, !tbaa !0
-  %6 = load float* %xk, align 4, !tbaa !0
-  %7 = load float* %xj, align 4, !tbaa !0
-  %sub.i.i24 = fsub float %6, %7
-  %arrayidx2.i.i25 = getelementptr inbounds float* %xk, i64 1
-  %8 = load float* %arrayidx2.i.i25, align 4, !tbaa !0
-  %9 = load float* %arrayidx3.i.i, align 4, !tbaa !0
-  %sub4.i.i27 = fsub float %8, %9
-  %arrayidx5.i.i28 = getelementptr inbounds float* %xk, i64 2
-  %10 = load float* %arrayidx5.i.i28, align 4, !tbaa !0
-  %11 = load float* %arrayidx6.i.i, align 4, !tbaa !0
-  %sub7.i.i30 = fsub float %10, %11
-  store float %sub.i.i24, float* %r_kj, align 4, !tbaa !0
-  %arrayidx9.i.i31 = getelementptr inbounds float* %r_kj, i64 1
-  store float %sub4.i.i27, float* %arrayidx9.i.i31, align 4, !tbaa !0
-  %arrayidx10.i.i32 = getelementptr inbounds float* %r_kj, i64 2
-  store float %sub7.i.i30, float* %arrayidx10.i.i32, align 4, !tbaa !0
-  %12 = load float* %xk, align 4, !tbaa !0
-  %13 = load float* %xl, align 4, !tbaa !0
-  %sub.i.i54 = fsub float %12, %13
-  %14 = load float* %arrayidx2.i.i25, align 4, !tbaa !0
-  %arrayidx3.i.i56 = getelementptr inbounds float* %xl, i64 1
-  %15 = load float* %arrayidx3.i.i56, align 4, !tbaa !0
-  %sub4.i.i57 = fsub float %14, %15
-  %16 = load float* %arrayidx5.i.i28, align 4, !tbaa !0
-  %arrayidx6.i.i59 = getelementptr inbounds float* %xl, i64 2
-  %17 = load float* %arrayidx6.i.i59, align 4, !tbaa !0
-  %sub7.i.i60 = fsub float %16, %17
-  store float %sub.i.i54, float* %r_kl, align 4, !tbaa !0
-  %arrayidx9.i.i61 = getelementptr inbounds float* %r_kl, i64 1
-  store float %sub4.i.i57, float* %arrayidx9.i.i61, align 4, !tbaa !0
-  %arrayidx10.i.i62 = getelementptr inbounds float* %r_kl, i64 2
-  store float %sub7.i.i60, float* %arrayidx10.i.i62, align 4, !tbaa !0
-  %18 = load float* %arrayidx9.i.i, align 4, !tbaa !0
-  %19 = load float* %arrayidx10.i.i32, align 4, !tbaa !0
-  %mul.i41 = fmul float %18, %19
-  %20 = load float* %arrayidx10.i.i, align 4, !tbaa !0
-  %21 = load float* %arrayidx9.i.i31, align 4, !tbaa !0
-  %mul4.i44 = fmul float %20, %21
-  %sub.i45 = fsub float %mul.i41, %mul4.i44
-  store float %sub.i45, float* %m, align 4, !tbaa !0
-  %22 = load float* %arrayidx10.i.i, align 4, !tbaa !0
-  %23 = load float* %r_kj, align 4, !tbaa !0
-  %mul8.i46 = fmul float %22, %23
-  %24 = load float* %r_ij, align 4, !tbaa !0
-  %25 = load float* %arrayidx10.i.i32, align 4, !tbaa !0
-  %mul11.i47 = fmul float %24, %25
-  %sub12.i48 = fsub float %mul8.i46, %mul11.i47
-  %arrayidx13.i49 = getelementptr inbounds float* %m, i64 1
-  store float %sub12.i48, float* %arrayidx13.i49, align 4, !tbaa !0
-  %26 = load float* %r_ij, align 4, !tbaa !0
-  %27 = load float* %arrayidx9.i.i31, align 4, !tbaa !0
-  %mul16.i50 = fmul float %26, %27
-  %28 = load float* %arrayidx9.i.i, align 4, !tbaa !0
-  %29 = load float* %r_kj, align 4, !tbaa !0
-  %mul19.i51 = fmul float %28, %29
-  %sub20.i52 = fsub float %mul16.i50, %mul19.i51
-  %arrayidx21.i53 = getelementptr inbounds float* %m, i64 2
-  store float %sub20.i52, float* %arrayidx21.i53, align 4, !tbaa !0
-  %30 = load float* %arrayidx9.i.i31, align 4, !tbaa !0
-  %31 = load float* %arrayidx10.i.i62, align 4, !tbaa !0
-  %mul.i34 = fmul float %30, %31
-  %32 = load float* %arrayidx10.i.i32, align 4, !tbaa !0
-  %33 = load float* %arrayidx9.i.i61, align 4, !tbaa !0
-  %mul4.i37 = fmul float %32, %33
-  %sub.i = fsub float %mul.i34, %mul4.i37
-  store float %sub.i, float* %n, align 4, !tbaa !0
-  %34 = load float* %arrayidx10.i.i32, align 4, !tbaa !0
-  %35 = load float* %r_kl, align 4, !tbaa !0
-  %mul8.i38 = fmul float %34, %35
-  %36 = load float* %r_kj, align 4, !tbaa !0
-  %37 = load float* %arrayidx10.i.i62, align 4, !tbaa !0
-  %mul11.i = fmul float %36, %37
-  %sub12.i = fsub float %mul8.i38, %mul11.i
-  %arrayidx13.i = getelementptr inbounds float* %n, i64 1
-  store float %sub12.i, float* %arrayidx13.i, align 4, !tbaa !0
-  %38 = load float* %r_kj, align 4, !tbaa !0
-  %39 = load float* %arrayidx9.i.i61, align 4, !tbaa !0
-  %mul16.i = fmul float %38, %39
-  %40 = load float* %arrayidx9.i.i31, align 4, !tbaa !0
-  %41 = load float* %r_kl, align 4, !tbaa !0
-  %mul19.i = fmul float %40, %41
-  %sub20.i = fsub float %mul16.i, %mul19.i
-  %arrayidx21.i = getelementptr inbounds float* %n, i64 2
-  store float %sub20.i, float* %arrayidx21.i, align 4, !tbaa !0
-  br label %for.body.i
-
-for.body.i:                                       ; preds = %for.body.i.for.body.i_crit_edge, %entry
-  %42 = phi float [ %sub.i, %entry ], [ %.pre, %for.body.i.for.body.i_crit_edge ]
-  %indvars.iv.i = phi i64 [ 0, %entry ], [ %indvars.iv.next.i, %for.body.i.for.body.i_crit_edge ]
-  %ipb.034.i = phi double [ 0.000000e+00, %entry ], [ %add7.i, %for.body.i.for.body.i_crit_edge ]
-  %ipa.033.i = phi double [ 0.000000e+00, %entry ], [ %add5.i, %for.body.i.for.body.i_crit_edge ]
-  %ip.032.i = phi double [ 0.000000e+00, %entry ], [ %add.i22, %for.body.i.for.body.i_crit_edge ]
-  %arrayidx.i = getelementptr inbounds float* %m, i64 %indvars.iv.i
-  %43 = load float* %arrayidx.i, align 4, !tbaa !0
-  %conv.i = fpext float %43 to double
-  %conv3.i = fpext float %42 to double
-  %mul.i21 = fmul double %conv.i, %conv3.i
-  %add.i22 = fadd double %ip.032.i, %mul.i21
-  %mul4.i23 = fmul double %conv.i, %conv.i
-  %add5.i = fadd double %ipa.033.i, %mul4.i23
-  %mul6.i = fmul double %conv3.i, %conv3.i
-  %add7.i = fadd double %ipb.034.i, %mul6.i
-  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next.i to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 3
-  br i1 %exitcond, label %for.end.i, label %for.body.i.for.body.i_crit_edge
-
-for.body.i.for.body.i_crit_edge:                  ; preds = %for.body.i
-  %arrayidx2.i20.phi.trans.insert = getelementptr inbounds float* %n, i64 %indvars.iv.next.i
-  %.pre = load float* %arrayidx2.i20.phi.trans.insert, align 4, !tbaa !0
-  br label %for.body.i
-
-for.end.i:                                        ; preds = %for.body.i
-  %mul8.i = fmul double %add5.i, %add7.i
-  %call.i = tail call double @sqrt(double %mul8.i) #5
-  %div.i = fdiv double 1.000000e+00, %call.i
-  %mul9.i = fmul double %add.i22, %div.i
-  %conv10.i = fptrunc double %mul9.i to float
-  %cmp12.i = fcmp ogt float %conv10.i, 1.000000e+00
-  br i1 %cmp12.i, label %cos_angle.exit, label %if.end.i
-
-if.end.i:                                         ; preds = %for.end.i
-  %cmp15.i = fcmp olt float %conv10.i, -1.000000e+00
-  %.conv10.i = select i1 %cmp15.i, float -1.000000e+00, float %conv10.i
-  br label %cos_angle.exit
-
-cos_angle.exit:                                   ; preds = %for.end.i, %if.end.i
-  %retval.0.i = phi float [ 1.000000e+00, %for.end.i ], [ %.conv10.i, %if.end.i ]
-  store float %retval.0.i, float* %cos_phi, align 4, !tbaa !0
-  %conv = fpext float %retval.0.i to double
-  %call1 = tail call double @acos(double %conv) #5
-  %conv2 = fptrunc double %call1 to float
-  %44 = load float* %r_ij, align 4, !tbaa !0
-  %45 = load float* %n, align 4, !tbaa !0
-  %mul.i = fmul float %44, %45
-  %46 = load float* %arrayidx9.i.i, align 4, !tbaa !0
-  %47 = load float* %arrayidx13.i, align 4, !tbaa !0
-  %mul4.i = fmul float %46, %47
-  %add.i = fadd float %mul.i, %mul4.i
-  %48 = load float* %arrayidx10.i.i, align 4, !tbaa !0
-  %49 = load float* %arrayidx21.i, align 4, !tbaa !0
-  %mul7.i = fmul float %48, %49
-  %add8.i = fadd float %add.i, %mul7.i
-  %cmp = fcmp olt float %add8.i, 0.000000e+00
-  %conv6 = select i1 %cmp, float -1.000000e+00, float 1.000000e+00
-  store float %conv6, float* %sign, align 4, !tbaa !0
-  %mul = fmul float %conv2, %conv6
-  ret float %mul
+define float @dih_angle([3 x float]* nocapture readnone %box, float* nocapture readonly %xi, float* nocapture readonly %xj, float* nocapture readonly %xk, float* nocapture readonly %xl, float* nocapture %r_ij, float* nocapture %r_kj, float* nocapture %r_kl, float* nocapture %m, float* nocapture %n, float* nocapture %cos_phi, float* nocapture %sign) #3 {
+  %1 = load float* %xi, align 4, !tbaa !14
+  %2 = load float* %xj, align 4, !tbaa !14
+  %3 = fsub float %1, %2
+  %4 = getelementptr inbounds float* %xi, i64 1
+  %5 = load float* %4, align 4, !tbaa !14
+  %6 = getelementptr inbounds float* %xj, i64 1
+  %7 = load float* %6, align 4, !tbaa !14
+  %8 = fsub float %5, %7
+  %9 = getelementptr inbounds float* %xi, i64 2
+  %10 = load float* %9, align 4, !tbaa !14
+  %11 = getelementptr inbounds float* %xj, i64 2
+  %12 = load float* %11, align 4, !tbaa !14
+  %13 = fsub float %10, %12
+  store float %3, float* %r_ij, align 4, !tbaa !14
+  %14 = getelementptr inbounds float* %r_ij, i64 1
+  store float %8, float* %14, align 4, !tbaa !14
+  %15 = getelementptr inbounds float* %r_ij, i64 2
+  store float %13, float* %15, align 4, !tbaa !14
+  %16 = load float* %xk, align 4, !tbaa !14
+  %17 = load float* %xj, align 4, !tbaa !14
+  %18 = fsub float %16, %17
+  %19 = getelementptr inbounds float* %xk, i64 1
+  %20 = load float* %19, align 4, !tbaa !14
+  %21 = load float* %6, align 4, !tbaa !14
+  %22 = fsub float %20, %21
+  %23 = getelementptr inbounds float* %xk, i64 2
+  %24 = load float* %23, align 4, !tbaa !14
+  %25 = load float* %11, align 4, !tbaa !14
+  %26 = fsub float %24, %25
+  store float %18, float* %r_kj, align 4, !tbaa !14
+  %27 = getelementptr inbounds float* %r_kj, i64 1
+  store float %22, float* %27, align 4, !tbaa !14
+  %28 = getelementptr inbounds float* %r_kj, i64 2
+  store float %26, float* %28, align 4, !tbaa !14
+  %29 = load float* %xk, align 4, !tbaa !14
+  %30 = load float* %xl, align 4, !tbaa !14
+  %31 = fsub float %29, %30
+  %32 = load float* %19, align 4, !tbaa !14
+  %33 = getelementptr inbounds float* %xl, i64 1
+  %34 = load float* %33, align 4, !tbaa !14
+  %35 = fsub float %32, %34
+  %36 = load float* %23, align 4, !tbaa !14
+  %37 = getelementptr inbounds float* %xl, i64 2
+  %38 = load float* %37, align 4, !tbaa !14
+  %39 = fsub float %36, %38
+  store float %31, float* %r_kl, align 4, !tbaa !14
+  %40 = getelementptr inbounds float* %r_kl, i64 1
+  store float %35, float* %40, align 4, !tbaa !14
+  %41 = getelementptr inbounds float* %r_kl, i64 2
+  store float %39, float* %41, align 4, !tbaa !14
+  %42 = load float* %14, align 4, !tbaa !14
+  %43 = load float* %28, align 4, !tbaa !14
+  %44 = fmul float %42, %43
+  %45 = load float* %15, align 4, !tbaa !14
+  %46 = load float* %27, align 4, !tbaa !14
+  %47 = fmul float %45, %46
+  %48 = fsub float %44, %47
+  store float %48, float* %m, align 4, !tbaa !14
+  %49 = load float* %15, align 4, !tbaa !14
+  %50 = load float* %r_kj, align 4, !tbaa !14
+  %51 = fmul float %49, %50
+  %52 = load float* %r_ij, align 4, !tbaa !14
+  %53 = load float* %28, align 4, !tbaa !14
+  %54 = fmul float %52, %53
+  %55 = fsub float %51, %54
+  %56 = getelementptr inbounds float* %m, i64 1
+  store float %55, float* %56, align 4, !tbaa !14
+  %57 = load float* %r_ij, align 4, !tbaa !14
+  %58 = load float* %27, align 4, !tbaa !14
+  %59 = fmul float %57, %58
+  %60 = load float* %14, align 4, !tbaa !14
+  %61 = load float* %r_kj, align 4, !tbaa !14
+  %62 = fmul float %60, %61
+  %63 = fsub float %59, %62
+  %64 = getelementptr inbounds float* %m, i64 2
+  store float %63, float* %64, align 4, !tbaa !14
+  %65 = load float* %27, align 4, !tbaa !14
+  %66 = load float* %41, align 4, !tbaa !14
+  %67 = fmul float %65, %66
+  %68 = load float* %28, align 4, !tbaa !14
+  %69 = load float* %40, align 4, !tbaa !14
+  %70 = fmul float %68, %69
+  %71 = fsub float %67, %70
+  store float %71, float* %n, align 4, !tbaa !14
+  %72 = load float* %28, align 4, !tbaa !14
+  %73 = load float* %r_kl, align 4, !tbaa !14
+  %74 = fmul float %72, %73
+  %75 = load float* %r_kj, align 4, !tbaa !14
+  %76 = load float* %41, align 4, !tbaa !14
+  %77 = fmul float %75, %76
+  %78 = fsub float %74, %77
+  %79 = getelementptr inbounds float* %n, i64 1
+  store float %78, float* %79, align 4, !tbaa !14
+  %80 = load float* %r_kj, align 4, !tbaa !14
+  %81 = load float* %40, align 4, !tbaa !14
+  %82 = fmul float %80, %81
+  %83 = load float* %27, align 4, !tbaa !14
+  %84 = load float* %r_kl, align 4, !tbaa !14
+  %85 = fmul float %83, %84
+  %86 = fsub float %82, %85
+  %87 = getelementptr inbounds float* %n, i64 2
+  store float %86, float* %87, align 4, !tbaa !14
+  %88 = tail call fastcc float @cos_angle(float* %m, float* %n) #11
+  store float %88, float* %cos_phi, align 4, !tbaa !14
+  %89 = fpext float %88 to double
+  %90 = tail call double @acos(double %89) #10
+  %91 = fptrunc double %90 to float
+  %92 = load float* %r_ij, align 4, !tbaa !14
+  %93 = load float* %n, align 4, !tbaa !14
+  %94 = fmul float %92, %93
+  %95 = load float* %14, align 4, !tbaa !14
+  %96 = load float* %79, align 4, !tbaa !14
+  %97 = fmul float %95, %96
+  %98 = fadd float %94, %97
+  %99 = load float* %15, align 4, !tbaa !14
+  %100 = load float* %87, align 4, !tbaa !14
+  %101 = fmul float %99, %100
+  %102 = fadd float %98, %101
+  %103 = fcmp olt float %102, 0.000000e+00
+  %104 = select i1 %103, float -1.000000e+00, float 1.000000e+00
+  store float %104, float* %sign, align 4, !tbaa !14
+  %105 = fmul float %91, %104
+  ret float %105
 }

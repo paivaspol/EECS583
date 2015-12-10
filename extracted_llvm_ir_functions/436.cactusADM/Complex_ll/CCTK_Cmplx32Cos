@@ -1,0 +1,39 @@
+define void @CCTK_Cmplx32Cos(%struct.CCTK_COMPLEX32* noalias nocapture sret %agg.result, %struct.CCTK_COMPLEX32* byval nocapture readonly align 16 %complex_number) #3 {
+  %result.sroa.3 = alloca [6 x i8], align 2
+  %result.sroa.5 = alloca [6 x i8], align 2
+  %1 = getelementptr inbounds %struct.CCTK_COMPLEX32* %complex_number, i64 0, i32 1
+  %2 = load x86_fp80* %1, align 16, !tbaa !7
+  %3 = fcmp oeq x86_fp80 %2, 0xK00000000000000000000
+  %4 = getelementptr inbounds %struct.CCTK_COMPLEX32* %complex_number, i64 0, i32 0
+  %5 = load x86_fp80* %4, align 16, !tbaa !2
+  %6 = fptrunc x86_fp80 %5 to double
+  %7 = tail call double @cos(double %6) #5
+  br i1 %3, label %16, label %8
+
+; <label>:8                                       ; preds = %0
+  %9 = fptrunc x86_fp80 %2 to double
+  %10 = tail call double @cosh(double %9) #5
+  %11 = fmul double %7, %10
+  %12 = tail call double @sin(double %6) #5
+  %13 = tail call double @sinh(double %9) #5
+  %14 = fmul double %12, %13
+  %15 = fpext double %14 to x86_fp80
+  br label %16
+
+; <label>:16                                      ; preds = %0, %8
+  %result.sroa.31.0 = phi x86_fp80 [ %15, %8 ], [ 0xK00000000000000000000, %0 ]
+  %result.sroa.0.0.in = phi double [ %11, %8 ], [ %7, %0 ]
+  %result.sroa.0.0 = fpext double %result.sroa.0.0.in to x86_fp80
+  %17 = getelementptr inbounds %struct.CCTK_COMPLEX32* %agg.result, i64 0, i32 0
+  store x86_fp80 %result.sroa.0.0, x86_fp80* %17, align 16
+  %18 = bitcast %struct.CCTK_COMPLEX32* %agg.result to i8*
+  %19 = getelementptr inbounds i8* %18, i64 10
+  %20 = getelementptr inbounds [6 x i8]* %result.sroa.3, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %19, i8* %20, i64 6, i32 2, i1 false)
+  %21 = getelementptr inbounds %struct.CCTK_COMPLEX32* %agg.result, i64 0, i32 1
+  store x86_fp80 %result.sroa.31.0, x86_fp80* %21, align 16
+  %22 = getelementptr inbounds i8* %18, i64 26
+  %23 = getelementptr inbounds [6 x i8]* %result.sroa.5, i64 0, i64 0
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %22, i8* %23, i64 6, i32 2, i1 false)
+  ret void
+}

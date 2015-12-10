@@ -1,65 +1,64 @@
-define void @free_enxframe(%struct.t_enxframe* nocapture %fr) #0 {
-entry:
-  %e_alloc = getelementptr inbounds %struct.t_enxframe* %fr, i64 0, i32 9
-  %0 = load i32* %e_alloc, align 4, !tbaa !0
-  %tobool = icmp eq i32 %0, 0
-  br i1 %tobool, label %if.end, label %if.then
+define void @free_enxframe(%struct.t_enxframe* nocapture readonly %fr) #3 {
+  %1 = getelementptr inbounds %struct.t_enxframe* %fr, i64 0, i32 9
+  %2 = load i32* %1, align 4, !tbaa !14
+  %3 = icmp eq i32 %2, 0
+  br i1 %3, label %8, label %4
 
-if.then:                                          ; preds = %entry
-  %ener = getelementptr inbounds %struct.t_enxframe* %fr, i64 0, i32 12
-  %1 = load %struct.t_energy** %ener, align 8, !tbaa !3
-  %2 = bitcast %struct.t_energy* %1 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([9 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 45, i8* %2) #4
-  br label %if.end
+; <label>:4                                       ; preds = %0
+  %5 = getelementptr inbounds %struct.t_enxframe* %fr, i64 0, i32 12
+  %6 = bitcast %struct.t_energy** %5 to i8**
+  %7 = load i8** %6, align 8, !tbaa !17
+  tail call void @save_free(i8* getelementptr inbounds ([9 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 45, i8* %7) #6
+  br label %8
 
-if.end:                                           ; preds = %entry, %if.then
-  %d_alloc = getelementptr inbounds %struct.t_enxframe* %fr, i64 0, i32 10
-  %3 = load i32* %d_alloc, align 4, !tbaa !0
-  %tobool1 = icmp eq i32 %3, 0
-  br i1 %tobool1, label %for.cond.preheader, label %if.then2
+; <label>:8                                       ; preds = %0, %4
+  %9 = getelementptr inbounds %struct.t_enxframe* %fr, i64 0, i32 10
+  %10 = load i32* %9, align 4, !tbaa !18
+  %11 = icmp eq i32 %10, 0
+  br i1 %11, label %.preheader, label %12
 
-if.then2:                                         ; preds = %if.end
-  %rav = getelementptr inbounds %struct.t_enxframe* %fr, i64 0, i32 13
-  %4 = load float** %rav, align 8, !tbaa !3
-  %5 = bitcast float* %4 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([8 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 47, i8* %5) #4
-  %rt = getelementptr inbounds %struct.t_enxframe* %fr, i64 0, i32 14
-  %6 = load float** %rt, align 8, !tbaa !3
-  %7 = bitcast float* %6 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([7 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 48, i8* %7) #4
-  br label %for.cond.preheader
+; <label>:12                                      ; preds = %8
+  %13 = getelementptr inbounds %struct.t_enxframe* %fr, i64 0, i32 13
+  %14 = bitcast float** %13 to i8**
+  %15 = load i8** %14, align 8, !tbaa !19
+  tail call void @save_free(i8* getelementptr inbounds ([8 x i8]* @.str2, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 47, i8* %15) #6
+  %16 = getelementptr inbounds %struct.t_enxframe* %fr, i64 0, i32 14
+  %17 = bitcast float** %16 to i8**
+  %18 = load i8** %17, align 8, !tbaa !20
+  tail call void @save_free(i8* getelementptr inbounds ([7 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 48, i8* %18) #6
+  br label %.preheader
 
-for.cond.preheader:                               ; preds = %if.end, %if.then2
-  %nblock = getelementptr inbounds %struct.t_enxframe* %fr, i64 0, i32 4
-  %8 = load i32* %nblock, align 4, !tbaa !0
-  %cmp16 = icmp sgt i32 %8, 0
-  %block = getelementptr inbounds %struct.t_enxframe* %fr, i64 0, i32 15
-  br i1 %cmp16, label %for.body, label %for.end
+.preheader:                                       ; preds = %8, %12
+  %19 = getelementptr inbounds %struct.t_enxframe* %fr, i64 0, i32 4
+  %20 = load i32* %19, align 4, !tbaa !21
+  %21 = icmp sgt i32 %20, 0
+  %22 = getelementptr inbounds %struct.t_enxframe* %fr, i64 0, i32 15
+  br i1 %21, label %.lr.ph, label %._crit_edge
 
-for.body:                                         ; preds = %for.cond.preheader, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %for.cond.preheader ]
-  %9 = load float*** %block, align 8, !tbaa !3
-  %arrayidx = getelementptr inbounds float** %9, i64 %indvars.iv
-  %10 = load float** %arrayidx, align 8, !tbaa !3
-  %11 = bitcast float* %10 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([13 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 51, i8* %11) #4
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %12 = load i32* %nblock, align 4, !tbaa !0
-  %13 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %13, %12
-  br i1 %cmp, label %for.body, label %for.end
+.lr.ph:                                           ; preds = %.preheader, %.lr.ph
+  %indvars.iv = phi i64 [ %indvars.iv.next, %.lr.ph ], [ 0, %.preheader ]
+  %23 = load float*** %22, align 8, !tbaa !22
+  %24 = getelementptr inbounds float** %23, i64 %indvars.iv
+  %25 = bitcast float** %24 to i8**
+  %26 = load i8** %25, align 8, !tbaa !23
+  tail call void @save_free(i8* getelementptr inbounds ([13 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 51, i8* %26) #6
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %27 = load i32* %19, align 4, !tbaa !21
+  %28 = sext i32 %27 to i64
+  %29 = icmp slt i64 %indvars.iv.next, %28
+  br i1 %29, label %.lr.ph, label %._crit_edge
 
-for.end:                                          ; preds = %for.cond.preheader, %for.body
-  %14 = load float*** %block, align 8, !tbaa !3
-  %15 = bitcast float** %14 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 52, i8* %15) #4
-  %b_alloc = getelementptr inbounds %struct.t_enxframe* %fr, i64 0, i32 11
-  %16 = load i32** %b_alloc, align 8, !tbaa !3
-  %17 = bitcast i32* %16 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([12 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 53, i8* %17) #4
-  %nr = getelementptr inbounds %struct.t_enxframe* %fr, i64 0, i32 5
-  %18 = load i32** %nr, align 8, !tbaa !3
-  %19 = bitcast i32* %18 to i8*
-  tail call void @save_free(i8* getelementptr inbounds ([7 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([53 x i8]* @.str1, i64 0, i64 0), i32 54, i8* %19) #4
+._crit_edge:                                      ; preds = %.lr.ph, %.preheader
+  %30 = bitcast float*** %22 to i8**
+  %31 = load i8** %30, align 8, !tbaa !22
+  tail call void @save_free(i8* getelementptr inbounds ([10 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 52, i8* %31) #6
+  %32 = getelementptr inbounds %struct.t_enxframe* %fr, i64 0, i32 11
+  %33 = bitcast i32** %32 to i8**
+  %34 = load i8** %33, align 8, !tbaa !24
+  tail call void @save_free(i8* getelementptr inbounds ([12 x i8]* @.str6, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 53, i8* %34) #6
+  %35 = getelementptr inbounds %struct.t_enxframe* %fr, i64 0, i32 5
+  %36 = bitcast i32** %35 to i8**
+  %37 = load i8** %36, align 8, !tbaa !25
+  tail call void @save_free(i8* getelementptr inbounds ([7 x i8]* @.str7, i64 0, i64 0), i8* getelementptr inbounds ([65 x i8]* @.str1, i64 0, i64 0), i32 54, i8* %37) #6
   ret void
 }

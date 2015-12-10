@@ -1,0 +1,91 @@
+define i32 @PUGH_PrintTimingInfo(%struct.cGH* %GH) #1 {
+  %1 = tail call %struct.PGH* @PUGH_pGH(%struct.cGH* %GH) #6
+  %2 = getelementptr inbounds %struct.PGH* %1, i64 0, i32 20
+  %3 = load i32* %2, align 4, !tbaa !60
+  %4 = icmp slt i32 %3, 0
+  br i1 %4, label %56, label %5
+
+; <label>:5                                       ; preds = %0
+  %6 = tail call %struct.cTimerData* @CCTK_TimerCreateData() #6
+  %7 = icmp eq %struct.cTimerData* %6, null
+  br i1 %7, label %54, label %8
+
+; <label>:8                                       ; preds = %5
+  %9 = tail call i32 @CCTK_Info(i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([37 x i8]* @.str4, i64 0, i64 0)) #6
+  %10 = load i32* %2, align 4, !tbaa !60
+  %11 = tail call i32 @CCTK_TimerI(i32 %10, %struct.cTimerData* %6) #6
+  %12 = getelementptr inbounds %struct.cTimerData* %6, i64 0, i32 0
+  %13 = load i32* %12, align 4, !tbaa !61
+  %14 = icmp sgt i32 %13, 0
+  br i1 %14, label %.lr.ph, label %._crit_edge
+
+.lr.ph:                                           ; preds = %8
+  %15 = getelementptr inbounds %struct.cTimerData* %6, i64 0, i32 1
+  br label %16
+
+; <label>:16                                      ; preds = %.lr.ph, %49
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %49 ]
+  %17 = load %struct.cTimerVal** %15, align 8, !tbaa !63
+  %18 = getelementptr inbounds %struct.cTimerVal* %17, i64 %indvars.iv, i32 0
+  %19 = load i32* %18, align 4, !tbaa !64
+  switch i32 %19, label %47 [
+    i32 1, label %20
+    i32 2, label %29
+    i32 3, label %38
+  ]
+
+; <label>:20                                      ; preds = %16
+  %21 = getelementptr inbounds %struct.cTimerVal* %17, i64 %indvars.iv, i32 1
+  %22 = load i8** %21, align 8, !tbaa !66
+  %23 = getelementptr inbounds %struct.cTimerVal* %17, i64 %indvars.iv, i32 3
+  %24 = bitcast %union.anon* %23 to i32*
+  %25 = load i32* %24, align 4, !tbaa !13
+  %26 = getelementptr inbounds %struct.cTimerVal* %17, i64 %indvars.iv, i32 2
+  %27 = load i8** %26, align 8, !tbaa !67
+  %28 = tail call i32 (i8*, i8*, ...)* @CCTK_VInfo(i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([12 x i8]* @.str5, i64 0, i64 0), i8* %22, i32 %25, i8* %27) #6
+  br label %49
+
+; <label>:29                                      ; preds = %16
+  %30 = getelementptr inbounds %struct.cTimerVal* %17, i64 %indvars.iv, i32 1
+  %31 = load i8** %30, align 8, !tbaa !66
+  %32 = getelementptr inbounds %struct.cTimerVal* %17, i64 %indvars.iv, i32 3, i32 0
+  %33 = load i64* %32, align 8, !tbaa !68
+  %34 = trunc i64 %33 to i32
+  %35 = getelementptr inbounds %struct.cTimerVal* %17, i64 %indvars.iv, i32 2
+  %36 = load i8** %35, align 8, !tbaa !67
+  %37 = tail call i32 (i8*, i8*, ...)* @CCTK_VInfo(i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([12 x i8]* @.str5, i64 0, i64 0), i8* %31, i32 %34, i8* %36) #6
+  br label %49
+
+; <label>:38                                      ; preds = %16
+  %39 = getelementptr inbounds %struct.cTimerVal* %17, i64 %indvars.iv, i32 1
+  %40 = load i8** %39, align 8, !tbaa !66
+  %41 = getelementptr inbounds %struct.cTimerVal* %17, i64 %indvars.iv, i32 3
+  %42 = bitcast %union.anon* %41 to double*
+  %43 = load double* %42, align 8, !tbaa !70
+  %44 = getelementptr inbounds %struct.cTimerVal* %17, i64 %indvars.iv, i32 2
+  %45 = load i8** %44, align 8, !tbaa !67
+  %46 = tail call i32 (i8*, i8*, ...)* @CCTK_VInfo(i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([14 x i8]* @.str6, i64 0, i64 0), i8* %40, double %43, i8* %45) #6
+  br label %49
+
+; <label>:47                                      ; preds = %16
+  %48 = tail call i32 @CCTK_Warn(i32 1, i32 561, i8* getelementptr inbounds ([78 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([33 x i8]* @.str7, i64 0, i64 0)) #6
+  br label %49
+
+; <label>:49                                      ; preds = %20, %29, %38, %47
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %50 = load i32* %12, align 4, !tbaa !61
+  %51 = sext i32 %50 to i64
+  %52 = icmp slt i64 %indvars.iv.next, %51
+  br i1 %52, label %16, label %._crit_edge
+
+._crit_edge:                                      ; preds = %49, %8
+  %53 = tail call i32 @CCTK_TimerDestroyData(%struct.cTimerData* %6) #6
+  br label %56
+
+; <label>:54                                      ; preds = %5
+  %55 = tail call i32 @CCTK_Warn(i32 1, i32 571, i8* getelementptr inbounds ([78 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([67 x i8]* @.str8, i64 0, i64 0)) #6
+  br label %56
+
+; <label>:56                                      ; preds = %._crit_edge, %54, %0
+  ret i32 0
+}

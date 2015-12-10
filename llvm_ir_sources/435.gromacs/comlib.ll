@@ -1,102 +1,104 @@
-; ModuleID = '../../SPEC/benchspec/CPU2006/435.gromacs/src/comlib.c'
-target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
-target triple = "x86_64-unknown-linux-gnu"
+; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/435.gromacs/src/comlib.c'
+target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
+target triple = "x86_64-apple-macosx10.10.0"
 
-; Function Attrs: nounwind optsize uwtable
+; Function Attrs: nounwind optsize ssp uwtable
 define void @put_serverbyte(i8 zeroext %data) #0 {
-entry:
-  store volatile i8 %data, i8* inttoptr (i64 2952794328 to i8*), align 8, !tbaa !0
-  store volatile i8 1, i8* inttoptr (i64 2952794312 to i8*), align 8, !tbaa !0
-  br label %while.cond
+  store volatile i8 %data, i8* inttoptr (i64 2952794328 to i8*), align 8, !tbaa !2
+  store volatile i8 1, i8* inttoptr (i64 2952794312 to i8*), align 8, !tbaa !2
+  br label %1
 
-while.cond:                                       ; preds = %while.cond, %entry
-  %0 = load volatile i8* inttoptr (i64 2952794312 to i8*), align 8, !tbaa !0
-  %and = and i8 %0, 1
-  %tobool = icmp eq i8 %and, 0
-  br i1 %tobool, label %while.end, label %while.cond
+; <label>:1                                       ; preds = %1, %0
+  %2 = load volatile i8* inttoptr (i64 2952794312 to i8*), align 8, !tbaa !2
+  %3 = and i8 %2, 1
+  %4 = icmp eq i8 %3, 0
+  br i1 %4, label %5, label %1
 
-while.end:                                        ; preds = %while.cond
+; <label>:5                                       ; preds = %1
   ret void
 }
 
-; Function Attrs: nounwind optsize uwtable
+; Function Attrs: nounwind optsize ssp uwtable
 define zeroext i8 @get_serverbyte() #0 {
-entry:
-  br label %while.cond
+  br label %1
 
-while.cond:                                       ; preds = %while.cond, %entry
-  %0 = load volatile i8* inttoptr (i64 2952794304 to i8*), align 64, !tbaa !0
-  %and = and i8 %0, 1
-  %cmp = icmp eq i8 %and, 0
-  br i1 %cmp, label %while.cond, label %while.end
+; <label>:1                                       ; preds = %1, %0
+  %2 = load volatile i8* inttoptr (i64 2952794304 to i8*), align 64, !tbaa !2
+  %3 = and i8 %2, 1
+  %4 = icmp eq i8 %3, 0
+  br i1 %4, label %1, label %5
 
-while.end:                                        ; preds = %while.cond
-  %1 = load volatile i8* inttoptr (i64 2952794320 to i8*), align 16, !tbaa !0
-  store volatile i8 0, i8* inttoptr (i64 2952794304 to i8*), align 64, !tbaa !0
-  ret i8 %1
+; <label>:5                                       ; preds = %1
+  %6 = load volatile i8* inttoptr (i64 2952794320 to i8*), align 16, !tbaa !2
+  store volatile i8 0, i8* inttoptr (i64 2952794304 to i8*), align 64, !tbaa !2
+  ret i8 %6
 }
 
-; Function Attrs: nounwind optsize uwtable
+; Function Attrs: nounwind optsize ssp uwtable
 define void @get_serverdata(i8* nocapture %data, i32 %size) #0 {
-entry:
-  %cmp2 = icmp sgt i32 %size, 0
-  br i1 %cmp2, label %while.cond.i.preheader, label %for.end
+  %1 = icmp sgt i32 %size, 0
+  br i1 %1, label %.preheader, label %._crit_edge
 
-while.cond.i.preheader:                           ; preds = %entry, %get_serverbyte.exit
-  %p.04 = phi i8* [ %incdec.ptr, %get_serverbyte.exit ], [ %data, %entry ]
-  %size.addr.03 = phi i32 [ %dec, %get_serverbyte.exit ], [ %size, %entry ]
-  br label %while.cond.i
+.preheader:                                       ; preds = %0, %get_serverbyte.exit
+  %p.02 = phi i8* [ %7, %get_serverbyte.exit ], [ %data, %0 ]
+  %.01 = phi i32 [ %8, %get_serverbyte.exit ], [ %size, %0 ]
+  br label %2
 
-while.cond.i:                                     ; preds = %while.cond.i.preheader, %while.cond.i
-  %0 = load volatile i8* inttoptr (i64 2952794304 to i8*), align 64, !tbaa !0
-  %and.i = and i8 %0, 1
-  %cmp.i = icmp eq i8 %and.i, 0
-  br i1 %cmp.i, label %while.cond.i, label %get_serverbyte.exit
+; <label>:2                                       ; preds = %.preheader, %2
+  %3 = load volatile i8* inttoptr (i64 2952794304 to i8*), align 64, !tbaa !2
+  %4 = and i8 %3, 1
+  %5 = icmp eq i8 %4, 0
+  br i1 %5, label %2, label %get_serverbyte.exit
 
-get_serverbyte.exit:                              ; preds = %while.cond.i
-  %1 = load volatile i8* inttoptr (i64 2952794320 to i8*), align 16, !tbaa !0
-  store volatile i8 0, i8* inttoptr (i64 2952794304 to i8*), align 64, !tbaa !0
-  %incdec.ptr = getelementptr inbounds i8* %p.04, i64 1
-  store i8 %1, i8* %p.04, align 1, !tbaa !0
-  %dec = add nsw i32 %size.addr.03, -1
-  %cmp = icmp sgt i32 %dec, 0
-  br i1 %cmp, label %while.cond.i.preheader, label %for.end
+get_serverbyte.exit:                              ; preds = %2
+  %6 = load volatile i8* inttoptr (i64 2952794320 to i8*), align 16, !tbaa !2
+  store volatile i8 0, i8* inttoptr (i64 2952794304 to i8*), align 64, !tbaa !2
+  %7 = getelementptr inbounds i8* %p.02, i64 1
+  store i8 %6, i8* %p.02, align 1, !tbaa !2
+  %8 = add nsw i32 %.01, -1
+  %9 = icmp sgt i32 %.01, 1
+  br i1 %9, label %.preheader, label %._crit_edge
 
-for.end:                                          ; preds = %get_serverbyte.exit, %entry
+._crit_edge:                                      ; preds = %get_serverbyte.exit, %0
   ret void
 }
 
-; Function Attrs: nounwind optsize uwtable
-define void @put_serverdata(i8* nocapture %data, i32 %size) #0 {
-entry:
-  %cmp2 = icmp sgt i32 %size, 0
-  br i1 %cmp2, label %for.body, label %for.end
+; Function Attrs: nounwind optsize ssp uwtable
+define void @put_serverdata(i8* nocapture readonly %data, i32 %size) #0 {
+  %1 = icmp sgt i32 %size, 0
+  br i1 %1, label %.lr.ph, label %._crit_edge
 
-for.body:                                         ; preds = %entry, %put_serverbyte.exit
-  %p.04 = phi i8* [ %incdec.ptr, %put_serverbyte.exit ], [ %data, %entry ]
-  %size.addr.03 = phi i32 [ %dec, %put_serverbyte.exit ], [ %size, %entry ]
-  %0 = load i8* %p.04, align 1, !tbaa !0
-  store volatile i8 %0, i8* inttoptr (i64 2952794328 to i8*), align 8, !tbaa !0
-  store volatile i8 1, i8* inttoptr (i64 2952794312 to i8*), align 8, !tbaa !0
-  br label %while.cond.i
+.lr.ph:                                           ; preds = %0, %put_serverbyte.exit
+  %p.02 = phi i8* [ %7, %put_serverbyte.exit ], [ %data, %0 ]
+  %.01 = phi i32 [ %8, %put_serverbyte.exit ], [ %size, %0 ]
+  %2 = load i8* %p.02, align 1, !tbaa !2
+  store volatile i8 %2, i8* inttoptr (i64 2952794328 to i8*), align 8, !tbaa !2
+  store volatile i8 1, i8* inttoptr (i64 2952794312 to i8*), align 8, !tbaa !2
+  br label %3
 
-while.cond.i:                                     ; preds = %while.cond.i, %for.body
-  %1 = load volatile i8* inttoptr (i64 2952794312 to i8*), align 8, !tbaa !0
-  %and.i = and i8 %1, 1
-  %tobool.i = icmp eq i8 %and.i, 0
-  br i1 %tobool.i, label %put_serverbyte.exit, label %while.cond.i
+; <label>:3                                       ; preds = %3, %.lr.ph
+  %4 = load volatile i8* inttoptr (i64 2952794312 to i8*), align 8, !tbaa !2
+  %5 = and i8 %4, 1
+  %6 = icmp eq i8 %5, 0
+  br i1 %6, label %put_serverbyte.exit, label %3
 
-put_serverbyte.exit:                              ; preds = %while.cond.i
-  %incdec.ptr = getelementptr inbounds i8* %p.04, i64 1
-  %dec = add nsw i32 %size.addr.03, -1
-  %cmp = icmp sgt i32 %dec, 0
-  br i1 %cmp, label %for.body, label %for.end
+put_serverbyte.exit:                              ; preds = %3
+  %7 = getelementptr inbounds i8* %p.02, i64 1
+  %8 = add nsw i32 %.01, -1
+  %9 = icmp sgt i32 %.01, 1
+  br i1 %9, label %.lr.ph, label %._crit_edge
 
-for.end:                                          ; preds = %put_serverbyte.exit, %entry
+._crit_edge:                                      ; preds = %put_serverbyte.exit, %0
   ret void
 }
 
-attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
 
-!0 = metadata !{metadata !"omnipotent char", metadata !1}
-!1 = metadata !{metadata !"Simple C/C++ TBAA"}
+!llvm.module.flags = !{!0}
+!llvm.ident = !{!1}
+
+!0 = !{i32 1, !"PIC Level", i32 2}
+!1 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
+!2 = !{!3, !3, i64 0}
+!3 = !{!"omnipotent char", !4, i64 0}
+!4 = !{!"Simple C/C++ TBAA"}

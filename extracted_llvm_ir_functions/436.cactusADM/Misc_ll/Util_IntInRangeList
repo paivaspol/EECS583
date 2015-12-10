@@ -1,0 +1,51 @@
+define i32 @Util_IntInRangeList(i32 %inval, i32 %n_elements, ...) #1 {
+  %ap = alloca [1 x %struct.__va_list_tag], align 16
+  %1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
+  call void @llvm.va_start(i8* %1)
+  %2 = icmp sgt i32 %n_elements, 0
+  br i1 %2, label %.lr.ph, label %._crit_edge
+
+.lr.ph:                                           ; preds = %0
+  %3 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 0
+  %4 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 3
+  %5 = getelementptr inbounds [1 x %struct.__va_list_tag]* %ap, i64 0, i64 0, i32 2
+  br label %8
+
+; <label>:6                                       ; preds = %19
+  %7 = icmp slt i32 %24, %n_elements
+  br i1 %7, label %8, label %._crit_edge
+
+; <label>:8                                       ; preds = %.lr.ph, %6
+  %arg.01 = phi i32 [ 0, %.lr.ph ], [ %24, %6 ]
+  %9 = load i32* %3, align 16
+  %10 = icmp ult i32 %9, 41
+  br i1 %10, label %11, label %16
+
+; <label>:11                                      ; preds = %8
+  %12 = load i8** %4, align 16
+  %13 = sext i32 %9 to i64
+  %14 = getelementptr i8* %12, i64 %13
+  %15 = add i32 %9, 8
+  store i32 %15, i32* %3, align 16
+  br label %19
+
+; <label>:16                                      ; preds = %8
+  %17 = load i8** %5, align 8
+  %18 = getelementptr i8* %17, i64 8
+  store i8* %18, i8** %5, align 8
+  br label %19
+
+; <label>:19                                      ; preds = %16, %11
+  %.in = phi i8* [ %14, %11 ], [ %17, %16 ]
+  %20 = bitcast i8* %.in to i8**
+  %21 = load i8** %20, align 8
+  %22 = call i32 @Util_IntInRange(i32 %inval, i8* %21) #8
+  %23 = icmp eq i32 %22, 0
+  %24 = add nuw nsw i32 %arg.01, 1
+  br i1 %23, label %6, label %._crit_edge
+
+._crit_edge:                                      ; preds = %6, %19, %0
+  %retval.0 = phi i32 [ 0, %0 ], [ 0, %6 ], [ 1, %19 ]
+  call void @llvm.va_end(i8* %1)
+  ret i32 %retval.0
+}

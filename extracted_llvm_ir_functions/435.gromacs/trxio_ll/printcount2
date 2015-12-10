@@ -1,25 +1,24 @@
-define internal fastcc void @printcount2(float %t, float %t0, float %tpf, float %tppf) #1 {
-entry:
-  %0 = load i32* @__frame, align 4, !tbaa !0
-  %inc = add nsw i32 %0, 1
-  store i32 %inc, i32* @__frame, align 4, !tbaa !0
-  %rem = srem i32 %inc, 10
-  %cmp = icmp eq i32 %rem, 0
-  %cmp1 = icmp slt i32 %inc, 10
-  %or.cond = or i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %if.end
+define internal fastcc void @printcount2(float %t, float %t0, float %tpf, float %tppf) #5 {
+  %1 = load i32* @__frame, align 4, !tbaa !18
+  %2 = add nsw i32 %1, 1
+  store i32 %2, i32* @__frame, align 4, !tbaa !18
+  %3 = srem i32 %2, 10
+  %4 = icmp eq i32 %3, 0
+  %5 = icmp slt i32 %2, 10
+  %or.cond = or i1 %4, %5
+  br i1 %or.cond, label %6, label %15
 
-if.then:                                          ; preds = %entry
-  %call = tail call i32 @check_times2(float %t, float %t0, float %tpf, float %tppf) #6
-  %cmp2 = icmp slt i32 %call, 0
-  %cond = select i1 %cmp2, i8* getelementptr inbounds ([15 x i8]* @.str44, i64 0, i64 0), i8* getelementptr inbounds ([14 x i8]* @.str45, i64 0, i64 0)
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !4
-  %2 = load i32* @__frame, align 4, !tbaa !0
-  %call.i = tail call float @convert_time(float %t) #6
-  %conv.i = fpext float %call.i to double
-  %call1.i = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %1, i8* getelementptr inbounds ([25 x i8]* @.str43, i64 0, i64 0), i8* %cond, i32 %2, double %conv.i) #6
-  br label %if.end
+; <label>:6                                       ; preds = %0
+  %7 = tail call i32 @check_times2(float %t, float %t0, float %tpf, float %tppf) #10
+  %8 = icmp slt i32 %7, 0
+  %9 = select i1 %8, i8* getelementptr inbounds ([15 x i8]* @.str24, i64 0, i64 0), i8* getelementptr inbounds ([14 x i8]* @.str25, i64 0, i64 0)
+  %10 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !54
+  %11 = load i32* @__frame, align 4, !tbaa !18
+  %12 = tail call float @convert_time(float %t) #10
+  %13 = fpext float %12 to double
+  %14 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %10, i8* getelementptr inbounds ([25 x i8]* @.str26, i64 0, i64 0), i8* %9, i32 %11, double %13) #10
+  br label %15
 
-if.end:                                           ; preds = %entry, %if.then
+; <label>:15                                      ; preds = %0, %6
   ret void
 }

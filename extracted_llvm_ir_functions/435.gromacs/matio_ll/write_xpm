@@ -1,20 +1,19 @@
-define void @write_xpm(%struct._IO_FILE* nocapture %out, i8* %title, i8* %legend, i8* %label_x, i8* %label_y, i32 %n_x, i32 %n_y, float* %axis_x, float* %axis_y, float** nocapture %matrix, float %lo, float %hi, <2 x float> %rlo.coerce0, float %rlo.coerce1, <2 x float> %rhi.coerce0, float %rhi.coerce1, i32* nocapture %nlevels) #0 {
-entry:
-  %cmp = fcmp ugt float %hi, %lo
-  br i1 %cmp, label %if.end, label %if.then
+define void @write_xpm(%struct.__sFILE* nocapture %out, i8* %title, i8* %legend, i8* %label_x, i8* %label_y, i32 %n_x, i32 %n_y, float* readonly %axis_x, float* readonly %axis_y, float** nocapture readonly %matrix, float %lo, float %hi, <2 x float> %rlo.coerce0, float %rlo.coerce1, <2 x float> %rhi.coerce0, float %rhi.coerce1, i32* nocapture %nlevels) #3 {
+  %1 = fcmp ugt float %hi, %lo
+  br i1 %1, label %5, label %2
 
-if.then:                                          ; preds = %entry
-  %conv = fpext float %hi to double
-  %conv2 = fpext float %lo to double
-  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([19 x i8]* @.str80, i64 0, i64 0), double %conv, double %conv2) #8
-  br label %if.end
+; <label>:2                                       ; preds = %0
+  %3 = fpext float %hi to double
+  %4 = fpext float %lo to double
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([19 x i8]* @.str80, i64 0, i64 0), double %3, double %4) #10
+  br label %5
 
-if.end:                                           ; preds = %entry, %if.then
-  tail call void @write_xpm_header(%struct._IO_FILE* %out, i8* %title, i8* %legend, i8* %label_x, i8* %label_y, i32 0) #9
-  tail call void @write_xpm_map(%struct._IO_FILE* %out, i32 %n_x, i32 %n_y, i32* %nlevels, float %lo, float %hi, <2 x float> %rlo.coerce0, float %rlo.coerce1, <2 x float> %rhi.coerce0, float %rhi.coerce1) #9
-  tail call void @write_xpm_axis(%struct._IO_FILE* %out, i8* getelementptr inbounds ([2 x i8]* @.str77, i64 0, i64 0), i32 %n_x, float* %axis_x) #9
-  tail call void @write_xpm_axis(%struct._IO_FILE* %out, i8* getelementptr inbounds ([2 x i8]* @.str78, i64 0, i64 0), i32 %n_y, float* %axis_y) #9
-  %0 = load i32* %nlevels, align 4, !tbaa !3
-  tail call void @write_xpm_data(%struct._IO_FILE* %out, i32 %n_x, i32 %n_y, float** %matrix, float %lo, float %hi, i32 %0) #9
+; <label>:5                                       ; preds = %0, %2
+  tail call void @write_xpm_header(%struct.__sFILE* %out, i8* %title, i8* %legend, i8* %label_x, i8* %label_y, i32 0) #11
+  tail call void @write_xpm_map(%struct.__sFILE* %out, i32 %n_x, i32 %n_y, i32* %nlevels, float %lo, float %hi, <2 x float> %rlo.coerce0, float %rlo.coerce1, <2 x float> %rhi.coerce0, float %rhi.coerce1) #11
+  tail call void @write_xpm_axis(%struct.__sFILE* %out, i8* getelementptr inbounds ([2 x i8]* @.str77, i64 0, i64 0), i32 %n_x, float* %axis_x) #11
+  tail call void @write_xpm_axis(%struct.__sFILE* %out, i8* getelementptr inbounds ([2 x i8]* @.str78, i64 0, i64 0), i32 %n_y, float* %axis_y) #11
+  %6 = load i32* %nlevels, align 4, !tbaa !15
+  tail call void @write_xpm_data(%struct.__sFILE* %out, i32 %n_x, i32 %n_y, float** %matrix, float %lo, float %hi, i32 %6) #11
   ret void
 }

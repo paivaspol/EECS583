@@ -1,29 +1,35 @@
-define i32 @read_mu(%struct._IO_FILE* nocapture %fp, float* nocapture %mu, float* nocapture %vol) #0 {
-entry:
+define i32 @read_mu(%struct.__sFILE* nocapture %fp, float* nocapture %mu, float* nocapture %vol) #4 {
   %mmm = alloca [4 x float], align 16
-  %0 = bitcast [4 x float]* %mmm to i8*
-  %call = call i64 @fread(i8* %0, i64 64, i64 1, %struct._IO_FILE* %fp) #3
-  %cmp = icmp eq i64 %call, 1
-  br i1 %cmp, label %if.end, label %return
+  %1 = bitcast [4 x float]* %mmm to i8*
+  %2 = call i64 @fread(i8* %1, i64 64, i64 1, %struct.__sFILE* %fp) #8
+  %3 = icmp eq i64 %2, 1
+  br i1 %3, label %4, label %22
 
-if.end:                                           ; preds = %entry
-  %arraydecay = getelementptr inbounds [4 x float]* %mmm, i64 0, i64 0
-  %1 = load float* %arraydecay, align 16, !tbaa !3
-  store float %1, float* %mu, align 4, !tbaa !3
-  %arrayidx2.i = getelementptr inbounds [4 x float]* %mmm, i64 0, i64 1
-  %2 = load float* %arrayidx2.i, align 4, !tbaa !3
-  %arrayidx3.i = getelementptr inbounds float* %mu, i64 1
-  store float %2, float* %arrayidx3.i, align 4, !tbaa !3
-  %arrayidx4.i = getelementptr inbounds [4 x float]* %mmm, i64 0, i64 2
-  %3 = load float* %arrayidx4.i, align 8, !tbaa !3
-  %arrayidx5.i = getelementptr inbounds float* %mu, i64 2
-  store float %3, float* %arrayidx5.i, align 4, !tbaa !3
-  %arrayidx = getelementptr inbounds [4 x float]* %mmm, i64 0, i64 3
-  %4 = load float* %arrayidx, align 4, !tbaa !3
-  store float %4, float* %vol, align 4, !tbaa !3
-  br label %return
+; <label>:4                                       ; preds = %0
+  %5 = bitcast [4 x float]* %mmm to i64*
+  %6 = load i64* %5, align 16
+  %7 = trunc i64 %6 to i32
+  %8 = bitcast float* %mu to i32*
+  store i32 %7, i32* %8, align 4, !tbaa !2
+  %9 = lshr i64 %6, 32
+  %10 = trunc i64 %9 to i32
+  %11 = getelementptr inbounds float* %mu, i64 1
+  %12 = bitcast float* %11 to i32*
+  store i32 %10, i32* %12, align 4, !tbaa !2
+  %13 = getelementptr inbounds [4 x float]* %mmm, i64 0, i64 2
+  %14 = bitcast float* %13 to i64*
+  %15 = load i64* %14, align 8
+  %16 = trunc i64 %15 to i32
+  %17 = getelementptr inbounds float* %mu, i64 2
+  %18 = bitcast float* %17 to i32*
+  store i32 %16, i32* %18, align 4, !tbaa !2
+  %19 = lshr i64 %15, 32
+  %20 = trunc i64 %19 to i32
+  %21 = bitcast float* %vol to i32*
+  store i32 %20, i32* %21, align 4, !tbaa !2
+  br label %22
 
-return:                                           ; preds = %entry, %if.end
-  %retval.0 = phi i32 [ 1, %if.end ], [ 0, %entry ]
-  ret i32 %retval.0
+; <label>:22                                      ; preds = %0, %4
+  %.0 = phi i32 [ 1, %4 ], [ 0, %0 ]
+  ret i32 %.0
 }

@@ -1,134 +1,140 @@
-define void @calc_ener(%struct._IO_FILE* %fp, i8* %title, i32 %bHeader, i32 %nmol, i32 %natoms, float* nocapture %phi, float* nocapture %charge, %struct.t_block* nocapture %excl) #0 {
-entry:
-  %cmp111 = icmp sgt i32 %natoms, 0
-  br i1 %cmp111, label %for.body, label %for.end
+define void @calc_ener(%struct.__sFILE* %fp, i8* %title, i32 %bHeader, i32 %nmol, i32 %natoms, float* nocapture readonly %phi, float* nocapture readonly %charge, %struct.t_block* nocapture readonly %excl) #1 {
+  %1 = icmp sgt i32 %natoms, 0
+  br i1 %1, label %.lr.ph12, label %16
 
-for.body:                                         ; preds = %entry, %for.body
-  %indvars.iv120 = phi i64 [ %indvars.iv.next121, %for.body ], [ 0, %entry ]
-  %qq.0113 = phi float [ %add8, %for.body ], [ 0.000000e+00, %entry ]
-  %V.0112 = phi float [ %add, %for.body ], [ 0.000000e+00, %entry ]
-  %arrayidx = getelementptr inbounds float* %charge, i64 %indvars.iv120
-  %0 = load float* %arrayidx, align 4, !tbaa !0
-  %arrayidx2 = getelementptr inbounds float* %phi, i64 %indvars.iv120
-  %1 = load float* %arrayidx2, align 4, !tbaa !0
-  %mul = fmul float %0, %1
-  %add = fadd float %V.0112, %mul
-  %mul7 = fmul float %0, %0
-  %add8 = fadd float %qq.0113, %mul7
-  %indvars.iv.next121 = add i64 %indvars.iv120, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next121 to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %natoms
-  br i1 %exitcond, label %for.cond.for.end_crit_edge, label %for.body
+.lr.ph12:                                         ; preds = %0
+  %2 = add i32 %natoms, -1
+  br label %3
 
-for.cond.for.end_crit_edge:                       ; preds = %for.body
-  %phitmp = fmul float %add, 5.000000e-01
-  %phitmp117 = fpext float %add8 to double
-  br label %for.end
+; <label>:3                                       ; preds = %3, %.lr.ph12
+  %indvars.iv20 = phi i64 [ 0, %.lr.ph12 ], [ %indvars.iv.next21, %3 ]
+  %4 = phi <2 x float> [ zeroinitializer, %.lr.ph12 ], [ %13, %3 ]
+  %5 = getelementptr inbounds float* %charge, i64 %indvars.iv20
+  %6 = load float* %5, align 4, !tbaa !2
+  %7 = getelementptr inbounds float* %phi, i64 %indvars.iv20
+  %8 = load float* %7, align 4, !tbaa !2
+  %9 = insertelement <2 x float> undef, float %6, i32 0
+  %10 = insertelement <2 x float> %9, float %8, i32 1
+  %11 = insertelement <2 x float> %9, float %6, i32 1
+  %12 = fmul <2 x float> %10, %11
+  %13 = fadd <2 x float> %4, %12
+  %indvars.iv.next21 = add nuw nsw i64 %indvars.iv20, 1
+  %lftr.wideiv22 = trunc i64 %indvars.iv20 to i32
+  %exitcond23 = icmp eq i32 %lftr.wideiv22, %2
+  br i1 %exitcond23, label %._crit_edge13, label %3
 
-for.end:                                          ; preds = %for.cond.for.end_crit_edge, %entry
-  %qq.0.lcssa = phi double [ %phitmp117, %for.cond.for.end_crit_edge ], [ 0.000000e+00, %entry ]
-  %V.0.lcssa = phi float [ %phitmp, %for.cond.for.end_crit_edge ], [ 0.000000e+00, %entry ]
-  %2 = load float* @C, align 4, !tbaa !0
-  %conv11 = fpext float %2 to double
-  %mul12 = fmul double %conv11, 5.000000e-01
-  %mul13 = fmul double %mul12, 3.320636e+02
-  %mul14 = fmul double %mul13, 4.184000e+00
-  %mul15 = fmul double %mul14, 1.000000e-01
-  %mul17 = fmul double %qq.0.lcssa, %mul15
-  %conv18 = fptrunc double %mul17 to float
-  %nr = getelementptr inbounds %struct.t_block* %excl, i64 0, i32 1
-  %3 = load i32* %nr, align 4, !tbaa !4
-  %cmp20107 = icmp sgt i32 %3, 0
-  br i1 %cmp20107, label %for.body22.lr.ph, label %for.end48
+._crit_edge13:                                    ; preds = %3
+  %14 = extractelement <2 x float> %13, i32 1
+  %phitmp = fmul float %14, 5.000000e-01
+  %15 = extractelement <2 x float> %13, i32 0
+  %phitmp16 = fpext float %15 to double
+  br label %16
 
-for.body22.lr.ph:                                 ; preds = %for.end
-  %index = getelementptr inbounds %struct.t_block* %excl, i64 0, i32 2
-  %4 = load i32** %index, align 8, !tbaa !3
-  %a = getelementptr inbounds %struct.t_block* %excl, i64 0, i32 4
-  %.pre = load i32* %4, align 4, !tbaa !4
-  br label %for.body22
+; <label>:16                                      ; preds = %._crit_edge13, %0
+  %qq.0.lcssa = phi double [ %phitmp16, %._crit_edge13 ], [ 0.000000e+00, %0 ]
+  %V.0.lcssa = phi float [ %phitmp, %._crit_edge13 ], [ 0.000000e+00, %0 ]
+  %17 = load float* @C, align 4, !tbaa !2
+  %18 = fpext float %17 to double
+  %19 = fmul double %18, 5.000000e-01
+  %20 = fmul double %19, 3.320636e+02
+  %21 = fmul double %20, 4.184000e+00
+  %22 = fmul double %21, 1.000000e-01
+  %23 = fmul double %qq.0.lcssa, %22
+  %24 = fptrunc double %23 to float
+  %25 = getelementptr inbounds %struct.t_block* %excl, i64 0, i32 1
+  %26 = load i32* %25, align 4, !tbaa !19
+  %27 = icmp sgt i32 %26, 0
+  br i1 %27, label %.lr.ph6, label %._crit_edge
 
-for.cond19.loopexit:                              ; preds = %for.inc43, %for.body22
-  %qq.2.lcssa = phi float [ %qq.1108, %for.body22 ], [ %qq.3, %for.inc43 ]
-  %5 = trunc i64 %indvars.iv.next119 to i32
-  %cmp20 = icmp slt i32 %5, %3
-  br i1 %cmp20, label %for.body22, label %for.end48
+.lr.ph6:                                          ; preds = %16
+  %28 = getelementptr inbounds %struct.t_block* %excl, i64 0, i32 2
+  %29 = load i32** %28, align 8, !tbaa !8
+  %30 = getelementptr inbounds %struct.t_block* %excl, i64 0, i32 4
+  %31 = sext i32 %26 to i64
+  %.pre = load i32* %29, align 4, !tbaa !11
+  br label %33
 
-for.body22:                                       ; preds = %for.body22.lr.ph, %for.cond19.loopexit
-  %6 = phi i32 [ %.pre, %for.body22.lr.ph ], [ %7, %for.cond19.loopexit ]
-  %indvars.iv118 = phi i64 [ 0, %for.body22.lr.ph ], [ %indvars.iv.next119, %for.cond19.loopexit ]
-  %qq.1108 = phi float [ 0.000000e+00, %for.body22.lr.ph ], [ %qq.2.lcssa, %for.cond19.loopexit ]
-  %indvars.iv.next119 = add i64 %indvars.iv118, 1
-  %arrayidx28 = getelementptr inbounds i32* %4, i64 %indvars.iv.next119
-  %7 = load i32* %arrayidx28, align 4, !tbaa !4
-  %arrayidx30 = getelementptr inbounds float* %charge, i64 %indvars.iv118
-  %8 = load float* %arrayidx30, align 4, !tbaa !0
-  %cmp32104 = icmp slt i32 %6, %7
-  br i1 %cmp32104, label %for.body34.lr.ph, label %for.cond19.loopexit
+.loopexit:                                        ; preds = %54, %33
+  %qq.2.lcssa = phi float [ %qq.14, %33 ], [ %qq.3, %54 ]
+  %32 = icmp slt i64 %indvars.iv.next19, %31
+  br i1 %32, label %33, label %._crit_edge
 
-for.body34.lr.ph:                                 ; preds = %for.body22
-  %9 = load i32** %a, align 8, !tbaa !3
-  %10 = sext i32 %6 to i64
-  br label %for.body34
+; <label>:33                                      ; preds = %.lr.ph6, %.loopexit
+  %34 = phi i32 [ %.pre, %.lr.ph6 ], [ %36, %.loopexit ]
+  %indvars.iv18 = phi i64 [ 0, %.lr.ph6 ], [ %indvars.iv.next19, %.loopexit ]
+  %qq.14 = phi float [ 0.000000e+00, %.lr.ph6 ], [ %qq.2.lcssa, %.loopexit ]
+  %indvars.iv.next19 = add nuw nsw i64 %indvars.iv18, 1
+  %35 = getelementptr inbounds i32* %29, i64 %indvars.iv.next19
+  %36 = load i32* %35, align 4, !tbaa !11
+  %37 = getelementptr inbounds float* %charge, i64 %indvars.iv18
+  %38 = load float* %37, align 4, !tbaa !2
+  %39 = icmp slt i32 %34, %36
+  br i1 %39, label %.lr.ph, label %.loopexit
 
-for.body34:                                       ; preds = %for.body34.lr.ph, %for.inc43
-  %indvars.iv = phi i64 [ %10, %for.body34.lr.ph ], [ %indvars.iv.next, %for.inc43 ]
-  %qq.2105 = phi float [ %qq.1108, %for.body34.lr.ph ], [ %qq.3, %for.inc43 ]
-  %arrayidx36 = getelementptr inbounds i32* %9, i64 %indvars.iv
-  %11 = load i32* %arrayidx36, align 4, !tbaa !4
-  %12 = trunc i64 %indvars.iv118 to i32
-  %cmp37 = icmp eq i32 %11, %12
-  br i1 %cmp37, label %for.inc43, label %if.then
+.lr.ph:                                           ; preds = %33
+  %40 = load i32** %30, align 8, !tbaa !12
+  %41 = sext i32 %34 to i64
+  %42 = add i32 %36, -1
+  br label %43
 
-if.then:                                          ; preds = %for.body34
-  %idxprom39 = sext i32 %11 to i64
-  %arrayidx40 = getelementptr inbounds float* %charge, i64 %idxprom39
-  %13 = load float* %arrayidx40, align 4, !tbaa !0
-  %mul41 = fmul float %8, %13
-  %add42 = fadd float %qq.2105, %mul41
-  br label %for.inc43
+; <label>:43                                      ; preds = %54, %.lr.ph
+  %indvars.iv = phi i64 [ %41, %.lr.ph ], [ %indvars.iv.next, %54 ]
+  %qq.22 = phi float [ %qq.14, %.lr.ph ], [ %qq.3, %54 ]
+  %44 = getelementptr inbounds i32* %40, i64 %indvars.iv
+  %45 = load i32* %44, align 4, !tbaa !11
+  %46 = trunc i64 %indvars.iv18 to i32
+  %47 = icmp eq i32 %45, %46
+  br i1 %47, label %54, label %48
 
-for.inc43:                                        ; preds = %for.body34, %if.then
-  %qq.3 = phi float [ %add42, %if.then ], [ %qq.2105, %for.body34 ]
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %14 = trunc i64 %indvars.iv.next to i32
-  %cmp32 = icmp slt i32 %14, %7
-  br i1 %cmp32, label %for.body34, label %for.cond19.loopexit
+; <label>:48                                      ; preds = %43
+  %49 = sext i32 %45 to i64
+  %50 = getelementptr inbounds float* %charge, i64 %49
+  %51 = load float* %50, align 4, !tbaa !2
+  %52 = fmul float %38, %51
+  %53 = fadd float %qq.22, %52
+  br label %54
 
-for.end48:                                        ; preds = %for.cond19.loopexit, %for.end
-  %qq.1.lcssa = phi float [ 0.000000e+00, %for.end ], [ %qq.2.lcssa, %for.cond19.loopexit ]
-  %conv49 = fpext float %qq.1.lcssa to double
-  %mul50 = fmul double %conv49, 5.000000e-01
-  %mul52 = fmul double %mul50, %conv11
-  %mul53 = fmul double %mul52, 3.320636e+02
-  %mul54 = fmul double %mul53, 4.184000e+00
-  %mul55 = fmul double %mul54, 1.000000e-01
-  %conv56 = fptrunc double %mul55 to float
-  %sub = fsub float %V.0.lcssa, %conv18
-  %sub57 = fsub float %sub, %conv56
-  %tobool = icmp eq i32 %bHeader, 0
-  %tobool58 = icmp eq %struct._IO_FILE* %fp, null
-  %or.cond = or i1 %tobool, %tobool58
-  br i1 %or.cond, label %if.end60, label %if.then59
+; <label>:54                                      ; preds = %43, %48
+  %qq.3 = phi float [ %53, %48 ], [ %qq.22, %43 ]
+  %indvars.iv.next = add nsw i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %42
+  br i1 %exitcond, label %.loopexit, label %43
 
-if.then59:                                        ; preds = %for.end48
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([36 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str14, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str16, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str17, i64 0, i64 0)) #6
-  br label %if.end60
+._crit_edge:                                      ; preds = %.loopexit, %16
+  %qq.1.lcssa = phi float [ 0.000000e+00, %16 ], [ %qq.2.lcssa, %.loopexit ]
+  %55 = fpext float %qq.1.lcssa to double
+  %56 = fmul double %55, 5.000000e-01
+  %57 = fmul double %56, %18
+  %58 = fmul double %57, 3.320636e+02
+  %59 = fmul double %58, 4.184000e+00
+  %60 = fmul double %59, 1.000000e-01
+  %61 = fptrunc double %60 to float
+  %62 = fsub float %V.0.lcssa, %24
+  %63 = fsub float %62, %61
+  %64 = icmp ne i32 %bHeader, 0
+  %65 = icmp ne %struct.__sFILE* %fp, null
+  %or.cond = and i1 %65, %64
+  br i1 %or.cond, label %66, label %68
 
-if.end60:                                         ; preds = %for.end48, %if.then59
-  br i1 %tobool58, label %if.end70, label %if.then62
+; <label>:66                                      ; preds = %._crit_edge
+  %67 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([36 x i8]* @.str11, i64 0, i64 0), i8* getelementptr inbounds ([1 x i8]* @.str12, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str13, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str14, i64 0, i64 0), i8* getelementptr inbounds ([6 x i8]* @.str15, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str16, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str17, i64 0, i64 0)) #8
+  br label %68
 
-if.then62:                                        ; preds = %if.end60
-  %conv63 = fpext float %V.0.lcssa to double
-  %conv64 = fpext float %conv18 to double
-  %conv65 = fpext float %conv56 to double
-  %conv66 = fpext float %sub57 to double
-  %conv67 = sitofp i32 %nmol to float
-  %div = fdiv float %sub57, %conv67
-  %conv68 = fpext float %div to double
-  %call69 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %fp, i8* getelementptr inbounds ([46 x i8]* @.str18, i64 0, i64 0), i8* %title, double %conv63, double %conv64, double %conv65, double %conv66, double %conv68) #6
-  br label %if.end70
+; <label>:68                                      ; preds = %66, %._crit_edge
+  br i1 %65, label %69, label %78
 
-if.end70:                                         ; preds = %if.end60, %if.then62
+; <label>:69                                      ; preds = %68
+  %70 = fpext float %V.0.lcssa to double
+  %71 = fpext float %24 to double
+  %72 = fpext float %61 to double
+  %73 = fpext float %63 to double
+  %74 = sitofp i32 %nmol to float
+  %75 = fdiv float %63, %74
+  %76 = fpext float %75 to double
+  %77 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %fp, i8* getelementptr inbounds ([46 x i8]* @.str18, i64 0, i64 0), i8* %title, double %70, double %71, double %72, double %73, double %76) #8
+  br label %78
+
+; <label>:78                                      ; preds = %69, %68
   ret void
 }

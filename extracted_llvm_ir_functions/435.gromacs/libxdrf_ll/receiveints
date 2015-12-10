@@ -1,112 +1,109 @@
-define internal fastcc void @receiveints(i32* nocapture %buf, i32 %num_of_bits, i32* nocapture %sizes, i32* nocapture %nums) #0 {
-entry:
+define internal fastcc void @receiveints(i32* nocapture %buf, i32 %num_of_bits, i32* nocapture readonly %sizes, i32* nocapture %nums) #4 {
   %bytes = alloca [32 x i32], align 16
-  %0 = bitcast [32 x i32]* %bytes to i8*
-  call void @llvm.lifetime.start(i64 128, i8* %0) #3
-  %arrayidx = getelementptr inbounds [32 x i32]* %bytes, i64 0, i64 3
-  store i32 0, i32* %arrayidx, align 4, !tbaa !3
-  %arrayidx1 = getelementptr inbounds [32 x i32]* %bytes, i64 0, i64 2
-  store i32 0, i32* %arrayidx1, align 8, !tbaa !3
-  %arrayidx2 = getelementptr inbounds [32 x i32]* %bytes, i64 0, i64 1
-  store i32 0, i32* %arrayidx2, align 4, !tbaa !3
-  %cmp6 = icmp sgt i32 %num_of_bits, 8
-  br i1 %cmp6, label %while.body.lr.ph, label %while.end
+  %1 = bitcast [32 x i32]* %bytes to i8*
+  call void @llvm.lifetime.start(i64 128, i8* %1) #7
+  %2 = getelementptr inbounds [32 x i32]* %bytes, i64 0, i64 3
+  store i32 0, i32* %2, align 4, !tbaa !23
+  %3 = getelementptr inbounds [32 x i32]* %bytes, i64 0, i64 2
+  store i32 0, i32* %3, align 8, !tbaa !23
+  %4 = getelementptr inbounds [32 x i32]* %bytes, i64 0, i64 1
+  store i32 0, i32* %4, align 4, !tbaa !23
+  %5 = icmp sgt i32 %num_of_bits, 8
+  br i1 %5, label %.lr.ph8, label %17
 
-while.body.lr.ph:                                 ; preds = %entry
-  %1 = add i32 %num_of_bits, -8
-  %2 = add i32 %num_of_bits, -9
-  %3 = lshr i32 %2, 3
-  %4 = shl nuw i32 %3, 3
-  %5 = sub i32 %1, %4
-  br label %while.body
+.lr.ph8:                                          ; preds = %0
+  %6 = add i32 %num_of_bits, -9
+  %7 = lshr i32 %6, 3
+  %8 = shl nuw i32 %7, 3
+  br label %9
 
-while.body:                                       ; preds = %while.body.lr.ph, %while.body
-  %indvars.iv13 = phi i64 [ 0, %while.body.lr.ph ], [ %indvars.iv.next14, %while.body ]
-  %num_of_bits.addr.08 = phi i32 [ %num_of_bits, %while.body.lr.ph ], [ %sub, %while.body ]
-  %call = call fastcc i32 @receivebits(i32* %buf, i32 8) #8
-  %indvars.iv.next14 = add i64 %indvars.iv13, 1
-  %arrayidx3 = getelementptr inbounds [32 x i32]* %bytes, i64 0, i64 %indvars.iv13
-  store i32 %call, i32* %arrayidx3, align 4, !tbaa !3
-  %sub = add nsw i32 %num_of_bits.addr.08, -8
-  %cmp = icmp sgt i32 %sub, 8
-  br i1 %cmp, label %while.body, label %while.cond.while.end_crit_edge
+; <label>:9                                       ; preds = %.lr.ph8, %9
+  %indvars.iv16 = phi i64 [ 0, %.lr.ph8 ], [ %indvars.iv.next17, %9 ]
+  %.06 = phi i32 [ %num_of_bits, %.lr.ph8 ], [ %12, %9 ]
+  %10 = tail call fastcc i32 @receivebits(i32* %buf, i32 8) #13
+  %indvars.iv.next17 = add nuw nsw i64 %indvars.iv16, 1
+  %11 = getelementptr inbounds [32 x i32]* %bytes, i64 0, i64 %indvars.iv16
+  store i32 %10, i32* %11, align 4, !tbaa !23
+  %12 = add nsw i32 %.06, -8
+  %13 = icmp sgt i32 %12, 8
+  br i1 %13, label %9, label %._crit_edge9
 
-while.cond.while.end_crit_edge:                   ; preds = %while.body
-  %6 = add i32 %3, 1
-  br label %while.end
+._crit_edge9:                                     ; preds = %9
+  %14 = add i32 %num_of_bits, -8
+  %15 = sub i32 %14, %8
+  %16 = add nuw nsw i32 %7, 1
+  br label %17
 
-while.end:                                        ; preds = %while.cond.while.end_crit_edge, %entry
-  %num_of_bits.addr.0.lcssa = phi i32 [ %5, %while.cond.while.end_crit_edge ], [ %num_of_bits, %entry ]
-  %num_of_bytes.0.lcssa = phi i32 [ %6, %while.cond.while.end_crit_edge ], [ 0, %entry ]
-  %cmp4 = icmp sgt i32 %num_of_bits.addr.0.lcssa, 0
-  br i1 %cmp4, label %if.then, label %if.end
+; <label>:17                                      ; preds = %._crit_edge9, %0
+  %.0.lcssa = phi i32 [ %15, %._crit_edge9 ], [ %num_of_bits, %0 ]
+  %num_of_bytes.0.lcssa = phi i32 [ %16, %._crit_edge9 ], [ 0, %0 ]
+  %18 = icmp sgt i32 %.0.lcssa, 0
+  br i1 %18, label %19, label %24
 
-if.then:                                          ; preds = %while.end
-  %call5 = call fastcc i32 @receivebits(i32* %buf, i32 %num_of_bits.addr.0.lcssa) #8
-  %inc6 = add nsw i32 %num_of_bytes.0.lcssa, 1
-  %idxprom7 = sext i32 %num_of_bytes.0.lcssa to i64
-  %arrayidx8 = getelementptr inbounds [32 x i32]* %bytes, i64 0, i64 %idxprom7
-  store i32 %call5, i32* %arrayidx8, align 4, !tbaa !3
-  br label %if.end
+; <label>:19                                      ; preds = %17
+  %20 = tail call fastcc i32 @receivebits(i32* %buf, i32 %.0.lcssa) #13
+  %21 = add nsw i32 %num_of_bytes.0.lcssa, 1
+  %22 = sext i32 %num_of_bytes.0.lcssa to i64
+  %23 = getelementptr inbounds [32 x i32]* %bytes, i64 0, i64 %22
+  store i32 %20, i32* %23, align 4, !tbaa !23
+  br label %24
 
-if.end:                                           ; preds = %if.then, %while.end
-  %num_of_bytes.1 = phi i32 [ %inc6, %if.then ], [ %num_of_bytes.0.lcssa, %while.end ]
-  %cmp132 = icmp sgt i32 %num_of_bytes.1, 0
-  %7 = sext i32 %num_of_bytes.1 to i64
-  br label %for.cond12.preheader
+; <label>:24                                      ; preds = %19, %17
+  %num_of_bytes.1 = phi i32 [ %21, %19 ], [ %num_of_bytes.0.lcssa, %17 ]
+  %25 = icmp sgt i32 %num_of_bytes.1, 0
+  %26 = sext i32 %num_of_bytes.1 to i64
+  br label %.preheader
 
-for.cond12.preheader:                             ; preds = %if.end, %for.end
-  %indvars.iv11 = phi i64 [ 2, %if.end ], [ %indvars.iv.next12, %for.end ]
-  br i1 %cmp132, label %for.body14.lr.ph, label %for.end
+.preheader:                                       ; preds = %24, %._crit_edge
+  %indvars.iv14 = phi i64 [ 2, %24 ], [ %indvars.iv.next15, %._crit_edge ]
+  br i1 %25, label %.lr.ph, label %._crit_edge
 
-for.body14.lr.ph:                                 ; preds = %for.cond12.preheader
-  %arrayidx18 = getelementptr inbounds i32* %sizes, i64 %indvars.iv11
-  %8 = load i32* %arrayidx18, align 4, !tbaa !3
-  br label %for.body14
+.lr.ph:                                           ; preds = %.preheader
+  %27 = getelementptr inbounds i32* %sizes, i64 %indvars.iv14
+  %28 = load i32* %27, align 4, !tbaa !23
+  br label %29
 
-for.body14:                                       ; preds = %for.body14.lr.ph, %for.body14
-  %indvars.iv = phi i64 [ %7, %for.body14.lr.ph ], [ %indvars.iv.next, %for.body14 ]
-  %num.03 = phi i32 [ 0, %for.body14.lr.ph ], [ %sub23, %for.body14 ]
-  %indvars.iv.next = add i64 %indvars.iv, -1
-  %shl = shl i32 %num.03, 8
-  %arrayidx16 = getelementptr inbounds [32 x i32]* %bytes, i64 0, i64 %indvars.iv.next
-  %9 = load i32* %arrayidx16, align 4, !tbaa !3
-  %or = or i32 %9, %shl
-  %div = udiv i32 %or, %8
-  store i32 %div, i32* %arrayidx16, align 4, !tbaa !3
-  %mul = mul i32 %8, %div
-  %sub23 = sub i32 %or, %mul
-  %10 = trunc i64 %indvars.iv.next to i32
-  %cmp13 = icmp sgt i32 %10, 0
-  br i1 %cmp13, label %for.body14, label %for.end
+; <label>:29                                      ; preds = %.lr.ph, %29
+  %indvars.iv = phi i64 [ %26, %.lr.ph ], [ %indvars.iv.next, %29 ]
+  %num.02 = phi i32 [ 0, %.lr.ph ], [ %36, %29 ]
+  %indvars.iv.next = add nsw i64 %indvars.iv, -1
+  %30 = shl i32 %num.02, 8
+  %31 = getelementptr inbounds [32 x i32]* %bytes, i64 0, i64 %indvars.iv.next
+  %32 = load i32* %31, align 4, !tbaa !23
+  %33 = or i32 %32, %30
+  %34 = udiv i32 %33, %28
+  store i32 %34, i32* %31, align 4, !tbaa !23
+  %35 = mul i32 %28, %34
+  %36 = sub i32 %33, %35
+  %37 = icmp sgt i64 %indvars.iv, 1
+  br i1 %37, label %29, label %._crit_edge
 
-for.end:                                          ; preds = %for.body14, %for.cond12.preheader
-  %num.0.lcssa = phi i32 [ 0, %for.cond12.preheader ], [ %sub23, %for.body14 ]
-  %arrayidx25 = getelementptr inbounds i32* %nums, i64 %indvars.iv11
-  store i32 %num.0.lcssa, i32* %arrayidx25, align 4, !tbaa !3
-  %indvars.iv.next12 = add i64 %indvars.iv11, -1
-  %11 = trunc i64 %indvars.iv.next12 to i32
-  %cmp10 = icmp sgt i32 %11, 0
-  br i1 %cmp10, label %for.cond12.preheader, label %for.end28
+._crit_edge:                                      ; preds = %29, %.preheader
+  %num.0.lcssa = phi i32 [ 0, %.preheader ], [ %36, %29 ]
+  %38 = getelementptr inbounds i32* %nums, i64 %indvars.iv14
+  store i32 %num.0.lcssa, i32* %38, align 4, !tbaa !23
+  %indvars.iv.next15 = add nsw i64 %indvars.iv14, -1
+  %39 = icmp sgt i64 %indvars.iv14, 1
+  br i1 %39, label %.preheader, label %40
 
-for.end28:                                        ; preds = %for.end
-  %12 = bitcast [32 x i32]* %bytes to i64*
-  %13 = load i64* %12, align 16
-  %14 = trunc i64 %13 to i32
-  %15 = lshr i64 %13, 24
-  %.tr = trunc i64 %15 to i32
-  %shl31 = and i32 %.tr, -256
-  %or32 = or i32 %shl31, %14
-  %16 = bitcast i32* %arrayidx1 to i64*
-  %17 = load i64* %16, align 8
-  %18 = trunc i64 %17 to i32
-  %shl34 = shl i32 %18, 16
-  %or35 = or i32 %or32, %shl34
-  %19 = lshr i64 %17, 8
-  %.tr17 = trunc i64 %19 to i32
-  %shl37 = and i32 %.tr17, -16777216
-  %or38 = or i32 %or35, %shl37
-  store i32 %or38, i32* %nums, align 4, !tbaa !3
-  call void @llvm.lifetime.end(i64 128, i8* %0) #3
+; <label>:40                                      ; preds = %._crit_edge
+  %41 = bitcast [32 x i32]* %bytes to i64*
+  %42 = load i64* %41, align 16
+  %43 = trunc i64 %42 to i32
+  %44 = lshr i64 %42, 24
+  %.tr = trunc i64 %44 to i32
+  %45 = and i32 %.tr, -256
+  %46 = or i32 %45, %43
+  %47 = bitcast i32* %3 to i64*
+  %48 = load i64* %47, align 8
+  %49 = trunc i64 %48 to i32
+  %50 = shl i32 %49, 16
+  %51 = or i32 %46, %50
+  %52 = lshr i64 %48, 8
+  %.tr18 = trunc i64 %52 to i32
+  %53 = and i32 %.tr18, -16777216
+  %54 = or i32 %51, %53
+  store i32 %54, i32* %nums, align 4, !tbaa !23
+  call void @llvm.lifetime.end(i64 128, i8* %1) #7
   ret void
 }

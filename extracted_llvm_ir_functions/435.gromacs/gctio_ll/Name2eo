@@ -1,30 +1,26 @@
-define internal fastcc i32 @Name2eo(i8* %s) #0 {
-entry:
-  br label %for.body
+define internal fastcc i32 @Name2eo(i8* nocapture readonly %s) #4 {
+  br label %1
 
-for.cond:                                         ; preds = %for.body
-  %inc = add nsw i32 %i.010, 1
-  %0 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %0, 17
-  br i1 %cmp, label %for.body, label %for.end
+; <label>:1                                       ; preds = %0, %10
+  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %10 ]
+  %2 = getelementptr inbounds [17 x i8*]* @eoNames, i64 0, i64 %indvars.iv
+  %3 = load i8** %2, align 8, !tbaa !22
+  %4 = tail call i32 @strcasecmp(i8* %s, i8* %3) #9
+  %5 = icmp eq i32 %4, 0
+  br i1 %5, label %6, label %10
 
-for.body:                                         ; preds = %entry, %for.cond
-  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.cond ]
-  %i.010 = phi i32 [ 0, %entry ], [ %inc, %for.cond ]
-  %arrayidx = getelementptr inbounds [17 x i8*]* @eoNames, i64 0, i64 %indvars.iv
-  %1 = load i8** %arrayidx, align 8, !tbaa !3
-  %call = tail call i32 @gmx_strcasecmp(i8* %s, i8* %1) #6
-  %cmp1 = icmp eq i32 %call, 0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  br i1 %cmp1, label %if.then, label %for.cond
+; <label>:6                                       ; preds = %1
+  %7 = trunc i64 %indvars.iv to i32
+  %8 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !22
+  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %8, i8* getelementptr inbounds ([32 x i8]* @.str70, i64 0, i64 0), i32 %7, i8* %3) #9
+  br label %.loopexit
 
-if.then:                                          ; preds = %for.body
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %3 = load i8** %arrayidx, align 8, !tbaa !3
-  %call4 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %2, i8* getelementptr inbounds ([32 x i8]* @.str68, i64 0, i64 0), i32 %i.010, i8* %3) #6
-  br label %for.end
+; <label>:10                                      ; preds = %1
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %11 = icmp slt i64 %indvars.iv.next, 17
+  br i1 %11, label %1, label %.loopexit
 
-for.end:                                          ; preds = %for.cond, %if.then
-  %res.0 = phi i32 [ %i.010, %if.then ], [ -1, %for.cond ]
+.loopexit:                                        ; preds = %10, %6
+  %res.0 = phi i32 [ %7, %6 ], [ -1, %10 ]
   ret i32 %res.0
 }

@@ -1,75 +1,74 @@
-define internal fastcc i32 @xyz_next_x(%struct._IO_FILE* %status, float* nocapture %t, i32 %natoms, [3 x float]* nocapture %x, [3 x float]* nocapture %box) #1 {
-entry:
-  %0 = load float* %t, align 4, !tbaa !3
-  %1 = load float* @tbegin, align 4, !tbaa !3
-  %cmp32 = fcmp ult float %1, 0.000000e+00
-  br i1 %cmp32, label %while.end, label %land.rhs
+define internal fastcc i32 @xyz_next_x(%struct.__sFILE* nocapture %status, float* nocapture %t, i32 %natoms, [3 x float]* nocapture %x, [3 x float]* nocapture %box) #5 {
+  %1 = load float* %t, align 4, !tbaa !14
+  %2 = load float* @tbegin, align 4, !tbaa !14
+  %3 = fcmp ult float %2, 0.000000e+00
+  br i1 %3, label %.critedge, label %.lr.ph
 
-land.rhs:                                         ; preds = %entry, %if.end
-  %2 = phi float [ %7, %if.end ], [ %1, %entry ]
-  %3 = phi float [ %conv2, %if.end ], [ %0, %entry ]
-  %cmp1 = fcmp olt float %3, %2
-  br i1 %cmp1, label %while.body, label %while.end
+.lr.ph:                                           ; preds = %0, %10
+  %4 = phi float [ %17, %10 ], [ %2, %0 ]
+  %5 = phi float [ %16, %10 ], [ %1, %0 ]
+  %6 = fcmp olt float %5, %4
+  br i1 %6, label %7, label %.critedge
 
-while.body:                                       ; preds = %land.rhs
-  %call = tail call fastcc i32 @do_read_xyz(%struct._IO_FILE* %status, i32 %natoms, [3 x float]* %x, [3 x float]* %box) #7
-  %tobool = icmp eq i32 %call, 0
-  br i1 %tobool, label %return, label %if.end
+; <label>:7                                       ; preds = %.lr.ph
+  %8 = tail call fastcc i32 @do_read_xyz(%struct.__sFILE* %status, i32 %natoms, [3 x float]* %x, [3 x float]* %box) #13
+  %9 = icmp eq i32 %8, 0
+  br i1 %9, label %.loopexit, label %10
 
-if.end:                                           ; preds = %while.body
-  %4 = load float* %t, align 4, !tbaa !3
-  tail call fastcc void @printcount2(float %4, float %4, float %4, float %4) #6
-  %5 = load double* @DT, align 8, !tbaa !5
-  %6 = load float* %t, align 4, !tbaa !3
-  %conv = fpext float %6 to double
-  %add = fadd double %5, %conv
-  %conv2 = fptrunc double %add to float
-  store float %conv2, float* %t, align 4, !tbaa !3
-  %7 = load float* @tbegin, align 4, !tbaa !3
-  %cmp = fcmp ult float %7, 0.000000e+00
-  br i1 %cmp, label %while.end, label %land.rhs
+; <label>:10                                      ; preds = %7
+  %11 = load float* %t, align 4, !tbaa !14
+  tail call fastcc void @printcount2(float %11, float %11, float %11, float %11) #10
+  %12 = load double* @DT, align 8, !tbaa !16
+  %13 = load float* %t, align 4, !tbaa !14
+  %14 = fpext float %13 to double
+  %15 = fadd double %12, %14
+  %16 = fptrunc double %15 to float
+  store float %16, float* %t, align 4, !tbaa !14
+  %17 = load float* @tbegin, align 4, !tbaa !14
+  %18 = fcmp ult float %17, 0.000000e+00
+  br i1 %18, label %.critedge, label %.lr.ph
 
-while.end:                                        ; preds = %if.end, %land.rhs, %entry
-  %8 = phi float [ %0, %entry ], [ %3, %land.rhs ], [ %conv2, %if.end ]
-  %9 = load float* @tend, align 4, !tbaa !3
-  %cmp3 = fcmp ult float %9, 0.000000e+00
-  br i1 %cmp3, label %lor.lhs.false, label %land.lhs.true
+.critedge:                                        ; preds = %.lr.ph, %10, %0
+  %19 = phi float [ %1, %0 ], [ %5, %.lr.ph ], [ %16, %10 ]
+  %20 = load float* @tend, align 4, !tbaa !14
+  %21 = fcmp ult float %20, 0.000000e+00
+  br i1 %21, label %25, label %22
 
-land.lhs.true:                                    ; preds = %while.end
-  %cmp5 = fcmp olt float %8, %9
-  %cmp8 = fcmp olt float %9, 0.000000e+00
-  %or.cond = or i1 %cmp5, %cmp8
-  br i1 %or.cond, label %if.then10, label %if.end18
+; <label>:22                                      ; preds = %.critedge
+  %23 = fcmp olt float %19, %20
+  %24 = fcmp olt float %20, 0.000000e+00
+  %or.cond = or i1 %24, %23
+  br i1 %or.cond, label %26, label %37
 
-lor.lhs.false:                                    ; preds = %while.end
-  %cmp8.old = fcmp olt float %9, 0.000000e+00
-  br i1 %cmp8.old, label %if.then10, label %if.end18
+; <label>:25                                      ; preds = %.critedge
+  %.old1 = fcmp olt float %20, 0.000000e+00
+  br i1 %.old1, label %26, label %37
 
-if.then10:                                        ; preds = %lor.lhs.false, %land.lhs.true
-  %call11 = tail call fastcc i32 @do_read_xyz(%struct._IO_FILE* %status, i32 %natoms, [3 x float]* %x, [3 x float]* %box) #7
-  %tobool12 = icmp eq i32 %call11, 0
-  %10 = load float* %t, align 4, !tbaa !3
-  br i1 %tobool12, label %if.then13, label %if.end14
+; <label>:26                                      ; preds = %25, %22
+  %27 = tail call fastcc i32 @do_read_xyz(%struct.__sFILE* %status, i32 %natoms, [3 x float]* %x, [3 x float]* %box) #13
+  %28 = icmp eq i32 %27, 0
+  %29 = load float* %t, align 4, !tbaa !14
+  br i1 %28, label %30, label %31
 
-if.then13:                                        ; preds = %if.then10
-  tail call fastcc void @printlast(float %10) #7
-  br label %return
+; <label>:30                                      ; preds = %26
+  tail call fastcc void @printlast(float %29) #13
+  br label %.loopexit
 
-if.end14:                                         ; preds = %if.then10
-  tail call fastcc void @printcount2(float %10, float %10, float %10, float %10) #6
-  %11 = load double* @DT, align 8, !tbaa !5
-  %12 = load float* %t, align 4, !tbaa !3
-  %conv15 = fpext float %12 to double
-  %add16 = fadd double %11, %conv15
-  %conv17 = fptrunc double %add16 to float
-  store float %conv17, float* %t, align 4, !tbaa !3
-  br label %return
+; <label>:31                                      ; preds = %26
+  tail call fastcc void @printcount2(float %29, float %29, float %29, float %29) #10
+  %32 = load double* @DT, align 8, !tbaa !16
+  %33 = load float* %t, align 4, !tbaa !14
+  %34 = fpext float %33 to double
+  %35 = fadd double %32, %34
+  %36 = fptrunc double %35 to float
+  store float %36, float* %t, align 4, !tbaa !14
+  br label %.loopexit
 
-if.end18:                                         ; preds = %land.lhs.true, %lor.lhs.false
-  tail call fastcc void @printlast(float %8) #7
-  br label %return
+; <label>:37                                      ; preds = %22, %25
+  tail call fastcc void @printlast(float %19) #13
+  br label %.loopexit
 
-return:                                           ; preds = %while.body, %if.end18, %if.end14, %if.then13
-  %retval.0 = phi i32 [ 1, %if.end14 ], [ 0, %if.then13 ], [ 0, %if.end18 ], [ 0, %while.body ]
-  ret i32 %retval.0
+.loopexit:                                        ; preds = %7, %37, %31, %30
+  %.0 = phi i32 [ 1, %31 ], [ 0, %30 ], [ 0, %37 ], [ 0, %7 ]
+  ret i32 %.0
 }

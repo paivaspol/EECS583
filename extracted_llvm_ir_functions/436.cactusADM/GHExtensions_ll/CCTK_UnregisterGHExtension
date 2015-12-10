@@ -1,0 +1,25 @@
+define i32 @CCTK_UnregisterGHExtension(i8* %name) #1 {
+  %extension = alloca i8*, align 8
+  %1 = load %struct.cHandledData** @GHExtensions, align 8, !tbaa !2
+  %2 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %name, i8** %extension) #5
+  %3 = icmp sgt i32 %2, -1
+  br i1 %3, label %4, label %12
+
+; <label>:4                                       ; preds = %0
+  %5 = load %struct.cHandledData** @GHExtensions, align 8, !tbaa !2
+  %6 = call i32 @Util_DeleteHandle(%struct.cHandledData* %5, i32 %2) #5
+  %7 = icmp eq i32 %6, 0
+  br i1 %7, label %8, label %12
+
+; <label>:8                                       ; preds = %4
+  %9 = load i8** %extension, align 8, !tbaa !2
+  call void @free(i8* %9) #6
+  %10 = load i32* @num_extensions, align 4, !tbaa !6
+  %11 = add nsw i32 %10, -1
+  store i32 %11, i32* @num_extensions, align 4, !tbaa !6
+  br label %12
+
+; <label>:12                                      ; preds = %4, %8, %0
+  %ret_val.0 = phi i32 [ 0, %8 ], [ -1, %4 ], [ -1, %0 ]
+  ret i32 %ret_val.0
+}

@@ -1,0 +1,30 @@
+define i32 @PUGH_ComposeIJK(i32 %dim, i32* nocapture readonly %nprocs, i32* nocapture readonly %pos) #4 {
+  %1 = add nsw i32 %dim, -1
+  %2 = sext i32 %1 to i64
+  %3 = getelementptr inbounds i32* %pos, i64 %2
+  %4 = load i32* %3, align 4, !tbaa !20
+  %5 = add i32 %dim, -2
+  %6 = icmp sgt i32 %5, -1
+  br i1 %6, label %.lr.ph, label %._crit_edge
+
+.lr.ph:                                           ; preds = %0
+  %7 = sext i32 %5 to i64
+  br label %8
+
+; <label>:8                                       ; preds = %.lr.ph, %8
+  %indvars.iv = phi i64 [ %7, %.lr.ph ], [ %indvars.iv.next, %8 ]
+  %ijk.01 = phi i32 [ %4, %.lr.ph ], [ %14, %8 ]
+  %9 = getelementptr inbounds i32* %pos, i64 %indvars.iv
+  %10 = load i32* %9, align 4, !tbaa !20
+  %11 = getelementptr inbounds i32* %nprocs, i64 %indvars.iv
+  %12 = load i32* %11, align 4, !tbaa !20
+  %13 = mul nsw i32 %12, %ijk.01
+  %14 = add nsw i32 %13, %10
+  %15 = icmp sgt i64 %indvars.iv, 0
+  %indvars.iv.next = add nsw i64 %indvars.iv, -1
+  br i1 %15, label %8, label %._crit_edge
+
+._crit_edge:                                      ; preds = %8, %0
+  %ijk.0.lcssa = phi i32 [ %4, %0 ], [ %14, %8 ]
+  ret i32 %ijk.0.lcssa
+}

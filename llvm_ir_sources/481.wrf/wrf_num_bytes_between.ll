@@ -1,62 +1,66 @@
-; ModuleID = '../../SPEC/benchspec/CPU2006/481.wrf/src/wrf_num_bytes_between.c'
-target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
-target triple = "x86_64-unknown-linux-gnu"
+; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/481.wrf/src/wrf_num_bytes_between.c'
+target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
+target triple = "x86_64-apple-macosx10.10.0"
 
-; Function Attrs: nounwind optsize uwtable
+; Function Attrs: nounwind optsize ssp uwtable
 define i32 @wrf_num_bytes_between_(i8* %a, i8* %b, i32* nocapture %n) #0 {
-entry:
-  %sub.ptr.lhs.cast = ptrtoint i8* %a to i64
-  %sub.ptr.rhs.cast = ptrtoint i8* %b to i64
-  %sub.ptr.sub = sub i64 %sub.ptr.lhs.cast, %sub.ptr.rhs.cast
-  %conv = trunc i64 %sub.ptr.sub to i32
-  %cmp = icmp slt i32 %conv, 0
-  %sub = sub nsw i32 0, %conv
-  %sub.conv = select i1 %cmp, i32 %sub, i32 %conv
-  store i32 %sub.conv, i32* %n, align 4, !tbaa !0
+  %1 = ptrtoint i8* %a to i64
+  %2 = ptrtoint i8* %b to i64
+  %3 = sub i64 %1, %2
+  %4 = trunc i64 %3 to i32
+  %5 = icmp slt i32 %4, 0
+  %6 = sub nsw i32 0, %4
+  %. = select i1 %5, i32 %6, i32 %4
+  store i32 %., i32* %n, align 4, !tbaa !2
   ret i32 undef
 }
 
-; Function Attrs: nounwind optsize uwtable
+; Function Attrs: nounwind optsize ssp uwtable
 define i32 @get_initial_data_value_(float* nocapture %n) #0 {
-entry:
-  store float 0.000000e+00, float* %n, align 4, !tbaa !3
+  store float 0.000000e+00, float* %n, align 4, !tbaa !6
   ret i32 undef
 }
 
-; Function Attrs: nounwind optsize uwtable
+; Function Attrs: nounwind optsize ssp uwtable
 define i32 @what_is_a_nan_(i32* nocapture %n) #0 {
-entry:
-  store i32 -4194304, i32* %n, align 4, !tbaa !0
+  store i32 -4194304, i32* %n, align 4, !tbaa !2
   ret i32 undef
 }
 
-; Function Attrs: nounwind optsize uwtable
-define i32 @wrf_mem_copy_(i8* nocapture %a, i8* nocapture %b, i32* nocapture %n) #0 {
-entry:
-  %0 = load i32* %n, align 4, !tbaa !0
-  %cmp3 = icmp sgt i32 %0, 0
-  br i1 %cmp3, label %for.body, label %for.end
+; Function Attrs: nounwind optsize ssp uwtable
+define i32 @wrf_mem_copy_(i8* nocapture readonly %a, i8* nocapture %b, i32* nocapture readonly %n) #0 {
+  %1 = load i32* %n, align 4, !tbaa !2
+  %2 = icmp sgt i32 %1, 0
+  br i1 %2, label %.lr.ph, label %._crit_edge
 
-for.body:                                         ; preds = %entry, %for.body
-  %i.06 = phi i32 [ %inc, %for.body ], [ 0, %entry ]
-  %a.addr.05 = phi i8* [ %incdec.ptr, %for.body ], [ %a, %entry ]
-  %b.addr.04 = phi i8* [ %incdec.ptr1, %for.body ], [ %b, %entry ]
-  %incdec.ptr = getelementptr inbounds i8* %a.addr.05, i64 1
-  %1 = load i8* %a.addr.05, align 1, !tbaa !1
-  %incdec.ptr1 = getelementptr inbounds i8* %b.addr.04, i64 1
-  store i8 %1, i8* %b.addr.04, align 1, !tbaa !1
-  %inc = add nsw i32 %i.06, 1
-  %2 = load i32* %n, align 4, !tbaa !0
-  %cmp = icmp slt i32 %inc, %2
-  br i1 %cmp, label %for.body, label %for.end
+.lr.ph:                                           ; preds = %0, %.lr.ph
+  %i.04 = phi i32 [ %6, %.lr.ph ], [ 0, %0 ]
+  %.03 = phi i8* [ %3, %.lr.ph ], [ %a, %0 ]
+  %.012 = phi i8* [ %5, %.lr.ph ], [ %b, %0 ]
+  %3 = getelementptr inbounds i8* %.03, i64 1
+  %4 = load i8* %.03, align 1, !tbaa !8
+  %5 = getelementptr inbounds i8* %.012, i64 1
+  store i8 %4, i8* %.012, align 1, !tbaa !8
+  %6 = add nuw nsw i32 %i.04, 1
+  %7 = load i32* %n, align 4, !tbaa !2
+  %8 = icmp slt i32 %6, %7
+  br i1 %8, label %.lr.ph, label %._crit_edge
 
-for.end:                                          ; preds = %for.body, %entry
+._crit_edge:                                      ; preds = %.lr.ph, %0
   ret i32 undef
 }
 
-attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #0 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
 
-!0 = metadata !{metadata !"int", metadata !1}
-!1 = metadata !{metadata !"omnipotent char", metadata !2}
-!2 = metadata !{metadata !"Simple C/C++ TBAA"}
-!3 = metadata !{metadata !"float", metadata !1}
+!llvm.module.flags = !{!0}
+!llvm.ident = !{!1}
+
+!0 = !{i32 1, !"PIC Level", i32 2}
+!1 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
+!2 = !{!3, !3, i64 0}
+!3 = !{!"int", !4, i64 0}
+!4 = !{!"omnipotent char", !5, i64 0}
+!5 = !{!"Simple C/C++ TBAA"}
+!6 = !{!7, !7, i64 0}
+!7 = !{!"float", !4, i64 0}
+!8 = !{!4, !4, i64 0}

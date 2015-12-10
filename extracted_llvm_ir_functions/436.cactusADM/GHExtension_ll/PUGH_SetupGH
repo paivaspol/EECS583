@@ -1,0 +1,143 @@
+define i8* @PUGH_SetupGH(%struct.tFleshConfig* nocapture readnone %config, i32 %convergence_level, %struct.cGH* %GH) #1 {
+  %pgroup = alloca %struct.cGroup, align 4
+  %1 = tail call i32 @CCTK_MaxDim() #6
+  %2 = mul nsw i32 %1, 5
+  %3 = sext i32 %2 to i64
+  %4 = shl nsw i64 %3, 2
+  %5 = tail call i8* @malloc(i64 %4) #6
+  %6 = bitcast i8* %5 to i32*
+  %7 = sext i32 %1 to i64
+  %8 = getelementptr inbounds i32* %6, i64 %7
+  %9 = shl nsw i32 %1, 1
+  %10 = sext i32 %9 to i64
+  %11 = getelementptr inbounds i32* %6, i64 %10
+  tail call void @PUGH_GFSize(i32 %1, i32* %6) #7
+  tail call void @PUGH_GFGhostsize(i32 %1, i32* %8) #7
+  tail call void @PUGH_GFPeriodic(i32 %1, i32* %11) #7
+  %12 = bitcast %struct.cGH* %GH to i8*
+  %13 = tail call i32 @CCTK_StaggerVars() #6
+  %14 = icmp ne i32 %13, 0
+  %15 = zext i1 %14 to i32
+  %16 = tail call %struct.PGH* @PUGH_SetupPGH(i8* %12, i32 %1, i32* %6, i32* %8, i32 %15, i32* %11) #6
+  %17 = icmp eq %struct.PGH* %16, null
+  br i1 %17, label %18, label %20
+
+; <label>:18                                      ; preds = %0
+  %19 = tail call i32 @CCTK_Warn(i32 0, i32 108, i8* getelementptr inbounds ([78 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([36 x i8]* @.str2, i64 0, i64 0)) #6
+  br label %20
+
+; <label>:20                                      ; preds = %0, %18
+  %21 = tail call i8* @calloc(i64 1, i64 1) #6
+  %22 = getelementptr inbounds %struct.PGH* %16, i64 0, i32 23
+  store i8* %21, i8** %22, align 8, !tbaa !2
+  %23 = call i32 @CCTK_NumGroups() #6
+  %24 = icmp sgt i32 %23, 0
+  br i1 %24, label %.lr.ph8, label %._crit_edge
+
+.lr.ph8:                                          ; preds = %20
+  %25 = mul nsw i32 %1, 3
+  %26 = sext i32 %25 to i64
+  %27 = getelementptr inbounds i32* %6, i64 %26
+  %28 = shl nsw i32 %1, 2
+  %29 = sext i32 %28 to i64
+  %30 = getelementptr inbounds i32* %6, i64 %29
+  %31 = getelementptr inbounds %struct.cGroup* %pgroup, i64 0, i32 0
+  %32 = bitcast i32* %30 to i8*
+  %33 = getelementptr inbounds %struct.cGroup* %pgroup, i64 0, i32 4
+  %34 = call i64 @llvm.objectsize.i64.p0i8(i8* %32, i1 false)
+  %35 = getelementptr inbounds %struct.cGroup* %pgroup, i64 0, i32 1
+  %36 = getelementptr inbounds %struct.cGroup* %pgroup, i64 0, i32 5
+  %37 = getelementptr inbounds %struct.cGroup* %pgroup, i64 0, i32 3
+  %38 = getelementptr inbounds %struct.cGroup* %pgroup, i64 0, i32 6
+  %39 = getelementptr inbounds %struct.cGroup* %pgroup, i64 0, i32 7
+  %40 = getelementptr inbounds %struct.cGroup* %pgroup, i64 0, i32 2
+  br label %41
+
+; <label>:41                                      ; preds = %.lr.ph8, %.loopexit
+  %group.07 = phi i32 [ 0, %.lr.ph8 ], [ %82, %.loopexit ]
+  %42 = call i32 @CCTK_GroupData(i32 %group.07, %struct.cGroup* %pgroup) #6
+  %43 = call i32** @CCTK_GroupSizesI(i32 %group.07) #6
+  %44 = icmp eq i32** %43, null
+  br i1 %44, label %.loopexit3, label %.preheader2
+
+.preheader2:                                      ; preds = %41
+  %45 = load i32* %33, align 4, !tbaa !9
+  %46 = icmp sgt i32 %45, 0
+  br i1 %46, label %.lr.ph, label %.loopexit3
+
+.lr.ph:                                           ; preds = %.preheader2
+  %.pre = load i32* %40, align 4, !tbaa !11
+  br label %47
+
+; <label>:47                                      ; preds = %.lr.ph, %47
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %47 ]
+  %48 = getelementptr inbounds i32** %43, i64 %indvars.iv
+  %49 = load i32** %48, align 8, !tbaa !12
+  %50 = load i32* %49, align 4, !tbaa !13
+  %.sum1 = add nsw i64 %indvars.iv, %26
+  %51 = getelementptr inbounds i32* %6, i64 %.sum1
+  %52 = icmp eq i32 %.pre, 1
+  %53 = sub nsw i32 0, %50
+  %. = select i1 %52, i32 %53, i32 %50
+  store i32 %., i32* %51, align 4, !tbaa !13
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %54 = sext i32 %45 to i64
+  %55 = icmp slt i64 %indvars.iv.next, %54
+  br i1 %55, label %47, label %.loopexit3
+
+.loopexit3:                                       ; preds = %47, %.preheader2, %41
+  %groupsize.0 = phi i32* [ null, %41 ], [ %27, %.preheader2 ], [ %27, %47 ]
+  %56 = call i32** @CCTK_GroupGhostsizesI(i32 %group.07) #6
+  %57 = icmp eq i32** %56, null
+  br i1 %57, label %66, label %.preheader
+
+.preheader:                                       ; preds = %.loopexit3
+  %58 = load i32* %33, align 4, !tbaa !9
+  %59 = icmp sgt i32 %58, 0
+  br i1 %59, label %.lr.ph6, label %.loopexit
+
+.lr.ph6:                                          ; preds = %.preheader, %.lr.ph6
+  %indvars.iv9 = phi i64 [ %indvars.iv.next10, %.lr.ph6 ], [ 0, %.preheader ]
+  %60 = getelementptr inbounds i32** %56, i64 %indvars.iv9
+  %61 = load i32** %60, align 8, !tbaa !12
+  %62 = load i32* %61, align 4, !tbaa !13
+  %.sum = add nsw i64 %indvars.iv9, %29
+  %63 = getelementptr inbounds i32* %6, i64 %.sum
+  store i32 %62, i32* %63, align 4, !tbaa !13
+  %indvars.iv.next10 = add nuw nsw i64 %indvars.iv9, 1
+  %64 = sext i32 %58 to i64
+  %65 = icmp slt i64 %indvars.iv.next10, %64
+  br i1 %65, label %.lr.ph6, label %.loopexit
+
+; <label>:66                                      ; preds = %.loopexit3
+  %67 = load i32* %31, align 4, !tbaa !14
+  %68 = icmp eq i32 %67, 3
+  br i1 %68, label %69, label %.loopexit
+
+; <label>:69                                      ; preds = %66
+  %70 = load i32* %33, align 4, !tbaa !9
+  %71 = sext i32 %70 to i64
+  %72 = shl nsw i64 %71, 2
+  %73 = call i8* @__memset_chk(i8* %32, i32 0, i64 %72, i64 %34) #6
+  br label %.loopexit
+
+.loopexit:                                        ; preds = %.lr.ph6, %.preheader, %66, %69
+  %groupghostsize.0 = phi i32* [ %30, %69 ], [ null, %66 ], [ %30, %.preheader ], [ %30, %.lr.ph6 ]
+  %74 = load i32* %31, align 4, !tbaa !14
+  %75 = load i32* %35, align 4, !tbaa !15
+  %76 = load i32* %33, align 4, !tbaa !9
+  %77 = load i32* %36, align 4, !tbaa !16
+  %78 = load i32* %37, align 4, !tbaa !17
+  %79 = load i32* %38, align 4, !tbaa !18
+  %80 = load i32* %39, align 4, !tbaa !19
+  %81 = call i32 @PUGH_SetupGroup(%struct.PGH* %16, i32* %groupsize.0, i32* %groupghostsize.0, i32 %74, i32 %75, i32 %76, i32 %77, i32 %78, i32 %79, i32 %80) #6
+  %82 = add nuw nsw i32 %group.07, 1
+  %83 = call i32 @CCTK_NumGroups() #6
+  %84 = icmp slt i32 %82, %83
+  br i1 %84, label %41, label %._crit_edge
+
+._crit_edge:                                      ; preds = %.loopexit, %20
+  call void @free(i8* %5) #7
+  %85 = bitcast %struct.PGH* %16 to i8*
+  ret i8* %85
+}

@@ -1,0 +1,38 @@
+define internal fastcc i32 @delete_key(%struct.table_header* nocapture %thp, i8* %key) #1 {
+  %prev_tep = alloca %struct.table_entry*, align 8
+  %1 = call fastcc %struct.table_entry* @find_table_entry(%struct.table_header* %thp, i8* %key, %struct.table_entry** %prev_tep) #9
+  %2 = icmp eq %struct.table_entry* %1, null
+  br i1 %2, label %18, label %3
+
+; <label>:3                                       ; preds = %0
+  %4 = bitcast %struct.table_entry* %1 to i64*
+  %5 = load i64* %4, align 8, !tbaa !12
+  %6 = load %struct.table_entry** %prev_tep, align 8, !tbaa !6
+  %7 = icmp eq %struct.table_entry* %6, null
+  br i1 %7, label %8, label %10
+
+; <label>:8                                       ; preds = %3
+  %9 = bitcast %struct.table_header* %thp to i64*
+  store i64 %5, i64* %9, align 8, !tbaa !8
+  br label %12
+
+; <label>:10                                      ; preds = %3
+  %11 = bitcast %struct.table_entry* %6 to i64*
+  store i64 %5, i64* %11, align 8, !tbaa !12
+  br label %12
+
+; <label>:12                                      ; preds = %10, %8
+  %13 = getelementptr inbounds %struct.table_entry* %1, i64 0, i32 1
+  %14 = load i8** %13, align 8, !tbaa !14
+  call void @free(i8* %14) #10
+  %15 = getelementptr inbounds %struct.table_entry* %1, i64 0, i32 4
+  %16 = load i8** %15, align 8, !tbaa !15
+  call void @free(i8* %16) #10
+  %17 = bitcast %struct.table_entry* %1 to i8*
+  call void @free(i8* %17) #10
+  br label %18
+
+; <label>:18                                      ; preds = %0, %12
+  %.0 = phi i32 [ 0, %12 ], [ -103, %0 ]
+  ret i32 %.0
+}

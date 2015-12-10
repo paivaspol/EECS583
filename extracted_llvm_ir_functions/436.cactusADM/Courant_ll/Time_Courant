@@ -1,0 +1,105 @@
+define void @Time_Courant(%struct.cGH* nocapture %cctkGH) #1 {
+  %1 = load i8** getelementptr inbounds (%struct.anon* @timerest_, i64 0, i32 0), align 8, !tbaa !2
+  %2 = load i32* getelementptr inbounds (%struct.anon* @timerest_, i64 0, i32 1), align 8, !tbaa !8
+  %3 = load double* getelementptr inbounds (%struct.anon.0* @timepriv_, i64 0, i32 0), align 8, !tbaa !9
+  %4 = load double* getelementptr inbounds (%struct.anon.0* @timepriv_, i64 0, i32 1), align 8, !tbaa !12
+  %5 = getelementptr inbounds %struct.cGH* %cctkGH, i64 0, i32 0
+  %6 = load i32* %5, align 4, !tbaa !13
+  %7 = getelementptr inbounds %struct.cGH* %cctkGH, i64 0, i32 9
+  %8 = getelementptr inbounds %struct.cGH* %cctkGH, i64 0, i32 10
+  %9 = load double** %8, align 8, !tbaa !15
+  %10 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([17 x i8]* @.str, i64 0, i64 0)) #4
+  %11 = sext i32 %10 to i64
+  %12 = getelementptr inbounds %struct.cGH* %cctkGH, i64 0, i32 17
+  %13 = load i8**** %12, align 8, !tbaa !16
+  %14 = getelementptr inbounds i8*** %13, i64 %11
+  %15 = bitcast i8*** %14 to double***
+  %16 = load double*** %15, align 8, !tbaa !17
+  %17 = load double** %16, align 8, !tbaa !17
+  %18 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([23 x i8]* @.str1, i64 0, i64 0)) #4
+  %19 = sext i32 %18 to i64
+  %20 = load i8**** %12, align 8, !tbaa !16
+  %21 = getelementptr inbounds i8*** %20, i64 %19
+  %22 = bitcast i8*** %21 to double***
+  %23 = load double*** %22, align 8, !tbaa !17
+  %24 = load double** %23, align 8, !tbaa !17
+  %25 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([25 x i8]* @.str2, i64 0, i64 0)) #4
+  %26 = sext i32 %25 to i64
+  %27 = load i8**** %12, align 8, !tbaa !16
+  %28 = getelementptr inbounds i8*** %27, i64 %26
+  %29 = bitcast i8*** %28 to double***
+  %30 = load double*** %29, align 8, !tbaa !17
+  %31 = load double** %30, align 8, !tbaa !17
+  %32 = load double* %9, align 8, !tbaa !18
+  %33 = icmp sgt i32 %6, 1
+  br i1 %33, label %34, label %.thread1
+
+; <label>:34                                      ; preds = %0
+  %35 = getelementptr inbounds double* %9, i64 1
+  %36 = load double* %35, align 8, !tbaa !18
+  %37 = fcmp olt double %32, %36
+  %. = select i1 %37, double %32, double %36
+  %38 = icmp sgt i32 %6, 2
+  br i1 %38, label %39, label %.thread1
+
+; <label>:39                                      ; preds = %34
+  %40 = getelementptr inbounds double* %9, i64 2
+  %41 = load double* %40, align 8, !tbaa !18
+  %42 = fcmp olt double %., %41
+  %min_spacing.0. = select i1 %42, double %., double %41
+  %43 = icmp sgt i32 %6, 3
+  br i1 %43, label %44, label %.thread1
+
+; <label>:44                                      ; preds = %39
+  %45 = tail call i32 @CCTK_Warn(i32 0, i32 51, i8* getelementptr inbounds ([74 x i8]* @.str3, i64 0, i64 0), i8* getelementptr inbounds ([5 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([52 x i8]* @.str5, i64 0, i64 0)) #4
+  br label %.thread1
+
+.thread1:                                         ; preds = %0, %34, %44, %39
+  %min_spacing.12 = phi double [ %min_spacing.0., %44 ], [ %min_spacing.0., %39 ], [ %., %34 ], [ %32, %0 ]
+  %46 = tail call i32 @CCTK_Equals(i8* %1, i8* getelementptr inbounds ([13 x i8]* @.str6, i64 0, i64 0)) #4
+  %47 = icmp eq i32 %46, 0
+  br i1 %47, label %54, label %48
+
+; <label>:48                                      ; preds = %.thread1
+  %49 = load double* %24, align 8, !tbaa !18
+  %50 = fmul double %3, %49
+  %51 = sitofp i32 %6 to double
+  %52 = tail call double @sqrt(double %51) #5
+  %53 = fdiv double %50, %52
+  store double %53, double* %17, align 8, !tbaa !18
+  br label %63
+
+; <label>:54                                      ; preds = %.thread1
+  %55 = tail call i32 @CCTK_Equals(i8* %1, i8* getelementptr inbounds ([14 x i8]* @.str7, i64 0, i64 0)) #4
+  %56 = icmp eq i32 %55, 0
+  br i1 %56, label %63, label %57
+
+; <label>:57                                      ; preds = %54
+  %58 = load double* %31, align 8, !tbaa !18
+  %59 = fdiv double %3, %58
+  %60 = sitofp i32 %6 to double
+  %61 = tail call double @sqrt(double %60) #5
+  %62 = fdiv double %59, %61
+  store double %62, double* %17, align 8, !tbaa !18
+  br label %63
+
+; <label>:63                                      ; preds = %54, %57, %48
+  %64 = icmp eq i32 %2, 0
+  br i1 %64, label %65, label %68
+
+; <label>:65                                      ; preds = %63
+  %66 = load double* %17, align 8, !tbaa !18
+  store double %66, double* %7, align 8, !tbaa !19
+  %67 = tail call i32 (i8*, i8*, ...)* @CCTK_VInfo(i8* getelementptr inbounds ([5 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([20 x i8]* @.str8, i64 0, i64 0), double %66) #4
+  br label %72
+
+; <label>:68                                      ; preds = %63
+  %69 = fmul double %4, %min_spacing.12
+  store double %69, double* %7, align 8, !tbaa !19
+  %70 = load double* %17, align 8, !tbaa !18
+  %71 = tail call i32 (i8*, i8*, ...)* @CCTK_VInfo(i8* getelementptr inbounds ([5 x i8]* @.str4, i64 0, i64 0), i8* getelementptr inbounds ([29 x i8]* @.str9, i64 0, i64 0), double %70) #4
+  br label %72
+
+; <label>:72                                      ; preds = %68, %65
+  ret void
+}

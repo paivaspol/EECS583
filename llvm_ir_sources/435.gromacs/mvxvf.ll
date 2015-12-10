@@ -1,253 +1,542 @@
-; ModuleID = '../../SPEC/benchspec/CPU2006/435.gromacs/src/mvxvf.c'
-target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
-target triple = "x86_64-unknown-linux-gnu"
+; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/435.gromacs/src/mvxvf.c'
+target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
+target triple = "x86_64-apple-macosx10.10.0"
 
-%struct._IO_FILE = type { i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, %struct._IO_marker*, %struct._IO_FILE*, i32, i32, i64, i16, i8, [1 x i8], i8*, i64, i8*, i8*, i8*, i8*, i64, i32, [20 x i8] }
-%struct._IO_marker = type { %struct._IO_marker*, %struct._IO_FILE*, i32 }
+%struct.__sFILE = type { i8*, i32, i32, i16, i16, %struct.__sbuf, i32, i8*, i32 (i8*)*, i32 (i8*, i8*, i32)*, i64 (i8*, i64, i32)*, i32 (i8*, i8*, i32)*, %struct.__sbuf, %struct.__sFILEX*, i32, [3 x i8], [1 x i8], %struct.__sbuf, i32, i64 }
+%struct.__sFILEX = type opaque
+%struct.__sbuf = type { i8*, i32 }
 %struct.t_nsborder = type { i32, i32, i32, i32, i32, i32, i32, [256 x i32], [256 x i32], [256 x i32], [256 x i32] }
 %struct.t_nrnb = type { [129 x double] }
 %struct.t_commrec = type { i32, i32, i32, i32, i32, i32 }
 
-@.str = private unnamed_addr constant [53 x i8] c"../../SPEC/benchspec/CPU2006/435.gromacs/src/mvxvf.c\00", align 1
+@.str = private unnamed_addr constant [65 x i8] c"../../SPEC_CPU2006v1.1/benchspec/CPU2006/435.gromacs/src/mvxvf.c\00", align 1
 
-; Function Attrs: nounwind optsize uwtable
-define void @move_rvecs(%struct._IO_FILE* nocapture %log, i32 %bForward, i32 %bSum, i32 %left, i32 %right, [3 x float]* %vecs, [3 x float]* %buf, i32 %shift, %struct.t_nsborder* %nsb, %struct.t_nrnb* nocapture %nrnb) #0 {
-entry:
-  %tobool = icmp ne i32 %bSum, 0
-  %nodeid = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 0
-  %0 = load i32* %nodeid, align 4, !tbaa !0
-  br i1 %tobool, label %if.then, label %for.cond.preheader
+; Function Attrs: alwaysinline nounwind optsize ssp uwtable
+define i32 @__sputc(i32 %_c, %struct.__sFILE* %_p) #0 {
+  %1 = getelementptr inbounds %struct.__sFILE* %_p, i64 0, i32 2
+  %2 = load i32* %1, align 4, !tbaa !2
+  %3 = add nsw i32 %2, -1
+  store i32 %3, i32* %1, align 4, !tbaa !2
+  %4 = icmp sgt i32 %2, 0
+  br i1 %4, label %._crit_edge, label %5
 
-if.then:                                          ; preds = %entry
-  %shift1 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 5
-  %1 = load i32* %shift1, align 4, !tbaa !0
-  %add = add nsw i32 %1, %0
-  %nnodes = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 1
-  %2 = load i32* %nnodes, align 4, !tbaa !0
-  %rem = srem i32 %add, %2
-  br label %for.cond.preheader
+._crit_edge:                                      ; preds = %0
+  %.pre = and i32 %_c, 255
+  br label %10
 
-for.cond.preheader:                               ; preds = %entry, %if.then
-  %cur.1.ph = phi i32 [ %rem, %if.then ], [ %0, %entry ]
-  %cmp285 = icmp sgt i32 %shift, 0
-  br i1 %cmp285, label %for.body.lr.ph, label %if.end199
+; <label>:5                                       ; preds = %0
+  %6 = getelementptr inbounds %struct.__sFILE* %_p, i64 0, i32 6
+  %7 = load i32* %6, align 4, !tbaa !11
+  %8 = icmp sle i32 %2, %7
+  %sext.mask = and i32 %_c, 255
+  %9 = icmp eq i32 %sext.mask, 10
+  %or.cond = or i1 %9, %8
+  br i1 %or.cond, label %15, label %10
 
-for.body.lr.ph:                                   ; preds = %for.cond.preheader
-  %tobool5 = icmp eq i32 %bForward, 0
-  %nnodes21 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 1
-  %tobool40 = icmp ne i32 %bForward, 0
-  br label %for.body
+; <label>:10                                      ; preds = %._crit_edge, %5
+  %.pre-phi = phi i32 [ %.pre, %._crit_edge ], [ %sext.mask, %5 ]
+  %11 = trunc i32 %_c to i8
+  %12 = getelementptr inbounds %struct.__sFILE* %_p, i64 0, i32 0
+  %13 = load i8** %12, align 8, !tbaa !12
+  %14 = getelementptr inbounds i8* %13, i64 1
+  store i8* %14, i8** %12, align 8, !tbaa !12
+  store i8 %11, i8* %13, align 1, !tbaa !13
+  br label %17
 
-for.body:                                         ; preds = %for.inc192, %for.body.lr.ph
-  %nsum.0290 = phi i32 [ 0, %for.body.lr.ph ], [ %nsum.1, %for.inc192 ]
-  %cur.1289 = phi i32 [ %cur.1.ph, %for.body.lr.ph ], [ %cur.2, %for.inc192 ]
-  %j1.0288 = phi i32 [ 391, %for.body.lr.ph ], [ %j1.2, %for.inc192 ]
-  %j0.0287 = phi i32 [ 137, %for.body.lr.ph ], [ %j0.2, %for.inc192 ]
-  %i.0286 = phi i32 [ 0, %for.body.lr.ph ], [ %inc193, %for.inc192 ]
-  br i1 %tobool, label %if.then4, label %if.end39
+; <label>:15                                      ; preds = %5
+  %16 = tail call i32 @__swbuf(i32 %_c, %struct.__sFILE* %_p) #5
+  br label %17
 
-if.then4:                                         ; preds = %for.body
-  br i1 %tobool5, label %if.else19, label %if.then6
+; <label>:17                                      ; preds = %15, %10
+  %.0 = phi i32 [ %.pre-phi, %10 ], [ %16, %15 ]
+  ret i32 %.0
+}
 
-if.then6:                                         ; preds = %if.then4
-  %sub = add nsw i32 %cur.1289, -1
-  %3 = load i32* %nnodes21, align 4, !tbaa !0
-  %add8 = add nsw i32 %sub, %3
-  %rem10 = srem i32 %add8, %3
-  %idxprom = sext i32 %rem10 to i64
-  %arrayidx = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 8, i64 %idxprom
-  %4 = load i32* %arrayidx, align 4, !tbaa !0
-  %arrayidx17 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 7, i64 %idxprom
-  %5 = load i32* %arrayidx17, align 4, !tbaa !0
-  %add18 = add nsw i32 %5, %4
-  br label %if.end33
+; Function Attrs: optsize
+declare i32 @__swbuf(i32, %struct.__sFILE*) #1
 
-if.else19:                                        ; preds = %if.then4
-  %add20 = add nsw i32 %cur.1289, 1
-  %6 = load i32* %nnodes21, align 4, !tbaa !0
-  %rem22 = srem i32 %add20, %6
-  %idxprom23 = sext i32 %rem22 to i64
-  %arrayidx25 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 8, i64 %idxprom23
-  %7 = load i32* %arrayidx25, align 4, !tbaa !0
-  %arrayidx31 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 7, i64 %idxprom23
-  %8 = load i32* %arrayidx31, align 4, !tbaa !0
-  %add32 = add nsw i32 %8, %7
-  br label %if.end33
+; Function Attrs: alwaysinline nounwind optsize readnone ssp uwtable
+define i32 @__sigbits(i32 %__signo) #2 {
+  %1 = icmp sgt i32 %__signo, 32
+  br i1 %1, label %5, label %2
 
-if.end33:                                         ; preds = %if.else19, %if.then6
-  %j0.1 = phi i32 [ %4, %if.then6 ], [ %7, %if.else19 ]
-  %j1.1 = phi i32 [ %add18, %if.then6 ], [ %add32, %if.else19 ]
-  %cmp35281 = icmp slt i32 %j0.1, %j1.1
-  br i1 %cmp35281, label %for.body36.lr.ph, label %if.end39
+; <label>:2                                       ; preds = %0
+  %3 = add nsw i32 %__signo, -1
+  %4 = shl i32 1, %3
+  br label %5
 
-for.body36.lr.ph:                                 ; preds = %if.end33
-  %9 = sext i32 %j0.1 to i64
-  br label %for.body36
+; <label>:5                                       ; preds = %0, %2
+  %6 = phi i32 [ %4, %2 ], [ 0, %0 ]
+  ret i32 %6
+}
 
-for.body36:                                       ; preds = %for.body36.lr.ph, %for.body36
-  %indvars.iv = phi i64 [ %9, %for.body36.lr.ph ], [ %indvars.iv.next, %for.body36 ]
-  %arraydecay = getelementptr inbounds [3 x float]* %buf, i64 %indvars.iv, i64 0
-  store float 0.000000e+00, float* %arraydecay, align 4, !tbaa !3
-  %arrayidx1.i = getelementptr inbounds [3 x float]* %buf, i64 %indvars.iv, i64 1
-  store float 0.000000e+00, float* %arrayidx1.i, align 4, !tbaa !3
-  %arrayidx2.i = getelementptr inbounds [3 x float]* %buf, i64 %indvars.iv, i64 2
-  store float 0.000000e+00, float* %arrayidx2.i, align 4, !tbaa !3
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %10 = trunc i64 %indvars.iv.next to i32
-  %cmp35 = icmp slt i32 %10, %j1.1
-  br i1 %cmp35, label %for.body36, label %if.end39
+; Function Attrs: alwaysinline nounwind optsize readnone ssp uwtable
+define i32 @__inline_isfinitef(float %__x) #2 {
+  %1 = fcmp ord float %__x, 0.000000e+00
+  br i1 %1, label %2, label %5
 
-if.end39:                                         ; preds = %if.end33, %for.body36, %for.body
-  %j0.2 = phi i32 [ %j0.0287, %for.body ], [ %j0.1, %for.body36 ], [ %j0.1, %if.end33 ]
-  %j1.2 = phi i32 [ %j1.0288, %for.body ], [ %j1.1, %for.body36 ], [ %j1.1, %if.end33 ]
-  %idxprom44 = sext i32 %cur.1289 to i64
-  %arrayidx46 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 8, i64 %idxprom44
-  %11 = load i32* %arrayidx46, align 4, !tbaa !0
-  %idxprom47 = sext i32 %11 to i64
-  %arraydecay49 = getelementptr inbounds [3 x float]* %vecs, i64 %idxprom47, i64 0
-  %arrayidx52 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 7, i64 %idxprom44
-  %12 = load i32* %arrayidx52, align 4, !tbaa !0
-  %mul = mul nsw i32 %12, 3
-  br i1 %tobool40, label %if.then41, label %if.else105
+; <label>:2                                       ; preds = %0
+  %3 = tail call float @llvm.fabs.f32(float %__x) #6
+  %4 = fcmp une float %3, 0x7FF0000000000000
+  br label %5
 
-if.then41:                                        ; preds = %if.end39
-  %sub53 = add nsw i32 %cur.1289, -1
-  %13 = load i32* %nnodes21, align 4, !tbaa !0
-  %add55 = add nsw i32 %sub53, %13
-  %rem57 = srem i32 %add55, %13
-  %idxprom58 = sext i32 %rem57 to i64
-  %arrayidx60 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 8, i64 %idxprom58
-  %14 = load i32* %arrayidx60, align 4, !tbaa !0
-  %idxprom61 = sext i32 %14 to i64
-  br i1 %tobool, label %if.then43, label %if.else73
+; <label>:5                                       ; preds = %2, %0
+  %6 = phi i1 [ false, %0 ], [ %4, %2 ]
+  %7 = zext i1 %6 to i32
+  ret i32 %7
+}
 
-if.then43:                                        ; preds = %if.then41
-  %arraydecay63 = getelementptr inbounds [3 x float]* %buf, i64 %idxprom61, i64 0
-  %arrayidx71 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 7, i64 %idxprom58
-  %15 = load i32* %arrayidx71, align 4, !tbaa !0
-  %mul72 = mul nsw i32 %15, 3
-  tail call void @gmx_tx_rx_real(i32 %right, float* %arraydecay49, i32 %mul, i32 %left, float* %arraydecay63, i32 %mul72) #2
-  br label %if.end104
+; Function Attrs: nounwind readnone
+declare float @llvm.fabs.f32(float) #3
 
-if.else73:                                        ; preds = %if.then41
-  %arraydecay94 = getelementptr inbounds [3 x float]* %vecs, i64 %idxprom61, i64 0
-  %arrayidx102 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 7, i64 %idxprom58
-  %16 = load i32* %arrayidx102, align 4, !tbaa !0
-  %mul103 = mul nsw i32 %16, 3
-  tail call void @gmx_tx_rx_real(i32 %right, float* %arraydecay49, i32 %mul, i32 %left, float* %arraydecay94, i32 %mul103) #2
-  br label %if.end104
+; Function Attrs: alwaysinline nounwind optsize readnone ssp uwtable
+define i32 @__inline_isfinited(double %__x) #2 {
+  %1 = fcmp ord double %__x, 0.000000e+00
+  br i1 %1, label %2, label %5
 
-if.end104:                                        ; preds = %if.else73, %if.then43
-  tail call void @gmx_wait(i32 %right, i32 %left) #2
-  br label %if.end162
+; <label>:2                                       ; preds = %0
+  %3 = tail call double @llvm.fabs.f64(double %__x) #6
+  %4 = fcmp une double %3, 0x7FF0000000000000
+  br label %5
 
-if.else105:                                       ; preds = %if.end39
-  %add118 = add nsw i32 %cur.1289, 1
-  %17 = load i32* %nnodes21, align 4, !tbaa !0
-  %rem120 = srem i32 %add118, %17
-  %idxprom121 = sext i32 %rem120 to i64
-  %arrayidx123 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 8, i64 %idxprom121
-  %18 = load i32* %arrayidx123, align 4, !tbaa !0
-  %idxprom124 = sext i32 %18 to i64
-  br i1 %tobool, label %if.then107, label %if.else134
+; <label>:5                                       ; preds = %2, %0
+  %6 = phi i1 [ false, %0 ], [ %4, %2 ]
+  %7 = zext i1 %6 to i32
+  ret i32 %7
+}
 
-if.then107:                                       ; preds = %if.else105
-  %arraydecay126 = getelementptr inbounds [3 x float]* %buf, i64 %idxprom124, i64 0
-  %arrayidx132 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 7, i64 %idxprom121
-  %19 = load i32* %arrayidx132, align 4, !tbaa !0
-  %mul133 = mul nsw i32 %19, 3
-  tail call void @gmx_tx_rx_real(i32 %left, float* %arraydecay49, i32 %mul, i32 %right, float* %arraydecay126, i32 %mul133) #2
-  br label %if.end161
+; Function Attrs: nounwind readnone
+declare double @llvm.fabs.f64(double) #3
 
-if.else134:                                       ; preds = %if.else105
-  %arraydecay153 = getelementptr inbounds [3 x float]* %vecs, i64 %idxprom124, i64 0
-  %arrayidx159 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 7, i64 %idxprom121
-  %20 = load i32* %arrayidx159, align 4, !tbaa !0
-  %mul160 = mul nsw i32 %20, 3
-  tail call void @gmx_tx_rx_real(i32 %left, float* %arraydecay49, i32 %mul, i32 %right, float* %arraydecay153, i32 %mul160) #2
-  br label %if.end161
+; Function Attrs: alwaysinline nounwind optsize readnone ssp uwtable
+define i32 @__inline_isfinitel(x86_fp80 %__x) #2 {
+  %1 = fcmp ord x86_fp80 %__x, 0xK00000000000000000000
+  br i1 %1, label %2, label %5
 
-if.end161:                                        ; preds = %if.else134, %if.then107
-  tail call void @gmx_wait(i32 %left, i32 %right) #2
-  br label %if.end162
+; <label>:2                                       ; preds = %0
+  %3 = tail call x86_fp80 @llvm.fabs.f80(x86_fp80 %__x) #6
+  %4 = fcmp une x86_fp80 %3, 0xK7FFF8000000000000000
+  br label %5
 
-if.end162:                                        ; preds = %if.end161, %if.end104
-  br i1 %tobool, label %for.cond165.preheader, label %if.end179
+; <label>:5                                       ; preds = %2, %0
+  %6 = phi i1 [ false, %0 ], [ %4, %2 ]
+  %7 = zext i1 %6 to i32
+  ret i32 %7
+}
 
-for.cond165.preheader:                            ; preds = %if.end162
-  %cmp166283 = icmp slt i32 %j0.2, %j1.2
-  br i1 %cmp166283, label %for.body167.lr.ph, label %for.end176
+; Function Attrs: nounwind readnone
+declare x86_fp80 @llvm.fabs.f80(x86_fp80) #3
 
-for.body167.lr.ph:                                ; preds = %for.cond165.preheader
-  %21 = sext i32 %j0.2 to i64
-  br label %for.body167
+; Function Attrs: alwaysinline nounwind optsize readnone ssp uwtable
+define i32 @__inline_isinff(float %__x) #2 {
+  %1 = tail call float @llvm.fabs.f32(float %__x) #6
+  %2 = fcmp oeq float %1, 0x7FF0000000000000
+  %3 = zext i1 %2 to i32
+  ret i32 %3
+}
 
-for.body167:                                      ; preds = %for.body167.lr.ph, %for.body167
-  %indvars.iv291 = phi i64 [ %21, %for.body167.lr.ph ], [ %indvars.iv.next292, %for.body167 ]
-  %arraydecay170 = getelementptr inbounds [3 x float]* %vecs, i64 %indvars.iv291, i64 0
-  %arraydecay173 = getelementptr inbounds [3 x float]* %buf, i64 %indvars.iv291, i64 0
-  %22 = load float* %arraydecay170, align 4, !tbaa !3
-  %23 = load float* %arraydecay173, align 4, !tbaa !3
-  %add.i = fadd float %22, %23
-  %arrayidx2.i280 = getelementptr inbounds [3 x float]* %vecs, i64 %indvars.iv291, i64 1
-  %24 = load float* %arrayidx2.i280, align 4, !tbaa !3
-  %arrayidx3.i = getelementptr inbounds [3 x float]* %buf, i64 %indvars.iv291, i64 1
-  %25 = load float* %arrayidx3.i, align 4, !tbaa !3
-  %add4.i = fadd float %24, %25
-  %arrayidx5.i = getelementptr inbounds [3 x float]* %vecs, i64 %indvars.iv291, i64 2
-  %26 = load float* %arrayidx5.i, align 4, !tbaa !3
-  %arrayidx6.i = getelementptr inbounds [3 x float]* %buf, i64 %indvars.iv291, i64 2
-  %27 = load float* %arrayidx6.i, align 4, !tbaa !3
-  %add7.i = fadd float %26, %27
-  store float %add.i, float* %arraydecay170, align 4, !tbaa !3
-  store float %add4.i, float* %arrayidx2.i280, align 4, !tbaa !3
-  store float %add7.i, float* %arrayidx5.i, align 4, !tbaa !3
-  %indvars.iv.next292 = add i64 %indvars.iv291, 1
-  %28 = trunc i64 %indvars.iv.next292 to i32
-  %cmp166 = icmp slt i32 %28, %j1.2
-  br i1 %cmp166, label %for.body167, label %for.end176
+; Function Attrs: alwaysinline nounwind optsize readnone ssp uwtable
+define i32 @__inline_isinfd(double %__x) #2 {
+  %1 = tail call double @llvm.fabs.f64(double %__x) #6
+  %2 = fcmp oeq double %1, 0x7FF0000000000000
+  %3 = zext i1 %2 to i32
+  ret i32 %3
+}
 
-for.end176:                                       ; preds = %for.body167, %for.cond165.preheader
-  %sub177 = sub i32 %nsum.0290, %j0.2
-  %add178 = add i32 %sub177, %j1.2
-  br label %if.end179
+; Function Attrs: alwaysinline nounwind optsize readnone ssp uwtable
+define i32 @__inline_isinfl(x86_fp80 %__x) #2 {
+  %1 = tail call x86_fp80 @llvm.fabs.f80(x86_fp80 %__x) #6
+  %2 = fcmp oeq x86_fp80 %1, 0xK7FFF8000000000000000
+  %3 = zext i1 %2 to i32
+  ret i32 %3
+}
 
-if.end179:                                        ; preds = %for.end176, %if.end162
-  %nsum.1 = phi i32 [ %add178, %for.end176 ], [ %nsum.0290, %if.end162 ]
-  br i1 %tobool40, label %if.then181, label %if.else187
+; Function Attrs: alwaysinline nounwind optsize readnone ssp uwtable
+define i32 @__inline_isnanf(float %__x) #2 {
+  %1 = fcmp uno float %__x, 0.000000e+00
+  %2 = zext i1 %1 to i32
+  ret i32 %2
+}
 
-if.then181:                                       ; preds = %if.end179
-  %sub182 = add nsw i32 %cur.1289, -1
-  %29 = load i32* %nnodes21, align 4, !tbaa !0
-  %add184 = add nsw i32 %sub182, %29
-  %rem186 = srem i32 %add184, %29
-  br label %for.inc192
+; Function Attrs: alwaysinline nounwind optsize readnone ssp uwtable
+define i32 @__inline_isnand(double %__x) #2 {
+  %1 = fcmp uno double %__x, 0.000000e+00
+  %2 = zext i1 %1 to i32
+  ret i32 %2
+}
 
-if.else187:                                       ; preds = %if.end179
-  %add188 = add nsw i32 %cur.1289, 1
-  %30 = load i32* %nnodes21, align 4, !tbaa !0
-  %rem190 = srem i32 %add188, %30
-  br label %for.inc192
+; Function Attrs: alwaysinline nounwind optsize readnone ssp uwtable
+define i32 @__inline_isnanl(x86_fp80 %__x) #2 {
+  %1 = fcmp uno x86_fp80 %__x, 0xK00000000000000000000
+  %2 = zext i1 %1 to i32
+  ret i32 %2
+}
 
-for.inc192:                                       ; preds = %if.then181, %if.else187
-  %cur.2 = phi i32 [ %rem186, %if.then181 ], [ %rem190, %if.else187 ]
-  %inc193 = add nsw i32 %i.0286, 1
-  %exitcond = icmp eq i32 %inc193, %shift
-  br i1 %exitcond, label %for.end194, label %for.body
+; Function Attrs: alwaysinline nounwind optsize readnone ssp uwtable
+define i32 @__inline_signbitf(float %__x) #2 {
+  %1 = bitcast float %__x to i32
+  %2 = lshr i32 %1, 31
+  ret i32 %2
+}
 
-for.end194:                                       ; preds = %for.inc192
-  %cmp195 = icmp sgt i32 %nsum.1, 0
-  br i1 %cmp195, label %if.then196, label %if.end199
+; Function Attrs: alwaysinline nounwind optsize readnone ssp uwtable
+define i32 @__inline_signbitd(double %__x) #2 {
+  %1 = bitcast double %__x to i64
+  %2 = lshr i64 %1, 63
+  %3 = trunc i64 %2 to i32
+  ret i32 %3
+}
 
-if.then196:                                       ; preds = %for.end194
-  %conv = sitofp i32 %nsum.1 to double
-  %arrayidx197 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 91
-  %31 = load double* %arrayidx197, align 8, !tbaa !4
-  %add198 = fadd double %conv, %31
-  store double %add198, double* %arrayidx197, align 8, !tbaa !4
-  br label %if.end199
+; Function Attrs: alwaysinline nounwind optsize readnone ssp uwtable
+define i32 @__inline_signbitl(x86_fp80 %__x) #2 {
+  %1 = bitcast x86_fp80 %__x to i80
+  %2 = lshr i80 %1, 79
+  %3 = trunc i80 %2 to i32
+  ret i32 %3
+}
 
-if.end199:                                        ; preds = %for.cond.preheader, %if.then196, %for.end194
+; Function Attrs: alwaysinline nounwind optsize readnone ssp uwtable
+define i32 @__inline_isnormalf(float %__x) #2 {
+  %1 = fcmp ord float %__x, 0.000000e+00
+  %2 = tail call float @llvm.fabs.f32(float %__x) #3
+  %3 = fcmp une float %2, 0x7FF0000000000000
+  %or.cond = and i1 %1, %3
+  br i1 %or.cond, label %4, label %.critedge
+
+; <label>:4                                       ; preds = %0
+  %5 = fcmp oge float %2, 0x3810000000000000
+  br label %.critedge
+
+.critedge:                                        ; preds = %0, %4
+  %6 = phi i1 [ %5, %4 ], [ false, %0 ]
+  %7 = zext i1 %6 to i32
+  ret i32 %7
+}
+
+; Function Attrs: alwaysinline nounwind optsize readnone ssp uwtable
+define i32 @__inline_isnormald(double %__x) #2 {
+  %1 = fcmp ord double %__x, 0.000000e+00
+  %2 = tail call double @llvm.fabs.f64(double %__x) #3
+  %3 = fcmp une double %2, 0x7FF0000000000000
+  %or.cond = and i1 %1, %3
+  br i1 %or.cond, label %4, label %.critedge
+
+; <label>:4                                       ; preds = %0
+  %5 = fcmp oge double %2, 0x10000000000000
+  br label %.critedge
+
+.critedge:                                        ; preds = %0, %4
+  %6 = phi i1 [ %5, %4 ], [ false, %0 ]
+  %7 = zext i1 %6 to i32
+  ret i32 %7
+}
+
+; Function Attrs: alwaysinline nounwind optsize readnone ssp uwtable
+define i32 @__inline_isnormall(x86_fp80 %__x) #2 {
+  %1 = fcmp ord x86_fp80 %__x, 0xK00000000000000000000
+  %2 = tail call x86_fp80 @llvm.fabs.f80(x86_fp80 %__x) #3
+  %3 = fcmp une x86_fp80 %2, 0xK7FFF8000000000000000
+  %or.cond = and i1 %1, %3
+  br i1 %or.cond, label %4, label %.critedge
+
+; <label>:4                                       ; preds = %0
+  %5 = fcmp oge x86_fp80 %2, 0xK00018000000000000000
+  br label %.critedge
+
+.critedge:                                        ; preds = %0, %4
+  %6 = phi i1 [ %5, %4 ], [ false, %0 ]
+  %7 = zext i1 %6 to i32
+  ret i32 %7
+}
+
+; Function Attrs: alwaysinline nounwind optsize ssp uwtable
+define void @__sincosf(float %__x, float* nocapture %__sinp, float* nocapture %__cosp) #0 {
+  %1 = tail call <2 x float> @__sincosf_stret(float %__x) #5
+  %2 = extractelement <2 x float> %1, i32 0
+  store float %2, float* %__sinp, align 4, !tbaa !14
+  %3 = extractelement <2 x float> %1, i32 1
+  store float %3, float* %__cosp, align 4, !tbaa !14
+  ret void
+}
+
+; Function Attrs: optsize
+declare <2 x float> @__sincosf_stret(float) #1
+
+; Function Attrs: alwaysinline nounwind optsize ssp uwtable
+define void @__sincos(double %__x, double* nocapture %__sinp, double* nocapture %__cosp) #0 {
+  %1 = tail call { double, double } @__sincos_stret(double %__x) #5
+  %2 = extractvalue { double, double } %1, 0
+  %3 = extractvalue { double, double } %1, 1
+  store double %2, double* %__sinp, align 8, !tbaa !16
+  store double %3, double* %__cosp, align 8, !tbaa !16
+  ret void
+}
+
+; Function Attrs: optsize
+declare { double, double } @__sincos_stret(double) #1
+
+; Function Attrs: alwaysinline nounwind optsize ssp uwtable
+define void @__sincospif(float %__x, float* nocapture %__sinp, float* nocapture %__cosp) #0 {
+  %1 = tail call <2 x float> @__sincospif_stret(float %__x) #5
+  %2 = extractelement <2 x float> %1, i32 0
+  store float %2, float* %__sinp, align 4, !tbaa !14
+  %3 = extractelement <2 x float> %1, i32 1
+  store float %3, float* %__cosp, align 4, !tbaa !14
+  ret void
+}
+
+; Function Attrs: optsize
+declare <2 x float> @__sincospif_stret(float) #1
+
+; Function Attrs: alwaysinline nounwind optsize ssp uwtable
+define void @__sincospi(double %__x, double* nocapture %__sinp, double* nocapture %__cosp) #0 {
+  %1 = tail call { double, double } @__sincospi_stret(double %__x) #5
+  %2 = extractvalue { double, double } %1, 0
+  %3 = extractvalue { double, double } %1, 1
+  store double %2, double* %__sinp, align 8, !tbaa !16
+  store double %3, double* %__cosp, align 8, !tbaa !16
+  ret void
+}
+
+; Function Attrs: optsize
+declare { double, double } @__sincospi_stret(double) #1
+
+; Function Attrs: nounwind optsize ssp uwtable
+define void @move_rvecs(%struct.__sFILE* nocapture readnone %log, i32 %bForward, i32 %bSum, i32 %left, i32 %right, [3 x float]* %vecs, [3 x float]* %buf, i32 %shift, %struct.t_nsborder* %nsb, %struct.t_nrnb* nocapture %nrnb) #4 {
+  %1 = icmp ne i32 %bSum, 0
+  %2 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 0
+  %3 = load i32* %2, align 4, !tbaa !18
+  br i1 %1, label %4, label %.preheader1
+
+; <label>:4                                       ; preds = %0
+  %5 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 5
+  %6 = load i32* %5, align 4, !tbaa !20
+  %7 = add nsw i32 %6, %3
+  %8 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 1
+  %9 = load i32* %8, align 4, !tbaa !21
+  %10 = srem i32 %7, %9
+  br label %.preheader1
+
+.preheader1:                                      ; preds = %0, %4
+  %cur.1.ph = phi i32 [ %10, %4 ], [ %3, %0 ]
+  %11 = icmp sgt i32 %shift, 0
+  br i1 %11, label %.lr.ph10, label %._crit_edge11.thread
+
+.lr.ph10:                                         ; preds = %.preheader1
+  %12 = icmp eq i32 %bForward, 0
+  %13 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 1
+  %14 = icmp ne i32 %bForward, 0
+  %15 = add i32 %shift, -1
+  br label %16
+
+; <label>:16                                      ; preds = %122, %.lr.ph10
+  %nsum.09 = phi i32 [ 0, %.lr.ph10 ], [ %nsum.1, %122 ]
+  %cur.18 = phi i32 [ %cur.1.ph, %.lr.ph10 ], [ %cur.2, %122 ]
+  %j1.07 = phi i32 [ 391, %.lr.ph10 ], [ %j1.2, %122 ]
+  %j0.06 = phi i32 [ 137, %.lr.ph10 ], [ %j0.2, %122 ]
+  %i.05 = phi i32 [ 0, %.lr.ph10 ], [ %123, %122 ]
+  br i1 %1, label %17, label %.loopexit
+
+; <label>:17                                      ; preds = %16
+  br i1 %12, label %29, label %18
+
+; <label>:18                                      ; preds = %17
+  %19 = add nsw i32 %cur.18, -1
+  %20 = load i32* %13, align 4, !tbaa !21
+  %21 = add nsw i32 %19, %20
+  %22 = srem i32 %21, %20
+  %23 = sext i32 %22 to i64
+  %24 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 8, i64 %23
+  %25 = load i32* %24, align 4, !tbaa !22
+  %26 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 7, i64 %23
+  %27 = load i32* %26, align 4, !tbaa !22
+  %28 = add nsw i32 %27, %25
+  br label %39
+
+; <label>:29                                      ; preds = %17
+  %30 = add nsw i32 %cur.18, 1
+  %31 = load i32* %13, align 4, !tbaa !21
+  %32 = srem i32 %30, %31
+  %33 = sext i32 %32 to i64
+  %34 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 8, i64 %33
+  %35 = load i32* %34, align 4, !tbaa !22
+  %36 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 7, i64 %33
+  %37 = load i32* %36, align 4, !tbaa !22
+  %38 = add nsw i32 %37, %35
+  br label %39
+
+; <label>:39                                      ; preds = %29, %18
+  %j0.1 = phi i32 [ %25, %18 ], [ %35, %29 ]
+  %j1.1 = phi i32 [ %28, %18 ], [ %38, %29 ]
+  %40 = icmp slt i32 %j0.1, %j1.1
+  br i1 %40, label %.lr.ph, label %.loopexit
+
+.lr.ph:                                           ; preds = %39
+  %41 = sext i32 %j0.1 to i64
+  %42 = add i32 %j1.1, -1
+  br label %43
+
+; <label>:43                                      ; preds = %43, %.lr.ph
+  %indvars.iv = phi i64 [ %41, %.lr.ph ], [ %indvars.iv.next, %43 ]
+  %44 = getelementptr inbounds [3 x float]* %buf, i64 %indvars.iv, i64 0
+  store float 0.000000e+00, float* %44, align 4, !tbaa !14
+  %45 = getelementptr inbounds [3 x float]* %buf, i64 %indvars.iv, i64 1
+  store float 0.000000e+00, float* %45, align 4, !tbaa !14
+  %46 = getelementptr inbounds [3 x float]* %buf, i64 %indvars.iv, i64 2
+  store float 0.000000e+00, float* %46, align 4, !tbaa !14
+  %indvars.iv.next = add nsw i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %42
+  br i1 %exitcond, label %.loopexit, label %43
+
+.loopexit:                                        ; preds = %43, %39, %16
+  %j0.2 = phi i32 [ %j0.06, %16 ], [ %j0.1, %39 ], [ %j0.1, %43 ]
+  %j1.2 = phi i32 [ %j1.07, %16 ], [ %j1.1, %39 ], [ %j1.1, %43 ]
+  %47 = sext i32 %cur.18 to i64
+  %48 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 8, i64 %47
+  %49 = load i32* %48, align 4, !tbaa !22
+  %50 = sext i32 %49 to i64
+  %51 = getelementptr inbounds [3 x float]* %vecs, i64 %50, i64 0
+  %52 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 7, i64 %47
+  %53 = load i32* %52, align 4, !tbaa !22
+  %54 = mul nsw i32 %53, 3
+  br i1 %14, label %55, label %73
+
+; <label>:55                                      ; preds = %.loopexit
+  %56 = add nsw i32 %cur.18, -1
+  %57 = load i32* %13, align 4, !tbaa !21
+  %58 = add nsw i32 %56, %57
+  %59 = srem i32 %58, %57
+  %60 = sext i32 %59 to i64
+  %61 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 8, i64 %60
+  %62 = load i32* %61, align 4, !tbaa !22
+  %63 = sext i32 %62 to i64
+  %64 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 7, i64 %60
+  %65 = load i32* %64, align 4
+  br i1 %1, label %66, label %69
+
+; <label>:66                                      ; preds = %55
+  %67 = getelementptr inbounds [3 x float]* %buf, i64 %63, i64 0
+  %68 = mul nsw i32 %65, 3
+  tail call void @gmx_tx_rx_real(i32 %right, float* %51, i32 %54, i32 %left, float* %67, i32 %68) #5
+  br label %72
+
+; <label>:69                                      ; preds = %55
+  %70 = getelementptr inbounds [3 x float]* %vecs, i64 %63, i64 0
+  %71 = mul nsw i32 %65, 3
+  tail call void @gmx_tx_rx_real(i32 %right, float* %51, i32 %54, i32 %left, float* %70, i32 %71) #5
+  br label %72
+
+; <label>:72                                      ; preds = %69, %66
+  tail call void @gmx_wait(i32 %right, i32 %left) #5
+  br label %90
+
+; <label>:73                                      ; preds = %.loopexit
+  %74 = add nsw i32 %cur.18, 1
+  %75 = load i32* %13, align 4, !tbaa !21
+  %76 = srem i32 %74, %75
+  %77 = sext i32 %76 to i64
+  %78 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 8, i64 %77
+  %79 = load i32* %78, align 4, !tbaa !22
+  %80 = sext i32 %79 to i64
+  %81 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 7, i64 %77
+  %82 = load i32* %81, align 4
+  br i1 %1, label %83, label %86
+
+; <label>:83                                      ; preds = %73
+  %84 = getelementptr inbounds [3 x float]* %buf, i64 %80, i64 0
+  %85 = mul nsw i32 %82, 3
+  tail call void @gmx_tx_rx_real(i32 %left, float* %51, i32 %54, i32 %right, float* %84, i32 %85) #5
+  br label %89
+
+; <label>:86                                      ; preds = %73
+  %87 = getelementptr inbounds [3 x float]* %vecs, i64 %80, i64 0
+  %88 = mul nsw i32 %82, 3
+  tail call void @gmx_tx_rx_real(i32 %left, float* %51, i32 %54, i32 %right, float* %87, i32 %88) #5
+  br label %89
+
+; <label>:89                                      ; preds = %86, %83
+  tail call void @gmx_wait(i32 %left, i32 %right) #5
+  br label %90
+
+; <label>:90                                      ; preds = %89, %72
+  br i1 %1, label %.preheader, label %112
+
+.preheader:                                       ; preds = %90
+  %91 = icmp slt i32 %j0.2, %j1.2
+  br i1 %91, label %.lr.ph4, label %._crit_edge
+
+.lr.ph4:                                          ; preds = %.preheader
+  %92 = sext i32 %j0.2 to i64
+  %93 = add i32 %j1.2, -1
+  br label %94
+
+; <label>:94                                      ; preds = %94, %.lr.ph4
+  %indvars.iv12 = phi i64 [ %92, %.lr.ph4 ], [ %indvars.iv.next13, %94 ]
+  %95 = getelementptr inbounds [3 x float]* %vecs, i64 %indvars.iv12, i64 0
+  %96 = getelementptr inbounds [3 x float]* %buf, i64 %indvars.iv12, i64 0
+  %97 = load float* %95, align 4, !tbaa !14
+  %98 = load float* %96, align 4, !tbaa !14
+  %99 = fadd float %97, %98
+  %100 = getelementptr inbounds [3 x float]* %vecs, i64 %indvars.iv12, i64 1
+  %101 = load float* %100, align 4, !tbaa !14
+  %102 = getelementptr inbounds [3 x float]* %buf, i64 %indvars.iv12, i64 1
+  %103 = load float* %102, align 4, !tbaa !14
+  %104 = fadd float %101, %103
+  %105 = getelementptr inbounds [3 x float]* %vecs, i64 %indvars.iv12, i64 2
+  %106 = load float* %105, align 4, !tbaa !14
+  %107 = getelementptr inbounds [3 x float]* %buf, i64 %indvars.iv12, i64 2
+  %108 = load float* %107, align 4, !tbaa !14
+  %109 = fadd float %106, %108
+  store float %99, float* %95, align 4, !tbaa !14
+  store float %104, float* %100, align 4, !tbaa !14
+  store float %109, float* %105, align 4, !tbaa !14
+  %indvars.iv.next13 = add nsw i64 %indvars.iv12, 1
+  %lftr.wideiv14 = trunc i64 %indvars.iv12 to i32
+  %exitcond15 = icmp eq i32 %lftr.wideiv14, %93
+  br i1 %exitcond15, label %._crit_edge, label %94
+
+._crit_edge:                                      ; preds = %94, %.preheader
+  %110 = sub i32 %nsum.09, %j0.2
+  %111 = add i32 %110, %j1.2
+  br label %112
+
+; <label>:112                                     ; preds = %._crit_edge, %90
+  %nsum.1 = phi i32 [ %111, %._crit_edge ], [ %nsum.09, %90 ]
+  br i1 %14, label %113, label %118
+
+; <label>:113                                     ; preds = %112
+  %114 = add nsw i32 %cur.18, -1
+  %115 = load i32* %13, align 4, !tbaa !21
+  %116 = add nsw i32 %114, %115
+  %117 = srem i32 %116, %115
+  br label %122
+
+; <label>:118                                     ; preds = %112
+  %119 = add nsw i32 %cur.18, 1
+  %120 = load i32* %13, align 4, !tbaa !21
+  %121 = srem i32 %119, %120
+  br label %122
+
+; <label>:122                                     ; preds = %113, %118
+  %cur.2 = phi i32 [ %117, %113 ], [ %121, %118 ]
+  %123 = add nuw nsw i32 %i.05, 1
+  %exitcond16 = icmp eq i32 %i.05, %15
+  br i1 %exitcond16, label %._crit_edge11, label %16
+
+._crit_edge11:                                    ; preds = %122
+  %124 = icmp sgt i32 %nsum.1, 0
+  br i1 %124, label %125, label %._crit_edge11.thread
+
+; <label>:125                                     ; preds = %._crit_edge11
+  %126 = sitofp i32 %nsum.1 to double
+  %127 = getelementptr inbounds %struct.t_nrnb* %nrnb, i64 0, i32 0, i64 91
+  %128 = load double* %127, align 8, !tbaa !16
+  %129 = fadd double %126, %128
+  store double %129, double* %127, align 8, !tbaa !16
+  br label %._crit_edge11.thread
+
+._crit_edge11.thread:                             ; preds = %.preheader1, %125, %._crit_edge11
   ret void
 }
 
@@ -257,113 +546,109 @@ declare void @gmx_tx_rx_real(i32, float*, i32, i32, float*, i32) #1
 ; Function Attrs: optsize
 declare void @gmx_wait(i32, i32) #1
 
-; Function Attrs: nounwind optsize uwtable
-define void @move_x(%struct._IO_FILE* nocapture %log, i32 %left, i32 %right, [3 x float]* %x, %struct.t_nsborder* %nsb, %struct.t_nrnb* nocapture %nrnb) #0 {
-entry:
-  %shift = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 5
-  %0 = load i32* %shift, align 4, !tbaa !0
-  tail call void @move_rvecs(%struct._IO_FILE* undef, i32 0, i32 0, i32 %left, i32 %right, [3 x float]* %x, [3 x float]* null, i32 %0, %struct.t_nsborder* %nsb, %struct.t_nrnb* %nrnb) #3
-  %bshift = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 6
-  %1 = load i32* %bshift, align 4, !tbaa !0
-  tail call void @move_rvecs(%struct._IO_FILE* undef, i32 1, i32 0, i32 %left, i32 %right, [3 x float]* %x, [3 x float]* null, i32 %1, %struct.t_nsborder* %nsb, %struct.t_nrnb* %nrnb) #3
-  tail call void @_where(i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 128) #2
+; Function Attrs: nounwind optsize ssp uwtable
+define void @move_x(%struct.__sFILE* nocapture readnone %log, i32 %left, i32 %right, [3 x float]* %x, %struct.t_nsborder* %nsb, %struct.t_nrnb* nocapture %nrnb) #4 {
+  %1 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 5
+  %2 = load i32* %1, align 4, !tbaa !20
+  tail call void @move_rvecs(%struct.__sFILE* undef, i32 0, i32 0, i32 %left, i32 %right, [3 x float]* %x, [3 x float]* null, i32 %2, %struct.t_nsborder* %nsb, %struct.t_nrnb* %nrnb) #7
+  %3 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 6
+  %4 = load i32* %3, align 4, !tbaa !23
+  tail call void @move_rvecs(%struct.__sFILE* undef, i32 1, i32 0, i32 %left, i32 %right, [3 x float]* %x, [3 x float]* null, i32 %4, %struct.t_nsborder* %nsb, %struct.t_nrnb* %nrnb) #7
+  tail call void @_where(i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0), i32 128) #5
   ret void
 }
 
 ; Function Attrs: optsize
 declare void @_where(i8*, i32) #1
 
-; Function Attrs: nounwind optsize uwtable
-define void @move_f(%struct._IO_FILE* nocapture %log, i32 %left, i32 %right, [3 x float]* %f, [3 x float]* %fadd, %struct.t_nsborder* %nsb, %struct.t_nrnb* nocapture %nrnb) #0 {
-entry:
-  %shift = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 5
-  %0 = load i32* %shift, align 4, !tbaa !0
-  tail call void @move_rvecs(%struct._IO_FILE* undef, i32 1, i32 1, i32 %left, i32 %right, [3 x float]* %f, [3 x float]* %fadd, i32 %0, %struct.t_nsborder* %nsb, %struct.t_nrnb* %nrnb) #3
-  %bshift = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 6
-  %1 = load i32* %bshift, align 4, !tbaa !0
-  tail call void @move_rvecs(%struct._IO_FILE* undef, i32 0, i32 1, i32 %left, i32 %right, [3 x float]* %f, [3 x float]* %fadd, i32 %1, %struct.t_nsborder* %nsb, %struct.t_nrnb* %nrnb) #3
-  tail call void @_where(i8* getelementptr inbounds ([53 x i8]* @.str, i64 0, i64 0), i32 138) #2
+; Function Attrs: nounwind optsize ssp uwtable
+define void @move_f(%struct.__sFILE* nocapture readnone %log, i32 %left, i32 %right, [3 x float]* %f, [3 x float]* %fadd, %struct.t_nsborder* %nsb, %struct.t_nrnb* nocapture %nrnb) #4 {
+  %1 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 5
+  %2 = load i32* %1, align 4, !tbaa !20
+  tail call void @move_rvecs(%struct.__sFILE* undef, i32 1, i32 1, i32 %left, i32 %right, [3 x float]* %f, [3 x float]* %fadd, i32 %2, %struct.t_nsborder* %nsb, %struct.t_nrnb* %nrnb) #7
+  %3 = getelementptr inbounds %struct.t_nsborder* %nsb, i64 0, i32 6
+  %4 = load i32* %3, align 4, !tbaa !23
+  tail call void @move_rvecs(%struct.__sFILE* undef, i32 0, i32 1, i32 %left, i32 %right, [3 x float]* %f, [3 x float]* %fadd, i32 %4, %struct.t_nsborder* %nsb, %struct.t_nrnb* %nrnb) #7
+  tail call void @_where(i8* getelementptr inbounds ([65 x i8]* @.str, i64 0, i64 0), i32 138) #5
   ret void
 }
 
-; Function Attrs: nounwind optsize uwtable
-define void @move_cgcm(%struct._IO_FILE* nocapture %log, %struct.t_commrec* nocapture %cr, [3 x float]* %cg_cm, i32* nocapture %nload) #0 {
-entry:
-  %nnodes = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1
-  %0 = load i32* %nnodes, align 4, !tbaa !0
-  %sub63 = add nsw i32 %0, -1
-  %cmp64 = icmp sgt i32 %sub63, 0
-  br i1 %cmp64, label %for.body.lr.ph, label %for.end
+; Function Attrs: nounwind optsize ssp uwtable
+define void @move_cgcm(%struct.__sFILE* nocapture readnone %log, %struct.t_commrec* nocapture readonly %cr, [3 x float]* %cg_cm, i32* nocapture readonly %nload) #4 {
+  %1 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 1
+  %2 = load i32* %1, align 4, !tbaa !24
+  %3 = icmp sgt i32 %2, 1
+  br i1 %3, label %.lr.ph, label %._crit_edge
 
-for.body.lr.ph:                                   ; preds = %entry
-  %nodeid = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0
-  %1 = load i32* %nodeid, align 4, !tbaa !0
-  %left = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 2
-  %right = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 3
-  br label %for.body
+.lr.ph:                                           ; preds = %0
+  %4 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 0
+  %5 = load i32* %4, align 4, !tbaa !26
+  %6 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 2
+  %7 = getelementptr inbounds %struct.t_commrec* %cr, i64 0, i32 3
+  br label %8
 
-for.body:                                         ; preds = %for.body.lr.ph, %cond.end20
-  %cur.066 = phi i32 [ %1, %for.body.lr.ph ], [ %rem38, %cond.end20 ]
-  %i.065 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %cond.end20 ]
-  %cmp1 = icmp eq i32 %cur.066, 0
-  br i1 %cmp1, label %cond.end, label %cond.false
+; <label>:8                                       ; preds = %.lr.ph, %35
+  %cur.02 = phi i32 [ %5, %.lr.ph ], [ %49, %35 ]
+  %i.01 = phi i32 [ 0, %.lr.ph ], [ %50, %35 ]
+  %9 = icmp eq i32 %cur.02, 0
+  br i1 %9, label %15, label %10
 
-cond.false:                                       ; preds = %for.body
-  %sub2 = add nsw i32 %cur.066, -1
-  %idxprom = sext i32 %sub2 to i64
-  %arrayidx = getelementptr inbounds i32* %nload, i64 %idxprom
-  %2 = load i32* %arrayidx, align 4, !tbaa !0
-  br label %cond.end
+; <label>:10                                      ; preds = %8
+  %11 = add nsw i32 %cur.02, -1
+  %12 = sext i32 %11 to i64
+  %13 = getelementptr inbounds i32* %nload, i64 %12
+  %14 = load i32* %13, align 4, !tbaa !22
+  br label %15
 
-cond.end:                                         ; preds = %for.body, %cond.false
-  %cond = phi i32 [ %2, %cond.false ], [ 0, %for.body ]
-  %idxprom3 = sext i32 %cur.066 to i64
-  %arrayidx4 = getelementptr inbounds i32* %nload, i64 %idxprom3
-  %3 = load i32* %arrayidx4, align 4, !tbaa !0
-  %sub5 = sub nsw i32 %3, %cond
-  %4 = load i32* %left, align 4, !tbaa !0
-  %idxprom6 = sext i32 %cond to i64
-  %arraydecay = getelementptr inbounds [3 x float]* %cg_cm, i64 %idxprom6, i64 0
-  %5 = bitcast float* %arraydecay to i8*
-  %mul = mul i32 %sub5, 12
-  tail call void @gmx_tx(i32 %4, i8* %5, i32 %mul) #2
-  %add = add nsw i32 %cur.066, 1
-  %6 = load i32* %nnodes, align 4, !tbaa !0
-  %rem = srem i32 %add, %6
-  %cmp10 = icmp eq i32 %rem, 0
-  br i1 %cmp10, label %cond.end20, label %cond.false13
+; <label>:15                                      ; preds = %8, %10
+  %16 = phi i32 [ %14, %10 ], [ 0, %8 ]
+  %17 = sext i32 %cur.02 to i64
+  %18 = getelementptr inbounds i32* %nload, i64 %17
+  %19 = load i32* %18, align 4, !tbaa !22
+  %20 = sub nsw i32 %19, %16
+  %21 = load i32* %6, align 4, !tbaa !27
+  %22 = sext i32 %16 to i64
+  %23 = getelementptr inbounds [3 x float]* %cg_cm, i64 %22, i64 0
+  %24 = bitcast float* %23 to i8*
+  %25 = mul i32 %20, 12
+  tail call void @gmx_tx(i32 %21, i8* %24, i32 %25) #5
+  %26 = add nsw i32 %cur.02, 1
+  %27 = load i32* %1, align 4, !tbaa !24
+  %28 = srem i32 %26, %27
+  %29 = icmp eq i32 %28, 0
+  br i1 %29, label %35, label %30
 
-cond.false13:                                     ; preds = %cond.end
-  %sub17 = add nsw i32 %rem, -1
-  %idxprom18 = sext i32 %sub17 to i64
-  %arrayidx19 = getelementptr inbounds i32* %nload, i64 %idxprom18
-  %7 = load i32* %arrayidx19, align 4, !tbaa !0
-  br label %cond.end20
+; <label>:30                                      ; preds = %15
+  %31 = add nsw i32 %28, -1
+  %32 = sext i32 %31 to i64
+  %33 = getelementptr inbounds i32* %nload, i64 %32
+  %34 = load i32* %33, align 4, !tbaa !22
+  br label %35
 
-cond.end20:                                       ; preds = %cond.end, %cond.false13
-  %cond21 = phi i32 [ %7, %cond.false13 ], [ 0, %cond.end ]
-  %idxprom25 = sext i32 %rem to i64
-  %arrayidx26 = getelementptr inbounds i32* %nload, i64 %idxprom25
-  %8 = load i32* %arrayidx26, align 4, !tbaa !0
-  %sub27 = sub nsw i32 %8, %cond21
-  %9 = load i32* %right, align 4, !tbaa !0
-  %idxprom28 = sext i32 %cond21 to i64
-  %arraydecay30 = getelementptr inbounds [3 x float]* %cg_cm, i64 %idxprom28, i64 0
-  %10 = bitcast float* %arraydecay30 to i8*
-  %mul32 = mul i32 %sub27, 12
-  tail call void @gmx_rx(i32 %9, i8* %10, i32 %mul32) #2
-  %11 = load i32* %left, align 4, !tbaa !0
-  tail call void @gmx_tx_wait(i32 %11) #2
-  %12 = load i32* %right, align 4, !tbaa !0
-  tail call void @gmx_rx_wait(i32 %12) #2
-  %13 = load i32* %nnodes, align 4, !tbaa !0
-  %rem38 = srem i32 %add, %13
-  %inc = add nsw i32 %i.065, 1
-  %sub = add nsw i32 %13, -1
-  %cmp = icmp slt i32 %inc, %sub
-  br i1 %cmp, label %for.body, label %for.end
+; <label>:35                                      ; preds = %15, %30
+  %36 = phi i32 [ %34, %30 ], [ 0, %15 ]
+  %37 = sext i32 %28 to i64
+  %38 = getelementptr inbounds i32* %nload, i64 %37
+  %39 = load i32* %38, align 4, !tbaa !22
+  %40 = sub nsw i32 %39, %36
+  %41 = load i32* %7, align 4, !tbaa !28
+  %42 = sext i32 %36 to i64
+  %43 = getelementptr inbounds [3 x float]* %cg_cm, i64 %42, i64 0
+  %44 = bitcast float* %43 to i8*
+  %45 = mul i32 %40, 12
+  tail call void @gmx_rx(i32 %41, i8* %44, i32 %45) #5
+  %46 = load i32* %6, align 4, !tbaa !27
+  tail call void @gmx_tx_wait(i32 %46) #5
+  %47 = load i32* %7, align 4, !tbaa !28
+  tail call void @gmx_rx_wait(i32 %47) #5
+  %48 = load i32* %1, align 4, !tbaa !24
+  %49 = srem i32 %26, %48
+  %50 = add nuw nsw i32 %i.01, 1
+  %51 = add nsw i32 %48, -1
+  %52 = icmp slt i32 %50, %51
+  br i1 %52, label %8, label %._crit_edge
 
-for.end:                                          ; preds = %cond.end20, %entry
+._crit_edge:                                      ; preds = %35, %0
   ret void
 }
 
@@ -379,13 +664,44 @@ declare void @gmx_tx_wait(i32) #1
 ; Function Attrs: optsize
 declare void @gmx_rx_wait(i32) #1
 
-attributes #0 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { nounwind optsize }
-attributes #3 = { optsize }
+attributes #0 = { alwaysinline nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { alwaysinline nounwind optsize readnone ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { nounwind readnone }
+attributes #4 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #5 = { nounwind optsize }
+attributes #6 = { readnone }
+attributes #7 = { optsize }
 
-!0 = metadata !{metadata !"int", metadata !1}
-!1 = metadata !{metadata !"omnipotent char", metadata !2}
-!2 = metadata !{metadata !"Simple C/C++ TBAA"}
-!3 = metadata !{metadata !"float", metadata !1}
-!4 = metadata !{metadata !"double", metadata !1}
+!llvm.module.flags = !{!0}
+!llvm.ident = !{!1}
+
+!0 = !{i32 1, !"PIC Level", i32 2}
+!1 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
+!2 = !{!3, !7, i64 12}
+!3 = !{!"__sFILE", !4, i64 0, !7, i64 8, !7, i64 12, !8, i64 16, !8, i64 18, !9, i64 24, !7, i64 40, !4, i64 48, !4, i64 56, !4, i64 64, !4, i64 72, !4, i64 80, !9, i64 88, !4, i64 104, !7, i64 112, !5, i64 116, !5, i64 119, !9, i64 120, !7, i64 136, !10, i64 144}
+!4 = !{!"any pointer", !5, i64 0}
+!5 = !{!"omnipotent char", !6, i64 0}
+!6 = !{!"Simple C/C++ TBAA"}
+!7 = !{!"int", !5, i64 0}
+!8 = !{!"short", !5, i64 0}
+!9 = !{!"__sbuf", !4, i64 0, !7, i64 8}
+!10 = !{!"long long", !5, i64 0}
+!11 = !{!3, !7, i64 40}
+!12 = !{!3, !4, i64 0}
+!13 = !{!5, !5, i64 0}
+!14 = !{!15, !15, i64 0}
+!15 = !{!"float", !5, i64 0}
+!16 = !{!17, !17, i64 0}
+!17 = !{!"double", !5, i64 0}
+!18 = !{!19, !7, i64 0}
+!19 = !{!"", !7, i64 0, !7, i64 4, !7, i64 8, !7, i64 12, !7, i64 16, !7, i64 20, !7, i64 24, !5, i64 28, !5, i64 1052, !5, i64 2076, !5, i64 3100}
+!20 = !{!19, !7, i64 20}
+!21 = !{!19, !7, i64 4}
+!22 = !{!7, !7, i64 0}
+!23 = !{!19, !7, i64 24}
+!24 = !{!25, !7, i64 4}
+!25 = !{!"", !7, i64 0, !7, i64 4, !7, i64 8, !7, i64 12, !7, i64 16, !7, i64 20}
+!26 = !{!25, !7, i64 0}
+!27 = !{!25, !7, i64 8}
+!28 = !{!25, !7, i64 12}

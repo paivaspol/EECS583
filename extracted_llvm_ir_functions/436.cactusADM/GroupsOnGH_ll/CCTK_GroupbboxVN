@@ -1,0 +1,17 @@
+define i32 @CCTK_GroupbboxVN(%struct.cGH* %cctkGH, i32 %size, i32* %bbox, i8* %varname) #1 {
+  %1 = tail call i32 @CCTK_GroupIndexFromVar(i8* %varname) #6
+  %2 = icmp sgt i32 %1, -1
+  br i1 %2, label %3, label %5
+
+; <label>:3                                       ; preds = %0
+  %4 = tail call i32 @CCTK_GroupbboxGI(%struct.cGH* %cctkGH, i32 %size, i32* %bbox, i32 %1) #7
+  br label %7
+
+; <label>:5                                       ; preds = %0
+  %6 = tail call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 1, i32 1582, i8* getelementptr inbounds ([79 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([47 x i8]* @.str39, i64 0, i64 0), i8* %varname) #6
+  br label %7
+
+; <label>:7                                       ; preds = %5, %3
+  %retval.0 = phi i32 [ %4, %3 ], [ -4, %5 ]
+  ret i32 %retval.0
+}

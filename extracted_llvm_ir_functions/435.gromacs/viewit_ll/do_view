@@ -1,16 +1,15 @@
-define void @do_view(i8* %fn, i8* nocapture %opts) #1 {
-entry:
-  %call = tail call i32 @bDoView() #4
-  %tobool = icmp eq i32 %call, 0
-  %tobool1 = icmp eq i8* %fn, null
-  %or.cond = or i1 %tobool, %tobool1
-  br i1 %or.cond, label %cleanup, label %if.then2
+define void @do_view(i8* %fn, i8* nocapture readnone %opts) #4 {
+  %1 = tail call i32 @bDoView() #6
+  %2 = icmp ne i32 %1, 0
+  %3 = icmp ne i8* %fn, null
+  %or.cond = and i1 %3, %2
+  br i1 %or.cond, label %4, label %7
 
-if.then2:                                         ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call3 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([51 x i8]* @.str, i64 0, i64 0), i8* %fn) #4
-  br label %cleanup
+; <label>:4                                       ; preds = %0
+  %5 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !15
+  %6 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %5, i8* getelementptr inbounds ([51 x i8]* @.str, i64 0, i64 0), i8* %fn) #6
+  br label %7
 
-cleanup:                                          ; preds = %if.then2, %entry
+; <label>:7                                       ; preds = %0, %4
   ret void
 }

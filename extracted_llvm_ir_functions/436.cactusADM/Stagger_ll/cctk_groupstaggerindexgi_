@@ -1,0 +1,12 @@
+define void @cctk_groupstaggerindexgi_(i32* nocapture %stagcode, i32* nocapture readonly %gindex) #1 {
+  %group.i = alloca %struct.cGroup, align 4
+  %1 = load i32* %gindex, align 4, !tbaa !7
+  %2 = bitcast %struct.cGroup* %group.i to i8*
+  call void @llvm.lifetime.start(i64 32, i8* %2)
+  %3 = call i32 @CCTK_GroupData(i32 %1, %struct.cGroup* %group.i) #6
+  %4 = getelementptr inbounds %struct.cGroup* %group.i, i64 0, i32 3
+  %5 = load i32* %4, align 4, !tbaa !2
+  call void @llvm.lifetime.end(i64 32, i8* %2)
+  store i32 %5, i32* %stagcode, align 4, !tbaa !7
+  ret void
+}

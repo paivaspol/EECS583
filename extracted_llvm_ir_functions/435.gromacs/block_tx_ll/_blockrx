@@ -1,54 +1,54 @@
-define void @_blockrx(i32 %src, i32 %nelem, i32 %size, i8* %data) #0 {
-entry:
+define void @_blockrx(i32 %src, i32 %nelem, i32 %size, i8* %data) #3 {
   %len = alloca i32, align 4
-  %cmp = icmp eq i8* %data, null
-  %cmp1 = icmp sgt i32 %size, 0
-  %or.cond = and i1 %cmp, %cmp1
-  br i1 %or.cond, label %if.then, label %for.cond.preheader
+  %1 = icmp eq i8* %data, null
+  %2 = icmp sgt i32 %size, 0
+  %or.cond = and i1 %2, %1
+  br i1 %or.cond, label %3, label %.preheader
 
-if.then:                                          ; preds = %entry
-  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([29 x i8]* @.str1, i64 0, i64 0), i32 %size) #2
-  br label %for.cond.preheader
+; <label>:3                                       ; preds = %0
+  tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([29 x i8]* @.str1, i64 0, i64 0), i32 %size) #4
+  br label %.preheader
 
-for.cond.preheader:                               ; preds = %if.then, %entry
-  %cmp216 = icmp sgt i32 %nelem, 0
-  br i1 %cmp216, label %for.body.lr.ph, label %for.end
+.preheader:                                       ; preds = %3, %0
+  %4 = icmp sgt i32 %nelem, 0
+  br i1 %4, label %.lr.ph, label %._crit_edge
 
-for.body.lr.ph:                                   ; preds = %for.cond.preheader
-  %0 = bitcast i32* %len to i8*
-  br label %for.body
+.lr.ph:                                           ; preds = %.preheader
+  %5 = bitcast i32* %len to i8*
+  %6 = add i32 %nelem, -1
+  br label %7
 
-for.body:                                         ; preds = %if.end8, %for.body.lr.ph
-  %buf.018 = phi i8* [ %data, %for.body.lr.ph ], [ %add.ptr, %if.end8 ]
-  %i.017 = phi i32 [ 0, %for.body.lr.ph ], [ %inc, %if.end8 ]
-  call void @gmx_rxs(i32 %src, i8* %0, i32 4) #2
-  %1 = load i32* %len, align 4, !tbaa !0
-  %cmp3 = icmp eq i32 %1, %size
-  br i1 %cmp3, label %if.end5, label %if.then4
+; <label>:7                                       ; preds = %15, %.lr.ph
+  %buf.03 = phi i8* [ %data, %.lr.ph ], [ %18, %15 ]
+  %i.02 = phi i32 [ 0, %.lr.ph ], [ %19, %15 ]
+  call void @gmx_rxs(i32 %src, i8* %5, i32 4) #4
+  %8 = load i32* %len, align 4, !tbaa !14
+  %9 = icmp eq i32 %8, %size
+  br i1 %9, label %11, label %10
 
-if.then4:                                         ; preds = %for.body
-  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([34 x i8]* @.str2, i64 0, i64 0), i32 0, i32 %size, i32 %1, i32 0) #2
-  %.pr = load i32* %len, align 4, !tbaa !0
-  br label %if.end5
+; <label>:10                                      ; preds = %7
+  call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([34 x i8]* @.str2, i64 0, i64 0), i32 0, i32 %size, i32 %8, i32 0) #4
+  %.pr = load i32* %len, align 4, !tbaa !14
+  br label %11
 
-if.end5:                                          ; preds = %for.body, %if.then4
-  %2 = phi i32 [ %size, %for.body ], [ %.pr, %if.then4 ]
-  %cmp6 = icmp sgt i32 %2, 0
-  br i1 %cmp6, label %if.then7, label %if.end8
+; <label>:11                                      ; preds = %7, %10
+  %12 = phi i32 [ %size, %7 ], [ %.pr, %10 ]
+  %13 = icmp sgt i32 %12, 0
+  br i1 %13, label %14, label %15
 
-if.then7:                                         ; preds = %if.end5
-  call void @gmx_rxs(i32 %src, i8* %buf.018, i32 %2) #2
-  %.pre = load i32* %len, align 4, !tbaa !0
-  br label %if.end8
+; <label>:14                                      ; preds = %11
+  call void @gmx_rxs(i32 %src, i8* %buf.03, i32 %12) #4
+  %.pre = load i32* %len, align 4, !tbaa !14
+  br label %15
 
-if.end8:                                          ; preds = %if.then7, %if.end5
-  %3 = phi i32 [ %.pre, %if.then7 ], [ %2, %if.end5 ]
-  %idx.ext = sext i32 %3 to i64
-  %add.ptr = getelementptr inbounds i8* %buf.018, i64 %idx.ext
-  %inc = add nsw i32 %i.017, 1
-  %exitcond = icmp eq i32 %inc, %nelem
-  br i1 %exitcond, label %for.end, label %for.body
+; <label>:15                                      ; preds = %14, %11
+  %16 = phi i32 [ %.pre, %14 ], [ %12, %11 ]
+  %17 = sext i32 %16 to i64
+  %18 = getelementptr inbounds i8* %buf.03, i64 %17
+  %19 = add nuw nsw i32 %i.02, 1
+  %exitcond = icmp eq i32 %i.02, %6
+  br i1 %exitcond, label %._crit_edge, label %7
 
-for.end:                                          ; preds = %if.end8, %for.cond.preheader
+._crit_edge:                                      ; preds = %15, %.preheader
   ret void
 }

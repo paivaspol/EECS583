@@ -1,0 +1,371 @@
+; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/436.cactusADM/src/Einstein/evaltrK.c'
+target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
+target triple = "x86_64-apple-macosx10.10.0"
+
+%struct.cGH = type { i32, i32, i32*, i32*, i32*, i32*, i32*, i32*, i32*, double, double*, double*, i32*, i32*, i32, i32*, double, i8***, i8**, %struct.cGHGroupData* }
+%struct.cGHGroupData = type { i8, i8 }
+
+@.str = private unnamed_addr constant [15 x i8] c"Einstein::detg\00", align 1
+@.str1 = private unnamed_addr constant [14 x i8] c"Einstein::gpp\00", align 1
+@.str2 = private unnamed_addr constant [14 x i8] c"Einstein::gqp\00", align 1
+@.str3 = private unnamed_addr constant [14 x i8] c"Einstein::gqq\00", align 1
+@.str4 = private unnamed_addr constant [14 x i8] c"Einstein::grp\00", align 1
+@.str5 = private unnamed_addr constant [14 x i8] c"Einstein::grq\00", align 1
+@.str6 = private unnamed_addr constant [14 x i8] c"Einstein::grr\00", align 1
+@.str7 = private unnamed_addr constant [14 x i8] c"Einstein::kpp\00", align 1
+@.str8 = private unnamed_addr constant [14 x i8] c"Einstein::kqp\00", align 1
+@.str9 = private unnamed_addr constant [14 x i8] c"Einstein::kqq\00", align 1
+@.str10 = private unnamed_addr constant [14 x i8] c"Einstein::krp\00", align 1
+@.str11 = private unnamed_addr constant [14 x i8] c"Einstein::krq\00", align 1
+@.str12 = private unnamed_addr constant [14 x i8] c"Einstein::krr\00", align 1
+@.str13 = private unnamed_addr constant [14 x i8] c"Einstein::trK\00", align 1
+@.str14 = private unnamed_addr constant [32 x i8] c"einstein::active_slicing_handle\00", align 1
+@.str15 = private unnamed_addr constant [14 x i8] c"einstein::alp\00", align 1
+@.str16 = private unnamed_addr constant [16 x i8] c"einstein::betax\00", align 1
+@.str17 = private unnamed_addr constant [16 x i8] c"einstein::betay\00", align 1
+@.str18 = private unnamed_addr constant [16 x i8] c"einstein::betaz\00", align 1
+@.str19 = private unnamed_addr constant [16 x i8] c"GRID::coarse_dx\00", align 1
+@.str20 = private unnamed_addr constant [16 x i8] c"GRID::coarse_dy\00", align 1
+@.str21 = private unnamed_addr constant [16 x i8] c"GRID::coarse_dz\00", align 1
+@.str22 = private unnamed_addr constant [26 x i8] c"einstein::conformal_state\00", align 1
+@.str23 = private unnamed_addr constant [23 x i8] c"TIME::courant_min_time\00", align 1
+@.str24 = private unnamed_addr constant [25 x i8] c"TIME::courant_wave_speed\00", align 1
+@.str25 = private unnamed_addr constant [16 x i8] c"einstein::emask\00", align 1
+@.str26 = private unnamed_addr constant [14 x i8] c"einstein::gxx\00", align 1
+@.str27 = private unnamed_addr constant [14 x i8] c"einstein::gxy\00", align 1
+@.str28 = private unnamed_addr constant [14 x i8] c"einstein::gxz\00", align 1
+@.str29 = private unnamed_addr constant [14 x i8] c"einstein::gyy\00", align 1
+@.str30 = private unnamed_addr constant [14 x i8] c"einstein::gyz\00", align 1
+@.str31 = private unnamed_addr constant [14 x i8] c"einstein::gzz\00", align 1
+@.str32 = private unnamed_addr constant [14 x i8] c"einstein::kxx\00", align 1
+@.str33 = private unnamed_addr constant [14 x i8] c"einstein::kxy\00", align 1
+@.str34 = private unnamed_addr constant [14 x i8] c"einstein::kxz\00", align 1
+@.str35 = private unnamed_addr constant [14 x i8] c"einstein::kyy\00", align 1
+@.str36 = private unnamed_addr constant [14 x i8] c"einstein::kyz\00", align 1
+@.str37 = private unnamed_addr constant [14 x i8] c"einstein::kzz\00", align 1
+@.str38 = private unnamed_addr constant [14 x i8] c"einstein::psi\00", align 1
+@.str39 = private unnamed_addr constant [15 x i8] c"einstein::psix\00", align 1
+@.str40 = private unnamed_addr constant [16 x i8] c"einstein::psixx\00", align 1
+@.str41 = private unnamed_addr constant [16 x i8] c"einstein::psixy\00", align 1
+@.str42 = private unnamed_addr constant [16 x i8] c"einstein::psixz\00", align 1
+@.str43 = private unnamed_addr constant [15 x i8] c"einstein::psiy\00", align 1
+@.str44 = private unnamed_addr constant [16 x i8] c"einstein::psiyy\00", align 1
+@.str45 = private unnamed_addr constant [16 x i8] c"einstein::psiyz\00", align 1
+@.str46 = private unnamed_addr constant [15 x i8] c"einstein::psiz\00", align 1
+@.str47 = private unnamed_addr constant [16 x i8] c"einstein::psizz\00", align 1
+@.str48 = private unnamed_addr constant [8 x i8] c"GRID::r\00", align 1
+@.str49 = private unnamed_addr constant [22 x i8] c"einstein::shift_state\00", align 1
+@.str50 = private unnamed_addr constant [8 x i8] c"GRID::x\00", align 1
+@.str51 = private unnamed_addr constant [8 x i8] c"GRID::y\00", align 1
+@.str52 = private unnamed_addr constant [8 x i8] c"GRID::z\00", align 1
+@.str53 = private unnamed_addr constant [94 x i8] c"$Header: /cactus/CactusEinstein/Einstein/src/evaltrK.c,v 1.12 2002/01/04 10:02:43 allen Exp $\00", align 1
+
+; Function Attrs: nounwind optsize readnone ssp uwtable
+define i8* @CCTKi_version_CactusEinstein_Einstein_evaltrK_c() #0 {
+  ret i8* getelementptr inbounds ([94 x i8]* @.str53, i64 0, i64 0)
+}
+
+; Function Attrs: nounwind optsize ssp uwtable
+define void @evaltrK(%struct.cGH* nocapture readonly %cctkGH) #1 {
+  %1 = getelementptr inbounds %struct.cGH* %cctkGH, i64 0, i32 3
+  %2 = load i32** %1, align 8, !tbaa !2
+  %3 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([15 x i8]* @.str, i64 0, i64 0)) #3
+  %4 = sext i32 %3 to i64
+  %5 = getelementptr inbounds %struct.cGH* %cctkGH, i64 0, i32 17
+  %6 = load i8**** %5, align 8, !tbaa !9
+  %7 = getelementptr inbounds i8*** %6, i64 %4
+  %8 = bitcast i8*** %7 to double***
+  %9 = load double*** %8, align 8, !tbaa !10
+  %10 = load double** %9, align 8, !tbaa !10
+  %11 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str1, i64 0, i64 0)) #3
+  %12 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str2, i64 0, i64 0)) #3
+  %13 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str3, i64 0, i64 0)) #3
+  %14 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str4, i64 0, i64 0)) #3
+  %15 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str5, i64 0, i64 0)) #3
+  %16 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str6, i64 0, i64 0)) #3
+  %17 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str7, i64 0, i64 0)) #3
+  %18 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str8, i64 0, i64 0)) #3
+  %19 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str9, i64 0, i64 0)) #3
+  %20 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str10, i64 0, i64 0)) #3
+  %21 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str11, i64 0, i64 0)) #3
+  %22 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str12, i64 0, i64 0)) #3
+  %23 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str13, i64 0, i64 0)) #3
+  %24 = sext i32 %23 to i64
+  %25 = load i8**** %5, align 8, !tbaa !9
+  %26 = getelementptr inbounds i8*** %25, i64 %24
+  %27 = bitcast i8*** %26 to double***
+  %28 = load double*** %27, align 8, !tbaa !10
+  %29 = load double** %28, align 8, !tbaa !10
+  %30 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([32 x i8]* @.str14, i64 0, i64 0)) #3
+  %31 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str15, i64 0, i64 0)) #3
+  %32 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str16, i64 0, i64 0)) #3
+  %33 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str17, i64 0, i64 0)) #3
+  %34 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str18, i64 0, i64 0)) #3
+  %35 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str19, i64 0, i64 0)) #3
+  %36 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str20, i64 0, i64 0)) #3
+  %37 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str21, i64 0, i64 0)) #3
+  %38 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([26 x i8]* @.str22, i64 0, i64 0)) #3
+  %39 = sext i32 %38 to i64
+  %40 = load i8**** %5, align 8, !tbaa !9
+  %41 = getelementptr inbounds i8*** %40, i64 %39
+  %42 = bitcast i8*** %41 to i32***
+  %43 = load i32*** %42, align 8, !tbaa !10
+  %44 = load i32** %43, align 8, !tbaa !10
+  %45 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([23 x i8]* @.str23, i64 0, i64 0)) #3
+  %46 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([25 x i8]* @.str24, i64 0, i64 0)) #3
+  %47 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str25, i64 0, i64 0)) #3
+  %48 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str26, i64 0, i64 0)) #3
+  %49 = sext i32 %48 to i64
+  %50 = load i8**** %5, align 8, !tbaa !9
+  %51 = getelementptr inbounds i8*** %50, i64 %49
+  %52 = bitcast i8*** %51 to double***
+  %53 = load double*** %52, align 8, !tbaa !10
+  %54 = load double** %53, align 8, !tbaa !10
+  %55 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str27, i64 0, i64 0)) #3
+  %56 = sext i32 %55 to i64
+  %57 = load i8**** %5, align 8, !tbaa !9
+  %58 = getelementptr inbounds i8*** %57, i64 %56
+  %59 = bitcast i8*** %58 to double***
+  %60 = load double*** %59, align 8, !tbaa !10
+  %61 = load double** %60, align 8, !tbaa !10
+  %62 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str28, i64 0, i64 0)) #3
+  %63 = sext i32 %62 to i64
+  %64 = load i8**** %5, align 8, !tbaa !9
+  %65 = getelementptr inbounds i8*** %64, i64 %63
+  %66 = bitcast i8*** %65 to double***
+  %67 = load double*** %66, align 8, !tbaa !10
+  %68 = load double** %67, align 8, !tbaa !10
+  %69 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str29, i64 0, i64 0)) #3
+  %70 = sext i32 %69 to i64
+  %71 = load i8**** %5, align 8, !tbaa !9
+  %72 = getelementptr inbounds i8*** %71, i64 %70
+  %73 = bitcast i8*** %72 to double***
+  %74 = load double*** %73, align 8, !tbaa !10
+  %75 = load double** %74, align 8, !tbaa !10
+  %76 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str30, i64 0, i64 0)) #3
+  %77 = sext i32 %76 to i64
+  %78 = load i8**** %5, align 8, !tbaa !9
+  %79 = getelementptr inbounds i8*** %78, i64 %77
+  %80 = bitcast i8*** %79 to double***
+  %81 = load double*** %80, align 8, !tbaa !10
+  %82 = load double** %81, align 8, !tbaa !10
+  %83 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str31, i64 0, i64 0)) #3
+  %84 = sext i32 %83 to i64
+  %85 = load i8**** %5, align 8, !tbaa !9
+  %86 = getelementptr inbounds i8*** %85, i64 %84
+  %87 = bitcast i8*** %86 to double***
+  %88 = load double*** %87, align 8, !tbaa !10
+  %89 = load double** %88, align 8, !tbaa !10
+  %90 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str32, i64 0, i64 0)) #3
+  %91 = sext i32 %90 to i64
+  %92 = load i8**** %5, align 8, !tbaa !9
+  %93 = getelementptr inbounds i8*** %92, i64 %91
+  %94 = bitcast i8*** %93 to double***
+  %95 = load double*** %94, align 8, !tbaa !10
+  %96 = load double** %95, align 8, !tbaa !10
+  %97 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str33, i64 0, i64 0)) #3
+  %98 = sext i32 %97 to i64
+  %99 = load i8**** %5, align 8, !tbaa !9
+  %100 = getelementptr inbounds i8*** %99, i64 %98
+  %101 = bitcast i8*** %100 to double***
+  %102 = load double*** %101, align 8, !tbaa !10
+  %103 = load double** %102, align 8, !tbaa !10
+  %104 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str34, i64 0, i64 0)) #3
+  %105 = sext i32 %104 to i64
+  %106 = load i8**** %5, align 8, !tbaa !9
+  %107 = getelementptr inbounds i8*** %106, i64 %105
+  %108 = bitcast i8*** %107 to double***
+  %109 = load double*** %108, align 8, !tbaa !10
+  %110 = load double** %109, align 8, !tbaa !10
+  %111 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str35, i64 0, i64 0)) #3
+  %112 = sext i32 %111 to i64
+  %113 = load i8**** %5, align 8, !tbaa !9
+  %114 = getelementptr inbounds i8*** %113, i64 %112
+  %115 = bitcast i8*** %114 to double***
+  %116 = load double*** %115, align 8, !tbaa !10
+  %117 = load double** %116, align 8, !tbaa !10
+  %118 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str36, i64 0, i64 0)) #3
+  %119 = sext i32 %118 to i64
+  %120 = load i8**** %5, align 8, !tbaa !9
+  %121 = getelementptr inbounds i8*** %120, i64 %119
+  %122 = bitcast i8*** %121 to double***
+  %123 = load double*** %122, align 8, !tbaa !10
+  %124 = load double** %123, align 8, !tbaa !10
+  %125 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str37, i64 0, i64 0)) #3
+  %126 = sext i32 %125 to i64
+  %127 = load i8**** %5, align 8, !tbaa !9
+  %128 = getelementptr inbounds i8*** %127, i64 %126
+  %129 = bitcast i8*** %128 to double***
+  %130 = load double*** %129, align 8, !tbaa !10
+  %131 = load double** %130, align 8, !tbaa !10
+  %132 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([14 x i8]* @.str38, i64 0, i64 0)) #3
+  %133 = sext i32 %132 to i64
+  %134 = load i8**** %5, align 8, !tbaa !9
+  %135 = getelementptr inbounds i8*** %134, i64 %133
+  %136 = bitcast i8*** %135 to double***
+  %137 = load double*** %136, align 8, !tbaa !10
+  %138 = load double** %137, align 8, !tbaa !10
+  %139 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([15 x i8]* @.str39, i64 0, i64 0)) #3
+  %140 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str40, i64 0, i64 0)) #3
+  %141 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str41, i64 0, i64 0)) #3
+  %142 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str42, i64 0, i64 0)) #3
+  %143 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([15 x i8]* @.str43, i64 0, i64 0)) #3
+  %144 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str44, i64 0, i64 0)) #3
+  %145 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str45, i64 0, i64 0)) #3
+  %146 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([15 x i8]* @.str46, i64 0, i64 0)) #3
+  %147 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([16 x i8]* @.str47, i64 0, i64 0)) #3
+  %148 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([8 x i8]* @.str48, i64 0, i64 0)) #3
+  %149 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([22 x i8]* @.str49, i64 0, i64 0)) #3
+  %150 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([8 x i8]* @.str50, i64 0, i64 0)) #3
+  %151 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([8 x i8]* @.str51, i64 0, i64 0)) #3
+  %152 = tail call i32 @CCTK_VarIndex(i8* getelementptr inbounds ([8 x i8]* @.str52, i64 0, i64 0)) #3
+  %153 = load i32* %2, align 4, !tbaa !11
+  %154 = getelementptr inbounds i32* %2, i64 1
+  %155 = load i32* %154, align 4, !tbaa !11
+  %156 = mul nsw i32 %155, %153
+  %157 = getelementptr inbounds i32* %2, i64 2
+  %158 = load i32* %157, align 4, !tbaa !11
+  %159 = mul nsw i32 %156, %158
+  %160 = icmp sgt i32 %159, 0
+  br i1 %160, label %.lr.ph4, label %._crit_edge
+
+.lr.ph4:                                          ; preds = %0
+  %161 = sext i32 %159 to i64
+  br label %162
+
+; <label>:162                                     ; preds = %.lr.ph4, %162
+  %indvars.iv6 = phi i64 [ 0, %.lr.ph4 ], [ %indvars.iv.next7, %162 ]
+  %163 = getelementptr inbounds double* %54, i64 %indvars.iv6
+  %164 = load double* %163, align 8, !tbaa !12
+  %165 = getelementptr inbounds double* %61, i64 %indvars.iv6
+  %166 = load double* %165, align 8, !tbaa !12
+  %167 = getelementptr inbounds double* %68, i64 %indvars.iv6
+  %168 = load double* %167, align 8, !tbaa !12
+  %169 = getelementptr inbounds double* %75, i64 %indvars.iv6
+  %170 = load double* %169, align 8, !tbaa !12
+  %171 = getelementptr inbounds double* %82, i64 %indvars.iv6
+  %172 = load double* %171, align 8, !tbaa !12
+  %173 = getelementptr inbounds double* %89, i64 %indvars.iv6
+  %174 = load double* %173, align 8, !tbaa !12
+  %175 = fmul double %168, %168
+  %176 = fmul double %175, %170
+  %177 = fmul double %166, 2.000000e+00
+  %178 = fmul double %177, %168
+  %179 = fmul double %178, %172
+  %180 = fsub double %179, %176
+  %181 = fmul double %164, %172
+  %182 = fmul double %172, %181
+  %183 = fsub double %180, %182
+  %184 = fmul double %166, %166
+  %185 = fmul double %184, %174
+  %186 = fsub double %183, %185
+  %187 = fmul double %164, %170
+  %188 = fmul double %187, %174
+  %189 = fadd double %188, %186
+  %190 = fmul double %172, %172
+  %191 = fmul double %170, %174
+  %192 = fsub double %191, %190
+  %193 = fdiv double %192, %189
+  %194 = fmul double %168, %172
+  %195 = fmul double %166, %174
+  %196 = fsub double %194, %195
+  %197 = fdiv double %196, %189
+  %198 = fmul double %164, %174
+  %199 = fsub double %198, %175
+  %200 = fdiv double %199, %189
+  %201 = fmul double %168, %170
+  %202 = fmul double %166, %172
+  %203 = fsub double %202, %201
+  %204 = fdiv double %203, %189
+  %205 = fmul double %166, %168
+  %206 = fsub double %205, %181
+  %207 = fdiv double %206, %189
+  %208 = fsub double %187, %184
+  %209 = fdiv double %208, %189
+  %210 = getelementptr inbounds double* %96, i64 %indvars.iv6
+  %211 = load double* %210, align 8, !tbaa !12
+  %212 = fmul double %193, %211
+  %213 = getelementptr inbounds double* %117, i64 %indvars.iv6
+  %214 = load double* %213, align 8, !tbaa !12
+  %215 = fmul double %200, %214
+  %216 = fadd double %212, %215
+  %217 = getelementptr inbounds double* %131, i64 %indvars.iv6
+  %218 = load double* %217, align 8, !tbaa !12
+  %219 = fmul double %209, %218
+  %220 = fadd double %216, %219
+  %221 = fmul double %197, 2.000000e+00
+  %222 = getelementptr inbounds double* %103, i64 %indvars.iv6
+  %223 = load double* %222, align 8, !tbaa !12
+  %224 = fmul double %221, %223
+  %225 = fadd double %220, %224
+  %226 = fmul double %204, 2.000000e+00
+  %227 = getelementptr inbounds double* %110, i64 %indvars.iv6
+  %228 = load double* %227, align 8, !tbaa !12
+  %229 = fmul double %226, %228
+  %230 = fadd double %225, %229
+  %231 = fmul double %207, 2.000000e+00
+  %232 = getelementptr inbounds double* %124, i64 %indvars.iv6
+  %233 = load double* %232, align 8, !tbaa !12
+  %234 = fmul double %231, %233
+  %235 = fadd double %230, %234
+  %236 = getelementptr inbounds double* %29, i64 %indvars.iv6
+  store double %235, double* %236, align 8, !tbaa !12
+  %237 = getelementptr inbounds double* %10, i64 %indvars.iv6
+  store double %189, double* %237, align 8, !tbaa !12
+  %indvars.iv.next7 = add nuw nsw i64 %indvars.iv6, 1
+  %238 = icmp slt i64 %indvars.iv.next7, %161
+  br i1 %238, label %162, label %._crit_edge
+
+._crit_edge:                                      ; preds = %162, %0
+  %239 = load i32* %44, align 4, !tbaa !11
+  %.not = icmp ne i32 %239, 1
+  %.not8 = xor i1 %160, true
+  %brmerge = or i1 %.not, %.not8
+  br i1 %brmerge, label %.loopexit, label %.lr.ph
+
+.lr.ph:                                           ; preds = %._crit_edge
+  %240 = sext i32 %159 to i64
+  br label %241
+
+; <label>:241                                     ; preds = %.lr.ph, %241
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %241 ]
+  %242 = getelementptr inbounds double* %29, i64 %indvars.iv
+  %243 = load double* %242, align 8, !tbaa !12
+  %244 = getelementptr inbounds double* %138, i64 %indvars.iv
+  %245 = load double* %244, align 8, !tbaa !12
+  %246 = fmul double %245, %245
+  %247 = fmul double %246, %246
+  %248 = fdiv double %243, %247
+  store double %248, double* %242, align 8, !tbaa !12
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %249 = icmp slt i64 %indvars.iv.next, %240
+  br i1 %249, label %241, label %.loopexit
+
+.loopexit:                                        ; preds = %241, %._crit_edge
+  ret void
+}
+
+; Function Attrs: optsize
+declare i32 @CCTK_VarIndex(i8*) #2
+
+attributes #0 = { nounwind optsize readnone ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { nounwind optsize }
+
+!llvm.module.flags = !{!0}
+!llvm.ident = !{!1}
+
+!0 = !{i32 1, !"PIC Level", i32 2}
+!1 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
+!2 = !{!3, !7, i64 16}
+!3 = !{!"", !4, i64 0, !4, i64 4, !7, i64 8, !7, i64 16, !7, i64 24, !7, i64 32, !7, i64 40, !7, i64 48, !7, i64 56, !8, i64 64, !7, i64 72, !7, i64 80, !7, i64 88, !7, i64 96, !4, i64 104, !7, i64 112, !8, i64 120, !7, i64 128, !7, i64 136, !7, i64 144}
+!4 = !{!"int", !5, i64 0}
+!5 = !{!"omnipotent char", !6, i64 0}
+!6 = !{!"Simple C/C++ TBAA"}
+!7 = !{!"any pointer", !5, i64 0}
+!8 = !{!"double", !5, i64 0}
+!9 = !{!3, !7, i64 128}
+!10 = !{!7, !7, i64 0}
+!11 = !{!4, !4, i64 0}
+!12 = !{!8, !8, i64 0}

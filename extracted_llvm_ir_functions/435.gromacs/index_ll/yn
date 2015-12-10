@@ -1,25 +1,24 @@
-define internal fastcc i32 @yn(i32 %bASK) #0 {
-entry:
-  %tobool = icmp eq i32 %bASK, 0
-  br i1 %tobool, label %return, label %do.body
+define internal fastcc i32 @yn(i32 %bASK) #3 {
+  %1 = icmp eq i32 %bASK, 0
+  br i1 %1, label %8, label %.preheader
 
-do.body:                                          ; preds = %entry, %do.body
-  %0 = load %struct._IO_FILE** @stdin, align 8, !tbaa !0
-  %call = tail call i32 @fgetc(%struct._IO_FILE* %0) #6
-  %call1 = tail call i32 @toupper(i32 %call) #6
-  %sext = shl i32 %call1, 24
-  %conv2 = ashr exact i32 %sext, 24
-  switch i32 %conv2, label %do.body [
-    i32 89, label %do.end
-    i32 78, label %do.end
+.preheader:                                       ; preds = %0, %.preheader
+  %2 = load %struct.__sFILE** @__stdinp, align 8, !tbaa !17
+  %3 = tail call i32 @fgetc(%struct.__sFILE* %2) #7
+  %4 = tail call i32 @__toupper(i32 %3) #7
+  %sext = shl i32 %4, 24
+  %5 = ashr exact i32 %sext, 24
+  switch i32 %5, label %.preheader [
+    i32 89, label %.critedge
+    i32 78, label %.critedge
   ]
 
-do.end:                                           ; preds = %do.body, %do.body
-  %cmp8 = icmp eq i32 %conv2, 89
-  %conv9 = zext i1 %cmp8 to i32
-  br label %return
+.critedge:                                        ; preds = %.preheader, %.preheader
+  %6 = icmp eq i32 %5, 89
+  %7 = zext i1 %6 to i32
+  br label %8
 
-return:                                           ; preds = %entry, %do.end
-  %retval.0 = phi i32 [ %conv9, %do.end ], [ 0, %entry ]
-  ret i32 %retval.0
+; <label>:8                                       ; preds = %0, %.critedge
+  %.0 = phi i32 [ %7, %.critedge ], [ 0, %0 ]
+  ret i32 %.0
 }

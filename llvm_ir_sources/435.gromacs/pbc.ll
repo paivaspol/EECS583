@@ -1,15 +1,16 @@
-; ModuleID = '../../SPEC/benchspec/CPU2006/435.gromacs/src/pbc.c'
-target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
-target triple = "x86_64-unknown-linux-gnu"
+; ModuleID = '../../SPEC_CPU2006v1.1/benchspec/CPU2006/435.gromacs/src/pbc.c'
+target datalayout = "e-m:o-i64:64-f80:128-n8:16:32:64-S128"
+target triple = "x86_64-apple-macosx10.10.0"
 
-%struct._IO_FILE = type { i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, %struct._IO_marker*, %struct._IO_FILE*, i32, i32, i64, i16, i8, [1 x i8], i8*, i64, i8*, i8*, i8*, i8*, i64, i32, [20 x i8] }
-%struct._IO_marker = type { %struct._IO_marker*, %struct._IO_FILE*, i32 }
+%struct.__sFILE = type { i8*, i32, i32, i16, i16, %struct.__sbuf, i32, i8*, i32 (i8*)*, i32 (i8*, i8*, i32)*, i64 (i8*, i64, i32)*, i32 (i8*, i8*, i32)*, %struct.__sbuf, %struct.__sFILEX*, i32, [3 x i8], [1 x i8], %struct.__sbuf, i32, i64 }
+%struct.__sFILEX = type opaque
+%struct.__sbuf = type { i8*, i32 }
 %struct.t_block = type { [256 x i32], i32, i32*, i32, i32* }
 
 @.str = private unnamed_addr constant [119 x i8] c"Only triclinic boxes with the first vector parallel to the x-axis and the second vector in the xy-plane are supported.\00", align 1
 @.str1 = private unnamed_addr constant [29 x i8] c"Triclinic box is too skewed.\00", align 1
 @init_pbc.nalloc = internal unnamed_addr global i32 0, align 4
-@stderr = external global %struct._IO_FILE*
+@__stderrp = external global %struct.__sFILE*
 @.str2 = private unnamed_addr constant [13 x i8] c"Warning: %s\0A\00", align 1
 @.str3 = private unnamed_addr constant [13 x i8] c"         Box\00", align 1
 @.str4 = private unnamed_addr constant [27 x i8] c"         Can not fix pbc.\0A\00", align 1
@@ -22,1999 +23,2133 @@ target triple = "x86_64-unknown-linux-gnu"
 @sure_dist2 = internal unnamed_addr global float 0.000000e+00, align 4
 @ntric_vec = internal unnamed_addr global i32 0, align 4
 @.str5 = private unnamed_addr constant [9 x i8] c"tric_vec\00", align 1
-@.str6 = private unnamed_addr constant [51 x i8] c"../../SPEC/benchspec/CPU2006/435.gromacs/src/pbc.c\00", align 1
+@.str6 = private unnamed_addr constant [63 x i8] c"../../SPEC_CPU2006v1.1/benchspec/CPU2006/435.gromacs/src/pbc.c\00", align 1
 @tric_vec = internal unnamed_addr global [3 x float]* null, align 8
 @bInit = internal unnamed_addr global i1 false
 @.str7 = private unnamed_addr constant [30 x i8] c"pbc_dx called before init_pbc\00", align 1
-@stdlog = external global %struct._IO_FILE*
+@stdlog = external global %struct.__sFILE*
 @.str8 = private unnamed_addr constant [15 x i8] c"n=%d, test=%d\0A\00", align 1
 @compact_unitcell_edges.edge = internal global [72 x i32] zeroinitializer, align 16
 @compact_unitcell_edges.hexcon = internal unnamed_addr constant [24 x i32] [i32 0, i32 9, i32 1, i32 19, i32 2, i32 15, i32 3, i32 21, i32 4, i32 17, i32 5, i32 11, i32 6, i32 23, i32 7, i32 13, i32 8, i32 20, i32 10, i32 18, i32 12, i32 16, i32 14, i32 22], align 16
 
-; Function Attrs: nounwind optsize readonly uwtable
-define i8* @check_box([3 x float]* nocapture %box) #0 {
-entry:
-  %arrayidx1 = getelementptr inbounds [3 x float]* %box, i64 0, i64 1
-  %0 = load float* %arrayidx1, align 4, !tbaa !0
-  %fabsf = tail call float @fabsf(float %0) #5
-  %1 = fpext float %fabsf to double
-  %cmp = fcmp ogt double %1, 1.200000e-38
-  br i1 %cmp, label %if.end49, label %lor.lhs.false
+; Function Attrs: alwaysinline nounwind optsize ssp uwtable
+define i32 @__sputc(i32 %_c, %struct.__sFILE* %_p) #0 {
+  %1 = getelementptr inbounds %struct.__sFILE* %_p, i64 0, i32 2
+  %2 = load i32* %1, align 4, !tbaa !2
+  %3 = add nsw i32 %2, -1
+  store i32 %3, i32* %1, align 4, !tbaa !2
+  %4 = icmp sgt i32 %2, 0
+  br i1 %4, label %._crit_edge, label %5
 
-lor.lhs.false:                                    ; preds = %entry
-  %arrayidx4 = getelementptr inbounds [3 x float]* %box, i64 0, i64 2
-  %2 = load float* %arrayidx4, align 4, !tbaa !0
-  %fabsf58 = tail call float @fabsf(float %2) #5
-  %3 = fpext float %fabsf58 to double
-  %cmp7 = fcmp ogt double %3, 1.200000e-38
-  br i1 %cmp7, label %if.end49, label %lor.lhs.false9
+._crit_edge:                                      ; preds = %0
+  %.pre = and i32 %_c, 255
+  br label %10
 
-lor.lhs.false9:                                   ; preds = %lor.lhs.false
-  %arrayidx11 = getelementptr inbounds [3 x float]* %box, i64 1, i64 2
-  %4 = load float* %arrayidx11, align 4, !tbaa !0
-  %fabsf59 = tail call float @fabsf(float %4) #5
-  %5 = fpext float %fabsf59 to double
-  %cmp14 = fcmp ogt double %5, 1.200000e-38
-  br i1 %cmp14, label %if.end49, label %if.else
+; <label>:5                                       ; preds = %0
+  %6 = getelementptr inbounds %struct.__sFILE* %_p, i64 0, i32 6
+  %7 = load i32* %6, align 4, !tbaa !11
+  %8 = icmp sle i32 %2, %7
+  %sext.mask = and i32 %_c, 255
+  %9 = icmp eq i32 %sext.mask, 10
+  %or.cond = or i1 %9, %8
+  br i1 %or.cond, label %15, label %10
 
-if.else:                                          ; preds = %lor.lhs.false9
-  %arrayidx17 = getelementptr inbounds [3 x float]* %box, i64 1, i64 0
-  %6 = load float* %arrayidx17, align 4, !tbaa !0
-  %fabsf60 = tail call float @fabsf(float %6) #5
-  %7 = fpext float %fabsf60 to double
-  %arrayidx21 = getelementptr inbounds [3 x float]* %box, i64 0, i64 0
-  %8 = load float* %arrayidx21, align 4, !tbaa !0
-  %conv22 = fpext float %8 to double
-  %mul = fmul double %conv22, 5.001000e-01
-  %cmp23 = fcmp ogt double %7, %mul
-  br i1 %cmp23, label %if.end49, label %lor.lhs.false25
+; <label>:10                                      ; preds = %._crit_edge, %5
+  %.pre-phi = phi i32 [ %.pre, %._crit_edge ], [ %sext.mask, %5 ]
+  %11 = trunc i32 %_c to i8
+  %12 = getelementptr inbounds %struct.__sFILE* %_p, i64 0, i32 0
+  %13 = load i8** %12, align 8, !tbaa !12
+  %14 = getelementptr inbounds i8* %13, i64 1
+  store i8* %14, i8** %12, align 8, !tbaa !12
+  store i8 %11, i8* %13, align 1, !tbaa !13
+  br label %17
 
-lor.lhs.false25:                                  ; preds = %if.else
-  %arrayidx27 = getelementptr inbounds [3 x float]* %box, i64 2, i64 0
-  %9 = load float* %arrayidx27, align 4, !tbaa !0
-  %fabsf61 = tail call float @fabsf(float %9) #5
-  %10 = fpext float %fabsf61 to double
-  %cmp34 = fcmp ogt double %10, %mul
-  br i1 %cmp34, label %if.end49, label %lor.lhs.false36
+; <label>:15                                      ; preds = %5
+  %16 = tail call i32 @__swbuf(i32 %_c, %struct.__sFILE* %_p) #7
+  br label %17
 
-lor.lhs.false36:                                  ; preds = %lor.lhs.false25
-  %arrayidx38 = getelementptr inbounds [3 x float]* %box, i64 2, i64 1
-  %11 = load float* %arrayidx38, align 4, !tbaa !0
-  %fabsf62 = tail call float @fabsf(float %11) #5
-  %12 = fpext float %fabsf62 to double
-  %arrayidx42 = getelementptr inbounds [3 x float]* %box, i64 1, i64 1
-  %13 = load float* %arrayidx42, align 4, !tbaa !0
-  %conv43 = fpext float %13 to double
-  %mul44 = fmul double %conv43, 5.001000e-01
-  %cmp45 = fcmp ogt double %12, %mul44
-  br i1 %cmp45, label %if.end49, label %if.else48
+; <label>:17                                      ; preds = %15, %10
+  %.0 = phi i32 [ %.pre-phi, %10 ], [ %16, %15 ]
+  ret i32 %.0
+}
 
-if.else48:                                        ; preds = %lor.lhs.false36
-  br label %if.end49
+; Function Attrs: optsize
+declare i32 @__swbuf(i32, %struct.__sFILE*) #1
 
-if.end49:                                         ; preds = %if.else, %lor.lhs.false25, %lor.lhs.false36, %entry, %lor.lhs.false, %lor.lhs.false9, %if.else48
-  %ptr.0 = phi i8* [ null, %if.else48 ], [ getelementptr inbounds ([119 x i8]* @.str, i64 0, i64 0), %lor.lhs.false9 ], [ getelementptr inbounds ([119 x i8]* @.str, i64 0, i64 0), %lor.lhs.false ], [ getelementptr inbounds ([119 x i8]* @.str, i64 0, i64 0), %entry ], [ getelementptr inbounds ([29 x i8]* @.str1, i64 0, i64 0), %lor.lhs.false36 ], [ getelementptr inbounds ([29 x i8]* @.str1, i64 0, i64 0), %lor.lhs.false25 ], [ getelementptr inbounds ([29 x i8]* @.str1, i64 0, i64 0), %if.else ]
+; Function Attrs: alwaysinline nounwind optsize readnone ssp uwtable
+define i32 @__sigbits(i32 %__signo) #2 {
+  %1 = icmp sgt i32 %__signo, 32
+  br i1 %1, label %5, label %2
+
+; <label>:2                                       ; preds = %0
+  %3 = add nsw i32 %__signo, -1
+  %4 = shl i32 1, %3
+  br label %5
+
+; <label>:5                                       ; preds = %0, %2
+  %6 = phi i32 [ %4, %2 ], [ 0, %0 ]
+  ret i32 %6
+}
+
+; Function Attrs: nounwind optsize readonly ssp uwtable
+define i8* @check_box([3 x float]* nocapture readonly %box) #3 {
+  %1 = getelementptr inbounds [3 x float]* %box, i64 0, i64 1
+  %2 = load float* %1, align 4, !tbaa !14
+  %fabsf = tail call float @fabsf(float %2) #8
+  %3 = fpext float %fabsf to double
+  %4 = fcmp ogt double %3, 1.200000e-38
+  br i1 %4, label %39, label %5
+
+; <label>:5                                       ; preds = %0
+  %6 = getelementptr inbounds [3 x float]* %box, i64 0, i64 2
+  %7 = load float* %6, align 4, !tbaa !14
+  %fabsf1 = tail call float @fabsf(float %7) #8
+  %8 = fpext float %fabsf1 to double
+  %9 = fcmp ogt double %8, 1.200000e-38
+  br i1 %9, label %39, label %10
+
+; <label>:10                                      ; preds = %5
+  %11 = getelementptr inbounds [3 x float]* %box, i64 1, i64 2
+  %12 = load float* %11, align 4, !tbaa !14
+  %fabsf2 = tail call float @fabsf(float %12) #8
+  %13 = fpext float %fabsf2 to double
+  %14 = fcmp ogt double %13, 1.200000e-38
+  br i1 %14, label %39, label %15
+
+; <label>:15                                      ; preds = %10
+  %16 = getelementptr inbounds [3 x float]* %box, i64 1, i64 0
+  %17 = load float* %16, align 4, !tbaa !14
+  %fabsf3 = tail call float @fabsf(float %17) #8
+  %18 = fpext float %fabsf3 to double
+  %19 = getelementptr inbounds [3 x float]* %box, i64 0, i64 0
+  %20 = load float* %19, align 4, !tbaa !14
+  %21 = fpext float %20 to double
+  %22 = fmul double %21, 5.001000e-01
+  %23 = fcmp ogt double %18, %22
+  br i1 %23, label %39, label %24
+
+; <label>:24                                      ; preds = %15
+  %25 = getelementptr inbounds [3 x float]* %box, i64 2, i64 0
+  %26 = load float* %25, align 4, !tbaa !14
+  %fabsf4 = tail call float @fabsf(float %26) #8
+  %27 = fpext float %fabsf4 to double
+  %28 = fcmp ogt double %27, %22
+  br i1 %28, label %39, label %29
+
+; <label>:29                                      ; preds = %24
+  %30 = getelementptr inbounds [3 x float]* %box, i64 2, i64 1
+  %31 = load float* %30, align 4, !tbaa !14
+  %fabsf5 = tail call float @fabsf(float %31) #8
+  %32 = fpext float %fabsf5 to double
+  %33 = getelementptr inbounds [3 x float]* %box, i64 1, i64 1
+  %34 = load float* %33, align 4, !tbaa !14
+  %35 = fpext float %34 to double
+  %36 = fmul double %35, 5.001000e-01
+  %37 = fcmp ogt double %32, %36
+  br i1 %37, label %39, label %38
+
+; <label>:38                                      ; preds = %29
+  br label %39
+
+; <label>:39                                      ; preds = %15, %24, %29, %0, %5, %10, %38
+  %ptr.0 = phi i8* [ null, %38 ], [ getelementptr inbounds ([119 x i8]* @.str, i64 0, i64 0), %10 ], [ getelementptr inbounds ([119 x i8]* @.str, i64 0, i64 0), %5 ], [ getelementptr inbounds ([119 x i8]* @.str, i64 0, i64 0), %0 ], [ getelementptr inbounds ([29 x i8]* @.str1, i64 0, i64 0), %29 ], [ getelementptr inbounds ([29 x i8]* @.str1, i64 0, i64 0), %24 ], [ getelementptr inbounds ([29 x i8]* @.str1, i64 0, i64 0), %15 ]
   ret i8* %ptr.0
 }
 
-; Function Attrs: nounwind optsize uwtable
-define void @init_pbc([3 x float]* %box) #1 {
-entry:
+; Function Attrs: nounwind optsize ssp uwtable
+define void @init_pbc([3 x float]* %box) #4 {
   %try = alloca [3 x float], align 4
-  %call = call i8* @check_box([3 x float]* %box) #6
-  %tobool = icmp eq i8* %call, null
-  br i1 %tobool, label %if.else, label %if.then
+  %1 = tail call i8* @check_box([3 x float]* %box) #9
+  %2 = icmp eq i8* %1, null
+  br i1 %2, label %9, label %3
 
-if.then:                                          ; preds = %entry
-  %0 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %call1 = call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %0, i8* getelementptr inbounds ([13 x i8]* @.str2, i64 0, i64 0), i8* %call) #7
-  %1 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  call void @pr_rvecs(%struct._IO_FILE* %1, i32 0, i8* getelementptr inbounds ([13 x i8]* @.str3, i64 0, i64 0), [3 x float]* %box, i32 3) #7
-  %2 = load %struct._IO_FILE** @stderr, align 8, !tbaa !3
-  %3 = call i64 @fwrite(i8* getelementptr inbounds ([27 x i8]* @.str4, i64 0, i64 0), i64 26, i64 1, %struct._IO_FILE* %2)
+; <label>:3                                       ; preds = %0
+  %4 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !16
+  %5 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %4, i8* getelementptr inbounds ([13 x i8]* @.str2, i64 0, i64 0), i8* %1) #7
+  %6 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !16
+  tail call void @pr_rvecs(%struct.__sFILE* %6, i32 0, i8* getelementptr inbounds ([13 x i8]* @.str3, i64 0, i64 0), [3 x float]* %box, i32 3) #7
+  %7 = load %struct.__sFILE** @__stderrp, align 8, !tbaa !16
+  %8 = tail call i64 @fwrite(i8* getelementptr inbounds ([27 x i8]* @.str4, i64 0, i64 0), i64 26, i64 1, %struct.__sFILE* %7)
   store i1 false, i1* @bSupported, align 1
-  br label %if.end159
+  br label %.loopexit
 
-if.else:                                          ; preds = %entry
+; <label>:9                                       ; preds = %0
   store i1 true, i1* @bSupported, align 1
-  br label %for.body
+  br label %10
 
-for.body:                                         ; preds = %for.body, %if.else
-  %indvars.iv229 = phi i64 [ 0, %if.else ], [ %indvars.iv.next230, %for.body ]
-  %arrayidx4 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv229, i64 %indvars.iv229
-  %4 = load float* %arrayidx4, align 4, !tbaa !0
-  %arrayidx6 = getelementptr inbounds [3 x float]* @gl_fbox, i64 0, i64 %indvars.iv229
-  store float %4, float* %arrayidx6, align 4, !tbaa !0
-  %conv9 = fmul float %4, 5.000000e-01
-  %arrayidx11 = getelementptr inbounds [3 x float]* @gl_hbox, i64 0, i64 %indvars.iv229
-  store float %conv9, float* %arrayidx11, align 4, !tbaa !0
-  %sub = fsub float -0.000000e+00, %conv9
-  %arrayidx15 = getelementptr inbounds [3 x float]* @gl_mhbox, i64 0, i64 %indvars.iv229
-  store float %sub, float* %arrayidx15, align 4, !tbaa !0
-  %indvars.iv.next230 = add i64 %indvars.iv229, 1
-  %lftr.wideiv231 = trunc i64 %indvars.iv.next230 to i32
-  %exitcond232 = icmp eq i32 %lftr.wideiv231, 3
-  br i1 %exitcond232, label %for.end, label %for.body
+; <label>:10                                      ; preds = %10, %9
+  %indvars.iv16 = phi i64 [ 0, %9 ], [ %indvars.iv.next17, %10 ]
+  %11 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv16, i64 %indvars.iv16
+  %12 = load float* %11, align 4, !tbaa !14
+  %13 = getelementptr inbounds [3 x float]* @gl_fbox, i64 0, i64 %indvars.iv16
+  store float %12, float* %13, align 4, !tbaa !14
+  %14 = fmul float %12, 5.000000e-01
+  %15 = getelementptr inbounds [3 x float]* @gl_hbox, i64 0, i64 %indvars.iv16
+  store float %14, float* %15, align 4, !tbaa !14
+  %16 = fsub float -0.000000e+00, %14
+  %17 = getelementptr inbounds [3 x float]* @gl_mhbox, i64 0, i64 %indvars.iv16
+  store float %16, float* %17, align 4, !tbaa !14
+  %indvars.iv.next17 = add nuw nsw i64 %indvars.iv16, 1
+  %exitcond18 = icmp eq i64 %indvars.iv.next17, 3
+  br i1 %exitcond18, label %18, label %10
 
-for.end:                                          ; preds = %for.body
-  %arrayidx17 = getelementptr inbounds [3 x float]* %box, i64 1, i64 0
-  %5 = load float* %arrayidx17, align 4, !tbaa !0
-  %fabsf = call float @fabsf(float %5) #5
-  %6 = fpext float %fabsf to double
-  %cmp20 = fcmp ogt double %6, 1.200000e-38
-  %arraydecay8.i.pre.pre = getelementptr inbounds [3 x float]* %box, i64 2, i64 0
-  br i1 %cmp20, label %lor.end.thread, label %lor.lhs.false
+; <label>:18                                      ; preds = %10
+  %19 = getelementptr inbounds [3 x float]* %box, i64 1, i64 0
+  %20 = load float* %19, align 4, !tbaa !14
+  %fabsf = tail call float @fabsf(float %20) #8
+  %21 = fpext float %fabsf to double
+  %22 = fcmp ogt double %21, 1.200000e-38
+  br i1 %22, label %.thread, label %23
 
-lor.lhs.false:                                    ; preds = %for.end
-  %7 = load float* %arraydecay8.i.pre.pre, align 4, !tbaa !0
-  %fabsf200 = call float @fabsf(float %7) #5
-  %8 = fpext float %fabsf200 to double
-  %cmp26 = fcmp ogt double %8, 1.200000e-38
-  br i1 %cmp26, label %lor.end.thread, label %lor.end
+; <label>:23                                      ; preds = %18
+  %24 = getelementptr inbounds [3 x float]* %box, i64 2, i64 0
+  %25 = load float* %24, align 4, !tbaa !14
+  %fabsf4 = tail call float @fabsf(float %25) #8
+  %26 = fpext float %fabsf4 to double
+  %27 = fcmp ogt double %26, 1.200000e-38
+  br i1 %27, label %.thread, label %28
 
-lor.end.thread:                                   ; preds = %for.end, %lor.lhs.false
-  store i32 1, i32* @bTriclinic, align 4, !tbaa !4
-  %arrayidx2.i1.i.pre = getelementptr inbounds [3 x float]* %box, i64 2, i64 1
-  br label %if.then35
+.thread:                                          ; preds = %23, %18
+  store i32 1, i32* @bTriclinic, align 4, !tbaa !17
+  %.pre20 = getelementptr inbounds [3 x float]* %box, i64 2, i64 0
+  %.pre21 = getelementptr inbounds [3 x float]* %box, i64 2, i64 1
+  br label %34
 
-lor.end:                                          ; preds = %lor.lhs.false
-  %arrayidx29 = getelementptr inbounds [3 x float]* %box, i64 2, i64 1
-  %9 = load float* %arrayidx29, align 4, !tbaa !0
-  %fabsf201 = call float @fabsf(float %9) #5
-  %10 = fpext float %fabsf201 to double
-  %cmp32 = fcmp ogt double %10, 1.200000e-38
-  %lor.ext = zext i1 %cmp32 to i32
-  store i32 %lor.ext, i32* @bTriclinic, align 4, !tbaa !4
-  br i1 %cmp32, label %if.then35, label %if.end159
+; <label>:28                                      ; preds = %23
+  %29 = getelementptr inbounds [3 x float]* %box, i64 2, i64 1
+  %30 = load float* %29, align 4, !tbaa !14
+  %fabsf5 = tail call float @fabsf(float %30) #8
+  %31 = fpext float %fabsf5 to double
+  %32 = fcmp ogt double %31, 1.200000e-38
+  %33 = zext i1 %32 to i32
+  store i32 %33, i32* @bTriclinic, align 4, !tbaa !17
+  br i1 %32, label %34, label %.loopexit
 
-if.then35:                                        ; preds = %lor.end.thread, %lor.end
-  %arrayidx2.i1.i.pre-phi = phi float* [ %arrayidx2.i1.i.pre, %lor.end.thread ], [ %arrayidx29, %lor.end ]
-  %arraydecay.i = getelementptr inbounds [3 x float]* %box, i64 0, i64 0
-  %11 = load float* %arraydecay.i, align 4, !tbaa !0
-  store float %11, float* getelementptr inbounds ([3 x [3 x float]]* @gl_box, i64 0, i64 0, i64 0), align 16, !tbaa !0
-  %arrayidx2.i.i = getelementptr inbounds [3 x float]* %box, i64 0, i64 1
-  %12 = load float* %arrayidx2.i.i, align 4, !tbaa !0
-  store float %12, float* getelementptr inbounds ([3 x [3 x float]]* @gl_box, i64 0, i64 0, i64 1), align 4, !tbaa !0
-  %arrayidx4.i.i = getelementptr inbounds [3 x float]* %box, i64 0, i64 2
-  %13 = load float* %arrayidx4.i.i, align 4, !tbaa !0
-  store float %13, float* getelementptr inbounds ([3 x [3 x float]]* @gl_box, i64 0, i64 0, i64 2), align 8, !tbaa !0
-  %14 = load float* %arrayidx17, align 4, !tbaa !0
-  store float %14, float* getelementptr inbounds ([3 x [3 x float]]* @gl_box, i64 0, i64 1, i64 0), align 4, !tbaa !0
-  %arrayidx2.i3.i = getelementptr inbounds [3 x float]* %box, i64 1, i64 1
-  %15 = load float* %arrayidx2.i3.i, align 4, !tbaa !0
-  store float %15, float* getelementptr inbounds ([3 x [3 x float]]* @gl_box, i64 0, i64 1, i64 1), align 4, !tbaa !0
-  %arrayidx4.i4.i = getelementptr inbounds [3 x float]* %box, i64 1, i64 2
-  %16 = load float* %arrayidx4.i4.i, align 4, !tbaa !0
-  store float %16, float* getelementptr inbounds ([3 x [3 x float]]* @gl_box, i64 0, i64 1, i64 2), align 4, !tbaa !0
-  %17 = load float* %arraydecay8.i.pre.pre, align 4, !tbaa !0
-  store float %17, float* getelementptr inbounds ([3 x [3 x float]]* @gl_box, i64 0, i64 2, i64 0), align 8, !tbaa !0
-  %18 = load float* %arrayidx2.i1.i.pre-phi, align 4, !tbaa !0
-  store float %18, float* getelementptr inbounds ([3 x [3 x float]]* @gl_box, i64 0, i64 2, i64 1), align 4, !tbaa !0
-  %arrayidx4.i2.i = getelementptr inbounds [3 x float]* %box, i64 2, i64 2
-  %19 = load float* %arrayidx4.i2.i, align 4, !tbaa !0
-  store float %19, float* getelementptr inbounds ([3 x [3 x float]]* @gl_box, i64 0, i64 2, i64 2), align 8, !tbaa !0
-  %20 = load float* %arraydecay.i, align 4, !tbaa !0
-  %mul.i219 = fmul float %20, %20
-  %21 = load float* %arrayidx2.i3.i, align 4, !tbaa !0
-  %mul.i218 = fmul float %21, %21
-  %22 = load float* %arrayidx4.i2.i, align 4, !tbaa !0
-  %mul.i217 = fmul float %22, %22
-  %cmp45 = fcmp olt float %mul.i218, %mul.i217
-  %cond = select i1 %cmp45, float %mul.i218, float %mul.i217
-  %cmp53 = fcmp olt float %mul.i219, %cond
-  %brmerge = or i1 %cmp53, %cmp45
-  %mul.i219.mux = select i1 %cmp53, float %mul.i219, float %mul.i218
-  %cond79 = select i1 %brmerge, float %mul.i219.mux, float %mul.i217
-  %conv82 = fmul float %cond79, 2.500000e-01
-  store float %conv82, float* @sure_dist2, align 4, !tbaa !0
-  %23 = load float* getelementptr inbounds ([3 x float]* @gl_fbox, i64 0, i64 0), align 4, !tbaa !0
-  %mul.i205 = fmul float %23, %23
-  %24 = load float* getelementptr inbounds ([3 x float]* @gl_fbox, i64 0, i64 1), align 4, !tbaa !0
-  %mul4.i206 = fmul float %24, %24
-  %add.i207 = fadd float %mul.i205, %mul4.i206
-  %25 = load float* getelementptr inbounds ([3 x float]* @gl_fbox, i64 0, i64 2), align 4, !tbaa !0
-  %mul7.i208 = fmul float %25, %25
-  %add8.i209 = fadd float %add.i207, %mul7.i208
-  store i32 0, i32* @ntric_vec, align 4, !tbaa !4
-  %arraydecay = getelementptr inbounds [3 x float]* %try, i64 0, i64 0
-  %arrayidx2.i203 = getelementptr inbounds [3 x float]* %try, i64 0, i64 1
-  %arrayidx5.i204 = getelementptr inbounds [3 x float]* %try, i64 0, i64 2
-  br label %for.cond88.preheader
+; <label>:34                                      ; preds = %.thread, %28
+  %.pre-phi22 = phi float* [ %.pre21, %.thread ], [ %29, %28 ]
+  %.pre-phi = phi float* [ %.pre20, %.thread ], [ %24, %28 ]
+  %35 = bitcast [3 x float]* %box to i32*
+  %36 = load i32* %35, align 4, !tbaa !14
+  store i32 %36, i32* bitcast ([3 x [3 x float]]* @gl_box to i32*), align 16, !tbaa !14
+  %37 = getelementptr inbounds [3 x float]* %box, i64 0, i64 1
+  %38 = bitcast float* %37 to i32*
+  %39 = load i32* %38, align 4, !tbaa !14
+  store i32 %39, i32* bitcast (float* getelementptr inbounds ([3 x [3 x float]]* @gl_box, i64 0, i64 0, i64 1) to i32*), align 4, !tbaa !14
+  %40 = getelementptr inbounds [3 x float]* %box, i64 0, i64 2
+  %41 = bitcast float* %40 to i32*
+  %42 = load i32* %41, align 4, !tbaa !14
+  store i32 %42, i32* bitcast (float* getelementptr inbounds ([3 x [3 x float]]* @gl_box, i64 0, i64 0, i64 2) to i32*), align 8, !tbaa !14
+  %43 = bitcast float* %19 to i32*
+  %44 = load i32* %43, align 4, !tbaa !14
+  store i32 %44, i32* bitcast (float* getelementptr inbounds ([3 x [3 x float]]* @gl_box, i64 0, i64 1, i64 0) to i32*), align 4, !tbaa !14
+  %45 = getelementptr inbounds [3 x float]* %box, i64 1, i64 1
+  %46 = bitcast float* %45 to i32*
+  %47 = load i32* %46, align 4, !tbaa !14
+  store i32 %47, i32* bitcast (float* getelementptr inbounds ([3 x [3 x float]]* @gl_box, i64 0, i64 1, i64 1) to i32*), align 4, !tbaa !14
+  %48 = getelementptr inbounds [3 x float]* %box, i64 1, i64 2
+  %49 = bitcast float* %48 to i32*
+  %50 = load i32* %49, align 4, !tbaa !14
+  store i32 %50, i32* bitcast (float* getelementptr inbounds ([3 x [3 x float]]* @gl_box, i64 0, i64 1, i64 2) to i32*), align 4, !tbaa !14
+  %51 = bitcast float* %.pre-phi to i32*
+  %52 = load i32* %51, align 4, !tbaa !14
+  store i32 %52, i32* bitcast (float* getelementptr inbounds ([3 x [3 x float]]* @gl_box, i64 0, i64 2, i64 0) to i32*), align 8, !tbaa !14
+  %53 = bitcast float* %.pre-phi22 to i32*
+  %54 = load i32* %53, align 4, !tbaa !14
+  store i32 %54, i32* bitcast (float* getelementptr inbounds ([3 x [3 x float]]* @gl_box, i64 0, i64 2, i64 1) to i32*), align 4, !tbaa !14
+  %55 = getelementptr inbounds [3 x float]* %box, i64 2, i64 2
+  %56 = bitcast float* %55 to i32*
+  %57 = load i32* %56, align 4, !tbaa !14
+  store i32 %57, i32* bitcast (float* getelementptr inbounds ([3 x [3 x float]]* @gl_box, i64 0, i64 2, i64 2) to i32*), align 8, !tbaa !14
+  %58 = getelementptr inbounds [3 x float]* %box, i64 0, i64 0
+  %59 = load float* %58, align 4, !tbaa !14
+  %60 = fmul float %59, %59
+  %61 = load float* %45, align 4, !tbaa !14
+  %62 = fmul float %61, %61
+  %63 = load float* %55, align 4, !tbaa !14
+  %64 = fmul float %63, %63
+  %65 = fcmp olt float %62, %64
+  %66 = select i1 %65, float %62, float %64
+  %67 = fcmp olt float %60, %66
+  %brmerge = or i1 %67, %65
+  %.mux = select i1 %67, float %60, float %62
+  %68 = select i1 %brmerge, float %.mux, float %64
+  %69 = fmul float %68, 2.500000e-01
+  store float %69, float* @sure_dist2, align 4, !tbaa !14
+  %70 = load float* getelementptr inbounds ([3 x float]* @gl_fbox, i64 0, i64 0), align 4, !tbaa !14
+  %71 = fmul float %70, %70
+  %72 = load float* getelementptr inbounds ([3 x float]* @gl_fbox, i64 0, i64 1), align 4, !tbaa !14
+  %73 = fmul float %72, %72
+  %74 = fadd float %71, %73
+  %75 = load float* getelementptr inbounds ([3 x float]* @gl_fbox, i64 0, i64 2), align 4, !tbaa !14
+  %76 = fmul float %75, %75
+  %77 = fadd float %74, %76
+  store i32 0, i32* @ntric_vec, align 4, !tbaa !17
+  %78 = getelementptr inbounds [3 x float]* %try, i64 0, i64 0
+  %79 = getelementptr inbounds [3 x float]* %try, i64 0, i64 1
+  %80 = getelementptr inbounds [3 x float]* %try, i64 0, i64 2
+  %81 = bitcast float* %79 to i32*
+  %82 = bitcast float* %80 to i32*
+  br label %.preheader7
 
-for.cond88.preheader:                             ; preds = %for.inc155, %if.then35
-  %26 = phi i32 [ 0, %if.then35 ], [ %44, %for.inc155 ]
-  %i.1224 = phi i32 [ -2, %if.then35 ], [ %inc156, %for.inc155 ]
-  %conv109 = sitofp i32 %i.1224 to float
-  br label %for.cond92.preheader
+.preheader7:                                      ; preds = %142, %34
+  %83 = phi i32 [ 0, %34 ], [ %138, %142 ]
+  %i.111 = phi i32 [ -2, %34 ], [ %143, %142 ]
+  %84 = sitofp i32 %i.111 to float
+  br label %.preheader6
 
-for.cond92.preheader:                             ; preds = %for.inc152, %for.cond88.preheader
-  %27 = phi i32 [ %26, %for.cond88.preheader ], [ %44, %for.inc152 ]
-  %j.0223 = phi i32 [ -2, %for.cond88.preheader ], [ %inc153, %for.inc152 ]
-  %28 = or i32 %j.0223, %i.1224
-  %conv114 = sitofp i32 %j.0223 to float
-  br label %for.body95
+.preheader6:                                      ; preds = %140, %.preheader7
+  %85 = phi i32 [ %83, %.preheader7 ], [ %138, %140 ]
+  %j.010 = phi i32 [ -2, %.preheader7 ], [ %141, %140 ]
+  %86 = or i32 %j.010, %i.111
+  %87 = sitofp i32 %j.010 to float
+  br label %88
 
-for.body95:                                       ; preds = %for.inc149, %for.cond92.preheader
-  %29 = phi i32 [ %27, %for.cond92.preheader ], [ %44, %for.inc149 ]
-  %k.0222 = phi i32 [ -2, %for.cond92.preheader ], [ %inc150, %for.inc149 ]
-  %30 = or i32 %28, %k.0222
-  %31 = icmp eq i32 %30, 0
-  br i1 %31, label %for.inc149, label %for.cond105.preheader
+; <label>:88                                      ; preds = %137, %.preheader6
+  %89 = phi i32 [ %85, %.preheader6 ], [ %138, %137 ]
+  %k.09 = phi i32 [ -2, %.preheader6 ], [ %139, %137 ]
+  %90 = or i32 %86, %k.09
+  %91 = icmp eq i32 %90, 0
+  br i1 %91, label %137, label %.preheader
 
-for.cond105.preheader:                            ; preds = %for.body95
-  %conv119 = sitofp i32 %k.0222 to float
-  br label %for.body108
+.preheader:                                       ; preds = %88
+  %92 = sitofp i32 %k.09 to float
+  br label %93
 
-for.body108:                                      ; preds = %for.body108, %for.cond105.preheader
-  %indvars.iv = phi i64 [ 0, %for.cond105.preheader ], [ %indvars.iv.next, %for.body108 ]
-  %arrayidx112 = getelementptr inbounds [3 x float]* %box, i64 0, i64 %indvars.iv
-  %32 = load float* %arrayidx112, align 4, !tbaa !0
-  %mul113 = fmul float %conv109, %32
-  %arrayidx117 = getelementptr inbounds [3 x float]* %box, i64 1, i64 %indvars.iv
-  %33 = load float* %arrayidx117, align 4, !tbaa !0
-  %mul118 = fmul float %conv114, %33
-  %add = fadd float %mul113, %mul118
-  %arrayidx122 = getelementptr inbounds [3 x float]* %box, i64 2, i64 %indvars.iv
-  %34 = load float* %arrayidx122, align 4, !tbaa !0
-  %mul123 = fmul float %conv119, %34
-  %add124 = fadd float %add, %mul123
-  %arrayidx126 = getelementptr inbounds [3 x float]* %try, i64 0, i64 %indvars.iv
-  store float %add124, float* %arrayidx126, align 4, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 3
-  br i1 %exitcond, label %for.end129, label %for.body108
+; <label>:93                                      ; preds = %93, %.preheader
+  %indvars.iv = phi i64 [ 0, %.preheader ], [ %indvars.iv.next, %93 ]
+  %94 = getelementptr inbounds [3 x float]* %box, i64 0, i64 %indvars.iv
+  %95 = load float* %94, align 4, !tbaa !14
+  %96 = fmul float %84, %95
+  %97 = getelementptr inbounds [3 x float]* %box, i64 1, i64 %indvars.iv
+  %98 = load float* %97, align 4, !tbaa !14
+  %99 = fmul float %87, %98
+  %100 = fadd float %96, %99
+  %101 = getelementptr inbounds [3 x float]* %box, i64 2, i64 %indvars.iv
+  %102 = load float* %101, align 4, !tbaa !14
+  %103 = fmul float %92, %102
+  %104 = fadd float %100, %103
+  %105 = getelementptr inbounds [3 x float]* %try, i64 0, i64 %indvars.iv
+  store float %104, float* %105, align 4, !tbaa !14
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i64 %indvars.iv.next, 3
+  br i1 %exitcond, label %106, label %93
 
-for.end129:                                       ; preds = %for.body108
-  %35 = load float* %arraydecay, align 4, !tbaa !0
-  %mul.i = fmul float %35, %35
-  %36 = load float* %arrayidx2.i203, align 4, !tbaa !0
-  %mul4.i = fmul float %36, %36
-  %add.i = fadd float %mul.i, %mul4.i
-  %37 = load float* %arrayidx5.i204, align 4, !tbaa !0
-  %mul7.i = fmul float %37, %37
-  %add8.i = fadd float %add.i, %mul7.i
-  %cmp131 = fcmp olt float %add8.i, %add8.i209
-  br i1 %cmp131, label %if.then133, label %for.inc149
+; <label>:106                                     ; preds = %93
+  %107 = load float* %78, align 4, !tbaa !14
+  %108 = fmul float %107, %107
+  %109 = load float* %79, align 4, !tbaa !14
+  %110 = fmul float %109, %109
+  %111 = fadd float %108, %110
+  %112 = load float* %80, align 4, !tbaa !14
+  %113 = fmul float %112, %112
+  %114 = fadd float %111, %113
+  %115 = fcmp olt float %114, %77
+  br i1 %115, label %116, label %137
 
-if.then133:                                       ; preds = %for.end129
-  %38 = load i32* @init_pbc.nalloc, align 4, !tbaa !4
-  %cmp134 = icmp slt i32 %29, %38
-  br i1 %cmp134, label %if.then133.if.end_crit_edge, label %if.then136
+; <label>:116                                     ; preds = %106
+  %117 = load i32* @init_pbc.nalloc, align 4, !tbaa !17
+  %118 = icmp slt i32 %89, %117
+  br i1 %118, label %._crit_edge, label %119
 
-if.then133.if.end_crit_edge:                      ; preds = %if.then133
-  %.pre233 = load [3 x float]** @tric_vec, align 8, !tbaa !3
-  br label %if.end
+._crit_edge:                                      ; preds = %116
+  %.pre19 = load [3 x float]** @tric_vec, align 8, !tbaa !16
+  br label %125
 
-if.then136:                                       ; preds = %if.then133
-  %add137 = add nsw i32 %38, 20
-  store i32 %add137, i32* @init_pbc.nalloc, align 4, !tbaa !4
-  %39 = load [3 x float]** @tric_vec, align 8, !tbaa !3
-  %40 = bitcast [3 x float]* %39 to i8*
-  %mul139 = mul i32 %add137, 12
-  %call141 = call i8* @save_realloc(i8* getelementptr inbounds ([9 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([51 x i8]* @.str6, i64 0, i64 0), i32 119, i8* %40, i32 %mul139) #7
-  %41 = bitcast i8* %call141 to [3 x float]*
-  store [3 x float]* %41, [3 x float]** @tric_vec, align 8, !tbaa !3
-  %.pre = load i32* @ntric_vec, align 4, !tbaa !4
-  br label %if.end
+; <label>:119                                     ; preds = %116
+  %120 = add nsw i32 %117, 20
+  store i32 %120, i32* @init_pbc.nalloc, align 4, !tbaa !17
+  %121 = load i8** bitcast ([3 x float]** @tric_vec to i8**), align 8, !tbaa !16
+  %122 = mul i32 %120, 12
+  %123 = tail call i8* @save_realloc(i8* getelementptr inbounds ([9 x i8]* @.str5, i64 0, i64 0), i8* getelementptr inbounds ([63 x i8]* @.str6, i64 0, i64 0), i32 119, i8* %121, i32 %122) #7
+  store i8* %123, i8** bitcast ([3 x float]** @tric_vec to i8**), align 8, !tbaa !16
+  %.pre = load i32* @ntric_vec, align 4, !tbaa !17
+  %124 = bitcast i8* %123 to [3 x float]*
+  br label %125
 
-if.end:                                           ; preds = %if.then133.if.end_crit_edge, %if.then136
-  %42 = phi [3 x float]* [ %.pre233, %if.then133.if.end_crit_edge ], [ %41, %if.then136 ]
-  %43 = phi i32 [ %29, %if.then133.if.end_crit_edge ], [ %.pre, %if.then136 ]
-  %idxprom143 = sext i32 %43 to i64
-  %arraydecay145 = getelementptr inbounds [3 x float]* %42, i64 %idxprom143, i64 0
-  store float %35, float* %arraydecay145, align 4, !tbaa !0
-  %arrayidx3.i = getelementptr inbounds [3 x float]* %42, i64 %idxprom143, i64 1
-  store float %36, float* %arrayidx3.i, align 4, !tbaa !0
-  %arrayidx5.i = getelementptr inbounds [3 x float]* %42, i64 %idxprom143, i64 2
-  store float %37, float* %arrayidx5.i, align 4, !tbaa !0
-  %inc146 = add nsw i32 %43, 1
-  store i32 %inc146, i32* @ntric_vec, align 4, !tbaa !4
-  br label %for.inc149
+; <label>:125                                     ; preds = %._crit_edge, %119
+  %126 = phi [3 x float]* [ %.pre19, %._crit_edge ], [ %124, %119 ]
+  %127 = phi i32 [ %89, %._crit_edge ], [ %.pre, %119 ]
+  %128 = sext i32 %127 to i64
+  %129 = getelementptr inbounds [3 x float]* %126, i64 %128, i64 0
+  store float %107, float* %129, align 4, !tbaa !14
+  %130 = load i32* %81, align 4, !tbaa !14
+  %131 = getelementptr inbounds [3 x float]* %126, i64 %128, i64 1
+  %132 = bitcast float* %131 to i32*
+  store i32 %130, i32* %132, align 4, !tbaa !14
+  %133 = load i32* %82, align 4, !tbaa !14
+  %134 = getelementptr inbounds [3 x float]* %126, i64 %128, i64 2
+  %135 = bitcast float* %134 to i32*
+  store i32 %133, i32* %135, align 4, !tbaa !14
+  %136 = add nsw i32 %127, 1
+  store i32 %136, i32* @ntric_vec, align 4, !tbaa !17
+  br label %137
 
-for.inc149:                                       ; preds = %for.body95, %if.end, %for.end129
-  %44 = phi i32 [ %29, %for.body95 ], [ %inc146, %if.end ], [ %29, %for.end129 ]
-  %inc150 = add nsw i32 %k.0222, 1
-  %exitcond226 = icmp eq i32 %inc150, 3
-  br i1 %exitcond226, label %for.inc152, label %for.body95
+; <label>:137                                     ; preds = %88, %125, %106
+  %138 = phi i32 [ %89, %88 ], [ %136, %125 ], [ %89, %106 ]
+  %139 = add nsw i32 %k.09, 1
+  %exitcond13 = icmp eq i32 %139, 3
+  br i1 %exitcond13, label %140, label %88
 
-for.inc152:                                       ; preds = %for.inc149
-  %inc153 = add nsw i32 %j.0223, 1
-  %exitcond227 = icmp eq i32 %inc153, 3
-  br i1 %exitcond227, label %for.inc155, label %for.cond92.preheader
+; <label>:140                                     ; preds = %137
+  %141 = add nsw i32 %j.010, 1
+  %exitcond14 = icmp eq i32 %141, 3
+  br i1 %exitcond14, label %142, label %.preheader6
 
-for.inc155:                                       ; preds = %for.inc152
-  %inc156 = add nsw i32 %i.1224, 1
-  %exitcond228 = icmp eq i32 %inc156, 3
-  br i1 %exitcond228, label %if.end159, label %for.cond88.preheader
+; <label>:142                                     ; preds = %140
+  %143 = add nsw i32 %i.111, 1
+  %exitcond15 = icmp eq i32 %143, 3
+  br i1 %exitcond15, label %.loopexit, label %.preheader7
 
-if.end159:                                        ; preds = %for.inc155, %lor.end, %if.then
+.loopexit:                                        ; preds = %142, %28, %3
   store i1 true, i1* @bInit, align 1
   ret void
 }
 
 ; Function Attrs: nounwind optsize
-declare i32 @fprintf(%struct._IO_FILE* nocapture, i8* nocapture, ...) #2
+declare i32 @fprintf(%struct.__sFILE* nocapture, i8* nocapture readonly, ...) #5
 
 ; Function Attrs: optsize
-declare void @pr_rvecs(%struct._IO_FILE*, i32, i8*, [3 x float]*, i32) #3
+declare void @pr_rvecs(%struct.__sFILE*, i32, i8*, [3 x float]*, i32) #1
 
 ; Function Attrs: optsize
-declare i8* @save_realloc(i8*, i8*, i32, i8*, i32) #3
+declare i8* @save_realloc(i8*, i8*, i32, i8*, i32) #1
 
-; Function Attrs: nounwind optsize uwtable
-define void @pbc_dx(float* nocapture %x1, float* nocapture %x2, float* nocapture %dx) #1 {
-entry:
-  %.b128 = load i1* @bInit, align 1
-  br i1 %.b128, label %if.end, label %if.then
+; Function Attrs: nounwind optsize ssp uwtable
+define void @pbc_dx(float* nocapture readonly %x1, float* nocapture readonly %x2, float* nocapture %dx) #4 {
+  %.b1 = load i1* @bInit, align 1
+  br i1 %.b1, label %2, label %1
 
-if.then:                                          ; preds = %entry
+; <label>:1                                       ; preds = %0
   tail call void (i32, i8*, ...)* @fatal_error(i32 0, i8* getelementptr inbounds ([30 x i8]* @.str7, i64 0, i64 0)) #7
-  br label %if.end
+  br label %2
 
-if.end:                                           ; preds = %if.then, %entry
-  %0 = load float* %x1, align 4, !tbaa !0
-  %1 = load float* %x2, align 4, !tbaa !0
-  %sub.i = fsub float %0, %1
-  %arrayidx2.i = getelementptr inbounds float* %x1, i64 1
-  %2 = load float* %arrayidx2.i, align 4, !tbaa !0
-  %arrayidx3.i = getelementptr inbounds float* %x2, i64 1
-  %3 = load float* %arrayidx3.i, align 4, !tbaa !0
-  %sub4.i = fsub float %2, %3
-  %arrayidx5.i = getelementptr inbounds float* %x1, i64 2
-  %4 = load float* %arrayidx5.i, align 4, !tbaa !0
-  %arrayidx6.i = getelementptr inbounds float* %x2, i64 2
-  %5 = load float* %arrayidx6.i, align 4, !tbaa !0
-  %sub7.i = fsub float %4, %5
-  store float %sub.i, float* %dx, align 4, !tbaa !0
-  %arrayidx9.i = getelementptr inbounds float* %dx, i64 1
-  store float %sub4.i, float* %arrayidx9.i, align 4, !tbaa !0
-  %arrayidx10.i = getelementptr inbounds float* %dx, i64 2
-  store float %sub7.i, float* %arrayidx10.i, align 4, !tbaa !0
+; <label>:2                                       ; preds = %1, %0
+  %3 = load float* %x1, align 4, !tbaa !14
+  %4 = load float* %x2, align 4, !tbaa !14
+  %5 = fsub float %3, %4
+  %6 = getelementptr inbounds float* %x1, i64 1
+  %7 = load float* %6, align 4, !tbaa !14
+  %8 = getelementptr inbounds float* %x2, i64 1
+  %9 = load float* %8, align 4, !tbaa !14
+  %10 = fsub float %7, %9
+  %11 = getelementptr inbounds float* %x1, i64 2
+  %12 = load float* %11, align 4, !tbaa !14
+  %13 = getelementptr inbounds float* %x2, i64 2
+  %14 = load float* %13, align 4, !tbaa !14
+  %15 = fsub float %12, %14
+  store float %5, float* %dx, align 4, !tbaa !14
+  %16 = getelementptr inbounds float* %dx, i64 1
+  store float %10, float* %16, align 4, !tbaa !14
+  %17 = getelementptr inbounds float* %dx, i64 2
+  store float %15, float* %17, align 4, !tbaa !14
   %.b = load i1* @bSupported, align 1
-  br i1 %.b, label %if.then2, label %if.end87
+  br i1 %.b, label %18, label %.critedge
 
-if.then2:                                         ; preds = %if.end
-  %6 = load i32* @bTriclinic, align 4, !tbaa !4
-  %tobool3 = icmp eq i32 %6, 0
-  br i1 %tobool3, label %for.body57, label %for.body
+; <label>:18                                      ; preds = %2
+  %19 = load i32* @bTriclinic, align 4, !tbaa !17
+  %20 = icmp eq i32 %19, 0
+  br i1 %20, label %.preheader, label %.preheader7
 
-for.body:                                         ; preds = %if.then2, %for.inc38.for.body_crit_edge
-  %7 = phi float [ %.pre181, %for.inc38.for.body_crit_edge ], [ %sub7.i, %if.then2 ]
-  %indvars.iv178 = phi i64 [ %indvars.iv.next179, %for.inc38.for.body_crit_edge ], [ 2, %if.then2 ]
-  %arrayidx6 = getelementptr inbounds [3 x float]* @gl_hbox, i64 0, i64 %indvars.iv178
-  %8 = load float* %arrayidx6, align 4, !tbaa !0
-  %cmp7 = fcmp ogt float %7, %8
-  br i1 %cmp7, label %for.body11, label %if.else
+.preheader7:                                      ; preds = %18, %._crit_edge
+  %21 = phi float [ %.pre, %._crit_edge ], [ %15, %18 ]
+  %indvars.iv27 = phi i64 [ %indvars.iv.next28, %._crit_edge ], [ 2, %18 ]
+  %22 = getelementptr inbounds [3 x float]* @gl_hbox, i64 0, i64 %indvars.iv27
+  %23 = load float* %22, align 4, !tbaa !14
+  %24 = fcmp ogt float %21, %23
+  br i1 %24, label %.lr.ph15.preheader, label %35
 
-for.body11:                                       ; preds = %for.body, %for.body11.for.body11_crit_edge
-  %9 = phi float [ %.pre183, %for.body11.for.body11_crit_edge ], [ %7, %for.body ]
-  %indvars.iv176 = phi i64 [ %indvars.iv.next177, %for.body11.for.body11_crit_edge ], [ %indvars.iv178, %for.body ]
-  %arrayidx15 = getelementptr inbounds [3 x [3 x float]]* @gl_box, i64 0, i64 %indvars.iv178, i64 %indvars.iv176
-  %10 = load float* %arrayidx15, align 4, !tbaa !0
-  %arrayidx17 = getelementptr inbounds float* %dx, i64 %indvars.iv176
-  %sub = fsub float %9, %10
-  store float %sub, float* %arrayidx17, align 4, !tbaa !0
-  %indvars.iv.next177 = add i64 %indvars.iv176, -1
-  %11 = trunc i64 %indvars.iv176 to i32
-  %cmp10 = icmp sgt i32 %11, 0
-  br i1 %cmp10, label %for.body11.for.body11_crit_edge, label %for.inc38
+.lr.ph15.preheader:                               ; preds = %.preheader7
+  %25 = getelementptr inbounds [3 x [3 x float]]* @gl_box, i64 0, i64 %indvars.iv27, i64 %indvars.iv27
+  %26 = load float* %25, align 4, !tbaa !14
+  %27 = getelementptr inbounds float* %dx, i64 %indvars.iv27
+  %28 = fsub float %21, %26
+  store float %28, float* %27, align 4, !tbaa !14
+  %29 = icmp sgt i64 %indvars.iv27, 0
+  br i1 %29, label %._crit_edge32, label %.loopexit
 
-for.body11.for.body11_crit_edge:                  ; preds = %for.body11
-  %arrayidx17.phi.trans.insert = getelementptr inbounds float* %dx, i64 %indvars.iv.next177
-  %.pre183 = load float* %arrayidx17.phi.trans.insert, align 4, !tbaa !0
-  br label %for.body11
+._crit_edge32:                                    ; preds = %.lr.ph15.preheader, %._crit_edge32
+  %indvars.iv.next2645.in = phi i64 [ %indvars.iv.next2645, %._crit_edge32 ], [ %indvars.iv27, %.lr.ph15.preheader ]
+  %indvars.iv.next2645 = add nsw i64 %indvars.iv.next2645.in, -1
+  %.phi.trans.insert33 = getelementptr inbounds float* %dx, i64 %indvars.iv.next2645
+  %.pre34 = load float* %.phi.trans.insert33, align 4, !tbaa !14
+  %30 = getelementptr inbounds [3 x [3 x float]]* @gl_box, i64 0, i64 %indvars.iv27, i64 %indvars.iv.next2645
+  %31 = load float* %30, align 4, !tbaa !14
+  %32 = getelementptr inbounds float* %dx, i64 %indvars.iv.next2645
+  %33 = fsub float %.pre34, %31
+  store float %33, float* %32, align 4, !tbaa !14
+  %34 = icmp sgt i64 %indvars.iv.next2645.in, 1
+  br i1 %34, label %._crit_edge32, label %.loopexit
 
-if.else:                                          ; preds = %for.body
-  %arrayidx21 = getelementptr inbounds [3 x float]* @gl_mhbox, i64 0, i64 %indvars.iv178
-  %12 = load float* %arrayidx21, align 4, !tbaa !0
-  %cmp22 = fcmp ugt float %7, %12
-  br i1 %cmp22, label %for.inc38, label %for.body26
+; <label>:35                                      ; preds = %.preheader7
+  %36 = getelementptr inbounds [3 x float]* @gl_mhbox, i64 0, i64 %indvars.iv27
+  %37 = load float* %36, align 4, !tbaa !14
+  %38 = fcmp ugt float %21, %37
+  br i1 %38, label %.loopexit, label %.lr.ph13.preheader
 
-for.body26:                                       ; preds = %if.else, %for.body26.for.body26_crit_edge
-  %13 = phi float [ %.pre182, %for.body26.for.body26_crit_edge ], [ %7, %if.else ]
-  %indvars.iv172 = phi i64 [ %indvars.iv.next173, %for.body26.for.body26_crit_edge ], [ %indvars.iv178, %if.else ]
-  %arrayidx30 = getelementptr inbounds [3 x [3 x float]]* @gl_box, i64 0, i64 %indvars.iv178, i64 %indvars.iv172
-  %14 = load float* %arrayidx30, align 4, !tbaa !0
-  %arrayidx32 = getelementptr inbounds float* %dx, i64 %indvars.iv172
-  %add = fadd float %14, %13
-  store float %add, float* %arrayidx32, align 4, !tbaa !0
-  %indvars.iv.next173 = add i64 %indvars.iv172, -1
-  %15 = trunc i64 %indvars.iv172 to i32
-  %cmp25 = icmp sgt i32 %15, 0
-  br i1 %cmp25, label %for.body26.for.body26_crit_edge, label %for.inc38
+.lr.ph13.preheader:                               ; preds = %35
+  %39 = getelementptr inbounds [3 x [3 x float]]* @gl_box, i64 0, i64 %indvars.iv27, i64 %indvars.iv27
+  %40 = load float* %39, align 4, !tbaa !14
+  %41 = getelementptr inbounds float* %dx, i64 %indvars.iv27
+  %42 = fadd float %40, %21
+  store float %42, float* %41, align 4, !tbaa !14
+  %43 = icmp sgt i64 %indvars.iv27, 0
+  br i1 %43, label %._crit_edge29, label %.loopexit
 
-for.body26.for.body26_crit_edge:                  ; preds = %for.body26
-  %arrayidx32.phi.trans.insert = getelementptr inbounds float* %dx, i64 %indvars.iv.next173
-  %.pre182 = load float* %arrayidx32.phi.trans.insert, align 4, !tbaa !0
-  br label %for.body26
+._crit_edge29:                                    ; preds = %.lr.ph13.preheader, %._crit_edge29
+  %indvars.iv.next2243.in = phi i64 [ %indvars.iv.next2243, %._crit_edge29 ], [ %indvars.iv27, %.lr.ph13.preheader ]
+  %indvars.iv.next2243 = add nsw i64 %indvars.iv.next2243.in, -1
+  %.phi.trans.insert30 = getelementptr inbounds float* %dx, i64 %indvars.iv.next2243
+  %.pre31 = load float* %.phi.trans.insert30, align 4, !tbaa !14
+  %44 = getelementptr inbounds [3 x [3 x float]]* @gl_box, i64 0, i64 %indvars.iv27, i64 %indvars.iv.next2243
+  %45 = load float* %44, align 4, !tbaa !14
+  %46 = getelementptr inbounds float* %dx, i64 %indvars.iv.next2243
+  %47 = fadd float %45, %.pre31
+  store float %47, float* %46, align 4, !tbaa !14
+  %48 = icmp sgt i64 %indvars.iv.next2243.in, 1
+  br i1 %48, label %._crit_edge29, label %.loopexit
 
-for.inc38:                                        ; preds = %for.body11, %for.body26, %if.else
-  %indvars.iv.next179 = add i64 %indvars.iv178, -1
-  %16 = trunc i64 %indvars.iv178 to i32
-  %cmp = icmp sgt i32 %16, 0
-  br i1 %cmp, label %for.inc38.for.body_crit_edge, label %for.end40
+.loopexit:                                        ; preds = %.lr.ph13.preheader, %._crit_edge29, %.lr.ph15.preheader, %._crit_edge32, %35
+  %indvars.iv.next28 = add nsw i64 %indvars.iv27, -1
+  %49 = icmp sgt i64 %indvars.iv27, 0
+  br i1 %49, label %._crit_edge, label %50
 
-for.inc38.for.body_crit_edge:                     ; preds = %for.inc38
-  %arrayidx.phi.trans.insert = getelementptr inbounds float* %dx, i64 %indvars.iv.next179
-  %.pre181 = load float* %arrayidx.phi.trans.insert, align 4, !tbaa !0
-  br label %for.body
+._crit_edge:                                      ; preds = %.loopexit
+  %.phi.trans.insert = getelementptr inbounds float* %dx, i64 %indvars.iv.next28
+  %.pre = load float* %.phi.trans.insert, align 4, !tbaa !14
+  br label %.preheader7
 
-for.end40:                                        ; preds = %for.inc38
-  %17 = load float* %dx, align 4, !tbaa !0
-  %18 = load float* %arrayidx9.i, align 4, !tbaa !0
-  %19 = load float* %arrayidx10.i, align 4, !tbaa !0
-  %mul.i141 = fmul float %17, %17
-  %mul4.i143 = fmul float %18, %18
-  %add.i144 = fadd float %mul.i141, %mul4.i143
-  %mul7.i146 = fmul float %19, %19
-  %add8.i147 = fadd float %add.i144, %mul7.i146
-  %20 = load float* @sure_dist2, align 4, !tbaa !0
-  %cmp41157 = fcmp ogt float %add8.i147, %20
-  %21 = load i32* @ntric_vec, align 4, !tbaa !4
-  %cmp42158 = icmp sgt i32 %21, 0
-  %or.cond159 = and i1 %cmp41157, %cmp42158
-  br i1 %or.cond159, label %while.body.lr.ph, label %if.end87
+; <label>:50                                      ; preds = %.loopexit
+  %51 = load float* %dx, align 4, !tbaa !14
+  %52 = load float* %16, align 4, !tbaa !14
+  %53 = load float* %17, align 4, !tbaa !14
+  %54 = fmul float %51, %51
+  %55 = fmul float %52, %52
+  %56 = fadd float %54, %55
+  %57 = fmul float %53, %53
+  %58 = fadd float %56, %57
+  %59 = load float* @sure_dist2, align 4, !tbaa !14
+  %60 = fcmp ogt float %58, %59
+  %61 = load i32* @ntric_vec, align 4
+  %62 = icmp sgt i32 %61, 0
+  %or.cond9 = and i1 %60, %62
+  br i1 %or.cond9, label %.lr.ph, label %.critedge
 
-while.body.lr.ph:                                 ; preds = %for.end40
-  %22 = load [3 x float]** @tric_vec, align 8, !tbaa !3
-  br label %while.body
+.lr.ph:                                           ; preds = %50
+  %63 = load [3 x float]** @tric_vec, align 8, !tbaa !16
+  br label %64
 
-while.body:                                       ; preds = %while.body.lr.ph, %if.end53
-  %23 = phi float [ %20, %while.body.lr.ph ], [ %27, %if.end53 ]
-  %indvars.iv168 = phi i64 [ 0, %while.body.lr.ph ], [ %indvars.iv.next169, %if.end53 ]
-  %d2min.0160 = phi float [ %add8.i147, %while.body.lr.ph ], [ %d2min.1, %if.end53 ]
-  %arraydecay46 = getelementptr inbounds [3 x float]* %22, i64 %indvars.iv168, i64 0
-  %24 = load float* %arraydecay46, align 4, !tbaa !0
-  %add.i134 = fadd float %17, %24
-  %arrayidx3.i136 = getelementptr inbounds [3 x float]* %22, i64 %indvars.iv168, i64 1
-  %25 = load float* %arrayidx3.i136, align 4, !tbaa !0
-  %add4.i = fadd float %18, %25
-  %arrayidx6.i138 = getelementptr inbounds [3 x float]* %22, i64 %indvars.iv168, i64 2
-  %26 = load float* %arrayidx6.i138, align 4, !tbaa !0
-  %add7.i = fadd float %19, %26
-  %mul.i = fmul float %add.i134, %add.i134
-  %mul4.i = fmul float %add4.i, %add4.i
-  %add.i = fadd float %mul.i, %mul4.i
-  %mul7.i = fmul float %add7.i, %add7.i
-  %add8.i = fadd float %add.i, %mul7.i
-  %cmp50 = fcmp olt float %add8.i, %d2min.0160
-  br i1 %cmp50, label %if.then51, label %if.end53
+; <label>:64                                      ; preds = %.lr.ph, %83
+  %65 = phi i32 [ %61, %.lr.ph ], [ %84, %83 ]
+  %66 = phi float [ %59, %.lr.ph ], [ %85, %83 ]
+  %indvars.iv17 = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next18, %83 ]
+  %d2min.010 = phi float [ %58, %.lr.ph ], [ %d2min.1, %83 ]
+  %67 = getelementptr inbounds [3 x float]* %63, i64 %indvars.iv17, i64 0
+  %68 = load float* %67, align 4, !tbaa !14
+  %69 = fadd float %51, %68
+  %70 = getelementptr inbounds [3 x float]* %63, i64 %indvars.iv17, i64 1
+  %71 = load float* %70, align 4, !tbaa !14
+  %72 = fadd float %52, %71
+  %73 = getelementptr inbounds [3 x float]* %63, i64 %indvars.iv17, i64 2
+  %74 = load float* %73, align 4, !tbaa !14
+  %75 = fadd float %53, %74
+  %76 = fmul float %69, %69
+  %77 = fmul float %72, %72
+  %78 = fadd float %76, %77
+  %79 = fmul float %75, %75
+  %80 = fadd float %78, %79
+  %81 = fcmp olt float %80, %d2min.010
+  br i1 %81, label %82, label %83
 
-if.then51:                                        ; preds = %while.body
-  store float %add.i134, float* %dx, align 4, !tbaa !0
-  store float %add4.i, float* %arrayidx9.i, align 4, !tbaa !0
-  store float %add7.i, float* %arrayidx10.i, align 4, !tbaa !0
-  %.pre = load float* @sure_dist2, align 4, !tbaa !0
-  br label %if.end53
+; <label>:82                                      ; preds = %64
+  store float %69, float* %dx, align 4, !tbaa !14
+  store float %72, float* %16, align 4, !tbaa !14
+  store float %75, float* %17, align 4, !tbaa !14
+  %.pre35 = load float* @sure_dist2, align 4, !tbaa !14
+  %.pre36 = load i32* @ntric_vec, align 4
+  br label %83
 
-if.end53:                                         ; preds = %if.then51, %while.body
-  %27 = phi float [ %.pre, %if.then51 ], [ %23, %while.body ]
-  %d2min.1 = phi float [ %add8.i, %if.then51 ], [ %d2min.0160, %while.body ]
-  %indvars.iv.next169 = add i64 %indvars.iv168, 1
-  %cmp41 = fcmp ogt float %d2min.1, %27
-  %28 = trunc i64 %indvars.iv.next169 to i32
-  %cmp42 = icmp slt i32 %28, %21
-  %or.cond = and i1 %cmp41, %cmp42
-  br i1 %or.cond, label %while.body, label %if.end87
+; <label>:83                                      ; preds = %82, %64
+  %84 = phi i32 [ %.pre36, %82 ], [ %65, %64 ]
+  %85 = phi float [ %.pre35, %82 ], [ %66, %64 ]
+  %d2min.1 = phi float [ %80, %82 ], [ %d2min.010, %64 ]
+  %indvars.iv.next18 = add nuw nsw i64 %indvars.iv17, 1
+  %86 = fcmp ogt float %d2min.1, %85
+  %87 = sext i32 %84 to i64
+  %88 = icmp slt i64 %indvars.iv.next18, %87
+  %or.cond = and i1 %86, %88
+  br i1 %or.cond, label %64, label %.critedge
 
-for.body57:                                       ; preds = %if.then2, %for.inc83.for.body57_crit_edge
-  %29 = phi float [ %.pre180, %for.inc83.for.body57_crit_edge ], [ %sub.i, %if.then2 ]
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc83.for.body57_crit_edge ], [ 0, %if.then2 ]
-  %arrayidx59 = getelementptr inbounds float* %dx, i64 %indvars.iv
-  %arrayidx61 = getelementptr inbounds [3 x float]* @gl_hbox, i64 0, i64 %indvars.iv
-  %30 = load float* %arrayidx61, align 4, !tbaa !0
-  %cmp62 = fcmp ogt float %29, %30
-  br i1 %cmp62, label %if.then63, label %if.else69
+.preheader:                                       ; preds = %18, %._crit_edge37
+  %89 = phi float [ %.pre39, %._crit_edge37 ], [ %5, %18 ]
+  %indvars.iv = phi i64 [ %indvars.iv.next, %._crit_edge37 ], [ 0, %18 ]
+  %90 = getelementptr inbounds float* %dx, i64 %indvars.iv
+  %91 = getelementptr inbounds [3 x float]* @gl_hbox, i64 0, i64 %indvars.iv
+  %92 = load float* %91, align 4, !tbaa !14
+  %93 = fcmp ogt float %89, %92
+  br i1 %93, label %94, label %98
 
-if.then63:                                        ; preds = %for.body57
-  %arrayidx65 = getelementptr inbounds [3 x float]* @gl_fbox, i64 0, i64 %indvars.iv
-  %31 = load float* %arrayidx65, align 4, !tbaa !0
-  %sub68 = fsub float %29, %31
-  store float %sub68, float* %arrayidx59, align 4, !tbaa !0
-  br label %for.inc83
+; <label>:94                                      ; preds = %.preheader
+  %95 = getelementptr inbounds [3 x float]* @gl_fbox, i64 0, i64 %indvars.iv
+  %96 = load float* %95, align 4, !tbaa !14
+  %97 = fsub float %89, %96
+  store float %97, float* %90, align 4, !tbaa !14
+  br label %106
 
-if.else69:                                        ; preds = %for.body57
-  %arrayidx73 = getelementptr inbounds [3 x float]* @gl_mhbox, i64 0, i64 %indvars.iv
-  %32 = load float* %arrayidx73, align 4, !tbaa !0
-  %cmp74 = fcmp ugt float %29, %32
-  br i1 %cmp74, label %for.inc83, label %if.then75
+; <label>:98                                      ; preds = %.preheader
+  %99 = getelementptr inbounds [3 x float]* @gl_mhbox, i64 0, i64 %indvars.iv
+  %100 = load float* %99, align 4, !tbaa !14
+  %101 = fcmp ugt float %89, %100
+  br i1 %101, label %106, label %102
 
-if.then75:                                        ; preds = %if.else69
-  %arrayidx77 = getelementptr inbounds [3 x float]* @gl_fbox, i64 0, i64 %indvars.iv
-  %33 = load float* %arrayidx77, align 4, !tbaa !0
-  %add80 = fadd float %29, %33
-  store float %add80, float* %arrayidx59, align 4, !tbaa !0
-  br label %for.inc83
+; <label>:102                                     ; preds = %98
+  %103 = getelementptr inbounds [3 x float]* @gl_fbox, i64 0, i64 %indvars.iv
+  %104 = load float* %103, align 4, !tbaa !14
+  %105 = fadd float %89, %104
+  store float %105, float* %90, align 4, !tbaa !14
+  br label %106
 
-for.inc83:                                        ; preds = %if.else69, %if.then63, %if.then75
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 3
-  br i1 %exitcond, label %if.end87, label %for.inc83.for.body57_crit_edge
+; <label>:106                                     ; preds = %98, %94, %102
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i64 %indvars.iv.next, 3
+  br i1 %exitcond, label %.critedge, label %._crit_edge37
 
-for.inc83.for.body57_crit_edge:                   ; preds = %for.inc83
-  %arrayidx59.phi.trans.insert = getelementptr inbounds float* %dx, i64 %indvars.iv.next
-  %.pre180 = load float* %arrayidx59.phi.trans.insert, align 4, !tbaa !0
-  br label %for.body57
+._crit_edge37:                                    ; preds = %106
+  %.phi.trans.insert38 = getelementptr inbounds float* %dx, i64 %indvars.iv.next
+  %.pre39 = load float* %.phi.trans.insert38, align 4, !tbaa !14
+  br label %.preheader
 
-if.end87:                                         ; preds = %for.end40, %if.end53, %for.inc83, %if.end
+.critedge:                                        ; preds = %83, %106, %50, %2
   ret void
 }
 
 ; Function Attrs: optsize
-declare void @fatal_error(i32, i8*, ...) #3
+declare void @fatal_error(i32, i8*, ...) #1
 
-; Function Attrs: nounwind optsize uwtable
-define i32 @image_rect(i32* nocapture %xi, i32* nocapture %xj, i32* nocapture %box_size, float %rlong2, i32* nocapture %shift, float* nocapture %r2) #1 {
-entry:
-  br label %for.body
+; Function Attrs: nounwind optsize ssp uwtable
+define i32 @image_rect(i32* nocapture readonly %xi, i32* nocapture readonly %xj, i32* nocapture readonly %box_size, float %rlong2, i32* nocapture %shift, float* nocapture %r2) #4 {
+  br label %3
 
-for.cond:                                         ; preds = %if.end13
-  %0 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %0, 3
-  br i1 %cmp, label %for.body, label %for.end
+; <label>:1                                       ; preds = %24
+  %2 = icmp slt i64 %indvars.iv.next, 3
+  br i1 %2, label %3, label %29
 
-for.body:                                         ; preds = %entry, %for.cond
-  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.cond ]
-  %rij2.041 = phi float [ 0.000000e+00, %entry ], [ %add15, %for.cond ]
-  %t.039 = phi i32 [ 0, %entry ], [ %t.1, %for.cond ]
-  %arrayidx = getelementptr inbounds i32* %xi, i64 %indvars.iv
-  %1 = load i32* %arrayidx, align 4, !tbaa !4
-  %arrayidx2 = getelementptr inbounds i32* %xj, i64 %indvars.iv
-  %2 = load i32* %arrayidx2, align 4, !tbaa !4
-  %sub = sub nsw i32 %1, %2
-  %mul = mul nsw i32 %t.039, 3
-  %arrayidx4 = getelementptr inbounds i32* %box_size, i64 %indvars.iv
-  %3 = load i32* %arrayidx4, align 4, !tbaa !4
-  %div = sdiv i32 %3, 2
-  %sub5 = sub nsw i32 0, %div
-  %cmp6 = icmp slt i32 %sub, %sub5
-  br i1 %cmp6, label %if.then, label %if.else
+; <label>:3                                       ; preds = %0, %1
+  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %1 ]
+  %rij2.05 = phi float [ 0.000000e+00, %0 ], [ %27, %1 ]
+  %t.03 = phi i32 [ 0, %0 ], [ %t.1, %1 ]
+  %4 = getelementptr inbounds i32* %xi, i64 %indvars.iv
+  %5 = load i32* %4, align 4, !tbaa !17
+  %6 = getelementptr inbounds i32* %xj, i64 %indvars.iv
+  %7 = load i32* %6, align 4, !tbaa !17
+  %8 = sub nsw i32 %5, %7
+  %9 = mul nsw i32 %t.03, 3
+  %10 = getelementptr inbounds i32* %box_size, i64 %indvars.iv
+  %11 = load i32* %10, align 4, !tbaa !17
+  %12 = sdiv i32 %11, 2
+  %13 = sub nsw i32 0, %12
+  %14 = icmp slt i32 %8, %13
+  br i1 %14, label %15, label %18
 
-if.then:                                          ; preds = %for.body
-  %add = add nsw i32 %mul, 2
-  %add7 = add nsw i32 %sub, %3
-  br label %if.end13
+; <label>:15                                      ; preds = %3
+  %16 = add nsw i32 %9, 2
+  %17 = add nsw i32 %8, %11
+  br label %24
 
-if.else:                                          ; preds = %for.body
-  %cmp8 = icmp sgt i32 %sub, %div
-  br i1 %cmp8, label %if.then9, label %if.else11
+; <label>:18                                      ; preds = %3
+  %19 = icmp sgt i32 %8, %12
+  br i1 %19, label %20, label %22
 
-if.then9:                                         ; preds = %if.else
-  %sub10 = sub nsw i32 %sub, %3
-  br label %if.end13
+; <label>:20                                      ; preds = %18
+  %21 = sub nsw i32 %8, %11
+  br label %24
 
-if.else11:                                        ; preds = %if.else
-  %add12 = add nsw i32 %mul, 1
-  br label %if.end13
+; <label>:22                                      ; preds = %18
+  %23 = add nsw i32 %9, 1
+  br label %24
 
-if.end13:                                         ; preds = %if.then9, %if.else11, %if.then
-  %dx.0 = phi i32 [ %add7, %if.then ], [ %sub10, %if.then9 ], [ %sub, %if.else11 ]
-  %t.1 = phi i32 [ %add, %if.then ], [ %mul, %if.then9 ], [ %add12, %if.else11 ]
-  %conv = sitofp i32 %dx.0 to float
-  %mul14 = fmul float %conv, %conv
-  %add15 = fadd float %rij2.041, %mul14
-  %cmp16 = fcmp ult float %add15, %rlong2
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  br i1 %cmp16, label %for.cond, label %return
+; <label>:24                                      ; preds = %20, %22, %15
+  %dx.0 = phi i32 [ %17, %15 ], [ %21, %20 ], [ %8, %22 ]
+  %t.1 = phi i32 [ %16, %15 ], [ %9, %20 ], [ %23, %22 ]
+  %25 = sitofp i32 %dx.0 to float
+  %26 = fmul float %25, %25
+  %27 = fadd float %rij2.05, %26
+  %28 = fcmp ult float %27, %rlong2
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  br i1 %28, label %1, label %.loopexit
 
-for.end:                                          ; preds = %for.cond
-  store i32 %t.1, i32* %shift, align 4, !tbaa !4
-  store float %add15, float* %r2, align 4, !tbaa !0
-  br label %return
+; <label>:29                                      ; preds = %1
+  store i32 %t.1, i32* %shift, align 4, !tbaa !17
+  store float %27, float* %r2, align 4, !tbaa !14
+  br label %.loopexit
 
-return:                                           ; preds = %if.end13, %for.end
-  %retval.0 = phi i32 [ 1, %for.end ], [ 0, %if.end13 ]
-  ret i32 %retval.0
+.loopexit:                                        ; preds = %24, %29
+  %.0 = phi i32 [ 1, %29 ], [ 0, %24 ]
+  ret i32 %.0
 }
 
-; Function Attrs: nounwind optsize uwtable
-define i32 @image_cylindric(i32* nocapture %xi, i32* nocapture %xj, i32* nocapture %box_size, float %rlong2, i32* nocapture %shift, float* nocapture %r2) #1 {
-entry:
-  br label %for.body
+; Function Attrs: nounwind optsize ssp uwtable
+define i32 @image_cylindric(i32* nocapture readonly %xi, i32* nocapture readonly %xj, i32* nocapture readonly %box_size, float %rlong2, i32* nocapture %shift, float* nocapture %r2) #4 {
+  br label %3
 
-for.cond:                                         ; preds = %if.end13
-  %0 = trunc i64 %indvars.iv.next to i32
-  %cmp = icmp slt i32 %0, 3
-  br i1 %cmp, label %for.body, label %for.end
+; <label>:1                                       ; preds = %24
+  %2 = icmp slt i64 %indvars.iv.next, 3
+  br i1 %2, label %3, label %30
 
-for.body:                                         ; preds = %entry, %for.cond
-  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.cond ]
-  %rij2.046 = phi float [ 0.000000e+00, %entry ], [ %add15, %for.cond ]
-  %t.044 = phi i32 [ 0, %entry ], [ %t.1, %for.cond ]
-  %arrayidx = getelementptr inbounds i32* %xi, i64 %indvars.iv
-  %1 = load i32* %arrayidx, align 4, !tbaa !4
-  %arrayidx2 = getelementptr inbounds i32* %xj, i64 %indvars.iv
-  %2 = load i32* %arrayidx2, align 4, !tbaa !4
-  %sub = sub nsw i32 %1, %2
-  %mul = mul nsw i32 %t.044, 3
-  %arrayidx4 = getelementptr inbounds i32* %box_size, i64 %indvars.iv
-  %3 = load i32* %arrayidx4, align 4, !tbaa !4
-  %div = sdiv i32 %3, 2
-  %sub5 = sub nsw i32 0, %div
-  %cmp6 = icmp slt i32 %sub, %sub5
-  br i1 %cmp6, label %if.then, label %if.else
+; <label>:3                                       ; preds = %0, %1
+  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %1 ]
+  %rij2.05 = phi float [ 0.000000e+00, %0 ], [ %27, %1 ]
+  %t.03 = phi i32 [ 0, %0 ], [ %t.1, %1 ]
+  %4 = getelementptr inbounds i32* %xi, i64 %indvars.iv
+  %5 = load i32* %4, align 4, !tbaa !17
+  %6 = getelementptr inbounds i32* %xj, i64 %indvars.iv
+  %7 = load i32* %6, align 4, !tbaa !17
+  %8 = sub nsw i32 %5, %7
+  %9 = mul nsw i32 %t.03, 3
+  %10 = getelementptr inbounds i32* %box_size, i64 %indvars.iv
+  %11 = load i32* %10, align 4, !tbaa !17
+  %12 = sdiv i32 %11, 2
+  %13 = sub nsw i32 0, %12
+  %14 = icmp slt i32 %8, %13
+  br i1 %14, label %15, label %18
 
-if.then:                                          ; preds = %for.body
-  %add = add nsw i32 %mul, 2
-  %add7 = add nsw i32 %sub, %3
-  br label %if.end13
+; <label>:15                                      ; preds = %3
+  %16 = add nsw i32 %9, 2
+  %17 = add nsw i32 %8, %11
+  br label %24
 
-if.else:                                          ; preds = %for.body
-  %cmp8 = icmp sgt i32 %sub, %div
-  br i1 %cmp8, label %if.then9, label %if.else11
+; <label>:18                                      ; preds = %3
+  %19 = icmp sgt i32 %8, %12
+  br i1 %19, label %20, label %22
 
-if.then9:                                         ; preds = %if.else
-  %sub10 = sub nsw i32 %sub, %3
-  br label %if.end13
+; <label>:20                                      ; preds = %18
+  %21 = sub nsw i32 %8, %11
+  br label %24
 
-if.else11:                                        ; preds = %if.else
-  %add12 = add nsw i32 %mul, 1
-  br label %if.end13
+; <label>:22                                      ; preds = %18
+  %23 = add nsw i32 %9, 1
+  br label %24
 
-if.end13:                                         ; preds = %if.then9, %if.else11, %if.then
-  %dx.0 = phi i32 [ %add7, %if.then ], [ %sub10, %if.then9 ], [ %sub, %if.else11 ]
-  %t.1 = phi i32 [ %add, %if.then ], [ %mul, %if.then9 ], [ %add12, %if.else11 ]
-  %conv = sitofp i32 %dx.0 to float
-  %mul14 = fmul float %conv, %conv
-  %add15 = fadd float %rij2.046, %mul14
-  %4 = trunc i64 %indvars.iv to i32
-  %cmp16 = icmp sgt i32 %4, 1
-  %cmp19 = fcmp ult float %add15, %rlong2
-  %or.cond = or i1 %cmp16, %cmp19
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  br i1 %or.cond, label %for.cond, label %return
+; <label>:24                                      ; preds = %20, %22, %15
+  %dx.0 = phi i32 [ %17, %15 ], [ %21, %20 ], [ %8, %22 ]
+  %t.1 = phi i32 [ %16, %15 ], [ %9, %20 ], [ %23, %22 ]
+  %25 = sitofp i32 %dx.0 to float
+  %26 = fmul float %25, %25
+  %27 = fadd float %rij2.05, %26
+  %28 = icmp sgt i64 %indvars.iv, 1
+  %29 = fcmp ult float %27, %rlong2
+  %or.cond = or i1 %28, %29
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  br i1 %or.cond, label %1, label %.loopexit
 
-for.end:                                          ; preds = %for.cond
-  store i32 %t.1, i32* %shift, align 4, !tbaa !4
-  store float %add15, float* %r2, align 4, !tbaa !0
-  br label %return
+; <label>:30                                      ; preds = %1
+  store i32 %t.1, i32* %shift, align 4, !tbaa !17
+  store float %27, float* %r2, align 4, !tbaa !14
+  br label %.loopexit
 
-return:                                           ; preds = %if.end13, %for.end
-  %retval.0 = phi i32 [ 1, %for.end ], [ 0, %if.end13 ]
-  ret i32 %retval.0
+.loopexit:                                        ; preds = %24, %30
+  %.0 = phi i32 [ 1, %30 ], [ 0, %24 ]
+  ret i32 %.0
 }
 
-; Function Attrs: nounwind optsize uwtable
-define void @calc_shifts([3 x float]* %box, float* nocapture %box_size, [3 x float]* nocapture %shift_vec) #1 {
-entry:
-  tail call void @init_pbc([3 x float]* %box) #6
-  br label %for.body
+; Function Attrs: nounwind optsize ssp uwtable
+define void @calc_shifts([3 x float]* %box, float* nocapture %box_size, [3 x float]* nocapture %shift_vec) #4 {
+  tail call void @init_pbc([3 x float]* %box) #9
+  br label %1
 
-for.body:                                         ; preds = %for.body, %entry
-  %indvars.iv98 = phi i64 [ 0, %entry ], [ %indvars.iv.next99, %for.body ]
-  %arrayidx2 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv98, i64 %indvars.iv98
-  %0 = load float* %arrayidx2, align 4, !tbaa !0
-  %arrayidx4 = getelementptr inbounds float* %box_size, i64 %indvars.iv98
-  store float %0, float* %arrayidx4, align 4, !tbaa !0
-  %indvars.iv.next99 = add i64 %indvars.iv98, 1
-  %lftr.wideiv100 = trunc i64 %indvars.iv.next99 to i32
-  %exitcond101 = icmp eq i32 %lftr.wideiv100, 3
-  br i1 %exitcond101, label %for.cond8.preheader, label %for.body
+; <label>:1                                       ; preds = %1, %0
+  %indvars.iv18 = phi i64 [ 0, %0 ], [ %indvars.iv.next19, %1 ]
+  %2 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv18, i64 %indvars.iv18
+  %3 = bitcast float* %2 to i32*
+  %4 = load i32* %3, align 4, !tbaa !14
+  %5 = getelementptr inbounds float* %box_size, i64 %indvars.iv18
+  %6 = bitcast float* %5 to i32*
+  store i32 %4, i32* %6, align 4, !tbaa !14
+  %indvars.iv.next19 = add nuw nsw i64 %indvars.iv18, 1
+  %exitcond20 = icmp eq i64 %indvars.iv.next19, 3
+  br i1 %exitcond20, label %.preheader3, label %1
 
-for.cond8.preheader:                              ; preds = %for.body, %for.inc53
-  %n.088 = phi i32 [ %10, %for.inc53 ], [ 0, %for.body ]
-  %m.187 = phi i32 [ %inc54, %for.inc53 ], [ -1, %for.body ]
-  %1 = mul i32 %m.187, 3
-  %mul = add i32 %1, 3
-  %conv33 = sitofp i32 %m.187 to float
-  br label %for.cond11.preheader
+.preheader3:                                      ; preds = %1, %42
+  %n.011 = phi i32 [ %43, %42 ], [ 0, %1 ]
+  %m.110 = phi i32 [ %44, %42 ], [ -1, %1 ]
+  %7 = mul i32 %m.110, 3
+  %8 = add nsw i32 %7, 3
+  %9 = sitofp i32 %m.110 to float
+  br label %.preheader2
 
-for.cond11.preheader:                             ; preds = %for.inc50, %for.cond8.preheader
-  %indvars.iv92.in = phi i32 [ %n.088, %for.cond8.preheader ], [ %indvars.iv92, %for.inc50 ]
-  %n.186 = phi i32 [ %n.088, %for.cond8.preheader ], [ %9, %for.inc50 ]
-  %l.085 = phi i32 [ -1, %for.cond8.preheader ], [ %inc51, %for.inc50 ]
-  %indvars.iv92 = add i32 %indvars.iv92.in, 3
-  %add14 = add nsw i32 %mul, %l.085
-  %2 = mul i32 %add14, 3
-  %add17 = add i32 %2, 4
-  %conv27 = sitofp i32 %l.085 to float
-  %3 = sext i32 %n.186 to i64
-  br label %for.body13
+.preheader2:                                      ; preds = %39, %.preheader3
+  %n.19 = phi i32 [ %n.011, %.preheader3 ], [ %40, %39 ]
+  %l.08 = phi i32 [ -1, %.preheader3 ], [ %41, %39 ]
+  %10 = add nsw i32 %8, %l.08
+  %11 = mul i32 %10, 3
+  %12 = add nsw i32 %11, 4
+  %13 = sitofp i32 %l.08 to float
+  %14 = sext i32 %n.19 to i64
+  br label %15
 
-for.body13:                                       ; preds = %for.inc46.for.body13_crit_edge, %for.cond11.preheader
-  %indvars.iv90 = phi i64 [ %3, %for.cond11.preheader ], [ %indvars.iv.next91, %for.inc46.for.body13_crit_edge ]
-  %k.084 = phi i32 [ -1, %for.cond11.preheader ], [ %inc47, %for.inc46.for.body13_crit_edge ]
-  %add18 = add i32 %add17, %k.084
-  %4 = trunc i64 %indvars.iv90 to i32
-  %cmp19 = icmp ne i32 %4, %add18
-  %5 = load %struct._IO_FILE** @stdlog, align 8, !tbaa !3
-  %tobool = icmp ne %struct._IO_FILE* %5, null
-  %or.cond = and i1 %cmp19, %tobool
-  br i1 %or.cond, label %if.then, label %for.cond20.preheader
+; <label>:15                                      ; preds = %37, %.preheader2
+  %indvars.iv13 = phi i64 [ %14, %.preheader2 ], [ %indvars.iv.next14, %37 ]
+  %k.07 = phi i32 [ -1, %.preheader2 ], [ %38, %37 ]
+  %16 = add nsw i32 %12, %k.07
+  %17 = trunc i64 %indvars.iv13 to i32
+  %18 = icmp ne i32 %17, %16
+  %19 = load %struct.__sFILE** @stdlog, align 8
+  %20 = icmp ne %struct.__sFILE* %19, null
+  %or.cond = and i1 %18, %20
+  br i1 %or.cond, label %21, label %.preheader
 
-if.then:                                          ; preds = %for.body13
-  %call = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %5, i8* getelementptr inbounds ([15 x i8]* @.str8, i64 0, i64 0), i32 %4, i32 %add18) #7
-  br label %for.cond20.preheader
+; <label>:21                                      ; preds = %15
+  %22 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %19, i8* getelementptr inbounds ([15 x i8]* @.str8, i64 0, i64 0), i32 %17, i32 %16) #7
+  br label %.preheader
 
-for.cond20.preheader:                             ; preds = %if.then, %for.body13
-  %conv = sitofp i32 %k.084 to float
-  br label %for.body22
+.preheader:                                       ; preds = %21, %15
+  %23 = sitofp i32 %k.07 to float
+  br label %24
 
-for.body22:                                       ; preds = %for.body22, %for.cond20.preheader
-  %indvars.iv = phi i64 [ 0, %for.cond20.preheader ], [ %indvars.iv.next, %for.body22 ]
-  %arrayidx25 = getelementptr inbounds [3 x float]* %box, i64 0, i64 %indvars.iv
-  %6 = load float* %arrayidx25, align 4, !tbaa !0
-  %mul26 = fmul float %conv, %6
-  %arrayidx30 = getelementptr inbounds [3 x float]* %box, i64 1, i64 %indvars.iv
-  %7 = load float* %arrayidx30, align 4, !tbaa !0
-  %mul31 = fmul float %conv27, %7
-  %add32 = fadd float %mul26, %mul31
-  %arrayidx36 = getelementptr inbounds [3 x float]* %box, i64 2, i64 %indvars.iv
-  %8 = load float* %arrayidx36, align 4, !tbaa !0
-  %mul37 = fmul float %conv33, %8
-  %add38 = fadd float %add32, %mul37
-  %arrayidx42 = getelementptr inbounds [3 x float]* %shift_vec, i64 %indvars.iv90, i64 %indvars.iv
-  store float %add38, float* %arrayidx42, align 4, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 3
-  br i1 %exitcond, label %for.inc46, label %for.body22
+; <label>:24                                      ; preds = %24, %.preheader
+  %indvars.iv = phi i64 [ 0, %.preheader ], [ %indvars.iv.next, %24 ]
+  %25 = getelementptr inbounds [3 x float]* %box, i64 0, i64 %indvars.iv
+  %26 = load float* %25, align 4, !tbaa !14
+  %27 = fmul float %23, %26
+  %28 = getelementptr inbounds [3 x float]* %box, i64 1, i64 %indvars.iv
+  %29 = load float* %28, align 4, !tbaa !14
+  %30 = fmul float %13, %29
+  %31 = fadd float %27, %30
+  %32 = getelementptr inbounds [3 x float]* %box, i64 2, i64 %indvars.iv
+  %33 = load float* %32, align 4, !tbaa !14
+  %34 = fmul float %9, %33
+  %35 = fadd float %31, %34
+  %36 = getelementptr inbounds [3 x float]* %shift_vec, i64 %indvars.iv13, i64 %indvars.iv
+  store float %35, float* %36, align 4, !tbaa !14
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i64 %indvars.iv.next, 3
+  br i1 %exitcond, label %37, label %24
 
-for.inc46:                                        ; preds = %for.body22
-  %indvars.iv.next91 = add i64 %indvars.iv90, 1
-  %lftr.wideiv94 = trunc i64 %indvars.iv.next91 to i32
-  %exitcond95 = icmp eq i32 %lftr.wideiv94, %indvars.iv92
-  br i1 %exitcond95, label %for.inc50, label %for.inc46.for.body13_crit_edge
+; <label>:37                                      ; preds = %24
+  %38 = add nsw i32 %k.07, 1
+  %indvars.iv.next14 = add nsw i64 %indvars.iv13, 1
+  %exitcond15 = icmp eq i32 %38, 2
+  br i1 %exitcond15, label %39, label %15
 
-for.inc46.for.body13_crit_edge:                   ; preds = %for.inc46
-  %inc47 = add nsw i32 %k.084, 1
-  br label %for.body13
+; <label>:39                                      ; preds = %37
+  %40 = add i32 %n.19, 3
+  %41 = add nsw i32 %l.08, 1
+  %exitcond16 = icmp eq i32 %41, 2
+  br i1 %exitcond16, label %42, label %.preheader2
 
-for.inc50:                                        ; preds = %for.inc46
-  %9 = add i32 %n.186, 3
-  %inc51 = add nsw i32 %l.085, 1
-  %exitcond96 = icmp eq i32 %inc51, 2
-  br i1 %exitcond96, label %for.inc53, label %for.cond11.preheader
+; <label>:42                                      ; preds = %39
+  %43 = add nuw nsw i32 %n.011, 9
+  %44 = add nsw i32 %m.110, 1
+  %exitcond17 = icmp eq i32 %44, 2
+  br i1 %exitcond17, label %45, label %.preheader3
 
-for.inc53:                                        ; preds = %for.inc50
-  %10 = add i32 %n.088, 9
-  %inc54 = add nsw i32 %m.187, 1
-  %exitcond97 = icmp eq i32 %inc54, 2
-  br i1 %exitcond97, label %for.end55, label %for.cond8.preheader
-
-for.end55:                                        ; preds = %for.inc53
+; <label>:45                                      ; preds = %42
   ret void
 }
 
-; Function Attrs: nounwind optsize uwtable
-define void @calc_cgcm(%struct._IO_FILE* nocapture %log, i32 %cg0, i32 %cg1, %struct.t_block* nocapture %cgs, [3 x float]* nocapture %pos, [3 x float]* nocapture %cg_cm) #1 {
-entry:
+; Function Attrs: nounwind optsize ssp uwtable
+define void @calc_cgcm(%struct.__sFILE* nocapture readnone %log, i32 %cg0, i32 %cg1, %struct.t_block* nocapture readonly %cgs, [3 x float]* nocapture readonly %pos, [3 x float]* nocapture %cg_cm) #4 {
   %cg = alloca [3 x float], align 4
-  %a = getelementptr inbounds %struct.t_block* %cgs, i64 0, i32 4
-  %0 = load i32** %a, align 8, !tbaa !3
-  %index = getelementptr inbounds %struct.t_block* %cgs, i64 0, i32 2
-  %1 = load i32** %index, align 8, !tbaa !3
-  %cmp78 = icmp slt i32 %cg0, %cg1
-  br i1 %cmp78, label %for.body.lr.ph, label %for.end48
+  %1 = getelementptr inbounds %struct.t_block* %cgs, i64 0, i32 4
+  %2 = load i32** %1, align 8, !tbaa !18
+  %3 = getelementptr inbounds %struct.t_block* %cgs, i64 0, i32 2
+  %4 = load i32** %3, align 8, !tbaa !20
+  %5 = icmp slt i32 %cg0, %cg1
+  br i1 %5, label %.lr.ph5, label %._crit_edge
 
-for.body.lr.ph:                                   ; preds = %entry
-  %arraydecay12 = getelementptr inbounds [3 x float]* %cg, i64 0, i64 0
-  %arrayidx1.i = getelementptr inbounds [3 x float]* %cg, i64 0, i64 1
-  %arrayidx2.i73 = getelementptr inbounds [3 x float]* %cg, i64 0, i64 2
-  %2 = sext i32 %cg0 to i64
-  %arrayidx.phi.trans.insert = getelementptr inbounds i32* %1, i64 %2
-  %.pre = load i32* %arrayidx.phi.trans.insert, align 4, !tbaa !4
-  br label %for.body
-
-for.body:                                         ; preds = %for.body.lr.ph, %for.cond.backedge
-  %3 = phi i32 [ %.pre, %for.body.lr.ph ], [ %4, %for.cond.backedge ]
-  %indvars.iv86 = phi i64 [ %2, %for.body.lr.ph ], [ %indvars.iv.next87, %for.cond.backedge ]
-  %indvars.iv.next87 = add i64 %indvars.iv86, 1
-  %arrayidx2 = getelementptr inbounds i32* %1, i64 %indvars.iv.next87
-  %4 = load i32* %arrayidx2, align 4, !tbaa !4
-  %sub = sub nsw i32 %4, %3
-  %cmp3 = icmp eq i32 %sub, 1
-  br i1 %cmp3, label %if.then, label %if.else
-
-if.then:                                          ; preds = %for.body
-  %idxprom4 = sext i32 %3 to i64
-  %arrayidx5 = getelementptr inbounds i32* %0, i64 %idxprom4
-  %5 = load i32* %arrayidx5, align 4, !tbaa !4
-  %idxprom6 = sext i32 %5 to i64
-  %arraydecay = getelementptr inbounds [3 x float]* %pos, i64 %idxprom6, i64 0
-  %arraydecay10 = getelementptr inbounds [3 x float]* %cg_cm, i64 %indvars.iv86, i64 0
-  %6 = load float* %arraydecay, align 4, !tbaa !0
-  store float %6, float* %arraydecay10, align 4, !tbaa !0
-  %arrayidx2.i = getelementptr inbounds [3 x float]* %pos, i64 %idxprom6, i64 1
-  %7 = load float* %arrayidx2.i, align 4, !tbaa !0
-  %arrayidx3.i = getelementptr inbounds [3 x float]* %cg_cm, i64 %indvars.iv86, i64 1
-  store float %7, float* %arrayidx3.i, align 4, !tbaa !0
-  %arrayidx4.i = getelementptr inbounds [3 x float]* %pos, i64 %idxprom6, i64 2
-  %8 = load float* %arrayidx4.i, align 4, !tbaa !0
-  %arrayidx5.i = getelementptr inbounds [3 x float]* %cg_cm, i64 %indvars.iv86, i64 2
-  store float %8, float* %arrayidx5.i, align 4, !tbaa !0
-  br label %for.cond.backedge
-
-for.cond.backedge:                                ; preds = %for.body36, %if.then
-  %9 = trunc i64 %indvars.iv.next87 to i32
-  %cmp = icmp slt i32 %9, %cg1
-  br i1 %cmp, label %for.body, label %for.end48
-
-if.else:                                          ; preds = %for.body
-  %conv = sitofp i32 %sub to double
-  %div = fdiv double 1.000000e+00, %conv
-  %conv11 = fptrunc double %div to float
-  store float 0.000000e+00, float* %arraydecay12, align 4, !tbaa !0
-  store float 0.000000e+00, float* %arrayidx1.i, align 4, !tbaa !0
-  store float 0.000000e+00, float* %arrayidx2.i73, align 4, !tbaa !0
-  %cmp1475 = icmp slt i32 %3, %4
-  br i1 %cmp1475, label %for.body16.lr.ph, label %for.body36
-
-for.body16.lr.ph:                                 ; preds = %if.else
-  %10 = sext i32 %3 to i64
-  br label %for.body16
-
-for.body16:                                       ; preds = %for.body16.lr.ph, %for.inc30
-  %indvars.iv80 = phi i64 [ %10, %for.body16.lr.ph ], [ %indvars.iv.next81, %for.inc30 ]
-  %arrayidx18 = getelementptr inbounds i32* %0, i64 %indvars.iv80
-  %11 = load i32* %arrayidx18, align 4, !tbaa !4
-  %idxprom24 = sext i32 %11 to i64
-  br label %for.body22
-
-for.body22:                                       ; preds = %for.body22, %for.body16
-  %indvars.iv = phi i64 [ 0, %for.body16 ], [ %indvars.iv.next, %for.body22 ]
-  %arrayidx26 = getelementptr inbounds [3 x float]* %pos, i64 %idxprom24, i64 %indvars.iv
-  %12 = load float* %arrayidx26, align 4, !tbaa !0
-  %arrayidx28 = getelementptr inbounds [3 x float]* %cg, i64 0, i64 %indvars.iv
-  %13 = load float* %arrayidx28, align 4, !tbaa !0
-  %add29 = fadd float %12, %13
-  store float %add29, float* %arrayidx28, align 4, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 3
-  br i1 %exitcond, label %for.inc30, label %for.body22
-
-for.inc30:                                        ; preds = %for.body22
-  %indvars.iv.next81 = add i64 %indvars.iv80, 1
-  %14 = trunc i64 %indvars.iv.next81 to i32
-  %cmp14 = icmp slt i32 %14, %4
-  br i1 %cmp14, label %for.body16, label %for.body36
-
-for.body36:                                       ; preds = %for.body36, %if.else, %for.inc30
-  %indvars.iv82 = phi i64 [ 0, %for.inc30 ], [ 0, %if.else ], [ %indvars.iv.next83, %for.body36 ]
-  %arrayidx38 = getelementptr inbounds [3 x float]* %cg, i64 0, i64 %indvars.iv82
-  %15 = load float* %arrayidx38, align 4, !tbaa !0
-  %mul = fmul float %conv11, %15
-  %arrayidx42 = getelementptr inbounds [3 x float]* %cg_cm, i64 %indvars.iv86, i64 %indvars.iv82
-  store float %mul, float* %arrayidx42, align 4, !tbaa !0
-  %indvars.iv.next83 = add i64 %indvars.iv82, 1
-  %lftr.wideiv84 = trunc i64 %indvars.iv.next83 to i32
-  %exitcond85 = icmp eq i32 %lftr.wideiv84, 3
-  br i1 %exitcond85, label %for.cond.backedge, label %for.body36
-
-for.end48:                                        ; preds = %for.cond.backedge, %entry
-  ret void
-}
-
-; Function Attrs: nounwind optsize uwtable
-define void @put_charge_groups_in_box(%struct._IO_FILE* nocapture %log, i32 %cg0, i32 %cg1, [3 x float]* nocapture %box, float* nocapture %box_size, %struct.t_block* nocapture %cgs, [3 x float]* nocapture %pos, [3 x float]* nocapture %cg_cm) #1 {
-entry:
-  %cg = alloca [3 x float], align 4
-  %a = getelementptr inbounds %struct.t_block* %cgs, i64 0, i32 4
-  %0 = load i32** %a, align 8, !tbaa !3
-  %index = getelementptr inbounds %struct.t_block* %cgs, i64 0, i32 2
-  %1 = load i32** %index, align 8, !tbaa !3
-  %arrayidx1 = getelementptr inbounds [3 x float]* %box, i64 1, i64 0
-  %2 = load float* %arrayidx1, align 4, !tbaa !0
-  %fabsf = call float @fabsf(float %2) #5
-  %3 = fpext float %fabsf to double
-  %cmp = fcmp ogt double %3, 1.200000e-38
-  br i1 %cmp, label %lor.end, label %lor.lhs.false
-
-lor.lhs.false:                                    ; preds = %entry
-  %arrayidx4 = getelementptr inbounds [3 x float]* %box, i64 2, i64 0
-  %4 = load float* %arrayidx4, align 4, !tbaa !0
-  %fabsf313 = call float @fabsf(float %4) #5
-  %5 = fpext float %fabsf313 to double
-  %cmp7 = fcmp ogt double %5, 1.200000e-38
-  br i1 %cmp7, label %lor.end, label %lor.rhs
-
-lor.rhs:                                          ; preds = %lor.lhs.false
-  %arrayidx10 = getelementptr inbounds [3 x float]* %box, i64 2, i64 1
-  %6 = load float* %arrayidx10, align 4, !tbaa !0
-  %fabsf314 = call float @fabsf(float %6) #5
-  %7 = fpext float %fabsf314 to double
-  %cmp13 = fcmp ogt double %7, 1.200000e-38
-  br label %lor.end
-
-lor.end:                                          ; preds = %lor.rhs, %lor.lhs.false, %entry
-  %8 = phi i1 [ true, %lor.lhs.false ], [ true, %entry ], [ %cmp13, %lor.rhs ]
-  %cmp15346 = icmp slt i32 %cg0, %cg1
-  br i1 %cmp15346, label %for.body.lr.ph, label %for.end216
-
-for.body.lr.ph:                                   ; preds = %lor.end
-  %arraydecay = getelementptr inbounds [3 x float]* %cg, i64 0, i64 0
-  %arrayidx1.i = getelementptr inbounds [3 x float]* %cg, i64 0, i64 1
-  %arrayidx2.i = getelementptr inbounds [3 x float]* %cg, i64 0, i64 2
+.lr.ph5:                                          ; preds = %0
+  %6 = getelementptr inbounds [3 x float]* %cg, i64 0, i64 0
+  %7 = getelementptr inbounds [3 x float]* %cg, i64 0, i64 1
+  %8 = getelementptr inbounds [3 x float]* %cg, i64 0, i64 2
   %9 = sext i32 %cg0 to i64
-  %arrayidx17.phi.trans.insert = getelementptr inbounds i32* %1, i64 %9
-  %.pre = load i32* %arrayidx17.phi.trans.insert, align 4, !tbaa !4
-  br label %for.body
+  %10 = add i32 %cg1, -1
+  %.phi.trans.insert = getelementptr inbounds i32* %4, i64 %9
+  %.pre = load i32* %.phi.trans.insert, align 4, !tbaa !17
+  br label %11
 
-for.cond.backedge:                                ; preds = %while.end123, %while.end204
-  %10 = trunc i64 %indvars.iv.next375 to i32
-  %cmp15 = icmp slt i32 %10, %cg1
-  br i1 %cmp15, label %for.body, label %for.end216
+; <label>:11                                      ; preds = %.backedge, %.lr.ph5
+  %12 = phi i32 [ %.pre, %.lr.ph5 ], [ %14, %.backedge ]
+  %indvars.iv12 = phi i64 [ %9, %.lr.ph5 ], [ %indvars.iv.next13, %.backedge ]
+  %indvars.iv.next13 = add nsw i64 %indvars.iv12, 1
+  %13 = getelementptr inbounds i32* %4, i64 %indvars.iv.next13
+  %14 = load i32* %13, align 4, !tbaa !17
+  %15 = sub nsw i32 %14, %12
+  %16 = icmp eq i32 %15, 1
+  br i1 %16, label %17, label %37
 
-for.body:                                         ; preds = %for.body.lr.ph, %for.cond.backedge
-  %11 = phi i32 [ %.pre, %for.body.lr.ph ], [ %12, %for.cond.backedge ]
-  %indvars.iv374 = phi i64 [ %9, %for.body.lr.ph ], [ %indvars.iv.next375, %for.cond.backedge ]
-  %indvars.iv.next375 = add i64 %indvars.iv374, 1
-  %arrayidx19 = getelementptr inbounds i32* %1, i64 %indvars.iv.next375
-  %12 = load i32* %arrayidx19, align 4, !tbaa !4
-  %sub = sub nsw i32 %12, %11
-  %conv20 = sitofp i32 %sub to double
-  %div = fdiv double 1.000000e+00, %conv20
-  %conv21 = fptrunc double %div to float
-  store float 0.000000e+00, float* %arraydecay, align 4, !tbaa !0
-  store float 0.000000e+00, float* %arrayidx1.i, align 4, !tbaa !0
-  store float 0.000000e+00, float* %arrayidx2.i, align 4, !tbaa !0
-  %cmp23316 = icmp slt i32 %11, %12
-  br i1 %cmp23316, label %for.body25.lr.ph, label %for.end41
+; <label>:17                                      ; preds = %11
+  %18 = sext i32 %12 to i64
+  %19 = getelementptr inbounds i32* %2, i64 %18
+  %20 = load i32* %19, align 4, !tbaa !17
+  %21 = sext i32 %20 to i64
+  %22 = getelementptr inbounds [3 x float]* %pos, i64 %21, i64 0
+  %23 = getelementptr inbounds [3 x float]* %cg_cm, i64 %indvars.iv12, i64 0
+  %24 = bitcast float* %22 to i32*
+  %25 = load i32* %24, align 4, !tbaa !14
+  %26 = bitcast float* %23 to i32*
+  store i32 %25, i32* %26, align 4, !tbaa !14
+  %27 = getelementptr inbounds [3 x float]* %pos, i64 %21, i64 1
+  %28 = bitcast float* %27 to i32*
+  %29 = load i32* %28, align 4, !tbaa !14
+  %30 = getelementptr inbounds [3 x float]* %cg_cm, i64 %indvars.iv12, i64 1
+  %31 = bitcast float* %30 to i32*
+  store i32 %29, i32* %31, align 4, !tbaa !14
+  %32 = getelementptr inbounds [3 x float]* %pos, i64 %21, i64 2
+  %33 = bitcast float* %32 to i32*
+  %34 = load i32* %33, align 4, !tbaa !14
+  %35 = getelementptr inbounds [3 x float]* %cg_cm, i64 %indvars.iv12, i64 2
+  %36 = bitcast float* %35 to i32*
+  store i32 %34, i32* %36, align 4, !tbaa !14
+  br label %.backedge
 
-for.body25.lr.ph:                                 ; preds = %for.body
-  %13 = sext i32 %11 to i64
-  br label %for.body25
+.backedge:                                        ; preds = %.preheader, %17
+  %lftr.wideiv14 = trunc i64 %indvars.iv12 to i32
+  %exitcond15 = icmp eq i32 %lftr.wideiv14, %10
+  br i1 %exitcond15, label %._crit_edge, label %11
 
-for.body25:                                       ; preds = %for.body25.lr.ph, %for.inc39
-  %indvars.iv348 = phi i64 [ %13, %for.body25.lr.ph ], [ %indvars.iv.next349, %for.inc39 ]
-  %arrayidx27 = getelementptr inbounds i32* %0, i64 %indvars.iv348
-  %14 = load i32* %arrayidx27, align 4, !tbaa !4
-  %idxprom33 = sext i32 %14 to i64
-  br label %for.body31
+; <label>:37                                      ; preds = %11
+  %38 = sitofp i32 %15 to double
+  %39 = fdiv double 1.000000e+00, %38
+  %40 = fptrunc double %39 to float
+  store float 0.000000e+00, float* %6, align 4, !tbaa !14
+  store float 0.000000e+00, float* %7, align 4, !tbaa !14
+  store float 0.000000e+00, float* %8, align 4, !tbaa !14
+  %41 = icmp sgt i32 %14, %12
+  br i1 %41, label %.lr.ph, label %.preheader
 
-for.body31:                                       ; preds = %for.body31, %for.body25
-  %indvars.iv = phi i64 [ 0, %for.body25 ], [ %indvars.iv.next, %for.body31 ]
-  %arrayidx35 = getelementptr inbounds [3 x float]* %pos, i64 %idxprom33, i64 %indvars.iv
-  %15 = load float* %arrayidx35, align 4, !tbaa !0
-  %mul = fmul float %conv21, %15
-  %arrayidx37 = getelementptr inbounds [3 x float]* %cg, i64 0, i64 %indvars.iv
-  %16 = load float* %arrayidx37, align 4, !tbaa !0
-  %add38 = fadd float %16, %mul
-  store float %add38, float* %arrayidx37, align 4, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 3
-  br i1 %exitcond, label %for.inc39, label %for.body31
+.lr.ph:                                           ; preds = %37
+  %42 = sext i32 %12 to i64
+  %43 = add i32 %14, -1
+  br label %44
 
-for.inc39:                                        ; preds = %for.body31
-  %indvars.iv.next349 = add i64 %indvars.iv348, 1
-  %17 = trunc i64 %indvars.iv.next349 to i32
-  %cmp23 = icmp slt i32 %17, %12
-  br i1 %cmp23, label %for.body25, label %for.end41
+; <label>:44                                      ; preds = %54, %.lr.ph
+  %indvars.iv6 = phi i64 [ %42, %.lr.ph ], [ %indvars.iv.next7, %54 ]
+  %45 = getelementptr inbounds i32* %2, i64 %indvars.iv6
+  %46 = load i32* %45, align 4, !tbaa !17
+  %47 = sext i32 %46 to i64
+  br label %48
 
-for.end41:                                        ; preds = %for.inc39, %for.body
-  %18 = sext i32 %11 to i64
-  br i1 %8, label %while.cond.preheader, label %while.cond137.preheader
+; <label>:48                                      ; preds = %48, %44
+  %indvars.iv = phi i64 [ 0, %44 ], [ %indvars.iv.next, %48 ]
+  %49 = getelementptr inbounds [3 x float]* %pos, i64 %47, i64 %indvars.iv
+  %50 = load float* %49, align 4, !tbaa !14
+  %51 = getelementptr inbounds [3 x float]* %cg, i64 0, i64 %indvars.iv
+  %52 = load float* %51, align 4, !tbaa !14
+  %53 = fadd float %50, %52
+  store float %53, float* %51, align 4, !tbaa !14
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i64 %indvars.iv.next, 3
+  br i1 %exitcond, label %54, label %48
 
-while.cond.preheader:                             ; preds = %for.end41, %while.end123.while.cond.preheader_crit_edge
-  %indvars.iv372 = phi i64 [ %indvars.iv.next373, %while.end123.while.cond.preheader_crit_edge ], [ 2, %for.end41 ]
-  %arrayidx47 = getelementptr inbounds [3 x float]* %cg, i64 0, i64 %indvars.iv372
-  %19 = load float* %arrayidx47, align 4, !tbaa !0
-  %cmp48332 = fcmp olt float %19, 0.000000e+00
-  br i1 %cmp48332, label %for.body53, label %while.cond81.loopexit
+; <label>:54                                      ; preds = %48
+  %indvars.iv.next7 = add nsw i64 %indvars.iv6, 1
+  %lftr.wideiv = trunc i64 %indvars.iv6 to i32
+  %exitcond8 = icmp eq i32 %lftr.wideiv, %43
+  br i1 %exitcond8, label %.preheader, label %44
 
-while.cond.loopexit:                              ; preds = %for.inc79
-  %.pre379 = load float* %arrayidx47, align 4, !tbaa !0
-  %cmp48 = fcmp olt float %.pre379, 0.000000e+00
-  br i1 %cmp48, label %for.body53, label %while.cond81.loopexit
+.preheader:                                       ; preds = %37, %54, %.preheader
+  %indvars.iv9 = phi i64 [ %indvars.iv.next10, %.preheader ], [ 0, %54 ], [ 0, %37 ]
+  %55 = getelementptr inbounds [3 x float]* %cg, i64 0, i64 %indvars.iv9
+  %56 = load float* %55, align 4, !tbaa !14
+  %57 = fmul float %40, %56
+  %58 = getelementptr inbounds [3 x float]* %cg_cm, i64 %indvars.iv12, i64 %indvars.iv9
+  store float %57, float* %58, align 4, !tbaa !14
+  %indvars.iv.next10 = add nuw nsw i64 %indvars.iv9, 1
+  %exitcond11 = icmp eq i64 %indvars.iv.next10, 3
+  br i1 %exitcond11, label %.backedge, label %.preheader
 
-for.body53:                                       ; preds = %while.cond.preheader, %while.cond.loopexit, %for.inc79.for.body53_crit_edge
-  %20 = phi float [ %.pre385, %for.inc79.for.body53_crit_edge ], [ %.pre379, %while.cond.loopexit ], [ %19, %while.cond.preheader ]
-  %indvars.iv363 = phi i64 [ %indvars.iv.next364, %for.inc79.for.body53_crit_edge ], [ %indvars.iv372, %while.cond.loopexit ], [ %indvars.iv372, %while.cond.preheader ]
-  %arrayidx57 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv372, i64 %indvars.iv363
-  %21 = load float* %arrayidx57, align 4, !tbaa !0
-  %arrayidx59 = getelementptr inbounds [3 x float]* %cg, i64 0, i64 %indvars.iv363
-  %add60 = fadd float %21, %20
-  store float %add60, float* %arrayidx59, align 4, !tbaa !0
-  br i1 %cmp23316, label %for.body64, label %for.inc79
-
-for.body64:                                       ; preds = %for.body53, %for.body64.for.body64_crit_edge
-  %22 = phi float [ %.pre386, %for.body64.for.body64_crit_edge ], [ %21, %for.body53 ]
-  %indvars.iv359 = phi i64 [ %indvars.iv.next360, %for.body64.for.body64_crit_edge ], [ %18, %for.body53 ]
-  %arrayidx71 = getelementptr inbounds i32* %0, i64 %indvars.iv359
-  %23 = load i32* %arrayidx71, align 4, !tbaa !4
-  %idxprom72 = sext i32 %23 to i64
-  %arrayidx74 = getelementptr inbounds [3 x float]* %pos, i64 %idxprom72, i64 %indvars.iv363
-  %24 = load float* %arrayidx74, align 4, !tbaa !0
-  %add75 = fadd float %22, %24
-  store float %add75, float* %arrayidx74, align 4, !tbaa !0
-  %indvars.iv.next360 = add i64 %indvars.iv359, 1
-  %25 = trunc i64 %indvars.iv.next360 to i32
-  %cmp62 = icmp slt i32 %25, %12
-  br i1 %cmp62, label %for.body64.for.body64_crit_edge, label %for.inc79
-
-for.body64.for.body64_crit_edge:                  ; preds = %for.body64
-  %.pre386 = load float* %arrayidx57, align 4, !tbaa !0
-  br label %for.body64
-
-for.inc79:                                        ; preds = %for.body64, %for.body53
-  %indvars.iv.next364 = add i64 %indvars.iv363, -1
-  %26 = trunc i64 %indvars.iv363 to i32
-  %cmp51 = icmp sgt i32 %26, 0
-  br i1 %cmp51, label %for.inc79.for.body53_crit_edge, label %while.cond.loopexit
-
-for.inc79.for.body53_crit_edge:                   ; preds = %for.inc79
-  %arrayidx59.phi.trans.insert = getelementptr inbounds [3 x float]* %cg, i64 0, i64 %indvars.iv.next364
-  %.pre385 = load float* %arrayidx59.phi.trans.insert, align 4, !tbaa !0
-  br label %for.body53
-
-while.cond81.loopexit:                            ; preds = %while.cond.loopexit, %while.cond.preheader
-  %27 = phi float [ %19, %while.cond.preheader ], [ %.pre379, %while.cond.loopexit ]
-  %arrayidx87 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv372, i64 %indvars.iv372
-  %28 = load float* %arrayidx87, align 4, !tbaa !0
-  %cmp88341 = fcmp ult float %27, %28
-  br i1 %cmp88341, label %while.end123, label %for.body94
-
-while.cond81.loopexit337:                         ; preds = %for.inc120
-  %.pre377 = load float* %arrayidx47, align 4, !tbaa !0
-  %.pre378 = load float* %arrayidx87, align 4, !tbaa !0
-  %cmp88 = fcmp ult float %.pre377, %.pre378
-  br i1 %cmp88, label %while.end123, label %for.body94
-
-for.body94:                                       ; preds = %while.cond81.loopexit, %while.cond81.loopexit337, %for.inc120.for.body94_crit_edge
-  %29 = phi float [ %.pre383, %for.inc120.for.body94_crit_edge ], [ %.pre377, %while.cond81.loopexit337 ], [ %27, %while.cond81.loopexit ]
-  %30 = phi float [ %.pre382, %for.inc120.for.body94_crit_edge ], [ %.pre378, %while.cond81.loopexit337 ], [ %28, %while.cond81.loopexit ]
-  %indvars.iv369 = phi i64 [ %indvars.iv.next370, %for.inc120.for.body94_crit_edge ], [ %indvars.iv372, %while.cond81.loopexit337 ], [ %indvars.iv372, %while.cond81.loopexit ]
-  %arrayidx98 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv372, i64 %indvars.iv369
-  %arrayidx100 = getelementptr inbounds [3 x float]* %cg, i64 0, i64 %indvars.iv369
-  %sub101 = fsub float %29, %30
-  store float %sub101, float* %arrayidx100, align 4, !tbaa !0
-  br i1 %cmp23316, label %for.body105, label %for.inc120
-
-for.body105:                                      ; preds = %for.body94, %for.body105.for.body105_crit_edge
-  %31 = phi float [ %.pre384, %for.body105.for.body105_crit_edge ], [ %30, %for.body94 ]
-  %indvars.iv365 = phi i64 [ %indvars.iv.next366, %for.body105.for.body105_crit_edge ], [ %18, %for.body94 ]
-  %arrayidx112 = getelementptr inbounds i32* %0, i64 %indvars.iv365
-  %32 = load i32* %arrayidx112, align 4, !tbaa !4
-  %idxprom113 = sext i32 %32 to i64
-  %arrayidx115 = getelementptr inbounds [3 x float]* %pos, i64 %idxprom113, i64 %indvars.iv369
-  %33 = load float* %arrayidx115, align 4, !tbaa !0
-  %sub116 = fsub float %33, %31
-  store float %sub116, float* %arrayidx115, align 4, !tbaa !0
-  %indvars.iv.next366 = add i64 %indvars.iv365, 1
-  %34 = trunc i64 %indvars.iv.next366 to i32
-  %cmp103 = icmp slt i32 %34, %12
-  br i1 %cmp103, label %for.body105.for.body105_crit_edge, label %for.inc120
-
-for.body105.for.body105_crit_edge:                ; preds = %for.body105
-  %.pre384 = load float* %arrayidx98, align 4, !tbaa !0
-  br label %for.body105
-
-for.inc120:                                       ; preds = %for.body105, %for.body94
-  %indvars.iv.next370 = add i64 %indvars.iv369, -1
-  %35 = trunc i64 %indvars.iv369 to i32
-  %cmp92 = icmp sgt i32 %35, 0
-  br i1 %cmp92, label %for.inc120.for.body94_crit_edge, label %while.cond81.loopexit337
-
-for.inc120.for.body94_crit_edge:                  ; preds = %for.inc120
-  %arrayidx98.phi.trans.insert = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv372, i64 %indvars.iv.next370
-  %.pre382 = load float* %arrayidx98.phi.trans.insert, align 4, !tbaa !0
-  %arrayidx100.phi.trans.insert = getelementptr inbounds [3 x float]* %cg, i64 0, i64 %indvars.iv.next370
-  %.pre383 = load float* %arrayidx100.phi.trans.insert, align 4, !tbaa !0
-  br label %for.body94
-
-while.end123:                                     ; preds = %while.cond81.loopexit337, %while.cond81.loopexit
-  %.lcssa340 = phi float [ %27, %while.cond81.loopexit ], [ %.pre377, %while.cond81.loopexit337 ]
-  %arrayidx129 = getelementptr inbounds [3 x float]* %cg_cm, i64 %indvars.iv374, i64 %indvars.iv372
-  store float %.lcssa340, float* %arrayidx129, align 4, !tbaa !0
-  %36 = trunc i64 %indvars.iv372 to i32
-  %cmp43 = icmp sgt i32 %36, 0
-  br i1 %cmp43, label %while.end123.while.cond.preheader_crit_edge, label %for.cond.backedge
-
-while.end123.while.cond.preheader_crit_edge:      ; preds = %while.end123
-  %indvars.iv.next373 = add i64 %indvars.iv372, -1
-  br label %while.cond.preheader
-
-while.cond137.preheader:                          ; preds = %for.end41, %while.end204
-  %indvars.iv355 = phi i64 [ %indvars.iv.next356, %while.end204 ], [ 0, %for.end41 ]
-  %arrayidx139 = getelementptr inbounds [3 x float]* %cg, i64 0, i64 %indvars.iv355
-  %37 = load float* %arrayidx139, align 4, !tbaa !0
-  %cmp140320 = fcmp olt float %37, 0.000000e+00
-  %arrayidx146 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv355, i64 %indvars.iv355
-  br i1 %cmp140320, label %while.body142, label %while.cond169.loopexit
-
-while.cond137.loopexit:                           ; preds = %for.body153, %while.body142
-  %cmp140 = fcmp olt float %add149, 0.000000e+00
-  br i1 %cmp140, label %while.body142, label %while.cond137.while.cond169.loopexit_crit_edge
-
-while.body142:                                    ; preds = %while.cond137.preheader, %while.cond137.loopexit
-  %38 = phi float [ %add149, %while.cond137.loopexit ], [ %37, %while.cond137.preheader ]
-  %39 = load float* %arrayidx146, align 4, !tbaa !0
-  %add149 = fadd float %38, %39
-  br i1 %cmp23316, label %for.body153, label %while.cond137.loopexit
-
-for.body153:                                      ; preds = %while.body142, %for.body153.for.body153_crit_edge
-  %40 = phi float [ %.pre381, %for.body153.for.body153_crit_edge ], [ %39, %while.body142 ]
-  %indvars.iv350 = phi i64 [ %indvars.iv.next351, %for.body153.for.body153_crit_edge ], [ %18, %while.body142 ]
-  %arrayidx160 = getelementptr inbounds i32* %0, i64 %indvars.iv350
-  %41 = load i32* %arrayidx160, align 4, !tbaa !4
-  %idxprom161 = sext i32 %41 to i64
-  %arrayidx163 = getelementptr inbounds [3 x float]* %pos, i64 %idxprom161, i64 %indvars.iv355
-  %42 = load float* %arrayidx163, align 4, !tbaa !0
-  %add164 = fadd float %40, %42
-  store float %add164, float* %arrayidx163, align 4, !tbaa !0
-  %indvars.iv.next351 = add i64 %indvars.iv350, 1
-  %43 = trunc i64 %indvars.iv.next351 to i32
-  %cmp151 = icmp slt i32 %43, %12
-  br i1 %cmp151, label %for.body153.for.body153_crit_edge, label %while.cond137.loopexit
-
-for.body153.for.body153_crit_edge:                ; preds = %for.body153
-  %.pre381 = load float* %arrayidx146, align 4, !tbaa !0
-  br label %for.body153
-
-while.cond137.while.cond169.loopexit_crit_edge:   ; preds = %while.cond137.loopexit
-  store float %add149, float* %arrayidx139, align 4, !tbaa !0
-  br label %while.cond169.loopexit
-
-while.cond169.loopexit:                           ; preds = %while.cond137.preheader, %while.cond137.while.cond169.loopexit_crit_edge
-  %44 = phi float [ %add149, %while.cond137.while.cond169.loopexit_crit_edge ], [ %37, %while.cond137.preheader ]
-  %45 = load float* %arrayidx146, align 4, !tbaa !0
-  %cmp176325 = fcmp ult float %44, %45
-  br i1 %cmp176325, label %while.end204, label %while.body178
-
-while.cond169.loopexit322:                        ; preds = %for.body189, %while.body178
-  %46 = phi float [ %47, %while.body178 ], [ %.pre380, %for.body189 ]
-  %cmp176 = fcmp ult float %sub185, %46
-  br i1 %cmp176, label %while.end204, label %while.body178
-
-while.body178:                                    ; preds = %while.cond169.loopexit, %while.cond169.loopexit322
-  %47 = phi float [ %46, %while.cond169.loopexit322 ], [ %45, %while.cond169.loopexit ]
-  %48 = phi float [ %sub185, %while.cond169.loopexit322 ], [ %44, %while.cond169.loopexit ]
-  %sub185 = fsub float %48, %47
-  store float %sub185, float* %arrayidx139, align 4, !tbaa !0
-  br i1 %cmp23316, label %for.body189, label %while.cond169.loopexit322
-
-for.body189:                                      ; preds = %for.body189, %while.body178
-  %49 = phi float [ %47, %while.body178 ], [ %.pre380, %for.body189 ]
-  %indvars.iv352 = phi i64 [ %18, %while.body178 ], [ %indvars.iv.next353, %for.body189 ]
-  %arrayidx196 = getelementptr inbounds i32* %0, i64 %indvars.iv352
-  %50 = load i32* %arrayidx196, align 4, !tbaa !4
-  %idxprom197 = sext i32 %50 to i64
-  %arrayidx199 = getelementptr inbounds [3 x float]* %pos, i64 %idxprom197, i64 %indvars.iv355
-  %51 = load float* %arrayidx199, align 4, !tbaa !0
-  %sub200 = fsub float %51, %49
-  store float %sub200, float* %arrayidx199, align 4, !tbaa !0
-  %indvars.iv.next353 = add i64 %indvars.iv352, 1
-  %52 = trunc i64 %indvars.iv.next353 to i32
-  %cmp187 = icmp slt i32 %52, %12
-  %.pre380 = load float* %arrayidx146, align 4, !tbaa !0
-  br i1 %cmp187, label %for.body189, label %while.cond169.loopexit322
-
-while.end204:                                     ; preds = %while.cond169.loopexit322, %while.cond169.loopexit
-  %.lcssa = phi float [ %44, %while.cond169.loopexit ], [ %sub185, %while.cond169.loopexit322 ]
-  %arrayidx210 = getelementptr inbounds [3 x float]* %cg_cm, i64 %indvars.iv374, i64 %indvars.iv355
-  store float %.lcssa, float* %arrayidx210, align 4, !tbaa !0
-  %indvars.iv.next356 = add i64 %indvars.iv355, 1
-  %lftr.wideiv357 = trunc i64 %indvars.iv.next356 to i32
-  %exitcond358 = icmp eq i32 %lftr.wideiv357, 3
-  br i1 %exitcond358, label %for.cond.backedge, label %while.cond137.preheader
-
-for.end216:                                       ; preds = %for.cond.backedge, %lor.end
+._crit_edge:                                      ; preds = %.backedge, %0
   ret void
 }
 
-; Function Attrs: nounwind optsize uwtable
-define void @calc_box_center([3 x float]* nocapture %box, float* nocapture %box_center) #1 {
-entry:
-  br label %for.body
+; Function Attrs: nounwind optsize ssp uwtable
+define void @put_charge_groups_in_box(%struct.__sFILE* nocapture readnone %log, i32 %cg0, i32 %cg1, [3 x float]* nocapture readonly %box, float* nocapture readnone %box_size, %struct.t_block* nocapture readonly %cgs, [3 x float]* nocapture %pos, [3 x float]* nocapture %cg_cm) #4 {
+  %cg = alloca [3 x float], align 4
+  %1 = getelementptr inbounds %struct.t_block* %cgs, i64 0, i32 4
+  %2 = load i32** %1, align 8, !tbaa !18
+  %3 = getelementptr inbounds %struct.t_block* %cgs, i64 0, i32 2
+  %4 = load i32** %3, align 8, !tbaa !20
+  %5 = getelementptr inbounds [3 x float]* %box, i64 1, i64 0
+  %6 = load float* %5, align 4, !tbaa !14
+  %fabsf = tail call float @fabsf(float %6) #8
+  %7 = fpext float %fabsf to double
+  %8 = fcmp ogt double %7, 1.200000e-38
+  br i1 %8, label %19, label %9
 
-for.body:                                         ; preds = %for.body, %entry
-  %indvars.iv = phi i64 [ 0, %entry ], [ %indvars.iv.next, %for.body ]
-  %arrayidx2 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv, i64 %indvars.iv
-  %0 = load float* %arrayidx2, align 4, !tbaa !0
-  %conv3 = fmul float %0, 5.000000e-01
-  %arrayidx5 = getelementptr inbounds float* %box_center, i64 %indvars.iv
-  store float %conv3, float* %arrayidx5, align 4, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 3
-  br i1 %exitcond, label %for.end, label %for.body
+; <label>:9                                       ; preds = %0
+  %10 = getelementptr inbounds [3 x float]* %box, i64 2, i64 0
+  %11 = load float* %10, align 4, !tbaa !14
+  %fabsf1 = tail call float @fabsf(float %11) #8
+  %12 = fpext float %fabsf1 to double
+  %13 = fcmp ogt double %12, 1.200000e-38
+  br i1 %13, label %19, label %14
 
-for.end:                                          ; preds = %for.body
+; <label>:14                                      ; preds = %9
+  %15 = getelementptr inbounds [3 x float]* %box, i64 2, i64 1
+  %16 = load float* %15, align 4, !tbaa !14
+  %fabsf2 = tail call float @fabsf(float %16) #8
+  %17 = fpext float %fabsf2 to double
+  %18 = fcmp ogt double %17, 1.200000e-38
+  br label %19
+
+; <label>:19                                      ; preds = %14, %9, %0
+  %20 = phi i1 [ true, %9 ], [ true, %0 ], [ %18, %14 ]
+  %21 = icmp slt i32 %cg0, %cg1
+  br i1 %21, label %.lr.ph55, label %._crit_edge56
+
+.lr.ph55:                                         ; preds = %19
+  %22 = getelementptr inbounds [3 x float]* %cg, i64 0, i64 0
+  %23 = getelementptr inbounds [3 x float]* %cg, i64 0, i64 1
+  %24 = getelementptr inbounds [3 x float]* %cg, i64 0, i64 2
+  %25 = sext i32 %cg0 to i64
+  %26 = add i32 %cg1, -1
+  %.phi.trans.insert = getelementptr inbounds i32* %4, i64 %25
+  %.pre = load i32* %.phi.trans.insert, align 4, !tbaa !17
+  br label %27
+
+.backedge:                                        ; preds = %._crit_edge32, %._crit_edge49
+  %lftr.wideiv93 = trunc i64 %indvars.iv91 to i32
+  %exitcond94 = icmp eq i32 %lftr.wideiv93, %26
+  br i1 %exitcond94, label %._crit_edge56, label %27
+
+; <label>:27                                      ; preds = %.backedge, %.lr.ph55
+  %28 = phi i32 [ %.pre, %.lr.ph55 ], [ %30, %.backedge ]
+  %indvars.iv91 = phi i64 [ %25, %.lr.ph55 ], [ %indvars.iv.next92, %.backedge ]
+  %indvars.iv.next92 = add nsw i64 %indvars.iv91, 1
+  %29 = getelementptr inbounds i32* %4, i64 %indvars.iv.next92
+  %30 = load i32* %29, align 4, !tbaa !17
+  %31 = sub nsw i32 %30, %28
+  %32 = sitofp i32 %31 to double
+  %33 = fdiv double 1.000000e+00, %32
+  %34 = fptrunc double %33 to float
+  store float 0.000000e+00, float* %22, align 4, !tbaa !14
+  store float 0.000000e+00, float* %23, align 4, !tbaa !14
+  store float 0.000000e+00, float* %24, align 4, !tbaa !14
+  %35 = icmp sgt i32 %30, %28
+  br i1 %35, label %.lr.ph, label %._crit_edge
+
+.lr.ph:                                           ; preds = %27
+  %36 = sext i32 %28 to i64
+  %37 = add i32 %30, -1
+  br label %38
+
+; <label>:38                                      ; preds = %49, %.lr.ph
+  %indvars.iv59 = phi i64 [ %36, %.lr.ph ], [ %indvars.iv.next60, %49 ]
+  %39 = getelementptr inbounds i32* %2, i64 %indvars.iv59
+  %40 = load i32* %39, align 4, !tbaa !17
+  %41 = sext i32 %40 to i64
+  br label %42
+
+; <label>:42                                      ; preds = %42, %38
+  %indvars.iv = phi i64 [ 0, %38 ], [ %indvars.iv.next, %42 ]
+  %43 = getelementptr inbounds [3 x float]* %pos, i64 %41, i64 %indvars.iv
+  %44 = load float* %43, align 4, !tbaa !14
+  %45 = fmul float %34, %44
+  %46 = getelementptr inbounds [3 x float]* %cg, i64 0, i64 %indvars.iv
+  %47 = load float* %46, align 4, !tbaa !14
+  %48 = fadd float %47, %45
+  store float %48, float* %46, align 4, !tbaa !14
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i64 %indvars.iv.next, 3
+  br i1 %exitcond, label %49, label %42
+
+; <label>:49                                      ; preds = %42
+  %indvars.iv.next60 = add nsw i64 %indvars.iv59, 1
+  %lftr.wideiv = trunc i64 %indvars.iv59 to i32
+  %exitcond61 = icmp eq i32 %lftr.wideiv, %37
+  br i1 %exitcond61, label %._crit_edge, label %38
+
+._crit_edge:                                      ; preds = %49, %27
+  %50 = sext i32 %28 to i64
+  %51 = add i32 %30, -1
+  br i1 %20, label %.preheader8, label %.preheader10
+
+.preheader8:                                      ; preds = %._crit_edge, %._crit_edge49
+  %indvars.iv89 = phi i64 [ %indvars.iv.next90, %._crit_edge49 ], [ 2, %._crit_edge ]
+  %52 = getelementptr inbounds [3 x float]* %cg, i64 0, i64 %indvars.iv89
+  %53 = load float* %52, align 4, !tbaa !14
+  %54 = fcmp olt float %53, 0.000000e+00
+  br i1 %54, label %.lr.ph40, label %.preheader7
+
+.loopexit4:                                       ; preds = %._crit_edge38
+  %.pre105 = load float* %52, align 4, !tbaa !14
+  %55 = fcmp olt float %.pre105, 0.000000e+00
+  br i1 %55, label %.lr.ph40, label %.preheader7
+
+.preheader7:                                      ; preds = %.loopexit4, %.preheader8
+  %56 = phi float [ %53, %.preheader8 ], [ %.pre105, %.loopexit4 ]
+  %57 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv89, i64 %indvars.iv89
+  %58 = load float* %57, align 4, !tbaa !14
+  %59 = fcmp ult float %56, %58
+  br i1 %59, label %._crit_edge49, label %.lr.ph48
+
+.lr.ph40:                                         ; preds = %.loopexit4, %._crit_edge100, %.preheader8
+  %60 = phi float [ %53, %.preheader8 ], [ %.pre102, %._crit_edge100 ], [ %.pre105, %.loopexit4 ]
+  %indvars.iv79 = phi i64 [ %indvars.iv89, %.preheader8 ], [ %indvars.iv.next80, %._crit_edge100 ], [ %indvars.iv89, %.loopexit4 ]
+  %61 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv89, i64 %indvars.iv79
+  %62 = load float* %61, align 4, !tbaa !14
+  %63 = getelementptr inbounds [3 x float]* %cg, i64 0, i64 %indvars.iv79
+  %64 = fadd float %62, %60
+  store float %64, float* %63, align 4, !tbaa !14
+  br i1 %35, label %.lr.ph37.preheader, label %._crit_edge38
+
+.lr.ph37.preheader:                               ; preds = %.lr.ph40
+  %65 = getelementptr inbounds i32* %2, i64 %50
+  %66 = load i32* %65, align 4, !tbaa !17
+  %67 = sext i32 %66 to i64
+  %68 = getelementptr inbounds [3 x float]* %pos, i64 %67, i64 %indvars.iv79
+  %69 = load float* %68, align 4, !tbaa !14
+  %70 = fadd float %62, %69
+  store float %70, float* %68, align 4, !tbaa !14
+  %exitcond76127 = icmp eq i32 %28, %51
+  br i1 %exitcond76127, label %._crit_edge38, label %._crit_edge103
+
+._crit_edge103:                                   ; preds = %.lr.ph37.preheader, %._crit_edge103
+  %indvars.iv73128 = phi i64 [ %indvars.iv.next74, %._crit_edge103 ], [ %50, %.lr.ph37.preheader ]
+  %indvars.iv.next74 = add nsw i64 %indvars.iv73128, 1
+  %.pre104 = load float* %61, align 4, !tbaa !14
+  %71 = getelementptr inbounds i32* %2, i64 %indvars.iv.next74
+  %72 = load i32* %71, align 4, !tbaa !17
+  %73 = sext i32 %72 to i64
+  %74 = getelementptr inbounds [3 x float]* %pos, i64 %73, i64 %indvars.iv79
+  %75 = load float* %74, align 4, !tbaa !14
+  %76 = fadd float %.pre104, %75
+  store float %76, float* %74, align 4, !tbaa !14
+  %lftr.wideiv75 = trunc i64 %indvars.iv.next74 to i32
+  %exitcond76 = icmp eq i32 %lftr.wideiv75, %51
+  br i1 %exitcond76, label %._crit_edge38, label %._crit_edge103
+
+._crit_edge38:                                    ; preds = %.lr.ph37.preheader, %._crit_edge103, %.lr.ph40
+  %indvars.iv.next80 = add nsw i64 %indvars.iv79, -1
+  %77 = icmp sgt i64 %indvars.iv79, 0
+  br i1 %77, label %._crit_edge100, label %.loopexit4
+
+._crit_edge100:                                   ; preds = %._crit_edge38
+  %.phi.trans.insert101 = getelementptr inbounds [3 x float]* %cg, i64 0, i64 %indvars.iv.next80
+  %.pre102 = load float* %.phi.trans.insert101, align 4, !tbaa !14
+  br label %.lr.ph40
+
+.loopexit:                                        ; preds = %._crit_edge46
+  %.pre113 = load float* %52, align 4, !tbaa !14
+  %.pre114 = load float* %57, align 4, !tbaa !14
+  %78 = fcmp ult float %.pre113, %.pre114
+  br i1 %78, label %._crit_edge49, label %.lr.ph48
+
+.lr.ph48:                                         ; preds = %.loopexit, %._crit_edge106, %.preheader7
+  %79 = phi float [ %56, %.preheader7 ], [ %.pre110, %._crit_edge106 ], [ %.pre113, %.loopexit ]
+  %80 = phi float [ %58, %.preheader7 ], [ %.pre108, %._crit_edge106 ], [ %.pre114, %.loopexit ]
+  %indvars.iv87 = phi i64 [ %indvars.iv89, %.preheader7 ], [ %indvars.iv.next88, %._crit_edge106 ], [ %indvars.iv89, %.loopexit ]
+  %81 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv89, i64 %indvars.iv87
+  %82 = getelementptr inbounds [3 x float]* %cg, i64 0, i64 %indvars.iv87
+  %83 = fsub float %79, %80
+  store float %83, float* %82, align 4, !tbaa !14
+  br i1 %35, label %.lr.ph45.preheader, label %._crit_edge46
+
+.lr.ph45.preheader:                               ; preds = %.lr.ph48
+  %84 = getelementptr inbounds i32* %2, i64 %50
+  %85 = load i32* %84, align 4, !tbaa !17
+  %86 = sext i32 %85 to i64
+  %87 = getelementptr inbounds [3 x float]* %pos, i64 %86, i64 %indvars.iv87
+  %88 = load float* %87, align 4, !tbaa !14
+  %89 = fsub float %88, %80
+  store float %89, float* %87, align 4, !tbaa !14
+  %exitcond84130 = icmp eq i32 %28, %51
+  br i1 %exitcond84130, label %._crit_edge46, label %._crit_edge111
+
+._crit_edge111:                                   ; preds = %.lr.ph45.preheader, %._crit_edge111
+  %indvars.iv81131 = phi i64 [ %indvars.iv.next82, %._crit_edge111 ], [ %50, %.lr.ph45.preheader ]
+  %indvars.iv.next82 = add nsw i64 %indvars.iv81131, 1
+  %.pre112 = load float* %81, align 4, !tbaa !14
+  %90 = getelementptr inbounds i32* %2, i64 %indvars.iv.next82
+  %91 = load i32* %90, align 4, !tbaa !17
+  %92 = sext i32 %91 to i64
+  %93 = getelementptr inbounds [3 x float]* %pos, i64 %92, i64 %indvars.iv87
+  %94 = load float* %93, align 4, !tbaa !14
+  %95 = fsub float %94, %.pre112
+  store float %95, float* %93, align 4, !tbaa !14
+  %lftr.wideiv83 = trunc i64 %indvars.iv.next82 to i32
+  %exitcond84 = icmp eq i32 %lftr.wideiv83, %51
+  br i1 %exitcond84, label %._crit_edge46, label %._crit_edge111
+
+._crit_edge46:                                    ; preds = %.lr.ph45.preheader, %._crit_edge111, %.lr.ph48
+  %indvars.iv.next88 = add nsw i64 %indvars.iv87, -1
+  %96 = icmp sgt i64 %indvars.iv87, 0
+  br i1 %96, label %._crit_edge106, label %.loopexit
+
+._crit_edge106:                                   ; preds = %._crit_edge46
+  %.phi.trans.insert107 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv89, i64 %indvars.iv.next88
+  %.pre108 = load float* %.phi.trans.insert107, align 4, !tbaa !14
+  %.phi.trans.insert109 = getelementptr inbounds [3 x float]* %cg, i64 0, i64 %indvars.iv.next88
+  %.pre110 = load float* %.phi.trans.insert109, align 4, !tbaa !14
+  br label %.lr.ph48
+
+._crit_edge49:                                    ; preds = %.loopexit, %.preheader7
+  %.lcssa19 = phi float [ %56, %.preheader7 ], [ %.pre113, %.loopexit ]
+  %97 = getelementptr inbounds [3 x float]* %cg_cm, i64 %indvars.iv91, i64 %indvars.iv89
+  store float %.lcssa19, float* %97, align 4, !tbaa !14
+  %indvars.iv.next90 = add nsw i64 %indvars.iv89, -1
+  %98 = icmp sgt i64 %indvars.iv89, 0
+  br i1 %98, label %.preheader8, label %.backedge
+
+.preheader10:                                     ; preds = %._crit_edge, %._crit_edge32
+  %indvars.iv70 = phi i64 [ %indvars.iv.next71, %._crit_edge32 ], [ 0, %._crit_edge ]
+  %99 = getelementptr inbounds [3 x float]* %cg, i64 0, i64 %indvars.iv70
+  %100 = load float* %99, align 4, !tbaa !14
+  %101 = fcmp olt float %100, 0.000000e+00
+  %102 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv70, i64 %indvars.iv70
+  br i1 %101, label %.lr.ph25, label %.preheader9
+
+.loopexit6:                                       ; preds = %.lr.ph24.preheader, %._crit_edge95, %.lr.ph25
+  %103 = fcmp olt float %109, 0.000000e+00
+  br i1 %103, label %.lr.ph25, label %..preheader9_crit_edge
+
+..preheader9_crit_edge:                           ; preds = %.loopexit6
+  store float %109, float* %99, align 4, !tbaa !14
+  br label %.preheader9
+
+.preheader9:                                      ; preds = %.preheader10, %..preheader9_crit_edge
+  %104 = phi float [ %109, %..preheader9_crit_edge ], [ %100, %.preheader10 ]
+  %105 = load float* %102, align 4, !tbaa !14
+  %106 = fcmp ult float %104, %105
+  br i1 %106, label %._crit_edge32, label %.lr.ph31
+
+.lr.ph25:                                         ; preds = %.preheader10, %.loopexit6
+  %107 = phi float [ %109, %.loopexit6 ], [ %100, %.preheader10 ]
+  %108 = load float* %102, align 4, !tbaa !14
+  %109 = fadd float %107, %108
+  br i1 %35, label %.lr.ph24.preheader, label %.loopexit6
+
+.lr.ph24.preheader:                               ; preds = %.lr.ph25
+  %110 = getelementptr inbounds i32* %2, i64 %50
+  %111 = load i32* %110, align 4, !tbaa !17
+  %112 = sext i32 %111 to i64
+  %113 = getelementptr inbounds [3 x float]* %pos, i64 %112, i64 %indvars.iv70
+  %114 = load float* %113, align 4, !tbaa !14
+  %115 = fadd float %108, %114
+  store float %115, float* %113, align 4, !tbaa !14
+  %exitcond65121 = icmp eq i32 %28, %51
+  br i1 %exitcond65121, label %.loopexit6, label %._crit_edge95
+
+._crit_edge95:                                    ; preds = %.lr.ph24.preheader, %._crit_edge95
+  %indvars.iv62122 = phi i64 [ %indvars.iv.next63, %._crit_edge95 ], [ %50, %.lr.ph24.preheader ]
+  %indvars.iv.next63 = add nsw i64 %indvars.iv62122, 1
+  %.pre96 = load float* %102, align 4, !tbaa !14
+  %116 = getelementptr inbounds i32* %2, i64 %indvars.iv.next63
+  %117 = load i32* %116, align 4, !tbaa !17
+  %118 = sext i32 %117 to i64
+  %119 = getelementptr inbounds [3 x float]* %pos, i64 %118, i64 %indvars.iv70
+  %120 = load float* %119, align 4, !tbaa !14
+  %121 = fadd float %.pre96, %120
+  store float %121, float* %119, align 4, !tbaa !14
+  %lftr.wideiv64 = trunc i64 %indvars.iv.next63 to i32
+  %exitcond65 = icmp eq i32 %lftr.wideiv64, %51
+  br i1 %exitcond65, label %.loopexit6, label %._crit_edge95
+
+..loopexit5_crit_edge:                            ; preds = %._crit_edge97, %.lr.ph30.preheader
+  %.pre99 = load float* %102, align 4, !tbaa !14
+  br label %.loopexit5
+
+.loopexit5:                                       ; preds = %..loopexit5_crit_edge, %.lr.ph31
+  %122 = phi float [ %.pre99, %..loopexit5_crit_edge ], [ %124, %.lr.ph31 ]
+  %123 = fcmp ult float %126, %122
+  br i1 %123, label %._crit_edge32, label %.lr.ph31
+
+.lr.ph31:                                         ; preds = %.preheader9, %.loopexit5
+  %124 = phi float [ %122, %.loopexit5 ], [ %105, %.preheader9 ]
+  %125 = phi float [ %126, %.loopexit5 ], [ %104, %.preheader9 ]
+  %126 = fsub float %125, %124
+  store float %126, float* %99, align 4, !tbaa !14
+  br i1 %35, label %.lr.ph30.preheader, label %.loopexit5
+
+.lr.ph30.preheader:                               ; preds = %.lr.ph31
+  %127 = getelementptr inbounds i32* %2, i64 %50
+  %128 = load i32* %127, align 4, !tbaa !17
+  %129 = sext i32 %128 to i64
+  %130 = getelementptr inbounds [3 x float]* %pos, i64 %129, i64 %indvars.iv70
+  %131 = load float* %130, align 4, !tbaa !14
+  %132 = fsub float %131, %124
+  store float %132, float* %130, align 4, !tbaa !14
+  %exitcond69124 = icmp eq i32 %28, %51
+  br i1 %exitcond69124, label %..loopexit5_crit_edge, label %._crit_edge97
+
+._crit_edge97:                                    ; preds = %.lr.ph30.preheader, %._crit_edge97
+  %indvars.iv66125 = phi i64 [ %indvars.iv.next67, %._crit_edge97 ], [ %50, %.lr.ph30.preheader ]
+  %indvars.iv.next67 = add nsw i64 %indvars.iv66125, 1
+  %.pre98 = load float* %102, align 4, !tbaa !14
+  %133 = getelementptr inbounds i32* %2, i64 %indvars.iv.next67
+  %134 = load i32* %133, align 4, !tbaa !17
+  %135 = sext i32 %134 to i64
+  %136 = getelementptr inbounds [3 x float]* %pos, i64 %135, i64 %indvars.iv70
+  %137 = load float* %136, align 4, !tbaa !14
+  %138 = fsub float %137, %.pre98
+  store float %138, float* %136, align 4, !tbaa !14
+  %lftr.wideiv68 = trunc i64 %indvars.iv.next67 to i32
+  %exitcond69 = icmp eq i32 %lftr.wideiv68, %51
+  br i1 %exitcond69, label %..loopexit5_crit_edge, label %._crit_edge97
+
+._crit_edge32:                                    ; preds = %.loopexit5, %.preheader9
+  %.lcssa16 = phi float [ %104, %.preheader9 ], [ %126, %.loopexit5 ]
+  %139 = getelementptr inbounds [3 x float]* %cg_cm, i64 %indvars.iv91, i64 %indvars.iv70
+  store float %.lcssa16, float* %139, align 4, !tbaa !14
+  %indvars.iv.next71 = add nuw nsw i64 %indvars.iv70, 1
+  %exitcond72 = icmp eq i64 %indvars.iv.next71, 3
+  br i1 %exitcond72, label %.backedge, label %.preheader10
+
+._crit_edge56:                                    ; preds = %.backedge, %19
   ret void
 }
 
-; Function Attrs: nounwind optsize uwtable
-define void @calc_triclinic_images([3 x float]* nocapture %box, [3 x float]* nocapture %img) #1 {
-entry:
-  %arraydecay = getelementptr inbounds [3 x float]* %box, i64 0, i64 0
-  %arraydecay2 = getelementptr inbounds [3 x float]* %img, i64 0, i64 0
-  %0 = load float* %arraydecay, align 4, !tbaa !0
-  store float %0, float* %arraydecay2, align 4, !tbaa !0
-  %arrayidx2.i = getelementptr inbounds [3 x float]* %box, i64 0, i64 1
-  %1 = load float* %arrayidx2.i, align 4, !tbaa !0
-  %arrayidx3.i = getelementptr inbounds [3 x float]* %img, i64 0, i64 1
-  store float %1, float* %arrayidx3.i, align 4, !tbaa !0
-  %arrayidx4.i = getelementptr inbounds [3 x float]* %box, i64 0, i64 2
-  %2 = load float* %arrayidx4.i, align 4, !tbaa !0
-  %arrayidx5.i = getelementptr inbounds [3 x float]* %img, i64 0, i64 2
-  store float %2, float* %arrayidx5.i, align 4, !tbaa !0
-  %arraydecay4 = getelementptr inbounds [3 x float]* %box, i64 1, i64 0
-  %arraydecay6 = getelementptr inbounds [3 x float]* %img, i64 1, i64 0
-  %3 = load float* %arraydecay4, align 4, !tbaa !0
-  store float %3, float* %arraydecay6, align 4, !tbaa !0
-  %arrayidx2.i137 = getelementptr inbounds [3 x float]* %box, i64 1, i64 1
-  %4 = load float* %arrayidx2.i137, align 4, !tbaa !0
-  %arrayidx3.i138 = getelementptr inbounds [3 x float]* %img, i64 1, i64 1
-  store float %4, float* %arrayidx3.i138, align 4, !tbaa !0
-  %arrayidx4.i139 = getelementptr inbounds [3 x float]* %box, i64 1, i64 2
-  %5 = load float* %arrayidx4.i139, align 4, !tbaa !0
-  %arrayidx5.i140 = getelementptr inbounds [3 x float]* %img, i64 1, i64 2
-  store float %5, float* %arrayidx5.i140, align 4, !tbaa !0
-  %cmp = fcmp olt float %3, 0.000000e+00
-  br i1 %cmp, label %if.then, label %if.end
+; Function Attrs: nounwind optsize ssp uwtable
+define void @calc_box_center([3 x float]* nocapture readonly %box, float* nocapture %box_center) #4 {
+  br label %1
 
-if.then:                                          ; preds = %entry
-  %mul.i130 = fmul float %3, -1.000000e+00
-  store float %mul.i130, float* %arraydecay6, align 4, !tbaa !0
-  %mul3.i132 = fmul float %4, -1.000000e+00
-  store float %mul3.i132, float* %arrayidx3.i138, align 4, !tbaa !0
-  %mul6.i135 = fmul float %5, -1.000000e+00
-  store float %mul6.i135, float* %arrayidx5.i140, align 4, !tbaa !0
-  br label %if.end
+; <label>:1                                       ; preds = %1, %0
+  %indvars.iv = phi i64 [ 0, %0 ], [ %indvars.iv.next, %1 ]
+  %2 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv, i64 %indvars.iv
+  %3 = load float* %2, align 4, !tbaa !14
+  %4 = fmul float %3, 5.000000e-01
+  %5 = getelementptr inbounds float* %box_center, i64 %indvars.iv
+  store float %4, float* %5, align 4, !tbaa !14
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i64 %indvars.iv.next, 3
+  br i1 %exitcond, label %6, label %1
 
-if.end:                                           ; preds = %if.then, %entry
-  %6 = phi float [ %mul6.i135, %if.then ], [ %5, %entry ]
-  %7 = phi float [ %mul3.i132, %if.then ], [ %4, %entry ]
-  %8 = phi float [ %mul.i130, %if.then ], [ %3, %entry ]
-  %arraydecay18 = getelementptr inbounds [3 x float]* %img, i64 2, i64 0
-  %sub.i = fsub float %8, %0
-  %sub4.i = fsub float %7, %1
-  %sub7.i = fsub float %6, %2
-  store float %sub.i, float* %arraydecay18, align 4, !tbaa !0
-  %arrayidx9.i128 = getelementptr inbounds [3 x float]* %img, i64 2, i64 1
-  store float %sub4.i, float* %arrayidx9.i128, align 4, !tbaa !0
-  %arrayidx10.i129 = getelementptr inbounds [3 x float]* %img, i64 2, i64 2
-  store float %sub7.i, float* %arrayidx10.i129, align 4, !tbaa !0
-  br label %for.body
-
-for.body:                                         ; preds = %for.body.for.body_crit_edge, %if.end
-  %9 = phi float [ %2, %if.end ], [ %.pre157, %for.body.for.body_crit_edge ]
-  %10 = phi float [ %1, %if.end ], [ %.pre156, %for.body.for.body_crit_edge ]
-  %11 = phi float [ %0, %if.end ], [ %.pre, %for.body.for.body_crit_edge ]
-  %indvars.iv151 = phi i64 [ 0, %if.end ], [ %indvars.iv.next152, %for.body.for.body_crit_edge ]
-  %12 = add nsw i64 %indvars.iv151, 3
-  %arraydecay24 = getelementptr inbounds [3 x float]* %img, i64 %12, i64 0
-  %mul.i117 = fmul float %11, -1.000000e+00
-  store float %mul.i117, float* %arraydecay24, align 4, !tbaa !0
-  %mul3.i119 = fmul float %10, -1.000000e+00
-  %arrayidx4.i120 = getelementptr inbounds [3 x float]* %img, i64 %12, i64 1
-  store float %mul3.i119, float* %arrayidx4.i120, align 4, !tbaa !0
-  %mul6.i122 = fmul float %9, -1.000000e+00
-  %arrayidx7.i123 = getelementptr inbounds [3 x float]* %img, i64 %12, i64 2
-  store float %mul6.i122, float* %arrayidx7.i123, align 4, !tbaa !0
-  %indvars.iv.next152 = add i64 %indvars.iv151, 1
-  %lftr.wideiv154 = trunc i64 %indvars.iv.next152 to i32
-  %exitcond155 = icmp eq i32 %lftr.wideiv154, 3
-  br i1 %exitcond155, label %for.end, label %for.body.for.body_crit_edge
-
-for.body.for.body_crit_edge:                      ; preds = %for.body
-  %arraydecay21.phi.trans.insert = getelementptr inbounds [3 x float]* %img, i64 %indvars.iv.next152, i64 0
-  %.pre = load float* %arraydecay21.phi.trans.insert, align 4, !tbaa !0
-  %arrayidx2.i118.phi.trans.insert = getelementptr inbounds [3 x float]* %img, i64 %indvars.iv.next152, i64 1
-  %.pre156 = load float* %arrayidx2.i118.phi.trans.insert, align 4, !tbaa !0
-  %arrayidx5.i121.phi.trans.insert = getelementptr inbounds [3 x float]* %img, i64 %indvars.iv.next152, i64 2
-  %.pre157 = load float* %arrayidx5.i121.phi.trans.insert, align 4, !tbaa !0
-  br label %for.body
-
-for.end:                                          ; preds = %for.body
-  %arraydecay26 = getelementptr inbounds [3 x float]* %box, i64 2, i64 0
-  %arraydecay28 = getelementptr inbounds [3 x float]* %img, i64 6, i64 0
-  %13 = load float* %arraydecay26, align 4, !tbaa !0
-  store float %13, float* %arraydecay28, align 4, !tbaa !0
-  %arrayidx2.i113 = getelementptr inbounds [3 x float]* %box, i64 2, i64 1
-  %14 = load float* %arrayidx2.i113, align 4, !tbaa !0
-  %arrayidx3.i114 = getelementptr inbounds [3 x float]* %img, i64 6, i64 1
-  store float %14, float* %arrayidx3.i114, align 4, !tbaa !0
-  %arrayidx4.i115 = getelementptr inbounds [3 x float]* %box, i64 2, i64 2
-  %15 = load float* %arrayidx4.i115, align 4, !tbaa !0
-  %arrayidx5.i116 = getelementptr inbounds [3 x float]* %img, i64 6, i64 2
-  store float %15, float* %arrayidx5.i116, align 4, !tbaa !0
-  %cmp31 = fcmp olt float %13, 0.000000e+00
-  br i1 %cmp31, label %if.then32, label %for.body40
-
-if.then32:                                        ; preds = %for.end
-  %mul.i106 = fmul float %13, -1.000000e+00
-  store float %mul.i106, float* %arraydecay28, align 4, !tbaa !0
-  %mul3.i108 = fmul float %14, -1.000000e+00
-  store float %mul3.i108, float* %arrayidx3.i114, align 4, !tbaa !0
-  %mul6.i111 = fmul float %15, -1.000000e+00
-  store float %mul6.i111, float* %arrayidx5.i116, align 4, !tbaa !0
-  br label %for.body40
-
-for.body40:                                       ; preds = %for.end, %if.then32, %for.body40.for.body40_crit_edge
-  %16 = phi float [ %.pre160, %for.body40.for.body40_crit_edge ], [ %mul6.i111, %if.then32 ], [ %15, %for.end ]
-  %17 = phi float [ %.pre159, %for.body40.for.body40_crit_edge ], [ %mul3.i108, %if.then32 ], [ %14, %for.end ]
-  %18 = phi float [ %.pre158, %for.body40.for.body40_crit_edge ], [ %mul.i106, %if.then32 ], [ %13, %for.end ]
-  %indvars.iv146 = phi i64 [ %indvars.iv.next147, %for.body40.for.body40_crit_edge ], [ 0, %if.then32 ], [ 0, %for.end ]
-  %indvars.iv.next147 = add i64 %indvars.iv146, 1
-  %arraydecay46 = getelementptr inbounds [3 x float]* %img, i64 %indvars.iv.next147, i64 0
-  %19 = add nsw i64 %indvars.iv146, 7
-  %arraydecay50 = getelementptr inbounds [3 x float]* %img, i64 %19, i64 0
-  %20 = load float* %arraydecay46, align 4, !tbaa !0
-  %add.i = fadd float %18, %20
-  %arrayidx3.i104 = getelementptr inbounds [3 x float]* %img, i64 %indvars.iv.next147, i64 1
-  %21 = load float* %arrayidx3.i104, align 4, !tbaa !0
-  %add4.i = fadd float %17, %21
-  %arrayidx6.i = getelementptr inbounds [3 x float]* %img, i64 %indvars.iv.next147, i64 2
-  %22 = load float* %arrayidx6.i, align 4, !tbaa !0
-  %add7.i = fadd float %16, %22
-  store float %add.i, float* %arraydecay50, align 4, !tbaa !0
-  %arrayidx9.i = getelementptr inbounds [3 x float]* %img, i64 %19, i64 1
-  store float %add4.i, float* %arrayidx9.i, align 4, !tbaa !0
-  %arrayidx10.i = getelementptr inbounds [3 x float]* %img, i64 %19, i64 2
-  store float %add7.i, float* %arrayidx10.i, align 4, !tbaa !0
-  %lftr.wideiv149 = trunc i64 %indvars.iv.next147 to i32
-  %exitcond150 = icmp eq i32 %lftr.wideiv149, 3
-  br i1 %exitcond150, label %for.body56, label %for.body40.for.body40_crit_edge
-
-for.body40.for.body40_crit_edge:                  ; preds = %for.body40
-  %.pre158 = load float* %arraydecay28, align 4, !tbaa !0
-  %.pre159 = load float* %arrayidx3.i114, align 4, !tbaa !0
-  %.pre160 = load float* %arrayidx5.i116, align 4, !tbaa !0
-  br label %for.body40
-
-for.body56:                                       ; preds = %for.body40, %for.body56
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body56 ], [ 0, %for.body40 ]
-  %23 = add nsw i64 %indvars.iv, 2
-  %24 = trunc i64 %23 to i32
-  %rem = srem i32 %24, 4
-  %add58 = add nsw i32 %rem, 6
-  %idxprom59 = sext i32 %add58 to i64
-  %arraydecay61 = getelementptr inbounds [3 x float]* %img, i64 %idxprom59, i64 0
-  %25 = add nsw i64 %indvars.iv, 10
-  %arraydecay65 = getelementptr inbounds [3 x float]* %img, i64 %25, i64 0
-  %26 = load float* %arraydecay61, align 4, !tbaa !0
-  %mul.i = fmul float %26, -1.000000e+00
-  store float %mul.i, float* %arraydecay65, align 4, !tbaa !0
-  %arrayidx2.i100 = getelementptr inbounds [3 x float]* %img, i64 %idxprom59, i64 1
-  %27 = load float* %arrayidx2.i100, align 4, !tbaa !0
-  %mul3.i = fmul float %27, -1.000000e+00
-  %arrayidx4.i101 = getelementptr inbounds [3 x float]* %img, i64 %25, i64 1
-  store float %mul3.i, float* %arrayidx4.i101, align 4, !tbaa !0
-  %arrayidx5.i102 = getelementptr inbounds [3 x float]* %img, i64 %idxprom59, i64 2
-  %28 = load float* %arrayidx5.i102, align 4, !tbaa !0
-  %mul6.i = fmul float %28, -1.000000e+00
-  %arrayidx7.i = getelementptr inbounds [3 x float]* %img, i64 %25, i64 2
-  store float %mul6.i, float* %arrayidx7.i, align 4, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 4
-  br i1 %exitcond, label %for.end68, label %for.body56
-
-for.end68:                                        ; preds = %for.body56
+; <label>:6                                       ; preds = %1
   ret void
 }
 
-; Function Attrs: nounwind optsize uwtable
-define void @calc_compact_unitcell_vertices([3 x float]* nocapture %box, [3 x float]* nocapture %vert) #1 {
-entry:
+; Function Attrs: nounwind optsize ssp uwtable
+define void @calc_triclinic_images([3 x float]* nocapture readonly %box, [3 x float]* nocapture %img) #4 {
+  %1 = bitcast [3 x float]* %box to i32*
+  %2 = load i32* %1, align 4, !tbaa !14
+  %3 = bitcast [3 x float]* %img to i32*
+  store i32 %2, i32* %3, align 4, !tbaa !14
+  %4 = getelementptr inbounds [3 x float]* %box, i64 0, i64 1
+  %5 = bitcast float* %4 to i32*
+  %6 = load i32* %5, align 4, !tbaa !14
+  %7 = getelementptr inbounds [3 x float]* %img, i64 0, i64 1
+  %8 = bitcast float* %7 to i32*
+  store i32 %6, i32* %8, align 4, !tbaa !14
+  %9 = getelementptr inbounds [3 x float]* %box, i64 0, i64 2
+  %10 = bitcast float* %9 to i32*
+  %11 = load i32* %10, align 4, !tbaa !14
+  %12 = getelementptr inbounds [3 x float]* %img, i64 0, i64 2
+  %13 = bitcast float* %12 to i32*
+  store i32 %11, i32* %13, align 4, !tbaa !14
+  %14 = getelementptr inbounds [3 x float]* %box, i64 1, i64 0
+  %15 = getelementptr inbounds [3 x float]* %img, i64 1, i64 0
+  %16 = bitcast float* %14 to i32*
+  %17 = load i32* %16, align 4, !tbaa !14
+  %18 = bitcast float* %15 to i32*
+  store i32 %17, i32* %18, align 4, !tbaa !14
+  %19 = getelementptr inbounds [3 x float]* %box, i64 1, i64 1
+  %20 = bitcast float* %19 to i32*
+  %21 = load i32* %20, align 4, !tbaa !14
+  %22 = getelementptr inbounds [3 x float]* %img, i64 1, i64 1
+  %23 = bitcast float* %22 to i32*
+  store i32 %21, i32* %23, align 4, !tbaa !14
+  %24 = getelementptr inbounds [3 x float]* %box, i64 1, i64 2
+  %25 = bitcast float* %24 to i32*
+  %26 = load i32* %25, align 4, !tbaa !14
+  %27 = getelementptr inbounds [3 x float]* %img, i64 1, i64 2
+  %28 = bitcast float* %27 to i32*
+  store i32 %26, i32* %28, align 4, !tbaa !14
+  %29 = bitcast i32 %17 to float
+  %30 = fcmp olt float %29, 0.000000e+00
+  %31 = bitcast i32 %21 to float
+  %32 = bitcast i32 %26 to float
+  %33 = bitcast i32 %2 to float
+  %34 = bitcast i32 %6 to float
+  %35 = bitcast i32 %11 to float
+  br i1 %30, label %36, label %40
+
+; <label>:36                                      ; preds = %0
+  %37 = fsub float -0.000000e+00, %29
+  store float %37, float* %15, align 4, !tbaa !14
+  %38 = fsub float -0.000000e+00, %31
+  store float %38, float* %22, align 4, !tbaa !14
+  %39 = fsub float -0.000000e+00, %32
+  store float %39, float* %27, align 4, !tbaa !14
+  br label %40
+
+; <label>:40                                      ; preds = %36, %0
+  %41 = phi float [ %39, %36 ], [ %32, %0 ]
+  %42 = phi float [ %38, %36 ], [ %31, %0 ]
+  %43 = phi float [ %37, %36 ], [ %29, %0 ]
+  %44 = getelementptr inbounds [3 x float]* %img, i64 2, i64 0
+  %45 = insertelement <4 x float> undef, float %43, i32 0
+  %46 = insertelement <4 x float> %45, float %42, i32 1
+  %47 = insertelement <4 x float> %46, float %41, i32 2
+  %48 = insertelement <4 x float> %47, float -0.000000e+00, i32 3
+  %49 = insertelement <4 x float> undef, float %33, i32 0
+  %50 = insertelement <4 x float> %49, float %34, i32 1
+  %51 = insertelement <4 x float> %50, float %35, i32 2
+  %52 = insertelement <4 x float> %51, float %33, i32 3
+  %53 = fsub <4 x float> %48, %52
+  %54 = bitcast float* %44 to <4 x float>*
+  store <4 x float> %53, <4 x float>* %54, align 4, !tbaa !14
+  %55 = fsub float -0.000000e+00, %34
+  %56 = getelementptr inbounds [3 x float]* %img, i64 3, i64 1
+  store float %55, float* %56, align 4, !tbaa !14
+  %57 = fsub float -0.000000e+00, %35
+  %58 = getelementptr inbounds [3 x float]* %img, i64 3, i64 2
+  store float %57, float* %58, align 4, !tbaa !14
+  br label %._crit_edge
+
+._crit_edge:                                      ; preds = %40, %._crit_edge
+  %indvars.iv.next921 = phi i64 [ 1, %40 ], [ %indvars.iv.next9, %._crit_edge ]
+  %.phi.trans.insert = getelementptr inbounds [3 x float]* %img, i64 %indvars.iv.next921, i64 0
+  %.pre = load float* %.phi.trans.insert, align 4, !tbaa !14
+  %.phi.trans.insert11 = getelementptr inbounds [3 x float]* %img, i64 %indvars.iv.next921, i64 1
+  %.pre12 = load float* %.phi.trans.insert11, align 4, !tbaa !14
+  %.phi.trans.insert13 = getelementptr inbounds [3 x float]* %img, i64 %indvars.iv.next921, i64 2
+  %.pre14 = load float* %.phi.trans.insert13, align 4, !tbaa !14
+  %59 = add nuw nsw i64 %indvars.iv.next921, 3
+  %60 = getelementptr inbounds [3 x float]* %img, i64 %59, i64 0
+  %61 = fsub float -0.000000e+00, %.pre
+  store float %61, float* %60, align 4, !tbaa !14
+  %62 = fsub float -0.000000e+00, %.pre12
+  %63 = getelementptr inbounds [3 x float]* %img, i64 %59, i64 1
+  store float %62, float* %63, align 4, !tbaa !14
+  %64 = fsub float -0.000000e+00, %.pre14
+  %65 = getelementptr inbounds [3 x float]* %img, i64 %59, i64 2
+  store float %64, float* %65, align 4, !tbaa !14
+  %indvars.iv.next9 = add nuw nsw i64 %indvars.iv.next921, 1
+  %exitcond10 = icmp eq i64 %indvars.iv.next9, 3
+  br i1 %exitcond10, label %66, label %._crit_edge
+
+; <label>:66                                      ; preds = %._crit_edge
+  %67 = getelementptr inbounds [3 x float]* %box, i64 2, i64 0
+  %68 = getelementptr inbounds [3 x float]* %img, i64 6, i64 0
+  %69 = bitcast float* %67 to i32*
+  %70 = load i32* %69, align 4, !tbaa !14
+  %71 = bitcast float* %68 to i32*
+  store i32 %70, i32* %71, align 4, !tbaa !14
+  %72 = getelementptr inbounds [3 x float]* %box, i64 2, i64 1
+  %73 = bitcast float* %72 to i32*
+  %74 = load i32* %73, align 4, !tbaa !14
+  %75 = getelementptr inbounds [3 x float]* %img, i64 6, i64 1
+  %76 = bitcast float* %75 to i32*
+  store i32 %74, i32* %76, align 4, !tbaa !14
+  %77 = getelementptr inbounds [3 x float]* %box, i64 2, i64 2
+  %78 = bitcast float* %77 to i32*
+  %79 = load i32* %78, align 4, !tbaa !14
+  %80 = getelementptr inbounds [3 x float]* %img, i64 6, i64 2
+  %81 = bitcast float* %80 to i32*
+  store i32 %79, i32* %81, align 4, !tbaa !14
+  %82 = bitcast i32 %70 to float
+  %83 = fcmp olt float %82, 0.000000e+00
+  %84 = bitcast i32 %74 to float
+  %85 = bitcast i32 %79 to float
+  br i1 %83, label %86, label %.preheader1
+
+; <label>:86                                      ; preds = %66
+  %87 = fsub float -0.000000e+00, %82
+  store float %87, float* %68, align 4, !tbaa !14
+  %88 = fsub float -0.000000e+00, %84
+  store float %88, float* %75, align 4, !tbaa !14
+  %89 = fsub float -0.000000e+00, %85
+  store float %89, float* %80, align 4, !tbaa !14
+  br label %.preheader1
+
+.preheader1:                                      ; preds = %66, %86, %._crit_edge15
+  %90 = phi float [ %.pre18, %._crit_edge15 ], [ %85, %66 ], [ %89, %86 ]
+  %91 = phi float [ %.pre17, %._crit_edge15 ], [ %84, %66 ], [ %88, %86 ]
+  %92 = phi float [ %.pre16, %._crit_edge15 ], [ %82, %66 ], [ %87, %86 ]
+  %indvars.iv5 = phi i64 [ %indvars.iv.next6, %._crit_edge15 ], [ 0, %66 ], [ 0, %86 ]
+  %indvars.iv.next6 = add nuw nsw i64 %indvars.iv5, 1
+  %93 = getelementptr inbounds [3 x float]* %img, i64 %indvars.iv.next6, i64 0
+  %94 = add nuw nsw i64 %indvars.iv5, 7
+  %95 = getelementptr inbounds [3 x float]* %img, i64 %94, i64 0
+  %96 = load float* %93, align 4, !tbaa !14
+  %97 = fadd float %92, %96
+  %98 = getelementptr inbounds [3 x float]* %img, i64 %indvars.iv.next6, i64 1
+  %99 = load float* %98, align 4, !tbaa !14
+  %100 = fadd float %91, %99
+  %101 = getelementptr inbounds [3 x float]* %img, i64 %indvars.iv.next6, i64 2
+  %102 = load float* %101, align 4, !tbaa !14
+  %103 = fadd float %90, %102
+  store float %97, float* %95, align 4, !tbaa !14
+  %104 = getelementptr inbounds [3 x float]* %img, i64 %94, i64 1
+  store float %100, float* %104, align 4, !tbaa !14
+  %105 = getelementptr inbounds [3 x float]* %img, i64 %94, i64 2
+  store float %103, float* %105, align 4, !tbaa !14
+  %exitcond7 = icmp eq i64 %indvars.iv.next6, 3
+  br i1 %exitcond7, label %.preheader, label %._crit_edge15
+
+._crit_edge15:                                    ; preds = %.preheader1
+  %.pre16 = load float* %68, align 4, !tbaa !14
+  %.pre17 = load float* %75, align 4, !tbaa !14
+  %.pre18 = load float* %80, align 4, !tbaa !14
+  br label %.preheader1
+
+.preheader:                                       ; preds = %.preheader1, %.preheader
+  %indvars.iv = phi i64 [ %indvars.iv.next, %.preheader ], [ 0, %.preheader1 ]
+  %106 = add nuw nsw i64 %indvars.iv, 2
+  %107 = trunc i64 %106 to i32
+  %108 = srem i32 %107, 4
+  %109 = add nsw i32 %108, 6
+  %110 = sext i32 %109 to i64
+  %111 = getelementptr inbounds [3 x float]* %img, i64 %110, i64 0
+  %112 = add nuw nsw i64 %indvars.iv, 10
+  %113 = getelementptr inbounds [3 x float]* %img, i64 %112, i64 0
+  %114 = load float* %111, align 4, !tbaa !14
+  %115 = fsub float -0.000000e+00, %114
+  store float %115, float* %113, align 4, !tbaa !14
+  %116 = getelementptr inbounds [3 x float]* %img, i64 %110, i64 1
+  %117 = load float* %116, align 4, !tbaa !14
+  %118 = fsub float -0.000000e+00, %117
+  %119 = getelementptr inbounds [3 x float]* %img, i64 %112, i64 1
+  store float %118, float* %119, align 4, !tbaa !14
+  %120 = getelementptr inbounds [3 x float]* %img, i64 %110, i64 2
+  %121 = load float* %120, align 4, !tbaa !14
+  %122 = fsub float -0.000000e+00, %121
+  %123 = getelementptr inbounds [3 x float]* %img, i64 %112, i64 2
+  store float %122, float* %123, align 4, !tbaa !14
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i64 %indvars.iv.next, 4
+  br i1 %exitcond, label %124, label %.preheader
+
+; <label>:124                                     ; preds = %.preheader
+  ret void
+}
+
+; Function Attrs: nounwind optsize ssp uwtable
+define void @calc_compact_unitcell_vertices([3 x float]* nocapture readonly %box, [3 x float]* nocapture %vert) #4 {
   %img = alloca [14 x [3 x float]], align 16
   %box_center = alloca [3 x float], align 4
   %tmp = alloca [4 x i32], align 16
-  %0 = bitcast [14 x [3 x float]]* %img to i8*
-  call void @llvm.lifetime.start(i64 168, i8* %0) #4
-  %arraydecay = getelementptr inbounds [14 x [3 x float]]* %img, i64 0, i64 0
-  call void @calc_triclinic_images([3 x float]* %box, [3 x float]* %arraydecay) #6
-  %arrayidx = getelementptr inbounds [4 x i32]* %tmp, i64 0, i64 0
-  %arrayidx3 = getelementptr inbounds [4 x i32]* %tmp, i64 0, i64 1
-  %arrayidx5 = getelementptr inbounds [4 x i32]* %tmp, i64 0, i64 2
-  %arrayidx8 = getelementptr inbounds [4 x i32]* %tmp, i64 0, i64 3
-  br label %for.body
+  %1 = bitcast [14 x [3 x float]]* %img to i8*
+  call void @llvm.lifetime.start(i64 168, i8* %1) #6
+  %2 = getelementptr inbounds [14 x [3 x float]]* %img, i64 0, i64 0
+  call void @calc_triclinic_images([3 x float]* %box, [3 x float]* %2) #9
+  %3 = getelementptr inbounds [4 x i32]* %tmp, i64 0, i64 0
+  %4 = getelementptr inbounds [4 x i32]* %tmp, i64 0, i64 1
+  %5 = getelementptr inbounds [4 x i32]* %tmp, i64 0, i64 2
+  %6 = getelementptr inbounds [4 x i32]* %tmp, i64 0, i64 3
+  br label %7
 
-for.body:                                         ; preds = %entry, %for.inc42
-  %indvars.iv324 = phi i64 [ 0, %entry ], [ %indvars.iv.next325, %for.inc42 ]
-  %indvars.iv320 = phi i64 [ 2, %entry ], [ %indvars.iv.next321, %for.inc42 ]
-  %1 = add nsw i64 %indvars.iv320, 4294967295
-  %2 = trunc i64 %1 to i32
-  store i32 %2, i32* %arrayidx, align 16, !tbaa !4
-  %3 = trunc i64 %indvars.iv320 to i32
-  %cmp2 = icmp eq i32 %3, 2
-  %. = select i1 %cmp2, i32 8, i32 6
-  store i32 %., i32* %arrayidx3, align 4, !tbaa !4
-  %4 = add nsw i64 %indvars.iv320, 1
-  %5 = trunc i64 %4 to i32
-  %6 = icmp eq i32 %5, 6
-  %tmp319 = select i1 %6, i32 0, i32 %5
-  store i32 %tmp319, i32* %arrayidx5, align 8, !tbaa !4
-  %add7 = add nsw i32 %., 4
-  store i32 %add7, i32* %arrayidx8, align 4, !tbaa !4
-  br label %for.cond12.preheader
+; <label>:7                                       ; preds = %0, %36
+  %indvars.iv68 = phi i64 [ 0, %0 ], [ %indvars.iv.next69, %36 ]
+  %indvars.iv66 = phi i64 [ 2, %0 ], [ %indvars.iv.next67, %36 ]
+  %8 = add i64 %indvars.iv66, 4294967295
+  %9 = trunc i64 %8 to i32
+  store i32 %9, i32* %3, align 16, !tbaa !17
+  %10 = trunc i64 %indvars.iv66 to i32
+  %11 = icmp eq i32 %10, 2
+  %. = select i1 %11, i32 8, i32 6
+  store i32 %., i32* %4, align 4, !tbaa !17
+  %12 = add nuw nsw i64 %indvars.iv66, 1
+  %13 = trunc i64 %12 to i32
+  %14 = icmp eq i32 %13, 6
+  %tmp65 = select i1 %14, i32 0, i32 %13
+  store i32 %tmp65, i32* %5, align 8, !tbaa !17
+  %15 = add nuw nsw i32 %., 4
+  store i32 %15, i32* %6, align 4, !tbaa !17
+  br label %.preheader11
 
-for.cond12.preheader:                             ; preds = %for.end.for.cond12.preheader_crit_edge, %for.body
-  %7 = phi i32 [ %2, %for.body ], [ %.pre, %for.end.for.cond12.preheader_crit_edge ]
-  %indvars.iv315 = phi i64 [ %indvars.iv324, %for.body ], [ %indvars.iv.next316, %for.end.for.cond12.preheader_crit_edge ]
-  %indvars.iv313 = phi i64 [ 1, %for.body ], [ %phitmp, %for.end.for.cond12.preheader_crit_edge ]
-  %idxprom21 = sext i32 %7 to i64
-  %8 = trunc i64 %indvars.iv313 to i32
-  %9 = icmp eq i32 %8, 4
-  %sext = shl i64 %indvars.iv313, 32
-  %10 = ashr exact i64 %sext, 32
-  %idxprom28 = select i1 %9, i64 0, i64 %10
-  %arrayidx29 = getelementptr inbounds [4 x i32]* %tmp, i64 0, i64 %idxprom28
-  %11 = load i32* %arrayidx29, align 4, !tbaa !4
-  %idxprom30 = sext i32 %11 to i64
-  br label %for.body14
+.preheader11:                                     ; preds = %..preheader11_crit_edge, %7
+  %16 = phi i32 [ %9, %7 ], [ %.pre, %..preheader11_crit_edge ]
+  %indvars.iv62 = phi i64 [ %indvars.iv68, %7 ], [ %indvars.iv.next63, %..preheader11_crit_edge ]
+  %indvars.iv60 = phi i64 [ 0, %7 ], [ %indvars.iv.next61, %..preheader11_crit_edge ]
+  %17 = sext i32 %16 to i64
+  %indvars.iv.next61 = add nuw nsw i64 %indvars.iv60, 1
+  %18 = trunc i64 %indvars.iv.next61 to i32
+  %19 = icmp eq i32 %18, 4
+  %sext = shl i64 %indvars.iv.next61, 32
+  %20 = ashr exact i64 %sext, 32
+  %21 = select i1 %19, i64 0, i64 %20
+  %22 = getelementptr inbounds [4 x i32]* %tmp, i64 0, i64 %21
+  %23 = load i32* %22, align 4, !tbaa !17
+  %24 = sext i32 %23 to i64
+  br label %25
 
-for.body14:                                       ; preds = %for.body14, %for.cond12.preheader
-  %indvars.iv308 = phi i64 [ 0, %for.cond12.preheader ], [ %indvars.iv.next309, %for.body14 ]
-  %arrayidx17 = getelementptr inbounds [14 x [3 x float]]* %img, i64 0, i64 %indvars.iv320, i64 %indvars.iv308
-  %12 = load float* %arrayidx17, align 4, !tbaa !0
-  %arrayidx23 = getelementptr inbounds [14 x [3 x float]]* %img, i64 0, i64 %idxprom21, i64 %indvars.iv308
-  %13 = load float* %arrayidx23, align 4, !tbaa !0
-  %add24 = fadd float %12, %13
-  %arrayidx32 = getelementptr inbounds [14 x [3 x float]]* %img, i64 0, i64 %idxprom30, i64 %indvars.iv308
-  %14 = load float* %arrayidx32, align 4, !tbaa !0
-  %add33 = fadd float %add24, %14
-  %arrayidx37 = getelementptr inbounds [3 x float]* %vert, i64 %indvars.iv315, i64 %indvars.iv308
-  store float %add33, float* %arrayidx37, align 4, !tbaa !0
-  %indvars.iv.next309 = add i64 %indvars.iv308, 1
-  %lftr.wideiv310 = trunc i64 %indvars.iv.next309 to i32
-  %exitcond311 = icmp eq i32 %lftr.wideiv310, 3
-  br i1 %exitcond311, label %for.end, label %for.body14
+; <label>:25                                      ; preds = %25, %.preheader11
+  %indvars.iv56 = phi i64 [ 0, %.preheader11 ], [ %indvars.iv.next57, %25 ]
+  %26 = getelementptr inbounds [14 x [3 x float]]* %img, i64 0, i64 %indvars.iv66, i64 %indvars.iv56
+  %27 = load float* %26, align 4, !tbaa !14
+  %28 = getelementptr inbounds [14 x [3 x float]]* %img, i64 0, i64 %17, i64 %indvars.iv56
+  %29 = load float* %28, align 4, !tbaa !14
+  %30 = fadd float %27, %29
+  %31 = getelementptr inbounds [14 x [3 x float]]* %img, i64 0, i64 %24, i64 %indvars.iv56
+  %32 = load float* %31, align 4, !tbaa !14
+  %33 = fadd float %30, %32
+  %34 = getelementptr inbounds [3 x float]* %vert, i64 %indvars.iv62, i64 %indvars.iv56
+  store float %33, float* %34, align 4, !tbaa !14
+  %indvars.iv.next57 = add nuw nsw i64 %indvars.iv56, 1
+  %exitcond58 = icmp eq i64 %indvars.iv.next57, 3
+  br i1 %exitcond58, label %35, label %25
 
-for.end:                                          ; preds = %for.body14
-  %exitcond318 = icmp eq i32 %8, 4
-  br i1 %exitcond318, label %for.inc42, label %for.end.for.cond12.preheader_crit_edge
+; <label>:35                                      ; preds = %25
+  %exitcond64 = icmp eq i64 %indvars.iv.next61, 4
+  br i1 %exitcond64, label %36, label %..preheader11_crit_edge
 
-for.end.for.cond12.preheader_crit_edge:           ; preds = %for.end
-  %indvars.iv.next316 = add i64 %indvars.iv315, 1
-  %arrayidx20.phi.trans.insert = getelementptr inbounds [4 x i32]* %tmp, i64 0, i64 %indvars.iv313
-  %.pre = load i32* %arrayidx20.phi.trans.insert, align 4, !tbaa !4
-  %phitmp = add i64 %indvars.iv313, 1
-  br label %for.cond12.preheader
+..preheader11_crit_edge:                          ; preds = %35
+  %indvars.iv.next63 = add nsw i64 %indvars.iv62, 1
+  %.phi.trans.insert = getelementptr inbounds [4 x i32]* %tmp, i64 0, i64 %indvars.iv.next61
+  %.pre = load i32* %.phi.trans.insert, align 4, !tbaa !17
+  br label %.preheader11
 
-for.inc42:                                        ; preds = %for.end
-  %indvars.iv.next325 = add i64 %indvars.iv324, 4
-  %indvars.iv.next321 = add i64 %indvars.iv320, 3
-  %15 = trunc i64 %indvars.iv.next321 to i32
-  %cmp = icmp slt i32 %15, 6
-  br i1 %cmp, label %for.body, label %for.body47
+; <label>:36                                      ; preds = %35
+  %indvars.iv.next67 = add nuw nsw i64 %indvars.iv66, 3
+  %37 = icmp slt i64 %indvars.iv.next67, 6
+  %indvars.iv.next69 = add nuw nsw i64 %indvars.iv68, 4
+  br i1 %37, label %7, label %.preheader10
 
-for.body47:                                       ; preds = %for.inc42, %for.inc98
-  %indvars.iv304 = phi i64 [ %indvars.iv.next305, %for.inc98 ], [ 7, %for.inc42 ]
-  %n.2266 = phi i32 [ %30, %for.inc98 ], [ 8, %for.inc42 ]
-  %16 = add nsw i64 %indvars.iv304, 4294967289
-  %17 = trunc i64 %16 to i32
-  %div = sdiv i32 %17, 2
-  store i32 %div, i32* %arrayidx, align 16, !tbaa !4
-  %add51 = add nsw i32 %div, 1
-  store i32 %add51, i32* %arrayidx3, align 4, !tbaa !4
-  %18 = trunc i64 %indvars.iv304 to i32
-  %cmp53 = icmp eq i32 %18, 7
-  %.254 = select i1 %cmp53, i32 8, i32 10
-  store i32 %.254, i32* %arrayidx5, align 8, !tbaa !4
-  %19 = add nsw i64 %indvars.iv304, 4294967295
-  %20 = trunc i64 %19 to i32
-  store i32 %20, i32* %arrayidx8, align 4, !tbaa !4
-  %21 = sext i32 %n.2266 to i64
-  br label %for.cond64.preheader
+.preheader10:                                     ; preds = %36, %67
+  %indvars.iv54 = phi i64 [ %indvars.iv.next55, %67 ], [ 7, %36 ]
+  %n.222 = phi i64 [ %68, %67 ], [ 8, %36 ]
+  %38 = add i64 %indvars.iv54, 4294967289
+  %39 = trunc i64 %38 to i32
+  %40 = sdiv i32 %39, 2
+  store i32 %40, i32* %3, align 16, !tbaa !17
+  %41 = add nsw i32 %40, 1
+  store i32 %41, i32* %4, align 4, !tbaa !17
+  %42 = trunc i64 %indvars.iv54 to i32
+  %43 = icmp eq i32 %42, 7
+  %.4 = select i1 %43, i32 8, i32 10
+  store i32 %.4, i32* %5, align 8, !tbaa !17
+  %44 = add i64 %indvars.iv54, 4294967295
+  %45 = trunc i64 %44 to i32
+  store i32 %45, i32* %6, align 4, !tbaa !17
+  %sext74 = shl i64 %n.222, 32
+  %46 = ashr exact i64 %sext74, 32
+  br label %.preheader9
 
-for.cond64.preheader:                             ; preds = %for.end93.for.cond64.preheader_crit_edge, %for.body47
-  %22 = phi i32 [ %div, %for.body47 ], [ %.pre326, %for.end93.for.cond64.preheader_crit_edge ]
-  %indvars.iv300 = phi i64 [ %21, %for.body47 ], [ %indvars.iv.next301, %for.end93.for.cond64.preheader_crit_edge ]
-  %indvars.iv298 = phi i64 [ 1, %for.body47 ], [ %phitmp328, %for.end93.for.cond64.preheader_crit_edge ]
-  %idxprom74 = sext i32 %22 to i64
-  %23 = trunc i64 %indvars.iv298 to i32
-  %24 = icmp eq i32 %23, 4
-  %sext329 = shl i64 %indvars.iv298, 32
-  %25 = ashr exact i64 %sext329, 32
-  %idxprom81 = select i1 %24, i64 0, i64 %25
-  %arrayidx82 = getelementptr inbounds [4 x i32]* %tmp, i64 0, i64 %idxprom81
-  %26 = load i32* %arrayidx82, align 4, !tbaa !4
-  %idxprom83 = sext i32 %26 to i64
-  br label %for.body66
+.preheader9:                                      ; preds = %..preheader9_crit_edge, %.preheader10
+  %47 = phi i32 [ %40, %.preheader10 ], [ %.pre71, %..preheader9_crit_edge ]
+  %indvars.iv51 = phi i64 [ %46, %.preheader10 ], [ %indvars.iv.next52, %..preheader9_crit_edge ]
+  %indvars.iv49 = phi i64 [ 0, %.preheader10 ], [ %indvars.iv.next50, %..preheader9_crit_edge ]
+  %48 = sext i32 %47 to i64
+  %indvars.iv.next50 = add nuw nsw i64 %indvars.iv49, 1
+  %49 = trunc i64 %indvars.iv.next50 to i32
+  %50 = icmp eq i32 %49, 4
+  %sext75 = shl i64 %indvars.iv.next50, 32
+  %51 = ashr exact i64 %sext75, 32
+  %52 = select i1 %50, i64 0, i64 %51
+  %53 = getelementptr inbounds [4 x i32]* %tmp, i64 0, i64 %52
+  %54 = load i32* %53, align 4, !tbaa !17
+  %55 = sext i32 %54 to i64
+  br label %56
 
-for.body66:                                       ; preds = %for.body66, %for.cond64.preheader
-  %indvars.iv293 = phi i64 [ 0, %for.cond64.preheader ], [ %indvars.iv.next294, %for.body66 ]
-  %arrayidx70 = getelementptr inbounds [14 x [3 x float]]* %img, i64 0, i64 %indvars.iv304, i64 %indvars.iv293
-  %27 = load float* %arrayidx70, align 4, !tbaa !0
-  %arrayidx76 = getelementptr inbounds [14 x [3 x float]]* %img, i64 0, i64 %idxprom74, i64 %indvars.iv293
-  %28 = load float* %arrayidx76, align 4, !tbaa !0
-  %add77 = fadd float %27, %28
-  %arrayidx85 = getelementptr inbounds [14 x [3 x float]]* %img, i64 0, i64 %idxprom83, i64 %indvars.iv293
-  %29 = load float* %arrayidx85, align 4, !tbaa !0
-  %add86 = fadd float %add77, %29
-  %arrayidx90 = getelementptr inbounds [3 x float]* %vert, i64 %indvars.iv300, i64 %indvars.iv293
-  store float %add86, float* %arrayidx90, align 4, !tbaa !0
-  %indvars.iv.next294 = add i64 %indvars.iv293, 1
-  %lftr.wideiv295 = trunc i64 %indvars.iv.next294 to i32
-  %exitcond296 = icmp eq i32 %lftr.wideiv295, 3
-  br i1 %exitcond296, label %for.end93, label %for.body66
+; <label>:56                                      ; preds = %56, %.preheader9
+  %indvars.iv45 = phi i64 [ 0, %.preheader9 ], [ %indvars.iv.next46, %56 ]
+  %57 = getelementptr inbounds [14 x [3 x float]]* %img, i64 0, i64 %indvars.iv54, i64 %indvars.iv45
+  %58 = load float* %57, align 4, !tbaa !14
+  %59 = getelementptr inbounds [14 x [3 x float]]* %img, i64 0, i64 %48, i64 %indvars.iv45
+  %60 = load float* %59, align 4, !tbaa !14
+  %61 = fadd float %58, %60
+  %62 = getelementptr inbounds [14 x [3 x float]]* %img, i64 0, i64 %55, i64 %indvars.iv45
+  %63 = load float* %62, align 4, !tbaa !14
+  %64 = fadd float %61, %63
+  %65 = getelementptr inbounds [3 x float]* %vert, i64 %indvars.iv51, i64 %indvars.iv45
+  store float %64, float* %65, align 4, !tbaa !14
+  %indvars.iv.next46 = add nuw nsw i64 %indvars.iv45, 1
+  %exitcond47 = icmp eq i64 %indvars.iv.next46, 3
+  br i1 %exitcond47, label %66, label %56
 
-for.end93:                                        ; preds = %for.body66
-  %exitcond303 = icmp eq i32 %23, 4
-  br i1 %exitcond303, label %for.inc98, label %for.end93.for.cond64.preheader_crit_edge
+; <label>:66                                      ; preds = %56
+  %exitcond53 = icmp eq i64 %indvars.iv.next50, 4
+  br i1 %exitcond53, label %67, label %..preheader9_crit_edge
 
-for.end93.for.cond64.preheader_crit_edge:         ; preds = %for.end93
-  %indvars.iv.next301 = add i64 %indvars.iv300, 1
-  %arrayidx73.phi.trans.insert = getelementptr inbounds [4 x i32]* %tmp, i64 0, i64 %indvars.iv298
-  %.pre326 = load i32* %arrayidx73.phi.trans.insert, align 4, !tbaa !4
-  %phitmp328 = add i64 %indvars.iv298, 1
-  br label %for.cond64.preheader
+..preheader9_crit_edge:                           ; preds = %66
+  %indvars.iv.next52 = add nsw i64 %indvars.iv51, 1
+  %.phi.trans.insert70 = getelementptr inbounds [4 x i32]* %tmp, i64 0, i64 %indvars.iv.next50
+  %.pre71 = load i32* %.phi.trans.insert70, align 4, !tbaa !17
+  br label %.preheader9
 
-for.inc98:                                        ; preds = %for.end93
-  %30 = add i32 %n.2266, 4
-  %indvars.iv.next305 = add i64 %indvars.iv304, 6
-  %31 = trunc i64 %indvars.iv.next305 to i32
-  %cmp46 = icmp slt i32 %31, 14
-  br i1 %cmp46, label %for.body47, label %for.body103
+; <label>:67                                      ; preds = %66
+  %68 = add nsw i64 %46, 4
+  %indvars.iv.next55 = add nuw nsw i64 %indvars.iv54, 6
+  %69 = icmp slt i64 %indvars.iv.next55, 14
+  br i1 %69, label %.preheader10, label %.preheader8
 
-for.body103:                                      ; preds = %for.inc98, %for.inc158
-  %indvars.iv290 = phi i64 [ %indvars.iv.next291, %for.inc158 ], [ 9, %for.inc98 ]
-  %n.4261 = phi i32 [ %44, %for.inc158 ], [ 16, %for.inc98 ]
-  %32 = trunc i64 %indvars.iv290 to i32
-  %cmp104 = icmp eq i32 %32, 9
-  %.255 = select i1 %cmp104, i32 3, i32 0
-  store i32 %.255, i32* %arrayidx, align 16, !tbaa !4
-  %add111 = add nsw i32 %.255, 1
-  store i32 %add111, i32* %arrayidx3, align 4, !tbaa !4
-  %storemerge = select i1 %cmp104, i32 6, i32 12
-  store i32 %storemerge, i32* %arrayidx5, align 8, !tbaa !4
-  %33 = add nsw i64 %indvars.iv290, 4294967295
-  %34 = trunc i64 %33 to i32
-  store i32 %34, i32* %arrayidx8, align 4, !tbaa !4
-  %35 = sext i32 %n.4261 to i64
-  br label %for.cond124.preheader
+.preheader8:                                      ; preds = %67, %96
+  %indvars.iv43 = phi i64 [ %indvars.iv.next44, %96 ], [ 9, %67 ]
+  %n.417 = phi i64 [ %97, %96 ], [ 16, %67 ]
+  %70 = trunc i64 %indvars.iv43 to i32
+  %71 = icmp eq i32 %70, 9
+  %.5 = select i1 %71, i32 3, i32 0
+  store i32 %.5, i32* %3, align 16, !tbaa !17
+  %72 = add nuw nsw i32 %.5, 1
+  store i32 %72, i32* %4, align 4, !tbaa !17
+  %storemerge = select i1 %71, i32 6, i32 12
+  store i32 %storemerge, i32* %5, align 8, !tbaa !17
+  %73 = add i64 %indvars.iv43, 4294967295
+  %74 = trunc i64 %73 to i32
+  store i32 %74, i32* %6, align 4, !tbaa !17
+  %sext76 = shl i64 %n.417, 32
+  %75 = ashr exact i64 %sext76, 32
+  br label %.preheader7
 
-for.cond124.preheader:                            ; preds = %for.end153.for.cond124.preheader_crit_edge, %for.body103
-  %36 = phi i32 [ %.255, %for.body103 ], [ %.pre327, %for.end153.for.cond124.preheader_crit_edge ]
-  %indvars.iv286 = phi i64 [ %35, %for.body103 ], [ %indvars.iv.next287, %for.end153.for.cond124.preheader_crit_edge ]
-  %indvars.iv284 = phi i64 [ 1, %for.body103 ], [ %phitmp330, %for.end153.for.cond124.preheader_crit_edge ]
-  %idxprom134 = sext i32 %36 to i64
-  %37 = trunc i64 %indvars.iv284 to i32
-  %38 = icmp eq i32 %37, 4
-  %sext331 = shl i64 %indvars.iv284, 32
-  %39 = ashr exact i64 %sext331, 32
-  %idxprom141 = select i1 %38, i64 0, i64 %39
-  %arrayidx142 = getelementptr inbounds [4 x i32]* %tmp, i64 0, i64 %idxprom141
-  %40 = load i32* %arrayidx142, align 4, !tbaa !4
-  %idxprom143 = sext i32 %40 to i64
-  br label %for.body126
+.preheader7:                                      ; preds = %..preheader7_crit_edge, %.preheader8
+  %76 = phi i32 [ %.5, %.preheader8 ], [ %.pre73, %..preheader7_crit_edge ]
+  %indvars.iv40 = phi i64 [ %75, %.preheader8 ], [ %indvars.iv.next41, %..preheader7_crit_edge ]
+  %indvars.iv38 = phi i64 [ 0, %.preheader8 ], [ %indvars.iv.next39, %..preheader7_crit_edge ]
+  %77 = sext i32 %76 to i64
+  %indvars.iv.next39 = add nuw nsw i64 %indvars.iv38, 1
+  %78 = trunc i64 %indvars.iv.next39 to i32
+  %79 = icmp eq i32 %78, 4
+  %sext77 = shl i64 %indvars.iv.next39, 32
+  %80 = ashr exact i64 %sext77, 32
+  %81 = select i1 %79, i64 0, i64 %80
+  %82 = getelementptr inbounds [4 x i32]* %tmp, i64 0, i64 %81
+  %83 = load i32* %82, align 4, !tbaa !17
+  %84 = sext i32 %83 to i64
+  br label %85
 
-for.body126:                                      ; preds = %for.body126, %for.cond124.preheader
-  %indvars.iv279 = phi i64 [ 0, %for.cond124.preheader ], [ %indvars.iv.next280, %for.body126 ]
-  %arrayidx130 = getelementptr inbounds [14 x [3 x float]]* %img, i64 0, i64 %indvars.iv290, i64 %indvars.iv279
-  %41 = load float* %arrayidx130, align 4, !tbaa !0
-  %arrayidx136 = getelementptr inbounds [14 x [3 x float]]* %img, i64 0, i64 %idxprom134, i64 %indvars.iv279
-  %42 = load float* %arrayidx136, align 4, !tbaa !0
-  %add137 = fadd float %41, %42
-  %arrayidx145 = getelementptr inbounds [14 x [3 x float]]* %img, i64 0, i64 %idxprom143, i64 %indvars.iv279
-  %43 = load float* %arrayidx145, align 4, !tbaa !0
-  %add146 = fadd float %add137, %43
-  %arrayidx150 = getelementptr inbounds [3 x float]* %vert, i64 %indvars.iv286, i64 %indvars.iv279
-  store float %add146, float* %arrayidx150, align 4, !tbaa !0
-  %indvars.iv.next280 = add i64 %indvars.iv279, 1
-  %lftr.wideiv281 = trunc i64 %indvars.iv.next280 to i32
-  %exitcond282 = icmp eq i32 %lftr.wideiv281, 3
-  br i1 %exitcond282, label %for.end153, label %for.body126
+; <label>:85                                      ; preds = %85, %.preheader7
+  %indvars.iv34 = phi i64 [ 0, %.preheader7 ], [ %indvars.iv.next35, %85 ]
+  %86 = getelementptr inbounds [14 x [3 x float]]* %img, i64 0, i64 %indvars.iv43, i64 %indvars.iv34
+  %87 = load float* %86, align 4, !tbaa !14
+  %88 = getelementptr inbounds [14 x [3 x float]]* %img, i64 0, i64 %77, i64 %indvars.iv34
+  %89 = load float* %88, align 4, !tbaa !14
+  %90 = fadd float %87, %89
+  %91 = getelementptr inbounds [14 x [3 x float]]* %img, i64 0, i64 %84, i64 %indvars.iv34
+  %92 = load float* %91, align 4, !tbaa !14
+  %93 = fadd float %90, %92
+  %94 = getelementptr inbounds [3 x float]* %vert, i64 %indvars.iv40, i64 %indvars.iv34
+  store float %93, float* %94, align 4, !tbaa !14
+  %indvars.iv.next35 = add nuw nsw i64 %indvars.iv34, 1
+  %exitcond36 = icmp eq i64 %indvars.iv.next35, 3
+  br i1 %exitcond36, label %95, label %85
 
-for.end153:                                       ; preds = %for.body126
-  %exitcond289 = icmp eq i32 %37, 4
-  br i1 %exitcond289, label %for.inc158, label %for.end153.for.cond124.preheader_crit_edge
+; <label>:95                                      ; preds = %85
+  %exitcond42 = icmp eq i64 %indvars.iv.next39, 4
+  br i1 %exitcond42, label %96, label %..preheader7_crit_edge
 
-for.end153.for.cond124.preheader_crit_edge:       ; preds = %for.end153
-  %indvars.iv.next287 = add i64 %indvars.iv286, 1
-  %arrayidx133.phi.trans.insert = getelementptr inbounds [4 x i32]* %tmp, i64 0, i64 %indvars.iv284
-  %.pre327 = load i32* %arrayidx133.phi.trans.insert, align 4, !tbaa !4
-  %phitmp330 = add i64 %indvars.iv284, 1
-  br label %for.cond124.preheader
+..preheader7_crit_edge:                           ; preds = %95
+  %indvars.iv.next41 = add nsw i64 %indvars.iv40, 1
+  %.phi.trans.insert72 = getelementptr inbounds [4 x i32]* %tmp, i64 0, i64 %indvars.iv.next39
+  %.pre73 = load i32* %.phi.trans.insert72, align 4, !tbaa !17
+  br label %.preheader7
 
-for.inc158:                                       ; preds = %for.end153
-  %44 = add i32 %n.4261, 4
-  %indvars.iv.next291 = add i64 %indvars.iv290, 2
-  %45 = trunc i64 %indvars.iv.next291 to i32
-  %cmp102 = icmp slt i32 %45, 12
-  br i1 %cmp102, label %for.body103, label %for.body.i
+; <label>:96                                      ; preds = %95
+  %97 = add nsw i64 %75, 4
+  %indvars.iv.next44 = add nuw nsw i64 %indvars.iv43, 2
+  %98 = icmp slt i64 %indvars.iv.next44, 12
+  br i1 %98, label %.preheader8, label %.preheader6
 
-for.body.i:                                       ; preds = %for.inc158, %for.body.i
-  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %for.body.i ], [ 0, %for.inc158 ]
-  %arrayidx2.i = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv.i, i64 %indvars.iv.i
-  %46 = load float* %arrayidx2.i, align 4, !tbaa !0
-  %conv3.i = fmul float %46, 5.000000e-01
-  %arrayidx5.i = getelementptr inbounds [3 x float]* %box_center, i64 0, i64 %indvars.iv.i
-  store float %conv3.i, float* %arrayidx5.i, align 4, !tbaa !0
-  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
-  %lftr.wideiv277 = trunc i64 %indvars.iv.next.i to i32
-  %exitcond278 = icmp eq i32 %lftr.wideiv277, 3
-  br i1 %exitcond278, label %for.cond165.preheader, label %for.body.i
+.preheader6:                                      ; preds = %96, %.preheader6
+  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %.preheader6 ], [ 0, %96 ]
+  %99 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv.i, i64 %indvars.iv.i
+  %100 = load float* %99, align 4, !tbaa !14
+  %101 = fmul float %100, 5.000000e-01
+  %102 = getelementptr inbounds [3 x float]* %box_center, i64 0, i64 %indvars.iv.i
+  store float %101, float* %102, align 4, !tbaa !14
+  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1
+  %exitcond.i = icmp eq i64 %indvars.iv.next.i, 3
+  br i1 %exitcond.i, label %.preheader, label %.preheader6
 
-for.cond165.preheader:                            ; preds = %for.body.i, %for.inc184
-  %indvars.iv273 = phi i64 [ %indvars.iv.next274, %for.inc184 ], [ 0, %for.body.i ]
-  br label %for.body167
+.preheader:                                       ; preds = %.preheader6, %calc_box_center.exit
+  %indvars.iv31 = phi i64 [ %indvars.iv.next32, %calc_box_center.exit ], [ 0, %.preheader6 ]
+  br label %103
 
-for.body167:                                      ; preds = %for.body167, %for.cond165.preheader
-  %indvars.iv = phi i64 [ 0, %for.cond165.preheader ], [ %indvars.iv.next, %for.body167 ]
-  %arrayidx171 = getelementptr inbounds [3 x float]* %vert, i64 %indvars.iv273, i64 %indvars.iv
-  %47 = load float* %arrayidx171, align 4, !tbaa !0
-  %conv = fpext float %47 to double
-  %mul = fmul double %conv, 2.500000e-01
-  %arrayidx173 = getelementptr inbounds [3 x float]* %box_center, i64 0, i64 %indvars.iv
-  %48 = load float* %arrayidx173, align 4, !tbaa !0
-  %conv174 = fpext float %48 to double
-  %add175 = fadd double %mul, %conv174
-  %conv176 = fptrunc double %add175 to float
-  store float %conv176, float* %arrayidx171, align 4, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 3
-  br i1 %exitcond, label %for.inc184, label %for.body167
+; <label>:103                                     ; preds = %103, %.preheader
+  %indvars.iv = phi i64 [ 0, %.preheader ], [ %indvars.iv.next, %103 ]
+  %104 = getelementptr inbounds [3 x float]* %vert, i64 %indvars.iv31, i64 %indvars.iv
+  %105 = load float* %104, align 4, !tbaa !14
+  %106 = fpext float %105 to double
+  %107 = fmul double %106, 2.500000e-01
+  %108 = getelementptr inbounds [3 x float]* %box_center, i64 0, i64 %indvars.iv
+  %109 = load float* %108, align 4, !tbaa !14
+  %110 = fpext float %109 to double
+  %111 = fadd double %107, %110
+  %112 = fptrunc double %111 to float
+  store float %112, float* %104, align 4, !tbaa !14
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i64 %indvars.iv.next, 3
+  br i1 %exitcond, label %calc_box_center.exit, label %103
 
-for.inc184:                                       ; preds = %for.body167
-  %indvars.iv.next274 = add i64 %indvars.iv273, 1
-  %lftr.wideiv275 = trunc i64 %indvars.iv.next274 to i32
-  %exitcond276 = icmp eq i32 %lftr.wideiv275, 24
-  br i1 %exitcond276, label %for.end186, label %for.cond165.preheader
+calc_box_center.exit:                             ; preds = %103
+  %indvars.iv.next32 = add nuw nsw i64 %indvars.iv31, 1
+  %exitcond33 = icmp eq i64 %indvars.iv.next32, 24
+  br i1 %exitcond33, label %113, label %.preheader
 
-for.end186:                                       ; preds = %for.inc184
-  call void @llvm.lifetime.end(i64 168, i8* %0) #4
+; <label>:113                                     ; preds = %calc_box_center.exit
+  call void @llvm.lifetime.end(i64 168, i8* %1) #6
   ret void
 }
 
 ; Function Attrs: nounwind
-declare void @llvm.lifetime.start(i64, i8* nocapture) #4
+declare void @llvm.lifetime.start(i64, i8* nocapture) #6
 
 ; Function Attrs: nounwind
-declare void @llvm.lifetime.end(i64, i8* nocapture) #4
+declare void @llvm.lifetime.end(i64, i8* nocapture) #6
 
-; Function Attrs: nounwind optsize uwtable
-define i32* @compact_unitcell_edges() #1 {
-entry:
-  br label %for.cond1.preheader
+; Function Attrs: nounwind optsize ssp uwtable
+define i32* @compact_unitcell_edges() #4 {
+  br label %.preheader1
 
-for.cond1.preheader:                              ; preds = %for.inc11, %entry
-  %indvars.iv48 = phi i64 [ 0, %entry ], [ %indvars.iv.next49, %for.inc11 ]
-  %i.040 = phi i32 [ 0, %entry ], [ %inc12, %for.inc11 ]
-  %mul = shl nsw i32 %i.040, 2
-  br label %for.body3
+.preheader1:                                      ; preds = %10, %0
+  %indvars.iv11 = phi i64 [ 0, %0 ], [ %indvars.iv.next12, %10 ]
+  %i.07 = phi i32 [ 0, %0 ], [ %11, %10 ]
+  %1 = shl nsw i32 %i.07, 2
+  br label %2
 
-for.cond14.preheader:                             ; preds = %for.inc11
+.preheader:                                       ; preds = %10
   call void @llvm.memcpy.p0i8.p0i8.i64(i8* bitcast (i32* getelementptr inbounds ([72 x i32]* @compact_unitcell_edges.edge, i64 0, i64 48) to i8*), i8* bitcast ([24 x i32]* @compact_unitcell_edges.hexcon to i8*), i64 96, i32 16, i1 false)
   ret i32* getelementptr inbounds ([72 x i32]* @compact_unitcell_edges.edge, i64 0, i64 0)
 
-for.body3:                                        ; preds = %for.body3, %for.cond1.preheader
-  %indvars.iv = phi i64 [ %indvars.iv48, %for.cond1.preheader ], [ %indvars.iv.next, %for.body3 ]
-  %j.038 = phi i32 [ 0, %for.cond1.preheader ], [ %add5, %for.body3 ]
-  %add = add nsw i32 %j.038, %mul
-  %0 = or i64 %indvars.iv, 1
-  %arrayidx = getelementptr inbounds [72 x i32]* @compact_unitcell_edges.edge, i64 0, i64 %indvars.iv
-  store i32 %add, i32* %arrayidx, align 8, !tbaa !4
-  %add5 = add nsw i32 %j.038, 1
-  %1 = icmp eq i32 %add5, 4
-  %tmp = select i1 %1, i32 0, i32 %add5
-  %add6 = add nsw i32 %tmp, %mul
-  %indvars.iv.next = add i64 %indvars.iv, 2
-  %arrayidx9 = getelementptr inbounds [72 x i32]* @compact_unitcell_edges.edge, i64 0, i64 %0
-  store i32 %add6, i32* %arrayidx9, align 4, !tbaa !4
-  %exitcond = icmp eq i32 %add5, 4
-  br i1 %exitcond, label %for.inc11, label %for.body3
+; <label>:2                                       ; preds = %2, %.preheader1
+  %indvars.iv = phi i64 [ %indvars.iv11, %.preheader1 ], [ %indvars.iv.next, %2 ]
+  %j.05 = phi i32 [ 0, %.preheader1 ], [ %6, %2 ]
+  %3 = add nuw nsw i32 %j.05, %1
+  %4 = or i64 %indvars.iv, 1
+  %5 = getelementptr inbounds [72 x i32]* @compact_unitcell_edges.edge, i64 0, i64 %indvars.iv
+  store i32 %3, i32* %5, align 8, !tbaa !17
+  %6 = add nuw nsw i32 %j.05, 1
+  %7 = icmp eq i32 %6, 4
+  %tmp = select i1 %7, i32 0, i32 %6
+  %8 = add nsw i32 %tmp, %1
+  %indvars.iv.next = add nsw i64 %indvars.iv, 2
+  %9 = getelementptr inbounds [72 x i32]* @compact_unitcell_edges.edge, i64 0, i64 %4
+  store i32 %8, i32* %9, align 4, !tbaa !17
+  %exitcond = icmp eq i32 %6, 4
+  br i1 %exitcond, label %10, label %2
 
-for.inc11:                                        ; preds = %for.body3
-  %indvars.iv.next49 = add i64 %indvars.iv48, 8
-  %inc12 = add nsw i32 %i.040, 1
-  %exitcond50 = icmp eq i32 %inc12, 6
-  br i1 %exitcond50, label %for.cond14.preheader, label %for.cond1.preheader
+; <label>:10                                      ; preds = %2
+  %11 = add nuw nsw i32 %i.07, 1
+  %indvars.iv.next12 = add nuw nsw i64 %indvars.iv11, 8
+  %exitcond13 = icmp eq i32 %11, 6
+  br i1 %exitcond13, label %.preheader, label %.preheader1
 }
 
-; Function Attrs: nounwind optsize uwtable
-define void @put_atoms_in_box([3 x float]* nocapture %box, i32 %natoms, [3 x float]* nocapture %x) #1 {
-entry:
-  %cmp85 = icmp sgt i32 %natoms, 0
-  br i1 %cmp85, label %for.cond1.preheader, label %for.end48
+; Function Attrs: nounwind optsize ssp uwtable
+define void @put_atoms_in_box([3 x float]* nocapture readonly %box, i32 %natoms, [3 x float]* nocapture %x) #4 {
+  %1 = icmp sgt i32 %natoms, 0
+  br i1 %1, label %.preheader5.lr.ph, label %._crit_edge15
 
-for.cond1.preheader:                              ; preds = %entry, %for.inc46
-  %indvars.iv97 = phi i64 [ %indvars.iv.next98, %for.inc46 ], [ 0, %entry ]
-  br label %while.cond.preheader
+.preheader5.lr.ph:                                ; preds = %0
+  %2 = add i32 %natoms, -1
+  br label %.preheader5
 
-while.cond.preheader:                             ; preds = %for.cond1.preheader, %for.inc44
-  %indvars.iv95 = phi i64 [ 2, %for.cond1.preheader ], [ %indvars.iv.next96, %for.inc44 ]
-  %indvars.iv91 = phi i32 [ 3, %for.cond1.preheader ], [ %indvars.iv.next92, %for.inc44 ]
-  %arrayidx5 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv97, i64 %indvars.iv95
-  %0 = load float* %arrayidx5, align 4, !tbaa !0
-  %cmp677 = fcmp olt float %0, 0.000000e+00
-  br i1 %cmp677, label %for.body9, label %while.cond18.loopexit
+.preheader5:                                      ; preds = %23, %.preheader5.lr.ph
+  %indvars.iv26 = phi i64 [ 0, %.preheader5.lr.ph ], [ %indvars.iv.next27, %23 ]
+  br label %.preheader4
 
-while.cond.loopexit:                              ; preds = %for.body9
-  %.pre102 = load float* %arrayidx5, align 4, !tbaa !0
-  %cmp6 = fcmp olt float %.pre102, 0.000000e+00
-  br i1 %cmp6, label %for.body9, label %while.cond18.loopexit
+.preheader4:                                      ; preds = %.preheader5, %._crit_edge
+  %indvars.iv24 = phi i64 [ 2, %.preheader5 ], [ %indvars.iv.next25, %._crit_edge ]
+  %indvars.iv20 = phi i32 [ 3, %.preheader5 ], [ %indvars.iv.next21, %._crit_edge ]
+  %3 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv26, i64 %indvars.iv24
+  %4 = load float* %3, align 4, !tbaa !14
+  %5 = fcmp olt float %4, 0.000000e+00
+  br i1 %5, label %.lr.ph, label %.preheader3
 
-for.body9:                                        ; preds = %while.cond.preheader, %while.cond.loopexit, %for.body9
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body9 ], [ 0, %while.cond.loopexit ], [ 0, %while.cond.preheader ]
-  %arrayidx13 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv95, i64 %indvars.iv
-  %1 = load float* %arrayidx13, align 4, !tbaa !0
-  %arrayidx17 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv97, i64 %indvars.iv
-  %2 = load float* %arrayidx17, align 4, !tbaa !0
-  %add = fadd float %1, %2
-  store float %add, float* %arrayidx17, align 4, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
+.loopexit2:                                       ; preds = %.lr.ph
+  %.pre = load float* %3, align 4, !tbaa !14
+  %6 = fcmp olt float %.pre, 0.000000e+00
+  br i1 %6, label %.lr.ph, label %.preheader3
+
+.preheader3:                                      ; preds = %.loopexit2, %.preheader4
+  %7 = phi float [ %4, %.preheader4 ], [ %.pre, %.loopexit2 ]
+  %8 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv24, i64 %indvars.iv24
+  %9 = load float* %8, align 4, !tbaa !14
+  %10 = fcmp ult float %7, %9
+  br i1 %10, label %._crit_edge, label %.lr.ph12
+
+.lr.ph:                                           ; preds = %.loopexit2, %.lr.ph, %.preheader4
+  %indvars.iv = phi i64 [ 0, %.preheader4 ], [ %indvars.iv.next, %.lr.ph ], [ 0, %.loopexit2 ]
+  %11 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv24, i64 %indvars.iv
+  %12 = load float* %11, align 4, !tbaa !14
+  %13 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv26, i64 %indvars.iv
+  %14 = load float* %13, align 4, !tbaa !14
+  %15 = fadd float %12, %14
+  store float %15, float* %13, align 4, !tbaa !14
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
   %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %indvars.iv91
-  br i1 %exitcond, label %while.cond.loopexit, label %for.body9
+  %exitcond = icmp eq i32 %lftr.wideiv, %indvars.iv20
+  br i1 %exitcond, label %.loopexit2, label %.lr.ph
 
-while.cond18.loopexit:                            ; preds = %while.cond.loopexit, %while.cond.preheader
-  %3 = phi float [ %0, %while.cond.preheader ], [ %.pre102, %while.cond.loopexit ]
-  %arrayidx26 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv95, i64 %indvars.iv95
-  %4 = load float* %arrayidx26, align 4, !tbaa !0
-  %cmp2783 = fcmp ult float %3, %4
-  br i1 %cmp2783, label %for.inc44, label %for.body31
+.loopexit:                                        ; preds = %.lr.ph12
+  %.pre30 = load float* %3, align 4, !tbaa !14
+  %.pre31 = load float* %8, align 4, !tbaa !14
+  %16 = fcmp ult float %.pre30, %.pre31
+  br i1 %16, label %._crit_edge, label %.lr.ph12
 
-while.cond18.loopexit80:                          ; preds = %for.body31
-  %.pre = load float* %arrayidx5, align 4, !tbaa !0
-  %.pre101 = load float* %arrayidx26, align 4, !tbaa !0
-  %cmp27 = fcmp ult float %.pre, %.pre101
-  br i1 %cmp27, label %for.inc44, label %for.body31
+.lr.ph12:                                         ; preds = %.loopexit, %.lr.ph12, %.preheader3
+  %indvars.iv18 = phi i64 [ 0, %.preheader3 ], [ %indvars.iv.next19, %.lr.ph12 ], [ 0, %.loopexit ]
+  %17 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv24, i64 %indvars.iv18
+  %18 = load float* %17, align 4, !tbaa !14
+  %19 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv26, i64 %indvars.iv18
+  %20 = load float* %19, align 4, !tbaa !14
+  %21 = fsub float %20, %18
+  store float %21, float* %19, align 4, !tbaa !14
+  %indvars.iv.next19 = add nuw nsw i64 %indvars.iv18, 1
+  %lftr.wideiv22 = trunc i64 %indvars.iv.next19 to i32
+  %exitcond23 = icmp eq i32 %lftr.wideiv22, %indvars.iv20
+  br i1 %exitcond23, label %.loopexit, label %.lr.ph12
 
-for.body31:                                       ; preds = %while.cond18.loopexit, %while.cond18.loopexit80, %for.body31
-  %indvars.iv89 = phi i64 [ %indvars.iv.next90, %for.body31 ], [ 0, %while.cond18.loopexit80 ], [ 0, %while.cond18.loopexit ]
-  %arrayidx35 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv95, i64 %indvars.iv89
-  %5 = load float* %arrayidx35, align 4, !tbaa !0
-  %arrayidx39 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv97, i64 %indvars.iv89
-  %6 = load float* %arrayidx39, align 4, !tbaa !0
-  %sub = fsub float %6, %5
-  store float %sub, float* %arrayidx39, align 4, !tbaa !0
-  %indvars.iv.next90 = add i64 %indvars.iv89, 1
-  %lftr.wideiv93 = trunc i64 %indvars.iv.next90 to i32
-  %exitcond94 = icmp eq i32 %lftr.wideiv93, %indvars.iv91
-  br i1 %exitcond94, label %while.cond18.loopexit80, label %for.body31
+._crit_edge:                                      ; preds = %.loopexit, %.preheader3
+  %indvars.iv.next25 = add nsw i64 %indvars.iv24, -1
+  %22 = icmp sgt i64 %indvars.iv24, 0
+  %indvars.iv.next21 = add nsw i32 %indvars.iv20, -1
+  br i1 %22, label %.preheader4, label %23
 
-for.inc44:                                        ; preds = %while.cond18.loopexit80, %while.cond18.loopexit
-  %indvars.iv.next96 = add i64 %indvars.iv95, -1
-  %7 = trunc i64 %indvars.iv95 to i32
-  %cmp2 = icmp sgt i32 %7, 0
-  %indvars.iv.next92 = add i32 %indvars.iv91, -1
-  br i1 %cmp2, label %while.cond.preheader, label %for.inc46
+; <label>:23                                      ; preds = %._crit_edge
+  %indvars.iv.next27 = add nuw nsw i64 %indvars.iv26, 1
+  %lftr.wideiv28 = trunc i64 %indvars.iv26 to i32
+  %exitcond29 = icmp eq i32 %lftr.wideiv28, %2
+  br i1 %exitcond29, label %._crit_edge15, label %.preheader5
 
-for.inc46:                                        ; preds = %for.inc44
-  %indvars.iv.next98 = add i64 %indvars.iv97, 1
-  %lftr.wideiv99 = trunc i64 %indvars.iv.next98 to i32
-  %exitcond100 = icmp eq i32 %lftr.wideiv99, %natoms
-  br i1 %exitcond100, label %for.end48, label %for.cond1.preheader
-
-for.end48:                                        ; preds = %for.inc46, %entry
+._crit_edge15:                                    ; preds = %23, %0
   ret void
 }
 
-; Function Attrs: nounwind optsize uwtable
-define void @put_atoms_in_triclinic_unitcell([3 x float]* nocapture %box, i32 %natoms, [3 x float]* nocapture %x) #1 {
-entry:
+; Function Attrs: nounwind optsize ssp uwtable
+define void @put_atoms_in_triclinic_unitcell([3 x float]* nocapture readonly %box, i32 %natoms, [3 x float]* nocapture %x) #4 {
   %box_center = alloca [3 x float], align 4
   %shift_mat = alloca [3 x [3 x float]], align 16
-  %0 = bitcast [3 x [3 x float]]* %shift_mat to i8*
-  call void @llvm.lifetime.start(i64 36, i8* %0) #4
-  br label %for.body.i
+  %1 = bitcast [3 x [3 x float]]* %shift_mat to i8*
+  call void @llvm.lifetime.start(i64 36, i8* %1) #6
+  br label %2
 
-for.body.i:                                       ; preds = %for.body.i, %entry
-  %indvars.iv.i = phi i64 [ 0, %entry ], [ %indvars.iv.next.i, %for.body.i ]
-  %arrayidx2.i = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv.i, i64 %indvars.iv.i
-  %1 = load float* %arrayidx2.i, align 4, !tbaa !0
-  %conv3.i = fmul float %1, 5.000000e-01
-  %arrayidx5.i = getelementptr inbounds [3 x float]* %box_center, i64 0, i64 %indvars.iv.i
-  store float %conv3.i, float* %arrayidx5.i, align 4, !tbaa !0
-  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
-  %lftr.wideiv199 = trunc i64 %indvars.iv.next.i to i32
-  %exitcond200 = icmp eq i32 %lftr.wideiv199, 3
-  br i1 %exitcond200, label %for.cond1.preheader, label %for.body.i
+; <label>:2                                       ; preds = %2, %0
+  %indvars.iv.i = phi i64 [ 0, %0 ], [ %indvars.iv.next.i, %2 ]
+  %3 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv.i, i64 %indvars.iv.i
+  %4 = load float* %3, align 4, !tbaa !14
+  %5 = fmul float %4, 5.000000e-01
+  %6 = getelementptr inbounds [3 x float]* %box_center, i64 0, i64 %indvars.iv.i
+  store float %5, float* %6, align 4, !tbaa !14
+  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1
+  %exitcond.i = icmp eq i64 %indvars.iv.next.i, 3
+  br i1 %exitcond.i, label %.preheader8, label %2
 
-for.cond1.preheader:                              ; preds = %for.body.i, %for.inc14
-  %indvars.iv196 = phi i64 [ %indvars.iv.next197, %for.inc14 ], [ 2, %for.body.i ]
-  %indvars.iv190 = phi i64 [ %indvars.iv.next191, %for.inc14 ], [ 3, %for.body.i ]
-  %2 = add nsw i64 %indvars.iv196, 1
-  %3 = trunc i64 %2 to i32
-  %cmp2166 = icmp slt i32 %3, 3
-  br i1 %cmp2166, label %for.body3, label %for.inc14
+.preheader8:                                      ; preds = %2, %calc_box_center.exit
+  %indvars.iv56 = phi i64 [ %indvars.iv.next57, %calc_box_center.exit ], [ 2, %2 ]
+  %indvars.iv50 = phi i64 [ %indvars.iv.next51, %calc_box_center.exit ], [ 3, %2 ]
+  %7 = add nuw nsw i64 %indvars.iv56, 1
+  %8 = icmp slt i64 %7, 3
+  br i1 %8, label %.lr.ph26, label %calc_box_center.exit
 
-for.cond16.preheader:                             ; preds = %for.inc14
-  %cmp17163 = icmp sgt i32 %natoms, 0
-  br i1 %cmp17163, label %for.cond19.preheader, label %for.end94
+.preheader7:                                      ; preds = %calc_box_center.exit
+  %9 = icmp sgt i32 %natoms, 0
+  br i1 %9, label %.preheader6.lr.ph, label %._crit_edge23
 
-for.body3:                                        ; preds = %for.cond1.preheader, %for.body3
-  %indvars.iv192 = phi i64 [ %indvars.iv.next193, %for.body3 ], [ %indvars.iv190, %for.cond1.preheader ]
-  %arrayidx5 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv192, i64 %indvars.iv196
-  %4 = load float* %arrayidx5, align 4, !tbaa !0
-  %arrayidx9 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv192, i64 %indvars.iv192
-  %5 = load float* %arrayidx9, align 4, !tbaa !0
-  %div = fdiv float %4, %5
-  %arrayidx13 = getelementptr inbounds [3 x [3 x float]]* %shift_mat, i64 0, i64 %indvars.iv192, i64 %indvars.iv196
-  store float %div, float* %arrayidx13, align 4, !tbaa !0
-  %indvars.iv.next193 = add i64 %indvars.iv192, 1
-  %lftr.wideiv194 = trunc i64 %indvars.iv.next193 to i32
-  %exitcond195 = icmp eq i32 %lftr.wideiv194, 3
-  br i1 %exitcond195, label %for.inc14, label %for.body3
+.preheader6.lr.ph:                                ; preds = %.preheader7
+  %10 = add i32 %natoms, -1
+  br label %.preheader6
 
-for.inc14:                                        ; preds = %for.body3, %for.cond1.preheader
-  %indvars.iv.next197 = add i64 %indvars.iv196, -1
-  %6 = trunc i64 %indvars.iv196 to i32
-  %cmp = icmp sgt i32 %6, 0
-  %indvars.iv.next191 = add i64 %indvars.iv190, -1
-  br i1 %cmp, label %for.cond1.preheader, label %for.cond16.preheader
+.lr.ph26:                                         ; preds = %.preheader8, %.lr.ph26
+  %indvars.iv52 = phi i64 [ %indvars.iv.next53, %.lr.ph26 ], [ %indvars.iv50, %.preheader8 ]
+  %11 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv52, i64 %indvars.iv56
+  %12 = load float* %11, align 4, !tbaa !14
+  %13 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv52, i64 %indvars.iv52
+  %14 = load float* %13, align 4, !tbaa !14
+  %15 = fdiv float %12, %14
+  %16 = getelementptr inbounds [3 x [3 x float]]* %shift_mat, i64 0, i64 %indvars.iv52, i64 %indvars.iv56
+  store float %15, float* %16, align 4, !tbaa !14
+  %indvars.iv.next53 = add nuw nsw i64 %indvars.iv52, 1
+  %lftr.wideiv54 = trunc i64 %indvars.iv52 to i32
+  %exitcond55 = icmp eq i32 %lftr.wideiv54, 2
+  br i1 %exitcond55, label %calc_box_center.exit, label %.lr.ph26
 
-for.cond19.preheader:                             ; preds = %for.cond16.preheader, %for.inc92
-  %indvars.iv186 = phi i64 [ %indvars.iv.next187, %for.inc92 ], [ 0, %for.cond16.preheader ]
-  br label %for.cond23.preheader
+calc_box_center.exit:                             ; preds = %.lr.ph26, %.preheader8
+  %indvars.iv.next57 = add nsw i64 %indvars.iv56, -1
+  %17 = icmp sgt i64 %indvars.iv56, 0
+  %indvars.iv.next51 = add nsw i64 %indvars.iv50, -1
+  br i1 %17, label %.preheader8, label %.preheader7
 
-for.cond23.preheader:                             ; preds = %for.cond19.preheader, %for.inc89
-  %indvars.iv183 = phi i64 [ 2, %for.cond19.preheader ], [ %indvars.iv.next184, %for.inc89 ]
-  %indvars.iv179 = phi i32 [ 3, %for.cond19.preheader ], [ %indvars.iv.next180, %for.inc89 ]
-  %indvars.iv = phi i64 [ 3, %for.cond19.preheader ], [ %indvars.iv.next, %for.inc89 ]
-  %7 = add nsw i64 %indvars.iv183, 1
-  %8 = trunc i64 %7 to i32
-  %cmp24146 = icmp slt i32 %8, 3
-  br i1 %cmp24146, label %for.body25, label %while.cond.loopexit
+.preheader6:                                      ; preds = %53, %.preheader6.lr.ph
+  %indvars.iv46 = phi i64 [ 0, %.preheader6.lr.ph ], [ %indvars.iv.next47, %53 ]
+  br label %.preheader5
 
-for.body25:                                       ; preds = %for.cond23.preheader, %for.body25
-  %indvars.iv169 = phi i64 [ %indvars.iv.next170, %for.body25 ], [ %indvars.iv, %for.cond23.preheader ]
-  %shift.0147 = phi float [ %add36, %for.body25 ], [ 0.000000e+00, %for.cond23.preheader ]
-  %arrayidx29 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv186, i64 %indvars.iv169
-  %9 = load float* %arrayidx29, align 4, !tbaa !0
-  %arrayidx31 = getelementptr inbounds [3 x float]* %box_center, i64 0, i64 %indvars.iv169
-  %10 = load float* %arrayidx31, align 4, !tbaa !0
-  %sub = fsub float %9, %10
-  %arrayidx35 = getelementptr inbounds [3 x [3 x float]]* %shift_mat, i64 0, i64 %indvars.iv169, i64 %indvars.iv183
-  %11 = load float* %arrayidx35, align 4, !tbaa !0
-  %mul = fmul float %sub, %11
-  %add36 = fadd float %shift.0147, %mul
-  %indvars.iv.next170 = add i64 %indvars.iv169, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next170 to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, 3
-  br i1 %exitcond, label %while.cond.loopexit, label %for.body25
+.preheader5:                                      ; preds = %.preheader6, %._crit_edge
+  %indvars.iv43 = phi i64 [ 2, %.preheader6 ], [ %indvars.iv.next44, %._crit_edge ]
+  %indvars.iv39 = phi i32 [ 3, %.preheader6 ], [ %indvars.iv.next40, %._crit_edge ]
+  %indvars.iv = phi i64 [ 3, %.preheader6 ], [ %indvars.iv.next, %._crit_edge ]
+  %18 = add nuw nsw i64 %indvars.iv43, 1
+  %19 = icmp slt i64 %18, 3
+  br i1 %19, label %.lr.ph, label %.preheader4
 
-while.cond.loopexit:                              ; preds = %for.body25, %for.cond23.preheader
-  %shift.0.lcssa = phi float [ 0.000000e+00, %for.cond23.preheader ], [ %add36, %for.body25 ]
-  %arrayidx43 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv186, i64 %indvars.iv183
-  %12 = load float* %arrayidx43, align 4, !tbaa !0
-  %sub44152 = fsub float %12, %shift.0.lcssa
-  %cmp45153 = fcmp olt float %sub44152, 0.000000e+00
-  br i1 %cmp45153, label %for.body48, label %while.cond61.loopexit
+.preheader4:                                      ; preds = %.lr.ph, %.preheader5
+  %shift.0.lcssa = phi float [ 0.000000e+00, %.preheader5 ], [ %32, %.lr.ph ]
+  %20 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv46, i64 %indvars.iv43
+  %21 = load float* %20, align 4, !tbaa !14
+  %22 = fsub float %21, %shift.0.lcssa
+  %23 = fcmp olt float %22, 0.000000e+00
+  br i1 %23, label %.lr.ph15, label %.preheader3
 
-while.cond.loopexit149:                           ; preds = %for.body48
-  %.pre202 = load float* %arrayidx43, align 4, !tbaa !0
-  %sub44 = fsub float %.pre202, %shift.0.lcssa
-  %cmp45 = fcmp olt float %sub44, 0.000000e+00
-  br i1 %cmp45, label %for.body48, label %while.cond61.loopexit
+.lr.ph:                                           ; preds = %.preheader5, %.lr.ph
+  %indvars.iv29 = phi i64 [ %indvars.iv.next30, %.lr.ph ], [ %indvars.iv, %.preheader5 ]
+  %shift.012 = phi float [ %32, %.lr.ph ], [ 0.000000e+00, %.preheader5 ]
+  %24 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv46, i64 %indvars.iv29
+  %25 = load float* %24, align 4, !tbaa !14
+  %26 = getelementptr inbounds [3 x float]* %box_center, i64 0, i64 %indvars.iv29
+  %27 = load float* %26, align 4, !tbaa !14
+  %28 = fsub float %25, %27
+  %29 = getelementptr inbounds [3 x [3 x float]]* %shift_mat, i64 0, i64 %indvars.iv29, i64 %indvars.iv43
+  %30 = load float* %29, align 4, !tbaa !14
+  %31 = fmul float %28, %30
+  %32 = fadd float %shift.012, %31
+  %indvars.iv.next30 = add nuw nsw i64 %indvars.iv29, 1
+  %lftr.wideiv = trunc i64 %indvars.iv29 to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, 2
+  br i1 %exitcond, label %.preheader4, label %.lr.ph
 
-for.body48:                                       ; preds = %while.cond.loopexit, %while.cond.loopexit149, %for.body48
-  %indvars.iv171 = phi i64 [ %indvars.iv.next172, %for.body48 ], [ 0, %while.cond.loopexit149 ], [ 0, %while.cond.loopexit ]
-  %arrayidx52 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv183, i64 %indvars.iv171
-  %13 = load float* %arrayidx52, align 4, !tbaa !0
-  %arrayidx56 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv186, i64 %indvars.iv171
-  %14 = load float* %arrayidx56, align 4, !tbaa !0
-  %add57 = fadd float %13, %14
-  store float %add57, float* %arrayidx56, align 4, !tbaa !0
-  %indvars.iv.next172 = add i64 %indvars.iv171, 1
-  %lftr.wideiv175 = trunc i64 %indvars.iv.next172 to i32
-  %exitcond176 = icmp eq i32 %lftr.wideiv175, %indvars.iv179
-  br i1 %exitcond176, label %while.cond.loopexit149, label %for.body48
+.loopexit2:                                       ; preds = %.lr.ph15
+  %.pre = load float* %20, align 4, !tbaa !14
+  %33 = fsub float %.pre, %shift.0.lcssa
+  %34 = fcmp olt float %33, 0.000000e+00
+  br i1 %34, label %.lr.ph15, label %.preheader3
 
-while.cond61.loopexit:                            ; preds = %while.cond.loopexit149, %while.cond.loopexit
-  %15 = phi float [ %12, %while.cond.loopexit ], [ %.pre202, %while.cond.loopexit149 ]
-  %sub66160 = fsub float %15, %shift.0.lcssa
-  %arrayidx70 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv183, i64 %indvars.iv183
-  %16 = load float* %arrayidx70, align 4, !tbaa !0
-  %cmp71161 = fcmp ult float %sub66160, %16
-  br i1 %cmp71161, label %for.inc89, label %for.body75
+.preheader3:                                      ; preds = %.loopexit2, %.preheader4
+  %35 = phi float [ %21, %.preheader4 ], [ %.pre, %.loopexit2 ]
+  %36 = fsub float %35, %shift.0.lcssa
+  %37 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv43, i64 %indvars.iv43
+  %38 = load float* %37, align 4, !tbaa !14
+  %39 = fcmp ult float %36, %38
+  br i1 %39, label %._crit_edge, label %.lr.ph20
 
-while.cond61.loopexit157:                         ; preds = %for.body75
-  %.pre = load float* %arrayidx43, align 4, !tbaa !0
-  %.pre201 = load float* %arrayidx70, align 4, !tbaa !0
-  %sub66 = fsub float %.pre, %shift.0.lcssa
-  %cmp71 = fcmp ult float %sub66, %.pre201
-  br i1 %cmp71, label %for.inc89, label %for.body75
+.lr.ph15:                                         ; preds = %.loopexit2, %.lr.ph15, %.preheader4
+  %indvars.iv31 = phi i64 [ 0, %.preheader4 ], [ %indvars.iv.next32, %.lr.ph15 ], [ 0, %.loopexit2 ]
+  %40 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv43, i64 %indvars.iv31
+  %41 = load float* %40, align 4, !tbaa !14
+  %42 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv46, i64 %indvars.iv31
+  %43 = load float* %42, align 4, !tbaa !14
+  %44 = fadd float %41, %43
+  store float %44, float* %42, align 4, !tbaa !14
+  %indvars.iv.next32 = add nuw nsw i64 %indvars.iv31, 1
+  %lftr.wideiv35 = trunc i64 %indvars.iv.next32 to i32
+  %exitcond36 = icmp eq i32 %lftr.wideiv35, %indvars.iv39
+  br i1 %exitcond36, label %.loopexit2, label %.lr.ph15
 
-for.body75:                                       ; preds = %while.cond61.loopexit, %while.cond61.loopexit157, %for.body75
-  %indvars.iv177 = phi i64 [ %indvars.iv.next178, %for.body75 ], [ 0, %while.cond61.loopexit157 ], [ 0, %while.cond61.loopexit ]
-  %arrayidx79 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv183, i64 %indvars.iv177
-  %17 = load float* %arrayidx79, align 4, !tbaa !0
-  %arrayidx83 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv186, i64 %indvars.iv177
-  %18 = load float* %arrayidx83, align 4, !tbaa !0
-  %sub84 = fsub float %18, %17
-  store float %sub84, float* %arrayidx83, align 4, !tbaa !0
-  %indvars.iv.next178 = add i64 %indvars.iv177, 1
-  %lftr.wideiv181 = trunc i64 %indvars.iv.next178 to i32
-  %exitcond182 = icmp eq i32 %lftr.wideiv181, %indvars.iv179
-  br i1 %exitcond182, label %while.cond61.loopexit157, label %for.body75
+.loopexit:                                        ; preds = %.lr.ph20
+  %.pre59 = load float* %20, align 4, !tbaa !14
+  %.pre60 = load float* %37, align 4, !tbaa !14
+  %45 = fsub float %.pre59, %shift.0.lcssa
+  %46 = fcmp ult float %45, %.pre60
+  br i1 %46, label %._crit_edge, label %.lr.ph20
 
-for.inc89:                                        ; preds = %while.cond61.loopexit157, %while.cond61.loopexit
-  %indvars.iv.next184 = add i64 %indvars.iv183, -1
-  %19 = trunc i64 %indvars.iv183 to i32
-  %cmp20 = icmp sgt i32 %19, 0
-  %indvars.iv.next = add i64 %indvars.iv, -1
-  %indvars.iv.next180 = add i32 %indvars.iv179, -1
-  br i1 %cmp20, label %for.cond23.preheader, label %for.inc92
+.lr.ph20:                                         ; preds = %.loopexit, %.lr.ph20, %.preheader3
+  %indvars.iv37 = phi i64 [ 0, %.preheader3 ], [ %indvars.iv.next38, %.lr.ph20 ], [ 0, %.loopexit ]
+  %47 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv43, i64 %indvars.iv37
+  %48 = load float* %47, align 4, !tbaa !14
+  %49 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv46, i64 %indvars.iv37
+  %50 = load float* %49, align 4, !tbaa !14
+  %51 = fsub float %50, %48
+  store float %51, float* %49, align 4, !tbaa !14
+  %indvars.iv.next38 = add nuw nsw i64 %indvars.iv37, 1
+  %lftr.wideiv41 = trunc i64 %indvars.iv.next38 to i32
+  %exitcond42 = icmp eq i32 %lftr.wideiv41, %indvars.iv39
+  br i1 %exitcond42, label %.loopexit, label %.lr.ph20
 
-for.inc92:                                        ; preds = %for.inc89
-  %indvars.iv.next187 = add i64 %indvars.iv186, 1
-  %lftr.wideiv188 = trunc i64 %indvars.iv.next187 to i32
-  %exitcond189 = icmp eq i32 %lftr.wideiv188, %natoms
-  br i1 %exitcond189, label %for.end94, label %for.cond19.preheader
+._crit_edge:                                      ; preds = %.loopexit, %.preheader3
+  %indvars.iv.next44 = add nsw i64 %indvars.iv43, -1
+  %52 = icmp sgt i64 %indvars.iv43, 0
+  %indvars.iv.next = add nsw i64 %indvars.iv, -1
+  %indvars.iv.next40 = add nsw i32 %indvars.iv39, -1
+  br i1 %52, label %.preheader5, label %53
 
-for.end94:                                        ; preds = %for.inc92, %for.cond16.preheader
-  call void @llvm.lifetime.end(i64 36, i8* %0) #4
+; <label>:53                                      ; preds = %._crit_edge
+  %indvars.iv.next47 = add nuw nsw i64 %indvars.iv46, 1
+  %lftr.wideiv48 = trunc i64 %indvars.iv46 to i32
+  %exitcond49 = icmp eq i32 %lftr.wideiv48, %10
+  br i1 %exitcond49, label %._crit_edge23, label %.preheader6
+
+._crit_edge23:                                    ; preds = %53, %.preheader7
+  call void @llvm.lifetime.end(i64 36, i8* %1) #6
   ret void
 }
 
-; Function Attrs: nounwind optsize uwtable
-define void @put_atoms_in_compact_unitcell([3 x float]* %box, i32 %natoms, [3 x float]* nocapture %x) #1 {
-entry:
+; Function Attrs: nounwind optsize ssp uwtable
+define void @put_atoms_in_compact_unitcell([3 x float]* %box, i32 %natoms, [3 x float]* nocapture %x) #4 {
   %box_center = alloca [3 x float], align 4
   %dx = alloca [3 x float], align 4
-  call void @init_pbc([3 x float]* %box) #6
-  br label %for.body.i
+  tail call void @init_pbc([3 x float]* %box) #9
+  br label %1
 
-for.body.i:                                       ; preds = %for.body.i, %entry
-  %indvars.iv.i = phi i64 [ 0, %entry ], [ %indvars.iv.next.i, %for.body.i ]
-  %arrayidx2.i = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv.i, i64 %indvars.iv.i
-  %0 = load float* %arrayidx2.i, align 4, !tbaa !0
-  %conv3.i = fmul float %0, 5.000000e-01
-  %arrayidx5.i = getelementptr inbounds [3 x float]* %box_center, i64 0, i64 %indvars.iv.i
-  store float %conv3.i, float* %arrayidx5.i, align 4, !tbaa !0
-  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
-  %lftr.wideiv18 = trunc i64 %indvars.iv.next.i to i32
-  %exitcond19 = icmp eq i32 %lftr.wideiv18, 3
-  br i1 %exitcond19, label %for.cond.preheader, label %for.body.i
+; <label>:1                                       ; preds = %1, %0
+  %indvars.iv.i = phi i64 [ 0, %0 ], [ %indvars.iv.next.i, %1 ]
+  %2 = getelementptr inbounds [3 x float]* %box, i64 %indvars.iv.i, i64 %indvars.iv.i
+  %3 = load float* %2, align 4, !tbaa !14
+  %4 = fmul float %3, 5.000000e-01
+  %5 = getelementptr inbounds [3 x float]* %box_center, i64 0, i64 %indvars.iv.i
+  store float %4, float* %5, align 4, !tbaa !14
+  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1
+  %exitcond.i = icmp eq i64 %indvars.iv.next.i, 3
+  br i1 %exitcond.i, label %calc_box_center.exit.preheader, label %1
 
-for.cond.preheader:                               ; preds = %for.body.i
-  %arraydecay = getelementptr inbounds [3 x float]* %box_center, i64 0, i64 0
-  %cmp16 = icmp sgt i32 %natoms, 0
-  br i1 %cmp16, label %for.body.lr.ph, label %for.end
+calc_box_center.exit.preheader:                   ; preds = %1
+  %6 = getelementptr inbounds [3 x float]* %box_center, i64 0, i64 0
+  %7 = icmp sgt i32 %natoms, 0
+  br i1 %7, label %.lr.ph, label %calc_box_center.exit._crit_edge
 
-for.body.lr.ph:                                   ; preds = %for.cond.preheader
-  %arraydecay3 = getelementptr inbounds [3 x float]* %dx, i64 0, i64 0
-  %arrayidx2.i14 = getelementptr inbounds [3 x float]* %box_center, i64 0, i64 1
-  %arrayidx3.i = getelementptr inbounds [3 x float]* %dx, i64 0, i64 1
-  %arrayidx5.i15 = getelementptr inbounds [3 x float]* %box_center, i64 0, i64 2
-  %arrayidx6.i = getelementptr inbounds [3 x float]* %dx, i64 0, i64 2
-  br label %for.body
+.lr.ph:                                           ; preds = %calc_box_center.exit.preheader
+  %8 = getelementptr inbounds [3 x float]* %dx, i64 0, i64 0
+  %9 = getelementptr inbounds [3 x float]* %box_center, i64 0, i64 1
+  %10 = getelementptr inbounds [3 x float]* %dx, i64 0, i64 1
+  %11 = getelementptr inbounds [3 x float]* %box_center, i64 0, i64 2
+  %12 = getelementptr inbounds [3 x float]* %dx, i64 0, i64 2
+  %13 = add i32 %natoms, -1
+  %.pre = load float* %6, align 4, !tbaa !14
+  %.pre2 = load float* %9, align 4, !tbaa !14
+  %.pre3 = load float* %11, align 4, !tbaa !14
+  br label %calc_box_center.exit
 
-for.body:                                         ; preds = %for.body, %for.body.lr.ph
-  %indvars.iv = phi i64 [ 0, %for.body.lr.ph ], [ %indvars.iv.next, %for.body ]
-  %arraydecay1 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv, i64 0
-  call void @pbc_dx(float* %arraydecay1, float* %arraydecay, float* %arraydecay3) #6
-  %1 = load float* %arraydecay, align 4, !tbaa !0
-  %2 = load float* %arraydecay3, align 4, !tbaa !0
-  %add.i = fadd float %1, %2
-  %3 = load float* %arrayidx2.i14, align 4, !tbaa !0
-  %4 = load float* %arrayidx3.i, align 4, !tbaa !0
-  %add4.i = fadd float %3, %4
-  %5 = load float* %arrayidx5.i15, align 4, !tbaa !0
-  %6 = load float* %arrayidx6.i, align 4, !tbaa !0
-  %add7.i = fadd float %5, %6
-  store float %add.i, float* %arraydecay1, align 4, !tbaa !0
-  %arrayidx9.i = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv, i64 1
-  store float %add4.i, float* %arrayidx9.i, align 4, !tbaa !0
-  %arrayidx10.i = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv, i64 2
-  store float %add7.i, float* %arrayidx10.i, align 4, !tbaa !0
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %natoms
-  br i1 %exitcond, label %for.end, label %for.body
+calc_box_center.exit:                             ; preds = %calc_box_center.exit, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %calc_box_center.exit ]
+  %14 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv, i64 0
+  call void @pbc_dx(float* %14, float* %6, float* %8) #9
+  %15 = load float* %8, align 4, !tbaa !14
+  %16 = fadd float %.pre, %15
+  %17 = load float* %10, align 4, !tbaa !14
+  %18 = fadd float %.pre2, %17
+  %19 = load float* %12, align 4, !tbaa !14
+  %20 = fadd float %.pre3, %19
+  store float %16, float* %14, align 4, !tbaa !14
+  %21 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv, i64 1
+  store float %18, float* %21, align 4, !tbaa !14
+  %22 = getelementptr inbounds [3 x float]* %x, i64 %indvars.iv, i64 2
+  store float %20, float* %22, align 4, !tbaa !14
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %13
+  br i1 %exitcond, label %calc_box_center.exit._crit_edge, label %calc_box_center.exit
 
-for.end:                                          ; preds = %for.body, %for.cond.preheader
+calc_box_center.exit._crit_edge:                  ; preds = %calc_box_center.exit, %calc_box_center.exit.preheader
   ret void
 }
 
 declare float @fabsf(float)
 
 ; Function Attrs: nounwind
-declare i64 @fwrite(i8* nocapture, i64, i64, %struct._IO_FILE* nocapture) #4
+declare i64 @fwrite(i8* nocapture, i64, i64, %struct.__sFILE* nocapture) #6
 
 ; Function Attrs: nounwind
-declare void @llvm.memcpy.p0i8.p0i8.i64(i8* nocapture, i8* nocapture, i64, i32, i1) #4
+declare void @llvm.memcpy.p0i8.p0i8.i64(i8* nocapture, i8* nocapture readonly, i64, i32, i1) #6
 
-attributes #0 = { nounwind optsize readonly uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #1 = { nounwind optsize uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #3 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #4 = { nounwind }
-attributes #5 = { nounwind optsize readnone "less-precise-fpmad"="false" "no-frame-pointer-elim"="false" "no-frame-pointer-elim-non-leaf"="false" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #6 = { optsize }
+attributes #0 = { alwaysinline nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #1 = { optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { alwaysinline nounwind optsize readnone ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { nounwind optsize readonly ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #4 = { nounwind optsize ssp uwtable "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #5 = { nounwind optsize "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #6 = { nounwind }
 attributes #7 = { nounwind optsize }
+attributes #8 = { nounwind optsize readnone "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="core2" "target-features"="+ssse3,+cx16,+sse,+sse2,+sse3" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #9 = { optsize }
 
-!0 = metadata !{metadata !"float", metadata !1}
-!1 = metadata !{metadata !"omnipotent char", metadata !2}
-!2 = metadata !{metadata !"Simple C/C++ TBAA"}
-!3 = metadata !{metadata !"any pointer", metadata !1}
-!4 = metadata !{metadata !"int", metadata !1}
+!llvm.module.flags = !{!0}
+!llvm.ident = !{!1}
+
+!0 = !{i32 1, !"PIC Level", i32 2}
+!1 = !{!"Apple LLVM version 7.0.0 (clang-700.1.76)"}
+!2 = !{!3, !7, i64 12}
+!3 = !{!"__sFILE", !4, i64 0, !7, i64 8, !7, i64 12, !8, i64 16, !8, i64 18, !9, i64 24, !7, i64 40, !4, i64 48, !4, i64 56, !4, i64 64, !4, i64 72, !4, i64 80, !9, i64 88, !4, i64 104, !7, i64 112, !5, i64 116, !5, i64 119, !9, i64 120, !7, i64 136, !10, i64 144}
+!4 = !{!"any pointer", !5, i64 0}
+!5 = !{!"omnipotent char", !6, i64 0}
+!6 = !{!"Simple C/C++ TBAA"}
+!7 = !{!"int", !5, i64 0}
+!8 = !{!"short", !5, i64 0}
+!9 = !{!"__sbuf", !4, i64 0, !7, i64 8}
+!10 = !{!"long long", !5, i64 0}
+!11 = !{!3, !7, i64 40}
+!12 = !{!3, !4, i64 0}
+!13 = !{!5, !5, i64 0}
+!14 = !{!15, !15, i64 0}
+!15 = !{!"float", !5, i64 0}
+!16 = !{!4, !4, i64 0}
+!17 = !{!7, !7, i64 0}
+!18 = !{!19, !4, i64 1048}
+!19 = !{!"", !5, i64 0, !7, i64 1024, !4, i64 1032, !7, i64 1040, !4, i64 1048}
+!20 = !{!19, !4, i64 1032}

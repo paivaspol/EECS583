@@ -1,0 +1,39 @@
+define void @cctk_staggerdirindex_(i32* nocapture %dsi, i32* nocapture readonly %dir, i32* nocapture readonly %gsi) #1 {
+  %1 = load i32* %dir, align 4, !tbaa !7
+  %2 = add nsw i32 %1, -1
+  %3 = load i32* %gsi, align 4, !tbaa !7
+  %.b.i = load i1* @CCTK_StaggerDirIndex.hashed, align 1
+  br i1 %.b.i, label %.preheader.i, label %4
+
+; <label>:4                                       ; preds = %0
+  store i32 1, i32* getelementptr inbounds ([4 x i32]* @CCTK_StaggerDirIndex.hash, i64 0, i64 0), align 16, !tbaa !7
+  store i32 3, i32* getelementptr inbounds ([4 x i32]* @CCTK_StaggerDirIndex.hash, i64 0, i64 1), align 4, !tbaa !7
+  store i32 9, i32* getelementptr inbounds ([4 x i32]* @CCTK_StaggerDirIndex.hash, i64 0, i64 2), align 8, !tbaa !7
+  store i32 27, i32* getelementptr inbounds ([4 x i32]* @CCTK_StaggerDirIndex.hash, i64 0, i64 3), align 4, !tbaa !7
+  store i1 true, i1* @CCTK_StaggerDirIndex.hashed, align 1
+  br label %.preheader.i
+
+.preheader.i:                                     ; preds = %4, %0, %11
+  %indvars.iv.i = phi i64 [ %indvars.iv.next.i, %11 ], [ 3, %0 ], [ 3, %4 ]
+  %.02.i = phi i32 [ %12, %11 ], [ %3, %0 ], [ %3, %4 ]
+  %5 = getelementptr inbounds [4 x i32]* @CCTK_StaggerDirIndex.hash, i64 0, i64 %indvars.iv.i
+  %6 = load i32* %5, align 4, !tbaa !7
+  %7 = trunc i64 %indvars.iv.i to i32
+  %8 = icmp eq i32 %7, %2
+  br i1 %8, label %9, label %11
+
+; <label>:9                                       ; preds = %.preheader.i
+  %10 = sdiv i32 %.02.i, %6
+  br label %CCTK_StaggerDirIndex.exit
+
+; <label>:11                                      ; preds = %.preheader.i
+  %12 = srem i32 %.02.i, %6
+  %indvars.iv.next.i = add nsw i64 %indvars.iv.i, -1
+  %13 = icmp sgt i64 %indvars.iv.i, 0
+  br i1 %13, label %.preheader.i, label %CCTK_StaggerDirIndex.exit
+
+CCTK_StaggerDirIndex.exit:                        ; preds = %11, %9
+  %dsi.0.i = phi i32 [ %10, %9 ], [ 0, %11 ]
+  store i32 %dsi.0.i, i32* %dsi, align 4, !tbaa !7
+  ret void
+}

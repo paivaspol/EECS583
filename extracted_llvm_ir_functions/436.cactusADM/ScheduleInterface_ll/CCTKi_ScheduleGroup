@@ -1,0 +1,30 @@
+define i32 @CCTKi_ScheduleGroup(i8* %name, i8* %thorn, i8* %implementation, i8* %description, i8* %where, i32 %n_mem_groups, i32 %n_comm_groups, i32 %n_trigger_groups, i32 %n_sync_groups, i32 %n_options, i32 %n_before, i32 %n_after, i32 %n_while, ...) #1 {
+  %ap = alloca [1 x %struct.__va_list_tag], align 16
+  %1 = bitcast [1 x %struct.__va_list_tag]* %ap to i8*
+  call void @llvm.va_start(i8* %1)
+  %2 = call fastcc %struct.t_attribute* @CreateAttribute(i8* %where, i8* %name, i8* %description, i8* null, i8* %thorn, i8* %implementation, i32 %n_mem_groups, i32 %n_comm_groups, i32 %n_trigger_groups, i32 %n_sync_groups, i32 %n_options, [1 x %struct.__va_list_tag]* %ap) #9
+  %3 = call fastcc %struct.T_SCHED_MODIFIER* @CreateModifiers(i32 %n_before, i32 %n_after, i32 %n_while, [1 x %struct.__va_list_tag]* %ap) #9
+  call void @llvm.va_end(i8* %1)
+  %4 = call i32 @ValidateModifiers(%struct.T_SCHED_MODIFIER* %3) #9
+  %5 = icmp eq %struct.t_attribute* %2, null
+  br i1 %5, label %15, label %6
+
+; <label>:6                                       ; preds = %0
+  %7 = icmp eq %struct.T_SCHED_MODIFIER* %3, null
+  br i1 %7, label %8, label %12
+
+; <label>:8                                       ; preds = %6
+  %9 = or i32 %n_after, %n_before
+  %10 = or i32 %9, %n_while
+  %11 = icmp eq i32 %10, 0
+  br i1 %11, label %12, label %15
+
+; <label>:12                                      ; preds = %6, %8
+  %13 = bitcast %struct.t_attribute* %2 to i8*
+  %14 = call i32 @CCTKi_DoScheduleGroup(i8* %where, i8* %name, %struct.T_SCHED_MODIFIER* %3, i8* %13) #8
+  br label %15
+
+; <label>:15                                      ; preds = %8, %0, %12
+  %retcode.0 = phi i32 [ %14, %12 ], [ -1, %0 ], [ -1, %8 ]
+  ret i32 %retcode.0
+}

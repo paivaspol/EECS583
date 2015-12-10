@@ -1,61 +1,63 @@
-define void @view_all(i32 %nf, %struct.t_filenm* %fnm) #1 {
-entry:
-  %cmp28 = icmp sgt i32 %nf, 0
-  br i1 %cmp28, label %for.body, label %for.end
+define void @view_all(i32 %nf, %struct.t_filenm* %fnm) #4 {
+  %1 = icmp sgt i32 %nf, 0
+  br i1 %1, label %.lr.ph, label %._crit_edge
 
-for.body:                                         ; preds = %entry, %for.inc
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.inc ], [ 0, %entry ]
-  %arrayidx = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv
-  %ftp = getelementptr inbounds %struct.t_filenm* %arrayidx, i64 0, i32 0
-  %0 = load i32* %ftp, align 4, !tbaa !0
-  br label %for.body.i
+.lr.ph:                                           ; preds = %0
+  %2 = add i32 %nf, -1
+  br label %3
 
-for.cond.i:                                       ; preds = %for.body.i
-  %inc.i = add nsw i32 %i.06.i, 1
-  %1 = trunc i64 %indvars.iv.next.i to i32
-  %cmp.i = icmp ult i32 %1, 5
-  br i1 %cmp.i, label %for.body.i, label %for.inc
+; <label>:3                                       ; preds = %can_view.exit.thread, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %can_view.exit.thread ]
+  %4 = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv
+  %5 = getelementptr inbounds %struct.t_filenm* %4, i64 0, i32 0
+  %6 = load i32* %5, align 4, !tbaa !16
+  br label %7
 
-for.body.i:                                       ; preds = %for.cond.i, %for.body
-  %indvars.iv.i = phi i64 [ 1, %for.body ], [ %indvars.iv.next.i, %for.cond.i ]
-  %i.06.i = phi i32 [ 1, %for.body ], [ %inc.i, %for.cond.i ]
-  %arrayidx.i = getelementptr inbounds [5 x i32]* @can_view_ftp, i64 0, i64 %indvars.iv.i
-  %2 = load i32* %arrayidx.i, align 4, !tbaa !0
-  %cmp2.i = icmp eq i32 %2, %0
-  %indvars.iv.next.i = add i64 %indvars.iv.i, 1
-  br i1 %cmp2.i, label %can_view.exit, label %for.cond.i
+; <label>:7                                       ; preds = %11, %3
+  %indvars.iv.i = phi i64 [ 1, %3 ], [ %indvars.iv.next.i, %11 ]
+  %8 = getelementptr inbounds [5 x i32]* @can_view_ftp, i64 0, i64 %indvars.iv.i
+  %9 = load i32* %8, align 4, !tbaa !14
+  %10 = icmp eq i32 %9, %6
+  br i1 %10, label %can_view.exit, label %11
 
-can_view.exit:                                    ; preds = %for.body.i
-  %tobool = icmp eq i32 %i.06.i, 0
-  br i1 %tobool, label %for.inc, label %land.lhs.true
+; <label>:11                                      ; preds = %7
+  %indvars.iv.next.i = add nuw nsw i64 %indvars.iv.i, 1
+  %12 = trunc i64 %indvars.iv.next.i to i32
+  %13 = icmp ult i32 %12, 5
+  br i1 %13, label %7, label %can_view.exit.thread
 
-land.lhs.true:                                    ; preds = %can_view.exit
-  %call3 = tail call i32 @is_output(%struct.t_filenm* %arrayidx) #4
-  %tobool4 = icmp eq i32 %call3, 0
-  br i1 %tobool4, label %for.inc, label %land.lhs.true5
+can_view.exit:                                    ; preds = %7
+  %14 = trunc i64 %indvars.iv.i to i32
+  %15 = icmp eq i32 %14, 0
+  br i1 %15, label %can_view.exit.thread, label %16
 
-land.lhs.true5:                                   ; preds = %land.lhs.true
-  %call8 = tail call i32 @is_optional(%struct.t_filenm* %arrayidx) #4
-  %tobool9 = icmp eq i32 %call8, 0
-  br i1 %tobool9, label %if.then, label %lor.lhs.false
+; <label>:16                                      ; preds = %can_view.exit
+  %17 = tail call i32 @is_output(%struct.t_filenm* %4) #6
+  %18 = icmp eq i32 %17, 0
+  br i1 %18, label %can_view.exit.thread, label %19
 
-lor.lhs.false:                                    ; preds = %land.lhs.true5
-  %call12 = tail call i32 @is_set(%struct.t_filenm* %arrayidx) #4
-  %tobool13 = icmp eq i32 %call12, 0
-  br i1 %tobool13, label %for.inc, label %if.then
+; <label>:19                                      ; preds = %16
+  %20 = tail call i32 @is_optional(%struct.t_filenm* %4) #6
+  %21 = icmp eq i32 %20, 0
+  br i1 %21, label %25, label %22
 
-if.then:                                          ; preds = %lor.lhs.false, %land.lhs.true5
-  %fn = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv, i32 2
-  %3 = load i8** %fn, align 8, !tbaa !3
-  tail call void @do_view(i8* %3, i8* undef) #5
-  br label %for.inc
+; <label>:22                                      ; preds = %19
+  %23 = tail call i32 @is_set(%struct.t_filenm* %4) #6
+  %24 = icmp eq i32 %23, 0
+  br i1 %24, label %can_view.exit.thread, label %25
 
-for.inc:                                          ; preds = %for.cond.i, %lor.lhs.false, %land.lhs.true, %can_view.exit, %if.then
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %nf
-  br i1 %exitcond, label %for.end, label %for.body
+; <label>:25                                      ; preds = %22, %19
+  %26 = getelementptr inbounds %struct.t_filenm* %fnm, i64 %indvars.iv, i32 2
+  %27 = load i8** %26, align 8, !tbaa !19
+  tail call void @do_view(i8* %27, i8* undef) #7
+  br label %can_view.exit.thread
 
-for.end:                                          ; preds = %for.inc, %entry
+can_view.exit.thread:                             ; preds = %11, %22, %16, %can_view.exit, %25
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %lftr.wideiv = trunc i64 %indvars.iv to i32
+  %exitcond = icmp eq i32 %lftr.wideiv, %2
+  br i1 %exitcond, label %._crit_edge, label %3
+
+._crit_edge:                                      ; preds = %can_view.exit.thread, %0
   ret void
 }

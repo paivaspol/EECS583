@@ -1,22 +1,24 @@
-define void @print_phi(i8* %fn, i32 %natoms, [3 x float]* nocapture %x, float* nocapture %phi) #0 {
-entry:
-  %call = tail call %struct._IO_FILE* @ffopen(i8* %fn, i8* getelementptr inbounds ([2 x i8]* @.str23, i64 0, i64 0)) #6
-  %cmp5 = icmp sgt i32 %natoms, 0
-  br i1 %cmp5, label %for.body, label %for.end
+define void @print_phi(i8* %fn, i32 %natoms, [3 x float]* nocapture readnone %x, float* nocapture readonly %phi) #1 {
+  %1 = tail call %struct.__sFILE* @ffopen(i8* %fn, i8* getelementptr inbounds ([2 x i8]* @.str23, i64 0, i64 0)) #8
+  %2 = icmp sgt i32 %natoms, 0
+  br i1 %2, label %.lr.ph, label %._crit_edge
 
-for.body:                                         ; preds = %entry, %for.body
-  %indvars.iv = phi i64 [ %indvars.iv.next, %for.body ], [ 0, %entry ]
-  %arrayidx = getelementptr inbounds float* %phi, i64 %indvars.iv
-  %0 = load float* %arrayidx, align 4, !tbaa !0
-  %conv = fpext float %0 to double
-  %1 = trunc i64 %indvars.iv to i32
-  %call1 = tail call i32 (%struct._IO_FILE*, i8*, ...)* @fprintf(%struct._IO_FILE* %call, i8* getelementptr inbounds ([14 x i8]* @.str24, i64 0, i64 0), i32 %1, double %conv) #6
-  %indvars.iv.next = add i64 %indvars.iv, 1
-  %lftr.wideiv = trunc i64 %indvars.iv.next to i32
-  %exitcond = icmp eq i32 %lftr.wideiv, %natoms
-  br i1 %exitcond, label %for.end, label %for.body
+.lr.ph:                                           ; preds = %0
+  %3 = add i32 %natoms, -1
+  br label %4
 
-for.end:                                          ; preds = %for.body, %entry
-  tail call void @ffclose(%struct._IO_FILE* %call) #6
+; <label>:4                                       ; preds = %4, %.lr.ph
+  %indvars.iv = phi i64 [ 0, %.lr.ph ], [ %indvars.iv.next, %4 ]
+  %5 = getelementptr inbounds float* %phi, i64 %indvars.iv
+  %6 = load float* %5, align 4, !tbaa !2
+  %7 = fpext float %6 to double
+  %8 = trunc i64 %indvars.iv to i32
+  %9 = tail call i32 (%struct.__sFILE*, i8*, ...)* @fprintf(%struct.__sFILE* %1, i8* getelementptr inbounds ([14 x i8]* @.str24, i64 0, i64 0), i32 %8, double %7) #8
+  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
+  %exitcond = icmp eq i32 %8, %3
+  br i1 %exitcond, label %._crit_edge, label %4
+
+._crit_edge:                                      ; preds = %4, %0
+  tail call void @ffclose(%struct.__sFILE* %1) #8
   ret void
 }

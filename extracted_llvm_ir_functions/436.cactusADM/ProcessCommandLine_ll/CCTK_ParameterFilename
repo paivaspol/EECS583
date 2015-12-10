@@ -1,0 +1,18 @@
+define i32 @CCTK_ParameterFilename(i32 %len, i8* %filename) #1 {
+  %1 = load i8** @parameter_file_name, align 8, !tbaa !6
+  %2 = tail call i32 @CCTK_Equals(i8* %1, i8* getelementptr inbounds ([2 x i8]* @.str15, i64 0, i64 0)) #7
+  %3 = icmp eq i32 %2, 0
+  %4 = load i8** @parameter_file_name, align 8, !tbaa !6
+  %copy_string.0 = select i1 %3, i8* %4, i8* getelementptr inbounds ([6 x i8]* @.str16, i64 0, i64 0)
+  %5 = tail call i64 @strlen(i8* %copy_string.0) #7
+  %6 = trunc i64 %5 to i32
+  %7 = add nsw i32 %len, -1
+  %8 = icmp sgt i32 %6, %7
+  %. = select i1 %8, i32 %7, i32 %6
+  %9 = sext i32 %. to i64
+  %10 = tail call i64 @llvm.objectsize.i64.p0i8(i8* %filename, i1 false)
+  %11 = tail call i8* @__strncpy_chk(i8* %filename, i8* %copy_string.0, i64 %9, i64 %10) #7
+  %12 = getelementptr inbounds i8* %filename, i64 %9
+  store i8 0, i8* %12, align 1, !tbaa !10
+  ret i32 %.
+}

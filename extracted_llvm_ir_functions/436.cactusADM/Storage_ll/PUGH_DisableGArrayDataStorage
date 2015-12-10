@@ -1,0 +1,56 @@
+define i32 @PUGH_DisableGArrayDataStorage(%struct.PGA* nocapture %GA) #1 {
+  %1 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 5
+  %2 = load i32* %1, align 4, !tbaa !10
+  %3 = icmp ne i32 %2, 1
+  %4 = zext i1 %3 to i32
+  %5 = icmp eq i32 %2, 1
+  br i1 %5, label %6, label %32
+
+; <label>:6                                       ; preds = %0
+  %7 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 14
+  %8 = load i32* %7, align 4, !tbaa !35
+  %9 = icmp sgt i32 %8, 1
+  br i1 %9, label %10, label %20
+
+; <label>:10                                      ; preds = %6
+  %11 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 15
+  %12 = load i32* %11, align 4, !tbaa !36
+  %13 = icmp sgt i32 %12, 0
+  br i1 %13, label %14, label %20
+
+; <label>:14                                      ; preds = %10
+  %15 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 3
+  %16 = bitcast i8** %15 to i64*
+  %17 = load i64* %16, align 8, !tbaa !37
+  %18 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 4
+  %19 = bitcast i8** %18 to i64*
+  store i64 %17, i64* %19, align 8, !tbaa !25
+  br label %31
+
+; <label>:20                                      ; preds = %10, %6
+  %21 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 3
+  %22 = load i8** %21, align 8, !tbaa !37
+  %23 = icmp eq i8* %22, null
+  br i1 %23, label %25, label %24
+
+; <label>:24                                      ; preds = %20
+  tail call void @free(i8* %22) #8
+  br label %25
+
+; <label>:25                                      ; preds = %20, %24
+  %26 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 8
+  %27 = load i32* %26, align 4, !tbaa !31
+  %28 = sext i32 %27 to i64
+  %29 = tail call i8* @calloc(i64 1, i64 %28) #7
+  store i8* %29, i8** %21, align 8, !tbaa !37
+  %30 = getelementptr inbounds %struct.PGA* %GA, i64 0, i32 4
+  store i8* %29, i8** %30, align 8, !tbaa !25
+  br label %31
+
+; <label>:31                                      ; preds = %25, %14
+  store i32 0, i32* %1, align 4, !tbaa !10
+  br label %32
+
+; <label>:32                                      ; preds = %31, %0
+  ret i32 %4
+}

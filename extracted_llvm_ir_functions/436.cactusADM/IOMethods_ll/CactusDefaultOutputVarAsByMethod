@@ -1,0 +1,23 @@
+define i32 @CactusDefaultOutputVarAsByMethod(%struct.cGH* %GH, i8* %var, i8* %methodname, i8* %alias) #1 {
+  %method = alloca %struct.IOMethod*, align 8
+  %1 = load %struct.cHandledData** @IOMethods, align 8, !tbaa !2
+  %2 = bitcast %struct.IOMethod** %method to i8**
+  %3 = call i32 @Util_GetHandle(%struct.cHandledData* %1, i8* %methodname, i8** %2) #5
+  %4 = load %struct.IOMethod** %method, align 8, !tbaa !2
+  %5 = icmp eq %struct.IOMethod* %4, null
+  br i1 %5, label %10, label %6
+
+; <label>:6                                       ; preds = %0
+  %7 = getelementptr inbounds %struct.IOMethod* %4, i64 0, i32 3
+  %8 = load i32 (%struct.cGH*, i8*, i8*)** %7, align 8, !tbaa !10
+  %9 = call i32 %8(%struct.cGH* %GH, i8* %var, i8* %alias) #5
+  br label %12
+
+; <label>:10                                      ; preds = %0
+  %11 = call i32 (i32, i32, i8*, i8*, i8*, ...)* @CCTK_VWarn(i32 8, i32 730, i8* getelementptr inbounds ([78 x i8]* @.str, i64 0, i64 0), i8* getelementptr inbounds ([7 x i8]* @.str1, i64 0, i64 0), i8* getelementptr inbounds ([88 x i8]* @.str2, i64 0, i64 0), i8* %methodname, i8* %var) #5
+  br label %12
+
+; <label>:12                                      ; preds = %10, %6
+  %retval.0 = phi i32 [ %9, %6 ], [ -1, %10 ]
+  ret i32 %retval.0
+}
