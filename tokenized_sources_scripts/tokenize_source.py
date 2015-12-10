@@ -8,8 +8,54 @@ out_path = "../tokenized_sources"
 token_dict = {}
 counts = {}
 next_token = 1
+preds = {}
 
 sep = ","
+
+def update_paths(label, br_labels):
+    global preds
+
+
+    if label not in preds:
+#        print "not yet seen",label
+        for next_step in br_labels:
+#            print "adding preds for",next_step
+            preds[next_step] = {label:1}
+        return False
+        
+
+    pred_dict = preds[label]
+    backedge = False
+    #first... is this a backedge? 
+    for next_step in br_labels:
+        if next_step in pred_dict or next_step == label:
+            backedge = True
+
+
+#    print "preds for ",label,
+#    for item in pred_dict:
+#        print item,
+#    print
+
+
+    new_dict = pred_dict
+    new_dict[label] = 1
+
+    for next_step in br_labels:
+#        print "adding preds for",next_step,
+#        for item in new_dict:
+#            print item,
+#        print 
+        #for each label, append the new path to its paths array
+        for next_step in br_labels:
+            #if next step already has preds, do a copy item by item
+            if next_step in preds:
+                for item in new_dict: 
+                    preds[next_step][item] = 1
+            else:
+                preds[next_step] = new_dict.copy()
+        
+    return backedge
 
 def get_token(token):
     global next_token
@@ -35,9 +81,9 @@ def tokenize_funct(function):
     switch = False
     switch_text = []
     labels = {}
+    curr_label = ""
     with open(function, "r") as funct_file:        
         for line in funct_file:
-            #if there is a ':', it means that this line is a lable
             line = line.strip()
             if "switch" in line:
                 switch = True
@@ -47,7 +93,7 @@ def tokenize_funct(function):
 
             elif "]" in line and switch:
                 switch_text.append(line)
-                backedge = False
+                sw_labels = []
 
                 for line in switch_text:
                     if " label " in line:
@@ -55,20 +101,25 @@ def tokenize_funct(function):
                         label = line.split("label")[-1].strip()
                         remove_trailing_brace = label.split("[")[0]
                         remove_percent = remove_trailing_brace.split("%")[1]
-                        if remove_percent in labels:
-                            backedge = True
+                        sw_labels.append(remove_percent)
 
+                backedge = update_paths(curr_label, sw_labels)
                 if backedge:
+#                    print "next back_sw",curr_label, switch_text
                     token_function.append(get_token("back_sw"))
                 else:
+#                    print "next sw",curr_label, switch_text
                     token_function.append(get_token("sw"))
-
+                
+                switch_text = []
                 switch = False
             elif switch:
                 switch_text.append(line)
 
             elif ":" in line: 
-                labels[line.split(":")[0]] = 1 #this is a label... add it!  
+                curr_label = line.split(":")[0]
+                labels[curr_label] = 1 #this is a label... add it!  
+
 
             elif len(line) == 0 or line == "}" or "define" in line or "unreachable" in line: 
                 continue 
@@ -76,15 +127,19 @@ def tokenize_funct(function):
             elif "br" in line:
                 found = False
                 line_labels = line.split(" label ")
+                br_labels = []
                 for i in range(1,len(line_labels)):
                     label = line_labels[i].split(",")[0]
                     remove_percent = label.split("%")[1]
-                    if remove_percent in labels:
-                        found = True
-                        break
-                if found: 
+                    br_labels.append(remove_percent)
+
+                backedge = update_paths(curr_label, br_labels)
+
+                if backedge:
+#                    print "next back_br",curr_label, line
                     token_function.append(get_token("back_br"))
                 else:
+#                    print "forward br",curr_label, line
                     token_function.append(get_token("br"))
 
             elif "=" in line: 
@@ -112,13 +167,13 @@ def tokenize_funct(function):
 #check the syntax on that write call
 def tokenize_function(): 
     for benchmark in os.listdir(path):
+        print benchmark
         for cfiles in os.listdir(path + "/" + benchmark ):
             if not os.path.isdir(out_path + "/" + benchmark + "/" + cfiles):
                 os.makedirs(out_path + "/" + benchmark + "/" + cfiles)
 
             for function in os.listdir(path + "/" + benchmark + "/" + cfiles):
                 funct_tokens = tokenize_funct(path + "/" + benchmark + "/" + cfiles + "/" + function)
-
                 with open(out_path+"/"+benchmark+"/"+cfiles+"/"+function,"w+") as out_file:
                     out_file.write(funct_tokens)
             
@@ -126,6 +181,9 @@ def tokenize_function():
 
 
 tokenize_function()
+#print "starting"
+#sys.stdout.flush()
+#output = tokenize_funct(path + "/401.bzip2/bzip2_ll/uncompressStream")
 
 print len(token_dict)
 for item in token_dict:
